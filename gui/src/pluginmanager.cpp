@@ -3947,7 +3947,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
   PluginMetadata metadata;
   bool ok = handler->ExtractMetadata(path.ToStdString(), metadata);
   if (!ok) {
-    OCPNMessageBox(this, _("Error extracting metadata from tarball."),
+    OCPNMessageBox(this, _("Error extracting metadata from tarball (missing metadata.xml?)"),
                    _("OpenCPN Plugin Import Error"));
     return;
   }

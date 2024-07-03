@@ -7109,7 +7109,7 @@ msgid "Select tarball file"
 msgstr "Valitse arkistotiedosto"
 
 #: gui/src/pluginmanager.cpp:3949
-msgid "Error extracting metadata from tarball."
+msgid "Error extracting metadata from tarball (missing metadata.xml?)"
 msgstr "Metatietojen purkaminen arkistotiedostosta epäonnistui."
 
 #: gui/src/pluginmanager.cpp:3950 gui/src/pluginmanager.cpp:3955

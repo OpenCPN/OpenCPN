@@ -7104,7 +7104,7 @@ msgid "Select tarball file"
 msgstr "Tarball Datei auswählen"
 
 #: gui/src/pluginmanager.cpp:3949
-msgid "Error extracting metadata from tarball."
+msgid "Error extracting metadata from tarball (missing metadata.xml?)"
 msgstr "Fehler beim Entpacken von Metadaten aus Tarball."
 
 #: gui/src/pluginmanager.cpp:3950 gui/src/pluginmanager.cpp:3955
