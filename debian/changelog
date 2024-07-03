@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.3) jammy; urgency=medium
+
+  * Add Breaks/Replaces to handle existing PPA installations
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 03 Jul 2024 20:54:53 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.2) jammy; urgency=medium
 
   * New minor release to handle epoch
