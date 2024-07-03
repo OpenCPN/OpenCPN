@@ -323,7 +323,14 @@ private:
   GshhsReader *reader;
 };
 
+/*
+ * Create a GSHHS singleton for detecting land crossing and load the data
+ * from GSHHS files on disk.
+ */
 void gshhsCrossesLandInit();
+/*
+ * Reset the GSHHS singleton and reload the data from the GSHHS files on disk.
+ */
 void gshhsCrossesLandReset();
 /*
  * Detects if the rectangle specified with the coordinates crosses land.

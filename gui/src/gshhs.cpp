@@ -152,7 +152,6 @@ void GSHHSChart::Reset() {
   wxLogMessage("GSHHSChart::Reset()");
   if (reader) delete reader;
   reader = NULL;
-  gshhsCrossesLandReset();
 }
 
 int GSHHSChart::GetMinAvailableQuality() {
@@ -1506,9 +1505,9 @@ void gshhsCrossesLandInit() {
   wxLogMessage("GSHHSChart::gshhsCrossesLandInit()");
   if (!gshhs_singleton) {
     gshhs_singleton = new GSHHSChart();
-    if (!gshhs_singleton->reader)
-      gshhs_singleton->reader = new GshhsReader();
   }
+  if (!gshhs_singleton->reader)
+    gshhs_singleton->reader = new GshhsReader();
   /* load best possible quality for crossing tests */
   int bestQuality = 4;
   while (!gshhs_singleton->reader->qualityAvailable[bestQuality] && bestQuality > 0)
@@ -1521,7 +1520,7 @@ void gshhsCrossesLandInit() {
 void gshhsCrossesLandReset() {
   wxLogMessage("GSHHSChart::gshhsCrossesLandReset()");
   if (gshhs_singleton) delete gshhs_singleton;
-  gshhs_singleton = NULL;
+  gshhsCrossesLandInit()
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2) {

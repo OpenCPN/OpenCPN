@@ -4576,6 +4576,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
       ChartCanvas *cc = g_canvasArray.Item(i);
       if (cc) cc->ResetWorldBackgroundChart();
     }
+    // Reset the GSHHS singleton which is used to detect whether a rectangle crosses land.
+    gshhsCrossesLandReset();
   }
 
   delete pprog;
