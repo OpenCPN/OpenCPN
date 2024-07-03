@@ -112,7 +112,6 @@ extern GLint color_tri_shader_program;
 //-------------------------------------------------------------------------
 
 GSHHSChart::GSHHSChart() {
-  wxLogMessage("GSHHSChart::GSHHSChart() constructor");
   reader = NULL;
   land = wxColor(250, 250, 250);
   water = wxColor(0, 0, 0);
@@ -149,7 +148,6 @@ void GSHHSChart::SetColorsDirect(wxColour newLand, wxColour newWater) {
 }
 
 void GSHHSChart::Reset() {
-  wxLogMessage("GSHHSChart::Reset()");
   if (reader) delete reader;
   reader = NULL;
 }
@@ -1136,7 +1134,6 @@ GshhsPolygon::~GshhsPolygon() {
 //==========================================================
 
 GshhsReader::GshhsReader() {
-  wxLogMessage("GSHHSChart::GshhsReader()");
   maxQualityAvailable = -1;
   minQualityAvailable = -1;
 
@@ -1519,8 +1516,9 @@ void gshhsCrossesLandInit() {
 
 void gshhsCrossesLandReset() {
   wxLogMessage("GSHHSChart::gshhsCrossesLandReset()");
-  if (gshhs_singleton) delete gshhs_singleton;
-  gshhsCrossesLandInit()
+  if (gshhs_singleton)
+    gshhs_singleton->Reset();
+  gshhsCrossesLandInit();
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2) {
