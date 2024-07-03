@@ -76,18 +76,20 @@ public:
 };
 
 struct PolygonFileHeader {
-  int version;
-  int pasx;
-  int pasy;
-  int xmin;
-  int ymin;
-  int xmax;
-  int ymax;
-  int p1;
-  int p2;
-  int p3;
-  int p4;
-  int p5;
+    int version;    // Version number of the GSHHS data format
+    int pasx;       // Longitude step size for cells (1/10th degree)
+    int pasy;       // Latitude step size for cells (1/10th degree)
+    // xmin, ymin, xmax, ymax define the bounding box of the entire grid in 1/10th of a degree.
+    // This allows for quick determination of whether a given point is within the covered area.
+    int xmin;       // Minimum longitude of the grid (1/10th degree)
+    int ymin;       // Minimum latitude of the grid (1/10th degree)
+    int xmax;       // Maximum longitude of the grid (1/10th degree)
+    int ymax;       // Maximum latitude of the grid (1/10th degree)
+    int p1;         // Spare (reserved for future use)
+    int p2;         // Spare (reserved for future use)
+    int p3;         // Spare (reserved for future use)
+    int p4;         // Spare (reserved for future use)
+    int p5;         // Spare (reserved for future use)
 };
 
 typedef std::vector<wxRealPoint> contour;
@@ -249,6 +251,7 @@ public:
 
   //    bool crossing( wxLineF traject, wxLineF trajectWorld ) const;
   bool crossing1(wxLineF trajectWorld);
+  // Open the polygon file, read and return the version from the header.
   int ReadPolyVersion();
   bool qualityAvailable[6];
 
