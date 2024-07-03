@@ -772,16 +772,31 @@ bool PluginHandler::archive_check(int r, const char* msg, struct archive* a) {
   return r >= ARCHIVE_WARN;
 }
 
+/*
+ * Helper function to extract a tarball into platform-specific user directories.
+ *
+ *   @param path: Path to tarball.
+ *   @param filelist: On return contains a list of files installed.
+ *   @param metadata_path: If non-empty, location where to extract plugin metadata.xml file.
+ *   @param only_metadata: If true don't install any files, just extract
+ *                         the metadata.xml file.
+ *   @return true on success.
+ *           false if metadata_path != "" and tarball does not contain metadata.xml file.
+ */
 bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
                                    std::string& filelist,
                                    const std::string& metadata_path,
                                    bool only_metadata) {
   struct archive_entry* entry = 0;
   pathmap_t pathmap = getInstallPaths();
+  bool status = metadata_path == "";
   while (true) {
     int r = archive_read_next_header(src, &entry);
     if (r == ARCHIVE_EOF) {
-      return true;
+      if (metadata_path != "" && !status) {
+
+      }
+      return status;
     }
     if (!archive_check(r, "archive read header error", src)) {
       return false;
@@ -791,6 +806,8 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
     if (is_metadata) {
       if (metadata_path == "") continue;
       archive_entry_set_pathname(entry, metadata_path.c_str());
+      wxLogDebug("Extracted metadata.xml to %s", metadata_path.c_str());
+      status = true;
     } else if (!entry_set_install_path(entry, pathmap))
       continue;
     if (strlen(archive_entry_pathname(entry)) == 0) {
@@ -933,7 +950,8 @@ bool PluginHandler::InstallPlugin(const std::string& path,
                                   bool only_metadata) {
   if (!extractTarball(path, filelist, metadata_path, only_metadata)) {
     std::ostringstream os;
-    os << "Cannot unpack plugin tarball at : " << path;
+    wxLogWarning("Cannot unpack plugin tarball at %s, check if tarball contains metadata.xml",
+      path.c_str());
     if (filelist != "") cleanup(filelist, "unknown_name");
     last_error_msg = os.str();
     return false;
@@ -1133,7 +1151,8 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
   std::string filelist;
   if (!extractTarball(path, filelist)) {
     std::ostringstream os;
-    os << "Cannot unpack plugin: " << plugin.name << " at " << path;
+    wxLogWarning("Cannot unpack plugin %s at %s, check if tarball contains metadata.xml",
+      plugin.name.c_str(), path.c_str());
     last_error_msg = os.str();
     PluginHandler::cleanup(filelist, plugin.name);
     return false;
@@ -1179,23 +1198,32 @@ bool PluginHandler::ExtractMetadata(const std::string& path,
   std::string temp_path(tmpnam(0));
   if (!extractTarball(path, filelist, temp_path, true)) {
     std::ostringstream os;
-    os << "Cannot unpack plugin tarball at : " << path;
+    wxLogWarning("Cannot unpack plugin %s tarball at %s, check if tarball contains metadata.xml",
+      metadata.name.c_str(), path.c_str());
     if (filelist != "") cleanup(filelist, "unknown_name");
     last_error_msg = os.str();
     return false;
   }
-  if (!isRegularFile(temp_path.c_str()))
+  if (!isRegularFile(temp_path.c_str())) {
+    // This could happen if the tarball does not contain the metadata.xml file
+    // or the metadata.xml file could not be extracted.
     return false;
+  }
 
   struct CatalogCtx ctx;
   std::ifstream istream(temp_path);
   std::stringstream buff;
   buff << istream.rdbuf();
-  remove(temp_path.c_str());
-
+  int r = remove(temp_path.c_str());
+  if (r != 0) {
+    wxLogWarning("Cannot remove file %s: %s", temp_path.c_str(), strerror(r));
+  }
   auto xml = std::string("<plugins>") + buff.str() + "</plugins>";
   ParseCatalog(xml, &ctx);
   metadata = ctx.plugins[0];
+  if (metadata.name.empty()) {
+    wxLogWarning("Plugin metadata is empty");
+  }
   return !metadata.name.empty();
 }
 

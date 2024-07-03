@@ -118,7 +118,6 @@ bool ParsePlugin(const std::string& xml, PluginMetadata& plugin) {
 
 
 bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
-  bool ok = true;
   PluginMetadata* plugin = 0;
 
   pugi::xml_document doc;
