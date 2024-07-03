@@ -112,7 +112,8 @@ extern GLint color_tri_shader_program;
 //-------------------------------------------------------------------------
 
 GSHHSChart::GSHHSChart() {
-  reader = NULL;
+  wxLogMessage("GSHHSChart::GSHHSChart() constructor");
+  global_reader = NULL;
   land = wxColor(250, 250, 250);
   water = wxColor(0, 0, 0);
 }
@@ -148,6 +149,7 @@ void GSHHSChart::SetColorsDirect(wxColour newLand, wxColour newWater) {
 }
 
 void GSHHSChart::Reset() {
+  wxLogMessage("GSHHSChart::Reset()");
   if (reader) delete reader;
   reader = NULL;
   gshhsCrossesLandReset();
@@ -904,6 +906,8 @@ void GshhsPolyReader::readPolygonFileHeader(FILE *polyfile,
   fseek(polyfile, 0, SEEK_SET);
   if (fread(header, sizeof(PolygonFileHeader), 1, polyfile) != 1)
     wxLogMessage(_T("gshhs ReadPolygonFileHeader failed"));
+  else
+    wxLogMessage("gshhs ReadPolygonFileHeader loaded version %d", header->version);
 }
 
 //-------------------------------------------------------------------------
@@ -1133,6 +1137,7 @@ GshhsPolygon::~GshhsPolygon() {
 //==========================================================
 
 GshhsReader::GshhsReader() {
+  wxLogMessage("GSHHSChart::GshhsReader()");
   maxQualityAvailable = -1;
   minQualityAvailable = -1;
 
@@ -1253,7 +1258,9 @@ wxString GshhsReader::getFileName_rivers(int quality) {
 
 //-----------------------------------------------------------------------
 bool GshhsReader::gshhsFilesExists(int quality) {
-  if (!wxFile::Access(GshhsReader::getFileName_Land(quality), wxFile::read))
+  wxString fname = GshhsReader::getFileName_Land(quality);
+  wxLogMessage("GSHHG: Checking if file %s exists.", fname.c_str());
+  if (!wxFile::Access(fname, wxFile::read))
     return false;
   // Borders disabled anyway since the perf optimizations if( ! wxFile::Access(
   // GshhsReader::getFileName_boundaries( quality ), wxFile::read ) ) return
@@ -1491,32 +1498,34 @@ int GshhsReader::selectBestQuality(ViewPort &vp) {
 
 /* so plugins can determine if a line segment crosses land, must call from main
    thread once at startup to initialize array */
-static GshhsReader *reader = NULL;
+static GshhsReader *global_reader = NULL;
 void gshhsCrossesLandInit() {
-  if (!reader) {
-    reader = new GshhsReader();
+  wxLogMessage("GSHHSChart::gshhsCrossesLandInit()");
+  if (!global_reader) {
+    global_reader = new GshhsReader();
   }
   /* load best possible quality for crossing tests */
   int bestQuality = 4;
-  while (!reader->qualityAvailable[bestQuality] && bestQuality > 0)
+  while (!global_reader->qualityAvailable[bestQuality] && bestQuality > 0)
     bestQuality--;
-  reader->LoadQuality(bestQuality);
+  global_reader->LoadQuality(bestQuality);
   wxLogMessage("GSHHG: Loaded quality %d for land crossing detection.",
                bestQuality);
 }
 
 void gshhsCrossesLandReset() {
-  if (reader) delete reader;
-  reader = NULL;
+  wxLogMessage("GSHHSChart::gshhsCrossesLandReset()");
+  if (global_reader) delete global_reader;
+  global_reader = NULL;
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2) {
-  if (!reader) {
+  if (!global_reader) {
     gshhsCrossesLandInit();
   }
   if (lon1 < 0) lon1 += 360;
   if (lon2 < 0) lon2 += 360;
 
   wxLineF trajectWorld(lon1, lat1, lon2, lat2);
-  return reader->crossing1(trajectWorld);
+  return global_reader->crossing1(trajectWorld);
 }
