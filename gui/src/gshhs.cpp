@@ -113,7 +113,7 @@ extern GLint color_tri_shader_program;
 
 GSHHSChart::GSHHSChart() {
   wxLogMessage("GSHHSChart::GSHHSChart() constructor");
-  global_reader = NULL;
+  reader = NULL;
   land = wxColor(250, 250, 250);
   water = wxColor(0, 0, 0);
 }
@@ -1496,36 +1496,41 @@ int GshhsReader::selectBestQuality(ViewPort &vp) {
   return bestQuality;
 }
 
+// A singleton GSHHSChart instance which is used to detect if a trajectory
+// crosses land.
+static GSHHSChart *gshhs_singleton = NULL;
+
 /* so plugins can determine if a line segment crosses land, must call from main
    thread once at startup to initialize array */
-static GshhsReader *global_reader = NULL;
 void gshhsCrossesLandInit() {
   wxLogMessage("GSHHSChart::gshhsCrossesLandInit()");
-  if (!global_reader) {
-    global_reader = new GshhsReader();
+  if (!gshhs_singleton) {
+    gshhs_singleton = new GSHHSChart();
+    if (!gshhs_singleton->reader)
+      gshhs_singleton->reader = new GshhsReader();
   }
   /* load best possible quality for crossing tests */
   int bestQuality = 4;
-  while (!global_reader->qualityAvailable[bestQuality] && bestQuality > 0)
+  while (!gshhs_singleton->reader->qualityAvailable[bestQuality] && bestQuality > 0)
     bestQuality--;
-  global_reader->LoadQuality(bestQuality);
+  gshhs_singleton->reader->LoadQuality(bestQuality);
   wxLogMessage("GSHHG: Loaded quality %d for land crossing detection.",
                bestQuality);
 }
 
 void gshhsCrossesLandReset() {
   wxLogMessage("GSHHSChart::gshhsCrossesLandReset()");
-  if (global_reader) delete global_reader;
-  global_reader = NULL;
+  if (gshhs_singleton) delete gshhs_singleton;
+  gshhs_singleton = NULL;
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2) {
-  if (!global_reader) {
+  if (!gshhs_singleton) {
     gshhsCrossesLandInit();
   }
   if (lon1 < 0) lon1 += 360;
   if (lon2 < 0) lon2 += 360;
 
   wxLineF trajectWorld(lon1, lat1, lon2, lat2);
-  return global_reader->crossing1(trajectWorld);
+  return gshhs_singleton->reader->crossing1(trajectWorld);
 }

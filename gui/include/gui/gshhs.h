@@ -325,6 +325,10 @@ private:
 
 void gshhsCrossesLandInit();
 void gshhsCrossesLandReset();
+/*
+ * Detects if the rectangle specified with the coordinates crosses land.
+ * The best available quality is used, regardless of the chart scale.
+ */
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2);
 
 #endif
