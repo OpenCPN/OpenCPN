@@ -259,6 +259,18 @@ public:
 private:
   int quality;  // 5 levels: 0=low ... 4=full
   int selectBestQuality(void);
+  /**
+   * @brief Selects the best available quality level for GSHHS data based on the scale in the ViewPort.
+   *
+   * This function determines the optimal quality level for GSHHS data based on the viewport
+   * scale. It considers both the desired quality at the current scale in the ViewPort
+   * and the actual availability of quality levels.
+   *
+   * @param vp The current ViewPort, containing information about the current chart scale display.
+   * @return int The selected quality level, ranging from 0 (lowest) to 4 (highest).
+   *             Returns the best available quality if the ideal quality is not available.
+   *             Returns -1 if no quality level is available at all.
+   */
   int selectBestQuality(ViewPort &vp);
 
   int maxQualityAvailable;
