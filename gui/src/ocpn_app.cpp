@@ -1985,6 +1985,11 @@ int MyApp::OnExit() {
 
   if (ptcmgr) delete ptcmgr;
 
+  for (Track* track : g_TrackList) {
+    delete track;
+  }
+  g_TrackList.clear();
+
   delete pConfig;
   delete pSelect;
   delete pSelectTC;
