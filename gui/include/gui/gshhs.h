@@ -330,6 +330,7 @@ private:
 void gshhsCrossesLandInit();
 /*
  * Reset the GSHHS singleton and reload the data from the GSHHS files on disk.
+ * For example, this should be invoked when new GSHHS files have been installed.
  */
 void gshhsCrossesLandReset();
 /*
