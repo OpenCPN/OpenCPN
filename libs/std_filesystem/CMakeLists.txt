@@ -36,8 +36,9 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
 endif ()
 
 string(TOLOWER ${CMAKE_CXX_COMPILER_ID} lc_compiler_id)
-if (${lc_compiler_id} MATCHES clang
-    AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 15.0
+if ((${lc_compiler_id} MATCHES clang
+    AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 15.0)
+    OR ("${CMAKE_OSX_DEPLOYMENT_TARGET}" VERSION_LESS 10.15)
 )
   # MacOS 10.13
   # Boost pulled in from Homebrew on the builders is not good enough as
@@ -45,4 +46,7 @@ if (${lc_compiler_id} MATCHES clang
   target_include_directories(
     _FILESYS INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
   )
+  if(APPLE)
+    target_compile_definitions(_FILESYS INTERFACE OCPN_GHC_FILESYSTEM)
+  endif()
 endif ()

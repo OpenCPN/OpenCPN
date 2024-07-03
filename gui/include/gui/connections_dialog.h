@@ -35,7 +35,7 @@
 #include "model/conn_params.h"
 #include "model/comm_util.h"
 
-#include "observable_evtvar.h"
+#include "observable.h"
 
 class options;
 class ConnectionParamsPanel;
@@ -69,7 +69,7 @@ public:
   void UpdateDatastreams();
   void OnSize(wxSizeEvent &ev);
 
-private:
+//private:
   wxScrolledWindow *m_container;
   options *m_parent;
   ConnectionParams *mSelectedConnection;
@@ -77,7 +77,7 @@ private:
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonEdit;
 
   wxTextCtrl *m_tFilterSec;
-  wxStaticText *m_stFilterSec;
+  wxStaticText *m_stFilterSec, *m_stTalkerIdText;
   wxCheckBox *m_cbGarminUploadHost;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
   wxCheckBox *m_cbAPBMagnetic;
@@ -92,7 +92,6 @@ private:
 #else
   wxScrolledWindow *m_scrollWinConnections;
 #endif
-  ObsListener nmea_window_close_listener;
 
 };
 

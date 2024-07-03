@@ -303,6 +303,8 @@ gui/include/gui/usb_devices.h
 gui/include/gui/viewport.h
 gui/include/gui/waypointman_gui.h
 gui/include/gui/WindowDestroyListener.h
+gui/include/gui/wiz_ui.h
+gui/include/gui/wiz_ui_proto.h
 gui/src/about.cpp
 gui/src/AboutFrame.cpp
 gui/src/AboutFrameImpl.cpp
@@ -413,4 +415,5 @@ gui/src/mbtiles/TileCache.hpp
 gui/src/mbtiles/TileDescriptor.hpp
 gui/src/mbtiles/TileQueue.hpp
 gui/src/mbtiles/WorkerThread.hpp
-
+gui/src/initwiz/wiz_ui.cpp
+gui/src/initwiz/wiz_ui_proto.cpp
