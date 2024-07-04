@@ -47,7 +47,7 @@ Depends: opencpn-data (>= ${source:Version}),
  libjs-highlight.js,
  ${shlibs:Depends},
  ${misc:Depends}
-Recommends: wx3.0-i18n
+Recommends: wx3.2-i18n
 Breaks: opencpn-plugins (<< 4.8.8~)
 Replaces: opencpn-plugins (<< 4.8.8~)
 Suggests: binutils
