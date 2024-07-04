@@ -47,13 +47,16 @@ Depends: opencpn-data (>= ${source:Version}),
  libjs-highlight.js,
  ${shlibs:Depends},
  ${misc:Depends}
-Recommends: wx3.2-i18n
+Recommends: wx3.2-i18n, xdg-utils, libusb-0.1-4
+Suggests: binutils, 
+ opencpn-sglock-amd64[amd64],
+ opencpn-sglock-arm64[arm64],
+ opencpn-sglock-arm32[arm32]
 Breaks: opencpn-plugins (<< 4.8.8~),
  libwxgtk3.2-0,
  libwxgtk-webview3.2-0,
  libwxbase3.2-0
 Replaces: opencpn-plugins (<< 4.8.8~)
-Suggests: binutils
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
  or as a planning tool. Developed by a team of active sailors using real
