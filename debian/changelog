@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.4) focal; urgency=medium
+
+  * Rebuild against wxwidgets 3.2.2
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 04 Jul 2024 09:29:56 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.3) jammy; urgency=medium
 
   * Add Breaks/Replaces to handle existing PPA installations
