@@ -2,3 +2,7 @@
 source-is-missing [plugins/chartdldr_pi/data/doc/advanced.html]
 source-is-missing [plugins/chartdldr_pi/data/doc/basic.html]
 source-is-missing [plugins/chartdldr_pi/data/doc/index.html]
+
+# Epoch added to handle downstream packages with different version scheme.
+# See: https://lists.debian.org/debian-devel/2024/07/msg00007.html
+epoch-changed-but-upstream-version-did-not-go-backwards * [debian/changelog:1]
