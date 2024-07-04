@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.5) jammy; urgency=medium
+
+  * Add S: and R: from downstream PPA package
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 04 Jul 2024 19:51:41 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.4) jammy; urgency=medium
 
   * Rebuild against wxwidgets 3.2.2
