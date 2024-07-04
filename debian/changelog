@@ -1,4 +1,4 @@
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.4) focal; urgency=medium
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.4) jammy; urgency=medium
 
   * Rebuild against wxwidgets 3.2.2
 
