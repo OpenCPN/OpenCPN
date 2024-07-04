@@ -4558,6 +4558,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
   wxLogMessage(_T("Starting chart database Update..."));
   wxString gshhg_chart_loc = gWorldMapLocation;
   gWorldMapLocation = wxEmptyString;
+  // The Update() function may set gWorldMapLocation if at least one of the directories
+  // contains GSHHS files.
   ChartData->Update(DirArray, b_force, pprog);
   ChartData->SaveBinary(ChartListFileName);
   wxLogMessage(_T("Finished chart database Update"));
@@ -4569,6 +4571,7 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
     gWorldMapLocation = gDefaultWorldMapLocation;
     gshhg_chart_loc = wxEmptyString;
   }
+  wxLogMessage("gWorldMapLocation: %s, gshhg_chart_loc: %s", gWorldMapLocation.c_str(), gshhg_chart_loc.c_str());
 
   if (gWorldMapLocation != gshhg_chart_loc) {
     // ..For each canvas...
@@ -4576,7 +4579,7 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
       ChartCanvas *cc = g_canvasArray.Item(i);
       if (cc) cc->ResetWorldBackgroundChart();
     }
-    // Reset the GSHHS singleton which is used to detect whether a rectangle crosses land.
+    // Reset the GSHHS singleton which is used to detect land crossing.
     gshhsCrossesLandReset();
   }
 

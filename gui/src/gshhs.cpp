@@ -903,8 +903,6 @@ void GshhsPolyReader::readPolygonFileHeader(FILE *polyfile,
   fseek(polyfile, 0, SEEK_SET);
   if (fread(header, sizeof(PolygonFileHeader), 1, polyfile) != 1)
     wxLogMessage(_T("gshhs ReadPolygonFileHeader failed"));
-  else
-    wxLogMessage("gshhs ReadPolygonFileHeader loaded version %d", header->version);
 }
 
 //-------------------------------------------------------------------------

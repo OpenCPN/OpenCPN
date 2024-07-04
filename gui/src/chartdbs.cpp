@@ -64,18 +64,6 @@ static int s_dbVersion;  //    Database version currently in use at runtime
                          //  above....
 ///////////////////////////////////////////////////////////////////////
 
-bool FindMatchingFile(const wxString &theDir, const wxChar *theRegEx,
-                      int nameLength, wxString &theMatch) {
-  wxDir dir(theDir);
-  wxRegEx rePattern(theRegEx);
-  for (bool fileFound = dir.GetFirst(&theMatch); fileFound;
-       fileFound = dir.GetNext(&theMatch))
-    if (theMatch.length() == (unsigned int)nameLength &&
-        rePattern.Matches(theMatch))
-      return true;
-  return false;
-}
-
 static ChartFamilyEnum GetChartFamily(int charttype) {
   ChartFamilyEnum cf;
 
@@ -1481,6 +1469,44 @@ bool ChartDatabase::Create(ArrayOfCDI &dir_array,
   return true;
 }
 
+/*
+ * Traverse a directory recursively and find the GSHHS directory
+ * that contains GSHHS data files.
+ */
+class GshhsTraverser : public wxDirTraverser {
+public:
+    GshhsTraverser() {}
+    virtual wxDirTraverseResult OnFile(const wxString& filename) override {
+      wxFileName fn(filename);
+      if (fn.GetFullName().Matches(_T("poly-*-1.dat"))) {
+          parent_dir = fn.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
+          return wxDIR_STOP;
+      }
+      return wxDIR_CONTINUE;
+    }
+    virtual wxDirTraverseResult OnDir(const wxString& dirname) override {
+      // Always recurse into directories.
+      return wxDIR_CONTINUE;
+    }
+    wxString GetGshhsDir() const { return parent_dir; }
+private:
+  wxString parent_dir;
+};
+
+/*
+ * Find the GSHHS directory containing data files by recursively
+ * traversing from the provide directory.
+ */
+wxString findGshhgDirectory(const wxString& directory) {
+  wxDir dir(directory);
+  if (!dir.IsOpened()) {
+    return wxEmptyString;
+  }
+  GshhsTraverser traverser;
+  dir.Traverse(traverser);
+  return traverser.GetGshhsDir();
+}
+
 // ----------------------------------------------------------------------------
 // Update existing ChartTable Database by directory search
 //    resulting in valid pChartTable in (this)
@@ -1524,15 +1550,15 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 #endif
 
     wxString dir_magic;
-
-    if (dir_info.fullpath.Find(_T("GSHHG")) != wxNOT_FOUND) {
-      if (!wxDir::FindFirst(dir_info.fullpath, "poly-*-1.dat").empty()) {
-        // If some polygons exist in the directory, set it as the one to use for
-        // GSHHG
-        // TODO: We should probably compare the version and maybe resolutions
-        // available with what is currently used...
-        gWorldMapLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
-      }
+    // Recursively search for a 'GSHHS' directory under dir_info.
+    wxString gshhg_dir = findGshhgDirectory(dir_info.fullpath);
+    wxLogMessage("Scanning '%s': Found: '%s'", dir_info.fullpath.c_str(), gshhg_dir.c_str());
+    if (!gshhg_dir.empty()) {
+      // If some polygons exist in the directory, set it as the one to use for
+      // GSHHG
+      // TODO: We should probably compare the version and maybe resolutions
+      // available with what is currently used...
+      gWorldMapLocation = gshhg_dir;
     }
     if (dir_info.fullpath.Find(_T("OSMSHP")) != wxNOT_FOUND) {
       if (!wxDir::FindFirst(dir_info.fullpath, "basemap_*.shp").empty()) {
