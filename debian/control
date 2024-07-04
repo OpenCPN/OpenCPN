@@ -52,8 +52,12 @@ Suggests: binutils,
  opencpn-sglock-amd64[amd64],
  opencpn-sglock-arm64[arm64],
  opencpn-sglock-arm32[arm32]
-Breaks: opencpn-plugins (<< 4.8.8~)
-Replaces: opencpn-plugins (<< 4.8.8~)
+Breaks: opencpn-plugins(<< 4.8.8~),
+ opencpn-gshhs-crude (<< 1:1),
+ opencpn-tcdata(<< 1:1)
+Replaces: opencpn-plugins (<< 4.8.8~),
+ opencpn-gshhs-crude(<< 1:1),
+ opencpn-tcdata(<< 1:1)
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
  or as a planning tool. Developed by a team of active sailors using real
