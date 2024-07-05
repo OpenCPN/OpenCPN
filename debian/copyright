@@ -647,15 +647,7 @@ License: BSD-3-clause
 
 Files: libs/libdnet/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: other
- This Makefile.in is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
- .
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY, to the extent permitted by law; without
- even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- PARTICULAR PURPOSE.
+License: FSFULLRWD
 
 Files: libs/libdnet/aclocal.m4
 Copyright: 1996-2021, Free Software Foundation, Inc.
@@ -761,14 +753,7 @@ License: FSFULLR
 
 Files: libs/libdnet/man/*
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: other
- This Makefile.in is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY, to the extent permitted by law; without
- even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- PARTICULAR PURPOSE.
+License: FSFULLRWD
 
 Files: libs/libdnet/man/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
@@ -780,14 +765,7 @@ License: BSD-3-clause
 
 Files: libs/libdnet/python/*
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: other
- This Makefile.in is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY, to the extent permitted by law; without
- even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- PARTICULAR PURPOSE.
+License: FSFULLRWD
 
 Files: libs/libdnet/python/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
@@ -853,29 +831,11 @@ License: BSD-3-clause
 
 Files: libs/libdnet/test/check/*
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: other
- This Makefile.in is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY, to the extent permitted by law; without
- even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- PARTICULAR PURPOSE.
+License: FSFULLRWD
 
 Files: libs/libdnet/test/check/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULR
-
-Files: libs/libdnet/test/dnet/Makefile.in
-Copyright: 1994-2021, Free Software Foundation, Inc.
-License: other
- This Makefile.in is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY, to the extent permitted by law; without
- even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- PARTICULAR PURPOSE.
+License: FSFULLRWD
 
 Files: libs/libdnet/test/dnet/fw.c
 Copyright: 2020, Oliver Falk <oliver@linux-kernel.at>
@@ -2322,3 +2282,12 @@ License: wxWidgets
  to permit this exception to apply to your modifications. If you do not wish that,
  you must delete the exception notice from such code and/or adjust the licensing '
  conditions notice accordingly.
+
+License: FSFULLRWD
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
