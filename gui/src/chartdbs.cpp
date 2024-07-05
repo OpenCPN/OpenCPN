@@ -1470,15 +1470,16 @@ bool ChartDatabase::Create(ArrayOfCDI &dir_array,
 }
 
 /*
- * Traverse a directory recursively and find the GSHHS directory
- * that contains GSHHS data files.
+ * Traverse a directory recursively and find the GSHHG directory
+ * that contains GSHHG data files.
  */
 class GshhsTraverser : public wxDirTraverser {
 public:
     GshhsTraverser() {}
     virtual wxDirTraverseResult OnFile(const wxString& filename) override {
       wxFileName fn(filename);
-      if (fn.GetFullName().Matches(_T("poly-*-1.dat"))) {
+      wxFileName dir(fn.GetPath());
+      if (fn.GetFullName().Matches(_T("poly-*-1.dat")) && dir.GetFullName().IsSameAs(_T("GSHHG"), false)) {
           parent_dir = fn.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
           return wxDIR_STOP;
       }
@@ -1494,8 +1495,8 @@ private:
 };
 
 /*
- * Find the GSHHS directory containing data files by recursively
- * traversing from the provide directory.
+ * Find and return the full path a of directory containing GSHHG data files.
+ * Search recursively starting from directory.
  */
 wxString findGshhgDirectory(const wxString& directory) {
   wxDir dir(directory);
@@ -1503,7 +1504,7 @@ wxString findGshhgDirectory(const wxString& directory) {
     return wxEmptyString;
   }
   GshhsTraverser traverser;
-  dir.Traverse(traverser);
+  dir.Traverse(traverser, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
   return traverser.GetGshhsDir();
 }
 
@@ -1550,14 +1551,14 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 #endif
 
     wxString dir_magic;
-    // Recursively search for a 'GSHHS' directory under dir_info.
+    // Recursively search for a directory that contains GSHHG files starting from dir_info.
     wxString gshhg_dir = findGshhgDirectory(dir_info.fullpath);
-    wxLogMessage("Scanning '%s': Found: '%s'", dir_info.fullpath.c_str(), gshhg_dir.c_str());
     if (!gshhg_dir.empty()) {
       // If some polygons exist in the directory, set it as the one to use for
       // GSHHG
       // TODO: We should probably compare the version and maybe resolutions
       // available with what is currently used...
+      wxLogMessage("Updating GSHHG directory: %s", gshhg_dir.c_str());
       gWorldMapLocation = gshhg_dir;
     }
     if (dir_info.fullpath.Find(_T("OSMSHP")) != wxNOT_FOUND) {
