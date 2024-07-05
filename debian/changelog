@@ -1,3 +1,11 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.4) UNRELEASED; urgency=medium
+
+  * d/control: Add some Breaks/Replaces from downstream PPA
+  * d/control: Add some R: and S: from downstream PPA
+  * d/control: Add Breaks  for opencpn << 1:1, pre epoch 1
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 10:49:41 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.3) focal; urgency=medium
 
   * d/control: Require and use wxWidgets 3.1
