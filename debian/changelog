@@ -1,3 +1,10 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.6) focal; urgency=medium
+
+  * Use R:opencpn-sqlock instead of S:
+  * Remove hack Break: wxWindows, not needed.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 16:20:06 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.5) jammy; urgency=medium
 
   * Add S: and R: from downstream PPA package
