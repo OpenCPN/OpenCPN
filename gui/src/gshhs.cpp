@@ -1252,9 +1252,7 @@ wxString GshhsReader::getFileName_rivers(int quality) {
 
 //-----------------------------------------------------------------------
 bool GshhsReader::gshhsFilesExists(int quality) {
-  wxString fname = GshhsReader::getFileName_Land(quality);
-  wxLogMessage("GSHHG: Checking if file %s exists.", fname.c_str());
-  if (!wxFile::Access(fname, wxFile::read))
+  if (!wxFile::Access(GshhsReader::getFileName_Land(quality), wxFile::read))
     return false;
   // Borders disabled anyway since the perf optimizations if( ! wxFile::Access(
   // GshhsReader::getFileName_boundaries( quality ), wxFile::read ) ) return

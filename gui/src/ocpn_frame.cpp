@@ -4571,7 +4571,6 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
     gWorldMapLocation = gDefaultWorldMapLocation;
     gshhg_chart_loc = wxEmptyString;
   }
-  wxLogMessage("gWorldMapLocation: %s, gshhg_chart_loc: %s", gWorldMapLocation.c_str(), gshhg_chart_loc.c_str());
 
   if (gWorldMapLocation != gshhg_chart_loc) {
     // ..For each canvas...
