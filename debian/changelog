@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.7) jammy; urgency=medium
+
+  * Fix wrong distro focal -> jammy
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 17:25:48 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.6) focal; urgency=medium
 
   * Use R:opencpn-sqlock instead of S:
