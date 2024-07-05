@@ -49,7 +49,7 @@ Depends: opencpn-data (>= ${source:Version}),
  ${misc:Depends}
 Recommends: wx3.2-i18n,
  xdg-utils,
- libusb-0.1-4
+ libusb-0.1-4,
  opencpn-sglock-amd64[amd64],
  opencpn-sglock-arm64[arm64],
  opencpn-sglock-arm32[arm32]
