@@ -486,6 +486,7 @@ private:
   wxSize m_styleToolSize;
   ColorScheme m_cs;
   wxFont m_font;
+  int m_top_space, m_bot_space;
 };
 
 
@@ -499,6 +500,49 @@ MUITextButton::MUITextButton(wxWindow* parent, wxWindowID id, float scale_factor
 
 
   Create(parent, id, scale_factor, text, pos, size, style);
+}
+
+bool GetTextIamgeClip( wxImage& image, int &top_space, int &bot_space) {
+  // Scan the image data to find the "active" lines
+  top_space = -1;
+  unsigned char *idata = image.GetData();
+  for (int j = 0; j < image.GetHeight(); j++){
+    if(top_space >- 0)
+      break;
+    for (int k = 0; k < image.GetWidth(); k++){
+      size_t index = j * image.GetWidth() + k;
+      index *= 3;
+      unsigned char r = idata[index];
+      unsigned char g = idata[index +1];
+      unsigned char b = idata[index +2];
+      printf( "%d:%d:%ld   %d %d %d\n", j, k, index, r, g, b);
+
+      if (( r>0 || g>0 ||b>0)){
+        top_space = j;
+        break;
+      }
+    }
+  }
+
+  bot_space = -1;
+  for (int j = image.GetHeight() - 1; j > 0; j--){
+    if(bot_space >= 0)
+      break;
+    size_t index0 = j * image.GetWidth();
+    for (int k = 0; k < image.GetWidth(); k++){
+      int index = index0 + k;
+      index *= 3;
+      unsigned char r = idata[index];
+      unsigned char g = idata[index +1];
+      unsigned char b = idata[index +2];
+      //printf( "%d:%d:%ld   %d %d %d\n", j, k, index, r, g, b);
+      if (( r>0 || g>0 || b>0)){
+        bot_space = image.GetHeight() - j; //6;
+        break;
+      }
+    }
+  }
+  return true;
 }
 
 bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
@@ -516,6 +560,91 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
 
   int height_ref = m_styleToolSize.y;
+
+#if 1
+  // create a bitmap of a line of text that has no top-leading, nor descender space
+  int font_test_size = 16;
+  wxFont *t_font = wxTheFontList->FindOrCreateFont(
+      font_test_size, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+
+  int h = t_font->GetPixelSize().y;
+
+  wxMemoryDC mdc;
+  wxBitmap bm;
+  bm.CreateWithDIPSize(wxSize(h,h), 1.0);
+  mdc.SelectObject(bm);
+  wxColour backColor = *wxBLACK; //GetGlobalColor(_T("GREY3"));
+  mdc.SetBackground(backColor);
+  mdc.Clear();
+  mdc.SetTextForeground(wxColor(255,255,255));
+  mdc.DrawText("M", 0, 0);
+  mdc.SelectObject(wxNullBitmap);
+  wxImage image = bm.ConvertToImage();
+  wxSize si = image.GetSize();
+
+  int w, h1;
+  wxScreenDC sdcx;
+  sdcx.GetTextExtent("M", &w, &h1, NULL, NULL, t_font);
+
+  int top, bot;
+  GetTextIamgeClip(image, top, bot);
+  m_top_space =  top;
+  m_bot_space = bot;
+
+#if 0
+  // Scan the image data to find the "active" lines
+  m_top_space = -1;
+  unsigned char *idata = image.GetData();
+  for (int j = 0; j < image.GetHeight(); j++){
+    if(m_top_space >- 0)
+      break;
+    for (int k = 0; k < image.GetWidth(); k++){
+      size_t index = j * image.GetWidth() + k;
+      index *= 3;
+      unsigned char r = idata[index];
+      unsigned char g = idata[index +1];
+      unsigned char b = idata[index +2];
+
+      if (( r>0 || g>0 ||b>0)){
+        m_top_space = j;
+        break;
+      }
+    }
+  }
+
+  m_bot_space = -1;
+  for (int j = image.GetHeight() - 1; j > 0; j--){
+    if(m_bot_space >= 0)
+      break;
+    size_t index0 = j * image.GetWidth();
+    for (int k = 0; k < image.GetWidth(); k++){
+      int index = index0 + k;
+      index *= 3;
+      unsigned char r = idata[index];
+      unsigned char g = idata[index +1];
+      unsigned char b = idata[index +2];
+      //printf( "%d:%d:%ld   %d %d %d\n", j, k, index, r, g, b);
+      if (( r>0 || g>0 || b>0)){
+        m_bot_space = image.GetHeight() - j; //6;
+        break;
+      }
+    }
+  }
+#endif
+
+  m_font = *t_font;
+
+  wxCoord descent, exlead, gw, gh;
+  wxScreenDC sdc;
+  sdc.GetTextExtent(m_text, &gw, &gh, &descent, &exlead, &m_font);
+
+  int min_width = gw * 1.2;
+  min_width *= OCPN_GetWinDIPScaleFactor();
+
+  m_size = wxSize(min_width, (m_styleToolSize.y * m_scaleFactor));
+
+
+#else
 
   // Really contorted logic to work around wxFont problems with Windows scaled displays,
   // And the apparent failure of wxFont::Scale()
@@ -557,7 +686,7 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
 
   m_size = wxSize(min_width, (m_styleToolSize.y * m_scaleFactor) - 1);
 
-
+#endif
   CreateControls();
   return true;
 }
@@ -606,6 +735,7 @@ void MUITextButton::BuildBitmap(){
   int width = m_size.x;
   int height = m_size.y;
 
+#if 0
   //Make the bitmap
   wxMemoryDC mdc;
   wxBitmap bm(width, height);
@@ -623,6 +753,35 @@ void MUITextButton::BuildBitmap(){
 
   mdc.SelectObject(wxNullBitmap);
   m_bitmap = bm;
+#else
+
+  wxMemoryDC mdc;
+  wxBitmap bm(width, m_font.GetPixelSize().y);
+  mdc.SelectObject(bm);
+  wxColour backColor = *wxBLACK; //GetGlobalColor(_T("GREY3"));
+  mdc.SetBackground(backColor);
+  mdc.Clear();
+
+  mdc.SetFont(m_font);
+  mdc.SetTextForeground(GetGlobalColor("CHWHT"));
+  mdc.DrawText(m_text, 0, 0);
+  mdc.SelectObject(wxNullBitmap);
+
+  wxImage image = bm.ConvertToImage();
+
+  int top, bot;
+  GetTextIamgeClip(image, top, bot);
+
+//  wxSize clip_size = wxSize( width, m_font.GetPixelSize().y - m_top_space - m_bot_space);
+  wxSize clip_size = wxSize( width, m_font.GetPixelSize().y - top - bot);
+  wxRect clip_rect = wxRect(0, m_top_space, clip_size.x, clip_size.y);
+  wxImage clip_image = image.GetSubImage(clip_rect);
+
+  //wxPoint clip_point = wxPoint(0, m_top_space);
+  //image.Resize(clip_size, clip_point);
+  m_bitmap = wxBitmap(clip_image);
+
+#endif
 }
 
 
