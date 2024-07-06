@@ -33,6 +33,7 @@
 #endif  // precompiled headers
 
 #include <wx/statline.h>
+#include "ssfn.h"
 
 #include "chcanv.h"
 #include "MUIBar.h"
@@ -70,6 +71,10 @@ extern ChartCanvas* g_focusCanvas;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool g_bShowMuiZoomButtons;
 extern bool g_bopengl;
+
+ssfn_t ctx;                                         /* the renderer context */
+ssfn_glyph_t *glyph;                                /* the returned rasterized bitmap */
+
 
 double getValue(int animationType, double t);
 
@@ -436,6 +441,91 @@ wxSize MUIButton::DoGetBestSize() const {
                 m_styleToolSize.y * m_scaleFactor);
 }
 
+//-----------------------------------------------------------------------
+//  SSFN Utils
+//-----------------------------------------------------------------------
+
+
+/**
+ * Load a font
+ */
+ssfn_font_t *load_font(const char *filename)
+{
+  char *fontdata = NULL;
+  long int size;
+  FILE *f;
+#if HAS_ZLIB
+  unsigned char hdr[2];
+  gzFile g;
+#endif
+
+  f = fopen(filename, "rb");
+  if(!f) { fprintf(stderr,"unable to load %s\n", filename); return NULL; }
+  size = 0;
+#if HAS_ZLIB
+  fread(&hdr, 2, 1, f);
+  if(hdr[0]==0x1f && hdr[1]==0x8b) {
+    fseek(f, -4L, SEEK_END);
+    fread(&size, 4, 1, f);
+  } else {
+    fseek(f, 0, SEEK_END);
+    size = ftell(f);
+  }
+  fclose(f);
+  g = gzopen(filename,"r");
+#else
+  fseek(f, 0, SEEK_END);
+  size = ftell(f);
+  fseek(f, 0, SEEK_SET);
+#endif
+  if(!size) { fprintf(stderr,"unable to load %s\n", filename); exit(3); }
+  fontdata = (char *)malloc(size);
+  if(!fontdata) { fprintf(stderr,"memory allocation error\n"); exit(2); }
+#if HAS_ZLIB
+  gzread(g, fontdata, size);
+  gzclose(g);
+#else
+  fread(fontdata, size, 1, f);
+  fclose(f);
+#endif
+
+  return (ssfn_font_t*)fontdata;
+}
+
+bool RenderGlyphToImageBuffer( unsigned char *buffer, ssfn_glyph_t *glyph,
+                              int x_offset, int w, int h,
+                              int nominal_baseline, wxColour &color) {
+  unsigned char* src = glyph->data;
+  for (int i = 0; i < h; i++) {
+    for (int j = 0; j < glyph->w; j++) {
+      size_t index = i * w + j + x_offset;
+      index += (nominal_baseline - glyph->baseline) * w;
+      if (index > (size_t)h*(w -1))
+        continue;
+      size_t didx = index * 3;
+
+      size_t sidx = i * glyph->pitch + j;
+      unsigned char d = src[sidx];
+      buffer[didx] = color.Red() * (d/256.);
+      buffer[didx+1] = color.Green() * (d/256.);
+      buffer[didx+2] = color.Blue() * (d/256.);
+    }
+  }
+  return true;
+}
+
+bool RenderStringToBuffer( unsigned char *buffer, std::string s,
+                          int wbox, int hbox, int nominal_baseline, wxColour color) {
+  int xpos = 0;
+  for (unsigned int i=0; i < s.size(); i++) {
+    ssfn_glyph_t *glyph= ssfn_render(&ctx, s[i]);
+    RenderGlyphToImageBuffer( buffer, glyph, xpos, wbox, hbox,
+                             nominal_baseline, color);
+    xpos += glyph->adv_x;
+    free(glyph);
+  }
+  return true;
+}
 
 
 //------------------------------------------------------------------------------
@@ -461,8 +551,7 @@ public:
   ~MUITextButton();
 
   void Init();
-  void CreateControls();
-
+  wxSize GetSize(){ return m_size;}
   void SetState(int state);
 
   void SetColorScheme(ColorScheme cs);
@@ -485,7 +574,8 @@ private:
   float m_scaleFactor;
   wxSize m_styleToolSize;
   ColorScheme m_cs;
-  wxFont m_font;
+  int m_pixel_height;
+  int m_ssfn_status;
 };
 
 
@@ -511,67 +601,47 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
 
   m_styleToolSize = g_StyleManager->GetCurrentStyle()->GetToolSize();
 
-  //  Arbitrarily boost the MUITextButton default size above the style defined size.
-  //  No good reason.....
+  //  Arbitrarily boost the MUITextButton default size above the style defined size. No good reason.....
   m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
 
   int height_ref = m_styleToolSize.y;
 
-  // Really contorted logic to work around wxFont problems with Windows scaled displays,
-  // And the apparent failure of wxFont::Scale()
-  // Sorry...
-  int font_test_size = 12;
-  double target_size = 1.0;  // Referenced to height of m_styleToolSize
-  wxFont *t_font = wxTheFontList->FindOrCreateFont(
-      font_test_size, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+  /* initialize the ssfn library, the context is zerod out */
+  memset(&ctx, 0, sizeof(ssfn_t));
+  wxString font_file = g_Platform->GetSharedDataDir() + "ssfndata/FreeSans.sfn";
+  std::string sfont = font_file.ToStdString();
+  ssfn_font_t* pssfn_font = NULL;
+  pssfn_font = load_font(sfont.c_str());
+  if (pssfn_font) ssfn_load(&ctx, pssfn_font);
 
-  int w, h;
-  wxScreenDC sdc;
-  //sdc.GetTextExtent("M", &w, &h, NULL, NULL, t_font);
-  h = t_font->GetPixelSize().y;
+  m_pixel_height = height_ref / 2;
+  m_pixel_height *= m_scaleFactor;
 
-  double fraction = ((double)h) / (height_ref);
-  double new_font_size = font_test_size * (target_size /fraction);
-  new_font_size *= m_scaleFactor;
-  new_font_size *= m_scaleFactor;
+  /* select the typeface to use */
+  m_ssfn_status =
+      ssfn_select(&ctx, SSFN_FAMILY_SANS, NULL,       /* family */
+                  SSFN_STYLE_REGULAR, m_pixel_height, /* style and size */
+                  SSFN_MODE_ALPHA                     /* rendering mode */
+      );
 
-#ifdef __WXMSW__
-  // No idea why this is required for MSW.  Probably due to
-  // automatic font selection
-  new_font_size *= 0.6;
-#endif
+  int wbox = 20;
+  int hbox = 20;
 
-  m_font = *wxTheFontList->FindOrCreateFont(new_font_size, wxFONTFAMILY_MODERN,
-                                            wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
-#ifndef __WXMSW__
-  // Twek the font size on those platforms that correctly support wxFont::Scaled()
-  //sdc.GetTextExtent("M", &w, &h, NULL, NULL, &m_font);
-  //m_font = m_font.Scaled( 1.5 * target_size * (m_styleToolSize.y * m_scaleFactor) / h);
-#endif
+  if (m_ssfn_status == SSFN_OK) {
+    std::string t = "1:888888";
+    ssfn_bbox(&ctx, (char*)t.c_str(), 0, &wbox, &hbox);
+  }
 
-  wxCoord descent, exlead, gw, gh;
-  sdc.GetTextExtent(m_text, &gw, &gh, &descent, &exlead, &m_font);
+  m_size = wxSize(hbox * 1.5, m_styleToolSize.y);
+  m_size.y *= m_scaleFactor;
 
-  int min_width = gw * 1.2;
-  min_width *= OCPN_GetWinDIPScaleFactor();
-
-  m_size = wxSize(min_width, (m_styleToolSize.y * m_scaleFactor) - 1);
-
-
-  CreateControls();
   return true;
 }
-
 MUITextButton::~MUITextButton() {}
 
 void MUITextButton::Init() {
   mState = 0;
   m_cs = (ColorScheme)-1;  // GLOBAL_COLOR_SCHEME_RGB;
-}
-
-void MUITextButton::CreateControls() {
-  //wxColour backColor = GetGlobalColor(_T("GREY3"));
-  //SetBackgroundColour(backColor);
 }
 
 void MUITextButton::SetText( const wxString &text){
@@ -606,24 +676,30 @@ void MUITextButton::BuildBitmap(){
   int width = m_size.x;
   int height = m_size.y;
 
-  //Make the bitmap
-  wxMemoryDC mdc;
-  wxBitmap bm(width, height);
-  mdc.SelectObject(bm);
-  wxColour backColor = *wxBLACK; //GetGlobalColor(_T("GREY3"));
-  mdc.SetBackground(backColor);
-  mdc.Clear();
+  if ( m_ssfn_status != SSFN_OK)
+    return;
 
-  wxCoord descent, exlead, gw, gh;
-  mdc.SetFont(m_font);
-  mdc.GetTextExtent(m_text, &gw, &gh, &descent, &exlead);
+  int wbox, hbox;
+  std::string t = m_text.ToStdString();
+  ssfn_bbox(&ctx, (char *)t.c_str(), 0, &wbox, &hbox);
 
-  mdc.SetTextForeground(GetGlobalColor("CHWHT"));
-  mdc.DrawText(m_text, (width-gw)/2, (height-gh)/2);
+  ssfn_glyph_t *glyph= ssfn_render(&ctx, '0');
+  int baseline = glyph->baseline;
+  free(glyph);
 
-  mdc.SelectObject(wxNullBitmap);
-  m_bitmap = bm;
+  unsigned char *image_data = (unsigned char *)calloc(1, wbox * hbox * 3);
+  RenderStringToBuffer( image_data, t, wbox, hbox,
+                       baseline, GetGlobalColor("CHWHT"));
+
+  wxImage fimage = wxImage(wbox, hbox, image_data);
+  wxSize clip_size = wxSize( wbox, baseline + 2);
+  wxRect clip_rect = wxRect(0, 0, clip_size.x, clip_size.y);
+  wxImage clip_image = fimage.GetSubImage(clip_rect);
+
+  m_bitmap = wxBitmap(clip_image);
 }
+
+
 
 
 #define CANVAS_OPTIONS_ANIMATION_TIMER_1 800
@@ -835,7 +911,13 @@ void MUIBar::CreateControls() {
 
     m_scaleButton = new MUITextButton(m_parentCanvas, wxID_ANY, m_scaleFactor,
                                       "1:400000");
-    m_scaleButton->m_position = wxPoint(xoff,0);
+
+    m_scaleButton->m_position = wxPoint(xoff, 0);
+    if (m_scaleButton->GetButtonBitmap().IsOk()) {
+      int bm_pos_y = (m_scaleButton->GetSize().y -
+                      m_scaleButton->GetButtonBitmap().GetHeight())/2;
+      m_scaleButton->m_position = wxPoint(xoff, bm_pos_y);
+    }
     xoff += m_scaleButton->m_size.x;
 
     m_followButton = new MUIButton(m_parentCanvas, ID_FOLLOW, m_scaleFactor,
@@ -1079,11 +1161,13 @@ wxBitmap &MUIBar::CreateBitmap(double displayScale) {
 
   if (m_scaleButton) {
     bmd = m_scaleButton->GetButtonBitmap();
-    if (bmd.IsOk())
-      mdc.DrawBitmap(bmd,
-                     m_scaleButton->m_position.x,
-                     m_scaleButton->m_position.y,
-                     false);
+    if (bmd.IsOk()) {
+      int bm_pos_y = (m_scaleButton->GetSize().y - bmd.GetHeight())/2;
+      int bm_pos_x = m_scaleButton->m_position.x +
+                     (m_scaleButton->GetSize().x - bmd.GetWidth())/2;
+
+      mdc.DrawBitmap(bmd, bm_pos_x, bm_pos_y, false);
+    }
   }
 
   if (m_followButton) {

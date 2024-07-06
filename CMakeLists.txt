@@ -1628,6 +1628,10 @@ set(basemap_shp
 
 # Various data files
 
+set(ssfnData
+        data/ssfn/FreeSans.sfn
+        )
+
 set(uiData
     resources/bitmaps/styles.xml
     resources/bitmaps/toolicons_journeyman.png
@@ -1692,6 +1696,9 @@ if (APPLE)
   )
   set_source_files_properties(
     ${basemap_shp} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/basemap_shp
+  )
+  set_source_files_properties(
+    ${ssfnData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/ssfndata
   )
   set_source_files_properties(
     ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata
@@ -1999,6 +2006,8 @@ if (NOT APPLE)
   endif ()
 
   install(FILES ${basemap_shp} DESTINATION ${PREFIX_PKGDATA}/basemap_shp)
+
+  install(FILES ${ssfnData} DESTINATION ${PREFIX_PKGDATA}/ssfndata)
 
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
