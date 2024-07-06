@@ -452,6 +452,11 @@ if (QT_ANDROID)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
 endif ()
 
+if (ARCH STREQUAL armhf)
+  # See: https://forums.raspberrypi.com/viewtopic.php?t=144115
+  add_compile_options(-mcpu=cortex-a53  -mfpu=neon-fp-armv8)
+endif ()   # Assuming at least RPi 3
+
 message(STATUS "Final compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
