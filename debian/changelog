@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.8) jammy; urgency=medium
+
+  *  Trigger new build
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 06 Jul 2024 12:43:36 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.7) jammy; urgency=medium
 
   * Fix wrong distro focal -> jammy
