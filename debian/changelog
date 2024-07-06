@@ -1,11 +1,3 @@
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.3) noble; urgency=medium
-
-  * Add R: and S: from downstream package
-  * Add Breaks/Replaces from downstream package
-  * Add Breaks opencpn (<< 1:1) to overwrite downstream package
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 16:44:17 +0200
-
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.2) noble; urgency=medium
 
   * Adjust version to handle the new epoch
