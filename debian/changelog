@@ -1,4 +1,10 @@
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.7) focal; urgency=medium
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.9) focal; urgency=medium
+
+  * Trigger new build
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 06 Jul 2024 12:27:32 +0200
+
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.8) focal; urgency=medium
 
   * Trigger new build.
   * Bump minor version ahead of jammy build given the wrong distro.
