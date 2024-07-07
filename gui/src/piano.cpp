@@ -797,10 +797,16 @@ void Piano::FormatKeys(void) {
   wxSize mui_tool_size = g_StyleManager->GetCurrentStyle()->GetToolSize();
   //  MuiBar has boosted the MUIButton default size by 125%
   mui_tool_size = wxSize(mui_tool_size.x * 1.25, mui_tool_size.y * 1.25);
-  //  Muibar horizontal is about 7 "icons" wide.
-  int mui_bar_width_est = mui_tool_size.x * 7 * g_toolbar_scalefactor;
+  //  Muibar horizontal is about 8 "icons" wide.
+  int mui_bar_width_est = mui_tool_size.x * 8 * g_toolbar_scalefactor;
 
-  width *= g_btouch ? 0.98f : 0.6f;
+  if (m_parentCanvas->GetClientSize().x < m_parentCanvas->GetClientSize().y){
+    //portrait mode
+    width *= 0.98;
+  }
+  else
+    width *= 0.6;
+
   width = wxMin(width, m_parentCanvas->GetClientSize().x - mui_bar_width_est);
   width = wxMax(width, mui_bar_width_est);
 
