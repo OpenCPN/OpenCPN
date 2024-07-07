@@ -1,7 +1,8 @@
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.7) focal; urgency=medium
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2214.1) focal; urgency=medium
 
   * Trigger new build.
-  * Bump version ahead of jammy build given the wrong distro.
+  * Bump version ahead of jammy build given the wrong distro, avoiding
+    clamping on the Jammy 2204 suffix
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 07 Jul 2024 09:41:35 +0200
 
