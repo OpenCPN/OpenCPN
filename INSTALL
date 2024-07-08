@@ -52,7 +52,7 @@ Opencpn uses the cmake system. On Linux, the build is performed using:
     $ make -j 4
     $ sudo make install
 
-See the manual at https://opencpn-manuals.github.io/main/ocpn-dev-manual/
+See the manual at https://opencpn-manuals.github.io/main/opencpn-dev/
 for build instructions on other platforms.
 
 
