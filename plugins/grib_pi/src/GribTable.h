@@ -77,12 +77,13 @@ public:
   /**
    * Initialize the GRIB data table.
    *
-   * @param zone Time zone for displaying timestamps (0=local, 1=UTC)
-   * @param rsa Array of GRIB record sets containing the weather data
-   * @param NowIndex Index of the current time point to highlight
+   * @param zone Time zone for displaying timestamps.
+   * @param rsa Array of GRIB record sets containing the weather data.
+   * @param NowIndex Index of the current time point to highlight.
    */
-  void InitGribTable(int zone, ArrayOfGribRecordSets *rsa);
-  void InitGribTable(int zone, ArrayOfGribRecordSets *rsa, int NowIndex);
+  void InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa);
+  void InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
+                     int NowIndex);
   /**
    * Set the table size and position relative to viewport.
    *
@@ -113,7 +114,6 @@ private:
   wxString GetCAPE(GribRecord **recordarray);
   wxString GetCompRefl(GribRecord **recordarray);
   wxString GetCurrent(GribRecord **recordarray, int datatype, double &wdir);
-  wxString GetTimeRowsStrings(wxDateTime date_time, int time_zone, int type);
 
   void OnClose(wxCloseEvent &event);
   void OnOKButton(wxCommandEvent &event);

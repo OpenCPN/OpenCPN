@@ -238,14 +238,14 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   bSizerTime->Add(m_stTimeZone, 0, wxALL, 5);
 
   // Timezone for departure time and ETA display.
-  wxString m_choiceTimezoneChoices[] = {_("UTC"), _("Local@PC"),
-                                        _("LMT@Location")};
+  wxString m_choiceTimezoneChoices[] = {
+      _("UTC"), _("Local Time"), _("LMT@Location"), _("Honor Global Settings")};
   int m_choiceTimezoneNChoices =
       sizeof(m_choiceTimezoneChoices) / sizeof(wxString);
   m_choiceTimezone =
       new wxChoice(m_pnlBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                    m_choiceTimezoneNChoices, m_choiceTimezoneChoices, 0);
-  m_choiceTimezone->SetSelection(0);
+  m_choiceTimezone->SetSelection(3 /*Honor Global Settings*/);
   m_choiceTimezone->SetMaxSize(wxSize(GetCharWidth() * 12, -1));
 
   bSizerTime->Add(m_choiceTimezone, 0, wxALL, 5);

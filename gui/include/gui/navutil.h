@@ -57,12 +57,14 @@ extern wxString formatAngle(double angle);
 #define UTCINPUT 0  //!< Date/time in UTC.
 #define LTINPUT 1   //!< Date/time using PC local timezone.
 #define LMTINPUT 2  //!< Date/time using the remote location LMT time.
+#define GLOBAL_SETTINGS_INPUT \
+  3  //!< Date/time according to global OpenCPN settings.
 
 /**
  * Convert the date/time in UTC to the given format.
  * @param ts The input timestamp in UTC.
  * @param format The desired output format:
- *        0 = UTC, 1 = Local@PC, 2 = LMT@Location.
+ *        0 = UTC, 1 = Local@PC, 2 = LMT@Location, 3 = Global settings.
  * @param lon The longitude for LMT calculation. Default is NaN.
  * @return wxDateTime The converted timestamp in the specified format.
  */
@@ -72,7 +74,7 @@ wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
  * Convert a date/time from a given input format to UTC.
  * @param ts The input timestamp in the specified format.
  * @param format The input timestamp format:
- *        0 = UTC, 1 = Local@PC, 2 = LMT@Location.
+ *        0 = UTC, 1 = Local@PC, 2 = LMT@Location, 3 = Global settings.
  * @param lon The longitude for LMT calculation. Default is NaN.
  * @return wxDateTime The converted timestamp in UTC.
  */
