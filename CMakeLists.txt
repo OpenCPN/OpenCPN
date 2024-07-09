@@ -883,6 +883,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/tty_scroll.h
     ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
+    ${GUI_HDR_DIR}/tooltip.h
     ${GUI_HDR_DIR}/update_mgr.h
     ${GUI_HDR_DIR}/usb_devices.h
     ${GUI_HDR_DIR}/viewport.h
@@ -1005,6 +1006,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/tty_scroll.cpp
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
+    ${GUI_SRC_DIR}/tooltip.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp

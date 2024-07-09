@@ -257,8 +257,8 @@ public:
   bool SetVPScale(double sc, bool b_refresh = true);
   bool SetVPProjection(int projection);
   /**
-   * Set the viewport center point.
    * Centers the view on a specific lat/lon position.
+   *
    * @param lat Latitude in degrees
    * @param lon Longitude in degrees
    * @return true if view was changed successfully
@@ -1239,6 +1239,11 @@ private:
 
   ocpnCompass *m_Compass;
   bool m_bShowGPS;
+  /**
+   * Track whether a previous wxMouseEvent was in the m_Compass area.
+   * This is used to determine whether to display tooltips for the compass.
+   */
+  bool m_mouseWasInCompass;
 
   wxRect m_mainlast_tb_rect;
   int m_restore_dbindex;
