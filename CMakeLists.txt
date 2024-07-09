@@ -913,6 +913,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
+    ${GUI_SRC_DIR}/mbtiles/WorkerThread.cpp
     ${GUI_SRC_DIR}/mbtiles/WorkerThread.hpp
     ${GUI_SRC_DIR}/mbtiles/TileQueue.hpp
     ${GUI_SRC_DIR}/mbtiles/TileDescriptor.hpp
