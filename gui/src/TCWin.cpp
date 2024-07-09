@@ -204,11 +204,13 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   pblack_3 = wxThePenList->FindOrCreatePen(
       wxSystemSettings::GetColour(wxSYS_COLOUR_BTNSHADOW),
       wxMax(1, (int)(m_tcwin_scaler + 0.5)), wxPENSTYLE_SOLID);
-  // System time vertical line
+  // System time vertical line - solid red line showing current system time
+  // position on tide/current chart
   pred_2 = wxThePenList->FindOrCreatePen(
       wxColor(230, 54, 54), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
       wxPENSTYLE_SOLID);
-  // Selected time vertical line (from GRIB plugin or timeline widget)
+  // Selected time vertical line - dotted blue line showing timeline widget or
+  // GRIB time selection on chart
   pred_time = wxThePenList->FindOrCreatePen(
       wxColour(0, 100, 255), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
       wxPENSTYLE_DOT);
@@ -399,8 +401,10 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
   pblack_2->SetColour(this->GetForegroundColour());
   pltgray->SetColour(this->GetBackgroundColour());
   pltgray2->SetColour(this->GetBackgroundColour());
-  pred_2->SetColour(GetDimedColor(wxColor(230, 54, 54)));
-  pred_time->SetColour(GetDimedColor(wxColour(0, 100, 255)));
+  pred_2->SetColour(
+      GetGlobalColor("URED"));  // System time indicator - universal red
+  pred_time->SetColour(
+      GetGlobalColor("UINFB"));  // Selected time indicator - information blue
 
   // Box the graph
   dc.SetPen(*pblack_1);
