@@ -219,7 +219,6 @@ int ssfn_putc(uint32_t unicode);                                                
 //   typedef __SIZE_TYPE__ size_t;
 //# endif
 # ifndef ssfn_private
-//#  define ssfn_private __attribute__((__visibility__("hidden")))
 #define ssfn_private
 # endif
 //# ifndef inline
@@ -232,7 +231,6 @@ int ssfn_putc(uint32_t unicode);                                                
 #   define SSFN_memcmp __builtin_memcmp
 #  else
 #   define SSFN_memcmp memcmp
-    extern int memcmp (const void *__s1, const void *__s2, size_t __n);
 #  endif
 # endif
 
@@ -241,7 +239,6 @@ int ssfn_putc(uint32_t unicode);                                                
 #   define SSFN_memset __builtin_memset
 #  else
 #   define SSFN_memset memset
-    extern void *memset (void *__s, int __c, size_t __n);
 #  endif
 # endif
 
@@ -250,24 +247,14 @@ int ssfn_putc(uint32_t unicode);                                                
 #   define SSFN_realloc __builtin_realloc
 #  else
 #   define SSFN_realloc realloc
-#ifdef __MSVC__
-    extern void *realloc (void *__ptr, size_t __size);
-#else
-    extern void *realloc (void *__ptr, size_t __size) noexcept;
 #endif
 #  endif
-# endif
 
 # ifndef SSFN_free
 #  ifdef __builtin_free
 #   define SSFN_free __builtin_free
 #  else
 #   define SSFN_free free
-#ifdef __MSVC__
-    extern void free (void *p);
-#else
-    extern void free (void *p) __THROW;
-#endif
 #  endif
 # endif
 
