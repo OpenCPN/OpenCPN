@@ -59,6 +59,7 @@ private:
   void CreateBmp(bool bnew = false);
   void CreateTexture();
   void UpdateTexture();
+  void SetToolTip(const wxString& tooltip);
 
   ChartCanvas *m_parent;
   wxBitmap m_StatBmp;
@@ -79,6 +80,7 @@ private:
   bool m_bshowGPS;
   ColorScheme m_cs;
   bool m_texOK;
+  wxString m_tooltip;
 
 #ifdef ocpnUSE_GL
   unsigned int m_texobj;
