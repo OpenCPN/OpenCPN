@@ -29,6 +29,7 @@
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
+#include "model/datetime.h"
 #include "model/ipc_api.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
@@ -960,4 +961,63 @@ TEST(FormatTime, Basic) {
   EXPECT_EQ(s, " 2M  0S");
   s = formatTimeDelta(wxLongLong(110.0));
   EXPECT_EQ(s, " 1M 50S");
+}
+
+class TToStringTest : public ::testing::Test {
+};
+
+TEST_F(TToStringTest, LMTTimeZoneOneHourEast) {
+  wxDateTime testDate(22, wxDateTime::Jan, 2023, 7, 0, 0);
+  testDate.MakeFromTimezone(wxDateTime::UTC);
+  wxString result = ocpn::TToString(testDate, "%A, %B %d, %Y %I:%M:%S %p", DT_TZ_LMT, 15.0); // 15 degrees East
+  // The time changes by 1 hour for every 15 degrees of longitude.
+  EXPECT_EQ(result, "Sunday, January 22, 2023 08:00:00 AM LMT")
+    << "Actual result: " << result;
+}
+
+TEST_F(TToStringTest, LMTTimeZone30MinEast) {
+  wxDateTime testDate(22, wxDateTime::Jan, 2023, 7, 0, 0);
+  testDate.MakeFromTimezone(wxDateTime::UTC);
+  wxString result = ocpn::TToString(testDate, "%A, %B %d, %Y %I:%M:%S %p", DT_TZ_LMT, 7.5); // 7.5 degrees East
+  // This should shift the time 30 minutes later.
+  EXPECT_EQ(result, "Sunday, January 22, 2023 07:30:00 AM LMT")
+    << "Actual result: " << result;
+}
+
+TEST_F(TToStringTest, LMTTimeZoneWest) {
+  wxDateTime testDate(22, wxDateTime::Jan, 2023, 7, 0, 0);
+  testDate.MakeFromTimezone(wxDateTime::UTC);
+  wxString result = ocpn::TToString(testDate, "%A, %B %d, %Y %I:%M:%S %p", DT_TZ_LMT, -37.5); // 37.5 degrees West
+  // This should shift the time 2 hours and 30 minutes earlier.
+  EXPECT_EQ(result, "Sunday, January 22, 2023 04:30:00 AM LMT")
+    << "Actual result: " << result;
+}
+
+TEST_F(TToStringTest, CustomFormatStringEnUS) {
+  wxDateTime testDate(22, wxDateTime::Jan, 2023, 12, 45, 57);
+  testDate.MakeFromTimezone(wxDateTime::UTC);
+  wxString result = ocpn::TToString(testDate, "%A, %B %d, %Y %I:%M:%S %p", wxEmptyString, NAN);
+  EXPECT_EQ(result, "Sunday, January 22, 2023 12:45:57 PM UTC");
+}
+
+TEST_F(TToStringTest, CustomFormatStringUTC) {
+  wxDateTime testDate(22, wxDateTime::Jan, 2023, 12, 45, 57);
+  testDate.MakeFromTimezone(wxDateTime::UTC);
+  wxString result = ocpn::TToString(testDate, "%Y-%m-%d %H:%M:%S", DT_TZ_UTC, NAN);
+  EXPECT_EQ(result, "2023-01-22 12:45:57 UTC");
+}
+
+TEST_F(TToStringTest, CustomFormatStringEST) {
+  wxDateTime testDate(22, wxDateTime::Jan, 2023, 12, 45, 57);
+  testDate.MakeFromTimezone(wxDateTime::EDT);
+  wxString result = ocpn::TToString(testDate, "%Y-%m-%d %H:%M:%S", DT_TZ_UTC, NAN);
+  EXPECT_EQ(result, "2023-01-22 16:45:57 UTC");
+}
+
+TEST_F(TToStringTest, CustomTimeZone) {
+  wxDateTime testDate(1, wxDateTime::Jan, 2023, 12, 0, 0);
+  testDate.MakeFromTimezone(wxDateTime::UTC);
+  wxString result = ocpn::TToString(testDate, "%Y-%m-%d %H:%M:%S", "EST", NAN);
+  // As of now, the function doesn't handle custom timezone strings, so it should default to UTC
+  EXPECT_TRUE(result.EndsWith("UTC"));
 }

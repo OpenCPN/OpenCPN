@@ -42,6 +42,7 @@
 #include <math.h>
 #include <time.h>
 
+#include "ocpn_plugin.h"
 #include "pi_gl.h"
 #include "grib_pi.h"
 #include "GribTable.h"
@@ -99,22 +100,6 @@ static int CompareFileStringTime(const wxString &first,
 
   //      return ::wxFileModificationTime(first) -
   //      ::wxFileModificationTime(second);
-}
-
-// date/time in the desired time zone format
-static wxString TToString(const wxDateTime date_time, const int time_zone) {
-  wxDateTime t(date_time);
-  switch (time_zone) {
-    case 0:
-      if ((wxDateTime::Now() == (wxDateTime::Now().ToGMT())) &&
-          t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
-        t.Add(wxTimeSpan(1, 0, 0, 0));
-      return t.Format(_T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local) +
-             _T("LOC");
-    case 1:
-    default:
-      return t.Format(_T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC) + _T("UTC");
-  }
 }
 
 wxWindow *GetGRIBCanvas() {
@@ -487,10 +472,11 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
       title.Prepend(_("Error! ")).Append(_(" contains no valid data!"));
     } else {
       PopulateComboDataList();
-      title.append(_T(" (") +
+      title.append(" (" +
                    TToString(m_bGRIBActiveFile->GetRefDateTime(),
+                             DT_WEEKDAY_SHORT_DATE_TIME,
                              pPlugIn->GetTimeZone()) +
-                   _T(" )"));
+                   ")");
 
       if (rsa->GetCount() > 1) {
         GribRecordSet &first = rsa->Item(0), &second = rsa->Item(1),
@@ -1381,10 +1367,10 @@ void GRIBUICtrlBar::TimelineChanged() {
     SaveSelectionString();  // memorize index and label
     m_cRecordForecast->SetString(
         m_Selection_index,
-        TToString(time, pPlugIn->GetTimeZone()));  // replace it by the
+        TToString(time, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // replace it by the
                                                    // interpolated time label
     m_cRecordForecast->SetStringSelection(TToString(
-        time, pPlugIn->GetTimeZone()));  // ensure it's visible in the box
+        time, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // ensure it's visible in the box
   }
 
   UpdateTrackingControl();
@@ -1764,7 +1750,7 @@ void GRIBUICtrlBar::PopulateComboDataList() {
   for (size_t i = 0; i < rsa->GetCount(); i++) {
     wxDateTime t(rsa->Item(i).m_Reference_Time);
 
-    m_cRecordForecast->Append(TToString(t, pPlugIn->GetTimeZone()));
+    m_cRecordForecast->Append(TToString(t, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));
   }
   m_cRecordForecast->SetSelection(index);
 }
@@ -1950,11 +1936,10 @@ void GRIBUICtrlBar::ComputeBestForecastForNow() {
   SaveSelectionString();  // memorize the new selected wxChoice date time label
   m_cRecordForecast->SetString(
       m_Selection_index,
-      TToString(now,
-                pPlugIn->GetTimeZone()));  // write the now date time label
-                                           // in the right place in wxChoice
+      TToString(now, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // write the now date time label
+                                                // in the right place in wxChoice
   m_cRecordForecast->SetStringSelection(
-      TToString(now, pPlugIn->GetTimeZone()));  // put it in the box
+      TToString(now, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // put it in the box
 
   UpdateTrackingControl();
 

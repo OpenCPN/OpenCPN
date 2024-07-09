@@ -22,6 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <chrono>
 #include <memory>
 
 #ifdef __linux__
@@ -3932,6 +3933,47 @@ void ChartGroupsUI::CompletePanel(void) {
   m_UIcomplete = TRUE;
 }
 
+#if __cplusplus >= 202002L
+/**
+ * Retrieve an array of IANA time zones configured in the operating system.
+ * @return wxArrayString An array of strings, each representing an IANA time zone.
+ */
+wxArrayString getTimeZones() {
+    std::vector<std::string> tzs;
+    // Get the time zone database.
+    const auto& tzdb = std::chrono::get_tzdb();
+    for (const auto& tz : tzdb.zones) {
+        tzs.push_back(std::string(tz.name()));
+    }
+    std::sort(tzs.begin(), tzs.end());
+    wxArrayString wxTzs;
+    for (const auto& tz : tzs) {
+        wxTzs.Add(wxString::FromUTF8(tz.c_str()));
+    }
+    return wxTzs;
+}
+#endif
+
+void options::OnTimezoneComboBoxSelect(wxCommandEvent& event) {
+  // The user has selected a specific timezone in the combobox,
+  // so select the "specific" radio button.
+  if (pTimezoneSpecific) {
+    pTimezoneSpecific->SetValue(true);
+  }
+}
+
+void options::OnTimezoneRadioSelect(wxCommandEvent& event) {
+  if (pTimezoneComboBox) {
+    if (event.GetId() == ID_TIMEZONE_SPECIFIC) {
+      pTimezoneComboBox->Enable(true);
+    } else {
+      // The user has selected the "UTC" or "Local Time" radio button.
+      pTimezoneComboBox->Enable(false);
+      pTimezoneComboBox->SetValue(wxEmptyString);
+    }
+  }
+}
+
 void options::CreatePanel_Display(size_t parent, int border_size,
                                   int group_item_spacing) {
   pDisplayPanel = AddPage(parent, _("General"));
@@ -4021,7 +4063,54 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
 
+    // Selection of timezone for date/time display format:
+    // UTC, local time, or specific time zone.
+    generalSizer->Add(
+        new wxStaticText(pDisplayPanel, wxID_ANY, _("Date and Time")),
+        groupLabelFlags);
+
+    wxBoxSizer* timezoneStyleBox = new wxBoxSizer(wxHORIZONTAL);
+    generalSizer->Add(timezoneStyleBox, groupInputFlags);
+    wxBoxSizer* itemTimezoneBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    timezoneStyleBox->Add(itemTimezoneBoxSizer, 1, wxEXPAND | wxALL, border_size);
+    pTimezoneLocalTime =
+        new wxRadioButton(pDisplayPanel, ID_TIMEZONE_LOCAL_TIME, _("Local Time"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneLocalTime, 0,
+                    wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+    pTimezoneUTC =
+        new wxRadioButton(pDisplayPanel, ID_TIMEZONE_UTC, _("UTC"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneUTC, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
+                    border_size);
+
+    // Connect the event handler for combo box selection
+    pTimezoneLocalTime->Bind(wxEVT_RADIOBUTTON, &options::OnTimezoneRadioSelect, this);
+    pTimezoneUTC->Bind(wxEVT_RADIOBUTTON, &options::OnTimezoneRadioSelect, this);
+
+#if __cplusplus >= 202002L
+    // Radio button and combobox for manually specifying time zone.
+    pTimezoneSpecific = new wxRadioButton(pDisplayPanel, ID_TIMEZONE_SPECIFIC, _("Specific"),
+        wxDefaultPosition, wxDefaultSize);
+    itemTimezoneBoxSizer->Add(pTimezoneSpecific, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+
+    // Populate the combobox with time zone options.
+    wxArrayString timezones = getTimeZones();
+    pTimezoneComboBox = new wxComboBox(pDisplayPanel, ID_TIMEZONE_COMBOBOX, wxEmptyString,
+      wxDefaultPosition, wxDefaultSize, timezones, wxCB_READONLY);
+    itemTimezoneBoxSizer->Add(pTimezoneComboBox, 1, wxALIGN_CENTER_VERTICAL);
+    pTimezoneComboBox->Bind(wxEVT_COMBOBOX, &options::OnTimezoneComboBoxSelect, this);
+    pTimezoneSpecific->Bind(wxEVT_RADIOBUTTON, &options::OnTimezoneRadioSelect, this);
+#else
+  pTimezoneSpecific = nullptr;
+  pTimezoneComboBox = nullptr;
+#endif
+
     if (!g_useMUI) {
+      // spacer
+      generalSizer->Add(0, border_size * 4);
+      generalSizer->Add(0, border_size * 4);
+
       // Display Options
       generalSizer->Add(
           new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Features")),
@@ -5284,6 +5373,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_itemLangListBox->Disable();
 #endif
 
+  // Fonts
   wxStaticBox* itemFontStaticBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
 
@@ -6140,6 +6230,16 @@ void options::SetInitialSettings(void) {
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
+
+  if (!g_timezone.IsEmpty() && pTimezoneComboBox && pTimezoneComboBox->FindString(g_timezone) != wxNOT_FOUND) {
+    pTimezoneComboBox->SetStringSelection(g_timezone);
+    pTimezoneSpecific->SetValue(true);
+  } else if (g_timezone == DT_TZ_LOCAL_TIME) {
+    pTimezoneLocalTime->SetValue(true);
+  } else {
+    // Default to UTC if no saved timezone or if it's not in the list.
+    pTimezoneUTC->SetValue(true);
+  }
 
   pTrackDaily->SetValue(g_bTrackDaily);
   pTrackRotateLMT->SetValue(g_track_rotate_time_type == TIME_TYPE_LMT);
@@ -7067,6 +7167,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
     g_track_rotate_time_type = TIME_TYPE_COMPUTER;
 
   g_bHighliteTracks = pTrackHighlite->GetValue();
+
+  if (pTimezoneUTC->GetValue())
+    g_timezone = DT_TZ_UTC;
+  else if (pTimezoneLocalTime->GetValue())
+    g_timezone = DT_TZ_LOCAL_TIME;
+  else if (pTimezoneComboBox)
+    g_timezone = pTimezoneComboBox->GetStringSelection();
 
   if (pEnableZoomToCursor)
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();

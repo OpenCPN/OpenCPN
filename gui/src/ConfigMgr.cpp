@@ -885,6 +885,8 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write(_T ( "TrackRotateTimeType" ), g_track_rotate_time_type);
   conf->Write(_T ( "HighlightTracks" ), g_bHighliteTracks);
 
+  conf->Write(_T ( "Timezone" ), g_timezone);
+
   conf->Write(_T ( "InitialStackIndex" ), g_restore_stackindex);
   conf->Write(_T ( "InitialdBIndex" ), g_restore_dbindex);
 
@@ -1377,6 +1379,8 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "TrackRotateAt" ), &g_track_rotate_time);
   CHECK_INT(_T ( "TrackRotateTimeType" ), &g_track_rotate_time_type);
   CHECK_INT(_T ( "HighlightTracks" ), &g_bHighliteTracks);
+
+  CHECK_STR(_T ( "Timezone" ), g_timezone);
 
   CHECK_FLT(_T ( "PlanSpeed" ), &g_PlanSpeed, 0.1)
 
