@@ -1010,6 +1010,12 @@ if (QT_ANDROID)
   list(APPEND GUI_SRC ${CMAKE_SOURCE_DIR}/android/androidUTIL.cpp)
 endif ()
 
+if (NOT MSVC AND NOT APPLE)
+  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/ocpn_fontdlg.h)
+  list(APPEND GUI_SRC ${GUI_SRC_DIR}/ocpn_fontdlg.cpp)
+endif ()
+
+
 set(SRCS ${GUI_SRC})
 set(HDRS ${GUI_HDRS})
 
