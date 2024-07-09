@@ -4417,7 +4417,7 @@ int doAndroidPersistState() {
         node = node->GetNext();
       }
 
-      wxString name = now.Format();
+      wxString name = ocpn::ToUsrDateTimeFormat(now);
       name.Prepend(_("Anchorage created "));
       RoutePoint *pWP =
           new RoutePoint(gLat, gLon, _T("anchorage"), name, _T(""));

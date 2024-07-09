@@ -768,7 +768,7 @@ bool grib_pi::LoadConfig(void) {
   pConf->Read(_T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1);
   pConf->Read(_T( "ZoomToCenterAtInit"), &m_bZoomToCenterAtInit, 1);
   pConf->Read(_T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1);
-  pConf->Read(_T( "GRIBTimeZone" ), &m_bTimeZone, 1);
+  pConf->Read(_T( "GRIBTimeZone" ), &m_bTimeZone, 2);
   pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
   pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
 #ifdef __WXMSW__
