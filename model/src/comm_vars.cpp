@@ -29,5 +29,8 @@ wxString gRmcTime;
 int g_priSats;
 int g_SatsInView;
 bool g_bVAR_Rx;
+// Indicate the status of the satellite watchdog timer.
+// - true if GNSS satellite data has been received recently.
+// - false if no GNSS satellite data has been received recently.
 bool g_bSatValid;
 wxString g_ownshipMMSI_SK;
