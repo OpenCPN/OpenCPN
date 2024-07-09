@@ -112,6 +112,12 @@ private:
   RoutePoint* m_pEnroutePoint;
   bool m_bStartNow;
 
+  // The timezone to use for date/time display and setting the departure time.
+  // 0 = UTC
+  // 1 = Timezone configured in operating system.
+  // 2 = Mean solar time at the location, based on the average time it takes for the sun
+  //     to cross the meridian (appear at its highest point in the sky) at that specific location.
+  // 3 = Honor OpenCPN global setting for timezone display.
   int m_tz_selection;
 
   wxDataViewColumn* etd_col;
@@ -119,8 +125,11 @@ private:
   wxHyperlinkCtrl* m_pEditedLink;
 
   bool IsThisRouteExtendable();
+  // Convert the date/time in UTC to the given format (UTC, Local@PC, LMT@Location).
   wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
                            const double lon = INFINITY - INFINITY);
+  // Convert a date/time in the given input format (UTC, Local@PC, LMT@Location) to UTC
+  // and return the date/time in UTC.
   wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
                              const double lon = INFINITY - INFINITY);
   wxString MakeTideInfo(wxString stationName, double lat, double lon,
