@@ -223,18 +223,23 @@ class wxGLCanvas;
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
 /**
- * Enumeration of color schemes.
+ * Color schemes for different lighting conditions.
+ *
+ * @note: When implementing SetColorScheme(), use GetGlobalColor() with
+ * predefined color names for automatic adaptation across all schemes.
  */
 enum PI_ColorScheme {
-  PI_GLOBAL_COLOR_SCHEME_RGB,    //!< RGB color scheme, unmodified colors
-  PI_GLOBAL_COLOR_SCHEME_DAY,    //!< Day color scheme, optimized for bright
-                                 //!< ambient light
-  PI_GLOBAL_COLOR_SCHEME_DUSK,   //!< Dusk color scheme, optimized for low
-                                 //!< ambient light
-  PI_GLOBAL_COLOR_SCHEME_NIGHT,  //!< Night color scheme, optimized for dark
-                                 //!< conditions with minimal impact on night
-                                 //!< vision
-  PI_N_COLOR_SCHEMES  //!< Number of color schemes, used for bounds checking
+  /** RGB color scheme, unmodified colors. */
+  PI_GLOBAL_COLOR_SCHEME_RGB,
+  /** Day color scheme, optimized for bright ambient light. */
+  PI_GLOBAL_COLOR_SCHEME_DAY,
+  /** Dusk color scheme, optimized for low ambient light. */
+  PI_GLOBAL_COLOR_SCHEME_DUSK,
+  /** Night/dark color scheme, optimized for dark conditions with minimal impact
+     on night vision. */
+  PI_GLOBAL_COLOR_SCHEME_NIGHT,
+  /** Number of color schemes, used for bounds checking. */
+  PI_N_COLOR_SCHEMES
 };
 
 /**
@@ -555,11 +560,11 @@ public:
    * (day/dusk/night). Chart plugins should update their rendering colors and
    * styles to match the specified scheme.
    *
-   * @param cs Color scheme to use:
-   *        - PI_GLOBAL_COLOR_SCHEME_RGB (0): RGB color scheme
-   *        - PI_GLOBAL_COLOR_SCHEME_DAY (1): Day color scheme
-   *        - PI_GLOBAL_COLOR_SCHEME_DUSK (2): Dusk/twilight color scheme
-   *        - PI_GLOBAL_COLOR_SCHEME_NIGHT (3): Night/dark color scheme
+   * @param cs New color scheme to use:
+   *   - PI_GLOBAL_COLOR_SCHEME_RGB: RGB color scheme
+   *   - PI_GLOBAL_COLOR_SCHEME_DAY: Day color scheme
+   *   - PI_GLOBAL_COLOR_SCHEME_DUSK: Dusk/twilight color scheme
+   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT: Night/dark color scheme
    * @param bApplyImmediate True to immediately refresh display, False to defer
    *
    * @note If bApplyImmediate is true, any cached rendering should be
@@ -1653,9 +1658,12 @@ public:
    * modes. Plugins should update their UI colors to match the new scheme.
    *
    * @param cs New color scheme to use:
-   *   - PI_GLOBAL_COLOR_SCHEME_DAY
-   *   - PI_GLOBAL_COLOR_SCHEME_DUSK
-   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT
+   *   - PI_GLOBAL_COLOR_SCHEME_RGB: Unmodified RGB colors
+   *   - PI_GLOBAL_COLOR_SCHEME_DAY: Optimized for bright conditions
+   *   - PI_GLOBAL_COLOR_SCHEME_DUSK: Optimized for low light
+   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT: Optimized for dark conditions
+   *
+   * @note Follow the patterns documented in the PI_ColorScheme enum.
    */
   virtual void SetColorScheme(PI_ColorScheme cs);
 
@@ -2567,13 +2575,19 @@ extern "C" DECL_EXP wxFileConfig *GetOCPNConfigObject(void);
 extern "C" DECL_EXP void RequestRefresh(wxWindow *);
 
 /**
- * Gets a global color value.
+ * Gets a functionally-named color for a specific UI purpose.
  *
- * Retrieves color values from OpenCPN's color scheme system.
+ * Retrieves colors by their functional role (e.g., "DILG3" for text, "URED"
+ * for vessels) that automatically adapt to current lighting conditions
+ * (Day/Dusk/Night modes).
  *
- * @param colorName Name of the color to retrieve
- * @param pcolour Pointer to wxColour to receive the color value
- * @return True if color was found, false if not
+ * @param colorName Functional color identifier.
+ * @param pcolour Pointer to wxColour to receive the adapted color value.
+ * @return True if color was found and retrieved successfully, false if color
+ *         name is unknown (returns grey fallback color).
+ *
+ * @see gui/src/ocpn_frame.cpp for color scheme definitions and available color
+ * names.
  */
 extern "C" DECL_EXP bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 

@@ -31,6 +31,7 @@
 #include "styles.h"
 #include <vector>
 #include "ocpndc.h"
+#include "tooltip.h"
 
 class ocpnFloatingToolbarDialog;                  // forward
 extern ocpnFloatingToolbarDialog *g_MainToolbar;  ///< Global instance
@@ -344,7 +345,6 @@ protected:
   wxColour m_toolOutlineColour;
   wxColour m_background_color;
 
-  ToolTipWin *m_pToolTipWin;
   ocpnToolBarTool *m_last_ro_tool;
 
   ColorScheme m_currentColorScheme;
