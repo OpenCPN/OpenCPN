@@ -801,14 +801,14 @@ void Piano::FormatKeys(void) {
   int mui_bar_width_est = mui_tool_size.x * 8 * g_toolbar_scalefactor;
 
   if (m_parentCanvas->GetClientSize().x < m_parentCanvas->GetClientSize().y){
-    //portrait mode
-    width *= 0.98;
-  }
-  else
+    //portrait mode, on a phone or tablet, etc.
     width *= 0.6;
-
-  width = wxMin(width, m_parentCanvas->GetClientSize().x - mui_bar_width_est);
-  width = wxMax(width, mui_bar_width_est);
+  }
+  else {
+    width *= 0.6;
+    //width = wxMin(width, m_parentCanvas->GetClientSize().x - mui_bar_width_est);
+  }
+  //width = wxMax(width, mui_bar_width_est);
 
   // Max width available
   m_width_avail = width;
