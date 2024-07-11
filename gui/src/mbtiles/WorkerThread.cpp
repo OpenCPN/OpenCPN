@@ -30,8 +30,9 @@ void MbtTilesThread::RequestStop() {
     m_tileQueue.Push(nullptr);
     while (!m_finished) {
     }
-  }
+}
 
+size_t MbtTilesThread::GetQueueSize() { return m_tileQueue.GetSize(); }
 
   /// @brief Main loop of the worker thread
   /// @return Always 0

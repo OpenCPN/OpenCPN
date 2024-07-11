@@ -53,6 +53,7 @@ public:
 
   /// @brief Request the thread to stop/delete itself
   void RequestStop();
+  size_t GetQueueSize();
 
 private:
   // Set to true to tell the main loop to stop execution
