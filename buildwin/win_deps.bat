@@ -54,7 +54,7 @@ set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
 set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
 if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   wget -nv -O !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
-      %GH_DL_BASE%/archive/refs/tags/v0.3.zip
+      %GH_DL_BASE%/archive/refs/tags/v0.5.zip
   7z x -y !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
       -o%CACHE_DIR%\buildwintemp
   if not exist !CACHE_DIR!\buildwin (mkdir !CACHE_DIR!\buildwin)
