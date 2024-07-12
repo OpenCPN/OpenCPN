@@ -59,7 +59,7 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
       -o%CACHE_DIR%\buildwintemp
   if not exist !CACHE_DIR!\buildwin (mkdir !CACHE_DIR!\buildwin)
   xcopy ^
-    !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin ^
+    !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.5\buildwin ^
     !CACHE_DIR!\buildwin /s /y /q
   if exist !CACHE_DIR!\buildwin\wxWidgets (
     del !CACHE_DIR!\buildwin\wxWidgets\*.dll /q
