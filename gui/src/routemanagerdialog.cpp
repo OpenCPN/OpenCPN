@@ -76,7 +76,7 @@
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };  // RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH, colTRKDATE };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };
-enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
+enum { colWPTICON = 0, colWPTNAME, colWPTDIST, colWPTSCALE };
 
 // GLOBALS :0
 extern RouteList *pRouteList;
@@ -2584,58 +2584,135 @@ void RouteManagerDialog::UpdateWptButtons() {
 }
 
 void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
-  wxPoint pos = event.GetPosition();
-  int flags = 0;
-  long clicked_index = m_pWptListCtrl->HitTest(pos, flags);
+    wxPoint pos = event.GetPosition();
+    int flags = 0;
+    long clicked_index = m_pWptListCtrl->HitTest(pos, flags);
 
-  //    Clicking Visibility column?
-  if (clicked_index > -1 &&
-      event.GetX() < m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE)) {
-    // Process the clicked item
-    RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
+#ifdef wxHAS_LISTCTRL_COLUMN_ORDER
+    // Get the current order of columns
+    wxArrayInt colOrder = m_pWptListCtrl->GetColumnsOrder();
 
-    if (!wp->IsSharedInVisibleRoute()) {
-      wp->SetVisible(!wp->IsVisible());
-      m_pWptListCtrl->SetItemImage(clicked_index, RoutePointGui(*wp).GetIconImageIndex());
+    // Find the indexes of the columns
+    int colTRKVISIBLE_index = -1;
+    int colWPTSCALE_index = -1;
 
-      pConfig->UpdateWayPoint(wp);
+    for (size_t i = 0; i < colOrder.GetCount(); ++i) {
+        if (colOrder[i] == colTRKVISIBLE) colTRKVISIBLE_index = i;
+        if (colOrder[i] == colWPTSCALE) colWPTSCALE_index = i;
     }
 
-    // Manage "show all" checkbox
-    bool viz = true;
-    long item = -1;
-    for (;;) {
-      item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
-                                         wxLIST_STATE_DONTCARE);
-      if (item == -1) break;
+    // Check if indexes are valid
+    if (colTRKVISIBLE_index == -1 || colWPTSCALE_index == -1) return;
 
-      RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-
-      if (!wp->IsVisible()) {
-        viz = false;
-        break;
-      }
+    // Get the current X coordinates of the start of columns
+    int colTRKVISIBLE_startX = 0;
+    for (int i = 0; i < colTRKVISIBLE_index; ++i) {
+        colTRKVISIBLE_startX += m_pWptListCtrl->GetColumnWidth(i);
     }
-    m_cbShowAllWP->SetValue(viz);
 
-    gFrame->RefreshAllCanvas();
-  } else  //  clicked on ScaMin column??
+    int colWPTSCALE_startX = colTRKVISIBLE_startX;
+    for (int i = colTRKVISIBLE_index; i < colWPTSCALE_index; ++i) {
+        colWPTSCALE_startX += m_pWptListCtrl->GetColumnWidth(i);
+    }
+
+    // Check for click on the visibility column
     if (clicked_index > -1 &&
-        event.GetX() > m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) &&
-        event.GetX() < (m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
-                        m_pWptListCtrl->GetColumnWidth(colWPTSCALE)) &&
-        !g_bOverruleScaMin) {
-      RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
-      wp->SetUseSca(!wp->GetUseSca());
-      pConfig->UpdateWayPoint(wp);
-      gFrame->RefreshAllCanvas();
-      wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
-      if (!wp->GetUseSca()) scamin = _("Always");
-      m_pWptListCtrl->SetItem(clicked_index, colWPTSCALE, scamin);
-    }
+        event.GetX() < colTRKVISIBLE_startX + m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE_index)) {
+        // Process the clicked item
+        RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
 
-  // Allow wx to process...
-  event.Skip();
+        if (!wp->IsSharedInVisibleRoute()) {
+            wp->SetVisible(!wp->IsVisible());
+            m_pWptListCtrl->SetItemImage(clicked_index, RoutePointGui(*wp).GetIconImageIndex());
+
+            pConfig->UpdateWayPoint(wp);
+        }
+
+        // Manage "show all" checkbox
+        bool viz = true;
+        long item = -1;
+        for (;;) {
+            item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+            if (item == -1) break;
+
+            RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+
+            if (!wp->IsVisible()) {
+                viz = false;
+                break;
+            }
+        }
+        m_cbShowAllWP->SetValue(viz);
+
+        gFrame->RefreshAllCanvas();
+    }
+    // Check for click on the Scale column
+    else if (clicked_index > -1 &&
+             event.GetX() > colWPTSCALE_startX &&
+             event.GetX() < colWPTSCALE_startX + m_pWptListCtrl->GetColumnWidth(colWPTSCALE_index) &&
+             !g_bOverruleScaMin) {
+        RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
+        wp->SetUseSca(!wp->GetUseSca());
+        pConfig->UpdateWayPoint(wp);
+        gFrame->RefreshAllCanvas();
+        wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
+        if (!wp->GetUseSca()) scamin = _("Always");
+        m_pWptListCtrl->SetItem(clicked_index, colWPTSCALE_index, scamin);
+    }
+#else
+    // Fixed column indices for platforms not supporting GetColumnsOrder
+    const int colTRKVISIBLE = 0; // Assuming the visibility column is the first one
+    const int colWPTSCALE = 1; // Assuming the Scale column is the second one
+
+    // Check for click on the visibility column
+    if (clicked_index > -1 &&
+        event.GetX() < m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE)) {
+        // Process the clicked item
+        RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
+
+        if (!wp->IsSharedInVisibleRoute()) {
+            wp->SetVisible(!wp->IsVisible());
+            m_pWptListCtrl->SetItemImage(clicked_index, RoutePointGui(*wp).GetIconImageIndex());
+
+            pConfig->UpdateWayPoint(wp);
+        }
+
+        // Manage "show all" checkbox
+        bool viz = true;
+        long item = -1;
+        for (;;) {
+            item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+            if (item == -1) break;
+
+            RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+
+            if (!wp->IsVisible()) {
+                viz = false;
+                break;
+            }
+        }
+        m_cbShowAllWP->SetValue(viz);
+
+        gFrame->RefreshAllCanvas();
+    }
+    // Check for click on the Scale column
+    else if (clicked_index > -1 &&
+             event.GetX() > m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) &&
+             event.GetX() < (m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
+                             m_pWptListCtrl->GetColumnWidth(colWPTSCALE)) &&
+             !g_bOverruleScaMin) {
+        RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
+        wp->SetUseSca(!wp->GetUseSca());
+        pConfig->UpdateWayPoint(wp);
+        gFrame->RefreshAllCanvas();
+        wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
+        if (!wp->GetUseSca()) scamin = _("Always");
+        m_pWptListCtrl->SetItem(clicked_index, colWPTSCALE, scamin);
+    }
+#endif
+
+    // Allow wxWidgets to process the event
+    event.Skip();
 }
 
 void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
