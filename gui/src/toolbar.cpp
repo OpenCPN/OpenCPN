@@ -555,6 +555,7 @@ void ocpnFloatingToolbarDialog::Realize() {
   if (m_ptoolbar) {
     m_ptoolbar->Realize();
     m_ptoolbar->CreateBitmap();
+    m_toolbar_image.Destroy();
   }
 }
 
@@ -616,23 +617,24 @@ void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
     glBindTexture(g_texture_rectangle_format, m_texture);
   }
 
+  if (!m_toolbar_image.IsOk()) {
+    // fill texture data
+    m_toolbar_image = m_ptoolbar->GetBitmap().ConvertToImage();
 
-  // fill texture data
-  wxImage image = m_ptoolbar->GetBitmap().ConvertToImage();
-
-  unsigned char *d = image.GetData();
-  unsigned char *e = new unsigned char[4 * width * height];
-  for (int y = 0; y < height; y++)
-    for (int x = 0; x < width; x++) {
-      int i = y * width + x;
-      memcpy(e + 4 * i, d + 3 * i, 3);
-      e[4 * i + 3] = 255; //d[3*i + 2] == 255 ? 0:255; //255 - d[3 * i + 2];
-    }
-  glTexImage2D(g_texture_rectangle_format, 0, GL_RGBA, width, height, 0,
-               GL_RGBA, GL_UNSIGNED_BYTE, e);
-  delete[] e;
-  glDisable(g_texture_rectangle_format);
-  glDisable(GL_BLEND);
+    unsigned char *d = m_toolbar_image.GetData();
+    unsigned char *e = new unsigned char[4 * width * height];
+    for (int y = 0; y < height; y++)
+      for (int x = 0; x < width; x++) {
+        int i = y * width + x;
+        memcpy(e + 4 * i, d + 3 * i, 3);
+        e[4 * i + 3] = 255;  // d[3*i + 2] == 255 ? 0:255; //255 - d[3 * i + 2];
+      }
+    glTexImage2D(g_texture_rectangle_format, 0, GL_RGBA, width, height, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, e);
+    delete[] e;
+    glDisable(g_texture_rectangle_format);
+    glDisable(GL_BLEND);
+  }
 
   // Render the texture
   if (m_texture) {
