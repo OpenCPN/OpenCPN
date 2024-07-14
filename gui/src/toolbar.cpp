@@ -526,8 +526,10 @@ bool ocpnFloatingToolbarDialog::MouseEvent(wxMouseEvent &event) {
 
 void ocpnFloatingToolbarDialog::RefreshToolbar() {
   if (m_ptoolbar){
-    if (m_ptoolbar->IsDirty())
+    if (m_ptoolbar->IsDirty()) {
+      Realize();
       gFrame->GetPrimaryCanvas()->Refresh();
+    }
   }
 }
 
