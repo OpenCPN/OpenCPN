@@ -444,6 +444,7 @@ wxSize MUIButton::DoGetBestSize() const {
 //-----------------------------------------------------------------------
 //  SSFN Utils
 //-----------------------------------------------------------------------
+static std::unordered_map<char, ssfn_glyph_t *> ssfn_glyph_map;
 
 
 /**
@@ -518,11 +519,19 @@ bool RenderStringToBuffer( unsigned char *buffer, std::string s,
                           int wbox, int hbox, int nominal_baseline, wxColour color) {
   int xpos = 0;
   for (unsigned int i=0; i < s.size(); i++) {
-    ssfn_glyph_t *glyph= ssfn_render(&ctx, s[i]);
+
+    char key = s[i];
+    ssfn_glyph_t *glyph = 0;
+    // find the required glyph
+    if ( auto findit = ssfn_glyph_map.find(key); findit != ssfn_glyph_map.end() ) {
+      glyph = findit->second;
+    } else {
+      glyph= ssfn_render(&ctx, key);
+      ssfn_glyph_map[key] = glyph;
+    }
     RenderGlyphToImageBuffer( buffer, glyph, xpos, wbox, hbox,
                              nominal_baseline, color);
     xpos += glyph->adv_x;
-    free(glyph);
   }
   return true;
 }
@@ -680,7 +689,12 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
 
   return true;
 }
-MUITextButton::~MUITextButton() {}
+MUITextButton::~MUITextButton() {
+  for (const auto & [ key, value ] : ssfn_glyph_map) {
+    free( value);
+  }
+  ssfn_glyph_map.clear();
+}
 
 void MUITextButton::Init() {
   mState = 0;
