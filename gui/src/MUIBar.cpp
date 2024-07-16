@@ -495,7 +495,8 @@ ssfn_font_t *load_font(const char *filename)
 
 bool RenderGlyphToImageBuffer( unsigned char *buffer, ssfn_glyph_t *glyph,
                               int x_offset, int w, int h,
-                              int nominal_baseline, wxColour &color) {
+                              int nominal_baseline,
+                              wxColour &color, wxColour &back_color) {
   unsigned char* src = glyph->data;
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < glyph->w; j++) {
@@ -507,16 +508,18 @@ bool RenderGlyphToImageBuffer( unsigned char *buffer, ssfn_glyph_t *glyph,
 
       size_t sidx = i * glyph->pitch + j;
       unsigned char d = src[sidx];
-      buffer[didx] = color.Red() * (d/256.);
-      buffer[didx+1] = color.Green() * (d/256.);
-      buffer[didx+2] = color.Blue() * (d/256.);
+      float dn = d / 256.;
+      buffer[didx] = (color.Red() * dn) + (back_color.Red() * (1-dn));
+      buffer[didx+1] = (color.Green() * dn) + (back_color.Green() * (1-dn));
+      buffer[didx+2] = (color.Blue() * dn) + (back_color.Blue() * (1-dn));
     }
   }
   return true;
 }
 
 bool RenderStringToBuffer( unsigned char *buffer, std::string s,
-                          int wbox, int hbox, int nominal_baseline, wxColour color) {
+                          int wbox, int hbox, int nominal_baseline,
+                          wxColour color, wxColour &back_color) {
   int xpos = 0;
   for (unsigned int i=0; i < s.size(); i++) {
 
@@ -530,7 +533,7 @@ bool RenderStringToBuffer( unsigned char *buffer, std::string s,
       ssfn_glyph_map[key] = glyph;
     }
     RenderGlyphToImageBuffer( buffer, glyph, xpos, wbox, hbox,
-                             nominal_baseline, color);
+                             nominal_baseline, color, back_color);
     xpos += glyph->adv_x;
   }
   return true;
@@ -545,13 +548,14 @@ class MUITextButton {
 
 public:
   MUITextButton();
-  MUITextButton(wxWindow* parent, wxWindowID id = wxID_ANY,
-                float scale_factor = 1.0,
+  MUITextButton(wxWindow* parent, wxWindowID id,
+                float scale_factor,
+                wxColor backColor,
                 const wxString& text = wxEmptyString,
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
-  bool Create(wxWindow* parent, wxWindowID id = wxID_ANY,
+  bool Create(wxWindow* parent, wxWindowID id,
               float scale_factor = 1.0,
               const wxString& text = wxEmptyString,
               const wxPoint& pos = wxDefaultPosition,
@@ -585,62 +589,19 @@ private:
   ColorScheme m_cs;
   int m_pixel_height;
   int m_ssfn_status;
+  wxColor m_backgrounColor;
 };
 
 
 MUITextButton::MUITextButton() { Init(); }
 
 MUITextButton::MUITextButton(wxWindow* parent, wxWindowID id, float scale_factor,
-                             const wxString& text,
+                             wxColor backColor, const wxString& text,
                              const wxPoint& pos,
                              const wxSize& size, long style) {
+  m_backgrounColor = backColor;
   Init();
-
-
   Create(parent, id, scale_factor, text, pos, size, style);
-}
-
-bool GetTextIamgeClip( wxImage& image, int &top_space, int &bot_space) {
-  // Scan the image data to find the "active" lines
-  top_space = -1;
-  unsigned char *idata = image.GetData();
-  for (int j = 0; j < image.GetHeight(); j++){
-    if(top_space >- 0)
-      break;
-    for (int k = 0; k < image.GetWidth(); k++){
-      size_t index = j * image.GetWidth() + k;
-      index *= 3;
-      unsigned char r = idata[index];
-      unsigned char g = idata[index +1];
-      unsigned char b = idata[index +2];
-      printf( "%d:%d:%ld   %d %d %d\n", j, k, index, r, g, b);
-
-      if (( r>0 || g>0 ||b>0)){
-        top_space = j;
-        break;
-      }
-    }
-  }
-
-  bot_space = -1;
-  for (int j = image.GetHeight() - 1; j > 0; j--){
-    if(bot_space >= 0)
-      break;
-    size_t index0 = j * image.GetWidth();
-    for (int k = 0; k < image.GetWidth(); k++){
-      int index = index0 + k;
-      index *= 3;
-      unsigned char r = idata[index];
-      unsigned char g = idata[index +1];
-      unsigned char b = idata[index +2];
-      //printf( "%d:%d:%ld   %d %d %d\n", j, k, index, r, g, b);
-      if (( r>0 || g>0 || b>0)){
-        bot_space = image.GetHeight() - j; //6;
-        break;
-      }
-    }
-  }
-  return true;
 }
 
 bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
@@ -745,8 +706,15 @@ void MUITextButton::BuildBitmap(){
   free(glyph);
 
   unsigned char *image_data = (unsigned char *)calloc(1, wbox * hbox * 3);
+  for (int i=0 ; i < wbox * hbox; i++){
+    int idx = i*3;
+    image_data[idx] = m_backgrounColor.Red();
+    image_data[idx+1] = m_backgrounColor.Green();
+    image_data[idx+2] = m_backgrounColor.Blue();
+  }
+
   RenderStringToBuffer( image_data, t, wbox, hbox,
-                       baseline, GetGlobalColor("CHWHT"));
+                       baseline, GetGlobalColor("CHWHT"), m_backgrounColor );
 
   wxImage fimage = wxImage(wbox, hbox, image_data);
   wxSize clip_size = wxSize( wbox, baseline + 2);
@@ -777,8 +745,7 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor,
 
   m_scaleFactor = size_factor;
   m_cs = (ColorScheme)-1;
-//  wxColour backColor = wxColor(*wxBLACK); //GetGlobalColor(m_backcolorString);
-//  SetBackgroundColour(backColor);
+  wxColour backColor = wxColor(*wxBLACK); //GetGlobalColor(m_backcolorString);
 
   Init();
   CreateControls();
@@ -807,7 +774,7 @@ void MUIBar::Init() {
   m_canvasOptions = NULL;
   m_canvasOptionsAnimationTimer.SetOwner(this,
                                          CANVAS_OPTIONS_ANIMATION_TIMER_1);
-  m_backcolorString = _T("GREY3");
+  m_backcolor = GetGlobalColor("GREY3");
   m_capture_size_y = 0;
 
   m_COTopOffset = 60;  //  TODO should be below GPS/Compass
@@ -967,7 +934,7 @@ void MUIBar::CreateControls() {
     //  Scale
 
     m_scaleButton = new MUITextButton(m_parentCanvas, wxID_ANY, m_scaleFactor,
-                                      "1:400000");
+                                      GetBackgroundColor(), "1:400000");
 
     m_scaleButton->m_position = wxPoint(xoff, 0);
     if (m_scaleButton->GetButtonBitmap().IsOk()) {
@@ -1196,7 +1163,8 @@ wxBitmap &MUIBar::CreateBitmap(double displayScale) {
   wxMemoryDC mdc;
   wxBitmap bm(width, height);
   mdc.SelectObject(bm);
-  mdc.SetBackground(*wxBLACK_BRUSH);
+  mdc.SetBackground(wxBrush(GetBackgroundColor()));
+
   mdc.Clear();
 
   wxBitmap bmd;
@@ -1252,7 +1220,7 @@ wxBitmap &MUIBar::CreateBitmap(double displayScale) {
 void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
 #ifdef ocpnUSE_GL
 
-  wxColour backColor = *wxBLACK;
+  wxColour backColor = GetBackgroundColor();
   gldc.SetBrush(wxBrush(backColor));
   gldc.SetPen(wxPen(backColor));
 
