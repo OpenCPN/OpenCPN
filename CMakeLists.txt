@@ -2044,7 +2044,7 @@ if (NOT APPLE)
   install(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds)
 
   if (OCPN_BUNDLE_DOCS)
-    install(DIRECTORY data/doc/QuickStartManual DESTINATION ${PREFIX_PKGDATA}/doc/QuickStartManual)
+    install(DIRECTORY data/doc/QuickStartManual DESTINATION ${PREFIX_PKGDATA}/doc)
   else ()
     install(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
   endif ()
