@@ -72,7 +72,7 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
       "file://%sdoc/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
 #else
   m_htmlWinHelp->LoadFile(wxString::Format(
-      "%s/doc/QuickStartManual/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
+      "%s/doc/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
 #endif
   m_bitmapLogo->SetBitmap(logo);
 
