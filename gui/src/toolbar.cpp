@@ -178,7 +178,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
   m_bAutoHideToolbar = false;
   m_nAutoHideToolbar = 5;
   m_toolbar_scale_tools_shown = false;
-  m_backcolorString = _T("GREY2");
+  m_backcolorString = _T("GREY3");
   m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
   n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
   b_canToggleOrientation = true;
@@ -187,7 +187,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
 
   m_ptoolbar = CreateNewToolbar();
   if (m_ptoolbar)
-    m_ptoolbar->SetBackgroundColour(*wxBLACK);
+    m_ptoolbar->SetBackgroundColour(GetGlobalColor("GREY3"));
   m_cs = (ColorScheme)-1;
 
   m_style = g_StyleManager->GetCurrentStyle();
@@ -576,7 +576,7 @@ void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
   if (!m_ptoolbar)
     return;
 
-  wxColour backColor = *wxBLACK;
+  wxColour backColor = GetGlobalColor("GREY3");
   gldc.SetBrush(wxBrush(backColor));
   gldc.SetPen(wxPen(backColor));
 
@@ -1375,7 +1375,7 @@ wxBitmap &ocpnToolBarSimple::CreateBitmap(double display_scale) {
   wxMemoryDC mdc;
   wxBitmap bm(width, height);
   mdc.SelectObject(bm);
-  mdc.SetBackground(wxBrush(GetBackgroundColour()));
+  mdc.SetBackground(wxBrush( GetBackgroundColour()));
   mdc.Clear();
 
   //  In a loop, draw the tools
