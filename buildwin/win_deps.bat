@@ -69,5 +69,6 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
 )
 
 wget -nv -O !CACHE_DIR!\QuickStartManual.zip ^
-       https://www.dropbox.com/scl/fi/3ofdz0leqewj0kf0blch0/QuicStartManual.zip?rlkey=v3gnflqo9786219d0gemfi6wy&st=cq0lgpe2&dl=1
-7z x -y !CACHE_DIR!\QuickStartManual.zip  -o%CACHE_DIR%\..\data\doc
+       https://www.dropbox.com/scl/fi/3ofdz0leqewj0kf0blch0/QuickStartManual.zip?rlkey=v3gnflqo9786219d0gemfi6wy&st=zzzqd0k3&dl=1
+if not exist !CACHE_DIR!\..\data\doc\QuickStartManual (mkdir !CACHE_DIR!\..\data\doc\QuickStartManual)
+7z x -y !CACHE_DIR!\QuickStartManual.zip  -o%CACHE_DIR%\..\data\doc\QuickStartManual
