@@ -1850,7 +1850,7 @@ if (APPLE)
 
   if (OCPN_BUNDLE_DOCS)
     set_source_files_properties(
-      data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION
+      data/doc/toc_flat.html PROPERTIES MACOSX_PACKAGE_LOCATION
                                           SharedSupport/doc
     )
     file(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
@@ -2044,7 +2044,7 @@ if (NOT APPLE)
   install(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds)
 
   if (OCPN_BUNDLE_DOCS)
-    install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA}/doc)
+    install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
   else ()
     install(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
   endif ()
