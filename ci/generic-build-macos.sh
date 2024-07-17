@@ -46,7 +46,7 @@ done
 wget -nv -O QuickStartManual.zip \
   "https://www.dropbox.com/scl/fi/3ofdz0leqewj0kf0blch0/QuickStartManual.zip?rlkey=v3gnflqo9786219d0gemfi6wy&st=zzzqd0k3&dl=1"
 unzip QuickStartManual.zip -d data/doc
-
+sudo chmod -R +r data/doc
 
 # Build, install and make package
 mkdir -p build
