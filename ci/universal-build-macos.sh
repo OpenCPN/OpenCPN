@@ -72,7 +72,7 @@ export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
 
 # Download and unzip documentation files
-wget -nv -O QuickStartManual.zip \
+wget -nv -O QuickStartGuide.zip \
   "https://www.dropbox.com/scl/fi/aj1p0yqp6ou60qqq5w8s7/QuickStartGuide.zip?rlkey=fljmzap7q2hp9sqacrbkrniy0&st=oakj9e5s&dl=1"
 unzip QuickStartGuide.zip -d data/doc
 sudo chmod -R +r data/doc
