@@ -286,6 +286,15 @@ if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.3\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
 :skipbuildwin
+if not exist "%CACHE_DIR%\..\data\doc" (mkdir "%CACHE_DIR%\..\data\doc")
+set URL="https://www.dropbox.com/scl/fi/3ofdz0leqewj0kf0blch0/QuickStartManual.zip?rlkey=v3gnflqo9786219d0gemfi6wy&st=zzzqd0k3&dl=1"
+set "DEST=%CACHE_DIR%\QuickStartManual.zip"
+call :download
+@echo Exploding quickstart manual
+set "SOURCE=%DEST%"
+set "DEST=%CACHE_DIR%\..\data\doc"
+call :explode
+del "%SOURCE%"
 ::-------------------------------------------------------------
 :: Download wxWidgets sources
 ::-------------------------------------------------------------
@@ -591,7 +600,7 @@ if exist %DEST% (
 )
 %PSH% -Command [System.Net.ServicePointManager]::MaxServicePointIdleTime = 5000000; ^
   if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; ^
-  Invoke-WebRequest "%URL%" -OutFile '%DEST%'; ^
+  Invoke-WebRequest '%URL%' -OutFile '%DEST%'; ^
   exit $LASTEXITCODE
 if errorlevel 1 (@echo Download failed && pause && exit /b 1) else (@echo Download OK)
 exit /b 0
