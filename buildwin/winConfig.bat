@@ -287,7 +287,7 @@ if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
 :skipbuildwin
 if not exist "%CACHE_DIR%\..\data\doc" (mkdir "%CACHE_DIR%\..\data\doc")
-set URL="https://www.dropbox.com/scl/fi/3ofdz0leqewj0kf0blch0/QuickStartManual.zip?rlkey=v3gnflqo9786219d0gemfi6wy&st=zzzqd0k3&dl=1"
+set URL="https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.2.zip"
 set "DEST=%CACHE_DIR%\QuickStartManual.zip"
 call :download
 @echo Exploding quickstart manual
