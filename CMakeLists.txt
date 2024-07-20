@@ -1885,7 +1885,7 @@ if (APPLE)
   set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
 
   if (OCPN_BUNDLE_DOCS)
-    set(DOC_FILES data/doc/help_web.html data/doc/toc_flat.html
+    set(DOC_FILES data/doc/help_web.html
                   ${WIKI_DOC_FILES}
     )
   else ()
