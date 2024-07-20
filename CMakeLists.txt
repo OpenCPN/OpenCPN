@@ -1860,7 +1860,7 @@ if (APPLE)
            ${_currentWikiDocFile} # Absolute path to the file
       )
       get_filename_component(_docfileLocation ${_docfileRelPath} DIRECTORY)
-      set(_location "SharedSupport/doc/${_docfileLocation}")
+      set(_location "SharedSupport/doc/local/${_docfileLocation}")
       set_source_files_properties(
         ${_currentWikiDocFile} PROPERTIES MACOSX_PACKAGE_LOCATION ${_location}
       )
