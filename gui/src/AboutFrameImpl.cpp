@@ -65,12 +65,14 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
                                  g_Platform->GetSharedDataDir().c_str()),
                 wxBITMAP_TYPE_ANY);
 
-  wxString target = wxString::Format("file://%sdoc/local/toc_flat.html",
+  wxString target = wxString::Format("%sdoc/local/toc_flat.html",
                                      g_Platform->GetSharedDataDir().c_str());
 
   if (!::wxFileExists(target))
-    target = wxString::Format("file://%sdoc/help_web.html",
+    target = wxString::Format("%sdoc/help_web.html",
                              g_Platform->GetSharedDataDir().c_str());
+
+  target.Prepend("file://");
 
   m_hyperlinkHelp->SetURL(target);
 #if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
