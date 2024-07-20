@@ -54,12 +54,12 @@ set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
 set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
 if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   wget -nv -O !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
-      %GH_DL_BASE%/archive/refs/tags/v0.3.zip
+      %GH_DL_BASE%/archive/refs/tags/v0.5.zip
   7z x -y !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
       -o%CACHE_DIR%\buildwintemp
   if not exist !CACHE_DIR!\buildwin (mkdir !CACHE_DIR!\buildwin)
   xcopy ^
-    !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin ^
+    !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.5\buildwin ^
     !CACHE_DIR!\buildwin /s /y /q
   if exist !CACHE_DIR!\buildwin\wxWidgets (
     del !CACHE_DIR!\buildwin\wxWidgets\*.dll /q
@@ -67,3 +67,8 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   wget !opencpn_support_base!/opencpn-support/raw/files/iphlpapi.lib ^
    -O %CACHE_DIR%\buildwin\iphlpapi.lib
 )
+
+wget -nv -O !CACHE_DIR!\QuickStartGuide.zip ^
+       https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.3.zip
+if not exist %CACHE_DIR%\..\data\doc\local (mkdir %CACHE_DIR%\..\data\doc\local)
+7z x -y !CACHE_DIR!\QuickStartGuide.zip  -o%CACHE_DIR%\..\data\doc\local

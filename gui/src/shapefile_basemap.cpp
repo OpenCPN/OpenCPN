@@ -413,6 +413,8 @@ void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
   glDrawArrays(GL_TRIANGLES, 0, polycnt);
 
   delete[] pvt;
+  delete[] polyv;
+
   glDeleteBuffers(1, &vbo);
   shader->UnBind();
 #endif

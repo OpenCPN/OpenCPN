@@ -286,6 +286,15 @@ if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.3\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
 :skipbuildwin
+if not exist "%CACHE_DIR%\..\data\doc\local" (mkdir "%CACHE_DIR%\..\data\doc\local")
+set URL="https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.3.zip"
+set "DEST=%CACHE_DIR%\QuickStartManual.zip"
+call :download
+@echo Exploding quickstart manual
+set "SOURCE=%DEST%"
+set "DEST=%CACHE_DIR%\..\data\doc\local"
+call :explode
+del "%SOURCE%"
 ::-------------------------------------------------------------
 :: Download wxWidgets sources
 ::-------------------------------------------------------------
@@ -591,7 +600,7 @@ if exist %DEST% (
 )
 %PSH% -Command [System.Net.ServicePointManager]::MaxServicePointIdleTime = 5000000; ^
   if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; ^
-  Invoke-WebRequest "%URL%" -OutFile '%DEST%'; ^
+  Invoke-WebRequest '%URL%' -OutFile '%DEST%'; ^
   exit $LASTEXITCODE
 if errorlevel 1 (@echo Download failed && pause && exit /b 1) else (@echo Download OK)
 exit /b 0

@@ -8,22 +8,48 @@ You have been warned!
 This page describes how to create .deb packages usable on Debian
 based distros like vanilla Debian, Ubuntu, Raspbian, Mint, etc.
 
-Work is done on a Debian or Ubuntu host. The big picture
+Work is done on a Debian or Ubuntu host.
+Uploading an ubuntu  package must be done from an Ubuntu host.
 
-1. Install necessary tools.
-2. Make a fresh OpenCPN clone.
-3. Update at least debian/changelog to create a new version
-4. Import the current master branch into upstream/latest
-5. Install build dependencies
-6. Create testable packages
-7. (Optional) Upload packages to an Ubuntu PPA.
+Here are three main tasks:
 
+  - <<import-version,Importing new opencpn releases into the packaging
+    branches>>.
+  - <<src-release, Creating a new downstream release and upload it into an
+    Ubuntu PPA>>
+  - <<test-build, Create a local test build of the package>>
 
+Here, the term "downstream release" refers to a release based on the 
+same opencpn release but where the packaging has been modified.
+
+There is also some support tasks, see the right panel. 
+
+[#setup]
+== Setting up the environment
+
+1. Creating releases requires a working gpg secret key including the
+   password is available.
+   Verify using something like
+   `gpg --export-secret-keys E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C`. 
+   This key must be registered on the PPA about the be used.
+3. Create a file _~/.devscripts_ with contents like:
+
+       DEBSIGN_KEYID=E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C
+       DEBEMAIL="leamas.alec@gmail.com"
+       DEBFULLNAME="Alec Leamas"+
++
+Of course, all values here are personal.
+DEBSIGN_KEYID is the secret key verified above.
+The gpg key is only required when uploading source packages to an ubuntu 
+PPA.
+
+[#install-tools]
 == Install tools
 
     $ sudo apt install devscripts git-buildpackage equivs
 
 
+[#create-clone]
 == Make a fresh OpenCPN clone.
 
 The Debian tools creates things in the parent directory. To handle this,
@@ -42,22 +68,25 @@ get all necessary three branches:
 
 `ubuntu/numbat` is the branch to use when building Ubuntu Numbat (24.04)
 packages.
-Other alternatives are `ubuntu/jammy`, `ubuntu/focal` and `debian/master`.
+Alternatives includes  `ubuntu/jammy`, `ubuntu/focal` and `debian/master`.
 The latter builds packages for the rolling Sid distribution.
 
 
-== Update debian/changelog with a new version
+[#import-version]
+== Import a new opencpn version into packaging branches.
+
+=== Initiate the changelog with a new version
 
 _debian/changelog_ is picky about the format. Editing by hand is hard. Instead,
-use the `dch` tool. It has a multitude of options. The simplest is to create
-a new, minor release using `dch -i`.
+use the `dch` tool. It has a multitude of options.In preparation of importing a
+new version, first update *debian/changelog* with a new version, something like
+`dch -v 1:5.9.3-beta3+dfsg`
 
-dch throws you in an editor loaded with debian/changelog. Complete the entry
-as you consider best (there are many conventions here, but for a local build
-it's not that important).
+`dch` throws you in an editor loaded with _debian/changelog_.
+Complete the entry as you consider best.
+The standard message for a new version is "New upstream Release".
 
-
-== Import the current master branch into upstream/latest
+=== Import the current master branch into upstream/latest
 
 For now, the debian directory needs to be removed. After that, create a
 tarball based on HEAD:
@@ -81,40 +110,100 @@ Where _../opencpn.tar.gz_  is the file created by `git archive` above. This
 creates something like  _../opencpn_.5.10.920.orig.tar.gz_. The version in
 the filename is taken from debian/changelog.
 
-`ubuntu/numbat` is just an example, see Make a fresh clone above.
+`ubuntu/numbat` is just an example,
+see Make a fresh clone <<create-clone, above>>.
 
-The final step is to import this tarball into upstream/latest. Using the
-above do:
+Nest step is to import this tarball into upstream/latest. Using the
+tarball created by git-archive above do:
 
    $ gbp import-orig ../opencpn_.5.10.920.orig.tar.gz
 
-== Install build dependencies
+=== Push the updated branches
+
+Final step is to push these changes:
+
+   $ gbp push
+
+[#src-release]
+== Create a downstream release
+
+Assuming the new upstream (opencpn) release is available as of <<import-version,
+above>> creating a downstream release goes like:
+
+1. Initiate the environment as described <<setup, above>>.
+2. Clone and checkout all branches, see <<create-clone, above>>.
+3. Create a orig.tar.xz tarball in ..
+
+       $ gbp export-orig
+
+This is a one time setup, the results can be used in various branches like
+ubuntu/jammy and debian/bookworm.
+
+For each release do:
+
+1. Checkout the actual branch like ubuntu/jammy. 
+   Work on ubuntu branches must be done on an ubuntu host.
+2. Create a provisional version entry in _debian/changelog_ using `dch -R`.
+3. Do possible changes in the new release.
+   Note that only files in the _debian/_ directory can be modified;
+   changes in other files are handled using patches in _debian/patches_.
+   See Modifying Sources <<edit-src,below>>
+4. Commit all changes.
+5. Finalize the changelog entry using `dch -r`. 
+6. Commit the change in _debian/changelog_
+7. Create a source package using `debuild -S`.
+8. List all available source packages using `ls -lt ../*source.changes`.
+9. Push the most recent package to a PPA using something like
+
+     $ `dput ppa:leamas-alec/opencpn \
+     ../opencpn_5.9.2-beta2+dfsg-1ubuntu1~bpo2204.8_source.changes`.
+
+and that's it.
+
+[#test-build]
+== Create a local test build
+
+First step is to setup the environment, see <<setup, above>>.
+However, no gpg key is required.
+
+Then, create a fresh clone as described <<create-clone, above>>.
+
+Install build dependencies:
 
     $ mk-build-deps
     $ sudo dpkg -i *deb     # Expect error messages, ignore them
     $ sudo apt install -f
     $ git clean -fxd
 
-== Build packages
-
-The step above creates a tag named like `upstream/5.10.920` or so. Use
-`git tag -l | grep upstream/` to find out the tag name. Then do
+List available upstream tags using `git tag -l | grep upstream/`.
+Normally use the most recent one like:
 
     $ git clean -fxd; git checkout .
-    $ gbp buildpackage --git-upstream-tag=upstream/whatever
+    $ gbp buildpackage --git-upstream-tag=upstream/whatever -us -uc
 
 This builds testable .deb packages in _.._.
 
+[#edit-src]
+== Modifying sources in a downstream release.
 
-== Upload to PPA
+One cannot change the opencpn sources when creating a release.
+However, it is possible to add or modify a patch in _debian/patches_.
+These patches are applied when building the opencpn package.
 
-The artifact uploaded to an Ubuntu ppa is a _.source.changes_ file.  This
-is created using
+The basic workflow starts in a fresh, clean clone and goes like
 
-    $ debuild -S
+    $ gbp pq import --force
+    #     All the patches in debian/patches are applied.
+    #     Edit sources as desired and do:
+    $ git commit -am "Reason for this change"
+    $ gbp pq export
+    $ git add debian/patches/*
+    $ git commit -m "d/patches: new patch: patch description"
 
-This requires that gpg signing keys is configured which is outside the scope
-of this document. The command creates something like
-_../opencpn.1.2.3.source.changes_.  Upload to a PPA using something like
+After `gbp pq import` actually all sorts of changes can be done.
+As usual, several small changes can and should be committed one
+by one rather than as a big patch.
 
-    $ dput ppa:leamas-alec/opencpn ../opencpn.1.2.3.source.changes
+It is also possible to edit existing patches using the standard
+git tools, in particular `git rebase -i`
+
