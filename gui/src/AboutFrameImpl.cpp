@@ -66,13 +66,13 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
                 wxBITMAP_TYPE_ANY);
 
   m_hyperlinkHelp->SetURL(wxString::Format(
-      "file://%sdoc/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
+      "file://%sdoc/local/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
 #if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
   m_htmlWinHelp->LoadURL(wxString::Format(
-      "file://%sdoc/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
+      "file://%sdoc/local/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
 #else
   m_htmlWinHelp->LoadFile(wxString::Format(
-      "%s/doc/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
+      "%s/doc/local/toc_flat.html", g_Platform->GetSharedDataDir().c_str()));
 #endif
   m_bitmapLogo->SetBitmap(logo);
 

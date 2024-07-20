@@ -286,13 +286,13 @@ if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.3\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
 :skipbuildwin
-if not exist "%CACHE_DIR%\..\data\doc" (mkdir "%CACHE_DIR%\..\data\doc")
+if not exist "%CACHE_DIR%\..\data\doc\local" (mkdir "%CACHE_DIR%\..\data\doc\local")
 set URL="https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.3.zip"
 set "DEST=%CACHE_DIR%\QuickStartManual.zip"
 call :download
 @echo Exploding quickstart manual
 set "SOURCE=%DEST%"
-set "DEST=%CACHE_DIR%\..\data\doc"
+set "DEST=%CACHE_DIR%\..\data\doc\local"
 call :explode
 del "%SOURCE%"
 ::-------------------------------------------------------------
