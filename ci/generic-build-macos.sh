@@ -44,7 +44,7 @@ done
 
 # Download and unzip documentation files
 wget -nv -O QuickStartGuide.zip \
-  "https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.2.zip"
+  "https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.3.zip"
 unzip QuickStartGuide.zip -d data/doc
 sudo chmod -R +r data/doc
 
