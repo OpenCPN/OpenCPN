@@ -1,5 +1,5 @@
-0001-build-Handle-missing-doc-files.patch
-0002-build-Drop-removed-CoC-1973_2018-InlandECDIS_2022091.patch
-0003-Add-missing-libs-like-tinyxml-Debian-work-around.patch
-0004-tests-Disable-time-dependent-Buffer.RateLimit2-test.patch
-0005-build-Use-system-shapelib-if-available.patch
+0001-build-Drop-removed-CoC-1973_2018-InlandECDIS_2022091.patch
+0002-Add-missing-libs-like-tinyxml-Debian-work-around.patch
+0003-tests-Disable-time-dependent-Buffer.RateLimit2-test.patch
+0004-build-Use-system-shapelib-if-available.patch
+0005-CMakeLists-help_web.html-path-error-fix.patch
