@@ -452,6 +452,11 @@ if (QT_ANDROID)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
 endif ()
 
+if (ARCH STREQUAL armhf)
+  # See: https://forums.raspberrypi.com/viewtopic.php?t=144115
+  add_compile_options(-mcpu=cortex-a53  -mfpu=neon-fp-armv8)
+endif ()   # Assuming at least RPi 3
+
 message(STATUS "Final compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -908,6 +913,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
+    ${GUI_SRC_DIR}/mbtiles/WorkerThread.cpp
     ${GUI_SRC_DIR}/mbtiles/WorkerThread.hpp
     ${GUI_SRC_DIR}/mbtiles/TileQueue.hpp
     ${GUI_SRC_DIR}/mbtiles/TileDescriptor.hpp
@@ -1004,6 +1010,12 @@ if (QT_ANDROID)
   list(APPEND GUI_HDRS android/androidUTIL.h)
   list(APPEND GUI_SRC ${CMAKE_SOURCE_DIR}/android/androidUTIL.cpp)
 endif ()
+
+if (NOT MSVC AND NOT APPLE)
+  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/ocpn_fontdlg.h)
+  list(APPEND GUI_SRC ${GUI_SRC_DIR}/ocpn_fontdlg.cpp)
+endif ()
+
 
 set(SRCS ${GUI_SRC})
 set(HDRS ${GUI_HDRS})
@@ -1628,6 +1640,10 @@ set(basemap_shp
 
 # Various data files
 
+set(ssfnData
+        data/ssfn/FreeSans.sfn
+        )
+
 set(uiData
     resources/bitmaps/styles.xml
     resources/bitmaps/toolicons_journeyman.png
@@ -1692,6 +1708,9 @@ if (APPLE)
   )
   set_source_files_properties(
     ${basemap_shp} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/basemap_shp
+  )
+  set_source_files_properties(
+    ${ssfnData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/ssfndata
   )
   set_source_files_properties(
     ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata
@@ -1831,17 +1850,17 @@ if (APPLE)
 
   if (OCPN_BUNDLE_DOCS)
     set_source_files_properties(
-      data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION
-                                          SharedSupport/doc
+      data/doc/local/toc_flat.html PROPERTIES MACOSX_PACKAGE_LOCATION
+                                          SharedSupport/doc/local
     )
-    file(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
+    file(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/local/*")
     foreach (_currentWikiDocFile ${WIKI_DOC_FILES})
       file(RELATIVE_PATH _docfileRelPath # Output variable
-           "${CMAKE_SOURCE_DIR}/data/doc/" # Base directory
+           "${CMAKE_SOURCE_DIR}/data/doc/local" # Base directory
            ${_currentWikiDocFile} # Absolute path to the file
       )
       get_filename_component(_docfileLocation ${_docfileRelPath} DIRECTORY)
-      set(_location "SharedSupport/doc/${_docfileLocation}")
+      set(_location "SharedSupport/doc/local/${_docfileLocation}")
       set_source_files_properties(
         ${_currentWikiDocFile} PROPERTIES MACOSX_PACKAGE_LOCATION ${_location}
       )
@@ -1866,7 +1885,7 @@ if (APPLE)
   set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
 
   if (OCPN_BUNDLE_DOCS)
-    set(DOC_FILES data/doc/help_web.html data/doc/help_en_US.html
+    set(DOC_FILES data/doc/help_web.html
                   ${WIKI_DOC_FILES}
     )
   else ()
@@ -2000,6 +2019,8 @@ if (NOT APPLE)
 
   install(FILES ${basemap_shp} DESTINATION ${PREFIX_PKGDATA}/basemap_shp)
 
+  install(FILES ${ssfnData} DESTINATION ${PREFIX_PKGDATA}/ssfndata)
+
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
 
@@ -2023,7 +2044,7 @@ if (NOT APPLE)
   install(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds)
 
   if (OCPN_BUNDLE_DOCS)
-    install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
+    install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
   else ()
     install(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
   endif ()

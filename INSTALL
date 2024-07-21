@@ -28,7 +28,7 @@ with the following wxWidgets hosts:
 ----------------------------------------------------------------------
 
 Up to date build dependency instructions can be found at
-https://opencpn-manuals.github.io/main/ocpn-dev-manual/, look for
+https://opencpn-manuals.github.io/main/opencpn-dev/, look for
 OpenCPN Development.
 
 On Debian/Ubuntu the canonical way to install build depencies is:
@@ -52,7 +52,7 @@ Opencpn uses the cmake system. On Linux, the build is performed using:
     $ make -j 4
     $ sudo make install
 
-See the manual at https://opencpn-manuals.github.io/main/ocpn-dev-manual/
+See the manual at https://opencpn-manuals.github.io/main/opencpn-dev/
 for build instructions on other platforms.
 
 

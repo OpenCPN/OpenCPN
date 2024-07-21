@@ -178,7 +178,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
   m_bAutoHideToolbar = false;
   m_nAutoHideToolbar = 5;
   m_toolbar_scale_tools_shown = false;
-  m_backcolorString = _T("GREY2");
+  m_backcolorString = _T("GREY3");
   m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
   n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
   b_canToggleOrientation = true;
@@ -187,7 +187,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
 
   m_ptoolbar = CreateNewToolbar();
   if (m_ptoolbar)
-    m_ptoolbar->SetBackgroundColour(*wxBLACK);
+    m_ptoolbar->SetBackgroundColour(GetGlobalColor("GREY3"));
   m_cs = (ColorScheme)-1;
 
   m_style = g_StyleManager->GetCurrentStyle();
@@ -526,8 +526,10 @@ bool ocpnFloatingToolbarDialog::MouseEvent(wxMouseEvent &event) {
 
 void ocpnFloatingToolbarDialog::RefreshToolbar() {
   if (m_ptoolbar){
-    if (m_ptoolbar->IsDirty())
+    if (m_ptoolbar->IsDirty()) {
+      Realize();
       gFrame->GetPrimaryCanvas()->Refresh();
+    }
   }
 }
 
@@ -555,6 +557,7 @@ void ocpnFloatingToolbarDialog::Realize() {
   if (m_ptoolbar) {
     m_ptoolbar->Realize();
     m_ptoolbar->CreateBitmap();
+    m_toolbar_image.Destroy();
   }
 }
 
@@ -573,7 +576,7 @@ void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
   if (!m_ptoolbar)
     return;
 
-  wxColour backColor = *wxBLACK;
+  wxColour backColor = GetGlobalColor("GREY3");
   gldc.SetBrush(wxBrush(backColor));
   gldc.SetPen(wxPen(backColor));
 
@@ -616,23 +619,24 @@ void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
     glBindTexture(g_texture_rectangle_format, m_texture);
   }
 
+  if (!m_toolbar_image.IsOk()) {
+    // fill texture data
+    m_toolbar_image = m_ptoolbar->GetBitmap().ConvertToImage();
 
-  // fill texture data
-  wxImage image = m_ptoolbar->GetBitmap().ConvertToImage();
-
-  unsigned char *d = image.GetData();
-  unsigned char *e = new unsigned char[4 * width * height];
-  for (int y = 0; y < height; y++)
-    for (int x = 0; x < width; x++) {
-      int i = y * width + x;
-      memcpy(e + 4 * i, d + 3 * i, 3);
-      e[4 * i + 3] = 255; //d[3*i + 2] == 255 ? 0:255; //255 - d[3 * i + 2];
-    }
-  glTexImage2D(g_texture_rectangle_format, 0, GL_RGBA, width, height, 0,
-               GL_RGBA, GL_UNSIGNED_BYTE, e);
-  delete[] e;
-  glDisable(g_texture_rectangle_format);
-  glDisable(GL_BLEND);
+    unsigned char *d = m_toolbar_image.GetData();
+    unsigned char *e = new unsigned char[4 * width * height];
+    for (int y = 0; y < height; y++)
+      for (int x = 0; x < width; x++) {
+        int i = y * width + x;
+        memcpy(e + 4 * i, d + 3 * i, 3);
+        e[4 * i + 3] = 255;  // d[3*i + 2] == 255 ? 0:255; //255 - d[3 * i + 2];
+      }
+    glTexImage2D(g_texture_rectangle_format, 0, GL_RGBA, width, height, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, e);
+    delete[] e;
+    glDisable(g_texture_rectangle_format);
+    glDisable(GL_BLEND);
+  }
 
   // Render the texture
   if (m_texture) {
@@ -1371,7 +1375,7 @@ wxBitmap &ocpnToolBarSimple::CreateBitmap(double display_scale) {
   wxMemoryDC mdc;
   wxBitmap bm(width, height);
   mdc.SelectObject(bm);
-  mdc.SetBackground(wxBrush(GetBackgroundColour()));
+  mdc.SetBackground(wxBrush( GetBackgroundColour()));
   mdc.Clear();
 
   //  In a loop, draw the tools
