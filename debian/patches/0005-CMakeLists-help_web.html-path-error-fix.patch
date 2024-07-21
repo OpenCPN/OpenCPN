@@ -1,5 +1,5 @@
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Sun, 21 Jul 2024 05:19:57 +0200
+Date: Sun, 21 Jul 2024 10:37:32 +0200
 Subject: CMakeLists: help_web.html path error fix
 
 ---
@@ -7,10 +7,10 @@ Subject: CMakeLists: help_web.html path error fix
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7ea8eef..a4f72e6 100644
+index 840f59f..b84afa2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1829,7 +1829,7 @@ if (APPLE)
+@@ -1843,7 +1843,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -19,11 +19,11 @@ index 7ea8eef..a4f72e6 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1869,11 +1869,11 @@ if (APPLE)
+@@ -1883,11 +1883,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
--    set(DOC_FILES data/doc/help_web.html data/doc/help_en_US.html
+-    set(DOC_FILES data/doc/help_web.html
 +    set(DOC_FILES data/help_web.html
                    ${WIKI_DOC_FILES}
      )
@@ -33,9 +33,9 @@ index 7ea8eef..a4f72e6 100644
    endif ()
  
    target_sources(
-@@ -2022,7 +2022,7 @@ if (NOT APPLE)
+@@ -2038,7 +2038,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
-     install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
+     install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()
 -    install(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
 +    install(FILES data/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
