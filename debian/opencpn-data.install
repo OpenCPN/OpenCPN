@@ -12,6 +12,7 @@ usr/share/opencpn/s57data
 usr/share/opencpn/sounds/*bells.wav
 usr/share/opencpn/sounds/beep*.wav
 usr/share/opencpn/sounds/phonering1.wav
+usr/share/opencpn/ssfndata
 usr/share/opencpn/tcdata/HARMONICS_NO_US.IDX
 usr/share/opencpn/tcdata/HARMONICS_NO_US
 usr/share/opencpn/uidata
