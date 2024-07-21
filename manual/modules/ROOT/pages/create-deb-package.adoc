@@ -142,18 +142,19 @@ ubuntu/jammy and debian/bookworm.
 For each release do:
 
 1. Checkout the actual branch like ubuntu/jammy. 
-   Work on ubuntu branches must be done on an ubuntu host.
+   Work on ubuntu branches must be done on an ubuntu host
 2. Create a provisional version entry in _debian/changelog_ using `dch -R`.
-3. Do possible changes in the new release.
+3. Merge upstream changes using `git merge -X theirs upstream/latest`
+4. Do possible changes in the new release.
    Note that only files in the _debian/_ directory can be modified;
    changes in other files are handled using patches in _debian/patches_.
    See Modifying Sources <<edit-src,below>>
-4. Commit all changes.
-5. Finalize the changelog entry using `dch -r`. 
-6. Commit the change in _debian/changelog_
-7. Create a source package using `debuild -S`.
-8. List all available source packages using `ls -lt ../*source.changes`.
-9. Push the most recent package to a PPA using something like
+5. Commit all changes.
+6. Finalize the changelog entry using `dch -r`. 
+7. Commit the change in _debian/changelog_
+8. Create a source package using `debuild -S`.
+9. List all available source packages using `ls -lt ../*source.changes`.
+10. Push the most recent package to a PPA using something like
 
      $ `dput ppa:leamas-alec/opencpn \
      ../opencpn_5.9.2-beta2+dfsg-1ubuntu1~bpo2204.8_source.changes`.
