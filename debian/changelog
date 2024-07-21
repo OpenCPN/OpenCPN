@@ -1,3 +1,9 @@
+opencpn (1:5.9.3~beta3+dfsg-1ubuntu1~bpo26.04+1) UNRELEASED; urgency=medium
+
+  * New upstream beta release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 21 Jul 2024 10:27:25 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.4) noble; urgency=medium
 
   * Add new patch for arm compiler options (#4027)
