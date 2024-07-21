@@ -9,7 +9,7 @@ Subject: build: Use system shapelib if available.
  create mode 100644 cmake/FindShapelib.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 05e4793..f88cb01 100644
+index 7bc18cf..522893d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1245,7 +1245,13 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)

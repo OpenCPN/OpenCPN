@@ -1,0 +1,24 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sat, 6 Jul 2024 19:07:54 +0200
+Subject: armhf:  Trying Rpi 3 compiler options
+
+---
+ CMakeLists.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 522893d..7ea8eef 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -452,6 +452,11 @@ if (QT_ANDROID)
+   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
+ endif ()
+ 
++if (ARCH STREQUAL armhf)
++  # See: https://forums.raspberrypi.com/viewtopic.php?t=144115
++  add_compile_options(-mcpu=cortex-a53  -mfpu=neon-fp-armv8)
++endif ()   # Assuming at least RPi 3
++
+ message(STATUS "Final compiler options:")
+ message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+ message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
