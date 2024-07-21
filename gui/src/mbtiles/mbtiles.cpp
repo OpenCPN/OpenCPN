@@ -646,10 +646,15 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
     // Tile is not in MbTiles file : no texture to render
     return false;
   } else if (tile->m_teximage == 0) {
-    if (tile->m_requested == false) {
-      // The tile has not been loaded and decompressed yet : request it
-      // to the worker thread
-      m_workerThread->RequestTile(tile);
+    // Throttle the worker thread
+    // Avoids unmanaged spikes in memory usage that arise from
+    // processing very large tiles at small display scale (issue #4043)
+    if (m_workerThread->GetQueueSize() < 500) {
+      if (tile->m_requested == false) {
+        // The tile has not been loaded and decompressed yet : request it
+        // to the worker thread
+        m_workerThread->RequestTile(tile);
+      }
     }
     return false;
   } else {

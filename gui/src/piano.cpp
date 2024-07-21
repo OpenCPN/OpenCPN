@@ -646,11 +646,12 @@ void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_a
       int chart_family = cte.GetChartFamily();
 
       // Perform scale compositing only for vector-family charts
-      // and Raster Family charts..
+      // and Raster Family charts excluding MBTiles..
       // All other families/types retain legacy piano keys, implemented as
       // PianoKeyElement with only one chart in the array.
       if ((cte.GetChartFamily() == CHART_FAMILY_VECTOR) ||
-          (cte.GetChartFamily() == CHART_FAMILY_RASTER)) {
+          ((cte.GetChartFamily() == CHART_FAMILY_RASTER) &&
+           (cte.GetChartType() != CHART_TYPE_MBTILES))) {
         auto predicate = [scale, chart_family](const PianoKeyElement &pke) {
           return ((scale == pke.chart_scale) && (chart_family == pke.chart_family));
         };
@@ -796,12 +797,18 @@ void Piano::FormatKeys(void) {
   wxSize mui_tool_size = g_StyleManager->GetCurrentStyle()->GetToolSize();
   //  MuiBar has boosted the MUIButton default size by 125%
   mui_tool_size = wxSize(mui_tool_size.x * 1.25, mui_tool_size.y * 1.25);
-  //  Muibar horizontal is about 7 "icons" wide.
-  int mui_bar_width_est = mui_tool_size.x * 7 * g_toolbar_scalefactor;
+  //  Muibar horizontal is about 8 "icons" wide.
+  int mui_bar_width_est = mui_tool_size.x * 8 * g_toolbar_scalefactor;
 
-  width *= g_btouch ? 0.98f : 0.6f;
-  width = wxMin(width, m_parentCanvas->GetClientSize().x - mui_bar_width_est);
-  width = wxMax(width, mui_bar_width_est);
+  if (m_parentCanvas->GetClientSize().x < m_parentCanvas->GetClientSize().y){
+    //portrait mode, on a phone or tablet, etc.
+    width *= 0.6;
+  }
+  else {
+    width *= 0.6;
+    //width = wxMin(width, m_parentCanvas->GetClientSize().x - mui_bar_width_est);
+  }
+  //width = wxMax(width, mui_bar_width_est);
 
   // Max width available
   m_width_avail = width;

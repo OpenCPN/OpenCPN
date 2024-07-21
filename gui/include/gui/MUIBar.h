@@ -94,7 +94,7 @@ private:
   void HandleMenuClick();
   wxBitmap &CreateBitmap(double displayScale);
   void InvalidateBitmap();
-
+  wxColor &GetBackgroundColor() { return m_backcolor; }
   void CaptureCanvasOptionsBitmap();
   void CaptureCanvasOptionsBitmapChain(wxTimerEvent &event);
 
@@ -123,7 +123,7 @@ private:
   int m_animationTotalTime;
   int m_pushPull;
 
-  wxString m_backcolorString;
+  wxColor m_backcolor;
   wxBitmap m_animateBitmap;
   wxBitmap m_backingBitmap;
   wxTimer CanvasOptionTimer;

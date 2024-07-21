@@ -95,9 +95,6 @@ void ConnectionsDialog::Init() {
 
   // Create the UI
 
-  //  Catch SizeEvents to force a layout honoring proportions
-  m_container->Connect(wxEVT_SIZE, wxSizeEventHandler(ConnectionsDialog::OnSize), NULL, this);
-
   // Try to detect smaller displays, and adjust dialog layout accordingly
   //  Looking for small devices in landscape mode.
   bool bcompact = false;
@@ -366,6 +363,9 @@ void ConnectionsDialog::Init() {
   m_ButtonPriorityDialog->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ConnectionsDialog::OnPriorityDialog), NULL, this);
+
+   //  Catch SizeEvents to force a layout honoring proportions
+  m_container->Connect(wxEVT_SIZE, wxSizeEventHandler(ConnectionsDialog::OnSize), NULL, this);
 
 }
 

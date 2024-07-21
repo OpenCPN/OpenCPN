@@ -399,6 +399,9 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
       {
       this->attributes["canPort"] = params->socketCAN_port.ToStdString();
       this->attributes["canAddress"] = std::to_string(DEFAULT_N2K_SOURCE_ADDRESS);
+      this->attributes["userComment"] = params->UserComment.ToStdString();
+      this->attributes["ioDirection"] = std::string("IN/OUT");
+
       }
 
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}

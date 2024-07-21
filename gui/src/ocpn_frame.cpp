@@ -2695,6 +2695,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     }
 
   }  // switch
+
+     // Finally, force a refresh of the main toolbar
+  if (g_MainToolbar)
+    g_MainToolbar->Realize();
+
+
 }
 
 bool MyFrame::SetGlobalToolbarViz(bool viz) {
@@ -3329,14 +3335,17 @@ void MyFrame::SetMenubarItemState(int item_id, bool state) {
 }
 
 void MyFrame::SetMasterToolbarItemState(int tool_id, bool state) {
-  if (g_MainToolbar && g_MainToolbar->GetToolbar())
+  if (g_MainToolbar && g_MainToolbar->GetToolbar()) {
     g_MainToolbar->GetToolbar()->ToggleTool(tool_id, state);
+    g_MainToolbar->Realize();
+  }
 }
 
 void MyFrame::SetToolbarItemBitmaps(int tool_id, wxBitmap *bmp,
                                     wxBitmap *bmpRollover) {
   if (g_MainToolbar && g_MainToolbar->GetToolbar()) {
     g_MainToolbar->GetToolbar()->SetToolBitmaps(tool_id, bmp, bmpRollover);
+    g_MainToolbar->Realize();
   }
 }
 
@@ -7091,6 +7100,7 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
   if (g_bTrackActive) {
     g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
   }
+  g_MainToolbar->Realize();
 
   return tb;
 }
