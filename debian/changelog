@@ -1,3 +1,9 @@
+opencpn (1:5.9.3~beta3+dfsg-1~bpo12+1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 21 Jul 2024 12:52:24 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * Upstream beta release backport
