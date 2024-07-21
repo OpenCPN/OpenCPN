@@ -537,6 +537,7 @@ private:
   int m_auxOffsetY;
 
   unsigned int m_texture;
+  wxImage m_toolbar_image;
 };
 
 //---------------------------------------------------------------------------

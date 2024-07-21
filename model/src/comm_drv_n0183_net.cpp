@@ -167,6 +167,12 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   char port_char[10];
   sprintf(port_char, "%d", params->NetworkPort);
   this->attributes["netPort"] = std::string(port_char);
+  this->attributes["userComment"] = params->UserComment.ToStdString();
+  dsPortType iosel = params->IOSelect;
+  std::string s_iosel = std::string("IN");
+  if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "OUT";}
+  else if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "IN/OUT";}
+  this->attributes["ioDirection"] = s_iosel;
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::handle_N0183_MSG, this);

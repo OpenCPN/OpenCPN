@@ -68,6 +68,10 @@
 #include <wx/colordlg.h>
 #endif
 
+#ifdef __WXGTK__
+#include "ocpn_fontdlg.h"
+#endif
+
 #include "config.h"
 
 #include "model/ais_decoder.h"
@@ -7969,6 +7973,7 @@ void options::OnFontChoice(wxCommandEvent& event) {
   event.Skip();
 }
 
+
 void options::OnChooseFont(wxCommandEvent& event) {
 #ifdef __ANDROID__
   androidDisableRotation();
@@ -7985,44 +7990,66 @@ void options::OnChooseFont(wxCommandEvent& event) {
   init_font_data.SetColour(init_color);
 
 #ifdef __WXGTK__
-  wxFontDialog dg(this, init_font_data);
+  if (g_Platform->getDisplaySize().y < 800) {
+    ocpnGenericFontDialog dg(this, init_font_data);
+    wxFont* qFont = dialogFont;
+    dg.SetFont(*qFont);
+
+    int retval = dg.ShowModal();
+    if (wxID_CANCEL != retval) {
+      font_data = dg.GetFontData();
+      wxFont font = font_data.GetChosenFont();
+      wxFont* psfont = new wxFont(font);
+      wxColor color = font_data.GetColour();
+      FontMgr::Get().SetFont(sel_text_element, psfont, color);
+      gFrame->UpdateAllFonts();
+      m_bfontChanged = true;
+      OnFontChoice(event);
+    }
+  }
+  else
+#endif
+  {
+#ifdef __WXGTK__
+    wxFontDialog dg(this, init_font_data);
 #else
-  wxFontDialog dg(pParent, init_font_data);
+    wxFontDialog dg(pParent, init_font_data);
 #endif
 
-  wxFont* qFont = dialogFont;
-  dg.SetFont(*qFont);
+    wxFont* qFont = dialogFont;
+    dg.SetFont(*qFont);
 
 #ifdef __WXQT__
-  // Make sure that font dialog will fit on the screen without scrolling
-  // We do this by setting the dialog font size "small enough" to show "n" lines
-  wxSize proposed_size = GetSize();
-  float n_lines = 30;
-  float font_size = dialogFont->GetPointSize();
+    // Make sure that font dialog will fit on the screen without scrolling
+    // We do this by setting the dialog font size "small enough" to show "n" lines
+    wxSize proposed_size = GetSize();
+    float n_lines = 30;
+    float font_size = dialogFont->GetPointSize();
 
-  if ((proposed_size.y / font_size) < n_lines) {
-    float new_font_size = proposed_size.y / n_lines;
-    wxFont* smallFont = new wxFont(*dialogFont);
-    smallFont->SetPointSize(new_font_size);
-    dg.SetFont(*smallFont);
-  }
+    if ((proposed_size.y / font_size) < n_lines) {
+      float new_font_size = proposed_size.y / n_lines;
+      wxFont* smallFont = new wxFont(*dialogFont);
+      smallFont->SetPointSize(new_font_size);
+      dg.SetFont(*smallFont);
+    }
 #endif
 
-  if (g_bresponsive) {
-    dg.SetSize(GetSize());
-    dg.Centre();
-  }
+    if (g_bresponsive) {
+      dg.SetSize(GetSize());
+      dg.Centre();
+    }
 
-  int retval = dg.ShowModal();
-  if (wxID_CANCEL != retval) {
-    font_data = dg.GetFontData();
-    wxFont font = font_data.GetChosenFont();
-    wxFont* psfont = new wxFont(font);
-    wxColor color = font_data.GetColour();
-    FontMgr::Get().SetFont(sel_text_element, psfont, color);
-    gFrame->UpdateAllFonts();
-    m_bfontChanged = true;
-    OnFontChoice(event);
+    int retval = dg.ShowModal();
+    if (wxID_CANCEL != retval) {
+      font_data = dg.GetFontData();
+      wxFont font = font_data.GetChosenFont();
+      wxFont* psfont = new wxFont(font);
+      wxColor color = font_data.GetColour();
+      FontMgr::Get().SetFont(sel_text_element, psfont, color);
+      gFrame->UpdateAllFonts();
+      m_bfontChanged = true;
+      OnFontChoice(event);
+    }
   }
 
 #ifdef __ANDROID__

@@ -42,6 +42,13 @@ for pkg in openssl cmake ; do
     brew link --overwrite $pkg || :
 done
 
+# Download and unzip documentation files
+wget -nv -O QuickStartGuide.zip \
+  "https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.3.zip"
+mkdir -p data/doc/local
+unzip QuickStartGuide.zip -d data/doc/local
+sudo chmod -R +r data/doc/local
+
 # Build, install and make package
 mkdir -p build
 cd build
