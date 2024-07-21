@@ -30,7 +30,7 @@ Flatpak
 -------
 
 Make a local Flatpak build as described in 
-https://opencpn-manuals.github.io/main/ocpn-dev-manual/od-compile-linux.html
+https://opencpn-manuals.github.io/main/opencpn-dev/linux.html#_flatpak
 This will also make a local installation.
 
 opencpn-cmd needs to run in the Flatpak sandbox. Do:
