@@ -2,5 +2,3 @@
 0002-Add-missing-libs-like-tinyxml-Debian-work-around.patch
 0003-tests-Disable-time-dependent-Buffer.RateLimit2-test.patch
 0004-build-Use-system-shapelib-if-available.patch
-0005-armhf-Trying-Rpi-3-compiler-options.patch
-0006-CMakeLists-help_web.html-path-error-fix.patch
