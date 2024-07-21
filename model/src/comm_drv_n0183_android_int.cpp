@@ -175,6 +175,12 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(const ConnectionParams* par
       m_params(*params),
       m_listener(listener) {
   this->attributes["commPort"] = params->Port.ToStdString();
+  this->attributes["userComment"] = params->UserComment.ToStdString();
+  dsPortType iosel = params->IOSelect;
+  std::string s_iosel = std::string("IN");
+  if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "OUT";}
+  else if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "IN/OUT";}
+  this->attributes["ioDirection"] = s_iosel;
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_ANDROID_INT, &CommDriverN0183AndroidInt::handle_N0183_MSG,

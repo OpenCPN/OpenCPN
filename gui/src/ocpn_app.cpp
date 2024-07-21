@@ -1882,6 +1882,7 @@ bool MyApp::OnInit() {
   if (!n_NavMessageShown || (vs != g_config_version_string)) {
     if (wxID_CANCEL == ShowNavWarning()) return false;
     n_NavMessageShown = 1;
+    pConfig->Flush();
   }
 #endif
 
@@ -1984,6 +1985,11 @@ int MyApp::OnExit() {
   g_loglast_time = lognow;
 
   if (ptcmgr) delete ptcmgr;
+
+  for (Track* track : g_TrackList) {
+    delete track;
+  }
+  g_TrackList.clear();
 
   delete pConfig;
   delete pSelect;

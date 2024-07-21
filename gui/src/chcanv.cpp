@@ -6734,8 +6734,8 @@ void ChartCanvas::SetMUIBarPosition() {
     // We estimate the piano width based on the canvas width
     int pianoWidth = GetClientSize().x * 0.6f;
     // If the piano already exists, we can use its exact width
-    if(m_Piano)
-      pianoWidth = m_Piano->GetWidth();
+    //if(m_Piano)
+      //pianoWidth = m_Piano->GetWidth();
 
     if ((m_muiBar->GetOrientation() == wxHORIZONTAL)) {
       if (m_muiBarHOSize.x > (GetClientSize().x - pianoWidth)) {

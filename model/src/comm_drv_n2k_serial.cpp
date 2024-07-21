@@ -219,6 +219,8 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   m_manufacturers_code = 0;
   m_got_mfg_code = false;
   this->attributes["canAddress"] = std::string("-1");
+  this->attributes["userComment"] = params->UserComment.ToStdString();
+  this->attributes["ioDirection"] = std::string("IN/OUT");
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_SERIAL, &CommDriverN2KSerial::handle_N2K_SERIAL_RAW,
