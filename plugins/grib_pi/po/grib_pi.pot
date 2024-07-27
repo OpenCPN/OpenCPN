@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 5.9.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-10 22:11-0400\n"
+"POT-Creation-Date: 2024-07-26 20:42-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,93 +17,93 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/GribUIDialog.cpp:427 src/GribUIDialog.cpp:1027
+#: src/GribUIDialog.cpp:428 src/GribUIDialog.cpp:1028
 msgid "Start a request"
 msgstr ""
 
-#: src/GribUIDialog.cpp:433
+#: src/GribUIDialog.cpp:434
 msgid ""
 "Draw requested Area\n"
 "or Click here to stop request"
 msgstr ""
 
-#: src/GribUIDialog.cpp:438 src/GribUIDialog.cpp:1030
+#: src/GribUIDialog.cpp:439 src/GribUIDialog.cpp:1031
 msgid "Valid Area and Continue"
 msgstr ""
 
-#: src/GribUIDialog.cpp:479
+#: src/GribUIDialog.cpp:480
 msgid "File: "
 msgstr ""
 
-#: src/GribUIDialog.cpp:484
+#: src/GribUIDialog.cpp:485
 msgid "Error! "
 msgstr ""
 
-#: src/GribUIDialog.cpp:484
+#: src/GribUIDialog.cpp:485
 msgid " contains no valid data!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:519
+#: src/GribUIDialog.cpp:520
 msgid "No valid GRIB file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:742 src/GribUIDialog.cpp:1004
+#: src/GribUIDialog.cpp:743 src/GribUIDialog.cpp:1005
 msgid "Hide data at cursor"
 msgstr ""
 
-#: src/GribUIDialog.cpp:743 src/GribUIDialog.cpp:1004
+#: src/GribUIDialog.cpp:744 src/GribUIDialog.cpp:1005
 msgid "Show data at cursor"
 msgstr ""
 
-#: src/GribUIDialog.cpp:744 src/GribUIDialog.cpp:1011 src/GribUIDialog.cpp:1353
+#: src/GribUIDialog.cpp:745 src/GribUIDialog.cpp:1012 src/GribUIDialog.cpp:1354
 msgid "Start play back"
 msgstr ""
 
-#: src/GribUIDialog.cpp:995
+#: src/GribUIDialog.cpp:996
 msgid "Select geopotential altitude"
 msgstr ""
 
-#: src/GribUIDialog.cpp:998 src/GribUIDialogBase.cpp:72
+#: src/GribUIDialog.cpp:999 src/GribUIDialogBase.cpp:72
 #: src/GribUIDialogBase.cpp:195 src/GribUIDialogBase.cpp:1666
 msgid "Now"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1000 src/GribUIDialogBase.cpp:79
+#: src/GribUIDialog.cpp:1001 src/GribUIDialogBase.cpp:79
 #: src/GribUIDialogBase.cpp:202
 msgid "Zoom To Center"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1011 src/GribUIDialog.cpp:1313
+#: src/GribUIDialog.cpp:1012 src/GribUIDialog.cpp:1314
 msgid "Stop play back"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1017 src/GribUIDialogBase.cpp:227
+#: src/GribUIDialog.cpp:1018 src/GribUIDialogBase.cpp:227
 msgid "Open a new file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1020 src/GribUIDialogBase.cpp:109
+#: src/GribUIDialog.cpp:1021 src/GribUIDialogBase.cpp:109
 #: src/GribUIDialogBase.cpp:234 src/GribUIDialogBase.cpp:1789
 #: src/GribUIDialogBase.h:351
 msgid "Settings"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1029
+#: src/GribUIDialog.cpp:1030
 msgid "Draw requested Area or Click here to stop request"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1708 src/GribUIDialog.cpp:1736
+#: src/GribUIDialog.cpp:1709 src/GribUIDialog.cpp:1737
 msgid "Select a GRIB file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:2025
+#: src/GribUIDialog.cpp:2026
 msgid " files don't exist!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:2046
+#: src/GribUIDialog.cpp:2047
 msgid " can't be read!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:2393 src/GribUIDialog.cpp:2397
+#: src/GribUIDialog.cpp:2394 src/GribUIDialog.cpp:2398
 #: src/GribUIDialogBase.h:199
 msgid "GRIB Display Control"
 msgstr ""
