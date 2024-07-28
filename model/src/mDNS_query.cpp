@@ -114,8 +114,9 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
     std::string ip = from.substr(0, r);
 
     //  Search for this record in the cache
-    auto func = [srv](const std::shared_ptr<ocpn_DNS_record_t> record) {
-      return !record->service_instance.compare(srv);
+    auto func = [srv, ip](const std::shared_ptr<ocpn_DNS_record_t> record) {
+      return (!record->service_instance.compare(srv)) &&
+             (ip == record->ip);
     };
     auto found = std::find_if(g_DNS_cache.begin(), g_DNS_cache.end(), func);
 

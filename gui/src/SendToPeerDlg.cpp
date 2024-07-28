@@ -171,6 +171,12 @@ SendToPeerDlg::SendToPeerDlg() {
   premtext = NULL;
   m_scanTime = 5;  // default, seconds
   m_bScanOnCreate = false;
+
+  // Get our own local ipv4 address, for filtering
+  std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
+  if (ipv4_addrs.size())
+    m_ownipAddr = ipv4_addrs[0];
+
 #ifdef __ANDROID__
   androidDisableRotation();
 #endif
@@ -240,7 +246,8 @@ void SendToPeerDlg::CreateControls(const wxString&) {
     wxString item(g_DNS_cache[i]->hostname.c_str());
 
     // skip "self"
-    if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+    if (!g_hostname.IsSameAs(item.BeforeFirst('.')) ||
+        (m_ownipAddr != g_DNS_cache[i]->ip)) {
       item += " {";
       item += g_DNS_cache[i]->ip.c_str();
       item += "}";
@@ -358,7 +365,8 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
       wxString item(g_DNS_cache[i]->hostname.c_str());
 
       // skip "self"
-      if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+      if (!g_hostname.IsSameAs(item.BeforeFirst('.')) ||
+          (m_ownipAddr != g_DNS_cache[i]->ip)) {
         item += " {";
         item += g_DNS_cache[i]->ip.c_str();
         item += "}";
