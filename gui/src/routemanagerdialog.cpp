@@ -2714,8 +2714,10 @@ void RouteManagerDialog::OnWptZoomtoClick(wxCommandEvent &event) {
 
   if (!wp) return;
 
-  gFrame->JumpToPosition(gFrame->GetPrimaryCanvas(), wp->m_lat, wp->m_lon,
-                         gFrame->GetPrimaryCanvas()->GetVPScale());
+  if (gFrame->GetFocusCanvas()) {
+    gFrame->JumpToPosition(gFrame->GetFocusCanvas(), wp->m_lat, wp->m_lon,
+                           gFrame->GetFocusCanvas()->GetVPScale());
+  }
 }
 
 void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event) {
