@@ -1384,13 +1384,13 @@ void RouteManagerDialog::ZoomtoRoute(Route *route) {
   DistanceBearingMercator(RBBox.GetMinLat(), RBBox.GetMinLon(),
                           RBBox.GetMaxLat(), RBBox.GetMinLon(), NULL, &rh);
 
-  gFrame->GetPrimaryCanvas()->GetSize(&ww, &wh);
+  if (gFrame->GetFocusCanvas()) {
+    gFrame->GetFocusCanvas()->GetSize(&ww, &wh);
+    ppm = wxMin(ww / (rw * 1852), wh / (rh * 1852)) * (100 - fabs(clat)) / 90;
+    ppm = wxMin(ppm, 1.0);
 
-  ppm = wxMin(ww / (rw * 1852), wh / (rh * 1852)) * (100 - fabs(clat)) / 90;
-
-  ppm = wxMin(ppm, 1.0);
-
-  gFrame->JumpToPosition(gFrame->GetPrimaryCanvas(), clat, clon, ppm);
+    gFrame->JumpToPosition(gFrame->GetFocusCanvas(), clat, clon, ppm);
+  }
 
   m_bNeedConfigFlush = true;
 }
