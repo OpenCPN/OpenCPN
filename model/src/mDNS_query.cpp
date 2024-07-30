@@ -55,11 +55,10 @@
 
 #include "model/cmdline.h"
 #include "mdns_util.h"
+#include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
 
 // Static data structs
-std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-wxDateTime g_DNS_cache_time;
 std::vector<ocpn_DNS_record_t> g_sk_servers;
 
 static char addrbuffer[64];
@@ -124,31 +123,10 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
     size_t r = from.find(':');
     std::string ip = from.substr(0, r);
 
-    //  Search for this record in the cache
-    auto func = [srv, ip](const std::shared_ptr<ocpn_DNS_record_t> record) {
-      return (!record->service_instance.compare(srv)) && (ip == record->ip);
-    };
-    auto found = std::find_if(g_DNS_cache.begin(), g_DNS_cache.end(), func);
-
-    std::shared_ptr<ocpn_DNS_record_t> entry;
-
-    if (found == g_DNS_cache.end()) {
-      // Add a record
-      entry = std::make_shared<ocpn_DNS_record_t>();
-      g_DNS_cache.push_back(entry);
-    } else
-      entry = *found;
-
-    // Update the cache entry
-    entry->service_instance = srv;
-    entry->hostname = hostname;
-    entry->ip = ip;
-    entry->port = "8000";
     // Is the destination a portable?  Detect by string inspection.
-    std::string p("Portable");
-    std::size_t port = hostname.find(p);
-    ;
-    if (port != std::string::npos) entry->port = "8001";
+    std::string port =
+      hostname.find("Portable") == std::string::npos ? "8000" : "8001";
+    MdnsCache::GetInstance().Add(srv, hostname, ip, port);
   }
 
   return 0;

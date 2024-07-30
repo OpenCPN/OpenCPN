@@ -29,6 +29,7 @@
 
 #include "model/cmdline.h"
 #include "model/config_vars.h"
+#include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
 #include "model/peer_client.h"
 #include "model/route.h"
@@ -53,8 +54,6 @@
 
 extern MyFrame* gFrame;
 extern OCPNPlatform* g_Platform;
-extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-extern wxDateTime g_DNS_cache_time;
 
 static PeerDlgResult ConfirmWriteDlg() {
   std::string msg(_("Objects exists on server. OK to overwrite?"));
@@ -242,14 +241,14 @@ void SendToPeerDlg::CreateControls(const wxString&) {
   m_PeerListBox = new wxComboBox(this, ID_STP_CHOICE_PEER);
 
   //    Fill in the wxComboBox with all detected peers
-  for (unsigned int i = 0; i < g_DNS_cache.size(); i++) {
-    wxString item(g_DNS_cache[i]->hostname.c_str());
+  for (auto& entry : MdnsCache::GetInstance().GetCache()) {
+    wxString item(entry.hostname.c_str());
 
     // skip "self"
     if (!g_hostname.IsSameAs(item.BeforeFirst('.')) ||
-        (m_ownipAddr != g_DNS_cache[i]->ip)) {
+        (m_ownipAddr != entry.ip)) {
       item += " {";
-      item += g_DNS_cache[i]->ip.c_str();
+      item += entry.ip.c_str();
       item += "}";
       m_PeerListBox->Append(item);
     }
@@ -361,21 +360,19 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
     m_PeerListBox->Clear();
 
     //    Fill in the wxComboBox with all detected peers
-    for (unsigned int i = 0; i < g_DNS_cache.size(); i++) {
-      wxString item(g_DNS_cache[i]->hostname.c_str());
+    for (auto& entry : MdnsCache::GetInstance().GetCache()) {
+      wxString item(entry.hostname.c_str());
 
       // skip "self"
       if (!g_hostname.IsSameAs(item.BeforeFirst('.')) ||
-          (m_ownipAddr != g_DNS_cache[i]->ip)) {
+          (m_ownipAddr != entry.ip)) {
         item += " {";
-        item += g_DNS_cache[i]->ip.c_str();
+        item += entry.ip.c_str();
         item += "}";
         m_PeerListBox->Append(item);
       }
     }
     if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
-
-    g_DNS_cache_time = wxDateTime::Now();
   }
 }
 

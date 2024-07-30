@@ -42,6 +42,7 @@
 #include "model/ais_decoder.h"
 #include "model/config_vars.h"
 #include "model/georef.h"
+#include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
@@ -93,8 +94,6 @@ extern MyFrame *gFrame;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
 extern OCPNPlatform *g_Platform;
-extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-extern wxDateTime g_DNS_cache_time;
 
 // Helper for conditional file name separator
 void appendOSDirSlash(wxString *pString);
@@ -1612,16 +1611,9 @@ void RouteManagerDialog::OnRteSendToPeerClick(wxCommandEvent &event) {
         // Perform initial scan, if necessary
 
         // Check for stale cache...
-        bool bDNScacheStale = true;
-        wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()){
-          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5)
-            bDNScacheStale = false;
-        }
-
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
-           dlg.SetScanOnCreate(true);
+        MdnsCache::GetInstance().Validate();
+        if (MdnsCache::GetInstance().GetCache().empty())
+          dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);     // seconds
         dlg.Create(NULL, -1, _("Send Route(s) to OpenCPN Peer") + _T( "..." ), _T(""));
@@ -1652,16 +1644,9 @@ void RouteManagerDialog::OnWptSendToPeerClick(wxCommandEvent &event) {
         // Perform initial scan, if necessary
 
         // Check for stale cache...
-        bool bDNScacheStale = true;
-        wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()){
-          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5)
-            bDNScacheStale = false;
-        }
-
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
-           dlg.SetScanOnCreate(true);
+        MdnsCache::GetInstance().Validate();
+        if (MdnsCache::GetInstance().GetCache().empty())
+          dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);     // seconds
         dlg.Create(NULL, -1, _("Send Waypoint(s) to OpenCPN Peer") + _T( "..." ), _T(""));
@@ -1692,16 +1677,9 @@ void RouteManagerDialog::OnTrkSendToPeerClick(wxCommandEvent &event) {
         // Perform initial scan, if necessary
 
         // Check for stale cache...
-        bool bDNScacheStale = true;
-        wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()){
-          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5)
-            bDNScacheStale = false;
-        }
-
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
-           dlg.SetScanOnCreate(true);
+        MdnsCache::GetInstance().Validate();
+        if (MdnsCache::GetInstance().GetCache().empty())
+          dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);     // seconds
         dlg.Create(NULL, -1, _("Send Track(s) to OpenCPN Peer") + _T( "..." ), _T(""));
@@ -2666,7 +2644,7 @@ void RouteManagerDialog::OnWptPropertiesClick(wxCommandEvent &event) {
     }
     item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
   }
-      
+
   if (wptlist.size() == 0) return;
 
   WptShowPropertiesDialog(wptlist, GetParent());
