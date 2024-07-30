@@ -64,6 +64,10 @@ bool MdnsCache::Add(const std::string& service, const std::string& host,
   return Add(Entry(service, host, _ip, _port));
 }
 
+bool MdnsCache::Add(const std::string& _ip, const std::string& _port) {
+  return Add(Entry("opencpn", "unknown", _ip, _port));
+}
+
 void MdnsCache::Validate() {
   std::unique_lock lock(m_mutex);
   for (auto it = m_cache.begin(); it != m_cache.end();) {
