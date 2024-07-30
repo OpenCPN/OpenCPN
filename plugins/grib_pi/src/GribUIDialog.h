@@ -198,6 +198,7 @@ public:
   double m_highlight_latmin;
   double m_highlight_lonmin;
   wxString m_grib_dir;
+  wxArrayString m_file_names; /* selected files */
 
 private:
   void OnClose(wxCloseEvent &event);
@@ -263,7 +264,6 @@ private:
   bool m_SelectionIsSaved;
   int m_Selection_index;
   wxString m_Selection_label;
-  wxArrayString m_file_names; /* selected files */
   wxSize m_DialogsOffset;
   double m_projected_lat;
   double m_projected_lon;

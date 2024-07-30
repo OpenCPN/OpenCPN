@@ -350,8 +350,11 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         m_pGribCtrlBar->ComputeBestForecastForNow();
         break;
     }
-    if (Pref->m_grib_dir_sel.Length())
+    if (Pref->m_grib_dir_sel.Length()) {
       m_pGribCtrlBar->m_grib_dir = Pref->m_grib_dir_sel;
+      m_pGribCtrlBar->m_file_names.Clear();
+    }
+
   }
 
   if (Pref->m_grib_dir_sel.Length()) {
@@ -359,6 +362,8 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
     if (pConf) {
       pConf->SetPath(_T ( "/Directories" ));
       pConf->Write(_T ( "GRIBDirectory" ), Pref->m_grib_dir_sel);
+      pConf->DeleteGroup(_T ( "/Settings/GRIB/FileNames" ));
+      pConf->Flush();
     }
   }
   SaveConfig();
