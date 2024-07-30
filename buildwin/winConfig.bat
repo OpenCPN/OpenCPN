@@ -286,7 +286,7 @@ if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.3\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
 :skipbuildwin
-set URL="https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.3.zip"
+set URL="https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.4.zip"
 set "DEST=%CACHE_DIR%\QuickStartManual.zip"
 if not exist "%DEST%" (
   @echo Downloading quickstart manual
