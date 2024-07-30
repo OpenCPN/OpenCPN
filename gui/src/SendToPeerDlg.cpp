@@ -31,6 +31,7 @@
 #include "model/config_vars.h"
 #include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
+#include "model/ocpn_utils.h"
 #include "model/peer_client.h"
 #include "model/route.h"
 #include "model/route_point.h"
@@ -309,6 +310,9 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
   // Set up transfer data
   PeerData peer_data(progress);
   ParsePeer(m_PeerListBox->GetValue(), peer_data);
+  auto addr_port = ocpn::split(peer_data.dest_ip_address, ":");
+  if (addr_port.size() == 1) addr_port.push_back("8443");
+  MdnsCache::GetInstance().Add(addr_port[0], addr_port[1]);
   peer_data.routes = m_RouteList;
   peer_data.tracks = m_TrackList;
   peer_data.routepoints = m_RoutePointList;

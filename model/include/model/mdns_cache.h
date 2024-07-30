@@ -56,13 +56,15 @@ public:
 
   /**
    * Add new entry to the cache
-   * @return true if entry was added, false if it already existed.
+   * @return true if entry was added, false if entry with same ip
+   * address already exists.
    */
   bool Add(const Entry& entry);
 
   /**
    * Add new entry to the cache
-   * @return true if entry was added, false if it already existed.
+   * @return true if entry was added, false if entry with same ip
+   * address already exists.
    */
   bool Add(const std::string& service, const std::string& host,
            const std::string& _ip, const std::string& _port);
