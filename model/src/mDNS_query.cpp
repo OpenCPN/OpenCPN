@@ -75,13 +75,13 @@ static int has_ipv4;
 static int has_ipv6;
 
 static void log_printf(const char* fmt, ...) {
-    if (getenv("OCPN_MDNS_DEBUG")
-        || wxLog::GetActiveTarget()->GetLogLevel() >= wxLOG_Debug) {
-      va_list ap;
-      va_start(ap, fmt);
-      vprintf(fmt, ap);
-      va_end(ap);
-    }
+  if (getenv("OCPN_MDNS_DEBUG") ||
+      wxLog::GetActiveTarget()->GetLogLevel() >= wxLOG_Debug) {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+  }
 }
 
 static int ocpn_query_callback(int sock, const struct sockaddr* from,
@@ -111,9 +111,9 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
         mdns_record_parse_ptr(data, size, record_offset, record_length,
                               namebuffer, sizeof(namebuffer));
     log_printf("%.*s : %s %.*s PTR %.*s rclass 0x%x ttl %u length %d\n",
-           MDNS_STRING_FORMAT(fromaddrstr), entrytype,
-           MDNS_STRING_FORMAT(entrystr), MDNS_STRING_FORMAT(namestr), rclass,
-           ttl, (int)record_length);
+               MDNS_STRING_FORMAT(fromaddrstr), entrytype,
+               MDNS_STRING_FORMAT(entrystr), MDNS_STRING_FORMAT(namestr),
+               rclass, ttl, (int)record_length);
 
     std::string srv(namestr.str, namestr.length);
     size_t rh = srv.find("opencpn-object");
@@ -126,8 +126,7 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
 
     //  Search for this record in the cache
     auto func = [srv, ip](const std::shared_ptr<ocpn_DNS_record_t> record) {
-      return (!record->service_instance.compare(srv)) &&
-             (ip == record->ip);
+      return (!record->service_instance.compare(srv)) && (ip == record->ip);
     };
     auto found = std::find_if(g_DNS_cache.begin(), g_DNS_cache.end(), func);
 
@@ -233,7 +232,7 @@ int send_mdns_query(mdns_query_t* query, size_t count, size_t timeout_secs,
     return -1;
   }
   log_printf("Opened %d socket%s for mDNS query\n", num_sockets,
-         num_sockets ? "s" : "");
+             num_sockets ? "s" : "");
 
   size_t capacity = 2048;
   void* buffer = malloc(capacity);
@@ -449,7 +448,8 @@ std::vector<std::string> get_local_ipv4_addresses() {
   struct ifaddrs* ifaddr = 0;
   struct ifaddrs* ifa = 0;
 
-  if (getifaddrs(&ifaddr) < 0) log_printf("Unable to get interface addresses\n");
+  if (getifaddrs(&ifaddr) < 0)
+    log_printf("Unable to get interface addresses\n");
 
   int first_ipv4 = 1;
   int first_ipv6 = 1;
