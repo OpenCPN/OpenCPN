@@ -145,7 +145,7 @@ static long ApiPost(const std::string& url, const std::string& body,
  */
 static int ApiGet(const std::string& url, const MemoryStruct* chunk,
                   int timeout = 0) {
-  int response_code = -1;
+  long response_code = -1;
 
   CURL* c = curl_easy_init();
   curl_easy_setopt(c, CURLOPT_ENCODING, "identity");  // Encoding: plain ASCII
