@@ -230,7 +230,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
     wxStandardPathsBase &spath = wxStandardPaths::Get();
 
     pConf->SetPath(_T ( "/Directories" ));
-    pConf->Read(_T ( "GRIBDirectory" ), &m_grib_dir, spath.GetDocumentsDir());
+    pConf->Read(_T ( "GRIBDirectory" ), &m_grib_dir);
 
     pConf->SetPath(_T( "/PlugIns/GRIB" ));
     pConf->Read(_T( "ManualRequestZoneSizing" ), &m_SavedZoneSelMode, 0);
@@ -661,13 +661,12 @@ private:
 };
 
 wxArrayString GRIBUICtrlBar::GetFilesInDirectory() {
-  if (!wxDir::Exists(m_grib_dir)) {
-    wxStandardPathsBase &path = wxStandardPaths::Get();
-    m_grib_dir = path.GetDocumentsDir();
-  }
+  wxArrayString file_array;
+  if (!wxDir::Exists(m_grib_dir))
+    return file_array;
+
   //    Get an array of GRIB file names in the target directory, not descending
   //    into subdirs
-  wxArrayString file_array;
   wxRegEx pattern(_T(".+\\.gri?b2?(\\.(bz2|gz))?$"),
                   wxRE_EXTENDED | wxRE_ICASE | wxRE_NOSUB);
   FileCollector collector(file_array, pattern);
@@ -1700,13 +1699,15 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
     return;  // do nothing when play back is running !
 
 #ifndef __OCPN__ANDROID__
-  if (!wxDir::Exists(m_grib_dir)) {
-    wxStandardPathsBase &path = wxStandardPaths::Get();
-    m_grib_dir = path.GetDocumentsDir();
-  }
+
+  wxStandardPathsBase &path = wxStandardPaths::Get();
+  wxString l_grib_dir = path.GetDocumentsDir();
+
+  if (wxDir::Exists(m_grib_dir))
+    l_grib_dir = m_grib_dir;
 
   wxFileDialog *dialog =
-      new wxFileDialog(NULL, _("Select a GRIB file"), m_grib_dir, _T(""),
+      new wxFileDialog(NULL, _("Select a GRIB file"), l_grib_dir, _T(""),
                        wxT("Grib files "
                            "(*.grb;*.bz2;*.gz;*.grib2;*.grb2)|*.grb;*.bz2;*.gz;"
                            "*.grib2;*.grb2|All files (*)|*.*"),

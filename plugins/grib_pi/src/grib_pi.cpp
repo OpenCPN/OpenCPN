@@ -245,6 +245,15 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_rbTimeFormat->SetSelection(m_bTimeZone);
   Pref->m_rbLoadOptions->SetSelection(m_bLoadLastOpenFile);
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
+
+  wxFileConfig *pConf = GetOCPNConfigObject();
+  if (pConf){
+    wxString l_grib_dir;
+    pConf->SetPath(_T ( "/Directories" ));
+    pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
+    Pref->m_grib_dir_sel = l_grib_dir;
+  }
+
 #ifdef __WXMSW__
   int val = (m_GribIconsScaleFactor * 10.) - 10;
   Pref->m_sIconSizeFactor->SetValue(val);
@@ -276,7 +285,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   }
   else {
     Pref->SetMaxSize(GetOCPNCanvasWindow()->GetSize());
-    Pref->SetSize(wxSize(60 * char_width, 29 * char_height));
+    Pref->SetSize(wxSize(60 * char_width, 32 * char_height));
   }
 
   Pref->ShowModal();
@@ -341,8 +350,17 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         m_pGribCtrlBar->ComputeBestForecastForNow();
         break;
     }
+    if (Pref->m_grib_dir_sel.Length())
+      m_pGribCtrlBar->m_grib_dir = Pref->m_grib_dir_sel;
   }
 
+  if (Pref->m_grib_dir_sel.Length()) {
+    wxFileConfig *pConf = GetOCPNConfigObject();
+    if (pConf) {
+      pConf->SetPath(_T ( "/Directories" ));
+      pConf->Write(_T ( "GRIBDirectory" ), Pref->m_grib_dir_sel);
+    }
+  }
   SaveConfig();
 }
 
