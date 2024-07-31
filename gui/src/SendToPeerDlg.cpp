@@ -256,6 +256,10 @@ void SendToPeerDlg::CreateControls(const wxString&) {
   }
 
   if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
+  m_PeerListBox->Bind(
+         wxEVT_TEXT,
+         [&](wxCommandEvent&) {
+             m_SendButton->Enable(m_PeerListBox->GetValue() != ""); });
 
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
@@ -293,6 +297,7 @@ void SendToPeerDlg::CreateControls(const wxString&) {
                               wxDefaultPosition, wxDefaultSize, 0);
   itemBoxSizer16->Add(m_SendButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
   m_SendButton->SetDefault();
+  m_SendButton->Enable(!m_PeerListBox->IsListEmpty());
 }
 
 void SendToPeerDlg::SetMessage(wxString msg) {
@@ -355,7 +360,6 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
     m_ScanTickTimer.Stop();
     g_Platform->HideBusySpinner();
     m_RescanButton->Enable();
-    m_SendButton->Enable();
     m_SendButton->SetDefault();
     m_pgauge->Hide();
     m_bScanOnCreate = false;
@@ -377,6 +381,7 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
       }
     }
     if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
+    m_SendButton->Enable(m_PeerListBox->GetCount() > 0);
   }
 }
 
