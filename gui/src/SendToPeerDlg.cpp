@@ -260,7 +260,7 @@ void SendToPeerDlg::CreateControls(const wxString&) {
          wxEVT_TEXT,
          [&](wxCommandEvent&) {
              m_SendButton->Enable(m_PeerListBox->GetValue() != ""); });
-
+  m_PeerListBox->Enable(!m_bScanOnCreate);
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
   wxBoxSizer* itemBoxSizer3 = new wxBoxSizer(wxVERTICAL);
@@ -362,6 +362,7 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
     m_RescanButton->Enable();
     m_SendButton->SetDefault();
     m_pgauge->Hide();
+    m_PeerListBox->Enable(true);
     m_bScanOnCreate = false;
 
     // Clear the combo box
