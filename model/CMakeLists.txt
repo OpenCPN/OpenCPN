@@ -81,6 +81,7 @@ set(
   ${MODEL_HDR_DIR}/logger.h
   ${MODEL_HDR_DIR}/MarkIcon.h
   ${MODEL_HDR_DIR}/mDNS_query.h
+  ${MODEL_HDR_DIR}/mdns_cache.h
   ${MODEL_HDR_DIR}/mDNS_service.h
   ${MODEL_HDR_DIR}/meteo_points.h
   ${MODEL_HDR_DIR}/multiplexer.h
@@ -168,6 +169,7 @@ set(SRC
   ${MODEL_SRC_DIR}/local_api.cpp
   ${MODEL_SRC_DIR}/logger.cpp
   ${MODEL_SRC_DIR}/mDNS_query.cpp
+  ${MODEL_SRC_DIR}/mdns_cache.cpp
   ${MODEL_SRC_DIR}/mDNS_service.cpp
   ${MODEL_SRC_DIR}/multiplexer.cpp
   ${MODEL_SRC_DIR}/nav_object_database.cpp

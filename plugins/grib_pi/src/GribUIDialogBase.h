@@ -364,6 +364,7 @@ protected:
   // Virtual event handlers, overide them in your derived class
   virtual void OnStartOptionChange(wxCommandEvent& event) { event.Skip(); }
   virtual void OnOKClick(wxCommandEvent& event) { event.Skip(); }
+  void OnDirSelClick(wxCommandEvent& event);
 
 public:
   wxCheckBox* m_cbUseHiDef;
@@ -375,6 +376,7 @@ public:
   wxRadioBox* m_rbLoadOptions;
   wxRadioBox* m_rbStartOptions;
   wxRadioBox* m_rbTimeFormat;
+  wxString m_grib_dir_sel;
 #ifdef __WXMSW__
   wxSlider* m_sIconSizeFactor;
 #endif
