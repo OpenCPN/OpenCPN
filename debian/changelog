@@ -1,3 +1,9 @@
+opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo24.04.1) UNRELEASED; urgency=medium
+
+  * New upstream beta release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 01 Aug 2024 19:33:49 +0200
+
 opencpn (1:5.9.3~beta3+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
   * New upstream beta release
