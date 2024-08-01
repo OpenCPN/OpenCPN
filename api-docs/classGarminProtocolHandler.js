@@ -1,0 +1,27 @@
+var classGarminProtocolHandler =
+[
+    [ "GarminProtocolHandler", "classGarminProtocolHandler.html#aaa1cee6c6309205e863c5028f80e2bbc", null ],
+    [ "~GarminProtocolHandler", "classGarminProtocolHandler.html#aa61f448d43dc5c742da9eedb190d8e6e", null ],
+    [ "Close", "classGarminProtocolHandler.html#a6fbbfcb8de393738ae2fc80550d286dd", null ],
+    [ "FindGarminDeviceInterface", "classGarminProtocolHandler.html#addf95e5d8ca1bdcc1eb9d61dcff9929f", null ],
+    [ "OnTimerGarmin1", "classGarminProtocolHandler.html#a3ac3fa3329cce35a327cf887efd8e57b", null ],
+    [ "RestartIOThread", "classGarminProtocolHandler.html#a2a53ab1bdc2f3999173e5d66bdd730c3", null ],
+    [ "StopIOThread", "classGarminProtocolHandler.html#a73a2ff3154862cf4fee717e052a18a14", null ],
+    [ "StopSerialThread", "classGarminProtocolHandler.html#a108bdfb552b951dbd8b1d20589731bf6", null ],
+    [ "grmin_unit_info", "classGarminProtocolHandler.html#a36dc036898da6475f944da423d87efca", null ],
+    [ "m_bneed_int_reset", "classGarminProtocolHandler.html#a4c2b643f5fc248c7b76a0f5b0daf439d", null ],
+    [ "m_bOK", "classGarminProtocolHandler.html#a4569cb9ebcc010ba6c7b8715df9a9bc2", null ],
+    [ "m_busb", "classGarminProtocolHandler.html#a8e862fb09c07a45936ac452382f520b6", null ],
+    [ "m_garmin_serial_thread", "classGarminProtocolHandler.html#a90a8a0aa770c4e0e06c66dbae0d22479", null ],
+    [ "m_garmin_usb_thread", "classGarminProtocolHandler.html#a086f5c774b75eddeb7b47180076851b5", null ],
+    [ "m_max_tx_size", "classGarminProtocolHandler.html#a04fcfdae1ef0f976a70d201745f17e2b", null ],
+    [ "m_ndelay", "classGarminProtocolHandler.html#a6d51f74c075ebd53e0b1f67723b7d1ac", null ],
+    [ "m_nSats", "classGarminProtocolHandler.html#a018760a0455cf2f8c29f51f830c29088", null ],
+    [ "m_pMainEventHandler", "classGarminProtocolHandler.html#a6da12b3bad0bf52c6b2032aa8f54bec0", null ],
+    [ "m_port", "classGarminProtocolHandler.html#a4fb028abe5c3946346d3680058a850bb", null ],
+    [ "m_pparent", "classGarminProtocolHandler.html#ae045579e5e02ccaeff36f5ed996cc5f8", null ],
+    [ "m_receive_state", "classGarminProtocolHandler.html#a1eab641cf821eb0787843c4ee95d8a91", null ],
+    [ "m_sat_data", "classGarminProtocolHandler.html#a1c17519a47243b6eec1995166b5e84c6", null ],
+    [ "m_Thread_run_flag", "classGarminProtocolHandler.html#acf05f1fb124e88c606a3cb02d6dd68e2", null ],
+    [ "TimerGarmin1", "classGarminProtocolHandler.html#a68d28501026c1239a9b07a652d7460ed", null ]
+];

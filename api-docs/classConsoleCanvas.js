@@ -1,0 +1,26 @@
+var classConsoleCanvas =
+[
+    [ "ConsoleCanvas", "classConsoleCanvas.html#ab6fb00636f0dfa55bffbb081945bf0b5", null ],
+    [ "~ConsoleCanvas", "classConsoleCanvas.html#a404772a599b79ddefa9f72b7d2b845c8", null ],
+    [ "LegRoute", "classConsoleCanvas.html#a214025ab2ae94e1752ae7998922a4d96", null ],
+    [ "OnContextMenu", "classConsoleCanvas.html#adcab3438e6ca2b7222aa77d866ead563", null ],
+    [ "OnContextMenuSelection", "classConsoleCanvas.html#a5dc06160c4cf6e0551da9b23ba20047b", null ],
+    [ "RefreshConsoleData", "classConsoleCanvas.html#a4f1ebb3a6d30bf6f59a366ffe3f222a3", null ],
+    [ "SetColorScheme", "classConsoleCanvas.html#a2bc490f843b89ca8a2aa031bb51e60d4", null ],
+    [ "ShowWithFreshFonts", "classConsoleCanvas.html#a1cf7258e62c2bf72aae5250d513affa1", null ],
+    [ "ToggleRouteTotalDisplay", "classConsoleCanvas.html#a3eaee342ea669e4adf1dd37169e60d8a", null ],
+    [ "UpdateFonts", "classConsoleCanvas.html#a9e6484446eaa66fce21f647e79d2d7b8", null ],
+    [ "UpdateRouteData", "classConsoleCanvas.html#a2eebd0dce227ba2516cb698d91d6d13c", null ],
+    [ "m_bNeedClear", "classConsoleCanvas.html#ad3a1a2126c298959b63130a95bbe4bf8", null ],
+    [ "m_pitemBoxSizerLeg", "classConsoleCanvas.html#a4ee27a5fef6468142bb62227e0870f6d", null ],
+    [ "m_pParent", "classConsoleCanvas.html#a0da039b7b9c40904635941723b90ae55", null ],
+    [ "pbackBrush", "classConsoleCanvas.html#a4c1f5b8dc32ea8451324bd82e8fd5f14", null ],
+    [ "pBRG", "classConsoleCanvas.html#a0e279ebfd95e00d73af7bb29758c886d", null ],
+    [ "pCDI", "classConsoleCanvas.html#a58ebc429b6e0f7a47eab57ac98ee7d3f", null ],
+    [ "pRNG", "classConsoleCanvas.html#ad39e7f70093b5227e4796fd44af646f4", null ],
+    [ "pThisLegFont", "classConsoleCanvas.html#a66d1b6b0ed4cfd660c43ffca53d19f37", null ],
+    [ "pThisLegText", "classConsoleCanvas.html#a43771a26a1323370bc202329345cf66a", null ],
+    [ "pTTG", "classConsoleCanvas.html#a3d00ef9794aba1786a86c3541f9258b6", null ],
+    [ "pVMG", "classConsoleCanvas.html#a27b4fbb76c0d7e535939ca3b9390f211", null ],
+    [ "pXTE", "classConsoleCanvas.html#ad07f993013d585cb227b427d1e42daaf", null ]
+];

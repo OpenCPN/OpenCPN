@@ -1,0 +1,26 @@
+var classPlugIn__Waypoint__Ex =
+[
+    [ "PlugIn_Waypoint_Ex", "classPlugIn__Waypoint__Ex.html#a4f8ff10615819003014ecb202528cb61", null ],
+    [ "PlugIn_Waypoint_Ex", "classPlugIn__Waypoint__Ex.html#a5ce72e4f5bd2b5b4152d77e2a8788d4a", null ],
+    [ "~PlugIn_Waypoint_Ex", "classPlugIn__Waypoint__Ex.html#a32e5a162a5e681dcb66e4c90336c839e", null ],
+    [ "GetFSStatus", "classPlugIn__Waypoint__Ex.html#a194e46c2d63db476bcd06a91f53240e7", null ],
+    [ "GetRouteMembershipCount", "classPlugIn__Waypoint__Ex.html#ab9145d78e94e25ae434226b18931524e", null ],
+    [ "InitDefaults", "classPlugIn__Waypoint__Ex.html#a78d1a7e893ed05b742be702e06bb4375", null ],
+    [ "b_useScamin", "classPlugIn__Waypoint__Ex.html#a33ad678958f1f5a5051ac04ee81f02b6", null ],
+    [ "IconDescription", "classPlugIn__Waypoint__Ex.html#a2cd3ab3922432b50d6309b83b8ba52a1", null ],
+    [ "IconName", "classPlugIn__Waypoint__Ex.html#a72c0aabdc80fe9b11be707965034f8a0", null ],
+    [ "IsActive", "classPlugIn__Waypoint__Ex.html#aec54c53c70704ade8f84491c092be369", null ],
+    [ "IsNameVisible", "classPlugIn__Waypoint__Ex.html#a950c16f4c065665e430e2bfc1544e9c8", null ],
+    [ "IsVisible", "classPlugIn__Waypoint__Ex.html#af88456be5549f92dd087fe824617519a", null ],
+    [ "m_CreateTime", "classPlugIn__Waypoint__Ex.html#a1c0c1aadb0d867d963fe7e864e03b32f", null ],
+    [ "m_GUID", "classPlugIn__Waypoint__Ex.html#a66abef47d9ade2f5d1316266f2c24eba", null ],
+    [ "m_HyperlinkList", "classPlugIn__Waypoint__Ex.html#a5625cd27715a5d2b8a5da7139c28e019", null ],
+    [ "m_lat", "classPlugIn__Waypoint__Ex.html#aa8812f189a7929ae20dab3f952fd5724", null ],
+    [ "m_lon", "classPlugIn__Waypoint__Ex.html#a7154b72e52e5a1eba20b97fc0a889e1e", null ],
+    [ "m_MarkDescription", "classPlugIn__Waypoint__Ex.html#ab21beab94a8ba2eaadb78f84a212280d", null ],
+    [ "m_MarkName", "classPlugIn__Waypoint__Ex.html#a62738da201c96c37d2831464aacf90b0", null ],
+    [ "nrange_rings", "classPlugIn__Waypoint__Ex.html#a2a5d4fbf9a2fdde1eeae1c2ecfbac2da", null ],
+    [ "RangeRingColor", "classPlugIn__Waypoint__Ex.html#a2358fa3c94872586dd661934e49e80ee", null ],
+    [ "RangeRingSpace", "classPlugIn__Waypoint__Ex.html#a51f69f4ec320211cfe7b4fdb3b7c681a", null ],
+    [ "scamin", "classPlugIn__Waypoint__Ex.html#a8083b56cad982d5ecd5a2efdae75adcb", null ]
+];

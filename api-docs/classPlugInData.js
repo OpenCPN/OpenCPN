@@ -1,0 +1,25 @@
+var classPlugInData =
+[
+    [ "PlugInData", "classPlugInData.html#a55f381b4fb9cf90c2b4ae3bfd864c49e", null ],
+    [ "PlugInData", "classPlugInData.html#a5aee885c6758c8c81929cd820e335ef1", null ],
+    [ "Key", "classPlugInData.html#a8818f72ffd48e950e54443a3876a5766", null ],
+    [ "m_api_version", "classPlugInData.html#ae47a47fa375b32bfe76917bd776bc49d", null ],
+    [ "m_bitmap", "classPlugInData.html#abc95fb29b82c8cdf3d7c6dfac8bcbc73", null ],
+    [ "m_cap_flag", "classPlugInData.html#a523a2af0602f40bf8a5611bb7bde35bc", null ],
+    [ "m_common_name", "classPlugInData.html#a67ab1739afe788232d9224031373d290", null ],
+    [ "m_enabled", "classPlugInData.html#af1d51d63bfcfe4dbcfdd42ee26d9a614", null ],
+    [ "m_has_setup_options", "classPlugInData.html#a865879ff43fce61b0fce2a77c2ddfea7", null ],
+    [ "m_init_state", "classPlugInData.html#a4e7752278c35cd5fbdfdf51832203ea1", null ],
+    [ "m_long_description", "classPlugInData.html#a7858573baf92f41a9880991a65f4a8a0", null ],
+    [ "m_managed_metadata", "classPlugInData.html#a1898457164d63eabfe398338c5071e83", null ],
+    [ "m_manifest_version", "classPlugInData.html#a9c179a3d74927b9a46674390586f5d7c", null ],
+    [ "m_plugin_file", "classPlugInData.html#a3ae3921ab5a3faf5ef1f150b7d6e986e", null ],
+    [ "m_plugin_filename", "classPlugInData.html#a27f1d12d256e7dd7d60de1ab9f484866", null ],
+    [ "m_plugin_modification", "classPlugInData.html#a9e0ccda4bd3c1fce623573413637cc73", null ],
+    [ "m_short_description", "classPlugInData.html#a27e3e03b8a32769b2050ebc4cfc43bf3", null ],
+    [ "m_status", "classPlugInData.html#a283b9b0c06b9ce9c5b3ced6e8f26275c", null ],
+    [ "m_toolbox_panel", "classPlugInData.html#a1c3d65f69441f077116959af93081fae", null ],
+    [ "m_version_major", "classPlugInData.html#a5f34b200786a79c27cb6433394403a06", null ],
+    [ "m_version_minor", "classPlugInData.html#a0d617f376448cbeff18a074bf79a063d", null ],
+    [ "m_version_str", "classPlugInData.html#abfb6842007fd343e784503c6eb606c55", null ]
+];

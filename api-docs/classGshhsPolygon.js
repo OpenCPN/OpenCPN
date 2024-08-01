@@ -1,0 +1,27 @@
+var classGshhsPolygon =
+[
+    [ "GshhsPolygon", "classGshhsPolygon.html#a898d5f0a1ca66b93bc89f2f76f6ec899", null ],
+    [ "~GshhsPolygon", "classGshhsPolygon.html#aa7b1e048908e547e3cd51f7ca0e308e9", null ],
+    [ "getLevel", "classGshhsPolygon.html#a61b39031237a25d05a585a4a8d3d74ba", null ],
+    [ "isAntarctic", "classGshhsPolygon.html#a043f59340f966212376426284e345147", null ],
+    [ "isGreenwich", "classGshhsPolygon.html#a03dc76868a929016593dd7f7ac5556ef", null ],
+    [ "isOk", "classGshhsPolygon.html#a851b700e9f037aad0c5d95a2a1096452", null ],
+    [ "readInt2", "classGshhsPolygon.html#ace6e275ed205ffe395d50e6a2d93844a", null ],
+    [ "readInt4", "classGshhsPolygon.html#a4c8e9f37fc66bfa6658950be690e52a4", null ],
+    [ "ancestor", "classGshhsPolygon.html#aea86eda2c99eee6a7476356514786176", null ],
+    [ "antarctic", "classGshhsPolygon.html#abb1996462fbc90ac8ddd38d9789bdedf", null ],
+    [ "area", "classGshhsPolygon.html#a7a3725d2002909f47f5e636a3db61338", null ],
+    [ "areaFull", "classGshhsPolygon.html#a030a0e91c277691cd65912fde44fce54", null ],
+    [ "container", "classGshhsPolygon.html#ab64f3706cf3f0be88adf8b26d6d88cf8", null ],
+    [ "east", "classGshhsPolygon.html#a526e04a60123aaacfa930e0edf36f1ab", null ],
+    [ "file", "classGshhsPolygon.html#a8f1b58ddd82e9bd890e01cb447a3fa30", null ],
+    [ "flag", "classGshhsPolygon.html#ac3a0b0c79cb5694d65583ec8d322835f", null ],
+    [ "greenwich", "classGshhsPolygon.html#aaaf94566ca3479a0e1790287ba015f24", null ],
+    [ "id", "classGshhsPolygon.html#ab6141124674ed2c6e308af66bc20d98f", null ],
+    [ "lsPoints", "classGshhsPolygon.html#a6017e551e0266bdf8bca5708fa22de46", null ],
+    [ "n", "classGshhsPolygon.html#a21210d00892c23fa24252277da412930", null ],
+    [ "north", "classGshhsPolygon.html#a89f35990ec46e7b3f861f7d7d9a4edb6", null ],
+    [ "ok", "classGshhsPolygon.html#a495e1db21563a98c5af332b19c02c876", null ],
+    [ "south", "classGshhsPolygon.html#aec038ba728c6cc31d4763407019c7163", null ],
+    [ "west", "classGshhsPolygon.html#aef94a52296ce7f10c964d2cabd992bc6", null ]
+];

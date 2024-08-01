@@ -1,0 +1,27 @@
+var structCell__Info__Block =
+[
+    [ "attribute_block_top", "structCell__Info__Block.html#a1c5d90f775906ee3c00f9d3b3d2f3bde", null ],
+    [ "b_have_offsets", "structCell__Info__Block.html#a40cd8a784f53c076712bda3f0380150b", null ],
+    [ "b_have_user_offsets", "structCell__Info__Block.html#adef03f5bf113d2b1c04626c131a9ad75", null ],
+    [ "edge_vector_descriptor_block", "structCell__Info__Block.html#ac091258de49fd3d510f6e655d73c8468", null ],
+    [ "m_cell_mcovr_list", "structCell__Info__Block.html#aac20c51393bb9d01d367e9aab98b89c1", null ],
+    [ "m_n_point2d_records", "structCell__Info__Block.html#ada6b082e426b7aad4c18c1b39b09ddb3", null ],
+    [ "m_n_point3d_records", "structCell__Info__Block.html#a66e424d873ca0f8703f7909653b6af2c", null ],
+    [ "m_nfeature_records", "structCell__Info__Block.html#acf0dcdd6a91e458fc078b8c2e57700ae", null ],
+    [ "m_nvector_records", "structCell__Info__Block.html#a549a4c236b7d8ddb78ed8b835bcb6d56", null ],
+    [ "min_lat", "structCell__Info__Block.html#a36b0d40e158d3e4939a561c400c3fc22", null ],
+    [ "min_lon", "structCell__Info__Block.html#a15f951f97b3e0d11319292785c8b2e61", null ],
+    [ "object_vector_record_descriptor_block", "structCell__Info__Block.html#afdcc8faa8a49dcdc11d8c2d1591128d6", null ],
+    [ "p2dpoint_array", "structCell__Info__Block.html#a26ee7259ff86966893f3874e0b5c7a30", null ],
+    [ "p3dpoint_array", "structCell__Info__Block.html#a1ae4f2267a81e6c457f7293a87fd44fe", null ],
+    [ "pobject_block", "structCell__Info__Block.html#aac1a8113b4a0d55228f95acb498b3d62", null ],
+    [ "point3d_descriptor_block", "structCell__Info__Block.html#a3a2847f72055cfb2fde0cbb6eca08ba0", null ],
+    [ "pprelated_object_block", "structCell__Info__Block.html#ac75d6587756f89674ef98077bfb708a5", null ],
+    [ "pvector_record_block_top", "structCell__Info__Block.html#adbdddffa2924434a096fbdb88ea74e62", null ],
+    [ "transform_x_origin", "structCell__Info__Block.html#adb064705f5d9698255b9583c02eaf3de", null ],
+    [ "transform_x_rate", "structCell__Info__Block.html#a2c99c69ebf9842f07e6284b0affb164e", null ],
+    [ "transform_y_origin", "structCell__Info__Block.html#a9978e1a0dc9d74668d7c23823c22b129", null ],
+    [ "transform_y_rate", "structCell__Info__Block.html#a3125e20f3bcfd95394e85ff48e414688", null ],
+    [ "user_xoff", "structCell__Info__Block.html#a212c9f3d39fa72bf105c9e0ecc50a217", null ],
+    [ "user_yoff", "structCell__Info__Block.html#a1e3df48a960defe6a7305420fd76afce", null ]
+];

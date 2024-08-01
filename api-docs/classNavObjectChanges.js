@@ -1,0 +1,26 @@
+var classNavObjectChanges =
+[
+    [ "NavObjectChanges", "classNavObjectChanges.html#a5724c7b664f849ef8d4e7bfc539debfc", null ],
+    [ "~NavObjectChanges", "classNavObjectChanges.html#a3f0675ded471339c7b505a590e7bed72", null ],
+    [ "AddNewRoute", "classNavObjectChanges.html#a27b80b45b41230efafbce6ce8d7439ba", null ],
+    [ "AddNewTrack", "classNavObjectChanges.html#a5f86db16876effc58cf29ff2d23165e7", null ],
+    [ "AddNewTrackPoint", "classNavObjectChanges.html#a7d135b404e630f08c99a992860f671a6", null ],
+    [ "AddNewWayPoint", "classNavObjectChanges.html#ae4cb34070cd93af17df931faf2942a89", null ],
+    [ "AddRoute", "classNavObjectChanges.html#a8d7736ae66dcd9cfe9816704a62a2d6c", null ],
+    [ "AddTrack", "classNavObjectChanges.html#a60beccdba537ddd8d792d8ea5f7c9b96", null ],
+    [ "AddTrackPoint", "classNavObjectChanges.html#a05db9f638484f3d96ea28b5579c0d45f", null ],
+    [ "AddWP", "classNavObjectChanges.html#aad0e0a82a5f2247e11adf6a7a6888b21", null ],
+    [ "ApplyChanges", "classNavObjectChanges.html#a8c60ad8560586fa4c7363765a0bdc93b", null ],
+    [ "DeleteConfigRoute", "classNavObjectChanges.html#ad67ac39a689f28588478fe902096a26a", null ],
+    [ "DeleteConfigTrack", "classNavObjectChanges.html#ae261379b045392cc86117759cd5bc6d6", null ],
+    [ "DeleteWayPoint", "classNavObjectChanges.html#a041563f20dd22dced9edcf9e4d1bcfd6", null ],
+    [ "Init", "classNavObjectChanges.html#a42c152f900df1f9bad2fb2407f059db2", null ],
+    [ "IsDirty", "classNavObjectChanges.html#a32f27674603bb6de618e5b5d5d093b30", null ],
+    [ "operator=", "classNavObjectChanges.html#a304fc74e12c2bc9e7ddebd7357d3e567", null ],
+    [ "UpdateRoute", "classNavObjectChanges.html#a62ddd6fe0319817fa0d0f21408142db2", null ],
+    [ "UpdateTrack", "classNavObjectChanges.html#ad2266bd402696532edc9b5fd22807184", null ],
+    [ "UpdateWayPoint", "classNavObjectChanges.html#a5c1f9b217ad03cb020325c0f6bc93ef2", null ],
+    [ "MyConfig", "classNavObjectChanges.html#a1e220e570bec812b25eb042a93256f0a", null ],
+    [ "evt_delete_route", "classNavObjectChanges.html#ac973fe263c2406b729150bd7950df105", null ],
+    [ "evt_delete_track", "classNavObjectChanges.html#a185be087921d25d98b9c1f722f65c095", null ]
+];

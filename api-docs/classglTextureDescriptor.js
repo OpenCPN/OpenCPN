@@ -1,0 +1,25 @@
+var classglTextureDescriptor =
+[
+    [ "glTextureDescriptor", "classglTextureDescriptor.html#a7a6183666186824f642691435ca5c842", null ],
+    [ "~glTextureDescriptor", "classglTextureDescriptor.html#add30bf06eeab1a6e5c37fa2bd6dd8474", null ],
+    [ "FreeAll", "classglTextureDescriptor.html#a3dfc6047da012222a8538b8652a48038", null ],
+    [ "FreeComp", "classglTextureDescriptor.html#a521a83694c3ccefadd67912fccf19f50", null ],
+    [ "FreeCompComp", "classglTextureDescriptor.html#a6b05442833b97dc2e79b3e9712c06b22", null ],
+    [ "FreeMap", "classglTextureDescriptor.html#ab05b534b46a2ef8891693059b5e8b661", null ],
+    [ "GetCompArrayAlloc", "classglTextureDescriptor.html#a55e409a510e2e6f1797062b519061fa8", null ],
+    [ "GetCompCompArrayAlloc", "classglTextureDescriptor.html#ad35ee35751cc253a6f9517c6c312dc2f", null ],
+    [ "GetMapArrayAlloc", "classglTextureDescriptor.html#a27c752f5974b10654f3aa8f5a000e358", null ],
+    [ "IsCompCompArrayComplete", "classglTextureDescriptor.html#a4dd80d42ad770169f69c98c3e577b071", null ],
+    [ "comp_array", "classglTextureDescriptor.html#ae63b4ef53f2ba4403701f775d0d7b411", null ],
+    [ "compcomp_array", "classglTextureDescriptor.html#a3a51bba50c8d045cb42956eb584d7a87", null ],
+    [ "compcomp_size", "classglTextureDescriptor.html#ad2e270cebb58ca2107d13f06adb2dd3a", null ],
+    [ "compdata_ticks", "classglTextureDescriptor.html#a82fed37d697e804346610bb7ef558f53", null ],
+    [ "level_min", "classglTextureDescriptor.html#adf5baccf344abe635821fe2146f579f4", null ],
+    [ "m_colorscheme", "classglTextureDescriptor.html#abec9dfa8e375ca4557bf2f6288f35eec", null ],
+    [ "map_array", "classglTextureDescriptor.html#ae0fe4e8e4f237a040e0df31b06dcaa01", null ],
+    [ "nGPU_compressed", "classglTextureDescriptor.html#a95b840c68688284c4cc0fef1f515c01e", null ],
+    [ "tex_mem_used", "classglTextureDescriptor.html#a75886fe5a708561aebae7d33352759a2", null ],
+    [ "tex_name", "classglTextureDescriptor.html#a582e0d729e64c947a17bfdf8f1ee3f17", null ],
+    [ "x", "classglTextureDescriptor.html#ab37c1c4924c7039d29c64dcbe2487520", null ],
+    [ "y", "classglTextureDescriptor.html#a914a040f0e26c174e4f54d00bdf62011", null ]
+];
