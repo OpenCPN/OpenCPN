@@ -112,6 +112,7 @@ private:
   wxCheckBox* m_activate_chkbox;
   EventVar progress;
   ObsListener progress_listener;
+  std::string m_ownipAddr;
 
   wxTimer m_autoScanTimer;
   wxTimer m_ScanTickTimer;

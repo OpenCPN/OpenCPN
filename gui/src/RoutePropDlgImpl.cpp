@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -775,8 +775,11 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged(
   if (selected_row >= 0 && selected_row < m_dvlcWaypoints->GetItemCount()) {
     RoutePoint* prp = m_pRoute->GetPoint(selected_row + 1);
     if (prp) {
-      gFrame->JumpToPosition(gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon,
-                             gFrame->GetPrimaryCanvas()->GetVPScale());
+      if (gFrame->GetFocusCanvas()) {
+        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat,
+                               prp->m_lon,
+                               gFrame->GetFocusCanvas()->GetVPScale());
+      }
 #ifdef __WXMSW__
       if (m_dvlcWaypoints) m_dvlcWaypoints->SetFocus();
 #endif
