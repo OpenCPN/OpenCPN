@@ -86,16 +86,16 @@ new version, first update *debian/changelog* with a new version, something like
 Complete the entry as you consider best.
 The standard message for a new version is "New upstream Release".
 
-=== Import the current master branch into upstream/latest
+=== Import a release tag into upstream/latest
 
 For now, the debian directory needs to be removed. After that, create a
-tarball based on HEAD:
+tarball based on HEAD. Using v5.9.3-beta3 as example:
 
-    $ git checkout master
+    $ git checkout git checkout v5.9.3-beta3
     $ git switch -c tmp-build
     $ git rm -r debian
     $ git commit -m "Remove unused debian/ dir"
-    $ git archive --prefix opencpn-1.2.3/ --output ../opencpn.tar.gz HEAD
+    $ git archive --prefix opencpn-5.9.3-beta3/ --output ../opencpn.tar.gz HEAD
 
 The `--prefix` part should be modified to reflect current version, but is not
 critical. Note the trailing slash!
@@ -116,7 +116,7 @@ see Make a fresh clone <<create-clone, above>>.
 Nest step is to import this tarball into upstream/latest. Using the
 tarball created by git-archive above do:
 
-   $ gbp import-orig ../opencpn_.5.10.920.orig.tar.gz
+   $ gbp import-orig ../opencpn_5.9.3~beta3+dfsg.orig.tar.xz
 
 === Push the updated branches
 
@@ -142,18 +142,20 @@ ubuntu/jammy and debian/bookworm.
 For each release do:
 
 1. Checkout the actual branch like ubuntu/jammy. 
-   Work on ubuntu branches must be done on an ubuntu host.
+   Work on ubuntu branches must be done on an ubuntu host
 2. Create a provisional version entry in _debian/changelog_ using `dch -R`.
-3. Do possible changes in the new release.
+3. Merge upstream changes using `gbp import-ref -u5.9.3-beta3`. The -u argument is
+   the last part of an upstream tag like `upstream/5.9.3-beta3`
+4. Do possible changes in the new release.
    Note that only files in the _debian/_ directory can be modified;
    changes in other files are handled using patches in _debian/patches_.
    See Modifying Sources <<edit-src,below>>
-4. Commit all changes.
-5. Finalize the changelog entry using `dch -r`. 
-6. Commit the change in _debian/changelog_
-7. Create a source package using `debuild -S`.
-8. List all available source packages using `ls -lt ../*source.changes`.
-9. Push the most recent package to a PPA using something like
+5. Commit all changes.
+6. Finalize the changelog entry using `dch -r`. 
+7. Commit the change in _debian/changelog_
+8. Create a source package using `debuild -S`.
+9. List all available source packages using `ls -lt ../*source.changes`.
+10. Push the most recent package to a PPA using something like
 
      $ `dput ppa:leamas-alec/opencpn \
      ../opencpn_5.9.2-beta2+dfsg-1ubuntu1~bpo2204.8_source.changes`.

@@ -138,7 +138,7 @@ INCLUDE_DIRECTORIES(nmea0183)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DEMO} ${SRC_NMEA0183} )
 
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn )
+target_link_libraries(${PACKAGE_NAME} ocpn::opencpn)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

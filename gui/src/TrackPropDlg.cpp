@@ -1428,8 +1428,11 @@ void TrackPropDlg::OnTrackPropListClick(wxListEvent& event) {
         m_nSelected = selected_no + 1;
         m_sdbBtmBtnsSizerSplit->Enable(true);
       }
-      gFrame->JumpToPosition(gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon,
-                             gFrame->GetPrimaryCanvas()->GetVPScale());
+      if (gFrame->GetFocusCanvas()) {
+        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat,
+                               prp->m_lon,
+                               gFrame->GetFocusCanvas()->GetVPScale());
+      }
 #ifdef __WXMSW__
       if (m_lcPoints) m_lcPoints->SetFocus();
 #endif

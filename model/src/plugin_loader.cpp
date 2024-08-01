@@ -83,7 +83,7 @@
 #endif
 
 static const std::vector<std::string> SYSTEM_PLUGINS = {
-    "chartdownloader", "wmm", "dashboard", "grib"};
+    "chartdownloader", "wmm", "dashboard", "grib", "demo"};
 
 /** Return complete PlugInContainer matching pic. */
 static PlugInContainer* GetContainer(const PlugInData& pd,
@@ -98,7 +98,7 @@ static PlugInContainer* GetContainer(const PlugInData& pd,
 /** Return true if path "seems" to contain a system plugin */
 static bool IsSystemPluginPath(const std::string& path) {
   static const std::vector<std::string> kPlugins = {
-      "chartdldr_pi", "wmm_pi", "dashboard_pi", "grib_pi"};
+      "chartdldr_pi", "wmm_pi", "dashboard_pi", "grib_pi", "demo_pi"};
 
   const std::string lc_path = ocpn::tolower(path);
   for (const auto& p : kPlugins)
@@ -109,7 +109,7 @@ static bool IsSystemPluginPath(const std::string& path) {
 /** Return true if name is a valid system plugin name. */
 static bool IsSystemPluginName(const std::string& name) {
   static const std::vector<std::string> kPlugins = {
-      "chartdownloader", "wmm", "dashboard", "grib"};
+      "chartdownloader", "wmm", "dashboard", "grib", "demo"};
   auto found =
       std::find(kPlugins.begin(), kPlugins.end(), ocpn::tolower(name));
   return found != kPlugins.end();

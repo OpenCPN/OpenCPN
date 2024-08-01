@@ -4777,6 +4777,14 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       console = new ConsoleCanvas(gFrame);  // the console
       console->SetColorScheme(global_color_scheme);
+
+      // Draw console if persisted route is active
+      if (g_pRouteMan){
+        if (g_pRouteMan->IsAnyRouteActive()){
+          g_pRouteMan->GetDlgContext().show_with_fresh_fonts();
+        }
+      }
+
       break;
 
     case 2: {

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-16 20:55-0400\n"
-"PO-Revision-Date: 2024-06-24 02:23\n"
+"POT-Creation-Date: 2024-07-24 16:20-0400\n"
+"PO-Revision-Date: 2024-07-31 19:36\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -17,8 +17,8 @@ msgstr ""
 "X-Crowdin-File: /po/opencpn.pot\n"
 "X-Crowdin-File-ID: 102\n"
 
-#: model/include/model/track.h:121 gui/src/ocpn_frame.cpp:3021
-#: gui/src/ocpn_frame.cpp:6426 gui/src/ocpn_frame.cpp:6544
+#: model/include/model/track.h:121 gui/src/ocpn_frame.cpp:3027
+#: gui/src/ocpn_frame.cpp:6422 gui/src/ocpn_frame.cpp:6540
 msgid "(Unnamed Track)"
 msgstr "(naamloze track)"
 
@@ -414,7 +414,7 @@ msgstr "SAR vliegtuig"
 
 #: model/src/ais_target_data.cpp:489 model/src/ais_target_data.cpp:501
 #: model/src/ais_target_data.cpp:517 gui/src/AISTargetListDialog.cpp:569
-#: gui/src/options.cpp:903 gui/src/options.cpp:1225
+#: gui/src/options.cpp:907 gui/src/options.cpp:1229
 msgid "MMSI"
 msgstr "MMSI"
 
@@ -476,7 +476,7 @@ msgstr " (laatst bekende)"
 #: model/src/ais_target_data.cpp:690 gui/src/GoToPositionDialog.cpp:113
 #: gui/src/priority_gui.cpp:221 gui/src/routeprintout.cpp:107
 #: gui/src/routeprintout.cpp:376 gui/src/trackprintout.cpp:88
-#: gui/src/trackprintout.cpp:298 gui/src/initwiz/wiz_ui_proto.cpp:74
+#: gui/src/trackprintout.cpp:298 gui/src/initwiz/wiz_ui_proto.cpp:77
 msgid "Position"
 msgstr "Positie"
 
@@ -509,11 +509,11 @@ msgstr "Rechts"
 msgid "Left"
 msgstr "Links"
 
-#: model/src/ais_target_data.cpp:835 gui/src/options.cpp:4333
-#: gui/src/options.cpp:4490 gui/src/RoutePropDlg.cpp:389
+#: model/src/ais_target_data.cpp:835 gui/src/options.cpp:4337
+#: gui/src/options.cpp:4494 gui/src/RoutePropDlg.cpp:389
 #: gui/src/trackprintout.cpp:100 gui/src/trackprintout.cpp:339
 #: gui/src/TrackPropDlg.cpp:311 gui/src/TrackPropDlg.cpp:1351
-#: gui/src/initwiz/wiz_ui_proto.cpp:52
+#: gui/src/initwiz/wiz_ui_proto.cpp:57
 msgid "Speed"
 msgstr "Vaart"
 
@@ -566,7 +566,7 @@ msgid "Altitude"
 msgstr "Hoogte"
 
 #: model/src/ais_target_data.cpp:905 model/src/ais_target_data.cpp:1178
-#: gui/src/options.cpp:4346 gui/src/initwiz/wiz_ui_proto.cpp:62
+#: gui/src/options.cpp:4350 gui/src/initwiz/wiz_ui_proto.cpp:67
 msgid "Wind speed"
 msgstr "Windsnelheid"
 
@@ -709,7 +709,7 @@ msgid "Aid to Navigation"
 msgstr "Navigatiehulpmiddel"
 
 #: model/src/ais_target_data.cpp:1336 gui/src/CanvasOptions.cpp:326
-#: gui/src/options.cpp:3311 gui/src/options.cpp:3514
+#: gui/src/options.cpp:3315 gui/src/options.cpp:3518
 msgid "Base"
 msgstr "Basis"
 
@@ -2263,21 +2263,21 @@ msgid "cm"
 msgstr "cm"
 
 #: model/src/navutil_base.cpp:323 model/src/navutil_base.cpp:349
-#: gui/src/initwiz/wiz_ui_proto.cpp:56 gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/initwiz/wiz_ui_proto.cpp:61 gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "mph"
 msgstr "mph"
 
 #: model/src/navutil_base.cpp:326 model/src/navutil_base.cpp:352
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "km/h"
 msgstr "km/u"
 
 #: model/src/navutil_base.cpp:329 model/src/navutil_base.cpp:346
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "m/s"
 msgstr "m/s"
 
@@ -2452,8 +2452,8 @@ msgstr "De waypoints worden hernoemd om de natuurlijke volgorde weer te geven, d
 "Wilt u de waypoints hernoemen?"
 
 #: gui/include/gui/AboutFrame.h:87 gui/include/gui/AboutFrameImpl.h:68
-#: gui/include/gui/about.h:38 gui/src/ocpn_frame.cpp:3592
-#: gui/src/ocpn_frame.cpp:7074
+#: gui/include/gui/about.h:38 gui/src/ocpn_frame.cpp:3601
+#: gui/src/ocpn_frame.cpp:7070
 msgid "About OpenCPN"
 msgstr "Over OpenCPN"
 
@@ -2499,9 +2499,9 @@ msgstr "Wilt u routenummer 1 op het Garmin-apparaat overschrijven?"
 msgid "OpenCPN Message"
 msgstr "OpenCPN Bericht"
 
-#: gui/include/gui/options.h:97 gui/src/ocpn_frame.cpp:3582
-#: gui/src/ocpn_frame.cpp:3860 gui/src/ocpn_frame.cpp:4916
-#: gui/src/ocpn_frame.cpp:7033 gui/src/options.cpp:3251
+#: gui/include/gui/options.h:96 gui/src/ocpn_frame.cpp:3591
+#: gui/src/ocpn_frame.cpp:3869 gui/src/ocpn_frame.cpp:4912
+#: gui/src/ocpn_frame.cpp:7029 gui/src/options.cpp:3255
 msgid "Options"
 msgstr "Opties"
 
@@ -2543,7 +2543,7 @@ msgstr "Geselecteerde track afdrukken"
 msgid "Track properties"
 msgstr "Trackeigenschappen"
 
-#: gui/include/gui/wiz_ui.h:69 gui/include/gui/wiz_ui_proto.h:83
+#: gui/include/gui/wiz_ui.h:69 gui/include/gui/wiz_ui_proto.h:86
 msgid "OpenCPN Initial Configuration"
 msgstr ""
 
@@ -2556,12 +2556,12 @@ msgstr ""
 #: gui/src/conn_params_panel.cpp:803 gui/src/glChartCanvas.cpp:3809
 #: gui/src/glTextureManager.cpp:1447 gui/src/gui_lib.cpp:155
 #: gui/src/gui_lib.cpp:293 gui/src/LinkPropDlg.cpp:37 gui/src/MarkInfo.cpp:225
-#: gui/src/MarkInfo.cpp:277 gui/src/ocpn_frame.cpp:4559
-#: gui/src/ocpn_frame.cpp:8616 gui/src/OCPNPlatform.cpp:1634
+#: gui/src/MarkInfo.cpp:277 gui/src/ocpn_frame.cpp:4555
+#: gui/src/ocpn_frame.cpp:8613 gui/src/OCPNPlatform.cpp:1634
 #: gui/src/OCPNPlatform.cpp:1893 gui/src/OCPNPlatform.cpp:1932
-#: gui/src/options.cpp:640 gui/src/options.cpp:665 gui/src/options.cpp:1194
-#: gui/src/options.cpp:1684 gui/src/options.cpp:8558 gui/src/options.cpp:8795
-#: gui/src/options.cpp:9035 gui/src/options.cpp:9173 gui/src/Osenc.cpp:1688
+#: gui/src/options.cpp:644 gui/src/options.cpp:669 gui/src/options.cpp:1198
+#: gui/src/options.cpp:1688 gui/src/options.cpp:8588 gui/src/options.cpp:8825
+#: gui/src/options.cpp:9065 gui/src/options.cpp:9203 gui/src/Osenc.cpp:1688
 #: gui/src/routemanagerdialog.cpp:317 gui/src/RoutePropDlg.cpp:84
 #: gui/src/TCWin.cpp:78 gui/src/TCWin.cpp:172 gui/src/toolbar.cpp:2390
 #: gui/src/TrackPropDlg.cpp:112 gui/src/TrackPropDlg.cpp:326
@@ -2659,23 +2659,23 @@ msgstr "Plugin API:"
 msgid "OpenCPN Website"
 msgstr "OpenCPN Website"
 
-#: gui/src/AboutFrameImpl.cpp:94
+#: gui/src/AboutFrameImpl.cpp:100
 msgid "OpenCPN Help documentation is not available locally."
 msgstr "OpenCPN Help-documentatie is niet aanwezig op de computer."
 
-#: gui/src/AboutFrameImpl.cpp:97
+#: gui/src/AboutFrameImpl.cpp:103
 msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr "Wilt u de opencpn.org website bezoeken voor meer informatie?"
 
-#: gui/src/AboutFrameImpl.cpp:101 gui/src/ais_info_gui.cpp:104
-#: gui/src/AISTargetQueryDialog.cpp:178 gui/src/connection_edit.cpp:2551
+#: gui/src/AboutFrameImpl.cpp:107 gui/src/ais_info_gui.cpp:104
+#: gui/src/AISTargetQueryDialog.cpp:176 gui/src/connection_edit.cpp:2551
 #: gui/src/connection_edit.cpp:2564 gui/src/LinkPropDlg.cpp:134
 #: gui/src/MarkInfo.cpp:1961 gui/src/navutil.cpp:3265 gui/src/ocpn_frame.cpp:721
-#: gui/src/ocpn_frame.cpp:868 gui/src/ocpn_frame.cpp:4253
-#: gui/src/options.cpp:1033 gui/src/options.cpp:2815 gui/src/options.cpp:7862
-#: gui/src/options.cpp:7899 gui/src/pluginmanager.cpp:311
+#: gui/src/ocpn_frame.cpp:868 gui/src/ocpn_frame.cpp:4249
+#: gui/src/options.cpp:1037 gui/src/options.cpp:2819 gui/src/options.cpp:7867
+#: gui/src/options.cpp:7904 gui/src/pluginmanager.cpp:311
 #: gui/src/pluginmanager.cpp:624 gui/src/pluginmanager.cpp:878
-#: gui/src/route_gui.cpp:608 gui/src/route_point_gui.cpp:914
+#: gui/src/route_gui.cpp:608 gui/src/route_point_gui.cpp:915
 #: gui/src/SendToPeerDlg.cpp:62 gui/src/SendToPeerDlg.cpp:77
 #: gui/src/SendToPeerDlg.cpp:85 gui/src/SendToPeerDlg.cpp:93
 #: gui/src/SendToPeerDlg.cpp:100 gui/src/SendToPeerDlg.cpp:107
@@ -3075,7 +3075,7 @@ msgstr "Intrekking - van gebied zoals genoemd in Message Linking ID "
 msgid "Undefined (default)"
 msgstr "niet gedefinieerd (standaard)"
 
-#: gui/src/ais.cpp:750 gui/src/ais.cpp:1719
+#: gui/src/ais.cpp:750 gui/src/ais.cpp:1719 gui/src/FontMgr.cpp:227
 msgid "AIS Target Name"
 msgstr "AIS objectnaam"
 
@@ -3089,7 +3089,7 @@ msgstr "\n"
 "Een permanente track opname zal daarom opnieuw worden gestart voor dit doel.\n\n"
 "Wilt u in plaats daarvan de permanente tracking voor dit doel stoppen?\n"
 
-#: gui/src/ais_info_gui.cpp:203 gui/src/options.cpp:4873
+#: gui/src/ais_info_gui.cpp:203 gui/src/options.cpp:4877
 msgid "AIS Alert"
 msgstr "AIS Waarschuwing"
 
@@ -3105,7 +3105,7 @@ msgstr "&Stop alarm"
 msgid "&Jump To"
 msgstr "&Spring naar"
 
-#: gui/src/AISTargetAlertDialog.cpp:204 gui/src/AISTargetQueryDialog.cpp:276
+#: gui/src/AISTargetAlertDialog.cpp:204 gui/src/AISTargetQueryDialog.cpp:274
 msgid "Create Waypoint"
 msgstr "Maak markeringspunt"
 
@@ -3128,7 +3128,7 @@ msgid "-"
 msgstr "-"
 
 #: gui/src/AISTargetListDialog.cpp:350 gui/src/canvasMenu.cpp:694
-#: gui/src/ocpn_frame.cpp:3546
+#: gui/src/ocpn_frame.cpp:3555
 msgid "AIS target list"
 msgstr "AIS objectenlijst"
 
@@ -3217,38 +3217,38 @@ msgstr "Objectaantal"
 msgid "Undock Target List"
 msgstr "Loskoppelen verzendlijst"
 
-#: gui/src/AISTargetQueryDialog.cpp:141 gui/src/AISTargetQueryDialog.cpp:280
-#: gui/src/AISTargetQueryDialog.cpp:311
+#: gui/src/AISTargetQueryDialog.cpp:141 gui/src/AISTargetQueryDialog.cpp:278
+#: gui/src/AISTargetQueryDialog.cpp:309
 msgid "Record Track"
 msgstr "Track opslaan"
 
-#: gui/src/AISTargetQueryDialog.cpp:175
+#: gui/src/AISTargetQueryDialog.cpp:173
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
 msgstr "De track van dit object wordt bewaard.\n"
 "Wilt u doorgaan met opslaan tot OpenCPN afgesloten wordt?"
 
-#: gui/src/AISTargetQueryDialog.cpp:197
+#: gui/src/AISTargetQueryDialog.cpp:195
 msgid "AISTargetQuery"
 msgstr "AIS objectquery"
 
-#: gui/src/AISTargetQueryDialog.cpp:285 gui/src/catalog_mgr.cpp:193
+#: gui/src/AISTargetQueryDialog.cpp:283 gui/src/catalog_mgr.cpp:193
 #: gui/src/catalog_mgr.cpp:585 gui/src/catalog_mgr.cpp:606 gui/src/cm93.cpp:6324
-#: gui/src/GoToPositionDialog.cpp:150 gui/src/MUIBar.cpp:190
-#: gui/src/options.cpp:853 gui/src/options.cpp:955 gui/src/options.cpp:5802
+#: gui/src/GoToPositionDialog.cpp:150 gui/src/MUIBar.cpp:195
+#: gui/src/options.cpp:857 gui/src/options.cpp:959 gui/src/options.cpp:5806
 #: gui/src/routeprintout.cpp:428 gui/src/TCWin.cpp:115 gui/src/TCWin.cpp:124
 #: gui/src/toolbar.cpp:2457 gui/src/trackprintout.cpp:359
 #: gui/src/TrackPropDlg.cpp:615 gui/src/TrackPropDlg.cpp:1003
 msgid "OK"
 msgstr "OK"
 
-#: gui/src/AISTargetQueryDialog.cpp:309
+#: gui/src/AISTargetQueryDialog.cpp:307
 msgid "Stop Tracking"
 msgstr "Stop volgen"
 
 #: gui/src/canvasMenu.cpp:240 gui/src/canvasMenu.cpp:269
 #: gui/src/canvasMenu.cpp:302 gui/src/canvasMenu.cpp:1051
-#: gui/src/canvasMenu.cpp:1074 gui/src/options.cpp:1146
+#: gui/src/canvasMenu.cpp:1074 gui/src/options.cpp:1150
 msgid "Menu"
 msgstr "Menu"
 
@@ -3302,7 +3302,7 @@ msgstr "Plaats schip hier"
 msgid "Navigate To Here"
 msgstr "Zet koers uit naar hier"
 
-#: gui/src/canvasMenu.cpp:523 gui/src/ocpn_frame.cpp:3441
+#: gui/src/canvasMenu.cpp:523 gui/src/ocpn_frame.cpp:3450
 msgid "Course Up Mode"
 msgstr "Koers-Boven presentatie"
 
@@ -3311,8 +3311,8 @@ msgid "Heading Up Mode"
 msgstr "Koers-Boven modus"
 
 #: gui/src/canvasMenu.cpp:527 gui/src/canvasMenu.cpp:534
-#: gui/src/ocpn_frame.cpp:3154 gui/src/ocpn_frame.cpp:3440
-#: gui/src/ocpn_frame.cpp:5951
+#: gui/src/ocpn_frame.cpp:3160 gui/src/ocpn_frame.cpp:3449
+#: gui/src/ocpn_frame.cpp:5947
 msgid "North Up Mode"
 msgstr "Noord-Boven presentatie"
 
@@ -3321,7 +3321,7 @@ msgid "Chart Up Mode"
 msgstr "Kaartoriëntatie-Boven presentatie"
 
 #: gui/src/canvasMenu.cpp:543 gui/src/canvasMenu.cpp:550
-#: gui/src/ocpn_frame.cpp:3522
+#: gui/src/ocpn_frame.cpp:3531
 msgid "Toggle Full Screen"
 msgstr "Volledig scherm aan/uit"
 
@@ -3346,7 +3346,7 @@ msgstr "Plak track"
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 offsets..."
 
-#: gui/src/canvasMenu.cpp:611 gui/src/options.cpp:3785 gui/src/options.cpp:3849
+#: gui/src/canvasMenu.cpp:611 gui/src/options.cpp:3789 gui/src/options.cpp:3853
 msgid "Chart Groups"
 msgstr "Kaartgroepen"
 
@@ -3464,7 +3464,7 @@ msgstr "Kopiëren als KML"
 #: gui/src/canvasMenu.cpp:758 gui/src/canvasMenu.cpp:812
 #: gui/src/canvasMenu.cpp:869 gui/src/canvasMenu.cpp:920
 #: gui/src/connection_edit.cpp:2411 gui/src/MarkInfo.cpp:485
-#: gui/src/MarkInfo.cpp:1167 gui/src/MarkInfo.cpp:1208 gui/src/options.cpp:1142
+#: gui/src/MarkInfo.cpp:1167 gui/src/MarkInfo.cpp:1208 gui/src/options.cpp:1146
 #: gui/src/RoutePropDlg.cpp:464 gui/src/TrackPropDlg.cpp:907
 msgid "Delete"
 msgstr "Verwijderen"
@@ -3618,18 +3618,18 @@ msgstr "Verstuur Track(s) naar 2ᵉ OpenCPN"
 msgid "Chart Panel Options"
 msgstr "Weergaveopties Kaart"
 
-#: gui/src/CanvasOptions.cpp:136 gui/src/options.cpp:3947
-#: gui/src/options.cpp:4130
+#: gui/src/CanvasOptions.cpp:136 gui/src/options.cpp:3951
+#: gui/src/options.cpp:4134
 msgid "Navigation Mode"
 msgstr "Navigatiemodus"
 
-#: gui/src/CanvasOptions.cpp:143 gui/src/options.cpp:3955
-#: gui/src/options.cpp:4138
+#: gui/src/CanvasOptions.cpp:143 gui/src/options.cpp:3959
+#: gui/src/options.cpp:4142
 msgid "North Up"
 msgstr "Noord-Boven"
 
-#: gui/src/CanvasOptions.cpp:151 gui/src/options.cpp:3958
-#: gui/src/options.cpp:4141
+#: gui/src/CanvasOptions.cpp:151 gui/src/options.cpp:3962
+#: gui/src/options.cpp:4145
 msgid "Course Up"
 msgstr "Koers-Boven"
 
@@ -3637,32 +3637,32 @@ msgstr "Koers-Boven"
 msgid "Heading Up"
 msgstr "Koers-Boven"
 
-#: gui/src/CanvasOptions.cpp:169 gui/src/options.cpp:3965
-#: gui/src/options.cpp:4148
+#: gui/src/CanvasOptions.cpp:169 gui/src/options.cpp:3969
+#: gui/src/options.cpp:4152
 msgid "Look Ahead Mode"
 msgstr "Kijk-Vooruit presentatie"
 
-#: gui/src/CanvasOptions.cpp:180 gui/src/options.cpp:1874
+#: gui/src/CanvasOptions.cpp:180 gui/src/options.cpp:1878
 msgid "Display Options"
 msgstr "Weergaveopties Eigen Schip"
 
-#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3465
-#: gui/src/ocpn_frame.cpp:3471 gui/src/options.cpp:3980 gui/src/options.cpp:4163
+#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3474
+#: gui/src/ocpn_frame.cpp:3480 gui/src/options.cpp:3984 gui/src/options.cpp:4167
 msgid "Enable Chart Quilting"
 msgstr "Kaartsamenvoeging inschakelen"
 
-#: gui/src/CanvasOptions.cpp:192 gui/src/options.cpp:4021
-#: gui/src/options.cpp:4208
+#: gui/src/CanvasOptions.cpp:192 gui/src/options.cpp:4025
+#: gui/src/options.cpp:4212
 msgid "Show Grid"
 msgstr "Toon geografisch grid"
 
-#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3467
-#: gui/src/ocpn_frame.cpp:3473 gui/src/options.cpp:4025 gui/src/options.cpp:4212
+#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3476
+#: gui/src/ocpn_frame.cpp:3482 gui/src/options.cpp:4029 gui/src/options.cpp:4216
 msgid "Show Chart Outlines"
 msgstr "Toon kaartgrenzen"
 
-#: gui/src/CanvasOptions.cpp:206 gui/src/options.cpp:4029
-#: gui/src/options.cpp:4216
+#: gui/src/CanvasOptions.cpp:206 gui/src/options.cpp:4033
+#: gui/src/options.cpp:4220
 msgid "Show Depth Units"
 msgstr "Toon diepte-eenheid"
 
@@ -3682,7 +3682,7 @@ msgstr "Getijden en stromingen"
 msgid "Show Tide stations"
 msgstr "Toon getij punten"
 
-#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3509
+#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3518
 msgid "Show Currents"
 msgstr "Toon getijstromen"
 
@@ -3698,8 +3698,8 @@ msgstr "Toon tekst"
 msgid "Show depths"
 msgstr "Toon dieptes"
 
-#: gui/src/CanvasOptions.cpp:277 gui/src/options.cpp:3349
-#: gui/src/options.cpp:3543
+#: gui/src/CanvasOptions.cpp:277 gui/src/options.cpp:3353
+#: gui/src/options.cpp:3547
 msgid "Buoy/Light Labels"
 msgstr "Boei- en lichtlabels"
 
@@ -3707,8 +3707,8 @@ msgstr "Boei- en lichtlabels"
 msgid "Lights"
 msgstr "Lichten"
 
-#: gui/src/CanvasOptions.cpp:291 gui/src/options.cpp:3354
-#: gui/src/options.cpp:3548
+#: gui/src/CanvasOptions.cpp:291 gui/src/options.cpp:3358
+#: gui/src/options.cpp:3552
 msgid "Light Descriptions"
 msgstr "Toon vuureigenschappen"
 
@@ -3724,18 +3724,18 @@ msgstr "Toon zichtbare sectorlichten"
 msgid "Show chart data quality"
 msgstr "Toon kwaliteit kaart data"
 
-#: gui/src/CanvasOptions.cpp:324 gui/src/options.cpp:3309
-#: gui/src/options.cpp:3512
+#: gui/src/CanvasOptions.cpp:324 gui/src/options.cpp:3313
+#: gui/src/options.cpp:3516
 msgid "Display Category"
 msgstr "Weergavecategorie"
 
-#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3311
-#: gui/src/options.cpp:3514
+#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3315
+#: gui/src/options.cpp:3518
 msgid "Standard"
 msgstr "standaard"
 
-#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3311
-#: gui/src/options.cpp:3514
+#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3315
+#: gui/src/options.cpp:3518
 msgid "All"
 msgstr "alles"
 
@@ -3780,7 +3780,7 @@ msgstr "Als actieve catalogus gebruiken"
 msgid "Latest available catalog:"
 msgstr "Laatst beschikbare catalogus:"
 
-#: gui/src/catalog_mgr.cpp:292 gui/src/pluginmanager.cpp:3854
+#: gui/src/catalog_mgr.cpp:292 gui/src/pluginmanager.cpp:3855
 msgid "Cannot download data from url"
 msgstr "Kan gegevens niet downloaden van url"
 
@@ -3835,8 +3835,8 @@ msgstr "Fout:"
 #: gui/src/catalog_mgr.cpp:604 gui/src/connection_edit.cpp:237
 #: gui/src/connection_edit.cpp:2415 gui/src/GoToPositionDialog.cpp:146
 #: gui/src/LinkPropDlg.cpp:76 gui/src/MarkInfo.cpp:751 gui/src/MarkInfo.cpp:1931
-#: gui/src/MUIBar.cpp:186 gui/src/options.cpp:850 gui/src/options.cpp:952
-#: gui/src/options.cpp:5806 gui/src/options.cpp:9096
+#: gui/src/MUIBar.cpp:191 gui/src/options.cpp:854 gui/src/options.cpp:956
+#: gui/src/options.cpp:5810 gui/src/options.cpp:9126
 #: gui/src/priority_gui.cpp:112 gui/src/rest_server_gui.cpp:171
 #: gui/src/rest_server_gui.cpp:298 gui/src/routeprintout.cpp:424
 #: gui/src/RoutePropDlg.cpp:547 gui/src/SendToGpsDlg.cpp:203
@@ -4168,28 +4168,28 @@ msgstr "Het antwoord 'Nee' resulteert in het maken van nieuwe markeringspunten v
 msgid "Merge waypoints?"
 msgstr "Markeringspunten samenvoegen?"
 
-#: gui/src/chcanv.cpp:10556 gui/src/RolloverWin.cpp:144
+#: gui/src/chcanv.cpp:10556 gui/src/FontMgr.cpp:219 gui/src/RolloverWin.cpp:144
 #: gui/src/RolloverWin.cpp:312
 msgid "RouteLegInfoRollover"
 msgstr "Info routesegment bij aanwijzen"
 
-#: gui/src/chcanv.cpp:11357 gui/src/mbtiles/mbtiles.cpp:1000
+#: gui/src/chcanv.cpp:11357 gui/src/mbtiles/mbtiles.cpp:1005
 msgid "MBTile requires OpenGL to be enabled"
 msgstr "MBTile vereist dat OpenGL ingeschakeld wordt"
 
-#: gui/src/chcanv.cpp:12012 gui/src/options.cpp:4364 gui/src/options.cpp:4513
-#: gui/src/initwiz/wiz_ui_proto.cpp:36
+#: gui/src/chcanv.cpp:12012 gui/src/options.cpp:4368 gui/src/options.cpp:4517
+#: gui/src/initwiz/wiz_ui_proto.cpp:41
 msgid "Feet"
 msgstr "voet"
 
-#: gui/src/chcanv.cpp:12014 gui/src/options.cpp:4321 gui/src/options.cpp:4365
-#: gui/src/options.cpp:4482 gui/src/options.cpp:4514
-#: gui/src/initwiz/wiz_ui_proto.cpp:36 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/chcanv.cpp:12014 gui/src/options.cpp:4325 gui/src/options.cpp:4369
+#: gui/src/options.cpp:4486 gui/src/options.cpp:4518
+#: gui/src/initwiz/wiz_ui_proto.cpp:41 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Meters"
 msgstr "meter"
 
-#: gui/src/chcanv.cpp:12016 gui/src/options.cpp:4366 gui/src/options.cpp:4515
-#: gui/src/initwiz/wiz_ui_proto.cpp:36
+#: gui/src/chcanv.cpp:12016 gui/src/options.cpp:4370 gui/src/options.cpp:4519
+#: gui/src/initwiz/wiz_ui_proto.cpp:41
 msgid "Fathoms"
 msgstr "vadem"
 
@@ -4197,7 +4197,7 @@ msgstr "vadem"
 msgid "OverZoom"
 msgstr "OverZoom"
 
-#: gui/src/chcanv.cpp:12387 gui/src/chcanv.cpp:12388
+#: gui/src/chcanv.cpp:12387 gui/src/chcanv.cpp:12388 gui/src/FontMgr.cpp:223
 msgid "ExtendedTideIcon"
 msgstr "Uitgebreid getijpictogram"
 
@@ -4213,7 +4213,7 @@ msgstr "AIS objectgegevens"
 msgid "Show all AIS Targets"
 msgstr "Toon alle AIS objecten"
 
-#: gui/src/chcanv.cpp:13202 gui/src/ocpn_frame.cpp:3529
+#: gui/src/chcanv.cpp:13202 gui/src/ocpn_frame.cpp:3538
 msgid "Attenuate less critical AIS targets"
 msgstr "Verklein minder kritische AIS objecten"
 
@@ -4261,9 +4261,9 @@ msgstr "Gebruiker X offset"
 msgid "User Y Offset"
 msgstr "Gebruiker Y offset"
 
-#: gui/src/cm93.cpp:6298 gui/src/cm93.cpp:6312 gui/src/options.cpp:3447
-#: gui/src/options.cpp:3457 gui/src/options.cpp:3467 gui/src/options.cpp:3662
-#: gui/src/options.cpp:3671 gui/src/options.cpp:3680 gui/src/options.cpp:6507
+#: gui/src/cm93.cpp:6298 gui/src/cm93.cpp:6312 gui/src/options.cpp:3451
+#: gui/src/options.cpp:3461 gui/src/options.cpp:3471 gui/src/options.cpp:3666
+#: gui/src/options.cpp:3675 gui/src/options.cpp:3684 gui/src/options.cpp:6511
 msgid "meters"
 msgstr "meter"
 
@@ -4274,11 +4274,13 @@ msgstr "Segment"
 
 #: gui/src/concanv.cpp:110 gui/src/concanv.cpp:114 gui/src/concanv.cpp:118
 #: gui/src/concanv.cpp:122 gui/src/concanv.cpp:126 gui/src/concanv.cpp:570
+#: gui/src/FontMgr.cpp:213
 msgid "Console Legend"
 msgstr "Consolelegenda"
 
 #: gui/src/concanv.cpp:110 gui/src/concanv.cpp:114 gui/src/concanv.cpp:118
 #: gui/src/concanv.cpp:122 gui/src/concanv.cpp:126 gui/src/concanv.cpp:571
+#: gui/src/FontMgr.cpp:215
 msgid "Console Value"
 msgstr "Consolewaarde"
 
@@ -4314,12 +4316,12 @@ msgstr "ETA @VMG"
 msgid "ETA  @SOG"
 msgstr "ETA @SOG"
 
-#: gui/src/ConfigMgr.cpp:456 gui/src/options.cpp:816
+#: gui/src/ConfigMgr.cpp:456 gui/src/options.cpp:820
 msgid "Title"
 msgstr "Naam"
 
 #: gui/src/ConfigMgr.cpp:461 gui/src/MarkInfo.cpp:428 gui/src/MarkInfo.cpp:526
-#: gui/src/options.cpp:826 gui/src/routeprintout.cpp:116
+#: gui/src/options.cpp:830 gui/src/routeprintout.cpp:116
 #: gui/src/routeprintout.cpp:409 gui/src/RoutePropDlg.cpp:397
 #: gui/src/RoutePropDlg.cpp:422 gui/src/TrackPropDlg.cpp:872
 msgid "Description"
@@ -4348,7 +4350,7 @@ msgid "Less"
 msgstr "Minder"
 
 #: gui/src/connection_edit.cpp:259 gui/src/connection_edit.cpp:803
-#: gui/src/connections_dialog.cpp:481
+#: gui/src/connections_dialog.cpp:557
 msgid "Edit Selected Connection"
 msgstr "Wijzig geselecteerde verbinding"
 
@@ -4637,12 +4639,12 @@ msgstr ""
 msgid "Or consider using a different data port for one of them"
 msgstr ""
 
-#: gui/src/connection_edit.cpp:1766 gui/src/options.cpp:7808
+#: gui/src/connection_edit.cpp:1766 gui/src/options.cpp:7813
 #: gui/src/routeman_gui.cpp:73
 msgid "OpenCPN Warning"
 msgstr "OpenCPN Waarschuwing"
 
-#: gui/src/connection_edit.cpp:1769 gui/src/options.cpp:6868
+#: gui/src/connection_edit.cpp:1769 gui/src/options.cpp:6872
 #: gui/src/routemanagerdialog.cpp:1949
 msgid "OpenCPN info"
 msgstr "OpenCPN info"
@@ -4651,17 +4653,17 @@ msgstr "OpenCPN info"
 msgid "Sentence Filter"
 msgstr "Stringfilter"
 
-#: gui/src/connection_edit.cpp:2408 gui/src/options.cpp:3486
-#: gui/src/options.cpp:3699
+#: gui/src/connection_edit.cpp:2408 gui/src/options.cpp:3490
+#: gui/src/options.cpp:3703
 msgid "Select All"
 msgstr "Selecteer alles"
 
-#: gui/src/connection_edit.cpp:2409 gui/src/options.cpp:3488
-#: gui/src/options.cpp:3701 gui/src/priority_gui.cpp:105
+#: gui/src/connection_edit.cpp:2409 gui/src/options.cpp:3492
+#: gui/src/options.cpp:3705 gui/src/priority_gui.cpp:105
 msgid "Clear All"
 msgstr "Wis alles"
 
-#: gui/src/connection_edit.cpp:2410 gui/src/options.cpp:3829
+#: gui/src/connection_edit.cpp:2410 gui/src/options.cpp:3833
 #: gui/src/RoutePropDlg.cpp:479 gui/src/TrackPropDlg.cpp:926
 msgid "Add"
 msgstr "Toevoegen"
@@ -4692,59 +4694,59 @@ msgstr "Een NMEA-string is in het algemeen 3 tekens lang (RMC, GGA enz.). \n"
 msgid "REGEX syntax error: \n"
 msgstr "REGEX syntaxisfout: \n"
 
-#: gui/src/connections_dialog.cpp:115 gui/src/options.cpp:3925
+#: gui/src/connections_dialog.cpp:122 gui/src/options.cpp:3929
 msgid "General"
 msgstr "Algemeen"
 
-#: gui/src/connections_dialog.cpp:128
+#: gui/src/connections_dialog.cpp:135
 msgid "Filter NMEA Course and Speed data"
 msgstr "Filter NMEA koers en snelheid"
 
-#: gui/src/connections_dialog.cpp:134
+#: gui/src/connections_dialog.cpp:141
 msgid "Filter period (sec)"
 msgstr "Filter periode (sec)"
 
-#: gui/src/connections_dialog.cpp:154
+#: gui/src/connections_dialog.cpp:168 gui/src/connections_dialog.cpp:220
 msgid "Show NMEA Debug Window"
 msgstr "Toon NMEA debugvenster"
 
-#: gui/src/connections_dialog.cpp:160
+#: gui/src/connections_dialog.cpp:174 gui/src/connections_dialog.cpp:226
 msgid "Format uploads for Furuno GP3X"
 msgstr "Opmaak uploads voor Furuno GP3X"
 
-#: gui/src/connections_dialog.cpp:166
+#: gui/src/connections_dialog.cpp:180 gui/src/connections_dialog.cpp:232
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Gebruik Garmin GRMN (Host) modus voor uploads"
 
-#: gui/src/connections_dialog.cpp:173
+#: gui/src/connections_dialog.cpp:187 gui/src/connections_dialog.cpp:239
 msgid "Use magnetic bearings in output sentence APB"
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:185
-msgid "NMEA0183 Talker ID"
-msgstr ""
-
-#: gui/src/connections_dialog.cpp:200
+#: gui/src/connections_dialog.cpp:196 gui/src/connections_dialog.cpp:265
 msgid "Adjust communication priorities..."
 msgstr "Stel communicatie prioriteiten in"
 
-#: gui/src/connections_dialog.cpp:209
+#: gui/src/connections_dialog.cpp:204 gui/src/connections_dialog.cpp:250
+msgid "NMEA0183 Talker ID"
+msgstr ""
+
+#: gui/src/connections_dialog.cpp:275
 msgid "Data Connections"
 msgstr "Data verbindingen"
 
-#: gui/src/connections_dialog.cpp:218
+#: gui/src/connections_dialog.cpp:284
 msgid "Add Connection..."
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:222
+#: gui/src/connections_dialog.cpp:288
 msgid "Edit Connection..."
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:227
+#: gui/src/connections_dialog.cpp:293
 msgid "Remove Connection"
 msgstr "Verwijder verbinding"
 
-#: gui/src/connections_dialog.cpp:421
+#: gui/src/connections_dialog.cpp:497
 msgid "Configure new connection"
 msgstr "Nieuwe verbinding configureren"
 
@@ -4802,7 +4804,7 @@ msgid "Install"
 msgstr "Installeren"
 
 #: gui/src/download_mgr.cpp:251 gui/src/download_mgr.cpp:268
-#: gui/src/pluginmanager.cpp:4758 gui/src/update_mgr.cpp:244
+#: gui/src/pluginmanager.cpp:4759 gui/src/update_mgr.cpp:244
 msgid "Reinstall"
 msgstr "Herïnstalleer"
 
@@ -4810,7 +4812,7 @@ msgstr "Herïnstalleer"
 msgid "Update"
 msgstr "Bijwerken"
 
-#: gui/src/download_mgr.cpp:270 gui/src/pluginmanager.cpp:4764
+#: gui/src/download_mgr.cpp:270 gui/src/pluginmanager.cpp:4765
 #: gui/src/update_mgr.cpp:246
 msgid "Downgrade"
 msgstr "Downgraden"
@@ -4840,13 +4842,28 @@ msgid " successfully installed"
 msgstr " succesvol geïnstalleerd!"
 
 #: gui/src/download_mgr.cpp:573 gui/src/pluginmanager.cpp:1122
-#: gui/src/pluginmanager.cpp:3978
+#: gui/src/pluginmanager.cpp:3979
 msgid "Installation complete"
 msgstr "De installatie is voltooid"
 
 #: gui/src/download_mgr.cpp:589 gui/src/pluginmanager.cpp:1113
 msgid "Installation error"
 msgstr "Installatiefout"
+
+#: gui/src/FontMgr.cpp:217 gui/src/routemanagerdialog.cpp:688
+#: gui/src/route_point_gui.cpp:127 gui/src/route_point_gui.cpp:135
+#: gui/src/route_point_gui.cpp:299 gui/src/route_point_gui.cpp:307
+msgid "Marks"
+msgstr "Markeringen"
+
+#: gui/src/FontMgr.cpp:221 gui/src/RolloverWin.cpp:137
+#: gui/src/RolloverWin.cpp:303
+msgid "AISRollover"
+msgstr "AIS-info bij aanwijzen"
+
+#: gui/src/FontMgr.cpp:225
+msgid "ChartTexts"
+msgstr ""
 
 #: gui/src/glChartCanvas.cpp:1925
 msgid "GridText"
@@ -4860,7 +4877,7 @@ msgstr "Wacht op einde van compressie rasterkaart"
 msgid "OpenCPN Compressed Cache Update"
 msgstr "OpenCPN Gecomprimeerde cache bijwerken"
 
-#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8654
+#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8651
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Afstand vanaf eigen schip: %4.0f NMi"
@@ -4993,7 +5010,7 @@ msgstr "Dit markeringspunt is deel van een kaartlaag en kan niet worden gewijzig
 msgid "Icon"
 msgstr "Pictogram"
 
-#: gui/src/MarkInfo.cpp:380 gui/src/options.cpp:2207 gui/src/options.cpp:2270
+#: gui/src/MarkInfo.cpp:380 gui/src/options.cpp:2211 gui/src/options.cpp:2274
 msgid "Combo!"
 msgstr "Combo!"
 
@@ -5003,7 +5020,7 @@ msgid "Links"
 msgstr "Koppelingen"
 
 #: gui/src/MarkInfo.cpp:490 gui/src/MarkInfo.cpp:1168 gui/src/MarkInfo.cpp:1216
-#: gui/src/options.cpp:1139 gui/src/RoutePropDlg.cpp:454
+#: gui/src/options.cpp:1143 gui/src/RoutePropDlg.cpp:454
 #: gui/src/RoutePropDlg.cpp:484 gui/src/TrackPropDlg.cpp:897
 #: gui/src/TrackPropDlg.cpp:930
 msgid "Edit"
@@ -5044,22 +5061,22 @@ msgstr "Afstandscirkels"
 msgid "Number"
 msgstr "Aantal"
 
-#: gui/src/MarkInfo.cpp:591 gui/src/options.cpp:4318 gui/src/options.cpp:4479
+#: gui/src/MarkInfo.cpp:591 gui/src/options.cpp:4322 gui/src/options.cpp:4483
 #: gui/src/routeprintout.cpp:113 gui/src/routeprintout.cpp:397
 #: gui/src/RoutePropDlg.cpp:146 gui/src/RoutePropDlg.cpp:360
 #: gui/src/trackprintout.cpp:94 gui/src/trackprintout.cpp:319
-#: gui/src/TrackPropDlg.cpp:305 gui/src/initwiz/wiz_ui_proto.cpp:42
+#: gui/src/TrackPropDlg.cpp:305 gui/src/initwiz/wiz_ui_proto.cpp:47
 msgid "Distance"
 msgstr "Afstand"
 
-#: gui/src/MarkInfo.cpp:595 gui/src/options.cpp:2024
+#: gui/src/MarkInfo.cpp:595 gui/src/options.cpp:2028
 #: gui/src/RoutePropDlg.cpp:259 gui/src/TrackPropDlg.cpp:476
 #: gui/src/TrackPropDlg.cpp:721
 msgid "Color"
 msgstr "Kleur"
 
-#: gui/src/MarkInfo.cpp:598 gui/src/options.cpp:1956 gui/src/options.cpp:2171
-#: gui/src/options.cpp:2600
+#: gui/src/MarkInfo.cpp:598 gui/src/options.cpp:1960 gui/src/options.cpp:2175
+#: gui/src/options.cpp:2604
 msgid "None"
 msgstr "Geen"
 
@@ -5149,16 +5166,16 @@ msgstr "Toon alleen op schaal"
 msgid "Tide Station not found"
 msgstr "Getij station niet gevonden"
 
-#: gui/src/MUIBar.cpp:89 gui/src/MUIBar.cpp:98
+#: gui/src/MUIBar.cpp:94 gui/src/MUIBar.cpp:103
 msgid "Set scale"
 msgstr "Schaal instellen"
 
-#: gui/src/MUIBar.cpp:167
+#: gui/src/MUIBar.cpp:172
 msgid "Chart Scale"
 msgstr "Kaart schaal"
 
-#: gui/src/navutil.cpp:1835 gui/src/navutil.cpp:3227 gui/src/options.cpp:928
-#: gui/src/options.cpp:1090
+#: gui/src/navutil.cpp:1835 gui/src/navutil.cpp:3227 gui/src/options.cpp:932
+#: gui/src/options.cpp:1094
 msgid "Persistent"
 msgstr "vasthouden"
 
@@ -5190,35 +5207,35 @@ msgstr "NMEA debugvenster"
 msgid "Cannot load route or waypoint file: "
 msgstr "Kan route- of waypointbestand niet laden: "
 
-#: gui/src/ocpn_app.cpp:1302 gui/src/ocpn_app.cpp:1309
+#: gui/src/ocpn_app.cpp:1294 gui/src/ocpn_app.cpp:1301
 msgid "Failed to initialize the user interface. "
 msgstr "Kon de gebruikersinterface niet initialiseren. "
 
-#: gui/src/ocpn_app.cpp:1303
+#: gui/src/ocpn_app.cpp:1295
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN kan niet starten."
 
-#: gui/src/ocpn_app.cpp:1304
+#: gui/src/ocpn_app.cpp:1296
 msgid "The necessary configuration files were not found. "
 msgstr "De benodigde configuratiebestanden zijn niet gevonden. "
 
-#: gui/src/ocpn_app.cpp:1305
+#: gui/src/ocpn_app.cpp:1297
 msgid "See the log file at "
 msgstr "Bekijk het logbestand op "
 
-#: gui/src/ocpn_app.cpp:1306
+#: gui/src/ocpn_app.cpp:1298
 msgid " for details."
 msgstr " voor details."
 
-#: gui/src/ocpn_app.cpp:1595
+#: gui/src/ocpn_app.cpp:1596
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portable(-p) uitvoeren vanaf "
 
-#: gui/src/ocpn_app.cpp:1670
+#: gui/src/ocpn_app.cpp:1671
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Haal de initiele kaartmapset op uit het Windows register"
 
-#: gui/src/ocpn_app.cpp:1852
+#: gui/src/ocpn_app.cpp:1853
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN Geïnitialiseerd in %ld ms."
@@ -5273,8 +5290,8 @@ msgstr "Geschatte tijd:"
 msgid "Remaining time : "
 msgstr "Resterende tijd:"
 
-#: gui/src/ocpn_frame.cpp:885 gui/src/ocpn_frame.cpp:4552
-#: gui/src/ocpn_frame.cpp:4562
+#: gui/src/ocpn_frame.cpp:885 gui/src/ocpn_frame.cpp:4548
+#: gui/src/ocpn_frame.cpp:4558
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Kaartbijwerking"
 
@@ -5282,277 +5299,277 @@ msgstr "OpenCPN Kaartbijwerking"
 msgid "Anchorage created "
 msgstr "Ankerpositie vastgelegd"
 
-#: gui/src/ocpn_frame.cpp:2582 gui/src/ocpn_frame.cpp:2704
+#: gui/src/ocpn_frame.cpp:2582 gui/src/ocpn_frame.cpp:2710
 msgid "Show Toolbar"
 msgstr "Toon werkbalk"
 
-#: gui/src/ocpn_frame.cpp:2583 gui/src/ocpn_frame.cpp:2706
-#: gui/src/ocpn_frame.cpp:7026
+#: gui/src/ocpn_frame.cpp:2583 gui/src/ocpn_frame.cpp:2712
+#: gui/src/ocpn_frame.cpp:7022
 msgid "Hide Toolbar"
 msgstr "Verberg werkbalk"
 
-#: gui/src/ocpn_frame.cpp:2912 gui/src/ocpn_frame.cpp:2975
+#: gui/src/ocpn_frame.cpp:2918 gui/src/ocpn_frame.cpp:2981
 msgid "MAN OVERBOARD"
 msgstr "MAN OVERBOORD"
 
-#: gui/src/ocpn_frame.cpp:2913 gui/src/ocpn_frame.cpp:6691
+#: gui/src/ocpn_frame.cpp:2919 gui/src/ocpn_frame.cpp:6687
 msgid " at "
 msgstr "op"
 
-#: gui/src/ocpn_frame.cpp:2915 gui/src/ocpn_frame.cpp:6693
+#: gui/src/ocpn_frame.cpp:2921 gui/src/ocpn_frame.cpp:6689
 msgid " on "
 msgstr " op "
 
-#: gui/src/ocpn_frame.cpp:2935
+#: gui/src/ocpn_frame.cpp:2941
 msgid "1.0 NM along COG"
 msgstr "1.0 NM langs GrK"
 
-#: gui/src/ocpn_frame.cpp:2947
+#: gui/src/ocpn_frame.cpp:2953
 msgid "Temporary MOB Route"
 msgstr "Tijdelijke MOB route"
 
-#: gui/src/ocpn_frame.cpp:2948
+#: gui/src/ocpn_frame.cpp:2954
 msgid "Assumed 1 Mile Point"
 msgstr "Aangenomen 1 NM punt"
 
-#: gui/src/ocpn_frame.cpp:2976 gui/src/ocpn_frame.cpp:6749
-#: gui/src/ocpn_frame.cpp:6790
+#: gui/src/ocpn_frame.cpp:2982 gui/src/ocpn_frame.cpp:6745
+#: gui/src/ocpn_frame.cpp:6786
 msgid " Time: "
 msgstr " Tijd: "
 
-#: gui/src/ocpn_frame.cpp:2978
+#: gui/src/ocpn_frame.cpp:2984
 msgid "  Position: "
 msgstr "  Positie: "
 
-#: gui/src/ocpn_frame.cpp:2996 gui/src/ocpn_frame.cpp:7105
+#: gui/src/ocpn_frame.cpp:3002 gui/src/ocpn_frame.cpp:7101
 msgid "Disable Tracking"
 msgstr "Volgen uitschakelen"
 
-#: gui/src/ocpn_frame.cpp:3068 gui/src/ocpn_frame.cpp:3438
-#: gui/src/ocpn_frame.cpp:7051
+#: gui/src/ocpn_frame.cpp:3074 gui/src/ocpn_frame.cpp:3447
+#: gui/src/ocpn_frame.cpp:7047
 msgid "Enable Tracking"
 msgstr "Volgen inschakelen"
 
-#: gui/src/ocpn_frame.cpp:3437
+#: gui/src/ocpn_frame.cpp:3446
 msgid "Auto Follow"
 msgstr "Automatische volgmodus"
 
-#: gui/src/ocpn_frame.cpp:3442
+#: gui/src/ocpn_frame.cpp:3451
 msgid "Head Up Mode"
 msgstr "Koers-Boven modus"
 
-#: gui/src/ocpn_frame.cpp:3445 gui/src/ocpn_frame.cpp:3448
+#: gui/src/ocpn_frame.cpp:3454 gui/src/ocpn_frame.cpp:3457
 msgid "Zoom In"
 msgstr "Inzoomen"
 
-#: gui/src/ocpn_frame.cpp:3446 gui/src/ocpn_frame.cpp:3449
+#: gui/src/ocpn_frame.cpp:3455 gui/src/ocpn_frame.cpp:3458
 msgid "Zoom Out"
 msgstr "Uitzoomen"
 
-#: gui/src/ocpn_frame.cpp:3453
+#: gui/src/ocpn_frame.cpp:3462
 msgid "Larger Scale Chart"
 msgstr "Kaart, grotere schaal"
 
-#: gui/src/ocpn_frame.cpp:3455
+#: gui/src/ocpn_frame.cpp:3464
 msgid "Smaller Scale Chart"
 msgstr "Kaart, kleinere schaal"
 
-#: gui/src/ocpn_frame.cpp:3458
+#: gui/src/ocpn_frame.cpp:3467
 msgid "Exit OpenCPN"
 msgstr "OpenCPN afsluiten"
 
-#: gui/src/ocpn_frame.cpp:3460
+#: gui/src/ocpn_frame.cpp:3469
 msgid "&Navigate"
 msgstr "Navigeren"
 
-#: gui/src/ocpn_frame.cpp:3476 gui/src/options.cpp:5409
+#: gui/src/ocpn_frame.cpp:3485 gui/src/options.cpp:5413
 msgid "Show Chart Bar"
 msgstr "Toon kaartbalk"
 
-#: gui/src/ocpn_frame.cpp:3481 gui/src/ocpn_frame.cpp:3494
+#: gui/src/ocpn_frame.cpp:3490 gui/src/ocpn_frame.cpp:3503
 msgid "Show ENC text"
 msgstr "Toon ENC-tekst"
 
-#: gui/src/ocpn_frame.cpp:3483 gui/src/ocpn_frame.cpp:3496
+#: gui/src/ocpn_frame.cpp:3492 gui/src/ocpn_frame.cpp:3505
 msgid "Show ENC Lights"
 msgstr "Toon ENC lichten"
 
-#: gui/src/ocpn_frame.cpp:3485 gui/src/ocpn_frame.cpp:3498
+#: gui/src/ocpn_frame.cpp:3494 gui/src/ocpn_frame.cpp:3507
 msgid "Show ENC Soundings"
 msgstr "Toon ENC dieptes"
 
-#: gui/src/ocpn_frame.cpp:3487 gui/src/ocpn_frame.cpp:3500
+#: gui/src/ocpn_frame.cpp:3496 gui/src/ocpn_frame.cpp:3509
 msgid "Show ENC Anchoring Info"
 msgstr "Toon ENC anker informatie"
 
-#: gui/src/ocpn_frame.cpp:3489 gui/src/ocpn_frame.cpp:3503
+#: gui/src/ocpn_frame.cpp:3498 gui/src/ocpn_frame.cpp:3512
 msgid "Show ENC Data Quality"
 msgstr "Toon ENC gegevenskwaliteit"
 
-#: gui/src/ocpn_frame.cpp:3491 gui/src/ocpn_frame.cpp:3505
+#: gui/src/ocpn_frame.cpp:3500 gui/src/ocpn_frame.cpp:3514
 msgid "Show Navobjects"
 msgstr "Toon Navobjecten"
 
-#: gui/src/ocpn_frame.cpp:3508
+#: gui/src/ocpn_frame.cpp:3517
 msgid "Show Tides"
 msgstr "Toon getijhoogten"
 
-#: gui/src/ocpn_frame.cpp:3513 gui/src/ocpn_frame.cpp:3516
-#: gui/src/ocpn_frame.cpp:7056
+#: gui/src/ocpn_frame.cpp:3522 gui/src/ocpn_frame.cpp:3525
+#: gui/src/ocpn_frame.cpp:7052
 msgid "Change Color Scheme"
 msgstr "Wijzig kleurenschema"
 
-#: gui/src/ocpn_frame.cpp:3524
+#: gui/src/ocpn_frame.cpp:3533
 msgid "&View"
 msgstr "&Weergave"
 
-#: gui/src/ocpn_frame.cpp:3527
+#: gui/src/ocpn_frame.cpp:3536
 msgid "Show AIS Targets"
 msgstr "Toon AIS objecten"
 
-#: gui/src/ocpn_frame.cpp:3532
+#: gui/src/ocpn_frame.cpp:3541
 msgid "Hide Moored AIS Targets"
 msgstr "Verberg afgemeerde AIS objecten"
 
-#: gui/src/ocpn_frame.cpp:3533
+#: gui/src/ocpn_frame.cpp:3542
 msgid "Show AIS Target Tracks"
 msgstr "Toon tracks van AIS objecten"
 
-#: gui/src/ocpn_frame.cpp:3534
+#: gui/src/ocpn_frame.cpp:3543
 msgid "Show CPA Alert Dialogs"
 msgstr "Toon CPA waarschuwings dialogen"
 
-#: gui/src/ocpn_frame.cpp:3535
+#: gui/src/ocpn_frame.cpp:3544
 msgid "Sound CPA Alarms"
 msgstr "Speel CPA geluidsalarm af"
 
-#: gui/src/ocpn_frame.cpp:3539 gui/src/ocpn_frame.cpp:3542
+#: gui/src/ocpn_frame.cpp:3548 gui/src/ocpn_frame.cpp:3551
 msgid "Show CPA Warnings"
 msgstr "Toon CPA waarschuwingen"
 
-#: gui/src/ocpn_frame.cpp:3547
+#: gui/src/ocpn_frame.cpp:3556
 msgid "&AIS"
 msgstr "&AIS"
 
-#: gui/src/ocpn_frame.cpp:3552 gui/src/ocpn_frame.cpp:3555
+#: gui/src/ocpn_frame.cpp:3561 gui/src/ocpn_frame.cpp:3564
 msgid "Measure Distance"
 msgstr "Afstand meten"
 
-#: gui/src/ocpn_frame.cpp:3559
+#: gui/src/ocpn_frame.cpp:3568
 msgid "Route && Mark Manager..."
 msgstr "Beheer route- en markeringen..."
 
-#: gui/src/ocpn_frame.cpp:3561 gui/src/ocpn_frame.cpp:7039
+#: gui/src/ocpn_frame.cpp:3570 gui/src/ocpn_frame.cpp:7035
 msgid "Create Route"
 msgstr "Maak route"
 
-#: gui/src/ocpn_frame.cpp:3564
+#: gui/src/ocpn_frame.cpp:3573
 msgid "Drop Mark at Boat"
 msgstr "Markeer bij schip"
 
-#: gui/src/ocpn_frame.cpp:3566
+#: gui/src/ocpn_frame.cpp:3575
 msgid "Drop Mark at Cursor"
 msgstr "Markeer bij cursor"
 
-#: gui/src/ocpn_frame.cpp:3572 gui/src/ocpn_frame.cpp:3579
-#: gui/src/ocpn_frame.cpp:7083
+#: gui/src/ocpn_frame.cpp:3581 gui/src/ocpn_frame.cpp:3588
+#: gui/src/ocpn_frame.cpp:7079
 msgid "Drop MOB Marker"
 msgstr "Plaats MOB markeringspunt hier"
 
-#: gui/src/ocpn_frame.cpp:3576 gui/src/pluginmanager.cpp:4538
-#: gui/src/pluginmanager.cpp:4559
+#: gui/src/ocpn_frame.cpp:3585 gui/src/pluginmanager.cpp:4539
+#: gui/src/pluginmanager.cpp:4560
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: gui/src/ocpn_frame.cpp:3584
+#: gui/src/ocpn_frame.cpp:3593
 msgid "&Tools"
 msgstr "&Gereedschappen"
 
-#: gui/src/ocpn_frame.cpp:3588
+#: gui/src/ocpn_frame.cpp:3597
 msgid "&Window"
 msgstr "&Venster"
 
-#: gui/src/ocpn_frame.cpp:3593
+#: gui/src/ocpn_frame.cpp:3602
 msgid "OpenCPN Help"
 msgstr "OpenCPN Help"
 
-#: gui/src/ocpn_frame.cpp:3594
+#: gui/src/ocpn_frame.cpp:3603
 msgid "&Help"
 msgstr "&Help"
 
-#: gui/src/ocpn_frame.cpp:4252
+#: gui/src/ocpn_frame.cpp:4248
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Start OpenCPN opnieuw om taal- of stijlveranderingen te activeren."
 
-#: gui/src/ocpn_frame.cpp:5253
+#: gui/src/ocpn_frame.cpp:5249
 msgid " Ship "
 msgstr " Schip "
 
-#: gui/src/ocpn_frame.cpp:5945
+#: gui/src/ocpn_frame.cpp:5941
 msgid "Rotated Mode"
 msgstr "Gedraaide modus"
 
-#: gui/src/ocpn_frame.cpp:6301 gui/src/routeprintout.cpp:477
+#: gui/src/ocpn_frame.cpp:6297 gui/src/routeprintout.cpp:477
 #: gui/src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Er was een afdrukprobleem.\n"
 "Is uw printer goed ingesteld?"
 
-#: gui/src/ocpn_frame.cpp:6470 gui/src/ocpn_frame.cpp:6527
+#: gui/src/ocpn_frame.cpp:6466 gui/src/ocpn_frame.cpp:6523
 #: gui/src/routemanagerdialog.cpp:1272
 msgid "(Unnamed Route)"
 msgstr "(naamloze route)"
 
-#: gui/src/ocpn_frame.cpp:6690 gui/src/ocpn_frame.cpp:6748
+#: gui/src/ocpn_frame.cpp:6686 gui/src/ocpn_frame.cpp:6744
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS MAN OVERBOORD"
 
-#: gui/src/ocpn_frame.cpp:6710 gui/src/options.cpp:1867
+#: gui/src/ocpn_frame.cpp:6706 gui/src/options.cpp:1871
 msgid "Own ship"
 msgstr " Eigen Schip"
 
-#: gui/src/ocpn_frame.cpp:6722
+#: gui/src/ocpn_frame.cpp:6718
 msgid "Temporary AISMOB Route"
 msgstr "Tijdelijke AIS-MOB route"
 
-#: gui/src/ocpn_frame.cpp:6723
+#: gui/src/ocpn_frame.cpp:6719
 msgid "Present own ship"
 msgstr "Toon eigen schip"
 
-#: gui/src/ocpn_frame.cpp:6751 gui/src/ocpn_frame.cpp:6792
+#: gui/src/ocpn_frame.cpp:6747 gui/src/ocpn_frame.cpp:6788
 msgid "  Ownship Position: "
 msgstr "  Eigen scheeps positie: "
 
-#: gui/src/ocpn_frame.cpp:6755 gui/src/ocpn_frame.cpp:6796
+#: gui/src/ocpn_frame.cpp:6751 gui/src/ocpn_frame.cpp:6792
 msgid "  MOB Position: "
 msgstr "MOB-positie:"
 
-#: gui/src/ocpn_frame.cpp:6789
+#: gui/src/ocpn_frame.cpp:6785
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS MAN OVERBOORD UPDATE"
 
-#: gui/src/ocpn_frame.cpp:7045 gui/src/routemanagerdialog.cpp:314
+#: gui/src/ocpn_frame.cpp:7041 gui/src/routemanagerdialog.cpp:314
 msgid "Route & Mark Manager"
 msgstr "Beheer routes, tracks en markeringspunten"
 
-#: gui/src/ocpn_frame.cpp:7069
+#: gui/src/ocpn_frame.cpp:7065
 msgid "Print Chart"
 msgstr "Afdrukken kaart"
 
-#: gui/src/ocpn_frame.cpp:7083
+#: gui/src/ocpn_frame.cpp:7079
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Spatie)"
 
-#: gui/src/ocpn_frame.cpp:8619
+#: gui/src/ocpn_frame.cpp:8616
 msgid "OpenCPN ENC Prepare"
 msgstr "OpenCPN ENC voorbereiden"
 
-#: gui/src/ocpn_frame.cpp:8685
+#: gui/src/ocpn_frame.cpp:8682
 msgid "ENC Completed."
 msgstr "ENC voltooid"
 
-#: gui/src/options.cpp:840
+#: gui/src/options.cpp:844
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
@@ -5560,105 +5577,105 @@ msgstr "Maak een persoonlijk configuratiesjabloon, gebaseerd op de huidige inste
 " Dit sjabloon wordt opgeslagen en kan op ieder moment worden geselecteerd voor verder gebruik.\n"
 "               "
 
-#: gui/src/options.cpp:898
+#: gui/src/options.cpp:902
 msgid "MMSI Extended Properties"
 msgstr "Uitgebreide MMSI gegevens"
 
-#: gui/src/options.cpp:912
+#: gui/src/options.cpp:916
 msgid "Tracking"
 msgstr "Volgen"
 
-#: gui/src/options.cpp:917
+#: gui/src/options.cpp:921
 msgid "Default tracking"
 msgstr "Standaard volgen"
 
-#: gui/src/options.cpp:922
+#: gui/src/options.cpp:926
 msgid "Always track"
 msgstr "Altijd volgen"
 
-#: gui/src/options.cpp:925
+#: gui/src/options.cpp:929
 msgid " Never track"
 msgstr " Nooit volgen"
 
-#: gui/src/options.cpp:934
+#: gui/src/options.cpp:938
 msgid "Ignore this MMSI"
 msgstr "Negeer deze MMSI"
 
-#: gui/src/options.cpp:938
+#: gui/src/options.cpp:942
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "Behandel deze MMSI als SART/PLB(AIS) MOB"
 
-#: gui/src/options.cpp:942
+#: gui/src/options.cpp:946
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "AIVDM omzetten naar AIVDO voor deze MMSI"
 
-#: gui/src/options.cpp:946
+#: gui/src/options.cpp:950
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr "Deze MMSI is mijn volger. Geen CPA-alarm."
 
-#: gui/src/options.cpp:1031
+#: gui/src/options.cpp:1035
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr "Een MMSI ID bestaat meestal uit 9 cijfers.\n"
 "Controleer uw invoer en annuleer deze indien nodig."
 
-#: gui/src/options.cpp:1078 gui/src/options.cpp:1901 gui/src/options.cpp:2013
+#: gui/src/options.cpp:1082 gui/src/options.cpp:1905 gui/src/options.cpp:2017
 #: gui/src/RoutePropDlg.cpp:287 gui/src/RoutePropDlg.cpp:308
 #: gui/src/TrackPropDlg.cpp:500 gui/src/TrackPropDlg.cpp:520
 #: gui/src/TrackPropDlg.cpp:743 gui/src/TrackPropDlg.cpp:756
 msgid "Default"
 msgstr "standaard"
 
-#: gui/src/options.cpp:1081 gui/src/routemanagerdialog.cpp:2433
+#: gui/src/options.cpp:1085 gui/src/routemanagerdialog.cpp:2433
 #: gui/src/routemanagerdialog.cpp:2633
 msgid "Always"
 msgstr "altijd"
 
-#: gui/src/options.cpp:1084
+#: gui/src/options.cpp:1088
 msgid "Never"
 msgstr "nooit"
 
-#: gui/src/options.cpp:1121 gui/src/options.cpp:1168
+#: gui/src/options.cpp:1125 gui/src/options.cpp:1172
 msgid "Edit MMSI Properties"
 msgstr "Bewerk MMSI-eigenschappen"
 
-#: gui/src/options.cpp:1137 gui/src/options.cpp:4997 gui/src/options.cpp:5004
+#: gui/src/options.cpp:1141 gui/src/options.cpp:5001 gui/src/options.cpp:5008
 msgid "MMSI Properties"
 msgstr "MMSI Eigenschappen"
 
-#: gui/src/options.cpp:1233
+#: gui/src/options.cpp:1237
 msgid "Track Mode"
 msgstr "Volgmodus"
 
-#: gui/src/options.cpp:1242
+#: gui/src/options.cpp:1246
 msgid "Ignore"
 msgstr "Negeren"
 
-#: gui/src/options.cpp:1251
+#: gui/src/options.cpp:1255
 msgid "MOB"
 msgstr "MOB"
 
-#: gui/src/options.cpp:1259
+#: gui/src/options.cpp:1263
 msgid "VDM->VDO"
 msgstr "VDM->VDO"
 
-#: gui/src/options.cpp:1268
+#: gui/src/options.cpp:1272
 msgid "Ship name"
 msgstr "Scheepsnaam"
 
-#: gui/src/options.cpp:1277
+#: gui/src/options.cpp:1281
 msgid "Follower"
 msgstr "Volger"
 
-#: gui/src/options.cpp:1282
+#: gui/src/options.cpp:1286
 msgid "New..."
 msgstr "Nieuw..."
 
-#: gui/src/options.cpp:1305
+#: gui/src/options.cpp:1309
 msgid "Add MMSI Properties"
 msgstr "Toevoegen MMSI-eigenschappen"
 
-#: gui/src/options.cpp:1726
+#: gui/src/options.cpp:1730
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -5676,7 +5693,7 @@ msgstr "Het geselecteerde apparaat is niet bereikbaar; opencpn zal het waarschij
 "            KERNEL == \"ttyS *\", MODE = \"0666\"\n"
 "< div class = \" notranslate \"> 8</div> Voor meer info, zie het bestand LINUX_DEVICES.md in de distributie-docs.\n"
 
-#: gui/src/options.cpp:1737
+#: gui/src/options.cpp:1741
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -5696,1181 +5713,1176 @@ msgstr "\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "Voor meer informatie, zie het bestand LINUX_DEVICES.md in \"distribution docs\".\n"
 
-#: gui/src/options.cpp:1859
+#: gui/src/options.cpp:1863
 msgid "NMEA"
 msgstr "NMEA"
 
-#: gui/src/options.cpp:1884
+#: gui/src/options.cpp:1888
 msgid "COG Predictor Length (min)"
 msgstr "Lengte GrK/Vgr-vector (tijdminuten): "
 
-#: gui/src/options.cpp:1891
+#: gui/src/options.cpp:1895
 msgid "Heading Predictor Length (NMi)"
 msgstr "Lengte koersvoorspeller (zeemijl):"
 
-#: gui/src/options.cpp:1898
+#: gui/src/options.cpp:1902
 msgid "Ship Icon Type"
 msgstr "Type scheepspictogram:"
 
-#: gui/src/options.cpp:1901
+#: gui/src/options.cpp:1905
 msgid "Real Scale Bitmap"
 msgstr "'Real Scale Bitmap'"
 
-#: gui/src/options.cpp:1902
+#: gui/src/options.cpp:1906
 msgid "Real Scale Vector"
 msgstr "'Real Scale Vector'"
 
-#: gui/src/options.cpp:1917
+#: gui/src/options.cpp:1921
 msgid "Length Over All (m)"
 msgstr "Lengte over alles (m)"
 
-#: gui/src/options.cpp:1923
+#: gui/src/options.cpp:1927
 msgid "Width Over All (m)"
 msgstr "Breedte over alles (m)"
 
-#: gui/src/options.cpp:1929
+#: gui/src/options.cpp:1933
 msgid "GPS Offset from Bow (m)"
 msgstr "GPS-offset vanaf boeg (m)"
 
-#: gui/src/options.cpp:1935
+#: gui/src/options.cpp:1939
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS-offset vanaf middenlijn (m)"
 
-#: gui/src/options.cpp:1941
+#: gui/src/options.cpp:1945
 msgid "Minimum Screen Size (mm)"
 msgstr "Minimum schermafmeting (mm)"
 
-#: gui/src/options.cpp:1953
+#: gui/src/options.cpp:1957
 msgid "Show range rings"
 msgstr "Toon afstandscirkels"
 
-#: gui/src/options.cpp:1970 gui/src/options.cpp:2328
+#: gui/src/options.cpp:1974 gui/src/options.cpp:2332
 msgid "Distance between rings"
 msgstr "Interval tussen afstandscirkels"
 
-#: gui/src/options.cpp:1979 gui/src/options.cpp:2339
+#: gui/src/options.cpp:1983 gui/src/options.cpp:2343
 msgid "Distance Unit"
 msgstr "Afstandseenheid voor cirkels:"
 
-#: gui/src/options.cpp:1982 gui/src/options.cpp:2169 gui/src/options.cpp:4320
-#: gui/src/options.cpp:4481 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:1986 gui/src/options.cpp:2173 gui/src/options.cpp:4324
+#: gui/src/options.cpp:4485 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Nautical miles"
 msgstr "zeemijl (NM of NMi)"
 
-#: gui/src/options.cpp:1982 gui/src/options.cpp:2169 gui/src/options.cpp:4321
-#: gui/src/options.cpp:4482 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:1986 gui/src/options.cpp:2173 gui/src/options.cpp:4325
+#: gui/src/options.cpp:4486 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Kilometers"
 msgstr "kilometer"
 
-#: gui/src/options.cpp:1982
+#: gui/src/options.cpp:1986
 msgid "Minutes (time)"
 msgstr ""
 
-#: gui/src/options.cpp:1989
+#: gui/src/options.cpp:1993
 msgid "Range Ring Colour"
 msgstr "Kleur afstandscirkels"
 
-#: gui/src/options.cpp:2004
+#: gui/src/options.cpp:2008
 msgid "Show direction to Active Waypoint"
 msgstr "Toon richting actief waypoint"
 
-#: gui/src/options.cpp:2009 gui/src/RoutePropDlg.cpp:282
+#: gui/src/options.cpp:2013 gui/src/RoutePropDlg.cpp:282
 #: gui/src/TrackPropDlg.cpp:495 gui/src/TrackPropDlg.cpp:738
 msgid "Style"
 msgstr "Stijl"
 
-#: gui/src/options.cpp:2013 gui/src/RoutePropDlg.cpp:287
+#: gui/src/options.cpp:2017 gui/src/RoutePropDlg.cpp:287
 #: gui/src/TrackPropDlg.cpp:500 gui/src/TrackPropDlg.cpp:743
 msgid "Solid"
 msgstr "ononderbroken"
 
-#: gui/src/options.cpp:2014 gui/src/RoutePropDlg.cpp:288
+#: gui/src/options.cpp:2018 gui/src/RoutePropDlg.cpp:288
 #: gui/src/TrackPropDlg.cpp:501 gui/src/TrackPropDlg.cpp:743
 msgid "Dot"
 msgstr "punt"
 
-#: gui/src/options.cpp:2014 gui/src/RoutePropDlg.cpp:288
+#: gui/src/options.cpp:2018 gui/src/RoutePropDlg.cpp:288
 #: gui/src/TrackPropDlg.cpp:501 gui/src/TrackPropDlg.cpp:744
 msgid "Long dash"
 msgstr "lange streep"
 
-#: gui/src/options.cpp:2015 gui/src/RoutePropDlg.cpp:289
+#: gui/src/options.cpp:2019 gui/src/RoutePropDlg.cpp:289
 #: gui/src/TrackPropDlg.cpp:502 gui/src/TrackPropDlg.cpp:744
 msgid "Short dash"
 msgstr "korte streep"
 
-#: gui/src/options.cpp:2015 gui/src/RoutePropDlg.cpp:289
-#: gui/src/TrackPropDlg.cpp:502 gui/src/TrackPropDlg.cpp:744
-msgid "Dot dash"
-msgstr "punt-streep"
-
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Default color"
 msgstr "standaard kleur"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Black"
 msgstr "zwart"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Dark Red"
 msgstr "donkerrood"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Dark Green"
 msgstr "donkergroen"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Yellow"
 msgstr "donkergeel"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Blue"
 msgstr "donkerblauw"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Magenta"
 msgstr "donkermagenta"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Cyan"
 msgstr "donkercyaan"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Light Gray"
 msgstr "lichtgrijs"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Dark Gray"
 msgstr "donkergrijs"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Red"
 msgstr "rood"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Green"
 msgstr "groen"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Yellow"
 msgstr "geel"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Blue"
 msgstr "blauw"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Magenta"
 msgstr "magenta"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Cyan"
 msgstr "cyaan"
 
-#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:269
+#: gui/src/options.cpp:2037 gui/src/RoutePropDlg.cpp:269
 #: gui/src/TrackPropDlg.cpp:486 gui/src/TrackPropDlg.cpp:731
 msgid "White"
 msgstr "wit"
 
-#: gui/src/options.cpp:2043 gui/src/routemanagerdialog.cpp:544
+#: gui/src/options.cpp:2047 gui/src/routemanagerdialog.cpp:544
 msgid "Tracks"
 msgstr "Tracks"
 
-#: gui/src/options.cpp:2049
+#: gui/src/options.cpp:2053
 msgid "Automatic Daily Tracks at midnight"
 msgstr "Automatische dagelijkse tracks vanaf 00:00 uur"
 
-#: gui/src/options.cpp:2057
+#: gui/src/options.cpp:2061
 msgid "Automatic Daily Tracks at"
 msgstr "Automatische dagelijkse tracks vanaf"
 
-#: gui/src/options.cpp:2074
+#: gui/src/options.cpp:2078
 msgid "Computer"
 msgstr "Computer"
 
-#: gui/src/options.cpp:2080 gui/src/RoutePropDlg.cpp:242 gui/src/TCWin.cpp:147
+#: gui/src/options.cpp:2084 gui/src/RoutePropDlg.cpp:242 gui/src/TCWin.cpp:147
 #: gui/src/TrackPropDlg.cpp:446 gui/src/TrackPropDlg.cpp:454
 #: gui/src/TrackPropDlg.cpp:819
 msgid "UTC"
 msgstr "UTC"
 
-#: gui/src/options.cpp:2086
+#: gui/src/options.cpp:2090
 msgid "LMT"
 msgstr "LMT"
 
-#: gui/src/options.cpp:2099
+#: gui/src/options.cpp:2103
 msgid "Highlight Tracks"
 msgstr "Markeer tracks"
 
-#: gui/src/options.cpp:2103
+#: gui/src/options.cpp:2107
 msgid "Highlight Colour"
 msgstr "Kleur markeren"
 
-#: gui/src/options.cpp:2118
+#: gui/src/options.cpp:2122
 msgid "Tracking Precision"
 msgstr "Volgnauwkeurigheid:"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "Low"
 msgstr "laag"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "Medium"
 msgstr "gemiddeld"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "High"
 msgstr "hoog"
 
-#: gui/src/options.cpp:2129
+#: gui/src/options.cpp:2133
 msgid "Calculate values"
 msgstr "Bereken waarden"
 
-#: gui/src/options.cpp:2143
+#: gui/src/options.cpp:2147
 msgid "Calculate SOG and COG from position changes"
 msgstr "Bereken SOG en COG vanuit opeenvolgende posities"
 
-#: gui/src/options.cpp:2148
+#: gui/src/options.cpp:2152
 msgid "Min seconds between updates"
 msgstr "Aantal seconden tussen updates"
 
-#: gui/src/options.cpp:2164
+#: gui/src/options.cpp:2168
 msgid "Routes/Points"
 msgstr "Routes/markeringspunten"
 
-#: gui/src/options.cpp:2177
+#: gui/src/options.cpp:2181
 msgid "New Routes"
 msgstr "Nieuwe routes"
 
-#: gui/src/options.cpp:2182
+#: gui/src/options.cpp:2186
 msgid "Active Route"
 msgstr "Actieve route"
 
-#: gui/src/options.cpp:2188
+#: gui/src/options.cpp:2192
 msgid "Persist active route, automatically activate on start up"
 msgstr "Vervolg actieve route, automatisch activeren bij opstarten"
 
-#: gui/src/options.cpp:2202
+#: gui/src/options.cpp:2206
 msgid "Waypoint default icon"
 msgstr "Standaard pictogram"
 
-#: gui/src/options.cpp:2228
+#: gui/src/options.cpp:2232
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "Straal van aankomstcirkel (in NM):"
 
-#: gui/src/options.cpp:2237
+#: gui/src/options.cpp:2241
 msgid "Advance route waypoint on arrival only"
 msgstr "Verschuif waypoint alleen bij aankomst"
 
-#: gui/src/options.cpp:2250
+#: gui/src/options.cpp:2254
 msgid "New Marks"
 msgstr ""
 
-#: gui/src/options.cpp:2265
+#: gui/src/options.cpp:2269
 msgid "Mark default icon"
 msgstr ""
 
-#: gui/src/options.cpp:2291
+#: gui/src/options.cpp:2295
 msgid "Show marks only at a chartscale greater than 1 :"
 msgstr ""
 
-#: gui/src/options.cpp:2300
+#: gui/src/options.cpp:2304
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr "Toon altijd, ongeacht andere kaartschaal-instellingen"
 
-#: gui/src/options.cpp:2313
+#: gui/src/options.cpp:2317
 msgid "Mark range rings"
 msgstr ""
 
-#: gui/src/options.cpp:2350
+#: gui/src/options.cpp:2354
 msgid "Waypoint Range Ring Colours"
 msgstr "Kleur afstandscirkels"
 
-#: gui/src/options.cpp:2371
+#: gui/src/options.cpp:2375
 msgid "Control Options"
 msgstr "Algemene Opties"
 
-#: gui/src/options.cpp:2380
+#: gui/src/options.cpp:2384
 msgid "Lock marks and waypoints (Unless object property dialog visible)"
 msgstr ""
 
-#: gui/src/options.cpp:2386
+#: gui/src/options.cpp:2390
 msgid "Confirm deletion of tracks and routes"
 msgstr "Bevestig verwijderen van tracks en routes"
 
-#: gui/src/options.cpp:2444
+#: gui/src/options.cpp:2448
 msgid "Chart Files"
 msgstr "Kaartbestanden"
 
-#: gui/src/options.cpp:2449
+#: gui/src/options.cpp:2453
 msgid "Directories"
 msgstr "Mappen"
 
-#: gui/src/options.cpp:2472
+#: gui/src/options.cpp:2476
 msgid "Add Directory..."
 msgstr "Voeg map toe ..."
 
-#: gui/src/options.cpp:2473 gui/src/options.cpp:3767
+#: gui/src/options.cpp:2477 gui/src/options.cpp:3771
 #: gui/src/RoutePropDlgImpl.cpp:933
 msgid "Remove Selected"
 msgstr "Selectie weghalen"
 
-#: gui/src/options.cpp:2474
+#: gui/src/options.cpp:2478
 msgid "Compress Selected"
 msgstr "Comprimeren van selectie"
 
-#: gui/src/options.cpp:2477
+#: gui/src/options.cpp:2481
 msgid "Add.."
 msgstr "Voeg toe..."
 
-#: gui/src/options.cpp:2478
+#: gui/src/options.cpp:2482
 msgid "Remove"
 msgstr "Verwijderen"
 
-#: gui/src/options.cpp:2479
+#: gui/src/options.cpp:2483
 msgid "Compress"
 msgstr "Comprimeer"
 
-#: gui/src/options.cpp:2504
+#: gui/src/options.cpp:2508
 msgid "Migrate Charts.."
 msgstr "verplaats kaarten.."
 
-#: gui/src/options.cpp:2512
+#: gui/src/options.cpp:2516
 msgid "Update Control"
 msgstr "Kaartmappen bijwerken"
 
-#: gui/src/options.cpp:2521
+#: gui/src/options.cpp:2525
 msgid "Scan Charts and Update Database"
 msgstr "Scan kaarten en werk database bij"
 
-#: gui/src/options.cpp:2525
+#: gui/src/options.cpp:2529
 msgid "Force Full Database Rebuild"
 msgstr "Forceer volledige herbouw van database"
 
-#: gui/src/options.cpp:2529
+#: gui/src/options.cpp:2533
 msgid "Prepare all ENC Charts"
 msgstr "Alle ENC-kaarten voorbereiden"
 
-#: gui/src/options.cpp:2597
+#: gui/src/options.cpp:2601
 msgid " [Modified]"
 msgstr " [Gewijzigd]"
 
-#: gui/src/options.cpp:2605
+#: gui/src/options.cpp:2609
 msgid "Templates"
 msgstr "Templates"
 
-#: gui/src/options.cpp:2617
+#: gui/src/options.cpp:2621
 msgid "Template Status"
 msgstr "Template Status"
 
-#: gui/src/options.cpp:2627
+#: gui/src/options.cpp:2631
 msgid "Last Applied Template Title:"
 msgstr "Laatst toegepaste template naam:"
 
-#: gui/src/options.cpp:2640
+#: gui/src/options.cpp:2644
 msgid "Saved Templates"
 msgstr "Opgeslagen Templates"
 
-#: gui/src/options.cpp:2667
+#: gui/src/options.cpp:2671
 msgid "Create Config..."
 msgstr "Configuratie aanmaken..."
 
-#: gui/src/options.cpp:2679
+#: gui/src/options.cpp:2683
 msgid "Delete Selected Config..."
 msgstr "Geselecteerde configuratie verwijderen..."
 
-#: gui/src/options.cpp:2687
+#: gui/src/options.cpp:2691
 msgid "Apply Selected Config"
 msgstr "Geselecteerde configuratie toepassen"
 
-#: gui/src/options.cpp:2760
+#: gui/src/options.cpp:2764
 msgid "Create Config"
 msgstr "Configuratie aanmaken"
 
-#: gui/src/options.cpp:2814
+#: gui/src/options.cpp:2818
 msgid "Problem applying selected configuration."
 msgstr "Probleem met het toepassen van geselecteerde configuratie."
 
-#: gui/src/options.cpp:2885 gui/src/RoutePropDlg.cpp:519
+#: gui/src/options.cpp:2889 gui/src/RoutePropDlg.cpp:519
 #: gui/src/TrackPropDlg.cpp:946
 msgid "Advanced"
 msgstr "Uitgebreid"
 
-#: gui/src/options.cpp:2905
+#: gui/src/options.cpp:2909
 msgid "De-skew Raster Charts"
 msgstr "Rechttrekken scheve rasterkaarten"
 
-#: gui/src/options.cpp:2917 gui/src/options.cpp:3239
+#: gui/src/options.cpp:2921 gui/src/options.cpp:3243
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Hardwareversnelling inschakelen (OpenGL)"
 
-#: gui/src/options.cpp:2922
+#: gui/src/options.cpp:2926
 msgid "OpenGL Options"
 msgstr "OpenGL-opties"
 
-#: gui/src/options.cpp:2938 gui/src/options.cpp:3099
+#: gui/src/options.cpp:2942 gui/src/options.cpp:3103
 msgid "Chart Rotation Averaging Time"
 msgstr "Gemiddelde tijd voor kaartrotatie"
 
-#: gui/src/options.cpp:2954 gui/src/options.cpp:3111 gui/src/options.cpp:5430
+#: gui/src/options.cpp:2958 gui/src/options.cpp:3115 gui/src/options.cpp:5434
 msgid "seconds"
 msgstr "seconden"
 
-#: gui/src/options.cpp:2962 gui/src/options.cpp:3120
+#: gui/src/options.cpp:2966 gui/src/options.cpp:3124
 msgid "Chart Zoom/Scale Weighting"
 msgstr "Kaart zoom/schaal-weging"
 
-#: gui/src/options.cpp:2971 gui/src/options.cpp:3145
+#: gui/src/options.cpp:2975 gui/src/options.cpp:3149
 msgid "Raster"
 msgstr "Raster"
 
-#: gui/src/options.cpp:2985 gui/src/options.cpp:3158
+#: gui/src/options.cpp:2989 gui/src/options.cpp:3162
 msgid "Vector"
 msgstr "Vector"
 
-#: gui/src/options.cpp:2999 gui/src/options.cpp:3175
+#: gui/src/options.cpp:3003 gui/src/options.cpp:3179
 msgid "CM93 Detail level"
 msgstr "CM93 detailniveau"
 
-#: gui/src/options.cpp:3018 gui/src/options.cpp:3198
+#: gui/src/options.cpp:3022 gui/src/options.cpp:3202
 msgid "Physical Screen Width"
 msgstr "Fysieke schermbreedte"
 
-#: gui/src/options.cpp:3023 gui/src/options.cpp:3203
+#: gui/src/options.cpp:3027 gui/src/options.cpp:3207
 msgid "Auto"
 msgstr "auto"
 
-#: gui/src/options.cpp:3027 gui/src/options.cpp:3207
+#: gui/src/options.cpp:3031 gui/src/options.cpp:3211
 msgid "Manual:"
 msgstr "handmatig"
 
-#: gui/src/options.cpp:3038 gui/src/options.cpp:3215
+#: gui/src/options.cpp:3042 gui/src/options.cpp:3219
 msgid "mm"
 msgstr "mm"
 
-#: gui/src/options.cpp:3069 gui/src/options.cpp:3974 gui/src/options.cpp:4157
+#: gui/src/options.cpp:3073 gui/src/options.cpp:3978 gui/src/options.cpp:4161
 msgid "Chart Display"
 msgstr "Kaartweergave"
 
-#: gui/src/options.cpp:3075
+#: gui/src/options.cpp:3079
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Toon scheve rasterkaarten Noord-Boven"
 
-#: gui/src/options.cpp:3128
+#: gui/src/options.cpp:3132
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "Met een lagere waarde toont bepaald zoomniveau een minder gedetailleerde kaart. \n"
 "Met een hogere waarde, toont hetzelfde zoomniveau een meer gedetailleerde kaart."
 
-#: gui/src/options.cpp:3233
+#: gui/src/options.cpp:3237
 msgid "Graphics"
 msgstr "Afbeeldingen"
 
-#: gui/src/options.cpp:3264
+#: gui/src/options.cpp:3268
 msgid "Chart Bar"
 msgstr "Kaartbalk"
 
-#: gui/src/options.cpp:3270
+#: gui/src/options.cpp:3274
 msgid "Show extended chart bar information."
 msgstr "Uitgebreide kaartbalk informatie tonen."
 
-#: gui/src/options.cpp:3289
+#: gui/src/options.cpp:3293
 msgid "Vector Chart Display"
 msgstr "Vectorkaartweergave"
 
-#: gui/src/options.cpp:3312 gui/src/options.cpp:3515
+#: gui/src/options.cpp:3316 gui/src/options.cpp:3519
 msgid "Mariner's Standard"
 msgstr "Nautische Standaard"
 
-#: gui/src/options.cpp:3331 gui/src/options.cpp:3530
+#: gui/src/options.cpp:3335 gui/src/options.cpp:3534
 msgid "Depth Soundings"
 msgstr "Toon kaartdieptes"
 
-#: gui/src/options.cpp:3337 gui/src/options.cpp:3535
+#: gui/src/options.cpp:3341 gui/src/options.cpp:3539
 msgid "Chart Information Objects"
 msgstr "Toon kaartinformatieobjecten"
 
-#: gui/src/options.cpp:3342
+#: gui/src/options.cpp:3346
 msgid "Buoys/Lights"
 msgstr "Boeien en lichten"
 
-#: gui/src/options.cpp:3359 gui/src/options.cpp:3553
+#: gui/src/options.cpp:3363 gui/src/options.cpp:3557
 msgid "Extended Light Sectors"
 msgstr "Toon verlengde lichtsectoren"
 
-#: gui/src/options.cpp:3364
+#: gui/src/options.cpp:3368
 msgid "Chart Texts"
 msgstr "Kaartteksten"
 
-#: gui/src/options.cpp:3371 gui/src/options.cpp:3561
+#: gui/src/options.cpp:3375 gui/src/options.cpp:3565
 msgid "National text on chart"
 msgstr "Nationale tekst op kaart"
 
-#: gui/src/options.cpp:3376 gui/src/options.cpp:3566
+#: gui/src/options.cpp:3380 gui/src/options.cpp:3570
 msgid "Important Text Only"
 msgstr "Toon alleen belangrijke tekst"
 
-#: gui/src/options.cpp:3381 gui/src/options.cpp:3571
+#: gui/src/options.cpp:3385 gui/src/options.cpp:3575
 msgid "De-Cluttered Text"
 msgstr "Schoon tekst op"
 
-#: gui/src/options.cpp:3385
+#: gui/src/options.cpp:3389
 msgid "Chart Detail"
 msgstr "Kaartdetail"
 
-#: gui/src/options.cpp:3388 gui/src/options.cpp:3576
+#: gui/src/options.cpp:3392 gui/src/options.cpp:3580
 msgid "Reduced Detail at Small Scale"
 msgstr "Reduceer detail bij kleine schaal"
 
-#: gui/src/options.cpp:3395 gui/src/options.cpp:3583
+#: gui/src/options.cpp:3399 gui/src/options.cpp:3587
 msgid "Additional detail reduction at Small Scale"
 msgstr ""
 
-#: gui/src/options.cpp:3404 gui/src/options.cpp:3599
+#: gui/src/options.cpp:3408 gui/src/options.cpp:3603
 msgid "Graphics Style"
 msgstr "Grafische stijl"
 
-#: gui/src/options.cpp:3407 gui/src/options.cpp:3602
+#: gui/src/options.cpp:3411 gui/src/options.cpp:3606
 msgid "Paper Chart"
 msgstr "papieren kaart"
 
-#: gui/src/options.cpp:3408 gui/src/options.cpp:3603
+#: gui/src/options.cpp:3412 gui/src/options.cpp:3607
 msgid "Simplified"
 msgstr "vereenvoudigd"
 
-#: gui/src/options.cpp:3414 gui/src/options.cpp:3614
+#: gui/src/options.cpp:3418 gui/src/options.cpp:3618
 msgid "Boundaries"
 msgstr "Grenzen"
 
-#: gui/src/options.cpp:3417 gui/src/options.cpp:3617
+#: gui/src/options.cpp:3421 gui/src/options.cpp:3621
 msgid "Plain"
 msgstr "eenvoudig"
 
-#: gui/src/options.cpp:3418 gui/src/options.cpp:3618
+#: gui/src/options.cpp:3422 gui/src/options.cpp:3622
 msgid "Symbolized"
 msgstr "gesymboliseerd"
 
-#: gui/src/options.cpp:3424 gui/src/options.cpp:3629
+#: gui/src/options.cpp:3428 gui/src/options.cpp:3633
 msgid "Colors"
 msgstr "Aantal kleuren voor diepteweergave"
 
-#: gui/src/options.cpp:3427 gui/src/options.cpp:3633
+#: gui/src/options.cpp:3431 gui/src/options.cpp:3637
 msgid "2 Color"
 msgstr "2 kleuren"
 
-#: gui/src/options.cpp:3428 gui/src/options.cpp:3634
+#: gui/src/options.cpp:3432 gui/src/options.cpp:3638
 msgid "4 Color"
 msgstr "4 kleuren"
 
-#: gui/src/options.cpp:3439 gui/src/options.cpp:3656
+#: gui/src/options.cpp:3443 gui/src/options.cpp:3660
 msgid "Shallow Depth"
 msgstr "Ondiep"
 
-#: gui/src/options.cpp:3450 gui/src/options.cpp:3665
+#: gui/src/options.cpp:3454 gui/src/options.cpp:3669
 msgid "Safety Depth"
 msgstr "Veilige diepte"
 
-#: gui/src/options.cpp:3460 gui/src/options.cpp:3674
+#: gui/src/options.cpp:3464 gui/src/options.cpp:3678
 msgid "Deep Depth"
 msgstr "Grote diepte"
 
-#: gui/src/options.cpp:3475 gui/src/options.cpp:3692
+#: gui/src/options.cpp:3479 gui/src/options.cpp:3696
 msgid "User Standard Objects"
 msgstr "Gebruikers voorkeur Objecten"
 
-#: gui/src/options.cpp:3494 gui/src/options.cpp:3707
+#: gui/src/options.cpp:3498 gui/src/options.cpp:3711
 msgid "Reset to STANDARD"
 msgstr "Terugzetten naar STANDAARD"
 
-#: gui/src/options.cpp:3720
+#: gui/src/options.cpp:3724
 msgid "Tides && Currents"
 msgstr "Getijhoogten en -stromen"
 
-#: gui/src/options.cpp:3725
+#: gui/src/options.cpp:3729
 msgid "Active Datasets"
 msgstr "Actieve datasets"
 
-#: gui/src/options.cpp:3765
+#: gui/src/options.cpp:3769
 msgid "Add Dataset..."
 msgstr "Voeg dataset toe ..."
 
-#: gui/src/options.cpp:3809
+#: gui/src/options.cpp:3813
 msgid "All Available Charts"
 msgstr "Alle beschikbare kaarten"
 
-#: gui/src/options.cpp:3831
+#: gui/src/options.cpp:3835
 msgid "Remove Chart"
 msgstr "Kaart weghalen"
 
-#: gui/src/options.cpp:3868
+#: gui/src/options.cpp:3872
 msgid "All Charts"
 msgstr "Alle kaarten"
 
-#: gui/src/options.cpp:3887
+#: gui/src/options.cpp:3891
 msgid "New Group..."
 msgstr "Nieuwe groep ..."
 
-#: gui/src/options.cpp:3889
+#: gui/src/options.cpp:3893
 msgid "Delete Group"
 msgstr "Groep verwijderen"
 
-#: gui/src/options.cpp:3985 gui/src/options.cpp:4168
+#: gui/src/options.cpp:3989 gui/src/options.cpp:4172
 msgid "Preserve scale when switching charts"
 msgstr "Behoud schaal wanneer kaart wordt gewisseld"
 
-#: gui/src/options.cpp:3994 gui/src/options.cpp:4177
+#: gui/src/options.cpp:3998 gui/src/options.cpp:4181
 msgid "Controls"
 msgstr "Besturingselementen"
 
-#: gui/src/options.cpp:4000 gui/src/options.cpp:4183
+#: gui/src/options.cpp:4004 gui/src/options.cpp:4187
 msgid "Smooth Panning / Zooming"
 msgstr "Soepel pannen en zoomen"
 
-#: gui/src/options.cpp:4004 gui/src/options.cpp:4186
+#: gui/src/options.cpp:4008 gui/src/options.cpp:4190
 msgid "Zoom to Cursor"
 msgstr "Zoom in op cursorpositie"
 
-#: gui/src/options.cpp:4015 gui/src/options.cpp:4202
+#: gui/src/options.cpp:4019 gui/src/options.cpp:4206
 msgid "Display Features"
 msgstr "Weergavevoorzieningen"
 
-#: gui/src/options.cpp:4045
+#: gui/src/options.cpp:4049
 msgid "Status Bar Option"
 msgstr "Optie voor statusbalk"
 
-#: gui/src/options.cpp:4052 gui/src/options.cpp:4239
+#: gui/src/options.cpp:4056 gui/src/options.cpp:4243
 msgid "Live ETA at Cursor"
 msgstr "ETA bij cursor"
 
-#: gui/src/options.cpp:4061 gui/src/options.cpp:4247 gui/src/options.cpp:7082
+#: gui/src/options.cpp:4065 gui/src/options.cpp:4251 gui/src/options.cpp:7086
 msgid "Default Boat Speed "
 msgstr "Kruissnelheid "
 
-#: gui/src/options.cpp:4077 gui/src/options.cpp:4262
+#: gui/src/options.cpp:4081 gui/src/options.cpp:4266
 msgid "Canvas Layout"
 msgstr "Schermindeling"
 
-#: gui/src/options.cpp:4232
+#: gui/src/options.cpp:4236
 msgid "Status Bar"
 msgstr "Status Balk"
 
-#: gui/src/options.cpp:4299
+#: gui/src/options.cpp:4303
 msgid "Units"
 msgstr "Eenheden"
 
-#: gui/src/options.cpp:4320 gui/src/options.cpp:4481
-#: gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:4324 gui/src/options.cpp:4485
+#: gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Statute miles"
 msgstr "statute mile"
 
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "Knots"
 msgstr "knopen"
 
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506
 msgid "Mph"
 msgstr "mph"
 
-#: gui/src/options.cpp:4361 gui/src/options.cpp:4510
-#: gui/src/initwiz/wiz_ui_proto.cpp:32
+#: gui/src/options.cpp:4365 gui/src/options.cpp:4514
+#: gui/src/initwiz/wiz_ui_proto.cpp:37
 msgid "Depth"
 msgstr "Diepte"
 
-#: gui/src/options.cpp:4377 gui/src/options.cpp:4523
+#: gui/src/options.cpp:4381 gui/src/options.cpp:4527
 msgid "Temperature"
 msgstr "Temperatuur"
 
-#: gui/src/options.cpp:4380 gui/src/options.cpp:4526
+#: gui/src/options.cpp:4384 gui/src/options.cpp:4530
 msgid "Celsius"
 msgstr "Celsius"
 
-#: gui/src/options.cpp:4381 gui/src/options.cpp:4527
+#: gui/src/options.cpp:4385 gui/src/options.cpp:4531
 msgid "Fahrenheit"
 msgstr "Fahrenheit"
 
-#: gui/src/options.cpp:4382 gui/src/options.cpp:4528
+#: gui/src/options.cpp:4386 gui/src/options.cpp:4532
 msgid "Kelvin"
 msgstr "Kelvin"
 
-#: gui/src/options.cpp:4397 gui/src/options.cpp:4540
+#: gui/src/options.cpp:4401 gui/src/options.cpp:4544
 msgid "Lat/Long"
 msgstr "Geogr. Breedte/Lengte"
 
-#: gui/src/options.cpp:4399 gui/src/options.cpp:4542
+#: gui/src/options.cpp:4403 gui/src/options.cpp:4546
 msgid "Degrees, Decimal Minutes"
 msgstr "graden, decimale minuten"
 
-#: gui/src/options.cpp:4400 gui/src/options.cpp:4543
+#: gui/src/options.cpp:4404 gui/src/options.cpp:4547
 msgid "Decimal Degrees"
 msgstr "graden, decimale graden"
 
-#: gui/src/options.cpp:4401 gui/src/options.cpp:4544
+#: gui/src/options.cpp:4405 gui/src/options.cpp:4548
 msgid "Degrees, Minutes, Seconds"
 msgstr "graden, minuten, seconden"
 
-#: gui/src/options.cpp:4416 gui/src/options.cpp:4556
+#: gui/src/options.cpp:4420 gui/src/options.cpp:4560
 msgid "Bearings"
 msgstr "Peilingen"
 
-#: gui/src/options.cpp:4421
+#: gui/src/options.cpp:4425
 msgid "Show true"
 msgstr "Toon als waar"
 
-#: gui/src/options.cpp:4426
+#: gui/src/options.cpp:4430
 msgid "Show magnetic"
 msgstr "Toon magnetisch"
 
-#: gui/src/options.cpp:4442
+#: gui/src/options.cpp:4446
 msgid "Assumed magnetic variation"
 msgstr "Veronderstelde magnetische variatie"
 
-#: gui/src/options.cpp:4457 gui/src/options.cpp:4589
+#: gui/src/options.cpp:4461 gui/src/options.cpp:4593
 msgid "deg (-W, +E)"
 msgstr "graden (-W, +E)"
 
-#: gui/src/options.cpp:4500
+#: gui/src/options.cpp:4504
 msgid "WindSpeed"
 msgstr "Windsnelheid"
 
-#: gui/src/options.cpp:4564
+#: gui/src/options.cpp:4568
 msgid "Show true bearings and headings"
 msgstr "Toon ware koersen en peilingen"
 
-#: gui/src/options.cpp:4567
+#: gui/src/options.cpp:4571
 msgid "Show magnetic bearings and headings."
 msgstr "Toon magnetische koersen en peilingen."
 
-#: gui/src/options.cpp:4579 gui/src/options.cpp:6052
+#: gui/src/options.cpp:4583 gui/src/options.cpp:6056
 msgid "WMM Plugin calculated magnetic variation"
 msgstr "Door WMM Plugin berekende magn. variatie"
 
-#: gui/src/options.cpp:4597
+#: gui/src/options.cpp:4601
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr " Om de magn. variatie handmatig in te stellen,\n"
 " dient u de WMM PlugIn uit te schakelen."
 
-#: gui/src/options.cpp:4731
+#: gui/src/options.cpp:4735
 msgid "Test"
 msgstr "Test"
 
-#: gui/src/options.cpp:4744
+#: gui/src/options.cpp:4748
 msgid "Audio file name:"
 msgstr "naam van geluidsbestand:"
 
-#: gui/src/options.cpp:4772 gui/src/options.cpp:4783 gui/src/options.cpp:8343
-#: gui/src/options.cpp:8354
+#: gui/src/options.cpp:4776 gui/src/options.cpp:4787 gui/src/options.cpp:8373
+#: gui/src/options.cpp:8384
 msgid "Select Sound File"
 msgstr "Selecteer geluidbestand"
 
-#: gui/src/options.cpp:4854
+#: gui/src/options.cpp:4858
 msgid "Sounds"
 msgstr "Geluiden"
 
-#: gui/src/options.cpp:4862
+#: gui/src/options.cpp:4866
 msgid "Anchor Alarm"
 msgstr "Anker Alarm"
 
-#: gui/src/options.cpp:4863
+#: gui/src/options.cpp:4867
 msgid "Play Sound on Anchor Alarm."
 msgstr "Speel Anker Alarm geluid af."
 
-#: gui/src/options.cpp:4864
+#: gui/src/options.cpp:4868
 msgid "Select Anchor Alarm Sound"
 msgstr "Selecteer Anker Alarm Geluid"
 
-#: gui/src/options.cpp:4874
+#: gui/src/options.cpp:4878
 msgid "Play Sound on AIS Alert."
 msgstr "AIS waarschuwing laten horen."
 
-#: gui/src/options.cpp:4875
+#: gui/src/options.cpp:4879
 msgid "Select AIS Alert Sound"
 msgstr "Selecteer AIS waarschuwingsgeluid"
 
-#: gui/src/options.cpp:4888
+#: gui/src/options.cpp:4892
 msgid "SART Alert"
 msgstr "SART waarschuwing"
 
-#: gui/src/options.cpp:4889
+#: gui/src/options.cpp:4893
 msgid "Play Sound on AIS SART Alert."
 msgstr "AIS waarschuwingsgeluid afspelen."
 
-#: gui/src/options.cpp:4890
+#: gui/src/options.cpp:4894
 msgid "Select AIS SART Alert Sound"
 msgstr "Selecteer AIS SART waarschuwingsgeluid"
 
-#: gui/src/options.cpp:4903
+#: gui/src/options.cpp:4907
 msgid "DSC Alert"
 msgstr "DSC Waarschuwing"
 
-#: gui/src/options.cpp:4904
+#: gui/src/options.cpp:4908
 msgid "Play Sound on DSC notification."
 msgstr "Speel geluid af voor DSC-melding"
 
-#: gui/src/options.cpp:4905
+#: gui/src/options.cpp:4909
 msgid "Select DSC notification Sound"
 msgstr "Selecteer DSC-meldingsgeluid"
 
-#: gui/src/options.cpp:4917
+#: gui/src/options.cpp:4921
 msgid "Sound Device Configuration"
 msgstr "Geluidsapparaat configuratie"
 
-#: gui/src/options.cpp:4932
+#: gui/src/options.cpp:4936
 msgid "Unknown device :"
 msgstr "Onbekend apparaat :"
 
-#: gui/src/options.cpp:4937
+#: gui/src/options.cpp:4941
 msgid "Input device :"
 msgstr "Invoerapparaat:"
 
-#: gui/src/options.cpp:4965
+#: gui/src/options.cpp:4969
 msgid "Sound Device"
 msgstr "Geluidsapparaat"
 
-#: gui/src/options.cpp:4979
+#: gui/src/options.cpp:4983
 msgid "Audio Play command:"
 msgstr "Audio Play commando:"
 
-#: gui/src/options.cpp:5020
+#: gui/src/options.cpp:5024
 msgid "AIS Targets"
 msgstr "AIS objecten"
 
-#: gui/src/options.cpp:5027
+#: gui/src/options.cpp:5031
 msgid "CPA Calculation"
 msgstr "CPA Berekening"
 
-#: gui/src/options.cpp:5038
+#: gui/src/options.cpp:5042
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "Geen CPA-waarschuwingen als objectafstand > (zeemijl)"
 
-#: gui/src/options.cpp:5045
+#: gui/src/options.cpp:5049
 msgid "Warn if CPA less than (NMi)"
 msgstr "Waarschuw als kortste naderingsafstand minder is dan (zeemijl): "
 
-#: gui/src/options.cpp:5057
+#: gui/src/options.cpp:5061
 msgid "...and TCPA is less than (min)"
 msgstr " ... en TCPA is minder dan (minuten):"
 
-#: gui/src/options.cpp:5065
+#: gui/src/options.cpp:5069
 msgid "Lost Targets"
 msgstr "Verdwenen AIS objecten"
 
-#: gui/src/options.cpp:5074
+#: gui/src/options.cpp:5078
 msgid "Mark targets as lost after (min)"
 msgstr "Markeer object als verdwenen na (minuten): "
 
-#: gui/src/options.cpp:5082
+#: gui/src/options.cpp:5086
 msgid "Remove lost targets after (min)"
 msgstr "Verwijder verdwenen objecten na (minuten): "
 
-#: gui/src/options.cpp:5092 gui/src/options.cpp:5812
+#: gui/src/options.cpp:5096 gui/src/options.cpp:5816
 msgid "Display"
 msgstr "Weergaveopties"
 
-#: gui/src/options.cpp:5101
+#: gui/src/options.cpp:5105
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Toon GrK/Vgr-vectoren met lengte van (tijdminuten):"
 
-#: gui/src/options.cpp:5109
+#: gui/src/options.cpp:5113
 msgid "Sync AIS arrow length with own ship's COG predictor"
 msgstr "Synchroniseer de lengte van de AIS-pijl met de COG-voorspeller van het eigen schip"
 
-#: gui/src/options.cpp:5119
+#: gui/src/options.cpp:5123
 msgid "Show target tracks, length (min)"
 msgstr "Toon objecttracks met lengte van (tijdminuten):"
 
-#: gui/src/options.cpp:5127
+#: gui/src/options.cpp:5131
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "Verberg geankerde/afgemeerde AIS objecten, max. vaart (knopen)"
 
-#: gui/src/options.cpp:5135
+#: gui/src/options.cpp:5139
 msgid "Draw AIS realtime prediction, target speed min (kn)"
 msgstr "Teken AIS realtime voorspelling, doel snelheid min (knopen)"
 
-#: gui/src/options.cpp:5145
+#: gui/src/options.cpp:5149
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "Verkleinen minder kritische AIS objecten toestaan indien meer dan..."
 
-#: gui/src/options.cpp:5153
+#: gui/src/options.cpp:5157
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Toon gebiedsberichten (binaire AIS meldingen)"
 
-#: gui/src/options.cpp:5160
+#: gui/src/options.cpp:5164
 msgid "Show AIS targets real size"
 msgstr "Toon AIS objecten in werkelijke grootte"
 
-#: gui/src/options.cpp:5167
+#: gui/src/options.cpp:5171
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "Toon namen bij AIS-objecten met een schaal > 1:"
 
-#: gui/src/options.cpp:5175
+#: gui/src/options.cpp:5179
 msgid "Use WPL position messages. Action when received:"
 msgstr "Gebruik WPL positieberichten. Actie bij ontvangen:"
 
-#: gui/src/options.cpp:5178
+#: gui/src/options.cpp:5182
 msgid "APRS position report"
 msgstr "APRS positierapport"
 
-#: gui/src/options.cpp:5178
+#: gui/src/options.cpp:5182
 msgid "Create mark"
 msgstr "Markeer"
 
-#: gui/src/options.cpp:5184
+#: gui/src/options.cpp:5188
 msgid "Rollover"
 msgstr "Toon bij aanwijzen"
 
-#: gui/src/options.cpp:5190
+#: gui/src/options.cpp:5194
 msgid "Enable route/AIS info block"
 msgstr "Route/AIS Infoblok inschakelen"
 
-#: gui/src/options.cpp:5198
+#: gui/src/options.cpp:5202
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "    \"Scheepsnaam\" MMSI (roepnaam)"
 
-#: gui/src/options.cpp:5202
+#: gui/src/options.cpp:5206
 msgid "[Class] Type (Status)"
 msgstr "[klasse] type (status)"
 
-#: gui/src/options.cpp:5205
+#: gui/src/options.cpp:5209
 msgid "SOG COG"
 msgstr "Vgr GrK"
 
-#: gui/src/options.cpp:5208
+#: gui/src/options.cpp:5212
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 
-#: gui/src/options.cpp:5213
+#: gui/src/options.cpp:5217
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA Waarschuwingen"
 
-#: gui/src/options.cpp:5222
+#: gui/src/options.cpp:5226
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Toon CPA/TCPA waarschuwingsscherm"
 
-#: gui/src/options.cpp:5241
+#: gui/src/options.cpp:5245
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Geluidsmelding bij CPA/TCPA waarschuwingen en DSC/SART noodberichten"
 
-#: gui/src/options.cpp:5250
+#: gui/src/options.cpp:5254
 msgid "Test AIS Alert Sound"
 msgstr "Test AIS waarschuwingsgeluid"
 
-#: gui/src/options.cpp:5263
+#: gui/src/options.cpp:5267
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr "Onderdruk waarschuwingen voor geankerde en gemeerde objecten"
 
-#: gui/src/options.cpp:5270
+#: gui/src/options.cpp:5274
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Inschakelen time-out voor CPA/TCPA waarschuwing na bevestiging (minuten):"
 
-#: gui/src/options.cpp:5294
+#: gui/src/options.cpp:5298
 msgid "General Options"
 msgstr "Opties Gebruikersinterface"
 
-#: gui/src/options.cpp:5303
+#: gui/src/options.cpp:5307
 msgid "Language"
 msgstr "Taal"
 
-#: gui/src/options.cpp:5318
+#: gui/src/options.cpp:5322
 msgid "Fonts"
 msgstr "Lettertypes"
 
-#: gui/src/options.cpp:5354
+#: gui/src/options.cpp:5358
 msgid "Choose Font..."
 msgstr "Kies lettertype..."
 
-#: gui/src/options.cpp:5359
+#: gui/src/options.cpp:5363
 msgid "Choose Font Color..."
 msgstr "Kies letterkleur..."
 
-#: gui/src/options.cpp:5363
+#: gui/src/options.cpp:5367
 msgid "Sample"
 msgstr "Voorbeeld"
 
-#: gui/src/options.cpp:5371
+#: gui/src/options.cpp:5375
 msgid "Toolbar and Window Style"
 msgstr "Werkbalk- en Windowstijl"
 
-#: gui/src/options.cpp:5389
+#: gui/src/options.cpp:5393
 msgid "Interface Options"
 msgstr "Interfaceopties"
 
-#: gui/src/options.cpp:5395
+#: gui/src/options.cpp:5399
 msgid "Show Status Bar"
 msgstr "Toon statusbalk"
 
-#: gui/src/options.cpp:5400
+#: gui/src/options.cpp:5404
 msgid "Show Menu Bar"
 msgstr "Toon menubalk"
 
-#: gui/src/options.cpp:5414
+#: gui/src/options.cpp:5418
 msgid "Show Compass/GPS Status Window"
 msgstr "Toon kompas- en GPS-statusvenster"
 
-#: gui/src/options.cpp:5422
+#: gui/src/options.cpp:5426
 msgid "Enable Toolbar auto-hide"
 msgstr "Verberg werkbalk na"
 
-#: gui/src/options.cpp:5437
+#: gui/src/options.cpp:5441
 msgid "Play Ships Bells"
 msgstr "Glazen slaan"
 
-#: gui/src/options.cpp:5442
+#: gui/src/options.cpp:5446
 msgid "Enable Touchscreen interface"
 msgstr "Activeer touchscreen-interface"
 
-#: gui/src/options.cpp:5446
+#: gui/src/options.cpp:5450
 msgid "Enable Scaled Graphics interface"
 msgstr "Scaled Graphics interface inschakelen"
 
-#: gui/src/options.cpp:5459
+#: gui/src/options.cpp:5463
 msgid "Show Zoom buttons"
 msgstr "Toon de \"zoom\" knoppen"
 
-#: gui/src/options.cpp:5466
+#: gui/src/options.cpp:5470
 msgid "Use Inland ECDIS"
 msgstr "Gebruik Inland ECDIS"
 
-#: gui/src/options.cpp:5470 gui/src/options.cpp:7777
+#: gui/src/options.cpp:5474 gui/src/options.cpp:7782
 msgid "Inland ECDIS Manual"
 msgstr "Binnenland ECDIS handleiding"
 
-#: gui/src/options.cpp:5492
+#: gui/src/options.cpp:5496
 msgid "User Interface scale factor"
 msgstr "Schaalfactor gebruikersinterface"
 
-#: gui/src/options.cpp:5506
+#: gui/src/options.cpp:5510
 msgid "Chart Object scale factor"
 msgstr "Schaalfactor kaartobjecten"
 
-#: gui/src/options.cpp:5520
+#: gui/src/options.cpp:5524
 msgid "Ship scale factor"
 msgstr "Schaalfactor Eigen Schip"
 
-#: gui/src/options.cpp:5534
+#: gui/src/options.cpp:5538
 msgid "ENC Sounding factor"
 msgstr "ENC Dieptefactor"
 
-#: gui/src/options.cpp:5548
+#: gui/src/options.cpp:5552
 msgid "ENC Text Scale"
 msgstr "ENC text grootte"
 
-#: gui/src/options.cpp:5558
+#: gui/src/options.cpp:5562
 msgid "Mouse wheel zoom sensitivity"
 msgstr "Muiswiel zoom gevoeligheid"
 
-#: gui/src/options.cpp:5809
+#: gui/src/options.cpp:5813
 msgid "Apply"
 msgstr "Toepassen"
 
-#: gui/src/options.cpp:5818
+#: gui/src/options.cpp:5822
 msgid "Charts"
 msgstr "Kaarten"
 
-#: gui/src/options.cpp:5841
+#: gui/src/options.cpp:5845
 msgid "Connections"
 msgstr "Verbindingen"
 
-#: gui/src/options.cpp:5843
+#: gui/src/options.cpp:5847
 msgid "Connect"
 msgstr "Verbinden"
 
-#: gui/src/options.cpp:5855
+#: gui/src/options.cpp:5859
 msgid "Ships"
 msgstr "Eigen Schip en\n"
 "AIS Objecten"
 
-#: gui/src/options.cpp:5864
+#: gui/src/options.cpp:5868
 msgid "User Interface"
 msgstr "Gebruikersinterface"
 
-#: gui/src/options.cpp:5866
+#: gui/src/options.cpp:5870
 msgid "User"
 msgstr "Gebruiker"
 
-#: gui/src/options.cpp:5872 gui/src/options.cpp:5873
+#: gui/src/options.cpp:5876 gui/src/options.cpp:5877
 msgid "Plugins"
 msgstr "Plugins"
 
-#: gui/src/options.cpp:6057
+#: gui/src/options.cpp:6061
 msgid "User set magnetic variation"
 msgstr "Gebruikersinstelling magn. variatie"
 
-#: gui/src/options.cpp:6507
+#: gui/src/options.cpp:6511
 msgid "feet"
 msgstr "voet"
 
-#: gui/src/options.cpp:6507
+#: gui/src/options.cpp:6511
 msgid "fathoms"
 msgstr "vadem"
 
-#: gui/src/options.cpp:6748
+#: gui/src/options.cpp:6752
 msgid "Add a directory containing chart files"
 msgstr "Voeg een map met kaartbestanden toe"
 
-#: gui/src/options.cpp:6854
+#: gui/src/options.cpp:6858
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - de scheepslengte moet > 0 zijn"
 
-#: gui/src/options.cpp:6856
+#: gui/src/options.cpp:6860
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - de scheepsbreedte moet > 0 zijn"
 
-#: gui/src/options.cpp:6859
+#: gui/src/options.cpp:6863
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - de GPS-offset vanaf de middenlijn moet vallen binnen de scheepsbreedte"
 
-#: gui/src/options.cpp:6863
+#: gui/src/options.cpp:6867
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - de GPS-offset vanaf de boeg moet vallen binnen de scheepslengte"
 
-#: gui/src/options.cpp:6865
+#: gui/src/options.cpp:6869
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - de minimum grootte van het scheepspictogram moet zijn tussen 1 en 100mm"
 
-#: gui/src/options.cpp:6867
+#: gui/src/options.cpp:6871
 msgid "The settings for own ship real size are not correct:"
 msgstr "De instellingen voor de afmetingen van uw schip zijn niet juist:"
 
-#: gui/src/options.cpp:7770
+#: gui/src/options.cpp:7775
 msgid "The Inland ECDIS Manual is not available locally."
 msgstr "De binnenland ECDIS-handleiding is niet lokaal beschikbaar."
 
-#: gui/src/options.cpp:7773
+#: gui/src/options.cpp:7778
 msgid "Would you like to visit the iECDIS Manual website for more information?"
 msgstr "Wilt u de iECDIS-handleiding-website bezoeken voor meer informatie?"
 
-#: gui/src/options.cpp:7804
+#: gui/src/options.cpp:7809
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
@@ -6880,15 +6892,15 @@ msgstr "Compressie verandert de kaartbestanden op de schijf.\n"
 "Het laden van gecomprimeerde kaarten kan op sommige systemen iets langer duren.\n"
 "De compressie kan ongedaan worden gemaakt met de programma's unxz of 7zip."
 
-#: gui/src/options.cpp:7825 gui/src/options.cpp:7869
+#: gui/src/options.cpp:7830 gui/src/options.cpp:7874
 msgid "OpenCPN Compress Charts"
 msgstr "OpenCPN Kaartcompressie"
 
-#: gui/src/options.cpp:7862
+#: gui/src/options.cpp:7867
 msgid "No charts found to compress."
 msgstr "Geen kaarten gevonden om te comprimeren."
 
-#: gui/src/options.cpp:7894
+#: gui/src/options.cpp:7899
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
@@ -6897,71 +6909,71 @@ msgstr "%ld kaarten gecomprimeerd\n"
 "van %.1fMB naar %.1fMB\n"
 "%.1fMB vrijgekomen(%.1f%%)"
 
-#: gui/src/options.cpp:8798
+#: gui/src/options.cpp:8828
 msgid "Enter Group Name"
 msgstr "Voer groepsnaam in"
 
-#: gui/src/options.cpp:8798
+#: gui/src/options.cpp:8828
 msgid "New Chart Group"
 msgstr "Nieuwe kaartgroep"
 
-#: gui/src/options.cpp:8971 gui/src/options.cpp:8985
+#: gui/src/options.cpp:9001 gui/src/options.cpp:9015
 msgid "Select Tide/Current Data"
 msgstr "Selecteer getijdenbestand"
 
-#: gui/src/options.cpp:9043
+#: gui/src/options.cpp:9073
 msgid "Texture Compression"
 msgstr "Textuurcompressie"
 
-#: gui/src/options.cpp:9044
+#: gui/src/options.cpp:9074
 msgid "Texture Compression with Caching"
 msgstr "Textuurcompressie met caching"
 
-#: gui/src/options.cpp:9046
+#: gui/src/options.cpp:9076
 msgid "Texture Compression Caching"
 msgstr "Textuurcompressie caching"
 
-#: gui/src/options.cpp:9048
+#: gui/src/options.cpp:9078
 msgid "Texture Memory Size (MB)"
 msgstr "Textuur-geheugengrootte (MB)"
 
-#: gui/src/options.cpp:9052 gui/src/options.cpp:9218
+#: gui/src/options.cpp:9082 gui/src/options.cpp:9248
 msgid "Size: "
 msgstr "Grootte: "
 
-#: gui/src/options.cpp:9054
+#: gui/src/options.cpp:9084
 msgid "Rebuild Texture Cache"
 msgstr "Textuurcache opnieuw maken"
 
-#: gui/src/options.cpp:9056
+#: gui/src/options.cpp:9086
 msgid "Clear Texture Cache"
 msgstr "Textuurcache opschonen"
 
-#: gui/src/options.cpp:9060
+#: gui/src/options.cpp:9090
 msgid "Polygon Smoothing"
 msgstr "Polygonen vloeiend maken"
 
-#: gui/src/options.cpp:9061
+#: gui/src/options.cpp:9091
 msgid "Line Smoothing"
 msgstr "Lijn vloeiend maken"
 
-#: gui/src/options.cpp:9063
+#: gui/src/options.cpp:9093
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "Software OpenGL (OpenCPN herstarten)"
 
-#: gui/src/options.cpp:9065
+#: gui/src/options.cpp:9095
 msgid "Use Accelerated Panning"
 msgstr "Gebruik versnelde planning"
 
-#: gui/src/options.cpp:9067
+#: gui/src/options.cpp:9097
 msgid "Texture Settings"
 msgstr "Textuurinstellingen"
 
-#: gui/src/options.cpp:9074
+#: gui/src/options.cpp:9104
 msgid "Texture Cache"
 msgstr "Textuurcache"
 
-#: gui/src/options.cpp:9081
+#: gui/src/options.cpp:9111
 msgid "Miscellaneous"
 msgstr "Diversen"
 
@@ -7043,127 +7055,127 @@ msgstr "Controleer het systeemlogboek voor meer informatie."
 msgid " successfully installed from cache"
 msgstr "Succesvol geïnstalleerd vanuit cache"
 
-#: gui/src/pluginmanager.cpp:3700
+#: gui/src/pluginmanager.cpp:3701
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr "Deze instellingen kunnen OpenCPN destabiliseren en zijn standaard uitgeschakeld. Om ze ondanks de risico's toch in te schakelen kunt u handmatig een CatalogExpert=1 regel toevoegen in de [PlugIns] sectie in het configuratiebestand."
 
-#: gui/src/pluginmanager.cpp:3716
+#: gui/src/pluginmanager.cpp:3717
 msgid "Plugin Catalog"
 msgstr "Plugin catalogus"
 
-#: gui/src/pluginmanager.cpp:3733 gui/src/pluginmanager.cpp:4007
+#: gui/src/pluginmanager.cpp:3734 gui/src/pluginmanager.cpp:4008
 msgid "Update Plugin Catalog"
 msgstr "Update Plugin Catalogus"
 
-#: gui/src/pluginmanager.cpp:3739 gui/src/pluginmanager.cpp:3811
+#: gui/src/pluginmanager.cpp:3740 gui/src/pluginmanager.cpp:3812
 msgid "Import plugin..."
 msgstr "Importeer plugin..."
 
-#: gui/src/pluginmanager.cpp:3746 gui/src/pluginmanager.cpp:3803
+#: gui/src/pluginmanager.cpp:3747 gui/src/pluginmanager.cpp:3804
 msgid "Settings..."
 msgstr "Instellingen ..."
 
-#: gui/src/pluginmanager.cpp:3754
+#: gui/src/pluginmanager.cpp:3755
 msgid "Disabled"
 msgstr "Uitgeschakeld"
 
-#: gui/src/pluginmanager.cpp:3779
+#: gui/src/pluginmanager.cpp:3780
 msgid "Update Plugin Catalog: master"
 msgstr "Update Plugin Catalogus:master"
 
-#: gui/src/pluginmanager.cpp:3855 gui/src/pluginmanager.cpp:3867
-#: gui/src/pluginmanager.cpp:3877 gui/src/pluginmanager.cpp:3886
-#: gui/src/pluginmanager.cpp:3917
+#: gui/src/pluginmanager.cpp:3856 gui/src/pluginmanager.cpp:3868
+#: gui/src/pluginmanager.cpp:3878 gui/src/pluginmanager.cpp:3887
+#: gui/src/pluginmanager.cpp:3918
 msgid "OpenCPN Catalog update"
 msgstr "OpenCPN kaart-update"
 
-#: gui/src/pluginmanager.cpp:3866 gui/src/pluginmanager.cpp:3876
+#: gui/src/pluginmanager.cpp:3867 gui/src/pluginmanager.cpp:3877
 msgid "Unable to copy catalog file"
 msgstr "Kan dit bestand niet kopiëren"
 
-#: gui/src/pluginmanager.cpp:3885
+#: gui/src/pluginmanager.cpp:3886
 msgid "Unable to copy catalog file to cache"
 msgstr "Kan dit bestand niet kopiëren"
 
-#: gui/src/pluginmanager.cpp:3916
+#: gui/src/pluginmanager.cpp:3917
 msgid "Catalog update successful"
 msgstr "Bijwerken status geslaagd"
 
-#: gui/src/pluginmanager.cpp:3938
+#: gui/src/pluginmanager.cpp:3939
 msgid "Select tarball file"
 msgstr "Selecteer tarball bestand"
 
-#: gui/src/pluginmanager.cpp:3948
+#: gui/src/pluginmanager.cpp:3949
 msgid "Error extracting metadata from tarball."
 msgstr "Fout bij het uitpakken van metadata uit tar bestand."
 
-#: gui/src/pluginmanager.cpp:3949 gui/src/pluginmanager.cpp:3954
-#: gui/src/pluginmanager.cpp:3962
+#: gui/src/pluginmanager.cpp:3950 gui/src/pluginmanager.cpp:3955
+#: gui/src/pluginmanager.cpp:3963
 msgid "OpenCPN Plugin Import Error"
 msgstr "OpenCPN Plugin import fout"
 
-#: gui/src/pluginmanager.cpp:3953
+#: gui/src/pluginmanager.cpp:3954
 msgid "Incompatible import plugin detected."
 msgstr "Niet-compatibele plug-in gedetecteerd."
 
-#: gui/src/pluginmanager.cpp:3961
+#: gui/src/pluginmanager.cpp:3962
 msgid "Error extracting import plugin tarball."
 msgstr "Fout bij het uitpakken van de plug-in tarball."
 
-#: gui/src/pluginmanager.cpp:3976
+#: gui/src/pluginmanager.cpp:3977
 msgid "Plugin"
 msgstr "Plug-in"
 
-#: gui/src/pluginmanager.cpp:3977
+#: gui/src/pluginmanager.cpp:3978
 msgid " successfully imported"
 msgstr "Succesvol geïmporteerd"
 
-#: gui/src/pluginmanager.cpp:3984
+#: gui/src/pluginmanager.cpp:3985
 msgid "Active Catalog"
 msgstr "Actieve catalogus"
 
-#: gui/src/pluginmanager.cpp:3984
+#: gui/src/pluginmanager.cpp:3985
 msgid "Last Catalog"
 msgstr "Laatste catalogus"
 
-#: gui/src/pluginmanager.cpp:3999
+#: gui/src/pluginmanager.cpp:4000
 msgid "Last change: "
 msgstr "Laatste wijziging:"
 
-#: gui/src/pluginmanager.cpp:4000
+#: gui/src/pluginmanager.cpp:4001
 msgid "Please Update Plugin Catalog."
 msgstr "Update Plug-in Catalogus."
 
-#: gui/src/pluginmanager.cpp:4355 gui/src/pluginmanager.cpp:4549
-#: gui/src/pluginmanager.cpp:4574
+#: gui/src/pluginmanager.cpp:4356 gui/src/pluginmanager.cpp:4550
+#: gui/src/pluginmanager.cpp:4575
 msgid "Uninstall"
 msgstr "De-installeer"
 
-#: gui/src/pluginmanager.cpp:4362
+#: gui/src/pluginmanager.cpp:4363
 msgid "Uninstall plugin "
 msgstr "Plug-in de-installeren"
 
-#: gui/src/pluginmanager.cpp:4363
+#: gui/src/pluginmanager.cpp:4364
 msgid "Un-Installation"
 msgstr "De-Installatie"
 
-#: gui/src/pluginmanager.cpp:4464 gui/src/pluginmanager.cpp:4517
+#: gui/src/pluginmanager.cpp:4465 gui/src/pluginmanager.cpp:4518
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
-#: gui/src/pluginmanager.cpp:4738
+#: gui/src/pluginmanager.cpp:4739
 msgid "Upgrade to Version "
 msgstr "Upgrade naar versie "
 
-#: gui/src/pluginmanager.cpp:4745
+#: gui/src/pluginmanager.cpp:4746
 msgid "Install..."
 msgstr "Installeren..."
 
-#: gui/src/pluginmanager.cpp:4751
+#: gui/src/pluginmanager.cpp:4752
 msgid "Update to "
 msgstr "Updaten naar"
 
-#: gui/src/pluginmanager.cpp:4983 gui/src/update_mgr.cpp:257
+#: gui/src/pluginmanager.cpp:4984 gui/src/update_mgr.cpp:257
 msgid "Website"
 msgstr "Website"
 
@@ -7207,10 +7219,6 @@ msgstr "Satellieten"
 #: gui/src/rest_server_gui.cpp:249 gui/src/SendToPeerDlg.cpp:127
 msgid "OpenCPN Server Message"
 msgstr "OpenCPN Server Bericht"
-
-#: gui/src/RolloverWin.cpp:137 gui/src/RolloverWin.cpp:303
-msgid "AISRollover"
-msgstr "AIS-info bij aanwijzen"
 
 #: gui/src/RolloverWin.cpp:140 gui/src/RolloverWin.cpp:307
 msgid "TideCurrentGraphRollover"
@@ -7328,12 +7336,6 @@ msgstr "Maak route van track"
 #: gui/src/routemanagerdialog.cpp:666 gui/src/routemanagerdialog.cpp:814
 msgid "Send to &Peer"
 msgstr "Verstuur naar 2ᵉ OpenCPN"
-
-#: gui/src/routemanagerdialog.cpp:688 gui/src/route_point_gui.cpp:127
-#: gui/src/route_point_gui.cpp:135 gui/src/route_point_gui.cpp:299
-#: gui/src/route_point_gui.cpp:307
-msgid "Marks"
-msgstr "Markeringen"
 
 #: gui/src/routemanagerdialog.cpp:714
 msgid "Show all marks"
@@ -7538,15 +7540,15 @@ msgstr "maar huidige kaartschaal is"
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "Daarom zal het nieuwe waypoint niet zichtbaar op dit zoomniveau."
 
-#: gui/src/route_point_gui.cpp:906
+#: gui/src/route_point_gui.cpp:907
 msgid "Waypoint(s) Transmitted."
 msgstr "Waypoint(s) verzonden."
 
-#: gui/src/route_point_gui.cpp:909
+#: gui/src/route_point_gui.cpp:910
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "Fout bij laden van waypoints. Garmin GPS-ontvanger niet verbonden."
 
-#: gui/src/route_point_gui.cpp:911
+#: gui/src/route_point_gui.cpp:912
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Fout bij laden van waypoints. Raadpleeg logbestanden..."
 
@@ -7971,7 +7973,7 @@ msgstr "Vandaag"
 msgid "Tomorrow"
 msgstr "Morgen"
 
-#: gui/src/toolbar.cpp:871 gui/src/toolbar.cpp:883 gui/src/toolbar.cpp:898
+#: gui/src/toolbar.cpp:875 gui/src/toolbar.cpp:887 gui/src/toolbar.cpp:902
 msgid "ToolTips"
 msgstr "Tips"
 
@@ -8261,153 +8263,157 @@ msgstr "Verplaats waypoint"
 msgid "Dismiss"
 msgstr "Afwijzen"
 
-#: gui/src/initwiz/wiz_ui.cpp:69
+#: gui/src/initwiz/wiz_ui.cpp:74
 msgid "Select the units and data formats you would like to use."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:73
+#: gui/src/initwiz/wiz_ui.cpp:78
 msgid "All the settings can be changed at any time in the configuration Toolbox accessible by clicking on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:76
+#: gui/src/initwiz/wiz_ui.cpp:81
 msgid " icon in the main Toolbar."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:82
+#: gui/src/initwiz/wiz_ui.cpp:87
 msgid "If you already have charts on your system, you may add them here."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:85
+#: gui/src/initwiz/wiz_ui.cpp:90
 msgid "Additional charts can be obtained  using the Chart Downloader integrated in the application."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:90
+#: gui/src/initwiz/wiz_ui.cpp:95
 msgid "To access the Chart Downloader click on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:93
+#: gui/src/initwiz/wiz_ui.cpp:98
 msgid " icon in the main Toolbar and navigate to Charts -> Chart Downloader tab."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:97
+#: gui/src/initwiz/wiz_ui.cpp:102
 msgid "<html><body><h1>Welcome to OpenCPN!</h1><p>You have successfully completed the initial configuration. You can now start using the application.</p></body></html>"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:345
+#: gui/src/initwiz/wiz_ui.cpp:395
 #, c-format
 msgid "NMEA0183: UDP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:356
+#: gui/src/initwiz/wiz_ui.cpp:406
 #, c-format
 msgid "NMEA2000: UDP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:444
+#: gui/src/initwiz/wiz_ui.cpp:510
 #, c-format
 msgid "NMEA0183: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:456
+#: gui/src/initwiz/wiz_ui.cpp:522
 #, c-format
 msgid "NMEA2000: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:493
+#: gui/src/initwiz/wiz_ui.cpp:609
 #, c-format
 msgid "GPSd: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:508
-msgid "Looking for Signal K servers..."
+#: gui/src/initwiz/wiz_ui.cpp:630
+msgid "Looking for navigation data sources, this may take a while..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:512
+#: gui/src/initwiz/wiz_ui.cpp:632
 msgid "Scanning USB devices..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:516
+#: gui/src/initwiz/wiz_ui.cpp:637
 msgid "Looking for UDP data feeds..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:520
+#: gui/src/initwiz/wiz_ui.cpp:642
 msgid "Looking for TCP servers..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:524
+#: gui/src/initwiz/wiz_ui.cpp:648
+msgid "Looking for Signal K servers..."
+msgstr ""
+
+#: gui/src/initwiz/wiz_ui.cpp:654
 msgid "Looking for CAN interfaces..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:528
+#: gui/src/initwiz/wiz_ui.cpp:660
 msgid "Looking for GPSD servers..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:541
+#: gui/src/initwiz/wiz_ui.cpp:676
 #, c-format
 msgid "SignalK: %s (%s port %d)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:555
+#: gui/src/initwiz/wiz_ui.cpp:690
 msgid "The system has been scanned for sources of navigation data."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:558
+#: gui/src/initwiz/wiz_ui.cpp:693
 msgid "The connections to the discovered sources of data will be configured automatically. You may uncheck the ones you want to ignore."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:562
+#: gui/src/initwiz/wiz_ui.cpp:697
 msgid "You may now connect additional USB devices or connect to a different network and press the Rescan button to update the list."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:567
+#: gui/src/initwiz/wiz_ui.cpp:702
 msgid "The connection settings can be changed at any time in the configuration Toolbox accessible by clicking on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:571
+#: gui/src/initwiz/wiz_ui.cpp:706
 msgid " icon in the main Toolbar. In the Toolbox navigate to the Connections tab."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:578
+#: gui/src/initwiz/wiz_ui.cpp:716
 msgid "Select a directory containing charts"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:25
+#: gui/src/initwiz/wiz_ui_proto.cpp:30
 msgid "Units and formats"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Degrees, decimal minutes (DD MM.MM)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Decimal degrees (DD.DDDDD)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Degrees, minutes, seconds (DD MM SS)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:87
+#: gui/src/initwiz/wiz_ui_proto.cpp:90
 msgid "Show true headings and bearings"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:94
+#: gui/src/initwiz/wiz_ui_proto.cpp:97
 msgid "Show magnetic headings and bearings"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:118
+#: gui/src/initwiz/wiz_ui_proto.cpp:132
 msgid "Detected navigation data sources:"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:126
+#: gui/src/initwiz/wiz_ui_proto.cpp:140
 msgid "Rescan..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:145
+#: gui/src/initwiz/wiz_ui_proto.cpp:170
 msgid "Add existing charts"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:152
+#: gui/src/initwiz/wiz_ui_proto.cpp:177
 msgid "Add chart directory..."
 msgstr ""
 
