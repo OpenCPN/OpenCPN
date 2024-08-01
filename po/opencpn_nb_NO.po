@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-16 20:55-0400\n"
-"PO-Revision-Date: 2024-06-24 02:23\n"
+"POT-Creation-Date: 2024-07-24 16:20-0400\n"
+"PO-Revision-Date: 2024-07-31 19:37\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -17,14 +17,14 @@ msgstr ""
 "X-Crowdin-File: /po/opencpn.pot\n"
 "X-Crowdin-File-ID: 102\n"
 
-#: model/include/model/track.h:121 gui/src/ocpn_frame.cpp:3021
-#: gui/src/ocpn_frame.cpp:6426 gui/src/ocpn_frame.cpp:6544
+#: model/include/model/track.h:121 gui/src/ocpn_frame.cpp:3027
+#: gui/src/ocpn_frame.cpp:6422 gui/src/ocpn_frame.cpp:6540
 msgid "(Unnamed Track)"
 msgstr "(Slepestrek uten navn)"
 
 #: model/include/model/track.h:136
 msgid "(Unknown Date)"
-msgstr ""
+msgstr "(Ukjent dato)"
 
 #: model/src/ais_decoder.cpp:934
 msgid "Vessel, type unknown"
@@ -392,15 +392,15 @@ msgstr "AtoN Virkelig (Utenfor posisjon)"
 
 #: model/src/ais_target_data.cpp:120
 msgid "steady"
-msgstr ""
+msgstr "stabil"
 
 #: model/src/ais_target_data.cpp:122
 msgid "decreasing"
-msgstr ""
+msgstr "avtagende"
 
 #: model/src/ais_target_data.cpp:124
 msgid "increasing"
-msgstr ""
+msgstr "økende"
 
 #: model/src/ais_target_data.cpp:483 model/src/ais_target_data.cpp:1081
 #: gui/src/OCPNListCtrl.cpp:121
@@ -414,7 +414,7 @@ msgstr "SAR fly"
 
 #: model/src/ais_target_data.cpp:489 model/src/ais_target_data.cpp:501
 #: model/src/ais_target_data.cpp:517 gui/src/AISTargetListDialog.cpp:569
-#: gui/src/options.cpp:903 gui/src/options.cpp:1225
+#: gui/src/options.cpp:907 gui/src/options.cpp:1229
 msgid "MMSI"
 msgstr "MMSI"
 
@@ -476,7 +476,7 @@ msgstr " (Sist sett)"
 #: model/src/ais_target_data.cpp:690 gui/src/GoToPositionDialog.cpp:113
 #: gui/src/priority_gui.cpp:221 gui/src/routeprintout.cpp:107
 #: gui/src/routeprintout.cpp:376 gui/src/trackprintout.cpp:88
-#: gui/src/trackprintout.cpp:298 gui/src/initwiz/wiz_ui_proto.cpp:74
+#: gui/src/trackprintout.cpp:298 gui/src/initwiz/wiz_ui_proto.cpp:77
 msgid "Position"
 msgstr "Posisjon"
 
@@ -486,7 +486,7 @@ msgstr "Rapport alder"
 
 #: model/src/ais_target_data.cpp:702
 msgid "Issued (UTC)"
-msgstr ""
+msgstr "Utstedt (UTC)"
 
 #: model/src/ais_target_data.cpp:721
 msgid "Report as of"
@@ -509,11 +509,11 @@ msgstr "Styrbord"
 msgid "Left"
 msgstr "Babord"
 
-#: model/src/ais_target_data.cpp:835 gui/src/options.cpp:4333
-#: gui/src/options.cpp:4490 gui/src/RoutePropDlg.cpp:389
+#: model/src/ais_target_data.cpp:835 gui/src/options.cpp:4337
+#: gui/src/options.cpp:4494 gui/src/RoutePropDlg.cpp:389
 #: gui/src/trackprintout.cpp:100 gui/src/trackprintout.cpp:339
 #: gui/src/TrackPropDlg.cpp:311 gui/src/TrackPropDlg.cpp:1351
-#: gui/src/initwiz/wiz_ui_proto.cpp:52
+#: gui/src/initwiz/wiz_ui_proto.cpp:57
 msgid "Speed"
 msgstr "Fart"
 
@@ -566,13 +566,13 @@ msgid "Altitude"
 msgstr "Breddegrad"
 
 #: model/src/ais_target_data.cpp:905 model/src/ais_target_data.cpp:1178
-#: gui/src/options.cpp:4346 gui/src/initwiz/wiz_ui_proto.cpp:62
+#: gui/src/options.cpp:4350 gui/src/initwiz/wiz_ui_proto.cpp:67
 msgid "Wind speed"
-msgstr ""
+msgstr "Vindstyrke"
 
 #: model/src/ais_target_data.cpp:907
 msgid "Wind gust"
-msgstr ""
+msgstr "Vindkast"
 
 #: model/src/ais_target_data.cpp:913 model/src/ais_target_data.cpp:1185
 msgid "Water level deviation"
@@ -584,11 +584,11 @@ msgstr ""
 
 #: model/src/ais_target_data.cpp:930 model/src/ais_target_data.cpp:1193
 msgid "Water level"
-msgstr ""
+msgstr "Vannstand"
 
 #: model/src/ais_target_data.cpp:940
 msgid "Surface current "
-msgstr ""
+msgstr "Overflatestrøm"
 
 #: model/src/ais_target_data.cpp:950 model/src/ais_target_data.cpp:957
 #: model/src/ais_target_data.cpp:1211
@@ -597,31 +597,31 @@ msgstr ""
 
 #: model/src/ais_target_data.cpp:960
 msgid "Waves height & period"
-msgstr ""
+msgstr "Bølgehøyde og periode"
 
 #: model/src/ais_target_data.cpp:962
 msgid "Swell height & period "
-msgstr ""
+msgstr "Dønningshøyde og periode"
 
 #: model/src/ais_target_data.cpp:979
 msgid "Air Temperatur"
-msgstr ""
+msgstr "Lufttemperatur"
 
 #: model/src/ais_target_data.cpp:980
 msgid "Air pressure"
-msgstr ""
+msgstr "Lufttrykk"
 
 #: model/src/ais_target_data.cpp:994
 msgid "Relative Humidity"
-msgstr ""
+msgstr "Relativ fuktighet"
 
 #: model/src/ais_target_data.cpp:996
 msgid "Dew Point "
-msgstr ""
+msgstr "Duggpunkt"
 
 #: model/src/ais_target_data.cpp:1010
 msgid "Water Temperatur"
-msgstr ""
+msgstr "Vanntemperatur"
 
 #: model/src/ais_target_data.cpp:1011
 msgid "Sea state"
@@ -629,7 +629,7 @@ msgstr ""
 
 #: model/src/ais_target_data.cpp:1026
 msgid "Precipitation"
-msgstr ""
+msgstr "Nedbør"
 
 #: model/src/ais_target_data.cpp:1028
 msgid "Horizontal Visibility"
@@ -709,7 +709,7 @@ msgid "Aid to Navigation"
 msgstr "Hjelp til Navigasjon (AtoN)"
 
 #: model/src/ais_target_data.cpp:1336 gui/src/CanvasOptions.cpp:326
-#: gui/src/options.cpp:3311 gui/src/options.cpp:3514
+#: gui/src/options.cpp:3315 gui/src/options.cpp:3518
 msgid "Base"
 msgstr "Base"
 
@@ -2263,21 +2263,21 @@ msgid "cm"
 msgstr "cm"
 
 #: model/src/navutil_base.cpp:323 model/src/navutil_base.cpp:349
-#: gui/src/initwiz/wiz_ui_proto.cpp:56 gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/initwiz/wiz_ui_proto.cpp:61 gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "mph"
 msgstr "mph"
 
 #: model/src/navutil_base.cpp:326 model/src/navutil_base.cpp:352
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "km/h"
 msgstr "km/t"
 
 #: model/src/navutil_base.cpp:329 model/src/navutil_base.cpp:346
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "m/s"
 msgstr "m/s"
 
@@ -2452,8 +2452,8 @@ msgstr "Veipunkter kan døpes om for å reflektere den nye sorteringen, navnene 
 "Ønsker du å døpe om veipunktene?"
 
 #: gui/include/gui/AboutFrame.h:87 gui/include/gui/AboutFrameImpl.h:68
-#: gui/include/gui/about.h:38 gui/src/ocpn_frame.cpp:3592
-#: gui/src/ocpn_frame.cpp:7074
+#: gui/include/gui/about.h:38 gui/src/ocpn_frame.cpp:3601
+#: gui/src/ocpn_frame.cpp:7070
 msgid "About OpenCPN"
 msgstr "Om OpenCPN"
 
@@ -2499,9 +2499,9 @@ msgstr "Overskrive Garmin enhetens rutenummer 1?"
 msgid "OpenCPN Message"
 msgstr "OpenCPN melding"
 
-#: gui/include/gui/options.h:97 gui/src/ocpn_frame.cpp:3582
-#: gui/src/ocpn_frame.cpp:3860 gui/src/ocpn_frame.cpp:4916
-#: gui/src/ocpn_frame.cpp:7033 gui/src/options.cpp:3251
+#: gui/include/gui/options.h:96 gui/src/ocpn_frame.cpp:3591
+#: gui/src/ocpn_frame.cpp:3869 gui/src/ocpn_frame.cpp:4912
+#: gui/src/ocpn_frame.cpp:7029 gui/src/options.cpp:3255
 msgid "Options"
 msgstr "Alternativer"
 
@@ -2543,7 +2543,7 @@ msgstr "Skriv ut valgte slepestrek"
 msgid "Track properties"
 msgstr "Egenskaper for slepestrek"
 
-#: gui/include/gui/wiz_ui.h:69 gui/include/gui/wiz_ui_proto.h:83
+#: gui/include/gui/wiz_ui.h:69 gui/include/gui/wiz_ui_proto.h:86
 msgid "OpenCPN Initial Configuration"
 msgstr ""
 
@@ -2556,12 +2556,12 @@ msgstr ""
 #: gui/src/conn_params_panel.cpp:803 gui/src/glChartCanvas.cpp:3809
 #: gui/src/glTextureManager.cpp:1447 gui/src/gui_lib.cpp:155
 #: gui/src/gui_lib.cpp:293 gui/src/LinkPropDlg.cpp:37 gui/src/MarkInfo.cpp:225
-#: gui/src/MarkInfo.cpp:277 gui/src/ocpn_frame.cpp:4559
-#: gui/src/ocpn_frame.cpp:8616 gui/src/OCPNPlatform.cpp:1634
+#: gui/src/MarkInfo.cpp:277 gui/src/ocpn_frame.cpp:4555
+#: gui/src/ocpn_frame.cpp:8613 gui/src/OCPNPlatform.cpp:1634
 #: gui/src/OCPNPlatform.cpp:1893 gui/src/OCPNPlatform.cpp:1932
-#: gui/src/options.cpp:640 gui/src/options.cpp:665 gui/src/options.cpp:1194
-#: gui/src/options.cpp:1684 gui/src/options.cpp:8558 gui/src/options.cpp:8795
-#: gui/src/options.cpp:9035 gui/src/options.cpp:9173 gui/src/Osenc.cpp:1688
+#: gui/src/options.cpp:644 gui/src/options.cpp:669 gui/src/options.cpp:1198
+#: gui/src/options.cpp:1688 gui/src/options.cpp:8588 gui/src/options.cpp:8825
+#: gui/src/options.cpp:9065 gui/src/options.cpp:9203 gui/src/Osenc.cpp:1688
 #: gui/src/routemanagerdialog.cpp:317 gui/src/RoutePropDlg.cpp:84
 #: gui/src/TCWin.cpp:78 gui/src/TCWin.cpp:172 gui/src/toolbar.cpp:2390
 #: gui/src/TrackPropDlg.cpp:112 gui/src/TrackPropDlg.cpp:326
@@ -2659,23 +2659,23 @@ msgstr "Utvidelses API: "
 msgid "OpenCPN Website"
 msgstr "OpenCPN nettsted"
 
-#: gui/src/AboutFrameImpl.cpp:94
+#: gui/src/AboutFrameImpl.cpp:100
 msgid "OpenCPN Help documentation is not available locally."
 msgstr "OpenCPN hjelpedokumenter er ikke tilgjengelig lokalt."
 
-#: gui/src/AboutFrameImpl.cpp:97
+#: gui/src/AboutFrameImpl.cpp:103
 msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr "Ønsker du å besøke opencpn.org nettsiden for mer informasjon?"
 
-#: gui/src/AboutFrameImpl.cpp:101 gui/src/ais_info_gui.cpp:104
-#: gui/src/AISTargetQueryDialog.cpp:178 gui/src/connection_edit.cpp:2551
+#: gui/src/AboutFrameImpl.cpp:107 gui/src/ais_info_gui.cpp:104
+#: gui/src/AISTargetQueryDialog.cpp:176 gui/src/connection_edit.cpp:2551
 #: gui/src/connection_edit.cpp:2564 gui/src/LinkPropDlg.cpp:134
 #: gui/src/MarkInfo.cpp:1961 gui/src/navutil.cpp:3265 gui/src/ocpn_frame.cpp:721
-#: gui/src/ocpn_frame.cpp:868 gui/src/ocpn_frame.cpp:4253
-#: gui/src/options.cpp:1033 gui/src/options.cpp:2815 gui/src/options.cpp:7862
-#: gui/src/options.cpp:7899 gui/src/pluginmanager.cpp:311
+#: gui/src/ocpn_frame.cpp:868 gui/src/ocpn_frame.cpp:4249
+#: gui/src/options.cpp:1037 gui/src/options.cpp:2819 gui/src/options.cpp:7867
+#: gui/src/options.cpp:7904 gui/src/pluginmanager.cpp:311
 #: gui/src/pluginmanager.cpp:624 gui/src/pluginmanager.cpp:878
-#: gui/src/route_gui.cpp:608 gui/src/route_point_gui.cpp:914
+#: gui/src/route_gui.cpp:608 gui/src/route_point_gui.cpp:915
 #: gui/src/SendToPeerDlg.cpp:62 gui/src/SendToPeerDlg.cpp:77
 #: gui/src/SendToPeerDlg.cpp:85 gui/src/SendToPeerDlg.cpp:93
 #: gui/src/SendToPeerDlg.cpp:100 gui/src/SendToPeerDlg.cpp:107
@@ -3075,7 +3075,7 @@ msgstr "Avbrytning - Avbryt område som identifisert av meldingskobling ID"
 msgid "Undefined (default)"
 msgstr "Udefinert (standard)"
 
-#: gui/src/ais.cpp:750 gui/src/ais.cpp:1719
+#: gui/src/ais.cpp:750 gui/src/ais.cpp:1719 gui/src/FontMgr.cpp:227
 msgid "AIS Target Name"
 msgstr "Navn på AIS-mål"
 
@@ -3089,7 +3089,7 @@ msgstr "\n"
 "En vedvarende sporing vil derfor bli startet på nytt for dette målet.\n\n"
 "Vil du i stedet stoppe vedvarende sporing for dette målet?\n"
 
-#: gui/src/ais_info_gui.cpp:203 gui/src/options.cpp:4873
+#: gui/src/ais_info_gui.cpp:203 gui/src/options.cpp:4877
 msgid "AIS Alert"
 msgstr "AIS varsel"
 
@@ -3105,7 +3105,7 @@ msgstr "&Avstill alarm"
 msgid "&Jump To"
 msgstr "&Hopp til"
 
-#: gui/src/AISTargetAlertDialog.cpp:204 gui/src/AISTargetQueryDialog.cpp:276
+#: gui/src/AISTargetAlertDialog.cpp:204 gui/src/AISTargetQueryDialog.cpp:274
 msgid "Create Waypoint"
 msgstr "Sett ut veipunkt"
 
@@ -3128,7 +3128,7 @@ msgid "-"
 msgstr "-"
 
 #: gui/src/AISTargetListDialog.cpp:350 gui/src/canvasMenu.cpp:694
-#: gui/src/ocpn_frame.cpp:3546
+#: gui/src/ocpn_frame.cpp:3555
 msgid "AIS target list"
 msgstr "AIS fartøyliste"
 
@@ -3217,38 +3217,38 @@ msgstr "Antall mål"
 msgid "Undock Target List"
 msgstr "Undock target liste"
 
-#: gui/src/AISTargetQueryDialog.cpp:141 gui/src/AISTargetQueryDialog.cpp:280
-#: gui/src/AISTargetQueryDialog.cpp:311
+#: gui/src/AISTargetQueryDialog.cpp:141 gui/src/AISTargetQueryDialog.cpp:278
+#: gui/src/AISTargetQueryDialog.cpp:309
 msgid "Record Track"
 msgstr "Lagre slepestrek"
 
-#: gui/src/AISTargetQueryDialog.cpp:175
+#: gui/src/AISTargetQueryDialog.cpp:173
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
 msgstr "Det nylig registrerte slepestreket etter dette målet har blitt lagret. \n"
 "Vil du fortsette lagringen til du avslutter OpenCPN?"
 
-#: gui/src/AISTargetQueryDialog.cpp:197
+#: gui/src/AISTargetQueryDialog.cpp:195
 msgid "AISTargetQuery"
 msgstr "AIS mål informasjon"
 
-#: gui/src/AISTargetQueryDialog.cpp:285 gui/src/catalog_mgr.cpp:193
+#: gui/src/AISTargetQueryDialog.cpp:283 gui/src/catalog_mgr.cpp:193
 #: gui/src/catalog_mgr.cpp:585 gui/src/catalog_mgr.cpp:606 gui/src/cm93.cpp:6324
-#: gui/src/GoToPositionDialog.cpp:150 gui/src/MUIBar.cpp:190
-#: gui/src/options.cpp:853 gui/src/options.cpp:955 gui/src/options.cpp:5802
+#: gui/src/GoToPositionDialog.cpp:150 gui/src/MUIBar.cpp:195
+#: gui/src/options.cpp:857 gui/src/options.cpp:959 gui/src/options.cpp:5806
 #: gui/src/routeprintout.cpp:428 gui/src/TCWin.cpp:115 gui/src/TCWin.cpp:124
 #: gui/src/toolbar.cpp:2457 gui/src/trackprintout.cpp:359
 #: gui/src/TrackPropDlg.cpp:615 gui/src/TrackPropDlg.cpp:1003
 msgid "OK"
 msgstr "OK"
 
-#: gui/src/AISTargetQueryDialog.cpp:309
+#: gui/src/AISTargetQueryDialog.cpp:307
 msgid "Stop Tracking"
 msgstr "Stopp sporing"
 
 #: gui/src/canvasMenu.cpp:240 gui/src/canvasMenu.cpp:269
 #: gui/src/canvasMenu.cpp:302 gui/src/canvasMenu.cpp:1051
-#: gui/src/canvasMenu.cpp:1074 gui/src/options.cpp:1146
+#: gui/src/canvasMenu.cpp:1074 gui/src/options.cpp:1150
 msgid "Menu"
 msgstr "Meny"
 
@@ -3302,7 +3302,7 @@ msgstr "Flytt båt hit"
 msgid "Navigate To Here"
 msgstr "Naviger hit"
 
-#: gui/src/canvasMenu.cpp:523 gui/src/ocpn_frame.cpp:3441
+#: gui/src/canvasMenu.cpp:523 gui/src/ocpn_frame.cpp:3450
 msgid "Course Up Mode"
 msgstr "Kurs opp modus"
 
@@ -3311,8 +3311,8 @@ msgid "Heading Up Mode"
 msgstr "Kurs opp modus"
 
 #: gui/src/canvasMenu.cpp:527 gui/src/canvasMenu.cpp:534
-#: gui/src/ocpn_frame.cpp:3154 gui/src/ocpn_frame.cpp:3440
-#: gui/src/ocpn_frame.cpp:5951
+#: gui/src/ocpn_frame.cpp:3160 gui/src/ocpn_frame.cpp:3449
+#: gui/src/ocpn_frame.cpp:5947
 msgid "North Up Mode"
 msgstr "Nord opp modus"
 
@@ -3321,7 +3321,7 @@ msgid "Chart Up Mode"
 msgstr "Kart opp modus"
 
 #: gui/src/canvasMenu.cpp:543 gui/src/canvasMenu.cpp:550
-#: gui/src/ocpn_frame.cpp:3522
+#: gui/src/ocpn_frame.cpp:3531
 msgid "Toggle Full Screen"
 msgstr "Aktiver/deaktiver fullskjerm"
 
@@ -3346,7 +3346,7 @@ msgstr "Lim inn slepestrek"
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 forskyvnings dialog..."
 
-#: gui/src/canvasMenu.cpp:611 gui/src/options.cpp:3785 gui/src/options.cpp:3849
+#: gui/src/canvasMenu.cpp:611 gui/src/options.cpp:3789 gui/src/options.cpp:3853
 msgid "Chart Groups"
 msgstr "Kartgrupper"
 
@@ -3464,7 +3464,7 @@ msgstr "Kopier som KML"
 #: gui/src/canvasMenu.cpp:758 gui/src/canvasMenu.cpp:812
 #: gui/src/canvasMenu.cpp:869 gui/src/canvasMenu.cpp:920
 #: gui/src/connection_edit.cpp:2411 gui/src/MarkInfo.cpp:485
-#: gui/src/MarkInfo.cpp:1167 gui/src/MarkInfo.cpp:1208 gui/src/options.cpp:1142
+#: gui/src/MarkInfo.cpp:1167 gui/src/MarkInfo.cpp:1208 gui/src/options.cpp:1146
 #: gui/src/RoutePropDlg.cpp:464 gui/src/TrackPropDlg.cpp:907
 msgid "Delete"
 msgstr "Slett"
@@ -3618,18 +3618,18 @@ msgstr "Send spor til annen OpenCPN"
 msgid "Chart Panel Options"
 msgstr "Tilpass kartet"
 
-#: gui/src/CanvasOptions.cpp:136 gui/src/options.cpp:3947
-#: gui/src/options.cpp:4130
+#: gui/src/CanvasOptions.cpp:136 gui/src/options.cpp:3951
+#: gui/src/options.cpp:4134
 msgid "Navigation Mode"
 msgstr "Navigasjonsmodus"
 
-#: gui/src/CanvasOptions.cpp:143 gui/src/options.cpp:3955
-#: gui/src/options.cpp:4138
+#: gui/src/CanvasOptions.cpp:143 gui/src/options.cpp:3959
+#: gui/src/options.cpp:4142
 msgid "North Up"
 msgstr "Nord opp"
 
-#: gui/src/CanvasOptions.cpp:151 gui/src/options.cpp:3958
-#: gui/src/options.cpp:4141
+#: gui/src/CanvasOptions.cpp:151 gui/src/options.cpp:3962
+#: gui/src/options.cpp:4145
 msgid "Course Up"
 msgstr "Kurs opp"
 
@@ -3637,32 +3637,32 @@ msgstr "Kurs opp"
 msgid "Heading Up"
 msgstr "Kurs opp"
 
-#: gui/src/CanvasOptions.cpp:169 gui/src/options.cpp:3965
-#: gui/src/options.cpp:4148
+#: gui/src/CanvasOptions.cpp:169 gui/src/options.cpp:3969
+#: gui/src/options.cpp:4152
 msgid "Look Ahead Mode"
 msgstr "Se forover modus"
 
-#: gui/src/CanvasOptions.cpp:180 gui/src/options.cpp:1874
+#: gui/src/CanvasOptions.cpp:180 gui/src/options.cpp:1878
 msgid "Display Options"
 msgstr "Visnings alternativer"
 
-#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3465
-#: gui/src/ocpn_frame.cpp:3471 gui/src/options.cpp:3980 gui/src/options.cpp:4163
+#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3474
+#: gui/src/ocpn_frame.cpp:3480 gui/src/options.cpp:3984 gui/src/options.cpp:4167
 msgid "Enable Chart Quilting"
 msgstr "Aktiver kartfletting"
 
-#: gui/src/CanvasOptions.cpp:192 gui/src/options.cpp:4021
-#: gui/src/options.cpp:4208
+#: gui/src/CanvasOptions.cpp:192 gui/src/options.cpp:4025
+#: gui/src/options.cpp:4212
 msgid "Show Grid"
 msgstr "Vis rutenett"
 
-#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3467
-#: gui/src/ocpn_frame.cpp:3473 gui/src/options.cpp:4025 gui/src/options.cpp:4212
+#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3476
+#: gui/src/ocpn_frame.cpp:3482 gui/src/options.cpp:4029 gui/src/options.cpp:4216
 msgid "Show Chart Outlines"
 msgstr "Vis kartomriss"
 
-#: gui/src/CanvasOptions.cpp:206 gui/src/options.cpp:4029
-#: gui/src/options.cpp:4216
+#: gui/src/CanvasOptions.cpp:206 gui/src/options.cpp:4033
+#: gui/src/options.cpp:4220
 msgid "Show Depth Units"
 msgstr "Vis dybdeenheter"
 
@@ -3682,7 +3682,7 @@ msgstr "Tidevann og strømmer"
 msgid "Show Tide stations"
 msgstr "Vis tidevannstasjoner"
 
-#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3509
+#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3518
 msgid "Show Currents"
 msgstr "Vis havstrømmer"
 
@@ -3698,8 +3698,8 @@ msgstr "Vis tekst"
 msgid "Show depths"
 msgstr "Vis dybder"
 
-#: gui/src/CanvasOptions.cpp:277 gui/src/options.cpp:3349
-#: gui/src/options.cpp:3543
+#: gui/src/CanvasOptions.cpp:277 gui/src/options.cpp:3353
+#: gui/src/options.cpp:3547
 msgid "Buoy/Light Labels"
 msgstr "Bøye/lykt navnelapper"
 
@@ -3707,8 +3707,8 @@ msgstr "Bøye/lykt navnelapper"
 msgid "Lights"
 msgstr "Lykter"
 
-#: gui/src/CanvasOptions.cpp:291 gui/src/options.cpp:3354
-#: gui/src/options.cpp:3548
+#: gui/src/CanvasOptions.cpp:291 gui/src/options.cpp:3358
+#: gui/src/options.cpp:3552
 msgid "Light Descriptions"
 msgstr "Lykt beskrivelse"
 
@@ -3724,18 +3724,18 @@ msgstr "Vis synlige sektorlys"
 msgid "Show chart data quality"
 msgstr "Vis kartets datakvalitet"
 
-#: gui/src/CanvasOptions.cpp:324 gui/src/options.cpp:3309
-#: gui/src/options.cpp:3512
+#: gui/src/CanvasOptions.cpp:324 gui/src/options.cpp:3313
+#: gui/src/options.cpp:3516
 msgid "Display Category"
 msgstr "Visnings alternativer"
 
-#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3311
-#: gui/src/options.cpp:3514
+#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3315
+#: gui/src/options.cpp:3518
 msgid "Standard"
 msgstr "Standard"
 
-#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3311
-#: gui/src/options.cpp:3514
+#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3315
+#: gui/src/options.cpp:3518
 msgid "All"
 msgstr "Alle"
 
@@ -3780,7 +3780,7 @@ msgstr "Bruk som aktiv katalog"
 msgid "Latest available catalog:"
 msgstr "Siste tilgjengelige katalog:"
 
-#: gui/src/catalog_mgr.cpp:292 gui/src/pluginmanager.cpp:3854
+#: gui/src/catalog_mgr.cpp:292 gui/src/pluginmanager.cpp:3855
 msgid "Cannot download data from url"
 msgstr "Kan ikke laste ned data fra URL"
 
@@ -3835,8 +3835,8 @@ msgstr "Mislykkes: "
 #: gui/src/catalog_mgr.cpp:604 gui/src/connection_edit.cpp:237
 #: gui/src/connection_edit.cpp:2415 gui/src/GoToPositionDialog.cpp:146
 #: gui/src/LinkPropDlg.cpp:76 gui/src/MarkInfo.cpp:751 gui/src/MarkInfo.cpp:1931
-#: gui/src/MUIBar.cpp:186 gui/src/options.cpp:850 gui/src/options.cpp:952
-#: gui/src/options.cpp:5806 gui/src/options.cpp:9096
+#: gui/src/MUIBar.cpp:191 gui/src/options.cpp:854 gui/src/options.cpp:956
+#: gui/src/options.cpp:5810 gui/src/options.cpp:9126
 #: gui/src/priority_gui.cpp:112 gui/src/rest_server_gui.cpp:171
 #: gui/src/rest_server_gui.cpp:298 gui/src/routeprintout.cpp:424
 #: gui/src/RoutePropDlg.cpp:547 gui/src/SendToGpsDlg.cpp:203
@@ -4168,28 +4168,28 @@ msgstr "Svarer du 'NEI' opprettes det nye veipunkter for denne ruten."
 msgid "Merge waypoints?"
 msgstr "Koble sammen veipunkter?"
 
-#: gui/src/chcanv.cpp:10556 gui/src/RolloverWin.cpp:144
+#: gui/src/chcanv.cpp:10556 gui/src/FontMgr.cpp:219 gui/src/RolloverWin.cpp:144
 #: gui/src/RolloverWin.cpp:312
 msgid "RouteLegInfoRollover"
 msgstr "RuteleggInfoMusOver"
 
-#: gui/src/chcanv.cpp:11357 gui/src/mbtiles/mbtiles.cpp:1000
+#: gui/src/chcanv.cpp:11357 gui/src/mbtiles/mbtiles.cpp:1005
 msgid "MBTile requires OpenGL to be enabled"
 msgstr "MBTile krever at OpenGL er aktivert"
 
-#: gui/src/chcanv.cpp:12012 gui/src/options.cpp:4364 gui/src/options.cpp:4513
-#: gui/src/initwiz/wiz_ui_proto.cpp:36
+#: gui/src/chcanv.cpp:12012 gui/src/options.cpp:4368 gui/src/options.cpp:4517
+#: gui/src/initwiz/wiz_ui_proto.cpp:41
 msgid "Feet"
 msgstr "Fot"
 
-#: gui/src/chcanv.cpp:12014 gui/src/options.cpp:4321 gui/src/options.cpp:4365
-#: gui/src/options.cpp:4482 gui/src/options.cpp:4514
-#: gui/src/initwiz/wiz_ui_proto.cpp:36 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/chcanv.cpp:12014 gui/src/options.cpp:4325 gui/src/options.cpp:4369
+#: gui/src/options.cpp:4486 gui/src/options.cpp:4518
+#: gui/src/initwiz/wiz_ui_proto.cpp:41 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Meters"
 msgstr "Meter"
 
-#: gui/src/chcanv.cpp:12016 gui/src/options.cpp:4366 gui/src/options.cpp:4515
-#: gui/src/initwiz/wiz_ui_proto.cpp:36
+#: gui/src/chcanv.cpp:12016 gui/src/options.cpp:4370 gui/src/options.cpp:4519
+#: gui/src/initwiz/wiz_ui_proto.cpp:41
 msgid "Fathoms"
 msgstr "Favner"
 
@@ -4197,7 +4197,7 @@ msgstr "Favner"
 msgid "OverZoom"
 msgstr "Overzoom"
 
-#: gui/src/chcanv.cpp:12387 gui/src/chcanv.cpp:12388
+#: gui/src/chcanv.cpp:12387 gui/src/chcanv.cpp:12388 gui/src/FontMgr.cpp:223
 msgid "ExtendedTideIcon"
 msgstr "UtvidetTidevannsIkon"
 
@@ -4213,7 +4213,7 @@ msgstr "AIS-mål informasjon"
 msgid "Show all AIS Targets"
 msgstr "Vis alle AIS-målene"
 
-#: gui/src/chcanv.cpp:13202 gui/src/ocpn_frame.cpp:3529
+#: gui/src/chcanv.cpp:13202 gui/src/ocpn_frame.cpp:3538
 msgid "Attenuate less critical AIS targets"
 msgstr "Demp mindre kritiske AIS-mål"
 
@@ -4261,9 +4261,9 @@ msgstr "Bruker X forskyvning"
 msgid "User Y Offset"
 msgstr "Bruker Y forskyvning"
 
-#: gui/src/cm93.cpp:6298 gui/src/cm93.cpp:6312 gui/src/options.cpp:3447
-#: gui/src/options.cpp:3457 gui/src/options.cpp:3467 gui/src/options.cpp:3662
-#: gui/src/options.cpp:3671 gui/src/options.cpp:3680 gui/src/options.cpp:6507
+#: gui/src/cm93.cpp:6298 gui/src/cm93.cpp:6312 gui/src/options.cpp:3451
+#: gui/src/options.cpp:3461 gui/src/options.cpp:3471 gui/src/options.cpp:3666
+#: gui/src/options.cpp:3675 gui/src/options.cpp:3684 gui/src/options.cpp:6511
 msgid "meters"
 msgstr "meter"
 
@@ -4274,11 +4274,13 @@ msgstr "Denne leggen"
 
 #: gui/src/concanv.cpp:110 gui/src/concanv.cpp:114 gui/src/concanv.cpp:118
 #: gui/src/concanv.cpp:122 gui/src/concanv.cpp:126 gui/src/concanv.cpp:570
+#: gui/src/FontMgr.cpp:213
 msgid "Console Legend"
 msgstr "Konsoll Forklaring"
 
 #: gui/src/concanv.cpp:110 gui/src/concanv.cpp:114 gui/src/concanv.cpp:118
 #: gui/src/concanv.cpp:122 gui/src/concanv.cpp:126 gui/src/concanv.cpp:571
+#: gui/src/FontMgr.cpp:215
 msgid "Console Value"
 msgstr "Konsoll Verdi"
 
@@ -4314,12 +4316,12 @@ msgstr "ETA @VMG"
 msgid "ETA  @SOG"
 msgstr "ETA @SOG"
 
-#: gui/src/ConfigMgr.cpp:456 gui/src/options.cpp:816
+#: gui/src/ConfigMgr.cpp:456 gui/src/options.cpp:820
 msgid "Title"
 msgstr "Tittel"
 
 #: gui/src/ConfigMgr.cpp:461 gui/src/MarkInfo.cpp:428 gui/src/MarkInfo.cpp:526
-#: gui/src/options.cpp:826 gui/src/routeprintout.cpp:116
+#: gui/src/options.cpp:830 gui/src/routeprintout.cpp:116
 #: gui/src/routeprintout.cpp:409 gui/src/RoutePropDlg.cpp:397
 #: gui/src/RoutePropDlg.cpp:422 gui/src/TrackPropDlg.cpp:872
 msgid "Description"
@@ -4348,7 +4350,7 @@ msgid "Less"
 msgstr "Mindre"
 
 #: gui/src/connection_edit.cpp:259 gui/src/connection_edit.cpp:803
-#: gui/src/connections_dialog.cpp:481
+#: gui/src/connections_dialog.cpp:557
 msgid "Edit Selected Connection"
 msgstr "Rediger valgt tilkobling"
 
@@ -4637,12 +4639,12 @@ msgstr ""
 msgid "Or consider using a different data port for one of them"
 msgstr ""
 
-#: gui/src/connection_edit.cpp:1766 gui/src/options.cpp:7808
+#: gui/src/connection_edit.cpp:1766 gui/src/options.cpp:7813
 #: gui/src/routeman_gui.cpp:73
 msgid "OpenCPN Warning"
 msgstr "OpenCPN advarsel"
 
-#: gui/src/connection_edit.cpp:1769 gui/src/options.cpp:6868
+#: gui/src/connection_edit.cpp:1769 gui/src/options.cpp:6872
 #: gui/src/routemanagerdialog.cpp:1949
 msgid "OpenCPN info"
 msgstr "OpenCPN info"
@@ -4651,17 +4653,17 @@ msgstr "OpenCPN info"
 msgid "Sentence Filter"
 msgstr "Setningsfilter"
 
-#: gui/src/connection_edit.cpp:2408 gui/src/options.cpp:3486
-#: gui/src/options.cpp:3699
+#: gui/src/connection_edit.cpp:2408 gui/src/options.cpp:3490
+#: gui/src/options.cpp:3703
 msgid "Select All"
 msgstr "Velg alt"
 
-#: gui/src/connection_edit.cpp:2409 gui/src/options.cpp:3488
-#: gui/src/options.cpp:3701 gui/src/priority_gui.cpp:105
+#: gui/src/connection_edit.cpp:2409 gui/src/options.cpp:3492
+#: gui/src/options.cpp:3705 gui/src/priority_gui.cpp:105
 msgid "Clear All"
 msgstr "Tøm alt"
 
-#: gui/src/connection_edit.cpp:2410 gui/src/options.cpp:3829
+#: gui/src/connection_edit.cpp:2410 gui/src/options.cpp:3833
 #: gui/src/RoutePropDlg.cpp:479 gui/src/TrackPropDlg.cpp:926
 msgid "Add"
 msgstr "Legg til"
@@ -4692,59 +4694,59 @@ msgstr "En NMEA setning er normalt 3 tegn lang (f.eks. RMC, GGA osv.)\n"
 msgid "REGEX syntax error: \n"
 msgstr "REGEX syntaksfeil: \n"
 
-#: gui/src/connections_dialog.cpp:115 gui/src/options.cpp:3925
+#: gui/src/connections_dialog.cpp:122 gui/src/options.cpp:3929
 msgid "General"
 msgstr "Generelt"
 
-#: gui/src/connections_dialog.cpp:128
+#: gui/src/connections_dialog.cpp:135
 msgid "Filter NMEA Course and Speed data"
 msgstr "Filtrer NMEA Kurs- og Fartsdata"
 
-#: gui/src/connections_dialog.cpp:134
+#: gui/src/connections_dialog.cpp:141
 msgid "Filter period (sec)"
 msgstr "Filterperiode (sek)"
 
-#: gui/src/connections_dialog.cpp:154
+#: gui/src/connections_dialog.cpp:168 gui/src/connections_dialog.cpp:220
 msgid "Show NMEA Debug Window"
 msgstr "Vis NMEA feilsøkningsvindu"
 
-#: gui/src/connections_dialog.cpp:160
+#: gui/src/connections_dialog.cpp:174 gui/src/connections_dialog.cpp:226
 msgid "Format uploads for Furuno GP3X"
 msgstr "Formater opplasting for Furuno GP3X"
 
-#: gui/src/connections_dialog.cpp:166
+#: gui/src/connections_dialog.cpp:180 gui/src/connections_dialog.cpp:232
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Benytt Garmin GRMN (Vert) modus for opplastinger"
 
-#: gui/src/connections_dialog.cpp:173
+#: gui/src/connections_dialog.cpp:187 gui/src/connections_dialog.cpp:239
 msgid "Use magnetic bearings in output sentence APB"
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:185
-msgid "NMEA0183 Talker ID"
-msgstr ""
-
-#: gui/src/connections_dialog.cpp:200
+#: gui/src/connections_dialog.cpp:196 gui/src/connections_dialog.cpp:265
 msgid "Adjust communication priorities..."
 msgstr "Juster kommunikasjonsprioritet..."
 
-#: gui/src/connections_dialog.cpp:209
+#: gui/src/connections_dialog.cpp:204 gui/src/connections_dialog.cpp:250
+msgid "NMEA0183 Talker ID"
+msgstr ""
+
+#: gui/src/connections_dialog.cpp:275
 msgid "Data Connections"
 msgstr "Datatilkoblinger"
 
-#: gui/src/connections_dialog.cpp:218
+#: gui/src/connections_dialog.cpp:284
 msgid "Add Connection..."
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:222
+#: gui/src/connections_dialog.cpp:288
 msgid "Edit Connection..."
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:227
+#: gui/src/connections_dialog.cpp:293
 msgid "Remove Connection"
 msgstr "Fjern tilkobling"
 
-#: gui/src/connections_dialog.cpp:421
+#: gui/src/connections_dialog.cpp:497
 msgid "Configure new connection"
 msgstr "Sett opp ny tilkobling"
 
@@ -4802,7 +4804,7 @@ msgid "Install"
 msgstr "Installer"
 
 #: gui/src/download_mgr.cpp:251 gui/src/download_mgr.cpp:268
-#: gui/src/pluginmanager.cpp:4758 gui/src/update_mgr.cpp:244
+#: gui/src/pluginmanager.cpp:4759 gui/src/update_mgr.cpp:244
 msgid "Reinstall"
 msgstr "Installer på nytt"
 
@@ -4810,7 +4812,7 @@ msgstr "Installer på nytt"
 msgid "Update"
 msgstr "Oppdater"
 
-#: gui/src/download_mgr.cpp:270 gui/src/pluginmanager.cpp:4764
+#: gui/src/download_mgr.cpp:270 gui/src/pluginmanager.cpp:4765
 #: gui/src/update_mgr.cpp:246
 msgid "Downgrade"
 msgstr "Nedgrader"
@@ -4840,13 +4842,28 @@ msgid " successfully installed"
 msgstr " installasjon vellykket"
 
 #: gui/src/download_mgr.cpp:573 gui/src/pluginmanager.cpp:1122
-#: gui/src/pluginmanager.cpp:3978
+#: gui/src/pluginmanager.cpp:3979
 msgid "Installation complete"
 msgstr "Installasjon fullført"
 
 #: gui/src/download_mgr.cpp:589 gui/src/pluginmanager.cpp:1113
 msgid "Installation error"
 msgstr "Installasjonsfeil"
+
+#: gui/src/FontMgr.cpp:217 gui/src/routemanagerdialog.cpp:688
+#: gui/src/route_point_gui.cpp:127 gui/src/route_point_gui.cpp:135
+#: gui/src/route_point_gui.cpp:299 gui/src/route_point_gui.cpp:307
+msgid "Marks"
+msgstr "Merker"
+
+#: gui/src/FontMgr.cpp:221 gui/src/RolloverWin.cpp:137
+#: gui/src/RolloverWin.cpp:303
+msgid "AISRollover"
+msgstr "AIS kursor over"
+
+#: gui/src/FontMgr.cpp:225
+msgid "ChartTexts"
+msgstr ""
 
 #: gui/src/glChartCanvas.cpp:1925
 msgid "GridText"
@@ -4860,7 +4877,7 @@ msgstr "Venter på at rasterkart komprimerings-tråden skal avslutte."
 msgid "OpenCPN Compressed Cache Update"
 msgstr "OpenCPN komprimert hurtigbuffer oppdatering"
 
-#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8654
+#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8651
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Distanse fra eget skip: %4.0f NM"
@@ -4993,7 +5010,7 @@ msgstr "Dette veipunktet er del av et lag og kan ikke endres"
 msgid "Icon"
 msgstr "Ikon"
 
-#: gui/src/MarkInfo.cpp:380 gui/src/options.cpp:2207 gui/src/options.cpp:2270
+#: gui/src/MarkInfo.cpp:380 gui/src/options.cpp:2211 gui/src/options.cpp:2274
 msgid "Combo!"
 msgstr "Kombinert!"
 
@@ -5003,7 +5020,7 @@ msgid "Links"
 msgstr "Linker"
 
 #: gui/src/MarkInfo.cpp:490 gui/src/MarkInfo.cpp:1168 gui/src/MarkInfo.cpp:1216
-#: gui/src/options.cpp:1139 gui/src/RoutePropDlg.cpp:454
+#: gui/src/options.cpp:1143 gui/src/RoutePropDlg.cpp:454
 #: gui/src/RoutePropDlg.cpp:484 gui/src/TrackPropDlg.cpp:897
 #: gui/src/TrackPropDlg.cpp:930
 msgid "Edit"
@@ -5044,22 +5061,22 @@ msgstr "Avstandsringer"
 msgid "Number"
 msgstr "Nummer"
 
-#: gui/src/MarkInfo.cpp:591 gui/src/options.cpp:4318 gui/src/options.cpp:4479
+#: gui/src/MarkInfo.cpp:591 gui/src/options.cpp:4322 gui/src/options.cpp:4483
 #: gui/src/routeprintout.cpp:113 gui/src/routeprintout.cpp:397
 #: gui/src/RoutePropDlg.cpp:146 gui/src/RoutePropDlg.cpp:360
 #: gui/src/trackprintout.cpp:94 gui/src/trackprintout.cpp:319
-#: gui/src/TrackPropDlg.cpp:305 gui/src/initwiz/wiz_ui_proto.cpp:42
+#: gui/src/TrackPropDlg.cpp:305 gui/src/initwiz/wiz_ui_proto.cpp:47
 msgid "Distance"
 msgstr "Distanse"
 
-#: gui/src/MarkInfo.cpp:595 gui/src/options.cpp:2024
+#: gui/src/MarkInfo.cpp:595 gui/src/options.cpp:2028
 #: gui/src/RoutePropDlg.cpp:259 gui/src/TrackPropDlg.cpp:476
 #: gui/src/TrackPropDlg.cpp:721
 msgid "Color"
 msgstr "Farge"
 
-#: gui/src/MarkInfo.cpp:598 gui/src/options.cpp:1956 gui/src/options.cpp:2171
-#: gui/src/options.cpp:2600
+#: gui/src/MarkInfo.cpp:598 gui/src/options.cpp:1960 gui/src/options.cpp:2175
+#: gui/src/options.cpp:2604
 msgid "None"
 msgstr "Ingen"
 
@@ -5149,16 +5166,16 @@ msgstr "Vis bare ved skala"
 msgid "Tide Station not found"
 msgstr "Tidevannstasjon ble ikke funnet"
 
-#: gui/src/MUIBar.cpp:89 gui/src/MUIBar.cpp:98
+#: gui/src/MUIBar.cpp:94 gui/src/MUIBar.cpp:103
 msgid "Set scale"
 msgstr "Sett målestokk"
 
-#: gui/src/MUIBar.cpp:167
+#: gui/src/MUIBar.cpp:172
 msgid "Chart Scale"
 msgstr "Målestokk"
 
-#: gui/src/navutil.cpp:1835 gui/src/navutil.cpp:3227 gui/src/options.cpp:928
-#: gui/src/options.cpp:1090
+#: gui/src/navutil.cpp:1835 gui/src/navutil.cpp:3227 gui/src/options.cpp:932
+#: gui/src/options.cpp:1094
 msgid "Persistent"
 msgstr "Varig"
 
@@ -5190,35 +5207,35 @@ msgstr "NMEA feilsøkningsvindu"
 msgid "Cannot load route or waypoint file: "
 msgstr ""
 
-#: gui/src/ocpn_app.cpp:1302 gui/src/ocpn_app.cpp:1309
+#: gui/src/ocpn_app.cpp:1294 gui/src/ocpn_app.cpp:1301
 msgid "Failed to initialize the user interface. "
 msgstr "Kunne ikke starte brukergrensesnittet. "
 
-#: gui/src/ocpn_app.cpp:1303
+#: gui/src/ocpn_app.cpp:1295
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN kan ikke starte. "
 
-#: gui/src/ocpn_app.cpp:1304
+#: gui/src/ocpn_app.cpp:1296
 msgid "The necessary configuration files were not found. "
 msgstr "De nødvendige konfigurasjonsfilene ble ikke funnet. "
 
-#: gui/src/ocpn_app.cpp:1305
+#: gui/src/ocpn_app.cpp:1297
 msgid "See the log file at "
 msgstr "SE loggfilen på "
 
-#: gui/src/ocpn_app.cpp:1306
+#: gui/src/ocpn_app.cpp:1298
 msgid " for details."
 msgstr " for detaljer."
 
-#: gui/src/ocpn_app.cpp:1595
+#: gui/src/ocpn_app.cpp:1596
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Bærbar(-p) startes fra "
 
-#: gui/src/ocpn_app.cpp:1670
+#: gui/src/ocpn_app.cpp:1671
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Innhenter kart mapper fra Windows registeret"
 
-#: gui/src/ocpn_app.cpp:1852
+#: gui/src/ocpn_app.cpp:1853
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN startet på %ld ms."
@@ -5273,8 +5290,8 @@ msgstr "Estimert tid : "
 msgid "Remaining time : "
 msgstr "Gjenværende tid : "
 
-#: gui/src/ocpn_frame.cpp:885 gui/src/ocpn_frame.cpp:4552
-#: gui/src/ocpn_frame.cpp:4562
+#: gui/src/ocpn_frame.cpp:885 gui/src/ocpn_frame.cpp:4548
+#: gui/src/ocpn_frame.cpp:4558
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN kartoppdatering"
 
@@ -5282,277 +5299,277 @@ msgstr "OpenCPN kartoppdatering"
 msgid "Anchorage created "
 msgstr "Ankerplass opprettet "
 
-#: gui/src/ocpn_frame.cpp:2582 gui/src/ocpn_frame.cpp:2704
+#: gui/src/ocpn_frame.cpp:2582 gui/src/ocpn_frame.cpp:2710
 msgid "Show Toolbar"
 msgstr "Vis verktøylinje"
 
-#: gui/src/ocpn_frame.cpp:2583 gui/src/ocpn_frame.cpp:2706
-#: gui/src/ocpn_frame.cpp:7026
+#: gui/src/ocpn_frame.cpp:2583 gui/src/ocpn_frame.cpp:2712
+#: gui/src/ocpn_frame.cpp:7022
 msgid "Hide Toolbar"
 msgstr "Skjul verktøylinje"
 
-#: gui/src/ocpn_frame.cpp:2912 gui/src/ocpn_frame.cpp:2975
+#: gui/src/ocpn_frame.cpp:2918 gui/src/ocpn_frame.cpp:2981
 msgid "MAN OVERBOARD"
 msgstr "MANN OVER BORD"
 
-#: gui/src/ocpn_frame.cpp:2913 gui/src/ocpn_frame.cpp:6691
+#: gui/src/ocpn_frame.cpp:2919 gui/src/ocpn_frame.cpp:6687
 msgid " at "
 msgstr " ved "
 
-#: gui/src/ocpn_frame.cpp:2915 gui/src/ocpn_frame.cpp:6693
+#: gui/src/ocpn_frame.cpp:2921 gui/src/ocpn_frame.cpp:6689
 msgid " on "
 msgstr " på "
 
-#: gui/src/ocpn_frame.cpp:2935
+#: gui/src/ocpn_frame.cpp:2941
 msgid "1.0 NM along COG"
 msgstr "1.0 NM langs COG"
 
-#: gui/src/ocpn_frame.cpp:2947
+#: gui/src/ocpn_frame.cpp:2953
 msgid "Temporary MOB Route"
 msgstr "Midlertidig MOB rute"
 
-#: gui/src/ocpn_frame.cpp:2948
+#: gui/src/ocpn_frame.cpp:2954
 msgid "Assumed 1 Mile Point"
 msgstr "Antatt 1 mils punkt"
 
-#: gui/src/ocpn_frame.cpp:2976 gui/src/ocpn_frame.cpp:6749
-#: gui/src/ocpn_frame.cpp:6790
+#: gui/src/ocpn_frame.cpp:2982 gui/src/ocpn_frame.cpp:6745
+#: gui/src/ocpn_frame.cpp:6786
 msgid " Time: "
 msgstr " Tid: "
 
-#: gui/src/ocpn_frame.cpp:2978
+#: gui/src/ocpn_frame.cpp:2984
 msgid "  Position: "
 msgstr "  Posisjon: "
 
-#: gui/src/ocpn_frame.cpp:2996 gui/src/ocpn_frame.cpp:7105
+#: gui/src/ocpn_frame.cpp:3002 gui/src/ocpn_frame.cpp:7101
 msgid "Disable Tracking"
 msgstr "Deaktiver sporing"
 
-#: gui/src/ocpn_frame.cpp:3068 gui/src/ocpn_frame.cpp:3438
-#: gui/src/ocpn_frame.cpp:7051
+#: gui/src/ocpn_frame.cpp:3074 gui/src/ocpn_frame.cpp:3447
+#: gui/src/ocpn_frame.cpp:7047
 msgid "Enable Tracking"
 msgstr "Aktiver sporing"
 
-#: gui/src/ocpn_frame.cpp:3437
+#: gui/src/ocpn_frame.cpp:3446
 msgid "Auto Follow"
 msgstr "Følg automatisk"
 
-#: gui/src/ocpn_frame.cpp:3442
+#: gui/src/ocpn_frame.cpp:3451
 msgid "Head Up Mode"
 msgstr "Baug opp modus"
 
-#: gui/src/ocpn_frame.cpp:3445 gui/src/ocpn_frame.cpp:3448
+#: gui/src/ocpn_frame.cpp:3454 gui/src/ocpn_frame.cpp:3457
 msgid "Zoom In"
 msgstr "Zoom inn"
 
-#: gui/src/ocpn_frame.cpp:3446 gui/src/ocpn_frame.cpp:3449
+#: gui/src/ocpn_frame.cpp:3455 gui/src/ocpn_frame.cpp:3458
 msgid "Zoom Out"
 msgstr "Zoom ut"
 
-#: gui/src/ocpn_frame.cpp:3453
+#: gui/src/ocpn_frame.cpp:3462
 msgid "Larger Scale Chart"
 msgstr "Kart med større målestokk"
 
-#: gui/src/ocpn_frame.cpp:3455
+#: gui/src/ocpn_frame.cpp:3464
 msgid "Smaller Scale Chart"
 msgstr "Kart med mindre målestokk"
 
-#: gui/src/ocpn_frame.cpp:3458
+#: gui/src/ocpn_frame.cpp:3467
 msgid "Exit OpenCPN"
 msgstr "Avslutt OpenCPN"
 
-#: gui/src/ocpn_frame.cpp:3460
+#: gui/src/ocpn_frame.cpp:3469
 msgid "&Navigate"
 msgstr "&Naviger"
 
-#: gui/src/ocpn_frame.cpp:3476 gui/src/options.cpp:5409
+#: gui/src/ocpn_frame.cpp:3485 gui/src/options.cpp:5413
 msgid "Show Chart Bar"
 msgstr "Vis kartlinje"
 
-#: gui/src/ocpn_frame.cpp:3481 gui/src/ocpn_frame.cpp:3494
+#: gui/src/ocpn_frame.cpp:3490 gui/src/ocpn_frame.cpp:3503
 msgid "Show ENC text"
 msgstr "Vis ENC tekst"
 
-#: gui/src/ocpn_frame.cpp:3483 gui/src/ocpn_frame.cpp:3496
+#: gui/src/ocpn_frame.cpp:3492 gui/src/ocpn_frame.cpp:3505
 msgid "Show ENC Lights"
 msgstr "Vis ENC lykter"
 
-#: gui/src/ocpn_frame.cpp:3485 gui/src/ocpn_frame.cpp:3498
+#: gui/src/ocpn_frame.cpp:3494 gui/src/ocpn_frame.cpp:3507
 msgid "Show ENC Soundings"
 msgstr "Vis ENC loddskudd"
 
-#: gui/src/ocpn_frame.cpp:3487 gui/src/ocpn_frame.cpp:3500
+#: gui/src/ocpn_frame.cpp:3496 gui/src/ocpn_frame.cpp:3509
 msgid "Show ENC Anchoring Info"
 msgstr "Vis ENC ankringsinfo"
 
-#: gui/src/ocpn_frame.cpp:3489 gui/src/ocpn_frame.cpp:3503
+#: gui/src/ocpn_frame.cpp:3498 gui/src/ocpn_frame.cpp:3512
 msgid "Show ENC Data Quality"
 msgstr "Vis ENC datakvalitet"
 
-#: gui/src/ocpn_frame.cpp:3491 gui/src/ocpn_frame.cpp:3505
+#: gui/src/ocpn_frame.cpp:3500 gui/src/ocpn_frame.cpp:3514
 msgid "Show Navobjects"
 msgstr "Vis nav.objekter"
 
-#: gui/src/ocpn_frame.cpp:3508
+#: gui/src/ocpn_frame.cpp:3517
 msgid "Show Tides"
 msgstr "Vis tidevann"
 
-#: gui/src/ocpn_frame.cpp:3513 gui/src/ocpn_frame.cpp:3516
-#: gui/src/ocpn_frame.cpp:7056
+#: gui/src/ocpn_frame.cpp:3522 gui/src/ocpn_frame.cpp:3525
+#: gui/src/ocpn_frame.cpp:7052
 msgid "Change Color Scheme"
 msgstr "Bytt fargepalett"
 
-#: gui/src/ocpn_frame.cpp:3524
+#: gui/src/ocpn_frame.cpp:3533
 msgid "&View"
 msgstr "&Vis"
 
-#: gui/src/ocpn_frame.cpp:3527
+#: gui/src/ocpn_frame.cpp:3536
 msgid "Show AIS Targets"
 msgstr "Vis AIS-mål"
 
-#: gui/src/ocpn_frame.cpp:3532
+#: gui/src/ocpn_frame.cpp:3541
 msgid "Hide Moored AIS Targets"
 msgstr "Skjul fortøyde AIS-mål"
 
-#: gui/src/ocpn_frame.cpp:3533
+#: gui/src/ocpn_frame.cpp:3542
 msgid "Show AIS Target Tracks"
 msgstr "Vis slepestrek etter AIS-mål"
 
-#: gui/src/ocpn_frame.cpp:3534
+#: gui/src/ocpn_frame.cpp:3543
 msgid "Show CPA Alert Dialogs"
 msgstr "Vis CPA alarmdialoger"
 
-#: gui/src/ocpn_frame.cpp:3535
+#: gui/src/ocpn_frame.cpp:3544
 msgid "Sound CPA Alarms"
 msgstr "Aktiver hørbare CPA alarmer"
 
-#: gui/src/ocpn_frame.cpp:3539 gui/src/ocpn_frame.cpp:3542
+#: gui/src/ocpn_frame.cpp:3548 gui/src/ocpn_frame.cpp:3551
 msgid "Show CPA Warnings"
 msgstr "Vis CPA advarsler"
 
-#: gui/src/ocpn_frame.cpp:3547
+#: gui/src/ocpn_frame.cpp:3556
 msgid "&AIS"
 msgstr "&AIS"
 
-#: gui/src/ocpn_frame.cpp:3552 gui/src/ocpn_frame.cpp:3555
+#: gui/src/ocpn_frame.cpp:3561 gui/src/ocpn_frame.cpp:3564
 msgid "Measure Distance"
 msgstr "Mål distanse"
 
-#: gui/src/ocpn_frame.cpp:3559
+#: gui/src/ocpn_frame.cpp:3568
 msgid "Route && Mark Manager..."
 msgstr "Rute && Merke behandling..."
 
-#: gui/src/ocpn_frame.cpp:3561 gui/src/ocpn_frame.cpp:7039
+#: gui/src/ocpn_frame.cpp:3570 gui/src/ocpn_frame.cpp:7035
 msgid "Create Route"
 msgstr "Lag rute"
 
-#: gui/src/ocpn_frame.cpp:3564
+#: gui/src/ocpn_frame.cpp:3573
 msgid "Drop Mark at Boat"
 msgstr "Sett merke ved båt"
 
-#: gui/src/ocpn_frame.cpp:3566
+#: gui/src/ocpn_frame.cpp:3575
 msgid "Drop Mark at Cursor"
 msgstr "Sett merke ved kursor"
 
-#: gui/src/ocpn_frame.cpp:3572 gui/src/ocpn_frame.cpp:3579
-#: gui/src/ocpn_frame.cpp:7083
+#: gui/src/ocpn_frame.cpp:3581 gui/src/ocpn_frame.cpp:3588
+#: gui/src/ocpn_frame.cpp:7079
 msgid "Drop MOB Marker"
 msgstr "Sett MOB merke"
 
-#: gui/src/ocpn_frame.cpp:3576 gui/src/pluginmanager.cpp:4538
-#: gui/src/pluginmanager.cpp:4559
+#: gui/src/ocpn_frame.cpp:3585 gui/src/pluginmanager.cpp:4539
+#: gui/src/pluginmanager.cpp:4560
 msgid "Preferences"
 msgstr "Innstillinger"
 
-#: gui/src/ocpn_frame.cpp:3584
+#: gui/src/ocpn_frame.cpp:3593
 msgid "&Tools"
 msgstr "&Verktøy"
 
-#: gui/src/ocpn_frame.cpp:3588
+#: gui/src/ocpn_frame.cpp:3597
 msgid "&Window"
 msgstr "&Vindu"
 
-#: gui/src/ocpn_frame.cpp:3593
+#: gui/src/ocpn_frame.cpp:3602
 msgid "OpenCPN Help"
 msgstr "OpenCPN Hjelp"
 
-#: gui/src/ocpn_frame.cpp:3594
+#: gui/src/ocpn_frame.cpp:3603
 msgid "&Help"
 msgstr "&Hjelp"
 
-#: gui/src/ocpn_frame.cpp:4252
+#: gui/src/ocpn_frame.cpp:4248
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Start OpenCPN på nytt for å aktivere valgt språk eller stilendring."
 
-#: gui/src/ocpn_frame.cpp:5253
+#: gui/src/ocpn_frame.cpp:5249
 msgid " Ship "
 msgstr " Skip "
 
-#: gui/src/ocpn_frame.cpp:5945
+#: gui/src/ocpn_frame.cpp:5941
 msgid "Rotated Mode"
 msgstr "Rotert modus"
 
-#: gui/src/ocpn_frame.cpp:6301 gui/src/routeprintout.cpp:477
+#: gui/src/ocpn_frame.cpp:6297 gui/src/routeprintout.cpp:477
 #: gui/src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Et problem oppstod ved utskrift.\n"
 "Kanskje printer ikke er installert korrekt?"
 
-#: gui/src/ocpn_frame.cpp:6470 gui/src/ocpn_frame.cpp:6527
+#: gui/src/ocpn_frame.cpp:6466 gui/src/ocpn_frame.cpp:6523
 #: gui/src/routemanagerdialog.cpp:1272
 msgid "(Unnamed Route)"
 msgstr "(Rute uten navn)"
 
-#: gui/src/ocpn_frame.cpp:6690 gui/src/ocpn_frame.cpp:6748
+#: gui/src/ocpn_frame.cpp:6686 gui/src/ocpn_frame.cpp:6744
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS MANN OVER BORD"
 
-#: gui/src/ocpn_frame.cpp:6710 gui/src/options.cpp:1867
+#: gui/src/ocpn_frame.cpp:6706 gui/src/options.cpp:1871
 msgid "Own ship"
 msgstr "Eget skip"
 
-#: gui/src/ocpn_frame.cpp:6722
+#: gui/src/ocpn_frame.cpp:6718
 msgid "Temporary AISMOB Route"
 msgstr "Midlertidig AISMOB rute"
 
-#: gui/src/ocpn_frame.cpp:6723
+#: gui/src/ocpn_frame.cpp:6719
 msgid "Present own ship"
 msgstr "Vis eget skip"
 
-#: gui/src/ocpn_frame.cpp:6751 gui/src/ocpn_frame.cpp:6792
+#: gui/src/ocpn_frame.cpp:6747 gui/src/ocpn_frame.cpp:6788
 msgid "  Ownship Position: "
 msgstr "  Eget skips posisjon: "
 
-#: gui/src/ocpn_frame.cpp:6755 gui/src/ocpn_frame.cpp:6796
+#: gui/src/ocpn_frame.cpp:6751 gui/src/ocpn_frame.cpp:6792
 msgid "  MOB Position: "
 msgstr "  MOB Posisjon: "
 
-#: gui/src/ocpn_frame.cpp:6789
+#: gui/src/ocpn_frame.cpp:6785
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS MANN OVER BORD OPPDATERING"
 
-#: gui/src/ocpn_frame.cpp:7045 gui/src/routemanagerdialog.cpp:314
+#: gui/src/ocpn_frame.cpp:7041 gui/src/routemanagerdialog.cpp:314
 msgid "Route & Mark Manager"
 msgstr "Rute & punktbehandling"
 
-#: gui/src/ocpn_frame.cpp:7069
+#: gui/src/ocpn_frame.cpp:7065
 msgid "Print Chart"
 msgstr "Skriv ut kart"
 
-#: gui/src/ocpn_frame.cpp:7083
+#: gui/src/ocpn_frame.cpp:7079
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Mellomrom)"
 
-#: gui/src/ocpn_frame.cpp:8619
+#: gui/src/ocpn_frame.cpp:8616
 msgid "OpenCPN ENC Prepare"
 msgstr "OpenCPN ENC forberedelse"
 
-#: gui/src/ocpn_frame.cpp:8685
+#: gui/src/ocpn_frame.cpp:8682
 msgid "ENC Completed."
 msgstr "ENC ferdig."
 
-#: gui/src/options.cpp:840
+#: gui/src/options.cpp:844
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
@@ -5560,105 +5577,105 @@ msgstr "Opprett en privat konfigurasjons-mal basert på nåværende innstillinge
 "Denne malen vil bli lagret, og kan når som helst bli valgt for fremtidig bruk.\n"
 "               "
 
-#: gui/src/options.cpp:898
+#: gui/src/options.cpp:902
 msgid "MMSI Extended Properties"
 msgstr "MMSI utvidede egenskaper"
 
-#: gui/src/options.cpp:912
+#: gui/src/options.cpp:916
 msgid "Tracking"
 msgstr "Sporer"
 
-#: gui/src/options.cpp:917
+#: gui/src/options.cpp:921
 msgid "Default tracking"
 msgstr "Standard sporing"
 
-#: gui/src/options.cpp:922
+#: gui/src/options.cpp:926
 msgid "Always track"
 msgstr "Alltid spor"
 
-#: gui/src/options.cpp:925
+#: gui/src/options.cpp:929
 msgid " Never track"
 msgstr " Aldri spor"
 
-#: gui/src/options.cpp:934
+#: gui/src/options.cpp:938
 msgid "Ignore this MMSI"
 msgstr "Ignorer dette MMSI"
 
-#: gui/src/options.cpp:938
+#: gui/src/options.cpp:942
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "Behandle dette MMSI som SART/PLB(AIS) MOB."
 
-#: gui/src/options.cpp:942
+#: gui/src/options.cpp:946
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "Konverter AIVDM for dette MMSI"
 
-#: gui/src/options.cpp:946
+#: gui/src/options.cpp:950
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr "Fartøy med MMSI er min følger - Ingen CPA varsel"
 
-#: gui/src/options.cpp:1031
+#: gui/src/options.cpp:1035
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr "En MMSI Id består av 9 siffer.\n"
 " Vennligst sjekk din oppføring og avbryt om nødvendig."
 
-#: gui/src/options.cpp:1078 gui/src/options.cpp:1901 gui/src/options.cpp:2013
+#: gui/src/options.cpp:1082 gui/src/options.cpp:1905 gui/src/options.cpp:2017
 #: gui/src/RoutePropDlg.cpp:287 gui/src/RoutePropDlg.cpp:308
 #: gui/src/TrackPropDlg.cpp:500 gui/src/TrackPropDlg.cpp:520
 #: gui/src/TrackPropDlg.cpp:743 gui/src/TrackPropDlg.cpp:756
 msgid "Default"
 msgstr "Standard"
 
-#: gui/src/options.cpp:1081 gui/src/routemanagerdialog.cpp:2433
+#: gui/src/options.cpp:1085 gui/src/routemanagerdialog.cpp:2433
 #: gui/src/routemanagerdialog.cpp:2633
 msgid "Always"
 msgstr "Alltid"
 
-#: gui/src/options.cpp:1084
+#: gui/src/options.cpp:1088
 msgid "Never"
 msgstr "Aldri"
 
-#: gui/src/options.cpp:1121 gui/src/options.cpp:1168
+#: gui/src/options.cpp:1125 gui/src/options.cpp:1172
 msgid "Edit MMSI Properties"
 msgstr "Rediger MMSI egenskaper"
 
-#: gui/src/options.cpp:1137 gui/src/options.cpp:4997 gui/src/options.cpp:5004
+#: gui/src/options.cpp:1141 gui/src/options.cpp:5001 gui/src/options.cpp:5008
 msgid "MMSI Properties"
 msgstr "MMSI egenskaper"
 
-#: gui/src/options.cpp:1233
+#: gui/src/options.cpp:1237
 msgid "Track Mode"
 msgstr "Spormodus"
 
-#: gui/src/options.cpp:1242
+#: gui/src/options.cpp:1246
 msgid "Ignore"
 msgstr "Ignorer"
 
-#: gui/src/options.cpp:1251
+#: gui/src/options.cpp:1255
 msgid "MOB"
 msgstr "MOB"
 
-#: gui/src/options.cpp:1259
+#: gui/src/options.cpp:1263
 msgid "VDM->VDO"
 msgstr "VDM->VDO"
 
-#: gui/src/options.cpp:1268
+#: gui/src/options.cpp:1272
 msgid "Ship name"
 msgstr "Skipsnavn"
 
-#: gui/src/options.cpp:1277
+#: gui/src/options.cpp:1281
 msgid "Follower"
 msgstr "Følger"
 
-#: gui/src/options.cpp:1282
+#: gui/src/options.cpp:1286
 msgid "New..."
 msgstr "Ny..."
 
-#: gui/src/options.cpp:1305
+#: gui/src/options.cpp:1309
 msgid "Add MMSI Properties"
 msgstr "Legg til MMSI egenskaper"
 
-#: gui/src/options.cpp:1726
+#: gui/src/options.cpp:1730
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -5676,7 +5693,7 @@ msgstr "Den valgte enheten er ikke tilgjengelig; opencpn vil sansynligvis ikke k
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "For mer informasjon, se filen LINUX_DEVICES.md i distribusjons dokumentene.\n"
 
-#: gui/src/options.cpp:1737
+#: gui/src/options.cpp:1741
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -5696,1180 +5713,1175 @@ msgstr "\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "For mer informasjon, se filen LINUX_DEVICES.md i distribusjons dokumentene.\n"
 
-#: gui/src/options.cpp:1859
+#: gui/src/options.cpp:1863
 msgid "NMEA"
 msgstr "NMEA"
 
-#: gui/src/options.cpp:1884
+#: gui/src/options.cpp:1888
 msgid "COG Predictor Length (min)"
 msgstr "COG kursvektor lengde (min)"
 
-#: gui/src/options.cpp:1891
+#: gui/src/options.cpp:1895
 msgid "Heading Predictor Length (NMi)"
 msgstr "Lengde på kursberegnings vektor (Nm)"
 
-#: gui/src/options.cpp:1898
+#: gui/src/options.cpp:1902
 msgid "Ship Icon Type"
 msgstr "Ikontype for skipet"
 
-#: gui/src/options.cpp:1901
+#: gui/src/options.cpp:1905
 msgid "Real Scale Bitmap"
 msgstr "Virkelig skala, Bitmap"
 
-#: gui/src/options.cpp:1902
+#: gui/src/options.cpp:1906
 msgid "Real Scale Vector"
 msgstr "Virkelig skala, Vektor"
 
-#: gui/src/options.cpp:1917
+#: gui/src/options.cpp:1921
 msgid "Length Over All (m)"
 msgstr "Total lengde, LOA (m)"
 
-#: gui/src/options.cpp:1923
+#: gui/src/options.cpp:1927
 msgid "Width Over All (m)"
 msgstr "Total bredde, WOA (m)"
 
-#: gui/src/options.cpp:1929
+#: gui/src/options.cpp:1933
 msgid "GPS Offset from Bow (m)"
 msgstr "GPS forskyvning fra baug (m)"
 
-#: gui/src/options.cpp:1935
+#: gui/src/options.cpp:1939
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS forskyvning fra midtskip (m)"
 
-#: gui/src/options.cpp:1941
+#: gui/src/options.cpp:1945
 msgid "Minimum Screen Size (mm)"
 msgstr "Minimums størrelse på skjerm (mm)"
 
-#: gui/src/options.cpp:1953
+#: gui/src/options.cpp:1957
 msgid "Show range rings"
 msgstr "Vis avstandsringer"
 
-#: gui/src/options.cpp:1970 gui/src/options.cpp:2328
+#: gui/src/options.cpp:1974 gui/src/options.cpp:2332
 msgid "Distance between rings"
 msgstr "Distanse mellom ringer"
 
-#: gui/src/options.cpp:1979 gui/src/options.cpp:2339
+#: gui/src/options.cpp:1983 gui/src/options.cpp:2343
 msgid "Distance Unit"
 msgstr "Distanse enhet"
 
-#: gui/src/options.cpp:1982 gui/src/options.cpp:2169 gui/src/options.cpp:4320
-#: gui/src/options.cpp:4481 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:1986 gui/src/options.cpp:2173 gui/src/options.cpp:4324
+#: gui/src/options.cpp:4485 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Nautical miles"
 msgstr "Nautiske mil"
 
-#: gui/src/options.cpp:1982 gui/src/options.cpp:2169 gui/src/options.cpp:4321
-#: gui/src/options.cpp:4482 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:1986 gui/src/options.cpp:2173 gui/src/options.cpp:4325
+#: gui/src/options.cpp:4486 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Kilometers"
 msgstr "Kilometer"
 
-#: gui/src/options.cpp:1982
+#: gui/src/options.cpp:1986
 msgid "Minutes (time)"
 msgstr ""
 
-#: gui/src/options.cpp:1989
+#: gui/src/options.cpp:1993
 msgid "Range Ring Colour"
 msgstr "Avstandsring farge"
 
-#: gui/src/options.cpp:2004
+#: gui/src/options.cpp:2008
 msgid "Show direction to Active Waypoint"
 msgstr "Vis retning til aktivt veipunkt"
 
-#: gui/src/options.cpp:2009 gui/src/RoutePropDlg.cpp:282
+#: gui/src/options.cpp:2013 gui/src/RoutePropDlg.cpp:282
 #: gui/src/TrackPropDlg.cpp:495 gui/src/TrackPropDlg.cpp:738
 msgid "Style"
 msgstr "Stil"
 
-#: gui/src/options.cpp:2013 gui/src/RoutePropDlg.cpp:287
+#: gui/src/options.cpp:2017 gui/src/RoutePropDlg.cpp:287
 #: gui/src/TrackPropDlg.cpp:500 gui/src/TrackPropDlg.cpp:743
 msgid "Solid"
 msgstr "Kraftig"
 
-#: gui/src/options.cpp:2014 gui/src/RoutePropDlg.cpp:288
+#: gui/src/options.cpp:2018 gui/src/RoutePropDlg.cpp:288
 #: gui/src/TrackPropDlg.cpp:501 gui/src/TrackPropDlg.cpp:743
 msgid "Dot"
 msgstr "Punkt"
 
-#: gui/src/options.cpp:2014 gui/src/RoutePropDlg.cpp:288
+#: gui/src/options.cpp:2018 gui/src/RoutePropDlg.cpp:288
 #: gui/src/TrackPropDlg.cpp:501 gui/src/TrackPropDlg.cpp:744
 msgid "Long dash"
 msgstr "Lang strek"
 
-#: gui/src/options.cpp:2015 gui/src/RoutePropDlg.cpp:289
+#: gui/src/options.cpp:2019 gui/src/RoutePropDlg.cpp:289
 #: gui/src/TrackPropDlg.cpp:502 gui/src/TrackPropDlg.cpp:744
 msgid "Short dash"
 msgstr "Kort strek"
 
-#: gui/src/options.cpp:2015 gui/src/RoutePropDlg.cpp:289
-#: gui/src/TrackPropDlg.cpp:502 gui/src/TrackPropDlg.cpp:744
-msgid "Dot dash"
-msgstr "Punkt strek"
-
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Default color"
 msgstr "Standard farge"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Black"
 msgstr "Sort"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Dark Red"
 msgstr "Mørk Rød"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Dark Green"
 msgstr "Mørk Grønn"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Yellow"
 msgstr "Mørk Gul"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Blue"
 msgstr "Mørk Blå"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Magenta"
 msgstr "Mørk Magenta"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Cyan"
 msgstr "Mørk Cyan"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Light Gray"
 msgstr "Lys Grå"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Dark Gray"
 msgstr "Mørk Grå"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Red"
 msgstr "Rød"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Green"
 msgstr "Grønn"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Yellow"
 msgstr "Gul"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Blue"
 msgstr "Blå"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Magenta"
 msgstr "Magenta"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Cyan"
 msgstr "Cyan"
 
-#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:269
+#: gui/src/options.cpp:2037 gui/src/RoutePropDlg.cpp:269
 #: gui/src/TrackPropDlg.cpp:486 gui/src/TrackPropDlg.cpp:731
 msgid "White"
 msgstr "Hvit"
 
-#: gui/src/options.cpp:2043 gui/src/routemanagerdialog.cpp:544
+#: gui/src/options.cpp:2047 gui/src/routemanagerdialog.cpp:544
 msgid "Tracks"
 msgstr "Slepestreker"
 
-#: gui/src/options.cpp:2049
+#: gui/src/options.cpp:2053
 msgid "Automatic Daily Tracks at midnight"
 msgstr "Automatisk daglig slepestrek ved midnatt"
 
-#: gui/src/options.cpp:2057
+#: gui/src/options.cpp:2061
 msgid "Automatic Daily Tracks at"
 msgstr "Automatisk daglig slepestrek på"
 
-#: gui/src/options.cpp:2074
+#: gui/src/options.cpp:2078
 msgid "Computer"
 msgstr "Datamaskin"
 
-#: gui/src/options.cpp:2080 gui/src/RoutePropDlg.cpp:242 gui/src/TCWin.cpp:147
+#: gui/src/options.cpp:2084 gui/src/RoutePropDlg.cpp:242 gui/src/TCWin.cpp:147
 #: gui/src/TrackPropDlg.cpp:446 gui/src/TrackPropDlg.cpp:454
 #: gui/src/TrackPropDlg.cpp:819
 msgid "UTC"
 msgstr "UTC"
 
-#: gui/src/options.cpp:2086
+#: gui/src/options.cpp:2090
 msgid "LMT"
 msgstr "LMT"
 
-#: gui/src/options.cpp:2099
+#: gui/src/options.cpp:2103
 msgid "Highlight Tracks"
 msgstr "Merkede slepestrek"
 
-#: gui/src/options.cpp:2103
+#: gui/src/options.cpp:2107
 msgid "Highlight Colour"
 msgstr "Uthevet farge"
 
-#: gui/src/options.cpp:2118
+#: gui/src/options.cpp:2122
 msgid "Tracking Precision"
 msgstr "Slepestrek nøyaktighet"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "Low"
 msgstr "Lav"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "Medium"
 msgstr "Middels"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "High"
 msgstr "Høy"
 
-#: gui/src/options.cpp:2129
+#: gui/src/options.cpp:2133
 msgid "Calculate values"
 msgstr "Beregn verdier"
 
-#: gui/src/options.cpp:2143
+#: gui/src/options.cpp:2147
 msgid "Calculate SOG and COG from position changes"
 msgstr "Beregn SOG og COG ut fra posisjons endringer"
 
-#: gui/src/options.cpp:2148
+#: gui/src/options.cpp:2152
 msgid "Min seconds between updates"
 msgstr "Min. sekunder mellom oppdateringer"
 
-#: gui/src/options.cpp:2164
+#: gui/src/options.cpp:2168
 msgid "Routes/Points"
 msgstr "Ruter/Punkter"
 
-#: gui/src/options.cpp:2177
+#: gui/src/options.cpp:2181
 msgid "New Routes"
 msgstr "Nye ruter"
 
-#: gui/src/options.cpp:2182
+#: gui/src/options.cpp:2186
 msgid "Active Route"
 msgstr ""
 
-#: gui/src/options.cpp:2188
+#: gui/src/options.cpp:2192
 msgid "Persist active route, automatically activate on start up"
 msgstr ""
 
-#: gui/src/options.cpp:2202
+#: gui/src/options.cpp:2206
 msgid "Waypoint default icon"
 msgstr "Standard ikon for veipunkt"
 
-#: gui/src/options.cpp:2228
+#: gui/src/options.cpp:2232
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "Veipunkt ankomst sirkel radius (Nm)"
 
-#: gui/src/options.cpp:2237
+#: gui/src/options.cpp:2241
 msgid "Advance route waypoint on arrival only"
 msgstr "Gå kun til ruteveipunkt etter ankomst"
 
-#: gui/src/options.cpp:2250
+#: gui/src/options.cpp:2254
 msgid "New Marks"
 msgstr ""
 
-#: gui/src/options.cpp:2265
+#: gui/src/options.cpp:2269
 msgid "Mark default icon"
 msgstr ""
 
-#: gui/src/options.cpp:2291
+#: gui/src/options.cpp:2295
 msgid "Show marks only at a chartscale greater than 1 :"
 msgstr ""
 
-#: gui/src/options.cpp:2300
+#: gui/src/options.cpp:2304
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr "Overstyr innstillinger for synlighet basert på kartskala og alltid vis punktene"
 
-#: gui/src/options.cpp:2313
+#: gui/src/options.cpp:2317
 msgid "Mark range rings"
 msgstr ""
 
-#: gui/src/options.cpp:2350
+#: gui/src/options.cpp:2354
 msgid "Waypoint Range Ring Colours"
 msgstr "Farge på avstandsringer for veipunkt"
 
-#: gui/src/options.cpp:2371
+#: gui/src/options.cpp:2375
 msgid "Control Options"
 msgstr "Kontroll alternativer"
 
-#: gui/src/options.cpp:2380
+#: gui/src/options.cpp:2384
 msgid "Lock marks and waypoints (Unless object property dialog visible)"
 msgstr ""
 
-#: gui/src/options.cpp:2386
+#: gui/src/options.cpp:2390
 msgid "Confirm deletion of tracks and routes"
 msgstr "Bekreft sletting av slepestrek og ruter"
 
-#: gui/src/options.cpp:2444
+#: gui/src/options.cpp:2448
 msgid "Chart Files"
 msgstr "Kartfiler"
 
-#: gui/src/options.cpp:2449
+#: gui/src/options.cpp:2453
 msgid "Directories"
 msgstr "Mapper"
 
-#: gui/src/options.cpp:2472
+#: gui/src/options.cpp:2476
 msgid "Add Directory..."
 msgstr "Legg til mappe"
 
-#: gui/src/options.cpp:2473 gui/src/options.cpp:3767
+#: gui/src/options.cpp:2477 gui/src/options.cpp:3771
 #: gui/src/RoutePropDlgImpl.cpp:933
 msgid "Remove Selected"
 msgstr "Fjern valgte"
 
-#: gui/src/options.cpp:2474
+#: gui/src/options.cpp:2478
 msgid "Compress Selected"
 msgstr "Komprimer valgte"
 
-#: gui/src/options.cpp:2477
+#: gui/src/options.cpp:2481
 msgid "Add.."
 msgstr "Legg til.."
 
-#: gui/src/options.cpp:2478
+#: gui/src/options.cpp:2482
 msgid "Remove"
 msgstr "Fjern"
 
-#: gui/src/options.cpp:2479
+#: gui/src/options.cpp:2483
 msgid "Compress"
 msgstr "Komprimer"
 
-#: gui/src/options.cpp:2504
+#: gui/src/options.cpp:2508
 msgid "Migrate Charts.."
 msgstr "Migrer kart.."
 
-#: gui/src/options.cpp:2512
+#: gui/src/options.cpp:2516
 msgid "Update Control"
 msgstr "Oppdateringskontroll"
 
-#: gui/src/options.cpp:2521
+#: gui/src/options.cpp:2525
 msgid "Scan Charts and Update Database"
 msgstr "Søk gjennom karter og oppdater database"
 
-#: gui/src/options.cpp:2525
+#: gui/src/options.cpp:2529
 msgid "Force Full Database Rebuild"
 msgstr "Fremtving full kartdatabase gjenoppbygging"
 
-#: gui/src/options.cpp:2529
+#: gui/src/options.cpp:2533
 msgid "Prepare all ENC Charts"
 msgstr "Forbered alle ENC karter"
 
-#: gui/src/options.cpp:2597
+#: gui/src/options.cpp:2601
 msgid " [Modified]"
 msgstr " [Modified]"
 
-#: gui/src/options.cpp:2605
+#: gui/src/options.cpp:2609
 msgid "Templates"
 msgstr "Maler"
 
-#: gui/src/options.cpp:2617
+#: gui/src/options.cpp:2621
 msgid "Template Status"
 msgstr "Malstatus"
 
-#: gui/src/options.cpp:2627
+#: gui/src/options.cpp:2631
 msgid "Last Applied Template Title:"
 msgstr "Sist brukte mal:"
 
-#: gui/src/options.cpp:2640
+#: gui/src/options.cpp:2644
 msgid "Saved Templates"
 msgstr "Lagrede maler"
 
-#: gui/src/options.cpp:2667
+#: gui/src/options.cpp:2671
 msgid "Create Config..."
 msgstr "Opprett konfigurasjon..."
 
-#: gui/src/options.cpp:2679
+#: gui/src/options.cpp:2683
 msgid "Delete Selected Config..."
 msgstr "Slett valgt konfigurasjon..."
 
-#: gui/src/options.cpp:2687
+#: gui/src/options.cpp:2691
 msgid "Apply Selected Config"
 msgstr "Bruk valgt mal"
 
-#: gui/src/options.cpp:2760
+#: gui/src/options.cpp:2764
 msgid "Create Config"
 msgstr "Opprett konfigurasjon"
 
-#: gui/src/options.cpp:2814
+#: gui/src/options.cpp:2818
 msgid "Problem applying selected configuration."
 msgstr "Det oppstod et problem ved aktivering av valgt konfigurasjon."
 
-#: gui/src/options.cpp:2885 gui/src/RoutePropDlg.cpp:519
+#: gui/src/options.cpp:2889 gui/src/RoutePropDlg.cpp:519
 #: gui/src/TrackPropDlg.cpp:946
 msgid "Advanced"
 msgstr "Avansert"
 
-#: gui/src/options.cpp:2905
+#: gui/src/options.cpp:2909
 msgid "De-skew Raster Charts"
 msgstr "Nullstill forskyvde rasterkarter"
 
-#: gui/src/options.cpp:2917 gui/src/options.cpp:3239
+#: gui/src/options.cpp:2921 gui/src/options.cpp:3243
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Bruk akselerert grafikk (OpenGL)"
 
-#: gui/src/options.cpp:2922
+#: gui/src/options.cpp:2926
 msgid "OpenGL Options"
 msgstr "OpenGL alternativer"
 
-#: gui/src/options.cpp:2938 gui/src/options.cpp:3099
+#: gui/src/options.cpp:2942 gui/src/options.cpp:3103
 msgid "Chart Rotation Averaging Time"
 msgstr "Kartrotasjons gjennomsnitts tid"
 
-#: gui/src/options.cpp:2954 gui/src/options.cpp:3111 gui/src/options.cpp:5430
+#: gui/src/options.cpp:2958 gui/src/options.cpp:3115 gui/src/options.cpp:5434
 msgid "seconds"
 msgstr "sekunder"
 
-#: gui/src/options.cpp:2962 gui/src/options.cpp:3120
+#: gui/src/options.cpp:2966 gui/src/options.cpp:3124
 msgid "Chart Zoom/Scale Weighting"
 msgstr "Vektbasert kart-zoom/-skalering"
 
-#: gui/src/options.cpp:2971 gui/src/options.cpp:3145
+#: gui/src/options.cpp:2975 gui/src/options.cpp:3149
 msgid "Raster"
 msgstr "Raster"
 
-#: gui/src/options.cpp:2985 gui/src/options.cpp:3158
+#: gui/src/options.cpp:2989 gui/src/options.cpp:3162
 msgid "Vector"
 msgstr "Vektor"
 
-#: gui/src/options.cpp:2999 gui/src/options.cpp:3175
+#: gui/src/options.cpp:3003 gui/src/options.cpp:3179
 msgid "CM93 Detail level"
 msgstr "CM93 Detaljnivå"
 
-#: gui/src/options.cpp:3018 gui/src/options.cpp:3198
+#: gui/src/options.cpp:3022 gui/src/options.cpp:3202
 msgid "Physical Screen Width"
 msgstr "Fysisk skjermbredde"
 
-#: gui/src/options.cpp:3023 gui/src/options.cpp:3203
+#: gui/src/options.cpp:3027 gui/src/options.cpp:3207
 msgid "Auto"
 msgstr "Auto"
 
-#: gui/src/options.cpp:3027 gui/src/options.cpp:3207
+#: gui/src/options.cpp:3031 gui/src/options.cpp:3211
 msgid "Manual:"
 msgstr "Manuell:"
 
-#: gui/src/options.cpp:3038 gui/src/options.cpp:3215
+#: gui/src/options.cpp:3042 gui/src/options.cpp:3219
 msgid "mm"
 msgstr "mm"
 
-#: gui/src/options.cpp:3069 gui/src/options.cpp:3974 gui/src/options.cpp:4157
+#: gui/src/options.cpp:3073 gui/src/options.cpp:3978 gui/src/options.cpp:4161
 msgid "Chart Display"
 msgstr "Kartvisning"
 
-#: gui/src/options.cpp:3075
+#: gui/src/options.cpp:3079
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Vis skjeve rasterkarter som Nord opp"
 
-#: gui/src/options.cpp:3128
+#: gui/src/options.cpp:3132
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "Med en lavere verdi, samme zoom-nivå vises et mindre detaljert kart.\n"
 "Med en høyere verdi, viser den samme zoom-verdi et mer detaljert kart."
 
-#: gui/src/options.cpp:3233
+#: gui/src/options.cpp:3237
 msgid "Graphics"
 msgstr "Grafikk"
 
-#: gui/src/options.cpp:3264
+#: gui/src/options.cpp:3268
 msgid "Chart Bar"
 msgstr ""
 
-#: gui/src/options.cpp:3270
+#: gui/src/options.cpp:3274
 msgid "Show extended chart bar information."
 msgstr ""
 
-#: gui/src/options.cpp:3289
+#: gui/src/options.cpp:3293
 msgid "Vector Chart Display"
 msgstr "Vektorkart visning"
 
-#: gui/src/options.cpp:3312 gui/src/options.cpp:3515
+#: gui/src/options.cpp:3316 gui/src/options.cpp:3519
 msgid "Mariner's Standard"
 msgstr "Mariner's Standard"
 
-#: gui/src/options.cpp:3331 gui/src/options.cpp:3530
+#: gui/src/options.cpp:3335 gui/src/options.cpp:3534
 msgid "Depth Soundings"
 msgstr "Vis loddskudd"
 
-#: gui/src/options.cpp:3337 gui/src/options.cpp:3535
+#: gui/src/options.cpp:3341 gui/src/options.cpp:3539
 msgid "Chart Information Objects"
 msgstr "Kartinformasjons objekter"
 
-#: gui/src/options.cpp:3342
+#: gui/src/options.cpp:3346
 msgid "Buoys/Lights"
 msgstr "Bøyer/lykter"
 
-#: gui/src/options.cpp:3359 gui/src/options.cpp:3553
+#: gui/src/options.cpp:3363 gui/src/options.cpp:3557
 msgid "Extended Light Sectors"
 msgstr "Utvidede fyrsektorer"
 
-#: gui/src/options.cpp:3364
+#: gui/src/options.cpp:3368
 msgid "Chart Texts"
 msgstr "Kart-tekst"
 
-#: gui/src/options.cpp:3371 gui/src/options.cpp:3561
+#: gui/src/options.cpp:3375 gui/src/options.cpp:3565
 msgid "National text on chart"
 msgstr "Nasjonal tekst på kart"
 
-#: gui/src/options.cpp:3376 gui/src/options.cpp:3566
+#: gui/src/options.cpp:3380 gui/src/options.cpp:3570
 msgid "Important Text Only"
 msgstr "Kun viktig tekst"
 
-#: gui/src/options.cpp:3381 gui/src/options.cpp:3571
+#: gui/src/options.cpp:3385 gui/src/options.cpp:3575
 msgid "De-Cluttered Text"
 msgstr "Ryddig visning av tekst"
 
-#: gui/src/options.cpp:3385
+#: gui/src/options.cpp:3389
 msgid "Chart Detail"
 msgstr "Kartdetaljer"
 
-#: gui/src/options.cpp:3388 gui/src/options.cpp:3576
+#: gui/src/options.cpp:3392 gui/src/options.cpp:3580
 msgid "Reduced Detail at Small Scale"
 msgstr "Reduser detaljer ved liten skala"
 
-#: gui/src/options.cpp:3395 gui/src/options.cpp:3583
+#: gui/src/options.cpp:3399 gui/src/options.cpp:3587
 msgid "Additional detail reduction at Small Scale"
 msgstr ""
 
-#: gui/src/options.cpp:3404 gui/src/options.cpp:3599
+#: gui/src/options.cpp:3408 gui/src/options.cpp:3603
 msgid "Graphics Style"
 msgstr "Grafikkstil"
 
-#: gui/src/options.cpp:3407 gui/src/options.cpp:3602
+#: gui/src/options.cpp:3411 gui/src/options.cpp:3606
 msgid "Paper Chart"
 msgstr "Papirkart"
 
-#: gui/src/options.cpp:3408 gui/src/options.cpp:3603
+#: gui/src/options.cpp:3412 gui/src/options.cpp:3607
 msgid "Simplified"
 msgstr "ENC standard"
 
-#: gui/src/options.cpp:3414 gui/src/options.cpp:3614
+#: gui/src/options.cpp:3418 gui/src/options.cpp:3618
 msgid "Boundaries"
 msgstr "Grenser"
 
-#: gui/src/options.cpp:3417 gui/src/options.cpp:3617
+#: gui/src/options.cpp:3421 gui/src/options.cpp:3621
 msgid "Plain"
 msgstr "Vanlig"
 
-#: gui/src/options.cpp:3418 gui/src/options.cpp:3618
+#: gui/src/options.cpp:3422 gui/src/options.cpp:3622
 msgid "Symbolized"
 msgstr "Symbolisert"
 
-#: gui/src/options.cpp:3424 gui/src/options.cpp:3629
+#: gui/src/options.cpp:3428 gui/src/options.cpp:3633
 msgid "Colors"
 msgstr "Farger"
 
-#: gui/src/options.cpp:3427 gui/src/options.cpp:3633
+#: gui/src/options.cpp:3431 gui/src/options.cpp:3637
 msgid "2 Color"
 msgstr "2 Farger"
 
-#: gui/src/options.cpp:3428 gui/src/options.cpp:3634
+#: gui/src/options.cpp:3432 gui/src/options.cpp:3638
 msgid "4 Color"
 msgstr "4 Farger"
 
-#: gui/src/options.cpp:3439 gui/src/options.cpp:3656
+#: gui/src/options.cpp:3443 gui/src/options.cpp:3660
 msgid "Shallow Depth"
 msgstr "Grunn dybde"
 
-#: gui/src/options.cpp:3450 gui/src/options.cpp:3665
+#: gui/src/options.cpp:3454 gui/src/options.cpp:3669
 msgid "Safety Depth"
 msgstr "Sikkerhetsdybde"
 
-#: gui/src/options.cpp:3460 gui/src/options.cpp:3674
+#: gui/src/options.cpp:3464 gui/src/options.cpp:3678
 msgid "Deep Depth"
 msgstr "Klart farvann (dybde)"
 
-#: gui/src/options.cpp:3475 gui/src/options.cpp:3692
+#: gui/src/options.cpp:3479 gui/src/options.cpp:3696
 msgid "User Standard Objects"
 msgstr "Brukers standard objekter"
 
-#: gui/src/options.cpp:3494 gui/src/options.cpp:3707
+#: gui/src/options.cpp:3498 gui/src/options.cpp:3711
 msgid "Reset to STANDARD"
 msgstr "Tilbakestill til STANDARD"
 
-#: gui/src/options.cpp:3720
+#: gui/src/options.cpp:3724
 msgid "Tides && Currents"
 msgstr "Tidevann && Strømmer"
 
-#: gui/src/options.cpp:3725
+#: gui/src/options.cpp:3729
 msgid "Active Datasets"
 msgstr "Aktive datasett"
 
-#: gui/src/options.cpp:3765
+#: gui/src/options.cpp:3769
 msgid "Add Dataset..."
 msgstr "Legg til datasett..."
 
-#: gui/src/options.cpp:3809
+#: gui/src/options.cpp:3813
 msgid "All Available Charts"
 msgstr "Alle tilgjengelige kart"
 
-#: gui/src/options.cpp:3831
+#: gui/src/options.cpp:3835
 msgid "Remove Chart"
 msgstr "Fjern kart"
 
-#: gui/src/options.cpp:3868
+#: gui/src/options.cpp:3872
 msgid "All Charts"
 msgstr "Alle kart"
 
-#: gui/src/options.cpp:3887
+#: gui/src/options.cpp:3891
 msgid "New Group..."
 msgstr "Ny gruppe..."
 
-#: gui/src/options.cpp:3889
+#: gui/src/options.cpp:3893
 msgid "Delete Group"
 msgstr "Slett gruppe"
 
-#: gui/src/options.cpp:3985 gui/src/options.cpp:4168
+#: gui/src/options.cpp:3989 gui/src/options.cpp:4172
 msgid "Preserve scale when switching charts"
 msgstr "Bevar skala ved bytte av karter"
 
-#: gui/src/options.cpp:3994 gui/src/options.cpp:4177
+#: gui/src/options.cpp:3998 gui/src/options.cpp:4181
 msgid "Controls"
 msgstr "Betjening"
 
-#: gui/src/options.cpp:4000 gui/src/options.cpp:4183
+#: gui/src/options.cpp:4004 gui/src/options.cpp:4187
 msgid "Smooth Panning / Zooming"
 msgstr "Jevn panorering / zooming"
 
-#: gui/src/options.cpp:4004 gui/src/options.cpp:4186
+#: gui/src/options.cpp:4008 gui/src/options.cpp:4190
 msgid "Zoom to Cursor"
 msgstr "Zoom til kursor"
 
-#: gui/src/options.cpp:4015 gui/src/options.cpp:4202
+#: gui/src/options.cpp:4019 gui/src/options.cpp:4206
 msgid "Display Features"
 msgstr "Visnings funksjoner"
 
-#: gui/src/options.cpp:4045
+#: gui/src/options.cpp:4049
 msgid "Status Bar Option"
 msgstr "Statuslinje valg"
 
-#: gui/src/options.cpp:4052 gui/src/options.cpp:4239
+#: gui/src/options.cpp:4056 gui/src/options.cpp:4243
 msgid "Live ETA at Cursor"
 msgstr "Virkelig ETA ved kursor"
 
-#: gui/src/options.cpp:4061 gui/src/options.cpp:4247 gui/src/options.cpp:7082
+#: gui/src/options.cpp:4065 gui/src/options.cpp:4251 gui/src/options.cpp:7086
 msgid "Default Boat Speed "
 msgstr "Standard båt hastighet "
 
-#: gui/src/options.cpp:4077 gui/src/options.cpp:4262
+#: gui/src/options.cpp:4081 gui/src/options.cpp:4266
 msgid "Canvas Layout"
 msgstr "Lerret oppsett"
 
-#: gui/src/options.cpp:4232
+#: gui/src/options.cpp:4236
 msgid "Status Bar"
 msgstr "Statuslinjen"
 
-#: gui/src/options.cpp:4299
+#: gui/src/options.cpp:4303
 msgid "Units"
 msgstr "Enheter"
 
-#: gui/src/options.cpp:4320 gui/src/options.cpp:4481
-#: gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:4324 gui/src/options.cpp:4485
+#: gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Statute miles"
 msgstr "Statute mil"
 
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "Knots"
 msgstr "Knop"
 
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506
 msgid "Mph"
 msgstr "Mph"
 
-#: gui/src/options.cpp:4361 gui/src/options.cpp:4510
-#: gui/src/initwiz/wiz_ui_proto.cpp:32
+#: gui/src/options.cpp:4365 gui/src/options.cpp:4514
+#: gui/src/initwiz/wiz_ui_proto.cpp:37
 msgid "Depth"
 msgstr "Dybde"
 
-#: gui/src/options.cpp:4377 gui/src/options.cpp:4523
+#: gui/src/options.cpp:4381 gui/src/options.cpp:4527
 msgid "Temperature"
 msgstr "Temperatur"
 
-#: gui/src/options.cpp:4380 gui/src/options.cpp:4526
+#: gui/src/options.cpp:4384 gui/src/options.cpp:4530
 msgid "Celsius"
 msgstr "Celcius"
 
-#: gui/src/options.cpp:4381 gui/src/options.cpp:4527
+#: gui/src/options.cpp:4385 gui/src/options.cpp:4531
 msgid "Fahrenheit"
 msgstr "Fahrenheit"
 
-#: gui/src/options.cpp:4382 gui/src/options.cpp:4528
+#: gui/src/options.cpp:4386 gui/src/options.cpp:4532
 msgid "Kelvin"
 msgstr "Kelvin"
 
-#: gui/src/options.cpp:4397 gui/src/options.cpp:4540
+#: gui/src/options.cpp:4401 gui/src/options.cpp:4544
 msgid "Lat/Long"
 msgstr "Len/Bre."
 
-#: gui/src/options.cpp:4399 gui/src/options.cpp:4542
+#: gui/src/options.cpp:4403 gui/src/options.cpp:4546
 msgid "Degrees, Decimal Minutes"
 msgstr "Grader, Desimal minutter"
 
-#: gui/src/options.cpp:4400 gui/src/options.cpp:4543
+#: gui/src/options.cpp:4404 gui/src/options.cpp:4547
 msgid "Decimal Degrees"
 msgstr "Desimal grader"
 
-#: gui/src/options.cpp:4401 gui/src/options.cpp:4544
+#: gui/src/options.cpp:4405 gui/src/options.cpp:4548
 msgid "Degrees, Minutes, Seconds"
 msgstr "Grader, Minutter, Sekunder"
 
-#: gui/src/options.cpp:4416 gui/src/options.cpp:4556
+#: gui/src/options.cpp:4420 gui/src/options.cpp:4560
 msgid "Bearings"
 msgstr "Kurser"
 
-#: gui/src/options.cpp:4421
+#: gui/src/options.cpp:4425
 msgid "Show true"
 msgstr "Vis sann"
 
-#: gui/src/options.cpp:4426
+#: gui/src/options.cpp:4430
 msgid "Show magnetic"
 msgstr "Vis magnetisk"
 
-#: gui/src/options.cpp:4442
+#: gui/src/options.cpp:4446
 msgid "Assumed magnetic variation"
 msgstr "Antatt magnetisk variasjon"
 
-#: gui/src/options.cpp:4457 gui/src/options.cpp:4589
+#: gui/src/options.cpp:4461 gui/src/options.cpp:4593
 msgid "deg (-W, +E)"
 msgstr "grad. (-V, +Ø)"
 
-#: gui/src/options.cpp:4500
+#: gui/src/options.cpp:4504
 msgid "WindSpeed"
 msgstr ""
 
-#: gui/src/options.cpp:4564
+#: gui/src/options.cpp:4568
 msgid "Show true bearings and headings"
 msgstr "Vis sanne retninger og kurser"
 
-#: gui/src/options.cpp:4567
+#: gui/src/options.cpp:4571
 msgid "Show magnetic bearings and headings."
 msgstr "Vis magnetiske retninger og kurser."
 
-#: gui/src/options.cpp:4579 gui/src/options.cpp:6052
+#: gui/src/options.cpp:4583 gui/src/options.cpp:6056
 msgid "WMM Plugin calculated magnetic variation"
 msgstr "Magnetisk variasjon kalkulert av WMM utvidelse"
 
-#: gui/src/options.cpp:4597
+#: gui/src/options.cpp:4601
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr " For å sette magnetisk variasjon manuelt,\n"
 " må du deaktivere WMM utvidelsen."
 
-#: gui/src/options.cpp:4731
+#: gui/src/options.cpp:4735
 msgid "Test"
 msgstr "Test"
 
-#: gui/src/options.cpp:4744
+#: gui/src/options.cpp:4748
 msgid "Audio file name:"
 msgstr "Lydfilnavn:"
 
-#: gui/src/options.cpp:4772 gui/src/options.cpp:4783 gui/src/options.cpp:8343
-#: gui/src/options.cpp:8354
+#: gui/src/options.cpp:4776 gui/src/options.cpp:4787 gui/src/options.cpp:8373
+#: gui/src/options.cpp:8384
 msgid "Select Sound File"
 msgstr "Velg lydfil"
 
-#: gui/src/options.cpp:4854
+#: gui/src/options.cpp:4858
 msgid "Sounds"
 msgstr "Lyd"
 
-#: gui/src/options.cpp:4862
+#: gui/src/options.cpp:4866
 msgid "Anchor Alarm"
 msgstr "Anker Alarm"
 
-#: gui/src/options.cpp:4863
+#: gui/src/options.cpp:4867
 msgid "Play Sound on Anchor Alarm."
 msgstr "Spill lyd på Anchor Alarm."
 
-#: gui/src/options.cpp:4864
+#: gui/src/options.cpp:4868
 msgid "Select Anchor Alarm Sound"
 msgstr "Velg Anker Alarmlyd"
 
-#: gui/src/options.cpp:4874
+#: gui/src/options.cpp:4878
 msgid "Play Sound on AIS Alert."
 msgstr "Spill lyd på AIS varsling."
 
-#: gui/src/options.cpp:4875
+#: gui/src/options.cpp:4879
 msgid "Select AIS Alert Sound"
 msgstr "Velg AIS varsel lyd"
 
-#: gui/src/options.cpp:4888
+#: gui/src/options.cpp:4892
 msgid "SART Alert"
 msgstr "SART Varsel"
 
-#: gui/src/options.cpp:4889
+#: gui/src/options.cpp:4893
 msgid "Play Sound on AIS SART Alert."
 msgstr "Spill lyd på AIS SART varsling."
 
-#: gui/src/options.cpp:4890
+#: gui/src/options.cpp:4894
 msgid "Select AIS SART Alert Sound"
 msgstr "Velg AIS SART alarmlyd"
 
-#: gui/src/options.cpp:4903
+#: gui/src/options.cpp:4907
 msgid "DSC Alert"
 msgstr "DSC Varsel"
 
-#: gui/src/options.cpp:4904
+#: gui/src/options.cpp:4908
 msgid "Play Sound on DSC notification."
 msgstr "Spill lyd ved DSC varsel."
 
-#: gui/src/options.cpp:4905
+#: gui/src/options.cpp:4909
 msgid "Select DSC notification Sound"
 msgstr "Velg DSC varslingslyd"
 
-#: gui/src/options.cpp:4917
+#: gui/src/options.cpp:4921
 msgid "Sound Device Configuration"
 msgstr ""
 
-#: gui/src/options.cpp:4932
+#: gui/src/options.cpp:4936
 msgid "Unknown device :"
 msgstr "Ukjent enhet :"
 
-#: gui/src/options.cpp:4937
+#: gui/src/options.cpp:4941
 msgid "Input device :"
 msgstr "Inn-enhet :"
 
-#: gui/src/options.cpp:4965
+#: gui/src/options.cpp:4969
 msgid "Sound Device"
 msgstr "Lydenhet"
 
-#: gui/src/options.cpp:4979
+#: gui/src/options.cpp:4983
 msgid "Audio Play command:"
 msgstr "Spill lyd kommando:"
 
-#: gui/src/options.cpp:5020
+#: gui/src/options.cpp:5024
 msgid "AIS Targets"
 msgstr "AIS-mål"
 
-#: gui/src/options.cpp:5027
+#: gui/src/options.cpp:5031
 msgid "CPA Calculation"
 msgstr "CPA kalkulasjon"
 
-#: gui/src/options.cpp:5038
+#: gui/src/options.cpp:5042
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "Ingen (T)CPA varsel hvis målets avstand er større enn (Nm)"
 
-#: gui/src/options.cpp:5045
+#: gui/src/options.cpp:5049
 msgid "Warn if CPA less than (NMi)"
 msgstr "Advar hvis CPA er mindre enn (Nm)"
 
-#: gui/src/options.cpp:5057
+#: gui/src/options.cpp:5061
 msgid "...and TCPA is less than (min)"
 msgstr " ...og TCPA er mindre enn (min)"
 
-#: gui/src/options.cpp:5065
+#: gui/src/options.cpp:5069
 msgid "Lost Targets"
 msgstr "Mistede mål"
 
-#: gui/src/options.cpp:5074
+#: gui/src/options.cpp:5078
 msgid "Mark targets as lost after (min)"
 msgstr "Merk mål som mistet etter (min)"
 
-#: gui/src/options.cpp:5082
+#: gui/src/options.cpp:5086
 msgid "Remove lost targets after (min)"
 msgstr "Fjern mistede mål etter (min)"
 
-#: gui/src/options.cpp:5092 gui/src/options.cpp:5812
+#: gui/src/options.cpp:5096 gui/src/options.cpp:5816
 msgid "Display"
 msgstr "Vis"
 
-#: gui/src/options.cpp:5101
+#: gui/src/options.cpp:5105
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Vis målenes COG kursvektor pil, lengde (min)"
 
-#: gui/src/options.cpp:5109
+#: gui/src/options.cpp:5113
 msgid "Sync AIS arrow length with own ship's COG predictor"
 msgstr "Synkroniser AIS pillengde med eget skips COG beregning"
 
-#: gui/src/options.cpp:5119
+#: gui/src/options.cpp:5123
 msgid "Show target tracks, length (min)"
 msgstr "Vis slepestrek etter mål, lengde (min)"
 
-#: gui/src/options.cpp:5127
+#: gui/src/options.cpp:5131
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "Undertrykk ankrede/fortøyde mål, fart maks (Kn)"
 
-#: gui/src/options.cpp:5135
+#: gui/src/options.cpp:5139
 msgid "Draw AIS realtime prediction, target speed min (kn)"
 msgstr "Tegn AIS sanntids forutsigelse, målets min. hastighet (kn)"
 
-#: gui/src/options.cpp:5145
+#: gui/src/options.cpp:5149
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "Tillat demping av mindre kritiske mål hvis det er mer enn ... mål"
 
-#: gui/src/options.cpp:5153
+#: gui/src/options.cpp:5157
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Vis område notiser (fra binære AIS meldinger)"
 
-#: gui/src/options.cpp:5160
+#: gui/src/options.cpp:5164
 msgid "Show AIS targets real size"
 msgstr "Vis AIS-målenes virkelige størrelse"
 
-#: gui/src/options.cpp:5167
+#: gui/src/options.cpp:5171
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "Vis navn ved AISmål ved skala større enn 1:"
 
-#: gui/src/options.cpp:5175
+#: gui/src/options.cpp:5179
 msgid "Use WPL position messages. Action when received:"
 msgstr "Bruk WPL posisjons meldinger. Handling når mottatt:"
 
-#: gui/src/options.cpp:5178
+#: gui/src/options.cpp:5182
 msgid "APRS position report"
 msgstr "APRS posisjons rapport"
 
-#: gui/src/options.cpp:5178
+#: gui/src/options.cpp:5182
 msgid "Create mark"
 msgstr "Opprett merke"
 
-#: gui/src/options.cpp:5184
+#: gui/src/options.cpp:5188
 msgid "Rollover"
 msgstr "Mus over"
 
-#: gui/src/options.cpp:5190
+#: gui/src/options.cpp:5194
 msgid "Enable route/AIS info block"
 msgstr "Aktiver rute/AIS info blokk"
 
-#: gui/src/options.cpp:5198
+#: gui/src/options.cpp:5202
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Skipsnavn\" MMSI (kallesignal)"
 
-#: gui/src/options.cpp:5202
+#: gui/src/options.cpp:5206
 msgid "[Class] Type (Status)"
 msgstr "[Klasse] Type (Status)"
 
-#: gui/src/options.cpp:5205
+#: gui/src/options.cpp:5209
 msgid "SOG COG"
 msgstr "SOG COG"
 
-#: gui/src/options.cpp:5208
+#: gui/src/options.cpp:5212
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 
-#: gui/src/options.cpp:5213
+#: gui/src/options.cpp:5217
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA Varsler"
 
-#: gui/src/options.cpp:5222
+#: gui/src/options.cpp:5226
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Vis CPA/TCPA Varseldialog"
 
-#: gui/src/options.cpp:5241
+#: gui/src/options.cpp:5245
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Spill lyd for CPA/TCPA advarsler og DSC/SART nødmeldinger."
 
-#: gui/src/options.cpp:5250
+#: gui/src/options.cpp:5254
 msgid "Test AIS Alert Sound"
 msgstr ""
 
-#: gui/src/options.cpp:5263
+#: gui/src/options.cpp:5267
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr "Undertrykk alarmer for ankrede/fortøyde mål"
 
-#: gui/src/options.cpp:5270
+#: gui/src/options.cpp:5274
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Aktiver tidsavbrudd for utkvittering av målvarsel (min)"
 
-#: gui/src/options.cpp:5294
+#: gui/src/options.cpp:5298
 msgid "General Options"
 msgstr "Generelle alternativer"
 
-#: gui/src/options.cpp:5303
+#: gui/src/options.cpp:5307
 msgid "Language"
 msgstr "Språk"
 
-#: gui/src/options.cpp:5318
+#: gui/src/options.cpp:5322
 msgid "Fonts"
 msgstr "Bokstavfamilier"
 
-#: gui/src/options.cpp:5354
+#: gui/src/options.cpp:5358
 msgid "Choose Font..."
 msgstr "Velg skrifttype"
 
-#: gui/src/options.cpp:5359
+#: gui/src/options.cpp:5363
 msgid "Choose Font Color..."
 msgstr "Velg skriftfarge..."
 
-#: gui/src/options.cpp:5363
+#: gui/src/options.cpp:5367
 msgid "Sample"
 msgstr "Eksempel"
 
-#: gui/src/options.cpp:5371
+#: gui/src/options.cpp:5375
 msgid "Toolbar and Window Style"
 msgstr "Verktøylinje og vindusstil"
 
-#: gui/src/options.cpp:5389
+#: gui/src/options.cpp:5393
 msgid "Interface Options"
 msgstr "Grensesnitt alternativer"
 
-#: gui/src/options.cpp:5395
+#: gui/src/options.cpp:5399
 msgid "Show Status Bar"
 msgstr "Vis statuslinje"
 
-#: gui/src/options.cpp:5400
+#: gui/src/options.cpp:5404
 msgid "Show Menu Bar"
 msgstr "Vis menylinje"
 
-#: gui/src/options.cpp:5414
+#: gui/src/options.cpp:5418
 msgid "Show Compass/GPS Status Window"
 msgstr "Vis kompass/GPS Statusvindu"
 
-#: gui/src/options.cpp:5422
+#: gui/src/options.cpp:5426
 msgid "Enable Toolbar auto-hide"
 msgstr "Skjul verktøylinjen automatisk"
 
-#: gui/src/options.cpp:5437
+#: gui/src/options.cpp:5441
 msgid "Play Ships Bells"
 msgstr "Spill skipsklokker"
 
-#: gui/src/options.cpp:5442
+#: gui/src/options.cpp:5446
 msgid "Enable Touchscreen interface"
 msgstr "Aktiver berøringsskjerm grensesnitt"
 
-#: gui/src/options.cpp:5446
+#: gui/src/options.cpp:5450
 msgid "Enable Scaled Graphics interface"
 msgstr "Aktiver skalert grafisk brukergrensesnitt"
 
-#: gui/src/options.cpp:5459
+#: gui/src/options.cpp:5463
 msgid "Show Zoom buttons"
 msgstr "Vis zoomknapper"
 
-#: gui/src/options.cpp:5466
+#: gui/src/options.cpp:5470
 msgid "Use Inland ECDIS"
 msgstr "Benytt innenlands ECDIS"
 
-#: gui/src/options.cpp:5470 gui/src/options.cpp:7777
+#: gui/src/options.cpp:5474 gui/src/options.cpp:7782
 msgid "Inland ECDIS Manual"
 msgstr "Innland ECDIS manual"
 
-#: gui/src/options.cpp:5492
+#: gui/src/options.cpp:5496
 msgid "User Interface scale factor"
 msgstr "Brukergrensesnitt skaleringsfaktor"
 
-#: gui/src/options.cpp:5506
+#: gui/src/options.cpp:5510
 msgid "Chart Object scale factor"
 msgstr "Kartobjekt skaleringsfaktor"
 
-#: gui/src/options.cpp:5520
+#: gui/src/options.cpp:5524
 msgid "Ship scale factor"
 msgstr "Skipets skalerings faktor"
 
-#: gui/src/options.cpp:5534
+#: gui/src/options.cpp:5538
 msgid "ENC Sounding factor"
 msgstr "ENC loddskudd visningsstørrelse"
 
-#: gui/src/options.cpp:5548
+#: gui/src/options.cpp:5552
 msgid "ENC Text Scale"
 msgstr "ENC tekstskala"
 
-#: gui/src/options.cpp:5558
+#: gui/src/options.cpp:5562
 msgid "Mouse wheel zoom sensitivity"
 msgstr "Sensivitet for zoom med musehjul"
 
-#: gui/src/options.cpp:5809
+#: gui/src/options.cpp:5813
 msgid "Apply"
 msgstr "Bruk"
 
-#: gui/src/options.cpp:5818
+#: gui/src/options.cpp:5822
 msgid "Charts"
 msgstr "Karter"
 
-#: gui/src/options.cpp:5841
+#: gui/src/options.cpp:5845
 msgid "Connections"
 msgstr "Tilkoblinger"
 
-#: gui/src/options.cpp:5843
+#: gui/src/options.cpp:5847
 msgid "Connect"
 msgstr "Koble til"
 
-#: gui/src/options.cpp:5855
+#: gui/src/options.cpp:5859
 msgid "Ships"
 msgstr "Skip"
 
-#: gui/src/options.cpp:5864
+#: gui/src/options.cpp:5868
 msgid "User Interface"
 msgstr "Brukergrensesnitt"
 
-#: gui/src/options.cpp:5866
+#: gui/src/options.cpp:5870
 msgid "User"
 msgstr "Bruker"
 
-#: gui/src/options.cpp:5872 gui/src/options.cpp:5873
+#: gui/src/options.cpp:5876 gui/src/options.cpp:5877
 msgid "Plugins"
 msgstr "Utvidelser"
 
-#: gui/src/options.cpp:6057
+#: gui/src/options.cpp:6061
 msgid "User set magnetic variation"
 msgstr "Brukersatt magnetisk variasjon"
 
-#: gui/src/options.cpp:6507
+#: gui/src/options.cpp:6511
 msgid "feet"
 msgstr "fot"
 
-#: gui/src/options.cpp:6507
+#: gui/src/options.cpp:6511
 msgid "fathoms"
 msgstr "favner"
 
-#: gui/src/options.cpp:6748
+#: gui/src/options.cpp:6752
 msgid "Add a directory containing chart files"
 msgstr "Legg til en mappe som inneholder kartfiler"
 
-#: gui/src/options.cpp:6854
+#: gui/src/options.cpp:6858
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - skipets lengde må være > 0"
 
-#: gui/src/options.cpp:6856
+#: gui/src/options.cpp:6860
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - skipets bredde må være > 0"
 
-#: gui/src/options.cpp:6859
+#: gui/src/options.cpp:6863
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - GPS forskyvningen fra midtskips må være innen skipets bredde"
 
-#: gui/src/options.cpp:6863
+#: gui/src/options.cpp:6867
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - GPS forskyvningen fra baug må være innenfor skipets lengde"
 
-#: gui/src/options.cpp:6865
+#: gui/src/options.cpp:6869
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - minste skipsikon størrelse må være mellom 1 og 100 mm."
 
-#: gui/src/options.cpp:6867
+#: gui/src/options.cpp:6871
 msgid "The settings for own ship real size are not correct:"
 msgstr "Innstillingene for størrelsen på eget skip er ikke riktige:"
 
-#: gui/src/options.cpp:7770
+#: gui/src/options.cpp:7775
 msgid "The Inland ECDIS Manual is not available locally."
 msgstr "Innenlands ECDIS manual er ikke tilgjengelig lokalt."
 
-#: gui/src/options.cpp:7773
+#: gui/src/options.cpp:7778
 msgid "Would you like to visit the iECDIS Manual website for more information?"
 msgstr "Ønsker du å besøke iECDIS manual nettsiden for mer informasjon?"
 
-#: gui/src/options.cpp:7804
+#: gui/src/options.cpp:7809
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
@@ -6879,15 +6891,15 @@ msgstr "Komprimering vil endre kartfiler på disk.\n"
 "Komprimerte kart kan ta litt lengre tid å åpne på noen systemer.\n"
 "Kartene kan dekomprimeres ved å benytte UNXZ eller 7zip programmer."
 
-#: gui/src/options.cpp:7825 gui/src/options.cpp:7869
+#: gui/src/options.cpp:7830 gui/src/options.cpp:7874
 msgid "OpenCPN Compress Charts"
 msgstr "OpenCPN komprimer karter"
 
-#: gui/src/options.cpp:7862
+#: gui/src/options.cpp:7867
 msgid "No charts found to compress."
 msgstr "Ingen kart funnet for komprimering."
 
-#: gui/src/options.cpp:7894
+#: gui/src/options.cpp:7899
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
@@ -6896,71 +6908,71 @@ msgstr "komprimert %ld karter\n"
 "fra %.1fMB til %.1fMB\n"
 "spart %.1fMB (%.1f%%)"
 
-#: gui/src/options.cpp:8798
+#: gui/src/options.cpp:8828
 msgid "Enter Group Name"
 msgstr "Sett inn gruppenavn"
 
-#: gui/src/options.cpp:8798
+#: gui/src/options.cpp:8828
 msgid "New Chart Group"
 msgstr "Ny kartgruppe"
 
-#: gui/src/options.cpp:8971 gui/src/options.cpp:8985
+#: gui/src/options.cpp:9001 gui/src/options.cpp:9015
 msgid "Select Tide/Current Data"
 msgstr "Velg tidevann/strømdata"
 
-#: gui/src/options.cpp:9043
+#: gui/src/options.cpp:9073
 msgid "Texture Compression"
 msgstr "Tekstur-komprimering"
 
-#: gui/src/options.cpp:9044
+#: gui/src/options.cpp:9074
 msgid "Texture Compression with Caching"
 msgstr "Teksturkomprimering med hurtigbuffer"
 
-#: gui/src/options.cpp:9046
+#: gui/src/options.cpp:9076
 msgid "Texture Compression Caching"
 msgstr "Tekstur-komprimerings buffer"
 
-#: gui/src/options.cpp:9048
+#: gui/src/options.cpp:9078
 msgid "Texture Memory Size (MB)"
 msgstr "Tekstur minnestørrelse (MB)"
 
-#: gui/src/options.cpp:9052 gui/src/options.cpp:9218
+#: gui/src/options.cpp:9082 gui/src/options.cpp:9248
 msgid "Size: "
 msgstr "Størrelse: "
 
-#: gui/src/options.cpp:9054
+#: gui/src/options.cpp:9084
 msgid "Rebuild Texture Cache"
 msgstr "Gjenopprett teksturbuffer"
 
-#: gui/src/options.cpp:9056
+#: gui/src/options.cpp:9086
 msgid "Clear Texture Cache"
 msgstr "Tøm tekstur buffer"
 
-#: gui/src/options.cpp:9060
+#: gui/src/options.cpp:9090
 msgid "Polygon Smoothing"
 msgstr "Polygon-utjevning"
 
-#: gui/src/options.cpp:9061
+#: gui/src/options.cpp:9091
 msgid "Line Smoothing"
 msgstr "Linje utjevning"
 
-#: gui/src/options.cpp:9063
+#: gui/src/options.cpp:9093
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "Programvare OpenGL (start OpenCPN på nytt)"
 
-#: gui/src/options.cpp:9065
+#: gui/src/options.cpp:9095
 msgid "Use Accelerated Panning"
 msgstr "Bruk akselerert grafikk (OpenGL)"
 
-#: gui/src/options.cpp:9067
+#: gui/src/options.cpp:9097
 msgid "Texture Settings"
 msgstr "Tekstur innstillinger"
 
-#: gui/src/options.cpp:9074
+#: gui/src/options.cpp:9104
 msgid "Texture Cache"
 msgstr "Tekstur-hurtigminne"
 
-#: gui/src/options.cpp:9081
+#: gui/src/options.cpp:9111
 msgid "Miscellaneous"
 msgstr "Diverse"
 
@@ -7042,127 +7054,127 @@ msgstr "Vennligst sjekk systemloggen for mer info."
 msgid " successfully installed from cache"
 msgstr " vellykket installert fra mellomlager"
 
-#: gui/src/pluginmanager.cpp:3700
+#: gui/src/pluginmanager.cpp:3701
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr "Disse innstillingene kan destabilisere OpenCPN og er som standard deaktivert. Til tross for farene kan du manuelt enable dem ved å legge til en CatalogExpert=1 linje i [PlugIns] -delen av konfigurasjonsfilen."
 
-#: gui/src/pluginmanager.cpp:3716
+#: gui/src/pluginmanager.cpp:3717
 msgid "Plugin Catalog"
 msgstr "Utvidelses katalog"
 
-#: gui/src/pluginmanager.cpp:3733 gui/src/pluginmanager.cpp:4007
+#: gui/src/pluginmanager.cpp:3734 gui/src/pluginmanager.cpp:4008
 msgid "Update Plugin Catalog"
 msgstr "Oppdater utvidelses katalog"
 
-#: gui/src/pluginmanager.cpp:3739 gui/src/pluginmanager.cpp:3811
+#: gui/src/pluginmanager.cpp:3740 gui/src/pluginmanager.cpp:3812
 msgid "Import plugin..."
 msgstr "Importer utvidelse..."
 
-#: gui/src/pluginmanager.cpp:3746 gui/src/pluginmanager.cpp:3803
+#: gui/src/pluginmanager.cpp:3747 gui/src/pluginmanager.cpp:3804
 msgid "Settings..."
 msgstr "Innstillinger..."
 
-#: gui/src/pluginmanager.cpp:3754
+#: gui/src/pluginmanager.cpp:3755
 msgid "Disabled"
 msgstr "Deaktivert"
 
-#: gui/src/pluginmanager.cpp:3779
+#: gui/src/pluginmanager.cpp:3780
 msgid "Update Plugin Catalog: master"
 msgstr "Oppdater utvidelsekatalog: hoved"
 
-#: gui/src/pluginmanager.cpp:3855 gui/src/pluginmanager.cpp:3867
-#: gui/src/pluginmanager.cpp:3877 gui/src/pluginmanager.cpp:3886
-#: gui/src/pluginmanager.cpp:3917
+#: gui/src/pluginmanager.cpp:3856 gui/src/pluginmanager.cpp:3868
+#: gui/src/pluginmanager.cpp:3878 gui/src/pluginmanager.cpp:3887
+#: gui/src/pluginmanager.cpp:3918
 msgid "OpenCPN Catalog update"
 msgstr "OpenCPN katalog oppdatering"
 
-#: gui/src/pluginmanager.cpp:3866 gui/src/pluginmanager.cpp:3876
+#: gui/src/pluginmanager.cpp:3867 gui/src/pluginmanager.cpp:3877
 msgid "Unable to copy catalog file"
 msgstr "Kunne ikke kopiere katalog-fil"
 
-#: gui/src/pluginmanager.cpp:3885
+#: gui/src/pluginmanager.cpp:3886
 msgid "Unable to copy catalog file to cache"
 msgstr "Kunne ikke kopiere katalog-fil til mellomlager"
 
-#: gui/src/pluginmanager.cpp:3916
+#: gui/src/pluginmanager.cpp:3917
 msgid "Catalog update successful"
 msgstr "Katalog ble vellykket oppdatert"
 
-#: gui/src/pluginmanager.cpp:3938
+#: gui/src/pluginmanager.cpp:3939
 msgid "Select tarball file"
 msgstr "Velg tarball fil"
 
-#: gui/src/pluginmanager.cpp:3948
+#: gui/src/pluginmanager.cpp:3949
 msgid "Error extracting metadata from tarball."
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:3949 gui/src/pluginmanager.cpp:3954
-#: gui/src/pluginmanager.cpp:3962
+#: gui/src/pluginmanager.cpp:3950 gui/src/pluginmanager.cpp:3955
+#: gui/src/pluginmanager.cpp:3963
 msgid "OpenCPN Plugin Import Error"
 msgstr "Importfeil med OpenCPN utvidelse"
 
-#: gui/src/pluginmanager.cpp:3953
+#: gui/src/pluginmanager.cpp:3954
 msgid "Incompatible import plugin detected."
 msgstr "Inkompatibel import utvidelse ble oppdaget."
 
-#: gui/src/pluginmanager.cpp:3961
+#: gui/src/pluginmanager.cpp:3962
 msgid "Error extracting import plugin tarball."
 msgstr "Feil ved utpakking av import utvidelses tarball."
 
-#: gui/src/pluginmanager.cpp:3976
+#: gui/src/pluginmanager.cpp:3977
 msgid "Plugin"
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:3977
+#: gui/src/pluginmanager.cpp:3978
 msgid " successfully imported"
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:3984
+#: gui/src/pluginmanager.cpp:3985
 msgid "Active Catalog"
 msgstr "Aktiv katalog"
 
-#: gui/src/pluginmanager.cpp:3984
+#: gui/src/pluginmanager.cpp:3985
 msgid "Last Catalog"
 msgstr "Siste katalog"
 
-#: gui/src/pluginmanager.cpp:3999
+#: gui/src/pluginmanager.cpp:4000
 msgid "Last change: "
 msgstr "Sist endret"
 
-#: gui/src/pluginmanager.cpp:4000
+#: gui/src/pluginmanager.cpp:4001
 msgid "Please Update Plugin Catalog."
 msgstr "Vennligst oppdater utvidelses katalog."
 
-#: gui/src/pluginmanager.cpp:4355 gui/src/pluginmanager.cpp:4549
-#: gui/src/pluginmanager.cpp:4574
+#: gui/src/pluginmanager.cpp:4356 gui/src/pluginmanager.cpp:4550
+#: gui/src/pluginmanager.cpp:4575
 msgid "Uninstall"
 msgstr "Avinstaller"
 
-#: gui/src/pluginmanager.cpp:4362
+#: gui/src/pluginmanager.cpp:4363
 msgid "Uninstall plugin "
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:4363
+#: gui/src/pluginmanager.cpp:4364
 msgid "Un-Installation"
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:4464 gui/src/pluginmanager.cpp:4517
+#: gui/src/pluginmanager.cpp:4465 gui/src/pluginmanager.cpp:4518
 msgid "Enabled"
 msgstr "Aktivert"
 
-#: gui/src/pluginmanager.cpp:4738
+#: gui/src/pluginmanager.cpp:4739
 msgid "Upgrade to Version "
 msgstr "Oppgrader til versjon "
 
-#: gui/src/pluginmanager.cpp:4745
+#: gui/src/pluginmanager.cpp:4746
 msgid "Install..."
 msgstr "Installer..."
 
-#: gui/src/pluginmanager.cpp:4751
+#: gui/src/pluginmanager.cpp:4752
 msgid "Update to "
 msgstr "Oppdater til "
 
-#: gui/src/pluginmanager.cpp:4983 gui/src/update_mgr.cpp:257
+#: gui/src/pluginmanager.cpp:4984 gui/src/update_mgr.cpp:257
 msgid "Website"
 msgstr "Nettsted"
 
@@ -7206,10 +7218,6 @@ msgstr "Satellitter"
 #: gui/src/rest_server_gui.cpp:249 gui/src/SendToPeerDlg.cpp:127
 msgid "OpenCPN Server Message"
 msgstr "OpenCPN server melding"
-
-#: gui/src/RolloverWin.cpp:137 gui/src/RolloverWin.cpp:303
-msgid "AISRollover"
-msgstr "AIS kursor over"
 
 #: gui/src/RolloverWin.cpp:140 gui/src/RolloverWin.cpp:307
 msgid "TideCurrentGraphRollover"
@@ -7327,12 +7335,6 @@ msgstr "Rute fra Slepestrek"
 #: gui/src/routemanagerdialog.cpp:666 gui/src/routemanagerdialog.cpp:814
 msgid "Send to &Peer"
 msgstr "Send til annen OCPN"
-
-#: gui/src/routemanagerdialog.cpp:688 gui/src/route_point_gui.cpp:127
-#: gui/src/route_point_gui.cpp:135 gui/src/route_point_gui.cpp:299
-#: gui/src/route_point_gui.cpp:307
-msgid "Marks"
-msgstr "Merker"
 
 #: gui/src/routemanagerdialog.cpp:714
 msgid "Show all marks"
@@ -7534,15 +7536,15 @@ msgstr "men nåværende målestokk er"
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "Derfor vil ikke nye veipunkt være synlige ved dette zoom nivå."
 
-#: gui/src/route_point_gui.cpp:906
+#: gui/src/route_point_gui.cpp:907
 msgid "Waypoint(s) Transmitted."
 msgstr "Veipunkt(er) er sendt."
 
-#: gui/src/route_point_gui.cpp:909
+#: gui/src/route_point_gui.cpp:910
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "Feil ved veipunkt opplasting. Garmin GPS er ikke tilkoblet"
 
-#: gui/src/route_point_gui.cpp:911
+#: gui/src/route_point_gui.cpp:912
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Feil ved veipunkt opplasting. Vennligst sjekk loggfiler..."
 
@@ -7966,7 +7968,7 @@ msgstr "I dag"
 msgid "Tomorrow"
 msgstr "I morgen"
 
-#: gui/src/toolbar.cpp:871 gui/src/toolbar.cpp:883 gui/src/toolbar.cpp:898
+#: gui/src/toolbar.cpp:875 gui/src/toolbar.cpp:887 gui/src/toolbar.cpp:902
 msgid "ToolTips"
 msgstr "Verktøytips"
 
@@ -8256,153 +8258,157 @@ msgstr "Flytt veipunkt"
 msgid "Dismiss"
 msgstr "Avvis"
 
-#: gui/src/initwiz/wiz_ui.cpp:69
+#: gui/src/initwiz/wiz_ui.cpp:74
 msgid "Select the units and data formats you would like to use."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:73
+#: gui/src/initwiz/wiz_ui.cpp:78
 msgid "All the settings can be changed at any time in the configuration Toolbox accessible by clicking on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:76
+#: gui/src/initwiz/wiz_ui.cpp:81
 msgid " icon in the main Toolbar."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:82
+#: gui/src/initwiz/wiz_ui.cpp:87
 msgid "If you already have charts on your system, you may add them here."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:85
+#: gui/src/initwiz/wiz_ui.cpp:90
 msgid "Additional charts can be obtained  using the Chart Downloader integrated in the application."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:90
+#: gui/src/initwiz/wiz_ui.cpp:95
 msgid "To access the Chart Downloader click on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:93
+#: gui/src/initwiz/wiz_ui.cpp:98
 msgid " icon in the main Toolbar and navigate to Charts -> Chart Downloader tab."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:97
+#: gui/src/initwiz/wiz_ui.cpp:102
 msgid "<html><body><h1>Welcome to OpenCPN!</h1><p>You have successfully completed the initial configuration. You can now start using the application.</p></body></html>"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:345
+#: gui/src/initwiz/wiz_ui.cpp:395
 #, c-format
 msgid "NMEA0183: UDP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:356
+#: gui/src/initwiz/wiz_ui.cpp:406
 #, c-format
 msgid "NMEA2000: UDP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:444
+#: gui/src/initwiz/wiz_ui.cpp:510
 #, c-format
 msgid "NMEA0183: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:456
+#: gui/src/initwiz/wiz_ui.cpp:522
 #, c-format
 msgid "NMEA2000: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:493
+#: gui/src/initwiz/wiz_ui.cpp:609
 #, c-format
 msgid "GPSd: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:508
-msgid "Looking for Signal K servers..."
+#: gui/src/initwiz/wiz_ui.cpp:630
+msgid "Looking for navigation data sources, this may take a while..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:512
+#: gui/src/initwiz/wiz_ui.cpp:632
 msgid "Scanning USB devices..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:516
+#: gui/src/initwiz/wiz_ui.cpp:637
 msgid "Looking for UDP data feeds..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:520
+#: gui/src/initwiz/wiz_ui.cpp:642
 msgid "Looking for TCP servers..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:524
+#: gui/src/initwiz/wiz_ui.cpp:648
+msgid "Looking for Signal K servers..."
+msgstr ""
+
+#: gui/src/initwiz/wiz_ui.cpp:654
 msgid "Looking for CAN interfaces..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:528
+#: gui/src/initwiz/wiz_ui.cpp:660
 msgid "Looking for GPSD servers..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:541
+#: gui/src/initwiz/wiz_ui.cpp:676
 #, c-format
 msgid "SignalK: %s (%s port %d)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:555
+#: gui/src/initwiz/wiz_ui.cpp:690
 msgid "The system has been scanned for sources of navigation data."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:558
+#: gui/src/initwiz/wiz_ui.cpp:693
 msgid "The connections to the discovered sources of data will be configured automatically. You may uncheck the ones you want to ignore."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:562
+#: gui/src/initwiz/wiz_ui.cpp:697
 msgid "You may now connect additional USB devices or connect to a different network and press the Rescan button to update the list."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:567
+#: gui/src/initwiz/wiz_ui.cpp:702
 msgid "The connection settings can be changed at any time in the configuration Toolbox accessible by clicking on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:571
+#: gui/src/initwiz/wiz_ui.cpp:706
 msgid " icon in the main Toolbar. In the Toolbox navigate to the Connections tab."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:578
+#: gui/src/initwiz/wiz_ui.cpp:716
 msgid "Select a directory containing charts"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:25
+#: gui/src/initwiz/wiz_ui_proto.cpp:30
 msgid "Units and formats"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Degrees, decimal minutes (DD MM.MM)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Decimal degrees (DD.DDDDD)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Degrees, minutes, seconds (DD MM SS)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:87
+#: gui/src/initwiz/wiz_ui_proto.cpp:90
 msgid "Show true headings and bearings"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:94
+#: gui/src/initwiz/wiz_ui_proto.cpp:97
 msgid "Show magnetic headings and bearings"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:118
+#: gui/src/initwiz/wiz_ui_proto.cpp:132
 msgid "Detected navigation data sources:"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:126
+#: gui/src/initwiz/wiz_ui_proto.cpp:140
 msgid "Rescan..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:145
+#: gui/src/initwiz/wiz_ui_proto.cpp:170
 msgid "Add existing charts"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:152
+#: gui/src/initwiz/wiz_ui_proto.cpp:177
 msgid "Add chart directory..."
 msgstr ""
 

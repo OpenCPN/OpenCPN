@@ -2170,6 +2170,15 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
   bSizerPrefsMain->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
 #endif
+
+  wxButton  *SetSaveButton =
+      new wxButton(scrollWin, wxID_ANY, _("Select GRIB download directory"));
+  bSizerPrefsMain->Add(SetSaveButton, 0, wxALL | wxEXPAND, 5);
+  SetSaveButton->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribPreferencesDialogBase::OnDirSelClick), NULL, this);
+
+
   Layout();
   Fit();
 
@@ -2306,6 +2315,17 @@ GribPreferencesDialogBase::~GribPreferencesDialogBase() {
       wxEVT_COMMAND_RADIOBOX_SELECTED,
       wxCommandEventHandler(GribPreferencesDialogBase::OnStartOptionChange),
       NULL, this);
+}
+
+void GribPreferencesDialogBase::OnDirSelClick(wxCommandEvent& event) {
+  wxString dir_spec;
+  int response = PlatformDirSelectorDialog(this, &dir_spec,
+                                           _("Choose GRIB File Directory"),
+                                           m_grib_dir_sel);
+
+  if (response == wxID_OK) {
+    m_grib_dir_sel = dir_spec;
+  }
 }
 
 GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,

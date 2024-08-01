@@ -113,7 +113,6 @@ Routeman::Routeman(struct RoutePropDlgCtx ctx,
       m_prop_dlg_ctx(ctx),
       m_route_dlg_ctx(route_dlg_ctx),
       m_nmea_log(nmea_log) {
-  if (g_persist_active_route) ActivatePersistedRoute(this);
 
   GlobalVar<wxString> active_route(&g_active_route);
   auto route_action = [&] (wxCommandEvent) {
@@ -422,6 +421,7 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
   if (pActiveRoute) {
     pActiveRoute->m_bRtIsActive = false;
     pActiveRoute->m_pRouteActivePoint = NULL;
+    g_active_route.Clear();
 
     wxJSONValue v;
     if (!b_arrival) {

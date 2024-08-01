@@ -1281,14 +1281,6 @@ bool MyApp::OnInit() {
   //  created from scratch
   if (b_initial_load) g_Platform->SetDefaultOptions();
 
-  if (g_config_wizard || b_initial_load) {
-    FirstUseWizImpl wiz(gFrame, pConfig);
-    auto res = wiz.Run();
-    if(res) {
-      g_NeedDBUpdate = 2;
-    }
-  }
-
   g_Platform->applyExpertMode(g_bUIexpert);
 
   // Now initialize UI Style.
@@ -1390,6 +1382,15 @@ bool MyApp::OnInit() {
 #else
   wxLogMessage(_T("wxLocale support not available"));
 #endif
+
+  //  Now that locale is established, possibly run the startup wizard.
+  if (g_config_wizard || b_initial_load) {
+    FirstUseWizImpl wiz(gFrame, pConfig);
+    auto res = wiz.Run();
+    if(res) {
+      g_NeedDBUpdate = 2;
+    }
+  }
 
   // Instantiate and initialize the Config Manager
   ConfigMgr::Get();

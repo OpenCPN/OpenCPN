@@ -69,6 +69,6 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
 )
 
 wget -nv -O !CACHE_DIR!\QuickStartGuide.zip ^
-       https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.3.zip
+       https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.4.zip
 if not exist %CACHE_DIR%\..\data\doc\local (mkdir %CACHE_DIR%\..\data\doc\local)
 7z x -y !CACHE_DIR!\QuickStartGuide.zip  -o%CACHE_DIR%\..\data\doc\local
