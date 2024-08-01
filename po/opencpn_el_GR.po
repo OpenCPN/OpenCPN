@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-16 20:55-0400\n"
-"PO-Revision-Date: 2024-06-24 02:23\n"
+"POT-Creation-Date: 2024-07-24 16:20-0400\n"
+"PO-Revision-Date: 2024-07-31 19:36\n"
 "Last-Translator: \n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -17,8 +17,8 @@ msgstr ""
 "X-Crowdin-File: /po/opencpn.pot\n"
 "X-Crowdin-File-ID: 102\n"
 
-#: model/include/model/track.h:121 gui/src/ocpn_frame.cpp:3021
-#: gui/src/ocpn_frame.cpp:6426 gui/src/ocpn_frame.cpp:6544
+#: model/include/model/track.h:121 gui/src/ocpn_frame.cpp:3027
+#: gui/src/ocpn_frame.cpp:6422 gui/src/ocpn_frame.cpp:6540
 msgid "(Unnamed Track)"
 msgstr "(Ανώνυμο ίχνος)"
 
@@ -414,7 +414,7 @@ msgstr "Αεροσκάφος διάσωσης"
 
 #: model/src/ais_target_data.cpp:489 model/src/ais_target_data.cpp:501
 #: model/src/ais_target_data.cpp:517 gui/src/AISTargetListDialog.cpp:569
-#: gui/src/options.cpp:903 gui/src/options.cpp:1225
+#: gui/src/options.cpp:907 gui/src/options.cpp:1229
 msgid "MMSI"
 msgstr "MMSI"
 
@@ -476,7 +476,7 @@ msgstr " (τελευταία γνωστή)"
 #: model/src/ais_target_data.cpp:690 gui/src/GoToPositionDialog.cpp:113
 #: gui/src/priority_gui.cpp:221 gui/src/routeprintout.cpp:107
 #: gui/src/routeprintout.cpp:376 gui/src/trackprintout.cpp:88
-#: gui/src/trackprintout.cpp:298 gui/src/initwiz/wiz_ui_proto.cpp:74
+#: gui/src/trackprintout.cpp:298 gui/src/initwiz/wiz_ui_proto.cpp:77
 msgid "Position"
 msgstr "Θέση"
 
@@ -509,11 +509,11 @@ msgstr "Δεξιά"
 msgid "Left"
 msgstr "Αριστερά"
 
-#: model/src/ais_target_data.cpp:835 gui/src/options.cpp:4333
-#: gui/src/options.cpp:4490 gui/src/RoutePropDlg.cpp:389
+#: model/src/ais_target_data.cpp:835 gui/src/options.cpp:4337
+#: gui/src/options.cpp:4494 gui/src/RoutePropDlg.cpp:389
 #: gui/src/trackprintout.cpp:100 gui/src/trackprintout.cpp:339
 #: gui/src/TrackPropDlg.cpp:311 gui/src/TrackPropDlg.cpp:1351
-#: gui/src/initwiz/wiz_ui_proto.cpp:52
+#: gui/src/initwiz/wiz_ui_proto.cpp:57
 msgid "Speed"
 msgstr "Ταχύτητα"
 
@@ -566,7 +566,7 @@ msgid "Altitude"
 msgstr "Υψόμετρο"
 
 #: model/src/ais_target_data.cpp:905 model/src/ais_target_data.cpp:1178
-#: gui/src/options.cpp:4346 gui/src/initwiz/wiz_ui_proto.cpp:62
+#: gui/src/options.cpp:4350 gui/src/initwiz/wiz_ui_proto.cpp:67
 msgid "Wind speed"
 msgstr "Ταχύτητα ανέμου"
 
@@ -709,7 +709,7 @@ msgid "Aid to Navigation"
 msgstr "Βοήθημα ναυσιπλοΐας"
 
 #: model/src/ais_target_data.cpp:1336 gui/src/CanvasOptions.cpp:326
-#: gui/src/options.cpp:3311 gui/src/options.cpp:3514
+#: gui/src/options.cpp:3315 gui/src/options.cpp:3518
 msgid "Base"
 msgstr "Βασική"
 
@@ -2263,21 +2263,21 @@ msgid "cm"
 msgstr "cm"
 
 #: model/src/navutil_base.cpp:323 model/src/navutil_base.cpp:349
-#: gui/src/initwiz/wiz_ui_proto.cpp:56 gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/initwiz/wiz_ui_proto.cpp:61 gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "mph"
 msgstr "μ.α.ώ."
 
 #: model/src/navutil_base.cpp:326 model/src/navutil_base.cpp:352
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "km/h"
 msgstr "km/h"
 
 #: model/src/navutil_base.cpp:329 model/src/navutil_base.cpp:346
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "m/s"
 msgstr "m/s"
 
@@ -2451,8 +2451,8 @@ msgstr "Τα σημεία πορείας θα μετονομαστούν, ώστ
 "Θέλετε να τα μετονομάσετε;"
 
 #: gui/include/gui/AboutFrame.h:87 gui/include/gui/AboutFrameImpl.h:68
-#: gui/include/gui/about.h:38 gui/src/ocpn_frame.cpp:3592
-#: gui/src/ocpn_frame.cpp:7074
+#: gui/include/gui/about.h:38 gui/src/ocpn_frame.cpp:3601
+#: gui/src/ocpn_frame.cpp:7070
 msgid "About OpenCPN"
 msgstr "Για το OpenCPN"
 
@@ -2498,9 +2498,9 @@ msgstr "Αντικατάσταση διαδρομής 1 συσκευής Garmin?
 msgid "OpenCPN Message"
 msgstr "Μήνυμα OpenCPN"
 
-#: gui/include/gui/options.h:97 gui/src/ocpn_frame.cpp:3582
-#: gui/src/ocpn_frame.cpp:3860 gui/src/ocpn_frame.cpp:4916
-#: gui/src/ocpn_frame.cpp:7033 gui/src/options.cpp:3251
+#: gui/include/gui/options.h:96 gui/src/ocpn_frame.cpp:3591
+#: gui/src/ocpn_frame.cpp:3869 gui/src/ocpn_frame.cpp:4912
+#: gui/src/ocpn_frame.cpp:7029 gui/src/options.cpp:3255
 msgid "Options"
 msgstr "Επιλογές"
 
@@ -2542,7 +2542,7 @@ msgstr "Εκτύπωση επιλογής διαδρομής"
 msgid "Track properties"
 msgstr "Ιδιότητες ίχνους"
 
-#: gui/include/gui/wiz_ui.h:69 gui/include/gui/wiz_ui_proto.h:83
+#: gui/include/gui/wiz_ui.h:69 gui/include/gui/wiz_ui_proto.h:86
 msgid "OpenCPN Initial Configuration"
 msgstr "Αρχική Ρύθμιση OpenCPN"
 
@@ -2555,12 +2555,12 @@ msgstr "Αρχική Ρύθμιση OpenCPN"
 #: gui/src/conn_params_panel.cpp:803 gui/src/glChartCanvas.cpp:3809
 #: gui/src/glTextureManager.cpp:1447 gui/src/gui_lib.cpp:155
 #: gui/src/gui_lib.cpp:293 gui/src/LinkPropDlg.cpp:37 gui/src/MarkInfo.cpp:225
-#: gui/src/MarkInfo.cpp:277 gui/src/ocpn_frame.cpp:4559
-#: gui/src/ocpn_frame.cpp:8616 gui/src/OCPNPlatform.cpp:1634
+#: gui/src/MarkInfo.cpp:277 gui/src/ocpn_frame.cpp:4555
+#: gui/src/ocpn_frame.cpp:8613 gui/src/OCPNPlatform.cpp:1634
 #: gui/src/OCPNPlatform.cpp:1893 gui/src/OCPNPlatform.cpp:1932
-#: gui/src/options.cpp:640 gui/src/options.cpp:665 gui/src/options.cpp:1194
-#: gui/src/options.cpp:1684 gui/src/options.cpp:8558 gui/src/options.cpp:8795
-#: gui/src/options.cpp:9035 gui/src/options.cpp:9173 gui/src/Osenc.cpp:1688
+#: gui/src/options.cpp:644 gui/src/options.cpp:669 gui/src/options.cpp:1198
+#: gui/src/options.cpp:1688 gui/src/options.cpp:8588 gui/src/options.cpp:8825
+#: gui/src/options.cpp:9065 gui/src/options.cpp:9203 gui/src/Osenc.cpp:1688
 #: gui/src/routemanagerdialog.cpp:317 gui/src/RoutePropDlg.cpp:84
 #: gui/src/TCWin.cpp:78 gui/src/TCWin.cpp:172 gui/src/toolbar.cpp:2390
 #: gui/src/TrackPropDlg.cpp:112 gui/src/TrackPropDlg.cpp:326
@@ -2658,23 +2658,23 @@ msgstr "API προσθέτου"
 msgid "OpenCPN Website"
 msgstr "Ιστοσελίδα του OpenCPN"
 
-#: gui/src/AboutFrameImpl.cpp:94
+#: gui/src/AboutFrameImpl.cpp:100
 msgid "OpenCPN Help documentation is not available locally."
 msgstr "Δεν υπάρχουν επεξηγήσεις για το OpenCPN τοπικά."
 
-#: gui/src/AboutFrameImpl.cpp:97
+#: gui/src/AboutFrameImpl.cpp:103
 msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr "Θέλετε να πάτε στην ιστοσελίδα opencpn.org για περισσότερες πληροφορίες;"
 
-#: gui/src/AboutFrameImpl.cpp:101 gui/src/ais_info_gui.cpp:104
-#: gui/src/AISTargetQueryDialog.cpp:178 gui/src/connection_edit.cpp:2551
+#: gui/src/AboutFrameImpl.cpp:107 gui/src/ais_info_gui.cpp:104
+#: gui/src/AISTargetQueryDialog.cpp:176 gui/src/connection_edit.cpp:2551
 #: gui/src/connection_edit.cpp:2564 gui/src/LinkPropDlg.cpp:134
 #: gui/src/MarkInfo.cpp:1961 gui/src/navutil.cpp:3265 gui/src/ocpn_frame.cpp:721
-#: gui/src/ocpn_frame.cpp:868 gui/src/ocpn_frame.cpp:4253
-#: gui/src/options.cpp:1033 gui/src/options.cpp:2815 gui/src/options.cpp:7862
-#: gui/src/options.cpp:7899 gui/src/pluginmanager.cpp:311
+#: gui/src/ocpn_frame.cpp:868 gui/src/ocpn_frame.cpp:4249
+#: gui/src/options.cpp:1037 gui/src/options.cpp:2819 gui/src/options.cpp:7867
+#: gui/src/options.cpp:7904 gui/src/pluginmanager.cpp:311
 #: gui/src/pluginmanager.cpp:624 gui/src/pluginmanager.cpp:878
-#: gui/src/route_gui.cpp:608 gui/src/route_point_gui.cpp:914
+#: gui/src/route_gui.cpp:608 gui/src/route_point_gui.cpp:915
 #: gui/src/SendToPeerDlg.cpp:62 gui/src/SendToPeerDlg.cpp:77
 #: gui/src/SendToPeerDlg.cpp:85 gui/src/SendToPeerDlg.cpp:93
 #: gui/src/SendToPeerDlg.cpp:100 gui/src/SendToPeerDlg.cpp:107
@@ -3074,7 +3074,7 @@ msgstr "Ακύρωση - ακυρώνεται ο προσδιορισμός τη
 msgid "Undefined (default)"
 msgstr "Ακαθόριστη (default) "
 
-#: gui/src/ais.cpp:750 gui/src/ais.cpp:1719
+#: gui/src/ais.cpp:750 gui/src/ais.cpp:1719 gui/src/FontMgr.cpp:227
 msgid "AIS Target Name"
 msgstr "Όνομα στόχου AIS"
 
@@ -3088,7 +3088,7 @@ msgstr "\n"
 "Δηλαδή, η καταγραφή του ίχνους θα ξαναρχίσει για αυτόν τον στόχο.\n\n"
 "Μήπως θέλετε να σταματήσετε την Επίμονη παρακολούθηση για αυτόν τον στόχο?\n"
 
-#: gui/src/ais_info_gui.cpp:203 gui/src/options.cpp:4873
+#: gui/src/ais_info_gui.cpp:203 gui/src/options.cpp:4877
 msgid "AIS Alert"
 msgstr "Συναγερμός AIS"
 
@@ -3104,7 +3104,7 @@ msgstr "&Σίγαση  συναγερμού"
 msgid "&Jump To"
 msgstr "&Πήγαινε σε"
 
-#: gui/src/AISTargetAlertDialog.cpp:204 gui/src/AISTargetQueryDialog.cpp:276
+#: gui/src/AISTargetAlertDialog.cpp:204 gui/src/AISTargetQueryDialog.cpp:274
 msgid "Create Waypoint"
 msgstr "Δημιουργία σημείου πορείας"
 
@@ -3127,7 +3127,7 @@ msgid "-"
 msgstr "-"
 
 #: gui/src/AISTargetListDialog.cpp:350 gui/src/canvasMenu.cpp:694
-#: gui/src/ocpn_frame.cpp:3546
+#: gui/src/ocpn_frame.cpp:3555
 msgid "AIS target list"
 msgstr "Κατάλογος στόχων AIS"
 
@@ -3216,38 +3216,38 @@ msgstr "Αριθμός στόχων"
 msgid "Undock Target List"
 msgstr "Αποδέσμευση καταλόγου στόχων"
 
-#: gui/src/AISTargetQueryDialog.cpp:141 gui/src/AISTargetQueryDialog.cpp:280
-#: gui/src/AISTargetQueryDialog.cpp:311
+#: gui/src/AISTargetQueryDialog.cpp:141 gui/src/AISTargetQueryDialog.cpp:278
+#: gui/src/AISTargetQueryDialog.cpp:309
 msgid "Record Track"
 msgstr "Καταγραφή ίχνους"
 
-#: gui/src/AISTargetQueryDialog.cpp:175
+#: gui/src/AISTargetQueryDialog.cpp:173
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
 msgstr "Το πρόσφατο ίχνος αυτού του στόχου έχει καταγραφεί.\n"
 " Να συνεχιστεί η καταγραφή μέχρι το τέλος της τρέχουσας συνεδρίας;"
 
-#: gui/src/AISTargetQueryDialog.cpp:197
+#: gui/src/AISTargetQueryDialog.cpp:195
 msgid "AISTargetQuery"
 msgstr "AIS.Πληρ.Στόχου"
 
-#: gui/src/AISTargetQueryDialog.cpp:285 gui/src/catalog_mgr.cpp:193
+#: gui/src/AISTargetQueryDialog.cpp:283 gui/src/catalog_mgr.cpp:193
 #: gui/src/catalog_mgr.cpp:585 gui/src/catalog_mgr.cpp:606 gui/src/cm93.cpp:6324
-#: gui/src/GoToPositionDialog.cpp:150 gui/src/MUIBar.cpp:190
-#: gui/src/options.cpp:853 gui/src/options.cpp:955 gui/src/options.cpp:5802
+#: gui/src/GoToPositionDialog.cpp:150 gui/src/MUIBar.cpp:195
+#: gui/src/options.cpp:857 gui/src/options.cpp:959 gui/src/options.cpp:5806
 #: gui/src/routeprintout.cpp:428 gui/src/TCWin.cpp:115 gui/src/TCWin.cpp:124
 #: gui/src/toolbar.cpp:2457 gui/src/trackprintout.cpp:359
 #: gui/src/TrackPropDlg.cpp:615 gui/src/TrackPropDlg.cpp:1003
 msgid "OK"
 msgstr "Εντάξει"
 
-#: gui/src/AISTargetQueryDialog.cpp:309
+#: gui/src/AISTargetQueryDialog.cpp:307
 msgid "Stop Tracking"
 msgstr "Διακοπή παρακολούθησης"
 
 #: gui/src/canvasMenu.cpp:240 gui/src/canvasMenu.cpp:269
 #: gui/src/canvasMenu.cpp:302 gui/src/canvasMenu.cpp:1051
-#: gui/src/canvasMenu.cpp:1074 gui/src/options.cpp:1146
+#: gui/src/canvasMenu.cpp:1074 gui/src/options.cpp:1150
 msgid "Menu"
 msgstr "Μενού"
 
@@ -3301,7 +3301,7 @@ msgstr "Φέρε το πλοίο εδώ"
 msgid "Navigate To Here"
 msgstr "Πλεύση μέχρι εδώ"
 
-#: gui/src/canvasMenu.cpp:523 gui/src/ocpn_frame.cpp:3441
+#: gui/src/canvasMenu.cpp:523 gui/src/ocpn_frame.cpp:3450
 msgid "Course Up Mode"
 msgstr "«Πορεία προς τα πάνω»"
 
@@ -3310,8 +3310,8 @@ msgid "Heading Up Mode"
 msgstr "Κατεύθυνση προς τα πάνω"
 
 #: gui/src/canvasMenu.cpp:527 gui/src/canvasMenu.cpp:534
-#: gui/src/ocpn_frame.cpp:3154 gui/src/ocpn_frame.cpp:3440
-#: gui/src/ocpn_frame.cpp:5951
+#: gui/src/ocpn_frame.cpp:3160 gui/src/ocpn_frame.cpp:3449
+#: gui/src/ocpn_frame.cpp:5947
 msgid "North Up Mode"
 msgstr "«Βορράς προς τα πάνω»"
 
@@ -3320,7 +3320,7 @@ msgid "Chart Up Mode"
 msgstr "Λειτουργία «Χάρτης προς τα πάνω»"
 
 #: gui/src/canvasMenu.cpp:543 gui/src/canvasMenu.cpp:550
-#: gui/src/ocpn_frame.cpp:3522
+#: gui/src/ocpn_frame.cpp:3531
 msgid "Toggle Full Screen"
 msgstr "Αλλαγή σε/από fullscreen"
 
@@ -3345,7 +3345,7 @@ msgstr "Επικόλληση ίχνους"
 msgid "CM93 Offset Dialog..."
 msgstr "Διάλογος αντιστάθμισης χάρτη CM93..."
 
-#: gui/src/canvasMenu.cpp:611 gui/src/options.cpp:3785 gui/src/options.cpp:3849
+#: gui/src/canvasMenu.cpp:611 gui/src/options.cpp:3789 gui/src/options.cpp:3853
 msgid "Chart Groups"
 msgstr "Ομάδες χαρτών"
 
@@ -3463,7 +3463,7 @@ msgstr "Αντιγραφή ως KML"
 #: gui/src/canvasMenu.cpp:758 gui/src/canvasMenu.cpp:812
 #: gui/src/canvasMenu.cpp:869 gui/src/canvasMenu.cpp:920
 #: gui/src/connection_edit.cpp:2411 gui/src/MarkInfo.cpp:485
-#: gui/src/MarkInfo.cpp:1167 gui/src/MarkInfo.cpp:1208 gui/src/options.cpp:1142
+#: gui/src/MarkInfo.cpp:1167 gui/src/MarkInfo.cpp:1208 gui/src/options.cpp:1146
 #: gui/src/RoutePropDlg.cpp:464 gui/src/TrackPropDlg.cpp:907
 msgid "Delete"
 msgstr "Διαγραφή"
@@ -3617,18 +3617,18 @@ msgstr "Αποστολή ´ιχνους στο OpenCPN Peer"
 msgid "Chart Panel Options"
 msgstr "Επιλογές εμφάνισης χάρτη"
 
-#: gui/src/CanvasOptions.cpp:136 gui/src/options.cpp:3947
-#: gui/src/options.cpp:4130
+#: gui/src/CanvasOptions.cpp:136 gui/src/options.cpp:3951
+#: gui/src/options.cpp:4134
 msgid "Navigation Mode"
 msgstr "Λειτουργία Πλοήγησης"
 
-#: gui/src/CanvasOptions.cpp:143 gui/src/options.cpp:3955
-#: gui/src/options.cpp:4138
+#: gui/src/CanvasOptions.cpp:143 gui/src/options.cpp:3959
+#: gui/src/options.cpp:4142
 msgid "North Up"
 msgstr "«Βορράς ⇈»"
 
-#: gui/src/CanvasOptions.cpp:151 gui/src/options.cpp:3958
-#: gui/src/options.cpp:4141
+#: gui/src/CanvasOptions.cpp:151 gui/src/options.cpp:3962
+#: gui/src/options.cpp:4145
 msgid "Course Up"
 msgstr "«Πορεία ⇈»"
 
@@ -3636,32 +3636,32 @@ msgstr "«Πορεία ⇈»"
 msgid "Heading Up"
 msgstr "«Κατεύθυνση ⇈»"
 
-#: gui/src/CanvasOptions.cpp:169 gui/src/options.cpp:3965
-#: gui/src/options.cpp:4148
+#: gui/src/CanvasOptions.cpp:169 gui/src/options.cpp:3969
+#: gui/src/options.cpp:4152
 msgid "Look Ahead Mode"
 msgstr "Προεπισκόπηση πορείας"
 
-#: gui/src/CanvasOptions.cpp:180 gui/src/options.cpp:1874
+#: gui/src/CanvasOptions.cpp:180 gui/src/options.cpp:1878
 msgid "Display Options"
 msgstr "Επιλογές παρουσίασης"
 
-#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3465
-#: gui/src/ocpn_frame.cpp:3471 gui/src/options.cpp:3980 gui/src/options.cpp:4163
+#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3474
+#: gui/src/ocpn_frame.cpp:3480 gui/src/options.cpp:3984 gui/src/options.cpp:4167
 msgid "Enable Chart Quilting"
 msgstr "Συρραφή χαρτών"
 
-#: gui/src/CanvasOptions.cpp:192 gui/src/options.cpp:4021
-#: gui/src/options.cpp:4208
+#: gui/src/CanvasOptions.cpp:192 gui/src/options.cpp:4025
+#: gui/src/options.cpp:4212
 msgid "Show Grid"
 msgstr "Εμφάνιση καννάβου"
 
-#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3467
-#: gui/src/ocpn_frame.cpp:3473 gui/src/options.cpp:4025 gui/src/options.cpp:4212
+#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3476
+#: gui/src/ocpn_frame.cpp:3482 gui/src/options.cpp:4029 gui/src/options.cpp:4216
 msgid "Show Chart Outlines"
 msgstr "Εμφάνιση των ορίων των χαρτών"
 
-#: gui/src/CanvasOptions.cpp:206 gui/src/options.cpp:4029
-#: gui/src/options.cpp:4216
+#: gui/src/CanvasOptions.cpp:206 gui/src/options.cpp:4033
+#: gui/src/options.cpp:4220
 msgid "Show Depth Units"
 msgstr "Εμφάνιση βαθυμετρικών μονάδων"
 
@@ -3681,7 +3681,7 @@ msgstr "Παλίρροια και ρεύματα"
 msgid "Show Tide stations"
 msgstr "Εμφάνιση σταθμών παλίρροιας"
 
-#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3509
+#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3518
 msgid "Show Currents"
 msgstr "Εμφάνιση ρευμάτων"
 
@@ -3697,8 +3697,8 @@ msgstr "Εμφάνιση κειμένου"
 msgid "Show depths"
 msgstr "Εμφάνιση βαθών"
 
-#: gui/src/CanvasOptions.cpp:277 gui/src/options.cpp:3349
-#: gui/src/options.cpp:3543
+#: gui/src/CanvasOptions.cpp:277 gui/src/options.cpp:3353
+#: gui/src/options.cpp:3547
 msgid "Buoy/Light Labels"
 msgstr "Ετικέτες σημαντήρα/φάρου"
 
@@ -3706,8 +3706,8 @@ msgstr "Ετικέτες σημαντήρα/φάρου"
 msgid "Lights"
 msgstr "Φάροι"
 
-#: gui/src/CanvasOptions.cpp:291 gui/src/options.cpp:3354
-#: gui/src/options.cpp:3548
+#: gui/src/CanvasOptions.cpp:291 gui/src/options.cpp:3358
+#: gui/src/options.cpp:3552
 msgid "Light Descriptions"
 msgstr "Περιγραφές φάρων"
 
@@ -3723,18 +3723,18 @@ msgstr "Εμφάνιση ορατών τομέων στα φανάρια"
 msgid "Show chart data quality"
 msgstr "Εμφάνιση ποιότητας δεδομένων χάρτη"
 
-#: gui/src/CanvasOptions.cpp:324 gui/src/options.cpp:3309
-#: gui/src/options.cpp:3512
+#: gui/src/CanvasOptions.cpp:324 gui/src/options.cpp:3313
+#: gui/src/options.cpp:3516
 msgid "Display Category"
 msgstr "Κατηγορία παρουσίασης"
 
-#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3311
-#: gui/src/options.cpp:3514
+#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3315
+#: gui/src/options.cpp:3518
 msgid "Standard"
 msgstr "Κανονική"
 
-#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3311
-#: gui/src/options.cpp:3514
+#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3315
+#: gui/src/options.cpp:3518
 msgid "All"
 msgstr "Όλα"
 
@@ -3779,7 +3779,7 @@ msgstr "Χρήση ως ενεργός κατάλογος"
 msgid "Latest available catalog:"
 msgstr "Τελευταίος διαθέσιμος κατάλογος:"
 
-#: gui/src/catalog_mgr.cpp:292 gui/src/pluginmanager.cpp:3854
+#: gui/src/catalog_mgr.cpp:292 gui/src/pluginmanager.cpp:3855
 msgid "Cannot download data from url"
 msgstr "Δεν μπορούν να κατέβουν τα δεδομένα από το URL"
 
@@ -3834,8 +3834,8 @@ msgstr "Αποτυχία: "
 #: gui/src/catalog_mgr.cpp:604 gui/src/connection_edit.cpp:237
 #: gui/src/connection_edit.cpp:2415 gui/src/GoToPositionDialog.cpp:146
 #: gui/src/LinkPropDlg.cpp:76 gui/src/MarkInfo.cpp:751 gui/src/MarkInfo.cpp:1931
-#: gui/src/MUIBar.cpp:186 gui/src/options.cpp:850 gui/src/options.cpp:952
-#: gui/src/options.cpp:5806 gui/src/options.cpp:9096
+#: gui/src/MUIBar.cpp:191 gui/src/options.cpp:854 gui/src/options.cpp:956
+#: gui/src/options.cpp:5810 gui/src/options.cpp:9126
 #: gui/src/priority_gui.cpp:112 gui/src/rest_server_gui.cpp:171
 #: gui/src/rest_server_gui.cpp:298 gui/src/routeprintout.cpp:424
 #: gui/src/RoutePropDlg.cpp:547 gui/src/SendToGpsDlg.cpp:203
@@ -4168,28 +4168,28 @@ msgstr "Αρνητική απάντηση θα δημιουργήσει καιν
 msgid "Merge waypoints?"
 msgstr "Συγχώνευση σημείων πορείας;"
 
-#: gui/src/chcanv.cpp:10556 gui/src/RolloverWin.cpp:144
+#: gui/src/chcanv.cpp:10556 gui/src/FontMgr.cpp:219 gui/src/RolloverWin.cpp:144
 #: gui/src/RolloverWin.cpp:312
 msgid "RouteLegInfoRollover"
 msgstr "Πληροφορίες σκέλους σε Rollover"
 
-#: gui/src/chcanv.cpp:11357 gui/src/mbtiles/mbtiles.cpp:1000
+#: gui/src/chcanv.cpp:11357 gui/src/mbtiles/mbtiles.cpp:1005
 msgid "MBTile requires OpenGL to be enabled"
 msgstr "Τα MBTiles χρειάζονται το OpenGL"
 
-#: gui/src/chcanv.cpp:12012 gui/src/options.cpp:4364 gui/src/options.cpp:4513
-#: gui/src/initwiz/wiz_ui_proto.cpp:36
+#: gui/src/chcanv.cpp:12012 gui/src/options.cpp:4368 gui/src/options.cpp:4517
+#: gui/src/initwiz/wiz_ui_proto.cpp:41
 msgid "Feet"
 msgstr "πόδια"
 
-#: gui/src/chcanv.cpp:12014 gui/src/options.cpp:4321 gui/src/options.cpp:4365
-#: gui/src/options.cpp:4482 gui/src/options.cpp:4514
-#: gui/src/initwiz/wiz_ui_proto.cpp:36 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/chcanv.cpp:12014 gui/src/options.cpp:4325 gui/src/options.cpp:4369
+#: gui/src/options.cpp:4486 gui/src/options.cpp:4518
+#: gui/src/initwiz/wiz_ui_proto.cpp:41 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Meters"
 msgstr "μέτρα"
 
-#: gui/src/chcanv.cpp:12016 gui/src/options.cpp:4366 gui/src/options.cpp:4515
-#: gui/src/initwiz/wiz_ui_proto.cpp:36
+#: gui/src/chcanv.cpp:12016 gui/src/options.cpp:4370 gui/src/options.cpp:4519
+#: gui/src/initwiz/wiz_ui_proto.cpp:41
 msgid "Fathoms"
 msgstr "οργιές"
 
@@ -4197,7 +4197,7 @@ msgstr "οργιές"
 msgid "OverZoom"
 msgstr "Υπερμεγέθυνση"
 
-#: gui/src/chcanv.cpp:12387 gui/src/chcanv.cpp:12388
+#: gui/src/chcanv.cpp:12387 gui/src/chcanv.cpp:12388 gui/src/FontMgr.cpp:223
 msgid "ExtendedTideIcon"
 msgstr "Εικονίδιο παλίρροιας"
 
@@ -4213,7 +4213,7 @@ msgstr "Πληροφορίες για τον στόχο AIS"
 msgid "Show all AIS Targets"
 msgstr "Εμφάνιση όλων των στόχων AIS"
 
-#: gui/src/chcanv.cpp:13202 gui/src/ocpn_frame.cpp:3529
+#: gui/src/chcanv.cpp:13202 gui/src/ocpn_frame.cpp:3538
 msgid "Attenuate less critical AIS targets"
 msgstr "Μετρίαση λιγότερο κρισίμων στόχων AIS"
 
@@ -4261,9 +4261,9 @@ msgstr "Αντιστάθμιση Χ άξονα από χρήστη"
 msgid "User Y Offset"
 msgstr "Αντιστάθμιση Υ άξονα από χρήστη"
 
-#: gui/src/cm93.cpp:6298 gui/src/cm93.cpp:6312 gui/src/options.cpp:3447
-#: gui/src/options.cpp:3457 gui/src/options.cpp:3467 gui/src/options.cpp:3662
-#: gui/src/options.cpp:3671 gui/src/options.cpp:3680 gui/src/options.cpp:6507
+#: gui/src/cm93.cpp:6298 gui/src/cm93.cpp:6312 gui/src/options.cpp:3451
+#: gui/src/options.cpp:3461 gui/src/options.cpp:3471 gui/src/options.cpp:3666
+#: gui/src/options.cpp:3675 gui/src/options.cpp:3684 gui/src/options.cpp:6511
 msgid "meters"
 msgstr "μέτρα"
 
@@ -4274,11 +4274,13 @@ msgstr "Αυτό το σκέλος"
 
 #: gui/src/concanv.cpp:110 gui/src/concanv.cpp:114 gui/src/concanv.cpp:118
 #: gui/src/concanv.cpp:122 gui/src/concanv.cpp:126 gui/src/concanv.cpp:570
+#: gui/src/FontMgr.cpp:213
 msgid "Console Legend"
 msgstr "Υπόμνημα κονσόλας"
 
 #: gui/src/concanv.cpp:110 gui/src/concanv.cpp:114 gui/src/concanv.cpp:118
 #: gui/src/concanv.cpp:122 gui/src/concanv.cpp:126 gui/src/concanv.cpp:571
+#: gui/src/FontMgr.cpp:215
 msgid "Console Value"
 msgstr "Τιμή κονσόλας"
 
@@ -4314,12 +4316,12 @@ msgstr "ETA  @VMG"
 msgid "ETA  @SOG"
 msgstr "ETA  @SOG"
 
-#: gui/src/ConfigMgr.cpp:456 gui/src/options.cpp:816
+#: gui/src/ConfigMgr.cpp:456 gui/src/options.cpp:820
 msgid "Title"
 msgstr "Τίτλος"
 
 #: gui/src/ConfigMgr.cpp:461 gui/src/MarkInfo.cpp:428 gui/src/MarkInfo.cpp:526
-#: gui/src/options.cpp:826 gui/src/routeprintout.cpp:116
+#: gui/src/options.cpp:830 gui/src/routeprintout.cpp:116
 #: gui/src/routeprintout.cpp:409 gui/src/RoutePropDlg.cpp:397
 #: gui/src/RoutePropDlg.cpp:422 gui/src/TrackPropDlg.cpp:872
 msgid "Description"
@@ -4348,7 +4350,7 @@ msgid "Less"
 msgstr "Λιγότερα"
 
 #: gui/src/connection_edit.cpp:259 gui/src/connection_edit.cpp:803
-#: gui/src/connections_dialog.cpp:481
+#: gui/src/connections_dialog.cpp:557
 msgid "Edit Selected Connection"
 msgstr "Επεξεργασία επιλεγμένης σύνδεσης"
 
@@ -4637,12 +4639,12 @@ msgstr ""
 msgid "Or consider using a different data port for one of them"
 msgstr ""
 
-#: gui/src/connection_edit.cpp:1766 gui/src/options.cpp:7808
+#: gui/src/connection_edit.cpp:1766 gui/src/options.cpp:7813
 #: gui/src/routeman_gui.cpp:73
 msgid "OpenCPN Warning"
 msgstr "Προσοχή"
 
-#: gui/src/connection_edit.cpp:1769 gui/src/options.cpp:6868
+#: gui/src/connection_edit.cpp:1769 gui/src/options.cpp:6872
 #: gui/src/routemanagerdialog.cpp:1949
 msgid "OpenCPN info"
 msgstr "Πληροφορίες για το OpenCPN"
@@ -4651,17 +4653,17 @@ msgstr "Πληροφορίες για το OpenCPN"
 msgid "Sentence Filter"
 msgstr "Φίλτρο δεδομένων"
 
-#: gui/src/connection_edit.cpp:2408 gui/src/options.cpp:3486
-#: gui/src/options.cpp:3699
+#: gui/src/connection_edit.cpp:2408 gui/src/options.cpp:3490
+#: gui/src/options.cpp:3703
 msgid "Select All"
 msgstr "Επιλογή όλων"
 
-#: gui/src/connection_edit.cpp:2409 gui/src/options.cpp:3488
-#: gui/src/options.cpp:3701 gui/src/priority_gui.cpp:105
+#: gui/src/connection_edit.cpp:2409 gui/src/options.cpp:3492
+#: gui/src/options.cpp:3705 gui/src/priority_gui.cpp:105
 msgid "Clear All"
 msgstr "Εκκαθάριση όλων"
 
-#: gui/src/connection_edit.cpp:2410 gui/src/options.cpp:3829
+#: gui/src/connection_edit.cpp:2410 gui/src/options.cpp:3833
 #: gui/src/RoutePropDlg.cpp:479 gui/src/TrackPropDlg.cpp:926
 msgid "Add"
 msgstr "Προσθήκη"
@@ -4692,59 +4694,59 @@ msgstr "Μια πρόταση NMEA έχει γενικά 3 χαρακτήρες 
 msgid "REGEX syntax error: \n"
 msgstr "Σφάλμα σύνταξης REGEX: \n"
 
-#: gui/src/connections_dialog.cpp:115 gui/src/options.cpp:3925
+#: gui/src/connections_dialog.cpp:122 gui/src/options.cpp:3929
 msgid "General"
 msgstr "Γενικά"
 
-#: gui/src/connections_dialog.cpp:128
+#: gui/src/connections_dialog.cpp:135
 msgid "Filter NMEA Course and Speed data"
 msgstr "Φίλτρο για δεδομένα πορείας και ταχύτητας ΝΜΕΑ"
 
-#: gui/src/connections_dialog.cpp:134
+#: gui/src/connections_dialog.cpp:141
 msgid "Filter period (sec)"
 msgstr "Περίοδος φίλτρου (s)"
 
-#: gui/src/connections_dialog.cpp:154
+#: gui/src/connections_dialog.cpp:168 gui/src/connections_dialog.cpp:220
 msgid "Show NMEA Debug Window"
 msgstr "Παράθυρο ροής δεδομένων NMEA"
 
-#: gui/src/connections_dialog.cpp:160
+#: gui/src/connections_dialog.cpp:174 gui/src/connections_dialog.cpp:226
 msgid "Format uploads for Furuno GP3X"
 msgstr "Φορμάρισμα δεδομένων για Furuno GP3X"
 
-#: gui/src/connections_dialog.cpp:166
+#: gui/src/connections_dialog.cpp:180 gui/src/connections_dialog.cpp:232
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Χρήση μεθόδου Garmin GRMN (Host) για εξαγωγή δεδομένων"
 
-#: gui/src/connections_dialog.cpp:173
+#: gui/src/connections_dialog.cpp:187 gui/src/connections_dialog.cpp:239
 msgid "Use magnetic bearings in output sentence APB"
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:185
-msgid "NMEA0183 Talker ID"
-msgstr ""
-
-#: gui/src/connections_dialog.cpp:200
+#: gui/src/connections_dialog.cpp:196 gui/src/connections_dialog.cpp:265
 msgid "Adjust communication priorities..."
 msgstr "Ρύθμιση προτεραιοτήτων επικοινωνίας..."
 
-#: gui/src/connections_dialog.cpp:209
+#: gui/src/connections_dialog.cpp:204 gui/src/connections_dialog.cpp:250
+msgid "NMEA0183 Talker ID"
+msgstr ""
+
+#: gui/src/connections_dialog.cpp:275
 msgid "Data Connections"
 msgstr "Σνδέσεις δεδομένων"
 
-#: gui/src/connections_dialog.cpp:218
+#: gui/src/connections_dialog.cpp:284
 msgid "Add Connection..."
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:222
+#: gui/src/connections_dialog.cpp:288
 msgid "Edit Connection..."
 msgstr ""
 
-#: gui/src/connections_dialog.cpp:227
+#: gui/src/connections_dialog.cpp:293
 msgid "Remove Connection"
 msgstr "Αφαίρεση σύνδεσης"
 
-#: gui/src/connections_dialog.cpp:421
+#: gui/src/connections_dialog.cpp:497
 msgid "Configure new connection"
 msgstr "Ρϋθμιση νέας σύνδεσης"
 
@@ -4802,7 +4804,7 @@ msgid "Install"
 msgstr "Εγκατάσταση"
 
 #: gui/src/download_mgr.cpp:251 gui/src/download_mgr.cpp:268
-#: gui/src/pluginmanager.cpp:4758 gui/src/update_mgr.cpp:244
+#: gui/src/pluginmanager.cpp:4759 gui/src/update_mgr.cpp:244
 msgid "Reinstall"
 msgstr "Επανεγκατάσταση"
 
@@ -4810,7 +4812,7 @@ msgstr "Επανεγκατάσταση"
 msgid "Update"
 msgstr "Ενημέρωση"
 
-#: gui/src/download_mgr.cpp:270 gui/src/pluginmanager.cpp:4764
+#: gui/src/download_mgr.cpp:270 gui/src/pluginmanager.cpp:4765
 #: gui/src/update_mgr.cpp:246
 msgid "Downgrade"
 msgstr "Υποβάθμιση"
@@ -4840,13 +4842,28 @@ msgid " successfully installed"
 msgstr "Επιτυχής εγκατάσταση"
 
 #: gui/src/download_mgr.cpp:573 gui/src/pluginmanager.cpp:1122
-#: gui/src/pluginmanager.cpp:3978
+#: gui/src/pluginmanager.cpp:3979
 msgid "Installation complete"
 msgstr "Η εγκατάσταση ολοκληρώθηκε"
 
 #: gui/src/download_mgr.cpp:589 gui/src/pluginmanager.cpp:1113
 msgid "Installation error"
 msgstr "Σφάλμα Εγκατάστασης."
+
+#: gui/src/FontMgr.cpp:217 gui/src/routemanagerdialog.cpp:688
+#: gui/src/route_point_gui.cpp:127 gui/src/route_point_gui.cpp:135
+#: gui/src/route_point_gui.cpp:299 gui/src/route_point_gui.cpp:307
+msgid "Marks"
+msgstr "Σημεία"
+
+#: gui/src/FontMgr.cpp:221 gui/src/RolloverWin.cpp:137
+#: gui/src/RolloverWin.cpp:303
+msgid "AISRollover"
+msgstr "Το Rollover ποντικιού δείχνει:"
+
+#: gui/src/FontMgr.cpp:225
+msgid "ChartTexts"
+msgstr ""
 
 #: gui/src/glChartCanvas.cpp:1925
 msgid "GridText"
@@ -4860,7 +4877,7 @@ msgstr "Αναμονή για τέλος της συμπίεσης του χάρ
 msgid "OpenCPN Compressed Cache Update"
 msgstr "OpenCPN: ανανέωση του συμπιεσμένου Cache"
 
-#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8654
+#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8651
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Απόσταση από ίδιον πλοίο: %4.0f ν.μ."
@@ -4993,7 +5010,7 @@ msgstr "Αυτό το σημείο π. είναι μέρος ενός ταξιδ
 msgid "Icon"
 msgstr "Εικονίδιο"
 
-#: gui/src/MarkInfo.cpp:380 gui/src/options.cpp:2207 gui/src/options.cpp:2270
+#: gui/src/MarkInfo.cpp:380 gui/src/options.cpp:2211 gui/src/options.cpp:2274
 msgid "Combo!"
 msgstr "Συνδυασμός!"
 
@@ -5003,7 +5020,7 @@ msgid "Links"
 msgstr "Σύνδεσμοι"
 
 #: gui/src/MarkInfo.cpp:490 gui/src/MarkInfo.cpp:1168 gui/src/MarkInfo.cpp:1216
-#: gui/src/options.cpp:1139 gui/src/RoutePropDlg.cpp:454
+#: gui/src/options.cpp:1143 gui/src/RoutePropDlg.cpp:454
 #: gui/src/RoutePropDlg.cpp:484 gui/src/TrackPropDlg.cpp:897
 #: gui/src/TrackPropDlg.cpp:930
 msgid "Edit"
@@ -5044,22 +5061,22 @@ msgstr "Δακτύλιοι απόστασης"
 msgid "Number"
 msgstr "Αριθμός"
 
-#: gui/src/MarkInfo.cpp:591 gui/src/options.cpp:4318 gui/src/options.cpp:4479
+#: gui/src/MarkInfo.cpp:591 gui/src/options.cpp:4322 gui/src/options.cpp:4483
 #: gui/src/routeprintout.cpp:113 gui/src/routeprintout.cpp:397
 #: gui/src/RoutePropDlg.cpp:146 gui/src/RoutePropDlg.cpp:360
 #: gui/src/trackprintout.cpp:94 gui/src/trackprintout.cpp:319
-#: gui/src/TrackPropDlg.cpp:305 gui/src/initwiz/wiz_ui_proto.cpp:42
+#: gui/src/TrackPropDlg.cpp:305 gui/src/initwiz/wiz_ui_proto.cpp:47
 msgid "Distance"
 msgstr "Απόσταση"
 
-#: gui/src/MarkInfo.cpp:595 gui/src/options.cpp:2024
+#: gui/src/MarkInfo.cpp:595 gui/src/options.cpp:2028
 #: gui/src/RoutePropDlg.cpp:259 gui/src/TrackPropDlg.cpp:476
 #: gui/src/TrackPropDlg.cpp:721
 msgid "Color"
 msgstr "Χρώμα: "
 
-#: gui/src/MarkInfo.cpp:598 gui/src/options.cpp:1956 gui/src/options.cpp:2171
-#: gui/src/options.cpp:2600
+#: gui/src/MarkInfo.cpp:598 gui/src/options.cpp:1960 gui/src/options.cpp:2175
+#: gui/src/options.cpp:2604
 msgid "None"
 msgstr "Καμία"
 
@@ -5149,16 +5166,16 @@ msgstr "Εμφάνιση μόνο σε κλίμακα"
 msgid "Tide Station not found"
 msgstr "Δεν βρέθηκε ο σταθμός παλίρροιας"
 
-#: gui/src/MUIBar.cpp:89 gui/src/MUIBar.cpp:98
+#: gui/src/MUIBar.cpp:94 gui/src/MUIBar.cpp:103
 msgid "Set scale"
 msgstr "Ορισμός κλίμακας"
 
-#: gui/src/MUIBar.cpp:167
+#: gui/src/MUIBar.cpp:172
 msgid "Chart Scale"
 msgstr "Κλίμακα"
 
-#: gui/src/navutil.cpp:1835 gui/src/navutil.cpp:3227 gui/src/options.cpp:928
-#: gui/src/options.cpp:1090
+#: gui/src/navutil.cpp:1835 gui/src/navutil.cpp:3227 gui/src/options.cpp:932
+#: gui/src/options.cpp:1094
 msgid "Persistent"
 msgstr "Παραμένον"
 
@@ -5190,35 +5207,35 @@ msgstr "Παράθυρο εντοπισμού σφαλμάτων NMEA"
 msgid "Cannot load route or waypoint file: "
 msgstr ""
 
-#: gui/src/ocpn_app.cpp:1302 gui/src/ocpn_app.cpp:1309
+#: gui/src/ocpn_app.cpp:1294 gui/src/ocpn_app.cpp:1301
 msgid "Failed to initialize the user interface. "
 msgstr "Δεν μπόρεσε να εκκινήσει η διεπιφάνεια χρήστη. "
 
-#: gui/src/ocpn_app.cpp:1303
+#: gui/src/ocpn_app.cpp:1295
 msgid "OpenCPN cannot start. "
 msgstr "Το OpenCPN δεν μπορεί να ξεκινήσει. "
 
-#: gui/src/ocpn_app.cpp:1304
+#: gui/src/ocpn_app.cpp:1296
 msgid "The necessary configuration files were not found. "
 msgstr "Δεν βρέθηκαν τα απαραίτητα αρχεία διαμόρφωσης. "
 
-#: gui/src/ocpn_app.cpp:1305
+#: gui/src/ocpn_app.cpp:1297
 msgid "See the log file at "
 msgstr "Δες το log σε "
 
-#: gui/src/ocpn_app.cpp:1306
+#: gui/src/ocpn_app.cpp:1298
 msgid " for details."
 msgstr " για λεπτομέρειες."
 
-#: gui/src/ocpn_app.cpp:1595
+#: gui/src/ocpn_app.cpp:1596
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Φορητό(-p) εκτελείται από "
 
-#: gui/src/ocpn_app.cpp:1670
+#: gui/src/ocpn_app.cpp:1671
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Ανάκτηση αρχικού καταλόγου χαρτών από το μητρώο των Windows"
 
-#: gui/src/ocpn_app.cpp:1852
+#: gui/src/ocpn_app.cpp:1853
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "Το OpenCPN άρχισε σε %ld ms."
@@ -5273,8 +5290,8 @@ msgstr "Εκτιμώμενος χρόνος: "
 msgid "Remaining time : "
 msgstr "Απομένων χρόνος: "
 
-#: gui/src/ocpn_frame.cpp:885 gui/src/ocpn_frame.cpp:4552
-#: gui/src/ocpn_frame.cpp:4562
+#: gui/src/ocpn_frame.cpp:885 gui/src/ocpn_frame.cpp:4548
+#: gui/src/ocpn_frame.cpp:4558
 msgid "OpenCPN Chart Update"
 msgstr "Ανανέωση του χάρτη"
 
@@ -5282,277 +5299,277 @@ msgstr "Ανανέωση του χάρτη"
 msgid "Anchorage created "
 msgstr "Δημιουργήθηκε αγκυροβόλιο"
 
-#: gui/src/ocpn_frame.cpp:2582 gui/src/ocpn_frame.cpp:2704
+#: gui/src/ocpn_frame.cpp:2582 gui/src/ocpn_frame.cpp:2710
 msgid "Show Toolbar"
 msgstr "Λωρίδα εργαλείων"
 
-#: gui/src/ocpn_frame.cpp:2583 gui/src/ocpn_frame.cpp:2706
-#: gui/src/ocpn_frame.cpp:7026
+#: gui/src/ocpn_frame.cpp:2583 gui/src/ocpn_frame.cpp:2712
+#: gui/src/ocpn_frame.cpp:7022
 msgid "Hide Toolbar"
 msgstr "Απόκρυψη λωρίδας εργαλείων"
 
-#: gui/src/ocpn_frame.cpp:2912 gui/src/ocpn_frame.cpp:2975
+#: gui/src/ocpn_frame.cpp:2918 gui/src/ocpn_frame.cpp:2981
 msgid "MAN OVERBOARD"
 msgstr "ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ"
 
-#: gui/src/ocpn_frame.cpp:2913 gui/src/ocpn_frame.cpp:6691
+#: gui/src/ocpn_frame.cpp:2919 gui/src/ocpn_frame.cpp:6687
 msgid " at "
 msgstr " σε "
 
-#: gui/src/ocpn_frame.cpp:2915 gui/src/ocpn_frame.cpp:6693
+#: gui/src/ocpn_frame.cpp:2921 gui/src/ocpn_frame.cpp:6689
 msgid " on "
 msgstr " σε "
 
-#: gui/src/ocpn_frame.cpp:2935
+#: gui/src/ocpn_frame.cpp:2941
 msgid "1.0 NM along COG"
 msgstr "1.0 ν.μ. κατά μήκος της COG"
 
-#: gui/src/ocpn_frame.cpp:2947
+#: gui/src/ocpn_frame.cpp:2953
 msgid "Temporary MOB Route"
 msgstr "Προσωρινή διαδρομή για MOB"
 
-#: gui/src/ocpn_frame.cpp:2948
+#: gui/src/ocpn_frame.cpp:2954
 msgid "Assumed 1 Mile Point"
 msgstr "Υποτιθετικό σημείο 1 ν.μ."
 
-#: gui/src/ocpn_frame.cpp:2976 gui/src/ocpn_frame.cpp:6749
-#: gui/src/ocpn_frame.cpp:6790
+#: gui/src/ocpn_frame.cpp:2982 gui/src/ocpn_frame.cpp:6745
+#: gui/src/ocpn_frame.cpp:6786
 msgid " Time: "
 msgstr " Χρόνος: "
 
-#: gui/src/ocpn_frame.cpp:2978
+#: gui/src/ocpn_frame.cpp:2984
 msgid "  Position: "
 msgstr "  Θέση: "
 
-#: gui/src/ocpn_frame.cpp:2996 gui/src/ocpn_frame.cpp:7105
+#: gui/src/ocpn_frame.cpp:3002 gui/src/ocpn_frame.cpp:7101
 msgid "Disable Tracking"
 msgstr "Απενεργοποίηση ίχνους"
 
-#: gui/src/ocpn_frame.cpp:3068 gui/src/ocpn_frame.cpp:3438
-#: gui/src/ocpn_frame.cpp:7051
+#: gui/src/ocpn_frame.cpp:3074 gui/src/ocpn_frame.cpp:3447
+#: gui/src/ocpn_frame.cpp:7047
 msgid "Enable Tracking"
 msgstr "Ενεργοποίηση ίχνους"
 
-#: gui/src/ocpn_frame.cpp:3437
+#: gui/src/ocpn_frame.cpp:3446
 msgid "Auto Follow"
 msgstr "Αυτόματη παρακολούθηση"
 
-#: gui/src/ocpn_frame.cpp:3442
+#: gui/src/ocpn_frame.cpp:3451
 msgid "Head Up Mode"
 msgstr "Πορεία προς τα πάνω"
 
-#: gui/src/ocpn_frame.cpp:3445 gui/src/ocpn_frame.cpp:3448
+#: gui/src/ocpn_frame.cpp:3454 gui/src/ocpn_frame.cpp:3457
 msgid "Zoom In"
 msgstr "Μεγέθυνση"
 
-#: gui/src/ocpn_frame.cpp:3446 gui/src/ocpn_frame.cpp:3449
+#: gui/src/ocpn_frame.cpp:3455 gui/src/ocpn_frame.cpp:3458
 msgid "Zoom Out"
 msgstr "Σμίκρυνση"
 
-#: gui/src/ocpn_frame.cpp:3453
+#: gui/src/ocpn_frame.cpp:3462
 msgid "Larger Scale Chart"
 msgstr "Χάρτης μεγαλύτερης κλίμακας"
 
-#: gui/src/ocpn_frame.cpp:3455
+#: gui/src/ocpn_frame.cpp:3464
 msgid "Smaller Scale Chart"
 msgstr "Χάρτης μικρότερης κλίμακας"
 
-#: gui/src/ocpn_frame.cpp:3458
+#: gui/src/ocpn_frame.cpp:3467
 msgid "Exit OpenCPN"
 msgstr "Έξοδος από το OpenCPN"
 
-#: gui/src/ocpn_frame.cpp:3460
+#: gui/src/ocpn_frame.cpp:3469
 msgid "&Navigate"
 msgstr "&Πλεύση"
 
-#: gui/src/ocpn_frame.cpp:3476 gui/src/options.cpp:5409
+#: gui/src/ocpn_frame.cpp:3485 gui/src/options.cpp:5413
 msgid "Show Chart Bar"
 msgstr "Εμφάνιση της λωρίδας πληροφοριών χάρτη"
 
-#: gui/src/ocpn_frame.cpp:3481 gui/src/ocpn_frame.cpp:3494
+#: gui/src/ocpn_frame.cpp:3490 gui/src/ocpn_frame.cpp:3503
 msgid "Show ENC text"
 msgstr "Εμφάνιση κειμένου ENC"
 
-#: gui/src/ocpn_frame.cpp:3483 gui/src/ocpn_frame.cpp:3496
+#: gui/src/ocpn_frame.cpp:3492 gui/src/ocpn_frame.cpp:3505
 msgid "Show ENC Lights"
 msgstr "Εμφάνιση φάρων ENC"
 
-#: gui/src/ocpn_frame.cpp:3485 gui/src/ocpn_frame.cpp:3498
+#: gui/src/ocpn_frame.cpp:3494 gui/src/ocpn_frame.cpp:3507
 msgid "Show ENC Soundings"
 msgstr "Εμφάνιση βυθομετρήσεων ENC"
 
-#: gui/src/ocpn_frame.cpp:3487 gui/src/ocpn_frame.cpp:3500
+#: gui/src/ocpn_frame.cpp:3496 gui/src/ocpn_frame.cpp:3509
 msgid "Show ENC Anchoring Info"
 msgstr "Εμφάνιση πληροφοριών αγκυροβολίας ENC"
 
-#: gui/src/ocpn_frame.cpp:3489 gui/src/ocpn_frame.cpp:3503
+#: gui/src/ocpn_frame.cpp:3498 gui/src/ocpn_frame.cpp:3512
 msgid "Show ENC Data Quality"
 msgstr "Εμφάνιση ποιότητα δεδομένων ENC"
 
-#: gui/src/ocpn_frame.cpp:3491 gui/src/ocpn_frame.cpp:3505
+#: gui/src/ocpn_frame.cpp:3500 gui/src/ocpn_frame.cpp:3514
 msgid "Show Navobjects"
 msgstr "Εμφάνιση αντ. ναυσιπλοΐας"
 
-#: gui/src/ocpn_frame.cpp:3508
+#: gui/src/ocpn_frame.cpp:3517
 msgid "Show Tides"
 msgstr "Εμφάνιση παλίρροιας"
 
-#: gui/src/ocpn_frame.cpp:3513 gui/src/ocpn_frame.cpp:3516
-#: gui/src/ocpn_frame.cpp:7056
+#: gui/src/ocpn_frame.cpp:3522 gui/src/ocpn_frame.cpp:3525
+#: gui/src/ocpn_frame.cpp:7052
 msgid "Change Color Scheme"
 msgstr "Αλλαγή χρωμάτων"
 
-#: gui/src/ocpn_frame.cpp:3524
+#: gui/src/ocpn_frame.cpp:3533
 msgid "&View"
 msgstr "&Εμφάνιση"
 
-#: gui/src/ocpn_frame.cpp:3527
+#: gui/src/ocpn_frame.cpp:3536
 msgid "Show AIS Targets"
 msgstr "Εμφάνιση στόχων AIS"
 
-#: gui/src/ocpn_frame.cpp:3532
+#: gui/src/ocpn_frame.cpp:3541
 msgid "Hide Moored AIS Targets"
 msgstr "Απόκρυψη AIS αγκυροβολημένων στόχων"
 
-#: gui/src/ocpn_frame.cpp:3533
+#: gui/src/ocpn_frame.cpp:3542
 msgid "Show AIS Target Tracks"
 msgstr "Δείξε ίχνη στόχων AIS"
 
-#: gui/src/ocpn_frame.cpp:3534
+#: gui/src/ocpn_frame.cpp:3543
 msgid "Show CPA Alert Dialogs"
 msgstr "Διάλογος για συναγερμούς  CPA"
 
-#: gui/src/ocpn_frame.cpp:3535
+#: gui/src/ocpn_frame.cpp:3544
 msgid "Sound CPA Alarms"
 msgstr "'Ηχητικοί συναγερμοί CPA"
 
-#: gui/src/ocpn_frame.cpp:3539 gui/src/ocpn_frame.cpp:3542
+#: gui/src/ocpn_frame.cpp:3548 gui/src/ocpn_frame.cpp:3551
 msgid "Show CPA Warnings"
 msgstr "Προβολή προειδοποιήσεων CPA"
 
-#: gui/src/ocpn_frame.cpp:3547
+#: gui/src/ocpn_frame.cpp:3556
 msgid "&AIS"
 msgstr "&AIS"
 
-#: gui/src/ocpn_frame.cpp:3552 gui/src/ocpn_frame.cpp:3555
+#: gui/src/ocpn_frame.cpp:3561 gui/src/ocpn_frame.cpp:3564
 msgid "Measure Distance"
 msgstr "Μέτρηση απόστασης"
 
-#: gui/src/ocpn_frame.cpp:3559
+#: gui/src/ocpn_frame.cpp:3568
 msgid "Route && Mark Manager..."
 msgstr "Ρυθμίσεις διαδρομών && σημείων..."
 
-#: gui/src/ocpn_frame.cpp:3561 gui/src/ocpn_frame.cpp:7039
+#: gui/src/ocpn_frame.cpp:3570 gui/src/ocpn_frame.cpp:7035
 msgid "Create Route"
 msgstr "Δημιουργία διαδρομής"
 
-#: gui/src/ocpn_frame.cpp:3564
+#: gui/src/ocpn_frame.cpp:3573
 msgid "Drop Mark at Boat"
 msgstr "Σημείο στη θέση του πλοίου"
 
-#: gui/src/ocpn_frame.cpp:3566
+#: gui/src/ocpn_frame.cpp:3575
 msgid "Drop Mark at Cursor"
 msgstr "Σημείο στη θέση του δρομέα"
 
-#: gui/src/ocpn_frame.cpp:3572 gui/src/ocpn_frame.cpp:3579
-#: gui/src/ocpn_frame.cpp:7083
+#: gui/src/ocpn_frame.cpp:3581 gui/src/ocpn_frame.cpp:3588
+#: gui/src/ocpn_frame.cpp:7079
 msgid "Drop MOB Marker"
 msgstr "Ρίξε σημάδι «Άνθρωπος στη Θάλασσα» (MOB)"
 
-#: gui/src/ocpn_frame.cpp:3576 gui/src/pluginmanager.cpp:4538
-#: gui/src/pluginmanager.cpp:4559
+#: gui/src/ocpn_frame.cpp:3585 gui/src/pluginmanager.cpp:4539
+#: gui/src/pluginmanager.cpp:4560
 msgid "Preferences"
 msgstr "Προτιμήσεις"
 
-#: gui/src/ocpn_frame.cpp:3584
+#: gui/src/ocpn_frame.cpp:3593
 msgid "&Tools"
 msgstr "&Εργαλεία"
 
-#: gui/src/ocpn_frame.cpp:3588
+#: gui/src/ocpn_frame.cpp:3597
 msgid "&Window"
 msgstr "&Παράθυρο"
 
-#: gui/src/ocpn_frame.cpp:3593
+#: gui/src/ocpn_frame.cpp:3602
 msgid "OpenCPN Help"
 msgstr "Βοήθεια για το OpenCPN"
 
-#: gui/src/ocpn_frame.cpp:3594
+#: gui/src/ocpn_frame.cpp:3603
 msgid "&Help"
 msgstr "&Βοήθεια"
 
-#: gui/src/ocpn_frame.cpp:4252
+#: gui/src/ocpn_frame.cpp:4248
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Επανεκκινείστε το OpenCPN για να ενεργοποιήσετε τις αλλαγές στη γλώσσα ή στο στιλ."
 
-#: gui/src/ocpn_frame.cpp:5253
+#: gui/src/ocpn_frame.cpp:5249
 msgid " Ship "
 msgstr " Πλοίο "
 
-#: gui/src/ocpn_frame.cpp:5945
+#: gui/src/ocpn_frame.cpp:5941
 msgid "Rotated Mode"
 msgstr "Περιστροφή εικόνας"
 
-#: gui/src/ocpn_frame.cpp:6301 gui/src/routeprintout.cpp:477
+#: gui/src/ocpn_frame.cpp:6297 gui/src/routeprintout.cpp:477
 #: gui/src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Πρόβλημα με την εκτύπωση.\n"
 "Ελέγξτε τις ρυθμίσεις του ενεργού εκτυπωτή!"
 
-#: gui/src/ocpn_frame.cpp:6470 gui/src/ocpn_frame.cpp:6527
+#: gui/src/ocpn_frame.cpp:6466 gui/src/ocpn_frame.cpp:6523
 #: gui/src/routemanagerdialog.cpp:1272
 msgid "(Unnamed Route)"
 msgstr "(Ανώνυμη διαδρομή)"
 
-#: gui/src/ocpn_frame.cpp:6690 gui/src/ocpn_frame.cpp:6748
+#: gui/src/ocpn_frame.cpp:6686 gui/src/ocpn_frame.cpp:6744
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS: ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ"
 
-#: gui/src/ocpn_frame.cpp:6710 gui/src/options.cpp:1867
+#: gui/src/ocpn_frame.cpp:6706 gui/src/options.cpp:1871
 msgid "Own ship"
 msgstr "Ίδιον πλοίο"
 
-#: gui/src/ocpn_frame.cpp:6722
+#: gui/src/ocpn_frame.cpp:6718
 msgid "Temporary AISMOB Route"
 msgstr "Προσωρινή διαδρομή AIS MOB"
 
-#: gui/src/ocpn_frame.cpp:6723
+#: gui/src/ocpn_frame.cpp:6719
 msgid "Present own ship"
 msgstr "Θέση ιδίου πλοίου"
 
-#: gui/src/ocpn_frame.cpp:6751 gui/src/ocpn_frame.cpp:6792
+#: gui/src/ocpn_frame.cpp:6747 gui/src/ocpn_frame.cpp:6788
 msgid "  Ownship Position: "
 msgstr "Θέση ίδιου πλοίου:"
 
-#: gui/src/ocpn_frame.cpp:6755 gui/src/ocpn_frame.cpp:6796
+#: gui/src/ocpn_frame.cpp:6751 gui/src/ocpn_frame.cpp:6792
 msgid "  MOB Position: "
 msgstr "  Θέση MOB: "
 
-#: gui/src/ocpn_frame.cpp:6789
+#: gui/src/ocpn_frame.cpp:6785
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS: ΑΝΑΝΕΩΣΗ του \"ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ\""
 
-#: gui/src/ocpn_frame.cpp:7045 gui/src/routemanagerdialog.cpp:314
+#: gui/src/ocpn_frame.cpp:7041 gui/src/routemanagerdialog.cpp:314
 msgid "Route & Mark Manager"
 msgstr "Διαχείριση διαδρομών και σημείων πορείας"
 
-#: gui/src/ocpn_frame.cpp:7069
+#: gui/src/ocpn_frame.cpp:7065
 msgid "Print Chart"
 msgstr "Εκτύπωση χάρτη"
 
-#: gui/src/ocpn_frame.cpp:7083
+#: gui/src/ocpn_frame.cpp:7079
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 
-#: gui/src/ocpn_frame.cpp:8619
+#: gui/src/ocpn_frame.cpp:8616
 msgid "OpenCPN ENC Prepare"
 msgstr "Προετοιμασία OpenCPN ENC"
 
-#: gui/src/ocpn_frame.cpp:8685
+#: gui/src/ocpn_frame.cpp:8682
 msgid "ENC Completed."
 msgstr "Το ENC ολοκληρώθηκε."
 
-#: gui/src/options.cpp:840
+#: gui/src/options.cpp:844
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
@@ -5560,105 +5577,105 @@ msgstr "Δημιουργήστε τo δικής σας πρότυπο επιλο
 "Το πρότυπο θα αποθηκευθεί για περαιτέρω χρήση ανά πάσα στιγμή.\n"
 "               "
 
-#: gui/src/options.cpp:898
+#: gui/src/options.cpp:902
 msgid "MMSI Extended Properties"
 msgstr "Ιδιότητες MMSI (εκτεταμένες)"
 
-#: gui/src/options.cpp:912
+#: gui/src/options.cpp:916
 msgid "Tracking"
 msgstr "Καταγραφή του ίχνους"
 
-#: gui/src/options.cpp:917
+#: gui/src/options.cpp:921
 msgid "Default tracking"
 msgstr "Προεπιλεγμένη παρακολούθηση"
 
-#: gui/src/options.cpp:922
+#: gui/src/options.cpp:926
 msgid "Always track"
 msgstr "Μόνιμο καταγραφή ίχνους"
 
-#: gui/src/options.cpp:925
+#: gui/src/options.cpp:929
 msgid " Never track"
 msgstr " Όχι ίχνος"
 
-#: gui/src/options.cpp:934
+#: gui/src/options.cpp:938
 msgid "Ignore this MMSI"
 msgstr "Αγνόησε αυτό το MMSI"
 
-#: gui/src/options.cpp:938
+#: gui/src/options.cpp:942
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "Αυτό το MMSI θεωρείται SART/PLB(AIS) MOB."
 
-#: gui/src/options.cpp:942
+#: gui/src/options.cpp:946
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "Μετατροπή AIVDM σε AIVDO για αυτό το MMSI"
 
-#: gui/src/options.cpp:946
+#: gui/src/options.cpp:950
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr "Αυτό το MMSI με ακολουθεί - Όχι συναγερμός CPA"
 
-#: gui/src/options.cpp:1031
+#: gui/src/options.cpp:1035
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr "Ένας αριθμός MMSI έχει συνήθως εννέα ψηφία.\n"
 " Έλεγξε τις καταχωρήσεις και ακυρώστε τις αν είναι απαραίτητο."
 
-#: gui/src/options.cpp:1078 gui/src/options.cpp:1901 gui/src/options.cpp:2013
+#: gui/src/options.cpp:1082 gui/src/options.cpp:1905 gui/src/options.cpp:2017
 #: gui/src/RoutePropDlg.cpp:287 gui/src/RoutePropDlg.cpp:308
 #: gui/src/TrackPropDlg.cpp:500 gui/src/TrackPropDlg.cpp:520
 #: gui/src/TrackPropDlg.cpp:743 gui/src/TrackPropDlg.cpp:756
 msgid "Default"
 msgstr "Προεπιλεγμένο"
 
-#: gui/src/options.cpp:1081 gui/src/routemanagerdialog.cpp:2433
+#: gui/src/options.cpp:1085 gui/src/routemanagerdialog.cpp:2433
 #: gui/src/routemanagerdialog.cpp:2633
 msgid "Always"
 msgstr "Πάντα"
 
-#: gui/src/options.cpp:1084
+#: gui/src/options.cpp:1088
 msgid "Never"
 msgstr "Ποτέ"
 
-#: gui/src/options.cpp:1121 gui/src/options.cpp:1168
+#: gui/src/options.cpp:1125 gui/src/options.cpp:1172
 msgid "Edit MMSI Properties"
 msgstr "Επεξεργασία ιδιοτήτων MMSI"
 
-#: gui/src/options.cpp:1137 gui/src/options.cpp:4997 gui/src/options.cpp:5004
+#: gui/src/options.cpp:1141 gui/src/options.cpp:5001 gui/src/options.cpp:5008
 msgid "MMSI Properties"
 msgstr "Ιδιότητες MMSI"
 
-#: gui/src/options.cpp:1233
+#: gui/src/options.cpp:1237
 msgid "Track Mode"
 msgstr "Είδος ίχνους"
 
-#: gui/src/options.cpp:1242
+#: gui/src/options.cpp:1246
 msgid "Ignore"
 msgstr "Αγνόησε"
 
-#: gui/src/options.cpp:1251
+#: gui/src/options.cpp:1255
 msgid "MOB"
 msgstr "Άνθρωπος στη Θάλασσα (MOB)"
 
-#: gui/src/options.cpp:1259
+#: gui/src/options.cpp:1263
 msgid "VDM->VDO"
 msgstr "VDM->VDO"
 
-#: gui/src/options.cpp:1268
+#: gui/src/options.cpp:1272
 msgid "Ship name"
 msgstr "Όνομα πλοίου"
 
-#: gui/src/options.cpp:1277
+#: gui/src/options.cpp:1281
 msgid "Follower"
 msgstr "Ακόλουθος"
 
-#: gui/src/options.cpp:1282
+#: gui/src/options.cpp:1286
 msgid "New..."
 msgstr "Νέο..."
 
-#: gui/src/options.cpp:1305
+#: gui/src/options.cpp:1309
 msgid "Add MMSI Properties"
 msgstr "Προσθήκη ιδιοτήτων MMSI"
 
-#: gui/src/options.cpp:1726
+#: gui/src/options.cpp:1730
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -5676,7 +5693,7 @@ msgstr "Η συσκευή που επιλέξατε δεν είναι προσβ
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 " Για περισσότερες πληροφορίες, ανατρέξτε στο αρχείο LINUX_DEVICES.md στα docs της διανομής.\n"
 
-#: gui/src/options.cpp:1737
+#: gui/src/options.cpp:1741
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -5696,1180 +5713,1175 @@ msgstr "\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 " Για περισσότερες πληροφορίες, ανατρέξτε στο αρχείο LINUX_DEVICES.md στα docs της διανομής.\n"
 
-#: gui/src/options.cpp:1859
+#: gui/src/options.cpp:1863
 msgid "NMEA"
 msgstr "NMEA (δίκτυο δεδομ. πλοίου)"
 
-#: gui/src/options.cpp:1884
+#: gui/src/options.cpp:1888
 msgid "COG Predictor Length (min)"
 msgstr "Μήκος πρόγνωσης πραγμ. πορείας (min)"
 
-#: gui/src/options.cpp:1891
+#: gui/src/options.cpp:1895
 msgid "Heading Predictor Length (NMi)"
 msgstr "Μήκος πρόγνωσης πορείας (heading, ν.μ.)"
 
-#: gui/src/options.cpp:1898
+#: gui/src/options.cpp:1902
 msgid "Ship Icon Type"
 msgstr "Τύπος εικονιδίου πλοίου"
 
-#: gui/src/options.cpp:1901
+#: gui/src/options.cpp:1905
 msgid "Real Scale Bitmap"
 msgstr "Bitmap σε πραγματική κλίμακα"
 
-#: gui/src/options.cpp:1902
+#: gui/src/options.cpp:1906
 msgid "Real Scale Vector"
 msgstr "Διανυσματικό σε πραγματική κλίμακα"
 
-#: gui/src/options.cpp:1917
+#: gui/src/options.cpp:1921
 msgid "Length Over All (m)"
 msgstr "Ολικό μήκος (m)"
 
-#: gui/src/options.cpp:1923
+#: gui/src/options.cpp:1927
 msgid "Width Over All (m)"
 msgstr "Ολικό πλάτος (m)"
 
-#: gui/src/options.cpp:1929
+#: gui/src/options.cpp:1933
 msgid "GPS Offset from Bow (m)"
 msgstr "Αντιστάθμιση θέσης κεραίας GPS από την πλώρη (m)"
 
-#: gui/src/options.cpp:1935
+#: gui/src/options.cpp:1939
 msgid "GPS Offset from Midship (m)"
 msgstr "Αντιστάθμιση θέσης κεραίας GPS από το μέσον του πλοίου"
 
-#: gui/src/options.cpp:1941
+#: gui/src/options.cpp:1945
 msgid "Minimum Screen Size (mm)"
 msgstr "Ελάχιστο μέγεθος στην οθόνη (mm)"
 
-#: gui/src/options.cpp:1953
+#: gui/src/options.cpp:1957
 msgid "Show range rings"
 msgstr "Εμφάνιση δακτυλίων ραντάρ"
 
-#: gui/src/options.cpp:1970 gui/src/options.cpp:2328
+#: gui/src/options.cpp:1974 gui/src/options.cpp:2332
 msgid "Distance between rings"
 msgstr "Απόσταση ανάμεσα στους δακτύλιους"
 
-#: gui/src/options.cpp:1979 gui/src/options.cpp:2339
+#: gui/src/options.cpp:1983 gui/src/options.cpp:2343
 msgid "Distance Unit"
 msgstr "Μονάδα απόστασης"
 
-#: gui/src/options.cpp:1982 gui/src/options.cpp:2169 gui/src/options.cpp:4320
-#: gui/src/options.cpp:4481 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:1986 gui/src/options.cpp:2173 gui/src/options.cpp:4324
+#: gui/src/options.cpp:4485 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Nautical miles"
 msgstr "Ναυτικά μίλια"
 
-#: gui/src/options.cpp:1982 gui/src/options.cpp:2169 gui/src/options.cpp:4321
-#: gui/src/options.cpp:4482 gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:1986 gui/src/options.cpp:2173 gui/src/options.cpp:4325
+#: gui/src/options.cpp:4486 gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Kilometers"
 msgstr "Χιλιόμετρα"
 
-#: gui/src/options.cpp:1982
+#: gui/src/options.cpp:1986
 msgid "Minutes (time)"
 msgstr ""
 
-#: gui/src/options.cpp:1989
+#: gui/src/options.cpp:1993
 msgid "Range Ring Colour"
 msgstr "Χρώμα δακτυλίων απόστασης"
 
-#: gui/src/options.cpp:2004
+#: gui/src/options.cpp:2008
 msgid "Show direction to Active Waypoint"
 msgstr "Κατεύθυνση προς ενεργό Σημείο Πορείας"
 
-#: gui/src/options.cpp:2009 gui/src/RoutePropDlg.cpp:282
+#: gui/src/options.cpp:2013 gui/src/RoutePropDlg.cpp:282
 #: gui/src/TrackPropDlg.cpp:495 gui/src/TrackPropDlg.cpp:738
 msgid "Style"
 msgstr "Στιλ"
 
-#: gui/src/options.cpp:2013 gui/src/RoutePropDlg.cpp:287
+#: gui/src/options.cpp:2017 gui/src/RoutePropDlg.cpp:287
 #: gui/src/TrackPropDlg.cpp:500 gui/src/TrackPropDlg.cpp:743
 msgid "Solid"
 msgstr "Συμπαγής"
 
-#: gui/src/options.cpp:2014 gui/src/RoutePropDlg.cpp:288
+#: gui/src/options.cpp:2018 gui/src/RoutePropDlg.cpp:288
 #: gui/src/TrackPropDlg.cpp:501 gui/src/TrackPropDlg.cpp:743
 msgid "Dot"
 msgstr "Διάστικτη"
 
-#: gui/src/options.cpp:2014 gui/src/RoutePropDlg.cpp:288
+#: gui/src/options.cpp:2018 gui/src/RoutePropDlg.cpp:288
 #: gui/src/TrackPropDlg.cpp:501 gui/src/TrackPropDlg.cpp:744
 msgid "Long dash"
 msgstr "Με μακριές παύλες"
 
-#: gui/src/options.cpp:2015 gui/src/RoutePropDlg.cpp:289
+#: gui/src/options.cpp:2019 gui/src/RoutePropDlg.cpp:289
 #: gui/src/TrackPropDlg.cpp:502 gui/src/TrackPropDlg.cpp:744
 msgid "Short dash"
 msgstr "Με κοντές παύλες"
 
-#: gui/src/options.cpp:2015 gui/src/RoutePropDlg.cpp:289
-#: gui/src/TrackPropDlg.cpp:502 gui/src/TrackPropDlg.cpp:744
-msgid "Dot dash"
-msgstr "Τελεία-παύλα"
-
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Default color"
 msgstr "Προεπιλεγμένο χρώμα"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Black"
 msgstr "Μαύρο"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Dark Red"
 msgstr "Σκούρο κόκκινο"
 
-#: gui/src/options.cpp:2029 gui/src/RoutePropDlg.cpp:265
+#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:265
 #: gui/src/TrackPropDlg.cpp:482 gui/src/TrackPropDlg.cpp:727
 msgid "Dark Green"
 msgstr "Σκούρο πράσινο"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Yellow"
 msgstr "Σκούρο κίτρινο"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Blue"
 msgstr "Σκούρο μπλε"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Magenta"
 msgstr "Σκούρο μαζέντα"
 
-#: gui/src/options.cpp:2030 gui/src/RoutePropDlg.cpp:266
+#: gui/src/options.cpp:2034 gui/src/RoutePropDlg.cpp:266
 #: gui/src/TrackPropDlg.cpp:483 gui/src/TrackPropDlg.cpp:728
 msgid "Dark Cyan"
 msgstr "Σκούρο κυανό"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Light Gray"
 msgstr "Ανοιχτό γκρι"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Dark Gray"
 msgstr "Σκούρο γκρι"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Red"
 msgstr "Κόκκινο"
 
-#: gui/src/options.cpp:2031 gui/src/RoutePropDlg.cpp:267
+#: gui/src/options.cpp:2035 gui/src/RoutePropDlg.cpp:267
 #: gui/src/TrackPropDlg.cpp:484 gui/src/TrackPropDlg.cpp:729
 msgid "Green"
 msgstr "Πράσινο"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Yellow"
 msgstr "Κίτρινο"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Blue"
 msgstr "Μπλε"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Magenta"
 msgstr "Μαζέντα"
 
-#: gui/src/options.cpp:2032 gui/src/RoutePropDlg.cpp:268
+#: gui/src/options.cpp:2036 gui/src/RoutePropDlg.cpp:268
 #: gui/src/TrackPropDlg.cpp:485 gui/src/TrackPropDlg.cpp:730
 msgid "Cyan"
 msgstr "Κυανό"
 
-#: gui/src/options.cpp:2033 gui/src/RoutePropDlg.cpp:269
+#: gui/src/options.cpp:2037 gui/src/RoutePropDlg.cpp:269
 #: gui/src/TrackPropDlg.cpp:486 gui/src/TrackPropDlg.cpp:731
 msgid "White"
 msgstr "Άσπρο"
 
-#: gui/src/options.cpp:2043 gui/src/routemanagerdialog.cpp:544
+#: gui/src/options.cpp:2047 gui/src/routemanagerdialog.cpp:544
 msgid "Tracks"
 msgstr "Ίχνη πορείας "
 
-#: gui/src/options.cpp:2049
+#: gui/src/options.cpp:2053
 msgid "Automatic Daily Tracks at midnight"
 msgstr "Αυτόματα καθημερινά ίχνη τα μεσάνυχτα"
 
-#: gui/src/options.cpp:2057
+#: gui/src/options.cpp:2061
 msgid "Automatic Daily Tracks at"
 msgstr "Αυτόματα καθημερινά ίχνη στις"
 
-#: gui/src/options.cpp:2074
+#: gui/src/options.cpp:2078
 msgid "Computer"
 msgstr "Υπολογιστής"
 
-#: gui/src/options.cpp:2080 gui/src/RoutePropDlg.cpp:242 gui/src/TCWin.cpp:147
+#: gui/src/options.cpp:2084 gui/src/RoutePropDlg.cpp:242 gui/src/TCWin.cpp:147
 #: gui/src/TrackPropDlg.cpp:446 gui/src/TrackPropDlg.cpp:454
 #: gui/src/TrackPropDlg.cpp:819
 msgid "UTC"
 msgstr "UTC"
 
-#: gui/src/options.cpp:2086
+#: gui/src/options.cpp:2090
 msgid "LMT"
 msgstr "LMT"
 
-#: gui/src/options.cpp:2099
+#: gui/src/options.cpp:2103
 msgid "Highlight Tracks"
 msgstr "Φωτισμένα ίχνη πορείας"
 
-#: gui/src/options.cpp:2103
+#: gui/src/options.cpp:2107
 msgid "Highlight Colour"
 msgstr "Χρώμα Τονισμού"
 
-#: gui/src/options.cpp:2118
+#: gui/src/options.cpp:2122
 msgid "Tracking Precision"
 msgstr "Ακρίβεια καταγραφής"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "Low"
 msgstr "Χαμηλή"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "Medium"
 msgstr "Μεσαία"
 
-#: gui/src/options.cpp:2121
+#: gui/src/options.cpp:2125
 msgid "High"
 msgstr "Υψηλή"
 
-#: gui/src/options.cpp:2129
+#: gui/src/options.cpp:2133
 msgid "Calculate values"
 msgstr "Υπολογισμός"
 
-#: gui/src/options.cpp:2143
+#: gui/src/options.cpp:2147
 msgid "Calculate SOG and COG from position changes"
 msgstr "Υπολογισμός SOG και COG από τις αλλαγές της θέσης"
 
-#: gui/src/options.cpp:2148
+#: gui/src/options.cpp:2152
 msgid "Min seconds between updates"
 msgstr "Ελάχιστος χρόνος μεταξύ ανανεώσεων (s)"
 
-#: gui/src/options.cpp:2164
+#: gui/src/options.cpp:2168
 msgid "Routes/Points"
 msgstr "Διαδρομές/σημεία"
 
-#: gui/src/options.cpp:2177
+#: gui/src/options.cpp:2181
 msgid "New Routes"
 msgstr "Νέες διαδρομές"
 
-#: gui/src/options.cpp:2182
+#: gui/src/options.cpp:2186
 msgid "Active Route"
 msgstr ""
 
-#: gui/src/options.cpp:2188
+#: gui/src/options.cpp:2192
 msgid "Persist active route, automatically activate on start up"
 msgstr ""
 
-#: gui/src/options.cpp:2202
+#: gui/src/options.cpp:2206
 msgid "Waypoint default icon"
 msgstr "Προεπ. εικονίδιο σημείου διαδρομής"
 
-#: gui/src/options.cpp:2228
+#: gui/src/options.cpp:2232
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "Ακτίνα προσέγγισης σημείου πορείας (ν.μ.)"
 
-#: gui/src/options.cpp:2237
+#: gui/src/options.cpp:2241
 msgid "Advance route waypoint on arrival only"
 msgstr "Προχώρησε σε επόμενο σημείο διαδρομής μόνο με την άφιξη"
 
-#: gui/src/options.cpp:2250
+#: gui/src/options.cpp:2254
 msgid "New Marks"
 msgstr ""
 
-#: gui/src/options.cpp:2265
+#: gui/src/options.cpp:2269
 msgid "Mark default icon"
 msgstr ""
 
-#: gui/src/options.cpp:2291
+#: gui/src/options.cpp:2295
 msgid "Show marks only at a chartscale greater than 1 :"
 msgstr ""
 
-#: gui/src/options.cpp:2300
+#: gui/src/options.cpp:2304
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr "Μόνιμη παρουσίαση"
 
-#: gui/src/options.cpp:2313
+#: gui/src/options.cpp:2317
 msgid "Mark range rings"
 msgstr ""
 
-#: gui/src/options.cpp:2350
+#: gui/src/options.cpp:2354
 msgid "Waypoint Range Ring Colours"
 msgstr "Χρώματα των δακτυλίων γύρω από τα σημεία"
 
-#: gui/src/options.cpp:2371
+#: gui/src/options.cpp:2375
 msgid "Control Options"
 msgstr "Επιλογές ελέγχου"
 
-#: gui/src/options.cpp:2380
+#: gui/src/options.cpp:2384
 msgid "Lock marks and waypoints (Unless object property dialog visible)"
 msgstr ""
 
-#: gui/src/options.cpp:2386
+#: gui/src/options.cpp:2390
 msgid "Confirm deletion of tracks and routes"
 msgstr "Επιβεβαίωση για διαγραφή ιχνών και διαδρομών"
 
-#: gui/src/options.cpp:2444
+#: gui/src/options.cpp:2448
 msgid "Chart Files"
 msgstr "Αρχεία χαρτών"
 
-#: gui/src/options.cpp:2449
+#: gui/src/options.cpp:2453
 msgid "Directories"
 msgstr "Φάκελοι"
 
-#: gui/src/options.cpp:2472
+#: gui/src/options.cpp:2476
 msgid "Add Directory..."
 msgstr "Προσθήκη φακέλου..."
 
-#: gui/src/options.cpp:2473 gui/src/options.cpp:3767
+#: gui/src/options.cpp:2477 gui/src/options.cpp:3771
 #: gui/src/RoutePropDlgImpl.cpp:933
 msgid "Remove Selected"
 msgstr "Αφαίρεση επιλεγμένων"
 
-#: gui/src/options.cpp:2474
+#: gui/src/options.cpp:2478
 msgid "Compress Selected"
 msgstr "Συμπίεση επιλογής"
 
-#: gui/src/options.cpp:2477
+#: gui/src/options.cpp:2481
 msgid "Add.."
 msgstr "Προσθήκη.."
 
-#: gui/src/options.cpp:2478
+#: gui/src/options.cpp:2482
 msgid "Remove"
 msgstr "Διαγραφή"
 
-#: gui/src/options.cpp:2479
+#: gui/src/options.cpp:2483
 msgid "Compress"
 msgstr "Συμπίεση"
 
-#: gui/src/options.cpp:2504
+#: gui/src/options.cpp:2508
 msgid "Migrate Charts.."
 msgstr "Μετεγκατάσταση χαρτών.."
 
-#: gui/src/options.cpp:2512
+#: gui/src/options.cpp:2516
 msgid "Update Control"
 msgstr "Έλεγχος ανανέωσης"
 
-#: gui/src/options.cpp:2521
+#: gui/src/options.cpp:2525
 msgid "Scan Charts and Update Database"
 msgstr "Σκάναρε τους χάρτες και ανανέωσε τη βάση δεδομένων "
 
-#: gui/src/options.cpp:2525
+#: gui/src/options.cpp:2529
 msgid "Force Full Database Rebuild"
 msgstr "Ανακατασκευή ολόκληρης της βάσης δεδομένων"
 
-#: gui/src/options.cpp:2529
+#: gui/src/options.cpp:2533
 msgid "Prepare all ENC Charts"
 msgstr "Προετοιμασία όλων των χαρτών ENC"
 
-#: gui/src/options.cpp:2597
+#: gui/src/options.cpp:2601
 msgid " [Modified]"
 msgstr " [Modified]"
 
-#: gui/src/options.cpp:2605
+#: gui/src/options.cpp:2609
 msgid "Templates"
 msgstr "Πρότυπα"
 
-#: gui/src/options.cpp:2617
+#: gui/src/options.cpp:2621
 msgid "Template Status"
 msgstr "Κατάσταση προτύπου"
 
-#: gui/src/options.cpp:2627
+#: gui/src/options.cpp:2631
 msgid "Last Applied Template Title:"
 msgstr "Τίτλος προηγούμενου προτύπου:"
 
-#: gui/src/options.cpp:2640
+#: gui/src/options.cpp:2644
 msgid "Saved Templates"
 msgstr "Αποθηκευμένα πρότυπα"
 
-#: gui/src/options.cpp:2667
+#: gui/src/options.cpp:2671
 msgid "Create Config..."
 msgstr "Δημιουργήστε Config..."
 
-#: gui/src/options.cpp:2679
+#: gui/src/options.cpp:2683
 msgid "Delete Selected Config..."
 msgstr "Διαγραφή επιλεγμένης Config..."
 
-#: gui/src/options.cpp:2687
+#: gui/src/options.cpp:2691
 msgid "Apply Selected Config"
 msgstr "Εφαρμογή επιλεγμένων ρυθμίσεων"
 
-#: gui/src/options.cpp:2760
+#: gui/src/options.cpp:2764
 msgid "Create Config"
 msgstr "Δημιουργήστε Config"
 
-#: gui/src/options.cpp:2814
+#: gui/src/options.cpp:2818
 msgid "Problem applying selected configuration."
 msgstr "Πρόβλημα με την εφαρμογή των επιλεγμένων ρυθμίσεων."
 
-#: gui/src/options.cpp:2885 gui/src/RoutePropDlg.cpp:519
+#: gui/src/options.cpp:2889 gui/src/RoutePropDlg.cpp:519
 #: gui/src/TrackPropDlg.cpp:946
 msgid "Advanced"
 msgstr "Για προχωρημένους"
 
-#: gui/src/options.cpp:2905
+#: gui/src/options.cpp:2909
 msgid "De-skew Raster Charts"
 msgstr "Ίσιωσε τους χάρτες raster"
 
-#: gui/src/options.cpp:2917 gui/src/options.cpp:3239
+#: gui/src/options.cpp:2921 gui/src/options.cpp:3243
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Χρήση γραφικών OpenGL"
 
-#: gui/src/options.cpp:2922
+#: gui/src/options.cpp:2926
 msgid "OpenGL Options"
 msgstr "Επιλογές OpenGL"
 
-#: gui/src/options.cpp:2938 gui/src/options.cpp:3099
+#: gui/src/options.cpp:2942 gui/src/options.cpp:3103
 msgid "Chart Rotation Averaging Time"
 msgstr "Μέσος χρόνος για την περιστροφή του χάρτη"
 
-#: gui/src/options.cpp:2954 gui/src/options.cpp:3111 gui/src/options.cpp:5430
+#: gui/src/options.cpp:2958 gui/src/options.cpp:3115 gui/src/options.cpp:5434
 msgid "seconds"
 msgstr "δευτερόλεπτα"
 
-#: gui/src/options.cpp:2962 gui/src/options.cpp:3120
+#: gui/src/options.cpp:2966 gui/src/options.cpp:3124
 msgid "Chart Zoom/Scale Weighting"
 msgstr "Κλίμακα λεπτομέρειας χάρτη"
 
-#: gui/src/options.cpp:2971 gui/src/options.cpp:3145
+#: gui/src/options.cpp:2975 gui/src/options.cpp:3149
 msgid "Raster"
 msgstr "Ράστερ"
 
-#: gui/src/options.cpp:2985 gui/src/options.cpp:3158
+#: gui/src/options.cpp:2989 gui/src/options.cpp:3162
 msgid "Vector"
 msgstr "Διανυσματικός"
 
-#: gui/src/options.cpp:2999 gui/src/options.cpp:3175
+#: gui/src/options.cpp:3003 gui/src/options.cpp:3179
 msgid "CM93 Detail level"
 msgstr "Επίπεδο λεπτομέρειας στον χάρτη CM93"
 
-#: gui/src/options.cpp:3018 gui/src/options.cpp:3198
+#: gui/src/options.cpp:3022 gui/src/options.cpp:3202
 msgid "Physical Screen Width"
 msgstr "Πλάτος φυσικής οθόνης"
 
-#: gui/src/options.cpp:3023 gui/src/options.cpp:3203
+#: gui/src/options.cpp:3027 gui/src/options.cpp:3207
 msgid "Auto"
 msgstr "Αυτόματα"
 
-#: gui/src/options.cpp:3027 gui/src/options.cpp:3207
+#: gui/src/options.cpp:3031 gui/src/options.cpp:3211
 msgid "Manual:"
 msgstr "Μη αυτόματα:"
 
-#: gui/src/options.cpp:3038 gui/src/options.cpp:3215
+#: gui/src/options.cpp:3042 gui/src/options.cpp:3219
 msgid "mm"
 msgstr "mm"
 
-#: gui/src/options.cpp:3069 gui/src/options.cpp:3974 gui/src/options.cpp:4157
+#: gui/src/options.cpp:3073 gui/src/options.cpp:3978 gui/src/options.cpp:4161
 msgid "Chart Display"
 msgstr "Εμφάνιση χάρτη"
 
-#: gui/src/options.cpp:3075
+#: gui/src/options.cpp:3079
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Δείξε τους παραμορφωμένους raster χάρτες με τον «Βορρά Πάνω»"
 
-#: gui/src/options.cpp:3128
+#: gui/src/options.cpp:3132
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "Με χαμηλότερη τιμή, στο ίδιο επίπεδο μεγέθυνσης ο χάρτης δείχνει λιγότερες λεπτομέρειες.\n"
 "Με υψηλότερη τιμή, στο ίδιο επίπεδο μεγέθυνσης ο χάρτης δείχνει περισσότερες λεπτομέρειες."
 
-#: gui/src/options.cpp:3233
+#: gui/src/options.cpp:3237
 msgid "Graphics"
 msgstr "Γραφικά"
 
-#: gui/src/options.cpp:3264
+#: gui/src/options.cpp:3268
 msgid "Chart Bar"
 msgstr ""
 
-#: gui/src/options.cpp:3270
+#: gui/src/options.cpp:3274
 msgid "Show extended chart bar information."
 msgstr ""
 
-#: gui/src/options.cpp:3289
+#: gui/src/options.cpp:3293
 msgid "Vector Chart Display"
 msgstr "Επιλογές εμφάνισης χάρτη"
 
-#: gui/src/options.cpp:3312 gui/src/options.cpp:3515
+#: gui/src/options.cpp:3316 gui/src/options.cpp:3519
 msgid "Mariner's Standard"
 msgstr "Στάνταρ ναυτικών"
 
-#: gui/src/options.cpp:3331 gui/src/options.cpp:3530
+#: gui/src/options.cpp:3335 gui/src/options.cpp:3534
 msgid "Depth Soundings"
 msgstr "Βυθομετρήσεις"
 
-#: gui/src/options.cpp:3337 gui/src/options.cpp:3535
+#: gui/src/options.cpp:3341 gui/src/options.cpp:3539
 msgid "Chart Information Objects"
 msgstr "Αντικείμενα πληροφοριών χάρτη"
 
-#: gui/src/options.cpp:3342
+#: gui/src/options.cpp:3346
 msgid "Buoys/Lights"
 msgstr "Σημαντήρες/Φάροι"
 
-#: gui/src/options.cpp:3359 gui/src/options.cpp:3553
+#: gui/src/options.cpp:3363 gui/src/options.cpp:3557
 msgid "Extended Light Sectors"
 msgstr "Επέκταση τομέων φάρου"
 
-#: gui/src/options.cpp:3364
+#: gui/src/options.cpp:3368
 msgid "Chart Texts"
 msgstr "Κείμενα στον χάρτη"
 
-#: gui/src/options.cpp:3371 gui/src/options.cpp:3561
+#: gui/src/options.cpp:3375 gui/src/options.cpp:3565
 msgid "National text on chart"
 msgstr "Κείμενο στον χάρτη στην τοπική γλώσσα"
 
-#: gui/src/options.cpp:3376 gui/src/options.cpp:3566
+#: gui/src/options.cpp:3380 gui/src/options.cpp:3570
 msgid "Important Text Only"
 msgstr "Μονο σημαντικό κείμενο"
 
-#: gui/src/options.cpp:3381 gui/src/options.cpp:3571
+#: gui/src/options.cpp:3385 gui/src/options.cpp:3575
 msgid "De-Cluttered Text"
 msgstr "Αραιωμένο κείμενο"
 
-#: gui/src/options.cpp:3385
+#: gui/src/options.cpp:3389
 msgid "Chart Detail"
 msgstr "Λεπτομέρεια χάρτη"
 
-#: gui/src/options.cpp:3388 gui/src/options.cpp:3576
+#: gui/src/options.cpp:3392 gui/src/options.cpp:3580
 msgid "Reduced Detail at Small Scale"
 msgstr "Μειωμένη λεπτομέρεια σε μικρή κλίμακα"
 
-#: gui/src/options.cpp:3395 gui/src/options.cpp:3583
+#: gui/src/options.cpp:3399 gui/src/options.cpp:3587
 msgid "Additional detail reduction at Small Scale"
 msgstr ""
 
-#: gui/src/options.cpp:3404 gui/src/options.cpp:3599
+#: gui/src/options.cpp:3408 gui/src/options.cpp:3603
 msgid "Graphics Style"
 msgstr "Στιλ γραφικών"
 
-#: gui/src/options.cpp:3407 gui/src/options.cpp:3602
+#: gui/src/options.cpp:3411 gui/src/options.cpp:3606
 msgid "Paper Chart"
 msgstr "Σαν τυπωμένοι χάρτες"
 
-#: gui/src/options.cpp:3408 gui/src/options.cpp:3603
+#: gui/src/options.cpp:3412 gui/src/options.cpp:3607
 msgid "Simplified"
 msgstr "Απλοποιημένοι"
 
-#: gui/src/options.cpp:3414 gui/src/options.cpp:3614
+#: gui/src/options.cpp:3418 gui/src/options.cpp:3618
 msgid "Boundaries"
 msgstr "Όρια"
 
-#: gui/src/options.cpp:3417 gui/src/options.cpp:3617
+#: gui/src/options.cpp:3421 gui/src/options.cpp:3621
 msgid "Plain"
 msgstr "Απλά"
 
-#: gui/src/options.cpp:3418 gui/src/options.cpp:3618
+#: gui/src/options.cpp:3422 gui/src/options.cpp:3622
 msgid "Symbolized"
 msgstr "Με σύμβολα"
 
-#: gui/src/options.cpp:3424 gui/src/options.cpp:3629
+#: gui/src/options.cpp:3428 gui/src/options.cpp:3633
 msgid "Colors"
 msgstr "Χρώματα"
 
-#: gui/src/options.cpp:3427 gui/src/options.cpp:3633
+#: gui/src/options.cpp:3431 gui/src/options.cpp:3637
 msgid "2 Color"
 msgstr "2-χρωμοι"
 
-#: gui/src/options.cpp:3428 gui/src/options.cpp:3634
+#: gui/src/options.cpp:3432 gui/src/options.cpp:3638
 msgid "4 Color"
 msgstr "4-χρωμοι"
 
-#: gui/src/options.cpp:3439 gui/src/options.cpp:3656
+#: gui/src/options.cpp:3443 gui/src/options.cpp:3660
 msgid "Shallow Depth"
 msgstr "Αβαθή"
 
-#: gui/src/options.cpp:3450 gui/src/options.cpp:3665
+#: gui/src/options.cpp:3454 gui/src/options.cpp:3669
 msgid "Safety Depth"
 msgstr "Ασφαλές βάθος"
 
-#: gui/src/options.cpp:3460 gui/src/options.cpp:3674
+#: gui/src/options.cpp:3464 gui/src/options.cpp:3678
 msgid "Deep Depth"
 msgstr "Βαθιά"
 
-#: gui/src/options.cpp:3475 gui/src/options.cpp:3692
+#: gui/src/options.cpp:3479 gui/src/options.cpp:3696
 msgid "User Standard Objects"
 msgstr "Αντικείμενα User Standard"
 
-#: gui/src/options.cpp:3494 gui/src/options.cpp:3707
+#: gui/src/options.cpp:3498 gui/src/options.cpp:3711
 msgid "Reset to STANDARD"
 msgstr "Επαναφορά στο στάνταρτ"
 
-#: gui/src/options.cpp:3720
+#: gui/src/options.cpp:3724
 msgid "Tides && Currents"
 msgstr "Παλίρροια && ρεύματα"
 
-#: gui/src/options.cpp:3725
+#: gui/src/options.cpp:3729
 msgid "Active Datasets"
 msgstr "Ενεργές βάσεις δεδομένων"
 
-#: gui/src/options.cpp:3765
+#: gui/src/options.cpp:3769
 msgid "Add Dataset..."
 msgstr "Προσθήκη βάσης δεδομένων..."
 
-#: gui/src/options.cpp:3809
+#: gui/src/options.cpp:3813
 msgid "All Available Charts"
 msgstr "Όλοι οι διαθέσιμοι χάρτες"
 
-#: gui/src/options.cpp:3831
+#: gui/src/options.cpp:3835
 msgid "Remove Chart"
 msgstr "Αφαίρεση χάρτη"
 
-#: gui/src/options.cpp:3868
+#: gui/src/options.cpp:3872
 msgid "All Charts"
 msgstr "Όλοι οι χάρτες"
 
-#: gui/src/options.cpp:3887
+#: gui/src/options.cpp:3891
 msgid "New Group..."
 msgstr "Νέα ομάδα..."
 
-#: gui/src/options.cpp:3889
+#: gui/src/options.cpp:3893
 msgid "Delete Group"
 msgstr "Διαγραφή ομάδας"
 
-#: gui/src/options.cpp:3985 gui/src/options.cpp:4168
+#: gui/src/options.cpp:3989 gui/src/options.cpp:4172
 msgid "Preserve scale when switching charts"
 msgstr "Διατήρηση της κλίμακας όταν αλλάζουν οι χάρτες"
 
-#: gui/src/options.cpp:3994 gui/src/options.cpp:4177
+#: gui/src/options.cpp:3998 gui/src/options.cpp:4181
 msgid "Controls"
 msgstr "Ρυθμίσεις"
 
-#: gui/src/options.cpp:4000 gui/src/options.cpp:4183
+#: gui/src/options.cpp:4004 gui/src/options.cpp:4187
 msgid "Smooth Panning / Zooming"
 msgstr "Ομαλό Panning/Zooming"
 
-#: gui/src/options.cpp:4004 gui/src/options.cpp:4186
+#: gui/src/options.cpp:4008 gui/src/options.cpp:4190
 msgid "Zoom to Cursor"
 msgstr "Μεγέθυνση γύρω από τον δρομέα"
 
-#: gui/src/options.cpp:4015 gui/src/options.cpp:4202
+#: gui/src/options.cpp:4019 gui/src/options.cpp:4206
 msgid "Display Features"
 msgstr "Χαρακτηριστικά παρουσίασης"
 
-#: gui/src/options.cpp:4045
+#: gui/src/options.cpp:4049
 msgid "Status Bar Option"
 msgstr "Επιλογή λωρίδας κατάστασης"
 
-#: gui/src/options.cpp:4052 gui/src/options.cpp:4239
+#: gui/src/options.cpp:4056 gui/src/options.cpp:4243
 msgid "Live ETA at Cursor"
 msgstr "Ζωντανή ΕΩΑ στον κέρσορα"
 
-#: gui/src/options.cpp:4061 gui/src/options.cpp:4247 gui/src/options.cpp:7082
+#: gui/src/options.cpp:4065 gui/src/options.cpp:4251 gui/src/options.cpp:7086
 msgid "Default Boat Speed "
 msgstr "Προεπιλεγμένη ταχύτητα σκάφους "
 
-#: gui/src/options.cpp:4077 gui/src/options.cpp:4262
+#: gui/src/options.cpp:4081 gui/src/options.cpp:4266
 msgid "Canvas Layout"
 msgstr "Διάταξη καμβά"
 
-#: gui/src/options.cpp:4232
+#: gui/src/options.cpp:4236
 msgid "Status Bar"
 msgstr "Γραμμή κατάστασης"
 
-#: gui/src/options.cpp:4299
+#: gui/src/options.cpp:4303
 msgid "Units"
 msgstr "Μονάδες"
 
-#: gui/src/options.cpp:4320 gui/src/options.cpp:4481
-#: gui/src/initwiz/wiz_ui_proto.cpp:46
+#: gui/src/options.cpp:4324 gui/src/options.cpp:4485
+#: gui/src/initwiz/wiz_ui_proto.cpp:51
 msgid "Statute miles"
 msgstr "Εγγλέζικα μίλια"
 
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502 gui/src/initwiz/wiz_ui_proto.cpp:56
-#: gui/src/initwiz/wiz_ui_proto.cpp:67
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506 gui/src/initwiz/wiz_ui_proto.cpp:61
+#: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "Knots"
 msgstr "κόμβοι"
 
-#: gui/src/options.cpp:4335 gui/src/options.cpp:4348 gui/src/options.cpp:4492
-#: gui/src/options.cpp:4502
+#: gui/src/options.cpp:4339 gui/src/options.cpp:4352 gui/src/options.cpp:4496
+#: gui/src/options.cpp:4506
 msgid "Mph"
 msgstr "Μ.α.ώ."
 
-#: gui/src/options.cpp:4361 gui/src/options.cpp:4510
-#: gui/src/initwiz/wiz_ui_proto.cpp:32
+#: gui/src/options.cpp:4365 gui/src/options.cpp:4514
+#: gui/src/initwiz/wiz_ui_proto.cpp:37
 msgid "Depth"
 msgstr "Βάθος"
 
-#: gui/src/options.cpp:4377 gui/src/options.cpp:4523
+#: gui/src/options.cpp:4381 gui/src/options.cpp:4527
 msgid "Temperature"
 msgstr " Θερμοκρασία"
 
-#: gui/src/options.cpp:4380 gui/src/options.cpp:4526
+#: gui/src/options.cpp:4384 gui/src/options.cpp:4530
 msgid "Celsius"
 msgstr "Κελσίου"
 
-#: gui/src/options.cpp:4381 gui/src/options.cpp:4527
+#: gui/src/options.cpp:4385 gui/src/options.cpp:4531
 msgid "Fahrenheit"
 msgstr "Φαρεναϊτ"
 
-#: gui/src/options.cpp:4382 gui/src/options.cpp:4528
+#: gui/src/options.cpp:4386 gui/src/options.cpp:4532
 msgid "Kelvin"
 msgstr "Kelvin"
 
-#: gui/src/options.cpp:4397 gui/src/options.cpp:4540
+#: gui/src/options.cpp:4401 gui/src/options.cpp:4544
 msgid "Lat/Long"
 msgstr "Γεωγ. πλάτος/μήκος"
 
-#: gui/src/options.cpp:4399 gui/src/options.cpp:4542
+#: gui/src/options.cpp:4403 gui/src/options.cpp:4546
 msgid "Degrees, Decimal Minutes"
 msgstr "Μοίρες, λεπτά με δεκαδικά"
 
-#: gui/src/options.cpp:4400 gui/src/options.cpp:4543
+#: gui/src/options.cpp:4404 gui/src/options.cpp:4547
 msgid "Decimal Degrees"
 msgstr "Μοίρες με δεκαδικά"
 
-#: gui/src/options.cpp:4401 gui/src/options.cpp:4544
+#: gui/src/options.cpp:4405 gui/src/options.cpp:4548
 msgid "Degrees, Minutes, Seconds"
 msgstr "Μοίρες, λεπτά, δεύτερα"
 
-#: gui/src/options.cpp:4416 gui/src/options.cpp:4556
+#: gui/src/options.cpp:4420 gui/src/options.cpp:4560
 msgid "Bearings"
 msgstr "Διόπτευση"
 
-#: gui/src/options.cpp:4421
+#: gui/src/options.cpp:4425
 msgid "Show true"
 msgstr "Πραγματικό"
 
-#: gui/src/options.cpp:4426
+#: gui/src/options.cpp:4430
 msgid "Show magnetic"
 msgstr "Mαγνητική"
 
-#: gui/src/options.cpp:4442
+#: gui/src/options.cpp:4446
 msgid "Assumed magnetic variation"
 msgstr "Θετή μαγνητική απόκλιση"
 
-#: gui/src/options.cpp:4457 gui/src/options.cpp:4589
+#: gui/src/options.cpp:4461 gui/src/options.cpp:4593
 msgid "deg (-W, +E)"
 msgstr "μοίρες (-Δ, +Α)"
 
-#: gui/src/options.cpp:4500
+#: gui/src/options.cpp:4504
 msgid "WindSpeed"
 msgstr ""
 
-#: gui/src/options.cpp:4564
+#: gui/src/options.cpp:4568
 msgid "Show true bearings and headings"
 msgstr "Πραγματικές κατευθύνσεις και διοπτεύσεις"
 
-#: gui/src/options.cpp:4567
+#: gui/src/options.cpp:4571
 msgid "Show magnetic bearings and headings."
 msgstr "Κατευθύνσεις και διοπτεύσεις μαγνητικής πυξίδας."
 
-#: gui/src/options.cpp:4579 gui/src/options.cpp:6052
+#: gui/src/options.cpp:4583 gui/src/options.cpp:6056
 msgid "WMM Plugin calculated magnetic variation"
 msgstr "Μαγνητική απόκλιση υπολογισμένη από το πρόσθετο WMM"
 
-#: gui/src/options.cpp:4597
+#: gui/src/options.cpp:4601
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr " Για να ρυθμίσετε τη μαγνητική απόκλιση με μη αυτόματο τρόπο,\n"
 " πρέπει να απενεργοποιήσετε το plugin WMM."
 
-#: gui/src/options.cpp:4731
+#: gui/src/options.cpp:4735
 msgid "Test"
 msgstr "Τεστ"
 
-#: gui/src/options.cpp:4744
+#: gui/src/options.cpp:4748
 msgid "Audio file name:"
 msgstr "Όνομα αρχείου ήχου:"
 
-#: gui/src/options.cpp:4772 gui/src/options.cpp:4783 gui/src/options.cpp:8343
-#: gui/src/options.cpp:8354
+#: gui/src/options.cpp:4776 gui/src/options.cpp:4787 gui/src/options.cpp:8373
+#: gui/src/options.cpp:8384
 msgid "Select Sound File"
 msgstr "Επιλογή αρχείου ήχου"
 
-#: gui/src/options.cpp:4854
+#: gui/src/options.cpp:4858
 msgid "Sounds"
 msgstr "Ήχοι"
 
-#: gui/src/options.cpp:4862
+#: gui/src/options.cpp:4866
 msgid "Anchor Alarm"
 msgstr "Συναγερμός αγκυροβολίου"
 
-#: gui/src/options.cpp:4863
+#: gui/src/options.cpp:4867
 msgid "Play Sound on Anchor Alarm."
 msgstr "Ηχητικό σήμα σε συναγερμό αγκυροβολίου"
 
-#: gui/src/options.cpp:4864
+#: gui/src/options.cpp:4868
 msgid "Select Anchor Alarm Sound"
 msgstr "Επιλογή ήχου συναγερμού αγκυροβολίας"
 
-#: gui/src/options.cpp:4874
+#: gui/src/options.cpp:4878
 msgid "Play Sound on AIS Alert."
 msgstr "Ηχητικό σήμα σε συναγερμό AIS"
 
-#: gui/src/options.cpp:4875
+#: gui/src/options.cpp:4879
 msgid "Select AIS Alert Sound"
 msgstr "Επιλογή ήχου συναγερμού AIS"
 
-#: gui/src/options.cpp:4888
+#: gui/src/options.cpp:4892
 msgid "SART Alert"
 msgstr "Συναγερμός AIS"
 
-#: gui/src/options.cpp:4889
+#: gui/src/options.cpp:4893
 msgid "Play Sound on AIS SART Alert."
 msgstr "Ηχητικό σήμα σε συναγερμό AIS-SART"
 
-#: gui/src/options.cpp:4890
+#: gui/src/options.cpp:4894
 msgid "Select AIS SART Alert Sound"
 msgstr "Επιλογή ήχου συναγερμού AIS-SART"
 
-#: gui/src/options.cpp:4903
+#: gui/src/options.cpp:4907
 msgid "DSC Alert"
 msgstr "Συναγερμός DSC"
 
-#: gui/src/options.cpp:4904
+#: gui/src/options.cpp:4908
 msgid "Play Sound on DSC notification."
 msgstr "Ηχητικό σήμα σε συναγερμό DSC"
 
-#: gui/src/options.cpp:4905
+#: gui/src/options.cpp:4909
 msgid "Select DSC notification Sound"
 msgstr "Επιλογή ήχου για ειδοποίηση DSC"
 
-#: gui/src/options.cpp:4917
+#: gui/src/options.cpp:4921
 msgid "Sound Device Configuration"
 msgstr ""
 
-#: gui/src/options.cpp:4932
+#: gui/src/options.cpp:4936
 msgid "Unknown device :"
 msgstr "Άγνωστη συσκευή :"
 
-#: gui/src/options.cpp:4937
+#: gui/src/options.cpp:4941
 msgid "Input device :"
 msgstr "Συσκευή εισαγωγής:"
 
-#: gui/src/options.cpp:4965
+#: gui/src/options.cpp:4969
 msgid "Sound Device"
 msgstr "Συσκευή ήχου"
 
-#: gui/src/options.cpp:4979
+#: gui/src/options.cpp:4983
 msgid "Audio Play command:"
 msgstr "Εντολή ενεργοποίησης ήχου:"
 
-#: gui/src/options.cpp:5020
+#: gui/src/options.cpp:5024
 msgid "AIS Targets"
 msgstr "Στόχοι AIS"
 
-#: gui/src/options.cpp:5027
+#: gui/src/options.cpp:5031
 msgid "CPA Calculation"
 msgstr "Υπολογισμός σημείου πλησιέστερης προσέγγισης (CPA)"
 
-#: gui/src/options.cpp:5038
+#: gui/src/options.cpp:5042
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "Όχι συναγερμό (T)CPA αν η απόσταση από τον στόχο είναι πάνω από (ν.μ.)"
 
-#: gui/src/options.cpp:5045
+#: gui/src/options.cpp:5049
 msgid "Warn if CPA less than (NMi)"
 msgstr "Ειδοποίηση αν το CPA είναι μικρότερο από (ν.μ.)"
 
-#: gui/src/options.cpp:5057
+#: gui/src/options.cpp:5061
 msgid "...and TCPA is less than (min)"
 msgstr "...και ο χρόνος για CPA είναι λιγότερος από (min)"
 
-#: gui/src/options.cpp:5065
+#: gui/src/options.cpp:5069
 msgid "Lost Targets"
 msgstr "Χαμένοι στόχοι"
 
-#: gui/src/options.cpp:5074
+#: gui/src/options.cpp:5078
 msgid "Mark targets as lost after (min)"
 msgstr "Θεώρησε τους στόχους ως χαμένους μετά από (min)"
 
-#: gui/src/options.cpp:5082
+#: gui/src/options.cpp:5086
 msgid "Remove lost targets after (min)"
 msgstr "Αφαίρεσε τους χαμένους στόχους μετά από (min)"
 
-#: gui/src/options.cpp:5092 gui/src/options.cpp:5812
+#: gui/src/options.cpp:5096 gui/src/options.cpp:5816
 msgid "Display"
 msgstr "Παρουσίαση"
 
-#: gui/src/options.cpp:5101
+#: gui/src/options.cpp:5105
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Βέλος πρόγνωσης πορείας COG του στόχου, μήκος (min)"
 
-#: gui/src/options.cpp:5109
+#: gui/src/options.cpp:5113
 msgid "Sync AIS arrow length with own ship's COG predictor"
 msgstr "Συγχρονίστε το μήκος βέλους AIS με τον εκτίμηση του COG του πλοίου"
 
-#: gui/src/options.cpp:5119
+#: gui/src/options.cpp:5123
 msgid "Show target tracks, length (min)"
 msgstr "Εμφάνιση ίχνους στόχων, μήκος (min)"
 
-#: gui/src/options.cpp:5127
+#: gui/src/options.cpp:5131
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "Όχι αγκυροβολημένα πλοία, max ταχύτητα (κόμβοι)"
 
-#: gui/src/options.cpp:5135
+#: gui/src/options.cpp:5139
 msgid "Draw AIS realtime prediction, target speed min (kn)"
 msgstr "Παρουσίαση τρέχουσας πρόγνωσης AIS, ταχύτητα στόχου min (κ.)"
 
-#: gui/src/options.cpp:5145
+#: gui/src/options.cpp:5149
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "Μείωση των λιγότερο κρίσιμων στόχων εάν είναι περισσότεροι από ... στόχους"
 
-#: gui/src/options.cpp:5153
+#: gui/src/options.cpp:5157
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Εμφάνιση τοπικών ανακοινώσεων (από μηνύματα AIS)"
 
-#: gui/src/options.cpp:5160
+#: gui/src/options.cpp:5164
 msgid "Show AIS targets real size"
 msgstr "Εμφάνιση στόχων AIS σε πραγματικό μέγεθος"
 
-#: gui/src/options.cpp:5167
+#: gui/src/options.cpp:5171
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "Ονόματα των στόχων AIS σε κλίματα μεγαλυτερη από 1:"
 
-#: gui/src/options.cpp:5175
+#: gui/src/options.cpp:5179
 msgid "Use WPL position messages. Action when received:"
 msgstr "Χρήση μηνυμάτων θέσης WPL. Ενέργεια όταν ληφθεί:"
 
-#: gui/src/options.cpp:5178
+#: gui/src/options.cpp:5182
 msgid "APRS position report"
 msgstr "Αναφορά θέσης APRS"
 
-#: gui/src/options.cpp:5178
+#: gui/src/options.cpp:5182
 msgid "Create mark"
 msgstr "Δημιουργία σημείου"
 
-#: gui/src/options.cpp:5184
+#: gui/src/options.cpp:5188
 msgid "Rollover"
 msgstr "Το Rollover ποντικιού δείχνει:"
 
-#: gui/src/options.cpp:5190
+#: gui/src/options.cpp:5194
 msgid "Enable route/AIS info block"
 msgstr "Ενεργοποίηση πληροφοριών διαδρομής/AIS"
 
-#: gui/src/options.cpp:5198
+#: gui/src/options.cpp:5202
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Όνομα πλοιου\" MMSI (ΔΔΣ)"
 
-#: gui/src/options.cpp:5202
+#: gui/src/options.cpp:5206
 msgid "[Class] Type (Status)"
 msgstr "[Κατηγορία] Τύπος (Κατάσταση)"
 
-#: gui/src/options.cpp:5205
+#: gui/src/options.cpp:5209
 msgid "SOG COG"
 msgstr "Ταχύτητα, πορεία (SOG COG)"
 
-#: gui/src/options.cpp:5208
+#: gui/src/options.cpp:5212
 msgid "CPA TCPA"
 msgstr "Σημείο/Χρόνος πλησ. προσέγγισης (CPA/TCPA)"
 
-#: gui/src/options.cpp:5213
+#: gui/src/options.cpp:5217
 msgid "CPA/TCPA Alerts"
 msgstr "Συναγερμοί CPA/TCPA"
 
-#: gui/src/options.cpp:5222
+#: gui/src/options.cpp:5226
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Διάλογος για συναγερμούς  CPA/TCPA"
 
-#: gui/src/options.cpp:5241
+#: gui/src/options.cpp:5245
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Ηχητικό σήμα για συναγερμούς CPA/TCPA και σήματα κινδύνου DSC/SART"
 
-#: gui/src/options.cpp:5250
+#: gui/src/options.cpp:5254
 msgid "Test AIS Alert Sound"
 msgstr ""
 
-#: gui/src/options.cpp:5263
+#: gui/src/options.cpp:5267
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr "Όχι συναγερμος για αγκυροβολημένους στόχους"
 
-#: gui/src/options.cpp:5270
+#: gui/src/options.cpp:5274
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Μέγιστος χρόνος για σίγαση του συναγερμού (min)"
 
-#: gui/src/options.cpp:5294
+#: gui/src/options.cpp:5298
 msgid "General Options"
 msgstr "Γενικές επιλογές"
 
-#: gui/src/options.cpp:5303
+#: gui/src/options.cpp:5307
 msgid "Language"
 msgstr "Γλώσσα"
 
-#: gui/src/options.cpp:5318
+#: gui/src/options.cpp:5322
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 
-#: gui/src/options.cpp:5354
+#: gui/src/options.cpp:5358
 msgid "Choose Font..."
 msgstr "Επιλογή γραμματοσειράς..."
 
-#: gui/src/options.cpp:5359
+#: gui/src/options.cpp:5363
 msgid "Choose Font Color..."
 msgstr "Επιλογή χρώματος γραμμάτων..."
 
-#: gui/src/options.cpp:5363
+#: gui/src/options.cpp:5367
 msgid "Sample"
 msgstr "Δείγμα"
 
-#: gui/src/options.cpp:5371
+#: gui/src/options.cpp:5375
 msgid "Toolbar and Window Style"
 msgstr "Στιλ του παράθυρου και της λωρίδας εργαλείων"
 
-#: gui/src/options.cpp:5389
+#: gui/src/options.cpp:5393
 msgid "Interface Options"
 msgstr "Επιλογές διεπαφής"
 
-#: gui/src/options.cpp:5395
+#: gui/src/options.cpp:5399
 msgid "Show Status Bar"
 msgstr "Εμφάνιση της λωρίδας πληροφοριών κατάστασης"
 
-#: gui/src/options.cpp:5400
+#: gui/src/options.cpp:5404
 msgid "Show Menu Bar"
 msgstr "Εμφάνιση της λωρίδας του μενού"
 
-#: gui/src/options.cpp:5414
+#: gui/src/options.cpp:5418
 msgid "Show Compass/GPS Status Window"
 msgstr "Παράθυρο κατάστασης πυξίδας/GPS"
 
-#: gui/src/options.cpp:5422
+#: gui/src/options.cpp:5426
 msgid "Enable Toolbar auto-hide"
 msgstr "Επίτρεψε αυτόματη απόκρυψη της λωρίδας των εργαλείων"
 
-#: gui/src/options.cpp:5437
+#: gui/src/options.cpp:5441
 msgid "Play Ships Bells"
 msgstr "Χτύπα το καμπανάκι του πλοίου"
 
-#: gui/src/options.cpp:5442
+#: gui/src/options.cpp:5446
 msgid "Enable Touchscreen interface"
 msgstr "Επιφάνεια αφής"
 
-#: gui/src/options.cpp:5446
+#: gui/src/options.cpp:5450
 msgid "Enable Scaled Graphics interface"
 msgstr "Ρυθμιζόμενα γραφικά διεπιφάνειας"
 
-#: gui/src/options.cpp:5459
+#: gui/src/options.cpp:5463
 msgid "Show Zoom buttons"
 msgstr "Κουμπιά για zoom"
 
-#: gui/src/options.cpp:5466
+#: gui/src/options.cpp:5470
 msgid "Use Inland ECDIS"
 msgstr "Χρήση Inland ECDIS V2"
 
-#: gui/src/options.cpp:5470 gui/src/options.cpp:7777
+#: gui/src/options.cpp:5474 gui/src/options.cpp:7782
 msgid "Inland ECDIS Manual"
 msgstr "Εγχειρίδιο Inland ECDIS"
 
-#: gui/src/options.cpp:5492
+#: gui/src/options.cpp:5496
 msgid "User Interface scale factor"
 msgstr "Κλίμακα διεπιφάνειας χρήστη"
 
-#: gui/src/options.cpp:5506
+#: gui/src/options.cpp:5510
 msgid "Chart Object scale factor"
 msgstr "Κλίμακα αντικειμένων χάρτη"
 
-#: gui/src/options.cpp:5520
+#: gui/src/options.cpp:5524
 msgid "Ship scale factor"
 msgstr "Συντελεστή κλίμακας πλοίο"
 
-#: gui/src/options.cpp:5534
+#: gui/src/options.cpp:5538
 msgid "ENC Sounding factor"
 msgstr "Μέγεθος βυθομετρήσεων σε χάρτες"
 
-#: gui/src/options.cpp:5548
+#: gui/src/options.cpp:5552
 msgid "ENC Text Scale"
 msgstr "Κλίμακα Κειμένου ENC"
 
-#: gui/src/options.cpp:5558
+#: gui/src/options.cpp:5562
 msgid "Mouse wheel zoom sensitivity"
 msgstr "Ευαισθησία ζουμ ρόδας ποντικιού"
 
-#: gui/src/options.cpp:5809
+#: gui/src/options.cpp:5813
 msgid "Apply"
 msgstr "Εφαρμογή"
 
-#: gui/src/options.cpp:5818
+#: gui/src/options.cpp:5822
 msgid "Charts"
 msgstr "Χάρτες"
 
-#: gui/src/options.cpp:5841
+#: gui/src/options.cpp:5845
 msgid "Connections"
 msgstr "Συνδέσεις"
 
-#: gui/src/options.cpp:5843
+#: gui/src/options.cpp:5847
 msgid "Connect"
 msgstr "Σύνδεση"
 
-#: gui/src/options.cpp:5855
+#: gui/src/options.cpp:5859
 msgid "Ships"
 msgstr "Πλοία"
 
-#: gui/src/options.cpp:5864
+#: gui/src/options.cpp:5868
 msgid "User Interface"
 msgstr "Διεπιφάνεια χρήστη"
 
-#: gui/src/options.cpp:5866
+#: gui/src/options.cpp:5870
 msgid "User"
 msgstr "Χρήστης"
 
-#: gui/src/options.cpp:5872 gui/src/options.cpp:5873
+#: gui/src/options.cpp:5876 gui/src/options.cpp:5877
 msgid "Plugins"
 msgstr "Πρόσθετα"
 
-#: gui/src/options.cpp:6057
+#: gui/src/options.cpp:6061
 msgid "User set magnetic variation"
 msgstr "Μαγνητική απόκλιση από τον χρήστη"
 
-#: gui/src/options.cpp:6507
+#: gui/src/options.cpp:6511
 msgid "feet"
 msgstr "πόδια"
 
-#: gui/src/options.cpp:6507
+#: gui/src/options.cpp:6511
 msgid "fathoms"
 msgstr "οργιές"
 
-#: gui/src/options.cpp:6748
+#: gui/src/options.cpp:6752
 msgid "Add a directory containing chart files"
 msgstr "Πρόσθεσε έναν φάκελο με αρχεία χαρτών"
 
-#: gui/src/options.cpp:6854
+#: gui/src/options.cpp:6858
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - το μήκος του πλοίου σας πρέπει να είναι > 0"
 
-#: gui/src/options.cpp:6856
+#: gui/src/options.cpp:6860
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - το πλάτος του πλοίου σας πρέπει να είναι > 0"
 
-#: gui/src/options.cpp:6859
+#: gui/src/options.cpp:6863
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " -η απόσταση του GPS από τον άξονα του σκάφους πρέπει να είναι εντός του πλάτους του"
 
-#: gui/src/options.cpp:6863
+#: gui/src/options.cpp:6867
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " -η απόσταση του GPS από την πλώρη πρέπει να είναι εντός του μήκους του σκάφους"
 
-#: gui/src/options.cpp:6865
+#: gui/src/options.cpp:6869
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - το ελάχιστο μήκος του εικονιδίου πρέπει να είναι μεταξύ 1 και 100  mm"
 
-#: gui/src/options.cpp:6867
+#: gui/src/options.cpp:6871
 msgid "The settings for own ship real size are not correct:"
 msgstr "Οι διαστάσεις του ιδίου πλοίου δεν είναι σωστές:"
 
-#: gui/src/options.cpp:7770
+#: gui/src/options.cpp:7775
 msgid "The Inland ECDIS Manual is not available locally."
 msgstr "Το Εγχειρίδιο ECDIS εσωτερικής ναυσιπλοΐας δεν διατίθεται τοπικά."
 
-#: gui/src/options.cpp:7773
+#: gui/src/options.cpp:7778
 msgid "Would you like to visit the iECDIS Manual website for more information?"
 msgstr "Θέλετε να πάτε στην ιστοσελίδα του εγχειριδίου του iECDIS για περισσότερες πληροφορίες;"
 
-#: gui/src/options.cpp:7804
+#: gui/src/options.cpp:7809
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
@@ -6879,15 +6891,15 @@ msgstr "Η συμπίεση θα αλλάξει τα αρχεία των χαρ�
 "Συμπιεσμένοι χάρτες μπορεί να χρειαστούν λίγο περισσότερο χρόνο για να φορτώσουν και εμφανιστούν σε ορισμένα συστήματα.\n"
 "Μπορούν να αποσυμπιεστούν ξανά χρησιμοποιώντας το unxz ή το 7zip."
 
-#: gui/src/options.cpp:7825 gui/src/options.cpp:7869
+#: gui/src/options.cpp:7830 gui/src/options.cpp:7874
 msgid "OpenCPN Compress Charts"
 msgstr "Συμπίεση χαρτών"
 
-#: gui/src/options.cpp:7862
+#: gui/src/options.cpp:7867
 msgid "No charts found to compress."
 msgstr "Δεν βρέθηκαν χάρτες για συμπίεση."
 
-#: gui/src/options.cpp:7894
+#: gui/src/options.cpp:7899
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
@@ -6896,71 +6908,71 @@ msgstr "συμπιέσθηκαν %ld χάρτες\n"
 " απο %.1fMB σε %.1fMB\n"
 "εξοικονομήθηκαν %.1fMB (%.1f%%)"
 
-#: gui/src/options.cpp:8798
+#: gui/src/options.cpp:8828
 msgid "Enter Group Name"
 msgstr "Όνομα ομάδας: "
 
-#: gui/src/options.cpp:8798
+#: gui/src/options.cpp:8828
 msgid "New Chart Group"
 msgstr "Νέα ομάδα χαρτών"
 
-#: gui/src/options.cpp:8971 gui/src/options.cpp:8985
+#: gui/src/options.cpp:9001 gui/src/options.cpp:9015
 msgid "Select Tide/Current Data"
 msgstr "Επιλογή δεδομένων παλίρροιας/ρευμάτων"
 
-#: gui/src/options.cpp:9043
+#: gui/src/options.cpp:9073
 msgid "Texture Compression"
 msgstr "Συμπίεση υφής"
 
-#: gui/src/options.cpp:9044
+#: gui/src/options.cpp:9074
 msgid "Texture Compression with Caching"
 msgstr "Συμπίεση υφής με απομνημόνευση"
 
-#: gui/src/options.cpp:9046
+#: gui/src/options.cpp:9076
 msgid "Texture Compression Caching"
 msgstr "Απομνημόνευση συμπίεσης υφής"
 
-#: gui/src/options.cpp:9048
+#: gui/src/options.cpp:9078
 msgid "Texture Memory Size (MB)"
 msgstr "Μέγεθος μνήμης για την υφη (MB)"
 
-#: gui/src/options.cpp:9052 gui/src/options.cpp:9218
+#: gui/src/options.cpp:9082 gui/src/options.cpp:9248
 msgid "Size: "
 msgstr "Μέγεθος: "
 
-#: gui/src/options.cpp:9054
+#: gui/src/options.cpp:9084
 msgid "Rebuild Texture Cache"
 msgstr "Ανακατασκευή της μνήμης υφής"
 
-#: gui/src/options.cpp:9056
+#: gui/src/options.cpp:9086
 msgid "Clear Texture Cache"
 msgstr "Εκκαθάριση της μνήμης της υφής"
 
-#: gui/src/options.cpp:9060
+#: gui/src/options.cpp:9090
 msgid "Polygon Smoothing"
 msgstr "Πολύγωνο εξομάλυνσης"
 
-#: gui/src/options.cpp:9061
+#: gui/src/options.cpp:9091
 msgid "Line Smoothing"
 msgstr "Απάλυνση γραμμών"
 
-#: gui/src/options.cpp:9063
+#: gui/src/options.cpp:9093
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "OpenGL λογισμικό (επανεκκίνηση του OpenCPN)"
 
-#: gui/src/options.cpp:9065
+#: gui/src/options.cpp:9095
 msgid "Use Accelerated Panning"
 msgstr "Γρήγορο panning"
 
-#: gui/src/options.cpp:9067
+#: gui/src/options.cpp:9097
 msgid "Texture Settings"
 msgstr "Ρυθμίσεις υφής"
 
-#: gui/src/options.cpp:9074
+#: gui/src/options.cpp:9104
 msgid "Texture Cache"
 msgstr "Cache υφής"
 
-#: gui/src/options.cpp:9081
+#: gui/src/options.cpp:9111
 msgid "Miscellaneous"
 msgstr "Διάφορα"
 
@@ -7042,127 +7054,127 @@ msgstr "Παρακαλούμε ελέγξτε το αρχείο log για πε�
 msgid " successfully installed from cache"
 msgstr " εγκαταστάθηκε επιτυχώς από τη μνήμη cache"
 
-#: gui/src/pluginmanager.cpp:3700
+#: gui/src/pluginmanager.cpp:3701
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr "Αυτές οι ρυθμίσεις ενδέχεται να αποσταθεροποιήσουν το OpenCPN και είναι εξ ορισμού απενεργοποιημένες. Για να τους ενεργοποιήσετε προσθέστε τη γραμμή «CatalogExpert=1» στην ενότητα «PlugIns» στο αρχείο ρυθμίσεων."
 
-#: gui/src/pluginmanager.cpp:3716
+#: gui/src/pluginmanager.cpp:3717
 msgid "Plugin Catalog"
 msgstr "Κατάλογος προσθέτων"
 
-#: gui/src/pluginmanager.cpp:3733 gui/src/pluginmanager.cpp:4007
+#: gui/src/pluginmanager.cpp:3734 gui/src/pluginmanager.cpp:4008
 msgid "Update Plugin Catalog"
 msgstr "Ανανέωση καταλόγου προσθέτων"
 
-#: gui/src/pluginmanager.cpp:3739 gui/src/pluginmanager.cpp:3811
+#: gui/src/pluginmanager.cpp:3740 gui/src/pluginmanager.cpp:3812
 msgid "Import plugin..."
 msgstr "Εισαγωγή προσθέτου..."
 
-#: gui/src/pluginmanager.cpp:3746 gui/src/pluginmanager.cpp:3803
+#: gui/src/pluginmanager.cpp:3747 gui/src/pluginmanager.cpp:3804
 msgid "Settings..."
 msgstr "Ρυθμίσεις..."
 
-#: gui/src/pluginmanager.cpp:3754
+#: gui/src/pluginmanager.cpp:3755
 msgid "Disabled"
 msgstr "Ανενεργό"
 
-#: gui/src/pluginmanager.cpp:3779
+#: gui/src/pluginmanager.cpp:3780
 msgid "Update Plugin Catalog: master"
 msgstr "Ανανέωση κύριου καταλόγου προσθέτων"
 
-#: gui/src/pluginmanager.cpp:3855 gui/src/pluginmanager.cpp:3867
-#: gui/src/pluginmanager.cpp:3877 gui/src/pluginmanager.cpp:3886
-#: gui/src/pluginmanager.cpp:3917
+#: gui/src/pluginmanager.cpp:3856 gui/src/pluginmanager.cpp:3868
+#: gui/src/pluginmanager.cpp:3878 gui/src/pluginmanager.cpp:3887
+#: gui/src/pluginmanager.cpp:3918
 msgid "OpenCPN Catalog update"
 msgstr "Ανανέωση του καταλόγου του OpenCPN"
 
-#: gui/src/pluginmanager.cpp:3866 gui/src/pluginmanager.cpp:3876
+#: gui/src/pluginmanager.cpp:3867 gui/src/pluginmanager.cpp:3877
 msgid "Unable to copy catalog file"
 msgstr "Αδυναμία αντιγραφής αρχείου καταλόγου"
 
-#: gui/src/pluginmanager.cpp:3885
+#: gui/src/pluginmanager.cpp:3886
 msgid "Unable to copy catalog file to cache"
 msgstr "Αδυναμία αντιγραφής αρχείου καταλόγου στο cache"
 
-#: gui/src/pluginmanager.cpp:3916
+#: gui/src/pluginmanager.cpp:3917
 msgid "Catalog update successful"
 msgstr "Ο κατάλογος ενημερώθηκε επιτυχώς"
 
-#: gui/src/pluginmanager.cpp:3938
+#: gui/src/pluginmanager.cpp:3939
 msgid "Select tarball file"
 msgstr "Επιλογή αρχείου tarball"
 
-#: gui/src/pluginmanager.cpp:3948
+#: gui/src/pluginmanager.cpp:3949
 msgid "Error extracting metadata from tarball."
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:3949 gui/src/pluginmanager.cpp:3954
-#: gui/src/pluginmanager.cpp:3962
+#: gui/src/pluginmanager.cpp:3950 gui/src/pluginmanager.cpp:3955
+#: gui/src/pluginmanager.cpp:3963
 msgid "OpenCPN Plugin Import Error"
 msgstr "Σφάλμα στην εισαγωγή του προσθέτου του OpenCPN"
 
-#: gui/src/pluginmanager.cpp:3953
+#: gui/src/pluginmanager.cpp:3954
 msgid "Incompatible import plugin detected."
 msgstr "Μη συμβατό πρόσθετο."
 
-#: gui/src/pluginmanager.cpp:3961
+#: gui/src/pluginmanager.cpp:3962
 msgid "Error extracting import plugin tarball."
 msgstr "Σφάλμα στην εισαγωγή του tarball"
 
-#: gui/src/pluginmanager.cpp:3976
+#: gui/src/pluginmanager.cpp:3977
 msgid "Plugin"
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:3977
+#: gui/src/pluginmanager.cpp:3978
 msgid " successfully imported"
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:3984
+#: gui/src/pluginmanager.cpp:3985
 msgid "Active Catalog"
 msgstr "Ενεργός κατάλογος"
 
-#: gui/src/pluginmanager.cpp:3984
+#: gui/src/pluginmanager.cpp:3985
 msgid "Last Catalog"
 msgstr "Προηγούμενος κατάλογος"
 
-#: gui/src/pluginmanager.cpp:3999
+#: gui/src/pluginmanager.cpp:4000
 msgid "Last change: "
 msgstr "Τελευταία Αλλαγή:"
 
-#: gui/src/pluginmanager.cpp:4000
+#: gui/src/pluginmanager.cpp:4001
 msgid "Please Update Plugin Catalog."
 msgstr "Ανανεώστε τον κατάλογο προσθέτων."
 
-#: gui/src/pluginmanager.cpp:4355 gui/src/pluginmanager.cpp:4549
-#: gui/src/pluginmanager.cpp:4574
+#: gui/src/pluginmanager.cpp:4356 gui/src/pluginmanager.cpp:4550
+#: gui/src/pluginmanager.cpp:4575
 msgid "Uninstall"
 msgstr "Απεγκατάσταση"
 
-#: gui/src/pluginmanager.cpp:4362
+#: gui/src/pluginmanager.cpp:4363
 msgid "Uninstall plugin "
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:4363
+#: gui/src/pluginmanager.cpp:4364
 msgid "Un-Installation"
 msgstr ""
 
-#: gui/src/pluginmanager.cpp:4464 gui/src/pluginmanager.cpp:4517
+#: gui/src/pluginmanager.cpp:4465 gui/src/pluginmanager.cpp:4518
 msgid "Enabled"
 msgstr "Ενεργοποιήθηκε"
 
-#: gui/src/pluginmanager.cpp:4738
+#: gui/src/pluginmanager.cpp:4739
 msgid "Upgrade to Version "
 msgstr "Αναβάθμισε στην έκδοση "
 
-#: gui/src/pluginmanager.cpp:4745
+#: gui/src/pluginmanager.cpp:4746
 msgid "Install..."
 msgstr "Εγκατάσταση..."
 
-#: gui/src/pluginmanager.cpp:4751
+#: gui/src/pluginmanager.cpp:4752
 msgid "Update to "
 msgstr "Ενημέρωση στο "
 
-#: gui/src/pluginmanager.cpp:4983 gui/src/update_mgr.cpp:257
+#: gui/src/pluginmanager.cpp:4984 gui/src/update_mgr.cpp:257
 msgid "Website"
 msgstr "Ιστότοπος"
 
@@ -7206,10 +7218,6 @@ msgstr "Δορυφόροι"
 #: gui/src/rest_server_gui.cpp:249 gui/src/SendToPeerDlg.cpp:127
 msgid "OpenCPN Server Message"
 msgstr "Μήνυμα Διακομιστή OpenCPN"
-
-#: gui/src/RolloverWin.cpp:137 gui/src/RolloverWin.cpp:303
-msgid "AISRollover"
-msgstr "Το Rollover ποντικιού δείχνει:"
 
 #: gui/src/RolloverWin.cpp:140 gui/src/RolloverWin.cpp:307
 msgid "TideCurrentGraphRollover"
@@ -7327,12 +7335,6 @@ msgstr "Διαδρομή από ίχνος"
 #: gui/src/routemanagerdialog.cpp:666 gui/src/routemanagerdialog.cpp:814
 msgid "Send to &Peer"
 msgstr "Αποστολή στο &peer"
-
-#: gui/src/routemanagerdialog.cpp:688 gui/src/route_point_gui.cpp:127
-#: gui/src/route_point_gui.cpp:135 gui/src/route_point_gui.cpp:299
-#: gui/src/route_point_gui.cpp:307
-msgid "Marks"
-msgstr "Σημεία"
 
 #: gui/src/routemanagerdialog.cpp:714
 msgid "Show all marks"
@@ -7534,15 +7536,15 @@ msgstr "αλλά η τρέχουσα κλίμακα είναι"
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "Γι' αυτό το νέο σημείο δεν θα είναι ορατό σε αυτή την κλίμακα."
 
-#: gui/src/route_point_gui.cpp:906
+#: gui/src/route_point_gui.cpp:907
 msgid "Waypoint(s) Transmitted."
 msgstr "Τα σημεία εστάλησαν."
 
-#: gui/src/route_point_gui.cpp:909
+#: gui/src/route_point_gui.cpp:910
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "Σφάλμα στο ανέβασμα. Το GPS Garmin δεν είναι συνδεδεμένο"
 
-#: gui/src/route_point_gui.cpp:911
+#: gui/src/route_point_gui.cpp:912
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Σφάλμα στο ανέβασμα. Δες τα log αρχεία..."
 
@@ -7966,7 +7968,7 @@ msgstr "Σήμερα"
 msgid "Tomorrow"
 msgstr "Αύριο"
 
-#: gui/src/toolbar.cpp:871 gui/src/toolbar.cpp:883 gui/src/toolbar.cpp:898
+#: gui/src/toolbar.cpp:875 gui/src/toolbar.cpp:887 gui/src/toolbar.cpp:902
 msgid "ToolTips"
 msgstr "Συμβουλές"
 
@@ -8258,153 +8260,157 @@ msgstr "Μετακίνηση σημείου πορείας"
 msgid "Dismiss"
 msgstr "Τέλος"
 
-#: gui/src/initwiz/wiz_ui.cpp:69
+#: gui/src/initwiz/wiz_ui.cpp:74
 msgid "Select the units and data formats you would like to use."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:73
+#: gui/src/initwiz/wiz_ui.cpp:78
 msgid "All the settings can be changed at any time in the configuration Toolbox accessible by clicking on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:76
+#: gui/src/initwiz/wiz_ui.cpp:81
 msgid " icon in the main Toolbar."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:82
+#: gui/src/initwiz/wiz_ui.cpp:87
 msgid "If you already have charts on your system, you may add them here."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:85
+#: gui/src/initwiz/wiz_ui.cpp:90
 msgid "Additional charts can be obtained  using the Chart Downloader integrated in the application."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:90
+#: gui/src/initwiz/wiz_ui.cpp:95
 msgid "To access the Chart Downloader click on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:93
+#: gui/src/initwiz/wiz_ui.cpp:98
 msgid " icon in the main Toolbar and navigate to Charts -> Chart Downloader tab."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:97
+#: gui/src/initwiz/wiz_ui.cpp:102
 msgid "<html><body><h1>Welcome to OpenCPN!</h1><p>You have successfully completed the initial configuration. You can now start using the application.</p></body></html>"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:345
+#: gui/src/initwiz/wiz_ui.cpp:395
 #, c-format
 msgid "NMEA0183: UDP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:356
+#: gui/src/initwiz/wiz_ui.cpp:406
 #, c-format
 msgid "NMEA2000: UDP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:444
+#: gui/src/initwiz/wiz_ui.cpp:510
 #, c-format
 msgid "NMEA0183: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:456
+#: gui/src/initwiz/wiz_ui.cpp:522
 #, c-format
 msgid "NMEA2000: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:493
+#: gui/src/initwiz/wiz_ui.cpp:609
 #, c-format
 msgid "GPSd: %s TCP port %d"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:508
-msgid "Looking for Signal K servers..."
+#: gui/src/initwiz/wiz_ui.cpp:630
+msgid "Looking for navigation data sources, this may take a while..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:512
+#: gui/src/initwiz/wiz_ui.cpp:632
 msgid "Scanning USB devices..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:516
+#: gui/src/initwiz/wiz_ui.cpp:637
 msgid "Looking for UDP data feeds..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:520
+#: gui/src/initwiz/wiz_ui.cpp:642
 msgid "Looking for TCP servers..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:524
+#: gui/src/initwiz/wiz_ui.cpp:648
+msgid "Looking for Signal K servers..."
+msgstr ""
+
+#: gui/src/initwiz/wiz_ui.cpp:654
 msgid "Looking for CAN interfaces..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:528
+#: gui/src/initwiz/wiz_ui.cpp:660
 msgid "Looking for GPSD servers..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:541
+#: gui/src/initwiz/wiz_ui.cpp:676
 #, c-format
 msgid "SignalK: %s (%s port %d)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:555
+#: gui/src/initwiz/wiz_ui.cpp:690
 msgid "The system has been scanned for sources of navigation data."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:558
+#: gui/src/initwiz/wiz_ui.cpp:693
 msgid "The connections to the discovered sources of data will be configured automatically. You may uncheck the ones you want to ignore."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:562
+#: gui/src/initwiz/wiz_ui.cpp:697
 msgid "You may now connect additional USB devices or connect to a different network and press the Rescan button to update the list."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:567
+#: gui/src/initwiz/wiz_ui.cpp:702
 msgid "The connection settings can be changed at any time in the configuration Toolbox accessible by clicking on the "
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:571
+#: gui/src/initwiz/wiz_ui.cpp:706
 msgid " icon in the main Toolbar. In the Toolbox navigate to the Connections tab."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui.cpp:578
+#: gui/src/initwiz/wiz_ui.cpp:716
 msgid "Select a directory containing charts"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:25
+#: gui/src/initwiz/wiz_ui_proto.cpp:30
 msgid "Units and formats"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Degrees, decimal minutes (DD MM.MM)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Decimal degrees (DD.DDDDD)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:78
+#: gui/src/initwiz/wiz_ui_proto.cpp:81
 msgid "Degrees, minutes, seconds (DD MM SS)"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:87
+#: gui/src/initwiz/wiz_ui_proto.cpp:90
 msgid "Show true headings and bearings"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:94
+#: gui/src/initwiz/wiz_ui_proto.cpp:97
 msgid "Show magnetic headings and bearings"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:118
+#: gui/src/initwiz/wiz_ui_proto.cpp:132
 msgid "Detected navigation data sources:"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:126
+#: gui/src/initwiz/wiz_ui_proto.cpp:140
 msgid "Rescan..."
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:145
+#: gui/src/initwiz/wiz_ui_proto.cpp:170
 msgid "Add existing charts"
 msgstr ""
 
-#: gui/src/initwiz/wiz_ui_proto.cpp:152
+#: gui/src/initwiz/wiz_ui_proto.cpp:177
 msgid "Add chart directory..."
 msgstr ""
 

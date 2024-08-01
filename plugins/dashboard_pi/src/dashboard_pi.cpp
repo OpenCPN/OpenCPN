@@ -44,7 +44,7 @@
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
 #include "N2KParser.h"
-
+#include "../../../gui/include/gui/ocpn_fontdlg.h"
 
 wxFontData *g_pFontTitle;
 wxFontData *g_pFontData;
@@ -6021,11 +6021,41 @@ bool OCPNFontButton::Create(wxWindow *parent, wxWindowID id,
 void OCPNFontButton::OnButtonClick(wxCommandEvent &WXUNUSED(ev)) {
   // update the wxFontData to be shown in the dialog
   m_data.SetInitialFont(m_selectedFont);
+  wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
 
+#ifdef __WXGTK__
+  // Use a smaller font picker dialog (ocpnGenericFontDialog) for small displays
+  int display_height = wxGetDisplaySize().y;
+  if (display_height < 800) {
+    // create the font dialog and display it
+    ocpnGenericFontDialog dlg(this, m_data);
+    dlg.SetFont(*pF);
+    if (dlg.ShowModal() == wxID_OK) {
+      m_data = dlg.GetFontData();
+      m_selectedFont = m_data.GetChosenFont();
+      // fire an event
+      wxFontPickerEvent event(this, GetId(), m_selectedFont);
+      GetEventHandler()->ProcessEvent(event);
+      UpdateFont();
+    }
+  }
+  else {
+    // create the font dialog and display it
+    wxFontDialog dlg(this, m_data);
+    dlg.SetFont(*pF);
+    if (dlg.ShowModal() == wxID_OK) {
+      m_data = dlg.GetFontData();
+      m_selectedFont = m_data.GetChosenFont();
+    // fire an event
+      wxFontPickerEvent event(this, GetId(), m_selectedFont);
+      GetEventHandler()->ProcessEvent(event);
+      UpdateFont();
+    }
+  }
+
+#else   // Not __GTK__
   // create the font dialog and display it
   wxFontDialog dlg(this, m_data);
-
-  wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
   dlg.SetFont(*pF);
 
 #ifdef __WXQT__
@@ -6056,6 +6086,7 @@ void OCPNFontButton::OnButtonClick(wxCommandEvent &WXUNUSED(ev)) {
 
     UpdateFont();
   }
+#endif
 }
 
 void OCPNFontButton::UpdateFont() {
