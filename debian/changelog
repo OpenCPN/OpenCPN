@@ -1,8 +1,8 @@
-opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo22.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
 
   * New upstream beta release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 01 Aug 2024 20:19:48 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 01 Aug 2024 22:17:40 +0200
 
 opencpn (1:5.9.3~beta3+dfsg-1ubuntu1~bpo2204+1) jammy; urgency=medium
 
