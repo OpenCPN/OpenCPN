@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-30 21:39-0400\n"
-"PO-Revision-Date: 2024-07-31 19:36\n"
+"PO-Revision-Date: 2024-07-31 20:50\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -311,7 +311,7 @@ msgstr "Mit dieser Option erlauben Sie Interpolation.\n"
 
 #: src/GribUIDialog.h:185 src/GribUIDialogBase.cpp:2323
 msgid "Choose GRIB File Directory"
-msgstr ""
+msgstr "Wählen Sie das GRIB-Dateiverzeichnis"
 
 #: src/GribUIDialogBase.cpp:40 src/GribUIDialogBase.cpp:164
 msgid "Previous"
@@ -697,7 +697,7 @@ msgstr "Faktor Größe Icons"
 
 #: src/GribUIDialogBase.cpp:2175
 msgid "Select GRIB download directory"
-msgstr ""
+msgstr "GRIB-Download-Verzeichnis auswählen"
 
 #: src/GribUIDialogBase.cpp:2209
 msgid "GRIB PlugIn Preferences"
