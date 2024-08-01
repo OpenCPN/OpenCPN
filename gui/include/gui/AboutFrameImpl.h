@@ -45,8 +45,11 @@ protected:
   void AboutFrameOnActivate(wxActivateEvent& event);
 #if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
   void m_btnBackOnButtonClick(wxCommandEvent& event) {
-    m_htmlWinHelp->GoBack();
-    m_btnBack->Enable(m_htmlWinHelp->CanGoBack());
+    wxString locn = m_htmlWinHelp->GetCurrentURL();
+    if (!locn.Contains("toc_flat")) {
+      m_htmlWinHelp->GoBack();
+      m_btnBack->Enable(m_htmlWinHelp->CanGoBack());
+    }
   }
 #else
   void m_btnBackOnButtonClick(wxCommandEvent& event) {
