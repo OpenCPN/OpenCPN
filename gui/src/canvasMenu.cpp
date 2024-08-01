@@ -44,6 +44,7 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
 #include "model/nav_object_database.h"
 #include "model/own_ship.h"
@@ -124,8 +125,6 @@ extern bool g_bBasicMenus;
 extern TrackPropDlg *pTrackPropDialog;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
-extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-extern wxDateTime g_DNS_cache_time;
 
 //    Constants for right click menus
 enum {
@@ -1752,14 +1751,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         // Perform initial scan, if necessary
 
         // Check for stale cache...
-        bool bDNScacheStale = true;
-        wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()) {
-          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5) bDNScacheStale = false;
-        }
-
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        MdnsCache::GetInstance().Validate();
+        if (MdnsCache::GetInstance().GetCache().empty())
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds
@@ -1803,14 +1796,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         // Perform initial scan, if necessary
 
         // Check for stale cache...
-        bool bDNScacheStale = true;
-        wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()) {
-          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5) bDNScacheStale = false;
-        }
-
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        MdnsCache::GetInstance().Validate();
+        if (MdnsCache::GetInstance().GetCache().empty())
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds
@@ -1942,14 +1929,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         // Perform initial scan, if necessary
 
         // Check for stale cache...
-        bool bDNScacheStale = true;
-        wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()) {
-          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5) bDNScacheStale = false;
-        }
-
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        MdnsCache::GetInstance().Validate();
+        if (MdnsCache::GetInstance().GetCache().empty())
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds

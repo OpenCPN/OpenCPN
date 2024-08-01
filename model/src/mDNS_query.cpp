@@ -47,6 +47,7 @@
 #endif
 
 #include <wx/datetime.h>
+#include <wx/log.h>
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -54,11 +55,10 @@
 
 #include "model/cmdline.h"
 #include "mdns_util.h"
+#include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
 
 // Static data structs
-std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-wxDateTime g_DNS_cache_time;
 std::vector<ocpn_DNS_record_t> g_sk_servers;
 
 static char addrbuffer[64];
@@ -72,6 +72,16 @@ static struct sockaddr_in6 service_address_ipv6;
 
 static int has_ipv4;
 static int has_ipv6;
+
+static void log_printf(const char* fmt, ...) {
+  if (getenv("OCPN_MDNS_DEBUG") ||
+      wxLog::GetActiveTarget()->GetLogLevel() >= wxLOG_Debug) {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+  }
+}
 
 static int ocpn_query_callback(int sock, const struct sockaddr* from,
                                size_t addrlen, mdns_entry_type_t entry,
@@ -99,10 +109,10 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
     mdns_string_t namestr =
         mdns_record_parse_ptr(data, size, record_offset, record_length,
                               namebuffer, sizeof(namebuffer));
-    printf("%.*s : %s %.*s PTR %.*s rclass 0x%x ttl %u length %d\n",
-           MDNS_STRING_FORMAT(fromaddrstr), entrytype,
-           MDNS_STRING_FORMAT(entrystr), MDNS_STRING_FORMAT(namestr), rclass,
-           ttl, (int)record_length);
+    log_printf("%.*s : %s %.*s PTR %.*s rclass 0x%x ttl %u length %d\n",
+               MDNS_STRING_FORMAT(fromaddrstr), entrytype,
+               MDNS_STRING_FORMAT(entrystr), MDNS_STRING_FORMAT(namestr),
+               rclass, ttl, (int)record_length);
 
     std::string srv(namestr.str, namestr.length);
     size_t rh = srv.find("opencpn-object");
@@ -113,31 +123,10 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
     size_t r = from.find(':');
     std::string ip = from.substr(0, r);
 
-    //  Search for this record in the cache
-    auto func = [srv](const std::shared_ptr<ocpn_DNS_record_t> record) {
-      return !record->service_instance.compare(srv);
-    };
-    auto found = std::find_if(g_DNS_cache.begin(), g_DNS_cache.end(), func);
-
-    std::shared_ptr<ocpn_DNS_record_t> entry;
-
-    if (found == g_DNS_cache.end()) {
-      // Add a record
-      entry = std::make_shared<ocpn_DNS_record_t>();
-      g_DNS_cache.push_back(entry);
-    } else
-      entry = *found;
-
-    // Update the cache entry
-    entry->service_instance = srv;
-    entry->hostname = hostname;
-    entry->ip = ip;
-    entry->port = "8000";
     // Is the destination a portable?  Detect by string inspection.
-    std::string p("Portable");
-    std::size_t port = hostname.find(p);
-    ;
-    if (port != std::string::npos) entry->port = "8001";
+    std::string port =
+      hostname.find("Portable") == std::string::npos ? "8000" : "8001";
+    MdnsCache::GetInstance().Add(srv, hostname, ip, port);
   }
 
   return 0;
@@ -204,7 +193,7 @@ static int sk_query_callback(int sock, const struct sockaddr* from,
         namebuffer, sizeof(namebuffer), &addr, sizeof(addr));
     g_sk_servers.back().ip = addrstr.str;
   } else {
-    // printf("SOMETING ELSE\n");
+    // log_printf("SOMETING ELSE\n");
   }
   return 0;
 }
@@ -217,17 +206,17 @@ int send_mdns_query(mdns_query_t* query, size_t count, size_t timeout_secs,
   int num_sockets =
       open_client_sockets(sockets, sizeof(sockets) / sizeof(sockets[0]), 0);
   if (num_sockets <= 0) {
-    printf("Failed to open any client sockets\n");
+    log_printf("Failed to open any client sockets\n");
     return -1;
   }
-  printf("Opened %d socket%s for mDNS query\n", num_sockets,
-         num_sockets ? "s" : "");
+  log_printf("Opened %d socket%s for mDNS query\n", num_sockets,
+             num_sockets ? "s" : "");
 
   size_t capacity = 2048;
   void* buffer = malloc(capacity);
   void* user_data = 0;
 
-  printf("Sending mDNS query");
+  log_printf("Sending mDNS query");
   for (size_t iq = 0; iq < count; ++iq) {
     const char* record_name = "PTR";
     if (query[iq].type == MDNS_RECORDTYPE_SRV)
@@ -238,20 +227,20 @@ int send_mdns_query(mdns_query_t* query, size_t count, size_t timeout_secs,
       record_name = "AAAA";
     else
       query[iq].type = MDNS_RECORDTYPE_PTR;
-    printf(" : %s %s", query[iq].name, record_name);
+    log_printf(" : %s %s", query[iq].name, record_name);
   }
-  printf("\n");
+  log_printf("\n");
   for (int isock = 0; isock < num_sockets; ++isock) {
     query_id[isock] =
         mdns_multiquery_send(sockets[isock], query, count, buffer, capacity, 0);
     if (query_id[isock] < 0)
-      printf("Failed to send mDNS query: %s\n", strerror(errno));
+      log_printf("Failed to send mDNS query: %s\n", strerror(errno));
   }
 
   // This is a simple implementation that loops for timeout_secs or as long as
   // we get replies
   int res;
-  printf("Reading mDNS query replies\n");
+  log_printf("Reading mDNS query replies\n");
   int records = 0;
   do {
     struct timeval timeout;
@@ -280,13 +269,13 @@ int send_mdns_query(mdns_query_t* query, size_t count, size_t timeout_secs,
     }
   } while (res > 0);
 
-  printf("Read %d records\n", records);
+  log_printf("Read %d records\n", records);
 
   free(buffer);
 
   for (int isock = 0; isock < num_sockets; ++isock)
     mdns_socket_close(sockets[isock]);
-  printf("Closed socket%s\n", num_sockets ? "s" : "");
+  log_printf("Closed socket%s\n", num_sockets ? "s" : "");
 
   return 0;
 }
@@ -349,7 +338,7 @@ std::vector<std::string> get_local_ipv4_addresses() {
 
   if (!adapter_address || (ret != NO_ERROR)) {
     free(adapter_address);
-    printf("Failed to get network adapter addresses\n");
+    log_printf("Failed to get network adapter addresses\n");
     return ret_vec;
   }
 
@@ -420,7 +409,7 @@ std::vector<std::string> get_local_ipv4_addresses() {
 						char buffer[128];
 						mdns_string_t addr = ipv6_address_to_string(buffer, sizeof(buffer), saddr,
 						                                            sizeof(struct sockaddr_in6));
-						printf("Local IPv6 address: %.*s\n", MDNS_STRING_FORMAT(addr));
+						log_printf("Local IPv6 address: %.*s\n", MDNS_STRING_FORMAT(addr));
 					}
 				}
 			}
@@ -437,7 +426,8 @@ std::vector<std::string> get_local_ipv4_addresses() {
   struct ifaddrs* ifaddr = 0;
   struct ifaddrs* ifa = 0;
 
-  if (getifaddrs(&ifaddr) < 0) printf("Unable to get interface addresses\n");
+  if (getifaddrs(&ifaddr) < 0)
+    log_printf("Unable to get interface addresses\n");
 
   int first_ipv4 = 1;
   int first_ipv6 = 1;
@@ -479,7 +469,7 @@ std::vector<std::string> get_local_ipv4_addresses() {
 					char buffer[128];
 					mdns_string_t addr = ipv4_address_to_string(buffer, sizeof(buffer), saddr,
 					                                            sizeof(struct sockaddr_in));
-					printf("Local IPv4 address: %.*s\n", MDNS_STRING_FORMAT(addr));
+					log_printf("Local IPv4 address: %.*s\n", MDNS_STRING_FORMAT(addr));
 				}
 #endif
       }
@@ -517,7 +507,7 @@ std::vector<std::string> get_local_ipv4_addresses() {
 					char buffer[128];
 					mdns_string_t addr = ipv6_address_to_string(buffer, sizeof(buffer), saddr,
 					                                            sizeof(struct sockaddr_in6));
-					printf("Local IPv6 address: %.*s\n", MDNS_STRING_FORMAT(addr));
+					log_printf("Local IPv6 address: %.*s\n", MDNS_STRING_FORMAT(addr));
 				}
 			}
 		}

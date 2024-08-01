@@ -176,6 +176,7 @@ public:
 
   wxString GetRouteReverseMessage(void);
   wxString GetRouteResequenceMessage(void);
+  struct RoutemanDlgCtx &GetDlgContext(){ return m_route_dlg_ctx;}
 
   bool m_bDataValid;
 

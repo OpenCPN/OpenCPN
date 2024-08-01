@@ -172,12 +172,20 @@ public:
   double m_ScaledFactor;
   void DoZoomToCenter();
   const wxString GetGribDir() {
-    if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir)) {
-      m_grib_dir = GetpSharedDataLocation()
+    if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir))
+    {
+      m_grib_dir = GetpPrivateApplicationDataLocation()
                        ->Append(wxFileName::GetPathSeparator())
                        .Append("grib");
-      if (!wxDirExists(m_grib_dir)) {
-        wxMkdir(m_grib_dir);
+
+      if (!wxDirExists(m_grib_dir)) wxMkdir(m_grib_dir);
+
+      wxString dir_spec;
+      int response = PlatformDirSelectorDialog(
+          this, &dir_spec, _("Choose GRIB File Directory"), m_grib_dir);
+
+      if (response == wxID_OK) {
+        m_grib_dir = (dir_spec);
       }
     }
     return m_grib_dir;
@@ -189,6 +197,8 @@ public:
   double m_highlight_lonmax;
   double m_highlight_latmin;
   double m_highlight_lonmin;
+  wxString m_grib_dir;
+  wxArrayString m_file_names; /* selected files */
 
 private:
   void OnClose(wxCloseEvent &event);
@@ -254,8 +264,6 @@ private:
   bool m_SelectionIsSaved;
   int m_Selection_index;
   wxString m_Selection_label;
-  wxArrayString m_file_names; /* selected files */
-  wxString m_grib_dir;
   wxSize m_DialogsOffset;
   double m_projected_lat;
   double m_projected_lon;
