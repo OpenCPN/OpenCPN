@@ -19,10 +19,10 @@ Here are four main tasks:
   - <<publish, Upload a downstream release to an Ubuntu PPA>>
   - <<test-build, Create a local test build of the package>>
 
-Here, the term "downstream release" refers to a release based on the 
+Here, the term "downstream release" refers to a release based on the
 same opencpn release but where the packaging has been modified.
 
-There is also some support tasks, see the right panel. 
+There is also some support tasks, see the right panel.
 
 [#setup]
 == Setting up the environment
@@ -30,21 +30,20 @@ There is also some support tasks, see the right panel.
 1. Creating releases requires a working gpg secret key including the
    password is available.
    Verify using something like
-   `gpg --export-secret-keys E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C`. 
+   `gpg --export-secret-keys E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C`.
    This key must be registered on the PPA about the be used.
-3. Create a file _~/.devscripts_ with contents like:
+2. Create a file _~/.devscripts_ with contents like:
 
        DEBSIGN_KEYID=E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C
        DEBEMAIL="leamas.alec@gmail.com"
-       DEBFULLNAME="Alec Leamas"+
+       DEBFULLNAME="Alec Leamas"
 +
 Of course, all values here are personal.
 DEBSIGN_KEYID is the secret key verified above.
-The gpg key is only required when uploading source packages to an ubuntu 
+This key is only required when uploading source packages to an ubuntu
 PPA.
-
 [#install-tools]
-== Install tools
+3. Install development tools
 
     $ sudo apt install devscripts git-buildpackage equivs
 
@@ -125,6 +124,8 @@ tarball created by git-archive above do:
 
    $ gbp import-orig ../opencpn_5.9.3~beta3+dfsg.orig.tar.xz
 
+=== Push upstream changes
+
 Final step is to push these changes:
 
    $ gbp push
@@ -147,38 +148,48 @@ ubuntu/jammy and debian/bookworm.
 
 For each release do:
 
-1. Checkout the actual branch like ubuntu/jammy. 
+1. Checkout the actual branch like ubuntu/jammy.
    Work on ubuntu branches must be done on an ubuntu host
 2. Create a provisional version entry in _debian/changelog_ using `dch -R`.
 3. Merge upstream changes using `gbp import-ref -u5.9.3-beta3`. The -u argument is
    the last part of an upstream tag like `upstream/5.9.3-beta3`
+   This command fails in some branch(es), see below.
 4. Do possible changes in the new release.
    Note that only files in the _debian/_ directory can be modified;
    changes in other files are handled using patches in _debian/patches_.
    See Modifying Sources <<edit-src,below>>
 5. Commit all changes.
-6. Finalize the changelog entry using `dch -r`. 
+6. Finalize the changelog entry using `dch -r`.
 7. Commit the change in _debian/changelog_
 8. Push the actual branch, for example `git push upstream ubuntu/jammy`
+
+If `gbp import-ref` fails, use the tarball created by `gbp export-orig`
+instead. For this to work, the corresponding tag should be deleted.
+Something like
+
+    $ git tag -d upstream/5.8.4+dfsg
+    $ gbp import-orig ../opencpn_5.8.4~beta4+dfsg.orig.tar.xz
 
 [#publish]
 == Publish existing downstream release to PPA
 
 1. Initiate the environment as described <<setup, above>>.
-2. Clone and checkout all branches, or update existing clone.  
+2. Clone and checkout all branches, or update existing clone.
    See <<create-clone, above>>.
-3. Create the upstream source tarball: `gbp export-orig`
-4. Create the source package: `debuild --no-lintian -S`
-5.  List all available source packages using `ls -lt ../*source.changes`.
-6. Push the most recent package to a PPA using something like:
+3. Make sure the repo is synchronized: `git clean -fxd; git checkout .`
+4. Create the upstream source tarball: `gbp export-orig`
+5. Create the source package: `debuild --no-lintian -S`
+6.  List all available source packages using `ls -lt ../*source.changes`.
+7. Push the most recent package to a PPA using something like:
 +
 ```
   $ dput ppa:leamas-alec/opencpn \
        ../opencpn_5.9.4~beta4+dfsg-1ubuntu1~bpo24.04+1_source.changes
 ```
-Or, a more generic oneliner pushing the last _source.changes_ file:
+Or, a more generic oneliner pushing the most recent _source.changes_ file:
++
 ```
-  $ dput ppa:leamas-alec/opencpn $(ls ../*source.changes | tail -1)
+  $ dput ppa:leamas-alec/opencpn $(ls -t ../*source.changes | head -1)
 ```
 
 [#test-build]
@@ -227,4 +238,3 @@ by one rather than as a big patch.
 
 It is also possible to edit existing patches using the standard
 git tools, in particular `git rebase -i`
-
