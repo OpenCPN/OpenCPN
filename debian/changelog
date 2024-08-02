@@ -1,3 +1,9 @@
+opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo22.04+2) jammy; urgency=medium
+
+  * New patch: disable intermittent failing test
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 02 Aug 2024 22:14:18 +0200
+
 opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
 
   * New upstream beta release
