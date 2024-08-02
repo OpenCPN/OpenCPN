@@ -11,12 +11,12 @@ based distros like vanilla Debian, Ubuntu, Raspbian, Mint, etc.
 Work is done on a Debian or Ubuntu host.
 Uploading an ubuntu  package must be done from an Ubuntu host.
 
-Here are three main tasks:
+Here are four main tasks:
 
   - <<import-version,Importing new opencpn releases into the packaging
     branches>>.
-  - <<src-release, Creating a new downstream release and upload it into an
-    Ubuntu PPA>>
+  - <<src-release, Creating a new downstream release>>.
+  - <<publish, Upload a downstream release to an Ubuntu PPA>>
   - <<test-build, Create a local test build of the package>>
 
 Here, the term "downstream release" refers to a release based on the 
@@ -71,6 +71,13 @@ packages.
 Alternatives includes  `ubuntu/jammy`, `ubuntu/focal` and `debian/master`.
 The latter builds packages for the rolling Sid distribution.
 
+To update an existing clone:
+
+    $ git fetch upstream upstream/latest:upstream/latest
+    $ git fetch upstream pristine-tar:pristine-tar
+    $ git checkout ubuntu/numbat
+    $ git pull upstream ubuntu/numbat
+
 
 [#import-version]
 == Import a new opencpn version into packaging branches.
@@ -118,11 +125,10 @@ tarball created by git-archive above do:
 
    $ gbp import-orig ../opencpn_5.9.3~beta3+dfsg.orig.tar.xz
 
-=== Push the updated branches
-
 Final step is to push these changes:
 
    $ gbp push
+
 
 [#src-release]
 == Create a downstream release
@@ -153,14 +159,27 @@ For each release do:
 5. Commit all changes.
 6. Finalize the changelog entry using `dch -r`. 
 7. Commit the change in _debian/changelog_
-8. Create a source package using `debuild -S`.
-9. List all available source packages using `ls -lt ../*source.changes`.
-10. Push the most recent package to a PPA using something like
+8. Push the actual branch, for example `git push upstream ubuntu/jammy`
 
-     $ `dput ppa:leamas-alec/opencpn \
-     ../opencpn_5.9.2-beta2+dfsg-1ubuntu1~bpo2204.8_source.changes`.
+[#publish]
+== Publish existing downstream release to PPA
 
-and that's it.
+1. Initiate the environment as described <<setup, above>>.
+2. Clone and checkout all branches, or update existing clone.  
+   See <<create-clone, above>>.
+3. Create the upstream source tarball: `gbp export-orig`
+4. Create the source package: `debuild --no-lintian -S`
+5.  List all available source packages using `ls -lt ../*source.changes`.
+6. Push the most recent package to a PPA using something like:
++
+```
+  $ dput ppa:leamas-alec/opencpn \
+       ../opencpn_5.9.4~beta4+dfsg-1ubuntu1~bpo24.04+1_source.changes
+```
+Or, a more generic oneliner pushing the last _source.changes_ file:
+```
+  $ dput ppa:leamas-alec/opencpn $(ls ../*source.changes | tail -1)
+```
 
 [#test-build]
 == Create a local test build
