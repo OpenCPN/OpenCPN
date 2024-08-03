@@ -18,15 +18,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * Singleton cache for hosts looked up using mdns. A critical region accessed
- * both by timer routines and the main thread.
- *
- * Entries are added by the various Add() signatures. The Validate() method
- * removes all entries where to host does not respond to a http request on
- * on port 8443.
- */
-
 #ifndef MDNS_CACHE_H
 #define MDNS_CACHE_H
 
@@ -34,6 +25,15 @@
 #include <string>
 #include <vector>
 
+
+/**
+ * Singleton cache for hosts looked up using mdns. A critical region accessed
+ * both by timer routines and the main thread.
+ *
+ * Entries are added by the various Add() signatures. The Validate() method
+ * removes all entries where host does not respond to a http request on
+ * port 8443.
+ */
 class MdnsCache {
 public:
   struct Entry {
