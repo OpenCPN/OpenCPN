@@ -37,7 +37,7 @@ public:
     }
   }
 
-  wxMailMessage(){};
+  wxMailMessage() {};
 
   //// Accessors
 

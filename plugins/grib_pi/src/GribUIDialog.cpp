@@ -169,7 +169,8 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
     : GRIBUICtrlBarBase(parent, id, title, pos, size, style) {
   pParent = parent;
   pPlugIn = ppi;
-  // Preinitialize the vierwport with an existing value, see https://github.com/OpenCPN/OpenCPN/pull/4002/files
+  // Preinitialize the vierwport with an existing value, see
+  // https://github.com/OpenCPN/OpenCPN/pull/4002/files
   m_vp = new PlugIn_ViewPort(pPlugIn->GetCurrentViewPort());
   pReq_Dialog = NULL;
   m_bGRIBActiveFile = NULL;
@@ -237,22 +238,22 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
 
     // Read XyGrib related configuration
     pConf->SetPath(_T ( "/Settings/GRIB/XyGrib" ));
-    pConf->Read(_T( "AtmModelIndex" ), &xyGribConfig.atmModelIndex , 0);
-    pConf->Read(_T( "WaveModelIndex" ), &xyGribConfig.waveModelIndex , 0);
-    pConf->Read(_T( "ResolutionIndex" ), &xyGribConfig.resolutionIndex , 0);
-    pConf->Read(_T( "DurationIndex" ), &xyGribConfig.durationIndex , 0);
-    pConf->Read(_T( "RunIndex" ), &xyGribConfig.runIndex , 0);
-    pConf->Read(_T( "IntervalIndex" ), &xyGribConfig.intervalIndex , 0);
-    pConf->Read(_T( "Wind" ), &xyGribConfig.wind , true);
-    pConf->Read(_T( "Gust" ), &xyGribConfig.gust , true);
-    pConf->Read(_T( "Pressure" ), &xyGribConfig.pressure , false);
-    pConf->Read(_T( "Temperature" ), &xyGribConfig.temperature , true);
-    pConf->Read(_T( "Cape" ), &xyGribConfig.cape , false);
-    pConf->Read(_T( "Reflectivity" ), &xyGribConfig.reflectivity , false);
-    pConf->Read(_T( "CloudCover" ), &xyGribConfig.cloudCover , true);
-    pConf->Read(_T( "Precipitation" ), &xyGribConfig.precipitation , true);
-    pConf->Read(_T( "WaveHeight" ), &xyGribConfig.waveHeight , true);
-    pConf->Read(_T( "WindWaves" ), &xyGribConfig.windWaves , true);
+    pConf->Read(_T( "AtmModelIndex" ), &xyGribConfig.atmModelIndex, 0);
+    pConf->Read(_T( "WaveModelIndex" ), &xyGribConfig.waveModelIndex, 0);
+    pConf->Read(_T( "ResolutionIndex" ), &xyGribConfig.resolutionIndex, 0);
+    pConf->Read(_T( "DurationIndex" ), &xyGribConfig.durationIndex, 0);
+    pConf->Read(_T( "RunIndex" ), &xyGribConfig.runIndex, 0);
+    pConf->Read(_T( "IntervalIndex" ), &xyGribConfig.intervalIndex, 0);
+    pConf->Read(_T( "Wind" ), &xyGribConfig.wind, true);
+    pConf->Read(_T( "Gust" ), &xyGribConfig.gust, true);
+    pConf->Read(_T( "Pressure" ), &xyGribConfig.pressure, false);
+    pConf->Read(_T( "Temperature" ), &xyGribConfig.temperature, true);
+    pConf->Read(_T( "Cape" ), &xyGribConfig.cape, false);
+    pConf->Read(_T( "Reflectivity" ), &xyGribConfig.reflectivity, false);
+    pConf->Read(_T( "CloudCover" ), &xyGribConfig.cloudCover, true);
+    pConf->Read(_T( "Precipitation" ), &xyGribConfig.precipitation, true);
+    pConf->Read(_T( "WaveHeight" ), &xyGribConfig.waveHeight, true);
+    pConf->Read(_T( "WindWaves" ), &xyGribConfig.windWaves, true);
   }
   // init zone selection parameters
   m_ZoneSelMode = m_SavedZoneSelMode;
@@ -344,7 +345,6 @@ GRIBUICtrlBar::~GRIBUICtrlBar() {
     pConf->Write(_T( "Precipitation" ), xyGribConfig.precipitation);
     pConf->Write(_T( "WaveHeight" ), xyGribConfig.waveHeight);
     pConf->Write(_T( "WindWaves" ), xyGribConfig.windWaves);
-
   }
   delete m_vp;
   delete m_pTimelineSet;
@@ -662,8 +662,7 @@ private:
 
 wxArrayString GRIBUICtrlBar::GetFilesInDirectory() {
   wxArrayString file_array;
-  if (!wxDir::Exists(m_grib_dir))
-    return file_array;
+  if (!wxDir::Exists(m_grib_dir)) return file_array;
 
   //    Get an array of GRIB file names in the target directory, not descending
   //    into subdirs
@@ -760,8 +759,8 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
   }
 
   if ((m_DialogStyle >> 1 == SEPARATED || !m_CDataIsShown) &&
-      !m_HasCaption) {  // Size and show grabber if necessary
-    Fit();              // each time CtrlData dialog will be alone
+      !m_HasCaption) {   // Size and show grabber if necessary
+    Fit();               // each time CtrlData dialog will be alone
     m_gGrabber->Size();  // or separated
     m_gGrabber->Show();
   }
@@ -870,9 +869,9 @@ void GRIBUICtrlBar::OnAltitude(wxCommandEvent &event) {
       MenuAppend(
           amenu, ID_CTRLALTITUDE + 1000 + i,
 
-              m_OverlaySettings.GetAltitudeFromIndex(
-                  i, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
-                         .m_Units),
+          m_OverlaySettings.GetAltitudeFromIndex(
+              i, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
+                     .m_Units),
           wxITEM_RADIO);
     }
   }
@@ -944,16 +943,15 @@ void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
                                wxItemKind kind, wxBitmap bitmap,
                                wxMenu *submenu) {
   wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), kind);
-  //add a submenu to this item if necessary
-  if (submenu)
-    item->SetSubMenu(submenu);
+  // add a submenu to this item if necessary
+  if (submenu) item->SetSubMenu(submenu);
 
-/* Menu font do not work properly for MSW (wxWidgets 3.2.1)
-#ifdef __WXMSW__
-  wxFont *qFont = OCPNGetFont(_("Menu"), 10);
-  item->SetFont(*qFont);
-#endif
-*/
+    /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
+    #ifdef __WXMSW__
+      wxFont *qFont = OCPNGetFont(_("Menu"), 10);
+      item->SetFont(*qFont);
+    #endif
+    */
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
   if (!bitmap.IsSameAs(wxNullBitmap)) item->SetBitmap(bitmap);
@@ -982,18 +980,19 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
               m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) !=
                   wxNOT_FOUND)) ||
             i == 0) {
-          MenuAppend(smenu, ID_CTRLALTITUDE + 1000 + i,
-                         m_OverlaySettings.GetAltitudeFromIndex(
-                             i, m_OverlaySettings
-                                    .Settings[GribOverlaySettings::PRESSURE]
-                                    .m_Units),
-                     wxITEM_RADIO);
+          MenuAppend(
+              smenu, ID_CTRLALTITUDE + 1000 + i,
+              m_OverlaySettings.GetAltitudeFromIndex(
+                  i, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
+                         .m_Units),
+              wxITEM_RADIO);
         }
       }
       smenu->Check(ID_CTRLALTITUDE + 1000 + m_Altitude, true);
       MenuAppend(
           xmenu, wxID_ANY, _("Select geopotential altitude"), wxITEM_NORMAL,
-          GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor),smenu);
+          GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor),
+          smenu);
     }
     MenuAppend(xmenu, ID_BTNNOW, _("Now"), wxITEM_NORMAL,
                GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));
@@ -1082,8 +1081,7 @@ void GRIBUICtrlBar::SetViewPort(PlugIn_ViewPort *vp) {
   delete m_vp;
   m_vp = new PlugIn_ViewPort(*vp);
 
-  if (pReq_Dialog)
-    pReq_Dialog->OnVpChange(vp);
+  if (pReq_Dialog) pReq_Dialog->OnVpChange(vp);
 }
 
 void GRIBUICtrlBar::OnClose(wxCloseEvent &event) {
@@ -1560,18 +1558,17 @@ GribTimelineRecordSet *GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time) {
   return set;
 }
 
-void GRIBUICtrlBar::GetProjectedLatLon(int &x, int &y)
-{
-  wxPoint p(0,0);
+void GRIBUICtrlBar::GetProjectedLatLon(int &x, int &y) {
+  wxPoint p(0, 0);
   auto now = TimelineTime();
   auto sog = m_ProjectBoatPanel->GetSpeed();
   auto cog = m_ProjectBoatPanel->GetCourse();
-  double dist = static_cast<double>(now.GetTicks() - pPlugIn->m_boat_time) * sog / 3600.0;
-  PositionBearingDistanceMercator_Plugin(pPlugIn->m_boat_lat, pPlugIn->m_boat_lon,
-                                         cog,
-                                         dist, &m_projected_lat,
-                                         &m_projected_lon);
-  if(m_vp) {
+  double dist =
+      static_cast<double>(now.GetTicks() - pPlugIn->m_boat_time) * sog / 3600.0;
+  PositionBearingDistanceMercator_Plugin(pPlugIn->m_boat_lat,
+                                         pPlugIn->m_boat_lon, cog, dist,
+                                         &m_projected_lat, &m_projected_lon);
+  if (m_vp) {
     GetCanvasPixLL(m_vp, &p, m_projected_lat, m_projected_lon);
   }
   x = p.x;
@@ -1703,8 +1700,7 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
   wxStandardPathsBase &path = wxStandardPaths::Get();
   wxString l_grib_dir = path.GetDocumentsDir();
 
-  if (wxDir::Exists(m_grib_dir))
-    l_grib_dir = m_grib_dir;
+  if (wxDir::Exists(m_grib_dir)) l_grib_dir = m_grib_dir;
 
   wxFileDialog *dialog =
       new wxFileDialog(NULL, _("Select a GRIB file"), l_grib_dir, _T(""),
@@ -1720,9 +1716,8 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
     m_grib_dir = dialog->GetDirectory();
     dialog->GetPaths(m_file_names);
     OpenFile();
-    if (g_pi){
-      if (g_pi->m_bZoomToCenterAtInit)
-        DoZoomToCenter();
+    if (g_pi) {
+      if (g_pi->m_bZoomToCenterAtInit) DoZoomToCenter();
     }
     SetDialogsStyleSizePosition(true);
   }
@@ -1953,8 +1948,9 @@ void GRIBUICtrlBar::ComputeBestForecastForNow() {
   SaveSelectionString();  // memorize the new selected wxChoice date time label
   m_cRecordForecast->SetString(
       m_Selection_index,
-      TToString(now, pPlugIn->GetTimeZone()));  // write the now date time label
-                                                // in the right place in wxChoice
+      TToString(now,
+                pPlugIn->GetTimeZone()));  // write the now date time label
+                                           // in the right place in wxChoice
   m_cRecordForecast->SetStringSelection(
       TToString(now, pPlugIn->GetTimeZone()));  // put it in the box
 

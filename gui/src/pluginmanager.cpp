@@ -38,8 +38,6 @@
 #include <string>
 #include <unordered_map>
 
-
-
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
@@ -304,7 +302,7 @@ public:
     m_defer = false;
   }
 
-  BlacklistUI() : m_defer(true){};
+  BlacklistUI() : m_defer(true) {};
 
 private:
   void show_msg(wxString msg) {
@@ -504,8 +502,8 @@ static void gui_uninstall(const PlugInData* pic, const char* plugin) {
 
 static bool LoadAllPlugIns(bool load_enabled, bool keep_orphans = false) {
   g_Platform->ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled,
-                                                       keep_orphans);
+  bool b =
+      PluginLoader::getInstance()->LoadAllPlugIns(load_enabled, keep_orphans);
   g_Platform->HideBusySpinner();
   return b;
 }
@@ -947,7 +945,8 @@ PlugInManager::PlugInManager(MyFrame* parent) {
   HandlePluginLoaderEvents();
   InitCommListeners();
   auto msg_sent_action = [](ObservedEvt ev) {
-    SendNMEASentenceToAllPlugIns(ev.GetString()); };
+    SendNMEASentenceToAllPlugIns(ev.GetString());
+  };
   m_on_msg_sent_listener.Init(g_pRouteMan->on_message_sent, msg_sent_action);
 }
 PlugInManager::~PlugInManager() {
@@ -3071,7 +3070,9 @@ wxString getUsrDistanceUnit_Plugin(int unit) {
 
 wxString getUsrSpeedUnit_Plugin(int unit) { return getUsrSpeedUnit(unit); }
 
-wxString getUsrWindSpeedUnit_Plugin(int unit) { return getUsrWindSpeedUnit(unit); }
+wxString getUsrWindSpeedUnit_Plugin(int unit) {
+  return getUsrWindSpeedUnit(unit);
+}
 
 wxString getUsrTempUnit_Plugin(int unit) { return getUsrTempUnit(unit); }
 
@@ -3271,7 +3272,8 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     if (prp) prp->ReLoadIcon();
 
     auto canvas = gFrame->GetPrimaryCanvas();
-    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(), canvas->GetScaleValue());
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(),
+                  canvas->GetScaleValue());
     SelectItem* pFind =
         pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {
@@ -3905,7 +3907,6 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   auto cataloghdlr = CatalogHandler::getInstance();
   cataloghdlr->ClearCatalogData();
 
-
   //  Reload all plugins, which will also update the status fields
   LoadAllPlugIns(false);
 
@@ -4067,8 +4068,8 @@ std::vector<const PlugInData*> GetInstalled() {
   }
   auto compare = [](const PlugInData* lhs, const PlugInData* rhs) {
     std::string slhs, srhs;
-    for (auto &cl : lhs->Key()) slhs += toupper(cl);
-    for (auto &cr : rhs->Key()) srhs += toupper(cr);
+    for (auto& cl : lhs->Key()) slhs += toupper(cl);
+    for (auto& cr : rhs->Key()) srhs += toupper(cr);
     return slhs.compare(srhs) < 0;
   };
   std::sort(result.begin(), result.end(), compare);
@@ -4116,7 +4117,7 @@ void PluginListPanel::ReloadPluginPanels() {
   if (safe_mode::get_mode()) {
     /** Add panels for installed, unloaded plugins. */
     auto installed = PluginHandler::getInstance()->GetInstalldataPlugins();
-    for (const auto& name : installed) AddPlugin(name)  ;
+    for (const auto& name : installed) AddPlugin(name);
   } else {
     /* The catalog entries. */
     auto available = getCompatiblePlugins();
@@ -4130,10 +4131,11 @@ void PluginListPanel::ReloadPluginPanels() {
 
     // Sort on case-insensitive name
     struct CompSort {
-      bool operator()(const PluginMetadata& lhs, const PluginMetadata rhs) const {
+      bool operator()(const PluginMetadata& lhs,
+                      const PluginMetadata rhs) const {
         std::string slhs, srhs;
-        for (auto &cl : lhs.name) slhs += toupper(cl);
-        for (auto &cr : rhs.name) srhs += toupper(cr);
+        for (auto& cl : lhs.name) slhs += toupper(cl);
+        for (auto& cr : rhs.name) srhs += toupper(cr);
         return slhs.compare(srhs) < 0;
       }
     } comp_sort;
@@ -4327,7 +4329,6 @@ PluginPanel::PluginPanel(wxPanel* parent, const std::string& name)
     : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
               wxBORDER_NONE),
       m_is_safe_panel(true) {
-
   m_PluginListPanel = dynamic_cast<PluginListPanel*>(parent);
   wxASSERT(m_PluginListPanel != 0);
   wxBoxSizer* top_sizer = new wxBoxSizer(wxVERTICAL);
@@ -4355,14 +4356,13 @@ PluginPanel::PluginPanel(wxPanel* parent, const std::string& name)
   top_horizontal->Add(m_info_btn);
   m_pButtonUninstall = new wxButton(this, wxID_ANY, _("Uninstall"),
                                     wxDefaultPosition, wxDefaultSize, 0);
-  top_horizontal->Add(m_pButtonUninstall, 0,
-                      wxALIGN_CENTER_VERTICAL | wxALL, 2);
+  top_horizontal->Add(m_pButtonUninstall, 0, wxALIGN_CENTER_VERTICAL | wxALL,
+                      2);
   auto uninstall = [&](wxCommandEvent ev) {
     auto n = m_pName->GetLabel().ToStdString();
-    int result = OCPNMessageBox(gFrame,
-                                std::string(_("Uninstall plugin ")) + n + "?",
-                                _("Un-Installation"),
-                                wxICON_QUESTION | wxOK | wxCANCEL);
+    int result =
+        OCPNMessageBox(gFrame, std::string(_("Uninstall plugin ")) + n + "?",
+                       _("Un-Installation"), wxICON_QUESTION | wxOK | wxCANCEL);
     if (result != wxID_OK) return;
     PluginHandler::getInstance()->ClearInstallData(n);
     m_PluginListPanel->ReloadPluginPanels();
@@ -4509,7 +4509,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
     if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable ||
         m_plugin.m_status == PluginStatus::System ||
         (m_plugin.m_status == PluginStatus::Unmanaged &&
-         !m_plugin.m_managed_metadata.is_orphan) ) {
+         !m_plugin.m_managed_metadata.is_orphan)) {
       m_pVersion->Hide();
     }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4598,8 +4598,10 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
   m_itemStatusIconBitmap = new wxStaticBitmap(this, wxID_ANY, statusBitmap);
   m_itemStatusIconBitmap->SetToolTip(message_by_status(stat));
-  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
+  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected,
+                               this);
+  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp,
+                               this);
 
   itemBoxSizer01->Add(m_itemStatusIconBitmap, 0, wxEXPAND | wxALL, 20);
 
@@ -4619,7 +4621,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
 PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
                          const wxSize& size, PluginMetadata md)
-    : PluginPanel(parent, id, pos, size, PlugInData(md)){};
+    : PluginPanel(parent, id, pos, size, PlugInData(md)) {};
 
 PluginPanel::~PluginPanel() {
   Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4719,8 +4721,7 @@ void PluginPanel::SetSelected(bool selected) {
       unInstallPossible = false;
 
     // Orphan plugins can usually be uninstalled, at best effort.
-    if (m_plugin.m_managed_metadata.is_orphan)
-      unInstallPossible = true;
+    if (m_plugin.m_managed_metadata.is_orphan) unInstallPossible = true;
 
     m_pButtonUninstall->Show(unInstallPossible);
 
@@ -4785,7 +4786,7 @@ void PluginPanel::SetSelected(bool selected) {
     SetActionLabel(label);
     const auto plugin_name = m_plugin.m_common_name.ToStdString();
     if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
-       m_pButtonAction->Hide();
+      m_pButtonAction->Hide();
     }
 
     Layout();
@@ -4905,12 +4906,11 @@ void PluginPanel::OnPluginAction(wxCommandEvent& event) {
   return;
 }
 
-static void SetWindowFontStyle(wxWindow* window,  wxFontStyle style) {
+static void SetWindowFontStyle(wxWindow* window, wxFontStyle style) {
   auto font = window->GetFont();
   font.SetStyle(style);
   window->SetFont(font);
 }
-
 
 void PluginPanel::SetEnabled(bool enabled) {
   if (m_is_safe_panel) return;
@@ -5511,7 +5511,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext& glc,
           glChartCanvas::DisableClipRegion();
 
         }  //! empty
-      }    // for
+      }  // for
       delete r;
     }
   } else
@@ -5580,7 +5580,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(
           glChartCanvas::DisableClipRegion();
 
         }  //! empty
-      }    // for
+      }  // for
       delete r;
     }
 
@@ -7748,7 +7748,8 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     if (prp) prp->ReLoadIcon();
 
     auto canvas = gFrame->GetPrimaryCanvas();
-    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(), canvas->GetScaleValue());
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(),
+                  canvas->GetScaleValue());
     SelectItem* pFind =
         pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {

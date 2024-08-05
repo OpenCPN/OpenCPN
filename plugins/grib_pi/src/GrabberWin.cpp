@@ -36,9 +36,10 @@
 //----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(GribGrabberWin, wxPanel)
 EVT_MOUSE_EVENTS(GribGrabberWin::OnMouseEvent)
-    EVT_PAINT(GribGrabberWin::OnPaint) END_EVENT_TABLE()
+EVT_PAINT(GribGrabberWin::OnPaint)
+END_EVENT_TABLE()
 
-        GribGrabberWin::GribGrabberWin(wxWindow* parent) {
+    GribGrabberWin::GribGrabberWin(wxWindow* parent) {
   Create(parent);
 
   m_bLeftDown = false;
@@ -132,7 +133,7 @@ void GribGrabberWin::OnPaint(wxPaintEvent& event) {
 
 void GribGrabberWin::Size() {
   wxBitmap bitmap = (wxBitmap(grabber));
-  int height = GetParent()->GetSize().y - 2; //keep a small margin of 2
+  int height = GetParent()->GetSize().y - 2;  // keep a small margin of 2
   int width = height / 2;
 
   wxImage scaled_image = bitmap.ConvertToImage();

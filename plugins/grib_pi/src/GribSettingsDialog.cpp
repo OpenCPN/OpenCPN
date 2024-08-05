@@ -196,8 +196,7 @@ void GribOverlaySettings::Read() {
     int units;
     pConf->Read(Name + _T ( "Units" ), &units, 0);
     int j;
-    for (j = 0; !unit_names[unittype[i]][j].empty(); j++)
-      ;
+    for (j = 0; !unit_names[unittype[i]][j].empty(); j++);
     Settings[i].m_Units =
         (units < 0 || units > j - 1) ? (SettingsType)0 : (SettingsType)units;
 
@@ -815,7 +814,7 @@ void GribSettingsDialog::SetSettingsDialogSize() {
       sc->SetSize(wxSize(wxMin(scr.x, w), wxMin(scr.y, h)));
 
       // Constrain size on small displays
-      if(display_height < 600){
+      if (display_height < 600) {
         sc->SetSize(scr.x, h);
       }
 
