@@ -44,6 +44,11 @@
 #include "instrument.h"
 extern int g_iUTCOffset;  // get offset from dashboard_pi.cpp
 
+/**
+ * @class DashboardInstrument_Clock
+ * @brief An instrument that reports the GNSS clock time, if available.
+ * @extends DashboardInstrument_Single
+ */
 class DashboardInstrument_Clock : public DashboardInstrument_Single {
 public:
   DashboardInstrument_Clock(wxWindow *parent, wxWindowID id, wxString title,

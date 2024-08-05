@@ -308,6 +308,17 @@ private:
   int mSatsInUse;
   int mSatsInView;
   double mHdm;
+  /**
+   * @var mUTCDateTime
+   * @brief The current time in UTC
+   *
+   * Obtained from the following sources in order of priority:
+   * 1. SignalK navigation.datetime
+   * 2. NMEA ZDA sentence
+   * 3. NMEA RMC sentence
+   * 4. GNSS
+   * 5. Local system clock
+   */
   wxDateTime mUTCDateTime;
   int m_config_version;
   wxString m_VDO_accumulator;
