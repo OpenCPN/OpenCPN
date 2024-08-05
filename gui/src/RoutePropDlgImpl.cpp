@@ -254,8 +254,7 @@ RoutePropDlgImpl::RoutePropDlgImpl(wxWindow* parent, wxWindowID id,
           NULL, this);
 
 #ifdef __WXOSX__
-  Connect(wxEVT_ACTIVATE,
-          wxActivateEventHandler(RoutePropDlgImpl::OnActivate),
+  Connect(wxEVT_ACTIVATE, wxActivateEventHandler(RoutePropDlgImpl::OnActivate),
           NULL, this);
 #endif
 }
@@ -281,13 +280,13 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance(wxWindow* parent) {
   return single;
 }
 
-void RoutePropDlgImpl::OnActivate(wxActivateEvent& event){
-    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
-    long int style = pWin->GetWindowStyle();
-    if (event.GetActive())
-      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
-    else
-      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
+void RoutePropDlgImpl::OnActivate(wxActivateEvent& event) {
+  wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+  long int style = pWin->GetWindowStyle();
+  if (event.GetActive())
+    pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+  else
+    pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
 void RoutePropDlgImpl::RecalculateSize(void) {
@@ -776,8 +775,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged(
     RoutePoint* prp = m_pRoute->GetPoint(selected_row + 1);
     if (prp) {
       if (gFrame->GetFocusCanvas()) {
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat,
-                               prp->m_lon,
+        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat, prp->m_lon,
                                gFrame->GetFocusCanvas()->GetVPScale());
       }
 #ifdef __WXMSW__
@@ -916,7 +914,8 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
       RoutePoint* pRP = m_pRoute->GetPoint(
           static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
 
-      RouteManagerDialog::WptShowPropertiesDialog(std::vector<RoutePoint*> {pRP}, this);
+      RouteManagerDialog::WptShowPropertiesDialog(std::vector<RoutePoint*>{pRP},
+                                                  this);
       break;
     }
   }

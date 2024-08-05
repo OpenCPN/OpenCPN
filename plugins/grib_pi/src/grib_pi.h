@@ -189,9 +189,9 @@ private:
   wxString m_ZyGribLogin;
   wxString m_ZyGribCode;
   double m_GUIScaleFactor;
- #ifdef __WXMSW__
+#ifdef __WXMSW__
   double m_GribIconsScaleFactor;
- #endif
+#endif
   bool m_bGRIBShowIcon;
 
   bool m_bShowGrib;

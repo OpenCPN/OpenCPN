@@ -93,10 +93,8 @@ void TexFont::Build(wxFont &font, bool blur) {
   wxASSERT(w < 2048 && h < 2048);
 
   /* make power of 2 */
-  for (tex_w = 1; tex_w < w; tex_w *= 2)
-    ;
-  for (tex_h = 1; tex_h < h; tex_h *= 2)
-    ;
+  for (tex_w = 1; tex_w < w; tex_w *= 2);
+  for (tex_h = 1; tex_h < h; tex_h *= 2);
 
   wxBitmap tbmp(tex_w, tex_h);
   wxMemoryDC dc;

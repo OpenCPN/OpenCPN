@@ -36,9 +36,9 @@
 #include "pi_gl.h"
 
 #ifndef __OCPN__ANDROID__
-//#include <GL/glew.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
+// #include <GL/glew.h>
+// #include <GL/gl.h>
+// #include <GL/glu.h>
 #endif
 
 #include "ocpn_plugin.h"
@@ -91,13 +91,17 @@ int NextPow2(int size) {
 //----------------------------------------------------------------------------
 /* pass the dc to the constructor, or NULL to use opengl */
 pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
-    : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
+    : glcanvas(&canvas),
+      dc(NULL),
+      m_pen(wxNullPen),
+      m_brush(wxNullBrush),
+      m_buseGL(true) {
 #ifdef ocpnUSE_GL
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -116,7 +120,11 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
 }
 
 pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
-    : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(false) {
+    : glcanvas(NULL),
+      dc(&pdc),
+      m_pen(wxNullPen),
+      m_brush(wxNullBrush),
+      m_buseGL(false) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
   wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
@@ -128,7 +136,7 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
   }
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
 #ifdef ocpnUSE_GL
@@ -137,12 +145,16 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
 }
 
 pi_ocpnDC::pi_ocpnDC()
-    : glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
+    : glcanvas(NULL),
+      dc(NULL),
+      m_pen(wxNullPen),
+      m_brush(wxNullBrush),
+      m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
 #ifdef ocpnUSE_GL
@@ -162,11 +174,11 @@ pi_ocpnDC::~pi_ocpnDC() {
 }
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {
-//#ifdef __OCPN__ANDROID__
-  if ( m_buseGL ) {
+  // #ifdef __OCPN__ANDROID__
+  if (m_buseGL) {
     configureShaders(vp->pix_width, vp->pix_height);
   }
-//#endif
+  // #endif
   m_vpSize = wxSize(vp->pix_width, vp->pix_height);
 }
 
@@ -420,7 +432,8 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
+    GLint pos =
+        glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
     glEnableVertexAttribArray(pos);
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), vert);
 
@@ -428,8 +441,8 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     mat4x4 I;
     mat4x4_identity(I);
 
-    GLint matloc =
-        glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
+    GLint matloc = glGetUniformLocation(GRIBpi_color_tri_shader_program,
+                                        "TransformMatrix");
     glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)I);
 
     wxColor c = pen.GetColour();
@@ -439,7 +452,8 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     colorv[2] = c.Blue() / float(256);
     colorv[3] = c.Alpha() / float(256);
 
-    GLint colloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
+    GLint colloc =
+        glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
 
     while (lrun < lpix) {
@@ -501,7 +515,8 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
+    GLint pos =
+        glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
     glEnableVertexAttribArray(pos);
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), vert);
 
@@ -509,8 +524,8 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     mat4x4 I;
     mat4x4_identity(I);
 
-    GLint matloc =
-        glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
+    GLint matloc = glGetUniformLocation(GRIBpi_color_tri_shader_program,
+                                        "TransformMatrix");
     glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)I);
 
     wxColor c = pen.GetColour();
@@ -520,7 +535,8 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     colorv[2] = c.Blue() / float(256);
     colorv[3] = c.Alpha() / float(256);
 
-    GLint colloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
+    GLint colloc =
+        glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -581,14 +597,15 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         glLineWidth(pen_width);
     }
 
-#if 1 //def USE_ANDROID_GLES2
+#if 1  // def USE_ANDROID_GLES2
     if (b_draw_thick)
       piDrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
       glUseProgram(GRIBpi_color_tri_shader_program);
 
       float fBuf[4];
-      GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
+      GLint pos =
+          glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
       glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                             fBuf);
       glEnableVertexAttribArray(pos);
@@ -604,7 +621,8 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       colorv[2] = m_pen.GetColour().Blue() / float(256);
       colorv[3] = 1.0;
 
-      GLint colloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
+      GLint colloc =
+          glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
       glUniform4fv(colloc, 1, colorv);
 
       wxDash *dashes;
@@ -658,7 +676,6 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
         glDrawArrays(GL_LINES, 0, 2);
         glDisableVertexAttribArray(pos);
-
       }
 
       glUseProgram(0);
@@ -887,7 +904,7 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#if 0 //ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
 
     glBegin(GL_LINE_STRIP);
     for (int i = 0; i < n; i++)
@@ -909,7 +926,8 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
 
     glUseProgram(GRIBpi_color_tri_shader_program);
 
-    GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
+    GLint pos =
+        glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           workBuf);
     glEnableVertexAttribArray(pos);
@@ -925,7 +943,8 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
     colorv[3] = m_pen.GetColour().Alpha() / float(256);
     1.0;
 
-    GLint colloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
+    GLint colloc =
+        glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
 
     glDrawArrays(GL_LINE_STRIP, 0, n);
@@ -979,8 +998,7 @@ void pi_ocpnDC::StrokeLines(int n, wxPoint *points) {
 
 void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
                                 unsigned char *color_array_ub, bool b_hiqual) {
-  if(!n)
-      return;
+  if (!n) return;
 
 #ifdef ocpnUSE_GL
   if (ConfigurePen()) {
@@ -1016,7 +1034,7 @@ void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
         glLineWidth(wxMax(g_piGLMinSymbolLineWidth, 1));
     }
 
-#if 0//ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -1038,12 +1056,14 @@ void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
 #else
     glUseProgram(GRIBpi_colorv_tri_shader_program);
 
-    GLint pos = glGetAttribLocation(GRIBpi_colorv_tri_shader_program, "position");
+    GLint pos =
+        glGetAttribLocation(GRIBpi_colorv_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           vertex_array);
     glEnableVertexAttribArray(pos);
 
-    GLint colloc = glGetAttribLocation(GRIBpi_colorv_tri_shader_program, "colorv");
+    GLint colloc =
+        glGetAttribLocation(GRIBpi_colorv_tri_shader_program, "colorv");
     glVertexAttribPointer(colloc, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                           color_array);
     glEnableVertexAttribArray(colloc);
@@ -1069,7 +1089,7 @@ void pi_ocpnDC::DrawRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h) {
   if (dc) dc->DrawRectangle(x, y, w, h);
 #ifdef ocpnUSE_GL
   else {
-#if 0//ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
     if (ConfigureBrush()) {
       glBegin(GL_QUADS);
       glVertex2i(x, y);
@@ -1175,7 +1195,7 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     wxCoord x1 = x + r, x2 = x + w - r;
     wxCoord y1 = y + r, y2 = y + h - r;
 
-#if 1//def USE_ANDROID_GLES2
+#if 1  // def USE_ANDROID_GLES2
 
     //  Grow the work buffer as necessary
     size_t bufReq = steps * 8 * 2 * sizeof(float);  // large, to be sure
@@ -1211,7 +1231,8 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     bcolorv[2] = m_brush.GetColour().Blue() / float(256);
     bcolorv[3] = m_brush.GetColour().Alpha() / float(256);
 
-    GLint bcolloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
+    GLint bcolloc =
+        glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
     glUniform4fv(bcolloc, 1, bcolorv);
 
     float angle = 0.;
@@ -1227,8 +1248,8 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     Q[3][0] = xoffset;
     Q[3][1] = yoffset;
 
-    GLint matloc =
-        glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
+    GLint matloc = glGetUniformLocation(GRIBpi_color_tri_shader_program,
+                                        "TransformMatrix");
     glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
 
     // Perform the actual drawing.
@@ -1238,8 +1259,8 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     // Restore the per-object transform to Identity Matrix
     mat4x4 IM;
     mat4x4_identity(IM);
-    GLint matlocf =
-        glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
+    GLint matlocf = glGetUniformLocation(GRIBpi_color_tri_shader_program,
+                                         "TransformMatrix");
     glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
     glUseProgram(0);
 
@@ -1472,8 +1493,8 @@ void pi_ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       Q[3][0] = xoffset;
       Q[3][1] = yoffset;
 
-      GLint matloc =
-          glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
+      GLint matloc = glGetUniformLocation(GRIBpi_color_tri_shader_program,
+                                          "TransformMatrix");
       glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
 
       // Perform the actual drawing.
@@ -1507,8 +1528,8 @@ void pi_ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       // Restore the per-object transform to Identity Matrix
       mat4x4 IM;
       mat4x4_identity(IM);
-      GLint matlocf =
-          glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
+      GLint matlocf = glGetUniformLocation(GRIBpi_color_tri_shader_program,
+                                           "TransformMatrix");
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
 
       glUseProgram(0);
@@ -1558,7 +1579,7 @@ typedef union {
   } info;
 } GLvertex;
 
-#if 0 //ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
 void APIENTRY pi_ocpnDCcombineCallback(GLdouble coords[3],
                                        GLdouble *vertex_data[4],
                                        GLfloat weight[4], GLdouble **dataOut) {
@@ -1598,7 +1619,7 @@ void APIENTRY ocpnDCendCallback() { glEnd(); }
 
 // GLSL callbacks
 
-#if 1 //def USE_ANDROID_GLES2
+#if 1  // def USE_ANDROID_GLES2
 
 static std::list<double *> odc_combine_work_data;
 static void pi_odc_combineCallbackD(GLdouble coords[3],
@@ -1684,7 +1705,7 @@ void pi_odc_endCallbackD_GLSL(void *data) {
 }
 #endif
 
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
 void pi_ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
                                        wxCoord yoffset) {
@@ -1700,7 +1721,7 @@ void pi_ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#if 1 //def USE_ANDROID_GLES2
+#if 1  // def USE_ANDROID_GLES2
     m_tobj = gluNewTess();
     s_odc_tess_vertex_idx = 0;
 
@@ -1868,7 +1889,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
 
       glColor4f(1, 1, 1, 1);
       GLDrawBlendData(x, y, w, h, GL_RGBA, e);
-      delete[](e);
+      delete[] (e);
     } else {
       glRasterPos2i(x, y);
       glPixelZoom(1, -1); /* draw data from top to bottom */
@@ -1899,7 +1920,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-#if 0//ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
         glPushMatrix();
         glTranslatef(x, y, 0);
 
@@ -1917,15 +1938,16 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
     } else {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
-      sdc.GetMultiLineTextExtent(text, &w, &h, NULL, &m_font); /*we need to handle multiline*/
+      sdc.GetMultiLineTextExtent(text, &w, &h, NULL,
+                                 &m_font); /*we need to handle multiline*/
       int ww, hw;
-      sdc.GetTextExtent("W", &ww, &hw); // metric
-      w += ww;    // RHS padding.
+      sdc.GetTextExtent("W", &ww, &hw);  // metric
+      w += ww;                           // RHS padding.
       w *= OCPN_GetWinDIPScaleFactor();
       h *= OCPN_GetWinDIPScaleFactor();
 
-      h *= 2;   //TODO //Some trouble with math or text sizing.
-                // Add "fluff" to text bitmap size.
+      h *= 2;  // TODO //Some trouble with math or text sizing.
+               //  Add "fluff" to text bitmap size.
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -2006,7 +2028,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
 
       float u = (float)w / TextureWidth, v = (float)h / TextureHeight;
 
-#if 0//ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
       glColor3ub(0, 0, 0);
 
       glBegin(GL_QUADS);
@@ -2046,8 +2068,10 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       glUseProgram(pi_texture_2D_shader_program);
 
       // Get pointers to the attributes in the program.
-      GLint mPosAttrib = glGetAttribLocation(pi_texture_2D_shader_program, "aPos");
-      GLint mUvAttrib = glGetAttribLocation(pi_texture_2D_shader_program, "aUV");
+      GLint mPosAttrib =
+          glGetAttribLocation(pi_texture_2D_shader_program, "aPos");
+      GLint mUvAttrib =
+          glGetAttribLocation(pi_texture_2D_shader_program, "aUV");
 
       // Set up the texture sampler to texture unit 0
       GLint texUni = glGetUniformLocation(pi_texture_2D_shader_program, "uTex");

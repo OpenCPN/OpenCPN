@@ -150,7 +150,7 @@ public:
 
 class GRIB2Grid {
 public:
-  GRIB2Grid() : gridpoints(0){};
+  GRIB2Grid() : gridpoints(0) {};
   ~GRIB2Grid() { delete[] gridpoints; };
 
   double *gridpoints;
@@ -158,7 +158,7 @@ public:
 
 class GRIBMessage {
 public:
-  GRIBMessage() : buffer(0){};
+  GRIBMessage() : buffer(0) {};
   ~GRIBMessage() { delete[] buffer; };
   unsigned char *buffer;
   int offset; /* offset in bytes to next GRIB2 section */
@@ -1026,7 +1026,8 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum) {
               ret = GRB_DEWPOINT;
               break;  // DATA_TO_GRBV2[DATA_DEWPOINT] = grb2DataType(0,0,6);
             case 17:
-              ret = GRB_WTMP; //Skin temperature [C] SFC="Ground or water surface"
+              ret = GRB_WTMP;  // Skin temperature [C] SFC="Ground or water
+                               // surface"
               break;  // DATA_TO_GRBV2[DATA_DEWPOINT] = grb2DataType(0,0,17);
           }
           break;
@@ -1479,8 +1480,8 @@ void GribV2Record::translateDataType() {
   } else if (idCenter == 84 && idModel <= 5 && idGrid == 0) {
   }
   // MeteoFrance
-  else if (idCenter==85) {
-    if (dataType == GRB_CLOUD_TOT && levelType == LV_GND_SURF && 
+  else if (idCenter == 85) {
+    if (dataType == GRB_CLOUD_TOT && levelType == LV_GND_SURF &&
         levelValue == 0) {
       levelType = LV_ATMOS_ALL;
     }

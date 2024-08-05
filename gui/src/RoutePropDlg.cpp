@@ -45,10 +45,9 @@ EVT_CHAR(RoutePropDlg::OnKeyChar)
 #endif
 END_EVENT_TABLE()
 
-
-extern Routeman *g_pRouteMan;
-extern RoutePropDlgImpl *pRoutePropDialog;
-extern RouteManagerDialog *pRouteManagerDialog;
+extern Routeman* g_pRouteMan;
+extern RoutePropDlgImpl* pRoutePropDialog;
+extern RouteManagerDialog* pRouteManagerDialog;
 
 RoutePropDlgCtx RoutePropDlg::GetDlgCtx() {
   struct RoutePropDlgCtx ctx;
@@ -214,9 +213,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                          5);
 #ifdef __ANDROID__
   int ys = GetCharHeight();
-  m_dpDepartureDate->SetMinSize(wxSize(-1, ys * 15/10));
+  m_dpDepartureDate->SetMinSize(wxSize(-1, ys * 15 / 10));
 #endif
-
 
 #ifdef __WXGTK__
   m_tpDepartureTime = new TimeCtrl(m_pnlBasic, wxID_ANY, wxDefaultDateTime,
@@ -284,9 +282,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stStyle->Wrap(-1);
   bSizerStyle->Add(m_stStyle, 0, wxALL, 5);
 
-  wxString m_choiceStyleChoices[] = {_("Default"),    _("Solid"),
-                                     _("Dot"),        _("Long dash"),
-                                     _("Short dash")};
+  wxString m_choiceStyleChoices[] = {_("Default"), _("Solid"), _("Dot"),
+                                     _("Long dash"), _("Short dash")};
   int m_choiceStyleNChoices = sizeof(m_choiceStyleChoices) / sizeof(wxString);
   m_choiceStyle =
       new wxChoice(m_pnlBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -645,14 +642,16 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                                    EVT_ROUTEMAN_DEL_TRK);
   Bind(EVT_ROUTEMAN_DEL_TRK, [&](ObservedEvt& ev) {
     auto t = std::const_pointer_cast<Track>(UnpackEvtPointer<Track>(ev));
-    RoutemanGui(*g_pRouteMan).DeleteTrack(t.get()); });
+    RoutemanGui(*g_pRouteMan).DeleteTrack(t.get());
+  });
 
   wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_ROUTE, ObservedEvt);
   navobj_del_route_listener.Listen(navobj->evt_delete_route, this,
                                    EVT_ROUTEMAN_DEL_ROUTE);
   Bind(EVT_ROUTEMAN_DEL_ROUTE, [&](ObservedEvt& ev) {
     auto r = std::const_pointer_cast<Route>(UnpackEvtPointer<Route>(ev));
-    g_pRouteMan->DeleteRoute(r.get(), navobj); });
+    g_pRouteMan->DeleteRoute(r.get(), navobj);
+  });
 }
 
 RoutePropDlg::~RoutePropDlg() {

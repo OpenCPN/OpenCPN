@@ -39,7 +39,7 @@
 #include "dychart.h"
 
 #include <stdlib.h>
-//#include <math.h>
+// #include <math.h>
 #include <time.h>
 #include <locale>
 #include <list>
@@ -463,7 +463,8 @@ ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent,
 
   SetMinSize(wxSize(-1, 6 * GetCharHeight()));
 
-  SetBackgroundColour(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW));
+  SetBackgroundColour(
+      wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW));
   // Connect(wxEVT_LEFT_DOWN,
   // wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
 }
@@ -501,7 +502,10 @@ ConfigMgr::ConfigMgr() {
   LoadCatalog();
 }
 
-ConfigMgr::~ConfigMgr() { configList->Clear(); delete configList; }
+ConfigMgr::~ConfigMgr() {
+  configList->Clear();
+  delete configList;
+}
 
 void ConfigMgr::Init() {
   m_configDir = g_Platform->GetPrivateDataDir();
@@ -912,7 +916,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   for (const auto &mm : g_config_display_size_mm) {
     st0.Append(wxString::Format(_T ( "%zu," ), mm));
   }
-  st0.RemoveLast(); //Strip last comma
+  st0.RemoveLast();  // Strip last comma
   conf->Write(_T ( "DisplaySizeMM" ), st0);
   conf->Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
 
@@ -1167,22 +1171,22 @@ bool ConfigMgr::CheckTemplateGUID(wxString GUID) {
   return rv;
 }
 
-#define CHECK_INT(s, t)                           \
-  read_int = *t;                                  \
+#define CHECK_INT(s, t)                          \
+  read_int = *t;                                 \
   if (!conf.Read(s, &read_int)) wxLogMessage(s); \
   if ((int)*t != read_int) return false;
 
 #define CHECK_STR(s, t) \
   val = t;              \
-  conf.Read(s, &val);  \
+  conf.Read(s, &val);   \
   if (!t.IsSameAs(val)) return false;
 
 #define CHECK_STRP(s, t) \
-  conf.Read(s, &val);   \
+  conf.Read(s, &val);    \
   if (!t->IsSameAs(val)) return false;
 
 #define CHECK_FLT(s, t, eps) \
-  conf.Read(s, &val);       \
+  conf.Read(s, &val);        \
   val.ToDouble(&dval);       \
   if (fabs(dval - *t) > eps) return false;
 
@@ -1342,8 +1346,9 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
                                   // 2 = "Kilometers", 3 = "Meters"
   CHECK_INT(_T ( "SpeedFormat" ),
             &g_iSpeedFormat);  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
-  CHECK_INT(_T ( "WindSpeedFormat" ),
-            &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
+  CHECK_INT(
+      _T ( "WindSpeedFormat" ),
+      &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
 
   // LIVE ETA OPTION
   CHECK_INT(_T ( "LiveETA" ), &g_bShowLiveETA);
@@ -1598,14 +1603,14 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
   // S57 template items
 
-#define CHECK_BFN(s, t)     \
-  conf.Read(s, &read_int);  \
-  bval = t;                 \
-  bval0 = read_int != 0;    \
+#define CHECK_BFN(s, t)    \
+  conf.Read(s, &read_int); \
+  bval = t;                \
+  bval0 = read_int != 0;   \
   if (bval != bval0) return false;
 
-#define CHECK_IFN(s, t)     \
-  conf.Read(s, &read_int);  \
+#define CHECK_IFN(s, t)    \
+  conf.Read(s, &read_int); \
   if (read_int != t) return false;
 
 #define CHECK_FFN(s, t) \

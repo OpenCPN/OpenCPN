@@ -72,7 +72,7 @@
 class wxGenericDirCtrl;
 class MyConfig;
 class ChartGroupsUI;
-//class ConnectionParams;
+// class ConnectionParams;
 class PluginListPanel;
 class ChartGroupArray;
 class ChartGroup;
@@ -377,15 +377,16 @@ public:
   void ClearConfigList();
   void BuildConfigList();
   void OnConfigMouseSelected(wxMouseEvent &event);
-  void OnDialogInit(wxInitDialogEvent& event);
-
+  void OnDialogInit(wxInitDialogEvent &event);
 
   bool GetNeedNew() { return m_bneedNew; }
   void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
   int GetScrollRate() { return m_scrollRate; }
-  void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
+  void SetForceNewToolbarOnCancel(bool val) {
+    m_bForceNewToolbaronCancel = val;
+  }
 
-  wxArrayString *GetSerialArray(){ return m_pSerialArray; }
+  wxArrayString *GetSerialArray() { return m_pSerialArray; }
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -425,8 +426,9 @@ public:
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
-  wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
-      *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor, *m_pSlider_ENCText_Factor;
+  wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor,
+      *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor,
+      *m_pSlider_ENCText_Factor;
   wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
@@ -446,7 +448,6 @@ public:
   void UpdateChartDirList();
 
   void OnCanvasConfigSelectClick(int ID, bool selected);
-
 
   bool b_haveWMM;
   bool b_oldhaveWMM;
@@ -491,9 +492,9 @@ public:
   int m_nCharWidthMax;
   wxBoxSizer *boxSizerCharts;
   wxScrolledWindow *m_scrollWinChartList;
-  wxScrolledWindow* chartPanelWin;
-  wxBoxSizer* cmdButtonSizer;
-  wxStaticBox* loadedBox;
+  wxScrolledWindow *chartPanelWin;
+  wxBoxSizer *cmdButtonSizer;
+  wxStaticBox *loadedBox;
   std::vector<OCPNChartDirPanel *> panelVector;
   wxArrayString activeChartList;
 
@@ -661,7 +662,7 @@ private:
   ChartGroupsUI *groupsPanel;
   wxImageList *m_topImgList;
 
-  wxCheckBox* m_persist_active_route_chkbox;
+  wxCheckBox *m_persist_active_route_chkbox;
   wxScrolledWindow *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
@@ -688,7 +689,7 @@ private:
   wxSize m_sliderSize;
   bool m_bneedNew;
 
-  std::shared_ptr<ConnectionsDialog>comm_dialog;
+  std::shared_ptr<ConnectionsDialog> comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };
@@ -716,7 +717,7 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-class ChartGroupsUI :  public wxScrolledWindow {
+class ChartGroupsUI : public wxScrolledWindow {
 public:
   ChartGroupsUI(wxWindow *parent);
   ~ChartGroupsUI(void);

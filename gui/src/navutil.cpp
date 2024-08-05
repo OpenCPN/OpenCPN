@@ -35,7 +35,6 @@
 #include <locale>
 #include <list>
 
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
@@ -113,7 +112,7 @@ extern double g_ChartNotRenderScaleFactor;
 extern int g_restore_stackindex;
 extern int g_restore_dbindex;
 extern RouteList *pRouteList;
-extern std::vector<Track*> g_TrackList;
+extern std::vector<Track *> g_TrackList;
 extern LayerList *pLayerList;
 extern MyConfig *pConfig;
 extern double vLat, vLon;
@@ -411,8 +410,7 @@ MyConfig::MyConfig(const wxString &LocalFileName)
   m_pNavObjectChangesSet = NavObjectChanges::getInstance();
 }
 
-MyConfig::~MyConfig() {
-}
+MyConfig::~MyConfig() {}
 
 void MyConfig::CreateRotatingNavObjBackup() {
   // Avoid nonsense log errors...
@@ -420,9 +418,10 @@ void MyConfig::CreateRotatingNavObjBackup() {
   wxLogNull logNo;
 #endif
   // Monthly backup, keep max 3
-  if(wxFileExists(m_sNavObjSetFile)) {
+  if (wxFileExists(m_sNavObjSetFile)) {
     int month = wxDateTime::Now().GetMonth() + 1;
-    wxString fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), month);
+    wxString fn =
+        wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), month);
     if (!wxFileExists(fn)) {
       wxCopyFile(m_sNavObjSetFile, fn);
     }
@@ -748,8 +747,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // Some undocumented values
   Read(_T ( "ConfigVersionString" ), &g_config_version_string);
   Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(OCPN_SOUND_CMD));
-  if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
+  if (wxIsEmpty(g_CmdSoundString)) g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Read(_T ( "NavMessageShown" ), &n_NavMessageShown);
 
   Read(_T ( "AndroidVersionCode" ), &g_AndroidVersionCode);
@@ -809,8 +807,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (!bAsTemplate) {
     g_config_display_size_mm.clear();
     wxStringTokenizer tokenizer(size_mm, ",");
-    while ( tokenizer.HasMoreTokens() )
-    {
+    while (tokenizer.HasMoreTokens()) {
       wxString token = tokenizer.GetNextToken();
       int size;
       try {
@@ -988,7 +985,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width);
   Read(_T ( "OwnshipHDTPredictorStyle" ), &g_ownship_HDTpredictor_style);
   Read(_T ( "OwnshipHDTPredictorColor" ), &g_ownship_HDTpredictor_color);
-  Read(_T ( "OwnshipHDTPredictorEndmarker" ), &g_ownship_HDTpredictor_endmarker);
+  Read(_T ( "OwnshipHDTPredictorEndmarker" ),
+       &g_ownship_HDTpredictor_endmarker);
   Read(_T ( "OwnshipHDTPredictorWidth" ), &g_ownship_HDTpredictor_width);
   Read(_T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles);
 
@@ -1036,9 +1034,9 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "KeepNavobjBackups" ), &g_navobjbackups);
 
   NMEALogWindow::GetInstance().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
-                               Read(_T("NMEALogWindowSizeY"), 400L));
+                                       Read(_T("NMEALogWindowSizeY"), 400L));
   NMEALogWindow::GetInstance().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
-                              Read(_T("NMEALogWindowPosY"), 10L));
+                                      Read(_T("NMEALogWindowPosY"), 10L));
   NMEALogWindow::GetInstance().CheckPos(display_width, display_height);
 
   // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg
@@ -1163,8 +1161,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     s.ToDouble(&g_ShowMoored_Kts);
 
   g_SOGminCOG_kts = 0.2;
-  if (Read(_T ( "SOGMinimumForCOGDisplay" ), &s))
-    s.ToDouble(&g_SOGminCOG_kts);
+  if (Read(_T ( "SOGMinimumForCOGDisplay" ), &s)) s.ToDouble(&g_SOGminCOG_kts);
 
   Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled);
   Read(_T ( "AISScaledNumber" ), &g_ShowScaled_Num);
@@ -1410,10 +1407,13 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     long dummy;
     bool bCont = GetFirstEntry(str, dummy);
     while (bCont) {
-      Read(str, &val);  // Get a file name and add it to the list just in case it is not repeated
-      // We have seen duplication of dataset entries in https://github.com/OpenCPN/OpenCPN/issues/3042, this
-      // effectively gets rid of them.
-      if (std::find(TideCurrentDataSet.begin(), TideCurrentDataSet.end(), val.ToStdString()) == TideCurrentDataSet.end()) {
+      Read(str, &val);  // Get a file name and add it to the list just in case
+                        // it is not repeated
+      // We have seen duplication of dataset entries in
+      // https://github.com/OpenCPN/OpenCPN/issues/3042, this effectively gets
+      // rid of them.
+      if (std::find(TideCurrentDataSet.begin(), TideCurrentDataSet.end(),
+                    val.ToStdString()) == TideCurrentDataSet.end()) {
         TideCurrentDataSet.push_back(val.ToStdString());
       }
       bCont = GetNextEntry(str, dummy);
@@ -1652,7 +1652,7 @@ void MyConfig::LoadS57Config() {
 }
 
 /** Load changes from a pending changes file path. */
-static bool ReloadPendingChanges(const wxString& changes_path) {
+static bool ReloadPendingChanges(const wxString &changes_path) {
   wxULongLong size = wxFileName::GetSize(changes_path);
 
   // We crashed last time :(
@@ -1665,8 +1665,7 @@ static bool ReloadPendingChanges(const wxString& changes_path) {
   //  Remove the file before applying the changes,
   //  just in case the changes file itself causes a fault.
   //  If it does fault, at least the next restart will proceed without fault.
-  if (::wxFileExists(changes_path))
-    ::wxRemoveFile(changes_path);
+  if (::wxFileExists(changes_path)) ::wxRemoveFile(changes_path);
 
   if (size == 0 || res.status != pugi::xml_parse_status::status_ok) {
     wxLogMessage(changes_path + " seems corrupted, not applying it.");
@@ -1676,7 +1675,7 @@ static bool ReloadPendingChanges(const wxString& changes_path) {
 
   wxLogMessage(_T("Applying NavObjChanges"));
   pNavObjectChangesSet->ApplyChanges();
-  return  true;
+  return true;
 }
 
 wxString MyConfig::FindNewestUsableBackup() const {
@@ -1684,7 +1683,9 @@ wxString MyConfig::FindNewestUsableBackup() const {
   pugi::xml_document doc;
   for (int i = 1; i <= g_navobjbackups; i++) {
     wxString backup = m_sNavObjSetFile + "." + wxString::Format("%d", i);
-    if (wxFileExists(backup) && wxFileName::GetSize(backup) > 461 && doc.load_file(backup.fn_str()).status == pugi::xml_parse_status::status_ok) {
+    if (wxFileExists(backup) && wxFileName::GetSize(backup) > 461 &&
+        doc.load_file(backup.fn_str()).status ==
+            pugi::xml_parse_status::status_ok) {
       newest_backup = backup;
       break;
     }
@@ -1702,51 +1703,78 @@ void MyConfig::LoadNavObjects() {
   int wpt_dups = 0;
   wxString newest_backup;
   if (::wxFileExists(m_sNavObjSetFile)) {
-    if (wxFileName::GetSize(m_sNavObjSetFile) < 461) { // Empty navobj.xml file with just the gpx tag is 461 bytes, so anything smaller is obvious sign of a fatal crash while saving it last time, replace it with latest backup if available
+    if (wxFileName::GetSize(m_sNavObjSetFile) <
+        461) {  // Empty navobj.xml file with just the gpx tag is 461 bytes, so
+                // anything smaller is obvious sign of a fatal crash while
+                // saving it last time, replace it with latest backup if
+                // available
       wxLogMessage("Navobjects file exists, but seems truncated!");
       newest_backup = FindNewestUsableBackup();
       if (wxFileExists(newest_backup)) {
-        wxLogMessage("We do have a backup " + newest_backup +  " that looks healthy and will use it.");
+        wxLogMessage("We do have a backup " + newest_backup +
+                     " that looks healthy and will use it.");
         wxCopyFile(newest_backup, m_sNavObjSetFile, true);
       }
     }
-  } else { //File does not exist, try to recover from a backup
+  } else {  // File does not exist, try to recover from a backup
     newest_backup = FindNewestUsableBackup();
     if (wxFileExists(newest_backup)) {
-      wxLogMessage("We do have a backup " + newest_backup +  " that looks healthy and will use it.");
-        wxCopyFile(newest_backup, m_sNavObjSetFile, true);
+      wxLogMessage("We do have a backup " + newest_backup +
+                   " that looks healthy and will use it.");
+      wxCopyFile(newest_backup, m_sNavObjSetFile, true);
     } else {
-      wxLogMessage("No navobjects.xml file or usable backup exist, will create a new one.");
+      wxLogMessage(
+          "No navobjects.xml file or usable backup exist, will create a new "
+          "one.");
     }
   }
   bool success = false;
-  // We did all we could to have an usable navobj.xml file in scenarios where it did not exist or was clearly corrupted, let's try to load it
-  if(::wxFileExists(m_sNavObjSetFile) && m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()).status == pugi::xml_parse_status::status_ok) {
-    CreateRotatingNavObjBackup(); // We only create backups when data is good, there is no point in saving something we can't even load
+  // We did all we could to have an usable navobj.xml file in scenarios where it
+  // did not exist or was clearly corrupted, let's try to load it
+  if (::wxFileExists(m_sNavObjSetFile) &&
+      m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()).status ==
+          pugi::xml_parse_status::status_ok) {
+    CreateRotatingNavObjBackup();  // We only create backups when data is good,
+                                   // there is no point in saving something we
+                                   // can't even load
     success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
   } else {
-    // It was still not valid after all our efforts and did not load as XML, let's rename it to a corrupted file and try to recover from a backup on last time
-    wxString corrupted_file = m_sNavObjSetFile + wxDateTime::Now().Format(".corrupted.%Y-%m-%d-%H-%M-%S");
+    // It was still not valid after all our efforts and did not load as XML,
+    // let's rename it to a corrupted file and try to recover from a backup on
+    // last time
+    wxString corrupted_file =
+        m_sNavObjSetFile +
+        wxDateTime::Now().Format(".corrupted.%Y-%m-%d-%H-%M-%S");
     wxRenameFile(m_sNavObjSetFile, corrupted_file, true);
-    wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile + ", the corrupted file was renamed to " + corrupted_file);
-    // If we got here with existing navobj.xml file, but it's corrupted, we can still try to recover from a backup
-    if (newest_backup.IsEmpty()) { // If we got here with empty newest_backup, navobj.xml probably did exist, but was corrupted XML-wise, so we need to find a new backup
+    wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile +
+                 ", the corrupted file was renamed to " + corrupted_file);
+    // If we got here with existing navobj.xml file, but it's corrupted, we can
+    // still try to recover from a backup
+    if (newest_backup
+            .IsEmpty()) {  // If we got here with empty newest_backup,
+                           // navobj.xml probably did exist, but was corrupted
+                           // XML-wise, so we need to find a new backup
       newest_backup = FindNewestUsableBackup();
     }
     m_pNavObjectInputSet->reset();
-    if (wxFileExists(newest_backup) && m_pNavObjectInputSet->load_file(newest_backup.fn_str()).status == pugi::xml_parse_status::status_ok) {
+    if (wxFileExists(newest_backup) &&
+        m_pNavObjectInputSet->load_file(newest_backup.fn_str()).status ==
+            pugi::xml_parse_status::status_ok) {
       success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
-      wxLogMessage("We do have a healthy backup " + newest_backup +  " and did load it.");
+      wxLogMessage("We do have a healthy backup " + newest_backup +
+                   " and did load it.");
     } else {
-      wxLogMessage("No usable backup found, a new navobj.xml file will be created.");
+      wxLogMessage(
+          "No usable backup found, a new navobj.xml file will be created.");
       m_pNavObjectInputSet->reset();
     }
   }
   if (success) {
     wxLogMessage(_T("Done loading navobjects, %d duplicate waypoints ignored"),
-               wpt_dups);
+                 wpt_dups);
   } else {
-    wxLogMessage(_T("Failed to load navobjects, creating a new navobj.xml file."));
+    wxLogMessage(
+        _T("Failed to load navobjects, creating a new navobj.xml file."));
   }
   delete m_pNavObjectInputSet;
 
@@ -1825,7 +1853,8 @@ bool MyConfig::LoadLayers(wxString &path) {
 
           if (::wxFileExists(file_path)) {
             NavObjectCollection1 *pSet = new NavObjectCollection1;
-            if (pSet->load_file(file_path.fn_str()).status != pugi::xml_parse_status::status_ok) {
+            if (pSet->load_file(file_path.fn_str()).status !=
+                pugi::xml_parse_status::status_ok) {
               wxLogMessage("Error loading GPX file " + file_path);
               pSet->reset();
             }
@@ -1910,45 +1939,40 @@ bool MyConfig::LoadChartDirArray(ArrayOfCDI &ChartDirArray) {
   return true;
 }
 
-void MyConfig::AddNewRoute(Route *r) {
-  m_pNavObjectChangesSet->AddNewRoute(r);
-}
+void MyConfig::AddNewRoute(Route *r) { m_pNavObjectChangesSet->AddNewRoute(r); }
 
-void MyConfig::UpdateRoute(Route *r) {
-  m_pNavObjectChangesSet->UpdateRoute(r);
-}
+void MyConfig::UpdateRoute(Route *r) { m_pNavObjectChangesSet->UpdateRoute(r); }
 
 void MyConfig::DeleteConfigRoute(Route *pr) {
   m_pNavObjectChangesSet->DeleteConfigRoute(pr);
 }
 
 void MyConfig::AddNewTrack(Track *pt) {
-    m_pNavObjectChangesSet->AddNewTrack(pt);
+  m_pNavObjectChangesSet->AddNewTrack(pt);
 }
 
 void MyConfig::UpdateTrack(Track *pt) {
-    m_pNavObjectChangesSet->UpdateTrack(pt);
+  m_pNavObjectChangesSet->UpdateTrack(pt);
 }
 
 void MyConfig::DeleteConfigTrack(Track *pt) {
-    m_pNavObjectChangesSet->DeleteConfigTrack(pt);
+  m_pNavObjectChangesSet->DeleteConfigTrack(pt);
 }
 
 void MyConfig::AddNewWayPoint(RoutePoint *pWP, int crm) {
-    m_pNavObjectChangesSet->AddNewWayPoint(pWP);
+  m_pNavObjectChangesSet->AddNewWayPoint(pWP);
 }
 
 void MyConfig::UpdateWayPoint(RoutePoint *pWP) {
-    m_pNavObjectChangesSet->UpdateWayPoint(pWP);
+  m_pNavObjectChangesSet->UpdateWayPoint(pWP);
 }
 
 void MyConfig::DeleteWayPoint(RoutePoint *pWP) {
-    m_pNavObjectChangesSet->DeleteWayPoint(pWP);
+  m_pNavObjectChangesSet->DeleteWayPoint(pWP);
 }
 
-void MyConfig::AddNewTrackPoint(TrackPoint *pWP,
-                                const wxString &parent_GUID) {
-    m_pNavObjectChangesSet->AddNewTrackPoint(pWP, parent_GUID);
+void MyConfig::AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID) {
+  m_pNavObjectChangesSet->AddNewTrackPoint(pWP, parent_GUID);
 }
 
 bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
@@ -2090,7 +2114,6 @@ void MyConfig::LoadCanvasConfigs(bool bApplyAsTemplate) {
   }
 
   Read(_T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0);
-
 
   // Do not recreate canvasConfigs when applying config dynamically
   if (config_array.GetCount() == 0) {  // This is initial load from startup
@@ -2346,8 +2369,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "CompatOS" ), g_compatOS);
   Write(_T ( "CompatOsVersion" ), g_compatOsVersion);
   Write(_T ( "ConfigVersionString" ), g_config_version_string);
-  if (wxIsEmpty(g_CmdSoundString))
-    g_CmdSoundString = wxString(OCPN_SOUND_CMD);
+  if (wxIsEmpty(g_CmdSoundString)) g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Write(_T( "CmdSoundString" ), g_CmdSoundString);
   Write(_T ( "NavMessageShown" ), n_NavMessageShown);
   Write(_T ( "InlandEcdis" ), g_bInlandEcdis);
@@ -2410,7 +2432,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider);
 
   Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
-  if (!g_bdisable_opengl) { // Only modify the saved value if OpenGL is not force-disabled from the command line
+  if (!g_bdisable_opengl) {  // Only modify the saved value if OpenGL is not
+                             // force-disabled from the command line
     Write(_T ( "OpenGL" ), g_bopengl);
   }
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
@@ -2452,7 +2475,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width);
   Write(_T ( "OwnshipHDTPredictorStyle" ), g_ownship_HDTpredictor_style);
   Write(_T ( "OwnshipHDTPredictorColor" ), g_ownship_HDTpredictor_color);
-  Write(_T ( "OwnshipHDTPredictorEndmarker" ), g_ownship_HDTpredictor_endmarker);
+  Write(_T ( "OwnshipHDTPredictorEndmarker" ),
+        g_ownship_HDTpredictor_endmarker);
   Write(_T ( "OwnshipHDTPredictorWidth" ), g_ownship_HDTpredictor_width);
   Write(_T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles);
 
@@ -2516,7 +2540,7 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "TemperatureFormat" ), g_iTempFormat);
   }
   Write(_T ( "GPSIdent" ), g_GPS_Ident);
-  Write("ActiveRoute" , g_active_route);
+  Write("ActiveRoute", g_active_route);
   Write("PersistActiveRoute", g_persist_active_route);
   Write(_T ( "UseGarminHostUpload" ), g_bGarminHostUpload);
 
@@ -2531,7 +2555,7 @@ void MyConfig::UpdateSettings() {
   for (const auto &mm : g_config_display_size_mm) {
     st0.Append(wxString::Format(_T ( "%zu," ), mm));
   }
-  st0.RemoveLast(); //Strip last comma
+  st0.RemoveLast();  // Strip last comma
   Write(_T ( "DisplaySizeMM" ), st0);
   Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
 
@@ -2762,7 +2786,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "GPXIODir" ), g_gpx_path);
   Write(_T ( "TCDataDir" ), g_TCData_Dir);
   Write(_T ( "BasemapDir" ), g_Platform->NormalizePath(gWorldMapLocation));
-  Write(_T ( "BaseShapefileDir" ), g_Platform->NormalizePath(gWorldShapefileLocation));
+  Write(_T ( "BaseShapefileDir" ),
+        g_Platform->NormalizePath(gWorldShapefileLocation));
   Write(_T ( "pluginInstallDir" ), g_Platform->NormalizePath(g_winPluginDir));
 
   SetPath(_T ( "/Settings/NMEADataSource" ));
@@ -2915,8 +2940,10 @@ void MyConfig::UpdateNavObj(bool bRecreate) {
     m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
 
     m_pNavObjectChangesSet->reset();
-    if (m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str()).status != pugi::xml_parse_status::status_ok) {
-      wxLogMessage("Error while loading " + m_sNavObjSetChangesFile + ", ignoring contents of the file.");
+    if (m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str())
+            .status != pugi::xml_parse_status::status_ok) {
+      wxLogMessage("Error while loading " + m_sNavObjSetChangesFile +
+                   ", ignoring contents of the file.");
       m_pNavObjectChangesSet->reset();
     }
   }
@@ -2980,7 +3007,7 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
   return false;
 }
 
-bool ExportGPXTracks(wxWindow *parent, std::vector<Track*> *pTracks,
+bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pTracks,
                      const wxString suggestedName) {
   wxFileName fn = exportFileName(parent, suggestedName);
   if (fn.IsOk()) {
@@ -3085,7 +3112,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
       node1 = node1->GetNext();
     }
 
-    for (Track* pTrack : g_TrackList) {
+    for (Track *pTrack : g_TrackList) {
       bool b_add = true;
 
       if (bviz_only && !pTrack->IsVisible()) b_add = false;
@@ -3214,7 +3241,8 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
 
       if (::wxFileExists(path)) {
         NavObjectCollection1 *pSet = new NavObjectCollection1;
-        if (pSet->load_file(path.fn_str()).status != pugi::xml_parse_status::status_ok) {
+        if (pSet->load_file(path.fn_str()).status !=
+            pugi::xml_parse_status::status_ok) {
           wxLogMessage("Error loading GPX file " + path);
           pSet->reset();
           delete pSet;
@@ -3413,7 +3441,6 @@ double fromUsrWindSpeed(double usr_wspeed, int unit) {
   return ret;
 }
 
-
 /**************************************************************************/
 /*  Converts the temperature from the units selected by user to Celsius   */
 /**************************************************************************/
@@ -3437,8 +3464,8 @@ double fromUsrTemp(double usr_temp, int unit) {
 wxString formatAngle(double angle) {
   wxString out;
   if (g_bShowMag && g_bShowTrue) {
-    out.Printf(wxT("%03.0f %cT (%.0f %cM)"), angle, 0x00B0,
-               toMagnetic(angle), 0x00B0);
+    out.Printf(wxT("%03.0f %cT (%.0f %cM)"), angle, 0x00B0, toMagnetic(angle),
+               0x00B0);
   } else if (g_bShowTrue) {
     out.Printf(wxT("%03.0f %cT"), angle, 0x00B0);
   } else {
@@ -3549,8 +3576,10 @@ void DimeControl(wxWindow *ctrl) {
   return;  // this is seriously broken on wxqt
 #endif
 
-  if(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW).Red() < 128) {
-    // Dark system color themes usually do better job than we do on diming UI controls, do not fight with them
+  if (wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW).Red() <
+      128) {
+    // Dark system color themes usually do better job than we do on diming UI
+    // controls, do not fight with them
     return;
   }
 
@@ -3614,9 +3643,8 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
 
     if (win->IsKindOf(CLASSINFO(wxListBox)) ||
         win->IsKindOf(CLASSINFO(wxListCtrl)) ||
-        win->IsKindOf(CLASSINFO(wxTextCtrl))
-        || win->IsKindOf(CLASSINFO(wxTimePickerCtrl))
-    ) {
+        win->IsKindOf(CLASSINFO(wxTextCtrl)) ||
+        win->IsKindOf(CLASSINFO(wxTimePickerCtrl))) {
       win->SetBackgroundColour(col);
     } else if (win->IsKindOf(CLASSINFO(wxStaticText)) ||
                win->IsKindOf(CLASSINFO(wxCheckBox)) ||
@@ -3680,20 +3708,19 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
 #define LUMIMOSITY_NIGHT (-0.8)
 #define LUMIMOSITY_DUSK (-0.5)
 
-wxColor GetDimedColor(const wxColor& c)
-{
-    switch (global_color_scheme) {
+wxColor GetDimedColor(const wxColor &c) {
+  switch (global_color_scheme) {
     case ColorScheme::GLOBAL_COLOR_SCHEME_NIGHT:
-        return (
-            wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_NIGHT, 255)),
-                wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_NIGHT, 255)),
-                wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_NIGHT, 255))));
+      return (wxColor(
+          wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_NIGHT, 255)),
+          wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_NIGHT, 255)),
+          wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_NIGHT, 255))));
     case ColorScheme::GLOBAL_COLOR_SCHEME_DUSK:
-        return (
-            wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_DUSK, 255)),
-                wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_DUSK, 255)),
-                wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_DUSK, 255))));
+      return (
+          wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_DUSK, 255)),
+                  wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_DUSK, 255)),
+                  wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_DUSK, 255))));
     default:
-        return c;
-    }
+      return c;
+  }
 }
