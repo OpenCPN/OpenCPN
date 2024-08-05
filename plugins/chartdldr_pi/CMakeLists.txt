@@ -58,50 +58,6 @@ if (QT_ANDROID)
   set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
 endif (QT_ANDROID)
 
-set(SRC_UNARR
-    src/unarr/common/conv.c
-    src/unarr/common/crc32.c
-    src/unarr/common/custalloc.c
-    src/unarr/common/allocator.h
-    src/unarr/common/unarr.c
-    src/unarr/common/unarr-imp.h
-    src/unarr/common/stream.c
-    src/unarr/_7z/_7z.h
-    src/unarr/_7z/_7z.c
-    src/unarr/lzmasdk/Ppmd7Dec.c
-    src/unarr/lzmasdk/Ppmd8.h
-    src/unarr/lzmasdk/7zTypes.h
-    src/unarr/lzmasdk/Precomp.h
-    src/unarr/lzmasdk/CpuArch.h
-    src/unarr/lzmasdk/Ppmd7.c
-    src/unarr/lzmasdk/LzmaDec.c
-    src/unarr/lzmasdk/Ppmd8.c
-    src/unarr/lzmasdk/Ppmd.h
-    src/unarr/lzmasdk/Ppmd7.h
-    src/unarr/lzmasdk/CpuArch.c
-    src/unarr/lzmasdk/LzmaDec.h
-    src/unarr/lzmasdk/Ppmd8Dec.c
-    src/unarr/rar/filter-rar.c
-    src/unarr/rar/huffman-rar.c
-    src/unarr/rar/parse-rar.c
-    src/unarr/rar/rar.h
-    src/unarr/rar/rarvm.c
-    src/unarr/rar/uncompress-rar.c
-    src/unarr/rar/rarvm.h
-    src/unarr/rar/lzss.h
-    src/unarr/rar/rar.c
-    src/unarr/unarr.h
-    src/unarr/tar/tar.h
-    src/unarr/tar/parse-tar.c
-    src/unarr/tar/tar.c
-    src/unarr/zip/uncompress-zip.c
-    src/unarr/zip/inflate.c
-    src/unarr/zip/zip.c
-    src/unarr/zip/parse-zip.c
-    src/unarr/zip/zip.h
-    src/unarr/zip/inflate.h
-)
-
 if (APPLE)
   # Homebrew does not link libarchive to /usr/local by default to avoid conflict
   # with the system-wide one (which in turn does not provide includes...) We do
@@ -134,29 +90,9 @@ if (wxWidgets_VERSION_STRING GREATER 2.9)
   endif (OCPN_USE_CHART_LIST)
 endif (wxWidgets_VERSION_STRING GREATER 2.9)
 
-option(CHARTDLDR_USE_UNARR
-       "Use unarr to extract RAR archives instead of libarchive" ON
-)
-if (CHARTDLDR_USE_UNARR)
-  add_definitions(-DCHARTDLDR_RAR_UNARR)
-endif ()
-
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
-include_directories(src/unarr/)
-pkg_search_module(UNARR libunarr unarr)
-use_bundled_lib(USE_BUNDLED_UNARR unarr)
-if (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
-  message(STATUS "chartdldr_pi: Building with system unarr")
-  include_directories(${UNARR_INCLUDE_DIR})
-  set(SRC_UNARR "")
-else ()
-  message(STATUS "chartdldr_pi: Building with bundled unarr")
-  add_library(UNARR ${SRC_UNARR})
-  include_directories(src/unarr)
-endif ()
-
-add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
+add_library(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR})
 
 find_package(OcpnLibarchive)
 if (NOT TARGET ocpn::libarchive)
@@ -175,7 +111,6 @@ if (LibArchive_FOUND)
   message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
   message(STATUS "chartdldr_pi: " ${LibArchive_LIBRARIES})
   include_directories(${LibArchive_INCLUDE_DIRS})
-  # Unset the unrar sources as we will not need them
   add_definitions(-DDLDR_USE_LIBARCHIVE)
 endif (LibArchive_FOUND)
 
@@ -194,28 +129,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unused-variable)
 endif ()
 
-if (UNARR_LIBRARIES AND NOT USE_BUNDLED_UNARR)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ${UNARR_LIBRARIES})
-endif ()
-
 if (LibArchive_FOUND)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-else (LibArchive_FOUND)
-  # We do not have libarchive, try to make unarr more powerful...
-  # ADD_DEFINITIONS(-DHAVE_7Z) #TODO if we decide it is needed, quite a bit more
-  # work here
-  find_package(ZLIB)
-  if (ZLIB_FOUND)
-    add_definitions(-DHAVE_ZLIB)
-    include_directories(${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARIES})
-  endif (ZLIB_FOUND)
-  find_package(BZip2)
-  if (BZIP2_FOUND)
-    add_definitions(-DHAVE_BZIP2)
-    include_directories(${BZIP2_INCLUDE_DIRS})
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
-  endif (BZIP2_FOUND)
 endif (LibArchive_FOUND)
 
 # TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )

@@ -57,9 +57,9 @@ fully compatible with older macOS versions on newer macOS, libarchive
 must instead of from Homebrew, be built as follows:
 
  $ export MACOSX_DEPLOYMENT_TARGET=10.13
- $ wget https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
- $ tar zxf libarchive-3.3.3.tar.gz
- $ cd libarchive-3.3.3
+ $ wget https://libarchive.org/downloads/libarchive-3.7.4.tar.gz
+ $ tar zxf libarchive-3.7.4.tar.gz
+ $ cd libarchive-3.7.4
  $ ./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat make
  $ make install
  $ cd ..
