@@ -164,8 +164,7 @@ TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
           this);
 
 #ifdef __WXOSX__
-  Connect(wxEVT_ACTIVATE,
-          wxActivateEventHandler(TrackPropDlg::OnActivate),
+  Connect(wxEVT_ACTIVATE, wxActivateEventHandler(TrackPropDlg::OnActivate),
           NULL, this);
 #endif
 
@@ -261,15 +260,14 @@ TrackPropDlg::~TrackPropDlg() {
   instanceFlag = false;
 }
 
-void TrackPropDlg::OnActivate(wxActivateEvent& event){
-    DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
-    long int style = pWin->GetWindowStyle();
-    if (event.GetActive())
-      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
-    else
-      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
+void TrackPropDlg::OnActivate(wxActivateEvent& event) {
+  DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
+  long int style = pWin->GetWindowStyle();
+  if (event.GetActive())
+    pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+  else
+    pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
-
 
 void TrackPropDlg::RecalculateSize(void) {
   //  Make an estimate of the dialog size, without scrollbars showing
@@ -497,9 +495,8 @@ void TrackPropDlg::CreateControlsCompact() {
   itemFlexGridSizer6b->Add(staticTextStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL,
                            5);
 
-  wxString m_chStyleChoices[] = {_("Default"),    _("Solid"),
-                                 _("Dot"),        _("Long dash"),
-                                 _("Short dash")};
+  wxString m_chStyleChoices[] = {_("Default"), _("Solid"), _("Dot"),
+                                 _("Long dash"), _("Short dash")};
   int m_chStyleNChoices = sizeof(m_chStyleChoices) / sizeof(wxString);
   m_cStyle =
       new wxChoice(itemDialog1, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -664,9 +661,9 @@ void TrackPropDlg::CreateControls(void) {
 
 #endif
 
-  //#ifdef __ANDROID__
-  //    m_panelBasic->GetHandle()->setStyleSheet( getQtStyleSheet());
-  //#endif
+  // #ifdef __ANDROID__
+  //     m_panelBasic->GetHandle()->setStyleSheet( getQtStyleSheet());
+  // #endif
 
   wxBoxSizer* bSizerBasic = new wxBoxSizer(wxVERTICAL);
   m_panelBasic->SetSizer(bSizerBasic);
@@ -740,7 +737,7 @@ void TrackPropDlg::CreateControls(void) {
   // m_stStyle->Wrap( -1 );
   sbSizerParams->Add(m_stStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  wxString m_cStyleChoices[] = {_("Default"),   _("Solid"),      _("Dot"),
+  wxString m_cStyleChoices[] = {_("Default"), _("Solid"), _("Dot"),
                                 _("Long dash"), _("Short dash")};
   int m_cStyleNChoices = sizeof(m_cStyleChoices) / sizeof(wxString);
   m_cStyle = new wxChoice(m_panelBasic, wxID_ANY, wxDefaultPosition,
@@ -819,18 +816,21 @@ void TrackPropDlg::CreateControls(void) {
   m_rbShowTimeUTC = new wxRadioButton(m_panel0, wxID_ANY, _("UTC"),
                                       wxDefaultPosition, wxDefaultSize, 0);
   bSizerShowTime->Add(m_rbShowTimeUTC, 0,
-       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
+                      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
+                      5);
 
   m_rbShowTimePC = new wxRadioButton(m_panel0, wxID_ANY, _("Local @ PC"),
                                      wxDefaultPosition, wxDefaultSize, 0);
   bSizerShowTime->Add(m_rbShowTimePC, 0,
-       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
+                      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
+                      5);
 
   m_rbShowTimeLocal =
       new wxRadioButton(m_panel0, wxID_ANY, _("LMT @ Track Start"),
                         wxDefaultPosition, wxDefaultSize, 0);
   bSizerShowTime->Add(m_rbShowTimeLocal, 0,
-       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
+                      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
+                      5);
 
   m_rbShowTimePC->SetValue(true);
 
@@ -1177,7 +1177,7 @@ bool TrackPropDlg::UpdateProperties() {
   //  Time
   wxString time_form;
   wxTimeSpan time(0, 0, (int)total_seconds, 0);
-  //TODO  Construct a readable time string, e.g. "xx Days, 15:34"
+  // TODO  Construct a readable time string, e.g. "xx Days, 15:34"
   if (total_seconds > 3600. * 24.)
     time_form = time.Format("%H:%M");
   else if (total_seconds > 0.)
@@ -1429,8 +1429,7 @@ void TrackPropDlg::OnTrackPropListClick(wxListEvent& event) {
         m_sdbBtmBtnsSizerSplit->Enable(true);
       }
       if (gFrame->GetFocusCanvas()) {
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat,
-                               prp->m_lon,
+        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat, prp->m_lon,
                                gFrame->GetFocusCanvas()->GetVPScale());
       }
 #ifdef __WXMSW__
@@ -1458,7 +1457,7 @@ void TrackPropDlg::OnToRouteBtnClick(wxCommandEvent& event) {
 
 void TrackPropDlg::OnExportBtnClick(wxCommandEvent& event) {
   wxString suggested_name = _("track");
-  std::vector<Track*> list = { m_pTrack };
+  std::vector<Track*> list = {m_pTrack};
   if (m_pTrack->GetName() != wxEmptyString)
     suggested_name = m_pTrack->GetName();
   ExportGPXTracks(this, &list, suggested_name);
@@ -1742,9 +1741,8 @@ void TrackPropDlg::OnOKBtnClick(wxCommandEvent& event) {
   //    Look in the track list to be sure the track is still available
   //    (May have been deleted by RouteManagerDialog...)
 
-  bool b_found_track =
-    std::find(g_TrackList.begin(), g_TrackList.end(), m_pTrack) !=
-    g_TrackList.end();
+  bool b_found_track = std::find(g_TrackList.begin(), g_TrackList.end(),
+                                 m_pTrack) != g_TrackList.end();
 
   if (b_found_track) {
     SaveChanges();  // write changes to globals and update config
@@ -1764,9 +1762,8 @@ void TrackPropDlg::OnOKBtnClick(wxCommandEvent& event) {
 }
 
 void TrackPropDlg::OnCancelBtnClick(wxCommandEvent& event) {
-  bool b_found_track =
-    std::find(g_TrackList.begin(), g_TrackList.end(), m_pTrack) !=
-    g_TrackList.end();
+  bool b_found_track = std::find(g_TrackList.begin(), g_TrackList.end(),
+                                 m_pTrack) != g_TrackList.end();
 
   if (b_found_track) m_pTrack->ClearHighlights();
 

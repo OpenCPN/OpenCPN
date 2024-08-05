@@ -107,9 +107,9 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
       return false;
     }
 
-    msg << "sh -c \" " << sendmail
-        << " --utf8  --subject '" << message.m_subject << "' "
-        <<"--body '"  << message.m_body << "'";
+    msg << "sh -c \" " << sendmail << " --utf8  --subject '"
+        << message.m_subject << "' "
+        << "--body '" << message.m_body << "'";
     for (size_t rcpt = 0; rcpt < message.m_to.GetCount(); rcpt++)
       msg << " '" << message.m_to[rcpt] << "'";  // add recipients
     msg << "\"";
@@ -155,5 +155,5 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
 #else
 wxLogMessage(_T("Send eMail not yet implemented for this platform"));
 return false;
-//#error Send not yet implemented for this platform.
+// #error Send not yet implemented for this platform.
 #endif
