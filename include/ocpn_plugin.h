@@ -221,6 +221,8 @@ public:
   double Var;  // Variation, typically from RMC message
   double Hdm;
   double Hdt;
+  // The time obtained from the most recent GNSS message, or the system time if
+  // the GNSS watchdog has expired.
   time_t FixTime;
   int nSats;
 };

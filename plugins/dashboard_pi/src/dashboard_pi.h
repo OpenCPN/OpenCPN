@@ -313,6 +313,20 @@ private:
   int mSatsInUse;
   int mSatsInView;
   double mHdm;
+  /**
+   * The current time in UTC.
+   *
+   * Holds the current UTC time, which is obtained from various sources in the
+   * following order of priority:
+   * 1. SignalK navigation.datetime
+   * 2. NMEA ZDA sentence
+   * 3. NMEA RMC sentence
+   * 4. GNSS (Global Navigation Satellite System)
+   * 5. Local system clock
+   *
+   * The priority order ensures that the most accurate and reliable source is
+   * used to set the UTC time.
+   */
   wxDateTime mUTCDateTime;
   int m_config_version;
   wxString m_VDO_accumulator;
