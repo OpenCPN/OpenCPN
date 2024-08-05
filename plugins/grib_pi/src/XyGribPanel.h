@@ -34,48 +34,47 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class XyGribPanel
 ///////////////////////////////////////////////////////////////////////////////
-class XyGribPanel : public wxPanel
-{
-	private:
+class XyGribPanel : public wxPanel {
+private:
+protected:
+  wxStaticText* m_wavemodel_label;
+  wxStaticText* m_atmmodel_label;
+  wxStaticText* m_weathermodel;
+  wxStaticText* m_duration_label;
+  wxStaticText* m_run_label;
+  wxStaticText* m_interval_label;
+  wxNotebook* m_dataconfig_nbook;
+  wxPanel* m_surfacetab_panel;
+  wxStaticLine* m_separator_1;
+  wxStaticText* m_status_label;
+  wxStaticText* m_sizeestimate_label;
 
-	protected:
-		wxStaticText* m_wavemodel_label;
-		wxStaticText* m_atmmodel_label;
-		wxStaticText* m_weathermodel;
-		wxStaticText* m_duration_label;
-		wxStaticText* m_run_label;
-		wxStaticText* m_interval_label;
-		wxNotebook* m_dataconfig_nbook;
-		wxPanel* m_surfacetab_panel;
-		wxStaticLine* m_separator_1;
-		wxStaticText* m_status_label;
-		wxStaticText* m_sizeestimate_label;
+public:
+  wxChoice* m_atmmodel_choice;
+  wxChoice* m_wavemodel_choice;
+  wxChoice* m_interval_choice;
+  wxChoice* m_resolution_choice;
+  wxChoice* m_duration_choice;
+  wxChoice* m_run_choice;
+  wxCheckBox* m_wind_cbox;
+  wxCheckBox* m_gust_cbox;
+  wxCheckBox* m_pressure_cbox;
+  wxCheckBox* m_temperature_cbox;
+  wxCheckBox* m_cape_cbox;
+  wxCheckBox* m_reflectivity_cbox;
+  wxCheckBox* m_cloudcover_cbox;
+  wxCheckBox* m_precipitation_cbox;
+  wxCheckBox* m_waveheight_cbox;
+  wxCheckBox* m_windwave_cbox;
+  wxButton* m_download_button;
+  wxGauge* m_progress_gauge;
+  wxStaticText* m_status_text;
+  wxStaticText* m_sizeestimate_text;
 
-	public:
-		wxChoice* m_atmmodel_choice;
-		wxChoice* m_wavemodel_choice;
-		wxChoice* m_interval_choice;
-		wxChoice* m_resolution_choice;
-		wxChoice* m_duration_choice;
-		wxChoice* m_run_choice;
-		wxCheckBox* m_wind_cbox;
-		wxCheckBox* m_gust_cbox;
-		wxCheckBox* m_pressure_cbox;
-		wxCheckBox* m_temperature_cbox;
-		wxCheckBox* m_cape_cbox;
-		wxCheckBox* m_reflectivity_cbox;
-		wxCheckBox* m_cloudcover_cbox;
-		wxCheckBox* m_precipitation_cbox;
-		wxCheckBox* m_waveheight_cbox;
-		wxCheckBox* m_windwave_cbox;
-		wxButton* m_download_button;
-		wxGauge* m_progress_gauge;
-		wxStaticText* m_status_text;
-		wxStaticText* m_sizeestimate_text;
+  XyGribPanel(wxWindow* parent, wxWindowID id = wxID_ANY,
+              const wxPoint& pos = wxDefaultPosition,
+              const wxSize& size = wxSize(-1, -1), long style = wxTAB_TRAVERSAL,
+              const wxString& name = wxEmptyString);
 
-		XyGribPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
-
-		~XyGribPanel();
-
+  ~XyGribPanel();
 };
-

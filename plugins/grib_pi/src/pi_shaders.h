@@ -39,104 +39,102 @@ extern GLint pi_circle_filled_shader_program;
 bool pi_loadShaders();
 void configureShaders(float width, float height);
 
-extern const GLchar* PI_shader_preamble;
+extern const GLchar *PI_shader_preamble;
 
 enum Consts { INFOLOG_LEN = 512 };
 
-class PI_GLShaderProgram
-{
+class PI_GLShaderProgram {
 public:
+  class Builder {
+  public:
+    Builder() : linked_(false) { programId_ = glCreateProgram(); }
 
-    class Builder {
-    public:
-        Builder() : linked_(false) {
-            programId_ = glCreateProgram();
-        }
+    Builder &addShaderFromSource(std::string const &shaderSource,
+                                 GLenum shaderType) {
+      char const *shaderCStr = shaderSource.c_str();
+      GLuint shaderId = glCreateShader(shaderType);
 
-        Builder & addShaderFromSource(std::string const &shaderSource, GLenum shaderType) {
-            char const *shaderCStr = shaderSource.c_str();
-            GLuint shaderId = glCreateShader(shaderType);
+      GLchar const *files[] = {PI_shader_preamble, shaderCStr};
+      GLint lengths[] = {(GLint)strlen(PI_shader_preamble),
+                         (GLint)strlen(shaderCStr)};
 
-            GLchar const* files[] = { PI_shader_preamble, shaderCStr };
-            GLint lengths[]       = { (GLint)strlen(PI_shader_preamble),  (GLint)strlen(shaderCStr)  };
+      glShaderSource(shaderId, 2, files, lengths);
+      // glShaderSource(shaderId, 1, &shaderCStr, nullptr);
 
-            glShaderSource(shaderId, 2, files, lengths);
-            //glShaderSource(shaderId, 1, &shaderCStr, nullptr);
+      glCompileShader(shaderId);
+      glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+      if (!success) {
+        glGetShaderInfoLog(shaderId, INFOLOG_LEN, NULL, infoLog);
+        printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", infoLog);
+        // ret_val = false;
+      }
 
-            glCompileShader(shaderId);
-            glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-            if (!success) {
-              glGetShaderInfoLog(shaderId, INFOLOG_LEN, NULL, infoLog);
-              printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", infoLog);
-              //ret_val = false;
-            }
-
-            glAttachShader(programId_, shaderId);
-            return *this;
-        }
-
-//         void addShaderFromFile(std::string const &shaderFile, GLenum shaderType) {
-//             std::ifstream fileName(shaderFile);
-//             std::istreambuf_iterator<char> fileBegin(fileName), fileEnd;
-//             std::string fileContents(fileBegin, fileEnd);
-//             return addShaderFromSource(fileContents, shaderType);
-//         }
-
-        PI_GLShaderProgram linkProgram() {
-            glLinkProgram(programId_);
-            glGetProgramiv( programId_, GL_LINK_STATUS, &linkSuccess); //requesting the status
-            if (linkSuccess == GL_FALSE) {
-              glGetProgramInfoLog(programId_, INFOLOG_LEN, NULL, infoLog);
-              printf("ERROR::SHADER::LINK_FAILED\n%s\n", infoLog);
-            }
-
-            PI_GLShaderProgram theProgram(programId_);
-            //deleteAttachedShaders(programId_);
-            linked_ = true;
-            return theProgram;
-        }
-
-        ~Builder() {
-             if(!linked_) {
-                 glDeleteProgram(programId_);
-             }
-         }
-    private:
-        GLuint programId_;
-        bool linked_;
-        GLint success;
-        GLint linkSuccess;
-        GLchar infoLog[INFOLOG_LEN];
-    };
-
-    PI_GLShaderProgram() : programId_(0) { }
-
-    PI_GLShaderProgram(PI_GLShaderProgram &&other) {
-        *this = std::move(other);
+      glAttachShader(programId_, shaderId);
+      return *this;
     }
 
-    PI_GLShaderProgram &operator=(PI_GLShaderProgram &&other)
-    {
-        programId_ = other.programId_;
-        other.programId_ = 0;
+    //         void addShaderFromFile(std::string const &shaderFile, GLenum
+    //         shaderType) {
+    //             std::ifstream fileName(shaderFile);
+    //             std::istreambuf_iterator<char> fileBegin(fileName), fileEnd;
+    //             std::string fileContents(fileBegin, fileEnd);
+    //             return addShaderFromSource(fileContents, shaderType);
+    //         }
 
-        if (other.programId_ != 0) {
-            glDeleteProgram(other.programId_);
-        }
+    PI_GLShaderProgram linkProgram() {
+      glLinkProgram(programId_);
+      glGetProgramiv(programId_, GL_LINK_STATUS,
+                     &linkSuccess);  // requesting the status
+      if (linkSuccess == GL_FALSE) {
+        glGetProgramInfoLog(programId_, INFOLOG_LEN, NULL, infoLog);
+        printf("ERROR::SHADER::LINK_FAILED\n%s\n", infoLog);
+      }
 
-        return *this;
+      PI_GLShaderProgram theProgram(programId_);
+      // deleteAttachedShaders(programId_);
+      linked_ = true;
+      return theProgram;
     }
 
-    ~PI_GLShaderProgram() { }
+    ~Builder() {
+      if (!linked_) {
+        glDeleteProgram(programId_);
+      }
+    }
 
-    GLuint programId() const { return programId_; }
-
-    PI_GLShaderProgram(PI_GLShaderProgram const &other) = delete;
-    PI_GLShaderProgram &operator=(PI_GLShaderProgram const &other) = delete;
-private:
-    PI_GLShaderProgram(GLuint programId) : programId_(programId) { }
+  private:
     GLuint programId_;
-};
+    bool linked_;
+    GLint success;
+    GLint linkSuccess;
+    GLchar infoLog[INFOLOG_LEN];
+  };
 
+  PI_GLShaderProgram() : programId_(0) {}
+
+  PI_GLShaderProgram(PI_GLShaderProgram &&other) { *this = std::move(other); }
+
+  PI_GLShaderProgram &operator=(PI_GLShaderProgram &&other) {
+    programId_ = other.programId_;
+    other.programId_ = 0;
+
+    if (other.programId_ != 0) {
+      glDeleteProgram(other.programId_);
+    }
+
+    return *this;
+  }
+
+  ~PI_GLShaderProgram() {}
+
+  GLuint programId() const { return programId_; }
+
+  PI_GLShaderProgram(PI_GLShaderProgram const &other) = delete;
+  PI_GLShaderProgram &operator=(PI_GLShaderProgram const &other) = delete;
+
+private:
+  PI_GLShaderProgram(GLuint programId) : programId_(programId) {}
+  GLuint programId_;
+};
 
 #endif

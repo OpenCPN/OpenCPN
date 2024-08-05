@@ -2711,7 +2711,8 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
 
   wxString warningStr = "";
   if (estimate / (1024 * 1024) > XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB) {
-    warningStr = wxString::Format("(Warning GRIB exceeds %d MB limit)", XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB);
+    warningStr = wxString::Format("(Warning GRIB exceeds %d MB limit)",
+                                  XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB);
   }
 
   m_xygribPanel->m_sizeestimate_text->SetLabel(

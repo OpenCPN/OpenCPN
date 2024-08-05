@@ -172,8 +172,7 @@ public:
   double m_ScaledFactor;
   void DoZoomToCenter();
   const wxString GetGribDir() {
-    if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir))
-    {
+    if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir)) {
       m_grib_dir = GetpPrivateApplicationDataLocation()
                        ->Append(wxFileName::GetPathSeparator())
                        .Append("grib");

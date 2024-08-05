@@ -388,7 +388,8 @@ void CursorData::UpdateTrackingControls(void) {
                 wxString::Format(_T("%2d bf"), (int)round(vk))));
     }
 
-    m_tcWindDirection->SetValue(wxString::Format(_T("%03d%c"), (int)(ang), 0x00B0));
+    m_tcWindDirection->SetValue(
+        wxString::Format(_T("%03d%c"), (int)(ang), 0x00B0));
   } else {
     m_tcWindSpeed->SetValue(_("N/A"));
     m_tcWindSpeedBf->SetValue(_("N/A"));

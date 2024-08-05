@@ -36,7 +36,6 @@
 #endif
 #endif  // precompiled headers
 
-
 #include <wx/fileconf.h>
 #include <wx/stdpaths.h>
 
@@ -131,18 +130,20 @@ int grib_pi::Init(void) {
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled
   //    locally
   wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
-                         wxFileName::GetPathSeparator() + _T("grib_pi") +
-                         wxFileName::GetPathSeparator() + _T("data") +
-                         wxFileName::GetPathSeparator();
-  //Initialize catalog file
+                       wxFileName::GetPathSeparator() + _T("grib_pi") +
+                       wxFileName::GetPathSeparator() + _T("data") +
+                       wxFileName::GetPathSeparator();
+  // Initialize catalog file
   wxString local_grib_catalog = "sources.json";
-  wxString data_path = *GetpPrivateApplicationDataLocation() + wxFileName::GetPathSeparator() + "grib_pi";
+  wxString data_path = *GetpPrivateApplicationDataLocation() +
+                       wxFileName::GetPathSeparator() + "grib_pi";
   if (!wxDirExists(data_path)) {
     wxMkdir(data_path);
   }
-  m_local_sources_catalog = data_path + wxFileName::GetPathSeparator() + local_grib_catalog;
+  m_local_sources_catalog =
+      data_path + wxFileName::GetPathSeparator() + local_grib_catalog;
   if (!wxFileExists(m_local_sources_catalog)) {
-      wxCopyFile(shareLocn + local_grib_catalog, m_local_sources_catalog);
+    wxCopyFile(shareLocn + local_grib_catalog, m_local_sources_catalog);
   }
   if (m_bGRIBShowIcon) {
     wxString normalIcon = shareLocn + _T("grib.svg");
@@ -247,7 +248,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
 
   wxFileConfig *pConf = GetOCPNConfigObject();
-  if (pConf){
+  if (pConf) {
     wxString l_grib_dir;
     pConf->SetPath(_T ( "/Directories" ));
     pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
@@ -277,13 +278,12 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   wxDisplaySize(&display_width, &display_height);
   int char_width = GetOCPNCanvasWindow()->GetCharWidth();
   int char_height = GetOCPNCanvasWindow()->GetCharHeight();
-  if(display_height < 600){
+  if (display_height < 600) {
     wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
     Pref->SetMaxSize(GetOCPNCanvasWindow()->GetSize());
     Pref->SetSize(wxSize(60 * char_width, canvas_size.x * 8 / 10));
     Pref->CentreOnScreen();
-  }
-  else {
+  } else {
     Pref->SetMaxSize(GetOCPNCanvasWindow()->GetSize());
     Pref->SetSize(wxSize(60 * char_width, 32 * char_height));
   }
@@ -354,7 +354,6 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
       m_pGribCtrlBar->m_grib_dir = Pref->m_grib_dir_sel;
       m_pGribCtrlBar->m_file_names.Clear();
     }
-
   }
 
   if (Pref->m_grib_dir_sel.Length()) {
@@ -429,7 +428,8 @@ void grib_pi::OnToolbarToolCallback(int id) {
 
   bool starting = false;
 
-  double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn() * OCPN_GetWinDIPScaleFactor();
+  double scale_factor =
+      GetOCPNGUIToolScaleFactor_PlugIn() * OCPN_GetWinDIPScaleFactor();
 #ifdef __WXMSW__
   scale_factor *= m_GribIconsScaleFactor;
 #endif
@@ -452,12 +452,12 @@ void grib_pi::OnToolbarToolCallback(int id) {
     wxMenuItem *table =
         new wxMenuItem(dummy, wxID_ANY, wxString(_("Weather table")),
                        wxEmptyString, wxITEM_NORMAL);
-/* Menu font do not work properly for MSW (wxWidgets 3.2.1)
-#ifdef __WXMSW__
-    wxFont *qFont = OCPNGetFont(_("Menu"), 10);
-    table->SetFont(*qFont);
-#endif
-*/
+    /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
+    #ifdef __WXMSW__
+        wxFont *qFont = OCPNGetFont(_("Menu"), 10);
+        table->SetFont(*qFont);
+    #endif
+    */
     m_MenuItem = AddCanvasContextMenuItem(table, this);
     SetCanvasContextMenuItemViz(m_MenuItem, false);
 
@@ -477,12 +477,12 @@ void grib_pi::OnToolbarToolCallback(int id) {
 
   //    Toggle dialog?
   if (m_bShowGrib) {
-    //A new file could have been added since grib plugin opened
+    // A new file could have been added since grib plugin opened
     if (!starting && m_bLoadLastOpenFile == 0) {
       m_pGribCtrlBar->OpenFile(true);
       starting = true;
     }
-    //the dialog font could have been changed since grib plugin opened
+    // the dialog font could have been changed since grib plugin opened
     if (m_pGribCtrlBar->GetFont() != *OCPNGetFont(_("Dialog"), 10))
       starting = true;
     if (starting) {
@@ -564,7 +564,7 @@ bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
 
   m_pGRIBOverlayFactory->RenderGribOverlay(dc, vp);
 
-  if ( GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse() ) {
+  if (GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse()) {
     m_pGribCtrlBar->SetViewPort(vp);
     if (m_pGribCtrlBar->pReq_Dialog)
       m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay(dc);
@@ -859,12 +859,12 @@ void grib_pi::SendTimelineMessage(wxDateTime time) {
   SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
 }
 
-void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix) {
+void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   m_boat_cog = pfix.Cog;
   m_boat_sog = pfix.Sog;
   m_boat_lat = pfix.Lat;
   m_boat_lon = pfix.Lon;
-  if(pfix.FixTime != 0) {
+  if (pfix.FixTime != 0) {
     m_boat_time = pfix.FixTime;
   } else {
     m_boat_time = wxDateTime::Now().GetTicks();

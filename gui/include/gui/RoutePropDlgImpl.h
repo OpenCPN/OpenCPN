@@ -97,7 +97,8 @@ protected:
                    const wxString& title = _("Route Properties"),
                    const wxPoint& pos = wxDefaultPosition,
                    const wxSize& size = wxSize(550, 450),
-                   long style = FRAME_WITH_LINKS_STYLE );
+                   long style = FRAME_WITH_LINKS_STYLE);
+
 private:
   void SaveGeometry();
   static bool instanceFlag;

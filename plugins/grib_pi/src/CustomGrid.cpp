@@ -65,7 +65,7 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   wxFont labelfont = GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold();
   SetLabelFont(labelfont);
   wxColour colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-  if(colour.Red() > 128) {
+  if (colour.Red() > 128) {
     GetGlobalColor(_T("DILG0"), &colour);
     GetGlobalColor(_T("GREEN1"), &m_greenColour);
     GetGlobalColor(_T("DILG1"), &m_greyColour);

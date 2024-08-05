@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-//#include "chcanv.h"
-//#include "model/georef.h"
+// #include "chcanv.h"
+// #include "model/georef.h"
 #include <wx/graphics.h>
 
 #include "IsoLine.h"
@@ -389,21 +389,21 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc,
     dc->SetPen(ppISO);
   } else { /* opengl */
 #ifdef ocpnUSE_GL
-    //#ifndef USE_ANDROID_GLES2
-    //           if(m_pixelMM > 0.2){        // pixel size large enough to
-    //           render well
-    //           //      Enable anti-aliased lines, at best quality
-    //             glEnable( GL_LINE_SMOOTH );
-    //             glEnable( GL_BLEND );
-    //             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    //             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-    //             glLineWidth( 2 );
-    //           }
-    //           else{
-    //             glLineWidth( 0.4/m_pixelMM);        //  set a target line
-    //             width by MM
-    //           }
-    //#else
+    // #ifndef USE_ANDROID_GLES2
+    //            if(m_pixelMM > 0.2){        // pixel size large enough to
+    //            render well
+    //            //      Enable anti-aliased lines, at best quality
+    //              glEnable( GL_LINE_SMOOTH );
+    //              glEnable( GL_BLEND );
+    //              glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    //              glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    //              glLineWidth( 2 );
+    //            }
+    //            else{
+    //              glLineWidth( 0.4/m_pixelMM);        //  set a target line
+    //              width by MM
+    //            }
+    // #else
     if (pof->m_oDC) {
       wxPen ppISO(isoLineColor, 2);
       pof->m_oDC->SetPen(ppISO);
@@ -559,7 +559,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp,
 #if 1
           prev = r;
           if (pof->m_oDC) {
-            //pof->m_oDC->SetFont( *mfont );
+            // pof->m_oDC->SetFont( *mfont );
             pof->m_oDC->SetPen(*wxBLACK_PEN);
             pof->m_oDC->SetBrush(color);
             pof->m_oDC->DrawRectangle(x, y, w, h);

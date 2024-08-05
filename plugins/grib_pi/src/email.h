@@ -22,7 +22,7 @@
 class WXDLLIMPEXP_NETUTILS wxEmail {
 public:
   //// Ctor/dtor
-  wxEmail(){};
+  wxEmail() {};
 
   //// Operations
 

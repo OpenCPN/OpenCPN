@@ -350,14 +350,14 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_) {
           b_len_add_8 = false;
           break;
         }  // end 'G' found in the next bytes
-      }    // end no 'G' found in 1st byte.
+      }  // end no 'G' found in 1st byte.
     }
   }  // end reading four bytes
 
   if (b_haveReadGRIB == 0) {  // the four bytes have been read
     if (strncmp(strgrib, "GRIB", 4) != 0)
       b_len_add_8 = true;  //"GRIB" header no valid so apply length adder.
-                           //Further reading will happen
+                           // Further reading will happen
     else {
       b_haveReadGRIB = 2;  //"GRIB" header is valid so no further reading
       b_len_add_8 = false;
