@@ -3768,12 +3768,15 @@ Var Patch_Date
 !macro VersionDate_Macro un
 	Function ${un}VersionDate
 		StrCpy $Patch_Version "@CPACK_PACKAGE_VERSION_PATCH@"
+		MessageBox MB_OK "Patch_Version= $Patch_Version"
 		${If} $Patch_Version == ""
 			StrCpy $Patch_Version "0000"
 		${EndIf}
 		StrLen $0 "$Patch_Version"
 		${StrFilter} "$Patch_Version" "1" "" "" $Version_Digits_Only
 		StrLen $1 $Version_Digits_Only
+   		MessageBox MB_OK "VDO= $Version_Digits_Only"
+
 		;# Patch version contains non-digit characters
 		${If} $0 != $1
 			${StrFilter} "$Patch_Version" "-2" "" "" $PATCH_ND
@@ -3787,6 +3790,9 @@ Var Patch_Date
 				StrCpy $Version_Unified "b${YEAR}$Patch_Version"
 			${EndIf}
 			${VersionConvert} $Version_Unified "" $Patch_Date
+    		MessageBox MB_OK "VU= $Version_Unified"
+  	    	MessageBox MB_OK "PD= $Patch_Date"
+
 			StrCpy $VERSION_DATE "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.$Patch_Date"
 		;# Patch version contains only digits
 		${Else}
@@ -3800,6 +3806,9 @@ Var Patch_Date
 				StrCpy $Version_Unified "b${YEAR}$Patch_Version"
 			${EndIf}
 			${VersionConvert} $Version_Unified "" $Patch_Date
+    		MessageBox MB_OK "VUB= $Version_Unified"
+   	    	MessageBox MB_OK "PDB= $Patch_Date"
+
 			StrCpy $VERSION_DATE "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.$Patch_Date.00"
 		${EndIf}
 	FunctionEnd
