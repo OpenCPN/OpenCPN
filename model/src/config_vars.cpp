@@ -86,6 +86,19 @@ wxString g_hostname;
 wxString g_SART_sound_file;
 wxString g_TalkerIdText;
 wxString g_winPluginDir;
+// Timezone to use when formatting date/time.
+// Supported values are:
+// - UTC:                Format date/time in UTC.
+// - Local Time:         Format date/time using the operating system timezone configuration.
+// In the future, additional values could be supported:
+// - LMT:                Format date/time using the local mean time.
+// - Valid IANA TZ name: Format date/time using the specified timezone.
+//                       This could be useful when planning a route in a timezone other than
+//                       what is configured in the operating system.
+//                       See see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
+// This configuration parameter is the English name without translation.
+// Widgets may provide a localized version of this value when displaying it to the user.
+wxString g_timezone;
 
 static wxConfigBase* the_base_config = 0;
 

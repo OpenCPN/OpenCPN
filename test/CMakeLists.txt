@@ -8,7 +8,10 @@ message(STATUS "Building tests")
 enable_testing ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
-set(SRC tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+set(SRC
+  tests.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+)
 
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
@@ -94,7 +97,6 @@ target_include_directories(
   ${PROJECT_SOURCE_DIR}/../include
   ${PROJECT_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/include
-  ${PROJECT_SOURCE_DIR}/../libs/sound/include
   ${PROJECT_SOURCE_DIR}/../libs/sound/include
   ${PROJECT_SOURCE_DIR}/../buildandroid/libcurl/include
 )

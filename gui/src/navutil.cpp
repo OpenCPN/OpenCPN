@@ -589,6 +589,7 @@ int MyConfig::LoadMyConfig() {
   g_n_arrival_circle_radius = 0.05;
   g_plus_minus_zoom_factor = 2.0;
   g_mouse_zoom_sensitivity = 1.5;
+  g_timezone = DT_TZ_UTC;
 
   g_AISShowTracks_Mins = 20;
   g_AISShowTracks_Limit = 300.0;
@@ -1015,6 +1016,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "TrackRotateAt" ), &g_track_rotate_time);
   Read(_T ( "TrackRotateTimeType" ), &g_track_rotate_time_type);
   Read(_T ( "HighlightTracks" ), &g_bHighliteTracks);
+
+  Read(_T ( "Timezone" ), &g_timezone);
 
   wxString stps;
   Read(_T ( "PlanSpeed" ), &stps);
@@ -2489,6 +2492,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "TrackRotateTimeType" ), g_track_rotate_time_type);
   Write(_T ( "HighlightTracks" ), g_bHighliteTracks);
 
+  Write(_T ( "Timezone" ), g_timezone);
   Write(_T ( "InitialStackIndex" ), g_restore_stackindex);
   Write(_T ( "InitialdBIndex" ), g_restore_dbindex);
 

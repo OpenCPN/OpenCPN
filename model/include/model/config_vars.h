@@ -92,6 +92,7 @@ extern wxString g_hostname;
 extern wxString g_SART_sound_file;
 extern wxString g_TalkerIdText;
 extern wxString g_winPluginDir;   // Base plugin directory on Windows.
+extern wxString g_timezone;
 
 wxConfigBase* TheBaseConfig();
 void InitBaseConfig(wxConfigBase* cfg);

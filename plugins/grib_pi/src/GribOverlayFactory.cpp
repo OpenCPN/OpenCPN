@@ -110,20 +110,6 @@ static wxString MToString( int DataCenterModel )
 }
 #endif
 
-#if 0
-static wxString TToString( const wxDateTime date_time, const int time_zone )
-{
-    wxDateTime t( date_time );
-    t.MakeFromTimezone( wxDateTime::UTC );
-    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
-    switch( time_zone ) {
-        case 0: return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");//:%S
-        case 1:
-        default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
-    }
-}
-#endif
-
 #ifdef ocpnUSE_GL
 static GLuint texture_format = 0;
 #endif
