@@ -87,6 +87,7 @@ CMake variables
 	Var VERSION_OLDER
 	Var CANCEL_INSTALLER
 	Var VERSION_DATE
+	Var LAST_VERSION_DATE
 	Var LANG_NAME
 	Var Status_SecGrpSetConfig
 	Var MAJOR_D
@@ -837,6 +838,7 @@ Section "-Install Section" SecInstall
 	WriteRegStr SHCTX "${REG_KEY_UN}" "DisplayName" "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "DisplayVersion" "@CPACK_PACKAGE_VERSION@"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "CompareVersion" "$VERSION_DATE"
+	WriteRegStr SHCTX "${REG_KEY_UN}" "LastCompareVersion" "$LAST_VERSION_DATE"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "StartMenuPath" "$SMPROGRAMS\$STARTMENU_FOLDER"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "InstallLocation" "$INSTDIR"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "UninstallString" "$\"$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe$\""
@@ -3692,6 +3694,7 @@ FunctionEnd
 				${If} $R3 == "OpenCPN"
 				${AndIf} $R2 > 7
 					ReadRegStr $R4 SHCTX "${REG_ROOT_KEY_UN}\$R1" "CompareVersion"
+					StrCpy $LAST_VERSION_DATE $R4
 					ReadRegStr $R6 SHCTX "${REG_ROOT_KEY_UN}\$R1" "InstallLocation"
 					${If} $R4 != ""
 						${VersionCompare} $VERSION_DATE $R4 $Compare_Version_Result
@@ -3768,15 +3771,12 @@ Var Patch_Date
 !macro VersionDate_Macro un
 	Function ${un}VersionDate
 		StrCpy $Patch_Version "@CPACK_PACKAGE_VERSION_PATCH@"
-		MessageBox MB_OK "Patch_Version= $Patch_Version"
 		${If} $Patch_Version == ""
 			StrCpy $Patch_Version "0000"
 		${EndIf}
 		StrLen $0 "$Patch_Version"
 		${StrFilter} "$Patch_Version" "1" "" "" $Version_Digits_Only
 		StrLen $1 $Version_Digits_Only
-   		MessageBox MB_OK "VDO= $Version_Digits_Only"
-
 		;# Patch version contains non-digit characters
 		${If} $0 != $1
 			${StrFilter} "$Patch_Version" "-2" "" "" $PATCH_ND
@@ -3790,9 +3790,6 @@ Var Patch_Date
 				StrCpy $Version_Unified "b${YEAR}$Patch_Version"
 			${EndIf}
 			${VersionConvert} $Version_Unified "" $Patch_Date
-    		MessageBox MB_OK "VU= $Version_Unified"
-  	    	MessageBox MB_OK "PD= $Patch_Date"
-
 			StrCpy $VERSION_DATE "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.$Patch_Date"
 		;# Patch version contains only digits
 		${Else}
@@ -3806,9 +3803,6 @@ Var Patch_Date
 				StrCpy $Version_Unified "b${YEAR}$Patch_Version"
 			${EndIf}
 			${VersionConvert} $Version_Unified "" $Patch_Date
-    		MessageBox MB_OK "VUB= $Version_Unified"
-   	    	MessageBox MB_OK "PDB= $Patch_Date"
-
 			StrCpy $VERSION_DATE "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.$Patch_Date.00"
 		${EndIf}
 	FunctionEnd
