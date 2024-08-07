@@ -3041,6 +3041,17 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pmmRow->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("mm")),
                 inputFlags);
 
+    // ChartBar Options
+    itemBoxSizerUI->Add(
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Bar")),
+        labelFlags);
+    wxBoxSizer* ChartBarSizer = new wxBoxSizer(wxHORIZONTAL);
+    itemBoxSizerUI->Add(ChartBarSizer, 0, 0, 0);
+
+    pChartBarEX = new wxCheckBox(m_ChartDisplayPage, -1,
+                                 _("Show extended chart bar information."));
+    ChartBarSizer->Add(pChartBarEX, inputFlags);
+
     pRBSizeAuto->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                          wxCommandEventHandler(options::OnSizeAutoButton), NULL,
                          this);
@@ -4245,9 +4256,9 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    defaultBoatSpeedSizer->Add(
-        new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed ")),
-        groupLabelFlagsHoriz);
+    m_Text_def_boat_speed = new wxStaticText( pDisplayPanel, wxID_ANY,
+               _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+    defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),
                        wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
