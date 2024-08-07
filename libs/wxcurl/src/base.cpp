@@ -13,6 +13,8 @@
 // Headers
 //////////////////////////////////////////////////////////////////////
 
+#include "config.h"
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -831,9 +833,7 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
         SetOpt(CURLOPT_HEADERFUNCTION, wxcurl_header_func);
         SetOpt(CURLOPT_WRITEHEADER, &m_szResponseHeader);
         SetOpt(CURLOPT_ERRORBUFFER, m_szDetailedErrorBuffer);
-        SetOpt(CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0\r\n" \
-                    "Accept: */*\r\n" \
-                    "Connection: keep-alive"); //Pretend we are a normal browser
+        SetOpt(CURLOPT_USERAGENT, "OpenCPN/" PACKAGE_VERSION);
         SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
 #ifdef __WXMSW__
         SetOpt(CURLOPT_CAINFO, "curl-ca-bundle.crt"); //Use our local certificate list on Windows
