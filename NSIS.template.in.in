@@ -2018,7 +2018,7 @@ FunctionEnd
 
 			StrCpy $GroupBox_Size 1
 		;Case 2: one older previous installation => Option 1: Upgrade Option 2: Parallel Installation
-		${ElseIf} $MULTIPLE_INSTALLS == 1
+		${ElseIf} $MULTIPLE_INSTALLS > 0
 		${AndIf} $VERSION_NEWER == 1
 			${NSD_CreateLabel} 0 0 100% 32u "$(Label_TypeInst_Upgrade_Text)"
 			Pop $Label_TypeInst_Upgrade
@@ -2041,7 +2041,7 @@ FunctionEnd
 
 			StrCpy $GroupBox_Size 2
 		;Case 3: one newer previous installation => Option 1: Downgrade Option 2: Parallel Installation
-		${ElseIf} $MULTIPLE_INSTALLS == 1
+		${ElseIf} $MULTIPLE_INSTALLS > 0
 		${AndIf} $VERSION_OLDER == 1
 			${NSD_CreateLabel} 0 0 100% 32u "$(Label_TypeInst_Downgrade_Text)"
 			Pop $Label_TypeInst_Downgrade
@@ -2064,6 +2064,7 @@ FunctionEnd
 
 			StrCpy $GroupBox_Size 2
 		;Case 4: more than one previous installation => Option 1: Parallel Installation
+		;August, 2024, dsr.  This case is never activated
 		${ElseIf} $MULTIPLE_INSTALLS > 1
 			${NSD_CreateLabel} 0 0 100% 32u "$(Label_TypeInst_Parallel_Text)"
 			Pop $Label_TypeInst_Parallel
