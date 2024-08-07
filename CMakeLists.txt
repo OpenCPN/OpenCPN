@@ -858,8 +858,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/waypointman_gui.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/wiz_ui_proto.h
-    ${GUI_HDR_DIR}/wiz_ui.h
 )
 list(APPEND  GUI_HDRS
     ${GUI_S57_DIR}/include/ogr_s57.h
@@ -976,9 +974,18 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
-    ${GUI_SRC_DIR}/initwiz/wiz_ui_proto.cpp
-    ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
 )
+
+if (NOT QT_ANDROID)
+  list(APPEND GUI_HDRS
+          ${GUI_HDR_DIR}/wiz_ui_proto.h
+          ${GUI_HDR_DIR}/wiz_ui.h
+          )
+  list(APPEND GUI_SRC
+          ${GUI_SRC_DIR}/initwiz/wiz_ui_proto.cpp
+          ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
+          )
+endif ()
 
 list(APPEND GUI_SRC
   ${GUI_S57_DIR}/src/ogrs57datasource.cpp
@@ -1127,7 +1134,8 @@ if (EXISTS /sys/devices)
   set(HAVE_SYSFS_PORTS 1)
 endif ()
 
-if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
+if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6"
+        AND NOT QT_ANDROID)
   find_package(PANGO)
   if (PANGO_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
