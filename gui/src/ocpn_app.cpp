@@ -1383,6 +1383,7 @@ bool MyApp::OnInit() {
   wxLogMessage(_T("wxLocale support not available"));
 #endif
 
+#ifndef __ANDROID__
   //  Now that locale is established, possibly run the startup wizard.
   if (g_config_wizard || b_initial_load) {
     FirstUseWizImpl wiz(gFrame, pConfig);
@@ -1391,6 +1392,7 @@ bool MyApp::OnInit() {
       g_NeedDBUpdate = 2;
     }
   }
+#endif
 
   // Instantiate and initialize the Config Manager
   ConfigMgr::Get();
