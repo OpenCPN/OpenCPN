@@ -14,12 +14,13 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
                                      const wxString& title, const wxPoint& pos,
                                      const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style) {
+  m_ProjectBoatPanel = NULL;
+
 #ifdef __OCPN__ANDROID__
   const bool m_bcompact = true;
 #else
   const bool m_bcompact = false;
 #endif
-
   if (m_bcompact) {
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 

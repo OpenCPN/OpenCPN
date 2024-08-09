@@ -191,7 +191,10 @@ public:
   }
 
   void GetProjectedLatLon(int &x, int &y);
-  bool ProjectionEnabled() { return m_ProjectBoatPanel->ProjectionEnabled(); }
+  bool ProjectionEnabled() {
+    if (m_ProjectBoatPanel) return m_ProjectBoatPanel->ProjectionEnabled();
+    else return false;
+  }
   double m_highlight_latmax;
   double m_highlight_lonmax;
   double m_highlight_latmin;
