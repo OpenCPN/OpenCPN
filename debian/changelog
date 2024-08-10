@@ -1,4 +1,4 @@
-opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
   * New upstream release backport
   * Add new patch for arm compiler options (#4027)
@@ -7,14 +7,14 @@ opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) UNRELEASED; urgency=medium
   * Add Breaks opencpn (<< 1:1) to overwrite downstream package
   * Adjust version to handle the new epoch
 
-
  -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 12:48:49 +0200
 
- opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) unstable; urgency=medium
- 
+opencpn (5.10.0+dfsg-1) unstable; urgency=medium
+
   * New upstream release
   * Closes: 1010860
   * Add an epoch,
     see https://lists.debian.org/debian-devel/2024/07/msg00007.html
- 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 12:48:49 +0200
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 11:53:35 +0200
+
