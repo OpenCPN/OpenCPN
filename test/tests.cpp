@@ -201,7 +201,14 @@ public:
     s_result = "";
     s_bus = NavAddr::Bus::Undef;
     Sink sink;
-    Source source;
+    // On loaded CPU:s, for example CI servers, the event might not make
+    // it to the event queue before ProcessPendingEvents(). Observed on
+    // at least launchpad. Correct fix would be to use a wxApp instead
+    // and run it under xvfb or a Wayland composer in headless mode.
+    do {
+      Source source;
+      std::this_thread::yield();
+    } while (!HasPendingEvents());
     ProcessPendingEvents();
     EXPECT_EQ(s_result, std::string("payload data"));
     EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
