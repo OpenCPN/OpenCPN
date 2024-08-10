@@ -1,79 +1,20 @@
-opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo22.04+2) jammy; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+1) UNRELEASED; urgency=medium
 
+  * New upstream release backport
   * New patch: disable intermittent failing test
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 02 Aug 2024 22:14:18 +0200
-
-opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
-
-  * New upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 01 Aug 2024 22:17:40 +0200
-
-opencpn (1:5.9.3~beta3+dfsg-1ubuntu1~bpo2204+1) jammy; urgency=medium
-
-  * New upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 21 Jul 2024 11:39:23 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.8) jammy; urgency=medium
-
-  *  Trigger new build
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 06 Jul 2024 12:43:36 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.7) jammy; urgency=medium
-
-  * Fix wrong distro focal -> jammy
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 17:25:48 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.6) focal; urgency=medium
-
   * Use R:opencpn-sqlock instead of S:
-  * Remove hack Break: wxWindows, not needed.
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 16:20:06 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.5) jammy; urgency=medium
-
   * Add S: and R: from downstream PPA package
+  * Add Breaks/Replaces to handle existing PPA installations.
+  * Adjust version to handle epoch.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 04 Jul 2024 19:51:41 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 13:27:48 +0200*
 
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.4) jammy; urgency=medium
+opencpn (5.10.0+dfsg-1) unstable; urgency=medium
 
-  * Rebuild against wxwidgets 3.2.2
+  * New upstream release
+  * Closes: 1010860
+  * Add an epoch,
+    see https://lists.debian.org/debian-devel/2024/07/msg00007.html
 
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 04 Jul 2024 09:29:56 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 11:53:35 +0200
 
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.3) jammy; urgency=medium
-
-  * Add Breaks/Replaces to handle existing PPA installations
-
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 03 Jul 2024 20:54:53 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.2) jammy; urgency=medium
-
-  * New minor release to handle epoch
-
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 02 Jul 2024 00:28:16 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.1) jammy; urgency=medium
-
-  * Upstream beta release backport
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Jun 2024 15:11:11 +0200
-
-opencpn (5.9.1-beta1+dfsg-1ubuntu1~bpo2204.1) jammy; urgency=medium
-
-  * Upstream beta release backport
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 10 Jun 2024 13:42:20 +0200
-
-opencpn (5.9.1-beta1+dfsg-1) unstable; urgency=medium
-
-  * Local build
-  * Upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 17 Apr 2024 13:13:39 +0200
