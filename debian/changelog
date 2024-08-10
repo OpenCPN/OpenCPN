@@ -1,4 +1,4 @@
-opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
 
   * New upstream release backport
   * New patch: disable intermittent failing test
@@ -7,7 +7,7 @@ opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+1) UNRELEASED; urgency=medium
   * Add Breaks/Replaces to handle existing PPA installations.
   * Adjust version to handle epoch.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 13:27:48 +0200*
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 13:35:02 +0200
 
 opencpn (5.10.0+dfsg-1) unstable; urgency=medium
 
