@@ -1,4 +1,4 @@
-opencpn (1:5.10.0+dfsg-1ubuntu1~bpo20.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
   * New upstream release backport
   * d/control: Add some Breaks/Replaces from downstream PPA
@@ -6,7 +6,7 @@ opencpn (1:5.10.0+dfsg-1ubuntu1~bpo20.04+1) UNRELEASED; urgency=medium
   * d/control: Add Breaks  for opencpn << 1:1, pre epoch 1
   * d/control: Require and use wxWidgets 3.1
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 13:49:16 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 13:57:53 +0200
 
 opencpn (5.10.0+dfsg-1) unstable; urgency=medium
 
