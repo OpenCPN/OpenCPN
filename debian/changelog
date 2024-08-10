@@ -1,48 +1,20 @@
-opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) UNRELEASED; urgency=medium
 
-  * New upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 01 Aug 2024 19:41:51 +0200
-
-opencpn (1:5.9.3~beta3+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
-
-  * New upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 21 Jul 2024 11:27:08 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.4) noble; urgency=medium
-
+  * New upstream release backport
   * Add new patch for arm compiler options (#4027)
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 06 Jul 2024 12:50:30 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.3) noble; urgency=medium
-
   * Add R: and S: from downstream package
   * Add Breaks/Replaces from downstream package
   * Add Breaks opencpn (<< 1:1) to overwrite downstream package
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 16:44:17 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.2) noble; urgency=medium
-
   * Adjust version to handle the new epoch
 
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 02 Jul 2024 00:22:23 +0200
 
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.1) noble; urgency=medium
-  * Upstream beta backport
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 12:48:49 +0200
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Jun 2024 12:04:17 +0200
-
-opencpn (5.9.1-beta1+dfsg-1ubuntu1~bpo26.04.1) noble; urgency=medium
-
-  * Upstream beta backport
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 10 Jun 2024 11:16:11 +0200
-
-opencpn (5.9.1-beta1+dfsg-1) unstable; urgency=medium
-
-  * Local build
-  * Upstream beta release
-
+ opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) unstable; urgency=medium
+ 
+  * New upstream release
+  * Closes: 1010860
+  * Add an epoch,
+    see https://lists.debian.org/debian-devel/2024/07/msg00007.html
+ 
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 12:48:49 +0200
