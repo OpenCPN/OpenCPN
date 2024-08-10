@@ -29,7 +29,9 @@
 
 #include "model/cmdline.h"
 #include "model/config_vars.h"
+#include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
+#include "model/ocpn_utils.h"
 #include "model/peer_client.h"
 #include "model/route.h"
 #include "model/route_point.h"
@@ -53,8 +55,6 @@
 
 extern MyFrame* gFrame;
 extern OCPNPlatform* g_Platform;
-extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-extern wxDateTime g_DNS_cache_time;
 
 static PeerDlgResult ConfirmWriteDlg() {
   std::string msg(_("Objects exists on server. OK to overwrite?"));
@@ -171,6 +171,12 @@ SendToPeerDlg::SendToPeerDlg() {
   premtext = NULL;
   m_scanTime = 5;  // default, seconds
   m_bScanOnCreate = false;
+
+  // Get our own local ipv4 address, for filtering
+  std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
+  if (ipv4_addrs.size())
+    m_ownipAddr = ipv4_addrs[0];
+
 #ifdef __ANDROID__
   androidDisableRotation();
 #endif
@@ -236,20 +242,25 @@ void SendToPeerDlg::CreateControls(const wxString&) {
   m_PeerListBox = new wxComboBox(this, ID_STP_CHOICE_PEER);
 
   //    Fill in the wxComboBox with all detected peers
-  for (unsigned int i = 0; i < g_DNS_cache.size(); i++) {
-    wxString item(g_DNS_cache[i]->hostname.c_str());
+  for (auto& entry : MdnsCache::GetInstance().GetCache()) {
+    wxString item(entry.hostname.c_str());
 
     // skip "self"
-    if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+    if (!g_hostname.IsSameAs(item.BeforeFirst('.')) ||
+        (m_ownipAddr != entry.ip)) {
       item += " {";
-      item += g_DNS_cache[i]->ip.c_str();
+      item += entry.ip.c_str();
       item += "}";
       m_PeerListBox->Append(item);
     }
   }
 
   if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
-
+  m_PeerListBox->Bind(
+         wxEVT_TEXT,
+         [&](wxCommandEvent&) {
+             m_SendButton->Enable(m_PeerListBox->GetValue() != ""); });
+  m_PeerListBox->Enable(!m_bScanOnCreate);
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
   wxBoxSizer* itemBoxSizer3 = new wxBoxSizer(wxVERTICAL);
@@ -286,6 +297,7 @@ void SendToPeerDlg::CreateControls(const wxString&) {
                               wxDefaultPosition, wxDefaultSize, 0);
   itemBoxSizer16->Add(m_SendButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
   m_SendButton->SetDefault();
+  m_SendButton->Enable(!m_PeerListBox->IsListEmpty());
 }
 
 void SendToPeerDlg::SetMessage(wxString msg) {
@@ -303,6 +315,9 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
   // Set up transfer data
   PeerData peer_data(progress);
   ParsePeer(m_PeerListBox->GetValue(), peer_data);
+  auto addr_port = ocpn::split(peer_data.dest_ip_address, ":");
+  if (addr_port.size() == 1) addr_port.push_back("8443");
+  MdnsCache::GetInstance().Add(addr_port[0], addr_port[1]);
   peer_data.routes = m_RouteList;
   peer_data.tracks = m_TrackList;
   peer_data.routepoints = m_RoutePointList;
@@ -345,29 +360,29 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
     m_ScanTickTimer.Stop();
     g_Platform->HideBusySpinner();
     m_RescanButton->Enable();
-    m_SendButton->Enable();
     m_SendButton->SetDefault();
     m_pgauge->Hide();
+    m_PeerListBox->Enable(true);
     m_bScanOnCreate = false;
 
     // Clear the combo box
     m_PeerListBox->Clear();
 
     //    Fill in the wxComboBox with all detected peers
-    for (unsigned int i = 0; i < g_DNS_cache.size(); i++) {
-      wxString item(g_DNS_cache[i]->hostname.c_str());
+    for (auto& entry : MdnsCache::GetInstance().GetCache()) {
+      wxString item(entry.hostname.c_str());
 
       // skip "self"
-      if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+      if (!g_hostname.IsSameAs(item.BeforeFirst('.')) ||
+          (m_ownipAddr != entry.ip)) {
         item += " {";
-        item += g_DNS_cache[i]->ip.c_str();
+        item += entry.ip.c_str();
         item += "}";
         m_PeerListBox->Append(item);
       }
     }
     if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
-
-    g_DNS_cache_time = wxDateTime::Now();
+    m_SendButton->Enable(m_PeerListBox->GetCount() > 0);
   }
 }
 

@@ -57,7 +57,7 @@ public:
   void SetCreateTime(wxDateTime dt);
   const char *GetTimeString() { return m_stimestring.c_str(); }
   bool HasValidTimestamp() {
-    if (m_stimestring.size() != strlen("YYYY-MM-DDTHH:MM:SSZ"))
+    if (m_stimestring.size() < strlen("YYYY-MM-DDTHH:MM:SSZ"))
       return false;
     return true;
   };
