@@ -1,58 +1,19 @@
-opencpn (1:5.9.4~beta4+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo20.04+1) UNRELEASED; urgency=medium
 
-  * New upstream beta release 
-
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 01 Aug 2024 22:30:27 +0200
-
-opencpn (1:5.9.3~beta3+dfsg-1ubuntu1~bpo2004+1) focal; urgency=medium
-
-  * New upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 21 Jul 2024 12:12:14 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2214.1) focal; urgency=medium
-
-  * Trigger new build.
-  * Bump version ahead of jammy build given the wrong distro, avoiding
-    clamping on the Jammy 2204 suffix
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 07 Jul 2024 09:41:35 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.4) focal; urgency=medium
-
+  * New upstream release backport
   * d/control: Add some Breaks/Replaces from downstream PPA
   * d/control: Add some R: and S: from downstream PPA
   * d/control: Add Breaks  for opencpn << 1:1, pre epoch 1
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jul 2024 16:17:32 +0200
-
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.3) focal; urgency=medium
-
   * d/control: Require and use wxWidgets 3.1
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 03 Jul 2024 13:55:52 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 13:49:16 +0200
 
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.2) focal; urgency=medium
+opencpn (5.10.0+dfsg-1) unstable; urgency=medium
 
-  * Minor bump to handle build errors.
+  * New upstream release
+  * Closes: 1010860
+  * Add an epoch,
+    see https://lists.debian.org/debian-devel/2024/07/msg00007.html
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 03 Jul 2024 13:24:22 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 11:53:35 +0200
 
-opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.1) focal; urgency=medium
-
-  * Upstream beta release backport
-
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 03 Jul 2024 11:13:19 +0200
-
-opencpn (5.9.1-beta1+dfsg-1ubuntu1~bpo1804.1) focal; urgency=medium
-
-  * Upstream beta release backport
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 10 Jun 2024 14:25:53 +0200
-
-opencpn (5.9.1-beta1+dfsg-1) unstable; urgency=medium
-
-  * Local build
-  * Upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 17 Apr 2024 13:13:39 +0200
