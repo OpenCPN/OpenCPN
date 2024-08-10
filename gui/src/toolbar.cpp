@@ -1430,10 +1430,6 @@ void ocpnToolBarSimple::OnToolTipOffTimerEvent(wxTimerEvent &event) {
 }
 
 bool ocpnToolBarSimple::OnMouseEvent(wxMouseEvent &event, wxPoint &position) {
-#ifdef __OCPN__ANDROID__
-  if (!event.IsButton()) return false;
-#endif
-
   wxCoord x, y;
   event.GetPosition(&x, &y);
 
@@ -1511,6 +1507,8 @@ bool ocpnToolBarSimple::OnMouseEvent(wxMouseEvent &event, wxPoint &position) {
   } else if (event.RightDown()) {
     OnRightClick(tool->GetId(), x, y);
   }
+
+
 
   // Left Button Released.  Only this action confirms selection.
   // If the button is enabled and it is not a toggle tool and it is
