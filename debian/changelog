@@ -1,3 +1,10 @@
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+2) UNRELEASED; urgency=medium
+
+  * New patch: Dont use -march=native (#1078467).
+  * New patch: Fix wrong date string (2023 -> 2024).
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 11 Aug 2024 10:01:40 +0200
+
 opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
 
   * New upstream release backport
