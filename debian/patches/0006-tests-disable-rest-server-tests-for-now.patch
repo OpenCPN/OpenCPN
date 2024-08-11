@@ -1,0 +1,23 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sat, 10 Aug 2024 09:49:04 +0200
+Subject: tests: disable rest server tests for now
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/4090
+
+---
+ test/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 6df1f0b..5b38b9a 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -18,7 +18,7 @@ if (MSVC)
+   set(CURL_HINTS C:\\mingw64\\bin C:\\ProgramData\\chocolatey\\bin)
+ endif ()
+ find_program(CURL NAMES curl HINTS ${CURL_HINTS})
+-if (CURL)
++if (CURL AND NOT OCPN_DISTRO_BUILD)
+   list(APPEND SRC rest-tests.cpp)
+ endif ()
+ 

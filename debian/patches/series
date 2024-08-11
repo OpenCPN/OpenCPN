@@ -3,3 +3,6 @@
 0003-tests-Disable-time-dependent-Buffer.RateLimit2-test.patch
 0004-build-Use-system-shapelib-if-available.patch
 0005-CMakeLists-help_web.html-path-error-fix.patch
+0006-tests-disable-rest-server-tests-for-now.patch
+0007-Build-Don-t-use-march-native-4088.patch
+0008-VERSION.cmake-Fix-date-string.patch
