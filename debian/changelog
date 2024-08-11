@@ -1,6 +1,8 @@
 opencpn (1:5.10.0+dfsg-2) unstable; urgency=medium
 
   * Don't use -march=native compile flag. Closes: 1078467
+  * Fix wrong date in version string
+  * Update patches DEP-3 annotations
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 11 Aug 2024 08:54:04 +0200
 

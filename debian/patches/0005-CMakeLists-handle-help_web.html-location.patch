@@ -1,6 +1,10 @@
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 21 Jul 2024 03:35:57 +0200
-Subject: CMakeLists: handle help_web.html location
+Subject: CMakeLists: handle help_web.html location3
+
+Not acceptable upstream, this is a consequence of us removinng the manual.
+
+Forwarded: not-needed
 
 ---
  CMakeLists.txt | 8 ++++----

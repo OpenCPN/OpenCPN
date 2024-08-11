@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sat, 10 Aug 2024 09:49:04 +0200
 Subject: tests: disable rest server tests for now
 
+Bug: https://github.com/OpenCPN/OpenCPN/issues/4090
+
 ---
  test/CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 10 Jun 2024 11:44:32 +0200
 Subject: tests: Disable time dependent Buffer.RateLimit2 test.
 
+Bug: https://github.com/OpenCPN/OpenCPN/issues/4090
+
 ---
  test/buffer_tests.cpp | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)

@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 11 Aug 2024 08:50:47 +0200
 Subject: Build: Don't use -march=native (#4088)
 
+Bug: https://github.com/OpenCPN/OpenCPN/issues/4088
+
 ---
  libs/mipmap/CMakeLists.txt              | 4 ++--
  libs/mipmap/cmake/CompilerSupport.cmake | 2 +-
