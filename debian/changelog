@@ -1,3 +1,10 @@
+opencpn (1:5.10.0+dfsg-1~bpo12+2) bookworm-backports; urgency=medium
+
+  * New patch: Dont use -march=native (#1078467).
+  * New patch: Fix wrong date string (2023 -> 2024).
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 11 Aug 2024 10:33:20 +0200
+
 opencpn (1:5.10.0+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release backport
