@@ -98,17 +98,20 @@ extern wxString g_winPluginDir;  // Base plugin directory on Windows.
  *
  * @details Supported values are:
  * - "UTC": Format date/time in Coordinated Universal Time (UTC).
- * - "Local Time": Format date/time using the operating system timezone configuration.
+ * - "Local Time": Format date/time using the operating system timezone
+ * configuration.
  *
  * @note Future support may include:
  * - "LMT": Format date/time using the solar mean time at a given location.
  * - Valid IANA TZ name: Format date/time using the specified timezone.
  *   This could be useful when planning a route in a timezone other than
  *   what is configured in the operating system.
- *   See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for valid names.
+ *   See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for valid
+ * names.
  *
- * @warning This configuration parameter stores the English name without translation.
- * Widgets may provide a localized version of this value when displaying it to the user.
+ * @warning This configuration parameter stores the English name without
+ * translation. Widgets may provide a localized version of this value when
+ * displaying it to the user.
  */
 extern wxString g_timezone;
 

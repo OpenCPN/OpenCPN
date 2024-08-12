@@ -7950,14 +7950,10 @@ double OCPN_GetWinDIPScaleFactor() {
   return scaler;
 }
 
-std::string GetTimeZone() {
-  return g_timezone.ToStdString();
-}
+std::string GetTimeZone() { return g_timezone.ToStdString(); }
 
 // date/time in the desired time zone format.
-wxString TToString(const wxDateTime date_time,
-                   const wxString format_string,
-                   const wxString time_zone,
-                   const double longitude) {
+wxString TToString(const wxDateTime date_time, const wxString format_string,
+                   const wxString time_zone, const double longitude) {
   return ocpn::TToString(date_time, format_string, time_zone, longitude);
 }

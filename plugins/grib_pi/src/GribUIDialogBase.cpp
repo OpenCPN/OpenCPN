@@ -2148,7 +2148,8 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_rbStartOptions->SetSelection(0);
   bSizerPrefsMain->Add(m_rbStartOptions, 0, wxALL | wxEXPAND, 5);
 
-  wxString m_rbTimeFormatChoices[] = {_("Local Time"), _("UTC"), _("Honor Global Settings")};
+  wxString m_rbTimeFormatChoices[] = {_("Local Time"), _("UTC"),
+                                      _("Honor Global Settings")};
   int m_rbTimeFormatNChoices = sizeof(m_rbTimeFormatChoices) / sizeof(wxString);
   m_rbTimeFormat = new wxRadioBox(
       scrollWin, wxID_ANY, _("Time Options"), wxDefaultPosition, wxDefaultSize,
@@ -2280,7 +2281,8 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_rbStartOptions->SetSelection(0);
   sbSizer9->Add(m_rbStartOptions, 0, wxALL | wxEXPAND, 5);
 
-  wxString m_rbTimeFormatChoices[] = {_("Local Time"), _("UTC"), _("Honor Global Settings")};
+  wxString m_rbTimeFormatChoices[] = {_("Local Time"), _("UTC"),
+                                      _("Honor Global Settings")};
   int m_rbTimeFormatNChoices = sizeof(m_rbTimeFormatChoices) / sizeof(wxString);
   m_rbTimeFormat =
       new wxRadioBox(itemScrollWin, wxID_ANY, _("Time Options"),

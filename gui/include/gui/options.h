@@ -427,7 +427,7 @@ public:
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
   wxRadioButton *pTimezoneLocalTime, *pTimezoneUTC, *pTimezoneSpecific;
-  wxComboBox* pTimezoneComboBox;
+  wxComboBox *pTimezoneComboBox;
 
   wxTextCtrl *pCmdSoundString;
 
@@ -451,8 +451,8 @@ public:
   wxButton *m_configDeleteButton, *m_configApplyButton;
 
   void OnAISRolloverClick(wxCommandEvent &event);
-  void OnTimezoneComboBoxSelect(wxCommandEvent& event);
-  void OnTimezoneRadioSelect(wxCommandEvent& event);
+  void OnTimezoneComboBoxSelect(wxCommandEvent &event);
+  void OnTimezoneRadioSelect(wxCommandEvent &event);
   void UpdateChartDirList();
 
   void OnCanvasConfigSelectClick(int ID, bool selected);

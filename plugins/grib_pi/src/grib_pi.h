@@ -128,7 +128,7 @@ public:
   wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
   wxPoint GetCursorDataXY() { return m_CursorDataxy; }
   const wxString GetTimeZone() {
-    switch(m_bTimeZone) {
+    switch (m_bTimeZone) {
       case 0:
         return DT_TZ_UTC;
       case 1:

@@ -80,7 +80,8 @@ void GRIBTable::InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
   for (unsigned i = 0; i < rsa->GetCount(); i++) {
     // populate time labels
     time = rsa->Item(i).m_Reference_Time;
-    m_pGribTable->SetColLabelValue(i, TToString(time, DT_SHORT_DATE + "\n" + DT_HOUR_MINUTES, zone));
+    m_pGribTable->SetColLabelValue(
+        i, TToString(time, DT_SHORT_DATE + "\n" + DT_HOUR_MINUTES, zone));
     nrows = -1;
     GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
     if (pTimeset == 0) continue;

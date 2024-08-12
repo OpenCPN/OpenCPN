@@ -42,7 +42,8 @@
 #define UTCINPUT 0  ///> Format date/time in UTC.
 #define LTINPUT 1   ///> Format date/time using PC local timezone.
 #define LMTINPUT 2  ///> Format date/time using the remote location LMT time.
-#define GLOBAL_SETTINGS_INPUT 3 ///> Format date/time according to global OpenCPN settings.
+#define GLOBAL_SETTINGS_INPUT \
+  3  ///> Format date/time according to global OpenCPN settings.
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP 7014
@@ -358,9 +359,10 @@ void RoutePropDlgImpl::UpdatePoints() {
                               &bearing, &distance);
       if (m_pRoute->m_PlannedDeparture.IsValid()) {
         eta = wxString::Format(
-            "Start: %s", TToString(m_pRoute->m_PlannedDeparture,
-                                  DT_WEEKDAY_SHORT_DATE_TIME,
-                                  getTimezoneSelector(m_tz_selection), pnode->GetData()->m_lon));
+            "Start: %s",
+            TToString(m_pRoute->m_PlannedDeparture, DT_WEEKDAY_SHORT_DATE_TIME,
+                      getTimezoneSelector(m_tz_selection),
+                      pnode->GetData()->m_lon));
         eta.Append(wxString::Format(
             _T(" (%s)"),
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
@@ -380,8 +382,7 @@ void RoutePropDlgImpl::UpdatePoints() {
       distance = pnode->GetData()->GetDistance();
       bearing = pnode->GetData()->GetCourse();
       if (pnode->GetData()->GetETA().IsValid()) {
-        eta = TToString(pnode->GetData()->GetETA(),
-                        DT_WEEKDAY_SHORT_DATE_TIME,
+        eta = TToString(pnode->GetData()->GetETA(), DT_WEEKDAY_SHORT_DATE_TIME,
                         getTimezoneSelector(m_tz_selection),
                         pnode->GetData()->m_lon);
         eta.Append(wxString::Format(
@@ -405,9 +406,9 @@ void RoutePropDlgImpl::UpdatePoints() {
     wxString etd;
     if (pnode->GetData()->GetManualETD().IsValid()) {
       // GetManualETD() returns time in UTC, always. So use it as such.
-      etd = TToString(pnode->GetData()->GetManualETD(),
-                      DT_WEEKDAY_SHORT_DATE_TIME,
-                      getTimezoneSelector(0) /*m_tz_selection*/, pnode->GetData()->m_lon);
+      etd = TToString(
+          pnode->GetData()->GetManualETD(), DT_WEEKDAY_SHORT_DATE_TIME,
+          getTimezoneSelector(0) /*m_tz_selection*/, pnode->GetData()->m_lon);
       if (pnode->GetData()->GetManualETD().IsValid() &&
           pnode->GetData()->GetETA().IsValid() &&
           pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA()) {
@@ -1213,13 +1214,14 @@ wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
   int offset =
       ptcmgr->GetStationTimeOffset((IDX_entry*)ptcmgr->GetIDX_entry(stationID));
 
-  tide_form.Append(
-      TToString(dtm, DT_WEEKDAY_SHORT_DATE_TIME, getTimezoneSelector(m_tz_selection), lon));
+  tide_form.Append(TToString(dtm, DT_WEEKDAY_SHORT_DATE_TIME,
+                             getTimezoneSelector(m_tz_selection), lon));
   dtm.Add(wxTimeSpan(0, offset, 0));
-  tide_form.Append(wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"),
-                                    TToString(dtm, DT_WEEKDAY_SHORT_DATE_TIME,
-                                              getTimezoneSelector(m_tz_selection), lon),
-                                    stationName.c_str()));
+  tide_form.Append(
+      wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"),
+                       TToString(dtm, DT_WEEKDAY_SHORT_DATE_TIME,
+                                 getTimezoneSelector(m_tz_selection), lon),
+                       stationName.c_str()));
 
   return tide_form;
 }

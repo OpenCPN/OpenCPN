@@ -51,7 +51,8 @@
 #define UTCINPUT 0  ///> Format date/time in UTC.
 #define LTINPUT 1   ///> Format date/time using PC local timezone
 #define LMTINPUT 2  ///> Format date/time using the remote location LMT time.
-#define GLOBAL_SETTINGS_INPUT 3 ///> Format date/time according to global OpenCPN settings.
+#define GLOBAL_SETTINGS_INPUT \
+  3  ///> Format date/time according to global OpenCPN settings.
 
 extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
@@ -300,7 +301,8 @@ static void addColumns(wxListCtrl* lctrl, int dx) {
   // Width of lat/lon may be up to 15 characters: 'DDD° MM.MMMM' W'.
   lctrl->InsertColumn(3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 15);
   lctrl->InsertColumn(4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 15);
-  // Width of timestamp may  be be up to 26 characters: 'MM/DD/YYYY HH:MM:SS PM UTC'.
+  // Width of timestamp may  be be up to 26 characters: 'MM/DD/YYYY HH:MM:SS PM
+  // UTC'.
   lctrl->InsertColumn(5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 26);
   lctrl->InsertColumn(6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8);
 
@@ -437,7 +439,8 @@ void TrackPropDlg::CreateControlsCompact() {
      wxRIGHT | wxBOTTOM, 5 );
   */
 
-  wxString pDispTimeZone[] = {_("UTC"), _("Local @ PC"), _("LMT @ Location"), _("Honor Global Settings")};
+  wxString pDispTimeZone[] = {_("UTC"), _("Local @ PC"), _("LMT @ Location"),
+                              _("Honor Global Settings")};
 
   wxStaticText* itemStaticText12b =
       new wxStaticText(itemDialog1, wxID_STATIC, _("Time shown as"),
@@ -838,7 +841,8 @@ void TrackPropDlg::CreateControls(void) {
       new wxRadioButton(m_panel0, wxID_ANY, _("Honor Global Settings"),
                         wxDefaultPosition, wxDefaultSize, 0);
   bSizerShowTime->Add(m_rbShowTimeGlobalSettings, 0,
-       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
+                      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
+                      5);
 
   m_rbShowTimeGlobalSettings->SetValue(true);
 
@@ -1863,7 +1867,8 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
       wxDateTime timestamp = this_point->GetCreateTime();
       if (timestamp.IsValid())
         ret = TToString(timestamp, DT_WEEKDAY_SHORT_DATE_TIME,
-                        getTimezoneSelector(m_tz_selection), getStartPointLongitude());
+                        getTimezoneSelector(m_tz_selection),
+                        getStartPointLongitude());
       else
         ret = _T("----");
     } break;

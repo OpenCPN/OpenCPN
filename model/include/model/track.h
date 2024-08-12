@@ -107,7 +107,8 @@ public:
 
   void ClearHighlights();
 
-  /* Return the name of the track, or the start date/time of the track if no name has been set. */
+  /* Return the name of the track, or the start date/time of the track if no
+   * name has been set. */
   wxString GetName(bool auto_if_empty = false) const {
     if (!auto_if_empty || !m_TrackNameString.IsEmpty()) {
       return m_TrackNameString;
@@ -119,10 +120,13 @@ public:
 
   /* Return the start date/time of the track, formatted as ISO 8601 timestamp.
    * The separator between date and time is a space character. */
-  wxString GetIsoDateTime(const wxString label_for_invalid_date = _("(Unknown Date)")) const;
+  wxString GetIsoDateTime(
+      const wxString label_for_invalid_date = _("(Unknown Date)")) const;
 
-  /* Return the start date/time of the track, formatted using the global timezone settings. */
-  wxString GetDateTime(const wxString label_for_invalid_date = _("(Unknown Date)")) const;
+  /* Return the start date/time of the track, formatted using the global
+   * timezone settings. */
+  wxString GetDateTime(
+      const wxString label_for_invalid_date = _("(Unknown Date)")) const;
 
   wxString m_GUID;
   bool m_bIsInLayer;

@@ -2069,7 +2069,8 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
     long idx = m_pTrkListCtrl->InsertItem(li);
 
     m_pTrkListCtrl->SetItem(idx, colTRKNAME, trk->GetName(true));
-    // Populate the track start date/time, formatted using the global timezone settings.
+    // Populate the track start date/time, formatted using the global timezone
+    // settings.
     m_pTrkListCtrl->SetItem(idx, colTRKDATE, trk->GetDateTime());
 
     wxString len;

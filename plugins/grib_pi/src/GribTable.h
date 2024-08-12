@@ -53,7 +53,8 @@ public:
 
   ~GRIBTable() { delete m_pGribTable; }
 
-  void InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa, int NowIndex);
+  void InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
+                     int NowIndex);
   void SetTableSizePosition(int vpWidth, int vpHeight);
   wxBitmap GetScaledBitmap(wxBitmap bmp, wxString svgfile, double scfactor) {
     return m_pGDialog->GetScaledBitmap(bmp, svgfile, scfactor);

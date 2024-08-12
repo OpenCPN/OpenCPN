@@ -1367,10 +1367,12 @@ void GRIBUICtrlBar::TimelineChanged() {
     SaveSelectionString();  // memorize index and label
     m_cRecordForecast->SetString(
         m_Selection_index,
-        TToString(time, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // replace it by the
-                                                   // interpolated time label
-    m_cRecordForecast->SetStringSelection(TToString(
-        time, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // ensure it's visible in the box
+        TToString(time, DT_WEEKDAY_SHORT_DATE_TIME,
+                  pPlugIn->GetTimeZone()));  // replace it by the
+                                             // interpolated time label
+    m_cRecordForecast->SetStringSelection(
+        TToString(time, DT_WEEKDAY_SHORT_DATE_TIME,
+                  pPlugIn->GetTimeZone()));  // ensure it's visible in the box
   }
 
   UpdateTrackingControl();
@@ -1750,7 +1752,8 @@ void GRIBUICtrlBar::PopulateComboDataList() {
   for (size_t i = 0; i < rsa->GetCount(); i++) {
     wxDateTime t(rsa->Item(i).m_Reference_Time);
 
-    m_cRecordForecast->Append(TToString(t, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));
+    m_cRecordForecast->Append(
+        TToString(t, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));
   }
   m_cRecordForecast->SetSelection(index);
 }
@@ -1936,10 +1939,12 @@ void GRIBUICtrlBar::ComputeBestForecastForNow() {
   SaveSelectionString();  // memorize the new selected wxChoice date time label
   m_cRecordForecast->SetString(
       m_Selection_index,
-      TToString(now, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // write the now date time label
-                                                // in the right place in wxChoice
+      TToString(now, DT_WEEKDAY_SHORT_DATE_TIME,
+                pPlugIn->GetTimeZone()));  // write the now date time label
+                                           // in the right place in wxChoice
   m_cRecordForecast->SetStringSelection(
-      TToString(now, DT_WEEKDAY_SHORT_DATE_TIME, pPlugIn->GetTimeZone()));  // put it in the box
+      TToString(now, DT_WEEKDAY_SHORT_DATE_TIME,
+                pPlugIn->GetTimeZone()));  // put it in the box
 
   UpdateTrackingControl();
 
