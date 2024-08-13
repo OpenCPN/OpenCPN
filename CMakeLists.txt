@@ -1969,7 +1969,11 @@ add_subdirectory(libs/picosha2)
 add_subdirectory(libs/pugixml)
 add_subdirectory(libs/rapidjson)
 add_subdirectory(libs/s52plib)
+
+set(SOUND_WX_INCLUDE_DIR "${wxWidgets_INCLUDE_DIRS}" CACHE STRING "")
+set(SOUND_WX_LIBS "${wxWidgets_LIBRARIES}" CACHE STRING "")
 add_subdirectory(libs/sound)
+
 add_subdirectory(libs/wxJSON)
 
 #
