@@ -81,7 +81,7 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
   ${_qtlibs}/libQt5AndroidExtras.so
 )
 
-target_link_libraries(${PACKAGE_NAME} PRIVATE
+set(_all_wx_libs
     # Link order is critical to avoid circular dependencies
     ${_wxlibs}/libwx_qtu_html-3.1-arm-linux-androideabi.a
     ${_wxlibs}/libwx_baseu_xml-3.1-arm-linux-androideabi.a
@@ -97,6 +97,7 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
     ${_wxlibs}/libwx_qtu_gl-3.1-arm-linux-androideabi.a
     ${_wxlibs}/libwx_baseu_net-3.1-arm-linux-androideabi.a
 )
+target_link_libraries(${PACKAGE_NAME} PRIVATE ${_all_wx_libs})
 
 add_compile_definitions(
   __WXQT__
@@ -108,9 +109,12 @@ add_compile_definitions(
   USE_GLU_TESS
 )
 
-  SET(OPENGLES_FOUND "YES")
-  SET(OPENGL_FOUND "YES")
-  SET(USE_GLES2 ON )
+set(OPENGLES_FOUND "YES")
+set(OPENGL_FOUND "YES")
+set(USE_GLES2 ON )
+
+set(ANDROID_WX_INCLUDES ${_wx_setup})
+set(ANDROID_WX_LIBS ${_all_wx_libs})
 
 #if (NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 #  string(APPEND CMAKE_SHARED_LINKER_FLAGS " -s")
