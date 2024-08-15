@@ -73,11 +73,14 @@ struct PluginMetadata {
     return name + version + release + target + target_version;
   }
 
-  std::string to_string(); ///< Return printable XML representation.
+  std::string to_string();  ///< Return printable XML representation.
 
   PluginMetadata()
-      : is_imported(false), is_orphan(false), openSource(true),
-        readonly(true), ix(-1) {}
+      : is_imported(false),
+        is_orphan(false),
+        openSource(true),
+        readonly(true),
+        ix(-1) {}
 };
 
 /**

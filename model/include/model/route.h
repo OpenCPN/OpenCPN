@@ -47,7 +47,7 @@
 #define RTE_TIME_DISP_LOCAL _T("LOCAL")
 #define RTE_UNDEF_DEPARTURE wxInvalidDateTime
 
-class WayPointman;   // FIXME (leamas) why? routeman.h defines this.
+class WayPointman;  // FIXME (leamas) why? routeman.h defines this.
 
 extern WayPointman *pWayPointMan;
 
@@ -73,7 +73,7 @@ const int StyleValues[] = {-1,          wxSOLID,      wxDOT,
 const int WidthValues[] = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
 class Route : public wxObject {
-friend class RouteGui;
+  friend class RouteGui;
 
 public:
   Route();
@@ -84,10 +84,11 @@ public:
   void AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence = true,
                 bool b_deferBoxCalc = false);
   void InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
-    bool b_rename_in_sequence = true,
-    bool b_deferBoxCalc = false);
-  void AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence = true,
-    bool b_deferBoxCalc = false);
+                             bool b_rename_in_sequence = true,
+                             bool b_deferBoxCalc = false);
+  void AddPointAndSegment(RoutePoint *pNewPoint,
+                          bool b_rename_in_sequence = true,
+                          bool b_deferBoxCalc = false);
   RoutePoint *GetPoint(int nPoint);
   RoutePoint *GetPoint(const wxString &guid);
   int GetIndexOf(RoutePoint *prp);

@@ -93,7 +93,6 @@ static void HandleMethodCall(GDBusConnection* connection, const gchar* sender,
  */
 class DbusServer : public LocalServerApi, public InstanceCheck {
 public:
-
   static DbusServer& GetInstance();
 
   /** Clear current singleton instance and disconnect from session bus */

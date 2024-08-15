@@ -26,8 +26,7 @@
 #ifndef _MDNSSERVICE_H
 #define _MDNSSERVICE_H
 
-int StartMDNSService(std::string hostname,
-                     std::string service_name,
+int StartMDNSService(std::string hostname, std::string service_name,
                      int service_port);
 
 bool StopMDNSService();

@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 - 2024 by David Register, Alec Leamas              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -57,7 +57,7 @@ struct N2kPGN {
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kName {
-  N2kName(){};
+  N2kName() {};
   N2kName(uint64_t name) { value.Name = name; }
 
   std::string to_string() const {
@@ -134,8 +134,8 @@ class NavAddr {
 public:
   enum class Bus { N0183, Signalk, N2000, Onenet, Plugin, TestBus, Undef };
 
-  NavAddr(Bus b, const std::string& i) : bus(b), iface(i){};
-  NavAddr() : bus(Bus::Undef), iface(""){};
+  NavAddr(Bus b, const std::string& i) : bus(b), iface(i) {};
+  NavAddr() : bus(Bus::Undef), iface("") {};
 
   std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + iface;
@@ -150,7 +150,7 @@ public:
 
 class NavAddr0183 : public NavAddr {
 public:
-  NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface){};
+  NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface) {};
 
   std::string to_string() const { return iface; }
 };
@@ -158,10 +158,10 @@ public:
 class NavAddr2000 : public NavAddr {
 public:
   NavAddr2000(const std::string& iface, const N2kName& _name)
-      : NavAddr(NavAddr::Bus::N2000, iface), name(_name){};
+      : NavAddr(NavAddr::Bus::N2000, iface), name(_name) {};
 
   NavAddr2000(const std::string& iface, unsigned char _address)
-      : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address){};
+      : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address) {};
 
   std::string to_string() const { return name.to_string(); }
 
@@ -176,10 +176,9 @@ public:
       : NavAddr(NavAddr::Bus::Plugin, "Plugin"), id(_id) {}
 };
 
-
 class NavAddrSignalK : public NavAddr {
 public:
-  NavAddrSignalK(std::string iface) : NavAddr(NavAddr::Bus::Signalk, iface){};
+  NavAddrSignalK(std::string iface) : NavAddr(NavAddr::Bus::Signalk, iface) {};
 
   std::string to_string() const { return NavAddr::to_string(); }
 };
@@ -187,7 +186,7 @@ public:
 class NavAddrTest : public NavAddr {
 public:
   NavAddrTest(std::string output_path)
-      : NavAddr(NavAddr::Bus::TestBus, "Test"), name(output_path){};
+      : NavAddr(NavAddr::Bus::TestBus, "Test"), name(output_path) {};
 
   const std::string name;
 };
@@ -211,7 +210,7 @@ public:
 
 protected:
   NavMsg(const NavAddr::Bus& _bus, std::shared_ptr<const NavAddr> src)
-      : bus(_bus), source(src){};
+      : bus(_bus), source(src) {};
 };
 
 /**
@@ -231,7 +230,9 @@ public:
 
   Nmea2000Msg(const uint64_t _pgn, const std::vector<unsigned char>& _payload,
               std::shared_ptr<const NavAddr> src, int _priority)
-      : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn), payload(_payload),
+      : NavMsg(NavAddr::Bus::N2000, src),
+        PGN(_pgn),
+        payload(_payload),
         priority(_priority) {}
 
   virtual ~Nmea2000Msg() = default;
@@ -309,11 +310,10 @@ public:
 
   const std::string name;
   const std::string message;
-  const std::string dest_host;   ///< hostname, ip address or 'localhost'
+  const std::string dest_host;  ///< hostname, ip address or 'localhost'
 
   std::string key() const { return std::string("plug.json-") + name; };
 };
-
 
 /** A parsed SignalK message over ipv4 */
 class SignalkMsg : public NavMsg {
@@ -327,7 +327,7 @@ public:
                std::make_shared<const NavAddr>(NavAddr::Bus::Signalk, _iface)),
         context_self(_context_self),
         context(_context),
-        raw_message(_raw_message){};
+        raw_message(_raw_message) {};
 
   virtual ~SignalkMsg() = default;
 

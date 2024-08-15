@@ -11,17 +11,17 @@
 /** Handle sending of wxJson messages to all plugins. */
 class JsonEvent {
 public:
-static JsonEvent& getInstance() {
+  static JsonEvent& getInstance() {
     static JsonEvent instance;
     return instance;
-}
+  }
 
-void Notify(const std::string& message, std::shared_ptr<void> msg_root) {
+  void Notify(const std::string& message, std::shared_ptr<void> msg_root) {
     event.Notify(msg_root, message, 0);
-}
+  }
 
 private:
-EventVar event;
+  EventVar event;
 };
 
 #endif

@@ -40,15 +40,16 @@
 #define SELTYPE_TRACKSEGMENT 0x0100
 #define SELTYPE_DRAGHANDLE 0x0200
 
-class Select;   // forward
+class Select;  // forward
 
-extern Select* pSelect;
+extern Select *pSelect;
 
 struct SelectCtx {
   const bool show_nav_objects;
   const double scale;
   const double chart_scale;
-  SelectCtx(bool s, double _scale, double _chart_scale) : show_nav_objects(s), scale(_scale), chart_scale(_chart_scale) {}
+  SelectCtx(bool s, double _scale, double _chart_scale)
+      : show_nav_objects(s), scale(_scale), chart_scale(_chart_scale) {}
 };
 
 class Select {
@@ -69,9 +70,9 @@ public:
                                  float slon2, TrackPoint *pTrackPointAdd1,
                                  TrackPoint *pTrackPointAdd2, Track *pTrack);
 
-  SelectItem *FindSelection(SelectCtx& ctx, float slat, float slon,
+  SelectItem *FindSelection(SelectCtx &ctx, float slat, float slon,
                             int fseltype);
-  SelectableItemList FindSelectionList(SelectCtx& ctx, float slat, float slon,
+  SelectableItemList FindSelectionList(SelectCtx &ctx, float slat, float slon,
                                        int fseltype);
 
   bool DeleteAllSelectableRouteSegments(Route *);
@@ -84,7 +85,7 @@ public:
   bool DeletePointSelectableTrackSegments(TrackPoint *pt);
   bool IsSegmentSelected(float a, float b, float c, float d, float slat,
                          float slon);
-  bool IsSelectableSegmentSelected(SelectCtx& ctx, float slat, float slon,
+  bool IsSelectableSegmentSelected(SelectCtx &ctx, float slat, float slon,
                                    SelectItem *pFindSel);
 
   //    Generic Point Support
@@ -106,11 +107,11 @@ public:
 
 private:
   // FIXME (leamas?) this is not model stuff.
-  void CalcSelectRadius(SelectCtx& ctx);
+  void CalcSelectRadius(SelectCtx &ctx);
 
   SelectableItemList *pSelectList;
   int pixelRadius;
   float selectRadius;
 };
 
-#endif // _SELECT_H__
+#endif  // _SELECT_H__

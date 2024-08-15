@@ -25,7 +25,6 @@
 
 /** InstanceCheck implementation based on DBus */
 class DbusInstanceCheck : public InstanceCheck {
-
 public:
   DbusInstanceCheck();
 

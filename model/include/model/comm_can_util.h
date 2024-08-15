@@ -40,31 +40,30 @@
 #define CAN_MAX_DLEN 8
 
 struct can_frame {
-  uint32_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
-  uint8_t    can_dlc; /* frame payload length in byte (0 .. 8) */
-  uint8_t    data[CAN_MAX_DLEN];
+  uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+  uint8_t can_dlc; /* frame payload length in byte (0 .. 8) */
+  uint8_t data[CAN_MAX_DLEN];
 };
 #endif
 
-#if defined (__WXMAC__)
+#if defined(__WXMAC__)
 #define CAN_MAX_DLEN 8
 
 struct can_frame {
-  uint32_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
-  uint8_t    can_dlc; /* frame payload length in byte (0 .. 8) */
-  uint8_t    data[CAN_MAX_DLEN];
+  uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+  uint8_t can_dlc; /* frame payload length in byte (0 .. 8) */
+  uint8_t data[CAN_MAX_DLEN];
 };
 #endif
 
 unsigned long BuildCanID(int priority, int source, int destination, int pgn);
 bool IsFastMessagePGN(unsigned pgn);
 
-
 /// CAN v2.0 29 bit header as used by NMEA 2000
 class CanHeader {
 public:
   CanHeader();
-    /** Construct a CanHeader by parsing a frame */
+  /** Construct a CanHeader by parsing a frame */
   CanHeader(can_frame frame);
 
   /** Return true if header reflects a multipart fast message. */
@@ -83,8 +82,9 @@ public:
   public:
     Entry()
         : time_arrived(wxDateTime::Now()),
-          sid(0), expected_length(0), cursor(0) {}
-
+          sid(0),
+          expected_length(0),
+          cursor(0) {}
 
     wxDateTime time_arrived;  ///< time of last fragment.
 
@@ -100,8 +100,7 @@ public:
     std::vector<unsigned char> data;  ///< Received data
   };
 
-  FastMessageMap() : dropped_frames(0),
-                     last_gc_run(wxDateTime::Now()) {}
+  FastMessageMap() : dropped_frames(0), last_gc_run(wxDateTime::Now()) {}
 
   Entry operator[](int i) const { return entries[i]; }  /// Getter
   Entry& operator[](int i) { return entries[i]; }       /// Setter
@@ -133,6 +132,5 @@ private:
   wxDateTime last_gc_run;
   wxDateTime dropped_frame_time;
 };
-
 
 #endif  // guard

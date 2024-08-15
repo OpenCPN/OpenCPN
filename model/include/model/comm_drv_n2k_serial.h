@@ -38,8 +38,8 @@
 #include "serial/serial.h"
 #endif
 
-#define OUT_QUEUE_LENGTH                20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH    200
+#define OUT_QUEUE_LENGTH 20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH 200
 
 #define ESCAPE 0x10
 #define STARTOFTEXT 0x02
@@ -61,13 +61,13 @@ public:
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
 
-  void SetListener(DriverListener& l) override{};
+  void SetListener(DriverListener& l) override {};
 
   bool Open();
   void Close();
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                    std::shared_ptr<const NavAddr> addr) override;
+                   std::shared_ptr<const NavAddr> addr) override;
 
   int SetTXPGN(int pgn) override;
 
@@ -92,10 +92,10 @@ public:
   std::atomic_int m_Thread_run_flag;
 
 private:
-  void ProcessManagementPacket(std::vector<unsigned char> *payload);
-  int SendMgmtMsg( unsigned char *string, size_t string_size,
-                   unsigned char cmd_code,
-                   int timeout_msec, bool *response_flag);
+  void ProcessManagementPacket(std::vector<unsigned char>* payload);
+  int SendMgmtMsg(unsigned char* string, size_t string_size,
+                  unsigned char cmd_code, int timeout_msec,
+                  bool* response_flag);
 
   bool m_bok;
   std::string m_portstring;
@@ -118,7 +118,6 @@ private:
   uint64_t NAME;
   int m_manufacturers_code;
   bool m_got_mfg_code;
-
 };
 
 #endif  // guard

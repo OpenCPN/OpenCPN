@@ -47,4 +47,4 @@ private:
   SystemEvents() = default;
 };
 
-#endif   // define SYS__EVENTS_H_
+#endif  // define SYS__EVENTS_H_

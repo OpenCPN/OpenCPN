@@ -43,7 +43,8 @@ public:
   void SetListener(DriverListener& l) override {}
 
   virtual std::shared_ptr<NavAddr> GetAddress() {
-      return std::make_shared<NavAddr>(NavAddr0183(iface)); }
+    return std::make_shared<NavAddr>(NavAddr0183(iface));
+  }
 
   void Activate() override;
 };

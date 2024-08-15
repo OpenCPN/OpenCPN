@@ -57,7 +57,7 @@ public:
 class AbstractCommDriver
     : public std::enable_shared_from_this<AbstractCommDriver> {
 public:
-  AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil"){};
+  AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil") {};
 
   virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) = 0;
@@ -89,15 +89,17 @@ public:
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
 
-  virtual std::unordered_map<std::string, std::string> GetAttributes() const { return attributes;}
+  virtual std::unordered_map<std::string, std::string> GetAttributes() const {
+    return attributes;
+  }
 
   std::unordered_map<std::string, std::string> attributes;
 
 protected:
-  AbstractCommDriver(NavAddr::Bus b) : bus(b){
+  AbstractCommDriver(NavAddr::Bus b) : bus(b) {
     attributes["protocol"] = NavAddr::BusToString(bus);
   };
-  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){
+  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s) {
     attributes["protocol"] = NavAddr::BusToString(bus);
   };
 };

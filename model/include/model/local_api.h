@@ -47,21 +47,19 @@ using LocalApiResult = std::pair<bool, std::string>;
 
 enum class CmdlineAction { Raise, Quit, Open, GetRestEndpoint, Fail, Skip };
 
-
-class LocalApiException :  public std::exception {
+class LocalApiException : public std::exception {
 public:
   LocalApiException(const std::string why) : reason(why) {}
 
   const char* str() { return reason.c_str(); }
+
 private:
   std::string reason;
 };
 
-
 /** Base interface for local server command handling. */
 class LocalServerApi {
 public:
-
   /** @return Reference to a LocalServerApi implementation. */
   static LocalServerApi& GetInstance();
 
@@ -86,8 +84,7 @@ public:
 
 protected:
   LocalServerApi()
-    : get_rest_api_endpoint_cb([](){ return "0.0.0.0/1024"; }) {}
-
+      : get_rest_api_endpoint_cb([]() { return "0.0.0.0/1024"; }) {}
 };
 
 /** Base interface for local clients. */
@@ -98,9 +95,9 @@ public:
   LocalClientApi() = default;
   virtual ~LocalClientApi() = default;
 
-
   virtual LocalApiResult HandleCmdline(const wxCmdLineParser& parser);
-  virtual LocalApiResult HandleCmdline(CmdlineAction action, const std::string& arg);
+  virtual LocalApiResult HandleCmdline(CmdlineAction action,
+                                       const std::string& arg);
 
   virtual LocalApiResult SendRaise() = 0;
   virtual LocalApiResult SendOpen(const char* path) = 0;
@@ -111,4 +108,4 @@ protected:
   CmdlineAction ParseArgs(const wxCmdLineParser& parser, std::string& arg);
 };
 
-#endif   //  LOCAL_SERVER_API__
+#endif  //  LOCAL_SERVER_API__

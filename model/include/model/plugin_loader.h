@@ -68,7 +68,7 @@ public:
 
   PlugInData();
 
-  bool m_has_setup_options;          //!< Has run NotifySetupOptionsPlugin()
+  bool m_has_setup_options;  //!< Has run NotifySetupOptionsPlugin()
   bool m_enabled;
   bool m_init_state;
   bool m_toolbox_panel;

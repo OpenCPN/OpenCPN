@@ -33,7 +33,6 @@
 
 #include "model/comm_driver.h"
 
-
 /** Read and write data to/from files test driver  */
 class FileCommDriver : public AbstractCommDriver {
 public:

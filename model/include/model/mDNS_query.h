@@ -38,11 +38,9 @@ struct ocpn_DNS_record_t {
   std::string port;
 };
 
-
-
-extern  int send_dns_sd(void);
-extern  void FindAllOCPNServers(size_t timeout_secs);
-extern  void FindAllSignalKServers(size_t timeout_secs);
+extern int send_dns_sd(void);
+extern void FindAllOCPNServers(size_t timeout_secs);
+extern void FindAllSignalKServers(size_t timeout_secs);
 extern std::vector<std::string> get_local_ipv4_addresses();
 
 #endif  // guard

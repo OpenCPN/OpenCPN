@@ -39,7 +39,7 @@ public:
   WaitContinue(const WaitContinue&) = delete;
 
   /** Release any threads blocked by Wait(). */
-  void Continue()  {
+  void Continue() {
     {
       std::unique_lock lock(m_mutex);
       is_waiting = false;
@@ -52,7 +52,7 @@ public:
     std::unique_lock lock(m_mutex);
     is_waiting = true;
     auto t = std::chrono::high_resolution_clock::now() + timeout;
-    auto result = cv.wait_until(lock, t, [&]{ return !is_waiting; });
+    auto result = cv.wait_until(lock, t, [&] { return !is_waiting; });
     return true;
   }
 
@@ -67,5 +67,4 @@ private:
   std::condition_variable cv;
 };
 
-
-#endif    //  WAIT_COND__
+#endif  //  WAIT_COND__

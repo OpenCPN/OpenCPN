@@ -32,9 +32,9 @@
 
 #include "observable_evtvar.h"
 
-
 // MacOS 1.13:
-#if (defined(OCPN_GHC_FILESYSTEM) || (defined(__clang_major__) && (__clang_major__ < 15)))
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 
@@ -219,7 +219,6 @@ public:
  * Result codes are as defined in RestServerResult.
  */
 class AbstractRestServer {
-
 public:
   /** Start the server thread. */
   virtual bool StartServer(const fs::path& certificate_location) = 0;

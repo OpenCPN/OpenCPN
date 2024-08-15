@@ -38,7 +38,7 @@
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
 
 // minimal allowed ScaMin setting. prevents always hiding
-#define SCAMIN_MIN  800
+#define SCAMIN_MIN 800
 
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
@@ -51,7 +51,7 @@ extern int g_LayerIdx;
 extern wxRect g_blink_rect;
 
 class RoutePoint {
-friend class RoutePointGui;
+  friend class RoutePointGui;
 
 public:
   RoutePoint(double lat, double lon, const wxString &icon_ident,
@@ -67,7 +67,7 @@ public:
    * doing nothing but at an "early stage" initiated do do the actual
    * glDeleteTextures call.
    */
-  static std::function<void(unsigned, const unsigned*)> delete_gl_textures;
+  static std::function<void(unsigned, const unsigned *)> delete_gl_textures;
 
   void ReLoadIcon() { m_IconIsDirty = true; }
 
@@ -228,7 +228,6 @@ public:
   wxDateTime m_CreateTimeX;
 
 private:
-
   wxString m_MarkName;
   wxBitmap *m_pbmIcon;
   wxString m_IconName;

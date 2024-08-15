@@ -1,7 +1,6 @@
 #include <string>
 #include <vector>
 
-
 /** Join a list of directories to a string. */
 std::string join(std::vector<std::string> v, char c);
 

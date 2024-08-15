@@ -25,25 +25,25 @@
 /** Common interface for all instance checkers. */
 class InstanceCheck {
 public:
-    /** @return Reference to an InstanceCheck implementation. */
-    static InstanceCheck& GetInstance();
+  /** @return Reference to an InstanceCheck implementation. */
+  static InstanceCheck& GetInstance();
 
-    virtual ~InstanceCheck() = default;
+  virtual ~InstanceCheck() = default;
 
-    /** Return true if this process is the primary opencpn instance. */
-    virtual bool IsMainInstance() = 0;
+  /** Return true if this process is the primary opencpn instance. */
+  virtual bool IsMainInstance() = 0;
 
-    /** Wait until this object can be used for example for Dbus connection. */
-    virtual void WaitUntilValid() {};
+  /** Wait until this object can be used for example for Dbus connection. */
+  virtual void WaitUntilValid() {};
 
-    /**
-     * Remove all persistent instance state, including possible lock file
-     * and defunct opencpn processes.
-     */
-    virtual void CleanUp() {};
+  /**
+   * Remove all persistent instance state, including possible lock file
+   * and defunct opencpn processes.
+   */
+  virtual void CleanUp() {};
 
-    /** Do whatever needed before wxWidget's checks triggers. */
-    virtual void OnExit () {};
+  /** Do whatever needed before wxWidget's checks triggers. */
+  virtual void OnExit() {};
 };
 
 /** Empty place holder, primarely for Android. */
@@ -54,7 +54,7 @@ public:
     return instance;
   }
 
-  virtual bool IsMainInstance()  { return true; }
+  virtual bool IsMainInstance() { return true; }
 };
 
-#endif   // INSTANCE_CHECK_H__
+#endif  // INSTANCE_CHECK_H__

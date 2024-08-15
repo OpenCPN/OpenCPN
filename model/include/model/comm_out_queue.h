@@ -77,7 +77,6 @@ std::ostream& operator<<(std::ostream& os, const PerfCounter& pc);
  */
 class CommOutQueue {
 public:
-
   /**
    * Insert valid line of NMEA0183 data in buffer.
    * @return false on errors including invalid input, else true.
@@ -137,7 +136,8 @@ protected:
   using duration_ms = std::chrono::duration<unsigned, std::milli>;
   duration_ms m_min_msg_gap;
   bool m_overrun_reported;
-  std::set<uint64_t> m_rate_limits_logged;;
+  std::set<uint64_t> m_rate_limits_logged;
+  ;
 };
 
 /** A  CommOutQueue limited to one message of each kind. */
@@ -172,7 +172,7 @@ public:
 };
 
 /** Simple FIFO queue without added logic. */
-class DummyCommOutQueue :  public CommOutQueue {
+class DummyCommOutQueue : public CommOutQueue {
 public:
   DummyCommOutQueue() {};
 

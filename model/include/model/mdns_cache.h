@@ -25,7 +25,6 @@
 #include <string>
 #include <vector>
 
-
 /**
  * Singleton cache for hosts looked up using mdns. A critical region accessed
  * both by timer routines and the main thread.
@@ -74,7 +73,7 @@ public:
    * @return true if entry was added, false if entry with same ip
    * address already exists.
    */
-  bool Add(const std::string& _ip,  const std::string& _port);
+  bool Add(const std::string& _ip, const std::string& _port);
 
   /** Return read-only cached entries reference. */
   const std::vector<Entry>& GetCache() const { return m_cache; }

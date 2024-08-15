@@ -114,7 +114,7 @@ public:
   void ClearCatalogData();
 
   /** Return a pointer to the currently active plugin catalog context */
-  CatalogCtx *GetActiveCatalogContext();
+  CatalogCtx* GetActiveCatalogContext();
 
   /** Retrieve status of currently active plugin catalog  */
   ServerStatus GetCatalogStatus();
