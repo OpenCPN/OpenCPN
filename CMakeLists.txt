@@ -2594,40 +2594,8 @@ configure_file(
   "${CMAKE_BINARY_DIR}/opencpn.appdata.xml" @ONLY
 )
 
-#
-# Debian package setup
-#
-set(PKG_DESCR
-    [=[
-OpenCPN is a concise ChartPlotter/Navigator. The application supports:
-GPS/GPSD Position Input, BSB Raster Chart Display, S57 Vector ENChart
-Display, AIS Input Decoding, Waypoint Autopilot Navigation. ]=]
-)
-
-if (UNIX AND NOT APPLE)
-  set(CPACK_STRIP_FILES ON)
-  set(CPACK_GENERATOR ${PACKAGE_FORMAT})
-  set(CPACK_PACKAGE_CONTACT "David S. Register ")
-
-  # autogenerate additional dependency information
-  set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
-  if ("${ARCH}" STREQUAL "x86_64")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
-  else ()
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
-  endif ()
-  set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
-  set(CPACK_DEBIAN_PACKAGE_SECTION "misc")
-  set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
-  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenSource Chart Plotter/Navigator")
-  set(CPACK_PACKAGE_DESCRIPTION ${PKG_DESCR})
-  set(CPACK_PACKAGE_RELOCATABLE OFF)
-  set(CPACK_SET_DESTDIR ON)
-  set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-endif ()
-
-# Command line tools - must be added before the macOS bundle is defined, otherwise they do not get installed before fixup_bundle is performed
+# Command line tools - must be added before the macOS bundle is defined,
+# otherwise they do not get installed before fixup_bundle is performed
 if (NOT QT_ANDROID)
   add_subdirectory(cli)
 endif ()
