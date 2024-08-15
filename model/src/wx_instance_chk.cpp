@@ -30,7 +30,7 @@
 #include <signal.h>
 #endif
 
-static const char* const  kName  = "_OpenCPN_SILock";
+static const char* const kName = "_OpenCPN_SILock";
 
 static void KillProcess(int pid) {
 #ifdef _MSC_VER
@@ -49,25 +49,25 @@ static void KillProcess(int pid) {
 // use lazy  init, postponed until object is actually used. At this point
 // required  globals should be in place
 WxInstanceCheck::WxInstanceCheck()
-       : m_checker(new wxSingleInstanceChecker), is_inited(false) { }
+    : m_checker(new wxSingleInstanceChecker), is_inited(false) {}
 
 void WxInstanceCheck::Init() {
   assert(g_BasePlatform && "NULL g_BasePlatform");
-  wxString dir = g_BasePlatform ->GetPrivateDataDir();
+  wxString dir = g_BasePlatform->GetPrivateDataDir();
   if (!m_checker->Create(kName, dir)) {
     WARNING_LOG << "Cannot create instance locker (!)";
   }
   is_inited = true;
 }
 
-bool  WxInstanceCheck::IsMainInstance() {
+bool WxInstanceCheck::IsMainInstance() {
   if (!is_inited) Init();
   return !m_checker->IsAnotherRunning();
 }
 
 void WxInstanceCheck::CleanUp() {
   if (!is_inited) Init();
-  wxFileName lockfile(g_BasePlatform ->GetPrivateDataDir(), kName);
+  wxFileName lockfile(g_BasePlatform->GetPrivateDataDir(), kName);
   if (!wxFileExists(lockfile.GetFullPath())) return;
 
   // Best effort try to read pid from lock file and kill it.
@@ -78,7 +78,8 @@ void WxInstanceCheck::CleanUp() {
     ss << f.rdbuf();
     try {
       pid = std::stoi(ss.str());
-    } catch (...) {}
+    } catch (...) {
+    }
   }
   wxRemoveFile(lockfile.GetFullPath());
   if (pid != -1) KillProcess(pid);

@@ -84,7 +84,6 @@ wxString trimAISField(char *data) {
   return field;
 }
 
-
 wxString ais_get_status(int index) {
   static const wxString ais_status[] = {
       _("Underway using Engine"),
@@ -201,7 +200,7 @@ wxString aisMeteoWaterLevelRef(int refID) {
   return ref;
 }
 
-AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
+AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   strncpy(ShipName, "Unknown             ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
   strncpy(Destination, "                    ", DESTINATION_LEN);
@@ -412,7 +411,7 @@ void AisTargetData::CloneFrom(AisTargetData *q) {
 }
 
 AisTargetData::~AisTargetData() { m_ptrack.clear(); }
-//AisTargetData::~AisTargetData() { m_pMetPoint.clear(); }  //TODO Needed?
+// AisTargetData::~AisTargetData() { m_pMetPoint.clear(); }  //TODO Needed?
 
 wxString AisTargetData::GetFullName(void) {
   wxString retName;
@@ -507,11 +506,11 @@ wxString AisTargetData::BuildQueryResult(void) {
     if (met_data.stationID) {  // Facilitate to find a Meteo target on SignalK
       wxString SK_ID =
           wxString::Format(_T("%06d"), (met_data.stationID - 1000000));
-      html << "<td>&nbsp;</td><td align=right>" << "SK-ID: " << SK_ID;
+      html << "<td>&nbsp;</td><td align=right>"
+           << "SK-ID: " << SK_ID;
     }
     html << rowEnd << _T("</b></table></td></tr>");
-  }
-  else
+  } else
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
             _T("cellspacing=0>")
          << rowStart << _("MMSI")
@@ -528,8 +527,8 @@ wxString AisTargetData::BuildQueryResult(void) {
                  ? _("Nation")
                  : _("Flag"))
          << rowEnd << _T("</font></td></tr>") << rowStartH
-         << _T("<font size=-1><b>")
-         << GetCountryCode(true) << rowEnd << _T("</font></table></td></tr>");
+         << _T("<font size=-1><b>") << GetCountryCode(true) << rowEnd
+         << _T("</font></table></td></tr>");
 
   wxString navStatStr;
   if ((Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) &&
@@ -651,24 +650,24 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("<b>") << navStatStr;
     html << rowEnd << _T("<tr><td colspan=2>")
          << _T("<b>") << sizeString << rowEnd;
-  }
-  else if (Class == AIS_DSC && (ShipType == 12 || ShipType == 16) ) {
-    if (ShipType == 16) {  //Distress relay
-      html << _T("<tr><td colspan=2>") << _T("<b>") << _("Distress relay");
+  } else if (Class == AIS_DSC && (ShipType == 12 || ShipType == 16)) {
+    if (ShipType == 16) {  // Distress relay
+      html << _T("<tr><td colspan=2>")
+           << _T("<b>") << _("Distress relay");
       if (m_dscTXmmsi > 2000000) {
         wxString mmsirelay = wxString::Format(_T(" %09d"), abs(m_dscTXmmsi));
         html << _T(" ") << _("by:") << mmsirelay;
       }
       html << _T("<b>") << sizeString << rowEnd;
     }
-    html << _T("<tr><td colspan=2>") << _("Nature of distress: ")
-         << rowEnd << _T("<tr><td colspan=2>");
+    html << _T("<tr><td colspan=2>") << _("Nature of distress: ") << rowEnd
+         << _T("<tr><td colspan=2>");
     if (m_dscNature < 13) {
-      html << _T("<tr><td colspan=2>") << _T("<b>") << GetNatureofDistress(m_dscNature)
-           << _T("<b>") << sizeString << rowEnd << _T("<tr><td colspan=2>");
+      html << _T("<tr><td colspan=2>")
+           << _T("<b>") << GetNatureofDistress(m_dscNature) << _T("<b>")
+           << sizeString << rowEnd << _T("<tr><td colspan=2>");
     }
-  }
-  else if ((Class != AIS_BASE) && (Class != AIS_DSC)) {
+  } else if ((Class != AIS_BASE) && (Class != AIS_DSC)) {
     html << _T("<tr><td colspan=2>")
          << _T("<b>") << AISTypeStr;
     if (navStatStr.Length()) html << _T(", ") << navStatStr;
@@ -694,7 +693,8 @@ wxString AisTargetData::BuildQueryResult(void) {
          << rowStartH << _T("<b>") << toSDMM(1, Lat)
          << _T("</b></td><td align=right><b>") << FormatTimeAdaptive(target_age)
          << rowEnd << rowStartH << _T("<b>") << toSDMM(2, Lon);
-    if (Class != AIS_METEO) html << rowEnd;
+    if (Class != AIS_METEO)
+      html << rowEnd;
     else {
       wxString meteoTime =
           wxString::Format(" %02d:%02d", met_data.hour, met_data.minute);
@@ -750,11 +750,11 @@ wxString AisTargetData::BuildQueryResult(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d%c(M)"),
-                                        static_cast<int>(m_callbacks.get_mag(COG)),
-                                        0x00B0);
+          magString << wxString::Format(
+              wxString("%03d%c(M)"), static_cast<int>(m_callbacks.get_mag(COG)),
+              0x00B0);
         if (g_bShowTrue)
-          trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
+          trueString << wxString::Format(wxString("%03d%c "), (int)crs, 0x00B0);
 
         courseStr << trueString << magString;
       } else if (COG == 360.0)
@@ -820,7 +820,7 @@ wxString AisTargetData::BuildQueryResult(void) {
                                     static_cast<int>(m_callbacks.get_mag(Brg)),
                                     0x00B0);
     if (g_bShowTrue)
-      trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
+      trueString << wxString::Format(wxString("%03d%c "), (int)Brg, 0x00B0);
 
     brgStr << trueString << magString;
   } else
@@ -894,27 +894,30 @@ wxString AisTargetData::BuildQueryResult(void) {
   if (Class == AIS_METEO) {
     if (met_data.wind_kn < 122) {
       double userwindspeed = toUsrWindSpeed(met_data.wind_kn);
-      wxString wspeed = wxString::Format("%0.1f %s %d%c", userwindspeed, getUsrWindSpeedUnit(),
-                           met_data.wind_dir, 0x00B0);
+      wxString wspeed =
+          wxString::Format("%0.1f %s %d%c", userwindspeed,
+                           getUsrWindSpeedUnit(), met_data.wind_dir, 0x00B0);
 
       double userwindgustspeed = toUsrWindSpeed(met_data.wind_gust_kn);
       wxString wspeedGust = wxString::Format("%.0f %s %d%c", userwindgustspeed,
-                           getUsrWindSpeedUnit(), met_data.wind_gust_dir, 0x00B0);
+                                             getUsrWindSpeedUnit(),
+                                             met_data.wind_gust_dir, 0x00B0);
       if (met_data.wind_gust_kn >= 126) wspeedGust = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Wind speed")
-           << _T("</font></td><td align=right><font size=-2>")
-           << _("Wind gust")
+           << _T("</font></td><td align=right><font size=-2>") << _("Wind gust")
            << _T("</font></td></tr>") << rowStartH << _T("<b>") << wspeed
            << _T("</b></td><td align=right><b>") << wspeedGust << rowEnd;
     }
 
-    if (met_data.water_lev_dev < 30. || met_data.water_level > -32. || met_data.current < 25.5) {
+    if (met_data.water_lev_dev < 30. || met_data.water_level > -32. ||
+        met_data.current < 25.5) {
       wxString wlevel_txt = _("Water level deviation");
       wxString wlevel;
       if (met_data.water_lev_dev < 30.) {
         double userlevel = toUsrDepth(met_data.water_lev_dev);
-        wlevel = wxString::Format("%.1f %s %s", userlevel, getUsrDepthUnit(),
+        wlevel =
+            wxString::Format("%.1f %s %s", userlevel, getUsrDepthUnit(),
                              ais_meteo_get_trend(met_data.water_lev_trend));
         if (met_data.vertical_ref < 14) {
           wlevel_txt = _("Water level dev. Ref: ");
@@ -925,7 +928,8 @@ wxString AisTargetData::BuildQueryResult(void) {
 
       } else if (met_data.water_level > -32.) {
         double userlevel = toUsrDepth(met_data.water_level);
-        wlevel = wxString::Format("%.1f %s %s", userlevel, getUsrDepthUnit(),
+        wlevel =
+            wxString::Format("%.1f %s %s", userlevel, getUsrDepthUnit(),
                              ais_meteo_get_trend(met_data.water_lev_trend));
         wlevel_txt = _("Water level");
         if (met_data.water_level <= -32.) wlevel = wxEmptyString;
@@ -936,31 +940,29 @@ wxString AisTargetData::BuildQueryResult(void) {
       if (met_data.current >= 25.5) current = wxEmptyString;
 
       html << vertSpacer << rowStart << wlevel_txt
-            << _T("</font></td><td align=right><font size=-2>")
-            << _("Surface current ") << _T("</font></td></tr>") << rowStartH
-            << _T("<b>") << wlevel << _T("</b></td><td align=right><b>")
-            << current << rowEnd;
+           << _T("</font></td><td align=right><font size=-2>")
+           << _("Surface current ") << _T("</font></td></tr>") << rowStartH
+           << _T("<b>") << wlevel << _T("</b></td><td align=right><b>")
+           << current << rowEnd;
     }
 
     if (met_data.wave_height < 24.6 || met_data.swell_height < 24.6) {
       double userwave = toUsrDepth(met_data.wave_height);
-        wxString wave =
-            wxString::Format("%.1f %s %d%c %d %s ", userwave, getUsrDepthUnit(),
-                             met_data.wave_dir, 0x00B0,
-                             met_data.wave_period, _("s"));
+      wxString wave = wxString::Format("%.1f %s %d%c %d %s ", userwave,
+                                       getUsrDepthUnit(), met_data.wave_dir,
+                                       0x00B0, met_data.wave_period, _("s"));
       if (met_data.wave_height >= 24.6) wave = wxEmptyString;
 
       double userswell = toUsrDepth(met_data.swell_height);
-      wxString swell =
-          wxString::Format("%.1f %s %d%c %d %s", userswell, getUsrDepthUnit(),
-                           met_data.swell_dir, 0x00B0,
-                           met_data.swell_per, _("s"));
+      wxString swell = wxString::Format("%.1f %s %d%c %d %s", userswell,
+                                        getUsrDepthUnit(), met_data.swell_dir,
+                                        0x00B0, met_data.swell_per, _("s"));
       if (met_data.swell_height >= 25.) swell = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Waves height & period")
            << _T("</font></td><td align=right><font size=-2>")
-           << _("Swell height & period ")
-           << _T("</font></td></tr>") << rowStartH << _T("<b>") << wave
+           << _("Swell height & period ") << _T("</font></td></tr>")
+           << rowStartH << _T("<b>") << wave
            << _T("</b></td><td align=right><b>") << swell << rowEnd;
     }
 
@@ -970,16 +972,17 @@ wxString AisTargetData::BuildQueryResult(void) {
           wxString::Format("%.1f%c%s", usertemp, 0x00B0, getUsrTempUnit());
       if (met_data.air_temp == -102.4) airtemp = wxEmptyString;
 
-      wxString airpress = wxString::Format(
-          "%d hPa %s", met_data.airpress,
-           ais_meteo_get_trend(met_data.airpress_tend));
+      wxString airpress =
+          wxString::Format("%d hPa %s", met_data.airpress,
+                           ais_meteo_get_trend(met_data.airpress_tend));
       const int ap = met_data.airpress;
       if (ap < 800 || ap >= 1310) airpress = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Air Temperatur")
-           << _T("</font></td><td align=right><font size=-2>") << _("Air pressure")
-           << _T("</font></td></tr>") << rowStartH << _T("<b>") << airtemp
-           << _T("</b></td><td align=right><b>") << airpress << rowEnd;
+           << _T("</font></td><td align=right><font size=-2>")
+           << _("Air pressure") << _T("</font></td></tr>") << rowStartH
+           << _T("<b>") << airtemp << _T("</b></td><td align=right><b>")
+           << airpress << rowEnd;
     }
 
     if (met_data.rel_humid < 101 || met_data.dew_point < 50.) {
@@ -1014,8 +1017,8 @@ wxString AisTargetData::BuildQueryResult(void) {
     }
 
     if (met_data.precipitation < 7 || met_data.hor_vis < 12.7) {
-      wxString precip = wxString::Format("%s",
-                                         aisMeteoPrecipType(met_data.precipitation));
+      wxString precip =
+          wxString::Format("%s", aisMeteoPrecipType(met_data.precipitation));
       if (met_data.precipitation >= 6) precip = wxEmptyString;
 
       double userVisDist = toUsrDistance(met_data.hor_vis);
@@ -1148,11 +1151,11 @@ wxString AisTargetData::GetRolloverString(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(wxString("%03d%c(M)  "),
-                                        static_cast<int>(m_callbacks.get_mag(COG)),
-                                        0x00B0);
+          magString << wxString::Format(
+              wxString("%03d%c(M)  "),
+              static_cast<int>(m_callbacks.get_mag(COG)), 0x00B0);
         if (g_bShowTrue)
-          trueString << wxString::Format( wxString("%03d%c "), (int)crs, 0x00B0 );
+          trueString << wxString::Format(wxString("%03d%c "), (int)crs, 0x00B0);
 
         result << trueString << magString;
       }
@@ -1176,7 +1179,8 @@ wxString AisTargetData::GetRolloverString(void) {
       if (result.Len()) result << "\n";
       double userwindspeed = toUsrWindSpeed(met_data.wind_kn);
       result << _("Wind speed");
-      result << wxString::Format(": %0.1f %s", userwindspeed, getUsrWindSpeedUnit())
+      result << wxString::Format(": %0.1f %s", userwindspeed,
+                                 getUsrWindSpeedUnit())
              << wxString::Format(" %d%c ", met_data.wind_dir, 0x00B0);
     }
 
@@ -1184,9 +1188,8 @@ wxString AisTargetData::GetRolloverString(void) {
       if (result.Len()) result << "\n";
       result << _("Water level deviation");
       double userdepth;
-        userdepth = toUsrDepth(met_data.water_lev_dev);
-      result << wxString::Format(": %.1f %s", userdepth,
-             getUsrDepthUnit());
+      userdepth = toUsrDepth(met_data.water_lev_dev);
+      result << wxString::Format(": %.1f %s", userdepth, getUsrDepthUnit());
 
     } else if (met_data.water_level > -32.) {
       if (result.Len()) result << "\n";
@@ -1196,7 +1199,7 @@ wxString AisTargetData::GetRolloverString(void) {
       result << wxString::Format(": %.1f %s", userdepth, getUsrDepthUnit());
     }
 
-    if (met_data.current  < 25.) {
+    if (met_data.current < 25.) {
       if (result.Len()) result << "\n";
       result << _("Current");
       result << wxString::Format(": %.1f ", met_data.current) << _("kts")
@@ -1337,7 +1340,7 @@ wxString AisTargetData::Get_class_string(bool b_short) {
     case AIS_GPSG_BUDDY:
       return b_short ? _("Buddy") : _("GPSGate Buddy");
     case AIS_DSC:
-      if (ShipType == 12 || ( ShipType == 16 && m_dscNature < 13))
+      if (ShipType == 12 || (ShipType == 16 && m_dscNature < 13))
         return b_short ? _("DSC") : _("DSC Distress");
       else
         return b_short ? _("DSC") : _("DSC Position Report");
@@ -1357,14 +1360,20 @@ wxString AisTargetData::Get_class_string(bool b_short) {
 
 wxString AisTargetData::GetNatureofDistress(int dscnature) {
   // Natures of distress from: Rec. ITU-R M.493-10.
-  wxString dscDistressType[] = { _("Fire, explosion"), _("Flooding"),
-                                     _("Collision"), _("Grounding"),
-                 _("Listing, in danger of capsizing"), _("Sinking"),
-               _("Disabled and adrift"), _("Undesignated distress"),
-             _("Abandoning ship"), _("Piracy/armed robbery attack"),
-                 _("Man overboard"), _T("-"), _("EPIRB emission") };
-  if (dscnature >= 0 && dscnature < 13)
-    return dscDistressType[dscnature];
+  wxString dscDistressType[] = {_("Fire, explosion"),
+                                _("Flooding"),
+                                _("Collision"),
+                                _("Grounding"),
+                                _("Listing, in danger of capsizing"),
+                                _("Sinking"),
+                                _("Disabled and adrift"),
+                                _("Undesignated distress"),
+                                _("Abandoning ship"),
+                                _("Piracy/armed robbery attack"),
+                                _("Man overboard"),
+                                _T("-"),
+                                _("EPIRB emission")};
+  if (dscnature >= 0 && dscnature < 13) return dscDistressType[dscnature];
 
   return wxEmptyString;
 }
@@ -1384,7 +1393,7 @@ bool AisTargetData::IsValidMID(int mid) {
 
 // Get country name and code according to ITU 2023-02
 // (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
-wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
+wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
   /***** Check for a valid MID *****/
   // Meteo adaption
   int tmpMmsi = met_data.original_mmsi ? met_data.original_mmsi : MMSI;
@@ -1963,7 +1972,6 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
   return wxEmptyString;
 #endif
 }
-
 
 wxString ais_get_type(int index) {
   static const wxString ais_type[] = {

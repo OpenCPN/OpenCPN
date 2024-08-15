@@ -59,7 +59,7 @@ wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
 
-Multiplexer* g_pMUX;
+Multiplexer *g_pMUX;
 
 #ifdef HAVE_READLINK
 
@@ -100,7 +100,7 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 
 #endif  // HAVE_READLINK
 
-Multiplexer::Multiplexer(MuxLogCallbacks cb, bool& filter_behaviour)
+Multiplexer::Multiplexer(MuxLogCallbacks cb, bool &filter_behaviour)
     : m_log_callbacks(cb), m_legacy_input_filter_behaviour(filter_behaviour) {
   auto &msgbus = NavMsgBus::GetInstance();
 
@@ -179,7 +179,7 @@ void Multiplexer::LogInputMessage(const wxString &msg,
 void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Find the driver that originated this message
 
-  const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
+  const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
   auto source_driver = FindDriver(drivers, n0183_msg->source->iface);
 
   wxString fmsg;
@@ -192,29 +192,31 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     std::string str = n0183_msg->payload;
 
     // Get the params for the driver sending this message
-      ConnectionParams params;
-      auto drv_serial =
-          std::dynamic_pointer_cast<CommDriverN0183Serial>(source_driver);
-      if (drv_serial) {
-        params = drv_serial->GetParams();
-      } else {
-        auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(source_driver);
-        if (drv_net) {
-          params = drv_net->GetParams();
-        }
-#ifdef __ANDROID__
-        else {
-          auto drv_bluetooth = std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(source_driver);
-          if (drv_bluetooth) {
-            params = drv_bluetooth->GetParams();
-          }
-        }
-#endif
+    ConnectionParams params;
+    auto drv_serial =
+        std::dynamic_pointer_cast<CommDriverN0183Serial>(source_driver);
+    if (drv_serial) {
+      params = drv_serial->GetParams();
+    } else {
+      auto drv_net =
+          std::dynamic_pointer_cast<CommDriverN0183Net>(source_driver);
+      if (drv_net) {
+        params = drv_net->GetParams();
       }
+#ifdef __ANDROID__
+      else {
+        auto drv_bluetooth =
+            std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(source_driver);
+        if (drv_bluetooth) {
+          params = drv_bluetooth->GetParams();
+        }
+      }
+#endif
+    }
 
     // Check to see if the message passes the source's input filter
-    bpass_input_filter = params.SentencePassesFilter(n0183_msg->payload.c_str(),
-                                        FILTER_INPUT);
+    bpass_input_filter =
+        params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
 
     bool b_error = false;
     for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
@@ -228,14 +230,14 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
       }
     }
 
-    // FIXME (dave)  Flag checksum errors, but fix and process the sentence anyway
-    //std::string goodMessage(message);
-    //bool checksumOK = CheckSumCheck(event.GetNMEAString());
-    //if (!checksumOK) {
-    //goodMessage = stream->FixChecksum(goodMessage);
-    //goodEvent->SetNMEAString(goodMessage);
+    // FIXME (dave)  Flag checksum errors, but fix and process the sentence
+    // anyway
+    // std::string goodMessage(message);
+    // bool checksumOK = CheckSumCheck(event.GetNMEAString());
+    // if (!checksumOK) {
+    // goodMessage = stream->FixChecksum(goodMessage);
+    // goodEvent->SetNMEAString(goodMessage);
     //}
-
 
     wxString port(n0183_msg->source->iface);
     LogInputMessage(fmsg, port, !bpass_input_filter, b_error);
@@ -244,13 +246,11 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Detect virtual driver, message comes from plugin API
   // Set such source iface to "" for later test
   std::string source_iface;
-  if (source_driver)        // NULL for virtual driver
+  if (source_driver)  // NULL for virtual driver
     source_iface = source_driver->iface;
 
-
   // Perform multiplexer output functions
-  for (auto& driver : drivers) {
-
+  for (auto &driver : drivers) {
     if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params;
       auto drv_serial =
@@ -264,7 +264,8 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
         }
 #ifdef __ANDROID__
         else {
-          auto drv_bluetooth = std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(driver);
+          auto drv_bluetooth =
+              std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(driver);
           if (drv_bluetooth) {
             params = drv_bluetooth->GetParams();
           }
@@ -273,21 +274,21 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
       }
 
       if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
-           bpass_input_filter) {
-
-      //  Allow re-transmit on same port (if type is SERIAL),
-      //  or any any other NMEA0183 port supporting output
-      //  But, do not echo to the source network interface.  This will likely recurse...
-        if ((!params.DisableEcho && params.Type == SERIAL) || driver->iface != source_iface) {
+          bpass_input_filter) {
+        //  Allow re-transmit on same port (if type is SERIAL),
+        //  or any any other NMEA0183 port supporting output
+        //  But, do not echo to the source network interface.  This will likely
+        //  recurse...
+        if ((!params.DisableEcho && params.Type == SERIAL) ||
+            driver->iface != source_iface) {
           if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
-              params.IOSelect == DS_TYPE_OUTPUT)
-          {
+              params.IOSelect == DS_TYPE_OUTPUT) {
             bool bout_filter = true;
             bool bxmit_ok = true;
             if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
-                                          FILTER_OUTPUT)) {
-              bxmit_ok = driver->SendMessage(n0183_msg,
-                                std::make_shared<NavAddr0183>(driver->iface));
+                                            FILTER_OUTPUT)) {
+              bxmit_ok = driver->SendMessage(
+                  n0183_msg, std::make_shared<NavAddr0183>(driver->iface));
               bout_filter = false;
             }
 
@@ -308,7 +309,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
 void Multiplexer::InitN2KCommListeners() {
   // Initialize the comm listeners
-  auto& msgbus = NavMsgBus::GetInstance();
+  auto &msgbus = NavMsgBus::GetInstance();
 
   // Create a series of N2K listeners
   // to allow minimal N2K Debug window logging
@@ -323,8 +324,7 @@ void Multiplexer::InitN2KCommListeners() {
 }
 
 bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-  if (!m_log_callbacks.log_is_active())
-    return false;
+  if (!m_log_callbacks.log_is_active()) return false;
 
   // extract PGN
   unsigned int pgn = 0;
@@ -344,9 +344,8 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (pgn == last_pgn_logged) {
     n_N2K_repeat++;
     return false;
-  }
-  else {
-    if(n_N2K_repeat) {
+  } else {
+    if (n_N2K_repeat) {
       wxString repeat_log_msg;
       repeat_log_msg.Printf("...Repeated %d times\n", n_N2K_repeat);
       LogInputMessage(repeat_log_msg, "N2000", false, false);
@@ -355,8 +354,8 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   }
 
   wxString log_msg;
-  log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source,
-                 ident,N2K_LogMessage_Detail(pgn, n2k_msg).c_str());
+  log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source, ident,
+                 N2K_LogMessage_Detail(pgn, n2k_msg).c_str());
 
   LogInputMessage(log_msg, "N2000", false, false);
 
@@ -364,11 +363,11 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   return true;
 }
 
-
-std::string Multiplexer::N2K_LogMessage_Detail(unsigned int pgn, std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+std::string Multiplexer::N2K_LogMessage_Detail(
+    unsigned int pgn, std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   std::string notused = "Not used by OCPN, maybe by Plugins";
 
-  switch (pgn){
+  switch (pgn) {
     case 129029:
       return "GNSS Position & DBoard: SAT System";
       break;

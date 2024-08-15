@@ -58,10 +58,9 @@
 #include "androidUTIL.h"
 #endif
 
-
 bool g_bPluginHandleAutopilotRoute;
 
-Routeman* g_pRouteMan;
+Routeman *g_pRouteMan;
 Route *pAISMOBRoute;
 
 RoutePoint *pAnchorWatchPoint1;
@@ -85,27 +84,25 @@ WX_DEFINE_LIST(markicon_description_list_type);
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);
 
-static void ActivatePersistedRoute(Routeman* routeman) {
+static void ActivatePersistedRoute(Routeman *routeman) {
   if (g_active_route == "") {
     wxLogWarning("\"Persist route\" but no persisted route configured");
     return;
   }
-  Route* route = routeman->FindRouteByGUID(g_active_route);
+  Route *route = routeman->FindRouteByGUID(g_active_route);
   if (!route) {
     wxLogWarning("Persisted route GUID not available");
     return;
   }
-  routeman->ActivateRoute(route);   // FIXME (leamas) better start point
+  routeman->ActivateRoute(route);  // FIXME (leamas) better start point
 }
-
 
 //--------------------------------------------------------------------------------
 //      Routeman   "Route Manager"
 //--------------------------------------------------------------------------------
 
 Routeman::Routeman(struct RoutePropDlgCtx ctx,
-                   struct RoutemanDlgCtx route_dlg_ctx,
-                   NmeaLog& nmea_log)
+                   struct RoutemanDlgCtx route_dlg_ctx, NmeaLog &nmea_log)
     : pActiveRoute(0),
       pActivePoint(0),
       pRouteActivatePoint(0),
@@ -113,10 +110,10 @@ Routeman::Routeman(struct RoutePropDlgCtx ctx,
       m_prop_dlg_ctx(ctx),
       m_route_dlg_ctx(route_dlg_ctx),
       m_nmea_log(nmea_log) {
-
   GlobalVar<wxString> active_route(&g_active_route);
-  auto route_action = [&] (wxCommandEvent) {
-      if (g_persist_active_route) ActivatePersistedRoute(this); };
+  auto route_action = [&](wxCommandEvent) {
+    if (g_persist_active_route) ActivatePersistedRoute(this);
+  };
   active_route_listener.Init(active_route, route_action);
 }
 
@@ -221,11 +218,10 @@ void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
   //  Add this point back into the selectables
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
 
-  //if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
-  //  pRoutePropDialog->SetRouteAndUpdate(route, true);
-  //}
+  // if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+  //   pRoutePropDialog->SetRouteAndUpdate(route, true);
+  // }
   m_prop_dlg_ctx.set_route_and_update(route);
-
 }
 
 RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
@@ -449,8 +445,7 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 }
 
 bool Routeman::UpdateAutopilot() {
-  if (!bGPSValid)
-    return false;
+  if (!bGPSValid) return false;
 
   // Send all known Autopilot messages upstream
 
@@ -490,25 +485,24 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
 
     if (pActivePoint->m_lat < 0.)
-      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(
-        -pActivePoint->m_lat, "S");
+      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat,
+                                                      "S");
     else
-      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(
-        pActivePoint->m_lat, "N");
+      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(pActivePoint->m_lat, "N");
 
     if (pActivePoint->m_lon < 0.)
-      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(
-         -pActivePoint->m_lon, "W");
+      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(-pActivePoint->m_lon,
+                                                       "W");
     else
-      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(
-         pActivePoint->m_lon, "E");
+      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(pActivePoint->m_lon,
+                                                       "E");
 
     m_NMEA0183.Rmb.DestinationClosingVelocityKnots =
         r_Sog * cos((r_Cog - CurrentBrgToActivePoint) * PI / 180.0);
     m_NMEA0183.Rmb.IsArrivalCircleEntered = m_bArrival ? NTrue : NFalse;
     m_NMEA0183.Rmb.FAAModeIndicator = bGPSValid ? "A" : "N";
-      // RMB is close to NMEA0183 length limit
-      // Restrict WP names further if necessary
+    // RMB is close to NMEA0183 length limit
+    // Restrict WP names further if necessary
     int wp_len = maxName;
     do {
       m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(wp_len);
@@ -527,8 +521,7 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
     m_NMEA0183.Rmc.IsDataValid = NTrue;
-    if (!bGPSValid)
-      m_NMEA0183.Rmc.IsDataValid = NFalse;
+    if (!bGPSValid) m_NMEA0183.Rmc.IsDataValid = NFalse;
 
     if (gLat < 0.)
       m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, _T("S"));
@@ -569,8 +562,7 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
-    if (!bGPSValid)
-      m_NMEA0183.Rmc.FAAModeIndicator = "N";
+    if (!bGPSValid) m_NMEA0183.Rmc.FAAModeIndicator = "N";
 
     m_NMEA0183.Rmc.Write(snt);
 
@@ -583,13 +575,12 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
 
-    m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;  // considered as "generic invalid fix" flag
-    if (!bGPSValid)
-      m_NMEA0183.Apb.IsLoranBlinkOK = NFalse;
+    m_NMEA0183.Apb.IsLoranBlinkOK =
+        NTrue;  // considered as "generic invalid fix" flag
+    if (!bGPSValid) m_NMEA0183.Apb.IsLoranBlinkOK = NFalse;
 
     m_NMEA0183.Apb.IsLoranCCycleLockOK = NTrue;
-    if (!bGPSValid)
-      m_NMEA0183.Apb.IsLoranCCycleLockOK = NFalse;
+    if (!bGPSValid) m_NMEA0183.Apb.IsLoranCCycleLockOK = NFalse;
 
     m_NMEA0183.Apb.CrossTrackErrorMagnitude = CurrentXTEToActivePoint;
 
@@ -654,13 +645,12 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
 
-    m_NMEA0183.Xte.IsLoranBlinkOK = NTrue;  // considered as "generic invalid fix" flag
-    if (!bGPSValid)
-      m_NMEA0183.Xte.IsLoranBlinkOK = NFalse;
+    m_NMEA0183.Xte.IsLoranBlinkOK =
+        NTrue;  // considered as "generic invalid fix" flag
+    if (!bGPSValid) m_NMEA0183.Xte.IsLoranBlinkOK = NFalse;
 
     m_NMEA0183.Xte.IsLoranCCycleLockOK = NTrue;
-    if (!bGPSValid)
-      m_NMEA0183.Xte.IsLoranCCycleLockOK = NFalse;
+    if (!bGPSValid) m_NMEA0183.Xte.IsLoranCCycleLockOK = NFalse;
 
     m_NMEA0183.Xte.CrossTrackErrorDistance = CurrentXTEToActivePoint;
 
@@ -742,13 +732,13 @@ bool Routeman::DeleteTrack(Track *pTrack) {
 
     ::wxEndBusyCursor();
 
-    //delete pprog;
+    // delete pprog;
     return true;
   }
   return false;
 }
 
-bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
+bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
@@ -825,7 +815,7 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
   return true;
 }
 
-void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
+void Routeman::DeleteAllRoutes(NavObjectChanges *nav_obj_changes) {
   ::wxBeginBusyCursor();
 
   //    Iterate on the RouteList
@@ -833,9 +823,9 @@ void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
   while (node) {
     Route *proute = node->GetData();
     if (proute == pAISMOBRoute) {
-       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
-         return;
-       }
+      if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
+        return;
+      }
       pAISMOBRoute = 0;
       ::wxBeginBusyCursor();
     }
@@ -851,7 +841,6 @@ void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
 
   ::wxEndBusyCursor();
 }
-
 
 void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
   // Re-Create the pens and colors
@@ -878,18 +867,18 @@ void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
 
   //    Or in something like S-52 compliance
 
-  m_pRoutePen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("UINFB"), scaled_line_width,
-                                        wxPENSTYLE_SOLID);
-  m_pSelectedRoutePen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("UINFO"), scaled_line_width,
-                                        wxPENSTYLE_SOLID);
-  m_pActiveRoutePen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("UARTE"), scaled_line_width,
-                                        wxPENSTYLE_SOLID);
-  m_pTrackPen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("CHMGD"), track_scaled_line_width,
-                                        wxPENSTYLE_SOLID);
+  m_pRoutePen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("UINFB"),
+                                    scaled_line_width, wxPENSTYLE_SOLID);
+  m_pSelectedRoutePen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("UINFO"),
+                                    scaled_line_width, wxPENSTYLE_SOLID);
+  m_pActiveRoutePen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("UARTE"),
+                                    scaled_line_width, wxPENSTYLE_SOLID);
+  m_pTrackPen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("CHMGD"),
+                                    track_scaled_line_width, wxPENSTYLE_SOLID);
   m_pRouteBrush = wxTheBrushList->FindOrCreateBrush(
       m_route_dlg_ctx.get_global_colour("UINFB"), wxBRUSHSTYLE_SOLID);
   m_pSelectedRouteBrush = wxTheBrushList->FindOrCreateBrush(
@@ -923,7 +912,7 @@ Route *Routeman::FindRouteByGUID(const wxString &guid) {
 }
 
 Track *Routeman::FindTrackByGUID(const wxString &guid) {
-  for (Track* pTrack : g_TrackList) {
+  for (Track *pTrack : g_TrackList) {
     if (pTrack->m_GUID == guid) return pTrack;
   }
 
@@ -947,12 +936,12 @@ void Routeman::ZeroCurrentXTEToActivePoint() {
 //--------------------------------------------------------------------------------
 
 WayPointman::WayPointman(GlobalColourFunc color_func)
-      : m_get_global_colour(color_func) {
+    : m_get_global_colour(color_func) {
   m_pWayPointList = new RoutePointList;
 
   pmarkicon_image_list = NULL;
 
-  //ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  // ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   m_pIconArray = new ArrayOfMarkIcon;
   m_pLegacyIconArray = NULL;
   m_pExtendedIconArray = NULL;
@@ -1270,8 +1259,10 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       icon_larger = pmi->iconImage.Resize(
           wxSize(w, h), wxPoint(w / 2 - w0 / 2, h / 2 - h0 / 2));
     } else {
-      // We want to maintain the aspect ratio of the original image, but need the canvas to fit the fixed cell size
-      // rescale in one or two directions to avoid cropping, then resize to fit to cell (Adds border/croops as necessary)
+      // We want to maintain the aspect ratio of the original image, but need
+      // the canvas to fit the fixed cell size rescale in one or two directions
+      // to avoid cropping, then resize to fit to cell (Adds border/croops as
+      // necessary)
       int h1 = h;
       int w1 = w;
       if (h0 > h)
@@ -1280,8 +1271,8 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       else if (w0 > w)
         h1 = wxRound((double)h0 * ((double)w / (double)w0));
 
-      icon_larger = pmi->iconImage.Rescale(w1, h1).Resize(wxSize(w, h),
-                                       wxPoint(w / 2 - w1 / 2, h / 2 - h1 / 2));
+      icon_larger = pmi->iconImage.Rescale(w1, h1).Resize(
+          wxSize(w, h), wxPoint(w / 2 - w1 / 2, h / 2 - h1 / 2));
     }
 
     int index = pmarkicon_image_list->Add(wxBitmap(icon_larger));
@@ -1491,10 +1482,10 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
   return;
 }
 
-RoutePoint* WayPointman::FindWaypointByGuid(const std::string& guid) {
+RoutePoint *WayPointman::FindWaypointByGuid(const std::string &guid) {
   wxRoutePointListNode *node = m_pWayPointList->GetFirst();
   while (node) {
-    RoutePoint* rp  = node->GetData();
+    RoutePoint *rp = node->GetData();
     if (guid == rp->m_GUID) return rp;
     node = node->GetNext();
   }
@@ -1503,7 +1494,7 @@ RoutePoint* WayPointman::FindWaypointByGuid(const std::string& guid) {
 void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
   if (!b_update_changeset)
     NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-    // turn OFF change-set updating if requested
+  // turn OFF change-set updating if requested
 
   if (pRp) {
     // Get a list of all routes containing this point
