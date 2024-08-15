@@ -33,8 +33,13 @@ sudo apt install --reinstall  ca-certificates
 sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2
 
 # Set up flatpak
-runtime=$(sed -n '/runtime-version/s/.*://p' flatpak/org.opencpn.OpenCPN.yaml)
+git submodule update --init  flatpak/org.opencpn.OpenCPN
+git submodule update --remote --merge flatpak/org.opencpn.OpenCPN
+runtime=$(sed -n '/runtime-version/s/.*://p' \
+          flatpak/org.opencpn.OpenCPN/org.opencpn.OpenCPN.yaml)
 runtime=${runtime/ /}
+runtime=${runtime%\"}
+runtime=${runtime#\"}
 flatpak --user remote-add --if-not-exists \
     flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak --user install --noninteractive org.freedesktop.Platform//$runtime
@@ -54,36 +59,11 @@ fi
 # The build heavy lifting
 test -d ../build || mkdir ../build
 cd ../build
-make -f ../flatpak/Makefile build
+make -f ../flatpak/Makefile ci-build
 flatpak list
-
-# Decrypt and unpack gpg keys, sign and install into website/
-ccat --envvar FLATPAK_KEY ../ci/gpg.tar.gz.cpt > gpg.tar.gz
-tar xf gpg.tar.gz
-chmod 700 opencpn-gpg
-make -f ../flatpak/Makefile install
-make GPG_HOMEDIR=opencpn-gpg -f ../flatpak/Makefile sign
-rm -rf gpg.tar.gz opencpn-gpg
-
-# Deploy website/ to deployment server.
-cp ../ci/id_opencpn.tar.cpt .
-ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
-tar -xf id_opencpn.tar
-chmod 600 .ssh/id_opencpn
-
-
-# Restore the patched file so the caching works.
-git checkout ../flatpak/org.opencpn.OpenCPN.yaml
-
-# Debug: show version in local repo.
-flatpak remote-add  \
-    --user --gpg-import=website/opencpn.key local $PWD/website/repo
-flatpak update --appstream local
-flatpak remote-ls local
 
 # Validate the appstream data:
 appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml || :
-
 
 # build the single file bundle, the actual artifact.
 flatpak build-bundle repo \
