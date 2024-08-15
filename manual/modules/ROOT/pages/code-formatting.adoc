@@ -2,24 +2,23 @@
 
 == C/C++
 
-After resolving https://github.com/OpenCPN/OpenCPN/issues/1118[Bug 1118]
-and https://github.com/OpenCPN/OpenCPN/issues/2357[Bug 2357] the sources
-have a uniform coding formatting based on the
+The sources have a uniform coding formatting based on the
 https://google.github.io/styleguide/cppguide.html#Formatting[Google Style].
 
-The style is also defined in the _.clang-format_ file which when used
+The style is defined in the _.clang-format_ file which when used
 by https://clang.llvm.org/docs/ClangFormat.html[clang-format] produces a
-correctly formatted source file.
+correctly formatted source file. 
 
-Some short notes:
+Since the 5.10 release all source file modifications must be processed by
+clang-format to be accepted. The recommended way to do this is using a git
+pre-commit hook which applies formatting when committing changes
 
-  - Indentation: two spaces per level, no hard tabs.
-  - The two-spaces indentation also applies to headers despite standard
-    Google style here is one space.
-  - 80 characters max line length.
-  - Unix-style lf line endings are used in the git repository.
-  - No trailing space or hard tabs in sources.
-  - Sources should use 7-bit ascii. Use  for example "\x00b0" rather than "°"
+To do this, just install the pre-commit program from https://pre-commit.com/:
+    
+    $ pip install pre-commit
+
+which will pick up the configuration from _.pre-commit-config.yaml_ which is 
+part of the project.
 
 == CMake
 
