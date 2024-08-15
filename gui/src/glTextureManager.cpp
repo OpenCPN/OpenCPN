@@ -747,10 +747,10 @@ glTextureManager::~glTextureManager() {
   //    ClearAllRasterTextures();
   ClearJobList();
   for (int i = 0; i < m_max_jobs; i++) {
-    delete(progList[i]);
+    delete (progList[i]);
   }
   progList.Clear();
-  for(auto hash : m_chart_texfactory_hash) {
+  for (auto hash : m_chart_texfactory_hash) {
     delete hash.second;
   }
   m_chart_texfactory_hash.clear();

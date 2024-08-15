@@ -42,11 +42,10 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
                                const wxString& title, const wxPoint& pos,
                                const wxSize& size, long style)
     : AboutFrame(parent, id, title, pos, size, style) {
-
-  if(strlen(DEBIAN_PPA_VERSION))
-   m_staticTextVersion->SetLabel(wxString(DEBIAN_PPA_VERSION));
+  if (strlen(DEBIAN_PPA_VERSION))
+    m_staticTextVersion->SetLabel(wxString(DEBIAN_PPA_VERSION));
   else
-   m_staticTextVersion->SetLabel(PACKAGE_VERSION);
+    m_staticTextVersion->SetLabel(PACKAGE_VERSION);
 
   m_staticTextCopyYears->SetLabel("\u00A9 2000-2024");
   m_hyperlinkIniFile->SetLabel(g_Platform->GetConfigFileName());
@@ -70,7 +69,7 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
 
   if (!::wxFileExists(target))
     target = wxString::Format("%sdoc/help_web.html",
-                             g_Platform->GetSharedDataDir().c_str());
+                              g_Platform->GetSharedDataDir().c_str());
 
   target.Prepend("file://");
 

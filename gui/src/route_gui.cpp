@@ -22,7 +22,7 @@
 #include "line_clip.h"
 #include "model/route.h"
 
-extern Routeman* g_pRouteMan;
+extern Routeman *g_pRouteMan;
 extern wxColour g_colourTrackLineColour;
 extern Multiplexer *g_pMUX;
 
@@ -102,14 +102,18 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
   RoutePoint *prp1 = node->GetData();
   node = node->GetNext();
 
-  if (m_route.m_bVisible || prp1->IsShared()) RoutePointGui(*prp1).Draw(dc, canvas, NULL); //prp1->Draw(dc, canvas, NULL);
+  if (m_route.m_bVisible || prp1->IsShared())
+    RoutePointGui(*prp1).Draw(dc, canvas,
+                              NULL);  // prp1->Draw(dc, canvas, NULL);
 
   while (node) {
     RoutePoint *prp2 = node->GetData();
 
     bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
 
-    if (m_route.m_bVisible || prp2->IsShared()) RoutePointGui(*prp2).Draw(dc, canvas, &rpt2); //prp2->Draw(dc, canvas, &rpt2);
+    if (m_route.m_bVisible || prp2->IsShared())
+      RoutePointGui(*prp2).Draw(dc, canvas,
+                                &rpt2);  // prp2->Draw(dc, canvas, &rpt2);
 
     if (m_route.m_bVisible) {
       //    Handle offscreen points
@@ -169,7 +173,7 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
 }
 
 void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
-                          ViewPort &vp, bool bdraw_arrow, int hilite_width) {
+                             ViewPort &vp, bool bdraw_arrow, int hilite_width) {
   //    Get the dc boundary
   int sx, sy;
   dc.GetSize(&sx, &sy);
@@ -255,7 +259,7 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
 }
 
 void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
-                                  ViewPort &vp) {
+                                     ViewPort &vp) {
 #ifdef ocpnUSE_GL
   //    Draw a direction arrow
   float icon_scale_factor = 100 * vp.view_scale_ppm;
@@ -314,18 +318,17 @@ void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
   pts[2].y = -s_arrow_icon[7];
   dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
 
-
 #endif
 }
 
 void RouteGui::DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
-                           wxPoint *rpn) {
+                              wxPoint *rpn) {
   if (iPoint <= m_route.GetnPoints())
     RoutePointGui(*m_route.GetPoint(iPoint)).Draw(dc, canvas, rpn);
 }
 
 void RouteGui::DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1,
-                        wxPoint *rp2, ViewPort &vp, bool bdraw_arrow) {
+                           wxPoint *rp2, ViewPort &vp, bool bdraw_arrow) {
   if (m_route.m_bRtIsSelected)
     dc.SetPen(*g_pRouteMan->GetSelectedRoutePen());
   else if (m_route.m_bRtIsActive)
@@ -353,7 +356,8 @@ void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
     // fixed lat/lon extent.
     //  Maybe better to use the mark's drawn box, once it is known.
     if (vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)) {
-      if (m_route.m_bVisible || prp->IsShared()) RoutePointGui(*prp).DrawGL(vp, canvas, dc);
+      if (m_route.m_bVisible || prp->IsShared())
+        RoutePointGui(*prp).DrawGL(vp, canvas, dc);
     }
   }
 #endif
@@ -401,7 +405,7 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   wxPenStyle style = wxPENSTYLE_SOLID;
   if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
   wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
-  if(glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
+  if (glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
     p.SetDashes(2, &glChartCanvas::dash_map[style][0]);
   }
   dc.SetPen(p);
@@ -501,7 +505,6 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
         }
       }
 
-
       if (!r1valid) {
         canvas->GetDoubleCanvasPointPix(prp1->m_lat, prp1->m_lon, &r1);
         if (std::isnan(r1.m_x)) continue;
@@ -548,7 +551,6 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
     }
   }
 
-
 #endif
 }
 
@@ -586,8 +588,8 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
   *prect = update_rect;
 }
 
-int RouteGui::SendToGPS(const wxString& com_name, bool bsend_waypoints,
-                        SendToGpsDlg* dialog) {
+int RouteGui::SendToGPS(const wxString &com_name, bool bsend_waypoints,
+                        SendToGpsDlg *dialog) {
   int result = 0;
 
   N0183DlgCtx dlg_ctx = GetDialogCtx(dialog);

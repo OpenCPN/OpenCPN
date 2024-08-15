@@ -30,7 +30,6 @@ public:
 
 #endif
 
-
 /// @brief Worker thread of the MbTiles chart decoder. It receives requests from
 /// the MbTile front-end to load and uncompress tiles from an MbTiles file. Once
 /// done, the tile list in memory is updated and a refresh of the map triggered.
@@ -72,7 +71,6 @@ private:
   /// @brief Load bitmap data of a tile from the MbTiles file to the tile cache
   /// @param tile Pointer to the tile to be loaded
   void LoadTile(mbTileDescriptor *tile);
-
 };
 
 #endif /* _MBTILESTHREAD_H_ */

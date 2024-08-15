@@ -201,9 +201,8 @@ class InstallButton : public wxPanel {
 public:
   InstallButton(wxWindow* parent, PluginMetadata metadata)
       : wxPanel(parent), m_metadata(metadata), m_remove(false) {
-    PlugInContainer* found =
-        PlugInByName(metadata.name,
-                     PluginLoader::getInstance()->GetPlugInArray());
+    PlugInContainer* found = PlugInByName(
+        metadata.name, PluginLoader::getInstance()->GetPlugInArray());
     std::string label(_("Install"));
     if (found) {
       label = getUpdateLabel(found, metadata);

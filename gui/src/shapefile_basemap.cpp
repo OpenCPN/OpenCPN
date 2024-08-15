@@ -42,7 +42,7 @@
 #define __CALL_CONVENTION
 #endif
 
-extern OCPNPlatform* g_Platform;
+extern OCPNPlatform *g_Platform;
 extern wxString gWorldShapefileLocation;
 
 #ifdef ocpnUSE_GL
@@ -128,8 +128,7 @@ void __CALL_CONVENTION shpsvertexCallback(GLvoid *arg) {
 }
 #endif
 
-ShapeBaseChartSet::ShapeBaseChartSet() : _loaded(false) {
-}
+ShapeBaseChartSet::ShapeBaseChartSet() : _loaded(false) {}
 
 wxPoint2DDouble ShapeBaseChartSet::GetDoublePixFromLL(ViewPort &vp, double lat,
                                                       double lon) {
@@ -171,7 +170,6 @@ ShapeBaseChart &ShapeBaseChartSet::HighestQualityBaseMap() {
 }
 
 ShapeBaseChart &ShapeBaseChartSet::SelectBaseMap(const size_t &scale) {
-
   if (_basemap_map.find(Quality::full) != _basemap_map.end() &&
       _basemap_map.at(Quality::full).IsUsable() &&
       scale <= _basemap_map.at(Quality::full).MinScale()) {
@@ -211,9 +209,9 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
   wxColor land_color = wxColor(170, 175, 80);
 
   if (fs::exists(ShapeBaseChart::ConstructPath(dir, "crude_10x10"))) {
-    auto c = ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "crude_10x10"), 300000000,
-                            land_color);
-    c._dmod= 10;
+    auto c = ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "crude_10x10"),
+                            300000000, land_color);
+    c._dmod = 10;
     _basemap_map.insert(std::make_pair(Quality::crude, c));
   }
 
@@ -241,8 +239,8 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
                        land_color)));
   }
   _loaded = true;
-  //if(_basemap_map.size())
-    //LowestQualityBaseMap().LoadSHP();
+  // if(_basemap_map.size())
+  // LowestQualityBaseMap().LoadSHP();
 }
 
 bool ShapeBaseChart::LoadSHP() {
@@ -456,10 +454,9 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
   else
     lon_start = lon_start - (lon_start % pmod);
 
-
   if (_is_tiled) {
-    for (int i = lat_start; i < ceil(bbox.GetMaxLat()) + pmod; i+=pmod) {
-      for (int j = lon_start; j < ceil(bbox.GetMaxLon()) + pmod; j+=pmod) {
+    for (int i = lat_start; i < ceil(bbox.GetMaxLat()) + pmod; i += pmod) {
+      for (int j = lon_start; j < ceil(bbox.GetMaxLon()) + pmod; j += pmod) {
         int lon{j};
         if (j < -180) {
           lon = j + 360;

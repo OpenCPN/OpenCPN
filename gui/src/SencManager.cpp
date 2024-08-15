@@ -264,8 +264,8 @@ SENCBuildThread::SENCBuildThread(SENCJobTicket *ticket,
 }
 
 void *SENCBuildThread::Entry() {
-  //#ifdef __MSVC__
-  //  _set_se_translator(my_translate);
+  // #ifdef __MSVC__
+  //   _set_se_translator(my_translate);
 
   //  On Windows, if anything in this thread produces a SEH exception (like
   //  access violation) we handle the exception locally, and simply alow the
@@ -273,7 +273,7 @@ void *SENCBuildThread::Entry() {
   //  got done, and maybe try again later.
 
   try
-  //#endif
+  // #endif
   {
     // Start the SENC build
     Osenc senc;
@@ -311,7 +311,7 @@ void *SENCBuildThread::Entry() {
     return 0;
   }  // try
 
-  //#ifdef __MSVC__
+  // #ifdef __MSVC__
   catch (const std::exception &e /*SE_Exception e*/) {
     const char *msg = e.what();
     if (m_manager) {
@@ -325,5 +325,5 @@ void *SENCBuildThread::Entry() {
 
     return 0;
   }
-  //#endif
+  // #endif
 }

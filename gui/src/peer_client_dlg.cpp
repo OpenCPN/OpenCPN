@@ -146,8 +146,6 @@ void PinConfirmDlg::SetPincodeText(const wxString& message) {
   GetSizer()->Fit(this);
 }
 
-void PinConfirmDlg::OnOKClick(wxCommandEvent&) {
-  EndModal(wxID_OK);
-}
+void PinConfirmDlg::OnOKClick(wxCommandEvent&) { EndModal(wxID_OK); }
 
 void PinConfirmDlg::OnCancelClick(wxCommandEvent&) { EndModal(wxID_CANCEL); }

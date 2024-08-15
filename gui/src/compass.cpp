@@ -36,7 +36,7 @@
 #include "styles.h"
 
 #include "glChartCanvas.h"
-#include "ocpn_frame.h"     // FIXME (dave) colorschemes
+#include "ocpn_frame.h"  // FIXME (dave) colorschemes
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool g_bSatValid;
@@ -89,7 +89,7 @@ ocpnCompass::~ocpnCompass() {
 void ocpnCompass::Paint(ocpnDC& dc) {
   if (m_shown && m_StatBmp.IsOk()) {
 #if defined(ocpnUSE_GLES) || defined(ocpnUSE_GL)
-    if (g_bopengl && !m_texobj){
+    if (g_bopengl && !m_texobj) {
       // The glContext is known active here,
       // so safe to create a texture.
       glGenTextures(1, &m_texobj);
@@ -148,18 +148,16 @@ void ocpnCompass::Paint(ocpnDC& dc) {
     } else {
 #ifdef __WXOSX__
       // Support MacBook Retina display
-      if(g_bopengl){
+      if (g_bopengl) {
         double scale = m_parent->GetContentScaleFactor();
-        if(scale > 1){
+        if (scale > 1) {
           wxImage image = m_StatBmp.ConvertToImage();
-          image.Rescale( image.GetWidth() * scale, image.GetHeight() * scale);
-          wxBitmap bmp( image );
+          image.Rescale(image.GetWidth() * scale, image.GetHeight() * scale);
+          wxBitmap bmp(image);
           dc.DrawBitmap(bmp, m_rect.x, m_rect.y, true);
-        }
-        else
+        } else
           dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
-      }
-      else
+      } else
         dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
 #else
       dc.DrawBitmap(m_StatBmp, m_rect.x, m_rect.y, true);
@@ -193,16 +191,13 @@ void ocpnCompass::SetColorScheme(ColorScheme cs) {
 }
 
 void ocpnCompass::UpdateStatus(bool bnew) {
-  if (bnew)
-    m_lastgpsIconName.Clear();  // force an update to occur
+  if (bnew) m_lastgpsIconName.Clear();  // force an update to occur
 
   CreateBmp(bnew);
 
 #ifdef ocpnUSE_GL
-  if (g_bopengl && m_texobj)
-    CreateTexture();
+  if (g_bopengl && m_texobj) CreateTexture();
 #endif
-
 }
 
 void ocpnCompass::SetScaleFactor(float factor) {
@@ -249,7 +244,7 @@ void ocpnCompass::SetScaleFactor(float factor) {
 }
 
 void ocpnCompass::CreateBmp(bool newColorScheme) {
-  //if (!m_shown) return;
+  // if (!m_shown) return;
 
   wxString gpsIconName;
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -318,7 +313,7 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
   if (fabs(m_rose_angle - rose_angle) > .1) b_need_refresh = true;
 
-  //if (!b_need_refresh) return;
+  // if (!b_need_refresh) return;
 
   int width = compassBg.GetWidth();
   if (m_bshowGPS) width += gpsBg.GetWidth() + leftmargin;
@@ -332,7 +327,7 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
   m_rect.width = m_StatBmp.GetWidth();
   m_rect.height = m_StatBmp.GetHeight();
 
-  //if (!m_StatBmp.IsOk()) return;
+  // if (!m_StatBmp.IsOk()) return;
 
   m_MaskBmp = wxBitmap(m_StatBmp.GetWidth(), m_StatBmp.GetHeight());
   if (style->marginsInvisible) {
@@ -447,7 +442,7 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 void ocpnCompass::CreateTexture() {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   // GLES does not do ocpnDC::DrawBitmap(), so use
-                           // texture
+  // texture
   if (g_bopengl) {
     wxImage image = m_StatBmp.ConvertToImage();
     unsigned char* imgdata = image.GetData();
@@ -489,7 +484,7 @@ void ocpnCompass::CreateTexture() {
     m_tex_h = height_pot;
 
     GLuint format = GL_RGBA;
-    GLuint internalformat = GL_RGBA8; //format;
+    GLuint internalformat = GL_RGBA8;  // format;
     int stride = 4;
 
     if (imgdata) {
@@ -530,7 +525,7 @@ void ocpnCompass::CreateTexture() {
 void ocpnCompass::UpdateTexture() {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   // GLES does not do ocpnDC::DrawBitmap(), so use
-                           // texture
+  // texture
   if (g_bopengl) {
     wxImage image = m_StatBmp.ConvertToImage();
     unsigned char* imgdata = image.GetData();
@@ -572,7 +567,7 @@ void ocpnCompass::UpdateTexture() {
     m_tex_h = height_pot;
 
     GLuint format = GL_RGBA;
-    GLuint internalformat = GL_RGBA8; //format;
+    GLuint internalformat = GL_RGBA8;  // format;
     int stride = 4;
 
     if (imgdata) {
@@ -594,7 +589,8 @@ void ocpnCompass::UpdateTexture() {
       glBindTexture(GL_TEXTURE_2D, m_texobj);
       glEnable(GL_TEXTURE_2D);
 
-      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_tex_w, m_tex_h, format, GL_UNSIGNED_BYTE, teximage);
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_tex_w, m_tex_h, format,
+                      GL_UNSIGNED_BYTE, teximage);
 
       free(teximage);
       glBindTexture(GL_TEXTURE_2D, 0);

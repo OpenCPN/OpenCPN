@@ -362,13 +362,16 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
                 points.push_back(target_point);
 
                 for (int i = 0; i < 18; ++i) {
-                  ll_gc_ll(lat1, lon1, sa->left_bound_deg + i * (sa->right_bound_deg - sa->left_bound_deg) / 18 , sa->radius_m / 1852.0,
-                         &lat, &lon);
+                  ll_gc_ll(
+                      lat1, lon1,
+                      sa->left_bound_deg +
+                          i * (sa->right_bound_deg - sa->left_bound_deg) / 18,
+                      sa->radius_m / 1852.0, &lat, &lon);
                   GetCanvasPointPix(vp, cp, lat, lon, &target_point);
                   points.push_back(target_point);
                 }
                 // Last angle explicitly to avoid any rounding errors
-                ll_gc_ll(lat1, lon1, sa->right_bound_deg , sa->radius_m / 1852.0,
+                ll_gc_ll(lat1, lon1, sa->right_bound_deg, sa->radius_m / 1852.0,
                          &lat, &lon);
                 GetCanvasPointPix(vp, cp, lat, lon, &target_point);
                 points.push_back(target_point);
@@ -469,8 +472,9 @@ static void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius,
   dc.SetPen(aton_DrawPen);
   dc.DrawLines(5, diamond, x, y);
 
-  aton_DrawPen = wxPen(GetGlobalColor(_T ( "UBLCK" )),
-                       pen.GetWidth());  // Change drawing pen to Solid and width 1
+  aton_DrawPen =
+      wxPen(GetGlobalColor(_T ( "UBLCK" )),
+            pen.GetWidth());  // Change drawing pen to Solid and width 1
   aton_WhiteBorderPen =
       wxPen(GetGlobalColor(_T ( "CHWHT" )), aton_DrawPen.GetWidth() + 2);
 
@@ -745,7 +749,8 @@ static void AISSetMetrics() {
   AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
   AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
-  AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor * AIS_scale_factor;
+  AIS_icon_diameter = AIS_intercept_bar_circle_diameter *
+                      AIS_user_scale_factor * AIS_scale_factor;
 
   wxFont *font = FontMgr::Get().GetFont(_("AIS Target Name"), 12);
   double scaler = DPIscale;
@@ -1315,15 +1320,19 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         TargetPoint.x + met_radius / 2, TargetPoint.y - met_radius / 2);
 
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
-    AtoN_Diamond(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x, TargetPoint.y, AIS_icon_diameter * 1.5, td);
+    AtoN_Diamond(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x,
+                 TargetPoint.y, AIS_icon_diameter * 1.5, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
-    Base_Square(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x, TargetPoint.y, AIS_icon_diameter);
+    Base_Square(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x,
+                TargetPoint.y, AIS_icon_diameter);
   } else if (td->Class == AIS_SART) {  // SART Target
     if (td->NavStatus == 14)           // active
-      SART_Render(dc, wxPen(URED, AIS_width_target_outline), TargetPoint.x, TargetPoint.y, AIS_icon_diameter);
-    else
-      SART_Render(dc, wxPen(GetGlobalColor(_T ( "UGREN" )), AIS_width_target_outline), TargetPoint.x,
+      SART_Render(dc, wxPen(URED, AIS_width_target_outline), TargetPoint.x,
                   TargetPoint.y, AIS_icon_diameter);
+    else
+      SART_Render(
+          dc, wxPen(GetGlobalColor(_T ( "UGREN" )), AIS_width_target_outline),
+          TargetPoint.x, TargetPoint.y, AIS_icon_diameter);
 
   } else if (td->b_SarAircraftPosnReport) {
     int airtype = (td->MMSI % 1000) / 100;  // xxxyyy5zz >> helicopter
@@ -1730,7 +1739,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                       TargetPoint.y /*+ (0.5 * h)*/);
 
       }  // If name do not empty
-    }    // if scale
+    }  // if scale
   }
 
   //  Draw tracks if enabled

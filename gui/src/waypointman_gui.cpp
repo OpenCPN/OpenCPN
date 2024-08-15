@@ -38,8 +38,8 @@
 #elif defined(__WXOSX__)
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
-typedef void (*  _GLUfuncptr)();
-#define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+typedef void (*_GLUfuncptr)();
+#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
 
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>
@@ -65,7 +65,7 @@ typedef void (*  _GLUfuncptr)();
 #include "waypointman_gui.h"
 #include "ocpn_plugin.h"
 
-extern BasePlatform* g_BasePlatform;
+extern BasePlatform *g_BasePlatform;
 extern float g_MarkScaleFactorExp;
 extern ocpnStyle::StyleManager *g_StyleManager;
 extern bool g_bUserIconsFirst;
@@ -73,7 +73,6 @@ extern bool g_bUserIconsFirst;
 static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
   return (mi1->icon_name.CmpNoCase(mi2->icon_name));
 }
-
 
 void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
                                       double displayDPmm) {
@@ -93,13 +92,14 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
     wxLogMessage(_T("Loading UserIcons from ") + UserIconPath);
     wxArrayString FileList;
 
-    wxBitmap default_bm = wxBitmap(1,1);   //empty
+    wxBitmap default_bm = wxBitmap(1, 1);  // empty
 
     int n_files =
         wxDir::GetAllFiles(UserIconPath, &FileList, _T(""), wxDIR_FILES);
 
     for (int ifile = 0; ifile < n_files; ifile++) {
-      wxString name = g_bUserIconsFirst ? FileList[n_files - ifile - 1] : FileList[ifile];
+      wxString name =
+          g_bUserIconsFirst ? FileList[n_files - ifile - 1] : FileList[ifile];
 
       wxFileName fn(name);
       wxString iconname = fn.GetName();
@@ -124,7 +124,7 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
 
         // This is to be a mark icon
         // Make it a nominal max size
-        double bm_size_nom = wxMin(wxMax(w,h), floor(displayDPmm * 20));
+        double bm_size_nom = wxMin(wxMax(w, h), floor(displayDPmm * 20));
         // We want certain minimal size for the icons, 15px (approx 3mm) be it
         bm_size_nom = wxMax(bm_size_nom, 15);
 
@@ -137,9 +137,8 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
         // Make the rendered icon square, if necessary
         if (fabs(aspect - 1.0) > .05) {
           wxImage image =
-              LoadSVG(name, (int)bm_size_nom,
-                            (int)bm_size_nom,
-                      &default_bm).ConvertToImage();
+              LoadSVG(name, (int)bm_size_nom, (int)bm_size_nom, &default_bm)
+                  .ConvertToImage();
 
           if (image.IsOk()) {
             wxRect rClip = CropImageOnAlpha(image);
@@ -148,11 +147,10 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
                               wxIMAGE_QUALITY_BICUBIC);
             pmi = ProcessIcon(imageClip, iconname, iconname, g_bUserIconsFirst);
           }
-        }
-        else {
+        } else {
           const unsigned int bm_size = bm_size_nom;  // horizontal
-          wxImage iconSVG = LoadSVG(name, bm_size, bm_size,
-                                     &default_bm, false).ConvertToImage();
+          wxImage iconSVG = LoadSVG(name, bm_size, bm_size, &default_bm, false)
+                                .ConvertToImage();
           wxRect rClip = CropImageOnAlpha(iconSVG);
           wxImage imageClip = iconSVG.GetSubImage(rClip);
           pmi = ProcessIcon(iconSVG, iconname, iconname, g_bUserIconsFirst);
@@ -164,8 +162,9 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
   }
 }
 
-MarkIcon* WayPointmanGui::ProcessIcon(wxImage image, const wxString& key,
-                                      const wxString& description, bool add_in_front) {
+MarkIcon *WayPointmanGui::ProcessIcon(wxImage image, const wxString &key,
+                                      const wxString &description,
+                                      bool add_in_front) {
   MarkIcon *pmi = 0;
 
   bool newIcon = true;
@@ -189,7 +188,6 @@ MarkIcon* WayPointmanGui::ProcessIcon(wxImage image, const wxString& key,
       m_waypoint_man.m_pIconArray->Add(pmi);
     }
   }
-
 
   wxBitmap *pbm = new wxBitmap(image);
   pmi->icon_name = key;
@@ -256,8 +254,8 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   if (m_waypoint_man.m_pLegacyIconArray)
     m_waypoint_man.m_pLegacyIconArray->Clear();
   else
-   m_waypoint_man.m_pLegacyIconArray =
-       new SortedArrayOfMarkIcon(CompareMarkIcons);
+    m_waypoint_man.m_pLegacyIconArray =
+        new SortedArrayOfMarkIcon(CompareMarkIcons);
 
   pmi = ProcessLegacyIcon(iconDir + _T("Symbol-Empty.svg"), _T("empty"),
                           _T("Empty"), displayDPmm);
@@ -343,8 +341,9 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Oil-Platform.svg"),
                           _T("platform"), _T("Platform"), displayDPmm);
   if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-Red-Green.svg"),
-                          _T("redgreenlite"), _T("Red/Green Light"), displayDPmm);
+  pmi =
+      ProcessLegacyIcon(iconDir + _T("Marks-Light-Red-Green.svg"),
+                        _T("redgreenlite"), _T("Red/Green Light"), displayDPmm);
   if (pmi) pmi->preScaled = true;
   pmi = ProcessLegacyIcon(iconDir + _T("Marks-Light-Red.svg"), _T("redlite"),
                           _T("Red Light"), displayDPmm);
@@ -489,12 +488,12 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
 
   size = m_waypoint_man.m_pExtendedIconArray->GetCount();
   for (unsigned int i = 0; i < size; i++) {
-    pmi = (MarkIcon *) m_waypoint_man.m_pExtendedIconArray->Item(i);
+    pmi = (MarkIcon *)m_waypoint_man.m_pExtendedIconArray->Item(i);
 
     //  Do not add any icons from the extended array if they have already been
     //  used as legacy substitutes
     bool noAdd = false;
-    auto legacy_count =  m_waypoint_man.m_pLegacyIconArray->GetCount();
+    auto legacy_count = m_waypoint_man.m_pLegacyIconArray->GetCount();
     for (unsigned int j = 0; j < legacy_count; j++) {
       MarkIcon *pmiLegacy =
           (MarkIcon *)m_waypoint_man.m_pLegacyIconArray->Item(j);
@@ -514,10 +513,10 @@ void WayPointmanGui::ReloadAllIcons(double displayDPmm) {
     MarkIcon *pmi = (MarkIcon *)m_waypoint_man.m_pIconArray->Item(i);
     wxImage dim_image;
     if (m_waypoint_man.m_cs == GLOBAL_COLOR_SCHEME_DUSK) {
-      dim_image =  m_waypoint_man.CreateDimImage(pmi->iconImage, .50);
+      dim_image = m_waypoint_man.CreateDimImage(pmi->iconImage, .50);
       pmi->iconImage = dim_image;
     } else if (m_waypoint_man.m_cs == GLOBAL_COLOR_SCHEME_NIGHT) {
-      dim_image =  m_waypoint_man.CreateDimImage(pmi->iconImage, .20);
+      dim_image = m_waypoint_man.CreateDimImage(pmi->iconImage, .20);
       pmi->iconImage = dim_image;
     }
   }
@@ -529,7 +528,8 @@ void WayPointmanGui::SetColorScheme(ColorScheme cs, double displayDPmm) {
   ReloadAllIcons(displayDPmm);
 }
 
-MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &key,
+MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName,
+                                            const wxString &key,
                                             const wxString &description,
                                             double displayDPmm) {
   double bm_size = -1.0;
@@ -548,8 +548,7 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   //  Android uses "density buckets", so simple math produces poor results.
   //  Thus, these factors have been empirically tweaked to provide good results
   //  on a variety of devices
-  float nominal_legacy_icon_size_pixels = wxMax(4.0,
-                                                floor(displayDPmm * 12.0));
+  float nominal_legacy_icon_size_pixels = wxMax(4.0, floor(displayDPmm * 12.0));
   // legacy icon size
   float pix_factor = nominal_legacy_icon_size_pixels / 68.0;
 
@@ -564,13 +563,12 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   SVGDocumentPixelSize(fileName, w, h);
   w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the icons,
                                // 15px (approx 3mm) be it
-  bm_size = w * g_MarkScaleFactorExp; //SVGPixelsToDisplay(w);
+  bm_size = w * g_MarkScaleFactorExp;  // SVGPixelsToDisplay(w);
   bm_size /= OCPN_GetWinDIPScaleFactor();
 #endif
 
   wxBitmap bm = LoadSVG(fileName, (int)bm_size, (int)bm_size);
-  if (!bm.IsOk())
-    return NULL;
+  if (!bm.IsOk()) return NULL;
 
   wxImage image =
       LoadSVG(fileName, (int)bm_size, (int)bm_size).ConvertToImage();
@@ -583,7 +581,8 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   bool newIcon = true;
 
   // avoid adding duplicates
-  for (unsigned int i = 0; i < m_waypoint_man.m_pLegacyIconArray->GetCount(); i++) {
+  for (unsigned int i = 0; i < m_waypoint_man.m_pLegacyIconArray->GetCount();
+       i++) {
     pmi = (MarkIcon *)m_waypoint_man.m_pLegacyIconArray->Item(i);
     if (pmi->icon_name.IsSameAs(key)) {
       newIcon = false;
@@ -712,7 +711,7 @@ void WayPointmanGui::ReloadRoutepointIcons() {
 }
 
 unsigned int WayPointmanGui::GetIconTexture(const wxBitmap *pbm, int &glw,
-                                           int &glh) {
+                                            int &glh) {
 #ifdef ocpnUSE_GL
   int index = m_waypoint_man.GetIconIndex(pbm);
   MarkIcon *pmi = (MarkIcon *)m_waypoint_man.m_pIconArray->Item(index);

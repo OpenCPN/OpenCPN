@@ -2452,8 +2452,7 @@ int S57Reader::FindAndApplyUpdates(const char *pszPath)
 #endif
 #endif
 
-OGRErr
-S57Reader::GetExtent(OGREnvelope *psExtent, int bForce)
+OGRErr S57Reader::GetExtent(OGREnvelope *psExtent, int bForce)
 
 {
 #define INDEX_COUNT 4

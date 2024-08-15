@@ -84,7 +84,8 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint position, long orient,
 
   m_state_timer.SetOwner(this, STATE_TIMER);
   m_state_timer.Start(100, wxTIMER_CONTINUOUS);
-  this->Connect( wxEVT_TIMER, wxTimerEventHandler( iENCToolbar::StateTimerEvent ), NULL, this );
+  this->Connect(wxEVT_TIMER, wxTimerEventHandler(iENCToolbar::StateTimerEvent),
+                NULL, this);
 }
 
 iENCToolbar::~iENCToolbar() {}
@@ -212,7 +213,6 @@ void iENCToolbar::OnToolLeftClick(wxCommandEvent &event) {
   }
   m_ptoolbar->InvalidateBitmaps();
   RefreshToolbar();
-
 }
 
 void iENCToolbar::SetDensityToolBitmap(int nDensity) {
@@ -270,7 +270,6 @@ void iENCToolbar::SetRangeToolBitmap() {
   dc.SelectObject(wxNullBitmap);
 
   m_ptoolbar->SetToolBitmaps(ID_RMINUS, m_pbmScratch, m_pbmScratch);
-
 }
 
 void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
@@ -329,5 +328,4 @@ void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
 
   // Restore runtime timer frequency after startup
   m_state_timer.Start(500, wxTIMER_CONTINUOUS);
-
 }

@@ -2089,7 +2089,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
 
       m_this_chart_context->safety_contour = m_next_safe_cnt;
       m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
-      m_this_chart_context->pt2GetAssociatedObjects = &s57chart::GetAssociatedObjects;
+      m_this_chart_context->pt2GetAssociatedObjects =
+          &s57chart::GetAssociatedObjects;
 
       //  Loop and populate all the objects
       for (int i = 0; i < PI_PRIO_NUM; ++i) {
@@ -3282,13 +3283,13 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
         break;
 
       case 'S':
-        pAVS = strdup((char*)aval);
+        pAVS = strdup((char *)aval);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
 
       case 'C':
-        pAVS = strdup((const char*)&aval[3]);
+        pAVS = strdup((const char *)&aval[3]);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
@@ -4198,8 +4199,8 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt) {
         loadcell_key++;
 
       }  // while
-    }    // cell is not in
-  }      // for cellindex array
+    }  // cell is not in
+  }  // for cellindex array
 
   return true;
 }
@@ -4730,7 +4731,9 @@ void cm93compchart::SetVPParms(const ViewPort &vpt) {
   //    Continuoesly update the composite chart edition date to the latest cell
   //    decoded
   if (m_pcm93chart_array[cmscale]) {
-    if (!m_EdDate.IsValid() || !m_pcm93chart_array[cmscale]->GetEditionDate().IsValid() || m_pcm93chart_array[cmscale]->GetEditionDate().IsLaterThan(m_EdDate))
+    if (!m_EdDate.IsValid() ||
+        !m_pcm93chart_array[cmscale]->GetEditionDate().IsValid() ||
+        m_pcm93chart_array[cmscale]->GetEditionDate().IsLaterThan(m_EdDate))
       m_EdDate = m_pcm93chart_array[cmscale]->GetEditionDate();
   }
 }
@@ -5778,8 +5781,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
   return true;
 }
 
-bool cm93compchart::RenderCellOutlines(ocpnDC &dc, ViewPort &vp,
-                                           wxPoint *pwp, M_COVR_Desc *mcd) {
+bool cm93compchart::RenderCellOutlines(ocpnDC &dc, ViewPort &vp, wxPoint *pwp,
+                                       M_COVR_Desc *mcd) {
   float_2Dpt *p = mcd->pvertices;
   int np = mcd->m_nvertices;
 
@@ -5827,7 +5830,7 @@ void cm93compchart::UpdateLUPs(s57chart *pOwner) {
   }
 }
 
-std::list<S57Obj*> *cm93compchart::GetAssociatedObjects(S57Obj *obj) {
+std::list<S57Obj *> *cm93compchart::GetAssociatedObjects(S57Obj *obj) {
   if (m_pcm93chart_current)
     return m_pcm93chart_current->GetAssociatedObjects(obj);
   else

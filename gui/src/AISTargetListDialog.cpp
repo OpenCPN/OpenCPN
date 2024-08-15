@@ -65,8 +65,7 @@ END_EVENT_TABLE()
 
 static bool g_bsort_once;
 
-static int ItemCompare(AisTargetData *pAISTarget1,
-                       AisTargetData *pAISTarget2) {
+static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
   wxString s1, s2;
   double n1 = 0.;
   double n2 = 0.;
@@ -152,7 +151,8 @@ static int ItemCompare(AisTargetData *pAISTarget1,
         s1 = _("-");
 
       if ((t1->Class == AIS_ATON) || (t1->Class == AIS_BASE) ||
-          (t1->Class == AIS_CLASS_B) || (t1->Class == AIS_METEO)) s1 = _T("-");
+          (t1->Class == AIS_CLASS_B) || (t1->Class == AIS_METEO))
+        s1 = _T("-");
 
       if ((t2->NavStatus <= 15) && (t2->NavStatus >= 0)) {
         if (t2->Class == AIS_SART) {
@@ -166,7 +166,8 @@ static int ItemCompare(AisTargetData *pAISTarget1,
         s2 = _("-");
 
       if ((t2->Class == AIS_ATON) || (t2->Class == AIS_BASE) ||
-          (t2->Class == AIS_CLASS_B) || (t2->Class == AIS_METEO)) s2 = _T("-");
+          (t2->Class == AIS_CLASS_B) || (t2->Class == AIS_METEO))
+        s2 = _T("-");
 
       break;
     }
@@ -704,11 +705,12 @@ void AISTargetListDialog::CreateControls() {
   bsRouteButtonsInner->Add(m_pButtonJumpTo, 0, wxEXPAND | wxALL, 2);
 
   m_pButtonJumpTo_Close =
-    new wxButton(winr, wxID_ANY, _("Center-Info-Close"), wxDefaultPosition,
-                 wxDefaultSize, wxBU_AUTODRAW);
+      new wxButton(winr, wxID_ANY, _("Center-Info-Close"), wxDefaultPosition,
+                   wxDefaultSize, wxBU_AUTODRAW);
   m_pButtonJumpTo_Close->Connect(
-    wxEVT_COMMAND_BUTTON_CLICKED,
-    wxCommandEventHandler(AISTargetListDialog::OnTargetScrollToClose), NULL, this);
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(AISTargetListDialog::OnTargetScrollToClose), NULL,
+      this);
   bsRouteButtonsInner->Add(m_pButtonJumpTo_Close, 0, wxEXPAND | wxALL, 2);
 
   m_pButtonCreateWpt =
@@ -849,7 +851,8 @@ void AISTargetListDialog::UpdateButtons() {
   m_pButtonInfo->Enable(enable);
 
   if (m_pdecoder && item != -1) {
-    auto pAISTargetSel =  m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
+    auto pAISTargetSel =
+        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
     if (pAISTargetSel && (!pAISTargetSel->b_positionOnceValid)) enable = false;
   }
   m_pButtonJumpTo->Enable(enable);
@@ -883,7 +886,8 @@ void AISTargetListDialog::OnTargetQuery(wxCommandEvent &event) {
   if (selItemID == -1) return;
 
   if (m_pdecoder) {
-    auto pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
+    auto pAISTarget =
+        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
     if (pAISTarget) DoTargetQuery(pAISTarget->MMSI);
   }
 }
@@ -1033,7 +1037,7 @@ void AISTargetListDialog::CenterToTarget(bool close) {
   std::shared_ptr<AisTargetData> pAISTarget = NULL;
   if (m_pdecoder)
     pAISTarget =
-    m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
+        m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
 
   if (pAISTarget) {
     double scale = gFrame->GetFocusCanvas()->GetVPScale();
@@ -1042,7 +1046,7 @@ void AISTargetListDialog::CenterToTarget(bool close) {
     if (close) {
       // Set a resonable (1:5000) chart scale to see the target.
       if (scale < 0.7) {  // Don't zoom if already close.
-        ChartCanvas* cc = gFrame->GetFocusCanvas();
+        ChartCanvas *cc = gFrame->GetFocusCanvas();
         double factor = cc->GetScaleValue() / 5000.0;
         cc->DoZoomCanvas(factor, false);
       }
@@ -1066,7 +1070,8 @@ void AISTargetListDialog::OnLimitRange(wxCommandEvent &event) {
   UpdateAISTargetList();
 }
 
-std::shared_ptr<AisTargetData> AISTargetListDialog::GetpTarget(unsigned int list_item) {
+std::shared_ptr<AisTargetData> AISTargetListDialog::GetpTarget(
+    unsigned int list_item) {
   if (m_pdecoder)
     return m_pdecoder->Get_Target_Data_From_MMSI(
         m_pMMSI_array->Item(list_item));
@@ -1107,8 +1112,7 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
           b_add = true;
 
         // Do not show any "lost" targets in the list.
-        if (pAISTarget->b_lost)
-          b_add = false;
+        if (pAISTarget->b_lost) b_add = false;
 
         if (b_add) {
           m_pMMSI_array->Add(pAISTarget->MMSI);

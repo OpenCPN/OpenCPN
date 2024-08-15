@@ -33,7 +33,6 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-
 #include <wx/datetime.h>
 #include <wx/event.h>
 #include <wx/string.h>
@@ -66,19 +65,19 @@ extern int g_iSoundDeviceIndex;
 extern OCPNPlatform *g_Platform;
 extern Route *pAISMOBRoute;
 extern wxString g_CmdSoundString;
-extern MyConfig* pConfig;
+extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern MyFrame* gFrame;
+extern MyFrame *gFrame;
 extern AisInfoGui *g_pAISGUI;
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
     wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-    wxPostEvent(g_pAISGUI, ev);   // FIXME(leamas): Review sound handling.
+    wxPostEvent(g_pAISGUI, ev);  // FIXME(leamas): Review sound handling.
   }
 }
 
-static void OnNewAisWaypoint(RoutePoint* pWP) {
+static void OnNewAisWaypoint(RoutePoint *pWP) {
   pConfig->AddNewWayPoint(pWP, -1);  // , -1 use auto next num
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
@@ -91,60 +90,56 @@ static void OnNewAisWaypoint(RoutePoint* pWP) {
   }
 }
 
-const static char* const kDeleteTrackPrompt =
-_(R"(
+const static char *const kDeleteTrackPrompt = _(R"(
 This AIS target has Persistent Tracking selected by MMSI properties
 A Persistent track recording will therefore be restarted for this target.
 
 Do you instead want to stop Persistent Tracking for this target?
 )");
 
-
-static void OnDeleteTrack(MmsiProperties* props) {
+static void OnDeleteTrack(MmsiProperties *props) {
   if (wxID_NO == OCPNMessageBox(NULL, kDeleteTrackPrompt, _("OpenCPN Info"),
-                                wxYES_NO | wxCENTER, 60))
-  {
+                                wxYES_NO | wxCENTER, 60)) {
     props->m_bPersistentTrack = true;
   }
 }
-
 
 AisInfoGui::AisInfoGui() {
   ais_info_listener.Listen(g_pAIS->info_update, this, EVT_AIS_INFO);
 
   Bind(EVT_AIS_INFO, [&](ObservedEvt &ev) {
-        auto ptr = ev.GetSharedPtr();
-        auto palert_target = std::static_pointer_cast<const AisTargetData>(ptr);
-        ShowAisInfo(palert_target); }
-       );
+    auto ptr = ev.GetSharedPtr();
+    auto palert_target = std::static_pointer_cast<const AisTargetData>(ptr);
+    ShowAisInfo(palert_target);
+  });
 
   ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
   Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
 
   ais_wp_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_WP);
   Bind(EVT_AIS_WP, [&](wxCommandEvent ev) {
-       auto pWP = static_cast<RoutePoint*>(ev.GetClientData());
-       OnNewAisWaypoint(pWP); });
+    auto pWP = static_cast<RoutePoint *>(ev.GetClientData());
+    OnNewAisWaypoint(pWP);
+  });
 
-  ais_new_track_listener.Listen(g_pAIS->new_ais_wp, this,
-                                EVT_AIS_NEW_TRACK);
+  ais_new_track_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_NEW_TRACK);
   Bind(EVT_AIS_NEW_TRACK, [&](wxCommandEvent ev) {
-       auto t = static_cast<Track*>(ev.GetClientData());
-       pConfig->AddNewTrack(t); });
+    auto t = static_cast<Track *>(ev.GetClientData());
+    pConfig->AddNewTrack(t);
+  });
 
-  ais_del_track_listener.Listen(g_pAIS->new_ais_wp, this,
-                                EVT_AIS_DEL_TRACK);
+  ais_del_track_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_DEL_TRACK);
   Bind(EVT_AIS_DEL_TRACK, [&](wxCommandEvent ev) {
-       auto t = static_cast< MmsiProperties*>(ev.GetClientData());
-       OnDeleteTrack(t); });
+    auto t = static_cast<MmsiProperties *>(ev.GetClientData());
+    OnDeleteTrack(t);
+  });
 
-  Bind(SOUND_PLAYED_EVTYPE, [&](wxCommandEvent ev) {
-       OnSoundFinishedAISAudio(ev); });
+  Bind(SOUND_PLAYED_EVTYPE,
+       [&](wxCommandEvent ev) { OnSoundFinishedAISAudio(ev); });
 
   m_AIS_Sound = 0;
   m_bAIS_Audio_Alert_On = false;
   m_bAIS_AlertPlaying = false;
-
 }
 
 void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
@@ -157,12 +152,13 @@ void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
   m_bAIS_AlertPlaying = false;
 }
 
-void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target) {
-   if (!palert_target) return;
+void AisInfoGui::ShowAisInfo(
+    std::shared_ptr<const AisTargetData> palert_target) {
+  if (!palert_target) return;
 
-   int audioType = AISAUDIO_NONE;
+  int audioType = AISAUDIO_NONE;
 
-   switch (palert_target->Class){
+  switch (palert_target->Class) {
     case AIS_DSC:
       audioType = AISAUDIO_DSC;
       break;
@@ -172,52 +168,50 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
     default:
       audioType = AISAUDIO_CPA;
       break;
-   }
+  }
 
-   // If no alert dialog shown yet...
-   if (!g_pais_alert_dialog_active) {
-      bool b_jumpto = (palert_target->Class == AIS_SART) ||
-                      (palert_target->Class == AIS_DSC);
-      bool b_createWP = palert_target->Class == AIS_DSC;
-      bool b_ack = palert_target->Class != AIS_DSC;
+  // If no alert dialog shown yet...
+  if (!g_pais_alert_dialog_active) {
+    bool b_jumpto =
+        (palert_target->Class == AIS_SART) || (palert_target->Class == AIS_DSC);
+    bool b_createWP = palert_target->Class == AIS_DSC;
+    bool b_ack = palert_target->Class != AIS_DSC;
 
-      //    Show the Alert dialog
+    //    Show the Alert dialog
 
-      //      See FS# 968/998
-      //      If alert occurs while OCPN is iconized to taskbar, then clicking
-      //      the taskbar icon only brings up the Alert dialog, and not the
-      //      entire application. This is an OS specific behavior, not seen on
-      //      linux or Mac. This patch will allow the audio alert to occur, and
-      //      the visual alert will pop up soon after the user selects the OCPN
-      //      icon from the taskbar. (on the next timer tick, probably)
+    //      See FS# 968/998
+    //      If alert occurs while OCPN is iconized to taskbar, then clicking
+    //      the taskbar icon only brings up the Alert dialog, and not the
+    //      entire application. This is an OS specific behavior, not seen on
+    //      linux or Mac. This patch will allow the audio alert to occur, and
+    //      the visual alert will pop up soon after the user selects the OCPN
+    //      icon from the taskbar. (on the next timer tick, probably)
 
 #ifndef __ANDROID__
-      if (gFrame->IsIconized() || !gFrame->IsActive())
-        gFrame->RequestUserAttention();
+    if (gFrame->IsIconized() || !gFrame->IsActive())
+      gFrame->RequestUserAttention();
 #endif
 
-      if (!gFrame->IsIconized()) {
-        AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-        pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS,
-                                b_jumpto, b_createWP, b_ack, -1,
-                                _("AIS Alert"));
+    if (!gFrame->IsIconized()) {
+      AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
+      pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS, b_jumpto,
+                              b_createWP, b_ack, -1, _("AIS Alert"));
 
-        g_pais_alert_dialog_active = pAISAlertDialog;
+      g_pais_alert_dialog_active = pAISAlertDialog;
 
-        wxTimeSpan alertLifeTime(0, 1, 0,
-                                 0);  // Alert default lifetime, 1 minute.
-        auto alert_dlg_active =
-            dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
-        alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
-        g_Platform->PositionAISAlert(pAISAlertDialog);
+      wxTimeSpan alertLifeTime(0, 1, 0,
+                               0);  // Alert default lifetime, 1 minute.
+      auto alert_dlg_active =
+          dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+      alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+      g_Platform->PositionAISAlert(pAISAlertDialog);
 
-        pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
-      }
-
-      //    Audio alert if requested
-      m_bAIS_Audio_Alert_On = true;  // always on when alert is first shown
+      pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
     }
 
+    //    Audio alert if requested
+    m_bAIS_Audio_Alert_On = true;  // always on when alert is first shown
+  }
 
   //    The AIS Alert dialog is already shown.  If the  dialog MMSI number is
   //    still alerted, update the dialog otherwise, destroy the dialog
@@ -225,8 +219,8 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
     // Find the target with shortest CPA, ignoring DSC and SART targets
     double tcpa_min = 1e6;  // really long
     AisTargetData *palert_target_lowestcpa = NULL;
-    const auto& current_targets = g_pAIS->GetTargetList();
-    for (auto& it : current_targets) {
+    const auto &current_targets = g_pAIS->GetTargetList();
+    for (auto &it : current_targets) {
       auto td = it.second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
@@ -244,9 +238,9 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
 
     // Get the target currently displayed
     auto alert_dlg_active =
-        dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
-    palert_target = g_pAIS->Get_Target_Data_From_MMSI(
-        alert_dlg_active->Get_Dialog_MMSI());
+        dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+    palert_target =
+        g_pAIS->Get_Target_Data_From_MMSI(alert_dlg_active->Get_Dialog_MMSI());
 
     //  If the currently displayed target is not alerted, it must be in "expiry
     //  delay" We should cancel that alert display now, and pick up the more
@@ -263,7 +257,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       wxDateTime now = wxDateTime::Now();
       if (((AIS_ALERT_SET == palert_target->n_alert_state) &&
            !palert_target->b_in_ack_timeout) ||
-          (palert_target->Class == AIS_SART) ) {
+          (palert_target->Class == AIS_SART)) {
         alert_dlg_active->UpdateText();
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
@@ -316,7 +310,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
       if (m_AIS_Sound->IsOk()) {
         m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-        if (!m_AIS_Sound->Play()){
+        if (!m_AIS_Sound->Play()) {
           delete m_AIS_Sound;
           m_AIS_Sound = 0;
           m_bAIS_AlertPlaying = false;

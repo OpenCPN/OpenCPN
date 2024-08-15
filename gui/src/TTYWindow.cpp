@@ -82,9 +82,9 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   wxStaticBoxSizer* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
 
   m_btn_pause = new wxButton(this, wxID_ANY, _("Pause"), wxDefaultPosition,
-                               wxDefaultSize, 0);
+                             wxDefaultSize, 0);
   m_btn_copy = new wxButton(this, wxID_ANY, _("Copy"), wxDefaultPosition,
-                              wxDefaultSize, 0);
+                            wxDefaultSize, 0);
   m_btn_copy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
 
   bbSizer1->Add(m_btn_pause, 0, wxALL, 5);
@@ -92,11 +92,11 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
 
   m_btn_copy->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                        wxCommandEventHandler(TTYWindow::OnCopyClick), NULL,
-                        this);
+                      wxCommandEventHandler(TTYWindow::OnCopyClick), NULL,
+                      this);
   m_btn_pause->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                         wxCommandEventHandler(TTYWindow::OnPauseClick), NULL,
-                         this);
+                       wxCommandEventHandler(TTYWindow::OnPauseClick), NULL,
+                       this);
 
   m_is_paused = false;
 }
@@ -111,7 +111,8 @@ TTYWindow::~TTYWindow() {
 void TTYWindow::CreateLegendBitmap() {
   double dip_factor = OCPN_GetWinDIPScaleFactor();
   wxScreenDC dcs;
-  wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+  wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+              wxFONTWEIGHT_NORMAL);
   int width, height;
   dcs.GetTextExtent("M", &width, &height, NULL, NULL, &font);
   double ref_dim = height * dip_factor;
@@ -128,7 +129,7 @@ void TTYWindow::CreateLegendBitmap() {
     int y = ref_dim * .25;
     int bsize = ref_dim;
     int text_x = ref_dim * 1.5;
-    int boff = ref_dim *.25;
+    int boff = ref_dim * .25;
 
     wxBrush b1(wxColour(_T("DARK GREEN")));
     dc.SetBrush(b1);
@@ -142,8 +143,8 @@ void TTYWindow::CreateLegendBitmap() {
     dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("CORAL")));
     dc.DrawText(
-        _("Input message filtered, output message filtered and dropped"), text_x,
-        y);
+        _("Input message filtered, output message filtered and dropped"),
+        text_x, y);
 
     y += yp;
     wxBrush b3(wxColour(_T("MAROON")));

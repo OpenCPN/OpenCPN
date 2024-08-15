@@ -431,12 +431,15 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                 parent->GetCanvasPointPix(lat1, lon1, &target_point);
                 bbox.Expand(target_point);
                 for (int i = 0; i < 18; ++i) {
-                  ll_gc_ll(lat1, lon1, sa->left_bound_deg + i * (sa->right_bound_deg - sa->left_bound_deg) / 18 , sa->radius_m / 1852.0,
-                         &lat, &lon);
+                  ll_gc_ll(
+                      lat1, lon1,
+                      sa->left_bound_deg +
+                          i * (sa->right_bound_deg - sa->left_bound_deg) / 18,
+                      sa->radius_m / 1852.0, &lat, &lon);
                   parent->GetCanvasPointPix(lat, lon, &target_point);
                   bbox.Expand(target_point);
                 }
-                ll_gc_ll(lat1, lon1, sa->right_bound_deg , sa->radius_m / 1852.0,
+                ll_gc_ll(lat1, lon1, sa->right_bound_deg, sa->radius_m / 1852.0,
                          &lat, &lon);
                 parent->GetCanvasPointPix(lat, lon, &target_point);
                 bbox.Expand(target_point);
@@ -1406,7 +1409,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_DEF_MENU_DEACTIVATE_MEASURE:
       parent->CancelMeasureRoute();
-      //gFrame->SurfaceAllCanvasToolbars();
+      // gFrame->SurfaceAllCanvasToolbars();
       parent->InvalidateGL();
       parent->Refresh(false);
       break;
@@ -1966,7 +1969,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_RC_MENU_FINISH:
       parent->FinishRoute();
-      //gFrame->SurfaceAllCanvasToolbars();
+      // gFrame->SurfaceAllCanvasToolbars();
       parent->Refresh(false);
       g_FlushNavobjChanges = true;
       break;

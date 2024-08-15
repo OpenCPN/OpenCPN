@@ -102,7 +102,7 @@ static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
       int r = dlg.ShowModal();
       return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
     }
-     case PeerDlg::BadPincode: {
+    case PeerDlg::BadPincode: {
       std::string msg(_("Pincode not accepted"));
       OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
                             wxICON_ERROR | wxOK | wxCANCEL);
@@ -128,8 +128,8 @@ std::pair<PeerDlgResult, std::string> RunPincodeDlg() {
                     wxDefaultPosition, wxDefaultSize, SYMBOL_PCD_STYLE);
 
   static const char* const msg =
-    _("A server pin is needed.\n"
-      "Please enter PIN number from server to pair with this device");
+      _("A server pin is needed.\n"
+        "Please enter PIN number from server to pair with this device");
 
   dlg.SetMessage(msg);
   dlg.SetPincodeText("");
@@ -174,8 +174,7 @@ SendToPeerDlg::SendToPeerDlg() {
 
   // Get our own local ipv4 address, for filtering
   std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
-  if (ipv4_addrs.size())
-    m_ownipAddr = ipv4_addrs[0];
+  if (ipv4_addrs.size()) m_ownipAddr = ipv4_addrs[0];
 
 #ifdef __ANDROID__
   androidDisableRotation();
@@ -222,7 +221,7 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
 
 bool SendToPeerDlg::EnableActivateChkbox() {
   return m_RouteList.size() == 1 && m_RoutePointList.empty() &&
-     m_TrackList.empty();
+         m_TrackList.empty();
 }
 
 void SendToPeerDlg::CreateControls(const wxString&) {
@@ -256,10 +255,9 @@ void SendToPeerDlg::CreateControls(const wxString&) {
   }
 
   if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
-  m_PeerListBox->Bind(
-         wxEVT_TEXT,
-         [&](wxCommandEvent&) {
-             m_SendButton->Enable(m_PeerListBox->GetValue() != ""); });
+  m_PeerListBox->Bind(wxEVT_TEXT, [&](wxCommandEvent&) {
+    m_SendButton->Enable(m_PeerListBox->GetValue() != "");
+  });
   m_PeerListBox->Enable(!m_bScanOnCreate);
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
@@ -276,14 +274,11 @@ void SendToPeerDlg::CreateControls(const wxString&) {
 
   itemBoxSizer2->AddSpacer(30);
   itemBoxSizer2->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
-  m_activate_chkbox = new wxCheckBox(this,  wxID_ANY,
-                                     _("Activate after transfer"),
-                                     wxDefaultPosition, wxDefaultSize,
-                                     wxALIGN_RIGHT);
-  itemBoxSizer2->Add(m_activate_chkbox, 0,
-                     wxALIGN_RIGHT | wxALL, 10);
+  m_activate_chkbox =
+      new wxCheckBox(this, wxID_ANY, _("Activate after transfer"),
+                     wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+  itemBoxSizer2->Add(m_activate_chkbox, 0, wxALIGN_RIGHT | wxALL, 10);
   if (!EnableActivateChkbox()) m_activate_chkbox->Disable();
-
 
   //    OK/Cancel/etc.
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);

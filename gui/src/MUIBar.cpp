@@ -72,9 +72,8 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool g_bShowMuiZoomButtons;
 extern bool g_bopengl;
 
-ssfn_t ctx;                                         /* the renderer context */
-ssfn_glyph_t *glyph;                                /* the returned rasterized bitmap */
-
+ssfn_t ctx;          /* the renderer context */
+ssfn_glyph_t* glyph; /* the returned rasterized bitmap */
 
 double getValue(int animationType, double t);
 
@@ -217,8 +216,7 @@ void SetScaleDialog::OnSetScaleOKClick(wxCommandEvent& event) {
 //    MUIButton
 //------------------------------------------------------------------------------
 
-class MUIButton  {
-
+class MUIButton {
   wxSize DoGetBestSize() const;
 
 public:
@@ -245,7 +243,7 @@ public:
   void CreateControls();
 
   void SetState(int state);
-  int GetState(){ return mState; }
+  int GetState() { return mState; }
 
   void SetColorScheme(ColorScheme cs);
   void OnSize(wxSizeEvent& event);
@@ -255,7 +253,7 @@ public:
   wxBitmap GetBitmapResource(const wxString& name);
 
   wxIcon GetIconResource(const wxString& name);
-  wxBitmap GetButtonBitmap(){ return m_bitmap; }
+  wxBitmap GetButtonBitmap() { return m_bitmap; }
 
   /// Should we show tooltips?
   static bool ShowToolTips();
@@ -285,7 +283,6 @@ MUIButton::MUIButton(wxWindow* parent, wxWindowID id, float scale_factor,
                      const wxSize& size, long style) {
   Init();
 
-
   Create(parent, id, scale_factor, bitmap, bitmapState1, bitmapState2, pos,
          size, style);
 }
@@ -307,7 +304,7 @@ bool MUIButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
 
   m_size = wxSize(m_styleToolSize.x * m_scaleFactor,
-                m_styleToolSize.y * m_scaleFactor);
+                  m_styleToolSize.y * m_scaleFactor);
 
   CreateControls();
   return true;
@@ -321,20 +318,20 @@ void MUIButton::Init() {
 }
 
 void MUIButton::CreateControls() {
-//  this->SetForegroundColour(wxColour(255, 255, 255));
+  //  this->SetForegroundColour(wxColour(255, 255, 255));
 
-//  wxColour backColor = GetGlobalColor(_T("GREY3"));
-//  SetBackgroundColour(backColor);
+  //  wxColour backColor = GetGlobalColor(_T("GREY3"));
+  //  SetBackgroundColour(backColor);
 
-//  this->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-//                       wxFONTWEIGHT_NORMAL, false, wxT("Tahoma")));
+  //  this->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+  //                       wxFONTWEIGHT_NORMAL, false, wxT("Tahoma")));
 }
 
 void MUIButton::SetColorScheme(ColorScheme cs) {
 #if 1
   if (m_cs != cs) {
     wxColour backColor = GetGlobalColor(_T("GREY3"));
-    //SetBackgroundColour(backColor);
+    // SetBackgroundColour(backColor);
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
@@ -431,7 +428,6 @@ void MUIButton::OnSize(wxSizeEvent& event) {
   }
 }
 
-
 wxSize MUIButton::DoGetBestSize() const {
   //     wxSize labelSize = wxDefaultSize;
   //     GetTextExtent(m_Label, &labelSize.x, &labelSize.y);
@@ -444,28 +440,29 @@ wxSize MUIButton::DoGetBestSize() const {
 //-----------------------------------------------------------------------
 //  SSFN Utils
 //-----------------------------------------------------------------------
-static std::unordered_map<char, ssfn_glyph_t *> ssfn_glyph_map;
-
+static std::unordered_map<char, ssfn_glyph_t*> ssfn_glyph_map;
 
 /**
  * Load a font
  */
-ssfn_font_t *load_font(const char *filename)
-{
-  char *fontdata = NULL;
+ssfn_font_t* load_font(const char* filename) {
+  char* fontdata = NULL;
   long int size;
-  FILE *f;
+  FILE* f;
 #if HAS_ZLIB
   unsigned char hdr[2];
   gzFile g;
 #endif
 
   f = fopen(filename, "rb");
-  if(!f) { fprintf(stderr,"unable to load %s\n", filename); return NULL; }
+  if (!f) {
+    fprintf(stderr, "unable to load %s\n", filename);
+    return NULL;
+  }
   size = 0;
 #if HAS_ZLIB
   fread(&hdr, 2, 1, f);
-  if(hdr[0]==0x1f && hdr[1]==0x8b) {
+  if (hdr[0] == 0x1f && hdr[1] == 0x8b) {
     fseek(f, -4L, SEEK_END);
     fread(&size, 4, 1, f);
   } else {
@@ -473,15 +470,21 @@ ssfn_font_t *load_font(const char *filename)
     size = ftell(f);
   }
   fclose(f);
-  g = gzopen(filename,"r");
+  g = gzopen(filename, "r");
 #else
   fseek(f, 0, SEEK_END);
   size = ftell(f);
   fseek(f, 0, SEEK_SET);
 #endif
-  if(!size) { fprintf(stderr,"unable to load %s\n", filename); exit(3); }
-  fontdata = (char *)malloc(size);
-  if(!fontdata) { fprintf(stderr,"memory allocation error\n"); exit(2); }
+  if (!size) {
+    fprintf(stderr, "unable to load %s\n", filename);
+    exit(3);
+  }
+  fontdata = (char*)malloc(size);
+  if (!fontdata) {
+    fprintf(stderr, "memory allocation error\n");
+    exit(2);
+  }
 #if HAS_ZLIB
   gzread(g, fontdata, size);
   gzclose(g);
@@ -493,70 +496,63 @@ ssfn_font_t *load_font(const char *filename)
   return (ssfn_font_t*)fontdata;
 }
 
-bool RenderGlyphToImageBuffer( unsigned char *buffer, ssfn_glyph_t *glyph,
-                              int x_offset, int w, int h,
-                              int nominal_baseline,
-                              wxColour &color, wxColour &back_color) {
+bool RenderGlyphToImageBuffer(unsigned char* buffer, ssfn_glyph_t* glyph,
+                              int x_offset, int w, int h, int nominal_baseline,
+                              wxColour& color, wxColour& back_color) {
   unsigned char* src = glyph->data;
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < glyph->w; j++) {
       size_t index = i * w + j + x_offset;
       index += (nominal_baseline - glyph->baseline) * w;
-      if (index > (size_t)h*(w -1))
-        continue;
+      if (index > (size_t)h * (w - 1)) continue;
       size_t didx = index * 3;
 
       size_t sidx = i * glyph->pitch + j;
       unsigned char d = src[sidx];
       float dn = d / 256.;
-      buffer[didx] = (color.Red() * dn) + (back_color.Red() * (1-dn));
-      buffer[didx+1] = (color.Green() * dn) + (back_color.Green() * (1-dn));
-      buffer[didx+2] = (color.Blue() * dn) + (back_color.Blue() * (1-dn));
+      buffer[didx] = (color.Red() * dn) + (back_color.Red() * (1 - dn));
+      buffer[didx + 1] = (color.Green() * dn) + (back_color.Green() * (1 - dn));
+      buffer[didx + 2] = (color.Blue() * dn) + (back_color.Blue() * (1 - dn));
     }
   }
   return true;
 }
 
-bool RenderStringToBuffer( unsigned char *buffer, std::string s,
-                          int wbox, int hbox, int nominal_baseline,
-                          wxColour color, wxColour &back_color) {
+bool RenderStringToBuffer(unsigned char* buffer, std::string s, int wbox,
+                          int hbox, int nominal_baseline, wxColour color,
+                          wxColour& back_color) {
   int xpos = 0;
-  for (unsigned int i=0; i < s.size(); i++) {
-
+  for (unsigned int i = 0; i < s.size(); i++) {
     char key = s[i];
-    ssfn_glyph_t *glyph = 0;
+    ssfn_glyph_t* glyph = 0;
     // find the required glyph
-    if ( auto findit = ssfn_glyph_map.find(key); findit != ssfn_glyph_map.end() ) {
+    if (auto findit = ssfn_glyph_map.find(key);
+        findit != ssfn_glyph_map.end()) {
       glyph = findit->second;
     } else {
-      glyph= ssfn_render(&ctx, key);
+      glyph = ssfn_render(&ctx, key);
       ssfn_glyph_map[key] = glyph;
     }
-    RenderGlyphToImageBuffer( buffer, glyph, xpos, wbox, hbox,
-                             nominal_baseline, color, back_color);
+    RenderGlyphToImageBuffer(buffer, glyph, xpos, wbox, hbox, nominal_baseline,
+                             color, back_color);
     xpos += glyph->adv_x;
   }
   return true;
 }
-
 
 //------------------------------------------------------------------------------
 //    MUITextButton
 //------------------------------------------------------------------------------
 
 class MUITextButton {
-
 public:
   MUITextButton();
-  MUITextButton(wxWindow* parent, wxWindowID id,
-                float scale_factor,
-                wxColor backColor,
-                const wxString& text = wxEmptyString,
+  MUITextButton(wxWindow* parent, wxWindowID id, float scale_factor,
+                wxColor backColor, const wxString& text = wxEmptyString,
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
-  bool Create(wxWindow* parent, wxWindowID id,
-              float scale_factor = 1.0,
+  bool Create(wxWindow* parent, wxWindowID id, float scale_factor = 1.0,
               const wxString& text = wxEmptyString,
               const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
@@ -564,16 +560,16 @@ public:
   ~MUITextButton();
 
   void Init();
-  wxSize GetSize(){ return m_size;}
+  wxSize GetSize() { return m_size; }
   void SetState(int state);
 
   void SetColorScheme(ColorScheme cs);
   void OnSize(wxSizeEvent& event);
   void OnLeftDown(wxMouseEvent& event);
   void OnLeftUp(wxMouseEvent& event);
-  void SetText( const wxString &text);
+  void SetText(const wxString& text);
 
-  wxBitmap GetButtonBitmap(){ return m_bitmap; }
+  wxBitmap GetButtonBitmap() { return m_bitmap; }
   wxSize m_size;
   wxPoint m_position;
 
@@ -592,12 +588,11 @@ private:
   wxColor m_backgrounColor;
 };
 
-
 MUITextButton::MUITextButton() { Init(); }
 
-MUITextButton::MUITextButton(wxWindow* parent, wxWindowID id, float scale_factor,
-                             wxColor backColor, const wxString& text,
-                             const wxPoint& pos,
+MUITextButton::MUITextButton(wxWindow* parent, wxWindowID id,
+                             float scale_factor, wxColor backColor,
+                             const wxString& text, const wxPoint& pos,
                              const wxSize& size, long style) {
   m_backgrounColor = backColor;
   Init();
@@ -605,8 +600,7 @@ MUITextButton::MUITextButton(wxWindow* parent, wxWindowID id, float scale_factor
 }
 
 bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
-                           const wxString& text,
-                           const wxPoint& pos,
+                           const wxString& text, const wxPoint& pos,
                            const wxSize& size, long style) {
   m_text = text;
 
@@ -614,7 +608,8 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
 
   m_styleToolSize = g_StyleManager->GetCurrentStyle()->GetToolSize();
 
-  //  Arbitrarily boost the MUITextButton default size above the style defined size. No good reason.....
+  //  Arbitrarily boost the MUITextButton default size above the style defined
+  //  size. No good reason.....
   m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
 
   int height_ref = m_styleToolSize.y;
@@ -651,8 +646,8 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   return true;
 }
 MUITextButton::~MUITextButton() {
-  for (const auto & [ key, value ] : ssfn_glyph_map) {
-    free( value);
+  for (const auto& [key, value] : ssfn_glyph_map) {
+    free(value);
   }
   ssfn_glyph_map.clear();
 }
@@ -662,8 +657,8 @@ void MUITextButton::Init() {
   m_cs = (ColorScheme)-1;  // GLOBAL_COLOR_SCHEME_RGB;
 }
 
-void MUITextButton::SetText( const wxString &text){
-  if (!m_text.IsSameAs(text)){
+void MUITextButton::SetText(const wxString& text) {
+  if (!m_text.IsSameAs(text)) {
     m_text = text;
     BuildBitmap();
   }
@@ -671,61 +666,53 @@ void MUITextButton::SetText( const wxString &text){
 
 void MUITextButton::SetColorScheme(ColorScheme cs) {
   if (m_cs != cs) {
-    //wxColour backColor = GetGlobalColor(_T("GREY3"));
-    //SetBackgroundColour(backColor);
+    // wxColour backColor = GetGlobalColor(_T("GREY3"));
+    // SetBackgroundColour(backColor);
 
     m_cs = cs;
   }
   BuildBitmap();
 }
 
-
-void MUITextButton::SetState(int state) {
-  mState = state;
-}
+void MUITextButton::SetState(int state) { mState = state; }
 
 void MUITextButton::OnSize(wxSizeEvent& event) {
   BuildBitmap();
   return;
 }
 
-
-void MUITextButton::BuildBitmap(){
+void MUITextButton::BuildBitmap() {
   int width = m_size.x;
   int height = m_size.y;
 
-  if ( m_ssfn_status != SSFN_OK)
-    return;
+  if (m_ssfn_status != SSFN_OK) return;
 
   int wbox, hbox;
   std::string t = m_text.ToStdString();
-  ssfn_bbox(&ctx, (char *)t.c_str(), 0, &wbox, &hbox);
+  ssfn_bbox(&ctx, (char*)t.c_str(), 0, &wbox, &hbox);
 
-  ssfn_glyph_t *glyph= ssfn_render(&ctx, '0');
+  ssfn_glyph_t* glyph = ssfn_render(&ctx, '0');
   int baseline = glyph->baseline;
   free(glyph);
 
-  unsigned char *image_data = (unsigned char *)calloc(1, wbox * hbox * 3);
-  for (int i=0 ; i < wbox * hbox; i++){
-    int idx = i*3;
+  unsigned char* image_data = (unsigned char*)calloc(1, wbox * hbox * 3);
+  for (int i = 0; i < wbox * hbox; i++) {
+    int idx = i * 3;
     image_data[idx] = m_backgrounColor.Red();
-    image_data[idx+1] = m_backgrounColor.Green();
-    image_data[idx+2] = m_backgrounColor.Blue();
+    image_data[idx + 1] = m_backgrounColor.Green();
+    image_data[idx + 2] = m_backgrounColor.Blue();
   }
 
-  RenderStringToBuffer( image_data, t, wbox, hbox,
-                       baseline, GetGlobalColor("CHWHT"), m_backgrounColor );
+  RenderStringToBuffer(image_data, t, wbox, hbox, baseline,
+                       GetGlobalColor("CHWHT"), m_backgrounColor);
 
   wxImage fimage = wxImage(wbox, hbox, image_data);
-  wxSize clip_size = wxSize( wbox, baseline + 2);
+  wxSize clip_size = wxSize(wbox, baseline + 2);
   wxRect clip_rect = wxRect(0, 0, clip_size.x, clip_size.y);
   wxImage clip_image = fimage.GetSubImage(clip_rect);
 
   m_bitmap = wxBitmap(clip_image);
 }
-
-
-
 
 #define CANVAS_OPTIONS_ANIMATION_TIMER_1 800
 #define CANVAS_OPTIONS_TIMER 801
@@ -745,7 +732,7 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor,
 
   m_scaleFactor = size_factor;
   m_cs = (ColorScheme)-1;
-  wxColour backColor = wxColor(*wxBLACK); //GetGlobalColor(m_backcolorString);
+  wxColour backColor = wxColor(*wxBLACK);  // GetGlobalColor(m_backcolorString);
 
   Init();
   CreateControls();
@@ -781,18 +768,17 @@ void MUIBar::Init() {
 
   CanvasOptionTimer.SetOwner(this, CANVAS_OPTIONS_TIMER);
   m_coAnimateByBitmaps = false;
-  m_bEffects = false; //true;
+  m_bEffects = false;  // true;
 #ifdef __OCPN__ANDROID__
   m_bEffects = false;
 #endif
   m_texture = 0;
-  m_end_margin = m_parentCanvas->GetCharWidth()/2;
+  m_end_margin = m_parentCanvas->GetCharWidth() / 2;
   m_scale = 0;
 }
 
 void MUIBar::SetColorScheme(ColorScheme cs) {
   if (m_cs != cs) {
-
     if (m_zinButton) m_zinButton->SetColorScheme(cs);
     if (m_zoutButton) m_zoutButton->SetColorScheme(cs);
     if (m_followButton) m_followButton->SetColorScheme(cs);
@@ -808,20 +794,20 @@ void MUIBar::InvalidateBitmap() {
   m_bitmap = wxNullBitmap;
 
 #ifdef ocpnUSE_GL
-  if(g_bopengl) {
+  if (g_bopengl) {
     glDeleteTextures(1, &m_texture);
     m_texture = 0;
   }
 #endif
 }
 
-bool MUIBar::MouseEvent(wxMouseEvent &event) {
+bool MUIBar::MouseEvent(wxMouseEvent& event) {
   int x, y;
   event.GetPosition(&x, &y);
 
   //    Check the regions
   wxRect r = wxRect(m_screenPos, m_size);
-  if (r.Contains(x,y)) {
+  if (r.Contains(x, y)) {
     // Check buttons
     if (event.LeftDown()) {
       if (g_bShowMuiZoomButtons) {
@@ -846,7 +832,7 @@ bool MUIBar::MouseEvent(wxMouseEvent &event) {
       }
 
       wxRect rfollow(m_followButton->m_position.x, m_followButton->m_position.y,
-                    m_followButton->m_size.x, m_followButton->m_size.y);
+                     m_followButton->m_size.x, m_followButton->m_size.y);
       rfollow.Offset(m_screenPos);
       if (rfollow.Contains(x, y)) {
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, ID_FOLLOW);
@@ -855,14 +841,13 @@ bool MUIBar::MouseEvent(wxMouseEvent &event) {
       }
 
       wxRect rmenu(m_menuButton->m_position.x, m_menuButton->m_position.y,
-                    m_menuButton->m_size.x, m_menuButton->m_size.y);
+                   m_menuButton->m_size.x, m_menuButton->m_size.y);
       rmenu.Offset(m_screenPos);
       if (rmenu.Contains(x, y)) {
         HandleMenuClick();
         if (g_focusCanvas) g_focusCanvas->TriggerDeferredFocus();
       }
-    }
-    else if (event.LeftUp()) {
+    } else if (event.LeftUp()) {
       if (m_scaleButton) {
         wxRect rscale(m_scaleButton->m_position.x, m_scaleButton->m_position.y,
                       m_scaleButton->m_size.x, m_scaleButton->m_size.y);
@@ -920,14 +905,13 @@ void MUIBar::CreateControls() {
     if (g_bShowMuiZoomButtons) {
       m_zinButton = new MUIButton(m_parentCanvas, ID_ZOOMIN, m_scaleFactor,
                                   iconDir + _T("MUI_zoom-in.svg"));
-      m_zinButton->m_position = wxPoint(xoff,0);
+      m_zinButton->m_position = wxPoint(xoff, 0);
       xoff += m_zinButton->m_size.x;
 
       m_zoutButton = new MUIButton(m_parentCanvas, ID_ZOOMOUT, m_scaleFactor,
                                    iconDir + _T("MUI_zoom-out.svg"));
-      m_zoutButton->m_position = wxPoint(xoff,0);
+      m_zoutButton->m_position = wxPoint(xoff, 0);
       xoff += m_zoutButton->m_size.x;
-
     }
 
 #ifndef __OCPN__ANDROID__
@@ -939,7 +923,8 @@ void MUIBar::CreateControls() {
     m_scaleButton->m_position = wxPoint(xoff, 0);
     if (m_scaleButton->GetButtonBitmap().IsOk()) {
       int bm_pos_y = (m_scaleButton->GetSize().y -
-                      m_scaleButton->GetButtonBitmap().GetHeight())/2;
+                      m_scaleButton->GetButtonBitmap().GetHeight()) /
+                     2;
       m_scaleButton->m_position = wxPoint(xoff, bm_pos_y);
     }
     xoff += m_scaleButton->m_size.x;
@@ -948,19 +933,18 @@ void MUIBar::CreateControls() {
                                    iconDir + _T("MUI_follow.svg"),
                                    iconDir + _T("MUI_follow_active.svg"),
                                    iconDir + _T("MUI_follow_ahead.svg"));
-    m_followButton->m_position = wxPoint(xoff,0);
+    m_followButton->m_position = wxPoint(xoff, 0);
     xoff += m_followButton->m_size.x;
 #endif
 
     m_menuButton = new MUIButton(m_parentCanvas, ID_MUI_MENU, m_scaleFactor,
                                  iconDir + _T("MUI_menu.svg"));
-    m_menuButton->m_position = wxPoint(xoff,0);
+    m_menuButton->m_position = wxPoint(xoff, 0);
     xoff += m_menuButton->m_size.x;
     m_size.x = xoff;
     m_size.y = m_zinButton->m_size.y;
 
   } else {
-
     int yoff = 0;
 
     // Buttons
@@ -972,9 +956,8 @@ void MUIBar::CreateControls() {
 
       m_zoutButton = new MUIButton(m_parentCanvas, ID_ZOOMOUT, m_scaleFactor,
                                    iconDir + _T("MUI_zoom-out.svg"));
-      m_zoutButton->m_position = wxPoint(0,yoff);
+      m_zoutButton->m_position = wxPoint(0, yoff);
       yoff += m_zoutButton->m_size.y;
-
     }
 
 #ifndef __OCPN__ANDROID__
@@ -982,32 +965,30 @@ void MUIBar::CreateControls() {
                                    iconDir + _T("MUI_follow.svg"),
                                    iconDir + _T("MUI_follow_active.svg"),
                                    iconDir + _T("MUI_follow_ahead.svg"));
-    m_followButton->m_position = wxPoint(0,yoff);
+    m_followButton->m_position = wxPoint(0, yoff);
     yoff += m_followButton->m_size.y;
 #endif
 
     m_menuButton = new MUIButton(m_parentCanvas, ID_MUI_MENU, m_scaleFactor,
                                  iconDir + _T("MUI_menu.svg"));
-    m_menuButton->m_position = wxPoint(0,yoff);
+    m_menuButton->m_position = wxPoint(0, yoff);
     yoff += m_menuButton->m_size.y;
 
     m_size.y = yoff;
     m_size.x = m_zinButton->m_size.x;
-
   }
-
 }
 
 void MUIBar::SetBestPosition(void) {
-  int x = (m_parentCanvas->GetClientSize().x - (m_size.x + (m_end_margin) * 2.00));
+  int x =
+      (m_parentCanvas->GetClientSize().x - (m_size.x + (m_end_margin) * 2.00));
 
   int bottomOffset = 6;
 
-
   int y = m_parentCanvas->GetClientSize().y - m_size.y - bottomOffset;
-  //if ( g_bopengl){
-  //  y -= m_parentCanvas->GetClientSize().y % 1;
- // }
+  // if ( g_bopengl){
+  //   y -= m_parentCanvas->GetClientSize().y % 1;
+  // }
 
   wxPoint position = wxPoint(x, y);
   m_screenPos = position;
@@ -1018,15 +999,13 @@ void MUIBar::SetBestPosition(void) {
   }
 }
 
-
 void MUIBar::UpdateDynamicValues() {
   if (!m_scaleButton) return;
 
   wxString scaleString;
   int scale = m_parentCanvas->GetScaleValue();
 
-  if (scale != m_scale)
-    InvalidateBitmap();
+  if (scale != m_scale) InvalidateBitmap();
   m_scale = scale;
 
   if (scale < 1e6)
@@ -1044,8 +1023,7 @@ void MUIBar::SetFollowButtonState(int state) {
   }
 }
 
-
-void MUIBar::HandleMenuClick(){
+void MUIBar::HandleMenuClick() {
   if (!m_canvasOptions) {
     m_canvasOptions = new CanvasOptions(m_parentCanvas);
 
@@ -1088,14 +1066,12 @@ void MUIBar::HandleMenuClick(){
       wxMemoryDC mdcb;
       mdcb.SelectObject(m_backingBitmap);
       wxScreenDC sdc;
-      mdcb.Blit(0, 0, m_canvasOptionsFullSize.x + overShoot_x,
-                m_capture_size_y, &sdc, m_capturePoint.x - overShoot_x,
-                m_capturePoint.y, wxCOPY);
+      mdcb.Blit(0, 0, m_canvasOptionsFullSize.x + overShoot_x, m_capture_size_y,
+                &sdc, m_capturePoint.x - overShoot_x, m_capturePoint.y, wxCOPY);
       mdcb.SelectObject(wxNullBitmap);
     }
     PullCanvasOptions();
   }
-
 }
 
 void MUIBar::CaptureCanvasOptionsBitmap() {
@@ -1117,8 +1093,8 @@ void MUIBar::CaptureCanvasOptionsBitmapChain(wxTimerEvent& event) {
 
     m_canvasOptions->SetSize(wxSize(-1, size_y));
 
-    m_capturePoint =
-        m_parentCanvas->ClientToScreen(wxPoint(m_parentCanvas->GetSize().x, m_COTopOffset));
+    m_capturePoint = m_parentCanvas->ClientToScreen(
+        wxPoint(m_parentCanvas->GetSize().x, m_COTopOffset));
     m_canvasOptions->Move(m_capturePoint);
     m_canvasOptions->Show();
 
@@ -1127,8 +1103,9 @@ void MUIBar::CaptureCanvasOptionsBitmapChain(wxTimerEvent& event) {
   }
 
   else if (m_coSequence == 1) {
-    m_capturePoint = m_parentCanvas->ClientToScreen(wxPoint(
-        m_parentCanvas->GetSize().x - m_canvasOptionsFullSize.x, m_COTopOffset));
+    m_capturePoint = m_parentCanvas->ClientToScreen(
+        wxPoint(m_parentCanvas->GetSize().x - m_canvasOptionsFullSize.x,
+                m_COTopOffset));
     m_canvasOptions->Move(m_capturePoint);
 
     m_coSequence++;
@@ -1151,12 +1128,10 @@ void MUIBar::CaptureCanvasOptionsBitmapChain(wxTimerEvent& event) {
   }
 }
 
+wxBitmap& MUIBar::CreateBitmap(double displayScale) {
+  if (m_bitmap.IsOk()) return m_bitmap;
 
-wxBitmap &MUIBar::CreateBitmap(double displayScale) {
-  if (m_bitmap.IsOk())
-    return m_bitmap;
-
-  //Make the bitmap
+  // Make the bitmap
   int width = m_size.x;
   int height = m_size.y;
 
@@ -1171,25 +1146,21 @@ wxBitmap &MUIBar::CreateBitmap(double displayScale) {
   if (g_bShowMuiZoomButtons) {
     wxBitmap bmd = m_zinButton->GetButtonBitmap();
     if (bmd.IsOk())
-      mdc.DrawBitmap(bmd,
-                   m_zinButton->m_position.x,
-                   m_zinButton->m_position.y,
-                   false);
+      mdc.DrawBitmap(bmd, m_zinButton->m_position.x, m_zinButton->m_position.y,
+                     false);
 
     bmd = m_zoutButton->GetButtonBitmap();
     if (bmd.IsOk())
-      mdc.DrawBitmap(bmd,
-                   m_zoutButton->m_position.x,
-                   m_zoutButton->m_position.y,
-                   false);
+      mdc.DrawBitmap(bmd, m_zoutButton->m_position.x,
+                     m_zoutButton->m_position.y, false);
   }
 
   if (m_scaleButton) {
     bmd = m_scaleButton->GetButtonBitmap();
     if (bmd.IsOk()) {
-      int bm_pos_y = (m_scaleButton->GetSize().y - bmd.GetHeight())/2;
+      int bm_pos_y = (m_scaleButton->GetSize().y - bmd.GetHeight()) / 2;
       int bm_pos_x = m_scaleButton->m_position.x +
-                     (m_scaleButton->GetSize().x - bmd.GetWidth())/2;
+                     (m_scaleButton->GetSize().x - bmd.GetWidth()) / 2;
 
       mdc.DrawBitmap(bmd, bm_pos_x, bm_pos_y, false);
     }
@@ -1198,17 +1169,15 @@ wxBitmap &MUIBar::CreateBitmap(double displayScale) {
   if (m_followButton) {
     bmd = m_followButton->GetButtonBitmap();
     if (bmd.IsOk())
-      mdc.DrawBitmap(bmd,
-                     m_followButton->m_position.x, m_followButton->m_position.y,
-                     false);
+      mdc.DrawBitmap(bmd, m_followButton->m_position.x,
+                     m_followButton->m_position.y, false);
   }
 
   if (m_menuButton) {
     bmd = m_menuButton->GetButtonBitmap();
     if (bmd.IsOk())
-      mdc.DrawBitmap(bmd,
-                     m_menuButton->m_position.x, m_menuButton->m_position.y,
-                     false);
+      mdc.DrawBitmap(bmd, m_menuButton->m_position.x,
+                     m_menuButton->m_position.y, false);
   }
 
   mdc.SelectObject(wxNullBitmap);
@@ -1217,7 +1186,7 @@ wxBitmap &MUIBar::CreateBitmap(double displayScale) {
   return m_bitmap;
 }
 
-void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
+void MUIBar::DrawGL(ocpnDC& gldc, double displayScale) {
 #ifdef ocpnUSE_GL
 
   wxColour backColor = GetBackgroundColor();
@@ -1226,17 +1195,16 @@ void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
 
   wxRect r = wxRect(m_screenPos, m_size);
   if (m_orientation == wxHORIZONTAL)
-    gldc.DrawRoundedRectangle((r.x - m_end_margin/2)*displayScale,
-                                    (r.y-1)*displayScale,
-                                    (r.width + m_end_margin)*displayScale,
-                                    (r.height+2)*displayScale,
-                                    (m_end_margin * 1)*displayScale);
+    gldc.DrawRoundedRectangle(
+        (r.x - m_end_margin / 2) * displayScale, (r.y - 1) * displayScale,
+        (r.width + m_end_margin) * displayScale, (r.height + 2) * displayScale,
+        (m_end_margin * 1) * displayScale);
   else
-    gldc.DrawRoundedRectangle((r.x-1)*displayScale,
-                              (r.y- m_end_margin/2)*displayScale,
-                              (r.width + 2)*displayScale,
-                              (r.height + 2 * m_end_margin)*displayScale,
-                              (m_end_margin * 1.5)*displayScale);
+    gldc.DrawRoundedRectangle((r.x - 1) * displayScale,
+                              (r.y - m_end_margin / 2) * displayScale,
+                              (r.width + 2) * displayScale,
+                              (r.height + 2 * m_end_margin) * displayScale,
+                              (m_end_margin * 1.5) * displayScale);
 
   int width = m_size.x;
   int height = m_size.y;
@@ -1260,12 +1228,11 @@ void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
     glBindTexture(g_texture_rectangle_format, m_texture);
   }
 
-
   // fill texture data
   if (m_bitmap.IsOk()) {
     wxImage image = m_bitmap.ConvertToImage();
-    if (image.IsOk()){
-    unsigned char* d = image.GetData();
+    if (image.IsOk()) {
+      unsigned char* d = image.GetData();
       if (d) {
         unsigned char* e = new unsigned char[4 * width * height];
         for (int y = 0; y < height; y++)
@@ -1292,8 +1259,10 @@ void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
 
     int x0 = m_screenPos.x, x1 = x0 + width;
     int y0 = m_screenPos.y - 0, y1 = y0 + height;
-    x0 *= displayScale;  x1 *= displayScale;
-    y0 *= displayScale;  y1 *= displayScale;
+    x0 *= displayScale;
+    x1 *= displayScale;
+    y0 *= displayScale;
+    y1 *= displayScale;
 
     float tx, ty;
     if (GL_TEXTURE_RECTANGLE_ARB == g_texture_rectangle_format)
@@ -1333,12 +1302,12 @@ void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
   }
 #endif
 
-    return;
+  return;
 }
 
-void MUIBar::DrawDC(ocpnDC &dc, double displayScale) {
-    CreateBitmap(1.0);
-    dc.DrawBitmap(m_bitmap, m_screenPos.x, m_screenPos.y, false);
+void MUIBar::DrawDC(ocpnDC& dc, double displayScale) {
+  CreateBitmap(1.0);
+  dc.DrawBitmap(m_bitmap, m_screenPos.x, m_screenPos.y, false);
 }
 
 void MUIBar::ResetCanvasOptions() {

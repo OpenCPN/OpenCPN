@@ -60,15 +60,19 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor,
     UINT effectivedpiX, effectivedpiY;
     /* In newer SDKs (Windows 8.1+) it is much simpler to get DPI for each
      * monitor as GetDpiForMonitor actually is exposed */
-    HRESULT hr = GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, &effectivedpiX, &effectivedpiY);
+    HRESULT hr = GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, &effectivedpiX,
+                                  &effectivedpiY);
     if (!SUCCEEDED(hr)) {
-      WARNING_LOG << "GetDpiForMonitor MDT_EFFECTIVE_DPI failed, falling back to 96 DPI";
+      WARNING_LOG << "GetDpiForMonitor MDT_EFFECTIVE_DPI failed, falling back "
+                     "to 96 DPI";
       effectivedpiX = 96;
       effectivedpiY = 96;
     }
     hr = GetDpiForMonitor(hMonitor, MDT_RAW_DPI, &rawdpiX, &rawdpiY);
     if (!SUCCEEDED(hr) || rawdpiX == 0 || rawdpiY == 0) {
-      WARNING_LOG << "GetDpiForMonitor MDT_RAW_DPI failed, falling back to " << effectivedpiX <<" DPI"; // This happens in virtualized environments
+      WARNING_LOG << "GetDpiForMonitor MDT_RAW_DPI failed, falling back to "
+                  << effectivedpiX
+                  << " DPI";  // This happens in virtualized environments
       rawdpiX = effectivedpiX;
       rawdpiY = effectivedpiY;
     }
@@ -93,9 +97,9 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor,
     DEBUG_LOG << "  Scale factor:" << scaleFactor;
     g_monitor_info.push_back(
         {std::string(ws.begin(), ws.end()), static_cast<size_t>(mmx),
-         static_cast<size_t>(mmy), static_cast<size_t>(width), static_cast<size_t>(height),
-         static_cast<size_t>(width), static_cast<size_t>(height),
-         static_cast<size_t>(scaleFactor)});
+         static_cast<size_t>(mmy), static_cast<size_t>(width),
+         static_cast<size_t>(height), static_cast<size_t>(width),
+         static_cast<size_t>(height), static_cast<size_t>(scaleFactor)});
   } else {
     DEBUG_LOG << "GetMonitorInfo failed";
   }
@@ -139,20 +143,23 @@ void EnumerateMonitors() {
       scale = gdk_monitor_get_scale_factor(monitor) * 100;
     }
     if (outputInfo && crtcInfo) {
-      // Physical size can be unknown and reported as zero (For example over VNC, assume a "standard" DPI of 96 in that case to guess it)
-      size_t mm_width = outputInfo->mm_width > 0 ? outputInfo->mm_width : crtcInfo->width * 25.4 / 96.0;
-      size_t mm_height = outputInfo->mm_height > 0 ? outputInfo->mm_height : crtcInfo->height * 25.4 / 96.0;
+      // Physical size can be unknown and reported as zero (For example over
+      // VNC, assume a "standard" DPI of 96 in that case to guess it)
+      size_t mm_width = outputInfo->mm_width > 0
+                            ? outputInfo->mm_width
+                            : crtcInfo->width * 25.4 / 96.0;
+      size_t mm_height = outputInfo->mm_height > 0
+                             ? outputInfo->mm_height
+                             : crtcInfo->height * 25.4 / 96.0;
       DEBUG_LOG << "Monitor " << i + 1 << ":";
       DEBUG_LOG << "  Name: " << outputInfo->name;
-      DEBUG_LOG << "  Physical Size (mm): " << mm_width << " x "
-                << mm_height;
+      DEBUG_LOG << "  Physical Size (mm): " << mm_width << " x " << mm_height;
       DEBUG_LOG << "  Resolution: " << crtcInfo->width << " x "
                 << crtcInfo->height;
       DEBUG_LOG << "  Scale: " << scale;
-      g_monitor_info.push_back({outputInfo->name, mm_width,
-                                mm_height, crtcInfo->width,
-                                crtcInfo->height, crtcInfo->width,
-                                crtcInfo->height, scale});
+      g_monitor_info.push_back({outputInfo->name, mm_width, mm_height,
+                                crtcInfo->width, crtcInfo->height,
+                                crtcInfo->width, crtcInfo->height, scale});
     }
     XRRFreeOutputInfo(outputInfo);
     XRRFreeCrtcInfo(crtcInfo);
@@ -220,29 +227,39 @@ void EnumerateMonitors() {
     CGSize displayPhysicalSize = CGDisplayScreenSize(displayID);
     int width = CGDisplayModeGetWidth(CGDisplayCopyDisplayMode(displayID));
     int height = CGDisplayModeGetHeight(CGDisplayCopyDisplayMode(displayID));
-    int pixel_width = CGDisplayModeGetPixelWidth(CGDisplayCopyDisplayMode(displayID));
-    int pixel_height = CGDisplayModeGetPixelHeight(CGDisplayCopyDisplayMode(displayID));
+    int pixel_width =
+        CGDisplayModeGetPixelWidth(CGDisplayCopyDisplayMode(displayID));
+    int pixel_height =
+        CGDisplayModeGetPixelHeight(CGDisplayCopyDisplayMode(displayID));
     DEBUG_LOG << "Display " << i + 1 << ":";
     DEBUG_LOG << "  Physical Size: " << displayPhysicalSize.width << "x"
               << displayPhysicalSize.height << " mm";
     DEBUG_LOG << "  Resolution: " << width << "x" << height << " pixels";
-    DEBUG_LOG << "  Pixel resolution: " << pixel_width << "x" << pixel_height << " pixels";
+    DEBUG_LOG << "  Pixel resolution: " << pixel_width << "x" << pixel_height
+              << " pixels";
     g_monitor_info.push_back(
         {std::to_string(i + 1), static_cast<size_t>(displayPhysicalSize.width),
          static_cast<size_t>(displayPhysicalSize.height),
-         static_cast<size_t>(width), static_cast<size_t>(height), static_cast<size_t>(pixel_width), static_cast<size_t>(pixel_height), 100});
+         static_cast<size_t>(width), static_cast<size_t>(height),
+         static_cast<size_t>(pixel_width), static_cast<size_t>(pixel_height),
+         100});
   }
 #endif
   if (g_monitor_info.size() == 0) {
     // This should never happen, but just in case...
-    // If we didn't find any monitors at all, add some dummy default that makes at least some sense (15.6 inch full HD)
-    // We might also use wxDisplaySize and wxDisplaySizeMM here, but what the heck would they report?
-    g_monitor_info.push_back({"Dummy monitor", 340, 190, 1920, 1080, 1920, 1080, 100});
+    // If we didn't find any monitors at all, add some dummy default that makes
+    // at least some sense (15.6 inch full HD) We might also use wxDisplaySize
+    // and wxDisplaySizeMM here, but what the heck would they report?
+    g_monitor_info.push_back(
+        {"Dummy monitor", 340, 190, 1920, 1080, 1920, 1080, 100});
   }
   g_num_monitors = g_monitor_info.size();
   DEBUG_LOG << "Number of monitors: " << g_num_monitors;
   DEBUG_LOG << "Monitor info:";
-  for (const auto &monitor : g_monitor_info) {
-    DEBUG_LOG << "Monitor: " << monitor.name << " " << monitor.width_mm << "x" << monitor.height_mm << "mm " << monitor.width << "x" << monitor.height << "DIP " << monitor.width_px << "x" << monitor.height_px << "px " << monitor.scale << "%";
+  for (const auto& monitor : g_monitor_info) {
+    DEBUG_LOG << "Monitor: " << monitor.name << " " << monitor.width_mm << "x"
+              << monitor.height_mm << "mm " << monitor.width << "x"
+              << monitor.height << "DIP " << monitor.width_px << "x"
+              << monitor.height_px << "px " << monitor.scale << "%";
   }
 }

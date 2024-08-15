@@ -59,7 +59,7 @@
 #include "gshhs.h"
 #include "chartbase.h"  // for projections
 #ifdef ocpnUSE_GL
-    #include "shaders.h"
+#include "shaders.h"
 #endif
 
 #ifdef __WXMSW__
@@ -102,7 +102,7 @@ static const GLfloat vertices3[] = {
 enum Consts { INFOLOG_LEN = 512 };
 GLchar infoLog[INFOLOG_LEN];
 GLint fragment_shader;
-//GLint shader_program;
+// GLint shader_program;
 GLint success;
 GLint vertex_shader;
 
@@ -405,8 +405,8 @@ void __CALL_CONVENTION gshhsbeginCallback(GLenum type) {
 
 void __CALL_CONVENTION gshhsendCallback() {}
 
-void GshhsPolyCell::DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv,
-                                        int *pvc, ViewPort &vp,
+void GshhsPolyCell::DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p,
+                                        float_2Dpt **pv, int *pvc, ViewPort &vp,
                                         wxColor const &color, bool idl) {
   if (!p->size())  // size of 0 is very common, exit early
     return;
@@ -579,16 +579,15 @@ void GshhsPolyCell::DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt
     shader->UnBind();
   }
 
-
 #else
 #endif
 }
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
 #define DRAW_POLY_FILLED(POLY, COL) \
   if (POLY) DrawPolygonFilled(pnt, POLY, dx, vp, COL);
 #define DRAW_POLY_FILLED_GL(NUM, COL) \
-  DrawPolygonFilledGL(pnt,&poly##NUM, &polyv[NUM], &polyc[NUM], vp, COL, idl);
+  DrawPolygonFilledGL(pnt, &poly##NUM, &polyv[NUM], &polyc[NUM], vp, COL, idl);
 
 void GshhsPolyCell::drawMapPlain(ocpnDC &pnt, double dx, ViewPort &vp,
                                  wxColor seaColor, wxColor landColor,
@@ -1258,8 +1257,8 @@ bool GshhsReader::gshhsFilesExists(int quality) {
   // Borders disabled anyway since the perf optimizations if( ! wxFile::Access(
   // GshhsReader::getFileName_boundaries( quality ), wxFile::read ) ) return
   // false; Rivers disabled anyway since the perf optimizations if( !
-  // wxFile::Access( GshhsReader::getFileName_rivers( quality ), wxFile::read ) )
-  // return false;
+  // wxFile::Access( GshhsReader::getFileName_rivers( quality ), wxFile::read )
+  // ) return false;
 
   return true;
 }

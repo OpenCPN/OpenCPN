@@ -81,7 +81,6 @@
 
 extern bool g_b_EnableVBO;
 
-
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR
 //----------------------------------------------------------------------------------
@@ -152,7 +151,7 @@ void S57Obj::Init() {
   geoPtz = NULL;
   geoPt = NULL;
   bIsClone = false;
-  Scamin = 1e8+2;  // Default is very large number, effectively unused.
+  Scamin = 1e8 + 2;  // Default is very large number, effectively unused.
   SuperScamin = -1;
   nRef = 0;
 
@@ -268,7 +267,7 @@ bool S57Obj::SetPointGeometry(double lat, double lon, double ref_lat,
   m_lat = lat;
 
   //  Set initial BoundingBox limits to 1 NM
-  double bound = 1. / 60.;    // 1 NM, nominal
+  double bound = 1. / 60.;  // 1 NM, nominal
   BBObj.Set(m_lat - bound, m_lon - bound, m_lat + bound, m_lon + bound);
   bBBObj_valid = false;
 

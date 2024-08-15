@@ -35,9 +35,8 @@ extern MyFrame* gFrame;
 class ChartCanvas;
 ChartCanvas* GetFocusCanvas();
 
-
 bool MyPrintout::OnPrintPage(int page) {
-  wxDC *dc = GetDC();
+  wxDC* dc = GetDC();
   if (dc) {
     if (page == 1) DrawPageOne(dc);
 
@@ -62,7 +61,7 @@ void MyPrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
 
 bool MyPrintout::HasPage(int pageNum) { return (pageNum == 1); }
 
-void MyPrintout::DrawPageOne(wxDC *dc) {
+void MyPrintout::DrawPageOne(wxDC* dc) {
   // Get the Size of the Chart Canvas
   int sx, sy;
   gFrame->GetFocusCanvas()->GetClientSize(&sx, &sy);  // of the canvas
@@ -129,10 +128,10 @@ void MyPrintout::GenerateGLbmp() {
     int gsx = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().x;
     int gsy = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().y;
 
-    unsigned char *buffer = (unsigned char *)malloc(gsx * gsy * 4);
+    unsigned char* buffer = (unsigned char*)malloc(gsx * gsy * 4);
     glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
-    unsigned char *e = (unsigned char *)malloc(gsx * gsy * 3);
+    unsigned char* e = (unsigned char*)malloc(gsx * gsy * 3);
 
     if (buffer && e) {
       for (int p = 0; p < gsx * gsy; p++) {

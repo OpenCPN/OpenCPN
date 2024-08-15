@@ -40,11 +40,10 @@
 #define wxAtoi(arg) atoi(arg)
 #endif
 
-
 /** A wxStaticText bold label with correct width, see #2538 */
-class ConnBoldLabel: public wxStaticText {
+class ConnBoldLabel : public wxStaticText {
 public:
-  ConnBoldLabel(wxWindow* parent, const wxString& label)
+  ConnBoldLabel(wxWindow *parent, const wxString &label)
       : wxStaticText(parent, wxID_ANY, "") {
     font = parent->GetFont();
     font.MakeBold();
@@ -55,7 +54,7 @@ public:
             parent);
   }
 
-  void SetLabel(const wxString& label) {
+  void SetLabel(const wxString &label) {
     wxStaticText::SetLabel(label);
     dc.SetFont(font);
     auto size = dc.GetTextExtent(label).Scale(1.1, 1.1);
@@ -66,7 +65,6 @@ private:
   wxScreenDC dc;
   wxFont font;
 };
-
 
 extern "C" bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
@@ -308,7 +306,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-     // line 2
+    // line 2
     t2 = new wxStaticText(this, wxID_ANY, _("Network"));
     t2->SetFont(*bFont);
     netGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL);

@@ -1074,7 +1074,7 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
 
 /* $Id: tide_db_default.h 1092 2006-11-16 03:02:42Z flaterco $ */
 
-//#include "tcd.h"
+// #include "tcd.h"
 
 /*****************************************************************************
  *
@@ -1904,9 +1904,9 @@ NV_CHAR tzfile[DEFAULT_TZFILES][DEFAULT_TZFILE_SIZE] = {
 
 /* $Id: tide_db.c 3744 2010-08-17 22:34:46Z flaterco $ */
 
-//#include "tcd.h"
-//#include "tide_db_header.h"
-//#include "tide_db_default.h"
+// #include "tcd.h"
+// #include "tide_db_header.h"
+// #include "tide_db_default.h"
 
 /* This should be done with stdbool.h, but VC doesn't have it. */
 /* Using crappy old int, must be careful not to 'require' a 64-bit value. */
@@ -7337,7 +7337,8 @@ NV_U_INT32 bit_unpack(NV_U_BYTE buffer[], NV_U_INT32 start,
     /*  For the last byte we mask out anything after the end bit and    */
     /*  then shift to the right (8 - end_bit) bits.                     */
     if (mask[end_bit]) {
-      value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
+      value +=
+          (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
     }
   }
 

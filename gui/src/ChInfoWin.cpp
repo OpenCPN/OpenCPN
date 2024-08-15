@@ -54,8 +54,7 @@ ChInfoWin::ChInfoWin(wxWindow* parent) {
   SetFont(*dFont);
 
   int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
-  m_pInfoTextCtl = new wxStaticText(this, -1, _T ( "" ),
-                                    wxDefaultPosition,
+  m_pInfoTextCtl = new wxStaticText(this, -1, _T ( "" ), wxDefaultPosition,
                                     wxDefaultSize, ststyle);
 
   dbIndex = -1;
@@ -94,7 +93,8 @@ void ChInfoWin::SetBitmap() {
   m_pInfoTextCtl->SetBackgroundColour(GetGlobalColor(_T ( "UIBCK" )));
   m_pInfoTextCtl->SetForegroundColour(GetGlobalColor(_T ( "UITX1" )));
 
-  m_pInfoTextCtl->SetSize(GetCharWidth(), 1, m_size.x - 2 * GetCharWidth(), m_size.y - 2);
+  m_pInfoTextCtl->SetSize(GetCharWidth(), 1, m_size.x - 2 * GetCharWidth(),
+                          m_size.y - 2);
   m_pInfoTextCtl->SetLabel(m_string);
 
   wxPoint top_position =

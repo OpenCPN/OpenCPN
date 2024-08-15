@@ -305,8 +305,7 @@ TCDS_Binary_Harmonic::TCDS_Binary_Harmonic() {
   //  Build the units array
 }
 
-TCDS_Binary_Harmonic::~TCDS_Binary_Harmonic()
-{
+TCDS_Binary_Harmonic::~TCDS_Binary_Harmonic() {
   for (int i = 0; i < num_csts; i++) {
     free(m_cst_nodes[i]);
     free(m_cst_epochs[i]);

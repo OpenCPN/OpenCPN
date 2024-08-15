@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -41,13 +41,12 @@ extern OCPNPlatform* g_Platform;
 extern int g_GUIScaleFactor;
 
 CopyableText::CopyableText(wxWindow* parent, const char* text)
-    : wxTextCtrl(parent, wxID_ANY, text, wxDefaultPosition,
-                 wxDefaultSize, wxBORDER_NONE) {
+    : wxTextCtrl(parent, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
+                 wxBORDER_NONE) {
   SetEditable(false);
   wxStaticText tmp(parent, wxID_ANY, text);
   SetBackgroundColour(tmp.GetBackgroundColour());
 }
-
 
 wxFont* GetOCPNScaledFont(wxString item, int default_size) {
   wxFont* dFont = FontMgr::Get().GetFont(item, default_size);
@@ -105,39 +104,38 @@ wxFont GetOCPNGUIScaledFont(wxString item) {
   return qFont;
 }
 
-int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
-                    int timeout_sec, int x, int y  )
-{
+int OCPNMessageBox(wxWindow* parent, const wxString& message,
+                   const wxString& caption, int style, int timeout_sec, int x,
+                   int y) {
 #ifdef __OCPN__ANDROID__
-    androidDisableRotation();
-    int style_mod = style;
+  androidDisableRotation();
+  int style_mod = style;
 
-    auto dlg = new wxMessageDialog(parent, message, caption,  style_mod);
-    int ret = dlg->ShowModal();
-    qDebug() << "OCPNMB-1 ret" << ret;
+  auto dlg = new wxMessageDialog(parent, message, caption, style_mod);
+  int ret = dlg->ShowModal();
+  qDebug() << "OCPNMB-1 ret" << ret;
 
-    //int ret= dlg->GetReturnCode();
+  // int ret= dlg->GetReturnCode();
 
-    //  Not sure why we need this, maybe on wx3?
-    if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
-        ret = wxID_YES;
+  //  Not sure why we need this, maybe on wx3?
+  if (((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK)) ret = wxID_YES;
 
-    dlg->Destroy();
+  dlg->Destroy();
 
-    androidEnableRotation();
-    qDebug() << "OCPNMB-2 ret" << ret;
-    return ret;
+  androidEnableRotation();
+  qDebug() << "OCPNMB-2 ret" << ret;
+  return ret;
 
 #else
-    int ret =  wxID_OK;
+  int ret = wxID_OK;
 
-    TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
-    ret = tbox.GetRetVal() ;
+  TimedMessageBox tbox(parent, message, caption, style, timeout_sec,
+                       wxPoint(x, y));
+  ret = tbox.GetRetVal();
 #endif
 
-    return ret;
+  return ret;
 }
-
 
 BEGIN_EVENT_TABLE(OCPNMessageDialog, wxDialog)
 EVT_BUTTON(wxID_YES, OCPNMessageDialog::OnYes)
@@ -280,7 +278,7 @@ EVT_BUTTON(wxID_NO, OCPN_TimedHTMLMessageDialog::OnNo)
 EVT_BUTTON(wxID_CANCEL, OCPN_TimedHTMLMessageDialog::OnCancel)
 EVT_CLOSE(OCPN_TimedHTMLMessageDialog::OnClose)
 EVT_TIMER(-1, OCPN_TimedHTMLMessageDialog::OnTimer)
-EVT_HTML_LINK_CLICKED( wxID_ANY, OCPN_TimedHTMLMessageDialog::OnHtmlLinkClicked )
+EVT_HTML_LINK_CLICKED(wxID_ANY, OCPN_TimedHTMLMessageDialog::OnHtmlLinkClicked)
 END_EVENT_TABLE()
 
 OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog(
@@ -398,7 +396,6 @@ void OCPN_TimedHTMLMessageDialog::OnTimer(wxTimerEvent& evt) {
     Hide();
 }
 
-
 //      Auto timed popup Window implementation
 
 BEGIN_EVENT_TABLE(TimedPopupWin, wxWindow)
@@ -408,7 +405,7 @@ EVT_TIMER(POPUP_TIMER, TimedPopupWin::OnTimer)
 END_EVENT_TABLE()
 
 // Define a constructor
-TimedPopupWin::TimedPopupWin(wxWindow *parent, int timeout)
+TimedPopupWin::TimedPopupWin(wxWindow* parent, int timeout)
     : wxWindow(parent, wxID_ANY, wxPoint(0, 0), wxSize(1, 1), wxNO_BORDER) {
   m_pbm = NULL;
 
@@ -419,11 +416,11 @@ TimedPopupWin::TimedPopupWin(wxWindow *parent, int timeout)
 }
 
 TimedPopupWin::~TimedPopupWin() { delete m_pbm; }
-void TimedPopupWin::OnTimer(wxTimerEvent &event) {
+void TimedPopupWin::OnTimer(wxTimerEvent& event) {
   if (IsShown()) Hide();
 }
 
-void TimedPopupWin::SetBitmap(wxBitmap &bmp) {
+void TimedPopupWin::SetBitmap(wxBitmap& bmp) {
   delete m_pbm;
   m_pbm = new wxBitmap(bmp);
 
@@ -432,7 +429,7 @@ void TimedPopupWin::SetBitmap(wxBitmap &bmp) {
     m_timer_timeout.Start(m_timeout_sec * 1000, wxTIMER_ONE_SHOT);
 }
 
-void TimedPopupWin::OnPaint(wxPaintEvent &event) {
+void TimedPopupWin::OnPaint(wxPaintEvent& event) {
   int width, height;
   GetClientSize(&width, &height);
   wxPaintDC dc(this);

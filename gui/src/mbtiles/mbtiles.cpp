@@ -154,7 +154,8 @@ private:
 
 ChartMBTiles::ChartMBTiles() {
   // Compute scale & MPP for each zoom level
-  // Initial constants taken from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+  // Initial constants taken from
+  // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   OSM_zoomScale[0] = 554680041;
   OSM_zoomMPP[0] = 156543.03;
   for (int i = 1; i < (int)(sizeof(OSM_zoomScale) / sizeof(double)); i++) {
@@ -849,7 +850,6 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   return true;
 }
 
-
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const ViewPort &VPoint,
                                         const OCPNRegion &RectRegion,
@@ -986,7 +986,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   glDisable(GL_TEXTURE_2D);
 
-  m_zoomScaleFactor = 2 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
+  m_zoomScaleFactor =
+      2 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
 
   glChartCanvas::DisableClipRegion();
 

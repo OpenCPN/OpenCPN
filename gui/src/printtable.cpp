@@ -35,7 +35,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 #ifdef __WXMSW__
-//#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
+// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
 #include <wx/print.h>

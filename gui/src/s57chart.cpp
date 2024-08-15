@@ -87,7 +87,7 @@
 
 #include "ssl/sha1.h"
 #ifdef ocpnUSE_GL
-    #include "shaders.h"
+#include "shaders.h"
 #endif
 #include "chart_ctx_factory.h"
 
@@ -101,7 +101,6 @@ extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName,
 void OpenCPN_OGRErrorHandler(
     CPLErr eErrClass, int nError,
     const char *pszErrorMsg);  // installed GDAL OGR library error handler
-
 
 extern s52plib *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
@@ -192,7 +191,6 @@ unsigned long connector_key::hash() const {
   return hash_fast32(k, sizeof k, 0);
 }
 
-
 //----------------------------------------------------------------------------------
 //      render_canvas_parms Implementation
 //----------------------------------------------------------------------------------
@@ -202,24 +200,13 @@ render_canvas_parms::render_canvas_parms() { pix_buff = NULL; }
 render_canvas_parms::~render_canvas_parms(void) {}
 
 static void PrepareForRender(ViewPort *pvp, s52plib *plib) {
- if(!plib)
-   return;
+  if (!plib) return;
 
- plib->SetVPointCompat(
-                    pvp->pix_width,
-                    pvp->pix_height,
-                    pvp->view_scale_ppm,
-                    pvp->rotation,
-                    pvp->clat,
-                    pvp->clon,
-                    pvp->chart_scale,
-                    pvp->rv_rect,
-                    pvp->GetBBox(),
-                    pvp->ref_scale,
-                    GetOCPNCanvasWindow()->GetContentScaleFactor()
-                      );
- plib->PrepareForRender();
-
+  plib->SetVPointCompat(pvp->pix_width, pvp->pix_height, pvp->view_scale_ppm,
+                        pvp->rotation, pvp->clat, pvp->clon, pvp->chart_scale,
+                        pvp->rv_rect, pvp->GetBBox(), pvp->ref_scale,
+                        GetOCPNCanvasWindow()->GetContentScaleFactor());
+  plib->PrepareForRender();
 }
 
 //----------------------------------------------------------------------------------
@@ -331,8 +318,7 @@ s57chart::~s57chart() {
   m_vc_hash.clear();
 
 #ifdef ocpnUSE_GL
-  if ((m_LineVBO_name > 0))
-    glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+  if ((m_LineVBO_name > 0)) glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
   free(m_this_chart_context);
 
@@ -437,12 +423,12 @@ void s57chart::ChangeThumbColor(ColorScheme cs) {
         wxImage gimg = img;
 #endif
 
-        //#ifdef ocpnUSE_ocpnBitmap
-        //                      ocpnBitmap *pBMP =  new ocpnBitmap(gimg,
-        //                      m_pDIBThumbDay->GetDepth());
-        //#else
+        // #ifdef ocpnUSE_ocpnBitmap
+        //                       ocpnBitmap *pBMP =  new ocpnBitmap(gimg,
+        //                       m_pDIBThumbDay->GetDepth());
+        // #else
         wxBitmap *pBMP = new wxBitmap(gimg);
-        //#endif
+        // #endif
         m_pDIBThumbDim = pBMP;
         m_pDIBThumbOrphan = m_pDIBThumbDay;
       }
@@ -1391,16 +1377,14 @@ void s57chart::AssembleLineGeometry(void) {
 #ifdef ocpnUSE_GL
   if (g_b_EnableVBO) {
     if (grow_buffer) {
-      if (m_LineVBO_name > 0){
-          glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
-          m_LineVBO_name = -1;
+      if (m_LineVBO_name > 0) {
+        glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+        m_LineVBO_name = -1;
       }
     }
   }
 #endif
-
-
- }
+}
 
 void s57chart::BuildLineVBO(void) {
 #ifdef ocpnUSE_GL
@@ -1422,7 +1406,7 @@ void s57chart::BuildLineVBO(void) {
     glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
 #endif
     glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer,
-                  GL_STATIC_DRAW);
+                 GL_STATIC_DRAW);
 
 #else
     // get the size of VBO data block needed for all AREA objects
@@ -1439,37 +1423,38 @@ void s57chart::BuildLineVBO(void) {
         top = top->next;  // next object
 
         //  Get the vertex data for this object
-        PolyTriGroup *ppg_vbo = crnt->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-        //add the byte length
+        PolyTriGroup *ppg_vbo =
+            crnt->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+        // add the byte length
         vbo_area_size_bytes += ppg_vbo->single_buffer_size;
       }
     }
 
-    glGetError();     //clear it
+    glGetError();  // clear it
 
     // Allocate the VBO
-    glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length + vbo_area_size_bytes,
-                 NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length + vbo_area_size_bytes, NULL,
+                 GL_STATIC_DRAW);
 
     GLenum err = glGetError();
-          if (err) {
-            wxString msg;
-            msg.Printf(_T("S57 VBO Error 1: %d"), err);
-            wxLogMessage(msg);
-            printf("S57 VBO Error 1: %d", err);
-          }
+    if (err) {
+      wxString msg;
+      msg.Printf(_T("S57 VBO Error 1: %d"), err);
+      wxLogMessage(msg);
+      printf("S57 VBO Error 1: %d", err);
+    }
 
     // Upload the line vertex data
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_vbo_byte_length, m_line_vertex_buffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_vbo_byte_length,
+                    m_line_vertex_buffer);
 
     err = glGetError();
-          if (err) {
-            wxString msg;
-            msg.Printf(_T("S57 VBO Error 2: %d"), err);
-            wxLogMessage(msg);
-            printf("S57 VBO Error 2: %d", err);
-          }
-
+    if (err) {
+      wxString msg;
+      msg.Printf(_T("S57 VBO Error 2: %d"), err);
+      wxLogMessage(msg);
+      printf("S57 VBO Error 2: %d", err);
+    }
 
     // Get the Area Object vertices, and add to the VBO, one by one
     int vbo_load_offset = m_vbo_byte_length;
@@ -1485,12 +1470,12 @@ void s57chart::BuildLineVBO(void) {
         top = top->next;  // next object
 
         //  Get the vertex data for this object
-        PolyTriGroup *ppg_vbo = crnt->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+        PolyTriGroup *ppg_vbo =
+            crnt->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
         // append  data to VBO
         glBufferSubData(GL_ARRAY_BUFFER, vbo_load_offset,
-                        ppg_vbo->single_buffer_size,
-                        ppg_vbo->single_buffer);
+                        ppg_vbo->single_buffer_size, ppg_vbo->single_buffer);
         // store the VBO offset in the object
         crnt->obj->vboAreaOffset = vbo_load_offset;
         vbo_load_offset += ppg_vbo->single_buffer_size;
@@ -1498,12 +1483,12 @@ void s57chart::BuildLineVBO(void) {
     }
 
     err = glGetError();
-          if (err) {
-            wxString msg;
-            msg.Printf(_T("S57 VBO Error 3: %d"), err);
-            wxLogMessage(msg);
-            printf("S57 VBO Error 3: %d", err);
-          }
+    if (err) {
+      wxString msg;
+      msg.Printf(_T("S57 VBO Error 3: %d"), err);
+      wxLogMessage(msg);
+      printf("S57 VBO Error 3: %d", err);
+    }
 
 #endif
 
@@ -1609,7 +1594,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
 
   SetVPParms(VPoint);
 
- PrepareForRender((ViewPort *)&VPoint, ps52plib);
+  PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   if (m_plib_state_hash != ps52plib->GetStateHash()) {
     m_bLinePrioritySet = false;  // need to reset line priorities
@@ -1634,12 +1619,12 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
 
   ViewPort vp = VPoint;
 
-// printf("\n");
+  // printf("\n");
   // region always has either 1 or 2 rectangles (full screen or panning
   // rectangles)
   for (OCPNRegionIterator upd(RectRegion); upd.HaveRects(); upd.NextRect()) {
     wxRect upr = upd.GetRect();
-    //printf("updRect: %d %d %d %d\n",upr.x, upr.y, upr.width, upr.height);
+    // printf("updRect: %d %d %d %d\n",upr.x, upr.y, upr.width, upr.height);
 
     LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
     chart_region.Intersect(Region);
@@ -1649,18 +1634,18 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
       //  cm93 vpoint crossing Greenwich, panning east, was rendering areas
       //  incorrectly.
       ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
-//  printf("CVP:  %g %g       %g %g\n",
-//         cvp.GetBBox().GetMinLat(),
-//         cvp.GetBBox().GetMaxLat(),
-//         cvp.GetBBox().GetMinLon(),
-//         cvp.GetBBox().GetMaxLon());
+      //  printf("CVP:  %g %g       %g %g\n",
+      //         cvp.GetBBox().GetMinLat(),
+      //         cvp.GetBBox().GetMaxLat(),
+      //         cvp.GetBBox().GetMinLon(),
+      //         cvp.GetBBox().GetMaxLon());
 
       if (CHART_TYPE_CM93 == GetChartType()) {
         // for now I will revert to the faster rectangle clipping now that
         // rendering order is resolved
         //                glChartCanvas::SetClipRegion(cvp, chart_region);
         glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
-        //ps52plib->m_last_clip_rect = upd.GetRect();
+        // ps52plib->m_last_clip_rect = upd.GetRect();
       } else {
 #ifdef OPT_USE_ANDROID_GLES2
 
@@ -1716,7 +1701,6 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
 #endif
   return true;
 }
-
 
 bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
 #ifdef ocpnUSE_GL
@@ -1815,7 +1799,7 @@ bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
   }
   // qDebug() << "Done Points" << sw.GetTime();
 
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
   return true;
 }
@@ -1881,7 +1865,7 @@ bool s57chart::DoRenderOnGLText(const wxGLContext &glc,
     }
   }
 
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
   return true;
 }
@@ -2972,13 +2956,12 @@ void s57chart::SetSafetyContour(void) {
     m_next_safe_cnt = (double)1e6;
 }
 
-void s57chart::CreateChartContext(){
+void s57chart::CreateChartContext() {
   //  Set up the chart context
   m_this_chart_context = (chart_context *)calloc(sizeof(chart_context), 1);
 }
 
-void s57chart::PopulateObjectsWithContext(){
-
+void s57chart::PopulateObjectsWithContext() {
   m_this_chart_context->chart = this;
   m_this_chart_context->chart_type = GetChartType();
   m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
@@ -2986,8 +2969,8 @@ void s57chart::PopulateObjectsWithContext(){
   m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
   m_this_chart_context->pRigidATONArray = pRigidATONArray;
   m_this_chart_context->safety_contour = m_next_safe_cnt;
-  m_this_chart_context->pt2GetAssociatedObjects = &s57chart::GetAssociatedObjects;
-
+  m_this_chart_context->pt2GetAssociatedObjects =
+      &s57chart::GetAssociatedObjects;
 
   //  Loop and populate all the objects
   ObjRazRules *top;
@@ -3002,7 +2985,6 @@ void s57chart::PopulateObjectsWithContext(){
     }
   }
 }
-
 
 void s57chart::InvalidateCache() {
   delete pDIB;
@@ -3497,11 +3479,11 @@ bool s57chart::GetNearestSafeContour(double safe_cnt, double &next_safe_cnt) {
  --------------------------------------------------------------------------
  */
 
-std::list<S57Obj*> *s57chart::GetAssociatedObjects(S57Obj *obj) {
+std::list<S57Obj *> *s57chart::GetAssociatedObjects(S57Obj *obj) {
   int disPrioIdx;
   bool gotit;
 
-  std::list<S57Obj*> *pobj_list = new std::list<S57Obj*>();
+  std::list<S57Obj *> *pobj_list = new std::list<S57Obj *>();
 
   double lat, lon;
   fromSM((obj->x * obj->x_rate) + obj->x_origin,
@@ -3761,8 +3743,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
             umdate.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
           umdate.ResetTime();
-          if (!umdate.IsValid())
-              int yyp = 4;
+          if (!umdate.IsValid()) int yyp = 4;
 
           //    Fetch the EDTN(Edition) field
           if (pr) {
@@ -4447,7 +4428,7 @@ void s57chart::ResetPointBBoxes(const ViewPort &vp_last,
   ObjRazRules *top;
   ObjRazRules *nxx;
 
-  if (vp_last.view_scale_ppm == 1.0)    // Skip the startup case
+  if (vp_last.view_scale_ppm == 1.0)  // Skip the startup case
     return;
 
   double d = vp_last.view_scale_ppm / vp_this.view_scale_ppm;
@@ -4729,8 +4710,9 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
     }
   }
 
-  // Copy the rules in order into a wxList so the function returns the correct type
-  for(std::size_t i = 0; i < selected_rules.size(); ++i) {
+  // Copy the rules in order into a wxList so the function returns the correct
+  // type
+  for (std::size_t i = 0; i < selected_rules.size(); ++i) {
     ret_ptr->Append(selected_rules[i]);
   }
 
@@ -4741,7 +4723,6 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
                                                     float select_radius,
                                                     ViewPort *VPoint,
                                                     int selection_mask) {
-
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
   std::vector<ObjRazRules *> selected_rules;
 
@@ -4767,8 +4748,6 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
               selected_rules.push_back(top);
           }
         }
-
-
 
         //    Check the child branch, if any.
         //    This is where Multipoint soundings are captured individually
@@ -4820,40 +4799,41 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
     }
   }
 
-
   // Sort Point objects by distance to searched lat/lon
-  // This lambda function could be modified to also sort GEO_LINES and GEO_AREAS if needed
-  auto sortObjs = [lat, lon, this] (const ObjRazRules* obj1, const ObjRazRules* obj2) -> bool
-  {
+  // This lambda function could be modified to also sort GEO_LINES and GEO_AREAS
+  // if needed
+  auto sortObjs = [lat, lon, this](const ObjRazRules *obj1,
+                                   const ObjRazRules *obj2) -> bool {
     double br1, dd1, br2, dd2;
 
-    if(obj1->obj->Primitive_type == GEO_POINT && obj2->obj->Primitive_type == GEO_POINT){
+    if (obj1->obj->Primitive_type == GEO_POINT &&
+        obj2->obj->Primitive_type == GEO_POINT) {
       double lat1, lat2, lon1, lon2;
       fromSM((obj1->obj->x * obj1->obj->x_rate) + obj1->obj->x_origin,
-        (obj1->obj->y * obj1->obj->y_rate) + obj1->obj->y_origin,
-        ref_lat, ref_lon, &lat1, &lon1);
+             (obj1->obj->y * obj1->obj->y_rate) + obj1->obj->y_origin, ref_lat,
+             ref_lon, &lat1, &lon1);
 
       if (lon1 > 180.0) lon1 -= 360.;
 
       fromSM((obj2->obj->x * obj2->obj->x_rate) + obj2->obj->x_origin,
-        (obj2->obj->y * obj2->obj->y_rate) + obj2->obj->y_origin,
-        ref_lat, ref_lon, &lat2, &lon2);
+             (obj2->obj->y * obj2->obj->y_rate) + obj2->obj->y_origin, ref_lat,
+             ref_lon, &lat2, &lon2);
 
       if (lon2 > 180.0) lon2 -= 360.;
 
       DistanceBearingMercator(lat, lon, lat1, lon1, &br1, &dd1);
       DistanceBearingMercator(lat, lon, lat2, lon2, &br2, &dd2);
-      return dd1>dd2;
+      return dd1 > dd2;
     }
     return false;
-
   };
 
   // Sort the selected rules by using the lambda sort function defined above
   std::sort(selected_rules.begin(), selected_rules.end(), sortObjs);
 
-  // Copy the rules in order into a wxList so the function returns the correct type
-  for(std::size_t i = 0; i < selected_rules.size(); ++i) {
+  // Copy the rules in order into a wxList so the function returns the correct
+  // type
+  for (std::size_t i = 0; i < selected_rules.size(); ++i) {
     ret_ptr->Append(selected_rules[i]);
   }
 
@@ -4975,8 +4955,8 @@ bool s57chart::DoesLatLonSelectObject(float lat, float lon, float select_radius,
         if (obj->m_ls_list) {
           float *ppt;
           unsigned char *vbo_point =
-              (unsigned char *)
-                  obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
+              (unsigned char *)obj->m_chart_context
+                  ->vertex_buffer;  // chart->GetLineVertexBuffer();
           line_segment_element *ls = obj->m_ls_list;
 
           while (ls && vbo_point) {
@@ -5840,7 +5820,7 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
           // 119,2.2,122,1.9,125,1.5,130,0.9,270,0.1,299,1.4,300,2.1,301,2.0,303,1.7,307,1.2
           wxStringTokenizer tk(value, wxT(","));
           ts1 =
-          tk.GetNextToken();  // get first token this will be skipped always
+              tk.GetNextToken();  // get first token this will be skipped always
           long l;
           do {  // Skip up upto the first non number. This is Port Name
             ts1 = tk.GetNextToken().Trim(false);
@@ -5985,15 +5965,15 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         if (vis.Contains(_T("8"))) {
           if (attrIndex != wxNOT_FOUND) {
             wxString color = thisLight->attributeValues.Item(attrIndex);
-            if (( color == _T("red (3)") || color == _T("red(3)")))
+            if ((color == _T("red (3)") || color == _T("red(3)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkRed>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (( color == _T("green (4)") || color == _T("green(4)")))
+            if ((color == _T("green (4)") || color == _T("green(4)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkGreen>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (( color == _T("white (1)") || color == _T("white(1)")))
+            if ((color == _T("white (1)") || color == _T("white(1)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=GoldenRod>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
@@ -6017,9 +5997,10 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         lightsHtml << _T(" ");
       }
 
-      attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
-      if( attrIndex != wxNOT_FOUND ) {
-        lightsHtml << _T(" ") << thisLight->attributeValues.Item( attrIndex ).Upper()[0];
+      attrIndex = thisLight->attributeNames.Index(_T("COLOUR"));
+      if (attrIndex != wxNOT_FOUND) {
+        lightsHtml << _T(" ")
+                   << thisLight->attributeValues.Item(attrIndex).Upper()[0];
         lightsHtml << _T(" ");
       }
 
@@ -6332,10 +6313,9 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
       penWidth = wxMin(20, penWidth);
       penWidth = wxMax(5, penWidth);
 
-
       int legOpacity;
-      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorlegs[i].color, penWidth,
-                                                    wxPENSTYLE_SOLID);
+      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorlegs[i].color,
+                                                    penWidth, wxPENSTYLE_SOLID);
       arcpen->SetCap(wxCAP_BUTT);
       dc.SetPen(*arcpen);
 
@@ -6420,7 +6400,7 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
 
 #ifdef ocpnUSE_GL
 void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
-                                  std::vector<s57Sector_t> &sectorlegs) {
+                                    std::vector<s57Sector_t> &sectorlegs) {
   float rangeScale = 0.0;
 
   if (sectorlegs.size() > 0) {
@@ -6443,7 +6423,6 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
 
       wxPoint lightPos =
           viewport.GetPixFromLL(sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x);
-
 
       // Make sure arcs are well inside viewport.
       float rangePx = sqrtf(powf((float)(lightPos.x - end1.x), 2) +
@@ -6474,30 +6453,29 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
       int lpy = lightPos.y;
 
       if (sectorlegs[i].isleading && (angle2 - angle1 < 60)) {
-         wxPoint yellowCone[3];
-         yellowCone[0] = lightPos;
-         yellowCone[1] = end1;
-         yellowCone[2] = end2;
-         wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 0), 1,
-                                                wxPENSTYLE_SOLID);
-         dc.SetPen(*arcpen);
-         wxColor c = sectorlegs[i].color;
-         c.Set(c.Red(), c.Green(), c.Blue(), 0.6 * c.Alpha());
-         dc.SetBrush(wxBrush(c));
-         dc.StrokePolygon(3, yellowCone, 0, 0);
-         legOpacity = 50;
+        wxPoint yellowCone[3];
+        yellowCone[0] = lightPos;
+        yellowCone[1] = end1;
+        yellowCone[2] = end2;
+        wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 0), 1,
+                                                      wxPENSTYLE_SOLID);
+        dc.SetPen(*arcpen);
+        wxColor c = sectorlegs[i].color;
+        c.Set(c.Red(), c.Green(), c.Blue(), 0.6 * c.Alpha());
+        dc.SetBrush(wxBrush(c));
+        dc.StrokePolygon(3, yellowCone, 0, 0);
+        legOpacity = 50;
       } else {
-         // Center point
+        // Center point
         wxPoint r(lpx, lpy);
 
         //  radius scaled to display
         float rad = rangePx;
 
-        //float arcw = arc_width * canvas_pix_per_mm;
-        // On larger screens, make the arc_width 1.0 mm
-        //if ( m_display_size_mm > 200)     //200 mm, about 8 inches
-          //arcw = canvas_pix_per_mm;
-
+        // float arcw = arc_width * canvas_pix_per_mm;
+        //  On larger screens, make the arc_width 1.0 mm
+        // if ( m_display_size_mm > 200)     //200 mm, about 8 inches
+        // arcw = canvas_pix_per_mm;
 
         //      Enable anti-aliased lines, at best quality
         glEnable(GL_BLEND);
@@ -6512,7 +6490,7 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         coords[6] = rad;
         coords[7] = -rad;
 
-        GLShaderProgram *shader = pring_shader_program[0/*GetCanvasIndex()*/];
+        GLShaderProgram *shader = pring_shader_program[0 /*GetCanvasIndex()*/];
         shader->Bind();
 
         // Get pointers to the attributes in the program.
@@ -6546,7 +6524,8 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         colorv[2] = colorb.Blue() / float(256);
         colorv[3] = colorb.Alpha() / float(256);
 
-        GLint colloc = glGetUniformLocation(shader->programId(), "circle_color");
+        GLint colloc =
+            glGetUniformLocation(shader->programId(), "circle_color");
         glUniform4fv(colloc, 1, colorv);
 
         //  Border color
@@ -6556,7 +6535,8 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         bcolorv[2] = 0;
         bcolorv[3] = 0;
 
-        GLint bcolloc = glGetUniformLocation(shader->programId(), "border_color");
+        GLint bcolloc =
+            glGetUniformLocation(shader->programId(), "border_color");
         glUniform4fv(bcolloc, 1, bcolorv);
 
         //  Border Width
@@ -6570,9 +6550,11 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         glUniform1f(ringWidthloc, arcw);
 
         //  Visible sectors, rotated to vp orientation
-        float sr1 = sectorlegs[i].sector1 + (viewport.rotation * 180 / PI) + 180;
+        float sr1 =
+            sectorlegs[i].sector1 + (viewport.rotation * 180 / PI) + 180;
         if (sr1 > 360.) sr1 -= 360.;
-        float sr2 = sectorlegs[i].sector2 + (viewport.rotation * 180 / PI) + 180;
+        float sr2 =
+            sectorlegs[i].sector2 + (viewport.rotation * 180 / PI) + 180;
         if (sr2 > 360.) sr2 -= 360.;
 
         float sb, se;
@@ -6590,9 +6572,11 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
           se += 360.;
         }
 
-        GLint sector1loc = glGetUniformLocation(shader->programId(), "sector_1");
+        GLint sector1loc =
+            glGetUniformLocation(shader->programId(), "sector_1");
         glUniform1f(sector1loc, (sb * PI / 180.));
-        GLint sector2loc = glGetUniformLocation(shader->programId(), "sector_2");
+        GLint sector2loc =
+            glGetUniformLocation(shader->programId(), "sector_2");
         glUniform1f(sector2loc, (se * PI / 180.));
 
         // Rotate and translate
@@ -6616,13 +6600,12 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
 
         glDisableVertexAttribArray(mPosAttrib);
         shader->UnBind();
-
       }
 
 #if 1
 
       wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 128), 1,
-                                             wxPENSTYLE_SOLID);
+                                                    wxPENSTYLE_SOLID);
       dc.SetPen(*arcpen);
 
       // Only draw each leg line once.
@@ -6872,7 +6855,8 @@ bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
   // Find the chart that is currently shown at the given lat/lon
   wxPoint calcPoint = viewport.GetPixFromLL(lat, lon);
   ChartBase *target_chart;
-  if (cc->m_singleChart && (cc->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR))
+  if (cc->m_singleChart &&
+      (cc->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR))
     target_chart = cc->m_singleChart;
   else if (viewport.b_quilt)
     target_chart = cc->m_pQuilt->GetChartAtPix(viewport, calcPoint);
