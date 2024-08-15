@@ -34,7 +34,7 @@
 
 #include "vector2D.h"
 
-Select* pSelect;
+Select *pSelect;
 
 Select::Select() {
   pSelectList = new SelectableItemList;
@@ -509,11 +509,11 @@ bool Select::IsSegmentSelected(float a, float b, float c, float d, float slat,
   return false;
 }
 
-void Select::CalcSelectRadius(SelectCtx& ctx) {
+void Select::CalcSelectRadius(SelectCtx &ctx) {
   selectRadius = pixelRadius / (ctx.scale * 1852 * 60);
 }
 
-SelectItem *Select::FindSelection(SelectCtx& ctx, float slat, float slon,
+SelectItem *Select::FindSelection(SelectCtx &ctx, float slat, float slon,
                                   int fseltype) {
   float a, b, c, d;
   SelectItem *pFindSel;
@@ -533,12 +533,13 @@ SelectItem *Select::FindSelection(SelectCtx& ctx, float slat, float slon,
         case SELTYPE_AISTARGET:
           if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
               (fabs(slon - pFindSel->m_slon) < selectRadius)) {
-                if(fseltype == SELTYPE_ROUTEPOINT) {
-                    if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.chart_scale))
-                      goto find_ok;
-                } else {
-                    goto find_ok;
-                }
+            if (fseltype == SELTYPE_ROUTEPOINT) {
+              if (((RoutePoint *)pFindSel->m_pData1)
+                      ->IsVisibleSelectable(ctx.chart_scale))
+                goto find_ok;
+            } else {
+              goto find_ok;
+            }
           }
           break;
         case SELTYPE_ROUTESEGMENT:
@@ -564,8 +565,8 @@ find_ok:
   return pFindSel;
 }
 
-bool Select::IsSelectableSegmentSelected(SelectCtx& ctx, float slat,
-                                         float slon, SelectItem *pFindSel) {
+bool Select::IsSelectableSegmentSelected(SelectCtx &ctx, float slat, float slon,
+                                         SelectItem *pFindSel) {
   bool valid = false;
   wxSelectableItemListNode *node = pSelectList->GetFirst();
 
@@ -603,7 +604,7 @@ static bool is_selectable_wp(SelectCtx ctx, RoutePoint *wp) {
   return false;
 }
 
-SelectableItemList Select::FindSelectionList(SelectCtx& ctx, float slat,
+SelectableItemList Select::FindSelectionList(SelectCtx &ctx, float slat,
                                              float slon, int fseltype) {
   float a, b, c, d;
   SelectItem *pFindSel;
@@ -622,7 +623,8 @@ SelectableItemList Select::FindSelectionList(SelectCtx& ctx, float slat,
           if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
               (fabs(slon - pFindSel->m_slon) < selectRadius))
             if (is_selectable_wp(ctx, (RoutePoint *)pFindSel->m_pData1))
-              if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.chart_scale))
+              if (((RoutePoint *)pFindSel->m_pData1)
+                      ->IsVisibleSelectable(ctx.chart_scale))
                 ret_list.Append(pFindSel);
           break;
         case SELTYPE_TIDEPOINT:

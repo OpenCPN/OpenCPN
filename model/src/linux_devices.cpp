@@ -198,8 +198,8 @@ static usbdata GetDeviceUsbdata(const char* path) {
   syspath << "/sys/dev/char/" << major(st.st_rdev) << ":" << minor(st.st_rdev);
   char buff[PATH_MAX];
   if (!realpath(syspath.str().c_str(), buff)) {
-      wxLogDebug("Error resolving link %s: %s", syspath.str().c_str(),
-                 strerror(errno));
+    wxLogDebug("Error resolving link %s: %s", syspath.str().c_str(),
+               strerror(errno));
   }
   std::string real_path(buff);
 

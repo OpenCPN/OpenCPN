@@ -19,7 +19,6 @@ static std::string SEP("\\");
 static std::string SEP("/");
 #endif
 
-
 bool safe_mode = false;
 
 std::string check_file_path() {
@@ -35,7 +34,6 @@ void set_mode(bool mode) {
 }
 
 bool get_mode() { return safe_mode; }
-
 
 /** Mark last run as successful. */
 void clear_check() { remove(check_file_path().c_str()); }

@@ -38,8 +38,7 @@ static const long long lNaN = 0xfff8000000000000;
 //----------------------------------------------------------------------------------
 //      Decode a single AIVDO sentence to a Generic Position Report
 //----------------------------------------------------------------------------------
-AisError DecodeSingleVDO(const wxString &str,
-                          GenericPosDatEx *pos) {
+AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos) {
   //  Make some simple tests for validity
   if (str.Len() > 128) return AIS_NMEAVDX_TOO_LONG;
 
@@ -47,7 +46,7 @@ AisError DecodeSingleVDO(const wxString &str,
 
   if (!pos) return AIS_GENERIC_ERROR;
 
-  //if (!ctx.accumulator) return AIS_GENERIC_ERROR;
+  // if (!ctx.accumulator) return AIS_GENERIC_ERROR;
 
   //  We only process AIVDO messages
   if (!str.Mid(1, 5).IsSameAs(_T("AIVDO"))) return AIS_GENERIC_ERROR;
@@ -83,8 +82,7 @@ AisError DecodeSingleVDO(const wxString &str,
   //  First and only part of a one-part sentence
   if ((1 == nsentences) && (1 == isentence)) {
     string_to_parse = tkz.GetNextToken();  // the encapsulated data
-  }
-  else {
+  } else {
     wxASSERT_MSG(false, wxT("Multipart AIVDO detected"));
     return AIS_INCOMPLETE_MULTIPART;  // and non-zero return
   }
@@ -93,7 +91,7 @@ AisError DecodeSingleVDO(const wxString &str,
   AisBitstring strbit(string_to_parse.mb_str());
 
   auto TargetData = std::make_unique<AisTargetData>(
-     *AisTargetDataMaker::GetInstance().GetTargetData());
+      *AisTargetDataMaker::GetInstance().GetTargetData());
 
   bool bdecode_result = Parse_VDXBitstring(&strbit, TargetData.get());
 
@@ -143,8 +141,7 @@ AisError DecodeSingleVDO(const wxString &str,
 //----------------------------------------------------------------------------
 //      Parse a NMEA VDM/VDO Bitstring
 //----------------------------------------------------------------------------
-bool Parse_VDXBitstring(AisBitstring* bstr,
-                        AisTargetData* ptd) {
+bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd) {
   bool parse_result = false;
   bool b_posn_report = false;
 
@@ -160,7 +157,6 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
     case 1:  // Position Report
     case 2:
     case 3: {
-
       ptd->NavStatus = bstr->GetInt(39, 4);
       ptd->SOG = 0.1 * (bstr->GetInt(51, 10));
 
@@ -175,7 +171,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
       double lat_tentative = lat / 600000.;
 
       if ((lon_tentative <= 180.) && (lat_tentative <= 90.))
-          // Ship does not report Lat or Lon "unavailable"
+      // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -233,8 +229,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
       ptd->blue_paddle = bstr->GetInt(144, 2);
       ptd->b_blue_paddle = (ptd->blue_paddle == 2);  // paddle is set
 
-      if (!ptd->b_isDSCtarget)
-        ptd->Class = AIS_CLASS_A;
+      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
 
       //    Check for SART and friends by looking at first two digits of MMSI
       int mmsi_start = ptd->MMSI / 10000000;
@@ -278,7 +273,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
       double lat_tentative = lat / 600000.;
 
       if ((lon_tentative <= 180.) && (lat_tentative <= 90.))
-          // Ship does not report Lat or Lon "unavailable"
+      // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -293,8 +288,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
 
       ptd->m_utc_sec = bstr->GetInt(134, 6);
 
-      if (!ptd->b_isDSCtarget)
-        ptd->Class = AIS_CLASS_B;
+      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_B;
 
       parse_result = true;  // so far so good
       b_posn_report = true;

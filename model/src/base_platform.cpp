@@ -297,7 +297,7 @@ wxString& AbstractPlatform::GetPrivateDataDir() {
   if (!m_PrivateDataDir.IsEmpty() && g_configdir.empty())
     return m_PrivateDataDir;
   if (!g_configdir.empty()) {
-    wxString path  = g_configdir;
+    wxString path = g_configdir;
     if (path.Last() == wxFileName::GetPathSeparator()) path.RemoveLast();
     m_default_private_datadir = path;
     return m_default_private_datadir;  // FIXME (leamas) normalize and trust
@@ -330,7 +330,7 @@ wxString& AbstractPlatform::DefaultPrivateDataDir() {
     appendOSDirSlash(&m_PrivateDataDir);
     m_PrivateDataDir.Append(_T("opencpn"));
 #else
-    m_PrivateDataDir = std_path.GetUserDataDir();    // should be ~/.opencpn
+    m_PrivateDataDir = std_path.GetUserDataDir();  // should be ~/.opencpn
 #endif
 
     if (g_bportable) m_PrivateDataDir = GetHomeDir();
@@ -780,20 +780,16 @@ void AbstractPlatform::HideBusySpinner() {
 
 // getDisplaySize
 
-
-
 #if defined(__ANDROID__)
 wxSize BasePlatform::getDisplaySize() { return getAndroidDisplayDimensions(); }
 
 #else
-wxSize BasePlatform::getDisplaySize() {
-  return wxSize(0, 0);
-}
+wxSize BasePlatform::getDisplaySize() { return wxSize(0, 0); }
 #endif
 
 // GetDisplaySizeMM
 double BasePlatform::GetDisplaySizeMM() {
-  if(m_displaySizeMMOverride.size() > 0 && m_displaySizeMMOverride[0] > 0) {
+  if (m_displaySizeMMOverride.size() > 0 && m_displaySizeMMOverride[0] > 0) {
     return m_displaySizeMMOverride[0];
   }
   double ret = 0;
@@ -821,12 +817,10 @@ double BasePlatform::GetDisplayDPmm() {
 }
 #endif
 
-
-double AbstractPlatform::GetDisplayDIPMult(wxWindow *win) {
+double AbstractPlatform::GetDisplayDIPMult(wxWindow* win) {
   double rv = 1.0;
 #ifdef __WXMSW__
-  if (win)
-    rv = (double)(win->ToDIP(100))/100.;
+  if (win) rv = (double)(win->ToDIP(100)) / 100.;
 #endif
   return rv;
 }
@@ -844,8 +838,8 @@ const GUID GUID_CLASS_MONITOR = {0x4d36e96e, 0xe325, 0x11ce, 0xbf, 0xc1, 0x08,
                                  0x00,       0x2b,   0xe1,   0x03, 0x18};
 
 // Assumes hDevRegKey is valid
-bool GetMonitorSizeFromEDID(const HKEY hDevRegKey, int *WidthMm,
-                            int *HeightMm) {
+bool GetMonitorSizeFromEDID(const HKEY hDevRegKey, int* WidthMm,
+                            int* HeightMm) {
   DWORD dwType, AcutalValueNameLength = NAME_SIZE;
   TCHAR valueName[NAME_SIZE];
 
@@ -871,7 +865,7 @@ bool GetMonitorSizeFromEDID(const HKEY hDevRegKey, int *WidthMm,
   return false;  // EDID not found
 }
 
-bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm) {
+bool GetSizeForDevID(wxString& TargetDevID, int* WidthMm, int* HeightMm) {
   HDEVINFO devInfo =
       SetupDiGetClassDevsEx(&GUID_CLASS_MONITOR,  // class GUID
                             NULL,                 // enumerator
@@ -911,7 +905,7 @@ bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm) {
   return bRes;
 }
 
-bool AbstractPlatform::GetWindowsMonitorSize(int *width, int *height) {
+bool AbstractPlatform::GetWindowsMonitorSize(int* width, int* height) {
   bool bFoundDevice = true;
 
   if (m_monitorWidth < 10) {

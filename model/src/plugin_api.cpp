@@ -64,7 +64,6 @@ std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev) {
   return msg->message;
 }
 
-
 std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev) {
   auto msg = UnpackEvtPointer<SignalkMsg>(ev);
   wxJSONReader reader;
@@ -92,8 +91,7 @@ std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev) {
 
 shared_ptr<ObservableListener> GetListener(NMEA2000Id id, wxEventType et,
                                            wxEvtHandler* eh) {
-  return make_shared<ObservableListener>(Nmea2000Msg(id.id), eh,
-                                         et);
+  return make_shared<ObservableListener>(Nmea2000Msg(id.id), eh, et);
 }
 
 std::shared_ptr<ObservableListener> GetListener(NMEA0183Id id, wxEventType et,
@@ -115,7 +113,6 @@ std::shared_ptr<ObservableListener> GetListener(PluginMsgId id, wxEventType et,
                                                 wxEvtHandler* eh) {
   return make_shared<ObservableListener>(PluginMsg(id.id, ""), eh, et);
 }
-
 
 PluginNavdata GetEventNavdata(ObservedEvt ev) {
   auto msg = UnpackEvtPointer<BasicNavDataMsg>(ev);
@@ -185,7 +182,7 @@ CommDriverResult WriteCommDriver(
     std::string msg(payload->begin(), payload->end());
     std::string id = msg.substr(1, 5);
     auto address = std::make_shared<NavAddr0183>(d0183->iface);
-    auto msg_out = std::make_shared<Nmea0183Msg>( id, msg, address);
+    auto msg_out = std::make_shared<Nmea0183Msg>(id, msg, address);
     bool xmit_ok = d0183->SendMessage(msg_out, address);
     return xmit_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else
@@ -208,10 +205,10 @@ CommDriverResult WriteCommDriverN2K(
     return RESULT_COMM_INVALID_HANDLE;
   }
   auto driver = *found;
-  auto dest_addr = std::make_shared<const NavAddr2000>(driver->iface,
-                                                       destinationCANAddress);
-  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, *payload, dest_addr,
-                                                 priority);
+  auto dest_addr =
+      std::make_shared<const NavAddr2000>(driver->iface, destinationCANAddress);
+  auto msg =
+      std::make_shared<const Nmea2000Msg>(_PGN, *payload, dest_addr, priority);
   bool result = driver->SendMessage(msg, dest_addr);
 
   return RESULT_COMM_NO_ERROR;
@@ -250,5 +247,5 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
 }
 
 wxString* GetpPrivateApplicationDataLocation(void) {
-  return  g_BasePlatform->GetPrivateDataDirPtr();
+  return g_BasePlatform->GetPrivateDataDirPtr();
 }

@@ -32,7 +32,6 @@
 
 #include "model/cutil.h"
 
-
 double round_msvc(double x) { return (floor(x + 0.5)); }
 
 #ifdef __MSVC__

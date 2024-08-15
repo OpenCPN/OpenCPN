@@ -91,9 +91,8 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
               return driver;
               break;
             }
-            case PROTO_NMEA2000:{
-              auto driver =
-                  std::make_shared<CommDriverN2KNet>(params, msgbus);
+            case PROTO_NMEA2000: {
+              auto driver = std::make_shared<CommDriverN2KNet>(params, msgbus);
               registry.Activate(driver);
               return driver;
 
@@ -107,8 +106,7 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
       }
 
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
-    case SOCKETCAN:
-    {
+    case SOCKETCAN: {
       auto driver = CommDriverN2KSocketCAN::Create(params, msgbus);
       registry.Activate(driver);
       return driver;
@@ -138,11 +136,6 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
   return NULL;
 };
 
+void initIXNetSystem() { CommDriverSignalKNet::initIXNetSystem(); };
 
-void initIXNetSystem() {
-  CommDriverSignalKNet::initIXNetSystem();
-};
-
-void uninitIXNetSystem() {
-  CommDriverSignalKNet::uninitIXNetSystem();
-};
+void uninitIXNetSystem() { CommDriverSignalKNet::uninitIXNetSystem(); };

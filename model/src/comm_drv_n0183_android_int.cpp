@@ -90,29 +90,34 @@ private:
   mutable std::mutex m_mutex;
 };
 
-#define OUT_QUEUE_LENGTH                20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
+#define OUT_QUEUE_LENGTH 20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_INT, CommDriverN0183AndroidIntEvent);
+wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
+               CommDriverN0183AndroidIntEvent);
 
-CommDriverN0183AndroidIntEvent::CommDriverN0183AndroidIntEvent( wxEventType commandType, int id = 0)
-      : wxEvent(id, commandType){};
+CommDriverN0183AndroidIntEvent::CommDriverN0183AndroidIntEvent(
+    wxEventType commandType, int id = 0)
+    : wxEvent(id, commandType) {};
 
-CommDriverN0183AndroidIntEvent::~CommDriverN0183AndroidIntEvent(){};
+CommDriverN0183AndroidIntEvent::~CommDriverN0183AndroidIntEvent() {};
 
-void CommDriverN0183AndroidIntEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
+void CommDriverN0183AndroidIntEvent::SetPayload(
+    std::shared_ptr<std::vector<unsigned char>> data) {
+  m_payload = data;
 }
-std::shared_ptr<std::vector<unsigned char>> CommDriverN0183AndroidIntEvent::GetPayload() { return m_payload; }
+std::shared_ptr<std::vector<unsigned char>>
+CommDriverN0183AndroidIntEvent::GetPayload() {
+  return m_payload;
+}
 
-  // required for sending with wxPostEvent()
+// required for sending with wxPostEvent()
 wxEvent* CommDriverN0183AndroidIntEvent::Clone() const {
-    CommDriverN0183AndroidIntEvent* newevent =
-        new CommDriverN0183AndroidIntEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
+  CommDriverN0183AndroidIntEvent* newevent =
+      new CommDriverN0183AndroidIntEvent(*this);
+  newevent->m_payload = this->m_payload;
+  return newevent;
 };
-
 
 template <class T>
 class circular_buffer {
@@ -166,8 +171,8 @@ private:
   bool full_ = 0;
 };
 
-CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(const ConnectionParams* params,
-                                             DriverListener& listener)
+CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(
+    const ConnectionParams* params, DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_bok(false),
@@ -178,13 +183,16 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(const ConnectionParams* par
   this->attributes["userComment"] = params->UserComment.ToStdString();
   dsPortType iosel = params->IOSelect;
   std::string s_iosel = std::string("IN");
-  if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "OUT";}
-  else if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "IN/OUT";}
+  if (iosel == DS_TYPE_INPUT_OUTPUT) {
+    s_iosel = "OUT";
+  } else if (iosel == DS_TYPE_INPUT_OUTPUT) {
+    s_iosel = "IN/OUT";
+  }
   this->attributes["ioDirection"] = s_iosel;
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_ANDROID_INT, &CommDriverN0183AndroidInt::handle_N0183_MSG,
-       this);
+  Bind(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
+       &CommDriverN0183AndroidInt::handle_N0183_MSG, this);
 
   Open();
 }
@@ -192,7 +200,7 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(const ConnectionParams* par
 CommDriverN0183AndroidInt::~CommDriverN0183AndroidInt() { Close(); }
 
 bool CommDriverN0183AndroidInt::Open() {
-  androidStartGPS( this );
+  androidStartGPS(this);
   return true;
 }
 
@@ -202,22 +210,18 @@ void CommDriverN0183AndroidInt::Close() {
 
   androidStopGPS();
 
-  Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_INT, &CommDriverN0183AndroidInt::handle_N0183_MSG,
-       this);
-
+  Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
+         &CommDriverN0183AndroidInt::handle_N0183_MSG, this);
 }
-
 
 void CommDriverN0183AndroidInt::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
 }
 
-bool CommDriverN0183AndroidInt::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                        std::shared_ptr<const NavAddr> addr) {
+bool CommDriverN0183AndroidInt::SendMessage(
+    std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
   return false;
 }
-
-
 
 void CommDriverN0183AndroidInt::handle_N0183_MSG(
     CommDriverN0183AndroidIntEvent& event) {

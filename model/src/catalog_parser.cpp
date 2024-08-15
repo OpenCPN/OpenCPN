@@ -41,7 +41,6 @@ static void add_node(pugi::xml_node root, const std::string& name,
   child.append_child(pugi::node_pcdata).set_value(value.c_str());
 }
 
-
 std::string PluginMetadata::to_string() {
   pugi::xml_document doc;
   auto root = doc.append_child("plugin");
@@ -70,7 +69,7 @@ std::string PluginMetadata::to_string() {
 }
 
 static void ParseValue(pugi::xml_node node, const std::string& name,
-                        std::string& value) {
+                       std::string& value) {
   auto child = node.child(name.c_str());
   if (child) value = ocpn::trim(child.first_child().value());
 }
@@ -79,31 +78,30 @@ static void ParseBool(pugi::xml_node node, const std::string& name,
                       bool& value) {
   auto child = node.child(name.c_str());
   if (child) {
-    auto text =  ocpn::trim(child.first_child().value());
+    auto text = ocpn::trim(child.first_child().value());
     value = text == "yes" || text == "true";
   }
 }
 
 bool ParsePlugin(pugi::xml_node root, PluginMetadata& plugin) {
-    ParseValue(root, "name", plugin.name);
-    ParseValue(root, "version", plugin.version);
-    ParseValue(root, "release", plugin.release);
-    ParseValue(root, "summary", plugin.summary);
-    ParseValue(root, "api-version", plugin.api_version);
-    ParseValue(root, "author", plugin.author);
-    ParseValue(root, "description", plugin.description);
-    ParseValue(root, "source", plugin.source);
-    ParseValue(root, "tarball-url", plugin.tarball_url);
-    ParseValue(root, "info-url", plugin.info_url);
-    ParseValue(root, "target", plugin.target);
-    ParseValue(root, "target-version", plugin.target_version);
-    ParseValue(root, "target-arch", plugin.target_arch);
-    ParseValue(root, "target-checksum", plugin.checksum);
-    ParseBool(root, "open-source", plugin.openSource);
-    ParseBool(root, "is-imported", plugin.is_imported);
-    return root.child("name") ? true : false;
+  ParseValue(root, "name", plugin.name);
+  ParseValue(root, "version", plugin.version);
+  ParseValue(root, "release", plugin.release);
+  ParseValue(root, "summary", plugin.summary);
+  ParseValue(root, "api-version", plugin.api_version);
+  ParseValue(root, "author", plugin.author);
+  ParseValue(root, "description", plugin.description);
+  ParseValue(root, "source", plugin.source);
+  ParseValue(root, "tarball-url", plugin.tarball_url);
+  ParseValue(root, "info-url", plugin.info_url);
+  ParseValue(root, "target", plugin.target);
+  ParseValue(root, "target-version", plugin.target_version);
+  ParseValue(root, "target-arch", plugin.target_arch);
+  ParseValue(root, "target-checksum", plugin.checksum);
+  ParseBool(root, "open-source", plugin.openSource);
+  ParseBool(root, "is-imported", plugin.is_imported);
+  return root.child("name") ? true : false;
 }
-
 
 bool ParsePlugin(const std::string& xml, PluginMetadata& plugin) {
   pugi::xml_document doc;
@@ -115,7 +113,6 @@ bool ParsePlugin(const std::string& xml, PluginMetadata& plugin) {
   }
   return ParsePlugin(doc.child("plugin"), plugin);
 }
-
 
 bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
   bool ok = true;

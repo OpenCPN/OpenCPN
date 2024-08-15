@@ -36,27 +36,26 @@ public:
 
   /** Update RouteManagerDialog callback. */
   std::function<void()> update_route_mgr_dlg;
-    //   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-    //    pRouteManagerDialog->UpdateLists();
+  //   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+  //    pRouteManagerDialog->UpdateLists();
 
   /** Center global view to a given box callback. */
   std::function<void(LLBBox)> gframe_center_view;
-    // gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
+  // gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
 
   /** Raise current OPenCPN main window to top of GUI application stack. */
   std::function<void()> raise;
-   //  gFrame->InvalidateAllGL();
-   //  gFrame->RefreshAllCanvas(false);
-   //  gFrame->Raise();
+  //  gFrame->InvalidateAllGL();
+  //  gFrame->RefreshAllCanvas(false);
+  //  gFrame->Raise();
 };
 
 // Client class, to be used by subsequent instances in OnInit
 class StClient : public wxClient {
 public:
-  StClient(){};
+  StClient() {};
   wxConnectionBase *OnMakeConnection() { return new StConnection; }
 };
-
 
 // Opens a file passed from another instance
 bool StConnection::OnExec(const wxString &topic, const wxString &data) {
@@ -92,7 +91,7 @@ public:
 /** Return true if there is a top-level modal window. */
 static bool IsToplevelModal() {
   for (auto w = wxTopLevelWindows.GetFirst(); w; w = w->GetNext()) {
-    wxDialog *dlg = dynamic_cast<wxDialog*>(w->GetData());
+    wxDialog *dlg = dynamic_cast<wxDialog *>(w->GetData());
     if (dlg && dlg->IsModal()) {
       return true;
     }
@@ -101,25 +100,23 @@ static bool IsToplevelModal() {
 }
 
 // Accepts a connection from another instance
-wxConnectionBase *StServer::OnAcceptConnection(const wxString& topic) {
+wxConnectionBase *StServer::OnAcceptConnection(const wxString &topic) {
   if (topic.Lower() == "opencpn" && !IsToplevelModal()) {
     return new StConnection();
   }
   return 0;
 }
 
-
-
 class InstanceHandler : public wxSingleInstanceChecker {
 public:
-  bool Init(const std::vector<std::string>& params) {
+  bool Init(const std::vector<std::string> &params) {
     if (wxSingleInstanceChecker::IsAnotherRunning()) {
       wxChar separator = wxFileName::GetPathSeparator();
       wxString service_name =
           g_BasePlatform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
 
-      auto checker = new wxSingleInstanceChecker(_T("_OpenCPN_SILock"),
-                                              g_BasePlatform->GetPrivateDataDir());
+      auto checker = new wxSingleInstanceChecker(
+          _T("_OpenCPN_SILock"), g_BasePlatform->GetPrivateDataDir());
       if (!checker->IsAnotherRunning()) {
         StServer *m_server = new StServer;
         if (!m_server->Create(service_name)) {

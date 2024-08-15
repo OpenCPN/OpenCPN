@@ -89,8 +89,8 @@ wxDECLARE_EVENT(wxEVT_COMMDRIVER_SIGNALK_NET, CommDriverSignalKNetEvent);
 class CommDriverSignalKNetEvent : public wxEvent {
 public:
   CommDriverSignalKNetEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
-      : wxEvent(id, commandType){};
-  ~CommDriverSignalKNetEvent(){};
+      : wxEvent(id, commandType) {};
+  ~CommDriverSignalKNetEvent() {};
 
   // accessors
   void SetPayload(std::shared_ptr<std::string> data) { m_payload = data; }
@@ -127,18 +127,18 @@ private:
 };
 
 WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
-                                 wxIPV4address address,
-                                 wxEvtHandler* consumer,
+                                 wxIPV4address address, wxEvtHandler* consumer,
                                  const std::string& token)
-      : m_address(address),
-        m_consumer(consumer),
-        m_parentStream(parent),
-        m_token(token) {
+    : m_address(address),
+      m_consumer(consumer),
+      m_parentStream(parent),
+      m_token(token) {
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
                        [&](ObservedEvt& ev) {
-                          ws.stop();
-                          ws.start();
-                          wxLogDebug("WebSocketThread: restarted"); });
+                         ws.stop();
+                         ws.start();
+                         wxLogDebug("WebSocketThread: restarted");
+                       });
 }
 
 void* WebSocketThread::Entry() {
@@ -186,7 +186,6 @@ void* WebSocketThread::Entry() {
     }
   };
 
-
   ws.setOnMessageCallback(message_callback);
   ws.start();
 
@@ -223,7 +222,6 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
       m_Thread_run_flag(-1),
       m_params(*params),
       m_listener(listener) {
-
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_SIGNALK_NET, &CommDriverSignalKNet::handle_SK_sentence,
        this);
@@ -238,9 +236,7 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
   Open();
 }
 
-CommDriverSignalKNet::~CommDriverSignalKNet() {
-  Close();
-}
+CommDriverSignalKNet::~CommDriverSignalKNet() { Close(); }
 
 void CommDriverSignalKNet::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
@@ -308,21 +304,21 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
               break;
             } else {
               wxYield();
-              wxMilliSleep(1000*tSec/10);
+              wxMilliSleep(1000 * tSec / 10);
             }
           }
           delete addrscan;
           return false;
         } else {
           wxYield();
-          wxMilliSleep(1000*tSec/10);
+          wxMilliSleep(1000 * tSec / 10);
         }
       }
       delete namescan;
       return false;
     } else {
       wxYield();
-      wxMilliSleep(1000*tSec/10);
+      wxMilliSleep(1000 * tSec / 10);
     }
   }
 
@@ -432,20 +428,15 @@ void CommDriverSignalKNet::handle_SK_sentence(
   // Notify all listeners
   auto pos = iface.find(":");
   std::string comm_interface = "";
-  if (pos != std::string::npos)
-    comm_interface = iface.substr(pos + 1);
-  auto navmsg =
-      std::make_shared<const SignalkMsg>(m_self, m_context, msgTerminated, comm_interface);
+  if (pos != std::string::npos) comm_interface = iface.substr(pos + 1);
+  auto navmsg = std::make_shared<const SignalkMsg>(
+      m_self, m_context, msgTerminated, comm_interface);
   m_listener.Notify(std::move(navmsg));
 }
 
-  void CommDriverSignalKNet::initIXNetSystem() {
-    ix::initNetSystem();
-  };
+void CommDriverSignalKNet::initIXNetSystem() { ix::initNetSystem(); };
 
-  void CommDriverSignalKNet::uninitIXNetSystem() {
-    ix::uninitNetSystem();
-  };
+void CommDriverSignalKNet::uninitIXNetSystem() { ix::uninitNetSystem(); };
 
 #if 0
 void CommDriverSignalKNet::handleUpdate(wxJSONValue &update) {

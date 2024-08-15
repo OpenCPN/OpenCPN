@@ -48,13 +48,13 @@ void PluginPaths::initWindowsPaths() {
 
   if (g_bportable) {
     m_userLibdir =
-      g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
+        g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_libdirs.push_back(m_userLibdir);
     m_userBindir =
-      g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
+        g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_bindirs = m_libdirs;
     m_userDatadir =
-      g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
+        g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_datadirs.push_back(m_userDatadir);
     return;
   }
@@ -119,12 +119,12 @@ void PluginPaths::initLinuxPaths() {
 #if defined(__WXGTK__) || defined(__WXQT__)
   char exe_buf[100] = {0};
   ssize_t len = readlink("/proc/self/exe", exe_buf, 99);
-  if (len > 0){
+  if (len > 0) {
     exe_buf[len] = '\0';
     wxFileName fn(exe_buf);
     std::string path = fn.GetPath().ToStdString();
     base_plugin_paths.push_back(expand(path + "/../lib/opencpn"));
-    if(g_BasePlatform->GetOSDetail()->osd_arch.find("64") != string::npos) {
+    if (g_BasePlatform->GetOSDetail()->osd_arch.find("64") != string::npos) {
       base_plugin_paths.push_back(expand(path + "/../lib64/opencpn"));
     } else {
       base_plugin_paths.push_back(expand(path + "/../lib32/opencpn"));
@@ -138,9 +138,9 @@ void PluginPaths::initLinuxPaths() {
   for (auto& dir : m_libdirs) {
     dir = expand(dir);
   }
-  for (auto &base_plugin_path : base_plugin_paths) {
+  for (auto& base_plugin_path : base_plugin_paths) {
     if (envdirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
-      if(ocpn::exists(base_plugin_path)) {
+      if (ocpn::exists(base_plugin_path)) {
         m_libdirs.push_back(base_plugin_path);
       }
     }
@@ -161,7 +161,7 @@ void PluginPaths::initLinuxPaths() {
   for (auto& dir : m_datadirs) {
     dir += "/opencpn/plugins";
   }
-  for (auto &base_plugin_path : base_plugin_paths) {
+  for (auto& base_plugin_path : base_plugin_paths) {
     if (xdg_data_dirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
       m_datadirs.push_back(base_plugin_path + "/plugins");
     }

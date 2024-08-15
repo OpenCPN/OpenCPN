@@ -35,13 +35,11 @@
 
 #include "model/logger.h"
 
-
 // Work around gnu's major() and minor() macros
 #ifdef major
 #undef major
 #undef minor
 #endif
-
 
 #ifdef _WIN32
 static const char SEP = '\\';
@@ -51,11 +49,11 @@ static const char SEP = '/';
 
 /** Hardcoded representation of a blocked plugin. */
 typedef struct config_block {
-  const char* name;      /** Official plugin name as of GetCommonName(). */
+  const char* name; /** Official plugin name as of GetCommonName(). */
   int version_major;
   int version_minor;
-  bool hard;             /** If true, unconditional hard block; else load
-                             plugin with a warning.  */
+  bool hard; /** If true, unconditional hard block; else load
+                 plugin with a warning.  */
   const char* message;
 } config_block;
 
@@ -78,20 +76,17 @@ instead. Please uninstall this plugin and install o-charts
 using the PlugIn manager master catalog.
 )");
 
-
 static const config_block plugin_blacklist[] = {
-  { "Radar",     0, 95, true, STD_HARD_MSG},
-  { "Watchdog",  1, 0,  true, STD_HARD_MSG},
-  { "squiddio",  0, 2,  true, STD_HARD_MSG},
-  { "ObjSearch", 0, 3,  true, STD_HARD_MSG},
+    {"Radar", 0, 95, true, STD_HARD_MSG},
+    {"Watchdog", 1, 0, true, STD_HARD_MSG},
+    {"squiddio", 0, 2, true, STD_HARD_MSG},
+    {"ObjSearch", 0, 3, true, STD_HARD_MSG},
 #ifdef __WXOSX__
-  { "S63",       0, 6,  true, STD_HARD_MSG},
+    {"S63", 0, 6, true, STD_HARD_MSG},
 #endif
-  { "oeSENC",   99, 99, true, OCHART_OBSOLETED_MSG},
-  { "oernc_pi", 99, 99, true, OCHART_OBSOLETED_MSG},
-  { "oesenc_pi", 99, 99, true, OCHART_OBSOLETED_MSG}
-};
-
+    {"oeSENC", 99, 99, true, OCHART_OBSOLETED_MSG},
+    {"oernc_pi", 99, 99, true, OCHART_OBSOLETED_MSG},
+    {"oesenc_pi", 99, 99, true, OCHART_OBSOLETED_MSG}};
 
 /** Runtime representation of a plugin block. */
 typedef struct block {
@@ -100,19 +95,19 @@ typedef struct block {
   plug_status status;
   const char* message;
 
-  block()
-    : major(0), minor(0), status(plug_status::unblocked), message("") {};
+  block() : major(0), minor(0), status(plug_status::unblocked), message("") {};
 
   block(int _major, int _minor)
-    : major(_major), minor(_minor), status(plug_status::unblocked),
-      message("")
-    {};
+      : major(_major),
+        minor(_minor),
+        status(plug_status::unblocked),
+        message("") {};
 
   block(const struct config_block& cb)
-    : major(cb.version_major), minor(cb.version_minor),
-      status(cb.hard ? plug_status::hard : plug_status::soft),
-      message(cb.message)
-    {};
+      : major(cb.version_major),
+        minor(cb.version_minor),
+        status(cb.hard ? plug_status::hard : plug_status::soft),
+        message(cb.message) {};
 
   /** Return true if _major/_minor matches the blocked plugin. */
   bool is_matching(int _major, int _minor) const {
@@ -128,7 +123,6 @@ typedef struct block {
   }
 
 } block;
-
 
 /** Drop possible directory, unix-style lib prefix and extension suffix. */
 static inline std::string normalize_lib(const std::string& name) {
@@ -146,20 +140,18 @@ static inline std::string normalize_lib(const std::string& name) {
 static std::string to_lower(const std::string& arg) {
   std::string s(arg);
   std::transform(s.begin(), s.end(), s.begin(),
-                 [](unsigned char c){ return std::tolower(c); });
+                 [](unsigned char c) { return std::tolower(c); });
   return s;
 }
 
+class PlugBlacklist : public AbstractBlacklist {
+  friend std::unique_ptr<AbstractBlacklist> blacklist_factory();
 
-class PlugBlacklist: public AbstractBlacklist {
-
-friend std::unique_ptr<AbstractBlacklist> blacklist_factory();
-
-typedef std::unordered_map<std::string, block> block_map;
+  typedef std::unordered_map<std::string, block> block_map;
 
 private:
   PlugBlacklist() {
-    constexpr int list_len = sizeof(plugin_blacklist)/sizeof(config_block);
+    constexpr int list_len = sizeof(plugin_blacklist) / sizeof(config_block);
     for (int i = 0; i < list_len; i += 1) {
       m_blocks[plugin_blacklist[i].name] = block(plugin_blacklist[i]);
     }
@@ -176,7 +168,7 @@ private:
   }
 
   bool update_block(const std::string& name, int major, int minor) {
-    bool  new_block = false;
+    bool new_block = false;
     if (m_blocks.find(name) == m_blocks.end()) {
       m_blocks[name] = block(major, minor);
       new_block = true;
@@ -188,21 +180,20 @@ private:
   }
 
   /** Avoid pulling in wx libraries in low-level model code. */
-  std::string format_message(const std::string msg, const  plug_data& data) {
-    int size = std::snprintf(nullptr, 0, msg.c_str(),
-                             data.name.c_str(), data.major, data.minor);
+  std::string format_message(const std::string msg, const plug_data& data) {
+    int size = std::snprintf(nullptr, 0, msg.c_str(), data.name.c_str(),
+                             data.major, data.minor);
     if (size < 0) {
       wxLogWarning("Cannot format message for %s", data.name.c_str());
       return "Internal error: Cannot format message(!)";
     }
     std::unique_ptr<char[]> buf(new char[size]);
-    std::snprintf(buf.get(), size, msg.c_str(),
-                  data.name.c_str(), data.major, data.minor);
+    std::snprintf(buf.get(), size, msg.c_str(), data.name.c_str(), data.major,
+                  data.minor);
     return std::string(buf.get(), buf.get() + size - 1);
   }
 
 public:
-
   virtual plug_data get_library_data(const std::string& library_file) {
     std::string filename(normalize_lib(library_file));
     auto found = find_block(filename);
@@ -220,8 +211,7 @@ public:
     return get_status(pd.name, pd.major, pd.minor);
   }
 
-  virtual bool mark_unloadable(const std::string& name,
-		               int major, int minor) {
+  virtual bool mark_unloadable(const std::string& name, int major, int minor) {
     return update_block(name, major, minor);
   }
 
@@ -229,8 +219,7 @@ public:
   bool mark_unloadable(const std::string& path) {
     auto filename(path);
     auto slashpos = filename.rfind(SEP);
-    if (slashpos != std::string::npos)
-      filename = filename.substr(slashpos + 1);
+    if (slashpos != std::string::npos) filename = filename.substr(slashpos + 1);
     return update_block(filename, -1, -1);
   }
 
@@ -266,7 +255,6 @@ public:
 #pragma GCC diagnostic pop
 };
 
-
 std::unique_ptr<AbstractBlacklist> blacklist_factory() {
   return std::unique_ptr<AbstractBlacklist>(new PlugBlacklist());
 };
@@ -279,7 +267,6 @@ std::unique_ptr<AbstractBlacklist> blacklist_factory() {
 
 #include <iostream>
 int main(int argc, char** argv) {
-
   const std::string name(argv[1]);
   int major = atoi(argv[2]);
   int minor = atoi(argv[3]);
@@ -287,15 +274,23 @@ int main(int argc, char** argv) {
   blacklist->mark_unloadable("foo");
   auto s = blacklist->get_status(name, major, minor);
   switch (s) {
-      case plug_status::unloadable: std::cout << "unloadable\n"; break;
-      case plug_status::unblocked: std::cout << "unblocked\n"; break;
-      case plug_status::hard: std::cout << "hard\n"; break;
-      case plug_status::soft: std::cout << "soft\n"; break;
+    case plug_status::unloadable:
+      std::cout << "unloadable\n";
+      break;
+    case plug_status::unblocked:
+      std::cout << "unblocked\n";
+      break;
+    case plug_status::hard:
+      std::cout << "hard\n";
+      break;
+    case plug_status::soft:
+      std::cout << "soft\n";
+      break;
   }
   auto lib = blacklist->plugin_by_libname(name);
   std::cout << "found plugin: \"" << lib.name << "\" version: " << lib.major
-      << "." << lib.minor << "\n";
+            << "." << lib.minor << "\n";
   exit(0);
 }
 
-#endif    // BLACKLIST_TEST
+#endif  // BLACKLIST_TEST

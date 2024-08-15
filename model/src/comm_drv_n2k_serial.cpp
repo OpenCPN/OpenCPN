@@ -42,7 +42,7 @@
 #include "model/logger.h"
 
 #include <N2kMsg.h>
-std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg);
+std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg);
 
 template <typename T>
 class n2k_atomic_queue {
@@ -129,7 +129,6 @@ private:
   bool full_ = 0;
 };
 
-
 class CommDriverN2KSerialEvent;  // fwd
 
 class CommDriverN2KSerialThread : public wxThread {
@@ -140,7 +139,7 @@ public:
 
   ~CommDriverN2KSerialThread(void);
   void* Entry();
-  bool SetOutMsg(const std::vector<unsigned char> &load);
+  bool SetOutMsg(const std::vector<unsigned char>& load);
   void OnExit(void);
 
 private:
@@ -151,7 +150,7 @@ private:
   bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
   void CloseComPortPhysical();
   size_t WriteComPortPhysical(std::vector<unsigned char> msg);
-  size_t WriteComPortPhysical(unsigned char *msg, size_t length);
+  size_t WriteComPortPhysical(unsigned char* msg, size_t length);
   void SetGatewayOperationMode(void);
 
   CommDriverN2KSerial* m_pParentDriver;
@@ -180,8 +179,8 @@ wxDECLARE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, CommDriverN2KSerialEvent);
 class CommDriverN2KSerialEvent : public wxEvent {
 public:
   CommDriverN2KSerialEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
-      : wxEvent(id, commandType){};
-  ~CommDriverN2KSerialEvent(){};
+      : wxEvent(id, commandType) {};
+  ~CommDriverN2KSerialEvent() {};
 
   // accessors
   void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
@@ -274,13 +273,9 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
 
   int yyp = 4;
 #endif
-
-
 }
 
-CommDriverN2KSerial::~CommDriverN2KSerial() {
-  Close();
-}
+CommDriverN2KSerial::~CommDriverN2KSerial() { Close(); }
 
 bool CommDriverN2KSerial::Open() {
   wxString comx;
@@ -332,7 +327,7 @@ void CommDriverN2KSerial::Activate() {
 }
 
 bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                        std::shared_ptr<const NavAddr> addr) {
+                                      std::shared_ptr<const NavAddr> addr) {
 #ifndef ANDROID
 
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
@@ -341,52 +336,48 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
   uint64_t _pgn = msg_n2k->PGN.pgn;
   auto destination_address = std::static_pointer_cast<const NavAddr2000>(addr);
 
-  tN2kMsg N2kMsg;   // automatically sets destination 255
+  tN2kMsg N2kMsg;  // automatically sets destination 255
   N2kMsg.SetPGN(_pgn);
   N2kMsg.Priority = msg_n2k->priority;
-  if (destination_address)
-    N2kMsg.Destination = destination_address->address;
+  if (destination_address) N2kMsg.Destination = destination_address->address;
 
-  for (size_t i=0 ; i < load.size(); i++)
-    N2kMsg.AddByte(load.at(i));    //data
+  for (size_t i = 0; i < load.size(); i++) N2kMsg.AddByte(load.at(i));  // data
 
   const std::vector<uint8_t> mv = BufferToActisenseFormat(N2kMsg);
 
-//    printf("mv\n");
-//    for(size_t i=0; i< mv.size(); i++){
-//        printf("%02X ", mv.at(i));
-//      }
-//    printf("\n\n");
+  //    printf("mv\n");
+  //    for(size_t i=0; i< mv.size(); i++){
+  //        printf("%02X ", mv.at(i));
+  //      }
+  //    printf("\n\n");
 
-    if( GetSecondaryThread() ) {
-        if( IsSecThreadActive() )
-        {
-            int retry = 10;
-            while( retry ) {
-                if( GetSecondaryThread()->SetOutMsg(mv))
-                    return true;
-                else
-                    retry--;
-            }
-            return false;   // could not send after several tries....
-        }
+  if (GetSecondaryThread()) {
+    if (IsSecThreadActive()) {
+      int retry = 10;
+      while (retry) {
+        if (GetSecondaryThread()->SetOutMsg(mv))
+          return true;
         else
-            return false;
-    }
+          retry--;
+      }
+      return false;  // could not send after several tries....
+    } else
+      return false;
+  }
 #endif
-    return true;
+  return true;
 }
 
-void CommDriverN2KSerial::ProcessManagementPacket(std::vector<unsigned char> *payload) {
+void CommDriverN2KSerial::ProcessManagementPacket(
+    std::vector<unsigned char>* payload) {
+  if (payload->at(2) != 0xF2) {  // hearbeat
+    // printf("    pl ");
+    // for (unsigned int i = 0; i < payload->size(); i++)
+    //  printf("%02X ", payload->at(i));
+    // printf("\n");
+  }
 
-   if (payload->at(2) != 0xF2) {   // hearbeat
-     //printf("    pl ");
-     //for (unsigned int i = 0; i < payload->size(); i++)
-     // printf("%02X ", payload->at(i));
-     //printf("\n");
-   }
-
-  switch (payload->at(2)){
+  switch (payload->at(2)) {
     case 0x47:
       m_bmg47_resp = true;
       break;
@@ -398,7 +389,7 @@ void CommDriverN2KSerial::ProcessManagementPacket(std::vector<unsigned char> *pa
       break;
     case 0x041: {
       m_bmg41_resp = true;
-      if (payload->at(3) == 0x02) {     // ASCII device_common_name
+      if (payload->at(3) == 0x02) {  // ASCII device_common_name
         std::string device_common_name;
         for (unsigned int i = 0; i < 32; i++) {
           device_common_name += payload->at(i + 14);
@@ -411,12 +402,11 @@ void CommDriverN2KSerial::ProcessManagementPacket(std::vector<unsigned char> *pa
     case 0x042: {
       m_bmg42_resp = true;
       unsigned char name[8];
-      for (unsigned int i = 0; i < 8; i++)
-        name[i] = payload->at(i + 15);
+      for (unsigned int i = 0; i < 8; i++) name[i] = payload->at(i + 15);
 
-      memcpy( (void *)&NAME, name, 8);
+      memcpy((void*)&NAME, name, 8);
       // Extract the manufacturers code
-      int *f1 = (int *)&NAME;
+      int* f1 = (int*)&NAME;
       int f1d = *f1;
       m_manufacturers_code = f1d >> 21;
       break;
@@ -424,17 +414,14 @@ void CommDriverN2KSerial::ProcessManagementPacket(std::vector<unsigned char> *pa
 
     default:
       break;
-
   }
 }
-
 
 static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
   uint64_t name;
   memcpy(&name, reinterpret_cast<const void*>(payload.data()), sizeof(name));
   return name;
 }
-
 
 void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
     CommDriverN2KSerialEvent& event) {
@@ -454,11 +441,13 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
   *c++ = payload->at(4);
   *c++ = payload->at(5);
   // memcpy(&v, &data[3], 1);
-  //printf("          %ld\n", pgn);
+  // printf("          %ld\n", pgn);
 
   auto name = PayloadToName(*payload);
-  auto msg = std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
-  auto msg_all = std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
+  auto msg =
+      std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
+  auto msg_all =
+      std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
 
   m_listener.Notify(std::move(msg));
   m_listener.Notify(std::move(msg_all));
@@ -482,34 +471,33 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
 #endif
 }
 
-int CommDriverN2KSerial::GetMfgCode(){
-  unsigned char request_name[] = { 0x42};
-  int ni = SendMgmtMsg( request_name, sizeof(request_name), 0x41, 2000, &m_bmg42_resp);
-  if (ni)
-    return ni;     // Not responding, return error so upper retries.
+int CommDriverN2KSerial::GetMfgCode() {
+  unsigned char request_name[] = {0x42};
+  int ni = SendMgmtMsg(request_name, sizeof(request_name), 0x41, 2000,
+                       &m_bmg42_resp);
+  if (ni) return ni;  // Not responding, return error so upper retries.
   m_got_mfg_code = true;
   return 0;
 }
 
-int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
-                                      unsigned char cmd_code,
-                                      int timeout_msec, bool *response_flag) {
+int CommDriverN2KSerial::SendMgmtMsg(unsigned char* string, size_t string_size,
+                                     unsigned char cmd_code, int timeout_msec,
+                                     bool* response_flag) {
 #ifndef ANDROID
-    // Make a message
+  // Make a message
   int byteSum = 0;
   uint8_t CheckSum;
-  std::vector <unsigned char> msg;
+  std::vector<unsigned char> msg;
 
   msg.push_back(ESCAPE);
   msg.push_back(STARTOFTEXT);
   msg.push_back(0xA1);
   byteSum += 0xA1;
-  msg.push_back(string_size);      // payload length
+  msg.push_back(string_size);  // payload length
   byteSum += string_size;
 
-  for (unsigned int i=0; i < string_size; i++){
-    if (string[i] == ESCAPE)
-      msg.push_back(string[i]);
+  for (unsigned int i = 0; i < string_size; i++) {
+    if (string[i] == ESCAPE) msg.push_back(string[i]);
     msg.push_back(string[i]);
     byteSum += string[i];
   }
@@ -524,35 +512,30 @@ int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
 
   // send it out
 
-  if (response_flag)
-    *response_flag = false;  // prime the response detector
+  if (response_flag) *response_flag = false;  // prime the response detector
 
   // Send the msg
   bool bsent = false;
   bool not_done = true;
   int ntry_outer = 10;
-  while ( not_done ){
-    if( GetSecondaryThread() && IsSecThreadActive() ) {
+  while (not_done) {
+    if (GetSecondaryThread() && IsSecThreadActive()) {
       int retry = 10;
-      while( retry ) {
-        if( GetSecondaryThread()->SetOutMsg( msg )){
+      while (retry) {
+        if (GetSecondaryThread()->SetOutMsg(msg)) {
           bsent = true;
           not_done = false;
           break;
-        }
-        else
+        } else
           retry--;
       }
-    }
-    else {
+    } else {
       wxMilliSleep(100);
-      if (ntry_outer-- <= 0)
-        not_done = false;
+      if (ntry_outer-- <= 0) not_done = false;
     }
   }
 
-  if (!bsent)
-    return 1;
+  if (!bsent) return 1;
 
   bool bOK = false;
   if (timeout_msec) {
@@ -560,24 +543,23 @@ int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
     while (timeout > 0) {
       wxYieldIfNeeded();
       wxMilliSleep(100);
-      if (response_flag){
-        if (*response_flag){
+      if (response_flag) {
+        if (*response_flag) {
           bOK = true;
           break;
         }
       }
       timeout -= 100;
     }
-  }
-  else
+  } else
     bOK = true;
 
-  if(!bOK){
-    //printf( "***Err-1\n");
+  if (!bOK) {
+    // printf( "***Err-1\n");
     return 1;
   }
-  //else
-    //printf("***OK-1  %d\n", timeout);
+  // else
+  // printf("***OK-1  %d\n", timeout);
 #endif
   return 0;
 }
@@ -596,15 +578,13 @@ static unsigned char NGT_STARTUP_SEQ[] = {
 };
 
 int CommDriverN2KSerial::SetTXPGN(int pgn) {
-
   // Try to detect Actisense NGT-xx, has Mfg_code == 273
-//   if (m_got_mfg_code) {
-//     if (m_manufacturers_code != 273)
-//       return 0;  // Not Actisense, no error
-//   }
+  //   if (m_got_mfg_code) {
+  //     if (m_manufacturers_code != 273)
+  //       return 0;  // Not Actisense, no error
+  //   }
 
-  SendMgmtMsg( NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
-
+  SendMgmtMsg(NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
 
 #if 0
   //  Enable PGN message
@@ -636,7 +616,6 @@ int CommDriverN2KSerial::SetTXPGN(int pgn) {
 //   if (cc)
 //     return -3;
 #endif
-
 
   return 0;
 }
@@ -721,18 +700,16 @@ void CommDriverN2KSerialThread::CloseComPortPhysical() {
 }
 
 void CommDriverN2KSerialThread::SetGatewayOperationMode(void) {
-
   // For YDNU-02 device
   // From Device User Manual
   // Set the mode to "N2K"
-  unsigned char config_string[] = { 0x10, 0x02, 0xA1, 0x03, 0x11,
-                                    0x02, 0x00, 0x49, 0x10, 0x03};
-	//std::vector<byte>writeBuffer {DLE,STX,NGT_TX_CMD,0x03,0x11,0x02,0x00,0x49, DLE,ETX};
+  unsigned char config_string[] = {0x10, 0x02, 0xA1, 0x03, 0x11,
+                                   0x02, 0x00, 0x49, 0x10, 0x03};
+  // std::vector<byte>writeBuffer {DLE,STX,NGT_TX_CMD,0x03,0x11,0x02,0x00,0x49,
+  // DLE,ETX};
 
   WriteComPortPhysical(config_string, 10);
-
 }
-
 
 void CommDriverN2KSerialThread::ThreadMessage(const wxString& msg) {
   //    Signal the main program thread
@@ -741,7 +718,8 @@ void CommDriverN2KSerialThread::ThreadMessage(const wxString& msg) {
   //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
-size_t CommDriverN2KSerialThread::WriteComPortPhysical(std::vector<unsigned char> msg) {
+size_t CommDriverN2KSerialThread::WriteComPortPhysical(
+    std::vector<unsigned char> msg) {
   if (m_serial.isOpen()) {
     ssize_t status = 0;
 #if 0
@@ -753,7 +731,7 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(std::vector<unsigned char
       status = m_serial.write((uint8_t*)msg.data(), msg.size());
     } catch (std::exception& e) {
       WARNING_LOG << "Unhandled Exception while writing to serial port: "
-          << e.what();
+                  << e.what();
       return -1;
     }
     return status;
@@ -762,14 +740,15 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(std::vector<unsigned char
   }
 }
 
-size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char *msg, size_t length) {
+size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
+                                                       size_t length) {
   if (m_serial.isOpen()) {
     ssize_t status;
     try {
       status = m_serial.write((uint8_t*)msg, length);
     } catch (std::exception&) {
-//       std::cerr << "Unhandled Exception while writing to serial port: " <<
-//       e.what() << std::endl;
+      //       std::cerr << "Unhandled Exception while writing to serial port: "
+      //       << e.what() << std::endl;
       return -1;
     }
     return status;
@@ -778,9 +757,9 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char *msg, size_
   }
 }
 
-bool CommDriverN2KSerialThread::SetOutMsg(const std::vector<unsigned char> &msg)
-{
-  if(out_que.size() < OUT_QUEUE_LENGTH){
+bool CommDriverN2KSerialThread::SetOutMsg(
+    const std::vector<unsigned char>& msg) {
+  if (out_que.size() < OUT_QUEUE_LENGTH) {
     out_que.push(msg);
     return true;
   }
@@ -806,12 +785,10 @@ void* CommDriverN2KSerialThread::Entry() {
     // needed/what we want as the reconnection logic is able to pick it up
     // whenever it actually appears (Of course given it appears with the
     // expected device name).
-  }
-  else {
+  } else {
     wxMilliSleep(100);
     SetGatewayOperationMode();
   }
-
 
   m_pParentDriver->SetSecThreadActive();  // I am alive
 
@@ -846,11 +823,10 @@ void* CommDriverN2KSerialThread::Entry() {
       // std::cerr << "Serial port seems closed." << std::endl;
       wxMilliSleep(250 * retries);
       CloseComPortPhysical();
-      if (OpenComPortPhysical(m_PortName, m_baud)){
+      if (OpenComPortPhysical(m_PortName, m_baud)) {
         SetGatewayOperationMode();
         retries = 0;
-      }
-      else if (retries < 10)
+      } else if (retries < 10)
         retries++;
     }
 
@@ -861,8 +837,7 @@ void* CommDriverN2KSerialThread::Entry() {
     }
 
     while (!circle.empty()) {
-      if (ib >= DS_RX_BUFFER_SIZE)
-        ib = 0;
+      if (ib >= DS_RX_BUFFER_SIZE) ib = 0;
       uint8_t next_byte = circle.get();
 
       if (bInMsg) {
@@ -877,18 +852,19 @@ void* CommDriverN2KSerialThread::Entry() {
           // Process packet
           //    Copy the message into a std::vector
 
-          auto buffer = std::make_shared<std::vector<unsigned char>>(rx_buffer, rx_buffer + ib);
+          auto buffer = std::make_shared<std::vector<unsigned char>>(
+              rx_buffer, rx_buffer + ib);
           std::vector<unsigned char>* vec = buffer.get();
 
           ib = 0;
-          //tak_ptr = tptr;
+          // tak_ptr = tptr;
           bInMsg = false;
           bGotESC = false;
 
-//           printf("raw ");
-//              for (unsigned int i = 0; i < vec->size(); i++)
-//                printf("%02X ", vec->at(i));
-//              printf("\n");
+          //           printf("raw ");
+          //              for (unsigned int i = 0; i < vec->size(); i++)
+          //                printf("%02X ", vec->at(i));
+          //              printf("\n");
 
           // Message is finished
           // Send the captured raw data vector pointer to the thread's "parent"
@@ -896,7 +872,6 @@ void* CommDriverN2KSerialThread::Entry() {
           CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
           Nevent.SetPayload(buffer);
           m_pParentDriver->AddPendingEvent(Nevent);
-
 
         } else {
           bGotESC = (next_byte == ESCAPE);
@@ -973,8 +948,7 @@ void* CommDriverN2KSerialThread::Entry() {
     // needed/what we want as the reconnection logic is able to pick it up
     // whenever it actually appears (Of course given it appears with the
     // expected device name).
-  }
-  else {
+  } else {
     SetGatewayOperationMode();
   }
 
@@ -1013,11 +987,10 @@ void* CommDriverN2KSerialThread::Entry() {
       // std::cerr << "Serial port seems closed." << std::endl;
       wxMilliSleep(250 * retries);
       CloseComPortPhysical();
-      if (OpenComPortPhysical(m_PortName, m_baud)){
+      if (OpenComPortPhysical(m_PortName, m_baud)) {
         SetGatewayOperationMode();
         retries = 0;
-      }
-      else if (retries < 10)
+      } else if (retries < 10)
         retries++;
     }
 
@@ -1038,7 +1011,7 @@ void* CommDriverN2KSerialThread::Entry() {
               if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                 put_ptr = rx_buffer;
               bGotESC = false;
-            } else if ( ENDOFTEXT == next_byte ) {
+            } else if (ENDOFTEXT == next_byte) {
               // Process packet
               //    Copy the message into a std::vector
 
@@ -1103,7 +1076,7 @@ void* CommDriverN2KSerialThread::Entry() {
           }
         }
       }  // if newdata > 0
-    }    // while
+    }  // while
 
     //      Check for any pending output message
     bool b_qdata = !out_que.empty();
@@ -1137,33 +1110,36 @@ void* CommDriverN2KSerialThread::Entry() {
 
 #endif  // Android
 
-
 //*****************************************************************************
 // Actisense Format:
-// <10><02><93><length (1)><priority (1)><PGN (3)><destination (1)><source (1)><time (4)><len (1)><data (len)><CRC (1)><10><03>
+// <10><02><93><length (1)><priority (1)><PGN (3)><destination (1)><source
+// (1)><time (4)><len (1)><data (len)><CRC (1)><10><03>
 #define MaxActisenseMsgBuf 400
 #define MsgTypeN2kTX 0x94
 
-void AddByteEscapedToBuf(unsigned char byteToAdd, uint8_t &idx, unsigned char *buf, int &byteSum);
+void AddByteEscapedToBuf(unsigned char byteToAdd, uint8_t& idx,
+                         unsigned char* buf, int& byteSum);
 
-std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg){
-  unsigned long _PGN=msg.PGN;
-  uint8_t msgIdx=0;
+std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg) {
+  unsigned long _PGN = msg.PGN;
+  uint8_t msgIdx = 0;
   int byteSum = 0;
   uint8_t CheckSum;
   unsigned char ActisenseMsgBuf[MaxActisenseMsgBuf];
 
+  ActisenseMsgBuf[msgIdx++] = ESCAPE;
+  ActisenseMsgBuf[msgIdx++] = STARTOFTEXT;
+  AddByteEscapedToBuf(MsgTypeN2kTX, msgIdx, ActisenseMsgBuf, byteSum);
+  AddByteEscapedToBuf(msg.DataLen + 6, msgIdx, ActisenseMsgBuf,
+                      byteSum);  // length does not include escaped chars
 
-  ActisenseMsgBuf[msgIdx++]=ESCAPE;
-  ActisenseMsgBuf[msgIdx++]=STARTOFTEXT;
-  AddByteEscapedToBuf(MsgTypeN2kTX,msgIdx,ActisenseMsgBuf,byteSum);
-  AddByteEscapedToBuf(msg.DataLen+6,msgIdx,ActisenseMsgBuf,byteSum); //length does not include escaped chars
-
-  AddByteEscapedToBuf(msg.Priority,msgIdx,ActisenseMsgBuf,byteSum);
-  AddByteEscapedToBuf(_PGN & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _PGN>>=8;
-  AddByteEscapedToBuf(_PGN & 0xff,msgIdx,ActisenseMsgBuf,byteSum); _PGN>>=8;
-  AddByteEscapedToBuf(_PGN & 0xff,msgIdx,ActisenseMsgBuf,byteSum);
-  AddByteEscapedToBuf(msg.Destination,msgIdx,ActisenseMsgBuf,byteSum);
+  AddByteEscapedToBuf(msg.Priority, msgIdx, ActisenseMsgBuf, byteSum);
+  AddByteEscapedToBuf(_PGN & 0xff, msgIdx, ActisenseMsgBuf, byteSum);
+  _PGN >>= 8;
+  AddByteEscapedToBuf(_PGN & 0xff, msgIdx, ActisenseMsgBuf, byteSum);
+  _PGN >>= 8;
+  AddByteEscapedToBuf(_PGN & 0xff, msgIdx, ActisenseMsgBuf, byteSum);
+  AddByteEscapedToBuf(msg.Destination, msgIdx, ActisenseMsgBuf, byteSum);
 
 #if 0
   // For TX through Actisense compatible gateway, we skip "source" byte and msg time fields
@@ -1178,22 +1154,21 @@ std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg){
 
 #endif
 
-  AddByteEscapedToBuf(msg.DataLen,msgIdx,ActisenseMsgBuf,byteSum);
+  AddByteEscapedToBuf(msg.DataLen, msgIdx, ActisenseMsgBuf, byteSum);
 
   for (int i = 0; i < msg.DataLen; i++)
-    AddByteEscapedToBuf(msg.Data[i],msgIdx,ActisenseMsgBuf,byteSum);
+    AddByteEscapedToBuf(msg.Data[i], msgIdx, ActisenseMsgBuf, byteSum);
   byteSum %= 256;
 
   CheckSum = (uint8_t)((byteSum == 0) ? 0 : (256 - byteSum));
-  ActisenseMsgBuf[msgIdx++]=CheckSum;
-  if (CheckSum==ESCAPE) ActisenseMsgBuf[msgIdx++]=CheckSum;
+  ActisenseMsgBuf[msgIdx++] = CheckSum;
+  if (CheckSum == ESCAPE) ActisenseMsgBuf[msgIdx++] = CheckSum;
 
   ActisenseMsgBuf[msgIdx++] = ESCAPE;
   ActisenseMsgBuf[msgIdx++] = ENDOFTEXT;
 
   std::vector<unsigned char> rv;
-  for (unsigned int i=0 ; i < msgIdx; i++)
-    rv.push_back(ActisenseMsgBuf[i]);
+  for (unsigned int i = 0; i < msgIdx; i++) rv.push_back(ActisenseMsgBuf[i]);
 
   return rv;
 }

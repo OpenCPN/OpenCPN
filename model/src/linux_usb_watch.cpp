@@ -80,12 +80,12 @@ void LinuxUsbWatchDaemon::Start() {
   g_dbus_connection_signal_subscribe(
       m_conn, kDevSender, kDevInterface, kDevRemoveMember, 0, 0,
       G_DBUS_SIGNAL_FLAGS_NONE, dev_signal_cb, this, 0);
-  g_dbus_connection_signal_subscribe(
-      m_conn, kResSender, kResInterface, kResMember, 0, 0,
-      G_DBUS_SIGNAL_FLAGS_NONE, prepare_for_sleep_cb, this, 0);
+  g_dbus_connection_signal_subscribe(m_conn, kResSender, kResInterface,
+                                     kResMember, 0, 0, G_DBUS_SIGNAL_FLAGS_NONE,
+                                     prepare_for_sleep_cb, this, 0);
   m_worker_context = g_main_context_new();
   m_main_loop = g_main_loop_new(m_worker_context, false);
-  m_thread = std::thread([&]{ DoStart(); });
+  m_thread = std::thread([&] { DoStart(); });
 }
 
 void LinuxUsbWatchDaemon::Stop() {

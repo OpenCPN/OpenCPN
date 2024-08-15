@@ -65,7 +65,6 @@ double PosPartsToDegrees(float degrees, float minutes,
   return degrees + minutes / 60 + percent_of_minute / 6000;
 }
 
-
 /* Position implementation */
 
 Position::Position(double _lat, double _lon, Type t)
@@ -85,7 +84,7 @@ std::string Position::to_string() const {
   return buf.str();
 }
 
-std::string  Position::TypeToStr(const Type t) const {
+std::string Position::TypeToStr(const Type t) const {
   switch (t) {
     case Type::NE:
       return "NE";
@@ -102,8 +101,8 @@ std::string  Position::TypeToStr(const Type t) const {
     case Type::Undef:
       return "Undefined";
       break;
-   }
-  return "??";     // Not reached, but compiler complains.
+  }
+  return "??";  // Not reached, but compiler complains.
 }
 
 Position::Type Position::LatLongToType(double lat, double lon) {
@@ -127,8 +126,7 @@ static double GgaPartToDouble(const std::string& s) {
   if (dotpos < 2) return nan("");
   auto degrees = s.substr(0, dotpos - 2);
   auto minutes = s.substr(dotpos - 2);
-  return std::stod(degrees) + std::stod(minutes)/60;
-
+  return std::stod(degrees) + std::stod(minutes) / 60;
 }
 
 Position Position::ParseGGA(const std::string gga) {
@@ -149,7 +147,6 @@ Position Position::ParseGGA(const std::string gga) {
 
   return lat != nan("") && lon != nan("") ? Position(lat, lon) : Position();
 }
-
 
 /* Appmsg implementation */
 

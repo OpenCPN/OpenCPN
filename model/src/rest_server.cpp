@@ -87,7 +87,8 @@ struct RestIoEvtData {
                                      const std::string& src,
                                      const std::string& gpx_data, bool _force,
                                      bool _activate) {
-    return RestIoEvtData(Cmd::Object, key, src, gpx_data, "", _force, _activate);
+    return RestIoEvtData(Cmd::Object, key, src, gpx_data, "", _force,
+                         _activate);
   }
 
   /** Create a Cmd::Ping instance: */
@@ -129,13 +130,11 @@ struct RestIoEvtData {
   }
 
 private:
-
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
-                std::string _id, bool _force, bool _activate) ;
+                std::string _id, bool _force, bool _activate);
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
                 std::string id)
       : RestIoEvtData(c, key, src, _payload, id, false, false) {}
-
 };
 
 /** Extract a HTTP variable from query string. */
@@ -271,8 +270,7 @@ static void HandleActivateRoute(struct mg_connection* c,
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
 
-static void HandlePluginMsg(struct mg_connection* c,
-                            struct mg_http_message* hm,
+static void HandlePluginMsg(struct mg_connection* c, struct mg_http_message* hm,
                             RestServer* parent) {
   std::string apikey = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
@@ -301,8 +299,7 @@ static void HandlePluginMsg(struct mg_connection* c,
 }
 
 static void HandleReverseRoute(struct mg_connection* c,
-                               struct mg_http_message* hm,
-                               RestServer* parent) {
+                               struct mg_http_message* hm, RestServer* parent) {
   std::string apikey = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
   std::string guid = HttpVarToString(hm->query, "guid");

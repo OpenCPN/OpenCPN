@@ -55,7 +55,6 @@
 #include "qdebug.h"
 #endif
 
-
 #ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
 #endif
@@ -96,7 +95,6 @@
 #include <termios.h>
 #include <linux/serial.h>
 #endif
-
 
 #ifdef __WXMSW__
 #include <windows.h>
@@ -147,14 +145,12 @@ static int isTTYreal(const char* dev) {
 
 /** For /sysfs paths return corresponding /dev path, otherwise return dev */
 static std::string device_path(const char* dev) {
-    if (strstr(dev, "/sysfs/") != 0) return std::string(dev);
-    std::string path(dev);
-    return std::string("/dev") + path.substr(path.rfind('/'));
+  if (strstr(dev, "/sysfs/") != 0) return std::string(dev);
+  std::string path(dev);
+  return std::string("/dev") + path.substr(path.rfind('/'));
 }
 
-
 static int isTTYreal(const char* dev) {
-
 // gcc 12 bogus regex warning
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -183,15 +179,14 @@ static int isTTYreal(const char* dev) {
   if (!ok) {
     // Accept standard ttyS0..ttyS3 + devices configured by udev:
     static const std::vector<std::regex> patterns = {
-      std::regex("ttyS[0-3]$", std::regex_constants::ECMAScript),
-      std::regex("ttyUSB", std::regex_constants::ECMAScript),
-      std::regex("ttyACM", std::regex_constants::ECMAScript),
-      std::regex("ttyAMA", std::regex_constants::ECMAScript)
-    };
+        std::regex("ttyS[0-3]$", std::regex_constants::ECMAScript),
+        std::regex("ttyUSB", std::regex_constants::ECMAScript),
+        std::regex("ttyACM", std::regex_constants::ECMAScript),
+        std::regex("ttyAMA", std::regex_constants::ECMAScript)};
     for (auto re : patterns) {
       if (std::regex_search(dev, re)) {
-          ok = true;
-          break;
+        ok = true;
+        break;
       }
     }
   }
@@ -508,7 +503,7 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
         }
       }
     }  // for
-  }    // if
+  }  // if
 
   //  Search for Garmin device driver on Windows platforms
 
@@ -543,7 +538,6 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
 }
 
 #endif  // __WXMSW__
-
 
 #if defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
 

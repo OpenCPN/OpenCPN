@@ -125,7 +125,7 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
 
     // Is the destination a portable?  Detect by string inspection.
     std::string port =
-      hostname.find("Portable") == std::string::npos ? "8000" : "8001";
+        hostname.find("Portable") == std::string::npos ? "8000" : "8001";
     MdnsCache::GetInstance().Add(srv, hostname, ip, port);
   }
 

@@ -98,7 +98,7 @@ void OcpnLog::DoLogRecord(wxLogLevel level, const wxString& msg,
   log << oss.str();
 }
 
-Logger::Logger() : info("", 0, "", ""), level(wxLOG_Info){};
+Logger::Logger() : info("", 0, "", ""), level(wxLOG_Info) {};
 
 Logger::~Logger() {
   wxString msg(os.str());

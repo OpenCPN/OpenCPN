@@ -28,8 +28,6 @@
 
 #include "model/comm_drv_signalk_net.h"
 
-
-
 /* commdriverSignalk implementation */
 
 CommDriverSignalK::CommDriverSignalK(const std::string& s)
@@ -38,10 +36,13 @@ CommDriverSignalK::CommDriverSignalK(const std::string& s)
 CommDriverSignalK::~CommDriverSignalK() {}
 
 bool CommDriverSignalK::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                    std::shared_ptr<const NavAddr> addr) { return false;}
+                                    std::shared_ptr<const NavAddr> addr) {
+  return false;
+}
 
-void CommDriverSignalK::SetListener(DriverListener& l){};
+void CommDriverSignalK::SetListener(DriverListener& l) {};
 
-std::shared_ptr<NavAddr> CommDriverSignalK::GetAddress(const NavAddrSignalK& name) {
-    return std::make_shared<NavAddr>(NavAddrSignalK(name.iface));
+std::shared_ptr<NavAddr> CommDriverSignalK::GetAddress(
+    const NavAddrSignalK& name) {
+  return std::make_shared<NavAddr>(NavAddrSignalK(name.iface));
 }

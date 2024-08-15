@@ -27,7 +27,7 @@
  * https://github.com/bratsche/glib/blob/master/gio/tests/gdbus-example-server.c
  */
 
-#include <iostream>            // Debug junk
+#include <iostream>  // Debug junk
 #include <chrono>
 #include <thread>
 
@@ -138,9 +138,9 @@ DbusServer::DbusServer()
   auto ctx = new DbusCtx(0, this);
   auto deleter = [](gpointer p) { delete static_cast<DbusCtx*>(p); };
   static_user_data = ctx;
-  m_owner_id = g_bus_own_name(G_BUS_TYPE_SESSION, kDbusName, flags,
-                              OnBusAcquired, OnNameAcquired, OnNameReleased,
-                              ctx, deleter);
+  m_owner_id =
+      g_bus_own_name(G_BUS_TYPE_SESSION, kDbusName, flags, OnBusAcquired,
+                     OnNameAcquired, OnNameReleased, ctx, deleter);
   DEBUG_LOG << "DbusServer::DbusServer, m_owner_id: " << m_owner_id;
 }
 
@@ -150,13 +150,12 @@ DbusServer::~DbusServer() {
   g_dbus_node_info_unref(introspection_data);
 }
 
-
 void DbusServer::WaitUntilValid() {
-    using namespace std::literals::chrono_literals;
-    int i = 0;
-    do {
-      wxYield();
-      std::this_thread::sleep_for(5ms);
-    } while (!m_is_main_instance &&  i++ < 200);
+  using namespace std::literals::chrono_literals;
+  int i = 0;
+  do {
     wxYield();
+    std::this_thread::sleep_for(5ms);
+  } while (!m_is_main_instance && i++ < 200);
+  wxYield();
 }

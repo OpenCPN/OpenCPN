@@ -30,7 +30,6 @@
 #include "model/sys_events.h"
 #include "model/win_usb_watch.h"
 
-
 class UsbListenFrame : public wxFrame {
 public:
   UsbListenFrame() : wxFrame(GetTopWindow(), wxID_ANY, "") {}
@@ -52,7 +51,6 @@ void WinUsbWatchDaemon::Start() {
   m_frame = new UsbListenFrame();
   m_frame->Hide();
 }
-
 
 void WinUsbWatchDaemon::Stop() {
   if (!m_frame) return;

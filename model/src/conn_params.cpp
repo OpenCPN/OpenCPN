@@ -56,12 +56,12 @@ wxArrayOfConnPrm* TheConnectionParams() {
   return the_connection_params;
 }
 
-ConnectionParams::ConnectionParams(const wxString &configStr) {
+ConnectionParams::ConnectionParams(const wxString& configStr) {
   m_optionsPanel = NULL;
   Deserialize(configStr);
 }
 
-void ConnectionParams::Deserialize(const wxString &configStr) {
+void ConnectionParams::Deserialize(const wxString& configStr) {
   Valid = true;
   wxArrayString prms = wxStringTokenize(configStr, _T(";"));
   if (prms.Count() < 18) {
@@ -126,12 +126,13 @@ wxString ConnectionParams::Serialize() const {
     ostcs.Append(OutputSentenceList[i]);
   }
   wxString ret = wxString::Format(
-      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s"), Type,
-      NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(),
-      Baudrate, ChecksumCheck, IOSelect, InputSentenceListType, istcs.c_str(),
-      OutputSentenceListType, ostcs.c_str(), Priority, Garmin, GarminUpload,
-      FurunoGP3X, bEnabled, UserComment.c_str(), AutoSKDiscover, socketCAN_port.c_str(),
-      NoDataReconnect, DisableEcho, AuthToken.c_str());
+      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%")
+      _T("d;%s"),
+      Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol,
+      Port.c_str(), Baudrate, ChecksumCheck, IOSelect, InputSentenceListType,
+      istcs.c_str(), OutputSentenceListType, ostcs.c_str(), Priority, Garmin,
+      GarminUpload, FurunoGP3X, bEnabled, UserComment.c_str(), AutoSKDiscover,
+      socketCAN_port.c_str(), NoDataReconnect, DisableEcho, AuthToken.c_str());
 
   return ret;
 }
@@ -295,15 +296,14 @@ wxString ConnectionParams::GetDSPort() const {
 }
 
 std::string ConnectionParams::GetStrippedDSPort() {
-  if (Type == SERIAL){
+  if (Type == SERIAL) {
     wxString t = wxString::Format(_T("Serial:%s"), Port.c_str());
     wxString comx = t.AfterFirst(':').BeforeFirst(' ');
     return comx.ToStdString();
-  }
-  else if (Type == NETWORK) {
+  } else if (Type == NETWORK) {
     wxString proto = NetworkProtocolToString(NetProtocol);
     wxString t = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
-                            NetworkAddress.c_str(), NetworkPort);
+                                  NetworkAddress.c_str(), NetworkPort);
     return t.ToStdString();
 
   } else if (Type == SOCKETCAN) {
@@ -317,80 +317,68 @@ std::string ConnectionParams::GetStrippedDSPort() {
 }
 
 std::string ConnectionParams::GetLastDSPort() const {
-  if (Type == SERIAL){
+  if (Type == SERIAL) {
     wxString sp = wxString::Format(_T("Serial:%s"), Port.c_str());
     return sp.ToStdString();
-  }
-  else {
+  } else {
     wxString proto = NetworkProtocolToString(LastNetProtocol);
     wxString sp = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
-                            LastNetworkAddress.c_str(), LastNetworkPort);
+                                   LastNetworkAddress.c_str(), LastNetworkPort);
     return sp.ToStdString();
   }
 }
 
-bool ConnectionParams::SentencePassesFilter(const wxString& sentence, FilterDirection direction)
-{
-    wxArrayString filter;
-    bool listype = false;
+bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
+                                            FilterDirection direction) {
+  wxArrayString filter;
+  bool listype = false;
 
-    if (direction == FILTER_INPUT)
-    {
-        filter = InputSentenceList;
-        if (InputSentenceListType == WHITELIST)
-            listype = true;
-    }
-    else
-    {
-        filter = OutputSentenceList;
-        if (OutputSentenceListType == WHITELIST)
-            listype = true;
-    }
-    if (filter.Count() == 0) //Empty list means everything passes
-        return true;
+  if (direction == FILTER_INPUT) {
+    filter = InputSentenceList;
+    if (InputSentenceListType == WHITELIST) listype = true;
+  } else {
+    filter = OutputSentenceList;
+    if (OutputSentenceListType == WHITELIST) listype = true;
+  }
+  if (filter.Count() == 0)  // Empty list means everything passes
+    return true;
 
-    wxString fs;
-    for (size_t i = 0; i < filter.Count(); i++)
-    {
-        fs = filter[i];
-        switch (fs.Length())
-        {
-            case 2:
-                if (fs == sentence.Mid(1, 2))
-                    return listype;
-                break;
-            case 3:
-                if (fs == sentence.Mid(3, 3))
-                    return listype;
-                break;
-            case 5:
-                if (fs == sentence.Mid(1, 5))
-                    return listype;
-                break;
-            default:
-	        // TODO: regex patterns like ".GPZ.." or 6-character patterns
-		//       are rejected in the connection settings dialogue currently
-		//       experts simply edit .opencpn/opncpn.config
-                wxRegEx  re(fs);
-                if (re.Matches(sentence.Mid(0, 8)))
-                {
-                    return listype;
-                }
-                break;
+  wxString fs;
+  for (size_t i = 0; i < filter.Count(); i++) {
+    fs = filter[i];
+    switch (fs.Length()) {
+      case 2:
+        if (fs == sentence.Mid(1, 2)) return listype;
+        break;
+      case 3:
+        if (fs == sentence.Mid(3, 3)) return listype;
+        break;
+      case 5:
+        if (fs == sentence.Mid(1, 5)) return listype;
+        break;
+      default:
+        // TODO: regex patterns like ".GPZ.." or 6-character patterns
+        //       are rejected in the connection settings dialogue currently
+        //       experts simply edit .opencpn/opncpn.config
+        wxRegEx re(fs);
+        if (re.Matches(sentence.Mid(0, 8))) {
+          return listype;
         }
+        break;
     }
-    return !listype;
+  }
+  return !listype;
 }
 
-NavAddr::Bus ConnectionParams::GetCommProtocol(){
-  if (Type == NETWORK){
+NavAddr::Bus ConnectionParams::GetCommProtocol() {
+  if (Type == NETWORK) {
     if (NetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
     else if (NetProtocol == GPSD)
       return NavAddr::Bus::N0183;
   }
 
-  switch (Protocol){
+  switch (Protocol) {
     case PROTO_NMEA0183:
       return NavAddr::Bus::N0183;
     case PROTO_NMEA2000:
@@ -400,15 +388,15 @@ NavAddr::Bus ConnectionParams::GetCommProtocol(){
   }
 }
 
-NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
-   if (Type == NETWORK){
+NavAddr::Bus ConnectionParams::GetLastCommProtocol() {
+  if (Type == NETWORK) {
     if (LastNetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
     else if (LastNetProtocol == GPSD)
       return NavAddr::Bus::N0183;
   }
 
-  switch (LastDataProtocol){
+  switch (LastDataProtocol) {
     case PROTO_NMEA0183:
       return NavAddr::Bus::N0183;
     case PROTO_NMEA2000:

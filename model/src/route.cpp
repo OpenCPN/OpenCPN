@@ -86,7 +86,8 @@ Route::Route() {
   m_NextLegGreatCircle = false;
 
   m_PlannedSpeed = ROUTE_DEFAULT_SPEED;
-  if (g_defaultBoatSpeed != ROUTE_DEFAULT_SPEED) m_PlannedSpeed = g_defaultBoatSpeed;
+  if (g_defaultBoatSpeed != ROUTE_DEFAULT_SPEED)
+    m_PlannedSpeed = g_defaultBoatSpeed;
 
   m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
   m_TimeDisplayFormat = RTE_TIME_DISP_PC;
@@ -105,8 +106,8 @@ Route::~Route() {
 // route
 //
 void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
-  const wxString &suffix,
-  const bool duplicate_first_point) {
+                       const wxString &suffix,
+                       const bool duplicate_first_point) {
   m_RouteNameString = psourceroute->m_RouteNameString + suffix;
   m_RouteStartString = psourceroute->m_RouteStartString;
   m_RouteEndString = psourceroute->m_RouteEndString;
@@ -114,16 +115,15 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
   int i;
   for (i = start_nPoint; i <= end_nPoint; i++) {
     if (!psourceroute->m_bIsInLayer &&
-      !(i == start_nPoint && duplicate_first_point)) {
+        !(i == start_nPoint && duplicate_first_point)) {
       AddPoint(psourceroute->GetPoint(i), false);
-    }
-    else {
+    } else {
       RoutePoint *psourcepoint = psourceroute->GetPoint(i);
       RoutePoint *ptargetpoint = new RoutePoint(
-        psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->GetIconName(),
-        psourcepoint->GetName(), wxEmptyString, true);
+          psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->GetIconName(),
+          psourcepoint->GetName(), wxEmptyString, true);
       ptargetpoint->m_bShowName =
-        psourcepoint->m_bShowName;  // do not change new wpt's name visibility
+          psourcepoint->m_bShowName;  // do not change new wpt's name visibility
       AddPoint(ptargetpoint, false);
     }
   }
@@ -132,7 +132,7 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
 }
 
 void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
-  bool b_deferBoxCalc) {
+                     bool b_deferBoxCalc) {
   if (pNewPoint->m_bIsolatedMark) {
     pNewPoint->SetShared(true);
   }
@@ -147,7 +147,7 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
   if (prev) UpdateSegmentDistance(prev, pNewPoint);
 
   if (b_rename_in_sequence && pNewPoint->GetName().IsEmpty() &&
-    !pNewPoint->IsShared()) {
+      !pNewPoint->IsShared()) {
     wxString name;
     name.Printf(_T("%03d"), GetnPoints());
     pNewPoint->SetName(name);
@@ -157,34 +157,37 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
 }
 
 void Route::AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence,
-  bool b_deferBoxCalc) {
+                               bool b_deferBoxCalc) {
   int npoints = GetnPoints();
   RoutePoint *newpoint = pNewPoint;
   if (newpoint->m_bIsInLayer) {
     newpoint = new RoutePoint(pNewPoint->m_lat, pNewPoint->m_lon,
-      pNewPoint->GetIconName(), pNewPoint->GetName(), wxEmptyString, false);
-    newpoint->m_bShowName = pNewPoint->m_bShowName; //do not change new wpt's name visibility
+                              pNewPoint->GetIconName(), pNewPoint->GetName(),
+                              wxEmptyString, false);
+    newpoint->m_bShowName =
+        pNewPoint->m_bShowName;  // do not change new wpt's name visibility
   }
   AddPoint(newpoint, false);
   if (npoints != 0) {
     double rlat = GetPoint(npoints)->m_lat;
     double rlon = GetPoint(npoints)->m_lon;
     npoints = GetnPoints();
-    pSelect->AddSelectableRouteSegment(rlat, rlon,
-      GetPoint(npoints)->m_lat, GetPoint(npoints)->m_lon, GetPoint(npoints - 1), GetPoint(npoints), this);
+    pSelect->AddSelectableRouteSegment(
+        rlat, rlon, GetPoint(npoints)->m_lat, GetPoint(npoints)->m_lon,
+        GetPoint(npoints - 1), GetPoint(npoints), this);
   }
   m_lastMousePointIndex = GetnPoints();
 }
 
-void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after, bool bRenamePoints, bool b_deferBoxCalc)
-{
+void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
+                                  bool bRenamePoints, bool b_deferBoxCalc) {
   {
     bool add = false;
 
     if (pNewPoint->m_bIsolatedMark) {
       pNewPoint->SetShared(true);
     }
-    pNewPoint->m_bIsolatedMark = false;       // definitely no longer isolated
+    pNewPoint->m_bIsolatedMark = false;  // definitely no longer isolated
     pNewPoint->m_bIsInRoute = true;
 
     if (insert_after >= GetnPoints() - 1) {

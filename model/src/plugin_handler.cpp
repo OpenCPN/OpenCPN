@@ -36,7 +36,8 @@
 
 #include "wx/wxprec.h"
 
-#if (defined(OCPN_GHC_FILESYSTEM) || (defined(__clang_major__) && (__clang_major__ < 15)))
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
 // MacOS 1.13
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
@@ -45,7 +46,6 @@ namespace fs = ghc::filesystem;
 #include <utility>
 namespace fs = std::filesystem;
 #endif
-
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
@@ -383,11 +383,12 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
     rv = true;
     wxLogDebug("Found Debian version matching Ubuntu host");
   }
-  // macOS is an exception as packages with universal binaries can support both x86_64 and arm64 at the same time
+  // macOS is an exception as packages with universal binaries can support both
+  // x86_64 and arm64 at the same time
   if (host.abi() == "darwin-wx32" && plugin.abi() == "darwin-wx32") {
-    OCPN_OSDetail *detail = g_BasePlatform->GetOSDetail();
+    OCPN_OSDetail* detail = g_BasePlatform->GetOSDetail();
     auto found = metadata.target_arch.find(detail->osd_arch);
-    if(found != std::string::npos) {
+    if (found != std::string::npos) {
       rv = true;
     }
   }
@@ -1068,7 +1069,7 @@ std::vector<PluginMetadata> PluginHandler::getCompatiblePlugins() {
 
 const std::vector<PluginMetadata> PluginHandler::getAvailable() {
   using namespace std;
-  CatalogCtx *ctx;
+  CatalogCtx* ctx;
 
   auto catalogHandler = CatalogHandler::getInstance();
 
@@ -1084,14 +1085,14 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable() {
 }
 
 std::vector<std::string> PluginHandler::GetInstalldataPlugins() {
-   std::vector<std::string> names;
-   fs::path dirpath(pluginsInstallDataPath());
-   for (const auto& entry: fs::directory_iterator(dirpath)) {
-     const std::string name(entry.path().filename().string());
-     if (ocpn::endswith(name, ".files"))
-       names.push_back(ocpn::split(name.c_str(), ".")[0]);
-   }
-   return names;
+  std::vector<std::string> names;
+  fs::path dirpath(pluginsInstallDataPath());
+  for (const auto& entry : fs::directory_iterator(dirpath)) {
+    const std::string name(entry.path().filename().string());
+    if (ocpn::endswith(name, ".files"))
+      names.push_back(ocpn::split(name.c_str(), ".")[0]);
+  }
+  return names;
 }
 
 const std::vector<PluginMetadata> PluginHandler::getInstalled() {
@@ -1184,8 +1185,7 @@ bool PluginHandler::ExtractMetadata(const std::string& path,
     last_error_msg = os.str();
     return false;
   }
-  if (!isRegularFile(temp_path.c_str()))
-    return false;
+  if (!isRegularFile(temp_path.c_str())) return false;
 
   struct CatalogCtx ctx;
   std::ifstream istream(temp_path);
