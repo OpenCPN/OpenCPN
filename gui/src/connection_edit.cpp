@@ -1667,10 +1667,10 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     }
     m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() &&
-            m_rbNetProtoUDP->GetValue())
-         m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
+        m_rbNetProtoUDP->GetValue())
+      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     else if (m_cbOutput->GetValue() && !m_cbMultiCast->GetValue())
-         m_tNetPort->SetValue(DEFAULT_UDP_OUT_ADDRESS);
+      m_tNetPort->SetValue(DEFAULT_UDP_OUT_ADDRESS);
 
     if (m_cbInput->GetValue() && m_cbOutput->GetValue())
       m_cbOutput->SetValue(false);
@@ -1729,7 +1729,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
     if (checked) {
       m_tNetAddress->SetValue(
           DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
-       // Check for an UDP input connection on the same port
+      // Check for an UDP input connection on the same port
       NetworkProtocol proto = UDP;
       for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
         ConnectionParams* cp = TheConnectionParams()->Item(i);
@@ -1745,26 +1745,26 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
           wxString mes;
           bool warn = false;
           if (cp->bEnabled) {
-            mes = _("There is an enabled UDP input connection that uses the "
-                   "same data port.");
+            mes =
+                _("There is an enabled UDP input connection that uses the "
+                  "same data port.");
             mes << "\n"
-                 << _("Please apply a filter on both connections to avoid a "
-                      "feedback loop.");
+                << _("Please apply a filter on both connections to avoid a "
+                     "feedback loop.");
             warn = true;
-          }
-          else {
-            mes = _("There is a disabled UDP Input connection that uses the "
-                   "same Dataport.");
-            mes
-                << "\n"
+          } else {
+            mes =
+                _("There is a disabled UDP Input connection that uses the "
+                  "same Dataport.");
+            mes << "\n"
                 << _("If you enable that input please apply a filter on both "
                      "connections to avoid a  feedback loop.");
           }
           mes << "\n"
-               << _("Or consider using a different data port for one of them");
+              << _("Or consider using a different data port for one of them");
           if (warn)
             OCPNMessageBox(this, mes, _("OpenCPN Warning"),
-                         wxOK | wxICON_EXCLAMATION, 60);
+                           wxOK | wxICON_EXCLAMATION, 60);
           else
             OCPNMessageBox(this, mes, _("OpenCPN info"),
                            wxOK | wxICON_INFORMATION, 60);

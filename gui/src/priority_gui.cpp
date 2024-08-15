@@ -47,24 +47,21 @@
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 
-extern MyFrame *gFrame;
-
+extern MyFrame* gFrame;
 
 class PriorityEntry : public wxTreeItemData {
 public:
-  PriorityEntry(int category, int index){ m_category = category, m_index=index; }
+  PriorityEntry(int category, int index) {
+    m_category = category, m_index = index;
+  }
   ~PriorityEntry() {};
 
   int m_category, m_index;
 };
 
-
-
-
 PriorityDlg::PriorityDlg(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Adjust Comm Priorities"), wxDefaultPosition,
-               wxSize(480, 420), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
-{
+               wxSize(480, 420), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
   m_selIndex = 0;
   m_selmap_index = 0;
 
@@ -78,15 +75,15 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   wxStaticBoxSizer* stcSizer = new wxStaticBoxSizer(pclbBox, wxVERTICAL);
   secondSizer->Add(stcSizer, 1, wxALL | wxEXPAND, 5);
 
-  m_prioTree = new wxTreeCtrl(this,wxID_ANY, wxDefaultPosition,
-                                       wxDefaultSize);
+  m_prioTree = new wxTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
   stcSizer->Add(m_prioTree, 1, wxALL | wxEXPAND, 5);
-  wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+  wxFont* pF = OCPNGetFont(_T("Dialog"), 0);
   m_pF = pF;
   m_prioTree->SetFont(*pF);
 #ifdef __ANDROID__
-    m_prioTree->GetHandle()->setStyleSheet(getWideScrollBarsStyleSheet()/*getScrollBarsStyleSheet()*/);
-    QScroller::ungrabGesture(m_prioTree->GetHandle());
+  m_prioTree->GetHandle()->setStyleSheet(
+      getWideScrollBarsStyleSheet() /*getScrollBarsStyleSheet()*/);
+  QScroller::ungrabGesture(m_prioTree->GetHandle());
 #endif
 
   wxBoxSizer* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
@@ -117,23 +114,23 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   // Connect Events
   btnMoveUp->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                   wxCommandEventHandler(PriorityDlg::OnMoveUpClick), NULL,
-                   this);
-  btnMoveDown->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                     wxCommandEventHandler(PriorityDlg::OnMoveDownClick), NULL,
+                     wxCommandEventHandler(PriorityDlg::OnMoveUpClick), NULL,
                      this);
+  btnMoveDown->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                       wxCommandEventHandler(PriorityDlg::OnMoveDownClick),
+                       NULL, this);
 
   btnRefresh->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                     wxCommandEventHandler(PriorityDlg::OnRefreshClick), NULL,
-                     this);
+                      wxCommandEventHandler(PriorityDlg::OnRefreshClick), NULL,
+                      this);
 
   btnClear->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                     wxCommandEventHandler(PriorityDlg::OnClearClick), NULL,
-                     this);
+                    wxCommandEventHandler(PriorityDlg::OnClearClick), NULL,
+                    this);
 
   m_prioTree->Connect(wxEVT_TREE_SEL_CHANGED,
-                           wxCommandEventHandler(PriorityDlg::OnItemSelected),
-                           NULL, this);
+                      wxCommandEventHandler(PriorityDlg::OnItemSelected), NULL,
+                      this);
 
   // Get the current status
   MyApp& app = wxGetApp();
@@ -147,9 +144,9 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   int char_width, char_height;
   dc.GetTextExtent("W", &char_width, &char_height, NULL, NULL, m_pF);
 
-  int stcw = wxMax(m_maxStringLength * 15 / 10,  15 * char_width);
-  wxSize min_size = wxSize(stcw,
-                       wxMin(gFrame->GetSize().y * 2 /4 , n_lines * GetCharHeight()));
+  int stcw = wxMax(m_maxStringLength * 15 / 10, 15 * char_width);
+  wxSize min_size = wxSize(
+      stcw, wxMin(gFrame->GetSize().y * 2 / 4, n_lines * GetCharHeight()));
 
   stcSizer->SetMinSize(min_size);
 
@@ -170,11 +167,10 @@ PriorityDlg::~PriorityDlg() {
 #endif
 }
 
-void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
+void PriorityDlg::AddLeaves(const std::vector<std::string>& map_list,
                             size_t map_index, std::string map_name,
-                            wxTreeItemId leaf_parent){
-  if(map_list.size() < (size_t)map_index)
-    return;
+                            wxTreeItemId leaf_parent) {
+  if (map_list.size() < (size_t)map_index) return;
 
   // Get the current Priority container for this branch
   MyApp& app = wxGetApp();
@@ -191,50 +187,54 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
     dc.GetTextExtent(item_string, &char_width, &char_height, NULL, NULL, m_pF);
 
     // Record the maximum display string length, for use in dialog sizing.
-    if (char_width > m_maxStringLength){
+    if (char_width > m_maxStringLength) {
       m_maxStringLength = char_width;
       m_max_string = item_string;
     }
 
-    PriorityEntry *pe = new PriorityEntry(map_index, index);
-    wxTreeItemId id_tk = m_prioTree->AppendItem(leaf_parent, item_string, -1, -1, pe);
+    PriorityEntry* pe = new PriorityEntry(map_index, index);
+    wxTreeItemId id_tk =
+        m_prioTree->AppendItem(leaf_parent, item_string, -1, -1, pe);
 
     //  Set bold text on item currently active (usually 0)
-    if ( (size_t)(pc.active_priority) == index)
-      m_prioTree->SetItemBold(id_tk);
+    if ((size_t)(pc.active_priority) == index) m_prioTree->SetItemBold(id_tk);
 
     index++;
   }
 }
 
-
 void PriorityDlg::Populate() {
-
   m_prioTree->Unselect();
   m_prioTree->DeleteAllItems();
-  m_maxStringLength = 15;   // default width calculation
+  m_maxStringLength = 15;  // default width calculation
 
-//  wxTreeItemId* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"), TRUE);
+  //  wxTreeItemId* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"),
+  //  TRUE);
   wxTreeItemId m_rootId = m_prioTree->AddRoot(_("Priorities"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(m_rootId);
 
-  wxTreeItemId id_position = m_prioTree->AppendItem(m_rootId, _("Position"), -1, -1, NULL);
+  wxTreeItemId id_position =
+      m_prioTree->AppendItem(m_rootId, _("Position"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_position);
   AddLeaves(m_map, 0, "position", id_position);
 
-  wxTreeItemId id_velocity = m_prioTree->AppendItem(m_rootId, _("Speed/Course"), -1, -1, NULL);
+  wxTreeItemId id_velocity =
+      m_prioTree->AppendItem(m_rootId, _("Speed/Course"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_velocity);
   AddLeaves(m_map, 1, "velocity", id_velocity);
 
-  wxTreeItemId id_heading = m_prioTree->AppendItem(m_rootId, _("Heading"), -1, -1, NULL);
+  wxTreeItemId id_heading =
+      m_prioTree->AppendItem(m_rootId, _("Heading"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_heading);
   AddLeaves(m_map, 2, "heading", id_heading);
 
-  wxTreeItemId id_magvar = m_prioTree->AppendItem(m_rootId, _("Mag Variation"), -1, -1, NULL);
+  wxTreeItemId id_magvar =
+      m_prioTree->AppendItem(m_rootId, _("Mag Variation"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_magvar);
   AddLeaves(m_map, 3, "variation", id_magvar);
 
-  wxTreeItemId id_sats = m_prioTree->AppendItem(m_rootId, _("Satellites"), -1, -1, NULL);
+  wxTreeItemId id_sats =
+      m_prioTree->AppendItem(m_rootId, _("Satellites"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_sats);
   AddLeaves(m_map, 4, "satellites", id_sats);
 
@@ -246,38 +246,34 @@ void PriorityDlg::Populate() {
   int i = m_selmap_index;
   wxTreeItemId cid = m_prioTree->GetFirstChild(rootID, cookie);
 
-  while ((i > 0) && cid.IsOk()){
-    cid = m_prioTree->GetNextChild( rootID, cookie);
+  while ((i > 0) && cid.IsOk()) {
+    cid = m_prioTree->GetNextChild(rootID, cookie);
     i--;
   }
 
   wxTreeItemId ccid = m_prioTree->GetFirstChild(cid, cookie);
 
   int j = m_selIndex;
-  while ((j > 0) && ccid.IsOk()){
-    ccid = m_prioTree->GetNextChild( cid, cookie);
+  while ((j > 0) && ccid.IsOk()) {
+    ccid = m_prioTree->GetNextChild(cid, cookie);
     j--;
   }
 
-  if(ccid.IsOk())
-    m_prioTree->SelectItem(ccid);
-
+  if (ccid.IsOk()) m_prioTree->SelectItem(ccid);
 }
 
-
-void PriorityDlg::OnItemSelected(wxCommandEvent& event){
+void PriorityDlg::OnItemSelected(wxCommandEvent& event) {
   btnMoveUp->Disable();
   btnMoveDown->Disable();
 
   wxTreeItemId id = m_prioTree->GetSelection();
-  PriorityEntry *pe = (PriorityEntry *)m_prioTree->GetItemData(id);
-  if (!pe)
-    return;
+  PriorityEntry* pe = (PriorityEntry*)m_prioTree->GetItemData(id);
+  if (!pe) return;
 
   m_selIndex = pe->m_index;
   m_selmap_index = pe->m_category;
 
-  if (pe->m_index > 0){
+  if (pe->m_index > 0) {
     btnMoveUp->Enable();
   }
 
@@ -292,8 +288,7 @@ void PriorityDlg::OnItemSelected(wxCommandEvent& event){
     ch = m_prioTree->GetNextChild(id_parent, cookie);
   }
 
-  if (pe->m_index < n_sibs-1)
-    btnMoveDown->Enable();
+  if (pe->m_index < n_sibs - 1) btnMoveDown->Enable();
 }
 
 void PriorityDlg::OnMoveUpClick(wxCommandEvent& event) {
@@ -304,20 +299,17 @@ void PriorityDlg::OnMoveDownClick(wxCommandEvent& event) {
   ProcessMove(m_prioTree->GetSelection(), 1);
 }
 
-void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
-
+void PriorityDlg::ProcessMove(wxTreeItemId id, int dir) {
   // Get the extra data
-  PriorityEntry *pe = (PriorityEntry *)m_prioTree->GetItemData(id);
-  if (!pe)
-    return;
-  if(pe->m_category >4)
-    return;
+  PriorityEntry* pe = (PriorityEntry*)m_prioTree->GetItemData(id);
+  if (!pe) return;
+  if (pe->m_category > 4) return;
 
   // Get the selected category string from the map
   wxString priority_string = wxString(m_map[pe->m_category].c_str());
 
   // Build an array
-  wxString prio_array[16];     // enough, plus
+  wxString prio_array[16];  // enough, plus
 
   wxStringTokenizer tk(priority_string, "|");
   int index = 0;
@@ -328,8 +320,8 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
   int max_index = index;
 
   // perform the action
-  if (dir == -1){     // Move UP
-    if (pe->m_index > 0){
+  if (dir == -1) {  // Move UP
+    if (pe->m_index > 0) {
       // swap entries in array
       wxString s_above = prio_array[pe->m_index - 1];
       wxString s_move = prio_array[pe->m_index];
@@ -337,9 +329,8 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
       prio_array[pe->m_index] = s_above;
       m_selIndex--;
     }
-  }
-  else{               // Move DOWN
-    if (pe->m_index < max_index){
+  } else {  // Move DOWN
+    if (pe->m_index < max_index) {
       // swap entries in array
       wxString s_below = prio_array[pe->m_index + 1];
       wxString s_move = prio_array[pe->m_index];
@@ -351,8 +342,8 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
 
   // create the new string
   wxString prio_mod;
-  for (int i=0 ; i < 16 ; i++){
-    if (prio_array[i].Length()){
+  for (int i = 0; i < 16; i++) {
+    if (prio_array[i].Length()) {
       prio_mod += prio_array[i];
       prio_mod += wxString("|");
     }
@@ -363,7 +354,7 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
   m_map[pe->m_category] = s_upd;
 
   // Auto-adjust Sat and COG/SOG priorities if POS has been moved up/down
-  if (pe->m_category == 0){
+  if (pe->m_category == 0) {
     AdjustSatPriority();
     AdjustCOGSOGPriority();
   }
@@ -400,11 +391,9 @@ void PriorityDlg::OnClearClick(wxCommandEvent& event) {
   // And reload the tree GUI
   m_map = app.m_comm_bridge.GetPriorityMaps();
   Populate();
-
 }
 
 void PriorityDlg::AdjustSatPriority() {
-
   // Get an array of available sat sources
   std::string sat_prio = m_map[4];
   wxArrayString sat_sources;
@@ -426,21 +415,20 @@ void PriorityDlg::AdjustSatPriority() {
 
     // search the sat sources array for a match
     // if found, add to proposed new priority array
-    for (size_t i = 0 ; i < sat_sources.GetCount(); i++){
-      if (pos_channel.IsSameAs(sat_sources[i].BeforeFirst(';'))){
+    for (size_t i = 0; i < sat_sources.GetCount(); i++) {
+      if (pos_channel.IsSameAs(sat_sources[i].BeforeFirst(';'))) {
         new_sat_prio.Add(sat_sources[i]);
         // Mark this source as "used"
         sat_sources[i] = "USED";
         break;
-      }
-      else {      // no match, what to do? //FIXME (dave)
+      } else {  // no match, what to do? //FIXME (dave)
         int yyp = 4;
       }
     }
   }
-    //  Create a new sat priority string from new_sat_prio array
+  //  Create a new sat priority string from new_sat_prio array
   wxString proposed_sat_prio;
-  for (size_t i = 0 ; i < new_sat_prio.GetCount(); i++){
+  for (size_t i = 0; i < new_sat_prio.GetCount(); i++) {
     proposed_sat_prio += new_sat_prio[i];
     proposed_sat_prio += wxString("|");
   }
@@ -450,7 +438,6 @@ void PriorityDlg::AdjustSatPriority() {
 }
 
 void PriorityDlg::AdjustCOGSOGPriority() {
-
   // Get an array of available COG/SOG sources
   std::string cogsog_prio = m_map[1];
   wxArrayString cogsog_sources;
@@ -472,21 +459,20 @@ void PriorityDlg::AdjustCOGSOGPriority() {
 
     // search the cogsog sources array for a match
     // if found, add to proposed new priority array
-    for (size_t i = 0 ; i < cogsog_sources.GetCount(); i++){
-      if (pos_channel.IsSameAs(cogsog_sources[i].BeforeFirst(';'))){
+    for (size_t i = 0; i < cogsog_sources.GetCount(); i++) {
+      if (pos_channel.IsSameAs(cogsog_sources[i].BeforeFirst(';'))) {
         new_cogsog_prio.Add(cogsog_sources[i]);
         // Mark this source as "used"
         cogsog_sources[i] = "USED";
         break;
-      }
-      else {      // no match, what to do? //FIXME (dave)
+      } else {  // no match, what to do? //FIXME (dave)
         int yyp = 4;
       }
     }
   }
-    //  Create a new cog/sog priority string from new_cogsog_prio array
+  //  Create a new cog/sog priority string from new_cogsog_prio array
   wxString proposed_cogsog_prio;
-  for (size_t i = 0 ; i < new_cogsog_prio.GetCount(); i++){
+  for (size_t i = 0; i < new_cogsog_prio.GetCount(); i++) {
     proposed_cogsog_prio += new_cogsog_prio[i];
     proposed_cogsog_prio += wxString("|");
   }

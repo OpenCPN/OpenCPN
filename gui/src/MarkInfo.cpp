@@ -355,10 +355,9 @@ void MarkInfoDlg::Create() {
 
   wxBoxSizer* bSizerNameValue = new wxBoxSizer(wxVERTICAL);
 
-    m_checkBoxShowName = new wxCheckBox(
-      m_panelBasicProperties, wxID_ANY, wxEmptyString, wxDefaultPosition,
-      wxDefaultSize,
-      wxALIGN_CENTER_VERTICAL);
+  m_checkBoxShowName =
+      new wxCheckBox(m_panelBasicProperties, wxID_ANY, wxEmptyString,
+                     wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_VERTICAL);
   bSizerName->Add(m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   m_textName = new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
@@ -920,7 +919,7 @@ void MarkInfoDlg::SetBulkEdit(bool bBulkEdit) {
   m_textCtrlExtDescription->Enable(!bBulkEdit);
 }
 
-void MarkInfoDlg::SetRoutePoints(const std::vector<RoutePoint*> &points) {
+void MarkInfoDlg::SetRoutePoints(const std::vector<RoutePoint*>& points) {
   m_pRoutePoints = points;
   SetRoutePoint(m_pRoutePoints[0]);
   SetBulkEdit(points.size() > 1);
@@ -1698,7 +1697,8 @@ void MarkInfoDlg::ValidateMark(void) {
 
 bool MarkInfoDlg::SaveChanges() {
   if (m_pRoutePoint) {
-    if (m_pRoutePoints.size() <= 1) {  // We are editing a single point, save everything
+    if (m_pRoutePoints.size() <=
+        1) {  // We are editing a single point, save everything
       if (m_pRoutePoint->m_bIsInLayer) return true;
 
       // Get User input Text Fields
@@ -1799,15 +1799,20 @@ bool MarkInfoDlg::SaveChanges() {
     } else {
       // We are modifying multiple points, just a subset of properties is to be
       // modified for each of them and just in case they were actually changed
-      // We need to iterate in reverse order to save the first point in the vector until the end and be able to compere it's original values for changes...
-      for (std::vector<RoutePoint*>::reverse_iterator rit = m_pRoutePoints.rbegin(); rit != m_pRoutePoints.rend(); ++rit) {
+      // We need to iterate in reverse order to save the first point in the
+      // vector until the end and be able to compere it's original values for
+      // changes...
+      for (std::vector<RoutePoint*>::reverse_iterator rit =
+               m_pRoutePoints.rbegin();
+           rit != m_pRoutePoints.rend(); ++rit) {
         RoutePoint* rp = *rit;
-        if (rp->m_bIsInLayer) continue; // Layer WP, skip it
-        if (m_pRoutePoint->m_WaypointArrivalRadius != wxAtof(m_textArrivalRadius->GetValue()))
+        if (rp->m_bIsInLayer) continue;  // Layer WP, skip it
+        if (m_pRoutePoint->m_WaypointArrivalRadius !=
+            wxAtof(m_textArrivalRadius->GetValue()))
           rp->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
         if (m_pRoutePoint->GetScaMin() != wxAtoi(m_textScaMin->GetValue()))
           rp->SetScaMin(m_textScaMin->GetValue());
-        if (m_pRoutePoint-> GetUseSca() != m_checkBoxScaMin->GetValue())
+        if (m_pRoutePoint->GetUseSca() != m_checkBoxScaMin->GetValue())
           rp->SetUseSca(m_checkBoxScaMin->GetValue());
         if (m_pRoutePoint->GetNameShown() != m_checkBoxShowName->GetValue())
           rp->SetNameShown(m_checkBoxShowName->GetValue());
@@ -1822,9 +1827,9 @@ bool MarkInfoDlg::SaveChanges() {
         if (m_pRoutePoint->GetShowWaypointRangeRings() !=
             (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0)) {
           rp->SetShowWaypointRangeRings(
-            (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
+              (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
           rp->SetWaypointRangeRingsNumber(
-            m_ChoiceWaypointRangeRingsNumber->GetSelection());
+              m_ChoiceWaypointRangeRingsNumber->GetSelection());
         }
 
         double value;
@@ -1838,13 +1843,16 @@ bool MarkInfoDlg::SaveChanges() {
           if (m_textArrivalRadius->GetValue().ToDouble(&value))
             rp->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
 
-        if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND && m_pRoutePoint->GetWaypointRangeRingsStepUnits() != m_RangeRingUnits->GetSelection())
+        if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND &&
+            m_pRoutePoint->GetWaypointRangeRingsStepUnits() !=
+                m_RangeRingUnits->GetSelection())
           rp->SetWaypointRangeRingsStepUnits(m_RangeRingUnits->GetSelection());
 
-        if (m_pRoutePoint->m_TideStation != m_comboBoxTideStation->GetStringSelection())
+        if (m_pRoutePoint->m_TideStation !=
+            m_comboBoxTideStation->GetStringSelection())
           rp->m_TideStation = m_comboBoxTideStation->GetStringSelection();
         pConfig->UpdateWayPoint(rp);
-        //TODO: Something else? Will we bulk edit routepoints for example?
+        // TODO: Something else? Will we bulk edit routepoints for example?
       }
     }
   }

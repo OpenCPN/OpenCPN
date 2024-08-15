@@ -24,7 +24,6 @@
  **************************************************************************/
 #include "config.h"
 
-
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
@@ -36,7 +35,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 #ifdef __WXMSW__
-//#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
+// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
 #include <algorithm>
@@ -61,7 +60,8 @@
 #include <X11/Xlib.h>
 #endif
 
-#if (defined(OCPN_GHC_FILESYSTEM) || (defined(__clang_major__) && (__clang_major__ < 15)))
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
 // MacOS 1.13
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
@@ -178,7 +178,7 @@ using namespace std::literals::chrono_literals;
 void RedirectIOToConsole();
 #endif
 
-#if defined(__WXMSW__) && defined (__MSVC__LEAK)
+#if defined(__WXMSW__) && defined(__MSVC__LEAK)
 #include "Stackwalker.h"
 #endif
 
@@ -193,9 +193,8 @@ void RedirectIOToConsole();
 #endif
 #include "wiz_ui.h"
 
-
-const char* const kUsage =
-R"""(Usage:
+const char *const kUsage =
+    R"""(Usage:
   opencpn -h | --help
   opencpn [-p] [-f] [-G] [-g] [-P] [-l <str>] [-u <num>] [-U] [-s] [GPX file ...]
   opencpn --remote [-R] | -q] | -e] |-o <str>]
@@ -228,7 +227,6 @@ Arguments:
   GPX  file                     GPX-formatted file with waypoints or routes.
 )""";
 
-
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N2K_129026, wxCommandEvent);
@@ -242,7 +240,6 @@ wxDEFINE_EVENT(EVT_N0183_GSV, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_GGA, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_GLL, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
-
 
 //------------------------------------------------------------------------------
 //      Fwd Declarations
@@ -260,7 +257,6 @@ bool g_bFirstRun;
 bool g_bUpgradeInProcess;
 
 bool g_bPauseTest;
-
 
 // Files specified on the command line, if any.
 
@@ -503,7 +499,6 @@ bool g_bFullScreenQuilt = true;
 bool g_bQuiltEnable;
 bool g_bQuiltStart;
 
-
 ChartGroupArray *g_pGroupArray;
 
 S57QueryDialog *g_pObjectQueryDialog;
@@ -527,7 +522,6 @@ int osMajor, osMinor;
 
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 bool g_bHasHwClock;
-
 
 int g_nAIS_activity_timer;
 
@@ -561,7 +555,9 @@ double g_n_gps_antenna_offset_y;
 double g_n_gps_antenna_offset_x;
 int g_n_ownship_min_mm;
 
-int g_NeedDBUpdate; // 0 - No update needed, 1 - Update needed because there is no chart database, inform user, 2 - Start update right away
+int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
+                     // no chart database, inform user, 2 - Start update right
+                     // away
 bool g_bPreserveScaleOnX;
 
 AboutFrameImpl *g_pAboutDlg;
@@ -638,7 +634,6 @@ bool g_bUIexpert;
 
 int g_chart_zoom_modifier_raster;
 int g_chart_zoom_modifier_vector;
-
 
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -717,7 +712,6 @@ static bool LoadAllPlugIns(bool load_enabled) {
 #include "bitmaps/opencpn.xpm"
 #endif
 
-
 wxString newPrivateFileName(wxString, const char *name,
                             [[maybe_unused]] const char *windowsName) {
   wxString fname = wxString::FromUTF8(name);
@@ -736,7 +730,6 @@ wxString newPrivateFileName(wxString, const char *name,
 
   return filePathAndName;
 }
-
 
 // `Main program` equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
@@ -758,7 +751,7 @@ static void ActivateRoute(const std::string &guid) {
   //  If this is an auto-created MOB route, always select the second point
   //  (the MOB)
   // as the destination.
-  RoutePoint* point;
+  RoutePoint *point;
   if (wxNOT_FOUND == route->m_RouteNameString.Find("MOB")) {
     point = g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
   } else {
@@ -779,22 +772,23 @@ static void ReverseRoute(const std::string &guid) {
   if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
 }
 
-
 void MyApp::InitRestListeners() {
   auto activate_route = [&](wxCommandEvent ev) {
     auto guid = ev.GetString().ToStdString();
-    ActivateRoute(guid); };
+    ActivateRoute(guid);
+  };
   rest_activate_listener.Init(m_rest_server.activate_route, activate_route);
   auto reverse_route = [&](wxCommandEvent ev) {
     auto guid = ev.GetString().ToStdString();
-    ReverseRoute(guid); };
+    ReverseRoute(guid);
+  };
   rest_reverse_listener.Init(m_rest_server.reverse_route, reverse_route);
 }
 
-  bool MyApp::OpenFile(const std::string& path) {
+bool MyApp::OpenFile(const std::string &path) {
   NavObjectCollection1 nav_objects;
   auto result = nav_objects.load_file(path.c_str());
-  if (!result)  {
+  if (!result) {
     std::string s(_("Cannot load route or waypoint file: "));
     s += std::string("\"") + path + "\"";
     wxMessageBox(s, "OpenCPN", wxICON_WARNING | wxOK);
@@ -820,7 +814,7 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   // is hardcoded in kUsage;
   parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
   parser.AddSwitch("p", "portable");
-  parser.AddOption("c", "configdir",  "", wxCMD_LINE_VAL_STRING,
+  parser.AddOption("c", "configdir", "", wxCMD_LINE_VAL_STRING,
                    wxCMD_LINE_PARAM_OPTIONAL);
   parser.AddSwitch("f", "fullscreen");
   parser.AddSwitch("G", "no_opengl");
@@ -841,7 +835,7 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   parser.AddOption("o", "open", "", wxCMD_LINE_VAL_STRING,
                    wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
 }
-#endif   // __ANDROID__
+#endif  // __ANDROID__
 
 /** Parse --loglevel and set up logging, falling back to defaults. */
 #ifdef __ANDROID__
@@ -863,10 +857,10 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
   }
   wxLog::SetLogLevel(level);
 }
-#endif   // __ANDROID__
+#endif  // __ANDROID__
 
 #ifndef __ANDROID__
-bool MyApp::OnCmdLineHelp(wxCmdLineParser& parser) {
+bool MyApp::OnCmdLineHelp(wxCmdLineParser &parser) {
   std::cout << kUsage;
   return false;
 }
@@ -904,9 +898,17 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
 
   bool has_start_options = false;
   static const std::vector<std::string> kStartOptions = {
-    "unit_test_2", "p", "fullscreen", "no_opengl", "rebuild_gl_raster_cache",
-    "rebuild_chart_db", "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
-  for (const auto& opt : kStartOptions) {
+      "unit_test_2",
+      "p",
+      "fullscreen",
+      "no_opengl",
+      "rebuild_gl_raster_cache",
+      "rebuild_chart_db",
+      "parse_all_enc",
+      "unit_test_1",
+      "safe_mode",
+      "loglevel"};
+  for (const auto &opt : kStartOptions) {
     if (parser.Found(opt)) has_start_options = true;
   }
   if (has_start_options && parser.Found("remote")) {
@@ -916,11 +918,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
 
   bool has_remote_options = false;
   static const std::vector<std::string> kRemoteOptions = {
-    "raise", "quit", "open", "get_rest_endpoint"};
-  for (const auto& opt : kRemoteOptions) {
+      "raise", "quit", "open", "get_rest_endpoint"};
+  for (const auto &opt : kRemoteOptions) {
     if (parser.Found(opt)) has_remote_options = true;
   }
-  if (has_remote_options && ! parser.Found("remote")) {
+  if (has_remote_options && !parser.Found("remote")) {
     std::cerr << "This option requires --remote\n";
     return false;
   }
@@ -938,11 +940,10 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   else if (parser.Found("get_rest_endpoint"))
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::GetRestEndpoint);
   else if (parser.Found("open", &optarg))
-    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
-                                     optarg.ToStdString());
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open, optarg.ToStdString());
   else if (parser.GetParamCount() == 1)
-    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
-                                     parser.GetParam(0).ToStdString());
+    m_parsed_cmdline =
+        ParsedCmdline(CmdlineAction::Open, parser.GetParam(0).ToStdString());
   else if (!has_start_options && !has_remote_options) {
     // Neither arguments nor options
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::Raise);
@@ -961,10 +962,7 @@ bool MyApp::OnExceptionInMainLoop() {
 }
 #endif
 
-void MyApp::OnActivateApp(wxActivateEvent &event) {
-  return;
-}
-
+void MyApp::OnActivateApp(wxActivateEvent &event) { return; }
 
 static wxStopWatch init_sw;
 
@@ -975,20 +973,20 @@ int MyApp::OnRun() {
 
 MyApp::MyApp()
     : m_checker(InstanceCheck::GetInstance()),
-      m_rest_server(PINCreateDialog::GetDlgCtx(),
-      RouteCtxFactory(),
-      g_bportable),
+      m_rest_server(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
+                    g_bportable),
       m_usb_watcher(UsbWatchDaemon::GetInstance()),
-      m_exitcode(-2)
-{
+      m_exitcode(-2) {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-  if (wxGetEnv( "WAYLAND_DISPLAY", NULL)) {
+  if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
     setenv("GDK_BACKEND", "x11", 1);
   }
-  setenv("mesa_glthread", "false", 1); // Explicitly disable glthread. This may have some impact on OpenGL performance,
-                                       // but we know it is problematic for us. See #2889
-#endif   // __linux__
+  setenv(
+      "mesa_glthread", "false",
+      1);  // Explicitly disable glthread. This may have some impact on OpenGL
+           // performance, but we know it is problematic for us. See #2889
+#endif  // __linux__
 }
 
 bool MyApp::OnInit() {
@@ -1023,7 +1021,7 @@ bool MyApp::OnInit() {
       // Server is created on first call to GetInstance()
       if (m_parsed_cmdline.action == CmdlineAction::Skip) {
         // Server starts running when referenced.
-        [[maybe_unused]] auto& server = LocalServerApi::GetInstance();
+        [[maybe_unused]] auto &server = LocalServerApi::GetInstance();
       } else {
         std::cerr << "No remote opencpn found. Giving up.\n";
         m_exitcode = 1;
@@ -1033,7 +1031,7 @@ bool MyApp::OnInit() {
       std::unique_ptr<LocalClientApi> client;
       try {
         client = LocalClientApi::GetClient();
-      } catch (LocalApiException& ie) {
+      } catch (LocalApiException &ie) {
         WARNING_LOG << "Ipc client exception: " << ie.str();
         // If we get here it means that the instance_chk found another
         // running instance. But that instance is for some reason not
@@ -1048,8 +1046,8 @@ bool MyApp::OnInit() {
         return true;  // main program quiet exit.
       }
       if (client) {
-        auto result =
-          client->HandleCmdline(m_parsed_cmdline.action, m_parsed_cmdline.arg);
+        auto result = client->HandleCmdline(m_parsed_cmdline.action,
+                                            m_parsed_cmdline.arg);
         if (result.first) {
           m_exitcode = 0;
         } else {
@@ -1197,7 +1195,8 @@ bool MyApp::OnInit() {
 
   //      Init the Route Manager
 
- g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
+  g_pRouteMan =
+      new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
                    NMEALogWindow::GetInstance());
 
   //      Init the Selectable Route Items List
@@ -1219,8 +1218,7 @@ bool MyApp::OnInit() {
 
   //      Who am I?
   g_hostname = ::wxGetHostName();
-  if(g_hostname.IsEmpty())
-     g_hostname = wxGetUserName();
+  if (g_hostname.IsEmpty()) g_hostname = wxGetUserName();
 #ifdef __ANDROID__
   androidGetDeviceInfo();
   g_hostname = wxString("Android-") + g_android_Device_Model;
@@ -1232,7 +1230,6 @@ bool MyApp::OnInit() {
     wxString p("Portable-");
     g_hostname = p + g_hostname;
   }
-
 
   //      Initialize some lists
   //    Layers
@@ -1319,7 +1316,9 @@ bool MyApp::OnInit() {
   wxLogMessage(msg);
 
   // User override....
-  if (g_config_display_size_manual && g_config_display_size_mm.size() > g_current_monitor && g_config_display_size_mm[g_current_monitor] > 0) {
+  if (g_config_display_size_manual &&
+      g_config_display_size_mm.size() > g_current_monitor &&
+      g_config_display_size_mm[g_current_monitor] > 0) {
     g_display_size_mm = g_config_display_size_mm[g_current_monitor];
     wxString msg;
     msg.Printf(_T("Display size (horizontal) config override: %d mm"),
@@ -1359,7 +1358,8 @@ bool MyApp::OnInit() {
 
   if (g_locale.IsEmpty()) {
     g_locale = def_lang_canonical;
-    cflmsg = _T("Config file language empty, using system default:  ") + g_locale;
+    cflmsg =
+        _T("Config file language empty, using system default:  ") + g_locale;
     wxLogMessage(cflmsg);
   }
 
@@ -1387,7 +1387,7 @@ bool MyApp::OnInit() {
   if (g_config_wizard || b_initial_load) {
     FirstUseWizImpl wiz(gFrame, pConfig);
     auto res = wiz.Run();
-    if(res) {
+    if (res) {
       g_NeedDBUpdate = 2;
     }
   }
@@ -1417,14 +1417,14 @@ bool MyApp::OnInit() {
   if (g_bSoftwareGL) setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
 #endif
 
-  //FIXMW (dave) move to frame
-  //g_bTransparentToolbarInOpenGLOK = isTransparentToolbarInOpenGLOK();
+    // FIXMW (dave) move to frame
+    // g_bTransparentToolbarInOpenGLOK = isTransparentToolbarInOpenGLOK();
 
-  // On Windows platforms, establish a default cache managment policy
-  // as allowing OpenCPN a percentage of available physical memory,
-  // not to exceed 1 GB
-  // Note that this logic implies that Windows platforms always use
-  // the memCacheLimit policy, and never use the fallback nCacheLimit policy
+    // On Windows platforms, establish a default cache managment policy
+    // as allowing OpenCPN a percentage of available physical memory,
+    // not to exceed 1 GB
+    // Note that this logic implies that Windows platforms always use
+    // the memCacheLimit policy, and never use the fallback nCacheLimit policy
 #ifdef __WXMSW__
   if (0 == g_memCacheLimit) g_memCacheLimit = (int)(g_mem_total * 0.5);
   g_memCacheLimit =
@@ -1479,8 +1479,10 @@ bool MyApp::OnInit() {
        wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
 
   if (TideCurrentDataSet.empty()) {
-    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
-    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
+    TideCurrentDataSet.push_back(
+        g_Platform->NormalizePath(default_tcdata0).ToStdString());
+    TideCurrentDataSet.push_back(
+        g_Platform->NormalizePath(default_tcdata1).ToStdString());
   }
 
   //  Check the global AIS alarm sound file
@@ -1510,7 +1512,6 @@ bool MyApp::OnInit() {
     PluginLoader::getInstance()->SetPluginDefaultIcon(bitmap);
   else
     wxLogWarning("Cannot initiate plugin default jigsaw icon.");
-
 
   if ((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) &&
       (g_nframewin_y <= ch))
@@ -1563,8 +1564,7 @@ bool MyApp::OnInit() {
   const wxPoint ptScreen(position.x, position.y);
   const int displayIndex = wxDisplay::GetFromPoint(ptScreen);
 
-  if (displayIndex == wxNOT_FOUND)
-    position = wxPoint(10, 30);
+  if (displayIndex == wxNOT_FOUND) position = wxPoint(10, 30);
 #endif
 
   g_nframewin_posx = position.x;
@@ -1590,7 +1590,8 @@ bool MyApp::OnInit() {
 
   // Strip the commit SHA number from the string to be shown in frame title.
   wxString short_version_name = wxString(PACKAGE_VERSION).BeforeFirst('+');
-  wxString myframe_window_title = wxString(wxT("OpenCPN ") + short_version_name);
+  wxString myframe_window_title =
+      wxString(wxT("OpenCPN ") + short_version_name);
 
   if (g_bportable) {
     myframe_window_title += _(" -- [Portable(-p) executing from ");
@@ -1641,7 +1642,7 @@ bool MyApp::OnInit() {
 
   // Show the frame
   gFrame->Show(TRUE);
-  Yield();      // required for Gnome 45
+  Yield();  // required for Gnome 45
 
   gFrame->SetAndApplyColorScheme(global_color_scheme);
 
@@ -1709,7 +1710,8 @@ bool MyApp::OnInit() {
 
   //      Try to load the current chart list Data file
   ChartData = new ChartDB();
-  if (g_NeedDBUpdate == 0 && !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
+  if (g_NeedDBUpdate == 0 &&
+      !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
     g_NeedDBUpdate = 1;
   }
 
@@ -1746,9 +1748,9 @@ bool MyApp::OnInit() {
   }
 #endif
 
-  //FIXME (dave)
-  // move method to frame
-  //if (g_parse_all_enc) ParseAllENC(gFrame);
+  // FIXME (dave)
+  //  move method to frame
+  // if (g_parse_all_enc) ParseAllENC(gFrame);
 
   //      establish GPS timeout value as multiple of frame timer
   //      This will override any nonsense or unset value from the config file
@@ -1810,12 +1812,12 @@ bool MyApp::OnInit() {
   // glDeleteTextures. Truly awful.
 #ifdef ocpnUSE_GL
   if (g_bopengl)
-    RoutePoint::delete_gl_textures =
-      [](unsigned n, const unsigned* texts) { glDeleteTextures(n, texts); };
+    RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {
+      glDeleteTextures(n, texts);
+    };
 #else
-  RoutePoint::delete_gl_textures = [](unsigned n, const unsigned* texts) { };
+  RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {};
 #endif
-
 
   if (g_start_fullscreen) gFrame->ToggleFullScreen();
 
@@ -1923,7 +1925,7 @@ bool MyApp::OnInit() {
 
   std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
 
-  //If network connection is available, start the server and mDNS client
+  // If network connection is available, start the server and mDNS client
   if (ipv4_addrs.size()) {
     std::string ipAddr = ipv4_addrs[0];
 
@@ -1934,14 +1936,13 @@ bool MyApp::OnInit() {
     make_certificate(ipAddr, data_dir.ToStdString());
 
     m_rest_server.StartServer(fs::path(data_dir.ToStdString()));
-    StartMDNSService(g_hostname.ToStdString(),
-                     "opencpn-object-control-service", 8000);
+    StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
+                     8000);
   }
   return TRUE;
 }
 
 int MyApp::OnExit() {
-
   wxLogMessage(_T("opencpn::MyApp starting exit."));
   m_checker.OnExit();
   m_usb_watcher.Stop();
@@ -1987,7 +1988,7 @@ int MyApp::OnExit() {
 
   if (ptcmgr) delete ptcmgr;
 
-  for (Track* track : g_TrackList) {
+  for (Track *track : g_TrackList) {
     delete track;
   }
   g_TrackList.clear();
@@ -2017,7 +2018,7 @@ int MyApp::OnExit() {
 
   delete pInit_Chart_Dir;
 
-  for (Track* track : g_TrackList) {
+  for (Track *track : g_TrackList) {
     delete track;
   }
   g_TrackList.clear();
@@ -2046,9 +2047,8 @@ int MyApp::OnExit() {
 
     //      Restore any changed system colors
 
-
 #ifdef __WXMSW__
-void RestoreSystemColors(void);
+  void RestoreSystemColors(void);
   RestoreSystemColors();
 #endif
 

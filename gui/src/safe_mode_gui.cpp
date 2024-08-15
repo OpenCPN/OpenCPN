@@ -19,7 +19,9 @@ static const int TIMEOUT_SECONDS = 15;
 static const char* LAST_RUN_ERROR_MSG =
     _("<p>The last opencpn run seems to have failed. Do you want to run\n"
       "in safe mode without plugins and other possibly problematic\n"
-      "features?\n</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>");
+      "features?\n</p><br/></br><p>You may consider visiting the <a "
+      "href=\"https://github.com/OpenCPN/OpenCPN/wiki/"
+      "OpenCPN-5.8-known-issues\">list of known issues</a>.</p>");
 
 /**
  * Check if the last start failed, possibly invoke user dialog and set

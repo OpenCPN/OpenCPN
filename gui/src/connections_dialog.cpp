@@ -50,7 +50,6 @@ extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 
-
 //------------------------------------------------------------------------------
 //          ConnectionsDialog Implementation
 //------------------------------------------------------------------------------
@@ -69,7 +68,6 @@ ConnectionsDialog::ConnectionsDialog(wxScrolledWindow* container,
 ConnectionsDialog::~ConnectionsDialog() {}
 
 void ConnectionsDialog::SetInitialSettings(void) {
-
   m_cbNMEADebug->SetValue(false);
   if (NMEALogWindow::GetInstance().GetTTYWindow()) {
     if (NMEALogWindow::GetInstance().GetTTYWindow()->IsShown()) {
@@ -83,10 +81,8 @@ void ConnectionsDialog::SetInitialSettings(void) {
   SetSelectedConnectionPanel(nullptr);
 }
 
-
-void ::ConnectionsDialog::OnSize(wxSizeEvent &ev){
-  if (m_sbSizerLB)
-    m_sbSizerLB->Layout();
+void ::ConnectionsDialog::OnSize(wxSizeEvent& ev) {
+  if (m_sbSizerLB) m_sbSizerLB->Layout();
 }
 
 void ConnectionsDialog::Init() {
@@ -99,8 +95,7 @@ void ConnectionsDialog::Init() {
   //  Looking for small devices in landscape mode.
   bool bcompact = false;
   wxSize displaySize = wxGetDisplaySize();
-  if ((displaySize.y < 500) && (displaySize.x > displaySize.y))
-    bcompact = true;
+  if ((displaySize.y < 500) && (displaySize.x > displaySize.y)) bcompact = true;
 
   wxBoxSizer* bSizer4 = new wxBoxSizer(wxVERTICAL);
   m_container->SetSizer(bSizer4);
@@ -112,7 +107,6 @@ void ConnectionsDialog::Init() {
     m_container->SetScrollRate(1, 1);
   else
     m_container->SetScrollRate(0, 0);
-
 
   m_bSizerOuterContainer = new wxBoxSizer(wxVERTICAL);
   bSizer4->Add(m_bSizerOuterContainer, 1, wxEXPAND, 5);
@@ -148,9 +142,9 @@ void ConnectionsDialog::Init() {
 #endif
   bSizer171->Add(m_stFilterSec, 0, wxALL, nspace);
 
-  m_tFilterSec = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition,
-                                wxSize(50, 3 * m_container->GetCharWidth()), 0);
+  m_tFilterSec =
+      new wxTextCtrl(m_container, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxSize(50, 3 * m_container->GetCharWidth()), 0);
   wxString sfilt;
   sfilt.Printf("%d", g_COGFilterSec);
   m_tFilterSec->SetValue(sfilt);
@@ -160,8 +154,8 @@ void ConnectionsDialog::Init() {
   int cb_space = 1;
 
   // On smaller displays, squeeze the dialog slightly
-  if (bcompact){
-    wxFlexGridSizer *GenProps = new wxFlexGridSizer(0, 2, 0, 0);
+  if (bcompact) {
+    wxFlexGridSizer* GenProps = new wxFlexGridSizer(0, 2, 0, 0);
     bSizer161->Add(GenProps, 0, wxALL, cb_space);
 
     m_cbNMEADebug =
@@ -189,32 +183,31 @@ void ConnectionsDialog::Init() {
     m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
     GenProps->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
 
-    wxSizer *talkerSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxSizer* talkerSizer = new wxBoxSizer(wxHORIZONTAL);
     bSizer161->Add(talkerSizer, 0, wxALL, 1);
 
-    m_ButtonPriorityDialog = new wxButton(m_container, wxID_ANY,
-                                          _("Adjust communication priorities..."),
-                                          wxDefaultPosition, wxDefaultSize, 0);
+    m_ButtonPriorityDialog = new wxButton(
+        m_container, wxID_ANY, _("Adjust communication priorities..."),
+        wxDefaultPosition, wxDefaultSize, 0);
     talkerSizer->Add(m_ButtonPriorityDialog, 0, wxALL, cb_space);
 
     talkerSizer->AddSpacer(12 * m_container->GetCharWidth());
 
     m_stTalkerIdText = new wxStaticText(
-        m_container, wxID_ANY,
-        wxString::Format("%s", _("NMEA0183 Talker ID")),
+        m_container, wxID_ANY, wxString::Format("%s", _("NMEA0183 Talker ID")),
         wxDefaultPosition, wxDefaultSize, 0);
     m_stTalkerIdText->Wrap(-1);
     talkerSizer->Add(m_stTalkerIdText, 0, wxALL, 2);
 
     talkerSizer->AddSpacer(2 * m_container->GetCharWidth());
 
-    m_TalkerIdText = new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
-                                    wxSize(50, 3 * m_container->GetCharWidth()), 0);
+    m_TalkerIdText =
+        new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
+                       wxSize(50, 3 * m_container->GetCharWidth()), 0);
     m_TalkerIdText->SetMaxLength(2);
     m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
-    talkerSizer->Add(m_TalkerIdText, 0,  wxALL | wxALIGN_CENTER_VERTICAL, 2);
-  }
-  else {
+    talkerSizer->Add(m_TalkerIdText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+  } else {
     cb_space = 2;
     m_cbNMEADebug =
         new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
@@ -295,28 +288,27 @@ void ConnectionsDialog::Init() {
   m_buttonRemove->Enable(FALSE);
   bSizer18->Add(m_buttonRemove, 0, wxALL, 5);
 
-  wxStaticLine *staticline5 = new wxStaticLine(m_container, wxID_ANY, wxDefaultPosition,
-                       wxDefaultSize, wxLI_HORIZONTAL);
+  wxStaticLine* staticline5 = new wxStaticLine(
+      m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
   m_sbSizerLB->Add(staticline5, 0, wxEXPAND | wxALL, 5);
 
+  // m_cPanel =
+  //     new wxPanel(m_container, wxID_ANY, wxDefaultPosition,
+  //                 wxDLG_UNIT(m_parent, wxSize(-1, -1)));
+  // sbSizerLB->Add(m_cPanel, 0, wxALL | wxEXPAND, 0);
 
-  //m_cPanel =
-  //    new wxPanel(m_container, wxID_ANY, wxDefaultPosition,
-  //                wxDLG_UNIT(m_parent, wxSize(-1, -1)));
-  //sbSizerLB->Add(m_cPanel, 0, wxALL | wxEXPAND, 0);
-
-
-  //wxBoxSizer* boxSizercPanel = new wxBoxSizer(wxVERTICAL);
-  //m_cPanel->SetSizer(boxSizercPanel);
+  // wxBoxSizer* boxSizercPanel = new wxBoxSizer(wxVERTICAL);
+  // m_cPanel->SetSizer(boxSizercPanel);
 
 #ifdef __ANDROID__
   m_scrollWinConnections =
       new wxPanel(m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                   wxBORDER_RAISED | wxBG_STYLE_ERASE);
 #else
-  m_scrollWinConnections = new wxScrolledWindow(
-      m_container, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_parent, wxSize(-1, -1)),
-      wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE);
+  m_scrollWinConnections =
+      new wxScrolledWindow(m_container, wxID_ANY, wxDefaultPosition,
+                           wxDLG_UNIT(m_parent, wxSize(-1, -1)),
+                           wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE);
 
   // In compact mode, we scroll the entire dialog
   // Otherwise, we scroll only the connection list
@@ -350,23 +342,23 @@ void ConnectionsDialog::Init() {
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(ConnectionsDialog::OnShowGpsWindowCheckboxClick),
       NULL, this);
-  //m_cbFilterSogCog->Connect(
-  //    wxEVT_COMMAND_CHECKBOX_CLICKED,
-  //    wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL, this);
-  //m_tFilterSec->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-  //                      wxCommandEventHandler(ConnectionsDialog::OnValChange),
-  //                      NULL, this);
-  //m_cbAPBMagnetic->Connect(
-  //    wxEVT_COMMAND_CHECKBOX_CLICKED,
-  //    wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL, this);
+  // m_cbFilterSogCog->Connect(
+  //     wxEVT_COMMAND_CHECKBOX_CLICKED,
+  //     wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL, this);
+  // m_tFilterSec->Connect(wxEVT_COMMAND_TEXT_UPDATED,
+  //                       wxCommandEventHandler(ConnectionsDialog::OnValChange),
+  //                       NULL, this);
+  // m_cbAPBMagnetic->Connect(
+  //     wxEVT_COMMAND_CHECKBOX_CLICKED,
+  //     wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL, this);
 
   m_ButtonPriorityDialog->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ConnectionsDialog::OnPriorityDialog), NULL, this);
 
-   //  Catch SizeEvents to force a layout honoring proportions
-  m_container->Connect(wxEVT_SIZE, wxSizeEventHandler(ConnectionsDialog::OnSize), NULL, this);
-
+  //  Catch SizeEvents to force a layout honoring proportions
+  m_container->Connect(
+      wxEVT_SIZE, wxSizeEventHandler(ConnectionsDialog::OnSize), NULL, this);
 }
 
 void ConnectionsDialog::SetSelectedConnectionPanel(
@@ -453,11 +445,11 @@ void ConnectionsDialog::FillSourceList(void) {
 
   // Add new panels as necessary
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+    ConnectionParams* cp = TheConnectionParams()->Item(i);
     if (!cp->m_optionsPanel) {
-      ConnectionParamsPanel* pPanel = new ConnectionParamsPanel(
-          m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-          cp, this);
+      ConnectionParamsPanel* pPanel =
+          new ConnectionParamsPanel(m_scrollWinConnections, wxID_ANY,
+                                    wxDefaultPosition, wxDefaultSize, cp, this);
       pPanel->SetSelected(false);
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxRIGHT, 10);
       cp->m_optionsPanel = pPanel;
@@ -493,7 +485,7 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
     TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
 
   ConnectionEditDialog dialog(m_parent, this);
-  dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8/10));
+  dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
   dialog.SetPropsLabel(_("Configure new connection"));
   dialog.SetDefaultConnectionParams();
 
@@ -553,13 +545,14 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 
     if ((index >= 0) && (cp)) {
       ConnectionEditDialog dialog(m_parent, this);
-      dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8/10));
+      dialog.SetSize(
+          wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
       dialog.SetPropsLabel(_("Edit Selected Connection"));
       // Preload the dialog contents
       dialog.PreloadControls(cp);
 
       auto rv = dialog.ShowModal();
-      if (rv == wxID_OK){
+      if (rv == wxID_OK) {
         ConnectionParams* cp_edited = dialog.GetParamsFromControls();
         delete cp->m_optionsPanel;
         StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
@@ -573,8 +566,6 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
     }
   }
 }
-
-
 
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
@@ -622,14 +613,14 @@ void ConnectionsDialog::ApplySettings() {
 
 void ConnectionsDialog::UpdateDatastreams() {
   // Recreate datastreams that are new, or have been edited
-  std::vector<std::string>enabled_conns;
+  std::vector<std::string> enabled_conns;
 
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams* cp = TheConnectionParams()->Item(i);
 
     // Connection already setup?
-    if (cp->b_IsSetup){
-      if(cp->bEnabled){
+    if (cp->b_IsSetup) {
+      if (cp->bEnabled) {
         enabled_conns.push_back(cp->GetStrippedDSPort());
       }
       continue;
@@ -641,7 +632,7 @@ void ConnectionsDialog::UpdateDatastreams() {
     // This will handle multiple connections with same port,
     // but possibly different filters
     // Also protect against some user config errors
-    if ( std::find(enabled_conns.begin(), enabled_conns.end(),
+    if (std::find(enabled_conns.begin(), enabled_conns.end(),
                   cp->GetStrippedDSPort()) != enabled_conns.end()) {
       continue;
     }
