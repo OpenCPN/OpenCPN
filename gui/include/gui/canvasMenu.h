@@ -47,7 +47,6 @@
 #include "timers.h"
 #include "emboss_data.h"
 
-
 class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
@@ -89,7 +88,7 @@ public:
   void CanvasPopupMenu(int x, int y, int seltype);
   void PopupMenuHandler(wxCommandEvent &event);
   static int GetNextContextMenuId();
-  void PrepareMenuItem( wxMenuItem *item );
+  void PrepareMenuItem(wxMenuItem *item);
   void MenuPrepend1(wxMenu *menu, int id, wxString label);
   void MenuAppend1(wxMenu *menu, int id, wxString label);
   void SetMenuItemFont1(wxMenuItem *item);

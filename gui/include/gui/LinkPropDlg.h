@@ -36,7 +36,7 @@
 #include <wx/filesys.h>
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
-//#include "chcanv.h"
+// #include "chcanv.h"
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>

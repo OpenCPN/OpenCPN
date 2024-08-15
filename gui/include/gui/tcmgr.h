@@ -68,7 +68,7 @@
  * spacing is greater than this value (in seconds).
  */
 #define TIDE_TIME_STEP (TIDE_TIME_PREC)
-#define TIDE_BAD_TIME ((time_t)-1)
+#define TIDE_BAD_TIME ((time_t) - 1)
 
 //----------------------------------------------------------------------------
 //   Reference Station Data
@@ -348,7 +348,7 @@ typedef struct {
 #define AMPLITUDE_EPSILON 0.00005
 
 /* Rounding function. */
-#define NINT(a) ((a) < 0.0 ? (NV_INT32)((a)-0.5) : (NV_INT32)((a) + 0.5))
+#define NINT(a) ((a) < 0.0 ? (NV_INT32)((a) - 0.5) : (NV_INT32)((a) + 0.5))
 
 /*  Public function prototypes.  */
 
@@ -598,7 +598,7 @@ NV_BOOL check_simple(TIDE_RECORD rec);
 #ifndef __TIDE_HEADER__
 #define __TIDE_HEADER__
 
-//#include "tcd.h"
+// #include "tcd.h"
 
 typedef struct {
   const NV_CHAR *keyphrase;
