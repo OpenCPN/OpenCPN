@@ -54,14 +54,13 @@ public:
   /** Construct a (0,0) position, type == Undef. */
   Position();
 
-
-  bool IsValid() const { return type != Type::Undef;  }
+  bool IsValid() const { return type != Type::Undef; }
 
   /** Return utf string like 65°25,11N 21°12,01E */
   std::string to_string() const;
 
-  const double lat;      // signed value
-  const double lon;      // signed value
+  const double lat;  // signed value
+  const double lon;  // signed value
   const Type type;
 
   /**
@@ -82,15 +81,13 @@ private:
 
   /** Returned signed long  deduced from t. */
   double TypeToLong(Type t, double lon);
-
 };
-
 
 class AppMsg : public KeyProvider {
 public:
   enum class Type;
   AppMsg(AppMsg::Type t)
-      : type(t), name(TypeToString(t)), source(NavAddr()), prio(0){};
+      : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
 
   virtual std::string key() const { return std::string("@!appmsg-") + name; }
 
@@ -105,7 +102,7 @@ public:
 
 protected:
   AppMsg(AppMsg::Type tp, const std::string& nm, NavAddr src)
-      : type(tp), name(nm), source(src), prio(0){};
+      : type(tp), name(nm), source(src), prio(0) {};
 };
 
 enum class AppMsg::Type {
@@ -138,7 +135,7 @@ public:
         pos(p),
         time(t),
         quality(q),
-        satellites_used(s_used){};
+        satellites_used(s_used) {};
   virtual ~GnssFix() = default;
 
   std::string to_string() const {
@@ -154,12 +151,12 @@ public:
 };
 
 // bitmask defining update validity of BasicNavDataMsg members
-#define POS_UPDATE     (int)(1)
-#define COG_UPDATE     (int)(1 << 1)
-#define SOG_UPDATE     (int)(1 << 2)
-#define VAR_UPDATE     (int)(1 << 3)
-#define HDT_UPDATE     (int)(1 << 4)
-#define POS_VALID      (int)(1 << 5)
+#define POS_UPDATE (int)(1)
+#define COG_UPDATE (int)(1 << 1)
+#define SOG_UPDATE (int)(1 << 2)
+#define VAR_UPDATE (int)(1 << 3)
+#define HDT_UPDATE (int)(1 << 4)
+#define POS_VALID (int)(1 << 5)
 
 class BasicNavDataMsg : public AppMsg {
 public:
@@ -172,7 +169,7 @@ public:
         var(VAR),
         hdt(HDT),
         vflag(valid_flag),
-        time(t){};
+        time(t) {};
 
   BasicNavDataMsg()
       : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
@@ -181,7 +178,7 @@ public:
         var(0),
         hdt(0),
         vflag(0),
-        time(0){};
+        time(0) {};
 
   virtual ~BasicNavDataMsg() = default;
 
@@ -201,7 +198,7 @@ public:
   GPSWatchdogMsg(WDSource _source, int value)
       : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
         gps_watchdog(value),
-        wd_source(_source){};
+        wd_source(_source) {};
 
   virtual ~GPSWatchdogMsg() = default;
 

@@ -47,7 +47,6 @@ typedef enum AisError {
 WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
                     AIS_Target_Name_Hash);
 
-
 #define TIMER_AIS_MSEC 998
 #define TIMER_AIS_AUDIO_MSEC 2000
 

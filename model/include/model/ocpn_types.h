@@ -32,9 +32,6 @@
 
 #include <wx/colour.h>
 
-
-
-
 //    ChartType constants
 typedef enum ChartTypeEnum {
   CHART_TYPE_UNKNOWN = 0,
@@ -56,7 +53,6 @@ typedef enum ChartFamilyEnum {
   CHART_FAMILY_VECTOR,
   CHART_FAMILY_DONTCARE
 } _ChartFamilyEnum;
-
 
 //----------------------------------------------------------------------------
 // ocpn Toolbar stuff
@@ -87,4 +83,4 @@ typedef struct {
   bool arrival;
 } ActiveLegDat;
 
-#endif    //  _OCPNTYPES_H__
+#endif  //  _OCPNTYPES_H__

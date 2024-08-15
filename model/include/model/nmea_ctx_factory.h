@@ -31,7 +31,7 @@
 
 static NmeaContext NmeaCtxFactory() {
   NmeaContext ctx;
-  ctx.get_talker_id = []() { return  g_TalkerIdText; };
+  ctx.get_talker_id = []() { return g_TalkerIdText; };
   ctx.get_apb_precision = []() { return g_NMEAAPBPrecision; };
   return ctx;
 }
