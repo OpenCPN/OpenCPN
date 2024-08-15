@@ -17,6 +17,10 @@ To do this, just install the pre-commit program from https://pre-commit.com/:
     
     $ pip install pre-commit
 
+and then, in the project top directory
+
+    $ pre-commit install
+
 which will pick up the configuration from _.pre-commit-config.yaml_ which is 
 part of the project.
 
