@@ -66,7 +66,6 @@ public:
   bool bCanDoVBO;
   bool bCanDoFBO;
   bool bCanDoGLSL;
-
 };
 
 GLboolean QueryExtension(const char *extName);
@@ -89,7 +88,7 @@ public:
 class glTestCanvas : public wxGLCanvas {
 public:
   glTestCanvas(wxWindow *parent);
-  ~glTestCanvas(){};
+  ~glTestCanvas() {};
 };
 
 class ocpnDC;
@@ -115,8 +114,9 @@ public:
   void SetColorScheme(ColorScheme cs);
   void RenderTextures(ocpnDC &dc, float *coords, float *uvCoords, int nVertex,
                       ViewPort *vp);
-  static void RenderSingleTexture(ocpnDC &dc, float *coords, float *uvCoords, ViewPort *vp,
-                                  float dx, float dy, float angle);
+  static void RenderSingleTexture(ocpnDC &dc, float *coords, float *uvCoords,
+                                  ViewPort *vp, float dx, float dy,
+                                  float angle);
   void RenderColorRect(wxRect r, wxColor &color);
 
   static bool s_b_useScissorTest;
@@ -216,7 +216,7 @@ protected:
   void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
   void RenderNoDTA(ViewPort &vp, const LLRegion &region,
                    int transparency = 255);
-  //void RenderNoDTA(ViewPort &vp, ChartBase *chart);
+  // void RenderNoDTA(ViewPort &vp, ChartBase *chart);
   void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
                         bool &world_view);
 

@@ -66,11 +66,11 @@ public:
   void Move();
   virtual void DestroyWindow();
   static void Shutdown();
-  wxWindow *GetTTYWindow(void) { return static_cast<wxWindow*>(m_window); }
+  wxWindow *GetTTYWindow(void) { return static_cast<wxWindow *>(m_window); }
 
 private:
   NMEALogWindow();
-  virtual ~NMEALogWindow(){};
+  virtual ~NMEALogWindow() {};
   void UpdateGeometry();
 
   static NMEALogWindow *instance;

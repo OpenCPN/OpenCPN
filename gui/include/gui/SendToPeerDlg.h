@@ -52,7 +52,6 @@
 
 #include "observable_evtvar.h"
 
-
 //    Constants for SendToPeer... Dialog
 #define ID_STPDIALOG 10006
 #define SYMBOL_STP_STYLE                                      \
@@ -83,11 +82,13 @@ public:
               const wxSize& size = SYMBOL_STP_SIZE,
               long style = SYMBOL_STP_STYLE);
   void SetRoute(Route* pRoute) { m_RouteList.push_back(pRoute); }
-  void SetWaypoint(RoutePoint* pRoutePoint) { m_RoutePointList.push_back(pRoutePoint); }
+  void SetWaypoint(RoutePoint* pRoutePoint) {
+    m_RoutePointList.push_back(pRoutePoint);
+  }
   void SetTrack(Track* pTrack) { m_TrackList.push_back(pTrack); }
   void SetMessage(wxString message);
-  void SetScanOnCreate(bool s){ m_bScanOnCreate = s;}
-  void SetScanTime(int t){ m_scanTime = t * 2;}
+  void SetScanOnCreate(bool s) { m_bScanOnCreate = s; }
+  void SetScanTime(int t) { m_scanTime = t * 2; }
 
 private:
   void CreateControls([[maybe_unused]] const wxString& hint);
@@ -95,8 +96,8 @@ private:
   void OnCancelClick(wxCommandEvent& event);
   void OnSendClick([[maybe_unused]] wxCommandEvent& event);
   void OnScanClick(wxCommandEvent& event);
-  void OnTimerAutoscan(wxTimerEvent &event);
-  void OnTimerScanTick(wxTimerEvent &event);
+  void OnTimerAutoscan(wxTimerEvent& event);
+  void OnTimerScanTick(wxTimerEvent& event);
   void DoScan();
   bool EnableActivateChkbox();
 
@@ -119,7 +120,6 @@ private:
   int m_tick;
   int m_scanTime;
   bool m_bScanOnCreate;
-
 };
 
 #endif

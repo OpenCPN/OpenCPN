@@ -31,7 +31,7 @@
 #ifndef _OCPN_PIXEL_H_
 #define _OCPN_PIXEL_H_
 
-//#include "dychart.h"  // for configuration stuff
+// #include "dychart.h"  // for configuration stuff
 
 wxImage Image_Rotate(wxImage &base_image, double angle,
                      const wxPoint &centre_of_rotation, bool interpolating,
@@ -46,28 +46,28 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
 //          Only one of the following must be selected
 //          with due regard for the system type
 
-//#define __PIX_CACHE_WXIMAGE__                               // a safe default
-//#define __PIX_CACHE_DIBSECTION__                            // for MSW
-//#define __PIX_CACHE_X11IMAGE__                              // for
-//X11/Universal, requires ocpnUSE_ocpnBitmap
+// #define __PIX_CACHE_WXIMAGE__                               // a safe default
+// #define __PIX_CACHE_DIBSECTION__                            // for MSW
+// #define __PIX_CACHE_X11IMAGE__                              // for
+// X11/Universal, requires ocpnUSE_ocpnBitmap
 
 //  I use these shortcuts....
 #ifdef __WXX11__
 #define __PIX_CACHE_WXIMAGE__
-//#define     __PIX_CACHE_X11IMAGE__
+// #define     __PIX_CACHE_X11IMAGE__
 #endif
 
 #ifdef __WXGTK__
 #define __PIX_CACHE_WXIMAGE__
-//#define     __PIX_CACHE_X11IMAGE__
-//#define __PIX_CACHE_PIXBUF__
+// #define     __PIX_CACHE_X11IMAGE__
+// #define __PIX_CACHE_PIXBUF__
 #endif
 
 #ifdef __WXMSW__
 #define __PIX_CACHE_WXIMAGE__
-//#define __PIX_CACHE_DIBSECTION__
-//#define     ocpnUSE_DIBSECTION
-//#define     ocpnUSE_ocpnBitmap
+// #define __PIX_CACHE_DIBSECTION__
+// #define     ocpnUSE_DIBSECTION
+// #define     ocpnUSE_ocpnBitmap
 #endif
 
 #ifdef __WXOSX__

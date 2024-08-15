@@ -36,7 +36,6 @@
 #define STATE_TIMER 3689
 
 class iENCToolbar : public ocpnFloatingToolbarDialog {
-
 public:
   iENCToolbar(wxWindow *parent, wxPoint position, long orient,
               float size_factor);

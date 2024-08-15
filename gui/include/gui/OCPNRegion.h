@@ -37,9 +37,9 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-//#if defined(__WXOSX__)
+// #if defined(__WXOSX__)
 #define USE_NEW_REGION
-//#endif
+// #endif
 
 // ----------------------------------------------------------------------------
 // OCPNRegion

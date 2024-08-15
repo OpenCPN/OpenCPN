@@ -36,9 +36,9 @@
 
 class RoutePointGui {
 public:
-  RoutePointGui(RoutePoint& point) : m_point(point) { /*ReLoadIcon();*/ }
+  RoutePointGui(RoutePoint &point) : m_point(point) { /*ReLoadIcon();*/ }
 
-  void Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn = 0,
+  void Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn = 0,
             bool boverride_viz = false);
   void CalculateDCRect(wxDC &dc, ChartCanvas *canvas, wxRect *prect);
   bool IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz = false);
@@ -52,20 +52,19 @@ public:
   void ReLoadIcon(void);
   void EnableDragHandle(bool bEnable);
   int GetIconImageIndex();
-  wxBitmap* GetIconBitmap() {
+  wxBitmap *GetIconBitmap() {
     if (m_point.m_IconIsDirty) ReLoadIcon();
     return m_point.m_pbmIcon;
   }
 
 #ifdef ocpnUSE_GL
-  void DrawGL(ViewPort &vp, ChartCanvas* canvas, ocpnDC &dc,
+  void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
               bool use_cached_screen_coords = false, bool vizOverride = false);
 #endif
 
 private:
   wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
-  RoutePoint& m_point;
+  RoutePoint &m_point;
 };
 
-
-#endif   // _ROUTE_POINT_GUI_H
+#endif  // _ROUTE_POINT_GUI_H

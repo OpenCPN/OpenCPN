@@ -106,10 +106,8 @@ public:
   ocpnToolBarSimple(ocpnFloatingToolbarDialog *parent, wxWindowID winid,
                     const wxPoint &pos = wxDefaultPosition,
                     const wxSize &size = wxDefaultSize,
-                    long style = wxNO_BORDER,
-                    int orient = wxTB_HORIZONTAL)
+                    long style = wxNO_BORDER, int orient = wxTB_HORIZONTAL)
       : m_one_shot(500) {
-
     Init();
 
     Create(parent, winid, pos, size, style, orient);
@@ -117,8 +115,7 @@ public:
 
   bool Create(ocpnFloatingToolbarDialog *parent, wxWindowID winid,
               const wxPoint &pos = wxDefaultPosition,
-              const wxSize &size = wxDefaultSize,
-              long style = wxNO_BORDER,
+              const wxSize &size = wxDefaultSize, long style = wxNO_BORDER,
               int orient = wxTB_HORIZONTAL);
 
   virtual ~ocpnToolBarSimple();
@@ -126,8 +123,8 @@ public:
   virtual void SetToggledBackgroundColour(wxColour c) {
     m_toggle_bg_color = c;
   };
-  virtual void SetBackgroundColour(wxColour c) {m_background_color = c; }
-  virtual wxColour GetBackgroundColour() { return m_background_color;}
+  virtual void SetBackgroundColour(wxColour c) { m_background_color = c; }
+  virtual wxColour GetBackgroundColour() { return m_background_color; }
   virtual void SetColorScheme(ColorScheme cs);
 
   // event handlers
@@ -166,8 +163,8 @@ public:
 
   virtual void DoPluginToolUp();
 
-  bool IsDirty(){ return m_dirty; }
-  void SetDirty( bool value ){ m_dirty = value; }
+  bool IsDirty() { return m_dirty; }
+  void SetDirty(bool value) { m_dirty = value; }
 
   size_t GetToolsCount() const { return m_tools.GetCount(); }
   void SetToolShowCount(int count) { m_nShowTools = count; }
@@ -184,7 +181,7 @@ public:
     m_tbenableRolloverBitmaps = enable;
   }
 
-  wxBitmap &GetBitmap(){ return m_bitmap; }
+  wxBitmap &GetBitmap() { return m_bitmap; }
 
   // get the control with the given id or return NULL
   virtual wxControl *FindControl(int toolid);
@@ -285,7 +282,7 @@ public:
   // the list of all our tools
   wxToolBarToolsList m_tools;
 
-  ocpnFloatingToolbarDialog * m_parentContainer;
+  ocpnFloatingToolbarDialog *m_parentContainer;
 
   // the maximum number of toolbar rows/columns
   int m_maxRows;
@@ -369,6 +366,7 @@ protected:
   bool m_tbenableRolloverBitmaps;
 
   wxBitmap m_bitmap;
+
 private:
   DECLARE_EVENT_TABLE()
 };
@@ -380,8 +378,7 @@ private:
 #define FADE_TIMER 2
 #define DESTROY_TIMER 3
 
-class ocpnFloatingToolbarDialog : public wxEvtHandler{
-
+class ocpnFloatingToolbarDialog : public wxEvtHandler {
 public:
   ocpnFloatingToolbarDialog(wxWindow *parent, wxPoint position, long orient,
                             float size_factor);
@@ -561,8 +558,8 @@ class ToolbarChoicesDialog : public wxDialog {
 public:
   /// Constructors
   ToolbarChoicesDialog();
-  ToolbarChoicesDialog(wxWindow *parent, ocpnFloatingToolbarDialog *sponsor, wxWindowID id = -1,
-                       const wxString &caption = _T(""),
+  ToolbarChoicesDialog(wxWindow *parent, ocpnFloatingToolbarDialog *sponsor,
+                       wxWindowID id = -1, const wxString &caption = _T(""),
                        const wxPoint &pos = wxDefaultPosition,
                        const wxSize &size = wxDefaultSize,
                        long style = SYMBOL_ToolbarChoices_STYLE);

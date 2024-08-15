@@ -65,7 +65,7 @@ extern "C" bool s57_GetChartExtent(const wxString &FullPath, Extent *pext);
 void s57_DrawExtendedLightSectors(ocpnDC &temp_dc, ViewPort &VPoint,
                                   std::vector<s57Sector_t> &sectorlegs);
 void s57_DrawExtendedLightSectorsGL(ocpnDC &temp_dc, ViewPort &VPoint,
-                                  std::vector<s57Sector_t> &sectorlegs);
+                                    std::vector<s57Sector_t> &sectorlegs);
 bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
                                    ViewPort &VPoint,
                                    std::vector<s57Sector_t> &sectorlegs);
@@ -198,7 +198,7 @@ public:
   //    DEPCNT VALDCO array access
   bool GetNearestSafeContour(double safe_cnt, double &next_safe_cnt);
 
-  virtual std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
+  virtual std::list<S57Obj *> *GetAssociatedObjects(S57Obj *obj);
 
   virtual std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void) {
     return m_ve_hash;
@@ -337,7 +337,7 @@ private:
                                        ChartPlugInWrapper *target_plugin_chart,
                                        s57chart *Chs57,
                                        ListOfObjRazRules *rule_list,
-                                       std::list<S57Obj*> *pi_rule_list,
+                                       std::list<S57Obj *> *pi_rule_list,
                                        std::vector<s57Sector_t> &sectorlegs);
   void CreateChartContext();
   void PopulateObjectsWithContext();
@@ -384,7 +384,6 @@ private:
   long m_plib_state_hash;
   bool m_btex_mem;
   char m_usage_char;
-
 
   int m_LineVBO_name;
 

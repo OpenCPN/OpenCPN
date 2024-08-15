@@ -78,7 +78,7 @@ public:
                           // Master Station reference only. For ASCII data,
                           // typically 0 For Binary data, probably
                           // -(IDX_time_zone * 60)-(tiderec->zone_offset * 3600)
-  int IDX_time_zone;  // Station location minutes offset from UTC
+  int IDX_time_zone;      // Station location minutes offset from UTC
 
   Station_Data *pref_sta_data;  // Pointer to the Reference Station Data
 

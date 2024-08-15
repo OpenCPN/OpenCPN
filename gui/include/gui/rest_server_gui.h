@@ -38,7 +38,7 @@
 
 //    Constants for  Dialog
 #define ID_STGDIALOG 10005
-#define SYMBOL_STG_STYLE                                      \
+#define SYMBOL_STG_STYLE \
   wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
 
 #define SYMBOL_STG_TITLE _("Send to GPS")
@@ -58,26 +58,23 @@ public:
   AcceptObjectDialog(wxWindow* parent, const wxString& caption,
                      const wxString& msg1, const wxString msg2);
   AcceptObjectDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
-               const wxString& hint, const wxPoint& pos, const wxSize& size,
-               long style, const wxString& msg1, const wxString& msg2);
+                     const wxString& hint, const wxPoint& pos,
+                     const wxSize& size, long style, const wxString& msg1,
+                     const wxString& msg2);
   ~AcceptObjectDialog();
 
-  bool Create(wxWindow* parent, wxWindowID id,
-              const wxString& caption,
-              const wxString& hint,
-              const wxPoint& pos,
-              const wxSize& size,
-              long style,
-              const wxString& msg1, const wxString& msg2);
+  bool Create(wxWindow* parent, wxWindowID id, const wxString& caption,
+              const wxString& hint, const wxPoint& pos, const wxSize& size,
+              long style, const wxString& msg1, const wxString& msg2);
 
-  void SetMessage(const wxString &message);
-  void SetCheck1Message(const wxString &message);
+  void SetMessage(const wxString& message);
+  void SetCheck1Message(const wxString& message);
 
-  bool GetCheck1Value(){ return m_pCheck1->GetValue(); }
+  bool GetCheck1Value() { return m_pCheck1->GetValue(); }
 
 private:
-  void CreateControls(const wxString& hint,
-                      const wxString& msg1, const wxString& msg);
+  void CreateControls(const wxString& hint, const wxString& msg1,
+                      const wxString& msg);
 
   void OnCancelClick(wxCommandEvent& event);
   void OnOKClick(wxCommandEvent& event);
@@ -85,10 +82,9 @@ private:
   wxButton* m_CancelButton;
   wxButton* m_OKButton;
   wxStaticText* premtext;
-  wxCheckBox *m_pCheck1;
+  wxCheckBox* m_pCheck1;
   wxString m_checkbox1_msg;
 };
-
 
 class PINCreateDialog : public wxDialog {
   DECLARE_DYNAMIC_CLASS(PINCreateDialog)
@@ -98,12 +94,11 @@ public:
   PINCreateDialog();
 
   PINCreateDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
-               const wxString& hint, const wxPoint& pos, const wxSize& size,
-               long style);
+                  const wxString& hint, const wxPoint& pos, const wxSize& size,
+                  long style);
   ~PINCreateDialog();
 
   static RestServerDlgCtx GetDlgCtx();
-
 
   wxDialog* Initiate(const std::string& msg, const std::string& text1);
   void DeInit();
@@ -114,10 +109,10 @@ public:
               const wxPoint& pos = SYMBOL_STG_POSITION,
               const wxSize& size = SYMBOL_STG_SIZE,
               long style = SYMBOL_STG_STYLE);
-  void SetMessage(const wxString &message);
-  void SetText1Message(const wxString &message);
+  void SetMessage(const wxString& message);
+  void SetText1Message(const wxString& message);
 
-  wxString GetText1Value(){ return m_pText1->GetValue(); }
+  wxString GetText1Value() { return m_pText1->GetValue(); }
 
 private:
   void CreateControls(const wxString& hint);
@@ -128,7 +123,7 @@ private:
   wxButton* m_CancelButton;
   wxButton* m_OKButton;
   wxStaticText* premtext;
-  wxTextCtrl *m_pText1;
+  wxTextCtrl* m_pText1;
   wxString m_checkbox1_msg;
 };
 

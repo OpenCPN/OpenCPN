@@ -41,9 +41,11 @@ struct OCPN_MonitorInfo {
   size_t width;
   /// @brief Height of the monitor in pixels
   size_t height;
-  /// @brief Width of the monitor in physical pixels, on eg. Apple Retina displays this value differs
+  /// @brief Width of the monitor in physical pixels, on eg. Apple Retina
+  /// displays this value differs
   size_t width_px;
-  /// @brief Height of the monitor in physical pixels, on eg. Apple Retina displays this value differs
+  /// @brief Height of the monitor in physical pixels, on eg. Apple Retina
+  /// displays this value differs
   size_t height_px;
   /// @brief Scaling factor in percent
   size_t scale;
@@ -54,9 +56,10 @@ extern size_t g_num_monitors;
 /// @brief Current monitor displaying the main application frame
 extern size_t g_current_monitor;
 /// @brief ratio to convert between DIP and physical pixels
-/// This is important while using OpenGL canvas on macOS with Retina displays, where this ratio is 2.0
+/// This is important while using OpenGL canvas on macOS with Retina displays,
+/// where this ratio is 2.0
 extern double g_current_monitor_dip_px_ratio;
-/// @brief Information about the monitors connected to the system  
+/// @brief Information about the monitors connected to the system
 extern std::vector<OCPN_MonitorInfo> g_monitor_info;
 
 /// @brief Enumerate the monitors connected to the system

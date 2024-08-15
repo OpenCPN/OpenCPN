@@ -281,11 +281,11 @@ enum { BUILTIN_DESCRIPTOR = 0, PLUGIN_DESCRIPTOR };
 
 class ChartClassDescriptor {
 public:
-  ChartClassDescriptor(){};
+  ChartClassDescriptor() {};
   virtual ~ChartClassDescriptor() {}
 
   ChartClassDescriptor(wxString classn, wxString mask, int type)
-      : m_class_name(classn), m_search_mask(mask), m_descriptor_type(type){};
+      : m_class_name(classn), m_search_mask(mask), m_descriptor_type(type) {};
 
   wxString m_class_name;
   wxString m_search_mask;
@@ -301,7 +301,7 @@ WX_DECLARE_OBJARRAY(ChartTableEntry, ChartTable);
 class ChartDatabase {
 public:
   ChartDatabase();
-  virtual ~ChartDatabase(){};
+  virtual ~ChartDatabase() {};
 
   bool Create(ArrayOfCDI &dir_array, wxGenericProgressDialog *pprog);
   bool Update(ArrayOfCDI &dir_array, bool bForce,

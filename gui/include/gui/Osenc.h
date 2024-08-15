@@ -321,8 +321,8 @@ typedef std::vector<VC_Element *> VC_ElementVector;
 //--------------------------------------------------------------------------
 class Osenc_instream {
 public:
-  Osenc_instream(){};
-  virtual ~Osenc_instream(){};
+  Osenc_instream() {};
+  virtual ~Osenc_instream() {};
 
   virtual bool Open(const wxString &senc_file_name) = 0;
   virtual void Close() = 0;
@@ -362,8 +362,8 @@ private:
 //--------------------------------------------------------------------------
 class Osenc_outstream {
 public:
-  Osenc_outstream(){};
-  virtual ~Osenc_outstream(){};
+  Osenc_outstream() {};
+  virtual ~Osenc_outstream() {};
 
   virtual bool Open(const wxString &ofileName) = 0;
 

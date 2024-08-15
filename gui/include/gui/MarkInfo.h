@@ -30,7 +30,7 @@
  * Includes
  */
 #include <wx/listctrl.h>
-#include "ocpn_frame.h"        //FIXME (dave ) // for ColorScheme
+#include "ocpn_frame.h"    //FIXME (dave ) // for ColorScheme
 #include <wx/hyperlink.h>  // toh, 2009.02.08
 #include <wx/choice.h>
 #include <wx/tglbtn.h>
@@ -368,7 +368,7 @@ public:
   void RecalculateSize(void);
   RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
-  void SetRoutePoints(const std::vector<RoutePoint*> &);
+  void SetRoutePoints(const std::vector<RoutePoint*>&);
   void ClearData();
   void SetBulkEdit(bool bBulkEdit);
   void UpdateHtmlList();

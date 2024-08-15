@@ -34,31 +34,33 @@
 #include "model/comm_n0183_output.h"
 
 static bool ConfirmOverwrite() {
-  int r = OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),
-                         _("OpenCPN Message"),
-                         wxOK | wxCANCEL | wxICON_QUESTION);
+  int r =
+      OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),
+                     _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
   return r == wxID_OK;
 }
 
-
-static  N0183DlgCtx GetDialogCtx(SendToGpsDlg* dialog) {
+static N0183DlgCtx GetDialogCtx(SendToGpsDlg* dialog) {
   N0183DlgCtx dlg_ctx;
   dlg_ctx.set_value = [dialog](int v) {
-      if (!dialog || !dialog->GetProgressGauge()) return;
-      dialog->GetProgressGauge()->SetValue(v);
-      dialog->GetProgressGauge()->Refresh();
-      dialog->GetProgressGauge()->Update();
+    if (!dialog || !dialog->GetProgressGauge()) return;
+    dialog->GetProgressGauge()->SetValue(v);
+    dialog->GetProgressGauge()->Refresh();
+    dialog->GetProgressGauge()->Update();
   };
   dlg_ctx.set_range = [dialog](int r) {
-      if (!dialog || !dialog->GetProgressGauge()) return;
-      dialog->GetProgressGauge()->SetRange(r); };
+    if (!dialog || !dialog->GetProgressGauge()) return;
+    dialog->GetProgressGauge()->SetRange(r);
+  };
   dlg_ctx.pulse = [dialog](void) {
-      if (!dialog || !dialog->GetProgressGauge()) return;
-      dialog->GetProgressGauge()->Pulse(); };
-  dlg_ctx.set_message =
-      [dialog](const std::string& s) { dialog->SetMessage(wxString(s)); };
+    if (!dialog || !dialog->GetProgressGauge()) return;
+    dialog->GetProgressGauge()->Pulse();
+  };
+  dlg_ctx.set_message = [dialog](const std::string& s) {
+    dialog->SetMessage(wxString(s));
+  };
   dlg_ctx.confirm_overwrite = []() { return ConfirmOverwrite(); };
   return dlg_ctx;
 }
 
-#endif   //  _N0183_DLG_CTX_FACTORY_H__
+#endif  //  _N0183_DLG_CTX_FACTORY_H__

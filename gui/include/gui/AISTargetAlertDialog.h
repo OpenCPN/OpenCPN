@@ -88,7 +88,7 @@ private:
   void OnIdJumptoClick(wxCommandEvent& event);
   void OnIdCreateWPClick(wxCommandEvent& event);
 
-  wxWindow *m_pParent;
+  wxWindow* m_pParent;
   wxHtmlWindow* m_pAlertTextCtl;
   int m_target_mmsi;
   AisDecoder* m_pdecoder;

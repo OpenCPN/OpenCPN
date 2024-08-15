@@ -23,7 +23,6 @@
  * Only making anything useful on Linux.
  */
 
-
 #ifndef UDEV_RULE_MGR_H__
 #define UDEV_RULE_MGR_H__
 

@@ -39,8 +39,8 @@ WX_DECLARE_LIST(ProgressInfoItem, ProgressInfoList);
 
 class ProgressInfoItem {
 public:
-  ProgressInfoItem(){};
-  ~ProgressInfoItem(){};
+  ProgressInfoItem() {};
+  ~ProgressInfoItem() {};
 
   wxString file_path;
   wxString msgx;

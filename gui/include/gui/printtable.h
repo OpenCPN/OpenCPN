@@ -145,7 +145,7 @@ protected:
 
 public:
   // Constructor with content to print and device
-  PrintCell(){};
+  PrintCell() {};
 
   // Constructor with content to print and device
   void Init(const wxString& _content, wxDC* _dc, int _width, int _cellpadding,

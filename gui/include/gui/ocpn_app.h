@@ -45,7 +45,7 @@ class Track;
 class MyApp : public wxApp {
 public:
   MyApp();
-  ~MyApp(){};
+  ~MyApp() {};
 
   bool OnInit() override;
   int OnExit() override;
@@ -78,7 +78,6 @@ public:
 
   DECLARE_EVENT_TABLE()
 private:
-
   /** Remote command deemed to be run from actual argc/argv. */
   struct ParsedCmdline {
     CmdlineAction action;
@@ -94,7 +93,6 @@ private:
   void InitRestListeners();
   ObsListener rest_activate_listener;
   ObsListener rest_reverse_listener;
-
 };
 
 wxDECLARE_APP(MyApp);

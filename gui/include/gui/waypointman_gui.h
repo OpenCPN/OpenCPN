@@ -31,7 +31,7 @@
 
 class WayPointmanGui {
 public:
-  WayPointmanGui(WayPointman& waypoint_man) : m_waypoint_man(waypoint_man) {}
+  WayPointmanGui(WayPointman &waypoint_man) : m_waypoint_man(waypoint_man) {}
 
   void SetColorScheme(ColorScheme cs, double displayDPmm);
   void ReloadAllIcons(double displayDPmm);
@@ -46,13 +46,11 @@ public:
 
 private:
   MarkIcon *ProcessLegacyIcon(wxString fileName, const wxString &key,
-                              const wxString &description,
-                              double displayDPmm);
+                              const wxString &description, double displayDPmm);
   MarkIcon *ProcessExtendedIcon(wxImage &image, const wxString &key,
                                 const wxString &description);
   wxRect CropImageOnAlpha(wxImage &image);
-  WayPointman& m_waypoint_man;
+  WayPointman &m_waypoint_man;
 };
 
-
-#endif   // _WAYPOINT_GUI_H__
+#endif  // _WAYPOINT_GUI_H__

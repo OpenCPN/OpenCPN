@@ -37,14 +37,13 @@
 #endif
 
 #include "bbox.h"
-//#include "chcanv.h"
+// #include "chcanv.h"
 #include "chartdbs.h"
 // nclude "RoutePoint.h"
 #include "vector2D.h"
 #include "model/select_item.h"
 #include "ocpndc.h"
 #include "model/navutil_base.h"
-
 
 extern bool LogMessageOnce(const wxString &msg);
 extern double fromUsrDistance(double usr_distance, int unit = -1);
@@ -63,8 +62,7 @@ void DimeControl(wxWindow *ctrl);
 void DimeControl(wxWindow *ctrl, wxColour col, wxColour col1,
                  wxColour back_color, wxColour text_color, wxColour uitext,
                  wxColour udkrd, wxColour gridline);
-wxColor GetDimedColor(const wxColor& c);
-
+wxColor GetDimedColor(const wxColor &c);
 
 class Route;
 class NavObjectCollection;
@@ -111,18 +109,16 @@ void UI_ImportGPX(wxWindow *parent, bool islayer = false,
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
                      const wxString suggestedName = _T("routes"));
-bool ExportGPXTracks(wxWindow *parent, std::vector<Track*> *pRoutes,
+bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pRoutes,
                      const wxString suggestedName = _T("tracks"));
 bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
                         const wxString suggestedName = _T("waypoints"));
 
-
 class MouseZoom {
 public:
-
   /** Convert a slider scale 1-100 value to configuration value 1.02..3.0. */
   static double ui_to_config(int slider_pos) {
-    return (2.0/100) * static_cast<double>(slider_pos) + 1.02;
+    return (2.0 / 100) * static_cast<double>(slider_pos) + 1.02;
   }
 
   /** Convert configuration 1.02..3.0 value to slider scale 1..100. */
@@ -130,7 +126,6 @@ public:
     return std::round((100.0 * (static_cast<double>(value) - 1.02)) / 2.0);
   }
 };
-
 
 //----------------------------------------------------------------------------
 //    Config
@@ -187,6 +182,5 @@ public:
 };
 
 void SwitchInlandEcdisMode(bool Switch);
-
 
 #endif

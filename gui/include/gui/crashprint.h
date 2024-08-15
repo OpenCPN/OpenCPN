@@ -11,9 +11,9 @@
 #ifndef _WX_CRASHPRINT_H_
 #define _WX_CRASHPRINT_H_
 
-//#ifdef __GNUG__
-//    #pragma implementation "crashprint.h"
-//#endif
+// #ifdef __GNUG__
+//     #pragma implementation "crashprint.h"
+// #endif
 
 //----------------------------------------------------------------------------
 // information
@@ -40,7 +40,7 @@ public:
   wxCrashPrint(int flags = 0, const wxString &fname = wxEmptyString);
 
   //! destructor
-  ~wxCrashPrint(){};
+  ~wxCrashPrint() {};
 
   // format and print report
   void Report();

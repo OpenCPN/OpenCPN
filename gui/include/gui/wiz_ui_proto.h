@@ -31,62 +31,65 @@
 #include <wx/html/htmlwin.h>
 #include <wx/wizard.h>
 #include <wx/dynarray.h>
-WX_DEFINE_ARRAY_PTR( wxWizardPageSimple*, WizardPages );
+WX_DEFINE_ARRAY_PTR(wxWizardPageSimple*, WizardPages);
 
 ///////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class FirstUseWiz
 ///////////////////////////////////////////////////////////////////////////////
-class FirstUseWiz : public wxWizard
-{
-	private:
+class FirstUseWiz : public wxWizard {
+private:
+protected:
+  wxScrolledWindow* m_swLangUnits;
+  wxStaticText* m_stDepth;
+  wxChoice* m_cDepth;
+  wxStaticText* m_stDistance;
+  wxChoice* m_cDistance;
+  wxStaticText* m_stSpeed;
+  wxChoice* m_cSpeed;
+  wxStaticText* m_stWind;
+  wxChoice* m_cWind;
+  wxStaticText* m_stPosition;
+  wxChoice* m_cPosition;
+  wxCheckBox* m_cbShowTrue;
+  wxCheckBox* m_cbShowMagnetic;
+  wxRichTextCtrl* m_rtLangUnitInfo;
+  wxScrolledWindow* m_swConnections;
+  wxStaticText* m_stSources;
+  wxCheckListBox* m_clSources;
+  wxButton* m_btnRescanSources;
+  wxRichTextCtrl* m_rtConnectionInfo;
+  wxScrolledWindow* m_swCharts;
+  wxStaticText* m_stAddCharts;
+  wxListBox* m_lbChartsDirs;
+  wxButton* m_btnAddChartDir;
+  wxRichTextCtrl* m_rtChartDirInfo;
+  wxHtmlWindow* m_htmlWinFinish;
 
-	protected:
-		wxScrolledWindow* m_swLangUnits;
-		wxStaticText* m_stDepth;
-		wxChoice* m_cDepth;
-		wxStaticText* m_stDistance;
-		wxChoice* m_cDistance;
-		wxStaticText* m_stSpeed;
-		wxChoice* m_cSpeed;
-		wxStaticText* m_stWind;
-		wxChoice* m_cWind;
-		wxStaticText* m_stPosition;
-		wxChoice* m_cPosition;
-		wxCheckBox* m_cbShowTrue;
-		wxCheckBox* m_cbShowMagnetic;
-		wxRichTextCtrl* m_rtLangUnitInfo;
-		wxScrolledWindow* m_swConnections;
-		wxStaticText* m_stSources;
-		wxCheckListBox* m_clSources;
-		wxButton* m_btnRescanSources;
-		wxRichTextCtrl* m_rtConnectionInfo;
-		wxScrolledWindow* m_swCharts;
-		wxStaticText* m_stAddCharts;
-		wxListBox* m_lbChartsDirs;
-		wxButton* m_btnAddChartDir;
-		wxRichTextCtrl* m_rtChartDirInfo;
-		wxHtmlWindow* m_htmlWinFinish;
+  // Virtual event handlers, override them in your derived class
+  virtual void OnInitDialog(wxInitDialogEvent& event) { event.Skip(); }
+  virtual void OnWizardCancel(wxWizardEvent& event) { event.Skip(); }
+  virtual void OnWizardFinished(wxWizardEvent& event) { event.Skip(); }
+  virtual void OnWizardHelp(wxWizardEvent& event) { event.Skip(); }
+  virtual void OnWizardPageChanged(wxWizardEvent& event) { event.Skip(); }
+  virtual void OnWizardPageChanging(wxWizardEvent& event) { event.Skip(); }
+  virtual void OnWizardPageShown(wxWizardEvent& event) { event.Skip(); }
+  virtual void m_btnRescanSourcesOnButtonClick(wxCommandEvent& event) {
+    event.Skip();
+  }
+  virtual void m_btnAddChartDirOnButtonClick(wxCommandEvent& event) {
+    event.Skip();
+  }
 
-		// Virtual event handlers, override them in your derived class
-		virtual void OnInitDialog( wxInitDialogEvent& event ) { event.Skip(); }
-		virtual void OnWizardCancel( wxWizardEvent& event ) { event.Skip(); }
-		virtual void OnWizardFinished( wxWizardEvent& event ) { event.Skip(); }
-		virtual void OnWizardHelp( wxWizardEvent& event ) { event.Skip(); }
-		virtual void OnWizardPageChanged( wxWizardEvent& event ) { event.Skip(); }
-		virtual void OnWizardPageChanging( wxWizardEvent& event ) { event.Skip(); }
-		virtual void OnWizardPageShown( wxWizardEvent& event ) { event.Skip(); }
-		virtual void m_btnRescanSourcesOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void m_btnAddChartDirOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+public:
+  FirstUseWiz(wxWindow* parent, wxWindowID id = wxID_ANY,
+              const wxString& title = _("OpenCPN Initial Configuration"),
+              const wxBitmap& bitmap = wxNullBitmap,
+              const wxPoint& pos = wxDefaultPosition,
+              long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER |
+                           wxSTAY_ON_TOP);
+  WizardPages m_pages;
 
-
-	public:
-
-		FirstUseWiz( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("OpenCPN Initial Configuration"), const wxBitmap& bitmap = wxNullBitmap, const wxPoint& pos = wxDefaultPosition, long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxSTAY_ON_TOP );
-		WizardPages m_pages;
-
-		~FirstUseWiz();
-
+  ~FirstUseWiz();
 };
-

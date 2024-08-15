@@ -41,18 +41,17 @@ public:
   virtual ~PriorityDlg();
 
 private:
-  void OnMoveUpClick(wxCommandEvent& event);
-  void OnMoveDownClick(wxCommandEvent& event);
-  void OnRefreshClick(wxCommandEvent& event);
-  void OnClearClick(wxCommandEvent& event);
-  void OnItemSelected(wxCommandEvent& event);
+  void OnMoveUpClick(wxCommandEvent &event);
+  void OnMoveDownClick(wxCommandEvent &event);
+  void OnRefreshClick(wxCommandEvent &event);
+  void OnClearClick(wxCommandEvent &event);
+  void OnItemSelected(wxCommandEvent &event);
 
   void ProcessMove(wxTreeItemId, int dir);
 
   void Populate();
-  void AddLeaves(const std::vector<std::string> &map_list,
-                            size_t map_index, std::string map_name,
-                            wxTreeItemId leaf_parent);
+  void AddLeaves(const std::vector<std::string> &map_list, size_t map_index,
+                 std::string map_name, wxTreeItemId leaf_parent);
   void AdjustSatPriority();
   void AdjustCOGSOGPriority();
 
@@ -69,5 +68,4 @@ private:
   wxFont *m_pF;
 };
 
-
-#endif    //_PRIORITY_DIALOG_H
+#endif  //_PRIORITY_DIALOG_H

@@ -439,14 +439,14 @@ private:
   PluginPanel* m_PluginSelected;
   wxString m_selectedName;
   int m_pluginSpacer;
-  std::atomic_flag m_is_loading;   //!<  recursive lock.
+  std::atomic_flag m_is_loading;  //!<  recursive lock.
 };
 
 /** Invokes client browser on plugin info_url when clicked. */
 class WebsiteButton : public wxPanel {
 public:
   WebsiteButton(wxWindow* parent, const char* url);
-  ~WebsiteButton(){};
+  ~WebsiteButton() {};
   void SetURL(std::string url) { m_url = url; }
 
 protected:
@@ -467,7 +467,7 @@ public:
               const wxSize& size, PluginMetadata plugin);
 
   /** Construct an entry reflecting a safe-loaded "uninstall-only" item */
-  PluginPanel(wxPanel* parent, const std::string&  name);
+  PluginPanel(wxPanel* parent, const std::string& name);
 
   ~PluginPanel();
 
@@ -526,7 +526,7 @@ public:
     LUP = NULL;
   };
 
-  ~S52PLIB_Context(){};
+  ~S52PLIB_Context() {};
 
   BoundingBox BBObj;  // lat/lon BBox of the rendered object
   bool bBBObj_valid;  // set after the BBObj has been calculated once.

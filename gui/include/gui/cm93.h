@@ -103,7 +103,7 @@ static const double CM93_semimajor_axis_meters =
 
 class Extended_Geometry;
 
-//#pragma pack(push,1)
+// #pragma pack(push,1)
 
 typedef struct {
   unsigned short x;
@@ -116,7 +116,7 @@ typedef struct {
   unsigned short z;
 } cm93_point_3d;
 
-//#pragma pack(pop)
+// #pragma pack(pop)
 
 typedef struct {
   double lon_min;
@@ -453,7 +453,7 @@ public:
 
   void UpdateLUPs(s57chart *pOwner);
   void ForceEdgePriorityEvaluate(void);
-  std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
+  std::list<S57Obj *> *GetAssociatedObjects(S57Obj *obj);
   cm93chart *GetCurrentSingleScaleChart() { return m_pcm93chart_current; }
 
   void SetSpecialOutlineCellIndex(int cell_index, int object_id, int subcell) {
@@ -489,7 +489,7 @@ private:
                               const LLRegion &Region);
 
   bool RenderCellOutlines(ocpnDC &dc, ViewPort &vp, wxPoint *pwp,
-                              M_COVR_Desc *mcd);
+                          M_COVR_Desc *mcd);
 
   //    Data members
 

@@ -38,7 +38,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#endif // _WX_DEFS_H_
+#endif  // _WX_DEFS_H_
 
 #include <wx/bmpbuttn.h>
 #include <wx/clrpicker.h>
@@ -57,7 +57,6 @@
 
 class MyConfig;
 class ArrayOfCDI;
-
 
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
@@ -126,7 +125,7 @@ public:
   void PositionAISAlert(wxWindow *alert_window);
   float GetChartScaleFactorExp(float scale_linear);
   float GetMarkScaleFactorExp(float scale_linear);
-  //float GetDIPScaleFactor();
+  // float GetDIPScaleFactor();
   int GetStatusBarFieldCount();
   bool GetFullscreen();
   bool SetFullscreen(bool bFull);
@@ -139,7 +138,7 @@ public:
   //      Per-Platform file/directory support
   //--------------------------------------------------------------------------
 
-    MyConfig *GetConfigObject();
+  MyConfig *GetConfigObject();
   wxString GetSupplementalLicenseString();
 
   int DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
@@ -147,7 +146,6 @@ public:
                            wxString suggestedName, wxString wildcard);
   int DoDirSelectorDialog(wxWindow *parent, wxString *file_spec, wxString Title,
                           wxString initDir, bool b_addFiles = true);
-
 
   //--------------------------------------------------------------------------
   //      Per-Platform Utility support
@@ -178,8 +176,6 @@ public:
 
 private:
   wxString m_SData_Dir;
-
-
 };
 
 //      Private colourPicker control

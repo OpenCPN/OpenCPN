@@ -64,8 +64,7 @@ const std::vector<USBDevice> known_usb_devices = {
 
 class FirstUseWizImpl : public FirstUseWiz {
 public:
-  FirstUseWizImpl(wxWindow* parent, MyConfig *pConfig,
-                  wxWindowID id = wxID_ANY,
+  FirstUseWizImpl(wxWindow* parent, MyConfig* pConfig, wxWindowID id = wxID_ANY,
                   const wxString& title = _("OpenCPN Initial Configuration"),
                   const wxBitmap& bitmap = wxNullBitmap,
                   const wxPoint& pos = wxDefaultPosition,
@@ -98,15 +97,14 @@ public:
   void EnumerateGPSD();
 
 private:
-  MyConfig *m_pConfig;
+  MyConfig* m_pConfig;
   std::vector<ConnectionParams> m_detected_connections;
   NMEA0183Flavor SeemsN0183(std::string& data);
   bool SeemsN2000(std::string& data);
 
-  inline void SetControlEnable(int id, bool state)
-  {
-    wxWindow *win = wxWindow::FindWindowById(id);
-    if(win) win->Enable(state);
+  inline void SetControlEnable(int id, bool state) {
+    wxWindow* win = wxWindow::FindWindowById(id);
+    if (win) win->Enable(state);
   }
 };
 

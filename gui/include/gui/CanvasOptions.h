@@ -101,7 +101,8 @@ private:
   wxChoice *m_pDispCat;
   wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights,
       *pCBENCAnchorDetails;
-      wxCheckBox *pCBShowAIS, *pCBAttenAIS, *pCBENCVisibleSectors, *pCBENCDataQuality;
+  wxCheckBox *pCBShowAIS, *pCBAttenAIS, *pCBENCVisibleSectors,
+      *pCBENCDataQuality;
 
   DECLARE_EVENT_TABLE()
 };

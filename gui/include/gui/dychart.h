@@ -38,7 +38,7 @@
 
 //    Profiling support
 
-//#include "/usr/include/valgrind/callgrind.h"
+// #include "/usr/include/valgrind/callgrind.h"
 
 //  Chart cacheing policy defaults
 
@@ -92,14 +92,14 @@
 
 //    Home Base, used if the config file lat/lon seems bogus or missing
 
-//#define START_LAT   35.1025              // New Bern (Ver 1.0)
-//#define START_LON  -77.0342
+// #define START_LAT   35.1025              // New Bern (Ver 1.0)
+// #define START_LON  -77.0342
 
-//#define START_LAT   26.783               // Green Turtle Key  (Ver 1.2)
-//#define START_LON  -77.333
+// #define START_LAT   26.783               // Green Turtle Key  (Ver 1.2)
+// #define START_LON  -77.333
 
-//#define START_LAT   25.786               //  Miami Beach (Ver 1.2.2)
-//#define START_LON  -80.148
+// #define START_LAT   25.786               //  Miami Beach (Ver 1.2.2)
+// #define START_LON  -80.148
 
 #define START_LAT 33.358  //  Georgetown, SC (Ver 1.2.4)
 #define START_LON -79.282
@@ -138,7 +138,7 @@
 //----------------------------------------------------------------------------
 
 #define USE_CPL
-//#include "gdal/cpl_port.h"
+// #include "gdal/cpl_port.h"
 
 #ifndef NULL
 #define NULL 0
@@ -164,25 +164,24 @@
 #endif
 
 #if defined(__OCPN__ANDROID__)
- #include <qopengl.h>
- #include <GL/gl_private.h>  // this is a cut-down version of gl.h
- #include <GLES2/gl2.h>
+#include <qopengl.h>
+#include <GL/gl_private.h>  // this is a cut-down version of gl.h
+#include <GLES2/gl2.h>
 #else
-  #ifdef ocpnUSE_GL
-    #if defined(__MSVC__)
-      #include "glew.h"
-    #elif defined(__WXOSX__)
-      #include <OpenGL/gl.h>
-      #include <OpenGL/glu.h>
-      typedef void (*  _GLUfuncptr)();
-      #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
-    #elif defined(__WXQT__) || defined(__WXGTK__)
-      #include <GL/glew.h>
-      #include <GL/glu.h>
-    #endif
-  #endif
+#ifdef ocpnUSE_GL
+#if defined(__MSVC__)
+#include "glew.h"
+#elif defined(__WXOSX__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+typedef void (*_GLUfuncptr)();
+#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#include <GL/glu.h>
 #endif
-
+#endif
+#endif
 
 /*
 #if defined(_WIN32) || defined(_WIN64)
@@ -210,7 +209,6 @@
 #  error platform not supported.
 #endif
 */
-
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"

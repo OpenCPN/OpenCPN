@@ -150,7 +150,8 @@ public:
 
   void SetHiliteIndex(int index) { m_nHiLiteIndex = index; }
   void SetHiliteIndexArray(const std::vector<int> &index_array) {
-    m_HiLiteIndexArray = index_array; }
+    m_HiLiteIndexArray = index_array;
+  }
   void ClearHiliteIndexArray() { m_HiLiteIndexArray.clear(); }
 
   void SetReferenceChart(int dbIndex) {
@@ -198,7 +199,7 @@ public:
   bool DoesQuiltContainPlugins(void);
 
   LLRegion GetHiliteRegion();
-  std::vector<int> &GetHiLiteIndexArray(){ return m_HiLiteIndexArray; }
+  std::vector<int> &GetHiLiteIndexArray() { return m_HiLiteIndexArray; }
 
   static LLRegion GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp);
 

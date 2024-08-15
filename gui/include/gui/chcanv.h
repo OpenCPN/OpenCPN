@@ -117,10 +117,11 @@ typedef enum ownship_state_t {
 
 enum { ID_S57QUERYTREECTRL = 10000, ID_AISDIALOGOK };
 
-enum { ID_PIANO_DISABLE_QUILT_CHART = 32000,
-       ID_PIANO_ENABLE_QUILT_CHART,
-       ID_PIANO_CONTRACT_PIANO,
-       ID_PIANO_EXPAND_PIANO
+enum {
+  ID_PIANO_DISABLE_QUILT_CHART = 32000,
+  ID_PIANO_ENABLE_QUILT_CHART,
+  ID_PIANO_CONTRACT_PIANO,
+  ID_PIANO_EXPAND_PIANO
 };
 
 enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
@@ -159,20 +160,20 @@ public:
   void OnKillFocus(wxFocusEvent &WXUNUSED(event));
   void OnSetFocus(wxFocusEvent &WXUNUSED(event));
 #ifdef HAVE_WX_GESTURE_EVENTS
-  void OnZoom(wxZoomGestureEvent& event);
-  void OnLongPress(wxLongPressEvent& event);
-  void OnPressAndTap(wxPressAndTapEvent& event);
+  void OnZoom(wxZoomGestureEvent &event);
+  void OnLongPress(wxLongPressEvent &event);
+  void OnPressAndTap(wxPressAndTapEvent &event);
 
-  void OnLeftDown(wxMouseEvent& evt);
-  void OnLeftUp(wxMouseEvent& evt);
+  void OnLeftDown(wxMouseEvent &evt);
+  void OnLeftUp(wxMouseEvent &evt);
 
-  void OnRightUp(wxMouseEvent& event);
-  void OnRightDown(wxMouseEvent& event);
+  void OnRightUp(wxMouseEvent &event);
+  void OnRightDown(wxMouseEvent &event);
 
-  void OnDoubleLeftClick(wxMouseEvent& event);
+  void OnDoubleLeftClick(wxMouseEvent &event);
 
-  void OnWheel(wxMouseEvent& event);
-  void OnMotion(wxMouseEvent& event);
+  void OnWheel(wxMouseEvent &event);
+  void OnMotion(wxMouseEvent &event);
 #endif /* HAVE_WX_GESTURE_EVENTS */
 
   void PopupMenuHandler(wxCommandEvent &event);
@@ -370,8 +371,8 @@ public:
 
   void ShowChartInfoWindow(int x, int dbIndex);
   void HideChartInfoWindow(void);
-  void ShowCompositeInfoWindow(int x, int n_charts,
-                               int scale, const std::vector<int> &index_vector);
+  void ShowCompositeInfoWindow(int x, int n_charts, int scale,
+                               const std::vector<int> &index_vector);
 
   void StartMeasureRoute();
   void CancelMeasureRoute();
@@ -384,7 +385,7 @@ public:
   void RemoveChartFromQuilt(int dbIndex);
 
   void HandlePianoClick(int selected_index,
-                           const std::vector<int> &selected_dbIndex_array);
+                        const std::vector<int> &selected_dbIndex_array);
   void HandlePianoRClick(int x, int y, int selected_index,
                          const std::vector<int> &selected_dbIndex_array);
   void HandlePianoRollover(int selected_index,
@@ -479,7 +480,6 @@ public:
   void TouchAISToolActive(void);
   void UpdateAISTBTool(void);
 
-
   void SelectChartFromStack(int index, bool bDir = false,
                             ChartTypeEnum New_Type = CHART_TYPE_DONTCARE,
                             ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
@@ -563,7 +563,7 @@ public:
   std::vector<int> GetQuiltNoshowIindexArray() {
     return m_quilt_noshow_index_array;
   }
-  double GetDisplayScale(){ return m_displayScale; }
+  double GetDisplayScale() { return m_displayScale; }
 
 private:
   int AdjustQuiltRefChart();
@@ -646,7 +646,7 @@ private:
                               // m_canvas_scale_factor / pixels_per_meter of
                               // displayed chart also may be considered as the
                               // "pixels-per-meter" of the canvas on-screen
-  double m_pix_per_mm;  // pixels per millimeter on the screen
+  double m_pix_per_mm;        // pixels per millimeter on the screen
   double m_display_size_mm;
 
   double m_absolute_min_scale_ppm;
@@ -853,9 +853,9 @@ private:
   bool m_bzooming, m_bzooming_to_cursor;
   IDX_entry *m_pIDXCandidate;
 
-  //#ifdef ocpnUSE_GL
+  // #ifdef ocpnUSE_GL
   glChartCanvas *m_glcc;
-  //#endif
+  // #endif
 
   // Smooth movement member variables
   wxPoint m_pan_drag;
@@ -877,7 +877,6 @@ private:
   wxFont *m_pgridFont;
 
   bool m_dragoffsetSet;
-
 
   bool m_bautofind;
   bool m_bFirstAuto;

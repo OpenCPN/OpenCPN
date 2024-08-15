@@ -48,6 +48,7 @@ public:
   wxStaticText* m_pInfoTextCtl;
   int dbIndex;
   int chart_scale;
+
 private:
   wxString m_string;
   wxSize m_size;

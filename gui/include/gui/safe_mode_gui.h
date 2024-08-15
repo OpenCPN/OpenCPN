@@ -18,4 +18,4 @@ namespace safe_mode {
  */
 void check_last_start();
 
-}
+}  // namespace safe_mode

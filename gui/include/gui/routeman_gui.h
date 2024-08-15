@@ -35,9 +35,8 @@ public:
   static RoutemanDlgCtx GetDlgCtx();
 
   void DeleteAllTracks();
-  void DeleteTrack(Track *pTrack);
+  void DeleteTrack(Track* pTrack);
   bool UpdateProgress();
-
 
 private:
   void DoAdvance(void);
@@ -45,5 +44,4 @@ private:
   Routeman& m_routeman;
 };
 
-
-#endif   // _ROUTEMAN_GUI_H
+#endif  // _ROUTEMAN_GUI_H
