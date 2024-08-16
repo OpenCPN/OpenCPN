@@ -18,6 +18,9 @@ if [ "$current_branch" != "master" ]; then
     git branch -m $current_branch master
 fi
 
+# https://stackoverflow.com/questions/74486167
+git config --global protocol.file.allow always
+
 # Use most updated flatpak PPA
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
     | sudo apt-key add -
