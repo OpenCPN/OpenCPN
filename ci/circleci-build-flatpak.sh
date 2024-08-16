@@ -47,15 +47,6 @@ flatpak --user install --noninteractive org.freedesktop.Sdk//$runtime
 
 cd flatpak
 
-# By default, script packages master branch from main github repo, as a
-# proper packaging branch should do. Setting FP_BUILD_ORIGINAL_BRANCH
-# makes it build same branch as the script instead, for testing.
-if [ -z "$FP_BUILD_ORIGINAL_BRANCH" ]; then
-    sed -i -e '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
-        -e "/BUILD_NUMBER/s/0/$BUILD_NUMBER/" \
-        org.opencpn.OpenCPN.yaml
-fi
-
 # The build heavy lifting
 test -d ../build || mkdir ../build
 cd ../build
