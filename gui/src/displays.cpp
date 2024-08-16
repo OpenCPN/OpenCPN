@@ -153,13 +153,20 @@ void EnumerateMonitors() {
                              : crtcInfo->height * 25.4 / 96.0;
       DEBUG_LOG << "Monitor " << i + 1 << ":";
       DEBUG_LOG << "  Name: " << outputInfo->name;
+      DEBUG_LOG << "  Connection: "
+                << (outputInfo->connection == RR_Connected
+                        ? "Connected"
+                        : "Disconnected/Unknown");
       DEBUG_LOG << "  Physical Size (mm): " << mm_width << " x " << mm_height;
       DEBUG_LOG << "  Resolution: " << crtcInfo->width << " x "
                 << crtcInfo->height;
       DEBUG_LOG << "  Scale: " << scale;
-      g_monitor_info.push_back({outputInfo->name, mm_width, mm_height,
-                                crtcInfo->width, crtcInfo->height,
-                                crtcInfo->width, crtcInfo->height, scale});
+      if (outputInfo->connection == RR_Connected && crtcInfo->width > 0 &&
+          crtcInfo->height > 0) {
+        g_monitor_info.push_back({outputInfo->name, mm_width, mm_height,
+                                  crtcInfo->width, crtcInfo->height,
+                                  crtcInfo->width, crtcInfo->height, scale});
+      }
     }
     XRRFreeOutputInfo(outputInfo);
     XRRFreeCrtcInfo(crtcInfo);
