@@ -1,0 +1,41 @@
+From: Pavel Kalian <pavel@kalian.cz>
+Date: Fri, 16 Aug 2024 20:11:28 -0300
+Subject: Improve display detection on headless X11 systems.
+
+Bug:  https://github.com/OpenCPN/OpenCPN/issues/4099
+Applied-Upstream: https://github.com/OpenCPN/OpenCPN/commit/1ad93a1b
+---
+ gui/src/displays.cpp | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/gui/src/displays.cpp b/gui/src/displays.cpp
+index 25be7d7..930d9de 100644
+--- a/gui/src/displays.cpp
++++ b/gui/src/displays.cpp
+@@ -144,15 +144,22 @@ void EnumerateMonitors() {
+       size_t mm_height = outputInfo->mm_height > 0 ? outputInfo->mm_height : crtcInfo->height * 25.4 / 96.0;
+       DEBUG_LOG << "Monitor " << i + 1 << ":";
+       DEBUG_LOG << "  Name: " << outputInfo->name;
++      DEBUG_LOG << "  Connection: "
++                << (outputInfo->connection == RR_Connected
++                        ? "Connected"
++                        : "Disconnected/Unknown");
++
+       DEBUG_LOG << "  Physical Size (mm): " << mm_width << " x "
+                 << mm_height;
+       DEBUG_LOG << "  Resolution: " << crtcInfo->width << " x "
+                 << crtcInfo->height;
+       DEBUG_LOG << "  Scale: " << scale;
+-      g_monitor_info.push_back({outputInfo->name, mm_width,
+-                                mm_height, crtcInfo->width,
+-                                crtcInfo->height, crtcInfo->width,
+-                                crtcInfo->height, scale});
++      if (outputInfo->connection == RR_Connected && crtcInfo->width > 0 &&
++          crtcInfo->height > 0) {
++        g_monitor_info.push_back({outputInfo->name, mm_width, mm_height,
++                                  crtcInfo->width, crtcInfo->height,
++                                  crtcInfo->width, crtcInfo->height, scale});
++      }
+     }
+     XRRFreeOutputInfo(outputInfo);
+     XRRFreeCrtcInfo(crtcInfo);
