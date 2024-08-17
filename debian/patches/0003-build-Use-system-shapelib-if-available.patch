@@ -1,0 +1,62 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Thu, 13 Jun 2024 21:43:20 +0200
+Subject: build: Use system shapelib if available.
+
+---
+ CMakeLists.txt           |  8 +++++++-
+ cmake/FindShapelib.cmake | 27 +++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+), 1 deletion(-)
+ create mode 100644 cmake/FindShapelib.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d0288f5..840f59f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1257,7 +1257,13 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
+ add_subdirectory("libs/SQLiteCpp")
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
+ 
+-add_subdirectory("libs/shapelib")
++find_package(Shapelib)
++if (SHAPELIB_FOUND)
++  message(STATUS "Using system shapelib")
++else ()
++  message(STATUS "Using bundled shapelib")
++  add_subdirectory("libs/shapelib")
++endif ()
+ target_link_libraries(${PACKAGE_NAME} PRIVATE shapelib::shapelib)
+ 
+ add_subdirectory("libs/ShapefileCpp")
+diff --git a/cmake/FindShapelib.cmake b/cmake/FindShapelib.cmake
+new file mode 100644
+index 0000000..c55b618
+--- /dev/null
++++ b/cmake/FindShapelib.cmake
+@@ -0,0 +1,27 @@
++# Find the shapelib a k a shp libraries
++#
++# Defines:
++#     SHAPELIB_FOUND - true if shapelib libs and headers found
++#
++# Exports:
++#     shapelib::shapelib transitive link target if SHAPELIB_FOUND is true
++#
++# Copyright (c) 2024 Alec Leamas
++# License: GPL 2+
++
++find_path(SHAPELIB_INCLUDE_DIR shapefil.h)
++
++find_library(SHAPELIB_LIBRARY NAMES shp shapelib)
++
++find_package_handle_standard_args(Shapelib
++    DEFAULT_MSG SHAPELIB_LIBRARY SHAPELIB_INCLUDE_DIR
++)
++
++if (Shapelib_FOUND)
++  add_library(_shapelib INTERFACE)
++  target_link_libraries(_shapelib INTERFACE ${SHAPELIB_LIBRARY})
++  target_include_directories(_shapelib INTERFACE ${SHAPELIB_INCLUDE_DIR})
++  add_library(shapelib::shapelib ALIAS _shapelib)
++endif()
++
++mark_as_advanced(SHAPELIB_INCLUDE_DIR SHAPELIB_LIBRARY)
