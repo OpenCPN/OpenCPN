@@ -1,4 +1,4 @@
-opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+2) UNRELEASED; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+2) noble; urgency=medium
 
   * New patch: Don't use -march=native (#1078467).
   * New patch: Fix wrong date string (2023 -> 2024).
@@ -6,7 +6,7 @@ opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+2) UNRELEASED; urgency=medium
   * New patch: Improve headless display size handling (opencpn/4099).
   * New patch: Add -latomic for armel and some other 32-bit platforms
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 11 Aug 2024 09:53:06 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 17 Aug 2024 16:39:51 +0200
 
 opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
