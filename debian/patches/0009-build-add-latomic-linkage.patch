@@ -1,0 +1,23 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Fri, 16 Aug 2024 20:26:11 +0200
+Subject: build: add  -latomic linkage
+
+Fix armel build.
+
+Bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81358
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b84afa2..6d1170a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -348,6 +348,7 @@ endif ()
+ # -march=native"
+ if (NOT WIN32 AND NOT APPLE)
+   add_compile_options("-Wall")
++  link_libraries(atomic)
+   if (NOT OCPN_PEDANTIC)
+     add_compile_options(
+       "-Wno-unused" "-fexceptions" "-rdynamic" "-fno-strict-aliasing"
