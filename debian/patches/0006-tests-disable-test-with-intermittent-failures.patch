@@ -7,10 +7,10 @@ Subject: tests: disable test with intermittent failures
  1 file changed, 2 insertions(+)
 
 diff --git a/test/tests.cpp b/test/tests.cpp
-index 697a098..c9f0488 100644
+index c072001..048296d 100644
 --- a/test/tests.cpp
 +++ b/test/tests.cpp
-@@ -765,7 +765,9 @@ public:
+@@ -772,7 +772,9 @@ public:
  };
  #endif  // __unix__
  
