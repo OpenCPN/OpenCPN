@@ -831,13 +831,16 @@ bool MUIBar::MouseEvent(wxMouseEvent& event) {
         }
       }
 
-      wxRect rfollow(m_followButton->m_position.x, m_followButton->m_position.y,
-                     m_followButton->m_size.x, m_followButton->m_size.y);
-      rfollow.Offset(m_screenPos);
-      if (rfollow.Contains(x, y)) {
-        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, ID_FOLLOW);
-        m_parentCanvas->GetEventHandler()->AddPendingEvent(evt);
-        if (g_focusCanvas) g_focusCanvas->TriggerDeferredFocus();
+      if (m_followButton) {
+        wxRect rfollow(m_followButton->m_position.x,
+                       m_followButton->m_position.y, m_followButton->m_size.x,
+                       m_followButton->m_size.y);
+        rfollow.Offset(m_screenPos);
+        if (rfollow.Contains(x, y)) {
+          wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, ID_FOLLOW);
+          m_parentCanvas->GetEventHandler()->AddPendingEvent(evt);
+          if (g_focusCanvas) g_focusCanvas->TriggerDeferredFocus();
+        }
       }
 
       wxRect rmenu(m_menuButton->m_position.x, m_menuButton->m_position.y,
