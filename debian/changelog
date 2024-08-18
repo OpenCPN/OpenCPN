@@ -1,3 +1,11 @@
+opencpn (1:5.10.0+dfsg-1~bpo12+3) UNRELEASED; urgency=medium
+
+  * New patch: fix dark theme invisible object text.
+  * New patch: Fix X11 headless display size handling.
+  * New patch: Add -latomic for Debian armel builds
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 10:12:20 +0200
+
 opencpn (1:5.10.0+dfsg-1~bpo12+2) bookworm-backports; urgency=medium
 
   * New patch: Dont use -march=native (#1078467).
