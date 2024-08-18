@@ -1,9 +1,10 @@
-opencpn (1:5.10.0+dfsg-4) UNRELEASED; urgency=medium
+opencpn (1:5.10.0+dfsg-4) unstable; urgency=medium
 
   * New patch: fix dark theme invisible object text
   * New patch: fix headless X11 display size handling
+  * d/control: Exclude armel from Architecture (#1078953)
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 10:01:20 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 14:42:15 +0200
 
 opencpn (1:5.10.0+dfsg-3) unstable; urgency=medium
 
