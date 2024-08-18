@@ -5,8 +5,9 @@ opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+2) noble; urgency=medium
   * New patch: Disable some tests onn Debian builders (#opencpn/4090).
   * New patch: Improve headless display size handling (opencpn/4099).
   * New patch: Add -latomic for armel and some other 32-bit platforms
+  * New patch: Fix dark theme invisible object test (opencpn/4101)
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 17 Aug 2024 16:39:51 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 10:23:46 +0200
 
 opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
