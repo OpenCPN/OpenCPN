@@ -46,6 +46,10 @@
 #include "priority_gui.h"
 #include "connection_edit.h"
 
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
@@ -95,7 +99,13 @@ void ConnectionsDialog::Init() {
   //  Looking for small devices in landscape mode.
   bool bcompact = false;
   wxSize displaySize = wxGetDisplaySize();
+
+  // This test especially for 7" rPI display
   if ((displaySize.y < 500) && (displaySize.x > displaySize.y)) bcompact = true;
+
+#ifdef __ANDROID__
+  bcompact = true;
+#endif
 
   wxBoxSizer* bSizer4 = new wxBoxSizer(wxVERTICAL);
   m_container->SetSizer(bSizer4);
@@ -153,8 +163,8 @@ void ConnectionsDialog::Init() {
 
   int cb_space = 1;
 
-  // On smaller displays, squeeze the dialog slightly
-  if (bcompact) {
+  // On smaller displays, in Landscape mode, squeeze the dialog slightly
+  if (bcompact && (displaySize.x > displaySize.y)) {
     wxFlexGridSizer* GenProps = new wxFlexGridSizer(0, 2, 0, 0);
     bSizer161->Add(GenProps, 0, wxALL, cb_space);
 
@@ -463,6 +473,8 @@ void ConnectionsDialog::FillSourceList(void) {
   mSelectedConnection = NULL;
   m_buttonAdd->Enable(true);
   m_buttonAdd->Show();
+
+  m_scrollWinConnections->Layout();
 }
 
 void ConnectionsDialog::UpdateSourceList(bool bResort) {
@@ -480,6 +492,10 @@ void ConnectionsDialog::UpdateSourceList(bool bResort) {
 }
 
 void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
+
   //  Unselect all panels
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++)
     TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
@@ -498,8 +514,13 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
       FillSourceList();
     }
     UpdateDatastreams();
+
+    m_container->FitInside();
     m_sbSizerLB->Layout();
   }
+#ifdef __ANDROID__
+  androidEnableRotation();
+#endif
 }
 
 void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
@@ -531,6 +552,9 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
 }
 
 void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
   if (mSelectedConnection) {
     // Find the index
     int index = -1;
@@ -565,6 +589,9 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
       }
     }
   }
+#ifdef __ANDROID__
+  androidEnableRotation();
+#endif
 }
 
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
