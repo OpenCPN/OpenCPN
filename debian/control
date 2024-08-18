@@ -40,7 +40,7 @@ Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
 Package: opencpn
-Architecture: all amd64 arm64 armhf i386 mips64el ppc64el riscv64 s390x
+Architecture: amd64 arm64 armhf i386 mips64el ppc64el riscv64 s390x
  loong64 powerpc ppc64
 Depends: opencpn-data (>= ${source:Version}),
  bzip2,
