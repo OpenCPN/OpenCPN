@@ -1,6 +1,14 @@
+opencpn (1:5.10.0+dfsg-4) UNRELEASED; urgency=medium
+
+  * New patch: fix dark theme invisible object text
+  * New patch: fix headless X11 display size handling
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 10:01:20 +0200
+
 opencpn (1:5.10.0+dfsg-3) unstable; urgency=medium
 
   * Add patch for missing -latomic on armel
+
 
  -- Alec Leamas <leamas.alec@gmail.com>  Fri, 16 Aug 2024 20:40:11 +0200
 
