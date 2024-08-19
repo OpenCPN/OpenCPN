@@ -44,6 +44,12 @@ else ()
   endif ()
   include(ExternalProject)
   set(LIBDNET_SRC ${CMAKE_BINARY_DIR}/libdnet)
+  if (APPLE)
+    if (DEFINED CMAKE_OSX_ARCHITECTURES AND NOT CMAKE_OSX_ARCHITECTURES STREQUAL "")
+      string(REPLACE ";" "$<SEMICOLON>" DNET_ARCHS "${CMAKE_OSX_ARCHITECTURES}")
+      set(CMAKE_ADDITIONAL_PARAMS "-DCMAKE_OSX_ARCHITECTURES='${DNET_ARCHS}'")
+    endif ()
+ endif ()
   ExternalProject_Add(
     libdnet
 
@@ -51,7 +57,7 @@ else ()
     GIT_TAG "libdnet-1.18.0"
 
     UPDATE_COMMAND ""
-    CMAKE_ARGS -DCMAKE_INSTALL_LIBDIR=/lib -DCMAKE_INSTALL_INCLUDEDIR=/include
+    CMAKE_ARGS -DCMAKE_INSTALL_LIBDIR=/lib -DCMAKE_INSTALL_INCLUDEDIR=/include ${CMAKE_ADDITIONAL_PARAMS}
     SOURCE_DIR "${LIBDNET_SRC}"
     TEST_COMMAND ""
     INSTALL_COMMAND make DESTDIR=${LIBDNET_SRC}/installed install
