@@ -365,6 +365,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
 bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
   g_bAllowShipToActive = false;
   wxJSONValue v;
+  bool result = false;
   if (pActivePoint) {
     pActivePoint->m_bBlink = false;
     pActivePoint->m_bIsActive = false;
@@ -375,20 +376,27 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     v[_T("WP_arrived")] = pActivePoint->GetName();
   }
   int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
-  if ((n_index_active + 1) <= pActiveRoute->GetnPoints()) {
-    pActiveRouteSegmentBeginPoint = pActivePoint;
-
-    pActiveRoute->m_pRouteActivePoint =
-        pActiveRoute->GetPoint(n_index_active + 1);
-
-    pActivePoint = pActiveRoute->GetPoint(n_index_active + 1);
+  int step = 1;
+  while (n_index_active == pActiveRoute->GetIndexOf(pActivePoint)) {
+    if ((n_index_active + step) <= pActiveRoute->GetnPoints()) {
+      pActiveRouteSegmentBeginPoint = pActivePoint;
+      pActiveRoute->m_pRouteActivePoint =
+          pActiveRoute->GetPoint(n_index_active + step);
+      pActivePoint = pActiveRoute->GetPoint(n_index_active + step);
+      step++;
+      result = true;
+    } else {
+      n_index_active = -1;  // stop the while loop
+      result = false;
+    }
+  }
+  if (result) {
     v[_T("Next_WP")] = pActivePoint->GetName();
     v[_T("GUID_Next_WP")] = pActivePoint->m_GUID;
 
     pActivePoint->m_bBlink = true;
     pActivePoint->m_bIsActive = true;
     g_blink_rect = pActivePoint->CurrentRect_in_DC;  // set up global blinker
-
     m_bArrival = false;
     m_arrival_min = 1e6;
     m_arrival_test = 0;
@@ -402,10 +410,8 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     m_prop_dlg_ctx.set_enroute_point(pr, pActivePoint);
 
     json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ARRIVED");
-    return true;
   }
-
-  return false;
+  return result;
 }
 
 bool Routeman::DeactivateRoute(bool b_arrival) {
