@@ -54,14 +54,14 @@ else ()
     CMAKE_ARGS -DCMAKE_INSTALL_LIBDIR=/lib -DCMAKE_INSTALL_INCLUDEDIR=/include
     SOURCE_DIR "${LIBDNET_SRC}"
     TEST_COMMAND ""
-    INSTALL_COMMAND make DESTDIR=${LIBDNET_SRC}/install install
+    INSTALL_COMMAND make DESTDIR=${LIBDNET_SRC}/installed install
   )
 
   message(STATUS "Using downloaded libdnet at ${CMAKE_BINARY_DIR}/libdnet")
   target_include_directories(
-    _DNET_IF INTERFACE ${LIBDNET_SRC}/install/include/dnet
+    _DNET_IF INTERFACE ${LIBDNET_SRC}/installed/include/dnet
   )
   target_link_libraries(
-    _DNET_IF INTERFACE ${LIBDNET_SRC}/install/lib/libdnet.a
+    _DNET_IF INTERFACE ${LIBDNET_SRC}/installed/lib/libdnet.a
   )
 endif ()
