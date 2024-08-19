@@ -1272,10 +1272,8 @@ target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
 target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
 
 if (NOT QT_ANDROID)
-  # TODO: On Linux libdnet may be available from system packages
   add_subdirectory("libs/libdnet")
-  target_link_libraries(${PACKAGE_NAME} PRIVATE dnet)
-  target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/libdnet/include)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::dnet)
 endif ()
 
 if (UNIX)
