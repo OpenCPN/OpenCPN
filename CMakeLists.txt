@@ -1908,6 +1908,7 @@ if (APPLE)
     ${PACKAGE_NAME}
     PRIVATE ${gshhs}
             ${basemap_shp}
+            ${ssfnData}
             ${uiData}
             ${s57data}
             ${tcData}
