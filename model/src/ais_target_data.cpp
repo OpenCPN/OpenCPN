@@ -142,6 +142,7 @@ wxString aisMeteoPrecipType(int precip) {
       break;
     case 4:
       prec = "Mixed / ice";
+      break;
     case 5:
       prec = "Snow";
       break;
@@ -169,6 +170,7 @@ wxString aisMeteoWaterLevelRef(int refID) {
       break;
     case 4:
       ref = "MHHW";
+      break;
     case 5:
       ref = "MHW";
       break;
