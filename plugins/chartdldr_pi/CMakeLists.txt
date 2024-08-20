@@ -19,20 +19,27 @@ set(VERSION_PATCH "0")
 set(VERSION_DATE "2019-12-09")
 
 if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE
-      Release
-      CACHE
-        STRING
-        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-        FORCE
+  set(CMAKE_BUILD_TYPE Release CACHE STRING
+      "Choose build type [None Debug Release RelWithDebInfo MinSizeRel]"
+      FORCE
   )
-endif (NOT CMAKE_BUILD_TYPE)
+endif ()
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+# LibArchive_VERSION is defined by cmake 3.17+ i. e. Focal+; Focal needs unarr.
+# See #4005.
+find_package(LibArchive REQUIRED)
+if (DEFINED LibArchive_VERSION AND LibArchive_VERSION VERSION_GREATER 3.7.3)
+  option(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives" OFF)
+else ()
+  option(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives" ON)
+endif ()
+if (CHARTDLDR_USE_UNARR)
+  add_definitions(-DCHARTDLDR_RAR_UNARR)
+endif ()
 
-# SET(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_MACOSX_RPATH "ON")
 
 include("cmake/PluginConfigure.cmake")
@@ -134,29 +141,26 @@ if (wxWidgets_VERSION_STRING GREATER 2.9)
   endif (OCPN_USE_CHART_LIST)
 endif (wxWidgets_VERSION_STRING GREATER 2.9)
 
-option(CHARTDLDR_USE_UNARR
-       "Use unarr to extract RAR archives instead of libarchive" ON
-)
-if (CHARTDLDR_USE_UNARR)
-  add_definitions(-DCHARTDLDR_RAR_UNARR)
-endif ()
-
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
 include_directories(src/unarr/)
 pkg_search_module(UNARR libunarr unarr)
 use_bundled_lib(USE_BUNDLED_UNARR unarr)
-if (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
-  message(STATUS "chartdldr_pi: Building with system unarr")
-  include_directories(${UNARR_INCLUDE_DIR})
-  set(SRC_UNARR "")
+if (CHARTDLDR_USE_UNARR)
+  if (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
+    message(STATUS "chartdldr_pi: Using system unarr for rar files")
+    include_directories(${UNARR_INCLUDE_DIR})
+    set(SRC_UNARR "")
+  else ()
+    message(STATUS "chartdldr_pi: using bundled unarr for rar files")
+    add_library(UNARR ${SRC_UNARR})
+    include_directories(src/unarr)
+  endif ()
+  add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 else ()
-  message(STATUS "chartdldr_pi: Building with bundled unarr")
-  add_library(UNARR ${SRC_UNARR})
-  include_directories(src/unarr)
+  message(STATUS "chartdldr_pi: using libarchive for rar files")
+  add_library(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR})
 endif ()
-
-add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 
 find_package(OcpnLibarchive)
 if (NOT TARGET ocpn::libarchive)
@@ -185,7 +189,9 @@ if (QT_ANDROID)
   add_definitions(
     "-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression"
   )
-endif (QT_ANDROID)
+else ()
+  add_definitions(-DDLDR_USE_LIBARCHIVE)
+endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   # FIXME: This is to broad, needs better handling after 5.0.0
