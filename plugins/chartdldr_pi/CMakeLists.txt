@@ -18,21 +18,30 @@ set(VERSION_MINOR "4")
 set(VERSION_PATCH "0")
 set(VERSION_DATE "2019-12-09")
 
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE
-      Release
-      CACHE
-        STRING
-        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-        FORCE
-  )
-endif (NOT CMAKE_BUILD_TYPE)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
+# LibArchive_VERSION is defined by cmake 3.17+ i. e. Focal+; Focal needs unarr.
+# See #4005.
+find_package(LibArchive)
+if (NOT LibArchive_FOUND)
+  include(FindPkgConfig)
+  pkg_check_modules(_LIBARCHIVE libarchive)
+  if (NOT _LIBARCHIVE_FOUND)
+    message(WARNING "Cannot find libarchive version, assuming 3.4.0")
+    set(LibArchive_VERSION 3.4.0)
+  else ()
+    set(LibArchive_VERSION ${_LIBARCHIVE_VERSION})
+  endif ()
+endif ()
+message(STATUS "Libarchive version: ${LibArchive_VERSION}")
+if (DEFINED LibArchive_VERSION AND LibArchive_VERSION VERSION_GREATER 3.7.3)
+  option(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives" OFF)
+else ()
+  option(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives" ON)
+endif ()
+if (CHARTDLDR_USE_UNARR)
+  add_definitions(-DCHARTDLDR_RAR_UNARR)
+endif ()
 
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-
-# SET(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_MACOSX_RPATH "ON")
 
 include("cmake/PluginConfigure.cmake")
@@ -134,34 +143,29 @@ if (wxWidgets_VERSION_STRING GREATER 2.9)
   endif (OCPN_USE_CHART_LIST)
 endif (wxWidgets_VERSION_STRING GREATER 2.9)
 
-option(CHARTDLDR_USE_UNARR
-       "Use unarr to extract RAR archives instead of libarchive" ON
-)
-if (CHARTDLDR_USE_UNARR)
-  add_definitions(-DCHARTDLDR_RAR_UNARR)
-endif ()
-
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
 include_directories(src/unarr/)
 pkg_search_module(UNARR libunarr unarr)
 use_bundled_lib(USE_BUNDLED_UNARR unarr)
-if (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
-  message(STATUS "chartdldr_pi: Building with system unarr")
-  include_directories(${UNARR_INCLUDE_DIR})
-  set(SRC_UNARR "")
+if (CHARTDLDR_USE_UNARR)
+  if (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
+    message(STATUS "chartdldr_pi: Using system unarr for rar files")
+    include_directories(${UNARR_INCLUDE_DIR})
+    set(SRC_UNARR "")
+  else ()
+    message(STATUS "chartdldr_pi: using bundled unarr for rar files")
+    add_library(UNARR ${SRC_UNARR})
+    include_directories(src/unarr)
+    include_directories(${CMAKE_SOURCE_DIR}/include)
+  endif ()
+  add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 else ()
-  message(STATUS "chartdldr_pi: Building with bundled unarr")
-  add_library(UNARR ${SRC_UNARR})
-  include_directories(src/unarr)
+  message(STATUS "chartdldr_pi: using libarchive for rar files")
+  add_library(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR})
 endif ()
-
-add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 
 find_package(OcpnLibarchive)
-if (NOT TARGET ocpn::libarchive)
-  message(FATAL:_ERROR "No libarchive!!!")
-endif ()
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::libarchive)
 if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   # If we use system libarchive, we do not bundle the dylib and need to
@@ -170,22 +174,15 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   set(LIBARCHIVE_COMMENT_END "-->")
 endif ()
 
-if (LibArchive_FOUND)
-  message(STATUS "chartdldr_pi: going to use LibArchive...")
-  message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
-  message(STATUS "chartdldr_pi: " ${LibArchive_LIBRARIES})
-  include_directories(${LibArchive_INCLUDE_DIRS})
-  # Unset the unrar sources as we will not need them
-  add_definitions(-DDLDR_USE_LIBARCHIVE)
-endif (LibArchive_FOUND)
-
 if (QT_ANDROID)
   add_definitions(-D__STDC_LIMIT_MACROS)
   add_definitions(-D__STDC_CONSTANT_MACROS)
   add_definitions(
     "-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression"
   )
-endif (QT_ANDROID)
+else ()
+  add_definitions(-DDLDR_USE_LIBARCHIVE)
+endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   # FIXME: This is to broad, needs better handling after 5.0.0
@@ -217,8 +214,6 @@ else (LibArchive_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
   endif (BZIP2_FOUND)
 endif (LibArchive_FOUND)
-
-# TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
 
 target_link_libraries( ${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
