@@ -18,15 +18,6 @@ set(VERSION_MINOR "4")
 set(VERSION_PATCH "0")
 set(VERSION_DATE "2019-12-09")
 
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING
-      "Choose build type [None Debug Release RelWithDebInfo MinSizeRel]"
-      FORCE
-  )
-endif ()
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-
-include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # LibArchive_VERSION is defined by cmake 3.17+ i. e. Focal+; Focal needs unarr.
 # See #4005.
@@ -166,6 +157,7 @@ if (CHARTDLDR_USE_UNARR)
     message(STATUS "chartdldr_pi: using bundled unarr for rar files")
     add_library(UNARR ${SRC_UNARR})
     include_directories(src/unarr)
+    include_directories(${CMAKE_SOURCE_DIR}/include)
   endif ()
   add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 else ()
@@ -174,9 +166,6 @@ else ()
 endif ()
 
 find_package(OcpnLibarchive)
-if (NOT TARGET ocpn::libarchive)
-  message(FATAL:_ERROR "No libarchive!!!")
-endif ()
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::libarchive)
 if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   # If we use system libarchive, we do not bundle the dylib and need to
@@ -184,15 +173,6 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   set(LIBARCHIVE_COMMENT_START "<!--")
   set(LIBARCHIVE_COMMENT_END "-->")
 endif ()
-
-if (LibArchive_FOUND)
-  message(STATUS "chartdldr_pi: going to use LibArchive...")
-  message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
-  message(STATUS "chartdldr_pi: " ${LibArchive_LIBRARIES})
-  include_directories(${LibArchive_INCLUDE_DIRS})
-  # Unset the unrar sources as we will not need them
-  add_definitions(-DDLDR_USE_LIBARCHIVE)
-endif (LibArchive_FOUND)
 
 if (QT_ANDROID)
   add_definitions(-D__STDC_LIMIT_MACROS)
@@ -234,8 +214,6 @@ else (LibArchive_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
   endif (BZIP2_FOUND)
 endif (LibArchive_FOUND)
-
-# TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
 
 target_link_libraries( ${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
