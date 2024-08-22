@@ -18,7 +18,10 @@
 #*************************************************************************
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
-message(STATUS "CMAKE_MODULE_PATH : ${CMAKE_MODULE_PATH}")
+
+if (UNIX AND NOT APPLE AND NOT QT_ANDROID)
+  set(LINUX "1")
+endif ()
 
 set(MODEL_HDR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/model)
 set(
@@ -259,6 +262,124 @@ target_include_directories(
     ${CMAKE_BINARY_DIR}/include
 )
 
+if (LINUX)
+  find_package(LIBUDEV)
+  if (LIBUDEV_FOUND)
+    target_link_libraries(_OCPN_MODEL INTERFACE ocpn::libudev)
+    set(HAVE_LIBUDEV 1)
+  endif ()
+endif ()
+
+if (OCPN_USE_CURL)
+  if (CMAKE_HOST_WIN32)
+    install(
+      FILES "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
+            "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
+            "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll" DESTINATION "."
+    )
+    if (MSVC)
+      set(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
+      #install(FILES "cache/buildwin/libcurl.dll" DESTINATION ".")
+      #install(FILES "cache/buildwin/zlib1.dll" DESTINATION ".")
+    endif ()
+  else ()
+    set(OCPN_USE_EXTERN_CURL ON)
+  endif ()
+
+  if (NOT QT_ANDROID)
+    if (OCPN_USE_EXTERN_CURL)
+      find_package(CURL REQUIRED)
+      message(STATUS "ocpn: using external curl libraries...")
+      message(STATUS "  curl includes: " ${CURL_INCLUDE_DIRS})
+      message(STATUS "  curl libraries: " ${CURL_LIBRARIES})
+
+      target_include_directories(_OCPN_MODEL INTERFACE ${CURL_INCLUDE_DIRS})
+    else ()
+      include("Curl")
+      message(STATUS "Using bundled curl library...")
+    endif ()
+
+    pkg_search_module(SYS_WXCURL libwxcurl wxcurl)
+    use_bundled_lib(USE_BUNDLED_WXCURL wxcurl)
+    if (SYS_WXCURL_FOUND AND NOT USE_BUNDLED_WXCURL)
+      message(STATUS "Building with system wxcurl")
+      target_include_directories(
+        _OCPN_MODEL INTERFACE ${CURL_INCLUDE_DIRS} ${SYS_WXCURL_INCLUDE_DIR}
+      )
+      target_link_libraries(_OCPN_MODEL INTERFACE ${SYS_WXCURL_LIBRARIES})
+    else ()
+      message(STATUS "Building with bundled wxcurl")
+      include("Curl")
+      add_subdirectory("${CMAKE_SOURCE_DIR}/libs/wxcurl" ${CMAKE_BINARY_DIR}/curl2)
+      target_link_libraries(_OCPN_MODEL INTERFACE ocpn::wxcurl)
+    endif ()
+
+    target_link_libraries(_OCPN_MODEL INTERFACE ${CURL_LIBRARIES})
+
+    if (WIN32 AND OCPN_USE_EXTERN_CURL)
+      find_library(
+        CURL_LIBRARY_DLL
+        NAMES curl curllib libcurl_imp curllib_static libcurl
+        PATH_SUFFIXES dll
+      )
+      install(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
+    endif ()
+  else ()
+    target_include_directories(
+      _OCPN_MODEL
+        INTERFACE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
+    )
+    target_link_libraries(
+      _OCPN_MODEL
+        INTERFACE
+            ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a
+    )
+  endif ()
+endif ()
+
+if (NOT WIN32)
+  if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+    set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
+  endif()
+  find_package(OpenSSL)
+  if (OPENSSL_FOUND)
+    message(STATUS
+      "OpenSSL found ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}"
+    )
+    target_include_directories(_OCPN_MODEL INTERFACE ${OPENSSL_INCLUDE_DIR})
+    target_include_directories(_OCPN_MODEL INTERFACE ${OPENSSL_INCLUDE_DIR})
+    target_link_libraries(_OCPN_MODEL INTERFACE ${OPENSSL_LIBRARIES})
+  elseif (APPLE)
+    message(STATUS "Model: APPLE: Hardwiring /usr/local OpenSSL...")
+    target_include_directories(
+      _OCPN_MODEL INTERFACE /usr/local/opt/openssl@3/include
+    )
+    target_link_libraries(
+      _OCPN_MODEL
+        INTERFACE
+          /usr/local/opt/openssl@3/lib/libcrypto.3.dylib
+          /usr/local/opt/openssl@3/lib/libssl.3.dylib
+    )
+
+  endif ()
+else ()
+  target_include_directories(
+    _OCPN_MODEL
+    INTERFACE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
+  )
+  target_link_libraries(
+    _OCPN_MODEL
+    INTERFACE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
+  )
+ target_link_libraries(
+    _OCPN_MODEL
+    INTERFACE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
+  )
+endif ()
+
+
+
+
 # check for lzma support for reading compressed charts
 if (OCPN_USE_LZMA)
   find_package(LibLZMA)
@@ -357,7 +478,6 @@ if (QT_ANDROID)
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
   )
-  target_compile_definitions(_OCPN_MODEL INTERFACE -DMG_ENABLE_OPENSSL)
   target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
     ${CMAKE_SOURCE_DIR}/android
