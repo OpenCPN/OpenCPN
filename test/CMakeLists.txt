@@ -44,7 +44,8 @@ target_compile_definitions(tests
 target_link_libraries(tests PRIVATE ocpn::model-src)
 
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
-  add_executable(ipc-srv-tests ipc-srv-tests.cpp)
+  set(_IPC_SRV_SRC ipc-srv-tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+  add_executable(ipc-srv-tests ${_IPC_SRV_SRC} )
   target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest ocpn::model-src)
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
     target_link_libraries(ipc-srv-tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
@@ -96,9 +97,8 @@ if (HAVE_LIBUDEV)
   target_link_libraries(tests PRIVATE ocpn::libudev)
 endif ()
 
-set(BUF_TEST_SRC buffer_tests.cpp
-)
-add_executable(buffer_tests ${BUF_TEST_SRC})
+set(_BUF_TEST_SRC buffer_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+add_executable(buffer_tests ${_BUF_TEST_SRC})
 
 target_link_libraries(buffer_tests PRIVATE  ocpn::model-src ocpn::gtest)
 target_compile_definitions(
@@ -106,7 +106,9 @@ target_compile_definitions(
 )
 
 if (LINUX)
-  add_executable(dbus_tests dbus_tests.cpp)
+  set(_DBUS_TEST_SRC dbus_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+
+  add_executable(dbus_tests ${_DBUS_TEST_SRC})
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
   target_link_libraries(dbus_tests PRIVATE ocpn::model-src)
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
@@ -134,26 +136,30 @@ if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   gtest_add_tests(TARGET dbus_tests)
 endif ()
 
-add_executable(cli-server cli_server.cpp)
+set(_CLI_SRV_SRC cli_server.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+add_executable(cli-server ${_CLI_SRV_SRC})
 target_link_libraries(cli-server PRIVATE ocpn::model-src)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(cli-server PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
-add_executable(ipc-client ipc_client.cpp)
+set(_CLI_CLIENT_SRC ipc_client.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+add_executable(ipc-client ${_CLI_CLIENT_SRC})
 target_link_libraries(ipc-client PRIVATE ocpn::model-src)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(ipc-client PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
-add_executable(wx-instance wx_instance.cpp)
+set(_WX_INST_SRC wx_instance.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+add_executable(wx-instance ${_WX_INST_SRC})
 target_link_libraries(wx-instance PRIVATE ocpn::model-src)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(wx-instance PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 if (UNIX)
-  add_executable(std-instance std_instance.cpp)
+  set(_STD_INST_SRC std_instance.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+  add_executable(std-instance ${_STD_INST_SRC})
   target_link_libraries(std-instance PRIVATE ocpn::model-src)
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
     target_link_libraries(std-instance PRIVATE -fsanitize=${ENABLE_SANITIZER})
