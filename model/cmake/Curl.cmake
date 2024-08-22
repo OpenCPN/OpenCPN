@@ -33,9 +33,17 @@ if (CMAKE_HOST_WIN32)
       IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/cache/buildwin/zlib1.dll
   )
   set(CURL_LIBRARIES WIN32_LIBCURL WIN32_ZLIB1)
-
   set(CURL_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/cache/buildwin/include)
   set(CURL_FOUND 1)
+  install(
+    FILES
+      "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
+      "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
+      "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll"
+	    "${CMAKE_SOURCE_DIR}/cache/buildwin/libcurl.dll"
+    DESTINATION "."
+  )
+
 endif ()
 
 if (UNIX)

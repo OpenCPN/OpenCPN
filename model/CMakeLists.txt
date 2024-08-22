@@ -271,18 +271,8 @@ if (LINUX)
 endif ()
 
 if (OCPN_USE_CURL)
-  if (CMAKE_HOST_WIN32)
-    install(
-      FILES "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
-            "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
-            "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll" DESTINATION "."
-    )
-    if (MSVC)
-      set(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
-      #install(FILES "cache/buildwin/libcurl.dll" DESTINATION ".")
-      #install(FILES "cache/buildwin/zlib1.dll" DESTINATION ".")
-    endif ()
-  else ()
+
+  if (NOT CMAKE_HOST_WIN32)
     set(OCPN_USE_EXTERN_CURL ON)
   endif ()
 
@@ -332,7 +322,7 @@ if (OCPN_USE_CURL)
     target_link_libraries(
       _OCPN_MODEL
         INTERFACE
-            ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a
+          ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a
     )
   endif ()
 endif ()
