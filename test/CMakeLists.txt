@@ -51,11 +51,6 @@ target_compile_definitions(tests
     TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
     UNIT_TESTS
 )
-target_compile_definitions(tests
-  PUBLIC
-    CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
-    TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
-)
 
 target_link_libraries(tests PRIVATE ocpn::model-src ocpn::gtest win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
