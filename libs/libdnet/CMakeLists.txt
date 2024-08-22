@@ -48,6 +48,7 @@ ExternalProject_Add(
       ${CMAKE_COMMAND} -Dpatch:FILEPATH=${LIBDNET_PATCH}
       -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchFile.cmake
   CMAKE_ARGS
+      -G${CMAKE_GENERATOR}
       -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libdnet-src/installed
       -DCMAKE_INSTALL_LIBDIR=lib
       -DCMAKE_INSTALL_INCLUDEDIR=include
@@ -60,20 +61,24 @@ ExternalProject_Add(
 )
 message(STATUS "Using patched libdnet at ${CMAKE_BINARY_DIR}/libdnet")
 
+if (WIN32)
+  set(_DNET_LIB ${LIBDNET_SRC}/installed/lib/dnet.lib)
+else ()
+  set(_DNET_LIB ${LIBDNET_SRC}/installed/lib/libdnet.a)
+endif ()
+
+add_custom_target(
+  _dnet_build
+  COMMAND  ${CMAKE_COMMAND} -E echo "Built the libdnet library"
+  DEPENDS _libdnet
+  BYPRODUCTS ${_DNET_LIB}
+)
+
 add_library(_DNET_IF INTERFACE)
 add_library(ocpn::dnet ALIAS _DNET_IF)
-add_dependencies(_DNET_IF _libdnet)
+add_dependencies(_DNET_IF _dnet_build)
 target_include_directories(
   _DNET_IF INTERFACE ${LIBDNET_SRC}/installed/include
   _DNET_IF INTERFACE ${LIBDNET_SRC}/installed/include/dnet
 )
-
-if (WIN32)
-  target_link_libraries(
-    _DNET_IF INTERFACE ${LIBDNET_SRC}/installed/lib/dnet.lib
-  )
-else ()
-  target_link_libraries(
-    _DNET_IF INTERFACE ${LIBDNET_SRC}/installed/lib/libdnet.a
-  )
-endif ()
+target_link_libraries(_DNET_IF INTERFACE ${_DNET_LIB})
