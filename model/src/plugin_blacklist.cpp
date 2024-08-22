@@ -81,7 +81,6 @@ static const config_block plugin_blacklist[] = {
     {"Watchdog", 1, 0, true, STD_HARD_MSG},
     {"squiddio", 0, 2, true, STD_HARD_MSG},
     {"ObjSearch", 0, 3, true, STD_HARD_MSG},
-    {"objsearch_pi", 0, 26, true, STD_HARD_MSG},
 #ifdef __WXOSX__
     {"S63", 0, 6, true, STD_HARD_MSG},
 #endif
