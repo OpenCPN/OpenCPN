@@ -1118,14 +1118,6 @@ find_package(Gettext REQUIRED)
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 
-if (LINUX)
-  find_package(LIBUDEV)
-  if (LIBUDEV_FOUND)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libudev)
-    set(HAVE_LIBUDEV 1)
-  endif ()
-endif ()
-
 if (OCPN_USE_SYSFS_PORTS)
   set(USE_SYSFS_PORTS 1)
 endif ()
@@ -1327,72 +1319,6 @@ if (CMAKE_HOST_WIN32)
   list(APPEND CMAKE_PREFIX_PATH
        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include"
   )
-endif ()
-
-if (OCPN_USE_CURL)
-  if (CMAKE_HOST_WIN32)
-    install(
-      FILES "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
-            "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
-            "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll" DESTINATION "."
-    )
-    if (MSVC)
-      set(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
-      install(FILES "cache/buildwin/libcurl.dll" DESTINATION ".")
-      install(FILES "cache/buildwin/zlib1.dll" DESTINATION ".")
-    endif ()
-  else ()
-    set(OCPN_USE_EXTERN_CURL ON)
-  endif ()
-
-  if (NOT QT_ANDROID)
-    if (OCPN_USE_EXTERN_CURL)
-      find_package(CURL REQUIRED)
-      message(STATUS "ocpn: using external curl libraries...")
-      message(STATUS "  curl includes: " ${CURL_INCLUDE_DIRS})
-      message(STATUS "  curl libraries: " ${CURL_LIBRARIES})
-
-      target_include_directories(${PACKAGE_NAME} PRIVATE ${CURL_INCLUDE_DIRS})
-    else ()
-      include("Curl")
-      message(STATUS "Using bundled curl library...")
-    endif ()
-
-    pkg_search_module(SYS_WXCURL libwxcurl wxcurl)
-    use_bundled_lib(USE_BUNDLED_WXCURL wxcurl)
-    if (SYS_WXCURL_FOUND AND NOT USE_BUNDLED_WXCURL)
-      message(STATUS "Building with system wxcurl")
-      target_include_directories(
-        ${PACKAGE_NAME} PRIVATE ${CURL_INCLUDE_DIRS} ${SYS_WXCURL_INCLUDE_DIR}
-      )
-      target_link_libraries(${PACKAGE_NAME} PRIVATE ${SYS_WXCURL_LIBRARIES})
-    else ()
-      message(STATUS "Building with bundled wxcurl")
-      include("Curl")
-      add_subdirectory("libs/wxcurl")
-      target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxcurl)
-    endif ()
-
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CURL_LIBRARIES})
-
-    if (WIN32 AND OCPN_USE_EXTERN_CURL)
-      find_library(
-        CURL_LIBRARY_DLL
-        NAMES curl curllib libcurl_imp curllib_static libcurl
-        PATH_SUFFIXES dll
-      )
-      install(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
-    endif ()
-  else ()
-    target_include_directories(
-      ${PACKAGE_NAME}
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
-    )
-    target_link_libraries(
-      ${PACKAGE_NAME}
-      PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a
-    )
-  endif ()
 endif ()
 
 if (QT_ANDROID)
@@ -2797,5 +2723,4 @@ if (QT_ANDROID)
       ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
       ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
   )
-  add_definitions(-DMG_ENABLE_OPENSSL)
 endif ()
