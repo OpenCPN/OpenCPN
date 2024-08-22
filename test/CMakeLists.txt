@@ -44,13 +44,16 @@ target_compile_definitions(tests
 target_link_libraries(tests PRIVATE ocpn::model-src)
 
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
-  add_executable(ipc-srv-tests ipc-srv-tests.cpp)
-  target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest ocpn::model-src)
+  set(IPC_SRV_TESTS_SRC ipc-srv-tests.cpp)
+  add_executable(ipc-srv-tests ${IPC_SRV_TESTS_SRC})
+
+  # See note in ipc-srv-tests.cpp
+  target_compile_options(ipc-srv-tests PRIVATE -O0)
+  target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest)
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
     target_link_libraries(ipc-srv-tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
   endif ()
-  # See note in ipc-srv-tests.cpp
-  target_compile_options(ipc-srv-tests PRIVATE -O0)
+  target_link_libraries(ipc-srv-tests PRIVATE ocpn::model-src)
   add_dependencies(ipc-srv-tests cli-server ipc-client)
 endif ()
 
@@ -66,9 +69,23 @@ if (MSVC)
   )
 endif ()
 
-## if (APPLE AND OCPN_USE_DEPS_BUNDLE)
-##   target_include_directories(tests PRIVATE ${OCPN_DEPS_BUNDLE_PATH}/include)
-## endif()
+target_include_directories(
+  tests
+  PRIVATE
+  ${PROJECT_SOURCE_DIR}/../include
+  ${PROJECT_SOURCE_DIR}/include
+  ${CMAKE_BINARY_DIR}/include
+  ${PROJECT_SOURCE_DIR}/../libs/sound/include
+  ${PROJECT_SOURCE_DIR}/../libs/sound/include
+  ${PROJECT_SOURCE_DIR}/../buildandroid/libcurl/include
+)
+if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+  target_include_directories(
+    tests
+    PRIVATE
+    ${OCPN_DEPS_BUNDLE_PATH}/include
+  )
+endif()
 
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(tests PRIVATE -fsanitize=${ENABLE_SANITIZER})
@@ -106,22 +123,67 @@ target_compile_definitions(
 )
 
 if (LINUX)
-  add_executable(dbus_tests dbus_tests.cpp)
+  add_executable(dbus_tests
+    dbus_tests.cpp
+    ${MODEL_SRC_DIR}/dbus_client.cpp
+    ${MODEL_SRC_DIR}/dbus_server.cpp
+    ${MODEL_SRC_DIR}/cmdline.cpp
+    ${MODEL_SRC_DIR}/config_vars.cpp
+    ${MODEL_SRC_DIR}/ipc_api.cpp
+    ${MODEL_SRC_DIR}/local_api.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
+  )
+  target_link_libraries(dbus_tests PRIVATE observable::observable)
+  target_link_libraries(dbus_tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
-  target_link_libraries(dbus_tests PRIVATE ocpn::model-src)
+  target_link_libraries(dbus_tests PRIVATE ocpn::model)
+  target_link_libraries(dbus_tests PRIVATE glib::glib)
+  target_include_directories(dbus_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/model/include
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
     target_link_libraries(dbus_tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
   endif ()
 endif ()
 
+
+if (NOT WIN32)
+  if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+    set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
+  endif()
+  find_package(OpenSSL)
+  if (OPENSSL_FOUND)
+    message(STATUS "OpenSSL found ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
+    target_include_directories(tests PRIVATE ${OPENSSL_INCLUDE_DIR})
+    target_link_libraries(tests PRIVATE ${OPENSSL_LIBRARIES})
+    add_definitions(-DMG_ENABLE_OPENSSL)
+  endif (OPENSSL_FOUND)
+else (NOT WIN32)
+    target_include_directories(
+      tests
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
+    )
+    target_link_libraries(
+      tests
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
+    )
+   target_link_libraries(
+      tests
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
+    )
+endif (NOT WIN32)
 find_program(DBUS_SEND NAMES dbus-send)
 if (DBUS_SEND)
   target_compile_definitions(tests PRIVATE HAVE_DBUS_SEND)
 endif ()
-
 if (GLIB_FOUND)
   target_compile_definitions(tests PRIVATE HAVE_GLIB)
 endif ()
+
 
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
@@ -134,27 +196,78 @@ if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   gtest_add_tests(TARGET dbus_tests)
 endif ()
 
-add_executable(cli-server cli_server.cpp)
-target_link_libraries(cli-server PRIVATE ocpn::model-src)
+add_executable(cli-server cli_server.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
+target_link_libraries(cli-server PRIVATE ${wxWidgets_LIBRARIES})
+target_include_directories(cli-server PRIVATE ../include)
+target_include_directories(cli-server PRIVATE
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(cli-server PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
-add_executable(ipc-client ipc_client.cpp)
-target_link_libraries(ipc-client PRIVATE ocpn::model-src)
+add_executable(ipc-client ipc_client.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
+target_link_libraries(ipc-client PRIVATE ${wxWidgets_LIBRARIES})
+target_link_libraries(ipc-client PRIVATE observable::observable)
+target_include_directories(ipc-client PRIVATE
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(ipc-client PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
-add_executable(wx-instance wx_instance.cpp)
-target_link_libraries(wx-instance PRIVATE ocpn::model-src)
+
+set (WX_INSTANCE_SRC
+  wx_instance.cpp
+  ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/cmdline.cpp
+  ${MODEL_SRC_DIR}/config_vars.cpp
+  ${MODEL_SRC_DIR}/ocpn_utils.cpp
+  ${MODEL_SRC_DIR}/logger.cpp
+)
+if (APPLE)
+  list(APPEND WX_INSTANCE_SRC ${MODEL_SRC_DIR}/macutils.c)
+endif ()
+add_executable(wx-instance ${WX_INSTANCE_SRC})
+target_link_libraries(wx-instance PRIVATE ${wxWidgets_LIBRARIES})
+target_link_libraries(wx-instance PRIVATE ocpn::opencpn ocpn::model)
+target_include_directories(wx-instance PRIVATE
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
+if (MSVC)
+  target_link_libraries(wx-instance PRIVATE setupapi)
+endif ()
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(wx-instance PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 if (UNIX)
-  add_executable(std-instance std_instance.cpp)
-  target_link_libraries(std-instance PRIVATE ocpn::model-src)
+  set(STD_INSTANCE_SRC
+    std_instance.cpp
+    ${MODEL_SRC_DIR}/std_instance_chk.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/cmdline.cpp
+    ${MODEL_SRC_DIR}/config_vars.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
+  )
+  if (APPLE)
+    list(APPEND STD_INSTANCE_SRC ${MODEL_SRC_DIR}/macutils.c)
+  endif ()
+  add_executable(std-instance ${STD_INSTANCE_SRC})
+  target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
+  target_link_libraries(std-instance PRIVATE ocpn::model)
+  target_include_directories(std-instance PRIVATE
+    ${CMAKE_SOURCE_DIR}/model/include
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
     target_link_libraries(std-instance PRIVATE -fsanitize=${ENABLE_SANITIZER})
   endif ()
