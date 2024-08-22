@@ -14,41 +14,30 @@
 
 # configure curl library
 
-IF (CURL_FOUND)
+if (CURL_FOUND)
     return()
-ENDIF ()
+endif ()
 
-IF(CMAKE_HOST_WIN32)
+if (CMAKE_HOST_WIN32)
   if (NOT EXISTS ${PROJECT_SOURCE_DIR}/cache/buildwin/libcurl.lib)
       message(FATAL_ERROR "Cannot find bundled windows files.")
   endif ()
-  ADD_LIBRARY(WIN32_LIBCURL SHARED IMPORTED)
-  SET_TARGET_PROPERTIES(WIN32_LIBCURL PROPERTIES
+  add_library(WIN32_LIBCURL SHARED IMPORTED)
+  set_target_properties(WIN32_LIBCURL PROPERTIES
       IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/cache/buildwin/libcurl.lib
       IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/cache/buildwin/libcurl.dll
   )
-  ADD_LIBRARY(WIN32_ZLIB1 SHARED IMPORTED)
-  SET_TARGET_PROPERTIES(WIN32_ZLIB1 PROPERTIES
+  add_library(WIN32_ZLIB1 SHARED IMPORTED)
+  set_target_properties(WIN32_ZLIB1 PROPERTIES
       IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/cache/buildwin/zlib1.lib
       IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/cache/buildwin/zlib1.dll
   )
-  IF(MSVC)
-    INSTALL(FILES "cache/buildwin/libcurl.dll" DESTINATION ".")
-    INSTALL(FILES "cache/buildwin/zlib1.dll" DESTINATION ".")
-    #INSTALL(FILES "cache/buildwin/libeay32.dll" DESTINATION ".")
-    #INSTALL(FILES "cache/buildwin/ssleay32.dll" DESTINATION ".")
-    #INSTALL(FILES "cache/buildwin/curl-ca-bundle.crt" DESTINATION ".")
-    SET(CURL_LIBRARIES WIN32_LIBCURL WIN32_ZLIB1)
-  ELSE(MSVC)
-    # mingw
-    SET(CURL_LIBRARIES WIN32_LIBCURL)
-    INSTALL(FILES "cache/buildwin/libcurl.dll" DESTINATION ".")
-  ENDIF(MSVC)
+  set(CURL_LIBRARIES WIN32_LIBCURL WIN32_ZLIB1)
 
   set(CURL_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/cache/buildwin/include)
-  SET(CURL_FOUND 1)
-ENDIF(CMAKE_HOST_WIN32)
+  set(CURL_FOUND 1)
+endif ()
 
-IF(UNIX)
-    FIND_PACKAGE(CURL REQUIRED)
-ENDIF(UNIX)
+if (UNIX)
+  find_package(CURL REQUIRED)
+endif()

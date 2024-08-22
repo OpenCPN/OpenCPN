@@ -6,6 +6,16 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 message(STATUS "Building tests")
 
 enable_testing ()
+
+add_library(win32_libs INTERFACE)
+if (MSVC)
+  target_link_libraries(win32_libs
+    INTERFACE
+      setupapi.lib psapi.lib
+      ${CMAKE_SOURCE_DIR}/cache/buildwin/iphlpapi.lib
+  )
+endif ()
+
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
@@ -41,79 +51,15 @@ target_compile_definitions(tests
     TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
     UNIT_TESTS
 )
-target_link_libraries(tests PRIVATE ocpn::model-src)
-
-if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
-  set(_IPC_SRV_SRC ipc-srv-tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
-  add_executable(ipc-srv-tests ${_IPC_SRV_SRC} )
-  target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest ocpn::model-src)
-  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
-    target_link_libraries(ipc-srv-tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
-  endif ()
-  # See note in ipc-srv-tests.cpp
-  target_compile_options(ipc-srv-tests PRIVATE -O0)
-  add_dependencies(ipc-srv-tests cli-server ipc-client)
-endif ()
-
 target_compile_definitions(tests
   PUBLIC
     CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
     TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
 )
 
-if (MSVC)
-  target_link_libraries(tests
-	  PRIVATE setupapi.lib psapi.lib ${CMAKE_SOURCE_DIR}/cache/buildwin/iphlpapi.lib
-  )
-endif ()
-
-## if (APPLE AND OCPN_USE_DEPS_BUNDLE)
-##   target_include_directories(tests PRIVATE ${OCPN_DEPS_BUNDLE_PATH}/include)
-## endif()
-
+target_link_libraries(tests PRIVATE ocpn::model-src ocpn::gtest win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(tests PRIVATE -fsanitize=${ENABLE_SANITIZER})
-endif ()
-
-target_link_libraries(tests PRIVATE ${wxWidgets_LIBRARIES})
-if (DEFINED LIBELF_LIBRARY)
-  target_link_libraries(tests PRIVATE "${LIBELF_LIBRARY}")
-endif ()
-target_link_libraries(tests PRIVATE ocpn::filesystem)
-target_link_libraries(tests PRIVATE ocpn::tinyxml)
-
-if (DEFINED CURL_LIBRARIES)
-  target_link_libraries(tests PRIVATE ${CURL_LIBRARIES})
-endif ()
-if (DEFINED WXCURL_LIBRARIES)
-  target_link_libraries(tests PRIVATE ${WXCURL_LIBRARIES})
-elseif (DEFINED WXSYS_CURL_LIBRARIES)
-  target_link_libraries(tests PRIVATE ${SYS_WXCURL_LIBRARIES})
-elseif (TARGET ocpn::wxcurl)
-  target_link_libraries(tests PRIVATE ocpn::wxcurl)
-endif ()
-
-if (HAVE_LIBUDEV)
-  target_link_libraries(tests PRIVATE ocpn::libudev)
-endif ()
-
-set(_BUF_TEST_SRC buffer_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
-add_executable(buffer_tests ${_BUF_TEST_SRC})
-
-target_link_libraries(buffer_tests PRIVATE  ocpn::model-src ocpn::gtest)
-target_compile_definitions(
-  buffer_tests PUBLIC TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
-)
-
-if (LINUX)
-  set(_DBUS_TEST_SRC dbus_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
-
-  add_executable(dbus_tests ${_DBUS_TEST_SRC})
-  target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
-  target_link_libraries(dbus_tests PRIVATE ocpn::model-src)
-  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
-    target_link_libraries(dbus_tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
-  endif ()
 endif ()
 
 find_program(DBUS_SEND NAMES dbus-send)
@@ -125,10 +71,43 @@ if (GLIB_FOUND)
   target_compile_definitions(tests PRIVATE HAVE_GLIB)
 endif ()
 
-target_link_libraries(tests PRIVATE ocpn::gtest)
+
+if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
+  set(_IPC_SRV_SRC ipc-srv-tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+  add_executable(ipc-srv-tests ${_IPC_SRV_SRC} )
+  target_link_libraries(
+    ipc-srv-tests PRIVATE ocpn::gtest ocpn::model-src win32_libs
+  )
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(ipc-srv-tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
+  endif ()
+  # See note in ipc-srv-tests.cpp
+  target_compile_options(ipc-srv-tests PRIVATE -O0)
+  add_dependencies(ipc-srv-tests cli-server ipc-client)
+endif ()
+
+set(_BUF_TEST_SRC buffer_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+add_executable(buffer_tests ${_BUF_TEST_SRC})
+target_link_libraries(
+  buffer_tests PRIVATE  ocpn::model-src ocpn::gtest win32_libs
+)
+target_compile_definitions(
+  buffer_tests PUBLIC TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
+)
+
+if (LINUX)
+  set(_DBUS_TEST_SRC dbus_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+  add_executable(dbus_tests ${_DBUS_TEST_SRC})
+  target_link_libraries(dbus_tests PRIVATE ocpn::gtest ocpn::model-src)
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(dbus_tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
+  endif ()
+endif ()
+
 include(GoogleTest)
 gtest_add_tests(TARGET tests)
 gtest_add_tests(TARGET buffer_tests)
+
 if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   # We don't have a session bus available when testing flatpak
   # so these can just be run in native builds.
@@ -138,21 +117,21 @@ endif ()
 
 set(_CLI_SRV_SRC cli_server.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 add_executable(cli-server ${_CLI_SRV_SRC})
-target_link_libraries(cli-server PRIVATE ocpn::model-src)
+target_link_libraries(cli-server PRIVATE ocpn::model-src win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(cli-server PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 set(_CLI_CLIENT_SRC ipc_client.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 add_executable(ipc-client ${_CLI_CLIENT_SRC})
-target_link_libraries(ipc-client PRIVATE ocpn::model-src)
+target_link_libraries(ipc-client PRIVATE ocpn::model-src win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(ipc-client PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 set(_WX_INST_SRC wx_instance.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 add_executable(wx-instance ${_WX_INST_SRC})
-target_link_libraries(wx-instance PRIVATE ocpn::model-src)
+target_link_libraries(wx-instance PRIVATE ocpn::model-src win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(wx-instance PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
