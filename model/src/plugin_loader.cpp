@@ -188,6 +188,10 @@ static void ClearLoadStamp(const std::string& filename) {
   }
 }
 
+void PluginLoader::MarkAsLoadable(const std::string& library_path) {
+  ClearLoadStamp(library_path);
+}
+
 std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
     std::function<const PluginMetadata(const std::string&)> get_metadata) {
