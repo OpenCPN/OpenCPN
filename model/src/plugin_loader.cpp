@@ -165,7 +165,7 @@ static fs::path LoadStampPath(const std::string& file_path) {
   fs::path path(g_BasePlatform->DefaultPrivateDataDir().ToStdString());
   path = path / "load_stamps";
   if (!ocpn::exists(path.string())) {
-    mkdir(path.c_str(), 0755);
+    ocpn::mkdir(path.c_str());
   }
   path /= file_path;
   return path.parent_path() / path.stem();
