@@ -523,6 +523,7 @@ static bool win_entry_set_install_path(struct archive_entry* entry,
   using namespace std;
 
   string path = archive_entry_pathname(entry);
+  bool is_library = false;
 
   // Check # components, drop the single top-level path
   int slashes = count(path.begin(), path.end(), '/');
@@ -549,6 +550,7 @@ static bool win_entry_set_install_path(struct archive_entry* entry,
     slashpos = path.find_first_of('/');
     path = path.substr(slashpos + 1);
     path = installPaths["bin"] + "\\" + path;
+    is_library = true;
   } else if (ocpn::startswith(path, "share")) {
     // The "share" directory should be a direct sibling of "plugins" directory
     wxFileName fn(installPaths["share"].c_str(),
@@ -571,6 +573,7 @@ static bool win_entry_set_install_path(struct archive_entry* entry,
   s.Replace("/", "\\");  // std::regex_replace FTBS on gcc 4.8.4
   s.Replace("\\\\", "\\");
   archive_entry_set_pathname(entry, s.c_str());
+  if (is_library) PluginLoader::MarkAsLoadable(s.ToStdString());
   return true;
 }
 
@@ -602,6 +605,11 @@ static bool flatpak_entry_set_install_path(struct archive_entry* entry,
   }
   string dest = installPaths[location] + "/" + suffix;
   archive_entry_set_pathname(entry, dest.c_str());
+
+  PluginPaths* paths = PluginPaths::getInstance();
+  if (dest.find(paths->UserLibdir()) != std::string::npos) {
+    PluginLoader::MarkAsLoadable(dest);
+  }
 
   return true;
 }
@@ -640,6 +648,7 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
     return false;
   }
 
+  bool is_library = false;
   string dest = installPaths[location] + "/" + suffix;
 
   if (g_bportable) {
@@ -655,12 +664,16 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
     if (ocpn::startswith(location, "lib") &&
         ocpn::startswith(suffix, "opencpn/")) {
       suffix = suffix.substr(8);
-
       dest = g_BasePlatform->GetPrivateDataDir().ToStdString() +
              "/plugins/lib/" + suffix;
+      is_library = true;
     }
   }
 
+  PluginPaths* paths = PluginPaths::getInstance();
+  if (is_library || dest.find(paths->UserLibdir()) != std::string::npos) {
+    PluginLoader::MarkAsLoadable(dest);
+  }
   archive_entry_set_pathname(entry, dest.c_str());
   return true;
 }
@@ -674,6 +687,7 @@ static bool apple_entry_set_install_path(struct archive_entry* entry,
 
   string path = archive_entry_pathname(entry);
   if (ocpn::startswith(path, "./")) path = path.substr(2);
+  bool is_library = false;
 
   string dest("");
   size_t slashes = count(path.begin(), path.end(), '/');
@@ -695,6 +709,7 @@ static bool apple_entry_set_install_path(struct archive_entry* entry,
     parts = split(path, "Contents/PlugIns");
     if (parts.size() >= 2) {
       dest = base + "/Contents/PlugIns" + parts[1];
+      is_library = true;
     }
   }
   if (dest == "" && archive_entry_filetype(entry) == AE_IFREG) {
@@ -704,6 +719,7 @@ static bool apple_entry_set_install_path(struct archive_entry* entry,
     return false;
   }
   archive_entry_set_pathname(entry, dest.c_str());
+  if (is_library) PluginLoader::MarkAsLoadable(dest);
   return true;
 }
 
@@ -711,6 +727,7 @@ static bool android_entry_set_install_path(struct archive_entry* entry,
                                            pathmap_t installPaths) {
   using namespace std;
 
+  bool is_library = false;
   string path = archive_entry_pathname(entry);
   int slashes = count(path.begin(), path.end(), '/');
   if (slashes < 2) {
@@ -745,6 +762,7 @@ static bool android_entry_set_install_path(struct archive_entry* entry,
   if ((location == "lib") && ocpn::startswith(suffix, "opencpn")) {
     auto parts = split(suffix, "/");
     if (parts.size() == 2) suffix = parts[1];
+    is_library = true;
   }
 
   if ((location == "share") && ocpn::startswith(suffix, "opencpn")) {
@@ -756,6 +774,7 @@ static bool android_entry_set_install_path(struct archive_entry* entry,
   string dest = installPaths[location] + "/" + suffix;
 
   archive_entry_set_pathname(entry, dest.c_str());
+  if (is_library) PluginLoader::MarkAsLoadable(dest);
   return true;
 }
 
