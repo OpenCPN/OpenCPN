@@ -411,17 +411,6 @@ void PluginLoader::SortPlugins(int (*cmp_func)(PlugInContainer**,
 bool PluginLoader::LoadAllPlugIns(bool load_enabled, bool keep_orphans) {
   using namespace std;
 
-  // Check to see if there is any instance of a failed plugin load in config
-  // file
-  ConfigVar<std::string> last_plugin_loaded("/Settings", "LastPluginLoaded",
-                                            TheBaseConfig());
-  std::string lpl = last_plugin_loaded.Get("");
-  if (!lpl.empty()) {
-    if (wxFileExists(lpl)) wxRemoveFile(lpl);
-    last_plugin_loaded.Set("");
-    TheBaseConfig()->Flush();
-  }
-
   static const wxString sep = wxFileName::GetPathSeparator();
   vector<string> dirs = PluginPaths::getInstance()->Libdirs();
   wxLogMessage("PluginLoader: loading plugins from %s", ocpn::join(dirs, ';'));
@@ -532,13 +521,6 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
     return false;
   }
 
-  // Record the path of the instant plugin in the config file
-  //  in order to manage load errors resulting in fault shutdown
-  ConfigVar<std::string> last_plugin_loaded("/Settings", "LastPluginLoaded",
-                                            TheBaseConfig());
-  last_plugin_loaded.Set(file_name.ToStdString().c_str());
-  TheBaseConfig()->Flush();
-
   PlugInContainer* pic = LoadPlugIn(file_name);
 
   // Check the config file to see if this PlugIn is user-enabled,
@@ -550,11 +532,6 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
     pic->m_destroy_fn(pic->m_pplugin);
     delete pic;
     wxLogMessage("Skipping not enabled candidate.");
-
-    // Plugin loaded and unloaded OK, so clear the bread crumbs
-    last_plugin_loaded.Set("");
-    TheBaseConfig()->Flush();
-
     return true;
   }
 
@@ -649,11 +626,6 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   } else {  // pic == 0
     return false;
   }
-
-  // Plugin loaded OK, so clear the bread crumbs
-  last_plugin_loaded.Set("");
-  TheBaseConfig()->Flush();
-
   return true;
 }
 
