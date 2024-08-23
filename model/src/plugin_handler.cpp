@@ -570,10 +570,10 @@ static bool win_entry_set_install_path(struct archive_entry* entry,
     return false;
   }
   wxString s(path);
+  if (is_library) PluginLoader::MarkAsLoadable(path);
   s.Replace("/", "\\");  // std::regex_replace FTBS on gcc 4.8.4
   s.Replace("\\\\", "\\");
   archive_entry_set_pathname(entry, s.c_str());
-  if (is_library) PluginLoader::MarkAsLoadable(s.ToStdString());
   return true;
 }
 
