@@ -37,6 +37,17 @@
 #include <gelf.h>
 #endif
 
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+
+#else
+#include <filesystem>
+#include <utility>
+namespace fs = std::filesystem;
+#endif
+
 #if defined(__linux__) && !defined(__ANDROID__)
 #include <wordexp.h>
 #endif
@@ -148,6 +159,33 @@ static PluginMetadata CreateMetadata(const PlugInContainer* pic) {
   mdata.is_orphan = true;
 
   return mdata;
+}
+
+static fs::path LoadStampPath(const std::string& file_path) {
+  fs::path path(g_BasePlatform->DefaultPrivateDataDir().ToStdString());
+  path = path / "load_stamps";
+  if (!ocpn::exists(path.string())) {
+    mkdir(path.c_str(), 0755);
+  }
+  path /= file_path;
+  return path.parent_path() / path.stem();
+}
+
+static void CreateLoadStamp(const std::string& filename) {
+  std::ofstream(LoadStampPath(filename).string());
+}
+
+static bool HasLoadStamp(const std::string& filename) {
+  return ocpn::exists(LoadStampPath(filename).c_str());
+}
+
+static void ClearLoadStamp(const std::string& filename) {
+  auto path = LoadStampPath(filename);
+  if (ocpn::exists(path.string())) {
+    if (std::remove(path.c_str()) != 0) {
+      MESSAGE_LOG << " Cannot remove load stamp file: " << path;
+    }
+  }
 }
 
 std::string PluginLoader::GetPluginVersion(
@@ -441,6 +479,12 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
                                        bool load_enabled) {
   wxString plugin_file = wxFileName(file_name).GetFullName();
   wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
+  if (HasLoadStamp(plugin_file.ToStdString())) {
+    MESSAGE_LOG << "Refusing to load " << file_name
+                << " failed at last attempt";
+    return false;
+  }
+  CreateLoadStamp(file_name.ToStdString());
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
   wxLog::FlushActive();
 
@@ -632,6 +676,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   } else {  // pic == 0
     return false;
   }
+  ClearLoadStamp(file_name.ToStdString());
   return true;
 }
 
