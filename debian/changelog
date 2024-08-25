@@ -4,29 +4,31 @@ opencpn (1:5.10.0+dfsg-4~bpo12+1) UNRELEASED; urgency=medium
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 25 Aug 2024 13:41:15 +0200
 
-opencpn (1:5.10.0+dfsg-1~bpo12+3) bookworm-backports; urgency=medium
+opencpn (1:5.10.0+dfsg-4) unstable; urgency=medium
 
-  * New patch: fix dark theme invisible object text.
-  * New patch: Fix X11 headless display size handling.
-  * New patch: Add -latomic for Debian armel builds
+  * New patch: fix dark theme invisible object text
+  * New patch: fix headless X11 display size handling
+  * d/control: Exclude armel from Architecture (#1078953)
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 14:57:00 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 14:42:15 +0200
 
-opencpn (1:5.10.0+dfsg-1~bpo12+2) bookworm-backports; urgency=medium
+opencpn (1:5.10.0+dfsg-3) unstable; urgency=medium
 
-  * New patch: Dont use -march=native (#1078467).
-  * New patch: Fix wrong date string (2023 -> 2024).
+  * Add patch for missing -latomic on armel
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 11 Aug 2024 10:33:20 +0200
 
-opencpn (1:5.10.0+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 16 Aug 2024 20:40:11 +0200
 
-  * New upstream release backport
+opencpn (1:5.10.0+dfsg-2) unstable; urgency=medium
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 14:26:12 +0200
+  * Don't use -march=native compile flag. Closes: 1078467
+  * Fix wrong date in version string
+  * Update patches DEP-3 annotations
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 11 Aug 2024 08:54:04 +0200
 
 opencpn (1:5.10.0+dfsg-1) unstable; urgency=medium
- 
+
   * New upstream release
   * Closes: 1010860
   * Add an epoch,
@@ -34,3 +36,8 @@ opencpn (1:5.10.0+dfsg-1) unstable; urgency=medium
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 11:53:35 +0200
 
+opencpn (5.8.4+dfsg-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 15 Jun 2023 20:26:20 +0200
