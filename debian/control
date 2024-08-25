@@ -2,7 +2,7 @@ Source: opencpn
 Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
-Build-Depends: debhelper-compat (= 13),
+Build-Depends: debhelper-compat (= 12),
  cmake,
  dbus-daemon,
  googletest,
@@ -48,10 +48,17 @@ Depends: opencpn-data (>= ${source:Version}),
  libjs-highlight.js,
  ${shlibs:Depends},
  ${misc:Depends}
-Recommends: wx3.0-i18n
-Breaks: opencpn-plugins (<< 4.8.8~)
-Replaces: opencpn-plugins (<< 4.8.8~)
+Recommends: wx3.2-i18n, xdg-utils, libusb-0.1-4,
+ opencpn-sglock-amd64[amd64],
+ opencpn-sglock-arm64[arm64],
+ opencpn-sglock-arm32[arm32]
 Suggests: binutils
+Breaks: opencpn-plugins (<< 4.8.8~),
+ opencpn-gshhs-crude (<< 1:1),
+ opencpn-tcdata (<< 1:1)
+Replaces: opencpn-plugins (<< 4.8.8~),
+ opencpn-gshhs-crude(<< 1:1),
+ opencpn-tcdata(<< 1:1)
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
  or as a planning tool. Developed by a team of active sailors using real
@@ -66,6 +73,8 @@ Description: Open Source Chartplotter and Marine GPS Navigation Software
 Package: opencpn-data
 Architecture: all
 Multi-Arch: foreign
+Breaks: opencpn (<< 1:1)
+Replaces: opencpn (<< 1:1)
 Depends: ${misc:Depends}
 Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
  Chart Plotter and Navigational software program for use underway
