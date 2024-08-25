@@ -2,7 +2,7 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 25 Aug 2024 10:35:54 +0200
 Subject: appdata: developer id: Fix illegal upper case chars.
 
-Appliead-upstream: https://github.com/OpenCPN/OpenCPN/commit/2dc50ba25
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/2dc50ba25
 ---
  resources/opencpn.appdata.xml.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

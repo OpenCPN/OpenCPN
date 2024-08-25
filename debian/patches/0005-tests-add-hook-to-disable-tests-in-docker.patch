@@ -2,9 +2,11 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 10 Jun 2024 20:56:02 +0200
 Subject: tests: add hook to disable tests in docker
 
+Bug: https://github.com/OpenCPN/OpenCPN/issues/4077
 ---
  test/rest-tests.cpp | 18 +++++++++++-------
  1 file changed, 11 insertions(+), 7 deletions(-)
+
 
 diff --git a/test/rest-tests.cpp b/test/rest-tests.cpp
 index dea9dfe..8454149 100644
