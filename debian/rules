@@ -22,4 +22,6 @@ override_dh_auto_configure:
             -DOCPN_DISTRO_BUILD=ON
 
 override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	cd obj-*-linux-gnu*; dbus-run-session make run-tests
+endif
