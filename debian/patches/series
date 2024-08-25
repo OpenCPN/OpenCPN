@@ -8,3 +8,4 @@
 0009-build-add-latomic-linkage.patch
 0010-Improve-display-detection-on-headless-X11-systems.patch
 0011-Explicitly-set-extra-object-info-text-color.4101.patch
+0011-appdata-developer-id-Fix-illegal-CamelCase.patch

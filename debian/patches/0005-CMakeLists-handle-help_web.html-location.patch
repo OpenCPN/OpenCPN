@@ -5,7 +5,6 @@ Subject: CMakeLists: handle help_web.html location3
 Not acceptable upstream, this is a consequence of us removinng the manual.
 
 Forwarded: not-needed
-
 ---
  CMakeLists.txt | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
