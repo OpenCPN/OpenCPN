@@ -3,6 +3,7 @@ Date: Thu, 13 Jun 2024 21:43:20 +0200
 Subject: build: Use system shapelib if available.
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/4089
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/056b5580e
 ---
  CMakeLists.txt           |  8 +++++++-
  cmake/FindShapelib.cmake | 27 +++++++++++++++++++++++++++

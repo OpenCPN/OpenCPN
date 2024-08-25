@@ -6,6 +6,8 @@ Subject: [PATCH] chartdldr: Don't use unarr for libarchive >= 3.7.4 (#4005)
 Check the libarchive version and avoid using unarr for versions
 recent enough to have a working rar support.
 
+Downstream bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1078767
+
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/4e9c1ee1e
 ---
  plugins/chartdldr_pi/CMakeLists.txt | 58 ++++++++++++++++-------------

@@ -3,6 +3,7 @@ Date: Sun, 11 Aug 2024 08:50:47 +0200
 Subject: Build: Don't use -march=native (#4088)
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/4088
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/44270d20a
 ---
  libs/mipmap/CMakeLists.txt              | 4 ++--
  libs/mipmap/cmake/CompilerSupport.cmake | 2 +-
