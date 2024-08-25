@@ -5,7 +5,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-2.0+</project_license>
   <name>OpenCPN</name>
-  <developer id="org.opencpn.OpenCPN">
+  <developer id="org.opencpn.opencpn">
       <name>The OpenCPN Community</name>
   </developer>
   <summary>Chartplotter and Navigation tool</summary>
