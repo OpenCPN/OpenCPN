@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 26 Aug 2024 14:54:27 +0200
 Subject: Update-the-link-to-known-issues-page.-Fixes-4116
 
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/137af91fd
+
 ---
  gui/src/safe_mode_gui.cpp | 2 +-
  po/opencpn.pot            | 2 +-
