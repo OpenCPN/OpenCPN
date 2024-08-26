@@ -112,6 +112,10 @@ Files: gui/include/gui/cat_settings.h
 Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
+Files: gui/include/gui/ssfn.h
+Copyright: 2019, bzt (bztsrc@gitlab)
+License: Expat
+
 Files: gui/include/gui/crashprint.h
 Copyright: 2004, wxCode
 License: wxWidgets
@@ -660,6 +664,14 @@ License: GPL-2+ with Autoconf-data exception
 Files: libs/libdnet/config/*
 Copyright: 1996-2021, Free Software Foundation, Inc.
 License: GPL-2+ with Autoconf-data exception
+
+Files: libs/libdnet/m4/libtool.m4
+Copyright: Copyright (C) 1996-2001, 2003-2019, 2021-2022 Free Software Foundation, Inc.
+License:  (FSFULLR and/or GPL-2) with Libtool exception
+ As a special exception to the GNU Lesser General Public License, if
+ you distribute this file as part of a program or library that is built
+ using GNU Libtool, you may include this file under the same distribution
+ terms that you use for the rest of that program.
 
 Files: libs/libdnet/config/config.guess
  libs/libdnet/config/config.sub
