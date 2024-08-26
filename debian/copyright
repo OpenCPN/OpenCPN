@@ -665,14 +665,6 @@ Files: libs/libdnet/config/*
 Copyright: 1996-2021, Free Software Foundation, Inc.
 License: GPL-2+ with Autoconf-data exception
 
-Files: libs/libdnet/m4/libtool.m4
-Copyright: Copyright (C) 1996-2001, 2003-2019, 2021-2022 Free Software Foundation, Inc.
-License:  (FSFULLR and/or GPL-2) with Libtool exception
- As a special exception to the GNU Lesser General Public License, if
- you distribute this file as part of a program or library that is built
- using GNU Libtool, you may include this file under the same distribution
- terms that you use for the rest of that program.
-
 Files: libs/libdnet/config/config.guess
  libs/libdnet/config/config.sub
 Copyright: 1992-2021, Free Software Foundation, Inc.
@@ -702,10 +694,6 @@ License: X11
  be used in advertising or otherwise to promote the sale, use or other deal-
  ings in this Software without prior written authorization from the X Consor-
  tium.
-
-Files: libs/libdnet/config/libtool.m4
-Copyright: 1996-2001, 2003-2005, Free Software Foundation, Inc.
-License: FSFULLR
 
 Files: libs/libdnet/config/ltmain.sh
 Copyright: 1996-2019, 2021, 2022, Free Software Foundation, Inc.
@@ -751,16 +739,20 @@ Files: libs/libdnet/include/queue.h
 Copyright: 1990, 1991, 1993, The Regents of the University of California.
 License: BSD-4-Clause-UC
 
-Files: libs/libdnet/m4/*
-Copyright: 2004, 2005, 2007-2009, 2011-2019, 2021, 2022, Free
-License: FSFULLR
+Files: libs/libdnet/m4/libtool.m4
+Copyright: Copyright (C) 1996-2001, 2003-2019, 2021-2022 Free Software Foundation, Inc.
+License:  (FSFULLR and/or GPL-2) with Libtool exception
+ As a special exception to the GNU Lesser General Public License, if
+ you distribute this file as part of a program or library that is built
+ using GNU Libtool, you may include this file under the same distribution
+ terms that you use for the rest of that program.
 
-Files: libs/libdnet/m4/ltsugar.m4
-Copyright: 2004, 2005, 2007, 2008, 2011-2019, 2021, 2022, Free Software
-License: FSFULLR
-
-Files: libs/libdnet/m4/ltversion.m4
-Copyright: 2004, 2011-2019, 2021, 2022, Free Software Foundation
+Files: libs/libdnet/m4/acinclude.m4
+ libs/libdnet/m4/lt~obsolete.m4
+ libs/libdnet/m4/ltoptions.m4
+ libs/libdnet/m4/ltsugar.m4
+ libs/libdnet/m4/ltversion.m4
+Copyright: 2004, 2005, 2007-2009, 2011-2019, 2021, 2022, Free Software Foundation, Inc.
 License: FSFULLR
 
 Files: libs/libdnet/man/*
