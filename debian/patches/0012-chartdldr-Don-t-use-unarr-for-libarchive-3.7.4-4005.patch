@@ -1,4 +1,3 @@
-From 4e9c1ee1e077d3a5f1163209ded8ef5654a118c3 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Tue, 20 Aug 2024 19:54:21 +0200
 Subject: [PATCH] chartdldr: Don't use unarr for libarchive >= 3.7.4 (#4005)
@@ -10,11 +9,11 @@ Downstream bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1078767
 
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/4e9c1ee1e
 ---
- plugins/chartdldr_pi/CMakeLists.txt | 58 ++++++++++++++++-------------
+ plugins/chartdldr_pi/CMakeLists.txt | 58 ++++++++++++++++++++-----------------
  1 file changed, 32 insertions(+), 26 deletions(-)
 
 diff --git a/plugins/chartdldr_pi/CMakeLists.txt b/plugins/chartdldr_pi/CMakeLists.txt
-index 73b6eba89..5798caf37 100644
+index 73b6eba..5798caf 100644
 --- a/plugins/chartdldr_pi/CMakeLists.txt
 +++ b/plugins/chartdldr_pi/CMakeLists.txt
 @@ -19,20 +19,27 @@ set(VERSION_PATCH "0")
@@ -109,6 +108,3 @@ index 73b6eba89..5798caf37 100644
  
  if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
    # FIXME: This is to broad, needs better handling after 5.0.0
--- 
-2.46.0
-

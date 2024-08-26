@@ -1,0 +1,63 @@
+From: Dave <bdbcat@yahoo.com>
+Date: Thu, 8 Aug 2024 22:18:09 -0400
+Subject: [PATCH] Correct faults on GRIB, compact control bar display mode
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/9d9b9c80a4b
+---
+ plugins/grib_pi/src/GribUIDialog.cpp     | 6 ++++--
+ plugins/grib_pi/src/GribUIDialog.h       | 5 ++++-
+ plugins/grib_pi/src/GribUIDialogBase.cpp | 3 ++-
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/plugins/grib_pi/src/GribUIDialog.cpp b/plugins/grib_pi/src/GribUIDialog.cpp
+index ec2af2d..97140ff 100644
+--- a/plugins/grib_pi/src/GribUIDialog.cpp
++++ b/plugins/grib_pi/src/GribUIDialog.cpp
+@@ -270,8 +270,10 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
+ 
+   Fit();
+   SetMinSize(GetBestSize());
+-  m_ProjectBoatPanel->SetSpeed(pPlugIn->m_boat_sog);
+-  m_ProjectBoatPanel->SetCourse(pPlugIn->m_boat_cog);
++  if (m_ProjectBoatPanel) {
++    m_ProjectBoatPanel->SetSpeed(pPlugIn->m_boat_sog);
++    m_ProjectBoatPanel->SetCourse(pPlugIn->m_boat_cog);
++  }
+   m_highlight_latmax = 0;
+   m_highlight_lonmax = 0;
+   m_highlight_latmin = 0;
+diff --git a/plugins/grib_pi/src/GribUIDialog.h b/plugins/grib_pi/src/GribUIDialog.h
+index e4a503e..afea428 100644
+--- a/plugins/grib_pi/src/GribUIDialog.h
++++ b/plugins/grib_pi/src/GribUIDialog.h
+@@ -192,7 +192,10 @@ public:
+   }
+ 
+   void GetProjectedLatLon(int &x, int &y);
+-  bool ProjectionEnabled() { return m_ProjectBoatPanel->ProjectionEnabled(); }
++  bool ProjectionEnabled() {
++    if (m_ProjectBoatPanel) return m_ProjectBoatPanel->ProjectionEnabled();
++    else return false;
++  }
+   double m_highlight_latmax;
+   double m_highlight_lonmax;
+   double m_highlight_latmin;
+diff --git a/plugins/grib_pi/src/GribUIDialogBase.cpp b/plugins/grib_pi/src/GribUIDialogBase.cpp
+index a083a3b..de8a832 100644
+--- a/plugins/grib_pi/src/GribUIDialogBase.cpp
++++ b/plugins/grib_pi/src/GribUIDialogBase.cpp
+@@ -14,12 +14,13 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
+                                      const wxString& title, const wxPoint& pos,
+                                      const wxSize& size, long style)
+     : wxDialog(parent, id, title, pos, size, style) {
++  m_ProjectBoatPanel = NULL;
++
+ #ifdef __OCPN__ANDROID__
+   const bool m_bcompact = true;
+ #else
+   const bool m_bcompact = false;
+ #endif
+-
+   if (m_bcompact) {
+     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
+ 
