@@ -2,15 +2,16 @@ opencpn (1:5.10.0+dfsg-4~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release backport
   * d/control: Update faulty vcs links.
-  * d/control: Unconditionally use libcurl4-openssl-dev, fixes Rpi 
+  * d/control: Unconditionally use libcurl4-openssl-dev, fixes Rpi
     problems with peer transfers.
   * d/control: Reset Architecture to any after failing armel build
     is excluded in testing (#1078767), fixing folded line error.
   * d/control: debhelper-compat -> 12 to match bookworm
+  * d/control, d/rules: Use dbus-session for tests to make them run.
   * d/patches: Drop a test failing on aarch64.
   * d/repo: Update pre-release repo configuration
+  * d/rules: Handle DEB_BUILD_OPTIONS=nocheck
   * d/source/lintian-overrides: update warning message match
-  
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 25 Aug 2024 16:09:27 +0200
 
