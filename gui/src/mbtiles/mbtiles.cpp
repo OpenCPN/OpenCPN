@@ -565,7 +565,8 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
   // Start the worker thread. Be careful that the thread must be started after
   // PostInit() to ensure that SQL database has been opened.
-  StartThread();
+  bool thread_return = StartThread();
+  if (!thread_return) return INIT_FAIL_RETRY;
 
   if (pi_ret != INIT_OK)
     return pi_ret;
@@ -1010,9 +1011,8 @@ bool ChartMBTiles::RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
 
 /// @brief Create and start the wortker thread. This thread is dedicated at
 /// loading and decompressing chart tiles into memory, in the background. If
-/// for any reason the thread would fail to load, a fatal error id generated
-/// and a message displayed to the user.
-void ChartMBTiles::StartThread() {
+/// for any reason the thread would fail to load, the method return false
+bool ChartMBTiles::StartThread() {
   // Create the worker thread
   m_workerThread = new MbtTilesThread(m_pDB);
   if (m_workerThread->Run() != wxTHREAD_NO_ERROR) {
@@ -1020,8 +1020,10 @@ void ChartMBTiles::StartThread() {
     m_workerThread = nullptr;
     // Not beeing able to create the worker thread is really a bad situation,
     // never supposed to happen. So we trigger a fatal error.
-    wxLogFatalError("MbTiles: Can't create the worker thread");
+    wxLogMessage("MbTiles: Can't create an MBTiles worker thread");
+    return false;
   }
+  return true;
 }
 
 /// @brief  Stop and delete the worker thread. This function is called when

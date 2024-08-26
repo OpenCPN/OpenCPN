@@ -151,7 +151,7 @@ protected:
   GLShaderProgram *m_tile_shader_program;
   uint32_t m_tileCount;
   MbtTilesThread *m_workerThread;
-  void StartThread();
+  bool StartThread();
   void StopThread();
 
 private:
