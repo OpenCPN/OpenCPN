@@ -1,3 +1,22 @@
+opencpn (1:5.10.0+dfsg-5) unstable; urgency=medium
+
+  * New patch: Don't use unarr for libarchive >= 3.7.4, Closes: #1078767
+  * New patch: Fix link to open issues (opencpn#4116)
+  * New patch: Make ActivateNextpoint pass multiple identical points
+  * New patch: Correct faults on GRIB, compact control bar display mode
+  * New patch: Improve connection_edit dialog layout for handheld devices
+  * New patch: Fix AIS Meteo Correct typos - missed breakes.
+  * d/copyright: Remove license files, clean up libdnet/m4 duplicates
+  * d/rules: Handle  -DEB_BUILD_OPTIONS=nocheck
+  * d/rules: Run tests in a custom dbus session (opencpn#4090)
+  * d/control: Add b-d dbus-daemon (opencpn#4090)
+  * d/control: Always use libcurl4-openssl-dev, fixes Rpi peer transfers.
+  * d/control: Require wxWidgets 3.2.
+  * d/control: Revert to Architecture: Any (#1078767)
+  * d/control: Update VCS links
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 28 Aug 2024 11:41:38 +0200
+
 opencpn (1:5.10.0+dfsg-4) unstable; urgency=medium
 
   * New patch: fix dark theme invisible object text
