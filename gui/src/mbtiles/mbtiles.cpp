@@ -914,6 +914,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   int maxrenZoom = m_minZoom;
 
   LLBBox box = Region.GetBox();
+  LLBBox region_box = Region.GetBox();
+  bool render_pass = true;
 
   // if the full screen box spans IDL,
   // we need to render the entire screen in two passes.
@@ -927,6 +929,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   while (zoomFactor <= viewZoom) {
     // Get the tile numbers of the box corners of this render region, at this
     // zoom level
+    vp = VPoint;
+
+    // First pass, right hand side in twopass rendering
     int topTile =
         wxMin(m_tileCache->GetNorthLimit(zoomFactor),
               mbTileDescriptor::lat2tiley(box.GetMaxLat(), zoomFactor));
@@ -937,13 +942,17 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
     int rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
 
     if (btwoPass) {
-      leftTile = mbTileDescriptor::long2tilex(-180 + eps, zoomFactor);
-      rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
       vp = VPoint;
-      if (vp.clon > 0) vp.clon -= 360;
-
-    } else
-      vp = VPoint;
+      if (vp.clon > 0) {
+        vp.clon -= 360;
+        leftTile = mbTileDescriptor::long2tilex(-180 + eps, zoomFactor);
+        rightTile =
+            mbTileDescriptor::long2tilex(box.GetMaxLon() - 360., zoomFactor);
+      } else {
+        leftTile = mbTileDescriptor::long2tilex(-180 + eps, zoomFactor);
+        rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
+      }
+    }
 
     for (int iy = botTile; iy <= topTile; iy++) {
       for (int ix = leftTile; ix <= rightTile; ix++) {
