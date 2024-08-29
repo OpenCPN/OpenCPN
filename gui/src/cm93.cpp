@@ -5231,7 +5231,8 @@ bool cm93compchart::DoRenderRegionViewOnGL(const wxGLContext &glc,
 
   //    Render the cm93 cell's M_COVR outlines if called for
   if (m_cell_index_special_outline) {
-    ocpnDC dc;
+    glChartCanvas *glc = gFrame->GetPrimaryCanvas()->GetglCanvas();
+    ocpnDC dc(*glc);
     dc.SetVP(VPoint);
 
     covr_set *pcover = m_pcm93chart_current->GetCoverSet();
