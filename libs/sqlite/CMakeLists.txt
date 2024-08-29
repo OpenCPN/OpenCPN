@@ -22,6 +22,8 @@ if (NOT SQLITE_FOUND OR APPLE OR WIN32 OR QT_ANDROID)
       _SQLITE INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
   )
 
+  add_definitions(" -DSQLITE_THREADSAFE=1")
+
   # We do not need extensions, and using them in a static library causes
   # trouble with libdl linking order.
   if (UNIX AND NOT APPLE)
