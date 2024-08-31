@@ -110,6 +110,7 @@ public:
 
   double GetPPM() { return m_ppm_avg; }
   double GetZoomFactor() { return m_zoomScaleFactor; }
+  MBTilesType GetTileType() { return m_TileType; }
 
 protected:
   //    Methods
@@ -131,6 +132,7 @@ protected:
 
   double m_ppm_avg;  // Calculated true scale factor of the 1X chart,
                      // pixels per meter
+  MBTilesType m_TileType;
 
   int m_b_cdebug;
 
@@ -141,7 +143,6 @@ protected:
 
   double m_zoomScaleFactor;
 
-  MBTilesType m_Type;
   MBTilesScheme m_Scheme;
 
   SQLite::Database *m_pDB;

@@ -407,9 +407,9 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
       } else if (!strncmp(colName, "name", 11)) {
         m_Name = wxString(colValue, wxConvUTF8);
       } else if (!strncmp(colName, "type", 11)) {
-        m_Type = wxString(colValue, wxConvUTF8).Upper().IsSameAs("OVERLAY")
-                     ? MBTilesType::OVERLAY
-                     : MBTilesType::BASE;
+        m_TileType = wxString(colValue, wxConvUTF8).Upper().IsSameAs("OVERLAY")
+                         ? MBTilesType::OVERLAY
+                         : MBTilesType::BASE;
       } else if (!strncmp(colName, "scheme", 11)) {
         m_Scheme = wxString(colValue, wxConvUTF8).Upper().IsSameAs("XYZ")
                        ? MBTilesScheme::XYZ
@@ -925,6 +925,10 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
     btwoPass = true;
     box = screenBox;
   }
+
+  // For tiles declared as "OVERLAY", render only the zoom level that
+  // corresponds to the currently viewed zoom level
+  if (m_TileType == MBTilesType::OVERLAY) zoomFactor = viewZoom;
 
   while (zoomFactor <= viewZoom) {
     // Get the tile numbers of the box corners of this render region, at this
