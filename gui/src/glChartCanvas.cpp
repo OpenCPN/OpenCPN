@@ -377,10 +377,11 @@ int attribs[] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE,
 BEGIN_EVENT_TABLE(glChartCanvas, wxGLCanvas)
 EVT_PAINT(glChartCanvas::OnPaint)
 EVT_ACTIVATE(glChartCanvas::OnActivate)
-EVT_SIZE(glChartCanvas::OnSize) EVT_MOUSE_EVENTS(glChartCanvas::MouseEvent)
-    END_EVENT_TABLE()
+EVT_SIZE(glChartCanvas::OnSize)
+EVT_MOUSE_EVENTS(glChartCanvas::MouseEvent)
+END_EVENT_TABLE()
 
-        glChartCanvas::glChartCanvas(wxWindow *parent, wxGLCanvas *share)
+glChartCanvas::glChartCanvas(wxWindow *parent, wxGLCanvas *share)
     : wxGLCanvas(parent, wxID_ANY, attribs, wxDefaultPosition, wxSize(256, 256),
                  wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""))
 
@@ -4553,6 +4554,62 @@ void glChartCanvas::RenderS57TextOverlay(ViewPort &VPoint) {
     }
   }
 }
+void glChartCanvas::RenderSingleMBTileOverlay(const int dbIndex, bool bOverlay,
+                                              ViewPort &vp,
+                                              OCPNRegion &screen_region,
+                                              LLRegion &screenLLRegion) {
+  ChartBase *chart = ChartData->OpenChartFromDBAndLock(dbIndex, FULL_INIT);
+
+  // Chart may have been prevented from initial loading due to size, or some
+  // other reason...
+  if (chart == NULL) return;
+
+  ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles *>(chart);
+  if (!pcmbt) return;
+
+  // Is tile an OVERLAY type?
+  // Render, or not, depending on passed flag.
+  if (bOverlay && pcmbt->GetTileType() != MBTilesType::OVERLAY) return;
+
+  wxFileName tileFile(chart->GetFullPath());
+  // Size test for 5 GByte
+  wxULongLong tileSizeMB = tileFile.GetSize() >> 20;
+
+  if (!ChartData->CheckAnyCanvasExclusiveTileGroup() ||
+      (tileSizeMB.GetLo() > 5000)) {
+    // Check to see if the tile has been "clicked".
+    // If so, do not add to no-show array again.
+    if (!m_pParentCanvas->IsTileOverlayIndexInYesShow(dbIndex)) {
+      if (!m_pParentCanvas->IsTileOverlayIndexInNoShow(dbIndex)) {
+        m_pParentCanvas->m_tile_noshow_index_array.push_back(dbIndex);
+      }
+    }
+  }
+
+  // This test catches the case where the chart is added to no_show list
+  // when first loaded by OpenChartFromDBAndLock
+  if (m_pParentCanvas->IsTileOverlayIndexInNoShow(dbIndex)) {
+    return;
+  }
+
+  pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
+
+  // Light up the piano key if the chart was rendered
+  std::vector<int> piano_active_array_tiles =
+      m_pParentCanvas->m_Piano->GetActiveKeyArray();
+  bool bfound = false;
+
+  if (std::find(piano_active_array_tiles.begin(),
+                piano_active_array_tiles.end(),
+                dbIndex) != piano_active_array_tiles.end()) {
+    bfound = true;
+  }
+
+  if (!bfound) {
+    piano_active_array_tiles.push_back(dbIndex);
+    m_pParentCanvas->m_Piano->SetActiveKeyArray(piano_active_array_tiles);
+  }
+}
 
 void glChartCanvas::RenderMBTilesOverlay(ViewPort &VPoint) {
   // Render MBTiles as overlay
@@ -4613,58 +4670,18 @@ void glChartCanvas::RenderMBTilesOverlay(ViewPort &VPoint) {
       }
     }
 
-    // We need to show the tilesets in reverse order to have the largest scale
+    // Render in two passes, to render the OVERLAY types last
+
+    // Show the tilesets in reverse order to have the largest scale
     // on top
+
     for (std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
          rit != tiles_to_show.rend(); ++rit) {
-      ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
-
-      // Chart may have been prevented from initial loading due to size, or some
-      // other reason...
-      if (chart == NULL) continue;
-
-      wxFileName tileFile(chart->GetFullPath());
-      // Size test for 5 GByte
-      wxULongLong tileSizeMB = tileFile.GetSize() >> 20;
-
-      if (!ChartData->CheckAnyCanvasExclusiveTileGroup() ||
-          (tileSizeMB.GetLo() > 5000)) {
-        // Check to see if the tile has been "clicked".
-        // If so, do not add to no-show array again.
-        if (!m_pParentCanvas->IsTileOverlayIndexInYesShow(*rit)) {
-          if (!m_pParentCanvas->IsTileOverlayIndexInNoShow(*rit)) {
-            m_pParentCanvas->m_tile_noshow_index_array.push_back(*rit);
-          }
-        }
-      }
-
-      // This test catches the case where the chart is added to no_show list
-      // when first loaded by OpenChartFromDBAndLock
-      if (m_pParentCanvas->IsTileOverlayIndexInNoShow(*rit)) {
-        continue;
-      }
-
-      ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles *>(chart);
-      if (pcmbt) {
-        pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region,
-                                    screenLLRegion);
-
-        // Light up the piano key if the chart was rendered
-        std::vector<int> piano_active_array_tiles =
-            m_pParentCanvas->m_Piano->GetActiveKeyArray();
-        bool bfound = false;
-
-        if (std::find(piano_active_array_tiles.begin(),
-                      piano_active_array_tiles.end(),
-                      *rit) != piano_active_array_tiles.end()) {
-          bfound = true;
-        }
-
-        if (!bfound) {
-          piano_active_array_tiles.push_back(*rit);
-          m_pParentCanvas->m_Piano->SetActiveKeyArray(piano_active_array_tiles);
-        }
-      }
+      RenderSingleMBTileOverlay(*rit, FALSE, vp, screen_region, screenLLRegion);
+    }
+    for (std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
+         rit != tiles_to_show.rend(); ++rit) {
+      RenderSingleMBTileOverlay(*rit, TRUE, vp, screen_region, screenLLRegion);
     }
 
     // Render the HiLite on piano rollover of mbTile key

@@ -200,6 +200,9 @@ public:
 protected:
   void RenderS57TextOverlay(ViewPort &VPoint);
   void RenderMBTilesOverlay(ViewPort &VPoint);
+  void RenderSingleMBTileOverlay(int dbIndex, bool bOVerlay, ViewPort &VPoint,
+                                 OCPNRegion &screen_region,
+                                 LLRegion &screenLLRegion);
   void RenderScene(bool bRenderCharts = true, bool bRenderOverlays = true);
 
   void RenderGLAlertMessage();
