@@ -2,6 +2,7 @@
 #define _TILECACHE_H_
 
 #include "TileDescriptor.hpp"
+#include <mutex>
 
 /// @brief Class managing the tiles of a mbtiles file
 class TileCache {
@@ -45,6 +46,15 @@ public:
   }
 
   virtual ~TileCache() { delete[] zoomTable; }
+
+  /// Return mutex to lock given tile. There is a fixed number of mutexes
+  /// available, the mutex returned might collide with another id causing
+  /// random serialization.
+  static std::mutex &GetMutex(uint64_t tile_id) {
+    static const int kMutexCount = 100;
+    static std::array<std::mutex, kMutexCount> mutexes;
+    return mutexes[tile_id % kMutexCount];
+  }
 
   /// @brief Flush the tile cache, including OpenGL texture memory if needed
   void Flush() {
@@ -109,23 +119,16 @@ public:
   /// only be called by rendering thread since it uses OpenGL calls.
   /// @param maxTiles Maximum number of tiles to be kept in the list
   void CleanCache(uint32_t maxTiles) {
-    uint64_t index;
+    uint64_t key;
 
     while (listSize > maxTiles) {
       // List size exceeds the maximum value : delete the last tile of the list
-      index = mbTileDescriptor::GetMapKey(listEnd->m_zoomLevel, listEnd->tile_x,
-                                          listEnd->tile_y);
-      auto ref = tileMap.find(index);
-      if ((ref->second->m_bAvailable) && (ref->second->m_teximage == 0) &&
-          (ref->second->glTextureName == 0)) {
-        // If the tile is currently used by worker thread, we must not delete
-        // it. Practically, this case is not supposed to happen, unless the
-        // system is really, really slow. In that case we exit the function and
-        // wait the next rendering to try again.
-        break;
-      }
+      key = mbTileDescriptor::GetMapKey(listEnd->m_zoomLevel, listEnd->tile_x,
+                                        listEnd->tile_y);
+      std::lock_guard lock(TileCache::GetMutex(key));
+      auto ref = tileMap.find(key);
       // Remove the tile from map and delete it. Tile destructor takes care to
-      // properly
+      // properly delete associated resources.
       tileMap.erase(ref);
       DeleteTileFromList(listEnd);
     }
