@@ -76,9 +76,7 @@ wxThread::ExitCode MbtTilesThread::Entry() {
 /// @brief Load bitmap data of a tile from the MbTiles file to the tile cache
 /// @param tile Pointer to the tile to be loaded
 void MbtTilesThread::LoadTile(mbTileDescriptor *tile) {
-  uint64_t key = mbTileDescriptor::GetMapKey(tile->m_zoomLevel, tile->tile_x,
-                                             tile->tile_y);
-  std::lock_guard lock(TileCache::GetMutex(key));
+  std::lock_guard lock(TileCache::GetMutex(tile));
 
   // If the tile has not been found in the SQL database in a previous attempt,
   // don't search for it again
