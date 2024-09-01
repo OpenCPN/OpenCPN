@@ -588,7 +588,7 @@ InitReturn ChartMBTiles::PostInit(void) {
 
   m_pDB = new SQLite::Database(name_UTF8);
   m_pDB->exec("PRAGMA locking_mode=EXCLUSIVE");
-  m_pDB->exec("PRAGMA cache_size=-50000");
+  m_pDB->exec("PRAGMA cache_size=-10000");
 
   bReadyToRender = true;
   return INIT_OK;
