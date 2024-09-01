@@ -4393,22 +4393,22 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemFlexGridSizer04->Add(m_pSpinCOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
   wxStaticText* itemStaticText13 =
-    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("AWS Damping Factor:"),
+    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Wind speed Damping Factor:"),
       wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer04->Add(itemStaticText13, 0, wxEXPAND | wxALL, border_size);
   m_pSpinAWSDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString,
     wxDefaultPosition, wxDefaultSize,
-    wxSP_ARROW_KEYS, 0, 100, g_iDashAWSDamp);
+                                  wxSP_ARROW_KEYS, 0, 100, g_iDashAWSDamp);
   itemFlexGridSizer04->Add(m_pSpinAWSDamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
   wxStaticText* itemStaticText14 =
-    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("AWA Damping Factor:"),
+    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Wind angle Damping Factor:"),
       wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer04->Add(itemStaticText14, 0, wxEXPAND | wxALL, border_size);
   m_pSpinAWADamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString,
     wxDefaultPosition, wxDefaultSize,
     wxSP_ARROW_KEYS, 0, 100, g_iDashAWADamp);
-  itemFlexGridSizer04->Add(m_pSpinCOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
+  itemFlexGridSizer04->Add(m_pSpinAWADamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
   wxStaticText *itemStaticText12 = new wxStaticText(
       itemPanelNotebook02, wxID_ANY, _("Local Time Offset From UTC:"),
