@@ -2,13 +2,13 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Thu, 13 Jun 2024 21:43:20 +0200
 Subject: build: Use system shapelib if available.
 
-Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/056b5580
+Bug: https://github.com/OpenCPN/OpenCPN/issues/4089
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/056b5580e
 ---
  CMakeLists.txt           |  8 +++++++-
  cmake/FindShapelib.cmake | 27 +++++++++++++++++++++++++++
  2 files changed, 34 insertions(+), 1 deletion(-)
  create mode 100644 cmake/FindShapelib.cmake
-
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index d0288f5..840f59f 100644

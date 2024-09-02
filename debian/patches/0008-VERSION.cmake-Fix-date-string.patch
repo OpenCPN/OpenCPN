@@ -2,8 +2,7 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 11 Aug 2024 08:58:08 +0200
 Subject: VERSION.cmake: Fix date string
 
-Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/6ac60d46d
-
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/734cc693f
 ---
  VERSION.cmake | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
