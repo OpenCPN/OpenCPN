@@ -225,6 +225,13 @@ Then, create a fresh clone as described <<create-clone, above>>.
 
 Make sure the build dependencies are in place, see <<test-build, above>>
 
+Checkout  the debian/ directory from the packaging branch. At the time of
+writing, this is only posssible for Bookworm:
+
+    $ git fetch upstream ci/bookworm-backports:ci/bookworm-backports
+    $ git checkout ci/bookworm-backports debian
+    $ git commit -m "Add debian/ packaging directory from ci/bookworm-backports"
+
 Create a debian changelog entry. This is an example of building a post 5.10 package
 for the bookworm release, YMMV:
 
@@ -242,7 +249,7 @@ version.
 
 Extract the orig tarball and work in the sources it provides:
 
-    $ cd ..; 
+    $ cd ..
     $ tar xf opencpn-5.11.0*orig*xz
     $ cd ../opencpn-5.11.0*
 
