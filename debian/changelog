@@ -1,10 +1,11 @@
 opencpn (1:5.10.0+dfsg-5~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release backport
+  * Re-introduce b-d libunarr-dev, required for pre-trixie builds.
   * Update pre-release repo configuration
   * Update lintian-override warning expression
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 02 Sep 2024 22:09:31 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Sep 2024 10:27:13 +0200
 
 opencpn (1:5.10.0+dfsg-5) unstable; urgency=medium
 
