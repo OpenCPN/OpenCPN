@@ -165,7 +165,7 @@ static fs::path LoadStampPath(const std::string& file_path) {
   fs::path path(g_BasePlatform->DefaultPrivateDataDir().ToStdString());
   path = path / "load_stamps";
   if (!ocpn::exists(path.string())) {
-    ocpn::mkdir(path.c_str());
+    ocpn::mkdir(path.string());
   }
   path /= file_path;
   return path.parent_path() / path.stem();
@@ -176,13 +176,13 @@ static void CreateLoadStamp(const std::string& filename) {
 }
 
 static bool HasLoadStamp(const std::string& filename) {
-  return ocpn::exists(LoadStampPath(filename).c_str());
+  return exists(LoadStampPath(filename));
 }
 
 static void ClearLoadStamp(const std::string& filename) {
   auto path = LoadStampPath(filename);
-  if (ocpn::exists(path.string())) {
-    if (std::remove(path.c_str()) != 0) {
+  if (exists(path)) {
+    if (!remove(path)) {
       MESSAGE_LOG << " Cannot remove load stamp file: " << path;
     }
   }
