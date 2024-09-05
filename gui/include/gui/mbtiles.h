@@ -140,6 +140,7 @@ protected:
   TileCache *m_tileCache;
   LLRegion m_minZoomRegion;
   wxBitmapType m_imageType;
+  int m_last_clean_zoom;
 
   double m_zoomScaleFactor;
 

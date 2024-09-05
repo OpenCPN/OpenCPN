@@ -1010,6 +1010,12 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   // resolution of the screen and to handle tricky configuration with multiple
   // screens or hdpi displays
   m_tileCache->CleanCache(m_tileCount * 3);
+
+  if (m_last_clean_zoom != viewZoom) {
+    m_tileCache->DeepCleanCache();
+    m_last_clean_zoom = viewZoom;
+  }
+
 #endif
   return true;
 }

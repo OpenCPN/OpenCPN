@@ -126,10 +126,42 @@ public:
 
     for (size_t i = 0; i < tileMap.size() - maxTiles; i += 1) {
       std::lock_guard lock(TileCache::GetMutex(tileMap[keys[i]]));
-
       auto tile = tileMap[keys[i]];
+
+      // Do not remove tiles that may be pending in the worker thread queue
+      if (tile->m_bAvailable && !tile->glTextureName && !tile->m_teximage)
+        continue;
+
       tileMap.erase(keys[i]);
       delete tile;
+    }
+  }
+
+  void DeepCleanCache() {
+    using namespace std::chrono;
+    auto time_now =
+        duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+
+    auto age_limit = std::chrono::duration<int>(5);  // 5 seconds
+
+    std::vector<uint64_t> keys;
+    for (auto &kv : tileMap) keys.push_back(kv.first);
+
+    for (size_t i = 0; i < keys.size(); i += 1) {
+      std::lock_guard lock(TileCache::GetMutex(tileMap[keys[i]]));
+      auto tile = tileMap[keys[i]];
+      const std::chrono::duration<double> elapsed_seconds{time_now -
+                                                          tile->last_used};
+
+      //  Looking for tiles that have been fetched from sql,
+      //  but not yet rendered.  Such tiles contain a large bitmap allocation.
+      //  After some time, it is likely they never will be needed in short term.
+      //  So safe to delete, and reload as necessary.
+      if (((!tile->glTextureName) && tile->m_teximage) &&
+          (elapsed_seconds > age_limit)) {
+        tileMap.erase(keys[i]);
+        delete tile;
+      }
     }
   }
 };
