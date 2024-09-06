@@ -86,15 +86,21 @@ public:
   int n_lock;
 };
 
-// ----------------------------------------------------------------------------
-// Chart Database
-// ----------------------------------------------------------------------------
-
+/**
+ * Manages the chart database and provides access to chart data.
+ * Responsible for loading, saving, and managing the chart database.
+ * Provides methods for building chart stacks, opening charts, and managing the chart cache.
+ */
 class ChartDB : public ChartDatabase {
 public:
   ChartDB();
   virtual ~ChartDB();
 
+  /**
+   * Load the chart database from a binary file.
+   * @param filename Name of the file to load
+   * @param dir_array_check Array to store directory information
+   */
   bool LoadBinary(const wxString &filename, ArrayOfCDI &dir_array_check);
   bool SaveBinary(const wxString &filename) {
     return ChartDatabase::Write(filename);

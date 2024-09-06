@@ -35,6 +35,10 @@
 class wxHtmlWindow;
 class AisTargetData;
 
+/**
+ * Dialog for querying detailed information about an AIS target. Displays detailed
+ * information about a specific AIS target and allows user interaction.
+ */
 class AISTargetQueryDialog : public wxFrame {
   DECLARE_CLASS(AISTargetQueryDialog)
   DECLARE_EVENT_TABLE()

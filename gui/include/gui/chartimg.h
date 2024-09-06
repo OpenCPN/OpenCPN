@@ -113,10 +113,20 @@ public:
   int nRev;
 };
 
-// ----------------------------------------------------------------------------
-// ChartBaseBSB
-// ----------------------------------------------------------------------------
-
+/**
+ * Base class for BSB (Maptech/NOS) format nautical charts.
+ *
+ * Provides core functionality for handling BSB format raster nautical charts.
+ * Implements chart rendering, coordinate transformations, and utility functions.
+ *
+ * Key features include:
+ * - Chart initialization and loading
+ * - Rendering of chart views on different devices (DC, OpenGL)
+ * - Coordinate conversions between lat/lon and chart pixels
+ * - Color scheme management
+ * - Chart scaling and zooming
+ * - Caching mechanisms for improved performance
+ */
 class ChartBaseBSB : public ChartBase {
 public:
   //    Public methods
@@ -318,10 +328,9 @@ protected:
   wxULongLong m_filesize;
 };
 
-// ----------------------------------------------------------------------------
-// ChartKAP
-// ----------------------------------------------------------------------------
-
+/**
+ * Represents a KAP format chart, derived from ChartBaseBSB.
+ */
 class ChartKAP : public ChartBaseBSB {
 public:
   //    Methods
@@ -352,6 +361,11 @@ public:
 
 class PlugInChartBase;  // found in ocpn_plugin.h
 
+/**
+ * Wrapper class for plugin-based charts.
+ * Serves as an interface between the main application and plugin-provided charts. Allows seamless integration of charts
+ * from external plugins into the main chart handling system.
+ */
 class ChartPlugInWrapper : public ChartBaseBSB {
 public:
   ChartPlugInWrapper();

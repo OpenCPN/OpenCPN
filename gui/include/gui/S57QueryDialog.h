@@ -31,6 +31,10 @@
 
 class wxHtmlWindow;
 
+/**
+ * Dialog for displaying query results of S57 objects. Creates a dialog window to display detailed information about
+ * queried S57 objects, including an HTML view of the object's properties.
+ */
 class S57QueryDialog : public wxFrame {
   DECLARE_CLASS(S57QueryDialog)
   DECLARE_EVENT_TABLE()
@@ -77,6 +81,10 @@ public:
   wxButton* m_btnOK;
 };
 
+/**
+ * Dialog for displaying extra query information for S57 objects.
+ * Extends S57QueryDialog to provide additional query information about S57 objects.
+ */
 class S57ExtraQueryInfoDlg : public S57QueryDialog {
   DECLARE_CLASS(S57ExtraQueryInfoDlg)
   DECLARE_EVENT_TABLE()

@@ -43,10 +43,10 @@
 // Class declarations
 class Routeman;
 
-//----------------------------------------------------------------------------
-// CDI
-//----------------------------------------------------------------------------
-
+/**
+ * Course Deviation Indicator display. Provides a visual representation
+ * of the vessel's course deviation from the planned route.
+ */
 class CDI : public wxWindow {
 public:
   CDI(wxWindow *parent, wxWindowID id, long style, const wxString &name);
@@ -62,9 +62,10 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
-//----------------------------------------------------------------------------
-// AnnunText
-//----------------------------------------------------------------------------
+/**
+ * Annunciator Text display. Displays labeled values for various
+ * navigation data points in the console.
+ */
 class AnnunText : public wxWindow {
 public:
   AnnunText(wxWindow *parent, wxWindowID id, const wxString &LegendElement,
@@ -100,9 +101,10 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-//----------------------------------------------------------------------------
-// ConsoleCanvas
-//----------------------------------------------------------------------------
+/**
+ * Main console display canvas. Primary class for the navigation console
+ * in OpenCPN. Manages and displays various navigation data points and controls.
+ */
 class ConsoleCanvas : public wxFrame {
 public:
   ConsoleCanvas(wxWindow *frame);

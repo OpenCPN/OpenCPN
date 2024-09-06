@@ -41,9 +41,10 @@
 class options;
 class ConnectionParamsPanel;
 
-//----------------------------------------------------------------------------
-// ConnectionEditDialog
-//----------------------------------------------------------------------------
+/**
+ * Dialog for editing connection parameters. Provides an interface for
+ * creating new connections or editing existing connection parameters in detail.
+ */
 class ConnectionEditDialog : public wxDialog {
 public:
   const wxString DEFAULT_TCP_PORT = "10110";

@@ -46,6 +46,9 @@ struct SubTrack {
   double m_scale;
 };
 
+/**
+ * Represents a single point in a track.
+ */
 class TrackPoint {
 public:
   TrackPoint(double lat, double lon, wxString ts = "");
@@ -69,10 +72,9 @@ private:
   std::string m_stimestring;
 };
 
-//----------------------------------------------------------------------------
-//    Track
-//----------------------------------------------------------------------------
-
+/**
+ * Represents a track, which is a series of connected track points.
+ */
 class Track {
   friend class TrackGui;
 
@@ -195,6 +197,9 @@ private:
 };
 
 class Route;
+/**
+ * Represents an active track that is currently being recorded.
+ */
 class ActiveTrack : public wxEvtHandler, public Track {
 public:
   ActiveTrack();

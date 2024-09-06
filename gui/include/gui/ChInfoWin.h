@@ -28,6 +28,10 @@
 #include <wx/stattext.h>
 #include <wx/panel.h>
 
+/**
+ * A custom panel for displaying chart information. Represents a panel that displays
+ * information about a chart, such as its scale and other relevant details.
+ */
 class ChInfoWin : public wxPanel {
 public:
   ChInfoWin(wxWindow* parent);

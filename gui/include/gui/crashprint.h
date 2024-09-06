@@ -29,11 +29,9 @@
 //============================================================================
 const int maxBtCount = 100;
 
-//----------------------------------------------------------------------------
-//!
-
-//----------------------------------------------------------------------------
-//! wxCrashPrint
+/**
+ * Handles crash reporting in wxWidgets applications.
+ */
 class wxCrashPrint {
 public:
   //! constructor
@@ -47,11 +45,11 @@ public:
 
 private:
   //! variables
-  int m_flags;
-  wxString m_fname;
+  int m_flags; ///< Flags controlling the crash report behavior.
+  wxString m_fname; ///< Filename to save the crash report to.
 
-  void *m_btBuffer[maxBtCount];
-  char **m_btStrings;
+  void *m_btBuffer[maxBtCount]; ///< Buffer for storing backtrace information.
+  char **m_btStrings; ///< Strings containing backtrace information.
 };
 
 #endif  // _WX_CRASHPRINT_H_

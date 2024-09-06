@@ -27,6 +27,13 @@
 class ocpnDC;
 class ChartCanvas;
 
+/**
+ * Represents a compass display in the OpenCPN navigation system.
+ *
+ * The ocpnCompass class provides a visual compass display for the OpenCPN
+ * application. It shows the current heading and, optionally, GPS status.
+ * This compass is typically displayed as an overlay on the main chart view.
+ */
 class ocpnCompass {
 public:
   ocpnCompass(ChartCanvas *parent, bool bShowGPS = true);

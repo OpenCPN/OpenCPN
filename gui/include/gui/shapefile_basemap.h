@@ -95,7 +95,10 @@ enum Quality {
 typedef std::vector<wxRealPoint> contour;
 typedef std::vector<contour> contour_list;
 
-/// @brief Basemap
+/**
+ * Represents a basemap chart based on shapefile data. Handles loading and rendering
+ * of shapefile-based basemap charts. Supports different quality levels and provides methods for drawing filled polygons.
+ */
 class ShapeBaseChart {
 public:
   ShapeBaseChart() = delete;
@@ -167,7 +170,10 @@ private:
                             const std::pair<double, double> &B);
 };
 
-/// @brief Set of basemaps at different resolutions
+/**
+ * Manages a set of ShapeBaseChart objects at different resolutions. Maintains multiple
+ * basemap charts at varying quality levels and scales. Handles selection of the appropriate chart based on the current view scale.
+ */
 class ShapeBaseChartSet {
 public:
   ShapeBaseChartSet();

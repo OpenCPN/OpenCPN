@@ -28,6 +28,10 @@
 
 #include <wx/wx.h>
 
+/**
+ * Represents a sector of a light in an S57 chart. Contains information about a light sector, including its
+ * position, angular range, visibility range, color, and type.
+ */
 typedef struct {
   wxPoint2DDouble pos;
   double sector1, sector2;

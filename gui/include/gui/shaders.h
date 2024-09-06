@@ -49,6 +49,10 @@ extern GLint texture_2DA_shader_program;
 
 extern const GLchar *preamble;
 
+/**
+ * Wrapper class for OpenGL shader programs. Encapsulates an OpenGL shader program,
+ * providing methods for compiling shaders, linking the program, and setting uniform variables.
+ */
 class GLShaderProgram {
 public:
   GLShaderProgram() : programId_(0), linked_(false) {

@@ -34,6 +34,9 @@
 
 class ocpnFloatingToolbarDialog;
 
+/**
+ * Container for toolbar item properties.
+ */
 class ToolbarItemContainer {
 public:
   ToolbarItemContainer();
@@ -93,11 +96,9 @@ enum {
 class ToolTipWin;
 class ocpnToolBarTool;
 
-// ----------------------------------------------------------------------------
-// ocpnToolBarSimple is a generic toolbar implementation in pure wxWidgets
-//    Adapted from wxToolBarSimple( deprecated )
-// ----------------------------------------------------------------------------
-
+/**
+ * Generic toolbar implementation in pure wxWidgets adapted from wxToolBarSimple (deprecated).
+ */
 class ocpnToolBarSimple : public wxEvtHandler {
 public:
   // ctors and dtor
@@ -378,6 +379,9 @@ private:
 #define FADE_TIMER 2
 #define DESTROY_TIMER 3
 
+/**
+ * Floating toolbar dialog for OpenCPN.
+ */
 class ocpnFloatingToolbarDialog : public wxEvtHandler {
 public:
   ocpnFloatingToolbarDialog(wxWindow *parent, wxPoint position, long orient,

@@ -2,6 +2,10 @@
 
 #include <string>
 
+/**
+ * Represents network adapter information and provides related functionality.
+ * Encapsulates IP address, netmask, and gateway, with methods to calculate and retrieve the broadcast address.
+ */
 class AdapterInfo {
   std::string IPAddress;
   std::string NetMask;

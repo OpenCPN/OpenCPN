@@ -38,8 +38,21 @@
 #include "WorkerThread.hpp"
 #include "TileCache.hpp"
 
-enum class MBTilesType : std::int8_t { BASE, OVERLAY };
-enum class MBTilesScheme : std::int8_t { XYZ, TMS };
+/**
+ * Defines the type of MBTiles chart
+ */
+enum class MBTilesType : std::int8_t {
+    BASE,     ///< Base map, providing the primary chart imagery
+    OVERLAY   ///< Overlay map, adding additional information on top of a base map
+};
+
+/**
+ * Defines the tile scheme used in the MBTiles chart
+ */
+enum class MBTilesScheme : std::int8_t {
+    XYZ,      ///< "Slippy Map" tilenames. Origin at top-left, Y increases southward.
+    TMS       ///< Tile Map Service scheme. Origin at bottom-left, Y increases northward.
+};
 
 class WXDLLEXPORT ChartMbTiles;
 
@@ -66,10 +79,20 @@ class MbtTilesThread;
 //    Helper classes
 //-----------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------------
-// ChartMBTiles
-// ----------------------------------------------------------------------------
-
+/**
+ * Represents an MBTiles format chart.
+ *
+ * Provides functionality to load, render, and interact with MBTiles format charts.
+ * MBTiles stores tiled map data in SQLite databases for efficient storage and retrieval.
+ *
+ * An MBTiles chart consists of:
+ * - A set of image tiles at various zoom levels
+ * - Metadata about the tileset (e.g., attribution, description)
+ * - An SQLite database structure for organizing and accessing tiles
+ *
+ * Handles tile management, caching, and rendering for efficient
+ * display of large tiled datasets, supporting both XYZ and TMS tile schemes.
+ */
 class ChartMBTiles : public ChartBase {
 public:
   //    Public methods
