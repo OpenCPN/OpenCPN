@@ -2044,6 +2044,20 @@ public:
 class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
 public:
   opencpn_plugin_121(void *pmgr);
+  /**
+   * Notifies plugin when timeline selection changes.
+   *
+   * Called by OpenCPN when the user changes the selected time in the global
+   * timeline widget. Allows plugins to update their display based on the
+   * selected time.
+   *
+   * @param selectedTime The newly selected timestamp, or wxInvalidDateTime
+   *                     if no time is selected.
+   *
+   * @note Time is in local time.
+   * @note Plugin should update its temporal data display to match this time
+   */
+  virtual void OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime);
 };
 
 //------------------------------------------------------------------
@@ -6956,5 +6970,43 @@ typedef struct _PI_PointContext {
 
 extern DECL_EXP std::shared_ptr<PI_PointContext> GetContextAtPoint(
     int x, int y, int canvas_index);
+/**
+ * Gets the currently selected time from the timeline widget.
+ *
+ * @return Currently selected time in local time, or wxInvalidDateTime if no
+ * time selected
+ */
+DECL_EXP wxDateTime GetTimelineSelectedTime();
+
+/**
+ * Sets the currently selected time in the timeline widget, with an optional
+ * duration and position.
+ *
+ * @param selectedTime The selected time, in local time.
+ * @param duration Timeline duration (e.g. wxTimeSpan::Days(365) for 1 year)
+ * @param selectedPosition Position of selected time within range (0.0=start,
+ * 0.5=center, 1.0=end)
+ *
+ * @note This function is used to control the timeline display in plugins
+ * like GRIB or climatology. It allows plugins to set the timeline to a
+ * specific time range and position, which is useful for visualizing data
+ * related to the selected time.
+ *
+ * Examples:
+ *   // Climatology plugin: Show 1 year centered on selected date
+ *   SetTimelineSelectedTime(selectedDate, wxTimeSpan::Days(365), 0.5);
+ *
+ *   // Tides plugin: Show 48 hours starting from current time
+ *   SetTimelineSelectedTime(now, wxTimeSpan::Days(2), 0.0);
+ */
+DECL_EXP void SetTimelineSelectedTime(
+    const wxDateTime &selectedTime,
+    const wxTimeSpan &duration = wxTimeSpan::Days(10),
+    double selectedPosition = 0.2);
+
+/**
+ * Returns true if the timeline wdiget is currently running.
+ */
+extern "C" DECL_EXP bool IsTimelinePlayerRunning();
 
 #endif  //_PLUGIN_H_

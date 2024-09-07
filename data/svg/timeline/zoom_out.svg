@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="currentColor"
+   stroke-width="2"
+   stroke-linecap="round"
+   stroke-linejoin="round">
+  <!-- Magnifying glass circle -->
+  <circle
+     cx="10"
+     cy="10"
+     r="6"
+     style="fill:none;stroke:#4a4a4a;stroke-width:2" />
+  <!-- Magnifying glass handle -->
+  <line
+     x1="15"
+     y1="15"
+     x2="20"
+     y2="20"
+     style="stroke:#4a4a4a;stroke-width:2" />
+  <!-- Minus sign inside magnifying glass -->
+  <line
+     x1="7"
+     y1="10"
+     x2="13"
+     y2="10"
+     style="stroke:#4a4a4a;stroke-width:2" />
+</svg>

@@ -598,6 +598,7 @@ int g_click_stop;
 int g_MemFootMB;
 
 bool g_bShowStatusBar;
+bool g_bShowTimeline;
 
 bool g_bquiting;
 int g_BSBImgDebug;
