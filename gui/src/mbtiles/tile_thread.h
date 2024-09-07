@@ -6,14 +6,12 @@
 #include <wx/thread.h>
 #include <wx/mstream.h>
 
-#include "mbtiles.h"
-#include "chartbase.h"
-#include "ocpn_frame.h"
-#include "ocpn_app.h"
-
 #include <sqlite3.h>
 #include <SQLiteCpp/SQLiteCpp.h>
 
+#include "chartbase.h"
+#include "ocpn_frame.h"
+#include "ocpn_app.h"
 #include "tile_queue.h"
 
 #ifdef __WXMSW__
@@ -41,11 +39,11 @@ public:
   * Create worker thread instance.
   * @param pDB Pointer to SQL database handler.
   */
-  MbtTilesThread(SQLite::Database *pDB)
+  MbtTilesThread(SQLite::Database *db)
       : wxThread(wxTHREAD_DETACHED),
-        m_exitThread(false),
+        m_exit_thread(false),
         m_finished(false),
-        m_pDB(pDB) {}
+        m_db(db) {}
 
   virtual ~MbtTilesThread() {}
 
@@ -54,7 +52,7 @@ public:
    * safe.
    * @param tile Pointer to tile to load
    */
-  void RequestTile(mbTileDescriptor *tile);
+  void RequestTile(MbTileDescriptor *tile);
 
   /** @brief Request the thread to stop/delete itself. */
   void RequestStop();
@@ -64,16 +62,16 @@ public:
 
 private:
   /// Set to true to tell the main loop to stop execution
-  bool m_exitThread;
+  bool m_exit_thread;
 
   /// Set to true when the thread has finished
   bool m_finished;
 
   /// The queue storing all the tile requests
-  TileQueue m_tileQueue;
+  TileQueue m_tile_queue;
 
   /// Pointer the SQL object managing the MbTiles file
-  SQLite::Database *m_pDB;
+  SQLite::Database *m_db;
 
   /**
    * @brief  Worker thread main loop.
@@ -85,7 +83,7 @@ private:
    * Load bitmap data of a tile from the MbTiles file to the tile cache
    * @param tile Pointer to the tile to be loaded
    */
-  void LoadTile(mbTileDescriptor *tile);
+  void LoadTile(MbTileDescriptor *tile);
 };
 
 #endif /* _MBTILESTHREAD_H_ */

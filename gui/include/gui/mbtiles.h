@@ -24,34 +24,27 @@
 #include "chartbase.h"
 #include "model/georef.h"  // for GeoRef type
 #include "OCPNRegion.h"
+#include "ocpn_pixel.h"
 #include "viewport.h"
 #include "tile_descr.h"
 #include "tile_thread.h"
 #include "tile_cache.h"
 
-enum class MBTilesType : std::int8_t { BASE, OVERLAY };
-enum class MBTilesScheme : std::int8_t { XYZ, TMS };
+#ifdef ocpnUSE_GL
+#include "shaders.h"
+#endif
 
-class WXDLLEXPORT ChartMbTiles;
-
-
-class ViewPort;
-class PixelCache;
-class ocpnBitmap;
-class mbTileDescriptor;
+enum class MbTilesType : std::int8_t { BASE, OVERLAY };
+enum class MbTilesScheme : std::int8_t { XYZ, TMS };
 
 namespace SQLite {
 class Database;
 }
 
-class GLShaderProgram;
-class MbtTilesThread;
-
-class ChartMBTiles : public ChartBase {
+class ChartMbTiles : public ChartBase {
 public:
-
-  ChartMBTiles();
-  virtual ~ChartMBTiles();
+  ChartMbTiles();
+  virtual ~ChartMbTiles();
 
   //    Accessors
 
@@ -85,14 +78,14 @@ public:
                             const OCPNRegion &Region);
 
   virtual bool RenderRegionViewOnGL(const wxGLContext &glc,
-                                    const ViewPort &VPoint,
-                                    const OCPNRegion &RectRegion,
-                                    const LLRegion &Region);
+                                    const ViewPort &vpoint,
+                                    const OCPNRegion &rect_region,
+                                    const LLRegion &region);
 
   virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
-  virtual void GetValidCanvasRegion(const ViewPort &VPoint,
-                                    OCPNRegion *pValidRegion);
+  virtual void GetValidCanvasRegion(const ViewPort &v_point,
+                                    OCPNRegion *valid_region);
   virtual LLRegion GetValidRegion();
 
   virtual bool GetChartExtent(Extent *pext);
@@ -100,8 +93,8 @@ public:
   void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
   double GetPPM() { return m_ppm_avg; }
-  double GetZoomFactor() { return m_zoomScaleFactor; }
-  MBTilesType GetTileType() { return m_TileType; }
+  double GetZoomFactor() { return m_zoom_scale_factor; }
+  MbTilesType GetTileType() { return m_tile_type; }
 
 protected:
   //    Methods
@@ -123,38 +116,45 @@ protected:
    * @param tile Pointer to the tile descriptor to be prepared
    * @return  true if the tile is ready to be rendered, false else.
    */
-  bool getTileTexture(mbTileDescriptor *tile);
+  bool GetTileTexture(MbTileDescriptor *tile);
   void FlushTiles(void);
-  bool RenderTile(mbTileDescriptor *tile, int zoomLevel,
-                  const ViewPort &VPoint);
+  bool RenderTile(MbTileDescriptor *tile, int zoom_level,
+                  const ViewPort &vpoint);
 
   //    Protected Data
 
-  float m_LonMax, m_LonMin, m_LatMax, m_LatMin;
+  float m_lon_max;
+  float m_lon_min;
+  float m_lat_max;
+  float m_lat_min;
 
   double m_ppm_avg;  // Calculated true scale factor of the 1X chart,
                      // pixels per meter
-  MBTilesType m_TileType;
+  MbTilesType m_tile_type;
 
   int m_b_cdebug;
 
-  int m_minZoom, m_maxZoom;
-  TileCache *m_tileCache;
-  LLRegion m_minZoomRegion;
-  wxBitmapType m_imageType;
+  int m_min_zoom;
+  int m_max_zoom;
+  TileCache *m_tile_cache;
+  LLRegion m_min_zoom_region;
+  wxBitmapType m_image_type;
   int m_last_clean_zoom;
 
-  double m_zoomScaleFactor;
+  double m_zoom_scale_factor;
 
-  MBTilesScheme m_Scheme;
+  MbTilesScheme m_scheme;
 
-  SQLite::Database *m_pDB;
-  int m_nTiles;
+  SQLite::Database *m_db;
+  int m_n_tiles;
   std::string m_format;
 
+  uint32_t m_tile_count;
+  MbtTilesThread *m_worker_thread;
+
+#ifdef ocpnUSE_GL
   GLShaderProgram *m_tile_shader_program;
-  uint32_t m_tileCount;
-  MbtTilesThread *m_workerThread;
+#endif
 
   /**
    * Create and start the worker thread. This thread is dedicated at

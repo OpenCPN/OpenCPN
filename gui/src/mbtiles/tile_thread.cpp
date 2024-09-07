@@ -1,8 +1,11 @@
 
 #include <mutex>
+
 #include <wx/thread.h>
+
 #include "dychart.h"
 #include "tile_thread.h"
+#include "tile_cache.h"
 
 #ifdef __WXMSW__
 void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS *ep) {
@@ -15,20 +18,20 @@ void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS *ep) {
  * safe.
  * @param tile Pointer to the tile to load
  */
-void MbtTilesThread::RequestTile(mbTileDescriptor *tile) {
+void MbtTilesThread::RequestTile(MbTileDescriptor *tile) {
   tile->m_requested = true;
-  m_tileQueue.Push(tile);
+  m_tile_queue.Push(tile);
 }
 
 void MbtTilesThread::RequestStop() {
 
-  m_exitThread = true;
-  m_tileQueue.Push(nullptr);
+  m_exit_thread = true;
+  m_tile_queue.Push(nullptr);
   while (!m_finished) {
   }
 }
 
-size_t MbtTilesThread::GetQueueSize() { return m_tileQueue.GetSize(); }
+size_t MbtTilesThread::GetQueueSize() { return m_tile_queue.GetSize(); }
 
 wxThread::ExitCode MbtTilesThread::Entry() {
 #ifdef __MSVC__
@@ -41,11 +44,11 @@ wxThread::ExitCode MbtTilesThread::Entry() {
 
 #endif
 
-  mbTileDescriptor *tile;
+  MbTileDescriptor *tile;
 
   do {
     // Wait for the next job
-    tile = m_tileQueue.Pop();
+    tile = m_tile_queue.Pop();
     // Only process non null tiles. A null pointer can be sent to force the
     // thread to check for a deletion request
     if (tile != nullptr) {
@@ -53,12 +56,12 @@ wxThread::ExitCode MbtTilesThread::Entry() {
     }
     // Only request a refresh of the display when there is no more tiles in
     // the queue.
-    if (m_tileQueue.GetSize() == 0) {
+    if (m_tile_queue.GetSize() == 0) {
       wxGetApp().GetTopWindow()->GetEventHandler()->CallAfter(
           &MyFrame::RefreshAllCanvas, true);
     }
     // Check if the thread has been requested to be destroyed
-  } while ((TestDestroy() == false) && (m_exitThread == false));
+  } while ((TestDestroy() == false) && (m_exit_thread == false));
 
   // Since the worker is a detached thread, we need a special mecanism to
   // allow the main thread to wait for its deletion
@@ -67,17 +70,17 @@ wxThread::ExitCode MbtTilesThread::Entry() {
   return (wxThread::ExitCode)0;
 }
 
-void MbtTilesThread::LoadTile(mbTileDescriptor *tile) {
+void MbtTilesThread::LoadTile(MbTileDescriptor *tile) {
   std::lock_guard lock(TileCache::GetMutex(tile));
 
   // If the tile has not been found in the SQL database in a previous attempt,
   // don't search for it again
-  if (!tile->m_bAvailable) return;
+  if (!tile->m_is_available) return;
 
   // If the tile has already been uncompressed, don't uncompress it
   // again
   if (tile->m_teximage != nullptr) return;
-  if (tile->glTextureName > 0) return;
+  if (tile->m_gl_texture_name > 0) return;
 
   // Fetch the tile data from the mbtile database
   try {
@@ -87,14 +90,14 @@ void MbtTilesThread::LoadTile(mbTileDescriptor *tile) {
     sprintf(qrs,
             "select tile_data, length(tile_data) from tiles where zoom_level "
             "= %d AND tile_column=%d AND tile_row=%d",
-            tile->m_zoomLevel, tile->tile_x, tile->tile_y);
-    SQLite::Statement query(*m_pDB, qrs);
+            tile->m_zoomLevel, tile->m_tile_x, tile->m_tile_y);
+    SQLite::Statement query(*m_db, qrs);
 
     int queryResult = query.tryExecuteStep();
     if (SQLITE_DONE == queryResult) {
       // The tile has not been found in databse, mark it as "not available" so
       // that we won't try to find it again later
-      tile->m_bAvailable = false;
+      tile->m_is_available = false;
       return;
     } else {
       // Get the blob
@@ -121,14 +124,14 @@ void MbtTilesThread::LoadTile(mbTileDescriptor *tile) {
       } else {
         // wxWidget can't uncompress the tile : mark it as not available and
         // exit
-        tile->m_bAvailable = false;
+        tile->m_is_available = false;
         return;
       }
 
       if (!imgdata) {
         // wxWidget can't uncompress the tile : mark it as not available and
         // exit
-        tile->m_bAvailable = false;
+        tile->m_is_available = false;
         return;
       }
 
@@ -170,7 +173,7 @@ void MbtTilesThread::LoadTile(mbTileDescriptor *tile) {
 #ifdef __MSVC__
   catch (SE_Exception e) {
     wxLogMessage("MbTiles: SE_Exception");
-    tile->m_bAvailable = false;
+    tile->m_is_available = false;
     tile->m_teximage = 0;
   }
 #else

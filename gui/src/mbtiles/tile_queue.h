@@ -2,6 +2,7 @@
 #define _MBTILESTILEQUEUE_H_
 
 #include <vector>
+
 #include <wx/event.h>
 #include <wx/thread.h>
 
@@ -16,10 +17,10 @@ public:
    *  Push a tile to the queue.
    *  @param tile Pointer to tile descriptor to be pushed.
    */
-  void Push(mbTileDescriptor *tile) {
-    wxMutexLocker lock(m_queueMutex);
-    m_tileList.push_back(tile);
-    m_tileCounter.Post();
+  void Push(MbTileDescriptor *tile) {
+    wxMutexLocker lock(m_mutex);
+    m_tile_list.push_back(tile);
+    m_tile_counter.Post();
   }
 
   /**
@@ -28,28 +29,28 @@ public:
   *
   *  @return Pointer to tile descriptor
   */
-  mbTileDescriptor *Pop() {
-    m_tileCounter.Wait();
-    wxMutexLocker lock(m_queueMutex);
-    mbTileDescriptor *tile = m_tileList.at(0);
-    m_tileList.erase(m_tileList.cbegin());
+  MbTileDescriptor *Pop() {
+    m_tile_counter.Wait();
+    wxMutexLocker lock(m_mutex);
+    MbTileDescriptor *tile = m_tile_list.at(0);
+    m_tile_list.erase(m_tile_list.cbegin());
     return tile;
   }
 
   /**  Retrieve current size of queue. */
   uint32_t GetSize() {
     uint32_t size;
-    wxMutexLocker lock(m_queueMutex);
+    wxMutexLocker lock(m_mutex);
 
-    size = m_tileList.size();
+    size = m_tile_list.size();
 
     return size;
   }
 
 private:
-  std::vector<mbTileDescriptor *> m_tileList;
-  wxMutex m_queueMutex;
-  wxSemaphore m_tileCounter;
+  std::vector<MbTileDescriptor *> m_tile_list;
+  wxMutex m_mutex;
+  wxSemaphore m_tile_counter;
 };
 
 #endif

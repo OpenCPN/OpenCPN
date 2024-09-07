@@ -1,22 +1,26 @@
 #ifndef _MBTILES_TILEDESCRIPTOR_H_
 #define _MBTILES_TILEDESCRIPTOR_H_
 
-#include <cstdint>
-#include <chrono>
 #include <atomic>
+#include <chrono>
 #include <cmath>
+#include <cstdint>
 
 #include "chartbase.h"
 #include "glChartCanvas.h"
 
 /** Per tile descriptor. */
-class mbTileDescriptor {
+class MbTileDescriptor {
 public:
-  int tile_x, tile_y;
+  int m_tile_x;
+  int m_tile_y;
   int m_zoomLevel;
-  float latmin, lonmin, latmax, lonmax;
-  LLBBox box;
-  std::chrono::milliseconds last_used;
+  float m_latmin;
+  float m_lonmin;
+  float m_latmax;
+  float m_lonmax;
+  LLBBox m_box;
+  std::chrono::milliseconds m_last_used;
 
   /// Set to true if a load request from main thread is already pending for this
   /// tile
@@ -26,48 +30,42 @@ public:
   std::atomic<unsigned char *> m_teximage;
 
   /// Identifier of the tile texture in OpenGL memory
-  GLuint glTextureName;
+  GLuint m_gl_texture_name;
 
   /// Set to true if the tile has not been found into the SQL database.
-  std::atomic<bool> m_bAvailable;
+  std::atomic<bool> m_is_available;
 
-  /// Pointer to the previous element of the tile chained list
-  mbTileDescriptor *prev;
-
-  /// Pointer to the next element of the tile chained list
-  mbTileDescriptor *next;
-
-  mbTileDescriptor(int zoomFactor, int x, int y) {
-    glTextureName = 0;
-    m_bAvailable = true;
+  MbTileDescriptor(int zoomFactor, int x, int y) {
+    m_gl_texture_name = 0;
+    m_is_available = true;
     m_teximage = nullptr;
     m_requested = false;
-    prev = nullptr;
-    next = nullptr;
-    tile_x = x;
-    tile_y = y;
+    m_tile_x = x;
+    m_tile_y = y;
     m_zoomLevel = zoomFactor;
     // Calculate tile boundaries
-    lonmin =
-        round(mbTileDescriptor::tilex2long(tile_x, zoomFactor) / eps) * eps;
-    lonmax =
-        round(mbTileDescriptor::tilex2long(tile_x + 1, zoomFactor) / eps) * eps;
-    latmin =
-        round(mbTileDescriptor::tiley2lat(tile_y - 1, zoomFactor) / eps) * eps;
-    latmax = round(mbTileDescriptor::tiley2lat(tile_y, zoomFactor) / eps) * eps;
+    m_lonmin =
+        round(MbTileDescriptor::Tilex2long(m_tile_x, zoomFactor) / kEps) * kEps;
+    m_lonmax =
+        round(MbTileDescriptor::Tilex2long(m_tile_x + 1, zoomFactor) / kEps) *
+        kEps;
+    m_latmin =
+        round(MbTileDescriptor::Tiley2lat(m_tile_y - 1, zoomFactor) / kEps) *
+        kEps;
+    m_latmax = round(MbTileDescriptor::Tiley2lat(m_tile_y, zoomFactor) / kEps) * kEps;
 
-    box.Set(latmin, lonmin, latmax, lonmax);
+    m_box.Set(m_latmin, m_lonmin, m_latmax, m_lonmax);
     SetTimestamp();
   }
 
-  virtual ~mbTileDescriptor() {
+  virtual ~MbTileDescriptor() {
     // Delete intermediate texture buffer if still allocated
     if (m_teximage != nullptr) {
       free(m_teximage);
     }
     // Delete OpenGL texture buffer if allocated
-    if (glTextureName > 0) {
-      glDeleteTextures(1, &glTextureName);
+    if (m_gl_texture_name > 0) {
+      glDeleteTextures(1, &m_gl_texture_name);
     }
   }
  /**
@@ -90,15 +88,15 @@ public:
   * @return Unique 64 bit key for tile
   */
   uint64_t GetMapKey() {
-    return mbTileDescriptor::GetMapKey(m_zoomLevel, tile_x, tile_y);
+    return MbTileDescriptor::GetMapKey(m_zoomLevel, m_tile_x, m_tile_y);
   }
 
-  static int long2tilex(double lon, int z) {
+  static int Long2tilex(double lon, int z) {
     if (lon < -180) lon += 360;
     return (int)(floor((lon + 180.0) / 360.0 * (1 << z)));
   }
 
-  static int lat2tiley(double lat, int z) {
+  static int Lat2tiley(double lat, int z) {
     int y = (int)(floor(
         (1.0 -
          log(tan(lat * M_PI / 180.0) + 1.0 / cos(lat * M_PI / 180.0)) / M_PI) /
@@ -108,28 +106,28 @@ public:
     return y;
   }
 
-  static double tilex2long(int x, int z) {
+  static double Tilex2long(int x, int z) {
     return x / (double)(1 << z) * 360.0 - 180;
   }
 
-  static double tiley2lat(int y, int z) {
+  static double Tiley2lat(int y, int z) {
     // double n = pow(2.0, z);
     double n = 1 << z;
     int ymax = 1 << z;
     y = ymax - y - 1;
-    double latRad = atan(sinh(M_PI * (1 - (2 * y / n))));
-    return 180.0 / M_PI * latRad;
+    double lat_rad = atan(sinh(M_PI * (1 - (2 * y / n))));
+    return 180.0 / M_PI * lat_rad;
   }
 
-  /** Update last_used to current time. */
+  /** Update m_last_used to current time. */
   void SetTimestamp() {
     using namespace std::chrono;
-    last_used =
+    m_last_used =
         duration_cast<milliseconds>(system_clock::now().time_since_epoch());
   }
 
 private:
-  const double eps = 6e-6;  // about 1cm on earth's surface at equator
+  const double kEps = 6e-6;  // about 1cm on earth's surface at equator
 };
 
 #endif /* _MBTILES_TILEDESCRIPTOR_H_ */
