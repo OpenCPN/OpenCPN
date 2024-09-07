@@ -1,7 +1,7 @@
 #ifndef _TILECACHE_H_
 #define _TILECACHE_H_
 
-#include "TileDescriptor.hpp"
+#include "tile_descr.h"
 #include <mutex>
 
 /// @brief Class managing the tiles of a mbtiles file

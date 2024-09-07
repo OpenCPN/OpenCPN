@@ -34,9 +34,9 @@
 #include "model/georef.h"  // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
-#include "TileDescriptor.hpp"
-#include "WorkerThread.hpp"
-#include "TileCache.hpp"
+#include "tile_descr.h"
+#include "worker_thread.h"
+#include "tile_cache.h"
 
 enum class MBTilesType : std::int8_t { BASE, OVERLAY };
 enum class MBTilesScheme : std::int8_t { XYZ, TMS };

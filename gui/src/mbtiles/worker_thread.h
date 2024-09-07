@@ -14,7 +14,7 @@
 #include <sqlite3.h>
 #include <SQLiteCpp/SQLiteCpp.h>
 
-#include "TileQueue.hpp"
+#include "tile_queue.h"
 
 #ifdef __WXMSW__
 class SE_Exception {
