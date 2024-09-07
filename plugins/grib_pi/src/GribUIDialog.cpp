@@ -177,6 +177,8 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   m_pTimelineSet = NULL;
   m_gCursorData = NULL;
   m_gGRIBUICData = NULL;
+  m_gtk_started = false;
+
   wxFileConfig *pConf = GetOCPNConfigObject();
 
   m_gGrabber = new GribGrabberWin(this);  // add the grabber to the dialog
@@ -788,17 +790,21 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
       m_gGRIBUICData->Update();
       m_gGRIBUICData->Show();
       pPlugIn->MoveDialog(m_gGRIBUICData, pPlugIn->GetCursorDataXY());
+      m_gGRIBUICData->Layout();
+      m_gGRIBUICData->Fit();
     }
   }
   Layout();
   Fit();
   wxSize sd = GetSize();
 #ifdef __WXGTK__
-  if (m_HasCaption && sd.y == GetClientSize().y) sd.y += 30;
+  if (!m_gtk_started && m_HasCaption /*&& sd.y == GetSize().y*/) {
+    sd.y += 30;
+    m_gtk_started = true;
+  }
 #endif
   SetSize(wxSize(sd.x, sd.y));
   SetMinSize(wxSize(sd.x, sd.y));
-
 #ifdef __OCPN__ANDROID__
   wxRect tbRect = GetMasterToolbarRect();
   // qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height
