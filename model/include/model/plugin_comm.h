@@ -75,4 +75,16 @@ void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
                                const wxString& objname, double& lat,
                                double& lon, double& scale, int& nativescale);
 
+/**
+ * Notifies all interested plugins when the global timeline selected time
+ * changes.
+ *
+ * Called when the user changes the selected time in the global timeline widget.
+ * Only plugins using API v121 and later will receive this notification.
+ *
+ * @param selectedTime The newly selected timestamp in local time,
+ *                     or wxInvalidDateTime if no time is selected
+ */
+void SendTimelineSelectedTimeToPlugins(const wxDateTime& selectedTime);
+
 #endif  //  PLUGIN__COMM_H

@@ -70,7 +70,7 @@ bool g_bpause;
 //
 //---------------------------------------------------------------------------------------------------------
 
-grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
+grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_121(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 

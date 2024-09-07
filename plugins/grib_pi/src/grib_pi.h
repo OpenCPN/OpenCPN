@@ -85,7 +85,7 @@ enum SettingsDisplay {
   PARTICLES
 };
 
-class grib_pi : public opencpn_plugin_116 {
+class grib_pi : public opencpn_plugin_121 {
 public:
   grib_pi(void *ppimgr);
   ~grib_pi(void);

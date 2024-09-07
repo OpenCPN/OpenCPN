@@ -48,6 +48,7 @@
 #include "s57registrar_mgr.h"
 #include "SencManager.h"
 #include "displays.h"
+#include "timeline.h"
 
 wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);
@@ -218,6 +219,8 @@ public:
   void TogglebFollow(ChartCanvas* cc);
   void ToggleFullScreen();
   void ToggleChartBar(ChartCanvas* cc);
+  void ToggleTimeline();
+  Timeline* GetGlobalTimeline();  // Global access function for plugin API
   void SetbFollow(ChartCanvas* cc);
   void ClearbFollow(ChartCanvas* cc);
   void ToggleChartOutlines(ChartCanvas* cc);
@@ -285,11 +288,15 @@ public:
   void UpdateAISMOBRoute(const AisTargetData* ptarget);
 
   wxStatusBar* m_pStatusBar;
+  Timeline* m_pTimeline;
   wxMenuBar* m_pMenuBar;
   int nBlinkerTick;
   bool m_bTimeIsSet;
 
   wxTimer InitTimer;
+
+  Timeline* GetTimeline() const { return m_pTimeline; }
+
   int m_iInitCount;
   bool m_initializing;
 
@@ -348,6 +355,7 @@ public:
   void ReleaseApiListeners();
   void UpdateStatusBar(void);
   void ConfigureStatusBar();
+  void ConfigureTimeline();
 
 private:
   void ProcessUnitTest();

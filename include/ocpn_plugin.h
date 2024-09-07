@@ -2027,6 +2027,25 @@ public:
                                             double lon);
 };
 
+class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
+public:
+  opencpn_plugin_121(void *pmgr);
+  /**
+   * Notifies plugin when global timeline selection changes.
+   *
+   * Called by OpenCPN when the user changes the selected time in the global
+   * timeline widget. Allows plugins to update their display based on the
+   * selected time.
+   *
+   * @param selectedTime The newly selected timestamp, or wxInvalidDateTime
+   *                     if no time is selected/timeline is closed
+   *
+   * @note Time is in local time.
+   * @note Plugin should update its temporal data display to match this time
+   */
+  virtual void OnTimelineTimeChanged(const wxDateTime &selectedTime);
+};
+
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
 //
@@ -6878,5 +6897,13 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
+
+/**
+ * Gets the currently selected time from the global timeline.
+ *
+ * @return Currently selected time in local time, or wxInvalidDateTime if no
+ * time selected
+ */
+DECL_EXP wxDateTime GetTimelineSelectedTime();
 
 #endif  //_PLUGIN_H_
