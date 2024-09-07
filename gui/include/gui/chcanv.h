@@ -887,6 +887,13 @@ private:
    */
   void DoZoomCanvas(double factor, bool can_zoom_to_cursor = true);
 
+  /**
+   * Check if mouse is near bottom of canvas and show timeline if needed.
+   * Used for auto-show functionality of timeline widget.
+   * @param event The mouse event containing position information
+   */
+  void CheckTimelineProximity(wxMouseEvent &event);
+
   int AdjustQuiltRefChart();
   bool UpdateS52State();
   void CallPopupMenu(int x, int y);
@@ -1003,7 +1010,29 @@ private:
   void DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox);
+  /**
+   * Draws crosshairs at the position along the active route nearest to the
+   * cursor.
+   *
+   * Position may differ from cursor because it snaps to the route.
+   *
+   * @param dc Drawing context for both OpenGL and non-OpenGL modes
+   */
+  void DrawRouteCursorCrosshairs(ocpnDC &dc);  // Helper for both GL and non-GL
   void DrawAnchorWatchPoints(ocpnDC &dc);
+  /**
+   * Generates rollover tooltip text for route segments.
+   *
+   * Returns multi-line text with route name, length, leg bearing/distance,
+   * and timing information for active routes. Includes arrival time at
+   * cursor position for routes with timing data.
+   *
+   * @param pr Route object
+   * @param pSel SelectItem with route segment endpoints
+   * @return Multi-line tooltip text
+   */
+  wxString GenerateRouteRolloverText(
+      Route *pr, SelectItem *pSel);  // Helper for tooltip content
   double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
   void DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox);

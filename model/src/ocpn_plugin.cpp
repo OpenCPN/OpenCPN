@@ -302,12 +302,6 @@ void opencpn_plugin_120::OnContextMenuItemCallbackExt(int id,
                                                       std::string obj_ident,
                                                       std::string obj_type,
                                                       double lat, double lon) {}
-
-//    Opencpn_Plugin_121 Implementation
-opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
-
-void opencpn_plugin_121::UpdateFollowState(int canvas_index, bool state) {}
-
 DateTimeFormatOptions::DateTimeFormatOptions()
     : format_string("$weekday_short_date_time"),
       time_zone(wxEmptyString),
@@ -316,3 +310,12 @@ DateTimeFormatOptions::DateTimeFormatOptions()
       version(1) {}
 
 DateTimeFormatOptions::~DateTimeFormatOptions() {}
+
+//    Opencpn_Plugin_121 Implementation
+opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
+
+void opencpn_plugin_121::UpdateFollowState(int canvas_index, bool state) {}
+
+void opencpn_plugin_121::OnTimelineSelectedTimeChanged(
+    const wxDateTime& selectedTime, const wxDateTime& startTime,
+    const wxDateTime& endTime) {}

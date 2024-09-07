@@ -1281,6 +1281,53 @@ double DistLoxodrome(double slat, double slon, double dlat, double dlon) {
   return dist;
 }
 
+void PositionBearingDistanceLoxodrome(double lat, double lon, double brg,
+                                      double dist, double *dlat, double *dlon) {
+  // Rhumb line (loxodrome) position calculation
+  // Uses a simplified but mathematically consistent approach
+
+  double bearing_rad = brg * DEGREE;
+
+  // Calculate latitude change (straightforward for rhumb lines)
+  double delta_lat = dist * cos(bearing_rad) / 60.0;  // distance in degrees
+  double new_lat = lat + delta_lat;
+
+  // Calculate longitude change using standard rhumb line mathematics
+  double delta_lon;
+
+  if (fabs(delta_lat) < 1e-10) {
+    // Nearly due East/West course - avoid division by zero
+    delta_lon = dist * sin(bearing_rad) / (60.0 * cos(lat * DEGREE));
+  } else {
+    // Standard rhumb line formula using Mercator latitude
+    double lat1_rad = lat * DEGREE;
+    double lat2_rad = new_lat * DEGREE;
+
+    // Mercator latitude calculation: ψ = ln(tan(π/4 + φ/2))
+    double psi1 = log(tan(PI / 4.0 + lat1_rad / 2.0));
+    double psi2 = log(tan(PI / 4.0 + lat2_rad / 2.0));
+    double delta_psi = psi2 - psi1;
+
+    if (fabs(delta_psi) < 1e-10) {
+      // Very small Mercator latitude change, use approximate formula
+      delta_lon = dist * sin(bearing_rad) / (60.0 * cos(lat1_rad));
+    } else {
+      // True rhumb line formula: Δλ = Δψ × tan(bearing)
+      // Convert to degrees: multiply by (180/π) since Δψ is in radians
+      delta_lon = delta_psi * tan(bearing_rad) * (180.0 / PI);
+    }
+  }
+
+  double new_lon = lon + delta_lon;
+
+  // Handle longitude wraparound
+  while (new_lon > 180.0) new_lon -= 360.0;
+  while (new_lon < -180.0) new_lon += 360.0;
+
+  if (dlat) *dlat = new_lat;
+  if (dlon) *dlon = new_lon;
+}
+
 /* ---------------------------------------------------------------------------------
  */
 /*

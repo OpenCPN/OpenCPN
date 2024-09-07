@@ -188,6 +188,7 @@ public:
 
   void ContextMenuItemCallback(int id);
   void SetFactoryOptions();
+  void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
 
   /** Returns the selected time in the GRIB timeline widget. */
   wxDateTime TimelineTime();
@@ -216,11 +217,26 @@ public:
    * data, or NULL if no valid data.
    */
   GribTimelineRecordSet *GetTimeLineRecordSet(wxDateTime time);
-  void StopPlayBack();
   void TimelineChanged();
   void CreateActiveFileFromNames(const wxArrayString &filenames);
-  void PopulateComboDataList();
-  void ComputeBestForecastForNow();
+  /**
+   * Computes and sets the best forecast for the specified time.
+   *
+   * Finds the best available GRIB data for the given time, sets it as the
+   * active timeline record set, and updates the display. If the time falls
+   * outside the GRIB data range, it will use the closest available time.
+   *
+   * @param time The time to get forecast data for
+   */
+  void ComputeBestForecast(const wxDateTime &time);
+
+  /**
+   * Computes and sets the best forecast for the current computer time.
+   *
+   * Convenience method that calls ComputeBestForecast() with the current
+   * computer time, clamped to the GRIB data range if necessary.
+   */
+  void ComputeBestForecastForNow() { ComputeBestForecast(GetNow()); }
   /** Set the ViewPort under the mouse. */
   void SetViewPortUnderMouse(PlugIn_ViewPort *vp);
   /** Set the ViewPort that has the focus */
@@ -243,6 +259,11 @@ public:
   void SetDialogsStyleSizePosition(bool force_recompute = false);
   /** Set the icon and tooltip for the download request button. */
   void SetRequestButtonBitmap(int type);
+
+  // Timeline integration methods
+  void UpdateTimelineWithGribData();
+  void AddGribTimelineDecorations();
+  wxDateTime GetOptimalInitialTime();
   void OnMouseEvent(wxMouseEvent &event);
   GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
   bool InDataPlot(int id) {
@@ -263,8 +284,6 @@ public:
   /** Current set of GRIB records for timeline playback. */
   GribTimelineRecordSet *m_pTimelineSet;
 
-  /** Timer for controlling GRIB animation playback. */
-  wxTimer m_tPlayStop;
   /** Plugin instance that owns this control bar. */
   grib_pi *pPlugIn;
   GribRequestSetting *pReq_Dialog;
@@ -333,25 +352,11 @@ private:
   void OnSize(wxSizeEvent &event);
   void OnPaint(wxPaintEvent &event);
   void OnSettings(wxCommandEvent &event);
-  void OnPlayStop(wxCommandEvent &event);
-  void OnPlayStopTimer(wxTimerEvent &event);
   void OnMove(wxMoveEvent &event);
   void OnMenuEvent(wxMenuEvent &event);
   void MenuAppend(wxMenu *menu, int id, wxString label, wxItemKind kind,
                   wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = nullptr);
   void OnZoomToCenterClick(wxCommandEvent &event);
-  void OnPrev(wxCommandEvent &event);
-  void OnRecordForecast(wxCommandEvent &event) {
-    StopPlayBack();
-    m_InterpolateMode = false;
-    m_pNowMode = false;
-    TimelineChanged();
-  }
-  void OnNext(wxCommandEvent &event);
-  void OnNow(wxCommandEvent &event) {
-    StopPlayBack();
-    ComputeBestForecastForNow();
-  }
   void OnAltitude(wxCommandEvent &event);
   void OnOpenFile(wxCommandEvent &event);
   /** Callback invoked when user clicks download/request forecast data. */
@@ -359,23 +364,15 @@ private:
   void createRequestDialog();
   void OnCompositeDialog(wxCommandEvent &event);
 
-  void OnTimeline(wxScrollEvent &event);
   void OnShowCursorData(wxCommandEvent &event);
 
   wxDateTime MinTime();
   wxArrayString GetFilesInDirectory();
-  void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
   int GetNearestIndex(wxDateTime time, int model);
   int GetNearestValue(wxDateTime time, int model);
   bool GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin,
                          double *latmax, double *lonmin, double *lonmax);
   wxDateTime GetNow();
-  void RestaureSelectionString();
-  void SaveSelectionString() {
-    m_SelectionIsSaved = true;
-    m_Selection_index = m_cRecordForecast->GetSelection();
-    m_Selection_label = m_cRecordForecast->GetString(m_Selection_index);
-  }
 
   //    Data
   CursorData *m_gCursorData;
@@ -387,13 +384,9 @@ private:
 
   int m_TimeLineHours;
   int m_FileIntervalIndex;
-  bool m_InterpolateMode;
   bool m_pNowMode;
   bool m_HasAltitude;
 
-  bool m_SelectionIsSaved;
-  int m_Selection_index;
-  wxString m_Selection_label;
   wxSize m_DialogsOffset;
   double m_projected_lat;
   double m_projected_lon;

@@ -177,12 +177,82 @@ public:
   double GetRouteArrivalRadius(void) { return m_ArrivalRadius; }
   void SetRouteArrivalRadius(double radius) { m_ArrivalRadius = radius; }
   /**
+   * Calculate the interpolated position on the route at a given timestamp.
+   *
+   * This function determines where a vessel would be positioned along the route
+   * at a specific time, based on the planned departure time, segment speeds,
+   * and waypoint ETAs/ETDs. Uses rhumb line interpolation to match the
+   * navigation behavior.
+   *
+   * @param timestamp The time for which to calculate position (UTC)
+   * @param lat [out] Latitude of interpolated position
+   * @param lon [out] Longitude of interpolated position
+   * @return true if position could be calculated, false if timestamp is outside
+   * route timeframe
+   */
+  bool GetPositionAtTime(const wxDateTime &timestamp, double &lat,
+                         double &lon) const;
+
+  /**
+   * Calculate the estimated arrival time at the position on the route closest
+   * to the specified target coordinates. Also returns the actual coordinates of
+   * the closest point on the route.
+   *
+   * This function finds the route segment that is closest to the target
+   * coordinates and calculates the arrival time based on the planned route
+   * timing and speeds. The target point is projected onto the closest point on
+   * the nearest route segment, ensuring accurate time calculation even when the
+   * cursor is not exactly on the route line.
+   *
+   * @param targetLat Latitude of the target position
+   * @param targetLon Longitude of the target position
+   * @param actualLat Output parameter for the actual latitude of the closest
+   * point on the route
+   * @param actualLon Output parameter for the actual longitude of the closest
+   * point on the route
+   * @return The calculated arrival time at the closest point, or invalid
+   * datetime if the route has no valid timing information
+   */
+  wxDateTime GetTimeAtPosition(double targetLat, double targetLon,
+                               double *actualLat = nullptr,
+                               double *actualLon = nullptr) const;
+
+private:
+  /**
+   * Helper function to calculate the distance from a point to a line segment.
+   *
+   * @param pointLat Point latitude
+   * @param pointLon Point longitude
+   * @param segStartLat Segment start latitude
+   * @param segStartLon Segment start longitude
+   * @param segEndLat Segment end latitude
+   * @param segEndLon Segment end longitude
+   * @param closestLat [out] Latitude of closest point on segment
+   * @param closestLon [out] Longitude of closest point on segment
+   * @return Distance from point to segment in nautical miles
+   */
+  double DistanceToSegment(double pointLat, double pointLon, double segStartLat,
+                           double segStartLon, double segEndLat,
+                           double segEndLon, double *closestLat,
+                           double *closestLon) const;
+
+  /**
+   * Invalidate the cached position data, forcing recalculation on next access.
+   * Called whenever route structure or timing changes.
+   */
+  void InvalidatePositionCache() const;
+
+public:
+  /**
    * Set the departure time of the route.
    *
    * @param dt The departure date and time to set, in UTC.
    */
   void SetDepartureDate(const wxDateTime &dt) {
-    if (dt.IsValid()) m_PlannedDeparture = dt;
+    if (dt.IsValid()) {
+      m_PlannedDeparture = dt;
+      InvalidatePositionCache();
+    }
   }
 
   wxString GetName() const { return m_RouteNameString; }
@@ -388,6 +458,12 @@ private:
    * When false, waypoints used by multiple routes may be hidden.
    */
   bool m_bsharedWPViz;
+
+  // Position cache for GetPositionAtTime() performance optimization
+  mutable wxDateTime m_cachedTimestamp;
+  mutable double m_cachedLat;
+  mutable double m_cachedLon;
+  mutable bool m_cacheValid;
 };
 
 using RouteList = std::vector<Route *>;

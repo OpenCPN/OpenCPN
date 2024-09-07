@@ -195,6 +195,7 @@ int MyConfig::LoadMyConfig() {
   g_SkewCompUpdatePeriod = 10;
 
   g_bShowStatusBar = 1;
+  g_bShowTimeline = true;
   g_bShowCompassWin = 1;
   g_iSoundDeviceIndex = -1;
   g_bFullscreenToolbar = 1;
@@ -585,6 +586,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read("SetSystemTime", &s_bSetSystemTime);
   Read("ShowStatusBar", &g_bShowStatusBar);
+  Read("ShowTimeline", &g_bShowTimeline);
 #ifndef __WXOSX__
   Read("ShowMenuBar", &g_bShowMenuBar);
 #endif
@@ -1836,6 +1838,7 @@ void MyConfig::UpdateSettings() {
   //    //Not desired for O5 MUI
 
   Write("ShowStatusBar", g_bShowStatusBar);
+  Write("ShowTimeline", g_bShowTimeline);
 #ifndef __WXOSX__
   Write("ShowMenuBar", g_bShowMenuBar);
 #endif

@@ -47,7 +47,7 @@
 #define PLUGIN_VERSION_MINOR 0
 
 #define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 16
+#define MY_API_VERSION_MINOR 21
 
 #include "ocpn_plugin.h"
 
@@ -85,7 +85,7 @@ enum SettingsDisplay {
   PARTICLES
 };
 
-class grib_pi : public opencpn_plugin_116 {
+class grib_pi : public opencpn_plugin_121 {
 public:
   grib_pi(void *ppimgr);
   ~grib_pi(void);
@@ -103,17 +103,17 @@ public:
   wxString GetShortDescription();
   wxString GetLongDescription();
 
-  //    The override PlugIn Methods
+  //    The PlugIn Methods
   bool MouseEventHook(wxMouseEvent &event);
   bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
+  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex,
+                                int priority);
   void SetCursorLatLon(double lat, double lon);
   void OnContextMenuItemCallback(int id);
   void SetPluginMessage(wxString &message_id, wxString &message_body);
   bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
-                                  int canvasIndex);
-  void SendTimelineMessage(wxDateTime time);
+                                  int canvasIndex, int priority);
   void SetDefaults(void);
   int GetToolBarToolCount(void);
   void ShowPreferencesDialog(wxWindow *parent);
@@ -121,6 +121,10 @@ public:
   bool QualifyCtrlBarPosition(wxPoint position, wxSize size);
   void MoveDialog(wxDialog *dialog, wxPoint position);
   void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
+  void OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime,
+                                     const wxDateTime &startTime,
+                                     const wxDateTime &endTime);
+  bool IsTimeInGribRange(const wxDateTime &time);
 
   // Other public methods
   void SetCtrlBarXY(wxPoint p) { m_CtrlBarxy = p; }
@@ -214,6 +218,13 @@ private:
    */
   bool m_bCopyMissWaveRec;
   int m_bLoadLastOpenFile;
+  /**
+   * Controls the initial date/time selection when loading a GRIB file.
+   * Options include:
+   * - 0: Start at the first forecast in the GRIB file
+   * - 1: Start at the nearest forecast to the current time
+   * - 2: Interpolate to start at the current computer time
+   */
   int m_bStartOptions;
   wxString m_RequestConfig;
   wxString m_bMailToAddresses;
