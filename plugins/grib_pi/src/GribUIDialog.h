@@ -192,8 +192,10 @@ public:
 
   void GetProjectedLatLon(int &x, int &y);
   bool ProjectionEnabled() {
-    if (m_ProjectBoatPanel) return m_ProjectBoatPanel->ProjectionEnabled();
-    else return false;
+    if (m_ProjectBoatPanel)
+      return m_ProjectBoatPanel->ProjectionEnabled();
+    else
+      return false;
   }
   double m_highlight_latmax;
   double m_highlight_lonmax;
@@ -271,6 +273,7 @@ private:
   double m_projected_lon;
   // XyGrib panel configuration
   XyGribConfig_t xyGribConfig;
+  bool m_gtk_started;
 };
 
 //----------------------------------------------------------------------------------------------------------
