@@ -70,7 +70,7 @@ bool g_bpause;
 //
 //---------------------------------------------------------------------------------------------------------
 
-grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
+grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_121(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 
@@ -326,14 +326,12 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         // with current index
         m_pGribCtrlBar->CreateActiveFileFromNames(
             m_pGribCtrlBar->m_bGRIBActiveFile->GetFileNames());
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 2:
         // only rebuild  data list with current index and new timezone
         // This no longer applicable because the timezone is set in the
         // OpenCPN core global settings (Options -> Display -> General)
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 1:
@@ -601,12 +599,13 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
 }
 
 bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
-                                         PlugIn_ViewPort *vp, int canvasIndex) {
+                                         PlugIn_ViewPort *vp, int canvasIndex,
+                                         int priority) {
   return DoRenderGLOverlay(pcontext, vp, canvasIndex);
 }
 
 bool grib_pi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
-                                       int canvasIndex) {
+                                       int canvasIndex, int priority) {
   return DoRenderOverlay(dc, vp, canvasIndex);
 }
 
@@ -868,6 +867,48 @@ void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   } else {
     m_boat_time = wxDateTime::Now().GetTicks();
   }
+}
+
+void grib_pi::OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime) {
+  // Handle global timeline time change from OpenCPN
+  if (!m_pGribCtrlBar) return;
+
+  if (selectedTime.IsValid()) {
+    // Update the GRIB display for the new timeline time
+    wxDateTime time = selectedTime;
+    if (m_pGribCtrlBar->m_bGRIBActiveFile &&
+        m_pGribCtrlBar->m_bGRIBActiveFile->IsOK()) {
+      GribTimelineRecordSet *timelineSet =
+          m_pGribCtrlBar->GetTimeLineRecordSet(time);
+      m_pGribCtrlBar->SetGribTimelineRecordSet(timelineSet);
+      m_pGribCtrlBar->UpdateTrackingControl();
+      RequestRefresh(m_parent_window);
+    }
+
+    // Send timeline message to notify other plugins (like weather routing)
+    // This is NOT circular - it's notifying other plugins of the time change
+    SendTimelineMessage(selectedTime);
+  } else {
+    // Invalid time - clear the timeline set and send invalid time to plugins
+    m_pGribCtrlBar->SetGribTimelineRecordSet(nullptr);
+    SendTimelineMessage(wxInvalidDateTime);
+    if (m_parent_window) {
+      RequestRefresh(m_parent_window);
+    }
+  }
+}
+
+bool grib_pi::IsTimeInGribRange(const wxDateTime &time) {
+  if (!m_pGribCtrlBar || !m_pGribCtrlBar->m_bGRIBActiveFile) return false;
+
+  ArrayOfGribRecordSets *rsa =
+      m_pGribCtrlBar->m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  if (rsa->GetCount() == 0) return false;
+
+  wxDateTime start = wxDateTime(rsa->Item(0).m_Reference_Time);
+  wxDateTime end = wxDateTime(rsa->Item(rsa->GetCount() - 1).m_Reference_Time);
+
+  return (time >= start && time <= end);
 }
 
 //----------------------------------------------------------------------------------------------------------

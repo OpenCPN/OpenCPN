@@ -122,6 +122,7 @@
 #include "ocpn_plugin.h"
 #include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
+#include "timeline.h"
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"
 #include "options.h"
@@ -280,6 +281,7 @@ extern wxString *pInit_Chart_Dir;
 extern bool g_bShowOutlines;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowStatusBar;
+extern bool g_bShowTimeline;
 extern bool g_FlushNavobjChanges;
 extern int g_FlushNavobjChangesTimeout;
 extern bool g_bShowChartBar;
@@ -719,6 +721,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_ulLastNMEATicktime = 0;
   m_data_monitor->Hide();
   m_pStatusBar = NULL;
+  m_pTimeline = NULL;
   m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
   m_pMenuBar = NULL;
@@ -1654,6 +1657,11 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pauimgr->DetachPane(g_pAISTargetList);
   }
 
+  // Clean up timeline pane
+  if (m_pTimeline) {
+    g_pauimgr->DetachPane(m_pTimeline);
+  }
+
   // Make sure the saved perspective minimum canvas sizes are essentially
   // undefined
   //     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -2488,6 +2496,11 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_MENU_UI_TIMELINE: {
+      ToggleTimeline();
+      break;
+    }
+
     case ID_MENU_ENC_TEXT:
     case ID_ENC_TEXT: {
       ToggleENCText(GetFocusCanvas());
@@ -2887,6 +2900,7 @@ void MyFrame::ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) {
   g_pauimgr->Update();
 
   ConfigureStatusBar();
+  ConfigureTimeline();
   wxSize lastOptSize = options_lastWindowSize;
   SendSizeEvent();
 
@@ -3034,6 +3048,22 @@ void MyFrame::ToggleChartBar(ChartCanvas *cc) {
   }
 
   SetMenubarItemState(ID_MENU_UI_CHARTBAR, g_bShowChartBar);
+}
+
+void MyFrame::ToggleTimeline() {
+  g_bShowTimeline = !g_bShowTimeline;
+
+  if (g_bShowTimeline) {
+    ConfigureTimeline();
+  } else {
+    // Hide and optionally destroy timeline
+    if (m_pTimeline) {
+      g_pauimgr->GetPane(m_pTimeline).Show(false);
+      g_pauimgr->Update();
+    }
+  }
+
+  SetMenubarItemState(ID_MENU_UI_TIMELINE, g_bShowTimeline);
 }
 
 void MyFrame::ToggleColorScheme() {
@@ -3534,8 +3564,87 @@ void MyFrame::ConfigureStatusBar() {
   }
 }
 
+void MyFrame::ConfigureTimeline() {
+  bool needsLayoutUpdate = false;
+
+  if (g_bShowTimeline) {
+    if (!m_pTimeline) {
+      m_pTimeline = new Timeline(this);
+      // Add timeline to AUI manager as a bottom-docked pane
+      g_pauimgr->AddPane(m_pTimeline, wxAuiPaneInfo()
+                                          .Name(_T("Timeline"))
+                                          .Caption(_T("Timeline"))
+                                          .CaptionVisible(false)
+                                          .CloseButton(false)
+                                          .PaneBorder(false)
+                                          .Gripper(false)
+                                          .GripperTop(false)
+                                          .Resizable(false)
+                                          .FloatingSize(wxSize(800, 60))
+                                          .MinSize(wxSize(-1, 60))
+                                          .MaxSize(wxSize(-1, 60))
+                                          .BestSize(wxSize(-1, 60))
+                                          .Bottom()
+                                          .Fixed());
+      needsLayoutUpdate = true;
+    } else {
+      // Show existing timeline pane
+      if (!g_pauimgr->GetPane(m_pTimeline).IsShown()) {
+        g_pauimgr->GetPane(m_pTimeline).Show(true);
+        needsLayoutUpdate = true;
+      }
+    }
+  } else {
+    if (m_pTimeline) {
+      // Hide timeline pane
+      if (g_pauimgr->GetPane(m_pTimeline).IsShown()) {
+        g_pauimgr->GetPane(m_pTimeline).Show(false);
+        needsLayoutUpdate = true;
+      }
+    }
+  }
+
+  // Trigger layout update if timeline visibility changed.
+  if (needsLayoutUpdate) {
+    g_pauimgr->Update();
+  }
+}
+
+// Global timeline access function for plugin API
+Timeline *GetGlobalTimeline() {
+  MyFrame *frame = dynamic_cast<MyFrame *>(gFrame);
+  return frame ? frame->m_pTimeline : nullptr;
+}
+
+// Timeline selected time access function for plugin API
+wxDateTime GetTimelineSelectedTime() {
+  Timeline *timeline = GetGlobalTimeline();
+  if (timeline) {
+    return timeline->GetSelectedTimestamp();
+  }
+  return wxInvalidDateTime;
+}
+
+void SetTimelineSelectedTime(const wxDateTime &selectedTime,
+                             const wxTimeSpan &duration,
+                             double selectedPosition) {
+  Timeline *timeline = GetGlobalTimeline();
+  if (timeline) {
+    timeline->ConfigureTimeline(selectedTime, duration, selectedPosition);
+  }
+}
+
+bool IsTimelinePlayerRunning() {
+  Timeline *timeline = GetGlobalTimeline();
+  if (timeline) {
+    return timeline->IsPlaying();
+  }
+  return false;
+}
+
 void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
   ConfigureStatusBar();
+  ConfigureTimeline();
 
   wxSize lastOptSize = options_lastWindowSize;
   SendSizeEvent();
@@ -3639,6 +3748,8 @@ void MyFrame::RegisterGlobalMenuItems() {
 #endif
   view_menu->AppendCheckItem(ID_MENU_UI_CHARTBAR,
                              _menuText(_("Show Chart Bar"), _T("Ctrl-B")));
+  view_menu->AppendCheckItem(ID_MENU_UI_TIMELINE,
+                             _menuText(_("Show Timeline"), _T("Ctrl-T")));
 
   view_menu->AppendSeparator();
 #ifndef __WXOSX__
@@ -3779,6 +3890,7 @@ void MyFrame::UpdateGlobalMenuItems() {
   m_pMenuBar->FindItem(ID_MENU_CHART_OUTLINES)->Check(g_bShowOutlines);
   m_pMenuBar->FindItem(ID_MENU_CHART_QUILTING)->Check(g_bQuiltEnable);
   m_pMenuBar->FindItem(ID_MENU_UI_CHARTBAR)->Check(g_bShowChartBar);
+  m_pMenuBar->FindItem(ID_MENU_UI_TIMELINE)->Check(g_bShowTimeline);
   m_pMenuBar->FindItem(ID_MENU_AIS_TARGETS)->Check(g_bShowAIS);
   m_pMenuBar->FindItem(ID_MENU_AIS_MOORED_TARGETS)->Check(g_bHideMoored);
   m_pMenuBar->FindItem(ID_MENU_AIS_SCALED_TARGETS)->Check(g_bShowScaled);
@@ -3850,6 +3962,7 @@ void MyFrame::UpdateGlobalMenuItems(ChartCanvas *cc) {
   m_pMenuBar->FindItem(ID_MENU_CHART_OUTLINES)->Check(cc->GetShowOutlines());
   m_pMenuBar->FindItem(ID_MENU_CHART_QUILTING)->Check(cc->GetQuiltMode());
   m_pMenuBar->FindItem(ID_MENU_UI_CHARTBAR)->Check(cc->GetShowChartbar());
+  m_pMenuBar->FindItem(ID_MENU_UI_TIMELINE)->Check(g_bShowTimeline);
   m_pMenuBar->FindItem(ID_MENU_AIS_TARGETS)->Check(cc->GetShowAIS());
   m_pMenuBar->FindItem(ID_MENU_AIS_MOORED_TARGETS)->Check(g_bHideMoored);
   m_pMenuBar->FindItem(ID_MENU_AIS_SCALED_TARGETS)->Check(cc->GetAttenAIS());

@@ -869,6 +869,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/tcmgr.h
     ${GUI_HDR_DIR}/TCWin.h
     ${GUI_HDR_DIR}/thumbwin.h
+    ${GUI_HDR_DIR}/timeline.h
     ${GUI_HDR_DIR}/tide_time.h
     ${GUI_HDR_DIR}/timers.h
     ${GUI_HDR_DIR}/time_textbox.h
@@ -995,6 +996,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/tcmgr.cpp
     ${GUI_SRC_DIR}/TCWin.cpp
     ${GUI_SRC_DIR}/thumbwin.cpp
+    ${GUI_SRC_DIR}/timeline.cpp
     ${GUI_SRC_DIR}/toolbar.cpp
     ${GUI_SRC_DIR}/track_gui.cpp
     ${GUI_SRC_DIR}/track_printout.cpp
@@ -1843,6 +1845,15 @@ if (APPLE)
       )
     endforeach ()
 
+    # Timeline SVG Icons
+    file(GLOB TIMELINE_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/timeline/*")
+    foreach (_currentSvgFile ${TIMELINE_SVG_FILES})
+      set_source_files_properties(
+        ${_currentSvgFile}
+        PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/timeline
+      )
+    endforeach ()
+
   endif (OCPN_USE_SVG)
 
   install(DIRECTORY data/svg/markicons/
@@ -1922,6 +1933,7 @@ if (APPLE)
             ${JOURNEYMAN_SVG_FILES}
             ${JOURNEYMAN_FLAT_SVG_FILES}
             ${DEFAULT_ICON_SVG_FILES}
+            ${TIMELINE_SVG_FILES}
             ${MUI_FLAT_SVG_FILES}
             ${DOC_FILES}
             ${CONFIG_FILES}
@@ -2027,6 +2039,9 @@ if (NOT APPLE)
     )
     install(DIRECTORY data/svg/MUI_flat/
             DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat
+    )
+    install(DIRECTORY data/svg/timeline/
+            DESTINATION ${PREFIX_PKGDATA}/uidata/timeline
     )
   endif ()
 

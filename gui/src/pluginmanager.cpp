@@ -1133,6 +1133,7 @@ bool PlugInManager::CallLateInit(void) {
       case 118:
       case 119:
       case 120:
+      case 121:
         ProcessLateInit(pic);
         break;
     }
@@ -1377,7 +1378,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
             }
             case 118:
             case 119:
-            case 120: {
+            case 120:
+            case 121: {
               if (priority <= 0) {
                 opencpn_plugin_18* ppi =
                     dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1457,7 +1459,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
             }
             case 118:
             case 119:
-            case 120: {
+            case 120:
+            case 121: {
               if (priority <= 0) {
                 opencpn_plugin_18* ppi =
                     dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1546,7 +1549,8 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
           }
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             if (priority <= 0) {
               opencpn_plugin_18* ppi =
                   dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1711,7 +1715,8 @@ void PlugInManager::PrepareAllPluginContextMenus() {
           case 117:
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             opencpn_plugin_116* ppi =
                 dynamic_cast<opencpn_plugin_116*>(pic->m_pplugin);
             if (ppi) ppi->PrepareContextMenu(canvasIndex);
