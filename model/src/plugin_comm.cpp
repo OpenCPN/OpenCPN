@@ -23,6 +23,8 @@
  *  Implement various ocpn_plugin.h methods.
  */
 
+#include <map>
+
 #include <setjmp.h>
 
 #include <wx/event.h>
@@ -44,6 +46,14 @@
 
 static struct sigaction sa_all_PIM_previous;
 static sigjmp_buf env_PIM;
+
+// Registry for core components
+static std::map<wxString, CoreMessageHandler*> s_coreHandlers;
+
+void RegisterCoreMessageHandler(const wxString& message_id,
+                                CoreMessageHandler* handler) {
+  s_coreHandlers[message_id] = handler;
+}
 
 static void catch_signals_PIM(int signo) {
   switch (signo) {
@@ -104,6 +114,15 @@ void SendMessageToAllPlugins(const wxString& message_id,
 
   LogMessage(msg);
   // LogMessage(std::string("internal ALL ") + msg->to_string());  FIXME/leamas
+
+  // Check if any core component wants to handle this message
+  auto it = s_coreHandlers.find(message_id);
+  if (it != s_coreHandlers.end()) {
+    if (it->second->HandleMessage(message_id, message_body)) {
+      // Core component handled it, don't send to plugins
+      return;
+    }
+  }
 
   for (auto pic : *PluginLoader::GetInstance()->GetPlugInArray()) {
     if (pic->m_enabled && pic->m_init_state) {
