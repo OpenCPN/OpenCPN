@@ -59,8 +59,58 @@ public:
                 SendToGpsDlg *dialog);
   static bool OnDelete(wxWindow *parent, const int count = 0);
 
+  /**
+   * Draw the expected boat position on this route at the specified time.
+   *
+   * This method calculates where a boat would be positioned along the route
+   * at the given timestamp, based on the route's planned departure time and
+   * waypoint ETAs/ETDs, then renders a position marker on the chart.
+   *
+   * @param dc Device context for drawing
+   * @param canvas Chart canvas for coordinate transformations
+   * @param timestamp Time for which to calculate and draw position
+   * @param positionColor Color for the position marker (default: red)
+   * @return true if position was calculated and drawn, false otherwise
+   */
+  bool DrawPositionAtTime(ocpnDC &dc, ChartCanvas *canvas,
+                          const wxDateTime &timestamp,
+                          const wxColour &positionColor = wxColour(255, 0, 0));
+
+  /**
+   * Draw a cursor position marker for route rollover tooltip.
+   * Shows only crosshairs to indicate the exact position used for "arrival at
+   * cursor" calculation.
+   *
+   * @param dc Device context for drawing
+   * @param canvas Chart canvas for coordinate transformations
+   * @param lat Latitude of cursor position
+   * @param lon Longitude of cursor position
+   * @param color Color for the crosshairs (default: yellow)
+   */
+  void DrawCursorPositionMarker(ocpnDC &dc, ChartCanvas *canvas, double lat,
+                                double lon,
+                                const wxColour &color = wxColour(255, 255, 0));
+
 private:
   Route &m_route;
+
+  /**
+   * Draw a boat position marker at the specified lat/lon coordinates.
+   *
+   * @param dc Device context for drawing
+   * @param canvas Chart canvas for coordinate transformations
+   * @param lat Latitude of position marker
+   * @param lon Longitude of position marker
+   * @param color Color for the marker
+   * @param showCircle Whether to draw the circle (default: true)
+   * @param showCrosshairs Whether to draw crosshairs (default: true)
+   * @param markerStyle Style of the marker (0=both, 1=circle only, 2=crosshairs
+   * only)
+   */
+  void DrawBoatPositionMarker(ocpnDC &dc, ChartCanvas *canvas, double lat,
+                              double lon, const wxColour &color,
+                              bool showCircle = true,
+                              bool showCrosshairs = true, int markerStyle = 0);
 };
 
 #endif  // _ROUTE_GUI_H
