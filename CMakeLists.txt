@@ -916,6 +916,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/mbtiles/tile_queue.h
     ${GUI_SRC_DIR}/mbtiles/tile_descr.h
     ${GUI_SRC_DIR}/mbtiles/tile_cache.h
+    ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
     ${GUI_SRC_DIR}/NMEALogWindow.cpp
