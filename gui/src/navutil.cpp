@@ -122,6 +122,7 @@ extern double kLat, kLon;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
 extern bool g_bShowStatusBar;
+extern bool g_bShowTimeline;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
 
@@ -439,6 +440,7 @@ int MyConfig::LoadMyConfig() {
   g_SkewCompUpdatePeriod = 10;
 
   g_bShowStatusBar = 1;
+  g_bShowTimeline = 1;
   g_bShowCompassWin = 1;
   g_iSoundDeviceIndex = -1;
   g_bFullscreenToolbar = 1;
@@ -830,6 +832,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read(_T ( "SetSystemTime" ), &s_bSetSystemTime);
   Read(_T ( "ShowStatusBar" ), &g_bShowStatusBar);
+  Read(_T ( "ShowTimeline" ), &g_bShowTimeline);
 #ifndef __WXOSX__
   Read(_T ( "ShowMenuBar" ), &g_bShowMenuBar);
 #endif
@@ -2092,6 +2095,7 @@ void MyConfig::UpdateSettings() {
   //    //Not desired for O5 MUI
 
   Write(_T ( "ShowStatusBar" ), g_bShowStatusBar);
+  Write(_T ( "ShowTimeline" ), g_bShowTimeline);
 #ifndef __WXOSX__
   Write(_T ( "ShowMenuBar" ), g_bShowMenuBar);
 #endif

@@ -40,31 +40,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     wxBoxSizer* mainBox = new wxBoxSizer(wxVERTICAL);
     m_fgCtrlBarSizer->Add(mainBox, 1, wxEXPAND, 0);
 
-    wxBoxSizer* fgSizer50 = new wxBoxSizer(wxHORIZONTAL);
-    mainBox->Add(fgSizer50, 0, wxEXPAND, 5);
-
-    m_bpPrev =
-        new wxBitmapButton(this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    m_bpPrev->SetToolTip(_("Previous"));
-
-    fgSizer50->Add(m_bpPrev, 0, wxALL, 1);
-
-    wxArrayString m_cRecordForecastChoices;
-    m_cRecordForecastChoices.Add(_T("Item0"));
-    m_cRecordForecast =
-        new wxChoice(this, ID_CTRLTIME, wxDefaultPosition, wxDefaultSize,
-                     m_cRecordForecastChoices, 0);
-    m_cRecordForecast->SetSelection(0);
-    fgSizer50->Add(m_cRecordForecast, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
-
-    m_bpNext =
-        new wxBitmapButton(this, ID_BTNNEXT, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    m_bpNext->SetToolTip(_("Next"));
-
-    fgSizer50->Add(m_bpNext, 0, wxALL, 1);
-
     wxBoxSizer* fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
     mainBox->Add(fgSizer51, 0, wxEXPAND, 5);
 
@@ -74,13 +49,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     m_bpAltitude->SetToolTip(_("Select geoptential altitude"));
 
     fgSizer51->Add(m_bpAltitude, 0, wxALL, 1);
-
-    m_bpNow =
-        new wxBitmapButton(this, ID_BTNNOW, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    m_bpNow->SetToolTip(_("Now"));
-
-    fgSizer51->Add(m_bpNow, 0, wxALL, 1);
 
     m_bpZoomToCenter =
         new wxBitmapButton(this, ID_BTNZOOMTC, wxNullBitmap, wxDefaultPosition,
@@ -93,18 +61,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
         new wxBitmapButton(this, ID_BTNSHOWCDATA, wxNullBitmap,
                            wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
     fgSizer51->Add(m_bpShowCursorData, 0, wxALL, 1);
-
-    fgSizer51->Add(0, 0, 1, wxEXPAND | wxLEFT | wxRIGHT, 1);
-    m_bpPlay =
-        new wxBitmapButton(this, ID_BTNPLAY, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    fgSizer51->Add(m_bpPlay, 0, wxBOTTOM | wxLEFT | wxTOP, 1);
-
-    m_sTimeline = new wxSlider(this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition,
-                               wxSize(90, -1), wxSL_HORIZONTAL);
-    fgSizer51->Add(m_sTimeline, 0, wxEXPAND, 1);
-
-    fgSizer51->Add(0, 0, 1, wxEXPAND | wxLEFT | wxRIGHT, 1);
 
     m_bpOpenFile = nullptr;
     //         m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE,
@@ -168,28 +124,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     fgSizer50->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
     fgSizer49->Add(fgSizer50, 0, wxEXPAND, 5);
 
-    m_bpPrev =
-        new wxBitmapButton(this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    m_bpPrev->SetToolTip(_("Previous"));
-
-    fgSizer50->Add(m_bpPrev, 0, wxALL, 1);
-
-    wxArrayString m_cRecordForecastChoices;
-    m_cRecordForecastChoices.Add(_T("Item0"));
-    m_cRecordForecast =
-        new wxChoice(this, ID_CTRLTIME, wxDefaultPosition, wxDefaultSize,
-                     m_cRecordForecastChoices, 0);
-    m_cRecordForecast->SetSelection(0);
-    fgSizer50->Add(m_cRecordForecast, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
-
-    m_bpNext =
-        new wxBitmapButton(this, ID_BTNNEXT, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    m_bpNext->SetToolTip(_("Next"));
-
-    fgSizer50->Add(m_bpNext, 0, wxALL, 1);
-
     fgSizer50->Add(0, 0, 1, wxEXPAND | wxLEFT | wxRIGHT, 1);
 
     m_bpAltitude =
@@ -199,12 +133,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
 
     fgSizer50->Add(m_bpAltitude, 0, wxALL, 1);
 
-    m_bpNow =
-        new wxBitmapButton(this, ID_BTNNOW, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    m_bpNow->SetToolTip(_("Now"));
-
-    fgSizer50->Add(m_bpNow, 0, wxALL, 1);
+    fgSizer50->Add(0, 0, 1, wxEXPAND, 1);
 
     m_bpZoomToCenter =
         new wxBitmapButton(this, ID_BTNZOOMTC, wxNullBitmap, wxDefaultPosition,
@@ -217,17 +146,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
         new wxBitmapButton(this, ID_BTNSHOWCDATA, wxNullBitmap,
                            wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
     fgSizer50->Add(m_bpShowCursorData, 0, wxALL, 1);
-
-    fgSizer50->Add(0, 0, 1, wxEXPAND | wxLEFT | wxRIGHT, 1);
-
-    m_bpPlay =
-        new wxBitmapButton(this, ID_BTNPLAY, wxNullBitmap, wxDefaultPosition,
-                           wxDefaultSize, wxBU_AUTODRAW);
-    fgSizer50->Add(m_bpPlay, 0, wxBOTTOM | wxLEFT | wxTOP, 1);
-
-    m_sTimeline = new wxSlider(this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition,
-                               wxSize(90, -1), wxSL_HORIZONTAL);
-    fgSizer50->Add(m_sTimeline, 0, wxEXPAND, 1);
 
     fgSizer50->Add(0, 0, 1, wxEXPAND | wxLEFT | wxRIGHT, 1);
 
@@ -306,37 +224,13 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
 #ifndef __WXQT__
   this->Connect(wxEVT_PAINT, wxPaintEventHandler(GRIBUICtrlBarBase::OnPaint));
 #endif
-  m_bpPrev->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(GRIBUICtrlBarBase::OnPrev), nullptr,
-                    this);
-  m_bpPrev->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                    nullptr, this);
-  m_cRecordForecast->Connect(
-      wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnRecordForecast), nullptr,
-      this);
-  m_cRecordForecast->Connect(
-      wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      nullptr, this);
-  m_bpNext->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(GRIBUICtrlBarBase::OnNext), nullptr,
-                    this);
-  m_bpNext->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                    nullptr, this);
+
   m_bpAltitude->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(GRIBUICtrlBarBase::OnAltitude),
                         nullptr, this);
   m_bpAltitude->Connect(wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
                         nullptr, this);
-  m_bpNow->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                   wxCommandEventHandler(GRIBUICtrlBarBase::OnNow), nullptr,
-                   this);
-  m_bpNow->Connect(wxEVT_RIGHT_DOWN,
-                   wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                   nullptr, this);
   m_bpZoomToCenter->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GRIBUICtrlBarBase::OnZoomToCenterClick), nullptr,
@@ -351,42 +245,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
   m_bpShowCursorData->Connect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
       nullptr, this);
-  m_bpPlay->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(GRIBUICtrlBarBase::OnPlayStop),
-                    nullptr, this);
-  m_bpPlay->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                    nullptr, this);
-  m_sTimeline->Connect(wxEVT_RIGHT_DOWN,
-                       wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_TOP,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_BOTTOM,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_LINEUP,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_LINEDOWN,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_PAGEUP,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_PAGEDOWN,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_THUMBTRACK,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_THUMBRELEASE,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
-  m_sTimeline->Connect(wxEVT_SCROLL_CHANGED,
-                       wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       nullptr, this);
 
   if (m_bpOpenFile) {
     m_bpOpenFile->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -455,37 +313,13 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase() {
   this->Disconnect(wxEVT_PAINT,
                    wxPaintEventHandler(GRIBUICtrlBarBase::OnPaint));
   this->Disconnect(wxEVT_SIZE, wxSizeEventHandler(GRIBUICtrlBarBase::OnSize));
-  m_bpPrev->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(GRIBUICtrlBarBase::OnPrev),
-                       nullptr, this);
-  m_bpPrev->Disconnect(wxEVT_RIGHT_DOWN,
-                       wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       nullptr, this);
-  m_cRecordForecast->Disconnect(
-      wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnRecordForecast), nullptr,
-      this);
-  m_cRecordForecast->Disconnect(
-      wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      nullptr, this);
-  m_bpNext->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(GRIBUICtrlBarBase::OnNext),
-                       nullptr, this);
-  m_bpNext->Disconnect(wxEVT_RIGHT_DOWN,
-                       wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       nullptr, this);
+
   m_bpAltitude->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(GRIBUICtrlBarBase::OnAltitude),
                            nullptr, this);
   m_bpAltitude->Disconnect(wxEVT_RIGHT_DOWN,
                            wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
                            nullptr, this);
-  m_bpNow->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
-                      wxCommandEventHandler(GRIBUICtrlBarBase::OnNow), nullptr,
-                      this);
-  m_bpNow->Disconnect(wxEVT_RIGHT_DOWN,
-                      wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                      nullptr, this);
   m_bpZoomToCenter->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GRIBUICtrlBarBase::OnZoomToCenterClick), nullptr,
@@ -500,42 +334,6 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase() {
   m_bpShowCursorData->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
       nullptr, this);
-  m_bpPlay->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(GRIBUICtrlBarBase::OnPlayStop),
-                       nullptr, this);
-  m_bpPlay->Disconnect(wxEVT_RIGHT_DOWN,
-                       wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_RIGHT_DOWN,
-                          wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_TOP,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_BOTTOM,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_LINEUP,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_LINEDOWN,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_PAGEUP,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_PAGEDOWN,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_THUMBTRACK,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_THUMBRELEASE,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
-  m_sTimeline->Disconnect(wxEVT_SCROLL_CHANGED,
-                          wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          nullptr, this);
 
   if (m_bpOpenFile) {
     m_bpOpenFile->Disconnect(
