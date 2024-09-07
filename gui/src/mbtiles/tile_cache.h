@@ -5,7 +5,7 @@
 #include "tile_descr.h"
 #include <mutex>
 
-/// @brief Class managing the tiles of a mbtiles file
+/** Manage the tiles of a mbtiles file. */
 class TileCache {
   //  Per zoomlevel descriptor of tile array for that zoomlevel
   class ZoomDescriptor {
@@ -27,43 +27,58 @@ public:
 
   virtual ~TileCache() { delete[] zoomTable; }
 
-  /// Return mutex to lock given tile. There is a fixed number of mutexes
-  /// available, the mutex returned might collide with another id causing
-  /// random serialization.
+  /**
+   * Return mutex to lock given tile. There is a fixed number of mutexes
+   * available, the mutex returned might collide with another id causing
+   * random serialization.
+   */
   static std::mutex &GetMutex(uint64_t tile_id);
 
+  /**
+   * Return mutex to lock given tile. There is a fixed number of mutexes
+   * available, the mutex returned might collide with another id causing
+   * random serialization.
+   */
   static std::mutex &GetMutex(const mbTileDescriptor *tile);
 
-  /// @brief Flush the tile cache, including OpenGL texture memory if needed
+  /** Flush the tile cache, including OpenGL texture memory if needed */
   void Flush();
 
-  // Get the north limit of the cache area for a given zoom in WMTS coordinates
+  /**
+   * Get the north limit of the cache area for a given zoom in WMTS coordinates.
+   */
   int GetNorthLimit(int zoomLevel) {
     return zoomTable[zoomLevel - minZoom].tile_y_max;
   }
 
-  // Get the south limit of the cache area for a given zoom in WMTS coordinates
+  /**
+   * Get the south limit of the cache area for a given zoom in WMTS coordinates.
+   */
   int GetSouthLimit(int zoomLevel) {
     return zoomTable[zoomLevel - minZoom].tile_y_min;
   }
 
-  /// @brief Get the current size of the cache in number of tiles
-  /// @return Number of tiles in the cache
+  /**
+   *  Get the current cache size.
+   *  @return Number of tiles in cache.
+   */
   uint32_t GetCacheSize() const { return tileMap.size(); }
 
-  /// @brief Retreive a tile from the cache. If the tile is not present in the
-  /// cache, an empty tile is created and added.
-  /// @param z Zoom level of the tile
-  /// @param x x coordinate of the tile
-  /// @param y y coordinate of the tile
-  /// @return Pointer to the tile
+ /**
+  *  Retreive a tile from cache. If the tile is not present an empty tile 
+  *  is created, added and returned.
+  *  @param z Tile zoom level.
+  *  @param x Tile x coordinate.
+  *  @param y Tile y coordinate.
+  *  @return Pointer to tile
+  */
   mbTileDescriptor *GetTile(int z, int x, int y);
 
-  /// @brief Reduce the size of the cache if it exceeds the given limit. To
-  /// reduce the size of the cache, the tiles at the end of the tile list are
-  /// deleted first (i.e. the least frequently used ones). This function must
-  /// only be called by rendering thread since it uses OpenGL calls.
-  /// @param maxTiles Maximum number of tiles to be kept in the list
+ /**
+  *  Reduce the size of the cache if it exceeds the given limit. Must
+  *  only be called by rendering thread since it uses OpenGL calls.
+  *  @param maxTiles Maximum number of tiles to be kept in the cache.
+  */
   void CleanCache(uint32_t maxTiles);
 
   void DeepCleanCache();

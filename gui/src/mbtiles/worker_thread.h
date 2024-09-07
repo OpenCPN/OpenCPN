@@ -30,13 +30,17 @@ public:
 
 #endif
 
-/// @brief Worker thread of the MbTiles chart decoder. It receives requests from
-/// the MbTile front-end to load and uncompress tiles from an MbTiles file. Once
-/// done, the tile list in memory is updated and a refresh of the map triggered.
+/**
+ *  MbTiles chart decoder worker thread. Receives requests from
+ *  the MbTile front-end to load and uncompress tiles from an MbTiles file. Once
+ *  done, the tile list in memory is updated and a refresh of the map triggered.
+ */
 class MbtTilesThread : public wxThread {
 public:
-  /// @brief Create the instance of the worker thread
-  /// @param pDB Pointer to the SQL database handler
+  /**
+  * Create worker thread instance.
+  * @param pDB Pointer to SQL database handler.
+  */
   MbtTilesThread(SQLite::Database *pDB)
       : wxThread(wxTHREAD_DETACHED),
         m_exitThread(false),
@@ -45,31 +49,42 @@ public:
 
   virtual ~MbtTilesThread() {}
 
-  /// @brief Request a tile to be loaded by the thread. This method is thread
-  /// safe.
-  /// @param tile Pointer to the tile to load
+  /**
+   * Request a tile to be loaded by the thread. This method is thread
+   * safe.
+   * @param tile Pointer to tile to load
+   */
   void RequestTile(mbTileDescriptor *tile);
 
-  /// @brief Request the thread to stop/delete itself
+  /** @brief Request the thread to stop/delete itself. */
   void RequestStop();
+
+  /** Return number of tiles in worker thread queue. */
   size_t GetQueueSize();
 
 private:
-  // Set to true to tell the main loop to stop execution
+  /// Set to true to tell the main loop to stop execution
   bool m_exitThread;
-  // Set to true when the thread has finished
+
+  /// Set to true when the thread has finished
   bool m_finished;
-  // The queue storing all the tile requests
+
+  /// The queue storing all the tile requests
   TileQueue m_tileQueue;
-  // Pointer the SQL object managing the MbTiles file
+
+  /// Pointer the SQL object managing the MbTiles file
   SQLite::Database *m_pDB;
 
-  /// @brief Main loop of the worker thread
-  /// @return Always 0
+  /**
+   * @brief  Worker thread main loop.
+   * @return Always 0
+   */
   virtual ExitCode Entry();
 
-  /// @brief Load bitmap data of a tile from the MbTiles file to the tile cache
-  /// @param tile Pointer to the tile to be loaded
+  /**
+   * Load bitmap data of a tile from the MbTiles file to the tile cache
+   * @param tile Pointer to the tile to be loaded
+   */
   void LoadTile(mbTileDescriptor *tile);
 };
 

@@ -10,23 +10,19 @@ void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS *ep) {
 }
 #endif
 
-/// @brief Worker thread of the MbTiles chart decoder. It receives requests from
-/// the MbTile front-end to load and uncompress tiles from an MbTiles file. Once
-/// done, the tile list in memory is updated and a refresh of the map triggered.
-
-/// @brief Request a tile to be loaded by the thread. This method is thread
-/// safe.
-/// @param tile Pointer to the tile to load
+/**
+ * Request a tile to be loaded by the thread. This method is thread
+ * safe.
+ * @param tile Pointer to the tile to load
+ */
 void MbtTilesThread::RequestTile(mbTileDescriptor *tile) {
   tile->m_requested = true;
   m_tileQueue.Push(tile);
 }
 
-/// @brief Request the thread to stop/delete itself
 void MbtTilesThread::RequestStop() {
-  // Set the exit request boolean
+
   m_exitThread = true;
-  // Force worker thread to wake-up
   m_tileQueue.Push(nullptr);
   while (!m_finished) {
   }
@@ -34,8 +30,6 @@ void MbtTilesThread::RequestStop() {
 
 size_t MbtTilesThread::GetQueueSize() { return m_tileQueue.GetSize(); }
 
-/// @brief Main loop of the worker thread
-/// @return Always 0
 wxThread::ExitCode MbtTilesThread::Entry() {
 #ifdef __MSVC__
   _set_se_translator(my_translate_mbtile);
@@ -73,8 +67,6 @@ wxThread::ExitCode MbtTilesThread::Entry() {
   return (wxThread::ExitCode)0;
 }
 
-/// @brief Load bitmap data of a tile from the MbTiles file to the tile cache
-/// @param tile Pointer to the tile to be loaded
 void MbtTilesThread::LoadTile(mbTileDescriptor *tile) {
   std::lock_guard lock(TileCache::GetMutex(tile));
 

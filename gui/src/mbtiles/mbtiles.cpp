@@ -1,10 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  MBTiles chart type support
- * Author:   David Register
- *
- ***************************************************************************
+
+ /**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,17 +16,8 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- */
+ ***************************************************************************/
 
-// ============================================================================
-// declarations
-// ============================================================================
-
-// ----------------------------------------------------------------------------
-// headers
-// ----------------------------------------------------------------------------
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -88,8 +74,8 @@ class MyConfig;
 extern MyConfig *pConfig;
 #endif
 
-// Raster Zoom Modifier value from advanced display preference pane
-// Physically located in ocpn_app.cpp
+/// Raster Zoom Modifier value from advanced display preference pane
+/// Physically located in ocpn_app.cpp
 extern int g_chart_zoom_modifier_raster;
 
 #define LON_UNDEF NAN
@@ -147,10 +133,6 @@ private:
   timespec tp;
 };
 #endif
-
-// ============================================================================
-// ChartMBTiles implementation
-// ============================================================================
 
 ChartMBTiles::ChartMBTiles() {
   // Compute scale & MPP for each zoom level
@@ -214,11 +196,6 @@ ChartMBTiles::~ChartMBTiles() {
   }
 }
 
-//-------------------------------------------------------------------------------------------------
-//          Get the Chart thumbnail data structure
-//          Creating the thumbnail bitmap as required
-//-------------------------------------------------------------------------------------------------
-
 ThumbData *ChartMBTiles::GetThumbData() { return NULL; }
 
 ThumbData *ChartMBTiles::GetThumbData(int tnx, int tny, float lat, float lon) {
@@ -230,9 +207,6 @@ bool ChartMBTiles::UpdateThumbData(double lat, double lon) { return true; }
 bool ChartMBTiles::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
   return true;
 }
-
-//    Report recommended minimum and maximum scale values for which use of this
-//    chart is valid
 
 double ChartMBTiles::GetNormalScaleMin(double canvas_scale_factor,
                                        bool b_allow_overzoom) {
@@ -630,12 +604,7 @@ bool ChartMBTiles::RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint) {
   return true;
 }
 
-/// @brief Loads a tile into OpenGL's texture memory for rendering. If the tile
-/// is not ready to be rendered (i.e. the tile has not been loaded from disk or
-/// decompressed to memory), the function sends a request to the worker thread
-/// which will do this later in the background.
-/// @param tile Pointer to the tile descriptor to be prepared
-/// @return true if the tile is ready to be rendered, false else.
+
 bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
   if (!m_pDB) return false;
   m_tileCount++;
@@ -1028,9 +997,6 @@ bool ChartMBTiles::RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
   return true;
 }
 
-/// @brief Create and start the wortker thread. This thread is dedicated at
-/// loading and decompressing chart tiles into memory, in the background. If
-/// for any reason the thread would fail to load, the method return false
 bool ChartMBTiles::StartThread() {
   // Create the worker thread
   m_workerThread = new MbtTilesThread(m_pDB);
@@ -1045,8 +1011,6 @@ bool ChartMBTiles::StartThread() {
   return true;
 }
 
-/// @brief  Stop and delete the worker thread. This function is called when
-/// OpenCPN is quitting.
 void ChartMBTiles::StopThread() {
   // Stop the worker thread
   if (m_workerThread != nullptr) {

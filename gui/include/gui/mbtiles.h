@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  MBTiles Chart Support
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
+ ***************************************************************************/
 
 #ifndef _CHARTMBTILES_H_
 #define _CHARTMBTILES_H_
@@ -43,13 +34,6 @@ enum class MBTilesScheme : std::int8_t { XYZ, TMS };
 
 class WXDLLEXPORT ChartMbTiles;
 
-//-----------------------------------------------------------------------------
-//    Constants, etc.
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-//    Fwd Refs
-//-----------------------------------------------------------------------------
 
 class ViewPort;
 class PixelCache;
@@ -62,22 +46,19 @@ class Database;
 
 class GLShaderProgram;
 class MbtTilesThread;
-//-----------------------------------------------------------------------------
-//    Helper classes
-//-----------------------------------------------------------------------------
-
-// ----------------------------------------------------------------------------
-// ChartMBTiles
-// ----------------------------------------------------------------------------
 
 class ChartMBTiles : public ChartBase {
 public:
-  //    Public methods
 
   ChartMBTiles();
   virtual ~ChartMBTiles();
 
   //    Accessors
+
+  /**
+   * Get the Chart thumbnail data structure,
+   * creating the thumbnail bitmap as required
+   */
   virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
   virtual ThumbData *GetThumbData();
   virtual bool UpdateThumbData(double lat, double lon);
@@ -85,7 +66,17 @@ public:
   virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
   int GetNativeScale() { return m_Chart_Scale; }
+
+  /**
+   * Report recommended minimum scale values for which use of this
+   *  chart is valid
+   */
   double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
+
+  /**
+   * Report recommended maximum scale values for which use of this
+   *  chart is valid
+   */
   double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
   virtual InitReturn Init(const wxString &name, ChartInitFlag init_flags);
@@ -121,6 +112,17 @@ protected:
 
   void PrepareTiles();
   void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
+
+
+
+  /**
+   * Loads a tile into OpenGL's texture memory for rendering. If the tile
+   * is not ready to be rendered (i.e. the tile has not been loaded from
+   * disk or ndecompressed to memory), the function sends a request to
+   * the worker thread which will do this later in the background
+   * @param tile Pointer to the tile descriptor to be prepared
+   * @return  true if the tile is ready to be rendered, false else.
+   */
   bool getTileTexture(mbTileDescriptor *tile);
   void FlushTiles(void);
   bool RenderTile(mbTileDescriptor *tile, int zoomLevel,
@@ -153,7 +155,15 @@ protected:
   GLShaderProgram *m_tile_shader_program;
   uint32_t m_tileCount;
   MbtTilesThread *m_workerThread;
+
+  /**
+   * Create and start the worker thread. This thread is dedicated at
+   * loading and decompressing chart tiles into memory, in the background. If
+   * for any reason the thread would fail to load, the method return false
+   */
   bool StartThread();
+
+  /** Stop and delete the worker thread. Called when OpenCPN is quitting. */
   void StopThread();
 
 private:

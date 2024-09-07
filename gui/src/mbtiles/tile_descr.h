@@ -9,7 +9,7 @@
 #include "chartbase.h"
 #include "glChartCanvas.h"
 
-/// @brief Per tile descriptor
+/** Per tile descriptor. */
 class mbTileDescriptor {
 public:
   int tile_x, tile_y;
@@ -18,18 +18,23 @@ public:
   LLBBox box;
   std::chrono::milliseconds last_used;
 
-  // Set to true if a load request from main thread is already pending for this
-  // tile
+  /// Set to true if a load request from main thread is already pending for this
+  /// tile
   bool m_requested;
-  // Pointer to the decompressed tile image
+
+  /// Pointer to the decompressed tile image
   std::atomic<unsigned char *> m_teximage;
-  // Identifier of the tile texture in OpenGL memory
+
+  /// Identifier of the tile texture in OpenGL memory
   GLuint glTextureName;
-  // Set to true if the tile has not been found into the SQL database.
+
+  /// Set to true if the tile has not been found into the SQL database.
   std::atomic<bool> m_bAvailable;
-  // Pointer to the previous element of the tile chained list
+
+  /// Pointer to the previous element of the tile chained list
   mbTileDescriptor *prev;
-  // Pointer to the next element of the tile chained list
+
+  /// Pointer to the next element of the tile chained list
   mbTileDescriptor *next;
 
   mbTileDescriptor(int zoomFactor, int x, int y) {
@@ -65,29 +70,31 @@ public:
       glDeleteTextures(1, &glTextureName);
     }
   }
-
-  /// @brief Generates a unique 64 bit key/identifier of a tile. This key can
-  /// be used to uniquely reference tiles in a unordered_map or other similar
-  /// list, with not risk of key collision up to zoom level 20
-  /// @param z Zoom level of the tile
-  /// @param x x coordinate of the file
-  /// @param y y coordinate of the tile
-  /// @return Unique 64 bit key of the tile
+ /**
+  * Generate an unique 64 bit key/identifier for a tile. This key can
+  * be used to uniquely reference tiles in an unordered_map or other similar
+  * list, with not risk of key collision up to zoom level 20
+  * @param z Tile Zoom level.
+  * @param x Tile x coordinate.
+  * @param y Tile y coordinate.
+  * @return Unique 64 bit key for tile
+  */
   static uint64_t GetMapKey(int z, int x, int y) {
     return ((uint64_t)z << 40) | ((uint64_t)y << 20) | x;
   }
 
-  /// @brief Generates a unique 64 bit key/identifier of the tile. This key can
-  /// be used to uniquely reference tiles in a unordered_map or other similar
-  /// list, with not risk of key collision up to zoom level 20
-  /// @return Unique 64 bit key of the tile
+  /**
+  * Generate a unique 64 bit key/identifier for  tile. This key can
+  * be used to uniquely reference tiles in a unordered_map or other similar
+  * list, with not risk of key collision up to zoom level 20
+  * @return Unique 64 bit key for tile
+  */
   uint64_t GetMapKey() {
     return mbTileDescriptor::GetMapKey(m_zoomLevel, tile_x, tile_y);
   }
 
   static int long2tilex(double lon, int z) {
     if (lon < -180) lon += 360;
-
     return (int)(floor((lon + 180.0) / 360.0 * (1 << z)));
   }
 

@@ -64,7 +64,7 @@ mbTileDescriptor *TileCache::GetTile(int z, int x, int y) {
 void TileCache::CleanCache(uint32_t maxTiles) {
   if (tileMap.size() <= maxTiles) return;
 
-  /** Create a sorted list of keys, oldest first. */
+  // Create a sorted list of keys, oldest first.
   std::vector<uint64_t> keys;
   for (auto &kv : tileMap) keys.push_back(kv.first);
   auto compare = [&](const uint64_t lhs, const uint64_t rhs) {
