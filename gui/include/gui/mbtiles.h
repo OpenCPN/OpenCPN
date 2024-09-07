@@ -26,7 +26,7 @@
 #include "OCPNRegion.h"
 #include "viewport.h"
 #include "tile_descr.h"
-#include "worker_thread.h"
+#include "tile_thread.h"
 #include "tile_cache.h"
 
 enum class MBTilesType : std::int8_t { BASE, OVERLAY };

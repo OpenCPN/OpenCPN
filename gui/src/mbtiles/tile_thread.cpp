@@ -2,7 +2,7 @@
 #include <mutex>
 #include <wx/thread.h>
 #include "dychart.h"
-#include "worker_thread.h"
+#include "tile_thread.h"
 
 #ifdef __WXMSW__
 void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS *ep) {

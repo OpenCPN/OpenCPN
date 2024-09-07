@@ -911,8 +911,8 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
-    ${GUI_SRC_DIR}/mbtiles/worker_thread.cpp
-    ${GUI_SRC_DIR}/mbtiles/worker_thread.h
+    ${GUI_SRC_DIR}/mbtiles/tile_thread.cpp
+    ${GUI_SRC_DIR}/mbtiles/tile_thread.h
     ${GUI_SRC_DIR}/mbtiles/tile_queue.h
     ${GUI_SRC_DIR}/mbtiles/tile_descr.h
     ${GUI_SRC_DIR}/mbtiles/tile_cache.h
