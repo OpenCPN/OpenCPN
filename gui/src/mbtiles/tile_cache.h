@@ -19,16 +19,14 @@ class TileCache {
 private:
   const double kEps = 6e-6;  // about 1cm on earth's surface at equator
   std::unordered_map<uint64_t, MbTileDescriptor *> tile_map;
-  ZoomDescriptor *zoom_table;
-  int m_min_zoom;
-  int m_max_zoom;
-  int m_nb_zoom;
+  const int m_min_zoom;
+  const int m_max_zoom;
+  const int m_nb_zoom;
+  const std::vector<ZoomDescriptor> zoom_table;
 
 public:
   TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min, float lon_max,
             float lat_max);
-
-  virtual ~TileCache() { delete[] zoom_table; }
 
   /**
    * Return mutex to lock given tile. There is a fixed number of mutexes

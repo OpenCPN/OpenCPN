@@ -1,25 +1,22 @@
 #include "tile_cache.h"
 
 TileCache::TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min,
-                     float lon_max, float lat_max) {
-  this->m_min_zoom = min_zoom;
-  this->m_max_zoom = max_zoom;
-  m_nb_zoom = (max_zoom - min_zoom) + 1;
-  zoom_table = new ZoomDescriptor[m_nb_zoom];
-
-  // Compute cache coverage for every zoom level in WMTS coordinates
-  for (int i = 0; i < m_nb_zoom; i++) {
-    int zoomFactor = min_zoom + i;
-    zoom_table[i].m_tile_x_min =
-        MbTileDescriptor::Long2tilex(Lon_min + kEps, zoomFactor);
-    zoom_table[i].m_tile_x_max =
-        MbTileDescriptor::Long2tilex(lon_max - kEps, zoomFactor);
-    zoom_table[i].m_tile_y_min =
-        MbTileDescriptor::Lat2tiley(Lat_min + kEps, zoomFactor);
-    zoom_table[i].m_tile_y_max =
-        MbTileDescriptor::Lat2tiley(lat_max - kEps, zoomFactor);
-  }
-}
+                     float lon_max, float lat_max)
+    : m_min_zoom(min_zoom),
+      m_max_zoom(max_zoom),
+      m_nb_zoom(max_zoom - min_zoom + 1),
+      zoom_table([&] {
+        using Mtd = MbTileDescriptor;
+        std::vector<ZoomDescriptor> v(m_nb_zoom);
+        for (int i = 0; i < m_nb_zoom; i++) {
+          int zoom_factor = min_zoom + i;
+          v[i].m_tile_x_min = Mtd::Long2tilex(Lon_min + kEps, zoom_factor);
+          v[i].m_tile_x_max = Mtd::Long2tilex(lon_max - kEps, zoom_factor);
+          v[i].m_tile_y_min = Mtd::Lat2tiley(Lat_min + kEps, zoom_factor);
+          v[i].m_tile_y_max = Mtd::Lat2tiley(lat_max - kEps, zoom_factor);
+        }
+        return v;
+      }()) {}
 
 std::mutex &TileCache::GetMutex(uint64_t tile_id) {
   static const int kMutexCount = 100;
