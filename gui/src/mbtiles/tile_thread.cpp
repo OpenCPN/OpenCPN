@@ -33,7 +33,7 @@ void MbtTilesThread::RequestStop() {
 
 size_t MbtTilesThread::GetQueueSize() { return m_tile_queue.GetSize(); }
 
-wxThread::ExitCode MbtTilesThread::Entry() {
+void MbtTilesThread::Run() {
 #ifdef __MSVC__
   _set_se_translator(my_translate_mbtile);
 
@@ -45,7 +45,6 @@ wxThread::ExitCode MbtTilesThread::Entry() {
 #endif
 
   SharedTilePtr tile;
-
   do {
     // Wait for the next job
     tile = m_tile_queue.Pop();
@@ -61,13 +60,11 @@ wxThread::ExitCode MbtTilesThread::Entry() {
           &MyFrame::RefreshAllCanvas, true);
     }
     // Check if the thread has been requested to be destroyed
-  } while ((TestDestroy() == false) && (m_exit_thread == false));
+  } while (!m_exit_thread);
 
   // Since the worker is a detached thread, we need a special mecanism to
   // allow the main thread to wait for its deletion
   m_finished = true;
-
-  return (wxThread::ExitCode)0;
 }
 
 void MbtTilesThread::LoadTile(SharedTilePtr tile) {

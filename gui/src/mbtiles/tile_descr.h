@@ -67,10 +67,12 @@ public:
     // Delete intermediate texture buffer if still allocated
     if (m_teximage != nullptr) {
       free(m_teximage);
+      m_teximage = nullptr;
     }
     // Delete OpenGL texture buffer if allocated
     if (m_gl_texture_name > 0) {
       glDeleteTextures(1, &m_gl_texture_name);
+      m_gl_texture_name = 0;
     }
   }
   /**

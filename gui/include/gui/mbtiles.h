@@ -21,6 +21,8 @@
 #define _CHARTMBTILES_H_
 
 #include <cstdint>
+#include <thread>
+
 #include "chartbase.h"
 #include "model/georef.h"  // for GeoRef type
 #include "OCPNRegion.h"
@@ -144,6 +146,7 @@ protected:
 
   uint32_t m_tile_count;
   std::unique_ptr<MbtTilesThread> m_worker_thread;
+  std::thread m_thread;
 
 #ifdef ocpnUSE_GL
   GLShaderProgram* m_tile_shader_program;

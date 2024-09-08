@@ -2,8 +2,9 @@
 #ifndef _MBTILESTHREAD_H_
 #define _MBTILESTHREAD_H_
 
+#include <thread>
+
 #include <wx/event.h>
-#include <wx/thread.h>
 #include <wx/mstream.h>
 
 #include <sqlite3.h>
@@ -33,17 +34,14 @@ public:
  *  the MbTile front-end to load and uncompress tiles from an MbTiles file. Once
  *  done, the tile list in memory is updated and a refresh of the map triggered.
  */
-class MbtTilesThread : public wxThread {
+class MbtTilesThread {
 public:
   /**
    * Create worker thread instance.
    * @param pDB Pointer to SQL database handler.
    */
   MbtTilesThread(std::shared_ptr<SQLite::Database> db)
-      : wxThread(wxTHREAD_DETACHED),
-        m_exit_thread(false),
-        m_finished(false),
-        m_db(db) {}
+      : m_exit_thread(false), m_finished(false), m_db(db) {}
 
   virtual ~MbtTilesThread() {}
 
@@ -60,6 +58,9 @@ public:
   /** Return number of tiles in worker thread queue. */
   size_t GetQueueSize();
 
+  /**  Worker thread main loop. */
+  virtual void Run();
+
 private:
   /// Set to true to tell the main loop to stop execution
   bool m_exit_thread;
@@ -72,12 +73,6 @@ private:
 
   /// Pointer to SQL object managing the MbTiles file
   std::shared_ptr<SQLite::Database> m_db;
-
-  /**
-   * Worker thread main loop.
-   * @return Always 0
-   */
-  virtual ExitCode Entry();
 
   /**
    * Load bitmap data of a tile from the MbTiles file to the tile cache

@@ -994,14 +994,9 @@ bool ChartMbTiles::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
 
 bool ChartMbTiles::StartThread() {
   // Create the worker thread
-  m_worker_thread = std::make_unique<MbtTilesThread>(m_db);  // FIXME (leamas)
-  if (m_worker_thread->Run() != wxTHREAD_NO_ERROR) {
-    m_worker_thread = nullptr;
-    // Not beeing able to create the worker thread is really a bad situation,
-    // never supposed to happen. So we trigger a fatal error.
-    wxLogMessage("MbTiles: Can't create an MBTiles worker thread");
-    return false;
-  }
+  m_worker_thread = std::make_unique<MbtTilesThread>(m_db);
+  m_thread = std::thread([&] { m_worker_thread->Run(); });
+  m_thread.detach();
   return true;
 }
 
