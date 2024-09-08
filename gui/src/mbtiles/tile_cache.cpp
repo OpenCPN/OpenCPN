@@ -18,21 +18,21 @@ TileCache::TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min,
         return v;
       }()) {}
 
-std::mutex &TileCache::GetMutex(uint64_t tile_id) {
+std::mutex& TileCache::GetMutex(uint64_t tile_id) {
   static const int kMutexCount = 100;
   static std::array<std::mutex, kMutexCount> mutexes;
   return mutexes[tile_id % kMutexCount];
 }
 
-std::mutex &TileCache::GetMutex(const MbTileDescriptor *tile) {
+std::mutex& TileCache::GetMutex(const MbTileDescriptor* tile) {
   uint64_t key = MbTileDescriptor::GetMapKey(tile->m_zoomLevel, tile->m_tile_x,
                                              tile->m_tile_y);
   return TileCache::GetMutex(key);
 }
 
 void TileCache::Flush() {
-  for (auto const &it : tile_map) {
-    MbTileDescriptor *tile = it.second;
+  for (auto const& it : tile_map) {
+    MbTileDescriptor* tile = it.second;
     if (tile) {
       // Note that all buffers are properly freed by the destructor, including
       // OpenGL textures. It means that this function must only be called from
@@ -42,7 +42,7 @@ void TileCache::Flush() {
   }
 }
 
-MbTileDescriptor *TileCache::GetTile(int z, int x, int y) {
+MbTileDescriptor* TileCache::GetTile(int z, int x, int y) {
   uint64_t index = MbTileDescriptor::GetMapKey(z, x, y);
   auto ref = tile_map.find(index);
   if (ref != tile_map.end()) {
@@ -53,7 +53,7 @@ MbTileDescriptor *TileCache::GetTile(int z, int x, int y) {
 
   // The tile is not in the cache : create an empty one and add it to the tile
   // map and list
-  MbTileDescriptor *tile = new MbTileDescriptor(z, x, y);
+  MbTileDescriptor* tile = new MbTileDescriptor(z, x, y);
   tile_map[index] = tile;
   return tile;
 }
@@ -63,7 +63,7 @@ void TileCache::CleanCache(uint32_t max_tiles) {
 
   // Create a sorted list of keys, oldest first.
   std::vector<uint64_t> keys;
-  for (auto &kv : tile_map) keys.push_back(kv.first);
+  for (auto& kv : tile_map) keys.push_back(kv.first);
   auto compare = [&](const uint64_t lhs, const uint64_t rhs) {
     return tile_map[lhs]->m_last_used < tile_map[rhs]->m_last_used;
   };
@@ -90,7 +90,7 @@ void TileCache::DeepCleanCache() {
   auto age_limit = std::chrono::duration<int>(5);  // 5 seconds
 
   std::vector<uint64_t> keys;
-  for (auto &kv : tile_map) keys.push_back(kv.first);
+  for (auto& kv : tile_map) keys.push_back(kv.first);
 
   for (size_t i = 0; i < keys.size(); i += 1) {
     std::lock_guard lock(TileCache::GetMutex(tile_map[keys[i]]));

@@ -1,5 +1,5 @@
 
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -66,16 +66,16 @@ typedef unsigned __int64 uint64_t;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
-#define NAN (*(double *)&lNaN)
+#define NAN (*(double*)&lNaN)
 #endif
 
 #ifdef OCPN_USE_CONFIG
 #include "navutil.h"
-extern MyConfig *pConfig;
+extern MyConfig* pConfig;
 #endif
 
-///Raster Zoom Modifier value from advanced display preference pane
-///Physically located in ocpn_app.cpp
+/// Raster Zoom Modifier value from advanced display preference pane
+/// Physically located in ocpn_app.cpp
 extern int g_chart_zoom_modifier_raster;
 
 #define LON_UNDEF NAN
@@ -88,12 +88,12 @@ static double osm_zoom_scale[22];
 //  Meters per pixel, by zoom factor
 static double osm_zoom_mpp[22];
 
-extern MyFrame *gFrame;
+extern MyFrame* gFrame;
 
 static const double kEps = 6e-6;  // about 1cm on earth's surface at equator
 
 // Private tile shader source
-static const GLchar *tile_vertex_shader_source =
+static const GLchar* tile_vertex_shader_source =
     "attribute vec2 aPos;\n"
     "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
@@ -103,7 +103,7 @@ static const GLchar *tile_vertex_shader_source =
     "   varCoord = aUV;\n"
     "}\n";
 
-static const GLchar *tile_fragment_shader_source =
+static const GLchar* tile_fragment_shader_source =
     "precision lowp float;\n"
     "uniform sampler2D uTex;\n"
     "varying vec2 varCoord;\n"
@@ -114,7 +114,7 @@ static const GLchar *tile_fragment_shader_source =
     "}\n";
 
 #ifdef ocpnUSE_GL
-GLShaderProgram *g_tile_shader_program;
+GLShaderProgram* g_tile_shader_program;
 #endif
 
 #if defined(__UNIX__) && \
@@ -177,7 +177,7 @@ ChartMbTiles::ChartMbTiles() {
   m_lat_max = LAT_UNDEF;
 
 #ifdef OCPN_USE_CONFIG
-  wxFileConfig *pfc = (wxFileConfig *)pConfig;
+  wxFileConfig* pfc = (wxFileConfig*)pConfig;
   pfc->SetPath(_T ( "/Settings" ));
   pfc->Read(_T ( "DebugMBTiles" ), &m_b_cdebug, 0);
 #endif
@@ -198,15 +198,15 @@ ChartMbTiles::~ChartMbTiles() {
   }
 }
 
-ThumbData *ChartMbTiles::GetThumbData() { return NULL; }
+ThumbData* ChartMbTiles::GetThumbData() { return NULL; }
 
-ThumbData *ChartMbTiles::GetThumbData(int tnx, int tny, float lat, float lon) {
+ThumbData* ChartMbTiles::GetThumbData(int tnx, int tny, float lat, float lon) {
   return NULL;
 }
 
 bool ChartMbTiles::UpdateThumbData(double lat, double lon) { return true; }
 
-bool ChartMbTiles::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
+bool ChartMbTiles::AdjustVP(ViewPort& vp_last, ViewPort& vp_proposed) {
   return true;
 }
 
@@ -227,10 +227,10 @@ double ChartMbTiles::GetNearestPreferredScalePPM(double target_scale_ppm) {
 
 // Checks/corrects/completes the initialization based on real data from the
 // tiles table
-void ChartMbTiles::InitFromTiles(const wxString &name) {
+void ChartMbTiles::InitFromTiles(const wxString& name) {
   try {
     // Open the MBTiles database file
-    const char *name_utf8 = "";
+    const char* name_utf8 = "";
     wxCharBuffer utf8CB = name.ToUTF8();  // the UTF-8 buffer
     if (utf8CB.data()) name_utf8 = utf8CB.data();
 
@@ -244,8 +244,8 @@ void ChartMbTiles::InitFromTiles(const wxString &name) {
                             "SELECT min(zoom_level) AS m_min_zoom, "
                             "max(zoom_level) AS m_max_zoom FROM tiles");
     while (query.executeStep()) {
-      const char *col_min_zoom = query.getColumn(0);
-      const char *col_max_zoom = query.getColumn(1);
+      const char* col_min_zoom = query.getColumn(0);
+      const char* col_max_zoom = query.getColumn(1);
 
       int min_zoom = 0, max_zoom = 0;
       sscanf(col_min_zoom, "%i", &min_zoom);
@@ -290,12 +290,12 @@ void ChartMbTiles::InitFromTiles(const wxString &name) {
             .c_str());
     float min_lat = 999., max_lat = -999.0, min_lon = 999., max_lon = -999.0;
     while (query1.executeStep()) {
-      const char *colMinRow = query1.getColumn(0);
-      const char *colMaxRow = query1.getColumn(1);
-      const char *colMinCol = query1.getColumn(2);
-      const char *colMaxCol = query1.getColumn(3);
-      const char *colCnt = query1.getColumn(4);
-      const char *colZoom = query1.getColumn(5);
+      const char* colMinRow = query1.getColumn(0);
+      const char* colMaxRow = query1.getColumn(1);
+      const char* colMinCol = query1.getColumn(2);
+      const char* colMaxCol = query1.getColumn(3);
+      const char* colCnt = query1.getColumn(4);
+      const char* colZoom = query1.getColumn(5);
 
       int minRow, maxRow, minCol, maxCol, cnt, zoom;
       sscanf(colMinRow, "%i", &minRow);
@@ -326,13 +326,13 @@ void ChartMbTiles::InitFromTiles(const wxString &name) {
     if (std::isnan(m_lat_max)) m_lat_max = max_lat;
     if (std::isnan(m_lon_min)) m_lon_min = min_lon;
     if (std::isnan(m_lon_max)) m_lon_max = max_lon;
-  } catch (std::exception &e) {
-    const char *t = e.what();
+  } catch (std::exception& e) {
+    const char* t = e.what();
     wxLogMessage("mbtiles exception: %s", e.what());
   }
 }
 
-InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
+InitReturn ChartMbTiles::Init(const wxString& name, ChartInitFlag init_flags) {
   m_global_color_scheme = GLOBAL_COLOR_SCHEME_RGB;
 
   m_FullPath = name;
@@ -340,7 +340,7 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
   try {
     // Open the MBTiles database file
-    const char *name_utf8 = "";
+    const char* name_utf8 = "";
     wxCharBuffer utf8CB = name.ToUTF8();  // the UTF-8 buffer
     if (utf8CB.data()) name_utf8 = utf8CB.data();
 
@@ -351,8 +351,8 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
     // Loop to execute the query step by step, to get rows of result
     while (query.executeStep()) {
-      const char *col_name = query.getColumn(0);
-      const char *col_value = query.getColumn(1);
+      const char* col_name = query.getColumn(0);
+      const char* col_value = query.getColumn(1);
 
       // Get the geometric extent of the data
       if (!strncmp(col_name, "bounds", 6)) {
@@ -383,17 +383,18 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
       } else if (!strncmp(col_name, "name", 11)) {
         m_Name = wxString(col_value, wxConvUTF8);
       } else if (!strncmp(col_name, "type", 11)) {
-        m_tile_type = wxString(col_value, wxConvUTF8).Upper().IsSameAs("OVERLAY")
-                         ? MbTilesType::OVERLAY
-                         : MbTilesType::BASE;
+        m_tile_type =
+            wxString(col_value, wxConvUTF8).Upper().IsSameAs("OVERLAY")
+                ? MbTilesType::OVERLAY
+                : MbTilesType::BASE;
       } else if (!strncmp(col_name, "scheme", 11)) {
         m_scheme = wxString(col_value, wxConvUTF8).Upper().IsSameAs("XYZ")
                        ? MbTilesScheme::XYZ
                        : MbTilesScheme::TMS;
       }
     }
-  } catch (std::exception &e) {
-    const char *t = e.what();
+  } catch (std::exception& e) {
+    const char* t = e.what();
     wxLogMessage("mbtiles exception: %s", e.what());
     return INIT_FAIL_REMOVE;
   }
@@ -407,14 +408,14 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
   // Initialize the tile data structures
   m_tile_cache = new TileCache(m_min_zoom, m_max_zoom, m_lon_min, m_lat_min,
-                              m_lon_max, m_lat_max);
+                               m_lon_max, m_lat_max);
 
   LLRegion covr_region;
 
   LLBBox extent_box;
   extent_box.Set(m_lat_min, m_lon_min, m_lat_max, m_lon_max);
 
-  const char *name_utf8 = "";
+  const char* name_utf8 = "";
   wxCharBuffer utf8CB = name.ToUTF8();  // the UTF-8 buffer
   if (utf8CB.data()) name_utf8 = utf8CB.data();
 
@@ -437,7 +438,7 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
     SQLite::Statement query_size(db, qrs);
 
     if (query_size.executeStep()) {
-      const char *col_value = query_size.getColumn(0);
+      const char* col_value = query_size.getColumn(0);
       int tile_at_zoom = atoi(col_value);
       m_n_tiles += tile_at_zoom;
 
@@ -461,10 +462,10 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
     covr_populated = true;
 
     while (query.executeStep()) {
-      const char *col_value = query.getColumn(0);
-      const char *c2 = query.getColumn(1);
+      const char* col_value = query.getColumn(0);
+      const char* c2 = query.getColumn(1);
       int tile_x_found = atoi(col_value);  // m_tile_x
-      int tile_y_found = atoi(c2);        // m_tile_y
+      int tile_y_found = atoi(c2);         // m_tile_y
 
       region_zoom.Union(tile_x_found, tile_y_found - 1, 1, 1);
 
@@ -476,9 +477,9 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
     while (upd) {
       wxRect rect = upd.GetRect();
 
-      double lonmin =
-          round(MbTileDescriptor::Tilex2long(rect.x, zoom_factor) / eps_factor) *
-          eps_factor;
+      double lonmin = round(MbTileDescriptor::Tilex2long(rect.x, zoom_factor) /
+                            eps_factor) *
+                      eps_factor;
       double lonmax =
           round(MbTileDescriptor::Tilex2long(rect.x + rect.width, zoom_factor) /
                 eps_factor) *
@@ -499,8 +500,9 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
       covr_region_zoom.Union(tile_region);
 
       upd++;
-      min_region_zoom = zoom_factor;  // We take the first populated (lowest) zoom
-                                   // level region as the final chart region
+      min_region_zoom =
+          zoom_factor;  // We take the first populated (lowest) zoom
+                        // level region as the final chart region
     }
 
     covr_region.Union(covr_region_zoom);
@@ -518,13 +520,13 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
   //  Populate M_COVR entries for the OCPN chart database
   if (covr_region.contours.size()) {  // Check for no intersection caused by ??
     m_nCOVREntries = covr_region.contours.size();
-    m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
-    m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
+    m_pCOVRTablePoints = (int*)malloc(m_nCOVREntries * sizeof(int));
+    m_pCOVRTable = (float**)malloc(m_nCOVREntries * sizeof(float*));
     std::list<poly_contour>::iterator it = covr_region.contours.begin();
     for (int i = 0; i < m_nCOVREntries; i++) {
       m_pCOVRTablePoints[i] = it->size();
       m_pCOVRTable[i] =
-          (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
+          (float*)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
       std::list<contour_pt>::iterator jt = it->begin();
       for (int j = 0; j < m_pCOVRTablePoints[i]; j++) {
         m_pCOVRTable[i][2 * j + 0] = jt->y;
@@ -550,7 +552,7 @@ InitReturn ChartMbTiles::Init(const wxString &name, ChartInitFlag init_flags) {
     return INIT_OK;
 }
 
-InitReturn ChartMbTiles::PreInit(const wxString &name, ChartInitFlag init_flags,
+InitReturn ChartMbTiles::PreInit(const wxString& name, ChartInitFlag init_flags,
                                  ColorScheme cs) {
   m_global_color_scheme = cs;
   return INIT_OK;
@@ -558,7 +560,7 @@ InitReturn ChartMbTiles::PreInit(const wxString &name, ChartInitFlag init_flags,
 
 InitReturn ChartMbTiles::PostInit(void) {
   // Create the persistent MBTiles database file
-  const char *name_UTF8 = "";
+  const char* name_UTF8 = "";
   wxCharBuffer utf8CB = m_FullPath.ToUTF8();  // the UTF-8 buffer
   if (utf8CB.data()) name_UTF8 = utf8CB.data();
 
@@ -580,7 +582,7 @@ void ChartMbTiles::FlushTiles() {
   }
 }
 
-bool ChartMbTiles::GetChartExtent(Extent *pext) {
+bool ChartMbTiles::GetChartExtent(Extent* pext) {
   pext->NLAT = m_lat_max;
   pext->SLAT = m_lat_min;
   pext->ELON = m_lon_max;
@@ -592,8 +594,8 @@ void ChartMbTiles::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
   m_global_color_scheme = cs;
 }
 
-void ChartMbTiles::GetValidCanvasRegion(const ViewPort &v_point,
-                                        OCPNRegion *valid_region) {
+void ChartMbTiles::GetValidCanvasRegion(const ViewPort& v_point,
+                                        OCPNRegion* valid_region) {
   valid_region->Clear();
   valid_region->Union(0, 0, v_point.pix_width, v_point.pix_height);
   return;
@@ -601,12 +603,11 @@ void ChartMbTiles::GetValidCanvasRegion(const ViewPort &v_point,
 
 LLRegion ChartMbTiles::GetValidRegion() { return m_min_zoom_region; }
 
-bool ChartMbTiles::RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint) {
+bool ChartMbTiles::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint) {
   return true;
 }
 
-
-bool ChartMbTiles::GetTileTexture(MbTileDescriptor *tile) {
+bool ChartMbTiles::GetTileTexture(MbTileDescriptor* tile) {
   if (!m_db) return false;
   m_tile_count++;
   // Is the texture ready to be rendered ?
@@ -658,7 +659,7 @@ bool ChartMbTiles::GetTileTexture(MbTileDescriptor *tile) {
 
 class wxPoint2DDouble;
 
-wxPoint2DDouble ChartMbTiles::GetDoublePixFromLL(ViewPort &vp, double lat,
+wxPoint2DDouble ChartMbTiles::GetDoublePixFromLL(ViewPort& vp, double lat,
                                                  double lon) {
   double easting = 0;
   double northing = 0;
@@ -703,8 +704,8 @@ wxPoint2DDouble ChartMbTiles::GetDoublePixFromLL(ViewPort &vp, double lat,
                          (vp.pix_height / 2.0) - dyr);
 }
 
-bool ChartMbTiles::RenderTile(MbTileDescriptor *tile, int zoom_level,
-                              const ViewPort &vpoint) {
+bool ChartMbTiles::RenderTile(MbTileDescriptor* tile, int zoom_level,
+                              const ViewPort& vpoint) {
 #ifdef ocpnUSE_GL
   ViewPort vp = vpoint;
 
@@ -745,7 +746,7 @@ bool ChartMbTiles::RenderTile(MbTileDescriptor *tile, int zoom_level,
   coords[7] = p.m_y;
 
   if (!g_tile_shader_program) {
-    GLShaderProgram *shaderProgram = new GLShaderProgram;
+    GLShaderProgram* shaderProgram = new GLShaderProgram;
     shaderProgram->addShaderFromSource(tile_vertex_shader_source,
                                        GL_VERTEX_SHADER);
     shaderProgram->addShaderFromSource(tile_fragment_shader_source,
@@ -754,13 +755,13 @@ bool ChartMbTiles::RenderTile(MbTileDescriptor *tile, int zoom_level,
     g_tile_shader_program = shaderProgram;
   }
 
-  GLShaderProgram *shader = g_tile_shader_program;
+  GLShaderProgram* shader = g_tile_shader_program;
   shader->Bind();
 
   // Set up the texture sampler to texture unit 0
   shader->SetUniform1i("uTex", 0);
 
-  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)vp.vp_matrix_transform);
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat*)vp.vp_matrix_transform);
 
   float co1[8];
   float tco1[8];
@@ -821,10 +822,10 @@ bool ChartMbTiles::RenderTile(MbTileDescriptor *tile, int zoom_level,
   return true;
 }
 
-bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext &glc,
-                                        const ViewPort &vpoint,
-                                        const OCPNRegion &rect_region,
-                                        const LLRegion &region) {
+bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext& glc,
+                                        const ViewPort& vpoint,
+                                        const OCPNRegion& rect_region,
+                                        const LLRegion& region) {
 #ifdef ocpnUSE_GL
 
   // Reset the tile counter. This counter is used to know how many tile are
@@ -930,7 +931,7 @@ bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
     for (int iy = bot_tile; iy <= top_tile; iy++) {
       for (int ix = left_tile; ix <= right_tile; ix++) {
-        MbTileDescriptor *tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
+        MbTileDescriptor* tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
 
         if (!region.IntersectOut(tile->m_box)) {
           if (RenderTile(tile, zoomFactor, vp)) maxren_zoom = zoomFactor;
@@ -958,9 +959,10 @@ bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
       for (int iy = bot_tile; iy <= top_tile; iy++) {
         for (int ix = left_tile; ix <= right_tile; ix++) {
-          MbTileDescriptor *tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
+          MbTileDescriptor* tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
 
-          if (!region.IntersectOut(tile->m_box)) RenderTile(tile, zoomFactor, vp);
+          if (!region.IntersectOut(tile->m_box))
+            RenderTile(tile, zoomFactor, vp);
         }
       }
     }
@@ -990,8 +992,8 @@ bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   return true;
 }
 
-bool ChartMbTiles::RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
-                                        const OCPNRegion &Region) {
+bool ChartMbTiles::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
+                                        const OCPNRegion& Region) {
   gFrame->GetPrimaryCanvas()->SetAlertString(
       _("MBTile requires OpenGL to be enabled"));
 

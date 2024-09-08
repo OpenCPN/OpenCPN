@@ -52,11 +52,11 @@ public:
    * Get the Chart thumbnail data structure,
    * creating the thumbnail bitmap as required
    */
-  virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
-  virtual ThumbData *GetThumbData();
+  virtual ThumbData* GetThumbData(int tnx, int tny, float lat, float lon);
+  virtual ThumbData* GetThumbData();
   virtual bool UpdateThumbData(double lat, double lon);
 
-  virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+  virtual bool AdjustVP(ViewPort& vp_last, ViewPort& vp_proposed);
 
   int GetNativeScale() { return m_Chart_Scale; }
 
@@ -72,23 +72,23 @@ public:
    */
   double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
-  virtual InitReturn Init(const wxString &name, ChartInitFlag init_flags);
+  virtual InitReturn Init(const wxString& name, ChartInitFlag init_flags);
 
-  bool RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
-                            const OCPNRegion &Region);
+  bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
+                            const OCPNRegion& Region);
 
-  virtual bool RenderRegionViewOnGL(const wxGLContext &glc,
-                                    const ViewPort &vpoint,
-                                    const OCPNRegion &rect_region,
-                                    const LLRegion &region);
+  virtual bool RenderRegionViewOnGL(const wxGLContext& glc,
+                                    const ViewPort& vpoint,
+                                    const OCPNRegion& rect_region,
+                                    const LLRegion& region);
 
   virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
-  virtual void GetValidCanvasRegion(const ViewPort &v_point,
-                                    OCPNRegion *valid_region);
+  virtual void GetValidCanvasRegion(const ViewPort& v_point,
+                                    OCPNRegion* valid_region);
   virtual LLRegion GetValidRegion();
 
-  virtual bool GetChartExtent(Extent *pext);
+  virtual bool GetChartExtent(Extent* pext);
 
   void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
@@ -98,15 +98,13 @@ public:
 
 protected:
   //    Methods
-  bool RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint);
-  InitReturn PreInit(const wxString &name, ChartInitFlag init_flags,
+  bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
+  InitReturn PreInit(const wxString& name, ChartInitFlag init_flags,
                      ColorScheme cs);
   InitReturn PostInit(void);
 
   void PrepareTiles();
   void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
-
-
 
   /**
    * Loads a tile into OpenGL's texture memory for rendering. If the tile
@@ -116,10 +114,10 @@ protected:
    * @param tile Pointer to the tile descriptor to be prepared
    * @return  true if the tile is ready to be rendered, false else.
    */
-  bool GetTileTexture(MbTileDescriptor *tile);
+  bool GetTileTexture(MbTileDescriptor* tile);
   void FlushTiles(void);
-  bool RenderTile(MbTileDescriptor *tile, int zoom_level,
-                  const ViewPort &vpoint);
+  bool RenderTile(MbTileDescriptor* tile, int zoom_level,
+                  const ViewPort& vpoint);
 
   //    Protected Data
 
@@ -136,7 +134,7 @@ protected:
 
   int m_min_zoom;
   int m_max_zoom;
-  TileCache *m_tile_cache;
+  TileCache* m_tile_cache;
   LLRegion m_min_zoom_region;
   wxBitmapType m_image_type;
   int m_last_clean_zoom;
@@ -145,15 +143,15 @@ protected:
 
   MbTilesScheme m_scheme;
 
-  SQLite::Database *m_db;
+  SQLite::Database* m_db;
   int m_n_tiles;
   std::string m_format;
 
   uint32_t m_tile_count;
-  MbtTilesThread *m_worker_thread;
+  MbtTilesThread* m_worker_thread;
 
 #ifdef ocpnUSE_GL
-  GLShaderProgram *m_tile_shader_program;
+  GLShaderProgram* m_tile_shader_program;
 #endif
 
   /**
@@ -167,8 +165,8 @@ protected:
   void StopThread();
 
 private:
-  void InitFromTiles(const wxString &name);
-  wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon);
+  void InitFromTiles(const wxString& name);
+  wxPoint2DDouble GetDoublePixFromLL(ViewPort& vp, double lat, double lon);
 };
 
 #endif

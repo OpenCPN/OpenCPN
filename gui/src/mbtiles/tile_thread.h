@@ -36,10 +36,10 @@ public:
 class MbtTilesThread : public wxThread {
 public:
   /**
-  * Create worker thread instance.
-  * @param pDB Pointer to SQL database handler.
-  */
-  MbtTilesThread(SQLite::Database *db)
+   * Create worker thread instance.
+   * @param pDB Pointer to SQL database handler.
+   */
+  MbtTilesThread(SQLite::Database* db)
       : wxThread(wxTHREAD_DETACHED),
         m_exit_thread(false),
         m_finished(false),
@@ -52,7 +52,7 @@ public:
    * safe.
    * @param tile Pointer to tile to load
    */
-  void RequestTile(MbTileDescriptor *tile);
+  void RequestTile(MbTileDescriptor* tile);
 
   /** @brief Request the thread to stop/delete itself. */
   void RequestStop();
@@ -71,7 +71,7 @@ private:
   TileQueue m_tile_queue;
 
   /// Pointer the SQL object managing the MbTiles file
-  SQLite::Database *m_db;
+  SQLite::Database* m_db;
 
   /**
    * @brief  Worker thread main loop.
@@ -83,7 +83,7 @@ private:
    * Load bitmap data of a tile from the MbTiles file to the tile cache
    * @param tile Pointer to the tile to be loaded
    */
-  void LoadTile(MbTileDescriptor *tile);
+  void LoadTile(MbTileDescriptor* tile);
 };
 
 #endif /* _MBTILESTHREAD_H_ */

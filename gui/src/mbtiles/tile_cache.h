@@ -18,29 +18,29 @@ class TileCache {
 
 private:
   const double kEps = 6e-6;  // about 1cm on earth's surface at equator
-  std::unordered_map<uint64_t, MbTileDescriptor *> tile_map;
+  std::unordered_map<uint64_t, MbTileDescriptor*> tile_map;
   const int m_min_zoom;
   const int m_max_zoom;
   const int m_nb_zoom;
   const std::vector<ZoomDescriptor> zoom_table;
 
 public:
-  TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min, float lon_max,
-            float lat_max);
+  TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min,
+            float lon_max, float lat_max);
 
   /**
    * Return mutex to lock given tile. There is a fixed number of mutexes
    * available, the mutex returned might collide with another id causing
    * random serialization.
    */
-  static std::mutex &GetMutex(uint64_t tile_id);
+  static std::mutex& GetMutex(uint64_t tile_id);
 
   /**
    * Return mutex to lock given tile. There is a fixed number of mutexes
    * available, the mutex returned might collide with another id causing
    * random serialization.
    */
-  static std::mutex &GetMutex(const MbTileDescriptor *tile);
+  static std::mutex& GetMutex(const MbTileDescriptor* tile);
 
   /** Flush the tile cache, including OpenGL texture memory if needed */
   void Flush();
@@ -65,21 +65,21 @@ public:
    */
   uint32_t GetCacheSize() const { return tile_map.size(); }
 
- /**
-  *  Retreive a tile from cache. If the tile is not present an empty tile 
-  *  is created, added and returned.
-  *  @param z Tile zoom level.
-  *  @param x Tile x coordinate.
-  *  @param y Tile y coordinate.
-  *  @return Pointer to tile
-  */
-  MbTileDescriptor *GetTile(int z, int x, int y);
+  /**
+   *  Retreive a tile from cache. If the tile is not present an empty tile
+   *  is created, added and returned.
+   *  @param z Tile zoom level.
+   *  @param x Tile x coordinate.
+   *  @param y Tile y coordinate.
+   *  @return Pointer to tile
+   */
+  MbTileDescriptor* GetTile(int z, int x, int y);
 
- /**
-  *  Reduce the size of the cache if it exceeds the given limit. Must
-  *  only be called by rendering thread since it uses OpenGL calls.
-  *  @param max_tiles Maximum number of tiles to be kept in the cache.
-  */
+  /**
+   *  Reduce the size of the cache if it exceeds the given limit. Must
+   *  only be called by rendering thread since it uses OpenGL calls.
+   *  @param max_tiles Maximum number of tiles to be kept in the cache.
+   */
   void CleanCache(uint32_t max_tiles);
 
   void DeepCleanCache();

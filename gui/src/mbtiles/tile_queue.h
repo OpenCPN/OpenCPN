@@ -16,7 +16,7 @@ public:
    *  Push a tile to the queue.
    *  @param tile Pointer to tile descriptor to be pushed.
    */
-  void Push(MbTileDescriptor *tile) {
+  void Push(MbTileDescriptor* tile) {
     {
       std::lock_guard lock(m_mutex);
       m_tile_list.push_back(tile);
@@ -25,15 +25,15 @@ public:
   }
 
   /**
-  *  Retreive a tile from the queue. If there is no tile in the queue,
-  *  calling thread is blocked until a tile is available.
-  *
-  *  @return Pointer to tile descriptor
-  */
-  MbTileDescriptor *Pop() {
+   *  Retrieve a tile from the queue. If there is no tile in the queue,
+   *  calling thread is blocked until a tile is available.
+   *
+   *  @return Pointer to tile descriptor
+   */
+  MbTileDescriptor* Pop() {
     std::unique_lock lock(m_mutex);
     m_cv.wait(lock, [&] { return m_tile_list.size() > 0; });
-    MbTileDescriptor *tile = m_tile_list.at(0);
+    MbTileDescriptor* tile = m_tile_list.at(0);
     m_tile_list.erase(m_tile_list.cbegin());
     return tile;
   }
@@ -41,12 +41,12 @@ public:
   /**  Retrieve current size of queue. */
   uint32_t GetSize() {
     std::lock_guard lock(m_mutex);
-    return  m_tile_list.size();
+    return m_tile_list.size();
   }
 
 private:
-  std::vector<MbTileDescriptor *> m_tile_list;
-  std::mutex  m_mutex;
+  std::vector<MbTileDescriptor*> m_tile_list;
+  std::mutex m_mutex;
   std::condition_variable m_cv;
 };
 

@@ -27,7 +27,7 @@ public:
   bool m_requested;
 
   /// Pointer to the decompressed tile image
-  std::atomic<unsigned char *> m_teximage;
+  std::atomic<unsigned char*> m_teximage;
 
   /// Identifier of the tile texture in OpenGL memory
   GLuint m_gl_texture_name;
@@ -52,7 +52,8 @@ public:
     m_latmin =
         round(MbTileDescriptor::Tiley2lat(m_tile_y - 1, zoomFactor) / kEps) *
         kEps;
-    m_latmax = round(MbTileDescriptor::Tiley2lat(m_tile_y, zoomFactor) / kEps) * kEps;
+    m_latmax =
+        round(MbTileDescriptor::Tiley2lat(m_tile_y, zoomFactor) / kEps) * kEps;
 
     m_box.Set(m_latmin, m_lonmin, m_latmax, m_lonmax);
     SetTimestamp();
@@ -68,25 +69,25 @@ public:
       glDeleteTextures(1, &m_gl_texture_name);
     }
   }
- /**
-  * Generate an unique 64 bit key/identifier for a tile. This key can
-  * be used to uniquely reference tiles in an unordered_map or other similar
-  * list, with not risk of key collision up to zoom level 20
-  * @param z Tile Zoom level.
-  * @param x Tile x coordinate.
-  * @param y Tile y coordinate.
-  * @return Unique 64 bit key for tile
-  */
+  /**
+   * Generate an unique 64 bit key/identifier for a tile. This key can
+   * be used to uniquely reference tiles in an unordered_map or other similar
+   * list, with not risk of key collision up to zoom level 20
+   * @param z Tile Zoom level.
+   * @param x Tile x coordinate.
+   * @param y Tile y coordinate.
+   * @return Unique 64 bit key for tile
+   */
   static uint64_t GetMapKey(int z, int x, int y) {
     return ((uint64_t)z << 40) | ((uint64_t)y << 20) | x;
   }
 
   /**
-  * Generate a unique 64 bit key/identifier for  tile. This key can
-  * be used to uniquely reference tiles in a unordered_map or other similar
-  * list, with not risk of key collision up to zoom level 20
-  * @return Unique 64 bit key for tile
-  */
+   * Generate a unique 64 bit key/identifier for  tile. This key can
+   * be used to uniquely reference tiles in a unordered_map or other similar
+   * list, with not risk of key collision up to zoom level 20
+   * @return Unique 64 bit key for tile
+   */
   uint64_t GetMapKey() {
     return MbTileDescriptor::GetMapKey(m_zoomLevel, m_tile_x, m_tile_y);
   }

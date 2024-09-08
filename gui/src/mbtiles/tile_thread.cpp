@@ -8,7 +8,7 @@
 #include "tile_cache.h"
 
 #ifdef __WXMSW__
-void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS *ep) {
+void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS* ep) {
   throw SE_Exception();
 }
 #endif
@@ -18,13 +18,12 @@ void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS *ep) {
  * safe.
  * @param tile Pointer to the tile to load
  */
-void MbtTilesThread::RequestTile(MbTileDescriptor *tile) {
+void MbtTilesThread::RequestTile(MbTileDescriptor* tile) {
   tile->m_requested = true;
   m_tile_queue.Push(tile);
 }
 
 void MbtTilesThread::RequestStop() {
-
   m_exit_thread = true;
   m_tile_queue.Push(nullptr);
   while (!m_finished) {
@@ -45,7 +44,7 @@ wxThread::ExitCode MbtTilesThread::Entry() {
 
 #endif
 
-  MbTileDescriptor *tile;
+  MbTileDescriptor* tile;
 
   do {
     // Wait for the next job
@@ -71,7 +70,7 @@ wxThread::ExitCode MbtTilesThread::Entry() {
   return (wxThread::ExitCode)0;
 }
 
-void MbtTilesThread::LoadTile(MbTileDescriptor *tile) {
+void MbtTilesThread::LoadTile(MbTileDescriptor* tile) {
   std::lock_guard lock(TileCache::GetMutex(tile));
 
   // If the tile has not been found in the SQL database in a previous attempt,
@@ -103,7 +102,7 @@ void MbtTilesThread::LoadTile(MbTileDescriptor *tile) {
     } else {
       // Get the blob
       SQLite::Column blobColumn = query.getColumn(0);
-      const void *blob = blobColumn.getBlob();
+      const void* blob = blobColumn.getBlob();
       // Get the length
       int length = query.getColumn(1);
 
@@ -112,7 +111,7 @@ void MbtTilesThread::LoadTile(MbTileDescriptor *tile) {
       wxImage blobImage;
       blobImage = wxImage(blobStream, wxBITMAP_TYPE_ANY);
       int blobWidth, blobHeight;
-      unsigned char *imgdata;
+      unsigned char* imgdata;
 
       // Check that the tile is OK and rescale it to 256x256 if necessary
       if (blobImage.IsOk()) {
@@ -140,7 +139,7 @@ void MbtTilesThread::LoadTile(MbTileDescriptor *tile) {
       int tex_w = 256;
       int tex_h = 256;
       // Copy and process the tile
-      unsigned char *teximage = (unsigned char *)malloc(stride * tex_w * tex_h);
+      unsigned char* teximage = (unsigned char*)malloc(stride * tex_w * tex_h);
       if (!teximage) return;
 
       bool transparent = blobImage.HasAlpha();
@@ -178,8 +177,8 @@ void MbtTilesThread::LoadTile(MbTileDescriptor *tile) {
     tile->m_teximage = 0;
   }
 #else
-  catch (std::exception &e) {
-    const char *t = e.what();
+  catch (std::exception& e) {
+    const char* t = e.what();
     wxLogMessage("mbtiles std::exception: %s", e.what());
   }
 #endif
