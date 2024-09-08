@@ -87,7 +87,7 @@ void MbtTilesThread::LoadTile(SharedTilePtr tile) {
     sprintf(qrs,
             "select tile_data, length(tile_data) from tiles where zoom_level "
             "= %d AND tile_column=%d AND tile_row=%d",
-            tile->m_zoomLevel, tile->m_tile_x, tile->m_tile_y);
+            tile->m_zoom_level, tile->m_tile_x, tile->m_tile_y);
     SQLite::Statement query(*m_db, qrs);
 
     int queryResult = query.tryExecuteStep();

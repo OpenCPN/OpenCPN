@@ -18,7 +18,7 @@ class MbTileDescriptor {
 public:
   int m_tile_x;
   int m_tile_y;
-  int m_zoomLevel;
+  int m_zoom_level;
   float m_latmin;
   float m_lonmin;
   float m_latmax;
@@ -39,26 +39,27 @@ public:
   /// Set to true if the tile has not been found into the SQL database.
   std::atomic<bool> m_is_available;
 
-  MbTileDescriptor(int zoomFactor, int x, int y) {
-    m_gl_texture_name = 0;
-    m_is_available = true;
-    m_teximage = nullptr;
-    m_requested = false;
-    m_tile_x = x;
-    m_tile_y = y;
-    m_zoomLevel = zoomFactor;
-    // Calculate tile boundaries
-    m_lonmin =
-        round(MbTileDescriptor::Tilex2long(m_tile_x, zoomFactor) / kEps) * kEps;
-    m_lonmax =
-        round(MbTileDescriptor::Tilex2long(m_tile_x + 1, zoomFactor) / kEps) *
-        kEps;
-    m_latmin =
-        round(MbTileDescriptor::Tiley2lat(m_tile_y - 1, zoomFactor) / kEps) *
-        kEps;
-    m_latmax =
-        round(MbTileDescriptor::Tiley2lat(m_tile_y, zoomFactor) / kEps) * kEps;
-
+  MbTileDescriptor(int zoom_level, int x, int y)
+      : m_tile_x(x),
+        m_tile_y(y),
+        m_zoom_level(zoom_level),
+        // Calculate tile boundaries
+        m_latmin(round(MbTileDescriptor::Tiley2lat(m_tile_y - 1, zoom_level) /
+                       kEps) *
+                 kEps),
+        m_lonmin(
+            round(MbTileDescriptor::Tilex2long(m_tile_x, zoom_level) / kEps) *
+            kEps),
+        m_latmax(
+            round(MbTileDescriptor::Tiley2lat(m_tile_y, zoom_level) / kEps) *
+            kEps),
+        m_lonmax(round(MbTileDescriptor::Tilex2long(m_tile_x + 1, zoom_level) /
+                       kEps) *
+                 kEps),
+        m_requested(false),
+        m_teximage(nullptr),
+        m_gl_texture_name(0),
+        m_is_available(true) {
     m_box.Set(m_latmin, m_lonmin, m_latmax, m_lonmax);
     SetTimestamp();
   }
@@ -95,7 +96,7 @@ public:
    * @return Unique 64 bit key for tile
    */
   uint64_t GetMapKey() {
-    return MbTileDescriptor::GetMapKey(m_zoomLevel, m_tile_x, m_tile_y);
+    return MbTileDescriptor::GetMapKey(m_zoom_level, m_tile_x, m_tile_y);
   }
 
   static int Long2tilex(double lon, int z) {

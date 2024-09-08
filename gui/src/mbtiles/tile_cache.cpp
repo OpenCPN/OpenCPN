@@ -25,7 +25,7 @@ std::mutex& TileCache::GetMutex(uint64_t tile_id) {
 }
 
 std::mutex& TileCache::GetMutex(const SharedTilePtr& tile) {
-  uint64_t key = MbTileDescriptor::GetMapKey(tile->m_zoomLevel, tile->m_tile_x,
+  uint64_t key = MbTileDescriptor::GetMapKey(tile->m_zoom_level, tile->m_tile_x,
                                              tile->m_tile_y);
   return TileCache::GetMutex(key);
 }
