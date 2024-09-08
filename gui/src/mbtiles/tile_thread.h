@@ -52,7 +52,7 @@ public:
    * safe.
    * @param tile Pointer to tile to load
    */
-  void RequestTile(MbTileDescriptor* tile);
+  void RequestTile(SharedTilePtr tile);
 
   /** @brief Request the thread to stop/delete itself. */
   void RequestStop();
@@ -83,7 +83,7 @@ private:
    * Load bitmap data of a tile from the MbTiles file to the tile cache
    * @param tile Pointer to the tile to be loaded
    */
-  void LoadTile(MbTileDescriptor* tile);
+  void LoadTile(SharedTilePtr tile);
 };
 
 #endif /* _MBTILESTHREAD_H_ */

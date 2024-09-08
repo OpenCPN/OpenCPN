@@ -114,9 +114,9 @@ protected:
    * @param tile Pointer to the tile descriptor to be prepared
    * @return  true if the tile is ready to be rendered, false else.
    */
-  bool GetTileTexture(MbTileDescriptor* tile);
+  bool GetTileTexture(SharedTilePtr tile);
   void FlushTiles(void);
-  bool RenderTile(MbTileDescriptor* tile, int zoom_level,
+  bool RenderTile(SharedTilePtr tile, int zoom_level,
                   const ViewPort& vpoint);
 
   //    Protected Data

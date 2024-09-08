@@ -5,11 +5,15 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 
 #include "chartbase.h"
 #include "glChartCanvas.h"
 
-/** Per tile descriptor. */
+class MbTileDescriptor;  // forward
+
+using SharedTilePtr = std::shared_ptr<MbTileDescriptor>;
+
 class MbTileDescriptor {
 public:
   int m_tile_x;

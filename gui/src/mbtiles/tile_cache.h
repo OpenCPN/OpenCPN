@@ -18,7 +18,7 @@ class TileCache {
 
 private:
   const double kEps = 6e-6;  // about 1cm on earth's surface at equator
-  std::unordered_map<uint64_t, MbTileDescriptor*> tile_map;
+  std::unordered_map<uint64_t, SharedTilePtr> tile_map;
   const int m_min_zoom;
   const int m_max_zoom;
   const int m_nb_zoom;
@@ -40,10 +40,10 @@ public:
    * available, the mutex returned might collide with another id causing
    * random serialization.
    */
-  static std::mutex& GetMutex(const MbTileDescriptor* tile);
+  static std::mutex& GetMutex(const SharedTilePtr& tile);
 
   /** Flush the tile cache, including OpenGL texture memory if needed */
-  void Flush();
+  void Flush() { tile_map.clear(); }
 
   /**
    * Get the north limit of the cache area for a given zoom in WMTS coordinates.
@@ -73,7 +73,7 @@ public:
    *  @param y Tile y coordinate.
    *  @return Pointer to tile
    */
-  MbTileDescriptor* GetTile(int z, int x, int y);
+  SharedTilePtr GetTile(int z, int x, int y);
 
   /**
    *  Reduce the size of the cache if it exceeds the given limit. Must

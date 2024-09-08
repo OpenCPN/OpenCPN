@@ -607,7 +607,7 @@ bool ChartMbTiles::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint) {
   return true;
 }
 
-bool ChartMbTiles::GetTileTexture(MbTileDescriptor* tile) {
+bool ChartMbTiles::GetTileTexture(SharedTilePtr tile) {
   if (!m_db) return false;
   m_tile_count++;
   // Is the texture ready to be rendered ?
@@ -704,7 +704,7 @@ wxPoint2DDouble ChartMbTiles::GetDoublePixFromLL(ViewPort& vp, double lat,
                          (vp.pix_height / 2.0) - dyr);
 }
 
-bool ChartMbTiles::RenderTile(MbTileDescriptor* tile, int zoom_level,
+bool ChartMbTiles::RenderTile(SharedTilePtr tile, int zoom_level,
                               const ViewPort& vpoint) {
 #ifdef ocpnUSE_GL
   ViewPort vp = vpoint;
@@ -931,7 +931,7 @@ bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext& glc,
 
     for (int iy = bot_tile; iy <= top_tile; iy++) {
       for (int ix = left_tile; ix <= right_tile; ix++) {
-        MbTileDescriptor* tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
+        SharedTilePtr tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
 
         if (!region.IntersectOut(tile->m_box)) {
           if (RenderTile(tile, zoomFactor, vp)) maxren_zoom = zoomFactor;
@@ -959,7 +959,7 @@ bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext& glc,
 
       for (int iy = bot_tile; iy <= top_tile; iy++) {
         for (int ix = left_tile; ix <= right_tile; ix++) {
-          MbTileDescriptor* tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
+          SharedTilePtr tile = m_tile_cache->GetTile(zoomFactor, ix, iy);
 
           if (!region.IntersectOut(tile->m_box))
             RenderTile(tile, zoomFactor, vp);

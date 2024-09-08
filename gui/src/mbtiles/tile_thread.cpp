@@ -18,7 +18,7 @@ void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS* ep) {
  * safe.
  * @param tile Pointer to the tile to load
  */
-void MbtTilesThread::RequestTile(MbTileDescriptor* tile) {
+void MbtTilesThread::RequestTile(SharedTilePtr tile) {
   tile->m_requested = true;
   m_tile_queue.Push(tile);
 }
@@ -44,7 +44,7 @@ wxThread::ExitCode MbtTilesThread::Entry() {
 
 #endif
 
-  MbTileDescriptor* tile;
+  SharedTilePtr tile;
 
   do {
     // Wait for the next job
@@ -70,7 +70,7 @@ wxThread::ExitCode MbtTilesThread::Entry() {
   return (wxThread::ExitCode)0;
 }
 
-void MbtTilesThread::LoadTile(MbTileDescriptor* tile) {
+void MbtTilesThread::LoadTile(SharedTilePtr tile) {
   std::lock_guard lock(TileCache::GetMutex(tile));
 
   // If the tile has not been found in the SQL database in a previous attempt,

@@ -16,7 +16,7 @@ public:
    *  Push a tile to the queue.
    *  @param tile Pointer to tile descriptor to be pushed.
    */
-  void Push(MbTileDescriptor* tile) {
+  void Push(SharedTilePtr tile) {
     {
       std::lock_guard lock(m_mutex);
       m_tile_list.push_back(tile);
@@ -30,10 +30,10 @@ public:
    *
    *  @return Pointer to tile descriptor
    */
-  MbTileDescriptor* Pop() {
+  SharedTilePtr Pop() {
     std::unique_lock lock(m_mutex);
     m_cv.wait(lock, [&] { return m_tile_list.size() > 0; });
-    MbTileDescriptor* tile = m_tile_list.at(0);
+    auto  tile = m_tile_list.at(0);
     m_tile_list.erase(m_tile_list.cbegin());
     return tile;
   }
@@ -45,7 +45,7 @@ public:
   }
 
 private:
-  std::vector<MbTileDescriptor*> m_tile_list;
+  std::vector<SharedTilePtr> m_tile_list;
   std::mutex m_mutex;
   std::condition_variable m_cv;
 };
