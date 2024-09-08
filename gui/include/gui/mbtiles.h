@@ -116,8 +116,7 @@ protected:
    */
   bool GetTileTexture(SharedTilePtr tile);
   void FlushTiles(void);
-  bool RenderTile(SharedTilePtr tile, int zoom_level,
-                  const ViewPort& vpoint);
+  bool RenderTile(SharedTilePtr tile, int zoom_level, const ViewPort& vpoint);
 
   //    Protected Data
 
@@ -134,7 +133,7 @@ protected:
 
   int m_min_zoom;
   int m_max_zoom;
-  TileCache* m_tile_cache;
+  std::unique_ptr<TileCache> m_tile_cache;
   LLRegion m_min_zoom_region;
   wxBitmapType m_image_type;
   int m_last_clean_zoom;
@@ -143,12 +142,12 @@ protected:
 
   MbTilesScheme m_scheme;
 
-  SQLite::Database* m_db;
+  std::shared_ptr<SQLite::Database> m_db;
   int m_n_tiles;
   std::string m_format;
 
   uint32_t m_tile_count;
-  MbtTilesThread* m_worker_thread;
+  std::unique_ptr<MbtTilesThread> m_worker_thread;
 
 #ifdef ocpnUSE_GL
   GLShaderProgram* m_tile_shader_program;

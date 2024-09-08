@@ -188,14 +188,6 @@ ChartMbTiles::~ChartMbTiles() {
   // Stop the worker thread before destroying this instance
   StopThread();
   FlushTiles();
-
-  if (m_tile_cache) {
-    delete m_tile_cache;
-  }
-
-  if (m_db) {
-    delete m_db;
-  }
 }
 
 ThumbData* ChartMbTiles::GetThumbData() { return NULL; }
@@ -407,8 +399,8 @@ InitReturn ChartMbTiles::Init(const wxString& name, ChartInitFlag init_flags) {
   m_Chart_Scale = osm_zoom_scale[m_max_zoom];
 
   // Initialize the tile data structures
-  m_tile_cache = new TileCache(m_min_zoom, m_max_zoom, m_lon_min, m_lat_min,
-                               m_lon_max, m_lat_max);
+  m_tile_cache = std::make_unique<TileCache>(m_min_zoom, m_max_zoom, m_lon_min,
+                                             m_lat_min, m_lon_max, m_lat_max);
 
   LLRegion covr_region;
 
@@ -564,7 +556,7 @@ InitReturn ChartMbTiles::PostInit(void) {
   wxCharBuffer utf8CB = m_FullPath.ToUTF8();  // the UTF-8 buffer
   if (utf8CB.data()) name_UTF8 = utf8CB.data();
 
-  m_db = new SQLite::Database(name_UTF8);
+  m_db = std::make_unique<SQLite::Database>(name_UTF8);
   m_db->exec("PRAGMA locking_mode=EXCLUSIVE");
   m_db->exec("PRAGMA cache_size=-10000");
 
@@ -1002,9 +994,8 @@ bool ChartMbTiles::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
 
 bool ChartMbTiles::StartThread() {
   // Create the worker thread
-  m_worker_thread = new MbtTilesThread(m_db);
+  m_worker_thread = std::make_unique<MbtTilesThread>(m_db);  // FIXME (leamas)
   if (m_worker_thread->Run() != wxTHREAD_NO_ERROR) {
-    delete m_worker_thread;
     m_worker_thread = nullptr;
     // Not beeing able to create the worker thread is really a bad situation,
     // never supposed to happen. So we trigger a fatal error.

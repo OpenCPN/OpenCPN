@@ -39,7 +39,7 @@ public:
    * Create worker thread instance.
    * @param pDB Pointer to SQL database handler.
    */
-  MbtTilesThread(SQLite::Database* db)
+  MbtTilesThread(std::shared_ptr<SQLite::Database> db)
       : wxThread(wxTHREAD_DETACHED),
         m_exit_thread(false),
         m_finished(false),
@@ -70,8 +70,8 @@ private:
   /// The queue storing all the tile requests
   TileQueue m_tile_queue;
 
-  /// Pointer the SQL object managing the MbTiles file
-  SQLite::Database* m_db;
+  /// Pointer to SQL object managing the MbTiles file
+  std::shared_ptr<SQLite::Database> m_db;
 
   /**
    * @brief  Worker thread main loop.
