@@ -37,10 +37,6 @@
 enum class MbTilesType : std::int8_t { BASE, OVERLAY };
 enum class MbTilesScheme : std::int8_t { XYZ, TMS };
 
-namespace SQLite {
-class Database;
-}
-
 class ChartMbTiles : public ChartBase {
 public:
   ChartMbTiles();

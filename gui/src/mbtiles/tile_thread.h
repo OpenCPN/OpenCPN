@@ -54,7 +54,7 @@ public:
    */
   void RequestTile(SharedTilePtr tile);
 
-  /** @brief Request the thread to stop/delete itself. */
+  /** Request the thread to stop/delete itself. */
   void RequestStop();
 
   /** Return number of tiles in worker thread queue. */
@@ -74,7 +74,7 @@ private:
   std::shared_ptr<SQLite::Database> m_db;
 
   /**
-   * @brief  Worker thread main loop.
+   * Worker thread main loop.
    * @return Always 0
    */
   virtual ExitCode Entry();

@@ -32,8 +32,8 @@ std::mutex& TileCache::GetMutex(const SharedTilePtr& tile) {
 
 SharedTilePtr TileCache::GetTile(int z, int x, int y) {
   uint64_t index = MbTileDescriptor::GetMapKey(z, x, y);
-  auto ref = tile_map.find(index);
-  if (ref != tile_map.end()) {
+  auto ref = m_tile_map.find(index);
+  if (ref != m_tile_map.end()) {
     // The tile is in the cache
     ref->second->SetTimestamp();
     return ref->second;
@@ -42,25 +42,25 @@ SharedTilePtr TileCache::GetTile(int z, int x, int y) {
   // The tile is not in the cache : create an empty one and add it to the tile
   // map and list
   auto tile = std::make_shared<MbTileDescriptor>(z, x, y);
-  tile_map[index] = tile;
+  m_tile_map[index] = tile;
   return tile;
 }
 
 void TileCache::CleanCache(uint32_t max_tiles) {
-  if (tile_map.size() <= max_tiles) return;
+  if (m_tile_map.size() <= max_tiles) return;
 
   // Create a sorted list of keys, oldest first.
   std::vector<uint64_t> keys;
-  for (auto& kv : tile_map) keys.push_back(kv.first);
+  for (auto& kv : m_tile_map) keys.push_back(kv.first);
   auto compare = [&](const uint64_t lhs, const uint64_t rhs) {
-    return tile_map[lhs]->m_last_used < tile_map[rhs]->m_last_used;
+    return m_tile_map[lhs]->m_last_used < m_tile_map[rhs]->m_last_used;
   };
   std::sort(keys.begin(), keys.end(), compare);
 
-  for (size_t i = 0; i < tile_map.size() - max_tiles; i += 1) {
-    std::lock_guard lock(TileCache::GetMutex(tile_map[keys[i]]));
-    auto tile = tile_map[keys[i]];
-    tile_map.erase(keys[i]);
+  for (size_t i = 0; i < m_tile_map.size() - max_tiles; i += 1) {
+    std::lock_guard lock(TileCache::GetMutex(m_tile_map[keys[i]]));
+    auto tile = m_tile_map[keys[i]];
+    m_tile_map.erase(keys[i]);
   }
 }
 
@@ -72,11 +72,11 @@ void TileCache::DeepCleanCache() {
   auto age_limit = std::chrono::duration<int>(5);  // 5 seconds
 
   std::vector<uint64_t> keys;
-  for (auto& kv : tile_map) keys.push_back(kv.first);
+  for (auto& kv : m_tile_map) keys.push_back(kv.first);
 
   for (size_t i = 0; i < keys.size(); i += 1) {
-    std::lock_guard lock(TileCache::GetMutex(tile_map[keys[i]]));
-    auto tile = tile_map[keys[i]];
+    std::lock_guard lock(TileCache::GetMutex(m_tile_map[keys[i]]));
+    auto tile = m_tile_map[keys[i]];
     const std::chrono::duration<double> elapsed_seconds{time_now -
                                                         tile->m_last_used};
 
@@ -85,7 +85,7 @@ void TileCache::DeepCleanCache() {
     //  After some time, it is likely they never will be needed in short term.
     //  So safe to delete, and reload as necessary.
     if (elapsed_seconds > age_limit) {
-      tile_map.erase(keys[i]);
+      m_tile_map.erase(keys[i]);
     }
   }
 }

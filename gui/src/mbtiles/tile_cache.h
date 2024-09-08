@@ -18,7 +18,7 @@ class TileCache {
 
 private:
   const double kEps = 6e-6;  // about 1cm on earth's surface at equator
-  std::unordered_map<uint64_t, SharedTilePtr> tile_map;
+  std::unordered_map<uint64_t, SharedTilePtr> m_tile_map;
   const int m_min_zoom;
   const int m_max_zoom;
   const int m_nb_zoom;
@@ -43,7 +43,7 @@ public:
   static std::mutex& GetMutex(const SharedTilePtr& tile);
 
   /** Flush the tile cache, including OpenGL texture memory if needed */
-  void Flush() { tile_map.clear(); }
+  void Flush() { m_tile_map.clear(); }
 
   /**
    * Get the north limit of the cache area for a given zoom in WMTS coordinates.
@@ -63,7 +63,7 @@ public:
    *  Get the current cache size.
    *  @return Number of tiles in cache.
    */
-  uint32_t GetCacheSize() const { return tile_map.size(); }
+  uint32_t GetCacheSize() const { return m_tile_map.size(); }
 
   /**
    *  Retreive a tile from cache. If the tile is not present an empty tile
