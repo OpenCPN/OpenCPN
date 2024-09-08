@@ -28,6 +28,7 @@ void MbtTilesThread::RequestStop() {
   m_exit_thread = true;
   m_tile_queue.Push(nullptr);
   while (!m_finished) {
+    wxYield();
   }
 }
 
