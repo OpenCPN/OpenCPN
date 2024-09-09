@@ -2958,6 +2958,15 @@ static wxFileName exportFileName(wxWindow *parent,
   // MS-DOS file systems have many more
   validName.Replace(_T("/"), _T("-"));
   validName.Replace(_T(":"), _T("_"));
+
+#ifdef __ANDROID__
+  if (!validName.EndsWith(".gpx")) {
+    wxFileName fn(validName);
+    fn.ClearExt();
+    fn.SetExt("gpx");
+    validName = fn.GetFullName();
+  }
+#endif
   int response = g_Platform->DoFileSelectorDialog(
       parent, &path, _("Export GPX file"), g_gpx_path, validName, wxT("*.gpx"));
 
