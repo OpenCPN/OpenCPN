@@ -4,6 +4,7 @@
 #include <mutex>
 
 #include "tile_descr.h"
+#include "observable_evtvar.h"
 
 /** Manage the tiles of a mbtiles file. */
 class TileCache {
@@ -23,10 +24,14 @@ private:
   const int m_max_zoom;
   const int m_nb_zoom;
   const std::vector<ZoomDescriptor> zoom_table;
+  ObsListener delete_listener;
 
 public:
   TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min,
             float lon_max, float lat_max);
+
+  /** Notified with a GLUint and const char* when a tile goes out of scope. */
+  EventVar on_delete;
 
   /**
    * Return mutex to lock given tile. There is a fixed number of mutexes

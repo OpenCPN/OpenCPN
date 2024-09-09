@@ -9,10 +9,13 @@
 
 #include "chartbase.h"
 #include "glChartCanvas.h"
+#include "observable_evtvar.h"
 
 class MbTileDescriptor;  // forward
 
 using SharedTilePtr = std::shared_ptr<MbTileDescriptor>;
+
+static const double kEps = 6e-6;  // about 1cm on earth's surface at equator
 
 class MbTileDescriptor {
 public:
@@ -31,7 +34,7 @@ public:
   bool m_requested;
 
   /// Pointer to the decompressed tile image
-  std::atomic<unsigned char*> m_teximage;
+  unsigned char* m_teximage;
 
   /// Identifier of the tile texture in OpenGL memory
   GLuint m_gl_texture_name;
@@ -39,7 +42,10 @@ public:
   /// Set to true if the tile has not been found into the SQL database.
   std::atomic<bool> m_is_available;
 
-  MbTileDescriptor(int zoom_level, int x, int y)
+  /** Notified on delete. */
+  EventVar& m_on_delete;
+
+  MbTileDescriptor(int zoom_level, int x, int y, EventVar& on_delete)
       : m_tile_x(x),
         m_tile_y(y),
         m_zoom_level(zoom_level),
@@ -59,21 +65,18 @@ public:
         m_requested(false),
         m_teximage(nullptr),
         m_gl_texture_name(0),
-        m_is_available(true) {
+        m_is_available(true),
+        m_on_delete(on_delete) {
     m_box.Set(m_latmin, m_lonmin, m_latmax, m_lonmax);
     SetTimestamp();
   }
 
   virtual ~MbTileDescriptor() {
-    // Delete intermediate texture buffer if still allocated
-    if (m_teximage != nullptr) {
-      free(m_teximage);
-      m_teximage = nullptr;
-    }
-    // Delete OpenGL texture buffer if allocated
-    if (m_gl_texture_name > 0) {
-      glDeleteTextures(1, &m_gl_texture_name);
+    if (m_gl_texture_name || m_teximage) {
+      // Message to main thread: Deallocate GL buffers.
+      m_on_delete.Notify(static_cast<int>(m_gl_texture_name), m_teximage);
       m_gl_texture_name = 0;
+      m_teximage = nullptr;
     }
   }
   /**
@@ -133,9 +136,6 @@ public:
     m_last_used =
         duration_cast<milliseconds>(system_clock::now().time_since_epoch());
   }
-
-private:
-  const double kEps = 6e-6;  // about 1cm on earth's surface at equator
 };
 
 #endif /* _MBTILES_TILEDESCRIPTOR_H_ */

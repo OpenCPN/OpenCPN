@@ -90,8 +90,6 @@ static double osm_zoom_mpp[22];
 
 extern MyFrame* gFrame;
 
-static const double kEps = 6e-6;  // about 1cm on earth's surface at equator
-
 // Private tile shader source
 static const GLchar* tile_vertex_shader_source =
     "attribute vec2 aPos;\n"

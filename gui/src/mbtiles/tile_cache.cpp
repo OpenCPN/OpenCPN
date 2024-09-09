@@ -1,4 +1,5 @@
 #include "tile_cache.h"
+#include <memory>
 
 TileCache::TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min,
                      float lon_max, float lat_max)
@@ -16,7 +17,17 @@ TileCache::TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min,
           v[i].m_tile_y_max = Mtd::Lat2tiley(lat_max - kEps, zoom_factor);
         }
         return v;
-      }()) {}
+      }()) {
+  // Set up how to handle the ~MbTileDescriptor() message sent using
+  // on_delete.Notify(). The message contains GL resources to be deallocated.
+  auto action = [&](ObservedEvt& evt) {
+    auto teximage = static_cast<char*>(evt.GetClientData());
+    if (teximage) free(teximage);
+    auto gl_texture_name = static_cast<GLuint>(evt.GetInt());
+    if (gl_texture_name) glDeleteTextures(1, &gl_texture_name);
+  };
+  delete_listener.Init(on_delete, action);
+}
 
 std::mutex& TileCache::GetMutex(uint64_t tile_id) {
   static const int kMutexCount = 100;
@@ -41,7 +52,7 @@ SharedTilePtr TileCache::GetTile(int z, int x, int y) {
 
   // The tile is not in the cache : create an empty one and add it to the tile
   // map and list
-  auto tile = std::make_shared<MbTileDescriptor>(z, x, y);
+  auto tile = std::make_shared<MbTileDescriptor>(z, x, y, on_delete);
   m_tile_map[index] = tile;
   return tile;
 }
