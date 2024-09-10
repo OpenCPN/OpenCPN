@@ -99,6 +99,10 @@ set(_all_wx_libs
 )
 target_link_libraries(${PACKAGE_NAME} PRIVATE ${_all_wx_libs})
 
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-armhf")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/buildandroid/ndk/linux-atomic.o")
+endif ()
+
 add_compile_definitions(
   __WXQT__
   __OCPN__ANDROID__
