@@ -1,0 +1,158 @@
+= Coding Guidelines
+
+== Guidelines for Submitters
+
+=== General Principles
+
+Follow the https://google.github.io/styleguide/cppguide.html[Google Style Guide]
+besides exceptions found in this document for all `C++` code.
+
+Be aware that existing code may not always reflect current best practices or project preferences.
+The codebase evolves, and what was once standard may now be outdated. Refer to this document for up-to-date guidelines.
+
+=== Naming Conventions
+
+. File names: use `snake_case`. Use `.h` for headers. Keep reasonably short.
+. Variable names: use `lower_case_names`.
+. Class member variables: use `m_lower_case`.
+. Class and methods names: use `PascalCase`. Avoid upper case acronyms, use OcpnFoo and NmeaFoo rather than OCPNFoo and NMEAFoo.
+. Constants: Pascal case + a 'k' prefix: `kSomeConstantValue`
+
+=== C++ Practices
+
+Use C++ standard library components over wxWidgets and old style C equivalents:
+
+[options="header"]
+|===
+| Avoid (wxWidgets, C) | Use Instead (C++ Standard Library) |
+| `wxMutex` | `std::mutex` and `std::lock_guard` |
+| `wxHashTable` | `std::unordered_map` |
+| `wxList`, `wxArray` | `std::vector` or other STL containers |
+| `wxThread` | `std::thread`, `std::async` |
+| `wxString` | `std::string` or `std::wstring` |
+| `open()`   | `std::ifstream`, `std::ofstream`, etc |
+|===
+
+=== Memory Management
+
+. Do not use raw pointers and `new`/`delete`.
+  The exception is when raw pointers are required by external libraries
+  like wxWidgets.
+. Use `std::unique_ptr` or `std::shared_ptr` for better memory management.
+
+=== String Handling
+
+. Use double-quoted strings for unicode strings.
+. Do not use `_T()` or `wxT()` macros.
+See link:++https://docs.wxwidgets.org%2F3.2%2Fgroup__group__funcmacro__string.html%23ga437ea6ba615b75dac8603e96ec864160++[wxWidgets string guidelines].
+
+=== Exception handling
+OpenCPN is compiled with exceptions enabled to handle third party libraries.
+However, most of OpenCPN is not  exception safe. Thus:
+
+. Do not throw exceptions.
+. When using code which throws exceptions these should be caught as soon as possible
+
+=== Code Documentation
+
+. Document code in doxygen format,
+  see https://www.doxygen.nl/manual/docblocks.html[doxygen manual]
+. Almost everything is documented in the header files.
+. Omit `@brief` and `@details` tags. The first sentence automatically becomes the brief description.
+. Avoid redundant phrases like "This class is..."
+. Test generated documentation locally. See `manual` sub-directory.
+
+For an extensive example see
+https://github.com/OpenCPN/OpenCPN/blob/master/model/include/model/rest_server.h[rest_server.h],
+results in the http://opencpn.github.io/OpenCPN/api-docs/classAbstractRestServer.html[API docs]
+
+=== Error Handling and Logging
+
+. Use appropriate logging levels (DEBUG, INFO, WARNING, ERROR) consistently.
+. Don't silently fail or ignore errors.
+. Provide meaningful i18n error messages and context.
+
+=== Code Refactoring
+
+. When working with existing code, gradually refactor to comply with coding guidelines.
+. Do not submit large PRs that refactor a lot of code changes.
+
+== Code Formatting
+
+=== C/C++
+
+The sources have a uniform coding formatting based on the
+https://google.github.io/styleguide/cppguide.html#Formatting[Google Style].
+
+The style is defined in the _.clang-format_ file which when used
+by https://clang.llvm.org/docs/ClangFormat.html[clang-format] produces a
+correctly formatted source file.
+
+Since the 5.10 release all source file modifications must be processed by
+clang-format to be accepted. The recommended way to do this is using a git
+pre-commit hook which applies formatting when committing changes
+
+To do this, just install the pre-commit program from https://pre-commit.com/:
+
+    $ pip install pre-commit
+
+and then, in the project top directory
+
+    $ pre-commit install
+
+which will pick up the configuration from _.pre-commit-config.yaml_ which is
+part of the project.
+
+=== CMake
+
+Cmake file uses formatting defined by the _.cmake-format.yaml_ which when used
+with https://github.com/cheshirekow/cmake_format[cmake-format] produces
+correctly formatted files. This has been applied to all _cmake/*.cmake_ files
+and CMakeLists.txt.
+
+=== Using clang-format
+
+clang is part of the llvm tools. These are usually installed using package
+managers like choco (Windows), brew (MacOS) or apt (Debian/Ubuntu).
+
+To format a C, C++ or header file with clang-format with the project's default
+configuration use:
+
+    clang-format -i  <filename>
+
+=== Using  cmake-format
+
+Install cmake-format as described in
+https://github.com/cheshirekow/cmake_format[]. To format a single file use
+
+    cmake-format -i  <filename>
+
+=== Editor and IDE configuration
+
+There is a  _.editorconfig_ file in the top directory.
+This file could be used by most editors to define basic settings.
+
+There are no standard configurations available for IDEs like Visual Studio
+Code, Eclipse or CLion.
+
+== Guidelines for Reviewers
+
+=== Performance and Compatibility
+
+. Ensure changes do not reduce performance.
+. Verify existing functionality and plugin compatibility are maintained.
+
+=== Cross-Platform Considerations
+
+. Check for consistency across different platforms (Windows, Linux, macOS).
+. Be aware of platform-specific behaviors, especially for UI elements.
+
+=== Display Settings
+
+. Consider different display settings (e.g., scaled displays, dark modes).
+. Plugins should be High DPI Display Responsive.
+
+=== Version Control Best Practices
+
+. Write clear, concise commit messages.
+. Keep commits focused and atomic (one logical change per commit).
