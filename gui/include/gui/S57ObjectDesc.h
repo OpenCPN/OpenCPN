@@ -27,6 +27,11 @@
 
 #include <wx/string.h>
 
+/**
+ * Describes an S57 object (feature) in an Electronic Navigational Chart.
+ * Objects represent various maritime features such as buoys, lights, depth areas, land areas, etc. Each object has a specific class
+ * and set of attributes that define its characteristics.
+ */
 class S57ObjectDesc {
 public:
   wxString S57ClassName;

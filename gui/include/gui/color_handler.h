@@ -5,16 +5,24 @@
 #define _COLOR_HANDLER_H
 
 wxColour GetGlobalColor(wxString colorName);
+/**
+ * Enumeration of color types used in dialogs.
+ * This enum defines different color roles used in the application's dialogs.
+ */
 enum DialogColor {
-  DLG_BACKGROUND,
-  DLG_SELECTED_BACKGROUND,
-  DLG_UNSELECTED_BACKGROUND,
-  DLG_ACCENT,
-  DLG_SELECTED_ACCENT,
-  DLG_UNSELECTED_ACCENT,
-  DLG_TEXT,
-  DLG_HIGHLIGHT
+  DLG_BACKGROUND,             /**< Background color of the dialog */
+  DLG_SELECTED_BACKGROUND,    /**< Background color for selected items */
+  DLG_UNSELECTED_BACKGROUND,  /**< Background color for unselected items */
+  DLG_ACCENT,                 /**< Accent color */
+  DLG_SELECTED_ACCENT,        /**< Accent color for selected items */
+  DLG_UNSELECTED_ACCENT,      /**< Accent color for unselected items */
+  DLG_TEXT,                   /**< Text color */
+  DLG_HIGHLIGHT               /**< Highlight color */
 };
+
+/**
+ * Retrieves a dialog color based on its role in the application's dialogs.
+ */
 wxColour GetDialogColor(DialogColor color);
 
 #endif  // _COLOR_HANDLER_H

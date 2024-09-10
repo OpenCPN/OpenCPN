@@ -25,6 +25,10 @@
 #include "observable.h"
 #include "OCPN_Sound.h"
 
+/**
+ * Handles the AIS information GUI and sound alerts. Manages the display of AIS information and handles audio alerts
+ * related to AIS targets.
+ */
 class AisInfoGui : public wxEvtHandler {
 public:
   AisInfoGui();

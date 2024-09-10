@@ -126,9 +126,10 @@ enum {
 
 enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
 
-//----------------------------------------------------------------------------
-// ChartCanvas
-//----------------------------------------------------------------------------
+/**
+ * Chart display canvas.
+ * Manages the display of charts and overlays. Handles chart loading, panning, zooming, and rendering of charts, routes, tracks, etc.
+ */
 class ChartCanvas : public wxWindow {
   friend class glChartCanvas;
 

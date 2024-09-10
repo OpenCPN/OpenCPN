@@ -174,7 +174,9 @@ private:
   int nTableEntries;
   int nDirEntries;
 };
-
+/**
+ * Represents an entry in the chart table, containing information about a single chart.
+ */
 struct ChartTableEntry {
   ChartTableEntry() { Clear(); }
   ChartTableEntry(ChartBase &theChart, wxString &utf8Path);
@@ -298,12 +300,27 @@ public:
 
 WX_DECLARE_OBJARRAY(ChartTableEntry, ChartTable);
 
+/**
+ * Manages a database of charts, including reading, writing, and querying chart information.
+ */
 class ChartDatabase {
 public:
   ChartDatabase();
   virtual ~ChartDatabase() {};
 
+  /**
+   * Creates a new chart database from a list of directories.
+   * @param dir_array Array of chart directory information
+   * @param pprog Progress dialog for user feedback
+   */
   bool Create(ArrayOfCDI &dir_array, wxGenericProgressDialog *pprog);
+
+  /**
+   * Updates the chart database.
+   * @param dir_array Array of chart directory information
+   * @param bForce Force update even if no changes detected
+   * @param pprog Progress dialog for user feedback
+   */
   bool Update(ArrayOfCDI &dir_array, bool bForce,
               wxGenericProgressDialog *pprog);
 
@@ -416,6 +433,12 @@ class ChartGroup;
 
 WX_DEFINE_ARRAY_PTR(ChartGroup *, ChartGroupArray);
 
+/**
+ * Represents an individual component within a ChartGroup.
+ * Typically corresponds to a single chart or a subgroup within a ChartGroup. Maintains information about the element's name
+ * and any charts that are supposed to be part of this element but are
+ * currently missing or unavailable.
+ */
 class ChartGroupElement {
   // ChartGroupElements need nothing special to delete since
   // m_missing_name_array is a wxArrayString which manages
@@ -425,6 +448,17 @@ public:
   wxArrayString m_missing_name_array;
 };
 
+/**
+ * Represents a user-defined collection of logically related charts.
+ *
+ * Allows users to categorize and manage
+ * sets of nautical charts based on criteria such as geographical region, chart type,
+ * or specific voyages. Enhances chart management by enabling:
+ * - Efficient organization of large chart collections
+ * - Quick access to relevant charts for specific needs
+ * - Grouped operations like enabling/disabling multiple charts simultaneously
+ * - Simplified update management for sets of related charts
+ */
 class ChartGroup {
 public:
   wxString m_group_name;

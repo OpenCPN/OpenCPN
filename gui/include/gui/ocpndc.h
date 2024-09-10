@@ -55,6 +55,11 @@ void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 class wxGLCanvas;
 class glChartCanvas;
 
+/**
+ * Device context class that can use either wxDC or OpenGL for drawing.
+ * Provides a unified interface for drawing operations, abstracting the underlying
+ * context. Allows seamless switching between contexts and offers various drawing methods.
+ */
 class ocpnDC {
 public:
   ocpnDC(glChartCanvas &canvas);

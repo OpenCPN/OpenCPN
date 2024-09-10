@@ -27,6 +27,10 @@
 
 #include "AboutFrame.h"
 
+/**
+ * Implements the AboutFrame class with additional functionality. Extends AboutFrame
+ * and provides implementation for various event handlers and additional methods.
+ */
 class AboutFrameImpl : public AboutFrame {
 protected:
   void AboutFrameOnClose(wxCloseEvent& event) {

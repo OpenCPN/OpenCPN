@@ -96,6 +96,11 @@ class emboss_data;
 class Route;
 class ChartBaseBSB;
 
+/**
+ * OpenGL chart rendering canvas. Implements OpenGL-based rendering of charts
+ * and overlays. Handles initialization of OpenGL context, rendering loop,
+ * and interface with chart objects for drawing.
+ */
 class glChartCanvas : public wxGLCanvas {
 public:
   static bool CanClipViewport(const ViewPort &vp);

@@ -40,9 +40,10 @@
 class options;
 class ConnectionParamsPanel;
 
-//----------------------------------------------------------------------------
-// ConnectionsDialog
-//----------------------------------------------------------------------------
+/**
+ * Main dialog for managing data connections. Provides the main interface
+ * for viewing, adding, editing, and removing data connections in OpenCPN.
+ */
 class ConnectionsDialog : public wxEvtHandler {
 public:
   ConnectionsDialog();

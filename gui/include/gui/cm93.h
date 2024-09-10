@@ -287,9 +287,17 @@ public:
   bool m_bfoundZ;
 };
 
-//----------------------------------------------------------------------------
-// cm93 Chart object class
-//----------------------------------------------------------------------------
+/**
+ * Represents a single CM93 chart at a specific scale.
+ *
+ * CM93 charts are a proprietary vector chart format developed by C-Map. Unlike S57 charts,
+ * CM93 charts use a different data structure and cover the entire world in a seamless database.
+ * Key differences from S57 include:
+ * - Multi-scale coverage: CM93 data is organized into several discrete zoom levels.
+ * - Proprietary encoding: CM93 uses its own object and attribute encoding, requiring translation to S57 objects.
+ * - Global coverage: A single CM93 database covers the entire world, eliminating chart boundaries.
+ * - Efficient storage: Data is highly compressed and organized in a cell-based structure.
+ */
 class cm93chart : public s57chart {
 public:
   cm93chart();
@@ -400,6 +408,11 @@ private:
 //----------------------------------------------------------------------------
 class CM93OffsetDialog;
 
+/**
+ * Represents a composite CM93 chart covering multiple scales.
+ * Manages multiple cm93chart objects at different scales, providing a seamless multi-scale chart. Handles scale transitions,
+ * rendering, and querying across different chart scales.
+ */
 class cm93compchart : public s57chart {
 public:
   cm93compchart();
@@ -518,9 +531,10 @@ private:
 };
 
 class OCPNOffsetListCtrl;
-//----------------------------------------------------------------------------------------------------------
-//    CM93OffsetDialog Specification
-//----------------------------------------------------------------------------------------------------------
+/**
+ * Dialog for managing CM93 chart offsets.
+ * Allows users to view and adjust offsets for CM93 charts, which can be used to fine-tune chart positioning.
+ */
 class CM93OffsetDialog : public wxDialog {
   DECLARE_CLASS(CM93OffsetDialog)
   DECLARE_EVENT_TABLE()

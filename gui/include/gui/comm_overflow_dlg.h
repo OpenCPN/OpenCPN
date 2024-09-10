@@ -24,6 +24,10 @@
 
 #include "observable.h"
 
+/**
+ * A dialog for handling communication overflow notifications.
+ * This class manages a popup dialog that appears when communication overflows occur.
+ */
 class CommOverflowDlg {
 public:
   CommOverflowDlg(wxWindow* parent);

@@ -30,6 +30,10 @@
 #include "AISTargetListDialog.h"
 #include "ais.h"
 
+/**
+ * A custom list control for displaying AIS target information. Extends wxListCtrl
+ * to provide specialized functionality for displaying and managing AIS target data in OpenCPN.
+ */
 class OCPNListCtrl : public wxListCtrl {
 public:
   OCPNListCtrl(AISTargetListDialog* parent, wxWindowID id, const wxPoint& pos,

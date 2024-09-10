@@ -25,6 +25,12 @@
 #ifndef __EMBOSS_DATA_H__
 #define __EMBOSS_DATA_H__
 
+/**
+ * Stores emboss effect data for textures.
+ *
+ * Encapsulates data for applying emboss effects to textures in OpenCPN,
+ * enhancing the visual appearance of charts or UI elements with a 3D-like effect.
+ */
 class emboss_data {
 public:
   emboss_data() {

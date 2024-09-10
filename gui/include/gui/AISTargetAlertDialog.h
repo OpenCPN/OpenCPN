@@ -35,6 +35,7 @@
 class AisDecoder;
 class wxHtmlWindow;
 
+
 class OCPN_AlertDialog : public wxDialog {
   DECLARE_CLASS(OCPN_AlertDialog)
   DECLARE_EVENT_TABLE()
@@ -54,6 +55,10 @@ private:
   wxWindow* m_pparent;
 };
 
+/**
+ * Dialog for displaying AIS target alerts. Shows alerts for specific AIS targets,
+ * allowing user interaction such as acknowledging or silencing the alert.
+ */
 class AISTargetAlertDialog : public OCPN_AlertDialog {
   DECLARE_CLASS(AISTargetAlertDialog)
   DECLARE_EVENT_TABLE()
