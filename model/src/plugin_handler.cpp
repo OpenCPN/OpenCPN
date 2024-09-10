@@ -207,8 +207,9 @@ public:
     m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
     m_name = metadata.name;
     DEBUG_LOG << "Plugin: setting up, name: " << m_name;
-    DEBUG_LOG << "Plugin: init: abi: " << m_abi << ", abi_version: " << m_abi_version <<
-                 ", major ver: " << m_major_version;
+    DEBUG_LOG << "Plugin: init: abi: " << m_abi
+              << ", abi_version: " << m_abi_version
+              << ", major ver: " << m_major_version;
   }
   const std::string& abi() const { return m_abi; }
   const std::string& abi_version() const { return m_abi_version; }
@@ -229,8 +230,9 @@ public:
     m_abi = compatOs->name();
     m_abi_version = compatOs->version();
     m_major_version = ocpn::split(m_abi_version.c_str(), ".")[0];
-    DEBUG_LOG << "Host: init: abi: " << m_abi << ", abi_version: " << m_abi_version <<
-                 ", major ver: " << m_major_version;
+    DEBUG_LOG << "Host: init: abi: " << m_abi
+              << ", abi_version: " << m_abi_version
+              << ", major ver: " << m_major_version;
   }
 
   bool is_version_compatible(const Plugin& plugin) const {
@@ -747,8 +749,8 @@ static bool entry_set_install_path(struct archive_entry* entry,
   } else if (osSystemId & wxOS_MAC) {
     rv = apple_entry_set_install_path(entry, installPaths);
   } else {
-    MESSAGE_LOG << "set_install_path() invoked, unsupported platform " <<
-                 wxPlatformInfo::Get().GetOperatingSystemDescription();
+    MESSAGE_LOG << "set_install_path() invoked, unsupported platform "
+                << wxPlatformInfo::Get().GetOperatingSystemDescription();
     rv = false;
   }
 #endif
@@ -1235,7 +1237,8 @@ bool PluginHandler::ClearInstallData(const std::string plugin_name) {
 bool PluginHandler::DoClearInstallData(const std::string plugin_name) {
   std::string path = PluginHandler::fileListPath(plugin_name);
   if (!ocpn::exists(path)) {
-    MESSAGE_LOG << "Cannot find installation data for " << plugin_name << " (" << path << ")";
+    MESSAGE_LOG << "Cannot find installation data for " << plugin_name << " ("
+                << path << ")";
     return false;
   }
   std::vector<std::string> plug_paths = LoadLinesFromFile(path);
