@@ -433,13 +433,13 @@ if (MSVC)
 endif ()
 
 if (QT_ANDROID)
-  set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE Release)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   add_definitions(-DNOASSERT)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g")
-  set(CMAKE_C_FLAGS "-pthread -fPIC -g")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g -O2")
+  set(CMAKE_C_FLAGS "-pthread -fPIC -g -O2")
 
   add_compile_options(
     "-Wno-inconsistent-missing-override"
