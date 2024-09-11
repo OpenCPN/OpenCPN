@@ -1,8 +1,14 @@
-opencpn (1:5.10.2+dfsg-1ubuntu1~bpo20.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.10.2+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
   * New upstream release
+  * d/control: add b-d dbus, git
+  * d/control: Update Vcs link
+  * d/copyright: Update to sid
+  * d/rules: merge sid changes
+  * Drop upstreamed patches
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 11:53:24 +0200
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 13:58:08 +0200
 
 opencpn (1:5.10.0+dfsg-1ubuntu1~bpo20.04+2) focal; urgency=medium
 
