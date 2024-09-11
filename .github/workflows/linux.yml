@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - master
+      - v5.10.x
     paths-ignore:
       - 'manual/**'
   pull_request:
