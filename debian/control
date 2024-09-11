@@ -5,6 +5,7 @@ Priority: optional
 Build-Depends: debhelper-compat (= 12),
  cmake,
  dbus,
+ git,
  googletest,
  libarchive-dev,
  libbz2-dev,
