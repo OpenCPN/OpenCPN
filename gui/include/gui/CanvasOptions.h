@@ -101,7 +101,9 @@ private:
   wxChoice *m_pDispCat;
   wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights,
       *pCBENCAnchorDetails;
-      wxCheckBox *pCBShowAIS, *pCBAttenAIS, *pCBENCVisibleSectors, *pCBENCDataQuality;
+  wxCheckBox *pCBShowAIS, *pCBAttenAIS, *pCBENCVisibleSectors,
+      *pCBENCDataQuality;
+  bool m_bmode_change_while_hidden;  // Coming from compass icon click
 
   DECLARE_EVENT_TABLE()
 };

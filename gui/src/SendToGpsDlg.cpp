@@ -51,9 +51,10 @@ IMPLEMENT_DYNAMIC_CLASS(SendToGpsDlg, wxDialog)
 
 BEGIN_EVENT_TABLE(SendToGpsDlg, wxDialog)
 EVT_BUTTON(ID_STG_CANCEL, SendToGpsDlg::OnCancelClick)
-    EVT_BUTTON(ID_STG_OK, SendToGpsDlg::OnSendClick) END_EVENT_TABLE()
+EVT_BUTTON(ID_STG_OK, SendToGpsDlg::OnSendClick)
+END_EVENT_TABLE()
 
-        SendToGpsDlg::SendToGpsDlg() {
+    SendToGpsDlg::SendToGpsDlg() {
   m_itemCommListBox = NULL;
   m_pgauge = NULL;
   m_SendButton = NULL;

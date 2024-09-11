@@ -87,7 +87,6 @@ private:
 
 class PluginHandler {
 public:
-
   EventVar evt_download_ok;
   EventVar evt_download_failed;
 
@@ -137,9 +136,9 @@ public:
   const std::vector<PluginMetadata> getAvailable();
 
   /**
- * Return list of available, unique and compatible plugins from
- * configured XML catalog.
- */
+   * Return list of available, unique and compatible plugins from
+   * configured XML catalog.
+   */
   std::vector<PluginMetadata> getCompatiblePlugins();
 
   /** Map of available plugin targets -> number of occurences. */
@@ -187,13 +186,11 @@ private:
   std::vector<PluginMetadata> installed;
   CatalogData catalogData;
   std::string last_error_msg;
-  bool InstallPlugin(const std::string& path,std::string& filelist,
-                     const std::string metadata_path,
-                     bool only_metadata);
+  bool InstallPlugin(const std::string& path, std::string& filelist,
+                     const std::string metadata_path, bool only_metadata);
 
   bool explodeTarball(struct archive* src, struct archive* dest,
-                      std::string& filelist,
-                      const std::string& metadata_path,
+                      std::string& filelist, const std::string& metadata_path,
                       bool only_metadata);
   bool extractTarball(const std::string path, std::string& filelist,
                       const std::string metadata_path = "",

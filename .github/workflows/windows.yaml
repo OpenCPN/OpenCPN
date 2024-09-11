@@ -64,7 +64,7 @@ jobs:
         run: |
           set -x
           cd build
-          cmake --install .
+          cmake --build . --config $CONFIGURATION --target install
           cmake --build . --config $CONFIGURATION --target run-tests
 
       - name: Upload

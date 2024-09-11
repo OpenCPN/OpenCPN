@@ -94,7 +94,6 @@ public:
                  wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxSTAY_ON_TOP),
         Helpers(this),
         m_show_edit(true) {
-
     HIDE = "<span foreground=\'blue\'>";
     HIDE += _("Hide");
     HIDE += " &lt;&lt;&lt;</span>";

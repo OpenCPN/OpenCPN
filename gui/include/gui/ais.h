@@ -63,7 +63,6 @@ class ChartCanvas;
 #define TIMER_AIS_MSEC 998
 #define TIMER_AIS_AUDIO_MSEC 2000
 
-
 enum {
   tlTRK = 0,
   tlNAME,
@@ -96,7 +95,6 @@ extern wxString ais8_001_22_notice_names[];
 WX_DEFINE_SORTED_ARRAY(AisTargetData *, ArrayOfAISTarget);
 
 //      Implement the AISTargetList as a wxHashMap
-
 
 void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp);
 void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp);

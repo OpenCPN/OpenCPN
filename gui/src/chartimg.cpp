@@ -3885,7 +3885,7 @@ int ChartBaseBSB::BSBScanScanline(wxInputStream *pinStream) {
 //      using /02 settings
 
 inline void memset_short(unsigned char *dst, unsigned char cbyte, int count) {
-#if 0 //def __MSVC__
+#if 0  // def __MSVC__
   __asm {
         pushf  // save Direction flag
         cld  // set direction "up"
@@ -3903,8 +3903,8 @@ inline void memset_short(unsigned char *dst, unsigned char cbyte, int count) {
 // this is chosen as it is also the opengl tile size so should work well
 #define TILE_SIZE 512
 
-//#define USE_OLD_CACHE  // removed this (and simplify code below) once the new
-//method is verified #define PRINT_TIMINGS  // enable for profiling
+// #define USE_OLD_CACHE  // removed this (and simplify code below) once the new
+// method is verified #define PRINT_TIMINGS  // enable for profiling
 
 #ifdef PRINT_TIMINGS
 class OCPNStopWatch {
@@ -3976,7 +3976,7 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
 #else
     pt->pTileOffset = (TileOffsetCache *)calloc(
         sizeof(TileOffsetCache) * (Size_X / TILE_SIZE + 1), 1);
-    pt->pPix = (unsigned char *)malloc(pt->size );
+    pt->pPix = (unsigned char *)malloc(pt->size);
 #endif
     if (pline_table[y] == 0 || pline_table[y + 1] == 0) FAIL;
 
@@ -3988,20 +3988,20 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
       FAIL;
 
 #ifdef USE_OLD_CACHE
-    if (pt->size  > ifs_bufsize) {
+    if (pt->size > ifs_bufsize) {
       unsigned char *tmp = ifs_buf;
-      if (!(ifs_buf = (unsigned char *)realloc(ifs_buf, pt->size ))) {
+      if (!(ifs_buf = (unsigned char *)realloc(ifs_buf, pt->size))) {
         free(tmp);
         FAIL;
       }
-      ifs_bufsize = pt->size ;
+      ifs_bufsize = pt->size;
     }
 
     lp = ifs_buf;
 #else
     lp = pt->pPix;
 #endif
-    ifs_bitmap->Read(lp, pt->size );
+    ifs_bitmap->Read(lp, pt->size);
 
 #ifdef USE_OLD_CACHE
     pCL = pt->pPix;
@@ -4016,8 +4016,7 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
         } else {
           byNext = 0;
         }
-      }
-      while ((byNext & 0x80) != 0);
+      } while ((byNext & 0x80) != 0);
       goto nocachestart;
     }
     pCL = ifs_buf;
@@ -4042,8 +4041,7 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
       } else {
         byNext = 0;
       }
-    }
-    while ((byNext & 0x80) != 0);
+    } while ((byNext & 0x80) != 0);
 
     //      Setup masking values.
     nValueShift = 7 - nColorSize;

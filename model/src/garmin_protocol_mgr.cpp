@@ -73,7 +73,6 @@
 #include "androidUTIL.h"
 #endif
 
-
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
@@ -86,7 +85,6 @@ static const long long lNaN = 0xfff8000000000000;
 DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b,
             0xba, 0xe7, 0x22, 0xc0);
 #endif
-
 
 //----------------------------------------------------------------------------
 // Garmin Device Management
@@ -129,7 +127,7 @@ END_EVENT_TABLE()
 GarminProtocolHandler::GarminProtocolHandler(wxString port,
                                              wxEvtHandler *MessageTarget,
                                              bool bsel_usb) {
-  //m_pparent = parent;
+  // m_pparent = parent;
   m_pMainEventHandler = MessageTarget;
   m_garmin_serial_thread = NULL;
   m_garmin_usb_thread = NULL;
@@ -259,9 +257,8 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent &event) {
         gusb_cmd_send((const garmin_usb_packet *)pvt_on, sizeof(pvt_on));
 
         //    Start the pump
-        m_garmin_usb_thread =
-            new GARMIN_USB_Thread(this, m_pMainEventHandler,
-                                  (wxIntPtr)m_usb_handle, m_max_tx_size);
+        m_garmin_usb_thread = new GARMIN_USB_Thread(
+            this, m_pMainEventHandler, (wxIntPtr)m_usb_handle, m_max_tx_size);
         m_Thread_run_flag = 1;
         m_garmin_usb_thread->Run();
       }
@@ -788,8 +785,8 @@ void *GARMIN_Serial_Thread::Entry() {
 
           //    Copy the message into a vector for tranmittal upstream
           auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char>* vec = buffer.get();
-          for (unsigned int i=0 ; i < message.Length() ; i++){
+          std::vector<unsigned char> *vec = buffer.get();
+          for (unsigned int i = 0; i < message.Length(); i++) {
             vec->push_back(message[i]);
           }
           if (m_pMessageTarget) {
@@ -829,7 +826,7 @@ thread_exit_2:
 
 thread_exit:
 
-#endif  //#ifdef USE_GARMINHOST
+#endif  // #ifdef USE_GARMINHOST
 
   m_parent->m_Thread_run_flag = -1;  // in GarminProtocolHandler
   return 0;
@@ -898,8 +895,8 @@ void *GARMIN_USB_Thread::Entry() {
 
       //    Copy the message into a vector for tranmittal upstream
       auto buffer = std::make_shared<std::vector<unsigned char>>();
-      std::vector<unsigned char>* vec = buffer.get();
-      for (unsigned int i=0 ; i < message.Length() ; i++){
+      std::vector<unsigned char> *vec = buffer.get();
+      for (unsigned int i = 0; i < message.Length(); i++) {
         vec->push_back(message[i]);
       }
       if (m_pMessageTarget) {
@@ -952,8 +949,8 @@ void *GARMIN_USB_Thread::Entry() {
 
         //    Copy the message into a vector for tranmittal upstream
         auto buffer = std::make_shared<std::vector<unsigned char>>();
-        std::vector<unsigned char>* vec = buffer.get();
-        for (unsigned int i=0 ; i < message.Length() ; i++){
+        std::vector<unsigned char> *vec = buffer.get();
+        for (unsigned int i = 0; i < message.Length(); i++) {
           vec->push_back(message[i]);
         }
         if (m_pMessageTarget) {

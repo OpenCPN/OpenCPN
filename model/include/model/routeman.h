@@ -54,7 +54,7 @@
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
 
-class Routeman;   // forward
+class Routeman;     // forward
 class WayPointman;  // forward
 
 extern bool g_bPluginHandleAutopilotRoute;
@@ -68,7 +68,7 @@ extern RoutePoint *pAnchorWatchPoint2;
 
 extern float g_ChartScaleFactorExp;
 
-extern Routeman* g_pRouteMan;
+extern Routeman *g_pRouteMan;
 
 //    List definitions for Waypoint Manager Icons
 
@@ -81,14 +81,13 @@ WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
 
 /** Callbacks for RoutePropDlg */
 struct RoutePropDlgCtx {
-  std::function<void(Route*)> set_route_and_update;
-  std::function<void(Route*, RoutePoint*)> set_enroute_point;
-  std::function<void(Route*)> hide;
-  RoutePropDlgCtx() :
-      set_route_and_update([&](Route* r) {}),
-      set_enroute_point([&](Route* r, RoutePoint* rt) {}),
-      hide([&](Route* r) {})
-      { }
+  std::function<void(Route *)> set_route_and_update;
+  std::function<void(Route *, RoutePoint *)> set_enroute_point;
+  std::function<void(Route *)> hide;
+  RoutePropDlgCtx()
+      : set_route_and_update([&](Route *r) {}),
+        set_enroute_point([&](Route *r, RoutePoint *rt) {}),
+        hide([&](Route *r) {}) {}
 };
 
 /** Routeman callbacks. */
@@ -101,33 +100,28 @@ struct RoutemanDlgCtx {
   std::function<void()> route_mgr_dlg_update_list_ctrl;
 
   RoutemanDlgCtx()
-     : confirm_delete_ais_mob([]() { return true; }),
-       get_global_colour([](wxString c) { return *wxBLACK; }),
-       show_with_fresh_fonts([]() { }),
-       clear_console_background([]() { }),
-       route_mgr_dlg_update_list_ctrl([]() { })
-       {}
+      : confirm_delete_ais_mob([]() { return true; }),
+        get_global_colour([](wxString c) { return *wxBLACK; }),
+        show_with_fresh_fonts([]() {}),
+        clear_console_background([]() {}),
+        route_mgr_dlg_update_list_ctrl([]() {}) {}
 };
-
 
 //----------------------------------------------------------------------------
 //   Routeman
 //----------------------------------------------------------------------------
 //
 class Routeman {
-
-friend class RoutemanGui;
+  friend class RoutemanGui;
 
 public:
   Routeman(struct RoutePropDlgCtx prop_dlg_ctx,
-           struct RoutemanDlgCtx route_dlg_ctx,
-           NmeaLog& nmea_log);
+           struct RoutemanDlgCtx route_dlg_ctx, NmeaLog &nmea_log);
   ~Routeman();
 
   bool DeleteTrack(Track *pTrack);
-  bool DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes);
-  void DeleteAllRoutes(NavObjectChanges* nav_obj_changes);
-
+  bool DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes);
+  void DeleteAllRoutes(NavObjectChanges *nav_obj_changes);
 
   bool IsRouteValid(Route *pRoute);
 
@@ -176,7 +170,7 @@ public:
 
   wxString GetRouteReverseMessage(void);
   wxString GetRouteResequenceMessage(void);
-  struct RoutemanDlgCtx &GetDlgContext(){ return m_route_dlg_ctx;}
+  struct RoutemanDlgCtx &GetDlgContext() { return m_route_dlg_ctx; }
 
   bool m_bDataValid;
 
@@ -190,7 +184,7 @@ public:
   EventVar json_leg_info;
 
   /** Notified when a message available as GetString() is sent to garmin. */
-  EventVar  on_message_sent;
+  EventVar on_message_sent;
 
   /** Notified when list of routes is updated (no data in event) */
   EventVar on_routes_update;
@@ -229,7 +223,7 @@ private:
   int m_arrival_test;
   struct RoutePropDlgCtx m_prop_dlg_ctx;
   struct RoutemanDlgCtx m_route_dlg_ctx;
-  NmeaLog& m_nmea_log;
+  NmeaLog &m_nmea_log;
 
   ObsListener msg_sent_listener;
   ObsListener active_route_listener;
@@ -242,8 +236,7 @@ private:
 typedef std::function<wxColour(wxString)> GlobalColourFunc;
 
 class WayPointman {
-
-friend class WayPointmanGui;
+  friend class WayPointmanGui;
 
 public:
   WayPointman(GlobalColourFunc colour_func);
@@ -256,7 +249,7 @@ public:
   int GetFIconImageListIndex(const wxBitmap *pbm);
   int GetNumIcons(void) { return m_pIconArray->Count(); }
   wxString CreateGUID(RoutePoint *pRP);
-  RoutePoint* FindWaypointByGuid(const std::string& guid);
+  RoutePoint *FindWaypointByGuid(const std::string &guid);
   RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
   RoutePoint *GetOtherNearbyWaypoint(double lat, double lon,
                                      double radius_meters,
@@ -279,7 +272,6 @@ public:
   bool AddRoutePoint(RoutePoint *prp);
   bool RemoveRoutePoint(RoutePoint *prp);
   RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
-
 
 private:
   wxImage CreateDimImage(wxImage &image, double factor);
@@ -304,4 +296,4 @@ private:
   GlobalColourFunc m_get_global_colour;
 };
 
-#endif // _ROUTEMAN_H__
+#endif  // _ROUTEMAN_H__

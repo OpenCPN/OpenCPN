@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
- /** \file gui_lib.h General purpose GUI support. */
+/** \file gui_lib.h General purpose GUI support. */
 
 #ifndef GUI_LIB_H__
 #define GUI_LIB_H__
@@ -35,7 +35,6 @@ class CopyableText : public wxTextCtrl {
 public:
   CopyableText(wxWindow* parent, const char* text);
 };
-
 
 wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
 wxFont GetOCPNGUIScaledFont(wxString item);
@@ -93,7 +92,9 @@ public:
   void OnClose(wxCloseEvent& event);
   void OnTimer(wxTimerEvent& evt);
   void RecalculateSize(void);
-  void OnHtmlLinkClicked( wxHtmlLinkEvent& event ) { wxLaunchDefaultBrowser(event.GetLinkInfo().GetHref()); }
+  void OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
+    wxLaunchDefaultBrowser(event.GetLinkInfo().GetHref());
+  }
 
 private:
   int m_style;
@@ -110,19 +111,19 @@ private:
 
 class TimedPopupWin : public wxWindow {
 public:
-  TimedPopupWin(wxWindow *parent, int timeout = -1);
+  TimedPopupWin(wxWindow* parent, int timeout = -1);
   ~TimedPopupWin();
 
-  void OnPaint(wxPaintEvent &event);
+  void OnPaint(wxPaintEvent& event);
 
-  void SetBitmap(wxBitmap &bmp);
-  wxBitmap *GetBitmap() { return m_pbm; }
-  void OnTimer(wxTimerEvent &event);
+  void SetBitmap(wxBitmap& bmp);
+  wxBitmap* GetBitmap() { return m_pbm; }
+  void OnTimer(wxTimerEvent& event);
   bool IsActive() { return isActive; }
   void IsActive(bool state) { isActive = state; }
 
 private:
-  wxBitmap *m_pbm;
+  wxBitmap* m_pbm;
   wxTimer m_timer_timeout;
   int m_timeout_sec;
   bool isActive;
@@ -130,15 +131,14 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-
 //-----------------------------------------------------------------------
 //          Dummy Text Control for global key events
 //-----------------------------------------------------------------------
 class DummyTextCtrl : public wxTextCtrl {
 public:
-  DummyTextCtrl(wxWindow *parent, wxWindowID id);
-  void OnChar(wxKeyEvent &event);
-  void OnMouseEvent(wxMouseEvent &event);
+  DummyTextCtrl(wxWindow* parent, wxWindowID id);
+  void OnChar(wxKeyEvent& event);
+  void OnMouseEvent(wxMouseEvent& event);
 
   wxTimer m_MouseWheelTimer;
   int m_mouse_wheel_oneshot;
@@ -146,6 +146,5 @@ public:
 
   DECLARE_EVENT_TABLE()
 };
-
 
 #endif  // GUI_LIB_H__

@@ -36,24 +36,24 @@
 
 class TrackPointGui {
 public:
-  TrackPointGui(const TrackPoint& point) : m_point(point) {}
+  TrackPointGui(const TrackPoint &point) : m_point(point) {}
   void Draw(ChartCanvas *cc, ocpnDC &dc);
-private:
-  const TrackPoint& m_point;
-};
 
+private:
+  const TrackPoint &m_point;
+};
 
 class TrackGui {
 public:
-  TrackGui(Track& track) : m_track(track) {}
-  void Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP, const LLBBox& box);
+  TrackGui(Track &track) : m_track(track) {}
+  void Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP, const LLBBox &box);
 
 protected:
   void Segments(ChartCanvas *cc, std::list<std::list<wxPoint> > &pointlists,
                 const LLBBox &box, double scale);
 
 private:
-  Track& m_track;
+  Track &m_track;
   void GetPointLists(ChartCanvas *cc,
                      std::list<std::list<wxPoint> > &pointlists, ViewPort &VP,
                      const LLBBox &box);
@@ -65,7 +65,6 @@ private:
   void AddPointToLists(ChartCanvas *cc,
                        std::list<std::list<wxPoint> > &pointlists, int &last,
                        int n);
-
 };
 
-#endif   // _TRACK_GUI_H
+#endif  // _TRACK_GUI_H

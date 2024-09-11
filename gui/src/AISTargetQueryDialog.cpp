@@ -47,7 +47,7 @@ extern ColorScheme global_color_scheme;
 extern wxString g_default_wp_icon;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern std::vector<Track*> g_TrackList;
+extern std::vector<Track *> g_TrackList;
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
 
@@ -169,7 +169,9 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
           pRouteManagerDialog->UpdateTrkListCtrl();
         Refresh(false);
 
-        if (wxID_YES == OCPNMessageBox(gFrame,
+        if (wxID_YES ==
+            OCPNMessageBox(
+                gFrame,
                 _("The recently captured track of this target has been "
                   "recorded.\nDo you want to continue recording until the end "
                   "of the current OpenCPN session?"),
@@ -366,21 +368,26 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
 
       m_adjustedFontSize--;
     }
-    target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
+    target_x = szv.x * 12 /
+               10;  // Making the winfow a bit wider than absolutely nesessary
+                    // gives a little better results in real world
   } else {
     wxSize szv = m_pQueryTextCtl->GetVirtualSize();
     int csz = g_Platform->getDisplaySize().x * 8 / 10;
     if ((szv.x) < csz) {
       if (szv.x > m_pQueryTextCtl->GetSize().x) target_x = szv.x;  // * 11/10;
     }
-    target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
+    target_x = szv.x * 12 /
+               10;  // Making the winfow a bit wider than absolutely nesessary
+                    // gives a little better results in real world
   }
 
 #ifdef __ANDROID__
   // Now adjust the font size used for the control buttons.
   // This adjustment makes sure that the two horizontal buttons are not wider
   // than the platform display allows. This may be a problem on phones,
-  // but probably never on normal computer displays. some platforms also don't support this at all
+  // but probably never on normal computer displays. some platforms also don't
+  // support this at all
 
   if (m_createWptBtn && m_createTrkBtn) {
     wxSize psz = g_Platform->getDisplaySize();
@@ -423,8 +430,7 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
   wxSize szyv = m_pQueryTextCtl->GetVirtualSize();
   int csz = g_Platform->getDisplaySize().y * 85 / 100;
   if ((szyv.y + yb) < csz) {
-    if (szyv.y > m_pQueryTextCtl->GetSize().y)
-      target_y = szyv.y * 12 / 10 + yb;
+    if (szyv.y > m_pQueryTextCtl->GetSize().y) target_y = szyv.y * 12 / 10 + yb;
   } else {
     target_y = csz;
   }

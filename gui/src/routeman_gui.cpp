@@ -56,12 +56,12 @@
 extern bool g_bShowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
-extern MyFrame* gFrame;
+extern MyFrame *gFrame;
 
 extern ConsoleCanvas *console;
 
-extern std::vector<Track*> g_TrackList;
-extern ActiveTrack* g_pActiveTrack;
+extern std::vector<Track *> g_TrackList;
+extern ActiveTrack *g_pActiveTrack;
 extern TrackPropDlg *pTrackPropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyConfig *pConfig;
@@ -69,28 +69,29 @@ extern MyConfig *pConfig;
 static bool ConfirmDeleteAisMob() {
   int r = OCPNMessageBox(NULL,
                          _("You are trying to delete an active AIS MOB "
-                         "route, are you REALLY sure?"),
+                           "route, are you REALLY sure?"),
                          _("OpenCPN Warning"), wxYES_NO);
 
   return r == wxID_YES;
 }
 
 RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
-   RoutemanDlgCtx ctx;
-   ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
-   ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
-   ctx.show_with_fresh_fonts =
-       []{ if (console) console->ShowWithFreshFonts(); };
-   ctx.clear_console_background = [] () {
-        console->pCDI->ClearBackground();
-        console->Show(false); };
-   ctx.route_mgr_dlg_update_list_ctrl = []() {
-     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-       pRouteManagerDialog->UpdateRouteListCtrl();
-   };
-   return ctx;
+  RoutemanDlgCtx ctx;
+  ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
+  ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
+  ctx.show_with_fresh_fonts = [] {
+    if (console) console->ShowWithFreshFonts();
+  };
+  ctx.clear_console_background = []() {
+    console->pCDI->ClearBackground();
+    console->Show(false);
+  };
+  ctx.route_mgr_dlg_update_list_ctrl = []() {
+    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+      pRouteManagerDialog->UpdateRouteListCtrl();
+  };
+  return ctx;
 }
-
 
 bool RoutemanGui::UpdateProgress() {
   bool bret_val = false;
@@ -101,8 +102,8 @@ bool RoutemanGui::UpdateProgress() {
     //  Bearing is calculated as Mercator Sailing, i.e. a  cartographic
     //  "bearing"
     double north, east;
-    toSM(m_routeman.pActivePoint->m_lat, m_routeman.pActivePoint->m_lon,
-         gLat, gLon, &east, &north);
+    toSM(m_routeman.pActivePoint->m_lat, m_routeman.pActivePoint->m_lon, gLat,
+         gLon, &east, &north);
     double a = atan(north / east);
     if (fabs(m_routeman.pActivePoint->m_lon - gLon) < 180.) {
       if (m_routeman.pActivePoint->m_lon > gLon)
@@ -118,23 +119,24 @@ bool RoutemanGui::UpdateProgress() {
 
     //      Calculate range using Great Circle Formula
 
-    double d5 =
-        DistGreatCircle(gLat, gLon, m_routeman.pActivePoint->m_lat, m_routeman.pActivePoint->m_lon);
+    double d5 = DistGreatCircle(gLat, gLon, m_routeman.pActivePoint->m_lat,
+                                m_routeman.pActivePoint->m_lon);
     m_routeman.CurrentRngToActivePoint = d5;
 
     //      Get the XTE vector, normal to current segment
     vector2D va, vb, vn;
 
     double brg1, dist1, brg2, dist2;
-    DistanceBearingMercator(m_routeman.pActivePoint->m_lat, m_routeman.pActivePoint->m_lon,
-                            m_routeman.pActiveRouteSegmentBeginPoint->m_lat,
-                            m_routeman.pActiveRouteSegmentBeginPoint->m_lon, &brg1,
-                            &dist1);
+    DistanceBearingMercator(
+        m_routeman.pActivePoint->m_lat, m_routeman.pActivePoint->m_lon,
+        m_routeman.pActiveRouteSegmentBeginPoint->m_lat,
+        m_routeman.pActiveRouteSegmentBeginPoint->m_lon, &brg1, &dist1);
     vb.x = dist1 * sin(brg1 * PI / 180.);
     vb.y = dist1 * cos(brg1 * PI / 180.);
 
-    DistanceBearingMercator(m_routeman.pActivePoint->m_lat, m_routeman.pActivePoint->m_lon, gLat,
-                            gLon, &brg2, &dist2);
+    DistanceBearingMercator(m_routeman.pActivePoint->m_lat,
+                            m_routeman.pActivePoint->m_lon, gLat, gLon, &brg2,
+                            &dist2);
     va.x = dist2 * sin(brg2 * PI / 180.);
     va.y = dist2 * cos(brg2 * PI / 180.);
 
@@ -165,7 +167,7 @@ bool RoutemanGui::UpdateProgress() {
     double e1 = atan2((x2 - x1), (y2 - y1));
     m_routeman.CurrentSegmentCourse = e1 * 180 / PI;
     if (m_routeman.CurrentSegmentCourse < 0)
-        m_routeman.CurrentSegmentCourse += 360;
+      m_routeman.CurrentSegmentCourse += 360;
 
     //      Compute XTE direction
     double h = atan(vn.y / vn.x);
@@ -223,11 +225,11 @@ bool RoutemanGui::UpdateProgress() {
         //      Test to see if we are moving away from the arrival point, and
         //      have been moving away for 2 seconds.
         //      If so, we should declare "Arrival"
-        if ((m_routeman.CurrentRangeToActiveNormalCrossing - m_routeman.m_arrival_min) >
+        if ((m_routeman.CurrentRangeToActiveNormalCrossing -
+             m_routeman.m_arrival_min) >
             m_routeman.pActivePoint->GetWaypointArrivalRadius()) {
           if (++m_routeman.m_arrival_test > 2 &&
-              !g_bAdvanceRouteWaypointOnArrivalOnly)
-          {
+              !g_bAdvanceRouteWaypointOnArrivalOnly) {
             m_routeman.m_bArrival = true;
             m_routeman.UpdateAutopilot();
 
@@ -239,8 +241,9 @@ bool RoutemanGui::UpdateProgress() {
       }
     }
     if (!bDidArrival)
-      m_routeman.m_arrival_min = wxMin(m_routeman.m_arrival_min,
-                                       m_routeman.CurrentRangeToActiveNormalCrossing);
+      m_routeman.m_arrival_min =
+          wxMin(m_routeman.m_arrival_min,
+                m_routeman.CurrentRangeToActiveNormalCrossing);
     // Only once on arrival
     if (!bDidArrival) m_routeman.UpdateAutopilot();
     bret_val = true;  // a route is active
@@ -272,7 +275,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
       pTrackPropDialog->Hide();
     }
 
-    if ((pTrack == g_pActiveTrack) && pTrack->IsRunning()){
+    if ((pTrack == g_pActiveTrack) && pTrack->IsRunning()) {
       pTrack = gFrame->TrackOff();
     }
     //    Remove the track from associated lists
@@ -297,7 +300,7 @@ void RoutemanGui::DeleteAllTracks() {
   // Iterate on the RouteList, we delete from g_TrackList in DeleteTrack,
   // bigger refactoring is viable, but for now, we simply make a copy
   // that goes out of scope soon.
-  std::vector<Track*> to_del = g_TrackList;
+  std::vector<Track *> to_del = g_TrackList;
   for (Track *ptrack : to_del) {
     if (ptrack->m_bIsInLayer) continue;
 
@@ -316,7 +319,8 @@ void RoutemanGui::DeleteAllTracks() {
 }
 
 void RoutemanGui::DoAdvance(void) {
-  if (!m_routeman.ActivateNextPoint(m_routeman.pActiveRoute, false))  // at the end?
+  if (!m_routeman.ActivateNextPoint(m_routeman.pActiveRoute,
+                                    false))  // at the end?
   {
     Route *pthis_route = m_routeman.pActiveRoute;
     m_routeman.DeactivateRoute(true);  // this is an arrival

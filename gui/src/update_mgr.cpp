@@ -310,11 +310,10 @@ public:
     LESS += "...</span>";
 
     //  For small displays, skip the "More" text.
-    if (g_Platform->getDisplaySize().x < 80 * GetCharWidth())
-      MORE = "";
+    if (g_Platform->getDisplaySize().x < 80 * GetCharWidth()) MORE = "";
 
     auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
-    m_widthDescription = g_options->GetSize().x *4 / 10;
+    m_widthDescription = g_options->GetSize().x * 4 / 10;
 
     // m_summary = staticText(plugin->summary);
     m_summary = new wxStaticText(
@@ -337,10 +336,11 @@ public:
     SetSizer(vbox);
 
     std::string name_reduced = plugin->name;
-    if(plugin->name.size() * GetCharWidth() > (size_t)m_widthDescription * 7 / 10){
-      int nc = (m_widthDescription *7 / 10) / GetCharWidth();
-      if (nc > 3){
-        name_reduced = plugin->name.substr(0, nc-3) + "...";
+    if (plugin->name.size() * GetCharWidth() >
+        (size_t)m_widthDescription * 7 / 10) {
+      int nc = (m_widthDescription * 7 / 10) / GetCharWidth();
+      if (nc > 3) {
+        name_reduced = plugin->name.substr(0, nc - 3) + "...";
       }
     }
 
@@ -478,13 +478,13 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
 
   Center();
 #ifdef __ANDROID__
-    androidDisableRotation();
+  androidDisableRotation();
 #endif
 }
 
 UpdateDialog::~UpdateDialog() {
 #ifdef __ANDROID__
-    androidEnableRotation();
+  androidEnableRotation();
 #endif
 }
 
@@ -514,7 +514,6 @@ void UpdateDialog::RecalculateSize() {
 #ifdef __OCPN__ANDROID__
   SetMinSize(g_Platform->getDisplaySize());
 #endif
-
 
   Fit();
   SetMaxSize(g_Platform->getDisplaySize());

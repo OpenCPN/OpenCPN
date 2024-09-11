@@ -26,10 +26,10 @@
 #ifndef _OCPN_PRINT_H__
 #define _OCPN_PRINT_H__
 
-#include  <wx/dc.h>
-#include  <wx/bitmap.h>
-#include  <wx/print.h>
-#include  <wx/string.h>
+#include <wx/dc.h>
+#include <wx/bitmap.h>
+#include <wx/print.h>
+#include <wx/string.h>
 
 class MyPrintout : public wxPrintout {
 public:

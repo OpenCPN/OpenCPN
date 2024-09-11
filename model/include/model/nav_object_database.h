@@ -94,20 +94,19 @@ Track *TrackExists(const wxString &guid);
 Route *FindRouteContainingWaypoint(RoutePoint *pWP);
 
 Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
-                     bool b_layerviz, int layer_id, bool b_change, bool load_points = true);
+                     bool b_layerviz, int layer_id, bool b_change,
+                     bool load_points = true);
 
 RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString symbol_name,
                              wxString GUID, bool b_fullviz, bool b_layer,
                              bool b_layerviz, int layer_id);
 
+bool InsertRouteA(Route *pTentRoute, NavObjectCollection1 *navobj);
+bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false);
+bool InsertWpt(RoutePoint *pWp, bool overwrite);
 
-bool InsertRouteA(Route* pTentRoute, NavObjectCollection1* navobj);
-bool InsertTrack(Track* pTentTrack, bool bApplyChanges = false);
-bool InsertWpt(RoutePoint* pWp, bool overwrite);
-
-
-Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
-                     bool b_layer, bool b_layerviz, int layer_id);
+Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz, bool b_layer,
+                     bool b_layerviz, int layer_id);
 
 class NavObjectCollection1 : public pugi::xml_document {
 public:
@@ -119,7 +118,7 @@ public:
   bool CreateNavObjGPXTracks(void);
 
   void AddGPXRoutesList(RouteList *pRoutes);
-  void AddGPXTracksList(std::vector<Track*> *pTracks);
+  void AddGPXTracksList(std::vector<Track *> *pTracks);
   bool AddGPXPointsList(RoutePointList *pRoutePoints);
   bool AddGPXRoute(Route *pRoute);
   bool AddGPXTrack(Track *pTrk);
@@ -142,26 +141,26 @@ public:
 };
 
 class NavObjectChanges : public NavObjectCollection1 {
-friend class  MyConfig;
+  friend class MyConfig;
 
 public:
   static std::unique_ptr<NavObjectChanges> getTempInstance() {
     return std::unique_ptr<NavObjectChanges>(new NavObjectChanges());
   }
 
-  static NavObjectChanges* getInstance() {
-    static NavObjectChanges* instance = 0;
+  static NavObjectChanges *getInstance() {
+    static NavObjectChanges *instance = 0;
     if (!instance) instance = new NavObjectChanges();
     return instance;
   }
 
-  void Init(const wxString& path) {
-      m_filename = path;
-      m_changes_file = fopen(m_filename.mb_str(), "a");
+  void Init(const wxString &path) {
+    m_filename = path;
+    m_changes_file = fopen(m_filename.mb_str(), "a");
   }
 
-  NavObjectChanges(const NavObjectChanges&) = delete;
-  void operator=(const NavObjectChanges&) = delete;
+  NavObjectChanges(const NavObjectChanges &) = delete;
+  void operator=(const NavObjectChanges &) = delete;
   ~NavObjectChanges();
 
   void AddRoute(Route *pr, const char *action);  // support "changes" file set
@@ -196,7 +195,6 @@ public:
    * shared_ptr<Route>
    */
   EventVar evt_delete_route;
-
 
 private:
   NavObjectChanges() : NavObjectCollection1() {

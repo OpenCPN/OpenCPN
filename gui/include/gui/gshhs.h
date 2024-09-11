@@ -43,7 +43,7 @@
 #include <wx/geometry.h>
 
 #include "model/ocpn_types.h"
-//#include "ocpndc.h"
+// #include "ocpndc.h"
 #include "viewport.h"
 #include "model/cutil.h"
 #include "poly_math.h"
@@ -131,8 +131,9 @@ private:
   void DrawPolygonFilled(ocpnDC &pnt, contour_list *poly, double dx,
                          ViewPort &vp, wxColor const &color);
 #ifdef ocpnUSE_GL
-  void DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv, int *pvc,
-                           ViewPort &vp, wxColor const &color, bool idl);
+  void DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv,
+                           int *pvc, ViewPort &vp, wxColor const &color,
+                           bool idl);
 #endif
   void DrawPolygonContour(ocpnDC &pnt, contour_list *poly, double dx,
                           ViewPort &vp);
