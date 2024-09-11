@@ -36,7 +36,7 @@ Build-Depends: debhelper-compat (= 12),
  rapidjson-dev
 Standards-Version: 4.6.2
 Vcs-Browser: https://gitlab.com/leamas/opencpn
-Vcs-Git: https://gitlab.com/leamas/opencpn.git -b debian/sid
+Vcs-Git: https://gitlab.com/leamas/opencpn.git -b ubuntu/focal
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
