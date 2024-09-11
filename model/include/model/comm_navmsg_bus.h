@@ -38,7 +38,6 @@
 
 #include "model/comm_driver.h"
 
-
 /** The raw message layer, a singleton. */
 class NavMsgBus : public DriverListener {
 public:

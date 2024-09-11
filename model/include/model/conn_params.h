@@ -30,7 +30,6 @@
 #include "model/ds_porttype.h"
 #endif
 
-
 #ifndef WX_PRECOMP
 #include <wx/arrstr.h>
 #include <wx/dynarray.h>
@@ -70,7 +69,6 @@ typedef enum {
 } DataProtocol;
 
 #define CONN_ENABLE_ID 47621
-
 
 class ConnectionParamsPanel;
 
@@ -127,7 +125,8 @@ public:
   std::string GetStrippedDSPort();
   NavAddr::Bus GetCommProtocol();
 
-  bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
+  bool SentencePassesFilter(const wxString &sentence,
+                            FilterDirection direction);
 
   bool Valid;
   bool b_IsSetup;
@@ -139,6 +138,6 @@ private:
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
 
-wxArrayOfConnPrm* TheConnectionParams();
+wxArrayOfConnPrm *TheConnectionParams();
 
 #endif

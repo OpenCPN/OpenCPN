@@ -229,6 +229,14 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
     wxTextFile txf(filen.GetFullPath());
     if (txf.Open()) {
       wxString contents;
+      if (filen.GetExt().Lower() == "txt") {
+        contents +=
+            "<font color="
+            "" +
+            GetForegroundColour().GetAsString(wxC2S_HTML_SYNTAX) +
+            ""
+            ">";
+      }
       wxString str;
       str = txf.GetFirstLine();
       do {
@@ -239,6 +247,9 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
 
         str = txf.GetNextLine();
       } while (!txf.Eof());
+      if (filen.GetExt().Lower() == "txt") {
+        contents += "</font>";
+      }
 
       ExtraObjInfoDlg->m_phtml->SetPage(contents);
     }

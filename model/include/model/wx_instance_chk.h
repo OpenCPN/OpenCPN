@@ -29,14 +29,15 @@ class WxInstanceCheck : public InstanceCheck {
 public:
   WxInstanceCheck();
 
-  ~WxInstanceCheck() { if (m_checker) delete m_checker; }
+  ~WxInstanceCheck() {
+    if (m_checker) delete m_checker;
+  }
 
   bool IsMainInstance() override;
 
   void CleanUp() override;
 
   void OnExit() override;
-
 
 private:
   void Init();
@@ -45,4 +46,4 @@ private:
   bool is_inited;
 };
 
-#endif   // _WX_INST_CHECK__
+#endif  // _WX_INST_CHECK__

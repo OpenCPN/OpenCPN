@@ -71,7 +71,7 @@ public:
   EventVar evt_driver_msg;
 
 private:
-  CommDriverRegistry()  = default;
+  CommDriverRegistry() = default;
   CommDriverRegistry(const CommDriverRegistry&) = delete;
   CommDriverRegistry& operator=(const CommDriverRegistry&) = delete;
 

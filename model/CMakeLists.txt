@@ -298,7 +298,10 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif ()
 
-find_package(LIBUSB)
+if (NOT QT_ANDROID)
+  find_package(LIBUSB)
+endif ()
+
 if (LIBUSB_FOUND)
   target_link_libraries(_OCPN_MODEL INTERFACE ocpn::libusb)
   add_compile_definitions(_OCPN_MODEL INTERFACE HAVE_LIBUSB_10)

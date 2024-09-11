@@ -18,8 +18,6 @@ static const uint64_t kFirstFiveBytes = 0xffffffffff000000;
 #define PUBX 190459303248   // "PUBX,"
 #define STALK 323401897043  // "STALK"
 
-
-
 /**
  * Return bytes 1..5 in line as an uint64_t with exceptions for u-blox GNSS and
  * converted Seatalk.
@@ -54,11 +52,13 @@ static inline uint64_t GetNmeaType(const std::string& line) {
 static void ReportOverrun(const std::string& msg, bool overrun_reported) {
   auto& registry = CommDriverRegistry::GetInstance();
   std::string s;
-  if (msg.length() < 6) s = msg; else s = msg.substr(0, 5);
+  if (msg.length() < 6)
+    s = msg;
+  else
+    s = msg.substr(0, 5);
   DEBUG_LOG << "CommOutQueue: Overrun on: " << msg;
   if (!overrun_reported) registry.evt_comm_overrun.Notify(msg);
 }
-
 
 CommOutQueue::BufferItem::BufferItem(const std::string& _line)
     : type(GetNmeaType(_line)),

@@ -491,8 +491,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
 
   if (db_version == 18) {
     // Read the path first
-    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++)
-      ;
+    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
     pFullPath = (char *)malloc(cp - path + 1);
     strncpy(pFullPath, path, cp - path + 1);
     wxLogVerbose(_T("  Chart %s"), pFullPath);
@@ -574,8 +573,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
 
   else if (db_version == 17) {
     // Read the path first
-    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++)
-      ;
+    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
     pFullPath = (char *)malloc(cp - path + 1);
     strncpy(pFullPath, path, cp - path + 1);
     wxLogVerbose(_T("  Chart %s"), pFullPath);
@@ -652,8 +650,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
 
   else if (db_version == 16) {
     // Read the path first
-    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++)
-      ;
+    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
     // TODO: optimize prepended dir
     pFullPath = (char *)malloc(cp - path + 1);
     strncpy(pFullPath, path, cp - path + 1);
@@ -716,8 +713,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
 
   else if (db_version == 15) {
     // Read the path first
-    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++)
-      ;
+    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
     // TODO: optimize prepended dir
     pFullPath = (char *)malloc(cp - path + 1);
     strncpy(pFullPath, path, cp - path + 1);
@@ -767,8 +763,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
     }
   } else if (db_version == 14) {
     // Read the path first
-    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++)
-      ;
+    for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
     pFullPath = (char *)malloc(cp - path + 1);
     strncpy(pFullPath, path, cp - path + 1);
     wxLogVerbose(_T("  Chart %s"), pFullPath);
@@ -1083,24 +1078,31 @@ ChartDatabase::ChartDatabase() {
   UpdateChartClassDescriptorArray();
 }
 
-
 void ChartDatabase::UpdateChartClassDescriptorArray(void) {
-  if(m_ChartClassDescriptorArray.empty()) {
-    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("ChartKAP"), _T("*.kap"), BUILTIN_DESCRIPTOR));
-    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("ChartGEO"), _T("*.geo"), BUILTIN_DESCRIPTOR));
-    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("s57chart"), _T("*.000"), BUILTIN_DESCRIPTOR));
-    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("s57chart"), _T("*.s57"), BUILTIN_DESCRIPTOR));
-    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR));
-    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("ChartMBTiles"), _T("*.mbtiles"), BUILTIN_DESCRIPTOR));
+  if (m_ChartClassDescriptorArray.empty()) {
+    m_ChartClassDescriptorArray.push_back(
+        ChartClassDescriptor(_T("ChartKAP"), _T("*.kap"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(
+        ChartClassDescriptor(_T("ChartGEO"), _T("*.geo"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(
+        ChartClassDescriptor(_T("s57chart"), _T("*.000"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(
+        ChartClassDescriptor(_T("s57chart"), _T("*.s57"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
+        _T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
+        _T("ChartMBTiles"), _T("*.mbtiles"), BUILTIN_DESCRIPTOR));
   }
   //    If the PlugIn Manager exists, get the array of dynamically loadable
   //    chart class names
   if (g_pi_manager) {
-    m_ChartClassDescriptorArray.erase(std::remove_if(
-    m_ChartClassDescriptorArray.begin(), m_ChartClassDescriptorArray.end(),
-    [](const ChartClassDescriptor& cd) {
-        return cd.m_descriptor_type ==PLUGIN_DESCRIPTOR;
-    }), m_ChartClassDescriptorArray.end());
+    m_ChartClassDescriptorArray.erase(
+        std::remove_if(m_ChartClassDescriptorArray.begin(),
+                       m_ChartClassDescriptorArray.end(),
+                       [](const ChartClassDescriptor &cd) {
+                         return cd.m_descriptor_type == PLUGIN_DESCRIPTOR;
+                       }),
+        m_ChartClassDescriptorArray.end());
 
     wxArrayString array = g_pi_manager->GetPlugInChartClassNameArray();
     for (unsigned int j = 0; j < array.GetCount(); j++) {
@@ -1112,7 +1114,8 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void) {
         wxString mask = cpiw->GetFileSearchMask();
 
         // Create a new descriptor and add it to the database
-        m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(class_name, mask, PLUGIN_DESCRIPTOR));
+        m_ChartClassDescriptorArray.push_back(
+            ChartClassDescriptor(class_name, mask, PLUGIN_DESCRIPTOR));
         delete cpiw;
       }
     }
@@ -1519,8 +1522,7 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
     //  on within the "scoped storage" domain is very slow.
     //  Aviod it....
 #ifdef __OCPN__ANDROID__
-    if (!androidIsDirWritable(dir_info.fullpath))
-      continue;
+    if (!androidIsDirWritable(dir_info.fullpath)) continue;
 #endif
 
     wxString dir_magic;
@@ -1536,7 +1538,8 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
     }
     if (dir_info.fullpath.Find(_T("OSMSHP")) != wxNOT_FOUND) {
       if (!wxDir::FindFirst(dir_info.fullpath, "basemap_*.shp").empty()) {
-        gWorldShapefileLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
+        gWorldShapefileLocation =
+            dir_info.fullpath + wxFileName::GetPathSeparator();
         gShapeBasemap.Reset();
       }
     }
@@ -1694,8 +1697,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo &dir_info,
 
   //    Look for all possible defined chart classes
   for (auto &cd : m_ChartClassDescriptorArray) {
-    nAdd += SearchDirAndAddCharts(dir_info.fullpath,
-                                  cd, pprog);
+    nAdd += SearchDirAndAddCharts(dir_info.fullpath, cd, pprog);
   }
 
   return nAdd;
@@ -1998,7 +2000,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   }
 
   if (!b_found_cm93) {
-
     wxDir dir(dir_name);
     dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
 
@@ -2011,13 +2012,11 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     }
 #endif
 
-
 #ifndef __WXMSW__
     if (filespec != lowerFileSpec) {
       // add lowercase filespec files too
       wxArrayString lowerFileList;
       dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
-
 
 #ifdef __OCPN__ANDROID__
       if (!lowerFileList.GetCount()) {
@@ -2035,11 +2034,10 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
 #endif
 
 #ifdef OCPN_USE_LZMA
-      // add xz compressed files;
-     dir.GetAllFiles(dir_name, &FileList, filespecXZ, gaf_flags);
-     dir.GetAllFiles(dir_name, &FileList, lowerFileSpecXZ, gaf_flags);
+    // add xz compressed files;
+    dir.GetAllFiles(dir_name, &FileList, filespecXZ, gaf_flags);
+    dir.GetAllFiles(dir_name, &FileList, lowerFileSpecXZ, gaf_flags);
 #endif
-
 
     FileList.Sort();  // Sorted processing order makes the progress bar more
                       // meaningful to the user.
@@ -2747,8 +2745,7 @@ bool ChartDatabase::IsChartAvailable(int dbIndex) {
     //    between the search mask and the the chart file extension
 
     for (auto &cd : m_ChartClassDescriptorArray) {
-      if (cd.m_descriptor_type ==
-          PLUGIN_DESCRIPTOR) {
+      if (cd.m_descriptor_type == PLUGIN_DESCRIPTOR) {
         wxString search_mask = cd.m_search_mask;
 
         if (search_mask == ext_upper) {

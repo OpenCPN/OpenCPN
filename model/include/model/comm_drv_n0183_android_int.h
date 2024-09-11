@@ -36,7 +36,7 @@
 
 class CommDriverN0183AndroidIntEvent : public wxEvent {
 public:
-  CommDriverN0183AndroidIntEvent( wxEventType commandType, int id);
+  CommDriverN0183AndroidIntEvent(wxEventType commandType, int id);
   ~CommDriverN0183AndroidIntEvent();
 
   // accessors
@@ -45,12 +45,13 @@ public:
 
   // required for sending with wxPostEvent()
   wxEvent* Clone() const;
+
 private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_INT, CommDriverN0183AndroidIntEvent);
-
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
+                CommDriverN0183AndroidIntEvent);
 
 class CommDriverN0183AndroidInt : public CommDriverN0183, public wxEvtHandler {
 public:
@@ -74,7 +75,6 @@ private:
   std::string m_portstring;
   std::string m_BaudRate;
   int m_handshake;
-
 
   ConnectionParams m_params;
   DriverListener& m_listener;

@@ -27,7 +27,6 @@
 #ifndef __statwin_H__
 #define __statwin_H__
 
-
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
@@ -43,10 +42,7 @@ WX_DECLARE_OBJARRAY(wxRect, RectArray);
 class MyFrame;
 class ChartCanvas;
 
-enum {
-  PIANO_MODE_COMPOSITE = 0,
-  PIANO_MODE_LEGACY
-};
+enum { PIANO_MODE_COMPOSITE = 0, PIANO_MODE_LEGACY };
 
 //----------------------------------------------------------------------------
 // PianoKeyElement
@@ -63,8 +59,6 @@ public:
   std::vector<int> dbindex_list;
 };
 
-
-
 //----------------------------------------------------------------------------
 // Piano
 //----------------------------------------------------------------------------
@@ -79,7 +73,8 @@ public:
   void FormatKeys(void);
   bool MouseEvent(wxMouseEvent &event);
   void SetColorScheme(ColorScheme cs);
-  void SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_array);
+  void SetKeyArray(std::vector<int> &center_array,
+                   std::vector<int> &full_array);
   void SetActiveKey(int iactive) { m_iactive = iactive; }
   void SetActiveKeyArray(std::vector<int> array);
   void SetNoshowIndexArray(std::vector<int> array);
@@ -88,7 +83,7 @@ public:
   void SetSkewIndexArray(std::vector<int> array);
   void SetTmercIndexArray(std::vector<int> array);
   void SetPolyIndexArray(std::vector<int> array);
-  int GetPianoMode() { return m_piano_mode;}
+  int GetPianoMode() { return m_piano_mode; }
 
   std::vector<int> GetActiveKeyArray() { return m_active_index_array; }
 
@@ -131,7 +126,7 @@ public:
   int GetnKeys() { return m_nRegions; }
 
 private:
-  void SetPianoMode(int new_mode) {m_piano_mode = new_mode;}
+  void SetPianoMode(int new_mode) { m_piano_mode = new_mode; }
 
   void DrawGLSL(int y);
   void BuildGLTexture();

@@ -49,10 +49,9 @@ public:
   void FreeAll(void);
 
 private:
-  bool isCached(font_cache_record& record, int pointSize, wxFontFamily family,
-                            wxFontStyle style, wxFontWeight weight,
-                            bool underline, const wxString &facename,
-                            wxFontEncoding encoding);
+  bool isCached(font_cache_record &record, int pointSize, wxFontFamily family,
+                wxFontStyle style, wxFontWeight weight, bool underline,
+                const wxString &facename, wxFontEncoding encoding);
 
   std::vector<font_cache_record> m_fontVector;
 };
@@ -100,7 +99,6 @@ FontMgr::~FontMgr() {
 void FontMgr::SetLocale(wxString &newLocale) { s_locale = newLocale; }
 
 wxColour FontMgr::GetFontColor(const wxString &TextElement) const {
-
   //    Look thru the font list for a match
   MyFontDesc *pmfd;
   auto node = m_fontlist->GetFirst();
@@ -198,7 +196,7 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int user_default_size) {
   wxString nativefont = GetSimpleNativeFont(new_size, FaceName);
   wxFont *nf = wxFont::New(nativefont);
 
-  wxColor color = GetDefaultFontColor( TextElement);
+  wxColor color = GetDefaultFontColor(TextElement);
 
   MyFontDesc *pnewfd = new MyFontDesc(TextElement, configkey, nf, color);
   m_fontlist->Append(pnewfd);
@@ -206,29 +204,29 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int user_default_size) {
   return pnewfd->m_font;
 }
 
-wxColour FontMgr::GetDefaultFontColor( const wxString &TextElement ){
+wxColour FontMgr::GetDefaultFontColor(const wxString &TextElement) {
   wxColor defaultColor = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
 
   // Special cases here
-  if(TextElement.IsSameAs( _("Console Legend")) )
-    defaultColor = wxColour( 0, 255, 0);
-  else if(TextElement.IsSameAs( _("Console Value")) )
-    defaultColor = wxColour( 0, 255, 0);
-  else if(TextElement.IsSameAs( _("Marks")) )
-    defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( _("RouteLegInfoRollover")) )
-    defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( _("AISRollover")) )
-    defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( _("ExtendedTideIcon")) )
-    defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( _("ChartTexts")) )
-    defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( _("AIS Target Name")) )
-    defaultColor = wxColour( 0, 0, 0);
+  if (TextElement.IsSameAs(_("Console Legend")))
+    defaultColor = wxColour(0, 255, 0);
+  else if (TextElement.IsSameAs(_("Console Value")))
+    defaultColor = wxColour(0, 255, 0);
+  else if (TextElement.IsSameAs(_("Marks")))
+    defaultColor = wxColour(0, 0, 0);
+  else if (TextElement.IsSameAs(_("RouteLegInfoRollover")))
+    defaultColor = wxColour(0, 0, 0);
+  else if (TextElement.IsSameAs(_("AISRollover")))
+    defaultColor = wxColour(0, 0, 0);
+  else if (TextElement.IsSameAs(_("ExtendedTideIcon")))
+    defaultColor = wxColour(0, 0, 0);
+  else if (TextElement.IsSameAs(_("ChartTexts")))
+    defaultColor = wxColour(0, 0, 0);
+  else if (TextElement.IsSameAs(_("AIS Target Name")))
+    defaultColor = wxColour(0, 0, 0);
 #ifdef __WXMAC__
   // Override, to adjust for light/dark mode
-  return wxColour(0,0,0);
+  return wxColour(0, 0, 0);
 #endif
 
   return defaultColor;
@@ -391,10 +389,11 @@ wxFont *FontMgr::FindOrCreateFont(int point_size, wxFontFamily family,
                                          underline, facename, encoding);
 }
 
-bool OCPNwxFontList::isCached(font_cache_record& record, int pointSize, wxFontFamily family,
-                            wxFontStyle style, wxFontWeight weight,
-                            bool underline, const wxString &facename,
-                            wxFontEncoding encoding) {
+bool OCPNwxFontList::isCached(font_cache_record &record, int pointSize,
+                              wxFontFamily family, wxFontStyle style,
+                              wxFontWeight weight, bool underline,
+                              const wxString &facename,
+                              wxFontEncoding encoding) {
   if (record.pointsize_req == pointSize && record.style_req == style &&
       record.weight_req == weight && record.underline_req == underline) {
     bool same;
@@ -439,10 +438,10 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
 #endif  // !__WXOSX__
 
   wxFont *font;
-  for (size_t i=0; i < m_fontVector.size() ; i++){
+  for (size_t i = 0; i < m_fontVector.size(); i++) {
     font_cache_record record = m_fontVector[i];
     if (isCached(record, pointSize, family, style, weight, underline, facename,
-               encoding))
+                 encoding))
       return record.font;
   }
 
@@ -450,8 +449,8 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
   // Support scaled HDPI displays automatically
 
   font = NULL;
-  wxFont fontTmp(OCPN_GetDisplayContentScaleFactor() * pointSize,
-                 family, style, weight, underline, facename, encoding);
+  wxFont fontTmp(OCPN_GetDisplayContentScaleFactor() * pointSize, family, style,
+                 weight, underline, facename, encoding);
   if (fontTmp.IsOk()) {
     font = new wxFont(fontTmp);
     font_cache_record record;
@@ -468,7 +467,7 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
 
 void OCPNwxFontList::FreeAll(void) {
   wxFont *font;
-  for (size_t i=0; i < m_fontVector.size() ; i++){
+  for (size_t i = 0; i < m_fontVector.size(); i++) {
     font_cache_record record = m_fontVector[i];
     font = record.font;
     delete font;

@@ -37,7 +37,8 @@
 #include "poly_math.h"
 #include "ocpndc.h"
 
-#if (defined(OCPN_GHC_FILESYSTEM) || (defined(__clang_major__) && (__clang_major__ < 15)))
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
 // MacOS 1.13
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
@@ -100,14 +101,14 @@ public:
   ShapeBaseChart() = delete;
   ShapeBaseChart(const std::string &filename, const size_t &min_scale,
                  const wxColor &color = *wxBLACK)
-      :  _dmod(1),
+      : _dmod(1),
         _loading(false),
         _is_usable(false),
         _is_tiled(false),
         _min_scale(min_scale),
         _filename(filename),
         _reader(nullptr),
-        _color(color){
+        _color(color) {
     _is_usable = fs::exists(filename);
   }
 
@@ -132,7 +133,7 @@ public:
   static const std::string ConstructPath(const std::string &dir,
                                          const std::string &quality_suffix) {
     return std::string(dir + fs::path::preferred_separator + "basemap_" +
-           quality_suffix + ".shp");
+                       quality_suffix + ".shp");
   }
 
   bool CrossesLand(double &lat1, double &lon1, double &lat2, double &lon2);
@@ -148,7 +149,8 @@ private:
   void DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                              const shp::Feature &feature);
   void DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp);
-    void AddPointToTessList(shp::Point &point, ViewPort &vp, GLUtesselator *tobj, bool idl);
+  void AddPointToTessList(shp::Point &point, ViewPort &vp, GLUtesselator *tobj,
+                          bool idl);
 
   std::string _filename;
   shp::ShapefileReader *_reader;
@@ -161,8 +163,8 @@ private:
                          const std::pair<double, double> &D);
 
   bool PolygonLineIntersect(const shp::Feature &feature,
-                        const std::pair<double, double> &A,
-                        const std::pair<double, double> &B);
+                            const std::pair<double, double> &A,
+                            const std::pair<double, double> &B);
 };
 
 /// @brief Set of basemaps at different resolutions
@@ -176,10 +178,12 @@ public:
   void RenderViewOnDC(ocpnDC &dc, ViewPort &vp);
 
   ShapeBaseChart &SelectBaseMap(const size_t &scale);
-  bool IsUsable() { return _basemap_map.size() > 0 && LowestQualityBaseMap().IsUsable(); }
+  bool IsUsable() {
+    return _basemap_map.size() > 0 && LowestQualityBaseMap().IsUsable();
+  }
 
   bool CrossesLand(double lat1, double lon1, double lat2, double lon2) {
-    if(IsUsable()) {
+    if (IsUsable()) {
       return HighestQualityBaseMap().CrossesLand(lat1, lon1, lat2, lon2);
     }
     return false;

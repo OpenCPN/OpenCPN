@@ -59,16 +59,16 @@ bool IsFastMessagePGN(unsigned pgn) {
 unsigned long BuildCanID(int priority, int source, int destination, int pgn) {
   // build CanID
   unsigned long cid = 0;
-  unsigned char pf = (unsigned char) (pgn >> 8);
-  if (pf < 240){
-    cid = ((unsigned long)(priority & 0x7))<<26 | pgn<<8 | ((unsigned long)destination)<<8 | (unsigned long)source;
-  }
-  else {
-    cid = ((unsigned long)(priority & 0x7))<<26 | pgn<<8 | (unsigned long)source;
+  unsigned char pf = (unsigned char)(pgn >> 8);
+  if (pf < 240) {
+    cid = ((unsigned long)(priority & 0x7)) << 26 | pgn << 8 |
+          ((unsigned long)destination) << 8 | (unsigned long)source;
+  } else {
+    cid = ((unsigned long)(priority & 0x7)) << 26 | pgn << 8 |
+          (unsigned long)source;
   }
   return cid;
 }
-
 
 // CanHeader implementation
 
@@ -84,7 +84,6 @@ CanHeader::CanHeader(const CanFrame frame) {
   pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
   priority = (buf[3] & 0x1c) >> 2;
 }
-
 
 bool CanHeader::IsFastMessage() const {
   return IsFastMessagePGN(static_cast<unsigned>(pgn));
@@ -107,12 +106,13 @@ bool CanHeader::IsFastMessage() const {
 //  FastMessage implementation
 
 bool FastMessageMap::IsEntryExpired(unsigned int i) {
-    return (wxDateTime::Now() - entries[i].time_arrived
-              > wxTimeSpan(0, 0, kEntryMaxAgeSecs));
+  return (wxDateTime::Now() - entries[i].time_arrived >
+          wxTimeSpan(0, 0, kEntryMaxAgeSecs));
 }
 
 void FastMessageMap::CheckGc() {
-  bool last_run_over_age = (wxDateTime::Now() - last_gc_run) > wxTimeSpan(0, 0, kGcIntervalSecs);
+  bool last_run_over_age =
+      (wxDateTime::Now() - last_gc_run) > wxTimeSpan(0, 0, kGcIntervalSecs);
   if (last_run_over_age || entries.size() > kGcThreshold) {
     GarbageCollector();
     last_gc_run = wxDateTime::Now();
@@ -242,5 +242,3 @@ void FastMessageMap::Remove(int pos) {
   if ((unsigned int)(pos + 1) >= entries.size())
     entries.erase(entries.begin() + pos);
 }
-
-

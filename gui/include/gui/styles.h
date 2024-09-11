@@ -34,7 +34,7 @@
 #include <wx/string.h>
 
 #include "model/ocpn_types.h"
-//#include "tinyxml.h"
+// #include "tinyxml.h"
 #include "color_types.h"
 
 enum StyleToolIconTypes {
@@ -114,7 +114,7 @@ public:
   wxBitmap GetIcon(const wxString& name, int width = -1, int height = -1,
                    bool bforceReload = false);
   wxBitmap GetIconScaled(const wxString& name, double scaleFactor,
-                        bool bforceReload = false );
+                         bool bforceReload = false);
 
   wxBitmap GetToolIcon(const wxString& toolname, int iconType = TOOLICON_NORMAL,
                        bool rollover = false, int width = -1, int height = -1);
@@ -240,4 +240,4 @@ private:
 
 }  // namespace ocpnStyle
 
-#endif   // _STYLES_H__
+#endif  // _STYLES_H__

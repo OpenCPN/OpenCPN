@@ -30,7 +30,6 @@
 #include <iomanip>
 #include <sstream>
 
-
 #include <wx/datetime.h>
 #include <wx/math.h>
 #include <wx/string.h>
@@ -41,9 +40,8 @@
 #include "model/own_ship.h"
 #include "vector2D.h"
 
-
 /** Return a timespan with minutes rounded w r t seconds. */
-static wxTimeSpan RoundToMinutes(const wxTimeSpan& span) {
+static wxTimeSpan RoundToMinutes(const wxTimeSpan &span) {
   auto minutes = span.GetMinutes() % 60;
   auto seconds = span.GetSeconds() % 60;
   if (seconds > 30) minutes += 1;
@@ -105,9 +103,11 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
             s.Printf(_T ( "%03d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
                      (m % 10000), c);
         else if (NEflag == 1)
-          s.Printf(_T ( "%02d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
+          s.Printf(_T ( "%02d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10),
+                   c);
         else
-          s.Printf(_T ( "%03d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
+          s.Printf(_T ( "%03d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10),
+                   c);
       }
       break;
     case 1:
@@ -131,7 +131,8 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
           s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 1000,
                    sec % 1000);
         else
-          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 10, sec % 10);
+          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 10,
+                   sec % 10);
       } else {
         if (hi_precision)
           if (NEflag == 1)
@@ -141,11 +142,11 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
             s.Printf(_T ( "%03d%c %02ld' %02ld.%03ld\" %c" ), d, 0x00B0, m,
                      sec / 1000, sec % 1000, c);
         else if (NEflag == 1)
-          s.Printf(_T ( "%02d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m, sec / 10,
-                   sec % 10, c);
+          s.Printf(_T ( "%02d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m,
+                   sec / 10, sec % 10, c);
         else
-          s.Printf(_T ( "%03d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m, sec / 10,
-                   sec % 10, c);
+          s.Printf(_T ( "%03d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m,
+                   sec / 10, sec % 10, c);
       }
       break;
   }
@@ -308,7 +309,6 @@ wxString getUsrDistanceUnit(int unit) {
   return ret;
 }
 
-
 /**************************************************************************/
 /*          Returns the abbreviation of user selected speed unit          */
 /**************************************************************************/
@@ -351,7 +351,6 @@ wxString getUsrWindSpeedUnit(int unit) {
     case WSPEED_KMH:
       ret = _("km/h");
       break;
-
   }
   return ret;
 }
@@ -440,7 +439,7 @@ double toUsrDepth(double cel_depth, int unit) {
       ret = cel_depth / 0.3048;
       break;
     case DEPTH_M:  // Meters
-      ret = cel_depth ;
+      ret = cel_depth;
       break;
     case DEPTH_FA:
       ret = cel_depth / 0.3048 / 6;
@@ -479,7 +478,7 @@ wxString getUsrDepthUnit(int unit) {
     case DEPTH_FT:  // Feet
       ret = _("ft");
       break;
-    case DEPTH_M:// Meters
+    case DEPTH_M:  // Meters
       ret = _("m");
       break;
     case DEPTH_FA:  // Fathoms
@@ -563,7 +562,6 @@ double vVectorMagnitude(pVector2D v0) {
     dMagnitude = sqrt(vVectorSquared(v0));
   return (dMagnitude);
 }
-
 
 // This function parses a string containing a GPX time representation
 // and returns a wxDateTime containing the UTC corresponding to the
@@ -818,12 +816,14 @@ double toMagnetic(double deg_true) {
     if ((deg_true - gVar) > 360.)
       return (deg_true - gVar - 360.);
     else
-      return ((deg_true - gVar) >= 0.) ? (deg_true - gVar) : (deg_true - gVar + 360.);
+      return ((deg_true - gVar) >= 0.) ? (deg_true - gVar)
+                                       : (deg_true - gVar + 360.);
   } else {
     if ((deg_true - g_UserVar) > 360.)
       return (deg_true - g_UserVar - 360.);
     else
-      return ((deg_true - g_UserVar) >= 0.) ? (deg_true - g_UserVar) : (deg_true - g_UserVar + 360.);
+      return ((deg_true - g_UserVar) >= 0.) ? (deg_true - g_UserVar)
+                                            : (deg_true - g_UserVar + 360.);
   }
 }
 

@@ -1101,7 +1101,8 @@ bool Quilt::IsChartSmallestScale(int dbIndex) {
 LLRegion Quilt::GetHiliteRegion() {
   LLRegion r;
 
-  //TODO Idea:  convert this to an array of smaller regions.  Should be faster to compose...
+  // TODO Idea:  convert this to an array of smaller regions.  Should be faster
+  // to compose...
 
   for (auto &index : m_HiLiteIndexArray) {
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
@@ -1326,10 +1327,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
         m_canvas_scale_factor / (double)candidate_chart_scale;
     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
     if ((zoom_factor < zoom_test_val) &&
-      // MBTILES charts report the scale of their smallest layer (i.e. most
-      // detailed) as native chart scale, even if they are embedding many more
-      // layers. Since we don't know their maximum scale at this stage, we don't
-      // skip the chart if this native scale is apparently too small.
+        // MBTILES charts report the scale of their smallest layer (i.e. most
+        // detailed) as native chart scale, even if they are embedding many more
+        // layers. Since we don't know their maximum scale at this stage, we
+        // don't skip the chart if this native scale is apparently too small.
         (cte.GetChartType() != CHART_TYPE_MBTILES)) {
       m_extended_stack_array.pop_back();
       continue;
@@ -1390,8 +1391,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     if (cte.GetChartType() == CHART_TYPE_CM93COMP)
       m_fullscreen_index_array.push_back(i);
 
-    //  On android, SDK > 29, we require that the directory of charts be "writable"
-    //  as determined by Android Java file system
+      //  On android, SDK > 29, we require that the directory of charts be
+      //  "writable" as determined by Android Java file system
 #ifdef __OCPN__ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
     if (!androidIsDirWritable(fn.GetPath())) continue;
@@ -1415,8 +1416,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     if (!m_bquiltskew && fabs(skew_norm) > 1.0) continue;
 
-    //    Special case for S57 ENC
-    //    Add the chart only if the chart's fractional area exceeds n%
+      //    Special case for S57 ENC
+      //    Add the chart only if the chart's fractional area exceeds n%
 #if 0
     if( CHART_TYPE_S57 == cte.GetChartType() ) {
       //Get the fractional area of this candidate
@@ -2386,7 +2387,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   for (ir = 0; ir < m_pcandidate_array->GetCount(); ir++) {
     QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
     if ((pqc->b_include) && (!pqc->b_eclipsed)) {
-      if (!ChartData->IsChartLocked(pqc->dbIndex))  //Not locked, or not loaded
+      if (!ChartData->IsChartLocked(pqc->dbIndex))  // Not locked, or not loaded
         ChartData->OpenChartFromDBAndLock(pqc->dbIndex, FULL_INIT, true);
     }
   }
@@ -2860,7 +2861,7 @@ bool Quilt::DoRenderQuiltRegionViewOnDC(wxMemoryDC &dc, ViewPort &vp,
           rdc.SelectObject(wxNullBitmap);
         }
       }  // box not empty
-    }    // m_nHiLiteIndex
+    }  // m_nHiLiteIndex
 
     //    Fogging....
     if (g_fog_overzoom) {

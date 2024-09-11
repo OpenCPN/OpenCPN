@@ -108,30 +108,38 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ProjectBoatPanel
 ///////////////////////////////////////////////////////////////////////////////
-class ProjectBoatPanel : public wxPanel
-{
-	private:
+class ProjectBoatPanel : public wxPanel {
+private:
+protected:
+  wxCheckBox* m_cbProjectPosition;
+  wxStaticText* m_stCourse;
+  wxTextCtrl* m_tCourse;
+  wxStaticText* m_stSpeed;
+  wxTextCtrl* m_tSpeed;
+  wxStaticText* m_stSpeedUnit;
 
-	protected:
-		wxCheckBox* m_cbProjectPosition;
-		wxStaticText* m_stCourse;
-		wxTextCtrl* m_tCourse;
-		wxStaticText* m_stSpeed;
-		wxTextCtrl* m_tSpeed;
-		wxStaticText* m_stSpeedUnit;
+public:
+  ProjectBoatPanel(wxWindow* parent, wxWindowID id = wxID_ANY,
+                   const wxPoint& pos = wxDefaultPosition,
+                   const wxSize& size = wxSize(580, 40),
+                   long style = wxTAB_TRAVERSAL,
+                   const wxString& name = wxEmptyString);
 
-	public:
+  ~ProjectBoatPanel();
 
-		ProjectBoatPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 580,40 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
-
-		~ProjectBoatPanel();
-
-    double GetCourse();
-    double GetSpeed();
-    bool ProjectionEnabled();
-    void SetCourse(const double course) { m_tCourse->SetValue(!wxIsNaN(course) ? wxString::FromDouble(course) : "0.0"); };
-    void SetSpeed(const double speed) { m_tSpeed->SetValue(!wxIsNaN(speed) ? wxString::FromDouble(speed) : "6.0"); };
-    void EnableProjection(bool enabled) { m_cbProjectPosition->SetValue(enabled); };
+  double GetCourse();
+  double GetSpeed();
+  bool ProjectionEnabled();
+  void SetCourse(const double course) {
+    m_tCourse->SetValue(!wxIsNaN(course) ? wxString::FromDouble(course)
+                                         : "0.0");
+  };
+  void SetSpeed(const double speed) {
+    m_tSpeed->SetValue(!wxIsNaN(speed) ? wxString::FromDouble(speed) : "6.0");
+  };
+  void EnableProjection(bool enabled) {
+    m_cbProjectPosition->SetValue(enabled);
+  };
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -402,7 +410,7 @@ protected:
   wxStaticText* m_stForecastLength;
   wxChoice* m_chForecastLength;
   wxStaticText* m_stECMWFResolution;
-	wxChoice* m_chECMWFResolution;
+  wxChoice* m_chECMWFResolution;
   wxButton* m_btnDownloadWorld;
   wxPanel* m_panelLocalModels;
   wxTreeCtrl* m_SourcesTreeCtrl1;
@@ -471,9 +479,9 @@ protected:
 
   // Virtual event handlers, overide them in your derived class
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
-  virtual void OnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
+  virtual void OnNotebookPageChanged(wxNotebookEvent& event) { event.Skip(); }
   virtual void OnWorldLengthChoice(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnWorldResolutionChoice( wxCommandEvent& event ) { event.Skip(); }
+  virtual void OnWorldResolutionChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnWorldDownload(wxCommandEvent& event) { event.Skip(); }
   virtual void OnLocalTreeItemExpanded(wxTreeEvent& event) { event.Skip(); }
   virtual void OnLocalTreeSelChanged(wxTreeEvent& event) { event.Skip(); }
@@ -495,15 +503,15 @@ protected:
   virtual void OnXyGribAtmModelChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribWaveModelChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribConfigChange(wxCommandEvent& event) { event.Skip(); }
-  
+
 public:
   wxScrolledWindow* m_sScrolledDialog;
 
-  GribRequestSettingBase(
-      wxWindow* parent, wxWindowID id = wxID_ANY,
-      const wxString& title = _("Get forecast..."),
-      const wxPoint& pos = wxDefaultPosition,
-      const wxSize& size = wxSize(-1, -1), long style = wxDEFAULT_DIALOG_STYLE);
+  GribRequestSettingBase(wxWindow* parent, wxWindowID id = wxID_ANY,
+                         const wxString& title = _("Get forecast..."),
+                         const wxPoint& pos = wxDefaultPosition,
+                         const wxSize& size = wxSize(-1, -1),
+                         long style = wxDEFAULT_DIALOG_STYLE);
   ~GribRequestSettingBase();
 };
 

@@ -46,8 +46,8 @@ int g_LayerIdx;
 
 wxRect g_blink_rect;
 
-std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
-    = [](unsigned, const unsigned*) { assert(true); };
+std::function<void(unsigned, const unsigned *)> RoutePoint::delete_gl_textures =
+    [](unsigned, const unsigned *) { assert(true); };
 
 RoutePoint::RoutePoint() {
   m_pbmIcon = NULL;
@@ -304,7 +304,6 @@ void RoutePoint::CalculateNameExtents(void) {
   } else
     m_NameExtents = wxSize(0, 0);
 }
-
 
 bool RoutePoint::IsVisibleSelectable(double scale_val, bool boverrideViz) {
   if (m_bIsActive)  //  An active route point must always be visible

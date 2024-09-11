@@ -55,7 +55,7 @@ else
     fi
     if test -f Release/opencpn.pdb; then cp Release/opencpn.pdb .; fi
     for src in \
-        $(expand *.dmg *setup.exe *.deb *.pkg *pdb*gz *.dSYM.tar.gz *.flatpak)
+        $(expand *.dmg *setup.exe *.deb *.pkg *pdb *gz *.dSYM.tar.gz *.flatpak)
     do
         old=$(basename $src)
         new=$(echo $old | sed "s/+/+${BUILD_NR}./")
