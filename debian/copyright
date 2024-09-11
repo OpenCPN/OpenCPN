@@ -11,11 +11,11 @@ Files-Excluded:
  data/CoC-1973_2018-InlandECDIS_20220912.pdf
  data/doc
  deploy_rsa.enc
- debian
  Docs
  flatpak
  libs/lz4
  libs/serial
+ libs/shapelib
  libs/tinyxml
  libs/wxsvg
  plugins/chartdldr_pi/src/tinyxml
@@ -111,6 +111,10 @@ Files: gui/include/gui/cat_settings.h
  gui/include/gui/usb_devices.h
 Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
+
+Files: gui/include/gui/ssfn.h
+Copyright: 2019, bzt (bztsrc@gitlab)
+License: Expat
 
 Files: gui/include/gui/crashprint.h
 Copyright: 2004, wxCode
@@ -521,10 +525,6 @@ Copyright: 2013, Ryan Hileman
  1995-1998, Brian Paul
 License: Expat or GPL-2+
 
-Files: libs/glshim/LICENSE
-Copyright: 2013, Ryan Hileman
-License: Expat
-
 Files: libs/glshim/README.md
 Copyright: 2011, 2014, Pavel Kalian
  2011, 2013-2016, Sean D'Epagnier
@@ -645,24 +645,32 @@ Files: libs/libdnet/*
 Copyright: 2000-2006, Dug Song <dugsong@monkey.org>
 License: BSD-3-clause
 
-Files: libs/libdnet/Makefile.in
+Files: libs/libdnet/libdnet-libdnet-1.18.0/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULLRWD
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
 
-Files: libs/libdnet/aclocal.m4
+Files: libs/libdnet/libdnet-libdnet-1.18.0/aclocal.m4
 Copyright: 1996-2021, Free Software Foundation, Inc.
 License: GPL-2+ with Autoconf-data exception
 
-Files: libs/libdnet/config/*
+Files: libs/libdnet/libdnet-libdnet-1.18.0/config/*
 Copyright: 1996-2021, Free Software Foundation, Inc.
 License: GPL-2+ with Autoconf-data exception
 
-Files: libs/libdnet/config/config.guess
- libs/libdnet/config/config.sub
+Files: libs/libdnet/libdnet-libdnet-1.18.0/config/config.guess
+ libs/libdnet/libdnet-libdnet-1.18.0/config/config.sub
 Copyright: 1992-2021, Free Software Foundation, Inc.
 License: GPL-3+ with Autoconf-data exception
 
-Files: libs/libdnet/config/install-sh
+Files: libs/libdnet/libdnet-libdnet-1.18.0/config/install-sh
 Copyright: 1994, X Consortium
 License: X11
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -687,99 +695,67 @@ License: X11
  ings in this Software without prior written authorization from the X Consor-
  tium.
 
-Files: libs/libdnet/config/libtool.m4
-Copyright: 1996-2001, 2003-2005, Free Software Foundation, Inc.
-License: FSFULLR
-
-Files: libs/libdnet/config/ltmain.sh
+Files: libs/libdnet/libdnet-libdnet-1.18.0/config/ltmain.sh
 Copyright: 1996-2019, 2021, 2022, Free Software Foundation, Inc.
 License: GPL-2+ with Libtool exception
 
-Files: libs/libdnet/configure
+Files: libs/libdnet/libdnet-libdnet-1.18.0/configure
 Copyright: 1992-1996, 1998-2017, 2020-2023, Free Software Foundation
 License: FSFUL
  This configure script is free software; the Free Software Foundation
  gives unlimited permission to copy, distribute and modify it.
 
-Files: libs/libdnet/configure.ac
+Files: libs/libdnet/libdnet-libdnet-1.18.0/configure.ac
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
 License: BSD-3-clause
 
-Files: libs/libdnet/include/Makefile.in
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
 License: BSD-3-clause
 
-Files: libs/libdnet/include/dnet/Makefile.in
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
 License: BSD-3-clause
 
-Files: libs/libdnet/include/dnet/arp.h
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/arp.h
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
 License: BSD-3-clause
 
-Files: libs/libdnet/include/dnet/rand.h
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/rand.h
 Copyright: 2000, Dug Song <dugsong@monkey.org>
  1996, David Mazieres <dm@lcs.mit.edu>
 License: BSD-3-clause
 
-Files: libs/libdnet/include/dnet/sctp.h
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/sctp.h
 Copyright: 2008, 2009, Daniel Roethlisberger <daniel@roe.ch>
 License: BSD-3-clause
 
-Files: libs/libdnet/include/err.h
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/err.h
 Copyright: 2000, Dug Song <dugsong@monkey.org>
  1993, The Regents of the University of California.
 License: BSD-4-Clause-UC
 
-Files: libs/libdnet/include/queue.h
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/queue.h
 Copyright: 1990, 1991, 1993, The Regents of the University of California.
 License: BSD-4-Clause-UC
 
-Files: libs/libdnet/m4/*
-Copyright: 2004, 2005, 2007-2009, 2011-2019, 2021, 2022, Free
+Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/libtool.m4
+Copyright: Copyright (C) 1996-2001, 2003-2019, 2021-2022 Free Software Foundation, Inc.
+License:  (FSFULLR and/or GPL-2) with Libtool exception
+ As a special exception to the GNU Lesser General Public License, if
+ you distribute this file as part of a program or library that is built
+ using GNU Libtool, you may include this file under the same distribution
+ terms that you use for the rest of that program.
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/acinclude.m4
+ libs/libdnet/libdnet-libdnet-1.18.0/m4/lt~obsolete.m4
+ libs/libdnet/libdnet-libdnet-1.18.0/m4/ltoptions.m4
+ libs/libdnet/libdnet-libdnet-1.18.0/m4/ltsugar.m4
+ libs/libdnet/libdnet-libdnet-1.18.0/m4/ltversion.m4
+Copyright: 2004, 2005, 2007-2009, 2011-2019, 2021, 2022, Free Software Foundation, Inc.
 License: FSFULLR
 
-Files: libs/libdnet/m4/libtool.m4
-Copyright: 1996-2001, 2003-2019, 2021, 2022, Free Software
-License: GPL-2+ with Libtool exception
-
-Files: libs/libdnet/m4/ltsugar.m4
-Copyright: 2004, 2005, 2007, 2008, 2011-2019, 2021, 2022, Free Software
-License: FSFULLR
-
-Files: libs/libdnet/m4/ltversion.m4
-Copyright: 2004, 2011-2019, 2021, 2022, Free Software Foundation
-License: FSFULLR
-
-Files: libs/libdnet/man/*
-Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULLRWD
-
-Files: libs/libdnet/man/Makefile.in
-Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULR
-
-Files: libs/libdnet/man/dnet.3
-Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
-License: BSD-3-clause
-
-Files: libs/libdnet/python/*
-Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULLRWD
-
-Files: libs/libdnet/python/Makefile.in
-Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULR
-
-Files: libs/libdnet/python/dnet.pyx
-Copyright: 2023, 2024, Oliver Falk'
-License: BSD-3-clause
-
-Files: libs/libdnet/src/*
-Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
-License: BSD-4-Clause-UC
-
-Files: libs/libdnet/src/Makefile.in
+Files: libs/libdnet/libdnet-libdnet-1.18.0/man/*
 Copyright: 1994-2021, Free Software Foundation, Inc.
 License: other
  This Makefile.in is free software; the Free Software Foundation
@@ -790,54 +766,114 @@ License: other
  even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  PARTICULAR PURPOSE.
 
-Files: libs/libdnet/src/err.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/man/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: FSFULR
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/man/dnet.3
+Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
+License: BSD-3-clause
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/python/*
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/python/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: FSFULR
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/python/dnet.pyx
+Copyright: 2023, 2024, Oliver Falk'
+License: BSD-3-clause
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/*
+Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
+License: BSD-4-Clause-UC
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/err.c
 Copyright: 2000, Dug Song <dugsong@monkey.org>
  1993, The Regents of the University of California.
 License: BSD-4-Clause-UC
 
-Files: libs/libdnet/src/fw-pktfilter.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/fw-pktfilter.c
 Copyright: 2002, Dug Song <dugsong@monkey.org>
  2001, Jean-Baptiste Marchand, Hervé Schauer Consultants.
 License: BSD-3-clause
 
-Files: libs/libdnet/src/intf-win32.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/intf-win32.c
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
 License: BSD-3-clause
 
-Files: libs/libdnet/src/memcmp.c
- libs/libdnet/src/strsep.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/memcmp.c
+ libs/libdnet/libdnet-libdnet-1.18.0/src/strsep.c
 Copyright: 1990, 1991, 1993, The Regents of the University of California.
 License: BSD-4-Clause-UC
 
-Files: libs/libdnet/src/rand.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/rand.c
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-krenle.at>
  2000, Dug Song <dugsong@monkey.org>
  1996, David Mazieres <dm@lcs.mit.edu>
 License: BSD-3-clause
 
-Files: libs/libdnet/src/route-bsd.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/route-bsd.c
 Copyright: 2001, Dug Song <dugsong@monkey.org>
  1999, Masaki Hirabaru <masaki@merit.edu>
 License: BSD-3-clause
 
-Files: libs/libdnet/src/strlcat.c
- libs/libdnet/src/strlcpy.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/src/strlcat.c
+ libs/libdnet/libdnet-libdnet-1.18.0/src/strlcpy.c
 Copyright: 1998, Todd C. Miller <Todd.Miller@courtesan.com>
 License: BSD-3-clause
 
-Files: libs/libdnet/test/Makefile.in
+Files: libs/libdnet/libdnet-libdnet-1.18.0/test/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
 License: BSD-3-clause
 
-Files: libs/libdnet/test/check/*
+Files: libs/libdnet/libdnet-libdnet-1.18.0/test/check/*
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULLRWD
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
 
-Files: libs/libdnet/test/check/Makefile.in
+Files: libs/libdnet/libdnet-libdnet-1.18.0/test/check/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULLRWD
+License: FSFULR
 
-Files: libs/libdnet/test/dnet/fw.c
+Files: libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/fw.c
 Copyright: 2020, Oliver Falk <oliver@linux-kernel.at>
  2001, Dug Song <dugsong@monkey.org>
 License: BSD-3-clause
@@ -907,10 +943,6 @@ Files: libs/observable/*
 Copyright: Alec Leamas 2021-2022. It is distributed under
  1989, 1991, Free Software Foundation, Inc.
 License: GPL-2+
-
-Files: libs/observable/COPYING
-Copyright: 1989, 1991, Free Software Foundation, Inc.
-License: GPL-2
 
 Files: libs/observable/include/*
 Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
@@ -1619,13 +1651,13 @@ License: Apache-2.0
 License: BSD-2-clause
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
- .  
+ .
   1. Redistributions of source code must retain the above copyright notice, this
      list of conditions and the following disclaimer.
   2. Redistributions in binary form must reproduce the above copyright notice,
      this list of conditions and the following disclaimer in the documentation
      and/or other materials provided with the distribution.
-  . 
+  .
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -1655,7 +1687,7 @@ License: BSD-3-clause-MZ
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
  met:
- . 
+ .
  1. Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
@@ -1665,7 +1697,7 @@ License: BSD-3-clause-MZ
  3. Neither the name of the copyright holder nor the names of its
     contributors may be used to endorse or promote products derived
     from this software without specific prior written permission.
- . 
+ .
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -1709,21 +1741,21 @@ License: BSD-4-Clause-UC
 
 License: BSL-1.0
  Boost Software License - Version 1.0 - August 17th, 2003
- . 
+ .
  Permission is hereby granted, free of charge, to any person or organization
  obtaining a copy of the software and accompanying documentation covered by
  this license (the "Software") to use, reproduce, display, distribute,
  execute, and transmit the Software, and to prepare derivative works of the
  Software, and to permit third-parties to whom the Software is furnished to
  do so, all subject to the following:
- . 
+ .
  The copyright notices in the Software and this entire statement, including
  the above license grant, this restriction and the following disclaimer,
  must be included in all copies of the Software, in whole or in part, and
  all derivative works of the Software, unless such copies or derivative
  works are solely in the form of machine-executable object code generated by
  a source language processor.
- . 
+ .
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
@@ -1742,7 +1774,7 @@ License: CC-BY-SA-4.0
  such rights in consideration of benefits the Licensor receives from
  making the Licensed Material available under these terms and
  conditions.
- . 
+ .
  Section 1 -- Definitions.
    a. Adapted Material means material subject to Copyright and Similar
       Rights that is derived from or based upon the Licensed Material
@@ -1753,15 +1785,15 @@ License: CC-BY-SA-4.0
       Material is a musical work, performance, or sound recording,
       Adapted Material is always produced where the Licensed Material is
       synched in timed relation with a moving image.
- . 
+ .
    b. Adapter's License means the license You apply to Your Copyright
       and Similar Rights in Your contributions to Adapted Material in
       accordance with the terms and conditions of this Public License.
- . 
+ .
    c. BY-SA Compatible License means a license listed at
       creativecommons.org/compatiblelicenses, approved by Creative
       Commons as essentially the equivalent of this Public License.
- . 
+ .
    d. Copyright and Similar Rights means copyright and/or similar rights
       closely related to copyright including, without limitation,
       performance, broadcast, sound recording, and Sui Generis Database
@@ -1769,33 +1801,33 @@ License: CC-BY-SA-4.0
       categorized. For purposes of this Public License, the rights
       specified in Section 2(b)(1)-(2) are not Copyright and Similar
       Rights.
- . 
+ .
    e. Effective Technological Measures means those measures that, in the
       absence of proper authority, may not be circumvented under laws
       fulfilling obligations under Article 11 of the WIPO Copyright
       Treaty adopted on December 20, 1996, and/or similar international
       agreements.
- . 
+ .
    f. Exceptions and Limitations means fair use, fair dealing, and/or
       any other exception or limitation to Copyright and Similar Rights
       that applies to Your use of the Licensed Material.
- . 
+ .
    g. License Elements means the license attributes listed in the name
       of a Creative Commons Public License. The License Elements of this
       Public License are Attribution and ShareAlike.
- . 
+ .
    h. Licensed Material means the artistic or literary work, database,
       or other material to which the Licensor applied this Public
       License.
- . 
+ .
    i. Licensed Rights means the rights granted to You subject to the
       terms and conditions of this Public License, which are limited to
       all Copyright and Similar Rights that apply to Your use of the
       Licensed Material and that the Licensor has authority to license.
- . 
+ .
    j. Licensor means the individual(s) or entity(ies) granting rights
       under this Public License.
- . 
+ .
    k. Share means to provide material to the public by any means or
       process that requires permission under the Licensed Rights, such
       as reproduction, public display, public performance, distribution,
@@ -1803,16 +1835,16 @@ License: CC-BY-SA-4.0
       available to the public including in ways that members of the
       public may access the material from a place and at a time
       individually chosen by them.
- . 
+ .
    l. Sui Generis Database Rights means rights other than copyright
       resulting from Directive 96/9/EC of the European Parliament and of
       the Council of 11 March 1996 on the legal protection of databases,
       as amended and/or succeeded, as well as other essentially
       equivalent rights anywhere in the world.
- . 
+ .
    m. You means the individual or entity exercising the Licensed Rights
       under this Public License. Your has a corresponding meaning.
- . 
+ .
  Section 2 -- Scope.
    a. License grant.
         1. Subject to the terms and conditions of this Public License,
@@ -1879,7 +1911,7 @@ License: CC-BY-SA-4.0
            licensing scheme. In all other cases the Licensor expressly
            reserves any right to collect such royalties.
  Section 3 -- License Conditions.
- . 
+ .
  Your exercise of the Licensed Rights is expressly made subject to the
  following conditions.
    a. Attribution.
@@ -1926,9 +1958,9 @@ License: CC-BY-SA-4.0
            or conditions on, or apply any Effective Technological
            Measures to, Adapted Material that restrict exercise of the
            rights granted under the Adapter's License You apply.
- . 
+ .
  Section 4 -- Sui Generis Database Rights.
- . 
+ .
  Where the Licensed Rights include Sui Generis Database Rights that
  apply to Your use of the Licensed Material:
    a. for the avoidance of doubt, Section 2(a)(1) grants You the right
@@ -1944,9 +1976,9 @@ License: CC-BY-SA-4.0
  For the avoidance of doubt, this Section 4 supplements and does not
  replace Your obligations under this Public License where the Licensed
  Rights include other Copyright and Similar Rights.
- . 
+ .
  Section 5 -- Disclaimer of Warranties and Limitation of Liability.
- . 
+ .
    a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
       EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
       AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
@@ -1970,9 +2002,9 @@ License: CC-BY-SA-4.0
       above shall be interpreted in a manner that, to the extent
       possible, most closely approximates an absolute disclaimer and
       waiver of all liability.
- . 
+ .
  Section 6 -- Term and Termination.
- . 
+ .
    a. This Public License applies for the term of the Copyright and
       Similar Rights licensed here. However, if You fail to comply with
       this Public License, then Your rights under this Public License
@@ -1992,17 +2024,17 @@ License: CC-BY-SA-4.0
       will not terminate this Public License.
    d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
       License.
- . 
+ .
  Section 7 -- Other Terms and Conditions.
- . 
+ .
    a. The Licensor shall not be bound by any additional or different
       terms or conditions communicated by You unless expressly agreed.
    b. Any arrangements, understandings, or agreements regarding the
       Licensed Material not stated herein are separate from and
       independent of the terms and conditions of this Public License.
- . 
+ .
  Section 8 -- Interpretation.
- . 
+ .
    a. For the avoidance of doubt, this Public License does not, and
       shall not be interpreted to, reduce, limit, restrict, or impose
       conditions on any use of the Licensed Material that could lawfully
@@ -2112,12 +2144,12 @@ License: GPL-2+ with Libtool exception
  distribute this file as part of a program or library that is built
  using GNU Libtool, you may include this file under the  same
  distribution terms that you use for the rest of that program.
- . 
+ .
  GNU Libtool is distributed in the hope that it will be useful, but
  WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- . 
+ .
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -2141,25 +2173,25 @@ License: GPL-3+
  `/usr/share/common-licenses/GPL-3'.
 
 License: GPL-3+ with Autoconf-data exception
- This file is free software; you can redistribute it and/or modify it 
- under the terms of the GNU General Public License as published by 
- the Free Software Foundation; either version 3 of the License, or 
- (at your option) any later version. 
- . 
- This program is distributed in the hope that it will be useful, but 
- WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
- General Public License for more details. 
- . 
- You should have received a copy of the GNU General Public License 
- along with this program; if not, see <https://www.gnu.org/licenses/>. 
- . 
- As a special exception to the GNU General Public License, if you 
- distribute this file as part of a program that contains a 
- configuration script generated by Autoconf, you may include it under 
- the same distribution terms that you use for the rest of that 
- program.  This Exception is an additional permission under section 7 
- of the GNU General Public License, version 3 ("GPLv3"). 
+ This file is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, see <https://www.gnu.org/licenses/>.
+ .
+ As a special exception to the GNU General Public License, if you
+ distribute this file as part of a program that contains a
+ configuration script generated by Autoconf, you may include it under
+ the same distribution terms that you use for the rest of that
+ program.  This Exception is an additional permission under section 7
+ of the GNU General Public License, version 3 ("GPLv3").
 
 License: Khronos
  Permission is hereby granted, free of charge, to any person obtaining
@@ -2282,12 +2314,3 @@ License: wxWidgets
  to permit this exception to apply to your modifications. If you do not wish that,
  you must delete the exception notice from such code and/or adjust the licensing '
  conditions notice accordingly.
-
-License: FSFULLRWD
- This Makefile.in is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY, to the extent permitted by law; without
- even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- PARTICULAR PURPOSE.
