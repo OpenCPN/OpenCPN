@@ -1,0 +1,21 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 11 Sep 2024 21:30:15 +0200
+Subject: libdnet: cmake patch for old cmake 3.16
+
+---
+ libs/libdnet/cmake/PatchFile.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libs/libdnet/cmake/PatchFile.cmake b/libs/libdnet/cmake/PatchFile.cmake
+index 70dfec8..b7da3eb 100644
+--- a/libs/libdnet/cmake/PatchFile.cmake
++++ b/libs/libdnet/cmake/PatchFile.cmake
+@@ -29,7 +29,7 @@ find_package(Git REQUIRED)
+ 
+ set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDOUT)
+ 
+-cmake_path(GET patch FILENAME patch_name)
++get_filename_component(patch_name patch NAME)
+ 
+ execute_process(
+   COMMAND ${GIT_EXECUTABLE} --git-dir= apply -p1 --ignore-whitespace "${patch}"
