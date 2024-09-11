@@ -36,7 +36,7 @@ Build-Depends: debhelper-compat (= 13),
  rapidjson-dev
 Standards-Version: 4.6.2
 Vcs-Browser: https://gitlab.com/leamas/opencpn
-Vcs-Git: https://gitlab.com/leamas/opencpn.git -b debian/sid
+Vcs-Git: https://gitlab.com/leamas/opencpn.git -b debian/numbat
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
@@ -54,7 +54,7 @@ Recommends: wx3.2-i18n,
  opencpn-sglock-amd64[amd64],
  opencpn-sglock-arm64[arm64],
  opencpn-sglock-arm32[arm32]
-Suggests: binutils 
+Suggests: binutils
 Breaks: opencpn-plugins (<< 4.8.8~),
  opencpn-gshhs-crude (<< 1:1),
  opencpn-tcdata (<< 1:1)
