@@ -1,8 +1,10 @@
-opencpn (1:5.10.2+dfsg-1ubuntu1~bpo22.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.10.2+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
 
   * New upstream release
+  * Drop upstreamed patches
+  * Drop sid patch for using libarchive instead of libunarr, not usable here-
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 11:14:55 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 11:47:24 +0200
 
 opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+2) jammy; urgency=medium
 
