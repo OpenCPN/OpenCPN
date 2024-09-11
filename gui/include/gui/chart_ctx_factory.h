@@ -34,7 +34,7 @@ extern GLenum g_texture_rectangle_format;
 
 /** Return a ChartCtx reflecting caller's opengl context */
 static ChartCtx ChartCtxFactory() {
-   return ChartCtx(g_bopengl, g_texture_rectangle_format);
+  return ChartCtx(g_bopengl, g_texture_rectangle_format);
 }
 #else
 
@@ -42,4 +42,4 @@ static ChartCtx ChartCtxFactory() {
 static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
 #endif
 
-#endif   //  _CHART_CTX_FACTORY_H__
+#endif  //  _CHART_CTX_FACTORY_H__

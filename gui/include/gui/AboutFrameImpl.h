@@ -65,7 +65,7 @@ protected:
   void RecalculateSize(void);
 
 public:
-  ~AboutFrameImpl(){};
+  ~AboutFrameImpl() {};
 
   AboutFrameImpl(wxWindow* parent, wxWindowID id = wxID_ANY,
                  const wxString& title = _("About OpenCPN"),

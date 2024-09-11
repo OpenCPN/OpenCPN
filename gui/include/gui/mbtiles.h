@@ -110,6 +110,7 @@ public:
 
   double GetPPM() { return m_ppm_avg; }
   double GetZoomFactor() { return m_zoomScaleFactor; }
+  MBTilesType GetTileType() { return m_TileType; }
 
 protected:
   //    Methods
@@ -131,6 +132,7 @@ protected:
 
   double m_ppm_avg;  // Calculated true scale factor of the 1X chart,
                      // pixels per meter
+  MBTilesType m_TileType;
 
   int m_b_cdebug;
 
@@ -138,10 +140,10 @@ protected:
   TileCache *m_tileCache;
   LLRegion m_minZoomRegion;
   wxBitmapType m_imageType;
+  int m_last_clean_zoom;
 
   double m_zoomScaleFactor;
 
-  MBTilesType m_Type;
   MBTilesScheme m_Scheme;
 
   SQLite::Database *m_pDB;
@@ -151,7 +153,7 @@ protected:
   GLShaderProgram *m_tile_shader_program;
   uint32_t m_tileCount;
   MbtTilesThread *m_workerThread;
-  void StartThread();
+  bool StartThread();
   void StopThread();
 
 private:

@@ -154,7 +154,8 @@ private:
 
 ChartMBTiles::ChartMBTiles() {
   // Compute scale & MPP for each zoom level
-  // Initial constants taken from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+  // Initial constants taken from
+  // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   OSM_zoomScale[0] = 554680041;
   OSM_zoomMPP[0] = 156543.03;
   for (int i = 1; i < (int)(sizeof(OSM_zoomScale) / sizeof(double)); i++) {
@@ -406,9 +407,9 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
       } else if (!strncmp(colName, "name", 11)) {
         m_Name = wxString(colValue, wxConvUTF8);
       } else if (!strncmp(colName, "type", 11)) {
-        m_Type = wxString(colValue, wxConvUTF8).Upper().IsSameAs("OVERLAY")
-                     ? MBTilesType::OVERLAY
-                     : MBTilesType::BASE;
+        m_TileType = wxString(colValue, wxConvUTF8).Upper().IsSameAs("OVERLAY")
+                         ? MBTilesType::OVERLAY
+                         : MBTilesType::BASE;
       } else if (!strncmp(colName, "scheme", 11)) {
         m_Scheme = wxString(colValue, wxConvUTF8).Upper().IsSameAs("XYZ")
                        ? MBTilesScheme::XYZ
@@ -564,7 +565,8 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
   // Start the worker thread. Be careful that the thread must be started after
   // PostInit() to ensure that SQL database has been opened.
-  StartThread();
+  bool thread_return = StartThread();
+  if (!thread_return) return INIT_FAIL_RETRY;
 
   if (pi_ret != INIT_OK)
     return pi_ret;
@@ -586,7 +588,7 @@ InitReturn ChartMBTiles::PostInit(void) {
 
   m_pDB = new SQLite::Database(name_UTF8);
   m_pDB->exec("PRAGMA locking_mode=EXCLUSIVE");
-  m_pDB->exec("PRAGMA cache_size=-50000");
+  m_pDB->exec("PRAGMA cache_size=-10000");
 
   bReadyToRender = true;
   return INIT_OK;
@@ -849,7 +851,6 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   return true;
 }
 
-
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const ViewPort &VPoint,
                                         const OCPNRegion &RectRegion,
@@ -913,6 +914,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   int maxrenZoom = m_minZoom;
 
   LLBBox box = Region.GetBox();
+  LLBBox region_box = Region.GetBox();
+  bool render_pass = true;
 
   // if the full screen box spans IDL,
   // we need to render the entire screen in two passes.
@@ -923,9 +926,16 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
     box = screenBox;
   }
 
+  // For tiles declared as "OVERLAY", render only the zoom level that
+  // corresponds to the currently viewed zoom level
+  if (m_TileType == MBTilesType::OVERLAY) zoomFactor = viewZoom;
+
   while (zoomFactor <= viewZoom) {
     // Get the tile numbers of the box corners of this render region, at this
     // zoom level
+    vp = VPoint;
+
+    // First pass, right hand side in twopass rendering
     int topTile =
         wxMin(m_tileCache->GetNorthLimit(zoomFactor),
               mbTileDescriptor::lat2tiley(box.GetMaxLat(), zoomFactor));
@@ -936,13 +946,17 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
     int rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
 
     if (btwoPass) {
-      leftTile = mbTileDescriptor::long2tilex(-180 + eps, zoomFactor);
-      rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
       vp = VPoint;
-      if (vp.clon > 0) vp.clon -= 360;
-
-    } else
-      vp = VPoint;
+      if (vp.clon > 0) {
+        vp.clon -= 360;
+        leftTile = mbTileDescriptor::long2tilex(-180 + eps, zoomFactor);
+        rightTile =
+            mbTileDescriptor::long2tilex(box.GetMaxLon() - 360., zoomFactor);
+      } else {
+        leftTile = mbTileDescriptor::long2tilex(-180 + eps, zoomFactor);
+        rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
+      }
+    }
 
     for (int iy = botTile; iy <= topTile; iy++) {
       for (int ix = leftTile; ix <= rightTile; ix++) {
@@ -986,7 +1000,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   glDisable(GL_TEXTURE_2D);
 
-  m_zoomScaleFactor = 2 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
+  m_zoomScaleFactor =
+      2 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
 
   glChartCanvas::DisableClipRegion();
 
@@ -995,6 +1010,12 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   // resolution of the screen and to handle tricky configuration with multiple
   // screens or hdpi displays
   m_tileCache->CleanCache(m_tileCount * 3);
+
+  if (m_last_clean_zoom != viewZoom) {
+    m_tileCache->DeepCleanCache();
+    m_last_clean_zoom = viewZoom;
+  }
+
 #endif
   return true;
 }
@@ -1009,9 +1030,8 @@ bool ChartMBTiles::RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
 
 /// @brief Create and start the wortker thread. This thread is dedicated at
 /// loading and decompressing chart tiles into memory, in the background. If
-/// for any reason the thread would fail to load, a fatal error id generated
-/// and a message displayed to the user.
-void ChartMBTiles::StartThread() {
+/// for any reason the thread would fail to load, the method return false
+bool ChartMBTiles::StartThread() {
   // Create the worker thread
   m_workerThread = new MbtTilesThread(m_pDB);
   if (m_workerThread->Run() != wxTHREAD_NO_ERROR) {
@@ -1019,8 +1039,10 @@ void ChartMBTiles::StartThread() {
     m_workerThread = nullptr;
     // Not beeing able to create the worker thread is really a bad situation,
     // never supposed to happen. So we trigger a fatal error.
-    wxLogFatalError("MbTiles: Can't create the worker thread");
+    wxLogMessage("MbTiles: Can't create an MBTiles worker thread");
+    return false;
   }
+  return true;
 }
 
 /// @brief  Stop and delete the worker thread. This function is called when

@@ -31,7 +31,7 @@
 
 class CommDriverSignalK : public AbstractCommDriver {
 public:
-  CommDriverSignalK(const std::string& s = "sk0" );
+  CommDriverSignalK(const std::string& s = "sk0");
 
   virtual ~CommDriverSignalK();
 

@@ -1,0 +1,4 @@
+[submodule "flatpak/org.opencpn.OpenCPN"]
+	path = flatpak/org.opencpn.OpenCPN
+	url = https://github.com/flathub/org.opencpn.OpenCPN.git
+	branch = ci

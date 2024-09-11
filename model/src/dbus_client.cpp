@@ -31,11 +31,9 @@ static GDBusProxy* GetProxy() {
   //  g_assert_cmpstr (g_dbus_proxy_get_name_owner (p), ==, NULL);
   //  g_assert (g_dbus_proxy_get_cached_property_names (p) == NULL);
   error = 0;
-  GDBusProxy* p = g_dbus_proxy_new_sync(conn, G_DBUS_PROXY_FLAGS_NONE,
-                                        0  /* GDBusInterfaceInfo* */,
-                                        kDbusName, kDbusObject, kDbusInterface,
-                                        0  /* GCancellable */,
-                                        &error);
+  GDBusProxy* p = g_dbus_proxy_new_sync(
+      conn, G_DBUS_PROXY_FLAGS_NONE, 0 /* GDBusInterfaceInfo* */, kDbusName,
+      kDbusObject, kDbusInterface, 0 /* GCancellable */, &error);
   g_assert_no_error(error);
   return p;
 }
@@ -44,16 +42,12 @@ LocalApiResult DbusLocalClient::SendRaise() {
   auto proxy = GetProxy();
   if (!proxy) return LocalApiResult(false, "Cannot create proxy");
   GError* error = 0;
-  GVariant* result = g_dbus_proxy_call_sync (proxy,
-                                             "Raise",
-                                             0 /* parameters */,
-                                             G_DBUS_CALL_FLAGS_NONE,
-                                             -1 /* timeout msec */,
-                                             0 /* cancellable */,
-                                             &error);
+  GVariant* result = g_dbus_proxy_call_sync(
+      proxy, "Raise", 0 /* parameters */, G_DBUS_CALL_FLAGS_NONE,
+      -1 /* timeout msec */, 0 /* cancellable */, &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result)
-          && g_variant_n_children(result) == 0);
+  bool ok(error == 0 && g_variant_is_container(result) &&
+          g_variant_n_children(result) == 0);
   if (error) g_clear_error(&error);
   g_variant_unref(result);
   g_object_unref(proxy);
@@ -64,16 +58,12 @@ LocalApiResult DbusLocalClient::SendQuit() {
   auto proxy = GetProxy();
   if (!proxy) return LocalApiResult(false, "Cannot create proxy");
   GError* error = 0;
-  GVariant* result = g_dbus_proxy_call_sync (proxy,
-                                             "Quit",
-                                             0 /* parameters */,
-                                             G_DBUS_CALL_FLAGS_NONE,
-                                             -1 /* timeout msec */,
-                                             0 /* cancellable */,
-                                             &error);
+  GVariant* result = g_dbus_proxy_call_sync(
+      proxy, "Quit", 0 /* parameters */, G_DBUS_CALL_FLAGS_NONE,
+      -1 /* timeout msec */, 0 /* cancellable */, &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result)
-          && g_variant_n_children(result) == 0);
+  bool ok(error == 0 && g_variant_is_container(result) &&
+          g_variant_n_children(result) == 0);
   if (error) g_clear_error(&error);
   g_variant_unref(result);
   g_object_unref(proxy);
@@ -84,16 +74,12 @@ LocalApiResult DbusLocalClient::SendOpen(const char* path) {
   auto proxy = GetProxy();
   if (!proxy) return LocalApiResult(false, "Cannot create proxy");
   GError* error = 0;
-  GVariant* result = g_dbus_proxy_call_sync (proxy,
-                                             "Open",
-                                             g_variant_new("(s)", path),
-                                             G_DBUS_CALL_FLAGS_NONE,
-                                             -1 /* timeout msec */,
-                                             0 /* cancellable */,
-                                             &error);
+  GVariant* result = g_dbus_proxy_call_sync(
+      proxy, "Open", g_variant_new("(s)", path), G_DBUS_CALL_FLAGS_NONE,
+      -1 /* timeout msec */, 0 /* cancellable */, &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result)
-          && g_variant_n_children(result) == 1);
+  bool ok(error == 0 && g_variant_is_container(result) &&
+          g_variant_n_children(result) == 1);
   gboolean result_code = false;
   if (ok) {
     GVariant* result_value = g_variant_get_child_value(result, 0);
@@ -112,16 +98,12 @@ LocalApiResult DbusLocalClient::GetRestEndpoint() {
   auto proxy = GetProxy();
   if (!proxy) return LocalApiResult(false, "Cannot create proxy");
   GError* error = 0;
-  GVariant* result = g_dbus_proxy_call_sync (proxy,
-                                             "GetRestEndpoint",
-                                             0 /*arguments */,
-                                             G_DBUS_CALL_FLAGS_NONE,
-                                             -1 /* timeout msec */,
-                                             0 /* cancellable */,
-                                             &error);
+  GVariant* result = g_dbus_proxy_call_sync(
+      proxy, "GetRestEndpoint", 0 /*arguments */, G_DBUS_CALL_FLAGS_NONE,
+      -1 /* timeout msec */, 0 /* cancellable */, &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result)
-          && g_variant_n_children(result) == 1);
+  bool ok(error == 0 && g_variant_is_container(result) &&
+          g_variant_n_children(result) == 1);
   std::string result_str;
   if (ok) {
     GVariant* result_value = g_variant_get_child_value(result, 0);

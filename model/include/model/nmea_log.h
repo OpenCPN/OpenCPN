@@ -5,7 +5,6 @@
 
 class NmeaLog {
 public:
-
   /** Add an formatted string to log output. */
   virtual void Add(const wxString& s) = 0;
 
@@ -13,4 +12,4 @@ public:
   virtual bool Active() const = 0;
 };
 
-#endif    // _ABSTRACT_NMEA_LOG__
+#endif  // _ABSTRACT_NMEA_LOG__

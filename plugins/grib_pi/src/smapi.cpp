@@ -186,8 +186,8 @@ bool wxMapiSession::Logon(const wxString& sProfileName,
                               flags | MAPI_NEW_SESSION, 0, &m_data->m_hSession);
   if (nError != SUCCESS_SUCCESS && nError != MAPI_E_USER_ABORT) {
     // Failed to create a create mapi session, try to acquire a shared mapi
-    // session wxLogDebug(_T("Failed to logon to MAPI using a new session, trying
-    // to acquire a shared one\n"));
+    // session wxLogDebug(_T("Failed to logon to MAPI using a new session,
+    // trying to acquire a shared one\n"));
     nError = m_data->m_lpfnMAPILogon(nUIParam, NULL, NULL, 0, 0,
                                      &m_data->m_hSession);
     if (nError == SUCCESS_SUCCESS) {

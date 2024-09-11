@@ -43,7 +43,7 @@
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
-//#include <gtk/gtk.h>
+// #include <gtk/gtk.h>
 #define GSocket GlibGSocket
 #include <wx/socket.h>
 #undef GSocket
@@ -131,7 +131,7 @@ private:
   wxSocketBase* m_tsock;
   wxSocketServer* m_socket_server;
   bool m_is_multicast;
-  MrqContainer  *m_mrq_container;
+  MrqContainer* m_mrq_container;
 
   int m_txenter;
   int m_dog_value;

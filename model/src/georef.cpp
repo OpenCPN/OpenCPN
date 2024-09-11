@@ -275,7 +275,6 @@ static int isWGS84(int i) {
   if (gDatum[i].dz != gDatum[DATUM_INDEX_WGS84].dz) return i;
 
   return DATUM_INDEX_WGS84;
-
 }
 
 int GetDatumIndex(const char *str) {
@@ -1018,7 +1017,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat,
   double th1, costh1, sinth1, sina12, cosa12, M, N, c1, c2, D, P, s1;
   int merid, signS;
 
-  if((brg == 90.) || (brg == 180.)){
+  if ((brg == 90.) || (brg == 180.)) {
     brg += 1e-9;
   }
 
@@ -1269,9 +1268,11 @@ double DistLoxodrome(double slat, double slon, double dlat, double dlon) {
       60 * sqrt(pow(slat - dlat, 2) +
                 pow((slon - dlon) * cos((slat + dlat) / 2 * DEGREE), 2));
   // Crossing IDL or Greenwich?
-  if (slon * dlon < 0){
-    if (slon < 0) slon += 360.;
-    else if (dlon < 0) dlon += 360.;
+  if (slon * dlon < 0) {
+    if (slon < 0)
+      slon += 360.;
+    else if (dlon < 0)
+      dlon += 360.;
     double distrtw =
         60 * sqrt(pow(slat - dlat, 2) +
                   pow((slon - dlon) * cos((slat + dlat) / 2 * DEGREE), 2));
@@ -1457,7 +1458,7 @@ void DistanceBearingMercator(double lat1, double lon1, double lat0, double lon0,
  * and provided a simplified interface
  */
 
-//#include "lmmin.h"            // all moved to georef.h
+// #include "lmmin.h"            // all moved to georef.h
 #define _LMDIF
 
 ///=================================================================================
@@ -1809,16 +1810,16 @@ const char *lm_shortmsg[] = {"invalid input", "success (f)", "success (p)",
 #endif
 
 // the following values seem good for an x86:
-//#define LM_MACHEP .555e-16 /* resolution of arithmetic */
-//#define LM_DWARF  9.9e-324 /* smallest nonzero number */
+// #define LM_MACHEP .555e-16 /* resolution of arithmetic */
+// #define LM_DWARF  9.9e-324 /* smallest nonzero number */
 // the follwoing values should work on any machine:
 #define LM_MACHEP 1.2e-16
 #define LM_DWARF 1.0e-38
 
 // the squares of the following constants shall not under/overflow:
 // these values seem good for an x86:
-//#define LM_SQRT_DWARF 1.e-160
-//#define LM_SQRT_GIANT 1.e150
+// #define LM_SQRT_DWARF 1.e-160
+// #define LM_SQRT_GIANT 1.e150
 // the following values should work on any machine:
 #define LM_SQRT_DWARF 3.834e-20
 #define LM_SQRT_GIANT 1.304e19
