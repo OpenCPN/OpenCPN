@@ -189,9 +189,34 @@ private:
   bool InstallPlugin(const std::string& path, std::string& filelist,
                      const std::string metadata_path, bool only_metadata);
 
+  /**
+   * Internal helper function to extract a tarball into platform-specific user
+   * directories.
+   *
+   *   @param path: Path to tarball.
+   *   @param filelist: On return contains a list of files installed.
+   *   @param metadata_path: If non-empty, location where to extract plugin
+   * metadata.xml file.
+   *   @param only_metadata: If true don't install any files, just extract
+   *                         the metadata.xml file.
+   *   @return true if tarball could be extracted and contains metadata.xml
+   * file. false otherwise.
+   */
   bool explodeTarball(struct archive* src, struct archive* dest,
                       std::string& filelist, const std::string& metadata_path,
                       bool only_metadata);
+  /**
+   * Extract a tarball into platform-specific user directories.
+   *
+   *   @param path: Path to tarball.
+   *   @param filelist: On return contains a list of files installed.
+   *   @param metadata_path: If non-empty, location where to extract plugin
+   * metadata.xml file.
+   *   @param only_metadata: If true don't install any files, just extract
+   *                         the metadata.xml file.
+   *   @return true if tarball could be extracted and contains metadata.xml
+   * file. false otherwise.
+   */
   bool extractTarball(const std::string path, std::string& filelist,
                       const std::string metadata_path = "",
                       bool only_metadata = false);
