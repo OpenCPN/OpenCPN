@@ -1,3 +1,9 @@
+opencpn (1:5.10.2+dfsg-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 07:27:40 +0200
+
 opencpn (1:5.10.0+dfsg-5) unstable; urgency=medium
 
   * New patch: Don't use unarr for libarchive >= 3.7.4, Closes: #1078767
