@@ -10,7 +10,7 @@ Bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81358
  1 file changed, 1 insertion(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b84afa2..6d1170a 100644
+index 5f6e029..638dd54 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -348,6 +348,7 @@ endif ()
