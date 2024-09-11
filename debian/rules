@@ -19,7 +19,10 @@ override_dh_auto_configure:
             -DOCPN_USE_NEWSERIAL=ON \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
             -DOCPN_FORCE_GTK3=ON \
+            -DOCPN_DISTRO_BUILD=ON \
             -DOCPN_BUILD_TEST=OFF
 
 override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	cd obj-*-linux-gnu*; dbus-run-session make run-tests
+endif
