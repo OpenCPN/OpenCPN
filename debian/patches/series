@@ -1,10 +1,5 @@
 0001-build-Drop-removed-CoC-1973_2018-InlandECDIS_2022091.patch
 0002-Add-missing-libs-like-tinyxml-Debian-work-around.patch
 0003-tests-Disable-time-dependent-Buffer.RateLimit2-test.patch
-0004-build-Use-system-shapelib-if-available.patch
 0005-CMakeLists-help_web.html-path-error-fix.patch
 0006-tests-disable-test-with-intermittent-failures.patch
-0007-Build-Don-t-use-march-native-4088.patch
-0008-VERSION.cmake-Fix-date-string.patch
-0009-Improve-display-detection-on-headless-X11-systems.patch
-0011-Explicitly-set-extra-object-info-text-color.4101.patch
