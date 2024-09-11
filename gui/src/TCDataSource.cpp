@@ -29,6 +29,8 @@
 #include "TCDS_Binary_Harmonic.h"
 
 #include <wx/arrimpl.cpp>
+#include "model/logger.h"
+
 WX_DEFINE_OBJARRAY(ArrayOfTCDSources);
 
 TCDataSource::TCDataSource() {
@@ -38,8 +40,7 @@ TCDataSource::TCDataSource() {
 }
 
 TCDataSource::~TCDataSource() {
-  wxLogMessage(_T("UnLoading Tide/Current data source: %s"),
-               m_data_source_path.c_str());
+  MESSAGE_LOG << "UnLoading Tide/Current data source: " << m_data_source_path;
 
   delete pTCDS_Ascii_Harmonic;
   delete pTCDS_Binary_Harmonic;
@@ -47,8 +48,7 @@ TCDataSource::~TCDataSource() {
 
 TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path) {
   m_data_source_path = data_file_path;
-  wxLogMessage(_T("Loading Tide/Current data source: %s"),
-               m_data_source_path.c_str());
+  MESSAGE_LOG << "Loading Tide/Current data source: " << m_data_source_path;
 
   wxFileName fname(data_file_path);
 

@@ -24,6 +24,7 @@
 #include <wx/string.h>
 
 #include "model/base_platform.h"
+#include "model/logger.h"
 #include "model/nav_object_database.h"
 
 #include "bbox.h"
@@ -120,7 +121,7 @@ public:
       if (!checker->IsAnotherRunning()) {
         StServer *m_server = new StServer;
         if (!m_server->Create(service_name)) {
-          wxLogDebug(wxT("Failed to create an IPC service."));
+          DEBUG_LOG << "Failed to create an IPC service.";
           return false;
         }
       } else {

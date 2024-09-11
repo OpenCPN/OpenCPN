@@ -51,6 +51,7 @@
 #include "mipmap/mipmap.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"
+#include "model/logger.h"
 #include "model/own_ship.h"
 
 #ifndef GL_ETC1_RGB8_OES
@@ -1178,8 +1179,9 @@ void glTextureManager::ClearAllRasterTextures(void) {
   }
   m_chart_texfactory_hash.clear();
 
-  if (g_tex_mem_used != 0)
-    wxLogMessage(_T("Texture memory use calculation error\n"));
+  if (g_tex_mem_used != 0) {
+    MESSAGE_LOG << "Texture memory use calculation error\n";
+  }
 }
 
 bool glTextureManager::PurgeChartTextures(ChartBase *pc, bool b_purge_factory) {
@@ -1375,7 +1377,7 @@ void glTextureManager::BuildCompressedCache() {
   m_timer.Stop();
   PurgeJobList();
   if (GetRunningJobCount()) {
-    wxLogMessage(_T("Starting compressor pool drain"));
+    MESSAGE_LOG << "Starting compressor pool drain";
     wxDateTime now = wxDateTime::Now();
     time_t stall = now.GetTicks();
 #define THREAD_WAIT_SECONDS 5
@@ -1389,7 +1391,7 @@ void glTextureManager::BuildCompressedCache() {
       wxString msg;
       msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop,
                  GetRunningJobCount());
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       if (!GetRunningJobCount()) break;
       wxYield();
       wxSleep(1);
@@ -1398,7 +1400,7 @@ void glTextureManager::BuildCompressedCache() {
     wxString fmsg;
     fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
                 n_comploop, GetRunningJobCount());
-    wxLogMessage(fmsg);
+    MESSAGE_LOG << fmsg;
   }
   ClearAllRasterTextures();
   b_inCompressAllCharts = true;

@@ -47,6 +47,7 @@
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "navutil.h"  // for LogMessageOnce
+#include "model/logger.h"
 #include "model/navutil_base.h"
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
@@ -1440,7 +1441,7 @@ void s57chart::BuildLineVBO(void) {
     if (err) {
       wxString msg;
       msg.Printf(_T("S57 VBO Error 1: %d"), err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       printf("S57 VBO Error 1: %d", err);
     }
 
@@ -1452,7 +1453,7 @@ void s57chart::BuildLineVBO(void) {
     if (err) {
       wxString msg;
       msg.Printf(_T("S57 VBO Error 2: %d"), err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       printf("S57 VBO Error 2: %d", err);
     }
 
@@ -1486,7 +1487,7 @@ void s57chart::BuildLineVBO(void) {
     if (err) {
       wxString msg;
       msg.Printf(_T("S57 VBO Error 3: %d"), err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       printf("S57 VBO Error 3: %d", err);
     }
 
@@ -2697,7 +2698,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
 
   wxString msg(_T("S57chart::Checking SENC file: "));
   msg.Append(m_SENCFileName);
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   {
     int force_make_senc = 0;
@@ -2707,7 +2708,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
       Osenc senc;
       if (senc.ingestHeader(m_SENCFileName)) {
         bbuild_new_senc = true;
-        wxLogMessage(_T("    Rebuilding SENC due to ingestHeader failure."));
+        MESSAGE_LOG << "    Rebuilding SENC due to ingestHeader failure.";
       } else {
         int senc_file_version = senc.getSencReadVersion();
 
@@ -2734,7 +2735,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
         //  SENC file version has to be correct for other tests to make sense
         if (senc_file_version != CURRENT_SENC_FORMAT_VERSION) {
           bbuild_new_senc = true;
-          wxLogMessage(_T("    Rebuilding SENC due to SENC format update."));
+          MESSAGE_LOG << "    Rebuilding SENC due to SENC format update.";
         }
 
         //  Senc EDTN must be the same as .000 file EDTN.
@@ -2743,13 +2744,13 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
 
         else if (ifile_edition > isenc_edition) {
           bbuild_new_senc = true;
-          wxLogMessage(_T("    Rebuilding SENC due to cell edition update."));
+          MESSAGE_LOG << "    Rebuilding SENC due to cell edition update.";
           wxString msg;
           msg = _T("    Last edition recorded in SENC: ");
           msg += senc_base_edtn;
           msg += _T("  most recent edition cell file: ");
           msg += m_edtn000;
-          wxLogMessage(msg);
+          MESSAGE_LOG << msg;
         } else {
           //    See if there are any new update files  in the ENC directory
           int most_recent_update_file =
@@ -2758,14 +2759,14 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
           if (ifile_edition == isenc_edition) {
             if (most_recent_update_file > last_update) {
               bbuild_new_senc = true;
-              wxLogMessage(
-                  _T("    Rebuilding SENC due to incremental cell update."));
+              MESSAGE_LOG
+                  << "    Rebuilding SENC due to incremental cell update.";
               wxString msg;
               msg.Printf(
                   _T("    Last update recorded in SENC: %d   most recent ")
                   _T("update file: %d"),
                   last_update, most_recent_update_file);
-              wxLogMessage(msg);
+              MESSAGE_LOG << msg;
             }
           }
 
@@ -2784,8 +2785,8 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
             }
           } else {
             bbuild_new_senc = true;
-            wxLogMessage(
-                _T("    Rebuilding SENC due to SENC create time invalid."));
+            MESSAGE_LOG
+                << "    Rebuilding SENC due to SENC create time invalid.";
           }
 
           //                     int Osize000l = FileName000.GetSize().GetLo();
@@ -2800,7 +2801,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
       }
     } else if (!::wxFileExists(m_SENCFileName))  // SENC file does not exist
     {
-      wxLogMessage(_T("    Rebuilding SENC due to missing SENC file."));
+      MESSAGE_LOG << "    Rebuilding SENC due to missing SENC file.";
       bbuild_new_senc = true;
     }
   }
@@ -2823,7 +2824,7 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
   if (0 != BuildRAZFromSENCFile(m_SENCFileName)) {
     wxString msg(_T("   Cannot load SENC file "));
     msg.Append(m_SENCFileName);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     return INIT_FAIL_RETRY;
   }
@@ -2999,8 +3000,8 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
   //      Make the target directory if needed
   if (true != ThumbFileName.DirExists(ThumbFileName.GetPath())) {
     if (!ThumbFileName.Mkdir(ThumbFileName.GetPath())) {
-      wxLogMessage(_T("   Cannot create BMP file directory for ") +
-                   ThumbFileName.GetFullPath());
+      MESSAGE_LOG << "   Cannot create BMP file directory for "
+                  << ThumbFileName.GetFullPath();
       return false;
     }
   }
@@ -3152,7 +3153,7 @@ bool s57chart::CreateHeaderDataFromENC(void) {
   if (!InitENCMinimal(m_TempFilePath)) {
     wxString msg(_T("   Cannot initialize ENC file "));
     msg.Append(m_TempFilePath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     return false;
   }
@@ -3258,7 +3259,7 @@ bool s57chart::CreateHeaderDataFromENC(void) {
   {
     wxString msg(_T("   ENC contains no useable M_COVR, CATCOV=1 features:  "));
     msg.Append(m_TempFilePath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   //      And for the NoCovr regions
@@ -3284,10 +3285,10 @@ bool s57chart::CreateHeaderDataFromENC(void) {
   if (0 == m_nCOVREntries) {  // fallback
     wxString msg(_T("   ENC contains no M_COVR features:  "));
     msg.Append(m_TempFilePath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     msg = _T("   Calculating Chart Extents as fallback.");
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     OGREnvelope Env;
 
@@ -3323,7 +3324,7 @@ bool s57chart::CreateHeaderDataFromENC(void) {
     } else {
       wxString msg(_T("   Cannot calculate Extents for ENC:  "));
       msg.Append(m_TempFilePath);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       return false;  // chart is completely unusable
     }
@@ -3356,7 +3357,7 @@ bool s57chart::CreateHeaderDataFromoSENC(void) {
     if (!::wxFileExists(m_SENCFileName)) {
       wxString msg(_T("   Cannot open SENC file "));
       msg.Append(m_SENCFileName);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
     return false;
   }
@@ -3596,7 +3597,7 @@ void s57chart::GetChartNameFromTXT(const wxString &FullPath, wxString &Name) {
       } else {
         wxString msg(_T("   Error Reading ENC .TXT file: "));
         msg.Append(file.GetFullPath());
-        wxLogMessage(msg);
+        MESSAGE_LOG << msg;
       }
 
       text_file.Close();
@@ -3709,7 +3710,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
           wxString msg(
               _T("   s57chart::BuildS57File  Unable to open update file "));
           msg.Append(FileToAdd);
-          wxLogMessage(msg);
+          MESSAGE_LOG << msg;
         } else {
           poModule->Rewind();
 
@@ -3733,7 +3734,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
                 _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
                 _T("DSID:ISDT in update file "));
             msg.Append(FileToAdd);
-            wxLogMessage(msg);
+            MESSAGE_LOG << msg;
 
             sumdate = _T("20000101");  // backstop, very early, so wont be used
           }
@@ -3757,7 +3758,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
                 _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
                 _T("DSID:EDTN in update file "));
             msg.Append(FileToAdd);
-            wxLogMessage(msg);
+            MESSAGE_LOG << msg;
 
             umedtn = _T("1");  // backstop
           }
@@ -3854,7 +3855,7 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
             msg.Append(ufile.GetFullPath());
             msg.Append(_T(" to "));
             msg.Append(cp_ufile);
-            wxLogMessage(msg);
+            MESSAGE_LOG << msg;
           }
         }
 
@@ -3877,8 +3878,8 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
               _T("WARNING---ENC Update chain incomplete. Substituting NULL ")
               _T("update file: "));
           msg += ufile.GetFullName();
-          wxLogMessage(msg);
-          wxLogMessage(_T("   Subsequent ENC updates may produce errors."));
+          MESSAGE_LOG << msg;
+          MESSAGE_LOG << "   Subsequent ENC updates may produce errors.";
           wxLogMessage(
               _T("   This ENC exchange set should be updated and SENCs ")
               _T("rebuilt."));
@@ -3892,7 +3893,7 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
           if (!bstat) {
             wxString msg(_T("   Error creating dummy update file: "));
             msg.Append(cp_ufile);
-            wxLogMessage(msg);
+            MESSAGE_LOG << msg;
           }
         }
 
@@ -3957,7 +3958,7 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
   if (!poModule->Open(FullPath000.mb_str())) {
     wxString msg(_T("   s57chart::BuildS57File  Unable to open "));
     msg.Append(FullPath000);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     delete poModule;
     return false;
   }
@@ -3977,7 +3978,7 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
     wxString msg(
         _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
         _T("DSSI:NOGR "));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     m_nGeoRecords = 1;  // backstop
   }
@@ -3992,7 +3993,7 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
     wxString msg(
         _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
         _T("DSID:ISDT "));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     date000 =
         _T("20000101");  // backstop, very early, so any new files will update?
@@ -4010,7 +4011,7 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
     wxString msg(
         _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
         _T("DSID:EDTN "));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     m_edtn000 = _T("1");  // backstop
   }
@@ -4027,7 +4028,7 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
   }
   if (!m_native_scale) {
     wxString msg(_T("   s57chart::BuildS57File  ENC not contain DSPM:CSCL "));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     m_native_scale = 1000;  // backstop
   }
@@ -4102,7 +4103,7 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   int srv = sencfile.ingest200(FullPath, &Objects, &VEs, &VCs);
 
   if (srv != SENC_NO_ERROR) {
-    wxLogMessage(sencfile.getLastError());
+    MESSAGE_LOG << sencfile.getLastError();
     // TODO  Clean up here, or massive leaks result
     return 1;
   }
@@ -5020,7 +5021,7 @@ wxString s57chart::GetAttributeDecode(wxString &att, int ival) {
   if (!wxFileName::FileExists(file)) {
     wxString msg(_T("   Could not open "));
     msg.Append(file);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     return ret_val;
   }
@@ -5039,7 +5040,7 @@ wxString s57chart::GetAttributeDecode(wxString &att, int ival) {
   if (!wxFileName::FileExists(ei_file)) {
     wxString msg(_T("   Could not open "));
     msg.Append(ei_file);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     return ret_val;
   }
@@ -6082,7 +6083,7 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
 //------------------------------------------------------------------------
 bool s57chart::InitENCMinimal(const wxString &FullPath) {
   if (NULL == g_poRegistrar) {
-    wxLogMessage(_T("   Error: No ClassRegistrar in InitENCMinimal."));
+    MESSAGE_LOG << "   Error: No ClassRegistrar in InitENCMinimal.";
     return false;
   }
 
@@ -6192,7 +6193,7 @@ void OpenCPN_OGRErrorHandler(CPLErr eErrClass, int nError,
 
   if (g_bGDAL_Debug || (CE_Debug != eErrClass)) {  // log every warning or error
     wxString msg(buf, wxConvUTF8);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   //      Do not simply return on CE_Fatal errors, as we don't want to abort()

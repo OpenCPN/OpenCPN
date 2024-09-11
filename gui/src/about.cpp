@@ -52,6 +52,8 @@
 #endif
 #include "ocpn_frame.h"
 
+#include "model/logger.h"
+
 extern OCPNPlatform* g_Platform;
 extern MyFrame* gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -347,7 +349,7 @@ void about::Populate(void) {
             licenseText.Append( str + _T("<br>") );
         license_filea.Close();
     } else {
-        wxLogMessage( _T("Could not open License file: ") + m_DataLocn );
+        MESSAGE_LOG << "Could not open License file: " << m_DataLocn;
     }
 
     wxString suppLicense = g_Platform->GetSupplementalLicenseString();
@@ -547,7 +549,7 @@ void about::OnNBPageChange(wxNotebookEvent& event) {
         licenseText.Append(str + _T("<br>"));
       license_filea.Close();
     } else {
-      wxLogMessage(_T("Could not open License file: ") + m_DataLocn);
+      MESSAGE_LOG << "Could not open License file: " << m_DataLocn;
     }
 
     wxString suppLicense = g_Platform->GetSupplementalLicenseString();
@@ -593,7 +595,7 @@ void about::OnCopyClick(wxCommandEvent& event) {
   wxFFile file(filename);
 
   if (!file.IsOpened()) {
-    wxLogMessage(_T("Failed to open file for Copy to Clipboard."));
+    MESSAGE_LOG << "Failed to open file for Copy to Clipboard.";
     return;
   }
 

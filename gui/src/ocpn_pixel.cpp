@@ -84,6 +84,8 @@
 #include <wx/gdicmn.h>
 #include <wx/palette.h>
 
+#include "model/logger.h"
+
 // missing from mingw32 header
 #ifndef CLR_INVALID
 #define CLR_INVALID ((COLORREF) - 1)
@@ -119,7 +121,7 @@ static void *x_malloc(size_t t) {
 
   //      malloc fails
   if (NULL == pr) {
-    wxLogMessage(_T("x_malloc...malloc fails with request of %d bytes."), t);
+    MESSAGE_LOG << "x_malloc...malloc fails with request of " << t << " bytes.";
 
     // Cat the /proc/meminfo file
 
@@ -185,7 +187,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
     m_img = XShmCreateImage(xdisplay, xvisual, bpp, ZPixmap, NULL, &shminfo,
                             width, height);
     if (m_img == NULL) {
-      wxLogError(_T("XShmCreateImage failed!"));
+      ERROR_LOG << "XShmCreateImage failed!";
       goto after_check;
     }
 
@@ -205,7 +207,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
     if (shminfo.shmaddr == (char *)-1) {
       XDestroyImage(m_img);
       m_img = NULL;
-      wxLogMessage(_T("shmat failed"));
+      MESSAGE_LOG << "shmat failed";
       goto after_check;
     }
 
@@ -246,7 +248,7 @@ after_check:
     if (m_img->data == NULL) {
       XDestroyImage(m_img);
       m_img = NULL;
-      wxLogError(wxT("ocpn_Bitmap:Cannot malloc for data image."));
+      ERROR_LOG << "ocpn_Bitmap:Cannot malloc for data image.";
     }
   }
 }

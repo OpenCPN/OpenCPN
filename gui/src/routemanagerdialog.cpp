@@ -44,6 +44,7 @@
 #include "model/georef.h"
 #include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
+#include "model/logger.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/route.h"
@@ -3041,7 +3042,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     else
       remMSG.sprintf(_T("Error deleting Layer file: %s"), destf);
 
-    wxLogMessage(remMSG);
+    MESSAGE_LOG << remMSG;
   }
 
   // Process Tracks and Routes in this layer

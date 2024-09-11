@@ -46,6 +46,7 @@
 #include "model/cutil.h"
 #include "model/geodesic.h"
 #include "model/idents.h"
+#include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
@@ -760,7 +761,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PRESS_GESTURES)) {
-    wxLogError("Failed to enable touch events");
+    ERROR_LOG << "Failed to enable touch events";
   }
 
   Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, this);
@@ -941,7 +942,7 @@ void ChartCanvas::SetupGlCanvas() {
 #ifdef ocpnUSE_GL
   if (!g_bdisable_opengl) {
     if (g_bopengl) {
-      wxLogMessage(_T("Creating glChartCanvas"));
+      MESSAGE_LOG << "Creating glChartCanvas";
       m_glcc = new glChartCanvas(this);
 
       // We use one context for all GL windows, so that textures etc will be
@@ -973,7 +974,7 @@ void ChartCanvas::SetupGlCanvas() {
   if (!g_bdisable_opengl) {
     if (g_bopengl) {
       // qDebug() << "SetupGlCanvas";
-      wxLogMessage(_T("Creating glChartCanvas"));
+      MESSAGE_LOG << "Creating glChartCanvas";
 
       // We use one context for all GL windows, so that textures etc will be
       // automatically shared
@@ -1249,7 +1250,7 @@ void ChartCanvas::ShowTides(bool bShow) {
 
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_TIDES, bShow);
   } else {
-    wxLogMessage(_T("Chart1::Event...TCMgr Not Available"));
+    MESSAGE_LOG << "Chart1::Event...TCMgr Not Available";
     SetbShowTide(false);
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_TIDES, false);
   }
@@ -1273,7 +1274,7 @@ void ChartCanvas::ShowCurrents(bool bShow) {
     SetbShowCurrent(bShow);
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_CURRENTS, bShow);
   } else {
-    wxLogMessage(_T("Chart1::Event...TCMgr Not Available"));
+    MESSAGE_LOG << "Chart1::Event...TCMgr Not Available";
     SetbShowCurrent(false);
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_CURRENTS, false);
   }
@@ -2318,13 +2319,13 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
       _T("Metrics:  m_display_size_mm: %g     g_Platform->getDisplaySize():  ")
       _T("%d:%d   "),
       m_display_size_mm, sd.x, sd.y);
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   int ssx, ssy;
   ssx = g_monitor_info[g_current_monitor].width;
   ssy = g_monitor_info[g_current_monitor].height;
   msg.Printf(_T("monitor size: %d %d"), ssx, ssy);
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   m_focus_indicator_pix = /*std::round*/ wxRound(1 * GetPixPerMM());
 }

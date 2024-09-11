@@ -80,6 +80,7 @@
 #include "model/cmdline.h"
 #include "model/config_vars.h"
 #include "model/idents.h"
+#include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
@@ -4256,8 +4257,9 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    m_Text_def_boat_speed = new wxStaticText( pDisplayPanel, wxID_ANY,
-               _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+    m_Text_def_boat_speed = new wxStaticText(
+        pDisplayPanel, wxID_ANY,
+        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
     defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),
@@ -4894,7 +4896,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
   auto sound = std::unique_ptr<OcpnSound>(SoundFactory());
   int deviceCount = sound->DeviceCount();
-  wxLogMessage("options: got device count: %d", deviceCount);
+  MESSAGE_LOG << "options: got device count: " << deviceCount;
   if (deviceCount >= 1) {
     wxArrayString labels;
     for (int i = 0; i < deviceCount; i += 1) {

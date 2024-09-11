@@ -61,6 +61,7 @@
 #include "model/geodesic.h"
 #include "model/georef.h"
 #include "model/idents.h"
+#include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
@@ -1244,8 +1245,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "BasemapDir"), &gWorldMapLocation);
   Read(_T ( "BaseShapefileDir"), &gWorldShapefileLocation);
   Read(_T ( "pluginInstallDir"), &g_winPluginDir);
-  wxLogMessage("winPluginDir, read from ini file: %s",
-               g_winPluginDir.mb_str().data());
+  MESSAGE_LOG << "winPluginDir, read from ini file: "
+              << g_winPluginDir.mb_str().data();
 
   SetPath(_T ( "/Settings/GlobalState" ));
 
@@ -1263,7 +1264,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
-          wxLogMessage(_T( "Skipped invalid DataStream config"));
+          MESSAGE_LOG << "Skipped invalid DataStream config";
           delete prm;
           continue;
         }
@@ -1291,7 +1292,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     if (fabs(st_lat) < 90.0) vLat = st_lat;
 
     s.Printf(_T ( "Setting Viewpoint Lat/Lon %g, %g" ), vLat, vLon);
-    wxLogMessage(s);
+    MESSAGE_LOG << s;
   }
 
   double st_view_scale, st_rotation;
@@ -1326,7 +1327,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     if (fabs(lat) < 90.0) gLat = lat;
 
     s.Printf(_T ( "Setting Ownship Lat/Lon %g, %g" ), gLat, gLon);
-    wxLogMessage(s);
+    MESSAGE_LOG << s;
   }
 
   //    Fonts
@@ -1668,12 +1669,12 @@ static bool ReloadPendingChanges(const wxString &changes_path) {
   if (::wxFileExists(changes_path)) ::wxRemoveFile(changes_path);
 
   if (size == 0 || res.status != pugi::xml_parse_status::status_ok) {
-    wxLogMessage(changes_path + " seems corrupted, not applying it.");
+    MESSAGE_LOG << changes_path << " seems corrupted, not applying it.";
     pNavObjectChangesSet->reset();
     return false;
   }
 
-  wxLogMessage(_T("Applying NavObjChanges"));
+  MESSAGE_LOG << "Applying NavObjChanges";
   pNavObjectChangesSet->ApplyChanges();
   return true;
 }
@@ -1695,7 +1696,7 @@ wxString MyConfig::FindNewestUsableBackup() const {
 
 void MyConfig::LoadNavObjects() {
   //      next thing to do is read tracks, etc from the NavObject XML file,
-  wxLogMessage(_T("Loading navobjects from navobj.xml"));
+  MESSAGE_LOG << "Loading navobjects from navobj.xml";
 
   if (NULL == m_pNavObjectInputSet)
     m_pNavObjectInputSet = new NavObjectCollection1();
@@ -1708,24 +1709,23 @@ void MyConfig::LoadNavObjects() {
                 // anything smaller is obvious sign of a fatal crash while
                 // saving it last time, replace it with latest backup if
                 // available
-      wxLogMessage("Navobjects file exists, but seems truncated!");
+      MESSAGE_LOG << "Navobjects file exists, but seems truncated!";
       newest_backup = FindNewestUsableBackup();
       if (wxFileExists(newest_backup)) {
-        wxLogMessage("We do have a backup " + newest_backup +
-                     " that looks healthy and will use it.");
+        MESSAGE_LOG << "We do have a backup " << newest_backup
+                    << " that looks healthy and will use it.";
         wxCopyFile(newest_backup, m_sNavObjSetFile, true);
       }
     }
   } else {  // File does not exist, try to recover from a backup
     newest_backup = FindNewestUsableBackup();
     if (wxFileExists(newest_backup)) {
-      wxLogMessage("We do have a backup " + newest_backup +
-                   " that looks healthy and will use it.");
+      MESSAGE_LOG << "We do have a backup " << newest_backup
+                  << " that looks healthy and will use it.";
       wxCopyFile(newest_backup, m_sNavObjSetFile, true);
     } else {
-      wxLogMessage(
-          "No navobjects.xml file or usable backup exist, will create a new "
-          "one.");
+      MESSAGE_LOG << "No navobjects.xml file or usable backup exist, will "
+                     "create a new one.";
     }
   }
   bool success = false;
@@ -1746,8 +1746,8 @@ void MyConfig::LoadNavObjects() {
         m_sNavObjSetFile +
         wxDateTime::Now().Format(".corrupted.%Y-%m-%d-%H-%M-%S");
     wxRenameFile(m_sNavObjSetFile, corrupted_file, true);
-    wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile +
-                 ", the corrupted file was renamed to " + corrupted_file);
+    MESSAGE_LOG << "Error while loading navobjects from " << m_sNavObjSetFile
+                << ", the corrupted file was renamed to " << corrupted_file;
     // If we got here with existing navobj.xml file, but it's corrupted, we can
     // still try to recover from a backup
     if (newest_backup
@@ -1761,20 +1761,19 @@ void MyConfig::LoadNavObjects() {
         m_pNavObjectInputSet->load_file(newest_backup.fn_str()).status ==
             pugi::xml_parse_status::status_ok) {
       success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
-      wxLogMessage("We do have a healthy backup " + newest_backup +
-                   " and did load it.");
+      MESSAGE_LOG << "We do have a healthy backup " << newest_backup
+                  << " and did load it.";
     } else {
-      wxLogMessage(
-          "No usable backup found, a new navobj.xml file will be created.");
+      MESSAGE_LOG
+          << "No usable backup found, a new navobj.xml file will be created.";
       m_pNavObjectInputSet->reset();
     }
   }
   if (success) {
-    wxLogMessage(_T("Done loading navobjects, %d duplicate waypoints ignored"),
-                 wpt_dups);
+    MESSAGE_LOG << "Done loading navobjects, " << wpt_dups
+                << " duplicate waypoints ignored";
   } else {
-    wxLogMessage(
-        _T("Failed to load navobjects, creating a new navobj.xml file."));
+    MESSAGE_LOG << "Failed to load navobjects, creating a new navobj.xml file.";
   }
   delete m_pNavObjectInputSet;
 
@@ -1842,7 +1841,7 @@ bool MyConfig::LoadLayers(wxString &path) {
         wxString laymsg;
         laymsg.Printf(wxT("New layer %d: %s"), l->m_LayerID,
                       l->m_LayerName.c_str());
-        wxLogMessage(laymsg);
+        MESSAGE_LOG << laymsg;
 
         pLayerList->Insert(l);
 
@@ -1855,7 +1854,7 @@ bool MyConfig::LoadLayers(wxString &path) {
             NavObjectCollection1 *pSet = new NavObjectCollection1;
             if (pSet->load_file(file_path.fn_str()).status !=
                 pugi::xml_parse_status::status_ok) {
-              wxLogMessage("Error loading GPX file " + file_path);
+              MESSAGE_LOG << "Error loading GPX file " << file_path;
               pSet->reset();
             }
             long nItems = pSet->LoadAllGPXObjectsAsLayer(
@@ -1866,7 +1865,7 @@ bool MyConfig::LoadLayers(wxString &path) {
             wxString objmsg;
             objmsg.Printf(wxT("Loaded GPX file %s with %ld items."),
                           file_path.c_str(), nItems);
-            wxLogMessage(objmsg);
+            MESSAGE_LOG << objmsg;
 
             delete pSet;
           }
@@ -2942,8 +2941,8 @@ void MyConfig::UpdateNavObj(bool bRecreate) {
     m_pNavObjectChangesSet->reset();
     if (m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str())
             .status != pugi::xml_parse_status::status_ok) {
-      wxLogMessage("Error while loading " + m_sNavObjSetChangesFile +
-                   ", ignoring contents of the file.");
+      MESSAGE_LOG << "Error while loading " << m_sNavObjSetChangesFile
+                  << ", ignoring contents of the file.";
       m_pNavObjectChangesSet->reset();
     }
   }
@@ -3240,7 +3239,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
       wxString laymsg;
       laymsg.Printf(wxT("New layer %d: %s"), l->m_LayerID,
                     l->m_LayerName.c_str());
-      wxLogMessage(laymsg);
+      MESSAGE_LOG << laymsg;
 
       pLayerList->Insert(l);
     }
@@ -3252,7 +3251,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
         NavObjectCollection1 *pSet = new NavObjectCollection1;
         if (pSet->load_file(path.fn_str()).status !=
             pugi::xml_parse_status::status_ok) {
-          wxLogMessage("Error loading GPX file " + path);
+          MESSAGE_LOG << "Error loading GPX file " << path;
           pSet->reset();
           delete pSet;
           continue;
@@ -3275,7 +3274,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
             appendOSDirSlash(&destf);
             if (!wxDirExists(destf)) {
               if (!wxMkdir(destf, wxS_DIR_DEFAULT))
-                wxLogMessage(_T("Error creating layer directory"));
+                MESSAGE_LOG << "Error creating layer directory";
             }
 
             destf << name << _T(".") << ext;
@@ -3286,7 +3285,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
             else
               msg.Printf(_T("Failed adding %s.%s to persistent layers"), name,
                          ext);
-            wxLogMessage(msg);
+            MESSAGE_LOG << msg;
           }
         } else {
           int wpt_dups;
@@ -3313,7 +3312,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
 //-------------------------------------------------------------------------
 void SwitchInlandEcdisMode(bool Switch) {
   if (Switch) {
-    wxLogMessage(_T("Switch InlandEcdis mode On"));
+    MESSAGE_LOG << "Switch InlandEcdis mode On";
     LoadS57();
     // Overule some sewttings to comply with InlandEcdis
     // g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
@@ -3324,7 +3323,7 @@ void SwitchInlandEcdisMode(bool Switch) {
     g_bDrawAISSize = false;
     if (gFrame) gFrame->RequestNewToolbars(true);
   } else {
-    wxLogMessage(_T("Switch InlandEcdis mode Off"));
+    MESSAGE_LOG << "Switch InlandEcdis mode Off";
     // reread the settings overruled by inlandEcdis
     if (pConfig) {
       pConfig->SetPath(_T ( "/Settings" ));
@@ -3372,7 +3371,7 @@ bool LogMessageOnce(const wxString &msg) {
   pMessageOnceArray->Add(msg);
 
   //    And print it
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
   return true;
 }
 

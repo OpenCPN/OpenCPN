@@ -57,6 +57,7 @@
 #include <wx/utils.h>
 #include <wx/window.h>
 
+#include "model/logger.h"
 #include "model/own_ship.h"
 #include "model/route.h"
 #include "model/routeman.h"
@@ -491,7 +492,7 @@ void glChartCanvas::Init() {
 //  Gesture support for platforms other than Android
 #ifdef HAVE_WX_GESTURE_EVENTS
   if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PRESS_GESTURES)) {
-    wxLogError("Failed to enable touch events");
+    ERROR_LOG << "Failed to enable touch events";
   }
 
   Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, m_pParentCanvas);
@@ -530,7 +531,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 #if 0
 #ifdef __ANDROID__
      if(!g_running){
-         wxLogMessage(_T("Got OnSize event while NOT running"));
+         MESSAGE_LOG << "Got OnSize event while NOT running";
          event.Skip();
          qDebug() << "OnSizeB";
 
@@ -559,7 +560,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   // SetSize(m_pParentCanvas->GetClientSize());
 
   if (m_bsetup) {
-    wxLogMessage(_T("BuildFBO 3"));
+    MESSAGE_LOG << "BuildFBO 3";
     BuildFBO();
   }
 
@@ -698,7 +699,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> Framebuffer GenFramebuffers error:  %08X"),
                err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -708,7 +709,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> Framebuffer GenRenderbuffers error:  %08X"),
                err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -718,7 +719,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> Framebuffer BindFramebuffers error:  %08X"),
                err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -745,7 +746,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     if (err) {
       wxString msg;
       msg.Printf(_T("    OpenGL-> glRenderbufferStorage error:  %08X"), err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
@@ -755,7 +756,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       wxString msg;
       msg.Printf(
           _T("    OpenGL-> glFramebufferRenderbuffer depth error:  %08X"), err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
@@ -766,7 +767,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       msg.Printf(
           _T("    OpenGL-> glFramebufferRenderbuffer stencil error:  %08X"),
           err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
 
   } else {
@@ -787,7 +788,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       msg.Printf(
           _T("    OpenGL-> Framebuffer Depth Buffer Storage error:  %08X"),
           err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       retVal = false;
     }
 
@@ -799,7 +800,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
       wxString msg;
       msg.Printf(
           _T("    OpenGL-> Framebuffer Depth Buffer Attach error:  %08X"), err);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       retVal = false;
     }
   }
@@ -821,7 +822,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> buildFBOSize->Framebuffer Incomplete:  %08X"),
                fb_status);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -874,7 +875,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> Framebuffer GenFramebuffers error:  %08X"),
                err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -884,7 +885,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> Framebuffer GenRenderbuffers error:  %08X"),
                err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -894,7 +895,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> Framebuffer BindFramebuffers error:  %08X"),
                err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -920,7 +921,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
   if (err) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> glRenderbufferStorage error:  %08X"), err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
@@ -930,7 +931,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(_T("    OpenGL-> glFramebufferRenderbuffer depth error:  %08X"),
                err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
@@ -940,7 +941,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     wxString msg;
     msg.Printf(
         _T("    OpenGL-> glFramebufferRenderbuffer stencil error:  %08X"), err);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -961,7 +962,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     msg.Printf(
         _T("    OpenGL-> buildFBOSize->Framebuffer Incomplete:  %08X %08X"),
         fb_status);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     retVal = false;
   }
 
@@ -999,10 +1000,10 @@ void glChartCanvas::BuildFBO() {
     glDeleteRenderbuffers(1, &m_renderbuffer);
 
     if (!buildFBOSize(1024)) {
-      wxLogMessage(_T("BuildFBO C"));
+      MESSAGE_LOG << "BuildFBO C";
 
       m_b_DisableFBO = true;
-      wxLogMessage(_T("OpenGL-> FBO Framebuffer unavailable"));
+      MESSAGE_LOG << "OpenGL-> FBO Framebuffer unavailable";
       m_b_BuiltFBO = false;
 
       return;
@@ -1013,7 +1014,7 @@ void glChartCanvas::BuildFBO() {
 
   wxString msg;
   msg.Printf(_T("OpenGL-> Framebuffer OK, size = %d"), m_cache_tex_x);
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   /* invalidate cache */
   Invalidate();
@@ -1030,7 +1031,7 @@ void glChartCanvas::SetupOpenGL() {
   char *str = (char *)glGetString(GL_RENDERER);
   if (str == NULL) {
     // perhaps we should edit the config and turn off opengl now
-    wxLogMessage(_T("Failed to initialize OpenGL"));
+    MESSAGE_LOG << "Failed to initialize OpenGL";
     exit(1);
   }
 
@@ -1042,7 +1043,7 @@ void glChartCanvas::SetupOpenGL() {
   if (g_bSoftwareGL) msg.Printf(_T("OpenGL-> Software OpenGL"));
   msg.Printf(_T("OpenGL-> Renderer String: "));
   msg += m_renderer;
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   if (ps52plib) ps52plib->SetGLRendererString(m_renderer);
 
@@ -1051,7 +1052,7 @@ void glChartCanvas::SetupOpenGL() {
   msg.Printf(_T("OpenGL-> Version reported:  "));
   m_version = wxString(version_string, wxConvUTF8);
   msg += m_version;
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   char GLSL_version_string[80];
   strncpy(GLSL_version_string, (char *)glGetString(GL_SHADING_LANGUAGE_VERSION),
@@ -1059,7 +1060,7 @@ void glChartCanvas::SetupOpenGL() {
   msg.Printf(_T("OpenGL-> GLSL Version reported:  "));
   m_GLSLversion = wxString(GLSL_version_string, wxConvUTF8);
   msg += m_GLSLversion;
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
 #ifndef __ANDROID__
 #ifndef __WXOSX__
@@ -1073,7 +1074,7 @@ void glChartCanvas::SetupOpenGL() {
     printf("GLEW init failed: %s\n", glewGetErrorString(err));
     exit(1);
   } else {
-    wxLogMessage("GLEW init success!n");
+    MESSAGE_LOG << "GLEW init success!n";
   }
 #endif
 #endif
@@ -1155,9 +1156,9 @@ void glChartCanvas::SetupOpenGL() {
 #endif
 
   if (g_b_EnableVBO)
-    wxLogMessage(_T("OpenGL-> Using Vertexbuffer Objects"));
+    MESSAGE_LOG << "OpenGL-> Using Vertexbuffer Objects";
   else
-    wxLogMessage(_T("OpenGL-> Vertexbuffer Objects unavailable"));
+    MESSAGE_LOG << "OpenGL-> Vertexbuffer Objects unavailable";
 
     //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES
@@ -1202,7 +1203,7 @@ void glChartCanvas::SetupOpenGL() {
     if (fb_status != GL_FRAMEBUFFER_COMPLETE_EXT) {
       wxString msg;
       msg.Printf(_T("    OpenGL-> Framebuffer Incomplete:  %08X"), fb_status);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       m_b_DisableFBO = true;
       BuildFBO();
     }
@@ -1223,22 +1224,26 @@ void glChartCanvas::SetupOpenGL() {
   m_bUseGLSL = true;
 
   if (m_b_BuiltFBO) {
-    wxLogMessage(_T("OpenGL-> Using Framebuffer Objects"));
+    MESSAGE_LOG << "OpenGL-> Using Framebuffer Objects";
 
-    if (m_b_useFBOStencil)
-      wxLogMessage(_T("OpenGL-> Using FBO Stencil buffer"));
-    else
-      wxLogMessage(_T("OpenGL-> FBO Stencil buffer unavailable"));
-  } else
-    wxLogMessage(_T("OpenGL-> Framebuffer Objects unavailable"));
+    if (m_b_useFBOStencil) {
+      MESSAGE_LOG << "OpenGL-> Using FBO Stencil buffer";
+    } else {
+      MESSAGE_LOG << "OpenGL-> FBO Stencil buffer unavailable";
+    }
+  } else {
+    MESSAGE_LOG << "OpenGL-> Framebuffer Objects unavailable";
+  }
 
-  if (s_b_useStencil)
-    wxLogMessage(_T("OpenGL-> Using Stencil buffer clipping"));
-  else
-    wxLogMessage(_T("OpenGL-> Using Depth buffer clipping"));
+  if (s_b_useStencil) {
+    MESSAGE_LOG << "OpenGL-> Using Stencil buffer clipping";
+  } else {
+    MESSAGE_LOG << "OpenGL-> Using Depth buffer clipping";
+  }
 
-  if (s_b_useScissorTest && s_b_useStencil)
-    wxLogMessage(_T("OpenGL-> Using Scissor Clipping"));
+  if (s_b_useScissorTest && s_b_useStencil) {
+    MESSAGE_LOG << "OpenGL-> Using Scissor Clipping";
+  }
 
   /* we upload non-aligned memory */
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1249,10 +1254,10 @@ void glChartCanvas::SetupOpenGL() {
   wxString lwmsg;
   lwmsg.Printf(_T("OpenGL-> Minimum cartographic line width: %4.1f"),
                g_GLMinCartographicLineWidth);
-  wxLogMessage(lwmsg);
+  MESSAGE_LOG << lwmsg;
   lwmsg.Printf(_T("OpenGL-> Minimum symbol line width: %4.1f"),
                g_GLMinSymbolLineWidth);
-  wxLogMessage(lwmsg);
+  MESSAGE_LOG << lwmsg;
 
   if (!g_bGLexpert)
     g_GLOptions.m_bUseAcceleratedPanning = !m_b_DisableFBO && m_b_BuiltFBO;
@@ -1307,7 +1312,7 @@ void glChartCanvas::SetupCompression() {
 
 #ifdef __WXMSW__
   if (!::IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE)) {
-    wxLogMessage(_T("OpenGL-> SSE2 Instruction set not available"));
+    MESSAGE_LOG << "OpenGL-> SSE2 Instruction set not available";
     goto no_compression;
   }
 #endif
@@ -1322,7 +1327,7 @@ void glChartCanvas::SetupCompression() {
   if (QueryExtension("GL_OES_compressed_ETC1_RGB8_texture")) {
     g_raster_format = GL_ETC1_RGB8_OES;
 
-    wxLogMessage(_T("OpenGL-> Using oes etc1 compression"));
+    MESSAGE_LOG << "OpenGL-> Using oes etc1 compression";
   }
 #endif
 
@@ -1342,13 +1347,13 @@ void glChartCanvas::SetupCompression() {
       else
         g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 
-      wxLogMessage(_T("OpenGL-> Using s3tc dxt1 compression"));
+      MESSAGE_LOG << "OpenGL-> Using s3tc dxt1 compression";
     } else if (QueryExtension("GL_3DFX_texture_compression_FXT1")) {
       g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
 
-      wxLogMessage(_T("OpenGL-> Using 3dfx fxt1 compression"));
+      MESSAGE_LOG << "OpenGL-> Using 3dfx fxt1 compression";
     } else {
-      wxLogMessage(_T("OpenGL-> No Useable compression format found"));
+      MESSAGE_LOG << "OpenGL-> No Useable compression format found";
       goto no_compression;
     }
   }

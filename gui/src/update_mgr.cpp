@@ -45,6 +45,7 @@
 #include "update_mgr.h"
 #include "model/plugin_loader.h"
 #include "model/downloader.h"
+#include "model/logger.h"
 #include "OCPNPlatform.h"
 #include "model/plugin_handler.h"
 #include "pluginmanager.h"
@@ -153,7 +154,7 @@ public:
     LoadIcon("packageBox.svg", m_bitmap, 2 * minsize / 3);
     wxPaintDC dc(this);
     if (!m_bitmap.IsOk()) {
-      wxLogMessage("AddPluginPanel: bitmap is not OK!");
+      MESSAGE_LOG << "AddPluginPanel: bitmap is not OK!";
       return;
     }
     dc.DrawBitmap(m_bitmap, offset, offset, true);
@@ -177,7 +178,7 @@ protected:
     if (!ok) {
       auto style = g_StyleManager->GetCurrentStyle();
       bitmap = wxBitmap(style->GetIcon(_T("default_pi"), size, size));
-      wxLogMessage("Icon: %s not found.", path.GetFullPath());
+      MESSAGE_LOG << "Icon: " << path.GetFullPath() << " not found.";
     }
 
     /*
@@ -220,7 +221,7 @@ public:
   }
 
   void OnClick(wxCommandEvent& event) {
-    wxLogMessage("Selected update: %s", m_metadata.name.c_str());
+    MESSAGE_LOG << "Selected update: " << m_metadata.name;
     auto top_parent = GetParent()->GetParent()->GetParent();
     auto dialog = dynamic_cast<UpdateDialog*>(top_parent);
     wxASSERT(dialog != 0);

@@ -37,7 +37,7 @@ public:
   virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam,
                                   WXLPARAM lParam) {
     if (nMsg == WM_DEVICECHANGE) {
-      wxLogDebug("WM_DEVICECHANGE %x %x", wParam, lParam);
+      DEBUG_LOG << "WM_DEVICECHANGE " << wParam << " " << lParam;
       if (wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE) {
         SystemEvents::GetInstance().evt_dev_change.Notify();
       }

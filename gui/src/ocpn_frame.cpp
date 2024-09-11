@@ -742,7 +742,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   g_pAISGUI = new AisInfoGui();
 
   //  Create/connect a dynamic event handler slot
-  wxLogMessage(" **** Connect stuff");
+  MESSAGE_LOG << " **** Connect stuff";
 
   b_autofind = false;
 
@@ -912,7 +912,7 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
   appendOSDirSlash(&soundfile);
   soundfile += wxString(bells_sound_file_name[bells - 1], wxConvUTF8);
   soundfile.Prepend(g_Platform->GetSharedDataDir());
-  wxLogMessage(_T("Using bells sound file: ") + soundfile);
+  MESSAGE_LOG << "Using bells sound file: " << soundfile;
 
   OcpnSound *sound = bells_sound[bells - 1];
   sound->SetFinishedCallback(onBellsFinishedCB, this);
@@ -920,7 +920,7 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
   sound->Load(soundfile);
   if (!sound->IsOk()) {
-    wxLogMessage(_T("Failed to load bells sound file: ") + soundfile);
+    MESSAGE_LOG << "Failed to load bells sound file: " << soundfile;
     return;
   }
   sound->Play();
@@ -1688,7 +1688,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     plugin_loader->DeactivateAllPlugIns();
   }
 
-  wxLogMessage(_T("opencpn::MyFrame exiting cleanly."));
+  MESSAGE_LOG << "opencpn::MyFrame exiting cleanly.";
 
   quitflag++;
 
@@ -1837,7 +1837,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       g_glTextureManager->GetRunningJobCount()) {
     g_glTextureManager->ClearAllRasterTextures();
 
-    wxLogMessage(_T("Starting compressor pool drain"));
+    MESSAGE_LOG << "Starting compressor pool drain";
     wxDateTime now = wxDateTime::Now();
     time_t stall = now.GetTicks();
     time_t end = stall + THREAD_WAIT_SECONDS;
@@ -1850,7 +1850,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       wxString msg;
       msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop,
                  g_glTextureManager->GetRunningJobCount());
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       if (!g_glTextureManager->GetRunningJobCount()) break;
       wxYield();
       wxSleep(1);
@@ -1859,7 +1859,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     wxString fmsg;
     fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
                 n_comploop, g_glTextureManager->GetRunningJobCount());
-    wxLogMessage(fmsg);
+    MESSAGE_LOG << fmsg;
   }
   delete g_glTextureManager;
 #endif
@@ -1867,7 +1867,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   this->Destroy();
   gFrame = NULL;
 
-  wxLogMessage(_T("gFrame destroyed."));
+  MESSAGE_LOG << "gFrame destroyed.";
 
 #ifdef __ANDROID__
 #ifndef USE_ANDROID_GLES2
@@ -2166,7 +2166,7 @@ void MyFrame::ODoSetSize(void) {
 #endif
     //        wxString msg;
     //        msg.Printf(_T("StatusBar min height: %d    StatusBar font points:
-    //        %d"), min_height, pstat_font->GetPointSize()); wxLogMessage(msg);
+    //        %d"), min_height, pstat_font->GetPointSize()); MESSAGE_LOG << msg;
   }
 
   SetCanvasSizes(GetClientSize());
@@ -3000,7 +3000,7 @@ void MyFrame::ActivateMOB(void) {
   mob_message += toSDMM(1, gLat);
   mob_message += _T("   ");
   mob_message += toSDMM(2, gLon);
-  wxLogMessage(mob_message);
+  MESSAGE_LOG << mob_message;
 }
 void MyFrame::TrackOn(void) {
   g_bTrackActive = true;
@@ -4583,14 +4583,14 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
     pprog->Show();
   }
 
-  wxLogMessage(_T("   "));
-  wxLogMessage(_T("Starting chart database Update..."));
+  MESSAGE_LOG << "   ";
+  MESSAGE_LOG << "Starting chart database Update...";
   wxString gshhg_chart_loc = gWorldMapLocation;
   gWorldMapLocation = wxEmptyString;
   ChartData->Update(DirArray, b_force, pprog);
   ChartData->SaveBinary(ChartListFileName);
-  wxLogMessage(_T("Finished chart database Update"));
-  wxLogMessage(_T("   "));
+  MESSAGE_LOG << "Finished chart database Update";
+  MESSAGE_LOG << "   ";
   if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
                                     // GSHHG data, but we still might have the
                                     // default dataset distributed with OpenCPN
@@ -4682,7 +4682,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   InitTimer.Stop();
   wxString msg;
   msg.Printf(_T("OnInitTimer...%d"), m_iInitCount);
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   wxLog::FlushActive();
 
@@ -4778,7 +4778,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         wxString laymsg;
         laymsg.Printf(wxT("Getting .gpx layer files from: %s"),
                       layerdir.c_str());
-        wxLogMessage(laymsg);
+        MESSAGE_LOG << laymsg;
         pConfig->LoadLayers(layerdir);
       }
 
@@ -4976,7 +4976,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
     default: {
       // Last call....
-      wxLogMessage(_T("OnInitTimer...Last Call"));
+      MESSAGE_LOG << "OnInitTimer...Last Call";
 
       PositionIENCToolbar();
 
@@ -4994,7 +4994,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         ChartsRefresh();
       }
 
-      wxLogMessage(_T("OnInitTimer...Finalize Canvases"));
+      MESSAGE_LOG << "OnInitTimer...Finalize Canvases";
 
       for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
         ChartCanvas *cc = g_canvasArray.Item(i);
@@ -5184,7 +5184,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
       if ((abs(TimeOff) > 20) && (abs(TimeOff) < 7200)) {
         wxString msg;
         msg.Printf(_T("Setting system time, delta t is %d seconds"), TimeOff);
-        wxLogMessage(msg);
+        MESSAGE_LOG << msg;
 #ifdef __WXMSW__
         //      Fix up the fix_time to convert to GMT
         Fix_Time = Fix_Time.ToGMT();
@@ -5212,7 +5212,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
         CommandStr.Append("\"");
         msg.Printf(_T("Linux command is:"));
         msg += CommandStr;
-        wxLogMessage(msg);
+        MESSAGE_LOG << msg;
         wxExecute(CommandStr, wxEXEC_ASYNC);
 #endif                   //__WXMSW__
       }
@@ -5234,7 +5234,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
         wxString CommandStr("sudo /bin/date --utc --set=\"");
         CommandStr.Append(Fix_Time.Format("%D %T\""));
         msg.Printf(_T("Set Date/Time, Linux command is: %s"), CommandStr);
-        wxLogMessage(msg);
+        MESSAGE_LOG << msg;
         wxExecute(CommandStr, wxEXEC_ASYNC);
 #endif                   // !__WXMSW__
         m_bTimeIsSet = true;
@@ -5473,7 +5473,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   //      Listen for quitflag to be set, requesting application close
   if (quitflag) {
-    wxLogMessage(_T("Got quitflag from SIGNAL"));
+    MESSAGE_LOG << "Got quitflag from SIGNAL";
     FrameTimer1.Stop();
     Close();
     return;
@@ -5610,7 +5610,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
         data.Printf(_T(" DR Lat %10.5f Lon %10.5f"), gLat, gLon);
         navmsg += data;
       }
-      wxLogMessage(navmsg);
+      MESSAGE_LOG << navmsg;
       g_loglast_time = lognow;
 
       int bells = (hourLOC % 4) * 2;  // 2 bells each hour
@@ -5813,7 +5813,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       pConfig->UpdateNavObj(true);
       wxString msg = wxString::Format(
           _T("OpenCPN periodic navobj update took %ld ms."), update_sw.Time());
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       qDebug() << msg.mb_str();
       g_FlushNavobjChanges = false;
       androidHideBusyIcon();
@@ -6162,7 +6162,7 @@ bool GetMemoryStatus(int *mem_total, int *mem_used) {
     FILE *file = fopen("/proc/self/statm", "r");
     if (file) {
       if (fscanf(file, "%d", mem_used) != 1) {
-        wxLogWarning("Cannot parse /proc/self/statm (!)");
+        WARNING_LOG << "Cannot parse /proc/self/statm (!)";
       }
       *mem_used *= 4;  // XXX assume 4K page
       fclose(file);
@@ -6771,7 +6771,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   mob_message += toSDMM(1, ptarget->Lat);
   mob_message += _T("   ");
   mob_message += toSDMM(2, ptarget->Lon);
-  wxLogMessage(mob_message);
+  MESSAGE_LOG << mob_message;
 }
 
 void MyFrame::UpdateAISMOBRoute(const AisTargetData *ptarget) {
@@ -6813,7 +6813,7 @@ void MyFrame::UpdateAISMOBRoute(const AisTargetData *ptarget) {
     mob_message += _T("   ");
     mob_message += toSDMM(2, ptarget->Lon);
 
-    wxLogMessage(mob_message);
+    MESSAGE_LOG << mob_message;
   }
 }
 
@@ -6906,30 +6906,30 @@ void MyFrame::OnSuspending(wxPowerEvent &event) {
   //   wxDateTime now = wxDateTime::Now();
   //   printf("OnSuspending...%d\n", now.GetTicks());
 
-  wxLogMessage(_T("System suspend starting..."));
+  MESSAGE_LOG << "System suspend starting...";
 }
 
 void MyFrame::OnSuspended(wxPowerEvent &WXUNUSED(event)) {
   //    wxDateTime now = wxDateTime::Now();
   //    printf("OnSuspended...%d\n", now.GetTicks());
-  wxLogMessage(_T("System is going to suspend."));
+  MESSAGE_LOG << "System is going to suspend.";
 }
 
 void MyFrame::OnSuspendCancel(wxPowerEvent &WXUNUSED(event)) {
   //    wxDateTime now = wxDateTime::Now();
   //    printf("OnSuspendCancel...%d\n", now.GetTicks());
-  wxLogMessage(_T("System suspend was cancelled."));
+  MESSAGE_LOG << "System suspend was cancelled.";
 }
 
 int g_last_resume_ticks;
 void MyFrame::OnResume(wxPowerEvent &WXUNUSED(event)) {
   wxDateTime now = wxDateTime::Now();
-  wxLogMessage(_T("System resumed from suspend."));
+  MESSAGE_LOG << "System resumed from suspend.";
 
   if ((now.GetTicks() - g_last_resume_ticks) > 5) {
     SystemEvents::GetInstance().evt_resume.Notify();
 
-    wxLogMessage("Restarting streams.");
+    MESSAGE_LOG << "Restarting streams.";
     g_last_resume_ticks = now.GetTicks();
 // FIXME (dave)
 #if 0
@@ -8392,7 +8392,7 @@ void LoadS57() {
     appendOSDirSlash(&plib_data);
     plib_data.Append(_T("S52RAZDS.RLE"));
 
-    wxLogMessage(_T("Looking for s57data in ") + look_data_dir);
+    MESSAGE_LOG << "Looking for s57data in " << look_data_dir;
     ps52plib = new s52plib(plib_data);
 
     if (ps52plib->m_bOK) {
@@ -8416,14 +8416,14 @@ void LoadS57() {
     appendOSDirSlash(&plib_data);
     plib_data.Append(_T("S52RAZDS.RLE"));
 
-    wxLogMessage(_T("Looking for s57data in ") + look_data_dir);
+    MESSAGE_LOG << "Looking for s57data in " << look_data_dir;
     ps52plib = new s52plib(plib_data);
 
     if (ps52plib->m_bOK) g_csv_locn = look_data_dir;
   }
 
   if (ps52plib->m_bOK) {
-    wxLogMessage(_T("Using s57data in ") + g_csv_locn);
+    MESSAGE_LOG << "Using s57data in " << g_csv_locn;
     m_pRegistrarMan =
         new s57RegistrarMgr(g_csv_locn, g_Platform->GetLogFilePtr());
 
@@ -8475,8 +8475,7 @@ void LoadS57() {
 #endif
 
   } else {
-    wxLogMessage(
-        _T("   S52PLIB Initialization failed, disabling Vector charts."));
+    MESSAGE_LOG << "   S52PLIB Initialization failed, disabling Vector charts.";
     delete ps52plib;
     ps52plib = NULL;
   }

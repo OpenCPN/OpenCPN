@@ -41,6 +41,7 @@
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
 
+#include "model/logger.h"
 #include "model/ocpn_types.h"
 #include "navutil.h"
 #include "tinyxml.h"
@@ -60,7 +61,7 @@ int Kml::ParseCoordinates(TiXmlNode* node, dPointList& points) {
   if (!e) {
     wxString msg(_T("KML Parser found no <coordinates> for the element: "));
     msg << wxString(node->ToElement()->Value(), wxConvUTF8);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return 0;
   }
 
@@ -153,7 +154,7 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint(TiXmlNode* node,
 
   if (newLat == 0.0 && newLon == 0.0) {
     wxString msg(_T("KML Parser failed to convert <Point> coordinates."));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return KML_PASTE_INVALID;
   }
   wxString pointName = wxEmptyString;
@@ -230,7 +231,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
   }
   if (!placemark) {
     wxString msg(_T("KML Parser found no <Placemark> tag in the KML."));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return KML_PASTE_INVALID;
   }
 
@@ -275,7 +276,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
     wxString msg(
         _T("KML Parser found a single <Placemark> in the KML, but no useable ")
         _T("data in it."));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return KML_PASTE_INVALID;
   }
 
@@ -317,7 +318,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
   if (foundPoints && parsedRoute->GetnPoints() < 2) {
     wxString msg(
         _T("KML Parser did not find enough <Point>s to make a route."));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     foundPoints = false;
   }
 

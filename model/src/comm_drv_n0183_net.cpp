@@ -65,6 +65,7 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
+#include "model/logger.h"
 #include "model/sys_events.h"
 
 #include "observable.h"
@@ -370,7 +371,7 @@ void CommDriverN0183Net::OnTimerSocket() {
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
-      wxLogDebug(" Attempting reconnection...");
+      DEBUG_LOG << " Attempting reconnection...";
       SetBrxConnectEvent(false);
       //  Stop DATA watchdog, may be restarted on successful connection.
       GetSocketThreadWatchdogTimer()->Stop();

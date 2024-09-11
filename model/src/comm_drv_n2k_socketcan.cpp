@@ -208,7 +208,7 @@ bool CommDriverN2KSocketCanImpl::Open() {
 }
 
 void CommDriverN2KSocketCanImpl::Close() {
-  wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
+  MESSAGE_LOG << "Closing N2K socketCAN: " << m_params.socketCAN_port;
   m_worker.StopThread();
 
   // We cannot use shared_from_this() since we might be in the destructor.
@@ -630,13 +630,13 @@ void Worker::Entry() {
     if (recvbytes == -1) {
       if (errno == EAGAIN || errno == EWOULDBLOCK) continue;  // timeout
 
-      wxLogWarning("can socket %s: fatal error %s", m_port_name.c_str(),
-                   strerror(errno));
+      WARNING_LOG << "can socket " << m_port_name << ": fatal error "
+                  << strerror(errno);
       break;
     }
     if (recvbytes != 16) {
-      wxLogWarning("can socket %s: bad frame size: %d (ignored)",
-                   m_port_name.c_str(), recvbytes);
+      WARNING_LOG << "can socket " << m_port_name
+                  << ": bad frame size: " << recvbytes << " (ignored)";
       sleep(1);
       continue;
     }
@@ -655,17 +655,17 @@ bool Worker::StartThread() {
 
 void Worker::StopThread() {
   if (m_run_flag < 0) {
-    wxLogMessage("Attempt to stop already dead thread (ignored).");
+    MESSAGE_LOG << "Attempt to stop already dead thread (ignored).";
     return;
   }
-  wxLogMessage("Stopping Worker Thread");
+  MESSAGE_LOG << "Stopping Worker Thread";
 
   m_run_flag = 0;
   int tsec = 10;
   while ((m_run_flag >= 0) && (tsec--)) wxSleep(1);
 
   if (m_run_flag < 0)
-    wxLogMessage("StopThread: Stopped in %d sec.", 10 - tsec);
+    MESSAGE_LOG << "StopThread: Stopped in " << 10 - tsec << " sec.";
   else
-    wxLogWarning("StopThread: Not Stopped after 10 sec.");
+    WARNING_LOG << "StopThread: Not Stopped after 10 sec.";
 }

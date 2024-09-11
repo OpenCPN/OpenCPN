@@ -184,7 +184,7 @@ private:
     int size = std::snprintf(nullptr, 0, msg.c_str(), data.name.c_str(),
                              data.major, data.minor);
     if (size < 0) {
-      wxLogWarning("Cannot format message for %s", data.name.c_str());
+      WARNING_LOG << "Cannot format message for " << data.name;
       return "Internal error: Cannot format message(!)";
     }
     std::unique_ptr<char[]> buf(new char[size]);
@@ -242,8 +242,8 @@ public:
       return msg;
     }
     if (status == plug_status::unblocked) {
-      wxLogMessage("Attempt to get message for unblocked plugin %s",
-                   data.name.c_str());
+      MESSAGE_LOG << "Attempt to get message for unblocked plugin "
+                  << data.name;
       return "No applicable message";
     }
     auto found = find_block(data.name);

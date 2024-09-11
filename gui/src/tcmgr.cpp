@@ -663,7 +663,7 @@ TC_Error_Code TCMgr::LoadDataSources(std::vector<std::string> &sources) {
         msg1.Printf(_T("Error code: %d"), r);
         msg += msg1;
       }
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       delete s;
     } else {
       m_source_array.Add(s);

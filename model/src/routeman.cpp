@@ -44,6 +44,7 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
 #include "model/nmea_ctx_factory.h"
@@ -91,7 +92,7 @@ static void ActivatePersistedRoute(Routeman *routeman) {
   }
   Route *route = routeman->FindRouteByGUID(g_active_route);
   if (!route) {
-    wxLogWarning("Persisted route GUID not available");
+    WARNING_LOG << "Persisted route GUID not available";
     return;
   }
   routeman->ActivateRoute(route);  // FIXME (leamas) better start point

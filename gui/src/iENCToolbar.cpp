@@ -42,6 +42,7 @@
 #include "chcanv.h"
 #include "svg_utils.h"
 #include "ocpn_frame.h"
+#include "model/logger.h"
 
 extern s52plib *ps52plib;
 extern MyFrame *gFrame;
@@ -115,7 +116,7 @@ void iENCToolbar::LoadToolBitmaps() {
     m_bmRPlus = LoadSVG(svgDir + _T("iENC_RPlus.svg"), w, h);
     m_bmRMinus = LoadSVG(svgDir + _T("iENC_RMinus.svg"), w, h);
   } else {
-    wxLogMessage(_T("Cannot find iENC icons at: ") + svgDir);
+    MESSAGE_LOG << "Cannot find iENC icons at: " << svgDir;
 
     m_bmMinimum = wxBitmap(96, 32);
     m_bmStandard = wxBitmap(96, 32);

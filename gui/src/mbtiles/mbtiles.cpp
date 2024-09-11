@@ -65,6 +65,7 @@
 #endif
 #include "mbtiles.h"
 #include "model/config_vars.h"
+#include "model/logger.h"
 
 //  Missing from MSW include files
 #ifdef _MSC_VER
@@ -352,7 +353,7 @@ void ChartMBTiles::InitFromTiles(const wxString &name) {
     if (std::isnan(m_LonMax)) m_LonMax = maxLon;
   } catch (std::exception &e) {
     const char *t = e.what();
-    wxLogMessage("mbtiles exception: %s", e.what());
+    MESSAGE_LOG << "mbtiles exception: " << e.what();
   }
 }
 
@@ -418,7 +419,7 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
     }
   } catch (std::exception &e) {
     const char *t = e.what();
-    wxLogMessage("mbtiles exception: %s", e.what());
+    MESSAGE_LOG << "mbtiles exception: " << e.what();
     return INIT_FAIL_REMOVE;
   }
 
@@ -1039,7 +1040,7 @@ bool ChartMBTiles::StartThread() {
     m_workerThread = nullptr;
     // Not beeing able to create the worker thread is really a bad situation,
     // never supposed to happen. So we trigger a fatal error.
-    wxLogMessage("MbTiles: Can't create an MBTiles worker thread");
+    MESSAGE_LOG << "MbTiles: Can't create an MBTiles worker thread";
     return false;
   }
   return true;

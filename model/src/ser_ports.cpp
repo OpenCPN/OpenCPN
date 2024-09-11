@@ -107,6 +107,7 @@
 
 #include "model/config_vars.h"
 #include "model/garmin_protocol_mgr.h"
+#include "model/logger.h"
 
 #ifdef __WXMSW__
 DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
@@ -215,7 +216,7 @@ static std::vector<std::string> get_device_candidates() {
   struct dirent* ent;
   dir = opendir("/sys/class/tty");
   if (dir == 0) {
-    wxLogWarning("Cannot open /sys/class/tty: %s", strerror(errno));
+    WARNING_LOG << "Cannot open /sys/class/tty: " << strerror(errno);
     return devices;
   }
   const std::string prefix("/dev/");
@@ -233,7 +234,7 @@ static std::vector<struct symlink> get_all_links() {
   struct dirent* ent;
   dir = opendir("/dev");
   if (dir == 0) {
-    wxLogError("Cannot open /dev: %s", strerror(errno));
+    ERROR_LOG << "Cannot open /dev: " << strerror(errno);
     return links;
   }
   const std::string prefix("/dev/");
@@ -242,8 +243,8 @@ static std::vector<struct symlink> get_all_links() {
     const std::string path(prefix + ent->d_name);
     int r = lstat(path.c_str(), &buf);
     if (r == -1) {
-      wxLogDebug("get_all_links: Cannot stat %s: %s", path.c_str(),
-                 strerror(errno));
+      DEBUG_LOG << "get_all_links: Cannot stat " << path << ": "
+                << strerror(errno);
     } else if (S_ISLNK(buf.st_mode)) {
       char buff[PATH_MAX + 1];
       readlink(path.c_str(), buff, PATH_MAX);
@@ -260,20 +261,20 @@ static std::vector<struct symlink> get_all_links() {
 static wxArrayString* EnumerateSysfsSerialPorts(void) {
   std::vector<std::string> ports;
   auto all_ports = get_device_candidates();
-  wxLogDebug("Enumerate: found %d candidates", all_ports.size());
+  DEBUG_LOG << "Enumerate: found " << all_ports.size() << " candidates";
   for (auto p : all_ports) {
     if (isTTYreal(p.c_str())) ports.push_back(p);
   }
-  wxLogDebug("Enumerate: found %d good ports", ports.size());
+  DEBUG_LOG << "Enumerate: found " << ports.size() << " good ports";
   const auto targets =
       std::unordered_set<std::string>(ports.begin(), ports.end());
 
   auto all_links = get_all_links();
-  wxLogDebug("Enumerate: found %d links", all_links.size());
+  DEBUG_LOG << "Enumerate: found " << all_links.size() << " links";
   for (auto l : all_links) {
     if (targets.find(l.target) != targets.end()) ports.push_back(l.path);
   }
-  wxLogDebug("Enumerate: found %d devices", ports.size());
+  DEBUG_LOG << "Enumerate: found " << ports.size() << " devices";
 
   auto wx_ports = new wxArrayString();
   for (auto p : ports) {
@@ -529,7 +530,7 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
                     0,
                     &deviceinterface))
     {
-        wxLogMessage(_T("Found Garmin Device."));
+        MESSAGE_LOG << "Found Garmin Device.";
 
         preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
     }

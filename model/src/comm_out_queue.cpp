@@ -94,8 +94,8 @@ bool CommOutQueue::push_back(const std::string& line) {
       m_buffer.erase(it);
       if (m_rate_limits_logged.find(item.type) != m_rate_limits_logged.end()) {
         m_rate_limits_logged.insert(item.type);
-        wxLogMessage("Limiting output rate for %u, message: %s", item.type,
-                     line.c_str());
+        MESSAGE_LOG << "Limiting output rate for " << item.type
+                    << ", message: " << line;
       }
     }
   }

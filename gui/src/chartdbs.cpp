@@ -44,6 +44,7 @@
 #include "FlexHash.h"
 #include "LOD_reduce.h"
 #include "shapefile_basemap.h"
+#include "model/logger.h"
 
 #ifndef UINT32
 #define UINT32 unsigned int
@@ -134,7 +135,7 @@ bool ChartTableHeader::CheckValid() {
     vbo[4] = 0;
     msg.Append(wxString(vbo, wxConvUTF8));
     msg.Prepend(wxT("   Warning: found incorrect chart db version: "));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     //          return false;       // no match....
 
@@ -156,7 +157,7 @@ bool ChartTableHeader::CheckValid() {
     vbo[4] = 0;
     msg.Append(wxString(vbo, wxConvUTF8));
     msg.Prepend(wxT("Loading chart db version: "));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   return true;
@@ -1198,8 +1199,8 @@ bool ChartDatabase::Read(const wxString &filePath) {
 
   wxLogVerbose(wxT("Chartdb:Reading %d directory entries, %d table entries"),
                cth.GetDirEntries(), cth.GetTableEntries());
-  wxLogMessage(_T("Chartdb: Chart directory list follows"));
-  if (0 == cth.GetDirEntries()) wxLogMessage(_T("  Nil"));
+  MESSAGE_LOG << "Chartdb: Chart directory list follows";
+  if (0 == cth.GetDirEntries()) MESSAGE_LOG << "  Nil";
 
   int ind = 0;
   for (int iDir = 0; iDir < cth.GetDirEntries(); iDir++) {
@@ -1217,7 +1218,7 @@ bool ChartDatabase::Read(const wxString &filePath) {
     wxString msg;
     msg.Printf(wxT("  Chart directory #%d: "), iDir);
     msg.Append(dir);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     m_chartDirs.Add(dir);
   }
 
@@ -1660,7 +1661,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo &dir_info,
   if (!bForce && !b_dirchange) {
     wxString msg(_T("   No change detected on directory "));
     msg.Append(dir_path);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     //    Traverse the database, and mark as valid all charts coming from this
     //    dir, or anywhere in its tree
@@ -1788,10 +1789,10 @@ bool ChartDatabase::Check_CM93_Structure(wxString dir_name) {
   wxString candidate;
 
   if (dirt.IsOpened())
-    wxLogMessage(_T("check_cm93 opened dir OK:  ") + dir_name);
+    MESSAGE_LOG << "check_cm93 opened dir OK:  " << dir_name;
   else {
-    wxLogMessage(_T("check_cm93 NOT OPENED OK:  ") + dir_name);
-    wxLogMessage(_T("check_cm93 returns false.") + dir_name);
+    MESSAGE_LOG << "check_cm93 NOT OPENED OK:  " << dir_name;
+    MESSAGE_LOG << "check_cm93 returns false." << dir_name;
     return false;
   }
 
@@ -1910,7 +1911,7 @@ shorten the recursive search
                         if(wxDir::Exists(dir_luk))
                         {
                               wxString msg(_T("Found probable CM93 database in
-")); msg += dir_name; wxLogMessage(msg);
+")); msg += dir_name; MESSAGE_LOG << msg;
 
                               wxString dir_name_plus = dir_luk; // be very
 specific about the dir_name,
@@ -1963,7 +1964,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   msg += dir_name_base;
   msg += _T(" for ");
   msg += chart_desc.m_search_mask;
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   wxString dir_name = dir_name_base;
 

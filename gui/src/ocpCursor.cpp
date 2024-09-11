@@ -24,6 +24,8 @@
 
 #include "ocpCursor.h"
 
+#include "model/logger.h"
+
 #ifdef __WXX11__
 
 #include <wx/x11/private.h>
@@ -335,7 +337,7 @@ ocpCursor::ocpCursor(const wxString& cursorName, long type, int hotSpotX,
   HCURSOR hcursor = NULL;
 
   if (!hcursor) {
-    wxLogWarning(_T( "Failed to create ocpCursor." ));
+    WARNING_LOG << "Failed to create ocpCursor.";
     return;
   }
 
@@ -367,7 +369,7 @@ ocpCursor::ocpCursor(const char** xpm_data, long type, int hotSpotX,
   HCURSOR hcursor = NULL;
 
   if (!hcursor) {
-    wxLogWarning(_T( "Failed to create ocpCursor." ));
+    WARNING_LOG << "Failed to create ocpCursor.";
     return;
   }
 

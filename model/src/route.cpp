@@ -44,6 +44,7 @@
 #include "model/georef.h"
 #include "model/georef.h"
 #include "model/config_vars.h"
+#include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/route.h"
 #include "model/routeman.h"
@@ -191,7 +192,7 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
     pNewPoint->m_bIsInRoute = true;
 
     if (insert_after >= GetnPoints() - 1) {
-      wxLogMessage(wxT("Error insert after last point"));
+      MESSAGE_LOG << "Error insert after last point";
       return;
     }
 

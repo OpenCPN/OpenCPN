@@ -49,6 +49,7 @@
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/logger.h"
 
 wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);
 
@@ -75,7 +76,8 @@ static std::string do_readlink(const char *link) {
     return path;
   }
   if (r == -1) {
-    wxLogDebug("Error reading device link %s: %s", path, strerror(errno));
+    DEBUG_LOG << "Error reading device link " << path << ": "
+              << strerror(errno);
     return path;
   }
   if (*target == '/') {

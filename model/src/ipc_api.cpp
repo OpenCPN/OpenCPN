@@ -109,7 +109,7 @@ const void* IpcConnection::OnRequest(const wxString& topic,
   } else if (ocpn::startswith(line, "open")) {
     auto words = ocpn::split(line.c_str(), " ");
     if (words.size() != 2) {
-      wxLogWarning("Illegal open cmd line: %s", line.c_str());
+      WARNING_LOG << "Illegal open cmd line: " << line;
       return 0;
     }
     bool ok = server.open_file_cb(words[1]);
@@ -117,7 +117,7 @@ const void* IpcConnection::OnRequest(const wxString& topic,
     if (size) *size = strlen(reply);
     return reply;
   } else {
-    wxLogWarning("Illegal cmd line: %s", line.c_str());
+    WARNING_LOG << "Illegal cmd line: " << line;
     return 0;
   }
 }

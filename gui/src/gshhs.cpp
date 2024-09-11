@@ -51,6 +51,7 @@
 // #endif
 
 #include "ocpndc.h"
+#include "model/logger.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -172,9 +173,9 @@ void GSHHSChart::RenderViewOnDC(ocpnDC &dc, ViewPort &vp) {
           _T("210-220."),
           reader->GetPolyVersion());
     } else {
-      wxLogMessage(
-          _T("Background world map loaded from GSHHS datafiles found in: ") +
-          gWorldMapLocation);
+      MESSAGE_LOG
+          << "Background world map loaded from GSHHS datafiles found in: "
+          << gWorldMapLocation;
     }
   }
 
@@ -241,7 +242,7 @@ void GshhsPolyCell::ReadPoly(contour_list &poly) {
   return;
 
 fail:
-  wxLogMessage(_T("gshhs ReadPoly failed"));
+  MESSAGE_LOG << "gshhs ReadPoly failed";
 }
 
 void GshhsPolyCell::ReadPolygonFile() {
@@ -265,7 +266,7 @@ void GshhsPolyCell::ReadPolygonFile() {
   return;
 
 fail:
-  wxLogMessage(_T("gshhs ReadPolygon failed"));
+  MESSAGE_LOG << "gshhs ReadPolygon failed";
 }
 
 wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon) {
@@ -902,7 +903,7 @@ void GshhsPolyReader::readPolygonFileHeader(FILE *polyfile,
                                             PolygonFileHeader *header) {
   fseek(polyfile, 0, SEEK_SET);
   if (fread(header, sizeof(PolygonFileHeader), 1, polyfile) != 1)
-    wxLogMessage(_T("gshhs ReadPolygonFileHeader failed"));
+    MESSAGE_LOG << "gshhs ReadPolygonFileHeader failed";
 }
 
 //-------------------------------------------------------------------------
@@ -1149,7 +1150,7 @@ GshhsReader::GshhsReader() {
         _T("Unable to initialize background world map. No GSHHS datafiles ")
         _T("found in "));
     msg += gWorldMapLocation;
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   //    int q = selectBestQuality( vp );
@@ -1317,8 +1318,7 @@ void GshhsReader::LoadQuality(int newQuality)  // 5 levels: 0=low ... 4=full
         }
     }
 #endif
-  wxLogMessage(_T("Loading World Chart Q=%d in %ld ms."), quality,
-               perftimer.Time());
+  MESSAGE_LOG << "Loading World Chart Q=" << quality << " in " << "ld ms.";
 }
 
 //-----------------------------------------------------------------------
@@ -1500,8 +1500,8 @@ void gshhsCrossesLandInit() {
   while (!reader->qualityAvailable[bestQuality] && bestQuality > 0)
     bestQuality--;
   reader->LoadQuality(bestQuality);
-  wxLogMessage("GSHHG: Loaded quality %d for land crossing detection.",
-               bestQuality);
+  MESSAGE_LOG << "GSHHG: Loaded quality " << bestQuality
+              << " for land crossing detection.";
 }
 
 void gshhsCrossesLandReset() {

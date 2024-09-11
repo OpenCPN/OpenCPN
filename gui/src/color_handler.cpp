@@ -2,6 +2,7 @@
 
 #include "color_handler.h"
 #include "s52plib.h"
+#include "model/logger.h"
 #include "model/ocpn_types.h"
 
 extern s52plib* ps52plib;
@@ -18,7 +19,7 @@ wxColour GetGlobalColor(wxString colorName) {
   //    Default
   if (!ret_color.Ok()) {
     ret_color.Set(128, 128, 128);  // Simple Grey
-    wxLogMessage(_T("Warning: Color not found ") + colorName);
+    MESSAGE_LOG << "Warning: Color not found " << colorName;
     // Avoid duplicate warnings:
     if (pcurrent_user_color_hash)
       (*pcurrent_user_color_hash)[colorName] = ret_color;

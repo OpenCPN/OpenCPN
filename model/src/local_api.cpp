@@ -104,6 +104,6 @@ LocalApiResult LocalClientApi::HandleCmdline(CmdlineAction action,
     case CmdlineAction::Skip:
       return LocalApiResult(true, "Unknown command CmdlineAction::Skip");
   }
-  wxLogMessage("Strange code path!");
+  MESSAGE_LOG << "Strange code path!";
   return LocalApiResult(false, "Internal error");
 }

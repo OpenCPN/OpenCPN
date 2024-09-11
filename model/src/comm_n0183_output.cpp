@@ -166,7 +166,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
         comx.BeforeFirst(' ');  // strip off any description provided by Windows
     std::shared_ptr<AbstractCommDriver> old_driver;
     old_driver = FindDriver(drivers, comx.ToStdString());
-    wxLogDebug("Looking for old stream %s", com_name);
+    DEBUG_LOG << "Looking for old stream " << com_name;
 
     if (old_driver) {
       auto drv_serial_n0183 =
@@ -341,7 +341,7 @@ int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
     comx =
         comx.BeforeFirst(' ');  // strip off any description provided by Windows
     existing_driver = FindDriver(drivers, comx.ToStdString());
-    wxLogDebug("Looking for old stream %s", com_name);
+    DEBUG_LOG << "Looking for old stream " << com_name;
 
     if (existing_driver) {
       drv_serial_n0183 =
@@ -392,7 +392,7 @@ int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
                     << Garmin_GPS_GetSaveString();
       }
     }
-    wxLogMessage("Sending Waypoint...");
+    MESSAGE_LOG << "Sending Waypoint...";
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
@@ -454,7 +454,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
                     << Garmin_GPS_GetSaveString();
       }
 
-      wxLogMessage("Sending Routes...");
+      MESSAGE_LOG << "Sending Routes...";
       int ret1 = Garmin_GPS_SendRoute(wxString("usb:"), pr, dlg_ctx);
 
       if (ret1 != 1) {
@@ -617,7 +617,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         auto msg =
             wxString("-->GPS Port: ") + com_name + " Sentence: " + snt.Sentence;
         msg.Trim();
-        wxLogMessage(msg);
+        MESSAGE_LOG << msg;
 
         dlg_ctx.set_value((ip * 100) / nProg);
 
@@ -827,7 +827,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         auto msg =
             wxString("-->GPS Port: ") + com_name + " Sentence: " + sentence;
         msg.Trim();
-        wxLogMessage(msg);
+        MESSAGE_LOG << msg;
 
         wxMilliSleep(progress_stall);
       }
@@ -844,7 +844,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       auto msg =
           wxString("-->GPS Port:") + com_name + " Sentence: " + snt.Sentence;
       msg.Trim();
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
 
     if (g_GPS_Ident == "FurunoGP3X") {
@@ -864,7 +864,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
       auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + rte;
       msg.Trim();
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       wxString term;
       term.Printf("$PFEC,GPxfr,CTL,E%c%c", 0x0d, 0x0a);
@@ -877,7 +877,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
       msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
       msg.Trim();
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
     dlg_ctx.set_value(100);
 
@@ -938,7 +938,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
                     << Garmin_GPS_GetSaveString();
       }
     }
-    wxLogMessage("Sending Waypoint...");
+    MESSAGE_LOG << "Sending Waypoint...";
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
@@ -1065,7 +1065,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     multiplexer.LogOutputMessage(snt.Sentence, com_name, false);
     auto msg = wxString("-->GPS Port:") + com_name + " Sentence: ";
     msg.Trim();
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     if (g_GPS_Ident == "FurunoGP3X") {
       wxString term;
@@ -1076,7 +1076,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
       auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
       msg.Trim();
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
     dlg_ctx.set_value(100);
 

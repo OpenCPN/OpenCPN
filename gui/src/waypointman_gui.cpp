@@ -58,6 +58,7 @@ typedef void (*_GLUfuncptr)();
 
 #include "model/base_platform.h"
 #include "model/cutil.h"
+#include "model/logger.h"
 #include "model/MarkIcon.h"
 #include "model/route_point.h"
 #include "styles.h"
@@ -79,17 +80,17 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
   wxString msg;
   msg.Printf(_T("DPMM: %g   ScaleFactorExp: %g"), displayDPmm,
              g_MarkScaleFactorExp);
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   wxString UserIconPath = g_BasePlatform->GetPrivateDataDir();
   wxChar sep = wxFileName::GetPathSeparator();
   if (UserIconPath.Last() != sep) UserIconPath.Append(sep);
   UserIconPath.Append(_T("UserIcons/"));
 
-  wxLogMessage(_T("Looking for UserIcons at ") + UserIconPath);
+  MESSAGE_LOG << "Looking for UserIcons at " << UserIconPath;
 
   if (wxDir::Exists(UserIconPath)) {
-    wxLogMessage(_T("Loading UserIcons from ") + UserIconPath);
+    MESSAGE_LOG << "Loading UserIcons from " << UserIconPath;
     wxArrayString FileList;
 
     wxBitmap default_bm = wxBitmap(1, 1);  // empty
@@ -106,14 +107,14 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
       wxBitmap icon1;
       if (fn.GetExt().Lower() == _T("xpm")) {
         if (icon1.LoadFile(name, wxBITMAP_TYPE_XPM)) {
-          wxLogMessage(_T("Adding icon: ") + iconname);
+          MESSAGE_LOG << "Adding icon: " << iconname;
           wxImage image = icon1.ConvertToImage();
           ProcessIcon(image, iconname, iconname, g_bUserIconsFirst);
         }
       }
       if (fn.GetExt().Lower() == _T("png")) {
         if (icon1.LoadFile(name, wxBITMAP_TYPE_PNG)) {
-          wxLogMessage(_T("Adding icon: ") + iconname);
+          MESSAGE_LOG << "Adding icon: " << iconname;
           wxImage image = icon1.ConvertToImage();
           ProcessIcon(image, iconname, iconname, g_bUserIconsFirst);
         }
@@ -471,7 +472,7 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
         MarkIcon *pmi = ProcessExtendedIcon(iconSVG, iconname, iconname);
         if (pmi) pmi->preScaled = true;
       } else {
-        wxLogMessage("Failed loading mark icon " + name);
+        MESSAGE_LOG << "Failed loading mark icon " << name;
       }
     }
   }

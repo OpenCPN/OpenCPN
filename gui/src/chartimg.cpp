@@ -56,6 +56,7 @@
 #include "chartimg.h"
 #include "ocpn_pixel.h"
 #include "model/chartdata_input_stream.h"
+#include "model/logger.h"
 
 #ifndef __WXMSW__
 #include <signal.h>
@@ -633,7 +634,7 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
   if (nPlypoint < 3) {
     wxString msg(_T("   Chart File contains less than 3 PLY points: "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     free(pPlyTable);
 
     return INIT_FAIL_REMOVE;
@@ -642,7 +643,7 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
   if (m_datum_str.IsEmpty()) {
     wxString msg(_T("   Chart datum not specified on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
     //          return INIT_FAIL_REMOVE;
@@ -658,7 +659,7 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
       msg += m_datum_str;
       msg += _T("} invalid on chart ");
       msg.Append(m_FullPath);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
       datum_index = DATUM_INDEX_WGS84;
@@ -708,7 +709,7 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
   if (nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
     wxString msg(_T("   Invalid nColorSize data, corrupt on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return INIT_FAIL_REMOVE;
   }
 
@@ -766,7 +767,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
         _T("   Could not read first %d bytes of header for chart file: "),
         TestBlockSize);
     msg.Append(name);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     free(pPlyTable);
     return INIT_FAIL_REMOVE;
   }
@@ -786,7 +787,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   if (i == TestBlockSize - 4) {
     wxString msg(_T("   Chart file has no BSB header, cannot Init."));
     msg.Append(name);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     free(pPlyTable);
     return INIT_FAIL_REMOVE;
   }
@@ -948,7 +949,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
             msg += tkz.GetNextToken();
             msg += _T(" which is unsupported.  Disabling chart ");
             msg += m_FullPath;
-            wxLogMessage(msg);
+            MESSAGE_LOG << msg;
             free(pPlyTable);
             return INIT_FAIL_REMOVE;
           }
@@ -1227,7 +1228,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     wxString msg(
         _T("   Chart File contains less than 3 or too many PLY points: "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     free(pPlyTable);
     return INIT_FAIL_REMOVE;
   }
@@ -1235,7 +1236,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   if (m_datum_str.IsEmpty()) {
     wxString msg(_T("   Chart datum not specified on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
     //          return INIT_FAIL_REMOVE;
@@ -1251,7 +1252,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
       msg += m_datum_str;
       msg += _T("} invalid on chart ");
       msg.Append(m_FullPath);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
       //          return INIT_FAIL_REMOVE;
@@ -1483,7 +1484,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   if (bcorrupt) {
     wxString msg(_T("   Chart File RLL data corrupt on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     return INIT_FAIL_REMOVE;
   }
@@ -1493,7 +1494,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   if (nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
     wxString msg(_T("   Invalid nColorSize data, corrupt on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return INIT_FAIL_REMOVE;
   }
 
@@ -1762,7 +1763,7 @@ InitReturn ChartBaseBSB::PostInit(void) {
     wxString msg(
         _T("   Invalid nColorSize data, corrupt in PostInit() on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return INIT_FAIL_REMOVE;
   }
 
@@ -1771,7 +1772,7 @@ InitReturn ChartBaseBSB::PostInit(void) {
     wxString msg(
         _T("   Invalid Size_X/Size_Y data, corrupt in PostInit() on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     return INIT_FAIL_REMOVE;
   }
 
@@ -1836,7 +1837,7 @@ InitReturn ChartBaseBSB::PostInit(void) {
   if (ifs_bitmap->LastRead() != Size_Y * sizeof(int)) {
     wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     free(tmp);
 
     return INIT_FAIL_REMOVE;
@@ -1868,7 +1869,7 @@ InitReturn ChartBaseBSB::PostInit(void) {
     if (pline_table[iplt] > bitmap_filesize) {
       wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
       msg.Append(m_FullPath);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       return INIT_FAIL_REMOVE;
     }
@@ -1877,7 +1878,7 @@ InitReturn ChartBaseBSB::PostInit(void) {
     if (thisline_size < 0) {
       wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
       msg.Append(m_FullPath);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       return INIT_FAIL_REMOVE;
     }
@@ -1895,7 +1896,7 @@ InitReturn ChartBaseBSB::PostInit(void) {
           ifs_bitmap->SeekI(pline_table[iplt], wxFromStart)) {
         wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
         msg.Append(m_FullPath);
-        wxLogMessage(msg);
+        MESSAGE_LOG << msg;
 
         return INIT_FAIL_REMOVE;
       }
@@ -1930,11 +1931,11 @@ InitReturn ChartBaseBSB::PostInit(void) {
   if (!bline_index_ok) {
     wxString msg(_T("   Line Index corrupt, recreating Index for chart "));
     msg.Append(m_FullPath);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     if (!CreateLineIndex()) {
       wxString msg(_T("   Error creating Line Index for chart "));
       msg.Append(m_FullPath);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       return INIT_FAIL_REMOVE;
     }
   }
@@ -2002,7 +2003,7 @@ bool ChartBaseBSB::CreateLineIndex() {
 
                 wxString msg(_T("CreateLineIndex() failed on chart "));
                 msg.Append(m_FullPath);
-                wxLogMessage(msg);
+                MESSAGE_LOG << msg;
                return false;
             }
 
@@ -3603,20 +3604,20 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, size_t data_size,
 
       wxString msg;
       msg.Printf(_T("   Caught SIGSEGV on GetandScaleData, Factor < 1"));
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       msg.Printf(
           _T("   m_raster_scale_factor:  %g   source.width: %d  dest.y: %d ")
           _T("dest.x: %d dest.width: %d  dest.height: %d "),
           m_raster_scale_factor, source.width, dest.y, dest.x, dest.width,
           dest.height);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       msg.Printf(
           _T("   i: %d  j: %d dest_stride: %d  target_line_start: %p  ")
           _T("target_data_x:  %p  y_offset: %d"),
           i, j, dest_stride, target_line_start, target_data_x, y_offset);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       free(s_data);
       return true;
@@ -4566,7 +4567,7 @@ bool ChartBaseBSB::AnalyzeSkew(void) {
     msg1.Printf(_T(" is %5g degrees"), apparent_skew);
     msg.Append(msg1);
 
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     return false;
   }
@@ -5020,7 +5021,7 @@ int ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution) {
                 Chart_Error_Factor, chart_error_pixels);
     msg.Append(msg1);
 
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     m_ExtraInfo = _T("---<<< Warning:  Chart georef accuracy is poor. >>>---");
   }
@@ -5031,7 +5032,7 @@ int ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution) {
   if ((chart_error_pixels > max_pixel_error) && bHaveEmbeddedGeoref) {
     wxString msg =
         _T("   Trying again with internally calculated georef solution ");
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     bHaveEmbeddedGeoref = false;
     SetVPRasterParms(vp);
@@ -5086,14 +5087,14 @@ int ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution) {
                   Chart_Error_Factor, chart_error_pixels);
       msg.Append(msg1);
 
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       m_ExtraInfo =
           _T("---<<< Warning:  Chart georef accuracy is poor. >>>---");
     } else {
       wxString msg = _T("   Result: OK, Internal georef solution used.");
 
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
 
       m_ExtraInfo = _T("");
     }

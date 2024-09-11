@@ -43,6 +43,7 @@
 #include "catalog_mgr.h"
 #include "download_mgr.h"
 #include "model/downloader.h"
+#include "model/logger.h"
 #include "OCPNPlatform.h"
 #include "picosha2.h"
 #include "model/plugin_handler.h"
@@ -69,9 +70,9 @@ namespace download_mgr {
  */
 static bool checksum_ok(const std::string& path,
                         const PluginMetadata& metadata) {
-  wxLogDebug("Checksum test on %s", metadata.name.c_str());
+  DEBUG_LOG << "Checksum test on " << metadata.name;
   if (metadata.checksum == "") {
-    wxLogDebug("No metadata checksum, aborting check,");
+    DEBUG_LOG << "No metadata checksum, aborting check,";
     return true;
   }
   const size_t pos = metadata.checksum.find(':');
@@ -92,11 +93,11 @@ static bool checksum_ok(const std::string& path,
       std::string("sha256:") + picosha2::get_hash_hex_string(hasher);
 
   if (tarball_hash == checksum) {
-    wxLogDebug("Checksum ok: %s", tarball_hash.c_str());
+    DEBUG_LOG << "Checksum ok: " << tarball_hash;
     return true;
   }
-  wxLogMessage("Checksum fail on %s, tarball: %s, metadata: %s",
-               metadata.name.c_str(), tarball_hash.c_str(), checksum.c_str());
+  MESSAGE_LOG << "Checksum fail on " << metadata.name
+              << ", tarball: " << tarball_hash << ", metadata: " << checksum;
   return false;
 }
 
@@ -162,7 +163,7 @@ public:
     LoadIcon(m_plugin_name.c_str(), m_bitmap, 2 * minsize / 3);
     wxPaintDC dc(this);
     if (!m_bitmap.IsOk()) {
-      wxLogMessage("AddPluginPanel: bitmap is not OK!");
+      MESSAGE_LOG << "AddPluginPanel: bitmap is not OK!";
       return;
     }
     dc.DrawBitmap(m_bitmap, offset, offset, true);
@@ -220,10 +221,10 @@ public:
   void OnClick(wxCommandEvent& event) {
     auto path = ocpn::lookup_tarball(m_metadata.tarball_url.c_str());
     if (m_remove && path != "") {
-      wxLogMessage("Uninstalling %s", m_metadata.name.c_str());
+      MESSAGE_LOG << "Uninstalling " << m_metadata.name;
       PluginHandler::getInstance()->uninstall(m_metadata.name);
     }
-    wxLogMessage("Installing %s", m_metadata.name.c_str());
+    MESSAGE_LOG << "Installing " << m_metadata.name;
 
     auto pluginHandler = PluginHandler::getInstance();
     bool cacheResult = pluginHandler->installPluginFromCache(m_metadata);
@@ -234,7 +235,7 @@ public:
       auto loader = PluginLoader::getInstance();
       auto pic = PlugInByName(m_metadata.name, loader->GetPlugInArray());
       if (!pic) {
-        wxLogMessage("Installation of %s failed", m_metadata.name.c_str());
+        MESSAGE_LOG << "Installation of " << m_metadata.name << " failed";
         return;
       }
       auto upwards = GetParent()->GetParent()->GetParent();
@@ -546,7 +547,7 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current) {
 
   auto pluginHandler = PluginHandler::getInstance();
   if (remove_current) {
-    wxLogMessage("Uninstalling %s", m_plugin.name.c_str());
+    MESSAGE_LOG << "Uninstalling " << m_plugin.name;
     pluginHandler->uninstall(m_plugin.name);
   }
   ok = pluginHandler->installPlugin(m_plugin, path);
@@ -561,8 +562,7 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current) {
     wxFileName fn(uri.GetPath());
     auto basename = fn.GetFullName().ToStdString();
     if (ocpn::store_tarball(path.c_str(), basename.c_str())) {
-      wxLogMessage("Copied %s to local cache at %s", path.c_str(),
-                   basename.c_str());
+      MESSAGE_LOG << "Copied " << path << " to local cache at " << basename;
     }
   }
 

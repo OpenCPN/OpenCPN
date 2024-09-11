@@ -43,6 +43,7 @@
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
 #include "model/idents.h"
+#include "model/logger.h"
 #include "model/ocpn_types.h"
 #include "model/own_ship.h"
 #include "model/multiplexer.h"
@@ -177,7 +178,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
         wxString logmsg;
         logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"),
                       gLat, gLon);
-        wxLogMessage(logmsg);
+        MESSAGE_LOG << logmsg;
       }
     }
 
@@ -196,8 +197,9 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   if (m_watchdogs.velocity_watchdog <= 0) {
     gSog = NAN;
     gCog = NAN;
-    if (g_nNMEADebug && (m_watchdogs.velocity_watchdog == 0))
-      wxLogMessage(_T("   ***Velocity Watchdog timeout..."));
+    if (g_nNMEADebug && (m_watchdogs.velocity_watchdog == 0)) {
+      MESSAGE_LOG << "   ***Velocity Watchdog timeout...";
+    }
     if (m_watchdogs.velocity_watchdog % 5 == 0) {
       // Send AppMsg telling of watchdog expiry
       auto msg = std::make_shared<GPSWatchdogMsg>(
@@ -214,8 +216,9 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   m_watchdogs.heading_watchdog--;
   if (m_watchdogs.heading_watchdog <= 0) {
     gHdt = NAN;
-    if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
-      wxLogMessage(_T("   ***HDT Watchdog timeout..."));
+    if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0)) {
+      MESSAGE_LOG << "   ***HDT Watchdog timeout...";
+    }
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -226,8 +229,9 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   m_watchdogs.variation_watchdog--;
   if (m_watchdogs.variation_watchdog <= 0) {
     g_bVAR_Rx = false;
-    if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
-      wxLogMessage(_T("   ***VAR Watchdog timeout..."));
+    if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0)) {
+      MESSAGE_LOG << "   ***VAR Watchdog timeout...";
+    }
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -240,8 +244,9 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     g_bSatValid = false;
     g_SatsInView = 0;
     g_priSats = 99;
-    if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0))
-      wxLogMessage(_T("   ***SAT Watchdog timeout..."));
+    if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0)) {
+      MESSAGE_LOG << "   ***SAT Watchdog timeout...";
+    }
 
     // Are there any other lower priority sources?
     // If so, adopt that one.

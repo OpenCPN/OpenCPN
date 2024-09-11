@@ -42,6 +42,7 @@
 #include "catalog_mgr.h"
 #include "model/downloader.h"
 #include "model/ocpn_utils.h"
+#include "model/logger.h"
 #include "OCPNPlatform.h"
 #include "model/plugin_handler.h"
 #include "download_mgr.h"
@@ -507,7 +508,7 @@ public:
       } else {
         ev.SetString("Update error (cannot writé to file)");
         ev.SetInt(static_cast<int>(catalog_status::OS_ERROR));
-        wxLogMessage("Update error: Cannot write to %s", path.c_str());
+        MESSAGE_LOG << "Update error: Cannot write to " << path;
       }
       m_grid->CellDone(ev, 6);
       m_buttons->ActivateOk();

@@ -558,7 +558,7 @@ void OCPNPlatform::Initialize_1(void) {
 //  Log is available
 void OCPNPlatform::Initialize_2(void) {
 #ifdef __ANDROID__
-  wxLogMessage(androidGetDeviceInfo());
+  MESSAGE_LOG << androidGetDeviceInfo();
 
   // Create some directories in App private directory
   // Mainly required for Android 11+, but useable on all versions.
@@ -593,7 +593,7 @@ void OCPNPlatform::Initialize_2(void) {
   if (!configdir.DirExists()) {
     if (!configdir.Mkdir()) {
       auto msg = std::string("Cannot create config directory: ");
-      wxLogWarning(msg + configdir.GetFullPath());
+      WARNING_LOG << msg << configdir.GetFullPath();
     }
   }
 }
@@ -712,7 +712,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   if (!fs::exists(gl_util_path)) {  // TODO: What to do if the utility is not
                                     // found (Which it is not for developer
                                     // builds that are not installed)?
-    wxLogMessage("OpenGL test utility not found at %s.", gl_util_path.c_str());
+    MESSAGE_LOG << "OpenGL test utility not found at " << gl_util_path << ".";
     return false;
   }
 
@@ -723,13 +723,13 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   wxString cmd = wxString::Format("\"%s\" opengl-info \"%s\"",
                                   gl_util_path.c_str(), gl_json.c_str());
 
-  wxLogMessage("Starting OpenGL test utility: %s", cmd);
+  MESSAGE_LOG << "Starting OpenGL test utility: " << cmd;
 
   wxArrayString output;
   if (long res = wxExecute(cmd, output); res != 0) {
-    wxLogMessage("OpenGL test utility failed with exit code %d", res);
+    MESSAGE_LOG << "OpenGL test utility failed with exit code " << res;
     for (const auto &l : output) {
-      wxLogMessage(l);
+      MESSAGE_LOG << l;
     }
     return false;
   }
@@ -739,9 +739,9 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   wxJSONValue root;
   reader.Parse(fis, &root);
   if (reader.GetErrorCount() > 0) {
-    wxLogMessage("Failed to parse JSON output from OpenGL test utility.");
+    MESSAGE_LOG << "Failed to parse JSON output from OpenGL test utility.";
     for (const auto &l : reader.GetErrors()) {
-      wxLogMessage(l);
+      MESSAGE_LOG << l;
     }
     return false;
   }
@@ -751,28 +751,28 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   if (root.HasMember("GL_RENDERER")) {
     pcaps->Renderer = root["GL_RENDERER"].AsString();
   } else {
-    wxLogMessage("GL_RENDERER not found.");
+    MESSAGE_LOG << "GL_RENDERER not found.";
     return false;
   }
   if (root.HasMember("GL_VERSION")) {
     pcaps->Version = root["GL_VERSION"].AsString();
   } else {
-    wxLogMessage("GL_VERSION not found.");
+    MESSAGE_LOG << "GL_VERSION not found.";
     return false;
   }
   if (root.HasMember("GL_SHADING_LANGUAGE_VERSION")) {
     pcaps->GLSL_Version = root["GL_SHADING_LANGUAGE_VERSION"].AsString();
   } else {
-    wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found.");
+    MESSAGE_LOG << "GL_SHADING_LANGUAGE_VERSION not found.";
     return false;
   }
   if (root.HasMember("GL_USABLE")) {
     if (!root["GL_USABLE"].AsBool()) {
-      wxLogMessage("OpenGL test utility reports that OpenGL is not usable.");
+      MESSAGE_LOG << "OpenGL test utility reports that OpenGL is not usable.";
       return false;
     }
   } else {
-    wxLogMessage("GL_USABLE not found.");
+    MESSAGE_LOG << "GL_USABLE not found.";
     return false;
   }
   pcaps->dGLSL_Version = 0;
@@ -782,7 +782,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
     msg += wxString(pcaps->GLSL_Version.c_str());
     msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     pcaps->bCanDoGLSL = false;
     return false;
   }
@@ -822,7 +822,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *str = (char *)glGetString(GL_RENDERER);
   if (str == NULL) {  // No GL at all...
-    wxLogMessage("GL_RENDERER not found.");
+    MESSAGE_LOG << "GL_RENDERER not found.";
     delete tcanvas;
     delete pctx;
     return false;
@@ -831,7 +831,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *stv = (char *)glGetString(GL_VERSION);
   if (stv == NULL) {  // No GL Version...
-    wxLogMessage("GL_VERSION not found");
+    MESSAGE_LOG << "GL_VERSION not found";
     delete tcanvas;
     delete pctx;
     return false;
@@ -840,7 +840,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *stsv = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
   if (stsv == NULL) {  // No GLSL...
-    wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found");
+    MESSAGE_LOG << "GL_SHADING_LANGUAGE_VERSION not found";
     delete tcanvas;
     delete pctx;
     return false;
@@ -855,7 +855,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
     msg += wxString(pcaps->GLSL_Version.c_str());
     msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     pcaps->bCanDoGLSL = false;
     delete tcanvas;
     delete pctx;
@@ -913,16 +913,16 @@ bool OCPNPlatform::IsGLCapable() {
 
   if (g_bdisable_opengl) return false;
 
-  wxLogMessage("Starting OpenGL test...");
+  MESSAGE_LOG << "Starting OpenGL test...";
   wxLog::FlushActive();
 
   if (!GL_Caps) {
     GL_Caps = new OCPN_GLCaps();
     bool bcaps = BuildGLCaps(GL_Caps);
 
-    wxLogMessage("OpenGL test complete.");
+    MESSAGE_LOG << "OpenGL test complete.";
     if (!bcaps) {
-      wxLogMessage("BuildGLCaps fails.");
+      MESSAGE_LOG << "BuildGLCaps fails.";
       wxLog::FlushActive();
       return false;
     }
@@ -942,7 +942,7 @@ bool OCPNPlatform::IsGLCapable() {
   }
 
   // OpenGL is OK for OCPN
-  wxLogMessage("OpenGL determined CAPABLE.");
+  MESSAGE_LOG << "OpenGL determined CAPABLE.";
   wxLog::FlushActive();
 
   g_bdisable_opengl = false;
@@ -969,7 +969,7 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
   wxString imsg = _T("Adding catalog lookup path:  ");
   imsg += locale_location;
-  wxLogMessage(imsg);
+  MESSAGE_LOG << imsg;
 
   // Managed plugin location
   wxFileName usrShare(GetWinPluginBaseDir() + wxFileName::GetPathSeparator());
@@ -978,7 +978,7 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
   imsg = _T("Adding catalog lookup path:  ");
   imsg += locale_location;
-  wxLogMessage(imsg);
+  MESSAGE_LOG << imsg;
 
 #elif defined(__ANDROID__)
 
@@ -1019,7 +1019,7 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
 }
 
 wxString OCPNPlatform::GetDefaultSystemLocale() {
-  wxLogMessage(_T("Getting DefaultSystemLocale..."));
+  MESSAGE_LOG << "Getting DefaultSystemLocale...";
 
   wxString retval = _T("en_US");
 
@@ -1040,11 +1040,11 @@ wxString OCPNPlatform::GetDefaultSystemLocale() {
 
     languageInfoW = wxLocale::FindLanguageInfo(lngcp);
     if (languageInfoW)
-      wxLogMessage(_T("Found LanguageInfo for: ") + lstring);
+      MESSAGE_LOG << "Found LanguageInfo for: " << lstring;
     else
-      wxLogMessage(_T("Could not find LanguageInfo for: ") + lstring);
+      MESSAGE_LOG << "Could not find LanguageInfo for: " << lstring;
   } else {
-    wxLogMessage(_T("Could not get LocaleInfo, using wxLANGUAGE_DEFAULT"));
+    MESSAGE_LOG << "Could not get LocaleInfo, using wxLANGUAGE_DEFAULT";
     languageInfoW = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
   }
 
@@ -1071,8 +1071,8 @@ wxString OCPNPlatform::GetAdjustedAppLocale() {
   if (g_bFirstRun || wxIsEmpty(adjLocale)) {
     wxRegKey RegKey(wxString(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN")));
     if (RegKey.Exists()) {
-      wxLogMessage(
-          _T("Retrieving initial language selection from Windows Registry"));
+      MESSAGE_LOG
+          << "Retrieving initial language selection from Windows Registry";
       RegKey.QueryValue(wxString(_T("InstallerLanguage")), adjLocale);
     }
   }
@@ -1100,7 +1100,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
 
   wxString imsg = _T("ChangeLocale: Language load for:  ");
   imsg += newLocaleID;
-  wxLogMessage(imsg);
+  MESSAGE_LOG << imsg;
 
   //  Old locale is done.
   delete (wxLocale *)presentLocale;
@@ -1110,7 +1110,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     std::string path(getenv("HOME"));
     path += "/.var/app/org.opencpn.OpenCPN/data/locale";
     locale->AddCatalogLookupPathPrefix(path);
-    wxLogMessage("Using flatpak locales at %s", path.c_str());
+    MESSAGE_LOG << "Using flatpak locales at " << path;
   }
   wxString loc_lang_canonical;
 
@@ -1125,7 +1125,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     if (!locale->IsOk()) {
       wxString imsg = _T("ChangeLocale:  could not initialize:  ");
       imsg += newLocaleID;
-      wxLogMessage(imsg);
+      MESSAGE_LOG << imsg;
 
       delete locale;
       locale = new wxLocale;
@@ -1141,7 +1141,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
 
   if (!b_initok) {
     wxString imsg = _T("ChangeLocale: Fall back to en_US");
-    wxLogMessage(imsg);
+    MESSAGE_LOG << imsg;
 
     delete locale;
     locale = new wxLocale;
@@ -1153,7 +1153,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
   if (b_initok) {
     wxString imsg = _T("ChangeLocale: Locale Init OK for:  ");
     imsg += loc_lang_canonical;
-    wxLogMessage(imsg);
+    MESSAGE_LOG << imsg;
 
     //  wxWidgets assigneds precedence to message catalogs in reverse order of
     //  loading. That is, the last catalog containing a certain translatable
@@ -1168,16 +1168,16 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
       if (!locale->AddCatalog(g_locale_catalog_array[i])) {
         wxString emsg = _T("ERROR Loading translation catalog for:  ");
         emsg += g_locale_catalog_array[i];
-        wxLogMessage(emsg);
+        MESSAGE_LOG << emsg;
       } else {
         wxString imsg = _T("Loaded translation catalog for:  ");
         imsg += g_locale_catalog_array[i];
-        wxLogMessage(imsg);
+        MESSAGE_LOG << imsg;
       }
     }
 
     // Get core opencpn catalog translation (.mo) file
-    wxLogMessage(_T("Loading catalog for opencpn core."));
+    MESSAGE_LOG << "Loading catalog for opencpn core.";
     locale->AddCatalog(_T("opencpn"));
 
     return_val = locale->GetCanonicalName();

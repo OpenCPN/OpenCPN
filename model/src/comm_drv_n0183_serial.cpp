@@ -288,7 +288,7 @@ void CommDriverN0183Serial::Close() {
   if (m_secondary_thread) {
     if (m_sec_thread_active)  // Try to be sure thread object is still alive
     {
-      wxLogMessage("Stopping Secondary Thread");
+      MESSAGE_LOG << "Stopping Secondary Thread";
 
       m_Thread_run_flag = 0;
 
@@ -300,7 +300,7 @@ void CommDriverN0183Serial::Close() {
         msg.Printf("Stopped in %d sec.", 10 - tsec);
       else
         msg.Printf("Not Stopped after 10 sec.");
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
 
     delete m_secondary_thread;

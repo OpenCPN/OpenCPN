@@ -47,6 +47,7 @@
 #include "chartdb.h"
 #include "OCPNPlatform.h"
 #include "mipmap/mipmap.h"
+#include "model/logger.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64
@@ -1069,8 +1070,8 @@ bool glTexFactory::LoadCatalog(void) {
 
   free(buf);
   if (bad && !m_catalogCorrupted) {
-    wxLogMessage(_T("Bad cache catalog %s %s"), m_ChartPath.c_str(),
-                 m_CompressedCacheFilePath.c_str());
+    MESSAGE_LOG << "Bad cache catalog " << m_ChartPath << " "
+                << m_CompressedCacheFilePath;
     m_catalogCorrupted = true;
   }
   m_catalogOK = true;

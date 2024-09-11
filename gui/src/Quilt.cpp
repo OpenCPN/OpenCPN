@@ -39,6 +39,8 @@
 #include "s57chart.h"
 
 #include <wx/listimpl.cpp>
+#include "model/logger.h"
+
 WX_DEFINE_LIST(PatchList);
 
 extern ChartDB *ChartData;
@@ -2517,10 +2519,10 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
     if (pqp->b_Valid) {
       if (!ChartData->IsChartInCache(pqp->dbIndex)) {
-        wxLogMessage(_T("   Quilt Compose cache miss..."));
+        MESSAGE_LOG << "   Quilt Compose cache miss...";
         ChartData->OpenChartFromDB(pqp->dbIndex, FULL_INIT);
         if (!ChartData->IsChartInCache(pqp->dbIndex)) {
-          wxLogMessage(_T("    Oops, removing from quilt..."));
+          MESSAGE_LOG << "    Oops, removing from quilt...";
           pqp->b_Valid = false;
         }
       }

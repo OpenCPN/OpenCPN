@@ -52,6 +52,7 @@
 #include "model/cutil.h"
 #include "model/geodesic.h"
 #include "model/georef.h"
+#include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
 #include "model/route.h"
@@ -524,7 +525,7 @@ void ConfigMgr::Init() {
 
   // Create the catalog, if necessary
   if (!wxFileExists(m_configCatalogName)) {
-    wxLogMessage(_T("Creating new Configs catalog: ") + m_configCatalogName);
+    MESSAGE_LOG << "Creating new Configs catalog: " << m_configCatalogName;
 
     OCPNConfigCatalog *cat = new OCPNConfigCatalog();
     cat->SetRootConfigNode();
@@ -545,7 +546,7 @@ void ConfigMgr::Init() {
 }
 
 bool ConfigMgr::LoadCatalog() {
-  wxLogMessage(_T("Loading Configs catalog: ") + m_configCatalogName);
+  MESSAGE_LOG << "Loading Configs catalog: " << m_configCatalogName;
   m_configCatalog->LoadFile(m_configCatalogName);
 
   // Parse the config catalog
@@ -629,8 +630,8 @@ wxString ConfigMgr::CreateNamedConfig(const wxString &title,
     //  Save the template contents
     wxString templateFullFileName = GetConfigDir() + pConfig->templateFileName;
     if (!SaveTemplate(templateFullFileName)) {
-      wxLogMessage(_T("Unable to save template titled: ") + title +
-                   _T(" as file: ") + templateFullFileName);
+      MESSAGE_LOG << "Unable to save template titled: " << title
+                  << " as file: " << templateFullFileName;
       delete pConfig;
       return _T("");
     }
@@ -638,7 +639,7 @@ wxString ConfigMgr::CreateNamedConfig(const wxString &title,
 
   // Add this config to the catalog
   if (!m_configCatalog->AddConfig(pConfig, 0)) {
-    wxLogMessage(_T("Unable to add config to catalog...Title: ") + title);
+    MESSAGE_LOG << "Unable to add config to catalog...Title: " << title;
     delete pConfig;
     return _T("");
   }
@@ -1171,9 +1172,11 @@ bool ConfigMgr::CheckTemplateGUID(wxString GUID) {
   return rv;
 }
 
-#define CHECK_INT(s, t)                          \
-  read_int = *t;                                 \
-  if (!conf.Read(s, &read_int)) wxLogMessage(s); \
+#define CHECK_INT(s, t)           \
+  read_int = *t;                  \
+  if (!conf.Read(s, &read_int)) { \
+    MESSAGE_LOG << s;             \
+  }                               \
   if ((int)*t != read_int) return false;
 
 #define CHECK_STR(s, t) \

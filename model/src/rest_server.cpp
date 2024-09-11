@@ -185,7 +185,9 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
     bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
-    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+    if (!r) {
+      WARNING_LOG << "Timeout waiting for REST server condition";
+    }
     mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
   }
 }
@@ -204,7 +206,9 @@ static void HandlePing(struct mg_connection* c, struct mg_http_message* hm,
     bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
-    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+    if (!r) {
+      WARNING_LOG << "Timeout waiting for REST server condition";
+    }
   }
   mg_http_reply(c, 200, "", "{\"result\": %d, \"version\": \"%s\"}\n",
                 parent->GetReturnStatus(), VERSION_FULL);
@@ -225,7 +229,9 @@ static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
     bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
-    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+    if (!r) {
+      WARNING_LOG << "Timeout waiting for REST server condition";
+    }
   }
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
@@ -244,7 +250,9 @@ static void HandleListRoutes(struct mg_connection* c,
     bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
-    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+    if (!r) {
+      WARNING_LOG << "Timeout waiting for REST server condition";
+    }
   }
   mg_http_reply(c, 200, "", parent->m_reply_body.c_str());
 }
@@ -265,7 +273,9 @@ static void HandleActivateRoute(struct mg_connection* c,
     bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
-    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+    if (!r) {
+      WARNING_LOG << "Timeout waiting for REST server condition";
+    }
   }
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
@@ -291,7 +301,9 @@ static void HandlePluginMsg(struct mg_connection* c, struct mg_http_message* hm,
       bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
         return parent->GetReturnStatus() != RestServerResult::Void;
       });
-      if (!r) wxLogWarning("Timeout waiting for REST server condition");
+      if (!r) {
+        WARNING_LOG << "Timeout waiting for REST server condition";
+      }
       mg_http_reply(c, 200, "", "{\"result\": %d}\n",
                     parent->GetReturnStatus());
     }
@@ -313,7 +325,9 @@ static void HandleReverseRoute(struct mg_connection* c,
     bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
-    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+    if (!r) {
+      WARNING_LOG << "Timeout waiting for REST server condition";
+    }
   }
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
@@ -470,10 +484,10 @@ bool RestServer::StartServer(const fs::path& certificate_location) {
 }
 
 void RestServer::StopServer() {
-  wxLogDebug("Stopping REST service");
+  DEBUG_LOG << "Stopping REST service";
   //  Kill off the IO Thread if alive
   if (m_std_thread.joinable()) {
-    wxLogDebug("Stopping io thread");
+    DEBUG_LOG << "Stopping io thread";
     m_io_thread.Stop();
     m_io_thread.WaitUntilStopped();
     m_std_thread.join();
@@ -531,7 +545,8 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
 
       m_ul_stream.open(m_upload_path.c_str(), std::ios::out | std::ios::trunc);
       if (!m_ul_stream.is_open()) {
-        wxLogMessage("REST_server: Cannot open %s for write", m_upload_path);
+        MESSAGE_LOG << "REST_server: Cannot open " << m_upload_path
+                    << " for write";
         m_upload_path.clear();  // reset for next time.
         return;
       }

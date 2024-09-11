@@ -34,6 +34,7 @@
 #include "Osenc.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
+#include "model/logger.h"
 
 extern MyFrame *gFrame;
 extern int g_nCPUCount;
@@ -84,7 +85,8 @@ SENCThreadManager::SENCThreadManager() {
   m_max_jobs = wxMax(nCPU - 1, 1);
   // m_max_jobs = 1;
 
-  wxLogDebug("SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
+  DEBUG_LOG << "SENC: nCPU: " << nCPU << "    m_max_jobs :" << m_max_jobs
+            << "\n";
 
   //  Create/connect a dynamic event handler slot for messages from the worker
   //  threads

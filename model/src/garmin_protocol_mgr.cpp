@@ -66,6 +66,7 @@
 #include "config.h"
 #include "model/garmin_wrapper.h"
 #include "model/garmin_protocol_mgr.h"
+#include "model/logger.h"
 #include "model/nmea_ctx_factory.h"
 #include "nmea0183.h"
 
@@ -149,13 +150,13 @@ GarminProtocolHandler::GarminProtocolHandler(wxString port,
     m_receive_state = rs_fromintr;
     m_ndelay = 0;
 
-    wxLogMessage(_T("Searching for Garmin DeviceInterface and Device..."));
+    MESSAGE_LOG << "Searching for Garmin DeviceInterface and Device...";
 
     if (!FindGarminDeviceInterface()) {
-      wxLogMessage(_T("   Find:Is the Garmin USB driver installed?"));
+      MESSAGE_LOG << "   Find:Is the Garmin USB driver installed?";
     } else {
       if (!ResetGarminUSBDriver())
-        wxLogMessage(_T("   Reset:Is the Garmin USB Device plugged in?"));
+        MESSAGE_LOG << "   Reset:Is the Garmin USB Device plugged in?";
     }
   }
 #endif
@@ -187,7 +188,7 @@ void GarminProtocolHandler::Close(void) {
 
 void GarminProtocolHandler::StopSerialThread(void) {
   if (m_garmin_serial_thread) {
-    wxLogMessage(_T("Stopping Garmin Serial thread"));
+    MESSAGE_LOG << "Stopping Garmin Serial thread";
     m_Thread_run_flag = 0;
 
     int tsec = 5;
@@ -200,7 +201,7 @@ void GarminProtocolHandler::StopSerialThread(void) {
       msg.Printf(_T("Stopped in %d sec."), 5 - tsec);
     else
       msg.Printf(_T("Not Stopped after 5 sec."));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   m_garmin_serial_thread = NULL;
@@ -210,7 +211,7 @@ void GarminProtocolHandler::StopIOThread(bool b_pause) {
   if (b_pause) TimerGarmin1.Stop();
 
   if (m_garmin_usb_thread) {
-    wxLogMessage(_T("Stopping Garmin USB thread"));
+    MESSAGE_LOG << "Stopping Garmin USB thread";
     m_Thread_run_flag = 0;
 
     int tsec = 5;
@@ -223,7 +224,7 @@ void GarminProtocolHandler::StopIOThread(bool b_pause) {
       msg.Printf(_T("Stopped in %d sec."), 5 - tsec);
     else
       msg.Printf(_T("Not Stopped after 5 sec."));
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   m_garmin_usb_thread = NULL;
@@ -238,7 +239,7 @@ void GarminProtocolHandler::StopIOThread(bool b_pause) {
 }
 
 void GarminProtocolHandler::RestartIOThread(void) {
-  wxLogMessage(_T("Restarting Garmin I/O thread"));
+  MESSAGE_LOG << "Restarting Garmin I/O thread";
   TimerGarmin1.Start(1000);
 }
 
@@ -295,7 +296,7 @@ bool GarminProtocolHandler::ResetGarminUSBDriver() {
 
   devInfo.cbSize = sizeof(devInfo);
   if (!SetupDiEnumDeviceInfo(devs, 0, &devInfo)) {
-    wxLogMessage(_T("   GarminUSBDriver Reset0 failed..."));
+    MESSAGE_LOG << "   GarminUSBDriver Reset0 failed...";
     return false;
   }
 
@@ -307,16 +308,16 @@ bool GarminProtocolHandler::ResetGarminUSBDriver() {
 
   if (!SetupDiSetClassInstallParams(devs, &devInfo, &pchange.ClassInstallHeader,
                                     sizeof(pchange))) {
-    wxLogMessage(_T("   GarminUSBDriver Reset1 failed..."));
+    MESSAGE_LOG << "   GarminUSBDriver Reset1 failed...";
     return false;
   }
 
   if (!SetupDiCallClassInstaller(DIF_PROPERTYCHANGE, devs, &devInfo)) {
-    wxLogMessage(_T("   GarminUSBDriver Reset2 failed..."));
+    MESSAGE_LOG << "   GarminUSBDriver Reset2 failed...";
     return false;
   }
 
-  wxLogMessage(_T("GarminUSBDriver Reset succeeded."));
+  MESSAGE_LOG << "GarminUSBDriver Reset succeeded.";
 
   return true;
 }
@@ -401,7 +402,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
 
   if (!bgarmin_unit_found) return INVALID_HANDLE_VALUE;
 
-  wxLogMessage(_T("Garmin USB Device Found"));
+  MESSAGE_LOG << "Garmin USB Device Found";
 
   if ((m_usb_handle == INVALID_HANDLE_VALUE) || (m_usb_handle == 0)) {
     PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
@@ -415,8 +416,8 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
     devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
     if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, &infodata, pdd, size, NULL,
                                          &devinfo)) {
-      wxLogMessage(
-          _T("   SetupDiGetDeviceInterfaceDetail failed for Garmin Device..."));
+      MESSAGE_LOG
+          << "   SetupDiGetDeviceInterfaceDetail failed for Garmin Device...";
       free(pdd);
       return INVALID_HANDLE_VALUE;
     }
@@ -424,7 +425,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
     /* Whew.  All that just to get something we can open... */
     //            wxString msg;
     //            msg.Printf(_T("Windows GUID for interface is
-    //            %s"),pdd->DevicePath); wxLogMessage(msg);
+    //            %s"),pdd->DevicePath); MESSAGE_LOG << msg;
 
     if (m_bneed_int_reset) {
       ResetGarminUSBDriver();
@@ -437,7 +438,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
     if (m_usb_handle == INVALID_HANDLE_VALUE) {
       wxString msg;
       msg.Printf(_T("   (usb) CreateFile on '%s' failed"), pdd->DevicePath);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
     }
 
     /*
@@ -461,7 +462,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
   if (!DeviceIoControl(m_usb_handle, IOCTL_GARMIN_USB_BULK_OUT_PACKET_SIZE,
                        NULL, 0, &m_max_tx_size, GARMIN_USB_INTERRUPT_DATA_SIZE,
                        &size, NULL)) {
-    wxLogMessage(_T("   Couldn't get Garmin USB packet size."));
+    MESSAGE_LOG << "   Couldn't get Garmin USB packet size.";
     CloseHandle(m_usb_handle);
     m_usb_handle = INVALID_HANDLE_VALUE;
     return INVALID_HANDLE_VALUE;
@@ -506,13 +507,13 @@ bool GarminProtocolHandler::gusb_syncup(void) {
 
         unit_number++;
 
-        wxLogMessage(_T("Successful Garmin USB syncup."));
+        MESSAGE_LOG << "Successful Garmin USB syncup.";
         return true;
         ;
       }
     }
   }
-  wxLogMessage(_T("   Unable to establish Garmin USB syncup."));
+  MESSAGE_LOG << "   Unable to establish Garmin USB syncup.";
   return false;
 }
 
@@ -533,9 +534,9 @@ int GarminProtocolHandler::gusb_cmd_send(const garmin_usb_packet *opkt,
    */
 
   if (sz && !(sz % m_max_tx_size)) {
-    wxLogMessage(_T("win_send_call1"));
+    MESSAGE_LOG << "win_send_call1";
     gusb_win_send(opkt, 0);
-    wxLogMessage(_T("win_send_ret1"));
+    MESSAGE_LOG << "win_send_ret1";
   }
 
   return (rv);
@@ -661,7 +662,7 @@ device
                             pDBHandle = (PDEV_BROADCAST_HANDLE) pDBHdr;
                             HANDLE target_handle = pDBHandle->dbch_handle;
 
-                            wxLogMessage(_T("Garmin USB Device Removed"));
+                            MESSAGE_LOG << "Garmin USB Device Removed";
                             StopIOThread(false);
                             m_bneed_int_reset = true;
                             processed = true;

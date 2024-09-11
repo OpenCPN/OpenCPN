@@ -8,6 +8,7 @@
 
 #include "model/base_platform.h"
 #include "model/cmdline.h"
+#include "model/logger.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_paths.h"
 #include "ocpn_plugin.h"
@@ -232,10 +233,10 @@ PluginPaths::PluginPaths() {
     initApplePaths();
   } else {
     wxString os_name = wxPlatformInfo::Get().GetPortIdName();
-    wxLogMessage(_T("OS_NAME: ") + os_name);
+    MESSAGE_LOG << "OS_NAME: " << os_name;
     if (os_name.Contains(_T("wxQT"))) {
       initAndroidPaths();
     } else
-      wxLogWarning("PluginPaths: Unknown platform");
+      WARNING_LOG << "PluginPaths: Unknown platform";
   }
 }

@@ -49,6 +49,7 @@
 #include "model/georef.h"
 #include "mygeom.h"
 #include "model/cutil.h"
+#include "model/logger.h"
 #include "navutil.h"     // for LogMessageOnce
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "ocpndc.h"
@@ -909,7 +910,7 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
 
     wxString msg(_T ( "Loaded CM93 Dictionary from " ));
     msg.Append(dir);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
   }
 
   return ret_val;
@@ -2518,7 +2519,7 @@ InitReturn cm93chart::Init(const wxString &name, ChartInitFlag flags) {
       if (m_pManager->Loadcm93Dictionary(name))
         m_pDict = m_pManager->m_pcm93Dict;
       else {
-        wxLogMessage(_T ( "   CM93Chart Init cannot locate CM93 dictionary." ));
+        MESSAGE_LOG << "   CM93Chart Init cannot locate CM93 dictionary.";
         return INIT_FAIL_REMOVE;
       }
     }
@@ -3193,7 +3194,7 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
     wxString msg;
     msg.Printf(_T ( "   CM93 Error...object type %d not found in CM93OBJ.DIC" ),
                iclass);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
     delete xgeom;
     return NULL;
   }
@@ -4372,7 +4373,7 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char) {
 
   wxString msg(_T ( "Loading CM93 cell " ));
   msg += file;
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   //    Set the member variable to be the actual file name for use in single
   //    chart mode info display
@@ -4398,7 +4399,7 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char) {
   if (!Ingest_CM93_Cell((const char *)file.mb_str(), &m_CIB)) {
     wxString msg(_T ( "   cm93chart  Error ingesting " ));
     msg.Append(file);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     if (compfile.Length()) wxRemoveFile(file);
     return 0;
@@ -4459,19 +4460,19 @@ bool cm93manager::Loadcm93Dictionary(const wxString &name) {
     m_pcm93Dict = FindAndLoadDict(name);
 
     if (!m_pcm93Dict) {
-      wxLogMessage(_T ( "   Cannot load CM93 Dictionary." ));
+      MESSAGE_LOG << "   Cannot load CM93 Dictionary.";
       return false;
     }
 
     if (!m_pcm93Dict->IsOk()) {
-      wxLogMessage(_T ( "   Error in loading CM93 Dictionary." ));
+      MESSAGE_LOG << "   Error in loading CM93 Dictionary.";
       delete m_pcm93Dict;
       m_pcm93Dict = NULL;
       return false;
       ;
     }
   } else if (!m_pcm93Dict->IsOk()) {
-    wxLogMessage(_T ( "   CM93 Dictionary is not OK." ));
+    MESSAGE_LOG << "   CM93 Dictionary is not OK.";
     return false;
   }
 
@@ -4576,7 +4577,7 @@ InitReturn cm93compchart::Init(const wxString &name, ChartInitFlag flags) {
     } else {
       wxString msg(_T ( "   CM93Composite Chart Init cannot find " ));
       msg.Append(name);
-      wxLogMessage(msg);
+      MESSAGE_LOG << msg;
       return INIT_FAIL_REMOVE;
     }
   } else  // its a file that exists
@@ -4597,7 +4598,7 @@ InitReturn cm93compchart::Init(const wxString &name, ChartInitFlag flags) {
 
   wxString msg(_T ( "CM93Composite Chart Root is " ));
   msg.Append(m_prefixComposite);
-  wxLogMessage(msg);
+  MESSAGE_LOG << msg;
 
   if (flags == THUMB_ONLY) {
     //            SetColorScheme(cs, false);
@@ -4613,8 +4614,8 @@ InitReturn cm93compchart::Init(const wxString &name, ChartInitFlag flags) {
       m_pDictComposite = FindAndLoadDictFromDir(path);
 
     if (!m_pDictComposite) {
-      wxLogMessage(
-          _T ( "   CM93Composite Chart Init cannot locate CM93 dictionary." ));
+      MESSAGE_LOG
+          << "   CM93Composite Chart Init cannot locate CM93 dictionary.";
       return INIT_FAIL_REMOVE;
     }
   }
@@ -4774,7 +4775,7 @@ int cm93compchart::PrepareChartScale(const ViewPort &vpt, int cmscale,
         //                        wxString msg;
         //                        msg.Printf ( _T ( "   CM93 finds no chart of
         //                        any scale present at Lat/Lon  %g %g" ),
-        //                        vpt.clat, vpt.clon ); wxLogMessage ( msg );
+        //                        vpt.clat, vpt.clon ); MESSAGE_LOG << msg;
         if (g_bDebugCM93)
           printf(
               "   CM93 finds no chart of any scale present at Lat/Lon  %g %g\n",
@@ -6055,7 +6056,7 @@ cm93_dictionary *cm93compchart::FindAndLoadDictFromDir(const wxString &dir) {
     target.Append(path[i]);
     if (path[i] == wxFileName::GetPathSeparator()) {
       //                  wxString msg = _T ( " Looking for CM93 dictionary in "
-      //                  ); msg.Append ( target ); wxLogMessage ( msg );
+      //                  ); msg.Append ( target ); MESSAGE_LOG << msg;
 
       if (pdict->LoadDictionary(target)) {
         retval = pdict;
@@ -6080,11 +6081,11 @@ cm93_dictionary *cm93compchart::FindAndLoadDictFromDir(const wxString &dir) {
 
     wxString msg = _T ( " Looking harder for CM93 dictionary in " );
     msg.Append(path);
-    wxLogMessage(msg);
+    MESSAGE_LOG << msg;
 
     if ((path.Len() == 0) || path.IsSameAs(fnc.GetPathSeparator())) {
       bdone = true;
-      wxLogMessage(_T ( "Early break1" ));
+      MESSAGE_LOG << "Early break1";
       break;
     }
 
@@ -6092,7 +6093,7 @@ cm93_dictionary *cm93compchart::FindAndLoadDictFromDir(const wxString &dir) {
     //    indication of CM93
     if ((wxNOT_FOUND == path.Lower().Find(_T ( "cm93" )))) {
       bdone = true;
-      wxLogMessage(_T ( "Early break2" ));
+      MESSAGE_LOG << "Early break2";
       break;
     }
 

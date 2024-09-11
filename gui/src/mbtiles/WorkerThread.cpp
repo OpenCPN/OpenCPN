@@ -3,6 +3,7 @@
 #include <wx/thread.h>
 #include "dychart.h"
 #include "WorkerThread.hpp"
+#include "model/logger.h"
 
 #ifdef __WXMSW__
 void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS *ep) {
@@ -177,14 +178,14 @@ void MbtTilesThread::LoadTile(mbTileDescriptor *tile) {
   }
 #ifdef __MSVC__
   catch (SE_Exception e) {
-    wxLogMessage("MbTiles: SE_Exception");
+    MESSAGE_LOG << "MbTiles: SE_Exception";
     tile->m_bAvailable = false;
     tile->m_teximage = 0;
   }
 #else
   catch (std::exception &e) {
     const char *t = e.what();
-    wxLogMessage("mbtiles std::exception: %s", e.what());
+    MESSAGE_LOG << "mbtiles std::exception: " << e.what();
   }
 #endif
 

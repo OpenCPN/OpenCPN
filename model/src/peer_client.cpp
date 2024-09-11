@@ -38,6 +38,7 @@
 #include <wx/string.h>
 
 #include "model/config_vars.h"
+#include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/peer_client.h"
 #include "model/ocpn_utils.h"
@@ -205,8 +206,7 @@ static RestServerResult ParseServerJson(const MemoryStruct& reply,
   int num_errors = reader.Parse(body, &root);
   if (num_errors != 0) {
     for (const auto& error : reader.GetErrors()) {
-      wxLogMessage("Json server reply parse error: %s",
-                   error.ToStdString().c_str());
+      MESSAGE_LOG << "Json server reply parse error: " << error.ToStdString();
     }
     peer_data.run_status_dlg(PeerDlg::JsonParseError, num_errors);
     peer_data.api_version = SemanticVersion(-1, -1);
@@ -367,7 +367,7 @@ static void SendObjects(std::string& body, const std::string& api_key,
 
       int num_errors = reader.Parse(json, &root);
       if (num_errors > 0)
-        wxLogDebug("SendObjects, parse errors: %d", num_errors);
+        DEBUG_LOG << "SendObjects, parse errors: " << num_errors;
       // Capture the result
       int result = root["result"].AsInt();
       if (result > 0) {
@@ -390,10 +390,10 @@ static int CheckChunk(struct MemoryStruct& chunk, const std::string& guid) {
   wxJSONReader reader;
   int num_errors = reader.Parse(body, &root);
   if (num_errors > 0)
-    wxLogDebug("CheckChunk: parsing errors found: %d", num_errors);
+    DEBUG_LOG << "CheckChunk: parsing errors found: " << num_errors;
   int result = root["result"].AsInt();
   if (result != 0) {
-    wxLogDebug("Server rejected guid %s, status: %d", guid.c_str(), result);
+    DEBUG_LOG << "Server rejected guid " << guid << ", status: " << result;
     return result;
   }
   return 0;
@@ -409,7 +409,7 @@ static bool CheckObjects(const std::string& api_key, PeerData& peer_data) {
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
     if (ApiGet(full_url, &chunk) != 200) {
-      wxLogMessage("Cannot check /api/writable for route %s", guid.c_str());
+      MESSAGE_LOG << "Cannot check /api/writable for route " << guid;
       return false;
     }
     int result = CheckChunk(chunk, guid);
@@ -420,7 +420,7 @@ static bool CheckObjects(const std::string& api_key, PeerData& peer_data) {
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
     if (ApiGet(full_url, &chunk) != 200) {
-      wxLogMessage("Cannot check /api/writable for track %s", guid.c_str());
+      MESSAGE_LOG << "Cannot check /api/writable for track " << guid;
       return false;
     }
     int result = CheckChunk(chunk, guid);
@@ -431,7 +431,7 @@ static bool CheckObjects(const std::string& api_key, PeerData& peer_data) {
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
     if (ApiGet(full_url, &chunk) != 200) {
-      wxLogMessage("Cannot check /api/writable for waypoint %s", guid.c_str());
+      MESSAGE_LOG << "Cannot check /api/writable for waypoint " << guid;
       return false;
     }
     int result = CheckChunk(chunk, guid);
