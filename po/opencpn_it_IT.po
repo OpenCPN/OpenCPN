@@ -7850,11 +7850,11 @@ msgstr "<font size=-2>(Gli angoli dei settori sono Rilevamenti Veri visti dal ma
 msgid "<p>The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
-"</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>"
+"</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.10-known-issues\">list of known issues</a>.</p>"
 msgstr "<p>L'ultima esecuzione di opencpn sembra aver fallito. Vuoi eseguire\n"
 "in modalità provvisoria senza plugin e altre funzioni\n"
 "potenzialmente problematiche?\n"
-"</p><br/></br><p>Puoi considerare la possibilità di visitare la <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">lista di problemi conosciuti</a>.</p>"
+"</p><br/></br><p>Puoi considerare la possibilità di visitare la <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.10-known-issues\">lista di problemi conosciuti</a>.</p>"
 
 #: gui/src/safe_mode_gui.cpp:38
 msgid "Safe restart"
@@ -8412,4 +8412,3 @@ msgstr ""
 #: gui/src/initwiz/wiz_ui_proto.cpp:177
 msgid "Add chart directory..."
 msgstr ""
-

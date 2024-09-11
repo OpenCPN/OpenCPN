@@ -30,11 +30,12 @@
 
 std::string Pincode::CompatHash() {
   std::linear_congruential_engine<unsigned long long, 48271, 0,
-	                          0xFFFFFFFFFFFFFFFF> engine;
+                                  0xFFFFFFFFFFFFFFFF>
+      engine;
   engine.seed(m_value);
   unsigned long long compat_val = engine();
   char buffer[100];
-  snprintf(buffer, sizeof(buffer)-1, "%0llX", compat_val);
+  snprintf(buffer, sizeof(buffer) - 1, "%0llX", compat_val);
   return std::string(buffer);
 }
 
@@ -54,9 +55,7 @@ std::string Pincode::ToString() const {
 std::string Pincode::Hash() const {
   std::string hash_hex_str;
   picosha2::hash256_hex_string(ToString(), hash_hex_str);
-  return hash_hex_str.substr(0,12);
+  return hash_hex_str.substr(0, 12);
 }
 
-std::string Pincode::IntToHash(uint64_t  value) {
-  return Pincode(value).Hash();
-}
+std::string Pincode::IntToHash(uint64_t value) { return Pincode(value).Hash(); }

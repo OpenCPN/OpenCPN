@@ -7866,7 +7866,7 @@ msgid ""
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
 "</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/"
-"OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>"
+"OpenCPN/OpenCPN/wiki/OpenCPN-5.10-known-issues\">list of known issues</a>.</p>"
 msgstr ""
 
 #: gui/src/safe_mode_gui.cpp:38

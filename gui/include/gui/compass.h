@@ -53,7 +53,6 @@ private:
   void CreateTexture();
   void UpdateTexture();
 
-
   ChartCanvas *m_parent;
   wxBitmap m_StatBmp;
   wxBitmap m_MaskBmp;

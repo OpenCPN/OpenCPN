@@ -32,39 +32,38 @@
 #include "model/track.h"
 
 extern WayPointman* pWayPointMan;
-extern Routeman *g_pRouteMan;
+extern Routeman* g_pRouteMan;
 extern std::vector<Track*> g_TrackList;
 
 RouteCtx RouteCtxFactory() {
-    RouteCtx ctx;
-    ctx.find_route_by_guid =
-        [](wxString guid) {
-            if (!g_pRouteMan) return static_cast<Route*>(0);
-            return g_pRouteMan->FindRouteByGUID(guid); };
-    ctx.find_track_by_guid =
-        [](wxString guid) {
-            if (!g_pRouteMan) return static_cast<Track*>(0);
-            return g_pRouteMan->FindTrackByGUID(guid); };
-    ctx.find_wpt_by_guid =
-        [](wxString guid) {
-            if (!pWayPointMan) return static_cast<RoutePoint*>(0);
-            return pWayPointMan->FindWaypointByGuid(guid.ToStdString()); };
-    ctx.delete_route =
-        [](Route* route) {
-            if (!g_pRouteMan) return;
-            g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance()); };
-    ctx.delete_track =
-        [](Track* track) {
-            auto it = std::find(g_TrackList.begin(), g_TrackList.end(), track);
-              if (it != g_TrackList.end()) {
-                g_TrackList.erase(it);
-              }
-              delete track;
-        };
-    ctx.delete_waypoint =
-        [](RoutePoint* wpt) {
-            if (!pWayPointMan) return;
-            pWayPointMan->DestroyWaypoint(wpt); };
-    return ctx;
+  RouteCtx ctx;
+  ctx.find_route_by_guid = [](wxString guid) {
+    if (!g_pRouteMan) return static_cast<Route*>(0);
+    return g_pRouteMan->FindRouteByGUID(guid);
+  };
+  ctx.find_track_by_guid = [](wxString guid) {
+    if (!g_pRouteMan) return static_cast<Track*>(0);
+    return g_pRouteMan->FindTrackByGUID(guid);
+  };
+  ctx.find_wpt_by_guid = [](wxString guid) {
+    if (!pWayPointMan) return static_cast<RoutePoint*>(0);
+    return pWayPointMan->FindWaypointByGuid(guid.ToStdString());
+  };
+  ctx.delete_route = [](Route* route) {
+    if (!g_pRouteMan) return;
+    g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
+  };
+  ctx.delete_track = [](Track* track) {
+    auto it = std::find(g_TrackList.begin(), g_TrackList.end(), track);
+    if (it != g_TrackList.end()) {
+      g_TrackList.erase(it);
+    }
+    delete track;
+  };
+  ctx.delete_waypoint = [](RoutePoint* wpt) {
+    if (!pWayPointMan) return;
+    pWayPointMan->DestroyWaypoint(wpt);
+  };
+  return ctx;
 }
-#endif   //  _ROUTE_CTX_FACTORY_H__
+#endif  //  _ROUTE_CTX_FACTORY_H__

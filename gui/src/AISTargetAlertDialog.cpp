@@ -209,7 +209,7 @@ void AISTargetAlertDialog::CreateControls() {
   // Also used to close a DSC Alert
   wxString acktext = _("&Acknowledge");
   bool show_ack_button = false;
-  if (m_bjumpto && m_bcreateWP) { //DSC Alert only
+  if (m_bjumpto && m_bcreateWP) {  // DSC Alert only
     acktext = _("&Close Alert");
     show_ack_button = true;
   }
@@ -242,7 +242,7 @@ void AISTargetAlertDialog::UpdateText() {
   if (GetAlertText()) {
     // Capture current scroll position
     int x, y;
-    m_pAlertTextCtl->GetViewStart( &x, &y);
+    m_pAlertTextCtl->GetViewStart(&x, &y);
 
     wxFont *dFont = FontMgr::Get().GetFont(_("AISTargetAlert"), 12);
     wxString face = dFont->GetFaceName();
@@ -360,9 +360,9 @@ void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
 void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
   //    Acknowledge the Alert, and dismiss the dialog
   if (m_pdecoder) {
-    auto td =  m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
-      if (AIS_ALERT_SET == td->n_alert_state ) {
+      if (AIS_ALERT_SET == td->n_alert_state) {
         td->m_ack_time = wxDateTime::Now();
         td->b_in_ack_timeout = true;
       }
@@ -379,7 +379,7 @@ void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
 }
 void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    auto td =  m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       RoutePoint *pWP = new RoutePoint(td->Lat, td->Lon, g_default_wp_icon,
                                        wxEmptyString, wxEmptyString);
@@ -403,16 +403,14 @@ void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
 void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
   //    Set the suppress audio flag
   if (m_pdecoder) {
-    auto td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) td->b_suppress_audio = true;
   }
 }
 
 void AISTargetAlertDialog::OnIdJumptoClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    auto td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td)
       gFrame->JumpToPosition(gFrame->GetFocusCanvas(), td->Lat, td->Lon,
                              gFrame->GetFocusCanvas()->GetVPScale());

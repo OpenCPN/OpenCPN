@@ -205,7 +205,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file() {
                 }
             }
 #endif
-    }                                                // while (more file)
+    }  // while (more file)
     if (index_in_memory) IndexFileIO(IFF_CLOSE, 0);  // All done with file
   }  // index file can't be opened
   //   if (hwndBusy) DestroyWindow(hwndBusy);

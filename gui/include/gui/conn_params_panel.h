@@ -53,7 +53,7 @@ public:
   void CreateControls(void);
   void OnEnableCBClick(wxCommandEvent &event);
   void Update(ConnectionParams *ConnectionParams);
-  void SetEnableCheckbox(bool value){ m_cbEnable->SetValue(value); }
+  void SetEnableCheckbox(bool value) { m_cbEnable->SetValue(value); }
 
   bool GetSelected() { return m_bSelected; }
   int GetUnselectedHeight() { return m_unselectedHeight; }
@@ -77,6 +77,5 @@ private:
 
   DECLARE_EVENT_TABLE()
 };
-
 
 #endif  // __CONN_PARAMS_PANEL_H__

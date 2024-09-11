@@ -55,7 +55,7 @@ class CommDriverSignalKNetEvent;
 
 class CommDriverSignalKNet : public CommDriverSignalK, public wxEvtHandler {
 public:
-  CommDriverSignalKNet(const ConnectionParams *params, DriverListener& l);
+  CommDriverSignalKNet(const ConnectionParams *params, DriverListener &l);
   virtual ~CommDriverSignalKNet();
 
   void Open();
@@ -64,16 +64,15 @@ public:
   static bool DiscoverSKServer(std::string serviceIdent, wxString &ip,
                                int &port, int tSec);
 
-
   void SetThreadRunning(bool active) { m_threadActive = active; }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
   void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
   void SetWatchdog(int n) { m_dog_value = n; }
 
-/** Register driver and possibly do other post-ctor steps. */
+  /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
 
-  void handle_SK_sentence(CommDriverSignalKNetEvent& event);
+  void handle_SK_sentence(CommDriverSignalKNetEvent &event);
   void handleUpdate(const rapidjson::Value &update);
   void updateItem(const rapidjson::Value &item, wxString &sfixtime);
 
@@ -88,7 +87,7 @@ public:
   std::atomic_int m_threadActive;
 
   ConnectionParams m_params;
-  DriverListener& m_listener;
+  DriverListener &m_listener;
 
   static void initIXNetSystem();
 
@@ -98,12 +97,12 @@ private:
   wxIPV4address m_addr;
   wxIPV4address GetAddr() const { return m_addr; }
 
-   int m_dog_value;
+  int m_dog_value;
 
-   wxTimer m_socketread_watchdog_timer;
-   wxTimer *GetSocketThreadWatchdogTimer() {
-     return &m_socketread_watchdog_timer;
-   }
+  wxTimer m_socketread_watchdog_timer;
+  wxTimer *GetSocketThreadWatchdogTimer() {
+    return &m_socketread_watchdog_timer;
+  }
 
   OCPN_WebSocketMessageHandler *m_eventHandler;
   bool m_useWebSocket;
@@ -115,7 +114,6 @@ private:
   std::string m_token;
 
   WebSocketThread *m_wsThread;
-
 };
 
 #endif  // _SIGNALK_NET_H

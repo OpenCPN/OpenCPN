@@ -1,3 +1,13 @@
+# Sound library
+#
+# Parameters:
+#     SOUND_WX_LIBS - wxWidgets libraries
+#     SOUND_WX_INCLUDE_DIR - wxWidgets headers location
+#     Numerous configuration variables, see cmake/SoundConfig.cmake
+#
+# Exports
+#     ocpn::sound transitive link target
+#
 cmake_minimum_required(VERSION 3.5.0)
 
 # Debug junk
@@ -8,6 +18,19 @@ if (TARGET ocpn::sound)
 endif ()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
+
+set(SOUND_WX_INCLUDE_DIR ""
+  CACHE STRING "wxWidgets header location (mandatory)"
+)
+set(SOUND_WX_LIBS "" CACHE STRING "wxWidgets libraries (mandatory)")
+
+if ("${SOUND_WX_LIBS}" STREQUAL "")
+  message(FATAL_ERROR "Sound parameter SOUND_WX_LIBS is undefined")
+endif ()
+if ("${SOUND_WX_INCLUDE_DIR}" STREQUAL "")
+  message(FATAL_ERROR "Sound parameter SOUND_WX_LINCLUDE_DIR is undefined")
+endif ()
 
 set(PORTAUDIO_MSG "Use portaudio(3) to play sounds if available")
 if (WIN32 OR APPLE OR QT_ANDROID)
@@ -75,9 +98,9 @@ target_include_directories(SOUND
     ${CMAKE_CURRENT_SOURCE_DIR}/include
   PRIVATE
     ${CMAKE_BINARY_DIR}/include
-    ${wxWidgets_INCLUDE_DIRS}
+    ${SOUND_WX_INCLUDE_DIRS}
 )
-target_link_libraries(SOUND PRIVATE ${wxWidgets_LIBRARIES})
+target_link_libraries(SOUND PRIVATE ${SOUND_WX_LIBS})
 
 if (QT_ANDROID)
   target_link_libraries(SOUND PRIVATE ocpn::java-jvm)

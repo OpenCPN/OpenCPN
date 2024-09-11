@@ -50,7 +50,6 @@
 #include "setupapi.h"  // presently stored in opencpn/src
 #endif
 
-
 #include <wx/app.h>
 #include <wx/apptrait.h>
 #include <wx/stdpaths.h>
@@ -111,7 +110,8 @@
 #include "model/macutils.h"
 #endif
 
-#if (defined(OCPN_GHC_FILESYSTEM) || (defined(__clang_major__) && (__clang_major__ < 15)))
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
 // MacOS 1.13
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
@@ -247,7 +247,6 @@ static bool checkIfFlatpacked() {
   return id == "org.opencpn.OpenCPN";
 }
 
-
 OCPNPlatform::OCPNPlatform() {
   m_pt_per_pixel = 0;  // cached value
   m_bdisableWindowsDisplayEnum = false;
@@ -328,7 +327,7 @@ void catch_signals(int signo) {
 #ifdef OCPN_USE_CRASHREPORT
 // Define the crash callback
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO *pInfo) {
-  wxLog::GetActiveTarget()->Flush();   //  Flush log file
+  wxLog::GetActiveTarget()->Flush();  //  Flush log file
   return CR_CB_DODEFAULT;
 }
 #endif
@@ -548,11 +547,10 @@ void OCPNPlatform::Initialize_1(void) {
 
 #ifdef __ANDROID__
   qDebug() << "Initialize_1()";
-//#ifdef NOASSERT
-  wxDisableAsserts( );      // No asserts at all in Release mode
-//#endif
+  // #ifdef NOASSERT
+  wxDisableAsserts();  // No asserts at all in Release mode
+// #endif
 #endif
-
 }
 
 //  Called from MyApp() immediately before creation of MyFrame()
@@ -564,28 +562,28 @@ void OCPNPlatform::Initialize_2(void) {
 
   // Create some directories in App private directory
   // Mainly required for Android 11+, but useable on all versions.
-    wxChar sep = wxFileName::GetPathSeparator();
+  wxChar sep = wxFileName::GetPathSeparator();
 
-    wxString ChartDir = GetPrivateDataDir();
-    if (ChartDir.Last() != sep) ChartDir.Append(sep);
-    ChartDir.Append( "Charts");
-    if (!::wxDirExists(ChartDir)) {
-      ::wxMkdir(ChartDir);
-    }
+  wxString ChartDir = GetPrivateDataDir();
+  if (ChartDir.Last() != sep) ChartDir.Append(sep);
+  ChartDir.Append("Charts");
+  if (!::wxDirExists(ChartDir)) {
+    ::wxMkdir(ChartDir);
+  }
 
-    wxString GRIBDir = GetPrivateDataDir();
-    if (GRIBDir.Last() != sep) GRIBDir.Append(sep);
-    GRIBDir.Append( "GRIBS");
-    if (!::wxDirExists(GRIBDir)) {
-      ::wxMkdir(GRIBDir);
-    }
+  wxString GRIBDir = GetPrivateDataDir();
+  if (GRIBDir.Last() != sep) GRIBDir.Append(sep);
+  GRIBDir.Append("GRIBS");
+  if (!::wxDirExists(GRIBDir)) {
+    ::wxMkdir(GRIBDir);
+  }
 
-    // Set the default Import/Export directory for A11+
-    if (g_Android_SDK_Version >= 30){
-      if (!g_gpx_path.StartsWith(androidGetDownloadDirectory())){
-        g_gpx_path = androidGetDownloadDirectory();
-      }
+  // Set the default Import/Export directory for A11+
+  if (g_Android_SDK_Version >= 30) {
+    if (!g_gpx_path.StartsWith(androidGetDownloadDirectory())) {
+      g_gpx_path = androidGetDownloadDirectory();
     }
+  }
 
 #endif
 
@@ -606,7 +604,7 @@ void OCPNPlatform::Initialize_3(void) {
   bool bcapable = IsGLCapable();
 
 #ifdef ocpnARM  // Boot arm* platforms (meaning rPI) without OpenGL on first run
-  //bcapable = false;
+  // bcapable = false;
 #endif
 
   bool bAndroid = false;
@@ -614,14 +612,13 @@ void OCPNPlatform::Initialize_3(void) {
   bAndroid = true;
 #endif
 
-  if(!bcapable)
+  if (!bcapable)
     g_bopengl = false;
   else {
-    //g_bopengl = true;
+    // g_bopengl = true;
     g_bdisable_opengl = false;
     pConfig->UpdateSettings();
   }
-
 
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
@@ -688,7 +685,6 @@ void OCPNPlatform::OnExit_2(void) {
 #endif
 }
 
-
 #ifdef ocpnUSE_GL
 
 bool HasGLExt(wxJSONValue &glinfo, const std::string ext) {
@@ -713,14 +709,19 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 #endif
   fs::path gl_util_path = ep.parent_path().append(gl_util_exe);
 
-  if (!fs::exists(gl_util_path)) { //TODO: What to do if the utility is not found (Which it is not for developer builds that are not installed)?
-    wxLogMessage("OpenGL test utility not found at %s.",  gl_util_path.c_str());
+  if (!fs::exists(gl_util_path)) {  // TODO: What to do if the utility is not
+                                    // found (Which it is not for developer
+                                    // builds that are not installed)?
+    wxLogMessage("OpenGL test utility not found at %s.", gl_util_path.c_str());
     return false;
   }
 
-  std::string gl_json = fs::path(GetPrivateDataDir().ToStdString()).append("gl_caps.json").string();
+  std::string gl_json = fs::path(GetPrivateDataDir().ToStdString())
+                            .append("gl_caps.json")
+                            .string();
 
-  wxString cmd = wxString::Format("\"%s\" opengl-info \"%s\"", gl_util_path.c_str(), gl_json.c_str());
+  wxString cmd = wxString::Format("\"%s\" opengl-info \"%s\"",
+                                  gl_util_path.c_str(), gl_json.c_str());
 
   wxLogMessage("Starting OpenGL test utility: %s", cmd);
 
@@ -737,9 +738,9 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   wxJSONReader reader;
   wxJSONValue root;
   reader.Parse(fis, &root);
-  if (reader.GetErrorCount() > 0){
+  if (reader.GetErrorCount() > 0) {
     wxLogMessage("Failed to parse JSON output from OpenGL test utility.");
-    for(const auto &l : reader.GetErrors()) {
+    for (const auto &l : reader.GetErrors()) {
       wxLogMessage(l);
     }
     return false;
@@ -747,7 +748,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
 
-  if(root.HasMember("GL_RENDERER")) {
+  if (root.HasMember("GL_RENDERER")) {
     pcaps->Renderer = root["GL_RENDERER"].AsString();
   } else {
     wxLogMessage("GL_RENDERER not found.");
@@ -765,7 +766,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found.");
     return false;
   }
-  if(root.HasMember("GL_USABLE")) {
+  if (root.HasMember("GL_USABLE")) {
     if (!root["GL_USABLE"].AsBool()) {
       wxLogMessage("OpenGL test utility reports that OpenGL is not usable.");
       return false;
@@ -796,17 +797,20 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   pcaps->bOldIntel = false;
 
-  pcaps->bCanDoFBO = HasGLExt(root,"GL_EXT_framebuffer_object");
+  pcaps->bCanDoFBO = HasGLExt(root, "GL_EXT_framebuffer_object");
   if (!pcaps->TextureRectangleFormat) {
     pcaps->bCanDoFBO = false;
   }
 
-  pcaps->bCanDoVBO = HasGLExt(root, "GL_ARB_vertex_buffer_object"); //TODO: Or the old way where we enable it without querying the extension is right?
+  pcaps->bCanDoVBO = HasGLExt(
+      root, "GL_ARB_vertex_buffer_object");  // TODO: Or the old way where we
+                                             // enable it without querying the
+                                             // extension is right?
   gFrame->Show();
   return true;
 #else
-  // The original codepath doing direct probing in the main OpenCPN process, now only for Android
-  // Investigate OpenGL capabilities
+  // The original codepath doing direct probing in the main OpenCPN process, now
+  // only for Android Investigate OpenGL capabilities
   gFrame->Show();
   glTestCanvas *tcanvas = new glTestCanvas(gFrame);
   tcanvas->Show();
@@ -817,7 +821,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
 
   char *str = (char *)glGetString(GL_RENDERER);
-  if (str == NULL) {    //No GL at all...
+  if (str == NULL) {  // No GL at all...
     wxLogMessage("GL_RENDERER not found.");
     delete tcanvas;
     delete pctx;
@@ -826,7 +830,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   pcaps->Renderer = std::string(str);
 
   char *stv = (char *)glGetString(GL_VERSION);
-  if (stv == NULL) {    //No GL Version...
+  if (stv == NULL) {  // No GL Version...
     wxLogMessage("GL_VERSION not found");
     delete tcanvas;
     delete pctx;
@@ -835,7 +839,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   pcaps->Version = std::string(stv);
 
   char *stsv = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
-  if (stsv == NULL) {    //No GLSL...
+  if (stsv == NULL) {  // No GLSL...
     wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found");
     delete tcanvas;
     delete pctx;
@@ -846,7 +850,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   pcaps->dGLSL_Version = 0;
   pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
 
-  if (pcaps->dGLSL_Version < 1.2){
+  if (pcaps->dGLSL_Version < 1.2) {
     wxString msg;
     msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
     msg += wxString(pcaps->GLSL_Version.c_str());
@@ -907,8 +911,7 @@ bool OCPNPlatform::IsGLCapable() {
   return false;
 #else
 
-  if(g_bdisable_opengl)
-    return false;
+  if (g_bdisable_opengl) return false;
 
   wxLogMessage("Starting OpenGL test...");
   wxLog::FlushActive();
@@ -918,7 +921,7 @@ bool OCPNPlatform::IsGLCapable() {
     bool bcaps = BuildGLCaps(GL_Caps);
 
     wxLogMessage("OpenGL test complete.");
-    if (!bcaps){
+    if (!bcaps) {
       wxLogMessage("BuildGLCaps fails.");
       wxLog::FlushActive();
       return false;
@@ -934,7 +937,7 @@ bool OCPNPlatform::IsGLCapable() {
 
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
-  if (!GL_Caps->bCanDoFBO)  {
+  if (!GL_Caps->bCanDoFBO) {
     return false;
   }
 
@@ -943,7 +946,7 @@ bool OCPNPlatform::IsGLCapable() {
   wxLog::FlushActive();
 
   g_bdisable_opengl = false;
-  //g_bopengl = true;
+  // g_bopengl = true;
 
   // Update and flush the config file
   pConfig->UpdateSettings();
@@ -967,7 +970,6 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   wxString imsg = _T("Adding catalog lookup path:  ");
   imsg += locale_location;
   wxLogMessage(imsg);
-
 
   // Managed plugin location
   wxFileName usrShare(GetWinPluginBaseDir() + wxFileName::GetPathSeparator());
@@ -1163,12 +1165,11 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     //  precedent.
 
     for (unsigned int i = 0; i < g_locale_catalog_array.GetCount(); i++) {
-      if(!locale->AddCatalog(g_locale_catalog_array[i])){
+      if (!locale->AddCatalog(g_locale_catalog_array[i])) {
         wxString emsg = _T("ERROR Loading translation catalog for:  ");
         emsg += g_locale_catalog_array[i];
         wxLogMessage(emsg);
-      }
-      else {
+      } else {
         wxString imsg = _T("Loaded translation catalog for:  ");
         imsg += g_locale_catalog_array[i];
         wxLogMessage(imsg);
@@ -1272,7 +1273,6 @@ void OCPNPlatform::SetDefaultOptions(void) {
     g_bsmoothpanzoom = true;
     g_bShowMenuBar = true;
 #endif
-
   }
 
 #ifdef __WXMSW__
@@ -1513,15 +1513,14 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Check the tide/current databases for readability,
     //  remove any not readable
     std::vector<std::string> TCDS_temp;
-    for (unsigned int i=0; i < TideCurrentDataSet.size() ; i++)
+    for (unsigned int i = 0; i < TideCurrentDataSet.size(); i++)
       TCDS_temp.push_back(TideCurrentDataSet[i]);
 
     TideCurrentDataSet.clear();
-    for (unsigned int i=0; i < TCDS_temp.size() ; i++){
+    for (unsigned int i = 0; i < TCDS_temp.size(); i++) {
       wxString tide = TCDS_temp[i];
       wxFileName ft(tide);
-      if (ft.FileExists())
-        TideCurrentDataSet.push_back(TCDS_temp[i]);
+      if (ft.FileExists()) TideCurrentDataSet.push_back(TCDS_temp[i]);
     }
   }
 }
@@ -1555,9 +1554,7 @@ wxString OCPNPlatform::GetSupplementalLicenseString() {
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
 
-
 static wxString ExpandPaths(wxString paths, OCPNPlatform *platform);
-
 
 int OCPNPlatform::DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
                                        wxString Title, wxString initDir,
@@ -1745,13 +1742,13 @@ int OCPNPlatform::GetStatusBarFieldCount() {
 double OCPNPlatform::getFontPointsperPixel(void) {
   double pt_per_pixel = 1.0;
 
-  //#ifdef __ANDROID__
-  // On Android, this calculation depends on the density bucket in use.
-  //  Also uses some magic numbers...
-  //  For reference, see http://pixplicity.com/dp-px-converter/
-  // pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
+  // #ifdef __ANDROID__
+  //  On Android, this calculation depends on the density bucket in use.
+  //   Also uses some magic numbers...
+  //   For reference, see http://pixplicity.com/dp-px-converter/
+  //  pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
 
-  //#else
+  // #else
 
   if (m_pt_per_pixel == 0) {
     //  Make a measurement...
@@ -1768,7 +1765,7 @@ double OCPNPlatform::getFontPointsperPixel(void) {
     if (height > 0) m_pt_per_pixel = 12.0 / (double)height;
   }
   if (m_pt_per_pixel > 0) pt_per_pixel = m_pt_per_pixel;
-  //#endif
+  // #endif
 
   return pt_per_pixel;
 }
@@ -2068,8 +2065,7 @@ double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
 
 #if defined(__WXOSX__) || defined(__WXGTK3__)
   // Support scaled HDPI displays.
-  if (gFrame)
-    rv *= gFrame->GetContentScaleFactor();
+  if (gFrame) rv *= gFrame->GetContentScaleFactor();
 #endif
 
   rv /= g_BasePlatform->GetDisplayDIPMult(gFrame);
@@ -2098,10 +2094,10 @@ float OCPNPlatform::GetChartScaleFactorExp(float scale_linear) {
 }
 
 float OCPNPlatform::GetMarkScaleFactorExp(float scale_linear) {
-  if(scale_linear <= 0)
+  if (scale_linear <= 0)
     return GetChartScaleFactorExp(scale_linear);
   else
-    return GetChartScaleFactorExp(scale_linear-1);
+    return GetChartScaleFactorExp(scale_linear - 1);
 }
 
 // float OCPNPlatform::GetDIPScaleFactor() {
@@ -2215,7 +2211,6 @@ bool LoadQtStyleSheet(wxString &sheet_file) {
 QString getQtStyleSheet(void) { return g_qtStyleSheet; }
 
 #endif
-
 
 bool OCPNPlatform::isPlatformCapable(int flag) {
 #ifndef __ANDROID__

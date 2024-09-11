@@ -49,7 +49,7 @@
 //------------------------------------------------------------------------------
 //    External Static Storage
 //------------------------------------------------------------------------------
-extern s52plib *ps52plib;
+extern s52plib* ps52plib;
 
 //  Helper utilities
 
@@ -75,7 +75,7 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
 
   long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
 #ifdef __WXOSX__
-    mstyle |= wxSTAY_ON_TOP;
+  mstyle |= wxSTAY_ON_TOP;
 #endif
 
   wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
@@ -310,12 +310,12 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
       wxCommandEventHandler(CanvasOptions::OnOptionChange), NULL, this);
 
   pCBENCDataQuality =
-  new wxCheckBox(pDisplayPanel, IDCO_ENCDATAQUALITY_CHECKBOX,
-                 _("Show chart data quality"));
+      new wxCheckBox(pDisplayPanel, IDCO_ENCDATAQUALITY_CHECKBOX,
+                     _("Show chart data quality"));
   boxENC->Add(pCBENCDataQuality, verticalInputFlags);
   pCBENCDataQuality->Connect(
-    wxEVT_COMMAND_CHECKBOX_CLICKED,
-    wxCommandEventHandler(CanvasOptions::OnOptionChange), NULL, this);
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(CanvasOptions::OnOptionChange), NULL, this);
 
   // spacer
   boxENC->Add(0, interGroupSpace);
@@ -357,6 +357,8 @@ void CanvasOptions::OnOptionChange(wxCommandEvent& event) {
 void CanvasOptions::RefreshControlValues(void) {
   ChartCanvas* parentCanvas = wxDynamicCast(m_parent, ChartCanvas);
   if (!parentCanvas) return;
+
+  m_bmode_change_while_hidden = !wxWindow::IsShown();
 
   // Control options
   //    pCBToolbar->SetValue(parentCanvas->GetToolbarEnable());
@@ -450,7 +452,6 @@ void CanvasOptions::RefreshControlValues(void) {
   // All NAVAID text options are gated by global "Show Text"
   pCBENCLightDesc->Enable(pCDOENCText->GetValue());
   pCBENCBuoyLabels->Enable(pCDOENCText->GetValue());
-
 }
 
 void CanvasOptions::SetENCAvailable(bool avail) {
@@ -544,28 +545,28 @@ void CanvasOptions::UpdateCanvasOptions(void) {
     b_needReLoad = true;
   }
 
-  if (pCBENCDataQuality->GetValue() !=
-    parentCanvas->GetShowENCDataQual()) {
+  if (pCBENCDataQuality->GetValue() != parentCanvas->GetShowENCDataQual()) {
     parentCanvas->SetShowENCDataQual(pCBENCDataQuality->GetValue());
     b_needReLoad = true;
   }
 
   // If pCBENCDataQuality is true, Force PLIB "Chart Information Objects" true.
-  if (pCBENCDataQuality->GetValue()){
-    if (ps52plib)
-      ps52plib->m_bShowMeta = true;
+  if (pCBENCDataQuality->GetValue()) {
+    if (ps52plib) ps52plib->m_bShowMeta = true;
     parentCanvas->UpdateCanvasS52PLIBConfig();
   }
 
-  int newMode = NORTH_UP_MODE;
-  if (pCBCourseUp->GetValue())
-    newMode = COURSE_UP_MODE;
-  else if (pCBHeadUp->GetValue())
-    newMode = HEAD_UP_MODE;
+  if (!m_bmode_change_while_hidden) {
+    int newMode = NORTH_UP_MODE;
+    if (pCBCourseUp->GetValue())
+      newMode = COURSE_UP_MODE;
+    else if (pCBHeadUp->GetValue())
+      newMode = HEAD_UP_MODE;
 
-  if (newMode != parentCanvas->GetUpMode()) {
-    parentCanvas->SetUpMode(newMode);
-    b_needReLoad = true;
+    if (newMode != parentCanvas->GetUpMode()) {
+      parentCanvas->SetUpMode(newMode);
+      b_needReLoad = true;
+    }
   }
 
   if (pCBLookAhead->GetValue() != parentCanvas->GetLookahead()) {

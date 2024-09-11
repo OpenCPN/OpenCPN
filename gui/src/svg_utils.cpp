@@ -117,7 +117,7 @@ unsigned int get_px_length(const char* val) {
     num = std::stoi(val);
   } catch (std::invalid_argument&) {
     return 0;
-  } catch (std::out_of_range& ) {
+  } catch (std::out_of_range&) {
     return 0;
   }
   if (num < 0) {
@@ -159,8 +159,8 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
 extern BasePlatform* g_BasePlatform;
 
 unsigned int SVGPixelsToDisplay(unsigned int svg_px) {
-  return g_BasePlatform->GetDisplayDPmm() * SVG_MM_TO_IN / SVG_IN_TO_PX * svg_px *
-         g_ChartScaleFactorExp;
+  return g_BasePlatform->GetDisplayDPmm() * SVG_MM_TO_IN / SVG_IN_TO_PX *
+         svg_px * g_ChartScaleFactorExp;
 }
 
 SVGBitmapCache::SVGBitmapCache() {

@@ -19,7 +19,6 @@
 
 #include "model/cmdline.h"
 
-
 int g_unit_test_1 = 0;
 int g_unit_test_2 = 0;
 bool g_start_fullscreen = false;

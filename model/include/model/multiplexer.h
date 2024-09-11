@@ -37,22 +37,20 @@
 
 class Multiplexer;  // forward
 
-extern Multiplexer* g_pMUX;
+extern Multiplexer *g_pMUX;
 
 struct MuxLogCallbacks {
   std::function<bool()> log_is_active;
-  std::function<void(const std::string&)> log_message;
+  std::function<void(const std::string &)> log_message;
   MuxLogCallbacks()
-    : log_is_active([]() { return false; }),
-      log_message([](const std::string& s) { }) { }
-
+      : log_is_active([]() { return false; }),
+        log_message([](const std::string &s) {}) {}
 };
-
 
 class Multiplexer : public wxEvtHandler {
 public:
   Multiplexer(MuxLogCallbacks log_callbacks,
-              bool& legacy_input_filter_behaviour );
+              bool &legacy_input_filter_behaviour);
   ~Multiplexer();
 
   void LogOutputMessage(const wxString &msg, wxString stream_name,
@@ -62,7 +60,8 @@ public:
   void LogInputMessage(const wxString &msg, const wxString &stream_name,
                        bool b_filter, bool b_error = false);
 
-  bool IsLogActive() { return m_log_callbacks.log_is_active();}
+  bool IsLogActive() { return m_log_callbacks.log_is_active(); }
+
 private:
   //  comm event listeners
   ObservableListener listener_N2K_All;
@@ -78,6 +77,6 @@ private:
   MuxLogCallbacks m_log_callbacks;
   unsigned int last_pgn_logged;
   int n_N2K_repeat;
-  bool&  m_legacy_input_filter_behaviour;
+  bool &m_legacy_input_filter_behaviour;
 };
 #endif  // _MULTIPLEXER_H__
