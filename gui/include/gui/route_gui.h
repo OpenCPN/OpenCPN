@@ -39,7 +39,7 @@
 
 class RouteGui {
 public:
-  RouteGui(Route& route) : m_route(route) {}
+  RouteGui(Route &route) : m_route(route) {}
   virtual void Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box);
   void DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
                       wxPoint *rpn);
@@ -58,7 +58,7 @@ public:
                 SendToGpsDlg *dialog);
 
 private:
-  Route& m_route;
+  Route &m_route;
 };
 
-#endif   // _ROUTE_GUI_H
+#endif  // _ROUTE_GUI_H

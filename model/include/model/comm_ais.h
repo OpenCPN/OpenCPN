@@ -36,6 +36,6 @@ bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd);
 
 AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos);
 
-bool NMEA_AISCheckSumOK(const wxString& str);
+bool NMEA_AISCheckSumOK(const wxString &str);
 
-#endif    // _COMM_AIS_H__
+#endif  // _COMM_AIS_H__

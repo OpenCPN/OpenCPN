@@ -42,7 +42,7 @@
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
-//#include <gtk/gtk.h>
+// #include <gtk/gtk.h>
 #define GSocket GlibGSocket
 #include <wx/socket.h>
 #undef GSocket
@@ -64,9 +64,7 @@
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
 
-
-typedef enum
-{
+typedef enum {
   N2KFormat_Undefined = 0,
   N2KFormat_YD_RAW,
   N2KFormat_Actisense_RAW_ASCII,
@@ -78,16 +76,11 @@ typedef enum
   N2KFormat_MiniPlex
 } N2K_Format;
 
-typedef enum
-{
-  TX_FORMAT_YDEN = 0,
-  TX_FORMAT_ACTISENSE
-} GW_TX_FORMAT;
+typedef enum { TX_FORMAT_YDEN = 0, TX_FORMAT_ACTISENSE } GW_TX_FORMAT;
 
 class CommDriverN2KNetEvent;  // Internal
 class MrqContainer;
 class FastMessageMap;
-
 
 class circular_buffer {
 public:
@@ -118,7 +111,7 @@ public:
 
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
-  void SetListener(DriverListener& l) override{};
+  void SetListener(DriverListener& l) override {};
 
   void Open();
   void Close();
@@ -190,15 +183,14 @@ private:
   bool ProcessSeaSmart(std::vector<unsigned char> packet);
   bool ProcessMiniPlex(std::vector<unsigned char> packet);
 
-
-  bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg> &msg,
+  bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
                       std::shared_ptr<const NavAddr2000> dest_addr);
 
-  std::vector<std::vector<unsigned char>>
-      GetTxVector(const std::shared_ptr<const Nmea2000Msg> &msg,
-              std::shared_ptr<const NavAddr2000> dest_addr);
+  std::vector<std::vector<unsigned char>> GetTxVector(
+      const std::shared_ptr<const Nmea2000Msg>& msg,
+      std::shared_ptr<const NavAddr2000> dest_addr);
   bool SendSentenceNetwork(std::vector<std::vector<unsigned char>> payload);
-  bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char> &payload);
+  bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char>& payload);
   bool PrepareForTX();
 
   wxString m_net_port;
@@ -208,7 +200,7 @@ private:
   wxSocketBase* m_tsock;
   wxSocketServer* m_socket_server;
   bool m_is_multicast;
-  MrqContainer  *m_mrq_container;
+  MrqContainer* m_mrq_container;
 
   int m_txenter;
   int m_dog_value;
@@ -227,11 +219,11 @@ private:
   int m_ib;
   bool m_bInMsg, m_bGotESC, m_bGotSOT;
 
-  circular_buffer *m_circle;
-  unsigned char *rx_buffer;
+  circular_buffer* m_circle;
+  unsigned char* rx_buffer;
   std::string m_sentence;
 
-  FastMessageMap *fast_messages;
+  FastMessageMap* fast_messages;
   N2K_Format m_n2k_format;
   uint8_t m_order;
   char m_TX_flag;
@@ -242,4 +234,3 @@ private:
 };
 
 #endif  // guard
-

@@ -46,7 +46,7 @@
 #include "ConfigMgr.h"
 #include "ocpn_frame.h"  //FIXME (dave) LoadS57
 #ifdef __OCPN__ANDROID__
- #include "androidUTIL.h"
+#include "androidUTIL.h"
 #endif
 
 #ifdef ocpnUSE_GL
@@ -484,12 +484,11 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
       b_group_add = true;
 
     bool b_writable_add = true;
-    //  On android, SDK > 29, we require that the directory of charts be "writable"
-    //  as determined by Android Java file system
+    //  On android, SDK > 29, we require that the directory of charts be
+    //  "writable" as determined by Android Java file system
 #ifdef __OCPN__ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
-    if (!androidIsDirWritable( fn.GetPath()))
-      b_writable_add = false;
+    if (!androidIsDirWritable(fn.GetPath())) b_writable_add = false;
 #endif
 
     bool b_pos_add = false;
@@ -548,7 +547,8 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
   //    actually a directory, then windows fails to produce a valid file
   //    modification time.  Detect GetFileTime() == 0, and skip the test in this
   //    case
-  //    Extended to also check for "identical" charts, having exact same EditionDate
+  //    Extended to also check for "identical" charts, having exact same
+  //    EditionDate
 
   for (int id = 0; id < j - 1; id++) {
     if (cstk->GetDBIndex(id) != -1) {
@@ -563,12 +563,12 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
             if (labs(ctem.GetFileTime() - cten.GetFileTime()) < 60)
               bsameTime = true;
           }
-          if (ctem.GetChartEditionDate() == cten.GetChartEditionDate() )
+          if (ctem.GetChartEditionDate() == cten.GetChartEditionDate())
             bsameTime = true;
 
-          if(bsameTime) {
-              if (cten.GetpFileName()->IsSameAs(*(ctem.GetpFileName())))
-                cstk->SetDBIndex(jd, -1);  // mark to remove
+          if (bsameTime) {
+            if (cten.GetpFileName()->IsSameAs(*(ctem.GetpFileName())))
+              cstk->SetDBIndex(jd, -1);  // mark to remove
           }
         }
       }
@@ -1241,8 +1241,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
       //    bewteen the search mask and the the chart file extension
 
       for (auto &cd : m_ChartClassDescriptorArray) {
-        if (cd.m_descriptor_type ==
-            PLUGIN_DESCRIPTOR) {
+        if (cd.m_descriptor_type == PLUGIN_DESCRIPTOR) {
           if (cd.m_search_mask == ext_upper) {
             chart_class_name = cd.m_class_name;
             break;

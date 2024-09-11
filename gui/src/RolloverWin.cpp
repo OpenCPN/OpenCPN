@@ -59,7 +59,8 @@ extern MyFrame *gFrame;
 extern BasePlatform *g_BasePlatform;
 
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
-EVT_PAINT(RolloverWin::OnPaint) EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
+EVT_PAINT(RolloverWin::OnPaint)
+EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
     EVT_MOUSE_EVENTS(RolloverWin::OnMouseEvent)
 
         END_EVENT_TABLE()
@@ -82,8 +83,7 @@ EVT_PAINT(RolloverWin::OnPaint) EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
 RolloverWin::~RolloverWin() {
   delete m_pbm;
 #ifdef ocpnUSE_GL
-  if (g_bopengl)
-    glDeleteTextures(1, &m_texture);
+  if (g_bopengl) glDeleteTextures(1, &m_texture);
 #endif
 }
 void RolloverWin::OnTimer(wxTimerEvent &event) {
@@ -152,7 +152,7 @@ void RolloverWin::SetBitmap(int rollover) {
   mdc.SetTextForeground(FontMgr::Get().GetFontColor(text));
 
 #ifdef __WXOSX__
-  mdc.SetTextForeground(wxColour(0,0,0));
+  mdc.SetTextForeground(wxColour(0, 0, 0));
 #endif
 
   if (m_plabelFont && m_plabelFont->IsOk()) {
@@ -263,33 +263,32 @@ void RolloverWin::Draw(ocpnDC &dc) {
 
     ChartCanvas *pCanvas = wxDynamicCast(GetParent(), ChartCanvas);
     if (pCanvas)
-      pCanvas->GetglCanvas()->RenderTextures(dc, coords, uv, 4, pCanvas->GetpVP());
+      pCanvas->GetglCanvas()->RenderTextures(dc, coords, uv, 4,
+                                             pCanvas->GetpVP());
 
     glDisable(g_texture_rectangle_format);
     glDisable(GL_BLEND);
   } else {
 #ifdef __WXOSX__
-      // Support MacBook Retina display
-      if(g_bopengl){
-        double scale = m_parent->GetContentScaleFactor();
-        if(scale > 1){
-          wxImage image = m_pbm->ConvertToImage();
-          image.Rescale( image.GetWidth() * scale, image.GetHeight() * scale);
-          wxBitmap bmp( image );
-          dc.DrawBitmap(bmp, m_position.x, m_position.y, false);
-        }
-        else
-          dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
-      }
-      else
+    // Support MacBook Retina display
+    if (g_bopengl) {
+      double scale = m_parent->GetContentScaleFactor();
+      if (scale > 1) {
+        wxImage image = m_pbm->ConvertToImage();
+        image.Rescale(image.GetWidth() * scale, image.GetHeight() * scale);
+        wxBitmap bmp(image);
+        dc.DrawBitmap(bmp, m_position.x, m_position.y, false);
+      } else
         dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
-#else
+    } else
       dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+#else
+    dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
 #endif
   }
 
 #else
-    dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
+  dc.DrawBitmap(*m_pbm, m_position.x, m_position.y, false);
 #endif
 }
 
@@ -313,7 +312,8 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
       break;
   }
 
-  int font_size = wxMax(8 * g_current_monitor_dip_px_ratio, dFont->GetPointSize());
+  int font_size =
+      wxMax(8 * g_current_monitor_dip_px_ratio, dFont->GetPointSize());
   font_size /= OCPN_GetWinDIPScaleFactor();
 
   m_plabelFont = FontMgr::Get().FindOrCreateFont(
@@ -338,11 +338,11 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
     h = 10;
   }
 
-
   m_size.x = w + sizeM.x;
   m_size.y = h + sizeM.y;
 
-  m_size *= OCPN_GetWinDIPScaleFactor(); //g_BasePlatform->GetDisplayDPIMult(this);
+  m_size *=
+      OCPN_GetWinDIPScaleFactor();  // g_BasePlatform->GetDisplayDPIMult(this);
 
   int xp, yp;
   if ((x + off_x + m_size.x) > parent_size.x) {

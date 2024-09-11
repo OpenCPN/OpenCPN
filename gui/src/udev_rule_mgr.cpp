@@ -46,7 +46,6 @@
 #include "gui_lib.h"
 #include "udev_rule_mgr.h"
 
-
 #if !defined(__linux__) || defined(__ANDROID__)
 
 // non-linux  platforms: Empty place holders.
@@ -55,7 +54,6 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
   return true;
 }
 void DestroyDeviceNotFoundDialogs() {}
-
 
 #else
 

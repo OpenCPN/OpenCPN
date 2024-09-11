@@ -182,9 +182,10 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
       }
 
       case tlSOG: {
-        if (((pAISTarget->SOG > 100.) && !pAISTarget->b_SarAircraftPosnReport) ||
-            (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE) ||
-            (pAISTarget->Class == AIS_METEO))
+        if (((pAISTarget->SOG > 100.) &&
+             !pAISTarget->b_SarAircraftPosnReport) ||
+            (pAISTarget->Class == AIS_ATON) ||
+            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else
           ret.Printf(_T("%5.1f"), toUsrSpeed(pAISTarget->SOG));

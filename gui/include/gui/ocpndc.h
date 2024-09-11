@@ -39,7 +39,7 @@
 #include "TexFont.h"
 #include "viewport.h"
 #ifdef ocpnUSE_GL
-    #include "shaders.h"
+#include "shaders.h"
 #endif
 
 class ViewPort;
@@ -86,9 +86,9 @@ public:
   void DrawLines(int n, wxPoint points[], wxCoord xoffset = 0,
                  wxCoord yoffset = 0, bool b_hiqual = true);
   void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
-                     bool b_hiqual);
-  void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
-                      wxPen pen, bool b_hiqual);
+                       bool b_hiqual);
+  void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset,
+                        wxCoord yoffset, wxPen pen, bool b_hiqual);
 
   void StrokeLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
   void StrokeLine(wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
@@ -125,7 +125,7 @@ public:
   void DestroyClippingRegion() {}
 
   wxDC *GetDC() const { return dc; }
-  void SetDPIFactor(double factor){ m_dpi_factor = factor; }
+  void SetDPIFactor(double factor) { m_dpi_factor = factor; }
   void SetVP(ViewPort vp);
 
 #ifdef ocpnUSE_GL

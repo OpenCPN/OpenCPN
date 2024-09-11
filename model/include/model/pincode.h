@@ -1,5 +1,5 @@
 
- /***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2023 Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -49,7 +49,6 @@ public:
 
 private:
   uint64_t m_value;
-
 };
 
 #endif  // OPENCPN_INCLUDE_PINCODE_H_

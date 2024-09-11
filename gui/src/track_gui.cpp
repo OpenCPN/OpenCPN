@@ -11,7 +11,7 @@
 #include "track_gui.h"
 #include "glChartCanvas.h"
 
-extern Routeman* g_pRouteMan;
+extern Routeman *g_pRouteMan;
 extern wxColour g_colourTrackLineColour;
 
 extern wxColor GetDimColor(wxColor c);
@@ -19,7 +19,7 @@ extern bool g_bHighliteTracks;
 
 extern ocpnGLOptions g_GLOptions;
 
-void TrackPointGui::Draw(ChartCanvas* cc, ocpnDC& dc) {
+void TrackPointGui::Draw(ChartCanvas *cc, ocpnDC &dc) {
   wxPoint r;
   wxRect hilitebox;
 
@@ -61,10 +61,10 @@ void TrackGui::Finalize() {
     new_level.resize(n);
     if (level == 0)
       for (int i = 0; i < n; i++) {
-        new_level[i].m_box.SetFromSegment(
-            m_track.TrackPoints[i]->m_lat, m_track.TrackPoints[i]->m_lon,
-            m_track.TrackPoints[i + 1]->m_lat,
-            m_track.TrackPoints[i + 1]->m_lon);
+        new_level[i].m_box.SetFromSegment(m_track.TrackPoints[i]->m_lat,
+                                          m_track.TrackPoints[i]->m_lon,
+                                          m_track.TrackPoints[i + 1]->m_lat,
+                                          m_track.TrackPoints[i + 1]->m_lon);
         new_level[i].m_scale = 0;
       }
     else {
@@ -86,14 +86,13 @@ void TrackGui::Finalize() {
     level++;
   }
   //    if(m_track.TrackPoints.size() > 100)
-  //        printf("fin time %f %d\n", sw1.GetTime(), (int)m_track.TrackPoints.size());
+  //        printf("fin time %f %d\n", sw1.GetTime(),
+  //        (int)m_track.TrackPoints.size());
 }
-
 
 void TrackGui::GetPointLists(ChartCanvas *cc,
                              std::list<std::list<wxPoint> > &pointlists,
                              ViewPort &VP, const LLBBox &box) {
-
   if (!m_track.IsVisible() || m_track.GetnPoints() == 0) return;
   Finalize();
   //    OCPNStopWatch sw;
@@ -124,8 +123,8 @@ void TrackGui::GetPointLists(ChartCanvas *cc,
   }
 }
 
-void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
-                    const LLBBox& box) {
+void TrackGui::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP,
+                    const LLBBox &box) {
   std::list<std::list<wxPoint> > pointlists;
   GetPointLists(cc, pointlists, VP, box);
 
@@ -145,8 +144,9 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
   if (m_track.m_width != WIDTH_UNDEFINED) width = m_track.m_width;
   if (m_track.m_Colour == wxEmptyString) {
     col = basic_colour;
-    // Render tracks associated with persistent AIS targets as a contrasting color
-    if(m_track.GetName().StartsWith("AIS"))
+    // Render tracks associated with persistent AIS targets as a contrasting
+    // color
+    if (m_track.GetName().StartsWith("AIS"))
       col = GetGlobalColor(_T ( "TEAL1" ));
   } else {
     for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
@@ -158,20 +158,18 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
     }
   }
 
-
-
   double radius = 0.;
   if (g_bHighliteTracks) {
     double radius_meters = 20;  // 1.5 mm at original scale
     double scale = VP.view_scale_ppm;
     radius = wxMax((radius_meters * wxMin(scale, 1.1)), 6.0);
-    if (scale  < 0.004) radius = 0;
+    if (scale < 0.004) radius = 0;
   }
 
   {
     wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
 #ifdef ocpnUSE_GL
-    if(glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
+    if (glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
       p.SetDashes(2, &glChartCanvas::dash_map[style][0]);
     }
 #endif
@@ -212,7 +210,8 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
   }
 
   if (m_track.m_HighlightedTrackPoint >= 0)
-    TrackPointGui(m_track.TrackPoints[m_track.m_HighlightedTrackPoint]).Draw(cc, dc);
+    TrackPointGui(m_track.TrackPoints[m_track.m_HighlightedTrackPoint])
+        .Draw(cc, dc);
 }
 
 // Entry to recursive Assemble at the head of the SubTracks tree
@@ -254,10 +253,12 @@ void TrackGui::Assemble(ChartCanvas *cc,
 }
 
 void TrackGui::AddPointToList(ChartCanvas *cc,
-                              std::list<std::list<wxPoint> > &pointlists, int n) {
+                              std::list<std::list<wxPoint> > &pointlists,
+                              int n) {
   wxPoint r(INVALID_COORD, INVALID_COORD);
   if ((size_t)n < m_track.TrackPoints.size())
-    cc->GetCanvasPointPix(m_track.TrackPoints[n]->m_lat, m_track.TrackPoints[n]->m_lon, &r);
+    cc->GetCanvasPointPix(m_track.TrackPoints[n]->m_lat,
+                          m_track.TrackPoints[n]->m_lon, &r);
 
   std::list<wxPoint> &pointlist = pointlists.back();
   if (r.x == INVALID_COORD) {

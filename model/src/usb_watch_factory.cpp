@@ -37,7 +37,6 @@ UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
   return instance;
 }
 
-
 #else
 #include "model/usb_watch_daemon.h"
 

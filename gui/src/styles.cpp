@@ -699,8 +699,8 @@ void Style::SetColorScheme(ColorScheme cs) {
     wxBitmap bm = graphics->GetSubBitmap(
         wxRect(consoleTextBackgroundLoc, consoleTextBackgroundSize));
 
-    // The background bitmap in the icons file may be too small but it's better to resize it
-    // when we use it
+    // The background bitmap in the icons file may be too small but it's better
+    // to resize it when we use it
 
     consoleTextBackground = SetBitmapBrightness(bm, cs);
   }

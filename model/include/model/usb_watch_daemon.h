@@ -59,4 +59,4 @@ public:
 };
 #endif
 
-#endif   //  USB_WATCH_DAEMON__H
+#endif  //  USB_WATCH_DAEMON__H

@@ -57,9 +57,8 @@ static const char* const API_ENDPOINT = "https://api.github.com/repos";
 // static const char* const API_PATH = "/leamas/plugins/branches";
 static const char* const API_PATH = "/OpenCPN/plugins/branches";
 
-CatalogHandler::CatalogHandler() :
-     status(ServerStatus::UNKNOWN),
-     m_catalog_status(ServerStatus::UNKNOWN){
+CatalogHandler::CatalogHandler()
+    : status(ServerStatus::UNKNOWN), m_catalog_status(ServerStatus::UNKNOWN) {
   if (g_catalog_channel == "") {
     g_catalog_channel = DEFAULT_CHANNEL;
   }
@@ -79,13 +78,10 @@ std::string CatalogHandler::GetDefaultUrl() {
   return url;
 }
 
-catalog_status CatalogHandler::GetCatalogStatus(){
-    return m_catalog_status;
-}
+catalog_status CatalogHandler::GetCatalogStatus() { return m_catalog_status; }
 
-CatalogCtx *CatalogHandler::GetActiveCatalogContext() {
-
-  if (m_catalog_status == ServerStatus::OK){
+CatalogCtx* CatalogHandler::GetActiveCatalogContext() {
+  if (m_catalog_status == ServerStatus::OK) {
     return &m_catalogctx;
   }
 
@@ -112,10 +108,9 @@ bool CatalogHandler::AddMetadataToActiveContext(PluginMetadata metadata) {
   if (m_catalog_status == ServerStatus::OK) {
     m_catalogctx.plugins.push_back(metadata);
     return true;
-  }
-  else return false;
+  } else
+    return false;
 }
-
 
 catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream) {
   std::string path(g_catalog_custom_url.ToStdString());
@@ -204,12 +199,11 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
     const auto& haystack = ctx->parsed_metas;
     auto found = std::find_if(haystack.begin(), haystack.end(), match);
     if (found != haystack.end()) {
-        continue;
+      continue;
     }
     ctx->parsed_metas.push_back(url);
     if (DownloadCatalog(&xml, url) != ServerStatus::OK) {
-      wxLogMessage("CatalogHandler: Cannot download meta-url: %s",
-                   url.c_str());
+      wxLogMessage("CatalogHandler: Cannot download meta-url: %s", url.c_str());
     } else {
       ok = DoParseCatalog(xml.str(), ctx) == ServerStatus::OK;
       if (!ok) break;
@@ -323,8 +317,6 @@ void CatalogHandler::ClearCatalogData() {
   m_catalogctx.parsed_metas.clear();
   m_catalogctx.version.clear();
   m_catalogctx.date.clear();
-
-
 }
 
 std::string CatalogHandler::GetCustomUrl() {

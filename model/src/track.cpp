@@ -96,7 +96,7 @@ millions of points.
 #include "model/routeman.h"
 #include "model/select.h"
 
-std::vector<Track*> g_TrackList;
+std::vector<Track *> g_TrackList;
 
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -129,13 +129,11 @@ TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
 
 // Copy Constructor
 TrackPoint::TrackPoint(TrackPoint *orig)
-    : m_lat(orig->m_lat),
-      m_lon(orig->m_lon),
-      m_GPXTrkSegNo(1) {
+    : m_lat(orig->m_lat), m_lon(orig->m_lon), m_GPXTrkSegNo(1) {
   SetCreateTime(orig->GetCreateTime());
 }
 
-TrackPoint::~TrackPoint() { }
+TrackPoint::~TrackPoint() {}
 
 wxDateTime TrackPoint::GetCreateTime() {
   wxDateTime CreateTimeX;
@@ -169,7 +167,6 @@ double _distance2(vector2D &a, vector2D &b) {
   return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
 }
 double _distance(vector2D &a, vector2D &b) { return sqrt(_distance2(a, b)); }
-
 
 Track::Track() {
   m_bVisible = true;
@@ -280,14 +277,13 @@ Track *ActiveTrack::DoExtendDaily() {
   TrackPoint *pExtendPoint = NULL;
 
   TrackPoint *pLastPoint = GetPoint(0);
-  if (!pLastPoint->GetCreateTime().IsValid())
-    return NULL;
+  if (!pLastPoint->GetCreateTime().IsValid()) return NULL;
 
-  for (Track* ptrack : g_TrackList) {
+  for (Track *ptrack : g_TrackList) {
     if (!ptrack->m_bIsInLayer && ptrack->m_GUID != m_GUID) {
       TrackPoint *track_node = ptrack->GetLastPoint();
       if (!track_node->GetCreateTime().IsValid())
-        continue;     // Skip this bad track
+        continue;  // Skip this bad track
       if (track_node->GetCreateTime() <= pLastPoint->GetCreateTime()) {
         if (!pExtendPoint ||
             track_node->GetCreateTime() > pExtendPoint->GetCreateTime()) {
@@ -376,10 +372,10 @@ void ActiveTrack::OnTimerTrack(wxTimerEvent &event) {
   if (b_addpoint)
     AddPointNow();
   else  // continuously update track beginning point timestamp if no movement.
-      if ((trackPointState == firstPoint) && !g_bTrackDaily) {
-    wxDateTime now = wxDateTime::Now();
-    if (TrackPoints.empty()) TrackPoints.front()->SetCreateTime(now.ToUTC());
-  }
+    if ((trackPointState == firstPoint) && !g_bTrackDaily) {
+      wxDateTime now = wxDateTime::Now();
+      if (TrackPoints.empty()) TrackPoints.front()->SetCreateTime(now.ToUTC());
+    }
 
   m_TimerTrack.Start(1000, wxTIMER_CONTINUOUS);
 }
@@ -397,17 +393,17 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
   vector2D gpsPoint(gLon, gLat);
 
   // Check if gps point is not too far from the last point
-  // which, if it is the case, means that there is probably a GPS bug on the two positions...
-  // So, it is better not to add this false new point.
+  // which, if it is the case, means that there is probably a GPS bug on the two
+  // positions... So, it is better not to add this false new point.
 
   // Calculate the distance between two points of the track based on georef lib
-    if (g_trackFilterMax){
-      if (trackPointState == potentialPoint)
-      {
-        double distToLastGpsPoint = DistLoxodrome(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon);
-        if (distToLastGpsPoint > g_trackFilterMax) return;
-      }
+  if (g_trackFilterMax) {
+    if (trackPointState == potentialPoint) {
+      double distToLastGpsPoint = DistLoxodrome(
+          m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon);
+      if (distToLastGpsPoint > g_trackFilterMax) return;
     }
+  }
 
   // The dynamic interval algorithm will gather all track points in a queue,
   // and analyze the cross track errors for each point before actually adding
@@ -501,9 +497,7 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
   m_prev_time = now;
 }
 
-
 void Track::ClearHighlights() { m_HighlightedTrackPoint = -1; }
-
 
 TrackPoint *Track::GetPoint(int nWhichPoint) {
   if (nWhichPoint < (int)TrackPoints.size())

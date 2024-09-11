@@ -11,13 +11,14 @@ based distros like vanilla Debian, Ubuntu, Raspbian, Mint, etc.
 Work is done on a Debian or Ubuntu host.
 Uploading an ubuntu  package must be done from an Ubuntu host.
 
-Here are four main tasks:
+Here are five main tasks:
 
   - <<import-version,Importing new opencpn releases into the packaging
     branches>>.
   - <<src-release, Creating a new downstream release>>.
   - <<publish, Upload a downstream release to an Ubuntu PPA>>
-  - <<test-build, Create a local test build of the package>>
+  - <<test-build, Local test build of the package from existing release>>
+  - <<master-build, Local test build of the package from master>>
 
 Here, the term "downstream release" refers to a release based on the
 same opencpn release but where the packaging has been modified.
@@ -193,7 +194,7 @@ Or, a more generic oneliner pushing the most recent _source.changes_ file:
 ```
 
 [#test-build]
-== Create a local test build
+== Local test build from existing upstream tag.
 
 First step is to setup the environment, see <<setup, above>>.
 However, no gpg key is required.
@@ -215,6 +216,53 @@ Normally use the most recent one like:
 
 This builds testable .deb packages in _.._.
 
+[#master-build]
+== Local test build from master
+First step is to setup the environment, see <<setup, above>>.
+However, no gpg key is required.
+
+Make sure the build dependencies are in place, see <<test-build, above>>
+
+Work is done in a clean clone of the master branch.
+Make sure the remote "upstream" exists and update it:
+
+    $ git config remote.upstream.url > /dev/null || \
+         git remote add upstream https://github.com/OpenCPN/OpenCPN.git
+    $ git remote update upstream
+
+Checkout  the debian/ directory from the packaging branch. At the time of
+writing, this is only possible for Bookworm:
+
+    $ git fetch upstream ci/bookworm-backports:ci/bookworm-backports
+    $ git checkout ci/bookworm-backports debian
+    $ git commit -m "Add debian/ packaging directory from ci/bookworm-backports"
+
+Create a debian changelog entry. This is an example of building a post 5.10 package
+for the bookworm release, YMMV:
+
+    $ version="1:5.11.0~$(date "+%Y%m%d%H%m").$(git rev-parse --short HEAD)-1"
+    $ dch --distribution bookworm -v "$version" "Test build from master"
+    $ git add debian/changelog
+    $ git commit -m "d/changelog: $version"
+
+Create orig tarball.
+The name of the orig tarball created by `mk-origtargz` reflects the changelog 
+version.
+
+    $ git archive --prefix opencpn-5.11.0/ --output ../opencpn.tar.gz HEAD
+    $ mk-origtargz ../opencpn.tar.gz
+
+Extract the orig tarball and work in the sources it provides:
+
+    $ cd ..
+    $ tar xf opencpn-5.11.0*orig*xz
+    $ cd opencpn-5.11.0*
+
+And build package. -j4 builds in  four parallel pipes, depending on processor
+you might want to use another value (I typically use -j12).
+
+    $  debuild -us -uc -j4
+    
 [#edit-src]
 == Modifying sources in a downstream release.
 

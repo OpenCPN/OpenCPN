@@ -7854,11 +7854,11 @@ msgstr "<font size=-2>Les secteurs sont des relèvements vrais à partir de la m
 msgid "<p>The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
-"</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>"
+"</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.10-known-issues\">list of known issues</a>.</p>"
 msgstr "<p>Le dernier run d'opencpn semble avoir échoué. Voulez-vous exécuter\n"
 "en mode sans compléments et autres fonctionnalités\n"
 "potentiellement problématiques ?\n"
-"</p><br/></br><p>Vous pouvez envisager de visiter la <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">liste des problèmes connus</a>.</p>"
+"</p><br/></br><p>Vous pouvez envisager de visiter la <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.10-known-issues\">liste des problèmes connus</a>.</p>"
 
 #: gui/src/safe_mode_gui.cpp:38
 msgid "Safe restart"
@@ -8428,4 +8428,3 @@ msgstr "Ajouter des cartes marines existantes"
 #: gui/src/initwiz/wiz_ui_proto.cpp:177
 msgid "Add chart directory..."
 msgstr "Ajouter un répertoire de cartes..."
-

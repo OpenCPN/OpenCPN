@@ -30,18 +30,15 @@
 #include <GLES2/gl2.h>
 #endif
 
-
-
 #ifdef USE_ANDROID_GLES2
-const GLchar* PI_shader_preamble =
-"\n";
+const GLchar* PI_shader_preamble = "\n";
 #else
 const GLchar* PI_shader_preamble =
-"#version 120\n"
-"#define precision\n"
-"#define lowp\n"
-"#define mediump\n"
-"#define highp\n";
+    "#version 120\n"
+    "#define precision\n"
+    "#define lowp\n"
+    "#define mediump\n"
+    "#define highp\n";
 #endif
 
 // Simple colored triangle shader
@@ -212,10 +209,13 @@ bool pi_loadShaders() {
   // Simple colored triangle shader
 
   if (!GRIBpi_color_tri_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(color_tri_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(color_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(color_tri_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(color_tri_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     GRIBpi_color_tri_shader_program = shaderProgram.programId();
   }
@@ -269,10 +269,13 @@ bool pi_loadShaders() {
 
   // Array colored triangle shader
   if (!GRIBpi_colorv_tri_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(colorv_tri_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(colorv_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(colorv_tri_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(colorv_tri_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     GRIBpi_colorv_tri_shader_program = shaderProgram.programId();
   }
@@ -326,10 +329,13 @@ bool pi_loadShaders() {
 
   // Simple 2D texture shader
   if (!pi_texture_2D_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(texture_2D_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(texture_2D_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(texture_2D_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     pi_texture_2D_shader_program = shaderProgram.programId();
   }
@@ -428,10 +434,13 @@ bool pi_loadShaders() {
 
   // Circle shader
   if (!pi_circle_filled_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(circle_filled_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(circle_filled_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(circle_filled_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(circle_filled_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     pi_circle_filled_shader_program = shaderProgram.programId();
   }
@@ -551,7 +560,8 @@ void configureShaders(float width, float height) {
   mat4x4_identity(I);
 
   glUseProgram(GRIBpi_color_tri_shader_program);
-  GLint matloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "MVMatrix");
+  GLint matloc =
+      glGetUniformLocation(GRIBpi_color_tri_shader_program, "MVMatrix");
   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat*)vp_transform);
   GLint transloc =
       glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
@@ -586,4 +596,3 @@ void configureShaders(float width, float height) {
 
   glUseProgram(0);
 }
-

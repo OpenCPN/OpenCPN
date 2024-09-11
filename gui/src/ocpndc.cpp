@@ -78,7 +78,11 @@ extern GLint texture_2D_shader_program;
 
 //----------------------------------------------------------------------------
 ocpnDC::ocpnDC(glChartCanvas &canvas)
-    : m_glchartCanvas(&canvas), m_glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : m_glchartCanvas(&canvas),
+      m_glcanvas(NULL),
+      dc(NULL),
+      m_pen(wxNullPen),
+      m_brush(wxNullBrush) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
@@ -89,7 +93,11 @@ ocpnDC::ocpnDC(glChartCanvas &canvas)
 }
 
 ocpnDC::ocpnDC(wxGLCanvas &canvas)
-    : m_glchartCanvas(NULL), m_glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : m_glchartCanvas(NULL),
+      m_glcanvas(&canvas),
+      dc(NULL),
+      m_pen(wxNullPen),
+      m_brush(wxNullBrush) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
@@ -97,7 +105,11 @@ ocpnDC::ocpnDC(wxGLCanvas &canvas)
 }
 
 ocpnDC::ocpnDC(wxDC &pdc)
-    : m_glchartCanvas(NULL), m_glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : m_glchartCanvas(NULL),
+      m_glcanvas(NULL),
+      dc(&pdc),
+      m_pen(wxNullPen),
+      m_brush(wxNullBrush) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
   wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
@@ -113,7 +125,11 @@ ocpnDC::ocpnDC(wxDC &pdc)
 }
 
 ocpnDC::ocpnDC()
-    : m_glchartCanvas(NULL), m_glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : m_glchartCanvas(NULL),
+      m_glcanvas(NULL),
+      dc(NULL),
+      m_pen(wxNullPen),
+      m_brush(wxNullBrush) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
@@ -136,7 +152,7 @@ ocpnDC::~ocpnDC() {
 #endif
 }
 
-void ocpnDC::Init(){
+void ocpnDC::Init() {
   m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
@@ -160,7 +176,6 @@ void ocpnDC::Init(){
   m_pcircle_filled_shader_program = NULL;
   m_ptexture_2D_shader_program = NULL;
 #endif
-
 }
 #ifdef ocpnUSE_GL
 void ocpnDC::SetGLCanvas(glChartCanvas *canvas) {
@@ -179,12 +194,10 @@ void ocpnDC::Clear() {
     if (m_glchartCanvas) {
       SetBrush(wxBrush(m_glchartCanvas->GetBackgroundColour()));
       m_glchartCanvas->GetSize(&w, &h);
-    }
-    else if (m_glcanvas) {
+    } else if (m_glcanvas) {
       SetBrush(wxBrush(m_glcanvas->GetBackgroundColour()));
       m_glcanvas->GetSize(&w, &h);
-    }
-    else
+    } else
       return;
 
     DrawRectangle(0, 0, w, h);
@@ -259,11 +272,10 @@ void ocpnDC::GetSize(wxCoord *width, wxCoord *height) const {
     dc->GetSize(width, height);
   else {
 #ifdef ocpnUSE_GL
-    if (m_glchartCanvas){
+    if (m_glchartCanvas) {
       *width = m_glchartCanvas->GetGLCanvasWidth();
       *height = m_glchartCanvas->GetGLCanvasHeight();
-    }
-    else if (m_glcanvas){
+    } else if (m_glcanvas) {
       m_glcanvas->GetSize(width, height);
     }
 #endif
@@ -346,7 +358,7 @@ void DrawEndCap(float x1, float y1, float t1, float angle) {
 
 // Draws a line between (x1,y1) - (x2,y2) with a start thickness of t1
 void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
-                     bool b_hiqual) {
+                             bool b_hiqual) {
 #ifdef ocpnUSE_GL
 
   float angle = atan2f(y2 - y1, x2 - x1);
@@ -356,29 +368,29 @@ void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
 
   // Set up the shader
   GLShaderProgram *shader;
-  if (m_glchartCanvas){
+  if (m_glchartCanvas) {
     shader = pcolor_tri_shader_program[m_canvasIndex];
     shader->Bind();
     // Assuming here that transform matrix for this shader is preset for canvas.
-    //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-  }
-  else{
+    // shader->SetUniformMatrix4fv("MVMatrix", (GLfloat
+    // *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+  } else {
     shader = m_pcolor_tri_shader_program;
     shader->Bind();
-    shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+    shader->SetUniformMatrix4fv("MVMatrix",
+                                (float *)&(m_vp.vp_matrix_transform));
   }
 
-    wxColor c = pen.GetColour();
-    float colorv[4];
-    colorv[0] = c.Red() / float(256);
-    colorv[1] = c.Green() / float(256);
-    colorv[2] = c.Blue() / float(256);
-    colorv[3] = c.Alpha() / float(256);
-    shader->SetUniform4fv("color", colorv);
+  wxColor c = pen.GetColour();
+  float colorv[4];
+  colorv[0] = c.Red() / float(256);
+  colorv[1] = c.Green() / float(256);
+  colorv[2] = c.Blue() / float(256);
+  colorv[3] = c.Alpha() / float(256);
+  shader->SetUniform4fv("color", colorv);
 
-    float vert[12];
-    shader->SetAttributePointerf("position", vert);
-
+  float vert[12];
+  shader->SetAttributePointerf("position", vert);
 
   //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in
   //    the dash table. The first is assumed drawn, second is assumed space
@@ -445,7 +457,6 @@ void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     vert[10] = x1 + t2sina1;
     vert[11] = y1 - t2cosa1;
 
-
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     /* wx draws a nice rounded end in dc mode, so replicate
@@ -458,7 +469,6 @@ void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     //
   }
   shader->UnBind();
-
 
 #endif
 }
@@ -507,7 +517,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
     if (b_draw_thick)
       DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
-#if 0       // Use AA lines
+#if 0  // Use AA lines
 
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
@@ -590,16 +600,18 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 #else
 
       GLShaderProgram *shader;
-      if (m_glchartCanvas){
+      if (m_glchartCanvas) {
         shader = pcolor_tri_shader_program[m_canvasIndex];
         shader->Bind();
-        // Assuming here that transform matrix for this shader is preset for canvas.
-        //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-      }
-      else{
+        // Assuming here that transform matrix for this shader is preset for
+        // canvas.
+        // shader->SetUniformMatrix4fv("MVMatrix", (GLfloat
+        // *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      } else {
         shader = m_pcolor_tri_shader_program;
         shader->Bind();
-        shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+        shader->SetUniformMatrix4fv("MVMatrix",
+                                    (float *)&(m_vp.vp_matrix_transform));
       }
 
       float colorv[4];
@@ -614,7 +626,6 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
       float fBuf[4];
       shader->SetAttributePointerf("position", fBuf);
-
 
       wxDash *dashes;
       int n_dashes = m_pen.GetDashes(&dashes);
@@ -633,7 +644,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
         ldraw = wxMax(ldraw, 4.0);
         lspace = wxMax(lspace, 4.0);
-        //lpix = wxMin(lpix, 2000.0);
+        // lpix = wxMin(lpix, 2000.0);
 
         while (lrun < lpix) {
           //    Dash
@@ -669,7 +680,6 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       shader->UnBind();
 
 #endif
-
     }
 
 #else
@@ -684,10 +694,9 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 #endif
 }
 
-
 // Draws thick lines from triangles
-void ocpnDC::DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
-                      wxPen pen, bool b_hiqual) {
+void ocpnDC::DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset,
+                              wxCoord yoffset, wxPen pen, bool b_hiqual) {
 #ifdef ocpnUSE_GL
   if (n < 2) return;
 
@@ -767,7 +776,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       workBuf[(i * 2) + 1] = points[i].y + yoffset;
     }
 
-#if 0     // Use AA lines
+#if 0  // Use AA lines
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
@@ -797,36 +806,36 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
 
       shader->UnBind();
 #else
-      GLShaderProgram *shader;
-      if (m_glchartCanvas){
-        shader = pcolor_tri_shader_program[m_canvasIndex];
-        shader->Bind();
-        // Assuming here that transform matrix for this shader is preset for canvas.
-        //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-      }
-      else{
-        shader = m_pcolor_tri_shader_program;
-        shader->Bind();
-        shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
-      }
+    GLShaderProgram *shader;
+    if (m_glchartCanvas) {
+      shader = pcolor_tri_shader_program[m_canvasIndex];
+      shader->Bind();
+      // Assuming here that transform matrix for this shader is preset for
+      // canvas.
+      // shader->SetUniformMatrix4fv("MVMatrix", (GLfloat
+      // *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+    } else {
+      shader = m_pcolor_tri_shader_program;
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix",
+                                  (float *)&(m_vp.vp_matrix_transform));
+    }
 
+    float colorv[4];
+    colorv[0] = m_pen.GetColour().Red() / float(256);
+    colorv[1] = m_pen.GetColour().Green() / float(256);
+    colorv[2] = m_pen.GetColour().Blue() / float(256);
+    colorv[3] = 1.0;
 
-      float colorv[4];
-      colorv[0] = m_pen.GetColour().Red() / float(256);
-      colorv[1] = m_pen.GetColour().Green() / float(256);
-      colorv[2] = m_pen.GetColour().Blue() / float(256);
-      colorv[3] = 1.0;
+    shader->SetUniform4fv("color", colorv);
 
-      shader->SetUniform4fv("color", colorv);
+    shader->SetAttributePointerf("position", workBuf);
 
-      shader->SetAttributePointerf("position", workBuf);
+    glDrawArrays(GL_LINE_STRIP, 0, n);
 
-      glDrawArrays(GL_LINE_STRIP, 0, n);
-
-      shader->UnBind();
+    shader->UnBind();
 
 #endif
-
 
     if (b_hiqual) {
       glDisable(GL_LINE_STIPPLE);
@@ -956,8 +965,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
   if (dc) dc->DrawRoundedRectangle(x, y, w, h, r);
 #ifdef ocpnUSE_GL
   else {
-    if (!m_glchartCanvas)
-      return;
+    if (!m_glchartCanvas) return;
 
     r++;
     int steps = ceil(sqrt((float)r));
@@ -969,7 +977,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     ConfigurePen();
 
     //  Grow the work buffer as necessary
-    size_t bufReq = (steps+1) * 8 * 2;  // large, to be sure
+    size_t bufReq = (steps + 1) * 8 * 2;  // large, to be sure
 
     if (workBufSize < bufReq) {
       workBuf = (float *)realloc(workBuf, bufReq * sizeof(float));
@@ -1008,10 +1016,11 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     Q[3][1] = yoffset;
 
     mat4x4 X;
-    mat4x4_mul(
-        X, (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform, Q);
+    mat4x4_mul(X,
+               (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()
+                   ->vp_matrix_transform,
+               Q);
     shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
-
 
     shader->SetAttributePointerf("position", workBuf);
 
@@ -1055,20 +1064,21 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
   coords[7] = y - radius;
 
   GLShaderProgram *shader;
-  if (m_glchartCanvas){
+  if (m_glchartCanvas) {
     shader = pcircle_filled_shader_program[m_canvasIndex];
     shader->Bind();
     // Assuming here that transform matrix for this shader is preset for canvas.
-    //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-  }
-  else{
+    // shader->SetUniformMatrix4fv("MVMatrix", (GLfloat
+    // *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+  } else {
     shader = m_pcircle_filled_shader_program;
     shader->Bind();
-    shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+    shader->SetUniformMatrix4fv("MVMatrix",
+                                (float *)&(m_vp.vp_matrix_transform));
   }
 
-//   GLShaderProgram *shader = pcircle_filled_shader_program[m_canvasIndex];
-//   shader->Bind();
+  //   GLShaderProgram *shader = pcircle_filled_shader_program[m_canvasIndex];
+  //   shader->Bind();
 
   shader->SetUniform1f("circle_radius", radius);
 
@@ -1080,7 +1090,7 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
   ctrv[1] = height - y;
   shader->SetUniform2fv("circle_center", ctrv);
 
-    //  Circle color
+  //  Circle color
   float colorv[4];
   if (m_brush.IsOk()) {
     colorv[0] = m_brush.GetColour().Red() / float(256);
@@ -1159,7 +1169,6 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
   if (dc) dc->DrawPolygon(n, points, xoffset, yoffset);
 #ifdef ocpnUSE_GL
   else {
-
 #ifdef __WXQT__
     SetGLAttrs(false);  // Some QT platforms (Android) have trouble with
                         // GL_BLEND / GL_LINE_SMOOTH
@@ -1170,19 +1179,19 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
     // Prepare the line rendering shader
     GLShaderProgram *line_shader;
-    float* mvmatrix;
+    float *mvmatrix;
 
-    if(m_glchartCanvas){
+    if (m_glchartCanvas) {
       line_shader = pAALine_shader_program[m_canvasIndex];
-      mvmatrix = (float *)&(m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-    }
-    else{
+      mvmatrix = (float *)&(
+          m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+    } else {
       line_shader = m_pAALine_shader_program;
       mvmatrix = (float *)&(m_vp.vp_matrix_transform);
     }
 
     {
-      //GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
+      // GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       line_shader->Bind();
 
       line_shader->SetUniform1f("uLineWidth", m_pen.GetWidth());
@@ -1205,7 +1214,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       line_shader->SetUniform4fv("color", colorv);
 
-      //shader->SetAttributePointerf("position", workBuf);
+      // shader->SetAttributePointerf("position", workBuf);
 
       // Rotate
       mat4x4 I, Q;
@@ -1218,7 +1227,9 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       mat4x4 X;
       mat4x4_mul(
-          X, (float(*)[4])mvmatrix, //m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform,
+          X,
+          (float(*)[4])
+              mvmatrix,  // m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform,
           Q);
 
       line_shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
@@ -1249,8 +1260,9 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       glDrawArrays(GL_LINE_LOOP, 0, n);
 
       // Restore the default matrix
-      //TODO  This will not work for multicanvas
-      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      // TODO  This will not work for multicanvas
+      // shader->SetUniformMatrix4fv("MVMatrix", (GLfloat
+      // *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       line_shader->UnBind();
 
@@ -1269,13 +1281,13 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Draw the triangle fill
       GLShaderProgram *shader;
-      float* mvmatrix;
+      float *mvmatrix;
 
-      if(m_glchartCanvas){
+      if (m_glchartCanvas) {
         shader = pcolor_tri_shader_program[m_canvasIndex];
-        mvmatrix = (float *)&(m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-      }
-      else{
+        mvmatrix = (float *)&(
+            m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      } else {
         shader = m_pcolor_tri_shader_program;
         mvmatrix = (float *)&(m_vp.vp_matrix_transform);
       }
@@ -1292,7 +1304,6 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       mat4x4 X;
       mat4x4_mul(X, (float(*)[4])mvmatrix, Q);
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
-
 
       //  Fill color
       float bcolorv[4];
@@ -1320,8 +1331,10 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       }
 
       // Restore the default glCanvas matrix
-      if (m_glchartCanvas){
-        shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      if (m_glchartCanvas) {
+        shader->SetUniformMatrix4fv(
+            "MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()
+                            ->vp_matrix_transform);
       }
 
       shader->UnBind();
@@ -1341,8 +1354,9 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       glDrawArrays(GL_LINE_LOOP, 0, n);
 
       // Restore the default matrix
-      //TODO  This will not work for multicanvas
-      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      // TODO  This will not work for multicanvas
+      // shader->SetUniformMatrix4fv("MVMatrix", (GLfloat
+      // *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       line_shader->UnBind();
     }
@@ -1437,20 +1451,18 @@ void odc_endCallbackD_GLSL(void *data) {
 
   shader->UnBind();
 
-
 #endif
 }
 #endif
 
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
 void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
                                     wxCoord yoffset) {
   if (dc) dc->DrawPolygon(n, points, xoffset, yoffset);
 #ifdef ocpnUSE_GL
   else {
-    if (!m_glchartCanvas)
-      return;
+    if (!m_glchartCanvas) return;
 
 #if !defined(ocpnUSE_GLES) || \
     defined(USE_ANDROID_GLES2)  // tessalator in glues is broken
@@ -1482,7 +1494,8 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
       gluTessBeginPolygon(m_tobj, this);
       gluTessBeginContour(m_tobj);
 
-      ViewPort *pvp = m_glchartCanvas->m_pParentCanvas->GetpVP(); //gFrame->GetPrimaryCanvas()->GetpVP();
+      ViewPort *pvp = m_glchartCanvas->m_pParentCanvas
+                          ->GetpVP();  // gFrame->GetPrimaryCanvas()->GetpVP();
 
       for (int i = 0; i < n; i++) {
         double *p = new double[6];
@@ -1515,8 +1528,7 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
     //         odc_combine_work_data.clear();
   }
 #else
-
- }
+  }
 
 #endif
 #endif
@@ -1611,7 +1623,7 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
 
       glColor4f(1, 1, 1, 1);
       GLDrawBlendData(x, y, w, h, GL_RGBA, e);
-      delete[](e);
+      delete[] (e);
     } else {
       glRasterPos2i(x, y);
       glPixelZoom(1, -1); /* draw data from top to bottom */
@@ -1631,9 +1643,10 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
     wxCoord w = 0;
     wxCoord h = 0;
 
-    //FIXME Dave Re-enable, and fix rotation logic.
-    if (0/*m_buseTex*/) {
-      m_texfont.Build(m_font, 1.0, m_dpi_factor);  // make sure the font is ready
+    // FIXME Dave Re-enable, and fix rotation logic.
+    if (0 /*m_buseTex*/) {
+      m_texfont.Build(m_font, 1.0,
+                      m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(text, &w, &h);
       m_texfont.SetColor(m_textforegroundcolour);
 
@@ -1651,7 +1664,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
       sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
-      if(w && h){
+      if (w && h) {
         /* create bitmap of appropriate size and select it */
         wxBitmap bmp(w, h);
         wxMemoryDC temp_dc;
@@ -1712,7 +1725,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
         int TextureWidth = NextPow2(w);
         int TextureHeight = NextPow2(h);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TextureWidth, TextureHeight, 0,
-                    GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                     GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
                         data);
 
@@ -1747,19 +1760,21 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
 
         // Set up the shader
         GLShaderProgram *shader;
-        if (m_glchartCanvas){
+        if (m_glchartCanvas) {
           shader = ptexture_2D_shader_program[m_canvasIndex];
           shader->Bind();
-          // Assuming here that transform matrix for this shader is preset for canvas.
-          //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-        }
-        else{
+          // Assuming here that transform matrix for this shader is preset for
+          // canvas.
+          // shader->SetUniformMatrix4fv("MVMatrix", (GLfloat
+          // *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+        } else {
           shader = m_ptexture_2D_shader_program;
           shader->Bind();
-          shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+          shader->SetUniformMatrix4fv("MVMatrix",
+                                      (float *)&(m_vp.vp_matrix_transform));
         }
 
-      // Set up the texture sampler to texture unit 0
+        // Set up the texture sampler to texture unit 0
         shader->SetUniform1i("uTex", 0);
 
         // Rotate
@@ -1776,12 +1791,10 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
         float co1[8];
         float tco1[8];
 
+        // Perform the actual drawing.
 
-
-    // Perform the actual drawing.
-
-    // For some reason, glDrawElements is busted on Android
-    // So we do this a hard ugly way, drawing two triangles...
+        // For some reason, glDrawElements is busted on Android
+        // So we do this a hard ugly way, drawing two triangles...
         co1[0] = coords[0];
         co1[1] = coords[1];
         co1[2] = coords[2];
@@ -1807,7 +1820,6 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
 
         shader->UnBind();
 
-
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
 
@@ -1832,8 +1844,8 @@ void ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
     wxFont f = m_font;
     if (font) f = *font;
 
-    //FIXME Dave Re-enable, and fix rotation logic.
-    if (0/*m_buseTex*/) {
+    // FIXME Dave Re-enable, and fix rotation logic.
+    if (0 /*m_buseTex*/) {
 #ifdef ocpnUSE_GL
       m_texfont.Build(f, 1.0, m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(string, w, h);
@@ -1902,12 +1914,11 @@ void ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 #endif
 }
 
-void ocpnDC::SetVP(ViewPort vp){
+void ocpnDC::SetVP(ViewPort vp) {
   m_vp = vp;
 
   // If not in DC mode, simply return
-  if (!m_glchartCanvas && !m_glcanvas)
-      return;
+  if (!m_glchartCanvas && !m_glcanvas) return;
 #ifdef ocpnUSE_GL
   // Otherwise, prepare local shaders
   m_vp.SetVPTransformMatrix();
@@ -1917,7 +1928,6 @@ void ocpnDC::SetVP(ViewPort vp){
   // Program the matrix transforms for the several private shaders
   mat4x4 I;
   mat4x4_identity(I);
-
 
   if (m_pcolor_tri_shader_program) {
     m_pcolor_tri_shader_program->Bind();
@@ -1956,25 +1966,23 @@ void ocpnDC::SetVP(ViewPort vp){
 #endif
 }
 
-
 #ifdef ocpnUSE_GL
-//  Private shaders, used when drawing to a context which is not a glChartCanvas (i.e. radar_pi)
+//  Private shaders, used when drawing to a context which is not a glChartCanvas
+//  (i.e. radar_pi)
 #ifdef USE_ANDROID_GLES2
-const GLchar* odc_preamble =
-"\n";
+const GLchar *odc_preamble = "\n";
 #else
-const GLchar* odc_preamble =
-"#version 120\n"
-"#define precision\n"
-"#define lowp\n"
-"#define mediump\n"
-"#define highp\n";
+const GLchar *odc_preamble =
+    "#version 120\n"
+    "#define precision\n"
+    "#define lowp\n"
+    "#define mediump\n"
+    "#define highp\n";
 #endif
-
 
 // Simple colored triangle shader
 
-static const GLchar* odc_color_tri_vertex_shader_source =
+static const GLchar *odc_color_tri_vertex_shader_source =
     "attribute vec2 position;\n"
     "uniform mat4 MVMatrix;\n"
     "uniform mat4 TransformMatrix;\n"
@@ -1985,29 +1993,28 @@ static const GLchar* odc_color_tri_vertex_shader_source =
     "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
     "}\n";
 
-static const GLchar* odc_color_tri_fragment_shader_source =
+static const GLchar *odc_color_tri_fragment_shader_source =
     "precision lowp float;\n"
     "varying vec4 fragColor;\n"
     "void main() {\n"
     "   gl_FragColor = fragColor;\n"
     "}\n";
 
-static const GLchar* odc_AALine_vertex_shader_source =
+static const GLchar *odc_AALine_vertex_shader_source =
     "uniform vec2 uViewPort; //Width and Height of the viewport\n"
     "varying vec2 vLineCenter;\n"
     "attribute vec2 position;\n"
     "uniform mat4 MVMatrix;\n"
     "uniform mat4 TransformMatrix;\n"
-  "void main()\n"
-  "{\n"
-  "   vec4 pp = MVMatrix * vec4(position, 0.0, 1.0);\n"
-  "   gl_Position = pp;\n"
-  "   vec2 vp = uViewPort;\n"
-  "   vLineCenter = 0.5*(pp.xy + vec2(1, 1))*vp;\n"
-  "}\n";
+    "void main()\n"
+    "{\n"
+    "   vec4 pp = MVMatrix * vec4(position, 0.0, 1.0);\n"
+    "   gl_Position = pp;\n"
+    "   vec2 vp = uViewPort;\n"
+    "   vLineCenter = 0.5*(pp.xy + vec2(1, 1))*vp;\n"
+    "}\n";
 
-
-static const GLchar* odc_AALine_fragment_shader_source =
+static const GLchar *odc_AALine_fragment_shader_source =
     "precision mediump float;\n"
     "uniform float uLineWidth;\n"
     "uniform vec4 color;\n"
@@ -2030,7 +2037,7 @@ static const GLchar* odc_AALine_fragment_shader_source =
     "}\n";
 
 //  Circle shader
-static const GLchar* odc_circle_filled_vertex_shader_source =
+static const GLchar *odc_circle_filled_vertex_shader_source =
     "precision highp float;\n"
     "attribute vec2 aPos;\n"
     "uniform mat4 MVMatrix;\n"
@@ -2039,7 +2046,7 @@ static const GLchar* odc_circle_filled_vertex_shader_source =
     "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
     "}\n";
 
-static const GLchar* odc_circle_filled_fragment_shader_source =
+static const GLchar *odc_circle_filled_fragment_shader_source =
     "precision highp float;\n"
     "uniform float border_width;\n"
     "uniform float circle_radius;\n"
@@ -2054,7 +2061,7 @@ static const GLchar* odc_circle_filled_fragment_shader_source =
     "}\n";
 
 // Simple 2D texture shader
-static const GLchar* odc_texture_2D_vertex_shader_source =
+static const GLchar *odc_texture_2D_vertex_shader_source =
     "attribute vec2 aPos;\n"
     "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
@@ -2065,7 +2072,7 @@ static const GLchar* odc_texture_2D_vertex_shader_source =
     "   varCoord = aUV;\n"
     "}\n";
 
-static const GLchar* odc_texture_2D_fragment_shader_source =
+static const GLchar *odc_texture_2D_fragment_shader_source =
     "precision lowp float;\n"
     "uniform sampler2D uTex;\n"
     "varying vec2 varCoord;\n"
@@ -2074,49 +2081,51 @@ static const GLchar* odc_texture_2D_fragment_shader_source =
     "}\n";
 
 #ifdef ocpnUSE_GL
-void ocpnDC::BuildShaders(){
-
+void ocpnDC::BuildShaders() {
   // Simple colored triangle shader
   if (!m_pcolor_tri_shader_program) {
     GLShaderProgram *shaderProgram = new GLShaderProgram;
-    shaderProgram->addShaderFromSource(odc_color_tri_vertex_shader_source, GL_VERTEX_SHADER);
-    shaderProgram->addShaderFromSource(odc_color_tri_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->addShaderFromSource(odc_color_tri_vertex_shader_source,
+                                       GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(odc_color_tri_fragment_shader_source,
+                                       GL_FRAGMENT_SHADER);
     shaderProgram->linkProgram();
 
-    if (shaderProgram->isOK())
-      m_pcolor_tri_shader_program = shaderProgram;
+    if (shaderProgram->isOK()) m_pcolor_tri_shader_program = shaderProgram;
   }
 
   if (!m_pAALine_shader_program) {
     GLShaderProgram *shaderProgram = new GLShaderProgram;
-    shaderProgram->addShaderFromSource(odc_AALine_fragment_shader_source, GL_FRAGMENT_SHADER);
-    shaderProgram->addShaderFromSource(odc_AALine_vertex_shader_source, GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(odc_AALine_fragment_shader_source,
+                                       GL_FRAGMENT_SHADER);
+    shaderProgram->addShaderFromSource(odc_AALine_vertex_shader_source,
+                                       GL_VERTEX_SHADER);
     shaderProgram->linkProgram();
 
-    if (shaderProgram->isOK())
-      m_pAALine_shader_program = shaderProgram;
+    if (shaderProgram->isOK()) m_pAALine_shader_program = shaderProgram;
   }
 
   if (!m_pcircle_filled_shader_program) {
     GLShaderProgram *shaderProgram = new GLShaderProgram;
-    shaderProgram->addShaderFromSource(odc_circle_filled_vertex_shader_source, GL_VERTEX_SHADER);
-    shaderProgram->addShaderFromSource(odc_circle_filled_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->addShaderFromSource(odc_circle_filled_vertex_shader_source,
+                                       GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(odc_circle_filled_fragment_shader_source,
+                                       GL_FRAGMENT_SHADER);
     shaderProgram->linkProgram();
 
-    if (shaderProgram->isOK())
-      m_pcircle_filled_shader_program = shaderProgram;
+    if (shaderProgram->isOK()) m_pcircle_filled_shader_program = shaderProgram;
   }
 
   if (!m_ptexture_2D_shader_program) {
     GLShaderProgram *shaderProgram = new GLShaderProgram;
-    shaderProgram->addShaderFromSource(odc_texture_2D_vertex_shader_source, GL_VERTEX_SHADER);
-    shaderProgram->addShaderFromSource(odc_texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->addShaderFromSource(odc_texture_2D_vertex_shader_source,
+                                       GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(odc_texture_2D_fragment_shader_source,
+                                       GL_FRAGMENT_SHADER);
     shaderProgram->linkProgram();
 
-    if (shaderProgram->isOK())
-      m_ptexture_2D_shader_program = shaderProgram;
+    if (shaderProgram->isOK()) m_ptexture_2D_shader_program = shaderProgram;
   }
-
 }
 #endif
 #endif

@@ -223,29 +223,28 @@ int adjustSpacing(int dialogSetSpacing) {
 //----------------------------------------------------------------------------------------------------------
 GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     : m_dlg(dlg), m_Settings(dlg.m_OverlaySettings) {
-
   if (wxGetDisplaySize().x > 0) {
-    //#ifdef __WXGTK__
-    //        GdkScreen *screen = gdk_screen_get_default();
-    //        m_pixelMM = (double)gdk_screen_get_monitor_width_mm(screen, 0) /
-    //        wxGetDisplaySize().x;
-    //#else
+    // #ifdef __WXGTK__
+    //         GdkScreen *screen = gdk_screen_get_default();
+    //         m_pixelMM = (double)gdk_screen_get_monitor_width_mm(screen, 0) /
+    //         wxGetDisplaySize().x;
+    // #else
     m_pixelMM = (double)PlugInGetDisplaySizeMM() /
                 wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y);
-    //#endif
+    // #endif
     m_pixelMM = wxMax(.02, m_pixelMM);  // protect against bad data
   } else
     m_pixelMM = 0.27;  // semi-standard number...
 
-  //qDebug() <<  "m_pixelMM: " << m_pixelMM;
+  // qDebug() <<  "m_pixelMM: " << m_pixelMM;
 
   m_pGribTimelineRecordSet = NULL;
   m_last_vp_scale = 0.;
 
   m_oDC = NULL;
-  #if wxUSE_GRAPHICS_CONTEXT
+#if wxUSE_GRAPHICS_CONTEXT
   m_gdc = NULL;
-  #endif
+#endif
   m_Font_Message = NULL;
 
   InitColorsTable();
@@ -260,12 +259,11 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
 
   // Generate the wind arrow cache
 
-  if (m_pixelMM < 0.2){
+  if (m_pixelMM < 0.2) {
     windArrowSize = 5.0 / m_pixelMM;  // Target scaled arrow size
-    windArrowSize = wxMin(windArrowSize,
-                          wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y) / 20);
-  }
-  else
+    windArrowSize = wxMin(
+        windArrowSize, wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y) / 20);
+  } else
     windArrowSize = 26;  // Standard value for desktop
 
   int r = 5, i = 0;  // wind is very light, draw a circle
@@ -353,10 +351,10 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     if (i == 0) {
       if (m_pixelMM > 0.2) {
         arrowSize = 5.0 / m_pixelMM;  // Target scaled arrow size
-        arrowSize = wxMin(arrowSize,
-                          wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y) / 20);
-        dec1 = arrowSize / 6;         // pointer length
-        dec2 = arrowSize / 8;         // space between double lines
+        arrowSize = wxMin(
+            arrowSize, wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y) / 20);
+        dec1 = arrowSize / 6;  // pointer length
+        dec2 = arrowSize / 8;  // space between double lines
       } else
         arrowSize = 26;  // Standard value for desktop
     } else
@@ -399,10 +397,10 @@ void GRIBOverlayFactory::SetMessageFont() {
   fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
 #else
   fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize()  * g_ContentScaleFactor / OCPN_GetWinDIPScaleFactor()));
+  fo.SetPointSize(
+      (fo.GetPointSize() * g_ContentScaleFactor / OCPN_GetWinDIPScaleFactor()));
 #endif
-  if (m_Font_Message)
-    delete m_Font_Message;
+  if (m_Font_Message) delete m_Font_Message;
   m_Font_Message = new wxFont(fo);
 }
 
@@ -434,16 +432,16 @@ bool GRIBOverlayFactory::RenderGLGribOverlay(wxGLContext *pcontext,
     if (m_oDC) {
       delete m_oDC;
     }
-     #ifdef ocpnUSE_GL
-      //  Set the minimum line width
-      GLint parms[2];
-    #ifndef USE_ANDROID_GLES2
-      glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-    #else
-      glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-    #endif
-      g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
-    #endif
+#ifdef ocpnUSE_GL
+    //  Set the minimum line width
+    GLint parms[2];
+#ifndef USE_ANDROID_GLES2
+    glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+#else
+    glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+#endif
+    g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+#endif
     m_oDC = new pi_ocpnDC();
   }
 
@@ -548,7 +546,8 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy,
 
 bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   if (!m_pGribTimelineRecordSet) {
-    DrawMessageWindow((m_Message), vp->pix_width, vp->pix_height, m_Font_Message);
+    DrawMessageWindow((m_Message), vp->pix_width, vp->pix_height,
+                      m_Font_Message);
     return false;
   }
 
@@ -556,8 +555,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   if (!m_pdc) {
     m_TexFontNumbers.Build(*m_Font_Message);
 
-    if (m_oDC)
-      m_oDC->SetFont(*m_Font_Message);
+    if (m_oDC) m_oDC->SetFont(*m_Font_Message);
   }
 
   m_Message_Hiden.Empty();
@@ -575,8 +573,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
     for (int i = 0; i < GribOverlaySettings::SETTINGS_COUNT; i++) {
       if (i == GribOverlaySettings::WIND) {
         if (overlay) { /* render overlays first */
-          if (m_dlg.m_bDataPlot[i])
-            RenderGribOverlayMap(i, pGR, vp);
+          if (m_dlg.m_bDataPlot[i]) RenderGribOverlayMap(i, pGR, vp);
         } else {
           if (m_dlg.m_bDataPlot[i]) {
             RenderGribBarbedArrows(i, pGR, vp);
@@ -626,7 +623,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
         .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
         .Append(_T(" ! "));
   }
-  if(m_dlg.ProjectionEnabled()) {
+  if (m_dlg.ProjectionEnabled()) {
     int x, y;
     m_dlg.GetProjectedLatLon(x, y);
     DrawProjectedPosition(x, y);
@@ -634,7 +631,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append(_T("\n"));
   m_Message_Hiden.Append(m_Message);
   DrawMessageWindow(m_Message_Hiden, vp->pix_width, vp->pix_height,
-    m_Font_Message);
+                    m_Font_Message);
 
   if (m_dlg.m_highlight_latmax - m_dlg.m_highlight_latmin > 0.01 &&
       m_dlg.m_highlight_lonmax - m_dlg.m_highlight_lonmin > 0.01) {
@@ -643,17 +640,19 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
     GetCanvasPixLL(vp, &p2, m_dlg.m_highlight_latmax, m_dlg.m_highlight_lonmax);
     if (m_pdc) {
       m_pdc->SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
-      m_pdc->SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
-                              wxBRUSHSTYLE_CROSSDIAG_HATCH));
-      m_pdc->DrawRectangle(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+      m_pdc->SetBrush(
+          wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
+                  wxBRUSHSTYLE_CROSSDIAG_HATCH));
+      m_pdc->DrawRectangle(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
     } else {
-      #ifdef ocpnUSE_GL
-      //GL
+#ifdef ocpnUSE_GL
+      // GL
       m_oDC->SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
-      m_oDC->SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
-                              wxBRUSHSTYLE_CROSSDIAG_HATCH));
-      m_oDC->DrawRectangle(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
-      #endif
+      m_oDC->SetBrush(
+          wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
+                  wxBRUSHSTYLE_CROSSDIAG_HATCH));
+      m_oDC->DrawRectangle(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+#endif
     }
   }
   return true;
@@ -680,10 +679,8 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in,
          settings == GribOverlaySettings::CLOUD) &&
         val_in < 0.01)
       a = 0;
-    if ((settings == GribOverlaySettings::COMP_REFL) &&
-        val_in < 5)
-      a = 0;
-    
+    if ((settings == GribOverlaySettings::COMP_REFL) && val_in < 5) a = 0;
+
     GetGraphicColor(settings, val_in, r, g, b);
   } else
     r = 255, g = 255, b = 255, a = 0;
@@ -881,7 +878,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture(GribOverlay *pGO, int settings,
   glTexParameteri(texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-#if 0//ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
   glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1019,11 +1016,10 @@ static ColorMap AirTempMap[] = {
     {82, _T("#ff8100")}, {86, _T("#f1780c")}, {90, _T("#e26a23")},
     {95, _T("#d5453c")}, {100, _T("#b53c59")}};
 
-
-    //  Color map similar to:
-    //  https://www.ospo.noaa.gov/data/sst/contour/global.cf.gif
+//  Color map similar to:
+//  https://www.ospo.noaa.gov/data/sst/contour/global.cf.gif
 static ColorMap SeaTempMap[] = {
-    {-2, _T("#cc04ae")}, {2, _T("#8f06e4")}, {6, _T("#486afa")},
+    {-2, _T("#cc04ae")}, {2, _T("#8f06e4")},  {6, _T("#486afa")},
     {10, _T("#00ffff")}, {15, _T("#00d54b")}, {19, _T("#59d800")},
     {23, _T("#f2fc00")}, {27, _T("#ff1500")}, {32, _T("#ff0000")},
     {36, _T("#d80000")}, {40, _T("#a90000")}, {44, _T("#870000")},
@@ -1780,8 +1776,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap(int settings, GribRecord **pGR,
             _("Overlays not supported by this graphics hardware (Disable "
               "OpenGL)"));
       else {
-        if (!pGO->m_iTexture)
-          CreateGribGLTexture(pGO, settings, pGRA);
+        if (!pGO->m_iTexture) CreateGribGLTexture(pGO, settings, pGRA);
 
         if (pGO->m_iTexture)
           DrawGLTexture(pGO, pGRA, vp);
@@ -1969,7 +1964,7 @@ void GRIBOverlayFactory::DrawNumbers(wxPoint p, double value, int settings,
     m_pdc->DrawBitmap(label, p.x, p.y, true);
   } else {
 #ifdef ocpnUSE_GL
-#if 0 //ndef USE_ANDROID_GLES2
+#if 0  // ndef USE_ANDROID_GLES2
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2113,24 +2108,24 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
 
     lvp = *vp;
   } else  // just panning, do quicker update
-      if (vp->clat != lvp.clat || vp->clon != lvp.clon) {
-    wxPoint p1, p2;
-    GetCanvasPixLL(vp, &p1, 0, 0);
-    GetCanvasPixLL(&lvp, &p2, 0, 0);
+    if (vp->clat != lvp.clat || vp->clon != lvp.clon) {
+      wxPoint p1, p2;
+      GetCanvasPixLL(vp, &p1, 0, 0);
+      GetCanvasPixLL(&lvp, &p2, 0, 0);
 
-    p1 -= p2;
+      p1 -= p2;
 
-    for (it = particles.begin(); it != particles.end(); it++)
-      for (int i = 0; i < it->m_HistorySize; i++) {
-        Particle::ParticleNode &n = it->m_History[i];
-        float(&p)[2] = n.m_Pos;
-        if (p[0] == -10000) continue;
+      for (it = particles.begin(); it != particles.end(); it++)
+        for (int i = 0; i < it->m_HistorySize; i++) {
+          Particle::ParticleNode &n = it->m_History[i];
+          float(&p)[2] = n.m_Pos;
+          if (p[0] == -10000) continue;
 
-        n.m_Screen[0] += p1.x;
-        n.m_Screen[1] += p1.y;
-      }
-    lvp = *vp;
-  }
+          n.m_Screen[0] += p1.x;
+          n.m_Screen[1] += p1.y;
+        }
+      lvp = *vp;
+    }
 
   double ptime = 0;
 
@@ -2188,7 +2183,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
         float angr = ang / 180 * M_PI;
         p[0] = pp[0] + sinf(angr) * d / 60;
         p[1] = pp[1] + cosf(angr) * d / 60;
-#else    // spherical (close enough)
+#else  // spherical (close enough)
         float angr = ang / 180 * M_PI;
         float latr = pp[1] * M_PI / 180;
         float D = d / 3443;  // earth radius in nm
@@ -2420,16 +2415,16 @@ void GRIBOverlayFactory::DrawProjectedPosition(int x, int y) {
     wxDC &dc = *m_pdc;
     dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    dc.DrawRectangle(x,y,20,20);
-    dc.DrawLine(x,y,x+20,y+20);
-    dc.DrawLine(x,y+20,x+20,y);
+    dc.DrawRectangle(x, y, 20, 20);
+    dc.DrawLine(x, y, x + 20, y + 20);
+    dc.DrawLine(x, y + 20, x + 20, y);
   } else {
     if (m_oDC) {
       m_oDC->SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
       m_oDC->SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-      m_oDC->DrawRectangle(x-10,y-10,20,20);
-      m_oDC->StrokeLine(x-10,y-10,x+10,y+10);
-      m_oDC->StrokeLine(x-10,y+10,x+10,y-10);
+      m_oDC->DrawRectangle(x - 10, y - 10, 20, 20);
+      m_oDC->StrokeLine(x - 10, y - 10, x + 10, y + 10);
+      m_oDC->StrokeLine(x - 10, y + 10, x + 10, y - 10);
     }
   }
 }
@@ -2438,7 +2433,7 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
                                            wxFont *mfont) {
   if (msg.empty()) return;
 
-  int ScaleBare_H = 30;//futur : get the position/size from API?
+  int ScaleBare_H = 30;  // futur : get the position/size from API?
 
   if (m_pdc) {
     wxDC &dc = *m_pdc;
@@ -2549,9 +2544,9 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs(int settings, int x, int y,
   if (m_Settings.Settings[settings].m_iBarbedColour == 1)
     arrowColor = GetGraphicColor(settings, vkn);
 
-//TODO
-//  Needs investigation
-//  This conditional should not really be necessary, but is safe.
+// TODO
+//   Needs investigation
+//   This conditional should not really be necessary, but is safe.
 #ifndef __MSVC__
   float penWidth = .6 / m_pixelMM;
 #else
@@ -2659,7 +2654,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y,
 void GRIBOverlayFactory::DrawSingleGLTexture(GribOverlay *pGO, GribRecord *pGR,
                                              double uv[], double x, double y,
                                              double width, double height) {
-#if 1//def __OCPN__ANDROID__
+#if 1  // def __OCPN__ANDROID__
 
   glEnable(texture_format);
 
@@ -2814,7 +2809,7 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
 
   // optimization for non-rotated mercator, since longitude is linear
   if (vp->rotation == 0 && vp->m_projection_type == PI_PROJECTION_MERCATOR)
-     xsquares = 1;
+    xsquares = 1;
 
   // It is possible to have only 1 square when the viewport covers more than
   // 180 longitudes but there is more logic needed.  This is simpler.
@@ -2895,7 +2890,7 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
           uv[6] = u3;
           uv[7] = v3;
 
-          if(u1 > u0){
+          if (u1 > u0) {
             DrawSingleGLTexture(pGO, pGR, uv, x, y, xs, ys);
           }
         }

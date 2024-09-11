@@ -878,6 +878,12 @@
     <section>
       <name>ChartCatalogs</name>
       <catalogs>
+	<catalog>
+	  <name>EURIS - All European waterways Inland ENC Charts</name>
+          <type>ENC</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/EURIS_IENC_Catalog.xml</location>
+          <dir>{USERDATA}/ENC/EURIS</dir>
+        </catalog>
         <catalog>
           <name>Argentina RNC Nautical Charts</name>
           <type>RNC</type>

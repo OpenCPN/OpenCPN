@@ -2,6 +2,7 @@
 #define _MBTILES_TILEDESCRIPTOR_H_
 
 #include <cstdint>
+#include <chrono>
 #include <atomic>
 #include <cmath>
 
@@ -15,6 +16,7 @@ public:
   int m_zoomLevel;
   float latmin, lonmin, latmax, lonmax;
   LLBBox box;
+  std::chrono::milliseconds last_used;
 
   // Set to true if a load request from main thread is already pending for this
   // tile
@@ -50,6 +52,7 @@ public:
     latmax = round(mbTileDescriptor::tiley2lat(tile_y, zoomFactor) / eps) * eps;
 
     box.Set(latmin, lonmin, latmax, lonmax);
+    SetTimestamp();
   }
 
   virtual ~mbTileDescriptor() {
@@ -109,6 +112,13 @@ public:
     y = ymax - y - 1;
     double latRad = atan(sinh(M_PI * (1 - (2 * y / n))));
     return 180.0 / M_PI * latRad;
+  }
+
+  /** Update last_used to current time. */
+  void SetTimestamp() {
+    using namespace std::chrono;
+    last_used =
+        duration_cast<milliseconds>(system_clock::now().time_since_epoch());
   }
 
 private:

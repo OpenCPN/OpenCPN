@@ -64,7 +64,6 @@ public:
         confirm_overwrite([]() { return true; }) {}
 };
 
-
 int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
                          bool bsend_waypoints, Multiplexer& multiplexer,
                          N0183DlgCtx ctx);

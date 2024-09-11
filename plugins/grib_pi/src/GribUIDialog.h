@@ -172,8 +172,7 @@ public:
   double m_ScaledFactor;
   void DoZoomToCenter();
   const wxString GetGribDir() {
-    if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir))
-    {
+    if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir)) {
       m_grib_dir = GetpPrivateApplicationDataLocation()
                        ->Append(wxFileName::GetPathSeparator())
                        .Append("grib");
@@ -192,7 +191,12 @@ public:
   }
 
   void GetProjectedLatLon(int &x, int &y);
-  bool ProjectionEnabled() { return m_ProjectBoatPanel->ProjectionEnabled(); }
+  bool ProjectionEnabled() {
+    if (m_ProjectBoatPanel)
+      return m_ProjectBoatPanel->ProjectionEnabled();
+    else
+      return false;
+  }
   double m_highlight_latmax;
   double m_highlight_lonmax;
   double m_highlight_latmin;
@@ -269,6 +273,7 @@ private:
   double m_projected_lon;
   // XyGrib panel configuration
   XyGribConfig_t xyGribConfig;
+  bool m_gtk_started;
 };
 
 //----------------------------------------------------------------------------------------------------------

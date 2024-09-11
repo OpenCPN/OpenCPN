@@ -56,7 +56,7 @@ public:
   wxString GetTemplateTitle(wxString GUID);
   bool ApplyConfigGUID(wxString GUID);
   bool CheckTemplateGUID(wxString GUID);
-  arrayofCanvasConfigPtr &GetCanvasConfigArray(){ return g_canvasConfigArray;}
+  arrayofCanvasConfigPtr &GetCanvasConfigArray() { return g_canvasConfigArray; }
 
 private:  // private for singleton
   ConfigMgr();
@@ -80,7 +80,6 @@ private:  // private for singleton
   OCPNConfigCatalog *m_configCatalog;
   ConfigObjectList *configList;
   arrayofCanvasConfigPtr g_canvasConfigArray;
-
 };
 
 class ConfigPanel : public wxPanel {

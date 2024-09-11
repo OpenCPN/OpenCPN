@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -36,7 +36,7 @@ class CommDriverN0183SerialThread;  // Internal
 
 class CommDriverN0183SerialEvent : public wxEvent {
 public:
-  CommDriverN0183SerialEvent( wxEventType commandType, int id);
+  CommDriverN0183SerialEvent(wxEventType commandType, int id);
   ~CommDriverN0183SerialEvent();
 
   // accessors
@@ -45,12 +45,12 @@ public:
 
   // required for sending with wxPostEvent()
   wxEvent* Clone() const;
+
 private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
 wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
-
 
 class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
 public:
@@ -98,7 +98,7 @@ private:
   CommDriverN0183SerialThread* m_secondary_thread;
   bool m_sec_thread_active;
 
-  GarminProtocolHandler * m_garmin_handler;
+  GarminProtocolHandler* m_garmin_handler;
 
   ConnectionParams m_params;
   DriverListener& m_listener;

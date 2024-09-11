@@ -37,7 +37,6 @@
 
 #include <wx/dynarray.h>
 
-
 #ifdef __cplusplus
 
 extern "C" int mysnprintf(char *buffer, int count, const char *format, ...);
@@ -56,8 +55,5 @@ extern long __stdcall MyUnhandledExceptionFilter(
     struct _EXCEPTION_POINTERS *ExceptionInfo);
 #endif
 #endif
-
-
-
 
 #endif
