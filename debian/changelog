@@ -1,6 +1,16 @@
 opencpn (1:5.10.2+dfsg-1ubuntu1~bpo24.04+1) UNRELEASED; urgency=medium
 
   * New upstream release
+  * Drop upstreamed patches:
+      - 0004-build-Use-system-shapelib-if-available.patch
+      - 0006-Improve-display-detection-on-headless-X11-systems.patch
+      - 0007-Build-Don-t-use-march-native-4088.patch                
+      - 0008-VERSION.cmake-Fix-date-string.patch                    
+      - 0009-build-add-latomic-linkage.patch                        
+      - 0011-Explicitly-set-extra-object-info-text-color.4101.patch
+  * Drop sid patch -chartdldr-Don-t-use-unarr-for-libarchive-3.7...,
+    not useful here.
+
 
  -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 10:02:31 +0200
 
