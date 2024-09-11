@@ -1,3 +1,9 @@
+opencpn (1:5.10.2+dfsg-1ubuntu1~bpo20.04+1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 11:53:24 +0200
+
 opencpn (1:5.10.0+dfsg-1ubuntu1~bpo20.04+2) focal; urgency=medium
 
   * New patch: Dont use -march=native (#1078467).
