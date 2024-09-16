@@ -4,6 +4,7 @@ Section: misc
 Priority: optional
 Build-Depends: debhelper-compat (= 13),
  cmake,
+ git,
  dbus-daemon,
  googletest,
  libarchive-dev,
