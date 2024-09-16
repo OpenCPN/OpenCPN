@@ -601,19 +601,19 @@ public:
   ///        should draw only when priority is OVERLAY_LEGACY (0)
   /// \return true if overlay was rendered, false otherwise
 #ifdef _MSC_VER
-  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
-		                          int canvasIndex, int priority = -1);
+  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
+                                          PlugIn_ViewPort *vp, int canvasIndex,
+                                          int priority = -1);
 #else
-  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
-                                  int canvasIndex, int priority);
+  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
+                                          PlugIn_ViewPort *vp, int canvasIndex,
+                                          int priority);
 
   bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
                                   int canvas_ix) override {
     return RenderGLOverlayMultiCanvas(pcontext, vp, canvas_ix, -1);
   }
 #endif
-
-
 
   /// Render plugin overlay over chart canvas in non-OpenGL mode
   ///
@@ -627,14 +627,13 @@ public:
   virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                         int canvasIndex, int priority = -1);
 #else
-  virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvas_ix,
-                                int priority);
+  virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                        int canvas_ix, int priority);
   bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                 int canvas_ix) override {
     return RenderOverlayMultiCanvas(dc, vp, canvas_ix, -1);
   }
 #endif
-
 };
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
@@ -1581,7 +1580,6 @@ public:
   bool m_isVisible;
   wxString m_Description;
 
-
   Plugin_WaypointExList *pWaypointList;
 };
 
@@ -1674,7 +1672,7 @@ class ObservableListener;
 /** Facade for NavAddr2000. */
 struct NMEA2000Id {
   const uint64_t id;
-  NMEA2000Id(int value) : id(static_cast<uint64_t>(value)){};
+  NMEA2000Id(int value) : id(static_cast<uint64_t>(value)) {};
 };
 
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
@@ -1683,7 +1681,7 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
 /** Facade for NavAddr0183. */
 struct NMEA0183Id {
   const std::string id;
-  NMEA0183Id(const std::string &s) : id(s){};
+  NMEA0183Id(const std::string &s) : id(s) {};
 };
 
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
@@ -1692,7 +1690,7 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
 /** Facade for NavAddrSignalK. */
 struct SignalkId {
   const std::string id;
-  SignalkId(const std::string &s) : id(s){};
+  SignalkId(const std::string &s) : id(s) {};
 };
 
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
@@ -1820,7 +1818,7 @@ extern DECL_EXP std::vector<DriverHandle> GetActiveDrivers();
 
 /**  Query driver attributes  */
 extern DECL_EXP const std::unordered_map<std::string, std::string>
-        GetAttributes(DriverHandle handle);
+GetAttributes(DriverHandle handle);
 
 /* Writing to a specific driver  */
 
@@ -1830,13 +1828,12 @@ extern DECL_EXP const std::unordered_map<std::string, std::string>
  * Return value is number of bytes queued for transmission.
  */
 extern DECL_EXP CommDriverResult WriteCommDriver(
-        DriverHandle handle,
-        const std::shared_ptr <std::vector<uint8_t>> &payload);
+    DriverHandle handle, const std::shared_ptr<std::vector<uint8_t>> &payload);
 
 /** Send a PGN message to an NMEA2000 address.  */
 extern DECL_EXP CommDriverResult WriteCommDriverN2K(
     DriverHandle handle, int PGN, int destinationCANAddress, int priority,
-    const std::shared_ptr <std::vector<uint8_t>> &payload);
+    const std::shared_ptr<std::vector<uint8_t>> &payload);
 
 /**
  * Special NMEA2000 requirements
@@ -1850,14 +1847,13 @@ extern DECL_EXP CommDriverResult WriteCommDriverN2K(
 extern DECL_EXP CommDriverResult RegisterTXPGNs(DriverHandle handle,
                                                 std::vector<int> &pgn_list);
 
-
 // API 1.19
 //
 
 /** Facade for NavAddrPluginMsg. */
 struct PluginMsgId {
   const std::string id;
-  PluginMsgId(const std::string &s) : id(s){};
+  PluginMsgId(const std::string &s) : id(s) {};
 };
 
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(

@@ -34,7 +34,7 @@
  */
 class WinUsbWatchDaemon : public UsbWatchDaemon {
 public:
-  WinUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se), m_frame(0)  {}
+  WinUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se), m_frame(0) {}
   virtual ~WinUsbWatchDaemon() = default;
 
   void Start();

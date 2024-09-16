@@ -17,5 +17,4 @@ enum DialogColor {
 };
 wxColour GetDialogColor(DialogColor color);
 
-
-#endif   // _COLOR_HANDLER_H
+#endif  // _COLOR_HANDLER_H

@@ -75,7 +75,7 @@ struct _OGdkRectangle {
   int height;
 };
 
-//#define gboolean bool;
+// #define gboolean bool;
 
 typedef struct _OGdkSegment OGdkSegment;
 struct _OGdkSegment {
@@ -196,18 +196,18 @@ typedef struct _OPOINTBLOCK {
      */                                                             \
     if ((dy) != 0) {                                                \
       xStart = (x1);                                                \
-      dx = (x2)-xStart;                                             \
+      dx = (x2) - xStart;                                           \
       if (dx < 0) {                                                 \
         m = dx / (dy);                                              \
         m1 = m - 1;                                                 \
-        incr1 = -2 * dx + 2 * (dy)*m1;                              \
-        incr2 = -2 * dx + 2 * (dy)*m;                               \
-        d = 2 * m * (dy)-2 * dx - 2 * (dy);                         \
+        incr1 = -2 * dx + 2 * (dy) * m1;                            \
+        incr2 = -2 * dx + 2 * (dy) * m;                             \
+        d = 2 * m * (dy) - 2 * dx - 2 * (dy);                       \
       } else {                                                      \
         m = dx / (dy);                                              \
         m1 = m + 1;                                                 \
-        incr1 = 2 * dx - 2 * (dy)*m1;                               \
-        incr2 = 2 * dx - 2 * (dy)*m;                                \
+        incr1 = 2 * dx - 2 * (dy) * m1;                             \
+        incr2 = 2 * dx - 2 * (dy) * m;                              \
         d = -2 * m * (dy) + 2 * dx;                                 \
       }                                                             \
     }                                                               \
@@ -881,12 +881,12 @@ wxRect OCPNRegionIterator::GetRect() const {
  * the y-x-banding that's so nice to have...
  */
 
-//#include "config.h"
-//#include <stdlib.h>
-//#include <string.h>
-//#include <gdkregion.h>
-//#include "gdkregion-generic.h"
-//#include "gdkalias.h"
+// #include "config.h"
+// #include <stdlib.h>
+// #include <string.h>
+// #include <gdkregion.h>
+// #include "gdkregion-generic.h"
+// #include "gdkalias.h"
 
 typedef void (*overlapFunc)(OGdkRegion *pReg, OGdkRegionBox *r1,
                             OGdkRegionBox *r1End, OGdkRegionBox *r2,

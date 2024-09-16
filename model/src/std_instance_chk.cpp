@@ -1,4 +1,4 @@
- /***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -33,23 +33,26 @@
 
 #include "model/std_instance_chk.h"
 
+static const char* const kName = "_OpenCPN_SILock";
 
-static const char* const  kName  = "_OpenCPN_SILock";
-
-static int GetLockfilePid(const std::string& path){
+static int GetLockfilePid(const std::string& path) {
   std::ifstream f(path.c_str());
   std::stringstream ss;
   ss << f.rdbuf();
   int pid = -1;
-  try { ss >> pid; } catch (...) { pid = -1; }
-  return  pid;
+  try {
+    ss >> pid;
+  } catch (...) {
+    pid = -1;
+  }
+  return pid;
 }
 
 StdInstanceCheck::StdInstanceCheck() : m_is_main_instance(false) {
-  wxString dir = g_BasePlatform ->GetPrivateDataDir();
+  wxString dir = g_BasePlatform->GetPrivateDataDir();
   m_path = (dir + "/" + kName).ToStdString();
   std::stringstream ss;
-  ss << m_path <<  "." << getpid();
+  ss << m_path << "." << getpid();
   std::ofstream f(ss.str());
   f << getpid() << "\n";
   if (!ocpn::exists(m_path.c_str())) {
@@ -71,7 +74,7 @@ void StdInstanceCheck::CleanUp() {
     return;
   }
   // Try to kill zombie process and remove lock file
-  for (int  i = 0; kill(pid, 0) == 0 && i < 3; i++) {
+  for (int i = 0; kill(pid, 0) == 0 && i < 3; i++) {
     kill(pid, SIGTERM);
     sleep(1);
   }
@@ -81,6 +84,6 @@ void StdInstanceCheck::CleanUp() {
 
 StdInstanceCheck::~StdInstanceCheck() {
   if (!ocpn::exists(m_path)) return;
-  int  pid = GetLockfilePid(m_path);
+  int pid = GetLockfilePid(m_path);
   if (pid == getpid()) std::remove(m_path.c_str());
 }

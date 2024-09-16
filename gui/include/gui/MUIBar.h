@@ -79,7 +79,7 @@ public:
   void OnScaleSelected(wxMouseEvent &event);
   void DrawGL(ocpnDC &gldc, double displayScale);
   void DrawDC(ocpnDC &dc, double displayScale);
-  wxRect GetRect(){ return wxRect(m_screenPos, m_size); }
+  wxRect GetRect() { return wxRect(m_screenPos, m_size); }
 
   bool MouseEvent(wxMouseEvent &event);
   void PushCanvasOptions();

@@ -42,11 +42,10 @@
 #include <wx/colourdata.h>
 #include <wx/colordlg.h>
 
-
 #define PLATFORM_CAP_PLUGINS 1
 #define PLATFORM_CAP_FASTPAN 2
 
-class BasePlatform;   // forward
+class BasePlatform;  // forward
 
 /// points to g_platform, handles brain-dead MS linker.
 extern BasePlatform* g_BasePlatform;
@@ -60,8 +59,8 @@ typedef struct {
 void appendOSDirSlash(wxString* path);
 
 struct OCPN_OSDetail {
-  OCPN_OSDetail(){};
-  ~OCPN_OSDetail(){};
+  OCPN_OSDetail() {};
+  ~OCPN_OSDetail() {};
 
   std::string osd_name;
   std::string osd_version;
@@ -73,14 +72,13 @@ struct OCPN_OSDetail {
 class AbstractPlatform {
 public:
   AbstractPlatform() = default;
-  virtual ~AbstractPlatform()  = default;
+  virtual ~AbstractPlatform() = default;
 
   /** Return dir path for opencpn.log, etc., respecting -c cli option. */
   wxString& GetPrivateDataDir();
 
   /** Return dir path for opencpn.log, etc., does not respect -c option. */
   wxString& DefaultPrivateDataDir();
-
 
   wxString* GetPluginDirPtr();
   wxString* GetSharedDataDirPtr();
@@ -133,7 +131,7 @@ public:
   virtual double GetDisplaySizeMM() { return 1.0; }
   virtual double GetDisplayDPmm() { return 1.0; }
   virtual unsigned int GetSelectRadiusPix();
-  double GetDisplayDIPMult(wxWindow *win);
+  double GetDisplayDIPMult(wxWindow* win);
 
   static void ShowBusySpinner();
   static void HideBusySpinner();
@@ -160,9 +158,8 @@ protected:
 
   std::vector<int> m_displaySizeMMOverride;
 
-
 #ifdef _MSC_VER
-  bool GetWindowsMonitorSize(int *width, int *height);
+  bool GetWindowsMonitorSize(int* width, int* height);
 #endif
   int m_monitorWidth, m_monitorHeight;
   bool m_bdisableWindowsDisplayEnum;

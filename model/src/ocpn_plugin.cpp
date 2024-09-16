@@ -30,7 +30,6 @@
 #include <typeinfo>
 #include <unordered_map>
 
-
 #include <wx/wx.h>
 #include <wx/arrstr.h>
 #include <wx/dc.h>
@@ -74,10 +73,9 @@ wxBitmap* opencpn_plugin::GetPlugInBitmap() {
 
 **/
 
-
 wxBitmap* opencpn_plugin::GetPlugInBitmap() {
   static wxBitmap* bitmap = 0;
-  if (!bitmap) bitmap = new wxBitmap(1,1);
+  if (!bitmap) bitmap = new wxBitmap(1, 1);
   return bitmap;
 }
 
@@ -282,12 +280,12 @@ opencpn_plugin_118::opencpn_plugin_118(void* pmgr) : opencpn_plugin_117(pmgr) {}
 bool opencpn_plugin_118::RenderGLOverlayMultiCanvas(wxGLContext* pcontext,
                                                     PlugIn_ViewPort* vp,
                                                     int max_canvas,
-						    int priority) {
+                                                    int priority) {
   return false;
 }
 
 bool opencpn_plugin_118::RenderOverlayMultiCanvas(wxDC& dc, PlugIn_ViewPort* vp,
                                                   int max_canvas,
-						  int priority) {
+                                                  int priority) {
   return false;
 }

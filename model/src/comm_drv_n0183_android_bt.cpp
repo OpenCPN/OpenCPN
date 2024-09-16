@@ -90,29 +90,34 @@ private:
   mutable std::mutex m_mutex;
 };
 
-#define OUT_QUEUE_LENGTH                20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
+#define OUT_QUEUE_LENGTH 20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_BT, CommDriverN0183AndroidBTEvent);
+wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
+               CommDriverN0183AndroidBTEvent);
 
-CommDriverN0183AndroidBTEvent::CommDriverN0183AndroidBTEvent( wxEventType commandType, int id = 0)
-      : wxEvent(id, commandType){};
+CommDriverN0183AndroidBTEvent::CommDriverN0183AndroidBTEvent(
+    wxEventType commandType, int id = 0)
+    : wxEvent(id, commandType) {};
 
-CommDriverN0183AndroidBTEvent::~CommDriverN0183AndroidBTEvent(){};
+CommDriverN0183AndroidBTEvent::~CommDriverN0183AndroidBTEvent() {};
 
-void CommDriverN0183AndroidBTEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
+void CommDriverN0183AndroidBTEvent::SetPayload(
+    std::shared_ptr<std::vector<unsigned char>> data) {
+  m_payload = data;
 }
-std::shared_ptr<std::vector<unsigned char>> CommDriverN0183AndroidBTEvent::GetPayload() { return m_payload; }
+std::shared_ptr<std::vector<unsigned char>>
+CommDriverN0183AndroidBTEvent::GetPayload() {
+  return m_payload;
+}
 
-  // required for sending with wxPostEvent()
+// required for sending with wxPostEvent()
 wxEvent* CommDriverN0183AndroidBTEvent::Clone() const {
-    CommDriverN0183AndroidBTEvent* newevent =
-        new CommDriverN0183AndroidBTEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
+  CommDriverN0183AndroidBTEvent* newevent =
+      new CommDriverN0183AndroidBTEvent(*this);
+  newevent->m_payload = this->m_payload;
+  return newevent;
 };
-
 
 template <class T>
 class circular_buffer {
@@ -166,26 +171,30 @@ private:
   bool full_ = 0;
 };
 
-CommDriverN0183AndroidBT::CommDriverN0183AndroidBT(const ConnectionParams* params,
-                                             DriverListener& listener)
+CommDriverN0183AndroidBT::CommDriverN0183AndroidBT(
+    const ConnectionParams* params, DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_params(*params),
       m_listener(listener) {
-  //m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
+  // m_BaudRate = wxString::Format("%i", params->Baudrate),
+  // SetSecThreadInActive();
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
   dsPortType iosel = params->IOSelect;
   std::string s_iosel = std::string("IN");
-  if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "OUT";}
-  else if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "IN/OUT";}
+  if (iosel == DS_TYPE_INPUT_OUTPUT) {
+    s_iosel = "OUT";
+  } else if (iosel == DS_TYPE_INPUT_OUTPUT) {
+    s_iosel = "IN/OUT";
+  }
   this->attributes["ioDirection"] = s_iosel;
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_ANDROID_BT, &CommDriverN0183AndroidBT::handle_N0183_MSG,
-       this);
+  Bind(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
+       &CommDriverN0183AndroidBT::handle_N0183_MSG, this);
 
   Open();
 }
@@ -198,7 +207,7 @@ bool CommDriverN0183AndroidBT::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-  androidStartBT( this, port_uc );
+  androidStartBT(this, port_uc);
   return true;
 }
 
@@ -208,30 +217,25 @@ void CommDriverN0183AndroidBT::Close() {
 
   androidStopBT();
 
-  Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_BT, &CommDriverN0183AndroidBT::handle_N0183_MSG,
-       this);
+  Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
+         &CommDriverN0183AndroidBT::handle_N0183_MSG, this);
 }
-
 
 void CommDriverN0183AndroidBT::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
 }
 
-bool CommDriverN0183AndroidBT::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                        std::shared_ptr<const NavAddr> addr) {
-
+bool CommDriverN0183AndroidBT::SendMessage(
+    std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   wxString sentence(msg_0183->payload.c_str());
 
   wxString payload = sentence;
-  if( !sentence.EndsWith(_T("\r\n")) )
-        payload += _T("\r\n");
+  if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
 
   androidSendBTMessage(payload);
   return true;
 }
-
-
 
 void CommDriverN0183AndroidBT::handle_N0183_MSG(
     CommDriverN0183AndroidBTEvent& event) {

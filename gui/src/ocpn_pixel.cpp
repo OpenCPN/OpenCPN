@@ -86,7 +86,7 @@
 
 // missing from mingw32 header
 #ifndef CLR_INVALID
-#define CLR_INVALID ((COLORREF)-1)
+#define CLR_INVALID ((COLORREF) - 1)
 #endif  // no CLR_INVALID
 
 #ifdef ocpnUSE_ocpnBitmap

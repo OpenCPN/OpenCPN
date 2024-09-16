@@ -2,6 +2,7 @@
 #define _TILECACHE_H_
 
 #include "TileDescriptor.hpp"
+#include <mutex>
 
 /// @brief Class managing the tiles of a mbtiles file
 class TileCache {
@@ -18,9 +19,6 @@ private:
   ZoomDescriptor *zoomTable;
   int minZoom, maxZoom, nbZoom;
   // Chained list parameters
-  mbTileDescriptor *listStart = nullptr;
-  mbTileDescriptor *listEnd = nullptr;
-  uint32_t listSize = 0;
 
 public:
   TileCache(int minZoom, int maxZoom, float LonMin, float LatMin, float LonMax,
@@ -46,6 +44,21 @@ public:
 
   virtual ~TileCache() { delete[] zoomTable; }
 
+  /// Return mutex to lock given tile. There is a fixed number of mutexes
+  /// available, the mutex returned might collide with another id causing
+  /// random serialization.
+  static std::mutex &GetMutex(uint64_t tile_id) {
+    static const int kMutexCount = 100;
+    static std::array<std::mutex, kMutexCount> mutexes;
+    return mutexes[tile_id % kMutexCount];
+  }
+
+  static std::mutex &GetMutex(const mbTileDescriptor *tile) {
+    uint64_t key = mbTileDescriptor::GetMapKey(tile->m_zoomLevel, tile->tile_x,
+                                               tile->tile_y);
+    return TileCache::GetMutex(key);
+  }
+
   /// @brief Flush the tile cache, including OpenGL texture memory if needed
   void Flush() {
     for (auto const &it : tileMap) {
@@ -57,10 +70,6 @@ public:
         delete tile;
       }
     }
-    // Reset the chained list
-    listStart = nullptr;
-    listEnd = nullptr;
-    listSize = 0;
   }
 
   // Get the north limit of the cache area for a given zoom in WMTS coordinates
@@ -75,7 +84,7 @@ public:
 
   /// @brief Get the current size of the cache in number of tiles
   /// @return Number of tiles in the cache
-  uint32_t GetCacheSize() { return listSize; }
+  uint32_t GetCacheSize() const { return tileMap.size(); }
 
   /// @brief Retreive a tile from the cache. If the tile is not present in the
   /// cache, an empty tile is created and added.
@@ -88,9 +97,7 @@ public:
     auto ref = tileMap.find(index);
     if (ref != tileMap.end()) {
       // The tile is in the cache
-      // Move it to the beginning of the tile list so that the list will have
-      // the most frequently needed tiles at the beginning
-      MoveTileToListStart(ref->second);
+      ref->second->SetTimestamp();
       return ref->second;
     }
 
@@ -98,8 +105,6 @@ public:
     // map and list
     mbTileDescriptor *tile = new mbTileDescriptor(z, x, y);
     tileMap[index] = tile;
-    AddTileToList(tile);
-
     return tile;
   }
 
@@ -109,100 +114,55 @@ public:
   /// only be called by rendering thread since it uses OpenGL calls.
   /// @param maxTiles Maximum number of tiles to be kept in the list
   void CleanCache(uint32_t maxTiles) {
-    uint64_t index;
+    if (tileMap.size() <= maxTiles) return;
 
-    while (listSize > maxTiles) {
-      // List size exceeds the maximum value : delete the last tile of the list
-      index = mbTileDescriptor::GetMapKey(listEnd->m_zoomLevel, listEnd->tile_x,
-                                          listEnd->tile_y);
-      auto ref = tileMap.find(index);
-      if ((ref->second->m_bAvailable) && (ref->second->m_teximage == 0) &&
-          (ref->second->glTextureName == 0)) {
-        // If the tile is currently used by worker thread, we must not delete
-        // it. Practically, this case is not supposed to happen, unless the
-        // system is really, really slow. In that case we exit the function and
-        // wait the next rendering to try again.
-        break;
-      }
-      // Remove the tile from map and delete it. Tile destructor takes care to
-      // properly
-      tileMap.erase(ref);
-      DeleteTileFromList(listEnd);
-    }
-  }
+    /** Create a sorted list of keys, oldest first. */
+    std::vector<uint64_t> keys;
+    for (auto &kv : tileMap) keys.push_back(kv.first);
+    auto compare = [&](const uint64_t lhs, const uint64_t rhs) {
+      return tileMap[lhs]->last_used < tileMap[rhs]->last_used;
+    };
+    std::sort(keys.begin(), keys.end(), compare);
 
-private:
-  /// @brief Add a new tile to the tile list.
-  /// @param tile Pointer to the tile
-  void AddTileToList(mbTileDescriptor *tile) {
-    if (listStart == nullptr) {
-      // List is empty : add the first element
-      tile->prev = nullptr;
-      tile->next = nullptr;
-      listStart = tile;
-      listEnd = tile;
-    } else {
-      // Insert tile at the start of the list
-      tile->prev = nullptr;
-      tile->next = listStart;
-      listStart->prev = tile;
-      listStart = tile;
-    }
-    // Update list size
-    listSize++;
-  }
+    for (size_t i = 0; i < tileMap.size() - maxTiles; i += 1) {
+      std::lock_guard lock(TileCache::GetMutex(tileMap[keys[i]]));
+      auto tile = tileMap[keys[i]];
 
-  /// @brief Remove a tile from the tile list and delete it.
-  /// @param tile Pointer to the tile to be deleted
-  void DeleteTileFromList(mbTileDescriptor *tile) {
-    if (tile) {
-      if (tile->prev == nullptr) {
-        // Tile is at beginning of the list
-        listStart = tile->next;
-      } else {
-        tile->prev->next = tile->next;
-      }
+      // Do not remove tiles that may be pending in the worker thread queue
+      if (tile->m_bAvailable && !tile->glTextureName && !tile->m_teximage)
+        continue;
 
-      if (tile->next == nullptr) {
-        // Tile is at the end of the list
-        listEnd = tile->prev;
-      } else {
-        tile->next->prev = tile->prev;
-      }
-
-      // Delete the tile
+      tileMap.erase(keys[i]);
       delete tile;
-      listSize--;
     }
   }
 
-  /// @brief Move a tile at the beginning of the list.
-  /// @param tile Tile to be moved
-  void MoveTileToListStart(mbTileDescriptor *tile) {
-    if (tile) {
-      if (tile->prev == nullptr) {
-        // Tile is already at beginning of list : exit function
-        return;
+  void DeepCleanCache() {
+    using namespace std::chrono;
+    auto time_now =
+        duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+
+    auto age_limit = std::chrono::duration<int>(5);  // 5 seconds
+
+    std::vector<uint64_t> keys;
+    for (auto &kv : tileMap) keys.push_back(kv.first);
+
+    for (size_t i = 0; i < keys.size(); i += 1) {
+      std::lock_guard lock(TileCache::GetMutex(tileMap[keys[i]]));
+      auto tile = tileMap[keys[i]];
+      const std::chrono::duration<double> elapsed_seconds{time_now -
+                                                          tile->last_used};
+
+      //  Looking for tiles that have been fetched from sql,
+      //  but not yet rendered.  Such tiles contain a large bitmap allocation.
+      //  After some time, it is likely they never will be needed in short term.
+      //  So safe to delete, and reload as necessary.
+      if (((!tile->glTextureName) && tile->m_teximage) &&
+          (elapsed_seconds > age_limit)) {
+        tileMap.erase(keys[i]);
+        delete tile;
       }
-
-      if (tile->next == nullptr) {
-        // Tile is at the end of list : update list end pointer
-        listEnd = tile->prev;
-      } else {
-        // We have a successor : update its previous pointer
-        tile->next->prev = tile->prev;
-      }
-
-      // Tile's predecessor must have its next pointer updated
-      tile->prev->next = tile->next;
-
-      // Insert tile at beginning of list
-      listStart->prev = tile;
-      tile->next = listStart;
-      tile->prev = nullptr;
-      listStart = tile;
     }
   }
 };
-
 #endif

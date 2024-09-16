@@ -433,13 +433,13 @@ if (MSVC)
 endif ()
 
 if (QT_ANDROID)
-  set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE Release)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   add_definitions(-DNOASSERT)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g")
-  set(CMAKE_C_FLAGS "-pthread -fPIC -g")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g -O2")
+  set(CMAKE_C_FLAGS "-pthread -fPIC -g -O2")
 
   add_compile_options(
     "-Wno-inconsistent-missing-override"
@@ -858,8 +858,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/waypointman_gui.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/wiz_ui_proto.h
-    ${GUI_HDR_DIR}/wiz_ui.h
 )
 list(APPEND  GUI_HDRS
     ${GUI_S57_DIR}/include/ogr_s57.h
@@ -976,9 +974,18 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
-    ${GUI_SRC_DIR}/initwiz/wiz_ui_proto.cpp
-    ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
 )
+
+if (NOT QT_ANDROID)
+  list(APPEND GUI_HDRS
+          ${GUI_HDR_DIR}/wiz_ui_proto.h
+          ${GUI_HDR_DIR}/wiz_ui.h
+          )
+  list(APPEND GUI_SRC
+          ${GUI_SRC_DIR}/initwiz/wiz_ui_proto.cpp
+          ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
+          )
+endif ()
 
 list(APPEND GUI_SRC
   ${GUI_S57_DIR}/src/ogrs57datasource.cpp
@@ -1127,7 +1134,8 @@ if (EXISTS /sys/devices)
   set(HAVE_SYSFS_PORTS 1)
 endif ()
 
-if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
+if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6"
+        AND NOT QT_ANDROID)
   find_package(PANGO)
   if (PANGO_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
@@ -1257,7 +1265,13 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
-add_subdirectory("libs/shapelib")
+find_package(Shapelib)
+if (SHAPELIB_FOUND)
+  message(STATUS "Using system shapelib")
+else ()
+  message(STATUS "Using bundled shapelib")
+  add_subdirectory("libs/shapelib")
+endif ()
 target_link_libraries(${PACKAGE_NAME} PRIVATE shapelib::shapelib)
 
 add_subdirectory("libs/ShapefileCpp")
@@ -1266,10 +1280,8 @@ target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
 target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
 
 if (NOT QT_ANDROID)
-  # TODO: On Linux libdnet may be available from system packages
   add_subdirectory("libs/libdnet")
-  target_link_libraries(${PACKAGE_NAME} PRIVATE dnet)
-  target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/libdnet/include)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::dnet)
 endif ()
 
 if (UNIX)
@@ -1896,6 +1908,7 @@ if (APPLE)
     ${PACKAGE_NAME}
     PRIVATE ${gshhs}
             ${basemap_shp}
+            ${ssfnData}
             ${uiData}
             ${s57data}
             ${tcData}
@@ -1963,7 +1976,16 @@ add_subdirectory(libs/picosha2)
 add_subdirectory(libs/pugixml)
 add_subdirectory(libs/rapidjson)
 add_subdirectory(libs/s52plib)
+
+if (QT_ANDROID)
+  set(SOUND_WX_INCLUDE_DIR "${ANDROID_WX_INCLUDES}" CACHE STRING "")
+  set(SOUND_WX_LIBS "${ANDROID_WX_LIBS}" CACHE STRING "")
+else ()
+  set(SOUND_WX_INCLUDE_DIR "${wxWidgets_INCLUDE_DIRS}" CACHE STRING "")
+  set(SOUND_WX_LIBS "${wxWidgets_LIBRARIES}" CACHE STRING "")
+endif ()
 add_subdirectory(libs/sound)
+
 add_subdirectory(libs/wxJSON)
 
 #
@@ -2579,40 +2601,8 @@ configure_file(
   "${CMAKE_BINARY_DIR}/opencpn.appdata.xml" @ONLY
 )
 
-#
-# Debian package setup
-#
-set(PKG_DESCR
-    [=[
-OpenCPN is a concise ChartPlotter/Navigator. The application supports:
-GPS/GPSD Position Input, BSB Raster Chart Display, S57 Vector ENChart
-Display, AIS Input Decoding, Waypoint Autopilot Navigation. ]=]
-)
-
-if (UNIX AND NOT APPLE)
-  set(CPACK_STRIP_FILES ON)
-  set(CPACK_GENERATOR ${PACKAGE_FORMAT})
-  set(CPACK_PACKAGE_CONTACT "David S. Register ")
-
-  # autogenerate additional dependency information
-  set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
-  if ("${ARCH}" STREQUAL "x86_64")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
-  else ()
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
-  endif ()
-  set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
-  set(CPACK_DEBIAN_PACKAGE_SECTION "misc")
-  set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
-  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenSource Chart Plotter/Navigator")
-  set(CPACK_PACKAGE_DESCRIPTION ${PKG_DESCR})
-  set(CPACK_PACKAGE_RELOCATABLE OFF)
-  set(CPACK_SET_DESTDIR ON)
-  set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-endif ()
-
-# Command line tools - must be added before the macOS bundle is defined, otherwise they do not get installed before fixup_bundle is performed
+# Command line tools - must be added before the macOS bundle is defined,
+# otherwise they do not get installed before fixup_bundle is performed
 if (NOT QT_ANDROID)
   add_subdirectory(cli)
 endif ()

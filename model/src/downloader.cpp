@@ -42,7 +42,7 @@ static unsigned write_cb(char* in, unsigned size, unsigned nmemb, void* data);
 // Forward
 
 Downloader::Downloader(std::string url_)
-    : url(url_), stream(), error_msg(""), errorcode(0){};
+    : url(url_), stream(), error_msg(""), errorcode(0) {};
 
 int Downloader::last_errorcode() { return errorcode; }
 

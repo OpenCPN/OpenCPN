@@ -519,9 +519,11 @@ void AnnunText::CalculateMinSize(void) {
   if (m_pvalueFont)
     GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
 
-   double pdifactor = g_BasePlatform->GetDisplayDIPMult(gFrame);
-   wl *= pdifactor; hl *= pdifactor;
-   wv *= pdifactor; hv *= pdifactor;
+  double pdifactor = g_BasePlatform->GetDisplayDIPMult(gFrame);
+  wl *= pdifactor;
+  hl *= pdifactor;
+  wv *= pdifactor;
+  hv *= pdifactor;
 
   wxSize min;
   min.x = wl + wv;
@@ -535,7 +537,7 @@ void AnnunText::CalculateMinSize(void) {
 
   SetMinSize(min);
 
-  //resize background to the necessary size
+  // resize background to the necessary size
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
   if (style->consoleTextBackground.IsOk()) {
     wxImage img = style->consoleTextBackground.ConvertToImage();
@@ -553,19 +555,15 @@ void AnnunText::SetColorScheme(ColorScheme cs) {
 }
 
 void AnnunText::RefreshFonts() {
-  wxFont *pl = FontMgr::Get().GetFont(m_LegendTextElement);
+  wxFont* pl = FontMgr::Get().GetFont(m_LegendTextElement);
   m_plabelFont = FontMgr::Get().FindOrCreateFont(
-      pl->GetPointSize() / OCPN_GetWinDIPScaleFactor(),
-      pl->GetFamily(), pl->GetStyle(),
-      pl->GetWeight(), FALSE,
-      pl->GetFaceName());
+      pl->GetPointSize() / OCPN_GetWinDIPScaleFactor(), pl->GetFamily(),
+      pl->GetStyle(), pl->GetWeight(), FALSE, pl->GetFaceName());
 
-  wxFont *pv = FontMgr::Get().GetFont(m_ValueTextElement);
+  wxFont* pv = FontMgr::Get().GetFont(m_ValueTextElement);
   m_pvalueFont = FontMgr::Get().FindOrCreateFont(
-      pv->GetPointSize() / OCPN_GetWinDIPScaleFactor(),
-      pv->GetFamily(), pv->GetStyle(),
-      pv->GetWeight(), FALSE,
-      pv->GetFaceName());
+      pv->GetPointSize() / OCPN_GetWinDIPScaleFactor(), pv->GetFamily(),
+      pv->GetStyle(), pv->GetWeight(), FALSE, pv->GetFaceName());
 
   m_legend_color = FontMgr::Get().GetFontColor(_("Console Legend"));
   m_val_color = FontMgr::Get().GetFontColor(_("Console Value"));

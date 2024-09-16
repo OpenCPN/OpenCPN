@@ -32,7 +32,6 @@
 
 #include "model/config_vars.h"
 
-
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 enum { WSPEED_KTS = 0, WSPEED_MS, WSPEED_MPH, WSPEED_KMH };
 enum { DEPTH_FT = 0, DEPTH_M, DEPTH_FA };
@@ -57,7 +56,6 @@ public:
 private:
   static int GetRandomNumber(int min, int max);
 };
-
 
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern double toUsrSpeed(double kts_speed, int unit = -1);
@@ -87,4 +85,4 @@ extern double fromDMM(wxString sdms);
 
 extern double toMagnetic(double deg_true);
 extern double toMagnetic(double deg_true, double variation);
-#endif   // _NAVUTIL_BASE__
+#endif  // _NAVUTIL_BASE__

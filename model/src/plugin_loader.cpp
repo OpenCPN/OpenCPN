@@ -72,7 +72,6 @@
 #include "model/safe_mode.h"
 #include "observable_confvar.h"
 
-
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <dlfcn.h>
@@ -110,15 +109,13 @@ static bool IsSystemPluginPath(const std::string& path) {
 static bool IsSystemPluginName(const std::string& name) {
   static const std::vector<std::string> kPlugins = {
       "chartdownloader", "wmm", "dashboard", "grib", "demo"};
-  auto found =
-      std::find(kPlugins.begin(), kPlugins.end(), ocpn::tolower(name));
+  auto found = std::find(kPlugins.begin(), kPlugins.end(), ocpn::tolower(name));
   return found != kPlugins.end();
 }
 
 /** Return version string from installation or as fallback API data */
 static std::string GetInstalledVersion(const PlugInData& pd) {
-  std::string path =
-      PluginHandler::versionPath(pd.m_common_name.ToStdString());
+  std::string path = PluginHandler::versionPath(pd.m_common_name.ToStdString());
   if (path == "" || !wxFileName::IsFileReadable(path)) {
     auto loader = PluginLoader::getInstance();
     auto pic = GetContainer(pd, *loader->GetPlugInArray());
@@ -146,7 +143,7 @@ static PluginMetadata CreateMetadata(const PlugInContainer* pic) {
   mdata.summary = pic->m_short_description;
   mdata.description = pic->m_long_description;
 
-  mdata.target = "all";   // Force IsCompatible() true
+  mdata.target = "all";  // Force IsCompatible() true
   mdata.is_orphan = true;
 
   return mdata;
@@ -166,8 +163,7 @@ std::string PluginLoader::GetPluginVersion(
   if (metadata.version == "")
     metadata = get_metadata(pic->m_common_name.ToStdString());
   std::string detail_suffix(metadata.is_imported ? _(" [Imported]") : "");
-  if (metadata.is_orphan)
-    detail_suffix = _(" [Orphan]");
+  if (metadata.is_orphan) detail_suffix = _(" [Orphan]");
 
   int v_major(0);
   int v_minor(0);
@@ -186,8 +182,7 @@ std::string PluginLoader::GetPluginVersion(
     if (!metadata.is_orphan) {
       std::string version = GetInstalledVersion(pd);
       return version + detail_suffix;
-    }
-    else
+    } else
       return metadata.version + detail_suffix;
   }
 }
@@ -308,7 +303,8 @@ PluginLoader::PluginLoader()
 #ifdef __WXMSW__
       m_found_wxwidgets(false),
 #endif
-      m_on_deactivate_cb([](const PlugInContainer* pic) {}) {}
+      m_on_deactivate_cb([](const PlugInContainer* pic) {}) {
+}
 
 bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
@@ -579,7 +575,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
 
       auto pbm0 = pic->m_pplugin->GetPlugInBitmap();
       if (!pbm0->IsOk()) {
-        pbm0 = (wxBitmap *)GetPluginDefaultIcon();
+        pbm0 = (wxBitmap*)GetPluginDefaultIcon();
       }
       pic->m_bitmap = wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
@@ -592,8 +588,8 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
         if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       }
 
-      //  Check to see if the plugin just processed has an associated catalog entry
-      //  understanding that SYSTEM plugins have no metadata by design
+      //  Check to see if the plugin just processed has an associated catalog
+      //  entry understanding that SYSTEM plugins have no metadata by design
       auto found = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
                              pic->m_common_name.Lower());
       bool is_system = found != SYSTEM_PLUGINS.end();
@@ -601,8 +597,9 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       if (!is_system) {
         auto available = PluginHandler::getInstance()->getCompatiblePlugins();
         wxString name = pic->m_common_name;
-        auto it = find_if(available.begin(), available.end(),
-                    [name](const PluginMetadata& md) { return md.name == name; });
+        auto it = find_if(
+            available.begin(), available.end(),
+            [name](const PluginMetadata& md) { return md.name == name; });
 
         if (it == available.end()) {
           // Installed plugin is an orphan....
@@ -856,8 +853,9 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   if (matches.size() == 1) return matches[0];  // only one found with given name
 
   auto version = VersionFromManifest(name);
-  auto predicate =
-          [version](const PluginMetadata& md) { return version == md.version; };
+  auto predicate = [version](const PluginMetadata& md) {
+    return version == md.version;
+  };
   auto found = find_if(matches.begin(), matches.end(), predicate);
   return found != matches.end() ? *found : matches[0];
 }
@@ -883,9 +881,7 @@ void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
   else
     plugin->m_status = PluginStatus::ManagedInstalledDowngradeAvailable;
 
-  if (!is_system && md.is_orphan)
-    plugin->m_status = PluginStatus::Unmanaged;
-
+  if (!is_system && md.is_orphan) plugin->m_status = PluginStatus::Unmanaged;
 
   plugin->m_managed_metadata = md;
 }
@@ -910,7 +906,7 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
       const auto md(
           PluginLoader::MetadataByName(pd->m_common_name.ToStdString()));
       return md.name.empty() && !md.is_imported && !pd->m_pplugin &&
-          !IsSystemPluginName(pd->m_common_name.ToStdString());
+             !IsSystemPluginName(pd->m_common_name.ToStdString());
     };
     auto end =
         std::remove_if(loaded_plugins.begin(), loaded_plugins.end(), predicate);
@@ -929,7 +925,7 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
       } else if (IsSystemPluginName(md.name)) {
         plugin->m_status = PluginStatus::System;
       } else if (md.is_orphan) {
-          plugin->m_status = PluginStatus::Unmanaged;
+        plugin->m_status = PluginStatus::Unmanaged;
       } else if (plugin->m_api_version) {
         // If the plugin is actually loaded, but the new plugin is known not
         // to be installed, then it must be a legacy plugin loaded.
@@ -943,8 +939,7 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
   }
 
   plugin_array.Clear();
-  for (const auto& p : loaded_plugins)
-    plugin_array.Add(p);
+  for (const auto& p : loaded_plugins) plugin_array.Add(p);
   evt_pluglist_change.Notify();
 }
 
@@ -1141,16 +1136,18 @@ FailureEpilogue:
 bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
   bool b_compat = false;
 #ifdef __WXOSX__
-  //TODO: Actually do some tests (In previous versions b_compat was initialized to true, so the actual behavior was exactly like this)
+  // TODO: Actually do some tests (In previous versions b_compat was initialized
+  // to true, so the actual behavior was exactly like this)
   b_compat = true;
 #endif
 #ifdef __WXMSW__
-  // For Windows we identify the dll file containing the core wxWidgets functions
-  // Later we will compare this with the file containing the wxWidgets functions used
-  // by plugins.  If these file names match exactly then we assume the plugin is compatible.
-  // By using the file names we avoid having to hard code the file name into the OpenCPN sources.
-  // This makes it easier to update wxWigets versions without editing sources.
-  // NOTE: this solution may not follow symlinks but almost no one uses simlinks for wxWidgets dlls
+  // For Windows we identify the dll file containing the core wxWidgets
+  // functions Later we will compare this with the file containing the wxWidgets
+  // functions used by plugins.  If these file names match exactly then we
+  // assume the plugin is compatible. By using the file names we avoid having to
+  // hard code the file name into the OpenCPN sources. This makes it easier to
+  // update wxWigets versions without editing sources. NOTE: this solution may
+  // not follow symlinks but almost no one uses simlinks for wxWidgets dlls
 
   // Only go through this process once per instance of O.
   if (!m_found_wxwidgets) {
@@ -1174,9 +1171,8 @@ bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
             if (m_module_name.Find("wxmsw") != wxNOT_FOUND) {
               if (m_module_name.Find("_core_") != wxNOT_FOUND) {
                 m_found_wxwidgets = true;
-                wxLogMessage(wxString::Format(
-                    "Found wxWidgets core DLL: %s",
-                    m_module_name.c_str()));
+                wxLogMessage(wxString::Format("Found wxWidgets core DLL: %s",
+                                              m_module_name.c_str()));
                 break;
               }
             }
@@ -1220,18 +1216,20 @@ bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
                                          pSech, ntheaders));
       LPSTR libname[256];
       size_t i = 0;
-      // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR or we find core wxWidgets DLL
+      // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR or we find core
+      // wxWidgets DLL
       while (pImportDescriptor->Name != 0) {
         // Get the name of each DLL
         libname[i] =
             (PCHAR)((DWORD_PTR)virtualpointer +
                     Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));
-        // Check if the plugin DLL dependencey is same as main process wxWidgets core DLL
+        // Check if the plugin DLL dependencey is same as main process wxWidgets
+        // core DLL
         if (m_module_name.Find(libname[i]) != wxNOT_FOUND) {
           // Match found - plugin is compatible
           b_compat = true;
-          wxLogMessage(
-              wxString::Format("Compatible wxWidgets plugin library found for %s: %s",
+          wxLogMessage(wxString::Format(
+              "Compatible wxWidgets plugin library found for %s: %s",
               plugin_file.c_str(), libname[i]));
           break;
         }

@@ -4,9 +4,8 @@
 #include "s52plib.h"
 #include "model/ocpn_types.h"
 
-extern s52plib *ps52plib;
+extern s52plib* ps52plib;
 extern wxColorHashMap* pcurrent_user_color_hash;
-
 
 wxColour GetGlobalColor(wxString colorName) {
   wxColour ret_color;

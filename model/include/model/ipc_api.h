@@ -36,20 +36,16 @@ std::string GetSocketPath();
 /**
  * Implement LocalClientApi using a filesystem fifo/socket.
  */
-class IpcClientConnection : public  wxConnection {
-friend class IpcClient;
+class IpcClientConnection : public wxConnection {
+  friend class IpcClient;
 
 public:
-
-
 private:
   IpcClientConnection() : wxConnection() {}
 };
 
-
 class IpcClient : public wxClient, public LocalClientApi {
 public:
-
   IpcClient(const std::string& path);
 
   IpcClient() : IpcClient(GetSocketPath()) {}
@@ -64,22 +60,20 @@ private:
   wxConnectionBase* connection;
 };
 
-
 class IpcServer;  // forward
 
 /**
  * Started by IpcServer on filesystem fifo/socket connects.
  */
-class IpcConnection: public wxConnection {
-friend  class IpcServer;
+class IpcConnection : public wxConnection {
+  friend class IpcServer;
 
 public:
   static LocalServerApi& GetInstance();
   static void ReleaseInstance();
 
   IpcConnection(IpcConnection&) = delete;
-  void operator= (const IpcConnection&) = delete;
-
+  void operator=(const IpcConnection&) = delete;
 
   IpcServer& server;
 
@@ -92,7 +86,7 @@ public:
    *   - get_api_endpoint, returns endpoint string.
    */
   const void* OnRequest(const wxString& topic, const wxString& item,
-                        size_t* size, wxIPCFormat format) ;
+                        size_t* size, wxIPCFormat format);
 
 protected:
   IpcConnection(IpcServer& s) : server(s) {}
@@ -107,19 +101,18 @@ private:
  */
 class IpcServer : public wxServer, public LocalServerApi {
 public:
-   const bool is_connected;
+  const bool is_connected;
 
-   IpcServer(const std::string& path)
-       : wxServer(), is_connected(Create(path)) {}
+  IpcServer(const std::string& path) : wxServer(), is_connected(Create(path)) {}
 
-   IpcServer() : IpcServer(GetSocketPath()) {}
+  IpcServer() : IpcServer(GetSocketPath()) {}
 
-   wxConnectionBase* OnAcceptConnection(const wxString& topic) {
-     return new IpcConnection(*this);
-   }
+  wxConnectionBase* OnAcceptConnection(const wxString& topic) {
+    return new IpcConnection(*this);
+  }
 
-   /** void, we are serving as long as there is a ServerFactory. */
-   void Serve() {}
+  /** void, we are serving as long as there is a ServerFactory. */
+  void Serve() {}
 };
 
 /**
@@ -127,25 +120,24 @@ public:
  */
 class DummyIpcServer : public LocalServerApi {
 public:
-   static DummyIpcServer& GetInstance() {
-     static DummyIpcServer server;
-     return server;
-   }
+  static DummyIpcServer& GetInstance() {
+    static DummyIpcServer server;
+    return server;
+  }
 
-   DummyIpcServer() {}
-   DummyIpcServer(const std::string& path) {}
+  DummyIpcServer() {}
+  DummyIpcServer(const std::string& path) {}
 
-   wxConnectionBase* OnAcceptConnection(const wxString& topic) {
-     assert(false && "OnAcceptConnection called in DummyIpcServer");
-     return nullptr;   // not reachable, for the compiler
-   }
+  wxConnectionBase* OnAcceptConnection(const wxString& topic) {
+    assert(false && "OnAcceptConnection called in DummyIpcServer");
+    return nullptr;  // not reachable, for the compiler
+  }
 
-   void Serve() {}
+  void Serve() {}
 };
 
-class DummyIpcClient :  public LocalClientApi {
+class DummyIpcClient : public LocalClientApi {
 public:
-
   DummyIpcClient(const std::string& path) {}
 
   DummyIpcClient() {}
@@ -168,10 +160,8 @@ public:
 
   wxConnectionBase* OnMakeConnection() {
     assert(false && "OnMakeConnection called in DummyIpcServer");
-    return nullptr;   // not reachable, for the compiler
+    return nullptr;  // not reachable, for the compiler
   }
 };
-
-
 
 #endif  // _IPC_API_H__

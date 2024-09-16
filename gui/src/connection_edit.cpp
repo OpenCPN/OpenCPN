@@ -215,6 +215,7 @@ void ConnectionEditDialog::Init() {
 
   m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
   m_BTscanning = 0;
+  wxSize displaySize = wxGetDisplaySize();
 
   // Create the UI
 
@@ -287,11 +288,14 @@ void ConnectionEditDialog::Init() {
   m_rbTypeCAN->Hide();
 #endif
 
+  wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
+  sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
+
   if (OCPNPlatform::hasInternalGPS()) {
     m_rbTypeInternalGPS =
         new wxRadioButton(m_scrolledwin, wxID_ANY, _("Built-in GPS"),
                           wxDefaultPosition, wxDefaultSize, 0);
-    bSizer15->Add(m_rbTypeInternalGPS, 0, wxALL, 5);
+    bSizer15a->Add(m_rbTypeInternalGPS, 0, wxALL, 5);
   } else
     m_rbTypeInternalGPS = NULL;
 
@@ -300,7 +304,7 @@ void ConnectionEditDialog::Init() {
     m_rbTypeInternalBT =
         new wxRadioButton(m_scrolledwin, wxID_ANY, _("Built-in Bluetooth SPP"),
                           wxDefaultPosition, wxDefaultSize, 0);
-    bSizer15->Add(m_rbTypeInternalBT, 0, wxALL, 5);
+    bSizer15a->Add(m_rbTypeInternalBT, 0, wxALL, 5);
 
     m_buttonScanBT = new wxButton(m_scrolledwin, wxID_ANY, _("BT Scan"),
                                   wxDefaultPosition, wxDefaultSize);
@@ -334,7 +338,7 @@ void ConnectionEditDialog::Init() {
   } else
     m_rbTypeInternalBT = NULL;
 
-  gSizerNetProps = new wxFlexGridSizer(0, 4, 0, 0);
+  gSizerNetProps = new wxFlexGridSizer(0, 2, 0, 0);
 
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
@@ -346,6 +350,9 @@ void ConnectionEditDialog::Init() {
 
   wxBoxSizer* bSizer16;
   bSizer16 = new wxBoxSizer(wxHORIZONTAL);
+  gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
+  gSizerNetProps->AddSpacer(1);
+  gSizerNetProps->AddSpacer(1);
 
   m_rbNetProtoTCP =
       new wxRadioButton(m_scrolledwin, wxID_ANY, _("TCP"), wxDefaultPosition,
@@ -361,20 +368,37 @@ void ConnectionEditDialog::Init() {
 
   bSizer16->Add(m_rbNetProtoUDP, 0, wxALL, 5);
 
-  m_rbNetProtoGPSD = new wxRadioButton(m_scrolledwin, wxID_ANY, _("GPSD"),
-                                       wxDefaultPosition, wxDefaultSize, 0);
-  m_rbNetProtoGPSD->Enable(TRUE);
-  bSizer16->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
+  //Optimize for Portrait mode handheld devices
+  if (displaySize.x < displaySize.y){
+    wxBoxSizer* bSizer16a;
+    bSizer16a = new wxBoxSizer(wxHORIZONTAL);
+    gSizerNetProps->AddSpacer(1);
+    gSizerNetProps->Add(bSizer16a, 1, wxEXPAND, 5);
+    gSizerNetProps->AddSpacer(1);
+    gSizerNetProps->AddSpacer(1);
+    m_rbNetProtoGPSD = new wxRadioButton(m_scrolledwin, wxID_ANY, _("GPSD"),
+                                         wxDefaultPosition, wxDefaultSize, 0);
+    m_rbNetProtoGPSD->Enable(TRUE);
+    bSizer16a->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
 
-  m_rbNetProtoSignalK =
-      new wxRadioButton(m_scrolledwin, wxID_ANY, _("Signal K"),
-                        wxDefaultPosition, wxDefaultSize, 0);
-  m_rbNetProtoSignalK->Enable(TRUE);
-  bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+    m_rbNetProtoSignalK =
+        new wxRadioButton(m_scrolledwin, wxID_ANY, _("Signal K"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    m_rbNetProtoSignalK->Enable(TRUE);
+    bSizer16a->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+  }
+  else {
+    m_rbNetProtoGPSD = new wxRadioButton(m_scrolledwin, wxID_ANY, _("GPSD"),
+                                         wxDefaultPosition, wxDefaultSize, 0);
+    m_rbNetProtoGPSD->Enable(TRUE);
+    bSizer16->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
 
-  gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
-  gSizerNetProps->AddSpacer(1);
-  gSizerNetProps->AddSpacer(1);
+    m_rbNetProtoSignalK =
+        new wxRadioButton(m_scrolledwin, wxID_ANY, _("Signal K"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    m_rbNetProtoSignalK->Enable(TRUE);
+    bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+  }
 
   m_stNetDataProtocol =
       new wxStaticText(m_scrolledwin, wxID_ANY, _("Data Protocol"),
@@ -1667,10 +1691,10 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     }
     m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() &&
-            m_rbNetProtoUDP->GetValue())
-         m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
+        m_rbNetProtoUDP->GetValue())
+      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     else if (m_cbOutput->GetValue() && !m_cbMultiCast->GetValue())
-         m_tNetPort->SetValue(DEFAULT_UDP_OUT_ADDRESS);
+      m_tNetPort->SetValue(DEFAULT_UDP_OUT_ADDRESS);
 
     if (m_cbInput->GetValue() && m_cbOutput->GetValue())
       m_cbOutput->SetValue(false);
@@ -1729,7 +1753,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
     if (checked) {
       m_tNetAddress->SetValue(
           DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
-       // Check for an UDP input connection on the same port
+      // Check for an UDP input connection on the same port
       NetworkProtocol proto = UDP;
       for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
         ConnectionParams* cp = TheConnectionParams()->Item(i);
@@ -1745,26 +1769,26 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
           wxString mes;
           bool warn = false;
           if (cp->bEnabled) {
-            mes = _("There is an enabled UDP input connection that uses the "
-                   "same data port.");
+            mes =
+                _("There is an enabled UDP input connection that uses the "
+                  "same data port.");
             mes << "\n"
-                 << _("Please apply a filter on both connections to avoid a "
-                      "feedback loop.");
+                << _("Please apply a filter on both connections to avoid a "
+                     "feedback loop.");
             warn = true;
-          }
-          else {
-            mes = _("There is a disabled UDP Input connection that uses the "
-                   "same Dataport.");
-            mes
-                << "\n"
+          } else {
+            mes =
+                _("There is a disabled UDP Input connection that uses the "
+                  "same Dataport.");
+            mes << "\n"
                 << _("If you enable that input please apply a filter on both "
                      "connections to avoid a  feedback loop.");
           }
           mes << "\n"
-               << _("Or consider using a different data port for one of them");
+              << _("Or consider using a different data port for one of them");
           if (warn)
             OCPNMessageBox(this, mes, _("OpenCPN Warning"),
-                         wxOK | wxICON_EXCLAMATION, 60);
+                           wxOK | wxICON_EXCLAMATION, 60);
           else
             OCPNMessageBox(this, mes, _("OpenCPN info"),
                            wxOK | wxICON_INFORMATION, 60);

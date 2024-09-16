@@ -7808,7 +7808,7 @@ msgstr "<font size=-2>(섹터 각도는 바다쪽방향으로 부터 실제 방�
 msgid "<p>The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
-"</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>"
+"</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.10-known-issues\">list of known issues</a>.</p>"
 msgstr ""
 
 #: gui/src/safe_mode_gui.cpp:38
@@ -8359,4 +8359,3 @@ msgstr ""
 #: gui/src/initwiz/wiz_ui_proto.cpp:177
 msgid "Add chart directory..."
 msgstr ""
-
