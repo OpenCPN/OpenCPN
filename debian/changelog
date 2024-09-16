@@ -1,65 +1,21 @@
-opencpn (1:5.10.0+dfsg-5~bpo12+1) bookworm-backports; urgency=medium
-
-  * New upstream release backport
-  * Re-introduce b-d libunarr-dev, required for pre-trixie builds.
-  * Update pre-release repo configuration
-  * Update lintian-override warning expression
-
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Sep 2024 10:27:13 +0200
-
-opencpn (1:5.10.0+dfsg-5) unstable; urgency=medium
-
-  * New patch: Don't use unarr for libarchive >= 3.7.4, Closes: #1078767
-  * New patch: Fix link to open issues (opencpn#4116)
-  * New patch: Make ActivateNextpoint pass multiple identical points
-  * New patch: Correct faults on GRIB, compact control bar display mode
-  * New patch: Improve connection_edit dialog layout for handheld devices
-  * New patch: Fix AIS Meteo Correct typos - missed breakes.
-  * d/copyright: Remove license files, clean up libdnet/m4 duplicates
-  * d/rules: Handle  -DEB_BUILD_OPTIONS=nocheck
-  * d/rules: Run tests in a custom dbus session (opencpn#4090)
-  * d/control: Add b-d dbus-daemon (opencpn#4090)
-  * d/control: Always use libcurl4-openssl-dev, fixes Rpi peer transfers.
-  * d/control: Require wxWidgets 3.2.
-  * d/control: Revert to Architecture: Any (#1078767)
-  * d/control: Update VCS links
-
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 28 Aug 2024 11:41:38 +0200
-
-opencpn (1:5.10.0+dfsg-4) unstable; urgency=medium
-
-  * New patch: fix dark theme invisible object text
-  * New patch: fix headless X11 display size handling
-  * d/control: Exclude armel from Architecture (#1078953)
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 14:42:15 +0200
-
-opencpn (1:5.10.0+dfsg-3) unstable; urgency=medium
-
-  * Add patch for missing -latomic on armel
-
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 16 Aug 2024 20:40:11 +0200
-
-opencpn (1:5.10.0+dfsg-2) unstable; urgency=medium
-
-  * Don't use -march=native compile flag. Closes: 1078467
-  * Fix wrong date in version string
-  * Update patches DEP-3 annotations
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 11 Aug 2024 08:54:04 +0200
-
-opencpn (1:5.10.0+dfsg-1) unstable; urgency=medium
+opencpn (1:5.10.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release
-  * Closes: 1010860
-  * Add an epoch,
-    see https://lists.debian.org/debian-devel/2024/07/msg00007.html
+  * Drop upstreamed patches:
+     - 0003-build-Use-system-shapelib-if-available.patch
+     - 0007-Build-Don-t-use-march-native-4088.patch                    
+     - 0008-VERSION.cmake-Fix-date-string.patch                        
+     - 0010-Improve-display-detection-on-headless-X11-systems.patch    
+     - 0011-appdata-developer-id-Fix-illegal-CamelCase.patch           
+     - 0012-Explicitly-set-extra-object-info-text-color.4101.patch     
+     - 0014-AIS-Meteo-Correct-typos-missed-brakes.patch                
+     - 0015-Improve-conneciton_edit-dialog-layout-for-handheld-P.patch 
+     - 0016-Correct-faults-on-GRIB-compact-control-bar-display-m.patch 
+     - 0017-Make-ActivateNextpoint-pass-multiple-identical-point.patch 
+     - 0018-Update-the-link-to-known-issues-page.-Fixes-4116.patch     
+  * d/control: Add b-d git
+  * d/copyright: libdnet source paths update.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 11:53:35 +0200
 
-opencpn (5.8.4+dfsg-1) unstable; urgency=medium
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 09:17:35 +0200
 
-  * New upstream release.
-
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 15 Jun 2023 20:26:20 +0200
