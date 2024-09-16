@@ -1,24 +1,25 @@
-opencpn (1:5.10.2+dfsg-1~bpo12+1) UNRELEASED; urgency=medium
+opencpn (1:5.10.2+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release backport
+  * Drop upstream patch for libunarr-dev, add b-d libunarr-dev (#1078767)
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 16 Sep 2024 13:01:14 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 16 Sep 2024 13:52:48 +0200
 
 opencpn (1:5.10.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release
   * Drop upstreamed patches:
      - 0003-build-Use-system-shapelib-if-available.patch
-     - 0007-Build-Don-t-use-march-native-4088.patch                    
-     - 0008-VERSION.cmake-Fix-date-string.patch                        
-     - 0010-Improve-display-detection-on-headless-X11-systems.patch    
-     - 0011-appdata-developer-id-Fix-illegal-CamelCase.patch           
-     - 0012-Explicitly-set-extra-object-info-text-color.4101.patch     
-     - 0014-AIS-Meteo-Correct-typos-missed-brakes.patch                
-     - 0015-Improve-conneciton_edit-dialog-layout-for-handheld-P.patch 
-     - 0016-Correct-faults-on-GRIB-compact-control-bar-display-m.patch 
-     - 0017-Make-ActivateNextpoint-pass-multiple-identical-point.patch 
-     - 0018-Update-the-link-to-known-issues-page.-Fixes-4116.patch     
+     - 0007-Build-Don-t-use-march-native-4088.patch
+     - 0008-VERSION.cmake-Fix-date-string.patch
+     - 0010-Improve-display-detection-on-headless-X11-systems.patch
+     - 0011-appdata-developer-id-Fix-illegal-CamelCase.patch
+     - 0012-Explicitly-set-extra-object-info-text-color.4101.patch
+     - 0014-AIS-Meteo-Correct-typos-missed-brakes.patch
+     - 0015-Improve-conneciton_edit-dialog-layout-for-handheld-P.patch
+     - 0016-Correct-faults-on-GRIB-compact-control-bar-display-m.patch
+     - 0017-Make-ActivateNextpoint-pass-multiple-identical-point.patch
+     - 0018-Update-the-link-to-known-issues-page.-Fixes-4116.patch
   * d/control: Add b-d git
   * d/copyright: libdnet source paths update.
 
