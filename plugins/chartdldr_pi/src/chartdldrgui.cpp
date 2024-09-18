@@ -7,6 +7,8 @@
 
 #include "chartdldr_pi.h"
 #include "chartdldrgui.h"
+#include "manual.h"
+#include "../../../libs/manual/include/manual.h"
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
 #include <wx/textwrapper.h>
@@ -1003,14 +1005,10 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPrefsDlg::OnDownloadMasterCatalog), NULL,
       this);
-  m_bHelp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [](wxCommandEvent) {
-#ifdef __WXMSW__
-    wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
-                           _T("plugins/chartdldr_pi/data/doc/index.html"));
-#else
-    wxLaunchDefaultBrowser(_T("file://") + *GetpSharedDataLocation() +
-                           _T("plugins/chartdldr_pi/data/doc/index.html"));
-#endif
+  m_bHelp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
+    wxString datadir = GetPluginDataDir("manual_pi");
+    Manual manual(datadir.ToStdString());
+    manual.Launch(Manual::Type::Chartdldr);
   });
 }
 
