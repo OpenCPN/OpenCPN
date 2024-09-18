@@ -262,6 +262,7 @@ else (NOT QT_ANDROID)
 endif (NOT QT_ANDROID)
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (NOT WIN32)
