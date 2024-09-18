@@ -23,6 +23,11 @@
 #
 # Exports: ocpn::filesystem transitive link target
 #
+# Usage:
+#      #include "std_filesystem.h"
+#      ...
+#      auto p = fs::path("/some/path");
+#
 
 if (TARGET ocpn::filesystem)
   return ()
@@ -35,6 +40,10 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
   target_link_libraries(_FILESYS INTERFACE stdc++fs)
 endif ()
 
+target_include_directories(
+  _FILESYS INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
+)
+
 string(TOLOWER ${CMAKE_CXX_COMPILER_ID} lc_compiler_id)
 if ((${lc_compiler_id} MATCHES clang
     AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 15.0)
@@ -43,9 +52,6 @@ if ((${lc_compiler_id} MATCHES clang
   # MacOS 10.13
   # Boost pulled in from Homebrew on the builders is not good enough as
   # it is not ABI compatible with older targets, use ghc instead.
-  target_include_directories(
-    _FILESYS INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
-  )
   if(APPLE)
     target_compile_definitions(_FILESYS INTERFACE OCPN_GHC_FILESYSTEM)
   endif()
