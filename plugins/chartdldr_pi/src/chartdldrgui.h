@@ -125,7 +125,6 @@ protected:
   wxButton* m_bUpdateChartList;
   wxButton* m_bUpdateAllCharts;
   wxStaticText* m_stCatalogInfo;
-  // wxButton* m_bHelp;
   wxButton* m_bDnldCharts;
   // wxButton* m_bShowLocal;
 #if defined(CHART_LIST)
@@ -208,6 +207,7 @@ protected:
   wxStaticLine* m_staticline1;
   wxCheckBox* m_cbBulkUpdate;
   wxStdDialogButtonSizer* m_sdbSizerBtns;
+  wxButton* m_bHelp;
   wxButton* m_sdbSizerBtnsOK;
   wxButton* m_sdbSizerBtnsCancel;
   wxButton* m_buttonChartDirectory;

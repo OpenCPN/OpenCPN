@@ -653,8 +653,6 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(ChartDldrPanel::OnContextMenu),
       NULL, this);
 #endif /* CHART_LIST */
-  // m_bHelp->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(
-  // ChartDldrPanel::DoHelp ), NULL, this );
   m_bDnldCharts->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPanel::OnDownloadCharts), NULL, this);
@@ -714,9 +712,6 @@ ChartDldrPanel::~ChartDldrPanel() {
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(ChartDldrPanel::OnContextMenu),
       NULL, this);
 #endif /* CHART_LIST */
-
-  // m_bHelp->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(
-  // ChartDldrPanel::DoHelp ), NULL, this );
   m_bDnldCharts->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPanel::OnDownloadCharts), NULL, this);
@@ -905,6 +900,8 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
   m_sdbSizerBtns = new wxStdDialogButtonSizer();
+  m_bHelp = new wxButton(this, wxID_HELP);
+  m_sdbSizerBtns->Add(m_bHelp);
   m_sdbSizerBtnsOK = new wxButton(this, wxID_OK);
   m_sdbSizerBtns->AddButton(m_sdbSizerBtnsOK);
   m_sdbSizerBtnsCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
@@ -1006,6 +1003,15 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPrefsDlg::OnDownloadMasterCatalog), NULL,
       this);
+  m_bHelp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [](wxCommandEvent) {
+#ifdef __WXMSW__
+    wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
+                           _T("plugins/chartdldr_pi/data/doc/index.html"));
+#else
+    wxLaunchDefaultBrowser(_T("file://") + *GetpSharedDataLocation() +
+                           _T("plugins/chartdldr_pi/data/doc/index.html"));
+#endif
+  });
 }
 
 void ChartDldrPrefsDlg::OnDownloadMasterCatalog(wxCommandEvent& event) {
