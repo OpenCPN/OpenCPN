@@ -45,6 +45,7 @@
 #include "wx/jsonwriter.h"
 #include "N2KParser.h"
 #include "../../../gui/include/gui/ocpn_fontdlg.h"
+#include "manual.h"
 
 wxFontData *g_pFontTitle;
 wxFontData *g_pFontData;
@@ -4061,8 +4062,17 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemBoxSizerMainPanel->Add(itemBoxSizer2, 1, wxEXPAND);
 #endif
 
-  wxStdDialogButtonSizer *DialogButtonSizer =
-      CreateStdDialogButtonSizer(wxOK | wxCANCEL);
+  auto *DialogButtonSizer = new wxStdDialogButtonSizer();
+  DialogButtonSizer->AddButton(new wxButton(this, wxID_OK));
+  DialogButtonSizer->AddButton(new wxButton(this, wxID_CANCEL));
+  wxButton *help_btn = new wxButton(this, wxID_HELP);
+  help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
+    wxString datadir = GetPluginDataDir("manual_pi");
+    Manual(datadir.ToStdString()).Launch(Manual::Type::Dashboard);
+  });
+  DialogButtonSizer->AddButton(help_btn);
+  DialogButtonSizer->Realize();
+
   itemBoxSizerMainPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5);
 
   wxNotebook *itemNotebook = new wxNotebook(
