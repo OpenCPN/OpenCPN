@@ -71,9 +71,6 @@
 #include <jni.h>
 #endif
 
-
-
-
 #ifdef __WXMAC__
 #define CATALOGS_NAME_WIDTH 300
 #define CATALOGS_DATE_WIDTH 120
