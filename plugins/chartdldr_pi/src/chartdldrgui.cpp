@@ -1008,7 +1008,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   m_bHelp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
     wxString datadir = GetPluginDataDir("manual_pi");
     Manual manual(datadir.ToStdString());
-    manual.Launch(Manual::Type::Chartdldr);
+    manual.Launch("Chartdldr");
   });
 }
 

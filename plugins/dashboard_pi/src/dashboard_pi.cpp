@@ -4068,7 +4068,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   wxButton *help_btn = new wxButton(this, wxID_HELP);
   help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
     wxString datadir = GetPluginDataDir("manual_pi");
-    Manual(datadir.ToStdString()).Launch(Manual::Type::Dashboard);
+    Manual(datadir.ToStdString()).Launch("Dashboard");
   });
   DialogButtonSizer->AddButton(help_btn);
   DialogButtonSizer->Realize();
