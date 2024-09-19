@@ -22,13 +22,10 @@
 #define MANUAL_H_
 
 #include <string>
-#include <unordered_map>
+#include <wx/jsonreader.h>
 
 class Manual {
 public:
-  /** Manual entry points. */
-  enum class Type { Toc, Chartdldr, Wmm, Dashboard, Grib };
-
   /**
    * Construct a Manual object.
    *
@@ -42,13 +39,18 @@ public:
    * plugin is installed use that, otherwise offer user to use the on-line
    * manual.
    *
-   * @param type Entry point to display.
+   * @param entrypoint Named entry in the entrypoints.json file provided
+   *        by the manual_pi plugin. If the plugin is not installed a
+   *        hardcoded list of entrypoints provides internet links.  See
+   *        kOnlineEntries in manual_pi.cpp for list of valid values.
+   * @return true if entrypoint exists in entrypoints.json, else false
+   *
    */
-  void Launch(Type type);
+  bool Launch(const std::string& entrypoint);
 
 private:
-  std::unordered_map<Type, std::pair<std::string, std::string>> entrypoints;
-  std::string manual_datadir;
+  std::string m_datadir;
+  wxJSONValue m_root;
 };
 
 #endif  // MANUAL_H_

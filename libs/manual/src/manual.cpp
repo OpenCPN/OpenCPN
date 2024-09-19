@@ -17,6 +17,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <fstream>
+#include <string>
+#include <unordered_map>
+
+#include <wx/log.h>
+#include <wx/jsonreader.h>
+#include <wx/string.h>
 
 #include "manual.h"
 #include "manual_dlg.h"
@@ -26,6 +33,15 @@ static const char* const kOnlineRoot = "https://opencpn-manuals.github.io/main";
 static const char* const kOnlinePlugroot =
     "https://opencpn-manuals.github.io/main/opencpn-plugins";
 
+static const std::unordered_map<std::string, std::string> kOnlineEntries = {
+  {"Toc", "@ONLINE_ROOT@/index.html"},
+  {"Chartdldr",
+     "@ONLINE_PLUGROOT@/chart_downloader_tab/chart_downloader_tab.html"},
+  {"Wmm",  "@ONLINE_PLUGROOT@/wmm/wmm.html"},
+  {"Dashboard", "@ONLINE_PLUGROOT@/dashboard/dashboard.html"},
+  {"Grib", "@ONLINE_PLUGROOT@/grib_weather/grib_weather.html"}
+};
+
 static bool replace(std::string& str, const std::string& from,
                     const std::string& to) {
   size_t start_pos = str.find(from);
@@ -34,35 +50,38 @@ static bool replace(std::string& str, const std::string& from,
   return true;
 }
 
-Manual::Manual(const std::string& path)
-    : entrypoints(
-          {{Type::Toc,
-            {"@LOCAL_ROOT@/doc/index.html", "@ONLINE_ROOT@/index.html"}},
-           {Type::Chartdldr,
-            {"@LOCAL_ROOT@/doc/plugin-dev-manual/chartdldr/index.html",
-             "@ONLINE_PLUGROOT@/chart_downloader_tab/"
-             "chart_downloader_tab.html"}},
-           {Type::Wmm,
-            {"@LOCAL_ROOT@/doc/plugin-dev-manual/wmm/index.html",
-             "@ONLINE_PLUGROOT@/wmm/wmm.html"}},
-           {Type::Dashboard,
-            {"@LOCAL_ROOT@/doc/plugin-dev-manual/dashboard/index.html",
-             "@ONLINE_PLUGROOT@/dashboard/dashboard.html"}},
-           {Type::Grib,
-            {"@LOCAL_ROOT@/doc/plugin-dev-manual/grib/index.html",
-             "@ONLINE_PLUGROOT@/grib_weather/grib_weather.html"}}}),
-      manual_datadir(path) {}
+Manual::Manual(const std::string& path) : m_datadir(path) {
+  auto datadir_path(fs::path(m_datadir) / "data" / "entrypoints.json");
+  if (!fs::exists(datadir_path)) {
+    wxLogDebug("Manual plugin is not installed");
+    return;
+  }
+  std::ifstream stream(datadir_path.string());
+  std::stringstream ss;
+  ss << stream.rdbuf();
+  wxJSONReader reader;
+  int err_count = reader.Parse(wxString(ss.str()), &m_root);
+  if (err_count != 0) {
+    wxLogWarning("Cannot parse entrypoints.json from manual plugin");
+  }
+}
 
-void Manual::Launch(Type type) {
-  std::string path(entrypoints[type].first);
-  replace(path, "@LOCAL_ROOT@", manual_datadir);
+bool Manual::Launch(const std::string& entrypoint) {
+  std::string path(m_root[entrypoint][0].AsString());
+  replace(path, "@LOCAL_ROOT@", m_datadir);
   if (fs::exists(fs::path(path))) {
     wxLaunchDefaultBrowser(path);
-  } else {
-    path = entrypoints[type].second;
-    replace(path, "@ONLINE_PLUGROOT@", kOnlinePlugroot);
-    replace(path, "@ONLINE_ROOT@", kOnlineRoot);
-    ManualDlg dlg(path);
-    dlg.ShowModal();
+    return true;
   }
+  auto found = kOnlineEntries.find(entrypoint);
+  if (found == kOnlineEntries.end()) {
+    wxLogWarning("Using illegal manual entry point: %s", entrypoint.c_str());
+    return false;
+  }
+  path = found->second;
+  replace(path, "@ONLINE_PLUGROOT@", kOnlinePlugroot);
+  replace(path, "@ONLINE_ROOT@", kOnlineRoot);
+  ManualDlg dlg(path);
+  dlg.ShowModal();
+  return true;
 }
