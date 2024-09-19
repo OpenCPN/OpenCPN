@@ -17,6 +17,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file manual.cpp Implement manual.h */
+
 #include <fstream>
 #include <string>
 #include <unordered_map>
@@ -60,14 +63,14 @@ Manual::Manual(const std::string& path) : m_datadir(path) {
   std::stringstream ss;
   ss << stream.rdbuf();
   wxJSONReader reader;
-  int err_count = reader.Parse(wxString(ss.str()), &m_root);
+  int err_count = reader.Parse(ss.str(), &m_root);
   if (err_count != 0) {
     wxLogWarning("Cannot parse entrypoints.json from manual plugin");
   }
 }
 
 bool Manual::Launch(const std::string& entrypoint) {
-  std::string path(m_root[entrypoint][0].AsString());
+  std::string path(m_root[entrypoint].AsString());
   replace(path, "@LOCAL_ROOT@", m_datadir);
   if (fs::exists(fs::path(path))) {
     wxLaunchDefaultBrowser(path);
