@@ -128,6 +128,7 @@ if (APPLE)
 endif (APPLE)
 
 # target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
 
 # Copy shared library to execution folder for debugging if not CI build
 if (NOT OCPN_CI_BUILD)
