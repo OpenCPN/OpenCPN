@@ -21,6 +21,7 @@
 /** \file manual.cpp Implement manual.h */
 
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -35,6 +36,9 @@
 static const char* const kOnlineRoot = "https://opencpn-manuals.github.io/main";
 static const char* const kOnlinePlugroot =
     "https://opencpn-manuals.github.io/main/opencpn-plugins";
+static const char* const kWikiRoot =
+    "https://opencpn.org/wiki/dokuwiki/doku.php";
+
 
 static const std::unordered_map<std::string, std::string> kOnlineEntries = {
   {"Toc", "@ONLINE_ROOT@/index.html"},
@@ -43,6 +47,8 @@ static const std::unordered_map<std::string, std::string> kOnlineEntries = {
   {"Wmm",  "@ONLINE_PLUGROOT@/wmm/wmm.html"},
   {"Dashboard", "@ONLINE_PLUGROOT@/dashboard/dashboard.html"},
   {"Grib", "@ONLINE_PLUGROOT@/grib_weather/grib_weather.html"}
+  {"Hotkeys",
+    "@WIKI_ROOT@?id=opencpn:manual_basic:ui_user_interface:keyboard_shortcuts" }
 };
 
 static bool replace(std::string& str, const std::string& from,
@@ -84,6 +90,7 @@ bool Manual::Launch(const std::string& entrypoint) {
   path = found->second;
   replace(path, "@ONLINE_PLUGROOT@", kOnlinePlugroot);
   replace(path, "@ONLINE_ROOT@", kOnlineRoot);
+  replace(path, "@WIKI_ROOT@", kWikiRoot);
   ManualDlg dlg(path);
   dlg.ShowModal();
   return true;
