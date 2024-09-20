@@ -46,7 +46,7 @@ static const std::unordered_map<std::string, std::string> kOnlineEntries = {
      "@ONLINE_PLUGROOT@/chart_downloader_tab/chart_downloader_tab.html"},
   {"Wmm",  "@ONLINE_PLUGROOT@/wmm/wmm.html"},
   {"Dashboard", "@ONLINE_PLUGROOT@/dashboard/dashboard.html"},
-  {"Grib", "@ONLINE_PLUGROOT@/grib_weather/grib_weather.html"}
+  {"Grib", "@ONLINE_PLUGROOT@/grib_weather/grib_weather.html"},
   {"Hotkeys",
     "@WIKI_ROOT@?id=opencpn:manual_basic:ui_user_interface:keyboard_shortcuts" }
 };
