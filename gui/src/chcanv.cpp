@@ -369,7 +369,7 @@ EVT_TIMER(CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent)
 EVT_TIMER(ROT_TIMER, ChartCanvas::RotateTimerEvent)
 EVT_TIMER(ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent)
 EVT_TIMER(ROUTEFINISH_TIMER, ChartCanvas::OnRouteFinishTimerEvent)
-EVT_KEY_DOWN(ChartCanvas::OnKeyDown)
+EVT_CHAR(ChartCanvas::OnKeyDown)
 EVT_KEY_UP(ChartCanvas::OnKeyUp)
 EVT_CHAR(ChartCanvas::OnKeyChar)
 EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture)
@@ -3034,6 +3034,10 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
         case 'W':  // W Toggle CPA alarm
           ToggleCPAWarn();
 
+          break;
+
+        case '?':
+          std::cout << "Hotkey info not implemented\n";
           break;
 
         case 1:  // Ctrl A
