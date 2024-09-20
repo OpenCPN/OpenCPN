@@ -76,6 +76,7 @@
 #include "iENCToolbar.h"
 #include "kml.h"
 #include "line_clip.h"
+#include "manual.h"
 #include "MarkInfo.h"
 #include "mbtiles.h"
 #include "MUIBar.h"
@@ -3036,9 +3037,10 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
           break;
 
-        case '?':
-          std::cout << "Hotkey info not implemented\n";
-          break;
+        case '?': {
+          wxString datadir = GetPluginDataDir("manual_pi");
+          Manual(datadir.ToStdString()).Launch("Hotkeys");
+        } break;
 
         case 1:  // Ctrl A
           TogglebFollow();
