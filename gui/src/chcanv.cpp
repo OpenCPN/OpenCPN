@@ -70,13 +70,13 @@
 #include "compass.h"
 #include "concanv.h"
 #include "displays.h"
+#include "hotkeys_dlg.h"
 #include "FontMgr.h"
 #include "glTextureDescriptor.h"
 #include "gshhs.h"
 #include "iENCToolbar.h"
 #include "kml.h"
 #include "line_clip.h"
-#include "manual.h"
 #include "MarkInfo.h"
 #include "mbtiles.h"
 #include "MUIBar.h"
@@ -3038,8 +3038,9 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           break;
 
         case '?': {
-          wxString datadir = GetPluginDataDir("manual_pi");
-          Manual(datadir.ToStdString()).Launch("Hotkeys");
+          auto parent = wxWindow::FindWindowByName("MainWindow");
+          HotkeysDlg dlg(parent);
+          dlg.ShowModal();
         } break;
 
         case 1:  // Ctrl A
