@@ -17,48 +17,23 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <array>
 #include <string>
 
 #include <wx/button.h>
 #include <wx/dialog.h>
+#include <wx/grid.h>
 #include <wx/intl.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/string.h>
 
 #include "ocpn_plugin.h"
 
 #include "hotkeys_dlg.h"
 #include "manual.h"
 
-static const char* kArrowLeft = "\u2190";
-static const char* kArrowRight = "\u2192";
-static const char* kArrowUp = "\u2191";
-static const char* kArrowDown = "\u2193";
-
-static const char* const kMessage = _(R"---(<tt>
-Zoom in             +, PgUp             Zoom out             -, PgDown
-Fine zoom in        Alt +               Fine zoom out        Alt +
-Fine zoom           Ctrl scroll-wheel
-Panning             < > ^ !             Slow panning:        Alt < > ^ !
-Larger scale chart  Ctrl <, F7          Smaller scale chart  Ctrl >, F8
-
-Toggle quilting     Q, F9               Toggle auto-follow   Ctrl A, F2
-Toggle outlines     O, F12              Toggle range rings   R
-Toggle quilting     Q, F9               Toggle chart bar     Ctrl-B
-Toggle full screen  F11                 Change color scheme  Ctrl-G, F5
-
-Start measure mode  F4                  Stop measure mode    Esc
-Drop mark           Ctrl O, space bar
-</tt>
-
-More keys are available in the manual.)---");
-
-static void replace(std::string& str, const std::string& from,
-                    const std::string to) {
-  size_t it = 0;
-  for (it = str.find(from); it != std::string::npos; it = str.find(from, it))
-    str.replace(it, from.length(), to);
-}
+static inline wxString U8(const char* s) { return wxString::FromUTF8(s); }
 
 /** Two buttons at bottom */
 class ButtonsSizer : public wxStdDialogButtonSizer {
@@ -91,29 +66,49 @@ public:
   };
 };
 
-class Message : public wxStaticText {
+/** Overall help message: key functions and bindings in a string matrix */
+class GridSizer : public wxGridSizer {
 public:
-  Message(wxWindow* parent, const char* text)
-      : wxStaticText(parent, wxID_ANY, "") {
-    std::string msg(text);
-    replace(msg, "<tt>", "%tt%");
-    replace(msg, "</tt>", "%/tt%");
-    replace(msg, "<", kArrowLeft);
-    replace(msg, ">", kArrowRight);
-    replace(msg, "^", kArrowUp);
-    replace(msg, "!", kArrowDown);
-    replace(msg, "%tt%", "<tt>");
-    replace(msg, "%/tt%", "</tt>");
-    SetLabelMarkup(msg);
+  GridSizer(wxWindow* parent) : wxGridSizer(kMessages[0].size()) {
+    for (auto line = kMessages.begin(); line != kMessages.end(); line++) {
+      for (auto word = line->begin(); word != line->end(); word++) {
+        Add(new wxStaticText(parent, wxID_ANY, *word),
+            wxSizerFlags().DoubleBorder());
+      }
+    }
   }
+
+private:
+  // It's unclear whether _() actually works in this context or
+  // if wxTRANSLATE is needed instead...
+  const std::array<std::array<wxString, 4>, 12> kMessages{
+      //  clang-format off
+      {{_("Zoom in"), "+, PgUp", _("Zoom out"), "-, PgDown"},
+       {_("Fine zoom in"), "Alt +", _("Fine zoom out"), "Alt -"},
+       {_("Fine zoom"), _("Ctrl scroll-wheel"), "", ""},
+       {_("Panning"), U8("→ ← ↑ ↓"), _("Slow panning"), U8("Alt → ← ↑ ↓")},
+       {_("Larger scale chart"), U8("Ctrl ←, F7"), _("Smaller scale chart"),
+        U8("Ctrl →, F8")},
+       {_("Toggle quilting "), "Q, F9", _("Toggle auto-follow"), "Ctrl A, F2"},
+       {_("Toggle outlines"), "O, F12", _("Toggle range rings"), "R"},
+       {_("Toggle chart bar"), "Ctrl B", _("Change color scheme"),
+        "Ctrl-G, F5"},
+       {_("Toggle full screen"), "F11", "", ""},
+       {"", "", "", ""},
+       {_("Start measure mode"), "F4", _("Stop measure mode"), "Esc"},
+       {_("Drop mark"), _("Ctrl O, space bar"), "", ""}}};  //  clang-format on
 };
 
 HotkeysDlg::HotkeysDlg(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, "Hotkeys") {
   auto vbox = new wxBoxSizer(wxVERTICAL);
-  auto flags = wxSizerFlags().Expand().DoubleBorder();
-  vbox->Add(new Message(this, kMessage), flags);
-  vbox->Add(new ButtonsSizer(this), flags);
+  auto flags = wxSizerFlags().DoubleBorder();
+  vbox->Add(new GridSizer(this), flags.Expand());
+  static const char* const kTrailer =
+      _("More keys are available in the manual.");
+  vbox->Add(new wxStaticText(this, wxID_ANY, kTrailer),
+            wxSizerFlags().DoubleBorder().Centre());
+  vbox->Add(new ButtonsSizer(this), flags.Expand());
   SetSizer(vbox);
   Fit();
   Layout();
