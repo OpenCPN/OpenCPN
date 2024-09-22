@@ -45,6 +45,7 @@
 #include <wx/textfile.h>
 #include <wx/timer.h>
 #include <wx/tokenzr.h>
+#include <wx/filename.h>
 
 // Be sure to include these before ais_decoder.h
 // to avoid a conflict with rapidjson/fwd.h
@@ -138,27 +139,29 @@ AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
   AISTargetNamesNC = new AIS_Target_Name_Hash;
 
   if (g_benableAISNameCache) {
-    wxTextFile infile;
-    if (infile.Open(AISTargetNameFileName)) {
-      AIS_Target_Name_Hash *HashFile = AISTargetNamesNC;
-      wxString line = infile.GetFirstLine();
-      while (!infile.Eof()) {
-        if (line.IsSameAs(wxT("+++==Confirmed Entry's==+++")))
-          HashFile = AISTargetNamesC;
-        else {
-          if (line.IsSameAs(wxT("+++==Non Confirmed Entry's==+++")))
-            HashFile = AISTargetNamesNC;
+    if (wxFileName::FileExists(AISTargetNameFileName)) {
+      wxTextFile infile;
+      if (infile.Open(AISTargetNameFileName)) {
+        AIS_Target_Name_Hash *HashFile = AISTargetNamesNC;
+        wxString line = infile.GetFirstLine();
+        while (!infile.Eof()) {
+          if (line.IsSameAs(wxT("+++==Confirmed Entry's==+++")))
+            HashFile = AISTargetNamesC;
           else {
-            wxStringTokenizer tokenizer(line, _T(","));
-            int mmsi = wxAtoi(tokenizer.GetNextToken());
-            wxString name = tokenizer.GetNextToken().Trim();
-            (*HashFile)[mmsi] = name;
+            if (line.IsSameAs(wxT("+++==Non Confirmed Entry's==+++")))
+              HashFile = AISTargetNamesNC;
+            else {
+              wxStringTokenizer tokenizer(line, _T(","));
+              int mmsi = wxAtoi(tokenizer.GetNextToken());
+              wxString name = tokenizer.GetNextToken().Trim();
+              (*HashFile)[mmsi] = name;
+            }
           }
+          line = infile.GetNextLine();
         }
-        line = infile.GetNextLine();
       }
+      infile.Close();
     }
-    infile.Close();
   }
 
   BuildERIShipTypeHash();
@@ -2543,7 +2546,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
     dse_mmsi = wxAtoi(token.Mid(
         0, 9));  // ITU-R M.493-10 �5.2
                  // token.ToDouble(&dse_addr);
-    // 0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
+                 // 0 - (int)(dse_addr / 10);  // as per NMEA 0183 3.01
 
 #if 0
     token = tkz.GetNextToken();  // code field
