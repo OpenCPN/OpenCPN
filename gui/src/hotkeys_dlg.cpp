@@ -69,7 +69,10 @@ public:
 /** Overall help message: key functions and bindings in a string matrix */
 class GridSizer : public wxGridSizer {
 public:
-  GridSizer(wxWindow* parent) : wxGridSizer(kMessages[0].size()) {
+  GridSizer(wxWindow* parent) : wxGridSizer(kMacMessages[0].size()) {
+    const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
+    const auto& kMessages =
+        (osSystemId & wxOS_MAC) ? kMacMessages : kWinLinuxMessages;
     for (auto line = kMessages.begin(); line != kMessages.end(); line++) {
       for (auto word = line->begin(); word != line->end(); word++) {
         Add(new wxStaticText(parent, wxID_ANY, *word),
@@ -81,22 +84,56 @@ public:
 private:
   // It's unclear whether _() actually works in this context or
   // if wxTRANSLATE is needed instead...
-  const std::array<std::array<wxString, 4>, 12> kMessages{
-      //  clang-format off
-      {{_("Zoom in"), "+, PgUp", _("Zoom out"), "-, PgDown"},
-       {_("Fine zoom in"), "Alt +", _("Fine zoom out"), "Alt -"},
-       {_("Fine zoom"), _("Ctrl scroll-wheel"), "", ""},
-       {_("Panning"), U8("→ ← ↑ ↓"), _("Slow panning"), U8("Alt → ← ↑ ↓")},
-       {_("Larger scale chart"), U8("Ctrl ←, F7"), _("Smaller scale chart"),
-        U8("Ctrl →, F8")},
-       {_("Toggle quilting "), "Q, F9", _("Toggle auto-follow"), "Ctrl A, F2"},
-       {_("Toggle outlines"), "O, F12", _("Toggle range rings"), "R"},
-       {_("Toggle chart bar"), "Ctrl B", _("Change color scheme"),
-        "Ctrl-G, F5"},
-       {_("Toggle full screen"), "F11", "", ""},
+  const std::array<std::array<wxString, 4>, 12> kWinLinuxMessages{
+      // clang-format off
+      {{_("Zoom in"), "+, PgUp",
+                                   _("Zoom out"), "-, PgDown"},
+       {_("Fine zoom in"), "Alt +",
+                                   _("Fine zoom out"), "Alt -"},
+       {_("Fine zoom"), _("Ctrl scroll-wheel"),
+                                   "", ""},
+       {_("Panning"), U8("→ ← ↑ ↓")
+                                 , _("Slow panning"), U8("Alt → ← ↑ ↓")},
+       {_("Larger scale chart"), U8("Ctrl ←, F7"),
+                                   _("Smaller scale chart"), U8("Ctrl →, F8")},
+       {_("Toggle quilting "), "Q, F9",
+                                   _("Toggle auto-follow"), "Ctrl A, F2"},
+       {_("Toggle outlines"), "O, F12",
+                                   _("Toggle range rings"), "R"},
+       {_("Toggle chart bar"), "Ctrl B",
+                                   _("Change color scheme"), "Ctrl-G, F5"},
+       {_("Toggle full screen"), "F11",
+                                   "", ""},
        {"", "", "", ""},
-       {_("Start measure mode"), "F4", _("Stop measure mode"), "Esc"},
-       {_("Drop mark"), _("Ctrl O, space bar"), "", ""}}};  //  clang-format on
+       {_("Start measure mode"), "F4",
+                                   _("Stop measure mode"), "Esc"},
+       {_("Drop mark"), _("Ctrl O, space bar"),
+                                   "", ""}}};
+
+  const std::array<std::array<wxString, 4>, 12> kMacMessages{
+      {{_("Zoom in"), "+, PgUp",
+                                   _("Zoom out"), "-, PgDown"},
+       {_("Fine zoom in"), "Alt +",
+                                   _("Fine zoom out"), "Alt -"},
+       {_("Fine zoom"), _("Ctrl scroll-wheel"),
+                                   "", ""},
+       {_("Panning"), U8("→ ← ↑ ↓")
+                                 , _("Slow panning"), U8("Alt → ← ↑ ↓")},
+       {_("Larger scale chart"), U8("Cmd ←, F7"),
+                                   _("Smaller scale chart"), U8("Cmd →, F8")},
+       {_("Toggle quilting "), "Q, F9",
+                                   _("Toggle auto-follow"), "Cmd A"},
+       {_("Toggle outlines"), "O, F12",
+                                   _("Toggle range rings"), "R"},
+       {_("Toggle chart bar"), "Ctrl B",
+                                   _("Change color scheme"), "Ctrl-G, F5"},
+       {_("Toggle full screen"), "Ctrl Cmd F",
+                                   "", ""},
+       {"", "", "", ""},
+       {_("Start measure mode"), "F4",
+                                   _("Stop measure mode"), "Esc"},
+       {_("Drop mark"), _("Ctrl O, space bar"),
+                                   "", ""}}};  // clang-format on
 };
 
 HotkeysDlg::HotkeysDlg(wxWindow* parent)
