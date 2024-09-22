@@ -45,6 +45,14 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   message(STATUS "Building for wxQt-Android")
+  set(CMAKE_BUILD_TYPE Release)
+
+  # Specific NDK setting, avoiding "Unwind" linkage problems with
+  # managed plugins found in later NDK versions.
+  set( tool_base /home/dsr/Android/Sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/linux-x86_64)
+  #cmake -DOCPN_TARGET_TUPLE:STRING="Android-arm64;16;arm64" ..
+  #cmake -DOCPN_TARGET_TUPLE:STRING="Android-armhf;16;armhf" \
+
   set(CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
   set(QT_ANDROID "ON")
   if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
