@@ -749,8 +749,7 @@ static void AISSetMetrics() {
   AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
   AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
-  AIS_icon_diameter = AIS_intercept_bar_circle_diameter *
-                      AIS_user_scale_factor * AIS_scale_factor;
+  AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
 
   wxFont *font = FontMgr::Get().GetFont(_("AIS Target Name"), 12);
   double scaler = DPIscale;
