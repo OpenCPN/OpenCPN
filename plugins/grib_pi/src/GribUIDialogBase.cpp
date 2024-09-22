@@ -2081,7 +2081,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   auto help_btn = new wxButton(this, wxID_HELP);
   help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
     wxString datadir = GetPluginDataDir("manual_pi");
-    Manual(datadir.ToStdString()).Launch("Grib");
+    Manual(this, datadir.ToStdString()).Launch("Grib");
   });
   m_sdbSizer2->AddButton(help_btn);
 

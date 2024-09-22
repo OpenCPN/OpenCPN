@@ -30,7 +30,7 @@
 /** Dialog handling "Manual not found" */
 class ManualDlg : public wxDialog {
 public:
-  explicit ManualDlg(const std::string& url);
+  ManualDlg(wxWindow* parent, const std::string& url);
 
 private:
   const std::string m_url;

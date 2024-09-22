@@ -23,6 +23,8 @@
 #ifndef MANUAL_H_
 #define MANUAL_H_
 
+#include <wx/window.h>
+
 #include <string>
 #include <wx/jsonreader.h>
 
@@ -34,7 +36,7 @@ public:
    * @param path  Manual plugin data directory as returned by
    *              GetPluginDataDir("manual")
    */
-  Manual(const std::string& path);
+  Manual(wxWindow* parent, const std::string& path);
 
   /**
    * Launch a web browser displaying a manual entry point. If the manual
@@ -53,6 +55,7 @@ public:
 private:
   std::string m_datadir;
   wxJSONValue m_root;
+  wxWindow* m_parent;
 };
 
 #endif  // MANUAL_H_

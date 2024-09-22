@@ -43,9 +43,9 @@ public:
   public:
     ManualButton(wxWindow* parent)
         : wxButton(parent, wxID_OK, _("Browse manual")) {
-      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [](wxCommandEvent) {
+      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
         wxString datadir = GetPluginDataDir("manual_pi");
-        Manual(datadir.ToStdString()).Launch("Hotkeys");
+        Manual(this, datadir.ToStdString()).Launch("Hotkeys");
       });
     }
   };

@@ -383,7 +383,7 @@ WmmPrefsDialog::WmmPrefsDialog(wxWindow* parent, wxWindowID id,
   auto* help_btn = new wxButton(this, wxID_HELP);
   help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
     wxString datadir = GetPluginDataDir("manual_pi");
-    Manual(datadir.ToStdString()).Launch("Wmm");
+    Manual(this, datadir.ToStdString()).Launch("Wmm");
   });
   m_sdbSizer1->AddButton(help_btn);
 
