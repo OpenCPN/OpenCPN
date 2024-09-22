@@ -901,6 +901,12 @@ void MUIBar::SetCanvasENCAvailable(bool avail) {
 void MUIBar::CreateControls() {
   wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
 
+  // Build one button to get sizes
+  MUIButton* tb = new MUIButton(m_parentCanvas, ID_ZOOMIN, m_scaleFactor,
+                                iconDir + _T("MUI_zoom-in.svg"));
+  wxSize button_size = tb->m_size;
+  delete tb;
+
   if (m_orientation == wxHORIZONTAL) {
     // Buttons
 
@@ -945,7 +951,7 @@ void MUIBar::CreateControls() {
     m_menuButton->m_position = wxPoint(xoff, 0);
     xoff += m_menuButton->m_size.x;
     m_size.x = xoff;
-    m_size.y = m_zinButton->m_size.y;
+    m_size.y = button_size.y;
 
   } else {
     int yoff = 0;
@@ -978,7 +984,7 @@ void MUIBar::CreateControls() {
     yoff += m_menuButton->m_size.y;
 
     m_size.y = yoff;
-    m_size.x = m_zinButton->m_size.x;
+    m_size.x = button_size.x;
   }
 }
 
