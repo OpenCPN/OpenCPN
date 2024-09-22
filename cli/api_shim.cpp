@@ -1101,9 +1101,15 @@ DECL_EXP double toUsrSpeed_Plugin(double kts_speed, int unit) { return 0.0; }
 DECL_EXP double fromUsrSpeed_Plugin(double usr_speed, int unit) { return 0.0; }
 DECL_EXP double toUsrTemp_Plugin(double cel_temp, int unit) { return 0.0; }
 DECL_EXP double fromUsrTemp_Plugin(double usr_temp, int unit) { return 0.0; }
+DECL_EXP double toUsrWindSpeed_Plugin(double kts_speed, int unit) { return 0.0; }
+DECL_EXP double fromUsrWindSpeed_Plugin(double usr_speed, int unit) { return 0.0; }
+DECL_EXP double toUsrDepth_Plugin(double metres_depth, int unit) { return 0.0; }
+DECL_EXP double fromUsrDepth_Plugin(double usr_depth, int unit) { return 0.0; }
 DECL_EXP wxString getUsrDistanceUnit_Plugin(int unit) { return ""; }
 DECL_EXP wxString getUsrSpeedUnit_Plugin(int unit) { return ""; }
 DECL_EXP wxString getUsrTempUnit_Plugin(int unit) { return ""; }
+DECL_EXP wxString getUsrWindSpeedUnit_Plugin(int unit) { return ""; }
+DECL_EXP wxString getUsrDepthUnit_Plugin(int unit) { return ""; }
 DECL_EXP wxString GetNewGUID() { return ""; }
 DECL_EXP bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
                                        double lon2) {

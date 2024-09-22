@@ -3064,6 +3064,14 @@ double fromUsrTemp_Plugin(double usr_temp, int unit) {
   return fromUsrTemp(usr_temp, unit);
 }
 
+double toUsrDepth_Plugin(double metres_depth, int unit) {
+  return toUsrDepth(metres_depth, unit);
+}
+
+double fromUsrDepth_Plugin(double usr_depth, int unit) {
+  return fromUsrDepth(usr_depth, unit);
+}
+
 wxString getUsrDistanceUnit_Plugin(int unit) {
   return getUsrDistanceUnit(unit);
 }
@@ -3075,6 +3083,8 @@ wxString getUsrWindSpeedUnit_Plugin(int unit) {
 }
 
 wxString getUsrTempUnit_Plugin(int unit) { return getUsrTempUnit(unit); }
+
+wxString getUsrDepthUnit_Plugin(int unit) { return getUsrDepthUnit(unit); }
 
 bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
                               double lon2) {
