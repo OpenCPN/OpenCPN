@@ -137,13 +137,12 @@ private:
 };
 
 HotkeysDlg::HotkeysDlg(wxWindow* parent)
-    : wxDialog(parent, wxID_ANY, "Hotkeys") {
+    : wxDialog(parent, wxID_ANY, _("Keyboard Shortcuts")) {
   auto vbox = new wxBoxSizer(wxVERTICAL);
   auto flags = wxSizerFlags().DoubleBorder();
   vbox->Add(new GridSizer(this), flags.Expand());
-  static const char* const kTrailer =
-      _("More keys are available in the manual.");
-  vbox->Add(new wxStaticText(this, wxID_ANY, kTrailer),
+  vbox->Add(new wxStaticText(this, wxID_ANY,
+                             _("More keys are available in the manual.")),
             wxSizerFlags().DoubleBorder().Centre());
   vbox->Add(new ButtonsSizer(this), flags.Expand());
   SetSizer(vbox);
