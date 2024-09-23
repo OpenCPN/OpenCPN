@@ -95,6 +95,10 @@
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
 #endif
 
+#ifdef __ANDROID__
+#include "crashlytics.h"
+#endif
+
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName,
                           double &val);  // found in s52cnsy
 
@@ -2526,6 +2530,11 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
     ext = wxFileName(name).GetExt();
   }
   m_FullPath = name;
+
+#ifdef __ANDROID__
+  firebase::crashlytics::SetCustomKey("s57chartInit",
+                                      name.ToStdString().c_str());
+#endif
 
   //    Use a static semaphore flag to prevent recursion
   if (s_bInS57) {

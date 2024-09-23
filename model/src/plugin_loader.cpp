@@ -75,6 +75,7 @@
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <dlfcn.h>
+#include "crashlytics.h"
 #endif
 
 #ifdef __WXMSW__
@@ -443,6 +444,11 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
   wxLog::FlushActive();
 
+#ifdef __ANDROID__
+  firebase::crashlytics::SetCustomKey("LoadPluginCandidate",
+                                      file_name.ToStdString().c_str());
+#endif
+
   // this gets called every time we switch to the plugins tab.
   // this allows plugins to be installed and enabled without restarting
   // opencpn. For this reason we must check that we didn't already load this
@@ -528,7 +534,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   // Make the check late enough to pick up incompatible plugins anyway
   const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
   ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
-  if (load_enabled && !enabled.Get(true)) {
+  if (pic && load_enabled && !enabled.Get(true)) {
     pic->m_destroy_fn(pic->m_pplugin);
     delete pic;
     wxLogMessage("Skipping not enabled candidate.");
