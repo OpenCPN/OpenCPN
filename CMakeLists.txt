@@ -45,7 +45,6 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   message(STATUS "Building for wxQt-Android")
-  set(CMAKE_BUILD_TYPE Release)
 
   # Specific NDK setting, avoiding "Unwind" linkage problems with
   # managed plugins found in later NDK versions.
@@ -441,7 +440,7 @@ if (MSVC)
 endif ()
 
 if (QT_ANDROID)
-  set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
