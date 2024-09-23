@@ -99,10 +99,8 @@ public:
       auto handler = PluginHandler::getInstance();
       for (const auto& e : errors) {
         auto plugin = handler->getPluginByLibrary(e.lib_path);
-        if (plugin != "")
-          plugins.push_back(plugin);
-        else
-          libs.push_back(e.lib_path);
+        if (plugin != "") plugins.push_back(plugin);
+        if (e.lib_path != "") libs.push_back(e.lib_path);
       }
     }
   };
@@ -147,7 +145,9 @@ static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
     for (const auto& plugin : format_ctx.plugins) {
       PluginHandler::getInstance()->uninstall(plugin);
     }
-    for (const auto& lib : format_ctx.libs) remove(lib.c_str());
+    for (const auto& lib : format_ctx.libs) {
+      if (isRegularFile(lib.c_str())) remove(lib.c_str());
+    }
   }
 }
 
