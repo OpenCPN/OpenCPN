@@ -1091,7 +1091,7 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void) {
     m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
         _T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR));
     m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
-        _T("ChartMBTiles"), _T("*.mbtiles"), BUILTIN_DESCRIPTOR));
+        _T("ChartMbTiles"), _T("*.mbtiles"), BUILTIN_DESCRIPTOR));
   }
   //    If the PlugIn Manager exists, get the array of dynamically loadable
   //    chart class names

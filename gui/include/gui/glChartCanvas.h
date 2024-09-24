@@ -25,6 +25,32 @@
 #ifndef __GLCHARTCANVAS_H__
 #define __GLCHARTCANVAS_H__
 
+// We need to set up our openGL environment before including
+// glcanvas.h which includes GL/gl.h
+#ifdef __ANDROID__
+#include <qopengl.h>
+#include <GL/gl_private.h>  // this is a cut-down version of gl.h
+#include <GLES2/gl2.h>
+
+#elif defined(ocpnUSE_GL)
+#if defined(__MSVC__)
+#include "glew.h"
+
+#elif defined(__WXOSX__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+typedef void (*_GLUfuncptr)();
+#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
+
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#include <GL/glu.h>
+
+#else
+#  error platform not supported.
+#endif  // __ANDROID__
+#endif  // ocpnUSE_GL
+
 #include <wx/glcanvas.h>
 
 #include "dychart.h"
