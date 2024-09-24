@@ -4564,12 +4564,12 @@ void glChartCanvas::RenderSingleMBTileOverlay(const int dbIndex, bool bOverlay,
   // other reason...
   if (chart == NULL) return;
 
-  ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles *>(chart);
+  ChartMbTiles *pcmbt = dynamic_cast<ChartMbTiles *>(chart);
   if (!pcmbt) return;
 
   // Is tile an OVERLAY type?
   // Render, or not, depending on passed flag.
-  if (bOverlay && pcmbt->GetTileType() != MBTilesType::OVERLAY) return;
+  if (bOverlay && pcmbt->GetTileType() != MbTilesType::OVERLAY) return;
 
   wxFileName tileFile(chart->GetFullPath());
   // Size test for 5 GByte

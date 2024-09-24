@@ -913,11 +913,12 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
-    ${GUI_SRC_DIR}/mbtiles/WorkerThread.cpp
-    ${GUI_SRC_DIR}/mbtiles/WorkerThread.hpp
-    ${GUI_SRC_DIR}/mbtiles/TileQueue.hpp
-    ${GUI_SRC_DIR}/mbtiles/TileDescriptor.hpp
-    ${GUI_SRC_DIR}/mbtiles/TileCache.hpp
+    ${GUI_SRC_DIR}/mbtiles/tile_thread.cpp
+    ${GUI_SRC_DIR}/mbtiles/tile_thread.h
+    ${GUI_SRC_DIR}/mbtiles/tile_queue.h
+    ${GUI_SRC_DIR}/mbtiles/tile_descr.h
+    ${GUI_SRC_DIR}/mbtiles/tile_cache.h
+    ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
     ${GUI_SRC_DIR}/NMEALogWindow.cpp

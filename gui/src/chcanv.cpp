@@ -11830,7 +11830,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator(ocpnDC &dc) {
       ChartTypeEnum current_type = (ChartTypeEnum)cte.GetChartType();
       if (current_type == CHART_TYPE_MBTILES) {
         ChartBase *pChart = m_pQuilt->GetRefChart();
-        ChartMBTiles *ptc = dynamic_cast<ChartMBTiles *>(pChart);
+        ChartMbTiles *ptc = dynamic_cast<ChartMbTiles *>(pChart);
         if (ptc) {
           zoom_factor = ptc->GetZoomFactor();
         }
