@@ -70,6 +70,7 @@
 #include "compass.h"
 #include "concanv.h"
 #include "displays.h"
+#include "hotkeys_dlg.h"
 #include "FontMgr.h"
 #include "glTextureDescriptor.h"
 #include "gshhs.h"
@@ -369,7 +370,7 @@ EVT_TIMER(CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent)
 EVT_TIMER(ROT_TIMER, ChartCanvas::RotateTimerEvent)
 EVT_TIMER(ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent)
 EVT_TIMER(ROUTEFINISH_TIMER, ChartCanvas::OnRouteFinishTimerEvent)
-EVT_KEY_DOWN(ChartCanvas::OnKeyDown)
+EVT_CHAR(ChartCanvas::OnKeyDown)
 EVT_KEY_UP(ChartCanvas::OnKeyUp)
 EVT_CHAR(ChartCanvas::OnKeyChar)
 EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture)
@@ -3035,6 +3036,12 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           ToggleCPAWarn();
 
           break;
+
+        case '?': {
+          auto parent = wxWindow::FindWindowByName("MainWindow");
+          HotkeysDlg dlg(parent);
+          dlg.ShowModal();
+        } break;
 
         case 1:  // Ctrl A
           TogglebFollow();

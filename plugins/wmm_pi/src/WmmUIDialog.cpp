@@ -6,6 +6,8 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "WmmUIDialog.h"
+#include "manual.h"
+#include "ocpn_plugin.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -315,7 +317,7 @@ void WmmUIDialogBase::OnKey(wxKeyEvent& ke) {
   }
 }
 
-void WmmUIDialogBase::OnClose( wxCloseEvent& event ) {
+void WmmUIDialogBase::OnClose(wxCloseEvent& event) {
   if (event.CanVeto()) {
     Hide();
     event.Veto();
@@ -324,7 +326,7 @@ void WmmUIDialogBase::OnClose( wxCloseEvent& event ) {
   }
 }
 
-void WmmUIDialogBase::OnClose( wxCommandEvent& event ) {
+void WmmUIDialogBase::OnClose(wxCommandEvent& event) {
   Hide();
   event.Skip();
 }
@@ -378,6 +380,13 @@ WmmPrefsDialog::WmmPrefsDialog(wxWindow* parent, wxWindowID id,
   m_sdbSizer1->AddButton(m_sdbSizer1OK);
   m_sdbSizer1Cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
   m_sdbSizer1->AddButton(m_sdbSizer1Cancel);
+  auto* help_btn = new wxButton(this, wxID_HELP);
+  help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
+    wxString datadir = GetPluginDataDir("manual_pi");
+    Manual(datadir.ToStdString()).Launch("Wmm");
+  });
+  m_sdbSizer1->AddButton(help_btn);
+
   m_sdbSizer1->Realize();
 
   bSizer2->Add(m_sdbSizer1, 0, wxBOTTOM | wxEXPAND | wxTOP, 5);

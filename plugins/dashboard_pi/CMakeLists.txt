@@ -199,6 +199,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
 )
 target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
 target_link_libraries(${PACKAGE_NAME} ocpn::N2KParser )
+target_link_libraries(${PACKAGE_NAME} ocpn::manual )
 
 IF (WIN32 AND NOT MSVC)
   SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )

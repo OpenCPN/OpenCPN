@@ -7,6 +7,8 @@
 
 #include "chartdldr_pi.h"
 #include "chartdldrgui.h"
+#include "manual.h"
+#include "../../../libs/manual/include/manual.h"
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
 #include <wx/textwrapper.h>
@@ -362,9 +364,8 @@ void AddSourceDlg::OnNbPage(wxNotebookEvent& event) {
     wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
     ChartSource* cs = nullptr;
     if (item.IsOk())
-      cs = (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
-    if(!cs)
-      m_buttonChartDirectory->Disable();
+      cs = (ChartSource*)(m_treeCtrlPredefSrcs->GetItemData(item));
+    if (!cs) m_buttonChartDirectory->Disable();
   }
 }
 
@@ -535,12 +536,12 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
   m_scrollWinChartList->SetMinSize(wxSize(-1, 12 * GetCharHeight()));
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-  if (!m_scrollWinChartList->EnableTouchEvents( wxTOUCH_PRESS_GESTURES)) {
+  if (!m_scrollWinChartList->EnableTouchEvents(wxTOUCH_PRESS_GESTURES)) {
     wxLogError("Failed to enable touch events on chart downloader");
   }
   Bind(wxEVT_LONG_PRESS, &ChartDldrPanel::OnLongPress, this);
 #endif
-  
+
   m_boxSizerCharts = new wxBoxSizer(wxVERTICAL);
   m_scrollWinChartList->SetSizer(m_boxSizerCharts);
 
@@ -590,8 +591,7 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
                    wxDefaultPosition, wxDefaultSize, 0);
   chartsPanelBoxSizer->Add(m_bDnldCharts, 0, wxALIGN_LEFT | wxALL, 5);
 
-  m_stCatalogInfo = new wxStaticText(chartsPanel, wxID_ANY,
-                                     "",
+  m_stCatalogInfo = new wxStaticText(chartsPanel, wxID_ANY, "",
                                      wxDefaultPosition, wxDefaultSize, 0);
   chartsPanelBoxSizer->Add(m_stCatalogInfo, 1, wxEXPAND | wxALL, 5);
   /// mainSizer->Add( m_stCatalogInfo, 0, wxEXPAND| wxALL, 5 );
@@ -655,8 +655,6 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(ChartDldrPanel::OnContextMenu),
       NULL, this);
 #endif /* CHART_LIST */
-  // m_bHelp->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(
-  // ChartDldrPanel::DoHelp ), NULL, this );
   m_bDnldCharts->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPanel::OnDownloadCharts), NULL, this);
@@ -716,9 +714,6 @@ ChartDldrPanel::~ChartDldrPanel() {
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(ChartDldrPanel::OnContextMenu),
       NULL, this);
 #endif /* CHART_LIST */
-
-  // m_bHelp->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(
-  // ChartDldrPanel::DoHelp ), NULL, this );
   m_bDnldCharts->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPanel::OnDownloadCharts), NULL, this);
@@ -728,7 +723,7 @@ ChartDldrPanel::~ChartDldrPanel() {
 }
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-void ChartDldrPanel::OnLongPress(wxLongPressEvent &event) {
+void ChartDldrPanel::OnLongPress(wxLongPressEvent& event) {
   printf(" OnLongPress\n");
   if (1) {
     wxPoint pos = event.GetPosition();
@@ -736,9 +731,8 @@ void ChartDldrPanel::OnLongPress(wxLongPressEvent &event) {
     ev.m_x = pos.x;
     ev.m_y = pos.y;
 
-    //MouseEvent(ev);
+    // MouseEvent(ev);
   }
-
 }
 #endif
 
@@ -835,11 +829,11 @@ ChartPanel::ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
   m_dldrPanel = DldrPanel;
 
-#ifdef  HAVE_WX_GESTURE_EVENTS
+#ifdef HAVE_WX_GESTURE_EVENTS
   Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(ChartPanel::OnContextMenu),
           NULL, this);
 
-  if (!EnableTouchEvents( wxTOUCH_PRESS_GESTURES)) {
+  if (!EnableTouchEvents(wxTOUCH_PRESS_GESTURES)) {
     wxLogError("Failed to enable touch events on chart downloader");
   }
 
@@ -868,14 +862,14 @@ void ChartPanel::OnContextMenu(wxMouseEvent& event) {
 }
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-void ChartPanel::OnLongPress(wxLongPressEvent &event) {
+void ChartPanel::OnLongPress(wxLongPressEvent& event) {
   /* we defer the popup menu call upon the leftup event
   else the menu disappears immediately, */
   m_popupWanted = true;
 }
 #endif
 
-void ChartPanel::OnLeftUp(wxMouseEvent &event) {
+void ChartPanel::OnLeftUp(wxMouseEvent& event) {
   wxPoint pos = event.GetPosition();
 
   if (m_popupWanted) {
@@ -898,16 +892,18 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
 
   this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-  wxBoxSizer *itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
+  wxBoxSizer* itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
   SetSizer(itemBoxSizerMainPanel);
 
-  wxScrolledWindow *scrollWin = new wxScrolledWindow(
-     this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
+  wxScrolledWindow* scrollWin = new wxScrolledWindow(
+      this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
 
   scrollWin->SetScrollRate(1, 1);
   itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
   m_sdbSizerBtns = new wxStdDialogButtonSizer();
+  m_bHelp = new wxButton(this, wxID_HELP);
+  m_sdbSizerBtns->Add(m_bHelp);
   m_sdbSizerBtnsOK = new wxButton(this, wxID_OK);
   m_sdbSizerBtns->AddButton(m_sdbSizerBtnsOK);
   m_sdbSizerBtnsCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
@@ -916,23 +912,25 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
 
   itemBoxSizerMainPanel->Add(m_sdbSizerBtns, 0, wxALL | wxEXPAND, 5);
 
-  wxBoxSizer *bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
+  wxBoxSizer* bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
   scrollWin->SetSizer(bSizerPrefsMain);
 
   wxStaticBoxSizer* sbSizerPaths;
   sbSizerPaths = new wxStaticBoxSizer(
-      new wxStaticBox(scrollWin, wxID_ANY, _("Default Path to Charts")), wxVERTICAL);
+      new wxStaticBox(scrollWin, wxID_ANY, _("Default Path to Charts")),
+      wxVERTICAL);
 
   //      m_dpDefaultDir = new wxDirPickerCtrl( this, wxID_ANY, wxEmptyString,
   //      _("Select a root folder for your charts"), wxDefaultPosition,
   //      wxDefaultSize, wxDIRP_USE_TEXTCTRL ); sbSizerPaths->Add(
   //      m_dpDefaultDir, 0, wxALL|wxEXPAND, 5 );
 
-  m_tcDefaultDir = new wxTextCtrl(scrollWin, wxID_ANY, _T(""), wxDefaultPosition,
-                                  wxSize(-1, -1), wxHSCROLL);
+  m_tcDefaultDir = new wxTextCtrl(scrollWin, wxID_ANY, _T(""),
+                                  wxDefaultPosition, wxSize(-1, -1), wxHSCROLL);
   sbSizerPaths->Add(m_tcDefaultDir, 3, wxALL | wxEXPAND, 5);
 
-  m_buttonChartDirectory = new wxButton(scrollWin, wxID_ANY, _("Select a folder"));
+  m_buttonChartDirectory =
+      new wxButton(scrollWin, wxID_ANY, _("Select a folder"));
   sbSizerPaths->Add(m_buttonChartDirectory, 1, wxALIGN_RIGHT | wxALL, 5);
 
   bSizerPrefsMain->Add(sbSizerPaths, 0, wxALL | wxEXPAND, 5);
@@ -949,8 +947,9 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   m_stPreselect->Wrap(-1);
   sbSizerBehavior->Add(m_stPreselect, 0, wxALL, 5);
 
-  m_cbSelectUpdated = new wxCheckBox(scrollWin, wxID_ANY, _("All updated charts"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
+  m_cbSelectUpdated =
+      new wxCheckBox(scrollWin, wxID_ANY, _("All updated charts"),
+                     wxDefaultPosition, wxDefaultSize, 0);
   m_cbSelectUpdated->SetValue(true);
   sbSizerBehavior->Add(m_cbSelectUpdated, 0, wxALL, 5);
 
@@ -976,7 +975,6 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
 
   bSizerPrefsMain->Add(sbSizerBehavior, 1, wxALL | wxEXPAND, 5);
 
-
   this->Fit();
 
   // Constrain size on small displays
@@ -984,11 +982,10 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   wxDisplaySize(&display_width, &display_height);
 
   wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
-  if(display_height < 600){
+  if (display_height < 600) {
     SetMaxSize(GetOCPNCanvasWindow()->GetSize());
     SetSize(wxSize(60 * GetCharWidth(), canvas_size.y * 8 / 10));
-  }
-  else {
+  } else {
     SetMaxSize(GetOCPNCanvasWindow()->GetSize());
     SetSize(wxSize(60 * GetCharWidth(), canvas_size.y * 8 / 10));
   }
@@ -1008,6 +1005,11 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPrefsDlg::OnDownloadMasterCatalog), NULL,
       this);
+  m_bHelp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
+    wxString datadir = GetPluginDataDir("manual_pi");
+    Manual manual(datadir.ToStdString());
+    manual.Launch("Chartdldr");
+  });
 }
 
 void ChartDldrPrefsDlg::OnDownloadMasterCatalog(wxCommandEvent& event) {

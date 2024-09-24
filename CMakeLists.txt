@@ -784,6 +784,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/GoToPositionDialog.h
     ${GUI_HDR_DIR}/gshhs.h
     ${GUI_HDR_DIR}/gui_lib.h
+    ${GUI_HDR_DIR}/hotkeys_dlg.h
     ${GUI_HDR_DIR}/IDX_entry.h
     ${GUI_HDR_DIR}/iENCToolbar.h
     ${GUI_HDR_DIR}/kml.h
@@ -903,6 +904,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/GoToPositionDialog.cpp
     ${GUI_SRC_DIR}/gshhs.cpp
     ${GUI_SRC_DIR}/gui_lib.cpp
+    ${GUI_SRC_DIR}/hotkeys_dlg.cpp
     ${GUI_SRC_DIR}/IDX_entry.cpp
     ${GUI_SRC_DIR}/iENCToolbar.cpp
     ${GUI_SRC_DIR}/kml.cpp
@@ -1466,6 +1468,9 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
 message(STATUS "    Adding local wxserverdisc")
 add_subdirectory(libs/wxservdisc)
+
+add_subdirectory(libs/manual)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
 
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")

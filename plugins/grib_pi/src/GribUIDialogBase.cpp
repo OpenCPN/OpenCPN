@@ -7,6 +7,7 @@
 
 #include "GribUIDialogBase.h"
 #include "XyGribPanel.h"
+#include "manual.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -2077,6 +2078,13 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_sdbSizer2->AddButton(m_sdbSizer2OK);
   m_sdbSizer2Cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
   m_sdbSizer2->AddButton(m_sdbSizer2Cancel);
+  auto help_btn = new wxButton(this, wxID_HELP);
+  help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
+    wxString datadir = GetPluginDataDir("manual_pi");
+    Manual(datadir.ToStdString()).Launch("Grib");
+  });
+  m_sdbSizer2->AddButton(help_btn);
+
   m_sdbSizer2->Realize();
 
   itemBoxSizerMainPanel->Add(m_sdbSizer2, 0, wxEXPAND, 5);

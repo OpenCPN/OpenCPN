@@ -4,7 +4,7 @@ image::opencpn_dev_linux_0.png[width=50]
 == Documented platforms
 
 The documentation here covers Debian/Ubuntu and Flatpak. Debian .deb
-packages and Flatpaks are the primary deployment platforms for Linux.
+packages and Flatpak are the primary deployment platforms for Linux.
 It is certainly possible to compile OpenCPN on other Linux distributions
 by adapting these instructions.
 
@@ -27,9 +27,6 @@ is the ultimate source for how to build on Linux.
     $ sudo apt-get --allow-unauthenticated install -f
 
 Notes:
-
-  * On old systems like Debian Buster and Ubuntu Bionic it is possible to build
-    OpenCPN linked against gtk2 or gtk3. The default alternative is to use gtk3.
   * The build setup is generally updated for Debian and Ubuntu LTS
     releases.
 
@@ -58,13 +55,11 @@ the appropriate option to cmake:
 _cmake_ is only required when building source code for the first time,
 then running _make_ is enough even if the source code is updated.
 
-=== 5. Install it or create a package
+=== 5. Install
 
     $ sudo make install
 
-Or, to create a .deb package:
-
-    $ make package
+Creating .deb packages is documented in the xref:/create-deb-package.adoc[Debian packaging page]
 
 
 == Flatpak
