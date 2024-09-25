@@ -53,6 +53,8 @@
 #include "model/n0183_comm_mgr.h"
 #endif
 
+using namespace std::literals::chrono_literals;
+
 typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_EMPTY,
   DS_RX_BUFFER_FULL
@@ -158,18 +160,17 @@ void CommDriverN0183Serial::Close() {
 
 #ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
-  if (!m_secondary_thread.IsStopped()) {
+  if (m_secondary_thread.IsRunning()) {
+    using namespace std::chrono;
     wxLogMessage("Stopping Secondary Thread");
-
-    m_secondary_thread.Stop();
-
-    int tsec = 10;
-    while (!m_secondary_thread.IsStopped() && (tsec--)) wxSleep(1);
-
-    if (m_secondary_thread.IsStopped())
-      wxLogMessage("Stopped in %d sec.", 10 - tsec);
-    else
-      wxLogMessage("Not Stopped after 10 sec.");
+    m_secondary_thread.RequestStop();
+    std::chrono::duration<int> elapsed;
+    if (m_secondary_thread.WaitUntilStopped(10s, elapsed)) {
+      MESSAGE_LOG << "Stopped in " << duration_cast<seconds>(elapsed).count()
+                  << " sec.";
+    } else {
+      MESSAGE_LOG << "Not stopped after 10 sec.";
+    }
   }
 
   //  Kill off the Garmin handler, if alive
@@ -224,7 +225,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   androidWriteSerial(port, payload);
   return true;
 #else
-  if (!m_secondary_thread.IsStopped()) {
+  if (m_secondary_thread.IsRunning()) {
     for (int retries = 0; retries < 10; retries += 1) {
       if (m_secondary_thread.SetOutMsg(sentence)) {
         return true;

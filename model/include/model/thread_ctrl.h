@@ -39,8 +39,20 @@ public:
   /** Block until thread invokes SignalExit(). */
   void WaitUntilStopped();
 
-  /** Block  until thread invokes SignalExit() or timeout */
-  void WaitUntilStopped(std::chrono::duration<int> timeout);
+  /**
+   *  Block  until thread invokes SignalExit() or timeout
+   *  @return false if the timeout triggered, else true.
+   */
+  bool WaitUntilStopped(std::chrono::duration<int> timeout);
+
+  /**
+   *  Block  until thread invokes SignalExit() or timeout
+   *  @param timeout Maximum time to wait for thread  to exit.
+   *  @param elapsed On exit, the time spent in method.
+   *  @return false if the timeout triggered, else true.
+   */
+  bool WaitUntilStopped(std::chrono::duration<int> timeout,
+                        std::chrono::duration<int>& elapsed);
 
 protected:
   /** If true continue thread operation, else exit and invoke SignalExit() */

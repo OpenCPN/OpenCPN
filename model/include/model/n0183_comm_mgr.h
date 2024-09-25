@@ -30,6 +30,7 @@
 #include <wx/string.h>
 
 #include "comm_buffers.h"
+#include "model/thread_ctrl.h"
 
 #ifndef __ANDROID__
 #include "serial/serial.h"
@@ -38,13 +39,13 @@
 class CommDriverN0183Serial;
 
 /** Nmea0183 serial IO thread. */
-class CommDriverN0183SerialThread {
+class CommDriverN0183SerialThread : public ThreadCtrl {
 public:
   CommDriverN0183SerialThread(CommDriverN0183Serial* launcher);
 
-  void SetParams(const wxString& portname, const wxString& str_baudrate);
+  ~CommDriverN0183SerialThread();
 
-  ~CommDriverN0183SerialThread(void);
+  void SetParams(const wxString& portname, const wxString& str_baudrate);
 
   /** Thread main function. */
   void* Entry();
@@ -53,16 +54,13 @@ public:
   bool SetOutMsg(const wxString& msg);
 
   /** Unset thread "keep going" flag i. e., initiate stop sequence. */
-  void Stop() { keep_going = 0; }
 
   /** Return true if/when thread has stopped. */
-  bool IsStopped() const { return keep_going < 0; }
 
 private:
 #ifndef __ANDROID__
   serial::Serial m_serial;
 #endif
-  std::atomic_int keep_going;
   void ThreadMessage(const wxString& msg);
   bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
   void CloseComPortPhysical();

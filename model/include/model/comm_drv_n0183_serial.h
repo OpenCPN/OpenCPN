@@ -65,7 +65,7 @@ public:
   bool Open();
   void Close();
 
-  bool IsSecThreadActive() { return !m_secondary_thread.IsStopped(); }
+  bool IsSecThreadActive() { return m_secondary_thread.IsRunning(); }
 
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
