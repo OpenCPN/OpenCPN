@@ -370,7 +370,7 @@ EVT_TIMER(CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent)
 EVT_TIMER(ROT_TIMER, ChartCanvas::RotateTimerEvent)
 EVT_TIMER(ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent)
 EVT_TIMER(ROUTEFINISH_TIMER, ChartCanvas::OnRouteFinishTimerEvent)
-EVT_CHAR(ChartCanvas::OnKeyDown)
+EVT_KEY_DOWN(ChartCanvas::OnKeyDown)
 EVT_KEY_UP(ChartCanvas::OnKeyUp)
 EVT_CHAR(ChartCanvas::OnKeyChar)
 EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture)
@@ -2591,7 +2591,19 @@ void ChartCanvas::OnKeyChar(wxKeyEvent &event) {
                // anything else
 
   int key_char = event.GetKeyCode();
-
+  switch (key_char) {
+    case '?':
+      HotkeysDlg(wxWindow::FindWindowByName("MainWindow")).ShowModal();
+      break;
+    case '+':
+      ZoomCanvas(g_plus_minus_zoom_factor, false);
+      break;
+    case '-':
+      ZoomCanvas(1.0 / g_plus_minus_zoom_factor, false);
+      break;
+    default:
+      break;
+  }
   if (g_benable_rotate) {
     switch (key_char) {
       case ']':
@@ -2856,18 +2868,6 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
     //      Handle both QWERTY and AZERTY keyboard separately for a few control
     //      codes
     if (!g_b_assume_azerty) {
-      switch (key_char) {
-        case '+':
-        case '=':
-          ZoomCanvas(g_plus_minus_zoom_factor, false);
-          break;
-
-        case '-':
-        case '_':
-          ZoomCanvas(1.0 / g_plus_minus_zoom_factor, false);
-          break;
-      }
-
 #ifdef __WXMAC__
       if (g_benable_rotate) {
         switch (key_char) {
@@ -3036,12 +3036,6 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           ToggleCPAWarn();
 
           break;
-
-        case '?': {
-          auto parent = wxWindow::FindWindowByName("MainWindow");
-          HotkeysDlg dlg(parent);
-          dlg.ShowModal();
-        } break;
 
         case 1:  // Ctrl A
           TogglebFollow();

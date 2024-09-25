@@ -105,7 +105,7 @@ private:
        {_("Toggle full screen"), "F11",
                                    "", ""},
        {"", "", "", ""},
-       {_("Start measure mode"), "F4",
+       {_("Start measure mode"), "M, F4",
                                    _("Stop measure mode"), "Esc"},
        {_("Drop mark"), _("Ctrl O, space bar"),
                                    "", ""}}};
