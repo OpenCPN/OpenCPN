@@ -131,9 +131,8 @@ void* CommDriverN0183SerialThread::Entry() {
   }
 
   //    The main loop
-  keep_going = 1;
   unsigned retries = 0;
-  while (keep_going > 0) {
+  while (KeepGoing()) {
     unsigned newdata = 0;
     uint8_t rdata[2000];
 
@@ -164,7 +163,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
     // Handle received data
     for (unsigned i = 0; i < newdata; i++) line_buf.Put(rdata[i]);
-    while (line_buf.HasLine()) {
+    while (KeepGoing() && line_buf.HasLine()) {
       auto payload = std::make_shared<std::vector<uint8_t>>(line_buf.GetLine());
       CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
       Nevent.SetPayload(payload);
@@ -173,7 +172,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
     //  Handle pending output messages
     std::string qmsg;
-    while (m_out_que.Get(qmsg)) {
+    while (KeepGoing() && m_out_que.Get(qmsg)) {
       qmsg += "\r\n";
       if (-1 == WriteComPortPhysical(qmsg.c_str()) && 10 < retries++) {
         // We failed to write the port 10 times, let's close the port so that
@@ -185,6 +184,6 @@ void* CommDriverN0183SerialThread::Entry() {
   }
 
   CloseComPortPhysical();
-  keep_going = -1;  // I am dead
+  SignalExit();
   return 0;
 }
