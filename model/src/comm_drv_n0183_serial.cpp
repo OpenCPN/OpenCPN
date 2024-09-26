@@ -60,6 +60,7 @@ typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
+
 class CommDriverN0183Serial;  // fwd
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
@@ -91,7 +92,8 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_portstring(params->GetDSPort()),
-      m_secondary_thread(this),
+      m_secondary_thread([&](const std::vector<unsigned char>& v) {
+                              SendMessage(v);}),
       m_params(*params),
       m_listener(listener) {
   m_baudrate = wxString::Format("%i", params->Baudrate);
@@ -238,6 +240,29 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 #endif
 }
 
+
+void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
+  // Is this an output-only port?
+  // Commonly used for "Send to GPS" function
+  if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
+
+  // sanity check
+  if (msg[0] != '$' && msg[0] != '!') return;
+
+  // We use the full src + type to discriminate messages,  like GPGGA
+  std::string identifier(msg.begin() + 1, msg.begin() + 6);
+
+  // notify msg listener and also "ALL" N0183 messages, to support plugin
+  // API using original talker id
+  std::string payload(msg.begin(), msg.end());
+  auto message = std::make_shared<const Nmea0183Msg>(identifier, payload,
+                                                     GetAddress());
+  auto message_all = std::make_shared<const Nmea0183Msg>(*message, "ALL");
+
+  if (m_params.SentencePassesFilter(payload, FILTER_INPUT))
+      m_listener.Notify(std::move(message));
+  m_listener.Notify(std::move(message_all));
+}
 void CommDriverN0183Serial::HandleN0183Msg(CommDriverN0183SerialEvent& event) {
   // Is this an output-only port?
   // Commonly used for "Send to GPS" function
