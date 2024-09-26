@@ -1,5 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/***************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 by Alec Leamas                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -33,26 +34,6 @@
 #include "model/garmin_protocol_mgr.h"
 #include "model/n0183_comm_mgr.h"
 
-class CommDriverN0183SerialThread;  // Internal
-
-class CommDriverN0183SerialEvent : public wxEvent {
-public:
-  CommDriverN0183SerialEvent(wxEventType commandType, int id);
-  ~CommDriverN0183SerialEvent();
-
-  // accessors
-  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data);
-  std::shared_ptr<std::vector<unsigned char>> GetPayload();
-
-  // required for sending with wxPostEvent()
-  wxEvent* Clone() const;
-
-private:
-  std::shared_ptr<std::vector<unsigned char>> m_payload;
-};
-
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
-
 class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
 public:
   CommDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
@@ -76,8 +57,6 @@ public:
                    std::shared_ptr<const NavAddr> addr) override;
 
 private:
-  void HandleN0183Msg(CommDriverN0183SerialEvent& event);
-
   /**
    * Send a message to all listeners after applying filtering. Ends up in a
    * Notify() and can thus be used as a callback in IO threads.
