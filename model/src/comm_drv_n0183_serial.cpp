@@ -125,11 +125,12 @@ bool CommDriverN0183Serial::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
+  auto send_func = [&](const std::vector<unsigned char>& v) {SendMessage(v); };
   if ((wxNOT_FOUND != port_uc.Find("USB")) &&
       (wxNOT_FOUND != port_uc.Find("GARMIN"))) {
-    m_garmin_handler = new GarminProtocolHandler(comx, this, true);
+    m_garmin_handler = new GarminProtocolHandler(comx, send_func, true);
   } else if (m_params.Garmin) {
-    m_garmin_handler = new GarminProtocolHandler(comx, this, false);
+    m_garmin_handler = new GarminProtocolHandler(comx, send_func, false);
   } else {
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');
