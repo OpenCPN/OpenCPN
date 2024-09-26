@@ -126,8 +126,7 @@ public:
   NavAddr::Bus GetCommProtocol();
 
   bool SentencePassesFilter(const wxString &sentence,
-                            FilterDirection direction);
-
+                            FilterDirection direction) const;
   bool Valid;
   bool b_IsSetup;
   ConnectionParamsPanel *m_optionsPanel;
