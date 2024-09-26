@@ -48,12 +48,8 @@
 #include "model/n0183_comm_mgr.h"
 #include "serial/serial.h"
 
-CommDriverN0183SerialThread::CommDriverN0183SerialThread(
-    CommDriverN0183Serial* Launcher) {
-  m_parent_driver = Launcher;  // This thread's immediate "parent"
-  m_portname = "undefined";
-  m_baud = 4800;
-}
+CommDriverN0183SerialThread::CommDriverN0183SerialThread(SendMsgFunc send_func)
+    : m_portname("undefined"), m_baud(4800), m_send_msg_func(send_func) {}
 
 void CommDriverN0183SerialThread::SetParams(const wxString& portname,
                                             const wxString& strBaudRate) {
@@ -164,10 +160,7 @@ void* CommDriverN0183SerialThread::Entry() {
     // Handle received data
     for (unsigned i = 0; i < newdata; i++) line_buf.Put(rdata[i]);
     while (KeepGoing() && line_buf.HasLine()) {
-      auto payload = std::make_shared<std::vector<uint8_t>>(line_buf.GetLine());
-      CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-      Nevent.SetPayload(payload);
-      m_parent_driver->AddPendingEvent(Nevent);
+      m_send_msg_func(line_buf.GetLine());
     }
 
     //  Handle pending output messages
