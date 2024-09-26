@@ -78,6 +78,12 @@ public:
 private:
   void HandleN0183Msg(CommDriverN0183SerialEvent& event);
 
+  /**
+   * Send a message to all listeners after applying filtering. Ends up in a
+   * Notify() and can thus be used as a callback in IO threads.
+   */
+  void SendMessage(const std::vector<unsigned char>& msg);
+
   std::string m_portstring;
   std::string m_baudrate;
 
