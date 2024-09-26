@@ -329,7 +329,7 @@ std::string ConnectionParams::GetLastDSPort() const {
 }
 
 bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
-                                            FilterDirection direction) {
+                                            FilterDirection direction) const {
   wxArrayString filter;
   bool listype = false;
 
