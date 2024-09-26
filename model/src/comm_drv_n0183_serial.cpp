@@ -1,5 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/***************************************************************************
+ *   Copyright (C) 2022 David Register                                     *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -60,33 +61,6 @@ typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
-
-class CommDriverN0183Serial;  // fwd
-
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
-
-CommDriverN0183SerialEvent::CommDriverN0183SerialEvent(wxEventType commandType,
-                                                       int id = 0)
-    : wxEvent(id, commandType) {};
-
-CommDriverN0183SerialEvent::~CommDriverN0183SerialEvent() {};
-
-void CommDriverN0183SerialEvent::SetPayload(
-    std::shared_ptr<std::vector<unsigned char>> data) {
-  m_payload = data;
-}
-std::shared_ptr<std::vector<unsigned char>>
-CommDriverN0183SerialEvent::GetPayload() {
-  return m_payload;
-}
-
-// required for sending with wxPostEvent()
-wxEvent* CommDriverN0183SerialEvent::Clone() const {
-  CommDriverN0183SerialEvent* newevent = new CommDriverN0183SerialEvent(*this);
-  newevent->m_payload = this->m_payload;
-  return newevent;
-};
-
 CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                                              DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183,
@@ -108,11 +82,6 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
     s_iosel = "IN/OUT";
   }
   this->attributes["ioDirection"] = s_iosel;
-
-  // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::HandleN0183Msg,
-       this);
-
   Open();
 }
 
@@ -157,9 +126,6 @@ void CommDriverN0183Serial::Close() {
   // If port is opened, and then closed immediately,
   // the secondary thread may not stop quickly enough.
   // It can then crash trying to send an event to its "parent".
-
-  Unbind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::HandleN0183Msg,
-         this);
 
 #ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
@@ -263,32 +229,4 @@ void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
   if (m_params.SentencePassesFilter(payload, FILTER_INPUT))
       m_listener.Notify(std::move(message));
   m_listener.Notify(std::move(message_all));
-}
-void CommDriverN0183Serial::HandleN0183Msg(CommDriverN0183SerialEvent& event) {
-  // Is this an output-only port?
-  // Commonly used for "Send to GPS" function
-  if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
-
-  auto p = event.GetPayload();
-  std::vector<unsigned char>* payload = p.get();
-
-  // Extract the NMEA0183 sentence
-  std::string full_sentence = std::string(payload->begin(), payload->end());
-
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
-    std::string identifier;
-    // We notify based on full message, including the Talker ID
-    identifier = full_sentence.substr(1, 5);
-
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
-    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
-                                                   GetAddress());
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
-    if (m_params.SentencePassesFilter(full_sentence, FILTER_INPUT))
-      m_listener.Notify(std::move(msg));
-
-    m_listener.Notify(std::move(msg_all));
-  }
 }
