@@ -50,6 +50,12 @@ public:
   static NMEALogWindow &GetInstance();
   NMEALogWindow(const NMEALogWindow &) = delete;
   NMEALogWindow &operator=(const NMEALogWindow &) = delete;
+
+  /** If required , create the window and show it. */
+  static void Show();
+
+  static void Shutdown();
+
   bool Active() const;
   void Create(wxWindow *parent, int num_lines = 35);
   void Add(const wxString &s);
@@ -64,8 +70,8 @@ public:
   void SetPos(const wxPoint &pos);
   void CheckPos(int display_width, int display_height);
   void Move();
+
   virtual void DestroyWindow();
-  static void Shutdown();
   wxWindow *GetTTYWindow(void) { return static_cast<wxWindow *>(m_window); }
 
 private:

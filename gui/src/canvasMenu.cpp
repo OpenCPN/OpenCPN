@@ -1500,13 +1500,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
     }
 
-    case ID_DGB_MENU_NMEA_WINDOW: {
-      if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
-        auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-        NMEALogWindow::GetInstance().Create(top_window, 35);
-      }
-      wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
-    } break;
+    case ID_DGB_MENU_NMEA_WINDOW:
+      NMEALogWindow::Show();
+      break;
 
     case ID_RT_MENU_REVERSE: {
       if (m_pSelectedRoute->m_bIsInLayer) break;

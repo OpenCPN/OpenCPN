@@ -25,6 +25,7 @@
 #include "NMEALogWindow.h"
 #include "TTYWindow.h"
 #include "OCPNPlatform.h"
+#include "model/gui.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -49,6 +50,14 @@ void NMEALogWindow::Shutdown() {
     delete instance;
     instance = NULL;
   }
+}
+
+void NMEALogWindow::Show() {
+  if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
+    auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
+    NMEALogWindow::GetInstance().Create(top_window, 35);
+  }
+  wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
 }
 
 bool NMEALogWindow::Active() const { return m_window != NULL; }
