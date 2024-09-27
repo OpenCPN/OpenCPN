@@ -708,7 +708,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
     }
   }
-  contextMenu->AppendSubMenu(subMenuDebug, _("Debug"));
+  if (g_enable_root_menu_debug)
+    contextMenu->AppendSubMenu(subMenuDebug, _("Debug"));
 
   if (seltype & SELTYPE_ROUTESEGMENT) {
     if (!g_bBasicMenus && m_pSelectedRoute) {
