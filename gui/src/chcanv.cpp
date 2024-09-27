@@ -7048,14 +7048,17 @@ bool leftIsDown;
 
 bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
   if (!m_bChartDragging && !m_bDrawingRoute) {
-    if (m_Compass && m_Compass->IsShown() &&
-        m_Compass->GetRect().Contains(event.GetPosition())) {
+    bool isInCompass = m_Compass && m_Compass->IsShown() &&
+                           m_Compass->GetRect().Contains(event.GetPosition());
+    if (isInCompass || m_mouseWasInCompass) {
       if (m_Compass->MouseEvent(event)) {
         cursor_region = CENTER;
         if (!g_btouch) SetCanvasCursor(event);
+        m_mouseWasInCompass = isInCompass;
         return true;
       }
     }
+    m_mouseWasInCompass = isInCompass;
 
     if (MouseEventToolbar(event)) return true;
 

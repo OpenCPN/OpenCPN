@@ -891,6 +891,8 @@ private:
 
   ocpnCompass *m_Compass;
   bool m_bShowGPS;
+  // Track whether a previous wxMouseEvent was in the m_Compass area.
+  bool m_mouseWasInCompass;
 
   wxRect m_mainlast_tb_rect;
   int m_restore_dbindex;

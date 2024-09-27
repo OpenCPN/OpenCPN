@@ -73,6 +73,7 @@ ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
 
   m_scale = 1.0;
   m_cs = GLOBAL_COLOR_SCHEME_RGB;
+  SetToolTip(wxEmptyString);
 }
 
 ocpnCompass::~ocpnCompass() {
@@ -171,7 +172,10 @@ void ocpnCompass::Paint(ocpnDC& dc) {
 }
 
 bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
-  if (!m_shown || !m_rect.Contains(event.GetPosition())) return false;
+  if (!m_shown || !m_rect.Contains(event.GetPosition())) {
+    m_parent->UnsetToolTip();
+    return false;
+  }
 
   if (event.LeftDown()) {
     if (m_parent->GetUpMode() == NORTH_UP_MODE)
@@ -182,12 +186,20 @@ bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
       m_parent->SetUpMode(NORTH_UP_MODE);
   }
 
+  if (event.Entering() || event.Moving()) {
+    m_parent->SetToolTip(m_tooltip);  // Show tooltip on hover
+  }
+
   return true;
 }
 
 void ocpnCompass::SetColorScheme(ColorScheme cs) {
   m_cs = cs;
   UpdateStatus(true);
+}
+
+void ocpnCompass::SetToolTip(const wxString& tooltip) {
+  m_tooltip = tooltip;
 }
 
 void ocpnCompass::UpdateStatus(bool bnew) {
@@ -198,6 +210,29 @@ void ocpnCompass::UpdateStatus(bool bnew) {
 #ifdef ocpnUSE_GL
   if (g_bopengl && m_texobj) CreateTexture();
 #endif
+
+  // Update tooltip text,
+  wxString tooltipText;
+  if (m_parent->GetUpMode() == NORTH_UP_MODE)
+    tooltipText = _T("North Up");
+  else if (m_parent->GetUpMode() == COURSE_UP_MODE)
+    tooltipText = _T("Course Up");
+  else
+    tooltipText = _T("Heading Up");
+
+  if (m_bshowGPS) {
+    tooltipText += "\n";
+    if (bGPSValid) {
+      if (g_bSatValid)
+        tooltipText += wxString::Format(_T("GNSS (%d satellites)"), g_SatsInView);
+      else
+        // Satellite watchdog timer has expired, no data has been received recently.
+        tooltipText += _T("GNSS data stale");
+    } else {
+      tooltipText += _T("No GNSS data");
+    }
+  }
+  SetToolTip(tooltipText);
 }
 
 void ocpnCompass::SetScaleFactor(float factor) {
