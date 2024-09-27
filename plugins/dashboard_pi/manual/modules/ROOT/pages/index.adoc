@@ -101,56 +101,65 @@ Window.
 
 image::dash-select-instr_0.png[image,width=260,height=265]
 
-=== 40 Instruments Available
+=== 50 Instruments Available
 
 
 [cols="",]
 |===
-|Position (text)
-|SOG (text) -Speed Over Ground
-|Speedometer (dial)
-|COG(text) - Course Over Ground
-|GPS Compass(dial)
-|STW(text) Speed Through Water
-|True HDG(text) Heading
-|Apparent WindAngle & Speed(dial) See http://www.cruisersforum.com/forums/f134/mwv-sentences-not-working-in-dashboard-159069.html[MWV]
-|App. Wind speed(text)
-|App. Wind speed(dial)
-|App. Wind angle
-|True Wind Angle & Speed(dial)
-|Depth(text)^1^
-|Depth(dial)^1^
-|Water Temp(text)
-|VMG(text)- Velocity Made Good to a waypoint
-|VMG(dial)
-|Rudder Angle(text)
-|Rudder Angle(dial)
-|GPS in view(text)- the number of satellites detected^2^
-|GPS status(dial)^2^
-|Cursor, shows the position of the cursor.
-|Clock, showing UTC from the NMEA stream, in most cases this is the gps time.
-|Sunrise/Sunset
-|Moon phase
-|Air Temp
-|Altitude
-|True Wind angle
-|True Wind direction
-|True Wind Speed
-|True Wind Direction and speed
-|Magnetic Hdg
-|True Compass
-|Wind History
-|Trip Log
-|Sum Log
+|Air Temp (text)
+|Altitude (text)
+|Altitude Trace (graph) - Historical
+|App & True Wind Angle (dial) - & speed
+|App Win Angle (text)
+|App Wind Angle & Speed (dial)
+|App Wind Speed (dial)
+|App Wind Speed (text)
+|Barometric History (graph)
+|Barometric Pressure (text)
 |Barometric Pressure (dial)
-|Barometric Pressure (text) http://www.cruisersforum.com/forums/f134/dashboard-vs-xdr-mta-mda-197116.html#post2571109[MVW Example]
-|Barometric History
-|From Ownship. Shows the vector from Ownship to the cursor.
-|Magnetic COG^2^
+|COG (text)
+|Cursor (text) - Position
+|Depth^1^ (graph) - Historical
+|Depth^1^ (text)
+|From OwnShip (text) - Vector & Distance to cursor
+|GNSS Clock (text)
+|GNSS Compass (dial)
+|GNSS in use^2^ (text) - Satellites used for the position calculation
+|GNSS Status^2^ (graph)
+|Heel (text)
+|Humidity (text)
+|Local CPU Clock (text)
+|Local GNSS Clock (text)
+|Local Sunrice/Sunset (text)
+|Mag COG^2^ (text)
+|Mag HDG (text)
+|Moon phase (graph)
+|Pitch (text)
+|Position (text)
+|Rudder Angle (dial)
+|Rudder Angle (text)
+|SOG (text)
+|Speed SOG (dial)
+|Speed STW (dial) - Speed through the water
+|STW (text)
+|Sum Log (text)
+|Sunrice/Sunset (text) - UTC
+|Trip Log (text)
+|True Compass (dial)
+|True HDG (text) - Compass heading
+|True Wind Angle (text)
+|True Wind Angle & Speed (dial)
+|True Wind Direction (text)
+|True Wind Speed (text)
+|VMG (Dial) - Velocity made good
+|VMG (text)
+|VMG Wind (text)
+|Water Temp (text)
+|Wind History (graph)
 |===
 
-. The DPT sentence is used, and transducer offset will be added
-to depth value, if available.
+. For the N0183 sentence: DBT, DPT, XDR(D) or SignalK (without offset). If the user option
+transducer offset is used it will be added to the depth value.
 . Linux note:: GPS satellite info is not available if using gpsd. The
 same informations is however available through the “xgps” command.
 

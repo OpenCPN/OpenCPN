@@ -43,9 +43,9 @@ public:
   public:
     ManualButton(wxWindow* parent)
         : wxButton(parent, wxID_OK, _("Browse manual")) {
-      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [](wxCommandEvent) {
+      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
         wxString datadir = GetPluginDataDir("manual_pi");
-        Manual(datadir.ToStdString()).Launch("Hotkeys");
+        Manual(this, datadir.ToStdString()).Launch("Hotkeys");
       });
     }
   };
@@ -105,7 +105,7 @@ private:
        {_("Toggle full screen"), "F11",
                                    "", ""},
        {"", "", "", ""},
-       {_("Start measure mode"), "F4",
+       {_("Start measure mode"), "M, F4",
                                    _("Stop measure mode"), "Esc"},
        {_("Drop mark"), _("Ctrl O, space bar"),
                                    "", ""}}};

@@ -68,10 +68,9 @@ public:
 };
 
 /** Overall "Local manual not found" window" */
-ManualDlg::ManualDlg(const std::string& url)
-    : wxDialog(wxWindow::FindWindowByName("MainWindow"), wxID_ANY,
-               "Manual not found"),
-      m_url(url) {
+ManualDlg::ManualDlg(wxWindow* parent, const std::string& url)
+    : wxDialog(parent, wxID_ANY, "Manual not found"), m_url(url) {
+
   auto vbox = new wxBoxSizer(wxVERTICAL);
   auto flags = wxSizerFlags().Expand().DoubleBorder();
   vbox->Add(new wxStaticText(this, wxID_ANY, kMessage), flags);

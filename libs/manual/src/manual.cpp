@@ -59,7 +59,8 @@ static bool replace(std::string& str, const std::string& from,
   return true;
 }
 
-Manual::Manual(const std::string& path) : m_datadir(path) {
+Manual::Manual(wxWindow* parent, const std::string& path)
+    : m_datadir(path), m_parent(parent) {
   auto datadir_path(fs::path(m_datadir) / "data" / "entrypoints.json");
   if (!fs::exists(datadir_path)) {
     wxLogDebug("Manual plugin is not installed");
@@ -91,7 +92,7 @@ bool Manual::Launch(const std::string& entrypoint) {
   replace(path, "@ONLINE_PLUGROOT@", kOnlinePlugroot);
   replace(path, "@ONLINE_ROOT@", kOnlineRoot);
   replace(path, "@WIKI_ROOT@", kWikiRoot);
-  ManualDlg dlg(path);
+  ManualDlg dlg(m_parent, path);
   dlg.ShowModal();
   return true;
 }
