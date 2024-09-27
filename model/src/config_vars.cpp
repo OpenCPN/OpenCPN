@@ -42,6 +42,7 @@ bool g_bTrackDaily = false;
 bool g_bUserIconsFirst = true;
 bool g_bUseWptScaMin = false;
 bool g_bWplUsePosition = false;
+bool g_enable_root_menu_debug = false;
 bool g_persist_active_route = false;
 
 double g_n_arrival_circle_radius = 0.0;
