@@ -53,8 +53,8 @@ public:
 
   ~GRIBTable() { delete m_pGribTable; }
 
-  void InitGribTable(int zone, ArrayOfGribRecordSets *rsa);
-  void InitGribTable(int zone, ArrayOfGribRecordSets *rsa, int NowIndex);
+  void InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
+                     int NowIndex);
   void SetTableSizePosition(int vpWidth, int vpHeight);
   wxBitmap GetScaledBitmap(wxBitmap bmp, wxString svgfile, double scfactor) {
     return m_pGDialog->GetScaledBitmap(bmp, svgfile, scfactor);
@@ -79,7 +79,6 @@ private:
   wxString GetCAPE(GribRecord **recordarray);
   wxString GetCompRefl(GribRecord **recordarray);
   wxString GetCurrent(GribRecord **recordarray, int datatype, double &wdir);
-  wxString GetTimeRowsStrings(wxDateTime date_time, int time_zone, int type);
 
   void OnClose(wxCloseEvent &event);
   void OnOKButton(wxCommandEvent &event);

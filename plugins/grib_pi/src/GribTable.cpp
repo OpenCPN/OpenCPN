@@ -50,7 +50,7 @@ extern double m_cursor_lat, m_cursor_lon;
 GRIBTable::GRIBTable(GRIBUICtrlBar &parent)
     : GRIBTableBase(&parent), m_pGDialog(&parent) {}
 
-void GRIBTable::InitGribTable(int zone, ArrayOfGribRecordSets *rsa,
+void GRIBTable::InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
                               int NowIndex) {
   m_pGribTable->m_gParent = this;
   m_pIndex = NowIndex;
@@ -81,17 +81,14 @@ void GRIBTable::InitGribTable(int zone, ArrayOfGribRecordSets *rsa,
     // populate time labels
     time = rsa->Item(i).m_Reference_Time;
     m_pGribTable->SetColLabelValue(
-        i, GetTimeRowsStrings(time, zone, 1)
-               .Append(_T("\n"))
-               .Append(
-                   GetTimeRowsStrings(rsa->Item(i).m_Reference_Time, zone, 0)));
+        i, TToString(time, DT_SHORT_DATE + "\n" + DT_HOUR_MINUTES, zone));
     nrows = -1;
     GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
     if (pTimeset == 0) continue;
 
     GribRecord **RecordArray = pTimeset->m_GribRecordPtrArray;
 
-    /*create and polulate wind data row
+    /*create and populate wind data row
          wind is a special case:
          1) if current unit is not bf ==> double speed display (current unit +
        bf) 2) create two lines for direction and speed and a third for gust if
@@ -638,36 +635,4 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray, int datatype,
             GribOverlaySettings::CURRENT, vkn);
   }
   return skn;
-}
-
-wxString GRIBTable::GetTimeRowsStrings(wxDateTime date_time, int time_zone,
-                                       int type) {
-  wxDateTime t(date_time);
-  switch (time_zone) {
-    case 0:
-      if ((wxDateTime::Now() == (wxDateTime::Now().ToGMT())) &&
-          t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
-        t.Add(wxTimeSpan(1, 0, 0, 0));
-      switch (type) {
-        case 0:
-          return t.Format(_T(" %H:%M  "), wxDateTime::Local) + _T("LOC");
-        case 1:
-          if (GetLocaleCanonicalName() == _T("en_US"))
-            return t.Format(_T(" %a-%m/%d/%y  "), wxDateTime::Local);
-          else
-            return t.Format(_T(" %a-%d/%m/%y  "), wxDateTime::Local);
-      }
-    case 1:
-      switch (type) {
-        case 0:
-          return t.Format(_T(" %H:%M  "), wxDateTime::UTC) + _T("UTC");
-        case 1:
-          if (GetLocaleCanonicalName() == _T("en_US"))
-            return t.Format(_T(" %a-%m/%d/%y  "), wxDateTime::UTC);
-          else
-            return t.Format(_T(" %a-%d/%m/%y  "), wxDateTime::UTC);
-      }
-    default:
-      return wxEmptyString;
-  }
 }

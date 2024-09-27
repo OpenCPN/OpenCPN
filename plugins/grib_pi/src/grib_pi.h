@@ -127,7 +127,16 @@ public:
 
   wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
   wxPoint GetCursorDataXY() { return m_CursorDataxy; }
-  int GetTimeZone() { return m_bTimeZone; }
+  const wxString GetTimeZone() {
+    switch (m_bTimeZone) {
+      case 0:
+        return DT_TZ_UTC;
+      case 1:
+        return DT_TZ_LOCAL_TIME;
+      default:
+        return wxEmptyString;
+    }
+  }
   void SetTimeZone(int tz);
   int GetStartOptions() { return m_bStartOptions; }
   bool GetCopyFirstCumRec() { return m_bCopyFirstCumRec; }

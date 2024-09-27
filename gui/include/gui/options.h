@@ -224,7 +224,11 @@ enum {
   ID_AISALERTAUDIO,
   ID_AISALERTDIALOG,
   ID_TEMPUNITSCHOICE,
-  ID_BUTTONMIGRATE
+  ID_BUTTONMIGRATE,
+  ID_TIMEZONE_UTC,
+  ID_TIMEZONE_LOCAL_TIME,
+  ID_TIMEZONE_SPECIFIC,
+  ID_TIMEZONE_COMBOBOX
 };
 
 /* Define an int bit field for dialog return value
@@ -422,6 +426,8 @@ public:
   wxCheckBox *pZoomButtons, *pChartBarEX;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
+  wxRadioButton *pTimezoneLocalTime, *pTimezoneUTC, *pTimezoneSpecific;
+  wxComboBox *pTimezoneComboBox;
 
   wxTextCtrl *pCmdSoundString;
 
@@ -445,6 +451,8 @@ public:
   wxButton *m_configDeleteButton, *m_configApplyButton;
 
   void OnAISRolloverClick(wxCommandEvent &event);
+  void OnTimezoneComboBoxSelect(wxCommandEvent &event);
+  void OnTimezoneRadioSelect(wxCommandEvent &event);
   void UpdateChartDirList();
 
   void OnCanvasConfigSelectClick(int ID, bool selected);

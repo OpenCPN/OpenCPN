@@ -140,8 +140,12 @@ protected:
   wxTextCtrl* m_tTimeEnroute;
   wxStaticText* m_stShowTime;
   wxRadioButton* m_rbShowTimeUTC;
-  wxRadioButton* m_rbShowTimePC;
-  wxRadioButton* m_rbShowTimeLocal;
+  wxRadioButton*
+      m_rbShowTimePC;  ///> Use PC Local timezone to format date/time.
+  wxRadioButton* m_rbShowTimeLocal;  ///> Use Local Mean Time (LMT) at the
+                                     ///location to format date/time.
+  wxRadioButton* m_rbShowTimeGlobalSettings;  ///> Honor OpenCPN global setting
+                                              ///to format date/time.
   OCPNTrackListCtrl* m_lcPoints;
   wxScrolledWindow* m_panelAdvanced;
   wxStaticText* m_stDescription;
@@ -218,6 +222,9 @@ public:
 };
 
 class OCPNTrackListCtrl : public wxListCtrl {
+protected:
+  double getStartPointLongitude() const;
+
 public:
   OCPNTrackListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                     const wxSize& size, long style);
@@ -227,6 +234,17 @@ public:
   int OnGetItemColumnImage(long item, long column) const;
 
   Track* m_pTrack;
+
+  /**
+   * The timezone to use when formatting date/time.
+   * Possible values are:
+   * - 0: UTC
+   * - 1: Timezone configured in operating system
+   * - 2: Mean solar time at the location, based on the average time it takes
+   * for the sun to cross the meridian (appear at its highest point in the sky)
+   * at that specific location
+   * - 3: Honor OpenCPN global setting for timezone display
+   */
   int m_tz_selection;
   int m_LMT_Offset;
 };

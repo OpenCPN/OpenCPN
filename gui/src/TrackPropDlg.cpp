@@ -48,12 +48,11 @@
 #include "androidUTIL.h"
 #endif
 
-#define UTCINPUT 0
-#define LTINPUT 1   // i.e. this PC local time
-#define LMTINPUT 2  // i.e. the remote location LMT time
-#define INPUT_FORMAT 1
-#define DISPLAY_FORMAT 2
-#define TIMESTAMP_FORMAT 3
+#define UTCINPUT 0  ///> Format date/time in UTC.
+#define LTINPUT 1   ///> Format date/time using PC local timezone
+#define LMTINPUT 2  ///> Format date/time using the remote location LMT time.
+#define GLOBAL_SETTINGS_INPUT \
+  3  ///> Format date/time according to global OpenCPN settings.
 
 extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
@@ -62,32 +61,6 @@ extern RouteManagerDialog* pRouteManagerDialog;
 extern MyConfig* pConfig;
 extern MyFrame* gFrame;
 extern PlugInManager* g_pi_manager;
-
-wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
-                     int format) {
-  wxString s = _T("");
-  wxString f;
-  if (format == INPUT_FORMAT)
-    f = _T("%x %H:%M");
-  else if (format == TIMESTAMP_FORMAT)
-    f = _T("%x %H:%M:%S");
-  else
-    f = _T(" %x %H:%M");
-  switch (tz_selection) {
-    case UTCINPUT:
-      s.Append(ts.Format(f));
-      if (format != INPUT_FORMAT) s.Append(_T(" UT"));
-      break;
-    case LTINPUT:
-      s.Append(ts.FromUTC().Format(f));
-      break;
-    case LMTINPUT:
-      wxTimeSpan lmt(0, 0, (int)LMT_offset, 0);
-      s.Append(ts.Add(lmt).Format(f));
-      if (format != INPUT_FORMAT) s.Append(_T(" LMT"));
-  }
-  return (s);
-}
 
 ///////////////////////////////////////////////////////////////////////////
 bool TrackPropDlg::instanceFlag = false;
@@ -190,6 +163,11 @@ TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
         wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
 
+  if (m_rbShowTimeGlobalSettings)
+    m_rbShowTimeGlobalSettings->Connect(
+        wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+        wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
+
   m_pMyLinkList = NULL;
 }
 
@@ -256,8 +234,26 @@ TrackPropDlg::~TrackPropDlg() {
     m_rbShowTimeLocal->Disconnect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
         wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
+  if (m_rbShowTimeGlobalSettings)
+    m_rbShowTimeGlobalSettings->Disconnect(
+        wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+        wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
 
   instanceFlag = false;
+}
+
+static wxString getTimezoneSelector(int selection) {
+  switch (selection) {
+    case UTCINPUT:
+      return DT_TZ_UTC;
+    case LTINPUT:
+      return DT_TZ_LOCAL_TIME;
+    case LMTINPUT:
+      return DT_TZ_LMT;
+    case GLOBAL_SETTINGS_INPUT:
+    default:
+      return wxEmptyString;
+  }
 }
 
 void TrackPropDlg::OnActivate(wxActivateEvent& event) {
@@ -300,12 +296,14 @@ void TrackPropDlg::RecalculateSize(void) {
 
 static void addColumns(wxListCtrl* lctrl, int dx) {
   lctrl->InsertColumn(0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6);
-  lctrl->InsertColumn(1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10);
+  lctrl->InsertColumn(1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 11);
   lctrl->InsertColumn(2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8);
-  lctrl->InsertColumn(3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11);
-  lctrl->InsertColumn(4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11);
-  // Width of timestamp is typically 19 characters: 'MM/DD/YYYY HH:MM:SS'.
-  lctrl->InsertColumn(5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 19);
+  // Width of lat/lon may be up to 15 characters: 'DDD° MM.MMMM' W'.
+  lctrl->InsertColumn(3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 15);
+  lctrl->InsertColumn(4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 15);
+  // Width of timestamp may  be be up to 26 characters: 'MM/DD/YYYY HH:MM:SS PM
+  // UTC'.
+  lctrl->InsertColumn(5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 26);
   lctrl->InsertColumn(6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8);
 
   lctrl->SetMinSize(wxSize(-1, 50));
@@ -441,7 +439,8 @@ void TrackPropDlg::CreateControlsCompact() {
      wxRIGHT | wxBOTTOM, 5 );
   */
 
-  wxString pDispTimeZone[] = {_("UTC"), _("Local @ PC"), _("LMT @ Location")};
+  wxString pDispTimeZone[] = {_("UTC"), _("Local @ PC"), _("LMT @ Location"),
+                              _("Honor Global Settings")};
 
   wxStaticText* itemStaticText12b =
       new wxStaticText(itemDialog1, wxID_STATIC, _("Time shown as"),
@@ -464,6 +463,12 @@ void TrackPropDlg::CreateControlsCompact() {
       new wxRadioButton(itemDialog1, wxID_ANY, _("LMT @ Location"));
   itemBoxSizer2->Add(
       m_rbShowTimeLocal, 0,
+      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+
+  m_rbShowTimeGlobalSettings =
+      new wxRadioButton(itemDialog1, wxID_ANY, _("Honor Global Settings"));
+  itemBoxSizer2->Add(
+      m_rbShowTimeGlobalSettings, 0,
       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
   wxFlexGridSizer* itemFlexGridSizer6b = new wxFlexGridSizer(3, 2, 0, 0);
@@ -832,7 +837,14 @@ void TrackPropDlg::CreateControls(void) {
                       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
                       5);
 
-  m_rbShowTimePC->SetValue(true);
+  m_rbShowTimeGlobalSettings =
+      new wxRadioButton(m_panel0, wxID_ANY, _("Honor Global Settings"),
+                        wxDefaultPosition, wxDefaultSize, 0);
+  bSizerShowTime->Add(m_rbShowTimeGlobalSettings, 0,
+                      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
+                      5);
+
+  m_rbShowTimeGlobalSettings->SetValue(true);
 
   sbSizerPoints->Add(bSizerShowTime, 0, wxEXPAND, 5);
 
@@ -1699,8 +1711,12 @@ void TrackPropDlg::OnShowTimeTZ(wxCommandEvent& event) {
     m_lcPoints->m_tz_selection = UTCINPUT;
   else if (m_rbShowTimePC && m_rbShowTimePC->GetValue())
     m_lcPoints->m_tz_selection = LTINPUT;
-  else
+  else if (m_rbShowTimeLocal && m_rbShowTimeLocal->GetValue())
     m_lcPoints->m_tz_selection = LMTINPUT;
+  else if (m_rbShowTimeGlobalSettings && m_rbShowTimeGlobalSettings->GetValue())
+    m_lcPoints->m_tz_selection = GLOBAL_SETTINGS_INPUT;
+  else
+    throw std::logic_error("Unexpected time zone selection");
   m_lcPoints->DeleteAllItems();
   InitializeList();
 }
@@ -1783,11 +1799,19 @@ OCPNTrackListCtrl::OCPNTrackListCtrl(wxWindow* parent, wxWindowID id,
                                      long style)
     : wxListCtrl(parent, id, pos, size, style) {
   m_parent = parent;
-  m_tz_selection = LTINPUT;
+  m_tz_selection = GLOBAL_SETTINGS_INPUT;
   m_LMT_Offset = 0;
 }
 
 OCPNTrackListCtrl::~OCPNTrackListCtrl() {}
+
+double OCPNTrackListCtrl::getStartPointLongitude() const {
+  if (m_pTrack->GetnPoints()) {
+    TrackPoint* prp = m_pTrack->GetPoint(0);
+    if (prp) return prp->m_lon;
+  }
+  return NAN;
+}
 
 wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
@@ -1842,8 +1866,9 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
     case 5: {
       wxDateTime timestamp = this_point->GetCreateTime();
       if (timestamp.IsValid())
-        ret = timestamp2s(timestamp, m_tz_selection, m_LMT_Offset,
-                          TIMESTAMP_FORMAT);
+        ret = TToString(timestamp, DT_WEEKDAY_SHORT_DATE_TIME,
+                        getTimezoneSelector(m_tz_selection),
+                        getStartPointLongitude());
       else
         ret = _T("----");
     } break;

@@ -1860,4 +1860,75 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     PluginMsgId id, wxEventType ev, wxEvtHandler *handler);
 
 extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
+
+const wxString DT_TZ_UTC = "UTC";
+const wxString DT_TZ_LOCAL_TIME = "Local Time";
+const wxString DT_TZ_LMT = "LMT";
+
+/**
+ * Return the name of the time zone to use when formatting date and time.
+ *
+ * @return std::string The name of the time zone to use. Special cases include:
+ *         - "UTC": Format date/time in Coordinated Universal Time (UTC).
+ *         - "Local Time": Format date/time in the local time as configured in
+ * the system.
+ *         - "LMT": Format date/time in Local Mean Time, based on the longitude.
+ */
+extern DECL_EXP std::string GetTimeZone();
+
+// Date/time format descriptors.
+// The descriptors are resolved to localized date/time string representations.
+// For example, $short_date is resolved to "12/31/2021" in the US locale and
+// "31/12/2021" in the UK locale.
+const wxString DT_LONG_DATE = "$long_date";    // Thursday December 31, 2021
+const wxString DT_SHORT_DATE = "$short_date";  // 12/31/2021
+const wxString DT_WEEKDAY_SHORT_DATE = "$weekday_short_date";  // Thu 12/31/2021
+const wxString DT_HOUR_MINUTES_SECONDS =
+    "$hour_minutes_seconds";                       // 15:34:56 zero-padded.
+const wxString DT_HOUR_MINUTES = "$hour_minutes";  // 15:34 zero-padded.
+const wxString DT_LONG_DATE_TIME =
+    DT_LONG_DATE + " " +
+    DT_HOUR_MINUTES_SECONDS;  // Thursday December 31, 2021 12:34:56
+const wxString DT_SHORT_DATE_TIME =
+    DT_SHORT_DATE + " " + DT_HOUR_MINUTES_SECONDS;  // 12/31/2021 15:34:56
+const wxString DT_WEEKDAY_SHORT_DATE_TIME =
+    DT_WEEKDAY_SHORT_DATE + " " +
+    DT_HOUR_MINUTES_SECONDS;  // Thu 12/31/2021 15:34:56
+
+/**
+ * Format a date/time to a localized string representation, conforming to the
+ * OpenCPN timezone settings. This function should be used instead of
+ * wxDateTime.Format() to ensure consistent date/time formatting.
+ *
+ * @param date_time The date/time to format.
+ * @param format The format string for date/time.
+ *        The default is "$weekday_short_date $hour_minutes_seconds".
+ *        Substitutions can be combined, for example
+ * "$short_date\n$hour_minutes". To ensure consistent date/time formatting, use
+ * the predefined format strings. Custom wxDateTime.Format descriptors are
+ * supported but not recommended to ensure consistency.
+ * @param time_zone The timezone to use when formatting the date/time. Options
+ * include:
+ *        - Empty string (default): the date/time is formatted according to the
+ * OpenCPN timezone settings.
+ *        - "UTC": the date/time is formatted in UTC.
+ *        - "Local Time": the date/time is formatted in the local time.
+ *        - "LMT": the date/time is formatted in local mean time. In this case,
+ * longitude is required.
+ *        - Valid timezone name: the date/time is formatted in that timezone
+ * (TODO).
+ * @param longitude The longitude to use when formatting the date/time in local
+ * mean time (LMT).
+ * @return wxString The formatted date/time string.
+ *
+ * @note It is strongly recommended to use the default value (empty string) for
+ * the time_zone parameter to ensure consistency of the date/time representation
+ * across the entire application. This will format the date/time according to
+ * the OpenCPN timezone settings.
+ */
+extern DECL_EXP wxString TToString(
+    const wxDateTime date_time,
+    const wxString format_string = DT_WEEKDAY_SHORT_DATE_TIME,
+    const wxString time_zone = wxEmptyString, const double longitude = NAN);
+
 #endif  //_PLUGIN_H_

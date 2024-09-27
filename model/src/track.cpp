@@ -95,6 +95,7 @@ millions of points.
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "ocpn_plugin.h"
 
 std::vector<Track *> g_TrackList;
 
@@ -975,4 +976,26 @@ double Track::GetXTE(TrackPoint *fm1, TrackPoint *fm2, TrackPoint *to) {
   return GetXTE(fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat,
                 to->m_lon);
   ;
+}
+
+wxString Track::GetIsoDateTime(const wxString label_for_invalid_date) const {
+  wxString name;
+  TrackPoint *rp = NULL;
+  if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
+  if (rp && rp->GetCreateTime().IsValid())
+    name = rp->GetCreateTime().FormatISOCombined(' ');
+  else
+    name = label_for_invalid_date;
+  return name;
+}
+
+wxString Track::GetDateTime(const wxString label_for_invalid_date) const {
+  wxString name;
+  TrackPoint *rp = NULL;
+  if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
+  if (rp && rp->GetCreateTime().IsValid())
+    name = ocpn::TToString(rp->GetCreateTime(), DT_WEEKDAY_SHORT_DATE_TIME);
+  else
+    name = label_for_invalid_date;
+  return name;
 }

@@ -93,6 +93,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
+#include "model/datetime.h"
 #include "model/downloader.h"
 #include "model/georef.h"
 #include "model/json_event.h"
@@ -7949,4 +7950,12 @@ double OCPN_GetWinDIPScaleFactor() {
   if (gFrame) scaler = (double)(gFrame->ToDIP(100)) / 100.;
 #endif
   return scaler;
+}
+
+std::string GetTimeZone() { return g_timezone.ToStdString(); }
+
+// date/time in the desired time zone format.
+wxString TToString(const wxDateTime date_time, const wxString format_string,
+                   const wxString time_zone, const double longitude) {
+  return ocpn::TToString(date_time, format_string, time_zone, longitude);
 }

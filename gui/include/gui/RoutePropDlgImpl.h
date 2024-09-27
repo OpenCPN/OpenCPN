@@ -113,6 +113,16 @@ private:
   RoutePoint* m_pEnroutePoint;
   bool m_bStartNow;
 
+  /**
+   * The timezone to use for formatting the departure date/time.
+   * Possible values are:
+   * - 0: UTC
+   * - 1: Timezone configured in operating system
+   * - 2: Mean solar time at the location, based on the average time it takes
+   * for the sun to cross the meridian (appear at its highest point in the sky)
+   * at that specific location
+   * - 3: Honor OpenCPN global setting for timezone display
+   */
   int m_tz_selection;
 
   wxDataViewColumn* etd_col;
@@ -120,8 +130,25 @@ private:
   wxHyperlinkCtrl* m_pEditedLink;
 
   bool IsThisRouteExtendable();
+
+  /**
+   * Convert the date/time in UTC to the given format.
+   * @param ts The input timestamp in UTC.
+   * @param format The desired output format:
+   *        0 = UTC, 1 = Local@PC, 2 = LMT@Location.
+   * @param lon The longitude for LMT calculation. Default is NaN.
+   * @return wxDateTime The converted timestamp in the specified format.
+   */
   wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
                            const double lon = INFINITY - INFINITY);
+  /**
+   * Convert a date/time from a given input format to UTC.
+   * @param ts The input timestamp in the specified format.
+   * @param format The input timestamp format:
+   *        0 = UTC, 1 = Local@PC, 2 = LMT@Location.
+   * @param lon The longitude for LMT calculation. Default is NaN.
+   * @return wxDateTime The converted timestamp in UTC.
+   */
   wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
                              const double lon = INFINITY - INFINITY);
   wxString MakeTideInfo(wxString stationName, double lat, double lon,
