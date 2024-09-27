@@ -7847,7 +7847,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             wxString msg = _("Use nearby waypoint?");
             // Don't add a mark without name to the route. Name it if needed
             bool noname = false;
-            if (noname = (pNearbyPoint->GetName() == "")) {
+            if ((noname = (pNearbyPoint->GetName() == ""))) {
               msg = _("Use nearby nameless waypoint and and name it M with a unic number?");
             }
             // Avoid route finish on focus change for message dialog
