@@ -64,7 +64,7 @@ void NMEALogWindow::Create(wxWindow *parent, int num_lines) {
 
     m_window->SetSize(m_pos_x, m_pos_y, m_width, m_height);
   }
-  m_window->Show();
+  m_window->Hide();
 }
 
 void NMEALogWindow::Add(const wxString &s) {

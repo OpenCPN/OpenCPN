@@ -4256,8 +4256,9 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    m_Text_def_boat_speed = new wxStaticText( pDisplayPanel, wxID_ANY,
-               _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+    m_Text_def_boat_speed = new wxStaticText(
+        pDisplayPanel, wxID_ANY,
+        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
     defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),
@@ -7905,6 +7906,8 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
   EndModal(0);
+  auto nmea_window = wxWindow::FindWindowByName("NmeaDebugWindow");
+  if (nmea_window) nmea_window->Show();
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {

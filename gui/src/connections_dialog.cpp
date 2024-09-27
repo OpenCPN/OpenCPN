@@ -168,9 +168,9 @@ void ConnectionsDialog::Init() {
     wxFlexGridSizer* GenProps = new wxFlexGridSizer(0, 2, 0, 0);
     bSizer161->Add(GenProps, 0, wxALL, cb_space);
 
-    m_cbNMEADebug =
-        new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
-                       wxDefaultPosition, wxDefaultSize, 0);
+    m_cbNMEADebug = new wxCheckBox(m_container, wxID_ANY,
+                                   _("Show NMEA Debug Window (after OK)"),
+                                   wxDefaultPosition, wxDefaultSize, 0);
     m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
     GenProps->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
@@ -219,9 +219,9 @@ void ConnectionsDialog::Init() {
     talkerSizer->Add(m_TalkerIdText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
   } else {
     cb_space = 2;
-    m_cbNMEADebug =
-        new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
-                       wxDefaultPosition, wxDefaultSize, 0);
+    m_cbNMEADebug = new wxCheckBox(m_container, wxID_ANY,
+                                   _("Show NMEA Debug Window (after OK)"),
+                                   wxDefaultPosition, wxDefaultSize, 0);
     m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
     bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
