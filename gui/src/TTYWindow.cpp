@@ -48,7 +48,8 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
     : m_window_destroy_listener(listener), m_tty_scroll(NULL) {
   wxFrame::Create(
       parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize,
-      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT);
+      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT,
+      "NmeaDebugWindow");
 
   wxBoxSizer* bSizerOuterContainer = new wxBoxSizer(wxVERTICAL);
   SetSizer(bSizerOuterContainer);
