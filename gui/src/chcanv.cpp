@@ -7846,22 +7846,24 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           if (brp_viz) {
             wxString msg = _("Use nearby waypoint?");
             // Don't add a mark without name to the route. Name it if needed
-            bool noname = false;
-            if ((noname = (pNearbyPoint->GetName() == ""))) {
-              msg = _("Use nearby nameless waypoint and and name it M with a unic number?");
+            const bool noname(pNearbyPoint->GetName() == "");
+            if (noname) {
+              msg =
+                  _("Use nearby nameless waypoint and name it M with"
+                    " a unique number?");
             }
             // Avoid route finish on focus change for message dialog
             m_FinishRouteOnKillFocus = false;
-            int dlg_return = OCPNMessageBox(this, msg, _("OpenCPN Route Create"),
-                (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+            int dlg_return =
+                OCPNMessageBox(this, msg, _("OpenCPN Route Create"),
+                               (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
             m_FinishRouteOnKillFocus = true;
             if (dlg_return == wxID_YES) {
               if (noname) {
                 if (m_pMouseRoute) {
                   int last_wp_num = m_pMouseRoute->GetnPoints();
                   // AP-ECRMB will truncate to 6 characters
-                  wxString guid_short =
-                      m_pMouseRoute->GetGUID().Left(2);
+                  wxString guid_short = m_pMouseRoute->GetGUID().Left(2);
                   wxString wp_name = wxString::Format(
                       "M%002i-%s", last_wp_num + 1, guid_short);
                   pNearbyPoint->SetName(wp_name);
