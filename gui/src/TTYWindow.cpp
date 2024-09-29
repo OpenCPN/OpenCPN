@@ -72,7 +72,7 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   bSizerOuterContainer->Add(bSizerBottomContainer, 0, wxEXPAND, 5);
 
   wxStaticBox* psb = new wxStaticBox(this, wxID_ANY, _("Legend"));
-  wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer(psb, wxVERTICAL);
+  auto* sbSizer1 = new wxStaticBoxSizer(psb, wxVERTICAL);
   bSizerBottomContainer->Add(sbSizer1, 0, wxALIGN_LEFT | wxALL, 5);
 
   CreateLegendBitmap();
@@ -80,7 +80,7 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   sbSizer1->Add(bb, 1, wxALL | wxEXPAND, 5);
 
   wxStaticBox* buttonBox = new wxStaticBox(this, wxID_ANY, wxEmptyString);
-  wxStaticBoxSizer* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
+  auto* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxHORIZONTAL);
 
   m_btn_pause = new wxButton(this, wxID_ANY, _("Pause"), wxDefaultPosition,
                              wxDefaultSize, 0);
@@ -88,8 +88,12 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
                             wxDefaultSize, 0);
   m_btn_copy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
 
+  auto btn_close = new wxButton(this, wxID_CLOSE);
+  btn_close->Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { Hide(); });
+
   bbSizer1->Add(m_btn_pause, 0, wxALL, 5);
   bbSizer1->Add(m_btn_copy, 0, wxALL, 5);
+  bbSizer1->Add(btn_close, 0, wxALL, 5);
   bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
 
   m_btn_copy->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
