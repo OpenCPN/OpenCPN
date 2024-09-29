@@ -39,17 +39,11 @@
 
 IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
 
-BEGIN_EVENT_TABLE(TTYWindow, wxFrame)
-EVT_CLOSE(TTYWindow::OnCloseWindow)
-END_EVENT_TABLE()
+TTYWindow::TTYWindow() : m_tty_scroll(NULL) {}
 
-TTYWindow::TTYWindow() : m_window_destroy_listener(NULL), m_tty_scroll(NULL) {}
-
-TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
-                     WindowDestroyListener* listener)
-    : m_window_destroy_listener(listener), m_tty_scroll(NULL) {
+TTYWindow::TTYWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
   wxFrame::Create(
-      parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize,
+      parent, -1, "Title", wxDefaultPosition, wxDefaultSize,
       wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT,
       "NmeaDebugWindow");
 
@@ -104,6 +98,8 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
                        this);
 
   m_is_paused = false;
+
+  Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& e) { Hide(); });
 }
 
 TTYWindow::~TTYWindow() {
@@ -191,11 +187,7 @@ void TTYWindow::OnPauseClick(wxCommandEvent&) {
 void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
 
 void TTYWindow::OnCloseWindow(wxCloseEvent&) {
-  if (m_window_destroy_listener) {
-    m_window_destroy_listener->DestroyWindow();
-  } else {
-    Destroy();
-  }
+  Hide();
 }
 
 void TTYWindow::Add(const wxString& line) {

@@ -64,7 +64,7 @@ bool NMEALogWindow::Active() const { return m_window != NULL; }
 
 void NMEALogWindow::Create(wxWindow *parent, int num_lines) {
   if (m_window == NULL) {
-    m_window = new TTYWindow(parent, num_lines, this);
+    m_window = new TTYWindow(parent, num_lines);
     m_window->SetTitle(_("NMEA Debug Window"));
 
     // Make sure the window is well on the screen

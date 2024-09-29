@@ -35,12 +35,10 @@ class WindowDestroyListener;
 
 class TTYWindow : public wxFrame {
   DECLARE_DYNAMIC_CLASS(TTYWindow)
-  DECLARE_EVENT_TABLE()
 
 public:
   TTYWindow();
-  TTYWindow(wxWindow *parent, int n_lines,
-            WindowDestroyListener *listener = NULL);
+  TTYWindow(wxWindow *parent, int n_lines);
   virtual ~TTYWindow();
 
   void Add(const wxString &line);
@@ -51,7 +49,6 @@ public:
 
 protected:
   void CreateLegendBitmap();
-  WindowDestroyListener *m_window_destroy_listener;
   TTYScroll *m_tty_scroll;
   wxButton *m_btn_pause;
   wxButton *m_btn_copy;

@@ -31,13 +31,13 @@
 
 #include "model/nmea_log.h"
 
-#include "WindowDestroyListener.h"
 #include "TTYWindow.h"
+#include "observable_evtvar.h"
 
 /**
- * This class provides access to the NMEA log/debug window.
+ * Access to the NMEA log/debug window.
  *
- * This provides everything needed to use the single NMEA log window.
+ * Provides everything needed to use the single NMEA log window.
  *
  * Singleton.
  *
@@ -45,7 +45,7 @@
  * inside this class. This is used to store them permanently in
  * the configuration file.
  */
-class NMEALogWindow : public NmeaLog, public WindowDestroyListener {
+class NMEALogWindow : public NmeaLog {
 public:
   static NMEALogWindow &GetInstance();
   NMEALogWindow(const NMEALogWindow &) = delete;
@@ -55,6 +55,9 @@ public:
   static void Show();
 
   static void Shutdown();
+
+  /** Notified with a bool reflecting if window is visible or not. */
+  EventVar OnHideChange;
 
   bool Active() const;
   void Create(wxWindow *parent, int num_lines = 35);
