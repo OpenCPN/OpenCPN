@@ -26,8 +26,9 @@
 #include "TTYWindow.h"
 #include "OCPNPlatform.h"
 #include "model/gui.h"
+#include "observable_evtvar.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "qdebug.h"
 #endif
 

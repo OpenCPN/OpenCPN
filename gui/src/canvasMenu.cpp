@@ -63,6 +63,7 @@
 #include "config.h"
 #include "FontMgr.h"
 #include "kml.h"
+#include "NMEALogWindow.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
@@ -231,9 +232,9 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
                                      Route *selectedRoute, Track *selectedTrack,
                                      RoutePoint *selectedPoint,
                                      int selectedAIS_MMSI,
-                                     void *selectedTCIndex)
-
-{
+                                     void *selectedTCIndex,
+                                     bool is_nmea_log_visible)
+    : m_is_nmea_log_visible(is_nmea_log_visible) {
   parent = parentCanvas;
   m_pSelectedRoute = selectedRoute;
   m_pSelectedTrack = selectedTrack;
@@ -244,7 +245,6 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     m_scaledFont = *qFont;
   }
-
   m_DIPFactor = g_Platform->GetDisplayDIPMult(gFrame);
 }
 
@@ -326,7 +326,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   wxMenu *subMenuRedo = new wxMenu("Redo...Ctrl-Y");
 #endif
   wxMenu *subMenuDebug = new wxMenu("");
-  MenuAppend1(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW, "Show NMEA log window");
+  auto *nmea_item = new wxMenuItem(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW,
+                                   _("Show NMEA log window"));
+  subMenuDebug->Append(nmea_item);
+  nmea_item->Enable(!m_is_nmea_log_visible);
 
   wxMenu *menuFocus = contextMenu;  // This is the one that will be shown
 

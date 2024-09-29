@@ -27,10 +27,12 @@
 #include <wx/bmpbuttn.h>
 #include <wx/dcmemory.h>
 #include <wx/dialog.h>
+#include <wx/event.h>
 #include <wx/settings.h>
 #include <wx/dcscreen.h>
 
 #include "TTYWindow.h"
+#include "NMEALogWindow.h"
 #include "TTYScroll.h"
 #include "WindowDestroyListener.h"
 #include "color_handler.h"
@@ -100,6 +102,9 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
   m_is_paused = false;
 
   Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& e) { Hide(); });
+  Bind(wxEVT_SHOW, [](wxShowEvent& ev) {
+    NMEALogWindow::GetInstance().OnHideChange.Notify(ev.IsShown(), "");
+  });
 }
 
 TTYWindow::~TTYWindow() {
@@ -186,9 +191,7 @@ void TTYWindow::OnPauseClick(wxCommandEvent&) {
 
 void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
 
-void TTYWindow::OnCloseWindow(wxCloseEvent&) {
-  Hide();
-}
+void TTYWindow::OnCloseWindow(wxCloseEvent&) { Hide(); }
 
 void TTYWindow::Add(const wxString& line) {
   if (m_tty_scroll) m_tty_scroll->Add(line);

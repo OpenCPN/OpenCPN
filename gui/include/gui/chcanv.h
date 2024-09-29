@@ -40,6 +40,7 @@
 #include "undo.h"
 
 #include "ocpCursor.h"
+#include "observable.h"
 #include "timers.h"
 #include "emboss_data.h"
 #include "S57Sector.h"
@@ -128,7 +129,8 @@ enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
 
 /**
  * Chart display canvas.
- * Manages the display of charts and overlays. Handles chart loading, panning, zooming, and rendering of charts, routes, tracks, etc.
+ * Manages the display of charts and overlays. Handles chart loading, panning,
+ * zooming, and rendering of charts, routes, tracks, etc.
  */
 class ChartCanvas : public wxWindow {
   friend class glChartCanvas;
@@ -933,6 +935,11 @@ private:
   std::vector<s57Sector_t> m_sectorlegsVisible;
   bool m_bShowVisibleSectors;
   double m_displayScale;
+
+  /** Notified with a bool when nmea log becomes visible or hidden. */
+  ObsListener m_nmea_log_visible_lstnr;
+
+  bool m_is_nmea_log_visible;
 
   DECLARE_EVENT_TABLE()
 };

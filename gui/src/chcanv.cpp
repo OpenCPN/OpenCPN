@@ -81,6 +81,7 @@
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"
+#include "NMEALogWindow.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
@@ -116,6 +117,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+#include "NMEALogWindow.h"
 #endif
 
 #ifdef __MSVC__
@@ -383,7 +385,8 @@ END_EVENT_TABLE()
 
 // Define a constructor for my canvas
 ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
-    : wxWindow(frame, wxID_ANY, wxPoint(20, 20), wxSize(5, 5), wxNO_BORDER) {
+    : wxWindow(frame, wxID_ANY, wxPoint(20, 20), wxSize(5, 5), wxNO_BORDER),
+      m_is_nmea_log_visible(false) {
   parent_frame = (MyFrame *)frame;  // save a pointer to parent
   m_canvasIndex = canvasIndex;
 
@@ -777,6 +780,9 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, this);
   Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
+  m_nmea_log_visible_lstnr.Init(
+      NMEALogWindow::GetInstance().OnHideChange,
+      [&](ObservedEvt &ev) { m_is_nmea_log_visible = bool(ev.GetInt()); });
 #endif
 }
 
@@ -10222,7 +10228,7 @@ void pupHandler_PasteTrack() {
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
   m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                        m_pFoundRoutePoint, m_FoundAIS_MMSI,
-                                       m_pIDXCandidate);
+                                       m_pIDXCandidate, m_is_nmea_log_visible);
 
   Connect(
       wxEVT_COMMAND_MENU_SELECTED,
