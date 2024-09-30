@@ -864,8 +864,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/usb_devices.h
     ${GUI_HDR_DIR}/viewport.h
     ${GUI_HDR_DIR}/waypointman_gui.h
-    ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/WindowDestroyListener.h
 )
 list(APPEND  GUI_HDRS
     ${GUI_S57_DIR}/include/ogr_s57.h

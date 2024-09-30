@@ -7913,8 +7913,6 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
   EndModal(0);
-  auto nmea_window = wxWindow::FindWindowByName("NmeaDebugWindow");
-  if (nmea_window) nmea_window->Show();
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {

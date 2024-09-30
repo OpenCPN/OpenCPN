@@ -51,8 +51,11 @@ public:
   NMEALogWindow(const NMEALogWindow &) = delete;
   NMEALogWindow &operator=(const NMEALogWindow &) = delete;
 
-  /** If required , create the window and show it. */
+  /** If required , create the NMEA log window and show it. */
   static void Show();
+
+  /** If visible, hide the NMEA log window. */
+  static void Hide();
 
   static void Shutdown();
 

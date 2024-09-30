@@ -27,11 +27,10 @@
 
 #include <wx/frame.h>
 #include <wx/bitmap.h>
+#include <wx/button.h>
+#include <wx/textctrl.h>
 
-class wxButton;
-class wxTextCtrl;
-class TTYScroll;
-class WindowDestroyListener;
+#include "TTYScroll.h"
 
 class TTYWindow : public wxFrame {
   DECLARE_DYNAMIC_CLASS(TTYWindow)

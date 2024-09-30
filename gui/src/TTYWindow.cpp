@@ -34,7 +34,6 @@
 #include "TTYWindow.h"
 #include "NMEALogWindow.h"
 #include "TTYScroll.h"
-#include "WindowDestroyListener.h"
 #include "color_handler.h"
 #include "ocpn_plugin.h"
 #include "FontMgr.h"
@@ -44,10 +43,8 @@ IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
 TTYWindow::TTYWindow() : m_tty_scroll(NULL) {}
 
 TTYWindow::TTYWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
-  wxFrame::Create(
-      parent, -1, "Title", wxDefaultPosition, wxDefaultSize,
-      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT,
-      "NmeaDebugWindow");
+  wxFrame::Create(parent, -1, "Title", wxDefaultPosition, wxDefaultSize,
+                  wxDEFAULT_DIALOG_STYLE, "NmeaDebugWindow");
 
   wxBoxSizer* bSizerOuterContainer = new wxBoxSizer(wxVERTICAL);
   SetSizer(bSizerOuterContainer);

@@ -595,26 +595,8 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 }
 
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
-  if (!m_cbNMEADebug->GetValue()) {
-    NMEALogWindow::GetInstance().DestroyWindow();
-  } else {
+  if (m_cbNMEADebug->GetValue()) {
     NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
-
-    // Try to ensure that the log window is a least a little bit visible
-    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
-                   NMEALogWindow::GetInstance().GetPosY(),
-                   NMEALogWindow::GetInstance().GetSizeW(),
-                   NMEALogWindow::GetInstance().GetSizeH());
-
-    if (m_container->GetRect().Contains(logRect)) {
-      NMEALogWindow::GetInstance().SetPos(
-          m_container->GetRect().x / 2,
-          (m_container->GetRect().y +
-           (m_container->GetRect().height - logRect.height) / 2));
-      NMEALogWindow::GetInstance().Move();
-    }
-
-    m_parent->Raise();
   }
 }
 
@@ -636,6 +618,8 @@ void ConnectionsDialog::ApplySettings() {
   g_GPS_Ident = m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";
 
   UpdateDatastreams();
+  if (m_cbNMEADebug->IsChecked()) NMEALogWindow::Show();
+  else NMEALogWindow::Hide();
 }
 
 void ConnectionsDialog::UpdateDatastreams() {

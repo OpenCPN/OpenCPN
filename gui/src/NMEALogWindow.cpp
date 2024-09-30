@@ -61,6 +61,13 @@ void NMEALogWindow::Show() {
   wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
 }
 
+void NMEALogWindow::Hide() {
+  auto w = wxWindow::FindWindowByName("NmeaDebugWindow");
+  if (!w) return;
+  NMEALogWindow::GetInstance().DestroyWindow();
+}
+
+
 bool NMEALogWindow::Active() const { return m_window != NULL; }
 
 void NMEALogWindow::Create(wxWindow *parent, int num_lines) {
