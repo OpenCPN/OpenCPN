@@ -3396,6 +3396,13 @@ void dashboard_pi::UpdateAuiStatus(void) {
     // Initialize visible state as perspective is loaded now
     cont->m_bIsVisible = (pane.IsOk() && pane.IsShown());
 
+    // Correct for incomplete AUIManager perspective when docked dashboard is
+    //  not visible at app close.
+    if (pane.IsDocked()) {
+      if ((cont->m_persist_size.x > 50) && (cont->m_persist_size.y > 50))
+        cont->m_pDashboardWindow->SetSize(cont->m_persist_size);
+    }
+
 #ifdef __WXQT__
     if (pane.IsShown()) {
       pane.Show(false);
@@ -3570,6 +3577,7 @@ bool dashboard_pi::LoadConfig(void) {
       m_config_version = 2;
       bool b_onePersisted = false;
       wxSize best_size;
+      wxSize persist_size;
       for (int k = 0; k < d_cnt; k++) {
         pConf->SetPath(
             wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), k + 1));
@@ -3588,6 +3596,10 @@ bool dashboard_pi::LoadConfig(void) {
         best_size.x = val;
         pConf->Read(_T("BestSizeY"), &val, DefaultWidth);
         best_size.y = val;
+        pConf->Read(_T("PersistSizeX"), &val, DefaultWidth);
+        persist_size.x = val;
+        pConf->Read(_T("PersistSizeY"), &val, DefaultWidth);
+        persist_size.y = val;
 
         wxArrayInt ar;
         wxArrayOfInstrumentProperties Property;
@@ -3689,6 +3701,7 @@ bool dashboard_pi::LoadConfig(void) {
             NULL, name, caption, orient, ar, Property);
         cont->m_bPersVisible = b_persist;
         cont->m_conf_best_size = best_size;
+        cont->m_persist_size = persist_size;
 
         if (b_persist) b_onePersisted = true;
 
@@ -3776,6 +3789,8 @@ bool dashboard_pi::SaveConfig(void) {
                    (int)cont->m_aInstrumentList.GetCount());
       pConf->Write(_T("BestSizeX"), cont->m_best_size.x);
       pConf->Write(_T("BestSizeY"), cont->m_best_size.y);
+      pConf->Write(_T("PersistSizeX"), cont->m_pDashboardWindow->GetSize().x);
+      pConf->Write(_T("PersistSizeY"), cont->m_pDashboardWindow->GetSize().y);
 
       // Delete old Instruments
       for (size_t i = cont->m_aInstrumentList.GetCount(); i < 40; i++) {
