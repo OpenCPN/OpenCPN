@@ -40,7 +40,7 @@
 
 #include "connections_dialog.h"
 #include "conn_params_panel.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "OCPNPlatform.h"
 #include "options.h"
 #include "priority_gui.h"
@@ -73,8 +73,8 @@ ConnectionsDialog::~ConnectionsDialog() {}
 
 void ConnectionsDialog::SetInitialSettings(void) {
   m_cbNMEADebug->SetValue(false);
-  if (NMEALogWindow::GetInstance().GetTTYWindow()) {
-    if (NMEALogWindow::GetInstance().GetTTYWindow()->IsShown()) {
+  if (NmeaLogWindow::GetInstance().GetTTYWindow()) {
+    if (NmeaLogWindow::GetInstance().GetTTYWindow()->IsShown()) {
       m_cbNMEADebug->SetValue(true);
     }
   }
@@ -171,7 +171,7 @@ void ConnectionsDialog::Init() {
     m_cbNMEADebug = new wxCheckBox(m_container, wxID_ANY,
                                    _("Show NMEA Debug Window (after OK)"),
                                    wxDefaultPosition, wxDefaultSize, 0);
-    m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
+    m_cbNMEADebug->SetValue(NmeaLogWindow::GetInstance().Active());
     GenProps->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
     m_cbFurunoGP3X = new wxCheckBox(m_container, wxID_ANY,
@@ -221,7 +221,6 @@ void ConnectionsDialog::Init() {
     cb_space = 2;
     m_cbNMEADebug = new wxCheckBox(m_container, wxID_ANY,
                                    _("Show NMEA Debug Window (after OK)"));
-    m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
     bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
     m_cbFurunoGP3X = new wxCheckBox(m_container, wxID_ANY,
@@ -595,7 +594,7 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (m_cbNMEADebug->GetValue()) {
-    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
+    NmeaLogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
     auto w = wxWindow::FindWindowByName("OptionsApplyButton");
     if (w) w->Enable(false);
   }
@@ -619,8 +618,10 @@ void ConnectionsDialog::ApplySettings() {
   g_GPS_Ident = m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";
 
   UpdateDatastreams();
-  if (m_cbNMEADebug->IsChecked()) NMEALogWindow::Show();
-  else NMEALogWindow::Hide();
+  if (m_cbNMEADebug->IsChecked())
+    NmeaLogWindow::Show();
+  else
+    NmeaLogWindow::Hide();
 }
 
 void ConnectionsDialog::UpdateDatastreams() {

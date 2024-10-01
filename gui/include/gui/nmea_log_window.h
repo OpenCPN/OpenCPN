@@ -1,8 +1,5 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,11 +16,10 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#ifndef __NMEALOGWINDOW_H__
-#define __NMEALOGWINDOW_H__
+#ifndef NMEALOGWINDOW_H_
+#define NMEALOGWINDOW_H_
 
 #include <wx/gdicmn.h>
 #include <wx/string.h>
@@ -31,7 +27,7 @@
 
 #include "model/nmea_log.h"
 
-#include "TTYWindow.h"
+#include "nmea_window.h"
 #include "observable_evtvar.h"
 
 /**
@@ -45,11 +41,11 @@
  * inside this class. This is used to store them permanently in
  * the configuration file.
  */
-class NMEALogWindow : public NmeaLog {
+class NmeaLogWindow : public NmeaLog {
 public:
-  static NMEALogWindow &GetInstance();
-  NMEALogWindow(const NMEALogWindow &) = delete;
-  NMEALogWindow &operator=(const NMEALogWindow &) = delete;
+  static NmeaLogWindow &GetInstance();
+  NmeaLogWindow(const NmeaLogWindow &) = delete;
+  NmeaLogWindow &operator=(const NmeaLogWindow &) = delete;
 
   /** If required , create the NMEA log window and show it. */
   static void Show();
@@ -81,12 +77,12 @@ public:
   wxWindow *GetTTYWindow(void) { return static_cast<wxWindow *>(m_window); }
 
 private:
-  NMEALogWindow();
-  virtual ~NMEALogWindow() {};
+  NmeaLogWindow();
+  virtual ~NmeaLogWindow() {};
   void UpdateGeometry();
 
-  static NMEALogWindow *instance;
-  TTYWindow *m_window;
+  static NmeaLogWindow *instance;
+  NmeaWindow *m_window;
   int m_width;
   int m_height;
   int m_pos_x;

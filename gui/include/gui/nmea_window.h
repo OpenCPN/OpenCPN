@@ -1,8 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,33 +16,39 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#ifndef __TTYSCROLL_H__
-#define __TTYSCROLL_H__
+#ifndef TTYWINDOW_H__
+#define TTYWINDOW_H__
 
-#include <wx/scrolwin.h>
+#include <wx/frame.h>
+#include <wx/bitmap.h>
+#include <wx/button.h>
 #include <wx/textctrl.h>
 
-//    Scrolled TTY-like window for logging, etc....
-class TTYScroll : public wxScrolledWindow {
+#include "nmea_scrollwin.h"
+
+/** The actual NMEA log window handled by NmeaLogWindow. */
+class NmeaWindow : public wxFrame {
+  DECLARE_DYNAMIC_CLASS(NmeaWindow)
+
 public:
-  TTYScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter);
-  virtual ~TTYScroll();
-  virtual void OnDraw(wxDC &dc);
-  virtual void Add(const wxString &line);
-  void OnSize(wxSizeEvent &event);
-  void Pause(bool pause) { bpause = pause; }
-  void Copy();
+  NmeaWindow();
+  NmeaWindow(wxWindow *parent, int n_lines);
+  virtual ~NmeaWindow();
+
+  void Add(const wxString &line);
+  void OnPauseClick(wxCommandEvent &event);
+  void OnCopyClick(wxCommandEvent &event);
 
 protected:
-  wxCoord m_hLine;  // the height of one line on screen
-  size_t m_nLines;  // the number of lines we draw
-
-  wxArrayString *m_plineArray;
-  wxTextCtrl &m_tFilter;
-  bool bpause;
+  void CreateLegendBitmap();
+  NmeaScrollwin *m_tty_scroll;
+  wxButton *m_btn_pause;
+  wxButton *m_btn_copy;
+  bool m_is_paused;
+  wxBitmap m_bm_legend;
+  wxTextCtrl *m_filter;
 };
 
 #endif

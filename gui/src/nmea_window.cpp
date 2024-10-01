@@ -1,8 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,8 +16,9 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ ************************************************************************* */
+
+/** \file tty_window.cpp Implement tty_window.h */
 
 #include <wx/sizer.h>
 #include <wx/statbox.h>
@@ -31,18 +29,18 @@
 #include <wx/settings.h>
 #include <wx/dcscreen.h>
 
-#include "TTYWindow.h"
-#include "NMEALogWindow.h"
-#include "TTYScroll.h"
+#include "nmea_window.h"
+#include "nmea_log_window.h"
+#include "nmea_scrollwin.h"
 #include "color_handler.h"
 #include "ocpn_plugin.h"
 #include "FontMgr.h"
 
-IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
+IMPLEMENT_DYNAMIC_CLASS(NmeaWindow, wxFrame)
 
-TTYWindow::TTYWindow() : m_tty_scroll(NULL) {}
+NmeaWindow::NmeaWindow() : m_tty_scroll(NULL) {}
 
-TTYWindow::TTYWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
+NmeaWindow::NmeaWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
   wxFrame::Create(parent, -1, "Title", wxDefaultPosition, wxDefaultSize,
                   wxDEFAULT_DIALOG_STYLE, "NmeaDebugWindow");
 
@@ -51,7 +49,7 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
 
   m_filter = new wxTextCtrl(this, wxID_ANY);
 
-  m_tty_scroll = new TTYScroll(this, n_lines, *m_filter);
+  m_tty_scroll = new NmeaScrollwin(this, n_lines, *m_filter);
   m_tty_scroll->Scroll(-1, 1000);  // start with full scroll down
 
   bSizerOuterContainer->Add(m_tty_scroll, 1, wxEXPAND, 5);
@@ -90,28 +88,28 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
   bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
 
   m_btn_copy->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                      wxCommandEventHandler(TTYWindow::OnCopyClick), NULL,
+                      wxCommandEventHandler(NmeaWindow::OnCopyClick), NULL,
                       this);
   m_btn_pause->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(TTYWindow::OnPauseClick), NULL,
+                       wxCommandEventHandler(NmeaWindow::OnPauseClick), NULL,
                        this);
 
   m_is_paused = false;
 
   Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& e) { Hide(); });
   Bind(wxEVT_SHOW, [](wxShowEvent& ev) {
-    NMEALogWindow::GetInstance().OnHideChange.Notify(ev.IsShown(), "");
+    NmeaLogWindow::GetInstance().OnHideChange.Notify(ev.IsShown(), "");
   });
 }
 
-TTYWindow::~TTYWindow() {
+NmeaWindow::~NmeaWindow() {
   if (m_tty_scroll) {
     delete m_tty_scroll;
     m_tty_scroll = NULL;
   }
 }
 
-void TTYWindow::CreateLegendBitmap() {
+void NmeaWindow::CreateLegendBitmap() {
   double dip_factor = OCPN_GetWinDIPScaleFactor();
   wxScreenDC dcs;
   wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -173,7 +171,7 @@ void TTYWindow::CreateLegendBitmap() {
   dc.SelectObject(wxNullBitmap);
 }
 
-void TTYWindow::OnPauseClick(wxCommandEvent&) {
+void NmeaWindow::OnPauseClick(wxCommandEvent&) {
   if (!m_is_paused) {
     m_is_paused = true;
     m_tty_scroll->Pause(true);
@@ -186,10 +184,8 @@ void TTYWindow::OnPauseClick(wxCommandEvent&) {
   }
 }
 
-void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
+void NmeaWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
 
-void TTYWindow::OnCloseWindow(wxCloseEvent&) { Hide(); }
-
-void TTYWindow::Add(const wxString& line) {
+void NmeaWindow::Add(const wxString& line) {
   if (m_tty_scroll) m_tty_scroll->Add(line);
 }

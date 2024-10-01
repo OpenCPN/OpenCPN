@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,11 +15,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#include "NMEALogWindow.h"
-#include "TTYWindow.h"
+/** \file nmea_log_window.cpp Implement nmea_log_window.h */
+
+#include "nmea_log_window.h"
+#include "nmea_window.h"
 #include "OCPNPlatform.h"
 #include "model/gui.h"
 #include "observable_evtvar.h"
@@ -34,45 +31,44 @@
 
 extern OCPNPlatform *g_Platform;
 
-NMEALogWindow *NMEALogWindow::instance = NULL;
+NmeaLogWindow *NmeaLogWindow::instance = NULL;
 
-NMEALogWindow &NMEALogWindow::GetInstance() {
+NmeaLogWindow &NmeaLogWindow::GetInstance() {
   if (instance == NULL) {
-    instance = new NMEALogWindow;
+    instance = new NmeaLogWindow;
   }
   return *instance;
 }
 
-NMEALogWindow::NMEALogWindow()
+NmeaLogWindow::NmeaLogWindow()
     : m_window(NULL), m_width(0), m_height(0), m_pos_x(0), m_pos_y(0) {}
 
-void NMEALogWindow::Shutdown() {
+void NmeaLogWindow::Shutdown() {
   if (instance) {
     delete instance;
     instance = NULL;
   }
 }
 
-void NMEALogWindow::Show() {
+void NmeaLogWindow::Show() {
   if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
     auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-    NMEALogWindow::GetInstance().Create(top_window, 35);
+    NmeaLogWindow::GetInstance().Create(top_window, 35);
   }
   wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
 }
 
-void NMEALogWindow::Hide() {
+void NmeaLogWindow::Hide() {
   auto w = wxWindow::FindWindowByName("NmeaDebugWindow");
   if (!w) return;
-  NMEALogWindow::GetInstance().DestroyWindow();
+  NmeaLogWindow::GetInstance().DestroyWindow();
 }
 
+bool NmeaLogWindow::Active() const { return m_window != NULL; }
 
-bool NMEALogWindow::Active() const { return m_window != NULL; }
-
-void NMEALogWindow::Create(wxWindow *parent, int num_lines) {
+void NmeaLogWindow::Create(wxWindow *parent, int num_lines) {
   if (m_window == NULL) {
-    m_window = new TTYWindow(parent, num_lines);
+    m_window = new NmeaWindow(parent, num_lines);
     m_window->SetTitle(_("NMEA Debug Window"));
 
     // Make sure the window is well on the screen
@@ -84,15 +80,15 @@ void NMEALogWindow::Create(wxWindow *parent, int num_lines) {
   m_window->Hide();
 }
 
-void NMEALogWindow::Add(const wxString &s) {
+void NmeaLogWindow::Add(const wxString &s) {
   if (m_window) m_window->Add(s);
 }
 
-void NMEALogWindow::Refresh(bool do_refresh) {
+void NmeaLogWindow::Refresh(bool do_refresh) {
   if (m_window) m_window->Refresh(do_refresh);
 }
 
-void NMEALogWindow::SetSize(const wxSize &size) {
+void NmeaLogWindow::SetSize(const wxSize &size) {
   m_width = size.GetWidth();
   m_width = wxMax(m_width, 400 * g_Platform->GetDisplayDensityFactor());
   m_width = wxMin(m_width, g_Platform->getDisplaySize().x - 20);
@@ -101,32 +97,32 @@ void NMEALogWindow::SetSize(const wxSize &size) {
   m_height = wxMin(m_height, g_Platform->getDisplaySize().y - 20);
 }
 
-void NMEALogWindow::SetPos(const wxPoint &pos) {
+void NmeaLogWindow::SetPos(const wxPoint &pos) {
   m_pos_x = pos.x;
   m_pos_y = pos.y;
 }
 
-int NMEALogWindow::GetSizeW() {
+int NmeaLogWindow::GetSizeW() {
   UpdateGeometry();
   return m_width;
 }
 
-int NMEALogWindow::GetSizeH() {
+int NmeaLogWindow::GetSizeH() {
   UpdateGeometry();
   return m_height;
 }
 
-int NMEALogWindow::GetPosX() {
+int NmeaLogWindow::GetPosX() {
   UpdateGeometry();
   return m_pos_x;
 }
 
-int NMEALogWindow::GetPosY() {
+int NmeaLogWindow::GetPosY() {
   UpdateGeometry();
   return m_pos_y;
 }
 
-void NMEALogWindow::SetSize(int w, int h) {
+void NmeaLogWindow::SetSize(int w, int h) {
   m_width = w;
   m_width = wxMax(m_width, 400 * g_Platform->GetDisplayDensityFactor());
   m_width = wxMin(m_width, g_Platform->getDisplaySize().x - 20);
@@ -137,17 +133,17 @@ void NMEALogWindow::SetSize(int w, int h) {
   //    qDebug() << w << h << width << height;
 }
 
-void NMEALogWindow::SetPos(int x, int y) {
+void NmeaLogWindow::SetPos(int x, int y) {
   m_pos_x = x;
   m_pos_y = y;
 }
 
-void NMEALogWindow::CheckPos(int display_width, int display_height) {
+void NmeaLogWindow::CheckPos(int display_width, int display_height) {
   if ((m_pos_x < 0) || (m_pos_x > display_width)) m_pos_x = 5;
   if ((m_pos_y < 0) || (m_pos_y > display_height)) m_pos_y = 5;
 }
 
-void NMEALogWindow::DestroyWindow() {
+void NmeaLogWindow::DestroyWindow() {
   if (m_window) {
     UpdateGeometry();
     m_window->Destroy();
@@ -155,7 +151,7 @@ void NMEALogWindow::DestroyWindow() {
   }
 }
 
-void NMEALogWindow::Move() {
+void NmeaLogWindow::Move() {
   if (m_window) {
     m_window->Move(m_pos_x, m_pos_y);
     m_window->Raise();
@@ -169,7 +165,7 @@ void NMEALogWindow::Move() {
  * Using this mechanism prevents to cache values on every move/resize
  * of the window.
  */
-void NMEALogWindow::UpdateGeometry() {
+void NmeaLogWindow::UpdateGeometry() {
   if (m_window) {
     SetSize(m_window->GetSize());
     SetPos(m_window->GetPosition());

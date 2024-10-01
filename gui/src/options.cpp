@@ -97,7 +97,7 @@
 #include "dychart.h"
 #include "FontMgr.h"
 #include "MarkInfo.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
@@ -8157,8 +8157,8 @@ void options::DoOnPageChange(size_t page) {
 
   auto page_window = m_pListbook->GetPage(page);
   if (page_window == m_pNMEAForm) {
-    if (NMEALogWindow::GetInstance().GetTTYWindow()
-        && NMEALogWindow::GetInstance().GetTTYWindow()->IsShown())
+    if (NmeaLogWindow::GetInstance().GetTTYWindow()
+        && NmeaLogWindow::GetInstance().GetTTYWindow()->IsShown())
     {
         m_ApplyButton->Enable(false);
     }

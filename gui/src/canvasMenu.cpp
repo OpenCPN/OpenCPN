@@ -63,12 +63,12 @@
 #include "config.h"
 #include "FontMgr.h"
 #include "kml.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "peer_client_dlg.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
@@ -1504,7 +1504,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_DGB_MENU_NMEA_WINDOW:
-      NMEALogWindow::Show();
+      NmeaLogWindow::Show();
       break;
 
     case ID_RT_MENU_REVERSE: {

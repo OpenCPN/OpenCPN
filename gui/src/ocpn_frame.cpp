@@ -111,7 +111,7 @@
 #include "MUIBar.h"
 #include "N2KParser.h"
 #include "navutil.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "ocpn_app.h"
 #include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
@@ -711,10 +711,10 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
   log_callbacks.log_is_active = []() {
-    return NMEALogWindow::GetInstance().Active();
+    return NmeaLogWindow::GetInstance().Active();
   };
   log_callbacks.log_message = [](const std::string &s) {
-    NMEALogWindow::GetInstance().Add(s);
+    NmeaLogWindow::GetInstance().Add(s);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 
@@ -1820,7 +1820,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     }
   }
 
-  NMEALogWindow::Shutdown();
+  NmeaLogWindow::Shutdown();
 
   ReleaseApiListeners();
 
@@ -4187,8 +4187,8 @@ int MyFrame::DoOptionsDialog() {
       dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
   if (alert_dlg_active) alert_dlg_active->Raise();
 
-  if (NMEALogWindow::GetInstance().Active())
-    NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
+  if (NmeaLogWindow::GetInstance().Active())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Raise();
 
 #ifdef __ANDROID__
   if (g_pi_manager) g_pi_manager->NotifyAuiPlugIns();
@@ -6897,8 +6897,8 @@ void MyFrame::applySettingsString(wxString settings) {
 
   Refresh(false);
 
-  if (NMEALogWindow::GetInstance().Active())
-    NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
+  if (NmeaLogWindow::GetInstance().Active())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Raise();
 }
 
 #ifdef wxHAS_POWER_EVENTS

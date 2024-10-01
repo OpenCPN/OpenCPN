@@ -1,8 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,41 +16,31 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#ifndef __TTYWINDOW_H__
-#define __TTYWINDOW_H__
+#ifndef TTYSCROLL_H_
+#define TTYSCROLL_H_
 
-#include <wx/frame.h>
-#include <wx/bitmap.h>
-#include <wx/button.h>
+#include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
-#include "TTYScroll.h"
-
-class TTYWindow : public wxFrame {
-  DECLARE_DYNAMIC_CLASS(TTYWindow)
-
+/** NMEA log scrolled TTY-like window. */
+class NmeaScrollwin : public wxScrolledWindow {
 public:
-  TTYWindow();
-  TTYWindow(wxWindow *parent, int n_lines);
-  virtual ~TTYWindow();
-
-  void Add(const wxString &line);
-  void OnCloseWindow(wxCloseEvent &event);
-  void Close();
-  void OnPauseClick(wxCommandEvent &event);
-  void OnCopyClick(wxCommandEvent &event);
+  NmeaScrollwin(wxWindow *parent, int n_lines, wxTextCtrl &tFilter);
+  virtual ~NmeaScrollwin();
+  virtual void OnDraw(wxDC &dc);
+  virtual void Add(const wxString &line);
+  void Pause(bool pause) { m_pause = pause; }
+  void Copy();
 
 protected:
-  void CreateLegendBitmap();
-  TTYScroll *m_tty_scroll;
-  wxButton *m_btn_pause;
-  wxButton *m_btn_copy;
-  bool m_is_paused;
-  wxBitmap m_bm_legend;
-  wxTextCtrl *m_filter;
+  wxCoord m_line;    // the height of one line on screen
+  size_t m_n_lines;  // the number of lines we draw
+
+  wxArrayString *m_line_array;
+  wxTextCtrl &m_filter;
+  bool m_pause;
 };
 
 #endif

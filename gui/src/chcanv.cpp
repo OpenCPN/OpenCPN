@@ -81,7 +81,7 @@
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
@@ -117,7 +117,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #endif
 
 #ifdef __MSVC__
@@ -781,7 +781,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, this);
   Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
   m_nmea_log_visible_lstnr.Init(
-      NMEALogWindow::GetInstance().OnHideChange,
+      NmeaLogWindow::GetInstance().OnHideChange,
       [&](ObservedEvt &ev) { m_is_nmea_log_visible = bool(ev.GetInt()); });
 #endif
 }
