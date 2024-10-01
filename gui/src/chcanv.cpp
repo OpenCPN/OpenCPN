@@ -2878,14 +2878,17 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
             // from working.
           case ']':
             RotateCanvas(1);
+            b_handled = true;
             break;
 
           case '[':
             RotateCanvas(-1);
+            b_handled = true;
             break;
 
           case '\\':
             DoRotateCanvas(0);
+            b_handled = true;
             break;
         }
       }
@@ -3189,11 +3192,10 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       }  // switch
   }
 
-#ifndef __WXMAC__
   // Allow OnKeyChar to catch the key events too.
-  // On OS X this is unnecessary since we handle all key events here.
-  if (!b_handled) event.Skip();
-#endif
+  if (!b_handled) {
+    event.Skip();
+  }
 }
 
 void ChartCanvas::OnKeyUp(wxKeyEvent &event) {
