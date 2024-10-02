@@ -220,8 +220,7 @@ void ConnectionsDialog::Init() {
   } else {
     cb_space = 2;
     m_cbNMEADebug = new wxCheckBox(m_container, wxID_ANY,
-                                   _("Show NMEA Debug Window (after OK)"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
+                                   _("Show NMEA Debug Window (after OK)"));
     m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
     bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
@@ -597,6 +596,8 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (m_cbNMEADebug->GetValue()) {
     NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
+    auto w = wxWindow::FindWindowByName("OptionsApplyButton");
+    if (w) w->Enable(false);
   }
 }
 

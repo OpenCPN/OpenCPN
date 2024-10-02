@@ -97,6 +97,7 @@
 #include "dychart.h"
 #include "FontMgr.h"
 #include "MarkInfo.h"
+#include "NMEALogWindow.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
@@ -5783,7 +5784,9 @@ void options::CreateControls(void) {
   m_CancelButton = new wxButton(itemDialog1, wxID_CANCEL, _("Cancel"));
   buttons->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
-  m_ApplyButton = new wxButton(itemDialog1, ID_APPLY, _("Apply"));
+  m_ApplyButton = new wxButton(itemDialog1, ID_APPLY, _("Apply"),
+                               wxDefaultPosition, wxDefaultSize, 0,
+                               wxDefaultValidator, "OptionsApplyButton");
   buttons->Add(m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
   m_pageDisplay = CreatePanel(_("Display"));
@@ -8138,6 +8141,7 @@ void options::OnTopNBPageChange(wxNotebookEvent& event) {
 
 void options::DoOnPageChange(size_t page) {
   unsigned int i = page;
+  m_ApplyButton->Enable(true); 
 
   //  Sometimes there is a (-1) page selected.
   if (page > 10) return;
@@ -8150,6 +8154,15 @@ void options::DoOnPageChange(size_t page) {
     if (m_sconfigSelect_twovertical) m_sconfigSelect_twovertical->Refresh(true);
   }
 #endif
+
+  auto page_window = m_pListbook->GetPage(page);
+  if (page_window == m_pNMEAForm) {
+    if (NMEALogWindow::GetInstance().GetTTYWindow()
+        && NMEALogWindow::GetInstance().GetTTYWindow()->IsShown())
+    {
+        m_ApplyButton->Enable(false);
+    }
+  }
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page
