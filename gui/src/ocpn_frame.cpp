@@ -1958,10 +1958,6 @@ void MyFrame::ProcessCanvasResize(void) {
   if (console && console->IsShown()) PositionConsole();
 
   PositionIENCToolbar();
-
-#ifndef __ANDROID__
-  TriggerRecaptureTimer();
-#endif
 }
 
 void MyFrame::TriggerRecaptureTimer() {
