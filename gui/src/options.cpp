@@ -8148,7 +8148,6 @@ void options::OnTopNBPageChange(wxNotebookEvent& event) {
 
 void options::DoOnPageChange(size_t page) {
   unsigned int i = page;
-  m_ApplyButton->Enable(true);
   if (NmeaLogWindow::GetInstance().GetTTYWindow())
     NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(false);
 
@@ -8164,13 +8163,6 @@ void options::DoOnPageChange(size_t page) {
   }
 #endif
 
-  auto page_window = m_pListbook->GetPage(page);
-  if (page_window == m_pNMEAForm) {
-    if (NmeaLogWindow::GetInstance().GetTTYWindow() &&
-        NmeaLogWindow::GetInstance().GetTTYWindow()->IsShown()) {
-      m_ApplyButton->Enable(false);
-    }
-  }
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page
