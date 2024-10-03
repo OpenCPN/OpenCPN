@@ -5564,47 +5564,12 @@ void options::CreateListbookIcons() {
     int sy = 40;
     m_topImgList = new wxImageList(sx, sy, TRUE, 0);
 
-#if wxCHECK_VERSION(2, 8, 12)
     m_topImgList->Add(style->GetIcon(_T("Display"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Charts"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Connections"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Ship"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("UI"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Plugins"), sx, sy));
-#else
-    wxBitmap bmp;
-    wxImage img;
-    bmp = style->GetIcon(_T("Display"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Charts"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Connections"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Ship"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("UI"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Plugins"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-#endif
   } else {
     wxBitmap bmps;
     bmps = style->GetIcon(_T("Display"));
@@ -7343,7 +7308,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   }
 
 // User Interface Panel
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
   if (m_bVisitLang) {
     wxString new_canon = _T("en_US");
     wxString lang_sel = m_itemLangListBox->GetStringSelection();
@@ -8172,7 +8137,7 @@ void options::DoOnPageChange(size_t page) {
 
   else if (m_pageUI == i) {  // 5 is the index of "User Interface" page
     if (!m_itemLangListBox) return;
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 
     if (!m_bVisitLang) {
       ::wxBeginBusyCursor();
@@ -8222,12 +8187,10 @@ void options::DoOnPageChange(size_t page) {
               FALSE);  // avoid "Cannot set locale to..." log message
 
           wxLocale ltest(lang_list[it], 0);
-#if wxCHECK_VERSION(2, 9, 0)
 #ifdef __WXGTK__
           ltest.AddCatalogLookupPathPrefix(
               wxStandardPaths::Get().GetInstallPrefix() +
               _T( "/share/locale" ));
-#endif
 #endif
           ltest.AddCatalog(_T("opencpn"));
 
@@ -8378,7 +8341,7 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   wxString return_string;
   wxString dir_suffix;
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 
   if (lang_canonical == _T("en_US")) {
     dir_suffix = _T("en");
