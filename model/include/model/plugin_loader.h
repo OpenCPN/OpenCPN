@@ -155,6 +155,12 @@ class PluginLoader {
 public:
   static PluginLoader* getInstance();
   virtual ~PluginLoader() = default;
+
+  /**
+   * Mark a library file (complete path) as loadable i. e., remove possible
+   * stamp
+   */
+  static void MarkAsLoadable(const std::string& library_path);
   /**
    *  Update PlugInContainer status using data from PluginMetadata and manifest.
    */
