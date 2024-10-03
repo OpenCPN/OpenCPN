@@ -42,7 +42,7 @@ NmeaWindow::NmeaWindow() : m_tty_scroll(NULL) {}
 
 NmeaWindow::NmeaWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
   wxFrame::Create(parent, -1, "Title", wxDefaultPosition, wxDefaultSize,
-                  wxDEFAULT_DIALOG_STYLE, "NmeaDebugWindow");
+                  wxDEFAULT_FRAME_STYLE, "NmeaDebugWindow");
 
   wxBoxSizer* bSizerOuterContainer = new wxBoxSizer(wxVERTICAL);
   SetSizer(bSizerOuterContainer);
