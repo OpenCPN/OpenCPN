@@ -5784,9 +5784,9 @@ void options::CreateControls(void) {
   m_CancelButton = new wxButton(itemDialog1, wxID_CANCEL, _("Cancel"));
   buttons->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
-  m_ApplyButton = new wxButton(itemDialog1, ID_APPLY, _("Apply"),
-                               wxDefaultPosition, wxDefaultSize, 0,
-                               wxDefaultValidator, "OptionsApplyButton");
+  m_ApplyButton =
+      new wxButton(itemDialog1, ID_APPLY, _("Apply"), wxDefaultPosition,
+                   wxDefaultSize, 0, wxDefaultValidator, "OptionsApplyButton");
   buttons->Add(m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
   m_pageDisplay = CreatePanel(_("Display"));
@@ -7428,6 +7428,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  Record notice of any changes to last applied template
   UpdateTemplateTitleText();
 
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(false);
   if (::wxIsBusy())  // FIXME: Not sure why this is needed here
     ::wxEndBusyCursor();
 }
@@ -7438,6 +7440,8 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   if (event.GetEventObject() == NULL) return;
 
   OnApplyClick(event);
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(true);
   SetReturnCode(m_returnChanges);
   if (event.GetInt() == wxID_STOP) return;
 
@@ -7915,6 +7919,9 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(true);
+
   EndModal(0);
 }
 
@@ -8141,7 +8148,9 @@ void options::OnTopNBPageChange(wxNotebookEvent& event) {
 
 void options::DoOnPageChange(size_t page) {
   unsigned int i = page;
-  m_ApplyButton->Enable(true); 
+  m_ApplyButton->Enable(true);
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(false);
 
   //  Sometimes there is a (-1) page selected.
   if (page > 10) return;
@@ -8157,10 +8166,9 @@ void options::DoOnPageChange(size_t page) {
 
   auto page_window = m_pListbook->GetPage(page);
   if (page_window == m_pNMEAForm) {
-    if (NmeaLogWindow::GetInstance().GetTTYWindow()
-        && NmeaLogWindow::GetInstance().GetTTYWindow()->IsShown())
-    {
-        m_ApplyButton->Enable(false);
+    if (NmeaLogWindow::GetInstance().GetTTYWindow() &&
+        NmeaLogWindow::GetInstance().GetTTYWindow()->IsShown()) {
+      m_ApplyButton->Enable(false);
     }
   }
   //    User selected Chart Page?

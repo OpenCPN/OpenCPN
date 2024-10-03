@@ -595,8 +595,6 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (m_cbNMEADebug->GetValue()) {
     NmeaLogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
-    auto w = wxWindow::FindWindowByName("OptionsApplyButton");
-    if (w) w->Enable(false);
   }
 }
 
