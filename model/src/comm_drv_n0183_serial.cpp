@@ -209,11 +209,13 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
 
 void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
+
   // Is this an output-only port?
   // Commonly used for "Send to GPS" function
   if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
 
-  // sanity check
+  // sanity checks
+  if (msg.size() < 6) return;
   if (msg[0] != '$' && msg[0] != '!') return;
 
   // We use the full src + type to discriminate messages,  like GPGGA
