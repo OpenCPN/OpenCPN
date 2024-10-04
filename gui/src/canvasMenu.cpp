@@ -280,7 +280,7 @@ void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   menu->Prepend(item);
 }
 
-void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
+wxMenuItem*  CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
   item->SetFont(m_scaledFont);
@@ -295,6 +295,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
 
   menu->Append(item);
   if (g_btouch) menu->AppendSeparator();
+  return item;
 }
 
 void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
@@ -325,11 +326,6 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #else
   wxMenu *subMenuRedo = new wxMenu("Redo...Ctrl-Y");
 #endif
-  wxMenu *subMenuDebug = new wxMenu("");
-  auto *nmea_item = new wxMenuItem(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW,
-                                   _("Show NMEA log window"));
-  subMenuDebug->Append(nmea_item);
-  nmea_item->Enable(!m_is_nmea_log_visible);
 
   wxMenu *menuFocus = contextMenu;  // This is the one that will be shown
 
@@ -711,8 +707,6 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
     }
   }
-  if (g_enable_root_menu_debug)
-    contextMenu->AppendSubMenu(subMenuDebug, _("Debug"));
 
   if (seltype & SELTYPE_ROUTESEGMENT) {
     if (!g_bBasicMenus && m_pSelectedRoute) {
@@ -1024,7 +1018,11 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     MenuAppend1(menuFocus, ID_DEF_MENU_CURRENTINFO,
                 _("Show Current Information"));
   }
-
+  if (g_enable_root_menu_nmea_dbg) {
+    auto dbg_item = MenuAppend1(contextMenu, ID_DGB_MENU_NMEA_WINDOW,
+                                _("Show NMEA log window"));
+    dbg_item->Enable(!m_is_nmea_log_visible);
+  }
   // Give the plugins a chance to update their menu items
   g_pi_manager->PrepareAllPluginContextMenus();
 

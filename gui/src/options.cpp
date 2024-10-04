@@ -5402,11 +5402,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                         group_item_spacing);
 
   auto enable_debug_cb = new wxCheckBox(itemPanelFont, wxID_ANY,
-                                        _("Enable Debug in root context menu"));
+                                        _("Enable NMEA window in root context menu"));
   enable_debug_cb->Bind(wxEVT_CHECKBOX, [enable_debug_cb](wxCommandEvent&) {
-    g_enable_root_menu_debug = enable_debug_cb->IsChecked();
+    g_enable_root_menu_nmea_dbg = enable_debug_cb->IsChecked();
   });
-  enable_debug_cb->SetValue(g_enable_root_menu_debug);
+  enable_debug_cb->SetValue(g_enable_root_menu_nmea_dbg);
   miscOptions->Add(enable_debug_cb, 0, wxALL, group_item_spacing);
 
   wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);

@@ -93,7 +93,7 @@ public:
   static int GetNextContextMenuId();
   void PrepareMenuItem(wxMenuItem *item);
   void MenuPrepend1(wxMenu *menu, int id, wxString label);
-  void MenuAppend1(wxMenu *menu, int id, wxString label);
+  wxMenuItem* MenuAppend1(wxMenu *menu, int id, wxString label);
   void SetMenuItemFont1(wxMenuItem *item);
 
   static wxFont m_scaledFont;
