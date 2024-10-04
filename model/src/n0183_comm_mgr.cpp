@@ -84,6 +84,7 @@ void CommDriverN0183SerialThread::CloseComPortPhysical() {
 }
 
 bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
+  if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
   m_out_que.Put(msg.ToStdString());
   return true;
 }
