@@ -52,7 +52,7 @@ public:
    *  @return false if the timeout triggered, else true.
    */
   bool WaitUntilStopped(std::chrono::duration<int> timeout,
-                        std::chrono::duration<int>& elapsed);
+                        std::chrono::milliseconds& elapsed);
 
 protected:
   /** If true continue thread operation, else exit and invoke SignalExit() */
