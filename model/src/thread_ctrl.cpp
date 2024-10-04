@@ -38,14 +38,14 @@ bool ThreadCtrl::WaitUntilStopped(std::chrono::duration<int> timeout) {
 }
 
 bool ThreadCtrl::WaitUntilStopped(std::chrono::duration<int> timeout,
-                                  std::chrono::duration<int>& elapsed) {
+                                  std::chrono::milliseconds& elapsed) {
   using namespace std::chrono;
 
   auto start = steady_clock::now();
   std::unique_lock lock(m_mutex);
   m_cv.wait_for(lock, timeout, [&] { return m_keep_going < 0; });
   auto end = steady_clock::now();
-  elapsed = duration_cast<seconds>(end - start);
+  elapsed = duration_cast<milliseconds>(end - start);
   return m_keep_going < 0;
 }
 

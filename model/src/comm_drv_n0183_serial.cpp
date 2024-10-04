@@ -66,8 +66,8 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_portstring(params->GetDSPort()),
-      m_secondary_thread([&](const std::vector<unsigned char>& v) {
-                              SendMessage(v);}),
+      m_secondary_thread(
+          [&](const std::vector<unsigned char>& v) { SendMessage(v); }),
       m_params(*params),
       m_listener(listener) {
   m_baudrate = wxString::Format("%i", params->Baudrate);
@@ -94,7 +94,7 @@ bool CommDriverN0183Serial::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-  auto send_func = [&](const std::vector<unsigned char>& v) {SendMessage(v); };
+  auto send_func = [&](const std::vector<unsigned char>& v) { SendMessage(v); };
   if ((wxNOT_FOUND != port_uc.Find("USB")) &&
       (wxNOT_FOUND != port_uc.Find("GARMIN"))) {
     m_garmin_handler = new GarminProtocolHandler(comx, send_func, true);
@@ -133,10 +133,9 @@ void CommDriverN0183Serial::Close() {
     using namespace std::chrono;
     wxLogMessage("Stopping Secondary Thread");
     m_secondary_thread.RequestStop();
-    std::chrono::duration<int> elapsed;
+    std::chrono::milliseconds elapsed;
     if (m_secondary_thread.WaitUntilStopped(10s, elapsed)) {
-      MESSAGE_LOG << "Stopped in " << duration_cast<seconds>(elapsed).count()
-                  << " sec.";
+      MESSAGE_LOG << "Stopped in " << elapsed.count() << " msec.";
     } else {
       MESSAGE_LOG << "Not stopped after 10 sec.";
     }
@@ -207,9 +206,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 #endif
 }
 
-
 void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
-
   // Is this an output-only port?
   // Commonly used for "Send to GPS" function
   if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
@@ -224,11 +221,11 @@ void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
   // notify msg listener and also "ALL" N0183 messages, to support plugin
   // API using original talker id
   std::string payload(msg.begin(), msg.end());
-  auto message = std::make_shared<const Nmea0183Msg>(identifier, payload,
-                                                     GetAddress());
+  auto message =
+      std::make_shared<const Nmea0183Msg>(identifier, payload, GetAddress());
   auto message_all = std::make_shared<const Nmea0183Msg>(*message, "ALL");
 
   if (m_params.SentencePassesFilter(payload, FILTER_INPUT))
-      m_listener.Notify(std::move(message));
+    m_listener.Notify(std::move(message));
   m_listener.Notify(std::move(message_all));
 }
