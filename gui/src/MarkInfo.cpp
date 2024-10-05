@@ -989,13 +989,14 @@ void MarkInfoDlg::UpdateHtmlList() {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_COMMAND_HYPERLINK,
-                       wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick));
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_RIGHT_DOWN,
-                       wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu));
+    auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+    if (link_win) {
+      link_win->Disconnect(
+          wxEVT_COMMAND_HYPERLINK,
+          wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick));
+      link_win->Disconnect(
+          wxEVT_RIGHT_DOWN,
+          wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu));
       win->Destroy();
     }
   }

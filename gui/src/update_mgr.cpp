@@ -496,8 +496,8 @@ void UpdateDialog::RecalculateSize() {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win && win->IsKindOf(CLASSINFO(PluginTextPanel))) {
-      PluginTextPanel* panel = (PluginTextPanel*)win;
+    auto panel = dynamic_cast<PluginTextPanel*>(win);
+    if (panel) {
       if (panel->m_isDesc) {
         wxSize tsize = win->GetEffectiveMinSize();
         calcHeight += tsize.y + GetCharHeight();

@@ -1710,7 +1710,7 @@ JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_getTLWCount(JNIEnv *env,
   wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
   while (node) {
     wxWindow *win = node->GetData();
-    if (win->IsShown() && !win->IsKindOf(CLASSINFO(CanvasOptions))) ret++;
+    if (win->IsShown() && !dynamic_cast<CanvasOptions>(win) ret++;
 
     node = node->GetNext();
   }
