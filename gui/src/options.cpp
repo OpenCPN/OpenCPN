@@ -1828,7 +1828,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
 bool options::DeletePluginPage(wxScrolledWindow* page) {
   for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
     wxNotebookPage* pg = m_pListbook->GetPage(i);
-    wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
+    auto nb = dynamic_cast<wxNotebook*>(pg);
 
     if (nb) {
       for (size_t j = 0; j < nb->GetPageCount(); j++) {
@@ -2706,9 +2706,9 @@ void options::ClearConfigList() {
     for (unsigned int i = 0; i < kids.GetCount(); i++) {
       wxWindowListNode* node = kids.Item(i);
       wxWindow* win = node->GetData();
-      wxPanel* pcp = wxDynamicCast(win, wxPanel);
+      auto pcp = dynamic_cast<wxPanel*>(win);
       if (pcp) {
-        ConfigPanel* cPanel = wxDynamicCast(pcp, ConfigPanel);
+        auto cPanel = dynamic_cast<ConfigPanel*>(pcp);
         if (cPanel) {
           cPanel->Destroy();
         }
@@ -2822,9 +2822,9 @@ void options::OnApplyConfig(wxCommandEvent& event) {
     for (unsigned int i = 0; i < kids.GetCount(); i++) {
       wxWindowListNode* node = kids.Item(i);
       wxWindow* win = node->GetData();
-      wxPanel* pcp = wxDynamicCast(win, wxPanel);
+      auto pcp = dynamic_cast<wxPanel*>(win);
       if (pcp) {
-        ConfigPanel* cPanel = wxDynamicCast(pcp, ConfigPanel);
+        auto cPanel = dynamic_cast<ConfigPanel*>(pcp);
         if (cPanel) {
           cPanel->SetBackgroundColour(m_panelBackgroundUnselected);
         }
@@ -2844,15 +2844,15 @@ void options::OnConfigMouseSelected(wxMouseEvent& event) {
   wxPanel* selectedPanel = NULL;
   wxObject* obj = event.GetEventObject();
   if (obj) {
-    wxPanel* panel = wxDynamicCast(obj, wxPanel);
+    auto panel = dynamic_cast<wxPanel*>(obj);
     if (panel) {
       selectedPanel = panel;
     }
     // Clicked on child?
     else {
-      wxWindow* win = wxDynamicCast(obj, wxWindow);
+      auto win = dynamic_cast<wxWindow*>(obj);
       if (win) {
-        wxPanel* parentpanel = wxDynamicCast(win->GetParent(), wxPanel);
+        auto parentpanel = dynamic_cast<wxPanel*>(win->GetParent());
         if (parentpanel) {
           selectedPanel = parentpanel;
         }
@@ -2864,12 +2864,12 @@ void options::OnConfigMouseSelected(wxMouseEvent& event) {
       for (unsigned int i = 0; i < kids.GetCount(); i++) {
         wxWindowListNode* node = kids.Item(i);
         wxWindow* win = node->GetData();
-        wxPanel* panel = wxDynamicCast(win, wxPanel);
+        auto panel = dynamic_cast<wxPanel*>(win);
         if (panel) {
           if (panel == selectedPanel) {
             panel->SetBackgroundColour(wxSystemSettings::GetColour(
                 wxSystemColour::wxSYS_COLOUR_HIGHLIGHT));
-            ConfigPanel* cPanel = wxDynamicCast(panel, ConfigPanel);
+            auto cPanel = dynamic_cast<ConfigPanel*>(panel);
             if (cPanel) m_selectedConfigPanelGUID = cPanel->GetConfigGUID();
           } else
             panel->SetBackgroundColour(m_panelBackgroundUnselected);
@@ -4256,8 +4256,9 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    m_Text_def_boat_speed = new wxStaticText( pDisplayPanel, wxID_ANY,
-               _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+    m_Text_def_boat_speed = new wxStaticText(
+        pDisplayPanel, wxID_ANY,
+        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
     defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),

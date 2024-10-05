@@ -866,7 +866,7 @@ bool MUIBar::MouseEvent(wxMouseEvent& event) {
 }
 
 void MUIBar::OnScaleSelected(wxMouseEvent& event) {
-  ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+  auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
   if (!pcc) return;
 
   SetScaleDialog dlg(pcc);
@@ -1357,7 +1357,7 @@ void MUIBar::PullCanvasOptions() {
   m_animationTotalTime = 200;  // msec
 
   m_pushPull = CO_PULL;
-  ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+  auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
   pcc->m_b_paint_enable = false;
 
   // Start the animation....
@@ -1395,7 +1395,7 @@ void MUIBar::PushCanvasOptions() {
   m_animateSteps = 5;
   m_animationTotalTime = 100;  // msec
   m_pushPull = CO_PUSH;
-  ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+  auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
 
   // Start the animation....
   m_animateStep = 0;
@@ -1452,7 +1452,7 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent(wxTimerEvent& event) {
     m_currentCOPos = m_targetCOPos;
     m_canvasOptions->Show(m_pushPull == CO_PULL);
 
-    ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+    auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
     if (pcc) {
       pcc->m_b_paint_enable = true;
 

@@ -261,7 +261,7 @@ TrackPropDlg::~TrackPropDlg() {
 }
 
 void TrackPropDlg::OnActivate(wxActivateEvent& event) {
-  DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
+  auto pWin = dynamic_cast<DIALOG_PARENT*>(event.GetEventObject());
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);

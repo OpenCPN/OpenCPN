@@ -5190,7 +5190,7 @@ ChartPlugInWrapper::ChartPlugInWrapper() {}
 
 ChartPlugInWrapper::ChartPlugInWrapper(const wxString& chart_class) {
   m_ppo = ::wxCreateDynamicObject(chart_class);
-  m_ppicb = wxDynamicCast(m_ppo, PlugInChartBase);
+  m_ppicb = dynamic_cast<PlugInChartBase*>(m_ppo);
 }
 
 ChartPlugInWrapper::~ChartPlugInWrapper() {
@@ -5264,7 +5264,7 @@ InitReturn ChartPlugInWrapper::Init(const wxString& name,
 
     //  PlugIn may invoke wxExecute(), which steals the keyboard focus
     //  So take it back
-    ChartCanvas* pc = wxDynamicCast(pa, ChartCanvas);
+    auto pc = dynamic_cast<ChartCanvas*>(pa);
     if (pc) pc->SetFocus();
 
     return ret_val;
@@ -7346,7 +7346,7 @@ wxWindow* PluginGetOverlayRenderCanvas() {
 
 void CanvasJumpToPosition(wxWindow* canvas, double lat, double lon,
                           double scale) {
-  ChartCanvas* oCanvas = wxDynamicCast(canvas, ChartCanvas);
+  auto oCanvas = dynamic_cast<ChartCanvas*>(canvas);
   if (oCanvas) gFrame->JumpToPosition(oCanvas, lat, lon, scale);
 }
 

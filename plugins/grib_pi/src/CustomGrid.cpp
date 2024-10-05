@@ -408,8 +408,8 @@ void CustomRenderer::Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
 
 #if wxUSE_GRAPHICS_CONTEXT
     wxGraphicsContext* gdc;
-    wxClientDC* cdc = new wxClientDC(wxDynamicCast(&grid, wxWindow));
-    cdc = wxDynamicCast(&dc, wxClientDC);
+    wxClientDC* cdc = new wxClientDC(dynamic_cast<wxWindow*>(&grid));
+    cdc = dynamic_cast<wxClientDC*>(&dc);
     if (cdc) {
       gdc = wxGraphicsContext::Create(*cdc);
 #ifdef __WXGTK__

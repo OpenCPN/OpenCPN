@@ -158,7 +158,7 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event) {
 
         //  Tell MyFrame that the sash is moving, so that he
         //  may disable any top-level windows and so avoid mouse focus problems.
-        MyFrame* pmf = wxDynamicCast(m_frame, MyFrame);
+        auto pmf = dynamic_cast<MyFrame*>(m_frame);
         if (pmf) pmf->NotifyChildrenResize();
 
         wxRect rect(m_frame->ClientToScreen(pos), m_actionPart->rect.GetSize());
@@ -221,7 +221,7 @@ bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event) {
 #if wxUSE_STATUSBAR
     // if there's a status control, the available
     // height decreases accordingly
-    if (wxDynamicCast(m_frame, wxFrame)) {
+    if (dynamic_cast<wxFrame*>(m_frame)) {
       wxFrame* frame = static_cast<wxFrame*>(m_frame);
       wxStatusBar* status = frame->GetStatusBar();
       if (status) {

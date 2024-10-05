@@ -61,12 +61,12 @@ extern BasePlatform *g_BasePlatform;
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
 EVT_PAINT(RolloverWin::OnPaint)
 EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
-    EVT_MOUSE_EVENTS(RolloverWin::OnMouseEvent)
+EVT_MOUSE_EVENTS(RolloverWin::OnMouseEvent)
 
-        END_EVENT_TABLE()
+END_EVENT_TABLE()
 
-    // Define a constructor
-    RolloverWin::RolloverWin(wxWindow *parent, int timeout, bool maincanvas)
+// Define a constructor
+RolloverWin::RolloverWin(wxWindow *parent, int timeout, bool maincanvas)
     : wxWindow(parent, wxID_ANY, wxPoint(0, 0), wxSize(1, 1), wxNO_BORDER),
       m_bmaincanvas(maincanvas) {
   m_pbm = NULL;
@@ -261,7 +261,7 @@ void RolloverWin::Draw(ocpnDC &dc) {
     coords[6] = x0;
     coords[7] = y1;
 
-    ChartCanvas *pCanvas = wxDynamicCast(GetParent(), ChartCanvas);
+    auto pCanvas = dynamic_cast<ChartCanvas *>(GetParent());
     if (pCanvas)
       pCanvas->GetglCanvas()->RenderTextures(dc, coords, uv, 4,
                                              pCanvas->GetpVP());
