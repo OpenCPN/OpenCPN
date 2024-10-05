@@ -145,9 +145,6 @@ protected:
   //    virtual bool DoXor(const OCPNRegion& region);
 
 #endif
-
-private:
-  DECLARE_DYNAMIC_CLASS(OCPNRegion)
 };
 
 /**

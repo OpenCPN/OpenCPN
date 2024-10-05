@@ -84,7 +84,6 @@ protected:
 #define ID_TRACKPRINT_SELECTION_CANCEL 9002
 
 class TrackPrintSelection : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(TrackPrintSelection)
   DECLARE_EVENT_TABLE()
 
 public:

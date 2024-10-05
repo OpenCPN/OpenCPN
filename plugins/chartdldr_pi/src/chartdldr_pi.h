@@ -270,7 +270,6 @@ public:
   }
 
 private:
-  DECLARE_DYNAMIC_CLASS(ChartDldrPanelImpl)
   DECLARE_EVENT_TABLE()
 };
 

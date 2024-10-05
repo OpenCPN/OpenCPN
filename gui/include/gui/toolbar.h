@@ -97,7 +97,8 @@ class ToolTipWin;
 class ocpnToolBarTool;
 
 /**
- * Generic toolbar implementation in pure wxWidgets adapted from wxToolBarSimple (deprecated).
+ * Generic toolbar implementation in pure wxWidgets adapted from wxToolBarSimple
+ * (deprecated).
  */
 class ocpnToolBarSimple : public wxEvtHandler {
 public:
@@ -556,7 +557,6 @@ public:
   wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
 
 class ToolbarChoicesDialog : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(ToolbarChoicesDialog)
   DECLARE_EVENT_TABLE()
 
 public:

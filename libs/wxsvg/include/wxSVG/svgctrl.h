@@ -72,8 +72,6 @@ public:
     wxSVGCtrl();
     wxSVGCtrl(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition,
     		const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxPanelNameStr);
-private:
-    DECLARE_DYNAMIC_CLASS(wxSVGCtrl)
 };
 
 

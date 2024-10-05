@@ -34,7 +34,6 @@ class TTYScroll;
 class WindowDestroyListener;
 
 class TTYWindow : public wxFrame {
-  DECLARE_DYNAMIC_CLASS(TTYWindow)
   DECLARE_EVENT_TABLE()
 
 public:

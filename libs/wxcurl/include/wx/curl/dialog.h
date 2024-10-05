@@ -240,7 +240,6 @@ public:     // event handlers
 
 private:
     DECLARE_EVENT_TABLE()
-    DECLARE_DYNAMIC_CLASS(wxCurlDownloadDialog)
 };
 
 
@@ -278,7 +277,6 @@ public:     // event handlers
 
 private:
     DECLARE_EVENT_TABLE()
-    DECLARE_DYNAMIC_CLASS(wxCurlUploadDialog)
 };
 
 
@@ -318,11 +316,7 @@ protected:
 
     virtual int ShowModal()
         { return wxDialog::ShowModal(); }
-
-private:
-    DECLARE_DYNAMIC_CLASS(wxCurlConnectionSettingsDialog)
 };
 
 
 #endif // _WXCURL_DIALOG_H_
-

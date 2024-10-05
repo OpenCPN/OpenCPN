@@ -539,7 +539,6 @@ ChartSource::~ChartSource() { m_update_data.clear(); }
 
 enum { ThreadId = wxID_HIGHEST + 1 };
 
-IMPLEMENT_DYNAMIC_CLASS(ChartDldrPanelImpl, ChartDldrPanel)
 BEGIN_EVENT_TABLE(ChartDldrPanelImpl, ChartDldrPanel)
 END_EVENT_TABLE()
 
