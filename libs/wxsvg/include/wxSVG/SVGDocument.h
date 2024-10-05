@@ -92,8 +92,6 @@ class wxSVGDocument:
 		bool alpha = false, wxProgressDialog* progressDlg = NULL);
 
     static void ApplyAnimation(wxSVGElement* parent, wxSVGSVGElement* ownerSVGElement);
-  private:
-      DECLARE_DYNAMIC_CLASS(wxSVGDocument)
 };
 
 #endif // WX_SVG_DOCUMENT_H

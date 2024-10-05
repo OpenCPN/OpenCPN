@@ -46,11 +46,11 @@ class Route;
 class RoutePoint;
 
 /**
- * Dialog for sending routes/waypoints to a GPS device. Allows users to send route and waypoint data to a connected GPS device.
- * It provides options to select the GPS device and displays a progress gauge during transfer.
+ * Dialog for sending routes/waypoints to a GPS device. Allows users to send
+ * route and waypoint data to a connected GPS device. It provides options to
+ * select the GPS device and displays a progress gauge during transfer.
  */
 class SendToGpsDlg : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(SendToGpsDlg)
   DECLARE_EVENT_TABLE()
 
 public:

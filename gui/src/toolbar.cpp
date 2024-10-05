@@ -1508,8 +1508,6 @@ bool ocpnToolBarSimple::OnMouseEvent(wxMouseEvent &event, wxPoint &position) {
     OnRightClick(tool->GetId(), x, y);
   }
 
-
-
   // Left Button Released.  Only this action confirms selection.
   // If the button is enabled and it is not a toggle tool and it is
   // in the pressed state, then raise the button and call OnLeftClick.
@@ -2312,7 +2310,6 @@ int ToolbarMOBDialog::GetSelection() {
   return 0;
 }
 
-IMPLEMENT_DYNAMIC_CLASS(ToolbarChoicesDialog, wxDialog)
 /*!
  * ToolbarChoicesDialog event table definition
  */

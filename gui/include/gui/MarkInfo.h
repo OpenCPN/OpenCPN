@@ -182,7 +182,6 @@ private:
 extern /*expdecl*/ const wxEventType EVT_LLCHANGE;
 
 class LatLonTextCtrl : public wxTextCtrl {
-  //    DECLARE_DYNAMIC_CLASS( LatLonTextCtrl )
   DECLARE_EVENT_TABLE()
 
 public:

@@ -177,8 +177,6 @@ const wxString AuthorText =
 
 // clang-format on
 
-IMPLEMENT_DYNAMIC_CLASS(about, wxDialog)
-
 BEGIN_EVENT_TABLE(about, wxDialog)
 EVT_BUTTON(xID_OK, about::OnXidOkClick)
 EVT_BUTTON(ID_DONATE, about::OnDonateClick)

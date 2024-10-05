@@ -37,8 +37,6 @@
 #include "ocpn_plugin.h"
 #include "FontMgr.h"
 
-IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
-
 BEGIN_EVENT_TABLE(TTYWindow, wxFrame)
 EVT_CLOSE(TTYWindow::OnCloseWindow)
 END_EVENT_TABLE()

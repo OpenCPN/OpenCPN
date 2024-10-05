@@ -65,11 +65,12 @@
 enum { ID_STP_CANCEL = 10000, ID_STP_OK, ID_STP_CHOICE_PEER, ID_STP_SCAN };
 
 /**
- * Dialog for sending navigation objects to peer devices. Enables sending routes, waypoints, and tracks to peer devices over a network.
- * It allows selecting the peer device and provides options for scanning for available peers.
+ * Dialog for sending navigation objects to peer devices. Enables sending
+ * routes, waypoints, and tracks to peer devices over a network. It allows
+ * selecting the peer device and provides options for scanning for available
+ * peers.
  */
 class SendToPeerDlg : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(SendToPeerDlg)
   DECLARE_EVENT_TABLE()
 
 public:

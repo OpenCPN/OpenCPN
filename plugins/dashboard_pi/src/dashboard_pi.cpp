@@ -6075,8 +6075,6 @@ void DashboardWindow::SendUtcTimeToAllInstruments(wxDateTime value) {
 // implementation
 // ============================================================================
 
-IMPLEMENT_DYNAMIC_CLASS(OCPNFontButton, wxButton)
-
 // ----------------------------------------------------------------------------
 // OCPNFontButton
 // ----------------------------------------------------------------------------

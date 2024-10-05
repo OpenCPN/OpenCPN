@@ -85,8 +85,6 @@ RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
   return ctx;
 }
 
-IMPLEMENT_DYNAMIC_CLASS(AcceptObjectDialog, wxDialog)
-
 BEGIN_EVENT_TABLE(AcceptObjectDialog, wxDialog)
 EVT_BUTTON(ID_STG_CANCEL, AcceptObjectDialog::OnCancelClick)
 EVT_BUTTON(ID_STG_OK, AcceptObjectDialog::OnOKClick)
@@ -202,8 +200,6 @@ void AcceptObjectDialog::OnCancelClick(wxCommandEvent& event) {
   androidDisableRotation();
 #endif
 }
-
-IMPLEMENT_DYNAMIC_CLASS(PINCreateDialog, wxDialog)
 
 BEGIN_EVENT_TABLE(PINCreateDialog, wxDialog)
 EVT_BUTTON(ID_STG_CANCEL, PINCreateDialog::OnCancelClick)
