@@ -7677,8 +7677,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       if (pFindAIS) {
         m_FoundAIS_MMSI = pFindAIS->GetUserData();
         if (g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI)) {
-          wxWindow *pwin = wxDynamicCast(this, wxWindow);
-          ShowAISTargetQueryDialog(pwin, m_FoundAIS_MMSI);
+          ShowAISTargetQueryDialog(this, m_FoundAIS_MMSI);
         }
         return true;
       }

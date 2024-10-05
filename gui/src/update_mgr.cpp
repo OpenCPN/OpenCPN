@@ -376,7 +376,7 @@ public:
     m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
     m_buttons->HideDetails(!m_descr->IsShown());
 
-    UpdateDialog* swin = wxDynamicCast(GetGrandParent(), UpdateDialog);
+    auto swin = dynamic_cast<UpdateDialog*>(GetGrandParent());
     if (swin) {
       swin->RecalculateSize();
     }

@@ -281,7 +281,7 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance(wxWindow* parent) {
 }
 
 void RoutePropDlgImpl::OnActivate(wxActivateEvent& event) {
-  wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+  auto pWin = dynamic_cast<wxFrame*>(event.GetEventObject());
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);

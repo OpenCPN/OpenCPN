@@ -146,8 +146,9 @@ WX_DECLARE_OBJARRAY(wxBitmap, ArrayOfBitmaps);
 class SaveDefaultsDialog;
 
 /**
- * Custom combobox for selecting waypoint icons. Extends wxOwnerDrawnComboBox to provide
- * a combobox with custom-drawn items, specifically for selecting waypoint icons.
+ * Custom combobox for selecting waypoint icons. Extends wxOwnerDrawnComboBox to
+ * provide a combobox with custom-drawn items, specifically for selecting
+ * waypoint icons.
  */
 class OCPNIconCombo : public wxOwnerDrawnComboBox {
 public:
@@ -382,7 +383,7 @@ public:
   void OnActivate(wxActivateEvent& event);
 
   wxSimpleHtmlListBox* GetSimpleBox() {
-    return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox);
+    return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);
   }
   void OnHtmlCellClicked(wxHtmlCellEvent& event);
 
@@ -391,7 +392,8 @@ public:
 
 /**
  * Dialog for saving default waypoint properties. Allows users to select
- * which properties of the current waypoint should be saved as defaults for future waypoints.
+ * which properties of the current waypoint should be saved as defaults for
+ * future waypoints.
  */
 class SaveDefaultsDialog : public wxDialog {
   friend class MarkInfoDlg;
