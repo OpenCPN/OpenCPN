@@ -7866,6 +7866,9 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(true);
+
   int rv = 0;
   if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
   EndModal(rv);
