@@ -40,7 +40,7 @@
 
 #include "connections_dialog.h"
 #include "conn_params_panel.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "OCPNPlatform.h"
 #include "options.h"
 #include "priority_gui.h"
@@ -73,8 +73,8 @@ ConnectionsDialog::~ConnectionsDialog() {}
 
 void ConnectionsDialog::SetInitialSettings(void) {
   m_cbNMEADebug->SetValue(false);
-  if (NMEALogWindow::GetInstance().GetTTYWindow()) {
-    if (NMEALogWindow::GetInstance().GetTTYWindow()->IsShown()) {
+  if (NmeaLogWindow::GetInstance().GetTTYWindow()) {
+    if (NmeaLogWindow::GetInstance().GetTTYWindow()->IsShown()) {
       m_cbNMEADebug->SetValue(true);
     }
   }
@@ -168,10 +168,10 @@ void ConnectionsDialog::Init() {
     wxFlexGridSizer* GenProps = new wxFlexGridSizer(0, 2, 0, 0);
     bSizer161->Add(GenProps, 0, wxALL, cb_space);
 
-    m_cbNMEADebug =
-        new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
-                       wxDefaultPosition, wxDefaultSize, 0);
-    m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
+    m_cbNMEADebug = new wxCheckBox(m_container, wxID_ANY,
+                                   _("Show NMEA Debug Window (after OK)"),
+                                   wxDefaultPosition, wxDefaultSize, 0);
+    m_cbNMEADebug->SetValue(NmeaLogWindow::GetInstance().Active());
     GenProps->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
     m_cbFurunoGP3X = new wxCheckBox(m_container, wxID_ANY,
@@ -219,10 +219,8 @@ void ConnectionsDialog::Init() {
     talkerSizer->Add(m_TalkerIdText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
   } else {
     cb_space = 2;
-    m_cbNMEADebug =
-        new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
-                       wxDefaultPosition, wxDefaultSize, 0);
-    m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
+    m_cbNMEADebug = new wxCheckBox(m_container, wxID_ANY,
+                                   _("Show NMEA Debug Window (after OK)"));
     bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
     m_cbFurunoGP3X = new wxCheckBox(m_container, wxID_ANY,
@@ -595,26 +593,8 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 }
 
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
-  if (!m_cbNMEADebug->GetValue()) {
-    NMEALogWindow::GetInstance().DestroyWindow();
-  } else {
-    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
-
-    // Try to ensure that the log window is a least a little bit visible
-    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
-                   NMEALogWindow::GetInstance().GetPosY(),
-                   NMEALogWindow::GetInstance().GetSizeW(),
-                   NMEALogWindow::GetInstance().GetSizeH());
-
-    if (m_container->GetRect().Contains(logRect)) {
-      NMEALogWindow::GetInstance().SetPos(
-          m_container->GetRect().x / 2,
-          (m_container->GetRect().y +
-           (m_container->GetRect().height - logRect.height) / 2));
-      NMEALogWindow::GetInstance().Move();
-    }
-
-    m_parent->Raise();
+  if (m_cbNMEADebug->GetValue()) {
+    NmeaLogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
   }
 }
 
@@ -636,6 +616,10 @@ void ConnectionsDialog::ApplySettings() {
   g_GPS_Ident = m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";
 
   UpdateDatastreams();
+  if (m_cbNMEADebug->IsChecked())
+    NmeaLogWindow::Show();
+  else
+    NmeaLogWindow::Hide();
 }
 
 void ConnectionsDialog::UpdateDatastreams() {

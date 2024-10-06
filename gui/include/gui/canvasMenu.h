@@ -75,14 +75,16 @@ class glChartCanvas;
 class Track;
 
 /**
- * Handles context menu events for the chart canvas. Manages the creation and handling of context menus that appear
- * when right-clicking on the chart canvas.
+ * Handles context menu events for the chart canvas. Manages the creation and
+ * handling of context menus that appear when right-clicking on the chart
+ * canvas.
  */
 class CanvasMenuHandler : public wxEvtHandler {
 public:
   CanvasMenuHandler(ChartCanvas *parentCanvas, Route *selectedRoute,
                     Track *selectedTrack, RoutePoint *selectedPoint,
-                    int selectedAIS_MMSI, void *selectedTCIndex);
+                    int selectedAIS_MMSI, void *selectedTCIndex,
+                    bool is_nmea_log_visible);
 
   ~CanvasMenuHandler();
 
@@ -91,7 +93,7 @@ public:
   static int GetNextContextMenuId();
   void PrepareMenuItem(wxMenuItem *item);
   void MenuPrepend1(wxMenu *menu, int id, wxString label);
-  void MenuAppend1(wxMenu *menu, int id, wxString label);
+  wxMenuItem* MenuAppend1(wxMenu *menu, int id, wxString label);
   void SetMenuItemFont1(wxMenuItem *item);
 
   static wxFont m_scaledFont;
@@ -108,6 +110,7 @@ private:
   int m_FoundAIS_MMSI;
   void *m_pIDXCandidate;
   double m_DIPFactor;
+  bool m_is_nmea_log_visible;
 };
 
 #endif

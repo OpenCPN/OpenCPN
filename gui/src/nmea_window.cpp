@@ -1,8 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,45 +16,40 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ ************************************************************************* */
+
+/** \file tty_window.cpp Implement tty_window.h */
 
 #include <wx/sizer.h>
 #include <wx/statbox.h>
 #include <wx/bmpbuttn.h>
 #include <wx/dcmemory.h>
 #include <wx/dialog.h>
+#include <wx/event.h>
 #include <wx/settings.h>
 #include <wx/dcscreen.h>
 
-#include "TTYWindow.h"
-#include "TTYScroll.h"
-#include "WindowDestroyListener.h"
+#include "nmea_window.h"
+#include "nmea_log_window.h"
+#include "nmea_scrollwin.h"
 #include "color_handler.h"
 #include "ocpn_plugin.h"
 #include "FontMgr.h"
 
-IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
+IMPLEMENT_DYNAMIC_CLASS(NmeaWindow, wxFrame)
 
-BEGIN_EVENT_TABLE(TTYWindow, wxFrame)
-EVT_CLOSE(TTYWindow::OnCloseWindow)
-END_EVENT_TABLE()
+NmeaWindow::NmeaWindow() : m_tty_scroll(NULL) {}
 
-TTYWindow::TTYWindow() : m_window_destroy_listener(NULL), m_tty_scroll(NULL) {}
-
-TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
-                     WindowDestroyListener* listener)
-    : m_window_destroy_listener(listener), m_tty_scroll(NULL) {
-  wxFrame::Create(
-      parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize,
-      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT);
+NmeaWindow::NmeaWindow(wxWindow* parent, int n_lines) : m_tty_scroll(NULL) {
+  wxFrame::Create(parent, -1, "Title", wxDefaultPosition, wxDefaultSize,
+                  wxDEFAULT_FRAME_STYLE, "NmeaDebugWindow");
 
   wxBoxSizer* bSizerOuterContainer = new wxBoxSizer(wxVERTICAL);
   SetSizer(bSizerOuterContainer);
 
   m_filter = new wxTextCtrl(this, wxID_ANY);
 
-  m_tty_scroll = new TTYScroll(this, n_lines, *m_filter);
+  m_tty_scroll = new NmeaScrollwin(this, n_lines, *m_filter);
   m_tty_scroll->Scroll(-1, 1000);  // start with full scroll down
 
   bSizerOuterContainer->Add(m_tty_scroll, 1, wxEXPAND, 5);
@@ -71,7 +63,7 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   bSizerOuterContainer->Add(bSizerBottomContainer, 0, wxEXPAND, 5);
 
   wxStaticBox* psb = new wxStaticBox(this, wxID_ANY, _("Legend"));
-  wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer(psb, wxVERTICAL);
+  auto* sbSizer1 = new wxStaticBoxSizer(psb, wxVERTICAL);
   bSizerBottomContainer->Add(sbSizer1, 0, wxALIGN_LEFT | wxALL, 5);
 
   CreateLegendBitmap();
@@ -79,7 +71,7 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   sbSizer1->Add(bb, 1, wxALL | wxEXPAND, 5);
 
   wxStaticBox* buttonBox = new wxStaticBox(this, wxID_ANY, wxEmptyString);
-  wxStaticBoxSizer* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
+  auto* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxHORIZONTAL);
 
   m_btn_pause = new wxButton(this, wxID_ANY, _("Pause"), wxDefaultPosition,
                              wxDefaultSize, 0);
@@ -87,28 +79,37 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
                             wxDefaultSize, 0);
   m_btn_copy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
 
+  auto btn_close = new wxButton(this, wxID_CLOSE);
+  btn_close->Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { Hide(); });
+
   bbSizer1->Add(m_btn_pause, 0, wxALL, 5);
   bbSizer1->Add(m_btn_copy, 0, wxALL, 5);
+  bbSizer1->Add(btn_close, 0, wxALL, 5);
   bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
 
   m_btn_copy->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                      wxCommandEventHandler(TTYWindow::OnCopyClick), NULL,
+                      wxCommandEventHandler(NmeaWindow::OnCopyClick), NULL,
                       this);
   m_btn_pause->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(TTYWindow::OnPauseClick), NULL,
+                       wxCommandEventHandler(NmeaWindow::OnPauseClick), NULL,
                        this);
 
   m_is_paused = false;
+
+  Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& e) { Hide(); });
+  Bind(wxEVT_SHOW, [](wxShowEvent& ev) {
+    NmeaLogWindow::GetInstance().OnHideChange.Notify(ev.IsShown(), "");
+  });
 }
 
-TTYWindow::~TTYWindow() {
+NmeaWindow::~NmeaWindow() {
   if (m_tty_scroll) {
     delete m_tty_scroll;
     m_tty_scroll = NULL;
   }
 }
 
-void TTYWindow::CreateLegendBitmap() {
+void NmeaWindow::CreateLegendBitmap() {
   double dip_factor = OCPN_GetWinDIPScaleFactor();
   wxScreenDC dcs;
   wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -170,7 +171,7 @@ void TTYWindow::CreateLegendBitmap() {
   dc.SelectObject(wxNullBitmap);
 }
 
-void TTYWindow::OnPauseClick(wxCommandEvent&) {
+void NmeaWindow::OnPauseClick(wxCommandEvent&) {
   if (!m_is_paused) {
     m_is_paused = true;
     m_tty_scroll->Pause(true);
@@ -183,16 +184,8 @@ void TTYWindow::OnPauseClick(wxCommandEvent&) {
   }
 }
 
-void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
+void NmeaWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
 
-void TTYWindow::OnCloseWindow(wxCloseEvent&) {
-  if (m_window_destroy_listener) {
-    m_window_destroy_listener->DestroyWindow();
-  } else {
-    Destroy();
-  }
-}
-
-void TTYWindow::Add(const wxString& line) {
+void NmeaWindow::Add(const wxString& line) {
   if (m_tty_scroll) m_tty_scroll->Add(line);
 }

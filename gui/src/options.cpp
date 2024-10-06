@@ -97,6 +97,7 @@
 #include "dychart.h"
 #include "FontMgr.h"
 #include "MarkInfo.h"
+#include "nmea_log_window.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
@@ -4256,8 +4257,9 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    m_Text_def_boat_speed = new wxStaticText( pDisplayPanel, wxID_ANY,
-               _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+    m_Text_def_boat_speed = new wxStaticText(
+        pDisplayPanel, wxID_ANY,
+        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
     defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),
@@ -5391,7 +5393,6 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pToolbarAutoHideCB =
       new wxCheckBox(itemPanelFont, wxID_ANY, _("Enable Toolbar auto-hide"));
   pToolbarAutoHide->Add(pToolbarAutoHideCB, 0, wxALL, group_item_spacing);
-
   pToolbarHideSecs =
       new wxTextCtrl(itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                      wxSize(50, -1), wxTE_RIGHT);
@@ -5399,6 +5400,14 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   pToolbarAutoHide->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("seconds")),
                         group_item_spacing);
+
+  auto enable_debug_cb = new wxCheckBox(itemPanelFont, wxID_ANY,
+                                        _("Enable NMEA window in root context menu"));
+  enable_debug_cb->Bind(wxEVT_CHECKBOX, [enable_debug_cb](wxCommandEvent&) {
+    g_enable_root_menu_nmea_dbg = enable_debug_cb->IsChecked();
+  });
+  enable_debug_cb->SetValue(g_enable_root_menu_nmea_dbg);
+  miscOptions->Add(enable_debug_cb, 0, wxALL, group_item_spacing);
 
   wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
   miscOptions->Add(pShipsBellsSizer, 0, wxALL, group_item_spacing);
@@ -5555,47 +5564,12 @@ void options::CreateListbookIcons() {
     int sy = 40;
     m_topImgList = new wxImageList(sx, sy, TRUE, 0);
 
-#if wxCHECK_VERSION(2, 8, 12)
     m_topImgList->Add(style->GetIcon(_T("Display"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Charts"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Connections"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Ship"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("UI"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Plugins"), sx, sy));
-#else
-    wxBitmap bmp;
-    wxImage img;
-    bmp = style->GetIcon(_T("Display"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Charts"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Connections"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Ship"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("UI"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-    bmp = style->GetIcon(_T("Plugins"));
-    img = bmp.ConvertToImage();
-    img.ConvertAlphaToMask(128);
-    bmp = wxBitmap(img);
-    m_topImgList->Add(bmp);
-#endif
   } else {
     wxBitmap bmps;
     bmps = style->GetIcon(_T("Display"));
@@ -5775,7 +5749,9 @@ void options::CreateControls(void) {
   m_CancelButton = new wxButton(itemDialog1, wxID_CANCEL, _("Cancel"));
   buttons->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
-  m_ApplyButton = new wxButton(itemDialog1, ID_APPLY, _("Apply"));
+  m_ApplyButton =
+      new wxButton(itemDialog1, ID_APPLY, _("Apply"), wxDefaultPosition,
+                   wxDefaultSize, 0, wxDefaultValidator, "OptionsApplyButton");
   buttons->Add(m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
   m_pageDisplay = CreatePanel(_("Display"));
@@ -7332,7 +7308,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   }
 
 // User Interface Panel
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
   if (m_bVisitLang) {
     wxString new_canon = _T("en_US");
     wxString lang_sel = m_itemLangListBox->GetStringSelection();
@@ -7417,6 +7393,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  Record notice of any changes to last applied template
   UpdateTemplateTitleText();
 
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(false);
   if (::wxIsBusy())  // FIXME: Not sure why this is needed here
     ::wxEndBusyCursor();
 }
@@ -7427,6 +7405,8 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   if (event.GetEventObject() == NULL) return;
 
   OnApplyClick(event);
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(true);
   SetReturnCode(m_returnChanges);
   if (event.GetInt() == wxID_STOP) return;
 
@@ -7886,6 +7866,9 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(true);
+
   int rv = 0;
   if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
   EndModal(rv);
@@ -7903,6 +7886,9 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->SetPath("/Settings");
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
+
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(true);
 
   EndModal(0);
 }
@@ -8130,6 +8116,8 @@ void options::OnTopNBPageChange(wxNotebookEvent& event) {
 
 void options::DoOnPageChange(size_t page) {
   unsigned int i = page;
+  if (NmeaLogWindow::GetInstance().GetTTYWindow())
+    NmeaLogWindow::GetInstance().GetTTYWindow()->Enable(false);
 
   //  Sometimes there is a (-1) page selected.
   if (page > 10) return;
@@ -8142,6 +8130,7 @@ void options::DoOnPageChange(size_t page) {
     if (m_sconfigSelect_twovertical) m_sconfigSelect_twovertical->Refresh(true);
   }
 #endif
+
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page
@@ -8151,7 +8140,7 @@ void options::DoOnPageChange(size_t page) {
 
   else if (m_pageUI == i) {  // 5 is the index of "User Interface" page
     if (!m_itemLangListBox) return;
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 
     if (!m_bVisitLang) {
       ::wxBeginBusyCursor();
@@ -8201,12 +8190,10 @@ void options::DoOnPageChange(size_t page) {
               FALSE);  // avoid "Cannot set locale to..." log message
 
           wxLocale ltest(lang_list[it], 0);
-#if wxCHECK_VERSION(2, 9, 0)
 #ifdef __WXGTK__
           ltest.AddCatalogLookupPathPrefix(
               wxStandardPaths::Get().GetInstallPrefix() +
               _T( "/share/locale" ));
-#endif
 #endif
           ltest.AddCatalog(_T("opencpn"));
 
@@ -8357,7 +8344,7 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   wxString return_string;
   wxString dir_suffix;
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 
   if (lang_canonical == _T("en_US")) {
     dir_suffix = _T("en");

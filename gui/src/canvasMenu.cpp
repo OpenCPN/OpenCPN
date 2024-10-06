@@ -44,6 +44,7 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui.h"
 #include "model/mdns_cache.h"
 #include "model/mDNS_query.h"
 #include "model/nav_object_database.h"
@@ -62,10 +63,12 @@
 #include "config.h"
 #include "FontMgr.h"
 #include "kml.h"
+#include "nmea_log_window.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "nmea_log_window.h"
 #include "peer_client_dlg.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
@@ -205,6 +208,9 @@ enum {
   ID_DEF_MENU_CURRENTINFO,
   ID_DEF_ZERO_XTE,
 
+  ID_DEF_MENU_DEBUG,
+  ID_DGB_MENU_NMEA_WINDOW,
+
   ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are
                           // created dynamically
 
@@ -226,9 +232,9 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
                                      Route *selectedRoute, Track *selectedTrack,
                                      RoutePoint *selectedPoint,
                                      int selectedAIS_MMSI,
-                                     void *selectedTCIndex)
-
-{
+                                     void *selectedTCIndex,
+                                     bool is_nmea_log_visible)
+    : m_is_nmea_log_visible(is_nmea_log_visible) {
   parent = parentCanvas;
   m_pSelectedRoute = selectedRoute;
   m_pSelectedTrack = selectedTrack;
@@ -239,7 +245,6 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     m_scaledFont = *qFont;
   }
-
   m_DIPFactor = g_Platform->GetDisplayDIPMult(gFrame);
 }
 
@@ -275,7 +280,7 @@ void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   menu->Prepend(item);
 }
 
-void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
+wxMenuItem*  CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
   item->SetFont(m_scaledFont);
@@ -290,6 +295,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
 
   menu->Append(item);
   if (g_btouch) menu->AppendSeparator();
+  return item;
 }
 
 void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
@@ -1012,7 +1018,11 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     MenuAppend1(menuFocus, ID_DEF_MENU_CURRENTINFO,
                 _("Show Current Information"));
   }
-
+  if (g_enable_root_menu_nmea_dbg) {
+    auto dbg_item = MenuAppend1(contextMenu, ID_DGB_MENU_NMEA_WINDOW,
+                                _("Show NMEA log window"));
+    dbg_item->Enable(!m_is_nmea_log_visible);
+  }
   // Give the plugins a chance to update their menu items
   g_pi_manager->PrepareAllPluginContextMenus();
 
@@ -1490,6 +1500,11 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       break;
     }
+
+    case ID_DGB_MENU_NMEA_WINDOW:
+      NmeaLogWindow::Show();
+      break;
+
     case ID_RT_MENU_REVERSE: {
       if (m_pSelectedRoute->m_bIsInLayer) break;
 

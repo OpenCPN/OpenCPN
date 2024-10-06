@@ -142,7 +142,7 @@ using namespace std::literals::chrono_literals;
 #include "Layer.h"
 #include "MarkInfo.h"
 #include "navutil.h"
-#include "NMEALogWindow.h"
+#include "nmea_log_window.h"
 #include "observable.h"
 #include "ocpn_app.h"
 #include "OCPN_AUIManager.h"
@@ -986,7 +986,7 @@ MyApp::MyApp()
       "mesa_glthread", "false",
       1);  // Explicitly disable glthread. This may have some impact on OpenGL
            // performance, but we know it is problematic for us. See #2889
-#endif  // __linux__
+#endif     // __linux__
 }
 
 bool MyApp::OnInit() {
@@ -1197,7 +1197,7 @@ bool MyApp::OnInit() {
 
   g_pRouteMan =
       new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
-                   NMEALogWindow::GetInstance());
+                   NmeaLogWindow::GetInstance());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();

@@ -1,8 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,40 +16,34 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#ifndef __TTYWINDOW_H__
-#define __TTYWINDOW_H__
+#ifndef TTYWINDOW_H__
+#define TTYWINDOW_H__
 
 #include <wx/frame.h>
 #include <wx/bitmap.h>
+#include <wx/button.h>
+#include <wx/textctrl.h>
 
-class wxButton;
-class wxTextCtrl;
-class TTYScroll;
-class WindowDestroyListener;
+#include "nmea_scrollwin.h"
 
-class TTYWindow : public wxFrame {
-  DECLARE_DYNAMIC_CLASS(TTYWindow)
-  DECLARE_EVENT_TABLE()
+/** The actual NMEA log window handled by NmeaLogWindow. */
+class NmeaWindow : public wxFrame {
+  DECLARE_DYNAMIC_CLASS(NmeaWindow)
 
 public:
-  TTYWindow();
-  TTYWindow(wxWindow *parent, int n_lines,
-            WindowDestroyListener *listener = NULL);
-  virtual ~TTYWindow();
+  NmeaWindow();
+  NmeaWindow(wxWindow *parent, int n_lines);
+  virtual ~NmeaWindow();
 
   void Add(const wxString &line);
-  void OnCloseWindow(wxCloseEvent &event);
-  void Close();
   void OnPauseClick(wxCommandEvent &event);
   void OnCopyClick(wxCommandEvent &event);
 
 protected:
   void CreateLegendBitmap();
-  WindowDestroyListener *m_window_destroy_listener;
-  TTYScroll *m_tty_scroll;
+  NmeaScrollwin *m_tty_scroll;
   wxButton *m_btn_pause;
   wxButton *m_btn_copy;
   bool m_is_paused;

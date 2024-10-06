@@ -803,7 +803,9 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
-    ${GUI_HDR_DIR}/NMEALogWindow.h
+    ${GUI_HDR_DIR}/nmea_log_window.h
+    ${GUI_HDR_DIR}/nmea_scrollwin.h
+    ${GUI_HDR_DIR}/nmea_window.h
     ${GUI_HDR_DIR}/ocpCursor.h
     ${GUI_HDR_DIR}/ocpndc.h
     ${GUI_HDR_DIR}/ocpn_app.h
@@ -856,16 +858,12 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/track_gui.h
     ${GUI_HDR_DIR}/trackprintout.h
     ${GUI_HDR_DIR}/TrackPropDlg.h
-    ${GUI_HDR_DIR}/TTYScroll.h
-    ${GUI_HDR_DIR}/TTYWindow.h
     ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
     ${GUI_HDR_DIR}/update_mgr.h
     ${GUI_HDR_DIR}/usb_devices.h
     ${GUI_HDR_DIR}/viewport.h
     ${GUI_HDR_DIR}/waypointman_gui.h
-    ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/WindowDestroyListener.h
 )
 list(APPEND  GUI_HDRS
     ${GUI_S57_DIR}/include/ogr_s57.h
@@ -928,7 +926,9 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
-    ${GUI_SRC_DIR}/NMEALogWindow.cpp
+    ${GUI_SRC_DIR}/nmea_log_window.cpp
+    ${GUI_SRC_DIR}/nmea_scrollwin.cpp
+    ${GUI_SRC_DIR}/nmea_window.cpp
     ${GUI_SRC_DIR}/ocpCursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
     ${GUI_SRC_DIR}/OCPN_AUIManager.cpp
@@ -977,8 +977,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/track_gui.cpp
     ${GUI_SRC_DIR}/trackprintout.cpp
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
-    ${GUI_SRC_DIR}/TTYScroll.cpp
-    ${GUI_SRC_DIR}/TTYWindow.cpp
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
