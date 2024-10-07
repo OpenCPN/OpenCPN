@@ -69,7 +69,6 @@ class ocpnFloatingToolbarDialog;
 class OCPN_MsgEvent;
 class options;
 class Track;
-// class OCPN_ThreadMessageEvent;
 class wxHtmlWindow;
 class ArrayOfCDI;
 
@@ -124,22 +123,6 @@ class OCPN_DataStreamEvent;
 class AisTargetData;
 
 bool isSingleChart(ChartBase* chart);
-
-class OCPN_ThreadMessageEvent : public wxEvent {
-public:
-  OCPN_ThreadMessageEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
-  ~OCPN_ThreadMessageEvent();
-
-  // accessors
-  [[maybe_unused]] void SetSString(std::string string) { m_string = string; }
-  std::string GetSString() { return m_string; }
-
-  // required for sending with wxPostEvent()
-  wxEvent* Clone() const;
-
-private:
-  std::string m_string;
-};
 
 /**
  * Main application frame. Top-level window frame for OpenCPN that manages
@@ -405,6 +388,7 @@ private:
   ObsListener m_on_raise_listener;
   ObsListener m_on_quit_listener;
   ObsListener m_routes_update_listener;
+  ObsListener m_evt_drv_msg_listener;
 
   CommOverflowDlg comm_overflow_dlg;
 

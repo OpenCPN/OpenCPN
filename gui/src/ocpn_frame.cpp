@@ -629,6 +629,11 @@ static void onBellsFinishedCB(void *ptr) {
   }
 }
 
+static void OnDriverMsg(const ObservedEvt& ev) {
+  auto msg = ev.GetString().ToStdString();
+  OCPNMessageBox(GetTopWindow(), msg, _("Communication Error"), 0, 15);
+}
+
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
@@ -794,6 +799,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   assert(g_pRouteMan != 0 && "g_pRouteMan not available");
   m_routes_update_listener.Init(g_pRouteMan->on_routes_update,
                                 [&](wxCommandEvent) { Refresh(); });
+  m_evt_drv_msg_listener.Init(CommDriverRegistry::GetInstance().evt_driver_msg,
+                              [&](ObservedEvt& ev) { OnDriverMsg(ev); });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
@@ -7692,18 +7699,6 @@ bool TestGLCanvas(wxString prog_dir) {
 #endif
 }
 #endif
-
-OCPN_ThreadMessageEvent::OCPN_ThreadMessageEvent(wxEventType commandType,
-                                                 int id)
-    : wxEvent(id, commandType) {}
-
-OCPN_ThreadMessageEvent::~OCPN_ThreadMessageEvent() {}
-
-wxEvent *OCPN_ThreadMessageEvent::Clone() const {
-  OCPN_ThreadMessageEvent *newevent = new OCPN_ThreadMessageEvent(*this);
-  newevent->m_string = this->m_string;
-  return newevent;
-}
 
 #if 0
 /*************************************************************************
