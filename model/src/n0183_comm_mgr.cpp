@@ -89,13 +89,6 @@ bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
   return true;
 }
 
-void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
-  //    Signal the main program thread
-  //   OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
-  //   event.SetSString(std::string(msg.mb_str()));
-  //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
-}
-
 ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(const char* msg) {
   if (m_serial.isOpen()) {
     ssize_t status;
@@ -117,14 +110,9 @@ void* CommDriverN0183SerialThread::Entry() {
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_portname, m_baud)) {
-    wxString msg("NMEA input device open failed: ");
-    msg.Append(m_portname);
-    ThreadMessage(msg);
-    // goto thread_exit; // This means we will not be trying to connect = The
-    // device must be connected when the thread is created. Does not seem to be
-    // needed/what we want as the reconnection logic is able to pick it up
-    // whenever it actually appears (Of course given it appears with the
-    // expected device name).
+    std::string msg(_("NMEA input device open failed: "));
+    msg += m_portname;
+    CommDriverRegistry::GetInstance().evt_driver_msg.Notify(msg);
   }
 
   //    The main loop
