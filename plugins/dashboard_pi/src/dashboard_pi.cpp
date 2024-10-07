@@ -232,9 +232,9 @@ enum {
   ID_DBP_I_PITCH,
   ID_DBP_I_HEEL,
   ID_DBP_D_AWA_TWA,
-  ID_DBP_I_GPSLCL,
-  ID_DBP_I_CPULCL,
-  ID_DBP_I_SUNLCL,
+  ID_DBP_I_GPSLCL,    ///< GNSS Clock formatted in local time.
+  ID_DBP_I_CPULCL,    ///< Computer Clock formatted in local time.
+  ID_DBP_I_SUNLCL,    ///< Sunrise/Sunset time formatted in local time.
   ID_DBP_I_ALTI,
   ID_DBP_D_ALTI,
   ID_DBP_I_VMGW,
@@ -3102,7 +3102,11 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
     }
   }
   if (mPriDateTime >= 6) {  // We prefer the GPS datetime
-    mUTCDateTime.Set(pfix.FixTime);
+    // pfix.FixTime is GNSS time in UTC if GNSS is available, otherwise it set to 0.
+    if (pfix.FixTime > 0)
+      mUTCDateTime.Set(pfix.FixTime);
+    else
+      mUTCDateTime = wxInvalidDateTime;
     if (mUTCDateTime.IsValid()) {
       mPriDateTime = 6;
       mUTCDateTime = mUTCDateTime.ToUTC();
