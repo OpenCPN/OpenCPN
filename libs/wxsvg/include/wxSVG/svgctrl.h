@@ -63,7 +63,6 @@ protected:
     virtual void RepaintBuffer();
 
 private:
-    DECLARE_ABSTRACT_CLASS(wxSVGCtrlBase)
     DECLARE_EVENT_TABLE()
 };
 
