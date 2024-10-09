@@ -43,6 +43,7 @@ set(
   ${MODEL_HDR_DIR}/comm_appmsg_bus.h
   ${MODEL_HDR_DIR}/comm_appmsg.h
   ${MODEL_HDR_DIR}/comm_bridge.h
+  ${MODEL_HDR_DIR}/comm_buffers.h
   ${MODEL_HDR_DIR}/comm_can_util.h
   ${MODEL_HDR_DIR}/comm_decoder.h
   ${MODEL_HDR_DIR}/comm_driver.h
@@ -113,6 +114,7 @@ set(
   ${MODEL_HDR_DIR}/semantic_vers.h
   ${MODEL_HDR_DIR}/ser_ports.h
   ${MODEL_HDR_DIR}/sys_events.h
+  ${MODEL_HDR_DIR}/thread_ctrl.h
   ${MODEL_HDR_DIR}/track.h
   ${MODEL_HDR_DIR}/usb_watch_daemon.h
   ${MODEL_HDR_DIR}/wait_continue.h
@@ -137,6 +139,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_appmsg_bus.cpp
   ${MODEL_SRC_DIR}/comm_appmsg.cpp
   ${MODEL_SRC_DIR}/comm_bridge.cpp
+  ${MODEL_SRC_DIR}/comm_buffers.cpp
   ${MODEL_SRC_DIR}/comm_can_util.cpp
   ${MODEL_SRC_DIR}/comm_decoder.cpp
   #${MODEL_SRC_DIR}/comm_driver.cpp
@@ -169,6 +172,7 @@ set(SRC
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
+  ${MODEL_SRC_DIR}/ipc_factories.cpp
   ${MODEL_SRC_DIR}/local_api.cpp
   ${MODEL_SRC_DIR}/logger.cpp
   ${MODEL_SRC_DIR}/mDNS_query.cpp
@@ -198,6 +202,7 @@ set(SRC
   ${MODEL_SRC_DIR}/select_item.cpp
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
+  ${MODEL_SRC_DIR}/thread_ctrl.cpp
   ${MODEL_SRC_DIR}/track.cpp
   ${MODEL_SRC_DIR}/usb_watch_factory.cpp
   ${MODEL_SRC_DIR}/wx_instance_chk.cpp
@@ -208,9 +213,10 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
-#if (NOT QT_ANDROID)
-  list(APPEND SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
-#endif ()
+if (NOT QT_ANDROID)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/n0183_comm_mgr.h)
+  list(APPEND SRC ${MODEL_SRC_DIR}/n0183_comm_mgr.cpp)
+endif ()
 
 if (LINUX)
   list(APPEND HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_socketcan.h )
