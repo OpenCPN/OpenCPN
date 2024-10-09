@@ -107,11 +107,12 @@ bool CommDriverN0183Serial::Open() {
 #ifndef __ANDROID__
     //    Kick off the  RX thread
     m_secondary_thread.SetParams(comx, m_baudrate);
-
     std::thread t(&CommDriverN0183SerialThread::Entry, &m_secondary_thread);
     t.detach();
 #else
-    androidStartUSBSerial(comx, m_baudrate, this);
+    androidStartUSBSerial(
+        comx, m_baudrate,
+        [&](const std::vector<unsigned char>& v) { SendMessage(v); });
 #endif
   }
 
