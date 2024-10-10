@@ -760,23 +760,26 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 #endif
 
 #ifdef HAVE_WX_GESTURE_EVENTS
-  if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PRESS_GESTURES)) {
-    wxLogError("Failed to enable touch events");
+  // if (!m_glcc)
+  {
+    if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE | wxTOUCH_PRESS_GESTURES)) {
+      wxLogError("Failed to enable touch events");
+    }
+
+    // Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, this);
+
+    Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, this);
+    Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, this);
+
+    Bind(wxEVT_RIGHT_UP, &ChartCanvas::OnRightUp, this);
+    Bind(wxEVT_RIGHT_DOWN, &ChartCanvas::OnRightDown, this);
+
+    Bind(wxEVT_LEFT_UP, &ChartCanvas::OnLeftUp, this);
+    Bind(wxEVT_LEFT_DOWN, &ChartCanvas::OnLeftDown, this);
+
+    Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, this);
+    Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
   }
-
-  Bind(wxEVT_GESTURE_ZOOM, &ChartCanvas::OnZoom, this);
-
-  Bind(wxEVT_LONG_PRESS, &ChartCanvas::OnLongPress, this);
-  Bind(wxEVT_PRESS_AND_TAP, &ChartCanvas::OnPressAndTap, this);
-
-  Bind(wxEVT_RIGHT_UP, &ChartCanvas::OnRightUp, this);
-  Bind(wxEVT_RIGHT_DOWN, &ChartCanvas::OnRightDown, this);
-
-  Bind(wxEVT_LEFT_UP, &ChartCanvas::OnLeftUp, this);
-  Bind(wxEVT_LEFT_DOWN, &ChartCanvas::OnLeftDown, this);
-
-  Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, this);
-  Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
 #endif
 }
 

@@ -47,7 +47,7 @@ typedef void (*_GLUfuncptr)();
 #include <GL/glu.h>
 
 #else
-#  error platform not supported.
+#error platform not supported.
 #endif  // __ANDROID__
 #endif  // ocpnUSE_GL
 
@@ -187,6 +187,11 @@ public:
   void OnEvtPinchGesture(wxQT_PinchGestureEvent &event);
   void onGestureTimerEvent(wxTimerEvent &event);
   void onGestureFinishTimerEvent(wxTimerEvent &event);
+#else
+  void OnEvtPanGesture(wxPanGestureEvent &event);
+  void OnEvtZoomGesture(wxZoomGestureEvent &event);
+  void onGestureTimerEvent(wxTimerEvent &event);
+  void onGestureFinishTimerEvent(wxTimerEvent &event);
 #endif
 
   void onZoomTimerEvent(wxTimerEvent &event);
@@ -265,6 +270,8 @@ protected:
   void DrawGLCurrentsInBBox(ocpnDC &dc, LLBBox &BBox);
 
   void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
+  wxBitmap &GetTouchBackingBitmap(ViewPort &vp);
+  void CreateBackingTexture();
 
   void RendertoTexture(GLint tex);
 
@@ -353,7 +360,16 @@ protected:
   int m_glcanvas_width;
   int m_glcanvas_height;
 
+  float m_total_zoom_val;
+  float m_final_zoom_val;
+
   bool m_bUseGLSL;
+
+  wxBitmap m_touch_backing_bitmap;
+  unsigned int m_TouchBackingTexture;
+  int m_tex_w, m_tex_h, m_image_width, m_image_height;
+  ViewPort m_texVP;
+  float m_zoom_inc;
 
   DECLARE_EVENT_TABLE()
 };
