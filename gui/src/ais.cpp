@@ -1278,7 +1278,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   }
 
   //        Actually Draw the target
-  if (td->Class == AIS_ARPA) {
+  if (td->Class == AIS_ARPA || td->Class == AIS_BUOY) {
     wxPen target_pen(UBLCK, 2);
 
     dc.SetPen(target_pen);
