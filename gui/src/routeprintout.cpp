@@ -293,7 +293,6 @@ void MyRoutePrintout::DrawPage(wxDC* dc) {
  * RoutePrintSelection type definition
  */
 
-IMPLEMENT_DYNAMIC_CLASS(RoutePrintSelection, wxDialog)
 /*!
  * RouteProp event table definition
  */

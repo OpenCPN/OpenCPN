@@ -395,7 +395,7 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
 
   // This does not work, but something like it should
   //     wxObject *obj = event.GetEventObject();
-  //     wxWindow *win = wxDynamicCast(obj, wxWindow);
+  //     wxWindow *win = dynamic_cast<wxWindow*>(obj);
   //     if( win && (win != PluginGetFocusCanvas()))
   //         return false;
 

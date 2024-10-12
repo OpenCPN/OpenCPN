@@ -112,11 +112,11 @@ ocpnDC::ocpnDC(wxDC &pdc)
       m_brush(wxNullBrush) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
-  wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
+  auto pmdc = dynamic_cast<wxMemoryDC *>(dc);
   if (pmdc)
     pgc = wxGraphicsContext::Create(*pmdc);
   else {
-    wxClientDC *pcdc = wxDynamicCast(dc, wxClientDC);
+    auto pcdc = dynamic_cast<wxClientDC *>(dc);
     if (pcdc) pgc = wxGraphicsContext::Create(*pcdc);
   }
 #endif

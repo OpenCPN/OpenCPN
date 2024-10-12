@@ -6044,8 +6044,8 @@ void DashboardWindow::SendSatInfoToAllInstruments(int cnt, int seq,
                                                   SAT_INFO sats[4]) {
   for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++) {
     if ((m_ArrayOfInstrument.Item(i)->m_cap_flag.test(OCPN_DBP_STC_GPS)) &&
-        m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(
-            CLASSINFO(DashboardInstrument_GPS)))
+        dynamic_cast<DashboardInstrument_GPS *>(
+            m_ArrayOfInstrument.Item(i)->m_pInstrument))
       ((DashboardInstrument_GPS *)m_ArrayOfInstrument.Item(i)->m_pInstrument)
           ->SetSatInfo(cnt, seq, talk, sats);
   }
@@ -6054,8 +6054,8 @@ void DashboardWindow::SendSatInfoToAllInstruments(int cnt, int seq,
 void DashboardWindow::SendUtcTimeToAllInstruments(wxDateTime value) {
   for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++) {
     if ((m_ArrayOfInstrument.Item(i)->m_cap_flag.test(OCPN_DBP_STC_CLK)) &&
-        m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(
-            CLASSINFO(DashboardInstrument_Clock)))
+        dynamic_cast<DashboardInstrument_Clock *>(
+            m_ArrayOfInstrument.Item(i)->m_pInstrument))
       //                  || m_ArrayOfInstrument.Item( i
       //                  )->m_pInstrument->IsKindOf( CLASSINFO(
       //                  DashboardInstrument_Sun ) )
@@ -6074,8 +6074,6 @@ void DashboardWindow::SendUtcTimeToAllInstruments(wxDateTime value) {
 // ============================================================================
 // implementation
 // ============================================================================
-
-IMPLEMENT_DYNAMIC_CLASS(OCPNFontButton, wxButton)
 
 // ----------------------------------------------------------------------------
 // OCPNFontButton

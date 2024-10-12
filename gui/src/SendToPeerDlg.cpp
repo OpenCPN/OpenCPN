@@ -153,8 +153,6 @@ static void ParsePeer(const wxString& ui_value, PeerData& peer_data) {
   peer_data.dest_ip_address = peer_ip.ToStdString();
 }
 
-IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
-
 BEGIN_EVENT_TABLE(SendToPeerDlg, wxDialog)
 EVT_BUTTON(ID_STP_CANCEL, SendToPeerDlg::OnCancelClick)
 EVT_BUTTON(ID_STP_OK, SendToPeerDlg::OnSendClick)

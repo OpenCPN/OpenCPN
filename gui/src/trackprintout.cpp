@@ -235,7 +235,6 @@ void MyTrackPrintout::DrawPage(wxDC* dc) {
 
 // ---------- TrackPrintSelection dialof implementation
 
-IMPLEMENT_DYNAMIC_CLASS(TrackPrintSelection, wxDialog)
 BEGIN_EVENT_TABLE(TrackPrintSelection, wxDialog)
 EVT_BUTTON(ID_TRACKPRINT_SELECTION_CANCEL,
            TrackPrintSelection::OnTrackpropCancelClick)

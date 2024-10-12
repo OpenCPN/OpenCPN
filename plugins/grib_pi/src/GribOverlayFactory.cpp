@@ -472,7 +472,7 @@ bool GRIBOverlayFactory::RenderGribOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
 #if 0
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc;
-    pmdc = wxDynamicCast(&dc, wxMemoryDC);
+    pmdc = dynamic_cast<wxMemoryDC*>(&dc);
     wxGraphicsContext *pgc = wxGraphicsContext::Create( *pmdc );
     m_gdc = pgc;
 #endif

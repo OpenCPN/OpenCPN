@@ -3650,14 +3650,13 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     wxWindowListNode *node = kids.Item(i);
     wxWindow *win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxListBox)) ||
-        win->IsKindOf(CLASSINFO(wxListCtrl)) ||
-        win->IsKindOf(CLASSINFO(wxTextCtrl)) ||
-        win->IsKindOf(CLASSINFO(wxTimePickerCtrl))) {
+    if (dynamic_cast<wxListBox *>(win) || dynamic_cast<wxListCtrl *>(win) ||
+        dynamic_cast<wxTextCtrl *>(win) ||
+        dynamic_cast<wxTimePickerCtrl *>(win)) {
       win->SetBackgroundColour(col);
-    } else if (win->IsKindOf(CLASSINFO(wxStaticText)) ||
-               win->IsKindOf(CLASSINFO(wxCheckBox)) ||
-               win->IsKindOf(CLASSINFO(wxRadioButton))) {
+    } else if (dynamic_cast<wxStaticText *>(win) ||
+               dynamic_cast<wxCheckBox *>(win) ||
+               dynamic_cast<wxRadioButton *>(win)) {
       win->SetForegroundColour(uitext);
     }
 #ifndef __WXOSX__
@@ -3665,43 +3664,39 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     // weird coloured boxes around them. Fortunately, however, many of them
     // inherit a colour or tint from the background of their parent.
 
-    else if (win->IsKindOf(CLASSINFO(wxBitmapComboBox)) ||
-             win->IsKindOf(CLASSINFO(wxChoice)) ||
-             win->IsKindOf(CLASSINFO(wxComboBox)) ||
-             win->IsKindOf(CLASSINFO(wxTreeCtrl))) {
+    else if (dynamic_cast<wxBitmapComboBox *>(win) ||
+             dynamic_cast<wxChoice *>(win) || dynamic_cast<wxComboBox *>(win) ||
+             dynamic_cast<wxTreeCtrl *>(win)) {
       win->SetBackgroundColour(col);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxScrolledWindow)) ||
-             win->IsKindOf(CLASSINFO(wxGenericDirCtrl)) ||
-             win->IsKindOf(CLASSINFO(wxListbook)) ||
-             win->IsKindOf(CLASSINFO(wxButton)) ||
-             win->IsKindOf(CLASSINFO(wxToggleButton))) {
+    else if (dynamic_cast<wxScrolledWindow *>(win) ||
+             dynamic_cast<wxGenericDirCtrl *>(win) ||
+             dynamic_cast<wxListbook *>(win) || dynamic_cast<wxButton *>(win) ||
+             dynamic_cast<wxToggleButton *>(win)) {
       win->SetBackgroundColour(window_back_color);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxNotebook))) {
-      ((wxNotebook *)win)->SetBackgroundColour(window_back_color);
-      ((wxNotebook *)win)->SetForegroundColour(text_color);
+    else if (dynamic_cast<wxNotebook *>(win)) {
+      win->SetBackgroundColour(window_back_color);
+      win->SetForegroundColour(text_color);
     }
 #endif
 
-    else if (win->IsKindOf(CLASSINFO(wxHtmlWindow))) {
+    else if (dynamic_cast<wxHtmlWindow *>(win)) {
       if (cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB)
-        ((wxPanel *)win)->SetBackgroundColour(ctrl_back_color);
+        win->SetBackgroundColour(ctrl_back_color);
       else
-        ((wxPanel *)win)->SetBackgroundColour(wxNullColour);
+        win->SetBackgroundColour(wxNullColour);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxGrid))) {
-      ((wxGrid *)win)->SetDefaultCellBackgroundColour(window_back_color);
-      ((wxGrid *)win)->SetDefaultCellTextColour(uitext);
-      ((wxGrid *)win)->SetLabelBackgroundColour(col);
-      ((wxGrid *)win)->SetLabelTextColour(uitext);
-#if !wxCHECK_VERSION(3, 0, 0)
-      ((wxGrid *)win)->SetDividerPen(wxPen(col));
-#endif
-      ((wxGrid *)win)->SetGridLineColour(gridline);
+    else if (dynamic_cast<wxGrid *>(win)) {
+      dynamic_cast<wxGrid *>(win)->SetDefaultCellBackgroundColour(
+          window_back_color);
+      dynamic_cast<wxGrid *>(win)->SetDefaultCellTextColour(uitext);
+      dynamic_cast<wxGrid *>(win)->SetLabelBackgroundColour(col);
+      dynamic_cast<wxGrid *>(win)->SetLabelTextColour(uitext);
+      dynamic_cast<wxGrid *>(win)->SetGridLineColour(gridline);
     }
 
     if (win->GetChildren().GetCount() > 0) {

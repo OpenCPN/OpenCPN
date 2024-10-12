@@ -281,7 +281,7 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance(wxWindow* parent) {
 }
 
 void RoutePropDlgImpl::OnActivate(wxActivateEvent& event) {
-  wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+  auto pWin = dynamic_cast<wxFrame*>(event.GetEventObject());
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
@@ -544,15 +544,14 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
       for (unsigned int i = 0; i < kids.GetCount(); i++) {
         wxWindowListNode* node = kids.Item(i);
         wxWindow* win = node->GetData();
-        if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-          ((wxHyperlinkCtrl*)win)
-              ->Disconnect(
-                  wxEVT_COMMAND_HYPERLINK,
-                  wxHyperlinkEventHandler(RoutePropDlgImpl::OnHyperlinkClick));
-          ((wxHyperlinkCtrl*)win)
-              ->Disconnect(
-                  wxEVT_RIGHT_DOWN,
-                  wxMouseEventHandler(RoutePropDlgImpl::HyperlinkContextMenu));
+        auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+        if (link_win) {
+          link_win->Disconnect(
+              wxEVT_COMMAND_HYPERLINK,
+              wxHyperlinkEventHandler(RoutePropDlgImpl::OnHyperlinkClick));
+          link_win->Disconnect(
+              wxEVT_RIGHT_DOWN,
+              wxMouseEventHandler(RoutePropDlgImpl::HyperlinkContextMenu));
           win->Destroy();
         }
       }
@@ -1260,15 +1259,14 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(
-              wxEVT_COMMAND_HYPERLINK,
-              wxHyperlinkEventHandler(RoutePropDlgImpl::OnHyperlinkClick));
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(
-              wxEVT_RIGHT_DOWN,
-              wxMouseEventHandler(RoutePropDlgImpl::HyperlinkContextMenu));
+    auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+    if (link_win) {
+      link_win->Disconnect(
+          wxEVT_COMMAND_HYPERLINK,
+          wxHyperlinkEventHandler(RoutePropDlgImpl::OnHyperlinkClick));
+      link_win->Disconnect(
+          wxEVT_RIGHT_DOWN,
+          wxMouseEventHandler(RoutePropDlgImpl::HyperlinkContextMenu));
       win->Destroy();
     }
   }

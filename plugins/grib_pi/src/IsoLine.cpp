@@ -382,7 +382,7 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc,
 
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc;
-    pmdc = wxDynamicCast(dc, wxMemoryDC);
+    pmdc = dynamic_cast<wxMemoryDC *>(dc);
     pgc = wxGraphicsContext::Create(*pmdc);
     pgc->SetPen(ppISO);
 #endif

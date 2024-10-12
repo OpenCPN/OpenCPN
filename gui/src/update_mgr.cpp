@@ -376,7 +376,7 @@ public:
     m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
     m_buttons->HideDetails(!m_descr->IsShown());
 
-    UpdateDialog* swin = wxDynamicCast(GetGrandParent(), UpdateDialog);
+    auto swin = dynamic_cast<UpdateDialog*>(GetGrandParent());
     if (swin) {
       swin->RecalculateSize();
     }
@@ -496,8 +496,8 @@ void UpdateDialog::RecalculateSize() {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win && win->IsKindOf(CLASSINFO(PluginTextPanel))) {
-      PluginTextPanel* panel = (PluginTextPanel*)win;
+    auto panel = dynamic_cast<PluginTextPanel*>(win);
+    if (panel) {
       if (panel->m_isDesc) {
         wxSize tsize = win->GetEffectiveMinSize();
         calcHeight += tsize.y + GetCharHeight();

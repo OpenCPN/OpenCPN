@@ -1119,12 +1119,9 @@ void GRIBUICtrlBar::OnPaint(wxPaintEvent &event) {
   wxPaintDC dc(this);
   while (node) {
     wxWindow *win = node->GetData();
-    if (win->IsKindOf(CLASSINFO(wxBitmapButton)))
-#if wxCHECK_VERSION(3, 0, 0)
-      dc.DrawBitmap(((wxBitmapButton *)win)->GetBitmap(), 5, 5, false);
-#else
-      dc.DrawBitmap(((wxBitmapButton *)win)->GetBitmapSelected(), 5, 5, false);
-#endif
+    if (dynamic_cast<wxBitmapButton *>(win))
+      dc.DrawBitmap(dynamic_cast<wxBitmapButton *>(win)->GetBitmap(), 5, 5,
+                    false);
     node = node->GetNext();
   }
 }

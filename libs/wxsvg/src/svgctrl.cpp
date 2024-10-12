@@ -12,8 +12,6 @@
 #include <SVGSVGElement.h>
 #include <wx/wx.h>
 
-IMPLEMENT_ABSTRACT_CLASS(wxSVGCtrlBase, wxControl)
-
 BEGIN_EVENT_TABLE(wxSVGCtrlBase, wxControl)
 	EVT_PAINT(wxSVGCtrlBase::OnPaint)
 	EVT_SIZE(wxSVGCtrlBase::OnResize)
@@ -180,7 +178,6 @@ void wxSVGCtrlBase::MoveElement(wxSVGElement* elem, double Xposition, double Ypo
 	}
 }
 
-IMPLEMENT_ABSTRACT_CLASS(wxSVGCtrl, wxSVGCtrlBase)
 wxSVGCtrl::wxSVGCtrl() {
 	// nothing to do
 }

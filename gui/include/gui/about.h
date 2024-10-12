@@ -46,11 +46,10 @@
 class wxHtmlWindow;
 
 /**
- * Represents the About dialog for OpenCPN. Implements a dialog that displays information about OpenCPN,
- * including version, authors, license, and tips.
+ * Represents the About dialog for OpenCPN. Implements a dialog that displays
+ * information about OpenCPN, including version, authors, license, and tips.
  */
 class about : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(about)
   DECLARE_EVENT_TABLE()
 
 public:

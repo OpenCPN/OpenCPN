@@ -359,30 +359,30 @@ void SetBackColor(wxWindow *ctrl, wxColour col) {
     wxWindowListNode *node = kids.Item(i);
     wxWindow *win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxListBox)))
-      ((wxListBox *)win)->SetBackgroundColour(col);
+    if (dynamic_cast<wxListBox *>(win))
+      dynamic_cast<wxListBox *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxTextCtrl)))
-      ((wxTextCtrl *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxTextCtrl *>(win))
+      dynamic_cast<wxTextCtrl *>(win)->SetBackgroundColour(col);
 
     //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
     //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
 
-    else if (win->IsKindOf(CLASSINFO(wxChoice)))
-      ((wxChoice *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxChoice *>(win))
+      dynamic_cast<wxChoice *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxComboBox)))
-      ((wxComboBox *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxComboBox *>(win))
+      dynamic_cast<wxComboBox *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxRadioButton)))
-      ((wxRadioButton *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxRadioButton *>(win))
+      dynamic_cast<wxRadioButton *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxScrolledWindow))) {
-      ((wxScrolledWindow *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxScrolledWindow *>(win)) {
+      dynamic_cast<wxScrolledWindow *>(win)->SetBackgroundColour(col);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxButton))) {
-      ((wxButton *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxButton *>(win)) {
+      dynamic_cast<wxButton *>(win)->SetBackgroundColour(col);
     }
 
     else {
@@ -539,7 +539,6 @@ ChartSource::~ChartSource() { m_update_data.clear(); }
 
 enum { ThreadId = wxID_HIGHEST + 1 };
 
-IMPLEMENT_DYNAMIC_CLASS(ChartDldrPanelImpl, ChartDldrPanel)
 BEGIN_EVENT_TABLE(ChartDldrPanelImpl, ChartDldrPanel)
 END_EVENT_TABLE()
 

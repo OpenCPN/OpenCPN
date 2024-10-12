@@ -261,7 +261,7 @@ TrackPropDlg::~TrackPropDlg() {
 }
 
 void TrackPropDlg::OnActivate(wxActivateEvent& event) {
-  DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
+  auto pWin = dynamic_cast<DIALOG_PARENT*>(event.GetEventObject());
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
@@ -1088,15 +1088,14 @@ bool TrackPropDlg::UpdateProperties() {
       wxWindowListNode* node = kids.Item(i);
       wxWindow* win = node->GetData();
 
-      if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-        ((wxHyperlinkCtrl*)win)
-            ->Disconnect(
-                wxEVT_COMMAND_HYPERLINK,
-                wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
-        ((wxHyperlinkCtrl*)win)
-            ->Disconnect(
-                wxEVT_RIGHT_DOWN,
-                wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
+      auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+      if (link_win) {
+        link_win->Disconnect(
+            wxEVT_COMMAND_HYPERLINK,
+            wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
+        link_win->Disconnect(
+            wxEVT_RIGHT_DOWN,
+            wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
         win->Destroy();
       }
     }
@@ -1499,14 +1498,14 @@ void TrackPropDlg::OnDeleteLink(wxCommandEvent& event) {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_COMMAND_HYPERLINK,
-                       wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(
-              wxEVT_RIGHT_DOWN,
-              wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
+    auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+    if (link_win) {
+      link_win->Disconnect(
+          wxEVT_COMMAND_HYPERLINK,
+          wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
+      link_win->Disconnect(
+          wxEVT_RIGHT_DOWN,
+          wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
       win->Destroy();
     }
   }

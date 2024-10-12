@@ -250,7 +250,7 @@ MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
 }
 
 void MarkInfoDlg::OnActivate(wxActivateEvent& event) {
-  DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
+  auto pWin = dynamic_cast<DIALOG_PARENT*>(event.GetEventObject());
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
@@ -989,13 +989,14 @@ void MarkInfoDlg::UpdateHtmlList() {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_COMMAND_HYPERLINK,
-                       wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick));
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_RIGHT_DOWN,
-                       wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu));
+    auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+    if (link_win) {
+      link_win->Disconnect(
+          wxEVT_COMMAND_HYPERLINK,
+          wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick));
+      link_win->Disconnect(
+          wxEVT_RIGHT_DOWN,
+          wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu));
       win->Destroy();
     }
   }
@@ -1177,7 +1178,7 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
   delete popup;
 #else
 
-  m_pEditedLink = wxDynamicCast(event.GetEventObject(), wxHyperlinkCtrl);
+  m_pEditedLink = dynamic_cast<wxHyperlinkCtrl*>(event.GetEventObject());
 
   if (m_pEditedLink) {
     wxString url = m_pEditedLink->GetURL();

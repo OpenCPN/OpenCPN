@@ -1438,8 +1438,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
     }
     case ID_DEF_MENU_AIS_QUERY: {
-      wxWindow *pwin = wxDynamicCast(parent, wxWindow);
-      ShowAISTargetQueryDialog(pwin, m_FoundAIS_MMSI);
+      ShowAISTargetQueryDialog(parent, m_FoundAIS_MMSI);
       break;
     }
 

@@ -1452,7 +1452,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
     int nTargetGTK = -1;
     ChartCanvas *target;
     wxWindow *source = FindFocus();
-    ChartCanvas *test = wxDynamicCast(source, ChartCanvas);
+    auto test = dynamic_cast<ChartCanvas *>(source);
     if (!test) return;
 
     // On linux(GTK), the TAB key causes a loss of focus immediately
@@ -1487,8 +1487,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
                        .Item(nfinalTarget)
                        ->canvas;
           if (target) {
-            wxWindow *win = wxDynamicCast(target, wxWindow);
-            win->SetFocus();
+            target->SetFocus();
             target->Refresh(true);
           }
         }
