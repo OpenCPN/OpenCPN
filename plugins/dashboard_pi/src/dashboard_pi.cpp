@@ -3461,7 +3461,7 @@ bool dashboard_pi::LoadConfig(void) {
     LoadFont(&pDF, config);
     pConf->Read(_T("ColorTitle"), &config, "#000000");
     wxColour DummyColor(config);
-    g_pUSFontTitle->SetChosenFont(DummyFont);
+    g_pUSFontTitle->SetChosenFont(*pDF);
     g_pUSFontTitle->SetColour(DummyColor);
     g_FontTitle = *g_pUSFontTitle;
     g_FontTitle.SetChosenFont(g_pUSFontTitle->GetChosenFont().Scaled(scaler));
@@ -3472,7 +3472,7 @@ bool dashboard_pi::LoadConfig(void) {
     LoadFont(&pDF, config);
     pConf->Read(_T("ColorData"), &config, "#000000");
     DummyColor.Set(config);
-    g_pUSFontData->SetChosenFont(DummyFont);
+    g_pUSFontData->SetChosenFont(*pDF);
     g_pUSFontData->SetColour(DummyColor);
     g_FontData = *g_pUSFontData;
     g_FontData.SetChosenFont(g_pUSFontData->GetChosenFont().Scaled(scaler));
@@ -3500,7 +3500,7 @@ bool dashboard_pi::LoadConfig(void) {
     LoadFont(&pDF, config);
     pConf->Read(_T("ColorLabel"), &config, "#000000");
     DummyColor.Set(config);
-    g_pUSFontLabel->SetChosenFont(DummyFont);
+    g_pUSFontLabel->SetChosenFont(*pDF);
     g_pUSFontLabel->SetColour(DummyColor);
     g_FontLabel = *g_pUSFontLabel;
     g_FontLabel.SetChosenFont(g_pUSFontLabel->GetChosenFont().Scaled(scaler));
@@ -3511,7 +3511,7 @@ bool dashboard_pi::LoadConfig(void) {
     LoadFont(&pDF, config);
     pConf->Read(_T("ColorSmall"), &config, "#000000");
     DummyColor.Set(config);
-    g_pUSFontSmall->SetChosenFont(DummyFont);
+    g_pUSFontSmall->SetChosenFont(*pDF);
     g_pUSFontSmall->SetColour(DummyColor);
     g_FontSmall = *g_pUSFontSmall;
     g_FontSmall.SetChosenFont(g_pUSFontSmall->GetChosenFont().Scaled(scaler));
