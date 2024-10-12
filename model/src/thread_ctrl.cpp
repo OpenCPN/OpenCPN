@@ -49,7 +49,7 @@ bool ThreadCtrl::WaitUntilStopped(std::chrono::duration<int> timeout,
   return m_keep_going < 0;
 }
 
-bool ThreadCtrl::KeepGoing() {
+bool ThreadCtrl::KeepGoing() const {
   std::lock_guard lock(m_mutex);
   return m_keep_going > 0;
 }

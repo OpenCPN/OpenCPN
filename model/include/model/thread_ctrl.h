@@ -31,10 +31,10 @@ public:
   ThreadCtrl() : m_keep_going(1) {}
 
   /** Return true if thread is running. */
-  bool IsRunning() { return KeepGoing(); }
+  bool IsRunning() const { return KeepGoing(); }
 
   /** Request that thread stops operation. */
-  void RequestStop();
+  virtual void RequestStop();
 
   /** Block until thread invokes SignalExit(). */
   void WaitUntilStopped();
@@ -56,13 +56,13 @@ public:
 
 protected:
   /** If true continue thread operation, else exit and invoke SignalExit() */
-  bool KeepGoing();
+  bool KeepGoing() const;
 
   /** Signal that thread has exited. */
   void SignalExit();
 
 private:
-  std::mutex m_mutex;
+  mutable std::mutex m_mutex;
   std::condition_variable m_cv;
   int m_keep_going;
 };
