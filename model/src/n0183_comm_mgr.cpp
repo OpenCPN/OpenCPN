@@ -45,20 +45,8 @@
 #include "model/n0183_comm_mgr.h"
 #include "serial/serial.h"
 
-CommDriverN0183SerialThread::CommDriverN0183SerialThread(SendMsgFunc send_func)
-    : m_portname("undefined"), m_baud(4800), m_send_msg_func(send_func) {}
-
-void CommDriverN0183SerialThread::SetParams(const wxString& portname,
-                                            const wxString& strBaudRate) {
-  m_portname = portname;
-  long lbaud;
-  if (strBaudRate.ToLong(&lbaud)) m_baud = static_cast<int>(lbaud);
-}
-
-CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
-
 bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
-                                                      int baud_rate) {
+                                                      unsigned baud_rate) {
   try {
     m_serial.setPort(com_name.ToStdString());
     m_serial.setBaudrate(baud_rate);
