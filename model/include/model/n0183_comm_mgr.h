@@ -40,7 +40,6 @@
 using SendMsgFunc = std::function<void(const std::vector<unsigned char>&)>;
 class CommDriverN0183Serial;
 
-
 /** Nmea0183 serial IO thread. */
 class CommDriverN0183SerialThread : public ThreadCtrl {
 public:
@@ -52,6 +51,9 @@ public:
 
   /** Thread main function. */
   void* Entry();
+
+  /** Start IO operations, possibly in separate thread. */
+  void Start();
 
   /** Send a message to remote peer. */
   bool SetOutMsg(const wxString& msg);

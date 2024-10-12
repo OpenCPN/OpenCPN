@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  IO thread for serial N0183 connections
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022-2024  Alec Leamas                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file n0813_comm_mgr.cpp Serial IO Linux asynchronous implementation. */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -168,4 +165,9 @@ void* CommDriverN0183SerialThread::Entry() {
   CloseComPortPhysical();
   SignalExit();
   return 0;
+}
+
+void CommDriverN0183SerialThread::Start() {
+  std::thread t([&] { Entry(); });
+  t.detach();
 }
