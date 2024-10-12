@@ -43,16 +43,11 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
 #include "model/logger.h"
+#include "model/n0183_comm_mgr.h"
 #include "model/sys_events.h"
 #include "model/wait_continue.h"
-#include "observable.h"
 
-#ifdef __ANDROID__
-#include "androidUTIL.h"
-#else
-#include "serial/serial.h"
-#include "model/n0183_comm_mgr.h"
-#endif
+#include "observable.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -66,11 +61,11 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_portstring(params->GetDSPort()),
+      m_baudrate(params->Baudrate),
       m_secondary_thread(
           [&](const std::vector<unsigned char>& v) { SendMessage(v); }),
       m_params(*params),
       m_listener(listener) {
-  m_baudrate = wxString::Format("%i", params->Baudrate);
   m_garmin_handler = NULL;
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
@@ -104,15 +99,9 @@ bool CommDriverN0183Serial::Open() {
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');
 
-#ifndef __ANDROID__
     //    Kick off the  RX thread
     m_secondary_thread.SetParams(comx, m_baudrate);
     m_secondary_thread.Start();
-#else
-    androidStartUSBSerial(
-        comx, m_baudrate,
-        [&](const std::vector<unsigned char>& v) { SendMessage(v); });
-#endif
   }
 
   return true;
@@ -122,15 +111,8 @@ void CommDriverN0183Serial::Close() {
   wxLogMessage(
       wxString::Format("Closing NMEA Driver %s", m_portstring.c_str()));
 
-  // FIXME (dave)
-  // If port is opened, and then closed immediately,
-  // the secondary thread may not stop quickly enough.
-  // It can then crash trying to send an event to its "parent".
-
-#ifndef __ANDROID__
-  //    Kill off the Secondary RX Thread if alive
+  //    Kill off the secondary RX IO if alive
   if (m_secondary_thread.IsRunning()) {
-    using namespace std::chrono;
     wxLogMessage("Stopping Secondary Thread");
     m_secondary_thread.RequestStop();
     std::chrono::milliseconds elapsed;
@@ -147,12 +129,6 @@ void CommDriverN0183Serial::Close() {
     delete m_garmin_handler;
     m_garmin_handler = NULL;
   }
-
-#else
-  wxString comx;
-  comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
-  androidStopUSBSerial(comx);
-#endif
 }
 
 bool CommDriverN0183Serial::IsGarminThreadActive() {
@@ -185,14 +161,6 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   wxString sentence(msg_0183->payload.c_str());
 
-#ifdef __ANDROID__
-  wxString payload = sentence;
-  if (!sentence.EndsWith("\r\n")) payload += "\r\n";
-
-  wxString port = m_params.GetStrippedDSPort();  // GetPort().AfterFirst(':');
-  androidWriteSerial(port, payload);
-  return true;
-#else
   if (m_secondary_thread.IsRunning()) {
     for (int retries = 0; retries < 10; retries += 1) {
       if (m_secondary_thread.SetOutMsg(sentence)) {
@@ -203,7 +171,6 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   } else {
     return false;
   }
-#endif
 }
 
 void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {

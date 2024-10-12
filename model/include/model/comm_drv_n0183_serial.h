@@ -64,7 +64,7 @@ private:
   void SendMessage(const std::vector<unsigned char>& msg);
 
   std::string m_portstring;
-  std::string m_baudrate;
+  unsigned m_baudrate;
 
   CommDriverN0183SerialThread m_secondary_thread;
   GarminProtocolHandler* m_garmin_handler;

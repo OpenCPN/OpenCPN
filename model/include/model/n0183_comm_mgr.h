@@ -43,11 +43,15 @@ class CommDriverN0183Serial;
 /** Nmea0183 serial IO thread. */
 class CommDriverN0183SerialThread : public ThreadCtrl {
 public:
-  CommDriverN0183SerialThread(SendMsgFunc send_msg_func);
+  CommDriverN0183SerialThread(SendMsgFunc send_msg_func)
+      : m_portname("undefined"), m_baud(4800), m_send_msg_func(send_msg_func) {}
 
-  ~CommDriverN0183SerialThread();
+  virtual ~CommDriverN0183SerialThread() = default;
 
-  void SetParams(const wxString& portname, const wxString& str_baudrate);
+  void SetParams(const wxString& portname, unsigned baud) {
+    m_portname = portname;
+    m_baud = baud;
+  }
 
   /** Thread main function. */
   void* Entry();
@@ -65,12 +69,12 @@ private:
   serial::Serial m_serial;
 #endif
   void ThreadMessage(const wxString& msg);
-  bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
+  bool OpenComPortPhysical(const wxString& com_name, unsigned baud_rate);
   void CloseComPortPhysical();
   ssize_t WriteComPortPhysical(const char* msg);
 
   wxString m_portname;
-  int m_baud;
+  unsigned m_baud;
   OutputBuffer m_out_que;
   SendMsgFunc m_send_msg_func;
 };

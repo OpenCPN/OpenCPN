@@ -30,24 +30,10 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <wx/log.h>
 #include <wx/string.h>
-#include <wx/utils.h>
 
 #include "androidUTIL.h"
 #include "model/n0183_comm_mgr.h"
-
-CommDriverN0183SerialThread::CommDriverN0183SerialThread(SendMsgFunc send_func)
-    : m_portname("undefined"), m_baud(4800), m_send_msg_func(send_func) {}
-
-CommDriverN0183SerialThread::~CommDriverN0183SerialThread() = default;
-
-void CommDriverN0183SerialThread::SetParams(const wxString& portname,
-                                            const wxString& str_baudrate) {
-  m_portname = portname;
-  long lbaud;
-  if (str_baudrate.ToLong(&lbaud)) m_baud = static_cast<int>(lbaud);
-}
 
 void CommDriverN0183SerialThread::Start() {
   if (m_portname.empty()) return;
@@ -60,6 +46,7 @@ void* CommDriverN0183SerialThread::Entry() {
 }
 
 bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
+  if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
   wxString payload = msg;
   if (!msg.EndsWith("\r\n")) payload += "\r\n";
   androidWriteSerial(m_portname, payload);
@@ -69,5 +56,5 @@ bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
 void CommDriverN0183SerialThread::RequestStop() {
   androidStopUSBSerial(m_portname);
   ThreadCtrl::RequestStop();
-  ThreadCtrl::SignalExit();  // No need for exiting thread doing this.
+  ThreadCtrl::SignalExit();  // No need to wait for exiting thread doing this
 }
