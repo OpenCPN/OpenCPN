@@ -2039,7 +2039,8 @@ wxString ais_get_type(int index) {
       _("Position Report"),                           // xx        53
       _("Distress"),                                  // xx        54
       _("ARPA radar target"),                         // xx        55
-      _("APRS Position Report")                       // xx        56
+      _("APRS Position Report"),                      // xx        56
+      _("Buoy or similar")                            // xx        57
   };
 
   return ais_type[index];
