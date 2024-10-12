@@ -58,6 +58,8 @@ public:
   /** Send a message to remote peer. */
   bool SetOutMsg(const wxString& msg);
 
+  void RequestStop() override;
+
 private:
 #ifndef __ANDROID__
   serial::Serial m_serial;

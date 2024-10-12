@@ -89,6 +89,7 @@ set(
   ${MODEL_HDR_DIR}/mDNS_service.h
   ${MODEL_HDR_DIR}/meteo_points.h
   ${MODEL_HDR_DIR}/multiplexer.h
+  ${MODEL_HDR_DIR}/n0183_comm_mgr.h
   ${MODEL_HDR_DIR}/nav_object_database.h
   ${MODEL_HDR_DIR}/navutil_base.h
   ${MODEL_HDR_DIR}/nmea_log.h
@@ -213,8 +214,9 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
-if (NOT QT_ANDROID)
-  list(APPEND HDRS ${MODEL_HDR_DIR}/n0183_comm_mgr.h)
+if (QT_ANDROID)
+  list(APPEND HDRS ${MODEL_SRC_DIR}/android_ser_thread.cpp)
+else ()
   list(APPEND SRC ${MODEL_SRC_DIR}/n0183_comm_mgr.cpp)
 endif ()
 
