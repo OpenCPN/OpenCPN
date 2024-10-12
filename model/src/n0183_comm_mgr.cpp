@@ -171,3 +171,5 @@ void CommDriverN0183SerialThread::Start() {
   std::thread t([&] { Entry(); });
   t.detach();
 }
+
+void CommDriverN0183SerialThread::RequestStop() { ThreadCtrl::RequestStop(); }
