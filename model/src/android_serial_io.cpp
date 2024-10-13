@@ -18,7 +18,8 @@
  **************************************************************************/
 
 /**
- *  \file android_ser_thread.cpp Android serial IO synchronous implementaion.
+ *  \file android_serial_io.cpp Android SerialIo synchronous implementation
+ *       based on the native Android serial interface.
  */
 
 #include <string>
@@ -28,24 +29,24 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/string.h>
 
 #include "androidUTIL.h"
-#include "model/n0183_comm_mgr.h"
+#include "model/serial_io.h"
 
-void CommDriverN0183SerialThread::Start() {
+void SerialIo::Start() {
   if (m_portname.empty()) return;
   androidStartUSBSerial(m_portname, std::to_string(m_baud), m_send_msg_func);
 }
 
-void* CommDriverN0183SerialThread::Entry() {
+void* SerialIo::Entry() {
   assert(false && "Android IO must be started using Start()");
   return nullptr;  // for the compiler
 }
 
-bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
+bool SerialIo::SetOutMsg(const wxString& msg) {
   if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
   wxString payload = msg;
   if (!msg.EndsWith("\r\n")) payload += "\r\n";
@@ -53,7 +54,7 @@ bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
   return true;
 }
 
-void CommDriverN0183SerialThread::RequestStop() {
+void SerialIo::RequestStop() {
   androidStopUSBSerial(m_portname);
   ThreadCtrl::RequestStop();
   ThreadCtrl::SignalExit();  // No need to wait for exiting thread doing this

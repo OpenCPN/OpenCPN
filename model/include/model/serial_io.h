@@ -37,16 +37,17 @@
 #ifndef __ANDROID__
 #include "serial/serial.h"
 #endif
+
 using SendMsgFunc = std::function<void(const std::vector<unsigned char>&)>;
 class CommDriverN0183Serial;
 
-/** Nmea0183 serial IO thread. */
-class CommDriverN0183SerialThread : public ThreadCtrl {
+/** Nmea0183 serial communications wrapper, possibly running a thread */
+class SerialIo : public ThreadCtrl {
 public:
-  CommDriverN0183SerialThread(SendMsgFunc send_msg_func)
+  SerialIo(SendMsgFunc send_msg_func)
       : m_portname("undefined"), m_baud(4800), m_send_msg_func(send_msg_func) {}
 
-  virtual ~CommDriverN0183SerialThread() = default;
+  virtual ~SerialIo() = default;
 
   void SetParams(const wxString& portname, unsigned baud) {
     m_portname = portname;
