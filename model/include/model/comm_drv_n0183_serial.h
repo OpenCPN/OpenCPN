@@ -32,7 +32,7 @@
 #include "model/comm_out_queue.h"
 #include "model/conn_params.h"
 #include "model/garmin_protocol_mgr.h"
-#include "model/n0183_comm_mgr.h"
+#include "model/serial_io.h"
 
 class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
 public:
@@ -46,7 +46,7 @@ public:
   bool Open();
   void Close();
 
-  bool IsSecThreadActive() { return m_secondary_thread.IsRunning(); }
+  bool IsSecThreadActive() { return m_serial_io.IsRunning(); }
 
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
@@ -66,7 +66,7 @@ private:
   std::string m_portstring;
   unsigned m_baudrate;
 
-  CommDriverN0183SerialThread m_secondary_thread;
+  SerialIo m_serial_io;
   GarminProtocolHandler* m_garmin_handler;
 
   ConnectionParams m_params;
