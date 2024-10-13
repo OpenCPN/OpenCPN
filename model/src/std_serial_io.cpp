@@ -18,35 +18,36 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file n0813_comm_mgr.cpp Serial IO Linux asynchronous implementation. */
+/**
+ * \file std_serial_io.cpp SerialIo asynchronous implementation
+ *          based on the serial/serial.h header. Used on all platforms
+ *          besides Android.
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <thread>
 #include <vector>
 
-#include <wx/event.h>
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/utils.h>
 
 #include "model/comm_buffers.h"
-#include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_registry.h"
-#include "model/comm_navmsg_bus.h"
 #include "model/logger.h"
-#include "model/n0183_comm_mgr.h"
+#include "model/serial_io.h"
 #include "serial/serial.h"
 
-bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
-                                                      unsigned baud_rate) {
+bool SerialIo::OpenComPortPhysical(const wxString& com_name,
+                                   unsigned baud_rate) {
   try {
     m_serial.setPort(com_name.ToStdString());
     m_serial.setBaudrate(baud_rate);
@@ -59,7 +60,7 @@ bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
   return m_serial.isOpen();
 }
 
-void CommDriverN0183SerialThread::CloseComPortPhysical() {
+void SerialIo::CloseComPortPhysical() {
   try {
     m_serial.close();
   } catch (std::exception& e) {
@@ -68,29 +69,27 @@ void CommDriverN0183SerialThread::CloseComPortPhysical() {
   }
 }
 
-bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
+bool SerialIo::SetOutMsg(const wxString& msg) {
   if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
   m_out_que.Put(msg.ToStdString());
   return true;
 }
 
-ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(const char* msg) {
+ssize_t SerialIo::WriteComPortPhysical(const char* msg) {
   if (m_serial.isOpen()) {
-    ssize_t status;
     try {
-      status = m_serial.write((uint8_t*)msg, strlen(msg));
+      return static_cast<ssize_t>(m_serial.write((uint8_t*)msg, strlen(msg)));
     } catch (std::exception& e) {
       DEBUG_LOG << "Unhandled Exception while writing to serial port: "
                 << e.what();
       return -1;
     }
-    return status;
   } else {
     return -1;
   }
 }
 
-void* CommDriverN0183SerialThread::Entry() {
+void* SerialIo::Entry() {
   LineBuffer line_buf;
 
   //    Request the com port from the comm manager
@@ -152,12 +151,12 @@ void* CommDriverN0183SerialThread::Entry() {
 
   CloseComPortPhysical();
   SignalExit();
-  return 0;
+  return nullptr;
 }
 
-void CommDriverN0183SerialThread::Start() {
+void SerialIo::Start() {
   std::thread t([&] { Entry(); });
   t.detach();
 }
 
-void CommDriverN0183SerialThread::RequestStop() { ThreadCtrl::RequestStop(); }
+void SerialIo::RequestStop() { ThreadCtrl::RequestStop(); }
