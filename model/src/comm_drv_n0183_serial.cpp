@@ -56,8 +56,9 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_portstring(params->GetDSPort()),
       m_baudrate(params->Baudrate),
-      m_serial_io(
-          [&](const std::vector<unsigned char>& v) { SendMessage(v); }),
+      m_serial_io(SerialIo::Create(
+          [&](const std::vector<unsigned char>& v) { SendMessage(v); },
+          m_portstring, m_baudrate)),
       m_params(*params),
       m_listener(listener) {
   m_garmin_handler = nullptr;
@@ -94,8 +95,7 @@ bool CommDriverN0183Serial::Open() {
     comx = comx.BeforeFirst(' ');
 
     //    Kick off the  RX thread
-    m_serial_io.SetParams(comx, m_baudrate);
-    m_serial_io.Start();
+    m_serial_io->Start();
   }
 
   return true;
@@ -106,11 +106,11 @@ void CommDriverN0183Serial::Close() {
       wxString::Format("Closing NMEA Driver %s", m_portstring.c_str()));
 
   //    Kill off the secondary RX IO if alive
-  if (m_serial_io.IsRunning()) {
+  if (m_serial_io->IsRunning()) {
     wxLogMessage("Stopping Secondary Thread");
-    m_serial_io.RequestStop();
+    m_serial_io->RequestStop();
     std::chrono::milliseconds elapsed;
-    if (m_serial_io.WaitUntilStopped(10s, elapsed)) {
+    if (m_serial_io->WaitUntilStopped(10s, elapsed)) {
       MESSAGE_LOG << "Stopped in " << elapsed.count() << " msec.";
     } else {
       MESSAGE_LOG << "Not stopped after 10 sec.";
@@ -155,9 +155,9 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   wxString sentence(msg_0183->payload.c_str());
 
-  if (m_serial_io.IsRunning()) {
+  if (m_serial_io->IsRunning()) {
     for (int retries = 0; retries < 10; retries += 1) {
-      if (m_serial_io.SetOutMsg(sentence)) {
+      if (m_serial_io->SetOutMsg(sentence)) {
         return true;
       }
     }

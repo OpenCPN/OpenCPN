@@ -24,6 +24,9 @@
  *          besides Android.
  */
 
+#include <memory>
+#include <string>
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
@@ -46,50 +49,33 @@
 #include "model/serial_io.h"
 #include "serial/serial.h"
 
-bool SerialIo::OpenComPortPhysical(const wxString& com_name,
-                                   unsigned baud_rate) {
-  try {
-    m_serial.setPort(com_name.ToStdString());
-    m_serial.setBaudrate(baud_rate);
-    m_serial.open();
-    m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception& e) {
-    MESSAGE_LOG << "Unhandled Exception while opening serial port: "
-                << e.what();
-  }
-  return m_serial.isOpen();
+/** SerialIo implementation based on serial/serial.h.*/
+class StdSerialIo : public SerialIo {
+public:
+  StdSerialIo(SendMsgFunc send_func, const std::string& port, unsigned baud)
+      : SerialIo(send_func, port, baud) {}
+
+  bool SetOutMsg(const wxString& msg) override;
+  void Start() override;
+
+private:
+  serial::Serial m_serial;
+  OutputBuffer m_out_que;
+  void* Entry();
+  void Reconnect();
+
+  bool OpenComPortPhysical(const wxString& com_name, unsigned baud_rate);
+  void CloseComPortPhysical();
+  ssize_t WriteComPortPhysical(const char* msg);
+};
+
+std::unique_ptr<SerialIo> SerialIo::Create(SendMsgFunc send_msg_func,
+                                           const std::string& port,
+                                           unsigned baud) {
+  return std::make_unique<StdSerialIo>(send_msg_func, port, baud);
 }
 
-void SerialIo::CloseComPortPhysical() {
-  try {
-    m_serial.close();
-  } catch (std::exception& e) {
-    MESSAGE_LOG << "Unhandled Exception while closing serial port: "
-                << e.what();
-  }
-}
-
-bool SerialIo::SetOutMsg(const wxString& msg) {
-  if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
-  m_out_que.Put(msg.ToStdString());
-  return true;
-}
-
-ssize_t SerialIo::WriteComPortPhysical(const char* msg) {
-  if (m_serial.isOpen()) {
-    try {
-      return static_cast<ssize_t>(m_serial.write((uint8_t*)msg, strlen(msg)));
-    } catch (std::exception& e) {
-      DEBUG_LOG << "Unhandled Exception while writing to serial port: "
-                << e.what();
-      return -1;
-    }
-  } else {
-    return -1;
-  }
-}
-
-void* SerialIo::Entry() {
+void* StdSerialIo::Entry() {
   LineBuffer line_buf;
 
   //    Request the com port from the comm manager
@@ -148,15 +134,57 @@ void* SerialIo::Entry() {
       }
     }
   }
-
   CloseComPortPhysical();
   SignalExit();
   return nullptr;
 }
 
-void SerialIo::Start() {
+void StdSerialIo::Start() {
   std::thread t([&] { Entry(); });
   t.detach();
+}
+
+bool StdSerialIo::SetOutMsg(const wxString& msg) {
+  if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
+  m_out_que.Put(msg.ToStdString());
+  return true;
+}
+
+bool StdSerialIo::OpenComPortPhysical(const wxString& com_name,
+                                      unsigned baud_rate) {
+  try {
+    m_serial.setPort(com_name.ToStdString());
+    m_serial.setBaudrate(baud_rate);
+    m_serial.open();
+    m_serial.setTimeout(250, 250, 0, 250, 0);
+  } catch (std::exception& e) {
+    MESSAGE_LOG << "Unhandled Exception while opening serial port: "
+                << e.what();
+  }
+  return m_serial.isOpen();
+}
+
+void StdSerialIo::CloseComPortPhysical() {
+  try {
+    m_serial.close();
+  } catch (std::exception& e) {
+    MESSAGE_LOG << "Unhandled Exception while closing serial port: "
+                << e.what();
+  }
+}
+
+ssize_t StdSerialIo::WriteComPortPhysical(const char* msg) {
+  if (m_serial.isOpen()) {
+    try {
+      return static_cast<ssize_t>(m_serial.write((uint8_t*)msg, strlen(msg)));
+    } catch (std::exception& e) {
+      DEBUG_LOG << "Unhandled Exception while writing to serial port: "
+                << e.what();
+      return -1;
+    }
+  } else {
+    return -1;
+  }
 }
 
 void SerialIo::RequestStop() { ThreadCtrl::RequestStop(); }
