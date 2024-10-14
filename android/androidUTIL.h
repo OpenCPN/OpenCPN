@@ -40,7 +40,6 @@
 
 class ArrayOfCDI;
 
-
 // Enumerators for OCPN menu actions requested by Android UI
 #define OCPN_ACTION_FOLLOW 0x1000
 #define OCPN_ACTION_ROUTE 0x1001
@@ -105,8 +104,10 @@ extern bool androidStopBT();
 extern bool androidSendBTMessage(wxString &payload);
 
 extern wxArrayString *androidGetSerialPortsArray(void);
+
+using SendMsgFunc = std::function<void(const std::vector<unsigned char> &)>;
 extern bool androidStartUSBSerial(wxString &portname, wxString baudRate,
-                                  wxEvtHandler *consumer);
+                                  SendMsgFunc send_msg_func);
 extern bool androidStopUSBSerial(wxString &portname);
 extern bool androidWriteSerial(wxString &portname, wxString &message);
 
@@ -148,7 +149,7 @@ void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
 
 class AndroidSound;
-bool androidPlaySound(const wxString soundfile, AndroidSound* sound);
+bool androidPlaySound(const wxString soundfile, AndroidSound *sound);
 
 bool androidGetFullscreen();
 bool androidSetFullscreen(bool bFull);
@@ -202,31 +203,31 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
                         unsigned int height);
 
 wxString androidGetAndroidSystemLocale();
-bool androidIsDirWritable( wxString dir );
+bool androidIsDirWritable(wxString dir);
 wxArrayString GetConfigChartDirectories();
 
-class InProgressIndicator: public wxGauge
-{
-    DECLARE_EVENT_TABLE()
+class InProgressIndicator : public wxGauge {
+  DECLARE_EVENT_TABLE()
 
 public:
-    InProgressIndicator();
-    InProgressIndicator(wxWindow* parent, wxWindowID id, int range,
-                        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-                        long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = "inprogress");
+  InProgressIndicator();
+  InProgressIndicator(wxWindow *parent, wxWindowID id, int range,
+                      const wxPoint &pos = wxDefaultPosition,
+                      const wxSize &size = wxDefaultSize,
+                      long style = wxGA_HORIZONTAL,
+                      const wxValidator &validator = wxDefaultValidator,
+                      const wxString &name = "inprogress");
 
-    ~InProgressIndicator();
+  ~InProgressIndicator();
 
-    void OnTimer(wxTimerEvent &evt);
-    void Start();
-    void Stop();
+  void OnTimer(wxTimerEvent &evt);
+  void Start();
+  void Stop();
 
-
-    wxTimer m_timer;
-    int msec;
-    bool m_bAlive;
+  wxTimer m_timer;
+  int msec;
+  bool m_bAlive;
 };
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MigrateAssistantDialog
@@ -239,12 +240,12 @@ public:
 
 class MigrateAssistantDialog : public wxDialog {
 public:
-  explicit MigrateAssistantDialog(wxWindow *parent,
-                          bool bskipScan,
-                          wxWindowID id = wxID_ANY,
-                          const wxString &caption = wxEmptyString,
-                          const wxPoint &pos = wxDefaultPosition,
-                          const wxSize &size = wxDefaultSize, long style = 0);
+  explicit MigrateAssistantDialog(wxWindow *parent, bool bskipScan,
+                                  wxWindowID id = wxID_ANY,
+                                  const wxString &caption = wxEmptyString,
+                                  const wxPoint &pos = wxDefaultPosition,
+                                  const wxSize &size = wxDefaultSize,
+                                  long style = 0);
   ~MigrateAssistantDialog(void);
 
   void CreateControls(void);
@@ -254,14 +255,15 @@ public:
   void OnMigrate1Click(wxCommandEvent &event);
   void OnCtlUpdated(wxCommandEvent &event);
   void onPermissionGranted(wxString);
-  void setStatus( wxString s ){ m_statusText->SetLabel(s); }
+  void setStatus(wxString s) { m_statusText->SetLabel(s); }
   void onTimerEvent(wxTimerEvent &event);
   void FinishMigration();
 
   wxButton *m_CancelButton, *m_OKButton;
   wxButton *m_migrateButton, *m_migrateButton1;
-  wxStaticText *m_infoText, *m_infoDirs, *m_migrateStep1, *m_statusText;;
-	wxRadioButton *m_radioSDCard, *m_radioInternal;
+  wxStaticText *m_infoText, *m_infoDirs, *m_migrateStep1, *m_statusText;
+  ;
+  wxRadioButton *m_radioSDCard, *m_radioInternal;
   InProgressIndicator *m_ipGauge;
   wxStaticBoxSizer *statusSizer;
 
@@ -270,15 +272,16 @@ public:
   wxString m_permissionResult;
   wxTimer m_statusTimer;
   wxString m_migrateSourceFolder;
-  wxString m_migrateDestinationFolder;  // something like "/storage/emulated/0/Android/data/org.opencpn.opencpn/files/Charts
-                                        // or             "/storage/xxx-yyyy/Android/data/org.opencpn.opencpn/files/Charts
+  wxString
+      m_migrateDestinationFolder;  // something like
+                                   // "/storage/emulated/0/Android/data/org.opencpn.opencpn/files/Charts
+                                   // or
+                                   // "/storage/xxx-yyyy/Android/data/org.opencpn.opencpn/files/Charts
   bool m_bsdcard;
   bool m_bskipScan;
 
 private:
-
   DECLARE_EVENT_TABLE()
 };
-
 
 #endif  // guard
