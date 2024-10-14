@@ -46,7 +46,7 @@ public:
   bool Open();
   void Close();
 
-  bool IsSecThreadActive() { return m_serial_io.IsRunning(); }
+  bool IsSecThreadActive() { return m_serial_io->IsRunning(); }
 
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
@@ -66,7 +66,7 @@ private:
   std::string m_portstring;
   unsigned m_baudrate;
 
-  SerialIo m_serial_io;
+  std::unique_ptr<SerialIo> m_serial_io;
   GarminProtocolHandler* m_garmin_handler;
 
   ConnectionParams m_params;

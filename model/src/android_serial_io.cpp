@@ -36,26 +36,40 @@
 #include "androidUTIL.h"
 #include "model/serial_io.h"
 
-void SerialIo::Start() {
-  if (m_portname.empty()) return;
-  androidStartUSBSerial(m_portname, std::to_string(m_baud), m_send_msg_func);
-}
+/**
+ * Android SerialIo synchronous implementation based on the native Android
+ * serial interface as exposed in androidUTIL.h
+ */
+class AndroidSerialIo : public SerialIo {
+public:
+  AndroidSerialIo(SendMsgFunc send_func, const std::string& port, unsigned baud)
+      : SerialIo(send_func, port, baud) {}
 
-void* SerialIo::Entry() {
-  assert(false && "Android IO must be started using Start()");
-  return nullptr;  // for the compiler
-}
+  bool SetOutMsg(const wxString& msg) override {
+    if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
+    wxString payload = msg;
+    if (!msg.EndsWith("\r\n")) payload += "\r\n";
+    wxString port(m_portname);  // Horrors due to missing const in library
+    androidWriteSerial(port, payload);
+    return true;
+  }
 
-bool SerialIo::SetOutMsg(const wxString& msg) {
-  if (msg.size() < 6 || (msg[0] != '$' && msg[0] != '!')) return false;
-  wxString payload = msg;
-  if (!msg.EndsWith("\r\n")) payload += "\r\n";
-  androidWriteSerial(m_portname, payload);
-  return true;
-}
+  void Start() override {
+    if (m_portname.empty()) return;
+    wxString port(m_portname);  // Horrors due to missing const in library
+    androidStartUSBSerial(port, std::to_string(m_baud), m_send_msg_func);
+  }
 
-void SerialIo::RequestStop() {
-  androidStopUSBSerial(m_portname);
-  ThreadCtrl::RequestStop();
-  ThreadCtrl::SignalExit();  // No need to wait for exiting thread doing this
+  void RequestStop() override {
+    wxString port(m_portname);  // Horrors due to missing const in library
+    androidStopUSBSerial(port);
+    ThreadCtrl::RequestStop();
+    ThreadCtrl::SignalExit();  // No need to wait for exiting thread doing this
+  }
+};
+
+std::unique_ptr<SerialIo> SerialIo::Create(SendMsgFunc send_msg_func,
+                                           const std::string& port,
+                                           unsigned baud) {
+  return std::make_unique<AndroidSerialIo>(send_msg_func, port, baud);
 }
