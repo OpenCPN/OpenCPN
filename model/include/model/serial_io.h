@@ -18,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file n0183_comm_mgr.h N0183 serial communications IO thread */
+/** \file serial_io.h Abstract N0183 serial communications interface */
 
 #ifndef _N0183_PROTOL_MGR__
 #define _N0183_PROTOL_MGR__
@@ -34,50 +34,34 @@
 #include "comm_buffers.h"
 #include "model/thread_ctrl.h"
 
-#ifndef __ANDROID__
-#include "serial/serial.h"
-#endif
-
+/** Forwards data from driver to local receivers (main code, plugins, etc). */
 using SendMsgFunc = std::function<void(const std::vector<unsigned char>&)>;
-class CommDriverN0183Serial;
 
 /** Nmea0183 serial communications wrapper, possibly running a thread */
 class SerialIo : public ThreadCtrl {
 public:
-  SerialIo(SendMsgFunc send_msg_func)
-      : m_portname("undefined"), m_baud(4800), m_send_msg_func(send_msg_func) {}
+  /** Factory */
+  static std::unique_ptr<SerialIo> Create(SendMsgFunc send_msg_func,
+                                          const std::string& port,
+                                          unsigned baud);
 
   virtual ~SerialIo() = default;
 
-  void SetParams(const wxString& portname, unsigned baud) {
-    m_portname = portname;
-    m_baud = baud;
-  }
-
-  /** Thread main function. */
-  void* Entry();
-
-  /** Start IO operations, possibly in separate thread. */
-  void Start();
+  /** Start IO operations including input, possibly in separate thread. */
+  virtual void Start() = 0;
 
   /** Send a message to remote peer. */
-  bool SetOutMsg(const wxString& msg);
+  virtual bool SetOutMsg(const wxString& msg) = 0;
 
-  void RequestStop() override;
+  virtual void RequestStop() override;
 
-private:
-#ifndef __ANDROID__
-  serial::Serial m_serial;
-#endif
-  void ThreadMessage(const wxString& msg);
-  bool OpenComPortPhysical(const wxString& com_name, unsigned baud_rate);
-  void CloseComPortPhysical();
-  ssize_t WriteComPortPhysical(const char* msg);
+protected:
+  const wxString m_portname;
+  const unsigned m_baud;
+  const SendMsgFunc m_send_msg_func;
 
-  wxString m_portname;
-  unsigned m_baud;
-  OutputBuffer m_out_que;
-  SendMsgFunc m_send_msg_func;
+  SerialIo(SendMsgFunc send_msg_func, const std::string& port, unsigned baud)
+      : m_portname(port), m_baud(baud), m_send_msg_func(send_msg_func) {}
 };
 
 #endif  //    _N0183_PROTOL_MGR__
