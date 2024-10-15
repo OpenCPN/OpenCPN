@@ -994,6 +994,12 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   if (!wxGetEnv(_T("OPENCPN_PREFIX"), &locale_location)) {
     locale_location = _T("/usr/local");
   }
+
+  if(g_bportable) {
+    locale_location = g_Platform->GetHomeDir();
+  }
+
+
   wxFileName location;
   location.AssignDir(locale_location);
   location.AppendDir(_T("share"));
