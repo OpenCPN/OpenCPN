@@ -264,6 +264,7 @@ private:
   void HandleN2K_128259(ObservedEvt ev);
   void HandleN2K_128267(ObservedEvt ev);
   void HandleN2K_128275(ObservedEvt ev);
+  void HandleN2K_128777(ObservedEvt ev);
   void HandleN2K_129029(ObservedEvt ev);
   void HandleN2K_129540(ObservedEvt ev);
   void HandleN2K_130306(ObservedEvt ev);
@@ -274,6 +275,7 @@ private:
   std::shared_ptr<ObservableListener> listener_128259;
   std::shared_ptr<ObservableListener> listener_128267;
   std::shared_ptr<ObservableListener> listener_128275;
+  std::shared_ptr<ObservableListener> listener_128777;
   std::shared_ptr<ObservableListener> listener_129029;
   std::shared_ptr<ObservableListener> listener_129540;
   std::shared_ptr<ObservableListener> listener_130306;
@@ -338,6 +340,7 @@ private:
   int mLOG_Watchdog;
   int mTrLOG_Watchdog;
   int mHUM_Watchdog;
+  int mWCC_Watchdog;
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;

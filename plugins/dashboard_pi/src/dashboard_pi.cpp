@@ -240,6 +240,7 @@ enum {
   ID_DBP_I_VMGW,
   ID_DBP_I_HUM,
   ID_DBP_D_STW,
+  ID_DBP_I_WCC,
   ID_DBP_LAST_ENTRY  // this has a reference in one of the routines; defining a
                      // "LAST_ENTRY" and setting the reference to it, is one
                      // codeline less to change (and find) when adding new
@@ -360,6 +361,8 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("Local Sunrise/Sunset");
     case ID_DBP_I_HUM:
       return _("Humidity");
+    case ID_DBP_I_WCC:
+      return _("Windlass");
   }
   return _T("");
 }
@@ -401,6 +404,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_I_HEEL:
     case ID_DBP_I_ALTI:
     case ID_DBP_I_HUM:
+    case ID_DBP_I_WCC:
       item.SetImage(0);
       break;
     case ID_DBP_D_SOG:
@@ -547,6 +551,7 @@ int dashboard_pi::Init(void) {
   mLOG_Watchdog = 2;
   mTrLOG_Watchdog = 2;
   mHUM_Watchdog = 2;
+  mWCC_Watchdog = 2;
 
   g_pFontTitle = new wxFontData();
   g_pFontTitle->SetChosenFont(
@@ -646,6 +651,12 @@ int dashboard_pi::Init(void) {
   NMEA2000Id id_128275 = NMEA2000Id(128275);
   listener_128275 = GetListener(id_128275, EVT_N2K_128275, this);
   Bind(EVT_N2K_128275, [&](ObservedEvt ev) { HandleN2K_128275(ev); });
+
+  // Windlass count
+  wxDEFINE_EVENT(EVT_N2K_128777, ObservedEvt);
+  NMEA2000Id id_128777 = NMEA2000Id(128777);
+  listener_128777 = GetListener(id_128777, EVT_N2K_128777, this);
+  Bind(EVT_N2K_128777, [&](ObservedEvt ev) { HandleN2K_128777(ev); });
 
   // GNSS Position Data   PGN 129029
   wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -918,6 +929,11 @@ void dashboard_pi::Notify() {
     mPriHUM = 99;
     SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, NAN, _T("-"));
     mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
+  }
+  mWCC_Watchdog--;
+  if (mWCC_Watchdog <= 0) {
+    SendSentenceToAllInstruments(OCPN_DBP_STC_WCC, NAN, _T("-"));
+    mWCC_Watchdog = no_nav_watchdog_timeout_ticks;
   }
 }
 
@@ -1851,20 +1867,33 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               }
             }
           }
-          // Depth sounding
+          // Depth sounding and Windlass rode count
           if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "D")) {
-            bool goodvalue = false;
+            bool good_depth = false;
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == "XDHI" &&
                 mPriDepth >= 6) {
-              goodvalue = true;
+              good_depth = true;
               mPriDepth = 6;
             } else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                            "XDLO" &&
                        mPriDepth >= 7) {
-              goodvalue = true;
+              good_depth = true;
               mPriDepth = 7;
             }
-            if (goodvalue) {
+            // XDR Windlass chain counter
+            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
+                         _T("WINDLASS") ||
+                     m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
+                         _T("WINDLASS#0")) {
+              wxString unit =
+                  m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement;
+              if (unit == wxEmptyString) unit = "m";
+              unit.MakeLower();
+              SendSentenceToAllInstruments(OCPN_DBP_STC_WCC, xdrdata, unit);
+              mWCC_Watchdog = no_nav_watchdog_timeout_ticks;
+            }
+
+            if (good_depth) {
               wxString unit = m_NMEA0183.Xdr.TransducerInfo[i]
                                   .UnitOfMeasurement.MakeLower();
               if (unit == "m") {
@@ -2191,6 +2220,29 @@ void dashboard_pi::HandleN2K_128259(ObservedEvt ev) {
         mPriSTW = 1;
         mSTW_Watchdog = gps_watchdog_timeout_ticks;
       }
+    }
+  }
+}
+
+void dashboard_pi::HandleN2K_128777(ObservedEvt ev) {
+  NMEA2000Id id_128777(128777);
+  std::vector<uint8_t> v = GetN2000Payload(id_128777, ev);
+  // Get Windlass rode count
+  unsigned char SID;
+  unsigned char WindlassIdentifier;
+  double RodeCounterValue;
+  double WindlassLineSpeed;
+  tN2kWindlassMotionStates WindlassMotionStatus;
+  tN2kRodeTypeStates RodeTypeStatus;
+  tN2kAnchorDockingStates AnchorDockingStatus;
+  tN2kWindlassOperatingEvents WindlassOperatingEvents;
+
+  if (ParseN2kPGN128777(v, SID, WindlassIdentifier, RodeCounterValue,
+                        WindlassLineSpeed, WindlassMotionStatus, RodeTypeStatus,
+                        AnchorDockingStatus, WindlassOperatingEvents)) {
+    if (!N2kIsNA(RodeCounterValue)) {
+      SendSentenceToAllInstruments(OCPN_DBP_STC_WCC, RodeCounterValue, "m");
+      mWCC_Watchdog = no_nav_watchdog_timeout_ticks;
     }
   }
 }
@@ -6000,6 +6052,12 @@ void DashboardWindow::SetInstrumentList(
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
             OCPN_DBP_STC_HUM, "%3.0f");
+        break;
+      case ID_DBP_I_WCC:
+        instrument = new DashboardInstrument_Single(
+            this, wxID_ANY, getInstrumentCaption(id), Properties,
+            OCPN_DBP_STC_WCC, _T("%5.1f"));
+        break;
     }
     if (instrument) {
       instrument->instrumentTypeId = id;
