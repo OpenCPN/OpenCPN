@@ -33,6 +33,12 @@
 
 #include "comm_buffers.h"
 #include "model/thread_ctrl.h"
+#include "model/ocpn_utils.h"
+
+/** Remove possible Serial: prefix. */
+static std::string NormalizePort(const std::string& port) {
+  return port.find("Serial:") == 0 ? port.substr(strlen("Serial:")) : port;
+}
 
 /** Forwards data from driver to local receivers (main code, plugins, etc). */
 using SendMsgFunc = std::function<void(const std::vector<unsigned char>&)>;
@@ -61,7 +67,9 @@ protected:
   const SendMsgFunc m_send_msg_func;
 
   SerialIo(SendMsgFunc send_msg_func, const std::string& port, unsigned baud)
-      : m_portname(port), m_baud(baud), m_send_msg_func(send_msg_func) {}
+      : m_portname(NormalizePort(port)),
+        m_baud(baud),
+        m_send_msg_func(send_msg_func) {}
 };
 
 #ifdef __clang__
