@@ -53,7 +53,7 @@ public:
   /** Send a message to remote peer. */
   virtual bool SetOutMsg(const wxString& msg) = 0;
 
-  virtual void RequestStop() override;
+  virtual void RequestStop() override = 0;
 
 protected:
   const wxString m_portname;
@@ -63,5 +63,13 @@ protected:
   SerialIo(SendMsgFunc send_msg_func, const std::string& port, unsigned baud)
       : m_portname(port), m_baud(baud), m_send_msg_func(send_msg_func) {}
 };
+
+#ifdef __clang__
+// As of 12.0.5, clang does not emit the SerialIo vtable and typeinfo linker
+// addresses without this hack (gcc does). Net result without hack is
+// undefined symbols like "typeinfo for SerialIo". Possible clang bug?
+
+__attribute__((used)) static SerialIo* force_clang_to_emit_typeinfo;
+#endif
 
 #endif  //    _N0183_PROTOL_MGR__
