@@ -9891,13 +9891,16 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
   }
 }
 
-void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
+void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint,
+                                           bool deleteMarkOnCancelClick) {
   bool bNew = false;
   if (!g_pMarkInfoDialog) {  // There is one global instance of the MarkProp
                              // Dialog
     g_pMarkInfoDialog = new MarkInfoDlg(this);
     bNew = true;
   }
+
+  g_pMarkInfoDialog->SetDeleteOnCancel(deleteMarkOnCancelClick);
 
   if (1 /*g_bresponsive*/) {
     wxSize canvas_size = GetSize();

@@ -212,6 +212,7 @@ private:
   std::vector<RoutePoint*> m_pRoutePoints;
   static bool instanceFlag;
   int i_htmlList_item;
+  bool m_deleteOnCancel;
 
   bool m_bShowName_save;
   wxString m_Name_save;
@@ -380,6 +381,9 @@ public:
   void ValidateMark(void);
   bool SaveChanges();
   void OnActivate(wxActivateEvent& event);
+  void SetDeleteOnCancel(bool deleteOnCancel) {
+    m_deleteOnCancel = deleteOnCancel;
+  }
 
   wxSimpleHtmlListBox* GetSimpleBox() {
     return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);
