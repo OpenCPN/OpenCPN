@@ -2598,6 +2598,7 @@ void ChartCanvas::OnKeyChar(wxKeyEvent &event) {
     case '?':
       HotkeysDlg(wxWindow::FindWindowByName("MainWindow")).ShowModal();
       break;
+    case '=':
     case '+':
       ZoomCanvas(g_plus_minus_zoom_factor, false);
       break;
