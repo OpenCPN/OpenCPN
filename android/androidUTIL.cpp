@@ -123,7 +123,7 @@ extern MyFrame *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 // extern const wxEventType wxEVT_DOWNLOAD_EVENT;
 
-wxEvtHandler *s_pAndroidNMEAMessageConsumer;
+static SendMsgFunc s_send_msg_func;
 wxEvtHandler *s_pAndroidGPSIntMessageConsumer;
 wxEvtHandler *s_pAndroidBTNMEAMessageConsumer;
 
@@ -1104,8 +1104,9 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(
   //  Java app, even without a definite connection, and we want to process these
   //  messages too. So assume that the global MUX, if present, will handle these
   //  synthesized messages.
-  if (!s_pAndroidNMEAMessageConsumer && g_pMUX)
-    s_pAndroidNMEAMessageConsumer = g_pMUX;
+
+  ////if (!s_pAndroidNMEAMessageConsumer && g_pMUX)
+  ////  s_pAndroidNMEAMessageConsumer = g_pMUX;
 
   double wind_angle_mag = 0;
   double apparent_wind_angle = 0;
@@ -1184,7 +1185,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(
       // qDebug() << wind_angle_mag << app_windSpeed << apparent_wind_angle <<
       // true_windSpeed << true_windDirection;
 
-      if (s_pAndroidNMEAMessageConsumer) {
+      if (g_androidUtilHandler) {
         NMEA0183 parser(NmeaCtxFactory());
 
         // Now make some NMEA messages
@@ -1244,21 +1245,14 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
   //  The NMEA message target handler may not be setup yet, if no connections
   //  are defined or enabled. But we may get synthesized messages from the Java
   //  app, even without a definite connection.  We ignore these messages.
-  wxEvtHandler *consumer = s_pAndroidNMEAMessageConsumer;
 
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
 
   // qDebug() << "ProcessNMEA: " << string;
 
-  if (consumer) {
-    auto buffer = std::make_shared<std::vector<unsigned char>>();
-    std::vector<unsigned char> *vec = buffer.get();
-
-    for (int i = 0; i < strlen(string); i++) vec->push_back(string[i]);
-
-    CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-    Nevent.SetPayload(buffer);
-    consumer->AddPendingEvent(Nevent);
+  if (s_send_msg_func) {
+    std::string s(string);
+    s_send_msg_func(std::vector<unsigned char>(s.begin(), s.end()));
   }
 
   return 66;
@@ -2870,17 +2864,17 @@ wxArrayString *androidGetSerialPortsArray(void) {
 }
 
 bool androidStartUSBSerial(wxString &portname, wxString baudRate,
-                           wxEvtHandler *consumer) {
+                           SendMsgFunc send_msg_func) {
   wxString result =
       callActivityMethod_s2s("startSerialPort", portname, baudRate);
 
-  s_pAndroidNMEAMessageConsumer = consumer;
+  s_send_msg_func = send_msg_func;
 
   return true;
 }
 
 bool androidStopUSBSerial(wxString &portname) {
-  s_pAndroidNMEAMessageConsumer = NULL;
+  s_send_msg_func = nullptr;
 
   //  If app is closing down, the USB serial ports will go away automatically.
   //  So no need here.
