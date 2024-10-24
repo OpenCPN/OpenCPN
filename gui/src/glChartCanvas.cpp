@@ -502,6 +502,8 @@ void glChartCanvas::Init() {
 #endif
 
 #else
+#ifdef HAVE_WX_GESTURE_EVENTS
+
   Connect(GESTURE_EVENT_TIMER, wxEVT_TIMER,
           (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::
               onGestureTimerEvent,
@@ -521,6 +523,7 @@ void glChartCanvas::Init() {
   m_gestureFinishTimer.SetOwner(this, GESTURE_FINISH_TIMER);
   zoomTimer.SetOwner(this, ZOOM_TIMER);
   m_zoom_inc = 1.0;
+#endif
 #endif
 
   m_bgestureGuard = false;
