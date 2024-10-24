@@ -1227,6 +1227,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       gFrame->RefreshAllCanvas(false);
       gFrame->InvalidateAllGL();
       g_FlushNavobjChanges = true;
+
+      parent->ShowMarkPropertiesDialog(pWP, true);
+
       break;
     }
 

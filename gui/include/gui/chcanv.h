@@ -360,7 +360,8 @@ public:
   void SetShowGPS(bool show);
 
   void ShowObjectQueryWindow(int x, int y, float zlat, float zlon);
-  void ShowMarkPropertiesDialog(RoutePoint *markPoint);
+  void ShowMarkPropertiesDialog(RoutePoint *markPoint,
+                                bool deleteMarkOnCancelClick = false);
   void ShowRoutePropertiesDialog(wxString title, Route *selected);
   void ShowTrackPropertiesDialog(Track *selected);
   void DrawTCWindow(int x, int y, void *pIDX);

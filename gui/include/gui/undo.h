@@ -65,7 +65,7 @@ public:
   bool AnythingToRedo();
   void InvalidateRedo();
   void InvalidateUndo();
-  void Invalidate();
+  void InvalidateLastAddedUndoableAction();
   bool InUndoableAction() { return isInsideUndoableAction; }
   UndoAction* GetNextUndoableAction();
   UndoAction* GetNextRedoableAction();

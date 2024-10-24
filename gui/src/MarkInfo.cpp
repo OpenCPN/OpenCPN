@@ -76,6 +76,9 @@ extern MyFrame* gFrame;
 extern OCPNPlatform* g_Platform;
 extern wxString g_default_wp_icon;
 
+extern wxString g_AW1GUID;
+extern wxString g_AW2GUID;
+
 // Global print data, to remember settings during the session
 
 // Global page setup data
@@ -219,7 +222,8 @@ EVT_CLOSE(MarkInfoDlg::OnClose)
 END_EVENT_TABLE()
 
 MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
-                         const wxPoint& pos, const wxSize& size, long style) {
+                         const wxPoint& pos, const wxSize& size, long style)
+    : m_deleteOnCancel(false) {
   DIALOG_PARENT::Create(parent, id, title, pos, size, style);
 
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
@@ -1426,31 +1430,73 @@ void MarkInfoDlg::DefautlBtnClicked(wxCommandEvent& event) {
 
 void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
   if (m_pRoutePoint) {
-    m_pRoutePoint->SetVisible(m_bIsVisible_save);
-    m_pRoutePoint->SetNameShown(m_bShowName_save);
-    m_pRoutePoint->SetPosition(m_lat_save, m_lon_save);
-    m_pRoutePoint->SetIconName(m_IconName_save);
-    m_pRoutePoint->ReLoadIcon();
-    m_pRoutePoint->SetName(m_Name_save);
-    m_pRoutePoint->m_MarkDescription = m_Description_save;
-    m_pRoutePoint->SetUseSca(m_bUseScaMin_save);
-    m_pRoutePoint->SetScaMin(m_iScaminVal_save);
+    if (m_deleteOnCancel) {
+      if (m_pRoutePoint == pAnchorWatchPoint1) {
+        pAnchorWatchPoint1 = NULL;
+        g_AW1GUID.Clear();
+      } else if (m_pRoutePoint == pAnchorWatchPoint2) {
+        pAnchorWatchPoint2 = NULL;
+        g_AW2GUID.Clear();
+      }
 
-    m_pRoutePoint->m_HyperlinkList->Clear();
+      if (m_pRoutePoint && !(m_pRoutePoint->m_bIsInLayer) &&
+          (m_pRoutePoint->GetIconName() != _T("mob"))) {
+        // If the WP belongs to an invisible route, we come here instead of to
+        // ID_RT_MENU_DELPOINT
+        //  Check it, and if so then remove the point from its routes
+        wxArrayPtrVoid* proute_array =
+            g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+        if (proute_array) {
+          pWayPointMan->DestroyWaypoint(m_pRoutePoint);
+        } else {
+          pConfig->DeleteWayPoint(m_pRoutePoint);
+          pSelect->DeleteSelectablePoint(m_pRoutePoint, SELTYPE_ROUTEPOINT);
+          if (NULL != pWayPointMan)
+            pWayPointMan->RemoveRoutePoint(m_pRoutePoint);
+          gFrame->GetPrimaryCanvas()->undo->InvalidateLastAddedUndoableAction();
+        }
 
-    int NbrOfLinks = m_pMyLinkList->GetCount();
-    if (NbrOfLinks > 0) {
-      wxHyperlinkListNode* linknode = m_pMyLinkList->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
-        Hyperlink* h = new Hyperlink();
-        h->DescrText = link->DescrText;
-        h->Link = link->Link;
-        h->LType = link->LType;
+        if (g_pMarkInfoDialog) {
+          g_pMarkInfoDialog->ClearData();
+        }
 
-        m_pRoutePoint->m_HyperlinkList->Append(h);
+        if (RouteManagerDialog::getInstanceFlag()) {
+          if (pRouteManagerDialog) {
+            if (pRouteManagerDialog->IsShown())
+              pRouteManagerDialog->UpdateWptListCtrl();
+          }
+        }
 
-        linknode = linknode->GetNext();
+        gFrame->RefreshAllCanvas(false);
+        gFrame->InvalidateAllGL();
+      }
+    } else {
+      m_pRoutePoint->SetVisible(m_bIsVisible_save);
+      m_pRoutePoint->SetNameShown(m_bShowName_save);
+      m_pRoutePoint->SetPosition(m_lat_save, m_lon_save);
+      m_pRoutePoint->SetIconName(m_IconName_save);
+      m_pRoutePoint->ReLoadIcon();
+      m_pRoutePoint->SetName(m_Name_save);
+      m_pRoutePoint->m_MarkDescription = m_Description_save;
+      m_pRoutePoint->SetUseSca(m_bUseScaMin_save);
+      m_pRoutePoint->SetScaMin(m_iScaminVal_save);
+
+      m_pRoutePoint->m_HyperlinkList->Clear();
+
+      int NbrOfLinks = m_pMyLinkList->GetCount();
+      if (NbrOfLinks > 0) {
+        wxHyperlinkListNode* linknode = m_pMyLinkList->GetFirst();
+        while (linknode) {
+          Hyperlink* link = linknode->GetData();
+          Hyperlink* h = new Hyperlink();
+          h->DescrText = link->DescrText;
+          h->Link = link->Link;
+          h->LType = link->LType;
+
+          m_pRoutePoint->m_HyperlinkList->Append(h);
+
+          linknode = linknode->GetNext();
+        }
       }
     }
   }
