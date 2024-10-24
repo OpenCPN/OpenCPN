@@ -128,7 +128,13 @@ void __CALL_CONVENTION shpsvertexCallback(GLvoid *arg) {
 }
 #endif
 
-ShapeBaseChartSet::ShapeBaseChartSet() : _loaded(false) {}
+ShapeBaseChartSet::ShapeBaseChartSet() : _loaded(false) {
+  land_color = wxColor(170, 175, 80);
+}
+void ShapeBaseChartSet::SetBasemapLandColor(wxColor color) {
+  land_color = color;
+}
+wxColor ShapeBaseChartSet::GetBasemapLandColor() { return land_color; }
 
 wxPoint2DDouble ShapeBaseChartSet::GetDoublePixFromLL(ViewPort &vp, double lat,
                                                       double lon) {
@@ -205,8 +211,6 @@ void ShapeBaseChartSet::Reset() {
 void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
   _loaded = false;
   _basemap_map.clear();
-
-  wxColor land_color = wxColor(170, 175, 80);
 
   if (fs::exists(ShapeBaseChart::ConstructPath(dir, "crude_10x10"))) {
     auto c = ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "crude_10x10"),
@@ -586,6 +590,8 @@ bool ShapeBaseChart::PolygonLineIntersect(const shp::Feature &feature,
 
 void ShapeBaseChartSet::RenderViewOnDC(ocpnDC &dc, ViewPort &vp) {
   if (IsUsable()) {
-    SelectBaseMap(vp.chart_scale).RenderViewOnDC(dc, vp);
+    ShapeBaseChart &chart = SelectBaseMap(vp.chart_scale);
+    chart.SetColor(land_color);
+    chart.RenderViewOnDC(dc, vp);
   }
 }

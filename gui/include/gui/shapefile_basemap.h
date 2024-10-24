@@ -96,8 +96,9 @@ typedef std::vector<wxRealPoint> contour;
 typedef std::vector<contour> contour_list;
 
 /**
- * Represents a basemap chart based on shapefile data. Handles loading and rendering
- * of shapefile-based basemap charts. Supports different quality levels and provides methods for drawing filled polygons.
+ * Represents a basemap chart based on shapefile data. Handles loading and
+ * rendering of shapefile-based basemap charts. Supports different quality
+ * levels and provides methods for drawing filled polygons.
  */
 class ShapeBaseChart {
 public:
@@ -126,6 +127,8 @@ public:
     this->_loading = t._loading;
   }
   ~ShapeBaseChart() { delete _reader; }
+
+  void SetColor(wxColor color) { _color = color; }
 
   int _dmod;
 
@@ -171,8 +174,9 @@ private:
 };
 
 /**
- * Manages a set of ShapeBaseChart objects at different resolutions. Maintains multiple
- * basemap charts at varying quality levels and scales. Handles selection of the appropriate chart based on the current view scale.
+ * Manages a set of ShapeBaseChart objects at different resolutions. Maintains
+ * multiple basemap charts at varying quality levels and scales. Handles
+ * selection of the appropriate chart based on the current view scale.
  */
 class ShapeBaseChartSet {
 public:
@@ -180,6 +184,9 @@ public:
   ~ShapeBaseChartSet() {}
   static wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat,
                                             double lon);
+
+  void SetBasemapLandColor(wxColor color);
+  wxColor GetBasemapLandColor();
 
   void RenderViewOnDC(ocpnDC &dc, ViewPort &vp);
 
@@ -206,6 +213,7 @@ private:
   ShapeBaseChart &HighestQualityBaseMap();
 
   bool _loaded;
+  wxColor land_color;
 
   std::map<Quality, ShapeBaseChart> _basemap_map;
 };

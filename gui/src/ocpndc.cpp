@@ -110,7 +110,7 @@ ocpnDC::ocpnDC(wxDC &pdc)
       dc(&pdc),
       m_pen(wxNullPen),
       m_brush(wxNullBrush) {
-#if wxUSE_GRAPHICS_CONTEXT
+#if 0  // wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
   auto pmdc = dynamic_cast<wxMemoryDC *>(dc);
   if (pmdc)
@@ -137,7 +137,7 @@ ocpnDC::ocpnDC()
 }
 
 ocpnDC::~ocpnDC() {
-#if wxUSE_GRAPHICS_CONTEXT
+#if 0  // wxUSE_GRAPHICS_CONTEXT
   if (pgc) delete pgc;
 #endif
   free(workBuf);
