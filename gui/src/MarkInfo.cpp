@@ -76,6 +76,9 @@ extern MyFrame* gFrame;
 extern OCPNPlatform* g_Platform;
 extern wxString g_default_wp_icon;
 
+extern wxString g_AW1GUID;
+extern wxString g_AW2GUID;
+
 // Global print data, to remember settings during the session
 
 // Global page setup data
@@ -219,7 +222,8 @@ EVT_CLOSE(MarkInfoDlg::OnClose)
 END_EVENT_TABLE()
 
 MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
-                         const wxPoint& pos, const wxSize& size, long style) : m_deleteOnCancel(false) {
+                         const wxPoint& pos, const wxSize& size, long style)
+    : m_deleteOnCancel(false) {
   DIALOG_PARENT::Create(parent, id, title, pos, size, style);
 
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
@@ -1427,11 +1431,30 @@ void MarkInfoDlg::DefautlBtnClicked(wxCommandEvent& event) {
 void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
   if (m_pRoutePoint) {
     if (m_deleteOnCancel) {
+      if (m_pRoutePoint == pAnchorWatchPoint1) {
+        pAnchorWatchPoint1 = NULL;
+        g_AW1GUID.Clear();
+      } else if (m_pRoutePoint == pAnchorWatchPoint2) {
+        pAnchorWatchPoint2 = NULL;
+        g_AW2GUID.Clear();
+      }
+
       if (m_pRoutePoint && !(m_pRoutePoint->m_bIsInLayer) &&
           (m_pRoutePoint->GetIconName() != _T("mob"))) {
-        pConfig->DeleteWayPoint(m_pRoutePoint);
-        pSelect->DeleteSelectablePoint(m_pRoutePoint, SELTYPE_ROUTEPOINT);
-        if (NULL != pWayPointMan) pWayPointMan->RemoveRoutePoint(m_pRoutePoint);
+        // If the WP belongs to an invisible route, we come here instead of to
+        // ID_RT_MENU_DELPOINT
+        //  Check it, and if so then remove the point from its routes
+        wxArrayPtrVoid* proute_array =
+            g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+        if (proute_array) {
+          pWayPointMan->DestroyWaypoint(m_pRoutePoint);
+        } else {
+          pConfig->DeleteWayPoint(m_pRoutePoint);
+          pSelect->DeleteSelectablePoint(m_pRoutePoint, SELTYPE_ROUTEPOINT);
+          if (NULL != pWayPointMan)
+            pWayPointMan->RemoveRoutePoint(m_pRoutePoint);
+          gFrame->GetPrimaryCanvas()->undo->InvalidateLastAddedUndoableAction();
+        }
 
         if (g_pMarkInfoDialog) {
           g_pMarkInfoDialog->ClearData();

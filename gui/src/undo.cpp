@@ -247,6 +247,11 @@ void Undo::InvalidateUndo() {
   stackpointer = 0;
 }
 
+void Undo::InvalidateLastAddedUndoableAction() {
+  delete undoStack.front();
+  undoStack.pop_front();
+}
+
 bool Undo::UndoLastAction() {
   if (!AnythingToUndo()) return false;
   UndoAction* action = GetNextUndoableAction();
