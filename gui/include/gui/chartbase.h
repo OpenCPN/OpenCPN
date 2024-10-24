@@ -111,9 +111,9 @@ public:
 };
 
 /**
- * Base class for all chart types. Defines the interface and common functionality
- * for all chart types in OpenCPN. Provides methods for initialization, rendering, and querying
- * chart properties and data.
+ * Base class for all chart types. Defines the interface and common
+ * functionality for all chart types in OpenCPN. Provides methods for
+ * initialization, rendering, and querying chart properties and data.
  */
 class ChartBase {
 public:

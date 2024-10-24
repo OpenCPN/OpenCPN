@@ -45,11 +45,11 @@ public:
 
 private:
   //! variables
-  int m_flags; ///< Flags controlling the crash report behavior.
-  wxString m_fname; ///< Filename to save the crash report to.
+  int m_flags;       ///< Flags controlling the crash report behavior.
+  wxString m_fname;  ///< Filename to save the crash report to.
 
-  void *m_btBuffer[maxBtCount]; ///< Buffer for storing backtrace information.
-  char **m_btStrings; ///< Strings containing backtrace information.
+  void *m_btBuffer[maxBtCount];  ///< Buffer for storing backtrace information.
+  char **m_btStrings;            ///< Strings containing backtrace information.
 };
 
 #endif  // _WX_CRASHPRINT_H_

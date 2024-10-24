@@ -117,7 +117,8 @@ public:
  * Base class for BSB (Maptech/NOS) format nautical charts.
  *
  * Provides core functionality for handling BSB format raster nautical charts.
- * Implements chart rendering, coordinate transformations, and utility functions.
+ * Implements chart rendering, coordinate transformations, and utility
+ * functions.
  *
  * Key features include:
  * - Chart initialization and loading
@@ -363,8 +364,9 @@ class PlugInChartBase;  // found in ocpn_plugin.h
 
 /**
  * Wrapper class for plugin-based charts.
- * Serves as an interface between the main application and plugin-provided charts. Allows seamless integration of charts
- * from external plugins into the main chart handling system.
+ * Serves as an interface between the main application and plugin-provided
+ * charts. Allows seamless integration of charts from external plugins into the
+ * main chart handling system.
  */
 class ChartPlugInWrapper : public ChartBaseBSB {
 public:

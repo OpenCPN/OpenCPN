@@ -112,13 +112,14 @@ WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
 /**
  * Represents an S57 format electronic navigational chart in OpenCPN.
  *
- * S57 is an international standard for encoding and exchanging digital hydrographic data.
- * These vector charts contain maritime information
- * including depths, buoys, lights, and other navigational features.
+ * S57 is an international standard for encoding and exchanging digital
+ * hydrographic data. These vector charts contain maritime information including
+ * depths, buoys, lights, and other navigational features.
  *
  * Key features of S57 charts and this class:
  * - Vector data: Allows for smooth scaling and rotation without loss of quality
- * - Rich feature set: Includes detailed information about various maritime objects
+ * - Rich feature set: Includes detailed information about various maritime
+ * objects
  * - Layered display: Supports showing/hiding different types of information
  * - SENC support: Can create and use System ENC (SENC) files for faster loading
  * - Render options: Supports various rendering modes including OpenGL

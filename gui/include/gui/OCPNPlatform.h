@@ -68,10 +68,10 @@ class ArrayOfCDI;
 // #endif
 
 /**
- * Provides platform-specific support utilities for OpenCPN. Extends BasePlatform
- * to implement platform-specific functionality for various aspects of the application,
- * including device support, initialization, display handling, and
- * file operations, and more.
+ * Provides platform-specific support utilities for OpenCPN. Extends
+ * BasePlatform to implement platform-specific functionality for various aspects
+ * of the application, including device support, initialization, display
+ * handling, and file operations, and more.
  */
 class OCPNPlatform : public BasePlatform {
 public:

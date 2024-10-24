@@ -57,8 +57,9 @@ class glChartCanvas;
 
 /**
  * Device context class that can use either wxDC or OpenGL for drawing.
- * Provides a unified interface for drawing operations, abstracting the underlying
- * context. Allows seamless switching between contexts and offers various drawing methods.
+ * Provides a unified interface for drawing operations, abstracting the
+ * underlying context. Allows seamless switching between contexts and offers
+ * various drawing methods.
  */
 class ocpnDC {
 public:

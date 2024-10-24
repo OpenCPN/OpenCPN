@@ -76,9 +76,10 @@ typedef enum ColorScheme
 #define INVALID_COORD (-2147483647 - 1)
 
 /**
- * Represents the view port for chart display in OpenCPN. Encapsulates all parameters
- * that define the current view of the chart, including position, scale, rotation,
- * and projection type. Provides methods for coordinate conversions and viewport manipulations.
+ * Represents the view port for chart display in OpenCPN. Encapsulates all
+ * parameters that define the current view of the chart, including position,
+ * scale, rotation, and projection type. Provides methods for coordinate
+ * conversions and viewport manipulations.
  */
 class ViewPort {
 public:
@@ -102,14 +103,16 @@ public:
     GetLLFromPix(wxPoint2DDouble(p), lat, lon);
   }
   /**
-   * @brief Convert pixel coordinates to latitude and longitude using double precision
+   * @brief Convert pixel coordinates to latitude and longitude using double
+   * precision
    * @param p Pixel coordinates as wxPoint2DDouble
    * @param lat Pointer to store resulting latitude
    * @param lon Pointer to store resulting longitude
    */
   void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
   /**
-   * @brief Convert latitude and longitude to pixel coordinates with double precision
+   * @brief Convert latitude and longitude to pixel coordinates with double
+   * precision
    * @param lat Latitude in degrees
    * @param lon Longitude in degrees
    * @return wxPoint2DDouble Pixel coordinates
@@ -129,7 +132,8 @@ public:
                                   int chart_native_scale);
 
   /**
-   * @brief Get the intersection of the viewport with a polygon defined by lat/lon points
+   * @brief Get the intersection of the viewport with a polygon defined by
+   * lat/lon points
    * @param Region OCPNRegion to intersect with
    * @param nPoints Number of points in the polygon
    * @param llpoints Array of lat/lon points defining the polygon

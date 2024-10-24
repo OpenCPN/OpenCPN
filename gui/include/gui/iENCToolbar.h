@@ -36,8 +36,9 @@
 #define STATE_TIMER 3689
 
 /**
- * Floating toolbar for iENC (International Electronic Navigational Chart) functionality.
- * Extends ocpnFloatingToolbarDialog to provide iENC-specific operations like density control and range adjustment.
+ * Floating toolbar for iENC (International Electronic Navigational Chart)
+ * functionality. Extends ocpnFloatingToolbarDialog to provide iENC-specific
+ * operations like density control and range adjustment.
  */
 class iENCToolbar : public ocpnFloatingToolbarDialog {
 public:
