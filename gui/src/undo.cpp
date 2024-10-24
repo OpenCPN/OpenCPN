@@ -243,6 +243,11 @@ void Undo::InvalidateRedo() {
 }
 
 void Undo::InvalidateUndo() {
+  for (auto* undoItem : undoStack)
+  {
+    delete undoItem;
+  }
+
   undoStack.clear();
   stackpointer = 0;
 }
