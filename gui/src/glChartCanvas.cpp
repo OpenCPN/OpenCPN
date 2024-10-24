@@ -5371,6 +5371,8 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 }
 
 #else
+#ifdef HAVE_WX_GESTURE_EVENTS
+
 void glChartCanvas::OnEvtPanGesture(wxPanGestureEvent &event) {
   // qDebug() << "OnEvtPanGesture" << m_pParentCanvas->m_canvasIndex <<
   // event.cursor_pos.x;
@@ -5603,6 +5605,7 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   m_bforcefull = false;
 }
 
+#endif
 #endif
 
 void glChartCanvas::configureShaders(ViewPort &vp) {

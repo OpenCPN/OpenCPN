@@ -188,10 +188,12 @@ public:
   void onGestureTimerEvent(wxTimerEvent &event);
   void onGestureFinishTimerEvent(wxTimerEvent &event);
 #else
+#ifdef HAVE_WX_GESTURE_EVENTS
   void OnEvtPanGesture(wxPanGestureEvent &event);
   void OnEvtZoomGesture(wxZoomGestureEvent &event);
   void onGestureTimerEvent(wxTimerEvent &event);
   void onGestureFinishTimerEvent(wxTimerEvent &event);
+#endif
 #endif
 
   void onZoomTimerEvent(wxTimerEvent &event);
