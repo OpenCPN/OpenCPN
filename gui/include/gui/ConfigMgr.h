@@ -82,8 +82,9 @@ private:  // private for singleton
 };
 
 /**
- * Represents a panel for displaying and editing a configuration. Creates a wxPanel
- * that shows the details of a specific configuration object and allows for user interaction.
+ * Represents a panel for displaying and editing a configuration. Creates a
+ * wxPanel that shows the details of a specific configuration object and allows
+ * for user interaction.
  */
 class ConfigPanel : public wxPanel {
 public:

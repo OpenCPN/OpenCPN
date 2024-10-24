@@ -29,8 +29,8 @@
 #include <wx/window.h>
 
 /**
- * Modal dialog for plugin catalog settings. Implements a dialog that displays and allows editing of
- * settings for the plugin catalog.
+ * Modal dialog for plugin catalog settings. Implements a dialog that displays
+ * and allows editing of settings for the plugin catalog.
  */
 class CatalogSettingsDialog : public wxDialog {
 public:

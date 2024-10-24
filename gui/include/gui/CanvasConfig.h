@@ -38,8 +38,9 @@ class ChartCanvas;
 class wxFileConfig;
 
 /**
- * Encapsulates persistent canvas configuration. Stores various settings for a chart canvas,
- * including position, scale, rotation, and display options for different chart elements.
+ * Encapsulates persistent canvas configuration. Stores various settings for a
+ * chart canvas, including position, scale, rotation, and display options for
+ * different chart elements.
  */
 class canvasConfig {
 public:

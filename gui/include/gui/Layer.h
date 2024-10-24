@@ -30,9 +30,10 @@
 #include <wx/datetime.h>
 
 /**
- * Represents a layer of chart objects in OpenCPN. A Layer in OpenCPN is a collection
- * of chart objects (such as waypoints, routes, or tracks) that can be managed and
- * displayed as a group. Layers provide a way to organize and control the visibility of related chart objects.
+ * Represents a layer of chart objects in OpenCPN. A Layer in OpenCPN is a
+ * collection of chart objects (such as waypoints, routes, or tracks) that can
+ * be managed and displayed as a group. Layers provide a way to organize and
+ * control the visibility of related chart objects.
  */
 class Layer {
 public:

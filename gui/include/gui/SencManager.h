@@ -101,7 +101,8 @@ private:
 /**
  * Manager for S57 chart SENC creation threads.
  * Manages the creation of SENC (Simplified Electronic Navigational Chart) files
- * from S57 charts using background threads. Handles scheduling and executing SENC build jobs.
+ * from S57 charts using background threads. Handles scheduling and executing
+ * SENC build jobs.
  */
 class SENCThreadManager : public wxEvtHandler {
 public:

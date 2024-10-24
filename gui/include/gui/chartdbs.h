@@ -175,7 +175,8 @@ private:
   int nDirEntries;
 };
 /**
- * Represents an entry in the chart table, containing information about a single chart.
+ * Represents an entry in the chart table, containing information about a single
+ * chart.
  */
 struct ChartTableEntry {
   ChartTableEntry() { Clear(); }
@@ -301,7 +302,8 @@ public:
 WX_DECLARE_OBJARRAY(ChartTableEntry, ChartTable);
 
 /**
- * Manages a database of charts, including reading, writing, and querying chart information.
+ * Manages a database of charts, including reading, writing, and querying chart
+ * information.
  */
 class ChartDatabase {
 public:
@@ -435,9 +437,9 @@ WX_DEFINE_ARRAY_PTR(ChartGroup *, ChartGroupArray);
 
 /**
  * Represents an individual component within a ChartGroup.
- * Typically corresponds to a single chart or a subgroup within a ChartGroup. Maintains information about the element's name
- * and any charts that are supposed to be part of this element but are
- * currently missing or unavailable.
+ * Typically corresponds to a single chart or a subgroup within a ChartGroup.
+ * Maintains information about the element's name and any charts that are
+ * supposed to be part of this element but are currently missing or unavailable.
  */
 class ChartGroupElement {
   // ChartGroupElements need nothing special to delete since
@@ -452,8 +454,8 @@ public:
  * Represents a user-defined collection of logically related charts.
  *
  * Allows users to categorize and manage
- * sets of nautical charts based on criteria such as geographical region, chart type,
- * or specific voyages. Enhances chart management by enabling:
+ * sets of nautical charts based on criteria such as geographical region, chart
+ * type, or specific voyages. Enhances chart management by enabling:
  * - Efficient organization of large chart collections
  * - Quick access to relevant charts for specific needs
  * - Grouped operations like enabling/disabling multiple charts simultaneously

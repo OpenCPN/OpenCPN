@@ -143,7 +143,8 @@ private:
 
 /**
  * Main application frame. Top-level window frame for OpenCPN that manages
- * overall application state, menus, toolbars, and child windows like chart canvases.
+ * overall application state, menus, toolbars, and child windows like chart
+ * canvases.
  */
 class MyFrame : public wxFrame {
 public:
