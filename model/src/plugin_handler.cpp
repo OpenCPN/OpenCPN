@@ -198,6 +198,33 @@ static std::vector<std::string> LoadLinesFromFile(const std::string& path) {
   return lines;
 }
 
+#ifdef _WIN32
+static std::string tmpfile_path() {
+  /** Use old poorly defined fname. */
+  char fname[4096];
+  if (tmpnam(fname) == NULL) {
+    MESSAGE_LOG << "Cannot create temporary file";
+    return "";
+  }
+  return std::string(fname);
+}
+
+#else
+static std::string tmpfile_path() {
+  /** Use mkstemp to avoid annoying linker warning */
+  fs::path tmp_path = fs::temp_directory_path() / "ocpn-tmpXXXXXX";
+  char buff[PATH_MAX];
+  strncpy(buff, tmp_path.c_str(), PATH_MAX - 1);
+  int fd = mkstemp(buff);
+  if (fd == -1) {
+    MESSAGE_LOG << "Cannot create temporary file: " << strerror(errno);
+    return "";
+  }
+  assert(close(fd) == 0 && "Cannot close file?!");
+  return std::string(buff);
+}
+#endif  // _WIN32
+
 /** Plugin ABI encapsulation. */
 class Plugin {
 public:
@@ -1162,15 +1189,12 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
 }
 
 bool PluginHandler::installPlugin(PluginMetadata plugin) {
-  std::string path;
-  char fname[4096];
-
-  if (tmpnam(fname) == NULL) {
+  std::string path = tmpfile_path();
+  if (path.empty()) {
     MESSAGE_LOG << "Cannot create temporary file";
     path = "";
     return false;
   }
-  path = std::string(fname);
   std::ofstream stream;
   stream.open(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
   DEBUG_LOG << "Downloading: " << plugin.name << std::endl;
@@ -1192,7 +1216,7 @@ bool PluginHandler::installPlugin(const std::string& path) {
 bool PluginHandler::ExtractMetadata(const std::string& path,
                                     PluginMetadata& metadata) {
   std::string filelist;
-  std::string temp_path(tmpnam(0));
+  std::string temp_path = tmpfile_path();
   if (!extractTarball(path, filelist, temp_path, true)) {
     std::ostringstream os;
     os << "Cannot unpack plugin " << metadata.name << " tarball at: " << path;

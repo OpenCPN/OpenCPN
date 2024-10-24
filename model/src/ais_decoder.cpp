@@ -83,6 +83,7 @@ Select *pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 wxString AISTargetNameFileName;
+bool isBuoyMmsi(const int);
 extern Multiplexer *g_pMUX;
 
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
@@ -538,8 +539,11 @@ bool AisDecoder::HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     // Populate the target_data
     pTargetData->MMSI = mmsi;
     pTargetData->MID = MessageID;
-    pTargetData->MMSI = mmsi;
-    pTargetData->Class = AIS_CLASS_B;
+    if (!isBuoyMmsi(mmsi))
+      pTargetData->Class = AIS_CLASS_B;
+    else
+      pTargetData->Class = AIS_BUOY;
+
     pTargetData->NavStatus = (ais_nav_status)NavStat;
     if (!N2kIsNA(SOG)) pTargetData->SOG = MS2KNOTS(SOG);
     if (!N2kIsNA(COG)) pTargetData->COG = GeodesicRadToDeg(COG);
@@ -1250,9 +1254,15 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
       if (aisclass == _T("A")) {
         if (!pTargetData->b_isDSCtarget) pTargetData->Class = AIS_CLASS_A;
       } else if (aisclass == _T("B")) {
-        if (!pTargetData->b_isDSCtarget) pTargetData->Class = AIS_CLASS_B;
-        pTargetData->NavStatus =
-            UNDEFINED;  // Class B targets have no status.  Enforce this...
+        if (!pTargetData->b_isDSCtarget) {
+          if (!isBuoyMmsi(pTargetData->MMSI))
+            pTargetData->Class = AIS_CLASS_B;
+          else
+            pTargetData->Class = AIS_BUOY;
+
+          // Class B targets have no status.  Enforce this...
+          pTargetData->NavStatus = UNDEFINED;
+        }
       } else if (aisclass == _T("BASE")) {
         pTargetData->Class = AIS_BASE;
       } else if (aisclass == _T("ATON")) {
@@ -2887,8 +2897,12 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
 
       ptd->m_utc_sec = bstr->GetInt(134, 6);
 
-      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_B;
-
+      if (!ptd->b_isDSCtarget) {
+        if (!isBuoyMmsi(ptd->MMSI))
+          ptd->Class = AIS_CLASS_B;
+        else
+          ptd->Class = AIS_BUOY;
+      }
       parse_result = true;  // so far so good
       b_posn_report = true;
 
@@ -2936,7 +2950,13 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       ptd->DimC = bstr->GetInt(290, 6);
       ptd->DimD = bstr->GetInt(296, 6);
 
-      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_B;
+      if (!ptd->b_isDSCtarget) {
+        // Although outdated, message 19 is used by many "ATON" for net buoys
+        if (!isBuoyMmsi(ptd->MMSI))
+          ptd->Class = AIS_CLASS_B;
+        else
+          ptd->Class = AIS_BUOY;
+      }
       parse_result = true;  // so far so good
       b_posn_report = true;
 
@@ -4651,4 +4671,18 @@ int AisMeteoNewMmsi(int orig_mmsi, int m_lat, int m_lon, int lon_bits = 0,
     new_mmsi = nextMeteommsi;
   }
   return new_mmsi;
+}
+
+bool isBuoyMmsi(const int msi) {
+  // IMO standard is not yet(?) implemented for (net)buoys
+  // This adaption, based on real-world outcomes, is used instead
+  // Consider any not valid MMSI number for a class B target (message 18 or 19)
+  // to be a "net buoy"
+  int mid = msi / 1000000;
+  if ((mid > 200 && mid < 800) || mid >= 970) {
+    return false;
+  } else {
+    return true;
+  }
+  return false;
 }
