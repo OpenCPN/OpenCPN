@@ -33,7 +33,7 @@ public:
   SharedTilePtr Pop() {
     std::unique_lock lock(m_mutex);
     m_cv.wait(lock, [&] { return m_tile_list.size() > 0; });
-    auto  tile = m_tile_list.at(0);
+    auto tile = m_tile_list.at(0);
     m_tile_list.erase(m_tile_list.cbegin());
     return tile;
   }

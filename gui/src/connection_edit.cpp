@@ -368,8 +368,8 @@ void ConnectionEditDialog::Init() {
 
   bSizer16->Add(m_rbNetProtoUDP, 0, wxALL, 5);
 
-  //Optimize for Portrait mode handheld devices
-  if (displaySize.x < displaySize.y){
+  // Optimize for Portrait mode handheld devices
+  if (displaySize.x < displaySize.y) {
     wxBoxSizer* bSizer16a;
     bSizer16a = new wxBoxSizer(wxHORIZONTAL);
     gSizerNetProps->AddSpacer(1);
@@ -386,8 +386,7 @@ void ConnectionEditDialog::Init() {
                           wxDefaultPosition, wxDefaultSize, 0);
     m_rbNetProtoSignalK->Enable(TRUE);
     bSizer16a->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
-  }
-  else {
+  } else {
     m_rbNetProtoGPSD = new wxRadioButton(m_scrolledwin, wxID_ANY, _("GPSD"),
                                          wxDefaultPosition, wxDefaultSize, 0);
     m_rbNetProtoGPSD->Enable(TRUE);
