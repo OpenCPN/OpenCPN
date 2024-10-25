@@ -294,7 +294,7 @@ void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
 
 void CommDriverN0183Net::OpenNetworkTCP(unsigned int addr) {
   int isServer = ((addr == INADDR_ANY) ? 1 : 0);
-  wxLogMessage(wxString::Format(_T("Opening TCP Server %d"), isServer));
+  wxLogMessage("Opening TCP Server %d", isServer);
 
   if (isServer) {
     SetSockServer(new wxSocketServer(GetAddr(), wxSOCKET_REUSEADDR));
@@ -348,8 +348,8 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
         if (tcp_socket) tcp_socket->Close();
 
         int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
-        wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.",
-                                      n_reconnect_delay));
+        wxLogMessage("Reconnection scheduled in %d seconds.",
+                     n_reconnect_delay);
         GetSocketTimer()->Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
 
         //  Stop DATA watchdog, will be restarted on successful connection.
@@ -364,7 +364,7 @@ void CommDriverN0183Net::OnTimerSocket() {
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
-      wxLogDebug(" Attempting reconnection...");
+      wxLogDebug("Attempting reconnection...");
       SetBrxConnectEvent(false);
       //  Stop DATA watchdog, may be restarted on successful connection.
       GetSocketThreadWatchdogTimer()->Stop();
@@ -387,8 +387,7 @@ void CommDriverN0183Net::HandleResume() {
 
     // schedule reconnect attempt
     int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
-    wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.",
-                                  n_reconnect_delay));
+    wxLogMessage("Reconnection scheduled in %d seconds.", n_reconnect_delay);
 
     GetSocketTimer()->Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
   }
@@ -509,8 +508,8 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     case wxSOCKET_LOST: {
       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
         if (GetBrxConnectEvent())
-          wxLogMessage(wxString::Format(
-              _T("NetworkDataStream connection lost: %s"), GetPort().c_str()));
+          wxLogMessage("NetworkDataStream connection lost: %s",
+                       GetPort().c_str());
         if (GetSockServer()) {
           GetSock()->Destroy();
           SetSock(NULL);
@@ -546,9 +545,8 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
         GetSock()->Write(cmd, strlen(cmd));
       } else if (GetProtocol() == TCP) {
-        wxLogMessage(wxString::Format(
-            _T("TCP NetworkDataStream connection established: %s"),
-            GetPort().c_str()));
+        wxLogMessage("TCP NetworkDataStream connection established: %s",
+                     GetPort().c_str());
 
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
         if (GetPortType() != DS_TYPE_OUTPUT) {
@@ -649,8 +647,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 }
 
 void CommDriverN0183Net::Close() {
-  wxLogMessage(wxString::Format(_T("Closing NMEA NetworkDataStream %s"),
-                                GetNetPort().c_str()));
+  wxLogMessage("Closing NMEA NetworkDataStream %s", GetNetPort().c_str());
   //    Kill off the TCP Socket if alive
   if (m_sock) {
     if (m_is_multicast)
