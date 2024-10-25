@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n0183_net.h -- network nmea0183 driver
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 David Register                                     *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file comm_drv_n0183_net.cpp Implement comm_drv_n0183_net.h. */
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -137,8 +134,6 @@ EVT_SOCKET(DS_SERVERSOCKET_ID, CommDriverN0183Net::OnServerSocketEvent)
 EVT_TIMER(TIMER_SOCKET + 1, CommDriverN0183Net::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
 
-// CommDriverN0183Net::CommDriverN0183Net() : CommDriverN0183() {}
-
 CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
                                        DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
@@ -251,7 +246,7 @@ void CommDriverN0183Net::Open(void) {
 void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
   if (GetPortType() != DS_TYPE_OUTPUT) {
     // We need a local (bindable) address to create the Datagram receive socket
-    // Set up the receive socket
+    // Set up the reception socket
     wxIPV4address conn_addr;
     conn_addr.Service(GetNetPort());
     conn_addr.AnyAddress();
@@ -477,10 +472,9 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           else
             m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
-          size_t nmea_start = nmea_line.find_last_of(
-              "$!");  // detect the potential start of a NMEA string, skipping
-                      // preceding chars that may look like the start of a
-                      // string.
+          // detect the potential start of a NMEA string, skipping
+          // preceding chars that may look like the start of a string.
+          size_t nmea_start = nmea_line.find_last_of("$!");
           if (nmea_start != wxString::npos) {
             nmea_line = nmea_line.substr(nmea_start);
             nmea_line += "\r\n";  // Add cr/lf, possibly superfluous
@@ -523,8 +517,8 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           break;
         }
         wxDateTime now = wxDateTime::Now();
-        wxTimeSpan since_connect(
-            0, 0, 10);  // ten secs assumed, if connect time is uninitialized
+        wxTimeSpan since_connect(0, 0, 10);
+        // ten secs assumed, if connect time is uninitialized
         if (GetConnectTime().IsValid()) since_connect = now - GetConnectTime();
 
         int retry_time = 5000;  // default
@@ -537,8 +531,9 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           retry_time = 10000;  // 10 secs
 
         GetSocketThreadWatchdogTimer()->Stop();
-        GetSocketTimer()->Start(
-            retry_time, wxTIMER_ONE_SHOT);  // Schedule a re-connect attempt
+
+        // Schedule a re-connect attempt
+        GetSocketTimer()->Start(retry_time, wxTIMER_ONE_SHOT);
       }
       break;
     }
@@ -557,7 +552,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
 
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
         if (GetPortType() != DS_TYPE_OUTPUT) {
-          /// start the DATA watchdog only if NODATA Reconnect is desired
+          // start the DATA watchdog only if NODATA Reconnect is desired
           if (GetParams().NoDataReconnect)
             GetSocketThreadWatchdogTimer()->Start(1000);
         }
@@ -596,10 +591,8 @@ void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
         GetSock()->SetNotify(notify_flags);
         GetSock()->Notify(true);
       }
-
       break;
     }
-
     default:
       break;
   }
@@ -641,8 +634,9 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
       if (udp_socket && udp_socket->IsOk()) {
         udp_socket->SendTo(GetAddr(), payload.mb_str(), payload.size());
         if (udp_socket->Error()) ret = false;
-      } else
+      } else {
         ret = false;
+      }
       break;
 
     case GPSD:
