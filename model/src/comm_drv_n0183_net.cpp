@@ -62,29 +62,12 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
+#include "model/ocpn_utils.h"
 #include "model/sys_events.h"
 
 #include "observable.h"
 
 #define N_DOG_TIMEOUT 8
-
-// FIXME (dave)  This should be in some more "common" space, but where?
-bool CheckSumCheck(const std::string& sentence) {
-  size_t check_start = sentence.find('*');
-  if (check_start == wxString::npos || check_start > sentence.size() - 3)
-    return false;  // * not found, or it didn't have 2 characters following it.
-
-  std::string check_str = sentence.substr(check_start + 1, 2);
-  unsigned long checksum = strtol(check_str.c_str(), 0, 16);
-  if (checksum == 0L && check_str != "00") return false;
-
-  unsigned char calculated_checksum = 0;
-  for (std::string::const_iterator i = sentence.begin() + 1;
-       i != sentence.end() && *i != '*'; ++i)
-    calculated_checksum ^= static_cast<unsigned char>(*i);
-
-  return calculated_checksum == checksum;
-}
 
 class MrqContainer {
 public:
@@ -477,7 +460,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           if (nmea_start != wxString::npos) {
             nmea_line = nmea_line.substr(nmea_start);
             nmea_line += "\r\n";  // Add cr/lf, possibly superfluous
-            if (ChecksumOK(nmea_line)) {
+            if (ocpn::N0183CheckSumOk(nmea_line)) {
               CommDriverN0183NetEvent Nevent(wxEVT_COMMDRIVER_N0183_NET, 0);
               if (nmea_line.size()) {
                 //    Copy the message into a vector for tranmittal upstream
@@ -697,5 +680,5 @@ bool CommDriverN0183Net::SetOutputSocketOptions(wxSocketBase* tsock) {
 bool CommDriverN0183Net::ChecksumOK(const std::string& sentence) {
   if (!m_bchecksumCheck) return true;
 
-  return CheckSumCheck(sentence);
+  return ocpn::N0183CheckSumOk(sentence);
 }
