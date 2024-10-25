@@ -1622,14 +1622,19 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               mHDx_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
-          if (!std::isnan(m_NMEA0183.Vhw.Knots)) {
-            if (mPriSTW >= 3) {
-              mPriSTW = 3;
+          if (mPriSTW >= 3) {
+            double stw_kn = NAN;
+            if (!std::isnan(m_NMEA0183.Vhw.Knots))
+              stw_kn = m_NMEA0183.Vhw.Knots;
+            else if (!std::isnan(m_NMEA0183.Vhw.KilometersPerHour))
+              stw_kn = m_NMEA0183.Vhw.KilometersPerHour * 0.53995;
+
+            if (!std::isnan(stw_kn)) {
               SendSentenceToAllInstruments(
-                  OCPN_DBP_STC_STW,
-                  toUsrSpeed_Plugin(m_NMEA0183.Vhw.Knots, g_iDashSpeedUnit),
+                  OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_kn, g_iDashSpeedUnit),
                   getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
               mSTW_Watchdog = gps_watchdog_timeout_ticks;
+              mPriSTW = 3;
             }
           }
         }
