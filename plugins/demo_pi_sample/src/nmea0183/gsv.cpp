@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,94 +39,86 @@
 ** You can use it any way you like.
 */
 
-
-GSV::GSV()
-{
-   Mnemonic = _T("GSV");
-   Empty();
+GSV::GSV() {
+  Mnemonic = _T("GSV");
+  Empty();
 }
 
-GSV::~GSV()
-{
-   Mnemonic.Empty();
-   Empty();
+GSV::~GSV() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void GSV::Empty( void )
-{
-   MessageNumber = 0;
-   SatsInView = 0;
+void GSV::Empty(void) {
+  MessageNumber = 0;
+  SatsInView = 0;
 }
 
-bool GSV::Parse( const SENTENCE& sentence )
-{
-/*
-  $GPGSV,2,1,08,01,40,083,46,02,17,308,41,12,07,344,39,14,22,228,45*75
+bool GSV::Parse(const SENTENCE& sentence) {
+  /*
+    $GPGSV,2,1,08,01,40,083,46,02,17,308,41,12,07,344,39,14,22,228,45*75
 
-Where:
-      GSV          Satellites in view
-      2            Number of sentences for full data
-      1            sentence 1 of 2
-      08           Number of satellites in view
+  Where:
+        GSV          Satellites in view
+        2            Number of sentences for full data
+        1            sentence 1 of 2
+        08           Number of satellites in view
 
-      01           Satellite PRN number
-      40           Elevation, degrees
-      083          Azimuth, degrees
-      46           SNR - higher is better
-           for up to 4 satellites per sentence
-      *75          the checksum data, always begins with *
-*/
+        01           Satellite PRN number
+        40           Elevation, degrees
+        083          Azimuth, degrees
+        46           SNR - higher is better
+             for up to 4 satellites per sentence
+        *75          the checksum data, always begins with *
+  */
 
+  /*
+  ** GSV - GPS satellite Status
+  **
+  **        1 2 3 4 5 6 7         n
+  **        | | | | | | |         |
+  ** $--GSV,x,x,x,x,x,x,x.........*hh<CR><LF>
+  **
+  ** Field Number:
+  **  1) Number of sentences for full data
+  **  2) sentence number
+  **  3) Number of satellites in view
+  **  4) Satellite PRN number
+  **  5) Elevation, degrees
+  **  6) Azimuth, degrees
+  **  7) SNR - higher is better
+  **  Fields 4-7 may repeat up to 4 times per sentence
+  **  n) Checksum
+  */
 
-   /*
-   ** GSV - GPS satellite Status
-   **
-   **        1 2 3 4 5 6 7         n
-   **        | | | | | | |         |
-   ** $--GSV,x,x,x,x,x,x,x.........*hh<CR><LF>
-   **
-   ** Field Number:
-   **  1) Number of sentences for full data
-   **  2) sentence number
-   **  3) Number of satellites in view
-   **  4) Satellite PRN number
-   **  5) Elevation, degrees
-   **  6) Azimuth, degrees
-   **  7) SNR - higher is better
-   **  Fields 4-7 may repeat up to 4 times per sentence
-   **  n) Checksum
-   */
+  /*
+  ** Ignore the checksum...
+  */
 
-   /*
-   ** Ignore the checksum...
-   */
+  MessageNumber = sentence.Integer(2);
+  SatsInView = sentence.Integer(3);
 
-   MessageNumber = sentence.Integer( 2 );
-   SatsInView = sentence.Integer( 3 );
-
-   return( TRUE );
+  return (TRUE);
 }
 
-bool GSV::Write( SENTENCE& sentence )
-{
-   /*
-   ** Let the parent do its thing
-   */
+bool GSV::Write(SENTENCE& sentence) {
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += 1;
-   sentence += 1;
-   sentence += SatsInView;
+  sentence += 1;
+  sentence += 1;
+  sentence += SatsInView;
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const GSV& GSV::operator = ( const GSV& source )
-{
-      SatsInView = source.SatsInView;
+const GSV& GSV::operator=(const GSV& source) {
+  SatsInView = source.SatsInView;
 
-   return( *this );
+  return (*this);
 }
