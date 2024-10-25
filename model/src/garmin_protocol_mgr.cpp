@@ -886,7 +886,6 @@ void *GARMIN_USB_Thread::Entry() {
 
       // and send message.
       m_send_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
-
     }
 
     if (iresp.gusb_pkt.pkt_id[0] == GUSB_RESPONSE_PVT)  // PVT Data Record

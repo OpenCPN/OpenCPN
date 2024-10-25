@@ -629,7 +629,7 @@ static void onBellsFinishedCB(void *ptr) {
   }
 }
 
-static void OnDriverMsg(const ObservedEvt& ev) {
+static void OnDriverMsg(const ObservedEvt &ev) {
   auto msg = ev.GetString().ToStdString();
   OCPNMessageBox(GetTopWindow(), msg, _("Communication Error"), 0, 15);
 }
@@ -800,7 +800,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_routes_update_listener.Init(g_pRouteMan->on_routes_update,
                                 [&](wxCommandEvent) { Refresh(); });
   m_evt_drv_msg_listener.Init(CommDriverRegistry::GetInstance().evt_driver_msg,
-                              [&](ObservedEvt& ev) { OnDriverMsg(ev); });
+                              [&](ObservedEvt &ev) { OnDriverMsg(ev); });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS

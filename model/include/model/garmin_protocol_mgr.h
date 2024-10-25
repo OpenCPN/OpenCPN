@@ -177,7 +177,7 @@ typedef struct {
 
 enum { rs_fromintr, rs_frombulk };
 
-using SendMsgFunc = std::function<void(const std::vector<unsigned char>&)>;
+using SendMsgFunc = std::function<void(const std::vector<unsigned char> &)>;
 
 #define TIMER_GARMIN1 7005
 
@@ -200,7 +200,7 @@ public:
 
   bool FindGarminDeviceInterface();
 
-  SendMsgFunc  m_send_msg_func;
+  SendMsgFunc m_send_msg_func;
   void *m_pparent;
 
   int m_max_tx_size;
@@ -250,8 +250,8 @@ public:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_Serial_Thread : public wxThread {
 public:
-  GARMIN_Serial_Thread(GarminProtocolHandler *parent,
-                       SendMsgFunc send_msg_func, wxString port);
+  GARMIN_Serial_Thread(GarminProtocolHandler *parent, SendMsgFunc send_msg_func,
+                       wxString port);
   ~GARMIN_Serial_Thread(void);
   void *Entry();
   void string(wxCharBuffer mb_str);
@@ -275,7 +275,7 @@ private:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_USB_Thread : public wxThread {
 public:
-  GARMIN_USB_Thread(GarminProtocolHandler *parent, SendMsgFunc  send_msg_func,
+  GARMIN_USB_Thread(GarminProtocolHandler *parent, SendMsgFunc send_msg_func,
                     unsigned int device_handle, size_t max_tx_size);
   ~GARMIN_USB_Thread(void);
   void *Entry();
