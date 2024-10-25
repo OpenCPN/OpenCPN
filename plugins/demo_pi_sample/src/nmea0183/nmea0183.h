@@ -41,6 +41,8 @@
 ** You can use it any way you like.
 */
 
+#include   <functional>
+
 //    Include wxWindows stuff
 //#include "wx/wxprec.h"
 
@@ -62,6 +64,15 @@
 
 #define CARRIAGE_RETURN 0x0D
 #define LINE_FEED       0x0A
+
+class NmeaContext {
+public:
+  std::function<wxString()> get_talker_id;
+  std::function<int()> get_apb_precision;
+  NmeaContext()
+      : get_talker_id([]() { return ""; }),
+        get_apb_precision( []() { return 3; }) {}
+};
 
 
 typedef enum _NMEA0183_BOOLEAN
