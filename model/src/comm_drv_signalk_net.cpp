@@ -218,7 +218,7 @@ wxDEFINE_EVENT(wxEVT_COMMDRIVER_SIGNALK_NET, CommDriverSignalKNetEvent);
 
 CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
                                            DriverListener& listener)
-    : CommDriverSignalK(((ConnectionParams*)params)->GetStrippedDSPort()),
+    : CommDriverSignalK(params->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
       m_params(*params),
       m_listener(listener) {

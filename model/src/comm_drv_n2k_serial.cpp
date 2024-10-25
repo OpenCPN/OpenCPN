@@ -207,7 +207,7 @@ wxDEFINE_EVENT(wxEVT_COMMDRIVER_N2K_SERIAL, CommDriverN2KSerialEvent);
 
 CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
                                          DriverListener& listener)
-    : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
+    : CommDriverN2K(params->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
       m_bok(false),
       m_portstring(params->GetDSPort()),

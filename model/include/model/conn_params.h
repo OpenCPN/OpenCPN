@@ -122,8 +122,8 @@ public:
   NavAddr::Bus GetLastCommProtocol();
   wxString GetPortStr() const { return Port; }
   void SetPortStr(wxString str) { Port = str; }
-  std::string GetStrippedDSPort();
-  NavAddr::Bus GetCommProtocol();
+  std::string GetStrippedDSPort() const;
+  NavAddr::Bus GetCommProtocol() const;
 
   bool SentencePassesFilter(const wxString &sentence,
                             FilterDirection direction) const;

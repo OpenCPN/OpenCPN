@@ -173,8 +173,7 @@ private:
 
 CommDriverN0183AndroidBT::CommDriverN0183AndroidBT(
     const ConnectionParams* params, DriverListener& listener)
-    : CommDriverN0183(NavAddr::Bus::N0183,
-                      ((ConnectionParams*)params)->GetStrippedDSPort()),
+    : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_params(*params),

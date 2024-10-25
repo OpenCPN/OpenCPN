@@ -141,8 +141,7 @@ END_EVENT_TABLE()
 
 CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
                                        DriverListener& listener)
-    : CommDriverN0183(NavAddr::Bus::N0183,
-                      ((ConnectionParams*)params)->GetStrippedDSPort()),
+    : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
       m_net_port(wxString::Format("%i", params->NetworkPort)),

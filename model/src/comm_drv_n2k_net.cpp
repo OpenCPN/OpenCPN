@@ -184,7 +184,7 @@ END_EVENT_TABLE()
 
 CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
                                    DriverListener& listener)
-    : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
+    : CommDriverN2K(params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
       m_net_port(wxString::Format("%i", params->NetworkPort)),
