@@ -30,7 +30,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled header
+#endif
 
 #include <wx/datetime.h>
 #include <wx/string.h>
@@ -90,8 +90,6 @@ private:
   void OpenNetworkUdp(unsigned int addr);
   void HandleN0183Msg(CommDriverN0183NetEvent& event);
   bool SendSentenceNetwork(const wxString& payload);
-  bool SetOutputSocketOptions(wxSocketBase* tsock);
-  bool ChecksumOK(const std::string& sentence);
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
@@ -109,7 +107,6 @@ private:
   dsPortType m_io_select;
   wxDateTime m_connect_time;
   bool m_rx_connect_event;
-  bool m_checksum_check;
 
   wxTimer m_socket_timer;
   wxTimer m_socketread_watchdog_timer;
