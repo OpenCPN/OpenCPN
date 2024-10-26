@@ -20,12 +20,6 @@
 
 /** \file comm_drv_n0183_net.cpp Implement comm_drv_n0183_net.h. */
 
-#ifdef __MINGW32__
-#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
-#include <ws2tcpip.h>
-#include <windows.h>
-#endif
-
 #ifdef __MSVC__
 #include "winsock2.h"
 #include <wx/msw/winundef.h>
@@ -36,26 +30,21 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
-#include <wx/tokenzr.h>
-#include <wx/datetime.h>
-
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
+#include <ctime>
+#include <vector>
 
 #ifndef __WXMSW__
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 #endif
 
-#include <vector>
+#include <wx/datetime.h>
 #include <wx/socket.h>
 #include <wx/log.h>
 #include <wx/memory.h>
 #include <wx/chartype.h>
-#include <wx/wx.h>
 #include <wx/sckaddr.h>
 
 #include "model/comm_drv_n0183_net.h"
@@ -85,19 +74,20 @@ wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_NET, CommDriverN0183NetEvent);
 
 class CommDriverN0183NetEvent : public wxEvent {
 public:
-  CommDriverN0183NetEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
+  explicit CommDriverN0183NetEvent(wxEventType commandType = wxEVT_NULL,
+                                   int id = 0)
       : wxEvent(id, commandType) {};
-  ~CommDriverN0183NetEvent() {};
+  ~CommDriverN0183NetEvent() override  = default;
 
   // accessors
   void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
+    m_payload = std::move(data);
   }
   std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
-  wxEvent* Clone() const {
-    CommDriverN0183NetEvent* newevent = new CommDriverN0183NetEvent(*this);
+  [[nodiscard]] wxEvent* Clone() const override {
+    auto* newevent = new CommDriverN0183NetEvent(*this);
     newevent->m_payload = this->m_payload;
     return newevent;
   };
@@ -106,6 +96,28 @@ private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
+static bool SetOutputSocketOptions(wxSocketBase* tsock) {
+  int ret;
+
+  // Disable nagle algorithm on outgoing connection
+  // Doing this here rather than after the accept() is
+  // pointless  on platforms where TCP_NODELAY is
+  // not inherited.  However, none of OpenCPN's currently
+  // supported platforms fall into that category.
+
+  int nagleDisable = 1;
+  ret = tsock->SetOption(IPPROTO_TCP, TCP_NODELAY, &nagleDisable,
+                         sizeof(nagleDisable));
+
+  //  Drastically reduce the size of the socket output buffer
+  //  so that when client goes away without properly closing, the stream will
+  //  quickly fill the output buffer, and thus fail the write() call
+  //  within a few seconds.
+  unsigned long outbuf_size = 1024;  // Smallest allowable value on Linux
+  return (tsock->SetOption(SOL_SOCKET, SO_SNDBUF, &outbuf_size,
+                           sizeof(outbuf_size)) &&
+          ret);
+}
 //========================================================================
 /*    commdriverN0183Net implementation
  * */
@@ -124,15 +136,16 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_listener(listener),
       m_net_port(wxString::Format("%i", params->NetworkPort)),
       m_net_protocol(params->NetProtocol),
-      m_sock(NULL),
-      m_tsock(NULL),
-      m_socket_server(NULL),
+      m_sock(nullptr),
+      m_tsock(nullptr),
+      m_socket_server(nullptr),
       m_is_multicast(false),
       m_txenter(0),
+      m_dog_value(0),
       m_portstring(params->GetDSPort()),
       m_io_select(params->IOSelect),
+      m_rx_connect_event(false),
       m_ok(false)
-
 {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
@@ -193,15 +206,10 @@ void CommDriverN0183Net::HandleN0183Msg(CommDriverN0183NetEvent& event) {
   }
 }
 
-void CommDriverN0183Net::Open(void) {
+void CommDriverN0183Net::Open() {
 #ifdef __UNIX__
-#if wxCHECK_VERSION(3, 0, 0)
   in_addr_t addr =
       ((struct sockaddr_in*)m_addr.GetAddressData())->sin_addr.s_addr;
-#else
-  in_addr_t addr =
-      ((struct sockaddr_in*)GetAddr().GetAddress()->m_addr)->sin_addr.s_addr;
-#endif
 #else
   unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
 #endif
@@ -265,7 +273,7 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
     // sentences read back that have just been transmitted
     if ((!m_is_multicast) && (m_addr.IPAddress().EndsWith("255"))) {
       int broadcastEnable = 1;
-      bool bam = m_tsock->SetOption(
+      m_tsock->SetOption(
           SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
     }
   }
@@ -314,19 +322,19 @@ void CommDriverN0183Net::OpenNetworkGpsd() {
   GetSock()->Notify(TRUE);
   GetSock()->SetTimeout(1);  // Short timeout
 
-  wxSocketClient* tcp_socket = static_cast<wxSocketClient*>(GetSock());
+  auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   tcp_socket->Connect(m_addr, false);
   m_rx_connect_event = false;
 }
 
-void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
+void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent&) {
   m_dog_value--;
 
   if (m_dog_value <= 0) {  // No receive in n seconds
     if (GetParams().NoDataReconnect) {
       // Reconnect on NO DATA is true, so try to reconnect now.
       if (m_net_protocol == TCP) {
-        wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+        auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
         if (tcp_socket) tcp_socket->Close();
 
         int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
@@ -343,7 +351,7 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
 
 void CommDriverN0183Net::OnTimerSocket() {
   //  Attempt a connection
-  wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+  auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
       wxLogDebug("Attempting reconnection...");
@@ -361,7 +369,7 @@ void CommDriverN0183Net::OnTimerSocket() {
 
 void CommDriverN0183Net::HandleResume() {
   //  Attempt a stop and restart of connection
-  wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+  auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     m_socketread_watchdog_timer.Stop();
 
@@ -390,7 +398,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
   switch (event.GetSocketEvent()) {
     case wxSOCKET_INPUT:  // from gpsd Daemon
     {
-      // TODO determine if the follwing SetFlags needs to be done at every
+      // TODO determine if the following SetFlags needs to be done at every
       // socket event or only once when socket is created, it it needs to be
       // done at all!
       // m_sock->SetFlags(wxSOCKET_WAITALL | wxSOCKET_BLOCK);      // was
@@ -408,7 +416,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
       if (!event.GetSocket()->Error()) {
         size_t count = event.GetSocket()->LastCount();
         if (count) {
-          if (1 /*FIXME !g_benableUDPNullHeader*/) {
+          if (true /*FIXME !g_enableUDPNullHeader*/) {
             data[count] = 0;
             m_sock_buffer += (&data.front());
           } else {
@@ -426,7 +434,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         int nmea_tail = 2;
         size_t nmea_end = m_sock_buffer.find_first_of(
             "*\r\n");  // detect the potential end of a NMEA string by finding
-                       // the checkum marker or EOL
+                       // the checksum marker or EOL
 
         if (nmea_end ==
             wxString::npos)  // No termination characters: continue reading
@@ -461,8 +469,8 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
             nmea_line += "\r\n";  // Add cr/lf, possibly superfluous
             if (ocpn::N0183CheckSumOk(nmea_line)) {
               CommDriverN0183NetEvent Nevent(wxEVT_COMMDRIVER_N0183_NET, 0);
-              if (nmea_line.size()) {
-                //    Copy the message into a vector for tranmittal upstream
+              if (!nmea_line.empty()) {
+                //    Copy the message into a vector for transmittal upstream
                 auto buffer = std::make_shared<std::vector<unsigned char>>();
                 std::vector<unsigned char>* vec = buffer.get();
                 std::copy(nmea_line.begin(), nmea_line.end(),
@@ -477,7 +485,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           done = true;
       }
 
-      // Prevent non-nmea junk from consuming to much memory by limiting
+      // Prevent non-nmea junk from consuming too much memory by limiting
       // carry-over buffer size.
       if (m_sock_buffer.size() > RD_BUF_SIZE)
         m_sock_buffer =
@@ -506,7 +514,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
 
         //  If the socket has never connected, and it is a short interval since
         //  the connect request then stretch the time a bit.  This happens on
-        //  Windows if there is no dafault IP on any interface
+        //  Windows if there is no default IP on any interface
 
         if (!m_rx_connect_event && (since_connect.GetSeconds() < 5))
           retry_time = 10000;  // 10 secs
@@ -524,7 +532,8 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         //      Sign up for watcher mode, Cooked NMEA
         //      Note that SIRF devices will be converted by gpsd into
         //      pseudo-NMEA
-        char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
+
+        char cmd[] = R"--(?WATCH={"class":"WATCH", "nmea":true})--";
         GetSock()->Write(cmd, strlen(cmd));
       } else if (m_net_protocol == TCP) {
         wxLogMessage("TCP NetworkDataStream connection established: %s",
@@ -595,8 +604,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
             GetSock()->Destroy();
             m_sock = nullptr;
           } else {
-            wxSocketClient* tcp_socket =
-                dynamic_cast<wxSocketClient*>(GetSock());
+            auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
             if (tcp_socket) tcp_socket->Close();
             if (!m_socket_timer.IsRunning())
               m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);
@@ -651,33 +659,4 @@ void CommDriverN0183Net::Close() {
 
   m_socket_timer.Stop();
   m_socketread_watchdog_timer.Stop();
-}
-
-bool CommDriverN0183Net::SetOutputSocketOptions(wxSocketBase* tsock) {
-  int ret;
-
-  // Disable nagle algorithm on outgoing connection
-  // Doing this here rather than after the accept() is
-  // pointless  on platforms where TCP_NODELAY is
-  // not inherited.  However, none of OpenCPN's currently
-  // supported platforms fall into that category.
-
-  int nagleDisable = 1;
-  ret = tsock->SetOption(IPPROTO_TCP, TCP_NODELAY, &nagleDisable,
-                         sizeof(nagleDisable));
-
-  //  Drastically reduce the size of the socket output buffer
-  //  so that when client goes away without properly closing, the stream will
-  //  quickly fill the output buffer, and thus fail the write() call
-  //  within a few seconds.
-  unsigned long outbuf_size = 1024;  // Smallest allowable value on Linux
-  return (tsock->SetOption(SOL_SOCKET, SO_SNDBUF, &outbuf_size,
-                           sizeof(outbuf_size)) &&
-          ret);
-}
-
-bool CommDriverN0183Net::ChecksumOK(const std::string& sentence) {
-  if (!m_checksum_check) return true;
-
-  return ocpn::N0183CheckSumOk(sentence);
 }
