@@ -20,8 +20,8 @@
 
 /** \file comm_drv_n0183_net.h  NMEA0183 over IP driver. */
 
-#ifndef _COMMDRIVERN0183NET_H
-#define _COMMDRIVERN0183NET_H
+#ifndef COMMDRIVERN0183NET_H_
+#define COMMDRIVERN0183NET_H_
 
 #include <memory>
 #include <string>
@@ -64,7 +64,7 @@ class CommDriverN0183Net : public CommDriverN0183, public wxEvtHandler {
 public:
   CommDriverN0183Net(const ConnectionParams* params, DriverListener& listener);
 
-  virtual ~CommDriverN0183Net();
+  ~CommDriverN0183Net() override;
 
   void Open();
   void Close();
@@ -81,45 +81,17 @@ private:
 
   void HandleResume();
   void OnServerSocketEvent(wxSocketEvent& event);  // The listener
-  void OnTimerSocket(wxTimerEvent& event) { OnTimerSocket(); }
+  void OnTimerSocket(wxTimerEvent&) { OnTimerSocket(); }
   void OnTimerSocket();
   void OnSocketEvent(wxSocketEvent& event);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
-  void OpenNetworkGPSD();
-  void OpenNetworkTCP(unsigned int addr);
-  void OpenNetworkUDP(unsigned int addr);
-  void handle_N0183_MSG(CommDriverN0183NetEvent& event);
+  void OpenNetworkGpsd();
+  void OpenNetworkTcp(unsigned int addr);
+  void OpenNetworkUdp(unsigned int addr);
+  void HandleN0183Msg(CommDriverN0183NetEvent& event);
   bool SendSentenceNetwork(const wxString& payload);
   bool SetOutputSocketOptions(wxSocketBase* tsock);
-
-  wxString GetNetPort() const { return m_net_port; }
-  wxIPV4address GetAddr() const { return m_addr; }
-  wxTimer* GetSocketThreadWatchdogTimer() {
-    return &m_socketread_watchdog_timer;
-  }
-  wxTimer* GetSocketTimer() { return &m_socket_timer; }
-  void SetSock(wxSocketBase* sock) { m_sock = sock; }
-  void SetTSock(wxSocketBase* sock) { m_tsock = sock; }
-  wxSocketBase* GetTSock() const { return m_tsock; }
-  void SetSockServer(wxSocketServer* sock) { m_socket_server = sock; }
-  wxSocketServer* GetSockServer() const { return m_socket_server; }
-  void SetMulticast(bool multicast) { m_is_multicast = multicast; }
-  bool GetMulticast() const { return m_is_multicast; }
-
-  NetworkProtocol GetProtocol() const { return m_net_protocol; }
-  void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
-  bool GetBrxConnectEvent() const { return m_brx_connect_event; }
-
-  void SetConnectTime(wxDateTime time) { m_connect_time = time; }
-  wxDateTime GetConnectTime() const { return m_connect_time; }
-
-  dsPortType GetPortType() const { return m_io_select; }
-  wxString GetPort() const { return m_portstring; }
-
-  ConnectionType GetConnectionType() const { return m_connection_type; }
-
   bool ChecksumOK(const std::string& sentence);
-  void SetOk(bool ok) { m_bok = ok; };
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
@@ -136,18 +108,17 @@ private:
   wxString m_portstring;
   dsPortType m_io_select;
   wxDateTime m_connect_time;
-  bool m_brx_connect_event;
-  bool m_bchecksumCheck;
-  ConnectionType m_connection_type;
+  bool m_rx_connect_event;
+  bool m_checksum_check;
 
   wxTimer m_socket_timer;
   wxTimer m_socketread_watchdog_timer;
 
-  bool m_bok;
+  bool m_ok;
 
   ObsListener resume_listener;
 
   DECLARE_EVENT_TABLE()
 };
 
-#endif  // guard
+#endif  // COMMDRIVERN0183NET_H_
