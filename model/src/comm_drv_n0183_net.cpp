@@ -33,7 +33,7 @@
 #endif
 
 #include <ctime>
-#include <vector>
+#include <deque>
 
 #ifndef __WXMSW__
 #include <arpa/inet.h>
@@ -116,8 +116,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_io_select(params->IOSelect),
       m_rx_connect_event(false),
-      m_ok(false)
-{
+      m_ok(false) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
 
@@ -158,8 +157,8 @@ void CommDriverN0183Net::HandleN0183Msg(const std::string& sentence) {
 
     // notify message listener and also "ALL" N0183 messages, to support plugin
     // API using original talker id
-    auto msg = std::make_shared<const Nmea0183Msg>(identifier, sentence,
-                                                   GetAddress());
+    auto msg =
+        std::make_shared<const Nmea0183Msg>(identifier, sentence, GetAddress());
     auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
 
     if (m_params.SentencePassesFilter(sentence, FILTER_INPUT))
@@ -235,8 +234,8 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
     // sentences read back that have just been transmitted
     if ((!m_is_multicast) && (m_addr.IPAddress().EndsWith("255"))) {
       int broadcastEnable = 1;
-      m_tsock->SetOption(
-          SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+      m_tsock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable,
+                         sizeof(broadcastEnable));
     }
   }
 
@@ -352,10 +351,9 @@ bool CommDriverN0183Net::SendMessage(std::shared_ptr<const NavMsg> msg,
 }
 
 void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
-  // #define RD_BUF_SIZE    200
-#define RD_BUF_SIZE \
-  4096  // Allows handling of high volume data streams, such as a National AIS
-        // stream with 100s of msgs a second.
+#define RD_BUF_SIZE 4096
+  // Allows handling of high volume data streams, such as a National AIS
+  // stream with 100s of msgs a second.
 
   switch (event.GetSocketEvent()) {
     case wxSOCKET_INPUT:  // from gpsd Daemon
@@ -372,77 +370,15 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
       //    Disable input event notifications to preclude re-entrancy on
       //    non-blocking socket
       //           m_sock->SetNotify(wxSOCKET_LOST_FLAG);
-
-      std::vector<char> data(RD_BUF_SIZE + 1);
-      event.GetSocket()->Read(&data.front(), RD_BUF_SIZE);
+      uint8_t buff[RD_BUF_SIZE + 1];
+      event.GetSocket()->Read(buff, RD_BUF_SIZE);
       if (!event.GetSocket()->Error()) {
-        size_t count = event.GetSocket()->LastCount();
-        if (count) {
-          if (true /*FIXME !g_enableUDPNullHeader*/) {
-            data[count] = 0;
-            m_sock_buffer += (&data.front());
-          } else {
-            // XXX FIXME: is it reliable?
-            // copy all received bytes
-            // there's 0 in furuno UDP tags before NMEA sentences.
-            m_sock_buffer.append(&data.front(), count);
-          }
+        unsigned count = event.GetSocket()->LastCount();
+        for (unsigned i = 0; i < count; i += 1) n0183_buffer.Put(buff[i]);
+        while (n0183_buffer.HasSentence()) {
+          HandleN0183Msg(n0183_buffer.GetSentence() + "\r\n");
         }
       }
-
-      bool done = false;
-
-      while (!done) {
-        int nmea_tail = 2;
-        size_t nmea_end = m_sock_buffer.find_first_of(
-            "*\r\n");  // detect the potential end of a NMEA string by finding
-                       // the checksum marker or EOL
-
-        if (nmea_end ==
-            wxString::npos)  // No termination characters: continue reading
-          break;
-
-        if (m_sock_buffer[nmea_end] != '*') nmea_tail = -1;
-
-        if (nmea_end < m_sock_buffer.size() - nmea_tail) {
-          nmea_end +=
-              nmea_tail +
-              1;  // move to the char after the 2 checksum digits, if present
-          if (nmea_end == 0)  // The first character in the buffer is a
-                              // terminator, skip it to avoid infinite loop
-            nmea_end = 1;
-          std::string nmea_line = m_sock_buffer.substr(0, nmea_end);
-          //  If, due to some logic error, the {nmea_end} parameter is larger
-          //  than the length of the socket buffer, then std::string::substr()
-          //  will throw an exception. We don't want that, so test for it. If
-          //  found, the simple solution is to clear the socket buffer, and
-          //  carry on This has been seen on high volume TCP feeds, Windows
-          //  only. Hard to catch.....
-          if (nmea_end > m_sock_buffer.size())
-            m_sock_buffer.clear();
-          else
-            m_sock_buffer = m_sock_buffer.substr(nmea_end);
-
-          // detect the potential start of a NMEA string, skipping
-          // preceding chars that may look like the start of a string.
-          size_t nmea_start = nmea_line.find_last_of("$!");
-          if (nmea_start != wxString::npos) {
-            nmea_line = nmea_line.substr(nmea_start);
-            nmea_line += "\r\n";  // Add cr/lf, possibly superfluous
-            if (ocpn::N0183CheckSumOk(nmea_line)) {
-              HandleN0183Msg(nmea_line);
-            }
-          }
-        } else
-          done = true;
-      }
-
-      // Prevent non-nmea junk from consuming too much memory by limiting
-      // carry-over buffer size.
-      if (m_sock_buffer.size() > RD_BUF_SIZE)
-        m_sock_buffer =
-            m_sock_buffer.substr(m_sock_buffer.size() - RD_BUF_SIZE);
-
       m_dog_value = N_DOG_TIMEOUT;  // feed the dog
       break;
     }
@@ -527,8 +463,7 @@ void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
           (void)SetOutputSocketOptions(GetSock());
         }
-        if (m_io_select != DS_TYPE_OUTPUT)
-          notify_flags |= wxSOCKET_INPUT_FLAG;
+        if (m_io_select != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
         GetSock()->SetNotify(notify_flags);
         GetSock()->Notify(true);
       }
@@ -560,7 +495,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
             if (tcp_socket) tcp_socket->Close();
             if (!m_socket_timer.IsRunning())
               m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);
-              // schedule a reconnect
+            // schedule a reconnect
             m_socketread_watchdog_timer.Stop();
           }
           ret = false;
