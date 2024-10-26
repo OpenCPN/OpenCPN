@@ -67,35 +67,6 @@ public:
   }
 };
 
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_NET, CommDriverN0183NetEvent);
-
-class CommDriverN0183NetEvent;
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_NET, CommDriverN0183NetEvent);
-
-class CommDriverN0183NetEvent : public wxEvent {
-public:
-  explicit CommDriverN0183NetEvent(wxEventType commandType = wxEVT_NULL,
-                                   int id = 0)
-      : wxEvent(id, commandType) {};
-  ~CommDriverN0183NetEvent() override  = default;
-
-  // accessors
-  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = std::move(data);
-  }
-  std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
-
-  // required for sending with wxPostEvent()
-  [[nodiscard]] wxEvent* Clone() const override {
-    auto* newevent = new CommDriverN0183NetEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
-  };
-
-private:
-  std::shared_ptr<std::vector<unsigned char>> m_payload;
-};
-
 static bool SetOutputSocketOptions(wxSocketBase* tsock) {
   int ret;
 
@@ -165,10 +136,6 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
     s_iosel = "IN/OUT";
   }
   this->attributes["ioDirection"] = s_iosel;
-
-  // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::HandleN0183Msg, this);
-
   m_mrq_container = new MrqContainer;
 
   // Establish the power events response
@@ -182,25 +149,20 @@ CommDriverN0183Net::~CommDriverN0183Net() {
   Close();
 }
 
-void CommDriverN0183Net::HandleN0183Msg(CommDriverN0183NetEvent& event) {
-  auto p = event.GetPayload();
-  std::vector<unsigned char>* payload = p.get();
-
-  // Extract the NMEA0183 sentence
-  std::string full_sentence = std::string(payload->begin(), payload->end());
-
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+void CommDriverN0183Net::HandleN0183Msg(const std::string& sentence) {
+  // Sanity check
+  if ((sentence[0] == '$' || sentence[0] == '!') && sentence.size() > 5) {
     std::string identifier;
     // We notify based on full message, including the Talker ID
-    identifier = full_sentence.substr(1, 5);
+    identifier = sentence.substr(1, 5);
 
     // notify message listener and also "ALL" N0183 messages, to support plugin
     // API using original talker id
-    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
+    auto msg = std::make_shared<const Nmea0183Msg>(identifier, sentence,
                                                    GetAddress());
     auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
 
-    if (m_params.SentencePassesFilter(full_sentence, FILTER_INPUT))
+    if (m_params.SentencePassesFilter(sentence, FILTER_INPUT))
       m_listener.Notify(std::move(msg));
     m_listener.Notify(std::move(msg_all));
   }
@@ -468,17 +430,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
             nmea_line = nmea_line.substr(nmea_start);
             nmea_line += "\r\n";  // Add cr/lf, possibly superfluous
             if (ocpn::N0183CheckSumOk(nmea_line)) {
-              CommDriverN0183NetEvent Nevent(wxEVT_COMMDRIVER_N0183_NET, 0);
-              if (!nmea_line.empty()) {
-                //    Copy the message into a vector for transmittal upstream
-                auto buffer = std::make_shared<std::vector<unsigned char>>();
-                std::vector<unsigned char>* vec = buffer.get();
-                std::copy(nmea_line.begin(), nmea_line.end(),
-                          std::back_inserter(*vec));
-
-                Nevent.SetPayload(buffer);
-                AddPendingEvent(Nevent);
-              }
+              HandleN0183Msg(nmea_line);
             }
           }
         } else

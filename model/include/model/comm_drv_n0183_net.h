@@ -57,7 +57,6 @@
 #include "model/conn_params.h"
 #include "observable.h"
 
-class CommDriverN0183NetEvent;  // Internal
 class MrqContainer;
 
 class CommDriverN0183Net : public CommDriverN0183, public wxEvtHandler {
@@ -88,7 +87,7 @@ private:
   void OpenNetworkGpsd();
   void OpenNetworkTcp(unsigned int addr);
   void OpenNetworkUdp(unsigned int addr);
-  void HandleN0183Msg(CommDriverN0183NetEvent& event);
+  void HandleN0183Msg(const std::string& sentence);
   bool SendSentenceNetwork(const wxString& payload);
 
   wxString m_net_port;
