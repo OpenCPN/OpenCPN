@@ -70,4 +70,27 @@ private:
   uint8_t m_last_ch;
 };
 
+/** Assemble characters to NMEA0183 sentences. */
+class N0183Buffer {
+public:
+  /** Add a single character, possibly making a sentence available */
+  void Put(uint8_t ch);
+
+  /** Return true if a sentence is available to be returned by GetSentence() */
+  bool HasSentence() const { return !m_lines.empty(); }
+
+  /**
+   * Retrieve a sentence from buffer
+   * @return Next available sentence in buffer or "" if none available
+   */
+  std::string GetSentence();
+
+  N0183Buffer() : m_state(State::PrefixWait) {}
+
+private:
+  std::deque<std::string> m_lines;
+  std::vector<uint8_t> m_line;
+  enum class State { PrefixWait, Data, CsDigit1, CsDigit2 } m_state;
+};
+
 #endif  // _COMM_BUFFERS_H__

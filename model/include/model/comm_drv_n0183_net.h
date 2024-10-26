@@ -53,6 +53,7 @@
 #include <netinet/in.h>
 #endif
 
+#include "model/comm_buffers.h"
 #include "model/comm_drv_n0183.h"
 #include "model/conn_params.h"
 #include "observable.h"
@@ -90,6 +91,7 @@ private:
   void HandleN0183Msg(const std::string& sentence);
   bool SendSentenceNetwork(const wxString& payload);
 
+  N0183Buffer n0183_buffer;
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
   wxIPV4address m_addr;
