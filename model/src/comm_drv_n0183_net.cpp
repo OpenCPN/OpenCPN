@@ -131,8 +131,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_txenter(0),
       m_portstring(params->GetDSPort()),
       m_io_select(params->IOSelect),
-      m_connection_type(params->Type),
-      m_bok(false)
+      m_ok(false)
 
 {
   m_addr.Hostname(params->NetworkAddress);
@@ -155,7 +154,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   this->attributes["ioDirection"] = s_iosel;
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::handle_N0183_MSG, this);
+  Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::HandleN0183Msg, this);
 
   m_mrq_container = new MrqContainer;
 
@@ -170,7 +169,7 @@ CommDriverN0183Net::~CommDriverN0183Net() {
   Close();
 }
 
-void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
+void CommDriverN0183Net::HandleN0183Msg(CommDriverN0183NetEvent& event) {
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
 
@@ -198,47 +197,47 @@ void CommDriverN0183Net::Open(void) {
 #ifdef __UNIX__
 #if wxCHECK_VERSION(3, 0, 0)
   in_addr_t addr =
-      ((struct sockaddr_in*)GetAddr().GetAddressData())->sin_addr.s_addr;
+      ((struct sockaddr_in*)m_addr.GetAddressData())->sin_addr.s_addr;
 #else
   in_addr_t addr =
       ((struct sockaddr_in*)GetAddr().GetAddress()->m_addr)->sin_addr.s_addr;
 #endif
 #else
-  unsigned int addr = inet_addr(GetAddr().IPAddress().mb_str());
+  unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
 #endif
   // Create the socket
   switch (m_net_protocol) {
     case GPSD: {
-      OpenNetworkGPSD();
+      OpenNetworkGpsd();
       break;
     }
     case TCP: {
-      OpenNetworkTCP(addr);
+      OpenNetworkTcp(addr);
       break;
     }
     case UDP: {
-      OpenNetworkUDP(addr);
+      OpenNetworkUdp(addr);
       break;
     }
     default:
       break;
   }
-  SetOk(true);
+  m_ok = true;
 }
 
-void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
-  if (GetPortType() != DS_TYPE_OUTPUT) {
+void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
+  if (m_io_select != DS_TYPE_OUTPUT) {
     // We need a local (bindable) address to create the Datagram receive socket
     // Set up the reception socket
     wxIPV4address conn_addr;
-    conn_addr.Service(GetNetPort());
+    conn_addr.Service(m_net_port);
     conn_addr.AnyAddress();
-    SetSock(
-        new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR));
+    m_sock =
+        new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
 
     // Test if address is IPv4 multicast
     if ((ntohl(addr) & 0xf0000000) == 0xe0000000) {
-      SetMulticast(true);
+      m_is_multicast = true;
       m_mrq_container->SetMrqAddr(addr);
       GetSock()->SetOption(IPPROTO_IP, IP_ADD_MEMBERSHIP,
                            &m_mrq_container->m_mrq,
@@ -254,61 +253,61 @@ void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
   }
 
   // Set up another socket for transmit
-  if (GetPortType() != DS_TYPE_INPUT) {
+  if (m_io_select != DS_TYPE_INPUT) {
     wxIPV4address tconn_addr;
     tconn_addr.Service(0);  // use ephemeral out port
     tconn_addr.AnyAddress();
-    SetTSock(
-        new wxDatagramSocket(tconn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR));
+    m_tsock =
+        new wxDatagramSocket(tconn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
     // Here would be the place to disable multicast loopback
     // but for consistency with broadcast behaviour, we will
     // instead rely on setting priority levels to ignore
     // sentences read back that have just been transmitted
-    if ((!GetMulticast()) && (GetAddr().IPAddress().EndsWith(_T("255")))) {
+    if ((!m_is_multicast) && (m_addr.IPAddress().EndsWith("255"))) {
       int broadcastEnable = 1;
-      bool bam = GetTSock()->SetOption(
+      bool bam = m_tsock->SetOption(
           SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
     }
   }
 
   // In case the connection is lost before acquired....
-  SetConnectTime(wxDateTime::Now());
+  m_connect_time = wxDateTime::Now();
 }
 
-void CommDriverN0183Net::OpenNetworkTCP(unsigned int addr) {
+void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
   int isServer = ((addr == INADDR_ANY) ? 1 : 0);
   wxLogMessage("Opening TCP Server %d", isServer);
 
   if (isServer) {
-    SetSockServer(new wxSocketServer(GetAddr(), wxSOCKET_REUSEADDR));
+    m_socket_server = new wxSocketServer(m_addr, wxSOCKET_REUSEADDR);
   } else {
-    SetSock(new wxSocketClient());
+    m_sock = new wxSocketClient();
   }
 
   if (isServer) {
-    GetSockServer()->SetEventHandler(*this, DS_SERVERSOCKET_ID);
-    GetSockServer()->SetNotify(wxSOCKET_CONNECTION_FLAG);
-    GetSockServer()->Notify(TRUE);
-    GetSockServer()->SetTimeout(1);  // Short timeout
+    m_socket_server->SetEventHandler(*this, DS_SERVERSOCKET_ID);
+    m_socket_server->SetNotify(wxSOCKET_CONNECTION_FLAG);
+    m_socket_server->Notify(TRUE);
+    m_socket_server->SetTimeout(1);  // Short timeout
   } else {
     GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
     int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-    if (GetPortType() != DS_TYPE_INPUT) notify_flags |= wxSOCKET_OUTPUT_FLAG;
-    if (GetPortType() != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
+    if (m_io_select != DS_TYPE_INPUT) notify_flags |= wxSOCKET_OUTPUT_FLAG;
+    if (m_io_select != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
     GetSock()->SetNotify(notify_flags);
     GetSock()->Notify(TRUE);
     GetSock()->SetTimeout(1);  // Short timeout
 
-    SetBrxConnectEvent(false);
-    GetSocketTimer()->Start(100, wxTIMER_ONE_SHOT);  // schedule a connection
+    m_rx_connect_event = false;
+    m_socket_timer.Start(100, wxTIMER_ONE_SHOT);  // schedule a connection
   }
 
   // In case the connection is lost before acquired....
-  SetConnectTime(wxDateTime::Now());
+  m_connect_time = wxDateTime::Now();
 }
 
-void CommDriverN0183Net::OpenNetworkGPSD() {
-  SetSock(new wxSocketClient());
+void CommDriverN0183Net::OpenNetworkGpsd() {
+  m_sock = new wxSocketClient();
   GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
   GetSock()->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG |
                        wxSOCKET_LOST_FLAG);
@@ -316,8 +315,8 @@ void CommDriverN0183Net::OpenNetworkGPSD() {
   GetSock()->SetTimeout(1);  // Short timeout
 
   wxSocketClient* tcp_socket = static_cast<wxSocketClient*>(GetSock());
-  tcp_socket->Connect(GetAddr(), FALSE);
-  SetBrxConnectEvent(false);
+  tcp_socket->Connect(m_addr, false);
+  m_rx_connect_event = false;
 }
 
 void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
@@ -326,17 +325,17 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   if (m_dog_value <= 0) {  // No receive in n seconds
     if (GetParams().NoDataReconnect) {
       // Reconnect on NO DATA is true, so try to reconnect now.
-      if (GetProtocol() == TCP) {
+      if (m_net_protocol == TCP) {
         wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
         if (tcp_socket) tcp_socket->Close();
 
         int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
         wxLogMessage("Reconnection scheduled in %d seconds.",
                      n_reconnect_delay);
-        GetSocketTimer()->Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
+        m_socket_timer.Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
 
         //  Stop DATA watchdog, will be restarted on successful connection.
-        GetSocketThreadWatchdogTimer()->Stop();
+        m_socketread_watchdog_timer.Stop();
       }
     }
   }
@@ -348,14 +347,14 @@ void CommDriverN0183Net::OnTimerSocket() {
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
       wxLogDebug("Attempting reconnection...");
-      SetBrxConnectEvent(false);
+      m_rx_connect_event = false;
       //  Stop DATA watchdog, may be restarted on successful connection.
-      GetSocketThreadWatchdogTimer()->Stop();
-      tcp_socket->Connect(GetAddr(), FALSE);
+      m_socketread_watchdog_timer.Stop();
+      tcp_socket->Connect(m_addr, false);
 
       // schedule another connection attempt, in case this one fails
       int n_reconnect_delay = N_DOG_TIMEOUT;
-      GetSocketTimer()->Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
+      m_socket_timer.Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
     }
   }
 }
@@ -364,7 +363,7 @@ void CommDriverN0183Net::HandleResume() {
   //  Attempt a stop and restart of connection
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
-    GetSocketThreadWatchdogTimer()->Stop();
+    m_socketread_watchdog_timer.Stop();
 
     tcp_socket->Close();
 
@@ -372,7 +371,7 @@ void CommDriverN0183Net::HandleResume() {
     int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
     wxLogMessage("Reconnection scheduled in %d seconds.", n_reconnect_delay);
 
-    GetSocketTimer()->Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
+    m_socket_timer.Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
   }
 }
 
@@ -489,19 +488,19 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_LOST: {
-      if (GetProtocol() == TCP || GetProtocol() == GPSD) {
-        if (GetBrxConnectEvent())
+      if (m_net_protocol == TCP || m_net_protocol == GPSD) {
+        if (m_rx_connect_event)
           wxLogMessage("NetworkDataStream connection lost: %s",
-                       GetPort().c_str());
-        if (GetSockServer()) {
+                       m_portstring.c_str());
+        if (m_socket_server) {
           GetSock()->Destroy();
-          SetSock(NULL);
+          m_sock = nullptr;
           break;
         }
         wxDateTime now = wxDateTime::Now();
         wxTimeSpan since_connect(0, 0, 10);
         // ten secs assumed, if connect time is uninitialized
-        if (GetConnectTime().IsValid()) since_connect = now - GetConnectTime();
+        if (m_connect_time.IsValid()) since_connect = now - m_connect_time;
 
         int retry_time = 5000;  // default
 
@@ -509,42 +508,42 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         //  the connect request then stretch the time a bit.  This happens on
         //  Windows if there is no dafault IP on any interface
 
-        if (!GetBrxConnectEvent() && (since_connect.GetSeconds() < 5))
+        if (!m_rx_connect_event && (since_connect.GetSeconds() < 5))
           retry_time = 10000;  // 10 secs
 
-        GetSocketThreadWatchdogTimer()->Stop();
+        m_socketread_watchdog_timer.Stop();
 
         // Schedule a re-connect attempt
-        GetSocketTimer()->Start(retry_time, wxTIMER_ONE_SHOT);
+        m_socket_timer.Start(retry_time, wxTIMER_ONE_SHOT);
       }
       break;
     }
 
     case wxSOCKET_CONNECTION: {
-      if (GetProtocol() == GPSD) {
+      if (m_net_protocol == GPSD) {
         //      Sign up for watcher mode, Cooked NMEA
         //      Note that SIRF devices will be converted by gpsd into
         //      pseudo-NMEA
         char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
         GetSock()->Write(cmd, strlen(cmd));
-      } else if (GetProtocol() == TCP) {
+      } else if (m_net_protocol == TCP) {
         wxLogMessage("TCP NetworkDataStream connection established: %s",
-                     GetPort().c_str());
+                     m_portstring.c_str());
 
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
-        if (GetPortType() != DS_TYPE_OUTPUT) {
+        if (m_io_select != DS_TYPE_OUTPUT) {
           // start the DATA watchdog only if NODATA Reconnect is desired
           if (GetParams().NoDataReconnect)
-            GetSocketThreadWatchdogTimer()->Start(1000);
+            m_socketread_watchdog_timer.Start(1000);
         }
 
-        if (GetPortType() != DS_TYPE_INPUT && GetSock()->IsOk())
+        if (m_io_select != DS_TYPE_INPUT && GetSock()->IsOk())
           (void)SetOutputSocketOptions(GetSock());
-        GetSocketTimer()->Stop();
-        SetBrxConnectEvent(true);
+        m_socket_timer.Stop();
+        m_rx_connect_event = true;
       }
 
-      SetConnectTime(wxDateTime::Now());
+      m_connect_time = wxDateTime::Now();
       break;
     }
 
@@ -556,18 +555,18 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
 void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
   switch (event.GetSocketEvent()) {
     case wxSOCKET_CONNECTION: {
-      SetSock(GetSockServer()->Accept(false));
+      m_sock = m_socket_server->Accept(false);
 
       if (GetSock()) {
         GetSock()->SetTimeout(2);
         //        GetSock()->SetFlags(wxSOCKET_BLOCK);
         GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
         int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-        if (GetPortType() != DS_TYPE_INPUT) {
+        if (m_io_select != DS_TYPE_INPUT) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
           (void)SetOutputSocketOptions(GetSock());
         }
-        if (GetPortType() != DS_TYPE_OUTPUT)
+        if (m_io_select != DS_TYPE_OUTPUT)
           notify_flags |= wxSOCKET_INPUT_FLAG;
         GetSock()->SetNotify(notify_flags);
         GetSock()->Notify(true);
@@ -587,22 +586,22 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 
   bool ret = true;
   wxDatagramSocket* udp_socket;
-  switch (GetProtocol()) {
+  switch (m_net_protocol) {
     case TCP:
       if (GetSock() && GetSock()->IsOk()) {
         GetSock()->Write(payload.mb_str(), strlen(payload.mb_str()));
         if (GetSock()->Error()) {
-          if (GetSockServer()) {
+          if (m_socket_server) {
             GetSock()->Destroy();
-            SetSock(NULL);
+            m_sock = nullptr;
           } else {
             wxSocketClient* tcp_socket =
                 dynamic_cast<wxSocketClient*>(GetSock());
             if (tcp_socket) tcp_socket->Close();
-            if (!GetSocketTimer()->IsRunning())
-              GetSocketTimer()->Start(
-                  5000, wxTIMER_ONE_SHOT);  // schedule a reconnect
-            GetSocketThreadWatchdogTimer()->Stop();
+            if (!m_socket_timer.IsRunning())
+              m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);
+              // schedule a reconnect
+            m_socketread_watchdog_timer.Stop();
           }
           ret = false;
         }
@@ -611,9 +610,9 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
         ret = false;
       break;
     case UDP:
-      udp_socket = dynamic_cast<wxDatagramSocket*>(GetTSock());
+      udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
       if (udp_socket && udp_socket->IsOk()) {
-        udp_socket->SendTo(GetAddr(), payload.mb_str(), payload.size());
+        udp_socket->SendTo(m_addr, payload.mb_str(), payload.size());
         if (udp_socket->Error()) ret = false;
       } else {
         ret = false;
@@ -630,7 +629,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 }
 
 void CommDriverN0183Net::Close() {
-  wxLogMessage("Closing NMEA NetworkDataStream %s", GetNetPort().c_str());
+  wxLogMessage("Closing NMEA NetworkDataStream %s", m_net_port.c_str());
   //    Kill off the TCP Socket if alive
   if (m_sock) {
     if (m_is_multicast)
@@ -678,7 +677,7 @@ bool CommDriverN0183Net::SetOutputSocketOptions(wxSocketBase* tsock) {
 }
 
 bool CommDriverN0183Net::ChecksumOK(const std::string& sentence) {
-  if (!m_bchecksumCheck) return true;
+  if (!m_checksum_check) return true;
 
   return ocpn::N0183CheckSumOk(sentence);
 }
