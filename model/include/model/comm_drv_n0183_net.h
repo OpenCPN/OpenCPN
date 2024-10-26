@@ -62,7 +62,6 @@ class MrqContainer;
 
 class CommDriverN0183Net : public CommDriverN0183, public wxEvtHandler {
 public:
-  CommDriverN0183Net();
   CommDriverN0183Net(const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN0183Net();
@@ -71,27 +70,28 @@ public:
   void Close();
   ConnectionParams GetParams() const { return m_params; }
 
-  bool SetOutputSocketOptions(wxSocketBase* tsock);
-  bool SendSentenceNetwork(const wxString& payload);
-  void OnServerSocketEvent(wxSocketEvent& event);  // The listener
-  void OnTimerSocket(wxTimerEvent& event) { OnTimerSocket(); }
-  void OnTimerSocket();
-  void OnSocketEvent(wxSocketEvent& event);
-  void OpenNetworkGPSD();
-  void OpenNetworkTCP(unsigned int addr);
-  void OpenNetworkUDP(unsigned int addr);
-  void OnSocketReadWatchdogTimer(wxTimerEvent& event);
-  void HandleResume();
+  wxSocketBase* GetSock() const { return m_sock; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
-  wxSocketBase* GetSock() const { return m_sock; }
 
 private:
   ConnectionParams m_params;
   DriverListener& m_listener;
 
+  void HandleResume();
+  void OnServerSocketEvent(wxSocketEvent& event);  // The listener
+  void OnTimerSocket(wxTimerEvent& event) { OnTimerSocket(); }
+  void OnTimerSocket();
+  void OnSocketEvent(wxSocketEvent& event);
+  void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+  void OpenNetworkGPSD();
+  void OpenNetworkTCP(unsigned int addr);
+  void OpenNetworkUDP(unsigned int addr);
   void handle_N0183_MSG(CommDriverN0183NetEvent& event);
+  bool SendSentenceNetwork(const wxString& payload);
+  bool SetOutputSocketOptions(wxSocketBase* tsock);
+
   wxString GetNetPort() const { return m_net_port; }
   wxIPV4address GetAddr() const { return m_addr; }
   wxTimer* GetSocketThreadWatchdogTimer() {
@@ -106,12 +106,12 @@ private:
   void SetMulticast(bool multicast) { m_is_multicast = multicast; }
   bool GetMulticast() const { return m_is_multicast; }
 
-  NetworkProtocol GetProtocol() { return m_net_protocol; }
+  NetworkProtocol GetProtocol() const { return m_net_protocol; }
   void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
-  bool GetBrxConnectEvent() { return m_brx_connect_event; }
+  bool GetBrxConnectEvent() const { return m_brx_connect_event; }
 
   void SetConnectTime(wxDateTime time) { m_connect_time = time; }
-  wxDateTime GetConnectTime() { return m_connect_time; }
+  wxDateTime GetConnectTime() const { return m_connect_time; }
 
   dsPortType GetPortType() const { return m_io_select; }
   wxString GetPort() const { return m_portstring; }
