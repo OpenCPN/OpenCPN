@@ -99,7 +99,7 @@ private:
   wxSocketBase* m_tsock;
   wxSocketServer* m_socket_server;
   bool m_is_multicast;
-  MrqContainer* m_mrq_container;
+  std::unique_ptr<MrqContainer> m_mrq_container;
 
   int m_txenter;
   int m_dog_value;
