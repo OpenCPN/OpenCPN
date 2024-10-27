@@ -130,7 +130,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
     s_iosel = "IN/OUT";
   }
   this->attributes["ioDirection"] = s_iosel;
-  m_mrq_container = new MrqContainer;
+  m_mrq_container = std::make_unique<MrqContainer>();
 
   // Establish event listeners
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
@@ -146,7 +146,6 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
 }
 
 CommDriverN0183Net::~CommDriverN0183Net() {
-  delete m_mrq_container;
   Close();
 }
 
