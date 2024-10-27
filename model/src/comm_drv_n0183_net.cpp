@@ -89,17 +89,12 @@ static bool SetOutputSocketOptions(wxSocketBase* tsock) {
                            sizeof(outbuf_size)) &&
           ret);
 }
+
+
 //========================================================================
-/*    commdriverN0183Net implementation
- * */
-
-BEGIN_EVENT_TABLE(CommDriverN0183Net, wxEvtHandler)
-EVT_TIMER(TIMER_SOCKET, CommDriverN0183Net::OnTimerSocket)
-EVT_SOCKET(DS_SOCKET_ID, CommDriverN0183Net::OnSocketEvent)
-EVT_SOCKET(DS_SERVERSOCKET_ID, CommDriverN0183Net::OnServerSocketEvent)
-EVT_TIMER(TIMER_SOCKET + 1, CommDriverN0183Net::OnSocketReadWatchdogTimer)
-END_EVENT_TABLE()
-
+/*
+ * CommDriverN0183Net implementation
+ */
 CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
                                        DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
@@ -137,9 +132,16 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   this->attributes["ioDirection"] = s_iosel;
   m_mrq_container = new MrqContainer;
 
-  // Establish the power events response
+  // Establish event listeners
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
                        [&](ObservedEvt&) { HandleResume(); });
+  Bind(wxEVT_SOCKET, &CommDriverN0183Net::OnSocketEvent, this, DS_SOCKET_ID);
+  Bind(wxEVT_SOCKET, &CommDriverN0183Net::OnServerSocketEvent, this,
+       DS_SERVERSOCKET_ID );
+  Bind(wxEVT_TIMER, &CommDriverN0183Net::OnTimerSocket, this, TIMER_SOCKET);
+  Bind(wxEVT_TIMER, &CommDriverN0183Net::OnSocketReadWatchdogTimer, this,
+       TIMER_SOCKET + 1);
+
   Open();
 }
 

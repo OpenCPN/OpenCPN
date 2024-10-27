@@ -115,8 +115,6 @@ private:
   bool m_ok;
 
   ObsListener resume_listener;
-
-  DECLARE_EVENT_TABLE()
 };
 
 #endif  // COMMDRIVERN0183NET_H_
