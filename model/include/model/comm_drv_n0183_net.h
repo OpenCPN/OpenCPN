@@ -37,7 +37,7 @@
 #include <wx/timer.h>
 
 #ifdef __WXGTK__
-// newer versions of glib define its own GSocket but we unfortunately use this
+// newer versions of glib define its own GSocket, but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
 // #include <gtk/gtk.h>
@@ -76,15 +76,33 @@ public:
                    std::shared_ptr<const NavAddr> addr) override;
 
 private:
+  class SocketTimer : public wxTimer {
+  public:
+    SocketTimer(CommDriverN0183Net& owner) : wxTimer(), m_owner(owner) {}
+    void Notify() override { m_owner.OnTimerSocket(); }
+
+  private:
+    CommDriverN0183Net& m_owner;
+  };
+
+  class SocketReadWatchdogTimer : public wxTimer {
+  public:
+    SocketReadWatchdogTimer(CommDriverN0183Net& owner)
+        : wxTimer(), m_owner(owner) {}
+    void Notify() override { m_owner.OnSocketReadWatchdogTimer(); }
+
+  private:
+    CommDriverN0183Net& m_owner;
+  };
+
   ConnectionParams m_params;
   DriverListener& m_listener;
 
   void HandleResume();
   void OnServerSocketEvent(wxSocketEvent& event);  // The listener
-  void OnTimerSocket(wxTimerEvent&) { OnTimerSocket(); }
   void OnTimerSocket();
   void OnSocketEvent(wxSocketEvent& event);
-  void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+  void OnSocketReadWatchdogTimer();
   void OpenNetworkGpsd();
   void OpenNetworkTcp(unsigned int addr);
   void OpenNetworkUdp(unsigned int addr);
@@ -109,8 +127,8 @@ private:
   wxDateTime m_connect_time;
   bool m_rx_connect_event;
 
-  wxTimer m_socket_timer;
-  wxTimer m_socketread_watchdog_timer;
+  SocketTimer m_socket_timer;
+  SocketReadWatchdogTimer m_socketread_watchdog_timer;
 
   bool m_ok;
 
