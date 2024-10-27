@@ -46,7 +46,7 @@ class NMEA0183;
 class RESPONSE
 {
 
-   private:
+   protected:
 
       NMEA0183 *container_p;
 

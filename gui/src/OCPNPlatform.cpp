@@ -995,10 +995,9 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
     locale_location = _T("/usr/local");
   }
 
-  if(g_bportable) {
+  if (g_bportable) {
     locale_location = g_Platform->GetHomeDir();
   }
-
 
   wxFileName location;
   location.AssignDir(locale_location);

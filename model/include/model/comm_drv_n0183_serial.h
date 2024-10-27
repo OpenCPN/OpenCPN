@@ -1,5 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/***************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 by Alec Leamas                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -31,26 +32,7 @@
 #include "model/comm_out_queue.h"
 #include "model/conn_params.h"
 #include "model/garmin_protocol_mgr.h"
-
-class CommDriverN0183SerialThread;  // Internal
-
-class CommDriverN0183SerialEvent : public wxEvent {
-public:
-  CommDriverN0183SerialEvent(wxEventType commandType, int id);
-  ~CommDriverN0183SerialEvent();
-
-  // accessors
-  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data);
-  std::shared_ptr<std::vector<unsigned char>> GetPayload();
-
-  // required for sending with wxPostEvent()
-  wxEvent* Clone() const;
-
-private:
-  std::shared_ptr<std::vector<unsigned char>> m_payload;
-};
-
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
+#include "model/serial_io.h"
 
 class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
 public:
@@ -64,25 +46,10 @@ public:
   bool Open();
   void Close();
 
-  //    Secondary thread life toggle
-  //    Used to inform launching object (this) to determine if the thread can
-  //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_sec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_sec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_sec_thread_active; }
+  bool IsSecThreadActive() { return m_serial_io->IsRunning(); }
 
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
-
-  void SetSecondaryThread(CommDriverN0183SerialThread* secondary_Thread) {
-    m_secondary_thread = secondary_Thread;
-  }
-  CommDriverN0183SerialThread* GetSecondaryThread() {
-    return m_secondary_thread;
-  }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
-
-  std::atomic_int m_Thread_run_flag;
 
   ConnectionParams GetParams() const { return m_params; }
 
@@ -90,22 +57,20 @@ public:
                    std::shared_ptr<const NavAddr> addr) override;
 
 private:
-  bool m_ok;
+  /**
+   * Send a message to all listeners after applying filtering. Ends up in a
+   * Notify() and can thus be used as a callback in IO threads.
+   */
+  void SendMessage(const std::vector<unsigned char>& msg);
+
   std::string m_portstring;
-  std::string m_baudrate;
-  int m_handshake;
+  unsigned m_baudrate;
 
-  CommDriverN0183SerialThread* m_secondary_thread;
-  bool m_sec_thread_active;
-
+  std::unique_ptr<SerialIo> m_serial_io;
   GarminProtocolHandler* m_garmin_handler;
 
   ConnectionParams m_params;
   DriverListener& m_listener;
-
-  std::unique_ptr<CommOutQueue> m_out_queue;
-
-  void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
 };
 
 #endif  // guard

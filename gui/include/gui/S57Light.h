@@ -28,8 +28,9 @@
 #include <wx/string.h>
 
 /**
- * Represents a light feature in an S57 chart. Encapsulates the attributes and properties of a light feature,
- * including its position, attributes, and sector information.
+ * Represents a light feature in an S57 chart. Encapsulates the attributes and
+ * properties of a light feature, including its position, attributes, and sector
+ * information.
  */
 class S57Light {
 public:

@@ -29,7 +29,8 @@
  * Stores emboss effect data for textures.
  *
  * Encapsulates data for applying emboss effects to textures in OpenCPN,
- * enhancing the visual appearance of charts or UI elements with a 3D-like effect.
+ * enhancing the visual appearance of charts or UI elements with a 3D-like
+ * effect.
  */
 class emboss_data {
 public:

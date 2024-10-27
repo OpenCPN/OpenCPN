@@ -89,7 +89,8 @@ public:
 /**
  * Manages the chart database and provides access to chart data.
  * Responsible for loading, saving, and managing the chart database.
- * Provides methods for building chart stacks, opening charts, and managing the chart cache.
+ * Provides methods for building chart stacks, opening charts, and managing the
+ * chart cache.
  */
 class ChartDB : public ChartDatabase {
 public:

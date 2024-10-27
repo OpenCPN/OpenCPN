@@ -1,9 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2024 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,45 +17,46 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __CHINFOWIN_H__
-#define __CHINFOWIN_H__
+/** \file  thread_ctrl.cpp Implement thread_ctrl.h. */
 
-#include <wx/window.h>
-#include <wx/stattext.h>
-#include <wx/panel.h>
+#include "model/thread_ctrl.h"
 
-/**
- * A custom panel for displaying chart information. Represents a panel that
- * displays information about a chart, such as its scale and other relevant
- * details.
- */
-class ChInfoWin : public wxPanel {
-public:
-  ChInfoWin(wxWindow* parent);
-  ~ChInfoWin();
+void ThreadCtrl::RequestStop() {
+  std::lock_guard lock(m_mutex);
+  m_keep_going = 0;
+}
 
-  void SetString(const wxString& s) { m_string = s; }
-  const wxString& GetString(void) { return m_string; }
-  void MouseEvent(wxMouseEvent& event);
+void ThreadCtrl::WaitUntilStopped() {
+  std::unique_lock lock(m_mutex);
+  m_cv.wait(lock, [&] { return m_keep_going < 0; });
+}
 
-  void SetPosition(wxPoint pt) { m_position = pt; }
-  void SetWinSize(wxSize sz) { m_size = sz; }
-  void SetBitmap(void);
-  void FitToChars(int char_width, int char_height);
-  wxSize GetWinSize(void) { return m_size; }
-  void OnPaint(wxPaintEvent& event);
-  void OnEraseBackground(wxEraseEvent& event);
+bool ThreadCtrl::WaitUntilStopped(std::chrono::duration<int> timeout) {
+  std::unique_lock lock(m_mutex);
+  m_cv.wait_for(lock, timeout, [&] { return m_keep_going < 0; });
+  return m_keep_going < 0;
+}
 
-  wxStaticText* m_pInfoTextCtl;
-  int dbIndex;
-  int chart_scale;
+bool ThreadCtrl::WaitUntilStopped(std::chrono::duration<int> timeout,
+                                  std::chrono::milliseconds& elapsed) {
+  using namespace std::chrono;
 
-private:
-  wxString m_string;
-  wxSize m_size;
-  wxPoint m_position;
+  auto start = steady_clock::now();
+  std::unique_lock lock(m_mutex);
+  m_cv.wait_for(lock, timeout, [&] { return m_keep_going < 0; });
+  auto end = steady_clock::now();
+  elapsed = duration_cast<milliseconds>(end - start);
+  return m_keep_going < 0;
+}
 
-  DECLARE_EVENT_TABLE()
-};
+bool ThreadCtrl::KeepGoing() const {
+  std::lock_guard lock(m_mutex);
+  return m_keep_going > 0;
+}
 
-#endif
+void ThreadCtrl::SignalExit() {
+  std::unique_lock lock(m_mutex);
+  m_keep_going = -1;
+  lock.unlock();
+  m_cv.notify_one();
+}

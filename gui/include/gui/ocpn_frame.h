@@ -69,7 +69,6 @@ class ocpnFloatingToolbarDialog;
 class OCPN_MsgEvent;
 class options;
 class Track;
-// class OCPN_ThreadMessageEvent;
 class wxHtmlWindow;
 class ArrayOfCDI;
 
@@ -123,66 +122,51 @@ class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
 class AisTargetData;
 
-bool isSingleChart(ChartBase *chart);
-
-class OCPN_ThreadMessageEvent : public wxEvent {
-public:
-  OCPN_ThreadMessageEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
-  ~OCPN_ThreadMessageEvent();
-
-  // accessors
-  [[maybe_unused]] void SetSString(std::string string) { m_string = string; }
-  std::string GetSString() { return m_string; }
-
-  // required for sending with wxPostEvent()
-  wxEvent *Clone() const;
-
-private:
-  std::string m_string;
-};
+bool isSingleChart(ChartBase* chart);
 
 /**
  * Main application frame. Top-level window frame for OpenCPN that manages
- * overall application state, menus, toolbars, and child windows like chart canvases.
+ * overall application state, menus, toolbars, and child windows like chart
+ * canvases.
  */
 class MyFrame : public wxFrame {
 public:
-  MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
-          const wxSize &size, long style);
+  MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
+          const wxSize& size, long style);
 
   ~MyFrame();
 
   int GetApplicationMemoryUse(void);
 
-  void OnEraseBackground(wxEraseEvent &event);
-  void OnMaximize(wxMaximizeEvent &event);
-  void OnCloseWindow(wxCloseEvent &event);
-  void OnExit(wxCommandEvent &event);
-  void OnSize(wxSizeEvent &event);
-  void OnMove(wxMoveEvent &event);
-  void OnInitTimer(wxTimerEvent &event);
-  void OnFrameTimer1(wxTimerEvent &event);
+  void OnEraseBackground(wxEraseEvent& event);
+  void OnMaximize(wxMaximizeEvent& event);
+  void OnCloseWindow(wxCloseEvent& event);
+  void OnExit(wxCommandEvent& event);
+  void OnSize(wxSizeEvent& event);
+  void OnMove(wxMoveEvent& event);
+  void OnInitTimer(wxTimerEvent& event);
+  void OnFrameTimer1(wxTimerEvent& event);
   bool DoChartUpdate(void);
-  void OnEvtPlugInMessage(OCPN_MsgEvent &event);
-  void OnMemFootTimer(wxTimerEvent &event);
-  void OnRecaptureTimer(wxTimerEvent &event);
-  void OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event);
-  void OnIconize(wxIconizeEvent &event);
-  void OnBellsFinished(wxCommandEvent &event);
+  void OnEvtPlugInMessage(OCPN_MsgEvent& event);
+  void OnMemFootTimer(wxTimerEvent& event);
+  void OnRecaptureTimer(wxTimerEvent& event);
+  void OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent& event);
+  void OnIconize(wxIconizeEvent& event);
+  void OnBellsFinished(wxCommandEvent& event);
 
 #ifdef wxHAS_POWER_EVENTS
-  void OnSuspending(wxPowerEvent &event);
-  void OnSuspended(wxPowerEvent &event);
-  void OnSuspendCancel(wxPowerEvent &event);
-  void OnResume(wxPowerEvent &event);
+  void OnSuspending(wxPowerEvent& event);
+  void OnSuspended(wxPowerEvent& event);
+  void OnSuspendCancel(wxPowerEvent& event);
+  void OnResume(wxPowerEvent& event);
 #endif  // wxHAS_POWER_EVENTS
 
-  void RefreshCanvasOther(ChartCanvas *ccThis);
+  void RefreshCanvasOther(ChartCanvas* ccThis);
   void UpdateAllFonts(void);
   void PositionConsole(void);
-  void OnToolLeftClick(wxCommandEvent &event);
-  void DoStackUp(ChartCanvas *cc);
-  void DoStackDown(ChartCanvas *cc);
+  void OnToolLeftClick(wxCommandEvent& event);
+  void DoStackUp(ChartCanvas* cc);
+  void DoStackDown(ChartCanvas* cc);
   void selectChartDisplay(int type, int family);
   void applySettingsString(wxString settings);
   void setStringVP(wxString VPS);
@@ -191,15 +175,15 @@ public:
   void CancelAllMouseRoute();
   void InvalidateAllQuilts();
 
-  void SetUpMode(ChartCanvas *cc, int mode);
+  void SetUpMode(ChartCanvas* cc, int mode);
 
-  ChartCanvas *GetPrimaryCanvas();
-  ChartCanvas *GetFocusCanvas();
+  ChartCanvas* GetPrimaryCanvas();
+  ChartCanvas* GetFocusCanvas();
 
-  void DoStackDelta(ChartCanvas *cc, int direction);
+  void DoStackDelta(ChartCanvas* cc, int direction);
   void DoSettings(void);
-  void SwitchKBFocus(ChartCanvas *pCanvas);
-  ChartCanvas *GetCanvasUnderMouse();
+  void SwitchKBFocus(ChartCanvas* pCanvas);
+  ChartCanvas* GetCanvasUnderMouse();
   int GetCanvasIndexUnderMouse();
 
   bool DropMarker(bool atOwnShip = true);
@@ -207,10 +191,10 @@ public:
   void TriggerRecaptureTimer();
   bool SetGlobalToolbarViz(bool viz);
 
-  void MouseEvent(wxMouseEvent &event);
-  void CenterView(ChartCanvas *cc, const LLBBox &bbox);
+  void MouseEvent(wxMouseEvent& event);
+  void CenterView(ChartCanvas* cc, const LLBBox& bbox);
 
-  void JumpToPosition(ChartCanvas *cc, double lat, double lon, double scale);
+  void JumpToPosition(ChartCanvas* cc, double lat, double lon, double scale);
 
   void ProcessCanvasResize(void);
 
@@ -218,45 +202,45 @@ public:
   void ApplyGlobalSettings(bool bnewtoolbar);
   void RegisterGlobalMenuItems();
   void UpdateGlobalMenuItems();
-  void UpdateGlobalMenuItems(ChartCanvas *cc);
+  void UpdateGlobalMenuItems(ChartCanvas* cc);
   int DoOptionsDialog();
-  bool ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray);
+  bool ProcessOptionsDialog(int resultFlags, ArrayOfCDI* pNewDirArray);
   void DoPrint(void);
-  void ToggleDataQuality(ChartCanvas *cc);
-  void TogglebFollow(ChartCanvas *cc);
+  void ToggleDataQuality(ChartCanvas* cc);
+  void TogglebFollow(ChartCanvas* cc);
   void ToggleFullScreen();
-  void ToggleChartBar(ChartCanvas *cc);
-  void SetbFollow(ChartCanvas *cc);
-  void ClearbFollow(ChartCanvas *cc);
-  void ToggleChartOutlines(ChartCanvas *cc);
-  void ToggleENCText(ChartCanvas *cc);
-  void ToggleSoundings(ChartCanvas *cc);
+  void ToggleChartBar(ChartCanvas* cc);
+  void SetbFollow(ChartCanvas* cc);
+  void ClearbFollow(ChartCanvas* cc);
+  void ToggleChartOutlines(ChartCanvas* cc);
+  void ToggleENCText(ChartCanvas* cc);
+  void ToggleSoundings(ChartCanvas* cc);
 #if 0
   void ToggleRocks(void);
 #endif
-  bool ToggleLights(ChartCanvas *cc);
-  void ToggleAnchor(ChartCanvas *cc);
-  void ToggleAISDisplay(ChartCanvas *cc);
-  void ToggleAISMinimizeTargets(ChartCanvas *cc);
+  bool ToggleLights(ChartCanvas* cc);
+  void ToggleAnchor(ChartCanvas* cc);
+  void ToggleAISDisplay(ChartCanvas* cc);
+  void ToggleAISMinimizeTargets(ChartCanvas* cc);
 
   void ToggleTestPause(void);
   void TrackOn(void);
-  void SetENCDisplayCategory(ChartCanvas *cc, enum _DisCat nset);
-  void ToggleNavobjects(ChartCanvas *cc);
+  void SetENCDisplayCategory(ChartCanvas* cc, enum _DisCat nset);
+  void ToggleNavobjects(ChartCanvas* cc);
 
-  Track *TrackOff(bool do_add_point = false);
+  Track* TrackOff(bool do_add_point = false);
   void TrackDailyRestart(void);
   bool ShouldRestartTrack();
   void ToggleColorScheme();
   void SetMenubarItemState(int item_id, bool state);
   void SetMasterToolbarItemState(int tool_id, bool state);
 
-  void SetToolbarItemBitmaps(int tool_id, wxBitmap *bitmap,
-                             wxBitmap *bmpDisabled);
+  void SetToolbarItemBitmaps(int tool_id, wxBitmap* bitmap,
+                             wxBitmap* bmpDisabled);
   void SetToolbarItemSVG(int tool_id, wxString normalSVGfile,
                          wxString rolloverSVGfile, wxString toggledSVGfile);
-  void ToggleQuiltMode(ChartCanvas *cc);
-  void UpdateControlBar(ChartCanvas *cc);
+  void ToggleQuiltMode(ChartCanvas* cc);
+  void UpdateControlBar(ChartCanvas* cc);
 
   void SubmergeAllCanvasToolbars(void);
   void SurfaceAllCanvasToolbars(void);
@@ -266,13 +250,13 @@ public:
 
   void RefreshGroupIndices(void);
 
-  double GetBestVPScale(ChartBase *pchart);
+  double GetBestVPScale(ChartBase* pchart);
 
   ColorScheme GetColorScheme();
   void SetAndApplyColorScheme(ColorScheme cs);
 
-  void OnFrameTCTimer(wxTimerEvent &event);
-  void OnFrameCOGTimer(wxTimerEvent &event);
+  void OnFrameTCTimer(wxTimerEvent& event);
+  void OnFrameCOGTimer(wxTimerEvent& event);
 
   void HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg);
   void HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg);
@@ -287,11 +271,11 @@ public:
   void TouchAISActive(void);
   void UpdateAISTool(void);
 
-  void ActivateAISMOBRoute(const AisTargetData *ptarget);
-  void UpdateAISMOBRoute(const AisTargetData *ptarget);
+  void ActivateAISMOBRoute(const AisTargetData* ptarget);
+  void UpdateAISMOBRoute(const AisTargetData* ptarget);
 
-  wxStatusBar *m_pStatusBar;
-  wxMenuBar *m_pMenuBar;
+  wxStatusBar* m_pStatusBar;
+  wxMenuBar* m_pMenuBar;
   int nBlinkerTick;
   bool m_bTimeIsSet;
 
@@ -310,7 +294,7 @@ public:
 
   //      PlugIn support
   int GetNextToolbarToolId() { return m_next_available_plugin_tool_id; }
-  void RequestNewToolbarArgEvent(wxCommandEvent &WXUNUSED(event)) {
+  void RequestNewToolbarArgEvent(wxCommandEvent& WXUNUSED(event)) {
     return RequestNewMasterToolbar();
   }
   void RequestNewToolbars(bool bforcenew = false);
@@ -319,9 +303,9 @@ public:
   void UpdateGPSCompassStatusBoxes(bool b_force_new = false);
   void UpdateRotationState(double rotation);
 
-  bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
+  bool UpdateChartDatabaseInplace(ArrayOfCDI& DirArray, bool b_force,
                                   bool b_prog,
-                                  const wxString &ChartListFileName);
+                                  const wxString& ChartListFileName);
 
   bool m_bdefer_resize;
   wxSize m_defer_size;
@@ -334,7 +318,7 @@ public:
   void ReloadAllVP();
   void SetCanvasSizes(wxSize frameSize);
 
-  ocpnToolBarSimple *CreateMasterToolbar();
+  ocpnToolBarSimple* CreateMasterToolbar();
   void RequestNewMasterToolbar(bool bforcenew = true);
   bool CheckAndAddPlugInTool();
   bool AddDefaultPositionPlugInTools();
@@ -363,7 +347,7 @@ private:
 
   bool ScrubGroupArray();
 
-  void OnToolbarAnimateTimer(wxTimerEvent &event);
+  void OnToolbarAnimateTimer(wxTimerEvent& event);
   bool CollapseGlobalToolbar();
 
   int m_StatusBarFieldCount;
@@ -404,6 +388,7 @@ private:
   ObsListener m_on_raise_listener;
   ObsListener m_on_quit_listener;
   ObsListener m_routes_update_listener;
+  ObsListener m_evt_drv_msg_listener;
 
   CommOverflowDlg comm_overflow_dlg;
 

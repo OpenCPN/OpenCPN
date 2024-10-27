@@ -39,14 +39,14 @@ enum { ID_MUI_MENU = 21500 };
  * Enumeration for animation types
  */
 enum {
-  CO_ANIMATION_LINEAR = 0,          ///< Linear animation
-  CO_ANIMATION_QUADRATIC,           ///< Quadratic animation
-  CO_ANIMATION_CUBIC,               ///< Cubic animation
-  CO_ANIMATION_CUBIC_BOUNCE_IN,     ///< Cubic animation with bounce-in effect
-  CO_ANIMATION_CUBIC_BACK_IN,       ///< Cubic animation with back-in effect
-  CO_ANIMATION_CUBIC_REVERSE,       ///< Reversed cubic animation
-  CO_PULL,                          ///< Pull animation
-  CO_PUSH                           ///< Push animation
+  CO_ANIMATION_LINEAR = 0,       ///< Linear animation
+  CO_ANIMATION_QUADRATIC,        ///< Quadratic animation
+  CO_ANIMATION_CUBIC,            ///< Cubic animation
+  CO_ANIMATION_CUBIC_BOUNCE_IN,  ///< Cubic animation with bounce-in effect
+  CO_ANIMATION_CUBIC_BACK_IN,    ///< Cubic animation with back-in effect
+  CO_ANIMATION_CUBIC_REVERSE,    ///< Reversed cubic animation
+  CO_PULL,                       ///< Pull animation
+  CO_PUSH                        ///< Push animation
 };
 
 class MyFrame;
@@ -56,8 +56,9 @@ class MUITextButton;
 class CanvasOptions;
 
 /**
- * Modern User Interface Control Bar for OpenCPN. Provides a customizable control bar
- * with various buttons and options for interacting with the chart canvas in OpenCPN.
+ * Modern User Interface Control Bar for OpenCPN. Provides a customizable
+ * control bar with various buttons and options for interacting with the chart
+ * canvas in OpenCPN.
  */
 class MUIBar : public wxEvtHandler {
 public:

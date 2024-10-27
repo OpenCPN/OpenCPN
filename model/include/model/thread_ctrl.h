@@ -17,27 +17,54 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  comm_oveflow_dlg.h Popup dialog on communication overflows. */
+/** \file thread_ctrl.h ThreadCtrl mixin class definition */
 
-#ifndef COMM_OVERFLOW_DLG_H__
-#define COMM_OVERFLOW_DLG_H__
+#ifndef THREAD_CTRL_H__
+#define THREAD_CTRL_H__
 
-#include "observable.h"
+#include <condition_variable>
+#include <mutex>
 
-/**
- * A dialog for handling communication overflow notifications.
- * This class manages a popup dialog that appears when communication overflows
- * occur.
- */
-class CommOverflowDlg {
+/** Thread mixin providing a "stop thread"/"wait until stopped" interface. */
+class ThreadCtrl {
 public:
-  CommOverflowDlg(wxWindow* parent);
+  ThreadCtrl() : m_keep_going(1) {}
+
+  /** Return true if thread is running. */
+  bool IsRunning() const { return KeepGoing(); }
+
+  /** Request that thread stops operation. */
+  virtual void RequestStop();
+
+  /** Block until thread invokes SignalExit(). */
+  void WaitUntilStopped();
+
+  /**
+   *  Block  until thread invokes SignalExit() or timeout
+   *  @return false if the timeout triggered, else true.
+   */
+  bool WaitUntilStopped(std::chrono::duration<int> timeout);
+
+  /**
+   *  Block  until thread invokes SignalExit() or timeout
+   *  @param timeout Maximum time to wait for thread  to exit.
+   *  @param elapsed On exit, the time spent in method.
+   *  @return false if the timeout triggered, else true.
+   */
+  bool WaitUntilStopped(std::chrono::duration<int> timeout,
+                        std::chrono::milliseconds& elapsed);
+
+protected:
+  /** If true continue thread operation, else exit and invoke SignalExit() */
+  bool KeepGoing() const;
+
+  /** Signal that thread has exited. */
+  void SignalExit();
 
 private:
-  void ShowDialog(const std::string& msg);
-
-  ObsListener m_listener;
-  wxWindow* m_parent;
+  mutable std::mutex m_mutex;
+  std::condition_variable m_cv;
+  int m_keep_going;
 };
 
-#endif  // COMM_OVERFLOW_DLG_H__
+#endif  //  THREAD_CTRL_H__

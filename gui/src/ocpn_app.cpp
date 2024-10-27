@@ -986,7 +986,7 @@ MyApp::MyApp()
       "mesa_glthread", "false",
       1);  // Explicitly disable glthread. This may have some impact on OpenGL
            // performance, but we know it is problematic for us. See #2889
-#endif  // __linux__
+#endif     // __linux__
 }
 
 bool MyApp::OnInit() {
