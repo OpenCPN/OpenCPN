@@ -90,7 +90,6 @@ static bool SetOutputSocketOptions(wxSocketBase* tsock) {
           ret);
 }
 
-
 //========================================================================
 /*
  * CommDriverN0183Net implementation
@@ -111,12 +110,12 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_io_select(params->IOSelect),
       m_rx_connect_event(false),
+      m_socket_timer(*this),
+      m_socketread_watchdog_timer(*this),
       m_ok(false) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
 
-  m_socket_timer.SetOwner(this, TIMER_SOCKET);
-  m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
   this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
   char port_char[10];
   sprintf(port_char, "%d", params->NetworkPort);
@@ -137,17 +136,12 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
                        [&](ObservedEvt&) { HandleResume(); });
   Bind(wxEVT_SOCKET, &CommDriverN0183Net::OnSocketEvent, this, DS_SOCKET_ID);
   Bind(wxEVT_SOCKET, &CommDriverN0183Net::OnServerSocketEvent, this,
-       DS_SERVERSOCKET_ID );
-  Bind(wxEVT_TIMER, &CommDriverN0183Net::OnTimerSocket, this, TIMER_SOCKET);
-  Bind(wxEVT_TIMER, &CommDriverN0183Net::OnSocketReadWatchdogTimer, this,
-       TIMER_SOCKET + 1);
+       DS_SERVERSOCKET_ID);
 
   Open();
 }
 
-CommDriverN0183Net::~CommDriverN0183Net() {
-  Close();
-}
+CommDriverN0183Net::~CommDriverN0183Net() { Close(); }
 
 void CommDriverN0183Net::HandleN0183Msg(const std::string& sentence) {
   // Sanity check
@@ -289,7 +283,7 @@ void CommDriverN0183Net::OpenNetworkGpsd() {
   m_rx_connect_event = false;
 }
 
-void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent&) {
+void CommDriverN0183Net::OnSocketReadWatchdogTimer() {
   m_dog_value--;
 
   if (m_dog_value <= 0) {  // No receive in n seconds

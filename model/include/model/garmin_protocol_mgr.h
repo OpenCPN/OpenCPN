@@ -74,8 +74,6 @@
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
 
-#define TIMER_SOCKET 7006
-
 //----------------------------------------------------------------------------
 // Garmin Device Management
 // Handle USB and Serial Port Garmin PVT protocol data interface.
