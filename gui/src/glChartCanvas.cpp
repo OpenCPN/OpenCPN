@@ -5487,6 +5487,9 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
     //             qDebug() << "finish totalzoom" << total_zoom_val <<
     //             projected_scale;
 
+    // Some ptaforms generate spurious gestureEnd events. Guard for this.
+    if (!m_binGesture) return;
+
     float cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
     float cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
     float dy = 0;
