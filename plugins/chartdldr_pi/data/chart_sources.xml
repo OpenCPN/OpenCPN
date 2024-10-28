@@ -915,6 +915,12 @@
           <dir>{USERDATA}/RNC/BRASIL</dir>
         </catalog>
         <catalog>
+          <name>Brasil Inland ENC Charts</name>
+          <type>RNC</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/BR_IENC_Catalog.xml</location>
+          <dir>{USERDATA}/ENC/BRASIL_INLAND</dir>
+        </catalog>
+        <catalog>
           <name>Bulgaria Inland ENC Charts</name>
           <type>ENC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/BG_IENC_Catalog.xml</location>
