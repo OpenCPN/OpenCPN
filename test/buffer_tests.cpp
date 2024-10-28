@@ -5,7 +5,8 @@
 #include <string>
 #include <thread>
 
-#if (defined(OCPN_GHC_FILESYSTEM) || (defined(__clang_major__) && (__clang_major__ < 15)))
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 #else
@@ -19,6 +20,7 @@ namespace fs = std::filesystem;
 #include <gtest/gtest.h>
 
 #include "model/base_platform.h"
+#include "model/comm_buffers.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_out_queue.h"
 #include "model/logger.h"
@@ -36,12 +38,11 @@ static const char* const GPGGL = "$GPGGL 00";
 
 class OverrunEvent : public wxAppConsole {
 public:
-
   OverrunEvent() {
     bool result = false;
     ObsListener listener;
     listener.Init(CommDriverRegistry::GetInstance().evt_comm_overrun,
-		  [&](ObservedEvt&) { result = true; });
+                  [&](ObservedEvt&) { result = true; });
 
     CommOutQueue queue(3);
     for (int i = 0; i < 20; i++) queue.push_back(GPGGL);
@@ -51,7 +52,6 @@ public:
     EXPECT_TRUE(result);
   };
 };
-
 
 TEST(Buffer, Single) {
   CommOutQueueSingle queue;
@@ -63,7 +63,7 @@ TEST(Buffer, Single) {
   EXPECT_FALSE(queue.push_back("foo"));
 }
 
-TEST(Buffer, Size_3 ) {
+TEST(Buffer, Size_3) {
   CommOutQueue queue(3);
 
   for (int i = 0; i < 20; i++) queue.push_back(GPGGL);
@@ -87,24 +87,28 @@ TEST(Buffer, Size_3 ) {
   EXPECT_THROW({ queue.pop(); }, std::underflow_error);
 }
 
-
-
 TEST(Buffer, Hakefjord) {
   const auto path = fs::path(TESTDATA) / "Hakefjord.log";
   std::ifstream stream(path.string());
   MeasuredCommOutQueue queue(3);
-  for (std::string line; std::getline(stream, line); ) {
+  for (std::string line; std::getline(stream, line);) {
     queue.push_back(line);
   }
   RecordProperty("buffer size", std::to_string(queue.size()));
   for (int i = 0; i < 3; i++) queue.push_back(GPGGA);
   std::string line;
-  do { line = queue.pop(); } while (!ocpn::startswith(line, "$GPGGA"));
+  do {
+    line = queue.pop();
+  } while (!ocpn::startswith(line, "$GPGGA"));
   EXPECT_EQ(line, GPGGA);
-  do { line = queue.pop(); } while (!ocpn::startswith(line, "$GPGGA"));
+  do {
+    line = queue.pop();
+  } while (!ocpn::startswith(line, "$GPGGA"));
   EXPECT_EQ(line, GPGGA);
-  do { line = queue.pop(); } while (!ocpn::startswith(line, "$GPGGA"));
-  EXPECT_EQ(line, GPGGA) ;
+  do {
+    line = queue.pop();
+  } while (!ocpn::startswith(line, "$GPGGA"));
+  EXPECT_EQ(line, GPGGA);
   RecordProperty("push_time", std::to_string(queue.push_time));
   // writes to test_detail.xml if invoked with --gtest_output.xml
 }
@@ -118,7 +122,7 @@ TEST(Buffer, RateLimit1) {
   EXPECT_EQ(queue.size(), 20);
 }
 
-#if !defined(__APPLE__) && !defined (_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
 // The MacOS builders seems to have a lot of "too" long sleeps,
 // same for  GA windows. Disable for now.
 TEST(Buffer, RateLimit2) {
@@ -142,6 +146,21 @@ TEST(Buffer, RateAndSizeLimit) {
   // might fail due to OS gitter i. e., sleep takes "too" long
 }
 
-TEST(Buffer, OverrunEvent) {
-  OverrunEvent event;
+TEST(Buffer, OverrunEvent) { OverrunEvent event; }
+
+TEST(N0183Nuffer, Basic) {
+  static const std::string input1("$GPGGA12345*12");
+  static const std::string input2("$GPGGA12\n345*12");
+
+  N0183Buffer n0183_buffer;
+  for (char c : input1) n0183_buffer.Put(c);
+  EXPECT_TRUE(n0183_buffer.HasSentence());
+  EXPECT_EQ(n0183_buffer.GetSentence(), input1);
+
+  for (char c : input2) n0183_buffer.Put(c);
+  EXPECT_FALSE(n0183_buffer.HasSentence());
+
+  for (char c : input1) n0183_buffer.Put(c);
+  EXPECT_TRUE(n0183_buffer.HasSentence());
+  EXPECT_EQ(n0183_buffer.GetSentence(), input1);
 }
