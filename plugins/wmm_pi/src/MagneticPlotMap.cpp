@@ -47,8 +47,8 @@
 #include "GeomagnetismHeader.h"
 #include "MagneticPlotMap.h"
 
-//static const long long lNaN = 0xfff8000000000000;
-//#define qNan (*(double *)&lNaN)
+// static const long long lNaN = 0xfff8000000000000;
+// #define qNan (*(double *)&lNaN)
 
 double square(double x) { return x * x; }
 
@@ -194,7 +194,7 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2,
   if (fabs(x1 - x2) < m_PoleAccuracy) { /* to avoid recursing too far. make this
                                            value smaller to get more accuracy
                                            especially near the magnetic poles */
-    rx = NAN;                          /* set as no intersections */
+    rx = NAN;                           /* set as no intersections */
     return true;
   }
 

@@ -31,103 +31,97 @@
 
 #include "nmea0183.h"
 
-//IMPLEMENT_DYNAMIC( MWD, RESPONSE )
+// IMPLEMENT_DYNAMIC( MWD, RESPONSE )
 
-MWD::MWD()
-{
-   Mnemonic = _T("MWD");
-   Empty();
+MWD::MWD() {
+  Mnemonic = _T("MWD");
+  Empty();
 }
 
-MWD::~MWD()
-{
-   Mnemonic.Empty();
-   Empty();
+MWD::~MWD() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void MWD::Empty( void )
-{
-//   ASSERT_VALID( this );
+void MWD::Empty(void) {
+  //   ASSERT_VALID( this );
 
-   WindAngleTrue   = 0.0;
-   WindAngleMagnetic   = 0.0;
-   WindSpeedKnots   = 0.0;
-   WindSpeedms   = 0.0;
+  WindAngleTrue = 0.0;
+  WindAngleMagnetic = 0.0;
+  WindSpeedKnots = 0.0;
+  WindSpeedms = 0.0;
 }
 
-bool MWD::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool MWD::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** MWD - Wind Speed and Angle
-   **
-   **        1   2 3   4 5   6 7   8 9
-   **        |   | |   | |   | |   | |
-   ** $--MWD,x.x,T,x.x,M,x.x,N,x.x,M*hh<CR><LF>
-   **
-   ** Field Number:
-   **  1) Wind direction, 0.0 to 359.9 degrees True, to the nearest 0.1 degree
-   **  2) T = True
-   **  3) Wind direction, 0.0 to 359.9 degrees Magnetic, to the nearest 0.1 degree
-   **  4) M = Magnetic
-   **  5> Wind speed, knots, to the nearest 0.1 knot.
-   **  6> N = Knots
-   **  7> Wind speed, meters/second, to the nearest 0.1 m/s.
-   **  8> M = Meters/second
-   **  9) Checksum
-   */
+  /*
+  ** MWD - Wind Speed and Angle
+  **
+  **        1   2 3   4 5   6 7   8 9
+  **        |   | |   | |   | |   | |
+  ** $--MWD,x.x,T,x.x,M,x.x,N,x.x,M*hh<CR><LF>
+  **
+  ** Field Number:
+  **  1) Wind direction, 0.0 to 359.9 degrees True, to the nearest 0.1 degree
+  **  2) T = True
+  **  3) Wind direction, 0.0 to 359.9 degrees Magnetic, to the nearest 0.1
+  *degree
+  **  4) M = Magnetic
+  **  5> Wind speed, knots, to the nearest 0.1 knot.
+  **  6> N = Knots
+  **  7> Wind speed, meters/second, to the nearest 0.1 m/s.
+  **  8> M = Meters/second
+  **  9) Checksum
+  */
 
-   /*
-   ** First we check the checksum...
-   */
+  /*
+  ** First we check the checksum...
+  */
 
-   if ( sentence.IsChecksumBad( 9 ) == TRUE )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
+  if (sentence.IsChecksumBad(9) == TRUE) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
 
-   WindAngleTrue      = sentence.Double( 1 );
-   WindAngleMagnetic  = sentence.Double( 3 );
-   WindSpeedKnots     = sentence.Double( 5 );
-   WindSpeedms        = sentence.Double( 7 );
+  WindAngleTrue = sentence.Double(1);
+  WindAngleMagnetic = sentence.Double(3);
+  WindSpeedKnots = sentence.Double(5);
+  WindSpeedms = sentence.Double(7);
 
-   return( TRUE );
+  return (TRUE);
 }
 
-bool MWD::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool MWD::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += WindAngleTrue;
-   sentence += _T("T");
-   sentence += WindAngleMagnetic;
-   sentence += _T("M");
-   sentence += WindSpeedKnots;
-   sentence += _T("N");
-   sentence += WindSpeedms;
-   sentence += _T("M");
+  sentence += WindAngleTrue;
+  sentence += _T("T");
+  sentence += WindAngleMagnetic;
+  sentence += _T("M");
+  sentence += WindSpeedKnots;
+  sentence += _T("N");
+  sentence += WindSpeedms;
+  sentence += _T("M");
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const MWD& MWD::operator = ( const MWD& source )
-{
-//   ASSERT_VALID( this );
+const MWD& MWD::operator=(const MWD& source) {
+  //   ASSERT_VALID( this );
 
-   WindAngleTrue      = source.WindAngleTrue;
-   WindAngleMagnetic  = source.WindAngleMagnetic;
-   WindSpeedKnots     = source.WindSpeedKnots;
-   WindSpeedms        = source.WindSpeedms;
+  WindAngleTrue = source.WindAngleTrue;
+  WindAngleMagnetic = source.WindAngleMagnetic;
+  WindSpeedKnots = source.WindSpeedKnots;
+  WindSpeedms = source.WindSpeedms;
 
-   return( *this );
+  return (*this);
 }

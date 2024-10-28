@@ -29,9 +29,8 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
-//#pragma hdrstop
+// #pragma hdrstop
 
 /*
 ** Author: Samuel R. Blackburn
@@ -41,135 +40,122 @@
 ** You can use it any way you like.
 */
 
-//IMPLEMENT_DYNAMIC( VTG, RESPONSE )
+// IMPLEMENT_DYNAMIC( VTG, RESPONSE )
 
-VTG::VTG()
-{
-   Mnemonic = _T("VTG");
-   Empty();
+VTG::VTG() {
+  Mnemonic = _T("VTG");
+  Empty();
 }
 
-VTG::~VTG()
-{
-   Mnemonic.Empty();
-   Empty();
+VTG::~VTG() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void VTG::Empty( void )
-{
-//   ASSERT_VALID( this );
+void VTG::Empty(void) {
+  //   ASSERT_VALID( this );
 
-   TrackDegreesTrue       = 0.0;
-   TrackDegreesMagnetic   = 0.0;
-   SpeedKnots             = 0.0;
-   SpeedKilometersPerHour = 0.0;
+  TrackDegreesTrue = 0.0;
+  TrackDegreesMagnetic = 0.0;
+  SpeedKnots = 0.0;
+  SpeedKilometersPerHour = 0.0;
 }
 
-bool VTG::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
-
-   /*
-   ** VTG - Track made good and Ground speed
-   **
-   **        1   2 3   4 5	 6 7   8 9
-   **        |   | |   | |	 | |   | |
-   ** $--VTG,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
-   **
-   ** Field Number:
-   **  1) Track Degrees
-   **  2) T = True
-   **  3) Track Degrees
-   **  4) M = Magnetic
-   **  5) Speed Knots
-   **  6) N = Knots
-   **  7) Speed Kilometers Per Hour
-   **  8) K = Kilometers Per Hour
-   **  9) Checksum
-   */
-
-   /*
-   ** First we check the checksum...
-   */
-
-      int target_field_count = 8;
-
-      NMEA0183_BOOLEAN check = sentence.IsChecksumBad( 9 );
-
-      if ( check == NTrue )
-      {
+bool VTG::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
   /*
-      ** This may be an NMEA Version 2.3 sentence, with "Mode" field
+  ** VTG - Track made good and Ground speed
+  **
+  **        1   2 3   4 5	 6 7   8 9
+  **        |   | |   | |	 | |   | |
+  ** $--VTG,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
+  **
+  ** Field Number:
+  **  1) Track Degrees
+  **  2) T = True
+  **  3) Track Degrees
+  **  4) M = Magnetic
+  **  5) Speed Knots
+  **  6) N = Knots
+  **  7) Speed Kilometers Per Hour
+  **  8) K = Kilometers Per Hour
+  **  9) Checksum
   */
-            wxString checksum_in_sentence = sentence.Field( 9 );
-            if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
-            {
-                  SetErrorMessage( _T("Invalid Checksum") );
-                  return( FALSE );
-            }
 
-           else
-           {
-                  target_field_count = 9;
-                  check = sentence.IsChecksumBad( 10 );
-                  if( check == NTrue)
-                  {
-                        SetErrorMessage( _T("Invalid Checksum") );
-                        return( FALSE );
-                  }
-            }
+  /*
+  ** First we check the checksum...
+  */
+
+  int target_field_count = 8;
+
+  NMEA0183_BOOLEAN check = sentence.IsChecksumBad(9);
+
+  if (check == NTrue) {
+    /*
+     ** This may be an NMEA Version 2.3 sentence, with "Mode" field
+     */
+    wxString checksum_in_sentence = sentence.Field(9);
+    if (checksum_in_sentence.StartsWith(
+            _T("*")))  // Field is a valid erroneous checksum
+    {
+      SetErrorMessage(_T("Invalid Checksum"));
+      return (FALSE);
+    }
+
+    else {
+      target_field_count = 9;
+      check = sentence.IsChecksumBad(10);
+      if (check == NTrue) {
+        SetErrorMessage(_T("Invalid Checksum"));
+        return (FALSE);
       }
+    }
+  }
 
+  if (sentence.GetNumberOfDataFields() != target_field_count) {
+    SetErrorMessage(_T("Invalid FieldCount"));
+    return (FALSE);
+  }
 
+  TrackDegreesTrue = sentence.Double(1);
+  TrackDegreesMagnetic = sentence.Double(3);
+  SpeedKnots = sentence.Double(5);
+  SpeedKilometersPerHour = sentence.Double(7);
 
-   if ( sentence.GetNumberOfDataFields() != target_field_count )
-   {
-         SetErrorMessage( _T("Invalid FieldCount") );
-         return( FALSE );
-   }
-
-
-   TrackDegreesTrue       = sentence.Double( 1 );
-   TrackDegreesMagnetic   = sentence.Double( 3 );
-   SpeedKnots             = sentence.Double( 5 );
-   SpeedKilometersPerHour = sentence.Double( 7 );
-
-   return( TRUE );
+  return (TRUE);
 }
 
-bool VTG::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool VTG::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += TrackDegreesTrue;
-   sentence += _T("T");
-   sentence += TrackDegreesMagnetic;
-   sentence += _T("M");
-   sentence += SpeedKnots;
-   sentence += _T("N");
-   sentence += SpeedKilometersPerHour;
-   sentence += _T("K");
+  sentence += TrackDegreesTrue;
+  sentence += _T("T");
+  sentence += TrackDegreesMagnetic;
+  sentence += _T("M");
+  sentence += SpeedKnots;
+  sentence += _T("N");
+  sentence += SpeedKilometersPerHour;
+  sentence += _T("K");
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const VTG& VTG::operator = ( const VTG& source )
-{
-//   ASSERT_VALID( this );
+const VTG& VTG::operator=(const VTG& source) {
+  //   ASSERT_VALID( this );
 
-   TrackDegreesTrue       = source.TrackDegreesTrue;
-   TrackDegreesMagnetic   = source.TrackDegreesMagnetic;
-   SpeedKnots             = source.SpeedKnots;
-   SpeedKilometersPerHour = source.SpeedKilometersPerHour;
+  TrackDegreesTrue = source.TrackDegreesTrue;
+  TrackDegreesMagnetic = source.TrackDegreesMagnetic;
+  SpeedKnots = source.SpeedKnots;
+  SpeedKilometersPerHour = source.SpeedKilometersPerHour;
 
-   return( *this );
+  return (*this);
 }

@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -43,343 +42,307 @@
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(MRL);
 
-
 NMEA0183::NMEA0183() : NMEA0183(NmeaContext()) {}
-NMEA0183::NMEA0183(const NmeaContext& ctx) : caller_ctx(ctx)
-{
-   initialize();
+NMEA0183::NMEA0183(const NmeaContext &ctx) : caller_ctx(ctx) {
+  initialize();
 
-/*
-   response_table.Add( (RESPONSE *) &Aam );
-   response_table.Add( (RESPONSE *) &Alm );
-   response_table.Add( (RESPONSE *) &Apb );
-   response_table.Add( (RESPONSE *) &Asd );
-   response_table.Add( (RESPONSE *) &Bec );
-   response_table.Add( (RESPONSE *) &Bod );
-   response_table.Add( (RESPONSE *) &Bwc );
-   response_table.Add( (RESPONSE *) &Bwr );
-   response_table.Add( (RESPONSE *) &Bww );
-   response_table.Add( (RESPONSE *) &Dbt );
-   response_table.Add( (RESPONSE *) &Dcn );
-   response_table.Add( (RESPONSE *) &Dpt );
-   response_table.Add( (RESPONSE *) &Fsi );
-   response_table.Add( (RESPONSE *) &Gga );
-   response_table.Add( (RESPONSE *) &Glc );
-   response_table.Add( (RESPONSE *) &Gll );
-   response_table.Add( (RESPONSE *) &Gxa );
-   response_table.Add( (RESPONSE *) &Hsc );
-   response_table.Add( (RESPONSE *) &Lcd );
-   response_table.Add( (RESPONSE *) &Mtw );
-   response_table.Add( (RESPONSE *) &Oln );
-   response_table.Add( (RESPONSE *) &Osd );
-   response_table.Add( (RESPONSE *) &Proprietary );
-   response_table.Add( (RESPONSE *) &Rma );
-*/
-   response_table.Append( (RESPONSE *) &Hdm );
-   response_table.Append( (RESPONSE *) &Hdg );
-   response_table.Append( (RESPONSE *) &Hdt );
-   response_table.Append( (RESPONSE *) &Rmb );
-   response_table.Append( (RESPONSE *) &Rmc );
-   response_table.Append( (RESPONSE *) &Wpl );
-   response_table.Append( (RESPONSE *) &Rte );
-   response_table.Append( (RESPONSE *) &Gll );
-   response_table.Append( (RESPONSE *) &Vtg );
-   response_table.Append( (RESPONSE *) &Gsv );
-   response_table.Append( (RESPONSE *) &Gga );
-   response_table.Append( (RESPONSE *) &GPwpl );
-   response_table.Append( (RESPONSE *) &Apb );
-   response_table.Append( (RESPONSE *) &Xte );
-   response_table.Append( (RESPONSE *) &Mwd );
-   response_table.Append( (RESPONSE *) &Mwv );
+  /*
+     response_table.Add( (RESPONSE *) &Aam );
+     response_table.Add( (RESPONSE *) &Alm );
+     response_table.Add( (RESPONSE *) &Apb );
+     response_table.Add( (RESPONSE *) &Asd );
+     response_table.Add( (RESPONSE *) &Bec );
+     response_table.Add( (RESPONSE *) &Bod );
+     response_table.Add( (RESPONSE *) &Bwc );
+     response_table.Add( (RESPONSE *) &Bwr );
+     response_table.Add( (RESPONSE *) &Bww );
+     response_table.Add( (RESPONSE *) &Dbt );
+     response_table.Add( (RESPONSE *) &Dcn );
+     response_table.Add( (RESPONSE *) &Dpt );
+     response_table.Add( (RESPONSE *) &Fsi );
+     response_table.Add( (RESPONSE *) &Gga );
+     response_table.Add( (RESPONSE *) &Glc );
+     response_table.Add( (RESPONSE *) &Gll );
+     response_table.Add( (RESPONSE *) &Gxa );
+     response_table.Add( (RESPONSE *) &Hsc );
+     response_table.Add( (RESPONSE *) &Lcd );
+     response_table.Add( (RESPONSE *) &Mtw );
+     response_table.Add( (RESPONSE *) &Oln );
+     response_table.Add( (RESPONSE *) &Osd );
+     response_table.Add( (RESPONSE *) &Proprietary );
+     response_table.Add( (RESPONSE *) &Rma );
+  */
+  response_table.Append((RESPONSE *)&Hdm);
+  response_table.Append((RESPONSE *)&Hdg);
+  response_table.Append((RESPONSE *)&Hdt);
+  response_table.Append((RESPONSE *)&Rmb);
+  response_table.Append((RESPONSE *)&Rmc);
+  response_table.Append((RESPONSE *)&Wpl);
+  response_table.Append((RESPONSE *)&Rte);
+  response_table.Append((RESPONSE *)&Gll);
+  response_table.Append((RESPONSE *)&Vtg);
+  response_table.Append((RESPONSE *)&Gsv);
+  response_table.Append((RESPONSE *)&Gga);
+  response_table.Append((RESPONSE *)&GPwpl);
+  response_table.Append((RESPONSE *)&Apb);
+  response_table.Append((RESPONSE *)&Xte);
+  response_table.Append((RESPONSE *)&Mwd);
+  response_table.Append((RESPONSE *)&Mwv);
 
-
-/*
-   response_table.Add( (RESPONSE *) &Rot );
-   response_table.Add( (RESPONSE *) &Rpm );
-   response_table.Add( (RESPONSE *) &Rsa );
-   response_table.Add( (RESPONSE *) &Rsd );
-   response_table.Add( (RESPONSE *) &Sfi );
-   response_table.Add( (RESPONSE *) &Stn );
-   response_table.Add( (RESPONSE *) &Trf );
-   response_table.Add( (RESPONSE *) &Ttm );
-   response_table.Add( (RESPONSE *) &Vbw );
-   response_table.Add( (RESPONSE *) &Vhw );
-   response_table.Add( (RESPONSE *) &Vdr );
-   response_table.Add( (RESPONSE *) &Vlw );
-   response_table.Add( (RESPONSE *) &Vpw );
-   response_table.Add( (RESPONSE *) &Vtg );
-   response_table.Add( (RESPONSE *) &Wcv );
-   response_table.Add( (RESPONSE *) &Wnc );
-   response_table.Add( (RESPONSE *) &Xdr );
-   response_table.Add( (RESPONSE *) &Xte );
-   response_table.Add( (RESPONSE *) &Xtr );
-   response_table.Add( (RESPONSE *) &Zda );
-   response_table.Add( (RESPONSE *) &Zfo );
-   response_table.Add( (RESPONSE *) &Ztg );
-*/
-   sort_response_table();
-   set_container_pointers();
+  /*
+     response_table.Add( (RESPONSE *) &Rot );
+     response_table.Add( (RESPONSE *) &Rpm );
+     response_table.Add( (RESPONSE *) &Rsa );
+     response_table.Add( (RESPONSE *) &Rsd );
+     response_table.Add( (RESPONSE *) &Sfi );
+     response_table.Add( (RESPONSE *) &Stn );
+     response_table.Add( (RESPONSE *) &Trf );
+     response_table.Add( (RESPONSE *) &Ttm );
+     response_table.Add( (RESPONSE *) &Vbw );
+     response_table.Add( (RESPONSE *) &Vhw );
+     response_table.Add( (RESPONSE *) &Vdr );
+     response_table.Add( (RESPONSE *) &Vlw );
+     response_table.Add( (RESPONSE *) &Vpw );
+     response_table.Add( (RESPONSE *) &Vtg );
+     response_table.Add( (RESPONSE *) &Wcv );
+     response_table.Add( (RESPONSE *) &Wnc );
+     response_table.Add( (RESPONSE *) &Xdr );
+     response_table.Add( (RESPONSE *) &Xte );
+     response_table.Add( (RESPONSE *) &Xtr );
+     response_table.Add( (RESPONSE *) &Zda );
+     response_table.Add( (RESPONSE *) &Zfo );
+     response_table.Add( (RESPONSE *) &Ztg );
+  */
+  sort_response_table();
+  set_container_pointers();
 }
 
-NMEA0183::~NMEA0183()
-{
-   initialize();
+NMEA0183::~NMEA0183() { initialize(); }
+
+void NMEA0183::initialize(void) {
+  //   ASSERT_VALID( this );
+
+  ErrorMessage.Empty();
 }
 
-void NMEA0183::initialize( void )
-{
-//   ASSERT_VALID( this );
+void NMEA0183::set_container_pointers(void) {
+  //   ASSERT_VALID( this );
 
-   ErrorMessage.Empty();
+  int index = 0;
+  int number_of_entries_in_table = response_table.GetCount();
+
+  RESPONSE *this_response = (RESPONSE *)NULL;
+
+  index = 0;
+
+  while (index < number_of_entries_in_table) {
+    this_response = (RESPONSE *)response_table[index];
+
+    this_response->SetContainer(this);
+
+    index++;
+  }
 }
 
-void NMEA0183::set_container_pointers( void )
-{
-//   ASSERT_VALID( this );
+void NMEA0183::sort_response_table(void) {
+  //   ASSERT_VALID( this );
 
-   int index = 0;
-   int number_of_entries_in_table = response_table.GetCount();
+  /*
+     int index = 0;
+     int number_of_entries_in_table = response_table.GetSize();
 
-   RESPONSE *this_response = (RESPONSE *) NULL;
+     RESPONSE *this_response = (RESPONSE *) NULL;
+     RESPONSE *that_response = (RESPONSE *) NULL;
 
-   index = 0;
+     bool sorted = FALSE;
 
-   while( index < number_of_entries_in_table )
-   {
-      this_response = (RESPONSE *) response_table[ index ];
+     while( sorted == FALSE )
+     {
+        sorted = TRUE;
 
-      this_response->SetContainer( this );
+        index = 0;
 
-      index++;
-   }
-}
+        while( index < number_of_entries_in_table )
+        {
+           this_response = (RESPONSE *) response_table.Item( index     );
+           that_response = (RESPONSE *) response_table.Item( index + 1 );
 
-void NMEA0183::sort_response_table( void )
-{
-//   ASSERT_VALID( this );
+           if ( this_response->Mnemonic.Compare( that_response->Mnemonic ) > 0 )
+           {
+              response_table[ index     ] = that_response;
+              response_table[ index + 1 ] = this_response;
 
-/*
-   int index = 0;
-   int number_of_entries_in_table = response_table.GetSize();
+              sorted = FALSE;
+           }
 
-   RESPONSE *this_response = (RESPONSE *) NULL;
-   RESPONSE *that_response = (RESPONSE *) NULL;
-
-   bool sorted = FALSE;
-
-   while( sorted == FALSE )
-   {
-      sorted = TRUE;
-
-      index = 0;
-
-      while( index < number_of_entries_in_table )
-      {
-         this_response = (RESPONSE *) response_table.Item( index     );
-         that_response = (RESPONSE *) response_table.Item( index + 1 );
-
-         if ( this_response->Mnemonic.Compare( that_response->Mnemonic ) > 0 )
-         {
-            response_table[ index     ] = that_response;
-            response_table[ index + 1 ] = this_response;
-
-            sorted = FALSE;
-         }
-
-         index++;
-      }
-   }
-*/
+           index++;
+        }
+     }
+  */
 }
 
 /*
 ** Public Interface
 */
 
-bool NMEA0183::IsGood( void ) const
-{
-//   ASSERT_VALID( this );
+bool NMEA0183::IsGood(void) const {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** NMEA 0183 sentences begin with $ and and with CR LF
-   */
+  /*
+  ** NMEA 0183 sentences begin with $ and and with CR LF
+  */
 
-   if ( sentence.Sentence[ 0 ] != '$' )
-   {
-      return( FALSE );
-   }
+  if (sentence.Sentence[0] != '$') {
+    return (FALSE);
+  }
 
-   /*
-   ** Next to last character must be a CR
-   */
+  /*
+  ** Next to last character must be a CR
+  */
 
-   /*  This seems too harsh for cross platform work
+  /*  This seems too harsh for cross platform work
 
-   Relax requirement to line ending of either CR or LF
+  Relax requirement to line ending of either CR or LF
 
-   if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) != wxString(_T("\r")) )
-   {
-      return( FALSE );
-   }
+  if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) !=
+  wxString(_T("\r")) )
+  {
+     return( FALSE );
+  }
 
-   if ( sentence.Sentence.Right( 1 ) != _T("\n") )
-   {
-      return( FALSE );
-   }
-   */
+  if ( sentence.Sentence.Right( 1 ) != _T("\n") )
+  {
+     return( FALSE );
+  }
+  */
 
-//TODO: GPSD messages are not terminated with CR/LF   if ( (sentence.Sentence.Right( 1 ) != _T("\n") ) && (sentence.Sentence.Right( 1 ) != _T("\r") ))
-//      return false;
+  // TODO: GPSD messages are not terminated with CR/LF   if (
+  // (sentence.Sentence.Right( 1 ) != _T("\n") ) && (sentence.Sentence.Right( 1
+  // ) != _T("\r") ))
+  //       return false;
 
-   return( TRUE );
+  return (TRUE);
 }
 
+bool NMEA0183::PreParse(void) {
+  wxCharBuffer buf = sentence.Sentence.ToUTF8();
+  if (!buf.data())  // badly formed sentence?
+    return false;
 
-bool NMEA0183::PreParse( void )
-{
-      wxCharBuffer buf = sentence.Sentence.ToUTF8();
-      if( !buf.data() )                            // badly formed sentence?
-        return false;
+  if (IsGood()) {
+    wxString mnemonic = sentence.Field(0);
 
-      if ( IsGood() )
-      {
-            wxString mnemonic = sentence.Field( 0 );
+    /*
+     ** See if this is a proprietary field
+     */
 
-      /*
-            ** See if this is a proprietary field
-      */
+    if (mnemonic.Left(1) == 'P')
+      mnemonic = _T("P");
 
-            if ( mnemonic.Left( 1 ) == 'P' )
-                  mnemonic = _T("P");
+    else
+      mnemonic = mnemonic.Right(3);
 
-            else
-                  mnemonic = mnemonic.Right( 3 );
+    LastSentenceIDReceived = mnemonic;
 
-
-            LastSentenceIDReceived = mnemonic;
-
-            return true;
-      }
-      else
-            return false;
+    return true;
+  } else
+    return false;
 }
 
+bool NMEA0183::Parse(void) {
+  bool return_value = FALSE;
 
-bool NMEA0183::Parse( void )
-{
-   bool return_value = FALSE;
+  if (PreParse()) {
+    wxString mnemonic = sentence.Field(0);
 
-   if(PreParse())
-   {
+    /*
+    ** See if this is a proprietary field
+    */
 
-      wxString mnemonic = sentence.Field( 0 );
+    if (mnemonic.Left(1) == 'P') {
+      mnemonic = _T("P");
+    } else {
+      mnemonic = mnemonic.Right(3);
+    }
 
-      /*
-      ** See if this is a proprietary field
-      */
+    /*
+    ** Set up our default error message
+    */
 
-      if ( mnemonic.Left( 1 ) == 'P' )
-      {
-          mnemonic = _T("P");
-      }
-      else
-      {
-         mnemonic = mnemonic.Right( 3 );
-      }
+    ErrorMessage = mnemonic;
+    ErrorMessage += _T(" is an unknown type of sentence");
 
-      /*
-      ** Set up our default error message
-      */
+    LastSentenceIDReceived = mnemonic;
 
-      ErrorMessage = mnemonic;
-      ErrorMessage += _T(" is an unknown type of sentence");
+    RESPONSE *response_p = (RESPONSE *)NULL;
 
-      LastSentenceIDReceived = mnemonic;
-
-      RESPONSE *response_p = (RESPONSE *) NULL;
-
-
-//          Traverse the response list to find a mnemonic match
-
-       wxMRLNode *node = response_table.GetFirst();
-
-       int comparison  = 0;
-
-        while(node)
-        {
-           RESPONSE *resp = node->GetData();
-
-            comparison = mnemonic.Cmp( resp->Mnemonic );
-
-            if ( comparison == 0 )
-            {
-                        response_p = (RESPONSE *) resp;
-                        return_value = response_p->Parse( sentence );
-
-                        /*
-                        ** Set your ErrorMessage
-                        */
-
-                        if ( return_value == TRUE )
-                        {
-                           ErrorMessage = _T("No Error");
-                           LastSentenceIDParsed = response_p->Mnemonic;
-                           TalkerID = talker_id( sentence );
-                           ExpandedTalkerID = expand_talker_id( TalkerID );
-                        }
-                        else
-                        {
-                           ErrorMessage = response_p->ErrorMessage;
-                        }
-
-                        break;
-                   }
-
-              node = node->GetNext();
-        }
-
-   }
-   else
-   {
-      return_value = FALSE;
-   }
-
-   return( return_value );
-}
-
-wxArrayString NMEA0183::GetRecognizedArray(void)
-{
-    wxArrayString ret;
+    //          Traverse the response list to find a mnemonic match
 
     wxMRLNode *node = response_table.GetFirst();
 
-    while(node)
-    {
-        RESPONSE *resp = node->GetData();
-        ret.Add( resp->Mnemonic );
-        node = node->GetNext();
+    int comparison = 0;
+
+    while (node) {
+      RESPONSE *resp = node->GetData();
+
+      comparison = mnemonic.Cmp(resp->Mnemonic);
+
+      if (comparison == 0) {
+        response_p = (RESPONSE *)resp;
+        return_value = response_p->Parse(sentence);
+
+        /*
+        ** Set your ErrorMessage
+        */
+
+        if (return_value == TRUE) {
+          ErrorMessage = _T("No Error");
+          LastSentenceIDParsed = response_p->Mnemonic;
+          TalkerID = talker_id(sentence);
+          ExpandedTalkerID = expand_talker_id(TalkerID);
+        } else {
+          ErrorMessage = response_p->ErrorMessage;
+        }
+
+        break;
+      }
+
+      node = node->GetNext();
     }
 
-    return ret;
+  } else {
+    return_value = FALSE;
+  }
+
+  return (return_value);
 }
 
+wxArrayString NMEA0183::GetRecognizedArray(void) {
+  wxArrayString ret;
 
+  wxMRLNode *node = response_table.GetFirst();
 
+  while (node) {
+    RESPONSE *resp = node->GetData();
+    ret.Add(resp->Mnemonic);
+    node = node->GetNext();
+  }
 
-NMEA0183& NMEA0183::operator << ( wxString & source )
-{
-//   ASSERT_VALID( this );
-
-   sentence = source;
-
-   return( *this );
+  return ret;
 }
 
-NMEA0183& NMEA0183::operator >> ( wxString& destination )
-{
-//   ASSERT_VALID( this );
+NMEA0183 &NMEA0183::operator<<(wxString &source) {
+  //   ASSERT_VALID( this );
 
-   destination = sentence;
+  sentence = source;
 
-   return( *this );
+  return (*this);
+}
+
+NMEA0183 &NMEA0183::operator>>(wxString &destination) {
+  //   ASSERT_VALID( this );
+
+  destination = sentence;
+
+  return (*this);
 }

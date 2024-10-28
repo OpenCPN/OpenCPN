@@ -58,7 +58,7 @@ public:
   //    iirfilter() {setFC(0.5); type = IIRFILTER_TYPE_LINEAR; reset();};
 
   iirfilter(double fc = 0.5, int tp = IIRFILTER_TYPE_LINEAR);
-  ~iirfilter(){};
+  ~iirfilter() {};
   double filter(double data);   // Return filtered data given new data point
   void reset(double a = 0.0);   // Clear filter
   void setFC(double fc = 0.1);  // Set cutoff frequency

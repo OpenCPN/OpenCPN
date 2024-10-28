@@ -39,7 +39,7 @@ EVT_MOUSE_EVENTS(GribGrabberWin::OnMouseEvent)
 EVT_PAINT(GribGrabberWin::OnPaint)
 END_EVENT_TABLE()
 
-    GribGrabberWin::GribGrabberWin(wxWindow* parent) {
+GribGrabberWin::GribGrabberWin(wxWindow* parent) {
   Create(parent);
 
   m_bLeftDown = false;

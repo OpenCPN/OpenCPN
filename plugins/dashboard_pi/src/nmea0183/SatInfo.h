@@ -29,16 +29,14 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( SAT_INFO_HEADER )
+#if !defined(SAT_INFO_HEADER)
 #define SAT_INFO_HEADER
 
-typedef struct
-{
-   int SatNumber;
-   int ElevationDegrees;
-   int AzimuthDegreesTrue;
-   int SignalToNoiseRatio;
+typedef struct {
+  int SatNumber;
+  int ElevationDegrees;
+  int AzimuthDegreesTrue;
+  int SignalToNoiseRatio;
 } SAT_INFO;
 
-#endif // SAT_INFO_HEADER
+#endif  // SAT_INFO_HEADER
