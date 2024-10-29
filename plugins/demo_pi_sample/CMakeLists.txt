@@ -79,12 +79,13 @@ IF(WIN32)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
 ENDIF(WIN32)
 
+if ($ENV{CI} STREQUAL "")
+  set(wxWidgets_USE_LIBS base core net xml html adv)
+  set(BUILD_SHARED_LIBS TRUE)
+  find_package(wxWidgets REQUIRED)
+  include(${wxWidgets_USE_FILE})
+endif ()
 
-SET(wxWidgets_USE_LIBS base core net xml html adv)
-SET(BUILD_SHARED_LIBS TRUE)
-FIND_PACKAGE(wxWidgets REQUIRED)
-
-INCLUDE(${wxWidgets_USE_FILE})
 
 FIND_PACKAGE(Gettext REQUIRED)
 
