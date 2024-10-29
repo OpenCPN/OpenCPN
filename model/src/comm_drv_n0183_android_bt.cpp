@@ -184,7 +184,7 @@ CommDriverN0183AndroidBT::CommDriverN0183AndroidBT(
   this->attributes["userComment"] = params->UserComment.ToStdString();
   dsPortType iosel = params->IOSelect;
   std::string s_iosel = std::string("IN");
-  if (iosel == DS_TYPE_INPUT_OUTPUT) {
+  if (iosel == DS_TYPE_OUTPUT) {
     s_iosel = "OUT";
   } else if (iosel == DS_TYPE_INPUT_OUTPUT) {
     s_iosel = "IN/OUT";
