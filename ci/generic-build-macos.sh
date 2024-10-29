@@ -60,6 +60,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn \
   -DOCPN_RELEASE=0 \
   -DOCPN_BUILD_TEST=ON \
+  -DOCPN_BUILD_SAMPLE=ON \
   ..
 
 # Compile OpenCPN

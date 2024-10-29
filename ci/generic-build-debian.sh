@@ -69,6 +69,7 @@ else
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DOCPN_CI_BUILD:BOOL=ON \
         -DOCPN_USE_BUNDLED_LIBS=OFF \
+        -DOCPN_BUILD_SAMPLE=ON \
         ..
     make -sj2
     dbus-run-session make run-tests || :

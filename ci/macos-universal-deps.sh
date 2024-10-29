@@ -166,7 +166,7 @@ cd ..
 rm -rf opus-${opus_version}
 
 #blake2
-if [ ! -f libb2-${blake2_version}.tar.gz ]; then 
+if [ ! -f libb2-${blake2_version}.tar.gz ]; then
   wget https://github.com/BLAKE2/libb2/releases/download/v${blake2_version}/libb2-${blake2_version}.tar.gz
 fi
 tar xzf libb2-${blake2_version}.tar.gz
@@ -228,7 +228,20 @@ cd libarchive-${libarchive_version}
 #lipo -create libarchive.13.dylib.x86-64 libarchive.13.dylib.arm64 -output .libs/libarchive.13.dylib
 mkdir bld
 cd bld
-cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_LZ4=false -DZSTD_INCLUDE_DIR=${cache_dir}/include -DZSTD_LIBRARY=${cache_dir}/lib/libzstd.dylib -DLIBB2_INCLUDE_DIR=${cache_dir}/include -DLIBB2_LIBRARY=${cache_dir}/lib/libb2.dylib -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE ..
+cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" \
+    -DCMAKE_INSTALL_PREFIX=${cache_dir} \
+    -DENABLE_LZ4=false \
+    -DZSTD_INCLUDE_DIR=${cache_dir}/include \
+    -DZSTD_LIBRARY=${cache_dir}/lib/libzstd.dylib \
+    -DLIBB2_INCLUDE_DIR=${cache_dir}/include \
+    -DLIBB2_LIBRARY=${cache_dir}/lib/libb2.dylib \
+    -DCMAKE_POLICY_DEFAULT_CMP0068=NEW \
+    -DCMAKE_SKIP_BUILD_RPATH=FALSE \
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE \
+    -DCMAKE_INSTALL_RPATH=${cache_dir}/lib \
+    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE \
+    -DOCPN_BUILD_SAMPLE=ON \
+    ..
 #-DCMAKE_MACOSX_RPATH=FALSE ..
 make -j ${ncp}
 make install
@@ -349,7 +362,7 @@ fi
 tar xjf openssl-${openssl_version}.tar.gz
 cd openssl-${openssl_version}
 if [[ "${arch}" = *"x86_64"* ]]; then
-  ./Configure --prefix="${cache_dir}" darwin64-x86_64-cc shared 
+  ./Configure --prefix="${cache_dir}" darwin64-x86_64-cc shared
   make -j ${ncpu}
   if [[ "${arch}" = *"x86_64"* ]] && [[ "${arch}" = *"arm64"* ]]; then
     mv libcrypto.3.dylib libcrypto.3.dylib.x86-64
