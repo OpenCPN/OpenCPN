@@ -4995,14 +4995,9 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event) {
     ZoomProject(m_runoffsetx, m_runoffsety, m_runswidth, m_runsheight);
 
   } else {
-    // qDebug() << "onZoomTimerEvent DONE" << m_nRun << m_nTotal;
-
     zoomTimer.Stop();
     if (m_zoomFinal) {
-      // qDebug() << "onZoomTimerEvent FINALZOOM" << m_zoomFinalZoom;
-
-      m_pParentCanvas->ZoomCanvas(m_zoomFinalZoom, false);
-
+      m_pParentCanvas->ZoomCanvasSimple(m_zoomFinalZoom);
       if (m_zoomFinaldx || m_zoomFinaldy) {
         m_pParentCanvas->PanCanvas(m_zoomFinaldx, m_zoomFinaldy);
       }
