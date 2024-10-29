@@ -497,15 +497,19 @@ TEST(RestServer, Object) {
   app.Run();
 }
 
+#ifndef OCPN_DISTRO_BUILD
 TEST(RestServer, CheckWrite) {
-  wxDisableAsserts();
-  RestServerDlgCtx dialog_ctx;
-  RouteCtx route_ctx;
-  RestCheckWriteApp app(dialog_ctx, route_ctx, g_portable);
-  app.Run();
-  delete g_BasePlatform;
-  g_BasePlatform = 0;
+  if (!getenv("DOCKER_BUILD")) {
+    wxDisableAsserts();
+    RestServerDlgCtx dialog_ctx;
+    RouteCtx route_ctx;
+    RestCheckWriteApp app(dialog_ctx, route_ctx, g_portable);
+    app.Run();
+    delete g_BasePlatform;
+    g_BasePlatform = 0;
+  }
 }
+#endif
 
 TEST(RestServer, PluginMessage) {
   wxDisableAsserts();

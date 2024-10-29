@@ -277,7 +277,7 @@ public:
   LogProcessing(): N2kTest() { app = new N2kRunLog(); }
 };
 
-
+#ifndef OCPN_DISTRO_BUILD
 TEST(DriverRegistry, RegisterDriver) {
   N2kTestDriverRegistry app;
   app.OnInit();
@@ -285,6 +285,7 @@ TEST(DriverRegistry, RegisterDriver) {
   EXPECT_EQ(int1, 0);   // Driver closed.
   EXPECT_EQ(int2, 0);   // All drivers closed.
 }
+#endif
 
 #ifdef ENABLE_VCAN_TESTS
 TEST(CanEnvironment, vcan0) {

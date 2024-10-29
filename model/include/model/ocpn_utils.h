@@ -58,6 +58,13 @@ bool replace(std::string& str, const std::string& from, const std::string& to);
 
 void copy_file(const std::string& src_path, const std::string& dest_path);
 
+/**
+ * Check if checksum in a NMEA0183 sentence is correct
+ * @param sentence complete NMEA01832 message
+ * @return true if checksum is OK, else false.
+ */
+bool N0183CheckSumOk(const std::string& sentence);
+
 }  // namespace ocpn
 
 #endif  //  _OCPN_UTILS_H__

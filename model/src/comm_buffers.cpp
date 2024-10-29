@@ -67,3 +67,50 @@ std::vector<uint8_t> LineBuffer::GetLine() {
   m_line_count -= 1;
   return line;
 }
+
+std::string N0183Buffer::GetSentence() {
+  if (m_lines.empty()) return "";
+  auto sentence = m_lines.front();
+  m_lines.pop_front();
+  return sentence;
+}
+
+void N0183Buffer::Put(uint8_t ch) {
+  switch (m_state) {
+    case State::PrefixWait:
+      // Wait until start of message
+      if (ch == '$' || ch == '!') {
+        m_line.clear();
+        m_line.push_back(ch);
+        m_state = State::Data;
+      }
+      break;
+    case State::Data:
+      // Collect data into m_line until a '*' is found
+      if (std::isprint(ch)) {
+        m_line.push_back(ch);
+        if (ch == '*') m_state = State::CsDigit1;
+      } else {
+        // Malformed? Garbage input?
+        m_state = State::PrefixWait;
+      }
+      break;
+    case State::CsDigit1:
+      // Collect first checksum digit
+      if (std::isxdigit(ch)) {
+        m_line.push_back(ch);
+        m_state = State::CsDigit2;
+      } else {
+        m_state = State::PrefixWait;
+      }
+      break;
+    case State::CsDigit2:
+      // Collect last checksum digit, push m_line to m_lines if OK
+      if (std::isxdigit(ch)) {
+        m_line.push_back(ch);
+        m_lines.emplace_back(m_line.begin(), m_line.end());
+      }
+      m_state = State::PrefixWait;
+      break;
+  }
+}

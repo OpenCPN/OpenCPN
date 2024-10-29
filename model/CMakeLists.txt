@@ -166,6 +166,7 @@ set(SRC
   ${MODEL_SRC_DIR}/conn_params.cpp
   ${MODEL_SRC_DIR}/cutil.cpp
   ${MODEL_SRC_DIR}/downloader.cpp
+  ${MODEL_SRC_DIR}/ds_porttype.cpp
   ${MODEL_SRC_DIR}/garmin_protocol_mgr.cpp
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
