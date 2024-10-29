@@ -121,14 +121,8 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   sprintf(port_char, "%d", params->NetworkPort);
   this->attributes["netPort"] = std::string(port_char);
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  dsPortType iosel = params->IOSelect;
-  std::string s_iosel = std::string("IN");
-  if (iosel == DS_TYPE_OUTPUT) {
-    s_iosel = "OUT";
-  } else if (iosel == DS_TYPE_INPUT_OUTPUT) {
-    s_iosel = "IN/OUT";
-  }
-  this->attributes["ioDirection"] = s_iosel;
+  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+
   m_mrq_container = std::make_unique<MrqContainer>();
 
   // Establish event listeners
