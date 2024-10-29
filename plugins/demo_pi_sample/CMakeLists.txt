@@ -61,27 +61,30 @@ include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 # require proper c++ ADD_DEFINITIONS( "-Wall -ansi -pedantic
 # -Wno-variadic-macros" ) TODO: Should we use  -fno-stack-protector IF NOT
 # DEBUGGING CFLAGS="-O2 -march=native"
-if (NOT WIN32)
-  add_compile_options("-Wall" "-g" "-fexceptions" "-fvisibility=hidden")
-  if (NOT APPLE)
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
-  else ()
-    set(CMAKE_SHARED_LINKER_FLAGS "-Wl")
-  endif ()
-endif ()
 
-# Add some definitions to satisfy MS
 if (WIN32)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+  string(APPEND
+    CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS " -undefined dynamic_lookup"
+  )
+  add_compile_options("-Wall" "-g" "-fexceptions" "-fvisibility=hidden")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL GNU)
+  add_compile_options("-Wl,-Bsymbolic")
+  add_compile_options("-Wl,--unresolved-symbols=ignore-in-shared-libs")
+  add_compile_options("-Wall" "-g" "-fexceptions" "-fvisibility=hidden")
 endif ()
 
 set(BUILD_SHARED_LIBS TRUE)
+
 if ($ENV{CI} STREQUAL "")
   set(wxWidgets_USE_LIBS base core net xml html adv)
   find_package(wxWidgets REQUIRED)
   include(${wxWidgets_USE_FILE})
 endif ()
+
+find_package(Gettext REQUIRED)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -104,24 +107,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 # TODO: Should we use  -fno-stack-protector IF NOT
 # DEBUGGING CFLAGS="-O2 -march=native"
 
-if (NOT WIN32)
-  add_compile_options("-Wall" "-g" "-fexceptions" "-fvisibility=hidden")
-  if (NOT APPLE)
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
-  else ()
-    set(CMAKE_SHARED_LINKER_FLAGS "-Wl")
-  endif ()
-endif ()
-
-# Add some definitions to satisfy MS
-if (WIN32)
-  add_definitions(-D__MSVC__)
-  add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
-endif ()
-
-set(BUILD_SHARED_LIBS TRUE)
-
-find_package(Gettext REQUIRED)
 
 # For convenience we define the sources as a variable. You can add header files
 # and cpp/c files and CMake will sort them out
