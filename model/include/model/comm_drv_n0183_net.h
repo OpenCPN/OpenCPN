@@ -95,7 +95,7 @@ private:
     CommDriverN0183Net& m_owner;
   };
 
-  ConnectionParams m_params;
+  const ConnectionParams m_params;
   DriverListener& m_listener;
 
   void HandleResume();
@@ -110,8 +110,6 @@ private:
   bool SendSentenceNetwork(const wxString& payload);
 
   N0183Buffer n0183_buffer;
-  wxString m_net_port;
-  NetworkProtocol m_net_protocol;
   wxIPV4address m_addr;
   wxSocketBase* m_sock;
   wxSocketBase* m_tsock;
@@ -121,9 +119,6 @@ private:
 
   int m_txenter;
   int m_dog_value;
-  std::string m_sock_buffer;
-  wxString m_portstring;
-  dsPortType m_io_select;
   wxDateTime m_connect_time;
   bool m_rx_connect_event;
 

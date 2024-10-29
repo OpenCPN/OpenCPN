@@ -51,6 +51,7 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
+#include "model/logger.h"
 #include "model/ocpn_utils.h"
 #include "model/sys_events.h"
 
@@ -99,16 +100,12 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
     : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
-      m_net_port(wxString::Format("%i", params->NetworkPort)),
-      m_net_protocol(params->NetProtocol),
       m_sock(nullptr),
       m_tsock(nullptr),
       m_socket_server(nullptr),
       m_is_multicast(false),
       m_txenter(0),
       m_dog_value(0),
-      m_portstring(params->GetDSPort()),
-      m_io_select(params->IOSelect),
       m_rx_connect_event(false),
       m_socket_timer(*this),
       m_socketread_watchdog_timer(*this),
@@ -164,7 +161,7 @@ void CommDriverN0183Net::Open() {
   unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
 #endif
   // Create the socket
-  switch (m_net_protocol) {
+  switch (m_params.NetProtocol) {
     case GPSD: {
       OpenNetworkGpsd();
       break;
@@ -184,11 +181,12 @@ void CommDriverN0183Net::Open() {
 }
 
 void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
-  if (m_io_select != DS_TYPE_OUTPUT) {
+  if (m_params.IOSelect != DS_TYPE_OUTPUT) {
     // We need a local (bindable) address to create the Datagram receive socket
     // Set up the reception socket
     wxIPV4address conn_addr;
-    conn_addr.Service(m_net_port);
+    conn_addr.Service(std::to_string(m_params.NetworkPort));
+    conn_addr.AnyAddress();
     conn_addr.AnyAddress();
     m_sock =
         new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
@@ -211,7 +209,7 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
   }
 
   // Set up another socket for transmit
-  if (m_io_select != DS_TYPE_INPUT) {
+  if (m_params.IOSelect != DS_TYPE_INPUT) {
     wxIPV4address tconn_addr;
     tconn_addr.Service(0);  // use ephemeral out port
     tconn_addr.AnyAddress();
@@ -250,8 +248,10 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
   } else {
     GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
     int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-    if (m_io_select != DS_TYPE_INPUT) notify_flags |= wxSOCKET_OUTPUT_FLAG;
-    if (m_io_select != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
+    if (m_params.IOSelect != DS_TYPE_INPUT)
+      notify_flags |= wxSOCKET_OUTPUT_FLAG;
+    if (m_params.IOSelect != DS_TYPE_OUTPUT)
+      notify_flags |= wxSOCKET_INPUT_FLAG;
     GetSock()->SetNotify(notify_flags);
     GetSock()->Notify(TRUE);
     GetSock()->SetTimeout(1);  // Short timeout
@@ -283,7 +283,7 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer() {
   if (m_dog_value <= 0) {  // No receive in n seconds
     if (GetParams().NoDataReconnect) {
       // Reconnect on NO DATA is true, so try to reconnect now.
-      if (m_net_protocol == TCP) {
+      if (m_params.NetProtocol == TCP) {
         auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
         if (tcp_socket) tcp_socket->Close();
 
@@ -375,10 +375,11 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_LOST: {
-      if (m_net_protocol == TCP || m_net_protocol == GPSD) {
-        if (m_rx_connect_event)
-          wxLogMessage("NetworkDataStream connection lost: %s",
-                       m_portstring.c_str());
+      if (m_params.NetProtocol == TCP || m_params.NetProtocol == GPSD) {
+        if (m_rx_connect_event) {
+          MESSAGE_LOG << "NetworkDataStream connection lost: "
+                      << m_params.GetDSPort();
+        }
         if (m_socket_server) {
           GetSock()->Destroy();
           m_sock = nullptr;
@@ -407,25 +408,25 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_CONNECTION: {
-      if (m_net_protocol == GPSD) {
+      if (m_params.NetProtocol == GPSD) {
         //      Sign up for watcher mode, Cooked NMEA
         //      Note that SIRF devices will be converted by gpsd into
         //      pseudo-NMEA
 
         char cmd[] = R"--(?WATCH={"class":"WATCH", "nmea":true})--";
         GetSock()->Write(cmd, strlen(cmd));
-      } else if (m_net_protocol == TCP) {
-        wxLogMessage("TCP NetworkDataStream connection established: %s",
-                     m_portstring.c_str());
+      } else if (m_params.NetProtocol == TCP) {
+        MESSAGE_LOG << "TCP NetworkDataStream connection established: "
+                    << m_params.GetDSPort();
 
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
-        if (m_io_select != DS_TYPE_OUTPUT) {
+        if (m_params.IOSelect != DS_TYPE_OUTPUT) {
           // start the DATA watchdog only if NODATA Reconnect is desired
           if (GetParams().NoDataReconnect)
             m_socketread_watchdog_timer.Start(1000);
         }
 
-        if (m_io_select != DS_TYPE_INPUT && GetSock()->IsOk())
+        if (m_params.IOSelect != DS_TYPE_INPUT && GetSock()->IsOk())
           (void)SetOutputSocketOptions(GetSock());
         m_socket_timer.Stop();
         m_rx_connect_event = true;
@@ -450,11 +451,12 @@ void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
         //        GetSock()->SetFlags(wxSOCKET_BLOCK);
         GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
         int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-        if (m_io_select != DS_TYPE_INPUT) {
+        if (m_params.IOSelect != DS_TYPE_INPUT) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
           (void)SetOutputSocketOptions(GetSock());
         }
-        if (m_io_select != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
+        if (m_params.IOSelect != DS_TYPE_OUTPUT)
+          notify_flags |= wxSOCKET_INPUT_FLAG;
         GetSock()->SetNotify(notify_flags);
         GetSock()->Notify(true);
       }
@@ -473,7 +475,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 
   bool ret = true;
   wxDatagramSocket* udp_socket;
-  switch (m_net_protocol) {
+  switch (m_params.NetProtocol) {
     case TCP:
       if (GetSock() && GetSock()->IsOk()) {
         GetSock()->Write(payload.mb_str(), strlen(payload.mb_str()));
@@ -515,7 +517,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 }
 
 void CommDriverN0183Net::Close() {
-  wxLogMessage("Closing NMEA NetworkDataStream %s", m_net_port.c_str());
+  MESSAGE_LOG << "Closing NMEA NetworkDataStream " << m_params.NetworkPort;
   //    Kill off the TCP Socket if alive
   if (m_sock) {
     if (m_is_multicast)
