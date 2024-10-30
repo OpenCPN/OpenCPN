@@ -64,8 +64,6 @@ public:
   wxString GetLongDescription();
 
   //    The optional method overrides
-
-  void SetNMEASentence(wxString &sentence);
   void OnContextMenuItemCallback(int id);
   void UpdateAuiStatus(void);
 
@@ -94,13 +92,16 @@ public:
   virtual ~DemoWindow() = default;
 
   void OnPaint(wxPaintEvent &event);
-  void SetSentence(wxString &sentence);
   void OnSize(wxSizeEvent &event);
+  void SetNavdata(ObservedEvt ev);
 
   NMEA0183 m_nmea0183;  // Used to parse NMEA Sentences
 
   wxString m_nmea_sentence;
   double m_lat, m_lon, m_sog, m_cog, m_var;
+
+private:
+  std::shared_ptr<ObservableListener> m_navdata_listener;
 };
 
 #endif

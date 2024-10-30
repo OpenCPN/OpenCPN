@@ -88,7 +88,7 @@ bool DemoPi::DeInit(void) {
   m_aui_mgr->DetachPane(m_demo_window);
   if (m_demo_window) {
     m_demo_window->Close();
-    //          m_demo_window->Destroy(); //Gives a Segmentation fault
+    m_demo_window = nullptr;
   }
   return true;
 }
@@ -113,12 +113,6 @@ wxString DemoPi::GetLongDescription() {
   return _(
       "Demo PlugIn for OpenCPN\n\
 demonstrates PlugIn processing of NMEA messages.");
-}
-
-void DemoPi::SetNMEASentence(wxString& sentence) {
-  if (m_demo_window) {
-    m_demo_window->SetSentence(sentence);
-  }
 }
 
 void DemoPi::OnContextMenuItemCallback(int id) {
@@ -206,8 +200,8 @@ void DemoPi::SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix) {}
 //
 //----------------------------------------------------------------
 
-DemoWindow::DemoWindow(wxWindow* pparent, wxWindowID id)
-    : wxWindow(pparent, id, wxPoint(10, 10), wxSize(200, 200), wxSIMPLE_BORDER,
+DemoWindow::DemoWindow(wxWindow* parent, wxWindowID id)
+    : wxWindow(parent, id, wxPoint(10, 10), wxSize(200, 200), wxSIMPLE_BORDER,
                "OpenCPN PlugIn"),
       m_lat(0.0),
       m_lon(1.0),
@@ -216,53 +210,22 @@ DemoWindow::DemoWindow(wxWindow* pparent, wxWindowID id)
       m_var(4.0) {
   Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) { OnPaint(ev); });
   Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
+  wxDEFINE_EVENT(EVT_DEMO_NAVDATA, ObservedEvt);
+  m_navdata_listener = GetListener(NavDataId(), EVT_DEMO_NAVDATA, this);
+  Bind(EVT_DEMO_NAVDATA, [&](ObservedEvt ev) { SetNavdata(ev); });
 }
 
 void DemoWindow::OnSize(wxSizeEvent&) { printf("demoWindow OnSize()\n"); }
 
-void DemoWindow::SetSentence(wxString& sentence) {
-  m_nmea0183 << sentence;
-
-  bool is_data_ok = false;
-
-  if (m_nmea0183.PreParse()) {
-    if (m_nmea0183.LastSentenceIDReceived == "RMC") {
-      if (m_nmea0183.Parse()) {
-        if (m_nmea0183.Rmc.IsDataValid == NTrue) {
-          float llt = m_nmea0183.Rmc.Position.Latitude.Latitude;
-          int lat_deg_int = (int)(llt / 100);
-          float lat_deg = lat_deg_int;
-          float lat_min = llt - (lat_deg * 100);
-          m_lat = lat_deg + (lat_min / 60.);
-          if (m_nmea0183.Rmc.Position.Latitude.Northing == South)
-            m_lat = -m_lat;
-
-          float lln = m_nmea0183.Rmc.Position.Longitude.Longitude;
-          int lon_deg_int = (int)(lln / 100);
-          float lon_deg = lon_deg_int;
-          float lon_min = lln - (lon_deg * 100);
-          m_lon = lon_deg + (lon_min / 60.);
-          if (m_nmea0183.Rmc.Position.Longitude.Easting == West) m_lon = -m_lon;
-
-          m_sog = m_nmea0183.Rmc.SpeedOverGroundKnots;
-          m_cog = m_nmea0183.Rmc.TrackMadeGoodDegreesTrue;
-
-          if (m_nmea0183.Rmc.MagneticVariationDirection == East)
-            m_var = m_nmea0183.Rmc.MagneticVariation;
-          else if (m_nmea0183.Rmc.MagneticVariationDirection == West)
-            m_var = -m_nmea0183.Rmc.MagneticVariation;
-
-          is_data_ok = true;
-        }
-      }
-    }
-  }
-  //    Got the data, now do something with it
-  if (is_data_ok) {
-    Refresh(false);
-  }
+void DemoWindow::SetNavdata(ObservedEvt ev) {
+  const PluginNavdata nav_data = GetEventNavdata(ev);
+  m_lat = nav_data.lat;
+  m_lon = nav_data.lon;
+  m_cog = nav_data.cog;
+  m_sog = nav_data.sog;
+  m_var = nav_data.var;
+  Refresh(false);
 }
-
 void DemoWindow::OnPaint(wxPaintEvent&) {
   wxLogMessage("demo_pi onpaint");
 
