@@ -100,6 +100,10 @@ int DemoPi::GetAPIVersionMinor() { return MY_API_VERSION_MINOR; }
 int DemoPi::GetPlugInVersionMajor() { return PLUGIN_VERSION_MAJOR; }
 
 int DemoPi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
+int GetPlugInVersionPatch() { return PLUGIN_VERSION_PATCH; }
+int GetPlugInVersionPost() { return PLUGIN_VERSION_TWEAK; }
+const char *GetPlugInVersionPre() { return PKG_PRERELEASE; }
+const char *GetPlugInVersionBuild() { return PKG_BUILD_INFO; }
 
 wxString DemoPi::GetCommonName() { return _("Demo"); }
 

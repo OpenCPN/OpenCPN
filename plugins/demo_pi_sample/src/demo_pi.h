@@ -46,9 +46,9 @@ class DemoWindow;
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-class DemoPi : public opencpn_plugin_18 {
+class DemoPi : public opencpn_plugin_118 {
 public:
-  DemoPi(void *ppimgr) : opencpn_plugin_18(ppimgr) {}
+  DemoPi(void *ppimgr) : opencpn_plugin_118(ppimgr) {}
 
   //    The required PlugIn Methods
   int Init(void);
