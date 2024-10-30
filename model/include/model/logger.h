@@ -43,6 +43,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <chrono>
 #include <fstream>
 #include <ostream>
 #include <sstream>
@@ -122,6 +123,38 @@ protected:
   std::stringstream os;
   wxLogRecordInfo info;
   wxLogLevel level;
+};
+
+/** Filter logging every nth message */
+class CountedLogFilter {
+public:
+  CountedLogFilter(unsigned n, wxLogLevel level = wxLOG_Message)
+      : m_count(n), m_level(level), m_not_logged(0) {}
+
+  /** Log a repeated message after suppressing n ones. */
+  void Log(const std::string& message);
+
+private:
+  const unsigned m_count;
+  const wxLogLevel m_level;
+  unsigned m_not_logged;
+};
+
+/** Filter logging repeated message with specified interval. */
+class TimedLogFilter {
+public:
+  TimedLogFilter(const std::chrono::seconds& interval,
+                 wxLogLevel level = wxLOG_Message)
+      : m_interval(interval), m_level(level), m_not_logged(0) {}
+
+  /** Log a repeated message after interval seconds. */
+  void Log(const std::string& message);
+
+private:
+  const std::chrono::seconds m_interval;
+  const wxLogLevel m_level;
+  std::chrono::time_point<std::chrono::steady_clock> m_last_logged;
+  unsigned m_not_logged;
 };
 
 #endif  // LOGGER_H
