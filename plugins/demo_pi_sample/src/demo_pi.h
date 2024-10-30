@@ -1,9 +1,4 @@
-/*****************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  demo Plugin
- *
- ***************************************************************************
+/******************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,8 +15,9 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ ***************************************************************************/
+
+/** \file demo_pi.h  Minimal example plugin. */
 
 #ifndef _DEMOPI_H_
 #define _DEMOPI_H_
@@ -37,19 +33,22 @@
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 8
 
-#include "../../../include/ocpn_plugin.h"
+#define PLUGIN_VERSION_MAJOR 0
+#define PLUGIN_VERSION_MINOR 1
+
+#include "ocpn_plugin.h"
 
 #include "nmea0183/nmea0183.h"
 
-class demoWindow;
+class DemoWindow;
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-class demo_pi : public opencpn_plugin_18 {
+class DemoPi : public opencpn_plugin_18 {
 public:
-  demo_pi(void *ppimgr) : opencpn_plugin_18(ppimgr) {}
+  DemoPi(void *ppimgr) : opencpn_plugin_18(ppimgr) {}
 
   //    The required PlugIn Methods
   int Init(void);
@@ -83,25 +82,25 @@ public:
 private:
   wxWindow *m_parent_window;
 
-  demoWindow *m_pdemo_window;
-  wxAuiManager *m_AUImgr;
+  DemoWindow *m_demo_window;
+  wxAuiManager *m_aui_mgr;
   int m_show_id;
   int m_hide_id;
 };
 
-class demoWindow : public wxWindow {
+class DemoWindow : public wxWindow {
 public:
-  demoWindow(wxWindow *pparent, wxWindowID id);
-  ~demoWindow();
+  DemoWindow(wxWindow *pparent, wxWindowID id);
+  virtual ~DemoWindow() = default;
 
   void OnPaint(wxPaintEvent &event);
   void SetSentence(wxString &sentence);
   void OnSize(wxSizeEvent &event);
 
-  NMEA0183 m_NMEA0183;  // Used to parse NMEA Sentences
+  NMEA0183 m_nmea0183;  // Used to parse NMEA Sentences
 
-  wxString m_NMEASentence;
-  double mLat, mLon, mSog, mCog, mVar;
+  wxString m_nmea_sentence;
+  double m_lat, m_lon, m_sog, m_cog, m_var;
 
   DECLARE_EVENT_TABLE()
 };
