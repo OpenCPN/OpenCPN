@@ -78,7 +78,7 @@ endif ()
 
 set(BUILD_SHARED_LIBS TRUE)
 
-if ($ENV{CI} STREQUAL "")
+if ("$ENV{CI}" STREQUAL "")
   set(wxWidgets_USE_LIBS base core net xml html adv)
   find_package(wxWidgets REQUIRED)
   include(${wxWidgets_USE_FILE})
