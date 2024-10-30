@@ -32,8 +32,11 @@
 #include <wx/string.h>
 
 #include "comm_buffers.h"
+#include "model/logger.h"
 #include "model/thread_ctrl.h"
 #include "model/ocpn_utils.h"
+
+using namespace std::literals::chrono_literals;
 
 /** Remove possible Serial: prefix. */
 static std::string NormalizePort(const std::string& port) {
@@ -65,11 +68,13 @@ protected:
   const wxString m_portname;
   const unsigned m_baud;
   const SendMsgFunc m_send_msg_func;
+  TimedLogFilter m_open_log_filter;
 
   SerialIo(SendMsgFunc send_msg_func, const std::string& port, unsigned baud)
       : m_portname(NormalizePort(port)),
         m_baud(baud),
-        m_send_msg_func(send_msg_func) {}
+        m_send_msg_func(send_msg_func),
+        m_open_log_filter(5min) {}
 };
 
 #ifdef __clang__

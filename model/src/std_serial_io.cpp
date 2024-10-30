@@ -159,8 +159,8 @@ bool StdSerialIo::OpenComPortPhysical(const wxString& com_name,
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
   } catch (std::exception& e) {
-    MESSAGE_LOG << "Unhandled Exception while opening serial port: "
-                << e.what();
+    auto msg = std::string("Unhandled Exception while opening serial port: ");
+    m_open_log_filter.Log(msg + e.what());
   }
   return m_serial.isOpen();
 }
