@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( GLL_CLASS_HEADER )
+#if !defined(GLL_CLASS_HEADER)
 #define GLL_CLASS_HEADER
 
 /*
@@ -41,36 +40,33 @@
 ** You can use it any way you like.
 */
 
-class GLL : public RESPONSE
-{
+class GLL : public RESPONSE {
+public:
+  GLL();
+  ~GLL();
 
-   public:
+  /*
+  ** Data
+  */
 
-      GLL();
-     ~GLL();
+  wxString UTCTime;
+  NMEA0183_BOOLEAN IsDataValid;
+  LATLONG Position;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      wxString          UTCTime;
-      NMEA0183_BOOLEAN IsDataValid;
-      LATLONG          Position;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual const wxString& PlainEnglish(void);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual const wxString& PlainEnglish( void );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const GLL& operator = ( const GLL& source );
+  virtual const GLL& operator=(const GLL& source);
 };
 
-#endif // GLL_CLASS_HEADER
+#endif  // GLL_CLASS_HEADER

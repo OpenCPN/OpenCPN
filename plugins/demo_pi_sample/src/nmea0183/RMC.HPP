@@ -29,7 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-#if ! defined( RMC_CLASS_HEADER )
+#if !defined(RMC_CLASS_HEADER)
 #define RMC_CLASS_HEADER
 
 /*
@@ -40,41 +40,38 @@
 ** You can use it any way you like.
 */
 
-class RMC : public RESPONSE
-{
+class RMC : public RESPONSE {
+public:
+  RMC();
+  ~RMC();
 
-   public:
+  /*
+  ** Data
+  */
 
-      RMC();
-     ~RMC();
+  wxString UTCTime;
+  NMEA0183_BOOLEAN IsDataValid;
+  LATLONG Position;
+  double SpeedOverGroundKnots;
+  double TrackMadeGoodDegreesTrue;
+  wxString Date;
+  double MagneticVariation;
+  EASTWEST MagneticVariationDirection;
+  wxString FAAModeIndicator;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      wxString          UTCTime;
-      NMEA0183_BOOLEAN IsDataValid;
-      LATLONG          Position;
-      double           SpeedOverGroundKnots;
-      double           TrackMadeGoodDegreesTrue;
-      wxString          Date;
-      double           MagneticVariation;
-      EASTWEST         MagneticVariationDirection;
-      wxString         FAAModeIndicator;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const RMC& operator = ( const RMC& source );
+  virtual const RMC& operator=(const RMC& source);
 };
 
-#endif // RMC_CLASS_HEADER
+#endif  // RMC_CLASS_HEADER

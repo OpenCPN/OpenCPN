@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( WPL_CLASS_HEADER )
+#if !defined(WPL_CLASS_HEADER)
 #define WPL_CLASS_HEADER
 
 /*
@@ -41,34 +40,31 @@
 ** You can use it any way you like.
 */
 
-class WPL : public RESPONSE
-{
+class WPL : public RESPONSE {
+public:
+  WPL();
+  ~WPL();
 
-   public:
+  /*
+  ** Data
+  */
 
-      WPL();
-     ~WPL();
+  LATLONG Position;
+  wxString To;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      LATLONG Position;
-      wxString To;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const WPL& operator = ( const WPL& source );
+  virtual const WPL& operator=(const WPL& source);
 };
 
-#endif // WPL_CLASS_HEADER
+#endif  // WPL_CLASS_HEADER

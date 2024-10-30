@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( RMB_CLASS_HEADER )
+#if !defined(RMB_CLASS_HEADER)
 #define RMB_CLASS_HEADER
 
 /*
@@ -41,43 +40,40 @@
 ** You can use it any way you like.
 */
 
-class RMB : public RESPONSE
-{
+class RMB : public RESPONSE {
+public:
+  RMB();
+  virtual ~RMB();
 
-   public:
+  /*
+  ** Data
+  */
 
-      RMB();
-      virtual ~RMB();
+  NMEA0183_BOOLEAN IsDataValid;
+  double CrossTrackError;
+  LEFTRIGHT DirectionToSteer;
+  wxString To;
+  wxString From;
+  LATLONG DestinationPosition;
+  double RangeToDestinationNauticalMiles;
+  double BearingToDestinationDegreesTrue;
+  double DestinationClosingVelocityKnots;
+  NMEA0183_BOOLEAN IsArrivalCircleEntered;
+  wxString FAAModeIndicator;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      NMEA0183_BOOLEAN IsDataValid;
-      double           CrossTrackError;
-      LEFTRIGHT        DirectionToSteer;
-      wxString          To;
-      wxString          From;
-      LATLONG          DestinationPosition;
-      double           RangeToDestinationNauticalMiles;
-      double           BearingToDestinationDegreesTrue;
-      double           DestinationClosingVelocityKnots;
-      NMEA0183_BOOLEAN IsArrivalCircleEntered;
-      wxString         FAAModeIndicator;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const RMB& operator = ( const RMB& source );
+  virtual const RMB& operator=(const RMB& source);
 };
 
-#endif // RMB_CLASS_HEADER
+#endif  // RMB_CLASS_HEADER

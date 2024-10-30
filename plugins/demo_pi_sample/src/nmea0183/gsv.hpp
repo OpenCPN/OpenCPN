@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( GSV_CLASS_HEADER )
+#if !defined(GSV_CLASS_HEADER)
 #define GSV_CLASS_HEADER
 
 /*
@@ -41,34 +40,31 @@
 ** You can use it any way you like.
 */
 
-class GSV : public RESPONSE
-{
+class GSV : public RESPONSE {
+public:
+  GSV();
+  ~GSV();
 
-   public:
+  /*
+  ** Data
+  */
 
-      GSV();
-     ~GSV();
+  int MessageNumber;
+  int SatsInView;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      int MessageNumber;
-      int SatsInView;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const GSV& operator = ( const GSV& source );
+  virtual const GSV& operator=(const GSV& source);
 };
 
-#endif // GSV_CLASS_HEADER
+#endif  // GSV_CLASS_HEADER

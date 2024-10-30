@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,61 +39,52 @@
 ** You can use it any way you like.
 */
 
-RESPONSE::RESPONSE()
-{
-   Talker.Empty();
-   ErrorMessage.Empty();
+RESPONSE::RESPONSE() {
+  Talker.Empty();
+  ErrorMessage.Empty();
 }
 
-RESPONSE::~RESPONSE()
-{
-   Mnemonic.Empty();
-   Talker.Empty();
-   ErrorMessage.Empty();
+RESPONSE::~RESPONSE() {
+  Mnemonic.Empty();
+  Talker.Empty();
+  ErrorMessage.Empty();
 }
 
-void RESPONSE::SetContainer( NMEA0183 *container )
-{
-   container_p = container;
+void RESPONSE::SetContainer(NMEA0183* container) { container_p = container; }
+
+void RESPONSE::SetErrorMessage(const wxString& error_message) {
+  ErrorMessage = Mnemonic;
+  ErrorMessage += _T(", ");
+  ErrorMessage += error_message;
 }
 
-void RESPONSE::SetErrorMessage( const wxString& error_message )
-{
-   ErrorMessage  = Mnemonic;
-   ErrorMessage += _T(", ");
-   ErrorMessage += error_message;
-}
+bool RESPONSE::Write(SENTENCE& sentence) {
+  /*
+  ** All NMEA0183 sentences begin with the mnemonic...
+  */
 
-bool RESPONSE::Write( SENTENCE& sentence )
-{
-   /*
-   ** All NMEA0183 sentences begin with the mnemonic...
-   */
+  sentence = _T("$");
 
-    sentence  = _T("$");
-
-    if (NULL == container_p)
-        sentence.Sentence.Append("--");
-    else {
-        wxString talker_id = container_p->caller_ctx.get_talker_id();
-        if ( talker_id.length() == 0) {
-            sentence.Sentence.Append(container_p->TalkerID);
-        }
-        else {
-            sentence.Sentence.Append( talker_id );
-        }
+  if (NULL == container_p)
+    sentence.Sentence.Append("--");
+  else {
+    wxString talker_id = container_p->caller_ctx.get_talker_id();
+    if (talker_id.length() == 0) {
+      sentence.Sentence.Append(container_p->TalkerID);
+    } else {
+      sentence.Sentence.Append(talker_id);
     }
+  }
 
-    sentence.Sentence.Append(Mnemonic);
+  sentence.Sentence.Append(Mnemonic);
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const wxString& RESPONSE::PlainEnglish( void )
-{
-   static wxString return_string;
+const wxString& RESPONSE::PlainEnglish(void) {
+  static wxString return_string;
 
-   return_string.Empty();
+  return_string.Empty();
 
-   return( return_string );
+  return (return_string);
 }

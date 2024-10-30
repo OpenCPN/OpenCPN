@@ -1,11 +1,5 @@
-/******************************************************************************
- * updated: 4-5-2012
- * Project:  OpenCPN
- * Purpose:  demo Plugin
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,233 +15,147 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
+/** \file demo_pi.h Minimal demonstration plugin. */
 
 #include "wx/wxprec.h"
 
-#ifndef  WX_PRECOMP
-  #include "wx/wx.h"
-#endif //precompiled headers
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
 
 #include <wx/aui/aui.h>
 
 #include "demo_pi.h"
-#include "wxWTranslateCatalog.h"
 
-
-// the class factories, used to create and destroy instances of the PlugIn
-
-extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
-{
-    return new demo_pi(ppimgr);
+/** Class factory used to create instances of the PlugIn */
+extern "C" DECL_EXP opencpn_plugin* create_pi(void* ppimgr) {
+  return new DemoPi(ppimgr);
 }
 
-extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
-{
-    delete p;
+/** Class destructor. */
+extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p) { delete p; }
+
+/** Basic plugin initialization. */
+int DemoPi::Init(void) {
+  AddLocaleCatalog("../plugins/demo_pi_sample/src/");
+
+  m_demo_window = nullptr;
+
+  // Get a pointer to the opencpn display canvas, to use as a parent for windows
+  // created
+  m_parent_window = GetOCPNCanvasWindow();
+
+  // Create the Context Menu Items
+
+  //    In order to avoid an ASSERT on msw debug builds,
+  //    we need to create a dummy menu to act as a surrogate parent of the
+  //    created MenuItems The Items will be re-parented when added to the real
+  //    context meenu
+  wxMenu dummy_menu;
+
+  wxMenuItem* pmi =
+      new wxMenuItem(&dummy_menu, -1, _("Show PlugIn DemoWindow"));
+  m_show_id = AddCanvasContextMenuItem(pmi, this);
+  SetCanvasContextMenuItemViz(m_show_id, true);
+
+  wxMenuItem* pmih =
+      new wxMenuItem(&dummy_menu, -1, _("Hide PlugIn DemoWindow"));
+  m_hide_id = AddCanvasContextMenuItem(pmih, this);
+  SetCanvasContextMenuItemViz(m_hide_id, false);
+
+  m_demo_window = std::make_unique<DemoWindow>(m_parent_window, wxID_ANY);
+
+  m_aui_mgr = GetFrameAuiManager();
+  m_aui_mgr->AddPane(m_demo_window.get());
+  m_aui_mgr->GetPane(m_demo_window.get()).Name("Demo Window Name");
+
+  m_aui_mgr->GetPane(m_demo_window.get()).Float();
+  m_aui_mgr->GetPane(m_demo_window.get()).FloatingPosition(300, 30);
+
+  m_aui_mgr->GetPane(m_demo_window.get()).Caption("AUI Managed Demo Window");
+  m_aui_mgr->GetPane(m_demo_window.get()).CaptionVisible(true);
+  m_aui_mgr->GetPane(m_demo_window.get()).GripperTop(true);
+  m_aui_mgr->GetPane(m_demo_window.get()).CloseButton(true);
+  m_aui_mgr->GetPane(m_demo_window.get()).Show(false);
+  m_aui_mgr->Update();
+
+  return (INSTALLS_CONTEXTMENU_ITEMS | WANTS_NMEA_SENTENCES | USES_AUI_MANAGER);
 }
 
-
-
-
-
-//---------------------------------------------------------------------------------------------------------
-//
-//    demo PlugIn Implementation
-//
-//---------------------------------------------------------------------------------------------------------
-
-
-
-//---------------------------------------------------------------------------------------------------------
-//
-//          PlugIn initialization and de-init
-//
-//---------------------------------------------------------------------------------------------------------
-
-
-int demo_pi::Init(void)
-{
-    AddLocaleCatalog( PLUGIN_CATALOG_NAME );
-
-      m_pdemo_window = NULL;
-
-      // Get a pointer to the opencpn display canvas, to use as a parent for windows created
-      m_parent_window = GetOCPNCanvasWindow();
-
-      // Create the Context Menu Items
-
-      //    In order to avoid an ASSERT on msw debug builds,
-      //    we need to create a dummy menu to act as a surrogate parent of the created MenuItems
-      //    The Items will be re-parented when added to the real context meenu
-      wxMenu dummy_menu;
-
-      wxMenuItem *pmi = new wxMenuItem(&dummy_menu, -1, _("Show PlugIn DemoWindow"));
-      m_show_id = AddCanvasContextMenuItem(pmi, this );
-      SetCanvasContextMenuItemViz(m_show_id, true);
-
-      wxMenuItem *pmih = new wxMenuItem(&dummy_menu, -1, _("Hide PlugIn DemoWindow"));
-      m_hide_id = AddCanvasContextMenuItem(pmih, this );
-      SetCanvasContextMenuItemViz(m_hide_id, false);
-
-        m_pdemo_window = new demoWindow(m_parent_window, wxID_ANY);
-
-        m_AUImgr = GetFrameAuiManager();
-        m_AUImgr->AddPane(m_pdemo_window);
-        m_AUImgr->GetPane(m_pdemo_window).Name(_T("Demo Window Name"));
-
-        m_AUImgr->GetPane(m_pdemo_window).Float();
-        m_AUImgr->GetPane(m_pdemo_window).FloatingPosition(300,30);
-
-        m_AUImgr->GetPane(m_pdemo_window).Caption(_T("AUI Managed Demo Window"));
-        m_AUImgr->GetPane(m_pdemo_window).CaptionVisible(true);
-        m_AUImgr->GetPane(m_pdemo_window).GripperTop(true);
-        m_AUImgr->GetPane(m_pdemo_window).CloseButton(true);
-        m_AUImgr->GetPane(m_pdemo_window).Show(false);
-        m_AUImgr->Update();
-
-      return (
-           INSTALLS_CONTEXTMENU_ITEMS     |
-           WANTS_NMEA_SENTENCES           |
-           USES_AUI_MANAGER
-            );
+bool DemoPi::DeInit(void) {
+  m_aui_mgr->DetachPane(m_demo_window.get());
+  return true;
 }
 
-bool demo_pi::DeInit(void)
-{
-      m_AUImgr->DetachPane(m_pdemo_window);
-      if(m_pdemo_window)
-      {
-        m_pdemo_window->Close();
-//          m_pdemo_window->Destroy(); //Gives a Segmentation fault
-      }
-      return true;
-}
+int DemoPi::GetAPIVersionMajor() { return MY_API_VERSION_MAJOR; }
 
-int demo_pi::GetAPIVersionMajor()
-{
-      return MY_API_VERSION_MAJOR;
-}
+int DemoPi::GetAPIVersionMinor() { return MY_API_VERSION_MINOR; }
 
-int demo_pi::GetAPIVersionMinor()
-{
-      return MY_API_VERSION_MINOR;
-}
+int DemoPi::GetPlugInVersionMajor() { return PLUGIN_VERSION_MAJOR; }
 
-int demo_pi::GetPlugInVersionMajor()
-{
-      return PLUGIN_VERSION_MAJOR;
-}
+int DemoPi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
+int GetPlugInVersionPatch() { return PLUGIN_VERSION_PATCH; }
+int GetPlugInVersionPost() { return PLUGIN_VERSION_TWEAK; }
+const char* GetPlugInVersionPre() { return PKG_PRERELEASE; }
+const char* GetPlugInVersionBuild() { return PKG_BUILD_INFO; }
 
-int demo_pi::GetPlugInVersionMinor()
-{
-      return PLUGIN_VERSION_MINOR;
-}
+wxString DemoPi::GetCommonName() { return _("Demo"); }
 
-wxString demo_pi::GetCommonName()
-{
-      return _("Demo");
-}
+wxString DemoPi::GetShortDescription() { return _("Demo PlugIn for OpenCPN"); }
 
-wxString demo_pi::GetShortDescription()
-{
-      return _("Demo PlugIn for OpenCPN");
-}
-
-wxString demo_pi::GetLongDescription()
-{
-      return _("Demo PlugIn for OpenCPN\n\
+wxString DemoPi::GetLongDescription() {
+  return _(
+      "Demo PlugIn for OpenCPN\n\
 demonstrates PlugIn processing of NMEA messages.");
-
 }
 
-void demo_pi::SetNMEASentence(wxString &sentence)
-{
-//      printf("demo_pi::SetNMEASentence\n");
-      if(m_pdemo_window)
-      {
-            m_pdemo_window->SetSentence(sentence);
-      }
+void DemoPi::OnContextMenuItemCallback(int id) {
+  wxLogMessage("demo_pi OnContextMenuCallBack()");
+  ::wxBell();
+
+  //  Note carefully that this is a "reference to a wxAuiPaneInfo classs
+  //  instance" Copy constructor (i.e. wxAuiPaneInfo pane =
+  //  m_aui_mgr->GetPane(m_demo_window);) will not work
+
+  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window.get());
+  if (!pane.IsOk()) return;
+
+  if (!pane.IsShown()) {
+    SetCanvasContextMenuItemViz(m_hide_id, true);
+    SetCanvasContextMenuItemViz(m_show_id, false);
+    pane.Show(true);
+    m_aui_mgr->Update();
+  } else {
+    SetCanvasContextMenuItemViz(m_hide_id, false);
+    SetCanvasContextMenuItemViz(m_show_id, true);
+
+    pane.Show(false);
+    m_aui_mgr->Update();
+  }
 }
 
+void DemoPi::UpdateAuiStatus(void) {
+  //    This method is called after the PlugIn is initialized
+  //    and the frame has done its initial layout, possibly from a saved
+  //    wxAuiManager "Perspective" It is a chance for the PlugIn to syncronize
+  //    itself internally with the state of any Panes that were added to the
+  //    frame in the PlugIn ctor.
 
-void demo_pi::OnContextMenuItemCallback(int id)
-{
-      wxLogMessage(_T("demo_pi OnContextMenuCallBack()"));
-     ::wxBell();
+  //    We use this callback here to keep the context menu selection in sync
+  //    with the window state
 
-      //  Note carefully that this is a "reference to a wxAuiPaneInfo classs instance"
-      //  Copy constructor (i.e. wxAuiPaneInfo pane = m_AUImgr->GetPane(m_pdemo_window);) will not work
+  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window.get());
+  if (!pane.IsOk()) return;
 
-      wxAuiPaneInfo &pane = m_AUImgr->GetPane(m_pdemo_window);
-      if(!pane.IsOk())
-            return;
+  printf("update %d\n", pane.IsShown());
 
-      if(!pane.IsShown())
-      {
-//            printf("show\n");
-            SetCanvasContextMenuItemViz(m_hide_id, true);
-            SetCanvasContextMenuItemViz(m_show_id, false);
-
-            pane.Show(true);
-            m_AUImgr->Update();
-
-      }
-      else
-      {
-//            printf("hide\n");
-            SetCanvasContextMenuItemViz(m_hide_id, false);
-            SetCanvasContextMenuItemViz(m_show_id, true);
-
-            pane.Show(false);
-            m_AUImgr->Update();
-      }
-
-/*
-      if(NULL == m_pdemo_window)
-      {
-            m_pdemo_window = new demoWindow(m_parent_window, wxID_ANY);
-
-            SetCanvasContextMenuItemViz(m_hide_id, true);
-            SetCanvasContextMenuItemViz(m_show_id, false);
-      }
-      else
-      {
-            m_pdemo_window->Close();
-            m_pdemo_window->Destroy();
-            m_pdemo_window = NULL;
-
-            SetCanvasContextMenuItemViz(m_hide_id, false);
-            SetCanvasContextMenuItemViz(m_show_id, true);
-      }
-*/
+  SetCanvasContextMenuItemViz(m_hide_id, pane.IsShown());
+  SetCanvasContextMenuItemViz(m_show_id, !pane.IsShown());
 }
 
-void demo_pi::UpdateAuiStatus(void)
-{
-      //    This method is called after the PlugIn is initialized
-      //    and the frame has done its initial layout, possibly from a saved wxAuiManager "Perspective"
-      //    It is a chance for the PlugIn to syncronize itself internally with the state of any Panes that
-      //    were added to the frame in the PlugIn ctor.
-
-      //    We use this callback here to keep the context menu selection in sync with the window state
-
-
-      wxAuiPaneInfo &pane = m_AUImgr->GetPane(m_pdemo_window);
-      if(!pane.IsOk())
-            return;
-
-      printf("update %d\n",pane.IsShown());
-
-      SetCanvasContextMenuItemViz(m_hide_id, pane.IsShown());
-      SetCanvasContextMenuItemViz(m_show_id, !pane.IsShown());
-
-}
-
-bool demo_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
-{
+bool DemoPi::RenderOverlay(wxDC& dc, PlugIn_ViewPort* vp) {
   /*    if(m_pGribDialog && m_pGRIBOverlayFactory)
       {
             if(m_pGRIBOverlayFactory->IsReadyToRender())
@@ -259,48 +167,28 @@ bool demo_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
                   return false;
       }
       else*/
-            return false;
+  return false;
 }
-void demo_pi::SetCursorLatLon(double lat, double lon)
-{
-
+void DemoPi::SetCursorLatLon(double lat, double lon) {}
+bool DemoPi::RenderGLOverlay(wxGLContext* pcontext, PlugIn_ViewPort* vp) {
+  /*   if(m_pGribDialog && m_pGRIBOverlayFactory)
+     {
+           if(m_pGRIBOverlayFactory->IsReadyToRender())
+           {
+                 m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
+                 return true;
+           }
+           else
+                 return false;
+     }
+     else*/
+  return false;
 }
-bool demo_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
-{
-   /*   if(m_pGribDialog && m_pGRIBOverlayFactory)
-      {
-            if(m_pGRIBOverlayFactory->IsReadyToRender())
-            {
-                  m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
-                  return true;
-            }
-            else
-                  return false;
-      }
-      else*/
-            return false;
-
-}
-int demo_pi::GetToolbarToolCount(void)
-{
-      return 1;
-}
-void demo_pi::ShowPreferencesDialog( wxWindow* parent )
-{
-
-}
-void demo_pi::OnToolbarToolCallback(int id)
-{
-
-}
-void demo_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
-{
-
-}
-void demo_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix)
-{
-
-}
+int DemoPi::GetToolbarToolCount(void) { return 1; }
+void DemoPi::ShowPreferencesDialog(wxWindow* parent) {}
+void DemoPi::OnToolbarToolCallback(int id) {}
+void DemoPi::SetPluginMessage(wxString& message_id, wxString& message_body) {}
+void DemoPi::SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix) {}
 
 //----------------------------------------------------------------
 //
@@ -308,109 +196,75 @@ void demo_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix)
 //
 //----------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(demoWindow, wxWindow)
-  EVT_PAINT ( demoWindow::OnPaint )
-  EVT_SIZE(demoWindow::OnSize)
+DemoWindow::DemoWindow(wxWindow* parent, wxWindowID id)
+    : wxWindow(parent, id, wxPoint(10, 10), wxSize(200, 200), wxSIMPLE_BORDER,
+               "OpenCPN PlugIn"),
+      m_lat(0.0),
+      m_lon(1.0),
+      m_sog(2.0),
+      m_cog(3.0),
+      m_var(4.0),
+      m_utc("No GGA data") {
+  Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) { OnPaint(ev); });
+  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
 
+  wxDEFINE_EVENT(EVT_DEMO_NAVDATA, ObservedEvt);
+  m_navdata_listener = GetListener(NavDataId(), EVT_DEMO_NAVDATA, this);
+  Bind(EVT_DEMO_NAVDATA, [&](ObservedEvt ev) { SetNavdata(ev); });
 
-END_EVENT_TABLE()
-
-demoWindow::demoWindow(wxWindow *pparent, wxWindowID id)
-      :wxWindow(pparent, id, wxPoint(10,10), wxSize(200,200),
-             wxSIMPLE_BORDER, _T("OpenCPN PlugIn"))
-{
-      mLat = 0.0;
-      mLon = 1.0;
-      mSog = 2.0;
-      mCog = 3.0;
-      mVar = 4.0;
+  wxDEFINE_EVENT(EVT_DEMO_GGA, ObservedEvt);
+  m_gga_listener = GetListener(NMEA0183Id("GGA"), EVT_DEMO_GGA, this);
+  Bind(EVT_DEMO_GGA, [&](ObservedEvt ev) { HandleGga(ev); });
 }
 
-demoWindow::~demoWindow()
-{
+void DemoWindow::OnSize(wxSizeEvent&) { printf("demoWindow OnSize()\n"); }
+
+void DemoWindow::SetNavdata(ObservedEvt ev) {
+  const PluginNavdata nav_data = GetEventNavdata(ev);
+  m_lat = nav_data.lat;
+  m_lon = nav_data.lon;
+  m_cog = nav_data.cog;
+  m_sog = nav_data.sog;
+  m_var = nav_data.var;
+  Refresh(false);
 }
 
-void demoWindow::OnSize(wxSizeEvent& event)
-{
-      printf("demoWindow OnSize()\n");
+void DemoWindow::HandleGga(ObservedEvt ev) {
+  auto payload = GetN0183Payload(NMEA0183Id("GGA"), ev);
+  wxString payload_clone(payload);  // Missing const in << operator def
+  m_utc = "parse error";
+  m_nmea0183 << payload_clone;
+  if (!m_nmea0183.PreParse()) return;
+  if (!m_nmea0183.Parse()) return;
+  if (m_nmea0183.LastSentenceIDReceived != "GGA") return;
+  m_utc = m_nmea0183.Gga.UTCTime;
+  Refresh(false);
 }
 
+void DemoWindow::OnPaint(wxPaintEvent&) {
+  wxLogMessage("demo_pi onpaint");
 
-void demoWindow::SetSentence(wxString &sentence)
-{
-      m_NMEA0183 << sentence;
+  wxPaintDC dc(this);
 
-      bool bGoodData = false;
+  //      printf("onpaint\n");
 
-      if(m_NMEA0183.PreParse())
-      {
-            if(m_NMEA0183.LastSentenceIDReceived == _T("RMC"))
-            {
-                  if(m_NMEA0183.Parse())
-                  {
-                              if(m_NMEA0183.Rmc.IsDataValid == NTrue)
-                              {
-                                    float llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
-                                    int lat_deg_int = (int)(llt / 100);
-                                    float lat_deg = lat_deg_int;
-                                    float lat_min = llt - (lat_deg * 100);
-                                    mLat = lat_deg + (lat_min/60.);
-                                    if(m_NMEA0183.Rmc.Position.Latitude.Northing == South)
-                                          mLat = -mLat;
+  {
+    dc.Clear();
 
-                                    float lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
-                                    int lon_deg_int = (int)(lln / 100);
-                                    float lon_deg = lon_deg_int;
-                                    float lon_min = lln - (lon_deg * 100);
-                                    mLon = lon_deg + (lon_min/60.);
-                                    if(m_NMEA0183.Rmc.Position.Longitude.Easting == West)
-                                          mLon = -mLon;
+    wxString data;
+    data.Printf("Lat: %g ", m_lat);
+    dc.DrawText(data, 10, 10);
 
-                                    mSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-                                    mCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+    data.Printf("Lon: %g", m_lon);
+    dc.DrawText(data, 10, 40);
 
-                                    if(m_NMEA0183.Rmc.MagneticVariationDirection == East)
-                                          mVar =  m_NMEA0183.Rmc.MagneticVariation;
-                                    else if(m_NMEA0183.Rmc.MagneticVariationDirection == West)
-                                          mVar = -m_NMEA0183.Rmc.MagneticVariation;
+    data.Printf("Sog: %g", m_sog);
+    dc.DrawText(data, 10, 70);
 
-                                    bGoodData = true;
+    data.Printf("Cog: %g", m_cog);
+    dc.DrawText(data, 10, 100);
 
-                              }
-                        }
-                  }
-        }
-
-      //    Got the data, now do something with it
-
-      if(bGoodData)
-      {
-            Refresh(false);
-      }
-}
-
-void demoWindow::OnPaint(wxPaintEvent& event)
-{
-      wxLogMessage(_T("demo_pi onpaint"));
-
-      wxPaintDC dc ( this );
-
-//      printf("onpaint\n");
-
-      {
-            dc.Clear();
-
-            wxString data;
-            data.Printf(_T("Lat: %g "), mLat);
-            dc.DrawText(data, 10, 10);
-
-            data.Printf(_T("Lon: %g"), mLon);
-            dc.DrawText(data, 10, 40);
-
-            data.Printf(_T("Sog: %g"), mSog);
-            dc.DrawText(data, 10, 70);
-
-            data.Printf(_T("Cog: %g"), mCog);
-            dc.DrawText(data, 10, 100);
-      }
+    data = "Utc: ";
+    dc.DrawText(data + m_utc, 10, 130);
+  }
 }
