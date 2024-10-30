@@ -631,7 +631,7 @@ static void onBellsFinishedCB(void *ptr) {
 
 static void OnDriverMsg(const ObservedEvt &ev) {
   auto msg = ev.GetString().ToStdString();
-  OCPNMessageBox(GetTopWindow(), msg, _("Communication Error"), 0, 15);
+  OCPNMessageBox(GetTopWindow(), msg, _("Communication Error"));
 }
 
 // My frame constructor
