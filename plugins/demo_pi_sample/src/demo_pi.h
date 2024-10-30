@@ -101,8 +101,6 @@ public:
 
   wxString m_nmea_sentence;
   double m_lat, m_lon, m_sog, m_cog, m_var;
-
-  DECLARE_EVENT_TABLE()
 };
 
 #endif

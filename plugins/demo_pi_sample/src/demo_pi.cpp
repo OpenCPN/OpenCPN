@@ -30,12 +30,12 @@
 #include "demo_pi.h"
 
 /** Class factory used to create instances of the PlugIn */
-extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
+extern "C" DECL_EXP opencpn_plugin* create_pi(void* ppimgr) {
   return new DemoPi(ppimgr);
 }
 
 /** Class destructor. */
-extern "C" DECL_EXP void destroy_pi(opencpn_plugin *p) { delete p; }
+extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p) { delete p; }
 
 /** Basic plugin initialization. */
 int DemoPi::Init(void) {
@@ -55,12 +55,12 @@ int DemoPi::Init(void) {
   //    context meenu
   wxMenu dummy_menu;
 
-  wxMenuItem *pmi =
+  wxMenuItem* pmi =
       new wxMenuItem(&dummy_menu, -1, _("Show PlugIn DemoWindow"));
   m_show_id = AddCanvasContextMenuItem(pmi, this);
   SetCanvasContextMenuItemViz(m_show_id, true);
 
-  wxMenuItem *pmih =
+  wxMenuItem* pmih =
       new wxMenuItem(&dummy_menu, -1, _("Hide PlugIn DemoWindow"));
   m_hide_id = AddCanvasContextMenuItem(pmih, this);
   SetCanvasContextMenuItemViz(m_hide_id, false);
@@ -102,8 +102,8 @@ int DemoPi::GetPlugInVersionMajor() { return PLUGIN_VERSION_MAJOR; }
 int DemoPi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
 int GetPlugInVersionPatch() { return PLUGIN_VERSION_PATCH; }
 int GetPlugInVersionPost() { return PLUGIN_VERSION_TWEAK; }
-const char *GetPlugInVersionPre() { return PKG_PRERELEASE; }
-const char *GetPlugInVersionBuild() { return PKG_BUILD_INFO; }
+const char* GetPlugInVersionPre() { return PKG_PRERELEASE; }
+const char* GetPlugInVersionBuild() { return PKG_BUILD_INFO; }
 
 wxString DemoPi::GetCommonName() { return _("Demo"); }
 
@@ -115,7 +115,7 @@ wxString DemoPi::GetLongDescription() {
 demonstrates PlugIn processing of NMEA messages.");
 }
 
-void DemoPi::SetNMEASentence(wxString &sentence) {
+void DemoPi::SetNMEASentence(wxString& sentence) {
   if (m_demo_window) {
     m_demo_window->SetSentence(sentence);
   }
@@ -129,7 +129,7 @@ void DemoPi::OnContextMenuItemCallback(int id) {
   //  instance" Copy constructor (i.e. wxAuiPaneInfo pane =
   //  m_aui_mgr->GetPane(m_demo_window);) will not work
 
-  wxAuiPaneInfo &pane = m_aui_mgr->GetPane(m_demo_window);
+  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window);
   if (!pane.IsOk()) return;
 
   if (!pane.IsShown()) {
@@ -156,7 +156,7 @@ void DemoPi::UpdateAuiStatus(void) {
   //    We use this callback here to keep the context menu selection in sync
   //    with the window state
 
-  wxAuiPaneInfo &pane = m_aui_mgr->GetPane(m_demo_window);
+  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window);
   if (!pane.IsOk()) return;
 
   printf("update %d\n", pane.IsShown());
@@ -165,7 +165,7 @@ void DemoPi::UpdateAuiStatus(void) {
   SetCanvasContextMenuItemViz(m_show_id, !pane.IsShown());
 }
 
-bool DemoPi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
+bool DemoPi::RenderOverlay(wxDC& dc, PlugIn_ViewPort* vp) {
   /*    if(m_pGribDialog && m_pGRIBOverlayFactory)
       {
             if(m_pGRIBOverlayFactory->IsReadyToRender())
@@ -180,7 +180,7 @@ bool DemoPi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
   return false;
 }
 void DemoPi::SetCursorLatLon(double lat, double lon) {}
-bool DemoPi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
+bool DemoPi::RenderGLOverlay(wxGLContext* pcontext, PlugIn_ViewPort* vp) {
   /*   if(m_pGribDialog && m_pGRIBOverlayFactory)
      {
            if(m_pGRIBOverlayFactory->IsReadyToRender())
@@ -195,10 +195,10 @@ bool DemoPi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   return false;
 }
 int DemoPi::GetToolbarToolCount(void) { return 1; }
-void DemoPi::ShowPreferencesDialog(wxWindow *parent) {}
+void DemoPi::ShowPreferencesDialog(wxWindow* parent) {}
 void DemoPi::OnToolbarToolCallback(int id) {}
-void DemoPi::SetPluginMessage(wxString &message_id, wxString &message_body) {}
-void DemoPi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {}
+void DemoPi::SetPluginMessage(wxString& message_id, wxString& message_body) {}
+void DemoPi::SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix) {}
 
 //----------------------------------------------------------------
 //
@@ -206,24 +206,21 @@ void DemoPi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {}
 //
 //----------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(DemoWindow, wxWindow)
-EVT_PAINT(DemoWindow::OnPaint)
-EVT_SIZE(DemoWindow::OnSize)
-
-END_EVENT_TABLE()
-
-DemoWindow::DemoWindow(wxWindow *pparent, wxWindowID id)
+DemoWindow::DemoWindow(wxWindow* pparent, wxWindowID id)
     : wxWindow(pparent, id, wxPoint(10, 10), wxSize(200, 200), wxSIMPLE_BORDER,
                "OpenCPN PlugIn"),
       m_lat(0.0),
       m_lon(1.0),
       m_sog(2.0),
       m_cog(3.0),
-      m_var(4.0) {}
+      m_var(4.0) {
+  Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) { OnPaint(ev); });
+  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
+}
 
-void DemoWindow::OnSize(wxSizeEvent &) { printf("demoWindow OnSize()\n"); }
+void DemoWindow::OnSize(wxSizeEvent&) { printf("demoWindow OnSize()\n"); }
 
-void DemoWindow::SetSentence(wxString &sentence) {
+void DemoWindow::SetSentence(wxString& sentence) {
   m_nmea0183 << sentence;
 
   bool is_data_ok = false;
@@ -266,7 +263,7 @@ void DemoWindow::SetSentence(wxString &sentence) {
   }
 }
 
-void DemoWindow::OnPaint(wxPaintEvent &) {
+void DemoWindow::OnPaint(wxPaintEvent&) {
   wxLogMessage("demo_pi onpaint");
 
   wxPaintDC dc(this);
