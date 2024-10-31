@@ -67,11 +67,9 @@ public:
 
   ~CommDriverN0183Net() override;
 
-  void Open();
-  void Close();
   ConnectionParams GetParams() const { return m_params; }
 
-  wxSocketBase* GetSock() const { return m_sock; }
+  const wxSocketBase* GetSock() const { return m_sock; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
@@ -96,9 +94,8 @@ private:
     CommDriverN0183Net& m_owner;
   };
 
-  const ConnectionParams m_params;
-  DriverListener& m_listener;
-
+  void Open();
+  void Close();
   void HandleResume();
   void OnServerSocketEvent(wxSocketEvent& event);  // The listener
   void OnTimerSocket();
@@ -110,6 +107,8 @@ private:
   void HandleN0183Msg(const std::string& sentence);
   bool SendSentenceNetwork(const wxString& payload);
 
+  const ConnectionParams m_params;
+  DriverListener& m_listener;
   N0183Buffer n0183_buffer;
   wxIPV4address m_addr;
   wxSocketBase* m_sock;
