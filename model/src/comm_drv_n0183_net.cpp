@@ -48,11 +48,11 @@
 #include <wx/sckaddr.h>
 
 #include "model/comm_drv_n0183_net.h"
+#include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
 #include "model/logger.h"
-#include "model/ocpn_utils.h"
 #include "model/sys_events.h"
 
 #include "observable.h"
@@ -109,14 +109,13 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_rx_connect_event(false),
       m_socket_timer(*this),
       m_socketread_watchdog_timer(*this),
-      m_ok(false) {
+      m_ok(false),
+      m_is_conn_err_reported(false) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
 
   this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
-  char port_char[10];
-  sprintf(port_char, "%d", params->NetworkPort);
-  this->attributes["netPort"] = std::string(port_char);
+  this->attributes["netPort"] = std::to_string(params->NetworkPort);
   this->attributes["userComment"] = params->UserComment.ToStdString();
   this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
 
@@ -231,21 +230,17 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
 }
 
 void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
-  int isServer = ((addr == INADDR_ANY) ? 1 : 0);
-  wxLogMessage("Opening TCP Server %d", isServer);
-
-  if (isServer) {
+  if (addr == INADDR_ANY) {
+    MESSAGE_LOG << "Listening for TCP connections on " << INADDR_ANY;
     m_socket_server = new wxSocketServer(m_addr, wxSOCKET_REUSEADDR);
-  } else {
-    m_sock = new wxSocketClient();
-  }
-
-  if (isServer) {
     m_socket_server->SetEventHandler(*this, DS_SERVERSOCKET_ID);
     m_socket_server->SetNotify(wxSOCKET_CONNECTION_FLAG);
     m_socket_server->Notify(TRUE);
     m_socket_server->SetTimeout(1);  // Short timeout
   } else {
+    MESSAGE_LOG << "Opening TCP connection to " << m_params.NetworkAddress
+                << ":" << m_params.NetworkPort;
+    m_sock = new wxSocketClient();
     GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
     int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
     if (m_params.IOSelect != DS_TYPE_INPUT)
@@ -253,7 +248,7 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
     if (m_params.IOSelect != DS_TYPE_OUTPUT)
       notify_flags |= wxSOCKET_INPUT_FLAG;
     GetSock()->SetNotify(notify_flags);
-    GetSock()->Notify(TRUE);
+    GetSock()->Notify(true);
     GetSock()->SetTimeout(1);  // Short timeout
 
     m_rx_connect_event = false;
@@ -313,6 +308,17 @@ void CommDriverN0183Net::OnTimerSocket() {
       // schedule another connection attempt, in case this one fails
       int n_reconnect_delay = N_DOG_TIMEOUT;
       m_socket_timer.Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
+
+      // Possibly report connect error to GUI.
+      if (!m_connect_time.IsValid()) return;
+      auto since_connect = wxDateTime::Now() - m_connect_time;
+      if (since_connect > wxTimeSpan(0, 0, 10) && !m_is_conn_err_reported) {
+        std::stringstream ss;
+        ss << "Cannot connect to remote server " << m_params.NetworkAddress
+           << ":" << m_params.NetworkPort;
+        CommDriverRegistry::GetInstance().evt_driver_msg.Notify(ss.str());
+        m_is_conn_err_reported = true;
+      }
     }
   }
 }
