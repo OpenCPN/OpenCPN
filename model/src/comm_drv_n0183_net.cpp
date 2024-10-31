@@ -194,17 +194,16 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
     if ((ntohl(addr) & 0xf0000000) == 0xe0000000) {
       m_is_multicast = true;
       m_mrq_container->SetMrqAddr(addr);
-      GetSock()->SetOption(IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                           &m_mrq_container->m_mrq,
-                           sizeof(m_mrq_container->m_mrq));
+      m_sock->SetOption(IPPROTO_IP, IP_ADD_MEMBERSHIP, &m_mrq_container->m_mrq,
+                        sizeof(m_mrq_container->m_mrq));
     }
 
-    GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
+    m_sock->SetEventHandler(*this, DS_SOCKET_ID);
 
-    GetSock()->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG |
-                         wxSOCKET_LOST_FLAG);
-    GetSock()->Notify(TRUE);
-    GetSock()->SetTimeout(1);  // Short timeout
+    m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG |
+                      wxSOCKET_LOST_FLAG);
+    m_sock->Notify(TRUE);
+    m_sock->SetTimeout(1);  // Short timeout
   }
 
   // Set up another socket for transmit
@@ -241,15 +240,15 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
     MESSAGE_LOG << "Opening TCP connection to " << m_params.NetworkAddress
                 << ":" << m_params.NetworkPort;
     m_sock = new wxSocketClient();
-    GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
+    m_sock->SetEventHandler(*this, DS_SOCKET_ID);
     int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
     if (m_params.IOSelect != DS_TYPE_INPUT)
       notify_flags |= wxSOCKET_OUTPUT_FLAG;
     if (m_params.IOSelect != DS_TYPE_OUTPUT)
       notify_flags |= wxSOCKET_INPUT_FLAG;
-    GetSock()->SetNotify(notify_flags);
-    GetSock()->Notify(true);
-    GetSock()->SetTimeout(1);  // Short timeout
+    m_sock->SetNotify(notify_flags);
+    m_sock->Notify(true);
+    m_sock->SetTimeout(1);  // Short timeout
 
     m_rx_connect_event = false;
     m_socket_timer.Start(100, wxTIMER_ONE_SHOT);  // schedule a connection
@@ -261,13 +260,13 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
 
 void CommDriverN0183Net::OpenNetworkGpsd() {
   m_sock = new wxSocketClient();
-  GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
-  GetSock()->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG |
-                       wxSOCKET_LOST_FLAG);
-  GetSock()->Notify(TRUE);
-  GetSock()->SetTimeout(1);  // Short timeout
+  m_sock->SetEventHandler(*this, DS_SOCKET_ID);
+  m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG |
+                    wxSOCKET_LOST_FLAG);
+  m_sock->Notify(TRUE);
+  m_sock->SetTimeout(1);  // Short timeout
 
-  auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+  auto* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
   tcp_socket->Connect(m_addr, false);
   m_rx_connect_event = false;
 }
@@ -279,7 +278,7 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer() {
     if (GetParams().NoDataReconnect) {
       // Reconnect on NO DATA is true, so try to reconnect now.
       if (m_params.NetProtocol == TCP) {
-        auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+        auto* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
         if (tcp_socket) tcp_socket->Close();
 
         int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
@@ -296,7 +295,8 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer() {
 
 void CommDriverN0183Net::OnTimerSocket() {
   //  Attempt a connection
-  auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+  using namespace std::chrono;
+  auto* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
       wxLogDebug("Attempting reconnection...");
@@ -325,7 +325,7 @@ void CommDriverN0183Net::OnTimerSocket() {
 
 void CommDriverN0183Net::HandleResume() {
   //  Attempt a stop and restart of connection
-  auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+  auto* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
   if (tcp_socket) {
     m_socketread_watchdog_timer.Stop();
 
@@ -387,7 +387,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
                       << m_params.GetDSPort();
         }
         if (m_socket_server) {
-          GetSock()->Destroy();
+          m_sock->Destroy();
           m_sock = nullptr;
           break;
         }
@@ -420,7 +420,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         //      pseudo-NMEA
 
         char cmd[] = R"--(?WATCH={"class":"WATCH", "nmea":true})--";
-        GetSock()->Write(cmd, strlen(cmd));
+        m_sock->Write(cmd, strlen(cmd));
       } else if (m_params.NetProtocol == TCP) {
         MESSAGE_LOG << "TCP NetworkDataStream connection established: "
                     << m_params.GetDSPort();
@@ -433,7 +433,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         }
 
         if (m_params.IOSelect != DS_TYPE_INPUT && GetSock()->IsOk())
-          (void)SetOutputSocketOptions(GetSock());
+          (void)SetOutputSocketOptions(m_sock);
         m_socket_timer.Stop();
         m_rx_connect_event = true;
       }
@@ -453,18 +453,18 @@ void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
       m_sock = m_socket_server->Accept(false);
 
       if (GetSock()) {
-        GetSock()->SetTimeout(2);
+        m_sock->SetTimeout(2);
         //        GetSock()->SetFlags(wxSOCKET_BLOCK);
-        GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
+        m_sock->SetEventHandler(*this, DS_SOCKET_ID);
         int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
         if (m_params.IOSelect != DS_TYPE_INPUT) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
-          (void)SetOutputSocketOptions(GetSock());
+          (void)SetOutputSocketOptions(m_sock);
         }
         if (m_params.IOSelect != DS_TYPE_OUTPUT)
           notify_flags |= wxSOCKET_INPUT_FLAG;
-        GetSock()->SetNotify(notify_flags);
-        GetSock()->Notify(true);
+        m_sock->SetNotify(notify_flags);
+        m_sock->Notify(true);
       }
       break;
     }
@@ -484,13 +484,13 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
   switch (m_params.NetProtocol) {
     case TCP:
       if (GetSock() && GetSock()->IsOk()) {
-        GetSock()->Write(payload.mb_str(), strlen(payload.mb_str()));
+        m_sock->Write(payload.mb_str(), strlen(payload.mb_str()));
         if (GetSock()->Error()) {
           if (m_socket_server) {
-            GetSock()->Destroy();
+            m_sock->Destroy();
             m_sock = nullptr;
           } else {
-            auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+            auto* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
             if (tcp_socket) tcp_socket->Close();
             if (!m_socket_timer.IsRunning())
               m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);
