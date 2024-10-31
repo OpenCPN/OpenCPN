@@ -94,14 +94,21 @@ public:
   void OnPaint(wxPaintEvent &event);
   void OnSize(wxSizeEvent &event);
   void SetNavdata(ObservedEvt ev);
+  void HandleGga(ObservedEvt ev);
 
   NMEA0183 m_nmea0183;  // Used to parse NMEA Sentences
 
   wxString m_nmea_sentence;
-  double m_lat, m_lon, m_sog, m_cog, m_var;
+  double m_lat;
+  double m_lon;
+  double m_sog;
+  double m_cog;
+  double m_var;
+  std::string m_utc;
 
 private:
   std::shared_ptr<ObservableListener> m_navdata_listener;
+  std::shared_ptr<ObservableListener> m_gga_listener;
 };
 
 #endif

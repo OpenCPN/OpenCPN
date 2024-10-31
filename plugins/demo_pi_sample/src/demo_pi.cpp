@@ -203,12 +203,18 @@ DemoWindow::DemoWindow(wxWindow* parent, wxWindowID id)
       m_lon(1.0),
       m_sog(2.0),
       m_cog(3.0),
-      m_var(4.0) {
+      m_var(4.0),
+      m_utc("No GGA data") {
   Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) { OnPaint(ev); });
   Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
+
   wxDEFINE_EVENT(EVT_DEMO_NAVDATA, ObservedEvt);
   m_navdata_listener = GetListener(NavDataId(), EVT_DEMO_NAVDATA, this);
   Bind(EVT_DEMO_NAVDATA, [&](ObservedEvt ev) { SetNavdata(ev); });
+
+  wxDEFINE_EVENT(EVT_DEMO_GGA, ObservedEvt);
+  m_gga_listener = GetListener(NMEA0183Id("GGA"), EVT_DEMO_GGA, this);
+  Bind(EVT_DEMO_GGA, [&](ObservedEvt ev) { HandleGga(ev); });
 }
 
 void DemoWindow::OnSize(wxSizeEvent&) { printf("demoWindow OnSize()\n"); }
@@ -222,6 +228,19 @@ void DemoWindow::SetNavdata(ObservedEvt ev) {
   m_var = nav_data.var;
   Refresh(false);
 }
+
+void DemoWindow::HandleGga(ObservedEvt ev) {
+  auto payload = GetN0183Payload(NMEA0183Id("GGA"), ev);
+  wxString payload_clone(payload);  // Missing const in << operator def
+  m_utc = "parse error";
+  m_nmea0183 << payload_clone;
+  if (!m_nmea0183.PreParse()) return;
+  if (!m_nmea0183.Parse()) return;
+  if (m_nmea0183.LastSentenceIDReceived != "GGA") return;
+  m_utc = m_nmea0183.Gga.UTCTime;
+  Refresh(false);
+}
+
 void DemoWindow::OnPaint(wxPaintEvent&) {
   wxLogMessage("demo_pi onpaint");
 
@@ -244,5 +263,8 @@ void DemoWindow::OnPaint(wxPaintEvent&) {
 
     data.Printf("Cog: %g", m_cog);
     dc.DrawText(data, 10, 100);
+
+    data = "Utc: ";
+    dc.DrawText(data + m_utc, 10, 130);
   }
 }
