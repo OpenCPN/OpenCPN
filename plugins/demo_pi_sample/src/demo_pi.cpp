@@ -65,31 +65,27 @@ int DemoPi::Init(void) {
   m_hide_id = AddCanvasContextMenuItem(pmih, this);
   SetCanvasContextMenuItemViz(m_hide_id, false);
 
-  m_demo_window = new DemoWindow(m_parent_window, wxID_ANY);
+  m_demo_window = std::make_unique<DemoWindow>(m_parent_window, wxID_ANY);
 
   m_aui_mgr = GetFrameAuiManager();
-  m_aui_mgr->AddPane(m_demo_window);
-  m_aui_mgr->GetPane(m_demo_window).Name("Demo Window Name");
+  m_aui_mgr->AddPane(m_demo_window.get());
+  m_aui_mgr->GetPane(m_demo_window.get()).Name("Demo Window Name");
 
-  m_aui_mgr->GetPane(m_demo_window).Float();
-  m_aui_mgr->GetPane(m_demo_window).FloatingPosition(300, 30);
+  m_aui_mgr->GetPane(m_demo_window.get()).Float();
+  m_aui_mgr->GetPane(m_demo_window.get()).FloatingPosition(300, 30);
 
-  m_aui_mgr->GetPane(m_demo_window).Caption("AUI Managed Demo Window");
-  m_aui_mgr->GetPane(m_demo_window).CaptionVisible(true);
-  m_aui_mgr->GetPane(m_demo_window).GripperTop(true);
-  m_aui_mgr->GetPane(m_demo_window).CloseButton(true);
-  m_aui_mgr->GetPane(m_demo_window).Show(false);
+  m_aui_mgr->GetPane(m_demo_window.get()).Caption("AUI Managed Demo Window");
+  m_aui_mgr->GetPane(m_demo_window.get()).CaptionVisible(true);
+  m_aui_mgr->GetPane(m_demo_window.get()).GripperTop(true);
+  m_aui_mgr->GetPane(m_demo_window.get()).CloseButton(true);
+  m_aui_mgr->GetPane(m_demo_window.get()).Show(false);
   m_aui_mgr->Update();
 
   return (INSTALLS_CONTEXTMENU_ITEMS | WANTS_NMEA_SENTENCES | USES_AUI_MANAGER);
 }
 
 bool DemoPi::DeInit(void) {
-  m_aui_mgr->DetachPane(m_demo_window);
-  if (m_demo_window) {
-    m_demo_window->Close();
-    m_demo_window = nullptr;
-  }
+  m_aui_mgr->DetachPane(m_demo_window.get());
   return true;
 }
 
@@ -123,7 +119,7 @@ void DemoPi::OnContextMenuItemCallback(int id) {
   //  instance" Copy constructor (i.e. wxAuiPaneInfo pane =
   //  m_aui_mgr->GetPane(m_demo_window);) will not work
 
-  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window);
+  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window.get());
   if (!pane.IsOk()) return;
 
   if (!pane.IsShown()) {
@@ -150,7 +146,7 @@ void DemoPi::UpdateAuiStatus(void) {
   //    We use this callback here to keep the context menu selection in sync
   //    with the window state
 
-  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window);
+  wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window.get());
   if (!pane.IsOk()) return;
 
   printf("update %d\n", pane.IsShown());

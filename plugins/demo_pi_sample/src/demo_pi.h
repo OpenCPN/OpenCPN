@@ -80,7 +80,7 @@ public:
 private:
   wxWindow *m_parent_window;
 
-  DemoWindow *m_demo_window;
+  std::unique_ptr<DemoWindow> m_demo_window;
   wxAuiManager *m_aui_mgr;
   int m_show_id;
   int m_hide_id;
