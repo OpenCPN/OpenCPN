@@ -56,6 +56,7 @@
 #include "model/comm_buffers.h"
 #include "model/comm_drv_n0183.h"
 #include "model/conn_params.h"
+#include "model/ocpn_utils.h"
 #include "observable.h"
 
 class MrqContainer;
@@ -126,6 +127,7 @@ private:
   SocketReadWatchdogTimer m_socketread_watchdog_timer;
 
   bool m_ok;
+  bool m_is_conn_err_reported;
 
   ObsListener resume_listener;
 };
