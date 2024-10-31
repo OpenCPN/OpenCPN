@@ -57,6 +57,8 @@
 
 #include "observable.h"
 
+using namespace std::literals::chrono_literals;
+
 #define N_DOG_TIMEOUT 8
 
 class MrqContainer {
@@ -225,7 +227,7 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
   }
 
   // In case the connection is lost before acquired....
-  m_connect_time = wxDateTime::Now();
+  m_connect_time = std::chrono::steady_clock::now();
 }
 
 void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
@@ -255,7 +257,7 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
   }
 
   // In case the connection is lost before acquired....
-  m_connect_time = wxDateTime::Now();
+  m_connect_time = std::chrono::steady_clock::now();
 }
 
 void CommDriverN0183Net::OpenNetworkGpsd() {
@@ -310,9 +312,9 @@ void CommDriverN0183Net::OnTimerSocket() {
       m_socket_timer.Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
 
       // Possibly report connect error to GUI.
-      if (!m_connect_time.IsValid()) return;
-      auto since_connect = wxDateTime::Now() - m_connect_time;
-      if (since_connect > wxTimeSpan(0, 0, 10) && !m_is_conn_err_reported) {
+      if (m_connect_time == time_point<steady_clock>()) return;
+      auto since_connect = steady_clock::now() - m_connect_time;
+      if (since_connect > 10s && !m_is_conn_err_reported) {
         std::stringstream ss;
         ss << "Cannot connect to remote server " << m_params.NetworkAddress
            << ":" << m_params.NetworkPort;
@@ -381,6 +383,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_LOST: {
+      using namespace std::chrono;
       if (m_params.NetProtocol == TCP || m_params.NetProtocol == GPSD) {
         if (m_rx_connect_event) {
           MESSAGE_LOG << "NetworkDataStream connection lost: "
@@ -391,24 +394,23 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           m_sock = nullptr;
           break;
         }
-        wxDateTime now = wxDateTime::Now();
-        wxTimeSpan since_connect(0, 0, 10);
+        auto since_connect = 10s;
         // ten secs assumed, if connect time is uninitialized
-        if (m_connect_time.IsValid()) since_connect = now - m_connect_time;
+        auto now = steady_clock::now();
+        if (m_connect_time != time_point<steady_clock>())
+          since_connect = duration_cast<seconds>(now - m_connect_time);
 
-        int retry_time = 5000;  // default
-
+        auto retry_time = 5s;  // default
         //  If the socket has never connected, and it is a short interval since
         //  the connect request then stretch the time a bit.  This happens on
         //  Windows if there is no default IP on any interface
-
-        if (!m_rx_connect_event && (since_connect.GetSeconds() < 5))
-          retry_time = 10000;  // 10 secs
+        if (!m_rx_connect_event && (since_connect < 5s)) retry_time = 10s;
 
         m_socketread_watchdog_timer.Stop();
 
         // Schedule a re-connect attempt
-        m_socket_timer.Start(retry_time, wxTIMER_ONE_SHOT);
+        m_socket_timer.Start(duration_cast<milliseconds>(retry_time).count(),
+                             wxTIMER_ONE_SHOT);
       }
       break;
     }
@@ -438,7 +440,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         m_rx_connect_event = true;
       }
 
-      m_connect_time = wxDateTime::Now();
+      m_connect_time = std::chrono::steady_clock::now();
       break;
     }
 

@@ -23,6 +23,7 @@
 #ifndef COMMDRIVERN0183NET_H_
 #define COMMDRIVERN0183NET_H_
 
+#include <chrono>
 #include <memory>
 #include <string>
 
@@ -32,7 +33,6 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/datetime.h>
 #include <wx/string.h>
 #include <wx/timer.h>
 
@@ -119,7 +119,7 @@ private:
 
   int m_txenter;
   int m_dog_value;
-  wxDateTime m_connect_time;
+  std::chrono::time_point<std::chrono::steady_clock> m_connect_time;
   bool m_rx_connect_event;
 
   SocketTimer m_socket_timer;
