@@ -75,7 +75,6 @@ public:
                             UndoItemPointer selectable);
   bool AfterUndoableAction(UndoItemPointer after);
   bool CancelUndoableAction(bool noDataDelete = false);
-  ChartCanvas* GetParent() { return m_parent; }
 
 private:
   ChartCanvas* m_parent;

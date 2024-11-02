@@ -244,24 +244,24 @@ bool Undo::UndoLastAction() {
 
   switch (action.type) {
     case Undo_CreateWaypoint:
-      doRedoDeleteWaypoint(&action,
-                           GetParent());  // Same as delete but reversed.
+      // Same ss delete but reversed.
+      doRedoDeleteWaypoint(&action, m_parent);
       m_stackpointer++;
       break;
 
     case Undo_MoveWaypoint:
-      doUndoMoveWaypoint(&action, GetParent());
+      doUndoMoveWaypoint(&action, m_parent);
       m_stackpointer++;
       break;
 
     case Undo_DeleteWaypoint:
-      doUndoDeleteWaypoint(&action, GetParent());
+      doUndoDeleteWaypoint(&action, m_parent);
       m_stackpointer++;
       break;
 
     case Undo_AppendWaypoint:
       m_stackpointer++;
-      doUndoAppendWaypoint(&action, GetParent());
+      doUndoAppendWaypoint(&action, m_parent);
       break;
   }
   return true;
@@ -274,23 +274,23 @@ bool Undo::RedoNextAction() {
   switch (action.type) {
     case Undo_CreateWaypoint:
       // Same as delete but reversed.
-      doUndoDeleteWaypoint(&action, GetParent());
+      doUndoDeleteWaypoint(&action, m_parent);
       m_stackpointer--;
       break;
 
     case Undo_MoveWaypoint:
       // For Wpt move, redo is same as undo (swap lat/long);
-      doUndoMoveWaypoint(&action, GetParent());
+      doUndoMoveWaypoint(&action, m_parent);
       m_stackpointer--;
       break;
 
     case Undo_DeleteWaypoint:
-      doRedoDeleteWaypoint(&action, GetParent());
+      doRedoDeleteWaypoint(&action, m_parent);
       m_stackpointer--;
       break;
 
     case Undo_AppendWaypoint:
-      doRedoAppendWaypoint(&action, GetParent());
+      doRedoAppendWaypoint(&action, m_parent);
       m_stackpointer--;
       break;
   }
