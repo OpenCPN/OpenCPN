@@ -337,7 +337,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
         wxString undoItem;
         undoItem << _("Undo") << _T(" ")
-                 << parent->undo->GetNextUndoableAction()->Description();
+                 << parent->undo->GetNextUndoableAction().Description();
         MenuAppend1(subMenuUndo, ID_UNDO, undoItem);
       }
       if (parent->undo->AnythingToRedo()) {
@@ -347,21 +347,21 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
         wxString redoItem;
         redoItem << _("Redo") << _T(" ")
-                 << parent->undo->GetNextRedoableAction()->Description();
+                 << parent->undo->GetNextRedoableAction().Description();
         MenuAppend1(subMenuRedo, ID_REDO, redoItem);
       }
     } else {
       if (parent->undo->AnythingToUndo()) {
         wxString undoItem;
         undoItem << _("Undo") << _T(" ")
-                 << parent->undo->GetNextUndoableAction()->Description();
+                 << parent->undo->GetNextUndoableAction().Description();
         MenuAppend1(contextMenu, ID_UNDO, _menuText(undoItem, _T("Ctrl-Z")));
       }
 
       if (parent->undo->AnythingToRedo()) {
         wxString redoItem;
         redoItem << _("Redo") << _T(" ")
-                 << parent->undo->GetNextRedoableAction()->Description();
+                 << parent->undo->GetNextRedoableAction().Description();
 #ifdef __WXOSX__
         MenuAppend1(contextMenu, ID_REDO,
                     _menuText(redoItem, _T("Shift-Ctrl-Z")));

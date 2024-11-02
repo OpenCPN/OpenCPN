@@ -48,7 +48,7 @@ typedef void* UndoItemPointer;
 class UndoAction {
 public:
   ~UndoAction();
-  wxString Description();
+  wxString Description() const;
 
   UndoType type;
   std::vector<UndoItemPointer> before;
@@ -65,10 +65,9 @@ public:
   bool AnythingToRedo();
   void InvalidateRedo();
   void InvalidateUndo();
-  void Invalidate();
-  bool InUndoableAction() { return isInsideUndoableAction; }
-  UndoAction* GetNextUndoableAction();
-  UndoAction* GetNextRedoableAction();
+  bool InUndoableAction() { return m_is_inside_undoable_action; }
+  const UndoAction& GetNextUndoableAction();
+  const UndoAction& GetNextRedoableAction();
   bool UndoLastAction();
   bool RedoNextAction();
   bool BeforeUndoableAction(UndoType type, UndoItemPointer before,
@@ -80,11 +79,11 @@ public:
 
 private:
   ChartCanvas* m_parent;
-  bool isInsideUndoableAction;
-  UndoAction* candidate;
-  unsigned int stackpointer;
-  unsigned int depthSetting;
-  std::deque<UndoAction*> undoStack;
+  bool m_is_inside_undoable_action;
+  UndoAction m_candidate;
+  unsigned int m_stackpointer;
+  unsigned int m_depth_setting;
+  std::deque<UndoAction> undoStack;
 };
 
 #endif

@@ -56,25 +56,15 @@ extern MyFrame* gFrame;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern MarkInfoDlg* g_pMarkInfoDialog;
 
-Undo::Undo(ChartCanvas* parent) {
-  m_parent = parent;
-  depthSetting = 10;
-  stackpointer = 0;
-  isInsideUndoableAction = false;
-  candidate = NULL;
-}
+Undo::Undo(ChartCanvas* parent)
+    : m_parent(parent),
+      m_is_inside_undoable_action(false),
+      m_stackpointer(0),
+      m_depth_setting(10) {}
 
-Undo::~Undo() {
-  for (unsigned int i = 0; i < undoStack.size(); i++) {
-    if (undoStack[i]) {
-      delete undoStack[i];
-      undoStack[i] = NULL;
-    }
-  }
-  undoStack.clear();
-}
+Undo::~Undo() { undoStack.clear(); }
 
-wxString UndoAction::Description() {
+wxString UndoAction::Description() const {
   wxString descr;
   switch (type) {
     case Undo_CreateWaypoint:
@@ -96,7 +86,7 @@ wxString UndoAction::Description() {
   return descr;
 }
 
-void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoMoveWaypoint(UndoAction* action, ChartCanvas*) {
   double lat, lon;
   RoutePoint* currentPoint = (RoutePoint*)action->after[0];
   wxRealPoint* lastPoint = (wxRealPoint*)action->before[0];
@@ -128,7 +118,7 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 }
 
-void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas*) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
   pConfig->AddNewWayPoint(point, -1);
@@ -137,7 +127,7 @@ void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
     pRouteManagerDialog->UpdateWptListCtrl();
 }
 
-void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas*) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   pConfig->DeleteWayPoint(point);
   pSelect->DeleteSelectablePoint(point, SELTYPE_ROUTEPOINT);
@@ -209,68 +199,69 @@ void doRedoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 }
 
-bool Undo::AnythingToUndo() { return undoStack.size() > stackpointer; }
+bool Undo::AnythingToUndo() { return undoStack.size() > m_stackpointer; }
 
-bool Undo::AnythingToRedo() { return stackpointer > 0; }
+bool Undo::AnythingToRedo() { return m_stackpointer > 0; }
 
-UndoAction* Undo::GetNextUndoableAction() { return undoStack[stackpointer]; }
+const UndoAction& Undo::GetNextUndoableAction() {
+  return undoStack[m_stackpointer];
+}
 
-UndoAction* Undo::GetNextRedoableAction() {
-  return undoStack[stackpointer - 1];
+const UndoAction& Undo::GetNextRedoableAction() {
+  return undoStack[m_stackpointer - 1];
 }
 
 void Undo::InvalidateRedo() {
-  if (stackpointer == 0) return;
+  if (m_stackpointer == 0) return;
 
   // Make sure we are not deleting any objects pointed to by
   // potential redo actions.
 
-  for (unsigned int i = 0; i < stackpointer; i++) {
-    switch (undoStack[i]->type) {
+  for (unsigned int i = 0; i < m_stackpointer; i++) {
+    switch (undoStack[i].type) {
       case Undo_DeleteWaypoint:
-        undoStack[i]->before[0] = NULL;
+        undoStack.erase(undoStack.begin() + i);
         break;
       case Undo_CreateWaypoint:
       case Undo_MoveWaypoint:
       case Undo_AppendWaypoint:
         break;
     }
-    delete undoStack[i];
   }
 
-  undoStack.erase(undoStack.begin(), undoStack.begin() + stackpointer);
-  stackpointer = 0;
+  undoStack.erase(undoStack.begin(), undoStack.begin() + m_stackpointer);
+  m_stackpointer = 0;
 }
 
 void Undo::InvalidateUndo() {
   undoStack.clear();
-  stackpointer = 0;
+  m_stackpointer = 0;
 }
 
 bool Undo::UndoLastAction() {
   if (!AnythingToUndo()) return false;
-  UndoAction* action = GetNextUndoableAction();
+  UndoAction action = GetNextUndoableAction();
 
-  switch (action->type) {
+  switch (action.type) {
     case Undo_CreateWaypoint:
-      doRedoDeleteWaypoint(action,
+      doRedoDeleteWaypoint(&action,
                            GetParent());  // Same as delete but reversed.
-      stackpointer++;
+      m_stackpointer++;
       break;
 
     case Undo_MoveWaypoint:
-      doUndoMoveWaypoint(action, GetParent());
-      stackpointer++;
+      doUndoMoveWaypoint(&action, GetParent());
+      m_stackpointer++;
       break;
 
     case Undo_DeleteWaypoint:
-      doUndoDeleteWaypoint(action, GetParent());
-      stackpointer++;
+      doUndoDeleteWaypoint(&action, GetParent());
+      m_stackpointer++;
       break;
 
     case Undo_AppendWaypoint:
-      stackpointer++;
-      doUndoAppendWaypoint(action, GetParent());
+      m_stackpointer++;
+      doUndoAppendWaypoint(&action, GetParent());
       break;
   }
   return true;
@@ -278,30 +269,29 @@ bool Undo::UndoLastAction() {
 
 bool Undo::RedoNextAction() {
   if (!AnythingToRedo()) return false;
-  UndoAction* action = GetNextRedoableAction();
+  UndoAction action = GetNextRedoableAction();
 
-  switch (action->type) {
+  switch (action.type) {
     case Undo_CreateWaypoint:
-      doUndoDeleteWaypoint(action,
-                           GetParent());  // Same as delete but reversed.
-      stackpointer--;
+      // Same as delete but reversed.
+      doUndoDeleteWaypoint(&action, GetParent());
+      m_stackpointer--;
       break;
 
     case Undo_MoveWaypoint:
-      doUndoMoveWaypoint(
-          action,
-          GetParent());  // For Wpt move, redo is same as undo (swap lat/long);
-      stackpointer--;
+      // For Wpt move, redo is same as undo (swap lat/long);
+      doUndoMoveWaypoint(&action, GetParent());
+      m_stackpointer--;
       break;
 
     case Undo_DeleteWaypoint:
-      doRedoDeleteWaypoint(action, GetParent());
-      stackpointer--;
+      doRedoDeleteWaypoint(&action, GetParent());
+      m_stackpointer--;
       break;
 
     case Undo_AppendWaypoint:
-      doRedoAppendWaypoint(action, GetParent());
-      stackpointer--;
+      doRedoAppendWaypoint(&action, GetParent());
+      m_stackpointer--;
       break;
   }
   return true;
@@ -314,18 +304,18 @@ bool Undo::BeforeUndoableAction(UndoType type, UndoItemPointer before,
   ;
   InvalidateRedo();
 
-  candidate = new UndoAction;
-  candidate->before.clear();
-  candidate->beforeType.clear();
-  candidate->selectable.clear();
-  candidate->after.clear();
+  m_candidate = UndoAction();
+  m_candidate.before.clear();
+  m_candidate.beforeType.clear();
+  m_candidate.selectable.clear();
+  m_candidate.after.clear();
 
-  candidate->type = type;
+  m_candidate.type = type;
   UndoItemPointer subject = before;
 
   switch (beforeType) {
     case Undo_NeedsCopy: {
-      switch (candidate->type) {
+      switch (m_candidate.type) {
         case Undo_MoveWaypoint: {
           wxRealPoint* point = new wxRealPoint;
           RoutePoint* rp = (RoutePoint*)before;
@@ -349,40 +339,38 @@ bool Undo::BeforeUndoableAction(UndoType type, UndoItemPointer before,
       break;
   }
 
-  candidate->before.push_back(subject);
-  candidate->beforeType.push_back(beforeType);
-  candidate->selectable.push_back(selectable);
+  m_candidate.before.push_back(subject);
+  m_candidate.beforeType.push_back(beforeType);
+  m_candidate.selectable.push_back(selectable);
 
-  isInsideUndoableAction = true;
+  m_is_inside_undoable_action = true;
   return true;
 }
 
 bool Undo::AfterUndoableAction(UndoItemPointer after) {
-  if (!isInsideUndoableAction) return false;
+  if (!m_is_inside_undoable_action) return false;
 
-  candidate->after.push_back(after);
-  undoStack.push_front(candidate);
+  m_candidate.after.push_back(after);
+  undoStack.push_front(m_candidate);
 
-  if (undoStack.size() > depthSetting) {
+  if (undoStack.size() > m_depth_setting) {
     undoStack.pop_back();
   }
 
-  isInsideUndoableAction = false;
+  m_is_inside_undoable_action = false;
   return true;
 }
 
 bool Undo::CancelUndoableAction(bool noDataDelete) {
-  if (isInsideUndoableAction) {
+  if (m_is_inside_undoable_action) {
     if (noDataDelete) {
-      for (unsigned int i = 0; i < candidate->beforeType.size(); i++) {
-        if (candidate->beforeType[i] == Undo_IsOrphanded) {
-          candidate->beforeType[i] = Undo_HasParent;
+      for (unsigned int i = 0; i < m_candidate.beforeType.size(); i++) {
+        if (m_candidate.beforeType[i] == Undo_IsOrphanded) {
+          m_candidate.beforeType[i] = Undo_HasParent;
         }
       }
     }
-    if (candidate) delete candidate;
-    candidate = NULL;
-    isInsideUndoableAction = false;
+    m_is_inside_undoable_action = false;
     return true;
   }
   return false;
