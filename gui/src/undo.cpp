@@ -56,7 +56,7 @@ Undo::Undo(ChartCanvas* parent)
       m_stackpointer(0),
       m_depth_setting(10) {}
 
-Undo::~Undo() { undoStack.clear(); }
+Undo::~Undo() { m_undo_stack.clear(); }
 
 wxString UndoAction::Description() const {
   wxString descr;
@@ -193,16 +193,18 @@ void doRedoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 }
 
-bool Undo::AnythingToUndo() { return undoStack.size() > m_stackpointer; }
-
-bool Undo::AnythingToRedo() { return m_stackpointer > 0; }
-
-const UndoAction& Undo::GetNextUndoableAction() {
-  return undoStack[m_stackpointer];
+bool Undo::AnythingToUndo() const {
+  return m_undo_stack.size() > m_stackpointer;
 }
 
-const UndoAction& Undo::GetNextRedoableAction() {
-  return undoStack[m_stackpointer - 1];
+bool Undo::AnythingToRedo() const { return m_stackpointer > 0; }
+
+const UndoAction& Undo::GetNextUndoableAction() const {
+  return m_undo_stack[m_stackpointer];
+}
+
+const UndoAction& Undo::GetNextRedoableAction() const {
+  return m_undo_stack[m_stackpointer - 1];
 }
 
 void Undo::InvalidateRedo() {
@@ -212,9 +214,9 @@ void Undo::InvalidateRedo() {
   // potential redo actions.
 
   for (unsigned int i = 0; i < m_stackpointer; i++) {
-    switch (undoStack[i].type) {
+    switch (m_undo_stack[i].type) {
       case Undo_DeleteWaypoint:
-        undoStack.erase(undoStack.begin() + i);
+        m_undo_stack.erase(m_undo_stack.begin() + i);
         break;
       case Undo_CreateWaypoint:
       case Undo_MoveWaypoint:
@@ -223,12 +225,13 @@ void Undo::InvalidateRedo() {
     }
   }
 
-  undoStack.erase(undoStack.begin(), undoStack.begin() + m_stackpointer);
+  m_undo_stack.erase(m_undo_stack.begin(),
+                     m_undo_stack.begin() + m_stackpointer);
   m_stackpointer = 0;
 }
 
 void Undo::InvalidateUndo() {
-  undoStack.clear();
+  m_undo_stack.clear();
   m_stackpointer = 0;
 }
 
@@ -345,10 +348,10 @@ bool Undo::AfterUndoableAction(UndoItemPointer after) {
   if (!m_is_inside_undoable_action) return false;
 
   m_candidate.after.push_back(after);
-  undoStack.push_front(m_candidate);
+  m_undo_stack.push_front(m_candidate);
 
-  if (undoStack.size() > m_depth_setting) {
-    undoStack.pop_back();
+  if (m_undo_stack.size() > m_depth_setting) {
+    m_undo_stack.pop_back();
   }
 
   m_is_inside_undoable_action = false;

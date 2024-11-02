@@ -55,13 +55,13 @@ class Undo {
 public:
   Undo(ChartCanvas* parent);
   ~Undo();
-  bool AnythingToUndo();
-  bool AnythingToRedo();
+  bool AnythingToUndo() const;
+  bool AnythingToRedo() const;
   void InvalidateRedo();
   void InvalidateUndo();
-  bool InUndoableAction() { return m_is_inside_undoable_action; }
-  const UndoAction& GetNextUndoableAction();
-  const UndoAction& GetNextRedoableAction();
+  bool InUndoableAction() const { return m_is_inside_undoable_action; }
+  const UndoAction& GetNextUndoableAction() const;
+  const UndoAction& GetNextRedoableAction() const;
   bool UndoLastAction();
   bool RedoNextAction();
   bool BeforeUndoableAction(UndoType type, UndoItemPointer before,
@@ -76,7 +76,7 @@ private:
   UndoAction m_candidate;
   unsigned int m_stackpointer;
   unsigned int m_depth_setting;
-  std::deque<UndoAction> undoStack;
+  std::deque<UndoAction> m_undo_stack;
 };
 
 #endif
