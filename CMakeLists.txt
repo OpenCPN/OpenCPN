@@ -1874,6 +1874,7 @@ if (APPLE)
   set_target_properties(
     ${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
                                "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in"
+                               XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES
   )
 endif ()
 

@@ -129,7 +129,8 @@ if [ -z "${APPLE_DEVELOPER_ID}" ]; then
   codesign --force --deep --sign - /tmp/opencpn/bin/OpenCPN.app
 else
   # We do have an account and did set up the certificates in ci/mac-sign.sh, let's sign the application bundle
-  codesign --deep --force --verbose --sign "${APPLE_DEVELOPER_ID}" /tmp/opencpn/bin/OpenCPN.app
+  codesign --verbose --sign "${APPLE_DEVELOPER_ID}" --options=runtime --timestamp --options=runtime /tmp/opencpn/bin/OpenCPN.app/Contents/PlugIns/*.dylib
+  codesign --deep --force --verbose --sign "${APPLE_DEVELOPER_ID}" --entitlements ../buildosx/entitlements.plist --timestamp --options=runtime /tmp/opencpn/bin/OpenCPN.app
 fi
 
 codesign -dv --verbose /tmp/opencpn/bin/OpenCPN.app

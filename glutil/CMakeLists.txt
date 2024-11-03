@@ -43,7 +43,7 @@ if (CMAKE_HOST_WIN32)
   target_link_libraries(
     ${APP_TARGET} PRIVATE setupapi.lib "GLU_static" psapi.lib
       iphlpapi.lib # glu32.lib
-  ) 
+  )
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
     target_link_libraries(${APP_TARGET} PRIVATE gdiplus.lib)
@@ -77,5 +77,8 @@ if (APPLE)
     DESTINATION "bin/OpenCPN.app/Contents/MacOS"
     PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+  )
+  set_target_properties(${APP_TARGET} PROPERTIES
+                               XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES
   )
 endif ()
