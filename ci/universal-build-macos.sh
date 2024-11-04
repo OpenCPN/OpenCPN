@@ -150,6 +150,10 @@ if [ -n "${APPLE_DEVELOPER_ID}" ]; then
     productsign --sign "${APPLE_DEVELOPER_ID}" "${pkg_file}" pkg.signed
     mv pkg.signed "${pkg_file}"
   done
+  # The resulting package has to be submitted to Apple for notarization
+  # xcrun notarytool submit --apple-id <Apple id e-mail> --team-id <APPLE_DEVELOPER_ID> --password <Application specific password> <OpenCPN_*.pkg>
+  # Once succesfully notarized, run the stapler to include the notarization ticket into the installer
+  # xcrun stapler staple <OpenCPN_*.pkg>
 fi
 
 # The build is over, if there is error now it is not ours
