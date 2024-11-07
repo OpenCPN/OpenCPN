@@ -2,9 +2,9 @@
 
 namespace shp {
 
-    Point::Point(double xCoord, double yCoord) : x(xCoord), y(yCoord), z(NAN), m(NAN) {}
+    Point::Point(double xCoord, double yCoord) : x(xCoord), y(yCoord), m(NAN), z(NAN) {}
 
-    Point::Point(double xCoord, double yCoord, double zValue, double mValue) : x(xCoord), y(yCoord), z(zValue), m(mValue) {}
+    Point::Point(double xCoord, double yCoord, double zValue, double mValue) : x(xCoord), y(yCoord), m(mValue), z(zValue) {}
 
     std::unique_ptr<Geometry> Point::clone() const  {
         return std::make_unique<Point>(x,y);
@@ -33,11 +33,11 @@ namespace shp {
         } else {
             str << "POINT ";
             if (!isnan(z) && !isnan(m)) {
-                str << "ZM ";    
+                str << "ZM ";
             } else if (!isnan(z)) {
-                str << "Z ";    
+                str << "Z ";
             } else if (!isnan(m)) {
-                str << "M ";    
+                str << "M ";
             }
             str << "(";
             str << x << " ";
@@ -49,7 +49,7 @@ namespace shp {
                 str << " " << m;
             }
             str << ")";
-            
+
         }
         return str.str();
     }
