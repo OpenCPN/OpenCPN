@@ -952,12 +952,12 @@ TEST(FormatTime, Basic) {
   span += wxTimeSpan(0, 0, 0, 10);
   s = formatTimeDelta(span).ToStdString();
   EXPECT_EQ(s, " 2H  0M");
-  s = formatTimeDelta(wxLongLong(7184.1181798492389));
+  s = formatTimeDelta(wxLongLong(7184));
   EXPECT_EQ(s, " 2H  0M");
-  s = formatTimeDelta(wxLongLong(123.0));
+  s = formatTimeDelta(wxLongLong(123));
   EXPECT_EQ(s, " 2M  3S");
-  s = formatTimeDelta(wxLongLong(120.0));
+  s = formatTimeDelta(wxLongLong(120));
   EXPECT_EQ(s, " 2M  0S");
-  s = formatTimeDelta(wxLongLong(110.0));
+  s = formatTimeDelta(wxLongLong(110));
   EXPECT_EQ(s, " 1M 50S");
 }
