@@ -69,10 +69,11 @@ public:
 /** Overall help message: key functions and bindings in a string matrix */
 class GridSizer : public wxGridSizer {
 private:
-    static constexpr int kGridSize {4};
-    static constexpr int kNumMsgs {12};
-    using MsgLine = std::array<wxString, kGridSize>;
-    using Messages = std::array<MsgLine, kNumMsgs>;
+  static constexpr int kGridSize{4};
+  static constexpr int kNumMsgs{12};
+  using MsgLine = std::array<wxString, kGridSize>;
+  using Messages = std::array<MsgLine, kNumMsgs>;
+
 public:
   GridSizer(wxWindow* parent) : wxGridSizer(kGridSize) {
     const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
