@@ -166,7 +166,7 @@ static int sk_query_callback(int sock, const struct sockaddr* from,
     std::string hostname = srv.substr(0, rh);
     // Remove non-printable characters as seen in names returned by macOS
     hostname.erase(remove_if(hostname.begin(), hostname.end(),
-                             [](char c) { return !(c >= 0 && c < 128); }),
+                             [](char c) { return (c < 0); }),
                    hostname.end());
     bool found = false;
     for (const auto& sks : g_sk_servers) {

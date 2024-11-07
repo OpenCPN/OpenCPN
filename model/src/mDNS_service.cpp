@@ -164,7 +164,7 @@ int ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen,
       // "<hostname>.<_service-name>._tcp.local."
       mdns_record_t answer = service->record_ptr;
 
-      mdns_record_t additional[5] = {0};
+      mdns_record_t additional[5]{{}};
       size_t additional_count = 0;
 
       // SRV record mapping "<hostname>.<_service-name>._tcp.local." to
@@ -213,7 +213,7 @@ int ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen,
       // "<hostname>.<_service-name>._tcp.local."
       mdns_record_t answer = service->record_srv;
 
-      mdns_record_t additional[5] = {0};
+      mdns_record_t additional[5]{{}};
       size_t additional_count = 0;
 
       // A/AAAA records mapping "<hostname>.local." to IPv4/IPv6 addresses
@@ -257,7 +257,7 @@ int ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen,
       // Answer A records mapping "<hostname>.local." to IPv4 address
       mdns_record_t answer = service->record_a;
 
-      mdns_record_t additional[5] = {0};
+      mdns_record_t additional[5]{{}};
       size_t additional_count = 0;
 
       // AAAA record mapping "<hostname>.local." to IPv6 addresses
@@ -300,7 +300,7 @@ int ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen,
       // Answer AAAA records mapping "<hostname>.local." to IPv6 address
       mdns_record_t answer = service->record_aaaa;
 
-      mdns_record_t additional[5] = {0};
+      mdns_record_t additional[5]{{}};
       size_t additional_count = 0;
 
       // A record mapping "<hostname>.local." to IPv4 addresses
@@ -394,7 +394,7 @@ void service_mdns(const char* hostname, const char* service_name,
   hostname_qualified_string.str = qualified_hostname_buffer;
   hostname_qualified_string.length = strlen(qualified_hostname_buffer);
 
-  service_t service = {0};
+  service_t service{};
   service.service = service_string;
   service.hostname = hostname_string;
   service.service_instance = service_instance_string;
@@ -459,7 +459,7 @@ void service_mdns(const char* hostname, const char* service_name,
   // Send an announcement on startup of service
   {
     printf("Sending announce\n");
-    mdns_record_t additional[5] = {0};
+    mdns_record_t additional[5]{{}};
     size_t additional_count = 0;
     additional[additional_count++] = service.record_srv;
     if (service.address_ipv4.sin_family == AF_INET)
@@ -505,7 +505,7 @@ void service_mdns(const char* hostname, const char* service_name,
   // Send a goodbye on end of service
   {
     printf("Sending goodbye\n");
-    mdns_record_t additional[5] = {0};
+    mdns_record_t additional[5]{{}};
     size_t additional_count = 0;
     additional[additional_count++] = service.record_srv;
     if (service.address_ipv4.sin_family == AF_INET)

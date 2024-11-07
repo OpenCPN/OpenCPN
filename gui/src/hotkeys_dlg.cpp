@@ -68,23 +68,28 @@ public:
 
 /** Overall help message: key functions and bindings in a string matrix */
 class GridSizer : public wxGridSizer {
+private:
+  static constexpr int kGridSize{4};
+  static constexpr int kNumMsgs{12};
+  using MsgLine = std::array<wxString, kGridSize>;
+  using Messages = std::array<MsgLine, kNumMsgs>;
+
 public:
-  GridSizer(wxWindow* parent) : wxGridSizer(kMacMessages[0].size()) {
+  GridSizer(wxWindow* parent) : wxGridSizer(kGridSize) {
     const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
-    const auto& kMessages =
+    const Messages& kMessages =
         (osSystemId & wxOS_MAC) ? kMacMessages : kWinLinuxMessages;
-    for (auto line = kMessages.begin(); line != kMessages.end(); line++) {
-      for (auto word = line->begin(); word != line->end(); word++) {
-        Add(new wxStaticText(parent, wxID_ANY, *word),
+
+    for (const MsgLine& line : kMessages)
+      for (const wxString& word : line)
+        Add(new wxStaticText(parent, wxID_ANY, word),
             wxSizerFlags().DoubleBorder());
-      }
-    }
   }
 
 private:
   // It's unclear whether _() actually works in this context or
   // if wxTRANSLATE is needed instead...
-  const std::array<std::array<wxString, 4>, 12> kWinLinuxMessages{
+  const Messages kWinLinuxMessages{
       // clang-format off
       {{_("Zoom in"), "+, PgUp",
                                    _("Zoom out"), "-, PgDown"},
@@ -110,7 +115,7 @@ private:
        {_("Drop mark"), _("Ctrl O, space bar"),
                                    "", ""}}};
 
-  const std::array<std::array<wxString, 4>, 12> kMacMessages{
+  const Messages kMacMessages{
       {{_("Zoom in"), "+, PgUp",
                                    _("Zoom out"), "-, PgDown"},
        {_("Fine zoom in"), "Alt +",

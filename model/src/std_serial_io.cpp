@@ -67,7 +67,7 @@ private:
   bool OpenComPortPhysical(const wxString& com_name, unsigned baud_rate);
   void CloseComPortPhysical();
   ssize_t WriteComPortPhysical(const char* msg);
-  void RequestStop() { ThreadCtrl::RequestStop(); }
+  void RequestStop() override { ThreadCtrl::RequestStop(); }
 };
 
 std::unique_ptr<SerialIo> SerialIo::Create(SendMsgFunc send_msg_func,
