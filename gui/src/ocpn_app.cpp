@@ -194,7 +194,7 @@ void RedirectIOToConsole();
 #include "wiz_ui.h"
 
 const char *const kUsage =
-    R"""(Usage:
+    R"(Usage:
   opencpn -h | --help
   opencpn [-p] [-f] [-G] [-g] [-P] [-l <str>] [-u <num>] [-U] [-s] [GPX file ...]
   opencpn --remote [-R] | -q] | -e] |-o <str>]
@@ -225,7 +225,7 @@ Options manipulating already started opencpn
 
 Arguments:
   GPX  file                     GPX-formatted file with waypoints or routes.
-)""";
+)";
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);

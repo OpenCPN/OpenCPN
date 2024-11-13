@@ -77,6 +77,23 @@ results in the http://opencpn.github.io/OpenCPN/api-docs/classAbstractRestServer
 . When working with existing code, gradually refactor to comply with coding guidelines.
 . Do not submit large PRs that refactor a lot of code changes.
 
+=== Localization and Internationalization
+
+. Use the gettext macro `_()` for user-visible strings that need translation.
+.. Do not use `_()` for log file messages and internal strings.
+. Add new source files containing translatable strings in `po/POTFILES.in`.
+. Maintainers run the following commands before each release. Do not run them in your pull requests.
+.. `make pot-update` - Scans source files and updates the template (`.pot`) file.
+.. `make po-update` - Updates all language files (`.po`) with new strings from template, to merge new strings into existing language files.
+
+[options="header", cols="50,50"]
+|===
+| Avoid | Use Instead
+| `mode = "Auto";` | `mode = _("Auto");`
+| `msg = _("File") + " " + _("not found");` | `msg = _("File not found");`
+| `msg = _("Found") + wxString::Format(" %d ", count) + _("errors");` | `msg = wxString::Format(_("Found %d errors"), count);`
+|===
+
 == Code Formatting
 
 === C/C++
