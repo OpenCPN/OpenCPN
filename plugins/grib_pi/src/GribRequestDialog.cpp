@@ -94,7 +94,7 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
       ">" +
       _("<h1>OpenCPN ECMWF forecast</h1>"
         "<p>Free service based on ECMWF Open Data published under the terms of "
-        "Creative Commons CC-4.0-BY licence</p>"
+        "Creative Commons CC-4.0-BY license</p>"
         "<p>The IFS model GRIB files include information about surface "
         "temperature, "
         "atmospheric pressure, wind strength, wind direction, wave height and "
