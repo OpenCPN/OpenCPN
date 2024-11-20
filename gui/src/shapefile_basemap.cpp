@@ -32,6 +32,8 @@
 #include "chartbase.h"
 #include "glChartCanvas.h"
 
+#include "model/logger.h"
+
 #ifdef ocpnUSE_GL
 #include "shaders.h"
 #endif
@@ -249,6 +251,10 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
 
 bool ShapeBaseChart::LoadSHP() {
   _reader = new shp::ShapefileReader(_filename);
+  if (!_reader->isOpen()) {
+    MESSAGE_LOG << "Shapefile " << _filename << " is not opened";
+    return false;
+  }
   auto bounds = _reader->getBounds();
   _is_usable = _reader->getCount() > 1 && bounds.getMaxX() <= 180 &&
                bounds.getMinX() >= -180 && bounds.getMinY() >= -90 &&
