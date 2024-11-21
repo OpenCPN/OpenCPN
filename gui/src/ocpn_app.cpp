@@ -393,6 +393,9 @@ int g_lastClientRectx;
 int g_lastClientRecty;
 int g_lastClientRectw;
 int g_lastClientRecth;
+/**
+ * The width of the physical screen in millimeters.
+ */
 double g_display_size_mm;
 std::vector<size_t> g_config_display_size_mm;
 bool g_config_display_size_manual;

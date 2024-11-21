@@ -186,6 +186,10 @@ public:
   ~s52plib();
 
   // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
+  /**
+   * Set pixels per millimeter for symbol rendering.
+   * @param ppmm Logical pixels per millimeter of display.
+   */
   void SetPPMM(float ppmm);
   void SetDisplayWidth(size_t pixels) { m_display_width = pixels; }
   float GetPPMM() { return canvas_pix_per_mm; }
@@ -529,8 +533,12 @@ private:
 
   wxString m_plib_file;
 
-  float
-      canvas_pix_per_mm;  // Set by parent, used to scale symbols/lines/patterns
+  /**
+   * The number of pixels per millimeter of the canvas.
+   *
+   * @note Set by parent, used to scale symbols/lines/patterns.
+   */
+  float canvas_pix_per_mm;
   double m_rv_scale_factor;
   float m_display_size_mm;
   size_t m_display_width;
