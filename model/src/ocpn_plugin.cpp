@@ -289,3 +289,8 @@ bool opencpn_plugin_118::RenderOverlayMultiCanvas(wxDC& dc, PlugIn_ViewPort* vp,
                                                   int priority) {
   return false;
 }
+
+//    Opencpn_Plugin_119 Implementation
+opencpn_plugin_119::opencpn_plugin_119(void* pmgr) : opencpn_plugin_118(pmgr) {}
+
+void opencpn_plugin_119::PreShutdownHook() { return; }

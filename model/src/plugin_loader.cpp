@@ -1579,6 +1579,16 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
                             p->GetPlugInVersionBuild());
       } while (false);  // NOLINT
       break;
+    case 119:
+      pic->m_pplugin = dynamic_cast<opencpn_plugin_119*>(plug_in);
+      do /* force a local scope */ {
+        auto p = dynamic_cast<opencpn_plugin_119*>(plug_in);
+        pi_ver =
+            SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
+                            p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
+                            p->GetPlugInVersionBuild());
+      } while (false);  // NOLINT
+      break;
 
     default:
       break;

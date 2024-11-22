@@ -105,6 +105,7 @@ class wxGLCanvas;
 #define WANTS_MOUSE_EVENTS 0x00080000
 #define WANTS_VECTOR_CHART_OBJECT_INFO 0x00100000
 #define WANTS_KEYBOARD_EVENTS 0x00200000
+#define WANTS_PRESHUTDOWN_HOOK 0x00400000
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -635,6 +636,14 @@ public:
   }
 #endif
 };
+
+class DECL_EXP opencpn_plugin_119 : public opencpn_plugin_118 {
+public:
+  opencpn_plugin_119(void *pmgr);
+
+  virtual void PreShutdownHook();
+};
+
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
 //
