@@ -1562,6 +1562,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     }
   }
 
+  //  Give any requesting plugins a PreShutdownHook call
+  g_pi_manager->SendPreShutdownHookToPlugins();
+
   // We save perspective before closing to restore position next time
   // Pane is not closed so the child is not notified (OnPaneClose)
   if (g_pAISTargetList) {

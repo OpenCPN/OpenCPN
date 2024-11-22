@@ -256,6 +256,7 @@ public:
 
   bool SendMouseEventToPlugins(wxMouseEvent& event);
   bool SendKeyEventToPlugins(wxKeyEvent& event);
+  void SendPreShutdownHookToPlugins();
 
   void SendBaseConfigToAllPlugIns();
   void SendS52ConfigToAllPlugIns(bool bReconfig = false);

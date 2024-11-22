@@ -1685,6 +1685,27 @@ void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort& vp) {
   }
 }
 
+void PlugInManager::SendPreShutdownHookToPlugins() {
+  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer* pic = plugin_array->Item(i);
+    if (pic->m_enabled && pic->m_init_state) {
+      if (pic->m_cap_flag & WANTS_PRESHUTDOWN_HOOK) {
+        switch (pic->m_api_version) {
+          case 119: {
+            opencpn_plugin_119* ppi =
+                dynamic_cast<opencpn_plugin_119*>(pic->m_pplugin);
+            if (ppi) ppi->PreShutdownHook();
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+  }
+}
+
 void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
