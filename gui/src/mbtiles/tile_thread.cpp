@@ -26,8 +26,12 @@ void MbtTilesThread::RequestTile(SharedTilePtr tile) {
 void MbtTilesThread::RequestStop() {
   m_exit_thread = true;
   m_tile_queue.Push(nullptr);
-  while (!m_finished) {
+  int tsec = 10;
+  wxMilliSleep(10);
+
+  while ((!m_finished) && (tsec--)) {
     wxYield();
+    wxMilliSleep(10);
   }
 }
 
