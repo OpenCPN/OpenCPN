@@ -62,6 +62,9 @@ namespace shp {
 
             ~ShapefileReader();
 
+            /** Return true if the reader has opened and loaded the shapefile successfully. */
+            bool isOpen();
+
             int getCount();
 
             GeometryType getGeometryType(); 
