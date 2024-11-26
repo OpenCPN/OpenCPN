@@ -13,6 +13,10 @@ namespace shp {
         DBFClose(dbf);
     }
 
+    bool ShapefileReader::isOpen() {
+        return shp && dbf;
+    }
+
     void ShapefileReader::getShapeInfo() {
         if (count == -1) {
             SHPGetInfo(shp, &count, &shapeType, min, max);
