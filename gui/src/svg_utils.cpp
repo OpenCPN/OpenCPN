@@ -140,9 +140,19 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
                           unsigned int& height) {
   width = 0;
   height = 0;
+  float viewBoxWidth = 0, viewBoxHeight = 0;
   pugi::xml_document svgDoc;
   if (svgDoc.load_file(filename.fn_str())) {
     pugi::xml_node svgNode = svgDoc.child("svg");
+
+    // Check for viewBox attribute.
+    if (const char* viewBox = svgNode.attribute("viewBox").value()) {
+      std::istringstream iss(viewBox);
+      float minX, minY;
+      iss >> minX >> minY >> viewBoxWidth >> viewBoxHeight;
+    }
+
+    // Check width/height attributes
     for (pugi::xml_attribute attr = svgNode.first_attribute(); attr;
          attr = attr.next_attribute()) {
       const char* pca = attr.name();
@@ -150,15 +160,30 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
         width = get_px_length(attr.as_string());
       } else if (!strcmp(pca, "height")) {
         height = get_px_length(attr.as_string());
-      } else if (!strcmp(pca, "viewBox") && (width == 0 || height == 0)) {
-        // Parse viewBox="min-x min-y width height"
-        std::string viewBox = attr.as_string();
-        std::istringstream iss(viewBox);
-        float minX, minY, vbWidth, vbHeight;
-        if (iss >> minX >> minY >> vbWidth >> vbHeight) {
-          if (width == 0) width = vbWidth;
-          if (height == 0) height = vbHeight;
-        }
+      }
+    }
+    // SVG sizing rules: https://svgwg.org/specs/integration/#svg-css-sizing
+    if (width == 0 && height == 0) {
+      if (viewBoxWidth > 0 && viewBoxHeight > 0) {
+        // Use viewBox dimensions
+        width = viewBoxWidth;
+        height = viewBoxHeight;
+      } else {
+        // Default sizes per spec
+        width = 300;
+        height = 150;
+      }
+    } else if (width == 0) {
+      if (viewBoxWidth > 0 && viewBoxHeight > 0) {
+        width = height * (viewBoxWidth / viewBoxHeight);
+      } else {
+        width = 300;
+      }
+    } else if (height == 0) {
+      if (viewBoxWidth > 0 && viewBoxHeight > 0) {
+        height = width * (viewBoxHeight / viewBoxWidth);
+      } else {
+        height = 150;
       }
     }
   }
