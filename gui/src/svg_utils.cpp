@@ -150,6 +150,15 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
         width = get_px_length(attr.as_string());
       } else if (!strcmp(pca, "height")) {
         height = get_px_length(attr.as_string());
+      } else if (!strcmp(pca, "viewBox") && (width == 0 || height == 0)) {
+        // Parse viewBox="min-x min-y width height"
+        std::string viewBox = attr.as_string();
+        std::istringstream iss(viewBox);
+        float minX, minY, vbWidth, vbHeight;
+        if (iss >> minX >> minY >> vbWidth >> vbHeight) {
+          if (width == 0) width = vbWidth;
+          if (height == 0) height = vbHeight;
+        }
       }
     }
   }

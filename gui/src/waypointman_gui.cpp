@@ -132,7 +132,11 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
         bm_size_nom *= g_MarkScaleFactorExp;
 
         MarkIcon *pmi = NULL;
-        double aspect = h / w;
+        double aspect =
+            1.0;  // Use default aspect ratio of 1 if width/height are missing.
+        if (w != 0 && h != 0) {
+          aspect = h / w;
+        }
 
         // Make the rendered icon square, if necessary
         if (fabs(aspect - 1.0) > .05) {
