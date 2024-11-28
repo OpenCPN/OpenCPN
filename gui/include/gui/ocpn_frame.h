@@ -333,6 +333,7 @@ public:
   void InitApiListeners();
   void ReleaseApiListeners();
   void UpdateStatusBar(void);
+  void ConfigureStatusBar();
 
 private:
   void CheckToolbarPosition();
