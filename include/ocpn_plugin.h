@@ -1859,6 +1859,13 @@ extern DECL_EXP CommDriverResult RegisterTXPGNs(DriverHandle handle,
 // API 1.19
 //
 
+// Navigation mode
+typedef enum _PI_NavMode {
+  PI_NORTH_UP_MODE = 0,
+  PI_COURSE_UP_MODE,
+  PI_HEAD_UP_MODE,
+} PI_NavMode;
+
 /** Facade for NavAddrPluginMsg. */
 struct PluginMsgId {
   const std::string id;
@@ -1869,4 +1876,49 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     PluginMsgId id, wxEventType ev, wxEvtHandler *handler);
 
 extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
+
+//  Assorted GUI utility functions
+void ExitOCPN();
+
+bool GetFullScreen();
+void SetFullScreen(bool full_screen_on);
+
+void EnableMUIBar(bool enable);
+void EnableCompassGPSIcon(bool enable);
+void EnableStatusBar(bool enable);
+void EnableChartBar(bool enable);
+void EnableMenu(bool enable);
+
+void SetGlobalColor(std::string table, std::string name, wxColor color);
+
+/*
+ *  Allow plugin control of "Chart Panel Options" dialog
+ */
+
+void EnableLatLonGrid(bool enable);
+
+void EnableChartOutlines(bool enable);
+
+void EnableDepthUnitDisplay(bool enable);
+
+void EnableAisTargetDisplay(bool enable);
+
+void EnableTideStationsDisplay(bool enable);
+
+void EnableCurrentStationsDisplay(bool enable);
+
+void EnableENCTextDisplay(bool enable);
+
+void EnableENCDepthSoundingsDisplay(bool enable);
+
+void EnableBuoyLightLabelsDisplay(bool enable);
+
+void EnableLightsDisplay(bool enable);
+
+void EnableLightDescriptionsDisplay(bool enable);
+
+void SetENCDisplayCategory(PI_DisCat cat);
+
+void SetNavigationMode(PI_NavMode mode);
+
 #endif  //_PLUGIN_H_
