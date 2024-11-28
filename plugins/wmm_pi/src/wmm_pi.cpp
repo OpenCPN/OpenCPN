@@ -41,6 +41,8 @@
 #include "qdebug.h"
 #endif
 
+#include "version.h"
+
 float g_piGLMinSymbolLineWidth = 0.9;
 
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
