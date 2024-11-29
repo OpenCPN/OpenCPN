@@ -132,6 +132,8 @@ void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
   pConfig->AddNewWayPoint(point, -1);
+  // transfer ownership to WayPointman which eventually deletes it.
+  // This is certainly not how things should be and needs an overhaul.
   if (NULL != pWayPointMan) pWayPointMan->AddRoutePoint(point);
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();

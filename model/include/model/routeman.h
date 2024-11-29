@@ -241,12 +241,17 @@ class WayPointman {
 public:
   WayPointman(GlobalColourFunc colour_func);
   ~WayPointman();
-  wxBitmap *GetIconBitmap(const wxString &icon_key);
-  bool GetIconPrescaled(const wxString &icon_key);
-  int GetIconIndex(const wxBitmap *pbm);
-  int GetIconImageListIndex(const wxBitmap *pbm);
-  int GetXIconImageListIndex(const wxBitmap *pbm);
-  int GetFIconImageListIndex(const wxBitmap *pbm);
+  wxBitmap *GetIconBitmap(const wxString &icon_key) const;
+  bool GetIconPrescaled(const wxString &icon_key) const;
+  int GetIconIndex(const wxBitmap *pbm) const;
+  int GetIconImageListIndex(const wxBitmap *pbm) const;
+
+  /** index of "X-ed out" icon in the image list */
+  int GetXIconImageListIndex(const wxBitmap *pbm) const;
+
+  /** index of "fixed viz" icon in the image list  */
+  int GetFIconImageListIndex(const wxBitmap *pbm) const;
+
   int GetNumIcons(void) { return m_pIconArray->Count(); }
   wxString CreateGUID(RoutePoint *pRP);
   RoutePoint *FindWaypointByGuid(const std::string &guid);
@@ -262,16 +267,28 @@ public:
   void ClearRoutePointFonts(void);
 
   bool DoesIconExist(const wxString &icon_key) const;
-  wxBitmap GetIconBitmapForList(int index, int height);
-  wxString *GetIconDescription(int index);
-  wxString *GetIconKey(int index);
-  wxString GetIconDescription(wxString icon_key);
+  wxBitmap GetIconBitmapForList(int index, int height) const;
+  wxString *GetIconDescription(int index) const;
+  wxString *GetIconKey(int index) const;
+  wxString GetIconDescription(wxString icon_key) const;
 
   wxImageList *Getpmarkicon_image_list(int nominal_height);
 
+  /**
+   * Add a point to list which owns it.
+   * @param prp RoutePoint allocated by caller.
+   * @return true if successfully added.
+   */
   bool AddRoutePoint(RoutePoint *prp);
+
+  /**
+   *  Remove a routepoint from list if present, deallocate it all cases.
+   *  @param prp RoutePoint possibly part of list.
+   *  @return true if prp != nullptr.
+   */
   bool RemoveRoutePoint(RoutePoint *prp);
-  RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
+
+  const RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
 
 private:
   wxImage CreateDimImage(wxImage &image, double factor);
