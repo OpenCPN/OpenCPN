@@ -363,8 +363,13 @@ wxArrayString NMEA0183::GetRecognizedArray(void)
     return ret;
 }
 
-
-
+bool NMEA0183::ValidateChecksum() const {
+   NMEA0183_BOOLEAN result = sentence.IsChecksumBad();
+   if (result == NTrue) {
+      return false;
+   }
+   return true;
+}
 
 NMEA0183& NMEA0183::operator << ( const wxString & source )
 {

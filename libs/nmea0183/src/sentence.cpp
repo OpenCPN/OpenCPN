@@ -288,6 +288,29 @@ int SENTENCE::Integer( int field_number ) const
     return( ::atoi( abuf.data() ));
 }
 
+
+NMEA0183_BOOLEAN SENTENCE::IsChecksumBad() const
+{
+    // Find the '*' delimiter
+    int starPos = Sentence.Find('*');
+    if (starPos == wxNOT_FOUND)
+    {
+        return Unknown0183;  // No checksum present
+    }
+    // Extract the checksum value after '*'
+    wxString checksum_in_sentence = Sentence.Mid(starPos);
+    if (checksum_in_sentence.Length() < 3)  // Need at least "*" + 2 hex digits
+    {
+        return NTrue;  // Malformed checksum
+    }
+    wxString check = checksum_in_sentence.Mid(1, 2);  // Get just the hex digits
+    if (ComputeChecksum() != HexValue(check))
+    {
+        return NTrue;
+    }
+    return NFalse;
+}
+
 NMEA0183_BOOLEAN SENTENCE::IsChecksumBad( int checksum_field_number ) const
 {
 //   ASSERT_VALID( this );

@@ -49,6 +49,9 @@
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/comm_util.h"
+
+#include "nmea0183.h"
 
 wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);
 
@@ -262,14 +265,15 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
       }
     }
 
-    // FIXME (dave)  Flag checksum errors, but fix and process the sentence
-    // anyway
-    // std::string goodMessage(message);
-    // bool checksumOK = CheckSumCheck(event.GetNMEAString());
-    // if (!checksumOK) {
-    // goodMessage = stream->FixChecksum(goodMessage);
-    // goodEvent->SetNMEAString(goodMessage);
-    //}
+    if (!b_error) {
+      // Validate the NMEA0183 message and checksum to help debugging.
+      NMEA0183 msg;
+      msg << ProcessNMEA4Tags(wxString(fmsg.c_str()));
+      b_error = !msg.ValidateChecksum();
+      if (b_error) {
+        error_msg = _("Invalid NMEA0183 checksum");
+      }
+    }
 
     wxString port(n0183_msg->source->iface);
     LogInputMessage(fmsg, port, !bpass_input_filter, b_error, error_msg);

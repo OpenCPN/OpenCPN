@@ -250,6 +250,16 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   }
 }
 
+template <typename HandlerFunc>
+void CommBridge::BindNmea0183Handler(wxEventTypeTag<ObservedEvt> evt_type,
+                                     HandlerFunc handler) {
+  Bind(evt_type, [this, handler](ObservedEvt ev) {
+    (this->*handler)(UnpackEvtPointer<Nmea0183Msg>(ev));
+    // The handler could be improved to return an error code and the return
+    // value could be used to maintain error statistics.
+  });
+}
+
 void CommBridge::MakeHDTFromHDM() {
   //    Here is the one place we try to create gHdt from gHdm and gVar,
 
@@ -318,74 +328,47 @@ void CommBridge::InitCommListeners() {
   // RMC
   Nmea0183Msg n0183_msg_RMC("RMC");
   listener_N0183_RMC.Listen(n0183_msg_RMC, this, EVT_N0183_RMC);
-
-  Bind(EVT_N0183_RMC, [&](ObservedEvt ev) {
-    HandleN0183_RMC(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_RMC, &CommBridge::HandleN0183_RMC);
 
   // HDT
   Nmea0183Msg n0183_msg_HDT("HDT");
   listener_N0183_HDT.Listen(n0183_msg_HDT, this, EVT_N0183_HDT);
-
-  Bind(EVT_N0183_HDT, [&](ObservedEvt ev) {
-    HandleN0183_HDT(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_HDT, &CommBridge::HandleN0183_HDT);
 
   // HDG
   Nmea0183Msg n0183_msg_HDG("HDG");
   listener_N0183_HDG.Listen(n0183_msg_HDG, this, EVT_N0183_HDG);
-
-  Bind(EVT_N0183_HDG, [&](ObservedEvt ev) {
-    HandleN0183_HDG(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_HDG, &CommBridge::HandleN0183_HDG);
 
   // HDM
   Nmea0183Msg n0183_msg_HDM("HDM");
   listener_N0183_HDM.Listen(n0183_msg_HDM, this, EVT_N0183_HDM);
-
-  Bind(EVT_N0183_HDM, [&](ObservedEvt ev) {
-    HandleN0183_HDM(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_HDM, &CommBridge::HandleN0183_HDM);
 
   // VTG
   Nmea0183Msg n0183_msg_VTG("VTG");
   listener_N0183_VTG.Listen(n0183_msg_VTG, this, EVT_N0183_VTG);
-
-  Bind(EVT_N0183_VTG, [&](ObservedEvt ev) {
-    HandleN0183_VTG(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_VTG, &CommBridge::HandleN0183_VTG);
 
   // GSV
   Nmea0183Msg n0183_msg_GSV("GSV");
   listener_N0183_GSV.Listen(n0183_msg_GSV, this, EVT_N0183_GSV);
-
-  Bind(EVT_N0183_GSV, [&](ObservedEvt ev) {
-    HandleN0183_GSV(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_GSV, &CommBridge::HandleN0183_GSV);
 
   // GGA
   Nmea0183Msg n0183_msg_GGA("GGA");
   listener_N0183_GGA.Listen(n0183_msg_GGA, this, EVT_N0183_GGA);
-
-  Bind(EVT_N0183_GGA, [&](ObservedEvt ev) {
-    HandleN0183_GGA(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_GGA, &CommBridge::HandleN0183_GGA);
 
   // GLL
   Nmea0183Msg n0183_msg_GLL("GLL");
   listener_N0183_GLL.Listen(n0183_msg_GLL, this, EVT_N0183_GLL);
-
-  Bind(EVT_N0183_GLL, [&](ObservedEvt ev) {
-    HandleN0183_GLL(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_GLL, &CommBridge::HandleN0183_GLL);
 
   // AIVDO
   Nmea0183Msg n0183_msg_AIVDO("AIVDO");
   listener_N0183_AIVDO.Listen(n0183_msg_AIVDO, this, EVT_N0183_AIVDO);
-
-  Bind(EVT_N0183_AIVDO, [&](ObservedEvt ev) {
-    HandleN0183_AIVDO(UnpackEvtPointer<Nmea0183Msg>(ev));
-  });
+  BindNmea0183Handler(EVT_N0183_AIVDO, &CommBridge::HandleN0183_AIVDO);
 
   // SignalK
   SignalkMsg sk_msg;

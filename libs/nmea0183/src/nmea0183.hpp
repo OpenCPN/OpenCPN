@@ -280,6 +280,19 @@ class NMEA0183
        */
       virtual bool PreParse( void );
 
+      /**
+       * ValidateChecksum - Validates the NMEA sentence checksum.
+       *
+       * This implementation allows messages without checksums to pass validation,
+       * since some instruments and message types don't include checksums.
+       *
+       * @return bool - Returns true if either:
+       *                - No checksum is present in the sentence (no '*' character), or
+       *                - Checksum is present and valid (matches calculated value)
+       *               Returns false only if a checksum is present but invalid
+       */
+      virtual bool ValidateChecksum() const;
+
       NMEA0183& operator << ( const wxString& source );
       NMEA0183& operator >> ( wxString& destination );
 };

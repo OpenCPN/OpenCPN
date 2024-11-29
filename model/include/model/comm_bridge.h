@@ -141,6 +141,14 @@ private:
   void SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,
                                PriorityContainer &pc);
 
+  template <typename HandlerFunc>
+  /**
+   * Wrapper for binding NMEA0183 handlers to events and logging messages to the
+   * NMEA debug window.
+   */
+  void BindNmea0183Handler(wxEventTypeTag<ObservedEvt> evt_type,
+                           HandlerFunc handler);
+
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;
   PriorityContainer active_priority_heading;
