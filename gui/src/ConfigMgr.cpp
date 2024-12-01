@@ -65,6 +65,7 @@
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"
+#include "ocpn_plugin.h"
 #include "FontMgr.h"
 #include "Layer.h"
 #include "navutil.h"
