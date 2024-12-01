@@ -43,10 +43,9 @@
 
 #include "s52s57.h"  // ObjRazRules
 
-#include "chartbase.h"    // ChartBase
-#include "OCPNRegion.h"   // OCPNRegion
-#include "ocpndc.h"       // ocpnDC
-#include "SencManager.h"  // SENCThreadStatus
+#include "chartbase.h"   // ChartBase
+#include "OCPNRegion.h"  // OCPNRegion
+#include "ocpndc.h"      // ocpnDC
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes
@@ -291,8 +290,6 @@ public:
   int FindOrCreateSenc(const wxString &name, bool b_progress = true);
   void DisableBackgroundSENC() { m_disableBackgroundSENC = true; }
   void EnableBackgroundSENC() { m_disableBackgroundSENC = false; }
-
-  SENCThreadStatus m_SENCthreadStatus;
 
 protected:
   void AssembleLineGeometry(void);
