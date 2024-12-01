@@ -99,6 +99,7 @@
 #include "MUIBar.h"
 #include "iENCToolbar.h"
 #include "shapefile_basemap.h"
+#include "s57_ocpn_utils.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>

@@ -831,8 +831,10 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/routeprintout.h
     ${GUI_HDR_DIR}/RoutePropDlg.h
     ${GUI_HDR_DIR}/RoutePropDlgImpl.h
+    ${GUI_HDR_DIR}/s57chart.h
     ${GUI_HDR_DIR}/S57Light.h
     ${GUI_HDR_DIR}/S57ObjectDesc.h
+    ${GUI_HDR_DIR}/s57_ocpn_utils.h
     ${GUI_HDR_DIR}/S57QueryDialog.h
     ${GUI_HDR_DIR}/S57Sector.h
     ${GUI_HDR_DIR}/safe_mode_gui.h

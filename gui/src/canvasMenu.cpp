@@ -75,6 +75,7 @@
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
+#include "s52s57.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "SendToGpsDlg.h"
 #include "SendToPeerDlg.h"

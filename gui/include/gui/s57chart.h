@@ -43,9 +43,8 @@
 
 #include "s52s57.h"  // ObjRazRules
 
-#include "chartbase.h"   // ChartBase
-#include "OCPNRegion.h"  // OCPNRegion
-#include "ocpndc.h"      // ocpnDC
+#include "OCPNRegion.h"
+#include "chartbase.h"  // ChartBase
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes
@@ -57,10 +56,6 @@ class ChartCanvas;
 // ----------------------------------------------------------------------------
 extern "C" bool s57_GetChartExtent(const wxString &FullPath, Extent *pext);
 
-void s57_DrawExtendedLightSectors(ocpnDC &temp_dc, ViewPort &VPoint,
-                                  std::vector<s57Sector_t> &sectorlegs);
-void s57_DrawExtendedLightSectorsGL(ocpnDC &temp_dc, ViewPort &VPoint,
-                                    std::vector<s57Sector_t> &sectorlegs);
 bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
                                    ViewPort &VPoint,
                                    std::vector<s57Sector_t> &sectorlegs);
@@ -105,8 +100,6 @@ class ChartPlugInWrapper;
 
 // Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
-
-WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
 
 /**
  * Represents an S57 format electronic navigational chart in OpenCPN.
