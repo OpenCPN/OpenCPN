@@ -26,31 +26,27 @@
 #ifndef __S57CHART_H__
 #define __S57CHART_H__
 
+#include <memory>
+#include <unordered_map>
+
 #include <wx/wx.h>
-#include <wx/progdlg.h>
-#include "s52s57.h"
-#include "chartbase.h"
-#include "wx/dir.h"
-#include "wx/filename.h"
-#include "wx/file.h"
-#include "wx/stream.h"
-#include "wx/wfstream.h"
+#include <wx/dir.h>
+#include <wx/dynarray.h>
+#include <wx/filename.h>
+#include <wx/stream.h>
+#include <wx/wfstream.h>
+
 #include "gdal/ogrsf_frmts.h"
 
-#include "iso8211.h"
-
-#include "gdal/gdal.h"
-#include "s57RegistrarMgr.h"
-#include "S57ClassRegistrar.h"
 #include "S57Light.h"
 #include "S57Sector.h"
-#include "OCPNRegion.h"
-#include "ocpndc.h"
-#include "viewport.h"
-#include "SencManager.h"
-#include <memory>
-#include "ocpn_plugin.h"
-#include <unordered_map>
+
+#include "s52s57.h"  // ObjRazRules
+
+#include "chartbase.h"    // ChartBase
+#include "OCPNRegion.h"   // OCPNRegion
+#include "ocpndc.h"       // ocpnDC
+#include "SencManager.h"  // SENCThreadStatus
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes
@@ -72,7 +68,13 @@ bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
 bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
                                 ViewPort &viewport,
                                 std::vector<s57Sector_t> &sectorlegs);
-
+// bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
+//                                     ChartPlugInWrapper *target_plugin_chart,
+//                                     s57chart *Chs57,
+//                                     ListOfObjRazRules *rule_list,
+//                                     std::list<S57Obj *> *pi_rule_list,
+//                                     std::vector<s57Sector_t> &sectorlegs);
+//
 //----------------------------------------------------------------------------
 // Constants
 //----------------------------------------------------------------------------
@@ -101,8 +103,6 @@ class VE_Element;
 class VC_Element;
 class connector_segment;
 class ChartPlugInWrapper;
-
-#include <wx/dynarray.h>
 
 // Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
@@ -346,12 +346,6 @@ private:
 
   void ChangeThumbColor(ColorScheme cs);
   void LoadThumb();
-  bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
-                                       ChartPlugInWrapper *target_plugin_chart,
-                                       s57chart *Chs57,
-                                       ListOfObjRazRules *rule_list,
-                                       std::list<S57Obj *> *pi_rule_list,
-                                       std::vector<s57Sector_t> &sectorlegs);
   void CreateChartContext();
   void PopulateObjectsWithContext();
 
