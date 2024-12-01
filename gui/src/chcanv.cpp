@@ -110,6 +110,8 @@
 #include "TrackPropDlg.h"
 #include "undo.h"
 
+#include "s57_ocpn_utils.h"
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
