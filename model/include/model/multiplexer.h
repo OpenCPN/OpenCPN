@@ -41,10 +41,10 @@ extern Multiplexer *g_pMUX;
 
 struct MuxLogCallbacks {
   std::function<bool()> log_is_active;
-  std::function<void(const std::string &)> log_message;
+  std::function<void(const wxString &)> log_message;
   MuxLogCallbacks()
       : log_is_active([]() { return false; }),
-        log_message([](const std::string &s) {}) {}
+        log_message([](const wxString &s) {}) {}
 };
 
 class Multiplexer : public wxEvtHandler {
@@ -57,8 +57,19 @@ public:
                         bool b_filter);
   void LogOutputMessageColor(const wxString &msg, const wxString &stream_name,
                              const wxString &color);
+  /**
+   * Logs an input message with context information.
+   *
+   * @param msg The message to be logged.
+   * @param stream_name The name of the stream from which the message
+   * originated.
+   * @param b_filter Indicates whether the message was filtered.
+   * @param b_error Indicates whether the message has an error such as bad CRC.
+   * @param error_msg The error message to be logged.
+   */
   void LogInputMessage(const wxString &msg, const wxString &stream_name,
-                       bool b_filter, bool b_error = false);
+                       bool b_filter, bool b_error = false,
+                       const wxString error_msg = wxEmptyString);
 
   bool IsLogActive() { return m_log_callbacks.log_is_active(); }
 

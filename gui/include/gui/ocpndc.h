@@ -87,6 +87,22 @@ public:
 
   void GetSize(wxCoord *width, wxCoord *height) const;
 
+  /**
+   * Draw a line between two points using either wxDC or OpenGL.
+   *
+   * When using OpenGL, this function supports different line qualities and
+   * widths. For high quality lines (b_hiqual=true), it enables anti-aliasing
+   * and line smoothing. The function also handles dashed lines via line
+   * stippling in OpenGL mode.
+   *
+   * @param x1 The x-coordinate of the starting point, in physical pixels.
+   * @param y1 The y-coordinate of the starting point, in physical pixels.
+   * @param x2 The x-coordinate of the ending point, in physical pixels.
+   * @param y2 The y-coordinate of the ending point, in physical pixels.
+   * @param b_hiqual If true, enables high quality rendering with anti-aliasing
+   *                 and line smoothing in OpenGL mode. Has no effect in wxDC
+   * mode.
+   */
   void DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
                 bool b_hiqual = true);
   void DrawLines(int n, wxPoint points[], wxCoord xoffset = 0,

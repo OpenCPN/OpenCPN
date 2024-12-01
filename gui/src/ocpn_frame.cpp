@@ -714,7 +714,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   log_callbacks.log_is_active = []() {
     return NMEALogWindow::GetInstance().Active();
   };
-  log_callbacks.log_message = [](const std::string &s) {
+  log_callbacks.log_message = [](const wxString &s) {
     NMEALogWindow::GetInstance().Add(s);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
