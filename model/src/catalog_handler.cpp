@@ -187,7 +187,7 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
     }
     ::ParsePlugin(ss.str().c_str(), metadata);
     metadata.is_imported = true;
-    // ctx->plugins.push_back(metadata);
+    ctx->plugins.push_back(metadata);
   }
   while (ctx->meta_urls.size() > 0) {
     std::ostringstream xml;
