@@ -5772,6 +5772,22 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
             file.Assign(GetFullPath());
             file.Assign(file.GetPath(), value);
             file.Normalize();
+            // Make the filecheck case-unsensitive (linux)
+            if(file.IsCaseSensitive()){
+              wxDir dir(file.GetPath());
+              wxString filename;
+              bool cont = dir.GetFirst(&filename, "", wxDIR_FILES);
+              while ( cont )
+              {
+                if(filename.IsSameAs( value, false)) {
+                  value = filename;
+                  file.Assign(file.GetPath(), value);
+                  break;
+                }
+                cont = dir.GetNext(&filename);
+              }
+            }
+
             if (file.IsOk()) {
               if (file.Exists())
                 value =
