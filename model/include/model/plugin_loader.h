@@ -54,6 +54,7 @@ enum class PluginStatus {
   ManagedInstalledUpdateAvailable,
   ManagedInstalledCurrentVersion,
   ManagedInstalledDowngradeAvailable,
+  Imported,
   PendingListRemoval
 };
 

@@ -849,6 +849,7 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
     ss << f.rdbuf();
     PluginMetadata pd;
     ParsePlugin(ss.str(), pd);
+    pd.is_imported = true;
     return pd;
   }
 
@@ -881,6 +882,8 @@ void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
 
   if (is_system)
     plugin->m_status = PluginStatus::System;
+  else if (plugin->m_status == PluginStatus::Imported)
+     ; // plugin->m_status = PluginStatus::Imported;
   else if (installedVersion < metaVersion)
     plugin->m_status = PluginStatus::ManagedInstalledUpdateAvailable;
   else if (installedVersion == metaVersion)
@@ -926,7 +929,9 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
     if (!md.name.empty()) {
       auto import_path = PluginHandler::ImportedMetadataPath(md.name.c_str());
       md.is_imported = isRegularFile(import_path.c_str());
-      if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
+      if (md.is_imported) {
+        plugin->m_status = PluginStatus::Imported;
+      } else if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
         // This is an installed plugin
         PluginLoader::UpdatePlugin(plugin, md);
       } else if (IsSystemPluginName(md.name)) {

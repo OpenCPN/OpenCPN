@@ -284,6 +284,24 @@ static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
   return (*p1)->Key().compare((*p2)->Key());
 }
 
+static SemanticVersion ParseVersion(const PluginMetadata& metadata) {
+  auto version = metadata.version;
+  // Handle tag versions like v1.2.3:
+  if (version[0] == 'v') version = version.substr(1);
+  return SemanticVersion::parse(version);
+}
+
+static bool IsUpdateAvailable(const PluginMetadata& metadata) {
+  auto imported_version = ParseVersion(metadata);
+  for (auto& md : PluginHandler::getInstance()->getAvailable()) {
+    if (md.name != metadata.name) continue;
+    if (md.is_imported) continue;
+    if (!PluginHandler::getInstance()->isCompatible(md)) continue;
+    if (ParseVersion(md) >= imported_version) return true;
+  }
+  return false;
+}
+
 /**
  * Handle messages for blacklisted plugins. Messages are deferred until
  * show_deferred_messages() is invoked, signaling that the UI is ready.
@@ -367,6 +385,8 @@ wxString message_by_status(PluginStatus stat) {
       return _("Update to installed Plugin is available");
     case PluginStatus::ManagedInstalledCurrentVersion:
       return _("Plugin is latest available");
+    case PluginStatus::Imported:
+      return _("Plugin is imported");
     case PluginStatus::ManagedInstalledDowngradeAvailable:
       return ("");
     case PluginStatus::PendingListRemoval:
@@ -390,9 +410,8 @@ static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
          {PluginStatus::ManagedInstalledCurrentVersion, "emblem-default.svg"},
          {PluginStatus::ManagedInstalledDowngradeAvailable,
           "emblem-default.svg"},
-         {PluginStatus::PendingListRemoval, "emblem-default.svg"}
-
-        });
+         {PluginStatus::PendingListRemoval, "emblem-default.svg"},
+         {PluginStatus::Imported, "emblem-default.svg"}});
 
 static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
     literalstatus_by_status(
@@ -409,7 +428,8 @@ static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
           "ManagedInstalledCurrentVersion"},
          {PluginStatus::ManagedInstalledDowngradeAvailable,
           "ManagedInstalledDowngradeAvailable"},
-         {PluginStatus::PendingListRemoval, "PendingListRemoval"}
+         {PluginStatus::PendingListRemoval, "PendingListRemoval"},
+         {PluginStatus::Imported, "Imported"}
 
         });
 
@@ -766,6 +786,7 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
       break;
     }
 
+    case ActionVerb::UPDATE_IMPORTED_VERSION:
     case ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION:
     case ActionVerb::REINSTALL_MANAGED_VERSION:
     case ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION: {
@@ -3390,6 +3411,11 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
   wxBitmap statusBitmap;
   const auto stat = m_plugin.m_status;
   auto icon_name = icon_by_status.at(stat);
+  if (stat == PluginStatus::Imported
+      && IsUpdateAvailable(m_plugin.m_managed_metadata)) {
+    icon_name =
+        icon_by_status.at(PluginStatus::ManagedInstalledUpdateAvailable);
+  }
 
   wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
   path.AppendDir("uidata");
@@ -3578,6 +3604,16 @@ void PluginPanel::SetSelected(bool selected) {
         m_pButtonAction->Enable();
         break;
 
+      case PluginStatus::Imported:
+        if (IsUpdateAvailable(m_plugin.m_managed_metadata)) {
+          label = _("Update");
+          m_action = ActionVerb::UPDATE_IMPORTED_VERSION;
+        } else {
+          m_pButtonAction->Hide();
+          m_action = ActionVerb::NOP;
+        }
+        break;
+
       case PluginStatus::Unmanaged:
         m_action = ActionVerb::NOP;
         m_pButtonAction->Hide();
@@ -3594,11 +3630,6 @@ void PluginPanel::SetSelected(bool selected) {
         break;
     }
     SetActionLabel(label);
-    const auto plugin_name = m_plugin.m_common_name.ToStdString();
-    // if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
-    // m_pButtonAction->Hide();
-    //}
-
     Layout();
   } else {
     SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
