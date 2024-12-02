@@ -125,6 +125,10 @@ public:
   /** Last error message, free format. */
   std::string LastErrorMsg();
 
+  /**
+   * Parse the catalog by merging data from imported metadata, meta-urls and
+   * the standard url.
+   */
   ServerStatus DoParseCatalog(const std::string xml, CatalogCtx* ctx);
 
 protected:
