@@ -41,6 +41,8 @@
 #include "qdebug.h"
 #endif
 
+#include "version.h"
+
 float g_piGLMinSymbolLineWidth = 0.9;
 
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
@@ -413,16 +415,16 @@ bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   if (!m_bShowPlot) return true;
 
   if (!m_oDC) {
-    #ifdef ocpnUSE_GL
-      //  Set the minimum line width
-      GLint parms[2];
-    #ifndef USE_ANDROID_GLES2
-      glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-    #else
-      glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-    #endif
-      g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
-    #endif
+#ifdef ocpnUSE_GL
+    //  Set the minimum line width
+    GLint parms[2];
+#ifndef USE_ANDROID_GLES2
+    glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+#else
+    glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+#endif
+    g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+#endif
     m_oDC = new pi_ocpnDC();
   }
 
@@ -559,8 +561,8 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   scale = wxRound(scale * 4.0) / 4.0;
   scale *= OCPN_GetWinDIPScaleFactor();
 
-  //scale =
-    //  wxMax(1.0, scale);  // Let the upstream processing handle minification.
+  // scale =
+  //   wxMax(1.0, scale);  // Let the upstream processing handle minification.
 
   if (m_bShowIcon && m_bShowLiveIcon &&
       ((m_LastVal != NewVal) || (scale != m_scale))) {

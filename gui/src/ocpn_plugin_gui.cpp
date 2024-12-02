@@ -1019,7 +1019,7 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
 
 wxArrayString GetWaypointGUIDArray(void) {
   wxArrayString result;
-  RoutePointList* list = pWayPointMan->GetWaypointList();
+  const RoutePointList* list = pWayPointMan->GetWaypointList();
 
   wxRoutePointListNode* prpnode = list->GetFirst();
   while (prpnode) {
@@ -1058,7 +1058,7 @@ wxArrayString GetTrackGUIDArray(void) {
 
 wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
-  RoutePointList* list = pWayPointMan->GetWaypointList();
+  const RoutePointList* list = pWayPointMan->GetWaypointList();
 
   wxRoutePointListNode* prpnode = list->GetFirst();
   while (prpnode) {

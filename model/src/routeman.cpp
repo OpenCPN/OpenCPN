@@ -1095,7 +1095,7 @@ bool WayPointman::DoesIconExist(const wxString &icon_key) const {
   return false;
 }
 
-wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) {
+wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) const {
   wxBitmap *pret = NULL;
   MarkIcon *pmi = NULL;
   unsigned int i;
@@ -1131,7 +1131,7 @@ wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) {
   return pret;
 }
 
-bool WayPointman::GetIconPrescaled(const wxString &icon_key) {
+bool WayPointman::GetIconPrescaled(const wxString &icon_key) const {
   MarkIcon *pmi = NULL;
   unsigned int i;
 
@@ -1159,7 +1159,7 @@ bool WayPointman::GetIconPrescaled(const wxString &icon_key) {
     return false;
 }
 
-wxBitmap WayPointman::GetIconBitmapForList(int index, int height) {
+wxBitmap WayPointman::GetIconBitmapForList(int index, int height) const {
   wxBitmap pret;
   MarkIcon *pmi;
 
@@ -1201,7 +1201,7 @@ wxBitmap WayPointman::GetIconBitmapForList(int index, int height) {
   return pret;
 }
 
-wxString *WayPointman::GetIconDescription(int index) {
+wxString *WayPointman::GetIconDescription(int index) const {
   wxString *pret = NULL;
 
   if (index >= 0) {
@@ -1211,7 +1211,7 @@ wxString *WayPointman::GetIconDescription(int index) {
   return pret;
 }
 
-wxString WayPointman::GetIconDescription(wxString icon_key) {
+wxString WayPointman::GetIconDescription(wxString icon_key) const {
   MarkIcon *pmi;
   unsigned int i;
 
@@ -1224,7 +1224,7 @@ wxString WayPointman::GetIconDescription(wxString icon_key) {
   return wxEmptyString;
 }
 
-wxString *WayPointman::GetIconKey(int index) {
+wxString *WayPointman::GetIconKey(int index) const {
   wxString *pret = NULL;
 
   if ((index >= 0) && ((unsigned int)index < m_pIconArray->GetCount())) {
@@ -1234,7 +1234,7 @@ wxString *WayPointman::GetIconKey(int index) {
   return pret;
 }
 
-int WayPointman::GetIconIndex(const wxBitmap *pbm) {
+int WayPointman::GetIconIndex(const wxBitmap *pbm) const {
   unsigned int ret = 0;
   MarkIcon *pmi;
 
@@ -1250,7 +1250,7 @@ int WayPointman::GetIconIndex(const wxBitmap *pbm) {
   return ret;
 }
 
-int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
+int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) const {
   MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(GetIconIndex(pbm));
 
   // Build a "list - sized" image
@@ -1344,28 +1344,16 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
   return pmi->listIndex;
 }
 
-int WayPointman::GetXIconImageListIndex(const wxBitmap *pbm) {
-  return GetIconImageListIndex(pbm) +
-         1;  // index of "X-ed out" icon in the image list
+int WayPointman::GetXIconImageListIndex(const wxBitmap *pbm) const {
+  return GetIconImageListIndex(pbm) + 1;
 }
 
-int WayPointman::GetFIconImageListIndex(const wxBitmap *pbm) {
-  return GetIconImageListIndex(pbm) +
-         2;  // index of "fixed viz" icon in the image list
+int WayPointman::GetFIconImageListIndex(const wxBitmap *pbm) const {
+  return GetIconImageListIndex(pbm) + 2;
 }
 
 //  Create the unique identifier
 wxString WayPointman::CreateGUID(RoutePoint *pRP) {
-  // FIXME: this method is not needed at all (if GetUUID works...)
-  /*wxDateTime now = wxDateTime::Now();
-   time_t ticks = now.GetTicks();
-   wxString GUID;
-   GUID.Printf(_T("%d-%d-%d-%d"), ((int)fabs(pRP->m_lat * 1e4)),
-   ((int)fabs(pRP->m_lon * 1e4)), (int)ticks, m_nGUID);
-
-   m_nGUID++;
-
-   return GUID;*/
   return GpxDocument::GetUUID();
 }
 
