@@ -475,10 +475,11 @@ if (QT_ANDROID)
   include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-src/include")
 endif ()
 
-if (ARCH STREQUAL armhf)
+if (NOT QT_ANDROID AND (ARCH STREQUAL armhf) )
   # See: https://forums.raspberrypi.com/viewtopic.php?t=144115
   add_compile_options(-mcpu=cortex-a53  -mfpu=neon-fp-armv8)
 endif ()   # Assuming at least RPi 3
+
 
 message(STATUS "Final compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
