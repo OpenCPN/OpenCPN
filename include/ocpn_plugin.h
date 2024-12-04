@@ -1739,7 +1739,7 @@ extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id,
  *  - "Context": string, message context
  *  - "ContextSelf": string, own ship context.
  */
-std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev);
+extern DECL_EXP std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev);
 
 /**
  * Return source identifier (iface) of a received n2000 message of type id

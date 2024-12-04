@@ -645,7 +645,7 @@ int MyConfig::LoadMyConfig() {
 
   g_nAWDefault = 50;
   g_nAWMax = 1852;
-  g_ObjQFileExt = _T("txt,rtf,png,html,gif,tif");
+  g_ObjQFileExt = _T("txt,rtf,png,html,gif,tif,jpg");
 
   // Load the raw value, with no defaults, and no processing
   int ret_Val = LoadMyConfigRaw();
