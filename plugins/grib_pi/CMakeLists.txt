@@ -87,6 +87,8 @@ find_package(Gettext REQUIRED)
 # and cpp/c files and CMake will sort them out
 
 set(SRC_GRIB
+    src/grib_layer.h
+    src/grib_layer_manager.h
     src/grib_pi.h
     src/grib_pi.cpp
     src/GribOverlayFactory.cpp

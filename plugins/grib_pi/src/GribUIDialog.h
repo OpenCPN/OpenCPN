@@ -35,6 +35,7 @@
 #include <wx/fileconf.h>
 #include <wx/glcanvas.h>
 
+#include "grib_layer_manager.h"
 #include "GribUIDialogBase.h"
 #include "CursorData.h"
 #include "GribSettingsDialog.h"
@@ -163,7 +164,8 @@ public:
   wxTimer m_tPlayStop;
   grib_pi *pPlugIn;
   GribRequestSetting *pReq_Dialog;
-  GRIBFile *m_bGRIBActiveFile;
+  GribLayerManager *m_pLayerManager;
+  //GRIBFile *m_bGRIBActiveFile;
   bool m_bDataPlot[GribOverlaySettings::GEO_ALTITUDE];  // only for no altitude
                                                         // parameters
   bool m_CDataIsShown;
