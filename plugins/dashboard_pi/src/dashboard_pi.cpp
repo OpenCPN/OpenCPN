@@ -5596,7 +5596,12 @@ void DashboardWindow::OnContextMenuSelect(wxCommandEvent &event) {
 
   switch (event.GetId()) {
     case ID_DASH_PREFS: {
+      // Capture the dashboard's floating_pos before update.
+      wxPoint fp = m_pauimgr->GetPane(this).floating_pos;
       m_plugin->ShowPreferencesDialog(this);
+      // This method sets the correct size of the edited dashboard,
+      // but if it's not specified, also a default floating_pos.
+      ChangePaneOrientation(GetSizerOrientation(), true, fp.x, fp.y);
       return;  // Does it's own save.
     }
     case ID_DASH_RESIZE: {
@@ -5640,7 +5645,8 @@ void DashboardWindow::SetColorScheme(PI_ColorScheme cs) {
   Refresh(false);
 }
 
-void DashboardWindow::ChangePaneOrientation(int orient, bool updateAUImgr) {
+void DashboardWindow::ChangePaneOrientation(int orient, bool updateAUImgr,
+                                            int fpx, int fpy) {
   m_pauimgr->DetachPane(this);
   SetSizerOrientation(orient);
   bool vertical = orient == wxVERTICAL;
@@ -5659,7 +5665,7 @@ void DashboardWindow::ChangePaneOrientation(int orient, bool updateAUImgr) {
                                .MinSize(sz)
                                .BestSize(sz)
                                .FloatingSize(sz)
-                               .FloatingPosition(100, 100)
+                               .FloatingPosition(fpx, fpy)
                                .Float()
                                .Show(m_Container->m_bIsVisible));
 
