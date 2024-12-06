@@ -38,7 +38,7 @@
 #include "gdal/ogrsf_frmts.h"
 #include "gdal/ogr_feature.h"
 #include "iso8211.h"
-#include "S57ClassRegistrar.h"
+#include "s57class_registrar.h"
 
 class S57Reader;
 
