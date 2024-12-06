@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+ /**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,15 +15,17 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
+ * TBD
  */
 
 #include <wx/log.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
 #include <wx/filename.h>
-
-//#include "config.h"
 
 #include "s57registrar_mgr.h"
 #include "s57class_registrar.h"
