@@ -1872,9 +1872,11 @@ struct PluginMsgId {
   PluginMsgId(const std::string &s) : id(s) {};
 };
 
+/** Return listener for plugin messages received on the REST interface. */
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     PluginMsgId id, wxEventType ev, wxEvtHandler *handler);
 
+/** Retrieve the string in a plugin message received on the REST insterface. */
 extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
 
 //  Assorted GUI utility functions
