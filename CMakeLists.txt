@@ -748,8 +748,6 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
-set(GUI_S57_DIR ${CMAKE_SOURCE_DIR}/gui/src/s57)
-
 set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(GUI_HDRS
     ${GUI_HDR_DIR}/AboutFrame.h
@@ -869,12 +867,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
 )
-list(APPEND  GUI_HDRS
-    ${GUI_S57_DIR}/include/ogr_s57.h
-    ${GUI_S57_DIR}/include/S57ClassRegistrar.h
-    ${GUI_S57_DIR}/include/s57.h
-    ${GUI_S57_DIR}/include/s57RegistrarMgr.h
-)
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(GUI_SRC
     ${GUI_SRC_DIR}/about.cpp
@@ -959,6 +951,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/routeprintout.cpp
     ${GUI_SRC_DIR}/RoutePropDlg.cpp
     ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
+    ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
     ${GUI_SRC_DIR}/S57QueryDialog.cpp
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
@@ -999,16 +992,6 @@ if (NOT QT_ANDROID)
           ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
           )
 endif ()
-
-list(APPEND GUI_SRC
-  ${GUI_S57_DIR}/src/ogrs57datasource.cpp
-  ${GUI_S57_DIR}/src/ogrs57layer.cpp
-  ${GUI_S57_DIR}/src/s57classregistrar.cpp
-  ${GUI_S57_DIR}/src/s57featuredefns.cpp
-  ${GUI_S57_DIR}/src/s57obj.cpp
-  ${GUI_S57_DIR}/src/s57reader.cpp
-  ${GUI_S57_DIR}/src/s57RegistrarMgr.cpp
-)
 
 if (OCPN_USE_GL)
   list(APPEND GUI_HDRS${GUI_HDR_DIR}/shaders.h)
@@ -1482,6 +1465,9 @@ add_subdirectory(libs/wxservdisc)
 
 add_subdirectory(libs/manual)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
+
+add_subdirectory(libs/s57-charts)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s57-charts)
 
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")

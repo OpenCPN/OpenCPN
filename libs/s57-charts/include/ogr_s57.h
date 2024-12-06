@@ -32,7 +32,6 @@
 #ifndef _OGR_S57_H_INCLUDED
 #define _OGR_S57_H_INCLUDED
 
-#include "gdal/ogrsf_frmts.h"
 #include "s57.h"
 
 //    Misc error return codes

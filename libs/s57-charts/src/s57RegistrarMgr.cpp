@@ -27,7 +27,7 @@
 #include <wx/textfile.h>
 #include <wx/filename.h>
 
-#include "config.h"
+//#include "config.h"
 
 #include "s57RegistrarMgr.h"
 #include "S57ClassRegistrar.h"
