@@ -1,4 +1,4 @@
- /*****************************************************************************
+/*****************************************************************************
  * Copyright (c) 1999, Frank Warmerdam warmerda@home.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

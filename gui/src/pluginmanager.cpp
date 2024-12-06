@@ -3411,8 +3411,8 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
   wxBitmap statusBitmap;
   const auto stat = m_plugin.m_status;
   auto icon_name = icon_by_status.at(stat);
-  if (stat == PluginStatus::Imported
-      && IsUpdateAvailable(m_plugin.m_managed_metadata)) {
+  if (stat == PluginStatus::Imported &&
+      IsUpdateAvailable(m_plugin.m_managed_metadata)) {
     icon_name =
         icon_by_status.at(PluginStatus::ManagedInstalledUpdateAvailable);
   }
