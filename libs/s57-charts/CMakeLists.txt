@@ -10,14 +10,14 @@ set(SRC
   src/s57classregistrar.cpp
   src/s57featuredefns.cpp
   src/s57reader.cpp
-  src/s57RegistrarMgr.cpp
+  src/s57registrar_mgr.cpp
 )
 
 set(HEADERS
   include/ogr_s57.h
-  include/S57ClassRegistrar.h
+  include/s57class_registrar.h
   include/s57.h
-  include/s57RegistrarMgr.h
+  include/s57registrar_mgr.h
 )
 
 

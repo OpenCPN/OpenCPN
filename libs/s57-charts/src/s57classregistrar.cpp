@@ -32,7 +32,7 @@
 #include "gdal/cpl_conv.h"
 #include "gdal/cpl_string.h"
 #include "s57.h"
-#include "S57ClassRegistrar.h"
+#include "s57class_registrar.h"
 
 #ifdef S57_BUILTIN_CLASSES
 #include "s57tables.h"

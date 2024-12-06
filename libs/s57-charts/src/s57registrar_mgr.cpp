@@ -29,8 +29,8 @@
 
 //#include "config.h"
 
-#include "s57RegistrarMgr.h"
-#include "S57ClassRegistrar.h"
+#include "s57registrar_mgr.h"
+#include "s57class_registrar.h"
 
 extern S57ClassRegistrar* g_poRegistrar;
 
