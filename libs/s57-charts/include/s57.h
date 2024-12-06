@@ -34,6 +34,8 @@
 #ifndef _S57_H_INCLUDED
 #define _S57_H_INCLUDED
 
+#include "gdal/ogr_api.h"
+#include "gdal/ogrsf_frmts.h"
 #include "gdal/ogr_feature.h"
 #include "iso8211.h"
 #include "S57ClassRegistrar.h"
