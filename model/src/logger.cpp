@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************/
 
-/** \file logger.cpp Implement logger.h */
+/**
+ *  \file
+ *   Implement logger.h
+ */
 
 #include <algorithm>
 #include <iomanip>

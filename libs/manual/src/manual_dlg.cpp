@@ -1,4 +1,3 @@
-
 /***************************************************************************
  *   Copyright (C) 2024  Alec Leamas                                       *
  *                                                                         *
@@ -18,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file manual_dlg.cpp Implement manual_dlg.h */
+/**
+ *  \file
+ *  Implement manual_dlg.h
+ */
 
 #include <wx/button.h>
 #include <wx/intl.h>

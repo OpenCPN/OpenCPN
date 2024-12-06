@@ -17,7 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************/
-/** \file udev_rule_mgr.cpp Implement udev_rule_mgr.h */
+
+/**
+ *  \file
+ *  Implement udev_rule_mgr.h
+ */
 
 #include "config.h"
 

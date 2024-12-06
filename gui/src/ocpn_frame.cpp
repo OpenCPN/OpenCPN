@@ -3382,7 +3382,7 @@ void MyFrame::SetToolbarItemSVG(int tool_id, wxString normalSVGfile,
   }
 }
 
-void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
+void MyFrame::ConfigureStatusBar() {
   //             ShowDebugWindow as a wxStatusBar
   m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
@@ -3404,6 +3404,10 @@ void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
       SetStatusBar(NULL);
     }
   }
+}
+
+void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
+  ConfigureStatusBar();
 
   wxSize lastOptSize = options_lastWindowSize;
   SendSizeEvent();

@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_navmsg.cpp  Implement comm_navmsg.h */
+/**
+ * \file
+ * Implement comm_navmsg.h
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>

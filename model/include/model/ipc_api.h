@@ -17,6 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/**
+ * \file
+ * Server and client CLI api implementations.
+ */
+
 #ifndef _IPC_API_H__
 #define _IPC_API_H__
 
@@ -25,11 +30,6 @@
 #include <wx/log.h>
 
 #include "model/local_api.h"
-
-/**
- * \file  ipc-api.h
- * Server and client CLI api implementations.
- */
 
 std::string GetSocketPath();
 

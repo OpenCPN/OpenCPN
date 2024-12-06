@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_buffers.h Line-oriented input/output buffers. */
+/**
+ * \file
+ * Line-oriented input/output buffers.
+ */
 
 #ifndef _COMM_BUFFERS_H__
 #define _COMM_BUFFERS_H__

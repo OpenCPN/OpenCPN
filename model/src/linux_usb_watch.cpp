@@ -18,7 +18,7 @@
  **************************************************************************/
 
 /**
- * \file linux_watch_daemon.h
+ * \file
  * Listen for Linux DBus  events like suspend/resume and new devices and notify
  * SystemEvents
  */

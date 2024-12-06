@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file win_watch_daemon.cpp Implement win_watch_daemon.h */
+/**
+ * \file
+ * Implement win_watch_daemon.h
+ */
 
 #include <windows.h>
 #include <Dbt.h>

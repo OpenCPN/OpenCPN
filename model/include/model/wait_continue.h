@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file wait_continue.h Basic synchronization primitive */
+/**
+ *  \file
+ *  Basic synchronization primitive
+ */
 
 #ifndef WAIT_COND__
 #define WAIT_COND__

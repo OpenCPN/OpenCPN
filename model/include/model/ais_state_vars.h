@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file ais_state_vars.h Global state for AIS decoder */
+/**
+ *  \file
+ *  Global state for AIS decoder
+ */
 
 extern bool g_bAIS_ACK_Timeout;
 extern bool g_bAIS_CPA_Alert;

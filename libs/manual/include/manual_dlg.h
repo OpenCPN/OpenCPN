@@ -1,4 +1,3 @@
-
 /***************************************************************************
  *   Copyright (C) 2024  Alec Leamas                                       *
  *                                                                         *
@@ -18,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  manual_dlg.h The "manual not found" dialog. */
+/**
+ * \file
+ * The "manual not found" dialog.
+ */
 
 #ifndef MANUAL_DLG_H_
 #define MANUAL_DLG_H_

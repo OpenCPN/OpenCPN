@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  comm_oveflow_dlg.h Popup dialog on communication overflows. */
+/**
+ * \file
+ * Popup dialog on communication overflows
+ */
 
 #ifndef COMM_OVERFLOW_DLG_H__
 #define COMM_OVERFLOW_DLG_H__

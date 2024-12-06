@@ -1218,6 +1218,7 @@ void ChartCanvas::SetShowGPS(bool bshow) {
 }
 
 void ChartCanvas::SetShowGPSCompassWindow(bool bshow) {
+  m_bShowCompassWin = bshow;
   if (m_Compass) {
     m_Compass->Show(m_bShowCompassWin);
     if (m_bShowCompassWin) m_Compass->UpdateStatus();
@@ -7119,7 +7120,10 @@ bool ChartCanvas::MouseEventMUIBar(wxMouseEvent &event) {
 
   cursor_region = CENTER;
   if (!g_btouch) SetCanvasCursor(event);
-  return true;
+  if (m_muiBar)
+    return true;
+  else
+    return false;
 }
 
 bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {

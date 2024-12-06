@@ -1,11 +1,5 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Object Definition/API
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+/**************************************************************************
+ *   Copyright (C) 2010 - 2024 by David S. Register                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file ocpn_plugin.h. */
+/**
+ * \file
+ * PlugIn Object Definition/API
+ */
 
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
@@ -1739,7 +1736,7 @@ extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id,
  *  - "Context": string, message context
  *  - "ContextSelf": string, own ship context.
  */
-std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev);
+extern DECL_EXP std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev);
 
 /**
  * Return source identifier (iface) of a received n2000 message of type id
@@ -1859,14 +1856,68 @@ extern DECL_EXP CommDriverResult RegisterTXPGNs(DriverHandle handle,
 // API 1.19
 //
 
+// Navigation mode
+typedef enum _PI_NavMode {
+  PI_NORTH_UP_MODE = 0,
+  PI_COURSE_UP_MODE,
+  PI_HEAD_UP_MODE,
+} PI_NavMode;
+
 /** Facade for NavAddrPluginMsg. */
 struct PluginMsgId {
   const std::string id;
   PluginMsgId(const std::string &s) : id(s) {};
 };
 
+/** Return listener for plugin messages received on the REST interface. */
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     PluginMsgId id, wxEventType ev, wxEvtHandler *handler);
 
+/** Retrieve the string in a plugin message received on the REST insterface. */
 extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
+
+//  Assorted GUI utility functions
+void ExitOCPN();
+
+bool GetFullScreen();
+void SetFullScreen(bool full_screen_on);
+
+void EnableMUIBar(bool enable);
+void EnableCompassGPSIcon(bool enable);
+void EnableStatusBar(bool enable);
+void EnableChartBar(bool enable);
+void EnableMenu(bool enable);
+
+void SetGlobalColor(std::string table, std::string name, wxColor color);
+
+/*
+ *  Allow plugin control of "Chart Panel Options" dialog
+ */
+
+void EnableLatLonGrid(bool enable);
+
+void EnableChartOutlines(bool enable);
+
+void EnableDepthUnitDisplay(bool enable);
+
+void EnableAisTargetDisplay(bool enable);
+
+void EnableTideStationsDisplay(bool enable);
+
+void EnableCurrentStationsDisplay(bool enable);
+
+void EnableENCTextDisplay(bool enable);
+
+void EnableENCDepthSoundingsDisplay(bool enable);
+
+void EnableBuoyLightLabelsDisplay(bool enable);
+
+void EnableLightsDisplay(bool enable);
+
+void EnableLightDescriptionsDisplay(bool enable);
+
+void SetENCDisplayCategory(PI_DisCat cat);
+
+void SetNavigationMode(PI_NavMode mode);
+
 #endif  //_PLUGIN_H_

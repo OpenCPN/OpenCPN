@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file gui.h  Hooks int gui available in model. */
+/**
+ * \file
+ * Hooks into gui available in model.
+ */
 
 #include <wx/window.h>
 

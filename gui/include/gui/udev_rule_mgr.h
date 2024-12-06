@@ -18,8 +18,9 @@
  **************************************************************************/
 
 /**
- * \file udev_rule_mgr.h Access checks for comm devices and dongle.
+ * \file
  *
+ * Access checks for comm devices and dongle.
  * Only making anything useful on Linux.
  */
 

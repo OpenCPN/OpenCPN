@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file usb_watch_daemon.h Generic hardware events interface */
+/**
+ *  \file
+ *  Generic hardware events interface
+ */
 
 #ifndef USB_WATCH_DAEMON__H
 #define USB_WATCH_DAEMON__H

@@ -17,7 +17,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file Local communications factories
+/**
+ * \file
+ * Local communications factories.
  *
  * Factory methods which returns dbus or wxwidgets based implementations
  * of instance checkers, servers and clients.
