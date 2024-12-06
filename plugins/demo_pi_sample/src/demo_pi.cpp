@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file demo_pi.h Minimal demonstration plugin. */
+/**
+ *  \file demo_pi.h
+ *   Minimal demonstration plugin.
+ */
 
 #include "wx/wxprec.h"
 

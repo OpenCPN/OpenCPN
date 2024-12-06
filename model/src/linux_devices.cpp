@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file linux_devices.cpp Implement linux_devices.h. */
+/**
+ *  \file
+ *  Implement linux_devices.h.
+ */
 
 #include "config.h"
 

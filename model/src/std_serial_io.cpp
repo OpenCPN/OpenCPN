@@ -19,9 +19,9 @@
  **************************************************************************/
 
 /**
- * \file std_serial_io.cpp SerialIo asynchronous implementation
- *          based on the serial/serial.h header. Used on all platforms
- *          besides Android.
+ * \file
+ * SerialIo asynchronous implementation based on the serial/serial.h header.
+ * Used on all platforms besides Android.
  */
 
 #include <memory>

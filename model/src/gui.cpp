@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file gui.cpp  Implement gui.h. */
+/**
+ *  \file
+ *  Implement gui.h.
+ */
 
 #include "model/gui.h"
 

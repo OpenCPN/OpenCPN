@@ -17,8 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file catalog_handler.h  Plugin catalog management: Build the
- *                           runtime catalog, handling downloads as required.
+/**
+ * \file
+ * Plugin catalog management: Build the runtime catalog, handling downloads
+ * as required.
  */
 
 #ifndef CATALOG_HANDLER_H__

@@ -15,7 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
+ * DBus interface header file.
  */
 
 #ifndef DBUS_HANDLER_H__
@@ -29,12 +33,6 @@
 #include "model/instance_check.h"
 #include "model/local_api.h"
 #include "observable_evtvar.h"
-
-/**
- * \file
- *
- * DBus interface header file.
- */
 
 /** The name registered on the session bus. */
 static const char* const kDbusName = "org.opencpn.OpenCPN";

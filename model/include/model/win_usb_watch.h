@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file win_usb_watch.h Windows specific hardware events interface */
+/**
+ *  \file
+ *  Windows specific hardware events interface
+ */
 
 #ifndef _WIN32
 #error "This file can only be compiled on windows. "

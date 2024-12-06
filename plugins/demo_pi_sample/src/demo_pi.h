@@ -1,5 +1,5 @@
-/******************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************/
 
-/** \file demo_pi.h  Minimal example plugin. */
+/**
+ *  \file
+ *  Minimal example plugin header
+ */
 
 #ifndef _DEMOPI_H_
 #define _DEMOPI_H_

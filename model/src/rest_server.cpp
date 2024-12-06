@@ -1,4 +1,3 @@
-
 /**************************************************************************
  *   Copyright (C) 2022 David Register                                     *
  *   Copyright (C) 2022-2023  Alec Leamas                                  *
@@ -19,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  rest_server.cpp Implement rest_server.h */
+/**
+ *  \file
+ *  Implement rest_server.h
+ */
 
 #include <memory>
 #include <mutex>

@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  ais_state_vars.cpp Implement ais_state_vars.h */
+/**
+ *  \file
+ *  Implement ais_state_vars.h
+ */
 
 #include <wx/string.h>
 

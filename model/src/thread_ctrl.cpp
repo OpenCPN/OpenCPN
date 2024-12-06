@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  thread_ctrl.cpp Implement thread_ctrl.h. */
+/**
+ * \file
+ * Implement thread_ctrl.h.
+ */
 
 #include "model/thread_ctrl.h"
 
