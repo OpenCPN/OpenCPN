@@ -1,3 +1,17 @@
+# ~~~
+# Build the basic s57 library
+#
+# Exports: ocpn::s57-charts transitive link target
+#
+# License:      GPLv3+
+# Copyright (c) 2024 Alec Leamas
+# ~~~
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+
 cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::s57-charts)
