@@ -1878,47 +1878,36 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
 extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
 
 //  Assorted GUI utility functions
-void ExitOCPN();
+extern DECL_EXP void ExitOCPN();
 
-bool GetFullScreen();
-void SetFullScreen(bool full_screen_on);
+extern DECL_EXP bool GetFullScreen();
+extern DECL_EXP void SetFullScreen(bool full_screen_on);
 
-void EnableMUIBar(bool enable);
-void EnableCompassGPSIcon(bool enable);
-void EnableStatusBar(bool enable);
-void EnableChartBar(bool enable);
-void EnableMenu(bool enable);
+extern DECL_EXP void EnableMUIBar(bool enable);
+extern DECL_EXP void EnableCompassGPSIcon(bool enable);
+extern DECL_EXP void EnableStatusBar(bool enable);
+extern DECL_EXP void EnableChartBar(bool enable);
+extern DECL_EXP void EnableMenu(bool enable);
 
-void SetGlobalColor(std::string table, std::string name, wxColor color);
+extern DECL_EXP void SetGlobalColor(std::string table, std::string name,
+                                    wxColor color);
 
 /*
  *  Allow plugin control of "Chart Panel Options" dialog
  */
 
-void EnableLatLonGrid(bool enable);
-
-void EnableChartOutlines(bool enable);
-
-void EnableDepthUnitDisplay(bool enable);
-
-void EnableAisTargetDisplay(bool enable);
-
-void EnableTideStationsDisplay(bool enable);
-
-void EnableCurrentStationsDisplay(bool enable);
-
-void EnableENCTextDisplay(bool enable);
-
-void EnableENCDepthSoundingsDisplay(bool enable);
-
-void EnableBuoyLightLabelsDisplay(bool enable);
-
-void EnableLightsDisplay(bool enable);
-
-void EnableLightDescriptionsDisplay(bool enable);
-
-void SetENCDisplayCategory(PI_DisCat cat);
-
-void SetNavigationMode(PI_NavMode mode);
+extern DECL_EXP void EnableLatLonGrid(bool enable);
+extern DECL_EXP void EnableChartOutlines(bool enable);
+extern DECL_EXP void EnableDepthUnitDisplay(bool enable);
+extern DECL_EXP void EnableAisTargetDisplay(bool enable);
+extern DECL_EXP void EnableTideStationsDisplay(bool enable);
+extern DECL_EXP void EnableCurrentStationsDisplay(bool enable);
+extern DECL_EXP void EnableENCTextDisplay(bool enable);
+extern DECL_EXP void EnableENCDepthSoundingsDisplay(bool enable);
+extern DECL_EXP void EnableBuoyLightLabelsDisplay(bool enable);
+extern DECL_EXP void EnableLightsDisplay(bool enable);
+extern DECL_EXP void EnableLightDescriptionsDisplay(bool enable);
+extern DECL_EXP void SetENCDisplayCategory(PI_DisCat cat);
+extern DECL_EXP void SetNavigationMode(PI_NavMode mode);
 
 #endif  //_PLUGIN_H_
