@@ -339,7 +339,7 @@ static inline size_t
 mdns_string_find(const char* str, size_t length, char c, size_t offset);
 
 //! Compare if two strings are equal. If the strings are equal it returns >0 and the offset variables are
-//! updated to the end of the corresponding strings. If the strings are not equal it returns 0 and 
+//! updated to the end of the corresponding strings. If the strings are not equal it returns 0 and
 //! the offset variables are NOT updated.
 static inline int
 mdns_string_equal(const void* buffer_lhs, size_t size_lhs, size_t* ofs_lhs, const void* buffer_rhs,
@@ -739,8 +739,6 @@ mdns_string_make(void* buffer, size_t capacity, void* data, const char* name, si
                  mdns_string_table_t* string_table) {
 	size_t last_pos = 0;
 	size_t remain = capacity - MDNS_POINTER_DIFF(data, buffer);
-        if ((length == 0) || (name == 0))
-                return 0;
 	if (name[length - 1] == '.')
 		--length;
 	while (last_pos < length) {
@@ -1570,6 +1568,9 @@ mdns_record_parse_txt(const void* buffer, size_t size, size_t offset, size_t len
 	while ((offset < end) && (parsed < capacity)) {
 		strdata = (const char*)MDNS_POINTER_OFFSET(buffer, offset);
 		size_t sublength = *(const unsigned char*)strdata;
+
+		if (sublength >= (end - offset))
+			break;
 
 		++strdata;
 		offset += sublength + 1;
