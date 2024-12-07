@@ -1,11 +1,4 @@
-/******************************************************************************
- *
- * Project:  S-57 Translator
- * Purpose:  Declarations for classes binding S57 support onto OGRLayer,
- *           OGRDataSource and OGRDriver.  See also s57.h.
- * Author:   Frank Warmerdam, warmerda@home.com
- *
- ******************************************************************************
+/*****************************************************************************
  * Copyright (c) 1999, Frank Warmerdam
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,14 +18,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- ******************************************************************************
- *
+ ******************************************************************************/
+
+/**
+ * \file
+ * Declarations for classes binding S57 support onto OGRLayer,
+ * OGRDataSource and OGRDriver.  See also s57.h.
  */
 
 #ifndef _OGR_S57_H_INCLUDED
 #define _OGR_S57_H_INCLUDED
 
-#include "gdal/ogrsf_frmts.h"
 #include "s57.h"
 
 //    Misc error return codes

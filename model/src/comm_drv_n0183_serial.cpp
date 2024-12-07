@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_drv_n0183_serial.cpp  Implement comm_drv_n0183_serial.h */
+/**
+ *  \file
+ *  Implement comm_drv_n0183_serial.h
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>

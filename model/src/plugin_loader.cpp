@@ -70,6 +70,7 @@
 #include "model/plugin_loader.h"
 #include "model/plugin_paths.h"
 #include "model/safe_mode.h"
+#include "model/semantic_vers.h"
 #include "observable_confvar.h"
 
 #ifdef __ANDROID__
@@ -842,7 +843,6 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   using namespace std;
   if (name.empty()) return {};
 
-#if 0
   auto import_path = PluginHandler::ImportedMetadataPath(name.c_str());
   if (isRegularFile(import_path.c_str())) {
     std::ifstream f(import_path.c_str());
@@ -850,9 +850,9 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
     ss << f.rdbuf();
     PluginMetadata pd;
     ParsePlugin(ss.str(), pd);
+    pd.is_imported = true;
     return pd;
   }
-#endif
 
   auto available = PluginHandler::getInstance()->getCompatiblePlugins();
   vector<PluginMetadata> matches;
@@ -883,6 +883,8 @@ void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
 
   if (is_system)
     plugin->m_status = PluginStatus::System;
+  else if (plugin->m_status == PluginStatus::Imported)
+    ;  // plugin->m_status = PluginStatus::Imported;
   else if (installedVersion < metaVersion)
     plugin->m_status = PluginStatus::ManagedInstalledUpdateAvailable;
   else if (installedVersion == metaVersion)
@@ -928,7 +930,9 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
     if (!md.name.empty()) {
       auto import_path = PluginHandler::ImportedMetadataPath(md.name.c_str());
       md.is_imported = isRegularFile(import_path.c_str());
-      if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
+      if (md.is_imported) {
+        plugin->m_status = PluginStatus::Imported;
+      } else if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
         // This is an installed plugin
         PluginLoader::UpdatePlugin(plugin, md);
       } else if (IsSystemPluginName(md.name)) {
@@ -1551,6 +1555,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
     case 114:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_114*>(plug_in);
       break;
+
     case 115:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_115*>(plug_in);
       break;
@@ -1561,37 +1566,27 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
 
     case 117:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_117*>(plug_in);
-      do /* force a local scope */ {
-        auto p = dynamic_cast<opencpn_plugin_117*>(plug_in);
-        pi_ver =
-            SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
-                            p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
-                            p->GetPlugInVersionBuild());
-      } while (false);  // NOLINT
       break;
+
     case 118:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_118*>(plug_in);
-      do /* force a local scope */ {
-        auto p = dynamic_cast<opencpn_plugin_118*>(plug_in);
-        pi_ver =
-            SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
-                            p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
-                            p->GetPlugInVersionBuild());
-      } while (false);  // NOLINT
       break;
+
     case 119:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_119*>(plug_in);
-      do /* force a local scope */ {
-        auto p = dynamic_cast<opencpn_plugin_119*>(plug_in);
-        pi_ver =
-            SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
-                            p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
-                            p->GetPlugInVersionBuild());
-      } while (false);  // NOLINT
       break;
 
     default:
       break;
+  }
+
+  if (auto p = dynamic_cast<opencpn_plugin_117*>(plug_in)) {
+    // For API 1.17+ use the version info in the plugin API in favor of
+    // the version file created when installing plugin.
+    pi_ver =
+        SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
+                        p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
+                        p->GetPlugInVersionBuild());
   }
 
   if (!pic->m_pplugin) {

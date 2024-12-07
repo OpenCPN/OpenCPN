@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file serial_io.h Abstract N0183 serial communications interface */
+/**
+ *  \file
+ *  Abstract N0183 serial communications interface
+ */
 
 #ifndef _N0183_PROTOL_MGR__
 #define _N0183_PROTOL_MGR__

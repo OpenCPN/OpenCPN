@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_drv_n0183_serial.h  NMEA0183 serial driver */
+/**
+ *  \file
+ *   NMEA0183 serial driver
+ */
 
 #ifndef _COMMDRIVERN0183SERIAL_H
 #define _COMMDRIVERN0183SERIAL_H

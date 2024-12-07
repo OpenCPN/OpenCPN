@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file navmsg.h  Raw, undecoded messages definitions. */
+/**
+ *  \file
+ *  Raw, undecoded messages definitions
+ */
 
 #ifndef _DRIVER_NAVMSG_H
 #define _DRIVER_NAVMSG_H

@@ -41,6 +41,7 @@
 #include "model/catalog_parser.h"
 #include "model/plugin_blacklist.h"
 #include "observable.h"
+#include "ocpndc.h"
 #include "model/ais_target_data.h"
 #include "model/comm_navmsg.h"
 #include "s57chart.h"  // for Object list
@@ -123,7 +124,8 @@ enum ActionVerb {
   REINSTALL_MANAGED_VERSION,
   DOWNGRADE_INSTALLED_MANAGED_VERSION,
   UNINSTALL_MANAGED_VERSION,
-  INSTALL_MANAGED_VERSION
+  INSTALL_MANAGED_VERSION,
+  UPDATE_IMPORTED_VERSION
 };
 
 class PlugInMenuItemContainer {

@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file thread_ctrl.h ThreadCtrl mixin class definition */
+/**
+ *  \file
+ *  ThreadCtrl mixin class definition
+ */
 
 #ifndef THREAD_CTRL_H__
 #define THREAD_CTRL_H__

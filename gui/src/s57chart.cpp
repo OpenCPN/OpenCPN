@@ -271,7 +271,6 @@ s57chart::s57chart() {
   m_this_chart_context = 0;
   m_Chart_Skew = 0;
   m_vbo_byte_length = 0;
-  m_SENCthreadStatus = THREAD_INACTIVE;
   bReadyToRender = false;
   m_RAZBuilt = false;
   m_disableBackgroundSENC = false;
@@ -4068,7 +4067,7 @@ int s57chart::BuildSENCFile(const wxString &FullPath000,
       ticket->m_SENCFileName = SENCFileName;
       ticket->m_chart = this;
 
-      m_SENCthreadStatus = g_SencThreadManager->ScheduleJob(ticket);
+      g_SencThreadManager->ScheduleJob(ticket);
       bReadyToRender = true;
       return BUILD_SENC_PENDING;
 

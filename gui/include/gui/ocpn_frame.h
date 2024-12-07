@@ -44,6 +44,7 @@
 #include "observable_evtvar.h"
 #include "ocpn_print.h"
 #include "s52s57.h"
+#include "s57registrar_mgr.h"
 #include "SencManager.h"
 #include "displays.h"
 

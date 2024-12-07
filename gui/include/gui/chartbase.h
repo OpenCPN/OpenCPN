@@ -30,6 +30,7 @@
 #include "model/ocpn_types.h"
 #include "color_types.h"
 #include "LLRegion.h"
+#include "viewport.h"
 
 //----------------------------------------------------------------------------
 //  Forward Declarations

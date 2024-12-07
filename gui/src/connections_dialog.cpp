@@ -38,6 +38,7 @@
 #include "model/config_vars.h"
 #include "model/sys_events.h"
 
+#include "chartbase.h"
 #include "connections_dialog.h"
 #include "conn_params_panel.h"
 #include "NMEALogWindow.h"

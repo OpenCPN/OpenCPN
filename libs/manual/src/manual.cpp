@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file manual.cpp Implement manual.h */
+/**
+ *  \file
+ *  Implement manual.h
+ */
 
 #include <fstream>
 #include <sstream>

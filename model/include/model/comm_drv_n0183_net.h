@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_drv_n0183_net.h  NMEA0183 over IP driver. */
+/**
+ * \file
+ * NMEA0183 over IP driver
+ */
 
 #ifndef COMMDRIVERN0183NET_H_
 #define COMMDRIVERN0183NET_H_

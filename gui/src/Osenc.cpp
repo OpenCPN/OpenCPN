@@ -40,7 +40,7 @@
 #include "s52s57.h"
 #include "s57chart.h"  // for one static method
 #include "model/cutil.h"
-#include "s57RegistrarMgr.h"
+#include "s57registrar_mgr.h"
 #include "gdal/cpl_csv.h"
 #include "ogr_s57.h"
 #include "gdal/cpl_string.h"

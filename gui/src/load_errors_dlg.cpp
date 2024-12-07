@@ -18,8 +18,8 @@
  **************************************************************************/
 
 /**
- * \file load_errors_dlg.h
- * \brief Handle dialog reporting plugin load errors.
+ * \file
+ * Handle dialog reporting plugin load errors.
  *
  * PluginLoader emits an event containing a list of all plugins which cannot
  * be loaded for various reasons when loading is complete. If this list is

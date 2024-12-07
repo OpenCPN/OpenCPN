@@ -1,11 +1,5 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Object Definition/API
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+/**************************************************************************
+ *   Copyright (C) 2010 - 2024 by David S. Register                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file ocpn_plugin.h. */
+/**
+ * \file
+ * PlugIn Object Definition/API
+ */
 
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
@@ -1872,9 +1869,11 @@ struct PluginMsgId {
   PluginMsgId(const std::string &s) : id(s) {};
 };
 
+/** Return listener for plugin messages received on the REST interface. */
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     PluginMsgId id, wxEventType ev, wxEvtHandler *handler);
 
+/** Retrieve the string in a plugin message received on the REST insterface. */
 extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
 
 //  Assorted GUI utility functions

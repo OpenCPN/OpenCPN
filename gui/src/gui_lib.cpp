@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file gui_lib.cpp Implements gui_lib.h */
+/**
+ *  \file
+ *  Implements gui_lib.h
+ */
 
 #include <wx/artprov.h>
 #include <wx/dialog.h>

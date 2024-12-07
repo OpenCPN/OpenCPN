@@ -454,7 +454,10 @@ public:
   void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk,
                                    SAT_INFO sats[4]);
   void SendUtcTimeToAllInstruments(wxDateTime value);
-  void ChangePaneOrientation(int orient, bool updateAUImgr);
+
+  // Default FloatingPosition (100.100) included.
+  void ChangePaneOrientation(int orient, bool updateAUImgr, int fpx = 100,
+                             int fpy = 100);
   /*TODO: OnKeyPress pass event to main window or disable focus*/
 
   DashboardWindowContainer *m_Container;

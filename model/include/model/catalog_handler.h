@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,12 +15,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 /**
- * Plugin catalog management: Check for available versions and branches,
- * download as required.
+ * \file
+ * Plugin catalog management: Build the runtime catalog, handling downloads
+ * as required.
  */
 
 #ifndef CATALOG_HANDLER_H__
@@ -38,11 +34,17 @@
 #include "model/catalog_parser.h"
 
 /**
- * A local proxy for the catalog server. The server has a number
- * of branches, some of which containing a plugin catalog.
+ * Local proxy for the catalog server and other catalog sources.
  *
- * Backend code for channel management (which catalog to get) and
- * the important download function.
+ * The active catalog is exported by GetActiveCatalogContext(). This
+ * catalog is the merged results of
+ *   - The active downloaded catalog,
+ *   - Possible meta-urls reflecting developers' personal catalogs.
+ *   - Imported metadata living in the data directory, created at import.
+ *
+ * The server has a number of branches, some of which containing a
+ * plugin catalog. Backend code for channel management (which catalog to
+ * get) and the important download function.
  *
  * Also: CatalogData handling, basically version and date for
  * various ocpn-plugins.xml.
@@ -80,7 +82,7 @@ public:
   /** Set a custom url, overrides also channel settings. */
   void SetCustomUrl(const char* url);
 
-  /** Set a custom url, overrides also channel settings. */
+  /** Get the custom url set by SetCustomUrl. */
   std::string GetCustomUrl();
 
   /** Get the default URL, with actual channel included */
@@ -125,6 +127,10 @@ public:
   /** Last error message, free format. */
   std::string LastErrorMsg();
 
+  /**
+   * Parse the catalog by merging data from imported metadata, meta-urls and
+   * the standard url.
+   */
   ServerStatus DoParseCatalog(const std::string xml, CatalogCtx* ctx);
 
 protected:

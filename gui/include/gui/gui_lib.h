@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file gui_lib.h General purpose GUI support. */
+/**
+ *  \file
+ *  General purpose GUI support.
+ */
 
 #ifndef GUI_LIB_H__
 #define GUI_LIB_H__

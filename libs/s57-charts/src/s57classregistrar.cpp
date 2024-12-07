@@ -1,12 +1,5 @@
-/******************************************************************************
- *
- * Project:  S-57 Translator
- * Purpose:  Implements S57ClassRegistrar class for keeping track of
- *           information on S57 object classes.
- * Author:   Frank Warmerdam, warmerda@home.com
- *
- ******************************************************************************
- * Copyright (c) 1999, Frank Warmerdam
+/*****************************************************************************
+ * Copyright (c) 1999, Frank Warmerdam warmerda@home.co
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,14 +18,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- ******************************************************************************
+ *****************************************************************************/
+
+/**
+ * \file
  *
+ * Implement S57ClassRegistrar class for keeping track of
+ * information on S57 object classes.
  */
 
 #include "gdal/cpl_conv.h"
 #include "gdal/cpl_string.h"
 #include "s57.h"
-#include "S57ClassRegistrar.h"
+#include "s57class_registrar.h"
 
 #ifdef S57_BUILTIN_CLASSES
 #include "s57tables.h"

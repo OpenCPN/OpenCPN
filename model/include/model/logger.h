@@ -20,7 +20,8 @@
  ***************************************************************************/
 
 /**
- * \file logger.h Enhanced logging interface on top of wx/log.h.
+ * \file
+ * Enhanced logging interface on top of wx/log.h.
  *
  * The OcpnLog acts as the active wxLog target: it formats and prints
  * log messages, overriding the default setup.

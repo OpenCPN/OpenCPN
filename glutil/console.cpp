@@ -1,5 +1,3 @@
-/** \file console.cpp  Simple CLI application to check OpenGL capabilities. */
-
 /**************************************************************************
  *   Copyright (C) 2022 Alec Leamas                                        *
  *   Copyright (C) 2024 Pavel Kalian                                       *
@@ -18,7 +16,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+
+/**
+ * \file
+ *  Simple CLI application to check OpenGL capabilities.
  */
 
 #include "wx/wxprec.h"

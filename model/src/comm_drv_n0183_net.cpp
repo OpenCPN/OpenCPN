@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_drv_n0183_net.cpp Implement comm_drv_n0183_net.h. */
+/**
+ *  \file
+ *  Implement comm_drv_n0183_net.h.
+ */
 
 #ifdef __MSVC__
 #include "winsock2.h"

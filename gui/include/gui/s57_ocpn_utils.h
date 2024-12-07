@@ -1,9 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2024 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,41 +16,28 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#ifndef __S57REGISTRARMGR_H__
-#define __S57REGISTRARMGR_H__
+/** \file s57_ocpn_util.h S57 utilities with core opencpn dependencies. */
 
-#include <wx/hashmap.h>
-#include <wx/string.h>
+#ifndef S57_OCPN_UTILS_H_GUARD__
+#define S57_OCPN_UTILS_H_GUARD__
 
-WX_DECLARE_STRING_HASH_MAP(int, CSVHash1);
+#include "OCPNRegion.h"
+#include "ocpndc.h"
+#include "s57chart.h"
 
-WX_DECLARE_HASH_MAP(int, std::string, wxIntegerHash, wxIntegerEqual, CSVHash2);
+bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
+                                     ChartPlugInWrapper *target_plugin_chart,
+                                     s57chart *Chs57,
+                                     ListOfObjRazRules *rule_list,
+                                     std::list<S57Obj *> *pi_rule_list,
+                                     std::vector<s57Sector_t> &sectorlegs);
 
-/**
- * s57RegistrarMgr Definition
- * This is a class holding the ctor and dtor for the global registrar
- */
-class s57RegistrarMgr {
-public:
-  s57RegistrarMgr(const wxString& csv_dir, FILE* flog);
-  ~s57RegistrarMgr();
+void s57_DrawExtendedLightSectors(ocpnDC &temp_dc, ViewPort &VPoint,
+                                  std::vector<s57Sector_t> &sectorlegs);
 
-  int getAttributeID(const char* pAttrName);
-  std::string getAttributeAcronym(int nID);
-  std::string getFeatureAcronym(int nID);
+void s57_DrawExtendedLightSectorsGL(ocpnDC &temp_dc, ViewPort &VPoint,
+                                    std::vector<s57Sector_t> &sectorlegs);
 
-private:
-  bool s57_attr_init(const wxString& csv_dir);
-  bool s57_feature_init(const wxString& csv_dir);
-
-  CSVHash1 m_attrHash1;
-  CSVHash2 m_attrHash2;
-
-  CSVHash1 m_featureHash1;
-  CSVHash2 m_featureHash2;
-};
-
-#endif
+#endif  //  S57_OCPN_UTILS_H_GUARD__

@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  S-57 Translator
- * Purpose:  Implements S57Reader class.
- * Author:   Frank Warmerdam, warmerdam@pobox.com
- *
- ******************************************************************************
- * Copyright (c) 1999, 2001, Frank Warmerdam
+/*****************************************************************************
+ * Copyright (c) 1999, 2001, Frank Warmerdam warmerdam@pobox.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -24,9 +18,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- ******************************************************************************
- *
- * *
+ *****************************************************************************/
+
+/**
+ * \file
+ * Implements S57Reader class.
  */
 
 #include <assert.h>

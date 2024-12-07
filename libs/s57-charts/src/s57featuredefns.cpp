@@ -1,12 +1,5 @@
-/******************************************************************************
- *
- * Project:  S-57 Translator
- * Purpose:  Implements methods to create OGRFeatureDefns for various
- *           object classes, and primitive features.
- * Author:   Frank Warmerdam, warmerdam@pobox.com
- *
- ******************************************************************************
- * Copyright (c) 1999, 2001, 2003 Frank Warmerdam
+/*****************************************************************************
+ * Copyright (c) 1999, 2001, 2003 Frank Warmerdam  warmerdam@pobox.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,23 +18,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- ******************************************************************************
- *
- * $Log: s57featuredefns.cpp,v $
- * Cleanup/optimize
- *
- * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.2  2003/11/17 20:10:46  warmerda
- * added support for writing FFPT linkages
- *
- * Revision 1.1  2003/11/12 21:24:41  warmerda
- * New
- *
+ *****************************************************************************/
+
+/**
+ * \file
+ * Implements methods to create OGRFeatureDefns for various
+ * object classes, and primitive features.
  */
 
 #include "s57.h"

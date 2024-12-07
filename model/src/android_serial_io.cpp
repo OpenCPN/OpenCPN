@@ -18,8 +18,9 @@
  **************************************************************************/
 
 /**
- *  \file android_serial_io.cpp Android SerialIo synchronous implementation
- *       based on the native Android serial interface.
+ * \file
+ * Android SerialIo synchronous implementation based on the native
+ * Android serial interface.
  */
 
 #include <string>

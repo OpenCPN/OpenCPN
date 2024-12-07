@@ -1,4 +1,3 @@
-
 /***************************************************************************
  *   Copyright (C) 2024  Alec Leamas                                       *
  *                                                                         *
@@ -18,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file manual.h Tools to invoke the manual provided by manual_pi. */
+/**
+ *  \file
+ *  Tools to invoke the manual provided by manual_pi.
+ */
 
 #ifndef MANUAL_H_
 #define MANUAL_H_

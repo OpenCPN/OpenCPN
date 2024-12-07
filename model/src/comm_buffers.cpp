@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_buffers.cpp  Implement comm_buffers.h */
+/**
+ *  \file
+ *  Implement comm_buffers.h
+ */
 
 #include "model/comm_buffers.h"
 
