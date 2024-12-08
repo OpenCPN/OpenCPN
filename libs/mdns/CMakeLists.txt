@@ -2,6 +2,11 @@
 # Include mdns library from https://github.com/mjansson/mdns and
 # add some local add-ons.
 #
+# The mdns.c file from the library is not compiled and is only
+# available as reference. The actually exported stuff is the
+# mdns.h header from the package and the files in src which
+# is code from mdns.c reimplemented for opencpn.
+#
 # Exports: ocpn::mdns transitive link target
 #
 # License:      GPLv3+
