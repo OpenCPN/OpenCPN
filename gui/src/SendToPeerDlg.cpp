@@ -30,7 +30,7 @@
 #include "model/cmdline.h"
 #include "model/config_vars.h"
 #include "model/mdns_cache.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 #include "model/ocpn_utils.h"
 #include "model/peer_client.h"
 #include "model/route.h"

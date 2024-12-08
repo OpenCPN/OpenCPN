@@ -27,7 +27,7 @@
 #include "model/cli_platform.h"
 #include "model/config_vars.h"
 #include "model/comm_navmsg.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 #include "observable_confvar.h"
 #include "model/ocpn_types.h"
 #include "model/ocpn_utils.h"
@@ -54,7 +54,7 @@ static void ConfigSetup() {
 }
 
 #ifdef _WIN32
-#define GetLocalAddresses()  get_local_ipv4_addresses()
+#define GetLocalAddresses() get_local_ipv4_addresses()
 
 #else
 static std::vector<std::string> GetLocalAddresses() {
@@ -67,7 +67,7 @@ static std::vector<std::string> GetLocalAddresses() {
   for (ifa = ifAddrStruct; ifa; ifa = ifa->ifa_next) {
     if (!ifa->ifa_addr) continue;
     if (ifa->ifa_addr->sa_family == AF_INET) {
-      tmp_addr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+      tmp_addr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
       char address_buffer[INET_ADDRSTRLEN];
       inet_ntop(AF_INET, tmp_addr, address_buffer, INET_ADDRSTRLEN);
       retvals.push_back(address_buffer);
@@ -76,25 +76,24 @@ static std::vector<std::string> GetLocalAddresses() {
   if (ifAddrStruct) freeifaddrs(ifAddrStruct);
   return retvals;
 }
-#endif   // _WIN32
+#endif  // _WIN32
 
 static bool g_portable = false;
 class RestServerApp : public wxAppConsole {
 public:
   RestServerApp(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
-          : wxAppConsole(),
-            m_rest_server(ctx, route_ctx, portable) {}
+      : wxAppConsole(), m_rest_server(ctx, route_ctx, portable) {}
 
   void Run() {
     ConfigSetup();
     std::vector<std::string> addresses;
     for (int i = 0; addresses.size() == 0 && i < 10; i++) {
-       std::this_thread::sleep_for(500ms);
-       addresses = GetLocalAddresses();
+      std::this_thread::sleep_for(500ms);
+      addresses = GetLocalAddresses();
     }
     if (!addresses.size()) {
-        std::cerr << "Cannot get local IP address(!)\n";
-        return;
+      std::cerr << "Cannot get local IP address(!)\n";
+      return;
     }
     auto local_address = addresses[0];
     fs::path dirpath(std::string(CMAKE_BINARY_DIR) + "/certs");
@@ -112,7 +111,6 @@ protected:
   RestServer m_rest_server;
 };
 
-
 static std::string CmdString(const std::string s) {
 #ifdef _MSC_VER
   return std::string("\"") + s + "\"";
@@ -120,7 +118,6 @@ static std::string CmdString(const std::string s) {
   return s;
 #endif
 }
-
 
 class RestServerPingApp : public RestServerApp {
 public:
@@ -136,7 +133,7 @@ protected:
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
       ss << curl_prog.make_preferred() << " --insecure -o " << path
-	  << " \"https://localhost:8443/api/ping?source=1.2.3.4&apikey=bad\"";
+         << " \"https://localhost:8443/api/ping?source=1.2.3.4&apikey=bad\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -146,13 +143,14 @@ protected:
       const char* expected =
           "{\"result\": 5, \"version\": \"" VERSION_FULL "\"}";
       EXPECT_EQ(result, expected);  // Bad api key
-    }{
+    }
+    {
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
       ss << curl_prog.make_preferred() << " --insecure -o " << path
          << " \"https://localhost:8443/api/ping?source=1.2.3.4&apikey=" << key
-	 << "\"";
+         << "\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -180,7 +178,7 @@ protected:
       std::stringstream ss;
       auto path = fs::path(CMAKE_BINARY_DIR) / "curl-result";
       ss << curl_prog.make_preferred() << " --insecure -o " << path
-	  << " \"https://localhost:8443/api/ping?source=1.2.3.4&apikey=bad\"";
+         << " \"https://localhost:8443/api/ping?source=1.2.3.4&apikey=bad\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -190,7 +188,8 @@ protected:
       const char* expected =
           "{\"result\": 5, \"version\": \"" VERSION_FULL "\"}";
       EXPECT_EQ(result, expected);  // Bad api key
-    }{
+    }
+    {
       // Check the internal API
       s_result = "";
       s_result2 = "";
@@ -199,7 +198,8 @@ protected:
       listener.Init(PluginMsg("msg1", ""), [&](ObservedEvt ev) {
         auto msg = UnpackEvtPointer<PluginMsg>(ev);
         s_result = msg->name;
-        s_result2 = msg->message; });
+        s_result2 = msg->message;
+      });
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
       ss << curl_prog.make_preferred() << " --insecure -X post --data foobar "
@@ -210,7 +210,8 @@ protected:
       ProcessPendingEvents();
       EXPECT_EQ(s_result, "msg1");
       EXPECT_EQ(s_result2, "foobar");
-    }{
+    }
+    {
       // Check plugin API
       s_result = "";
       s_result2 = "";
@@ -219,7 +220,8 @@ protected:
       auto listener = GetListener(PluginMsgId("msg1"), EVT_BAR, this);
       Bind(EVT_BAR, [&](ObservedEvt ev) {
         auto msg = GetPluginMsgPayload(PluginMsgId("msg1"), ev);
-        s_result = msg; });
+        s_result = msg;
+      });
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
       ss << curl_prog.make_preferred() << " --insecure -X post --data foobar "
@@ -234,7 +236,6 @@ protected:
   }
 };
 
-
 class RestServer404App : public RestServerApp {
 public:
   RestServer404App(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
@@ -246,7 +247,7 @@ protected:
     std::this_thread::sleep_for(50ms);
     fs::path curl_prog(CURLPROG);
     std::stringstream ss;
-    ss <<  curl_prog.make_preferred()  << " --insecure --max-time 3 -I -o "
+    ss << curl_prog.make_preferred() << " --insecure --max-time 3 -I -o "
        << path << " \"https://localhost:8443/api/pong\"";
     system(CmdString(ss.str()).c_str());
     std::this_thread::sleep_for(50ms);
@@ -272,8 +273,8 @@ protected:
     {
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
-      ss << curl_prog.make_preferred()  << " --insecure --max-time 3 -o "
-         << path << " \"https://localhost:8443/api/get-version\"";
+      ss << curl_prog.make_preferred() << " --insecure --max-time 3 -o " << path
+         << " \"https://localhost:8443/api/get-version\"";
       system(CmdString(ss.str()).c_str());
     }
     std::this_thread::sleep_for(50ms);
@@ -291,19 +292,18 @@ protected:
   }
 };
 
-class
-RestServerObjectApp : public RestServerApp {
+class RestServerObjectApp : public RestServerApp {
 public:
   RestServerObjectApp(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
       : RestServerApp(ctx, route_ctx, portable) {}
 
 protected:
   void Work() override {
-    auto colour_func = [] (wxString c) { return *wxBLACK; };
+    auto colour_func = [](wxString c) { return *wxBLACK; };
     pWayPointMan = new WayPointman(colour_func);
     pRouteList = new RouteList;
     g_BasePlatform = new BasePlatform();
-    pSelect =  new Select();
+    pSelect = new Select();
 
     auto outpath = fs::path(CMAKE_BINARY_DIR) / "curl-result";
     auto datapath = fs::path(TESTDATA) / "foo.gpx";
@@ -312,7 +312,7 @@ protected:
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
       ss << curl_prog.make_preferred() << " --insecure --silent --data @"
-	 << datapath << " -o " << outpath <<  " -H \"Content-Type: text/xml\""
+         << datapath << " -o " << outpath << " -H \"Content-Type: text/xml\""
          << " \"https://localhost:8443/api/rx_object?source=1.2.3.4\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
@@ -320,24 +320,26 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 5}");   // New pin required
-    } {
+      EXPECT_EQ(result, "{\"result\": 5}");  // New pin required
+    }
+    {
       // Try to transfer using api key set up above.
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
       ss << curl_prog.make_preferred() << " --insecure --silent --data @"
-	 << datapath << " -o " << outpath <<  " -H \"Content-Type: text/xml\""
-          << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
-          << "&apikey=" << key << "\"";
+         << datapath << " -o " << outpath << " -H \"Content-Type: text/xml\""
+         << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
+         << "&apikey=" << key << "\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 0}");     // Ok
-    } {
+      EXPECT_EQ(result, "{\"result\": 0}");  // Ok
+    }
+    {
       // Set "find duplicate guid" callback to return true;
       m_rest_server.m_route_ctx.find_route_by_guid = [](wxString guid) {
         auto r = new Route;
@@ -345,40 +347,42 @@ protected:
         return r;
       };
       // Set the user "accept overwrite" cb to return false
-      m_rest_server.m_dlg_ctx.run_accept_object_dlg =
-        [](const wxString&, const wxString&) {
-            return AcceptObjectDlgResult(ID_STG_CANCEL, true); };
+      m_rest_server.m_dlg_ctx.run_accept_object_dlg = [](const wxString&,
+                                                         const wxString&) {
+        return AcceptObjectDlgResult(ID_STG_CANCEL, true);
+      };
 
       // Try to transfer same object
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
       ss << curl_prog.make_preferred() << " --insecure --silent --data @"
-         << datapath << " -o " << outpath <<  " -H \"Content-Type: text/xml\""
-          << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
-          << "&apikey=" << key << "\"";
+         << datapath << " -o " << outpath << " -H \"Content-Type: text/xml\""
+         << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
+         << "&apikey=" << key << "\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 3}");     // Duplicate rejected
-    } {
+      EXPECT_EQ(result, "{\"result\": 3}");  // Duplicate rejected
+    }
+    {
       // Try to transfer same object using argument force
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
       ss << curl_prog.make_preferred() << " --insecure --silent --data @"
-         << datapath << " -o " << outpath <<  " -H \"Content-Type: text/xml\""
-          << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
-          << "&force=1&apikey=" << key << "\"";
+         << datapath << " -o " << outpath << " -H \"Content-Type: text/xml\""
+         << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
+         << "&force=1&apikey=" << key << "\"";
       system(CmdString(ss.str()).c_str());
       ProcessPendingEvents();
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 0}");     // Ok
+      EXPECT_EQ(result, "{\"result\": 0}");  // Ok
     }
   }
 };
@@ -389,9 +393,8 @@ public:
       : RestServerApp(ctx, route_ctx, portable) {}
 
 protected:
-
   void Work() override {
-    auto colour_func = [] (wxString c) { return *wxBLACK; };
+    auto colour_func = [](wxString c) { return *wxBLACK; };
     pWayPointMan = new WayPointman(colour_func);
     pRouteList = new RouteList;
     g_BasePlatform = new BasePlatform();
@@ -403,36 +406,37 @@ protected:
     {
       std::stringstream ss;
       ss << curl_prog.make_preferred() << " --insecure --silent --data @"
-         << datapath << " -o " << outpath <<  " -H \"Content-Type: text/xml\""
-        << " \"https://localhost:8443/api/writable?source=1.2.3.4"
-        << "&apikey=" << "foobar"
-        << "&guid=6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
+         << datapath << " -o " << outpath << " -H \"Content-Type: text/xml\""
+         << " \"https://localhost:8443/api/writable?source=1.2.3.4"
+         << "&apikey=" << "foobar"
+         << "&guid=6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
 
-    // Try check our standard object, bad api key
+      // Try check our standard object, bad api key
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 5}");     // New pin required
-    } {
+      EXPECT_EQ(result, "{\"result\": 5}");  // New pin required
+    }
+    {
       // Try check our standard object, fix the api key
       auto key = m_rest_server.m_key_map["1.2.3.4"];
-      std::stringstream  ss;
+      std::stringstream ss;
       ss << curl_prog.make_preferred() << " --insecure --silent --data @"
-         << datapath << " -o " << outpath <<  " -H \"Content-Type: text/xml\""
-        << " \"https://localhost:8443/api/writable?source=1.2.3.4"
-        << "&apikey=" << key
-        << "&guid=6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
+         << datapath << " -o " << outpath << " -H \"Content-Type: text/xml\""
+         << " \"https://localhost:8443/api/writable?source=1.2.3.4"
+         << "&apikey=" << key << "&guid=6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 0}");     // Ok
-    } {
+      EXPECT_EQ(result, "{\"result\": 0}");  // Ok
+    }
+    {
       // Set "find duplicate guid" callback to return true;
       m_rest_server.m_route_ctx.find_route_by_guid = [](wxString guid) {
         auto r = new Route;
@@ -440,19 +444,19 @@ protected:
         return r;
       };
       auto key = m_rest_server.m_key_map["1.2.3.4"];
-      std::stringstream  ss;
+      std::stringstream ss;
       ss << curl_prog.make_preferred() << " --insecure --silent --data @"
-	 << datapath << " -o " << outpath <<  " -H \"Content-Type: text/xml\""
-        << " \"https://localhost:8443/api/writable?source=1.2.3.4"
-        << "&apikey=" << key
-        << "&guid=apikey6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
+         << datapath << " -o " << outpath << " -H \"Content-Type: text/xml\""
+         << " \"https://localhost:8443/api/writable?source=1.2.3.4"
+         << "&apikey=" << key
+         << "&guid=apikey6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
       system(CmdString(ss.str()).c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 3}");     // Duplicate reject
+      EXPECT_EQ(result, "{\"result\": 3}");  // Duplicate reject
     }
   }
 };

@@ -56,7 +56,7 @@
 #include "model/cmdline.h"
 #include "mdns_util.h"
 #include "model/mdns_cache.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 
 // Static data structs
 std::vector<ocpn_DNS_record_t> g_sk_servers;

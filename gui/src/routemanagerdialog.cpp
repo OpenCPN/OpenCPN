@@ -43,7 +43,7 @@
 #include "model/config_vars.h"
 #include "model/georef.h"
 #include "model/mdns_cache.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/route.h"

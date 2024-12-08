@@ -1893,7 +1893,7 @@ add_subdirectory(libs/gdal)
 add_subdirectory(libs/gl_headers)
 add_subdirectory(libs/geoprim)
 add_subdirectory(libs/iso8211)
-add_subdirectory(libs/mDNS)
+add_subdirectory(libs/mdns)
 
 set(MSVC_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include)
 add_subdirectory(libs/mongoose)

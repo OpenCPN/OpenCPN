@@ -59,7 +59,7 @@ model/include/model/local_api.h
 model/include/model/logger.h
 model/include/model/macutils.h
 model/include/model/MarkIcon.h
-model/include/model/mDNS_query.h
+model/include/model/mdns_query.h
 model/include/model/mDNS_service.h
 model/include/model/meteo_points.h
 model/include/model/multiplexer.h

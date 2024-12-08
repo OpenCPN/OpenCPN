@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5.0)
 
-if (TARGET ocpn::mDNS)
+if (TARGET ocpn::mdns)
   return ()
 endif ()
 
@@ -24,7 +24,7 @@ target_include_directories(_MDNS PUBLIC ${MDNS_ROOT})
 set(SRC src/mdns_util.cpp include/mdns_util.h)
 add_library(_MDNS_UTILS STATIC ${SRC})
 target_link_libraries(_MDNS_UTILS PRIVATE _MDNS)
-add_library(ocpn::mDNS ALIAS _MDNS_UTILS)
+add_library(ocpn::mdns ALIAS _MDNS_UTILS)
 target_include_directories(
   _MDNS_UTILS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${MDNS_ROOT}
 )

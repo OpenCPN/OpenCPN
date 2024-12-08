@@ -45,7 +45,7 @@
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "model/mdns_cache.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 #include "model/nav_object_database.h"
 #include "model/own_ship.h"
 #include "model/own_ship.h"
