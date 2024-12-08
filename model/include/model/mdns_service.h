@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,6 +20,10 @@
 
 #ifndef _MDNSSERVICE_H
 #define _MDNSSERVICE_H
+
+/**
+ * \file start/stop mdns service routines.
+ */
 
 int StartMDNSService(std::string hostname, std::string service_name,
                      int service_port);

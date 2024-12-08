@@ -13,6 +13,11 @@
  * mdns_util.cpp/h was adapted in part from mdns.c
  */
 
+/**
+ *  \file
+ *  Address conversion routines reimplemented from mdns.c
+ */
+
 #ifndef __MDNSUTIL_H__
 #define __MDNSUTIL_H__
 
