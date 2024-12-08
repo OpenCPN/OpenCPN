@@ -84,9 +84,9 @@ set(
   ${MODEL_HDR_DIR}/local_api.h
   ${MODEL_HDR_DIR}/logger.h
   ${MODEL_HDR_DIR}/MarkIcon.h
-  ${MODEL_HDR_DIR}/mDNS_query.h
+  ${MODEL_HDR_DIR}/mdns_query.h
   ${MODEL_HDR_DIR}/mdns_cache.h
-  ${MODEL_HDR_DIR}/mDNS_service.h
+  ${MODEL_HDR_DIR}/mdns_service.h
   ${MODEL_HDR_DIR}/meteo_points.h
   ${MODEL_HDR_DIR}/multiplexer.h
   ${MODEL_HDR_DIR}/nav_object_database.h
@@ -177,9 +177,9 @@ set(SRC
   ${MODEL_SRC_DIR}/ipc_factories.cpp
   ${MODEL_SRC_DIR}/local_api.cpp
   ${MODEL_SRC_DIR}/logger.cpp
-  ${MODEL_SRC_DIR}/mDNS_query.cpp
+  ${MODEL_SRC_DIR}/mdns_query.cpp
   ${MODEL_SRC_DIR}/mdns_cache.cpp
-  ${MODEL_SRC_DIR}/mDNS_service.cpp
+  ${MODEL_SRC_DIR}/mdns_service.cpp
   ${MODEL_SRC_DIR}/multiplexer.cpp
   ${MODEL_SRC_DIR}/nav_object_database.cpp
   ${MODEL_SRC_DIR}/navutil_base.cpp
@@ -445,7 +445,7 @@ target_link_libraries(
     ocpn::geoprim
     ocpn::iso8211
     ocpn::libarchive
-    ocpn::mDNS
+    ocpn::mdns
     ocpn::mongoose
     ocpn::N2KParser
     ocpn::nmea0183
