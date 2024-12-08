@@ -59,7 +59,7 @@
 #undef recvfrom
 #endif
 
-extern volatile sig_atomic_t running;    // in mdns.cpp
+volatile sig_atomic_t running;
 
 static char addrbuffer[64];
 static char namebuffer[256];
