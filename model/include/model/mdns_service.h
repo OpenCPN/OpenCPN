@@ -22,7 +22,8 @@
 #define _MDNSSERVICE_H
 
 /**
- * \file start/stop mdns service routines.
+ * \file
+ * Start/stop mdns service routines.
  */
 
 int StartMDNSService(std::string hostname, std::string service_name,
