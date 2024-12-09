@@ -170,7 +170,7 @@ if(MSVC)
   set(BUILD_TESTING OFF CACHE BOOL "")
 else()
   # TODO(schwehr): Temporary work around.
-  cmake_policy(SET CMP0026 OLD)
+  ## cmake_policy(SET CMP0026 OLD)   we don't build tests anyway
 endif()
 
 find_program(BASH_EXECUTABLE bash)
@@ -181,7 +181,8 @@ else()
   message(STATUS "WARNING: sed or bash not available so disabling testing")
 endif()
 
-set(BUILD_TESTING OFF)
+set(BUILD_TESTING OFF)           ## Quick hack to avoid building test code
+cmake_policy(SET CMP0026 NEW)    ## Test code need  needs OLD
 
 # For the first series of tests, the user needs to have downloaded
 # from http://dl.maptools.org/dl/shapelib/shape_eg_data.zip, unpacked
