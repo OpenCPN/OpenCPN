@@ -5,7 +5,7 @@ if (TARGET ocpn::wxcurl)
 endif ()
 
 if (POLICY CMP0077)
-    CMAKE_POLICY(SET CMP0077 OLD)
+  CMAKE_POLICY(SET CMP0077 NEW)
 endif ()
 
 set(SRC
