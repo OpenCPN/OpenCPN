@@ -12,7 +12,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10)
 
 if (TARGET ocpn::s57-charts)
     return ()

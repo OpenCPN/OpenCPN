@@ -8,7 +8,7 @@
 # See README.CMake
 
 # Version 3.7 or above of cmake is currently required for all platforms.
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.10)
 project(shapelib C CXX)
 
 message(STATUS "CMake version = ${CMAKE_VERSION}")
@@ -18,7 +18,7 @@ set(PROJECT_VERSION_MAJOR 1)
 set(PROJECT_VERSION_MINOR 6)
 set(PROJECT_VERSION_PATCH 0)
 set(shp_LIB_VERSIONINFO "4:0:0")
-set(PROJECT_VERSION 
+set(PROJECT_VERSION
   "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
