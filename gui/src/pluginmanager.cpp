@@ -224,7 +224,6 @@ extern unsigned int g_canvasConfig;
 extern wxString g_CmdSoundString;
 
 extern unsigned int gs_plib_flags;
-extern wxString g_lastPluginMessage;
 extern ChartCanvas* g_focusCanvas;
 extern ChartCanvas* g_overlayCanvas;
 extern bool g_bquiting;
@@ -1909,8 +1908,6 @@ void PlugInManager::SendJSONMessageToAllPlugins(const wxString& message_id,
 
 void PlugInManager::SendMessageToAllPlugins(const wxString& message_id,
                                             const wxString& message_body) {
-  g_lastPluginMessage = message_body;
-
   auto msg = std::make_shared<PluginMsg>(
       PluginMsg(message_id.ToStdString(), message_body.ToStdString()));
   NavMsgBus::GetInstance().Notify(msg);

@@ -124,7 +124,6 @@ extern unsigned int g_canvasConfig;
 extern wxString g_CmdSoundString;
 
 unsigned int gs_plib_flags;
-wxString g_lastPluginMessage;
 extern ChartCanvas* g_focusCanvas;
 extern ChartCanvas* g_overlayCanvas;
 extern bool g_bquiting;
