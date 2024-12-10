@@ -1911,6 +1911,10 @@ void PlugInManager::SendMessageToAllPlugins(const wxString& message_id,
                                             const wxString& message_body) {
   g_lastPluginMessage = message_body;
 
+  auto msg = std::make_shared<PluginMsg>(
+      PluginMsg(message_id.ToStdString(), message_body.ToStdString()));
+  NavMsgBus::GetInstance().Notify(msg);
+
   wxString decouple_message_id(
       message_id);  // decouples 'const wxString &' and 'wxString &' to keep bin
                     // compat for plugins
