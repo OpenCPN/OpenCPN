@@ -27,32 +27,21 @@
 #ifndef _PLUGINMGR_H_
 #define _PLUGINMGR_H_
 
-#include <wx/wx.h>
-#include <wx/dynarray.h>
-#include <wx/dynlib.h>
-
-#include <memory>
 #include <atomic>
+#include <memory>
+#include <string>
+
 #include "config.h"
 
-#include "ocpn_plugin.h"
-#include "OCPN_Sound.h"
-#include "chartimg.h"
-#include "model/catalog_parser.h"
-#include "model/plugin_blacklist.h"
-#include "observable.h"
-#include "ocpndc.h"
-#include "model/ais_target_data.h"
-#include "model/comm_navmsg.h"
-#include "model/comm_vars.h"
-#include "s57chart.h"  // for Object list
-#include "model/semantic_vers.h"
-
-// For widgets...
-#include <wx/hyperlink.h>
-#include <wx/choice.h>
-#include <wx/tglbtn.h>
+#include <wx/wx.h>
 #include <wx/bmpcbox.h>
+#include <wx/choice.h>
+#include <wx/dynarray.h>
+#include <wx/dynlib.h>
+#include <wx/hyperlink.h>
+#include <wx/json_defs.h>
+#include <wx/jsonwriter.h>
+#include <wx/tglbtn.h>
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
@@ -61,21 +50,18 @@
 #endif
 #endif
 
-//    Include wxJSON headers
-//    We undefine MIN/MAX so avoid warning of redefinition coming from
-//    json_defs.h
-//    Definitions checked manually, and are identical
-#ifdef MIN
-#undef MIN
-#endif
-
-#ifdef MAX
-#undef MAX
-#endif
-
-#include <wx/json_defs.h>
-#include <wx/jsonwriter.h>
+#include "model/ais_target_data.h"
+#include "model/catalog_parser.h"
+#include "model/comm_navmsg.h"
+#include "model/plugin_blacklist.h"
 #include "model/plugin_loader.h"
+#include "model/semantic_vers.h"
+#include "chartimg.h"
+#include "observable.h"
+#include "ocpndc.h"
+#include "ocpn_plugin.h"
+#include "OCPN_Sound.h"
+#include "s57chart.h"  // for Object list
 
 //    Assorted static helper routines
 
