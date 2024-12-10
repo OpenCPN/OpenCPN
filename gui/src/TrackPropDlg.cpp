@@ -27,6 +27,7 @@
 #include "model/georef.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -61,7 +62,6 @@ extern Routeman* g_pRouteMan;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern MyConfig* pConfig;
 extern MyFrame* gFrame;
-extern PlugInManager* g_pi_manager;
 
 wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
                      int format) {
@@ -1730,7 +1730,7 @@ bool TrackPropDlg::SaveChanges(void) {
     v[_T("Name")] = m_pTrack->GetName();
     v[_T("GUID")] = m_pTrack->m_GUID;
     wxString msg_id(_T("OCPN_TRK_ACTIVATED"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   }
 
   return true;

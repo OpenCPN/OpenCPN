@@ -55,6 +55,7 @@
 #include "toolbar.h"
 #include "options.h"
 #include "s52plib.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/track.h"
 #include "routemanagerdialog.h"
@@ -400,7 +401,7 @@ ArrayOfPlugIn_AIS_Targets* GetAISTargetArray(void) {
 wxAuiManager* GetFrameAuiManager(void) { return g_pauimgr; }
 
 void SendPluginMessage(wxString message_id, wxString message_body) {
-  s_ppim->SendMessageToAllPlugins(message_id, message_body);
+  SendMessageToAllPlugins(message_id, message_body);
 
   //  We will send an event to the main application frame (gFrame)
   //  for informational purposes.

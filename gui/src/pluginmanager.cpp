@@ -102,6 +102,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "model/navutil_base.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_cache.h"
+#include "model/plugin_comm.h"
 #include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
 #include "model/plugin_paths.h"
@@ -159,29 +160,6 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
-
-#ifndef __WXMSW__
-#include <signal.h>
-#include <setjmp.h>
-
-struct sigaction sa_all_PIM;
-struct sigaction sa_all_PIM_previous;
-
-sigjmp_buf env_PIM;  // the context saved by sigsetjmp();
-
-void catch_signals_PIM(int signo) {
-  switch (signo) {
-    case SIGSEGV:
-      siglongjmp(env_PIM, 1);  // jump back to the setjmp() point
-      break;
-
-    default:
-      break;
-  }
-}
-
-#endif
-
 extern MyConfig* pConfig;
 extern OCPN_AUIManager* g_pauimgr;
 
@@ -244,7 +222,7 @@ wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
 static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   //  Only send messages if someone is listening...
-  if (!g_pi_manager->GetJSONMessageTargetCount()) return;
+  if (!GetJSONMessageTargetCount()) return;
 
   // Do JSON message to all Plugin to inform of target
   wxJSONValue jMsg;
@@ -276,7 +254,7 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   }
   jMsg[wxS("callsign")] = l_CallSign;
   jMsg[wxS("removed")] = pTarget->b_removed;
-  g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
+  SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
 }
 
 static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
@@ -1207,44 +1185,6 @@ void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
   }
 }
 
-void PlugInManager::SendVectorChartObjectInfo(const wxString& chart,
-                                              const wxString& feature,
-                                              const wxString& objname,
-                                              double& lat, double& lon,
-                                              double& scale, int& nativescale) {
-  wxString decouple_chart(chart);
-  wxString decouple_feature(feature);
-  wxString decouple_objname(objname);
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = (*plugin_array)[i];
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_VECTOR_CHART_OBJECT_INFO) {
-        switch (pic->m_api_version) {
-          case 112:
-          case 113:
-          case 114:
-          case 115:
-          case 116:
-          case 117:
-          case 118:
-          case 119: {
-            opencpn_plugin_112* ppi =
-                dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
-            if (ppi)
-              ppi->SendVectorChartObjectInfo(decouple_chart, decouple_feature,
-                                             decouple_objname, lat, lon, scale,
-                                             nativescale);
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
-  }
-}
-
 bool PlugInManager::IsAnyPlugInChartEnabled() {
   //  Is there a PlugIn installed and active that implements PlugIn Chart
   //  type(s)?
@@ -1635,70 +1575,6 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
   return true;
 }
 
-bool PlugInManager::SendMouseEventToPlugins(wxMouseEvent& event) {
-  bool bret = false;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_MOUSE_EVENTS) {
-        switch (pic->m_api_version) {
-          case 112:
-          case 113:
-          case 114:
-          case 115:
-          case 116:
-          case 117:
-          case 118:
-          case 119: {
-            opencpn_plugin_112* ppi =
-                dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
-            if (ppi)
-              if (ppi->MouseEventHook(event)) bret = true;
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
-  }
-
-  return bret;
-}
-
-bool PlugInManager::SendKeyEventToPlugins(wxKeyEvent& event) {
-  bool bret = false;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_KEYBOARD_EVENTS) {
-        {
-          switch (pic->m_api_version) {
-            case 113:
-            case 114:
-            case 115:
-            case 116:
-            case 117:
-            case 118:
-            case 119: {
-              opencpn_plugin_113* ppi =
-                  dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
-              if (ppi && ppi->KeyboardEventHook(event)) bret = true;
-              break;
-            }
-            default:
-              break;
-          }
-        }
-      }
-    }
-  }
-
-  return bret;
-}
-
 void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort& vp) {
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
@@ -1708,38 +1584,6 @@ void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort& vp) {
         PlugIn_ViewPort pivp = CreatePlugInViewport(vp);
         if (pic->m_pplugin) pic->m_pplugin->SetCurrentViewPort(pivp);
       }
-    }
-  }
-}
-
-void PlugInManager::SendPreShutdownHookToPlugins() {
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_PRESHUTDOWN_HOOK) {
-        switch (pic->m_api_version) {
-          case 119: {
-            opencpn_plugin_119* ppi =
-                dynamic_cast<opencpn_plugin_119*>(pic->m_pplugin);
-            if (ppi) ppi->PreShutdownHook();
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
-  }
-}
-
-void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_CURSOR_LATLON)
-        if (pic->m_pplugin) pic->m_pplugin->SetCursorLatLon(lat, lon);
     }
   }
 }
@@ -1830,251 +1674,6 @@ void PlugInManager::SetCanvasContextMenuItemGrey(int item, bool grey,
       if (pimis->id == item && !strcmp(name, pimis->m_in_menu)) {
         pimis->b_grey = grey;
         break;
-      }
-    }
-  }
-}
-
-void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString& sentence) {
-  wxString decouple_sentence(
-      sentence);  // decouples 'const wxString &' and 'wxString &' to keep bin
-                  // compat for plugins
-#ifndef __WXMSW__
-  // Set up a framework to catch (some) sigsegv faults from plugins.
-  sigaction(SIGSEGV, NULL, &sa_all_PIM_previous);  // save existing
-                                                   // action for this signal
-  struct sigaction temp;
-  sigaction(SIGSEGV, NULL, &temp);  // inspect existing action for this signal
-
-  temp.sa_handler = catch_signals_PIM;  // point to my handler
-  sigemptyset(&temp.sa_mask);           // make the blocking set
-                                        // empty, so that all
-                                        // other signals will be
-                                        // unblocked during my handler
-  temp.sa_flags = 0;
-  sigaction(SIGSEGV, &temp, NULL);
-#endif
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_NMEA_SENTENCES) {
-#ifndef __WXMSW__
-        if (sigsetjmp(env_PIM, 1)) {
-          //  Something in the "else" code block faulted.
-          // Probably safest to assume that all variables in this method are
-          // trash... So, simply clean up and return.
-          sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);
-          // reset signal handler
-          return;
-        } else
-#endif
-        {
-          // volatile int *x = 0;
-          //*x = 0;
-          if (pic->m_pplugin)
-            pic->m_pplugin->SetNMEASentence(decouple_sentence);
-        }
-      }
-    }
-  }
-
-#ifndef __WXMSW__
-  sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);  // reset signal handler
-#endif
-}
-
-int PlugInManager::GetJSONMessageTargetCount() {
-  int rv = 0;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state &&
-        (pic->m_cap_flag & WANTS_PLUGIN_MESSAGING))
-      rv++;
-  }
-  return rv;
-}
-
-void PlugInManager::SendJSONMessageToAllPlugins(const wxString& message_id,
-                                                wxJSONValue v) {
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(message_id, out);
-  wxLogDebug(message_id);
-  wxLogDebug(out);
-}
-
-void PlugInManager::SendMessageToAllPlugins(const wxString& message_id,
-                                            const wxString& message_body) {
-  auto msg = std::make_shared<PluginMsg>(
-      PluginMsg(message_id.ToStdString(), message_body.ToStdString()));
-  NavMsgBus::GetInstance().Notify(msg);
-
-  wxString decouple_message_id(
-      message_id);  // decouples 'const wxString &' and 'wxString &' to keep bin
-                    // compat for plugins
-  wxString decouple_message_body(
-      message_body);  // decouples 'const wxString &' and 'wxString &' to keep
-                      // bin compat for plugins
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_PLUGIN_MESSAGING) {
-        switch (pic->m_api_version) {
-          case 106: {
-            opencpn_plugin_16* ppi =
-                dynamic_cast<opencpn_plugin_16*>(pic->m_pplugin);
-            if (ppi)
-              ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
-            break;
-          }
-          case 107: {
-            opencpn_plugin_17* ppi =
-                dynamic_cast<opencpn_plugin_17*>(pic->m_pplugin);
-            if (ppi)
-              ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
-            break;
-          }
-          case 108:
-          case 109:
-          case 110:
-          case 111:
-          case 112:
-          case 113:
-          case 114:
-          case 115:
-          case 116:
-          case 117:
-          case 118:
-          case 119: {
-            opencpn_plugin_18* ppi =
-                dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
-            if (ppi)
-              ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
-  }
-}
-
-void PlugInManager::SendAISSentenceToAllPlugIns(const wxString& sentence) {
-  wxString decouple_sentence(
-      sentence);  // decouples 'const wxString &' and 'wxString &' to keep bin
-                  // compat for plugins
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_AIS_SENTENCES)
-        pic->m_pplugin->SetAISSentence(decouple_sentence);
-    }
-  }
-}
-
-void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx* ppos) {
-  //    Send basic position fix
-  PlugIn_Position_Fix pfix;
-  pfix.Lat = ppos->kLat;
-  pfix.Lon = ppos->kLon;
-  pfix.Cog = ppos->kCog;
-  pfix.Sog = ppos->kSog;
-  pfix.Var = ppos->kVar;
-  pfix.FixTime = ppos->FixTime;
-  pfix.nSats = ppos->nSats;
-
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_NMEA_EVENTS)
-        if (pic->m_pplugin) pic->m_pplugin->SetPositionFix(pfix);
-    }
-  }
-
-  //    Send extended position fix to PlugIns at API 108 and later
-  PlugIn_Position_Fix_Ex pfix_ex;
-  pfix_ex.Lat = ppos->kLat;
-  pfix_ex.Lon = ppos->kLon;
-  pfix_ex.Cog = ppos->kCog;
-  pfix_ex.Sog = ppos->kSog;
-  pfix_ex.Var = ppos->kVar;
-  pfix_ex.FixTime = ppos->FixTime;
-  pfix_ex.nSats = ppos->nSats;
-  pfix_ex.Hdt = ppos->kHdt;
-  pfix_ex.Hdm = ppos->kHdm;
-
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_NMEA_EVENTS) {
-        switch (pic->m_api_version) {
-          case 108:
-          case 109:
-          case 110:
-          case 111:
-          case 112:
-          case 113:
-          case 114:
-          case 115:
-          case 116:
-          case 117:
-          case 118:
-          case 119: {
-            opencpn_plugin_18* ppi =
-                dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
-            if (ppi) ppi->SetPositionFixEx(pfix_ex);
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
-  }
-}
-
-void PlugInManager::SendActiveLegInfoToAllPlugIns(
-    const ActiveLegDat* leg_info) {
-  Plugin_Active_Leg_Info leg;
-  leg.Btw = leg_info->Btw;
-  leg.Dtw = leg_info->Dtw;
-  leg.wp_name = leg_info->wp_name;
-  leg.Xte = leg_info->Xte;
-  leg.arrival = leg_info->arrival;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic->m_enabled && pic->m_init_state) {
-      if (pic->m_cap_flag & WANTS_NMEA_EVENTS) {
-        switch (pic->m_api_version) {
-          case 108:
-          case 109:
-          case 110:
-          case 111:
-          case 112:
-          case 113:
-          case 114:
-          case 115:
-          case 116:
-            break;
-          case 117:
-          case 118:
-          case 119: {
-            opencpn_plugin_117* ppi =
-                dynamic_cast<opencpn_plugin_117*>(pic->m_pplugin);
-            if (ppi) ppi->SetActiveLegInfo(leg);
-            break;
-          }
-          default:
-            break;
-        }
       }
     }
   }

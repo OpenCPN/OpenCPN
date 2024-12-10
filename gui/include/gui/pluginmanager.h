@@ -191,7 +191,7 @@ public:
   bool RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
                                        const ViewPort& vp, int canvasIndex,
                                        int priority);
-  void SendCursorLatLonToAllPlugIns(double lat, double lon);
+  // void SendCursorLatLonToAllPlugIns(double lat, double lon);
   void SendViewPortToRequestingPlugIns(ViewPort& vp);
   void PrepareAllPluginContextMenus();
 
@@ -234,17 +234,9 @@ public:
   void SetCanvasContextMenuItemViz(int item, bool viz, const char* name = "");
   void SetCanvasContextMenuItemGrey(int item, bool grey, const char* name = "");
 
-  static void SendNMEASentenceToAllPlugIns(const wxString& sentence);
-  void SendPositionFixToAllPlugIns(GenericPosDatEx* ppos);
-  void SendActiveLegInfoToAllPlugIns(const ActiveLegDat* infos);
-  void SendAISSentenceToAllPlugIns(const wxString& sentence);
-  void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v);
-  void SendMessageToAllPlugins(const wxString& message_id,
-                               const wxString& message_body);
   bool UpDateChartDataTypes();
   void FinalizePluginLoadall();
 
-  int GetJSONMessageTargetCount();
   bool UpdateConfig();
   void SendResizeEventToAllPlugIns(int x, int y);
   void SetColorSchemeForAllPlugIns(ColorScheme cs);
@@ -252,14 +244,6 @@ public:
   bool CallLateInit(void);
 
   bool IsAnyPlugInChartEnabled();
-
-  void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
-                                 const wxString& objname, double& lat,
-                                 double& lon, double& scale, int& nativescale);
-
-  bool SendMouseEventToPlugins(wxMouseEvent& event);
-  bool SendKeyEventToPlugins(wxKeyEvent& event);
-  void SendPreShutdownHookToPlugins();
 
   void SendBaseConfigToAllPlugIns();
   void SendS52ConfigToAllPlugIns(bool bReconfig = false);

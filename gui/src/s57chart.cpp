@@ -48,6 +48,7 @@
 #include "model/georef.h"
 #include "navutil.h"  // for LogMessageOnce
 #include "model/navutil_base.h"
+#include "model/plugin_comm.h"
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
 #include "s52utils.h"
@@ -4187,18 +4188,16 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
     const wxString objnam = obj->GetAttrValueAsString("OBJNAM");
     if (objnam.Len() > 0) {
       const wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-      g_pi_manager->SendVectorChartObjectInfo(FullPath, fe_name, objnam,
-                                              obj->m_lat, obj->m_lon, scale,
-                                              nativescale);
+      SendVectorChartObjectInfo(FullPath, fe_name, objnam, obj->m_lat,
+                                obj->m_lon, scale, nativescale);
     }
     // If there is a localized object name and it actually is different from the
     // object name, send it as well...
     const wxString nobjnam = obj->GetAttrValueAsString("NOBJNM");
     if (nobjnam.Len() > 0 && nobjnam != objnam) {
       const wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-      g_pi_manager->SendVectorChartObjectInfo(FullPath, fe_name, nobjnam,
-                                              obj->m_lat, obj->m_lon, scale,
-                                              nativescale);
+      SendVectorChartObjectInfo(FullPath, fe_name, nobjnam, obj->m_lat,
+                                obj->m_lon, scale, nativescale);
     }
 
     switch (obj->Primitive_type) {

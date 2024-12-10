@@ -101,6 +101,7 @@ set(
   ${MODEL_HDR_DIR}/pincode.h
   ${MODEL_HDR_DIR}/plugin_blacklist.h
   ${MODEL_HDR_DIR}/plugin_cache.h
+  ${MODEL_HDR_DIR}/plugin_comm.h
   ${MODEL_HDR_DIR}/plugin_handler.h
   ${MODEL_HDR_DIR}/plugin_loader.h
   ${MODEL_HDR_DIR}/plugin_paths.h
@@ -193,6 +194,7 @@ set(SRC
   ${MODEL_SRC_DIR}/plugin_api.cpp
   ${MODEL_SRC_DIR}/plugin_blacklist.cpp
   ${MODEL_SRC_DIR}/plugin_cache.cpp
+  ${MODEL_SRC_DIR}/plugin_comm.cpp
   ${MODEL_SRC_DIR}/plugin_handler.cpp
   ${MODEL_SRC_DIR}/plugin_loader.cpp
   ${MODEL_SRC_DIR}/plugin_paths.cpp

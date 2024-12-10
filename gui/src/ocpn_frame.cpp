@@ -75,6 +75,7 @@
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -1563,7 +1564,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   }
 
   //  Give any requesting plugins a PreShutdownHook call
-  g_pi_manager->SendPreShutdownHookToPlugins();
+  SendPreShutdownHookToPlugins();
 
   // We save perspective before closing to restore position next time
   // Pane is not closed so the child is not notified (OnPaneClose)
@@ -2989,7 +2990,7 @@ void MyFrame::ActivateMOB(void) {
     wxJSONValue v;
     v[_T("GUID")] = temp_route->m_GUID;
     wxString msg_id(_T("OCPN_MAN_OVERBOARD"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   }
 
   if (RouteManagerDialog::getInstanceFlag()) {
@@ -3053,7 +3054,7 @@ void MyFrame::TrackOn(void) {
   v[_T("Name")] = name;
   v[_T("GUID")] = g_pActiveTrack->m_GUID;
   wxString msg_id(_T("OCPN_TRK_ACTIVATED"));
-  g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+  SendJSONMessageToAllPlugins(msg_id, v);
   g_FlushNavobjChangesTimeout =
       30;  // Every thirty seconds, consider flushing navob changes
 }
@@ -3065,7 +3066,7 @@ Track *MyFrame::TrackOff(bool do_add_point) {
     wxJSONValue v;
     wxString msg_id(_T("OCPN_TRK_DEACTIVATED"));
     v[_T("GUID")] = g_pActiveTrack->m_GUID;
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
 
     g_pActiveTrack->Stop(do_add_point);
 
@@ -5528,7 +5529,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     else
       GPSData.FixTime = wxDateTime::Now().GetTicks();
 
-    g_pi_manager->SendPositionFixToAllPlugIns(&GPSData);
+    SendPositionFixToAllPlugIns(&GPSData);
   }
 
   //   Check for anchorwatch alarms                                 // pjotrc
@@ -5871,7 +5872,7 @@ bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon,
     v[_T("Month")] = date.GetMonth();
     v[_T("Day")] = date.GetDay();
 
-    g_pi_manager->SendJSONMessageToAllPlugins(_T("WMM_VARIATION_REQUEST"), v);
+    SendJSONMessageToAllPlugins(_T("WMM_VARIATION_REQUEST"), v);
     return true;
   } else
     return false;
@@ -6466,14 +6467,14 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           v[_T("NodeNr")] = i;
           i++;
           wxString msg_id(_T("OCPN_TRACKPOINTS_COORDS"));
-          g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+          SendJSONMessageToAllPlugins(msg_id, v);
         }
         return;
       }
       v[_T("error")] = true;
 
       wxString msg_id(_T("OCPN_TRACKPOINTS_COORDS"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      SendJSONMessageToAllPlugins(msg_id, v);
     }
   } else if (message_ID == _T("OCPN_ROUTE_REQUEST")) {
     wxJSONValue root;
@@ -6525,7 +6526,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
         }
         v[_T("waypoints")] = w;
         wxString msg_id(_T("OCPN_ROUTE_RESPONSE"));
-        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+        SendJSONMessageToAllPlugins(msg_id, v);
         return;
       }
     }
@@ -6533,7 +6534,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     v[_T("error")] = true;
 
     wxString msg_id(_T("OCPN_ROUTE_RESPONSE"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   } else if (message_ID == _T("OCPN_ROUTELIST_REQUEST")) {
     wxJSONValue root;
     wxJSONReader reader;
@@ -6579,12 +6580,12 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
         }
       }
       wxString msg_id(_T("OCPN_ROUTELIST_RESPONSE"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      SendJSONMessageToAllPlugins(msg_id, v);
     } else {
       wxJSONValue v;
       v[0][_T("error")] = true;
       wxString msg_id(_T("OCPN_ROUTELIST_RESPONSE"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      SendJSONMessageToAllPlugins(msg_id, v);
     }
   } else if (message_ID == _T("OCPN_ACTIVE_ROUTELEG_REQUEST")) {
     wxJSONValue v;
@@ -6604,7 +6605,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
       }
     }
     wxString msg_id(_T("OCPN_ACTIVE_ROUTELEG_RESPONSE"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   }
 }
 
@@ -6761,7 +6762,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   wxJSONValue v;
   v[_T("GUID")] = pAISMOBRoute->m_GUID;
   wxString msg_id(_T("OCPN_MAN_OVERBOARD"));
-  g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+  SendJSONMessageToAllPlugins(msg_id, v);
   //}
 
   if (RouteManagerDialog::getInstanceFlag()) {

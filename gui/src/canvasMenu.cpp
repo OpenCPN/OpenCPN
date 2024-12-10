@@ -49,6 +49,7 @@
 #include "model/nav_object_database.h"
 #include "model/own_ship.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -1367,7 +1368,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         wxJSONValue v;
         v[_T("GUID")] = guid;
         wxString msg_id(_T("OCPN_ANCHOR_WATCH_CLEARED"));
-        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+        SendJSONMessageToAllPlugins(msg_id, v);
       }
       break;
     }
@@ -1399,7 +1400,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         wxJSONValue v;
         v[_T("GUID")] = guid;
         wxString msg_id(_T("OCPN_ANCHOR_WATCH_SET"));
-        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+        SendJSONMessageToAllPlugins(msg_id, v);
       }
       break;
     }
