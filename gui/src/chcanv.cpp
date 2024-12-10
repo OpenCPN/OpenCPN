@@ -331,7 +331,6 @@ wxGLContext *g_pGLcontext;  // shared common context
 
 extern bool g_useMUI;
 extern unsigned int g_canvasConfig;
-extern wxString g_lastPluginMessage;
 
 extern ChartCanvas *g_focusCanvas;
 extern ChartCanvas *g_overlayCanvas;

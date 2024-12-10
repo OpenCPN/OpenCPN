@@ -44,6 +44,7 @@
 #include "ocpndc.h"
 #include "model/ais_target_data.h"
 #include "model/comm_navmsg.h"
+#include "model/comm_vars.h"
 #include "s57chart.h"  // for Object list
 #include "model/semantic_vers.h"
 
