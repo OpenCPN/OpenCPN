@@ -49,6 +49,7 @@ set(
   ${MODEL_HDR_DIR}/comm_driver.h
   ${MODEL_HDR_DIR}/comm_drv_factory.h
   ${MODEL_HDR_DIR}/comm_drv_file.h
+  ${MODEL_HDR_DIR}/comm_drv_internal.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_bt.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_int.h
   ${MODEL_HDR_DIR}/comm_drv_n0183.h
@@ -146,6 +147,7 @@ set(SRC
   #${MODEL_SRC_DIR}/comm_driver.cpp
   ${MODEL_SRC_DIR}/comm_drv_factory.cpp
   ${MODEL_SRC_DIR}/comm_drv_file.cpp
+  ${MODEL_SRC_DIR}/comm_drv_internal.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
