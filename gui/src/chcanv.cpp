@@ -50,6 +50,7 @@
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -2590,10 +2591,9 @@ void ChartCanvas::OnDeferredFocusTimerEvent(wxTimerEvent &event) {
 }
 
 void ChartCanvas::OnKeyChar(wxKeyEvent &event) {
-  if (g_pi_manager)
-    if (g_pi_manager->SendKeyEventToPlugins(event))
-      return;  // PlugIn did something, and does not want the canvas to do
-               // anything else
+  if (SendKeyEventToPlugins(event))
+    return;  // PlugIn did something, and does not want the canvas to do
+             // anything else
 
   int key_char = event.GetKeyCode();
   switch (key_char) {
@@ -2631,10 +2631,9 @@ void ChartCanvas::OnKeyChar(wxKeyEvent &event) {
 }
 
 void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
-  if (g_pi_manager)
-    if (g_pi_manager->SendKeyEventToPlugins(event))
-      return;  // PlugIn did something, and does not want the canvas to do
-               // anything else
+  if (SendKeyEventToPlugins(event))
+    return;  // PlugIn did something, and does not want the canvas to do
+             // anything else
 
   bool b_handled = false;
 
@@ -3204,10 +3203,9 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 }
 
 void ChartCanvas::OnKeyUp(wxKeyEvent &event) {
-  if (g_pi_manager)
-    if (g_pi_manager->SendKeyEventToPlugins(event))
-      return;  // PlugIn did something, and does not want the canvas to do
-               // anything else
+  if (SendKeyEventToPlugins(event))
+    return;  // PlugIn did something, and does not want the canvas to do
+             // anything else
 
   switch (event.GetKeyCode()) {
     case WXK_TAB:
@@ -5077,7 +5075,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     GetCanvasPixPoint(mouseX, mouseY, lat, lon);
     m_cursor_lat = lat;
     m_cursor_lon = lon;
-    if (g_pi_manager) g_pi_manager->SendCursorLatLonToAllPlugIns(lat, lon);
+    SendCursorLatLonToAllPlugIns(lat, lon);
   }
 
   if (!VPoint.b_quilt && m_singleChart) {
@@ -7203,10 +7201,9 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   if (event.ButtonUp() && HasCapture()) ReleaseMouse();
 #endif
 
-  if (g_pi_manager)
-    if (g_pi_manager->SendMouseEventToPlugins(event))
-      return (true);  // PlugIn did something, and does not want the canvas to
-                      // do anything else
+  if (SendMouseEventToPlugins(event))
+    return (true);  // PlugIn did something, and does not want the canvas to
+                    // do anything else
 
   // Capture LeftUp's and time them, unless it already came from the timer.
 
@@ -7279,7 +7276,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
     //  Occasionally, MSW will produce nonsense events on right click....
     //  This results in an error in cursor geo position, so we skip this case
     if ((x >= 0) && (y >= 0))
-      g_pi_manager->SendCursorLatLonToAllPlugIns(m_cursor_lat, m_cursor_lon);
+      SendCursorLatLonToAllPlugIns(m_cursor_lat, m_cursor_lon);
   }
 
   if (!g_btouch) {
@@ -10898,8 +10895,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
     w.Write(v, out);
 
     if (!g_lastS52PLIBPluginMessage.IsSameAs(out)) {
-      g_pi_manager->SendMessageToAllPlugins(wxString(_T("OpenCPN Config")),
-                                            out);
+      SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
       g_lastS52PLIBPluginMessage = out;
     }
   }

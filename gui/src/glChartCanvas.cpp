@@ -58,6 +58,7 @@
 #include <wx/window.h>
 
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/track.h"
@@ -1347,7 +1348,7 @@ void glChartCanvas::SendJSONConfigMessage() {
     v[_T("useVBO")] = g_b_EnableVBO;
     v[_T("TextureRectangleFormat")] = g_texture_rectangle_format;
     wxString msg_id(_T("OCPN_OPENGL_CONFIG"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   }
 }
 void glChartCanvas::SetupCompression() {
