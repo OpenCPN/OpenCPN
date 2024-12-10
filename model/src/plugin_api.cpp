@@ -183,8 +183,17 @@ CommDriverResult WriteCommDriver(
     auto msg_out = std::make_shared<Nmea0183Msg>(id, msg, address);
     bool xmit_ok = d0183->SendMessage(msg_out, address);
     return xmit_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
-  } else
+  } else if (protocol == "internal") {
+    std::string msg(payload->begin(), payload->end());
+    size_t space_pos = msg.find(" ");
+    if (space_pos == std::string::npos) return RESULT_COMM_INVALID_PARMS;
+    auto plugin_msg = std::make_shared<PluginMsg>(msg.substr(0, space_pos),
+                                                  msg.substr(space_pos + 1));
+    NavMsgBus::GetInstance().Notify(static_pointer_cast<NavMsg>(plugin_msg));
+    return RESULT_COMM_NO_ERROR;
+  } else {
     return RESULT_COMM_INVALID_PARMS;
+  }
 }
 
 CommDriverResult WriteCommDriverN2K(

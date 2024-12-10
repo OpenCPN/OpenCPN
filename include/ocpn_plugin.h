@@ -1827,11 +1827,16 @@ extern DECL_EXP const std::unordered_map<std::string, std::string>
 GetAttributes(DriverHandle handle);
 
 /* Writing to a specific driver  */
-
-/* Comm drivers on bus protocols other than NMEA2000 may write directly to the
+/**
+ * Send a non-NMEA2000 message.
  * port * using  a simple call.  The physical write operation will be queued,
  * and executed in order as bandwidth allows.
- * Return value is number of bytes queued for transmission.
+ * @param handle Obtained from GetActiveDrivers()
+ * @param payload Message data, for eaxample a complete Nmea0183 message.
+ *        From 1.19: if the handle "protocol" attribute is "internal" it is
+ *        parsed as <id><space><message> where the id is used when listening/
+ *        subscribing to message.
+ * @return value number of bytes queued for transmission.
  */
 extern DECL_EXP CommDriverResult WriteCommDriver(
     DriverHandle handle, const std::shared_ptr<std::vector<uint8_t>> &payload);
