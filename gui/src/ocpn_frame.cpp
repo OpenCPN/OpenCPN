@@ -54,6 +54,7 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 #include <wx/display.h>
+#include <wx/jsonreader.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
