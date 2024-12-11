@@ -2368,6 +2368,14 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_MENU_TOOL_NMEA_DBG_LOG:
+      if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
+        auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
+        NMEALogWindow::GetInstance().Create(top_window, 35);
+      }
+      wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+      break;
+
     case ID_MENU_MARK_BOAT: {
       DropMarker(true);
       break;
@@ -3580,6 +3588,8 @@ void MyFrame::RegisterGlobalMenuItems() {
   m_pMenuBar->Append(ais_menu, _("&AIS"));
 
   wxMenu *tools_menu = new wxMenu();
+  tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
+                     _menuText(_("NMEA Debugger"), "Alt-C"));
 #ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), _T("M")));
