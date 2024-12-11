@@ -99,6 +99,7 @@
 #include "color_handler.h"
 #include "compass.h"
 #include "concanv.h"
+#include "connections_dlg.h"
 #include "ConfigMgr.h"
 #include "displays.h"
 #include "dychart.h"
@@ -647,7 +648,8 @@ static void OnDriverMsg(const ObservedEvt &ev) {
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
-      comm_overflow_dlg(this) {
+      comm_overflow_dlg(this),
+      m_connections_dlg(nullptr) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
@@ -2392,7 +2394,9 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     }
 
     case ID_MENU_TOOL_CONNECTIONS:
-      std::cout << "Starting frame\n";
+
+      if (!m_connections_dlg) m_connections_dlg = new ConnectionsDlg(this);
+      m_connections_dlg->Show();
       break;
 
     case ID_MENU_MARK_BOAT: {
