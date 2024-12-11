@@ -478,6 +478,50 @@ public:
   };
 };
 
+class NavMsgApp : public BasicTest {
+public:
+  class Source {
+  public:
+    Source() {
+      auto msg = std::make_unique<PluginMsg>("foo", "bar");
+      NavMsgBus::GetInstance().Notify(std::move(msg));
+      msg = std::make_unique<PluginMsg>("foo2", "bar2");
+      NavMsgBus::GetInstance().Notify(std::move(msg));
+    }
+  };
+
+  class Sink : public wxEvtHandler {
+  public:
+    Sink() {
+      auto& t = NavMsgBus::GetInstance();
+      auto msg = PluginMsg("foo", "");
+      listener.Listen(msg, this, EVT_FOO);
+
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto plugin_msg = std::static_pointer_cast<const PluginMsg>(ptr);
+      });
+    }
+    ObservableListener listener;
+  };
+
+  NavMsgApp() : BasicTest() {}
+
+  void Work() {
+    s_result = "";
+    s_bus = NavAddr::Bus::Undef;
+    Sink sink;
+    Source source;
+    ProcessPendingEvents();
+    auto& bus = NavMsgBus::GetInstance();
+    EXPECT_TRUE(bus.GetActiveMessages().size() == 2);
+    auto& msg_set = bus.GetActiveMessages();
+    EXPECT_TRUE(msg_set.find("internal::foo") != msg_set.end());
+    EXPECT_TRUE(msg_set.find("internal::foo2") != msg_set.end());
+    EXPECT_TRUE(msg_set.find("internal::foo3") == msg_set.end());
+  }
+};
+
 using namespace std;
 
 #ifdef _MSC_VER
@@ -987,6 +1031,8 @@ TEST(AIS, Decoding) { AisDecodeApp app; }
 TEST(AIS, AISVDO) { AisVdoApp app; }
 
 TEST(AIS, AISVDM) { AisVdmApp app; }
+
+TEST(Navmsg, ActiveMessages) { NavMsgApp app; }
 
 #if API_VERSION_MINOR > 18
 #if 0
