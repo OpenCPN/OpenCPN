@@ -38,6 +38,7 @@
 #include "model/comm_appmsg_bus.h"
 #include "bbox.h"
 #include "comm_overflow_dlg.h"
+#include "connections_dlg.h"
 #include "color_handler.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
@@ -402,6 +403,7 @@ private:
   ObsListener m_evt_drv_msg_listener;
 
   CommOverflowDlg comm_overflow_dlg;
+  ConnectionsDlg* m_connections_dlg;
 
   DECLARE_EVENT_TABLE()
 };
