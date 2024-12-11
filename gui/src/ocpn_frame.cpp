@@ -2366,6 +2366,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_MENU_TOOL_CONNECTIONS:
+      std::cout << "Starting frame\n";
+      break;
+
     case ID_MENU_MARK_BOAT: {
       DropMarker(true);
       break;
@@ -3578,6 +3582,8 @@ void MyFrame::RegisterGlobalMenuItems() {
   m_pMenuBar->Append(ais_menu, _("&AIS"));
 
   wxMenu *tools_menu = new wxMenu();
+  tools_menu->Append(ID_MENU_TOOL_CONNECTIONS,
+                     _menuText(_("Connections"), "Alt-C"));
 #ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), _T("M")));
