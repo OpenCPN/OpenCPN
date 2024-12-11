@@ -29,10 +29,12 @@
 #define _NAVMSG_BUS_H__
 
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 
 #include "model/comm_driver.h"
+#include "observable_evtvar.h"
 
 /** The raw message layer, a singleton. */
 class NavMsgBus : public DriverListener {
@@ -53,8 +55,17 @@ public:
   /* DriverListener implementation: */
   void Notify(const AbstractCommDriver& driver);
 
+  /** Return list of message types sent or received. */
+  const std::set<std::string>& GetActiveMessages() { return m_active_messages; }
+
+  /** Notified without data when new message type(s) are detected. */
+  EventVar NewMessageEvent;
+
 private:
+  std::mutex m_mutex;
   NavMsgBus() = default;
+
+  std::set<std::string> m_active_messages;
 };
 
 #endif  // NAVMSG_BUS_H
