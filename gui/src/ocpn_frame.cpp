@@ -102,6 +102,7 @@
 #include "concanv.h"
 #include "connections_dlg.h"
 #include "ConfigMgr.h"
+#include "data_monitor.h"
 #include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -643,7 +644,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
       comm_overflow_dlg(this),
-      m_connections_dlg(nullptr) {
+      m_connections_dlg(nullptr),
+      m_data_monitor(nullptr) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
@@ -2394,6 +2396,11 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
         NMEALogWindow::GetInstance().Create(top_window, 35);
       }
       wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+
+    case ID_MENU_TOOL_IO_MONITOR:
+      if (!m_data_monitor)
+        m_data_monitor = new DataMonitor(this, [&] { m_data_monitor = 0; });
+      m_data_monitor->Show();
       break;
 
     case ID_MENU_MARK_BOAT: {
@@ -3664,6 +3671,8 @@ void MyFrame::RegisterGlobalMenuItems() {
   wxMenu *tools_menu = new wxMenu();
   tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
                      _menuText(_("NMEA Debugger"), "Alt-C"));
+  tools_menu->Append(ID_MENU_TOOL_IO_MONITOR,
+                     _menuText(_("Data Monitor"), "Alt-C"));
 #ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), _T("M")));
