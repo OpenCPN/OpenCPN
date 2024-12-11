@@ -62,6 +62,7 @@
 #include <wx/hashset.h>
 #include <wx/hashmap.h>
 #include <wx/jsonval.h>
+#include <wx/jsonreader.h>
 #include <wx/uri.h>
 #include <wx/zipstrm.h>
 #include <wx/zstream.h>
