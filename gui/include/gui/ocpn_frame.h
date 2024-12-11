@@ -40,6 +40,7 @@
 #include "comm_overflow_dlg.h"
 #include "connections_dlg.h"
 #include "color_handler.h"
+#include "data_monitor.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
 #include "observable_evtvar.h"
@@ -424,6 +425,7 @@ private:
   wxArrayString pathArray;
   double restoreScale[4];
   unsigned int last_canvasConfig;
+  DataMonitor* m_data_monitor;
 
   DECLARE_EVENT_TABLE()
 };
