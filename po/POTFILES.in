@@ -411,9 +411,5 @@ gui/src/update_mgr.cpp
 gui/src/viewport.cpp
 gui/src/waypointman_gui.cpp
 gui/src/mbtiles/mbtiles.cpp
-gui/src/mbtiles/TileCache.hpp
-gui/src/mbtiles/TileDescriptor.hpp
-gui/src/mbtiles/TileQueue.hpp
-gui/src/mbtiles/WorkerThread.hpp
 gui/src/initwiz/wiz_ui.cpp
 gui/src/initwiz/wiz_ui_proto.cpp
