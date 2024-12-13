@@ -308,7 +308,7 @@ else ()
 endif ()
 message(STATUS "*** Host Build Architecture is ${ARCH}")
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 message(STATUS "Setting C++17 standard via cmake standard mechanism")
 set(CMAKE_CXX_VISIBILITY_PRESET=hidden)
 if (NOT MSVC)

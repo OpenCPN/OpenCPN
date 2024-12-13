@@ -132,10 +132,11 @@ public:
   bool ProjectionEnabled();
   void SetCourse(const double course) {
     m_tCourse->SetValue(!wxIsNaN(course) ? wxString::FromDouble(course)
-                                         : "0.0");
+                                         : wxString("0.0"));
   };
   void SetSpeed(const double speed) {
-    m_tSpeed->SetValue(!wxIsNaN(speed) ? wxString::FromDouble(speed) : "6.0");
+    m_tSpeed->SetValue(!wxIsNaN(speed) ? wxString::FromDouble(speed)
+                                       : wxString("6.0"));
   };
   void EnableProjection(bool enabled) {
     m_cbProjectPosition->SetValue(enabled);

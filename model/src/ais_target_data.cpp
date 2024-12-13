@@ -1432,200 +1432,200 @@ wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
 
   switch (nMID) {
     case 201:
-      return b_CntryLongStr ? _("Albania") : _T("AL");
+      return b_CntryLongStr ? _("Albania") : wxString("AL");
     case 202:
-      return b_CntryLongStr ? _("Andorra") : _T("AD");
+      return b_CntryLongStr ? _("Andorra") : wxString("AD");
     case 203:
-      return b_CntryLongStr ? _("Austria") : _T("AT");
+      return b_CntryLongStr ? _("Austria") : wxString("AT");
     case 204:
-      return b_CntryLongStr ? _("Azores") : _T("AZ");
+      return b_CntryLongStr ? _("Azores") : wxString("AZ");
     case 205:
-      return b_CntryLongStr ? _("Belgium") : _T("BE");
+      return b_CntryLongStr ? _("Belgium") : wxString("BE");
     case 206:
-      return b_CntryLongStr ? _("Belarus") : _T("BY");
+      return b_CntryLongStr ? _("Belarus") : wxString("BY");
     case 207:
-      return b_CntryLongStr ? _("Bulgaria") : _T("BG");
+      return b_CntryLongStr ? _("Bulgaria") : wxString("BG");
     case 208:
-      return b_CntryLongStr ? _("Vatican City State") : _T("VA");
+      return b_CntryLongStr ? _("Vatican City State") : wxString("VA");
     case 209:
     case 210:
-      return b_CntryLongStr ? _("Cyprus") : _T("CY");
+      return b_CntryLongStr ? _("Cyprus") : wxString("CY");
     case 211:
-      return b_CntryLongStr ? _("Germany") : _T("DE");
+      return b_CntryLongStr ? _("Germany") : wxString("DE");
     case 212:
-      return b_CntryLongStr ? _("Cyprus") : _T("CY");
+      return b_CntryLongStr ? _("Cyprus") : wxString("CY");
     case 213:
-      return b_CntryLongStr ? _("Georgia") : _T("GE");
+      return b_CntryLongStr ? _("Georgia") : wxString("GE");
     case 214:
-      return b_CntryLongStr ? _("Moldova") : _T("MD");
+      return b_CntryLongStr ? _("Moldova") : wxString("MD");
     case 215:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : wxString("MT");
     case 216:
-      return b_CntryLongStr ? _("Armenia") : _T("AM");
+      return b_CntryLongStr ? _("Armenia") : wxString("AM");
     case 218:
-      return b_CntryLongStr ? _("Germany") : _T("DE");
+      return b_CntryLongStr ? _("Germany") : wxString("DE");
     case 219:
     case 220:
-      return b_CntryLongStr ? _("Denmark") : _T("DK");
+      return b_CntryLongStr ? _("Denmark") : wxString("DK");
     case 224:
-      return b_CntryLongStr ? _("Spain") : _T("ES");
+      return b_CntryLongStr ? _("Spain") : wxString("ES");
     case 225:
-      return b_CntryLongStr ? _("Spain") : _T("ES");
+      return b_CntryLongStr ? _("Spain") : wxString("ES");
     case 226:
     case 227:
     case 228:
-      return b_CntryLongStr ? _("France") : _T("FR");
+      return b_CntryLongStr ? _("France") : wxString("FR");
     case 229:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : wxString("MT");
     case 230:
-      return b_CntryLongStr ? _("Finland") : _T("FI");
+      return b_CntryLongStr ? _("Finland") : wxString("FI");
     case 231:
-      return b_CntryLongStr ? _("Faroe Islands") : _T("FO");
+      return b_CntryLongStr ? _("Faroe Islands") : wxString("FO");
     case 232:
     case 233:
     case 234:
     case 235:
-      return b_CntryLongStr ? _("Great Britain") : _T("GB");
+      return b_CntryLongStr ? _("Great Britain") : wxString("GB");
     case 236:
-      return b_CntryLongStr ? _("Gibraltar") : _T("GI");
+      return b_CntryLongStr ? _("Gibraltar") : wxString("GI");
     case 237:
-      return b_CntryLongStr ? _("Greece") : _T("GR");
+      return b_CntryLongStr ? _("Greece") : wxString("GR");
     case 238:
-      return b_CntryLongStr ? _("Croatia") : _T("HR");
+      return b_CntryLongStr ? _("Croatia") : wxString("HR");
     case 239:
     case 240:
     case 241:
-      return b_CntryLongStr ? _("Greece") : _T("GR");
+      return b_CntryLongStr ? _("Greece") : wxString("GR");
     case 242:
-      return b_CntryLongStr ? _("Morocco") : _T("MA");
+      return b_CntryLongStr ? _("Morocco") : wxString("MA");
     case 243:
-      return b_CntryLongStr ? _("Hungary") : _T("HU");
+      return b_CntryLongStr ? _("Hungary") : wxString("HU");
     case 244:
     case 245:
     case 246:
-      return b_CntryLongStr ? _("Netherlands") : _T("NL");
+      return b_CntryLongStr ? _("Netherlands") : wxString("NL");
     case 247:
-      return b_CntryLongStr ? _("Italy") : _T("IT");
+      return b_CntryLongStr ? _("Italy") : wxString("IT");
     case 248:
     case 249:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : wxString("MT");
     case 250:
-      return b_CntryLongStr ? _("Ireland") : _T("IE");
+      return b_CntryLongStr ? _("Ireland") : wxString("IE");
     case 251:
-      return b_CntryLongStr ? _("Iceland") : _T("IS");
+      return b_CntryLongStr ? _("Iceland") : wxString("IS");
     case 252:
-      return b_CntryLongStr ? _("Liechtenstein") : _T("LI");
+      return b_CntryLongStr ? _("Liechtenstein") : wxString("LI");
     case 253:
-      return b_CntryLongStr ? _("Luxembourg") : _T("LU");
+      return b_CntryLongStr ? _("Luxembourg") : wxString("LU");
     case 254:
-      return b_CntryLongStr ? _("Monaco") : _T("MC");
+      return b_CntryLongStr ? _("Monaco") : wxString("MC");
     case 255:
-      return b_CntryLongStr ? _("Madeira") : _T("PT");
+      return b_CntryLongStr ? _("Madeira") : wxString("PT");
     case 256:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : wxString("MT");
     case 257:
     case 258:
     case 259:
-      return b_CntryLongStr ? _("Norway") : _T("NO");
+      return b_CntryLongStr ? _("Norway") : wxString("NO");
     case 261:
-      return b_CntryLongStr ? _("Poland") : _T("PL");
+      return b_CntryLongStr ? _("Poland") : wxString("PL");
     case 262:
-      return b_CntryLongStr ? _("Montenegro") : _T("ME");
+      return b_CntryLongStr ? _("Montenegro") : wxString("ME");
     case 263:
-      return b_CntryLongStr ? _("Portugal") : _T("PT");
+      return b_CntryLongStr ? _("Portugal") : wxString("PT");
     case 264:
-      return b_CntryLongStr ? _("Romania") : _T("RO");
+      return b_CntryLongStr ? _("Romania") : wxString("RO");
     case 265:
     case 266:
-      return b_CntryLongStr ? _("Sweden") : _T("SE");
+      return b_CntryLongStr ? _("Sweden") : wxString("SE");
     case 267:
-      return b_CntryLongStr ? _("Slovak Republic") : _T("SK");
+      return b_CntryLongStr ? _("Slovak Republic") : wxString("SK");
     case 268:
-      return b_CntryLongStr ? _("San Marino") : _T("SM");
+      return b_CntryLongStr ? _("San Marino") : wxString("SM");
     case 269:
-      return b_CntryLongStr ? _("Switzerland") : _T("CH");
+      return b_CntryLongStr ? _("Switzerland") : wxString("CH");
     case 270:
-      return b_CntryLongStr ? _("Czech Republic") : _T("CZ");
+      return b_CntryLongStr ? _("Czech Republic") : wxString("CZ");
     case 271:
-      return b_CntryLongStr ? _("Turkey") : _T("TR");
+      return b_CntryLongStr ? _("Turkey") : wxString("TR");
     case 272:
-      return b_CntryLongStr ? _("Ukraine") : _T("UA");
+      return b_CntryLongStr ? _("Ukraine") : wxString("UA");
     case 273:
-      return b_CntryLongStr ? _("Russian") : _T("RU");
+      return b_CntryLongStr ? _("Russian") : wxString("RU");
     case 274:
-      return b_CntryLongStr ? _("Macedonia") : _T("MK");
+      return b_CntryLongStr ? _("Macedonia") : wxString("MK");
     case 275:
-      return b_CntryLongStr ? _("Latvia") : _T("LV");
+      return b_CntryLongStr ? _("Latvia") : wxString("LV");
     case 276:
-      return b_CntryLongStr ? _("Estonia") : _T("EE");
+      return b_CntryLongStr ? _("Estonia") : wxString("EE");
     case 277:
-      return b_CntryLongStr ? _("Lithuania") : _T("LT");
+      return b_CntryLongStr ? _("Lithuania") : wxString("LT");
     case 278:
-      return b_CntryLongStr ? _("Slovenia") : _T("SI");
+      return b_CntryLongStr ? _("Slovenia") : wxString("SI");
     case 279:
-      return b_CntryLongStr ? _("Serbia") : _T("RS");
+      return b_CntryLongStr ? _("Serbia") : wxString("RS");
     case 301:
-      return b_CntryLongStr ? _("Anguilla") : _T("AI");
+      return b_CntryLongStr ? _("Anguilla") : wxString("AI");
     case 303:
-      return b_CntryLongStr ? _("Alaska") : _T("AK");
+      return b_CntryLongStr ? _("Alaska") : wxString("AK");
     case 304:
     case 305:
-      return b_CntryLongStr ? _("Antigua and Barbuda") : _T("AG");
+      return b_CntryLongStr ? _("Antigua and Barbuda") : wxString("AG");
     case 306:
-      return b_CntryLongStr ? _("Antilles") : _T("AN");
+      return b_CntryLongStr ? _("Antilles") : wxString("AN");
     case 307:
-      return b_CntryLongStr ? _("Aruba") : _T("AW");
+      return b_CntryLongStr ? _("Aruba") : wxString("AW");
     case 308:
     case 309:
-      return b_CntryLongStr ? _("Bahamas") : _T("BS");
+      return b_CntryLongStr ? _("Bahamas") : wxString("BS");
     case 310:
-      return b_CntryLongStr ? _("Bermuda") : _T("BM");
+      return b_CntryLongStr ? _("Bermuda") : wxString("BM");
     case 311:
-      return b_CntryLongStr ? _("Bahamas") : _T("BS");
+      return b_CntryLongStr ? _("Bahamas") : wxString("BS");
     case 312:
-      return b_CntryLongStr ? _("Belize") : _T("BZ");
+      return b_CntryLongStr ? _("Belize") : wxString("BZ");
     case 314:
-      return b_CntryLongStr ? _("Barbados") : _T("BB");
+      return b_CntryLongStr ? _("Barbados") : wxString("BB");
     case 316:
-      return b_CntryLongStr ? _("Canada") : _T("CA");
+      return b_CntryLongStr ? _("Canada") : wxString("CA");
     case 319:
-      return b_CntryLongStr ? _("Cayman Islands") : _T("KY");
+      return b_CntryLongStr ? _("Cayman Islands") : wxString("KY");
     case 321:
-      return b_CntryLongStr ? _("Costa Rica") : _T("CR");
+      return b_CntryLongStr ? _("Costa Rica") : wxString("CR");
     case 323:
-      return b_CntryLongStr ? _("Cuba") : _T("CU");
+      return b_CntryLongStr ? _("Cuba") : wxString("CU");
     case 325:
-      return b_CntryLongStr ? _("Dominica") : _T("DM");
+      return b_CntryLongStr ? _("Dominica") : wxString("DM");
     case 327:
-      return b_CntryLongStr ? _("Dominican Republic") : _T("DM");
+      return b_CntryLongStr ? _("Dominican Republic") : wxString("DM");
     case 329:
-      return b_CntryLongStr ? _("Guadeloupe") : _T("GP");
+      return b_CntryLongStr ? _("Guadeloupe") : wxString("GP");
     case 330:
-      return b_CntryLongStr ? _("Grenada") : _T("GD");
+      return b_CntryLongStr ? _("Grenada") : wxString("GD");
     case 331:
-      return b_CntryLongStr ? _("Greenland") : _T("GL");
+      return b_CntryLongStr ? _("Greenland") : wxString("GL");
     case 332:
-      return b_CntryLongStr ? _("Guatemala") : _T("GT");
+      return b_CntryLongStr ? _("Guatemala") : wxString("GT");
     case 334:
-      return b_CntryLongStr ? _("Honduras") : _T("HN");
+      return b_CntryLongStr ? _("Honduras") : wxString("HN");
     case 336:
-      return b_CntryLongStr ? _("Haiti") : _T("HT");
+      return b_CntryLongStr ? _("Haiti") : wxString("HT");
     case 338:
-      return b_CntryLongStr ? _("United States of America") : _T("US");
+      return b_CntryLongStr ? _("United States of America") : wxString("US");
     case 339:
-      return b_CntryLongStr ? _("Jamaica") : _T("JM");
+      return b_CntryLongStr ? _("Jamaica") : wxString("JM");
     case 341:
-      return b_CntryLongStr ? _("Saint Kitts and Nevis") : _T("KN");
+      return b_CntryLongStr ? _("Saint Kitts and Nevis") : wxString("KN");
     case 343:
-      return b_CntryLongStr ? _("Saint Lucia") : _T("LC");
+      return b_CntryLongStr ? _("Saint Lucia") : wxString("LC");
     case 345:
-      return b_CntryLongStr ? _("Mexico") : _T("MX");
+      return b_CntryLongStr ? _("Mexico") : wxString("MX");
     case 347:
-      return b_CntryLongStr ? _("Martinique") : _T("MQ");
+      return b_CntryLongStr ? _("Martinique") : wxString("MQ");
     case 348:
-      return b_CntryLongStr ? _("Montserrat") : _T("MS");
+      return b_CntryLongStr ? _("Montserrat") : wxString("MS");
     case 350:
-      return b_CntryLongStr ? _("Nicaragua") : _T("NI");
+      return b_CntryLongStr ? _("Nicaragua") : wxString("NI");
     case 351:
     case 352:
     case 353:
@@ -1633,345 +1633,347 @@ wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
     case 355:
     case 356:
     case 357:
-      return b_CntryLongStr ? _("Panama") : _T("PA");
+      return b_CntryLongStr ? _("Panama") : wxString("PA");
     case 358:
-      return b_CntryLongStr ? _("Puerto Rico") : _T("PR");
+      return b_CntryLongStr ? _("Puerto Rico") : wxString("PR");
     case 359:
-      return b_CntryLongStr ? _("El Salvador") : _T("SV");
+      return b_CntryLongStr ? _("El Salvador") : wxString("SV");
     case 361:
-      return b_CntryLongStr ? _("Saint Pierre and Miquelon") : _T("PM");
+      return b_CntryLongStr ? _("Saint Pierre and Miquelon") : wxString("PM");
     case 362:
-      return b_CntryLongStr ? _("Trinidad and Tobago") : _T("TT");
+      return b_CntryLongStr ? _("Trinidad and Tobago") : wxString("TT");
     case 364:
-      return b_CntryLongStr ? _("Turks and Caicos Islands") : _T("TC");
+      return b_CntryLongStr ? _("Turks and Caicos Islands") : wxString("TC");
     case 366:
     case 367:
     case 368:
     case 369:
-      return b_CntryLongStr ? _("United States of America") : _T("US");
+      return b_CntryLongStr ? _("United States of America") : wxString("US");
     case 370:
     case 371:
     case 372:
     case 373:
     case 374:
-      return b_CntryLongStr ? _("Panama") : _T("PA");
+      return b_CntryLongStr ? _("Panama") : wxString("PA");
     case 375:
     case 376:
     case 377:
-      return b_CntryLongStr ? _("Saint Vincent and the Grenadines") : _T("VC");
+      return b_CntryLongStr ? _("Saint Vincent and the Grenadines")
+                            : wxString("VC");
     case 378:
-      return b_CntryLongStr ? _("British Virgin Islands") : _T("VG");
+      return b_CntryLongStr ? _("British Virgin Islands") : wxString("VG");
     case 379:
-      return b_CntryLongStr ? _("United States Virgin Islands") : _T("AE");
+      return b_CntryLongStr ? _("United States Virgin Islands")
+                            : wxString("AE");
     case 401:
-      return b_CntryLongStr ? _("Afghanistan") : _T("AF");
+      return b_CntryLongStr ? _("Afghanistan") : wxString("AF");
     case 403:
-      return b_CntryLongStr ? _("Saudi Arabia") : _T("SA");
+      return b_CntryLongStr ? _("Saudi Arabia") : wxString("SA");
     case 405:
-      return b_CntryLongStr ? _("Bangladesh") : _T("BD");
+      return b_CntryLongStr ? _("Bangladesh") : wxString("BD");
     case 408:
-      return b_CntryLongStr ? _("Bahrain") : _T("BH");
+      return b_CntryLongStr ? _("Bahrain") : wxString("BH");
     case 410:
-      return b_CntryLongStr ? _("Bhutan") : _T("BT");
+      return b_CntryLongStr ? _("Bhutan") : wxString("BT");
     case 412:
     case 413:
     case 414:
-      return b_CntryLongStr ? _("China") : _T("CN");
+      return b_CntryLongStr ? _("China") : wxString("CN");
     case 416:
-      return b_CntryLongStr ? _("Taiwan") : _T("TW");
+      return b_CntryLongStr ? _("Taiwan") : wxString("TW");
     case 417:
-      return b_CntryLongStr ? _("Sri Lanka") : _T("LK");
+      return b_CntryLongStr ? _("Sri Lanka") : wxString("LK");
     case 419:
-      return b_CntryLongStr ? _("India") : _T("IN");
+      return b_CntryLongStr ? _("India") : wxString("IN");
     case 422:
-      return b_CntryLongStr ? _("Iran") : _T("IR");
+      return b_CntryLongStr ? _("Iran") : wxString("IR");
     case 423:
-      return b_CntryLongStr ? _("Azerbaijani Republic") : _T("AZ");
+      return b_CntryLongStr ? _("Azerbaijani Republic") : wxString("AZ");
     case 425:
-      return b_CntryLongStr ? _("Iraq") : _T("IQ");
+      return b_CntryLongStr ? _("Iraq") : wxString("IQ");
     case 428:
-      return b_CntryLongStr ? _("Israel") : _T("IL");
+      return b_CntryLongStr ? _("Israel") : wxString("IL");
     case 431:
-      return b_CntryLongStr ? _("Japan") : _T("JP");
+      return b_CntryLongStr ? _("Japan") : wxString("JP");
     case 432:
-      return b_CntryLongStr ? _("Japan") : _T("JP");
+      return b_CntryLongStr ? _("Japan") : wxString("JP");
     case 434:
-      return b_CntryLongStr ? _("Turkmenistan") : _T("TM");
+      return b_CntryLongStr ? _("Turkmenistan") : wxString("TM");
     case 436:
-      return b_CntryLongStr ? _("Kazakhstan") : _T("KZ");
+      return b_CntryLongStr ? _("Kazakhstan") : wxString("KZ");
     case 437:
-      return b_CntryLongStr ? _("Uzbekistan") : _T("UZ");
+      return b_CntryLongStr ? _("Uzbekistan") : wxString("UZ");
     case 438:
-      return b_CntryLongStr ? _("Jordan") : _T("JO");
+      return b_CntryLongStr ? _("Jordan") : wxString("JO");
     case 440:
     case 441:
-      return b_CntryLongStr ? _("Korea") : _T("KR");
+      return b_CntryLongStr ? _("Korea") : wxString("KR");
     case 443:
-      return b_CntryLongStr ? _("Palestine") : _T("PS");
+      return b_CntryLongStr ? _("Palestine") : wxString("PS");
     case 445:
-      return b_CntryLongStr ? _("People's Rep. of Korea") : _T("KP");
+      return b_CntryLongStr ? _("People's Rep. of Korea") : wxString("KP");
     case 447:
-      return b_CntryLongStr ? _("Kuwait") : _T("KW");
+      return b_CntryLongStr ? _("Kuwait") : wxString("KW");
     case 450:
-      return b_CntryLongStr ? _("Lebanon") : _T("LB");
+      return b_CntryLongStr ? _("Lebanon") : wxString("LB");
     case 451:
-      return b_CntryLongStr ? _("Kyrgyz Republic") : _T("KG");
+      return b_CntryLongStr ? _("Kyrgyz Republic") : wxString("KG");
     case 453:
-      return b_CntryLongStr ? _("Macao") : _T("MO");
+      return b_CntryLongStr ? _("Macao") : wxString("MO");
     case 455:
-      return b_CntryLongStr ? _("Maldives") : _T("MV");
+      return b_CntryLongStr ? _("Maldives") : wxString("MV");
     case 457:
-      return b_CntryLongStr ? _("Mongolia") : _T("MN");
+      return b_CntryLongStr ? _("Mongolia") : wxString("MN");
     case 459:
-      return b_CntryLongStr ? _("Nepal") : _T("NP");
+      return b_CntryLongStr ? _("Nepal") : wxString("NP");
     case 461:
-      return b_CntryLongStr ? _("Oman") : _T("OM");
+      return b_CntryLongStr ? _("Oman") : wxString("OM");
     case 463:
-      return b_CntryLongStr ? _("Pakistan") : _T("PK");
+      return b_CntryLongStr ? _("Pakistan") : wxString("PK");
     case 466:
-      return b_CntryLongStr ? _("Qatar") : _T("QA");
+      return b_CntryLongStr ? _("Qatar") : wxString("QA");
     case 468:
-      return b_CntryLongStr ? _("Syrian Arab Republic") : _T("SY");
+      return b_CntryLongStr ? _("Syrian Arab Republic") : wxString("SY");
     case 470:
     case 471:
-      return b_CntryLongStr ? _("United Arab Emirates") : _T("AE");
+      return b_CntryLongStr ? _("United Arab Emirates") : wxString("AE");
     case 472:
-      return b_CntryLongStr ? _("Tajikistan") : _T("TJ");
+      return b_CntryLongStr ? _("Tajikistan") : wxString("TJ");
     case 473:
     case 475:
-      return b_CntryLongStr ? _("Yemen") : _T("YE");
+      return b_CntryLongStr ? _("Yemen") : wxString("YE");
     case 477:
-      return b_CntryLongStr ? _("Hong Kong") : _T("HK");
+      return b_CntryLongStr ? _("Hong Kong") : wxString("HK");
     case 478:
-      return b_CntryLongStr ? _("Bosnia and Herzegovina") : _T("BA");
+      return b_CntryLongStr ? _("Bosnia and Herzegovina") : wxString("BA");
     case 501:
-      return b_CntryLongStr ? _("Adelie Land") : _T("TF");
+      return b_CntryLongStr ? _("Adelie Land") : wxString("TF");
     case 503:
-      return b_CntryLongStr ? _("Australia") : _T("AU");
+      return b_CntryLongStr ? _("Australia") : wxString("AU");
     case 506:
-      return b_CntryLongStr ? _("Myanmar") : _T("MM");
+      return b_CntryLongStr ? _("Myanmar") : wxString("MM");
     case 508:
-      return b_CntryLongStr ? _("Brunei Darussalam") : _T("BN");
+      return b_CntryLongStr ? _("Brunei Darussalam") : wxString("BN");
     case 510:
-      return b_CntryLongStr ? _("Micronesia") : _T("FM");
+      return b_CntryLongStr ? _("Micronesia") : wxString("FM");
     case 511:
-      return b_CntryLongStr ? _("Palau") : _T("PW");
+      return b_CntryLongStr ? _("Palau") : wxString("PW");
     case 512:
-      return b_CntryLongStr ? _("New Zealand") : _T("NZ");
+      return b_CntryLongStr ? _("New Zealand") : wxString("NZ");
     case 514:
     case 515:
-      return b_CntryLongStr ? _("Cambodia") : _T("KH");
+      return b_CntryLongStr ? _("Cambodia") : wxString("KH");
     case 516:
-      return b_CntryLongStr ? _("Christmas Island") : _T("CX");
+      return b_CntryLongStr ? _("Christmas Island") : wxString("CX");
     case 518:
-      return b_CntryLongStr ? _("Cook Islands") : _T("CK");
+      return b_CntryLongStr ? _("Cook Islands") : wxString("CK");
     case 520:
-      return b_CntryLongStr ? _("Fiji") : _T("FJ");
+      return b_CntryLongStr ? _("Fiji") : wxString("FJ");
     case 523:
-      return b_CntryLongStr ? _("Cocos (Keeling) Islands") : _T("CC");
+      return b_CntryLongStr ? _("Cocos (Keeling) Islands") : wxString("CC");
     case 525:
-      return b_CntryLongStr ? _("Indonesia") : _T("ID");
+      return b_CntryLongStr ? _("Indonesia") : wxString("ID");
     case 529:
-      return b_CntryLongStr ? _("Kiribati") : _T("KI");
+      return b_CntryLongStr ? _("Kiribati") : wxString("KI");
     case 531:
-      return b_CntryLongStr ? _("Lao People's Dem. Rep.") : _T("LA");
+      return b_CntryLongStr ? _("Lao People's Dem. Rep.") : wxString("LA");
     case 533:
-      return b_CntryLongStr ? _("Malaysia") : _T("MY");
+      return b_CntryLongStr ? _("Malaysia") : wxString("MY");
     case 536:
-      return b_CntryLongStr ? _("Northern Mariana Islands") : _T("MP");
+      return b_CntryLongStr ? _("Northern Mariana Islands") : wxString("MP");
     case 538:
-      return b_CntryLongStr ? _("Marshall Islands") : _T("MH");
+      return b_CntryLongStr ? _("Marshall Islands") : wxString("MH");
     case 540:
-      return b_CntryLongStr ? _("New Caledonia") : _T("NC");
+      return b_CntryLongStr ? _("New Caledonia") : wxString("NC");
     case 542:
-      return b_CntryLongStr ? _("Niue") : _T("NU");
+      return b_CntryLongStr ? _("Niue") : wxString("NU");
     case 544:
-      return b_CntryLongStr ? _("Nauru") : _T("NR");
+      return b_CntryLongStr ? _("Nauru") : wxString("NR");
     case 546:
-      return b_CntryLongStr ? _("French Polynesia") : _T("PF");
+      return b_CntryLongStr ? _("French Polynesia") : wxString("PF");
     case 548:
-      return b_CntryLongStr ? _("Philippines") : _T("PH");
+      return b_CntryLongStr ? _("Philippines") : wxString("PH");
     case 550:
-      return b_CntryLongStr ? _("East Timor") : _T("TL");
+      return b_CntryLongStr ? _("East Timor") : wxString("TL");
     case 553:
-      return b_CntryLongStr ? _("Papua New Guinea") : _T("PG");
+      return b_CntryLongStr ? _("Papua New Guinea") : wxString("PG");
     case 555:
-      return b_CntryLongStr ? _("Pitcairn Island") : _T("PN");
+      return b_CntryLongStr ? _("Pitcairn Island") : wxString("PN");
     case 557:
-      return b_CntryLongStr ? _("Solomon Islands") : _T("SB");
+      return b_CntryLongStr ? _("Solomon Islands") : wxString("SB");
     case 559:
-      return b_CntryLongStr ? _("American Samoa") : _T("AS");
+      return b_CntryLongStr ? _("American Samoa") : wxString("AS");
     case 561:
-      return b_CntryLongStr ? _("Samoa") : _T("WS");
+      return b_CntryLongStr ? _("Samoa") : wxString("WS");
     case 563:
     case 564:
     case 565:
     case 566:
-      return b_CntryLongStr ? _("Singapore") : _T("SG");
+      return b_CntryLongStr ? _("Singapore") : wxString("SG");
     case 567:
-      return b_CntryLongStr ? _("Thailand") : _T("TH");
+      return b_CntryLongStr ? _("Thailand") : wxString("TH");
     case 570:
-      return b_CntryLongStr ? _("Tonga") : _T("TO");
+      return b_CntryLongStr ? _("Tonga") : wxString("TO");
     case 572:
-      return b_CntryLongStr ? _("Tuvalu") : _T("TV");
+      return b_CntryLongStr ? _("Tuvalu") : wxString("TV");
     case 574:
-      return b_CntryLongStr ? _("Viet Nam") : _T("VN");
+      return b_CntryLongStr ? _("Viet Nam") : wxString("VN");
     case 576:
     case 577:
-      return b_CntryLongStr ? _("Vanuatu") : _T("VU");
+      return b_CntryLongStr ? _("Vanuatu") : wxString("VU");
     case 578:
-      return b_CntryLongStr ? _("Wallis and Futuna Islands") : _T("WF");
+      return b_CntryLongStr ? _("Wallis and Futuna Islands") : wxString("WF");
     case 601:
-      return b_CntryLongStr ? _("South Africa") : _T("ZA");
+      return b_CntryLongStr ? _("South Africa") : wxString("ZA");
     case 603:
-      return b_CntryLongStr ? _("Angola") : _T("AO");
+      return b_CntryLongStr ? _("Angola") : wxString("AO");
     case 605:
-      return b_CntryLongStr ? _("Algeria") : _T("DZ");
+      return b_CntryLongStr ? _("Algeria") : wxString("DZ");
     case 607:
-      return b_CntryLongStr ? _("Saint Paul") : _T("TF");
+      return b_CntryLongStr ? _("Saint Paul") : wxString("TF");
     case 608:
-      return b_CntryLongStr ? _("Ascension Island") : _T("SH");
+      return b_CntryLongStr ? _("Ascension Island") : wxString("SH");
     case 609:
-      return b_CntryLongStr ? _("Burundi") : _T("BI");
+      return b_CntryLongStr ? _("Burundi") : wxString("BI");
     case 610:
-      return b_CntryLongStr ? _("Benin") : _T("BJ");
+      return b_CntryLongStr ? _("Benin") : wxString("BJ");
     case 611:
-      return b_CntryLongStr ? _("Botswana") : _T("BW");
+      return b_CntryLongStr ? _("Botswana") : wxString("BW");
     case 612:
-      return b_CntryLongStr ? _("Central African Republic") : _T("CF");
+      return b_CntryLongStr ? _("Central African Republic") : wxString("CF");
     case 613:
-      return b_CntryLongStr ? _("Cameroon") : _T("CM");
+      return b_CntryLongStr ? _("Cameroon") : wxString("CM");
     case 615:
-      return b_CntryLongStr ? _("Congo") : _T("CD");
+      return b_CntryLongStr ? _("Congo") : wxString("CD");
     case 616:
-      return b_CntryLongStr ? _("Comoros") : _T("KM");
+      return b_CntryLongStr ? _("Comoros") : wxString("KM");
     case 617:
-      return b_CntryLongStr ? _("Capo Verde") : _T("CV");
+      return b_CntryLongStr ? _("Capo Verde") : wxString("CV");
     case 618:
-      return b_CntryLongStr ? _("Crozet Archipelago") : _T("TF");
+      return b_CntryLongStr ? _("Crozet Archipelago") : wxString("TF");
     case 619:
-      return b_CntryLongStr ? _("Ivory Coast") : _T("CI");
+      return b_CntryLongStr ? _("Ivory Coast") : wxString("CI");
     case 620:
-      return b_CntryLongStr ? _("Comoros (Union of the)") : _T("KM");
+      return b_CntryLongStr ? _("Comoros (Union of the)") : wxString("KM");
     case 621:
-      return b_CntryLongStr ? _("Djibouti") : _T("DJ");
+      return b_CntryLongStr ? _("Djibouti") : wxString("DJ");
     case 622:
-      return b_CntryLongStr ? _("Egypt") : _T("EG");
+      return b_CntryLongStr ? _("Egypt") : wxString("EG");
     case 624:
-      return b_CntryLongStr ? _("Ethiopia") : _T("ET");
+      return b_CntryLongStr ? _("Ethiopia") : wxString("ET");
     case 625:
-      return b_CntryLongStr ? _("Eritrea") : _T("ER");
+      return b_CntryLongStr ? _("Eritrea") : wxString("ER");
     case 626:
-      return b_CntryLongStr ? _("Gabonese Republic") : _T("GA");
+      return b_CntryLongStr ? _("Gabonese Republic") : wxString("GA");
     case 627:
-      return b_CntryLongStr ? _("Ghana") : _T("GH");
+      return b_CntryLongStr ? _("Ghana") : wxString("GH");
     case 629:
-      return b_CntryLongStr ? _("Gambia") : _T("GM");
+      return b_CntryLongStr ? _("Gambia") : wxString("GM");
     case 630:
-      return b_CntryLongStr ? _("Guinea-Bissau") : _T("GW");
+      return b_CntryLongStr ? _("Guinea-Bissau") : wxString("GW");
     case 631:
-      return b_CntryLongStr ? _("Equatorial Guinea") : _T("GQ");
+      return b_CntryLongStr ? _("Equatorial Guinea") : wxString("GQ");
     case 632:
-      return b_CntryLongStr ? _("Guinea") : _T("GN");
+      return b_CntryLongStr ? _("Guinea") : wxString("GN");
     case 633:
-      return b_CntryLongStr ? _("Burkina Faso") : _T("BF");
+      return b_CntryLongStr ? _("Burkina Faso") : wxString("BF");
     case 634:
-      return b_CntryLongStr ? _("Kenya") : _T("KE");
+      return b_CntryLongStr ? _("Kenya") : wxString("KE");
     case 635:
-      return b_CntryLongStr ? _("Kerguelen Islands") : _T("TF");
+      return b_CntryLongStr ? _("Kerguelen Islands") : wxString("TF");
     case 636:
     case 637:
-      return b_CntryLongStr ? _("Liberia") : _T("LR");
+      return b_CntryLongStr ? _("Liberia") : wxString("LR");
     case 638:
-      return b_CntryLongStr ? _("South Sudan (Republic of)") : _T("SS");
+      return b_CntryLongStr ? _("South Sudan (Republic of)") : wxString("SS");
     case 642:
-      return b_CntryLongStr ? _("Libya") : _T("LY");
+      return b_CntryLongStr ? _("Libya") : wxString("LY");
     case 644:
-      return b_CntryLongStr ? _("Lesotho") : _T("LS");
+      return b_CntryLongStr ? _("Lesotho") : wxString("LS");
     case 645:
-      return b_CntryLongStr ? _("Mauritius") : _T("MU");
+      return b_CntryLongStr ? _("Mauritius") : wxString("MU");
     case 647:
-      return b_CntryLongStr ? _("Madagascar") : _T("MG");
+      return b_CntryLongStr ? _("Madagascar") : wxString("MG");
     case 649:
-      return b_CntryLongStr ? _("Mali") : _T("ML");
+      return b_CntryLongStr ? _("Mali") : wxString("ML");
     case 650:
-      return b_CntryLongStr ? _("Mozambique") : _T("MZ");
+      return b_CntryLongStr ? _("Mozambique") : wxString("MZ");
     case 654:
-      return b_CntryLongStr ? _("Mauritania") : _T("MR");
+      return b_CntryLongStr ? _("Mauritania") : wxString("MR");
     case 655:
-      return b_CntryLongStr ? _("Malawi") : _T("MW");
+      return b_CntryLongStr ? _("Malawi") : wxString("MW");
     case 656:
-      return b_CntryLongStr ? _("Niger") : _T("NE");
+      return b_CntryLongStr ? _("Niger") : wxString("NE");
     case 657:
-      return b_CntryLongStr ? _("Nigeria") : _T("NG");
+      return b_CntryLongStr ? _("Nigeria") : wxString("NG");
     case 659:
-      return b_CntryLongStr ? _("Namibia") : _T("NA");
+      return b_CntryLongStr ? _("Namibia") : wxString("NA");
     case 660:
-      return b_CntryLongStr ? _("Reunion") : _T("RE");
+      return b_CntryLongStr ? _("Reunion") : wxString("RE");
     case 661:
-      return b_CntryLongStr ? _("Rwanda") : _T("RW");
+      return b_CntryLongStr ? _("Rwanda") : wxString("RW");
     case 662:
-      return b_CntryLongStr ? _("Sudan") : _T("SD");
+      return b_CntryLongStr ? _("Sudan") : wxString("SD");
     case 663:
-      return b_CntryLongStr ? _("Senegal") : _T("SN");
+      return b_CntryLongStr ? _("Senegal") : wxString("SN");
     case 664:
-      return b_CntryLongStr ? _("Seychelles") : _T("SC");
+      return b_CntryLongStr ? _("Seychelles") : wxString("SC");
     case 665:
-      return b_CntryLongStr ? _("Saint Helena") : _T("SH");
+      return b_CntryLongStr ? _("Saint Helena") : wxString("SH");
     case 666:
-      return b_CntryLongStr ? _("Somalia") : _T("SO");
+      return b_CntryLongStr ? _("Somalia") : wxString("SO");
     case 667:
-      return b_CntryLongStr ? _("Sierra Leone") : _T("SL");
+      return b_CntryLongStr ? _("Sierra Leone") : wxString("SL");
     case 668:
-      return b_CntryLongStr ? _("Sao Tome and Principe") : _T("ST");
+      return b_CntryLongStr ? _("Sao Tome and Principe") : wxString("ST");
     case 669:
-      return b_CntryLongStr ? _("Eswatini") : _T("SZ");
+      return b_CntryLongStr ? _("Eswatini") : wxString("SZ");
     case 670:
-      return b_CntryLongStr ? _("Chad") : _T("TD");
+      return b_CntryLongStr ? _("Chad") : wxString("TD");
     case 671:
-      return b_CntryLongStr ? _("Togolese Republic") : _T("TG");
+      return b_CntryLongStr ? _("Togolese Republic") : wxString("TG");
     case 672:
-      return b_CntryLongStr ? _("Tunisia") : _T("TN");
+      return b_CntryLongStr ? _("Tunisia") : wxString("TN");
     case 674:
-      return b_CntryLongStr ? _("Tanzania") : _T("TZ");
+      return b_CntryLongStr ? _("Tanzania") : wxString("TZ");
     case 675:
-      return b_CntryLongStr ? _("Uganda") : _T("UG");
+      return b_CntryLongStr ? _("Uganda") : wxString("UG");
     case 676:
-      return b_CntryLongStr ? _("Dem Rep.of the Congo") : _T("CD");
+      return b_CntryLongStr ? _("Dem Rep.of the Congo") : wxString("CD");
     case 677:
-      return b_CntryLongStr ? _("Tanzania") : _T("TZ");
+      return b_CntryLongStr ? _("Tanzania") : wxString("TZ");
     case 678:
-      return b_CntryLongStr ? _("Zambia") : _T("ZM");
+      return b_CntryLongStr ? _("Zambia") : wxString("ZM");
     case 679:
-      return b_CntryLongStr ? _("Zimbabwe") : _T("ZW");
+      return b_CntryLongStr ? _("Zimbabwe") : wxString("ZW");
     case 701:
-      return b_CntryLongStr ? _("Argentine Republic") : _T("AR");
+      return b_CntryLongStr ? _("Argentine Republic") : wxString("AR");
     case 710:
-      return b_CntryLongStr ? _("Brazil") : _T("BR");
+      return b_CntryLongStr ? _("Brazil") : wxString("BR");
     case 720:
-      return b_CntryLongStr ? _("Bolivia") : _T("BO");
+      return b_CntryLongStr ? _("Bolivia") : wxString("BO");
     case 725:
-      return b_CntryLongStr ? _("Chile") : _T("CL");
+      return b_CntryLongStr ? _("Chile") : wxString("CL");
     case 730:
-      return b_CntryLongStr ? _("Colombia") : _T("CO");
+      return b_CntryLongStr ? _("Colombia") : wxString("CO");
     case 735:
-      return b_CntryLongStr ? _("Ecuador") : _T("EC");
+      return b_CntryLongStr ? _("Ecuador") : wxString("EC");
     case 740:
-      return b_CntryLongStr ? _("Falkland Islands") : _T("FK");
+      return b_CntryLongStr ? _("Falkland Islands") : wxString("FK");
     case 745:
-      return b_CntryLongStr ? _("France - Guiana") : _T("GY");
+      return b_CntryLongStr ? _("France - Guiana") : wxString("GY");
     case 750:
-      return b_CntryLongStr ? _("Guyana") : _T("GY");
+      return b_CntryLongStr ? _("Guyana") : wxString("GY");
     case 755:
-      return b_CntryLongStr ? _("Paraguay") : _T("PY");
+      return b_CntryLongStr ? _("Paraguay") : wxString("PY");
     case 760:
-      return b_CntryLongStr ? _("Peru") : _T("PE");
+      return b_CntryLongStr ? _("Peru") : wxString("PE");
     case 765:
-      return b_CntryLongStr ? _("Suriname") : _T("SR");
+      return b_CntryLongStr ? _("Suriname") : wxString("SR");
     case 770:
-      return b_CntryLongStr ? _("Uruguay") : _T("UY");
+      return b_CntryLongStr ? _("Uruguay") : wxString("UY");
     case 775:
-      return b_CntryLongStr ? _("Venezuela") : _T("VE");
+      return b_CntryLongStr ? _("Venezuela") : wxString("VE");
 
     default:
       return wxEmptyString;

@@ -431,19 +431,19 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
       bool showUnit = (m_Properties ? (m_Properties->m_ShowUnit==1) : g_bShowUnit);
       wxString format = (m_Properties && m_Properties->m_Format != "" ? m_Properties->m_Format : m_format);
       if (unit == _T("C"))
-        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _T("C"):"");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _T("C"): wxString(""));
       else if (unit == _T("\u00B0"))
-        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN : "");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN : wxString(""));
       else if (unit == _T("\u00B0T"))
-        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _(" true") : "");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _(" true") : wxString(""));
       else if (unit == _T("\u00B0M"))
-        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _(" mag") : "");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _(" mag") : wxString(""));
       else if (unit == _T("\u00B0L"))
-        m_data = _T(">") + wxString::Format(format, data) + (showUnit ? DEGREE_SIGN : "");
+        m_data = _T(">") + wxString::Format(format, data) + (showUnit ? DEGREE_SIGN : wxString(""));
       else if (unit == _T("\u00B0R"))
-        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _T("<") : "");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _T("<") : wxString(""));
       else if (unit == _T("N"))  // Knots
-        m_data = wxString::Format(format, data) + (showUnit ? _T(" Kts") : _T(""));
+        m_data = wxString::Format(format, data) + (showUnit ? " Kts" : "");
       /* maybe in the future ...
                       else if (unit == _T("M")) // m/s
                         m_data = wxString::Format(m_format, data)+_T(" m/s");
@@ -452,7 +452,7 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
        ... to be completed
        */
       else
-        m_data = wxString::Format(format, data) + (showUnit ? _T(" ") + unit : "");
+        m_data = wxString::Format(format, data) + (showUnit ? _T(" ") + unit : wxString(""));
     } else
       m_data = _T("---");
 

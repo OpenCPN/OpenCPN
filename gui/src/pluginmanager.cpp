@@ -2265,7 +2265,8 @@ static const char* const DOWNLOAD_REPO_PROTO =
 
 void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   // Craft the url
-  std::string catalog(g_catalog_channel == "" ? "master" : g_catalog_channel);
+  std::string catalog(g_catalog_channel == "" ? "master"
+                                              : g_catalog_channel.c_str());
   std::string url(g_catalog_custom_url);
   if (catalog != "custom") {
     url = std::string(DOWNLOAD_REPO_PROTO);
@@ -2439,7 +2440,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
 void CatalogMgrPanel::SetUpdateButtonLabel() {
   wxString label = _("Update Plugin Catalog");
   label += _T(": ");
-  label += g_catalog_channel == "" ? "master" : g_catalog_channel;
+  label += g_catalog_channel == "" ? "master" : g_catalog_channel.c_str();
   m_updateButton->SetLabel(label);
   Layout();
 }

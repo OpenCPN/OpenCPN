@@ -164,7 +164,8 @@ std::string PluginLoader::GetPluginVersion(
   metadata = pic->m_managed_metadata;
   if (metadata.version == "")
     metadata = get_metadata(pic->m_common_name.ToStdString());
-  std::string detail_suffix(metadata.is_imported ? _(" [Imported]") : "");
+  std::string detail_suffix(metadata.is_imported ? _(" [Imported]")
+                                                 : wxString(""));
   if (metadata.is_orphan) detail_suffix = _(" [Orphan]");
 
   int v_major(0);

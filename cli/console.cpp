@@ -385,7 +385,7 @@ public:
   }
 
   void update_catalog() {
-    std::string catalog(g_catalog_channel == "" ? "master" : g_catalog_channel);
+    std::string catalog(g_catalog_channel == "" ? "master" : g_catalog_channel.c_str());
     std::string url(g_catalog_custom_url);
     if (catalog != "custom") {
       url = std::string(DOWNLOAD_REPO_PROTO);

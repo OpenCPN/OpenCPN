@@ -694,7 +694,7 @@ void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
                   source["description"].AsString(),
                   grib.HasMember("url") ? grib["url"].AsString()
                                         : grib["cat_url"].AsString(),
-                  grib.HasMember("filename") ? grib["filename"].AsString() : "",
+                  grib.HasMember("filename") ? grib["filename"].AsString() : wxString(""),
                   grib.HasMember("url") ? LocalGribDownloadType::DIRECT
                                         : LocalGribDownloadType::MANIFEST,
                   area["boundary"]["lat_min"].AsDouble(),

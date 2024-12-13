@@ -210,12 +210,9 @@ Table& Table::operator<<(const int& cellcontent) {
 ostream& operator<<(ostream& out, Table& table) {
   vector<vector<wxString> >& data = table.GetData();
 
-  for (vector<vector<wxString> >::iterator iter = data.begin();
-       iter != data.end(); iter++) {
-    vector<wxString> row = (*iter);
-    for (vector<wxString>::iterator rowiter = row.begin(); rowiter != row.end();
-         rowiter++) {
-      out << (*rowiter).fn_str() << " ";
+  for (const auto& row : data) {
+    for (const auto& cell : row) {
+      out << cell.ToStdString() << " ";
     }
     out << endl;
   }
