@@ -239,7 +239,21 @@ public:
   bool CheckBlacklistedPlugin(const PluginMetadata plugin);
 
   void InitCommListeners(void);
+  /**
+   * Process incoming NMEA 0183 messages from the message bus.
+   * Filters messages based on their source configuration and distributes
+   * valid messages to all interested plugins.
+   *
+   * @param n0183_msg Message container with NMEA 0183 sentence and metadata
+   */
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  /**
+   * Process incoming SignalK messages from the message bus.
+   * Validates and forwards SignalK data to plugins that have registered
+   * interest in SignalK messages.
+   *
+   * @param sK_msg Message container with SignalK data and metadata
+   */
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);

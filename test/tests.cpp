@@ -641,7 +641,7 @@ public:
     }
     )""";
 
-    SignalkMsg signalk_msg("ownship_ctx", "global_ctx", kJsonMsg);
+    SignalkMsg signalk_msg("ownship_ctx", "global_ctx", kJsonMsg, "test_iface");
 
     const wxEventTypeTag<ObservedEvt> EvtTest(wxNewEventType());
     ObservedEvt ev(EvtTest);
