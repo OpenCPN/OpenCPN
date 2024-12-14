@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin Friends
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,9 +15,27 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Weather Data Control Interface.
+ *
+ * This module provides the primary user interface controls for the GRIB plugin,
+ * including:
+ * - Timeline controls for navigating forecast times
+ * - Layer controls for selecting visible weather parameters
+ * - Display settings for customizing visualizations
+ * - File management for loading and organizing GRIB data
+ *
+ * The interface is designed to give users complete control over how weather
+ * data is displayed while maintaining efficiency for real-time navigation and
+ * animation playback. Key features include:
+ * - Temporal interpolation between forecast times
+ * - Multi-file data management
+ * - Customizable overlay settings
+ * - Cursor tracking for data inspection
+ * - Animation controls
  */
-
 #ifndef __GRIBUICTRLBAR_H__
 #define __GRIBUICTRLBAR_H__
 
@@ -95,8 +107,35 @@ typedef struct {
   bool windWaves;
 } XyGribConfig_t;
 
+/**
+ * A specialized GribRecordSet that represents temporally interpolated weather
+ * data with isobar rendering optimizations.
+ *
+ * While GribRecordSet simply holds meteorological parameters at a point in
+ * time, GribTimelineRecordSet provides:
+ * 1. Temporally interpolated records between two time points.
+ * 2. Cached calculations for visualization (e.g., isobars).
+ *
+ * This class is used when:
+ * - Displaying weather conditions between available GRIB timestamps.
+ * - Animating weather evolution over time.
+ * - Rendering isobars, isotherms, and other derived visualizations.
+ *
+ * @see GribRecordSet for basic parameter storage.
+ * @see GetTimeLineRecordSet() for how interpolation is performed.
+ */
+
 class GribTimelineRecordSet : public GribRecordSet {
 public:
+  /**
+   * Creates a timeline record set containing temporally interpolated GRIB
+   * records.
+   *
+   * Timeline record sets store cached data like isobar calculations to optimize
+   * rendering performance during animation playback.
+   *
+   * @param cnt Source GRIB file identifier used to trace record origins
+   */
   GribTimelineRecordSet(unsigned int cnt);
   //    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double
   //    interp_const);
@@ -104,7 +143,13 @@ public:
 
   void ClearCachedData();
 
-  /* cache isobars here to speed up rendering */
+  /**
+   * Array of cached isobar calculations for each data type (wind, pressure,
+   * etc).
+   *
+   * Each element is a pointer to a wxArrayPtrVoid containing IsoLine objects.
+   * Used to speed up rendering by avoiding recalculation of isobars.
+   */
   wxArrayPtrVoid *m_IsobarArray[Idx_COUNT];
 };
 
@@ -126,6 +171,30 @@ public:
   void SetFactoryOptions();
 
   wxDateTime TimelineTime();
+  /**
+   * Retrieves or creates a temporally interpolated GRIB record set for a
+   * specific timestamp.
+   *
+   * This function performs temporal interpolation between two known timestamps
+   * to estimate values at the requested time. The actual data values at each
+   * lat/lon point are either:
+   * 1. Linearly interpolated in time for scalar values
+   * 2. Vector interpolated (2D) for wind and current vectors to maintain
+   * physical consistency
+   *
+   * @note This function does NOT perform spatial (lat/lon) interpolation.
+   *
+   * @note Timestamp handling:
+   *       - For timestamps between forecast times (e.g. 1AM between 12AM and
+   * 3AM forecasts), data is interpolated between the bracketing forecasts.
+   *       - For timestamps exactly matching forecast times (e.g. 12AM, 3AM),
+   *         the original GRIB record is used directly without interpolation to
+   * avoid unnecessary computation and maintain precision.
+   *
+   * @param time The target datetime for which to interpolate GRIB records.
+   * @return Pointer to GribTimelineRecordSet containing temporally interpolated
+   * data, or NULL if no valid data.
+   */
   GribTimelineRecordSet *GetTimeLineRecordSet(wxDateTime time);
   void StopPlayBack();
   void TimelineChanged();
@@ -156,13 +225,17 @@ public:
                                  double lon, double lat, wxDateTime t);
 
   wxWindow *pParent;
+  /** Settings that control how GRIB data is displayed and overlaid. */
   GribOverlaySettings m_OverlaySettings;
-
+  /** Current set of GRIB records for timeline playback. */
   GribTimelineRecordSet *m_pTimelineSet;
 
+  /** Timer for controlling GRIB animation playback. */
   wxTimer m_tPlayStop;
+  /** Plugin instance that owns this control bar. */
   grib_pi *pPlugIn;
   GribRequestSetting *pReq_Dialog;
+  /** Currently active GRIB file being displayed. */
   GRIBFile *m_bGRIBActiveFile;
   bool m_bDataPlot[GribOverlaySettings::GEO_ALTITUDE];  // only for no altitude
                                                         // parameters
@@ -201,8 +274,10 @@ public:
   double m_highlight_lonmax;
   double m_highlight_latmin;
   double m_highlight_lonmin;
+  /** Directory containing GRIB files. */
   wxString m_grib_dir;
-  wxArrayString m_file_names; /* selected files */
+  /** List of GRIB filenames being displayed. */
+  wxArrayString m_file_names;
 
 private:
   void OnClose(wxCloseEvent &event);
@@ -276,21 +351,71 @@ private:
   bool m_gtk_started;
 };
 
-//----------------------------------------------------------------------------------------------------------
-//    GRIBFile Object Specification
-//----------------------------------------------------------------------------------------------------------
+/**
+ * Manages multiple GRIB record sets from one or more GRIB files.
+ *
+ * GRIBFile is responsible for parsing and organizing weather data from GRIB
+ * files. It can handle:
+ * - Multiple files with different data types (e.g., wind in one file, waves in
+ * another).
+ * - Multiple files with overlapping data.
+ * - Data from different meteorological models and levels.
+ *
+ * The class provides logic for resolving overlapping or conflicting records by:
+ * - Favoring UV vector components over polar (direction/speed) representations.
+ * - Preferring mean/average records over instantaneous values.
+ * - Using Mean-Sea-Level (MSL) pressure over other pressure types.
+ * - Prioritizing significant wave data over wind wave data.
+ */
 class GRIBFile {
 public:
+  /**
+   * Creates a new GRIBFile by parsing one or more GRIB files.
+   *
+   * @param file_names Array of GRIB file paths to load. Can contain multiple
+   * files with different or overlapping data types.
+   * @param CumRec Whether to copy first cumulative record to fill gaps in
+   * precipitation and cloud cover data, preventing artificial zero periods.
+   * @param WaveRec Whether to copy missing wave records to fill gaps, ensuring
+   *                continuous marine condition visualization.
+   * @param newestFile When true, only load the newest file from the array.
+   *                  When false (default), combine all records from all files.
+   */
   GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
            bool newestFile = false);
   ~GRIBFile();
 
+  /**
+   * Checks if file loading and parsing was successful.
+   * @return true if at least one valid GRIB record was loaded.
+   */
   bool IsOK(void) { return m_bOK; }
+  /**
+   * Gets the list of source filenames being used.
+   * When newestFile=true, will contain only the newest file.
+   * Otherwise contains all input files.
+   */
   wxArrayString &GetFileNames(void) { return m_FileNames; }
+  /**
+   * Gets the last error message if file loading failed.
+   */
   wxString GetLastMessage(void) { return m_last_message; }
+  /**
+   * Gets pointer to array of record sets organized by timestamp.
+   * Contains combined data from all source files (or just newest file
+   * if newestFile=true).
+   */
   ArrayOfGribRecordSets *GetRecordSetArrayPtr(void) {
     return &m_GribRecordSetArray;
   }
+  /**
+   * Gets reference datetime of the GRIB data.
+   *
+   * The reference time is when the model run started (analysis time).
+   * This differs from the forecast time of individual records which is
+   * reference_time + forecast_hour. For example, a 24h forecast from a
+   * 00Z model run would have reference_time=00Z and forecast_time=00Z+24h.
+   */
   time_t GetRefDateTime(void) { return m_pRefDateTime; }
 
   const unsigned int GetCounter() { return m_counter; }
@@ -299,16 +424,16 @@ public:
   GribIdxArray m_GribIdxArray;
 
 private:
-  static unsigned int ID;
+  static unsigned int ID;  //!< Unique identifier counter for GRIBFile instances
 
-  const unsigned int m_counter;
-  bool m_bOK;
-  wxString m_last_message;
-  wxArrayString m_FileNames;
-  GribReader *m_pGribReader;
-  time_t m_pRefDateTime;
+  const unsigned int m_counter;  //!< This instance's unique ID
+  bool m_bOK;                    //!< Whether file loading succeeded
+  wxString m_last_message;       //!< Error message if loading failed
+  wxArrayString m_FileNames;     //!< Source GRIB filenames
+  GribReader *m_pGribReader;     //!< Parser for GRIB file format
+  time_t m_pRefDateTime;         //!< Reference time of the model run
 
-  //    An array of GribRecordSets found in this GRIB file
+  /** An array of GribRecordSets found in this GRIB file. */
   ArrayOfGribRecordSets m_GribRecordSetArray;
 
   int m_nGribRecords;

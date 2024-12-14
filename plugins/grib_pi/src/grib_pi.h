@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,10 +14,25 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Weather Data Plugin for OpenCPN.
+ *
+ * Primary plugin interface for the GRIB weather data visualization system.
+ * This plugin enables OpenCPN to display weather forecasts from GRIB files,
+ * providing mariners with critical meteorological data including:
+ * - Wind speed and direction
+ * - Pressure systems and isobars
+ * - Wave height, direction and period
+ * - Precipitation and cloud cover
+ * - Temperature and humidity
+ *
+ * The plugin supports both GRIB1 and GRIB2 file formats, allows temporal
+ * interpolation between forecast times, and provides various visualization
+ * options including wind barbs, particle animations, and color-coded overlays.
  */
-
 #ifndef _GRIBPI_H_
 #define _GRIBPI_H_
 
@@ -130,7 +139,20 @@ public:
   int GetTimeZone() { return m_bTimeZone; }
   void SetTimeZone(int tz);
   int GetStartOptions() { return m_bStartOptions; }
+  /**
+   * Returns true if cumulative parameters like precipitation and cloud cover
+   * should initialize their start values from the first record.
+   *
+   * This avoids artificial zero values at the beginning of the time series.
+   */
   bool GetCopyFirstCumRec() { return m_bCopyFirstCumRec; }
+  /**
+   * Returns true if wave data should be propagated across time periods where
+   * wave records are missing.
+   *
+   * This ensures continuity of wave visualization even when data points are
+   * sparse.
+   */
   bool GetCopyMissWaveRec() { return m_bCopyMissWaveRec; }
 
   GRIBOverlayFactory *m_pGRIBOverlayFactory;
@@ -179,7 +201,15 @@ private:
   bool m_bGRIBUseGradualColors;
   bool m_bDrawBarbedArrowHead;
   int m_bTimeZone;
+  /** Controls whether cumulative parameters like precipitation and cloud cover
+   * should initialize their start values from the first record. This avoids
+   * artificial zero values at the beginning of the time series.
+   */
   bool m_bCopyFirstCumRec;
+  /** Controls propagation of wave data across time periods where wave records
+   * are missing. This ensures continuity of wave visualization even when data
+   * points are sparse.
+   */
   bool m_bCopyMissWaveRec;
   int m_bLoadLastOpenFile;
   int m_bStartOptions;

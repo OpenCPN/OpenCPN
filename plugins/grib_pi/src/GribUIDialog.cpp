@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Object
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref GribUIDialog.h
  */
-
 #include "wx/wx.h"
 #include "wx/tokenzr.h"
 #include "wx/datetime.h"
@@ -148,7 +143,7 @@ GribTimelineRecordSet::~GribTimelineRecordSet() {
 void GribTimelineRecordSet::ClearCachedData() {
   for (int i = 0; i < Idx_COUNT; i++) {
     if (m_IsobarArray[i]) {
-      //    Clear out the cached isobars
+      // Clear out the cached isobars
       for (unsigned int j = 0; j < m_IsobarArray[i]->GetCount(); j++) {
         IsoLine *piso = (IsoLine *)m_IsobarArray[i]->Item(j);
         delete piso;
@@ -954,12 +949,12 @@ void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
   // add a submenu to this item if necessary
   if (submenu) item->SetSubMenu(submenu);
 
-    /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
-    #ifdef __WXMSW__
-      wxFont *qFont = OCPNGetFont(_("Menu"), 10);
-      item->SetFont(*qFont);
-    #endif
-    */
+  /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
+  #ifdef __WXMSW__
+    wxFont *qFont = OCPNGetFont(_("Menu"), 10);
+    item->SetFont(*qFont);
+  #endif
+  */
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
   if (!bitmap.IsSameAs(wxNullBitmap)) item->SetBitmap(bitmap);
