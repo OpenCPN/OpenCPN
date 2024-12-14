@@ -4,7 +4,10 @@
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * \implements \ref GribUIDialogBase.h
+ */
 #include "GribUIDialogBase.h"
 #include "XyGribPanel.h"
 #include "manual.h"
