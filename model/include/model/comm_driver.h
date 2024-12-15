@@ -1,14 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Communication driver layer. Defines the generic driver model,
- *           messages sent to/from drivers and addresses. The driver layer
- *           is the lowest of the three layers drivers, raw messages (navmsg)
- *           and decoded application messages(appmsg).
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ /**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 - 2024  Alec Leamas                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,6 +17,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+ /**
+  * \file
+  * Communication driver layer. Defines the generic driver model,
+  * messages sent to/from drivers and addresses. The driver layer
+  * is the lowest of the three layers drivers, raw messages (navmsg)
+  * and decoded application messages(appmsg).
+  */
 
 #include <memory>
 #include <string>
