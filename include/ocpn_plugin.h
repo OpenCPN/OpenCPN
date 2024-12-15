@@ -1918,4 +1918,39 @@ extern DECL_EXP void EnableLightDescriptionsDisplay(bool enable);
 extern DECL_EXP void SetENCDisplayCategory(PI_DisCat cat);
 extern DECL_EXP void SetNavigationMode(PI_NavMode mode);
 
+extern DECL_EXP bool GetEnableLatLonGrid();
+extern DECL_EXP bool GetEnableChartOutlines();
+extern DECL_EXP bool GetEnableDepthUnitDisplay();
+extern DECL_EXP bool GetEnableAisTargetDisplay();
+extern DECL_EXP bool GetEnableTideStationsDisplay();
+extern DECL_EXP bool GetEnableCurrentStationsDisplay();
+extern DECL_EXP bool GetEnableENCTextDisplay();
+extern DECL_EXP bool GetEnableENCDepthSoundingsDisplay();
+extern DECL_EXP bool GetEnableBuoyLightLabelsDisplay();
+extern DECL_EXP bool GetEnableLightsDisplay();
+extern DECL_EXP bool GetEnableLightDescriptionsDisplay();
+extern DECL_EXP PI_DisCat GetENCDisplayCategory();
+extern DECL_EXP PI_NavMode GetNavigationMode();
+
+extern DECL_EXP bool GetEnableMUIBar();
+extern DECL_EXP bool GetEnableCompassGPSIcon();
+extern DECL_EXP bool GetEnableStatusBar();
+extern DECL_EXP bool GetEnableChartBar();
+extern DECL_EXP bool GetEnableMenu();
+
+extern DECL_EXP void CenterOnOwnship();
+extern DECL_EXP bool GetCenterOnOwnship();
+
+extern DECL_EXP void SetTrackingMode(bool enable);
+extern DECL_EXP bool GetTrackingMode();
+
+extern DECL_EXP void EnableLookaheadMode(bool enable);
+extern DECL_EXP bool GetEnableLookaheadMode();
+
+extern DECL_EXP void EnableTouchMode(bool enable);
+extern DECL_EXP bool GetTouchMode();
+
+extern DECL_EXP void SetAppColorScheme(PI_ColorScheme cs);
+extern DECL_EXP PI_ColorScheme GetAppColorScheme();
+
 #endif  //_PLUGIN_H_

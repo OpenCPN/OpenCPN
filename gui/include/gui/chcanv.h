@@ -231,9 +231,12 @@ public:
   double GetVPRotation(void) { return GetVP().rotation; }
   double GetVPSkew(void) { return GetVP().skew; }
   double GetVPTilt(void) { return GetVP().tilt; }
+
   void ClearbFollow(void);
   void SetbFollow(void);
   void TogglebFollow(void);
+  bool GetbFollow() { return m_bFollow; }
+
   void JumpToPosition(double lat, double lon, double scale);
   void SetFirstAuto(bool b_auto) { m_bFirstAuto = b_auto; }
 
@@ -406,7 +409,7 @@ public:
   void UpdateFollowButtonState(void);
   void ApplyGlobalSettings();
   void SetShowGPSCompassWindow(bool bshow);
-
+  bool GetShowGPSCompassWindow() { return m_bShowCompassWin; }
   void FreezePiano() { m_pianoFrozen = true; }
   void ThawPiano() { m_pianoFrozen = false; }
 
