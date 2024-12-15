@@ -38,6 +38,7 @@
 #include "model/logger.h"
 #include "model/thread_ctrl.h"
 #include "model/ocpn_utils.h"
+#include "model/comm_drv_stats.h"
 
 using namespace std::literals::chrono_literals;
 

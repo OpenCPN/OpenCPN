@@ -61,6 +61,7 @@ set(
   ${MODEL_HDR_DIR}/comm_drv_registry.h
   ${MODEL_HDR_DIR}/comm_drv_signalk.h
   ${MODEL_HDR_DIR}/comm_drv_signalk_net.h
+  ${MODEL_HDR_DIR}/comm_drv_stats.h
   ${MODEL_HDR_DIR}/comm_n0183_output.h
   ${MODEL_HDR_DIR}/comm_navmsg_bus.h
   ${MODEL_HDR_DIR}/comm_navmsg.h
@@ -69,6 +70,7 @@ set(
   ${MODEL_HDR_DIR}/comm_vars.h
   ${MODEL_HDR_DIR}/config_vars.h
   ${MODEL_HDR_DIR}/conn_params.h
+  ${MODEL_HDR_DIR}/conn_states.h
   ${MODEL_HDR_DIR}/cutil.h
   ${MODEL_HDR_DIR}/downloader.h
   ${MODEL_HDR_DIR}/ds_porttype.h
@@ -98,7 +100,9 @@ set(
   ${MODEL_HDR_DIR}/ocpn_utils.h
   ${MODEL_HDR_DIR}/own_ship.h
   ${MODEL_HDR_DIR}/peer_client.h
+  ${MODEL_HDR_DIR}/periodic_timer.h
   ${MODEL_HDR_DIR}/pincode.h
+  ${MODEL_HDR_DIR}/periodic_timer.h
   ${MODEL_HDR_DIR}/plugin_blacklist.h
   ${MODEL_HDR_DIR}/plugin_cache.h
   ${MODEL_HDR_DIR}/plugin_comm.h
@@ -167,6 +171,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_vars.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
   ${MODEL_SRC_DIR}/conn_params.cpp
+  ${MODEL_SRC_DIR}/conn_states.cpp
   ${MODEL_SRC_DIR}/cutil.cpp
   ${MODEL_SRC_DIR}/downloader.cpp
   ${MODEL_SRC_DIR}/ds_porttype.cpp
@@ -190,6 +195,7 @@ set(SRC
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/own_ship.cpp
   ${MODEL_SRC_DIR}/peer_client.cpp
+  ${MODEL_SRC_DIR}/periodic_timer.cpp
   ${MODEL_SRC_DIR}/pincode.cpp
   ${MODEL_SRC_DIR}/plugin_api.cpp
   ${MODEL_SRC_DIR}/plugin_blacklist.cpp
