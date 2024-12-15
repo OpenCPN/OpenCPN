@@ -1953,4 +1953,7 @@ extern DECL_EXP bool GetTouchMode();
 extern DECL_EXP void SetAppColorScheme(PI_ColorScheme cs);
 extern DECL_EXP PI_ColorScheme GetAppColorScheme();
 
+extern "C" DECL_EXP void RequestWindowRefresh(wxWindow *win,
+                                              bool eraseBackground);
+
 #endif  //_PLUGIN_H_

@@ -4386,6 +4386,8 @@ void glChartCanvas::Render() {
     glDisable(g_texture_rectangle_format);
 
     m_cache_vp = VPoint;
+    m_cache_vp.Validate();
+
     m_cache_current_ch = m_pParentCanvas->m_singleChart;
 
     if (VPoint.b_quilt) m_pParentCanvas->m_pQuilt->SetRenderedVP(VPoint);

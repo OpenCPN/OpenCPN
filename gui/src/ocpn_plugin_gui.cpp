@@ -235,7 +235,7 @@ wxWindow* GetOCPNCanvasWindow() {
 }
 
 void RequestRefresh(wxWindow* win) {
-  if (win) win->Refresh(false);
+  if (win) win->Refresh(true);
 }
 
 void GetCanvasPixLL(PlugIn_ViewPort* vp, wxPoint* pp, double lat, double lon) {
@@ -2635,4 +2635,8 @@ void SetAppColorScheme(PI_ColorScheme cs) {
 }
 PI_ColorScheme GetAppColorScheme() {
   return (PI_ColorScheme)global_color_scheme;
+}
+
+void RequestWindowRefresh(wxWindow* win, bool eraseBackground) {
+  if (win) win->Refresh(eraseBackground);
 }
