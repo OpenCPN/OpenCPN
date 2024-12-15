@@ -135,8 +135,6 @@ private:
   wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
 };
 
-WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
-
 std::vector<ConnectionParams *> &TheConnectionParams();
 
 #endif
