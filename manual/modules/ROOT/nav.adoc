@@ -1,6 +1,7 @@
 .Core Developer Manual
 * Compiling
 ** xref:cmake.adoc[CMake]
+** xref:android.adoc[Android]
 ** xref:linux.adoc[Linux]
 ** xref:linux.adoc#_flatpak[Flatpak]
 ** xref:windows.adoc[Windows]
