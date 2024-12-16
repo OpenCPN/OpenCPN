@@ -71,9 +71,10 @@
 //------------------------------------------------------------------------------
 
 #ifdef __MSVC__
-#pragma warning(disable : 4114)
-#pragma warning( \
-    disable : 4284)  // This one is to do with "reverse iterator UDT..." Huh?
+#include <wx/wxprec.h>
+// #pragma warning(disable : 4114)
+// #pragma warning( \
+    // disable : 4284)  // This one is to do with "reverse iterator UDT..." Huh?
 #endif
 
 //    Following definition required by GDAL
