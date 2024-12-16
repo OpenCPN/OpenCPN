@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+	<META NAME="GENERATOR" Content="Microsoft Visual Studio">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.2.1/ol.css">
+	<script src="https://cdn.jsdelivr.net/npm/ol@v10.2.1/dist/ol.js"></script>
+
+	<TITLE>WMS tester</TITLE>
+</HEAD>
+<BODY onload="refresh()">
+	map_opencpn_leaflet_wms
+	<div id="map_opencpn_leaflet_wms" style="width:600px;height:600px;background-color:lightcoral">map_opencpn_leaflet_wms</div>
+	<br />
+	map_ol_10_1_0
+	<div id="map_ol_10_1_0" style="width:400px;height:400px;background-color:green"></div>
+	<br />
+	map_leaflet_1_9_4
+	<div id="map_leaflet_1_9_4" style="width:400px;height:400px;background-color:lightblue">map_leaflet_1_9_4</div>
+	<br />
+	map_leaflet_datafors (depth map 50x50m)
+	<div id="map_leaflet_datafors" style="width:400px;height:400px;background-color:lightblue">map_leaflet_datafors</div>
+	<br />
+	map_pub_leaflet_wms
+	<div id="map_pub_leaflet_wms" style="width:400px;height:400px;background-color:darkgoldenrod">map_pub_leaflet_wms</div>
+
+
+
+	<script>
+		console.log("script runnning")
+
+		const localwmsurl = "https://localhost:8443/api/wms"; //opencpn rest server api wms endpoint
+		//const localwmsurl = 'http://localhost:1234/service'; //local testserver for finding out what the openlayers and leaflet was sending
+
+		const Map = window.ol.Map;
+		const View = window.ol.View;
+		const TileLayer = window.ol.layer.Tile;
+		const TileWMS = window.ol.source.TileWMS;
+		const OSM = window.ol.source.OSM;
+
+		const LAT = 54.9103;
+		const LON = 9.77;
+		const ZOOM = 11
+		//******************************************************************
+		//load opencpn_wms
+		const map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
+
+		L.tileLayer.wms(localwmsurl, {
+			layers: 'NAV',
+		}).addTo(map_opencpn_leaflet);
+
+		map_opencpn_leaflet.panTo(new L.LatLng(LAT, LON));
+
+
+		//******************************************************************
+		//Load the danish 50m grid depth map dataforsyningen in openlayers
+
+		//Example https://api.dataforsyningen.dk/natur_friluftskort?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=nfkort&STYLES=&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&BBOX=559140.625%2C6199218.75%2C560000%2C6200078.125&token=xxx
+
+		//Can load: https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&width=256&height=256&layers=ddm_50m_dybde&BBOX=10,54.5,11,55.5
+
+
+		try {
+			//devtoken: 7a727064ade2ea325977be038c6768ca the laro
+			document.layers_datfors = [
+
+				new TileLayer({
+					extent: [10, 54.5, 11, 55.5],
+					source: new TileWMS({
+						url: 'https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&layers=ddm_50m_dybde&bbox=10,54.5,11,55.5',
+						params: { LAYERS: 'ddm_50m_dybde', TILED: 'TRUE' },
+						serverType: 'geoserver'
+					}),
+				}),
+				//new TileLayer({
+				//	source: new OSM(),
+				//}),
+			];
+			document.map_datfors = new Map({
+				layers: document.layers_datfors,
+				target: 'map_ol_10_1_0',
+				view: new View({
+					projection: 'EPSG:4326',
+					center: [0, 0],
+					zoom: 1,
+				}),
+			});
+		}
+		catch (e) {
+			console.error(e);
+		}
+
+
+
+
+		//******************************************************************
+		//load leafet 1_9_4
+		const map_leaflet = L.map('map_leaflet_1_9_4').setView([LAT, LON], ZOOM);
+
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+		}).addTo(map_leaflet);
+
+		//******************************************************************
+		//load leafet datafors
+		const mapOptions_datafors = {};
+		const map_leaflet_datafors = L.map('map_leaflet_datafors', mapOptions_datafors);
+
+		//https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&width=256&height=256&layers=ddm_50m_dybde&BBOX=10,54.5,11,55.5
+		var wmsLayer = L.tileLayer.wms('https://api.dataforsyningen.dk/ddm?token=7a727064ade2ea325977be038c6768ca', {
+			layers: 'ddm_50m_dybde'
+		}).addTo(map_leaflet_datafors);
+
+		//map_leaflet_wms.panTo(new L.LatLng(54.92, 9.797));
+		map_leaflet_datafors.setView([LAT, LON], ZOOM);
+
+		//******************************************************************
+		//load pub leafet wms
+		const mapOptions = {};
+		const map_leaflet_wms = L.map('map_pub_leaflet_wms', mapOptions);
+
+		var wmsLayer = L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+			layers: 'TOPO-OSM-WMS'
+		}).addTo(map_leaflet_wms);
+
+		//map_leaflet_wms.panTo(new L.LatLng(54.92, 9.797));
+		map_leaflet_wms.setView([LAT, LON], ZOOM);
+
+
+		//******************************************************************
+		function refresh() {
+			console.log("refresh function called")
+
+			document.map_datfors.render();
+		}
+	</script>
+</BODY>
+</HTML>
