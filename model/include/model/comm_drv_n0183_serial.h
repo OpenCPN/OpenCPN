@@ -37,7 +37,9 @@
 #include "model/garmin_protocol_mgr.h"
 #include "model/serial_io.h"
 
-class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
+class CommDriverN0183Serial : public CommDriverN0183,
+                              public wxEvtHandler,
+                              public DriverStatsProvider {
 public:
   CommDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
 
@@ -56,13 +58,9 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
-private:
-  /**
-   * Send a message to all listeners after applying filtering. Ends up in a
-   * Notify() and can thus be used as a callback in IO threads.
-   */
-  void SendMessage(const std::vector<unsigned char>& msg);
+  DriverStats GetDriverStats() const { return m_serial_io->GetStats(); }
 
+private:
   std::string m_portstring;
   unsigned m_baudrate;
 
@@ -71,6 +69,14 @@ private:
 
   ConnectionParams m_params;
   DriverListener& m_listener;
+
+  StatsTimer m_stats_timer;
+
+  /**
+   * Send a message to all listeners after applying filtering. Ends up in a
+   * Notify() and can thus be used as a callback in IO threads.
+   */
+  void SendMessage(const std::vector<unsigned char>& msg);
 };
 
 #endif  // guard
