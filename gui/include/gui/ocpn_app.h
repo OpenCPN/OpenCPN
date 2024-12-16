@@ -39,6 +39,7 @@
 #include "model/comm_bridge.h"
 #include "model/local_api.h"
 #include "model/rest_server.h"
+#include "model/rest_server_wms.h"
 #include "model/usb_watch_daemon.h"
 class Track;
 
@@ -74,6 +75,7 @@ public:
   CommBridge m_comm_bridge;
 
   RestServer m_rest_server;
+  RestServerWms m_rest_server_wms;
   UsbWatchDaemon& m_usb_watcher;
 
   DECLARE_EVENT_TABLE()

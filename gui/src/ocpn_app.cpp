@@ -975,6 +975,7 @@ MyApp::MyApp()
     : m_checker(InstanceCheck::GetInstance()),
       m_rest_server(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
                     g_bportable),
+      m_rest_server_wms(),
       m_usb_watcher(UsbWatchDaemon::GetInstance()),
       m_exitcode(-2) {
 #ifdef __linux__
@@ -1938,6 +1939,7 @@ bool MyApp::OnInit() {
     make_certificate(ipAddr, data_dir.ToStdString());
 
     m_rest_server.StartServer(fs::path(data_dir.ToStdString()));
+    m_rest_server_wms.StartServer();
     StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                      8000);
   }
@@ -1947,6 +1949,7 @@ bool MyApp::OnInit() {
 int MyApp::OnExit() {
   wxLogMessage(_T("opencpn::MyApp starting exit."));
   m_checker.OnExit();
+  m_rest_server_wms.StopServer();
   m_usb_watcher.Stop();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
 
