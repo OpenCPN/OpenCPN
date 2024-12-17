@@ -109,7 +109,7 @@ goto :main
 @echo *     * options.                                                    *      *
 @echo *     ***************************************************************      *
 @echo *      --Y                Non-interactive mode (for calling from a script) *
-@echo *      --wxver vn.n[.n]    Download specific version of wxWidgets sources.  *
+@echo *      --wxver vn.n[.n]   Download specific version of wxWidgets sources.  *
 @echo *      --help             Print this message                               *
 @echo *                                                                          *
 @echo ****************************************************************************
@@ -292,6 +292,7 @@ if [%ocpn_rebuild%]==[1] (
   )
   set "target=%OCPN_DIR%\build\.vs" & call :removeTarget
   if exist "%OCPN_DIR%\build\CMakeCache.txt" del "%OCPN_DIR%\build\CMakeCache.txt"
+  if exist "%OCPN_DIR%\.git\hooks\pre-commit" del "%OCPN_DIR%\.git\hooks\pre-commit"
   set "target=%OCPN_DIR%\build\Release" & call :removeTarget
   set "target=%OCPN_DIR%\build\RelWithDebInfo" & call :removeTarget
   set "target=%OCPN_DIR%\build\Debug" & call :removeTarget
@@ -402,6 +403,42 @@ where /Q /R %CACHE_DIR% nuget.exe && goto :skipnuget
 @echo Error: Could not download nuget.exe
 goto :usage
 :skipnuget
+
+:: Is CMake present and the correct version?
+where /Q cmake.exe && goto :skipcmake
+@echo Error: Could not find required CMake tools.
+goto :usage
+:skipcmake
+:: Run cmake --version and capture the output
+for /f "tokens=3" %%i in ('cmake --version') do (
+    set CMAKE_VERSION=%%i
+    goto :cmdone
+)
+:cmdone
+:: echo CMake version: %CMAKE_VERSION%
+:: Split the version number into major, minor, and patch components
+for /f "tokens=1,2,3 delims=." %%a in ("%CMAKE_VERSION%") do (
+    set CMAKE_MAJOR=%%a
+    set CMAKE_MINOR=%%b
+    set CMAKE_PATCH=%%c
+)
+:: @echo CMake version: %CMAKE_MAJOR%.%CMAKE_MINOR%.%CMAKE_PATCH%
+
+:: Check if the version is greater than 3.26
+if %CMAKE_MAJOR% gtr 3 goto :cmake_ok
+:: @echo CMMAKE_MAJOR is gtr 2.
+:: @echo CMMAKE_MINOR=%CMAKE_MINOR%
+if %CMAKE_MAJOR% gtr 2 (
+  if %CMAKE_MINOR% gtr 25 (
+    goto :cmake_ok
+  )
+)
+@echo Error: CMake version is less than 3.26
+pause
+goto :usage
+
+:cmake_ok
+@echo CMake version is not less than 3.26
 
 ::-------------------------------------------------------------
 :: Install pre-commit hooks if not already installed
@@ -657,7 +694,7 @@ where /Q makensisw.exe && goto :skipnsis
 %CACHE_DIR%\nuget install NSIS-Package
 where /Q /R . makensisw.exe && echo Found NSIS-Package && goto :skipnsis
 @echo Error: Could not install NSIS installer.
-pushd %OCPN_DIR%
+popd
 goto :usage
 :skipnsis
 for /D %%D in (Gettext*) do (set "gettextpath=%%~fD")
