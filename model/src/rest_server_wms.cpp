@@ -47,6 +47,7 @@ static const char* const ServerAddr = "http://0.0.0.0:8081";
 unsigned int RestServerWms::m_hitcount = 0;
 wxFrame* RestServerWms::m_pWxFrame = nullptr;
 ChartCanvas* RestServerWms::m_pChartCanvas = nullptr;
+wxStaticText* RestServerWms::pText = nullptr;
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
@@ -122,7 +123,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         coord3857To4326(data[2], data[3], lonNE, latNE);
         // m_pchart
 
-        ;
+        RestServerWms::pText->SetLabelText(std::to_string(RestServerWms::m_hitcount));
 
         RestServerWms::m_pChartCanvas->SetShowGrid(true);
         RestServerWms::m_pChartCanvas->SetShowENCLights(true);
@@ -131,8 +132,16 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         RestServerWms::m_pChartCanvas->SetViewPointByCorners(latSW, lonSW,
                                                              latNE, lonNE);
 
+        RestServerWms::m_pChartCanvas->SetSize(
+            wxSize(std::stoi(strWidthPx),
+                   std::stoi(strHeightPx)));
+
+        RestServerWms::m_pChartCanvas->DoCanvasUpdate();
+
         RestServerWms::m_pChartCanvas->Refresh();
         RestServerWms::m_pWxFrame->Refresh();
+        RestServerWms::m_pChartCanvas->Update();
+        RestServerWms::m_pWxFrame->Update();
 
         wxClientDC dcWindow(RestServerWms::m_pWxFrame);
         wxCoord screenWidth, screenHeight;
@@ -234,9 +243,9 @@ void RestServerWms::RunDelayedLoader() {
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    m_pChartCanvas->SetSize(wxSize(400, 400));
+    //m_pChartCanvas->SetSize(wxSize(400, 400));
     //m_pChartCanvas->SetDisplaySizeMM
-    m_pChartCanvas->SetViewPointByCorners(10, 57, 11, 58);
+    //m_pChartCanvas->SetViewPointByCorners(10, 57, 11, 58);
 
   } catch (const std::exception& ex) {
     int j = 0;
@@ -246,11 +255,17 @@ bool RestServerWms::StartServer() {
 
   m_pWxFrame = new wxFrame(nullptr, -1, "WMS");
   m_pWxFrame->Show();
+  pText = new wxStaticText(m_pWxFrame, wxID_STATIC, wxT("Clean"));
+
   m_pChartCanvas = new ChartCanvas(m_pWxFrame, 10);
-  m_pChartCanvas->SetSize(wxSize(400, 400));
+  m_pChartCanvas->SetPosition(wxPoint(100, 110));
+  m_pChartCanvas->SetSize(wxSize(100, 100));
 
   m_delayedLoaderThread = std::thread([&]() { RestServerWms::RunDelayedLoader(); });
   m_workerthread = std::thread([&]() { RestServerWms::Run(); });
+
+  m_pWxFrame->Refresh();
+  m_pWxFrame->Update();
   return true;
 }
 

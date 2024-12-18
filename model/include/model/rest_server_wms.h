@@ -161,6 +161,8 @@ public:
   static wxFrame* m_pWxFrame;
   static ChartCanvas* m_pChartCanvas;
 
+  static wxStaticText* pText;
+
 private:
   void RunDelayedLoader();
   void Run();
