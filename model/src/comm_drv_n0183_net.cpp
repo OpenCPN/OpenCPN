@@ -109,6 +109,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_tsock(nullptr),
       m_socket_server(nullptr),
       m_is_multicast(false),
+      m_stats_timer(*this, 2s),
       m_txenter(0),
       m_dog_value(0),
       m_rx_connect_event(false),
@@ -118,11 +119,12 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_is_conn_err_reported(false) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
-
   this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
   this->attributes["netPort"] = std::to_string(params->NetworkPort);
   this->attributes["userComment"] = params->UserComment.ToStdString();
   this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  m_driver_stats.driver_bus = NavAddr::Bus::N0183;
+  m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
   m_mrq_container = std::make_unique<MrqContainer>();
 
@@ -141,6 +143,7 @@ CommDriverN0183Net::~CommDriverN0183Net() { Close(); }
 void CommDriverN0183Net::HandleN0183Msg(const std::string& sentence) {
   // Sanity check
   if ((sentence[0] == '$' || sentence[0] == '!') && sentence.size() > 5) {
+    m_driver_stats.rx_count += sentence.size();
     std::string identifier;
     // We notify based on full message, including the Talker ID
     identifier = sentence.substr(1, 5);
@@ -209,6 +212,7 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
                       wxSOCKET_LOST_FLAG);
     m_sock->Notify(TRUE);
     m_sock->SetTimeout(1);  // Short timeout
+    m_driver_stats.available = true;
   }
 
   // Set up another socket for transmit
@@ -304,6 +308,7 @@ void CommDriverN0183Net::OnTimerSocket() {
   auto* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
+      m_driver_stats.available = false;
       wxLogDebug("Attempting reconnection...");
       m_rx_connect_event = false;
       //  Stop DATA watchdog, may be restarted on successful connection.
@@ -323,6 +328,7 @@ void CommDriverN0183Net::OnTimerSocket() {
            << ":" << m_params.NetworkPort;
         CommDriverRegistry::GetInstance().evt_driver_msg.Notify(ss.str());
         m_is_conn_err_reported = true;
+        m_driver_stats.error_count++;
       }
     }
   }
@@ -349,6 +355,7 @@ bool CommDriverN0183Net::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   std::string payload(msg_0183->payload);
   if (!ocpn::endswith(payload, "\r\n")) payload += "\r\n";
+  m_driver_stats.tx_count += payload.size();
   return SendSentenceNetwork(payload.c_str());
 }
 
@@ -386,6 +393,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_LOST: {
+      m_driver_stats.available = false;
       using namespace std::chrono;
       if (m_params.NetProtocol == TCP || m_params.NetProtocol == GPSD) {
         if (m_rx_connect_event) {
@@ -443,6 +451,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         m_rx_connect_event = true;
       }
 
+      m_driver_stats.available = true;
       m_connect_time = std::chrono::steady_clock::now();
       break;
     }
@@ -550,4 +559,5 @@ void CommDriverN0183Net::Close() {
 
   m_socket_timer.Stop();
   m_socketread_watchdog_timer.Stop();
+  m_driver_stats.available = false;
 }
