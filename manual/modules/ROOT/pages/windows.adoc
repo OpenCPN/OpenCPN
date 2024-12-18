@@ -185,6 +185,7 @@ $ .\opencpn -p
  --Y                Non-interactive mode (for calling from a script)
  --clean            Delete and reinitialize the build folder
  --rebuild          Rebuild all build types
+ --package          Create installer package for each built configuration
  --wxver vn.n[.n]   Build specified version of wxWidgets sources.
                     Note: This is a tag or branch name.
 ----
@@ -201,11 +202,13 @@ options, it will initialize all 4 configurations. This feature allows one to cho
 than the first time. So --clean is basically the same as a first time run except it
 will save the runtime data for all existing configs and restore when a particular configuration
 (debug, release, etc.) is initialized. The --clean option can be used to up or down size the build
-tree to just the configurations you are interested in at the moment. You can always restore a
-configuration later with the --clean option accompanied by the desired configuration switches.
+tree to just the configurations you are interested in at the moment.
 
 * Remember, do not try to build a configuration you did not create initially with this script. The results
-will not run or be useful in any meaningful way.  This is why it defaults to all 4 configuration types.
+will not run or be useful in any meaningful way.  This is why it defaults to all 4 configuration types initially.
+
+* Use the --package option to build installer packages.  The installer will be found in the folder named for
+each built configuration type (.\build\Release, .\build\Debug, etc.)
 
 *Example usage:*
 
