@@ -102,6 +102,9 @@ goto :main
 @echo *      --debug            Build Debug configuration                        *
 @echo *                                                                          *
 @echo *      --all              Build all 4 configurations  (default)            *
+@echo *                                                                          *
+@echo *      --package          Create installer package after building          *
+@echo *                                                                          *
 @echo *     ***************************************************************      *
 @echo *     * By default, the first time you run this script all 4        *      *
 @echo *     * configuration types of builds are created. If you don't     *      *
@@ -225,6 +228,20 @@ set ocpn_release=0
 set ocpn_relwithdebinfo=0
 set ocpn_debug=0
 set quiet=N
+set ocpn_package=0
+:: Clean up if previous run "failed"
+if exist "%~dp0..\build\.MinSizeRel\.Pack" (
+  rmdir "%~dp0..\build\.MinSizeRel\.Pack"
+)
+if exist "%~dp0..\build\.Release\.Pack" (
+  rmdir "%~dp0..\build\.Release\.Pack"
+)
+if exist "%~dp0..\build\.Debug\.Pack" (
+  rmdir "%~dp0..\build\.Debug\.Pack"
+)
+if exist "%~dp0..\build\.RelWithDebInfo\.Pack" (
+  rmdir "%~dp0..\build\.RelWithDebInfo\.Pack"
+)
 :: If this is a rerun then build existing configurations
 if exist "%OCPN_DIR%\build\.Debug" (
   set ocpn_all=0
@@ -252,7 +269,8 @@ if [%1]==[--release] (shift /1 && set ocpn_all=0&& set ocpn_release=1&& goto :pa
 if [%1]==[--relwithdebinfo] (shift /1 && set ocpn_all=0&& set ocpn_relwithdebinfo=1&& goto :parse)
 if [%1]==[--debug] (shift /1 && set ocpn_all=0&& set ocpn_debug=1&& goto :parse)
 if [%1]==[--wxver] (shift /1 && set wxVER=%2&& shift /1 && goto :parse)
-if [%1]==[--Y] (shift /1 && set "quiet=Y" && shift /1 && goto :parse)
+if [%1]==[--Y] (shift /1 && set "quiet=Y"&& shift /1 && goto :parse)
+if [%1]==[--package] (shift /1 && set ocpn_package=1&& goto :parse)
 if [%1]==[] (goto :begin) else (
   echo Unknown option: %1
   shift /1
@@ -640,15 +658,19 @@ if errorlevel 1 (
 
 if [%ocpn_debug%]==[1] (
   if not exist "%OCPN_DIR%\build\.Debug" (mkdir "%OCPN_DIR%\build\.Debug")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.Debug\.Pack")
   )
 if [%ocpn_release%]==[1] (
   if not exist "%OCPN_DIR%\build\.Release" (mkdir "%OCPN_DIR%\build\.Release")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.Release\.Pack")
   )
 if [%ocpn_relwithdebinfo%]==[1] (
   if not exist "%OCPN_DIR%\build\.RelWithDebInfo" (mkdir "%OCPN_DIR%\build\.RelWithDebInfo")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.RelWithDebInfo\.Pack")
   )
 if [%ocpn_minsizerel%]==[1] (
   if not exist "%OCPN_DIR%\build\.MinSizeRel" (mkdir "%OCPN_DIR%\build\.MinSizeRel")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.MinSizeRel\.Pack")
 )
 ::-------------------------------------------------------------
 :: Download and initialize build dependencies
@@ -732,7 +754,12 @@ if exist "%~dp0..\build\.RelWithDebInfo" (
     goto :fail
   )
   set buildTarget=Build
-  call :ocpnBuild
+  if exist "%~dp0..\build\.RelWithDebInfo\.Pack" (
+    rmdir "%~dp0..\build\.RelWithDebInfo\.Pack"
+    call :ocpnPack
+  ) else (
+    call :ocpnBuild
+  )
   if errorlevel 1 (
     goto :fail
   )
@@ -747,7 +774,12 @@ if exist "%~dp0..\build\.Release" (
     goto :fail
   )
   set buildTarget=Build
-  call :ocpnBuild
+  if exist "%~dp0..\build\.Release\.Pack" (
+    rmdir "%~dp0..\build\.Release\.Pack"
+    call :ocpnPack
+  ) else (
+    call :ocpnBuild
+  )
   if errorlevel 1 (
     goto :fail
   )
@@ -768,7 +800,12 @@ if exist "%~dp0..\build\.Debug" (
     goto :fail
   )
   set buildTarget=Build
-  call :ocpnBuild
+  if exist "%~dp0..\build\.Debug\.Pack" (
+    call :ocpnPack
+    rmdir "%~dp0..\build\.Debug\.Pack"
+  ) else (
+    call :ocpnBuild
+  )
   if errorlevel 1 (
     goto :fail
   )
@@ -783,7 +820,12 @@ if exist "%~dp0..\build\.MinSizeRel" (
     goto :fail
   )
   set buildTarget=Build
-  call :ocpnBuild
+  if exist "%~dp0..\build\.MinSizeRel\.Pack" (
+    rmdir "%~dp0..\build\.MinSizeRel\.Pack"
+    call :ocpnPack
+  ) else (
+    call :ocpnBuild
+  )
   if errorlevel 1 (
     goto :fail
   )
@@ -894,6 +936,31 @@ msbuild ^
   /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
   "%~dp0..\build\INSTALL.vcxproj"
 if errorlevel 1 goto :buildErr
+::
+:: Delete the .mo files because they are only valid for this build Configuration.
+:: They will not be rebuilt for a different configuration unless we delete them.
+del /F "%~dp0..\build\*.mo"
+
+set buildTarget=
+@echo OpenCPN %build_type% build successful!
+@echo.
+exit /b 0
+:ocpnPack
+@echo build_type=%build_type%
+msbuild ^
+  -property:Configuration=%build_type%;Platform=Win32 ^
+  -target:%buildTarget% ^
+  -noLogo ^
+  -verbosity:minimal ^
+  -maxCpuCount ^
+  -property:UseMultiToolTask=true ^
+  -property:EnableClServerMode=true ^
+  -property:BuildPassReferences=true ^
+  -property:CL="/arch:SSE" ^
+  /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
+  "%~dp0..\build\PACKAGE.vcxproj"
+if errorlevel 1 goto :buildErr
+move "%~dp0..\build\*.exe" "%~dp0..\build\%build_type%"
 ::
 :: Delete the .mo files because they are only valid for this build Configuration.
 :: They will not be rebuilt for a different configuration unless we delete them.
