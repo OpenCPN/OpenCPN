@@ -30,7 +30,8 @@
 	<script>
 		console.log("script runnning")
 
-		const localwmsurl = "https://localhost:8443/api/wms"; //opencpn rest server api wms endpoint
+		const localwmsurl = "http://localhost:8081/api/wms"; //opencpn rest server api wms endpoint
+		//const localwmsurl = "https://localhost:8443/api/wms"; //opencpn rest server api wms endpoint
 		//const localwmsurl = 'http://localhost:1234/service'; //local testserver for finding out what the openlayers and leaflet was sending
 
 		const Map = window.ol.Map;
@@ -45,6 +46,8 @@
 		//******************************************************************
 		//load opencpn_wms
 		const map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
+		
+
 
 		L.tileLayer.wms(localwmsurl, {
 			layers: 'NAV',

@@ -107,6 +107,7 @@ set(
   ${MODEL_HDR_DIR}/plugin_paths.h
   ${MODEL_HDR_DIR}/position_parser.h
   ${MODEL_HDR_DIR}/rest_server.h
+  ${MODEL_HDR_DIR}/rest_server_wms.h
   ${MODEL_HDR_DIR}/route.h
   ${MODEL_HDR_DIR}/routeman.h
   ${MODEL_HDR_DIR}/route_point.h
@@ -200,6 +201,7 @@ set(SRC
   ${MODEL_SRC_DIR}/plugin_paths.cpp
   ${MODEL_SRC_DIR}/position_parser.cpp
   ${MODEL_SRC_DIR}/rest_server.cpp
+  ${MODEL_SRC_DIR}/rest_server_wms.cpp
   ${MODEL_SRC_DIR}/route.cpp
   ${MODEL_SRC_DIR}/routeman.cpp
   ${MODEL_SRC_DIR}/route_point.cpp

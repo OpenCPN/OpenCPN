@@ -32,6 +32,11 @@
 
 #include "observable_evtvar.h"
 
+#include "../gui/include/gui/viewport.h"
+#include "../gui/include/gui/chcanv.h"
+
+#include "../model/georef.h"
+
 // MacOS 1.13:
 #if (defined(OCPN_GHC_FILESYSTEM) || \
      (defined(__clang_major__) && (__clang_major__ < 15)))
@@ -144,21 +149,21 @@ namespace fs = std::filesystem;
  */
 
 /** AbstractRestServer implementation and interface to underlying IO thread. */
-class RestServerWms  {
-
-
+class RestServerWms {
 public:
   RestServerWms();
   ~RestServerWms();
 
-  bool StartServer() ;
-  void StopServer() ;
+  bool StartServer();
+  void StopServer();
 
   static unsigned int RestServerWms::m_hitcount;
+  static wxFrame* m_pWxFrame;
+  static ChartCanvas* m_pChartCanvas;
 
 private:
+  void RunDelayedLoader();
   void Run();
-
 
   /** IoThread interface: Guards return_status */
   std::mutex ret_mutex;
@@ -166,13 +171,13 @@ private:
   /** IoThread interface: Guards return_status */
   std::condition_variable return_status_cv;
 
- 
   const std::string m_endpoint;
 
   std::atomic<bool> m_alive = true;
+
+  std::thread m_delayedLoaderThread;
   std::thread m_workerthread;
 
-  
+ 
 };
-
 #endif  // guard

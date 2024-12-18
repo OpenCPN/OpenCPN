@@ -79,6 +79,7 @@ model/include/model/plugin_loader.h
 model/include/model/plugin_paths.h
 model/include/model/position_parser.h
 model/include/model/rest_server.h
+model/include/model/rest_server_wms.h
 model/include/model/route.h
 model/include/model/routeman.h
 model/include/model/route_point.h
@@ -169,6 +170,7 @@ model/src/plugin_loader.cpp
 model/src/plugin_paths.cpp
 model/src/position_parser.cpp
 model/src/rest_server.cpp
+model/src/rest_server_wms.cpp
 model/src/route.cpp
 model/src/routeman.cpp
 model/src/route_point.cpp
