@@ -1,5 +1,7 @@
 # Building OpenCPN for Android
 
+These instructions describe how to build OpenCPN for Android on Ubuntu 24.04.
+
 ## Build Environment Setup
 
 1. Required Tools:
@@ -8,8 +10,15 @@
 sudo apt update
 sudo apt install cmake git gettext python3-pip
 
-# Install Cloudsmith CLI for uploads
-python3 -m pip install --user --force-reinstall cloudsmith-cli
+# Create a virtual environment in your home directory
+python3 -m venv ~/opencpn-buildenv
+
+# Activate the virtual environment
+source ~/opencpn-buildenv/bin/activate
+
+# Install required Python packages
+pip install --upgrade pip setuptools
+pip install cloudsmith-cli
 
 # Set environment variables 
 export ANDROID_NDK_ROOT=$HOME/android-sdk/ndk/26.1.10909125
