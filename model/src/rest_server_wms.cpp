@@ -279,7 +279,7 @@ bool RestServerWms::StartServer() {
   m_pChartCanvas = new ChartCanvas(m_pWxFrame, 10);
   m_pChartCanvas->SetPosition(wxPoint(0, 0));
   m_pChartCanvas->SetSize(wxSize(100, 100));
-delay
+
   m_workerthread = std::thread([&]() { RestServerWms::Run(); });
 
   //m_pWxFrame->Refresh();
