@@ -1945,7 +1945,7 @@ bool MyApp::OnInit() {
 int MyApp::OnExit() {
   wxLogMessage(_T("opencpn::MyApp starting exit."));
   m_checker.OnExit();
-  m_rest_server_wms.StopServer();
+  //m_rest_server_wms.StopServer();
   m_usb_watcher.Stop();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
 
