@@ -4554,6 +4554,7 @@ void glChartCanvas::Render() {
     g_pi_manager->SendViewPortToRequestingPlugIns(vp);
     g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
         m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_OVER_UI);
+    glActiveTexture(GL_TEXTURE0);
   }
 
   // quiting?

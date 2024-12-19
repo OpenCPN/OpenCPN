@@ -62,10 +62,10 @@ class wxGLContext;
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
-//    PlugIns conforming to API Version less then the most modern will also
+//    PlugIns conforming to API Version less than the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR 1
-#define API_VERSION_MINOR 18
+#define API_VERSION_MINOR 19
 
 //    Fwd Definitions
 class wxFileConfig;

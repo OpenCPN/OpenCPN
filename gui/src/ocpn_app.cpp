@@ -677,12 +677,8 @@ DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
             0x6b, 0xba, 0xe7, 0x22, 0xc0);
 #endif
 
-#ifdef __MSVC__
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
 #endif
 
 #if !defined(NAN)
