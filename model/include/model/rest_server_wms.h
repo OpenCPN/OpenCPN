@@ -163,6 +163,8 @@ public:
 
   static wxStaticText* pText;
 
+  static void* jpegdatabuffer;
+
 private:
   void RunDelayedLoader();
   void Run();

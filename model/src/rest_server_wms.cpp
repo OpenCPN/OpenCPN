@@ -37,21 +37,20 @@
 #include "model/rest_server_wms.h"
 
 #include "mongoose.h"
-#include "observable_evt.h"
 
-/** Event from IO thread to main */
-wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
-
+#define RESTSERVERWMS
 
 static const char* const ServerAddr = "http://0.0.0.0:8081";
 
 unsigned int RestServerWms::m_hitcount = 0;
+
+#ifdef RESTSERVERWMS
 wxFrame* RestServerWms::m_pWxFrame = nullptr;
 ChartCanvas* RestServerWms::m_pChartCanvas = nullptr;
 wxStaticText* RestServerWms::pText = nullptr;
 
-/** Kind of messages sent from io thread to main code. */
-enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
+void* RestServerWms::jpegdatabuffer = new char[1000000];
+#endif
 
 /** Extract a HTTP variable from query string. */
 static inline std::string HttpVarToString(const struct mg_str& query,
@@ -61,16 +60,6 @@ static inline std::string HttpVarToString(const struct mg_str& query,
   if (mgs.len && mgs.ptr) string = std::string(mgs.ptr, mgs.len);
   return string;
 }
-
-
-//static void ConvertCoordinate(double lat, double lng, double& lat4326,
-//                       double& lon4326) {
-//  double x = lng * 20037508.34 / 180;
-//  double y = log(tan((90 + lat) * PI / 360)) / (PI / 180);
-//  y = y * 20037508.34 / 180;
-//  lat4326 = x;
-//  lon4326 = y;
-//};
 
 //https://gist.github.com/onderaltintas/6649521//
 void coord3857To4326(double lon3857, double lat3857, double& lat4326,
@@ -82,10 +71,13 @@ void coord3857To4326(double lon3857, double lat3857, double& lat4326,
         atan(exp(lat3857 * PI / 20037508.34)) * 360 / PI - 90;
 }
 
-// We use the same event handler function for HTTP and HTTPS connections
-// fn_data is NULL for plain HTTP, and non-NULL for HTTPS
+
+// entrypoint for mongoose
 static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
+
+ #ifdef RESTSERVERWMS
   int j = 0;
+
   
   if (ev == MG_EV_HTTP_MSG) {
     ++RestServerWms::m_hitcount;
@@ -97,6 +89,11 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
                     "{hitcount:%lu}\n", RestServerWms::m_hitcount);
     } else if (mg_match(hm->uri, mg_str("/api/wms"), NULL)) {
       try {
+        if (mg_match(hm->uri, mg_str("favicon.ico"), NULL
+        )){
+          mg_http_reply(c, 404,"","");
+          return;
+        }
         std::string strService = HttpVarToString(hm->query, "service");
         std::string strRequest = HttpVarToString(hm->query, "request");
         std::string strFormat = HttpVarToString(hm->query, "format");
@@ -109,6 +106,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         std::stringstream ss(strBbox);
         std::vector<double> data;
 
+        INFO_LOG << "WMS req " << RestServerWms::m_hitcount
+                 << " bbox:" << strBbox; 
         while (ss.good()) {
           std::string substr;
           getline(ss, substr, ',');
@@ -122,6 +121,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         double lonSW, latSW, lonNE, latNE;
         coord3857To4326(data[0], data[1], lonSW, latSW);
         coord3857To4326(data[2], data[3], lonNE, latNE);
+
+        /*mg_http_reply(c, 500, "", "reject 500 wms");
+        return;*/
+
         // m_pchart
 
         RestServerWms::pText->SetLabelText(std::to_string(RestServerWms::m_hitcount));
@@ -158,7 +161,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
                    0  // offset in the original DC
         );
         memDC.SelectObject(wxNullBitmap);
-        screenshot.SaveFile("c:\\temp\\opencpn_wms_imgs\\img_" + std::to_string(RestServerWms::m_hitcount) + ".jpg",
+        std::string filename = "c:\\temp\\opencpn_wms_imgs\\img_" +
+                               std::to_string(RestServerWms::m_hitcount) +
+                               ".jpg";
+        screenshot.SaveFile(filename,
                             wxBITMAP_TYPE_JPEG);
         
         //get byte array for sending
@@ -168,33 +174,23 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         wxMemoryOutputStream s;
         img.SaveFile(s, wxBITMAP_TYPE_JPEG);
 
-        size_t size = s.GetSize();
-        
-
-        //wxStreamBuffer* pS = s.GetOutputStreamBuffer();
-        //char jpegdata[size];
-
-        void* buffer = new char[size];
+        size_t size = s.GetSize();      
 
         // Copy data from the stream to the external buffer
-        s.CopyTo(buffer, size);
+        s.CopyTo(RestServerWms::jpegdatabuffer, size);
 
-        //size_t read = pS->Read(&jpegdata, sizeof(jpegdata));
-
-        //mg_http_reply(c, 200, "Content-Type: application/json\r\n",
-        //              "{\"width\":%s}\n", strWidthPx.c_str());
-
-         //mg_http_reply(c, 200, "Content-Type: image/jpeg\r\n", "%s", buffer, size);
-
-        /*
+        //Warning - the reply generation is messed up (or I am an idiot)
+        //this works, mg_http_reply, chunk writing etc did not. Suspecting that nulls inside the char* causes transmission to end prematurely - much like the stringlength counted only to first null.... Waisted a whole day, wireshark finally gave the clue as to what what wrong 
         mg_printf(c, "HTTP/1.1 200 OK\r\n");
         mg_printf(c, "Content-Type: image/jpeg\r\n");
-        mg_printf(c, "Content-Length: %zu\r\n\r\n", size);
-        mg_send(c, buffer, size);
-        */
-        //cleanup
-        //delete pH;
-        //delete buffer;
+
+        std::string header_conlength = "Content-Length: " + std::to_string(size) + "\r\n\r\n"; 
+        mg_printf(c, header_conlength.c_str());
+        mg_send(c, RestServerWms::jpegdatabuffer, size);
+        c->is_resp = 0;
+        
+        INFO_LOG << "WMS replied to hit:" << RestServerWms::m_hitcount
+                 << " size:" << size;
       }
       catch(const std::exception& ex){
         int j = 0;
@@ -206,13 +202,14 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       mg_http_reply(c, 500, NULL, "\n");
     }
   }
+  #endif
 }
 
 //========================================================================
 /*    RestServer implementation */
 
 void RestServerWms::Run() {
-  
+  #ifdef RESTSERVERWMS
   struct mg_mgr mgr = {0};  // Event manager
   mg_log_set(MG_LL_DEBUG);  // Set log level
   mg_mgr_init(&mgr);        // Initialise event manager
@@ -222,9 +219,10 @@ void RestServerWms::Run() {
   mg_http_listen(&mgr, ServerAddr, fn, this);
 
   while (m_alive) {
-    mg_mgr_poll(&mgr, 10);  // Infinite event loop //TODO set the time depending on activity bursts, WMS often load 9 times rapidly
+    mg_mgr_poll(&mgr, 1);  // Infinite event loop //TODO set the time depending on activity bursts, WMS often load 9 times rapidly
   }
   mg_mgr_free(&mgr);
+  #endif
 }
 
 void RestServerWms::StopServer() {
@@ -245,6 +243,7 @@ RestServerWms::RestServerWms(){
   //lon, lat expecting: -77.035974, 38.898717
   int j = 0;
 
+  INFO_LOG << "RestServerWms running";
 }   
 
 RestServerWms::~RestServerWms() {
@@ -270,7 +269,8 @@ void RestServerWms::RunDelayedLoader() {
   }
 }
 bool RestServerWms::StartServer() {
-
+  #ifdef RESTSERVERWMS
+  
   m_pWxFrame = new wxFrame(nullptr, -1, "WMS");
   m_pWxFrame->Show();
   pText = new wxStaticText(m_pWxFrame, wxID_STATIC, wxT("Clean"));
@@ -282,8 +282,10 @@ bool RestServerWms::StartServer() {
   m_delayedLoaderThread = std::thread([&]() { RestServerWms::RunDelayedLoader(); });
   m_workerthread = std::thread([&]() { RestServerWms::Run(); });
 
-  m_pWxFrame->Refresh();
-  m_pWxFrame->Update();
+  //m_pWxFrame->Refresh();
+  //m_pWxFrame->Update();
+
+  #endif
   return true;
 }
 
