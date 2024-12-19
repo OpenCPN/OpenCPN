@@ -44,6 +44,9 @@ static const char* const ServerAddr = "http://0.0.0.0:8081";
 
 unsigned int RestServerWms::m_hitcount = 0;
 
+unsigned int RestServerWms::lastSize_W = 0;
+unsigned int RestServerWms::lastSize_H = 0;
+
 #ifdef RESTSERVERWMS
 wxFrame* RestServerWms::m_pWxFrame = nullptr;
 ChartCanvas* RestServerWms::m_pChartCanvas = nullptr;
@@ -102,12 +105,21 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         std::string strSrs = HttpVarToString(hm->query, "srs");
         std::string strBbox = HttpVarToString(hm->query, "bbox");
 
+        //check for resizing
+        int _w = std::stoi(strWidthPx);
+        int _h = std::stoi(strHeightPx);
+        if (_w != RestServerWms::lastSize_W || _h != RestServerWms::lastSize_H){
+          RestServerWms::lastSize_W = _w;
+          RestServerWms::lastSize_H = _h;
+
+           RestServerWms::m_pChartCanvas->SetSize(wxSize(_w, _h));
+
+        }
+
         // BBox manging
         std::stringstream ss(strBbox);
         std::vector<double> data;
 
-        INFO_LOG << "WMS req " << RestServerWms::m_hitcount
-                 << " bbox:" << strBbox; 
         while (ss.good()) {
           std::string substr;
           getline(ss, substr, ',');
@@ -121,6 +133,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         double lonSW, latSW, lonNE, latNE;
         coord3857To4326(data[0], data[1], lonSW, latSW);
         coord3857To4326(data[2], data[3], lonNE, latNE);
+
+        INFO_LOG << "WMS req " << RestServerWms::m_hitcount << " SE:" << latSW
+                 << "," << lonSW << " NE" << latNE << "," << lonNE; 
+        
 
         /*mg_http_reply(c, 500, "", "reject 500 wms");
         return;*/
@@ -152,12 +168,13 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
 
         dcWindow.GetSize(&screenWidth, &screenHeight);
 
-        wxBitmap screenshot(screenWidth, screenHeight, -1);
+        wxBitmap screenshot(RestServerWms::lastSize_W,
+                            RestServerWms::lastSize_H, -1);
         wxMemoryDC memDC;
         memDC.SelectObject(screenshot);
         memDC.Clear();
         memDC.Blit(0, 0,  // Copy to coordinate
-                   screenWidth, screenHeight, &dcWindow, 0,
+                   RestServerWms::lastSize_W, RestServerWms::lastSize_H, &dcWindow, 0,
                    0  // offset in the original DC
         );
         memDC.SelectObject(wxNullBitmap);
@@ -274,9 +291,10 @@ bool RestServerWms::StartServer() {
   m_pWxFrame = new wxFrame(nullptr, -1, "WMS");
   m_pWxFrame->Show();
   pText = new wxStaticText(m_pWxFrame, wxID_STATIC, wxT("Clean"));
+  pText->SetForegroundColour(wxColor("red"));
 
   m_pChartCanvas = new ChartCanvas(m_pWxFrame, 10);
-  m_pChartCanvas->SetPosition(wxPoint(100, 110));
+  m_pChartCanvas->SetPosition(wxPoint(0, 0));
   m_pChartCanvas->SetSize(wxSize(100, 100));
 
   m_delayedLoaderThread = std::thread([&]() { RestServerWms::RunDelayedLoader(); });

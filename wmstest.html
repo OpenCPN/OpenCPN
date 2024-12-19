@@ -14,7 +14,7 @@
 	<div id="map_opencpn_leaflet_wms" style="width:600px;height:600px;background-color:lightcoral">map_opencpn_leaflet_wms</div>
 	<br />
 	map_ol_10_1_0
-	<div id="map_ol_10_1_0" style="width:400px;height:400px;background-color:green"></div>
+	<div id="map_ol_10_1_0" style="width:600px;height:600px;background-color:green"></div>
 	<br />
 	map_leaflet_1_9_4
 	<div id="map_leaflet_1_9_4" style="width:400px;height:400px;background-color:lightblue">map_leaflet_1_9_4</div>
@@ -44,10 +44,8 @@
 		const LON = 9.77;
 		const ZOOM = 11
 		//******************************************************************
-		//load opencpn_wms
+		//load opencpn_wms using leaflet
 		const map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
-		
-
 
 		L.tileLayer.wms(localwmsurl, {
 			layers: 'NAV',
@@ -57,11 +55,7 @@
 
 
 		//******************************************************************
-		//Load the danish 50m grid depth map dataforsyningen in openlayers
-
-		//Example https://api.dataforsyningen.dk/natur_friluftskort?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=nfkort&STYLES=&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&BBOX=559140.625%2C6199218.75%2C560000%2C6200078.125&token=xxx
-
-		//Can load: https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&width=256&height=256&layers=ddm_50m_dybde&BBOX=10,54.5,11,55.5
+		//load opencpn_wms using openlayers
 
 
 		try {
@@ -71,8 +65,8 @@
 				new TileLayer({
 					extent: [10, 54.5, 11, 55.5],
 					source: new TileWMS({
-						url: 'https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&layers=ddm_50m_dybde&bbox=10,54.5,11,55.5',
-						params: { LAYERS: 'ddm_50m_dybde', TILED: 'TRUE' },
+						url: 'http://localhost:8081/api/wms',
+						params: { LAYERS: 'NAV', TILED: 'TRUE' },
 						serverType: 'geoserver'
 					}),
 				}),
@@ -85,8 +79,8 @@
 				target: 'map_ol_10_1_0',
 				view: new View({
 					projection: 'EPSG:4326',
-					center: [0, 0],
-					zoom: 1,
+					center: [LAT, LON],
+					zoom: ZOOM,
 				}),
 			});
 		}
@@ -107,6 +101,10 @@
 
 		//******************************************************************
 		//load leafet datafors
+		//Example https://api.dataforsyningen.dk/natur_friluftskort?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=nfkort&STYLES=&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&BBOX=559140.625%2C6199218.75%2C560000%2C6200078.125&token=xxx
+
+		//Can load: https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&width=256&height=256&layers=ddm_50m_dybde&BBOX=10,54.5,11,55.5
+
 		const mapOptions_datafors = {};
 		const map_leaflet_datafors = L.map('map_leaflet_datafors', mapOptions_datafors);
 

@@ -163,6 +163,9 @@ public:
 
   static wxStaticText* pText;
 
+  static unsigned int lastSize_W;
+  static unsigned int lastSize_H;
+
   static void* jpegdatabuffer;
 
 private:
