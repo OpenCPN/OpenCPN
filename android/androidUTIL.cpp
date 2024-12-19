@@ -3106,8 +3106,7 @@ wxString BuildAndroidSettingsString(void) {
   // Connections
 
   // Internal GPS.
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto &cp : TheConnectionParams()) {
     if (INTERNAL_GPS == cp->Type) {
       result += _T("prefb_internalGPS:");
       result += cp->bEnabled ? _T("1;") : _T("0;");
@@ -3358,8 +3357,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
     ConnectionParams *pExistingParams = NULL;
     ConnectionParams *cp = NULL;
 
-    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-      ConnectionParams *xcp = TheConnectionParams()->Item(i);
+    for (auto &xcp : TheConnectionParams()) {
       if (INTERNAL_GPS == xcp->Type) {
         pExistingParams = xcp;
         cp = xcp;
@@ -3379,7 +3377,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
       ConnectionParams *new_params = new ConnectionParams(sGPS);
 
       new_params->bEnabled = benable_InternalGPS;
-      TheConnectionParams()->Add(new_params);
+      TheConnectionParams().push_back(new_params);
       cp = new_params;
     }
 
@@ -3451,8 +3449,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
 
         wxString target = AUSBNames[i] + _T("-") + extraString;
 
-        for (unsigned int j = 0; j < TheConnectionParams()->Count(); j++) {
-          ConnectionParams *xcp = TheConnectionParams()->Item(j);
+        for (auto &xcp : TheConnectionParams()) {
           wxLogMessage(_T("    Checking: ") + target + " .. " +
                        xcp->GetDSPort());
 
@@ -3488,7 +3485,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
           ConnectionParams *new_params = new ConnectionParams(sSerial);
 
           new_params->bEnabled = true;
-          TheConnectionParams()->Add(new_params);
+          TheConnectionParams().push_back(new_params);
           cp = new_params;
           rr |= NEED_NEW_OPTIONS;
         }

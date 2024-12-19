@@ -1260,7 +1260,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-      TheConnectionParams()->Clear();
+      TheConnectionParams().clear();
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
@@ -1268,7 +1268,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
           delete prm;
           continue;
         }
-        TheConnectionParams()->Add(prm);
+        TheConnectionParams().push_back(prm);
       }
     }
   }
@@ -2793,9 +2793,9 @@ void MyConfig::UpdateSettings() {
 
   SetPath(_T ( "/Settings/NMEADataSource" ));
   wxString connectionconfigs;
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+  for (size_t i = 0; i < TheConnectionParams().size(); i++) {
     if (i > 0) connectionconfigs.Append(_T("|"));
-    connectionconfigs.Append(TheConnectionParams()->Item(i)->Serialize());
+    connectionconfigs.Append(TheConnectionParams()[i]->Serialize());
   }
   Write(_T ( "DataConnections" ), connectionconfigs);
 
