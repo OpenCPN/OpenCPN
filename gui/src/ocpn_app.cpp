@@ -1907,8 +1907,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto *cp : TheConnectionParams()) {
     if (cp->bEnabled) {
       if (cp->GetDSPort().Contains("Serial")) {
         std::string port(cp->Port.ToStdString());

@@ -1812,11 +1812,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto *cp : TheConnectionParams()) {
     delete cp;
   }
-  delete TheConnectionParams();
 
   if (pLayerList) {
     LayerList::iterator it;
@@ -4797,8 +4795,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 1:
       // Connect Datastreams
 
-      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-        ConnectionParams *cp = TheConnectionParams()->Item(i);
+      for (auto *cp : TheConnectionParams()) {
         if (cp->bEnabled) {
           auto driver = MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
