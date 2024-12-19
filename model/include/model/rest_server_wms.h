@@ -169,7 +169,6 @@ public:
   static void* jpegdatabuffer;
 
 private:
-  void RunDelayedLoader();
   void Run();
 
   /** IoThread interface: Guards return_status */

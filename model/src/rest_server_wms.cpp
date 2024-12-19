@@ -267,24 +267,7 @@ RestServerWms::~RestServerWms() {
   StopServer();
 }
 
-void RestServerWms::RunDelayedLoader() {
-  try {
-    std::this_thread::sleep_for(std::chrono::seconds(5));
 
-   
-    
-
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    //m_pChartCanvas->SetSize(wxSize(400, 400));
-    //m_pChartCanvas->SetDisplaySizeMM
-    //m_pChartCanvas->SetViewPointByCorners(10, 57, 11, 58);
-
-  } catch (const std::exception& ex) {
-    int j = 0;
-  }
-}
 bool RestServerWms::StartServer() {
   #ifdef RESTSERVERWMS
   
@@ -296,8 +279,7 @@ bool RestServerWms::StartServer() {
   m_pChartCanvas = new ChartCanvas(m_pWxFrame, 10);
   m_pChartCanvas->SetPosition(wxPoint(0, 0));
   m_pChartCanvas->SetSize(wxSize(100, 100));
-
-  m_delayedLoaderThread = std::thread([&]() { RestServerWms::RunDelayedLoader(); });
+delay
   m_workerthread = std::thread([&]() { RestServerWms::Run(); });
 
   //m_pWxFrame->Refresh();
