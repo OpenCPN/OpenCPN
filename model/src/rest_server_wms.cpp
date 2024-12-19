@@ -28,6 +28,7 @@
 #include <wx/filename.h>
 #include <wx/log.h>
 #include <wx/string.h>
+#include <wx/mstream.h>
 
 #include "config.h"
 
@@ -159,30 +160,47 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         memDC.SelectObject(wxNullBitmap);
         screenshot.SaveFile("c:\\temp\\opencpn_wms_imgs\\img_" + std::to_string(RestServerWms::m_hitcount) + ".jpg",
                             wxBITMAP_TYPE_JPEG);
+        
+        //get byte array for sending
+        wxImage img = screenshot.ConvertToImage();
+        wxJPEGHandler* pH = new wxJPEGHandler();
+        img.AddHandler(pH);
+        wxMemoryOutputStream s;
+        img.SaveFile(s, wxBITMAP_TYPE_JPEG);
+
+        size_t size = s.GetSize();
+        
+
+        //wxStreamBuffer* pS = s.GetOutputStreamBuffer();
+        //char jpegdata[size];
+
+        void* buffer = new char[size];
+
+        // Copy data from the stream to the external buffer
+        s.CopyTo(buffer, size);
+
+        //size_t read = pS->Read(&jpegdata, sizeof(jpegdata));
 
         //mg_http_reply(c, 200, "Content-Type: application/json\r\n",
         //              "{\"width\":%s}\n", strWidthPx.c_str());
 
-         mg_http_reply(c, 200, "Content-Type: image/jpeg\r\n", "");
-        //               
+         //mg_http_reply(c, 200, "Content-Type: image/jpeg\r\n", "%s", buffer, size);
+
+        /*
+        mg_printf(c, "HTTP/1.1 200 OK\r\n");
+        mg_printf(c, "Content-Type: image/jpeg\r\n");
+        mg_printf(c, "Content-Length: %zu\r\n\r\n", size);
+        mg_send(c, buffer, size);
+        */
+        //cleanup
+        //delete pH;
+        //delete buffer;
       }
       catch(const std::exception& ex){
         int j = 0;
       }
       catch(...){
         int j = 0;
-      }
-
-    } else if (mg_match(hm->uri, mg_str("/api/sum"), NULL)) {
-      // Expecting JSON array in the HTTP body, e.g. [ 123.38, -2.72 ]
-      double num1, num2;
-      if (mg_json_get_num(hm->body, "$[0]", &num1) &&
-          mg_json_get_num(hm->body, "$[1]", &num2)) {
-        // Success! create JSON response
-        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{%m:%g}\n",
-                      0, "result", num1 + num2);
-      } else {
-        mg_http_reply(c, 500, NULL, "Parameters missing\n");
       }
     } else {
       mg_http_reply(c, 500, NULL, "\n");
@@ -269,57 +287,5 @@ bool RestServerWms::StartServer() {
   return true;
 }
 
-
-//void RestServerWms::HandleServerMessage(ObservedEvt& event) {
-//  auto evt_data = UnpackEvtPointer<RestIoEvtData>(event);
-//  m_reply_body = "";
-//  switch (event.GetId()) {
-//    case ORS_START_OF_SESSION:
-//      // Prepare a temp file to catch chuncks that might follow
-//      m_upload_path = wxFileName::CreateTempFileName("ocpn_tul").ToStdString();
-//
-//      m_ul_stream.open(m_upload_path.c_str(), std::ios::out | std::ios::trunc);
-//      if (!m_ul_stream.is_open()) {
-//        wxLogMessage("REST_server: Cannot open %s for write", m_upload_path);
-//        m_upload_path.clear();  // reset for next time.
-//        return;
-//      }
-//      return;
-//    case ORS_CHUNK_N:
-//      //  Stream out to temp file
-//      if (!m_upload_path.empty() && m_ul_stream.is_open()) {
-//        m_ul_stream.write(evt_data->payload.c_str(), evt_data->payload.size());
-//      }
-//      return;
-//    case ORS_CHUNK_LAST:
-//      // Cancel existing dialog and close temp file
-//      if (m_pin_dialog) wxQueueEvent(m_pin_dialog, new wxCloseEvent);
-//      if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
-//      break;
-//  }
-//
-//  if (!CheckApiKey(*evt_data)) {
-//    UpdateReturnStatus(RestServerResult::NewPinRequested);
-//    return;
-//  }
-//
-//  switch (evt_data->cmd) {
-//    case RestIoEvtData::Cmd::Ping:
-//      UpdateReturnStatus(RestServerResult::NoError);
-//      return;
-//    case RestIoEvtData::Cmd::CheckWrite: {
-//      auto guid = evt_data->payload;
-//      auto dup = m_route_ctx.find_route_by_guid(guid);
-//      if (!dup || evt_data->force || m_overwrite) {
-//        UpdateReturnStatus(RestServerResult::NoError);
-//      } else {
-//        UpdateReturnStatus(RestServerResult::DuplicateRejected);
-//      }
-//      return;
-//    }
-//    
-//   
-//  }
-// }
 
 
