@@ -7,8 +7,8 @@ These instructions describe how to build OpenCPN for Android on Ubuntu 24.04.
 1. Required Tools:
 ```bash
 # Install basic build tools
-sudo apt update
-sudo apt install cmake git gettext python3-pip
+sudo apt -y update
+sudo apt -y install cmake git gettext python3-pip
 
 # Create a virtual environment in your home directory
 python3 -m venv ~/opencpn-buildenv
@@ -28,8 +28,8 @@ export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
 
 2. Install Android SDK & NDK:
 - Install Android Studio (recommended) or command line tools
-- Use SDK Manager to install:
-  - Android NDK 26.1.10909125
+- Use Android SDK Manager to install:
+  - Android NDK 26.1.10909125 or higher
   - Android SDK Platform API level 16 or higher
   - Android Build Tools
 
