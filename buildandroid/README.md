@@ -60,7 +60,16 @@ export ANDROID_SDK_ROOT=$HOME/Android/Sdk
 export ANDROID_NDK_VERSION=$(ls $ANDROID_SDK_ROOT/ndk | sort -V | tail -1)
 export ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}
 export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+
+# API 30: Android 11 (2020)
+# API 31: Android 12 (2021)
+# API 33: Android 13 (2022)
+# API 34: Android 14 (2023)
 export OCPN_ANDROID_API=33  # Minimum Android API level to target
+
+# Create required NDK symlink
+ln -sf $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar
+
 ```
 
 ## Building the Core Library
