@@ -108,14 +108,11 @@ make VERBOSE=1
 
 ## Building the APK
 
-1. Install Qt for Android:
-- Download Qt 5.5.0 for Android or newer
-- Set up Qt Creator with Android kit
+After building the core library successfully:
 
-2. Configure the project:
+1. The Qt libraries are already available in the downloaded support package at:
 ```bash
-# Set Qt environment
-export QT_ANDROID_ROOT=/path/to/Qt/5.5.0
+export QT_ANDROID_ROOT=/path/to/OpenCPN/cache/OCPNAndroidCoreBuildSupport/qt5
 
 # Create APK build directory
 mkdir apk_build
