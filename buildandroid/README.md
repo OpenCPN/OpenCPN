@@ -8,11 +8,22 @@ These instructions describe how to build OpenCPN for Android on Ubuntu 24.04.
 ```bash
 # Install basic build tools
 sudo apt update
-sudo apt install -y cmake git gettext python3-pip
-sudo apt install -y libxcb-cursor0 libxcb-cursor-dev
-sudo apt install -y libarchive-dev libjpeg-dev zlib1g-dev libbz2-dev libsndfile1-dev libssl-dev libgles1
-# Install java JDK
-sudo apt install -y default-jdk
+sudo apt install -y \
+  cmake \
+  git \
+  gettext \
+  python3-pip \
+  python3-venv \
+  libxcb-cursor0 \
+  libxcb-cursor-dev \
+  libarchive-dev \
+  libjpeg-dev \
+  zlib1g-dev \
+  libbz2-dev \
+  libsndfile1-dev \
+  libssl-dev \
+  libgles1 \
+  default-jdk
 
 # Create a virtual environment in your home directory
 python3 -m venv ~/opencpn-buildenv
@@ -45,9 +56,9 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --list |grep ndk
 
 # Set environment variables
-export ANDROID_NDK_VERSION=28.0.12674087
-export ANDROID_NDK_ROOT=$HOME/Android/Sdk/ndk/${ANDROID_NDK_VERSION}
 export ANDROID_SDK_ROOT=$HOME/Android/Sdk
+export ANDROID_NDK_VERSION=$(ls $ANDROID_SDK_ROOT/ndk | sort -V | tail -1)
+export ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}
 export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
 ```
 
@@ -61,20 +72,22 @@ cd OpenCPN
 
 2. Create build directory and configure:
 ```bash
-mkdir build-androicd build-android-armhfd-armhf
-
 # For armhf build - 32bit
+mkdir build-android-armhf
+cd build-android-armhf
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -DOCPN_TARGET_TUPLE="Android-armhf;16;armhf" \
-  -Dtool_base="$HOME/Android/Sdk/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64" \
+  -Dtool_base="$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64" \
   ..
 
 # For arm64 build - 64bit
+mkdir build-android-arm64
+cd build-android-arm64
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -DOCPN_TARGET_TUPLE="Android-arm64;16;arm64" \
-  -Dtool_base="$HOME/Android/Sdk/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64" \
+  -Dtool_base="$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64" \
   ..
 ```
 
