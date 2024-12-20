@@ -213,6 +213,7 @@ if not exist "%bashcmd%" (set bashcmd=& echo [101;93mWarning[0m: bash not foun
 :: Initialize local helper script that can reinitialize environment
 ::-------------------------------------------------------------
 @echo set "wxDIR=%wxDIR%" > "%OCPN_Dir%\buildwin\configdev.bat"
+@echo set "wxWIN=%wxDIR%" >> "%OCPN_Dir%\buildwin\configdev.bat"
 @echo set "wxWidgets_ROOT_DIR=%wxWidgets_ROOT_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
 @echo set "wxWidgets_LIB_DIR=%wxWidgets_LIB_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
 @echo set "VCver=%VCver%" >> "%OCPN_DIR%\buildwin\configdev.bat"
