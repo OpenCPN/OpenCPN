@@ -2,10 +2,20 @@ This is an attempt to add the ability to act as a WMS Server.
 
 Work in progress!
 
-Testing with a to engines running in Chrome, (Leaflet and OpenLayers)
-See the test html in the root as I know what the coordinates are in Southern Denmark - I know what it looks like there :-)
+Testing with a to engines running in Chrome using Leaflet and OpenLayers as clients and a set of S-57 charts.
 
-Problems:
+There is a test html in the root of the project. It is in Southern Denmark (you can just see a glimpse of Germany) - I know what it looks like there :-)
+I will switch to whereever OpenCPN normally works.
+
+TODO:
+More layers to handle lights etc.
+Day Night
+
+Known Problems:
+Don't hover over the WMS window (tries to activate not existing menu)
 Small images not rendered properly (messing up scaling)
 Zoom causes crashes
 Coordinates will be messed up slightly
+
+Sidenote:
+Could be used for rendering a "view only" set for low power up devices, might try to do that on a small esp32 based 4" thing if I get bored. Just another layer.
