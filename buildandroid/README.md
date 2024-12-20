@@ -60,6 +60,7 @@ export ANDROID_SDK_ROOT=$HOME/Android/Sdk
 export ANDROID_NDK_VERSION=$(ls $ANDROID_SDK_ROOT/ndk | sort -V | tail -1)
 export ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}
 export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+export OCPN_ANDROID_API=33  # Minimum Android API level to target
 ```
 
 ## Building the Core Library
@@ -77,7 +78,7 @@ mkdir build-android-armhf
 cd build-android-armhf
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
-  -DOCPN_TARGET_TUPLE="Android-armhf;16;armhf" \
+  -DOCPN_TARGET_TUPLE="Android-armhf;${OCPN_ANDROID_API};armhf" \
   -Dtool_base="$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64" \
   ..
 
@@ -86,7 +87,7 @@ mkdir build-android-arm64
 cd build-android-arm64
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
-  -DOCPN_TARGET_TUPLE="Android-arm64;16;arm64" \
+  -DOCPN_TARGET_TUPLE="Android-arm64;${OCPN_ANDROID_API};arm64" \
   -Dtool_base="$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64" \
   ..
 ```
