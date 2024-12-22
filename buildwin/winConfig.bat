@@ -941,11 +941,11 @@ if errorlevel 1 goto :buildErr
 :: Delete the .mo files because they are only valid for this build Configuration.
 :: They will not be rebuilt for a different configuration unless we delete them.
 del /F "%~dp0..\build\*.mo"
-
 set buildTarget=
 @echo OpenCPN %build_type% build successful!
 @echo.
 exit /b 0
+
 :ocpnPack
 @echo build_type=%build_type%
 msbuild ^
@@ -961,16 +961,17 @@ msbuild ^
   /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
   "%~dp0..\build\PACKAGE.vcxproj"
 if errorlevel 1 goto :buildErr
+:: Move the build package file to config build folder
 move "%~dp0..\build\*.exe" "%~dp0..\build\%build_type%"
 ::
 :: Delete the .mo files because they are only valid for this build Configuration.
 :: They will not be rebuilt for a different configuration unless we delete them.
 del /F "%~dp0..\build\*.mo"
-
 set buildTarget=
 @echo OpenCPN %build_type% build successful!
 @echo.
 exit /b 0
+
 ::-------------------------------------------------------------
 :: CMake failed
 ::-------------------------------------------------------------
