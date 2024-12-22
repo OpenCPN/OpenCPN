@@ -1888,72 +1888,74 @@ extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
 //  Assorted GUI utility functions
 extern DECL_EXP void ExitOCPN();
 
+extern "C" DECL_EXP void RequestWindowRefresh(wxWindow *win,
+                                              bool eraseBackground);
+
 extern DECL_EXP bool GetFullScreen();
 extern DECL_EXP void SetFullScreen(bool full_screen_on);
 
-extern DECL_EXP void EnableMUIBar(bool enable);
-extern DECL_EXP void EnableCompassGPSIcon(bool enable);
-extern DECL_EXP void EnableStatusBar(bool enable);
-extern DECL_EXP void EnableChartBar(bool enable);
-extern DECL_EXP void EnableMenu(bool enable);
+extern DECL_EXP void EnableTouchMode(bool enable);
+extern DECL_EXP bool GetTouchMode();
 
 extern DECL_EXP void SetGlobalColor(std::string table, std::string name,
                                     wxColor color);
+
+extern DECL_EXP void EnableStatusBar(bool enable);
+extern DECL_EXP void EnableMenu(bool enable);
+extern DECL_EXP bool GetEnableStatusBar();
+extern DECL_EXP bool GetEnableMenu();
+
+extern DECL_EXP void SetNavigationMode(PI_NavMode mode, int CanvasIndex);
+extern DECL_EXP PI_NavMode GetNavigationMode(int CanvasIndex);
+extern DECL_EXP void EnableLookaheadMode(bool enable, int CanvasIndex);
+extern DECL_EXP bool GetEnableLookaheadMode(int CanvasIndex);
+
+extern DECL_EXP void EnableMUIBar(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableCompassGPSIcon(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableChartBar(bool enable, int CanvasIndex);
+extern DECL_EXP bool GetEnableMUIBar(int CanvasIndex);
+extern DECL_EXP bool GetEnableCompassGPSIcon(int CanvasIndex);
+extern DECL_EXP bool GetEnableChartBar(int CanvasIndex);
 
 /*
  *  Allow plugin control of "Chart Panel Options" dialog
  */
 
-extern DECL_EXP void EnableLatLonGrid(bool enable);
-extern DECL_EXP void EnableChartOutlines(bool enable);
-extern DECL_EXP void EnableDepthUnitDisplay(bool enable);
-extern DECL_EXP void EnableAisTargetDisplay(bool enable);
-extern DECL_EXP void EnableTideStationsDisplay(bool enable);
-extern DECL_EXP void EnableCurrentStationsDisplay(bool enable);
-extern DECL_EXP void EnableENCTextDisplay(bool enable);
-extern DECL_EXP void EnableENCDepthSoundingsDisplay(bool enable);
-extern DECL_EXP void EnableBuoyLightLabelsDisplay(bool enable);
-extern DECL_EXP void EnableLightsDisplay(bool enable);
-extern DECL_EXP void EnableLightDescriptionsDisplay(bool enable);
-extern DECL_EXP void SetENCDisplayCategory(PI_DisCat cat);
-extern DECL_EXP void SetNavigationMode(PI_NavMode mode);
+extern DECL_EXP void EnableLatLonGrid(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableChartOutlines(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableDepthUnitDisplay(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableAisTargetDisplay(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableTideStationsDisplay(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableCurrentStationsDisplay(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableENCTextDisplay(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableENCDepthSoundingsDisplay(bool enable,
+                                                    int CanvasIndex);
+extern DECL_EXP void EnableBuoyLightLabelsDisplay(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableLightsDisplay(bool enable, int CanvasIndex);
+extern DECL_EXP void EnableLightDescriptionsDisplay(bool enable,
+                                                    int CanvasIndex);
+extern DECL_EXP void SetENCDisplayCategory(PI_DisCat cat, int CanvasIndex);
 
-extern DECL_EXP bool GetEnableLatLonGrid();
-extern DECL_EXP bool GetEnableChartOutlines();
-extern DECL_EXP bool GetEnableDepthUnitDisplay();
-extern DECL_EXP bool GetEnableAisTargetDisplay();
-extern DECL_EXP bool GetEnableTideStationsDisplay();
-extern DECL_EXP bool GetEnableCurrentStationsDisplay();
-extern DECL_EXP bool GetEnableENCTextDisplay();
-extern DECL_EXP bool GetEnableENCDepthSoundingsDisplay();
-extern DECL_EXP bool GetEnableBuoyLightLabelsDisplay();
-extern DECL_EXP bool GetEnableLightsDisplay();
-extern DECL_EXP bool GetEnableLightDescriptionsDisplay();
-extern DECL_EXP PI_DisCat GetENCDisplayCategory();
-extern DECL_EXP PI_NavMode GetNavigationMode();
+extern DECL_EXP bool GetEnableLatLonGrid(int CanvasIndex);
+extern DECL_EXP bool GetEnableChartOutlines(int CanvasIndex);
+extern DECL_EXP bool GetEnableDepthUnitDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableAisTargetDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableTideStationsDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableCurrentStationsDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableENCTextDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableENCDepthSoundingsDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableBuoyLightLabelsDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableLightsDisplay(int CanvasIndex);
+extern DECL_EXP bool GetEnableLightDescriptionsDisplay(int CanvasIndex);
+extern DECL_EXP PI_DisCat GetENCDisplayCategory(int CanvasIndex);
 
-extern DECL_EXP bool GetEnableMUIBar();
-extern DECL_EXP bool GetEnableCompassGPSIcon();
-extern DECL_EXP bool GetEnableStatusBar();
-extern DECL_EXP bool GetEnableChartBar();
-extern DECL_EXP bool GetEnableMenu();
-
-extern DECL_EXP void CenterOnOwnship();
-extern DECL_EXP bool GetCenterOnOwnship();
+extern DECL_EXP void CenterOnOwnship(int CanvasIndex);
+extern DECL_EXP bool GetCenterOnOwnship(int CanvasIndex);
 
 extern DECL_EXP void SetTrackingMode(bool enable);
 extern DECL_EXP bool GetTrackingMode();
 
-extern DECL_EXP void EnableLookaheadMode(bool enable);
-extern DECL_EXP bool GetEnableLookaheadMode();
-
-extern DECL_EXP void EnableTouchMode(bool enable);
-extern DECL_EXP bool GetTouchMode();
-
 extern DECL_EXP void SetAppColorScheme(PI_ColorScheme cs);
 extern DECL_EXP PI_ColorScheme GetAppColorScheme();
-
-extern "C" DECL_EXP void RequestWindowRefresh(wxWindow *win,
-                                              bool eraseBackground);
 
 #endif  //_PLUGIN_H_
