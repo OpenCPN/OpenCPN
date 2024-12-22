@@ -180,10 +180,13 @@ ConnectionEditDialog::ConnectionEditDialog() {}
 
 ConnectionEditDialog::ConnectionEditDialog(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Connection Edit"), wxDefaultPosition,
-               wxSize(280, 420)) {
+               wxSize(560, 840)) {
   m_parent = parent;
 
   Init();
+  // Layout();
+  // Fit();
+  // Show();
 }
 
 ConnectionEditDialog::~ConnectionEditDialog() {}
@@ -547,7 +550,7 @@ void ConnectionEditDialog::Init() {
   // sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
   //  Net User Comments
-  m_stNetComment = new wxStaticText(m_scrolledwin, wxID_ANY, _("User Comment"),
+  m_stNetComment = new wxStaticText(m_scrolledwin, wxID_ANY, _("Description"),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_stNetComment->Wrap(-1);
   m_stNetComment->SetMinSize(wxSize(column1width, -1));
@@ -842,7 +845,7 @@ void ConnectionEditDialog::SetPropsLabel(wxString label) {
 void ConnectionEditDialog::EnableConnection(ConnectionParams* conn,
                                             bool value) {
   if (conn) {
-    conn->bEnabled = value;
+    // conn->bEnabled = value;
     conn->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
     m_connection_enabled = conn->bEnabled;
   }
@@ -1747,7 +1750,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
     if (checked) {
       m_tNetAddress->SetValue(
           DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
-      // Check for an UDP input connection on the same port
+      // Check for a UDP input connection on the same port
       NetworkProtocol proto = UDP;
       for (auto* cp : TheConnectionParams()) {
         if (cp->NetProtocol == proto &&
@@ -1843,7 +1846,7 @@ void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   } else {
     NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->GetParent()), 35);
 
-    // Try to ensure that the log window is a least a little bit visible
+    // Try to ensure that the log window is at least a little bit visible
     wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
                    NMEALogWindow::GetInstance().GetPosY(),
                    NMEALogWindow::GetInstance().GetSizeW(),

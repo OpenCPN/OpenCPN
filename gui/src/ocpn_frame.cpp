@@ -2395,7 +2395,9 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_MENU_TOOL_CONNECTIONS:
 
-      if (!m_connections_dlg) m_connections_dlg = new ConnectionsDlg(this);
+      if (!m_connections_dlg)
+        m_connections_dlg = new ConnectionsDlg(
+            this, TheConnectionParams(), [&] { m_connections_dlg = nullptr; });
       m_connections_dlg->Show();
       break;
 
