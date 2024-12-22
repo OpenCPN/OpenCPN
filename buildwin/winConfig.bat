@@ -270,7 +270,7 @@ if [%1]==[--release] (shift /1 && set ocpn_all=0&& set ocpn_release=1&& goto :pa
 if [%1]==[--relwithdebinfo] (shift /1 && set ocpn_all=0&& set ocpn_relwithdebinfo=1&& goto :parse)
 if [%1]==[--debug] (shift /1 && set ocpn_all=0&& set ocpn_debug=1&& goto :parse)
 if [%1]==[--wxver] (shift /1 && set wxVER=%2&& shift /1 && goto :parse)
-if [%1]==[--Y] (shift /1 && set "quiet=Y"&& shift /1 && goto :parse)
+if [%1]==[--Y] (shift /1 && set "quiet=Y" && goto :parse)
 if [%1]==[--package] (shift /1 && set ocpn_package=1&& goto :parse)
 if [%1]==[] (goto :begin) else (
   echo Unknown option: %1
@@ -384,9 +384,7 @@ if [%ocpn_clean%]==[1] (
   if exist "%OCPN_DIR%\build" (
     @echo Could not remove "%OCPN_DIR%\build" folder
     @echo Is Visual Studio IDE open? If so, please close it so we can try again.
-    if not [%quiet%]==[Y] (
-      pause
-    )
+    if not [%quiet%]==[Y] pause
     @echo Retrying...
     rmdir /s /q "%OCPN_DIR%\build"
   )
@@ -453,7 +451,7 @@ if %CMAKE_MAJOR% gtr 2 (
   )
 )
 @echo Error: CMake version is less than 3.26
-pause
+if not [%quiet%]==[Y] pause
 goto :usage
 
 :cmake_ok
@@ -482,7 +480,7 @@ popd
 :skipPreCommit
 if not DEFINED PRECOMMIT_OK (.
   @echo Error: Could not find Python and/or pre-commit tool.
-  pause.
+  if not [%quiet%]==[Y] pause
 )
 
 ::-------------------------------------------------------------
@@ -502,7 +500,7 @@ if errorlevel 1 (echo [101;93mNOT OK[0m ) else (
   xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.5\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (
     @echo [101;93mNOT OK[0m
-    pause
+    if not [%quiet%]==[Y] pause
   ) else (
     @echo xcopy OK
   )
@@ -527,7 +525,7 @@ if exist "%VCToolsRedistDir%\x86\Microsoft.VC143.CRT\msvcp140.dll" (
   xcopy /q /d /y "%VCToolsRedistDir%\x86\Microsoft.VC143.CRT\*.*" "%CACHE_DIR%\buildwin\vc"
   if errorlevel 1 (
     @echo [101;93mNOT OK[0m
-    pause
+    if not [%quiet%]==[Y] pause
   ) else (
     echo OK
   )
@@ -866,7 +864,7 @@ if exist "%target%" (
   @echo Could not remove "%target%" folder
   if [%quiet%]==[Y] (goto :fail)
   @echo Is Visual Studio IDE or OpenCPN running? If so, please close so we can try again.
-  pause
+  if not [%quiet%]==[Y] pause
   @echo Retrying...
   rmdir /s /q "%target%"
   if exist "%target%" (
@@ -982,7 +980,7 @@ set wxVerb=
 @echo CMake failed to configure OpenCPN build folder.
 @echo Review the error messages and read the OpenCPN
 @echo Developer Manual for help.
-pause
+if not [%quiet%]==[Y] pause
 exit /b 1
 ::-------------------------------------------------------------
 :: Build failed

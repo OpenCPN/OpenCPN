@@ -177,7 +177,7 @@ $ .\opencpn -p
 [,console]
 ----
  --release          Initialize/build Release configuration
- --relwithdebinfo   Initialise/build RelWithDebInfo configuration
+ --relwithdebinfo   Initialize/build RelWithDebInfo configuration
  --minsizerel       Initialize/build MinSizeRel configuration
  --debug            Initialize/build Debug configuration
  --all              Initialize/build all 4 configurations (default)
