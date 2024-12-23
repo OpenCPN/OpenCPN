@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register
- *
- ***************************************************************************
+ /**************************************************************************
  *   Copyright (C) 2024 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,9 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
+ **************************************************************************/
+
+/**
+ * \file
+ * Implement connections_dialog.h
  */
 
 #include <wx/wxprec.h>
@@ -39,14 +35,14 @@
 #include "model/sys_events.h"
 
 #include "chartbase.h"
+#include "connection_edit.h"
 #include "connections_dialog.h"
 #include "conn_params_panel.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
 #include "options.h"
 #include "priority_gui.h"
-#include "connection_edit.h"
-
+ 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
@@ -500,7 +496,7 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
   //  Unselect all panels
   for (auto* cp : TheConnectionParams()) cp->m_optionsPanel->SetSelected(false);
 
-  ConnectionEditDialog dialog(m_parent, this);
+  ConnectionEditDialog dialog(m_parent);
   dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
   dialog.SetPropsLabel(_("Configure new connection"));
   dialog.SetDefaultConnectionParams();
@@ -554,7 +550,7 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
     auto found = std::find(TheConnectionParams().begin(),
                            TheConnectionParams().end(), mSelectedConnection);
     if (found != TheConnectionParams().begin() && (*found)) {
-      ConnectionEditDialog dialog(m_parent, this);
+      ConnectionEditDialog dialog(m_parent);
       dialog.SetSize(
           wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
       dialog.SetPropsLabel(_("Edit Selected Connection"));
