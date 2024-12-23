@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2024 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -42,14 +42,10 @@
 #include "OCPNPlatform.h"
 #include "options.h"
 #include "priority_gui.h"
- 
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
-
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 //------------------------------------------------------------------------------
 //          ConnectionsDialog Implementation

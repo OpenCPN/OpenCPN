@@ -263,10 +263,6 @@ extern wxString g_CmdSoundString;
 
 extern bool g_bDebugGPSD;
 
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
-
 int g_navobjbackups;
 
 extern bool g_bQuiltEnable;

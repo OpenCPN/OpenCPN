@@ -208,9 +208,6 @@ extern wxString g_config_version_string;
 
 extern bool g_bDebugGPSD;
 
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-
 extern int g_navobjbackups;
 
 extern bool g_bQuiltEnable;
