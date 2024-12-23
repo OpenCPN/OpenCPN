@@ -182,8 +182,7 @@ static void LoadSerialPorts(wxComboBox* box) {
 // Define constructors
 ConnectionEditDialog::ConnectionEditDialog() {}
 
-ConnectionEditDialog::ConnectionEditDialog(options* parent,
-                                           ConnectionsDialog* client)
+ConnectionEditDialog::ConnectionEditDialog(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Connection Edit"), wxDefaultPosition,
                wxSize(280, 420)) {
   m_parent = parent;
@@ -1846,7 +1845,7 @@ void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
     NMEALogWindow::GetInstance().DestroyWindow();
   } else {
-    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
+    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->GetParent()), 35);
 
     // Try to ensure that the log window is a least a little bit visible
     wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
