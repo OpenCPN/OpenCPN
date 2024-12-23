@@ -71,10 +71,6 @@
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
 
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
-
 extern OCPNPlatform* g_Platform;
 
 static wxString StringArrayToString(const wxArrayString& arr) {

@@ -157,9 +157,6 @@ extern int g_chart_zoom_modifier_raster;
 extern int g_NMEAAPBPrecision;
 
 extern wxString *pInit_Chart_Dir;
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 extern bool g_bDisplayGrid;
 
