@@ -270,7 +270,7 @@ void GribRequestSetting::InitRequestConfig() {
 
   m_tMouseEventTimer.Connect(
       wxEVT_TIMER, wxTimerEventHandler(GribRequestSetting::OnMouseEventTimer),
-      NULL, this);
+      nullptr, this);
 
   m_RenderZoneOverlay = 0;
 
@@ -316,7 +316,7 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
 void GribRequestSetting::SetRequestDialogSize() {
   int y;
   /*first let's size the mail display space*/
-  GetTextExtent(_T("abc"), NULL, &y, 0, 0, OCPNGetFont(_("Dialog"), 10));
+  GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog"), 10));
   m_MailImage->SetMinSize(
       wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
 
@@ -1301,7 +1301,7 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
 
 bool GribRequestSetting::RenderGlZoneOverlay() {
   if (m_RenderZoneOverlay == 0) return false;
-  m_pdc = NULL;  // inform lower layers that this is OpenGL render
+  m_pdc = nullptr;  // inform lower layers that this is OpenGL render
   return DoRenderZoneOverlay();
 }
 

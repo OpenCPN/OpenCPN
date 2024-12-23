@@ -64,7 +64,7 @@ public:
       glCompileShader(shaderId);
       glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
       if (!success) {
-        glGetShaderInfoLog(shaderId, INFOLOG_LEN, NULL, infoLog);
+        glGetShaderInfoLog(shaderId, INFOLOG_LEN, nullptr, infoLog);
         printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", infoLog);
         // ret_val = false;
       }
@@ -86,7 +86,7 @@ public:
       glGetProgramiv(programId_, GL_LINK_STATUS,
                      &linkSuccess);  // requesting the status
       if (linkSuccess == GL_FALSE) {
-        glGetProgramInfoLog(programId_, INFOLOG_LEN, NULL, infoLog);
+        glGetProgramInfoLog(programId_, INFOLOG_LEN, nullptr, infoLog);
         printf("ERROR::SHADER::LINK_FAILED\n%s\n", infoLog);
       }
 
