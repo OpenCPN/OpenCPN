@@ -638,10 +638,13 @@ for /f "tokens=*" %%p in ('dir "%WXDIR%\lib\vc_dll\wxmsw32*.pdb" /b') do (
     goto :buildErr
   )
 )
-xcopy /e /q /y "%WXDIR%\lib\vc_dll\" "%CACHE_DIR%\buildwin\wxWidgets"
-if not exist "%CACHE_DIR%\buildwin\wxWidgets\locale" (
-  mkdir "%CACHE_DIR%\buildwin\wxWidgets\locale"
+@echo Copying wxWidgets libraries
+cmake -E copy_directory_if_different "%WXDIR%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets"
+if errorlevel 1 (
+  echo wxWidgets library copy [101;93mNOT OK[0m
+  goto :buildErr
 )
+@echo Copying wxWidgets locale
 cmake -E copy_directory_if_different "%WXDIR%\locale" "%CACHE_DIR%\buildwin\wxWidgets\locale"
 if errorlevel 1 (
   echo locale copy [101;93mNOT OK[0m
