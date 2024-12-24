@@ -627,7 +627,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
       // The tide/current modules calculate values based on PC local time
       // We want UTC, so adjust accordingly
       int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
-      //then eventually we could need LMT at station
+      // then eventually we could need LMT at station
       if (m_tzoneDisplay == 0)
         tt_localtz -= m_stationOffset_mins * 60;  // LMT at station
 
