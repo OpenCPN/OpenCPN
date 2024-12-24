@@ -65,6 +65,7 @@
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -97,7 +98,6 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
-#include "model/plugin_comm.h"
 #endif
 
 #ifdef __ANDROID__
