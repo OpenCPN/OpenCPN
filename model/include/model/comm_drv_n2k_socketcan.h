@@ -39,9 +39,6 @@ public:
 
   virtual ~CommDriverN2KSocketCAN();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
   void SetListener(DriverListener& l) override { m_listener = l; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,

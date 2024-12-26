@@ -238,10 +238,6 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
 
 CommDriverSignalKNet::~CommDriverSignalKNet() { Close(); }
 
-void CommDriverSignalKNet::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-}
-
 void CommDriverSignalKNet::Open(void) {
   wxString discoveredIP;
 #if 0

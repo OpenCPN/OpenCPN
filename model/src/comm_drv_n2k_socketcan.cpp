@@ -388,10 +388,6 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
 
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 
-void CommDriverN2KSocketCAN::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-}
-
 // Worker implementation
 
 Worker::Worker(CommDriverN2KSocketCAN* parent, const wxString& port_name)

@@ -502,7 +502,7 @@ public:
       auto n0183_msg = static_pointer_cast<const Nmea0183Msg>(ptr);
       log.push_back(n0183_msg->to_string());
     });
-    driver->Activate();
+    CommDriverRegistry::GetInstance().Activate(driver);
     ProcessPendingEvents();
     EXPECT_EQ(log.size(), 14522);
   }
@@ -547,10 +547,10 @@ public:
     auto& msgbus = NavMsgBus::GetInstance();
     std::string path(TESTDATA);
     path += kSEP + inputfile;
-    auto driver = make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
     CommBridge comm_bridge;
     comm_bridge.Initialize();
-    driver->Activate();
+    auto driver = make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
+    CommDriverRegistry::GetInstance().Activate(driver);
     ProcessPendingEvents();
     EXPECT_NEAR(gLat, 57.6460, 0.001);
     EXPECT_NEAR(gLon, 11.7130, 0.001);
@@ -919,7 +919,7 @@ TEST(FileDriver, Registration) {
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
   auto& registry = CommDriverRegistry::GetInstance();
   int start_size = registry.GetDrivers().size();
-  driver->Activate();
+  registry.Activate(driver);
   auto drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
 }
