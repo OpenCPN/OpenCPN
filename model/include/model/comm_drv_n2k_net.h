@@ -109,8 +109,6 @@ public:
 
   virtual ~CommDriverN2KNet();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
   void SetListener(DriverListener& l) override {};
 
   void Open();

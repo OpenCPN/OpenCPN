@@ -43,9 +43,6 @@ public:
 
   virtual ~CommDriverN0183Serial();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
   bool Open();
   void Close();
 

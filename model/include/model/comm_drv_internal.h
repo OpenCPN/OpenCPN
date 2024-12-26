@@ -36,9 +36,6 @@ public:
 
   ~CommDriverInternal() = default;
 
-  /** Register driver. */
-  void Activate() override;
-
   /**
    * Send a message to all plugins and core on internal bus.
    * @param msg Must be PluginMsg, by convention a type + a json encoded
