@@ -34,7 +34,7 @@
 
 class CommDriverN2KSocketCAN : public CommDriverN2K {
 public:
-  static std::shared_ptr<CommDriverN2KSocketCAN> Create(
+  static std::unique_ptr<CommDriverN2KSocketCAN> Create(
       const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN2KSocketCAN();

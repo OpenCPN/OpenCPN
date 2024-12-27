@@ -495,14 +495,14 @@ public:
     string path(TESTDATA);
     path += kSEP + "Guernesey-1659560590623.input.txt";
     auto& msgbus = NavMsgBus::GetInstance();
-    auto driver = make_shared<FileCommDriver>("test-output.txt", path, msgbus);
+    auto driver = make_unique<FileCommDriver>("test-output.txt", path, msgbus);
     listener.Listen(Nmea0183Msg("GPGLL"), this, EVT_FOO);
     Bind(EVT_FOO, [&log](ObservedEvt ev) {
       auto ptr = ev.GetSharedPtr();
       auto n0183_msg = static_pointer_cast<const Nmea0183Msg>(ptr);
       log.push_back(n0183_msg->to_string());
     });
-    CommDriverRegistry::GetInstance().Activate(driver);
+    CommDriverRegistry::GetInstance().Activate(std::move(driver));
     ProcessPendingEvents();
     EXPECT_EQ(log.size(), 14522);
   }
@@ -518,11 +518,11 @@ public:
     std::vector<DriverPtr> drivers;
     std::vector<std::string> ifaces{"foo", "bar", "foobar"};
     for (const auto& iface : ifaces) {
-      drivers.push_back(std::make_shared<SillyDriver>(SillyDriver(iface)));
+      drivers.push_back(std::make_unique<SillyDriver>(SillyDriver(iface)));
     }
-    auto found1 = FindDriver(drivers, "bar");
+    auto& found1 = FindDriver(drivers, "bar");
     EXPECT_EQ(found1->iface, std::string("bar"));
-    auto found2 = FindDriver(drivers, "baz");
+    auto& found2 = FindDriver(drivers, "baz");
     EXPECT_FALSE(found2);
     auto file_drv = dynamic_cast<const FileCommDriver*>(found1.get());
     EXPECT_EQ(found1, nullptr);
@@ -549,8 +549,8 @@ public:
     path += kSEP + inputfile;
     CommBridge comm_bridge;
     comm_bridge.Initialize();
-    auto driver = make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
-    CommDriverRegistry::GetInstance().Activate(driver);
+    auto driver = make_unique<FileCommDriver>(inputfile + ".log", path, msgbus);
+    CommDriverRegistry::GetInstance().Activate(std::move(driver));
     ProcessPendingEvents();
     EXPECT_NEAR(gLat, 57.6460, 0.001);
     EXPECT_NEAR(gLon, 11.7130, 0.001);
@@ -565,10 +565,10 @@ public:
     wxLog::SetActiveTarget(&defaultLog);
     int start_size = 0;
     if (true) {  // a scope
-      auto driver = std::make_shared<SillyDriver>();
+      auto driver = std::make_unique<SillyDriver>();
       auto& registry = CommDriverRegistry::GetInstance();
       start_size = registry.GetDrivers().size();
-      registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver));
+      registry.Activate(std::move(driver));
     }
     auto& registry = CommDriverRegistry::GetInstance();
     auto& drivers = registry.GetDrivers();
@@ -878,29 +878,32 @@ TEST(Observable, torture) {
 
 TEST(Drivers, Registry) {
   wxLog::SetActiveTarget(&defaultLog);
-  DriverPtr driver = std::make_shared<SillyDriver>();
+  DriverPtr driver1 = std::make_unique<SillyDriver>();
   auto& registry = CommDriverRegistry::GetInstance();
-  registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver));
+  registry.CloseAllDrivers();
+  EXPECT_EQ(registry.GetDrivers().size(), 0);
+  registry.Activate(std::move(driver1));
   auto& drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), 1);
   EXPECT_EQ(registry.GetDrivers()[0]->iface, string("silly"));
   EXPECT_EQ(registry.GetDrivers()[0]->bus, NavAddr::Bus::TestBus);
 
   /* Add it again, should be ignored. */
-  registry.Activate(driver);
+  DriverPtr driver2 = std::make_unique<SillyDriver>();
+  auto iface = driver2->iface;
+  auto bus = driver2->bus;
+  registry.Activate(std::move(driver2));
   EXPECT_EQ(registry.GetDrivers().size(), 1);
 
   /* Add another one, should be accepted */
-  DriverPtr driver2 = std::make_shared<SillyDriver>("orvar");
-  registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver2));
+  DriverPtr driver3 = std::make_unique<SillyDriver>("orvar");
+
+  registry.Activate(std::move(driver3));
   EXPECT_EQ(registry.GetDrivers().size(), 2);
 
   /* Remove one, leaving one in place. */
-  registry.Deactivate(driver2);
-  EXPECT_EQ(registry.GetDrivers().size(), 1);
-
-  /* Remove it again, should be ignored. */
-  registry.Deactivate(driver2);
+  auto& registered_driver = FindDriver(drivers, iface, bus);
+  registry.Deactivate(registered_driver);
   EXPECT_EQ(registry.GetDrivers().size(), 1);
 }
 
@@ -916,10 +919,10 @@ TEST(Navmsg2000, to_string) {
 
 TEST(FileDriver, Registration) {
   wxLog::SetActiveTarget(&defaultLog);
-  auto driver = std::make_shared<FileCommDriver>("test-output.txt");
+  auto driver = std::make_unique<FileCommDriver>("test-output.txt");
   auto& registry = CommDriverRegistry::GetInstance();
   int start_size = registry.GetDrivers().size();
-  registry.Activate(driver);
+  registry.Activate(std::move(driver));
   auto& drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
 }
