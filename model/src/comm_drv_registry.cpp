@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implements comm_drv_registry.h
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,12 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
+/**
+ * \file
+ * Implement comm_drv_registry.h
+ */
 
 #include <algorithm>
 #include <memory>
