@@ -520,12 +520,12 @@ public:
     for (const auto& iface : ifaces) {
       drivers.push_back(std::make_shared<SillyDriver>(SillyDriver(iface)));
     }
-    auto found = FindDriver(drivers, "bar");
-    EXPECT_EQ(found->iface, std::string("bar"));
-    found = FindDriver(drivers, "baz");
-    EXPECT_FALSE(found);
-    auto file_drv = std::dynamic_pointer_cast<const FileCommDriver>(found);
-    EXPECT_EQ(file_drv.get(), nullptr);
+    auto found1 = FindDriver(drivers, "bar");
+    EXPECT_EQ(found1->iface, std::string("bar"));
+    auto found2 = FindDriver(drivers, "baz");
+    EXPECT_FALSE(found2);
+    auto file_drv = dynamic_cast<const FileCommDriver*>(found1.get());
+    EXPECT_EQ(found1, nullptr);
   }
 };
 
@@ -571,7 +571,7 @@ public:
       registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver));
     }
     auto& registry = CommDriverRegistry::GetInstance();
-    auto drivers = registry.GetDrivers();
+    auto& drivers = registry.GetDrivers();
     EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
     EXPECT_EQ(registry.GetDrivers()[start_size]->iface, std::string("silly"));
     EXPECT_EQ(registry.GetDrivers()[start_size]->bus, NavAddr::Bus::TestBus);
@@ -878,29 +878,29 @@ TEST(Observable, torture) {
 
 TEST(Drivers, Registry) {
   wxLog::SetActiveTarget(&defaultLog);
-  auto driver = std::make_shared<SillyDriver>();
+  DriverPtr driver = std::make_shared<SillyDriver>();
   auto& registry = CommDriverRegistry::GetInstance();
   registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver));
-  auto drivers = registry.GetDrivers();
+  auto& drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), 1);
   EXPECT_EQ(registry.GetDrivers()[0]->iface, string("silly"));
   EXPECT_EQ(registry.GetDrivers()[0]->bus, NavAddr::Bus::TestBus);
 
   /* Add it again, should be ignored. */
-  registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver));
+  registry.Activate(driver);
   EXPECT_EQ(registry.GetDrivers().size(), 1);
 
   /* Add another one, should be accepted */
-  auto driver2 = std::make_shared<SillyDriver>("orvar");
+  DriverPtr driver2 = std::make_shared<SillyDriver>("orvar");
   registry.Activate(std::static_pointer_cast<AbstractCommDriver>(driver2));
   EXPECT_EQ(registry.GetDrivers().size(), 2);
 
   /* Remove one, leaving one in place. */
-  registry.Deactivate(std::static_pointer_cast<AbstractCommDriver>(driver2));
+  registry.Deactivate(driver2);
   EXPECT_EQ(registry.GetDrivers().size(), 1);
 
   /* Remove it again, should be ignored. */
-  registry.Deactivate(std::static_pointer_cast<AbstractCommDriver>(driver2));
+  registry.Deactivate(driver2);
   EXPECT_EQ(registry.GetDrivers().size(), 1);
 }
 
@@ -920,7 +920,7 @@ TEST(FileDriver, Registration) {
   auto& registry = CommDriverRegistry::GetInstance();
   int start_size = registry.GetDrivers().size();
   registry.Activate(driver);
-  auto drivers = registry.GetDrivers();
+  auto& drivers = registry.GetDrivers();
   EXPECT_EQ(registry.GetDrivers().size(), start_size + 1);
 }
 
