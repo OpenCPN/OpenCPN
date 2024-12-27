@@ -495,12 +495,12 @@ set "SOURCE=%DEST%"
 set "DEST=%buildWINtmp%"
 call :explode
 if errorlevel 1 (echo [101;93mNOT OK[0m ) else (
-  xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.5\buildwin" "%CACHE_DIR%\buildwin"
+  cmake -E copy_directory_if_different "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.5\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (
     @echo [101;93mNOT OK[0m
     if not [%quiet%]==[Y] pause
   ) else (
-    @echo xcopy OK
+    @echo Windows dependencies OK
   )
 )
 :skipbuildwin
@@ -520,7 +520,7 @@ if exist "%VCToolsRedistDir%\x86\Microsoft.VC143.CRT\msvcp140.dll" (
   @echo Updating VC runtime ...
   if not exist "%CACHE_DIR%\buildwin" mkdir "%CACHE_DIR%\buildwin"
   if not exist "%CACHE_DIR%\buildwin\vc" mkdir "%CACHE_DIR%\buildwin\vc"
-  xcopy /q /d /y "%VCToolsRedistDir%\x86\Microsoft.VC143.CRT\*.*" "%CACHE_DIR%\buildwin\vc"
+  cmake -E copy_directory_if_different "%VCToolsRedistDir%\x86\Microsoft.VC143.CRT" "%CACHE_DIR%\buildwin\vc"
   if errorlevel 1 (
     @echo [101;93mNOT OK[0m
     if not [%quiet%]==[Y] pause
@@ -681,10 +681,10 @@ if not exist "%DEST%" (
   if exist "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" (
     if not exist "%IPHDEST%\include" mkdir "%IPHDEST%\include"
     if not exist "%DEST%" (
-    @echo xcopy /d /y "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
-    xcopy /d /y "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
-    @echo xcopy /d /y "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%IPHDEST%\include"
-    xcopy /d /y "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%IPHDEST%\include"
+    @echo cmake -E copy_if_different "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
+    cmake -E copy_if_different "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
+    @echo cmake -E copy_if_different "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%IPHDEST%\include"
+    cmake -E copy_if_different "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%IPHDEST%\include"
     )
   ) else (
     @echo [101;93mCould not find local copy of iphlpapi library so will try to download one.[0m
@@ -1003,25 +1003,78 @@ if not exist "%~dp0..\build\%folder%" goto :bexit
 if not exist "%~dp0..\tmp" (mkdir "%~dp0..\tmp")
 if not exist "%~dp0..\tmp\%folder%" (mkdir "%~dp0..\tmp\%folder%")
 @echo backing up %folder%
-xcopy /Q /Y "%~dp0..\build\%folder%\opencpn.ini" "%~dp0..\tmp\%folder%"
+if exist "%~dp0..\build\%folder%\opencpn.ini" (xcopy /Q /Y "%~dp0..\build\%folder%\opencpn.ini" "%~dp0..\tmp\%folder%")
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\opencpn.ini" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\opencpn.ini" "%~dp0..\tmp\%folder%" OK
+)
 xcopy /Q /Y "%~dp0..\build\%folder%\*.log.log" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\*.log.log" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\*.log.log" OK
+)
 xcopy /Q /Y "%~dp0..\build\%folder%\*.log" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\*.log" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\*.log" "%~dp0..\tmp\%folder%" OK
+)
 xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%" OK
+)
 xcopy /Q /Y "%~dp0..\build\%folder%\*.csv" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\*.csv" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\*.csv" "%~dp0..\tmp\%folder%" OK
+)
 xcopy /Q /Y "%~dp0..\build\%folder%\navobj.*" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.*" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.*" "%~dp0..\tmp\%folder%" OK
+)
 xcopy /Q /Y "%~dp0..\build\%folder%\navobj.xml.?" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.xml.?" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.xml.?" "%~dp0..\tmp\%folder%" OK
+)
 if exist "%~dp0..\build\%folder%\plugins" (
   :: Convert old winConfig build structure to latest version
   if not exist "%~dp0..\build\.%folder%" (
     mkdir "%~dp0..\build\.%folder%"
-    attrib +H "%~dp0..\build\.%folder%"
   )
   @echo cmake -E copy_directory "%~dp0..\build\%folder%\plugins" "%~dp0..\tmp\%folder%"
   cmake -E copy_directory "%~dp0..\build\%folder%\plugins" "%~dp0..\tmp\%folder%"
+  if errorlevel 1 (
+    @echo cmake -E copy_directory "%~dp0..\build\%folder%\plugins" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+    if not [%quiet%]==[Y] pause
+  ) else (
+    echo cmake -E copy_directory "%~dp0..\build\%folder%\plugins" "%~dp0..\tmp\%folder%" OK
+  )
 )
 if not exist "%~dp0..\build\%folder%\Charts" goto :breturn
 @echo cmake -E copy_directory "%~dp0..\build\%folder%\Charts" "%~dp0..\tmp\%folder%"
 cmake -E copy_directory "%~dp0..\build\%folder%\Charts" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo cmake -E copy_directory "%~dp0..\build\%folder%\Charts" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo cmake -E copy_directory "%~dp0..\build\%folder%\Charts" "%~dp0..\tmp\%folder%" OK
+)
 :breturn
 @echo Backup returning
 :bexit
@@ -1039,6 +1092,7 @@ if not exist "%~dp0..\tmp\%build_type%" (
 cmake -E copy_directory "%~dp0..\tmp\%build_type%" "%~dp0..\build\%build_type%"
 if errorlevel 1 (
   @echo Restore %build_type% failed
+  if not [%quiet%]==[Y] pause
   exit /b 0
 ) else (
   @echo Restore successful
