@@ -148,9 +148,10 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
   on_msg_sent.Notify(msg.ToStdString());
 }
 
-std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
-    const wxString& com_name, ConnectionParams& params_save, bool& btempStream,
-    bool& b_restoreStream, N0183DlgCtx dlg_ctx, bool bGarminIn) {
+bool CreateOutputConnection(const wxString& com_name,
+                            ConnectionParams& params_save, bool& btempStream,
+                            bool& b_restoreStream, N0183DlgCtx dlg_ctx,
+                            bool bGarminIn) {
   std::shared_ptr<AbstractCommDriver> driver;
   auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers =
@@ -237,7 +238,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     driver = FindDriver(drivers, comm_addr.ToStdString());
     if (!driver) {
       // Force Android Bluetooth to use only already enabled driver
-      return driver;
+      return false;
 
       ConnectionParams ConnectionParams;
       ConnectionParams.Type = INTERNAL_BT;
@@ -315,7 +316,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
       }
     }
   }
-  return driver;
+  return driver != nullptr;
 }
 
 int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
@@ -365,10 +366,10 @@ int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
     registry.Deactivate(me);
     btempStream = true;
   }
-  new_driver =
+  bool conn_ok =
       CreateOutputConnection(com_name, params_save, btempStream,
                              b_restoreStream, dlg_ctx, is_garmin_serial);
-  if (!new_driver) return 1;
+  if (!conn_ok) return 1;
 
 #ifdef xUSE_GARMINHOST
 #ifdef __WXMSW__
