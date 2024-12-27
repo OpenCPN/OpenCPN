@@ -42,14 +42,14 @@ void CommDriverRegistry::Activate(DriverPtr driver) {
   evt_driverlist_change.Notify();
 };
 
-void CommDriverRegistry::Deactivate(DriverPtr driver) {
+void CommDriverRegistry::Deactivate(DriverPtr& driver) {
   auto found = std::find(drivers.begin(), drivers.end(), driver);
   if (found == drivers.end()) return;
   drivers.erase(found);
   evt_driverlist_change.Notify();
 }
 
-const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() {
+const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() const {
   return drivers;
 };
 
@@ -64,26 +64,27 @@ CommDriverRegistry& CommDriverRegistry::GetInstance() {
   return instance;
 }
 
-const std::shared_ptr<AbstractCommDriver> kNoDriver(nullptr);
+std::shared_ptr<AbstractCommDriver> kNoDriver(nullptr);
 
-const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
-                           const std::string& iface, const NavAddr::Bus _bus) {
+DriverPtr& FindDriver(const std::vector<DriverPtr>& drivers,
+                      const std::string& iface, const NavAddr::Bus _bus) {
   if (_bus != NavAddr::Bus::Undef) {
-    auto func = [iface, _bus](const DriverPtr d) {
-      return ((d->iface == iface) && (d->bus == _bus));
-    };
-    auto found = std::find_if(drivers.begin(), drivers.end(), func);
-    return found != drivers.end() ? *found : kNoDriver;
+    for (const DriverPtr& d : drivers) {
+      if (d->iface == iface && d->bus == _bus) {
+        return const_cast<DriverPtr&>(d);
+      }
+    }
+    return kNoDriver;
   } else {
-    auto func = [iface](const DriverPtr d) { return d->iface == iface; };
-    auto found = std::find_if(drivers.begin(), drivers.end(), func);
-    return found != drivers.end() ? *found : kNoDriver;
+    for (auto&& d : drivers)
+      if (d->iface == iface) return const_cast<DriverPtr&>(d);
+    return kNoDriver;
   }
 }
 
 const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
                            const std::string& key) {
-  auto func = [key](const DriverPtr d) { return d->Key() == key; };
-  auto found = std::find_if(drivers.begin(), drivers.end(), func);
-  return found != drivers.end() ? *found : kNoDriver;
+  for (auto&& d : drivers)
+    if (d->Key() == key) return d;
+  return kNoDriver;
 }
