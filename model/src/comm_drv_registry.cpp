@@ -30,9 +30,12 @@
 #include "model/comm_drv_registry.h"
 
 void CommDriverRegistry::Activate(DriverPtr driver) {
-  auto found = std::find(drivers.begin(), drivers.end(), driver);
-  if (found != drivers.end()) return;
-  drivers.push_back(driver);
+  if (!driver) return;
+  AbstractCommDriver* found = nullptr;
+  for (auto& d : drivers)
+    if (d->iface == driver->iface && d->bus == driver->bus) found = d.get();
+  if (found) return;
+  drivers.push_back(std::move(driver));
   evt_driverlist_change.Notify();
 };
 
@@ -58,7 +61,7 @@ CommDriverRegistry& CommDriverRegistry::GetInstance() {
   return instance;
 }
 
-std::shared_ptr<AbstractCommDriver> kNoDriver(nullptr);
+std::unique_ptr<AbstractCommDriver> kNoDriver(nullptr);
 
 DriverPtr& FindDriver(const std::vector<DriverPtr>& drivers,
                       const std::string& iface, const NavAddr::Bus _bus) {
@@ -74,11 +77,4 @@ DriverPtr& FindDriver(const std::vector<DriverPtr>& drivers,
       if (d->iface == iface) return const_cast<DriverPtr&>(d);
     return kNoDriver;
   }
-}
-
-const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
-                           const std::string& key) {
-  for (auto&& d : drivers)
-    if (d->Key() == key) return d;
-  return kNoDriver;
 }

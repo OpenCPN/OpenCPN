@@ -982,19 +982,17 @@ void PlugInManager::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
   if (s[0] == '$') {
     const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
-    auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
+    auto& target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
     bool bpass_input_filter = true;
 
     // Get the params for the driver sending this message
     ConnectionParams params;
-    auto drv_serial =
-        std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
+    auto drv_serial = dynamic_cast<CommDriverN0183Serial*>(target_driver.get());
     if (drv_serial) {
       params = drv_serial->GetParams();
     } else {
-      auto drv_net =
-          std::dynamic_pointer_cast<CommDriverN0183Net>(target_driver);
+      auto drv_net = dynamic_cast<CommDriverN0183Net*>(target_driver.get());
       if (drv_net) {
         params = drv_net->GetParams();
       }

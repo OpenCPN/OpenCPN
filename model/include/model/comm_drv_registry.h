@@ -29,7 +29,7 @@
 #include "model/comm_driver.h"
 #include "observable_evtvar.h"
 
-typedef std::shared_ptr<AbstractCommDriver> DriverPtr;
+using DriverPtr = std::unique_ptr<AbstractCommDriver>;
 
 /**
  * The global driver registry, a singleton. Drivers register here when
@@ -81,6 +81,10 @@ private:
 /**
  * Search list of drivers for a driver with given interface string.
  * @return First found driver or shared_ptr<>(nullptr), which is false.
+ *
+ * @note The driver list is const in the sense that elements cannot be
+ * added, removed, etc. However, the driver returned needs to be non-const
+ * since most driver operations (notably sending) are non-const.
  */
 DriverPtr& FindDriver(const std::vector<DriverPtr>& drivers,
                       const std::string& iface,
