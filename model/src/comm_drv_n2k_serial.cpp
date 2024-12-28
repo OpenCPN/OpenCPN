@@ -321,11 +321,6 @@ void CommDriverN2KSerial::Close() {
   }
 }
 
-void CommDriverN2KSerial::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-  // TODO: Read input data.
-}
-
 bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                       std::shared_ptr<const NavAddr> addr) {
 #ifndef ANDROID

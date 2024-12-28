@@ -1360,7 +1360,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   ConnectionParams *new_params = new ConnectionParams(sGPS);
 
   new_params->bEnabled = true;
-  TheConnectionParams()->Add(new_params);
+  TheConnectionParams().push_back(new_params);
 
   g_default_font_facename = _T("Roboto");
 

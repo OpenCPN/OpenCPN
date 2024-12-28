@@ -69,9 +69,6 @@ public:
   void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
   void SetWatchdog(int n) { m_dog_value = n; }
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
   void handle_SK_sentence(CommDriverSignalKNetEvent &event);
   void handleUpdate(const rapidjson::Value &update);
   void updateItem(const rapidjson::Value &item, wxString &sfixtime);

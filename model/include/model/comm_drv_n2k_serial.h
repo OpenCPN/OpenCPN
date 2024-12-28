@@ -58,9 +58,6 @@ public:
 
   virtual ~CommDriverN2KSerial();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
   void SetListener(DriverListener& l) override {};
 
   bool Open();

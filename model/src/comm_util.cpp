@@ -38,7 +38,7 @@
 bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus _bus) {
   auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<DriverPtr>& drivers = registry.GetDrivers();
-  DriverPtr target_driver = FindDriver(drivers, ident, _bus);
+  DriverPtr& target_driver = FindDriver(drivers, ident, _bus);
 
   if (!target_driver) return false;
 

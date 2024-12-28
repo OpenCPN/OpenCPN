@@ -386,10 +386,6 @@ int gHDx_Watchdog;
 bool g_bDebugCM93;
 bool g_bDebugS57;
 
-bool g_bfilter_cogsog;
-int g_COGFilterSec = 1;
-int g_SOGFilterSec;
-
 int g_ChartUpdatePeriod;
 int g_SkewCompUpdatePeriod;
 
@@ -1907,8 +1903,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto *cp : TheConnectionParams()) {
     if (cp->bEnabled) {
       if (cp->GetDSPort().Contains("Serial")) {
         std::string port(cp->Port.ToStdString());

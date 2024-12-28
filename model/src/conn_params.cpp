@@ -48,11 +48,9 @@
 #define wxAtoi(arg) atoi(arg)
 #endif
 
-static wxArrayOfConnPrm* the_connection_params = 0;
+static std::vector<ConnectionParams*> the_connection_params;
 
-wxArrayOfConnPrm* TheConnectionParams() {
-  if (the_connection_params == 0)
-    the_connection_params = new wxArrayOfConnPrm();
+std::vector<ConnectionParams*>& TheConnectionParams() {
   return the_connection_params;
 }
 

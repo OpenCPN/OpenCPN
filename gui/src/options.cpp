@@ -162,9 +162,6 @@ extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
 extern Multiplexer* g_pMUX;
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;

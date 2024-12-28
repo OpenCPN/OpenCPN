@@ -303,9 +303,6 @@ extern wxArrayPtrVoid *UserColourHashTableArray;
 extern wxColorHashMap *pcurrent_user_color_hash;
 
 // probable move to ocpn_app
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
 extern bool g_bHasHwClock;
@@ -1812,11 +1809,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto *cp : TheConnectionParams()) {
     delete cp;
   }
-  delete TheConnectionParams();
 
   if (pLayerList) {
     LayerList::iterator it;
@@ -4797,8 +4792,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 1:
       // Connect Datastreams
 
-      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-        ConnectionParams *cp = TheConnectionParams()->Item(i);
+      for (auto *cp : TheConnectionParams()) {
         if (cp->bEnabled) {
           auto driver = MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
