@@ -2075,4 +2075,11 @@ extern DECL_EXP bool GetTrackingMode();
 extern DECL_EXP void SetAppColorScheme(PI_ColorScheme cs);
 extern DECL_EXP PI_ColorScheme GetAppColorScheme();
 
+// Create an unmanaged ChartCanvas
+extern DECL_EXP int
+PluginCreateChartCanvas();  // The wxWindow is created at a nominal size,
+                            // hidden.
+                            //  Return value is index of new canvas wxWindow
+extern DECL_EXP void PluginDeleteChartCanvas(wxWindow *win);
+
 #endif  //_PLUGIN_H_
