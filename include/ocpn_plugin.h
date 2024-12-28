@@ -80,28 +80,83 @@ class wxGLCanvas;
 //    Bitfield PlugIn Capabilites flag definition
 //
 //---------------------------------------------------------------------------------------------------------
+/** Receive callbacks to render custom overlay graphics on the chart.
+    Used for drawing additional navigation data, markers, or custom
+   visualizations. */
 #define WANTS_OVERLAY_CALLBACK 0x00000001
+/** Receive updates when cursor moves over chart.
+    Enables plugins to show information about chart features at cursor position.
+ */
 #define WANTS_CURSOR_LATLON 0x00000002
+/**
+ * Receive notification when user left-clicks plugin's toolbar buttons.
+ *
+ * Required for plugins that need to respond to their toolbar button actions.
+ * \ref opencpn_plugin::OnToolbarToolCallback() will be called with the button
+ * ID when user left-clicks a toolbar button.
+ *
+ * @see opencpn_plugin::OnToolbarToolCallback
+ */
 #define WANTS_TOOLBAR_CALLBACK 0x00000004
+/**
+ * Plugin will add one or more toolbar buttons.
+ *
+ * Enables plugin to extend OpenCPN toolbar with custom functionality.
+ */
 #define INSTALLS_TOOLBAR_TOOL 0x00000008
+/** Plugin requires persistent configuration storage.
+    Enables access to the config file for saving and loading settings. */
 #define WANTS_CONFIG 0x00000010
+/** Plugin will add pages to the toolbox/settings dialog.
+    Allows plugin to provide custom configuration UI in OpenCPN settings. */
 #define INSTALLS_TOOLBOX_PAGE 0x00000020
+/** Plugin will add items to chart context menu.
+    Enables extending the right-click menu with custom actions. */
 #define INSTALLS_CONTEXTMENU_ITEMS 0x00000040
+/** Receive raw NMEA 0183 sentences from all active ports.
+    Used for plugins that need to process navigation data directly. */
 #define WANTS_NMEA_SENTENCES 0x00000080
+/** Receive decoded NMEA events with parsed data.
+    Provides easy access to specific navigation data without parsing raw
+   sentences. */
 #define WANTS_NMEA_EVENTS 0x00000100
+/** Receive AIS target information and updates.
+    Required for plugins that monitor or process vessel traffic data. */
 #define WANTS_AIS_SENTENCES 0x00000200
+/** Plugin uses wxAuiManager for window management.
+    Needed for plugins that create dockable windows or panels. */
 #define USES_AUI_MANAGER 0x00000400
+/** Plugin will add page(s) to global preferences dialog.
+    Allows plugin to integrate configuration UI with main preferences. */
 #define WANTS_PREFERENCES 0x00000800
+/** Plugin provides new chart type for standard (non-GL) view.
+    Used by plugins that implement custom chart formats. */
 #define INSTALLS_PLUGIN_CHART 0x00001000
+/** Receive callbacks during chart viewport painting.
+    Enables custom drawing in standard (non-GL) chart display. */
 #define WANTS_ONPAINT_VIEWPORT 0x00002000
+/** Enable message passing between plugins.
+    Required for plugins that need to communicate with other plugins. */
 #define WANTS_PLUGIN_MESSAGING 0x00004000
 #define WANTS_OPENGL_OVERLAY_CALLBACK 0x00008000
 #define WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK 0x00010000
+/** Delay full plugin initialization until system is ready.
+    Useful for plugins that need complete system initialization. */
 #define WANTS_LATE_INIT 0x00020000
+/** Plugin provides new chart type for OpenGL view.
+    Used by plugins that implement custom chart formats with OpenGL support. */
 #define INSTALLS_PLUGIN_CHART_GL 0x00040000
+/** Receive mouse events (clicks, movement, etc).
+    Enables plugins to respond to user mouse interaction. */
 #define WANTS_MOUSE_EVENTS 0x00080000
+/** Receive information about vector chart objects.
+    Enables access to S57 chart feature data and attributes. */
 #define WANTS_VECTOR_CHART_OBJECT_INFO 0x00100000
+/** Receive keyboard events from main window.
+    Enables plugins to implement keyboard shortcuts or commands. */
 #define WANTS_KEYBOARD_EVENTS 0x00200000
+/** Receive notification just before OpenCPN shutdown.
+    Allows plugins to clean up resources and save state. */
 #define WANTS_PRESHUTDOWN_HOOK 0x00400000
 
 //---------------------------------------------------------------------------------------------------------
@@ -429,7 +484,36 @@ public:
   virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
   virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
+  /**
+   * Receive all NMEA 0183 sentences from OpenCPN.
+   *
+   * Plugins can implement this method to receive all NMEA 0183 sentences.
+   * They must set the WANTS_NMEA_SENTENCES capability flag to receive updates.
+   *
+   * @param sentence The NMEA 0183 sentence
+   *
+   * @note For handling NMEA/SignalK messages, a newer recommended message API
+   * is available: \htmlonly <a
+   * href="https://opencpn-manuals.github.io/main/opencpn-dev/plugin-messaging.html">Plugin
+   * Message API Documentation</a> \endhtmlonly
+   */
   virtual void SetNMEASentence(wxString &sentence);
+  /**
+   * Receive all AIS sentences from OpenCPN.
+   *
+   * Plugins can implement this method to receive all AIS sentences.
+   * They must set the WANTS_AIS_SENTENCES capability flag to receive updates.
+   *
+   * @param sentence The AIS sentence in standard NMEA 0183 VDM/VDO format
+   *                 (e.g., "!AIVDM,1,1,,B,15MwkRUOidG?GElEa<iQk1JV06Jd,0*1D")
+   *                 These sentences contain binary encoded AIS messages that
+   *                 follow the ITU-R M.1371 standard.
+   *
+   * @note For handling NMEA/SignalK messages, a newer recommended message API
+   * is available: \htmlonly <a
+   * href="https://opencpn-manuals.github.io/main/opencpn-dev/plugin-messaging.html">Plugin
+   * Message API Documentation</a> \endhtmlonly
+   */
   virtual void SetAISSentence(wxString &sentence);
 
   virtual void ProcessParentResize(int x, int y);
@@ -1845,13 +1929,46 @@ extern DECL_EXP CommDriverResult WriteCommDriverN2K(
     const std::shared_ptr<std::vector<uint8_t>> &payload);
 
 /**
- * Special NMEA2000 requirements
- * NMEA2000 bus protocol device management requires that devices writing on
- * the bus must inform all bus listeners of the specific PGNs that may be
- * transmitted by this device. Once configured, this bus management process
- * will be handled transparently by the OCPN core drivers. It is only
- * necessary for plugins wishing to write to the NMEA2000 bus to register the
- * specific PGNs that they anticipate using, with the selected driver.
+ * Register PGNs that this application intends to transmit for some NMEA 2000
+ * adapters like Actisense NGT-1.
+ *
+ * This function is required specifically for NMEA 2000 adapters like the
+ * Actisense NGT-1. For these devices, registration of transmit PGNs is required
+ * before sending any messages. This is an adapter-specific requirement, not a
+ * requirement of the NMEA 2000 standard itself.
+ *
+ * This function is only implemented for serial NMEA 2000 adapters (specifically
+ * the Actisense NGT-1). For other connection types (TCP, UDP), the function
+ * will return success and perform no registration.
+ *
+ * @param handle    The driver handle obtained from GetActiveDrivers()
+ * @param pgn_list  List of PGNs this application will transmit
+ *
+ * @return RESULT_COMM_NO_ERROR if registration successful
+ *         RESULT_COMM_INVALID_PARMS if pgn_list is empty
+ *         RESULT_COMM_INVALID_HANDLE if handle is invalid
+ *         RESULT_COMM_REGISTER_PGN_ERROR if PGN registration failed
+ *
+ * Example usage:
+ * @code
+ *     // Register to transmit wind data and rudder commands
+ *     std::vector<int> pgns = {130306,  // Wind Data
+ *                             127245};  // Rudder
+ *     auto result = RegisterTXPGNs(driver_handle, pgns);
+ *     if (result != RESULT_COMM_NO_ERROR) {
+ *         // Handle error
+ *     }
+ * @endcode
+ *
+ * @note For Actisense NGT-1 adapters, this registration must be done before
+ * transmitting any NMEA 2000 messages. The registration remains in effect until
+ * the application closes or explicitly registers a new list. Before any device
+ * can transmit messages on an NMEA 2000 network, it must first announce which
+ * message types (PGNs) it will transmit. This allows other devices on the
+ * network to:
+ *    - Know what data is available.
+ *    - Request specific data from the transmitting device.
+ *    - Properly handle network address claims.
  */
 extern DECL_EXP CommDriverResult RegisterTXPGNs(DriverHandle handle,
                                                 std::vector<int> &pgn_list);

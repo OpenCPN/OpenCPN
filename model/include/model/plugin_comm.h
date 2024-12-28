@@ -50,6 +50,23 @@ void SendPreShutdownHookToPlugins();
 
 void SendCursorLatLonToAllPlugIns(double lat, double lon);
 
+/**
+ * Distribute a NMEA 0183 sentence to all plugins that have registered interest
+ * by setting the WANTS_NMEA_SENTENCES capability flag.
+ *
+ * The sentence will only be sent to plugins that:
+ * - Are enabled
+ * - Have been initialized
+ * - Have declared WANTS_NMEA_SENTENCES in their Init() return flags
+ *
+ * @param sentence A complete NMEA 0183 sentence including delimiters and
+ * checksum.
+ *
+ * @note For handling NMEA/SignalK messages, a newer recommended message API is
+ * available: \htmlonly <a
+ * href="https://opencpn-manuals.github.io/main/opencpn-dev/plugin-messaging.html">Plugin
+ * Message API Documentation</a> \endhtmlonly
+ */
 void SendNMEASentenceToAllPlugIns(const wxString& sentence);
 
 int GetJSONMessageTargetCount();

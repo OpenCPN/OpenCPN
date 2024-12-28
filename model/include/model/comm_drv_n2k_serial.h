@@ -93,6 +93,11 @@ public:
 
 private:
   void ProcessManagementPacket(std::vector<unsigned char>* payload);
+  /**
+   * Sends a management message over NMEA 2000 serial interface.
+   *
+   * @note This implementation is excluded on Android platforms
+   */
   int SendMgmtMsg(unsigned char* string, size_t string_size,
                   unsigned char cmd_code, int timeout_msec,
                   bool* response_flag);
