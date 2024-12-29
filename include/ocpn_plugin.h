@@ -2066,8 +2066,8 @@ extern DECL_EXP bool GetEnableLightsDisplay(int CanvasIndex);
 extern DECL_EXP bool GetEnableLightDescriptionsDisplay(int CanvasIndex);
 extern DECL_EXP PI_DisCat GetENCDisplayCategory(int CanvasIndex);
 
-extern DECL_EXP void CenterOnOwnship(int CanvasIndex);
-extern DECL_EXP bool GetCenterOnOwnship(int CanvasIndex);
+extern DECL_EXP void SetFollowMode(int CanvasIndex, bool enable_follow);
+extern DECL_EXP bool GetFollowMode(int CanvasIndex);
 
 extern DECL_EXP void SetTrackingMode(bool enable);
 extern DECL_EXP bool GetTrackingMode();
@@ -2081,5 +2081,16 @@ PluginCreateChartCanvas();  // The wxWindow is created at a nominal size,
                             // hidden.
                             //  Return value is index of new canvas wxWindow
 extern DECL_EXP void PluginDeleteChartCanvas(wxWindow *win);
+
+// ChartCanvas control utilities
+
+extern DECL_EXP void PluginZoomCanvas(int CanvasIndex, double factor);
+
+extern DECL_EXP bool GetEnableMainToolbar();
+extern DECL_EXP void SetEnableMainToolbar(bool enable);
+
+extern DECL_EXP void ShowGlobalSettingsDialog();
+
+extern DECL_EXP void PluginCenterOwnship(int CanvasIndex);
 
 #endif  //_PLUGIN_H_

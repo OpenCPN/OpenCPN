@@ -319,6 +319,7 @@ extern int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
 extern bool g_config_display_size_manual;
 extern bool g_PrintingInProgress;
+extern bool g_disable_main_toolbar;
 
 #ifdef __WXMSW__
 // System color control support
@@ -5021,7 +5022,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       UpdateStatusBar();
 
       SendSizeEvent();
-
       break;
     }
   }  // switch

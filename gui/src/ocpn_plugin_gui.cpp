@@ -44,6 +44,7 @@
 #include "model/route.h"
 #include "model/track.h"
 #include "routemanagerdialog.h"
+#include "model/idents.h"
 #include "model/multiplexer.h"
 #include "chartdb.h"
 #include "OCPNPlatform.h"
@@ -51,11 +52,12 @@
 #include "FontMgr.h"
 #include "gui_lib.h"
 #include "model/ais_decoder.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/own_ship.h"
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "svg_utils.h"
 #include "navutil.h"
-#include "model/comm_navmsg_bus.h"
 #include "chcanv.h"
 #include "piano.h"
 #include "waypointman_gui.h"
@@ -114,6 +116,7 @@ unsigned int gs_plib_flags;
 extern ChartCanvas* g_focusCanvas;
 extern ChartCanvas* g_overlayCanvas;
 extern bool g_bquiting;
+extern bool g_disable_main_toolbar;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -2621,22 +2624,6 @@ void SetTrackingMode(bool enable) {
 }
 bool GetTrackingMode() { return g_bTrackActive; }
 
-void CenterOnOwnship(int CanvasIndex) {
-  if (CanvasIndex < GetCanvasCount()) {
-    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
-    if (cc) {
-      if (cc->GetbFollow()) cc->TogglebFollow();
-    }
-  }
-}
-bool GetCenterOnOwnship(int CanvasIndex) {
-  if (CanvasIndex < GetCanvasCount()) {
-    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
-    if (cc) return cc->GetbFollow();
-  }
-  return false;
-}
-
 void SetAppColorScheme(PI_ColorScheme cs) {
   gFrame->SetAndApplyColorScheme((ColorScheme)cs);
 }
@@ -2714,4 +2701,54 @@ void PluginDeleteChartCanvas(wxWindow* win) {
     if (cc) cc->SetCanvasIndex(i);
   }
 #endif
+}
+
+// ChartCanvas control utilities
+
+void PluginZoomCanvas(int CanvasIndex, double factor) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) cc->ZoomCanvasSimple(factor);
+  }
+}
+
+bool GetEnableMainToolbar() { return (!g_disable_main_toolbar); }
+void SetEnableMainToolbar(bool enable) {
+  g_disable_main_toolbar = !enable;
+  if (g_MainToolbar) g_MainToolbar->RefreshToolbar();
+}
+
+void ShowGlobalSettingsDialog() {
+  if (gFrame) gFrame->ScheduleSettingsDialog();
+}
+
+void PluginCenterOwnship(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) {
+      bool bfollow = cc->GetbFollow();
+      cc->ResetOwnshipOffset();
+      if (bfollow)
+        cc->SetbFollow();
+      else
+        cc->JumpToPosition(gLat, gLon, cc->GetVPScale());
+    }
+  }
+}
+
+void PluginSetFollowMode(int CanvasIndex, bool enable_follow) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) {
+      if (cc->GetbFollow() != enable_follow) cc->TogglebFollow();
+    }
+  }
+}
+
+bool PluginGetFollowMode(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return cc->GetbFollow();
+  }
+  return false;
 }

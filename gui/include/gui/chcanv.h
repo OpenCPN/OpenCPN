@@ -569,6 +569,7 @@ public:
     return m_quilt_noshow_index_array;
   }
   double GetDisplayScale() { return m_displayScale; }
+  void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
 
 private:
   int AdjustQuiltRefChart();
