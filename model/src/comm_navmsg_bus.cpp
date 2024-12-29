@@ -30,7 +30,7 @@ void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
   {
     std::lock_guard lock(m_mutex);
     if (m_active_messages.find(key) == m_active_messages.end())
-      NewMessageEvent.Notify();
+      new_msg_event.Notify();
     m_active_messages.insert(key);
   }
   Observable(*msg).Notify(msg);
