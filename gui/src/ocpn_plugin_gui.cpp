@@ -2645,6 +2645,7 @@ int PluginCreateChartCanvas() {
   if (g_bopengl)
     if (!cc->GetglCanvas()) cc->SetupGlCanvas();
 #endif
+  g_canvasConfig++;
 
   auto& config_array = ConfigMgr::Get().GetCanvasConfigArray();
   // Try to find an unused config entry, and use it for this canvas.
