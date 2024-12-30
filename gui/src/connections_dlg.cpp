@@ -25,7 +25,9 @@ static const char* kFisheye = "\u25c9";
 static const char* kCircle = "\u3007";
 static const char* kTrashbin = "\U0001f5d1";
 static const char* kGear = "\u2699";
+static const char* kCrossmark = "\u2715";
 
+/** The "Add new connection" plus sign */
 class AddConnectionPanel : public wxPanel {
 public:
   AddConnectionPanel(wxWindow* parent) : wxPanel(parent) {
@@ -53,8 +55,49 @@ public:
   }
 };
 
+/** Grid with existing connections: type, port, status, etc. */
 class Connections : public wxGrid {
 public:
+  Connections(wxWindow* parent,
+              const std::vector<ConnectionParams*>& connections)
+      : wxGrid(parent, wxID_ANY), m_connections(connections) {
+    CreateGrid(0, 7);
+    static const std::array<std::string, 7> headers = {
+        "", "Protocol", "Direction", "Port", "Status", "", ""};
+    for (auto hdr = headers.begin(); hdr != headers.end(); hdr++) {
+      SetColLabelValue(hdr - headers.begin(), *hdr);
+    }
+    HideRowLabels();
+    SetColAttributes(parent);
+    ReloadGrid(connections);
+    DisableDragColSize();
+    DisableDragRowSize();
+
+    GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent ev) {
+      wxPoint pt = ev.GetPosition();
+      int row = YToRow(pt.y);
+      int col = XToCol(pt.x);
+      SetToolTip(m_tooltips[row][col]);
+      ev.Skip();
+    });
+
+    Bind(wxEVT_GRID_SELECT_CELL,
+         [&](wxGridEvent& ev) { OnSelectCell(ev.GetRow(), ev.GetCol()); });
+    conn_change_lstnr.Init(
+        m_conn_states.evt_conn_status_change,
+        [&](ObservedEvt) { OnConnectionChange(m_connections); });
+  }
+
+  ConnectionParams* FindRowConnection(int row) {
+    auto iface = GetCellValue(row, 3);
+    auto bus = NavAddr::StringToBus(GetCellValue(row, 1).ToStdString());
+    auto found = find_if(
+        m_connections.begin(), m_connections.end(), [&](ConnectionParams* p) {
+          return bus == p->GetCommProtocol() && iface == p->GetStrippedDSPort();
+        });
+    return found != m_connections.end() ? *found : nullptr;
+  }
+
   void SetColAttributes(wxWindow* parent) {
     auto enable_attr = new wxGridCellAttr();
     enable_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
@@ -96,46 +139,6 @@ public:
     SetColAttr(6, delete_attr);
   }
 
-  Connections(wxWindow* parent,
-              const std::vector<ConnectionParams*>& connections)
-      : wxGrid(parent, wxID_ANY), m_connections(connections) {
-    CreateGrid(0, 7);
-    static const std::array<std::string, 7> headers = {
-        "", "Protocol", "Direction", "Port", "Status", "", ""};
-    for (auto hdr = headers.begin(); hdr != headers.end(); hdr++) {
-      SetColLabelValue(hdr - headers.begin(), *hdr);
-    }
-    HideRowLabels();
-    SetColAttributes(parent);
-    ReloadGrid(connections);
-    DisableDragColSize();
-    DisableDragRowSize();
-
-    GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent ev) {
-      wxPoint pt = ev.GetPosition();
-      int row = YToRow(pt.y);
-      int col = XToCol(pt.x);
-      SetToolTip(m_tooltips[row][col]);
-      ev.Skip();
-    });
-
-    Bind(wxEVT_GRID_SELECT_CELL,
-         [&](wxGridEvent& ev) { OnSelectCell(ev.GetRow(), ev.GetCol()); });
-    conn_change_lstnr.Init(
-        m_conn_states.evt_conn_status_change,
-        [&](ObservedEvt) { OnConnectionChange(m_connections); });
-  }
-
-  ConnectionParams* FindRowConnection(int row) {
-    auto iface = GetCellValue(row, 3);
-    auto bus = NavAddr::StringToBus(GetCellValue(row, 1).ToStdString());
-    auto found = find_if(
-        m_connections.begin(), m_connections.end(), [&](ConnectionParams* p) {
-          return bus == p->GetCommProtocol() && iface == p->GetStrippedDSPort();
-        });
-    return found != m_connections.end() ? *found : nullptr;
-  }
-
   int FindConnectionIndex(ConnectionParams* cp) {
     using namespace std;
     auto found = find(m_connections.begin(), m_connections.end(), cp);
@@ -175,12 +178,15 @@ public:
       }
     }
   }
+  void HandleDelete(int row) {}
 
   void OnSelectCell(int row, int col) {
     if (col == 0) {
       HandleEnable(row);
     } else if (col == 5) {
       HandleEdit(row);
+    } else if (col == 6) {
+      HandleDelete(row);
     }
   }
 
@@ -216,13 +222,12 @@ public:
       m_tooltips[row][5] = "Edit connection";
       SetCellValue(row, 6, kTrashbin);  // 🗑
       m_tooltips[row][6] = "Delete connection";
-      OnConnectionChange(TheConnectionParams());
+      OnConnectionChange(m_connections);
       AutoSize();
     }
   }
 
   void OnConnectionChange(const std::vector<ConnectionParams*>& connections) {
-    static const char* kCrossmark = "\u2715";
     for (auto it = connections.begin(); it != connections.end(); it++) {
       ConnState state = m_conn_states.GetDriverState(
           (*it)->GetCommProtocol(), (*it)->GetStrippedDSPort());
@@ -259,6 +264,7 @@ public:
   const std::vector<ConnectionParams*>& m_connections;
 };
 
+/** Main window: connections grid + "Add new connection" plus sign. */
 ConnectionsDlg::ConnectionsDlg(
     wxWindow* parent, const std::vector<ConnectionParams*>& connections,
     std::function<void()> on_exit)
