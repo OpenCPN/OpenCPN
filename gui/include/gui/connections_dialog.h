@@ -67,7 +67,6 @@ public:
   void UpdateSourceList(bool bResort);
   bool SortSourceList(void);
 
-  void UpdateDatastreams();
   void OnSize(wxSizeEvent &ev);
 
   // private:
