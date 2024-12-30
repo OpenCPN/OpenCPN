@@ -2066,8 +2066,8 @@ extern DECL_EXP bool GetEnableLightsDisplay(int CanvasIndex);
 extern DECL_EXP bool GetEnableLightDescriptionsDisplay(int CanvasIndex);
 extern DECL_EXP PI_DisCat GetENCDisplayCategory(int CanvasIndex);
 
-extern DECL_EXP void SetFollowMode(int CanvasIndex, bool enable_follow);
-extern DECL_EXP bool GetFollowMode(int CanvasIndex);
+extern DECL_EXP void PluginSetFollowMode(int CanvasIndex, bool enable_follow);
+extern DECL_EXP bool PluginGetFollowMode(int CanvasIndex);
 
 extern DECL_EXP void SetTrackingMode(bool enable);
 extern DECL_EXP bool GetTrackingMode();
