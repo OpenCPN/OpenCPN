@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Grib Settings Dialog
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2014 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,32 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Display Settings Configuration Interface.
  *
+ * Provides comprehensive configuration options for customizing GRIB weather
+ * data visualization, including:
+ * - Units and display formats for each meteorological parameter
+ * - Overlay styling (transparency, colors, arrows, isobars)
+ * - Animation and playback settings
+ * - Data interpolation options
+ * - Layout and GUI preferences
+ *
+ * The settings system supports:
+ * - Multiple meteorological parameters (wind, pressure, waves, etc.)
+ * - Different visualization methods (arrows, particles, contours)
+ * - Unit conversion and calibration
+ * - Persistent storage of user preferences
+ * - JSON import/export of configurations
+ *
+ * Key features:
+ * - Per-parameter customization of display elements
+ * - Flexible unit systems (metric, imperial, nautical)
+ * - Real-time preview of setting changes
+ * - Profile management for different use cases
  */
-
 #ifndef __GRIBSETTINGSDIALOG_H__
 #define __GRIBSETTINGSDIALOG_H__
 

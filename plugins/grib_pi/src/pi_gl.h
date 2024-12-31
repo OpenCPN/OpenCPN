@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Global Build Options
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,18 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * OpenGL Platform Abstraction Layer.
  *
+ * Provides consistent OpenGL header inclusion and function access across
+ * multiple platforms.
+ *
+ * This layer ensures consistent OpenGL functionality across different
+ * operating systems while handling platform-specific initialization
+ * and extensions.
  */
-
 //----------------------------------------------------------------------------------
 //          OpenGL Build options for S52PLIB
 //----------------------------------------------------------------------------------

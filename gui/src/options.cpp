@@ -162,9 +162,6 @@ extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
 extern Multiplexer* g_pMUX;
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -1990,7 +1987,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   radarGrid->Add(m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size);
 
   wxStaticText* colourText =
-      new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Colour"));
+      new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Color"));
   radarGrid->Add(colourText, 1, wxEXPAND | wxALL, group_item_spacing);
 
   m_colourOwnshipRangeRingColour = new OCPNColourPickerCtrl(
@@ -2103,7 +2100,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   hTrackGrid->Add(pTrackHighlite, 1, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL,
                   border_size);
   wxStaticText* trackColourText =
-      new wxStaticText(itemPanelShip, wxID_STATIC, _("Highlight Colour"));
+      new wxStaticText(itemPanelShip, wxID_STATIC, _("Highlight Color"));
   hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL,
                   border_size);
   m_colourTrackLineColour = new OCPNColourPickerCtrl(
@@ -2350,7 +2347,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                          wxALIGN_RIGHT | wxALL, border_size);
 
   wxStaticText* waypointrangeringsColour = new wxStaticText(
-      itemPanelRoutes, wxID_STATIC, _("Waypoint Range Ring Colours"));
+      itemPanelRoutes, wxID_STATIC, _("Waypoint Range Ring Colors"));
   waypointradarGrid->Add(waypointrangeringsColour, 1, wxEXPAND | wxALL, 1);
 
   m_colourWaypointRangeRingsColour = new OCPNColourPickerCtrl(

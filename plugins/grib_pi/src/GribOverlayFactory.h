@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin Freinds
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2014 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,9 +15,23 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Data Visualization and Rendering Factory.
+ *
+ * Provides comprehensive visualization capabilities for GRIB weather data in
+ * OpenCPN, including:
+ * - Wind barbs and particle animations
+ * - Pressure isobars and directional arrows
+ * - Color-coded overlay maps for various parameters
+ * - Numerical data displays and labels
+ *
+ * The factory manages both OpenGL and bitmap-based rendering paths, handles
+ * resource allocation, and provides efficient caching of rendered elements.
+ * It serves as the central hub for converting raw GRIB data into meaningful
+ * visual representations for mariners.
  */
-
 #ifndef _GRIBOVERLAYFACTORY_H_
 #define _GRIBOVERLAYFACTORY_H_
 
@@ -36,10 +44,13 @@
 #include "pi_ocpndc.h"
 #include "pi_TexFont.h"
 
-//----------------------------------------------------------------------------------------------------------
-//    Grib Overlay Specification
-//----------------------------------------------------------------------------------------------------------
-
+/**
+ * Container for rendered GRIB data visualizations in texture or bitmap form.
+ *
+ * This class manages the rendered representation of GRIB weather data,
+ * supporting both OpenGL texture-based rendering and bitmap-based rendering. It
+ * handles resource allocation and cleanup for both rendering paths.
+ */
 class GribOverlay {
 public:
   GribOverlay(void) {
@@ -71,7 +82,14 @@ public:
 #define MAX_PARTICLE_HISTORY 8
 #include <vector>
 #include <list>
+/**
+ * Individual particle for wind/current animation.
+ *
+ * Represents a single particle in the animation system with position history
+ * and rendering attributes.
+ */
 struct Particle {
+  /** Duration this particle should exist in animation cycles. */
   int m_Duration;
 
   // history is a ringbuffer.. because so many particles are
@@ -84,6 +102,11 @@ struct Particle {
   } m_History[MAX_PARTICLE_HISTORY];
 };
 
+/**
+ * Manager for particle animation system.
+ *
+ * Handles collections of particles and their rendering data arrays.
+ */
 struct ParticleMap {
 public:
   ParticleMap(int settings)
@@ -139,14 +162,17 @@ private:
   std::list<float> buffer;
 };
 
-//----------------------------------------------------------------------------------------------------------
-//    Grib Overlay Factory Specification
-//----------------------------------------------------------------------------------------------------------
-
 class GRIBUICtrlBar;
 class GribRecord;
 class GribTimelineRecordSet;
 
+/**
+ * Factory class for creating and managing GRIB data visualizations.
+ *
+ * This class is responsible for rendering all GRIB weather data visualizations
+ * in OpenCPN. It handles multiple visualization types including wind barbs,
+ * isobars, particles, directional arrows, and numeric overlays.
+ */
 class GRIBOverlayFactory : public wxEvtHandler {
 public:
   GRIBOverlayFactory(GRIBUICtrlBar &dlg);

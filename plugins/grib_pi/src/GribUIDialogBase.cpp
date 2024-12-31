@@ -4,7 +4,10 @@
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * \implements \ref GribUIDialogBase.h
+ */
 #include "GribUIDialogBase.h"
 #include "XyGribPanel.h"
 #include "manual.h"
@@ -1168,8 +1171,8 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
   m_fgBarbedData1->SetFlexibleDirection(wxBOTH);
   m_fgBarbedData1->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-  wxString m_cBarbedColoursChoices[] = {_("Default Colour"),
-                                        _("Controlled Colours")};
+  wxString m_cBarbedColoursChoices[] = {_("Default Color"),
+                                        _("Controlled Colors")};
   int m_cBarbedColoursNChoices =
       sizeof(m_cBarbedColoursChoices) / sizeof(wxString);
   m_cBarbedColours =

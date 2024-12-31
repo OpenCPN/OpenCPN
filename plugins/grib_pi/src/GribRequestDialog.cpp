@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Object
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref GribRequestDialog.h
  */
-
 #include "wx/wx.h"
 #include <wx/utils.h>
 #include <sstream>
@@ -94,7 +89,7 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
       ">" +
       _("<h1>OpenCPN ECMWF forecast</h1>"
         "<p>Free service based on ECMWF Open Data published under the terms of "
-        "Creative Commons CC-4.0-BY licence</p>"
+        "Creative Commons CC-4.0-BY license</p>"
         "<p>The IFS model GRIB files include information about surface "
         "temperature, "
         "atmospheric pressure, wind strength, wind direction, wave height and "

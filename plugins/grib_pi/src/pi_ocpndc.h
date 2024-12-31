@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Layer to use wxDC or opengl
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2011 by Sean D'Epagnier                                 *
  *   sean at depagnier dot com                                             *
  *                                                                         *
@@ -21,12 +15,28 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************/
+/**
+ * \file
+ * Device Context Abstraction Layer.
  *
- *f
+ * Provides a unified drawing interface that works across different rendering
+ * backends:
+ *
+ * Features:
+ * - OpenGL and bitmap rendering support
+ * - Pen and brush handling
+ * - Text and font management
+ * - Line and shape primitives
+ * - Texture support
+ * - Geographic coordinate transforms
+ * - Viewport management
+ *
+ * The class abstracts platform-specific graphics operations to provide
+ * consistent rendering capabilities for weather data visualization across
+ * different platforms and rendering systems.
  */
-
 #ifndef __PIOCPNDC_H__
 #define __PIOCPNDC_H__
 

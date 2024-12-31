@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2024 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,9 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
+ **************************************************************************/
+
+/**
+ * \file
+ * Implement connections_dialog.h
  */
 
 #include <wx/wxprec.h>
@@ -39,21 +35,17 @@
 #include "model/sys_events.h"
 
 #include "chartbase.h"
+#include "connection_edit.h"
 #include "connections_dialog.h"
 #include "conn_params_panel.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
 #include "options.h"
 #include "priority_gui.h"
-#include "connection_edit.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
-
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 //------------------------------------------------------------------------------
 //          ConnectionsDialog Implementation
@@ -413,18 +405,19 @@ void ConnectionsDialog::EnableConnection(ConnectionParams* conn, bool value) {
 }
 
 bool ConnectionsDialog::SortSourceList(void) {
-  if (TheConnectionParams()->Count() < 2) return false;
+  // FIXME (leamas): this is not the way to sort a vector...
+  if (TheConnectionParams().size() < 2) return false;
 
   std::vector<int> ivec;
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) ivec.push_back(i);
+  for (size_t i = 0; i < TheConnectionParams().size(); i++) ivec.push_back(i);
 
   bool did_sort = false;
   bool did_swap = true;
   while (did_swap) {
     did_swap = false;
     for (size_t j = 1; j < ivec.size(); j++) {
-      ConnectionParams* c1 = TheConnectionParams()->Item(ivec[j]);
-      ConnectionParams* c2 = TheConnectionParams()->Item(ivec[j - 1]);
+      ConnectionParams* c1 = TheConnectionParams()[ivec[j]];
+      ConnectionParams* c2 = TheConnectionParams()[ivec[j - 1]];
 
       if (c1->Priority < c2->Priority) {
         int t = ivec[j - 1];
@@ -443,7 +436,7 @@ bool ConnectionsDialog::SortSourceList(void) {
 
     for (size_t i = 0; i < ivec.size(); i++) {
       ConnectionParamsPanel* pPanel =
-          TheConnectionParams()->Item(ivec[i])->m_optionsPanel;
+          TheConnectionParams()[ivec[i]]->m_optionsPanel;
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxRIGHT, 10);
     }
   }
@@ -455,8 +448,7 @@ void ConnectionsDialog::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
 
   // Add new panels as necessary
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams* cp = TheConnectionParams()->Item(i);
+  for (auto* cp : TheConnectionParams()) {
     if (!cp->m_optionsPanel) {
       ConnectionParamsPanel* pPanel =
           new ConnectionParamsPanel(m_scrollWinConnections, wxID_ANY,
@@ -479,10 +471,10 @@ void ConnectionsDialog::FillSourceList(void) {
 }
 
 void ConnectionsDialog::UpdateSourceList(bool bResort) {
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams* cp = TheConnectionParams()->Item(i);
+  for (size_t i = 0; i < TheConnectionParams().size(); i++) {
+    ConnectionParams* cp = TheConnectionParams()[i];
     ConnectionParamsPanel* panel = cp->m_optionsPanel;
-    if (panel) panel->Update(TheConnectionParams()->Item(i));
+    if (panel) panel->Update(TheConnectionParams()[i]);
   }
 
   if (bResort) {
@@ -498,10 +490,9 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
 #endif
 
   //  Unselect all panels
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++)
-    TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
+  for (auto* cp : TheConnectionParams()) cp->m_optionsPanel->SetSelected(false);
 
-  ConnectionEditDialog dialog(m_parent, this);
+  ConnectionEditDialog dialog(m_parent);
   dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
   dialog.SetPropsLabel(_("Configure new connection"));
   dialog.SetDefaultConnectionParams();
@@ -511,7 +502,7 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
     ConnectionParams* cp = dialog.GetParamsFromControls();
     if (cp) {
       cp->b_IsSetup = false;  // Trigger new stream
-      TheConnectionParams()->Add(cp);
+      TheConnectionParams().push_back(cp);
       FillSourceList();
     }
     UpdateDatastreams();
@@ -526,23 +517,16 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
 
 void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
   if (mSelectedConnection) {
-    // Find the index
-    int index = -1;
-    ConnectionParams* cp = NULL;
-    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-      cp = TheConnectionParams()->Item(i);
-      if (mSelectedConnection == cp) {
-        index = i;
-        break;
-      }
-    }
-
-    if ((index >= 0) && (cp)) {
-      delete TheConnectionParams()->Item(index)->m_optionsPanel;
-      TheConnectionParams()->RemoveAt(index);
-      StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
+    // Find the index    int index = -1;
+    auto found = std::find(TheConnectionParams().begin(),
+                           TheConnectionParams().end(), mSelectedConnection);
+    if (found != TheConnectionParams().end() && *found) {
+      int index = found - TheConnectionParams().begin();
+      delete TheConnectionParams()[index]->m_optionsPanel;
+      TheConnectionParams().erase(found);
+      StopAndRemoveCommDriver((*found)->GetStrippedDSPort(),
+                              (*found)->GetCommProtocol());
       mSelectedConnection = NULL;
-
       FillSourceList();
     }
     m_buttonEdit->Disable();
@@ -559,30 +543,24 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
   if (mSelectedConnection) {
     // Find the index
     int index = -1;
-    ConnectionParams* cp = NULL;
-    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-      cp = TheConnectionParams()->Item(i);
-      if (mSelectedConnection == cp) {
-        index = i;
-        break;
-      }
-    }
-
-    if ((index >= 0) && (cp)) {
-      ConnectionEditDialog dialog(m_parent, this);
+    auto found = std::find(TheConnectionParams().begin(),
+                           TheConnectionParams().end(), mSelectedConnection);
+    if (found != TheConnectionParams().begin() && (*found)) {
+      ConnectionEditDialog dialog(m_parent);
       dialog.SetSize(
           wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
       dialog.SetPropsLabel(_("Edit Selected Connection"));
       // Preload the dialog contents
-      dialog.PreloadControls(cp);
+      dialog.PreloadControls(*found);
 
       auto rv = dialog.ShowModal();
       if (rv == wxID_OK) {
         ConnectionParams* cp_edited = dialog.GetParamsFromControls();
-        delete cp->m_optionsPanel;
-        StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
+        delete (*found)->m_optionsPanel;
+        StopAndRemoveCommDriver((*found)->GetStrippedDSPort(),
+                                (*found)->GetCommProtocol());
 
-        TheConnectionParams()->Item(index) = cp_edited;
+        TheConnectionParams()[index] = cp_edited;
         cp_edited->b_IsSetup = false;  // Trigger new stream
         FillSourceList();
         UpdateDatastreams();
@@ -643,9 +621,7 @@ void ConnectionsDialog::UpdateDatastreams() {
   // Recreate datastreams that are new, or have been edited
   std::vector<std::string> enabled_conns;
 
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams* cp = TheConnectionParams()->Item(i);
-
+  for (auto* cp : TheConnectionParams()) {
     // Connection already setup?
     if (cp->b_IsSetup) {
       if (cp->bEnabled) {

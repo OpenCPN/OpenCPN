@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Driver registration container, a singleton.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,13 +18,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/**
+ * \file
+ * Driver registration container, a singleton.
+ */
+
 #ifndef _COMMDRIVERREGISTRY_H__
 #define _COMMDRIVERREGISTRY_H__
 
 #include "model/comm_driver.h"
 #include "observable_evtvar.h"
 
-typedef std::shared_ptr<AbstractCommDriver> DriverPtr;
+using DriverPtr = std::unique_ptr<AbstractCommDriver>;
 
 /**
  * The global driver registry, a singleton. Drivers register here when
@@ -45,13 +45,13 @@ public:
   void Activate(DriverPtr driver);
 
   /** Remove driver from list of active drivers. */
-  void Deactivate(DriverPtr driver);
+  void Deactivate(DriverPtr& driver);
 
   /** Close and destroy all drivers completely. */
   void CloseAllDrivers();
 
   /** @return List of all activated drivers. */
-  const std::vector<DriverPtr>& GetDrivers();
+  const std::vector<DriverPtr>& GetDrivers() const;
 
   /** Notified by all driverlist updates. */
   EventVar evt_driverlist_change;
@@ -81,9 +81,13 @@ private:
 /**
  * Search list of drivers for a driver with given interface string.
  * @return First found driver or shared_ptr<>(nullptr), which is false.
+ *
+ * @note The driver list is const in the sense that elements cannot be
+ * added, removed, etc. However, the driver returned needs to be non-const
+ * since most driver operations (notably sending) are non-const.
  */
-const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
-                           const std::string& iface,
-                           const NavAddr::Bus _bus = NavAddr::Bus::Undef);
+DriverPtr& FindDriver(const std::vector<DriverPtr>& drivers,
+                      const std::string& iface,
+                      const NavAddr::Bus _bus = NavAddr::Bus::Undef);
 
 #endif  // guard
