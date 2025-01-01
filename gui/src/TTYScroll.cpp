@@ -99,11 +99,21 @@ void TTYScroll::OnDraw(wxDC &dc) {
   }
 }
 
-void TTYScroll::Copy() {
+void TTYScroll::Copy(bool n0183) {
   wxString theText;
   for (unsigned int i = 0; i < m_plineArray->GetCount(); i++) {
-    theText.append(m_plineArray->Item(i));
-    theText.append("\n");
+    wxString s = m_plineArray->Item(i);
+    if (n0183) {
+      int pos = 0;
+      if ((pos = s.Find("$")) != wxNOT_FOUND) {
+        theText.append(s.Mid(pos) + "\n");
+      } else if ((pos = s.Find("!")) != wxNOT_FOUND) {
+        theText.append(s.Mid(pos) + "\n");
+      }
+    } else {
+      theText.append(s);
+      theText.append("\n");
+    }
   }
   // Write scrolled text to the clipboard
   if (wxTheClipboard->Open()) {

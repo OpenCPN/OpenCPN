@@ -76,22 +76,30 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   wxBitmapButton* bb = new wxBitmapButton(this, wxID_ANY, m_bm_legend);
   sbSizer1->Add(bb, 1, wxALL | wxEXPAND, 5);
 
-  wxStaticBox* buttonBox = new wxStaticBox(this, wxID_ANY, wxEmptyString);
+  wxStaticBox* buttonBox = new wxStaticBox(this, wxID_ANY, "Tools");
   wxStaticBoxSizer* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
 
   m_btn_pause = new wxButton(this, wxID_ANY, _("Pause"), wxDefaultPosition,
                              wxDefaultSize, 0);
-  m_btn_copy = new wxButton(this, wxID_ANY, _("Copy"), wxDefaultPosition,
+  m_btn_copy = new wxButton(this, wxID_ANY, _("Copy all"), wxDefaultPosition,
                             wxDefaultSize, 0);
-  m_btn_copy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
+  m_btn_copy->SetToolTip(_("Copy all NMEA Debug window to clipboard."));
+  m_btn_copy_N0183 = new wxButton(this, wxID_ANY, _("Copy NMEA 0183"),
+                                  wxDefaultPosition, wxDefaultSize, 0);
+  m_btn_copy_N0183->SetToolTip(
+      _("Copy only pure NMEA 0183 sentences to clipboard."));
 
   bbSizer1->Add(m_btn_pause, 0, wxALL, 5);
   bbSizer1->Add(m_btn_copy, 0, wxALL, 5);
+  bbSizer1->Add(m_btn_copy_N0183, 0, wxALL, 5);
   bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
 
   m_btn_copy->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                       wxCommandEventHandler(TTYWindow::OnCopyClick), NULL,
                       this);
+  m_btn_copy_N0183->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                            wxCommandEventHandler(TTYWindow::OnCopyN0183Click),
+                            NULL, this);
   m_btn_pause->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(TTYWindow::OnPauseClick), NULL,
                        this);
@@ -181,7 +189,9 @@ void TTYWindow::OnPauseClick(wxCommandEvent&) {
   }
 }
 
-void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
+void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(false); }
+
+void TTYWindow::OnCopyN0183Click(wxCommandEvent&) { m_tty_scroll->Copy(true); }
 
 void TTYWindow::OnCloseWindow(wxCloseEvent&) {
   if (m_window_destroy_listener) {
