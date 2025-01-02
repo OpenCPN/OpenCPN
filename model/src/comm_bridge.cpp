@@ -93,6 +93,7 @@ void ClearNavData(NavData& d) {
 static void SendBasicNavdata(int vflag) {
   auto msg = std::make_shared<BasicNavDataMsg>(
       gLat, gLon, gSog, gCog, gVar, gHdt, vflag, wxDateTime::Now().GetTicks());
+  clock_gettime(CLOCK_MONOTONIC, &msg->set_time);
   AppMsgBus::GetInstance().Notify(std::move(msg));
 }
 

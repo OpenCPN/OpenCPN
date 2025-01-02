@@ -593,6 +593,7 @@ EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
 EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
 EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
+EVT_TIMER(FRANE_TENHZ_TIMER, MyFrame::OnFrameTenHzTimer)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED,
             MyFrame::RequestNewToolbarArgEvent)
@@ -675,6 +676,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   //      Direct the Toolbar Animation timer to this frame
   ToolbarAnimateTimer.SetOwner(this, TOOLBAR_ANIMATE_TIMER);
+
+  FrameTenHzTimer.SetOwner(this, FRANE_TENHZ_TIMER);
 
 #ifdef __ANDROID__
 //    m_PrefTimer.SetOwner( this, ANDROID_PREF_TIMER );
@@ -806,6 +809,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
 MyFrame::~MyFrame() {
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
   DestroyDeviceNotFoundDialogs();
 
   delete ChartData;
@@ -1504,6 +1508,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
 
 void MyFrame::FastClose() {
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
   quitflag++;            // signal to the timer loop
   FrameTimer1.Start(1);  // real quick now...
 }
@@ -1621,6 +1626,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   g_bframemax = IsMaximized();
 
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
+
   FrameCOGTimer.Stop();
 
   TrackOff();
@@ -4515,6 +4522,7 @@ void MyFrame::ChartsRefresh() {
   bool b_run = FrameTimer1.IsRunning();
 
   FrameTimer1.Stop();  // stop other asynchronous activity
+  FrameTenHzTimer.Stop();
 
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -4529,6 +4537,7 @@ void MyFrame::ChartsRefresh() {
   }
 
   if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
   AbstractPlatform::HideBusySpinner();
 }
@@ -4549,6 +4558,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
                                          const wxString &ChartListFileName) {
   bool b_run = FrameTimer1.IsRunning();
   FrameTimer1.Stop();  // stop other asynchronous activity
+  FrameTenHzTimer.Stop();
+
   bool b_runCOGTimer = FrameCOGTimer.IsRunning();
   FrameCOGTimer.Stop();
 
@@ -4622,6 +4633,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
   // Restart timers, if necessary
   if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+
   if (b_runCOGTimer) {
     //    Restart the COG rotation timer, max frequency is 10 hz.
     int period_ms = 100;
@@ -5099,6 +5112,11 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 
 void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   m_fixtime = msg->time;
+  if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
+      ((msg->vflag & POS_VALID) == POS_VALID)) {
+    m_fixtime_hi = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+    printf("================================  HandleBasicNavMsg\n");
+  }
 
   //    Maintain average COG for Course Up Mode
   if (!std::isnan(gCog)) {
@@ -5400,6 +5418,50 @@ void MyFrame::CheckToolbarPosition() {
 #endif
 }
 
+void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
+  // Estimate current position by extrapolating from last
+  if (std::isnan(gCog)) return;
+  if (std::isnan(gSog)) return;
+
+  struct timespec now;
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - m_fixtime_hi;
+  double diffc = diff / 1e9;  // sec
+
+  m_fixtime_hi = now.tv_sec * 1e9 + now.tv_nsec;
+
+  double delta_t = diffc / 3600;     // hours
+  double distance = gSog * delta_t;  // NMi
+
+  printf("  delta_t: %g  distance:  %g\n", diffc * 1000, distance);
+
+#if 1  // really fast rectangular not for high latitudes
+  float angr = gCog / 180 * M_PI;
+  gLon = gLon + sin(angr) * distance / 60;
+  gLat = gLat + cos(angr) * distance / 60;
+
+#else  // spherical (close enough)
+  double angr = gCog / 180 * M_PI;
+  double latr = gLat * M_PI / 180;
+  double D = distance / 3443;  // earth radius in nm
+  double sD = sin(D), cD = cos(D);
+  double sy = sin(latr), cy = cos(latr);
+  double sa = sin(angr), ca = cos(angr);
+
+  gLon = gLon + asin(sa * sD / cy) * 180 / M_PI;
+  gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
+#endif
+
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      if (g_bopengl) {
+        cc->Refresh(false);
+      }
+    }
+  }
+}
+
 void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   CheckToolbarPosition();
 
@@ -5480,6 +5542,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (quitflag) {
     wxLogMessage(_T("Got quitflag from SIGNAL"));
     FrameTimer1.Stop();
+    FrameTenHzTimer.Stop();
+
     Close();
     return;
   }
@@ -5487,6 +5551,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (bDBUpdateInProgress) return;
 
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
 
   //  If tracking carryover was found in config file, enable tracking as soon as
   //  GPS become valid
@@ -5635,6 +5700,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   // If no alerts are on, then safe to resume sleeping
   if (g_bSleep && !AnchorAlertOn1 && !AnchorAlertOn2) {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+    FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
     return;
   }
 
@@ -5753,8 +5819,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
         if (AnyAISTargetsOnscreen(cc, cc->GetVP())) bnew_view = true;
 
-        if (bnew_view) /* full frame in opengl mode */
-          cc->Refresh(false);
+        if (bnew_view) { /* full frame in opengl mode */
+          printf(
+              "********************************************           "
+              "MainTimer Refresh Skipped\n");
+          // cc->Refresh(false);
+        }
+
 #endif
       } else {
         //  Invalidate the ChartCanvas window appropriately
@@ -5831,8 +5902,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   if (g_unit_test_2)
     FrameTimer1.Start(TIMER_GFRAME_1 * 3, wxTIMER_CONTINUOUS);
-  else
+  else {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+    FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+  }
 }
 
 double MyFrame::GetMag(double a, double lat, double lon) {

@@ -1067,7 +1067,7 @@ void glChartCanvas::BuildFBO() {
   /* invalidate cache */
   Invalidate();
 
-  glClear(GL_COLOR_BUFFER_BIT);
+  // glClear(GL_COLOR_BUFFER_BIT);
   m_b_BuiltFBO = true;
 
   return;
@@ -3924,6 +3924,9 @@ void glChartCanvas::Render() {
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
+
+  static int nrender;
+  printf("render %d\n", nrender++);
 
   m_last_render_time = wxDateTime::Now().GetTicks();
 
