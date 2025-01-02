@@ -137,6 +137,8 @@
 #include "CanvasOptions.h"
 #include "udev_rule_mgr.h"
 
+#include "KalmanFilter3D.h"
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
@@ -708,6 +710,13 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
 
   m_fixtime = -1;
+
+  double dt = 2.0;                     // Time interval
+  double process_noise_std = 1.0;      // Process noise standard deviation
+  double measurement_noise_std = 0.5;  // Measurement noise standard deviation
+
+  m_kfilter.Init(dt, process_noise_std, measurement_noise_std);
+  kfilter_live = false;
 
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
   initIXNetSystem();
@@ -5116,6 +5125,15 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
       ((msg->vflag & POS_VALID) == POS_VALID)) {
     m_fixtime_hi = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
     printf("================================  HandleBasicNavMsg\n");
+
+    double measurement[3];
+    measurement[0] = gLat;
+    measurement[1] = gLon;
+    measurement[2] = 0;
+
+    m_kfilter.predict();
+    m_kfilter.update(measurement);
+    kfilter_live = true;
   }
 
   //    Maintain average COG for Course Up Mode
@@ -5422,7 +5440,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   // Estimate current position by extrapolating from last
   if (std::isnan(gCog)) return;
   if (std::isnan(gSog)) return;
-
+#if 0
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
   uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - m_fixtime_hi;
@@ -5451,12 +5469,24 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   gLon = gLon + asin(sa * sD / cy) * 180 / M_PI;
   gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
 #endif
+#endif
 
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) {
-      if (g_bopengl) {
-        cc->Refresh(false);
+  if (kfilter_live) {
+    m_kfilter.predict();
+
+    // Get the current state
+    double current_state[6];
+    m_kfilter.getState(current_state);
+
+    gLat = current_state[0];
+    gLon = current_state[1];
+
+    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+      ChartCanvas *cc = g_canvasArray.Item(i);
+      if (cc) {
+        if (g_bopengl) {
+          cc->Refresh(false);
+        }
       }
     }
   }

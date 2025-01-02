@@ -47,6 +47,7 @@
 #include "s57registrar_mgr.h"
 #include "SencManager.h"
 #include "displays.h"
+#include "KalmanFilter3D.h"
 
 wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);
@@ -396,6 +397,9 @@ private:
   ObsListener m_evt_drv_msg_listener;
 
   CommOverflowDlg comm_overflow_dlg;
+
+  KalmanFilter3D m_kfilter;
+  bool kfilter_live;
 
   DECLARE_EVENT_TABLE()
 };
