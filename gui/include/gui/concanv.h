@@ -102,14 +102,45 @@ private:
 };
 
 /**
- * Main console display canvas. Primary class for the navigation console
- * in OpenCPN. Manages and displays various navigation data points and controls.
+ * Primary navigation console display for route and vessel tracking.
+ *
+ * Manages a dynamic interface that presents real-time navigation metrics
+ * during active route tracking. Provides detailed route information and
+ * interaction capabilities for maritime navigation.
+ *
+ * Key Responsibilities:
+ * - Display current leg and total route navigation data
+ * - Render route-related information like XTE, bearing, range, TTG
+ * - Support user interactions for route display modes
+ * - Manage color scheme and font rendering
+ *
+ * Navigation Display Modes:
+ * - Single Leg Mode: Focuses on current route segment
+ * - Total Route Mode: Displays cumulative route statistics
+ * - Speed Calculation: Supports VMG and SOG calculations
+ *
+ * Interaction Features:
+ * - Context menu for route and display configuration
+ * - Toggleable route total/leg display
+ * - Dynamic font and color scheme adaptation
  */
 class ConsoleCanvas : public wxFrame {
 public:
   ConsoleCanvas(wxWindow *frame);
   ~ConsoleCanvas();
+  /**
+   * Updates route-related data displays.
+   *
+   * Calculates and refreshes navigation metrics based on current
+   * route state, vessel position, and selected display mode.
+   */
   void UpdateRouteData();
+  /**
+   * Recomputes and applies new fonts to console elements.
+   *
+   * Ensures consistent font rendering across different platforms
+   * and display configurations. Triggers layout recalculation.
+   */
   void ShowWithFreshFonts(void);
   void UpdateFonts(void);
   void SetColorScheme(ColorScheme cs);
@@ -117,6 +148,14 @@ public:
   void OnContextMenu(wxContextMenuEvent &event);
   void OnContextMenuSelection(wxCommandEvent &event);
   void RefreshConsoleData(void);
+  /**
+   * Toggles between route total and current leg display modes.
+   *
+   * Switches speed calculation method and route information
+   * presentation between:
+   * - Current leg metrics
+   * - Total route statistics
+   */
   void ToggleRouteTotalDisplay();
 
   wxWindow *m_pParent;
