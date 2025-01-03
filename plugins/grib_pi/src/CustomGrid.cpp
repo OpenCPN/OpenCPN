@@ -71,7 +71,7 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   SetLabelBackgroundColour(colour);
   // set row label size
   int w;
-  GetTextExtent(_T("Ab"), &w, NULL, 0, 0, &labelfont);
+  GetTextExtent(_T("Ab"), &w, nullptr, 0, 0, &labelfont);
   double x = (double)w * 6.5;
   SetRowLabelSize((int)x);
 
@@ -81,21 +81,21 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
   // connect events at dialog level
   Connect(wxEVT_SCROLLWIN_THUMBTRACK,
-          wxScrollEventHandler(CustomGrid::OnScroll), NULL, this);
-  Connect(wxEVT_SIZE, wxSizeEventHandler(CustomGrid::OnResize), NULL, this);
+          wxScrollEventHandler(CustomGrid::OnScroll), nullptr, this);
+  Connect(wxEVT_SIZE, wxSizeEventHandler(CustomGrid::OnResize), nullptr, this);
   Connect(wxEVT_GRID_LABEL_LEFT_CLICK,
-          wxGridEventHandler(CustomGrid::OnLabeClick), NULL, this);
+          wxGridEventHandler(CustomGrid::OnLabeClick), nullptr, this);
   // connect events at grid level
   GetGridWindow()->Connect(wxEVT_LEFT_DOWN,
-                           wxMouseEventHandler(CustomGrid::OnMouseEvent), NULL,
+                           wxMouseEventHandler(CustomGrid::OnMouseEvent), nullptr,
                            this);
   GetGridWindow()->Connect(
-      wxEVT_LEFT_UP, wxMouseEventHandler(CustomGrid::OnMouseEvent), NULL, this);
+      wxEVT_LEFT_UP, wxMouseEventHandler(CustomGrid::OnMouseEvent), nullptr, this);
   GetGridWindow()->Connect(
-      wxEVT_MOTION, wxMouseEventHandler(CustomGrid::OnMouseEvent), NULL, this);
+      wxEVT_MOTION, wxMouseEventHandler(CustomGrid::OnMouseEvent), nullptr, this);
   // timer event
   m_tRefreshTimer.Connect(
-      wxEVT_TIMER, wxTimerEventHandler(CustomGrid::OnRefreshTimer), NULL, this);
+      wxEVT_TIMER, wxTimerEventHandler(CustomGrid::OnRefreshTimer), nullptr, this);
 }
 
 CustomGrid::~CustomGrid() {

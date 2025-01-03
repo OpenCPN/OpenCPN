@@ -247,7 +247,7 @@ void GRIBTable::InitGribTable(int zone, ArrayOfGribRecordSets *rsa,
   datarow->DecRef();  // Give up pointer contrl to Grid
 
   m_tScrollToNowTimer.Connect(
-      wxEVT_TIMER, wxTimerEventHandler(GRIBTable::OnScrollToNowTimer), NULL,
+      wxEVT_TIMER, wxTimerEventHandler(GRIBTable::OnScrollToNowTimer), nullptr,
       this);
 }
 

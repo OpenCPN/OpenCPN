@@ -926,11 +926,11 @@ void GribSettingsDialog::ShowFittingSettings(int settings) {
   // Hide all Parameters
   ShowSettings(B_ARROWS, false);
   ShowSettings(ISO_LINE, false);
-  if (m_fIsoBarSpacing->GetItem(m_sIsoBarSpacing) != NULL)
+  if (m_fIsoBarSpacing->GetItem(m_sIsoBarSpacing) != nullptr)
     m_fIsoBarSpacing->Detach(m_sIsoBarSpacing);
-  if (m_fIsoBarVisibility->GetItem(m_sIsoBarSpacing) != NULL)
+  if (m_fIsoBarVisibility->GetItem(m_sIsoBarSpacing) != nullptr)
     m_fIsoBarVisibility->Detach(m_sIsoBarSpacing);
-  if (m_fIsoBarVisibility->GetItem(m_sIsoBarVisibility) != NULL)
+  if (m_fIsoBarVisibility->GetItem(m_sIsoBarVisibility) != nullptr)
     m_fIsoBarVisibility->Detach(m_sIsoBarVisibility);
   ShowSettings(ISO_ABBR, false);
   ShowSettings(D_ARROWS, false);

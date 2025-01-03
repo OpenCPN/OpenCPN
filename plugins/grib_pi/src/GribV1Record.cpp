@@ -321,8 +321,8 @@ void GribV1Record::translateDataType() {
 GribV1Record::GribV1Record(ZUFILE* file, int id_) {
   id = id_;
   //   seekStart = zu_tell(file);           // moved to section 0 read
-  data = NULL;
-  BMSbits = NULL;
+  data = nullptr;
+  BMSbits = nullptr;
   eof = false;
   knownData = true;
   IsDuplicated = false;

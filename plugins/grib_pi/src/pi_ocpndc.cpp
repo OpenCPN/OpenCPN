@@ -84,22 +84,22 @@ int NextPow2(int size) {
 }
 
 //----------------------------------------------------------------------------
-/* pass the dc to the constructor, or NULL to use opengl */
+/* pass the dc to the constructor, or nullptr to use opengl */
 pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
     : glcanvas(&canvas),
-      dc(NULL),
+      dc(nullptr),
       m_pen(wxNullPen),
       m_brush(wxNullBrush),
       m_buseGL(true) {
 #ifdef ocpnUSE_GL
 #if wxUSE_GRAPHICS_CONTEXT
-  pgc = NULL;
+  pgc = nullptr;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
   m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
-  workBuf = NULL;
+  workBuf = nullptr;
   workBufSize = 0;
-  s_odc_tess_work_buf = NULL;
+  s_odc_tess_work_buf = nullptr;
 
 #ifdef USE_ANDROID_GLES2
   s_odc_tess_vertex_idx = 0;
@@ -115,13 +115,13 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
 }
 
 pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
-    : glcanvas(NULL),
+    : glcanvas(nullptr),
       dc(&pdc),
       m_pen(wxNullPen),
       m_brush(wxNullBrush),
       m_buseGL(false) {
 #if wxUSE_GRAPHICS_CONTEXT
-  pgc = NULL;
+  pgc = nullptr;
   auto pmdc = dynamic_cast<wxMemoryDC *>(dc);
   if (pmdc)
     pgc = wxGraphicsContext::Create(*pmdc);
@@ -132,28 +132,28 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
   m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
-  workBuf = NULL;
+  workBuf = nullptr;
   workBufSize = 0;
 #ifdef ocpnUSE_GL
-  s_odc_tess_work_buf = NULL;
+  s_odc_tess_work_buf = nullptr;
 #endif
 }
 
 pi_ocpnDC::pi_ocpnDC()
-    : glcanvas(NULL),
-      dc(NULL),
+    : glcanvas(nullptr),
+      dc(nullptr),
       m_pen(wxNullPen),
       m_brush(wxNullBrush),
       m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
-  pgc = NULL;
+  pgc = nullptr;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
   m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
-  workBuf = NULL;
+  workBuf = nullptr;
   workBufSize = 0;
 #ifdef ocpnUSE_GL
-  s_odc_tess_work_buf = NULL;
+  s_odc_tess_work_buf = nullptr;
   pi_loadShaders();
 #endif
 }
@@ -1636,9 +1636,9 @@ void pi_odc_vertexCallbackD_GLSL(GLvoid *vertex, void *data) {
 
     pDC->s_odc_tess_work_buf = (GLfloat *)realloc(
         pDC->s_odc_tess_work_buf, new_buf_len * sizeof(GLfloat));
-    if (NULL == pDC->s_odc_tess_work_buf) {
+    if (nullptr == pDC->s_odc_tess_work_buf) {
       free(tmp);
-      tmp = NULL;
+      tmp = nullptr;
     } else
       pDC->s_odc_tess_buf_len = new_buf_len;
   }
@@ -1756,7 +1756,7 @@ void pi_ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
     //         odc_combine_work_data.clear();
   }
 #else
-    static GLUtesselator *tobj = NULL;
+    static GLUtesselator *tobj = nullptr;
     if (!tobj) tobj = gluNewTess();
 
     gluTessCallback(tobj, GLU_TESS_VERTEX, (_GLUfuncptr)&ocpnDCvertexCallback);
@@ -1770,7 +1770,7 @@ void pi_ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
     gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 
     if (ConfigureBrush()) {
-      gluTessBeginPolygon(tobj, NULL);
+      gluTessBeginPolygon(tobj, nullptr);
       gluTessBeginContour(tobj);
 
       for (int i = 0; i < n; i++) {
@@ -1933,7 +1933,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
     } else {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
-      sdc.GetMultiLineTextExtent(text, &w, &h, NULL,
+      sdc.GetMultiLineTextExtent(text, &w, &h, nullptr,
                                  &m_font); /*we need to handle multiline*/
       int ww, hw;
       sdc.GetTextExtent("W", &ww, &hw);  // metric
@@ -2013,7 +2013,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       int TextureWidth = NextPow2(w);
       int TextureHeight = NextPow2(h);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TextureWidth, TextureHeight, 0,
-                   GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                   GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
                       data);
 
@@ -2163,7 +2163,7 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
 
   /*we need to handle multiline to get true w & h */
   if (dc)
-    dc->GetMultiLineTextExtent(string, w, h, NULL, font);
+    dc->GetMultiLineTextExtent(string, w, h, nullptr, font);
   else {
     wxFont f = m_font;
     if (font) f = *font;
@@ -2174,13 +2174,13 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
       m_texfont.GetTextExtent(string, w, h);
 #else
       wxMemoryDC temp_dc;
-      temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
+      temp_dc.GetMultiLineTextExtent(string, w, h, nullptr, &f);
       if (w) (*w) *= OCPN_GetWinDIPScaleFactor();
       if (h) (*h) *= OCPN_GetWinDIPScaleFactor();
 #endif
     } else {
       wxMemoryDC temp_dc;
-      temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
+      temp_dc.GetMultiLineTextExtent(string, w, h, nullptr, &f);
       if (w) (*w) *= OCPN_GetWinDIPScaleFactor();
       if (h) (*h) *= OCPN_GetWinDIPScaleFactor();
     }
