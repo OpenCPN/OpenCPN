@@ -37,7 +37,9 @@
 		const Map = window.ol.Map;
 		const View = window.ol.View;
 		const TileLayer = window.ol.layer.Tile;
+		const ImageLayer = window.ol.layer.Image;
 		const TileWMS = window.ol.source.TileWMS;
+		const ImageWMS = window.ol.source.ImageWMS;
 		const OSM = window.ol.source.OSM;
 
 		const LAT = 54.9103;
@@ -45,51 +47,53 @@
 		const ZOOM = 11
 		//******************************************************************
 		//load opencpn_wms using leaflet
-		const map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
+		if(false){
+			const map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
 
-		L.tileLayer.wms(localwmsurl, {
-			layers: 'NAV',
-		}).addTo(map_opencpn_leaflet);
+			L.tileLayer.wms(localwmsurl, {
+				layers: 'NAV',
+				tileSize: 900
+			}).addTo(map_opencpn_leaflet);
 
-		map_opencpn_leaflet.panTo(new L.LatLng(LAT, LON));
-
+			map_opencpn_leaflet.panTo(new L.LatLng(LAT, LON));
+		}
 
 		//******************************************************************
 		//load opencpn_wms using openlayers
+		if(true)
+		{
+			try {
+				document.layers_opencpnwms_ol = [
 
-
-		try {
-			//devtoken: 7a727064ade2ea325977be038c6768ca the laro
-			document.layers_datfors = [
-
-				new TileLayer({
-					extent: [10, 54.5, 11, 55.5],
-					source: new TileWMS({
-						url: 'http://localhost:8081/api/wms',
-						params: { LAYERS: 'NAV', TILED: 'TRUE' },
-						serverType: 'geoserver'
+					new ImageLayer({
+						source: new ImageWMS({
+							url: localwmsurl,
+							params: {
+								'LAYERS': 'NAV',
+								'VERSION':"1.1.1",
+								'FORMAT': 'image/jpeg',
+								//'WIDTH' : '256',
+								//'HEIGHT' : '256'
+							},
+							ratio: 1,
+							serverType: 'geoserver'
+						})
+					})
+				];
+				document.map_opencpnwms_ol = new Map({
+					layers: document.layers_opencpnwms_ol,
+					target: 'map_ol_10_1_0',
+					view: new View({
+						projection: 'EPSG:4326',
+						center: [LAT, LON],
+						zoom: ZOOM,
 					}),
-				}),
-				//new TileLayer({
-				//	source: new OSM(),
-				//}),
-			];
-			document.map_datfors = new Map({
-				layers: document.layers_datfors,
-				target: 'map_ol_10_1_0',
-				view: new View({
-					projection: 'EPSG:4326',
-					center: [LAT, LON],
-					zoom: ZOOM,
-				}),
-			});
+				});
+			}
+			catch (e) {
+				console.error(e);
+			}
 		}
-		catch (e) {
-			console.error(e);
-		}
-
-
-
 
 		//******************************************************************
 		//load leafet 1_9_4
@@ -104,7 +108,7 @@
 		//Example https://api.dataforsyningen.dk/natur_friluftskort?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=nfkort&STYLES=&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&BBOX=559140.625%2C6199218.75%2C560000%2C6200078.125&token=xxx
 
 		//Can load: https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&width=256&height=256&layers=ddm_50m_dybde&BBOX=10,54.5,11,55.5
-
+		//devtoken: 7a727064ade2ea325977be038c6768ca the laro
 		const mapOptions_datafors = {};
 		const map_leaflet_datafors = L.map('map_leaflet_datafors', mapOptions_datafors);
 
