@@ -37,7 +37,7 @@ public:
   virtual void Add(const wxString &line);
   void OnSize(wxSizeEvent &event);
   void Pause(bool pause) { bpause = pause; }
-  void Copy();
+  void Copy(bool);
 
 protected:
   wxCoord m_hLine;  // the height of one line on screen

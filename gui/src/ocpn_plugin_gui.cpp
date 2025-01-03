@@ -44,6 +44,7 @@
 #include "model/route.h"
 #include "model/track.h"
 #include "routemanagerdialog.h"
+#include "model/idents.h"
 #include "model/multiplexer.h"
 #include "chartdb.h"
 #include "OCPNPlatform.h"
@@ -51,11 +52,12 @@
 #include "FontMgr.h"
 #include "gui_lib.h"
 #include "model/ais_decoder.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/own_ship.h"
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "svg_utils.h"
 #include "navutil.h"
-#include "model/comm_navmsg_bus.h"
 #include "chcanv.h"
 #include "piano.h"
 #include "waypointman_gui.h"
@@ -64,6 +66,7 @@
 #include "SoundFactory.h"
 #include "SystemCmdSound.h"
 #include "ais.h"
+#include "ConfigMgr.h"
 
 extern PlugInManager* s_ppim;
 extern MyConfig* pConfig;
@@ -113,6 +116,7 @@ unsigned int gs_plib_flags;
 extern ChartCanvas* g_focusCanvas;
 extern ChartCanvas* g_overlayCanvas;
 extern bool g_bquiting;
+extern bool g_disable_main_toolbar;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -2288,7 +2292,7 @@ void SetFullScreen(bool set_full_screen_on) {
 }
 
 extern bool g_useMUI;
-void EnableMUIBar(bool enable) {
+void EnableMUIBar(bool enable, int CanvasIndex) {
   bool current_mui_state = g_useMUI;
 
   g_useMUI = enable;
@@ -2307,21 +2311,24 @@ void EnableMUIBar(bool enable) {
   }
 }
 
-bool GetEnableMUIBar() { return g_useMUI; }
+bool GetEnableMUIBar(int CanvasIndex) { return g_useMUI; }
 
-void EnableCompassGPSIcon(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableCompassGPSIcon(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowGPSCompassWindow(enable);
   }
 }
 
-bool GetEnableCompassGPSIcon() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return cc->GetShowGPSCompassWindow();
-  else
-    return false;
+bool GetEnableCompassGPSIcon(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc)
+      return cc->GetShowGPSCompassWindow();
+    else
+      return false;
+  }
+  return false;
 }
 
 extern bool g_bShowStatusBar;
@@ -2332,7 +2339,7 @@ void EnableStatusBar(bool enable) {
 
 bool GetEnableStatusBar() { return g_bShowStatusBar; }
 
-void EnableChartBar(bool enable) {
+void EnableChartBar(bool enable, int CanvasIndex) {
   bool current_chartbar_state = g_bShowChartBar;
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas* cc = g_canvasArray.Item(i);
@@ -2347,7 +2354,7 @@ void EnableChartBar(bool enable) {
   g_bShowChartBar = enable;
 }
 
-bool GetEnableChartBar() { return g_bShowChartBar; }
+bool GetEnableChartBar(int CanvasIndex) { return g_bShowChartBar; }
 
 extern bool g_bShowMenuBar;
 void EnableMenu(bool enable) {
@@ -2372,84 +2379,84 @@ void SetGlobalColor(std::string table, std::string name, wxColor color) {
   if (ps52plib) ps52plib->m_chartSymbols.UpdateTableColor(table, name, color);
 }
 
-void EnableLatLonGrid(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableLatLonGrid(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowGrid(enable);
   }
 }
 
-void EnableChartOutlines(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableChartOutlines(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowOutlines(enable);
   }
 }
 
-void EnableDepthUnitDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableDepthUnitDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowDepthUnits(enable);
   }
 }
 
-void EnableAisTargetDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableAisTargetDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowAIS(enable);
   }
 }
 
-void EnableTideStationsDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableTideStationsDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->ShowTides(enable);
   }
 }
 
-void EnableCurrentStationsDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableCurrentStationsDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->ShowCurrents(enable);
   }
 }
 
-void EnableENCTextDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableENCTextDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowENCText(enable);
   }
 }
 
-void EnableENCDepthSoundingsDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableENCDepthSoundingsDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowENCDepth(enable);
   }
 }
 
-void EnableBuoyLightLabelsDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableBuoyLightLabelsDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowENCBuoyLabels(enable);
   }
 }
 
-void EnableLightsDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableLightsDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowENCLights(enable);
   }
 }
 
-void EnableLightDescriptionsDisplay(bool enable) {
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+void EnableLightDescriptionsDisplay(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetShowENCLightDesc(enable);
   }
 }
 
-void SetENCDisplayCategory(PI_DisCat cat) {
+void SetENCDisplayCategory(PI_DisCat cat, int CanvasIndex) {
   int valSet = STANDARD;
   switch (cat) {
     case PI_DISPLAYBASE:
@@ -2468,143 +2475,144 @@ void SetENCDisplayCategory(PI_DisCat cat) {
       valSet = STANDARD;
       break;
   }
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetENCDisplayCategory(valSet);
   }
 }
-PI_DisCat GetENCDisplayCategory() {
-  ChartCanvas* cc = g_canvasArray.Item(9);
+PI_DisCat GetENCDisplayCategory(int CanvasIndex) {
+  ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
   if (cc)
     return ((PI_DisCat)cc->GetENCDisplayCategory());
   else
     return PI_DisCat::PI_STANDARD;
 }
 
-void SetNavigationMode(PI_NavMode mode) {
+void SetNavigationMode(PI_NavMode mode, int CanvasIndex) {
   int newMode = NORTH_UP_MODE;
   if (mode == PI_COURSE_UP_MODE)
     newMode = COURSE_UP_MODE;
   else if (mode == PI_HEAD_UP_MODE)
     newMode = HEAD_UP_MODE;
 
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas* cc = g_canvasArray.Item(i);
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) cc->SetUpMode(newMode);
   }
 }
-
-PI_NavMode GetNavigationMode() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return ((PI_NavMode)cc->GetUpMode());
-  else
-    return PI_NavMode::PI_NORTH_UP_MODE;
+PI_NavMode GetNavigationMode(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return ((PI_NavMode)cc->GetUpMode());
+  }
+  return PI_NavMode::PI_NORTH_UP_MODE;
 }
 
-bool GetEnableLatLonGrid() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowGrid());
-  else
-    return false;
+bool GetEnableLatLonGrid(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowGrid());
+  }
+  return false;
 }
 
-bool GetEnableChartOutlines() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowOutlines());
-  else
-    return false;
+bool GetEnableChartOutlines(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowOutlines());
+  }
+  return false;
 }
 
-bool GetEnableDepthUnitDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowDepthUnits());
-  else
-    return false;
+bool GetEnableDepthUnitDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowDepthUnits());
+  }
+  return false;
 }
 
-bool GetEnableAisTargetDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowAIS());
-  else
-    return false;
+bool GetEnableAisTargetDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowAIS());
+  }
+  return false;
 }
 
-bool GetEnableTideStationsDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetbShowTide());
-  else
-    return false;
+bool GetEnableTideStationsDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetbShowTide());
+  }
+  return false;
 }
 
-bool GetEnableCurrentStationsDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetbShowCurrent());
-  else
-    return false;
+bool GetEnableCurrentStationsDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetbShowCurrent());
+  }
+  return false;
 }
 
-bool GetEnableENCTextDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowENCText());
-  else
-    return false;
+bool GetEnableENCTextDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowENCText());
+  }
+  return false;
 }
 
-bool GetEnableENCDepthSoundingsDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowENCDepth());
-  else
-    return false;
+bool GetEnableENCDepthSoundingsDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowENCDepth());
+  }
+  return false;
 }
 
-bool GetEnableBuoyLightLabelsDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowENCBuoyLabels());
-  else
-    return false;
+bool GetEnableBuoyLightLabelsDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowENCBuoyLabels());
+  }
+  return false;
 }
 
-bool GetEnableLightsDisplay() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetShowENCLights());
-  else
-    return false;
+bool GetEnableLightsDisplay(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowENCLights());
+  }
+  return false;
 }
 
-bool GetShowENCLightDesc() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetbShowCurrent());
-  else
-    return false;
+bool GetShowENCLightDesc(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetbShowCurrent());
+  }
+  return false;
 }
 
 void EnableTouchMode(bool enable) { g_btouch = enable; }
 
 bool GetTouchMode() { return g_btouch; }
 
-void EnableLookaheadMode(bool enable) {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc) cc->ToggleLookahead();
+void EnableLookaheadMode(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) cc->ToggleLookahead();
+  }
 }
 
-bool GetEnableLookaheadMode() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return (cc->GetLookahead());
-  else
-    return false;
+bool GetEnableLookaheadMode(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetLookahead());
+  }
+  return false;
 }
 
 extern bool g_bTrackActive;
@@ -2616,20 +2624,6 @@ void SetTrackingMode(bool enable) {
 }
 bool GetTrackingMode() { return g_bTrackActive; }
 
-void CenterOnOwnship() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc) {
-    if (cc->GetbFollow()) cc->TogglebFollow();
-  }
-}
-bool GetCenterOnOwnship() {
-  ChartCanvas* cc = g_canvasArray.Item(0);
-  if (cc)
-    return cc->GetbFollow();
-  else
-    return false;
-}
-
 void SetAppColorScheme(PI_ColorScheme cs) {
   gFrame->SetAndApplyColorScheme((ColorScheme)cs);
 }
@@ -2639,4 +2633,123 @@ PI_ColorScheme GetAppColorScheme() {
 
 void RequestWindowRefresh(wxWindow* win, bool eraseBackground) {
   if (win) win->Refresh(eraseBackground);
+}
+
+int PluginCreateChartCanvas() {
+  ChartCanvas* cc = NULL;
+  int new_index = g_canvasArray.GetCount();
+  cc = new ChartCanvas(gFrame, new_index);
+  g_canvasArray.Add(cc);
+#ifdef ocpnUSE_GL
+  // Verify that glCanvas is ready, if necessary
+  if (g_bopengl)
+    if (!cc->GetglCanvas()) cc->SetupGlCanvas();
+#endif
+  g_canvasConfig++;
+
+  auto& config_array = ConfigMgr::Get().GetCanvasConfigArray();
+  // Try to find an unused config entry, and use it for this canvas.
+  // If there is non already available, then,
+  //  create one by copy ctor from canvas {0}.
+
+  bool bfound = false;
+  for (auto item : config_array) {
+    if (!item->canvas) {
+      item->canvas = cc;
+      bfound = true;
+      break;
+    }
+  }
+
+  if (!bfound) {
+    if (config_array.GetCount() < (size_t)new_index + 1) {
+      canvasConfig* pcc = new canvasConfig(*config_array.Item(0));
+      pcc->configIndex = new_index;
+      pcc->canvas = cc;
+      config_array.Add(pcc);
+    }
+  }
+  return new_index;
+}
+
+void PluginDeleteChartCanvas(wxWindow* win) {
+#if 0
+  // Look for the canvas...
+  size_t i_remove = 0;
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    auto cwin = dynamic_cast<wxWindow *>(cc);
+    if( cwin == win) {
+      g_canvasArray.Item(i) = NULL;
+      cc->Destroy();
+      break;
+    }
+  }
+
+  // Silly workaround for broken array.RemoveAt() in Windows.
+  std::vector<ChartCanvas *> tvec;
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    if (i != i_remove)
+      tvec.push_back(g_canvasArray.Item(i));
+  }
+
+  g_canvasArray.Clear();
+  for (auto cc : tvec)
+    g_canvasArray.Add(cc);
+
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) cc->SetCanvasIndex(i);
+  }
+#endif
+}
+
+// ChartCanvas control utilities
+
+void PluginZoomCanvas(int CanvasIndex, double factor) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) cc->ZoomCanvasSimple(factor);
+  }
+}
+
+bool GetEnableMainToolbar() { return (!g_disable_main_toolbar); }
+void SetEnableMainToolbar(bool enable) {
+  g_disable_main_toolbar = !enable;
+  if (g_MainToolbar) g_MainToolbar->RefreshToolbar();
+}
+
+void ShowGlobalSettingsDialog() {
+  if (gFrame) gFrame->ScheduleSettingsDialog();
+}
+
+void PluginCenterOwnship(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) {
+      bool bfollow = cc->GetbFollow();
+      cc->ResetOwnshipOffset();
+      if (bfollow)
+        cc->SetbFollow();
+      else
+        cc->JumpToPosition(gLat, gLon, cc->GetVPScale());
+    }
+  }
+}
+
+void PluginSetFollowMode(int CanvasIndex, bool enable_follow) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) {
+      if (cc->GetbFollow() != enable_follow) cc->TogglebFollow();
+    }
+  }
+}
+
+bool PluginGetFollowMode(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return cc->GetbFollow();
+  }
+  return false;
 }

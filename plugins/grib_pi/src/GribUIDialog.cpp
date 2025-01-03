@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Object
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref GribUIDialog.h
  */
-
 #include "wx/wx.h"
 #include "wx/tokenzr.h"
 #include "wx/datetime.h"
@@ -137,7 +132,7 @@ wxWindow *GetGRIBCanvas() {
    screen */
 GribTimelineRecordSet::GribTimelineRecordSet(unsigned int cnt)
     : GribRecordSet(cnt) {
-  for (int i = 0; i < Idx_COUNT; i++) m_IsobarArray[i] = NULL;
+  for (int i = 0; i < Idx_COUNT; i++) m_IsobarArray[i] = nullptr;
 }
 
 GribTimelineRecordSet::~GribTimelineRecordSet() {
@@ -148,13 +143,13 @@ GribTimelineRecordSet::~GribTimelineRecordSet() {
 void GribTimelineRecordSet::ClearCachedData() {
   for (int i = 0; i < Idx_COUNT; i++) {
     if (m_IsobarArray[i]) {
-      //    Clear out the cached isobars
+      // Clear out the cached isobars
       for (unsigned int j = 0; j < m_IsobarArray[i]->GetCount(); j++) {
         IsoLine *piso = (IsoLine *)m_IsobarArray[i]->Item(j);
         delete piso;
       }
       delete m_IsobarArray[i];
-      m_IsobarArray[i] = NULL;
+      m_IsobarArray[i] = nullptr;
     }
   }
 }
@@ -172,11 +167,11 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   // Preinitialize the vierwport with an existing value, see
   // https://github.com/OpenCPN/OpenCPN/pull/4002/files
   m_vp = new PlugIn_ViewPort(pPlugIn->GetCurrentViewPort());
-  pReq_Dialog = NULL;
-  m_bGRIBActiveFile = NULL;
-  m_pTimelineSet = NULL;
-  m_gCursorData = NULL;
-  m_gGRIBUICData = NULL;
+  pReq_Dialog = nullptr;
+  m_bGRIBActiveFile = nullptr;
+  m_pTimelineSet = nullptr;
+  m_gCursorData = nullptr;
+  m_gGRIBUICData = nullptr;
   m_gtk_started = false;
 
   wxFileConfig *pConf = GetOCPNConfigObject();
@@ -262,7 +257,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
 
   // connect Timer
   m_tPlayStop.Connect(wxEVT_TIMER,
-                      wxTimerEventHandler(GRIBUICtrlBar::OnPlayStopTimer), NULL,
+                      wxTimerEventHandler(GRIBUICtrlBar::OnPlayStopTimer), nullptr,
                       this);
   // connect functions
   Connect(wxEVT_MOVE, wxMoveEventHandler(GRIBUICtrlBar::OnMove));
@@ -421,7 +416,7 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
 }
 
 void GRIBUICtrlBar::SetRequestBitmap(int type) {
-  if (NULL == m_bpRequest) return;
+  if (nullptr == m_bpRequest) return;
 
   switch (type) {
     case AUTO_SELECTION:
@@ -454,7 +449,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   m_FileIntervalIndex = m_OverlaySettings.m_SlicesPerUpdate;
   delete m_bGRIBActiveFile;
   delete m_pTimelineSet;
-  m_pTimelineSet = NULL;
+  m_pTimelineSet = nullptr;
   m_sTimeline->SetValue(0);
   m_TimeLineHours = 0;
   m_InterpolateMode = false;
@@ -485,7 +480,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
     title.Append(fn.GetFullName());
     if (rsa->GetCount() == 0) {  // valid but empty file
       delete m_bGRIBActiveFile;
-      m_bGRIBActiveFile = NULL;
+      m_bGRIBActiveFile = nullptr;
       title.Prepend(_("Error! ")).Append(_(" contains no valid data!"));
     } else {
       PopulateComboDataList();
@@ -520,7 +515,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
     }
   } else {
     delete m_bGRIBActiveFile;
-    m_bGRIBActiveFile = NULL;
+    m_bGRIBActiveFile = nullptr;
     title = _("No valid GRIB file");
   }
   pPlugIn->GetGRIBOverlayFactory()->SetMessage(title);
@@ -548,21 +543,21 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
 #ifdef __OCPN__ANDROID__
   m_bpSettings->Enable(true);
 #else
-  m_bpSettings->Enable(m_pTimelineSet != NULL);
+  m_bpSettings->Enable(m_pTimelineSet != nullptr);
 #endif
-  m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
+  m_bpZoomToCenter->Enable(m_pTimelineSet != nullptr);
 
-  m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-  m_bpPlay->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+  m_sTimeline->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
+  m_bpPlay->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
 
-  m_bpPrev->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-  m_bpNext->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-  m_bpNow->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+  m_bpPrev->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
+  m_bpNext->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
+  m_bpNow->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
 
   SetCanvasContextMenuItemViz(pPlugIn->m_MenuItem, m_TimeLineHours != 0);
 
   //
-  if (m_bGRIBActiveFile == NULL) {
+  if (m_bGRIBActiveFile == nullptr) {
     // there's no data we can use in this file
     return;
   }
@@ -759,7 +754,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
   // necessary )
   if (m_gGRIBUICData) {
     m_gGRIBUICData->Destroy();
-    m_gGRIBUICData = NULL;
+    m_gGRIBUICData = nullptr;
   }
 
   if ((m_DialogStyle >> 1 == SEPARATED || !m_CDataIsShown) &&
@@ -776,7 +771,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
       pPlugIn->SetDialogFont(m_gCursorData);
       m_gCursorData->PopulateTrackingControls(false);
       // attach CursorData to CtrlBar if necessary
-      if (m_fgCDataSizer->GetItem(m_gCursorData) == NULL)
+      if (m_fgCDataSizer->GetItem(m_gCursorData) == nullptr)
         m_fgCDataSizer->Add(m_gCursorData, 0);
       m_gCursorData->Show();
 
@@ -834,7 +829,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
         sFont = FindOrCreateFont_PlugIn(pointSize, wxFONTFAMILY_DEFAULT,
                                         wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
                                         FALSE);
-        dc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, sFont);
+        dc.GetTextExtent(_T("W"), &width, &height, nullptr, nullptr, sFont);
         if (width <= target_char_width) bOK = true;
         pointSize--;
         if (pointSize <= 10) bOK = true;
@@ -865,7 +860,7 @@ void GRIBUICtrlBar::OnAltitude(wxCommandEvent &event) {
 
   wxMenu *amenu = new wxMenu();
   amenu->Connect(wxEVT_COMMAND_MENU_SELECTED,
-                 wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this);
+                 wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), nullptr, this);
 
   for (int i = 0; i < 5; i++) {
     if (((m_pTimelineSet &&
@@ -954,12 +949,12 @@ void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
   // add a submenu to this item if necessary
   if (submenu) item->SetSubMenu(submenu);
 
-    /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
-    #ifdef __WXMSW__
-      wxFont *qFont = OCPNGetFont(_("Menu"), 10);
-      item->SetFont(*qFont);
-    #endif
-    */
+  /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
+  #ifdef __WXMSW__
+    wxFont *qFont = OCPNGetFont(_("Menu"), 10);
+    item->SetFont(*qFont);
+  #endif
+  */
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
   if (!bitmap.IsSameAs(wxNullBitmap)) item->SetBitmap(bitmap);
@@ -973,12 +968,12 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
     // populate menu
     wxMenu *xmenu = new wxMenu();
     xmenu->Connect(wxEVT_COMMAND_MENU_SELECTED,
-                   wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this);
+                   wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), nullptr, this);
 
     if (m_HasAltitude) {  // eventually populate altitude choice
       wxMenu *smenu = new wxMenu();
       smenu->Connect(wxEVT_COMMAND_MENU_SELECTED,
-                     wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL,
+                     wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), nullptr,
                      this);
 
       for (int i = 0; i < 5; i++) {
@@ -1156,7 +1151,7 @@ void GRIBUICtrlBar::OnRequest(wxCommandEvent &event) {
     pReq_Dialog->SetRequestDialogSize();
     // need to set a position at start
     int w;
-    ::wxDisplaySize(&w, NULL);
+    ::wxDisplaySize(&w, nullptr);
     pReq_Dialog->Move((w - pReq_Dialog->GetSize().GetX()) / 2, 30);
 
   }  // end create new request dialog
@@ -1195,7 +1190,7 @@ void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {
   dialog->SetSettingsDialogSize();
   // need to set a position at start
   int w;
-  ::wxDisplaySize(&w, NULL);
+  ::wxDisplaySize(&w, nullptr);
   dialog->Move((w - dialog->GetSize().GetX()) / 2, 30);
   // end set position
 
@@ -1359,7 +1354,7 @@ void GRIBUICtrlBar::StopPlayBack() {
 
 void GRIBUICtrlBar::TimelineChanged() {
   if (!m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK())) {
-    pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
+    pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(nullptr);
     return;
   }
 
@@ -1479,16 +1474,16 @@ wxDateTime GRIBUICtrlBar::MinTime() {
 }
 
 GribTimelineRecordSet *GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time) {
-  if (m_bGRIBActiveFile == NULL) return NULL;
+  if (m_bGRIBActiveFile == nullptr) return nullptr;
   ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
-  if (rsa->GetCount() == 0) return NULL;
+  if (rsa->GetCount() == 0) return nullptr;
 
   GribTimelineRecordSet *set =
       new GribTimelineRecordSet(m_bGRIBActiveFile->GetCounter());
   for (int i = 0; i < Idx_COUNT; i++) {
-    GribRecordSet *GRS1 = NULL, *GRS2 = NULL;
-    GribRecord *GR1 = NULL, *GR2 = NULL;
+    GribRecordSet *GRS1 = nullptr, *GRS2 = nullptr;
+    GribRecord *GR1 = nullptr, *GR2 = nullptr;
     wxDateTime GR1time, GR2time;
 
     // already computed using polar interpolation from first axis
@@ -1708,7 +1703,7 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
   if (wxDir::Exists(m_grib_dir)) l_grib_dir = m_grib_dir;
 
   wxFileDialog *dialog =
-      new wxFileDialog(NULL, _("Select a GRIB file"), l_grib_dir, _T(""),
+      new wxFileDialog(nullptr, _("Select a GRIB file"), l_grib_dir, _T(""),
                        wxT("Grib files "
                            "(*.grb;*.bz2;*.gz;*.grib2;*.grb2)|*.grb;*.bz2;*.gz;"
                            "*.grib2;*.grb2|All files (*)|*.*"),
@@ -1735,7 +1730,7 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
 
   wxString file;
   int response = PlatformFileSelectorDialog(
-      NULL, &file, _("Select a GRIB file"), m_grib_dir, _T(""), _T("*.*"));
+      nullptr, &file, _("Select a GRIB file"), m_grib_dir, _T(""), _T("*.*"));
 
   if (response == wxID_OK) {
     wxFileName fn(file);
@@ -1750,7 +1745,7 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
 
 void GRIBUICtrlBar::CreateActiveFileFromNames(const wxArrayString &filenames) {
   if (filenames.GetCount() != 0) {
-    m_bGRIBActiveFile = NULL;
+    m_bGRIBActiveFile = nullptr;
     m_bGRIBActiveFile = new GRIBFile(filenames, pPlugIn->GetCopyFirstCumRec(),
                                      pPlugIn->GetCopyMissWaveRec());
   }
@@ -1804,8 +1799,8 @@ void GRIBUICtrlBar::OnZoomToCenterClick(wxCommandEvent &event) {
 
     //Calculate overlay width & height in nm (around the center)
     double ow, oh;
-    DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow );
-    DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, NULL, &oh );
+    DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, nullptr, &ow );
+    DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, nullptr, &oh );
 
     //calculate screen size
     int w = pPlugIn->GetGRIBOverlayFactory()->m_ParentSize.GetWidth();
@@ -1852,8 +1847,8 @@ void GRIBUICtrlBar::DoZoomToCenter() {
 
   // Calculate overlay width & height in nm (around the center)
   double ow, oh;
-  DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow);
-  DistanceBearingMercator_Plugin(latmin, clon, latmax, clon, NULL, &oh);
+  DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, nullptr, &ow);
+  DistanceBearingMercator_Plugin(latmin, clon, latmax, clon, nullptr, &oh);
 
   wxWindow *wx = GetGRIBCanvas();
   // calculate screen size
@@ -1922,7 +1917,7 @@ void GRIBUICtrlBar::OnNext(wxCommandEvent &event) {
 
 void GRIBUICtrlBar::ComputeBestForecastForNow() {
   if (!m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK())) {
-    pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
+    pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(nullptr);
     return;
   }
 
@@ -2017,7 +2012,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
                    bool newestFile)
     : m_counter(++ID) {
   m_bOK = false;  // Assume ok until proven otherwise
-  m_pGribReader = NULL;
+  m_pGribReader = nullptr;
   m_last_message = wxEmptyString;
   for (unsigned int i = 0; i < file_names.GetCount(); i++) {
     wxString file_name = file_names[i];
@@ -2427,7 +2422,7 @@ void GRIBUICData::OnMove(wxMoveEvent &event) {
 
 bool CheckPendingJNIException() {
   if (!java_vm) {
-    // qDebug() << "java_vm is NULL.";
+    // qDebug() << "java_vm is nullptr.";
     return true;
   }
 
@@ -2447,7 +2442,7 @@ bool CheckPendingJNIException() {
 
 wxString callActivityMethod_ss(const char *method, wxString parm) {
   if (!java_vm) {
-    // qDebug() << "java_vm is NULL.";
+    // qDebug() << "java_vm is nullptr.";
     return _T("NOK");
   }
 
@@ -2486,7 +2481,7 @@ wxString callActivityMethod_ss(const char *method, wxString parm) {
   jstring s = data.object<jstring>();
 
   if ((jenv)->GetStringLength(s)) {
-    const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+    const char *ret_string = (jenv)->GetStringUTFChars(s, nullptr);
     return_string = wxString(ret_string, wxConvUTF8);
   }
 

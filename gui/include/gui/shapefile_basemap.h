@@ -126,7 +126,10 @@ public:
     this->_dmod = t._dmod;
     this->_loading = t._loading;
   }
-  ~ShapeBaseChart() { delete _reader; }
+  ~ShapeBaseChart() {
+    CancelLoading();  // Ensure async operation is done before cleanup.
+    delete _reader;
+  }
 
   void SetColor(wxColor color) { _color = color; }
 
@@ -143,6 +146,9 @@ public:
   }
 
   bool CrossesLand(double &lat1, double &lon1, double &lat2, double &lon2);
+
+  /** Cancel the chart loading operation. */
+  void CancelLoading();
 
 private:
   std::future<bool> _loaded;
@@ -181,7 +187,7 @@ private:
 class ShapeBaseChartSet {
 public:
   ShapeBaseChartSet();
-  ~ShapeBaseChartSet() {}
+  ~ShapeBaseChartSet() { Cleanup(); }
   static wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat,
                                             double lon);
 
@@ -202,6 +208,13 @@ public:
     return false;
   }
 
+  void Cleanup() {
+    for (auto &pair : _basemap_map) {
+      pair.second.CancelLoading();
+    }
+    _basemap_map.clear();
+    _loaded = false;
+  }
   void Reset();
 
 private:

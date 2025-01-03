@@ -213,10 +213,6 @@ void CommDriverN0183AndroidBT::Close() {
          &CommDriverN0183AndroidBT::handle_N0183_MSG, this);
 }
 
-void CommDriverN0183AndroidBT::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-}
-
 bool CommDriverN0183AndroidBT::SendMessage(
     std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);

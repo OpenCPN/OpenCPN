@@ -6345,7 +6345,7 @@ EditDialog::EditDialog(wxWindow *parent, InstrumentProperties &Properties,
                                        wxDefaultPosition, wxDefaultSize);
   fgSizer2->Add(m_fontPicker6, 0, wxALL, 5);
 
-  m_staticText9 = new wxStaticText(this, wxID_ANY, _("Arrow 1 Colour :"),
+  m_staticText9 = new wxStaticText(this, wxID_ANY, _("Arrow 1 Color :"),
                                    wxDefaultPosition, wxDefaultSize, 0);
   m_staticText9->Wrap(-1);
   fgSizer2->Add(m_staticText9, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
@@ -6355,7 +6355,7 @@ EditDialog::EditDialog(wxWindow *parent, InstrumentProperties &Properties,
       wxDefaultSize, wxCLRP_DEFAULT_STYLE);
   fgSizer2->Add(m_colourPicker3, 0, wxALL, 5);
 
-  m_staticText10 = new wxStaticText(this, wxID_ANY, _("Arrow 2 Colour :"),
+  m_staticText10 = new wxStaticText(this, wxID_ANY, _("Arrow 2 Color :"),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_staticText10->Wrap(-1);
   fgSizer2->Add(m_staticText10, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);

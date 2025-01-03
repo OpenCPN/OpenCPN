@@ -137,6 +137,6 @@ private:
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
 
-wxArrayOfConnPrm *TheConnectionParams();
+std::vector<ConnectionParams *> &TheConnectionParams();
 
 #endif

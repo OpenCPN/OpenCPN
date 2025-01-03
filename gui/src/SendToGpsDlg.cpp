@@ -119,8 +119,7 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
 
   // Add any defined Network connections supporting "output"
   wxArrayString netconns;
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams* cp = TheConnectionParams()->Item(i);
+  for (auto* cp : TheConnectionParams()) {
     wxString netident;
 
     if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&

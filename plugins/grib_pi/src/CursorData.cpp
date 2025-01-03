@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Object
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref  CursorData.h
  */
-
 #include "pi_gl.h"
 #include "grib_pi.h"
 
@@ -57,7 +52,7 @@ CursorData::CursorData(wxWindow *window, GRIBUICtrlBar &parent)
   m_bLeftDown = false;
 
   m_tCursorTrackTimer.Connect(
-      wxEVT_TIMER, wxTimerEventHandler(CursorData::OnCursorTrackTimer), NULL,
+      wxEVT_TIMER, wxTimerEventHandler(CursorData::OnCursorTrackTimer), nullptr,
       this);
 
   DimeWindow(this);
@@ -149,15 +144,15 @@ void CursorData::PopulateTrackingControls(bool vertical) {
   // Get text controls sizing data
   wxFont *font = OCPNGetFont(_("Dialog"), 10);
   int wn, wd, ws, wl;
-  GetTextExtent(_T("abcdefghihjk"), &wn, NULL, 0, 0,
+  GetTextExtent(_T("abcdefghihjk"), &wn, nullptr, 0, 0,
                 font);  // normal width text control size
-  GetTextExtent(_T("abcdef"), &ws, NULL, 0, 0,
+  GetTextExtent(_T("abcdef"), &ws, nullptr, 0, 0,
                 font);  // short width text control size for direction only
   GetTextExtent(
-      _T("abcdefghijklmopq"), &wd, NULL, 0, 0,
+      _T("abcdefghijklmopq"), &wd, nullptr, 0, 0,
       font);  // long width text control size for double unit wind display
   GetTextExtent(
-      _T("abcdefghijklm"), &wl, NULL, 0, 0,
+      _T("abcdefghijklm"), &wl, nullptr, 0, 0,
       font);  // long width text control size for double unit wave display
   //
   // create a dummy textCtrl to be used as a "space" in vertical display

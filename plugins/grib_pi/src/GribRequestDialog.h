@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin Friends
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +17,33 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-
+/**
+ * \file
+ * GRIB Weather Data Request and Download Management.
+ *
+ * Provides comprehensive functionality for requesting and downloading GRIB
+ * weather forecast data from multiple sources:
+ *
+ * Download Sources:
+ * - Global models (GFS, ECMWF, etc.)
+ * - XyGrib specialized marine weather service
+ * - Local GRIB catalogs and repositories
+ * - Email-based request services
+ *
+ * Key Features:
+ * - Interactive geographic zone selection
+ * - Multiple forecast model support
+ * - Resolution and time range configuration
+ * - File size estimation and validation
+ * - Download progress tracking
+ * - Catalog management and updates
+ * - Email request template generation
+ *
+ * The interface provides visual feedback during zone selection and supports
+ * both manual coordinate entry and graphical region selection. It handles
+ * different download methods including direct HTTP(S) downloads and email-based
+ * requests with size and coverage validation.
+ */
 #ifndef __GRIBREQUESTDIALOG_H__
 #define __GRIBREQUESTDIALOG_H__
 
@@ -36,7 +56,13 @@
 #include "pi_ocpndc.h"
 #include "wx/jsonreader.h"
 
-enum GribDownloadType { WORLD, LOCAL, LOCAL_CATALOG, XYGRIB, NONE };
+enum GribDownloadType {
+  WORLD,          ///< Global forecast downloads (e.g., GFS)
+  LOCAL,          ///< Downloads from local sources
+  LOCAL_CATALOG,  ///< Downloads from configured catalogs
+  XYGRIB,         ///< Downloads from XyGrib service
+  NONE            ///< No download source selected
+};
 
 const std::string CATALOG_URL =
     "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/"
@@ -44,9 +70,17 @@ const std::string CATALOG_URL =
 
 #define XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB 10
 
-//----------------------------------------------------------------------------------------------------------
-//    Request setting Specification
-//----------------------------------------------------------------------------------------------------------
+/**
+ * Manages GRIB file request configuration and downloads.
+ *
+ * This class provides:
+ * - User interface for request configuration
+ * - Geographic zone selection
+ * - Multiple download source support
+ * - File size estimation
+ * - Request validation
+ * - Visual feedback during selection
+ */
 class GribRequestSetting : public GribRequestSettingBase {
 public:
   GribRequestSetting(GRIBUICtrlBar &parent);

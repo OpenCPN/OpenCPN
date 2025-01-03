@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Grib Settings Dialog
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2015 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref GribSettingsDialog.h
  */
-
 #include "pi_gl.h"
 
 #include "grib_pi.h"
@@ -931,11 +926,11 @@ void GribSettingsDialog::ShowFittingSettings(int settings) {
   // Hide all Parameters
   ShowSettings(B_ARROWS, false);
   ShowSettings(ISO_LINE, false);
-  if (m_fIsoBarSpacing->GetItem(m_sIsoBarSpacing) != NULL)
+  if (m_fIsoBarSpacing->GetItem(m_sIsoBarSpacing) != nullptr)
     m_fIsoBarSpacing->Detach(m_sIsoBarSpacing);
-  if (m_fIsoBarVisibility->GetItem(m_sIsoBarSpacing) != NULL)
+  if (m_fIsoBarVisibility->GetItem(m_sIsoBarSpacing) != nullptr)
     m_fIsoBarVisibility->Detach(m_sIsoBarSpacing);
-  if (m_fIsoBarVisibility->GetItem(m_sIsoBarVisibility) != NULL)
+  if (m_fIsoBarVisibility->GetItem(m_sIsoBarVisibility) != nullptr)
     m_fIsoBarVisibility->Detach(m_sIsoBarVisibility);
   ShowSettings(ISO_ABBR, false);
   ShowSettings(D_ARROWS, false);

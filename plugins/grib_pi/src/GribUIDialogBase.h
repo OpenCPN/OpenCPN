@@ -4,7 +4,31 @@
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * Base User Interface Components for GRIB Plugin.
+ *
+ * Defines the foundational UI elements and structure for the GRIB plugin
+ * including:
+ * - Control bar for timeline navigation
+ * - Data display controls and settings
+ * - Request dialogs for downloading GRIB files
+ * - Table views for detailed data inspection
+ * - Settings and preferences panels
+ *
+ * Key Components:
+ * - Timeline controls for forecast navigation
+ * - Parameter selection and visualization options
+ * - Geographic position tracking
+ * - Animation playback controls
+ * - File management interface
+ * - Settings configuration panels
+ * - Data table visualization
+ *
+ * This base UI framework provides the structure for all user interaction with
+ * GRIB weather data, supporting both basic and advanced usage scenarios while
+ * maintaining consistency across the interface.
+ */
 #ifndef __GRIBUIDIALOGBASE_H__
 #define __GRIBUIDIALOGBASE_H__
 

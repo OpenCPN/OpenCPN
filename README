@@ -1,34 +1,21 @@
-----------------------------------------------------------------------
-1.  Overview
-----------------------------------------------------------------------
+This is an attempt to add the ability to act as a WMS Server.
 
-a.  Opencpn was built with the following objectives in mind.
+Work in progress!
 
-    i.   Intended use as primary navigation interface for vessels
-         with full-time helm-visible navigational suites.
-         Other tools may be better for offline route planning, tide
-         and current prediction, online logging, etc.
-    ii.  Quick startup and shutdown.
-    iii. Those and only those toolbar buttons really needed for
-         daily operation.
-    iv.  Portability, thus wxWidgets core components.  Currently
-         tested and in production use on Windows XP-8.1, OS X, and Linux.
-    v.   Conventional ( i.e. popular and modern ) chart format
-         support.  In the real world, this means BSB format raster
-         charts, and S57ENC format vector charts.
+Testing with a to engines running in Chrome using Leaflet and OpenLayers as clients and a set of S-57 charts.
 
+There is a test html in the root of the project. It is in Southern Denmark (you can just see a glimpse of Germany) - I know what it looks like there :-)
+I will switch to whereever OpenCPN normally works.
 
+TODO:
+More layers to handle lights etc.
+Day Night
 
-        And, of course, opencpn is all GPL'ed (or equivalent)
-                        Open Source code.
+Known Problems:
+Don't hover over the WMS window (tries to activate not existing menu)
+Small images not rendered properly (messing up scaling)
+Zoom causes crashes
+Coordinates will be messed up slightly
 
-
-    Personal Note:
-    Opencpn is in primary daily use as the navigation package aboard
-    M/V Dyad, a 48 ft trawler yacht cruising from Newfoundland to the
-    Bahamas yearly.
-
-    Our thanks go to MAXCDN for providing a CDN network delivering
-    the OpenCPN downloads worldwide.
-
-    OpenCPN is distributed using a multitude of licenses, see LICENSING.
+Sidenote:
+Could be used for rendering a "view only" set for low power up devices, might try to do that on a small esp32 based 4" thing if I get bored. Just another layer.
