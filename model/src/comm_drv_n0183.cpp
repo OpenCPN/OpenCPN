@@ -38,5 +38,3 @@ CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s)
     : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
 
 CommDriverN0183::~CommDriverN0183() {}
-
-void CommDriverN0183::Activate() {}

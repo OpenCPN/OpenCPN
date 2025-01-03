@@ -81,21 +81,12 @@ void TTYScroll::OnDraw(wxDC &dc) {
     if (ls.Mid(0, 7) == _T("<GREEN>")) {
       dc.SetTextForeground(wxColour(_T("DARK GREEN")));
       lss = ls.Mid(7);
-    } else if (ls.Mid(0, 7) == _T("<GOLD>")) {
-      dc.SetTextForeground(wxColour(_T("GOLD")));
-      lss = ls.Mid(7);
     } else if (ls.Mid(0, 6) == _T("<BLUE>")) {
       dc.SetTextForeground(wxColour(_T("BLUE")));
       lss = ls.Mid(6);
     } else if (ls.Mid(0, 5) == _T("<RED>")) {
       dc.SetTextForeground(wxColour(_T("RED")));
       lss = ls.Mid(5);
-    } else if (ls.Mid(0, 7) == _T("<BROWN>")) {
-      dc.SetTextForeground(wxColour(_T("BROWN")));
-      lss = ls.Mid(7);
-    } else if (ls.Mid(0, 8) == _T("<SIENNA>")) {
-      dc.SetTextForeground(wxColour(_T("SIENNA")));
-      lss = ls.Mid(8);
     } else if (ls.Mid(0, 8) == _T("<MAROON>")) {
       dc.SetTextForeground(wxColour(_T("MAROON")));
       lss = ls.Mid(8);
@@ -108,11 +99,21 @@ void TTYScroll::OnDraw(wxDC &dc) {
   }
 }
 
-void TTYScroll::Copy() {
+void TTYScroll::Copy(bool n0183) {
   wxString theText;
   for (unsigned int i = 0; i < m_plineArray->GetCount(); i++) {
-    theText.append(m_plineArray->Item(i));
-    theText.append("\n");
+    wxString s = m_plineArray->Item(i);
+    if (n0183) {
+      int pos = 0;
+      if ((pos = s.Find("$")) != wxNOT_FOUND) {
+        theText.append(s.Mid(pos) + "\n");
+      } else if ((pos = s.Find("!")) != wxNOT_FOUND) {
+        theText.append(s.Mid(pos) + "\n");
+      }
+    } else {
+      theText.append(s);
+      theText.append("\n");
+    }
   }
   // Write scrolled text to the clipboard
   if (wxTheClipboard->Open()) {

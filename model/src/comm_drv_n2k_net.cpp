@@ -304,11 +304,6 @@ void CommDriverN2KNet::handle_N2K_MSG(CommDriverN2KNetEvent& event) {
   m_listener.Notify(std::move(msg_all));
 }
 
-void CommDriverN2KNet::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-  // TODO: Read input data.
-}
-
 void CommDriverN2KNet::Open(void) {
 #ifdef __UNIX__
 #if wxCHECK_VERSION(3, 0, 0)

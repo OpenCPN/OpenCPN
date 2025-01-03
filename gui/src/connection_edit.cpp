@@ -71,10 +71,6 @@
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
 
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
-
 extern OCPNPlatform* g_Platform;
 
 static wxString StringArrayToString(const wxArrayString& arr) {
@@ -182,8 +178,7 @@ static void LoadSerialPorts(wxComboBox* box) {
 // Define constructors
 ConnectionEditDialog::ConnectionEditDialog() {}
 
-ConnectionEditDialog::ConnectionEditDialog(options* parent,
-                                           ConnectionsDialog* client)
+ConnectionEditDialog::ConnectionEditDialog(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Connection Edit"), wxDefaultPosition,
                wxSize(280, 420)) {
   m_parent = parent;
@@ -1568,18 +1563,19 @@ void ConnectionEditDialog::SetDefaultConnectionParams(void) {
 }
 
 bool ConnectionEditDialog::SortSourceList(void) {
-  if (TheConnectionParams()->Count() < 2) return false;
+  if (TheConnectionParams().size() < 2) return false;
 
   std::vector<int> ivec;
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) ivec.push_back(i);
+  for (size_t i = 0; i < TheConnectionParams().size(); i++) ivec.push_back(i);
 
+  // FIXME (leamas) : This is not the way to sort a vector.
   bool did_sort = false;
   bool did_swap = true;
   while (did_swap) {
     did_swap = false;
     for (size_t j = 1; j < ivec.size(); j++) {
-      ConnectionParams* c1 = TheConnectionParams()->Item(ivec[j]);
-      ConnectionParams* c2 = TheConnectionParams()->Item(ivec[j - 1]);
+      ConnectionParams* c1 = TheConnectionParams()[ivec[j]];
+      ConnectionParams* c2 = TheConnectionParams()[ivec[j - 1]];
 
       if (c1->Priority > c2->Priority) {
         int t = ivec[j - 1];
@@ -1598,7 +1594,7 @@ bool ConnectionEditDialog::SortSourceList(void) {
 
     for (size_t i = 0; i < ivec.size(); i++) {
       ConnectionParamsPanel* pPanel =
-          TheConnectionParams()->Item(ivec[i])->m_optionsPanel;
+          TheConnectionParams()[ivec[i]]->m_optionsPanel;
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
     }
   }
@@ -1615,10 +1611,9 @@ void ConnectionEditDialog::LayoutDialog() {
 }
 
 void ConnectionEditDialog::UpdateSourceList(bool bResort) {
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams* cp = TheConnectionParams()->Item(i);
+  for (auto* cp : TheConnectionParams()) {
     ConnectionParamsPanel* panel = cp->m_optionsPanel;
-    if (panel) panel->Update(TheConnectionParams()->Item(i));
+    if (panel) panel->Update(cp);
   }
 
   if (bResort) {
@@ -1629,7 +1624,7 @@ void ConnectionEditDialog::UpdateSourceList(bool bResort) {
 }
 
 void ConnectionEditDialog::OnSelectDatasource(wxListEvent& event) {
-  SetConnectionParams(TheConnectionParams()->Item(event.GetData()));
+  SetConnectionParams(TheConnectionParams()[event.GetData()]);
   m_buttonRemove->Enable();
   m_buttonRemove->Show();
   event.Skip();
@@ -1754,8 +1749,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
           DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
       // Check for an UDP input connection on the same port
       NetworkProtocol proto = UDP;
-      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-        ConnectionParams* cp = TheConnectionParams()->Item(i);
+      for (auto* cp : TheConnectionParams()) {
         if (cp->NetProtocol == proto &&
             cp->NetworkPort == wxAtoi(m_tNetPort->GetValue()) &&
             cp->IOSelect == DS_TYPE_INPUT) {
@@ -1847,7 +1841,7 @@ void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
     NMEALogWindow::GetInstance().DestroyWindow();
   } else {
-    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
+    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->GetParent()), 35);
 
     // Try to ensure that the log window is a least a little bit visible
     wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),

@@ -47,7 +47,7 @@ class WXDLLIMPEXP_JSON wxJSONInternalArray;
 //! The type of the value held by the wxJSONRefData class
 enum wxJSONType {
   wxJSONTYPE_INVALID = 0, /*!< the object is not uninitialized        */
-  wxJSONTYPE_NULL,        /*!< the object contains a NULL value         */
+  wxJSONTYPE_NULL,        /*!< the object contains a nullptr value         */
   wxJSONTYPE_INT,         /*!< the object contains an integer           */
   wxJSONTYPE_UINT,        /*!< the object contains an unsigned integer  */
   wxJSONTYPE_DOUBLE,      /*!< the object contains a double             */

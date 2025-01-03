@@ -206,10 +206,6 @@ void CommDriverN0183AndroidInt::Close() {
          &CommDriverN0183AndroidInt::handle_N0183_MSG, this);
 }
 
-void CommDriverN0183AndroidInt::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-}
-
 bool CommDriverN0183AndroidInt::SendMessage(
     std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
   return false;

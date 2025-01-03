@@ -28,24 +28,24 @@
 
 #include <wx/config.h>
 #include <wx/string.h>
-
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
 extern bool g_bAllowShipToActive;
 extern bool g_benableUDPNullHeader;
+extern bool g_bfilter_cogsog;
 extern bool g_bGarminHostUpload;
 extern bool g_bInlandEcdis;
 extern bool g_bMagneticAPB;
 extern bool g_bOverruleScaMin;
 extern bool g_bShowMag;
 extern bool g_bShowTrue;
-extern bool g_bTrackDaily;
-extern bool g_bWplUsePosition;
 extern bool g_bShowWptName;
-extern bool g_bUserIconsFirst;
 extern bool g_btouch;
+extern bool g_bTrackDaily;
+extern bool g_bUserIconsFirst;
 extern bool g_bUseWptScaMin;
+extern bool g_bWplUsePosition;
 extern bool g_persist_active_route;
 
 extern double g_n_arrival_circle_radius;
@@ -58,25 +58,27 @@ extern float g_GLMinSymbolLineWidth;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
 
+extern int g_COGFilterSec;
+extern int g_NMEAAPBPrecision;
+extern int g_SOGFilterSec;
+extern int g_WplAction;
 extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
 extern int g_iSDMMFormat;
-extern int g_iWindSpeedFormat;
+extern int g_iSpeedFormat;
 extern int g_iTempFormat;
-extern int g_iWpt_ScaMin;
 extern int g_iWaypointRangeRingsNumber;
 extern int g_iWaypointRangeRingsStepUnits;
+extern int g_iWindSpeedFormat;
+extern int g_iWpt_ScaMin;
 extern int g_maxWPNameLength;
 extern int g_mbtilesMaxLayers;
-extern int g_NMEAAPBPrecision;
 extern int g_nCOMPortCheck;
 extern int g_nDepthUnitDisplay;
 extern int g_nNMEADebug;
 extern int g_nTrackPrecision;
 extern int g_route_line_width;
-extern int g_track_line_width;
 extern int g_trackFilterMax;
-extern int g_WplAction;
+extern int g_track_line_width;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 

@@ -7,7 +7,10 @@
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * \implements \ref jsonreader.h
+ */
 #ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow
 // must be defined before including debug.h
@@ -256,7 +259,7 @@ wxJSONReader::~wxJSONReader() {}
  JSON text stored in a wxString object or in a wxInputStream
  object.
 
- If \c val is a NULL pointer, the function does not store the
+ If \c val is a nullptr pointer, the function does not store the
  values: it can be used as a JSON checker in order to check the
  syntax of the document.
  Returns the number of \b errors found in the document.
@@ -292,7 +295,7 @@ wxJSONReader::~wxJSONReader() {}
  Next, the overloaded Parse function is called.
 
  @param doc    the JSON text that has to be parsed
- @param val    the wxJSONValue object that contains the parsed text; if NULL the
+ @param val    the wxJSONValue object that contains the parsed text; if nullptr the
          parser do not store anything but errors and warnings are reported
  @return the total number of errors encontered
 */
@@ -305,7 +308,7 @@ int wxJSONReader::Parse(const wxString& doc, wxJSONValue* val) {
 
   // convert the string to a UTF-8 / ANSI memory stream and calls overloaded
   // Parse()
-  char* readBuff = 0;
+  char* readBuff = nullptr;
   wxCharBuffer utf8CB = doc.ToUTF8();  // the UTF-8 buffer
 #if !defined(wxJSON_USE_UNICODE)
   wxCharBuffer ansiCB(doc.c_str());  // the ANSI buffer
@@ -344,7 +347,7 @@ int wxJSONReader::Parse(wxInputStream& is, wxJSONValue* val) {
   // if a wxJSONValue is not passed to the Parse function
   // we set the temparary object created on the stack
   // I know this will slow down the validation of input
-  if (val == 0) {
+  if (val == nullptr) {
     val = &temp;
   }
   wxASSERT(val);
@@ -600,7 +603,7 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
         // close-object: store the current value, if any
         StoreValue(ch, key, value, parent);
         m_current = &parent;
-        m_next = 0;
+        m_next = nullptr;
         m_current->SetLineNo(m_lineNo);
         ch = ReadChar(is);
         return ch;
@@ -635,7 +638,7 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
         }
         StoreValue(ch, key, value, parent);
         m_current = &parent;
-        m_next = 0;
+        m_next = nullptr;
         m_current->SetLineNo(m_lineNo);
         return 0;  // returning ZERO for reading the next char
         break;
@@ -650,19 +653,19 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
       case '\"':
         ch = ReadString(is, value);  // read a JSON string type
         m_current = &value;
-        m_next = 0;
+        m_next = nullptr;
         break;
 
       case '\'':
         ch = ReadMemoryBuff(is, value);  // read a memory buffer type
         m_current = &value;
-        m_next = 0;
+        m_next = nullptr;
         break;
 
       case ':':  // key / value separator
         m_current = &value;
         m_current->SetLineNo(m_lineNo);
-        m_next = 0;
+        m_next = nullptr;
         if (!parent.IsObject()) {
           AddError(_T( "\':\' can only used in object's values" ));
         } else if (!value.IsString()) {
@@ -684,7 +687,7 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
         // errors are checked in the 'ReadValue()' function.
         m_current = &value;
         m_current->SetLineNo(m_lineNo);
-        m_next = 0;
+        m_next = nullptr;
         ch = ReadValue(is, ch, value);
         break;
     }  // end switch
@@ -1317,10 +1320,10 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
   // first try the literal strings lowercase and nocase
   if (s == _T("null")) {
     val.SetType(wxJSONTYPE_NULL);
-    wxLogTrace(traceMask, _T("(%s) value = NULL"), __PRETTY_FUNCTION__);
+    wxLogTrace(traceMask, _T("(%s) value = nullptr"), __PRETTY_FUNCTION__);
     return nextCh;
   } else if (s.CmpNoCase(_T( "null" )) == 0) {
-    wxLogTrace(traceMask, _T("(%s) value = NULL"), __PRETTY_FUNCTION__);
+    wxLogTrace(traceMask, _T("(%s) value = nullptr"), __PRETTY_FUNCTION__);
     AddWarning(wxJSONREADER_CASE,
                _T( "the \'null\' literal must be lowercase" ));
     val.SetType(wxJSONTYPE_NULL);
@@ -1516,7 +1519,7 @@ int wxJSONReader::AppendUES(wxMemoryBuffer& utf8Buff, const char* uesBuffer) {
   char buffer[16];
   size_t len = wxConvUTF8.FromWChar(buffer, 10, &ch, 1);
 
-  // seems that the wxMBConv classes always appends a NULL byte to
+  // seems that the wxMBConv classes always appends a nullptr byte to
   // the converted buffer
   if (len > 1) {
     len = len - 1;

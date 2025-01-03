@@ -8,7 +8,10 @@
 // Copyright:   (c) PJ Naughter
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * \implements \ref smapi.h
+ */
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -42,12 +45,12 @@ public:
   wxMapiData() {
     m_hSession = 0;
     m_nLastError = 0;
-    m_hMapi = NULL;
-    m_lpfnMAPILogon = NULL;
-    m_lpfnMAPILogoff = NULL;
-    m_lpfnMAPISendMail = NULL;
-    m_lpfnMAPIResolveName = NULL;
-    m_lpfnMAPIFreeBuffer = NULL;
+    m_hMapi = nullptr;
+    m_lpfnMAPILogon = nullptr;
+    m_lpfnMAPILogoff = nullptr;
+    m_lpfnMAPISendMail = nullptr;
+    m_lpfnMAPIResolveName = nullptr;
+    m_lpfnMAPIFreeBuffer = nullptr;
   }
 
   // Data
@@ -84,7 +87,7 @@ void wxMapiSession::Initialise() {
   // as the MAPI32 dll being present on the system
   bool bMapiInstalled =
       (GetProfileInt(_T("MAIL"), _T("MAPI"), 0) != 0) &&
-      (SearchPath(NULL, _T("MAPI32.DLL"), NULL, 0, NULL, NULL) != 0);
+      (SearchPath(nullptr, _T("MAPI32.DLL"), nullptr, 0, nullptr, nullptr) != 0);
 
   if (bMapiInstalled) {
     // Load up the MAPI dll and get the function pointers we are interested in
@@ -102,10 +105,10 @@ void wxMapiSession::Initialise() {
           (LPMAPIFREEBUFFER)GetProcAddress(m_data->m_hMapi, "MAPIFreeBuffer");
 
       // If any of the functions are not installed then fail the load
-      if (m_data->m_lpfnMAPILogon == NULL || m_data->m_lpfnMAPILogoff == NULL ||
-          m_data->m_lpfnMAPISendMail == NULL ||
-          m_data->m_lpfnMAPIResolveName == NULL ||
-          m_data->m_lpfnMAPIFreeBuffer == NULL) {
+      if (m_data->m_lpfnMAPILogon == nullptr || m_data->m_lpfnMAPILogoff == nullptr ||
+          m_data->m_lpfnMAPISendMail == nullptr ||
+          m_data->m_lpfnMAPIResolveName == nullptr ||
+          m_data->m_lpfnMAPIFreeBuffer == nullptr) {
         wxLogMessage(
             _T("MAIL Error: Failed to get one of the functions pointer in ")
             _T("MAPI32.DLL\n"));
@@ -121,14 +124,14 @@ void wxMapiSession::Initialise() {
 
 void wxMapiSession::Deinitialise() {
   if (m_data->m_hMapi) {
-    // Unload the MAPI dll and reset the function pointers to NULL
+    // Unload the MAPI dll and reset the function pointers to nullptr
     FreeLibrary(m_data->m_hMapi);
-    m_data->m_hMapi = NULL;
-    m_data->m_lpfnMAPILogon = NULL;
-    m_data->m_lpfnMAPILogoff = NULL;
-    m_data->m_lpfnMAPISendMail = NULL;
-    m_data->m_lpfnMAPIResolveName = NULL;
-    m_data->m_lpfnMAPIFreeBuffer = NULL;
+    m_data->m_hMapi = nullptr;
+    m_data->m_lpfnMAPILogon = nullptr;
+    m_data->m_lpfnMAPILogoff = nullptr;
+    m_data->m_lpfnMAPISendMail = nullptr;
+    m_data->m_lpfnMAPIResolveName = nullptr;
+    m_data->m_lpfnMAPIFreeBuffer = nullptr;
   }
 }
 
@@ -146,8 +149,8 @@ bool wxMapiSession::Logon(const wxString& sProfileName,
   // Setup the ascii versions of the profile name and password
   int nProfileLength = sProfileName.Length();
 
-  LPSTR pszProfileName = NULL;
-  LPSTR pszPassword = NULL;
+  LPSTR pszProfileName = nullptr;
+  LPSTR pszPassword = nullptr;
   wxCharBuffer cbProfile(1), cbPassword(1);
   if (nProfileLength) {
 #ifndef UNICODE
@@ -188,7 +191,7 @@ bool wxMapiSession::Logon(const wxString& sProfileName,
     // Failed to create a create mapi session, try to acquire a shared mapi
     // session wxLogDebug(_T("Failed to logon to MAPI using a new session,
     // trying to acquire a shared one\n"));
-    nError = m_data->m_lpfnMAPILogon(nUIParam, NULL, NULL, 0, 0,
+    nError = m_data->m_lpfnMAPILogon(nUIParam, nullptr, nullptr, 0, 0,
                                      &m_data->m_hSession);
     if (nError == SUCCESS_SUCCESS) {
       m_data->m_nLastError = SUCCESS_SUCCESS;
@@ -210,7 +213,7 @@ bool wxMapiSession::Logon(const wxString& sProfileName,
 
 bool wxMapiSession::LoggedOn() const { return (m_data->m_hSession != 0); }
 
-bool wxMapiSession::MapiInstalled() const { return (m_data->m_hMapi != NULL); }
+bool wxMapiSession::MapiInstalled() const { return (m_data->m_hMapi != nullptr); }
 
 bool wxMapiSession::Logoff() {
   wxASSERT(MapiInstalled());           // MAPI must be installed
@@ -420,7 +423,7 @@ bool wxMapiSession::Send(wxMailMessage& message) {
              file.lpszPathName = sFilename.mb_str().release();
  #endif
              //file.lpszFileName = file.lpszPathName;
-             file.lpszFileName = NULL;
+             file.lpszFileName = nullptr;
 
              if (nTitleSize && !message.m_attachmentTitles[i].IsEmpty())
              {

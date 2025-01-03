@@ -15,7 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
-
+/**
+ * \file
+ * \implements \ref GribRecord.h
+ */
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -56,12 +59,12 @@ GribRecord::GribRecord(const GribRecord &rec) {
   *this = rec;
   IsDuplicated = true;
   // recopie les champs de bits
-  if (rec.data != NULL) {
+  if (rec.data != nullptr) {
     int size = rec.Ni * rec.Nj;
     this->data = new double[size];
     for (int i = 0; i < size; i++) this->data[i] = rec.data[i];
   }
-  if (rec.BMSbits != NULL) {
+  if (rec.BMSbits != nullptr) {
     int size = rec.BMSsize;
     this->BMSbits = new zuchar[size];
     for (int i = 0; i < size; i++) this->BMSbits[i] = rec.BMSbits[i];
@@ -162,14 +165,14 @@ GribRecord *GribRecord::InterpolatedRecord(const GribRecord &rec1,
   if (!GetInterpolatedParameters(rec1, rec2, La1, Lo1, La2, Lo2, Di, Dj, im1,
                                  jm1, im2, jm2, Ni, Nj, rec1offi, rec1offj,
                                  rec2offi, rec2offj))
-    return NULL;
+    return nullptr;
 
   // recopie les champs de bits
   int size = Ni * Nj;
   double *data = new double[size];
 
-  zuchar *BMSbits = NULL;
-  if (rec1.BMSbits != NULL && rec2.BMSbits != NULL)
+  zuchar *BMSbits = nullptr;
+  if (rec1.BMSbits != nullptr && rec2.BMSbits != nullptr)
     BMSbits = new zuchar[(Ni * Nj - 1) / 8 + 1]();
 
   for (int i = 0; i < Ni; i++)
@@ -233,7 +236,7 @@ GribRecord *GribRecord::Interpolated2DRecord(
   if (!GetInterpolatedParameters(rec1x, rec2x, La1, Lo1, La2, Lo2, Di, Dj, im1,
                                  jm1, im2, jm2, Ni, Nj, rec1offi, rec1offj,
                                  rec2offi, rec2offj))
-    return NULL;
+    return nullptr;
 
   if (!rec1y.data || !rec2y.data || !rec1y.isOk() || !rec2y.isOk() ||
       rec1x.Di != rec1y.Di || rec1x.Dj != rec1y.Dj || rec2x.Di != rec2y.Di ||
@@ -291,7 +294,7 @@ GribRecord *GribRecord::Interpolated2DRecord(
   ret->Lo1 = Lo1, ret->Lo2 = Lo2;
 
   ret->data = datax;
-  ret->BMSbits = NULL;
+  ret->BMSbits = nullptr;
   ret->hasBMS = false;  // I don't think wind or current ever use BMS correct?
 
   ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
@@ -301,7 +304,7 @@ GribRecord *GribRecord::Interpolated2DRecord(
   *rety = *ret;
   rety->dataType = rec1y.dataType;
   rety->data = datay;
-  rety->BMSbits = NULL;
+  rety->BMSbits = nullptr;
   rety->hasBMS = false;
 
   return ret;
@@ -322,7 +325,7 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1,
   } else
     rec->ok = false;
 
-  if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
+  if (rec1.BMSbits != nullptr && rec2.BMSbits != nullptr) {
     if (rec1.BMSsize == rec2.BMSsize) {
       int size = rec1.BMSsize;
       for (int i = 0; i < size; i++)
@@ -438,11 +441,11 @@ std::string GribRecord::makeKey(
 GribRecord::~GribRecord() {
   if (data) {
     delete[] data;
-    data = NULL;
+    data = nullptr;
   }
   if (BMSbits) {
     delete[] BMSbits;
-    BMSbits = NULL;
+    BMSbits = nullptr;
   }
 
   // if (dataType==GRB_TEMP) printf("record destroyed %s   %d\n",

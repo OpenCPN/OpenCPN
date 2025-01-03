@@ -1,24 +1,43 @@
-/**********************************************************************
-zyGrib: meteorological GRIB file viewer
-Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-***********************************************************************/
-
-/*************************************
-Dessin des données GRIB (avec QT)
-*************************************/
+/***************************************************************************
+ *   Copyright (C) 2008 by Jacques Zaninetti                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Isobar and Isoline Generation System.
+ *
+ * Implements algorithms for generating and rendering isolines (contours) from
+ * GRIB weather data grids. The system specializes in:
+ * - Isobar generation for pressure fields
+ * - Isotherms for temperature fields
+ * - General contour lines for other scalar fields
+ *
+ * Key Features:
+ * - Efficient line segment generation using grid cell analysis
+ * - Contour line simplification and smoothing
+ * - Automatic label placement and collision avoidance
+ * - Support for both OpenGL and bitmap rendering paths
+ * - Line clipping for viewport optimization
+ * - High-definition rendering support
+ *
+ * The implementation uses the Cohen-Sutherland line clipping algorithm for
+ * viewport culling and provides specialized handling for circular quantities
+ * like wind direction that wrap around 0-360 degrees.
+ */
 
 #ifndef ISOLINE_H
 #define ISOLINE_H

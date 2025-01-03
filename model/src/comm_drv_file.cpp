@@ -41,41 +41,14 @@
 #include "model/comm_drv_file.h"
 #include "model/ocpn_utils.h"
 
+using namespace std;
+
 class VoidDriverListener : public DriverListener {
   virtual void Notify(std::shared_ptr<const NavMsg> message) {}
   virtual void Notify(const AbstractCommDriver& driver) {}
 };
 
 static VoidDriverListener kVoidDriverListener;
-
-using namespace std;
-
-FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
-                               DriverListener& l)
-    : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
-      output_path(opath),
-      input_path(ipath),
-      listener(l) {}
-
-FileCommDriver::FileCommDriver(const string& opath)
-    : FileCommDriver(opath, "", kVoidDriverListener) {}
-
-std::shared_ptr<NavAddr> FileCommDriver::GetAddress() {
-  return std::make_shared<NavAddr>(NavAddrTest(output_path));
-}
-
-bool FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                 std::shared_ptr<const NavAddr> addr) {
-  ofstream f;
-  f.open(output_path, ios::app);
-  if (!f.is_open()) {
-    wxLogWarning("Cannot open file %s for writing", output_path.c_str());
-    return false;
-  }
-  f << msg->to_string();
-  f.close();
-  return true;
-}
 
 static vector<unsigned char> HexToChar(string hex) {
   if (hex.size() % 2 == 1) hex = string("0") + hex;
@@ -117,8 +90,12 @@ static shared_ptr<const NavMsg> LineToMessage(const string& line,
   return make_shared<NullNavMsg>();  // for the compiler.
 }
 
-void FileCommDriver::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
+FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
+                               DriverListener& l)
+    : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
+      output_path(opath),
+      input_path(ipath),
+      listener(l) {
   if (input_path != "") {
     ifstream f(input_path);
     string line;
@@ -127,4 +104,24 @@ void FileCommDriver::Activate() {
       if (msg->bus != NavAddr::Bus::Undef) listener.Notify(msg);
     }
   }
+}
+
+FileCommDriver::FileCommDriver(const string& opath)
+    : FileCommDriver(opath, "", kVoidDriverListener) {}
+
+std::shared_ptr<NavAddr> FileCommDriver::GetAddress() {
+  return std::make_shared<NavAddr>(NavAddrTest(output_path));
+}
+
+bool FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                 std::shared_ptr<const NavAddr> addr) {
+  ofstream f;
+  f.open(output_path, ios::app);
+  if (!f.is_open()) {
+    wxLogWarning("Cannot open file %s for writing", output_path.c_str());
+    return false;
+  }
+  f << msg->to_string();
+  f.close();
+  return true;
 }

@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,10 +14,12 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref grib_pi.h
  */
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -88,7 +84,7 @@ grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
   else
     wxLogMessage(_T("    GRIB panel icon NOT loaded"));
 
-  m_pLastTimelineSet = NULL;
+  m_pLastTimelineSet = nullptr;
   m_bShowGrib = false;
   m_GUIScaleFactor = -1.;
   g_pi = this;
@@ -107,8 +103,8 @@ int grib_pi::Init(void) {
   m_CtrlBarxy = wxPoint(0, 0);
   m_CursorDataxy = wxPoint(0, 0);
 
-  m_pGribCtrlBar = NULL;
-  m_pGRIBOverlayFactory = NULL;
+  m_pGribCtrlBar = nullptr;
+  m_pGRIBOverlayFactory = nullptr;
 
   ::wxDisplaySize(&m_display_width, &m_display_height);
 
@@ -161,7 +157,7 @@ int grib_pi::Init(void) {
     wxLogMessage(normalIcon);
     m_leftclick_tool_id = InsertPlugInToolSVG(
         _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, _("Grib"),
-        _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
+        _T(""), nullptr, GRIB_TOOL_POSITION, 0, this);
   }
 
   if (!QualifyCtrlBarPosition(m_CtrlBarxy, m_CtrlBar_Sizexy)) {
@@ -179,11 +175,11 @@ bool grib_pi::DeInit(void) {
   if (m_pGribCtrlBar) {
     m_pGribCtrlBar->Close();
     delete m_pGribCtrlBar;
-    m_pGribCtrlBar = NULL;
+    m_pGribCtrlBar = nullptr;
   }
 
   delete m_pGRIBOverlayFactory;
-  m_pGRIBOverlayFactory = NULL;
+  m_pGRIBOverlayFactory = nullptr;
 
   return true;
 }
@@ -384,7 +380,7 @@ bool grib_pi::QualifyCtrlBarPosition(
                                 ? position.y + 30
                                 : position.y + size.y;
 
-  if (NULL == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
+  if (nullptr == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
     b_reset_pos = true;
 #else
   wxRect window_title_rect;  // conservative estimate
@@ -551,7 +547,7 @@ void grib_pi::OnGribCtrlBarClose() {
 
   if (m_DialogStyleChanged) {
     m_pGribCtrlBar->Destroy();
-    m_pGribCtrlBar = NULL;
+    m_pGribCtrlBar = nullptr;
     m_DialogStyleChanged = false;
   }
 }
@@ -729,7 +725,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
     if (!m_pGribCtrlBar) OnToolbarToolCallback(0);
 
     GribTimelineRecordSet *set =
-        m_pGribCtrlBar ? m_pGribCtrlBar->GetTimeLineRecordSet(time) : NULL;
+        m_pGribCtrlBar ? m_pGribCtrlBar->GetTimeLineRecordSet(time) : nullptr;
 
     char ptr[64];
     snprintf(ptr, sizeof ptr, "%p", set);

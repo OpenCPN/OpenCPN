@@ -26,7 +26,7 @@ public:
   // Logon / Logoff Methods
   bool Logon(const wxString& sProfileName,
              const wxString& sPassword = wxEmptyString,
-             wxWindow* pParentWnd = NULL);
+             wxWindow* pParentWnd = nullptr);
   bool LoggedOn() const;
   bool Logoff();
 

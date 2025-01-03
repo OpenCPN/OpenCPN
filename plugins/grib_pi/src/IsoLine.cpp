@@ -15,7 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
-
+/**
+ * \file
+ * \implements \ref IsoLine.h
+ */
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -229,7 +232,7 @@ IsoLine::~IsoLine() {
   std::list<Segment *>::iterator it;
   for (it = trace.begin(); it != trace.end(); it++) {
     delete *it;
-    *it = NULL;
+    *it = nullptr;
   }
   trace.clear();
 
@@ -289,7 +292,7 @@ MySegList *IsoLine::BuildContinuousSegment(void) {
     if (badded == true)
       tseg = seg;
     else
-      tseg = NULL;
+      tseg = nullptr;
   }
 
   //     Build a chain extending from the "1" end of the target segment
@@ -337,7 +340,7 @@ MySegList *IsoLine::BuildContinuousSegment(void) {
     if (badded == true)
       tseg = seg;
     else
-      tseg = NULL;
+      tseg = nullptr;
   }
 
   //     Now have two lists...
@@ -374,7 +377,7 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc,
   GetGlobalColor(_T ( "UITX1" ), &isoLineColor);
 
 #if wxUSE_GRAPHICS_CONTEXT
-  wxGraphicsContext *pgc = NULL;
+  wxGraphicsContext *pgc = nullptr;
 #endif
 
   if (dc) {
@@ -875,7 +878,7 @@ void GenSpline(wxList *points) {
 
   while ((node = node->GetNext())
 #if !wxUSE_STL
-         != NULL
+         != nullptr
 #endif  // !wxUSE_STL
   ) {
     p = (wxPoint *)node->GetData();

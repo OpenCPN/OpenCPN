@@ -29,7 +29,7 @@
 #include "model/conn_params.h"
 #include "model/comm_driver.h"
 
-std::shared_ptr<AbstractCommDriver> MakeCommDriver(
+std::unique_ptr<AbstractCommDriver> MakeCommDriver(
     const ConnectionParams* params);
 
 void initIXNetSystem();

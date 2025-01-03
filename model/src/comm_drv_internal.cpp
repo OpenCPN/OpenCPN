@@ -47,10 +47,6 @@ CommDriverInternal::CommDriverInternal(DriverListener& listener)
   this->attributes["ioDirection"] = "OUT";
 }
 
-void CommDriverInternal::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-}
-
 bool CommDriverInternal::SendMessage(std::shared_ptr<const NavMsg> msg,
                                      std::shared_ptr<const NavAddr> addr) {
   auto msg_plugin = std::dynamic_pointer_cast<const PluginMsg>(msg);

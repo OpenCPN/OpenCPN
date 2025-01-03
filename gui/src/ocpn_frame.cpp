@@ -54,6 +54,7 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 #include <wx/display.h>
+#include <wx/jsonreader.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
@@ -303,9 +304,6 @@ extern wxArrayPtrVoid *UserColourHashTableArray;
 extern wxColorHashMap *pcurrent_user_color_hash;
 
 // probable move to ocpn_app
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
 extern bool g_bHasHwClock;
@@ -321,6 +319,7 @@ extern int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
 extern bool g_config_display_size_manual;
 extern bool g_PrintingInProgress;
+extern bool g_disable_main_toolbar;
 
 #ifdef __WXMSW__
 // System color control support
@@ -1812,11 +1811,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto *cp : TheConnectionParams()) {
     delete cp;
   }
-  delete TheConnectionParams();
 
   if (pLayerList) {
     LayerList::iterator it;
@@ -4797,8 +4794,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 1:
       // Connect Datastreams
 
-      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-        ConnectionParams *cp = TheConnectionParams()->Item(i);
+      for (auto *cp : TheConnectionParams()) {
         if (cp->bEnabled) {
           auto driver = MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
@@ -5026,7 +5022,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       UpdateStatusBar();
 
       SendSizeEvent();
-
       break;
     }
   }  // switch
