@@ -4544,7 +4544,8 @@ void glChartCanvas::Render() {
   // render the chart bar
   if (g_bShowChartBar) DrawChartBar(m_gldc);
 
-  if (m_pParentCanvas->m_Compass) m_pParentCanvas->m_Compass->Paint(gldc);
+  if (m_pParentCanvas->m_Compass && m_pParentCanvas->m_bShowCompassWin)
+    m_pParentCanvas->m_Compass->Paint(gldc);
 
   RenderGLAlertMessage();
 #endif
