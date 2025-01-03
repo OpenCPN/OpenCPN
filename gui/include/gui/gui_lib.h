@@ -46,7 +46,8 @@ public:
  * system settings and preserving readability across different displays.
  *
  * @param item UI element identifier (e.g., "AISTargetAlert", "StatusBar")
- * @param default_size Optional base font size in points. 0 uses platform default.
+ * @param default_size Optional base font size in points. 0 uses platform
+ * default.
  *
  * @return Pointer to a dynamically scaled wxFont
  *
