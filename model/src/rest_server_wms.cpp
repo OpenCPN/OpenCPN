@@ -24,8 +24,6 @@
 #include <utility>
 #include <vector>
 
-#include <wx/event.h>
-#include <wx/filename.h>
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/mstream.h>
@@ -74,13 +72,17 @@ void coord3857To4326(double lon3857, double lat3857, double& lat4326,
         atan(exp(lat3857 * PI / 20037508.34)) * 360 / PI - 90;
 }
 
+std::string unescape(const std::string& StrIn) {
+  int newLen = 0;
+  char* pszUnescaped = CPLUnescapeString(StrIn.c_str(), &newLen, CPLES_URL);
+  std::string sNew(pszUnescaped);
+  CPLFree(pszUnescaped);
+  return sNew;
+}
 
 // entrypoint for mongoose
 static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
-
  #ifdef RESTSERVERWMS
-  int j = 0;
-
   
   if (ev == MG_EV_HTTP_MSG) {
     ++RestServerWms::m_hitcount;
@@ -97,6 +99,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
           mg_http_reply(c, 404,"","");
           return;
         }
+
         std::string strService = HttpVarToString(hm->query, "service");
         std::string strRequest = HttpVarToString(hm->query, "request");
         std::string strFormat = HttpVarToString(hm->query, "format");
@@ -105,15 +108,22 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         std::string strSrs = HttpVarToString(hm->query, "srs");
         std::string strBbox = HttpVarToString(hm->query, "bbox");
 
+        strBbox = unescape(strBbox);
+        strSrs = unescape(strSrs);
+
         //check for resizing
         int _w = std::stoi(strWidthPx);
         int _h = std::stoi(strHeightPx);
         if (_w != RestServerWms::lastSize_W || _h != RestServerWms::lastSize_H){
+          INFO_LOG << "Size req change  from (w,h)" << RestServerWms::lastSize_W
+                   << ", " << RestServerWms::lastSize_H << " to " << _w << ", "
+                   << _h;
+ 
           RestServerWms::lastSize_W = _w;
           RestServerWms::lastSize_H = _h;
 
+            RestServerWms::m_pWxFrame->SetSize(wxSize(_w + 100, _h + 100));
            RestServerWms::m_pChartCanvas->SetSize(wxSize(_w, _h));
-
         }
 
         // BBox manging
@@ -129,40 +139,76 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
           data.push_back(d);
         }
 
-        // coord convertion
+        if (data.size() != 4) {
+          mg_http_reply(
+              c, 422, "",
+              "Unable to contnue, bbox data not resulting in 4 params");
+          return;
+        }
+
         double lonSW, latSW, lonNE, latNE;
-        coord3857To4326(data[0], data[1], lonSW, latSW);
-        coord3857To4326(data[2], data[3], lonNE, latNE);
 
-        INFO_LOG << "WMS req " << RestServerWms::m_hitcount << " SE:" << latSW
-                 << "," << lonSW << " NE" << latNE << "," << lonNE; 
+        if (strSrs == "EPSG:4326") {
+          latSW = data[0];
+          lonSW = data[1];
+          latNE = data[2];
+          lonNE = data[3];
+
+        } else if (strSrs == "EPSG:3857") {
+          
+          // coord convertion
+          coord3857To4326(data[0], data[1], lonSW, latSW);
+          coord3857To4326(data[2], data[3], lonNE, latNE);
+        } else{
+          std::string err = "Unsupported Srs param:" + strSrs;
+
+          mg_http_reply(c, 422, "", err.c_str());
+              
+          return;
+        }
         
-
-        /*mg_http_reply(c, 500, "", "reject 500 wms");
-        return;*/
+        INFO_LOG << "WMS req " << RestServerWms::m_hitcount << " SW:" << latSW
+                 << "," << lonSW << " NE" << latNE << "," << lonNE
+                 << "(lat, lon)"; 
 
         // m_pchart
-
-        RestServerWms::pText->SetLabelText(std::to_string(RestServerWms::m_hitcount));
-
         RestServerWms::m_pChartCanvas->SetShowGrid(true);
         RestServerWms::m_pChartCanvas->SetShowENCLights(true);
-        RestServerWms::m_pChartCanvas->SetShowENCDepth(true);
+        //RestServerWms::m_pChartCanvas->SetShowENCDepth(true);
+        RestServerWms::m_pChartCanvas->SetShowAIS(false);
+        RestServerWms::m_pChartCanvas->SetShowGPS(false);
+        RestServerWms::m_pChartCanvas->SetShowGPSCompassWindow(false);
+        
+        RestServerWms::m_pChartCanvas->canvasChartsRefresh(-1);
 
-        RestServerWms::m_pChartCanvas->SetViewPointByCorners(latSW, lonSW,
+        
+        bool ok_setviewpointbycorners = RestServerWms::m_pChartCanvas->SetViewPointByCorners(latSW, lonSW,
                                                              latNE, lonNE);
+        INFO_LOG << "SetViewpointByCorners ok: " << ok_setviewpointbycorners; 
 
-        RestServerWms::m_pChartCanvas->SetSize(
-            wxSize(std::stoi(strWidthPx),
-                   std::stoi(strHeightPx)));
+        //RestServerWms::m_pChartCanvas->SetSize(
+        //    wxSize(std::stoi(strWidthPx),
+        //           std::stoi(strHeightPx)));
 
-        RestServerWms::m_pChartCanvas->DoCanvasUpdate();
+        bool update = RestServerWms::m_pChartCanvas->DoCanvasUpdate();
+        INFO_LOG << "CanvasUpdate success:" << update;
+
+        //RestServerWms::m_pChartCanvas->
 
         RestServerWms::m_pChartCanvas->Refresh();
         RestServerWms::m_pWxFrame->Refresh();
         RestServerWms::m_pChartCanvas->Update();
         RestServerWms::m_pWxFrame->Update();
 
+        std::stringstream ssImgInfo;
+        ssImgInfo << RestServerWms::m_hitcount << "\n  NE" << latNE << ", "
+                  << lonNE << "\nSW" << latSW << ", " << lonSW;
+        RestServerWms::pText->SetLabelText(
+            ssImgInfo.str());
+
+      RestServerWms::m_pWxFrame->Update();
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(599));
         wxClientDC dcWindow(RestServerWms::m_pWxFrame);
         wxCoord screenWidth, screenHeight;
 
@@ -211,9 +257,11 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       }
       catch(const std::exception& ex){
         int j = 0;
+        ERROR_LOG << "std::exception in rendering, details:" << ex.what();
       }
       catch(...){
         int j = 0;
+        ERROR_LOG << "... exception in rendering";
       }
     } else {
       mg_http_reply(c, 500, NULL, "\n");
@@ -250,16 +298,6 @@ void RestServerWms::StopServer() {
 }
 
 RestServerWms::RestServerWms(){
-  //dummy debug 
-  double lat, lon;
-  coord3857To4326(-8575605.398444, 4707174.018280 , lon,
-                  lat);
-
-  //https://epsg.io/transform#s_srs=3857&t_srs=4326&x=-8575605.3984440&y=4707174.0182800
-  //x,y input  -8575605.398444, 4707174.018280
-  //lon, lat expecting: -77.035974, 38.898717
-  int j = 0;
-
   INFO_LOG << "RestServerWms running";
 }   
 
@@ -288,6 +326,3 @@ bool RestServerWms::StartServer() {
   #endif
   return true;
 }
-
-
-

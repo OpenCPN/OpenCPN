@@ -30,6 +30,8 @@
 #include <thread>
 #include <unordered_map>
 
+#include "gdal/cpl_string.h"
+
 #include "observable_evtvar.h"
 
 #include "../gui/include/gui/viewport.h"
