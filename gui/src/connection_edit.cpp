@@ -550,7 +550,7 @@ void ConnectionEditDialog::Init() {
   // sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
   //  Net User Comments
-  m_stNetComment = new wxStaticText(m_scrolledwin, wxID_ANY, _("User Comment"),
+  m_stNetComment = new wxStaticText(m_scrolledwin, wxID_ANY, _("Description"),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_stNetComment->Wrap(-1);
   m_stNetComment->SetMinSize(wxSize(column1width, -1));
