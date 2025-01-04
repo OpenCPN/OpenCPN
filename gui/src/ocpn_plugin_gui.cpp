@@ -2644,73 +2644,24 @@ void RequestWindowRefresh(wxWindow* win, bool eraseBackground) {
   if (win) win->Refresh(eraseBackground);
 }
 
-int PluginCreateChartCanvas() {
-  ChartCanvas* cc = NULL;
-  int new_index = g_canvasArray.GetCount();
-  cc = new ChartCanvas(gFrame, new_index);
-  g_canvasArray.Add(cc);
-#ifdef ocpnUSE_GL
-  // Verify that glCanvas is ready, if necessary
-  if (g_bopengl)
-    if (!cc->GetglCanvas()) cc->SetupGlCanvas();
-#endif
-  g_canvasConfig++;
-
-  auto& config_array = ConfigMgr::Get().GetCanvasConfigArray();
-  // Try to find an unused config entry, and use it for this canvas.
-  // If there is non already available, then,
-  //  create one by copy ctor from canvas {0}.
-
-  bool bfound = false;
-  for (auto item : config_array) {
-    if (!item->canvas) {
-      item->canvas = cc;
-      bfound = true;
-      break;
+void EnableSplitScreenLayout(bool enable) {
+  if (g_canvasConfig == 1) {
+    if (enable)
+      return;
+    else {                 // split to single
+      g_canvasConfig = 0;  // 0 => "single canvas"
+      gFrame->CreateCanvasLayout();
+      gFrame->DoChartUpdate();
+    }
+  } else {
+    if (enable) {          // single to split
+      g_canvasConfig = 1;  // 1 => "two canvas"
+      gFrame->CreateCanvasLayout();
+      gFrame->DoChartUpdate();
+    } else {
+      return;
     }
   }
-
-  if (!bfound) {
-    if (config_array.GetCount() < (size_t)new_index + 1) {
-      canvasConfig* pcc = new canvasConfig(*config_array.Item(0));
-      pcc->configIndex = new_index;
-      pcc->canvas = cc;
-      config_array.Add(pcc);
-    }
-  }
-  return new_index;
-}
-
-void PluginDeleteChartCanvas(wxWindow* win) {
-#if 0
-  // Look for the canvas...
-  size_t i_remove = 0;
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    auto cwin = dynamic_cast<wxWindow *>(cc);
-    if( cwin == win) {
-      g_canvasArray.Item(i) = NULL;
-      cc->Destroy();
-      break;
-    }
-  }
-
-  // Silly workaround for broken array.RemoveAt() in Windows.
-  std::vector<ChartCanvas *> tvec;
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    if (i != i_remove)
-      tvec.push_back(g_canvasArray.Item(i));
-  }
-
-  g_canvasArray.Clear();
-  for (auto cc : tvec)
-    g_canvasArray.Add(cc);
-
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->SetCanvasIndex(i);
-  }
-#endif
 }
 
 // ChartCanvas control utilities
