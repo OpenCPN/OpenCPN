@@ -7197,6 +7197,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   if (event.ButtonUp() && HasCapture()) ReleaseMouse();
 #endif
 
+  event.SetEventObject(this);
   if (SendMouseEventToPlugins(event))
     return (true);  // PlugIn did something, and does not want the canvas to
                     // do anything else

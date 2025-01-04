@@ -18,7 +18,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
                                      const wxString& title, const wxPoint& pos,
                                      const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style) {
-  m_ProjectBoatPanel = NULL;
+  m_ProjectBoatPanel = nullptr;
 
 #ifdef __OCPN__ANDROID__
   const bool m_bcompact = true;
@@ -102,7 +102,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
 
     fgSizer51->Add(0, 0, 1, wxEXPAND | wxLEFT | wxRIGHT, 1);
 
-    m_bpOpenFile = NULL;
+    m_bpOpenFile = nullptr;
     //         m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE,
     //         wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
     //         m_bpOpenFile->SetToolTip( _("Open a new file") );
@@ -115,7 +115,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
 
     fgSizer51->Add(m_bpSettings, 0, wxALL, 1);
 
-    m_bpRequest = NULL;
+    m_bpRequest = nullptr;
 
     //         m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST,
     //         wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
@@ -305,113 +305,113 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
   this->Connect(wxEVT_PAINT, wxPaintEventHandler(GRIBUICtrlBarBase::OnPaint));
 #endif
   m_bpPrev->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(GRIBUICtrlBarBase::OnPrev), NULL,
+                    wxCommandEventHandler(GRIBUICtrlBarBase::OnPrev), nullptr,
                     this);
   m_bpPrev->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), NULL,
+                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), nullptr,
                     this);
   m_cRecordForecast->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnRecordForecast), NULL, this);
+      wxCommandEventHandler(GRIBUICtrlBarBase::OnRecordForecast), nullptr, this);
   m_cRecordForecast->Connect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_bpNext->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(GRIBUICtrlBarBase::OnNext), NULL,
+                    wxCommandEventHandler(GRIBUICtrlBarBase::OnNext), nullptr,
                     this);
   m_bpNext->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), NULL,
+                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), nullptr,
                     this);
   m_bpAltitude->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(GRIBUICtrlBarBase::OnAltitude),
-                        NULL, this);
+                        nullptr, this);
   m_bpAltitude->Connect(wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                        NULL, this);
+                        nullptr, this);
   m_bpNow->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                   wxCommandEventHandler(GRIBUICtrlBarBase::OnNow), NULL, this);
+                   wxCommandEventHandler(GRIBUICtrlBarBase::OnNow), nullptr, this);
   m_bpNow->Connect(wxEVT_RIGHT_DOWN,
-                   wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), NULL,
+                   wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), nullptr,
                    this);
   m_bpZoomToCenter->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnZoomToCenterClick), NULL,
+      wxCommandEventHandler(GRIBUICtrlBarBase::OnZoomToCenterClick), nullptr,
       this);
   m_bpZoomToCenter->Connect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_bpShowCursorData->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnShowCursorData), NULL, this);
+      wxCommandEventHandler(GRIBUICtrlBarBase::OnShowCursorData), nullptr, this);
   m_bpShowCursorData->Connect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_bpPlay->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(GRIBUICtrlBarBase::OnPlayStop), NULL,
+                    wxCommandEventHandler(GRIBUICtrlBarBase::OnPlayStop), nullptr,
                     this);
   m_bpPlay->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), NULL,
+                    wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent), nullptr,
                     this);
   m_sTimeline->Connect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_TOP,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_BOTTOM,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_LINEUP,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_LINEDOWN,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_PAGEUP,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_PAGEDOWN,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_THUMBTRACK,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_THUMBRELEASE,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Connect(wxEVT_SCROLL_CHANGED,
                        wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                       NULL, this);
+                       nullptr, this);
 
   if (m_bpOpenFile) {
     m_bpOpenFile->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                           wxCommandEventHandler(GRIBUICtrlBarBase::OnOpenFile),
-                          NULL, this);
+                          nullptr, this);
     m_bpOpenFile->Connect(wxEVT_RIGHT_DOWN,
                           wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                          NULL, this);
+                          nullptr, this);
   }
 
 #ifdef __OCPN__ANDROID__
   m_bpSettings->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnCompositeDialog), NULL, this);
+      wxCommandEventHandler(GRIBUICtrlBarBase::OnCompositeDialog), nullptr, this);
 #else
   m_bpSettings->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(GRIBUICtrlBarBase::OnSettings),
-                        NULL, this);
+                        nullptr, this);
   m_bpSettings->Connect(wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                        NULL, this);
+                        nullptr, this);
 #endif
 
   if (m_bpRequest) {
     m_bpRequest->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                          wxCommandEventHandler(GRIBUICtrlBarBase::OnRequest),
-                         NULL, this);
+                         nullptr, this);
     m_bpRequest->Connect(wxEVT_RIGHT_DOWN,
                          wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                         NULL, this);
+                         nullptr, this);
   }
 }
 
@@ -449,108 +449,108 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase() {
                    wxPaintEventHandler(GRIBUICtrlBarBase::OnPaint));
   this->Disconnect(wxEVT_SIZE, wxSizeEventHandler(GRIBUICtrlBarBase::OnSize));
   m_bpPrev->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(GRIBUICtrlBarBase::OnPrev), NULL,
+                       wxCommandEventHandler(GRIBUICtrlBarBase::OnPrev), nullptr,
                        this);
   m_bpPrev->Disconnect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       NULL, this);
+                       nullptr, this);
   m_cRecordForecast->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnRecordForecast), NULL, this);
+      wxCommandEventHandler(GRIBUICtrlBarBase::OnRecordForecast), nullptr, this);
   m_cRecordForecast->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_bpNext->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(GRIBUICtrlBarBase::OnNext), NULL,
+                       wxCommandEventHandler(GRIBUICtrlBarBase::OnNext), nullptr,
                        this);
   m_bpNext->Disconnect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       NULL, this);
+                       nullptr, this);
   m_bpAltitude->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(GRIBUICtrlBarBase::OnAltitude),
-                           NULL, this);
+                           nullptr, this);
   m_bpAltitude->Disconnect(wxEVT_RIGHT_DOWN,
                            wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                           NULL, this);
+                           nullptr, this);
   m_bpNow->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
-                      wxCommandEventHandler(GRIBUICtrlBarBase::OnNow), NULL,
+                      wxCommandEventHandler(GRIBUICtrlBarBase::OnNow), nullptr,
                       this);
   m_bpNow->Disconnect(wxEVT_RIGHT_DOWN,
                       wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                      NULL, this);
+                      nullptr, this);
   m_bpZoomToCenter->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnZoomToCenterClick), NULL,
+      wxCommandEventHandler(GRIBUICtrlBarBase::OnZoomToCenterClick), nullptr,
       this);
   m_bpZoomToCenter->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_bpShowCursorData->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GRIBUICtrlBarBase::OnShowCursorData), NULL, this);
+      wxCommandEventHandler(GRIBUICtrlBarBase::OnShowCursorData), nullptr, this);
   m_bpShowCursorData->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_bpPlay->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(GRIBUICtrlBarBase::OnPlayStop),
-                       NULL, this);
+                       nullptr, this);
   m_bpPlay->Disconnect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                       NULL, this);
+                       nullptr, this);
   m_sTimeline->Disconnect(wxEVT_RIGHT_DOWN,
                           wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_TOP,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_BOTTOM,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_LINEUP,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_LINEDOWN,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_PAGEUP,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_PAGEDOWN,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_THUMBTRACK,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_THUMBRELEASE,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
   m_sTimeline->Disconnect(wxEVT_SCROLL_CHANGED,
                           wxScrollEventHandler(GRIBUICtrlBarBase::OnTimeline),
-                          NULL, this);
+                          nullptr, this);
 
   if (m_bpOpenFile) {
     m_bpOpenFile->Disconnect(
         wxEVT_COMMAND_BUTTON_CLICKED,
-        wxCommandEventHandler(GRIBUICtrlBarBase::OnOpenFile), NULL, this);
+        wxCommandEventHandler(GRIBUICtrlBarBase::OnOpenFile), nullptr, this);
     m_bpOpenFile->Disconnect(
         wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-        NULL, this);
+        nullptr, this);
   }
 
   m_bpSettings->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(GRIBUICtrlBarBase::OnSettings),
-                           NULL, this);
+                           nullptr, this);
   m_bpSettings->Disconnect(wxEVT_RIGHT_DOWN,
                            wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-                           NULL, this);
+                           nullptr, this);
 
   if (m_bpRequest) {
     m_bpRequest->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                             wxCommandEventHandler(GRIBUICtrlBarBase::OnRequest),
-                            NULL, this);
+                            nullptr, this);
     m_bpRequest->Disconnect(
         wxEVT_RIGHT_DOWN, wxMouseEventHandler(GRIBUICtrlBarBase::OnMouseEvent),
-        NULL, this);
+        nullptr, this);
   }
 }
 
@@ -868,105 +868,105 @@ CursorDataBase::CursorDataBase(wxWindow* parent, wxWindowID id,
                 wxMouseEventHandler(CursorDataBase::OnMouseEvent));
   m_stTrackingText->Connect(wxEVT_LEFT_DOWN,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_LEFT_UP,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_MIDDLE_DOWN,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_MIDDLE_UP,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_RIGHT_DOWN,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_RIGHT_UP,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_MOTION,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_LEFT_DCLICK,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_MIDDLE_DCLICK,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_RIGHT_DCLICK,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_LEAVE_WINDOW,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_ENTER_WINDOW,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_stTrackingText->Connect(wxEVT_MOUSEWHEEL,
                             wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-                            NULL, this);
+                            nullptr, this);
   m_cbWind->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                    wxCommandEventHandler(CursorDataBase::OnCBAny), NULL, this);
+                    wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr, this);
   m_cbWind->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(CursorDataBase::OnMenuCallBack), NULL,
+                    wxMouseEventHandler(CursorDataBase::OnMenuCallBack), nullptr,
                     this);
   m_cbWindGust->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                        wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                        wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                         this);
   m_cbWindGust->Connect(wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                        NULL, this);
+                        nullptr, this);
   m_cbPressure->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                        wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                        wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                         this);
   m_cbPressure->Connect(wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                        NULL, this);
+                        nullptr, this);
   m_cbWave->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                    wxCommandEventHandler(CursorDataBase::OnCBAny), NULL, this);
+                    wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr, this);
   m_cbWave->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(CursorDataBase::OnMenuCallBack), NULL,
+                    wxMouseEventHandler(CursorDataBase::OnMenuCallBack), nullptr,
                     this);
   m_cbCurrent->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                       wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                       wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                        this);
   m_cbCurrent->Connect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                       NULL, this);
+                       nullptr, this);
   m_cbPrecipitation->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                              wxCommandEventHandler(CursorDataBase::OnCBAny),
-                             NULL, this);
+                             nullptr, this);
   m_cbPrecipitation->Connect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-      NULL, this);
+      nullptr, this);
   m_cbCloud->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                     wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                     wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                      this);
   m_cbCloud->Connect(wxEVT_RIGHT_DOWN,
-                     wxMouseEventHandler(CursorDataBase::OnMenuCallBack), NULL,
+                     wxMouseEventHandler(CursorDataBase::OnMenuCallBack), nullptr,
                      this);
   m_cbAirTemperature->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                               wxCommandEventHandler(CursorDataBase::OnCBAny),
-                              NULL, this);
+                              nullptr, this);
   m_cbAirTemperature->Connect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-      NULL, this);
+      nullptr, this);
   m_cbSeaTemperature->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                               wxCommandEventHandler(CursorDataBase::OnCBAny),
-                              NULL, this);
+                              nullptr, this);
   m_cbSeaTemperature->Connect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-      NULL, this);
+      nullptr, this);
   m_cbCAPE->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                    wxCommandEventHandler(CursorDataBase::OnCBAny), NULL, this);
+                    wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr, this);
   m_cbCAPE->Connect(wxEVT_RIGHT_DOWN,
-                    wxMouseEventHandler(CursorDataBase::OnMenuCallBack), NULL,
+                    wxMouseEventHandler(CursorDataBase::OnMenuCallBack), nullptr,
                     this);
   m_cbReflC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                     wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                     wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                      this);
   m_cbReflC->Connect(wxEVT_RIGHT_DOWN,
-                     wxMouseEventHandler(CursorDataBase::OnMenuCallBack), NULL,
+                     wxMouseEventHandler(CursorDataBase::OnMenuCallBack), nullptr,
                      this);
 }
 
@@ -999,110 +999,110 @@ CursorDataBase::~CursorDataBase() {
   this->Disconnect(wxEVT_MOUSEWHEEL,
                    wxMouseEventHandler(CursorDataBase::OnMouseEvent));
   m_stTrackingText->Disconnect(
-      wxEVT_LEFT_DOWN, wxMouseEventHandler(CursorDataBase::OnMouseEvent), NULL,
+      wxEVT_LEFT_DOWN, wxMouseEventHandler(CursorDataBase::OnMouseEvent), nullptr,
       this);
   m_stTrackingText->Disconnect(
-      wxEVT_LEFT_UP, wxMouseEventHandler(CursorDataBase::OnMouseEvent), NULL,
+      wxEVT_LEFT_UP, wxMouseEventHandler(CursorDataBase::OnMouseEvent), nullptr,
       this);
   m_stTrackingText->Disconnect(
       wxEVT_MIDDLE_DOWN, wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_stTrackingText->Disconnect(
-      wxEVT_MIDDLE_UP, wxMouseEventHandler(CursorDataBase::OnMouseEvent), NULL,
+      wxEVT_MIDDLE_UP, wxMouseEventHandler(CursorDataBase::OnMouseEvent), nullptr,
       this);
   m_stTrackingText->Disconnect(
-      wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMouseEvent), NULL,
+      wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMouseEvent), nullptr,
       this);
   m_stTrackingText->Disconnect(
-      wxEVT_RIGHT_UP, wxMouseEventHandler(CursorDataBase::OnMouseEvent), NULL,
+      wxEVT_RIGHT_UP, wxMouseEventHandler(CursorDataBase::OnMouseEvent), nullptr,
       this);
   m_stTrackingText->Disconnect(
-      wxEVT_MOTION, wxMouseEventHandler(CursorDataBase::OnMouseEvent), NULL,
+      wxEVT_MOTION, wxMouseEventHandler(CursorDataBase::OnMouseEvent), nullptr,
       this);
   m_stTrackingText->Disconnect(
       wxEVT_LEFT_DCLICK, wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_stTrackingText->Disconnect(
       wxEVT_MIDDLE_DCLICK, wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_stTrackingText->Disconnect(
       wxEVT_RIGHT_DCLICK, wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_stTrackingText->Disconnect(
       wxEVT_LEAVE_WINDOW, wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_stTrackingText->Disconnect(
       wxEVT_ENTER_WINDOW, wxMouseEventHandler(CursorDataBase::OnMouseEvent),
-      NULL, this);
+      nullptr, this);
   m_stTrackingText->Disconnect(
-      wxEVT_MOUSEWHEEL, wxMouseEventHandler(CursorDataBase::OnMouseEvent), NULL,
+      wxEVT_MOUSEWHEEL, wxMouseEventHandler(CursorDataBase::OnMouseEvent), nullptr,
       this);
   m_cbWind->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                       wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                       wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                        this);
   m_cbWind->Disconnect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                       NULL, this);
+                       nullptr, this);
   m_cbWindGust->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                           wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                           wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                            this);
   m_cbWindGust->Disconnect(wxEVT_RIGHT_DOWN,
                            wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                           NULL, this);
+                           nullptr, this);
   m_cbPressure->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                           wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                           wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                            this);
   m_cbPressure->Disconnect(wxEVT_RIGHT_DOWN,
                            wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                           NULL, this);
+                           nullptr, this);
   m_cbWave->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                       wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                       wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                        this);
   m_cbWave->Disconnect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                       NULL, this);
+                       nullptr, this);
   m_cbCurrent->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                          wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                          wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                           this);
   m_cbCurrent->Disconnect(wxEVT_RIGHT_DOWN,
                           wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                          NULL, this);
+                          nullptr, this);
   m_cbPrecipitation->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                                 wxCommandEventHandler(CursorDataBase::OnCBAny),
-                                NULL, this);
+                                nullptr, this);
   m_cbPrecipitation->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-      NULL, this);
+      nullptr, this);
   m_cbCloud->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                        wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                        wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                         this);
   m_cbCloud->Disconnect(wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                        NULL, this);
+                        nullptr, this);
   m_cbAirTemperature->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                                  wxCommandEventHandler(CursorDataBase::OnCBAny),
-                                 NULL, this);
+                                 nullptr, this);
   m_cbAirTemperature->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-      NULL, this);
+      nullptr, this);
   m_cbSeaTemperature->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                                  wxCommandEventHandler(CursorDataBase::OnCBAny),
-                                 NULL, this);
+                                 nullptr, this);
   m_cbSeaTemperature->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-      NULL, this);
+      nullptr, this);
   m_cbCAPE->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                       wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                       wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                        this);
   m_cbCAPE->Disconnect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                       NULL, this);
+                       nullptr, this);
   m_cbReflC->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                        wxCommandEventHandler(CursorDataBase::OnCBAny), NULL,
+                        wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                         this);
   m_cbReflC->Disconnect(wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
-                        NULL, this);
+                        nullptr, this);
 }
 
 GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
@@ -1857,202 +1857,202 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
   // Connect Events
   m_nSettingsBook->Connect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-      wxNotebookEventHandler(GribSettingsDialogBase::OnPageChange), NULL, this);
+      wxNotebookEventHandler(GribSettingsDialogBase::OnPageChange), nullptr, this);
   m_cDataType->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnDataTypeChoice), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnDataTypeChoice), nullptr,
       this);
   m_cDataUnits->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnUnitChange), NULL, this);
+      wxCommandEventHandler(GribSettingsDialogBase::OnUnitChange), nullptr, this);
   m_cBarbArrFixSpac->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cBarbArrMinSpac->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cDirArrFixSpac->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cDirArrMinSpac->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cNumFixSpac->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cNumMinSpac->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_TOP,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_BOTTOM,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_LINEUP,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_LINEDOWN,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_PAGEUP,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_PAGEDOWN,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_THUMBTRACK,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_THUMBRELEASE,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Connect(
       wxEVT_SCROLL_CHANGED,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_cLoopMode->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), nullptr,
       this);
   m_cInterpolate->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), nullptr,
       this);
   m_rbCurDataAttaWCap->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_rbCurDataAttaWoCap->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_rbCurDataIsolHoriz->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_rbCurDataIsolVertic->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_sButtonApply->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnApply), NULL, this);
+      wxCommandEventHandler(GribSettingsDialogBase::OnApply), nullptr, this);
 }
 
 GribSettingsDialogBase::~GribSettingsDialogBase() {
   // Disconnect Events
   m_nSettingsBook->Disconnect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-      wxNotebookEventHandler(GribSettingsDialogBase::OnPageChange), NULL, this);
+      wxNotebookEventHandler(GribSettingsDialogBase::OnPageChange), nullptr, this);
   m_cDataType->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnDataTypeChoice), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnDataTypeChoice), nullptr,
       this);
   m_cDataUnits->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnUnitChange), NULL, this);
+      wxCommandEventHandler(GribSettingsDialogBase::OnUnitChange), nullptr, this);
   m_cBarbArrFixSpac->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cBarbArrMinSpac->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cDirArrFixSpac->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cDirArrMinSpac->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cNumFixSpac->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_cNumMinSpac->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnSpacingModeChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_TOP,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_BOTTOM,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_LINEUP,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_LINEDOWN,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_PAGEUP,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_PAGEDOWN,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_THUMBTRACK,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_THUMBRELEASE,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_sTransparency->Disconnect(
       wxEVT_SCROLL_CHANGED,
-      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), NULL,
+      wxScrollEventHandler(GribSettingsDialogBase::OnTransparencyChange), nullptr,
       this);
   m_cLoopMode->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), nullptr,
       this);
   m_cInterpolate->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), NULL,
+      wxCommandEventHandler(GribSettingsDialogBase::OnIntepolateChange), nullptr,
       this);
   m_rbCurDataAttaWCap->Disconnect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_rbCurDataAttaWoCap->Disconnect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_rbCurDataIsolHoriz->Disconnect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_rbCurDataIsolVertic->Disconnect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(GribSettingsDialogBase::OnCtrlandDataStyleChanged),
-      NULL, this);
+      nullptr, this);
   m_sButtonApply->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribSettingsDialogBase::OnApply), NULL, this);
+      wxCommandEventHandler(GribSettingsDialogBase::OnApply), nullptr, this);
 }
 
 #ifndef __OCPN__ANDROID__
@@ -2188,7 +2188,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   bSizerPrefsMain->Add(SetSaveButton, 0, wxALL | wxEXPAND, 5);
   SetSaveButton->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribPreferencesDialogBase::OnDirSelClick), NULL,
+      wxCommandEventHandler(GribPreferencesDialogBase::OnDirSelClick), nullptr,
       this);
 
   Layout();
@@ -2198,10 +2198,10 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_rbStartOptions->Connect(
       wxEVT_COMMAND_RADIOBOX_SELECTED,
       wxCommandEventHandler(GribPreferencesDialogBase::OnStartOptionChange),
-      NULL, this);
+      nullptr, this);
   m_sdbSizer2OK->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribPreferencesDialogBase::OnOKClick), NULL, this);
+      wxCommandEventHandler(GribPreferencesDialogBase::OnOKClick), nullptr, this);
 }
 #else
 
@@ -2313,10 +2313,10 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_rbStartOptions->Connect(
       wxEVT_COMMAND_RADIOBOX_SELECTED,
       wxCommandEventHandler(GribPreferencesDialogBase::OnStartOptionChange),
-      NULL, this);
+      nullptr, this);
   m_sdbButtonSizerOK->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribPreferencesDialogBase::OnOKClick), NULL, this);
+      wxCommandEventHandler(GribPreferencesDialogBase::OnOKClick), nullptr, this);
 }
 
 #endif
@@ -2326,7 +2326,7 @@ GribPreferencesDialogBase::~GribPreferencesDialogBase() {
   m_rbStartOptions->Disconnect(
       wxEVT_COMMAND_RADIOBOX_SELECTED,
       wxCommandEventHandler(GribPreferencesDialogBase::OnStartOptionChange),
-      NULL, this);
+      nullptr, this);
 }
 
 void GribPreferencesDialogBase::OnDirSelClick(wxCommandEvent& event) {
@@ -2996,208 +2996,208 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
                 wxCloseEventHandler(GribRequestSettingBase::OnClose));
   m_chForecastLength->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice), nullptr,
       this);
   m_btnDownloadWorld->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), nullptr,
       this);
   m_SourcesTreeCtrl1->Connect(
       wxEVT_COMMAND_TREE_ITEM_EXPANDED,
-      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded), NULL,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded), nullptr,
       this);
   m_SourcesTreeCtrl1->Connect(
       wxEVT_COMMAND_TREE_SEL_CHANGED,
-      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeSelChanged), NULL,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeSelChanged), nullptr,
       this);
   m_buttonUpdateCatalog->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnUpdateLocalCatalog), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnUpdateLocalCatalog), nullptr,
       this);
   m_btnDownloadLocal->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnDownloadLocal), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnDownloadLocal), nullptr,
       this);
   m_pMailTo->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                      wxCommandEventHandler(GribRequestSettingBase::OnTopChange),
-                     NULL, this);
+                     nullptr, this);
   m_pModel->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                     wxCommandEventHandler(GribRequestSettingBase::OnTopChange),
-                    NULL, this);
+                    nullptr, this);
   m_cMovingGribEnabled->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnMovingClick), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnMovingClick), nullptr, this);
   m_sMovingSpeed->Connect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), NULL, this);
+      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), nullptr, this);
   m_sMovingCourse->Connect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), NULL, this);
+      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), nullptr, this);
   m_pLogin->Connect(wxEVT_COMMAND_TEXT_UPDATED,
                     wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                    NULL, this);
+                    nullptr, this);
   m_pCode->Connect(wxEVT_COMMAND_TEXT_UPDATED,
                    wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                   NULL, this);
+                   nullptr, this);
   m_pResolution->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pInterval->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pTimeRange->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnTimeRangeChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnTimeRangeChange), nullptr,
       this);
   m_cManualZoneSel->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnZoneSelectionModeChange),
-      NULL, this);
+      nullptr, this);
   m_cUseSavedZone->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnZoneSelectionModeChange),
-      NULL, this);
+      nullptr, this);
   m_spMaxLat->Connect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_spMaxLon->Connect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_spMinLat->Connect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_spMinLon->Connect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_pWind->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                    wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                   NULL, this);
+                   nullptr, this);
   m_pPress->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                     wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                    NULL, this);
+                    nullptr, this);
   m_pWindGust->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pRainfall->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pCloudCover->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pAirTemp->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pCAPE->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                    wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                   NULL, this);
+                   nullptr, this);
   m_pReflectivity->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pSeaTemp->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pCurrent->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pWaves->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                     wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                    NULL, this);
+                    nullptr, this);
   m_pWModel->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                     NULL, this);
+                     nullptr, this);
   m_pAltitudeData->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_p850hpa->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                     NULL, this);
+                     nullptr, this);
   m_p700hpa->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                     NULL, this);
+                     nullptr, this);
   m_p500hpa->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                     NULL, this);
+                     nullptr, this);
   m_p300hpa->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
-                     NULL, this);
+                     nullptr, this);
   m_rButtonApply->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnSaveMail), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnSaveMail), nullptr, this);
   m_rButtonCancel->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnCancel), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnCancel), nullptr, this);
   m_rButtonYes->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), nullptr, this);
 
   // Connect XyGrib related callbacks
   m_xygribPanel->m_download_button->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton),
-      NULL, this);
+      nullptr, this);
   m_xygribPanel->m_atmmodel_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice),
-      NULL, this);
+      nullptr, this);
   m_xygribPanel->m_wavemodel_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribWaveModelChoice),
-      NULL, this);
+      nullptr, this);
   m_xygribPanel->m_wind_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_gust_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_reflectivity_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_precipitation_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_cape_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_pressure_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_cloudcover_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_temperature_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_waveheight_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_windwave_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_resolution_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_duration_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_interval_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
 }
 
@@ -3207,208 +3207,208 @@ GribRequestSettingBase::~GribRequestSettingBase() {
                    wxCloseEventHandler(GribRequestSettingBase::OnClose));
   m_chForecastLength->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice), nullptr,
       this);
   m_btnDownloadWorld->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), nullptr,
       this);
   m_SourcesTreeCtrl1->Disconnect(
       wxEVT_COMMAND_TREE_ITEM_EXPANDED,
-      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded), NULL,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded), nullptr,
       this);
   m_SourcesTreeCtrl1->Disconnect(
       wxEVT_COMMAND_TREE_SEL_CHANGED,
-      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeSelChanged), NULL,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeSelChanged), nullptr,
       this);
   m_buttonUpdateCatalog->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnUpdateLocalCatalog), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnUpdateLocalCatalog), nullptr,
       this);
   m_btnDownloadLocal->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnDownloadLocal), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnDownloadLocal), nullptr,
       this);
   m_pMailTo->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnTopChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnTopChange), nullptr, this);
   m_pModel->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnTopChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnTopChange), nullptr, this);
   m_cMovingGribEnabled->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnMovingClick), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnMovingClick), nullptr, this);
   m_sMovingSpeed->Disconnect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), NULL, this);
+      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), nullptr, this);
   m_sMovingCourse->Disconnect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), NULL, this);
+      wxSpinEventHandler(GribRequestSettingBase::OnAnySpinChange), nullptr, this);
   m_pLogin->Disconnect(
       wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pCode->Disconnect(
       wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pResolution->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pInterval->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pTimeRange->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnTimeRangeChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnTimeRangeChange), nullptr,
       this);
   m_cManualZoneSel->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnZoneSelectionModeChange),
-      NULL, this);
+      nullptr, this);
   m_cUseSavedZone->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnZoneSelectionModeChange),
-      NULL, this);
+      nullptr, this);
   m_spMaxLat->Disconnect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_spMaxLon->Disconnect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_spMinLat->Disconnect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_spMinLon->Disconnect(
       wxEVT_COMMAND_SPINCTRL_UPDATED,
-      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), NULL,
+      wxSpinEventHandler(GribRequestSettingBase::OnCoordinatesChange), nullptr,
       this);
   m_pWind->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pPress->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pWindGust->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pRainfall->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pCloudCover->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pAirTemp->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pCAPE->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pReflectivity->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pSeaTemp->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pCurrent->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pWaves->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pWModel->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_pAltitudeData->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_p850hpa->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_p700hpa->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_p500hpa->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_p300hpa->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr, this);
   m_rButtonApply->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnSaveMail), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnSaveMail), nullptr, this);
   m_rButtonCancel->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnCancel), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnCancel), nullptr, this);
   m_rButtonYes->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+      wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), nullptr, this);
 
   // Disconnect XyGrib related callbacks
   m_xygribPanel->m_download_button->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton),
-      NULL, this);
+      nullptr, this);
   m_xygribPanel->m_atmmodel_choice->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice),
-      NULL, this);
+      nullptr, this);
   m_xygribPanel->m_wavemodel_choice->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribWaveModelChoice),
-      NULL, this);
+      nullptr, this);
   m_xygribPanel->m_wind_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_gust_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_reflectivity_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_precipitation_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_cape_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_pressure_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_cloudcover_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_temperature_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_waveheight_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_windwave_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_resolution_choice->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_duration_choice->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
   m_xygribPanel->m_interval_choice->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange), nullptr,
       this);
 }
 
@@ -3483,7 +3483,7 @@ GRIBTableBase::GRIBTableBase(wxWindow* parent, wxWindowID id,
                 wxCloseEventHandler(GRIBTableBase::OnClose));
   m_pButtonTableOK->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                             wxCommandEventHandler(GRIBTableBase::OnOKButton),
-                            NULL, this);
+                            nullptr, this);
 }
 
 GRIBTableBase::~GRIBTableBase() {
@@ -3492,7 +3492,7 @@ GRIBTableBase::~GRIBTableBase() {
                    wxCloseEventHandler(GRIBTableBase::OnClose));
   m_pButtonTableOK->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                                wxCommandEventHandler(GRIBTableBase::OnOKButton),
-                               NULL, this);
+                               nullptr, this);
 }
 
 ProjectBoatPanel::ProjectBoatPanel(wxWindow* parent, wxWindowID id,

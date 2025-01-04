@@ -4796,7 +4796,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       for (auto *cp : TheConnectionParams()) {
         if (cp->bEnabled) {
-          auto driver = MakeCommDriver(cp);
+          MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
         }
       }
