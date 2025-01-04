@@ -871,9 +871,9 @@ extern "C" DECL_EXP wxWindow *GetOCPNCanvasWindow();
  * @note Each UI element can have different fonts per locale to support
  * language-specific fonts. Color is also managed - use OCPNGetFontColor()
  * to get the configured color.
- * @note The "console" in OpenCPN displays key navigation data such as Cross Track
- * Error (XTE), Bearing (BRG), Velocity Made Good (VMG), Range (RNG), and Time
- * to Go (TTG). By default, the text is large and green, optimized for
+ * @note The "console" in OpenCPN displays key navigation data such as Cross
+ * Track Error (XTE), Bearing (BRG), Velocity Made Good (VMG), Range (RNG), and
+ * Time to Go (TTG). By default, the text is large and green, optimized for
  * visibility.
  */
 extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size);
@@ -2139,6 +2139,7 @@ extern DECL_EXP bool GetTouchMode();
 
 extern DECL_EXP void SetGlobalColor(std::string table, std::string name,
                                     wxColor color);
+extern DECL_EXP wxColor GetGlobalColorD(std::string map_name, std::string name);
 
 extern DECL_EXP void EnableStatusBar(bool enable);
 extern DECL_EXP void EnableMenu(bool enable);
@@ -2156,6 +2157,9 @@ extern DECL_EXP void EnableChartBar(bool enable, int CanvasIndex);
 extern DECL_EXP bool GetEnableMUIBar(int CanvasIndex);
 extern DECL_EXP bool GetEnableCompassGPSIcon(int CanvasIndex);
 extern DECL_EXP bool GetEnableChartBar(int CanvasIndex);
+
+extern DECL_EXP void EnableCanvasFocusBar(bool enable, int CanvasIndex);
+extern DECL_EXP bool GetEnableCanvasFocusBar(int CanvasIndex);
 
 /*
  *  Allow plugin control of "Chart Panel Options" dialog

@@ -2379,6 +2379,15 @@ void SetGlobalColor(std::string table, std::string name, wxColor color) {
   if (ps52plib) ps52plib->m_chartSymbols.UpdateTableColor(table, name, color);
 }
 
+wxColor GetGlobalColorD(std::string map_name, std::string name) {
+  wxColor ret = wxColor(*wxRED);
+  if (ps52plib) {
+    int i_table = ps52plib->m_chartSymbols.FindColorTable(map_name.c_str());
+    ret = ps52plib->m_chartSymbols.GetwxColor(name.c_str(), i_table);
+  }
+  return ret;
+}
+
 void EnableLatLonGrid(bool enable, int CanvasIndex) {
   if (CanvasIndex < GetCanvasCount()) {
     ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
@@ -2750,6 +2759,20 @@ bool PluginGetFollowMode(int CanvasIndex) {
   if (CanvasIndex < GetCanvasCount()) {
     ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
     if (cc) return cc->GetbFollow();
+  }
+  return false;
+}
+
+void EnableCanvasFocusBar(bool enable, int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) cc->SetShowFocusBar(enable);
+  }
+}
+bool GetEnableCanvasFocusBar(int CanvasIndex) {
+  if (CanvasIndex < GetCanvasCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
+    if (cc) return (cc->GetShowFocusBar());
   }
   return false;
 }

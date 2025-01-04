@@ -4431,7 +4431,8 @@ void glChartCanvas::Render() {
 
   // If multi-canvas, indicate which canvas has keyboard focus
   // by drawing a simple blue bar at the top.
-  if (g_canvasConfig != 0) {  // multi-canvas?
+  if (m_pParentCanvas->m_show_focus_bar &&
+      (g_canvasConfig != 0)) {  // multi-canvas?
     if (m_pParentCanvas == wxWindow::FindFocus()) {
       g_focusCanvas = m_pParentCanvas;
 

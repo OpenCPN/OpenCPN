@@ -549,6 +549,9 @@ public:
   bool GetAttenAIS() { return m_bShowAISScaled; }
   void SetAttenAIS(bool show);
 
+  void SetShowFocusBar(bool enable) { m_show_focus_bar = enable; }
+  bool GetShowFocusBar() { return m_show_focus_bar; }
+
   MUIBar *GetMUIBar() { return m_muiBar; }
 
   void SetAlertString(wxString str) { m_alertString = str; }
@@ -938,6 +941,7 @@ private:
   std::vector<s57Sector_t> m_sectorlegsVisible;
   bool m_bShowVisibleSectors;
   double m_displayScale;
+  bool m_show_focus_bar;
 
   DECLARE_EVENT_TABLE()
 };

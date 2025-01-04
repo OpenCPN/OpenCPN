@@ -495,6 +495,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_muiBar = NULL;
   m_bShowScaleInStatusBar = false;
+  m_show_focus_bar = true;
 
   m_bShowOutlines = false;
   m_bDisplayGrid = false;
@@ -11349,7 +11350,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
   // If multi-canvas, indicate which canvas has keyboard focus
   // by drawing a simple blue bar at the top.
-  if (g_canvasConfig != 0) {  // multi-canvas?
+  if (m_show_focus_bar && (g_canvasConfig != 0)) {  // multi-canvas?
     if (this == wxWindow::FindFocus()) {
       g_focusCanvas = this;
 
