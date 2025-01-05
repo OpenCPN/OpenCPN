@@ -523,9 +523,9 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
     if (found != TheConnectionParams().end() && *found) {
       int index = found - TheConnectionParams().begin();
       delete TheConnectionParams()[index]->m_optionsPanel;
-      TheConnectionParams().erase(found);
       StopAndRemoveCommDriver((*found)->GetStrippedDSPort(),
                               (*found)->GetCommProtocol());
+      TheConnectionParams().erase(found);
       mSelectedConnection = NULL;
       FillSourceList();
     }
