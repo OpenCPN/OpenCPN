@@ -7574,7 +7574,7 @@ msgid "Show Waypoint position."
 msgstr "Toon waypoint-positie."
 
 #: gui/src/routeprintout.cpp:392 gui/src/trackprintout.cpp:314
-msgid "Show course from each Waypoint to the next one. "
+msgid "Show course from each Waypoint to the next one."
 msgstr "Toon koers van elk waypoint naar het volgende. "
 
 #: gui/src/routeprintout.cpp:404 gui/src/trackprintout.cpp:325

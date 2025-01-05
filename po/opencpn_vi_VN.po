@@ -7501,7 +7501,7 @@ msgid "Show Waypoint position."
 msgstr "Hiển thị vị trí điểm đường."
 
 #: gui/src/routeprintout.cpp:392 gui/src/trackprintout.cpp:314
-msgid "Show course from each Waypoint to the next one. "
+msgid "Show course from each Waypoint to the next one."
 msgstr "Hiển thị liên kết từ mỗi điểm đường đến điểm tiếp theo. "
 
 #: gui/src/routeprintout.cpp:404 gui/src/trackprintout.cpp:325

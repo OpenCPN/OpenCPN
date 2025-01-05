@@ -424,7 +424,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_tcDescription =
       new wxTextCtrl(m_pnlAdvanced, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_MULTILINE);
-  bSizerAdvanced->Add(m_tcDescription, 0, wxALL | wxEXPAND, 5);
+  bSizerAdvanced->Add(m_tcDescription, 1, wxALL | wxEXPAND, 5);
 
   wxStaticBoxSizer* sbSizerLinks;
   sbSizerLinks = new wxStaticBoxSizer(

@@ -7570,7 +7570,7 @@ msgid "Show Waypoint position."
 msgstr "Στίγμα του σημείου πορείας."
 
 #: gui/src/routeprintout.cpp:392 gui/src/trackprintout.cpp:314
-msgid "Show course from each Waypoint to the next one. "
+msgid "Show course from each Waypoint to the next one."
 msgstr "Εμφάνιση της πορείας από κάθε σημείο στο επόμενο."
 
 #: gui/src/routeprintout.cpp:404 gui/src/trackprintout.cpp:325

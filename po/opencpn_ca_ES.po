@@ -7499,7 +7499,7 @@ msgid "Show Waypoint position."
 msgstr "Informació de la Marca"
 
 #: gui/src/routeprintout.cpp:392 gui/src/trackprintout.cpp:314
-msgid "Show course from each Waypoint to the next one. "
+msgid "Show course from each Waypoint to the next one."
 msgstr "Mostrar rumb des de cada Waypoint fins el següent. "
 
 #: gui/src/routeprintout.cpp:404 gui/src/trackprintout.cpp:325

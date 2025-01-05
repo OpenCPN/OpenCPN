@@ -154,6 +154,29 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
 }
 
 /**************************************************************************/
+/*          Converts the date time to the units selected by user          */
+/**************************************************************************/
+wxDateTime toUsrDateTime(const wxDateTime ts, const wxString format,
+                         const double lon) {
+  if (!ts.IsValid()) {
+    return ts;
+  }
+
+  wxDateTime dt = ts;  // UTC
+
+  if (format == DATE_TIME_DISP_LOCAL) {  // LMT@Location
+    if (std::isnan(lon)) {
+      dt = wxInvalidDateTime;
+    } else {
+      dt = ts.Add(wxTimeSpan(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.))));
+    }
+  } else if (format == DATE_TIME_DISP_PC) {  // Local@PC
+    dt = ts.FromUTC();
+  }
+  return dt;
+}
+
+/**************************************************************************/
 /*          Converts the speed to the units selected by user              */
 /**************************************************************************/
 double toUsrSpeed(double kts_speed, int unit) {
@@ -376,6 +399,29 @@ wxString FormatDistanceAdaptive(double distance) {
   }
   result << wxString::Format(format, usrDistance) << getUsrDistanceUnit(unit);
   return result;
+}
+
+/**************************************************************************/
+/*          Converts date time from the units selected by user to UTC   */
+/**************************************************************************/
+wxDateTime fromUsrDateTime(const wxDateTime ts, const wxString format,
+                           const double lon) {
+  if (!ts.IsValid()) {
+    return ts;
+  }
+
+  wxDateTime dt = ts;
+  if (format == DATE_TIME_DISP_LOCAL) {  // LMT@Location
+    if (std::isnan(lon)) {
+      dt = wxInvalidDateTime;
+    } else {
+      dt = ts.Subtract(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.)));
+    }
+
+  } else if (format == DATE_TIME_DISP_PC) {  // Local@PC
+    dt = ts.ToUTC();
+  }
+  return dt;
 }
 
 /**************************************************************************/
@@ -833,4 +879,172 @@ double toMagnetic(double deg_true, double variation) {
     return degm - 360.;
   else
     return degm >= 0. ? degm : degm + 360.;
+}
+
+// Sunrise/twilight calculation for route properties.
+// limitations: latitude below 60, year between 2000 and 2100
+// riset is +1 for rise -1 for set
+// adapted by author's permission from QBASIC source as published at
+//     http://www.stargazing.net/kepler
+
+#ifndef PI
+#define PI (4. * atan(1.0))
+#endif
+#define TPI (2. * PI)
+#define DEGS (180. / PI)
+#define RADS (PI / 180.)
+
+#define MOTWILIGHT \
+  1  // in some languages there may be a distinction between morning/evening
+#define SUNRISE 2
+#define DAY 3
+#define SUNSET 4
+#define EVTWILIGHT 5
+#define NIGHT 6
+
+static double sign(double x) {
+  if (x < 0.)
+    return -1.;
+  else
+    return 1.;
+}
+
+static double FNipart(double x) { return (sign(x) * (int)(fabs(x))); }
+
+static double FNday(int y, int m, int d, int h) {
+  long fd = (367 * y - 7 * (y + (m + 9) / 12) / 4 + 275 * m / 9 + d);
+  return ((double)fd - 730531.5 + h / 24.);
+}
+
+static double FNrange(double x) {
+  double b = x / TPI;
+  double a = TPI * (b - FNipart(b));
+  if (a < 0.) a = TPI + a;
+  return (a);
+}
+
+static double getLMT(double ut, double lon) {
+  double t = ut + lon / 15.;
+  if (t >= 0.)
+    if (t <= 24.)
+      return (t);
+    else
+      return (t - 24.);
+  else
+    return (t + 24.);
+}
+
+wxString GetDaylightString(int index) {
+  switch (index) {
+    case 0:
+      return _T(" - ");
+    case 1:
+      return _("MoTwilight");
+    case 2:
+      return _("Sunrise");
+    case 3:
+      return _("Daytime");
+    case 4:
+      return _("Sunset");
+    case 5:
+      return _("EvTwilight");
+    case 6:
+      return _("Nighttime");
+
+    default:
+      return _T("");
+  }
+}
+
+double getDaylightEvent(double glat, double glong, int riset, double altitude,
+                        int y, int m, int d) {
+  double day = FNday(y, m, d, 0);
+  double days, correction;
+  double utold = PI;
+  double utnew = 0.;
+  double sinalt =
+      sin(altitude * RADS);  // go for the sunrise/sunset altitude first
+  double sinphi = sin(glat * RADS);
+  double cosphi = cos(glat * RADS);
+  double g = glong * RADS;
+  double t, L, G, ec, lambda, E, obl, delta, GHA, cosc;
+  int limit = 12;
+  while ((fabs(utold - utnew) > .001)) {
+    if (limit-- <= 0) return (-1.);
+    days = day + utnew / TPI;
+    t = days / 36525.;
+    //     get arguments of Sun's orbit
+    L = FNrange(4.8949504201433 + 628.331969753199 * t);
+    G = FNrange(6.2400408 + 628.3019501 * t);
+    ec = .033423 * sin(G) + .00034907 * sin(2 * G);
+    lambda = L + ec;
+    E = -1. * ec + .0430398 * sin(2 * lambda) - .00092502 * sin(4. * lambda);
+    obl = .409093 - .0002269 * t;
+    delta = asin(sin(obl) * sin(lambda));
+    GHA = utold - PI + E;
+    cosc = (sinalt - sinphi * sin(delta)) / (cosphi * cos(delta));
+    if (cosc > 1.)
+      correction = 0.;
+    else if (cosc < -1.)
+      correction = PI;
+    else
+      correction = acos(cosc);
+    double tmp = utnew;
+    utnew = FNrange(utold - (GHA + g + riset * correction));
+    utold = tmp;
+  }
+  return (utnew * DEGS / 15.);  // returns decimal hours UTC
+}
+
+int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime) {
+  if (fabs(lat) > 60.) return (0);
+  int y = utcDateTime.GetYear();
+  int m = utcDateTime.GetMonth() + 1;  // wxBug? months seem to run 0..11 ?
+  int d = utcDateTime.GetDay();
+  int h = utcDateTime.GetHour();
+  int n = utcDateTime.GetMinute();
+  int s = utcDateTime.GetSecond();
+  if (y < 2000 || y > 2100) return (0);
+
+  double ut = (double)h + (double)n / 60. + (double)s / 3600.;
+  double lt = getLMT(ut, lon);
+  double rsalt = -0.833;
+  double twalt = -12.;
+
+  if (lt <= 12.) {
+    double sunrise = getDaylightEvent(lat, lon, +1, rsalt, y, m, d);
+    if (sunrise < 0.)
+      return (0);
+    else
+      sunrise = getLMT(sunrise, lon);
+
+    if (fabs(lt - sunrise) < 0.15) return (SUNRISE);
+    if (lt > sunrise) return (DAY);
+    double twilight = getDaylightEvent(lat, lon, +1, twalt, y, m, d);
+    if (twilight < 0.)
+      return (0);
+    else
+      twilight = getLMT(twilight, lon);
+    if (lt > twilight)
+      return (MOTWILIGHT);
+    else
+      return (NIGHT);
+  } else {
+    double sunset = getDaylightEvent(lat, lon, -1, rsalt, y, m, d);
+    if (sunset < 0.)
+      return (0);
+    else
+      sunset = getLMT(sunset, lon);
+    if (fabs(lt - sunset) < 0.15) return (SUNSET);
+    if (lt < sunset) return (DAY);
+    double twilight = getDaylightEvent(lat, lon, -1, twalt, y, m, d);
+    if (twilight < 0.)
+      return (0);
+    else
+      twilight = getLMT(twilight, lon);
+    if (lt < twilight)
+      return (EVTWILIGHT);
+    else
+      return (NIGHT);
+  }
 }
