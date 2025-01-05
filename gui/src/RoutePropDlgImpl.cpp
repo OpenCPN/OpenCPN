@@ -23,6 +23,7 @@
 
 #include <wx/clipbrd.h>
 
+#include "model/navutil_base.h"
 #include "model/georef.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"
@@ -67,188 +68,15 @@ extern TCMgr* ptcmgr;
 
 int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
 
-// Sunrise/twilight calculation for route properties.
-// limitations: latitude below 60, year between 2000 and 2100
-// riset is +1 for rise -1 for set
-// adapted by author's permission from QBASIC source as published at
-//     http://www.stargazing.net/kepler
-
-#ifndef PI
-#define PI (4. * atan(1.0))
-#endif
-#define TPI (2. * PI)
-#define DEGS (180. / PI)
-#define RADS (PI / 180.)
-
-#define MOTWILIGHT \
-  1  // in some languages there may be a distinction between morning/evening
-#define SUNRISE 2
-#define DAY 3
-#define SUNSET 4
-#define EVTWILIGHT 5
-#define NIGHT 6
-
-static wxString GetDaylightString(int index) {
-  switch (index) {
-    case 0:
-      return _T(" - ");
-    case 1:
-      return _("MoTwilight");
-    case 2:
-      return _("Sunrise");
-    case 3:
-      return _("Daytime");
-    case 4:
-      return _("Sunset");
-    case 5:
-      return _("EvTwilight");
-    case 6:
-      return _("Nighttime");
-
-    default:
-      return _T("");
-  }
-}
-
-static double sign(double x) {
-  if (x < 0.)
-    return -1.;
-  else
-    return 1.;
-}
-
-static double FNipart(double x) { return (sign(x) * (int)(fabs(x))); }
-
-static double FNday(int y, int m, int d, int h) {
-  long fd = (367 * y - 7 * (y + (m + 9) / 12) / 4 + 275 * m / 9 + d);
-  return ((double)fd - 730531.5 + h / 24.);
-}
-
-static double FNrange(double x) {
-  double b = x / TPI;
-  double a = TPI * (b - FNipart(b));
-  if (a < 0.) a = TPI + a;
-  return (a);
-}
-
-static double getDaylightEvent(double glat, double glong, int riset,
-                               double altitude, int y, int m, int d) {
-  double day = FNday(y, m, d, 0);
-  double days, correction;
-  double utold = PI;
-  double utnew = 0.;
-  double sinalt =
-      sin(altitude * RADS);  // go for the sunrise/sunset altitude first
-  double sinphi = sin(glat * RADS);
-  double cosphi = cos(glat * RADS);
-  double g = glong * RADS;
-  double t, L, G, ec, lambda, E, obl, delta, GHA, cosc;
-  int limit = 12;
-  while ((fabs(utold - utnew) > .001)) {
-    if (limit-- <= 0) return (-1.);
-    days = day + utnew / TPI;
-    t = days / 36525.;
-    //     get arguments of Sun's orbit
-    L = FNrange(4.8949504201433 + 628.331969753199 * t);
-    G = FNrange(6.2400408 + 628.3019501 * t);
-    ec = .033423 * sin(G) + .00034907 * sin(2 * G);
-    lambda = L + ec;
-    E = -1. * ec + .0430398 * sin(2 * lambda) - .00092502 * sin(4. * lambda);
-    obl = .409093 - .0002269 * t;
-    delta = asin(sin(obl) * sin(lambda));
-    GHA = utold - PI + E;
-    cosc = (sinalt - sinphi * sin(delta)) / (cosphi * cos(delta));
-    if (cosc > 1.)
-      correction = 0.;
-    else if (cosc < -1.)
-      correction = PI;
-    else
-      correction = acos(cosc);
-    double tmp = utnew;
-    utnew = FNrange(utold - (GHA + g + riset * correction));
-    utold = tmp;
-  }
-  return (utnew * DEGS / 15.);  // returns decimal hours UTC
-}
-
-static double getLMT(double ut, double lon) {
-  double t = ut + lon / 15.;
-  if (t >= 0.)
-    if (t <= 24.)
-      return (t);
-    else
-      return (t - 24.);
-  else
-    return (t + 24.);
-}
-
-/**
- * Return the date/time timezone setting for the given selection.
- */
-static wxString getDatetimeTimezoneSelector(int selection) {
+static wxString GetTimeZoneDisplayFormat(const int selection) {
   switch (selection) {
-    case UTCINPUT:
-      return "UTC";
     case LTINPUT:
-      return "Local Time";
+      return DATE_TIME_DISP_PC;
     case LMTINPUT:
-      return "LMT";
-    case GLOBAL_SETTINGS_INPUT:
+      return DATE_TIME_DISP_LOCAL;
+    case UTCINPUT:
     default:
-      return wxEmptyString;
-  }
-}
-
-static int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime) {
-  if (fabs(lat) > 60.) return (0);
-  int y = utcDateTime.GetYear();
-  int m = utcDateTime.GetMonth() + 1;  // wxBug? months seem to run 0..11 ?
-  int d = utcDateTime.GetDay();
-  int h = utcDateTime.GetHour();
-  int n = utcDateTime.GetMinute();
-  int s = utcDateTime.GetSecond();
-  if (y < 2000 || y > 2100) return (0);
-
-  double ut = (double)h + (double)n / 60. + (double)s / 3600.;
-  double lt = getLMT(ut, lon);
-  double rsalt = -0.833;
-  double twalt = -12.;
-
-  if (lt <= 12.) {
-    double sunrise = getDaylightEvent(lat, lon, +1, rsalt, y, m, d);
-    if (sunrise < 0.)
-      return (0);
-    else
-      sunrise = getLMT(sunrise, lon);
-
-    if (fabs(lt - sunrise) < 0.15) return (SUNRISE);
-    if (lt > sunrise) return (DAY);
-    double twilight = getDaylightEvent(lat, lon, +1, twalt, y, m, d);
-    if (twilight < 0.)
-      return (0);
-    else
-      twilight = getLMT(twilight, lon);
-    if (lt > twilight)
-      return (MOTWILIGHT);
-    else
-      return (NIGHT);
-  } else {
-    double sunset = getDaylightEvent(lat, lon, -1, rsalt, y, m, d);
-    if (sunset < 0.)
-      return (0);
-    else
-      sunset = getLMT(sunset, lon);
-    if (fabs(lt - sunset) < 0.15) return (SUNSET);
-    if (lt < sunset) return (DAY);
-    double twilight = getDaylightEvent(lat, lon, -1, twalt, y, m, d);
-    if (twilight < 0.)
-      return (0);
-    else
-      twilight = getLMT(twilight, lon);
-    if (lt < twilight)
-      return (EVTWILIGHT);
-    else
-      return (NIGHT);
+      return DATE_TIME_DISP_UTC;
   }
 }
 
@@ -332,6 +160,8 @@ void RoutePropDlgImpl::RecalculateSize(void) {
 }
 
 void RoutePropDlgImpl::UpdatePoints() {
+  wxString dt_format = GetTimeZoneDisplayFormat(m_tz_selection);
+
   if (!m_pRoute) return;
   wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
   int selected_row = m_dvlcWaypoints->GetSelectedRow();
@@ -367,8 +197,10 @@ void RoutePropDlgImpl::UpdatePoints() {
                 .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
                 .SetLongitude(pnode->GetData()->m_lon);
         eta = wxString::Format(
-            "Start: %s",
-            ocpn::toUsrDateTimeFormat(m_pRoute->m_PlannedDeparture, opts));
+            "Start: %s", toUsrDateTime(m_pRoute->m_PlannedDeparture, dt_format,
+                                       pnode->GetData()->m_lon)
+                             .Format(DT_FORMAT_LOCALE)
+                             .c_str());
         eta.Append(wxString::Format(
             _T(" (%s)"),
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
@@ -388,11 +220,9 @@ void RoutePropDlgImpl::UpdatePoints() {
       distance = pnode->GetData()->GetDistance();
       bearing = pnode->GetData()->GetCourse();
       if (pnode->GetData()->GetETA().IsValid()) {
-        DateTimeFormatOptions opts =
-            DateTimeFormatOptions()
-                .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
-                .SetLongitude(pnode->GetData()->m_lon);
-        eta = ocpn::toUsrDateTimeFormat(pnode->GetData()->GetETA(), opts);
+        eta = toUsrDateTime(pnode->GetData()->GetETA(), dt_format,
+                            pnode->GetData()->m_lon)
+                  .Format(DT_FORMAT_LOCALE);
         eta.Append(wxString::Format(
             _T(" (%s)"),
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
@@ -414,11 +244,9 @@ void RoutePropDlgImpl::UpdatePoints() {
     wxString etd;
     if (pnode->GetData()->GetManualETD().IsValid()) {
       // GetManualETD() returns time in UTC, always. So use it as such.
-      DateTimeFormatOptions opts =
-          DateTimeFormatOptions()
-              .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
-              .SetLongitude(pnode->GetData()->m_lon);
-      etd = ocpn::toUsrDateTimeFormat(pnode->GetData()->GetManualETD(), opts);
+      etd = toUsrDateTime(pnode->GetData()->GetManualETD(), DATE_TIME_DISP_UTC,
+                          pnode->GetData()->m_lon)
+                .Format(DT_FORMAT_LOCALE);
       if (pnode->GetData()->GetManualETD().IsValid() &&
           pnode->GetData()->GetETA().IsValid() &&
           pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA()) {
@@ -461,9 +289,21 @@ void RoutePropDlgImpl::UpdatePoints() {
     data.push_back(schar + eta + schar);                                 // ETA
     data.push_back(
         wxVariant(wxString::FromDouble(toUsrSpeed(speed))));  // Speed
-    data.push_back(wxVariant(
-        MakeTideInfo(tide_station, lat, lon, eta_dt)));  // Next Tide event
-    data.push_back(wxVariant(desc));                     // Description
+
+    wxString tide_info;
+    if (tide_station.IsEmpty()) {
+      tide_info = wxEmptyString;
+    } else {
+      TideEvent tide_event =
+          ptcmgr->GetTideEvent(tide_station.wc_str(), eta_dt, lat, lon);
+      tide_info = tide_event.GetEventStr(dt_format.wc_str(), DT_FORMAT_LOCALE);
+      tide_info.Append(wxString::Format(
+          " (%s)", tide_event.GetLocalTimeStr(DT_FORMAT_LOCALE)));
+      tide_info.Append(wxString::Format(" @%s", tide_station.c_str()));
+    }
+
+    data.push_back(wxVariant(tide_info));
+    data.push_back(wxVariant(desc));  // Description
     data.push_back(wxVariant(crs));
     data.push_back(wxVariant(etd));
     data.push_back(wxVariant(
@@ -506,9 +346,9 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
 
     m_tz_selection = GLOBAL_SETTINGS_INPUT;  // Honor global setting by default
     if (pR != m_pRoute) {
-      if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
+      if (pR->m_TimeDisplayFormat == DATE_TIME_DISP_UTC)
         m_tz_selection = UTCINPUT;
-      else if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL)
+      else if (pR->m_TimeDisplayFormat == DATE_TIME_DISP_LOCAL)
         m_tz_selection = LMTINPUT;
       m_pEnroutePoint = NULL;
       m_bStartNow = false;
@@ -568,6 +408,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     }
 
     m_choiceTimezone->SetSelection(m_tz_selection);
+    wxString dt_format = GetTimeZoneDisplayFormat(m_tz_selection);
 
     // Reorganize dialog for route or track display
     m_tcName->SetValue(m_pRoute->m_RouteNameString);
@@ -579,19 +420,19 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     if (m_pRoute->m_PlannedDeparture.IsValid() &&
         m_pRoute->m_PlannedDeparture.GetValue() > 0) {
       m_dpDepartureDate->SetValue(
-          toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
+          toUsrDateTime(m_pRoute->m_PlannedDeparture, dt_format,
                         m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)
               .GetDateOnly());
       m_tpDepartureTime->SetValue(toUsrDateTime(
-          m_pRoute->m_PlannedDeparture, m_tz_selection,
+          m_pRoute->m_PlannedDeparture, dt_format,
           m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
     } else {
       m_dpDepartureDate->SetValue(
-          toUsrDateTime(wxDateTime::Now(), m_tz_selection,
+          toUsrDateTime(wxDateTime::Now(), dt_format,
                         m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)
               .GetDateOnly());
       m_tpDepartureTime->SetValue(toUsrDateTime(
-          wxDateTime::Now(), m_tz_selection,
+          wxDateTime::Now(), dt_format,
           m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
     }
   }
@@ -646,12 +487,14 @@ void RoutePropDlgImpl::DepartureTimeOnTimeChanged(wxDateEvent& event) {
 
 void RoutePropDlgImpl::TimezoneOnChoice(wxCommandEvent& event) {
   m_tz_selection = m_choiceTimezone->GetSelection();
+  wxString dt_format = GetTimeZoneDisplayFormat(m_tz_selection);
+
   m_dpDepartureDate->SetValue(
-      toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
+      toUsrDateTime(m_pRoute->m_PlannedDeparture, dt_format,
                     m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon)
           .GetDateOnly());
   m_tpDepartureTime->SetValue(
-      toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
+      toUsrDateTime(m_pRoute->m_PlannedDeparture, dt_format,
                     m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
   UpdatePoints();
   event.Skip();
@@ -700,6 +543,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged(
 #if wxCHECK_VERSION(3, 1, 2)
   // wx 3.0.x crashes in the below code
   if (!m_pRoute) return;
+  wxString dt_format = GetTimeZoneDisplayFormat(m_tz_selection);
   wxDataViewModel* const model = event.GetModel();
   wxVariant value;
   model->GetValue(value, event.GetItem(), ev_col);
@@ -727,7 +571,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged(
         p->SetETD(wxInvalidDateTime);
       } else {
         p->SetETD(
-            fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());
+            fromUsrDateTime(etd, dt_format, p->m_lon).FormatISOCombined());
       }
     } else {
       p->SetETD(wxInvalidDateTime);
@@ -765,13 +609,13 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged(
 }
 
 wxDateTime RoutePropDlgImpl::GetDepartureTS() {
+  wxString dt_format = GetTimeZoneDisplayFormat(m_tz_selection);
   wxDateTime dt = m_dpDepartureDate->GetValue();
   dt.SetHour(m_tpDepartureTime->GetValue().GetHour());
   dt.SetMinute(m_tpDepartureTime->GetValue().GetMinute());
   dt.SetSecond(m_tpDepartureTime->GetValue().GetSecond());
   return fromUsrDateTime(
-      dt, m_tz_selection,
-      m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);
+      dt, dt_format, m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);
   ;
 }
 
@@ -786,8 +630,8 @@ void RoutePropDlgImpl::OnRoutepropCopyTxtClick(wxCommandEvent& event) {
             << m_pRoute->m_RouteEndString << eol << _("Total distance") << tab
             << m_tcDistance->GetValue() << eol << _("Speed (Kts)") << tab
             << m_tcPlanSpeed->GetValue() << eol
-            << _("Departure Time") + _T(" (") + _T(ETA_FORMAT_STR) + _T(")")
-            << tab << GetDepartureTS().Format(ETA_FORMAT_STR) << eol
+            << _("Departure Time") + _T(" (") + _T(DT_FORMAT_LOCALE) + _T(")")
+            << tab << GetDepartureTS().Format(DT_FORMAT_LOCALE) << eol
             << _("Time enroute") << tab << m_tcEnroute->GetValue() << eol
             << eol;
 
@@ -982,20 +826,7 @@ void RoutePropDlgImpl::SaveChanges() {
     m_pRoute->m_style =
         (wxPenStyle)::StyleValues[m_choiceStyle->GetSelection()];
     m_pRoute->m_width = ::WidthValues[m_choiceWidth->GetSelection()];
-    switch (m_tz_selection) {
-      case LTINPUT:
-        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_PC;
-        break;
-      case LMTINPUT:
-        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_LOCAL;
-        break;
-      case GLOBAL_SETTINGS_INPUT:
-        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_GLOBAL;
-        break;
-      case UTCINPUT:
-      default:
-        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
-    }
+    m_pRoute->m_TimeDisplayFormat = GetTimeZoneDisplayFormat(m_tz_selection);
 
     pConfig->UpdateRoute(m_pRoute);
     pConfig->UpdateSettings();
@@ -1137,51 +968,6 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
   delete pEditRouteArray;
 
   return false;
-}
-
-wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
-                                        double lon, wxDateTime utcTime) {
-  if (stationName.Find("lind") != wxNOT_FOUND) int yyp = 4;
-
-  if (stationName.IsEmpty()) {
-    return wxEmptyString;
-  }
-  if (!utcTime.IsValid()) {
-    return _("Invalid date/time!");
-  }
-  int stationID = ptcmgr->GetStationIDXbyName(stationName, lat, lon);
-  if (stationID == 0) {
-    return _("Unknown station!");
-  }
-  time_t dtmtt = utcTime.FromUTC().GetTicks();
-  int ev = ptcmgr->GetNextBigEvent(&dtmtt, stationID);
-
-  wxDateTime dtm;
-  dtm.Set(dtmtt).MakeUTC();
-
-  wxString tide_form = wxEmptyString;
-
-  if (ev == 1) {
-    tide_form.Append(_T("LW: "));
-  } else if (ev == 2) {
-    tide_form.Append(_T("HW: "));
-  } else if (ev == 0) {
-    tide_form.Append(_("Unavailable: "));
-  }
-
-  int offset =
-      ptcmgr->GetStationTimeOffset((IDX_entry*)ptcmgr->GetIDX_entry(stationID));
-  DateTimeFormatOptions opts =
-      DateTimeFormatOptions()
-          .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
-          .SetLongitude(lon);
-  tide_form.Append(ocpn::toUsrDateTimeFormat(dtm, opts));
-  dtm.Add(wxTimeSpan(0, offset, 0));
-  tide_form.Append(wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"),
-                                    ocpn::toUsrDateTimeFormat(dtm, opts),
-                                    stationName.c_str()));
-
-  return tide_form;
 }
 
 void RoutePropDlgImpl::ItemEditOnMenuSelection(wxCommandEvent& event) {
@@ -1352,7 +1138,8 @@ void RoutePropDlgImpl::OnHyperlinkClick(wxHyperlinkEvent& event) {
   //    wxLaunchDefaultBrowser with verb "open" Workaround is to probe the
   //    registry to get the default browser, and open directly
   //
-  //    But, we will do this only if the URL contains the anchor point character
+  //    But, we will do this only if the URL contains the anchor point
+  //    character
   //    '#' What a hack......
 
 #ifdef __WXMSW__

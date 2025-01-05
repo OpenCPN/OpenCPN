@@ -24,6 +24,8 @@
  **************************************************************************/
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include <wx/wxprec.h>
 
@@ -62,7 +64,6 @@
 #include <signal.h>
 #include <setjmp.h>
 #endif
-#include "routeprintout.h"
 
 #include "gui_lib.h"
 #include "model/navutil_base.h"
@@ -77,13 +78,22 @@
 #define PRINT_WP_COURSE 2
 #define PRINT_WP_DISTANCE 3
 #define PRINT_WP_DESCRIPTION 4
+#define PRINT_WP_SPEED 5
+#define PRINT_WP_ETA 6
+#define PRINT_WP_TIDE 7
 
 using namespace std;
 
-MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route)
-    : BasePrintout(_("Route Print").ToStdString()),
-      myRoute(route),
-      toPrintOut(_toPrintOut) {
+// Global print data, to remember settings during the session
+extern wxPrintData* g_printData;
+// Global page setup data
+extern wxPageSetupData* g_pageSetupData;
+// Global Tide and Current Manager
+extern TCMgr* ptcmgr;
+
+MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
+                                 const wxString& title)
+    : MyPrintout(title), myRoute(route), toPrintOut(_toPrintOut) {
   // Let's have at least some device units margin
   marginX = 100;
   marginY = 100;
@@ -92,13 +102,13 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route)
   textOffsetX = 5;
   textOffsetY = 8;
 
+  // setup table headers
   table.StartFillHeader();
-  // setup widths for columns
 
   table << _("Leg");
 
   if (toPrintOut[PRINT_WP_NAME]) {
-    table << _("To Waypoint");
+    table << _("Destination");
   }
   if (toPrintOut[PRINT_WP_POSITION]) {
     table << _("Position");
@@ -109,29 +119,52 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route)
   if (toPrintOut[PRINT_WP_DISTANCE]) {
     table << _("Distance");
   }
+  if (toPrintOut[PRINT_WP_SPEED]) {
+    table << _("Speed");
+  }
+  if (toPrintOut[PRINT_WP_ETA]) {
+    std::wostringstream eta_str;
+    eta_str << _("ETA").wc_str();
+    eta_str << " (" << myRoute->m_TimeDisplayFormat.wc_str() << ")";
+    table << eta_str.str();
+  }
+  if (toPrintOut[PRINT_WP_TIDE]) {
+    std::wostringstream tide_str;
+    tide_str << _("Tide").wc_str();
+    tide_str << " (" << myRoute->m_TimeDisplayFormat.wc_str() << ")";
+    table << tide_str.str();
+  }
   if (toPrintOut[PRINT_WP_DESCRIPTION]) {
     table << _("Description");
   }
 
+  // setup widths for columns
   table.StartFillWidths();
-
   table << 20;  // "Leg" column
 
-  // setup widths for columns
   if (toPrintOut[PRINT_WP_NAME]) {
-    table << 40;
-  }
-  if (toPrintOut[PRINT_WP_POSITION]) {
-    table << 40;
-  }
-  if (toPrintOut[PRINT_WP_COURSE]) {
-    table << 40;
-  }
-  if (toPrintOut[PRINT_WP_DISTANCE]) {
     table << 80;
   }
+  if (toPrintOut[PRINT_WP_POSITION]) {
+    table << 60;
+  }
+  if (toPrintOut[PRINT_WP_COURSE]) {
+    table << 50;
+  }
+  if (toPrintOut[PRINT_WP_DISTANCE]) {
+    table << 60;
+  }
+  if (toPrintOut[PRINT_WP_SPEED]) {
+    table << 40;
+  }
+  if (toPrintOut[PRINT_WP_ETA]) {
+    table << 80;
+  }
+  if (toPrintOut[PRINT_WP_TIDE]) {
+    table << 120;
+  }
   if (toPrintOut[PRINT_WP_DESCRIPTION]) {
-    table << 100;
+    table << 120;
   }
 
   table.StartFillData();
@@ -144,11 +177,14 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route)
 
     if (NULL == point) continue;
 
-    wxString leg = _T("---");
-    if (n > 1) leg.Printf(_T("%d"), n - 1);
+    std::ostringstream leg;
+    if (n > 1) {
+      leg << n - 1;
+    } else {
+      leg << "---";
+    }
 
-    string cell(leg.mb_str());
-
+    string cell(leg.str());
     table << cell;
 
     if (toPrintOut[PRINT_WP_NAME]) {
@@ -156,27 +192,79 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route)
       table << cell;
     }
     if (toPrintOut[PRINT_WP_POSITION]) {
-      wxString point_position = toSDMM(1, point->m_lat, false) + _T( "\n" ) +
-                                toSDMM(2, point->m_lon, false);
-      string cell(point_position.mb_str());
-      table << cell;
+      std::wostringstream point_position;
+      point_position << toSDMM(1, point->m_lat, false).wc_str() << "\n"
+                     << toSDMM(2, point->m_lon, false).wc_str();
+      table << point_position.str();
     }
     if (toPrintOut[PRINT_WP_COURSE]) {
-      wxString point_course = "---";
+      std::wostringstream point_course;
       if (pointm1) {
-        point_course = formatAngle(point->GetCourse());
+        point_course << formatAngle(point->GetCourse()).wc_str();
+      } else {
+        point_course << "---";
       }
-      table << point_course;
+      table << point_course.str();
     }
     if (toPrintOut[PRINT_WP_DISTANCE]) {
-      wxString point_distance = _T("---");
-      if (n > 1)
-        point_distance.Printf(_T("%6.2f" + getUsrDistanceUnit()),
-                              toUsrDistance(point->GetDistance()));
-      table << point_distance;
+      std::wostringstream point_distance;
+      if (n > 1) {
+        point_distance << std::fixed << std::setprecision(2)
+                       << toUsrDistance(point->GetDistance())
+                       << getUsrDistanceUnit().wc_str();
+      } else {
+        point_distance << "---";
+      }
+      table << point_distance.str();
+    }
+    if (toPrintOut[PRINT_WP_SPEED]) {
+      std::wostringstream point_speed;
+      if (n > 1) {
+        point_speed << std::fixed << std::setprecision(1);
+        if (point->GetPlannedSpeed() > 0.1) {
+          point_speed << toUsrSpeed(point->GetPlannedSpeed());
+        } else {
+          point_speed << toUsrSpeed(myRoute->m_PlannedSpeed);
+        }
+        point_speed << getUsrSpeedUnit().wc_str();
+      } else {
+        point_speed << "---";
+      }
+      table << point_speed.str();
+    }
+
+    if (toPrintOut[PRINT_WP_ETA]) {
+      std::wostringstream point_eta;
+      if (n == 1) {
+        point_eta << _("Start").wc_str() << ": ";
+      }
+      int daylight =
+          getDaylightStatus(point->m_lat, point->m_lon, point->GetETA());
+      point_eta << toUsrDateTime(point->GetETA(), myRoute->m_TimeDisplayFormat,
+                                 point->m_lon)
+                       .Format(DT_FORMAT_ISO);
+      point_eta << "\n(" << GetDaylightString(daylight).wc_str() << ")";
+
+      table << point_eta.str();
+    }
+    if (toPrintOut[PRINT_WP_TIDE]) {
+      std::wostringstream point_tide;
+
+      if (point->m_TideStation.Len() > 0) {
+        TideEvent tide_event =
+            ptcmgr->GetTideEvent(point->m_TideStation.wc_str(), point->GetETA(),
+                                 point->m_lat, point->m_lon);
+        point_tide << tide_event.GetEventStr(
+                          myRoute->m_TimeDisplayFormat.wc_str(), DT_FORMAT_ISO)
+                   << "\n"
+                   << tide_event.GetLocalOffsetStr(
+                          myRoute->m_TimeDisplayFormat.wc_str())
+                   << " @" << tide_event.m_station_name;
+      }
+      table << point_tide.str();
     }
     if (toPrintOut[PRINT_WP_DESCRIPTION]) {
-      table << point->GetDescription();
+      table << point->GetDescription().wc_str();
     }
     table << "\n";
   }
@@ -198,22 +286,23 @@ void MyRoutePrintout::OnPreparePrinting() {
   dc->SetFont(routePrintFont);
 
   // Get the size of the DC in pixels
-  int w, h;
-  dc->GetSize(&w, &h);
+  dc->GetSize(&pageSizeX, &pageSizeY);
 
-  // We don't know before hand what size the Print DC will be, in pixels. Varies
-  // by host. So, if the dc size is greater than 1000 pixels, we scale
+  // We don't know before hand what size the Print DC will be, in pixels.
+  // Varies by host. So, if the dc size is greater than 1000 pixels, we scale
   // accordinly.
 
-  int maxX = wxMin(w, 1000);
-  int maxY = wxMin(h, 1000);
+  int maxX = wxMin(pageSizeX, 1000);
+  int maxY = wxMin(pageSizeY, 1000);
 
   // Calculate a suitable scaling factor
-  double scaleX = (double)(w / maxX);
-  double scaleY = (double)(h / maxY);
+  double scaleX = (double)(pageSizeX / maxX);
+  double scaleY = (double)(pageSizeY / maxY);
 
   // Use x or y scaling factor, whichever fits on the DC
   double actualScale = wxMin(scaleX, scaleY);
+  pageSizeX = (pageSizeX / actualScale) - (2 * marginX);
+  pageSizeY = (pageSizeY / actualScale) - (2 * marginY);
 
   // Set the scale and origin
   dc->SetUserScale(actualScale, actualScale);
@@ -237,19 +326,76 @@ bool MyRoutePrintout::OnPrintPage(int page) {
 }
 
 void MyRoutePrintout::DrawPage(wxDC* dc) {
-  wxFont routePrintFont_bold(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                             wxFONTWEIGHT_BOLD);
-  dc->SetFont(routePrintFont_bold);
+  wxFont title_font(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                    wxFONTWEIGHT_BOLD);
+  wxFont subtitle_font(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                       wxFONTWEIGHT_NORMAL);
+  wxFont header_font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                     wxFONTWEIGHT_BOLD);
+  wxFont normal_font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                     wxFONTWEIGHT_NORMAL);
+
   wxBrush brush(wxColour(255, 255, 255), wxBRUSHSTYLE_TRANSPARENT);
   dc->SetBrush(brush);
 
-  int header_textOffsetX = 2;
-  int header_textOffsetY = 2;
-
-  dc->DrawText(myRoute->m_RouteNameString, 150, 20);
-
   int currentX = marginX;
   int currentY = marginY;
+
+  std::wostringstream title;
+  std::wostringstream subtitle;
+  std::wostringstream distance;
+
+  title << myRoute->m_RouteNameString.wc_str();
+  distance << std::fixed << std::setprecision(1) << "("
+           << toUsrDistance(myRoute->m_route_length)
+           << getUsrDistanceUnit().wc_str() << ")";
+
+  if (myRoute->m_RouteStartString.Trim().Len() > 0) {
+    subtitle << _("From").wc_str() << " "
+             << myRoute->m_RouteStartString.wc_str();
+    if (myRoute->m_RouteEndString.Trim().Len() > 0) {
+      subtitle << " " << _("To").wc_str() << " "
+               << myRoute->m_RouteEndString.wc_str();
+    }
+    subtitle << " " << distance.str();
+  } else if (myRoute->m_RouteEndString.Trim().Len() > 0) {
+    subtitle << _("Destination").wc_str() << ": "
+             << myRoute->m_RouteEndString.wc_str();
+    subtitle << " " << distance.str();
+  } else {
+    title << " " << distance.str();
+  }
+
+  int title_width, title_height;
+  dc->SetFont(title_font);
+  dc->GetTextExtent(title.str(), &title_width, &title_height);
+  dc->DrawText(title.str(), currentX, currentY);
+  currentY += title_height;
+
+  if (subtitle.str().length() > 0) {
+    currentY += 2;  // add top margin
+    int subtitle_width, subtitle_height;
+    dc->SetFont(subtitle_font);
+    dc->GetTextExtent(subtitle.str(), &subtitle_width, &subtitle_height);
+    dc->DrawText(subtitle.str(), currentX, currentY);
+    currentY += subtitle_height;
+  }
+
+  // Route description on page 1.
+  if (pageToPrint == 1 && myRoute->m_RouteDescription.Trim().Len() > 0) {
+    currentY += 10;  // add top margin
+    dc->SetFont(normal_font);
+    PrintCell cell_desc;
+    cell_desc.Init(myRoute->m_RouteDescription, dc, pageSizeX, 0);
+    dc->DrawText(cell_desc.GetText(), currentX, currentY);
+    currentY += cell_desc.GetHeight();
+  }
+
+  int header_textOffsetX = 2;
+  int header_textOffsetY = 2;
+  dc->SetFont(header_font);
+
+  currentY += 20;  // add top margin
   vector<PrintCell>& header_content = table.GetHeader();
   for (size_t j = 0; j < header_content.size(); j++) {
     PrintCell& cell = header_content[j];
@@ -259,12 +405,10 @@ void MyRoutePrintout::DrawPage(wxDC* dc) {
     currentX += cell.GetWidth();
   }
 
-  wxFont routePrintFont_normal(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                               wxFONTWEIGHT_NORMAL);
-  dc->SetFont(routePrintFont_normal);
+  dc->SetFont(normal_font);
 
   vector<vector<PrintCell> >& cells = table.GetContent();
-  currentY = marginY + table.GetHeaderHeight();
+  currentY += table.GetHeaderHeight();
   int currentHeight = 0;
   for (size_t i = 0; i < cells.size(); i++) {
     vector<PrintCell>& content_row = cells[i];
@@ -347,15 +491,15 @@ bool RoutePrintSelection::Create(wxWindow* parent, wxWindowID id,
 void RoutePrintSelection::CreateControls() {
   RoutePrintSelection* itemDialog1 = this;
 
-  wxStaticBox* itemStaticBoxSizer3Static =
-      new wxStaticBox(itemDialog1, wxID_ANY, _("Elements to print..."));
+  wxStaticBox* itemStaticBoxSizer3Static = new wxStaticBox(
+      itemDialog1, wxID_ANY, _("Waypoint elements to print..."));
 
   wxStaticBoxSizer* itemBoxSizer1 =
       new wxStaticBoxSizer(itemStaticBoxSizer3Static, wxVERTICAL);
   itemDialog1->SetSizer(itemBoxSizer1);
 
   wxFlexGridSizer* fgSizer2;
-  fgSizer2 = new wxFlexGridSizer(5, 2, 0, 0);
+  fgSizer2 = new wxFlexGridSizer(0, 2, 0, 0);
 
   m_checkBoxWPName =
       new wxCheckBox(itemDialog1, wxID_ANY, _("Name"), wxDefaultPosition,
@@ -385,7 +529,7 @@ void RoutePrintSelection::CreateControls() {
   fgSizer2->Add(m_checkBoxWPCourse, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
   wxStaticText* label3 =
       new wxStaticText(itemDialog1, wxID_ANY,
-                       _("Show course from each Waypoint to the next one. "),
+                       _("Show course from each Waypoint to the next one."),
                        wxDefaultPosition, wxDefaultSize);
   fgSizer2->Add(label3, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -410,6 +554,36 @@ void RoutePrintSelection::CreateControls() {
       new wxStaticText(itemDialog1, wxID_ANY, _("Show Waypoint description."),
                        wxDefaultPosition, wxDefaultSize);
   fgSizer2->Add(label5, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+  m_checkBoxWPSpeed =
+      new wxCheckBox(itemDialog1, wxID_ANY, _("Speed"), wxDefaultPosition,
+                     wxDefaultSize, wxALIGN_LEFT);
+  m_checkBoxWPSpeed->SetValue(true);
+  fgSizer2->Add(m_checkBoxWPSpeed, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  wxStaticText* label6 = new wxStaticText(itemDialog1, wxID_ANY,
+                                          _("Show planned speed to Waypoint."),
+                                          wxDefaultPosition, wxDefaultSize);
+  fgSizer2->Add(label6, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+  m_checkBoxWPETA =
+      new wxCheckBox(itemDialog1, wxID_ANY, _("ETA"), wxDefaultPosition,
+                     wxDefaultSize, wxALIGN_LEFT);
+  m_checkBoxWPETA->SetValue(true);
+  fgSizer2->Add(m_checkBoxWPETA, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  wxStaticText* label7 = new wxStaticText(itemDialog1, wxID_ANY,
+                                          _("Show Estimated Time of Arrival."),
+                                          wxDefaultPosition, wxDefaultSize);
+  fgSizer2->Add(label7, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+  m_checkBoxWPTide =
+      new wxCheckBox(itemDialog1, wxID_ANY, _("Tide event"), wxDefaultPosition,
+                     wxDefaultSize, wxALIGN_LEFT);
+  m_checkBoxWPTide->SetValue(true);
+  fgSizer2->Add(m_checkBoxWPTide, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  wxStaticText* label8 = new wxStaticText(itemDialog1, wxID_ANY,
+                                          _("Show next tide event at station."),
+                                          wxDefaultPosition, wxDefaultSize);
+  fgSizer2->Add(label8, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   itemBoxSizer1->Add(fgSizer2, 5, wxEXPAND, 5);
 
@@ -453,13 +627,12 @@ void RoutePrintSelection::OnRoutepropOkClick(wxCommandEvent& event) {
   toPrintOut.push_back(m_checkBoxWPCourse->GetValue());
   toPrintOut.push_back(m_checkBoxWPDistanceToNext->GetValue());
   toPrintOut.push_back(m_checkBoxWPDescription->GetValue());
+  toPrintOut.push_back(m_checkBoxWPSpeed->GetValue());
+  toPrintOut.push_back(m_checkBoxWPETA->GetValue());
+  toPrintOut.push_back(m_checkBoxWPTide->GetValue());
 
-  MyRoutePrintout myrouteprintout1(toPrintOut, route);
   auto& printer = PrintDialog::GetInstance();
   printer.Initialize(wxPORTRAIT);
   printer.EnablePageNumbers(true);
   printer.Print(this, &myrouteprintout1);
-
-  Close();
-  event.Skip();
 }
