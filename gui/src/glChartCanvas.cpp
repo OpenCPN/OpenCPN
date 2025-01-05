@@ -205,6 +205,7 @@ extern iENCToolbar *g_iENCToolbar;
 extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
 extern bool b_inCompressAllCharts;
+extern bool g_bShowCompassWin;
 
 extern GLenum g_texture_rectangle_format;
 
@@ -4545,7 +4546,8 @@ void glChartCanvas::Render() {
   // render the chart bar
   if (g_bShowChartBar) DrawChartBar(m_gldc);
 
-  if (m_pParentCanvas->m_Compass && m_pParentCanvas->m_bShowCompassWin)
+  if (m_pParentCanvas->m_Compass && m_pParentCanvas->m_bShowCompassWin &&
+      g_bShowCompassWin)
     m_pParentCanvas->m_Compass->Paint(gldc);
 
   RenderGLAlertMessage();

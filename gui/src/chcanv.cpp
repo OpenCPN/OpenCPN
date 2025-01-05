@@ -742,11 +742,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_Piano = new Piano(this);
 
-  m_bShowCompassWin = g_bShowCompassWin;
+  m_bShowCompassWin = true;
 
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
-  m_Compass->Show(m_bShowCompassWin);
+  m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
 
   m_pianoFrozen = false;
 
@@ -1191,10 +1191,9 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
 
 void ChartCanvas::ApplyGlobalSettings() {
   // GPS compas window
-  m_bShowCompassWin = g_bShowCompassWin;
   if (m_Compass) {
-    m_Compass->Show(m_bShowCompassWin);
-    if (m_bShowCompassWin) m_Compass->UpdateStatus();
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+    if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
 }
 
@@ -1211,7 +1210,7 @@ void ChartCanvas::SetShowGPS(bool bshow) {
     delete m_Compass;
     m_Compass = new ocpnCompass(this, bshow);
     m_Compass->SetScaleFactor(g_compass_scalefactor);
-    m_Compass->Show(m_bShowCompassWin);
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
   }
   m_bShowGPS = bshow;
 }
@@ -1219,8 +1218,8 @@ void ChartCanvas::SetShowGPS(bool bshow) {
 void ChartCanvas::SetShowGPSCompassWindow(bool bshow) {
   m_bShowCompassWin = bshow;
   if (m_Compass) {
-    m_Compass->Show(m_bShowCompassWin);
-    if (m_bShowCompassWin) m_Compass->UpdateStatus();
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+    if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
 }
 
@@ -4408,11 +4407,6 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
   // possible on startup
   if (!ChartData) return;
   if (!m_pCurrentStack) return;
-
-  if (g_bShowCompassWin) {
-    m_bShowCompassWin = true;
-    SetShowGPSCompassWindow(true);  // Cancel effects of Ctrl-I
-  }
 
   /* TODO: queue the quilted loading code to a background thread
      so yield is never called from here, and also rendering is not delayed */
@@ -12007,7 +12001,7 @@ emboss_data *ChartCanvas::EmbossDepthScale() {
 
   ped->x = (GetVP().pix_width - ped->width);
 
-  if (m_Compass && m_bShowCompassWin) {
+  if (m_Compass && m_bShowCompassWin && g_bShowCompassWin) {
     wxRect r = m_Compass->GetRect();
     ped->y = r.y + r.height;
   } else {
