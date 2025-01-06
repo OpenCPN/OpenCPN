@@ -82,10 +82,11 @@ class Connections : public wxGrid {
 public:
   Connections(wxWindow* parent,
               const std::vector<ConnectionParams*>& connections,
-              EventVar& on_conn_delete)
+              EventVar& on_conn_update)
       : wxGrid(parent, wxID_ANY),
         m_connections(connections),
-        m_on_conn_delete(on_conn_delete) {
+        m_on_conn_delete(on_conn_update),
+        m_last_tooltip_cell(100) {
     auto set_enabled = [&](int row, bool b) { HandleEnable(row, b); };
     SetTable(new StringTable(set_enabled), false);
     GetTable()->AppendCols(7);
@@ -98,6 +99,9 @@ public:
     ReloadGrid(connections);
     DisableDragColSize();
     DisableDragRowSize();
+    SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
+    Show(GetNumberRows() > 0);
+
     GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent& ev) {
       OnMouseMove(ev);
       ev.Skip();
@@ -247,11 +251,10 @@ private:
     wxPoint pt = ev.GetPosition();
     int row = YToRow(pt.y);
     int col = XToCol(pt.x);
-    if (col >= 0 && col < 7 && row >= 0 && row < GetNumberRows()) {
-      auto& new_tooltip = m_tooltips[row][col];
-      if (new_tooltip != GetGridWindow()->GetToolTipText())
-        GetGridWindow()->SetToolTip(new_tooltip);
-    }
+    if (col < 0 || col >= 7 || row < 0 || row >= GetNumberRows()) return;
+    if (row * 7 + col == m_last_tooltip_cell) return;
+    m_last_tooltip_cell = row * 7 + col;
+    GetGridWindow()->SetToolTip(m_tooltips[row][col]);
   }
 
   /** Handle connections driver statistics status changes event. */
@@ -337,7 +340,7 @@ private:
       std::stringstream ss;
       ss << _("Ok to delete connection on ") << (*found)->GetStrippedDSPort();
       int rcode = OCPNMessageBox(this, ss.str(), _("Delete connection?"),
-                                 wxYES_NO | wxCANCEL);
+                                 wxOK | wxCANCEL);
       if (rcode != wxID_OK && rcode != wxID_YES) return;
       delete (*found)->m_optionsPanel;
       StopAndRemoveCommDriver((*found)->GetStrippedDSPort(),
@@ -350,10 +353,12 @@ private:
   }
 
   ObsListener conn_change_lstnr;
+  ObsListener on_delete_lstnr;
   std::vector<std::vector<std::string>> m_tooltips;
   ConnStates m_conn_states;
   const std::vector<ConnectionParams*>& m_connections;
   EventVar& m_on_conn_delete;
+  int m_last_tooltip_cell;
 };
 
 /** Indeed: the General  panel. */
@@ -508,7 +513,7 @@ public:
   /** Set contents and size limits for scrollable area. */
   void AddClient(wxWindow* client, wxSize max_size, wxSize min_size) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
-    vbox->Add(client);
+    vbox->Add(client, wxSizerFlags().Border());
     SetSizer(vbox);
     vbox->Layout();
     SetScrollRate(0, 10);
@@ -519,11 +524,8 @@ public:
 
 /** Main window: connections grid, "Add new connection", general options. */
 ConnectionsDlg::ConnectionsDlg(
-    wxWindow* parent, const std::vector<ConnectionParams*>& connections,
-    std::function<void()> on_exit)
-    : wxFrame(parent, wxID_ANY, _("Connections")),
-      m_connections(connections),
-      m_on_exit(std::move(on_exit)) {
+    wxWindow* parent, const std::vector<ConnectionParams*>& connections)
+    : wxPanel(parent), m_connections(connections) {
   auto vbox = new wxBoxSizer(wxVERTICAL);
   auto scrolled_window = new ScrolledWindow(this);
   auto conn_grid =
@@ -536,6 +538,7 @@ ConnectionsDlg::ConnectionsDlg(
   vbox->Add(0, 0, 1);  // Expanding spacer
   vbox->Add(new GeneralPanel(this),
             wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand());
+
   auto advanced_panel = new AdvancedPanel(this);
   auto on_toggle = [&, advanced_panel, vbox](bool show) {
     advanced_panel->Show(show);
@@ -546,15 +549,14 @@ ConnectionsDlg::ConnectionsDlg(
             wxSizerFlags().Border(wxLEFT | wxDOWN).Expand());
   vbox->Add(advanced_panel,
             wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand());
+
   SetSizer(vbox);
   SetAutoLayout(true);
+  Fit();
 
-  Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent&) {
-    m_on_exit();
-    Destroy();
-  });
   auto on_evt_add_connection = [&, conn_grid](ObservedEvt&) {
     conn_grid->ReloadGrid(TheConnectionParams());
+    conn_grid->Show(conn_grid->GetNumberRows() > 0);
     Layout();
   };
   m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_add_connection);

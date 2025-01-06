@@ -9,11 +9,10 @@
 #include "model/conn_params.h"
 #include "observable_evtvar.h"
 
-class ConnectionsDlg : public wxFrame {
+class ConnectionsDlg : public wxPanel {
 public:
   ConnectionsDlg(wxWindow* parent,
-                 const std::vector<ConnectionParams*>& connections,
-                 std::function<void()> on_exit);
+                 const std::vector<ConnectionParams*>& connections);
 
 private:
   const std::vector<ConnectionParams*>& m_connections;

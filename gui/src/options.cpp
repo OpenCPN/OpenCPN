@@ -93,6 +93,7 @@
 #include "chcanv.h"
 #include "cm93.h"
 #include "ConfigMgr.h"
+#include "connections_dlg.h"
 #include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -1859,7 +1860,8 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                                int group_item_spacing) {
   m_pNMEAForm = AddPage(parent, _("NMEA"));
 
-  comm_dialog = std::make_shared<ConnectionsDialog>(m_pNMEAForm, this);
+  comm_dialog =
+      std::make_shared<ConnectionsDlg>(m_pNMEAForm, TheConnectionParams());
 }
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,
@@ -2155,8 +2157,6 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0,
                                   wxALIGN_RIGHT | wxALL, group_item_spacing);
-
-  // DimeControl(itemPanelShip);
 }
 
 void options::CreatePanel_Routes(size_t parent, int border_size,
@@ -6292,9 +6292,6 @@ void options::SetInitialSettings(void) {
   delete m_pSerialArray;
   m_pSerialArray = NULL;
   m_pSerialArray = EnumerateSerialPorts();
-
-  comm_dialog->SetInitialSettings();
-
   m_bForceNewToolbaronCancel = false;
 }
 
@@ -6927,7 +6924,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_config_display_size_manual = pRBSizeManual->GetValue();
 
   // Connections page.
-  comm_dialog->ApplySettings();
+  // comm_dialog->ApplySettings();
 
   if (pCDOOutlines) g_bShowOutlines = pCDOOutlines->GetValue();
   if (pSDisplayGrid) g_bDisplayGrid = pSDisplayGrid->GetValue();
