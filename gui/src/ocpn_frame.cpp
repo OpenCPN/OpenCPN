@@ -5514,11 +5514,17 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     GPSData.nSats = g_SatsInView;
 
     wxDateTime tCheck((time_t)m_fixtime);
-
-    if (tCheck.IsValid())
+    if (tCheck.IsValid()) {
+      // As a special case, when no GNSS data is available, m_fixtime is set to
+      // zero. Note wxDateTime(0) is valid, so the zero value is passed to the
+      // plugins. The plugins should check for zero and not use the time in that
+      // case.
       GPSData.FixTime = m_fixtime;
-    else
+    } else {
+      // Note: I don't think this is ever reached, as m_fixtime can never be set
+      // to wxLongLong(wxINT64_MIN), which is the only way to get here.
       GPSData.FixTime = wxDateTime::Now().GetTicks();
+    }
 
     SendPositionFixToAllPlugIns(&GPSData);
   }
