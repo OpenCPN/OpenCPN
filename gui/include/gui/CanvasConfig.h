@@ -48,29 +48,38 @@ public:
   canvasConfig(int index);
   ~canvasConfig();
 
+  /**
+   * Resets all configuration options to default values.
+   *
+   * Initializes follow mode, tides, currents, orientation modes, and AIS
+   * settings.
+   */
   void Reset();
   void LoadFromLegacyConfig(wxFileConfig *conf);
 
   int configIndex;
-  ChartCanvas *canvas;
-  double iLat, iLon, iScale, iRotation;
+  ChartCanvas *canvas;  //!< Pointer to associated chart canvas.
+  double iLat;          //!< Latitude of the center of the chart, in degrees.
+  double iLon;          //!< Longitude of the center of the chart, in degrees.
+  double iScale;        //!< Initial chart scale factor.
+  double iRotation;     //!< Initial rotation angle in radians.
   int DBindex;
   int GroupID;
-  bool bFollow;
-  bool bQuilt;
-  bool bShowTides;
-  bool bShowCurrents;
-  wxSize canvasSize;
-  bool bShowGrid;
-  bool bShowOutlines;
-  bool bShowDepthUnits;
-  bool bCourseUp;
-  bool bHeadUp;
-  bool bLookahead;
-  bool bShowAIS;
-  bool bAttenAIS;
+  bool bFollow;          //!< Enable vessel following mode.
+  bool bQuilt;           //!< Enable chart quilting.
+  bool bShowTides;       //!< Display tide information.
+  bool bShowCurrents;    //!< Display current information.
+  wxSize canvasSize;     //!< Canvas dimensions.
+  bool bShowGrid;        //!< Display coordinate grid.
+  bool bShowOutlines;    //!< Display chart outlines.
+  bool bShowDepthUnits;  //!< Display depth unit indicators.
+  bool bCourseUp;        //!< Orient display to course up.
+  bool bHeadUp;          //!< Orient display to heading up.
+  bool bLookahead;       //!< Enable lookahead mode.
+  bool bShowAIS;         //!< Display AIS targets.
+  bool bAttenAIS;        //!< Enable AIS target attenuation.
   // ENC options
-  bool bShowENCText;
+  bool bShowENCText;  //!< Display ENC text elements.
   int nENCDisplayCategory;
   bool bShowENCDepths;
   bool bShowENCBuoyLabels;

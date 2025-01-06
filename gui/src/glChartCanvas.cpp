@@ -463,6 +463,7 @@ void glChartCanvas::Init() {
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
+  m_pParentCanvas->VPoint.SetPixelScale(m_displayScale);
 
 #ifdef __ANDROID__
   //  Create/connect a dynamic event handler slot for gesture and some timer
@@ -594,6 +595,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   SetCurrent(*m_pcontext);
 
   if (!g_bopengl) {
+    // Invoked immediately after user has disabled OpenGL.
     SetSize(GetSize().x, GetSize().y);
     event.Skip();
     return;
@@ -3925,6 +3927,7 @@ void glChartCanvas::Render() {
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
+  m_pParentCanvas->VPoint.SetPixelScale(m_displayScale);
 
   m_last_render_time = wxDateTime::Now().GetTicks();
 
@@ -3975,6 +3978,10 @@ void glChartCanvas::Render() {
                               -vp->pix_width / 2, -vp->pix_height / 2, 0);
   }
 
+  // @todo: If the intention was to work with the same ViewPort object, use a
+  // reference instead. Making a copy of VPoint here means that any changes to
+  // VPoint will not affect m_pParentCanvas->VPoint. It's not clear if this is
+  // the intended behavior.
   ViewPort VPoint = m_pParentCanvas->VPoint;
 
   OCPNRegion screen_region(wxRect(0, 0, gl_width, gl_height));
