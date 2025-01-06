@@ -25,6 +25,7 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
+#include "priority_gui.h"
 #include "std_filesystem.h"
 #include "svg_utils.h"
 
@@ -355,37 +356,39 @@ private:
   EventVar& m_on_conn_delete;
 };
 
+/** Indeed: the General  panel. */
 class GeneralPanel : public wxPanel {
 public:
   explicit GeneralPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
     SetSizer(sizer);
-
-    auto standard_panel = new StandardPanel(this);
-    sizer->Add(standard_panel, wxSizerFlags().Expand());
+    auto flags = wxSizerFlags().Border();
+    sizer->Add(new GarminCheckbox(this), flags);
+    sizer->Add(new FurunoCheckbox(this), flags);
   }
 
 private:
+  /** Use Garmin mode for uploads checkbox, bound to g_bGarminHostUpload. */
   class GarminCheckbox : public wxCheckBox {
   public:
     explicit GarminCheckbox(wxWindow* parent)
         : wxCheckBox(parent, wxID_ANY,
-                     _("Use Garmin GRMN (Host) mode for uploads")) {}
+                     _("Use Garmin GRMN (Host) mode for uploads")) {
+      SetValue(g_bGarminHostUpload);
+      Bind(wxEVT_CHECKBOX,
+           [&](wxCommandEvent&) { g_bGarminHostUpload = GetValue(); });
+    }
   };
+
+  /** The "Format uploads for Furuna checkbox, bound to g_GPS_Ident. */
   class FurunoCheckbox : public wxCheckBox {
   public:
     explicit FurunoCheckbox(wxWindow* parent)
-        : wxCheckBox(parent, wxID_ANY, _("Format uploads for Furuno GP4X")) {}
-  };
-
-  class StandardPanel : public wxPanel {
-  public:
-    explicit StandardPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
-      auto sizer = new wxBoxSizer(wxVERTICAL);
-      auto flags = wxSizerFlags().Border();
-      sizer->Add(new GarminCheckbox(this), flags);
-      sizer->Add(new FurunoCheckbox(this), flags);
-      SetSizer(sizer);
+        : wxCheckBox(parent, wxID_ANY, _("Format uploads for Furuno GP4X")) {
+      SetValue(g_GPS_Ident == "FurunoGP3X");
+      Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) {
+        g_GPS_Ident = GetValue() ? "FurunoGP3X" : "Generic";
+      });
     }
   };
 };
@@ -415,6 +418,7 @@ private:
   }
 };
 
+/** Indeed: The "Advanced" panel. */
 class AdvancedPanel : public wxPanel {
 public:
   explicit AdvancedPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
@@ -422,18 +426,24 @@ public:
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
     sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
-    sizer->Add(new FilterButton(this), wxSizerFlags().Border());
+    sizer->Add(new PrioritiesBtn(this), wxSizerFlags().Border());
     SetSizer(sizer);
   }
 
 private:
+  /** "Use magnetic bearing..." checkbox bound to g_bMagneticAPB. */
   class BearingsCheckbox : public wxCheckBox {
   public:
     BearingsCheckbox(wxWindow* parent)
         : wxCheckBox(parent, wxID_ANY,
-                     _("Use magnetic bearing in output sentence APB")) {}
+                     _("Use magnetic bearing in output sentence APB")) {
+      SetValue(g_bMagneticAPB);
+      Bind(wxEVT_CHECKBOX,
+           [&](wxCommandEvent&) { g_bMagneticAPB = GetValue(); });
+    }
   };
 
+  /** NMEA filter setup bound to g_bfilter_cogsog and g_COGFilterSec. */
   class NmeaFilterRow : public wxPanel {
   public:
     NmeaFilterRow(wxWindow* parent) : wxPanel(parent) {
@@ -441,32 +451,50 @@ private:
       auto checkbox = new wxCheckBox(
           this, wxID_ANY,
           _("Filter NMEA course and speed data. Filter period: "));
+      checkbox->SetValue(g_bfilter_cogsog);
       hbox->Add(checkbox, wxSizerFlags().Align(wxALIGN_CENTRE));
       auto filter_period = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
                                           wxSize(50, 3 * GetCharWidth()), 0);
+      filter_period->SetValue(std::to_string(g_COGFilterSec));
       hbox->Add(filter_period, wxSizerFlags().Border());
       SetSizer(hbox);
+      checkbox->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) {
+        g_bfilter_cogsog = checkbox->GetValue();
+        std::stringstream ss;
+        ss << filter_period->GetValue();
+        ss >> g_COGFilterSec;
+      });
     }
   };
 
+  /** NMEA Talker ID configuration, bound to g_TalkerIdText. */
   class TalkerIdRow : public wxPanel {
   public:
     TalkerIdRow(wxWindow* parent) : wxPanel(parent) {
       auto hbox = new wxBoxSizer(wxHORIZONTAL);
       hbox->Add(new wxStaticText(this, wxID_ANY, _("NMEA 0183 Talker Id: ")),
                 wxSizerFlags().Align(wxALIGN_CENTRE_VERTICAL).Border());
-      auto talker_id = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
+      auto text_ctrl = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
                                       wxSize(50, 3 * GetCharWidth()));
-      talker_id->SetLabel("EC");
-      hbox->Add(talker_id, wxSizerFlags().Border());
+      text_ctrl->SetValue(g_TalkerIdText);
+      hbox->Add(text_ctrl, wxSizerFlags().Border());
       SetSizer(hbox);
+      text_ctrl->Bind(wxEVT_TEXT, [text_ctrl](wxCommandEvent) {
+        g_TalkerIdText = text_ctrl->GetValue();
+      });
     }
   };
 
-  class FilterButton : public wxButton {
+  /** Button invokes "Adjust communication priorities" GUI. */
+  class PrioritiesBtn : public wxButton {
   public:
-    FilterButton(wxWindow* parent)
-        : wxButton(parent, wxID_ANY, _("Adjust communication priorities...")) {}
+    PrioritiesBtn(wxWindow* parent)
+        : wxButton(parent, wxID_ANY, _("Adjust communication priorities...")) {
+      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
+        PriorityDlg dialog(this);
+        dialog.ShowModal();
+      });
+    }
   };
 };
 
