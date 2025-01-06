@@ -98,15 +98,7 @@ ConnectionParamsPanel::~ConnectionParamsPanel() {
   if (m_pConnectionParams) m_pConnectionParams->m_optionsPanel = nullptr;
 }
 
-void ConnectionParamsPanel::OnSelected(wxMouseEvent &event) {
-  if (!m_bSelected) {
-    SetSelected(true);
-    m_pContainer->SetSelectedConnectionPanel(this);
-  } else {
-    SetSelected(false);
-    m_pContainer->SetSelectedConnectionPanel(NULL);
-  }
-}
+void ConnectionParamsPanel::OnSelected(wxMouseEvent &event) {}
 
 void ConnectionParamsPanel::SetSelected(bool selected) {
   m_bSelected = selected;
@@ -130,11 +122,7 @@ void ConnectionParamsPanel::SetSelected(bool selected) {
   Refresh(true);
 }
 
-void ConnectionParamsPanel::OnEnableCBClick(wxCommandEvent &event) {
-  if (m_pContainer) {
-    m_pContainer->EnableConnection(m_pConnectionParams, event.IsChecked());
-  }
-}
+void ConnectionParamsPanel::OnEnableCBClick(wxCommandEvent &event) {}
 
 void ConnectionParamsPanel::CreateControls(void) {
   int metric = GetCharHeight();
