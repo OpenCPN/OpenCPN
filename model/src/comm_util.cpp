@@ -50,10 +50,15 @@ bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus _bus) {
   return true;
 }
 
-//----------------------------------------------------------------------------------
-//     Strip NMEA V4 tags from NMEA0183 message
-//----------------------------------------------------------------------------------
-wxString ProcessNMEA4Tags(wxString& msg) {
+/**
+ * Strip NMEA V4 tag blocks from NMEA0183 message.
+ *
+ * Tag blocks are enclosed in '\' characters and appear before the
+ * traditional NMEA sentence (which starts with $ or !).
+ * The format is:
+ * \tag:value,tag:value*checksum\actual NMEA message
+ */
+wxString ProcessNMEA4Tags(const wxString& msg) {
   int idxFirst = msg.Find('\\');
 
   if (wxNOT_FOUND == idxFirst) return msg;

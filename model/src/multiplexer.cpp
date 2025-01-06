@@ -120,6 +120,13 @@ Multiplexer::Multiplexer(MuxLogCallbacks cb, bool &filter_behaviour)
 
 Multiplexer::~Multiplexer() {}
 
+static const wxChar SYMBOL_INPUT = 0x2190;     // ← LEFT ARROW
+static const wxChar SYMBOL_OUTPUT = 0x2192;    // → RIGHT ARROW
+static const wxChar SYMBOL_ERROR = 0x2716;     // ✖ MULTIPLICATION X
+static const wxChar SYMBOL_FILTERED = 0x269F;  // ⚟ FALLING DIAGONAL
+static const wxChar SYMBOL_DROPPED = 0x2298;   // ⊘ CIRCLED DIVISION SLASH
+static const wxChar SYMBOL_ACCEPTED = 0x2713;  // ✓ CHECK MARK
+
 void Multiplexer::LogOutputMessageColor(const wxString &msg,
                                         const wxString &stream_name,
                                         const wxString &color) {
@@ -129,14 +136,21 @@ void Multiplexer::LogOutputMessageColor(const wxString &msg,
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
     ss = now.FormatISOTime();
 #endif
-    ss.Prepend(_T("--> "));
-    ss.Append(_T(" ("));
+    ss.Append(" ").Append(SYMBOL_OUTPUT).Append(" ");
+    if (color == "<RED>") {
+      ss.Append(SYMBOL_ERROR);
+    } else if (color == "<CORAL>") {
+      ss.Append(SYMBOL_DROPPED);
+    } else {
+      ss.Append(SYMBOL_ACCEPTED);
+    }
+    ss.Append(" (");
     ss.Append(stream_name);
-    ss.Append(_T(") "));
+    ss.Append(") ");
     ss.Append(msg);
     ss.Prepend(color);
 
-    m_log_callbacks.log_message(ss.ToStdString());
+    m_log_callbacks.log_message(ss);
   }
 }
 
@@ -150,29 +164,43 @@ void Multiplexer::LogOutputMessage(const wxString &msg, wxString stream_name,
 
 void Multiplexer::LogInputMessage(const wxString &msg,
                                   const wxString &stream_name, bool b_filter,
-                                  bool b_error) {
+                                  bool b_error, const wxString error_msg) {
   if (m_log_callbacks.log_is_active()) {
     wxDateTime now = wxDateTime::Now();
     wxString ss;
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
     ss = now.FormatISOTime();
 #endif
-    ss.Append(_T(" ("));
+    ss.Append(" ").Append(SYMBOL_INPUT);
+    if (b_error) {
+      ss.Prepend("<RED>");
+      ss.Append(" ").Append(SYMBOL_ERROR);
+    } else {
+      if (b_filter) {
+        if (m_legacy_input_filter_behaviour) {
+          ss.Prepend("<CORAL>");
+          ss.Append(" ").Append(SYMBOL_FILTERED);
+        } else {
+          ss.Prepend("<MAROON>");
+          ss.Append(" ").Append(SYMBOL_DROPPED);
+        }
+      } else {
+        ss.Prepend("<GREEN>");
+        ss.Append(" ").Append(SYMBOL_ACCEPTED);
+      }
+    }
+    ss.Append(" (");
     ss.Append(stream_name);
-    ss.Append(_T(") "));
+    ss.Append(") ");
     ss.Append(msg);
     if (b_error) {
-      ss.Prepend(_T("<RED>"));
-    } else {
-      if (b_filter)
-        if (m_legacy_input_filter_behaviour)
-          ss.Prepend(_T("<CORAL>"));
-        else
-          ss.Prepend(_T("<MAROON>"));
+      ss.Append(" - ");
+      if (!error_msg.IsEmpty())
+        ss.Append(error_msg);
       else
-        ss.Prepend(_T("<GREEN>"));
+        ss.Append(_("Unknown error"));
     }
-    m_log_callbacks.log_message(ss.ToStdString());
+    m_log_callbacks.log_message(ss);
   }
 }
 
@@ -219,6 +247,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
         params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
 
     bool b_error = false;
+    wxString error_msg;
     for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
       if (isprint(*it))
         fmsg += *it;
@@ -226,7 +255,10 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
         wxString bin_print;
         bin_print.Printf(_T("<0x%02X>"), *it);
         fmsg += bin_print;
-        if ((*it != 0x0a) && (*it != 0x0d)) b_error = true;
+        if ((*it != 0x0a) && (*it != 0x0d)) {
+          b_error = true;
+          error_msg = _("Non-printable character in NMEA0183 message");
+        }
       }
     }
 
@@ -240,7 +272,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     //}
 
     wxString port(n0183_msg->source->iface);
-    LogInputMessage(fmsg, port, !bpass_input_filter, b_error);
+    LogInputMessage(fmsg, port, !bpass_input_filter, b_error, error_msg);
   }
 
   // Detect virtual driver, message comes from plugin API
