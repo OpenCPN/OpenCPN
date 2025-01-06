@@ -175,7 +175,7 @@ public:
   wxRadioButton *m_rbOIgnore, *m_rbTypeCAN;
   wxStaticText *m_stBTPairs, *m_stNetProto, *m_stNetAddr, *m_stNetPort;
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
-  wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
+  wxStaticText *m_stFilterSec, *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
   wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource,
       *m_stAuthToken;

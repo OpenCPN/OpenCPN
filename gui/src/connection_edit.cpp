@@ -578,25 +578,6 @@ void ConnectionEditDialog::Init() {
 
   commentSizer->Add(m_tSerialComment, 1, wxTOP, 5);
 
-  m_stPriority = new wxStaticText(m_scrolledwin, wxID_ANY, _("List position"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
-  m_stPriority->Wrap(-1);
-  commentSizer->Add(m_stPriority, 0, wxALL, 5);
-
-  wxString m_choicePriorityChoices[] = {_("0"), _("1"), _("2"), _("3"), _("4"),
-                                        _("5"), _("6"), _("7"), _("8"), _("9")};
-  int m_choicePriorityNChoices =
-      sizeof(m_choicePriorityChoices) / sizeof(wxString);
-  m_choicePriority =
-      new wxChoice(m_scrolledwin, wxID_ANY, wxDefaultPosition,
-                   wxSize(8 * m_parent->GetCharWidth(), -1),
-                   m_choicePriorityNChoices, m_choicePriorityChoices, 0);
-  // m_choicePriority->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice,
-  // this);
-
-  m_choicePriority->SetSelection(9);
-  commentSizer->Add(m_choicePriority, 0, wxEXPAND | wxTOP, 5);
-
   sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
   wxFlexGridSizer* fgSizer5;
@@ -1426,8 +1407,6 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   m_choiceBaudRate->Select(
       m_choiceBaudRate->FindString(wxString::Format("%d", cp->Baudrate)));
   m_choiceSerialProtocol->Select(cp->Protocol);  // TODO
-  m_choicePriority->Select(
-      m_choicePriority->FindString(wxString::Format("%d", cp->Priority)));
   m_tNetAddress->SetValue(cp->NetworkAddress);
 
   m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
@@ -1526,7 +1505,6 @@ void ConnectionEditDialog::SetDefaultConnectionParams(void) {
   m_tcOutputStc->SetValue(wxEmptyString);
   m_choiceBaudRate->Select(m_choiceBaudRate->FindString("4800"));
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
-  m_choicePriority->Select(m_choicePriority->FindString("1"));
 
   m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
 
@@ -1565,46 +1543,6 @@ void ConnectionEditDialog::SetDefaultConnectionParams(void) {
   connectionsaved = false;
 }
 
-bool ConnectionEditDialog::SortSourceList(void) {
-  if (TheConnectionParams().size() < 2) return false;
-
-  std::vector<int> ivec;
-  for (size_t i = 0; i < TheConnectionParams().size(); i++) ivec.push_back(i);
-
-  // FIXME (leamas) : This is not the way to sort a vector.
-  bool did_sort = false;
-  bool did_swap = true;
-  while (did_swap) {
-    did_swap = false;
-    for (size_t j = 1; j < ivec.size(); j++) {
-      ConnectionParams* c1 = TheConnectionParams()[ivec[j]];
-      ConnectionParams* c2 = TheConnectionParams()[ivec[j - 1]];
-
-      if (c1->Priority > c2->Priority) {
-        int t = ivec[j - 1];
-        ivec[j - 1] = ivec[j];
-        ivec[j] = t;
-        did_swap = true;
-        did_sort = true;
-      }
-    }
-  }
-
-  // if(did_sort)
-  {
-    boxSizerConnections = new wxBoxSizer(wxVERTICAL);
-    m_scrollWinConnections->SetSizer(boxSizerConnections);
-
-    for (size_t i = 0; i < ivec.size(); i++) {
-      ConnectionParamsPanel* pPanel =
-          TheConnectionParams()[ivec[i]]->m_optionsPanel;
-      boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
-    }
-  }
-
-  return did_sort;
-}
-
 void ConnectionEditDialog::LayoutDialog() {
   gSizerNetProps->Layout();
   gSizerSerProps->Layout();
@@ -1617,10 +1555,6 @@ void ConnectionEditDialog::UpdateSourceList(bool bResort) {
   for (auto* cp : TheConnectionParams()) {
     ConnectionParamsPanel* panel = cp->m_optionsPanel;
     if (panel) panel->Update(cp);
-  }
-
-  if (bResort) {
-    SortSourceList();
   }
 
   m_scrollWinConnections->Layout();
@@ -1870,8 +1804,6 @@ void ConnectionEditDialog::SetNMEAFormForSerialProtocol() {
   bool advanced = m_advanced;
   ShowNMEACommon(n0183ctlenabled && advanced);
   m_cbGarminHost->Show(n0183ctlenabled && advanced);
-  m_stPriority->Show(true);
-  m_choicePriority->Show(true);
 
   SetDSFormRWStates();
   LayoutDialog();
@@ -1884,8 +1816,6 @@ void ConnectionEditDialog::SetNMEAFormForNetProtocol() {
   bool advanced = m_advanced;
   ShowNMEACommon(n0183ctlenabled && advanced);
   m_cbGarminHost->Show(n0183ctlenabled && advanced);
-  m_stPriority->Show(true);
-  m_choicePriority->Show(true);
 
   SetDSFormRWStates();
 
@@ -2120,7 +2050,6 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
         (DataProtocol)m_choiceNetDataProtocol->GetSelection();
 
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
-  pConnectionParams->Priority = wxAtoi(m_choicePriority->GetStringSelection());
   pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
   pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
   pConnectionParams->Garmin = m_cbGarminHost->GetValue();

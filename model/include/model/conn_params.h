@@ -104,7 +104,6 @@ public:
   wxArrayString InputSentenceList;
   ListType OutputSentenceListType;
   wxArrayString OutputSentenceList;
-  int Priority;
   bool bEnabled;
   wxString UserComment;
   wxString AuthToken;
