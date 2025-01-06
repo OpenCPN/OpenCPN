@@ -40,28 +40,26 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/progdlg.h>
-#include <wx/radiobox.h>
-#include <wx/listbox.h>
-#include <wx/imaglist.h>
-#include <wx/display.h>
 #include <wx/choice.h>
-#include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
+#include <wx/dirdlg.h>
+#include <wx/dir.h>
+#include <wx/display.h>
 #include <wx/fontdata.h>
 #include <wx/fontdlg.h>
-#include <wx/stdpaths.h>
-#include <wx/tokenzr.h>
+#include <wx/imaglist.h>
+#include <wx/listbox.h>
 #include <wx/mediactrl.h>
-#include <wx/dir.h>
 #include <wx/odcombo.h>
-#include <wx/statline.h>
+#include <wx/progdlg.h>
+#include <wx/radiobox.h>
 #include <wx/regex.h>
 #include <wx/renderer.h>
+#include <wx/statline.h>
+#include <wx/stdpaths.h>
 #include <wx/textwrapper.h>
+#include <wx/tokenzr.h>
 
-#include "model/comm_drv_factory.h"
-#include "model/comm_util.h"
 #include "conn_params_panel.h"
 
 #if defined(__WXGTK__) || defined(__WXQT__)
@@ -78,6 +76,8 @@
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/cmdline.h"
+#include "model/comm_drv_factory.h"
+#include "model/comm_util.h"
 #include "model/config_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
