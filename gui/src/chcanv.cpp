@@ -292,7 +292,9 @@ extern bool g_boptionsactive;
 ShapeBaseChartSet gShapeBasemap;
 
 //  TODO why are these static?
+/** The current mouse X position in canvas coordinates (physical pixels). */
 static int mouse_x;
+/** The current mouse Y position in canvas coordinates (physical pixels). */
 static int mouse_y;
 static bool mouse_leftisdown;
 
@@ -495,6 +497,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_muiBar = NULL;
   m_bShowScaleInStatusBar = false;
+  m_show_focus_bar = true;
 
   m_bShowOutlines = false;
   m_bDisplayGrid = false;
@@ -741,11 +744,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_Piano = new Piano(this);
 
-  m_bShowCompassWin = g_bShowCompassWin;
+  m_bShowCompassWin = true;
 
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
-  m_Compass->Show(m_bShowCompassWin);
+  m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
 
   m_pianoFrozen = false;
 
@@ -756,6 +759,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
+  VPoint.SetPixelScale(m_displayScale);
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   // if (!m_glcc)
@@ -1190,10 +1194,9 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
 
 void ChartCanvas::ApplyGlobalSettings() {
   // GPS compas window
-  m_bShowCompassWin = g_bShowCompassWin;
   if (m_Compass) {
-    m_Compass->Show(m_bShowCompassWin);
-    if (m_bShowCompassWin) m_Compass->UpdateStatus();
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+    if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
 }
 
@@ -1210,7 +1213,7 @@ void ChartCanvas::SetShowGPS(bool bshow) {
     delete m_Compass;
     m_Compass = new ocpnCompass(this, bshow);
     m_Compass->SetScaleFactor(g_compass_scalefactor);
-    m_Compass->Show(m_bShowCompassWin);
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
   }
   m_bShowGPS = bshow;
 }
@@ -1218,8 +1221,8 @@ void ChartCanvas::SetShowGPS(bool bshow) {
 void ChartCanvas::SetShowGPSCompassWindow(bool bshow) {
   m_bShowCompassWin = bshow;
   if (m_Compass) {
-    m_Compass->Show(m_bShowCompassWin);
-    if (m_bShowCompassWin) m_Compass->UpdateStatus();
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+    if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
 }
 
@@ -1630,6 +1633,10 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       //  boolean...
       ChartData->CheckExclusiveTileGroup(m_canvasIndex);
 
+      // Calculate DPI compensation scale, i.e., the ratio of logical pixels to
+      // physical pixels. On standard DPI displays where logical = physical
+      // pixels, this ratio would be 1.0. On Retina displays where physical = 2x
+      // logical pixels, this ratio would be 0.5.
       double proposed_scale_onscreen =
           GetCanvasScaleFactor() / GetVPScale();  // as set from config load
 
@@ -1674,7 +1681,9 @@ bool ChartCanvas::DoCanvasUpdate(void) {
           m_pCurrentStack->SetCurrentEntryFromdbIndex(initial_db_index);
         }
       }
-
+      // TODO: GetCanvasScaleFactor() / proposed_scale_onscreen simplifies to
+      // just GetVPScale(), so I'm not sure why it's necessary to define the
+      // proposed_scale_onscreen variable.
       bNewView |= SetViewPoint(vpLat, vpLon,
                                GetCanvasScaleFactor() / proposed_scale_onscreen,
                                0, GetVPRotation());
@@ -2302,7 +2311,7 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   // int sx, sy;
   // wxDisplaySize( &sx, &sy );
 
-  // Calculate pixels per mm for later reference
+  // Calculate logical pixels per mm for later reference.
   wxSize sd = g_Platform->getDisplaySize();
   double horizontal = sd.x;
   // Set DPI (Win) scale factor
@@ -2557,7 +2566,10 @@ void ChartCanvas::CancelMeasureRoute() {
 
 ViewPort &ChartCanvas::GetVP() { return VPoint; }
 
-void ChartCanvas::SetVP(ViewPort &vp) { VPoint = vp; }
+void ChartCanvas::SetVP(ViewPort &vp) {
+  VPoint = vp;
+  VPoint.SetPixelScale(m_displayScale);
+}
 
 // void ChartCanvas::SetFocus()
 // {
@@ -4408,11 +4420,6 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
   if (!ChartData) return;
   if (!m_pCurrentStack) return;
 
-  if (g_bShowCompassWin) {
-    m_bShowCompassWin = true;
-    SetShowGPSCompassWindow(true);  // Cancel effects of Ctrl-I
-  }
-
   /* TODO: queue the quilted loading code to a background thread
      so yield is never called from here, and also rendering is not delayed */
 
@@ -4992,7 +4999,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
                                double skew, double rotation, int projection,
                                bool b_adjust, bool b_refresh) {
   bool b_ret = false;
-
   if (skew > PI) /* so our difference tests work, put in range of +-Pi */
     skew -= 2 * PI;
 
@@ -5351,7 +5357,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     //    Calculate the on-screen displayed actual scale
     //    by a simple traverse northward from the center point
     //    of roughly one eighth of the canvas height
-    wxPoint2DDouble r, r1;
+    wxPoint2DDouble r, r1;  // Screen coordinates in physical pixels.
 
     double delta_check =
         (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
@@ -5367,6 +5373,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
     GetDoubleCanvasPointPix(check_point, VPoint.clon, &r1);
     GetDoubleCanvasPointPix(check_point + delta_check, VPoint.clon, &r);
+    // Calculate the distance between r1 and r in physical pixels.
     double delta_p = sqrt(((r1.m_y - r.m_y) * (r1.m_y - r.m_y)) +
                           ((r1.m_x - r.m_x) * (r1.m_x - r.m_x)));
 
@@ -5402,11 +5409,16 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 #ifdef __WXOSX__
     if (g_bopengl) {
       retina_coef = GetContentScaleFactor();
-      ;
     }
 #endif
 #endif
 
+    // The chart scale denominator (e.g., 50000 if the scale is 1:50000),
+    // rounded to the nearest 10, 100 or 1000.
+    //
+    // @todo: on MacOS there is 2x ratio between VPoint.chart_scale and
+    // true_scale_display. That does not make sense. The chart scale should be
+    // the same as the true scale within the limits of the rounding factor.
     double true_scale_display =
         wxRound(VPoint.chart_scale / round_factor) * round_factor * retina_coef;
     wxString text;
@@ -6617,6 +6629,7 @@ void ChartCanvas::OnActivate(wxActivateEvent &event) { ReloadVP(); }
 
 void ChartCanvas::OnSize(wxSizeEvent &event) {
   if ((event.m_size.GetWidth() < 1) || (event.m_size.GetHeight() < 1)) return;
+  // GetClientSize returns the size of the canvas area in logical pixels.
   GetClientSize(&m_canvas_width, &m_canvas_height);
 
 #ifdef __WXOSX__
@@ -6624,12 +6637,14 @@ void ChartCanvas::OnSize(wxSizeEvent &event) {
   m_displayScale = GetContentScaleFactor();
 #endif
 
+  // Convert to physical pixels.
   m_canvas_width *= m_displayScale;
   m_canvas_height *= m_displayScale;
 
   //    Resize the current viewport
   VPoint.pix_width = m_canvas_width;
   VPoint.pix_height = m_canvas_height;
+  VPoint.SetPixelScale(m_displayScale);
 
   //    Get some canvas metrics
 
@@ -11349,7 +11364,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
   // If multi-canvas, indicate which canvas has keyboard focus
   // by drawing a simple blue bar at the top.
-  if (g_canvasConfig != 0) {  // multi-canvas?
+  if (m_show_focus_bar && (g_canvasConfig != 0)) {  // multi-canvas?
     if (this == wxWindow::FindFocus()) {
       g_focusCanvas = this;
 
@@ -12006,7 +12021,7 @@ emboss_data *ChartCanvas::EmbossDepthScale() {
 
   ped->x = (GetVP().pix_width - ped->width);
 
-  if (m_Compass && m_bShowCompassWin) {
+  if (m_Compass && m_bShowCompassWin && g_bShowCompassWin) {
     wxRect r = m_Compass->GetRect();
     ped->y = r.y + r.height;
   } else {

@@ -687,7 +687,8 @@ void MUITextButton::BuildBitmap() {
 
   if (m_ssfn_status != SSFN_OK) return;
 
-  int wbox, hbox;
+  int wbox = 0;
+  int hbox = 0;
   std::string t = m_text.ToStdString();
   ssfn_bbox(&ctx, (char*)t.c_str(), 0, &wbox, &hbox);
 

@@ -148,6 +148,9 @@ void TTYWindow::CreateLegendBitmap() {
     dc.SetBrush(b2);
     dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("CORAL")));
+    // Indicate message has been filtered and dropped.
+    // This could be an input or output message.
+    // For input messages, only used if m_legacy_input_filter_behaviour is true.
     dc.DrawText(
         _("Input message filtered, output message filtered and dropped"),
         text_x, y);
@@ -163,6 +166,7 @@ void TTYWindow::CreateLegendBitmap() {
     wxBrush b4(wxColour(_T("BLUE")));
     dc.SetBrush(b4);
     dc.DrawRectangle(boff, y, bsize, bsize);
+    // Indicate message has been sent successfully.
     dc.SetTextForeground(wxColour(_T("BLUE")));
     dc.DrawText(_("Output Message"), text_x, y);
 
@@ -171,7 +175,9 @@ void TTYWindow::CreateLegendBitmap() {
     dc.SetBrush(b5);
     dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("RED")));
-    dc.DrawText(_("Information Message or Message with errors"), text_x, y);
+    // Indicate message has error (parse error, wrong checksum, cannot be sent,
+    // etc). This could be an input or output message.
+    dc.DrawText(_("Message with errors"), text_x, y);
   }
   dc.SelectObject(wxNullBitmap);
 }

@@ -205,6 +205,7 @@ extern iENCToolbar *g_iENCToolbar;
 extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
 extern bool b_inCompressAllCharts;
+extern bool g_bShowCompassWin;
 
 extern GLenum g_texture_rectangle_format;
 
@@ -462,6 +463,7 @@ void glChartCanvas::Init() {
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
+  m_pParentCanvas->VPoint.SetPixelScale(m_displayScale);
 
 #ifdef __ANDROID__
   //  Create/connect a dynamic event handler slot for gesture and some timer
@@ -593,6 +595,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   SetCurrent(*m_pcontext);
 
   if (!g_bopengl) {
+    // Invoked immediately after user has disabled OpenGL.
     SetSize(GetSize().x, GetSize().y);
     event.Skip();
     return;
@@ -3924,6 +3927,7 @@ void glChartCanvas::Render() {
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
+  m_pParentCanvas->VPoint.SetPixelScale(m_displayScale);
 
   m_last_render_time = wxDateTime::Now().GetTicks();
 
@@ -3974,6 +3978,10 @@ void glChartCanvas::Render() {
                               -vp->pix_width / 2, -vp->pix_height / 2, 0);
   }
 
+  // @todo: If the intention was to work with the same ViewPort object, use a
+  // reference instead. Making a copy of VPoint here means that any changes to
+  // VPoint will not affect m_pParentCanvas->VPoint. It's not clear if this is
+  // the intended behavior.
   ViewPort VPoint = m_pParentCanvas->VPoint;
 
   OCPNRegion screen_region(wxRect(0, 0, gl_width, gl_height));
@@ -4431,7 +4439,8 @@ void glChartCanvas::Render() {
 
   // If multi-canvas, indicate which canvas has keyboard focus
   // by drawing a simple blue bar at the top.
-  if (g_canvasConfig != 0) {  // multi-canvas?
+  if (m_pParentCanvas->m_show_focus_bar &&
+      (g_canvasConfig != 0)) {  // multi-canvas?
     if (m_pParentCanvas == wxWindow::FindFocus()) {
       g_focusCanvas = m_pParentCanvas;
 
@@ -4544,7 +4553,8 @@ void glChartCanvas::Render() {
   // render the chart bar
   if (g_bShowChartBar) DrawChartBar(m_gldc);
 
-  if (m_pParentCanvas->m_Compass && m_pParentCanvas->m_bShowCompassWin)
+  if (m_pParentCanvas->m_Compass && m_pParentCanvas->m_bShowCompassWin &&
+      g_bShowCompassWin)
     m_pParentCanvas->m_Compass->Paint(gldc);
 
   RenderGLAlertMessage();

@@ -714,7 +714,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   log_callbacks.log_is_active = []() {
     return NMEALogWindow::GetInstance().Active();
   };
-  log_callbacks.log_message = [](const std::string &s) {
+  log_callbacks.log_message = [](const wxString &s) {
     NMEALogWindow::GetInstance().Add(s);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
@@ -4796,7 +4796,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       for (auto *cp : TheConnectionParams()) {
         if (cp->bEnabled) {
-          auto driver = MakeCommDriver(cp);
+          MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
         }
       }
@@ -5514,11 +5514,17 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     GPSData.nSats = g_SatsInView;
 
     wxDateTime tCheck((time_t)m_fixtime);
-
-    if (tCheck.IsValid())
+    if (tCheck.IsValid()) {
+      // As a special case, when no GNSS data is available, m_fixtime is set to
+      // zero. Note wxDateTime(0) is valid, so the zero value is passed to the
+      // plugins. The plugins should check for zero and not use the time in that
+      // case.
       GPSData.FixTime = m_fixtime;
-    else
+    } else {
+      // Note: I don't think this is ever reached, as m_fixtime can never be set
+      // to wxLongLong(wxINT64_MIN), which is the only way to get here.
       GPSData.FixTime = wxDateTime::Now().GetTicks();
+    }
 
     SendPositionFixToAllPlugIns(&GPSData);
   }

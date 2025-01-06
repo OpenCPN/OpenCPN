@@ -58,6 +58,14 @@ private:
 
 extern wxString g_locale;
 
+/**
+ * Static copy of effective UI locale.
+ *
+ * Used by FontMgr to support locale-specific font configurations. Allows for
+ * different fonts per language.
+ * Updated whenever UI locale changes via platform ChangeLocale().
+ * @see g_locale for main locale setting
+ */
 wxString s_locale;
 int g_default_font_size;
 wxString g_default_font_facename;
@@ -158,15 +166,17 @@ wxString FontMgr::GetFontConfigKey(const wxString &description) {
   return configkey;
 }
 
-wxFont *FontMgr::GetFont(const wxString &TextElement, int user_default_size) {
+wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
   //    Look thru the font list for a match
   MyFontDesc *pmfd;
   auto node = m_fontlist->GetFirst();
   while (node) {
     pmfd = node->GetData();
-    if (pmfd->m_dialogstring == TextElement) {
-      if (pmfd->m_configstring.BeforeFirst('-') == s_locale)
-        return pmfd->m_font;
+    // Check if the font matches both the text element and the requested size
+    if ((pmfd->m_configstring.BeforeFirst('-') == s_locale) &&
+        (requested_font_size == 0 ||
+         pmfd->m_font->GetPointSize() == requested_font_size)) {
+      return pmfd->m_font;
     }
     node = node->GetNext();
   }
@@ -183,13 +193,13 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int user_default_size) {
   wxString FaceName = sys_font.GetFaceName();
 
   int new_size;
-  if (0 == user_default_size) {
+  if (0 == requested_font_size) {
     if (g_default_font_size)
       new_size = g_default_font_size;
     else
       new_size = sys_font_size;
   } else
-    new_size = user_default_size;
+    new_size = requested_font_size;
 
   if (g_default_font_facename.Length()) FaceName = g_default_font_facename;
 
