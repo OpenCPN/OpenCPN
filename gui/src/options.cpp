@@ -1504,7 +1504,7 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
 
   SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
-  wxDialog::Create(parent, id, caption, pos, size, style);
+  wxDialog::Create(parent, id, caption, pos, size, style, "Options");
   SetFont(*dialogFont);
 
   CreateControls();
@@ -1862,6 +1862,12 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   comm_dialog =
       std::make_shared<ConnectionsDlg>(m_pNMEAForm, TheConnectionParams());
+  // Hijacks the options | Resize event for use by comm_dialog only.
+  // Needs new solution if other pages also have a need to act on it.
+  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
+    comm_dialog->OnResize();
+    ev.Skip();
+  });
 }
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,
@@ -6924,7 +6930,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_config_display_size_manual = pRBSizeManual->GetValue();
 
   // Connections page.
-  // comm_dialog->ApplySettings();
+  comm_dialog->ApplySettings();
 
   if (pCDOOutlines) g_bShowOutlines = pCDOOutlines->GetValue();
   if (pSDisplayGrid) g_bDisplayGrid = pSDisplayGrid->GetValue();
@@ -7871,6 +7877,7 @@ void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
 
 void options::OnCancelClick(wxCommandEvent& event) {
   m_pListbook->ChangeSelection(0);
+  comm_dialog->CancelSettings();
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
