@@ -24,6 +24,7 @@
 #include "connection_edit.h"
 #include "conn_params_panel.h"
 #include "gui_lib.h"
+#include "color_handler.h"
 #include "navutil.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
@@ -43,6 +44,10 @@ static const auto kUtfFisheye = wxString::FromUTF8(u8"\u25c9");
 static const auto kUtfGear = wxString::FromUTF8(u8"\u2699");
 static const auto kUtfMultiplyX = wxString::FromUTF8(u8"\u2715");
 static const auto kUtfTrashbin = wxString::FromUTF8(u8"\U0001f5d1");
+
+static inline bool IsWindows() {
+  return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
+}
 
 /** std::sort support: Compare two ConnectionParams w r t given column */
 class ConnCompare {
@@ -133,6 +138,10 @@ public:
         "", _("Protocol"), _("Direction"), _("Port"), _("Status"), "", ""};
     for (auto hdr = headers.begin(); hdr != headers.end(); hdr++)
       SetColLabelValue(static_cast<int>(hdr - headers.begin()), *hdr);
+    if (IsWindows()) {
+      SetLabelBackgroundColour(GetGlobalColor("DILG1"));
+      SetLabelTextColour(GetGlobalColor("DILG3"));
+    }
     HideRowLabels();
     SetColAttributes(parent);
     ReloadGrid(connections);
@@ -149,6 +158,10 @@ public:
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
     Bind(wxEVT_GRID_SELECT_CELL,
          [&](wxGridEvent& ev) { OnSelectCell(ev.GetRow(), ev.GetCol()); });
+    Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) {
+      SetColAttributes(static_cast<wxWindow*>(ev.GetEventObject()));
+      ev.Skip();
+    });
     conn_change_lstnr.Init(
         m_conn_states.evt_conn_status_change,
         [&](ObservedEvt&) { OnConnectionChange(m_connections); });
@@ -266,33 +279,40 @@ private:
     enable_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
     enable_attr->SetRenderer(new wxGridCellBoolRenderer());
     enable_attr->SetEditor(new wxGridCellBoolEditor());
+    if (IsWindows()) enable_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(0, enable_attr);
 
     auto protocol_attr = new wxGridCellAttr();
     protocol_attr->SetAlignment(wxALIGN_LEFT, wxALIGN_CENTRE);
     protocol_attr->SetReadOnly(true);
+    if (IsWindows())
+      protocol_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(1, protocol_attr);
 
     auto in_out_attr = new wxGridCellAttr();
     in_out_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
     in_out_attr->SetReadOnly(true);
+    if (IsWindows()) in_out_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(2, in_out_attr);
 
     auto port_attr = new wxGridCellAttr();
     port_attr->SetAlignment(wxALIGN_LEFT, wxALIGN_CENTRE);
     port_attr->SetReadOnly(true);
+    if (IsWindows()) port_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(3, port_attr);
 
     auto status_attr = new wxGridCellAttr();
     status_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
     status_attr->SetReadOnly(true);
     status_attr->SetFont(parent->GetFont().Scale(1.3));
+    if (IsWindows()) status_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(4, status_attr);
 
     auto edit_attr = new wxGridCellAttr();
     edit_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
     edit_attr->SetFont(parent->GetFont().Scale(1.3));
     edit_attr->SetReadOnly(true);
+    if (IsWindows()) edit_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(5, edit_attr);
 
     auto delete_attr = new wxGridCellAttr();
@@ -300,6 +320,7 @@ private:
     delete_attr->SetFont(parent->GetFont().Scale(1.3));
     delete_attr->SetTextColour(*wxRED);
     delete_attr->SetReadOnly(true);
+    if (IsWindows()) delete_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(6, delete_attr);
   }
 
