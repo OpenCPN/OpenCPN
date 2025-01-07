@@ -2023,13 +2023,13 @@ void glChartCanvas::GridDraw() {
   if (!straight_latitudes) lon_step /= ceil(lon_step / curved_step);
 
   for (lat = startlat; lat < nlat; lat += gridlatMajor) {
-    wxPoint2DDouble r, s;
-    s.m_x = NAN;
-
+    wxPoint r, s;
+    s.x = INVALID_COORD;
+    s.y = INVALID_COORD;
     for (lon = wlon; lon < elon + lon_step / 2; lon += lon_step) {
-      m_pParentCanvas->GetDoubleCanvasPointPix(lat, lon, &r);
-      if (!std::isnan(s.m_x) && !std::isnan(r.m_x)) {
-        gldc.DrawLine(s.m_x, s.m_y, r.m_x, r.m_y, false);
+      m_pParentCanvas->GetCanvasPointPix(lat, lon, &r);
+      if (s.x != INVALID_COORD && s.y != INVALID_COORD) {
+        gldc.DrawLine(s.x, s.y, r.x, r.y, false);
       }
       s = r;
     }
@@ -2043,8 +2043,6 @@ void glChartCanvas::GridDraw() {
       m_pParentCanvas->GetCanvasPointPix(lat, (elon + wlon) / 2, &r);
       gldc.DrawLine(0, r.y, 10, r.y, true);
       gldc.DrawLine(w - 10, r.y, w, r.y, false);
-
-      lat = lat + gridlatMinor;
     }
   }
 
@@ -2053,13 +2051,13 @@ void glChartCanvas::GridDraw() {
   if (!straight_longitudes) lat_step /= ceil(lat_step / curved_step);
 
   for (lon = startlon; lon < elon; lon += gridlonMajor) {
-    wxPoint2DDouble r, s;
-    s.m_x = NAN;
+    wxPoint r, s;
+    s.x = INVALID_COORD;
+    s.y = INVALID_COORD;
     for (lat = slat; lat < nlat + lat_step / 2; lat += lat_step) {
-      m_pParentCanvas->GetDoubleCanvasPointPix(lat, lon, &r);
-
-      if (!std::isnan(s.m_x) && !std::isnan(r.m_x)) {
-        gldc.DrawLine(s.m_x, s.m_y, r.m_x, r.m_y, false);
+      m_pParentCanvas->GetCanvasPointPix(lat, lon, &r);
+      if (s.x != INVALID_COORD && s.y != INVALID_COORD) {
+        gldc.DrawLine(s.x, s.y, r.x, r.y, false);
       }
       s = r;
     }
