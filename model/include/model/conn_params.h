@@ -108,6 +108,9 @@ public:
   wxString UserComment;
   wxString AuthToken;
 
+  /** Return string unique for each instance. */
+  std::string GetKey() const;
+
   wxString Serialize() const;
   void Deserialize(const wxString &configStr);
 

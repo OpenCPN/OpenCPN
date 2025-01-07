@@ -133,6 +133,18 @@ wxString ConnectionParams::Serialize() const {
   return ret;
 }
 
+std::string ConnectionParams::GetKey() const {
+  std::stringstream ss;
+  ss << Type << NetProtocol << NetworkAddress << NetworkPort << Protocol << Port
+     << Baudrate << ChecksumCheck << IOSelect << InputSentenceListType
+     << OutputSentenceListType << Garmin << GarminUpload << FurunoGP3X
+     << UserComment << AutoSKDiscover << socketCAN_port << NoDataReconnect
+     << DisableEcho << AuthToken;
+  for (const auto& sentence : OutputSentenceList) ss << sentence;
+  for (const auto& sentence : InputSentenceList) ss << sentence;
+  return ss.str();
+}
+
 ConnectionParams::ConnectionParams() {
   Type = UNKNOWN;
   NetProtocol = TCP;
