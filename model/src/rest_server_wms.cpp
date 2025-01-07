@@ -45,6 +45,8 @@ unsigned int RestServerWms::m_hitcount = 0;
 unsigned int RestServerWms::lastSize_W = 0;
 unsigned int RestServerWms::lastSize_H = 0;
 
+std::function<void(WmsReqParams)> RestServerWms::fCallback;
+
 #ifdef RESTSERVERWMS
 wxFrame* RestServerWms::m_pWxFrame = nullptr;
 ChartCanvas* RestServerWms::m_pChartCanvas = nullptr;
@@ -52,6 +54,8 @@ wxStaticText* RestServerWms::pText = nullptr;
 
 void* RestServerWms::jpegdatabuffer = new char[1000000];
 #endif
+
+
 
 /** Extract a HTTP variable from query string. */
 static inline std::string HttpVarToString(const struct mg_str& query,
@@ -122,7 +126,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
           RestServerWms::lastSize_W = _w;
           RestServerWms::lastSize_H = _h;
 
-            RestServerWms::m_pWxFrame->SetSize(wxSize(_w + 100, _h + 100));
+           RestServerWms::m_pWxFrame->SetSize(wxSize(_w + 100, _h + 100));
            RestServerWms::m_pChartCanvas->SetSize(wxSize(_w, _h));
         }
 
@@ -171,6 +175,19 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
                  << "," << lonSW << " NE" << latNE << "," << lonNE
                  << "(lat, lon)"; 
 
+        WmsReqParams p;
+        p.w = _w;
+        p.h = _h;
+        p.latNE = latNE;
+        p.lonNE = lonNE;
+        p.latSW = latSW;
+        p.lonSW = lonSW;
+        p.hitcount = RestServerWms::m_hitcount;
+
+        p.c = c;
+
+        RestServerWms::fCallback(p);
+
         // m_pchart
         RestServerWms::m_pChartCanvas->SetShowGrid(true);
         RestServerWms::m_pChartCanvas->SetShowENCLights(true);
@@ -194,7 +211,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         INFO_LOG << "CanvasUpdate success:" << update;
 
         //RestServerWms::m_pChartCanvas->
-
+        /*
         RestServerWms::m_pChartCanvas->Refresh();
         RestServerWms::m_pWxFrame->Refresh();
         RestServerWms::m_pChartCanvas->Update();
@@ -254,6 +271,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         
         INFO_LOG << "WMS replied to hit:" << RestServerWms::m_hitcount
                  << " size:" << size;
+
+        */
       }
       catch(const std::exception& ex){
         int j = 0;
@@ -297,8 +316,8 @@ void RestServerWms::StopServer() {
   }
 }
 
-RestServerWms::RestServerWms(){
-  INFO_LOG << "RestServerWms running";
+RestServerWms::RestServerWms() {  
+  INFO_LOG << "RestServerWms consctuction, call to StartServer will start the rendering engine";
 }   
 
 RestServerWms::~RestServerWms() {
@@ -306,7 +325,8 @@ RestServerWms::~RestServerWms() {
 }
 
 
-bool RestServerWms::StartServer() {
+bool RestServerWms::StartServer(std::function<void(WmsReqParams)> FCallback) {
+  RestServerWms::fCallback = FCallback;
   #ifdef RESTSERVERWMS
   
   m_pWxFrame = new wxFrame(nullptr, -1, "WMS");

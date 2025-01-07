@@ -41,6 +41,7 @@
 #include "model/rest_server.h"
 #include "model/rest_server_wms.h"
 #include "model/usb_watch_daemon.h"
+#include "WmsFrame.h"
 class Track;
 
 class MyApp : public wxApp {
@@ -49,6 +50,7 @@ public:
   ~MyApp() {};
 
   bool OnInit() override;
+  void EventifyWmsReqParam(WmsReqParams p);
   int OnExit() override;
 #ifndef __ANDROID__
   void OnInitCmdLine(wxCmdLineParser& parser) override;
@@ -75,7 +77,10 @@ public:
   CommBridge m_comm_bridge;
 
   RestServer m_rest_server;
+
+  WmsFrame* wmsFrame;
   RestServerWms m_rest_server_wms;
+
   UsbWatchDaemon& m_usb_watcher;
 
   DECLARE_EVENT_TABLE()

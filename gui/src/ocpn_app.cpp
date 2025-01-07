@@ -164,6 +164,7 @@ using namespace std::literals::chrono_literals;
 #include "thumbwin.h"
 #include "TrackPropDlg.h"
 #include "udev_rule_mgr.h"
+#include "WmsFrame.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -1955,11 +1956,27 @@ bool MyApp::OnInit() {
     make_certificate(ipAddr, data_dir.ToStdString());
 
     m_rest_server.StartServer(fs::path(data_dir.ToStdString()));
-    m_rest_server_wms.StartServer();
+
+    //WMS BEGIN
+    wmsFrame = new WmsFrame(gFrame, wxID_ANY);
+    wmsFrame->Show();
+    std::function<void(WmsReqParams)> f =
+        std::bind(&MyApp::EventifyWmsReqParam, this, std::placeholders::_1);
+    m_rest_server_wms.StartServer(f);
+    //WMS END
+
     StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                      8000);
   }
   return TRUE;
+}
+
+void MyApp::EventifyWmsReqParam(WmsReqParams p) {
+  wxLogDebug("Eventify called, creating wx event from rendering request");
+  wxWMSRequestEvent *e = new wxWMSRequestEvent(WXWMSREQUESTEVENT, wxID_ANY, p);
+
+  wmsFrame->GetEventHandler()->QueueEvent(e);
+  
 }
 
 int MyApp::OnExit() {
