@@ -44,6 +44,30 @@ static const auto kUtfGear = wxString::FromUTF8(u8"\u2699");
 static const auto kUtfMultiplyX = wxString::FromUTF8(u8"\u2715");
 static const auto kUtfTrashbin = wxString::FromUTF8(u8"\U0001f5d1");
 
+/** std::sort support: Compare two ConnectionParams w r t given column */
+class ConnCompare {
+public:
+  ConnCompare(int col) : m_col(col) {}
+
+  bool operator()(ConnectionParams* p1, ConnectionParams* p2) {
+    switch (m_col) {
+      case 0:
+        return int(p1->bEnabled) > int(p2->bEnabled);
+      case 1:
+        return p1->GetCommProtocol() < p2->GetCommProtocol();
+      case 2:
+        return p1->GetIOTypeValueStr() < p2->GetIOTypeValueStr();
+      case 3:
+        return p1->GetStrippedDSPort() < p2->GetStrippedDSPort();
+      default:
+        return false;
+    }
+  }
+
+private:
+  const int m_col;
+};
+
 /** The "Add new connection" button */
 class AddConnectionButton : public wxButton {
 public:
@@ -89,7 +113,8 @@ public:
         m_last_tooltip_cell(100) {
     auto set_enabled = [&](int row, bool b) { HandleEnable(row, b); };
     SetTable(new StringTable(set_enabled), false);
-    GetTable()->AppendCols(7);
+    GetTable()->AppendCols(8);
+    HideCol(7);
     static const std::array<wxString, 7> headers = {
         "", _("Protocol"), _("Direction"), _("Port"), _("Status"), "", ""};
     for (auto hdr = headers.begin(); hdr != headers.end(); hdr++)
@@ -106,6 +131,8 @@ public:
       OnMouseMove(ev);
       ev.Skip();
     });
+    Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
+         [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
     Bind(wxEVT_GRID_SELECT_CELL,
          [&](wxGridEvent& ev) { OnSelectCell(ev.GetRow(), ev.GetCol()); });
     conn_change_lstnr.Init(
@@ -133,6 +160,7 @@ public:
       m_tooltips[row][5] = _("Edit connection");
       SetCellValue(row, 6, kUtfTrashbin);  // 🗑
       m_tooltips[row][6] = _("Delete connection");
+      SetCellValue(row, 7, (*it)->GetKey());
     }
     OnConnectionChange(m_connections);
     AutoSize();
@@ -147,6 +175,24 @@ public:
     return wxSize(GetCharWidth() * 60,
                   std::max(GetNumberRows() + 1, 4) * GetCharHeight() * 2);
   }
+
+  /** std::sort support: Compare two ConnectionParams w r t state. */
+  class ConnStateCompare {
+  public:
+    ConnStateCompare(Connections* connections) : m_conns(connections) {}
+    bool operator()(ConnectionParams* p1, ConnectionParams* p2) {
+      std::cout << "ConnStateCompare: enter\n";
+      int row1 = m_conns->FindConnectionIndex(p1);
+      int row2 = m_conns->FindConnectionIndex(p2);
+      if (row1 == -1 && row2 == -1) return false;
+      if (row1 == -1) return false;
+      if (row2 == -1) return true;
+      int v1 = static_cast<int>(m_conns->GetCellValue(row1, 4)[0]);
+      int v2 = static_cast<int>(m_conns->GetCellValue(row2, 4)[0]);
+      return v1 < v2;
+    }
+    Connections* m_conns;
+  };
 
 private:
   /** Overrides SetCellValue in order to act on changes. */
@@ -164,21 +210,28 @@ private:
     std::function<void(int, bool)> m_set_enabled;
   };
 
-  /** Return pointer to parameters related to row. */
+  /**
+   *  Return pointer to parameters related to row.
+   *  @return valid pointer if found, else nullptr.
+   */
   ConnectionParams* FindRowConnection(int row) {
-    auto iface = GetCellValue(row, 3);
-    auto bus = NavAddr::StringToBus(GetCellValue(row, 1).ToStdString());
-    auto found = find_if(
-        m_connections.begin(), m_connections.end(), [&](ConnectionParams* p) {
-          return bus == p->GetCommProtocol() && iface == p->GetStrippedDSPort();
-        });
+    auto found = find_if(m_connections.begin(), m_connections.end(),
+                         [&](ConnectionParams* p) {
+                           return GetCellValue(row, 7) == p->GetKey();
+                         });
     return found != m_connections.end() ? *found : nullptr;
   }
 
-  /** Find index in m_connections for given pointer. */
+  /**
+   * Find index in m_connections for given pointer.
+   * @return positive index if found, else -1;
+   * */
   int FindConnectionIndex(ConnectionParams* cp) {
     using namespace std;
-    auto found = find(m_connections.begin(), m_connections.end(), cp);
+    auto key = cp->GetKey();
+    auto found =
+        find_if(m_connections.begin(), m_connections.end(),
+                [key](ConnectionParams* cp) { return cp->GetKey() == key; });
     if (found == m_connections.end()) return -1;
     return static_cast<int>(found - m_connections.begin());
   }
@@ -197,8 +250,6 @@ private:
   void SetColAttributes(wxWindow* parent) {
     auto enable_attr = new wxGridCellAttr();
     enable_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-    // enable_attr->SetFont(parent->GetFont().Scale(1.3));
-    // enable_attr->SetReadOnly(true);
     enable_attr->SetRenderer(new wxGridCellBoolRenderer());
     enable_attr->SetEditor(new wxGridCellBoolEditor());
     SetColAttr(0, enable_attr);
@@ -288,6 +339,32 @@ private:
           break;
       }
     }
+  }
+
+  void SetSortingColumn(int col) {
+    if (GetSortingColumn() != wxNOT_FOUND) {
+      int old_col = GetSortingColumn();
+      auto label = GetColLabelValue(old_col);
+      if (label[0] == kUtfArrowDown[0])
+        SetColLabelValue(old_col, label.substr(2));
+    }
+    auto label = GetColLabelValue(col);
+    if (label[0] != kUtfArrowDown[0])
+      SetColLabelValue(col, kUtfArrowDown + " " + label);
+    wxGrid::SetSortingColumn(col);
+    Fit();
+  }
+
+  /** Handle user click on column header */
+  void HandleSort(int col) {
+    if (col > 4) return;
+    auto& params = TheConnectionParams();
+    if (col < 4)
+      std::sort(params.begin(), params.end(), ConnCompare(col));
+    else  // col == 4
+      std::sort(params.begin(), params.end(), ConnStateCompare(this));
+    ReloadGrid(TheConnectionParams());
+    SetSortingColumn(col);
   }
 
   /** Handle user click on the enable/disable checkbox. */
