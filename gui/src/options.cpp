@@ -6924,7 +6924,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_config_display_size_manual = pRBSizeManual->GetValue();
 
   // Connections page.
-  // comm_dialog->ApplySettings();
+  comm_dialog->ApplySettings();
 
   if (pCDOOutlines) g_bShowOutlines = pCDOOutlines->GetValue();
   if (pSDisplayGrid) g_bDisplayGrid = pSDisplayGrid->GetValue();
@@ -7871,6 +7871,7 @@ void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
 
 void options::OnCancelClick(wxCommandEvent& event) {
   m_pListbook->ChangeSelection(0);
+  comm_dialog->CancelSettings();
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();

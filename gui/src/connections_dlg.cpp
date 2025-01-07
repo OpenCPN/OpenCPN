@@ -68,6 +68,20 @@ private:
   const int m_col;
 };
 
+/**
+ * Interface implemented by widgets supporting Apply and Cancel.
+ */
+class ApplyCancel {
+public:
+  /** Make values set by user actually being used. */
+  virtual void Apply() = 0;
+
+  /**
+   * Restore values modified by user to their pristine state, often in a global.
+   */
+  virtual void Cancel() = 0;
+};
+
 /** The "Add new connection" button */
 class AddConnectionButton : public wxButton {
 public:
@@ -451,27 +465,38 @@ public:
 
 private:
   /** Use Garmin mode for uploads checkbox, bound to g_bGarminHostUpload. */
-  class GarminCheckbox : public wxCheckBox {
+  class GarminCheckbox : public wxCheckBox, public ApplyCancel {
+    bool value;
+
   public:
-    explicit GarminCheckbox(wxWindow* parent)
+    GarminCheckbox(wxWindow* parent)
         : wxCheckBox(parent, wxID_ANY,
-                     _("Use Garmin GRMN (Host) mode for uploads")) {
+                     _("Use Garmin GRMN (Host) mode for uploads")),
+          value(g_bGarminHostUpload) {
       SetValue(g_bGarminHostUpload);
-      Bind(wxEVT_CHECKBOX,
-           [&](wxCommandEvent&) { g_bGarminHostUpload = GetValue(); });
+      Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) { value = GetValue(); });
     }
+
+    void Apply() override { g_bGarminHostUpload = value; }
+    void Cancel() override { SetValue(g_bGarminHostUpload); }
   };
 
   /** The "Format uploads for Furuna checkbox, bound to g_GPS_Ident. */
-  class FurunoCheckbox : public wxCheckBox {
+  class FurunoCheckbox : public wxCheckBox, public ApplyCancel {
+    std::string value;
+
   public:
     explicit FurunoCheckbox(wxWindow* parent)
-        : wxCheckBox(parent, wxID_ANY, _("Format uploads for Furuno GP4X")) {
+        : wxCheckBox(parent, wxID_ANY, _("Format uploads for Furuno GP4X")),
+          value(g_GPS_Ident) {
       SetValue(g_GPS_Ident == "FurunoGP3X");
       Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) {
-        g_GPS_Ident = GetValue() ? "FurunoGP3X" : "Generic";
+        value = GetValue() ? "FurunoGP3X" : "Generic";
       });
     }
+
+    void Apply() override { g_GPS_Ident = value; }
+    void Cancel() override { SetValue(g_GPS_Ident == "FurunoGP3X"); }
   };
 };
 
@@ -514,57 +539,74 @@ public:
 
 private:
   /** "Use magnetic bearing..." checkbox bound to g_bMagneticAPB. */
-  class BearingsCheckbox : public wxCheckBox {
+  class BearingsCheckbox : public wxCheckBox, public ApplyCancel {
   public:
     BearingsCheckbox(wxWindow* parent)
         : wxCheckBox(parent, wxID_ANY,
                      _("Use magnetic bearing in output sentence APB")) {
       SetValue(g_bMagneticAPB);
-      Bind(wxEVT_CHECKBOX,
-           [&](wxCommandEvent&) { g_bMagneticAPB = GetValue(); });
+      wxCheckBox::SetValue(g_bMagneticAPB);
     }
+
+    void Apply() override { g_bMagneticAPB = GetValue(); }
+    void Cancel() override { SetValue(g_bMagneticAPB); }
   };
 
   /** NMEA filter setup bound to g_bfilter_cogsog and g_COGFilterSec. */
-  class NmeaFilterRow : public wxPanel {
+  class NmeaFilterRow : public wxPanel, public ApplyCancel {
+    wxCheckBox* checkbox;
+    wxTextCtrl* filter_period;
+
   public:
     NmeaFilterRow(wxWindow* parent) : wxPanel(parent) {
       auto hbox = new wxBoxSizer(wxHORIZONTAL);
-      auto checkbox = new wxCheckBox(
+      checkbox = new wxCheckBox(
           this, wxID_ANY,
           _("Filter NMEA course and speed data. Filter period: "));
       checkbox->SetValue(g_bfilter_cogsog);
       hbox->Add(checkbox, wxSizerFlags().Align(wxALIGN_CENTRE));
-      auto filter_period = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
-                                          wxSize(50, 3 * GetCharWidth()), 0);
+      filter_period = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
+                                     wxSize(50, 3 * GetCharWidth()), 0);
       filter_period->SetValue(std::to_string(g_COGFilterSec));
       hbox->Add(filter_period, wxSizerFlags().Border());
       SetSizer(hbox);
-      checkbox->Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) {
-        g_bfilter_cogsog = checkbox->GetValue();
-        std::stringstream ss;
-        ss << filter_period->GetValue();
-        ss >> g_COGFilterSec;
-      });
+      Cancel();
+    }
+
+    void Apply() override {
+      std::stringstream ss;
+      ss << filter_period->GetValue();
+      ss >> g_COGFilterSec;
+      g_bfilter_cogsog = checkbox->GetValue();
+    }
+
+    void Cancel() override {
+      std::stringstream ss;
+      ss << g_COGFilterSec;
+      filter_period->SetValue(ss.str());
+      checkbox->SetValue(g_bfilter_cogsog);
     }
   };
 
   /** NMEA Talker ID configuration, bound to g_TalkerIdText. */
-  class TalkerIdRow : public wxPanel {
+  class TalkerIdRow : public wxPanel, public ApplyCancel {
+    wxTextCtrl* text_ctrl;
+
   public:
     TalkerIdRow(wxWindow* parent) : wxPanel(parent) {
       auto hbox = new wxBoxSizer(wxHORIZONTAL);
       hbox->Add(new wxStaticText(this, wxID_ANY, _("NMEA 0183 Talker Id: ")),
                 wxSizerFlags().Align(wxALIGN_CENTRE_VERTICAL).Border());
-      auto text_ctrl = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
-                                      wxSize(50, 3 * GetCharWidth()));
+      text_ctrl = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
+                                 wxSize(50, 3 * GetCharWidth()));
       text_ctrl->SetValue(g_TalkerIdText);
       hbox->Add(text_ctrl, wxSizerFlags().Border());
       SetSizer(hbox);
-      text_ctrl->Bind(wxEVT_TEXT, [text_ctrl](wxCommandEvent) {
-        g_TalkerIdText = text_ctrl->GetValue();
-      });
+      Cancel();
     }
+
+    void Apply() override { g_TalkerIdText = text_ctrl->GetValue(); }
+    void Cancel() override { text_ctrl->SetValue(g_TalkerIdText); }
   };
 
   /** Button invokes "Adjust communication priorities" GUI. */
@@ -638,3 +680,23 @@ ConnectionsDlg::ConnectionsDlg(
   };
   m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_add_connection);
 };
+
+void ConnectionsDlg::DoApply(wxWindow* root) {
+  for (wxWindow* child : root->GetChildren()) {
+    auto widget = dynamic_cast<ApplyCancel*>(child);
+    if (widget) widget->Apply();
+    DoApply(child);
+  }
+}
+
+void ConnectionsDlg::DoCancel(wxWindow* root) {
+  for (wxWindow* child : root->GetChildren()) {
+    auto widget = dynamic_cast<ApplyCancel*>(child);
+    if (widget) widget->Cancel();
+    DoCancel(child);
+  }
+}
+
+void ConnectionsDlg::ApplySettings() { DoApply(this); }
+
+void ConnectionsDlg::CancelSettings() { DoCancel(this); }
