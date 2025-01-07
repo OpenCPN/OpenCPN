@@ -172,11 +172,9 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
   auto node = m_fontlist->GetFirst();
   while (node) {
     pmfd = node->GetData();
-    // Check if the font matches both the text element and the requested size
-    if ((pmfd->m_configstring.BeforeFirst('-') == s_locale) &&
-        (requested_font_size == 0 ||
-         pmfd->m_font->GetPointSize() == requested_font_size)) {
-      return pmfd->m_font;
+    if (pmfd->m_dialogstring == TextElement) {
+      if (pmfd->m_configstring.BeforeFirst('-') == s_locale)
+        return pmfd->m_font;
     }
     node = node->GetNext();
   }
