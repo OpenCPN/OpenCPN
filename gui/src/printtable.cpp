@@ -109,7 +109,7 @@ void PrintCell::Adjust() {
     if ((w < width - 2 * cellpadding) || words_number == 1) {
       list[list.size() - 1] = tmp2;
     } else {
-      list.push_back(wxString());
+      list.push_back(token);
     }
   }
 

@@ -165,7 +165,7 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
     table << 120;
   }
   if (toPrintOut[PRINT_WP_DESCRIPTION]) {
-    table << 120;
+    table << 150;
   }
 
   table.StartFillData();
@@ -387,7 +387,7 @@ void MyRoutePrintout::DrawPage(wxDC* dc) {
     currentY += 10;  // add top margin
     dc->SetFont(normal_font);
     PrintCell cell_desc;
-    cell_desc.Init(myRoute->m_RouteDescription, dc, pageSizeX, 0);
+    cell_desc.Init(myRoute->m_RouteDescription, dc, pageSizeX, marginX);
     dc->DrawText(cell_desc.GetText(), currentX, currentY);
     currentY += cell_desc.GetHeight();
   }
