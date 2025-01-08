@@ -57,26 +57,27 @@ public:
   void StopServer();
 
   static unsigned int RestServerWms::m_hitcount;
-  static wxFrame* m_pWxFrame;
+  /* static wxFrame* m_pWxFrame;
   static ChartCanvas* m_pChartCanvas;
 
    
 
 
-  static wxStaticText* pText;
+  static wxStaticText* pText;*/
 
   static unsigned int lastSize_W;
   static unsigned int lastSize_H;
 
-  static void* jpegdatabuffer;
+  //static void* jpegdatabuffer;
 
   static std::function<void(WmsReqParams)> fCallback;
+  static std::mutex ret_mutex;
 
 private:
   void Run();
   
   /** IoThread interface: Guards return_status */
-  std::mutex ret_mutex;
+  
 
   /** IoThread interface: Guards return_status */
   std::condition_variable return_status_cv;
@@ -85,7 +86,6 @@ private:
 
   std::atomic<bool> m_alive = true;
 
-  std::thread m_delayedLoaderThread;
   std::thread m_workerthread;
 
  
