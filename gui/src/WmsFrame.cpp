@@ -35,6 +35,11 @@ WmsFrame::WmsFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 WmsFrame::~WmsFrame() {
 }
 
+void WmsFrame::AssignTargetObjects(wxFrame* pF, ChartCanvas* pC) {
+  m_pTgtFrame = pF;
+  m_pChartCanvas = pC;
+}
+
 void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
   try {
     // Handle the custom event
@@ -54,13 +59,17 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
     // m_pchart
     m_pChartCanvas->SetShowGrid(true);
     m_pChartCanvas->SetShowENCLights(true);
-    // m_pChartCanvas->SetShowENCDepth(true);
+    m_pChartCanvas->SetShowENCDepth(true);
     m_pChartCanvas->SetShowAIS(false);
     m_pChartCanvas->SetShowGPS(false);
     m_pChartCanvas->SetShowGPSCompassWindow(false);
+    m_pChartCanvas->SetShowDepthUnits(false);
+
+    
     //m_pChartCanvas->set<>>SetUserOwnship((false);
 
     m_pChartCanvas->canvasChartsRefresh(-1);
+    m_pChartCanvas->SetQuiltMode(true);
 
     bool ok_setviewpointbycorners = m_pChartCanvas->SetViewPointByCorners(
         event.p.latSW, event.p.lonSW, event.p.latNE, event.p.lonNE);
@@ -102,7 +111,10 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
     wxJPEGHandler* pH = new wxJPEGHandler();
     img.AddHandler(pH);
     wxMemoryOutputStream s;
-    img.SaveFile(s, wxBITMAP_TYPE_JPEG);
+    bool saved = img.SaveFile(s, wxBITMAP_TYPE_JPEG);
+    if (!saved) {
+      int j = 9;
+    }
 
     size_t size = s.GetSize();
 

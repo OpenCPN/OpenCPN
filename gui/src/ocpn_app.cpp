@@ -1960,6 +1960,10 @@ bool MyApp::OnInit() {
     //WMS BEGIN
     wmsFrame = new WmsFrame(gFrame, wxID_ANY);
     wmsFrame->Show();
+
+    wmsFrame->AssignTargetObjects(gFrame
+        , g_focusCanvas);  // GetPrimaryCanvas
+
     std::function<void(WmsReqParams)> f =
         std::bind(&MyApp::EventifyWmsReqParam, this, std::placeholders::_1);
     m_rest_server_wms.StartServer(f);

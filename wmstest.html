@@ -14,7 +14,7 @@
 	<div id="map_opencpn_leaflet_wms" style="width:600px;height:600px;background-color:lightcoral">map_opencpn_leaflet_wms</div>
 	<br />
 	map_ol_10_1_0
-	<div id="map_ol_10_1_0" style="width:600px;height:600px;background-color:green"></div>
+	<div id="map_ol_10_1_0" style="width:500px;height:1000px;background-color:green"></div>
 	<br />
 	<!-- map_leaflet_1_9_4 -->
 	<!-- <div id="map_leaflet_1_9_4" style="width:400px;height:400px;background-color:lightblue">map_leaflet_1_9_4</div> -->
@@ -45,37 +45,49 @@
 		const LAT = 54.9103;
 		const LON = 9.77;
 		const ZOOM = 11
+		
+		BOJE_ROD_LAT = 54.9003;
+		BOJE_ROD_LON = 9.7850666667;
+		
+		//******************************************************************
+		//Control active map request users (rendering engines basically) here
+		const enable_opencpn_leaflet = false;
+		const enable_opencpn_openlayers = true;
+		
 		//******************************************************************
 		//load opencpn_wms using leaflet
-		if(false){
-			const map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
+		
+		if(enable_opencpn_leaflet){
+			document.map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
 
 			L.tileLayer.wms(localwmsurl, {
 				layers: 'NAV',
-				tileSize: 900
-			}).addTo(map_opencpn_leaflet);
+				tileSize: 1024
+			}).addTo(document.map_opencpn_leaflet);
 
-			map_opencpn_leaflet.panTo(new L.LatLng(LAT, LON));
+			document.map_opencpn_leaflet.panTo(new L.LatLng(LAT, LON));
 		}
 
 		//******************************************************************
 		//load opencpn_wms using openlayers
-		if(true){
+		if(enable_opencpn_openlayers){
 			try {
 				document.layers_opencpnwms_ol = [
 					new ImageLayer({
 						source: new ImageWMS({
 							url: localwmsurl,
 							params: {
+								'TILED' : true,
 								'LAYERS': 'NAV',
 								'VERSION':"1.1.1",
 								'FORMAT': 'image/jpeg',
-								//'WIDTH' : '256',
-								//'HEIGHT' : '256'
+								'WIDTH' : '256',
+								'HEIGHT' : '256'
 							},
 							ratio: 1,
 							serverType: 'geoserver'
-						})
+						}),
+						zIndex:1
 					})
 				];
 				document.map_opencpnwms_ol = new Map({
@@ -143,7 +155,34 @@
 		//******************************************************************
 		function refresh() {
 			console.log("refresh function called")
-
+			if(enable_opencpn_leaflet){
+				L.circle([BOJE_ROD_LAT,BOJE_ROD_LON], 500).addTo(document.map_opencpn_leaflet);
+			}
+			
+			if(enable_opencpn_openlayers){
+				var center = ol.proj.fromLonLat([BOJE_ROD_LON, BOJE_ROD_LAT]); // Convert to map projection
+				var circle = new ol.geom.Circle(center, 2000);
+				var circleFeature = new ol.Feature(circle);
+				var vectorSource = new ol.source.Vector({
+				  features: [circleFeature]
+				});
+				var vectorLayer = new ol.layer.Vector({
+				  source: vectorSource,
+				  style: new ol.style.Style({
+					stroke: new ol.style.Stroke({
+					  color: 'red',
+					  width: 444
+					})
+				  }),
+				  fill: new ol.style.Fill({
+					color: 'rgba(255,0,0,0.9)'
+				  }),
+				  zIndex:3
+				});
+				//vectorLayer.setZIndex(2);
+				document.map_opencpnwms_ol.addLayer(vectorLayer);
+				
+			}
 			//document.map_datfors.render();
 		}
 		

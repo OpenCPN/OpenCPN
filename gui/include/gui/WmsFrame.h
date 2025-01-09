@@ -15,6 +15,7 @@ wxDECLARE_EVENT(WXWMSREQUESTEVENT, wxWMSRequestEvent);
 
 class WmsFrame : public wxFrame {
 private:
+   wxFrame* m_pTgtFrame;
    ChartCanvas* m_pChartCanvas;
 
    wxStaticText* pText;
@@ -43,6 +44,7 @@ public:
                           wxTAB_TRAVERSAL);
 
   ~WmsFrame();
+  void AssignTargetObjects(wxFrame* pF, ChartCanvas* pC);
 };
 
 #endif

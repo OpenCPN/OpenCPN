@@ -150,7 +150,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         if (data.size() != 4) {
           mg_http_reply(
               c, 422, "",
-              "Unable to contnue, bbox data not resulting in 4 params");
+              "Unable to continue, bbox data not having mandatory in 4 params");
           return;
         }
 
@@ -167,7 +167,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
           // coord convertion
           coord3857To4326(data[0], data[1], lonSW, latSW);
           coord3857To4326(data[2], data[3], lonNE, latNE);
-        } else{
+        } else {
           std::string err = "Unsupported Srs param:" + strSrs;
 
           mg_http_reply(c, 422, "", err.c_str());
@@ -187,6 +187,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         p.latSW = latSW;
         p.lonSW = lonSW;
         p.hitcount = RestServerWms::m_hitcount;
+       
 
         p.c = c;
 
