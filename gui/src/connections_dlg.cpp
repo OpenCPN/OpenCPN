@@ -134,8 +134,7 @@ public:
         m_connections(connections),
         m_on_conn_delete(on_conn_update),
         m_last_tooltip_cell(100) {
-    auto set_enabled = [&](int row, bool b) { HandleEnable(row, b); };
-    SetTable(new StringTable(set_enabled), false);
+    SetTable(new wxGridStringTable(), false);
     GetTable()->AppendCols(8);
     HideCol(7);
     static const std::array<wxString, 7> headers = {
@@ -161,8 +160,8 @@ public:
     });
     Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
-    Bind(wxEVT_GRID_SELECT_CELL,
-         [&](wxGridEvent& ev) { OnSelectCell(ev.GetRow(), ev.GetCol()); });
+    Bind(wxEVT_GRID_CELL_LEFT_CLICK,
+         [&](wxGridEvent& ev) { OnClickCell(ev.GetRow(), ev.GetCol()); });
     Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) {
       SetColAttributes(static_cast<wxWindow*>(ev.GetEventObject()));
       ev.Skip();
@@ -227,21 +226,6 @@ public:
   };
 
 private:
-  /** Overrides SetCellValue in order to act on changes. */
-  class StringTable : public wxGridStringTable {
-  public:
-    explicit StringTable(std::function<void(int, bool)> set_enabled)
-        : wxGridStringTable(), m_set_enabled(std::move(set_enabled)) {}
-
-    void SetValue(int row, int col, const wxString& value) override {
-      wxGridStringTable::SetValue(row, col, value);
-      if (col == 0) m_set_enabled(row, !value.empty());
-    }
-
-  private:
-    std::function<void(int, bool)> m_set_enabled;
-  };
-
   /**
    *  Return pointer to parameters related to row.
    *  @return valid pointer if found, else nullptr.
@@ -330,8 +314,10 @@ private:
   }
 
   /** User mouse click on grid dispatcher. */
-  void OnSelectCell(int row, int col) {
-    if (col == 5) {
+  void OnClickCell(int row, int col) {
+    if (col == 0)
+      HandleEnable(row);
+    else if (col == 5) {
       HandleEdit(row);
     } else if (col == 6) {
       HandleDelete(row);
@@ -408,12 +394,13 @@ private:
   }
 
   /** Handle user click on the enable/disable checkbox. */
-  void HandleEnable(int row, bool enabled) {
+  void HandleEnable(int row) {
     ConnectionParams* cp = FindRowConnection(row);
     if (!cp) return;
-    cp->bEnabled = enabled;
+    cp->bEnabled = !cp->bEnabled;
     cp->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
-    if (enabled)
+    SetCellValue(row, 0, cp->bEnabled ? "1" : "");
+    if (cp->bEnabled)
       m_tooltips[row][0] = _("Enabled, click to disable");
     else
       m_tooltips[row][0] = _("Disabled, click to enable");
