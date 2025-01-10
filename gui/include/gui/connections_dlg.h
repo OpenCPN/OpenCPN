@@ -5,7 +5,8 @@
 
 #include <functional>
 
-#include <wx/frame.h>
+#include <wx/panel.h>
+#include <wx/scrolwin.h>
 #include "model/conn_params.h"
 #include "observable_evtvar.h"
 
@@ -23,6 +24,8 @@ public:
    * Traverse root's children and invoke Cancel if they implement ApplyCancel
    */
   void CancelSettings();
+
+  void OnResize();
 
 private:
   void DoApply(wxWindow* root);

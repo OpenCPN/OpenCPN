@@ -1499,6 +1499,7 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style)
     : pTrackRotateTime(0) {
   Init();
+  SetName("Options");
 
   pParent = parent;
 
@@ -1862,6 +1863,13 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   comm_dialog =
       std::make_shared<ConnectionsDlg>(m_pNMEAForm, TheConnectionParams());
+  DimeControl(comm_dialog.get());
+  // Hijacks the options | Resize event for use by comm_dialog only.
+  // Needs new solution if other pages also have a need to act on it.
+  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
+    comm_dialog->OnResize();
+    ev.Skip();
+  });
 }
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,

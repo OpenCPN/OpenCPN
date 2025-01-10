@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <wx/bitmap.h>
+#include <wx/notebook.h>
 #include <wx/grid.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
@@ -147,7 +148,8 @@ public:
     ReloadGrid(connections);
     DisableDragColSize();
     DisableDragRowSize();
-    SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
+    wxWindow* options = wxWindow::FindWindowByName("Options");
+    SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
     Show(GetNumberRows() > 0);
 
     GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent& ev) {
@@ -194,13 +196,14 @@ public:
   }
 
   wxSize GetMaxSize() {
-    return wxSize(GetCharWidth() * 60,
-                  (GetNumberRows() + 1) * GetCharHeight() * 2);
+    return wxSize(GetCharWidth() * 90,
+                  std::min(GetNumberRows() + 3, 10) * 2 * GetCharHeight());
   }
 
   wxSize GetMinSize() {
+    auto size = GetGridWindow()->GetSize();
     return wxSize(GetCharWidth() * 60,
-                  std::max(GetNumberRows() + 1, 4) * GetCharHeight() * 2);
+                  std::min(GetNumberRows() + 3, 6) * 2 * GetCharHeight());
   }
 
   /** std::sort support: Compare two ConnectionParams w r t state. */
@@ -208,7 +211,6 @@ public:
   public:
     ConnStateCompare(Connections* connections) : m_conns(connections) {}
     bool operator()(ConnectionParams* p1, ConnectionParams* p2) {
-      std::cout << "ConnStateCompare: enter\n";
       int row1 = m_conns->FindConnectionIndex(p1);
       int row2 = m_conns->FindConnectionIndex(p2);
       if (row1 == -1 && row2 == -1) return false;
@@ -426,9 +428,15 @@ private:
   void HandleEdit(int row) {
     ConnectionParams* cp = FindRowConnection(row);
     if (cp) {
-      ConnectionEditDialog dialog(m_parent);
+      ConnectionEditDialog dialog(this);
+      DimeControl(&dialog);
       dialog.SetPropsLabel(_("Edit Selected Connection"));
       dialog.PreloadControls(cp);
+      wxWindow* options = wxWindow::FindWindowByName("Options");
+      dialog.SetSize(
+          wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
+      Show(GetNumberRows() > 0);
+
       auto rv = dialog.ShowModal();
       if (rv == wxID_OK) {
         ConnectionParams* cp_edited = dialog.GetParamsFromControls();
@@ -458,9 +466,9 @@ private:
       StopAndRemoveCommDriver((*found)->GetStrippedDSPort(),
                               (*found)->GetCommProtocol());
       TheConnectionParams().erase(found);
-      m_on_conn_delete.Notify();
       if (GetNumberRows() > static_cast<int>(m_connections.size()))
         DeleteRows(GetNumberRows() - 1);
+      m_on_conn_delete.Notify();
     }
   }
 
@@ -655,17 +663,19 @@ public:
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(client, wxSizerFlags().Border());
     SetSizer(vbox);
+    SetMinClientSize(min_size);
+    SetMaxSize(max_size);
     vbox->Layout();
     SetScrollRate(0, 10);
-    SetMinSize(min_size);
-    SetMaxSize(max_size);
   }
 };
 
 /** Main window: connections grid, "Add new connection", general options. */
 ConnectionsDlg::ConnectionsDlg(
     wxWindow* parent, const std::vector<ConnectionParams*>& connections)
-    : wxPanel(parent), m_connections(connections) {
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+              wxTAB_TRAVERSAL, "ConnectionsDlg"),
+      m_connections(connections) {
   auto vbox = new wxBoxSizer(wxVERTICAL);
   auto scrolled_window = new ScrolledWindow(this);
   auto conn_grid =
@@ -675,9 +685,9 @@ ConnectionsDlg::ConnectionsDlg(
   vbox->Add(scrolled_window, wxSizerFlags(5).Expand().Border());
   vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
             wxSizerFlags().Border());
-  vbox->Add(0, 0, 1);  // Expanding spacer
-  vbox->Add(new GeneralPanel(this),
-            wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand());
+  vbox->Add(0, GetCharHeight(), 1);  // Expanding spacer
+  auto panel_flags = wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
+  vbox->Add(new GeneralPanel(this), panel_flags);
 
   auto advanced_panel = new AdvancedPanel(this);
   auto on_toggle = [&, advanced_panel, vbox](bool show) {
@@ -685,21 +695,22 @@ ConnectionsDlg::ConnectionsDlg(
     vbox->SetSizeHints(this);
     vbox->Fit(this);
   };
-  vbox->Add(new ShowAdvanced(this, on_toggle),
-            wxSizerFlags().Border(wxLEFT | wxDOWN).Expand());
-  vbox->Add(advanced_panel,
-            wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand());
+  vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
+  vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
 
   SetSizer(vbox);
   SetAutoLayout(true);
   Fit();
 
-  auto on_evt_add_connection = [&, conn_grid](ObservedEvt&) {
+  auto on_evt_update_connections = [&, conn_grid, vbox,
+                                    scrolled_window](ObservedEvt&) {
     conn_grid->ReloadGrid(TheConnectionParams());
     conn_grid->Show(conn_grid->GetNumberRows() > 0);
+    scrolled_window->SetMinClientSize(conn_grid->GetMinSize());
+    scrolled_window->SetMaxSize(conn_grid->GetMaxSize());
     Layout();
   };
-  m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_add_connection);
+  m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_update_connections);
 };
 
 void ConnectionsDlg::DoApply(wxWindow* root) {
@@ -708,6 +719,12 @@ void ConnectionsDlg::DoApply(wxWindow* root) {
     if (widget) widget->Apply();
     DoApply(child);
   }
+}
+
+void ConnectionsDlg::OnResize() {
+  Layout();
+  Refresh();
+  Update();
 }
 
 void ConnectionsDlg::DoCancel(wxWindow* root) {
