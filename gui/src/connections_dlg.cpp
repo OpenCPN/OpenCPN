@@ -103,6 +103,9 @@ private:
     ConnectionEditDialog dialog(this);
     dialog.SetPropsLabel(_("Configure new connection"));
     dialog.SetDefaultConnectionParams();
+    wxWindow* options = wxWindow::FindWindowByName("Options");
+    dialog.SetSize(
+        wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
     auto rv = dialog.ShowModal();
     if (rv == wxID_OK) {
       ConnectionParams* cp = dialog.GetParamsFromControls();
