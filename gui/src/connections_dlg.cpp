@@ -198,13 +198,13 @@ public:
   }
 
   wxSize GetMaxSize() {
-    return wxSize(GetCharWidth() * 90,
+    return wxSize(GetCharWidth() * 120,
                   std::min(GetNumberRows() + 3, 10) * 2 * GetCharHeight());
   }
 
   wxSize GetMinSize() {
     auto size = GetGridWindow()->GetSize();
-    return wxSize(GetCharWidth() * 60,
+    return wxSize(GetCharWidth() * 80,
                   std::min(GetNumberRows() + 3, 6) * 2 * GetCharHeight());
   }
 
