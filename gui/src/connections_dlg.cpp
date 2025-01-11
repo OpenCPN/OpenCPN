@@ -5,11 +5,9 @@
 #include <vector>
 
 #include <wx/bitmap.h>
-#include <wx/notebook.h>
 #include <wx/grid.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
-#include <wx/statbmp.h>
 #include <wx/textctrl.h>
 #include <wx/window.h>
 
@@ -17,21 +15,23 @@
 #include "model/comm_drv_factory.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_util.h"
+#include "model/config_vars.h"
 #include "model/conn_params.h"
 #include "model/conn_states.h"
 
 #include "connections_dlg.h"
 
+#include "color_handler.h"
 #include "connection_edit.h"
 #include "conn_params_panel.h"
 #include "gui_lib.h"
-#include "color_handler.h"
 #include "navutil.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
-#include "svg_utils.h"
 
-extern MyConfig* pConfig;
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
 
 static const auto kUtfArrowDown = wxString::FromUTF8(u8"\u25bc");
 static const auto kUtfArrowRight = wxString::FromUTF8(u8"\u25ba");
@@ -153,7 +153,7 @@ public:
     wxWindow* options = wxWindow::FindWindowByName("Options");
     assert(options && "Null Options window!");
     SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
-    Show(GetNumberRows() > 0);
+    wxWindow::Show(GetNumberRows() > 0);
 
     GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent& ev) {
       OnMouseMove(ev);
@@ -198,13 +198,12 @@ public:
     AutoSize();
   }
 
-  wxSize GetMaxSize() {
+  wxSize GetGridMaxSize() const {
     return wxSize(GetCharWidth() * 120,
                   std::min(GetNumberRows() + 3, 10) * 2 * GetCharHeight());
   }
 
-  wxSize GetMinSize() {
-    auto size = GetGridWindow()->GetSize();
+  wxSize GetGridMinSize() const {
     return wxSize(GetCharWidth() * 80,
                   std::min(GetNumberRows() + 3, 6) * 2 * GetCharHeight());
   }
@@ -409,7 +408,6 @@ private:
     stats.driver_iface = cp->GetStrippedDSPort();
     stats.driver_bus = cp->GetCommProtocol();
     m_conn_states.HandleDriverStats(stats);
-    pConfig->UpdateSettings();
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
     if (cp->bEnabled) MakeCommDriver(cp);
     cp->b_IsSetup = true;
@@ -465,7 +463,6 @@ private:
   }
 
   ObsListener conn_change_lstnr;
-  ObsListener on_delete_lstnr;
   std::vector<std::vector<std::string>> m_tooltips;
   ConnStates m_conn_states;
   const std::vector<ConnectionParams*>& m_connections;
@@ -494,7 +491,7 @@ private:
         : wxCheckBox(parent, wxID_ANY,
                      _("Use Garmin GRMN (Host) mode for uploads")),
           value(g_bGarminHostUpload) {
-      SetValue(g_bGarminHostUpload);
+      wxCheckBox::SetValue(g_bGarminHostUpload);
       Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) { value = GetValue(); });
     }
 
@@ -510,7 +507,7 @@ private:
     explicit FurunoCheckbox(wxWindow* parent)
         : wxCheckBox(parent, wxID_ANY, _("Format uploads for Furuno GP4X")),
           value(g_GPS_Ident) {
-      SetValue(g_GPS_Ident == "FurunoGP3X");
+      wxCheckBox::SetValue(g_GPS_Ident == "FurunoGP3X");
       Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) {
         value = GetValue() ? "FurunoGP3X" : "Generic";
       });
@@ -586,8 +583,9 @@ private:
           _("Filter NMEA course and speed data. Filter period: "));
       checkbox->SetValue(g_bfilter_cogsog);
       hbox->Add(checkbox, wxSizerFlags().Align(wxALIGN_CENTRE));
-      filter_period = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
-                                     wxSize(50, 3 * GetCharWidth()), 0);
+      filter_period =
+          new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
+                         wxSize(50, 3 * wxWindow::GetCharWidth()), 0);
       filter_period->SetValue(std::to_string(g_COGFilterSec));
       hbox->Add(filter_period, wxSizerFlags().Border());
       SetSizer(hbox);
@@ -619,7 +617,7 @@ private:
       hbox->Add(new wxStaticText(this, wxID_ANY, _("NMEA 0183 Talker Id: ")),
                 wxSizerFlags().Align(wxALIGN_CENTRE_VERTICAL).Border());
       text_ctrl = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
-                                 wxSize(50, 3 * GetCharWidth()));
+                                 wxSize(50, 3 * wxWindow::GetCharWidth()));
       text_ctrl->SetValue(g_TalkerIdText);
       hbox->Add(text_ctrl, wxSizerFlags().Border());
       SetSizer(hbox);
@@ -672,12 +670,12 @@ ConnectionsDlg::ConnectionsDlg(
   auto scrolled_window = new ScrolledWindow(this);
   auto conn_grid =
       new Connections(scrolled_window, m_connections, m_evt_add_connection);
-  scrolled_window->AddClient(conn_grid, conn_grid->GetMaxSize(),
-                             conn_grid->GetMinSize());
+  scrolled_window->AddClient(conn_grid, conn_grid->GetGridMaxSize(),
+                             conn_grid->GetGridMinSize());
   vbox->Add(scrolled_window, wxSizerFlags(5).Expand().Border());
   vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
             wxSizerFlags().Border());
-  vbox->Add(0, GetCharHeight(), 1);  // Expanding spacer
+  vbox->Add(0, wxWindow::GetCharHeight(), 1);  // Expanding spacer
   auto panel_flags = wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
   vbox->Add(new GeneralPanel(this), panel_flags);
 
@@ -692,14 +690,14 @@ ConnectionsDlg::ConnectionsDlg(
 
   SetSizer(vbox);
   SetAutoLayout(true);
-  Fit();
+  wxWindow::Fit();
 
-  auto on_evt_update_connections = [&, conn_grid, vbox,
+  auto on_evt_update_connections = [&, conn_grid,
                                     scrolled_window](ObservedEvt&) {
     conn_grid->ReloadGrid(TheConnectionParams());
     conn_grid->Show(conn_grid->GetNumberRows() > 0);
-    scrolled_window->SetMinClientSize(conn_grid->GetMinSize());
-    scrolled_window->SetMaxSize(conn_grid->GetMaxSize());
+    scrolled_window->SetMinClientSize(conn_grid->GetGridMinSize());
+    scrolled_window->SetMaxSize(conn_grid->GetGridMaxSize());
     Layout();
   };
   m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_update_connections);
