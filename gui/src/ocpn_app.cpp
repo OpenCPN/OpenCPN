@@ -659,6 +659,7 @@ ChartCanvas *g_overlayCanvas;
 bool b_inCloseWindow;
 extern int ShowNavWarning();
 bool g_disable_main_toolbar;
+bool g_btenhertz;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;

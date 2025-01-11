@@ -320,6 +320,7 @@ extern int g_chart_zoom_modifier_vector;
 extern bool g_config_display_size_manual;
 extern bool g_PrintingInProgress;
 extern bool g_disable_main_toolbar;
+extern bool g_btenhertz;
 
 #ifdef __WXMSW__
 // System color control support
@@ -5493,10 +5494,12 @@ void MyFrame::CheckToolbarPosition() {
 }
 
 void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
-  // Estimate current state by extrapolating from last "ground truth" state
+  if (!g_btenhertz) return;
 
   if (std::isnan(gCog)) return;
   if (std::isnan(gSog)) return;
+
+  // Estimate current state by extrapolating from last "ground truth" state
 
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
