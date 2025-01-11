@@ -359,6 +359,17 @@ static const long long lNaN = 0xfff8000000000000;
 
 static wxArrayPtrVoid *UserColorTableArray = 0;
 
+// Latest "ground truth" fix, and auxiliaries
+double gLat_gt, gLon_gt;
+double gLat_gt_m1, gLon_gt_m1;
+double gLat_gt_m2, gLon_gt_m2;
+uint64_t fix_time_gt;
+
+double gSog_gt, gCog_gt, gHdt_gt;
+double gCog_gt_m1, gHdt_gt_m1;
+uint64_t hdt_time_gt;
+double cog_rate_gt, hdt_rate_gt;
+
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
 
@@ -706,6 +717,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   gVar = NAN;
   gSog = NAN;
   gCog = NAN;
+  gHdt_gt = NAN;
+  gCog_gt = NAN;
 
   for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
 
@@ -5121,19 +5134,104 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 
 void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   m_fixtime = msg->time;
+  bool b_Pos_retrigger = false;
+  bool b_Hdt_retrigger = false;
+  double hdt_data_interval = 0;
+  double fix_time_interval = 0;
+
+  // clock_gettime(CLOCK_MONOTONIC, &msg->set_time);
+
+  double msgtime = msg->set_time.tv_sec;
+  double m1 = msg->set_time.tv_nsec / 1e9;
+  msgtime += m1;
+
   if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
       ((msg->vflag & POS_VALID) == POS_VALID)) {
-    m_fixtime_hi = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
-    printf("================================  HandleBasicNavMsg\n");
+    printf("\n------------------------Fix GT %.3f\n", msgtime);
+    // Save the reported fix as the best available "ground truth"
+    uint64_t fix_time_gt_last = fix_time_gt;
+    fix_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+    fix_time_interval = (fix_time_gt - fix_time_gt_last) / (double)1e9;
 
-    double measurement[3];
-    measurement[0] = gLat;
-    measurement[1] = gLon;
-    measurement[2] = 0;
+    // shuffle history data
+    gLat_gt_m2 = gLat_gt_m1;
+    gLon_gt_m2 = gLon_gt_m1;
+    gLat_gt_m1 = gLat_gt;
+    gLon_gt_m1 = gLon_gt;
+    gCog_gt_m1 = gCog_gt;
 
-    m_kfilter.predict();
-    m_kfilter.update(measurement);
-    kfilter_live = true;
+    gLat_gt = gLat;
+    gLon_gt = gLon;
+    gCog_gt = gCog;
+    gSog_gt = gSog;
+
+    // Calculate an estimated Rate-of-turn
+    double diff = gCog_gt - gCog_gt_m1;
+    double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
+    tentative_cog_rate_gt *= 1e9;  // degrees / sec
+    // Sanity check, and resolve the "phase" problem at +/- North
+    if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
+      cog_rate_gt = tentative_cog_rate_gt;
+
+    // Calculate the center point of an assumed constant rate turn
+    float_2Dpt p0, p1, p2, pcenter;
+    p0.x = gLon_gt_m2;
+    p0.y = gLat_gt_m2;
+    p1.x = gLon_gt_m1;
+    p1.y = gLat_gt_m1;
+    p2.x = gLon_gt;
+    p2.y = gLat_gt;
+    // pcenter = CircleCenter(p0, p1, p2);
+    // printf("Center:  %g %g\n", pcenter.x, pcenter.y);
+
+    b_Pos_retrigger = true;
+  } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
+    printf("\n-------------------------------HDT GT  %g %.3f\n", gHdt, msgtime);
+    if (!std::isnan(gHdt)) {
+      // Prepare to estimate the gHdt from prior ground truth measurements
+      uint64_t hdt_time_gt_last = hdt_time_gt;
+      hdt_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+      hdt_data_interval = (hdt_time_gt - hdt_time_gt_last) / 1e9;
+      if (hdt_data_interval > .09) {
+        // shuffle points
+        gHdt_gt_m1 = gHdt_gt;
+        gHdt_gt = gHdt;
+
+        // Calculate an estimated Rate-of-change of gHdt
+        double tentative_hdt_rate_gt =
+            (gHdt_gt - gHdt_gt_m1) / (hdt_time_gt - hdt_time_gt_last);
+        tentative_hdt_rate_gt *= 1e9;  // degrees / sec
+        // Sanity check, and resolve the "phase" problem at +/- North
+        if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
+          hdt_rate_gt = tentative_hdt_rate_gt;
+        // printf("-----------------HDT: %g  %g %g %g %g\n", gHdt_gt,
+        // gHdt_gt_m1, hdt_data_interval, tentative_hdt_rate_gt, hdt_rate_gt);
+        b_Hdt_retrigger = true;
+      } else
+        printf("----------------Skip\n");
+    }
+  }
+  if (std::isnan(gHdt)) gHdt_gt = NAN;
+
+  if (b_Pos_retrigger || b_Hdt_retrigger) {
+    printf("-----------------------------dt: %g %g\n", fix_time_interval,
+           hdt_data_interval);
+
+    // If valid fixes are arriving at high enough rate
+    // then use it immediately, refreshing the charts now
+    // Otherwise, allow the ten Hz timer to extrpolate the state
+    if ((b_Pos_retrigger && (fix_time_interval < 0.5)) ||
+        (b_Hdt_retrigger && (hdt_data_interval < 0.5))) {
+      // FrameTenHzTimer.Stop(); //art(1);  // Refresh now
+      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if (cc) {
+          if (g_bopengl) {
+            // cc->Refresh(false);
+          }
+        }
+      }
+    }
   }
 
   //    Maintain average COG for Course Up Mode
@@ -5437,50 +5535,47 @@ void MyFrame::CheckToolbarPosition() {
 }
 
 void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
-  // Estimate current position by extrapolating from last
+  // Estimate current state by extrapolating from last "ground truth" state
+
   if (std::isnan(gCog)) return;
   if (std::isnan(gSog)) return;
-#if 0
+
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
-  uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - m_fixtime_hi;
+  uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - fix_time_gt;
   double diffc = diff / 1e9;  // sec
 
-  m_fixtime_hi = now.tv_sec * 1e9 + now.tv_nsec;
+  printf("ten:  %g\n", diffc);
 
-  double delta_t = diffc / 3600;     // hours
-  double distance = gSog * delta_t;  // NMi
+  // Set gCog as estimated from last two ground truth fixes
+  gCog = gCog_gt + (cog_rate_gt * diffc);
 
-  printf("  delta_t: %g  distance:  %g\n", diffc * 1000, distance);
+  // And the same for gHdt
+  if (!std::isnan(gHdt_gt)) {
+    uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
+    double diffc = diff / 1e9;  // sec
+    gHdt = gHdt_gt + (hdt_rate_gt * diffc);
 
-#if 1  // really fast rectangular not for high latitudes
-  float angr = gCog / 180 * M_PI;
-  gLon = gLon + sin(angr) * distance / 60;
-  gLat = gLat + cos(angr) * distance / 60;
+    printf("Hdt:  %g %g %g %g\n", gHdt_gt, hdt_rate_gt, diffc, gHdt);
+  }
 
-#else  // spherical (close enough)
-  double angr = gCog / 180 * M_PI;
-  double latr = gLat * M_PI / 180;
+  // printf("COG, HDT  %g %g **** %g %g \n", gCog, gHdt, gCog_gt, gHdt_gt);
+
+  double delta_t = diffc / 3600;        // hours
+  double distance = gSog_gt * delta_t;  // NMi
+
+  // spherical (close enough)
+  double angr = gCog_gt / 180 * M_PI;
+  double latr = gLat_gt * M_PI / 180;
   double D = distance / 3443;  // earth radius in nm
   double sD = sin(D), cD = cos(D);
   double sy = sin(latr), cy = cos(latr);
   double sa = sin(angr), ca = cos(angr);
 
-  gLon = gLon + asin(sa * sD / cy) * 180 / M_PI;
+  gLon = gLon_gt + asin(sa * sD / cy) * 180 / M_PI;
   gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
-#endif
-#endif
 
-  if (kfilter_live) {
-    m_kfilter.predict();
-
-    // Get the current state
-    double current_state[6];
-    m_kfilter.getState(current_state);
-
-    gLat = current_state[0];
-    gLon = current_state[1];
-
+  if (1) {
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
       ChartCanvas *cc = g_canvasArray.Item(i);
       if (cc) {
@@ -5490,6 +5585,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
       }
     }
   }
+  FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 }
 
 void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
@@ -5850,9 +5946,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
         if (AnyAISTargetsOnscreen(cc, cc->GetVP())) bnew_view = true;
 
         if (bnew_view) { /* full frame in opengl mode */
-          printf(
-              "********************************************           "
-              "MainTimer Refresh Skipped\n");
           // cc->Refresh(false);
         }
 

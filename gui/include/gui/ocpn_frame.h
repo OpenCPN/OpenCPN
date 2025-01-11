@@ -379,7 +379,6 @@ private:
   wxString prev_locale;
 
   time_t m_fixtime;
-  uint64_t m_fixtime_hi;
   bool b_autofind;
 
   time_t m_last_track_rotation_ts;
