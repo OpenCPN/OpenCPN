@@ -1499,13 +1499,12 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style)
     : pTrackRotateTime(0) {
   Init();
-  SetName("Options");
 
   pParent = parent;
 
   SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
-  wxDialog::Create(parent, id, caption, pos, size, style);
+  wxDialog::Create(parent, id, caption, pos, size, style, "Options");
   SetFont(*dialogFont);
 
   CreateControls();
