@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include <wx/arrstr.h>
 #include <wx/bitmap.h>
 #include <wx/grid.h>
 #include <wx/panel.h>
@@ -477,44 +478,52 @@ public:
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
     SetSizer(sizer);
     auto flags = wxSizerFlags().Border();
-    sizer->Add(new GarminCheckbox(this), flags);
-    sizer->Add(new FurunoCheckbox(this), flags);
+    auto hbox = new wxBoxSizer(wxHORIZONTAL);
+    hbox->Add(new wxStaticText(this, wxID_ANY, _("Upload format:")), flags);
+    hbox->Add(new UploadOptionsChoice(this), flags);
+    sizer->Add(hbox, flags);
   }
 
 private:
-  /** Use Garmin mode for uploads checkbox, bound to g_bGarminHostUpload. */
-  class GarminCheckbox : public wxCheckBox, public ApplyCancel {
-    bool value;
-
+  /** The select Generic, Garmin or Furuno upload options choice */
+  class UploadOptionsChoice : public wxChoice, public ApplyCancel {
   public:
-    GarminCheckbox(wxWindow* parent)
-        : wxCheckBox(parent, wxID_ANY,
-                     _("Use Garmin GRMN (Host) mode for uploads")),
-          value(g_bGarminHostUpload) {
-      wxCheckBox::SetValue(g_bGarminHostUpload);
-      Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) { value = GetValue(); });
+    explicit UploadOptionsChoice(wxWindow* parent) : wxChoice() {
+      wxArrayString wx_choices;
+      for (auto& c : choices) wx_choices.Add(c);
+      Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wx_choices);
+      Cancel();
     }
 
-    void Apply() override { g_bGarminHostUpload = value; }
-    void Cancel() override { SetValue(g_bGarminHostUpload); }
-  };
-
-  /** The "Format uploads for Furuna checkbox, bound to g_GPS_Ident. */
-  class FurunoCheckbox : public wxCheckBox, public ApplyCancel {
-    std::string value;
-
-  public:
-    explicit FurunoCheckbox(wxWindow* parent)
-        : wxCheckBox(parent, wxID_ANY, _("Format uploads for Furuno GP4X")),
-          value(g_GPS_Ident) {
-      wxCheckBox::SetValue(g_GPS_Ident == "FurunoGP3X");
-      Bind(wxEVT_CHECKBOX, [&](wxCommandEvent&) {
-        value = GetValue() ? "FurunoGP3X" : "Generic";
-      });
+    void Cancel() {
+      if (g_bGarminHostUpload)
+        SetSelection(1);
+      else if (g_GPS_Ident == "FurunoGP3X")
+        SetSelection(2);
+      else
+        SetSelection(0);
     }
 
-    void Apply() override { g_GPS_Ident = value; }
-    void Cancel() override { SetValue(g_GPS_Ident == "FurunoGP3X"); }
+    void Apply() {
+      switch (GetSelection()) {
+        case 0:
+          g_bGarminHostUpload = false;
+          g_GPS_Ident = "Generic";
+          break;
+        case 1:
+          g_bGarminHostUpload = true;
+          g_GPS_Ident = "Generic";
+          break;
+        case 2:
+          g_bGarminHostUpload = false;
+          g_GPS_Ident = "FurunoGP3X";
+          break;
+      }
+    }
+
+    const std::array<wxString, 3> choices = {
+        _("Generic"), _("Use Garmin GRMN (Host) mode for uploads"),
+        _("Format uploads for Furuno GP4X")};
   };
 };
 
