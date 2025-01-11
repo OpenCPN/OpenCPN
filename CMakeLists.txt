@@ -980,7 +980,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
-    ${GUI_SRC_DIR}/KalmanFilter3D.cpp
 
 )
 

@@ -3926,9 +3926,6 @@ void glChartCanvas::Render() {
   m_displayScale = GetContentScaleFactor();
 #endif
 
-  static int nrender;
-  printf("render %d\n", nrender++);
-
   m_last_render_time = wxDateTime::Now().GetTicks();
 
   // we don't care about jobs that are now off screen

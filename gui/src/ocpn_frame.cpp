@@ -137,8 +137,6 @@
 #include "CanvasOptions.h"
 #include "udev_rule_mgr.h"
 
-#include "KalmanFilter3D.h"
-
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
@@ -727,9 +725,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   double dt = 2.0;                     // Time interval
   double process_noise_std = 1.0;      // Process noise standard deviation
   double measurement_noise_std = 0.5;  // Measurement noise standard deviation
-
-  m_kfilter.Init(dt, process_noise_std, measurement_noise_std);
-  kfilter_live = false;
 
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
   initIXNetSystem();
@@ -5139,15 +5134,12 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   double hdt_data_interval = 0;
   double fix_time_interval = 0;
 
-  // clock_gettime(CLOCK_MONOTONIC, &msg->set_time);
-
   double msgtime = msg->set_time.tv_sec;
   double m1 = msg->set_time.tv_nsec / 1e9;
   msgtime += m1;
 
   if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
       ((msg->vflag & POS_VALID) == POS_VALID)) {
-    printf("\n------------------------Fix GT %.3f\n", msgtime);
     // Save the reported fix as the best available "ground truth"
     uint64_t fix_time_gt_last = fix_time_gt;
     fix_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
@@ -5173,25 +5165,15 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
     if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
       cog_rate_gt = tentative_cog_rate_gt;
 
-    // Calculate the center point of an assumed constant rate turn
-    float_2Dpt p0, p1, p2, pcenter;
-    p0.x = gLon_gt_m2;
-    p0.y = gLat_gt_m2;
-    p1.x = gLon_gt_m1;
-    p1.y = gLat_gt_m1;
-    p2.x = gLon_gt;
-    p2.y = gLat_gt;
-    // pcenter = CircleCenter(p0, p1, p2);
-    // printf("Center:  %g %g\n", pcenter.x, pcenter.y);
-
     b_Pos_retrigger = true;
   } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
-    printf("\n-------------------------------HDT GT  %g %.3f\n", gHdt, msgtime);
     if (!std::isnan(gHdt)) {
       // Prepare to estimate the gHdt from prior ground truth measurements
       uint64_t hdt_time_gt_last = hdt_time_gt;
       hdt_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
       hdt_data_interval = (hdt_time_gt - hdt_time_gt_last) / 1e9;
+
+      // Skip data reports that come too frequently
       if (hdt_data_interval > .09) {
         // shuffle points
         gHdt_gt_m1 = gHdt_gt;
@@ -5204,35 +5186,11 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
         // Sanity check, and resolve the "phase" problem at +/- North
         if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
           hdt_rate_gt = tentative_hdt_rate_gt;
-        // printf("-----------------HDT: %g  %g %g %g %g\n", gHdt_gt,
-        // gHdt_gt_m1, hdt_data_interval, tentative_hdt_rate_gt, hdt_rate_gt);
         b_Hdt_retrigger = true;
-      } else
-        printf("----------------Skip\n");
-    }
-  }
-  if (std::isnan(gHdt)) gHdt_gt = NAN;
-
-  if (b_Pos_retrigger || b_Hdt_retrigger) {
-    printf("-----------------------------dt: %g %g\n", fix_time_interval,
-           hdt_data_interval);
-
-    // If valid fixes are arriving at high enough rate
-    // then use it immediately, refreshing the charts now
-    // Otherwise, allow the ten Hz timer to extrpolate the state
-    if ((b_Pos_retrigger && (fix_time_interval < 0.5)) ||
-        (b_Hdt_retrigger && (hdt_data_interval < 0.5))) {
-      // FrameTenHzTimer.Stop(); //art(1);  // Refresh now
-      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if (cc) {
-          if (g_bopengl) {
-            // cc->Refresh(false);
-          }
-        }
       }
     }
   }
+  if (std::isnan(gHdt)) gHdt_gt = NAN;  // Handle loss of signal
 
   //    Maintain average COG for Course Up Mode
   if (!std::isnan(gCog)) {
@@ -5545,8 +5503,6 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - fix_time_gt;
   double diffc = diff / 1e9;  // sec
 
-  printf("ten:  %g\n", diffc);
-
   // Set gCog as estimated from last two ground truth fixes
   gCog = gCog_gt + (cog_rate_gt * diffc);
 
@@ -5555,12 +5511,9 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
     uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
     double diffc = diff / 1e9;  // sec
     gHdt = gHdt_gt + (hdt_rate_gt * diffc);
-
-    printf("Hdt:  %g %g %g %g\n", gHdt_gt, hdt_rate_gt, diffc, gHdt);
   }
 
-  // printf("COG, HDT  %g %g **** %g %g \n", gCog, gHdt, gCog_gt, gHdt_gt);
-
+  // Estimate lat/lon position
   double delta_t = diffc / 3600;        // hours
   double distance = gSog_gt * delta_t;  // NMi
 
@@ -5575,13 +5528,11 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   gLon = gLon_gt + asin(sa * sD / cy) * 180 / M_PI;
   gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
 
-  if (1) {
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) {
-        if (g_bopengl) {
-          cc->Refresh(false);
-        }
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      if (g_bopengl) {
+        cc->Refresh(false);
       }
     }
   }
