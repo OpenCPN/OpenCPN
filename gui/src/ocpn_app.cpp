@@ -683,6 +683,7 @@ ChartCanvas *g_overlayCanvas;
 bool b_inCloseWindow;
 extern int ShowNavWarning();
 bool g_disable_main_toolbar;
+bool g_btenhertz;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -1861,6 +1862,9 @@ bool MyApp::OnInit() {
 
   //      Start up the ViewPort Rotation angle Averaging Timer....
   gFrame->FrameCOGTimer.Start(2000, wxTIMER_CONTINUOUS);
+
+  //      Start up the Ten Hz timer....
+  gFrame->FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
   //    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."),
   //    init_sw.Time() ) );

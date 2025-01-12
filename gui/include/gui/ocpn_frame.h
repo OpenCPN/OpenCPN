@@ -154,6 +154,7 @@ public:
   void OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent& event);
   void OnIconize(wxIconizeEvent& event);
   void OnBellsFinished(wxCommandEvent& event);
+  void OnFrameTenHzTimer(wxTimerEvent& event);
 
 #ifdef wxHAS_POWER_EVENTS
   void OnSuspending(wxPowerEvent& event);
@@ -289,6 +290,7 @@ public:
   wxTimer FrameCOGTimer;
   wxTimer MemFootTimer;
   wxTimer m_resizeTimer;
+  wxTimer FrameTenHzTimer;
 
   int m_BellsToPlay;
   wxTimer BellsTimer;

@@ -1070,7 +1070,7 @@ void glChartCanvas::BuildFBO() {
   /* invalidate cache */
   Invalidate();
 
-  glClear(GL_COLOR_BUFFER_BIT);
+  // glClear(GL_COLOR_BUFFER_BIT);
   m_b_BuiltFBO = true;
 
   return;
@@ -2282,13 +2282,15 @@ void glChartCanvas::DrawEmboss(ocpnDC &dc, emboss_data *emboss) {
 
 void glChartCanvas::ShipDraw(ocpnDC &dc) {
   if (!m_pParentCanvas->GetVP().IsValid()) return;
-  wxPoint lGPSPoint, lShipMidPoint, GPSOffsetPixels(0, 0);
+  wxPoint GPSOffsetPixels(0, 0);
+  wxPoint2DDouble lGPSPoint, lShipMidPoint;
 
   //  COG/SOG may be undefined in NMEA data stream
   float pCog = std::isnan(gCog) ? 0 : gCog;
   float pSog = std::isnan(gSog) ? 0 : gSog;
 
-  m_pParentCanvas->GetCanvasPointPix(gLat, gLon, &lGPSPoint);
+  m_pParentCanvas->GetDoubleCanvasPointPixVP(m_pParentCanvas->GetVP(), gLat,
+                                             gLon, &lGPSPoint);
   lShipMidPoint = lGPSPoint;
 
   //  Draw the icon rotated to the COG
@@ -2302,16 +2304,16 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
   //    Calculate the ownship drawing angle icon_rad using an assumed 10 minute
   //    predictor
   double osd_head_lat, osd_head_lon;
-  wxPoint osd_head_point;
+  wxPoint2DDouble osd_head_point;
 
   ll_gc_ll(gLat, gLon, icon_hdt, pSog * 10. / 60., &osd_head_lat,
            &osd_head_lon);
 
-  m_pParentCanvas->GetCanvasPointPix(osd_head_lat, osd_head_lon,
-                                     &osd_head_point);
+  m_pParentCanvas->GetDoubleCanvasPointPixVP(
+      m_pParentCanvas->GetVP(), osd_head_lat, osd_head_lon, &osd_head_point);
 
-  float icon_rad = atan2f((float)(osd_head_point.y - lShipMidPoint.y),
-                          (float)(osd_head_point.x - lShipMidPoint.x));
+  double icon_rad = atan2f((float)(osd_head_point.m_y - lShipMidPoint.m_y),
+                           (float)(osd_head_point.m_x - lShipMidPoint.m_x));
   icon_rad += (float)PI;
 
   if (pSog < 0.2)
@@ -2363,14 +2365,14 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
           wxBrush(GetGlobalColor(_T ( "URED" )), wxBRUSHSTYLE_TRANSPARENT));
 
       // start with cross
-      dc.DrawLine((-v * 1.2) + lShipMidPoint.x, lShipMidPoint.y,
-                  (v * 1.2) + lShipMidPoint.x, lShipMidPoint.y);
-      dc.DrawLine(lShipMidPoint.x, (-v * 1.2) + lShipMidPoint.y,
-                  lShipMidPoint.x, (v * 1.2) + lShipMidPoint.y);
+      dc.DrawLine((-v * 1.2) + lShipMidPoint.m_x, lShipMidPoint.m_y,
+                  (v * 1.2) + lShipMidPoint.m_x, lShipMidPoint.m_y);
+      dc.DrawLine(lShipMidPoint.m_x, (-v * 1.2) + lShipMidPoint.m_y,
+                  lShipMidPoint.m_x, (v * 1.2) + lShipMidPoint.m_y);
 
       //  Two circles
-      dc.StrokeCircle(lShipMidPoint.x, lShipMidPoint.y, v);
-      dc.StrokeCircle(lShipMidPoint.x, lShipMidPoint.y, 0.6 * v);
+      dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, v);
+      dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, 0.6 * v);
       img_height = 20;
     } else {
       int draw_color = SHIP_INVALID;
@@ -2473,8 +2475,6 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
 
       glEnable(GL_BLEND);
 
-      int x = lShipMidPoint.x, y = lShipMidPoint.y;
-
       // Scale the generic icon to ChartScaleFactor, slightly softened....
       if ((g_ShipScaleFactorExp > 1.0) && (g_OwnShipIconType == 0)) {
         scale_factor_x = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
@@ -2550,7 +2550,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         coords[6] = -w / 2;
         coords[7] = h / 2;
 
-        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(), x, y,
+        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(),
+                            lShipMidPoint.m_x, lShipMidPoint.m_y,
                             icon_rad - PI / 2);
 
         glDisable(GL_TEXTURE_2D);
@@ -2590,7 +2591,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         coords[6] = -w / 2;
         coords[7] = h / 2;
 
-        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(), x, y,
+        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(),
+                            lShipMidPoint.m_x, lShipMidPoint.m_y,
                             icon_rad - PI / 2);
 
         glDisable(GL_TEXTURE_2D);
@@ -2618,7 +2620,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         shipPoints[2].y = 42 * scale_factor_y;
         shipPoints[3].x = 0 * scale_factor_x;
         shipPoints[3].y = 42 * scale_factor_y;
-        dc.DrawPolygon(4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1,
+        dc.DrawPolygon(4, shipPoints, lShipMidPoint.m_x, lShipMidPoint.m_y, 1,
                        icon_rad - PI / 2);
 
         shipPoints[0].x = 0 * scale_factor_x;
@@ -2629,7 +2631,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         shipPoints[2].y = -28 * scale_factor_y;
         shipPoints[3].x = 0 * scale_factor_x;
         shipPoints[3].y = -28 * scale_factor_y;
-        dc.DrawPolygon(4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1,
+        dc.DrawPolygon(4, shipPoints, lShipMidPoint.m_x, lShipMidPoint.m_y, 1,
                        icon_rad - PI / 2);
 
         shipPoints[0].x = 0 * scale_factor_x;
@@ -2640,7 +2642,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         shipPoints[2].y = 42 * scale_factor_y;
         shipPoints[3].x = 0 * scale_factor_x;
         shipPoints[3].y = 42 * scale_factor_y;
-        dc.DrawPolygon(4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1,
+        dc.DrawPolygon(4, shipPoints, lShipMidPoint.m_x, lShipMidPoint.m_y, 1,
                        icon_rad - PI / 2);
 
         shipPoints[0].x = 0 * scale_factor_x;
@@ -2651,7 +2653,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         shipPoints[2].y = -28 * scale_factor_y;
         shipPoints[3].x = 0 * scale_factor_x;
         shipPoints[3].y = -28 * scale_factor_y;
-        dc.DrawPolygon(4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1,
+        dc.DrawPolygon(4, shipPoints, lShipMidPoint.m_x, lShipMidPoint.m_y, 1,
                        icon_rad - PI / 2);
 
         // draw with cross
@@ -2667,8 +2669,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
             ((p1y)*cos(icon_rad - PI / 2)) + ((p1x)*sin(icon_rad - PI / 2));
         double p2yr =
             ((p2y)*cos(icon_rad - PI / 2)) + ((p2x)*sin(icon_rad - PI / 2));
-        dc.DrawLine(p1xr + lShipMidPoint.x, p1yr + lShipMidPoint.y,
-                    p2xr + lShipMidPoint.x, p2yr + lShipMidPoint.y);
+        dc.DrawLine(p1xr + lShipMidPoint.m_x, p1yr + lShipMidPoint.m_y,
+                    p2xr + lShipMidPoint.m_x, p2yr + lShipMidPoint.m_y);
 
         p1x = 0;
         p2x = 0;
@@ -2678,8 +2680,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         p2xr = ((p2x)*cos(icon_rad - PI / 2)) - ((p2y)*sin(icon_rad - PI / 2));
         p1yr = ((p1y)*cos(icon_rad - PI / 2)) + ((p1x)*sin(icon_rad - PI / 2));
         p2yr = ((p2y)*cos(icon_rad - PI / 2)) + ((p2x)*sin(icon_rad - PI / 2));
-        dc.DrawLine(p1xr + lShipMidPoint.x, p1yr + lShipMidPoint.y,
-                    p2xr + lShipMidPoint.x, p2yr + lShipMidPoint.y);
+        dc.DrawLine(p1xr + lShipMidPoint.m_x, p1yr + lShipMidPoint.m_y,
+                    p2xr + lShipMidPoint.m_x, p2yr + lShipMidPoint.m_y);
       }
 
       img_height = ownShipLength * scale_factor_y;
@@ -2687,12 +2689,11 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       //      Reference point, where the GPS antenna is
       if (m_pParentCanvas->m_pos_image_user) gps_circle_radius = 1;
 
-      float cx = lGPSPoint.x, cy = lGPSPoint.y;
       wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
       dc.SetPen(ppPen1);
       dc.SetBrush(wxBrush(GetGlobalColor(_T ( "CHWHT" ))));
 
-      dc.StrokeCircle(cx, cy, gps_circle_radius);
+      dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, gps_circle_radius);
     }
 
     //        glDisableClientState(GL_VERTEX_ARRAY);

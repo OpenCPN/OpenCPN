@@ -117,6 +117,7 @@ extern ChartCanvas* g_focusCanvas;
 extern ChartCanvas* g_overlayCanvas;
 extern bool g_bquiting;
 extern bool g_disable_main_toolbar;
+extern bool g_btenhertz;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -2727,3 +2728,7 @@ bool GetEnableCanvasFocusBar(int CanvasIndex) {
   }
   return false;
 }
+
+bool GetEnableTenHertzUpdate() { return g_btenhertz; }
+
+void EnableTenHertzUpdate(bool enable) { g_btenhertz = enable; }
