@@ -265,6 +265,10 @@ private:
 
   /** Set up column attributes: alignment, font size, read-only, etc. */
   void SetColAttributes(wxWindow* parent) {
+    if (IsWindows()) {
+      // Set all cells to global color scheme
+      SetDefaultCellBackgroundColour(GetGlobalColor("DILG1"));
+    }
     auto enable_attr = new wxGridCellAttr();
     enable_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
     enable_attr->SetRenderer(new wxGridCellBoolRenderer());
