@@ -113,7 +113,7 @@ private:
        {_("Start measure mode"), "M, F4",
                                    _("Stop measure mode"), "Esc"},
        {_("Drop mark"), _("Ctrl O, space bar"),
-                                   "", ""}}};
+                                   _("Open NMEA debugger"), "E"}}};
 
   const Messages kMacMessages{
       {{_("Zoom in"), "+, PgUp",

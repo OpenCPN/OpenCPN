@@ -45,6 +45,7 @@
 #include "model/conn_params.h"
 #include "model/cutil.h"
 #include "model/geodesic.h"
+#include "model/gui.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
@@ -82,6 +83,7 @@
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"
+#include "NMEALogWindow.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
@@ -2998,6 +3000,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           }
           break;
         }
+
+        case 'E':
+          if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
+            auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
+            NMEALogWindow::GetInstance().Create(top_window, 35);
+          }
+          wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+          break;
 
         case 'L':
           SetShowENCLights(!GetShowENCLights());
