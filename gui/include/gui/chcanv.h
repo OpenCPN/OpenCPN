@@ -768,13 +768,14 @@ private:
   wxColour ShipColor();
 
   void ComputeShipScaleFactor(float icon_hdt, int ownShipWidth,
-                              int ownShipLength, wxPoint &lShipMidPoint,
-                              wxPoint &GpsOffsetPixels, wxPoint lGPSPoint,
-                              float &scale_factor_x, float &scale_factor_y);
+                              int ownShipLength, wxPoint2DDouble &lShipMidPoint,
+                              wxPoint &GpsOffsetPixels,
+                              wxPoint2DDouble lGPSPoint, float &scale_factor_x,
+                              float &scale_factor_y);
 
-  void ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint);
+  void ShipDrawLargeScale(ocpnDC &dc, wxPoint2DDouble lShipMidPoint);
   void ShipIndicatorsDraw(ocpnDC &dc, int img_height, wxPoint GPSOffsetPixels,
-                          wxPoint lGPSPoint);
+                          wxPoint2DDouble lGPSPoint);
 
   ChInfoWin *m_pCIWin;
 

@@ -320,6 +320,7 @@ extern int g_chart_zoom_modifier_vector;
 extern bool g_config_display_size_manual;
 extern bool g_PrintingInProgress;
 extern bool g_disable_main_toolbar;
+extern bool g_btenhertz;
 
 #ifdef __WXMSW__
 // System color control support
@@ -356,6 +357,17 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 static wxArrayPtrVoid *UserColorTableArray = 0;
+
+// Latest "ground truth" fix, and auxiliaries
+double gLat_gt, gLon_gt;
+double gLat_gt_m1, gLon_gt_m1;
+double gLat_gt_m2, gLon_gt_m2;
+uint64_t fix_time_gt;
+
+double gSog_gt, gCog_gt, gHdt_gt;
+double gCog_gt_m1, gHdt_gt_m1;
+uint64_t hdt_time_gt;
+double cog_rate_gt, hdt_rate_gt;
 
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
@@ -593,6 +605,7 @@ EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
 EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
 EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
+EVT_TIMER(FRANE_TENHZ_TIMER, MyFrame::OnFrameTenHzTimer)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED,
             MyFrame::RequestNewToolbarArgEvent)
@@ -676,6 +689,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //      Direct the Toolbar Animation timer to this frame
   ToolbarAnimateTimer.SetOwner(this, TOOLBAR_ANIMATE_TIMER);
 
+  FrameTenHzTimer.SetOwner(this, FRANE_TENHZ_TIMER);
+
 #ifdef __ANDROID__
 //    m_PrefTimer.SetOwner( this, ANDROID_PREF_TIMER );
 //    Connect( m_PrefTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler(
@@ -701,10 +716,16 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   gVar = NAN;
   gSog = NAN;
   gCog = NAN;
+  gHdt_gt = NAN;
+  gCog_gt = NAN;
 
   for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
 
   m_fixtime = -1;
+
+  double dt = 2.0;                     // Time interval
+  double process_noise_std = 1.0;      // Process noise standard deviation
+  double measurement_noise_std = 0.5;  // Measurement noise standard deviation
 
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
   initIXNetSystem();
@@ -806,6 +827,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
 MyFrame::~MyFrame() {
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
   DestroyDeviceNotFoundDialogs();
 
   delete ChartData;
@@ -1504,6 +1526,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
 
 void MyFrame::FastClose() {
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
   quitflag++;            // signal to the timer loop
   FrameTimer1.Start(1);  // real quick now...
 }
@@ -1621,6 +1644,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   g_bframemax = IsMaximized();
 
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
+
   FrameCOGTimer.Stop();
 
   TrackOff();
@@ -4515,6 +4540,7 @@ void MyFrame::ChartsRefresh() {
   bool b_run = FrameTimer1.IsRunning();
 
   FrameTimer1.Stop();  // stop other asynchronous activity
+  FrameTenHzTimer.Stop();
 
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -4529,6 +4555,7 @@ void MyFrame::ChartsRefresh() {
   }
 
   if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
   AbstractPlatform::HideBusySpinner();
 }
@@ -4549,6 +4576,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
                                          const wxString &ChartListFileName) {
   bool b_run = FrameTimer1.IsRunning();
   FrameTimer1.Stop();  // stop other asynchronous activity
+  FrameTenHzTimer.Stop();
+
   bool b_runCOGTimer = FrameCOGTimer.IsRunning();
   FrameCOGTimer.Stop();
 
@@ -4622,6 +4651,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
   // Restart timers, if necessary
   if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+
   if (b_runCOGTimer) {
     //    Restart the COG rotation timer, max frequency is 10 hz.
     int period_ms = 100;
@@ -5099,6 +5130,68 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 
 void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   m_fixtime = msg->time;
+  bool b_Pos_retrigger = false;
+  bool b_Hdt_retrigger = false;
+  double hdt_data_interval = 0;
+  double fix_time_interval = 0;
+
+  double msgtime = msg->set_time.tv_sec;
+  double m1 = msg->set_time.tv_nsec / 1e9;
+  msgtime += m1;
+
+  if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
+      ((msg->vflag & POS_VALID) == POS_VALID)) {
+    // Save the reported fix as the best available "ground truth"
+    uint64_t fix_time_gt_last = fix_time_gt;
+    fix_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+    fix_time_interval = (fix_time_gt - fix_time_gt_last) / (double)1e9;
+
+    // shuffle history data
+    gLat_gt_m2 = gLat_gt_m1;
+    gLon_gt_m2 = gLon_gt_m1;
+    gLat_gt_m1 = gLat_gt;
+    gLon_gt_m1 = gLon_gt;
+    gCog_gt_m1 = gCog_gt;
+
+    gLat_gt = gLat;
+    gLon_gt = gLon;
+    gCog_gt = gCog;
+    gSog_gt = gSog;
+
+    // Calculate an estimated Rate-of-turn
+    double diff = gCog_gt - gCog_gt_m1;
+    double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
+    tentative_cog_rate_gt *= 1e9;  // degrees / sec
+    // Sanity check, and resolve the "phase" problem at +/- North
+    if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
+      cog_rate_gt = tentative_cog_rate_gt;
+
+    b_Pos_retrigger = true;
+  } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
+    if (!std::isnan(gHdt)) {
+      // Prepare to estimate the gHdt from prior ground truth measurements
+      uint64_t hdt_time_gt_last = hdt_time_gt;
+      hdt_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+      hdt_data_interval = (hdt_time_gt - hdt_time_gt_last) / 1e9;
+
+      // Skip data reports that come too frequently
+      if (hdt_data_interval > .09) {
+        // shuffle points
+        gHdt_gt_m1 = gHdt_gt;
+        gHdt_gt = gHdt;
+
+        // Calculate an estimated Rate-of-change of gHdt
+        double tentative_hdt_rate_gt =
+            (gHdt_gt - gHdt_gt_m1) / (hdt_time_gt - hdt_time_gt_last);
+        tentative_hdt_rate_gt *= 1e9;  // degrees / sec
+        // Sanity check, and resolve the "phase" problem at +/- North
+        if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
+          hdt_rate_gt = tentative_hdt_rate_gt;
+        b_Hdt_retrigger = true;
+      }
+    }
+  }
+  if (std::isnan(gHdt)) gHdt_gt = NAN;  // Handle loss of signal
 
   //    Maintain average COG for Course Up Mode
   if (!std::isnan(gCog)) {
@@ -5400,6 +5493,55 @@ void MyFrame::CheckToolbarPosition() {
 #endif
 }
 
+void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
+  if (!g_btenhertz) return;
+
+  if (std::isnan(gCog)) return;
+  if (std::isnan(gSog)) return;
+
+  // Estimate current state by extrapolating from last "ground truth" state
+
+  struct timespec now;
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - fix_time_gt;
+  double diffc = diff / 1e9;  // sec
+
+  // Set gCog as estimated from last two ground truth fixes
+  gCog = gCog_gt + (cog_rate_gt * diffc);
+
+  // And the same for gHdt
+  if (!std::isnan(gHdt_gt)) {
+    uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
+    double diffc = diff / 1e9;  // sec
+    gHdt = gHdt_gt + (hdt_rate_gt * diffc);
+  }
+
+  // Estimate lat/lon position
+  double delta_t = diffc / 3600;        // hours
+  double distance = gSog_gt * delta_t;  // NMi
+
+  // spherical (close enough)
+  double angr = gCog_gt / 180 * M_PI;
+  double latr = gLat_gt * M_PI / 180;
+  double D = distance / 3443;  // earth radius in nm
+  double sD = sin(D), cD = cos(D);
+  double sy = sin(latr), cy = cos(latr);
+  double sa = sin(angr), ca = cos(angr);
+
+  gLon = gLon_gt + asin(sa * sD / cy) * 180 / M_PI;
+  gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
+
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      if (g_bopengl) {
+        cc->Refresh(false);
+      }
+    }
+  }
+  FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+}
+
 void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   CheckToolbarPosition();
 
@@ -5480,6 +5622,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (quitflag) {
     wxLogMessage(_T("Got quitflag from SIGNAL"));
     FrameTimer1.Stop();
+    FrameTenHzTimer.Stop();
+
     Close();
     return;
   }
@@ -5487,6 +5631,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (bDBUpdateInProgress) return;
 
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
 
   //  If tracking carryover was found in config file, enable tracking as soon as
   //  GPS become valid
@@ -5641,6 +5786,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   // If no alerts are on, then safe to resume sleeping
   if (g_bSleep && !AnchorAlertOn1 && !AnchorAlertOn2) {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+    FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
     return;
   }
 
@@ -5759,8 +5905,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
         if (AnyAISTargetsOnscreen(cc, cc->GetVP())) bnew_view = true;
 
-        if (bnew_view) /* full frame in opengl mode */
-          cc->Refresh(false);
+        if (bnew_view) { /* full frame in opengl mode */
+          // cc->Refresh(false);
+        }
+
 #endif
       } else {
         //  Invalidate the ChartCanvas window appropriately
@@ -5837,8 +5985,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   if (g_unit_test_2)
     FrameTimer1.Start(TIMER_GFRAME_1 * 3, wxTIMER_CONTINUOUS);
-  else
+  else {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+    FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+  }
 }
 
 double MyFrame::GetMag(double a, double lat, double lon) {

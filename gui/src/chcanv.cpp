@@ -5529,7 +5529,8 @@ wxColour ChartCanvas::ShipColor() {
   return GetGlobalColor(_T ( "URED" ));  // default is OK
 }
 
-void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint) {
+void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
+                                     wxPoint2DDouble lShipMidPoint) {
   dc.SetPen(wxPen(PredColor(), 2));
 
   if (SHIP_NORMAL == m_ownship_state)
@@ -5537,18 +5538,18 @@ void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint) {
   else
     dc.SetBrush(wxBrush(GetGlobalColor(_T ( "YELO1" ))));
 
-  dc.DrawEllipse(lShipMidPoint.x - 10, lShipMidPoint.y - 10, 20, 20);
-  dc.DrawEllipse(lShipMidPoint.x - 6, lShipMidPoint.y - 6, 12, 12);
+  dc.DrawEllipse(lShipMidPoint.m_x - 10, lShipMidPoint.m_y - 10, 20, 20);
+  dc.DrawEllipse(lShipMidPoint.m_x - 6, lShipMidPoint.m_y - 6, 12, 12);
 
-  dc.DrawLine(lShipMidPoint.x - 12, lShipMidPoint.y, lShipMidPoint.x + 12,
-              lShipMidPoint.y);
-  dc.DrawLine(lShipMidPoint.x, lShipMidPoint.y - 12, lShipMidPoint.x,
-              lShipMidPoint.y + 12);
+  dc.DrawLine(lShipMidPoint.m_x - 12, lShipMidPoint.m_y, lShipMidPoint.m_x + 12,
+              lShipMidPoint.m_y);
+  dc.DrawLine(lShipMidPoint.m_x, lShipMidPoint.m_y - 12, lShipMidPoint.m_x,
+              lShipMidPoint.m_y + 12);
 }
 
 void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                                      wxPoint GPSOffsetPixels,
-                                     wxPoint lGPSPoint) {
+                                     wxPoint2DDouble lGPSPoint) {
   // Develop a uniform length for course predictor line dash length, based on
   // physical display size Use this reference length to size all other graphics
   // elements
@@ -5611,8 +5612,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
   // draw course over ground if they are longer than the ship
   wxPoint lShipMidPoint;
-  lShipMidPoint.x = lGPSPoint.x + GPSOffsetPixels.x;
-  lShipMidPoint.y = lGPSPoint.y + GPSOffsetPixels.y;
+  lShipMidPoint.x = lGPSPoint.m_x + GPSOffsetPixels.x;
+  lShipMidPoint.y = lGPSPoint.m_y + GPSOffsetPixels.y;
   float lpp = sqrtf(powf((float)(lPredPoint.x - lShipMidPoint.x), 2) +
                     powf((float)(lPredPoint.y - lShipMidPoint.y), 2));
 
@@ -5641,7 +5642,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         ppPen2.SetDashes(2, dash_long);
       dc.SetPen(ppPen2);
       dc.StrokeLine(
-          lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+          lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
           lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
 
       if (g_cog_predictor_width > 1) {
@@ -5656,9 +5657,10 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         if (g_cog_predictor_style == (wxPenStyle)wxUSER_DASH)
           ppPen3.SetDashes(2, dash_long3);
         dc.SetPen(ppPen3);
-        dc.StrokeLine(
-            lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-            lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
+        dc.StrokeLine(lGPSPoint.m_x + GPSOffsetPixels.x,
+                      lGPSPoint.m_y + GPSOffsetPixels.y,
+                      lPredPoint.x + GPSOffsetPixels.x,
+                      lPredPoint.y + GPSOffsetPixels.y);
       }
 
       if (g_cog_predictor_endmarker) {
@@ -5723,7 +5725,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
     dc.SetPen(ppPen2);
     dc.StrokeLine(
-        lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+        lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
         lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y);
 
     wxPen ppPen1(cPred, g_cog_predictor_width / 3, wxPENSTYLE_SOLID);
@@ -5762,8 +5764,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
     ll_gc_ll(gLat, gLon, 0, factor, &tlat, &tlon);
     GetCanvasPointPix(tlat, tlon, &r);
 
-    double lpp = sqrt(pow((double)(lGPSPoint.x - r.x), 2) +
-                      pow((double)(lGPSPoint.y - r.y), 2));
+    double lpp = sqrt(pow((double)(lGPSPoint.m_x - r.x), 2) +
+                      pow((double)(lGPSPoint.m_y - r.y), 2));
     int pix_radius = (int)lpp;
 
     extern wxColor GetDimColor(wxColor c);
@@ -5775,14 +5777,14 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
     dc.SetBrush(wxBrush(rangeringcolour, wxBRUSHSTYLE_TRANSPARENT));
 
     for (int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++)
-      dc.StrokeCircle(lGPSPoint.x, lGPSPoint.y, i * pix_radius);
+      dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, i * pix_radius);
   }
 }
 
 void ChartCanvas::ComputeShipScaleFactor(
-    float icon_hdt, int ownShipWidth, int ownShipLength, wxPoint &lShipMidPoint,
-    wxPoint &GPSOffsetPixels, wxPoint lGPSPoint, float &scale_factor_x,
-    float &scale_factor_y) {
+    float icon_hdt, int ownShipWidth, int ownShipLength,
+    wxPoint2DDouble &lShipMidPoint, wxPoint &GPSOffsetPixels,
+    wxPoint2DDouble lGPSPoint, float &scale_factor_x, float &scale_factor_y) {
   float screenResolution = m_pix_per_mm;
 
   //  Calculate the true ship length in exact pixels
@@ -5827,9 +5829,11 @@ void ChartCanvas::ComputeShipScaleFactor(
   ll_gc_ll(ship_mid_lat, ship_mid_lon, icon_hdt - 90., dx, &ship_mid_lat1,
            &ship_mid_lon1);
 
-  GetCanvasPointPix(ship_mid_lat1, ship_mid_lon1, &lShipMidPoint);
-  GPSOffsetPixels.x = lShipMidPoint.x - lGPSPoint.x;
-  GPSOffsetPixels.y = lShipMidPoint.y - lGPSPoint.y;
+  GetDoubleCanvasPointPixVP(GetVP(), ship_mid_lat1, ship_mid_lon1,
+                            &lShipMidPoint);
+
+  GPSOffsetPixels.x = lShipMidPoint.m_x - lGPSPoint.m_x;
+  GPSOffsetPixels.y = lShipMidPoint.m_y - lGPSPoint.m_y;
 
   float scale_factor = shipLength_px / ownShipLength;
 
@@ -5847,13 +5851,15 @@ void ChartCanvas::ComputeShipScaleFactor(
 void ChartCanvas::ShipDraw(ocpnDC &dc) {
   if (!GetVP().IsValid()) return;
 
-  wxPoint lGPSPoint, lShipMidPoint, GPSOffsetPixels(0, 0);
+  wxPoint GPSOffsetPixels(0, 0);
+  wxPoint2DDouble lGPSPoint, lShipMidPoint;
 
   //  COG/SOG may be undefined in NMEA data stream
   float pCog = std::isnan(gCog) ? 0 : gCog;
   float pSog = std::isnan(gSog) ? 0 : gSog;
 
-  GetCanvasPointPix(gLat, gLon, &lGPSPoint);
+  GetDoubleCanvasPointPixVP(GetVP(), gLat, gLon, &lGPSPoint);
+
   lShipMidPoint = lGPSPoint;
 
   //  Draw the icon rotated to the COG
@@ -5874,8 +5880,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
   GetCanvasPointPix(osd_head_lat, osd_head_lon, &osd_head_point);
 
-  float icon_rad = atan2f((float)(osd_head_point.y - lShipMidPoint.y),
-                          (float)(osd_head_point.x - lShipMidPoint.x));
+  float icon_rad = atan2f((float)(osd_head_point.y - lShipMidPoint.m_y),
+                          (float)(osd_head_point.x - lShipMidPoint.m_x));
   icon_rad += (float)PI;
 
   if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + GetVP().rotation;
@@ -5952,13 +5958,14 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
           int h = os_bm.GetHeight();
           img_height = h;
 
-          dc.DrawBitmap(os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2,
-                        true);
+          dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+                        lShipMidPoint.m_y - h / 2, true);
 
           // Maintain dirty box,, missing in __WXMSW__ library
-          dc.CalcBoundingBox(lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2);
-          dc.CalcBoundingBox(lShipMidPoint.x - w / 2 + w,
-                             lShipMidPoint.y - h / 2 + h);
+          dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+                             lShipMidPoint.m_y - h / 2);
+          dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2 + w,
+                             lShipMidPoint.m_y - h / 2 + h);
         }
 
         else if (g_OwnShipIconType == 2) {  // Scaled Vector
@@ -5974,8 +5981,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
             float px = (pxa * sinf(icon_rad)) + (pya * cosf(icon_rad));
             float py = (pya * sinf(icon_rad)) - (pxa * cosf(icon_rad));
 
-            ownship_icon[i].x = (int)(px) + lShipMidPoint.x;
-            ownship_icon[i].y = (int)(py) + lShipMidPoint.y;
+            ownship_icon[i].x = (int)(px) + lShipMidPoint.m_x;
+            ownship_icon[i].y = (int)(py) + lShipMidPoint.m_y;
           }
 
           wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
@@ -5999,7 +6006,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
         dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
         dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
-        dc.StrokeCircle(lGPSPoint.x, lGPSPoint.y, circle_rad);
+        dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, circle_rad);
       } else {  // Fixed bitmap icon.
         /* non opengl, or suboptimal opengl via ocpndc: */
         wxPoint rot_ctr(pos_image.GetWidth() / 2, pos_image.GetHeight() / 2);
@@ -6026,8 +6033,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
         int h = os_bm.GetHeight();
         img_height = h;
 
-        dc.DrawBitmap(os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2,
-                      true);
+        dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+                      lShipMidPoint.m_y - h / 2, true);
 
         //      Reference point, where the GPS antenna is
         int circle_rad = 3;
@@ -6035,12 +6042,13 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
         dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
         dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
-        dc.StrokeCircle(lShipMidPoint.x, lShipMidPoint.y, circle_rad);
+        dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, circle_rad);
 
         // Maintain dirty box,, missing in __WXMSW__ library
-        dc.CalcBoundingBox(lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2);
-        dc.CalcBoundingBox(lShipMidPoint.x - w / 2 + w,
-                           lShipMidPoint.y - h / 2 + h);
+        dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+                           lShipMidPoint.m_y - h / 2);
+        dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2 + w,
+                           lShipMidPoint.m_y - h / 2 + h);
       }
     }  // ownship draw
   }

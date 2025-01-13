@@ -362,10 +362,10 @@ if (NOT WIN32 AND NOT APPLE)
     )
   endif ()
   if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    #if (CMAKE_BUILD_TYPE MATCHES "Debug")
       string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0")
       add_compile_options("-O0")
-    endif ()
+    #endif ()
   endif ()
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof ADD_COMPILE_OPTIONS( -pg )
@@ -980,6 +980,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
+
 )
 
 if (NOT QT_ANDROID)

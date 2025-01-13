@@ -56,4 +56,10 @@ extern long __stdcall MyUnhandledExceptionFilter(
 #endif
 #endif
 
+#ifdef __WXMSW__
+#define clock_gettime(id, tv) clock_gettime_monotonic(tv)
+#define CLOCK_MONOTONIC 1
+extern "C" int clock_gettime_monotonic(struct timespec *tv);
+#endif
+
 #endif

@@ -178,7 +178,8 @@ public:
         var(0),
         hdt(0),
         vflag(0),
-        time(0) {};
+        time(0),
+        set_time() {};
 
   virtual ~BasicNavDataMsg() = default;
 
@@ -189,6 +190,7 @@ public:
   const double hdt;
   const int vflag;
   const time_t time;
+  struct timespec set_time;
 };
 
 class GPSWatchdogMsg : public AppMsg {
