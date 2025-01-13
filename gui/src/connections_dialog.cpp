@@ -554,7 +554,7 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 
     auto found = std::find(TheConnectionParams().begin(),
                            TheConnectionParams().end(), mSelectedConnection);
-    if (found != TheConnectionParams().begin() && (*found)) {
+    if (found != TheConnectionParams().end() && (*found)) {
       ConnectionEditDialog dialog(m_parent);
       dialog.SetSize(
           wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8 / 10));
