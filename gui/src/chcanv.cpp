@@ -435,6 +435,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_upMode = NORTH_UP_MODE;
   m_bShowAIS = true;
   m_bShowAISScaled = false;
+  m_timed_move_vp_active = false;
 
   m_vLat = 0.;
   m_vLon = 0.;
@@ -1694,7 +1695,6 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                0, GetVPRotation());
     }
     if (m_bFollow) {
-      printf("DoChartUpdate Start Timed move\n");
       StartTimedMovementVP(vpLat, vpLon);
     } else {
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
@@ -2841,10 +2841,13 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       break;
 
     case WXK_F12: {
-      if (m_modkeys == wxMOD_ALT)
-        m_nMeasureState = *(volatile int *)(0);  // generate a fault for testing
-
-      ToggleChartOutlines();
+      if (m_modkeys == wxMOD_ALT) {
+        // m_nMeasureState = *(volatile int *)(0);  // generate a fault for
+        // testing
+        bool b = GetEnableTenHertzUpdate();
+        EnableTenHertzUpdate(!b);
+      } else
+        ToggleChartOutlines();
       break;
     }
 
@@ -3417,9 +3420,6 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
   return true;
 }
 
-static double m_start_lat, m_start_lon;
-static double m_target_lat, m_target_lon;
-static double m_run_lat, m_run_lon;
 void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
   // Save the target
   m_target_lat = target_lat;
@@ -3430,8 +3430,11 @@ void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
   m_start_lon = GetVP().clon;
 
   m_VPMovementTimer.Start(1, true);  // oneshot
+  m_timed_move_vp_active = true;
 }
 void ChartCanvas::DoTimedMovementVP() {
+  if (!m_timed_move_vp_active) return;  // not active
+
   // Stop condition
   double one_pix = (1. / (1852 * 60)) / GetVP().view_scale_ppm;
 
@@ -3440,9 +3443,6 @@ void ChartCanvas::DoTimedMovementVP() {
     StopMovementVP();
     return;
   }
-
-  // if (m_run_lat == 0 && m_run_lon == 0)   // not running
-  // return;
 
   double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / 10;
   double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / 10;
@@ -3453,7 +3453,7 @@ void ChartCanvas::DoTimedMovementVP() {
   SetViewPoint(new_lat, new_lon);  // Embeds a refresh
 }
 
-void ChartCanvas::StopMovementVP() { m_run_lat = m_run_lon = 0; }
+void ChartCanvas::StopMovementVP() { m_timed_move_vp_active = false; }
 
 void ChartCanvas::MovementVPTimerEvent(wxTimerEvent &) { DoTimedMovementVP(); }
 
@@ -3501,7 +3501,6 @@ void ChartCanvas::DoMovement(long dt) {
       m_panspeed += (double)dt / 500; /* apply acceleration */
       m_panspeed = wxMin(maxpan, m_panspeed);
     }
-    printf("Pan: %.2f, %d, %ld\n", m_panspeed, m_panx, dt);
     PanCanvas(m_panspeed * m_panx * dt, m_panspeed * m_pany * dt);
   }
 
@@ -11801,7 +11800,6 @@ bool ChartCanvas::SetCursor(const wxCursor &c) {
 }
 
 void ChartCanvas::Refresh(bool eraseBackground, const wxRect *rect) {
-  printf("Refresh()\n");
   if (g_bquiting) return;
   //  Keep the mouse position members up to date
   GetCanvasPixPoint(mouse_x, mouse_y, m_cursor_lat, m_cursor_lon);

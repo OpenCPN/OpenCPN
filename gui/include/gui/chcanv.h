@@ -1158,6 +1158,11 @@ private:
   double m_panx_target_now;
   double m_pany_target_now;
 
+  double m_start_lat, m_start_lon;
+  double m_target_lat, m_target_lon;
+  double m_run_lat, m_run_lon;
+  bool m_timed_move_vp_active;
+
   DECLARE_EVENT_TABLE()
 };
 

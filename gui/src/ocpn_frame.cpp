@@ -5158,6 +5158,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
     gCog_gt = gCog;
     gSog_gt = gSog;
 
+    if (std::isnan(gCog_gt_m1)) return;  // Startup
     // Calculate an estimated Rate-of-turn
     double diff = gCog_gt - gCog_gt_m1;
     double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
@@ -5179,6 +5180,8 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
         // shuffle points
         gHdt_gt_m1 = gHdt_gt;
         gHdt_gt = gHdt;
+
+        if (std::isnan(gHdt_gt_m1)) return;  // startup
 
         // Calculate an estimated Rate-of-change of gHdt
         double tentative_hdt_rate_gt =
@@ -5899,16 +5902,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       if (g_bopengl) {
 #ifdef ocpnUSE_GL
         if (cc->GetglCanvas()) {
-          if (m_fixtime - cc->GetglCanvas()->m_last_render_time > 0)
-            bnew_view = true;
+          cc->Refresh(false);
         }
-
-        if (AnyAISTargetsOnscreen(cc, cc->GetVP())) bnew_view = true;
-
-        if (bnew_view) { /* full frame in opengl mode */
-          // cc->Refresh(false);
-        }
-
 #endif
       } else {
         //  Invalidate the ChartCanvas window appropriately
