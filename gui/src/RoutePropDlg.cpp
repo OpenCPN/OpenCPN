@@ -237,6 +237,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stTimeZone->Wrap(-1);
   bSizerTime->Add(m_stTimeZone, 0, wxALL, 5);
 
+  // Timezone for departure time and ETA display.
   wxString m_choiceTimezoneChoices[] = {_("UTC"), _("Local@PC"),
                                         _("LMT@Location")};
   int m_choiceTimezoneNChoices =
@@ -329,13 +330,22 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   toLabel = _("To WP");
 
 #else
-  int columWidths[] = {30,  80, 70,
-                       60,   // Bearing
-                       100,  // Distance Total
-                       90,  90, 80,  120,
-                       60,   // Speed
-                       100,  // Next tide event
-                       -1,  80, 120, -1};
+  int columWidths[] = {
+      30,   // Leg
+      80,   // To waypoint
+      70,   // Distance to waypoint
+      60,   // Bearing to waypoint
+      100,  // Total Distance
+      90,   // Latitude
+      90,   // Longitude
+      80,   // Estimated Time Enroute (ETE), i.e., duration of travel.
+      120,  // Estimated Time of Arrival (ETA)
+      60,   // Speed
+      100,  // Next tide event
+      -1,   // Description
+      80,   // Course
+      120,  // Estimated Time of Departure (ETD)
+      -1};
   int colFlags = wxDATAVIEW_COL_RESIZABLE;
 
 #endif
