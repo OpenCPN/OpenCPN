@@ -219,6 +219,10 @@ public:
   bool SetVPProjection(int projection);
   /**
    * Set the viewport center point.
+   * Centers the view on a specific lat/lon position.
+   * @param lat Latitude in degrees
+   * @param lon Longitude in degrees
+   * @return true if view was changed successfully
    */
   bool SetViewPoint(double lat, double lon);
   bool SetViewPointByCorners(double latSW, double lonSW, double latNE,

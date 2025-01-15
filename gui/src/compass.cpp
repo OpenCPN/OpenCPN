@@ -171,7 +171,14 @@ void ocpnCompass::Paint(ocpnDC& dc) {
 }
 
 bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
-  if (!m_shown || !m_rect.Contains(event.GetPosition())) return false;
+  wxRect logicalRect = GetLogicalRect();
+  if (!m_shown) {
+    return false;
+  }
+  if (!logicalRect.Contains(event.GetPosition())) {
+    // User is moving away from compass widget.
+    return false;
+  }
 
   if (event.LeftDown()) {
     if (m_parent->GetUpMode() == NORTH_UP_MODE)
@@ -188,6 +195,25 @@ bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
 void ocpnCompass::SetColorScheme(ColorScheme cs) {
   m_cs = cs;
   UpdateStatus(true);
+}
+
+wxRect ocpnCompass::GetLogicalRect(void) const {
+#ifdef wxHAS_DPI_INDEPENDENT_PIXELS
+#if wxCHECK_VERSION(3, 1, 6)
+  wxRect logicalRect = wxRect(m_parent->FromPhys(m_rect.GetPosition()),
+                              m_parent->FromPhys(m_rect.GetSize()));
+#else
+  double scaleFactor = m_parent->GetContentScaleFactor();
+  wxRect logicalRect(
+      wxPoint(m_rect.GetX() / scaleFactor, m_rect.GetY() / scaleFactor),
+      wxSize(m_rect.GetWidth() / scaleFactor,
+             m_rect.GetHeight() / scaleFactor));
+#endif
+#else
+  // On platforms without DPI-independent pixels, logical = physical.
+  wxRect logicalRect = m_rect;
+#endif
+  return logicalRect;
 }
 
 void ocpnCompass::UpdateStatus(bool bnew) {
