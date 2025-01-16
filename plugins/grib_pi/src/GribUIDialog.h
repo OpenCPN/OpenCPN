@@ -289,7 +289,7 @@ private:
   void OnMove(wxMoveEvent &event);
   void OnMenuEvent(wxMenuEvent &event);
   void MenuAppend(wxMenu *menu, int id, wxString label, wxItemKind kind,
-                  wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = NULL);
+                  wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = nullptr);
   void OnZoomToCenterClick(wxCommandEvent &event);
   void OnPrev(wxCommandEvent &event);
   void OnRecordForecast(wxCommandEvent &event) {

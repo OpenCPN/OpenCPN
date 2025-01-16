@@ -32,16 +32,17 @@
 #endif
 
 #include <memory>
+#include <vector>
 
 #include <wx/listbook.h>
 #include <wx/dirctrl.h>
+#include <wx/frame.h>
 #include <wx/spinctrl.h>
 #include <wx/listctrl.h>
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
 #include <wx/colourdata.h>
-#include "connections_dialog.h"
 
 #if wxUSE_TIMEPICKCTRL
 #include <wx/timectrl.h>
@@ -53,18 +54,11 @@
 #include "time_textbox.h"
 #endif
 
-#include <vector>
-
-#if wxCHECK_VERSION(2, 9, 0)
-#include <wx/frame.h>
-#else
-#include "scrollingdialog.h"
-#endif
-
 #include "chartdbs.h"
 #include "pluginmanager.h"  // FIXME: Refactor
+#include "connections_dlg.h"
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #define __OCPN__OPTIONS_USE_LISTBOOK__
 #endif
 
@@ -689,7 +683,7 @@ private:
   wxSize m_sliderSize;
   bool m_bneedNew;
 
-  std::shared_ptr<ConnectionsDialog> comm_dialog;
+  std::shared_ptr<ConnectionsDlg> comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };

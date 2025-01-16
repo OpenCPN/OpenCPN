@@ -38,6 +38,7 @@
 #include "model/logger.h"
 #include "model/thread_ctrl.h"
 #include "model/ocpn_utils.h"
+#include "model/comm_drv_stats.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -67,10 +68,15 @@ public:
 
   virtual void RequestStop() override = 0;
 
+  /** Retrieve updated driver statistics. */
+  virtual DriverStats GetStats() const = 0;
+
 protected:
   const wxString m_portname;
   const unsigned m_baud;
   const SendMsgFunc m_send_msg_func;
+  DriverStats m_stats;
+  mutable std::mutex m_stats_mutex;
   TimedLogFilter m_open_log_filter;
 
   SerialIo(SendMsgFunc send_msg_func, const std::string& port, unsigned baud)

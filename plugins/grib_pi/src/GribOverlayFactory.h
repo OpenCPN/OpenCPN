@@ -55,7 +55,7 @@ class GribOverlay {
 public:
   GribOverlay(void) {
     m_iTexture = 0;
-    m_pDCBitmap = NULL, m_pRGBA = NULL;
+    m_pDCBitmap = nullptr, m_pRGBA = nullptr;
   }
 
   ~GribOverlay(void) {
@@ -113,9 +113,9 @@ public:
       : m_Setting(settings),
         history_size(0),
         array_size(0),
-        color_array(NULL),
-        vertex_array(NULL),
-        color_float_array(NULL) {
+        color_array(nullptr),
+        vertex_array(nullptr),
+        color_float_array(nullptr) {
     // XXX should be done in default PlugIn_ViewPort CTOR
     last_viewport.bValid = false;
   }
@@ -145,7 +145,7 @@ class LineBuffer {
 public:
   LineBuffer() {
     count = 0;
-    lines = NULL;
+    lines = nullptr;
   }
   ~LineBuffer() { delete[] lines; }
 
@@ -202,7 +202,7 @@ public:
   void ClearCachedLabel(void) { m_labelCache.clear(); }
   void ClearParticles() {
     delete m_ParticleMap;
-    m_ParticleMap = NULL;
+    m_ParticleMap = nullptr;
   }
 
   GribTimelineRecordSet *m_pGribTimelineRecordSet;

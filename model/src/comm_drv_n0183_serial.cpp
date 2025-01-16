@@ -41,6 +41,7 @@
 #include "model/comm_buffers.h"
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_registry.h"
+#include "model/comm_drv_stats.h"
 #include "model/logger.h"
 #include "model/wait_continue.h"
 
@@ -57,7 +58,8 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
           [&](const std::vector<unsigned char>& v) { SendMessage(v); },
           m_portstring, m_baudrate)),
       m_params(*params),
-      m_listener(listener) {
+      m_listener(listener),
+      m_stats_timer(*this, 2s) {
   m_garmin_handler = nullptr;
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();

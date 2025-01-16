@@ -362,10 +362,10 @@ if (NOT WIN32 AND NOT APPLE)
     )
   endif ()
   if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    #if (CMAKE_BUILD_TYPE MATCHES "Debug")
       string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0")
       add_compile_options("-O0")
-    endif ()
+    #endif ()
   endif ()
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof ADD_COMPILE_OPTIONS( -pg )
@@ -776,7 +776,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/concanv.h
     ${GUI_HDR_DIR}/ConfigMgr.h
     ${GUI_HDR_DIR}/connection_edit.h
-    ${GUI_HDR_DIR}/connections_dialog.h
+    ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/DetailSlider.h
     ${GUI_HDR_DIR}/displays.h
@@ -894,7 +894,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/ConfigMgr.cpp
     ${GUI_SRC_DIR}/connection_edit.cpp
-    ${GUI_SRC_DIR}/connections_dialog.cpp
+    ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
     ${GUI_SRC_DIR}/displays.cpp
@@ -980,6 +980,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
+
 )
 
 if (NOT QT_ANDROID)

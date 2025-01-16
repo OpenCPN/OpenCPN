@@ -39,7 +39,35 @@ public:
   CopyableText(wxWindow* parent, const char* text);
 };
 
+/**
+ * Retrieves a font from FontMgr, optionally scaled for physical readability.
+ *
+ * Returns a font configured for a specific UI context, scaling based on
+ * system settings and preserving readability across different displays.
+ *
+ * @param item UI element identifier (e.g., "AISTargetAlert", "StatusBar")
+ * @param default_size Optional base font size in points. 0 uses platform
+ * default.
+ *
+ * @return Pointer to a dynamically scaled wxFont
+ *
+ * @note Font is managed by OpenCPN's central font cache
+ * @note Pointer is shared and should not be deleted by caller
+ */
 wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
+/**
+ * Retrieves a font optimized for touch and high-resolution interfaces.
+ *
+ * Generates a font specifically tuned for responsive and touch-friendly
+ * interfaces, with more aggressive scaling than standard font methods.
+ *
+ * @param item UI element identifier (e.g., "AISTargetAlert", "StatusBar")
+ *
+ * @return A wxFont object scaled for touch and high-resolution interfaces
+ *
+ * @note Ensures minimum physical font size for improved readability
+ * @note Particularly suitable for toolbars, buttons, and touch controls
+ */
 wxFont GetOCPNGUIScaledFont(wxString item);
 
 extern int OCPNMessageBox(wxWindow* parent, const wxString& message,

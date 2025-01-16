@@ -127,13 +127,10 @@ ViewPort::ViewPort() {
   b_MercatorProjectionOverride = false;
   lat0_cache = NAN;
   m_projection_type = PROJECTION_MERCATOR;
+  m_displayScale = 1.0;
 }
 
-void ViewPort::PixelScale(float scale) {
-  pix_width *= scale;
-  pix_height *= scale;
-  view_scale_ppm *= scale;
-}
+void ViewPort::SetPixelScale(double scale) { m_displayScale = scale; }
 
 // TODO: eliminate the use of this function
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) {
@@ -256,8 +253,16 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL(double lat, double lon) {
     dxr = epix * cos(angle) + npix * sin(angle);
     dyr = npix * cos(angle) - epix * sin(angle);
   }
-
-  return wxPoint2DDouble((pix_width / 2.0) + dxr, (pix_height / 2.0) - dyr);
+  double x = (pix_width / 2.0) + dxr;
+  double y = (pix_height / 2.0) - dyr;
+  if (!g_bopengl) {
+    // Convert from physical to logical pixels when not using OpenGL.
+    // This ensures that the viewport corner coordinates remain the
+    // same in OpenGL and no-OpenGL mode (especially in MacOS).
+    x /= m_displayScale;
+    y /= m_displayScale;
+  }
+  return wxPoint2DDouble(x, y);
 }
 
 void ViewPort::GetLLFromPix(const wxPoint2DDouble &p, double *lat,

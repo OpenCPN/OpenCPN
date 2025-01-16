@@ -77,42 +77,44 @@ class DashboardInstrument_Position;
 class DashboardInstrument_Sun;
 
 enum DASH_CAP {
-  OCPN_DBP_STC_LAT = 0,
-  OCPN_DBP_STC_LON,
-  OCPN_DBP_STC_SOG,
-  OCPN_DBP_STC_COG,
-  OCPN_DBP_STC_STW,  // Speed through water
-  OCPN_DBP_STC_HDM,
-  OCPN_DBP_STC_HDT,
-  OCPN_DBP_STC_HMV,  // Magnetic variation
-  OCPN_DBP_STC_BRG,
-  OCPN_DBP_STC_AWA,  // Apparent wind angle
-  OCPN_DBP_STC_AWS,
-  OCPN_DBP_STC_TWA,
-  OCPN_DBP_STC_TWS,
-  OCPN_DBP_STC_DPT,
-  OCPN_DBP_STC_TMP,
-  OCPN_DBP_STC_VMG,
-  OCPN_DBP_STC_VMGW,
-  OCPN_DBP_STC_RSA,
-  OCPN_DBP_STC_SAT,
-  OCPN_DBP_STC_GPS,
-  OCPN_DBP_STC_PLA,  // Cursor latitude
-  OCPN_DBP_STC_PLO,  // Cursor longitude
-  OCPN_DBP_STC_CLK,
-  OCPN_DBP_STC_MON,
-  OCPN_DBP_STC_ATMP,  // AirTemp
-  OCPN_DBP_STC_TWD,
-  OCPN_DBP_STC_TWS2,
-  OCPN_DBP_STC_VLW1,   // Trip Log
-  OCPN_DBP_STC_VLW2,   // Sum Log
-  OCPN_DBP_STC_MDA,    // Barometic pressure
-  OCPN_DBP_STC_MCOG,   // Magnetic Course over Ground
-  OCPN_DBP_STC_PITCH,  // Pitch
-  OCPN_DBP_STC_HEEL,   // Heel
-  OCPN_DBP_STC_ALTI,   // Altitude
-  OCPN_DBP_STC_HUM,    // Humidity
-  OCPN_DBP_STC_WCC,    // Windlass
+  OCPN_DBP_STC_LAT = 0,  ///< Latitude
+  OCPN_DBP_STC_LON,      ///< Longitude
+  OCPN_DBP_STC_SOG,      ///< Speed over ground
+  OCPN_DBP_STC_COG,      ///< Course over ground
+  OCPN_DBP_STC_STW,      ///< Speed through water
+  OCPN_DBP_STC_HDM,      ///< Heading magnetic North
+  OCPN_DBP_STC_HDT,      ///< Heading true North
+  OCPN_DBP_STC_HMV,   ///< Magnetic variation from NMEA device if available (not
+                      ///< from WMM)
+  OCPN_DBP_STC_BRG,   ///< Bearing
+  OCPN_DBP_STC_AWA,   ///< Apparent wind angle
+  OCPN_DBP_STC_AWS,   ///< Apparent wind speed
+  OCPN_DBP_STC_TWA,   ///< True wind angle
+  OCPN_DBP_STC_TWS,   ///< True wind speed
+  OCPN_DBP_STC_DPT,   ///< Depth
+  OCPN_DBP_STC_TMP,   ///< Water temperature
+  OCPN_DBP_STC_VMG,   ///< Velocity made good
+  OCPN_DBP_STC_VMGW,  ///< Velocity made good to windward
+  OCPN_DBP_STC_RSA,   ///< Rudder angle
+  OCPN_DBP_STC_SAT,   ///< Satellite count in use
+  OCPN_DBP_STC_GPS,   ///< GPS status
+  OCPN_DBP_STC_PLA,   ///< Cursor latitude
+  OCPN_DBP_STC_PLO,   ///< Cursor longitude
+  OCPN_DBP_STC_CLK,   ///< Clock
+  OCPN_DBP_STC_MON,   // Does not seem to be used anywhere
+  OCPN_DBP_STC_ATMP,  ///< Air Temperature
+  OCPN_DBP_STC_TWD,   ///< True Wind Direction (from NMEA device if available,
+                      ///< otherwise TWA + magnetic variation)
+  OCPN_DBP_STC_TWS2,  ///< True Wind Speed, same calculation as TWS
+  OCPN_DBP_STC_VLW1,  ///< Trip Log
+  OCPN_DBP_STC_VLW2,  ///< Sum Log
+  OCPN_DBP_STC_MDA,   ///< Barometic pressure
+  OCPN_DBP_STC_MCOG,  ///< Magnetic Course over Ground
+  OCPN_DBP_STC_PITCH,  ///< Pitch
+  OCPN_DBP_STC_HEEL,   ///< Heel
+  OCPN_DBP_STC_ALTI,   ///< Altitude
+  OCPN_DBP_STC_HUM,    ///< Humidity
+  OCPN_DBP_STC_WCC,    ///< Windlass
                        // Insert new instrument capability flags here
   OCPN_DBP_STC_LAST    // This should always be the last enum in this list
 };

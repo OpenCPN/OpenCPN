@@ -393,6 +393,9 @@ int g_lastClientRectx;
 int g_lastClientRecty;
 int g_lastClientRectw;
 int g_lastClientRecth;
+/**
+ * The width of the physical screen in millimeters.
+ */
 double g_display_size_mm;
 std::vector<size_t> g_config_display_size_mm;
 bool g_config_display_size_manual;
@@ -563,6 +566,14 @@ about *g_pAboutDlgLegacy;
 wxLocale *plocale_def_lang = 0;
 #endif
 
+/**
+ * Global locale setting for OpenCPN UI.
+ *
+ * If not set in config (empty string), uses system default locale.
+ * Stores the language/locale name in format "en_US", "fr_FR", etc.
+ * A valid setting triggers loading the corresponding .mo translation files
+ * from the appropriate locale directory.
+ */
 wxString g_locale;
 wxString g_localeOverride;
 bool g_b_assume_azerty;
@@ -621,7 +632,20 @@ wxString g_config_version_string;
 
 wxString g_CmdSoundString;
 
+/**
+ * Flag to control adaptive UI scaling.
+ *
+ * When true, OpenCPN will automatically maximize the application window
+ * if the pixel density suggests a touch-friendly device.
+ *
+ * This helps ensure better usability on mobile and tablet devices by
+ * providing a full-screen interface optimized for touch interaction.
+ *
+ * @note For the most part, the use of this feature is conditionally compiled
+ * for Android builds only.
+ */
 bool g_bresponsive;
+/** Flag to enable or disable mouse rollover effects in the user interface. */
 bool g_bRollover;
 
 bool b_inCompressAllCharts;
@@ -659,6 +683,7 @@ ChartCanvas *g_overlayCanvas;
 bool b_inCloseWindow;
 extern int ShowNavWarning();
 bool g_disable_main_toolbar;
+bool g_btenhertz;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -1400,7 +1425,7 @@ bool MyApp::OnInit() {
   if (!g_Platform->GetLargeLogMessage().IsEmpty())
     wxLogMessage(g_Platform->GetLargeLogMessage());
 
-    //  Validate OpenGL functionality, if selected
+    // Validate OpenGL functionality, if selected
 #ifndef ocpnUSE_GL
   g_bdisable_opengl = true;
   ;
@@ -1838,6 +1863,9 @@ bool MyApp::OnInit() {
   //      Start up the ViewPort Rotation angle Averaging Timer....
   gFrame->FrameCOGTimer.Start(2000, wxTIMER_CONTINUOUS);
 
+  //      Start up the Ten Hz timer....
+  gFrame->FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+
   //    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."),
   //    init_sw.Time() ) );
 
@@ -2039,7 +2067,7 @@ int MyApp::OnExit() {
 #endif
 #endif
 
-    //      Restore any changed system colors
+    // Restore any changed system colors
 
 #ifdef __WXMSW__
   void RestoreSystemColors(void);

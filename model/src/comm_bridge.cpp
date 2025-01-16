@@ -42,6 +42,7 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
+#include "model/cutil.h"
 #include "model/idents.h"
 #include "model/ocpn_types.h"
 #include "model/own_ship.h"
@@ -93,6 +94,7 @@ void ClearNavData(NavData& d) {
 static void SendBasicNavdata(int vflag) {
   auto msg = std::make_shared<BasicNavDataMsg>(
       gLat, gLon, gSog, gCog, gVar, gHdt, vflag, wxDateTime::Now().GetTicks());
+  clock_gettime(CLOCK_MONOTONIC, &msg->set_time);
   AppMsgBus::GetInstance().Notify(std::move(msg));
 }
 

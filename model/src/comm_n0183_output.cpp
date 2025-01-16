@@ -250,8 +250,10 @@ bool CreateOutputConnection(const wxString& com_name,
       ConnectionParams.NetProtocol = PROTO_UNDEFINED;
       ConnectionParams.Baudrate = 0;
 
-      driver = MakeCommDriver(&ConnectionParams).get();
+      MakeCommDriver(&ConnectionParams);
 
+      driver =
+          FindDriver(drivers, mac.ToStdString(), NavAddr::Bus::Undef).get();
       btempStream = true;
     }
   } else if (com_name.Lower().StartsWith("udp") ||

@@ -1044,6 +1044,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // Boolean to cater for sailing when not approaching waypoint
   Read(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
        &g_bAdvanceRouteWaypointOnArrivalOnly);
+  Read("EnableRootMenuDebug", &g_enable_root_menu_debug);
 
   Read(_T ( "EnableRotateKeys" ), &g_benable_rotate);
   Read(_T ( "EmailCrashReport" ), &g_bEmailCrashReport);
@@ -2592,6 +2593,7 @@ void MyConfig::UpdateSettings() {
         g_b_legacy_input_filter_behaviour);
   Write(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
         g_bAdvanceRouteWaypointOnArrivalOnly);
+  Write("EnableRootMenuDebug", g_enable_root_menu_debug);
 
   // LIVE ETA OPTION
   Write(_T( "LiveETA" ), g_bShowLiveETA);

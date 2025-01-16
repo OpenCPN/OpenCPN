@@ -250,20 +250,35 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
 }
 
 bool ShapeBaseChart::LoadSHP() {
-  _reader = new shp::ShapefileReader(_filename);
-  if (!_reader->isOpen()) {
-    MESSAGE_LOG << "Shapefile " << _filename << " is not opened";
+  if (!fs::exists(_filename)) {
+    _is_usable = false;
     return false;
   }
-  auto bounds = _reader->getBounds();
-  _is_usable = _reader->getCount() > 1 && bounds.getMaxX() <= 180 &&
+  std::unique_ptr<shp::ShapefileReader> temp_reader(
+      new shp::ShapefileReader(_filename));
+  if (!temp_reader->isOpen()) {
+    MESSAGE_LOG << "Shapefile " << _filename << " is not opened";
+    _is_usable = false;
+    return false;
+  }
+  if (!_loading) {
+    // Check if loading was cancelled
+    return false;
+  }
+  auto bounds = temp_reader->getBounds();
+  _is_usable = temp_reader->getCount() > 1 && bounds.getMaxX() <= 180 &&
                bounds.getMinX() >= -180 && bounds.getMinY() >= -90 &&
                bounds.getMaxY() <=
                    90;  // TODO - Do we care whether the planet is covered?
-  _is_usable &= _reader->getGeometryType() == shp::GeometryType::Polygon;
+  if (!_loading) {
+    // Check if loading was cancelled
+    _is_usable = false;
+    return false;
+  }
+  _is_usable &= temp_reader->getGeometryType() == shp::GeometryType::Polygon;
   bool has_x = false;
   bool has_y = false;
-  for (auto field : _reader->getFields()) {
+  for (auto field : temp_reader->getFields()) {
     if (field.getName() == "x") {
       has_x = true;
     } else if (field.getName() == "y") {
@@ -273,13 +288,21 @@ bool ShapeBaseChart::LoadSHP() {
   _is_tiled = (has_x && has_y);
   if (_is_usable && _is_tiled) {
     size_t feat{0};
-    for (auto const &feature : *_reader) {
+    for (auto const &feature : *temp_reader) {
+      if (!_loading) {
+        // Check if loading was cancelled
+        _is_usable = false;
+        return false;
+      }
       auto f1 = feature.getAttributes();
       _tiles[LatLonKey(std::any_cast<int>(feature.getAttributes()["y"]),
                        std::any_cast<int>(feature.getAttributes()["x"]))]
           .push_back(feat);
       feat++;
     }
+  }
+  if (_loading) {  // Only set reader if loading wasn't cancelled
+    _reader = temp_reader.release();
   }
   return _is_usable;
 }
@@ -534,6 +557,15 @@ bool ShapeBaseChart::CrossesLand(double &lat1, double &lon1, double &lat2,
   }
 
   return false;
+}
+
+void ShapeBaseChart::CancelLoading() {
+  if (_loading) {
+    _loading = false;
+    if (_loaded.valid()) {
+      _loaded.wait();  // Wait for async operation to complete
+    }
+  }
 }
 
 bool ShapeBaseChart::LineLineIntersect(const std::pair<double, double> &A,

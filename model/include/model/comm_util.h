@@ -28,9 +28,11 @@
 
 #include "model/comm_navmsg.h"
 
+void UpdateDatastreams();
+
 bool StopAndRemoveCommDriver(std::string ident,
                              NavAddr::Bus = NavAddr::Bus::Undef);
 
-wxString ProcessNMEA4Tags(wxString& msg);
+wxString ProcessNMEA4Tags(const wxString& msg);
 
 #endif  // _COMM_UTIL_H

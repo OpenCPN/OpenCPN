@@ -1,11 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2024  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,16 +17,36 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _COMM_DRV_FACTORY
-#define _COMM_DRV_FACTORY
+/**
+ * \file
+ * Implement periodic_timer.h
+ */
 
-#include "model/conn_params.h"
-#include "model/comm_driver.h"
+#include "model/periodic_timer.h"
 
-/** Create and register a driver for given connection. */
-void MakeCommDriver(const ConnectionParams* params);
+PeriodicTimer::PeriodicTimer(std::chrono::milliseconds interval)
+    : m_interval(interval),
+      m_run_sts(1),
+      m_thread(std::thread([&] { Worker(); })) {}
 
-void initIXNetSystem();
-void uninitIXNetSystem();
+PeriodicTimer::~PeriodicTimer() { Stop(); }
 
-#endif  // _COMM_UTIL_H
+void PeriodicTimer::Stop() {
+  m_run_sts = 0;
+  m_cond_var.notify_all();
+  std::unique_lock lock(m_mutex);
+  m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts < 0; });
+  lock.unlock();
+  if (m_thread.joinable()) m_thread.join();
+}
+
+void PeriodicTimer::Worker() {
+  while (m_run_sts > 0) {
+    std::unique_lock lock(m_mutex);
+    m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts <= 0; });
+    lock.unlock();
+    if (m_run_sts > 0) Notify();
+  }
+  m_run_sts = -1;
+  m_cond_var.notify_all();
+}

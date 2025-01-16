@@ -1,11 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2024  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,16 +17,50 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _COMM_DRV_FACTORY
-#define _COMM_DRV_FACTORY
+/**
+ * \file
+ * Pure C++17 periodic timer
+ */
 
-#include "model/conn_params.h"
-#include "model/comm_driver.h"
+#ifndef _PERIODIC_TIMER_H
+#define _PERIODIC_TIMER_H
 
-/** Create and register a driver for given connection. */
-void MakeCommDriver(const ConnectionParams* params);
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
 
-void initIXNetSystem();
-void uninitIXNetSystem();
+/**
+ * Continuously run Notify with given interval. Runs from being constructed
+ * until Stop() or going out of scope.
+ *
+ * To use, derive a subclass and override the Notify() method.
+ *
+ * Similar to wxTimer when used in continuous mode. However, it does not
+ * depend on wxEventHandler and also has better destructor semantics.
+ */
+class PeriodicTimer {
+public:
+  PeriodicTimer(std::chrono::milliseconds interval);
 
-#endif  // _COMM_UTIL_H
+  virtual ~PeriodicTimer();
+
+  void Stop();
+
+protected:
+  virtual void Notify() = 0;
+
+private:
+  const std::chrono::milliseconds m_interval;
+  std::mutex m_mutex;
+  std::condition_variable m_cond_var;
+  std::atomic<int> m_run_sts;  // 1 == running, 0 == request stop, -1 == stopped
+  std::thread m_thread;
+
+  void Worker();
+};
+
+#endif  // PERIODIC_TIMER_H

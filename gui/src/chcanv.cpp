@@ -45,6 +45,7 @@
 #include "model/conn_params.h"
 #include "model/cutil.h"
 #include "model/geodesic.h"
+#include "model/gui.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
@@ -82,6 +83,7 @@
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"
+#include "NMEALogWindow.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
@@ -292,7 +294,9 @@ extern bool g_boptionsactive;
 ShapeBaseChartSet gShapeBasemap;
 
 //  TODO why are these static?
+/** The current mouse X position in canvas coordinates (physical pixels). */
 static int mouse_x;
+/** The current mouse Y position in canvas coordinates (physical pixels). */
 static int mouse_y;
 static bool mouse_leftisdown;
 
@@ -376,6 +380,7 @@ EVT_KILL_FOCUS(ChartCanvas::OnKillFocus)
 EVT_SET_FOCUS(ChartCanvas::OnSetFocus)
 EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
 EVT_TIMER(DEFERRED_FOCUS_TIMER, ChartCanvas::OnDeferredFocusTimerEvent)
+EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
 
 END_EVENT_TABLE()
 
@@ -432,6 +437,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_upMode = NORTH_UP_MODE;
   m_bShowAIS = true;
   m_bShowAISScaled = false;
+  m_timed_move_vp_active = false;
 
   m_vLat = 0.;
   m_vLon = 0.;
@@ -495,6 +501,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_muiBar = NULL;
   m_bShowScaleInStatusBar = false;
+  m_show_focus_bar = true;
 
   m_bShowOutlines = false;
   m_bDisplayGrid = false;
@@ -551,8 +558,12 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_DoubleClickTimer = new wxTimer(this, DBLCLICK_TIMER);
   m_DoubleClickTimer->Stop();
 
+  m_VPMovementTimer.SetOwner(this, MOVEMENT_VP_TIMER);
+
   m_panx = m_pany = 0;
   m_panspeed = 0;
+  m_panx_target_final = m_pany_target_final = 0;
+  m_panx_target_now = m_pany_target_now = 0;
 
   pCurTrackTimer = new wxTimer(this, CURTRACK_TIMER);
   pCurTrackTimer->Stop();
@@ -741,11 +752,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_Piano = new Piano(this);
 
-  m_bShowCompassWin = g_bShowCompassWin;
+  m_bShowCompassWin = true;
 
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
-  m_Compass->Show(m_bShowCompassWin);
+  m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
 
   m_pianoFrozen = false;
 
@@ -756,6 +767,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
 #endif
+  VPoint.SetPixelScale(m_displayScale);
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   // if (!m_glcc)
@@ -1190,10 +1202,9 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
 
 void ChartCanvas::ApplyGlobalSettings() {
   // GPS compas window
-  m_bShowCompassWin = g_bShowCompassWin;
   if (m_Compass) {
-    m_Compass->Show(m_bShowCompassWin);
-    if (m_bShowCompassWin) m_Compass->UpdateStatus();
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+    if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
 }
 
@@ -1210,7 +1221,7 @@ void ChartCanvas::SetShowGPS(bool bshow) {
     delete m_Compass;
     m_Compass = new ocpnCompass(this, bshow);
     m_Compass->SetScaleFactor(g_compass_scalefactor);
-    m_Compass->Show(m_bShowCompassWin);
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
   }
   m_bShowGPS = bshow;
 }
@@ -1218,8 +1229,8 @@ void ChartCanvas::SetShowGPS(bool bshow) {
 void ChartCanvas::SetShowGPSCompassWindow(bool bshow) {
   m_bShowCompassWin = bshow;
   if (m_Compass) {
-    m_Compass->Show(m_bShowCompassWin);
-    if (m_bShowCompassWin) m_Compass->UpdateStatus();
+    m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+    if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
 }
 
@@ -1630,6 +1641,10 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       //  boolean...
       ChartData->CheckExclusiveTileGroup(m_canvasIndex);
 
+      // Calculate DPI compensation scale, i.e., the ratio of logical pixels to
+      // physical pixels. On standard DPI displays where logical = physical
+      // pixels, this ratio would be 1.0. On Retina displays where physical = 2x
+      // logical pixels, this ratio would be 0.5.
       double proposed_scale_onscreen =
           GetCanvasScaleFactor() / GetVPScale();  // as set from config load
 
@@ -1674,13 +1689,18 @@ bool ChartCanvas::DoCanvasUpdate(void) {
           m_pCurrentStack->SetCurrentEntryFromdbIndex(initial_db_index);
         }
       }
-
+      // TODO: GetCanvasScaleFactor() / proposed_scale_onscreen simplifies to
+      // just GetVPScale(), so I'm not sure why it's necessary to define the
+      // proposed_scale_onscreen variable.
       bNewView |= SetViewPoint(vpLat, vpLon,
                                GetCanvasScaleFactor() / proposed_scale_onscreen,
                                0, GetVPRotation());
     }
-    // else
-    bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
+    if (m_bFollow) {
+      StartTimedMovementVP(vpLat, vpLon);
+    } else {
+      bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
+    }
 
     goto update_finish;
   }
@@ -2302,7 +2322,7 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   // int sx, sy;
   // wxDisplaySize( &sx, &sy );
 
-  // Calculate pixels per mm for later reference
+  // Calculate logical pixels per mm for later reference.
   wxSize sd = g_Platform->getDisplaySize();
   double horizontal = sd.x;
   // Set DPI (Win) scale factor
@@ -2557,7 +2577,10 @@ void ChartCanvas::CancelMeasureRoute() {
 
 ViewPort &ChartCanvas::GetVP() { return VPoint; }
 
-void ChartCanvas::SetVP(ViewPort &vp) { VPoint = vp; }
+void ChartCanvas::SetVP(ViewPort &vp) {
+  VPoint = vp;
+  VPoint.SetPixelScale(m_displayScale);
+}
 
 // void ChartCanvas::SetFocus()
 // {
@@ -2820,10 +2843,13 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       break;
 
     case WXK_F12: {
-      if (m_modkeys == wxMOD_ALT)
-        m_nMeasureState = *(volatile int *)(0);  // generate a fault for testing
-
-      ToggleChartOutlines();
+      if (m_modkeys == wxMOD_ALT) {
+        // m_nMeasureState = *(volatile int *)(0);  // generate a fault for
+        // testing
+        bool b = GetEnableTenHertzUpdate();
+        EnableTenHertzUpdate(!b);
+      } else
+        ToggleChartOutlines();
       break;
     }
 
@@ -2974,6 +3000,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           }
           break;
         }
+
+        case 'E':
+          if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
+            auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
+            NMEALogWindow::GetInstance().Create(top_window, 35);
+          }
+          wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+          break;
 
         case 'L':
           SetShowENCLights(!GetShowENCLights());
@@ -3395,6 +3429,49 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
 
   return true;
 }
+
+void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
+  // Save the target
+  m_target_lat = target_lat;
+  m_target_lon = target_lon;
+
+  // Save the start point
+  m_start_lat = GetVP().clat;
+  m_start_lon = GetVP().clon;
+
+  m_VPMovementTimer.Start(1, true);  // oneshot
+  m_timed_move_vp_active = true;
+}
+void ChartCanvas::DoTimedMovementVP() {
+  if (!m_timed_move_vp_active) return;  // not active
+
+  // Stop condition
+  double one_pix = (1. / (1852 * 60)) / GetVP().view_scale_ppm;
+
+  if ((fabs(m_run_lat - m_target_lat) < one_pix) ||
+      (fabs(m_run_lat - m_target_lat) < one_pix)) {
+    StopMovementVP();
+    return;
+  }
+
+  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / 10;
+  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / 10;
+
+  m_run_lat = new_lat;
+  m_run_lon = new_lon;
+
+  SetViewPoint(new_lat, new_lon);  // Embeds a refresh
+}
+
+void ChartCanvas::StopMovementVP() { m_timed_move_vp_active = false; }
+
+void ChartCanvas::MovementVPTimerEvent(wxTimerEvent &) { DoTimedMovementVP(); }
+
+void ChartCanvas::StartTimedMovementTarget() {}
+
+void ChartCanvas::DoTimedMovementTarget() {}
+
+void ChartCanvas::StopMovementTarget() {}
 
 void ChartCanvas::DoTimedMovement() {
   if (m_pan_drag == wxPoint(0, 0) && !m_panx && !m_pany && m_zoom_factor == 1 &&
@@ -4408,11 +4485,6 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
   if (!ChartData) return;
   if (!m_pCurrentStack) return;
 
-  if (g_bShowCompassWin) {
-    m_bShowCompassWin = true;
-    SetShowGPSCompassWindow(true);  // Cancel effects of Ctrl-I
-  }
-
   /* TODO: queue the quilted loading code to a background thread
      so yield is never called from here, and also rendering is not delayed */
 
@@ -4992,7 +5064,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
                                double skew, double rotation, int projection,
                                bool b_adjust, bool b_refresh) {
   bool b_ret = false;
-
   if (skew > PI) /* so our difference tests work, put in range of +-Pi */
     skew -= 2 * PI;
 
@@ -5351,7 +5422,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     //    Calculate the on-screen displayed actual scale
     //    by a simple traverse northward from the center point
     //    of roughly one eighth of the canvas height
-    wxPoint2DDouble r, r1;
+    wxPoint2DDouble r, r1;  // Screen coordinates in physical pixels.
 
     double delta_check =
         (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
@@ -5367,6 +5438,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
     GetDoubleCanvasPointPix(check_point, VPoint.clon, &r1);
     GetDoubleCanvasPointPix(check_point + delta_check, VPoint.clon, &r);
+    // Calculate the distance between r1 and r in physical pixels.
     double delta_p = sqrt(((r1.m_y - r.m_y) * (r1.m_y - r.m_y)) +
                           ((r1.m_x - r.m_x) * (r1.m_x - r.m_x)));
 
@@ -5402,11 +5474,16 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 #ifdef __WXOSX__
     if (g_bopengl) {
       retina_coef = GetContentScaleFactor();
-      ;
     }
 #endif
 #endif
 
+    // The chart scale denominator (e.g., 50000 if the scale is 1:50000),
+    // rounded to the nearest 10, 100 or 1000.
+    //
+    // @todo: on MacOS there is 2x ratio between VPoint.chart_scale and
+    // true_scale_display. That does not make sense. The chart scale should be
+    // the same as the true scale within the limits of the rounding factor.
     double true_scale_display =
         wxRound(VPoint.chart_scale / round_factor) * round_factor * retina_coef;
     wxString text;
@@ -5517,7 +5594,8 @@ wxColour ChartCanvas::ShipColor() {
   return GetGlobalColor(_T ( "URED" ));  // default is OK
 }
 
-void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint) {
+void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
+                                     wxPoint2DDouble lShipMidPoint) {
   dc.SetPen(wxPen(PredColor(), 2));
 
   if (SHIP_NORMAL == m_ownship_state)
@@ -5525,18 +5603,18 @@ void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint) {
   else
     dc.SetBrush(wxBrush(GetGlobalColor(_T ( "YELO1" ))));
 
-  dc.DrawEllipse(lShipMidPoint.x - 10, lShipMidPoint.y - 10, 20, 20);
-  dc.DrawEllipse(lShipMidPoint.x - 6, lShipMidPoint.y - 6, 12, 12);
+  dc.DrawEllipse(lShipMidPoint.m_x - 10, lShipMidPoint.m_y - 10, 20, 20);
+  dc.DrawEllipse(lShipMidPoint.m_x - 6, lShipMidPoint.m_y - 6, 12, 12);
 
-  dc.DrawLine(lShipMidPoint.x - 12, lShipMidPoint.y, lShipMidPoint.x + 12,
-              lShipMidPoint.y);
-  dc.DrawLine(lShipMidPoint.x, lShipMidPoint.y - 12, lShipMidPoint.x,
-              lShipMidPoint.y + 12);
+  dc.DrawLine(lShipMidPoint.m_x - 12, lShipMidPoint.m_y, lShipMidPoint.m_x + 12,
+              lShipMidPoint.m_y);
+  dc.DrawLine(lShipMidPoint.m_x, lShipMidPoint.m_y - 12, lShipMidPoint.m_x,
+              lShipMidPoint.m_y + 12);
 }
 
 void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                                      wxPoint GPSOffsetPixels,
-                                     wxPoint lGPSPoint) {
+                                     wxPoint2DDouble lGPSPoint) {
   // Develop a uniform length for course predictor line dash length, based on
   // physical display size Use this reference length to size all other graphics
   // elements
@@ -5599,8 +5677,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
   // draw course over ground if they are longer than the ship
   wxPoint lShipMidPoint;
-  lShipMidPoint.x = lGPSPoint.x + GPSOffsetPixels.x;
-  lShipMidPoint.y = lGPSPoint.y + GPSOffsetPixels.y;
+  lShipMidPoint.x = lGPSPoint.m_x + GPSOffsetPixels.x;
+  lShipMidPoint.y = lGPSPoint.m_y + GPSOffsetPixels.y;
   float lpp = sqrtf(powf((float)(lPredPoint.x - lShipMidPoint.x), 2) +
                     powf((float)(lPredPoint.y - lShipMidPoint.y), 2));
 
@@ -5629,7 +5707,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         ppPen2.SetDashes(2, dash_long);
       dc.SetPen(ppPen2);
       dc.StrokeLine(
-          lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+          lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
           lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
 
       if (g_cog_predictor_width > 1) {
@@ -5644,9 +5722,10 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         if (g_cog_predictor_style == (wxPenStyle)wxUSER_DASH)
           ppPen3.SetDashes(2, dash_long3);
         dc.SetPen(ppPen3);
-        dc.StrokeLine(
-            lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-            lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
+        dc.StrokeLine(lGPSPoint.m_x + GPSOffsetPixels.x,
+                      lGPSPoint.m_y + GPSOffsetPixels.y,
+                      lPredPoint.x + GPSOffsetPixels.x,
+                      lPredPoint.y + GPSOffsetPixels.y);
       }
 
       if (g_cog_predictor_endmarker) {
@@ -5711,7 +5790,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
     dc.SetPen(ppPen2);
     dc.StrokeLine(
-        lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+        lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
         lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y);
 
     wxPen ppPen1(cPred, g_cog_predictor_width / 3, wxPENSTYLE_SOLID);
@@ -5750,8 +5829,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
     ll_gc_ll(gLat, gLon, 0, factor, &tlat, &tlon);
     GetCanvasPointPix(tlat, tlon, &r);
 
-    double lpp = sqrt(pow((double)(lGPSPoint.x - r.x), 2) +
-                      pow((double)(lGPSPoint.y - r.y), 2));
+    double lpp = sqrt(pow((double)(lGPSPoint.m_x - r.x), 2) +
+                      pow((double)(lGPSPoint.m_y - r.y), 2));
     int pix_radius = (int)lpp;
 
     extern wxColor GetDimColor(wxColor c);
@@ -5763,14 +5842,14 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
     dc.SetBrush(wxBrush(rangeringcolour, wxBRUSHSTYLE_TRANSPARENT));
 
     for (int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++)
-      dc.StrokeCircle(lGPSPoint.x, lGPSPoint.y, i * pix_radius);
+      dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, i * pix_radius);
   }
 }
 
 void ChartCanvas::ComputeShipScaleFactor(
-    float icon_hdt, int ownShipWidth, int ownShipLength, wxPoint &lShipMidPoint,
-    wxPoint &GPSOffsetPixels, wxPoint lGPSPoint, float &scale_factor_x,
-    float &scale_factor_y) {
+    float icon_hdt, int ownShipWidth, int ownShipLength,
+    wxPoint2DDouble &lShipMidPoint, wxPoint &GPSOffsetPixels,
+    wxPoint2DDouble lGPSPoint, float &scale_factor_x, float &scale_factor_y) {
   float screenResolution = m_pix_per_mm;
 
   //  Calculate the true ship length in exact pixels
@@ -5815,9 +5894,11 @@ void ChartCanvas::ComputeShipScaleFactor(
   ll_gc_ll(ship_mid_lat, ship_mid_lon, icon_hdt - 90., dx, &ship_mid_lat1,
            &ship_mid_lon1);
 
-  GetCanvasPointPix(ship_mid_lat1, ship_mid_lon1, &lShipMidPoint);
-  GPSOffsetPixels.x = lShipMidPoint.x - lGPSPoint.x;
-  GPSOffsetPixels.y = lShipMidPoint.y - lGPSPoint.y;
+  GetDoubleCanvasPointPixVP(GetVP(), ship_mid_lat1, ship_mid_lon1,
+                            &lShipMidPoint);
+
+  GPSOffsetPixels.x = lShipMidPoint.m_x - lGPSPoint.m_x;
+  GPSOffsetPixels.y = lShipMidPoint.m_y - lGPSPoint.m_y;
 
   float scale_factor = shipLength_px / ownShipLength;
 
@@ -5835,13 +5916,15 @@ void ChartCanvas::ComputeShipScaleFactor(
 void ChartCanvas::ShipDraw(ocpnDC &dc) {
   if (!GetVP().IsValid()) return;
 
-  wxPoint lGPSPoint, lShipMidPoint, GPSOffsetPixels(0, 0);
+  wxPoint GPSOffsetPixels(0, 0);
+  wxPoint2DDouble lGPSPoint, lShipMidPoint;
 
   //  COG/SOG may be undefined in NMEA data stream
   float pCog = std::isnan(gCog) ? 0 : gCog;
   float pSog = std::isnan(gSog) ? 0 : gSog;
 
-  GetCanvasPointPix(gLat, gLon, &lGPSPoint);
+  GetDoubleCanvasPointPixVP(GetVP(), gLat, gLon, &lGPSPoint);
+
   lShipMidPoint = lGPSPoint;
 
   //  Draw the icon rotated to the COG
@@ -5862,8 +5945,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
   GetCanvasPointPix(osd_head_lat, osd_head_lon, &osd_head_point);
 
-  float icon_rad = atan2f((float)(osd_head_point.y - lShipMidPoint.y),
-                          (float)(osd_head_point.x - lShipMidPoint.x));
+  float icon_rad = atan2f((float)(osd_head_point.y - lShipMidPoint.m_y),
+                          (float)(osd_head_point.x - lShipMidPoint.m_x));
   icon_rad += (float)PI;
 
   if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + GetVP().rotation;
@@ -5940,13 +6023,14 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
           int h = os_bm.GetHeight();
           img_height = h;
 
-          dc.DrawBitmap(os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2,
-                        true);
+          dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+                        lShipMidPoint.m_y - h / 2, true);
 
           // Maintain dirty box,, missing in __WXMSW__ library
-          dc.CalcBoundingBox(lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2);
-          dc.CalcBoundingBox(lShipMidPoint.x - w / 2 + w,
-                             lShipMidPoint.y - h / 2 + h);
+          dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+                             lShipMidPoint.m_y - h / 2);
+          dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2 + w,
+                             lShipMidPoint.m_y - h / 2 + h);
         }
 
         else if (g_OwnShipIconType == 2) {  // Scaled Vector
@@ -5962,8 +6046,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
             float px = (pxa * sinf(icon_rad)) + (pya * cosf(icon_rad));
             float py = (pya * sinf(icon_rad)) - (pxa * cosf(icon_rad));
 
-            ownship_icon[i].x = (int)(px) + lShipMidPoint.x;
-            ownship_icon[i].y = (int)(py) + lShipMidPoint.y;
+            ownship_icon[i].x = (int)(px) + lShipMidPoint.m_x;
+            ownship_icon[i].y = (int)(py) + lShipMidPoint.m_y;
           }
 
           wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
@@ -5987,7 +6071,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
         dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
         dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
-        dc.StrokeCircle(lGPSPoint.x, lGPSPoint.y, circle_rad);
+        dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, circle_rad);
       } else {  // Fixed bitmap icon.
         /* non opengl, or suboptimal opengl via ocpndc: */
         wxPoint rot_ctr(pos_image.GetWidth() / 2, pos_image.GetHeight() / 2);
@@ -6014,8 +6098,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
         int h = os_bm.GetHeight();
         img_height = h;
 
-        dc.DrawBitmap(os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2,
-                      true);
+        dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+                      lShipMidPoint.m_y - h / 2, true);
 
         //      Reference point, where the GPS antenna is
         int circle_rad = 3;
@@ -6023,12 +6107,13 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
         dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
         dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
-        dc.StrokeCircle(lShipMidPoint.x, lShipMidPoint.y, circle_rad);
+        dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, circle_rad);
 
         // Maintain dirty box,, missing in __WXMSW__ library
-        dc.CalcBoundingBox(lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2);
-        dc.CalcBoundingBox(lShipMidPoint.x - w / 2 + w,
-                           lShipMidPoint.y - h / 2 + h);
+        dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+                           lShipMidPoint.m_y - h / 2);
+        dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2 + w,
+                           lShipMidPoint.m_y - h / 2 + h);
       }
     }  // ownship draw
   }
@@ -6617,6 +6702,7 @@ void ChartCanvas::OnActivate(wxActivateEvent &event) { ReloadVP(); }
 
 void ChartCanvas::OnSize(wxSizeEvent &event) {
   if ((event.m_size.GetWidth() < 1) || (event.m_size.GetHeight() < 1)) return;
+  // GetClientSize returns the size of the canvas area in logical pixels.
   GetClientSize(&m_canvas_width, &m_canvas_height);
 
 #ifdef __WXOSX__
@@ -6624,12 +6710,14 @@ void ChartCanvas::OnSize(wxSizeEvent &event) {
   m_displayScale = GetContentScaleFactor();
 #endif
 
+  // Convert to physical pixels.
   m_canvas_width *= m_displayScale;
   m_canvas_height *= m_displayScale;
 
   //    Resize the current viewport
   VPoint.pix_width = m_canvas_width;
   VPoint.pix_height = m_canvas_height;
+  VPoint.SetPixelScale(m_displayScale);
 
   //    Get some canvas metrics
 
@@ -6917,7 +7005,13 @@ void ChartCanvas::PanTimerEvent(wxTimerEvent &event) {
   ::wxPostEvent(evthp, ev);
 }
 
-void ChartCanvas::MovementTimerEvent(wxTimerEvent &) { DoTimedMovement(); }
+void ChartCanvas::MovementTimerEvent(wxTimerEvent &) {
+  if ((m_panx_target_final - m_panx_target_now) ||
+      (m_pany_target_final - m_pany_target_now)) {
+    DoTimedMovementTarget();
+  } else
+    DoTimedMovement();
+}
 
 void ChartCanvas::MovementStopTimerEvent(wxTimerEvent &) { StopMovement(); }
 
@@ -7197,6 +7291,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   if (event.ButtonUp() && HasCapture()) ReleaseMouse();
 #endif
 
+  event.SetEventObject(this);
   if (SendMouseEventToPlugins(event))
     return (true);  // PlugIn did something, and does not want the canvas to
                     // do anything else
@@ -11348,7 +11443,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
   // If multi-canvas, indicate which canvas has keyboard focus
   // by drawing a simple blue bar at the top.
-  if (g_canvasConfig != 0) {  // multi-canvas?
+  if (m_show_focus_bar && (g_canvasConfig != 0)) {  // multi-canvas?
     if (this == wxWindow::FindFocus()) {
       g_focusCanvas = this;
 
@@ -11573,10 +11668,11 @@ void ChartCanvas::PaintCleanup() {
     warp_flag = false;
   }
 
-  // Start movement timer, this runs nearly immediately.
+  // Start movement timers, this runs nearly immediately.
   // the reason we cannot simply call it directly is the
   // refresh events it emits may be blocked from this paint event
   pMovementTimer->Start(1, wxTIMER_ONE_SHOT);
+  m_VPMovementTimer.Start(1, wxTIMER_ONE_SHOT);
 }
 
 #if 0
@@ -12005,7 +12101,7 @@ emboss_data *ChartCanvas::EmbossDepthScale() {
 
   ped->x = (GetVP().pix_width - ped->width);
 
-  if (m_Compass && m_bShowCompassWin) {
+  if (m_Compass && m_bShowCompassWin && g_bShowCompassWin) {
     wxRect r = m_Compass->GetRect();
     ped->y = r.y + r.height;
   } else {

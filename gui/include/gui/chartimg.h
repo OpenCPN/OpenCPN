@@ -162,6 +162,16 @@ public:
                                     const LLRegion &Region);
 
   virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+  /**
+   * Find the nearest preferred viewport scale (in pixels/meter) for this chart.
+   *
+   * The function aims to find a scale within 5% of the requested scale while
+   * staying between 1/0.01x and 64x of the chart's native scale.
+   *
+   * @param target_scale_ppm Desired viewport scale in physical pixels per
+   * meter.
+   * @return Closest preferred scale in physical pixels per meter
+   */
   virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
   virtual void GetValidCanvasRegion(const ViewPort &VPoint,
@@ -208,6 +218,17 @@ protected:
   PaletteDir GetPaletteDir(void);
   int *GetPalettePtr(BSB_Color_Capability);
 
+  /**
+   * Find closest valid scale that's a power of 2 multiple of chart's native
+   * scale.
+   *
+   * @param target_scale Target scale in physical pixels per meter.
+   * @param scale_factor_min Minimum allowed scale multiplier (e.g., 0.01 allows
+   * zoom in to 100x).
+   * @param scale_factor_max Maximum allowed scale multiplier (e.g., 64 allows
+   * zoom out to 1/64x).
+   * @return Valid scale in physical pixels per meter.
+   */
   double GetClosestValidNaturalScalePPM(double target_scale,
                                         double scale_factor_min,
                                         double scale_factor_max);
