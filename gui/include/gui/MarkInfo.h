@@ -333,6 +333,7 @@ protected:
   void initialize_images(void);
   void OnBitmapCombClick(wxCommandEvent& event);
   void OnPositionCtlUpdated(wxCommandEvent& event);
+  void OnNameChanged(wxCommandEvent& event);
   void OnExtDescriptionClick(wxCommandEvent& event);
   void OnDescChangedExt(wxCommandEvent& event);
   void OnDescChangedBasic(wxCommandEvent& event);
@@ -380,6 +381,8 @@ public:
   void ValidateMark(void);
   bool SaveChanges();
   void OnActivate(wxActivateEvent& event);
+
+  void SetNameValidator(wxTextValidator* pValidator);
 
   wxSimpleHtmlListBox* GetSimpleBox() {
     return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);

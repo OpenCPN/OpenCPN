@@ -59,6 +59,7 @@
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "route_validators.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"
@@ -2621,9 +2622,8 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
   gFrame->RefreshAllCanvas();
 
   // g_pMarkInfoDialog = MarkInfoImpl::getInstance( GetParent() );
-  if (!g_pMarkInfoDialog)  // There is one global instance of the MarkProp
-                           // Dialog
-    g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
+  // There is on global instance of the MarkProp Dialog
+  if (!g_pMarkInfoDialog) g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
 
   WptShowPropertiesDialog(std::vector<RoutePoint *>{pWP}, GetParent());
 }
@@ -2656,6 +2656,8 @@ void RouteManagerDialog::WptShowPropertiesDialog(
                            // Dialog
     g_pMarkInfoDialog = new MarkInfoDlg(parent);
 
+  RoutePointNameValidator *pRPNameValidator = new RoutePointNameValidator();
+  g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
   g_pMarkInfoDialog->SetRoutePoints(wptlist);
   g_pMarkInfoDialog->UpdateProperties();
 

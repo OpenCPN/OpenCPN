@@ -967,6 +967,14 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
   SetBulkEdit(m_pRoutePoints.size() > 1);
 }
 
+/*!
+ * Attach route point name validator and bind to key event.
+ */
+void MarkInfoDlg::SetNameValidator(wxTextValidator* pValidator) {
+  m_textName->SetValidator(*pValidator);
+  m_textName->Bind(wxEVT_TEXT, &MarkInfoDlg::OnNameChanged, this);
+}
+
 void MarkInfoDlg::UpdateHtmlList() {
 #ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
   GetSimpleBox()->Clear();
@@ -1668,6 +1676,23 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
   RecalculateSize();
 
   return true;
+}
+
+/*!
+ * Name changed event handler triggers validaton.
+ */
+void MarkInfoDlg::OnNameChanged(wxCommandEvent& event) {
+  wxTextCtrl* textCtrl = dynamic_cast<wxTextCtrl*>(event.GetEventObject());
+  if (textCtrl) {
+    if (!textCtrl->Validate()) {
+      // Optional: Provide visual feedback or handle the error
+      textCtrl->SetBackgroundColour(*wxRED);
+      textCtrl->Refresh();
+    } else {
+      textCtrl->SetBackgroundColour(*wxWHITE);
+      textCtrl->Refresh();
+    }
+  }
 }
 
 void MarkInfoDlg::OnBitmapCombClick(wxCommandEvent& event) {
