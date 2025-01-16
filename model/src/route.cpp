@@ -151,7 +151,6 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
     wxString name;
     name.Printf(_T("%03d"), GetnPoints());
     pNewPoint->SetName(name);
-    pNewPoint->m_bDynamicName = true;
   }
   return;
 }
@@ -197,7 +196,6 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
 
     int insert = insert_after++;
     pNewPoint->m_bIsInRoute = true;
-    pNewPoint->m_bDynamicName = true;
     pNewPoint->SetNameShown(false);
     pRoutePointList->Insert(insert, pNewPoint);
     if (bRenamePoints) RenameRoutePoints();
@@ -285,7 +283,6 @@ RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
                                         GetNewMarkSequenced(), wxEmptyString);
   newpoint->m_bIsInRoute = true;
-  newpoint->m_bDynamicName = true;
   newpoint->SetNameShown(false);
 
   int nRP = pRoutePointList->IndexOf(pRP);
@@ -308,7 +305,6 @@ RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
                                         GetNewMarkSequenced(), wxEmptyString);
   newpoint->m_bIsInRoute = true;
-  newpoint->m_bDynamicName = true;
   newpoint->SetNameShown(false);
 
   pRoutePointList->Insert(nRP, newpoint);
@@ -382,8 +378,7 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
   Route *pcontainer_route = FindRouteContainingWaypoint(rp);
 
   if (pcontainer_route == NULL) {
-    rp->m_bIsInRoute = false;  // Take this point out of this (and only) route
-    rp->m_bDynamicName = false;
+    rp->m_bIsInRoute = false;    // Take this point out of this (and only) route
     rp->m_bIsolatedMark = true;  // This has become an isolated mark
   }
 
@@ -665,7 +660,7 @@ void Route::RenameRoutePoints(void) {
   int i = 1;
   while (node) {
     RoutePoint *prp = node->GetData();
-    if (prp->m_bDynamicName) {
+    if (prp->IsNameDynamic()) {
       wxString name = prp->GetName();
       if (name.Len() == 3) {
         name.Printf(_T ( "%03d" ), i);

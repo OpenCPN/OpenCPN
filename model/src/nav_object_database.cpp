@@ -44,7 +44,7 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
                              bool b_layerviz, int layer_id) {
   bool bviz = false;
   bool bviz_name = false;
-  bool bauto_name = false;
+  bool bauto_name = false;  // deprecated
   bool bshared = false;
   bool b_propvizname = false;
   bool b_propviz = false;
@@ -146,10 +146,6 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
             wxString s = wxString::FromUTF8(ext_child.first_child().value());
             long v = 0;
             if (s.ToLong(&v)) bviz_name = (v != 0);
-          } else if (ext_name == _T ( "opencpn:auto_name" )) {
-            wxString s = wxString::FromUTF8(ext_child.first_child().value());
-            long v = 0;
-            if (s.ToLong(&v)) bauto_name = (v != 0);
           } else if (ext_name == _T ( "opencpn:shared" )) {
             wxString s = wxString::FromUTF8(ext_child.first_child().value());
             long v = 0;
@@ -253,7 +249,6 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
   }
 
   pWP->SetShared(bshared);
-  pWP->m_bDynamicName = bauto_name;
 
   if (TimeString.Len()) {
     pWP->m_timestring = TimeString;
@@ -751,10 +746,6 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
       child.append_child(pugi::node_pcdata).set_value("1");
     }
 
-    if ((flags & OUT_AUTO_NAME) && pr->m_bDynamicName) {
-      child = child_ext.append_child("opencpn:auto_name");
-      child.append_child(pugi::node_pcdata).set_value("1");
-    }
     if ((flags & OUT_SHARED) && pr->IsShared()) {
       child = child_ext.append_child("opencpn:shared");
       child.append_child(pugi::node_pcdata).set_value("1");

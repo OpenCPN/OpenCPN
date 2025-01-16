@@ -1754,33 +1754,6 @@ bool MarkInfoDlg::SaveChanges() {
         m_pRoutePoint->SetETD(wxEmptyString);
       }
 
-      // Here is some logic....
-      // If the name has 3 numeric characters, and is part of a route,
-      // Then declare it to be of attribute m_bDynamicName = true
-      // This is later used for re-numbering points on actions like
-      // Insert Point, Delete Point, Append Point, etc
-      if (m_pRoutePoint->m_bIsInRoute) {
-        bool b_name_is_numeric = true;
-        if (m_pRoutePoint->GetName().Len() >= 2) {
-          wxString substring = m_pRoutePoint->GetName().Left(2);
-          if (substring == "NM") {
-            substring = m_pRoutePoint->GetName().substr(2, 3);
-          } else {
-            substring = m_pRoutePoint->GetName().Left(3);
-          }
-          for (unsigned int i = 0; i < substring.Len(); i++) {
-            if (b_name_is_numeric == true) {
-              b_name_is_numeric = wxIsdigit(substring[i]);
-            }
-          }
-          m_pRoutePoint->m_bDynamicName = b_name_is_numeric;
-        } else {
-          m_pRoutePoint->m_bDynamicName = false;
-        }
-      } else {
-        m_pRoutePoint->m_bDynamicName = false;
-      }
-
       if (m_pRoutePoint->m_bIsInRoute) {
         // Update the route segment selectables
         pSelect->UpdateSelectableRouteSegments(m_pRoutePoint);
