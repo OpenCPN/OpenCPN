@@ -44,7 +44,6 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
                              bool b_layerviz, int layer_id) {
   bool bviz = false;
   bool bviz_name = false;
-  bool bauto_name = false;  // deprecated
   bool bshared = false;
   bool b_propvizname = false;
   bool b_propviz = false;
@@ -726,9 +725,8 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
   }
 
   if ((flags & OUT_GUID) || (flags & OUT_VIZ) || (flags & OUT_VIZ_NAME) ||
-      (flags & OUT_SHARED) || (flags & OUT_AUTO_NAME) ||
-      (flags & OUT_EXTENSION) || (flags & OUT_TIDE_STATION) ||
-      (flags & OUT_RTE_PROPERTIES)) {
+      (flags & OUT_SHARED) || (flags & OUT_EXTENSION) ||
+      (flags & OUT_TIDE_STATION) || (flags & OUT_RTE_PROPERTIES)) {
     pugi::xml_node child_ext = node.append_child("extensions");
 
     if (!pr->m_GUID.IsEmpty() && (flags & OUT_GUID)) {

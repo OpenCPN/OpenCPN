@@ -5,7 +5,7 @@
     <xs:element name="planned_speed" type="xs:double" />
     <xs:element name="planned_departure" type="xs:string" />
     <xs:element name="time_display" type="xs:string" />
-    <xs:element name="auto_name" type="xs:boolean" />
+    <xs:element name="auto_name" type="xs:boolean" /> // deprecated
     <xs:element name="shared" type="xs:boolean" />
     <xs:element name="arrival_radius" type="xs:double" />
     <xs:element name="waypoint_range_rings">
