@@ -1,0 +1,744 @@
+#include <array>
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include <wx/arrstr.h>
+#include <wx/bitmap.h>
+#include <wx/grid.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
+#include <wx/textctrl.h>
+#include <wx/window.h>
+
+#include "model/base_platform.h"
+#include "model/comm_drv_factory.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_util.h"
+#include "model/config_vars.h"
+#include "model/conn_params.h"
+#include "model/conn_states.h"
+
+#include "connections_dlg.h"
+
+#include "color_handler.h"
+#include "connection_edit.h"
+#include "conn_params_panel.h"
+#include "gui_lib.h"
+#include "navutil.h"
+#include "priority_gui.h"
+#include "std_filesystem.h"
+
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
+static const auto kUtfArrowDown = wxString::FromUTF8(u8"\u25bc");
+static const auto kUtfArrowRight = wxString::FromUTF8(u8"\u25ba");
+static const auto kUtfCheckmark = wxString::FromUTF8(u8"\u2713");
+static const auto kUtfCircle = wxString::FromUTF8(u8"\u3007");
+static const auto kUtfCrossmark = wxString::FromUTF8(u8"\u274c");
+static const auto kUtfDegrees = wxString::FromUTF8(u8"\u00B0");
+static const auto kUtfExclamationMark = wxString::FromUTF8("!");
+static const auto kUtfFilledCircle = wxString::FromUTF8(u8"\u2b24");
+static const auto kUtfFisheye = wxString::FromUTF8(u8"\u25c9");
+static const auto kUtfGear = wxString::FromUTF8(u8"\u2699");
+static const auto kUtfMultiplyX = wxString::FromUTF8(u8"\u2715");
+static const auto kUtfTrashbin = wxString::FromUTF8(u8"\U0001f5d1");
+
+static inline bool IsWindows() {
+  return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
+}
+
+/** std::sort support: Compare two ConnectionParams w r t given column */
+class ConnCompare {
+public:
+  ConnCompare(int col) : m_col(col) {}
+
+  bool operator()(ConnectionParams* p1, ConnectionParams* p2) {
+    switch (m_col) {
+      case 0:
+        return int(p1->bEnabled) > int(p2->bEnabled);
+      case 1:
+        return p1->GetCommProtocol() < p2->GetCommProtocol();
+      case 2:
+        return p1->GetIOTypeValueStr() < p2->GetIOTypeValueStr();
+      case 3:
+        return p1->GetStrippedDSPort() < p2->GetStrippedDSPort();
+      default:
+        return false;
+    }
+  }
+
+private:
+  const int m_col;
+};
+
+/**
+ * Interface implemented by widgets supporting Apply and Cancel.
+ */
+class ApplyCancel {
+public:
+  /** Make values set by user actually being used. */
+  virtual void Apply() = 0;
+
+  /**
+   * Restore values modified by user to their pristine state, often in a global.
+   */
+  virtual void Cancel() = 0;
+};
+
+/** The "Add new connection" button */
+class AddConnectionButton : public wxButton {
+public:
+  AddConnectionButton(wxWindow* parent, EventVar& evt_add_connection)
+      : wxButton(parent, wxID_ANY, _("Add new connection...")),
+        m_evt_add_connection(evt_add_connection) {
+    Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+         [&](wxCommandEvent& ev) { OnAddConnection(); });
+  }
+
+private:
+  void OnAddConnection() {
+    ConnectionEditDialog dialog(this);
+    dialog.SetPropsLabel(_("Configure new connection"));
+    dialog.SetDefaultConnectionParams();
+    wxWindow* options = wxWindow::FindWindowByName("Options");
+    assert(options && "Null Options window!");
+    dialog.SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
+    auto rv = dialog.ShowModal();
+    if (rv == wxID_OK) {
+      ConnectionParams* cp = dialog.GetParamsFromControls();
+      if (cp) {
+        cp->b_IsSetup = false;  // Trigger new stream
+        TheConnectionParams().push_back(cp);
+      }
+      UpdateDatastreams();
+      m_evt_add_connection.Notify();
+    }
+#ifdef __ANDROID__
+    androidEnableRotation();
+#endif
+  }
+
+  EventVar& m_evt_add_connection;
+};
+
+/** Grid with existing connections: type, port, status, etc. */
+class Connections : public wxGrid {
+public:
+  Connections(wxWindow* parent,
+              const std::vector<ConnectionParams*>& connections,
+              EventVar& on_conn_update)
+      : wxGrid(parent, wxID_ANY),
+        m_connections(connections),
+        m_on_conn_delete(on_conn_update),
+        m_last_tooltip_cell(100) {
+    SetTable(new wxGridStringTable(), false);
+    GetTable()->AppendCols(8);
+    HideCol(7);
+    static const std::array<wxString, 7> headers = {
+        "", _("Protocol"), _("Direction"), _("Port"), _("Status"), "", ""};
+    for (auto hdr = headers.begin(); hdr != headers.end(); hdr++)
+      SetColLabelValue(static_cast<int>(hdr - headers.begin()), *hdr);
+    if (IsWindows()) {
+      SetLabelBackgroundColour(GetGlobalColor("DILG1"));
+      SetLabelTextColour(GetGlobalColor("DILG3"));
+    }
+    HideRowLabels();
+    SetColAttributes(parent);
+    ReloadGrid(connections);
+    DisableDragColSize();
+    DisableDragRowSize();
+    wxWindow* options = wxWindow::FindWindowByName("Options");
+    assert(options && "Null Options window!");
+    SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
+    wxWindow::Show(GetNumberRows() > 0);
+
+    GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent& ev) {
+      OnMouseMove(ev);
+      ev.Skip();
+    });
+    Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
+         [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
+    Bind(wxEVT_GRID_CELL_LEFT_CLICK,
+         [&](wxGridEvent& ev) { OnClickCell(ev.GetRow(), ev.GetCol()); });
+    Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) {
+      SetColAttributes(static_cast<wxWindow*>(ev.GetEventObject()));
+      ev.Skip();
+    });
+    conn_change_lstnr.Init(
+        m_conn_states.evt_conn_status_change,
+        [&](ObservedEvt&) { OnConnectionChange(m_connections); });
+  }
+
+  /** Reload grid using data from given list of connections. */
+  void ReloadGrid(const std::vector<ConnectionParams*>& connections) {
+    ClearGrid();
+    for (auto it = connections.begin(); it != connections.end(); it++) {
+      auto row = static_cast<int>(it - connections.begin());
+      EnsureRows(row);
+      SetCellValue(row, 0, (*it)->bEnabled ? "1" : "");
+      if ((*it)->bEnabled)
+        m_tooltips[row][0] = _("Enabled, click to disable");
+      else
+        m_tooltips[row][0] = _("Disabled, click to enable");
+      std::string protocol = NavAddr::BusToString((*it)->GetCommProtocol());
+      SetCellValue(row, 1, protocol);
+      SetCellValue(row, 2, (*it)->GetIOTypeValueStr());
+      SetCellValue(row, 3, (*it)->GetStrippedDSPort());
+      m_tooltips[row][3] = (*it)->UserComment;
+      SetCellValue(row, 5, kUtfGear);  // ⚙
+      m_tooltips[row][5] = _("Edit connection");
+      SetCellValue(row, 6, kUtfTrashbin);  // 🗑
+      m_tooltips[row][6] = _("Delete connection");
+      SetCellValue(row, 7, (*it)->GetKey());
+    }
+    OnConnectionChange(m_connections);
+    AutoSize();
+  }
+
+  wxSize GetGridMaxSize() const {
+    return wxSize(GetCharWidth() * 120,
+                  std::min(GetNumberRows() + 3, 10) * 2 * GetCharHeight());
+  }
+
+  wxSize GetGridMinSize() const {
+    return wxSize(GetCharWidth() * 80,
+                  std::min(GetNumberRows() + 3, 6) * 2 * GetCharHeight());
+  }
+
+  /** std::sort support: Compare two ConnectionParams w r t state. */
+  class ConnStateCompare {
+  public:
+    ConnStateCompare(Connections* connections) : m_conns(connections) {}
+    bool operator()(ConnectionParams* p1, ConnectionParams* p2) {
+      int row1 = m_conns->FindConnectionIndex(p1);
+      int row2 = m_conns->FindConnectionIndex(p2);
+      if (row1 == -1 && row2 == -1) return false;
+      if (row1 == -1) return false;
+      if (row2 == -1) return true;
+      int v1 = static_cast<int>(m_conns->GetCellValue(row1, 4)[0]);
+      int v2 = static_cast<int>(m_conns->GetCellValue(row2, 4)[0]);
+      return v1 < v2;
+    }
+    Connections* m_conns;
+  };
+
+private:
+  /**
+   *  Return pointer to parameters related to row.
+   *  @return valid pointer if found, else nullptr.
+   */
+  ConnectionParams* FindRowConnection(int row) {
+    auto found = find_if(m_connections.begin(), m_connections.end(),
+                         [&](ConnectionParams* p) {
+                           return GetCellValue(row, 7) == p->GetKey();
+                         });
+    return found != m_connections.end() ? *found : nullptr;
+  }
+
+  /**
+   * Find index in m_connections for given pointer.
+   * @return positive index if found, else -1;
+   * */
+  int FindConnectionIndex(ConnectionParams* cp) {
+    using namespace std;
+    auto key = cp->GetKey();
+    auto found =
+        find_if(m_connections.begin(), m_connections.end(),
+                [key](ConnectionParams* cp) { return cp->GetKey() == key; });
+    if (found == m_connections.end()) return -1;
+    return static_cast<int>(found - m_connections.begin());
+  }
+
+  /**
+   *  Ensure that grid and tooltips has allocated at least given amount of
+   *  rows.
+   */
+  void EnsureRows(size_t rows) {
+    while (m_tooltips.size() <= rows)
+      m_tooltips.push_back(std::vector<std::string>(7));
+    while (GetNumberRows() <= static_cast<int>(rows)) AppendRows(1, false);
+  }
+
+  /** Set up column attributes: alignment, font size, read-only, etc. */
+  void SetColAttributes(wxWindow* parent) {
+    if (IsWindows()) {
+      // Set all cells to global color scheme
+      SetDefaultCellBackgroundColour(GetGlobalColor("DILG1"));
+    }
+    auto enable_attr = new wxGridCellAttr();
+    enable_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+    enable_attr->SetRenderer(new wxGridCellBoolRenderer());
+    enable_attr->SetEditor(new wxGridCellBoolEditor());
+    if (IsWindows()) enable_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
+    SetColAttr(0, enable_attr);
+
+    auto protocol_attr = new wxGridCellAttr();
+    protocol_attr->SetAlignment(wxALIGN_LEFT, wxALIGN_CENTRE);
+    protocol_attr->SetReadOnly(true);
+    if (IsWindows())
+      protocol_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
+    SetColAttr(1, protocol_attr);
+
+    auto in_out_attr = new wxGridCellAttr();
+    in_out_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+    in_out_attr->SetReadOnly(true);
+    if (IsWindows()) in_out_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
+    SetColAttr(2, in_out_attr);
+
+    auto port_attr = new wxGridCellAttr();
+    port_attr->SetAlignment(wxALIGN_LEFT, wxALIGN_CENTRE);
+    port_attr->SetReadOnly(true);
+    if (IsWindows()) port_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
+    SetColAttr(3, port_attr);
+
+    auto status_attr = new wxGridCellAttr();
+    status_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+    status_attr->SetReadOnly(true);
+    status_attr->SetFont(parent->GetFont().Scale(1.3));
+    if (IsWindows()) status_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
+    SetColAttr(4, status_attr);
+
+    auto edit_attr = new wxGridCellAttr();
+    edit_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+    edit_attr->SetFont(parent->GetFont().Scale(1.3));
+    edit_attr->SetReadOnly(true);
+    if (IsWindows()) edit_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
+    SetColAttr(5, edit_attr);
+
+    auto delete_attr = new wxGridCellAttr();
+    delete_attr->SetAlignment(wxALIGN_LEFT, wxALIGN_CENTRE);
+    delete_attr->SetFont(parent->GetFont().Scale(1.3));
+    delete_attr->SetTextColour(*wxRED);
+    delete_attr->SetReadOnly(true);
+    if (IsWindows()) delete_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
+    SetColAttr(6, delete_attr);
+  }
+
+  /** User mouse click on grid dispatcher. */
+  void OnClickCell(int row, int col) {
+    if (col == 0)
+      HandleEnable(row);
+    else if (col == 5) {
+      HandleEdit(row);
+    } else if (col == 6) {
+      HandleDelete(row);
+    }
+  }
+  /** Handle mouse movements i. e., the tooltips. */
+  void OnMouseMove(wxMouseEvent& ev) {
+    wxPoint pt = ev.GetPosition();
+    int row = YToRow(pt.y);
+    int col = XToCol(pt.x);
+    if (col < 0 || col >= 7 || row < 0 || row >= GetNumberRows()) return;
+    if (row * 7 + col == m_last_tooltip_cell) return;
+    m_last_tooltip_cell = row * 7 + col;
+    GetGridWindow()->SetToolTip(m_tooltips[row][col]);
+  }
+
+  /** Handle connections driver statistics status changes event. */
+  void OnConnectionChange(const std::vector<ConnectionParams*>& connections) {
+    for (auto it = connections.begin(); it != connections.end(); it++) {
+      ConnState state = m_conn_states.GetDriverState(
+          (*it)->GetCommProtocol(), (*it)->GetStrippedDSPort());
+      if (!(*it)->bEnabled) state = ConnState::Disabled;
+      auto row = static_cast<int>(it - connections.begin());
+      EnsureRows(row);
+      switch (state) {
+        case ConnState::Disabled:
+          SetCellValue(row, 4, kUtfFilledCircle);
+          m_tooltips[row][4] = _("Disabled");
+          break;
+        case ConnState::NoStats:
+          SetCellValue(row, 4, kUtfCircle);
+          m_tooltips[row][4] = _("No driver statistics available");
+          break;
+        case ConnState::NoData:
+          SetCellValue(row, 4, kUtfExclamationMark);
+          m_tooltips[row][4] = _("No data flowing through connection");
+          break;
+        case ConnState::Unavailable:
+          SetCellValue(row, 4, kUtfMultiplyX);
+          m_tooltips[row][4] = _("The device is unavailable");
+          break;
+        case ConnState::Ok:
+          SetCellValue(row, 4, kUtfCheckmark);
+          m_tooltips[row][4] = _("Data is flowing");
+          break;
+      }
+    }
+  }
+
+  void SetSortingColumn(int col) {
+    if (GetSortingColumn() != wxNOT_FOUND) {
+      int old_col = GetSortingColumn();
+      auto label = GetColLabelValue(old_col);
+      if (label[0] == kUtfArrowDown[0])
+        SetColLabelValue(old_col, label.substr(2));
+    }
+    auto label = GetColLabelValue(col);
+    if (label[0] != kUtfArrowDown[0])
+      SetColLabelValue(col, kUtfArrowDown + " " + label);
+    wxGrid::SetSortingColumn(col);
+    Fit();
+  }
+
+  /** Handle user click on column header */
+  void HandleSort(int col) {
+    if (col > 4) return;
+    auto& params = TheConnectionParams();
+    if (col < 4)
+      std::sort(params.begin(), params.end(), ConnCompare(col));
+    else  // col == 4
+      std::sort(params.begin(), params.end(), ConnStateCompare(this));
+    ReloadGrid(TheConnectionParams());
+    SetSortingColumn(col);
+  }
+
+  /** Handle user click on the enable/disable checkbox. */
+  void HandleEnable(int row) {
+    ConnectionParams* cp = FindRowConnection(row);
+    if (!cp) return;
+    cp->bEnabled = !cp->bEnabled;
+    cp->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
+    SetCellValue(row, 0, cp->bEnabled ? "1" : "");
+    if (cp->bEnabled)
+      m_tooltips[row][0] = _("Enabled, click to disable");
+    else
+      m_tooltips[row][0] = _("Disabled, click to enable");
+    DriverStats stats;
+    stats.driver_iface = cp->GetStrippedDSPort();
+    stats.driver_bus = cp->GetCommProtocol();
+    m_conn_states.HandleDriverStats(stats);
+    StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
+    if (cp->bEnabled) MakeCommDriver(cp);
+    cp->b_IsSetup = true;
+    if (!cp->bEnabled) SetCellValue(row, 4, kUtfFilledCircle);
+  }
+
+  /** Handle user click on Edit gear symbol. */
+  void HandleEdit(int row) {
+    ConnectionParams* cp = FindRowConnection(row);
+    if (cp) {
+      ConnectionEditDialog dialog(this);
+      DimeControl(&dialog);
+      dialog.SetPropsLabel(_("Edit Selected Connection"));
+      dialog.PreloadControls(cp);
+      wxWindow* options = wxWindow::FindWindowByName("Options");
+      assert(options && "Null Options window!");
+      dialog.SetSize(
+          wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
+      Show(GetNumberRows() > 0);
+
+      auto rv = dialog.ShowModal();
+      if (rv == wxID_OK) {
+        ConnectionParams* cp_edited = dialog.GetParamsFromControls();
+        delete cp->m_optionsPanel;
+        StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
+        int index = FindConnectionIndex(cp);
+        assert(index != -1 && "Cannot look up connection index");
+        TheConnectionParams()[index] = cp_edited;
+        cp_edited->b_IsSetup = false;  // Trigger new stream
+        ReloadGrid(m_connections);
+        UpdateDatastreams();
+      }
+    }
+  }
+
+  /** Handle user click on Delete trashbin symbol. */
+  void HandleDelete(int row) {
+    ConnectionParams* cp = FindRowConnection(row);
+    auto found = std::find(m_connections.begin(), m_connections.end(), cp);
+    if (found != m_connections.end()) {
+      std::stringstream ss;
+      ss << _("Ok to delete connection on ") << (*found)->GetStrippedDSPort();
+      int rcode = OCPNMessageBox(this, ss.str(), _("Delete connection?"),
+                                 wxOK | wxCANCEL);
+      if (rcode != wxID_OK && rcode != wxID_YES) return;
+      delete (*found)->m_optionsPanel;
+      StopAndRemoveCommDriver((*found)->GetStrippedDSPort(),
+                              (*found)->GetCommProtocol());
+      TheConnectionParams().erase(found);
+      if (GetNumberRows() > static_cast<int>(m_connections.size()))
+        DeleteRows(GetNumberRows() - 1);
+      m_on_conn_delete.Notify();
+    }
+  }
+
+  ObsListener conn_change_lstnr;
+  std::vector<std::vector<std::string>> m_tooltips;
+  ConnStates m_conn_states;
+  const std::vector<ConnectionParams*>& m_connections;
+  EventVar& m_on_conn_delete;
+  int m_last_tooltip_cell;
+};
+
+/** Indeed: the General  panel. */
+class GeneralPanel : public wxPanel {
+public:
+  explicit GeneralPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
+    auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
+    SetSizer(sizer);
+    auto flags = wxSizerFlags().Border();
+    auto hbox = new wxBoxSizer(wxHORIZONTAL);
+    hbox->Add(new wxStaticText(this, wxID_ANY, _("Upload format:")), flags);
+    hbox->Add(new UploadOptionsChoice(this), flags);
+    sizer->Add(hbox, flags);
+  }
+
+private:
+  /** The select Generic, Garmin or Furuno upload options choice */
+  class UploadOptionsChoice : public wxChoice, public ApplyCancel {
+  public:
+    explicit UploadOptionsChoice(wxWindow* parent) : wxChoice() {
+      wxArrayString wx_choices;
+      for (auto& c : choices) wx_choices.Add(c);
+      Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wx_choices);
+      Cancel();
+    }
+
+    void Cancel() {
+      if (g_bGarminHostUpload)
+        SetSelection(1);
+      else if (g_GPS_Ident == "FurunoGP3X")
+        SetSelection(2);
+      else
+        SetSelection(0);
+    }
+
+    void Apply() {
+      switch (GetSelection()) {
+        case 0:
+          g_bGarminHostUpload = false;
+          g_GPS_Ident = "Generic";
+          break;
+        case 1:
+          g_bGarminHostUpload = true;
+          g_GPS_Ident = "Generic";
+          break;
+        case 2:
+          g_bGarminHostUpload = false;
+          g_GPS_Ident = "FurunoGP3X";
+          break;
+      }
+    }
+
+    const std::array<wxString, 3> choices = {
+        _("Generic"), _("Use Garmin GRMN (Host) mode for uploads"),
+        _("Format uploads for Furuno GP4X")};
+  };
+};
+
+/** The "Show advanced" text + right/down triangle and handler. */
+class ShowAdvanced : public wxStaticText {
+public:
+  ShowAdvanced(wxWindow* parent, std::function<void(bool)> on_toggle)
+      : wxStaticText(parent, wxID_ANY, ""),
+        m_on_toggle(on_toggle),
+        m_show_advanced(true) {
+    Toggle();
+    Bind(wxEVT_LEFT_DOWN, [&](wxMouseEvent& ev) { Toggle(); });
+  }
+
+private:
+  wxString m_label = _("Advanced ");
+  std::function<void(bool)> m_on_toggle;
+  bool m_show_advanced;
+
+  void Toggle() {
+    m_show_advanced = !m_show_advanced;
+    m_label = _("Advanced ");
+    m_label += (m_show_advanced ? kUtfArrowDown : kUtfArrowRight);
+    SetLabelText(m_label);
+    m_on_toggle(m_show_advanced);
+  }
+};
+
+/** Indeed: The "Advanced" panel. */
+class AdvancedPanel : public wxPanel {
+public:
+  explicit AdvancedPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
+    auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, "");
+    sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
+    sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
+    sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
+    sizer->Add(new PrioritiesBtn(this), wxSizerFlags().Border());
+    SetSizer(sizer);
+  }
+
+private:
+  /** "Use magnetic bearing..." checkbox bound to g_bMagneticAPB. */
+  class BearingsCheckbox : public wxCheckBox, public ApplyCancel {
+  public:
+    BearingsCheckbox(wxWindow* parent)
+        : wxCheckBox(parent, wxID_ANY,
+                     _("Use magnetic bearing in output sentence APB")) {
+      SetValue(g_bMagneticAPB);
+      wxCheckBox::SetValue(g_bMagneticAPB);
+    }
+
+    void Apply() override { g_bMagneticAPB = GetValue(); }
+    void Cancel() override { SetValue(g_bMagneticAPB); }
+  };
+
+  /** NMEA filter setup bound to g_bfilter_cogsog and g_COGFilterSec. */
+  class NmeaFilterRow : public wxPanel, public ApplyCancel {
+    wxCheckBox* checkbox;
+    wxTextCtrl* filter_period;
+
+  public:
+    NmeaFilterRow(wxWindow* parent) : wxPanel(parent) {
+      auto hbox = new wxBoxSizer(wxHORIZONTAL);
+      checkbox = new wxCheckBox(
+          this, wxID_ANY,
+          _("Filter NMEA course and speed data. Filter period: "));
+      checkbox->SetValue(g_bfilter_cogsog);
+      hbox->Add(checkbox, wxSizerFlags().Align(wxALIGN_CENTRE));
+      filter_period =
+          new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
+                         wxSize(50, 3 * wxWindow::GetCharWidth()), 0);
+      filter_period->SetValue(std::to_string(g_COGFilterSec));
+      hbox->Add(filter_period, wxSizerFlags().Border());
+      SetSizer(hbox);
+      Cancel();
+    }
+
+    void Apply() override {
+      std::stringstream ss;
+      ss << filter_period->GetValue();
+      ss >> g_COGFilterSec;
+      g_bfilter_cogsog = checkbox->GetValue();
+    }
+
+    void Cancel() override {
+      std::stringstream ss;
+      ss << g_COGFilterSec;
+      filter_period->SetValue(ss.str());
+      checkbox->SetValue(g_bfilter_cogsog);
+    }
+  };
+
+  /** NMEA Talker ID configuration, bound to g_TalkerIdText. */
+  class TalkerIdRow : public wxPanel, public ApplyCancel {
+    wxTextCtrl* text_ctrl;
+
+  public:
+    TalkerIdRow(wxWindow* parent) : wxPanel(parent) {
+      auto hbox = new wxBoxSizer(wxHORIZONTAL);
+      hbox->Add(new wxStaticText(this, wxID_ANY, _("NMEA 0183 Talker Id: ")),
+                wxSizerFlags().Align(wxALIGN_CENTRE_VERTICAL).Border());
+      text_ctrl = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
+                                 wxSize(50, 3 * wxWindow::GetCharWidth()));
+      text_ctrl->SetValue(g_TalkerIdText);
+      hbox->Add(text_ctrl, wxSizerFlags().Border());
+      SetSizer(hbox);
+      Cancel();
+    }
+
+    void Apply() override { g_TalkerIdText = text_ctrl->GetValue(); }
+    void Cancel() override { text_ctrl->SetValue(g_TalkerIdText); }
+  };
+
+  /** Button invokes "Adjust communication priorities" GUI. */
+  class PrioritiesBtn : public wxButton {
+  public:
+    PrioritiesBtn(wxWindow* parent)
+        : wxButton(parent, wxID_ANY, _("Adjust communication priorities...")) {
+      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
+        PriorityDlg dialog(this);
+        dialog.ShowModal();
+      });
+    }
+  };
+};
+
+/** Scrollable window wrapping the client i. e., the grid. */
+class ScrolledWindow : public wxScrolledWindow {
+public:
+  ScrolledWindow(wxWindow* parent)
+      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                         wxVSCROLL) {}
+
+  /** Set contents and size limits for scrollable area. */
+  void AddClient(wxWindow* client, wxSize max_size, wxSize min_size) {
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    vbox->Add(client, wxSizerFlags().Border());
+    SetSizer(vbox);
+    SetMinClientSize(min_size);
+    SetMaxSize(max_size);
+    vbox->Layout();
+    SetScrollRate(0, 10);
+  }
+};
+
+/** Main window: connections grid, "Add new connection", general options. */
+ConnectionsDlg::ConnectionsDlg(
+    wxWindow* parent, const std::vector<ConnectionParams*>& connections)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+              wxTAB_TRAVERSAL, "ConnectionsDlg"),
+      m_connections(connections) {
+  auto vbox = new wxBoxSizer(wxVERTICAL);
+  auto scrolled_window = new ScrolledWindow(this);
+  auto conn_grid =
+      new Connections(scrolled_window, m_connections, m_evt_add_connection);
+  scrolled_window->AddClient(conn_grid, conn_grid->GetGridMaxSize(),
+                             conn_grid->GetGridMinSize());
+  vbox->Add(scrolled_window, wxSizerFlags(5).Expand().Border());
+  vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
+            wxSizerFlags().Border());
+  vbox->Add(0, wxWindow::GetCharHeight(), 1);  // Expanding spacer
+  auto panel_flags = wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
+  vbox->Add(new GeneralPanel(this), panel_flags);
+
+  auto advanced_panel = new AdvancedPanel(this);
+  auto on_toggle = [&, advanced_panel, vbox](bool show) {
+    advanced_panel->Show(show);
+    vbox->SetSizeHints(this);
+    vbox->Fit(this);
+  };
+  vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
+  vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
+
+  SetSizer(vbox);
+  SetAutoLayout(true);
+  wxWindow::Fit();
+
+  auto on_evt_update_connections = [&, conn_grid,
+                                    scrolled_window](ObservedEvt&) {
+    conn_grid->ReloadGrid(TheConnectionParams());
+    conn_grid->Show(conn_grid->GetNumberRows() > 0);
+    scrolled_window->SetMinClientSize(conn_grid->GetGridMinSize());
+    scrolled_window->SetMaxSize(conn_grid->GetGridMaxSize());
+    Layout();
+  };
+  m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_update_connections);
+};
+
+void ConnectionsDlg::DoApply(wxWindow* root) {
+  for (wxWindow* child : root->GetChildren()) {
+    auto widget = dynamic_cast<ApplyCancel*>(child);
+    if (widget) widget->Apply();
+    DoApply(child);
+  }
+}
+
+void ConnectionsDlg::OnResize() {
+  Layout();
+  Refresh();
+  Update();
+}
+
+void ConnectionsDlg::DoCancel(wxWindow* root) {
+  for (wxWindow* child : root->GetChildren()) {
+    auto widget = dynamic_cast<ApplyCancel*>(child);
+    if (widget) widget->Cancel();
+    DoCancel(child);
+  }
+}
+
+void ConnectionsDlg::ApplySettings() { DoApply(this); }
+
+void ConnectionsDlg::CancelSettings() { DoCancel(this); }

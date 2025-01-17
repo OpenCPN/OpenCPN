@@ -57,6 +57,7 @@ public:
 
   bool SetOutMsg(const wxString& msg) override;
   void Start() override;
+  DriverStats GetStats() const override;
 
 private:
   serial::Serial m_serial;
@@ -88,6 +89,8 @@ void* StdSerialIo::Entry() {
 
   //    The main loop
   unsigned retries = 0;
+  m_stats.driver_bus = NavAddr::Bus::N0183;
+  m_stats.driver_iface = m_portname.ToStdString();
   while (KeepGoing()) {
     unsigned newdata = 0;
     uint8_t rdata[2000];
@@ -120,14 +123,24 @@ void* StdSerialIo::Entry() {
     // Handle received data
     for (unsigned i = 0; i < newdata; i++) line_buf.Put(rdata[i]);
     while (KeepGoing() && line_buf.HasLine()) {
-      m_send_msg_func(line_buf.GetLine());
+      auto line = line_buf.GetLine();
+      {
+        std::lock_guard lock(m_stats_mutex);
+        m_stats.tx_count += line.size();
+      }
+      m_send_msg_func(line);
     }
 
     //  Handle pending output messages
     std::string qmsg;
     while (KeepGoing() && m_out_que.Get(qmsg)) {
       qmsg += "\r\n";
-      if (-1 == WriteComPortPhysical(qmsg.c_str()) && 10 < retries++) {
+      bool failed_write = WriteComPortPhysical(qmsg.c_str()) == -1;
+      if (!failed_write) {
+        std::lock_guard lock(m_stats_mutex);
+        m_stats.tx_count += qmsg.size();
+      }
+      if (failed_write && 10 < retries++) {
         // We failed to write the port 10 times, let's close the port so that
         // the reconnection logic kicks in and tries to fix our connection.
         retries = 0;
@@ -151,6 +164,11 @@ bool StdSerialIo::SetOutMsg(const wxString& msg) {
   return true;
 }
 
+DriverStats StdSerialIo::GetStats() const {
+  std::lock_guard lock(m_stats_mutex);
+  return m_stats;
+}
+
 bool StdSerialIo::OpenComPortPhysical(const wxString& com_name,
                                       unsigned baud_rate) {
   try {
@@ -161,6 +179,10 @@ bool StdSerialIo::OpenComPortPhysical(const wxString& com_name,
   } catch (std::exception& e) {
     auto msg = std::string("Unhandled Exception while opening serial port: ");
     m_open_log_filter.Log(msg + e.what());
+  }
+  {
+    std::lock_guard lock(m_stats_mutex);
+    m_stats.available = m_serial.isOpen();
   }
   return m_serial.isOpen();
 }

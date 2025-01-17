@@ -666,8 +666,18 @@ void Route::RenameRoutePoints(void) {
   while (node) {
     RoutePoint *prp = node->GetData();
     if (prp->m_bDynamicName) {
-      wxString name;
-      name.Printf(_T ( "%03d" ), i);
+      wxString name = prp->GetName();
+      if (name.Len() == 3) {
+        name.Printf(_T ( "%03d" ), i);
+      } else if (name.Left(2) == "NM") {
+        name.Printf(_T ( "%03d" ), i);
+        if (prp->GetName().Len() >= 5) {
+          name.Append(prp->GetName().Mid(5));
+        }
+      } else {
+        name.Printf(_T ( "%03d" ), i);
+        name.Append(prp->GetName().Mid(3));
+      }
       prp->SetName(name);
     }
 

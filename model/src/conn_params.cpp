@@ -81,7 +81,6 @@ void ConnectionParams::Deserialize(const wxString& configStr) {
   InputSentenceList = wxStringTokenize(prms[10], _T(","));
   OutputSentenceListType = (ListType)wxAtoi(prms[11]);
   OutputSentenceList = wxStringTokenize(prms[12], _T(","));
-  Priority = wxAtoi(prms[13]);
   Garmin = !!wxAtoi(prms[14]);
   GarminUpload = !!wxAtoi(prms[15]);
   FurunoGP3X = !!wxAtoi(prms[16]);
@@ -124,15 +123,27 @@ wxString ConnectionParams::Serialize() const {
     ostcs.Append(OutputSentenceList[i]);
   }
   wxString ret = wxString::Format(
-      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%")
-      _T("d;%s"),
+      "%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s",
       Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol,
       Port.c_str(), Baudrate, ChecksumCheck, IOSelect, InputSentenceListType,
-      istcs.c_str(), OutputSentenceListType, ostcs.c_str(), Priority, Garmin,
-      GarminUpload, FurunoGP3X, bEnabled, UserComment.c_str(), AutoSKDiscover,
-      socketCAN_port.c_str(), NoDataReconnect, DisableEcho, AuthToken.c_str());
+      istcs.c_str(), OutputSentenceListType, ostcs.c_str(), 0 /* Priority */,
+      Garmin, GarminUpload, FurunoGP3X, bEnabled, UserComment.c_str(),
+      AutoSKDiscover, socketCAN_port.c_str(), NoDataReconnect, DisableEcho,
+      AuthToken.c_str());
 
   return ret;
+}
+
+std::string ConnectionParams::GetKey() const {
+  std::stringstream ss;
+  ss << Type << NetProtocol << NetworkAddress << NetworkPort << Protocol << Port
+     << Baudrate << ChecksumCheck << IOSelect << InputSentenceListType
+     << OutputSentenceListType << Garmin << GarminUpload << FurunoGP3X
+     << UserComment << AutoSKDiscover << socketCAN_port << NoDataReconnect
+     << DisableEcho << AuthToken;
+  for (const auto& sentence : OutputSentenceList) ss << sentence;
+  for (const auto& sentence : InputSentenceList) ss << sentence;
+  return ss.str();
 }
 
 ConnectionParams::ConnectionParams() {
@@ -149,7 +160,6 @@ ConnectionParams::ConnectionParams() {
   IOSelect = DS_TYPE_INPUT;
   InputSentenceListType = WHITELIST;
   OutputSentenceListType = WHITELIST;
-  Priority = 0;
   Valid = true;
   bEnabled = true;
   b_IsSetup = false;

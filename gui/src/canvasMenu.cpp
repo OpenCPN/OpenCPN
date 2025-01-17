@@ -44,6 +44,7 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui.h"
 #include "model/mdns_cache.h"
 #include "model/mdns_query.h"
 #include "model/nav_object_database.h"
@@ -67,6 +68,7 @@
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "NMEALogWindow.h"
 #include "peer_client_dlg.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
@@ -207,6 +209,9 @@ enum {
   ID_DEF_MENU_CURRENTINFO,
   ID_DEF_ZERO_XTE,
 
+  ID_DEF_MENU_DEBUG,
+  ID_DGB_MENU_NMEA_WINDOW,
+
   ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are
                           // created dynamically
 
@@ -322,6 +327,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #else
   wxMenu *subMenuRedo = new wxMenu("Redo...Ctrl-Y");
 #endif
+  wxMenu *subMenuDebug = new wxMenu("");
+  MenuAppend1(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW, "Show NMEA log window");
 
   wxMenu *menuFocus = contextMenu;  // This is the one that will be shown
 
@@ -703,6 +710,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
     }
   }
+  if (g_enable_root_menu_debug)
+    contextMenu->AppendSubMenu(subMenuDebug, _("Debug"));
 
   if (seltype & SELTYPE_ROUTESEGMENT) {
     if (!g_bBasicMenus && m_pSelectedRoute) {
@@ -1491,6 +1500,15 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       break;
     }
+
+    case ID_DGB_MENU_NMEA_WINDOW: {
+      if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
+        auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
+        NMEALogWindow::GetInstance().Create(top_window, 35);
+      }
+      wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+    } break;
+
     case ID_RT_MENU_REVERSE: {
       if (m_pSelectedRoute->m_bIsInLayer) break;
 
