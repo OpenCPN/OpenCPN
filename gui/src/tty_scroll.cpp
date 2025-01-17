@@ -38,6 +38,14 @@ TtyScroll::TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter)
   SetScrollRate(0, m_line_height);
   SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
   for (unsigned i = 0; i < m_n_lines; i++) m_lines.push_back("");
+  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
+}
+
+void TtyScroll::OnSize(wxSizeEvent& ev) {
+  m_n_lines = ev.GetSize().y / GetCharHeight();
+  while (m_lines.size() < m_n_lines) m_lines.push_back("");
+  SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
+  ev.Skip();
 }
 
 void TtyScroll::Add(const wxString& line) {
