@@ -325,6 +325,7 @@ extern int g_nAIS_activity_timer;
 extern bool g_bskew_comp;
 extern float g_compass_scalefactor;
 extern int g_COGAvgSec;  // COG average period (sec.) for Course Up Mode
+extern bool g_btenhertz;
 
 wxGLContext *g_pGLcontext;  // shared common context
 
@@ -1694,7 +1695,7 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                GetCanvasScaleFactor() / proposed_scale_onscreen,
                                0, GetVPRotation());
     }
-    if (m_bFollow) {
+    if (m_bFollow && g_btenhertz) {
       StartTimedMovementVP(vpLat, vpLon);
     } else {
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
@@ -3370,9 +3371,9 @@ bool ChartCanvas::DoCanvasCOGSet(void) {
     m_VPRotate = -g_COGAvg * PI / 180.;
 
   SetVPRotation(m_VPRotate);
-  bool bnew_chart = DoCanvasUpdate();
+  // bool bnew_chart = DoCanvasUpdate();
 
-  if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
+  // if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
 
   return true;
 }
@@ -3419,7 +3420,7 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
 
   return true;
 }
-
+int stvpc;
 void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
   // Save the target
   m_target_lat = target_lat;
@@ -3431,21 +3432,30 @@ void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
 
   m_VPMovementTimer.Start(1, true);  // oneshot
   m_timed_move_vp_active = true;
+  stvpc = 0;
 }
 void ChartCanvas::DoTimedMovementVP() {
   if (!m_timed_move_vp_active) return;  // not active
 
   // Stop condition
   double one_pix = (1. / (1852 * 60)) / GetVP().view_scale_ppm;
+  double d2 =
+      pow(m_run_lat - m_target_lat, 2) + pow(m_run_lon - m_target_lon, 2);
 
-  if ((fabs(m_run_lat - m_target_lat) < one_pix) ||
-      (fabs(m_run_lat - m_target_lat) < one_pix)) {
+  if (d2 < one_pix) {
+    SetViewPoint(m_target_lat, m_target_lon);  // Embeds a refresh
     StopMovementVP();
     return;
   }
 
-  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / 10;
-  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / 10;
+  // if ((fabs(m_run_lat - m_target_lat) < one_pix) &&
+  //     (fabs(m_run_lon - m_target_lon) < one_pix)) {
+  //   StopMovementVP();
+  //   return;
+  // }
+
+  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / 5;
+  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / 5;
 
   m_run_lat = new_lat;
   m_run_lon = new_lon;
