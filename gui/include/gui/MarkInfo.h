@@ -209,7 +209,6 @@ class MarkInfoDlg : public DIALOG_PARENT {
 
 private:
   RoutePoint* m_pRoutePoint;
-  std::vector<RoutePoint*> m_pRoutePoints;
   static bool instanceFlag;
   int i_htmlList_item;
 
@@ -233,7 +232,6 @@ private:
   wxDateTime m_ArrETA_save;
   std::map<double, const IDX_entry*> m_tss;
   wxString m_lasttspos;
-  void SetRoutePoint(RoutePoint* pRP);
 
 protected:
   OCPNIconCombo* m_bcomboBoxIcon;
@@ -372,7 +370,7 @@ public:
   void RecalculateSize(void);
   RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
-  void SetRoutePoints(const std::vector<RoutePoint*>&);
+  void SetRoutePoint(RoutePoint* pRP);
   void ClearData();
   void SetBulkEdit(bool bBulkEdit);
   void UpdateHtmlList();

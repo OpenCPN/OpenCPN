@@ -10039,7 +10039,7 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
   wxString title_base = _("Waypoint Properties");
   if (!markPoint->m_bIsInRoute) title_base = _("Mark Properties");
 
-  g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint *>{markPoint});
+  g_pMarkInfoDialog->SetRoutePoint(markPoint);
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"), title_base, _("Layer"),
