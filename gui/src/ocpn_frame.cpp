@@ -5519,6 +5519,80 @@ void MyFrame::CheckToolbarPosition() {
 #endif
 }
 
+void MyFrame::ProcessUnitTest() {
+  if (!g_bPauseTest && (g_unit_test_1 || g_unit_test_2)) {
+    //            if((0 == ut_index) && GetQuiltMode())
+    //                  ToggleQuiltMode();
+
+    // We use only one canvas for the unit tests, so far...
+    ChartCanvas *cc = GetPrimaryCanvas();
+
+    cc->m_bFollow = false;
+    if (g_MainToolbar && g_MainToolbar->GetToolbar())
+      g_MainToolbar->GetToolbar()->ToggleTool(ID_FOLLOW, cc->m_bFollow);
+    int ut_index_max = ((g_unit_test_1 > 0) ? (g_unit_test_1 - 1) : INT_MAX);
+
+    if (ChartData) {
+      if (cc->m_groupIndex > 0) {
+        while (ut_index < ChartData->GetChartTableEntries() &&
+               !ChartData->IsChartInGroup(ut_index, cc->m_groupIndex)) {
+          ut_index++;
+        }
+      }
+      if (ut_index < ChartData->GetChartTableEntries()) {
+        // printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
+        const ChartTableEntry *cte = &ChartData->GetChartTableEntry(ut_index);
+
+        double clat = (cte->GetLatMax() + cte->GetLatMin()) / 2;
+        double clon = (cte->GetLonMax() + cte->GetLonMin()) / 2;
+
+        vLat = clat;
+        vLon = clon;
+
+        cc->SetViewPoint(clat, clon);
+
+        if (cc->GetQuiltMode()) {
+          if (cc->IsChartQuiltableRef(ut_index))
+            cc->SelectQuiltRefdbChart(ut_index);
+        } else
+          cc->SelectdbChart(ut_index);
+
+        double ppm;  // final ppm scale to use
+        if (g_unit_test_1) {
+          ppm = cc->GetCanvasScaleFactor() / cte->GetScale();
+          ppm /= 2;
+        } else {
+          double rw, rh;  // width, height
+          int ww, wh;     // chart window width, height
+
+          // width in nm
+          DistanceBearingMercator(cte->GetLatMin(), cte->GetLonMin(),
+                                  cte->GetLatMin(), cte->GetLonMax(), NULL,
+                                  &rw);
+
+          // height in nm
+          DistanceBearingMercator(cte->GetLatMin(), cte->GetLonMin(),
+                                  cte->GetLatMax(), cte->GetLonMin(), NULL,
+                                  &rh);
+
+          cc->GetSize(&ww, &wh);
+          ppm = wxMin(ww / (rw * 1852), wh / (rh * 1852)) * (100 - fabs(clat)) /
+                90;
+          ppm = wxMin(ppm, 1.0);
+        }
+        cc->SetVPScale(ppm);
+
+        cc->ReloadVP();
+
+        ut_index++;
+        if (ut_index > ut_index_max) exit(0);
+      } else {
+        _exit(0);
+      }
+    }
+  }
+}
+
 void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   // Check to see if in non-North-Up mode
   bool b_rotate = false;
@@ -5596,82 +5670,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 }
 
-void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
-  CheckToolbarPosition();
-
-  if (!g_bPauseTest && (g_unit_test_1 || g_unit_test_2)) {
-    //            if((0 == ut_index) && GetQuiltMode())
-    //                  ToggleQuiltMode();
-
-    // We use only one canvas for the unit tests, so far...
-    ChartCanvas *cc = GetPrimaryCanvas();
-
-    cc->m_bFollow = false;
-    if (g_MainToolbar && g_MainToolbar->GetToolbar())
-      g_MainToolbar->GetToolbar()->ToggleTool(ID_FOLLOW, cc->m_bFollow);
-    int ut_index_max = ((g_unit_test_1 > 0) ? (g_unit_test_1 - 1) : INT_MAX);
-
-    if (ChartData) {
-      if (cc->m_groupIndex > 0) {
-        while (ut_index < ChartData->GetChartTableEntries() &&
-               !ChartData->IsChartInGroup(ut_index, cc->m_groupIndex)) {
-          ut_index++;
-        }
-      }
-      if (ut_index < ChartData->GetChartTableEntries()) {
-        // printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
-        const ChartTableEntry *cte = &ChartData->GetChartTableEntry(ut_index);
-
-        double clat = (cte->GetLatMax() + cte->GetLatMin()) / 2;
-        double clon = (cte->GetLonMax() + cte->GetLonMin()) / 2;
-
-        vLat = clat;
-        vLon = clon;
-
-        cc->SetViewPoint(clat, clon);
-
-        if (cc->GetQuiltMode()) {
-          if (cc->IsChartQuiltableRef(ut_index))
-            cc->SelectQuiltRefdbChart(ut_index);
-        } else
-          cc->SelectdbChart(ut_index);
-
-        double ppm;  // final ppm scale to use
-        if (g_unit_test_1) {
-          ppm = cc->GetCanvasScaleFactor() / cte->GetScale();
-          ppm /= 2;
-        } else {
-          double rw, rh;  // width, height
-          int ww, wh;     // chart window width, height
-
-          // width in nm
-          DistanceBearingMercator(cte->GetLatMin(), cte->GetLonMin(),
-                                  cte->GetLatMin(), cte->GetLonMax(), NULL,
-                                  &rw);
-
-          // height in nm
-          DistanceBearingMercator(cte->GetLatMin(), cte->GetLonMin(),
-                                  cte->GetLatMax(), cte->GetLonMin(), NULL,
-                                  &rh);
-
-          cc->GetSize(&ww, &wh);
-          ppm = wxMin(ww / (rw * 1852), wh / (rh * 1852)) * (100 - fabs(clat)) /
-                90;
-          ppm = wxMin(ppm, 1.0);
-        }
-        cc->SetVPScale(ppm);
-
-        cc->ReloadVP();
-
-        ut_index++;
-        if (ut_index > ut_index_max) exit(0);
-      } else {
-        _exit(0);
-      }
-    }
-  }
-  g_tick++;
-
+void MyFrame::ProcessQuitFlag() {
   //      Listen for quitflag to be set, requesting application close
   if (quitflag) {
     wxLogMessage(_T("Got quitflag from SIGNAL"));
@@ -5681,12 +5680,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     Close();
     return;
   }
+}
 
-  if (bDBUpdateInProgress) return;
-
-  FrameTimer1.Stop();
-  FrameTenHzTimer.Stop();
-
+void MyFrame::ProcessDeferredTrackOn() {
   //  If tracking carryover was found in config file, enable tracking as soon as
   //  GPS become valid
   if (g_bDeferredStartTrack) {
@@ -5699,35 +5695,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       g_bDeferredStartTrack = false;
     }
   }
+}
 
-  //    Build and send a Position Fix event to PlugIns
-  if (g_pi_manager) {
-    GenericPosDatEx GPSData;
-    GPSData.kLat = gLat;
-    GPSData.kLon = gLon;
-    GPSData.kCog = gCog;
-    GPSData.kSog = gSog;
-    GPSData.kVar = gVar;
-    GPSData.kHdm = gHdm;
-    GPSData.kHdt = gHdt;
-    GPSData.nSats = g_SatsInView;
-
-    wxDateTime tCheck((time_t)m_fixtime);
-    if (tCheck.IsValid()) {
-      // As a special case, when no GNSS data is available, m_fixtime is set to
-      // zero. Note wxDateTime(0) is valid, so the zero value is passed to the
-      // plugins. The plugins should check for zero and not use the time in that
-      // case.
-      GPSData.FixTime = m_fixtime;
-    } else {
-      // Note: I don't think this is ever reached, as m_fixtime can never be set
-      // to wxLongLong(wxINT64_MIN), which is the only way to get here.
-      GPSData.FixTime = wxDateTime::Now().GetTicks();
-    }
-
-    SendPositionFixToAllPlugIns(&GPSData);
-  }
-
+void MyFrame::ProcessAnchorWatch() {
   //   Check for anchorwatch alarms                                 // pjotrc
   //   2010.02.15
   if (pAnchorWatchPoint1) {
@@ -5773,10 +5743,41 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   if ((pAnchorWatchPoint1 || pAnchorWatchPoint2) && !bGPSValid)
     AnchorAlertOn1 = true;
+}
 
+void MyFrame::SendFixToPlugins() {
+  //    Build and send a Position Fix event to PlugIns
+  if (g_pi_manager) {
+    GenericPosDatEx GPSData;
+    GPSData.kLat = gLat;
+    GPSData.kLon = gLon;
+    GPSData.kCog = gCog;
+    GPSData.kSog = gSog;
+    GPSData.kVar = gVar;
+    GPSData.kHdm = gHdm;
+    GPSData.kHdt = gHdt;
+    GPSData.nSats = g_SatsInView;
+
+    wxDateTime tCheck((time_t)m_fixtime);
+    if (tCheck.IsValid()) {
+      // As a special case, when no GNSS data is available, m_fixtime is set to
+      // zero. Note wxDateTime(0) is valid, so the zero value is passed to the
+      // plugins. The plugins should check for zero and not use the time in that
+      // case.
+      GPSData.FixTime = m_fixtime;
+    } else {
+      // Note: I don't think this is ever reached, as m_fixtime can never be set
+      // to wxLongLong(wxINT64_MIN), which is the only way to get here.
+      GPSData.FixTime = wxDateTime::Now().GetTicks();
+    }
+
+    SendPositionFixToAllPlugIns(&GPSData);
+  }
+}
+
+void MyFrame::ProcessLogAndBells() {
   //  Send current nav status data to log file on every half hour   // pjotrc
   //  2010.02.09
-
   wxDateTime lognow = wxDateTime::Now();  // pjotrc 2010.02.09
   int hourLOC = lognow.GetHour();
   int minuteLOC = lognow.GetMinute();
@@ -5834,6 +5835,24 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       }
     }
   }
+}
+
+void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+  CheckToolbarPosition();
+
+  ProcessUnitTest();
+  g_tick++;
+  ProcessQuitFlag();
+
+  if (bDBUpdateInProgress) return;
+
+  FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
+
+  ProcessDeferredTrackOn();
+  SendFixToPlugins();
+  ProcessAnchorWatch();
+  ProcessLogAndBells();
 
   if (ShouldRestartTrack()) TrackDailyRestart();
 
@@ -5854,18 +5873,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
     gCog = 0.0;  // say speed is zero to kill ownship predictor
   }
-
-// TODO
-//  Not needed?
-#if 0
-#if !defined(__WXGTK__) && !defined(__WXQT__)
-    {
-        double cursor_lat, cursor_lon;
-        GetPrimaryCanvas()->GetCursorLatLon( &cursor_lat, &cursor_lon );
-        GetPrimaryCanvas()->SetCursorStatus(cursor_lat, cursor_lon);
-    }
-#endif
-#endif
 
   //      Update the chart database and displayed chart
   bool bnew_view = false;

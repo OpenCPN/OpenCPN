@@ -339,7 +339,15 @@ public:
   void ConfigureStatusBar();
 
 private:
+  void ProcessUnitTest();
+  void ProcessQuitFlag();
+  void ProcessDeferredTrackOn();
+  void SendFixToPlugins();
+  void ProcessAnchorWatch();
+  void ProcessLogAndBells();
+
   void CheckToolbarPosition();
+
   void ODoSetSize(void);
   void DoCOGSet(void);
 
