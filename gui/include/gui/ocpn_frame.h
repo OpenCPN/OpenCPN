@@ -346,7 +346,7 @@ private:
   void SendFixToPlugins();
   void ProcessAnchorWatch();
   void ProcessLogAndBells();
-
+  void CalculateCOGAverage();
   void CheckToolbarPosition();
 
   void ODoSetSize(void);

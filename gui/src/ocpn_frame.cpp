@@ -5140,97 +5140,7 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
   }
 }
 
-void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
-  m_fixtime = msg->time;
-  bool b_Pos_retrigger = false;
-  bool b_Hdt_retrigger = false;
-  double hdt_data_interval = 0;
-  double fix_time_interval = 0;
-
-  double msgtime = msg->set_time.tv_sec;
-  double m1 = msg->set_time.tv_nsec / 1e9;
-  msgtime += m1;
-
-  if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
-      ((msg->vflag & POS_VALID) == POS_VALID)) {
-    // Save the reported fix as the best available "ground truth"
-    uint64_t fix_time_gt_last = fix_time_gt;
-    uint64_t fix_time_gt_now =
-        msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
-    fix_time_interval = (fix_time_gt_now - fix_time_gt_last) / (double)1e9;
-
-    // Calculate an implied SOG from the position change and time interval
-    double dist, brg;
-    DistanceBearingMercator(gLat, gLon, gLat_gt, gLon_gt, &brg, &dist);
-    double implied_sog = dist / (fix_time_interval / 3600);
-
-    // printf("-------------- SOG: %g  %g   %g\n", fix_time_interval, gSog,
-    // implied_sog);
-    if (dist < .001) {
-      return;  // probably a duplicate message, ignore it
-    }
-
-    // shuffle history data
-    gLat_gt_m2 = gLat_gt_m1;
-    gLon_gt_m2 = gLon_gt_m1;
-    gLat_gt_m1 = gLat_gt;
-    gLon_gt_m1 = gLon_gt;
-    gCog_gt_m1 = gCog_gt;
-
-    gLat_gt = gLat;
-    gLon_gt = gLon;
-    gCog_gt = gCog;
-    gSog_gt = gSog;
-    fix_time_gt = fix_time_gt_now;
-
-    if (std::isnan(gCog_gt_m1)) return;  // Startup
-
-    if ((fabs(gSog - implied_sog) / gSog) > 0.5) {
-      // Probably a synthetic data stream, with multiple position sources.
-      // Do not try to interpolate position at 10 Hz.
-      gSog_gt = 0;
-      cog_rate_gt = 0;
-      // printf("---Skip SOG\n");
-      return;
-    }
-
-    // Calculate an estimated Rate-of-turn
-    double diff = gCog_gt - gCog_gt_m1;
-    double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
-    tentative_cog_rate_gt *= 1e9;  // degrees / sec
-    // Sanity check, and resolve the "phase" problem at +/- North
-    if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
-      cog_rate_gt = tentative_cog_rate_gt;
-
-    b_Pos_retrigger = true;
-  } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
-    if (!std::isnan(gHdt)) {
-      // Prepare to estimate the gHdt from prior ground truth measurements
-      uint64_t hdt_time_gt_last = hdt_time_gt;
-      hdt_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
-      hdt_data_interval = (hdt_time_gt - hdt_time_gt_last) / 1e9;
-
-      // Skip data reports that come too frequently
-      if (hdt_data_interval > .09) {
-        // shuffle points
-        gHdt_gt_m1 = gHdt_gt;
-        gHdt_gt = gHdt;
-
-        if (std::isnan(gHdt_gt_m1)) return;  // startup
-
-        // Calculate an estimated Rate-of-change of gHdt
-        double tentative_hdt_rate_gt =
-            (gHdt_gt - gHdt_gt_m1) / (hdt_time_gt - hdt_time_gt_last);
-        tentative_hdt_rate_gt *= 1e9;  // degrees / sec
-        // Sanity check, and resolve the "phase" problem at +/- North
-        if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
-          hdt_rate_gt = tentative_hdt_rate_gt;
-        b_Hdt_retrigger = true;
-      }
-    }
-  }
-  if (std::isnan(gHdt)) gHdt_gt = NAN;  // Handle loss of signal
-
+void MyFrame::CalculateCOGAverage() {
   //    Maintain average COG for Course Up Mode
   if (!std::isnan(gCog)) {
     if (g_COGAvgSec > 0) {
@@ -5264,12 +5174,91 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
     } else
       g_COGAvg = gCog;
   }
+}
 
+void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
+  m_fixtime = msg->time;
+  double hdt_data_interval = 0;
+  double fix_time_interval = 0;
+
+  double msgtime = msg->set_time.tv_sec;
+  double m1 = msg->set_time.tv_nsec / 1e9;
+  msgtime += m1;
+
+  if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
+      ((msg->vflag & POS_VALID) == POS_VALID)) {
+    // Save the reported fix as the best available "ground truth"
+    uint64_t fix_time_gt_last = fix_time_gt;
+    uint64_t fix_time_gt_now =
+        msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+    fix_time_interval = (fix_time_gt_now - fix_time_gt_last) / (double)1e9;
+
+    // Calculate an implied SOG from the position change and time interval
+    double dist, brg;
+    DistanceBearingMercator(gLat, gLon, gLat_gt, gLon_gt, &brg, &dist);
+    double implied_sog = dist / (fix_time_interval / 3600);
+
+    if (dist > .001) {  // Avoid duplicate position report
+      // shuffle history data
+      gLat_gt_m2 = gLat_gt_m1;
+      gLon_gt_m2 = gLon_gt_m1;
+      gLat_gt_m1 = gLat_gt;
+      gLon_gt_m1 = gLon_gt;
+      gCog_gt_m1 = gCog_gt;
+
+      gLat_gt = gLat;
+      gLon_gt = gLon;
+      gCog_gt = gCog;
+      gSog_gt = gSog;
+      fix_time_gt = fix_time_gt_now;
+
+      if (std::isnan(gCog_gt_m1)) return;  // Startup
+
+      if ((fabs(gSog - implied_sog) / gSog) > 0.5) {
+        // Probably a synthetic data stream, with multiple position sources.
+        // Do not try to interpolate position at 10 Hz.
+        gSog_gt = 0;
+        cog_rate_gt = 0;
+      } else {
+        // Calculate an estimated Rate-of-turn
+        double diff = gCog_gt - gCog_gt_m1;
+        double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
+        tentative_cog_rate_gt *= 1e9;  // degrees / sec
+        // Sanity check, and resolve the "phase" problem at +/- North
+        if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
+          cog_rate_gt = tentative_cog_rate_gt;
+      }
+    }
+  } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
+    if (!std::isnan(gHdt)) {
+      // Prepare to estimate the gHdt from prior ground truth measurements
+      uint64_t hdt_time_gt_last = hdt_time_gt;
+      hdt_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+      hdt_data_interval = (hdt_time_gt - hdt_time_gt_last) / 1e9;
+
+      // Skip data reports that come too frequently
+      if (hdt_data_interval > .09) {
+        // shuffle points
+        gHdt_gt_m1 = gHdt_gt;
+        gHdt_gt = gHdt;
+
+        if (std::isnan(gHdt_gt_m1)) return;  // startup
+
+        // Calculate an estimated Rate-of-change of gHdt
+        double tentative_hdt_rate_gt =
+            (gHdt_gt - gHdt_gt_m1) / (hdt_time_gt - hdt_time_gt_last);
+        tentative_hdt_rate_gt *= 1e9;  // degrees / sec
+        // Sanity check, and resolve the "phase" problem at +/- North
+        if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
+          hdt_rate_gt = tentative_hdt_rate_gt;
+      }
+    }
+  }
+  if (std::isnan(gHdt)) gHdt_gt = NAN;  // Handle loss of signal
+
+  // Some housekeeping
+  CalculateCOGAverage();
   FilterCogSog();
-
-  //    If gSog is greater than some threshold, we determine that we are
-  //    "cruising"
-  if (gSog > 3.0) g_bCruising = true;
 
   //      Maintain the GPS position validity flag
   //      Determined by source validity of RMC, GGA, GLL (N0183)
@@ -5286,99 +5275,6 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
 
   bVelocityValid = true;
   UpdateStatusBar();
-
-#if 0
-#ifdef ocpnUPDATE_SYSTEM_TIME
-
-  //      Use the fix time to update the local system clock, only once per
-  //      session
-  if (!m_bTimeIsSet) {
-    if (!s_bSetSystemTime) {
-      m_bTimeIsSet = true;
-      return;
-    }
-    wxDateTime Fix_Time(wxDateTime::Now());
-
-    if (6 == sfixtime.Len() ||
-        6 == sfixtime.find('.')) {  // perfectly recognised format?
-      wxString a;
-      long b;
-      a = sfixtime.Mid(0, 2);
-      if (a.ToLong(&b)) Fix_Time.SetHour((wxDateTime::wxDateTime_t)b);
-      a = sfixtime.Mid(2, 2);
-      if (a.ToLong(&b)) Fix_Time.SetMinute((wxDateTime::wxDateTime_t)b);
-      a = sfixtime.Mid(4, 2);
-      if (a.ToLong(&b)) Fix_Time.SetSecond((wxDateTime::wxDateTime_t)b);
-    } else
-      return;  // not a good sfixtime format
-
-    time_t TimeOff = Fix_Time.GetTicks() - wxDateTime::Now().GetTicks();
-
-    if (g_bHasHwClock) {  // if a realtime hardwareclock isavailable we only
-                          // check for time and a max of 2 hours of to prevent
-                          // bogus info from some gps devices
-      if ((abs(TimeOff) > 20) && (abs(TimeOff) < 7200)) {
-        wxString msg;
-        msg.Printf(_T("Setting system time, delta t is %d seconds"), TimeOff);
-        wxLogMessage(msg);
-#ifdef __WXMSW__
-        //      Fix up the fix_time to convert to GMT
-        Fix_Time = Fix_Time.ToGMT();
-
-        //    Code snippet following borrowed from wxDateCtrl, MSW
-        const wxDateTime::Tm tm(Fix_Time.GetTm());
-        SYSTEMTIME stm;
-        stm.wYear = (WXWORD)tm.year;
-        stm.wMonth = (WXWORD)(tm.mon - wxDateTime::Jan + 1);
-        stm.wDay = tm.mday;
-        stm.wDayOfWeek = 0;
-        stm.wHour = Fix_Time.GetHour();
-        stm.wMinute = tm.min;
-        stm.wSecond = tm.sec;
-        stm.wMilliseconds = 0;
-
-        ::SetSystemTime(&stm);  // in GMT
-#else
-        //      This contortion sets the system date/time on POSIX host
-        //      Requires the following line in /etc/sudoers
-        //      "nav ALL=NOPASSWD:/bin/date *" (where nav is your username)
-        //      or "%sudo ALL=NOPASSWD:/bin/date *"
-        wxString CommandStr("sudo /bin/date +%T --utc --set=\"");
-        CommandStr.Append(Fix_Time.Format("%T"));
-        CommandStr.Append("\"");
-        msg.Printf(_T("Linux command is:"));
-        msg += CommandStr;
-        wxLogMessage(msg);
-        wxExecute(CommandStr, wxEXEC_ASYNC);
-#endif                   //__WXMSW__
-      }
-      m_bTimeIsSet = true;
-    } else {  // no hw-clock set both date and time
-      if (gRmcDate.Len() == 6) {
-#if !defined(__WXMSW__)  // not for windows
-        wxString a;
-        long b;
-        Fix_Time.SetMonth((wxDateTime::Month)2);
-        a = gRmcDate.Mid(0, 2);
-        if (a.ToLong(&b)) Fix_Time.SetDay(b);
-        a = gRmcDate.Mid(2, 2);
-        if (a.ToLong(&b)) Fix_Time.SetMonth((wxDateTime::Month)(b - 1));
-        a = gRmcDate.Mid(4, 2);
-        if (a.ToLong(&b))
-          Fix_Time.SetYear(b + 2000);  // TODO fix this before the year 2100
-        wxString msg;
-        wxString CommandStr("sudo /bin/date --utc --set=\"");
-        CommandStr.Append(Fix_Time.Format("%D %T\""));
-        msg.Printf(_T("Set Date/Time, Linux command is: %s"), CommandStr);
-        wxLogMessage(msg);
-        wxExecute(CommandStr, wxEXEC_ASYNC);
-#endif                   // !__WXMSW__
-        m_bTimeIsSet = true;
-      }
-    }
-  }
-#endif                   // ocpnUPDATE_SYSTEM_TIME
-#endif
 }
 
 void MyFrame::UpdateStatusBar() {
@@ -5874,6 +5770,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
     return;
   }
+
+  //    If gSog is greater than some threshold,
+  //    we determine that we are"cruising"
+  if (gSog > 3.0) g_bCruising = true;
 
   //  Update the Toolbar Status windows and lower status bar
   //  just after start of ticks.
