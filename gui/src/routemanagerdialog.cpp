@@ -59,7 +59,7 @@
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
-#include "route_validators.h"
+#include "route_validator.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"

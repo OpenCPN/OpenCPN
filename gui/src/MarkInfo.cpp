@@ -40,6 +40,7 @@
 #include <wx/bmpbuttn.h>
 
 #include "chcanv.h"
+#include "dialog_cntrl.h"
 #include "gui_lib.h"
 #include "MarkInfo.h"
 #include "model/georef.h"
@@ -360,8 +361,8 @@ void MarkInfoDlg::Create() {
                      wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_VERTICAL);
   bSizerName->Add(m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
-  m_textName = new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
-                              wxDefaultPosition, wxDefaultSize, 0);
+  m_textName = new TextField(m_panelBasicProperties, wxID_ANY, wxEmptyString,
+                             wxDefaultPosition, wxDefaultSize, 0);
   bSizerNameValue->Add(m_textName, 0, wxALL | wxEXPAND, 5);
   bSizerName->Add(bSizerNameValue, 1, wxEXPAND, 5);
   bSizerTextProperties->Add(bSizerName, 0, wxEXPAND, 5);
@@ -1662,16 +1663,9 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
  * Name changed event handler triggers validaton.
  */
 void MarkInfoDlg::OnNameChanged(wxCommandEvent& event) {
-  wxTextCtrl* textCtrl = dynamic_cast<wxTextCtrl*>(event.GetEventObject());
+  TextField* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
   if (textCtrl) {
-    if (!textCtrl->Validate()) {
-      // Optional: Provide visual feedback or handle the error
-      textCtrl->SetBackgroundColour(*wxRED);
-      textCtrl->Refresh();
-    } else {
-      textCtrl->SetBackgroundColour(*wxWHITE);
-      textCtrl->Refresh();
-    }
+    textCtrl->Validate();
   }
 }
 

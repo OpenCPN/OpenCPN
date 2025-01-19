@@ -786,6 +786,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/FlexHash.h
     ${GUI_HDR_DIR}/FontDesc.h
     ${GUI_HDR_DIR}/FontMgr.h
+    ${GUI_HDR_DIR}/dialog_cntrl.h
     ${GUI_HDR_DIR}/GoToPositionDialog.h
     ${GUI_HDR_DIR}/gshhs.h
     ${GUI_HDR_DIR}/gui_lib.h
@@ -826,7 +827,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/routemanagerdialog.h
     ${GUI_HDR_DIR}/routeman_gui.h
     ${GUI_HDR_DIR}/route_point_gui.h
-    ${GUI_HDR_DIR}/route_validators.h
+    ${GUI_HDR_DIR}/route_validator.h
     ${GUI_HDR_DIR}/routeprintout.h
     ${GUI_HDR_DIR}/RoutePropDlg.h
     ${GUI_HDR_DIR}/RoutePropDlgImpl.h
@@ -903,6 +904,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
     ${GUI_SRC_DIR}/FontMgr.cpp
+    ${GUI_SRC_DIR}/dialog_cntrl.cpp
     ${GUI_SRC_DIR}/GoToPositionDialog.cpp
     ${GUI_SRC_DIR}/gshhs.cpp
     ${GUI_SRC_DIR}/gui_lib.cpp
@@ -949,7 +951,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/routemanagerdialog.cpp
     ${GUI_SRC_DIR}/routeman_gui.cpp
     ${GUI_SRC_DIR}/route_point_gui.cpp
-    ${GUI_SRC_DIR}/route_validators.cpp
+    ${GUI_SRC_DIR}/route_validator.cpp
     ${GUI_SRC_DIR}/routeprintout.cpp
     ${GUI_SRC_DIR}/RoutePropDlg.cpp
     ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
