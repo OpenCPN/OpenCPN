@@ -23,8 +23,14 @@
 // Text field constructor
 TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
                      const wxPoint& pos, const wxSize& size, long style)
-    : wxTextCtrl(parent, id, value, pos, size, style) {
+    : wxTextCtrl(new wxPanel(parent), id, value, pos, size, style) {
   m_errorText = nullptr;
+
+  // Create panel as
+  wxBoxSizer* nameSizer = new wxBoxSizer(wxVERTICAL);
+  wxPanel* panel = dynamic_cast<wxPanel*>(GetParent());
+  nameSizer->Add(this, 0, wxEXPAND);
+  panel->SetSizer(nameSizer);
 }
 
 // Get the position index within a sizer.
