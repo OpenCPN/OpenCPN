@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,105 +15,99 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#include <wx/textctrl.h>
-#include <wx/dcclient.h>
 #include <wx/clipbrd.h>
+#include <wx/dcclient.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
 
 #include "tty_scroll.h"
 
-TtyScroll::TtyScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter)
-    : wxScrolledWindow(parent), m_nLines(n_lines), m_tFilter(tFilter) {
-  bpause = false;
-  wxClientDC dc(this);
-  dc.GetTextExtent(_T("Line Height"), NULL, &m_hLine);
+/**
+ * \file
+ * Implement tty_scroll.h
+ */
 
-  SetScrollRate(0, m_hLine);
-  SetVirtualSize(-1, (m_nLines + 1) * m_hLine);
-  m_plineArray = new wxArrayString;
-  for (unsigned int i = 0; i < m_nLines; i++) m_plineArray->Add(_T(""));
+TtyScroll::TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter)
+    : wxScrolledWindow(parent), m_n_lines(n_lines), m_filter(filter) {
+  m_is_paused = false;
+  wxClientDC dc(this);
+  dc.GetTextExtent("Line Height", NULL, &m_line_height);
+
+  SetScrollRate(0, m_line_height);
+  SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
+  for (unsigned i = 0; i < m_n_lines; i++) m_lines.push_back("");
 }
 
-TtyScroll::~TtyScroll() { delete m_plineArray; }
-
-void TtyScroll::Add(const wxString &line) {
-  wxString filter = m_tFilter.GetValue();
-  if (!bpause && (filter.IsEmpty() || line.Contains(filter))) {
-    if (m_plineArray->GetCount() > m_nLines - 1) {  // shuffle the arraystring
-      wxArrayString *p_newArray = new wxArrayString;
-
-      for (unsigned int i = 1; i < m_plineArray->GetCount(); i++)
-        p_newArray->Add(m_plineArray->Item(i));
-
-      delete m_plineArray;
-      m_plineArray = p_newArray;
-    }
-
-    m_plineArray->Add(line);
+void TtyScroll::Add(const wxString& line) {
+  wxString filter = m_filter.GetValue();
+  if (!m_is_paused && (filter.IsEmpty() || line.Contains(filter))) {
+    while (m_lines.size() > m_n_lines - 1) m_lines.pop_front();
+    m_lines.push_back(line);
     Refresh(true);
   }
 }
 
-void TtyScroll::OnDraw(wxDC &dc) {
+void TtyScroll::OnDraw(wxDC& dc) {
   // update region is always in device coords, translate to logical ones
-  wxRect rectUpdate = GetUpdateRegion().GetBox();
-  CalcUnscrolledPosition(rectUpdate.x, rectUpdate.y, &rectUpdate.x,
-                         &rectUpdate.y);
+  wxRect rect_update = GetUpdateRegion().GetBox();
+  CalcUnscrolledPosition(rect_update.x, rect_update.y, &rect_update.x,
+                         &rect_update.y);
 
-  size_t lineFrom = rectUpdate.y / m_hLine,
-         lineTo = rectUpdate.GetBottom() / m_hLine;
+  size_t line_from = rect_update.y / m_line_height,
+         line_to = rect_update.GetBottom() / m_line_height;
 
-  if (lineTo > m_nLines - 1) lineTo = m_nLines - 1;
+  if (line_to > m_n_lines - 1) line_to = m_n_lines - 1;
 
-  wxCoord y = lineFrom * m_hLine;
+  wxCoord y = line_from * m_line_height;
   wxString lss;
-  for (size_t line = lineFrom; line <= lineTo; line++) {
-    wxCoord yPhys;
-    CalcScrolledPosition(0, y, NULL, &yPhys);
+  for (size_t line = line_from; line <= line_to; line++) {
+    wxCoord y_phys;
+    CalcScrolledPosition(0, y, NULL, &y_phys);
 
-    wxString ls = m_plineArray->Item(line);
-    if (ls.Mid(0, 7) == _T("<GREEN>")) {
-      dc.SetTextForeground(wxColour(_T("DARK GREEN")));
+    wxString ls = m_lines[line];
+    if (ls.Mid(0, 7) == "<GREEN>") {
+      dc.SetTextForeground(wxColour("DARK GREEN"));
       lss = ls.Mid(7);
-    } else if (ls.Mid(0, 6) == _T("<BLUE>")) {
-      dc.SetTextForeground(wxColour(_T("BLUE")));
+    } else if (ls.Mid(0, 6) == ("<BLUE>")) {
+      dc.SetTextForeground(wxColour("BLUE"));
       lss = ls.Mid(6);
-    } else if (ls.Mid(0, 5) == _T("<RED>")) {
-      dc.SetTextForeground(wxColour(_T("RED")));
+    } else if (ls.Mid(0, 5) == "<RED>") {
+      dc.SetTextForeground(wxColour("RED"));
       lss = ls.Mid(5);
-    } else if (ls.Mid(0, 8) == _T("<MAROON>")) {
-      dc.SetTextForeground(wxColour(_T("MAROON")));
+    } else if (ls.Mid(0, 8) == "<MAROON>") {
+      dc.SetTextForeground(wxColour("MAROON"));
       lss = ls.Mid(8);
-    } else if (ls.Mid(0, 7) == _T("<CORAL>")) {
-      dc.SetTextForeground(wxColour(_T("CORAL")));
+    } else if (ls.Mid(0, 7) == "<CORAL>") {
+      dc.SetTextForeground(wxColour("CORAL"));
       lss = ls.Mid(7);
+    } else {
+      lss = ls;
     }
     dc.DrawText(lss, 0, y);
-    y += m_hLine;
+    y += m_line_height;
   }
 }
 
 void TtyScroll::Copy(bool n0183) {
-  wxString theText;
-  for (unsigned int i = 0; i < m_plineArray->GetCount(); i++) {
-    wxString s = m_plineArray->Item(i);
+  wxString the_text;
+  for (auto& s : m_lines) {
     if (n0183) {
       int pos = 0;
       if ((pos = s.Find("$")) != wxNOT_FOUND) {
-        theText.append(s.Mid(pos) + "\n");
+        the_text.append(s.Mid(pos) + "\n");
       } else if ((pos = s.Find("!")) != wxNOT_FOUND) {
-        theText.append(s.Mid(pos) + "\n");
+        the_text.append(s.Mid(pos) + "\n");
       }
     } else {
-      theText.append(s);
-      theText.append("\n");
+      the_text.append(s);
+      the_text.append("\n");
     }
   }
   // Write scrolled text to the clipboard
   if (wxTheClipboard->Open()) {
-    wxTheClipboard->SetData(new wxTextDataObject(theText));
+    wxTheClipboard->SetData(new wxTextDataObject(the_text));
     wxTheClipboard->Close();
   }
 }
