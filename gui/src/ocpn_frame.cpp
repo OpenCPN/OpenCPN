@@ -5212,21 +5212,22 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
       gSog_gt = gSog;
       fix_time_gt = fix_time_gt_now;
 
-      if (std::isnan(gCog_gt_m1)) return;  // Startup
-
-      if ((fabs(gSog - implied_sog) / gSog) > 0.5) {
-        // Probably a synthetic data stream, with multiple position sources.
-        // Do not try to interpolate position at 10 Hz.
-        gSog_gt = 0;
-        cog_rate_gt = 0;
-      } else {
-        // Calculate an estimated Rate-of-turn
-        double diff = gCog_gt - gCog_gt_m1;
-        double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
-        tentative_cog_rate_gt *= 1e9;  // degrees / sec
-        // Sanity check, and resolve the "phase" problem at +/- North
-        if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
-          cog_rate_gt = tentative_cog_rate_gt;
+      if (!std::isnan(gCog_gt_m1)) {  // Startup
+        if ((fabs(gSog - implied_sog) / gSog) > 0.5) {
+          // Probably a synthetic data stream, with multiple position sources.
+          // Do not try to interpolate position at 10 Hz.
+          gSog_gt = 0;
+          cog_rate_gt = 0;
+        } else {
+          // Calculate an estimated Rate-of-turn
+          double diff = gCog_gt - gCog_gt_m1;
+          double tentative_cog_rate_gt =
+              diff / (fix_time_gt - fix_time_gt_last);
+          tentative_cog_rate_gt *= 1e9;  // degrees / sec
+          // Sanity check, and resolve the "phase" problem at +/- North
+          if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
+            cog_rate_gt = tentative_cog_rate_gt;
+        }
       }
     }
   } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
@@ -5242,18 +5243,19 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
         gHdt_gt_m1 = gHdt_gt;
         gHdt_gt = gHdt;
 
-        if (std::isnan(gHdt_gt_m1)) return;  // startup
-
-        // Calculate an estimated Rate-of-change of gHdt
-        double tentative_hdt_rate_gt =
-            (gHdt_gt - gHdt_gt_m1) / (hdt_time_gt - hdt_time_gt_last);
-        tentative_hdt_rate_gt *= 1e9;  // degrees / sec
-        // Sanity check, and resolve the "phase" problem at +/- North
-        if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
-          hdt_rate_gt = tentative_hdt_rate_gt;
+        if (!std::isnan(gHdt_gt_m1)) {  // startup
+          // Calculate an estimated Rate-of-change of gHdt
+          double tentative_hdt_rate_gt =
+              (gHdt_gt - gHdt_gt_m1) / (hdt_time_gt - hdt_time_gt_last);
+          tentative_hdt_rate_gt *= 1e9;  // degrees / sec
+          // Sanity check, and resolve the "phase" problem at +/- North
+          if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
+            hdt_rate_gt = tentative_hdt_rate_gt;
+        }
       }
     }
   }
+
   if (std::isnan(gHdt)) gHdt_gt = NAN;  // Handle loss of signal
 
   // Some housekeeping
