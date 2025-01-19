@@ -5876,8 +5876,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
         if (cc->GetglCanvas()) {
           bool b_rotate = cc->GetUpMode() != NORTH_UP_MODE;
           if (!b_rotate && !g_btenhertz) {
-            // printf("...........1 Hz update\n");
-            if (cc->m_bFollow)
+            if (cc->m_bFollow && !bnew_view)
               cc->DoCanvasUpdate();
             else
               cc->Refresh(false);
