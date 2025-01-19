@@ -26,9 +26,9 @@
 #include <wx/dcclient.h>
 #include <wx/clipbrd.h>
 
-#include "TTYScroll.h"
+#include "tty_scroll.h"
 
-TTYScroll::TTYScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter)
+TtyScroll::TtyScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter)
     : wxScrolledWindow(parent), m_nLines(n_lines), m_tFilter(tFilter) {
   bpause = false;
   wxClientDC dc(this);
@@ -40,9 +40,9 @@ TTYScroll::TTYScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter)
   for (unsigned int i = 0; i < m_nLines; i++) m_plineArray->Add(_T(""));
 }
 
-TTYScroll::~TTYScroll() { delete m_plineArray; }
+TtyScroll::~TtyScroll() { delete m_plineArray; }
 
-void TTYScroll::Add(const wxString &line) {
+void TtyScroll::Add(const wxString &line) {
   wxString filter = m_tFilter.GetValue();
   if (!bpause && (filter.IsEmpty() || line.Contains(filter))) {
     if (m_plineArray->GetCount() > m_nLines - 1) {  // shuffle the arraystring
@@ -60,7 +60,7 @@ void TTYScroll::Add(const wxString &line) {
   }
 }
 
-void TTYScroll::OnDraw(wxDC &dc) {
+void TtyScroll::OnDraw(wxDC &dc) {
   // update region is always in device coords, translate to logical ones
   wxRect rectUpdate = GetUpdateRegion().GetBox();
   CalcUnscrolledPosition(rectUpdate.x, rectUpdate.y, &rectUpdate.x,
@@ -99,7 +99,7 @@ void TTYScroll::OnDraw(wxDC &dc) {
   }
 }
 
-void TTYScroll::Copy(bool n0183) {
+void TtyScroll::Copy(bool n0183) {
   wxString theText;
   for (unsigned int i = 0; i < m_plineArray->GetCount(); i++) {
     wxString s = m_plineArray->Item(i);

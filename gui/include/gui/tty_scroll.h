@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -28,11 +24,16 @@
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
-//    Scrolled TTY-like window for logging, etc....
-class TTYScroll : public wxScrolledWindow {
+/**
+ * \file
+ * Scrolled TTY-like window for logging, etc....
+ */
+
+/** Scrolled TTY-like window for logging, etc. */
+class TtyScroll : public wxScrolledWindow {
 public:
-  TTYScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter);
-  virtual ~TTYScroll();
+  TtyScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter);
+  virtual ~TtyScroll();
   virtual void OnDraw(wxDC &dc);
   virtual void Add(const wxString &line);
   void OnSize(wxSizeEvent &event);

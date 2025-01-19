@@ -30,7 +30,7 @@
 
 class wxButton;
 class wxTextCtrl;
-class TTYScroll;
+class TtyScroll;
 class WindowDestroyListener;
 
 class TTYWindow : public wxFrame {
@@ -52,7 +52,7 @@ public:
 protected:
   void CreateLegendBitmap();
   WindowDestroyListener *m_window_destroy_listener;
-  TTYScroll *m_tty_scroll;
+  TtyScroll *m_tty_scroll;
   wxButton *m_btn_pause;
   wxButton *m_btn_copy;
   wxButton *m_btn_copy_N0183;
