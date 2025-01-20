@@ -690,7 +690,8 @@ void MarkInfoDlg::Create() {
   btnSizer->Add(0, 0, 1, wxEXPAND);  // spacer
 
   m_sdbSizerButtons = new wxStdDialogButtonSizer();
-  m_sdbSizerButtons->AddButton(new wxButton(this, wxID_OK));
+  m_buttonOkay = new wxButton(this, wxID_OK);
+  m_sdbSizerButtons->AddButton(m_buttonOkay);
   m_sdbSizerButtons->AddButton(new wxButton(this, wxID_CANCEL, _("Cancel")));
   m_sdbSizerButtons->Realize();
   btnSizer->Add(m_sdbSizerButtons, 0, wxALL, 5);
@@ -1611,6 +1612,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
 // Focus event handler to validate the dialog.
 void MarkInfoDlg::OnFocusEvent(wxFocusEvent& event) {
   bool is_valid = Validate();
+  m_buttonOkay->Enable(is_valid);
   event.Skip();
 }
 
@@ -1643,6 +1645,7 @@ void MarkInfoDlg::ValidateMark(void) {
 bool MarkInfoDlg::SaveChanges() {
   if (m_pRoutePoint) {
     if (m_pRoutePoint->m_bIsInLayer) return true;
+    if (!this->Validate()) return false;  // prevent invalid save
 
     // Get User input Text Fields
     m_pRoutePoint->SetName(m_textName->GetValue());

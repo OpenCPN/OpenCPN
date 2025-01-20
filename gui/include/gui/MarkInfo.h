@@ -238,6 +238,7 @@ protected:
   OCPNIconCombo* m_bcomboBoxIcon;
   wxBoxSizer* bSizerBasicProperties;
   wxBoxSizer* bSizerLinks;
+  wxButton* m_buttonOkay;
   wxButton* m_buttonExtDescription;
   wxButton* m_buttonLinksMenu;
   wxBitmapButton* m_buttonShowTides;
