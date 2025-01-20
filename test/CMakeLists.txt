@@ -18,7 +18,7 @@ endif ()
 
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
-set(SRC tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+set(SRC tests.cpp filter_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
@@ -49,6 +49,7 @@ target_compile_definitions(tests
   PUBLIC
     CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
     TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
+    FILTER_DIR="${CMAKE_SOURCE_DIR}/data/filters"
     UNIT_TESTS
 )
 
