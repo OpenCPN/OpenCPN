@@ -136,11 +136,11 @@ wxString Route::IsPointNameValid(RoutePoint *pPoint,
                                  const wxString &name) const {
   RoutePoint *point;
   wxRoutePointListNode *node = pRoutePointList->GetFirst();
-  std::string substr = name.substr(0, 6);
+  wxString substr = name.SubString(0, 6);
 
   while (node) {
     point = node->GetData();
-    std::string exist = point->GetName().substr(0, 6);
+    wxString exist = point->GetName().SubString(0, 6);
 
     if (pPoint->m_GUID == point->m_GUID) {
       node = node->GetNext();
