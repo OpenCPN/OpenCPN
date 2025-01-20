@@ -898,10 +898,15 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
 /*!
  * Attach route point name validator and bind to key event.
  */
-void MarkInfoDlg::SetNameValidator(wxTextValidator* pValidator) {
-  m_textName->SetValidator(*pValidator);
-  m_textName->Bind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
-  m_textName->Bind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
+void MarkInfoDlg::SetNameValidator(const wxValidator* validator) {
+  m_textName->SetValidator(*validator);
+  if (validator == nullptr) {
+    m_textName->Unbind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
+    m_textName->Unbind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
+  } else {
+    m_textName->Bind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
+    m_textName->Bind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
+  }
 }
 
 void MarkInfoDlg::UpdateHtmlList() {

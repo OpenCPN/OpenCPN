@@ -381,7 +381,7 @@ public:
   bool SaveChanges();
   void OnActivate(wxActivateEvent& event);
 
-  void SetNameValidator(wxTextValidator* pValidator);
+  void SetNameValidator(const wxValidator* validator);
 
   wxSimpleHtmlListBox* GetSimpleBox() {
     return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);

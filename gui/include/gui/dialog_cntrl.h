@@ -41,6 +41,7 @@ public:
 
   int GetSizerIndex(wxSizer* sizer);
   void onError(const wxString& msg);
+  void SetValidator(const wxValidator& validator) override;
 
   // Text changed event handler
   void OnTextChanged(wxCommandEvent& event);
@@ -50,8 +51,7 @@ private:
 };
 
 /**
- * Text validator base class.
- * Member classes must implement the IsValid method,
+ * Text validator base class. Member must classes implement the IsValid method,
  * and the Clone method to return a new instance of the class.
  */
 class TextValidator : public wxTextValidator {

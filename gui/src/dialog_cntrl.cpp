@@ -89,6 +89,16 @@ void TextField::onError(const wxString& msg = wxEmptyString) {
   }
 }
 
+// Set the validator and reset error status.
+void TextField::SetValidator(const wxValidator& validator) {
+  if (&validator == nullptr) {
+    wxTextCtrl::SetValidator(wxDefaultValidator);
+  } else {
+    wxTextCtrl::SetValidator(validator);
+  }
+  onError(wxEmptyString);
+}
+
 // Text changed event handler validates the text.
 void TextField::OnTextChanged(wxCommandEvent& event) {
   TextField* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
