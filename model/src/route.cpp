@@ -53,6 +53,7 @@ WayPointman *pWayPointMan;
 double g_defaultBoatSpeed;
 
 #include <wx/listimpl.cpp>
+
 WX_DEFINE_LIST(RouteList);
 
 Route::Route() {
@@ -129,6 +130,28 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
   }
 
   FinalizeForRendering();
+}
+
+wxString Route::IsPointNameValid(RoutePoint *pPoint,
+                                 const wxString &name) const {
+  RoutePoint *point;
+  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  std::string substr = name.substr(0, 6);
+
+  while (node) {
+    point = node->GetData();
+    std::string exist = point->GetName().substr(0, 6);
+
+    if (pPoint->m_GUID == point->m_GUID) {
+      node = node->GetNext();
+    } else if (substr == exist) {
+      return wxString("Name is not unique in route");
+    } else {
+      node = node->GetNext();
+    }
+  }
+
+  return wxEmptyString;
 }
 
 void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,

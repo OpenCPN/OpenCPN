@@ -900,7 +900,8 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
  */
 void MarkInfoDlg::SetNameValidator(wxTextValidator* pValidator) {
   m_textName->SetValidator(*pValidator);
-  m_textName->Bind(wxEVT_TEXT, &MarkInfoDlg::OnNameChanged, this);
+  m_textName->Bind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
+  m_textName->Bind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
 }
 
 void MarkInfoDlg::UpdateHtmlList() {
@@ -1602,14 +1603,10 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
   return true;
 }
 
-/*!
- * Name changed event handler triggers validaton.
- */
-void MarkInfoDlg::OnNameChanged(wxCommandEvent& event) {
-  TextField* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
-  if (textCtrl) {
-    textCtrl->Validate();
-  }
+// Focus event handler to validate the dialog.
+void MarkInfoDlg::OnFocusEvent(wxFocusEvent& event) {
+  bool is_valid = Validate();
+  event.Skip();
 }
 
 void MarkInfoDlg::OnBitmapCombClick(wxCommandEvent& event) {

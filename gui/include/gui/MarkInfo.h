@@ -51,6 +51,7 @@
 #include <wx/combobox.h>
 
 #include <wx/dialog.h>
+#include "dialog_cntrl.h"
 
 #ifdef __WXGTK__
 // wxTimePickerCtrl is completely broken in Gnome based desktop environments as
@@ -309,7 +310,7 @@ protected:
   wxTextCtrl* m_textDescription;
   wxTextCtrl* m_textLatitude;
   wxTextCtrl* m_textLongitude;
-  wxTextCtrl* m_textName;
+  TextField* m_textName;
   wxTextCtrl* m_textScaMin;
   wxTextCtrl* m_textWaypointRangeRingsStep;
   wxTextCtrl* m_textCtrlPlSpeed;
@@ -331,7 +332,7 @@ protected:
   void initialize_images(void);
   void OnBitmapCombClick(wxCommandEvent& event);
   void OnPositionCtlUpdated(wxCommandEvent& event);
-  void OnNameChanged(wxCommandEvent& event);
+  void OnFocusEvent(wxFocusEvent& event);
   void OnExtDescriptionClick(wxCommandEvent& event);
   void OnDescChangedExt(wxCommandEvent& event);
   void OnDescChangedBasic(wxCommandEvent& event);

@@ -42,6 +42,9 @@ public:
   int GetSizerIndex(wxSizer* sizer);
   void onError(const wxString& msg);
 
+  // Text changed event handler
+  void OnTextChanged(wxCommandEvent& event);
+
 private:
   wxStaticText* m_errorText;
 };

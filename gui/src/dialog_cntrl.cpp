@@ -19,6 +19,7 @@
  */
 
 #include "dialog_cntrl.h"
+#include "model/gui.h"
 
 // Text field constructor
 TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
@@ -27,18 +28,20 @@ TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
   m_errorText = nullptr;
 
   // Create panel as
-  wxBoxSizer* nameSizer = new wxBoxSizer(wxVERTICAL);
   wxPanel* panel = dynamic_cast<wxPanel*>(GetParent());
+  wxBoxSizer* nameSizer = new wxBoxSizer(wxVERTICAL);
   nameSizer->Add(this, 0, wxEXPAND);
   panel->SetSizer(nameSizer);
 }
 
 // Get the position index within a sizer.
 int TextField::GetSizerIndex(wxSizer* sizer) {
-  for (size_t i = 0; i < sizer->GetItemCount(); ++i) {
-    wxSizerItem* item = sizer->GetItem(i);
-    if (item->GetWindow() == this) {
-      return static_cast<int>(i);
+  if (sizer) {
+    for (size_t i = 0; i < sizer->GetItemCount(); ++i) {
+      wxSizerItem* item = sizer->GetItem(i);
+      if (item->GetWindow() == this) {
+        return static_cast<int>(i);
+      }
     }
   }
   return wxNOT_FOUND;
@@ -50,14 +53,15 @@ int TextField::GetSizerIndex(wxSizer* sizer) {
  * under the text field, otherwise with a popup message.
  */
 void TextField::onError(const wxString& msg = wxEmptyString) {
-  if (m_errorText) {
+  if (m_errorText != nullptr) {
     if (msg == wxEmptyString) {
       wxSizer* sizer = GetParent()->GetSizer();
-      sizer->Detach(m_errorText);  // control must have a sizer
-      m_errorText->Destroy();
+      sizer->Detach(m_errorText);
+      m_errorText = nullptr;
+      PropagateResize(this);
     } else {
       m_errorText->SetLabel(msg);
-      this->SetFocus();
+      Refresh();
     }
   } else {
     if (msg == wxEmptyString) {
@@ -68,21 +72,28 @@ void TextField::onError(const wxString& msg = wxEmptyString) {
       wxSizer* sizer = GetParent()->GetSizer();
       int index = GetSizerIndex(sizer);  // field position in sizer
 
-      if (sizer && index < 0) {
-        wxMessageDialog popup(this, msg, "Error", wxOK | wxICON_ERROR);
-        popup.ShowModal();
-        SetBackgroundColour(*wxRED);
-        Refresh();
-      } else {
+      if (sizer && index >= 0) {
         m_errorText =
             new wxStaticText(GetParent(), wxID_ANY, msg, wxDefaultPosition);
         m_errorText->SetForegroundColour(*wxRED);
 
-        sizer->Insert(index + 1, m_errorText, 0, wxALL | wxEXPAND, 5);
-        GetParent()->Layout();
-        this->SetFocus();
+        sizer->Insert(index + 1, m_errorText, 0, wxALL | wxEXPAND, 4);
+        PropagateResize(this);
+      } else {
+        wxMessageDialog popup(this, msg, "Error", wxOK | wxICON_ERROR);
+        popup.ShowModal();
+        SetBackgroundColour(*wxRED);
+        Refresh();
       }
     }
+  }
+}
+
+// Text changed event handler validates the text.
+void TextField::OnTextChanged(wxCommandEvent& event) {
+  TextField* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
+  if (textCtrl) {
+    textCtrl->Validate();
   }
 }
 

@@ -26,15 +26,19 @@
 #define ROUTE_VALIDATOR_H
 
 #include "dialog_cntrl.h"
+#include "model/route_point.h"
 
 /**
  * Route point name validator to validate the name.
  */
 class RoutePointNameValidator : public TextValidator {
 public:
-  RoutePointNameValidator();
-  virtual wxValidator* Clone() const override;
-  virtual wxString IsValid(const wxString& val) const override;
+  RoutePointNameValidator(RoutePoint* wp_ptr);
+  wxValidator* Clone() const override;
+  wxString IsValid(const wxString& val) const override;
+
+private:
+  RoutePoint* m_wp_ptr;
 };
 
 #endif  // ROUTE_VALIDATOR_H

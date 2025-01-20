@@ -2647,7 +2647,7 @@ void RouteManagerDialog::WptShowPropertiesDialog(RoutePoint *pWP,
                            // Dialog
     g_pMarkInfoDialog = new MarkInfoDlg(parent);
 
-  RoutePointNameValidator *pRPNameValidator = new RoutePointNameValidator();
+  RoutePointNameValidator *pRPNameValidator = new RoutePointNameValidator(pWP);
   g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
   g_pMarkInfoDialog->SetRoutePoint(pWP);
   g_pMarkInfoDialog->UpdateProperties();
