@@ -33,7 +33,53 @@
 #include <string>
 
 #include "model/comm_util.h"
+#include "model/comm_drv_factory.h"
 #include "model/comm_drv_registry.h"
+#include "model/conn_params.h"
+
+void UpdateDatastreams() {
+  // Recreate datastreams that are new, or have been edited
+  std::vector<std::string> enabled_conns;
+
+  for (auto* cp : TheConnectionParams()) {
+    // Connection already setup?
+    if (cp->b_IsSetup) {
+      if (cp->bEnabled) {
+        enabled_conns.push_back(cp->GetStrippedDSPort());
+      }
+      continue;
+    }
+
+    // Check to see if this connection port has been
+    // already enabled in this loop.
+    // If so, then leave this connection alone.
+    // This will handle multiple connections with same port,
+    // but possibly different filters
+    // Also protect against some user config errors
+    if (std::find(enabled_conns.begin(), enabled_conns.end(),
+                  cp->GetStrippedDSPort()) != enabled_conns.end()) {
+      continue;
+    }
+
+    // Terminate and remove any existing driver, if present in registry
+    StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
+
+    // Stop and remove  "previous" port, in case other params have changed.
+    StopAndRemoveCommDriver(cp->GetLastDSPort(), cp->GetLastCommProtocol());
+
+    // Internal BlueTooth driver stacks commonly need a time delay to purge
+    // their buffers, etc. before restating with new parameters...
+    if (cp->Type == INTERNAL_BT) wxSleep(1);
+
+    // Connection has been disabled
+    if (!cp->bEnabled) continue;
+
+    // Make any new or re-enabled drivers
+    MakeCommDriver(cp);
+    cp->b_IsSetup = TRUE;
+    enabled_conns.push_back(cp->GetStrippedDSPort());
+  }
+}
 
 bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus _bus) {
   auto& registry = CommDriverRegistry::GetInstance();

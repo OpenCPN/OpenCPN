@@ -1,11 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Misc driver utilities
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2024  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,16 +17,50 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _COMM_UTIL_H
-#define _COMM_UTIL_H
+/**
+ * \file
+ * Pure C++17 periodic timer
+ */
 
-#include "model/comm_navmsg.h"
+#ifndef _PERIODIC_TIMER_H
+#define _PERIODIC_TIMER_H
 
-void UpdateDatastreams();
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
 
-bool StopAndRemoveCommDriver(std::string ident,
-                             NavAddr::Bus = NavAddr::Bus::Undef);
+/**
+ * Continuously run Notify with given interval. Runs from being constructed
+ * until Stop() or going out of scope.
+ *
+ * To use, derive a subclass and override the Notify() method.
+ *
+ * Similar to wxTimer when used in continuous mode. However, it does not
+ * depend on wxEventHandler and also has better destructor semantics.
+ */
+class PeriodicTimer {
+public:
+  PeriodicTimer(std::chrono::milliseconds interval);
 
-wxString ProcessNMEA4Tags(const wxString& msg);
+  virtual ~PeriodicTimer();
 
-#endif  // _COMM_UTIL_H
+  void Stop();
+
+protected:
+  virtual void Notify() = 0;
+
+private:
+  const std::chrono::milliseconds m_interval;
+  std::mutex m_mutex;
+  std::condition_variable m_cond_var;
+  std::atomic<int> m_run_sts;  // 1 == running, 0 == request stop, -1 == stopped
+  std::thread m_thread;
+
+  void Worker();
+};
+
+#endif  // PERIODIC_TIMER_H

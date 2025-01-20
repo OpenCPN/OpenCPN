@@ -383,6 +383,14 @@ public:
   void DoMovement(long dt);
   void StopMovement();
 
+  void StartTimedMovementVP(double target_lat, double target_lon);
+  void DoTimedMovementVP();
+  void StopMovementVP();
+
+  void StartTimedMovementTarget();
+  void DoTimedMovementTarget();
+  void StopMovementTarget();
+
   void SetColorScheme(ColorScheme cs);
   ColorScheme GetColorScheme() { return m_cs; }
 
@@ -863,6 +871,8 @@ private:
   void MovementStopTimerEvent(wxTimerEvent &);
   void OnCursorTrackTimerEvent(wxTimerEvent &event);
 
+  void MovementVPTimerEvent(wxTimerEvent &event);
+
   void DrawAllTracksInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawActiveTrackInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox);
@@ -938,6 +948,8 @@ private:
   wxTimer m_routeFinishTimer;
 
   wxTimer m_RolloverPopupTimer;
+
+  wxTimer m_VPMovementTimer;
 
   int m_wheelzoom_stop_oneshot;
   int m_last_wheel_dir;
@@ -1140,6 +1152,16 @@ private:
   /** Physical to logical pixel ratio for the display. */
   double m_displayScale;
   bool m_show_focus_bar;
+
+  double m_panx_target_final;
+  double m_pany_target_final;
+  double m_panx_target_now;
+  double m_pany_target_now;
+
+  double m_start_lat, m_start_lon;
+  double m_target_lat, m_target_lon;
+  double m_run_lat, m_run_lon;
+  bool m_timed_move_vp_active;
 
   DECLARE_EVENT_TABLE()
 };

@@ -38,6 +38,7 @@
 #include "model/comm_appmsg_bus.h"
 #include "bbox.h"
 #include "comm_overflow_dlg.h"
+#include "connections_dlg.h"
 #include "color_handler.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
@@ -339,7 +340,15 @@ public:
   void ConfigureStatusBar();
 
 private:
+  void ProcessUnitTest();
+  void ProcessQuitFlag();
+  void ProcessDeferredTrackOn();
+  void SendFixToPlugins();
+  void ProcessAnchorWatch();
+  void ProcessLogAndBells();
+  void CalculateCOGAverage();
   void CheckToolbarPosition();
+
   void ODoSetSize(void);
   void DoCOGSet(void);
 
@@ -402,6 +411,7 @@ private:
   ObsListener m_evt_drv_msg_listener;
 
   CommOverflowDlg comm_overflow_dlg;
+  ConnectionsDlg* m_connections_dlg;
 
   DECLARE_EVENT_TABLE()
 };

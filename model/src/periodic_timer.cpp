@@ -1,9 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+/***************************************************************************
+ *   Copyright (C) 2024  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,26 +15,38 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
+ * Implement periodic_timer.h
  */
 
-#ifndef __TIMERS_H__
-#define __TIMERS_H__
+#include "model/periodic_timer.h"
 
-#define RESCALE_TIMER 1
-#define PAN_TIMER 2
-#define CURTRACK_TIMER 3
-#define ROT_TIMER 4
-#define ROPOPUP_TIMER 5
-#define TCWININF_TIMER 6
-#define ROLLOVER_TIMER 7
-#define MOVEMENT_TIMER 8
-#define MOVEMENT_STOP_TIMER 9
-#define DBLCLICK_TIMER 10
-#define POPUP_TIMER 11
-#define MOUSEWHEEL_TIMER 12
-#define DEFERRED_FOCUS_TIMER 13
-#define ROUTEFINISH_TIMER 14
-#define MOVEMENT_VP_TIMER 15
+PeriodicTimer::PeriodicTimer(std::chrono::milliseconds interval)
+    : m_interval(interval),
+      m_run_sts(1),
+      m_thread(std::thread([&] { Worker(); })) {}
 
-#endif
+PeriodicTimer::~PeriodicTimer() { Stop(); }
+
+void PeriodicTimer::Stop() {
+  m_run_sts = 0;
+  m_cond_var.notify_all();
+  std::unique_lock lock(m_mutex);
+  m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts < 0; });
+  lock.unlock();
+  if (m_thread.joinable()) m_thread.join();
+}
+
+void PeriodicTimer::Worker() {
+  while (m_run_sts > 0) {
+    std::unique_lock lock(m_mutex);
+    m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts <= 0; });
+    lock.unlock();
+    if (m_run_sts > 0) Notify();
+  }
+  m_run_sts = -1;
+  m_cond_var.notify_all();
+}

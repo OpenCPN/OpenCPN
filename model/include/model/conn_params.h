@@ -104,10 +104,12 @@ public:
   wxArrayString InputSentenceList;
   ListType OutputSentenceListType;
   wxArrayString OutputSentenceList;
-  int Priority;
   bool bEnabled;
   wxString UserComment;
   wxString AuthToken;
+
+  /** Return string unique for each instance. */
+  std::string GetKey() const;
 
   wxString Serialize() const;
   void Deserialize(const wxString &configStr);
@@ -134,8 +136,6 @@ public:
 private:
   wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
 };
-
-WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
 
 std::vector<ConnectionParams *> &TheConnectionParams();
 

@@ -40,28 +40,26 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/progdlg.h>
-#include <wx/radiobox.h>
-#include <wx/listbox.h>
-#include <wx/imaglist.h>
-#include <wx/display.h>
 #include <wx/choice.h>
-#include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
+#include <wx/dirdlg.h>
+#include <wx/dir.h>
+#include <wx/display.h>
 #include <wx/fontdata.h>
 #include <wx/fontdlg.h>
-#include <wx/stdpaths.h>
-#include <wx/tokenzr.h>
+#include <wx/imaglist.h>
+#include <wx/listbox.h>
 #include <wx/mediactrl.h>
-#include <wx/dir.h>
 #include <wx/odcombo.h>
-#include <wx/statline.h>
+#include <wx/progdlg.h>
+#include <wx/radiobox.h>
 #include <wx/regex.h>
 #include <wx/renderer.h>
+#include <wx/statline.h>
+#include <wx/stdpaths.h>
 #include <wx/textwrapper.h>
+#include <wx/tokenzr.h>
 
-#include "model/comm_drv_factory.h"
-#include "model/comm_util.h"
 #include "conn_params_panel.h"
 
 #if defined(__WXGTK__) || defined(__WXQT__)
@@ -78,6 +76,8 @@
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/cmdline.h"
+#include "model/comm_drv_factory.h"
+#include "model/comm_util.h"
 #include "model/config_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
@@ -93,6 +93,7 @@
 #include "chcanv.h"
 #include "cm93.h"
 #include "ConfigMgr.h"
+#include "connections_dlg.h"
 #include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -1503,7 +1504,7 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
 
   SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
-  wxDialog::Create(parent, id, caption, pos, size, style);
+  wxDialog::Create(parent, id, caption, pos, size, style, "Options");
   SetFont(*dialogFont);
 
   CreateControls();
@@ -1859,7 +1860,14 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                                int group_item_spacing) {
   m_pNMEAForm = AddPage(parent, _("NMEA"));
 
-  comm_dialog = std::make_shared<ConnectionsDialog>(m_pNMEAForm, this);
+  comm_dialog =
+      std::make_shared<ConnectionsDlg>(m_pNMEAForm, TheConnectionParams());
+  // Hijacks the options | Resize event for use by comm_dialog only.
+  // Needs new solution if other pages also have a need to act on it.
+  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
+    comm_dialog->OnResize();
+    ev.Skip();
+  });
 }
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,
@@ -2155,8 +2163,6 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0,
                                   wxALIGN_RIGHT | wxALL, group_item_spacing);
-
-  // DimeControl(itemPanelShip);
 }
 
 void options::CreatePanel_Routes(size_t parent, int border_size,
@@ -5389,7 +5395,6 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pToolbarAutoHideCB =
       new wxCheckBox(itemPanelFont, wxID_ANY, _("Enable Toolbar auto-hide"));
   pToolbarAutoHide->Add(pToolbarAutoHideCB, 0, wxALL, group_item_spacing);
-
   pToolbarHideSecs =
       new wxTextCtrl(itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                      wxSize(50, -1), wxTE_RIGHT);
@@ -5397,6 +5402,14 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   pToolbarAutoHide->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("seconds")),
                         group_item_spacing);
+
+  auto enable_debug_cb = new wxCheckBox(itemPanelFont, wxID_ANY,
+                                        _("Enable Debug in root context menu"));
+  enable_debug_cb->Bind(wxEVT_CHECKBOX, [enable_debug_cb](wxCommandEvent&) {
+    g_enable_root_menu_debug = enable_debug_cb->IsChecked();
+  });
+  enable_debug_cb->SetValue(g_enable_root_menu_debug);
+  miscOptions->Add(enable_debug_cb, 0, wxALL, group_item_spacing);
 
   wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
   miscOptions->Add(pShipsBellsSizer, 0, wxALL, group_item_spacing);
@@ -6292,9 +6305,6 @@ void options::SetInitialSettings(void) {
   delete m_pSerialArray;
   m_pSerialArray = NULL;
   m_pSerialArray = EnumerateSerialPorts();
-
-  comm_dialog->SetInitialSettings();
-
   m_bForceNewToolbaronCancel = false;
 }
 
@@ -7874,6 +7884,7 @@ void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
 
 void options::OnCancelClick(wxCommandEvent& event) {
   m_pListbook->ChangeSelection(0);
+  comm_dialog->CancelSettings();
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();

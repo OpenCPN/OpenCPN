@@ -2218,7 +2218,7 @@ extern DECL_EXP void ShowGlobalSettingsDialog();
 
 extern DECL_EXP void PluginCenterOwnship(int CanvasIndex);
 
-extern DECL_EXP bool GetEnableTenHertzUpdateMainToolbar();
+extern DECL_EXP bool GetEnableTenHertzUpdate();
 extern DECL_EXP void EnableTenHertzUpdate(bool enable);
 
 #endif  //_PLUGIN_H_

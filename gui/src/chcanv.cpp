@@ -45,6 +45,7 @@
 #include "model/conn_params.h"
 #include "model/cutil.h"
 #include "model/geodesic.h"
+#include "model/gui.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
@@ -82,6 +83,7 @@
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"
+#include "NMEALogWindow.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
@@ -325,6 +327,7 @@ extern int g_nAIS_activity_timer;
 extern bool g_bskew_comp;
 extern float g_compass_scalefactor;
 extern int g_COGAvgSec;  // COG average period (sec.) for Course Up Mode
+extern bool g_btenhertz;
 
 wxGLContext *g_pGLcontext;  // shared common context
 
@@ -378,6 +381,7 @@ EVT_KILL_FOCUS(ChartCanvas::OnKillFocus)
 EVT_SET_FOCUS(ChartCanvas::OnSetFocus)
 EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
 EVT_TIMER(DEFERRED_FOCUS_TIMER, ChartCanvas::OnDeferredFocusTimerEvent)
+EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
 
 END_EVENT_TABLE()
 
@@ -434,6 +438,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_upMode = NORTH_UP_MODE;
   m_bShowAIS = true;
   m_bShowAISScaled = false;
+  m_timed_move_vp_active = false;
 
   m_vLat = 0.;
   m_vLon = 0.;
@@ -554,8 +559,12 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_DoubleClickTimer = new wxTimer(this, DBLCLICK_TIMER);
   m_DoubleClickTimer->Stop();
 
+  m_VPMovementTimer.SetOwner(this, MOVEMENT_VP_TIMER);
+
   m_panx = m_pany = 0;
   m_panspeed = 0;
+  m_panx_target_final = m_pany_target_final = 0;
+  m_panx_target_now = m_pany_target_now = 0;
 
   pCurTrackTimer = new wxTimer(this, CURTRACK_TIMER);
   pCurTrackTimer->Stop();
@@ -1688,8 +1697,11 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                GetCanvasScaleFactor() / proposed_scale_onscreen,
                                0, GetVPRotation());
     }
-    // else
-    bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
+    if (m_bFollow && g_btenhertz) {
+      StartTimedMovementVP(vpLat, vpLon);
+    } else {
+      bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
+    }
 
     goto update_finish;
   }
@@ -2832,10 +2844,13 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       break;
 
     case WXK_F12: {
-      if (m_modkeys == wxMOD_ALT)
-        m_nMeasureState = *(volatile int *)(0);  // generate a fault for testing
-
-      ToggleChartOutlines();
+      if (m_modkeys == wxMOD_ALT) {
+        // m_nMeasureState = *(volatile int *)(0);  // generate a fault for
+        // testing
+        bool b = GetEnableTenHertzUpdate();
+        EnableTenHertzUpdate(!b);
+      } else
+        ToggleChartOutlines();
       break;
     }
 
@@ -2986,6 +3001,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           }
           break;
         }
+
+        case 'E':
+          if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
+            auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
+            NMEALogWindow::GetInstance().Create(top_window, 35);
+          }
+          wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+          break;
 
         case 'L':
           SetShowENCLights(!GetShowENCLights());
@@ -3358,9 +3381,9 @@ bool ChartCanvas::DoCanvasCOGSet(void) {
     m_VPRotate = -g_COGAvg * PI / 180.;
 
   SetVPRotation(m_VPRotate);
-  bool bnew_chart = DoCanvasUpdate();
+  // bool bnew_chart = DoCanvasUpdate();
 
-  if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
+  // if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
 
   return true;
 }
@@ -3407,6 +3430,58 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
 
   return true;
 }
+int stvpc;
+void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
+  // Save the target
+  m_target_lat = target_lat;
+  m_target_lon = target_lon;
+
+  // Save the start point
+  m_start_lat = GetVP().clat;
+  m_start_lon = GetVP().clon;
+
+  m_VPMovementTimer.Start(1, true);  // oneshot
+  m_timed_move_vp_active = true;
+  stvpc = 0;
+}
+void ChartCanvas::DoTimedMovementVP() {
+  if (!m_timed_move_vp_active) return;  // not active
+
+  // Stop condition
+  double one_pix = (1. / (1852 * 60)) / GetVP().view_scale_ppm;
+  double d2 =
+      pow(m_run_lat - m_target_lat, 2) + pow(m_run_lon - m_target_lon, 2);
+
+  if (d2 < one_pix) {
+    SetViewPoint(m_target_lat, m_target_lon);  // Embeds a refresh
+    StopMovementVP();
+    return;
+  }
+
+  // if ((fabs(m_run_lat - m_target_lat) < one_pix) &&
+  //     (fabs(m_run_lon - m_target_lon) < one_pix)) {
+  //   StopMovementVP();
+  //   return;
+  // }
+
+  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / 5;
+  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / 5;
+
+  m_run_lat = new_lat;
+  m_run_lon = new_lon;
+
+  SetViewPoint(new_lat, new_lon);  // Embeds a refresh
+}
+
+void ChartCanvas::StopMovementVP() { m_timed_move_vp_active = false; }
+
+void ChartCanvas::MovementVPTimerEvent(wxTimerEvent &) { DoTimedMovementVP(); }
+
+void ChartCanvas::StartTimedMovementTarget() {}
+
+void ChartCanvas::DoTimedMovementTarget() {}
+
+void ChartCanvas::StopMovementTarget() {}
 
 void ChartCanvas::DoTimedMovement() {
   if (m_pan_drag == wxPoint(0, 0) && !m_panx && !m_pany && m_zoom_factor == 1 &&
@@ -6940,7 +7015,13 @@ void ChartCanvas::PanTimerEvent(wxTimerEvent &event) {
   ::wxPostEvent(evthp, ev);
 }
 
-void ChartCanvas::MovementTimerEvent(wxTimerEvent &) { DoTimedMovement(); }
+void ChartCanvas::MovementTimerEvent(wxTimerEvent &) {
+  if ((m_panx_target_final - m_panx_target_now) ||
+      (m_pany_target_final - m_pany_target_now)) {
+    DoTimedMovementTarget();
+  } else
+    DoTimedMovement();
+}
 
 void ChartCanvas::MovementStopTimerEvent(wxTimerEvent &) { StopMovement(); }
 
@@ -11597,10 +11678,11 @@ void ChartCanvas::PaintCleanup() {
     warp_flag = false;
   }
 
-  // Start movement timer, this runs nearly immediately.
+  // Start movement timers, this runs nearly immediately.
   // the reason we cannot simply call it directly is the
   // refresh events it emits may be blocked from this paint event
   pMovementTimer->Start(1, wxTIMER_ONE_SHOT);
+  m_VPMovementTimer.Start(1, wxTIMER_ONE_SHOT);
 }
 
 #if 0
