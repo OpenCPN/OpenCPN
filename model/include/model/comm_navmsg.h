@@ -163,6 +163,9 @@ class NavAddr0183 : public NavAddr {
 public:
   NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface) {};
 
+  // An empty, illegal N0183 address
+  NavAddr0183() : NavAddr() {}
+
   std::string to_string() const { return iface; }
 };
 
@@ -173,6 +176,9 @@ public:
 
   NavAddr2000(const std::string& iface, unsigned char _address)
       : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address) {};
+
+  // An empty, illegal N2000 address
+  NavAddr2000() : NavAddr() {}
 
   std::string to_string() const { return name.to_string(); }
 
@@ -207,16 +213,22 @@ class NavMsg : public KeyProvider {
 public:
   NavMsg() = delete;
 
+  /** Return unique key used by observable to notify/listen. */
   virtual std::string key() const = 0;
 
   virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + key();
   }
 
+  /** Alias for key(). */
   std::string GetKey() const { return key(); }
 
   const NavAddr::Bus bus;
 
+  /**
+   * Source address is set by drivers when receiving, unused and should be
+   * empty when sending.
+   */
   std::shared_ptr<const NavAddr> source;
 
 protected:
