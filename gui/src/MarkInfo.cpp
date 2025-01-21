@@ -203,9 +203,6 @@ EVT_BUTTON(ID_BTN_DESC_BASIC, MarkInfoDlg::OnExtDescriptionClick)
 EVT_BUTTON(ID_DEFAULT, MarkInfoDlg::DefautlBtnClicked)
 EVT_BUTTON(ID_BTN_SHOW_TIDES, MarkInfoDlg::ShowTidesBtnClicked)
 EVT_COMBOBOX(ID_BITMAPCOMBOCTRL, MarkInfoDlg::OnBitmapCombClick)
-EVT_CHECKBOX(ID_SHOWNAMECHECKBOXBASIC,
-             MarkInfoDlg::OnShowWaypointNameSelectBasic)
-EVT_CHECKBOX(ID_SHOWNAMECHECKBOX_EXT, MarkInfoDlg::OnShowWaypointNameSelectExt)
 EVT_CHECKBOX(ID_CHECKBOX_SCAMIN_VIS, MarkInfoDlg::OnSelectScaMinExt)
 EVT_TEXT(ID_DESCR_CTR_DESC, MarkInfoDlg::OnDescChangedExt)
 EVT_TEXT(ID_DESCR_CTR_BASIC, MarkInfoDlg::OnDescChangedBasic)
@@ -351,6 +348,8 @@ void MarkInfoDlg::Create() {
   m_checkBoxShowName =
       new wxCheckBox(props_panel, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxALIGN_CENTER_VERTICAL);
+  m_checkBoxShowName->Bind(wxEVT_CHECKBOX,
+                           &MarkInfoDlg::OnShowWaypointNameSelectBasic, this);
   props_sizer->Add(name_cb_label, 0, wxALIGN_TOP);
   props_sizer->Add(m_checkBoxShowName, 0, wxEXPAND);
 
@@ -512,12 +511,14 @@ void MarkInfoDlg::Create() {
   m_textScaMin = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY);
   gbSizerInnerExtProperties->Add(m_textScaMin, 0, wxALL | wxEXPAND, 5);
 
-  m_checkBoxShowNameExt =
-      new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
-                     ID_SHOWNAMECHECKBOX_EXT, wxEmptyString);
+  m_checkBoxShowNameExt = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
+                                         wxID_ANY, wxEmptyString);
+  m_checkBoxShowNameExt->Bind(wxEVT_CHECKBOX,
+                              &MarkInfoDlg::OnShowWaypointNameSelectExt, this);
   gbSizerInnerExtProperties->Add(m_checkBoxShowNameExt);
   m_staticTextShowNameExt = new wxStaticText(
       sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show waypoint name"));
+
   gbSizerInnerExtProperties->Add(m_staticTextShowNameExt);
   gbSizerInnerExtProperties->Add(0, 0, 1, wxEXPAND, 0);
 
@@ -1051,13 +1052,11 @@ void MarkInfoDlg::OnExtDescriptionClick(wxCommandEvent& event) {
 }
 
 void MarkInfoDlg::OnShowWaypointNameSelectBasic(wxCommandEvent& event) {
-  if (m_panelBasicProperties->IsShownOnScreen())
-    m_checkBoxShowNameExt->SetValue(m_checkBoxShowName->GetValue());
+  m_checkBoxShowNameExt->SetValue(m_checkBoxShowName->GetValue());
   event.Skip();
 }
 void MarkInfoDlg::OnShowWaypointNameSelectExt(wxCommandEvent& event) {
-  if (m_panelExtendedProperties->IsShownOnScreen())
-    m_checkBoxShowName->SetValue(m_checkBoxShowNameExt->GetValue());
+  m_checkBoxShowName->SetValue(m_checkBoxShowNameExt->GetValue());
   event.Skip();
 }
 
