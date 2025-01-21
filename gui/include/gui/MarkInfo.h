@@ -51,6 +51,7 @@
 #include <wx/combobox.h>
 
 #include <wx/dialog.h>
+#include "dialog_cntrl.h"
 
 #ifdef __WXGTK__
 // wxTimePickerCtrl is completely broken in Gnome based desktop environments as
@@ -209,7 +210,6 @@ class MarkInfoDlg : public DIALOG_PARENT {
 
 private:
   RoutePoint* m_pRoutePoint;
-  std::vector<RoutePoint*> m_pRoutePoints;
   static bool instanceFlag;
   int i_htmlList_item;
 
@@ -233,12 +233,12 @@ private:
   wxDateTime m_ArrETA_save;
   std::map<double, const IDX_entry*> m_tss;
   wxString m_lasttspos;
-  void SetRoutePoint(RoutePoint* pRP);
 
 protected:
   OCPNIconCombo* m_bcomboBoxIcon;
   wxBoxSizer* bSizerBasicProperties;
   wxBoxSizer* bSizerLinks;
+  wxButton* m_buttonOkay;
   wxButton* m_buttonExtDescription;
   wxButton* m_buttonLinksMenu;
   wxBitmapButton* m_buttonShowTides;
@@ -311,7 +311,7 @@ protected:
   wxTextCtrl* m_textDescription;
   wxTextCtrl* m_textLatitude;
   wxTextCtrl* m_textLongitude;
-  wxTextCtrl* m_textName;
+  TextField* m_textName;
   wxTextCtrl* m_textScaMin;
   wxTextCtrl* m_textWaypointRangeRingsStep;
   wxTextCtrl* m_textCtrlPlSpeed;
@@ -333,6 +333,7 @@ protected:
   void initialize_images(void);
   void OnBitmapCombClick(wxCommandEvent& event);
   void OnPositionCtlUpdated(wxCommandEvent& event);
+  void OnFocusEvent(wxFocusEvent& event);
   void OnExtDescriptionClick(wxCommandEvent& event);
   void OnDescChangedExt(wxCommandEvent& event);
   void OnDescChangedBasic(wxCommandEvent& event);
@@ -371,7 +372,7 @@ public:
   void RecalculateSize(void);
   RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
-  void SetRoutePoints(const std::vector<RoutePoint*>&);
+  void SetRoutePoint(RoutePoint* pRP);
   void ClearData();
   void SetBulkEdit(bool bBulkEdit);
   void UpdateHtmlList();
@@ -380,6 +381,8 @@ public:
   void ValidateMark(void);
   bool SaveChanges();
   void OnActivate(wxActivateEvent& event);
+
+  void SetNameValidator(const wxValidator* validator);
 
   wxSimpleHtmlListBox* GetSimpleBox() {
     return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);

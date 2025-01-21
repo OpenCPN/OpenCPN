@@ -95,6 +95,7 @@
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
+#include "route_validator.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
 #include "s52utils.h"
@@ -10037,9 +10038,16 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
   markPoint->m_bRPIsBeingEdited = false;
 
   wxString title_base = _("Waypoint Properties");
-  if (!markPoint->m_bIsInRoute) title_base = _("Mark Properties");
+  if (markPoint->m_bIsInRoute) {
+    RoutePointNameValidator *pRPNameValidator =
+        new RoutePointNameValidator(markPoint);
+    g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
+  } else {
+    title_base = _("Mark Properties");
+    g_pMarkInfoDialog->SetNameValidator(nullptr);
+  }
 
-  g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint *>{markPoint});
+  g_pMarkInfoDialog->SetRoutePoint(markPoint);
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"), title_base, _("Layer"),

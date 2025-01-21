@@ -21,6 +21,8 @@
  *  \file
  *  Implement gui.h.
  */
+#include <wx/dialog.h>
+#include <wx/frame.h>
 
 #include "model/gui.h"
 
@@ -28,4 +30,16 @@ wxWindow* GetTopWindow() {
   auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
   assert(top_window && "Cannot find MainWindow a k a gFrame");
   return top_window;
+}
+
+// Propagate layout resize to all parent windows
+void PropagateResize(wxWindow* window) {
+  wxWindow* parent = window->GetParent();
+  while (parent) {
+    parent->Layout();
+    parent = parent->GetParent();
+    if (wxTopLevelWindow* topLevel = wxDynamicCast(parent, wxTopLevelWindow)) {
+      break;
+    }
+  }
 }

@@ -913,8 +913,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
       RoutePoint* pRP = m_pRoute->GetPoint(
           static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
 
-      RouteManagerDialog::WptShowPropertiesDialog(std::vector<RoutePoint*>{pRP},
-                                                  this);
+      RouteManagerDialog::WptShowPropertiesDialog(pRP, this);
       break;
     }
   }
