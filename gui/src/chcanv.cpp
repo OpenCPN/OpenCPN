@@ -3371,14 +3371,17 @@ void ChartCanvas::SetUpMode(int mode) {
 bool ChartCanvas::DoCanvasCOGSet(void) {
   if (GetUpMode() == NORTH_UP_MODE) return false;
 
-  if (std::isnan(g_COGAvg)) return true;
+  double cog_use = g_COGAvg;
+  if (g_btenhertz) cog_use - gCog;
+
+  if (std::isnan(cog_use)) return true;
 
   double old_VPRotate = m_VPRotate;
 
   if ((GetUpMode() == HEAD_UP_MODE) && !std::isnan(gHdt)) {
     m_VPRotate = -gHdt * PI / 180.;
   } else if (GetUpMode() == COURSE_UP_MODE)
-    m_VPRotate = -g_COGAvg * PI / 180.;
+    m_VPRotate = -cog_use * PI / 180.;
 
   SetVPRotation(m_VPRotate);
   // bool bnew_chart = DoCanvasUpdate();

@@ -5187,19 +5187,22 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
 
   if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
       ((msg->vflag & POS_VALID) == POS_VALID)) {
-    // Save the reported fix as the best available "ground truth"
-    uint64_t fix_time_gt_last = fix_time_gt;
-    uint64_t fix_time_gt_now =
-        msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
-    fix_time_interval = (fix_time_gt_now - fix_time_gt_last) / (double)1e9;
-
-    // Calculate an implied SOG from the position change and time interval
+    // Check the position change, looking for a valid new fix.
     double dist, brg;
     DistanceBearingMercator(gLat, gLon, gLat_gt, gLon_gt, &brg, &dist);
-    double implied_sog = dist / (fix_time_interval / 3600);
 
-    if (dist > .001) {  // Avoid duplicate position report
-      // shuffle history data
+    if (dist > .0001) {  // Avoid duplicate position report
+      uint64_t fix_time_gt_last = fix_time_gt;
+      uint64_t fix_time_gt_now =
+          msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+      fix_time_interval = (fix_time_gt_now - fix_time_gt_last) / (double)1e9;
+
+      // Calculate an implied SOG from the position change and time interval
+      double implied_sog = dist / (fix_time_interval / 3600);
+
+      // printf ("Fix Interval:  %g\n", fix_time_interval);
+      // printf("SOG est: %g %g\n", gSog, implied_sog);
+      //  shuffle history data
       gLat_gt_m2 = gLat_gt_m1;
       gLon_gt_m2 = gLon_gt_m1;
       gLat_gt_m1 = gLat_gt;
@@ -5220,14 +5223,35 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
           cog_rate_gt = 0;
         } else {
           // Calculate an estimated Rate-of-turn
-          double diff = gCog_gt - gCog_gt_m1;
+          int dir = 0;
+          double diff = 0;
+          double difft = 0;
+          if (gCog_gt > gCog_gt_m1) {
+            if ((gCog_gt - gCog_gt_m1) > 180.)
+              dir = 1;  // left
+            else
+              dir = 2;  // right
+          } else {
+            if ((gCog_gt_m1 - gCog_gt) > 180.)
+              dir = 2;  // right
+            else
+              dir = 1;  // left
+          }
+          difft = fabs(gCog_gt - gCog_gt_m1);
+          if (fabs(difft > 180.)) difft = fabs(difft - 360.);
+          if (dir == 1)
+            diff = -difft;
+          else
+            diff = difft;
+
+          // double diff = gCog_gt - gCog_gt_m1;
+          // printf("diff  %g  %d\n", diff, dir);
           double tentative_cog_rate_gt =
               diff / (fix_time_gt - fix_time_gt_last);
           tentative_cog_rate_gt *= 1e9;  // degrees / sec
-          // Sanity check, and resolve the "phase" problem at +/- North
-          if (fabs(tentative_cog_rate_gt - cog_rate_gt) < 180.)
-            cog_rate_gt = tentative_cog_rate_gt;
+          cog_rate_gt = tentative_cog_rate_gt;
         }
+        // printf("cog_rate_gt  %g\n", cog_rate_gt);
       }
     }
   } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
@@ -5525,13 +5549,17 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
     double diffc = diff / 1e9;  // sec
 
     // Set gCog as estimated from last two ground truth fixes
-    gCog = gCog_gt + (cog_rate_gt * diffc);
+    double gCog_tentative = gCog_gt_m1 + (cog_rate_gt * diffc);
+    if (gCog_tentative >= 360.) gCog_tentative -= 360.;
+    if (gCog_tentative < 0.) gCog_tentative += 360.;
+    gCog = gCog_tentative;
 
-    // And the same for gHdt
+    // printf("                      cog:  %g\n", gCog);
+    //  And the same for gHdt
     if (!std::isnan(gHdt_gt)) {
       uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
       double diffc = diff / 1e9;  // sec
-      gHdt = gHdt_gt + (hdt_rate_gt * diffc);
+      gHdt = gHdt_gt_m1 + (hdt_rate_gt * diffc);
     }
 
     // Estimate lat/lon position
