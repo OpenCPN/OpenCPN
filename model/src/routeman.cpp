@@ -803,7 +803,6 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
           pnode = NULL;
           delete prp;
         } else {
-          prp->m_bDynamicName = false;
           prp->m_bIsolatedMark = true;  // This has become an isolated mark
           prp->SetShared(false);        // and is no longer part of a route
         }

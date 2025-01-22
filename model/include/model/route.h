@@ -80,6 +80,7 @@ public:
   ~Route();
 
   virtual int GetnPoints(void) { return pRoutePointList->GetCount(); }
+  wxString IsPointNameValid(RoutePoint *pRP, const wxString &name) const;
 
   void AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence = true,
                 bool b_deferBoxCalc = false);

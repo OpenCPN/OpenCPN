@@ -53,6 +53,7 @@ WayPointman *pWayPointMan;
 double g_defaultBoatSpeed;
 
 #include <wx/listimpl.cpp>
+
 WX_DEFINE_LIST(RouteList);
 
 Route::Route() {
@@ -131,6 +132,28 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
   FinalizeForRendering();
 }
 
+wxString Route::IsPointNameValid(RoutePoint *pPoint,
+                                 const wxString &name) const {
+  RoutePoint *point;
+  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  wxString substr = name.SubString(0, 6);
+
+  while (node) {
+    point = node->GetData();
+    wxString exist = point->GetName().SubString(0, 6);
+
+    if (pPoint->m_GUID == point->m_GUID) {
+      node = node->GetNext();
+    } else if (substr == exist) {
+      return wxString("Name is not unique in route");
+    } else {
+      node = node->GetNext();
+    }
+  }
+
+  return wxEmptyString;
+}
+
 void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
                      bool b_deferBoxCalc) {
   if (pNewPoint->m_bIsolatedMark) {
@@ -151,7 +174,6 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
     wxString name;
     name.Printf(_T("%03d"), GetnPoints());
     pNewPoint->SetName(name);
-    pNewPoint->m_bDynamicName = true;
   }
   return;
 }
@@ -197,7 +219,6 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
 
     int insert = insert_after++;
     pNewPoint->m_bIsInRoute = true;
-    pNewPoint->m_bDynamicName = true;
     pNewPoint->SetNameShown(false);
     pRoutePointList->Insert(insert, pNewPoint);
     if (bRenamePoints) RenameRoutePoints();
@@ -285,7 +306,6 @@ RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
                                         GetNewMarkSequenced(), wxEmptyString);
   newpoint->m_bIsInRoute = true;
-  newpoint->m_bDynamicName = true;
   newpoint->SetNameShown(false);
 
   int nRP = pRoutePointList->IndexOf(pRP);
@@ -308,7 +328,6 @@ RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
                                         GetNewMarkSequenced(), wxEmptyString);
   newpoint->m_bIsInRoute = true;
-  newpoint->m_bDynamicName = true;
   newpoint->SetNameShown(false);
 
   pRoutePointList->Insert(nRP, newpoint);
@@ -382,8 +401,7 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
   Route *pcontainer_route = FindRouteContainingWaypoint(rp);
 
   if (pcontainer_route == NULL) {
-    rp->m_bIsInRoute = false;  // Take this point out of this (and only) route
-    rp->m_bDynamicName = false;
+    rp->m_bIsInRoute = false;    // Take this point out of this (and only) route
     rp->m_bIsolatedMark = true;  // This has become an isolated mark
   }
 
@@ -665,7 +683,7 @@ void Route::RenameRoutePoints(void) {
   int i = 1;
   while (node) {
     RoutePoint *prp = node->GetData();
-    if (prp->m_bDynamicName) {
+    if (prp->IsNameDynamic()) {
       wxString name = prp->GetName();
       if (name.Len() == 3) {
         name.Printf(_T ( "%03d" ), i);

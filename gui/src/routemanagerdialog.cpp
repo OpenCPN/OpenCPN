@@ -59,6 +59,7 @@
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "route_validator.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"
@@ -2621,57 +2622,44 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
   gFrame->RefreshAllCanvas();
 
   // g_pMarkInfoDialog = MarkInfoImpl::getInstance( GetParent() );
-  if (!g_pMarkInfoDialog)  // There is one global instance of the MarkProp
-                           // Dialog
-    g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
+  // There is on global instance of the MarkProp Dialog
+  if (!g_pMarkInfoDialog) g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
 
-  WptShowPropertiesDialog(std::vector<RoutePoint *>{pWP}, GetParent());
+  WptShowPropertiesDialog(pWP, GetParent());
 }
 
 void RouteManagerDialog::OnWptPropertiesClick(wxCommandEvent &event) {
-  std::vector<RoutePoint *> wptlist;
   long item = wxNOT_FOUND;
   item =
       m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-  while (item != wxNOT_FOUND) {
-    auto wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-    if (wp) {
-      wptlist.push_back(wp);
-    }
-    item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
-                                       wxLIST_STATE_SELECTED);
-  }
+  if (item == wxNOT_FOUND) return;
 
-  if (wptlist.size() == 0) return;
-
-  WptShowPropertiesDialog(wptlist, GetParent());
+  auto pWP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+  WptShowPropertiesDialog(pWP, GetParent());
 
   UpdateWptListCtrl();
   m_bNeedConfigFlush = true;
 }
 
-void RouteManagerDialog::WptShowPropertiesDialog(
-    std::vector<RoutePoint *> wptlist, wxWindow *parent) {
+void RouteManagerDialog::WptShowPropertiesDialog(RoutePoint *pWP,
+                                                 wxWindow *parent) {
   if (!g_pMarkInfoDialog)  // There is one global instance of the MarkProp
                            // Dialog
     g_pMarkInfoDialog = new MarkInfoDlg(parent);
 
-  g_pMarkInfoDialog->SetRoutePoints(wptlist);
+  RoutePointNameValidator *pRPNameValidator = new RoutePointNameValidator(pWP);
+  g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
+  g_pMarkInfoDialog->SetRoutePoint(pWP);
   g_pMarkInfoDialog->UpdateProperties();
 
-  wxString base_title = _("Mark Properties");
-  if (wptlist[0]->m_bIsInRoute) base_title = _("Waypoint Properties");
+  wxString base_title = _("Waypoint Properties");
 
-  if (wptlist[0]->m_bIsInLayer) {
+  if (pWP->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"), base_title, _("Layer"),
-                                      GetLayerName(wptlist[0]->m_LayerID)));
+                                      GetLayerName(pWP->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
   } else {
-    if (wptlist.size() > 1)
-      g_pMarkInfoDialog->SetDialogTitle(
-          base_title + wxString::Format(_(" (%lu points)"), wptlist.size()));
-    else
-      g_pMarkInfoDialog->SetDialogTitle(base_title);
+    g_pMarkInfoDialog->SetDialogTitle(base_title);
   }
 
   if (!g_pMarkInfoDialog->IsShown()) g_pMarkInfoDialog->Show();
