@@ -1,3 +1,28 @@
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Route UI stuff
+ * Author:   David Register, Alec Leamas, NoCodeHummel
+ *
+ ***************************************************************************
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
+
 #include <string>
 
 #include <wx/colour.h>
@@ -5,6 +30,8 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 #include <wx/utils.h>
+
+#include "dialog_alert.h"
 
 #include "color_handler.h"
 #include "chartbase.h"
@@ -610,4 +637,23 @@ int RouteGui::SendToGPS(const wxString &com_name, bool bsend_waypoints,
   OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
   return (result == 0);
+}
+
+// Delete the route.
+bool RouteGui::OnDelete(wxWindow *parent, const int count) {
+  std::string title = _("Route Delete").utf8_string();
+  std::string action = _("Delete").utf8_string();
+  std::string msg;
+  if (count > 1) {
+    wxString str = wxString::Format(
+        _("Are you sure you want to delete %d routes?"), count);
+    msg = str.c_str();
+  } else {
+    msg = _("Are you sure you want to delete this route?").utf8_string();
+  }
+
+  AlertDialog *dialog = new AlertDialog(parent, title, action);
+  dialog->SetMessage(msg);
+  int result = dialog->ShowModal();
+  return result == wxID_YES;
 }
