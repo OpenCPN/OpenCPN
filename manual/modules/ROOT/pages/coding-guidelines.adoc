@@ -44,6 +44,7 @@ Use C++ standard library components over wxWidgets and old style C equivalents:
 
 . Use double-quoted strings for unicode strings.
 . Do not use `_T()` or `wxT()` macros.
+. Avoid wxString except when interfacing wxWidgets routines.
 See link:++https://docs.wxwidgets.org%2F3.2%2Fgroup__group__funcmacro__string.html%23ga437ea6ba615b75dac8603e96ec864160++[wxWidgets string guidelines].
 
 === Exception handling
