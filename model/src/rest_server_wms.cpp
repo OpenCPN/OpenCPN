@@ -38,7 +38,7 @@
 
 #define RESTSERVERWMS
 
-static const char* const ServerAddr = "http://0.0.0.0:8081";
+static const char* const ServerAddr = "http://0.0.0.0:8091";
 
 unsigned int RestServerWms::m_hitcount = 0;
 
@@ -70,8 +70,8 @@ inline std::string HttpVarToString(const struct mg_str& query,
 }
 
 //https://gist.github.com/onderaltintas/6649521//
-void coord3857To4326(double lon3857, double lat3857, double& lat4326,
-                     double& lon4326) {
+void coord3857To4326(double lon3857, double lat3857, double& lon4326,
+                     double& lat4326) {
  
     lon4326 = lon3857 * 180 / 20037508.34;
     //lat4326 = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360 / Math.PI - 90;
