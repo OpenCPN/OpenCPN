@@ -43,6 +43,10 @@ struct N2kPGN {
 
   N2kPGN(uint64_t _pgn) { pgn = _pgn; }
 
+  friend bool operator<(const N2kPGN& lhs, const N2kPGN& rhs) {
+    return lhs.pgn < rhs.pgn;
+  }
+
   std::string to_string() const {
     std::stringstream ss;
     ss << pgn;
@@ -62,6 +66,10 @@ struct N2kPGN {
 struct N2kName {
   N2kName() {};
   N2kName(uint64_t name) { value.Name = name; }
+
+  friend bool operator<(const N2kName& lhs, const N2kName& rhs) {
+    return lhs.value.Name < rhs.value.Name;
+  }
 
   std::string to_string() const {
     std::stringstream ss;
