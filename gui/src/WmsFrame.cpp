@@ -23,9 +23,9 @@ WmsFrame::WmsFrame(wxWindow* parent, wxWindowID id, const wxString& title,
   pText = new wxStaticText(this, wxID_STATIC, wxT("Clean"));
   pText->SetForegroundColour(wxColor("red"));
 
-  m_pChartCanvas = new ChartCanvas(this, 10);
-  m_pChartCanvas->SetPosition(wxPoint(0, 0));
-  m_pChartCanvas->SetSize(wxSize(100, 100));
+  //m_pChartCanvas = new ChartCanvas(this, 10);
+  //m_pChartCanvas->SetPosition(wxPoint(0, 0));
+  //m_pChartCanvas->SetSize(wxSize(100, 100));
 
   jpegdatabuffer = new char[10000000];
 
@@ -51,9 +51,16 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
 
       lastSize_W = event.p.w;
       lastSize_H = event.p.h;
+      wxLogMessage("dimension change req to w: %i h:%i", event.p.w, event.p.h);
+      //this->SetSize(wxSize(event.p.w + 100, event.p.h + 100));
 
-      this->SetSize(wxSize(event.p.w + 100, event.p.h + 100));
-      m_pChartCanvas->SetSize(wxSize(event.p.w, event.p.h));
+      
+      int newChartW = event.p.w + 2;
+      int newChartH = event.p.h + 174;
+
+      m_pTgtFrame->SetSize(newChartW+100, newChartH+100);
+
+      m_pChartCanvas->SetSize(wxSize(newChartW, newChartH));
     }
 
     // m_pchart
@@ -88,7 +95,7 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
     m_pChartCanvas->Update();
     this->Update();
 
-    wxClientDC dcWindow(this);
+    wxClientDC dcWindow(m_pTgtFrame);  // was this
     wxCoord screenWidth, screenHeight;
 
     dcWindow.GetSize(&screenWidth, &screenHeight);
@@ -140,6 +147,6 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
     wxLogError(ex.what());
   }
   catch(...){
-    int j = 9;
+    ERROR_LOG << "... exception (unhandled) - critical problem somewhere";
   }
 }
