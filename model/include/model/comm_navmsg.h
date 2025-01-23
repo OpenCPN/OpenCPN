@@ -245,15 +245,15 @@ public:
   Nmea2000Msg(const uint64_t _pgn)
       : NavMsg(NavAddr::Bus::N2000, std::make_shared<NavAddr>()), PGN(_pgn) {}
 
-  Nmea2000Msg(const uint64_t _pgn, std::shared_ptr<const NavAddr> src)
+  Nmea2000Msg(const uint64_t _pgn, std::shared_ptr<const NavAddr2000> src)
       : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn) {}
 
   Nmea2000Msg(const uint64_t _pgn, const std::vector<unsigned char>& _payload,
-              std::shared_ptr<const NavAddr> src)
+              std::shared_ptr<const NavAddr2000> src)
       : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn), payload(_payload) {}
 
   Nmea2000Msg(const uint64_t _pgn, const std::vector<unsigned char>& _payload,
-              std::shared_ptr<const NavAddr> src, int _priority)
+              std::shared_ptr<const NavAddr2000> src, int _priority)
       : NavMsg(NavAddr::Bus::N2000, src),
         PGN(_pgn),
         payload(_payload),
