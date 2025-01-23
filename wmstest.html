@@ -1,20 +1,27 @@
-<HTML>
+<!DOCTYPE html>
+
 <HEAD>
 	<META NAME="GENERATOR" Content="Microsoft Visual Studio">
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.2.1/ol.css">
-	<script src="https://cdn.jsdelivr.net/npm/ol@v10.2.1/dist/ol.js"></script>
+	
+	<script src="https://cdn.jsdelivr.net/npm/ol@v10.3.1/dist/ol.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.3.1/ol.css">
+
 
 	<TITLE>WMS tester</TITLE>
 </HEAD>
+
 <BODY onload="refresh()">
 	map_opencpn_leaflet_wms
-	<div id="map_opencpn_leaflet_wms" style="width:600px;height:600px;background-color:lightcoral">map_opencpn_leaflet_wms</div>
+	<div id="map_opencpn_leaflet_wms" style="width:800px;height:800px;background-color:lightcoral">
+		map_opencpn_leaflet_wms</div>
 	<br />
 	map_ol_10_1_0
-	<div id="map_ol_10_1_0" style="width:500px;height:1000px;background-color:green"></div>
+	<div id="map_ol_10_1_0" style="width:800px;height:800px;background-color:green"></div>
 	<br />
 	<!-- map_leaflet_1_9_4 -->
 	<!-- <div id="map_leaflet_1_9_4" style="width:400px;height:400px;background-color:lightblue">map_leaflet_1_9_4</div> -->
@@ -30,7 +37,7 @@
 	<script>
 		console.log("script runnning")
 
-		const localwmsurl = "http://localhost:8081/api/wms"; //opencpn rest server api wms endpoint
+		const localwmsurl = "http://localhost:8091/api/wms"; //opencpn rest server api wms endpoint
 		//const localwmsurl = "https://localhost:8443/api/wms"; //opencpn rest server api wms endpoint
 		//const localwmsurl = 'http://localhost:1234/service'; //local testserver for finding out what the openlayers and leaflet was sending
 
@@ -38,26 +45,42 @@
 		const View = window.ol.View;
 		const TileLayer = window.ol.layer.Tile;
 		const ImageLayer = window.ol.layer.Image;
+		const VectorLayer = window.ol.layer.Vector;
+
 		const TileWMS = window.ol.source.TileWMS;
 		const ImageWMS = window.ol.source.ImageWMS;
 		const OSM = window.ol.source.OSM;
 
+		//let saabol_vectorlayer = {};
+		document.saabol_vectorsource = new window.ol.source.Vector();
 		const LAT = 54.9103;
 		const LON = 9.77;
-		const ZOOM = 11
-		
-		BOJE_ROD_LAT = 54.9003;
-		BOJE_ROD_LON = 9.7850666667;
-		
+		const ZOOM = 15
+
+		//simple converter https://applications.pgc.umn.edu/convert/
+		let objs = [
+			{
+				"lat": 54.9003,
+				"lon": 9.7850666667,
+				"dia": 200
+			},
+			{
+				"lat": 54.901083,
+				"lon": 9.714583,
+				"dia": 100
+			},
+
+		]
+
 		//******************************************************************
 		//Control active map request users (rendering engines basically) here
 		const enable_opencpn_leaflet = false;
 		const enable_opencpn_openlayers = true;
-		
+
 		//******************************************************************
 		//load opencpn_wms using leaflet
-		
-		if(enable_opencpn_leaflet){
+
+		if (enable_opencpn_leaflet) {
 			document.map_opencpn_leaflet = L.map('map_opencpn_leaflet_wms').setView([LAT, LON], ZOOM);
 
 			L.tileLayer.wms(localwmsurl, {
@@ -70,25 +93,42 @@
 
 		//******************************************************************
 		//load opencpn_wms using openlayers
-		if(enable_opencpn_openlayers){
+		if (enable_opencpn_openlayers) {
 			try {
 				document.layers_opencpnwms_ol = [
 					new ImageLayer({
 						source: new ImageWMS({
 							url: localwmsurl,
 							params: {
-								'TILED' : true,
+								'TILED': true,
 								'LAYERS': 'NAV',
-								'VERSION':"1.1.1",
+								'VERSION': "1.1.1",
 								'FORMAT': 'image/jpeg',
-								'WIDTH' : '256',
-								'HEIGHT' : '256'
+								'WIDTH': '256',
+								'HEIGHT': '256'
 							},
 							ratio: 1,
 							serverType: 'geoserver'
 						}),
-						zIndex:1
-					})
+						zIndex: 1
+					}),
+					new VectorLayer({
+					source: document.saabol_vectorsource,
+					style: new ol.style.Style({
+						stroke: new ol.style.Stroke({
+							color: 'red',
+							width: 3
+						})
+					}),
+					fill: new ol.style.Fill({
+						color: 'rgba(255,0,0,0.9)'
+					}),
+					stroke: new ol.style.Stroke({
+						width: 3,
+						color: 'rgba(0, 100, 240, 0.8)'
+					}),
+					zIndex: 3
+				})
 				];
 				document.map_opencpnwms_ol = new Map({
 					layers: document.layers_opencpnwms_ol,
@@ -107,8 +147,7 @@
 
 		//******************************************************************
 		//load leafet 1_9_4
-		if(false)
-		{
+		if (false) {
 			const map_leaflet = L.map('map_leaflet_1_9_4').setView([LAT, LON], ZOOM);
 
 			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -118,8 +157,7 @@
 
 		//******************************************************************
 		//load leafet datafors
-		if(false)
-		{
+		if (false) {
 			//Example https://api.dataforsyningen.dk/natur_friluftskort?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=TRUE&LAYERS=nfkort&STYLES=&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&BBOX=559140.625%2C6199218.75%2C560000%2C6200078.125&token=xxx
 
 			//Can load: https://api.dataforsyningen.dk/ddm?service=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&SRS=EPSG%3A4326&TRANSPARENT=TRUE&token=7a727064ade2ea325977be038c6768ca&width=256&height=256&layers=ddm_50m_dybde&BBOX=10,54.5,11,55.5
@@ -138,8 +176,7 @@
 
 		//******************************************************************
 		//load pub leafet wms
-		if(false)
-		{
+		if (false) {
 			const mapOptions = {};
 			const map_leaflet_wms = L.map('map_pub_leaflet_wms', mapOptions);
 
@@ -155,37 +192,51 @@
 		//******************************************************************
 		function refresh() {
 			console.log("refresh function called")
-			if(enable_opencpn_leaflet){
-				L.circle([BOJE_ROD_LAT,BOJE_ROD_LON], 500).addTo(document.map_opencpn_leaflet);
+			let i = 0;
+
+			//leaflet rendering
+			if (enable_opencpn_leaflet) {
+				for (let i = 0; i < objs.length; i++) {
+					L.circle([obj.lat, obj.lon], obj.dia).addTo(document.map_opencpn_leaflet);
+				}
 			}
-			
-			if(enable_opencpn_openlayers){
-				var center = ol.proj.fromLonLat([BOJE_ROD_LON, BOJE_ROD_LAT]); // Convert to map projection
-				var circle = new ol.geom.Circle(center, 2000);
-				var circleFeature = new ol.Feature(circle);
-				var vectorSource = new ol.source.Vector({
-				  features: [circleFeature]
-				});
-				var vectorLayer = new ol.layer.Vector({
-				  source: vectorSource,
-				  style: new ol.style.Style({
-					stroke: new ol.style.Stroke({
-					  color: 'red',
-					  width: 444
-					})
-				  }),
-				  fill: new ol.style.Fill({
-					color: 'rgba(255,0,0,0.9)'
-				  }),
-				  zIndex:3
-				});
+
+			//openlayers rendering
+			if (enable_opencpn_openlayers) {
 				//vectorLayer.setZIndex(2);
-				document.map_opencpnwms_ol.addLayer(vectorLayer);
 				
+
+				//iterate objects and add them
+				for (let i = 0; i < objs.length; i++) {
+					let obj = objs[i];
+					//var center = ol.proj.fromLonLat([obj.lon, obj.lat]); // Convert to map projection
+					var center = new ol.geom.Point(obj.lon, obj.lat); // Convert to map projection
+					var circle = new ol.geom.Circle(center, obj.dia);
+					var circleFeature = new ol.Feature(circle);
+					document.saabol_vectorsource.addFeature(circleFeature);
+				}
+
+				//X: 1089038.5784305953 9°46'58.8"
+				//Y: 7344284.029245517  54°54'33.5"
+				
+				//https://epsg.io/map#srs=3857&x=1089074.779007&y=7344197.072492&z=14&layer=streets
+
+
+				//1089074.779007 7344197.072492
+
+				//var center = new ol.geom.Point(1089074.779007, 7344197.072492 ); // Convert to map projection
+				var center = [1089074.779007, 7344197.072492 ]; // Convert to map projection
+				var circle = new ol.geom.Circle(center, 500);
+				var circleFeature = new ol.Feature(circle);
+				document.saabol_vectorsource.addFeature(circleFeature);
 			}
+
 			//document.map_datfors.render();
+			//document.map_opencpnwms_ol.refresh();
+
 		}
-		
+
 	</script>
 </BODY>
+
 </HTML>
