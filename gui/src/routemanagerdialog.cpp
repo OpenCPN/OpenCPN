@@ -16,6 +16,7 @@
 
     ---
     Copyright (C) 2010, Anders Lund <anders@alweb.dk>
+    Copyright (c) 2025 NoCodeHummel
  */
 
 #include "config.h"
