@@ -10054,16 +10054,10 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
 
   markPoint->m_bRPIsBeingEdited = false;
 
-  wxString title_base = _("Waypoint Properties");
+  wxString title_base = _("Mark Properties");
   if (markPoint->m_bIsInRoute) {
-    RoutePointNameValidator *pRPNameValidator =
-        new RoutePointNameValidator(markPoint);
-    g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
-  } else {
-    title_base = _("Mark Properties");
-    g_pMarkInfoDialog->SetNameValidator(nullptr);
+    title_base = _("Waypoint Properties");
   }
-
   g_pMarkInfoDialog->SetRoutePoint(markPoint);
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
