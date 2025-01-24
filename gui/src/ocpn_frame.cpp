@@ -732,10 +732,10 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
   log_callbacks.log_is_active = []() {
-    return NMEALogWindow::GetInstance().Active();
+    return NMEALogWindow::GetInstance().IsActive();
   };
-  log_callbacks.log_message = [](const wxString &s) {
-    NMEALogWindow::GetInstance().Add(s);
+  log_callbacks.log_message = [](Logline ll) {
+    NMEALogWindow::GetInstance().Add(ll);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 
@@ -6914,7 +6914,7 @@ void MyFrame::applySettingsString(wxString settings) {
 
   Refresh(false);
 
-  if (NMEALogWindow::GetInstance().Active())
+  if (NMEALogWindow::GetInstance().IsActive())
     NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
 }
 

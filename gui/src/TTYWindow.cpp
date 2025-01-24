@@ -207,7 +207,11 @@ void TTYWindow::OnCloseWindow(wxCloseEvent&) {
     Destroy();
   }
 }
+//
+// void TTYWindow::Add(const wxString& line) {
+//  if (m_tty_scroll) m_tty_scroll->Add(line);
+//}
 
-void TTYWindow::Add(const wxString& line) {
-  if (m_tty_scroll) m_tty_scroll->Add(line);
+void TTYWindow::Add(struct Logline l) {
+  if (m_tty_scroll) m_tty_scroll->Add(l);
 }
