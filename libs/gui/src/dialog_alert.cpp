@@ -43,8 +43,7 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
   Bind(wxEVT_BUTTON, &AlertDialog::OnConfirm, this, wxID_OK);
   Bind(wxEVT_BUTTON, &AlertDialog::OnCancel, this, wxID_CANCEL);
 
-  wxSizerFlags flags = wxSizerFlags();
-  flags.Border(wxALL, FromDIP(kDialogPadding));
+  wxSizerFlags flags = wxSizerFlags().Border(wxALL, FromDIP(kDialogPadding));
   m_layout->Add(footer, flags);
 }
 
