@@ -28,6 +28,8 @@
 #include <wx/frame.h>
 #include <wx/bitmap.h>
 
+#include "model/navmsg_filter.h"
+
 class wxButton;
 class wxTextCtrl;
 class TtyScroll;
@@ -42,7 +44,8 @@ public:
             WindowDestroyListener *listener = NULL);
   virtual ~TTYWindow();
 
-  void Add(const wxString &line);
+  //  void Add(const wxString &line);
+  void Add(struct Logline l);
   void OnCloseWindow(wxCloseEvent &event);
   void Close();
   void OnPauseClick(wxCommandEvent &event);
