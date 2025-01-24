@@ -139,7 +139,7 @@ public:
     GetTable()->AppendCols(8);
     HideCol(7);
     static const std::array<wxString, 7> headers = {
-        "", _("Protocol"), _("Direction"), _("Port"), _("Status"), "", ""};
+        "", _("Protocol"), _("In/Out"), _("Data port"), _("Status"), "", ""};
     for (auto hdr = headers.begin(); hdr != headers.end(); hdr++)
       SetColLabelValue(static_cast<int>(hdr - headers.begin()), *hdr);
     if (IsWindows()) {
