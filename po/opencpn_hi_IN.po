@@ -7509,7 +7509,7 @@ msgid "Show Waypoint position."
 msgstr "वेपॉइंट स्थिति दिखाएं"
 
 #: gui/src/routeprintout.cpp:392 gui/src/trackprintout.cpp:314
-msgid "Show course from each Waypoint to the next one. "
+msgid "Show course from each Waypoint to the next one."
 msgstr "प्रत्येक वेपॉइंट से अगले एक तक पाठ्यक्रम दिखाएं। "
 
 #: gui/src/routeprintout.cpp:404 gui/src/trackprintout.cpp:325

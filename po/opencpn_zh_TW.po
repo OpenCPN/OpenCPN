@@ -7495,7 +7495,7 @@ msgid "Show Waypoint position."
 msgstr "顯示轉向點位置"
 
 #: gui/src/routeprintout.cpp:392 gui/src/trackprintout.cpp:314
-msgid "Show course from each Waypoint to the next one. "
+msgid "Show course from each Waypoint to the next one."
 msgstr "顯示每一轉向點到下一點的航向"
 
 #: gui/src/routeprintout.cpp:404 gui/src/trackprintout.cpp:325

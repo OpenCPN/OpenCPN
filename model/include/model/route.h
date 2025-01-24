@@ -42,9 +42,6 @@
 #define WIDTH_UNDEFINED -1
 
 #define ROUTE_DEFAULT_SPEED 5.0
-#define RTE_TIME_DISP_UTC _T("UTC")
-#define RTE_TIME_DISP_PC _T("PC")
-#define RTE_TIME_DISP_LOCAL _T("LOCAL")
 #define RTE_UNDEF_DEPARTURE wxInvalidDateTime
 
 class WayPointman;  // FIXME (leamas) why? routeman.h defines this.

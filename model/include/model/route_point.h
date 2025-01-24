@@ -40,9 +40,6 @@
 // minimal allowed ScaMin setting. prevents always hiding
 #define SCAMIN_MIN 800
 
-#define ETA_FORMAT_STR "%x %H:%M"
-//"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
-
 // Default color, global state
 extern wxColour g_colourWaypointRangeRingsColour;
 

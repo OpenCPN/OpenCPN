@@ -310,7 +310,7 @@ void TrackPrintSelection::CreateControls() {
   fgSizer2->Add(m_checkBoxCourse, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
   wxStaticText* label3 =
       new wxStaticText(itemDialog1, wxID_ANY,
-                       _("Show course from each Waypoint to the next one. "),
+                       _("Show course from each Waypoint to the next one."),
                        wxDefaultPosition, wxDefaultSize);
   fgSizer2->Add(label3, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 

@@ -445,7 +445,7 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
 
     RoutePoint *pWp = NULL;
     bool route_existing = false;
-    pTentRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
+    pTentRoute->m_TimeDisplayFormat = DATE_TIME_DISP_UTC;
 
     for (pugi::xml_node tschild = wpt_node.first_child(); tschild;
          tschild = tschild.next_sibling()) {

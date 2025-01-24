@@ -44,6 +44,7 @@
 #include "model/georef.h"
 #include "model/georef.h"
 #include "model/config_vars.h"
+#include "model/navutil_base.h"
 #include "model/nav_object_database.h"
 #include "model/route.h"
 #include "model/routeman.h"
@@ -91,7 +92,7 @@ Route::Route() {
     m_PlannedSpeed = g_defaultBoatSpeed;
 
   m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
-  m_TimeDisplayFormat = RTE_TIME_DISP_PC;
+  m_TimeDisplayFormat = DATE_TIME_DISP_PC;
   m_HyperlinkList = new HyperlinkList;
 
   m_bsharedWPViz = false;
