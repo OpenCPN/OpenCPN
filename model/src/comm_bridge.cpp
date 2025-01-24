@@ -1039,7 +1039,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
 
     logmsg += content;
     std::string source = sK_msg->source->to_string();
-    g_pMUX->LogInputMessage(logmsg, source, false, false);
+    g_pMUX->LogInputMessage(sK_msg, source, false, false);
   }
 
   SendBasicNavdata(valid_flag);

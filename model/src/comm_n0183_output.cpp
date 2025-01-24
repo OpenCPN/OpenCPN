@@ -72,23 +72,14 @@ wxString FormatPrintableMessage(wxString msg_raw) {
   return wxString(fmsg.c_str());
 }
 
-void LogBroadcastOutputMessageColor(const wxString& msg,
-                                    const wxString& stream_name,
-                                    const wxString& color, NmeaLog& nmea_log) {
-  if (nmea_log.Active()) {
-    wxDateTime now = wxDateTime::Now();
-    wxString ss;
-#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
-    ss = now.FormatISOTime();
-#endif
-    ss.Prepend("--> ");
-    ss.Append(" (");
-    ss.Append(stream_name);
-    ss.Append(") ");
-    ss.Append(msg);
-    ss.Prepend(color);
-
-    nmea_log.Add(ss.ToStdString());
+void LogBroadcastOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
+                                    const std::string& stream_name,
+                                    NavmsgStatus status, NmeaLog& nmea_log) {
+  if (nmea_log.IsActive()) {
+    NavmsgStatus ns;
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    Logline ll(msg, ns, stream_name);
+    nmea_log.Add(ll);
   }
 }
 
@@ -122,24 +113,20 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
 
       if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
           params.IOSelect == DS_TYPE_OUTPUT) {
-        bool bout_filter = params.SentencePassesFilter(msg, FILTER_OUTPUT);
-        if (bout_filter) {
-          std::string id = msg.ToStdString().substr(1, 5);
-          auto msg_out = std::make_shared<Nmea0183Msg>(
-              id, msg.ToStdString(), std::make_shared<NavAddr>());
-
-          bool bxmit_ok =
+        std::string id = msg.ToStdString().substr(1, 5);
+        auto msg_out = std::make_shared<Nmea0183Msg>(
+            id, msg.ToStdString(), std::make_shared<NavAddr>());
+        NavmsgStatus ns;
+        ns.direction = NavmsgStatus::Direction::kOutput;
+        if (params.SentencePassesFilter(msg, FILTER_OUTPUT)) {
+          bool xmit_ok =
               driver->SendMessage(msg_out, std::make_shared<NavAddr>());
-
-          if (bxmit_ok)
-            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<BLUE>",
-                                           nmea_log);
-          else
-            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<RED>",
-                                           nmea_log);
-        } else
-          LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<CORAL>",
-                                         nmea_log);
+          if (!xmit_ok) ns.status = NavmsgStatus::State::kTxError;
+        } else {
+          ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
+        }
+        LogBroadcastOutputMessageColor(
+            msg_out, params.GetDSPort().ToStdString(), ns, nmea_log);
       }
     }
   }
@@ -619,8 +606,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         if (g_GPS_Ident != "FurunoGP3X")
           drv_n0183->SendMessage(msg_out, std::make_shared<NavAddr>());
 
-        multiplexer.LogOutputMessage(snt.Sentence, com_name.ToStdString(),
-                                     false);
+        NavmsgStatus ns;
+        ns.direction = NavmsgStatus::Direction::kOutput;
+        multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
         auto msg =
             wxString("-->GPS Port: ") + com_name + " Sentence: " + snt.Sentence;
         msg.Trim();
@@ -826,8 +814,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             "ECRTE", sentence.ToStdString(), std::make_shared<NavAddr>());
         drv_n0183->SendMessage(msg_out, address);
 
-        wxString fmsg = FormatPrintableMessage(sentence);
-        multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
+        NavmsgStatus ns;
+        ns.direction = NavmsgStatus::Direction::kOutput;
+        multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
         wxYield();
 
         //             LogOutputMessage(sentence, dstr->GetPort(), false);
@@ -844,8 +833,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           "ECRTE", snt.Sentence.ToStdString(), address);
       drv_n0183->SendMessage(msg_out, address);
 
-      wxString fmsg = FormatPrintableMessage(snt.Sentence);
-      multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
+      NavmsgStatus ns;
+      ns.direction = NavmsgStatus::Direction::kOutput;
+      multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
       wxYield();
 
       auto msg =
@@ -867,7 +857,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       auto msg_out =
           std::make_shared<Nmea0183Msg>("GPRTC", rte.ToStdString(), address);
       drv_n0183->SendMessage(msg_out, address);
-      multiplexer.LogOutputMessage(rte, com_name.ToStdString(), false);
+      NavmsgStatus ns;
+      ns.direction = NavmsgStatus::Direction::kOutput;
+      multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
 
       auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + rte;
       msg.Trim();
@@ -880,7 +872,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           std::make_shared<Nmea0183Msg>("GPRTC", term.ToStdString(), address);
       drv_n0183->SendMessage(msg_outf, address);
 
-      multiplexer.LogOutputMessage(term, com_name.ToStdString(), false);
+      ns = NavmsgStatus();
+      ns.direction = NavmsgStatus::Direction::kOutput;
+      multiplexer.LogOutputMessage(msg_outf, com_name.ToStdString(), ns);
 
       msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
       msg.Trim();
@@ -1075,7 +1069,9 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
         "ECWPL", snt.Sentence.ToStdString(), address);
     drv_n0183->SendMessage(msg_out, address);
 
-    multiplexer.LogOutputMessage(snt.Sentence, com_name, false);
+    NavmsgStatus ns;
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
     auto msg = wxString("-->GPS Port:") + com_name + " Sentence: ";
     msg.Trim();
     wxLogMessage(msg);
