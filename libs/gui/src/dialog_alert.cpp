@@ -42,8 +42,11 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
 
   Bind(wxEVT_BUTTON, &AlertDialog::OnConfirm, this, wxID_OK);
   Bind(wxEVT_BUTTON, &AlertDialog::OnCancel, this, wxID_CANCEL);
-
-  wxSizerFlags flags = wxSizerFlags().Border(wxALL, FromDIP(kDialogPadding));
+#if wxCHECK_VERSION(3, 2, 0)
+  auto flags = wxSizerFlags().Border(wxALL, FromDIP(kDialogPadding));
+#else
+  auto flags = wxSizerFlags().Border();
+#endif
   m_layout->Add(footer, flags);
 }
 
