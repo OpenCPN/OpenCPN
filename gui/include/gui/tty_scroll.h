@@ -26,9 +26,11 @@
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
+#include "model/nmea_log.h"
+
 /**
  * \file
- * Scrolled TTY-like window for logging, etc....
+ * Scrolled TTY-like window for logging and utilities
  */
 
 /** Scrolled TTY-like window for logging, etc. */
@@ -51,7 +53,7 @@ public:
    * Subject to checks with respect to paused state and filter possibly
    * discarding argument line.
    */
-  virtual void Add(const wxString& line);
+  virtual void Add(struct Logline line);
 
   /** Set the window to ignore Add() or not depending on pause. */
   void Pause(bool pause) { m_is_paused = pause; }
@@ -66,7 +68,7 @@ protected:
   wxCoord m_line_height;  // the height of one line on screen
   size_t m_n_lines;       // the number of lines we draw
 
-  std::deque<wxString> m_lines;
+  std::deque<Logline> m_lines;
   wxTextCtrl& m_filter;
   bool m_is_paused;
 

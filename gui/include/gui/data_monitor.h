@@ -25,6 +25,7 @@
 #ifndef DATA_MONITOR_DLG__
 #define DATA_MONITOR_DLG__
 
+#include <iostream>  // debug junk
 #include <functional>
 
 #include <wx/frame.h>
