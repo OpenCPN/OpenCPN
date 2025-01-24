@@ -897,20 +897,6 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
   }
 }
 
-/*!
- * Attach route point name validator and bind to key event.
- */
-void MarkInfoDlg::SetNameValidator(const wxValidator* validator) {
-  m_textName->SetValidator(*validator);
-  if (validator == nullptr) {
-    m_textName->Unbind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
-    m_textName->Unbind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
-  } else {
-    m_textName->Bind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
-    m_textName->Bind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
-  }
-}
-
 void MarkInfoDlg::UpdateHtmlList() {
 #ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
   GetSimpleBox()->Clear();
@@ -1475,6 +1461,19 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
 
     wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
     m_PickColor->SetColour(col);
+
+    if (m_pRoutePoint->m_bIsInRoute) {
+      if (m_name_validator) m_name_validator.reset();
+      m_name_validator =
+          std::make_unique<RoutePointNameValidator>(m_pRoutePoint);
+      m_textName->SetValidator(*m_name_validator);
+      m_textName->Bind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
+      m_textName->Bind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
+    } else {
+      m_textName->SetValidator();
+      m_textName->Unbind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
+      m_textName->Unbind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
+    }
 
     if (m_comboBoxTideStation->GetStringSelection() !=
         m_pRoutePoint->m_TideStation) {
