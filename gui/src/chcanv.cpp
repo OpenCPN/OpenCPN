@@ -3373,7 +3373,7 @@ bool ChartCanvas::DoCanvasCOGSet(void) {
   if (GetUpMode() == NORTH_UP_MODE) return false;
 
   double cog_use = g_COGAvg;
-  if (g_btenhertz) cog_use - gCog;
+  if (g_btenhertz) cog_use = gCog;
 
   if (std::isnan(cog_use)) return true;
 
@@ -3384,7 +3384,8 @@ bool ChartCanvas::DoCanvasCOGSet(void) {
   } else if (GetUpMode() == COURSE_UP_MODE)
     m_VPRotate = -cog_use * PI / 180.;
 
-  SetVPRotation(m_VPRotate);
+  // SetVPRotation(m_VPRotate);
+  VPoint.rotation = m_VPRotate;
   // bool bnew_chart = DoCanvasUpdate();
 
   // if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
@@ -3450,11 +3451,15 @@ void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
 }
 void ChartCanvas::DoTimedMovementVP() {
   if (!m_timed_move_vp_active) return;  // not active
-
+  if (stvpc++ > 10) {                   // Backstop
+    StopMovement();
+    return;
+  }
   // Stop condition
   double one_pix = (1. / (1852 * 60)) / GetVP().view_scale_ppm;
   double d2 =
       pow(m_run_lat - m_target_lat, 2) + pow(m_run_lon - m_target_lon, 2);
+  d2 = pow(d2, 0.5);
 
   if (d2 < one_pix) {
     SetViewPoint(m_target_lat, m_target_lon);  // Embeds a refresh
@@ -3474,10 +3479,14 @@ void ChartCanvas::DoTimedMovementVP() {
   m_run_lat = new_lat;
   m_run_lon = new_lon;
 
+  // printf(" Timed\n");
   SetViewPoint(new_lat, new_lon);  // Embeds a refresh
 }
 
-void ChartCanvas::StopMovementVP() { m_timed_move_vp_active = false; }
+void ChartCanvas::StopMovementVP() {
+  // printf("Stop\n");
+  m_timed_move_vp_active = false;
+}
 
 void ChartCanvas::MovementVPTimerEvent(wxTimerEvent &) { DoTimedMovementVP(); }
 

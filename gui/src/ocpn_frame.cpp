@@ -5196,6 +5196,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
       uint64_t fix_time_gt_now =
           msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
       fix_time_interval = (fix_time_gt_now - fix_time_gt_last) / (double)1e9;
+      // printf("interval:  %g\n", fix_time_interval);
 
       // Calculate an implied SOG from the position change and time interval
       double implied_sog = dist / (fix_time_interval / 3600);
@@ -5251,7 +5252,10 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
           tentative_cog_rate_gt *= 1e9;  // degrees / sec
           cog_rate_gt = tentative_cog_rate_gt;
         }
-        // printf("cog_rate_gt  %g\n", cog_rate_gt);
+
+        gCog = gCog_gt_m1;
+
+        // printf("cog_rate_gt  %g %g\n", gCog, cog_rate_gt);
       }
     }
   } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
@@ -5275,6 +5279,8 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
           // Sanity check, and resolve the "phase" problem at +/- North
           if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
             hdt_rate_gt = tentative_hdt_rate_gt;
+
+          gHdt = gHdt_gt_m1;
         }
       }
     }
@@ -5526,6 +5532,7 @@ void MyFrame::ProcessUnitTest() {
     }
   }
 }
+double gCog_last;
 
 void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   // Check to see if in non-North-Up mode
@@ -5591,7 +5598,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   }
 
   if (b_update) {
-    // printf("10 Hz update\n");
+    // printf("                   gCog:  %g  %g\n", gCog, gCog - gCog_last);
 
     for (ChartCanvas *cc : g_canvasArray) {
       if (cc) {
@@ -5605,6 +5612,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
     }
   }
 
+  gCog_last = gCog;
   FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 }
 
@@ -5823,7 +5831,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   //    If in COG UP mode, the chart update is handled by COG Update timer
   if (/*!g_bCourseUp &&*/ (0 != g_ChartUpdatePeriod)) {
     if (0 == m_ChartUpdatePeriod--) {
-      bnew_view = DoChartUpdate();
+      // bnew_view = DoChartUpdate();
       m_ChartUpdatePeriod = g_ChartUpdatePeriod;
     }
   }
