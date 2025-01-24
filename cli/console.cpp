@@ -81,15 +81,15 @@
 
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-class NmeaLogDummy: public NmeaLog {
-  bool Active() const { return false; }
-  void Add(const wxString& s) {};
+class NmeaLogDummy : public NmeaLog {
+  bool IsActive() const { return false; }
+  void Add(const Logline& s) {};
 };
 
 static void InitRouteman() {
   struct RoutePropDlgCtx ctx;
   auto RouteMgrDlgUpdateListCtrl = [&]() {};
-  static  NmeaLogDummy dummy_log;
+  static NmeaLogDummy dummy_log;
   g_pRouteMan = new Routeman(ctx, RoutemanDlgCtx(), dummy_log);
 }
 
@@ -151,11 +151,9 @@ static const char* const DOWNLOAD_REPO_PROTO =
 wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
 
-
 using namespace std;
 
 class CliApp : public wxAppConsole {
-
 public:
   CliApp() : wxAppConsole() {
     CheckBuildOptions(WX_BUILD_OPTIONS_SIGNATURE, "program");
@@ -180,7 +178,7 @@ public:
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();
-    auto colour_func = [] (wxString c) { return *wxBLACK; };
+    auto colour_func = [](wxString c) { return *wxBLACK; };
     pWayPointMan = new WayPointman(colour_func);
   }
 
@@ -194,7 +192,7 @@ public:
       if (p.version == "0.0") continue;
       auto path = PluginHandler::ImportedMetadataPath(p.name);
       std::string suffix(ocpn::exists(path) ? "[imported]" : "");
-      cout << left << setw(25) << p.name << p.version << suffix  << "\n";
+      cout << left << setw(25) << p.name << p.version << suffix << "\n";
     }
   }
 
@@ -246,9 +244,9 @@ public:
     std::ofstream file(metadata_path);
     file << metadata.to_string();
     if (!file.good()) {
-       std::cerr << "Error saving metadata file: " << metadata_path
+      std::cerr << "Error saving metadata file: " << metadata_path
                 << " for imported plugin: " << metadata.name;
-       exit(2);
+      exit(2);
     }
     exit(0);
   }
@@ -356,8 +354,8 @@ public:
     int numkey;
     try {
       numkey = std::stoi(key);
-    } catch(...) {
-      std::cerr << "Cannot parse key:"  << key << "\n";
+    } catch (...) {
+      std::cerr << "Cannot parse key:" << key << "\n";
       exit(1);
     }
     Pincode pincode(numkey);

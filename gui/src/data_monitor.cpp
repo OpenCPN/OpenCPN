@@ -42,14 +42,14 @@ public:
     Fit();
   }
 
-  void Add(const std::string& s) { m_tty_scroll->Add(s); }
+  void Add(const Logline& ll) { m_tty_scroll->Add(ll); }
 
   /** Invoke Add(s) for possibly existing instance. */
-  static void AddIfExists(const std::string& s) {
+  static void AddIfExists(const Logline& ll) {
     auto window = wxWindow::FindWindowByName("TtyPanel");
     if (!window) return;
     auto tty_panel = dynamic_cast<TtyPanel*>(window);
-    if (tty_panel) tty_panel->Add(s);
+    if (tty_panel) tty_panel->Add(ll);
   }
 
 protected:
@@ -329,7 +329,7 @@ DataMonitor::DataMonitor(wxWindow* parent, std::function<void()> on_exit)
       m_on_exit(on_exit),
       m_monitor_src([&](const std::shared_ptr<const NavMsg>& navmsg) {
         auto msg = std::dynamic_pointer_cast<const Nmea0183Msg>(navmsg);
-        TtyPanel::AddIfExists(msg->payload);
+        TtyPanel::AddIfExists(navmsg);
       }),
       m_quick_filter(new QuickFilterPanel(this)) {
   auto vbox = new wxBoxSizer(wxVERTICAL);
