@@ -91,12 +91,8 @@ void TextField::onError(const wxString& msg = wxEmptyString) {
 
 // Set the validator and reset error status.
 void TextField::SetValidator(const wxValidator& validator) {
-  if (&validator == nullptr) {
-    wxTextCtrl::SetValidator(wxDefaultValidator);
-  } else {
-    wxTextCtrl::SetValidator(validator);
-  }
-  onError(wxEmptyString);
+  wxTextCtrl::SetValidator(validator);
+  onError("");
 }
 
 // Text changed event handler validates the text.
