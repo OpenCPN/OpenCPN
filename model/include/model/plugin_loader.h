@@ -243,6 +243,9 @@ public:
   /** Update m_toolbox_panel state for plugin with given name. */
   void SetToolboxPanel(const wxString& common_name, bool value);
 
+  /** Update m_has_setup_options state for plugin with given name. */
+  void SetSetupOptions(const wxString& common_name, bool value);
+
 private:
   PluginLoader();
   bool LoadPlugInDirectory(const wxString& plugin_dir, bool load_enabled);

@@ -5779,7 +5779,7 @@ void options::CreateControls(void) {
   wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
   itemBoxSizer2->Add(buttons, 0, wxALIGN_RIGHT | wxALL, border_size);
 
-  m_OKButton = new wxButton(itemDialog1, xID_OK, _("OK"));
+  m_OKButton = new wxButton(itemDialog1, xID_OK, _("Close"));
   m_OKButton->SetDefault();
   buttons->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
@@ -7403,16 +7403,17 @@ void options::OnApplyClick(wxCommandEvent& event) {
     TideCurrentDataSet.push_back(setName.ToStdString());
   }
 
-  if (event.GetId() != ID_APPLY)  // only on ID_OK
-    g_canvasConfig = m_screenConfig;
+  if (g_canvasConfig != m_screenConfig) m_returnChanges |= CONFIG_CHANGED;
+  g_canvasConfig = m_screenConfig;
 
-  if (event.GetId() == ID_APPLY) {
+  // if (event.GetId() == ID_APPLY)
+  {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
     m_CurrentDirList =
         *m_pWorkDirList;  // Perform a deep copy back to main database.
 
     //  We can clear a few flag bits on "Apply", so they won't be recognised at
-    //  the "OK" click. Their actions have already been accomplished once...
+    //  the "Close" click. Their actions have already been accomplished once...
     m_returnChanges &= ~(CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE);
     k_charts = 0;
 
@@ -7435,10 +7436,8 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   if (event.GetEventObject() == NULL) return;
 
   OnApplyClick(event);
-  SetReturnCode(m_returnChanges);
-  if (event.GetInt() == wxID_STOP) return;
-
   Finish();
+  Hide();
 }
 
 void options::Finish(void) {
@@ -7457,8 +7456,7 @@ void options::Finish(void) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  SetReturnCode(m_returnChanges);
-  EndModal(m_returnChanges);
+  gFrame->PrepareOptionsClose(this, m_returnChanges);
 }
 
 ArrayOfCDI options::GetSelectedChartDirs() {
@@ -7895,9 +7893,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  int rv = 0;
-  if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
-  EndModal(rv);
+  Hide();
 }
 
 void options::OnClose(wxCloseEvent& event) {
@@ -7913,7 +7909,8 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  EndModal(0);
+  gFrame->PrepareOptionsClose(this, m_returnChanges);
+  Hide();
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {
@@ -8142,6 +8139,8 @@ void options::DoOnPageChange(size_t page) {
 
   //  Sometimes there is a (-1) page selected.
   if (page > 10) return;
+
+  lastSubPage = 0;  // Reset sub-page
 
   lastPage = i;
 

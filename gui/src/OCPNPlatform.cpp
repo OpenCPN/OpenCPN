@@ -158,7 +158,6 @@ extern bool g_bPermanentMOBIcon;
 extern float g_toolbar_scalefactor;
 
 extern options *g_options;
-extern bool g_boptionsactive;
 
 extern wxString *pInit_Chart_Dir;
 

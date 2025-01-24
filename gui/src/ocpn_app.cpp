@@ -505,7 +505,6 @@ S57QueryDialog *g_pObjectQueryDialog;
 std::vector<std::string> TideCurrentDataSet;
 wxString g_TCData_Dir;
 
-bool g_boptionsactive;
 options *g_options;
 bool g_bDeferredInitDone;
 int options_lastPage = 0;

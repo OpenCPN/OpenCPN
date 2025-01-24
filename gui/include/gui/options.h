@@ -662,7 +662,7 @@ private:
 
   ObservableListener compat_os_listener;
 
-  int m_screenConfig;
+  unsigned int m_screenConfig;
 
   wxNotebookPage *m_groupsPage;
   wxFont *dialogFont;

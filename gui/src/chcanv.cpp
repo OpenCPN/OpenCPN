@@ -89,6 +89,7 @@
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "OCPNRegion.h"
+#include "options.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
@@ -202,6 +203,7 @@ extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
 extern MyFrame *gFrame;
+extern options *g_options;
 
 extern int g_iNavAidRadarRingsNumberVisible;
 extern bool g_bNavAidRadarRingsShown;
@@ -291,7 +293,6 @@ extern int g_nAutoHideToolbar;
 extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
-extern bool g_boptionsactive;
 ShapeBaseChartSet gShapeBasemap;
 
 //  TODO why are these static?
@@ -13593,7 +13594,7 @@ void ChartCanvas::AddTileOverlayIndexToNoShow(int index) {
 
 void ChartCanvas::HandlePianoClick(
     int selected_index, const std::vector<int> &selected_dbIndex_array) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!m_pCurrentStack) return;
   if (!ChartData) return;
@@ -13734,7 +13735,7 @@ void ChartCanvas::HandlePianoClick(
 void ChartCanvas::HandlePianoRClick(
     int x, int y, int selected_index,
     const std::vector<int> &selected_dbIndex_array) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
 
@@ -13747,7 +13748,7 @@ void ChartCanvas::HandlePianoRClick(
 void ChartCanvas::HandlePianoRollover(
     int selected_index, const std::vector<int> &selected_dbIndex_array,
     int n_charts, int scale) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
   if (!ChartData) return;

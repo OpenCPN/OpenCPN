@@ -63,6 +63,7 @@ enum {
   ID_TBSTAT,
   ID_TBSTATBOX,
   ID_MASTERTOGGLE,
+  ID_SETTINGS_NEW,
 
   ID_PLUGIN_BASE  // This MUST be the last item in the enum
 };
