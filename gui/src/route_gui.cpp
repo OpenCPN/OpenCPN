@@ -642,15 +642,15 @@ int RouteGui::SendToGPS(const wxString &com_name, bool bsend_waypoints,
 
 // Delete the route.
 bool RouteGui::OnDelete(wxWindow *parent, const int count) {
-  std::string title = _("Route Delete").utf8_string();
-  std::string action = _("Delete").utf8_string();
+  std::string title = _("Route Delete").ToStdString();
+  std::string action = _("Delete").ToStdString();
   std::string msg;
   if (count > 1) {
     wxString str = wxString::Format(
         _("Are you sure you want to delete %d routes?"), count);
     msg = str.c_str();
   } else {
-    msg = _("Are you sure you want to delete this route?").utf8_string();
+    msg = _("Are you sure you want to delete this route?").ToStdString();
   }
 
   AlertDialog *dialog = new AlertDialog(parent, title, action);
