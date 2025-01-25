@@ -208,7 +208,7 @@ public:
   void UpdateGlobalMenuItems();
   void UpdateGlobalMenuItems(ChartCanvas* cc);
   void DoOptionsDialog();
-  bool ProcessOptionsDialog(int resultFlags, ArrayOfCDI* pNewDirArray);
+  void ProcessOptionsDialog(int resultFlags, ArrayOfCDI* pNewDirArray);
   void PrepareOptionsClose(options* settings, int settings_return_value);
 
   void DoPrint(void);
@@ -334,7 +334,7 @@ public:
   void UpdateCanvasConfigDescriptors();
   void ScheduleSettingsDialog();
   void ScheduleSettingsDialogNew();
-  void ScheduleReconfigAndSettingsReload(bool bnew_dialog = false);
+  void ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog);
   static void RebuildChartDatabase();
   void PositionIENCToolbar();
 

@@ -2810,7 +2810,7 @@ void MyFrame::ScheduleSettingsDialogNew() {
   GetEventHandler()->AddPendingEvent(evt);
 }
 
-void MyFrame::ScheduleReconfigAndSettingsReload(bool bnew_dialog) {
+void MyFrame::ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) {
   UpdateCanvasConfigDescriptors();
 
   if ((g_canvasConfig > 0) && (last_canvasConfig == 0))
@@ -2828,10 +2828,12 @@ void MyFrame::ScheduleReconfigAndSettingsReload(bool bnew_dialog) {
   SendSizeEvent();
   options_lastWindowSize = lastOptSize;
 
-  if (bnew_dialog)
-    ScheduleSettingsDialogNew();
-  else
-    ScheduleSettingsDialog();
+  if (reload) {
+    if (new_dialog)
+      ScheduleSettingsDialogNew();
+    else
+      ScheduleSettingsDialog();
+  }
 }
 
 ChartCanvas *MyFrame::GetFocusCanvas() {
@@ -4071,7 +4073,7 @@ void MyFrame::DoOptionsDialog() {
   return;
 }
 
-bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
+void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   bool b_need_refresh = false;  // Do we need a full reload?
 
   if ((rr & VISIT_CHARTS) &&
@@ -4291,23 +4293,7 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
 
-  //  Force reload of options dialog to pick up font changes, locale changes,
-  //  or other major layout changes
-  if ((rr & FONT_CHANGED) || (rr & NEED_NEW_OPTIONS)) {
-    DestroyPersistentDialogs();
-    PrepareOptionsClose(g_options, rr);
-    ScheduleReconfigAndSettingsReload(true);
-  } else {
-    //  If we had a config change,
-    //  then schedule a re-entry to the settings dialog
-    if ((rr & CONFIG_CHANGED)) {
-      DestroyPersistentDialogs();
-      PrepareOptionsClose(g_options, rr);
-      ScheduleReconfigAndSettingsReload();
-    }
-  }
-
-  return b_need_refresh;
+  return;
 }
 
 bool MyFrame::CheckGroup(int igroup) {

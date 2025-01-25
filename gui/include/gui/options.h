@@ -661,6 +661,7 @@ private:
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
   ObservableListener compat_os_listener;
+  void ApplyChanges(wxCommandEvent &event);
 
   unsigned int m_screenConfig;
 
