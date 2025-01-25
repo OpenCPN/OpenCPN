@@ -1509,6 +1509,7 @@ void ChartCanvas::canvasChartsRefresh(int dbi_hint) {
 bool ChartCanvas::DoCanvasUpdate(void) {
   double tLat, tLon;    // Chart Stack location
   double vpLat, vpLon;  // ViewPort location
+  bool blong_jump = false;
 
   bool bNewChart = false;
   bool bNewView = false;
@@ -1567,9 +1568,19 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       fromSM(d_east_mod, d_north_mod, gLat, gLon, &vpLat, &vpLon);
     }
 
+    extern double gCog_gt;
+
     // on lookahead mode, adjust the vp center point
     if (m_bLookAhead && bGPSValid && !m_MouseDragging) {
-      double angle = g_COGAvg + (GetVPRotation() * 180. / PI);
+      double cog_to_use = gCog;
+      if (g_btenhertz &&
+          (fabs(gCog - gCog_gt) > 20)) {  // big COG change in process
+        cog_to_use = gCog_gt;
+        blong_jump = true;
+      }
+      if (!g_btenhertz) cog_to_use = g_COGAvg;
+
+      double angle = cog_to_use + (GetVPRotation() * 180. / PI);
 
       double pixel_deltay =
           fabs(cos(angle * PI / 180.)) * GetCanvasHeight() / 4;
@@ -1592,13 +1603,16 @@ bool ChartCanvas::DoCanvasUpdate(void) {
           pixel_delta = pixel_delta_tent * (gSog - 1.0) / 2.0;
       }
 
-      double meters_to_shift =
-          cos(gLat * PI / 180.) * pixel_delta / GetVPScale();
-
-      double dir_to_shift = g_COGAvg;
-
-      ll_gc_ll(gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat,
-               &vpLon);
+      double meters_to_shift = 0;
+      double dir_to_shift = 0;
+      if (!std::isnan(gCog)) {
+        meters_to_shift = cos(gLat * PI / 180.) * pixel_delta / GetVPScale();
+        dir_to_shift = cog_to_use;
+        // printf("                      look:  %g %g\n", meters_to_shift,
+        // dir_to_shift);
+        ll_gc_ll(gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat,
+                 &vpLon);
+      }
     } else if (m_bLookAhead && !bGPSValid) {
       m_OSoffsetx = 0;  // center ownship on loss of GPS
       m_OSoffsety = 0;
@@ -1700,7 +1714,9 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                0, GetVPRotation());
     }
     if (m_bFollow && g_btenhertz) {
-      StartTimedMovementVP(vpLat, vpLon);
+      int nstep = 5;
+      if (blong_jump) nstep = 20;
+      StartTimedMovementVP(vpLat, vpLon, nstep);
     } else {
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
     }
@@ -1921,14 +1937,6 @@ update_finish:
 
   // TODO
   //     if( bNewPiano ) UpdateControlBar();
-
-  //  Update the ownship position on thumbnail chart, if shown
-  if (pthumbwin && pthumbwin->IsShown()) {
-    if (pthumbwin->pThumbChart) {
-      if (pthumbwin->pThumbChart->UpdateThumbData(gLat, gLon))
-        pthumbwin->Refresh(TRUE);
-    }
-  }
 
   m_bFirstAuto = false;  // Auto open on program start
 
@@ -3428,16 +3436,10 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
 
   m_last_movement_time = wxDateTime::UNow();
 
-  /* jumpstart because paint gets called right away, if we want first frame to
-   * move */
-  //    m_last_movement_time -= wxTimeSpan::Milliseconds(100);
-
-  //    Refresh( false );
-
   return true;
 }
-int stvpc;
-void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
+void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon,
+                                       int nstep) {
   // Save the target
   m_target_lat = target_lat;
   m_target_lon = target_lon;
@@ -3448,11 +3450,13 @@ void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
 
   m_VPMovementTimer.Start(1, true);  // oneshot
   m_timed_move_vp_active = true;
-  stvpc = 0;
+  m_stvpc = 0;
+  m_timedVP_step = nstep;
 }
+
 void ChartCanvas::DoTimedMovementVP() {
-  if (!m_timed_move_vp_active) return;  // not active
-  if (stvpc++ > 10) {                   // Backstop
+  if (!m_timed_move_vp_active) return;   // not active
+  if (m_stvpc++ > m_timedVP_step * 2) {  // Backstop
     StopMovement();
     return;
   }
@@ -3474,8 +3478,8 @@ void ChartCanvas::DoTimedMovementVP() {
   //   return;
   // }
 
-  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / 5;
-  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / 5;
+  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / m_timedVP_step;
+  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / m_timedVP_step;
 
   m_run_lat = new_lat;
   m_run_lon = new_lon;

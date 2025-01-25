@@ -5404,7 +5404,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
     gCog = gCog_tentative;
 
     // printf("                      cog:  %g\n", gCog);
-    //  And the same for gHdt
+    //   And the same for gHdt
     if (!std::isnan(gHdt_gt)) {
       uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
       double diffc = diff / 1e9;  // sec
@@ -5668,20 +5668,11 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   //      Update the chart database and displayed chart
   bool bnew_view = false;
-
-  //    Do the chart update based on the global update period currently set
-  //    If in COG UP mode, the chart update is handled by COG Update timer
-  if (/*!g_bCourseUp &&*/ (0 != g_ChartUpdatePeriod)) {
-    if (0 == m_ChartUpdatePeriod--) {
-      // bnew_view = DoChartUpdate();
-      m_ChartUpdatePeriod = g_ChartUpdatePeriod;
-    }
-  }
+  if (!g_btenhertz) bnew_view = DoChartUpdate();
 
   nBlinkerTick++;
 
   // This call sends autopilot output strings to output ports.
-
   bool bactiveRouteUpdate = RoutemanGui(*g_pRouteMan).UpdateProgress();
 
   // For each canvas....
@@ -5754,7 +5745,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
         if (cc->GetglCanvas()) {
           bool b_rotate = cc->GetUpMode() != NORTH_UP_MODE;
           if (!b_rotate && !g_btenhertz) {
-            if (cc->m_bFollow && !bnew_view)
+            if (cc->m_bFollow)
               cc->DoCanvasUpdate();
             else
               cc->Refresh(false);
