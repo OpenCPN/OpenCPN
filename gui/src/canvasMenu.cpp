@@ -1562,15 +1562,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_RT_MENU_DELETE: {
-      int dlg_return = wxID_YES;
-      if (g_bConfirmObjectDelete) {
-        dlg_return = OCPNMessageBox(
-            parent, _("Are you sure you want to delete this route?"),
-            _("OpenCPN Route Delete"),
-            (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-      }
+      bool confirmed = RouteGui::OnDelete(parent);
 
-      if (dlg_return == wxID_YES) {
+      if (confirmed) {
         if (g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute)
           g_pRouteMan->DeactivateRoute();
 

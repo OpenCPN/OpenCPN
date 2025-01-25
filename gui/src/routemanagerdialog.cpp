@@ -16,11 +16,13 @@
 
     ---
     Copyright (C) 2010, Anders Lund <anders@alweb.dk>
+    Copyright (c) 2025 NoCodeHummel
  */
 
 #include "config.h"
 
 #include "routemanagerdialog.h"
+#include "route_gui.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -1392,33 +1394,27 @@ void RouteManagerDialog::ZoomtoRoute(Route *route) {
 
 // BEGIN Event handlers
 void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event) {
-  RouteList list;
+  int count = m_pRouteListCtrl->GetSelectedItemCount();
+  bool confirmed = RouteGui::OnDelete(this, count);
 
-  int answer = OCPNMessageBox(
-      this, _("Are you sure you want to delete the selected object(s)"),
-      wxString(_("OpenCPN Alert")), wxYES_NO);
-  if (answer != wxID_YES) return;
-
-  bool busy = false;
-  if (m_pRouteListCtrl->GetSelectedItemCount()) {
+  if (confirmed && count > 0) {
     ::wxBeginBusyCursor();
+    RouteList list;
+
     gFrame->CancelAllMouseRoute();
     m_bNeedConfigFlush = true;
-    busy = true;
-  }
 
-  long item = -1;
-  for (;;) {
-    item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
-                                         wxLIST_STATE_SELECTED);
-    if (item == -1) break;
+    long item = -1;
+    for (;;) {
+      item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
+                                           wxLIST_STATE_SELECTED);
+      if (item == -1) break;
 
-    Route *proute_to_delete = (Route *)m_pRouteListCtrl->GetItemData(item);
+      Route *proute_to_delete = (Route *)m_pRouteListCtrl->GetItemData(item);
 
-    if (proute_to_delete) list.Append(proute_to_delete);
-  }
+      if (proute_to_delete) list.Append(proute_to_delete);
+    }
 
-  if (busy) {
     for (unsigned int i = 0; i < list.GetCount(); i++) {
       Route *route = list.Item(i)->GetData();
       if (route) {

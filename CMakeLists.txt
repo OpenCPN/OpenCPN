@@ -869,6 +869,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
 )
+
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(GUI_SRC
     ${GUI_SRC_DIR}/about.cpp
@@ -1024,10 +1025,8 @@ if (NOT MSVC AND NOT APPLE)
   list(APPEND GUI_SRC ${GUI_SRC_DIR}/ocpn_fontdlg.cpp)
 endif ()
 
-
 set(SRCS ${GUI_SRC})
 set(HDRS ${GUI_HDRS})
-
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
@@ -1115,6 +1114,10 @@ if (APPLE)
 endif ()
 
 find_package(Gettext REQUIRED)
+
+# UI components
+add_subdirectory(libs/gui)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::guilib)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
