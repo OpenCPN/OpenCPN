@@ -628,7 +628,7 @@ static void *DEPARE01(void *param) {
   // drval2 = drval1 + 0.01;
   GetDoubleAttr(obj, "DRVAL2", drval2);
   //make sure drval2 is higher then drval1, always even in bad charts
-  if (drval2 <= drval1) drval1 + 0.01;
+  if (drval2 <= drval1) drval2 = drval1 + 0.01;
 
   //   Create a string of the proper color reference
 
