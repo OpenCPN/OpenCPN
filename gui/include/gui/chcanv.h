@@ -383,6 +383,14 @@ public:
   void DoMovement(long dt);
   void StopMovement();
 
+  void StartTimedMovementVP(double target_lat, double target_lon, int nstep);
+  void DoTimedMovementVP();
+  void StopMovementVP();
+
+  void StartTimedMovementTarget();
+  void DoTimedMovementTarget();
+  void StopMovementTarget();
+
   void SetColorScheme(ColorScheme cs);
   ColorScheme GetColorScheme() { return m_cs; }
 
@@ -768,13 +776,14 @@ private:
   wxColour ShipColor();
 
   void ComputeShipScaleFactor(float icon_hdt, int ownShipWidth,
-                              int ownShipLength, wxPoint &lShipMidPoint,
-                              wxPoint &GpsOffsetPixels, wxPoint lGPSPoint,
-                              float &scale_factor_x, float &scale_factor_y);
+                              int ownShipLength, wxPoint2DDouble &lShipMidPoint,
+                              wxPoint &GpsOffsetPixels,
+                              wxPoint2DDouble lGPSPoint, float &scale_factor_x,
+                              float &scale_factor_y);
 
-  void ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint);
+  void ShipDrawLargeScale(ocpnDC &dc, wxPoint2DDouble lShipMidPoint);
   void ShipIndicatorsDraw(ocpnDC &dc, int img_height, wxPoint GPSOffsetPixels,
-                          wxPoint lGPSPoint);
+                          wxPoint2DDouble lGPSPoint);
 
   ChInfoWin *m_pCIWin;
 
@@ -862,6 +871,8 @@ private:
   void MovementStopTimerEvent(wxTimerEvent &);
   void OnCursorTrackTimerEvent(wxTimerEvent &event);
 
+  void MovementVPTimerEvent(wxTimerEvent &event);
+
   void DrawAllTracksInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawActiveTrackInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox);
@@ -937,6 +948,8 @@ private:
   wxTimer m_routeFinishTimer;
 
   wxTimer m_RolloverPopupTimer;
+
+  wxTimer m_VPMovementTimer;
 
   int m_wheelzoom_stop_oneshot;
   int m_last_wheel_dir;
@@ -1139,6 +1152,18 @@ private:
   /** Physical to logical pixel ratio for the display. */
   double m_displayScale;
   bool m_show_focus_bar;
+
+  double m_panx_target_final;
+  double m_pany_target_final;
+  double m_panx_target_now;
+  double m_pany_target_now;
+
+  double m_start_lat, m_start_lon;
+  double m_target_lat, m_target_lon;
+  double m_run_lat, m_run_lon;
+  bool m_timed_move_vp_active;
+  int m_timedVP_step;
+  int m_stvpc;
 
   DECLARE_EVENT_TABLE()
 };

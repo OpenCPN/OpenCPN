@@ -58,13 +58,16 @@
 
 #include "model/comm_buffers.h"
 #include "model/comm_drv_n0183.h"
+#include "model/comm_drv_stats.h"
 #include "model/conn_params.h"
 #include "model/ocpn_utils.h"
 #include "observable.h"
 
 class MrqContainer;
 
-class CommDriverN0183Net : public CommDriverN0183, public wxEvtHandler {
+class CommDriverN0183Net : public CommDriverN0183,
+                           public wxEvtHandler,
+                           public DriverStatsProvider {
 public:
   CommDriverN0183Net(const ConnectionParams* params, DriverListener& listener);
 
@@ -110,6 +113,8 @@ private:
   void HandleN0183Msg(const std::string& sentence);
   bool SendSentenceNetwork(const wxString& payload);
 
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
+
   const ConnectionParams m_params;
   DriverListener& m_listener;
   N0183Buffer n0183_buffer;
@@ -119,6 +124,8 @@ private:
   wxSocketServer* m_socket_server;
   bool m_is_multicast;
   std::unique_ptr<MrqContainer> m_mrq_container;
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 
   int m_txenter;
   int m_dog_value;

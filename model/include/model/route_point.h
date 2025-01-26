@@ -80,6 +80,7 @@ public:
   bool IsVisible() { return m_bIsVisible; }
   bool IsListed() { return m_bIsListed; }
   bool IsNameShown() { return m_bShowName; }
+  bool IsNameDynamic();
 
   bool IsShared() { return m_bsharedMark; }
   void SetShared(bool bshared) { m_bsharedMark = bshared; }
@@ -189,7 +190,6 @@ public:
   wxSize m_NameExtents;
 
   bool m_bBlink;
-  bool m_bDynamicName;
   bool m_bShowName, m_bShowNameData;
   wxRect CurrentRect_in_DC;
   int m_NameLocationOffsetX;

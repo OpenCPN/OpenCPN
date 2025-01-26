@@ -62,6 +62,9 @@ public:
   /** Notified with a printable message on first detected overrun. */
   EventVar evt_comm_overrun;
 
+  /** Regularly notified by drivers with a DriverStats shared_ptr */
+  EventVar evt_driver_stats;
+
   /**
    *  Notified for messages from drivers. The generated event contains:
    *  - A wxLogLevel stored as an int.

@@ -45,6 +45,7 @@
 #include "model/conn_params.h"
 #include "model/cutil.h"
 #include "model/geodesic.h"
+#include "model/gui.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
@@ -82,17 +83,20 @@
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"
+#include "NMEALogWindow.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "OCPNRegion.h"
+#include "options.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
+#include "route_validator.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
 #include "s52utils.h"
@@ -199,6 +203,7 @@ extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
 extern MyFrame *gFrame;
+extern options *g_options;
 
 extern int g_iNavAidRadarRingsNumberVisible;
 extern bool g_bNavAidRadarRingsShown;
@@ -288,7 +293,6 @@ extern int g_nAutoHideToolbar;
 extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
-extern bool g_boptionsactive;
 ShapeBaseChartSet gShapeBasemap;
 
 //  TODO why are these static?
@@ -325,6 +329,7 @@ extern int g_nAIS_activity_timer;
 extern bool g_bskew_comp;
 extern float g_compass_scalefactor;
 extern int g_COGAvgSec;  // COG average period (sec.) for Course Up Mode
+extern bool g_btenhertz;
 
 wxGLContext *g_pGLcontext;  // shared common context
 
@@ -378,6 +383,7 @@ EVT_KILL_FOCUS(ChartCanvas::OnKillFocus)
 EVT_SET_FOCUS(ChartCanvas::OnSetFocus)
 EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
 EVT_TIMER(DEFERRED_FOCUS_TIMER, ChartCanvas::OnDeferredFocusTimerEvent)
+EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
 
 END_EVENT_TABLE()
 
@@ -434,6 +440,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_upMode = NORTH_UP_MODE;
   m_bShowAIS = true;
   m_bShowAISScaled = false;
+  m_timed_move_vp_active = false;
 
   m_vLat = 0.;
   m_vLon = 0.;
@@ -554,8 +561,12 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_DoubleClickTimer = new wxTimer(this, DBLCLICK_TIMER);
   m_DoubleClickTimer->Stop();
 
+  m_VPMovementTimer.SetOwner(this, MOVEMENT_VP_TIMER);
+
   m_panx = m_pany = 0;
   m_panspeed = 0;
+  m_panx_target_final = m_pany_target_final = 0;
+  m_panx_target_now = m_pany_target_now = 0;
 
   pCurTrackTimer = new wxTimer(this, CURTRACK_TIMER);
   pCurTrackTimer->Stop();
@@ -1498,6 +1509,7 @@ void ChartCanvas::canvasChartsRefresh(int dbi_hint) {
 bool ChartCanvas::DoCanvasUpdate(void) {
   double tLat, tLon;    // Chart Stack location
   double vpLat, vpLon;  // ViewPort location
+  bool blong_jump = false;
 
   bool bNewChart = false;
   bool bNewView = false;
@@ -1556,9 +1568,19 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       fromSM(d_east_mod, d_north_mod, gLat, gLon, &vpLat, &vpLon);
     }
 
+    extern double gCog_gt;
+
     // on lookahead mode, adjust the vp center point
     if (m_bLookAhead && bGPSValid && !m_MouseDragging) {
-      double angle = g_COGAvg + (GetVPRotation() * 180. / PI);
+      double cog_to_use = gCog;
+      if (g_btenhertz &&
+          (fabs(gCog - gCog_gt) > 20)) {  // big COG change in process
+        cog_to_use = gCog_gt;
+        blong_jump = true;
+      }
+      if (!g_btenhertz) cog_to_use = g_COGAvg;
+
+      double angle = cog_to_use + (GetVPRotation() * 180. / PI);
 
       double pixel_deltay =
           fabs(cos(angle * PI / 180.)) * GetCanvasHeight() / 4;
@@ -1581,13 +1603,16 @@ bool ChartCanvas::DoCanvasUpdate(void) {
           pixel_delta = pixel_delta_tent * (gSog - 1.0) / 2.0;
       }
 
-      double meters_to_shift =
-          cos(gLat * PI / 180.) * pixel_delta / GetVPScale();
-
-      double dir_to_shift = g_COGAvg;
-
-      ll_gc_ll(gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat,
-               &vpLon);
+      double meters_to_shift = 0;
+      double dir_to_shift = 0;
+      if (!std::isnan(gCog)) {
+        meters_to_shift = cos(gLat * PI / 180.) * pixel_delta / GetVPScale();
+        dir_to_shift = cog_to_use;
+        // printf("                      look:  %g %g\n", meters_to_shift,
+        // dir_to_shift);
+        ll_gc_ll(gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat,
+                 &vpLon);
+      }
     } else if (m_bLookAhead && !bGPSValid) {
       m_OSoffsetx = 0;  // center ownship on loss of GPS
       m_OSoffsety = 0;
@@ -1688,8 +1713,13 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                GetCanvasScaleFactor() / proposed_scale_onscreen,
                                0, GetVPRotation());
     }
-    // else
-    bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
+    if (m_bFollow && g_btenhertz) {
+      int nstep = 5;
+      if (blong_jump) nstep = 20;
+      StartTimedMovementVP(vpLat, vpLon, nstep);
+    } else {
+      bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
+    }
 
     goto update_finish;
   }
@@ -1907,14 +1937,6 @@ update_finish:
 
   // TODO
   //     if( bNewPiano ) UpdateControlBar();
-
-  //  Update the ownship position on thumbnail chart, if shown
-  if (pthumbwin && pthumbwin->IsShown()) {
-    if (pthumbwin->pThumbChart) {
-      if (pthumbwin->pThumbChart->UpdateThumbData(gLat, gLon))
-        pthumbwin->Refresh(TRUE);
-    }
-  }
 
   m_bFirstAuto = false;  // Auto open on program start
 
@@ -2832,10 +2854,13 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       break;
 
     case WXK_F12: {
-      if (m_modkeys == wxMOD_ALT)
-        m_nMeasureState = *(volatile int *)(0);  // generate a fault for testing
-
-      ToggleChartOutlines();
+      if (m_modkeys == wxMOD_ALT) {
+        // m_nMeasureState = *(volatile int *)(0);  // generate a fault for
+        // testing
+        bool b = GetEnableTenHertzUpdate();
+        EnableTenHertzUpdate(!b);
+      } else
+        ToggleChartOutlines();
       break;
     }
 
@@ -2986,6 +3011,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           }
           break;
         }
+
+        case 'E':
+          if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
+            auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
+            NMEALogWindow::GetInstance().Create(top_window, 35);
+          }
+          wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+          break;
 
         case 'L':
           SetShowENCLights(!GetShowENCLights());
@@ -3348,19 +3381,23 @@ void ChartCanvas::SetUpMode(int mode) {
 bool ChartCanvas::DoCanvasCOGSet(void) {
   if (GetUpMode() == NORTH_UP_MODE) return false;
 
-  if (std::isnan(g_COGAvg)) return true;
+  double cog_use = g_COGAvg;
+  if (g_btenhertz) cog_use = gCog;
+
+  if (std::isnan(cog_use)) return true;
 
   double old_VPRotate = m_VPRotate;
 
   if ((GetUpMode() == HEAD_UP_MODE) && !std::isnan(gHdt)) {
     m_VPRotate = -gHdt * PI / 180.;
   } else if (GetUpMode() == COURSE_UP_MODE)
-    m_VPRotate = -g_COGAvg * PI / 180.;
+    m_VPRotate = -cog_use * PI / 180.;
 
-  SetVPRotation(m_VPRotate);
-  bool bnew_chart = DoCanvasUpdate();
+  // SetVPRotation(m_VPRotate);
+  VPoint.rotation = m_VPRotate;
+  // bool bnew_chart = DoCanvasUpdate();
 
-  if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
+  // if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
 
   return true;
 }
@@ -3399,14 +3436,70 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
 
   m_last_movement_time = wxDateTime::UNow();
 
-  /* jumpstart because paint gets called right away, if we want first frame to
-   * move */
-  //    m_last_movement_time -= wxTimeSpan::Milliseconds(100);
-
-  //    Refresh( false );
-
   return true;
 }
+void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon,
+                                       int nstep) {
+  // Save the target
+  m_target_lat = target_lat;
+  m_target_lon = target_lon;
+
+  // Save the start point
+  m_start_lat = GetVP().clat;
+  m_start_lon = GetVP().clon;
+
+  m_VPMovementTimer.Start(1, true);  // oneshot
+  m_timed_move_vp_active = true;
+  m_stvpc = 0;
+  m_timedVP_step = nstep;
+}
+
+void ChartCanvas::DoTimedMovementVP() {
+  if (!m_timed_move_vp_active) return;   // not active
+  if (m_stvpc++ > m_timedVP_step * 2) {  // Backstop
+    StopMovement();
+    return;
+  }
+  // Stop condition
+  double one_pix = (1. / (1852 * 60)) / GetVP().view_scale_ppm;
+  double d2 =
+      pow(m_run_lat - m_target_lat, 2) + pow(m_run_lon - m_target_lon, 2);
+  d2 = pow(d2, 0.5);
+
+  if (d2 < one_pix) {
+    SetViewPoint(m_target_lat, m_target_lon);  // Embeds a refresh
+    StopMovementVP();
+    return;
+  }
+
+  // if ((fabs(m_run_lat - m_target_lat) < one_pix) &&
+  //     (fabs(m_run_lon - m_target_lon) < one_pix)) {
+  //   StopMovementVP();
+  //   return;
+  // }
+
+  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / m_timedVP_step;
+  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / m_timedVP_step;
+
+  m_run_lat = new_lat;
+  m_run_lon = new_lon;
+
+  // printf(" Timed\n");
+  SetViewPoint(new_lat, new_lon);  // Embeds a refresh
+}
+
+void ChartCanvas::StopMovementVP() {
+  // printf("Stop\n");
+  m_timed_move_vp_active = false;
+}
+
+void ChartCanvas::MovementVPTimerEvent(wxTimerEvent &) { DoTimedMovementVP(); }
+
+void ChartCanvas::StartTimedMovementTarget() {}
+
+void ChartCanvas::DoTimedMovementTarget() {}
+
+void ChartCanvas::StopMovementTarget() {}
 
 void ChartCanvas::DoTimedMovement() {
   if (m_pan_drag == wxPoint(0, 0) && !m_panx && !m_pany && m_zoom_factor == 1 &&
@@ -5529,7 +5622,8 @@ wxColour ChartCanvas::ShipColor() {
   return GetGlobalColor(_T ( "URED" ));  // default is OK
 }
 
-void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint) {
+void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
+                                     wxPoint2DDouble lShipMidPoint) {
   dc.SetPen(wxPen(PredColor(), 2));
 
   if (SHIP_NORMAL == m_ownship_state)
@@ -5537,18 +5631,18 @@ void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc, wxPoint lShipMidPoint) {
   else
     dc.SetBrush(wxBrush(GetGlobalColor(_T ( "YELO1" ))));
 
-  dc.DrawEllipse(lShipMidPoint.x - 10, lShipMidPoint.y - 10, 20, 20);
-  dc.DrawEllipse(lShipMidPoint.x - 6, lShipMidPoint.y - 6, 12, 12);
+  dc.DrawEllipse(lShipMidPoint.m_x - 10, lShipMidPoint.m_y - 10, 20, 20);
+  dc.DrawEllipse(lShipMidPoint.m_x - 6, lShipMidPoint.m_y - 6, 12, 12);
 
-  dc.DrawLine(lShipMidPoint.x - 12, lShipMidPoint.y, lShipMidPoint.x + 12,
-              lShipMidPoint.y);
-  dc.DrawLine(lShipMidPoint.x, lShipMidPoint.y - 12, lShipMidPoint.x,
-              lShipMidPoint.y + 12);
+  dc.DrawLine(lShipMidPoint.m_x - 12, lShipMidPoint.m_y, lShipMidPoint.m_x + 12,
+              lShipMidPoint.m_y);
+  dc.DrawLine(lShipMidPoint.m_x, lShipMidPoint.m_y - 12, lShipMidPoint.m_x,
+              lShipMidPoint.m_y + 12);
 }
 
 void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                                      wxPoint GPSOffsetPixels,
-                                     wxPoint lGPSPoint) {
+                                     wxPoint2DDouble lGPSPoint) {
   // Develop a uniform length for course predictor line dash length, based on
   // physical display size Use this reference length to size all other graphics
   // elements
@@ -5611,8 +5705,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
   // draw course over ground if they are longer than the ship
   wxPoint lShipMidPoint;
-  lShipMidPoint.x = lGPSPoint.x + GPSOffsetPixels.x;
-  lShipMidPoint.y = lGPSPoint.y + GPSOffsetPixels.y;
+  lShipMidPoint.x = lGPSPoint.m_x + GPSOffsetPixels.x;
+  lShipMidPoint.y = lGPSPoint.m_y + GPSOffsetPixels.y;
   float lpp = sqrtf(powf((float)(lPredPoint.x - lShipMidPoint.x), 2) +
                     powf((float)(lPredPoint.y - lShipMidPoint.y), 2));
 
@@ -5641,7 +5735,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         ppPen2.SetDashes(2, dash_long);
       dc.SetPen(ppPen2);
       dc.StrokeLine(
-          lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+          lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
           lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
 
       if (g_cog_predictor_width > 1) {
@@ -5656,9 +5750,10 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         if (g_cog_predictor_style == (wxPenStyle)wxUSER_DASH)
           ppPen3.SetDashes(2, dash_long3);
         dc.SetPen(ppPen3);
-        dc.StrokeLine(
-            lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-            lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
+        dc.StrokeLine(lGPSPoint.m_x + GPSOffsetPixels.x,
+                      lGPSPoint.m_y + GPSOffsetPixels.y,
+                      lPredPoint.x + GPSOffsetPixels.x,
+                      lPredPoint.y + GPSOffsetPixels.y);
       }
 
       if (g_cog_predictor_endmarker) {
@@ -5723,7 +5818,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
     dc.SetPen(ppPen2);
     dc.StrokeLine(
-        lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+        lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
         lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y);
 
     wxPen ppPen1(cPred, g_cog_predictor_width / 3, wxPENSTYLE_SOLID);
@@ -5762,8 +5857,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
     ll_gc_ll(gLat, gLon, 0, factor, &tlat, &tlon);
     GetCanvasPointPix(tlat, tlon, &r);
 
-    double lpp = sqrt(pow((double)(lGPSPoint.x - r.x), 2) +
-                      pow((double)(lGPSPoint.y - r.y), 2));
+    double lpp = sqrt(pow((double)(lGPSPoint.m_x - r.x), 2) +
+                      pow((double)(lGPSPoint.m_y - r.y), 2));
     int pix_radius = (int)lpp;
 
     extern wxColor GetDimColor(wxColor c);
@@ -5775,14 +5870,14 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
     dc.SetBrush(wxBrush(rangeringcolour, wxBRUSHSTYLE_TRANSPARENT));
 
     for (int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++)
-      dc.StrokeCircle(lGPSPoint.x, lGPSPoint.y, i * pix_radius);
+      dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, i * pix_radius);
   }
 }
 
 void ChartCanvas::ComputeShipScaleFactor(
-    float icon_hdt, int ownShipWidth, int ownShipLength, wxPoint &lShipMidPoint,
-    wxPoint &GPSOffsetPixels, wxPoint lGPSPoint, float &scale_factor_x,
-    float &scale_factor_y) {
+    float icon_hdt, int ownShipWidth, int ownShipLength,
+    wxPoint2DDouble &lShipMidPoint, wxPoint &GPSOffsetPixels,
+    wxPoint2DDouble lGPSPoint, float &scale_factor_x, float &scale_factor_y) {
   float screenResolution = m_pix_per_mm;
 
   //  Calculate the true ship length in exact pixels
@@ -5827,9 +5922,11 @@ void ChartCanvas::ComputeShipScaleFactor(
   ll_gc_ll(ship_mid_lat, ship_mid_lon, icon_hdt - 90., dx, &ship_mid_lat1,
            &ship_mid_lon1);
 
-  GetCanvasPointPix(ship_mid_lat1, ship_mid_lon1, &lShipMidPoint);
-  GPSOffsetPixels.x = lShipMidPoint.x - lGPSPoint.x;
-  GPSOffsetPixels.y = lShipMidPoint.y - lGPSPoint.y;
+  GetDoubleCanvasPointPixVP(GetVP(), ship_mid_lat1, ship_mid_lon1,
+                            &lShipMidPoint);
+
+  GPSOffsetPixels.x = lShipMidPoint.m_x - lGPSPoint.m_x;
+  GPSOffsetPixels.y = lShipMidPoint.m_y - lGPSPoint.m_y;
 
   float scale_factor = shipLength_px / ownShipLength;
 
@@ -5847,13 +5944,15 @@ void ChartCanvas::ComputeShipScaleFactor(
 void ChartCanvas::ShipDraw(ocpnDC &dc) {
   if (!GetVP().IsValid()) return;
 
-  wxPoint lGPSPoint, lShipMidPoint, GPSOffsetPixels(0, 0);
+  wxPoint GPSOffsetPixels(0, 0);
+  wxPoint2DDouble lGPSPoint, lShipMidPoint;
 
   //  COG/SOG may be undefined in NMEA data stream
   float pCog = std::isnan(gCog) ? 0 : gCog;
   float pSog = std::isnan(gSog) ? 0 : gSog;
 
-  GetCanvasPointPix(gLat, gLon, &lGPSPoint);
+  GetDoubleCanvasPointPixVP(GetVP(), gLat, gLon, &lGPSPoint);
+
   lShipMidPoint = lGPSPoint;
 
   //  Draw the icon rotated to the COG
@@ -5874,8 +5973,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
   GetCanvasPointPix(osd_head_lat, osd_head_lon, &osd_head_point);
 
-  float icon_rad = atan2f((float)(osd_head_point.y - lShipMidPoint.y),
-                          (float)(osd_head_point.x - lShipMidPoint.x));
+  float icon_rad = atan2f((float)(osd_head_point.y - lShipMidPoint.m_y),
+                          (float)(osd_head_point.x - lShipMidPoint.m_x));
   icon_rad += (float)PI;
 
   if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + GetVP().rotation;
@@ -5952,13 +6051,14 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
           int h = os_bm.GetHeight();
           img_height = h;
 
-          dc.DrawBitmap(os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2,
-                        true);
+          dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+                        lShipMidPoint.m_y - h / 2, true);
 
           // Maintain dirty box,, missing in __WXMSW__ library
-          dc.CalcBoundingBox(lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2);
-          dc.CalcBoundingBox(lShipMidPoint.x - w / 2 + w,
-                             lShipMidPoint.y - h / 2 + h);
+          dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+                             lShipMidPoint.m_y - h / 2);
+          dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2 + w,
+                             lShipMidPoint.m_y - h / 2 + h);
         }
 
         else if (g_OwnShipIconType == 2) {  // Scaled Vector
@@ -5974,8 +6074,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
             float px = (pxa * sinf(icon_rad)) + (pya * cosf(icon_rad));
             float py = (pya * sinf(icon_rad)) - (pxa * cosf(icon_rad));
 
-            ownship_icon[i].x = (int)(px) + lShipMidPoint.x;
-            ownship_icon[i].y = (int)(py) + lShipMidPoint.y;
+            ownship_icon[i].x = (int)(px) + lShipMidPoint.m_x;
+            ownship_icon[i].y = (int)(py) + lShipMidPoint.m_y;
           }
 
           wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
@@ -5999,7 +6099,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
         dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
         dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
-        dc.StrokeCircle(lGPSPoint.x, lGPSPoint.y, circle_rad);
+        dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, circle_rad);
       } else {  // Fixed bitmap icon.
         /* non opengl, or suboptimal opengl via ocpndc: */
         wxPoint rot_ctr(pos_image.GetWidth() / 2, pos_image.GetHeight() / 2);
@@ -6026,8 +6126,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
         int h = os_bm.GetHeight();
         img_height = h;
 
-        dc.DrawBitmap(os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2,
-                      true);
+        dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+                      lShipMidPoint.m_y - h / 2, true);
 
         //      Reference point, where the GPS antenna is
         int circle_rad = 3;
@@ -6035,12 +6135,13 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
         dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
         dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
-        dc.StrokeCircle(lShipMidPoint.x, lShipMidPoint.y, circle_rad);
+        dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, circle_rad);
 
         // Maintain dirty box,, missing in __WXMSW__ library
-        dc.CalcBoundingBox(lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2);
-        dc.CalcBoundingBox(lShipMidPoint.x - w / 2 + w,
-                           lShipMidPoint.y - h / 2 + h);
+        dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+                           lShipMidPoint.m_y - h / 2);
+        dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2 + w,
+                           lShipMidPoint.m_y - h / 2 + h);
       }
     }  // ownship draw
   }
@@ -6932,7 +7033,13 @@ void ChartCanvas::PanTimerEvent(wxTimerEvent &event) {
   ::wxPostEvent(evthp, ev);
 }
 
-void ChartCanvas::MovementTimerEvent(wxTimerEvent &) { DoTimedMovement(); }
+void ChartCanvas::MovementTimerEvent(wxTimerEvent &) {
+  if ((m_panx_target_final - m_panx_target_now) ||
+      (m_pany_target_final - m_pany_target_now)) {
+    DoTimedMovementTarget();
+  } else
+    DoTimedMovement();
+}
 
 void ChartCanvas::MovementStopTimerEvent(wxTimerEvent &) { StopMovement(); }
 
@@ -9948,9 +10055,16 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
   markPoint->m_bRPIsBeingEdited = false;
 
   wxString title_base = _("Waypoint Properties");
-  if (!markPoint->m_bIsInRoute) title_base = _("Mark Properties");
+  if (markPoint->m_bIsInRoute) {
+    RoutePointNameValidator *pRPNameValidator =
+        new RoutePointNameValidator(markPoint);
+    g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
+  } else {
+    title_base = _("Mark Properties");
+    g_pMarkInfoDialog->SetNameValidator(nullptr);
+  }
 
-  g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint *>{markPoint});
+  g_pMarkInfoDialog->SetRoutePoint(markPoint);
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"), title_base, _("Layer"),
@@ -11589,10 +11703,11 @@ void ChartCanvas::PaintCleanup() {
     warp_flag = false;
   }
 
-  // Start movement timer, this runs nearly immediately.
+  // Start movement timers, this runs nearly immediately.
   // the reason we cannot simply call it directly is the
   // refresh events it emits may be blocked from this paint event
   pMovementTimer->Start(1, wxTIMER_ONE_SHOT);
+  m_VPMovementTimer.Start(1, wxTIMER_ONE_SHOT);
 }
 
 #if 0
@@ -13483,7 +13598,7 @@ void ChartCanvas::AddTileOverlayIndexToNoShow(int index) {
 
 void ChartCanvas::HandlePianoClick(
     int selected_index, const std::vector<int> &selected_dbIndex_array) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!m_pCurrentStack) return;
   if (!ChartData) return;
@@ -13624,7 +13739,7 @@ void ChartCanvas::HandlePianoClick(
 void ChartCanvas::HandlePianoRClick(
     int x, int y, int selected_index,
     const std::vector<int> &selected_dbIndex_array) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
 
@@ -13637,7 +13752,7 @@ void ChartCanvas::HandlePianoRClick(
 void ChartCanvas::HandlePianoRollover(
     int selected_index, const std::vector<int> &selected_dbIndex_array,
     int n_charts, int scale) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
   if (!ChartData) return;

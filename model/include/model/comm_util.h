@@ -28,6 +28,8 @@
 
 #include "model/comm_navmsg.h"
 
+void UpdateDatastreams();
+
 bool StopAndRemoveCommDriver(std::string ident,
                              NavAddr::Bus = NavAddr::Bus::Undef);
 
