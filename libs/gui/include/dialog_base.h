@@ -1,5 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -15,17 +15,30 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
+#ifndef DIALOG_BASE_H
+#define DIALOG_BASE_H
+
+#include <wx/dialog.h>
 
 /**
- * \file
- * Hooks into gui available in model.
+ * OpenCPN standard dialog layout with content sizer.
  */
+class BaseDialog : public wxDialog {
+public:
+  static const int kScaling = 6;  // UI guideline default
 
-#include <wx/window.h>
+  BaseDialog(wxWindow* parent, const std::string& title,
+             long style = wxDEFAULT_DIALOG_STYLE);
 
-static const char* const kTopLevelWindowName = "MainWindow";
+  void AddHtmlContent(const wxString& html);
 
-/** Return the top level window a k a gFrame. */
-wxWindow* GetTopWindow();
-void PropagateResize(wxWindow* window);
+protected:
+  wxBoxSizer* m_layout;
+  wxBoxSizer* m_content;
+
+  static const int kDialogPadding = 12;
+};
+
+#endif  // DIALOG_BASE_H

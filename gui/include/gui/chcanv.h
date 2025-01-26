@@ -383,7 +383,7 @@ public:
   void DoMovement(long dt);
   void StopMovement();
 
-  void StartTimedMovementVP(double target_lat, double target_lon);
+  void StartTimedMovementVP(double target_lat, double target_lon, int nstep);
   void DoTimedMovementVP();
   void StopMovementVP();
 
@@ -1162,6 +1162,8 @@ private:
   double m_target_lat, m_target_lon;
   double m_run_lat, m_run_lon;
   bool m_timed_move_vp_active;
+  int m_timedVP_step;
+  int m_stvpc;
 
   DECLARE_EVENT_TABLE()
 };

@@ -54,8 +54,6 @@ class RoutePoint;
 #define OUT_VIZ 1 << 9        //  Output point viz, if non-zero(true)
 #define OUT_VIZ_NAME 1 << 10  //  Output point name viz, if non-zero(true)
 #define OUT_SHARED 1 << 11    //  Output point shared state, if non-zero(true)
-#define OUT_AUTO_NAME \
-  1 << 12  //  Output point auto_name state, if non-zero(true)
 #define OUT_HYPERLINKS 1 << 13  //  Output point Hyperlinks, if present
 #define OUT_ACTION_ADD 1 << 14  //  opencpn:action node support
 #define OUT_ACTION_DEL 1 << 15
@@ -68,11 +66,11 @@ class RoutePoint;
 #define OUT_RTE_PROPERTIES 1 << 22
 
 #define OPT_TRACKPT OUT_TIME
-#define OPT_WPT                                                         \
-  (OUT_TYPE) + (OUT_TIME) + (OUT_NAME) + (OUT_DESC) + (OUT_SYM_FORCE) + \
-      (OUT_GUID) + (OUT_VIZ) + (OUT_VIZ_NAME) + (OUT_SHARED) +          \
-      (OUT_AUTO_NAME) + (OUT_HYPERLINKS) + (OUT_ARRIVAL_RADIUS) +       \
-      (OUT_WAYPOINT_RANGE_RINGS) + (OUT_WAYPOINT_SCALE) + (OUT_TIDE_STATION)
+#define OPT_WPT                                                              \
+  (OUT_TYPE) + (OUT_TIME) + (OUT_NAME) + (OUT_DESC) + (OUT_SYM_FORCE) +      \
+      (OUT_GUID) + (OUT_VIZ) + (OUT_VIZ_NAME) + (OUT_SHARED) +               \
+      (OUT_HYPERLINKS) + (OUT_ARRIVAL_RADIUS) + (OUT_WAYPOINT_RANGE_RINGS) + \
+      (OUT_WAYPOINT_SCALE) + (OUT_TIDE_STATION)
 #define OPT_ROUTEPT OPT_WPT + (OUT_RTE_PROPERTIES)
 
 //      Bitfield definitions controlling the GPX nodes output for Route.Track

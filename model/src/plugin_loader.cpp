@@ -381,6 +381,18 @@ void PluginLoader::SetToolboxPanel(const wxString& common_name, bool value) {
                common_name);
 }
 
+void PluginLoader::SetSetupOptions(const wxString& common_name, bool value) {
+  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+    PlugInContainer* pic = plugin_array[i];
+    if (pic->m_common_name == common_name) {
+      pic->m_has_setup_options = value;
+      return;
+    }
+  }
+  wxLogMessage("Atttempt to update setup options on non-existing plugin " +
+               common_name);
+}
+
 const wxBitmap* PluginLoader::GetPluginDefaultIcon() {
   if (!m_default_plugin_icon) m_default_plugin_icon = new wxBitmap(32, 32);
   return m_default_plugin_icon;

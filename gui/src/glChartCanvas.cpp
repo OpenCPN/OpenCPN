@@ -3876,6 +3876,8 @@ void glChartCanvas::Render() {
     if (!g_PrintingInProgress) return;
   }
 
+  // printf("                  Render gCOG, rotation  %g %g\n", gCog,
+  // m_pParentCanvas->VPoint.rotation);
   if (m_binPinch) return;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)

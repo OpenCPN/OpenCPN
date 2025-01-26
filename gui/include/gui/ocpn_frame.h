@@ -185,6 +185,7 @@ public:
 
   void DoStackDelta(ChartCanvas* cc, int direction);
   void DoSettings(void);
+  void DoSettingsNew(void);
   void SwitchKBFocus(ChartCanvas* pCanvas);
   ChartCanvas* GetCanvasUnderMouse();
   int GetCanvasIndexUnderMouse();
@@ -206,8 +207,10 @@ public:
   void RegisterGlobalMenuItems();
   void UpdateGlobalMenuItems();
   void UpdateGlobalMenuItems(ChartCanvas* cc);
-  int DoOptionsDialog();
-  bool ProcessOptionsDialog(int resultFlags, ArrayOfCDI* pNewDirArray);
+  void DoOptionsDialog();
+  void ProcessOptionsDialog(int resultFlags, ArrayOfCDI* pNewDirArray);
+  void PrepareOptionsClose(options* settings, int settings_return_value);
+
   void DoPrint(void);
   void ToggleDataQuality(ChartCanvas* cc);
   void TogglebFollow(ChartCanvas* cc);
@@ -330,6 +333,9 @@ public:
   void NotifyChildrenResize(void);
   void UpdateCanvasConfigDescriptors();
   void ScheduleSettingsDialog();
+  void ScheduleSettingsDialogNew();
+  void ScheduleDeleteSettingsDialog();
+  void ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog);
   static void RebuildChartDatabase();
   void PositionIENCToolbar();
 
@@ -412,6 +418,10 @@ private:
 
   CommOverflowDlg comm_overflow_dlg;
   ConnectionsDlg* m_connections_dlg;
+  bool m_need_new_options;
+  wxArrayString pathArray;
+  double restoreScale[4];
+  unsigned int last_canvasConfig;
 
   DECLARE_EVENT_TABLE()
 };

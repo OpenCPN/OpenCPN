@@ -1,5 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -15,17 +15,19 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
+#ifndef DIALOG_FOOTER_H
+#define DIALOG_FOOTER_H
+
+#include <wx/wx.h>
 
 /**
- * \file
- * Hooks into gui available in model.
+ * Footer sizer adjusts the button layout for the target platform.
  */
+class DialogFooter : public wxStdDialogButtonSizer {
+public:
+  DialogFooter() : wxStdDialogButtonSizer() {};
+};
 
-#include <wx/window.h>
-
-static const char* const kTopLevelWindowName = "MainWindow";
-
-/** Return the top level window a k a gFrame. */
-wxWindow* GetTopWindow();
-void PropagateResize(wxWindow* window);
+#endif  // DIALOG_FOOTER_H

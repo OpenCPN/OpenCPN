@@ -91,7 +91,6 @@ extern std::vector<Track*> g_TrackList;
 extern PlugInManager* g_pi_manager;
 extern s52plib* ps52plib;
 extern wxString ChartListFileName;
-extern bool g_boptionsactive;
 extern options* g_options;
 extern ColorScheme global_color_scheme;
 extern wxArrayString g_locale_catalog_array;
@@ -502,9 +501,8 @@ int AddChartToDBInPlace(wxString& full_path, bool b_RefreshCanvas) {
       // Update group contents
       if (g_pGroupArray) ChartData->ApplyGroupArray(g_pGroupArray);
 
-      if (g_boptionsactive) {
+      if (g_options && g_options->IsShown())
         g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
-      }
 
       if (b_RefreshCanvas || !gFrame->GetPrimaryCanvas()->GetQuiltMode()) {
         gFrame->ChartsRefresh();
@@ -533,9 +531,8 @@ int RemoveChartFromDBInPlace(wxString& full_path) {
     // Update group contents
     if (g_pGroupArray) ChartData->ApplyGroupArray(g_pGroupArray);
 
-    if (g_boptionsactive) {
+    if (g_options && g_options->IsShown())
       g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
-    }
 
     gFrame->ChartsRefresh();
   }

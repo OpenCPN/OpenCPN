@@ -158,7 +158,6 @@ extern bool g_bPermanentMOBIcon;
 extern float g_toolbar_scalefactor;
 
 extern options *g_options;
-extern bool g_boptionsactive;
 
 extern wxString *pInit_Chart_Dir;
 
@@ -2180,7 +2179,10 @@ bool OCPNPlatform::AllowAlertDialog(const wxString &class_name) {
   }
 
   // qDebug() << "AllowAlertDialog" << g_boptionsactive << g_running << nTLW;
-  return (g_running && !g_boptionsactive && (nTLW <= 4));
+  if (g_options)
+    return (g_running && !g_options->IsShown() && (nTLW <= 4));
+  else
+    return (g_running && (nTLW <= 4));
 
 #else
   return true;

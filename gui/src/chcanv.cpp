@@ -89,12 +89,14 @@
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "OCPNRegion.h"
+#include "options.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
+#include "route_validator.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
 #include "s52utils.h"
@@ -201,6 +203,7 @@ extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
 extern MyFrame *gFrame;
+extern options *g_options;
 
 extern int g_iNavAidRadarRingsNumberVisible;
 extern bool g_bNavAidRadarRingsShown;
@@ -290,7 +293,6 @@ extern int g_nAutoHideToolbar;
 extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
-extern bool g_boptionsactive;
 ShapeBaseChartSet gShapeBasemap;
 
 //  TODO why are these static?
@@ -1507,6 +1509,7 @@ void ChartCanvas::canvasChartsRefresh(int dbi_hint) {
 bool ChartCanvas::DoCanvasUpdate(void) {
   double tLat, tLon;    // Chart Stack location
   double vpLat, vpLon;  // ViewPort location
+  bool blong_jump = false;
 
   bool bNewChart = false;
   bool bNewView = false;
@@ -1565,9 +1568,19 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       fromSM(d_east_mod, d_north_mod, gLat, gLon, &vpLat, &vpLon);
     }
 
+    extern double gCog_gt;
+
     // on lookahead mode, adjust the vp center point
     if (m_bLookAhead && bGPSValid && !m_MouseDragging) {
-      double angle = g_COGAvg + (GetVPRotation() * 180. / PI);
+      double cog_to_use = gCog;
+      if (g_btenhertz &&
+          (fabs(gCog - gCog_gt) > 20)) {  // big COG change in process
+        cog_to_use = gCog_gt;
+        blong_jump = true;
+      }
+      if (!g_btenhertz) cog_to_use = g_COGAvg;
+
+      double angle = cog_to_use + (GetVPRotation() * 180. / PI);
 
       double pixel_deltay =
           fabs(cos(angle * PI / 180.)) * GetCanvasHeight() / 4;
@@ -1590,13 +1603,16 @@ bool ChartCanvas::DoCanvasUpdate(void) {
           pixel_delta = pixel_delta_tent * (gSog - 1.0) / 2.0;
       }
 
-      double meters_to_shift =
-          cos(gLat * PI / 180.) * pixel_delta / GetVPScale();
-
-      double dir_to_shift = g_COGAvg;
-
-      ll_gc_ll(gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat,
-               &vpLon);
+      double meters_to_shift = 0;
+      double dir_to_shift = 0;
+      if (!std::isnan(gCog)) {
+        meters_to_shift = cos(gLat * PI / 180.) * pixel_delta / GetVPScale();
+        dir_to_shift = cog_to_use;
+        // printf("                      look:  %g %g\n", meters_to_shift,
+        // dir_to_shift);
+        ll_gc_ll(gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat,
+                 &vpLon);
+      }
     } else if (m_bLookAhead && !bGPSValid) {
       m_OSoffsetx = 0;  // center ownship on loss of GPS
       m_OSoffsety = 0;
@@ -1698,7 +1714,9 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                0, GetVPRotation());
     }
     if (m_bFollow && g_btenhertz) {
-      StartTimedMovementVP(vpLat, vpLon);
+      int nstep = 5;
+      if (blong_jump) nstep = 20;
+      StartTimedMovementVP(vpLat, vpLon, nstep);
     } else {
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
     }
@@ -1919,14 +1937,6 @@ update_finish:
 
   // TODO
   //     if( bNewPiano ) UpdateControlBar();
-
-  //  Update the ownship position on thumbnail chart, if shown
-  if (pthumbwin && pthumbwin->IsShown()) {
-    if (pthumbwin->pThumbChart) {
-      if (pthumbwin->pThumbChart->UpdateThumbData(gLat, gLon))
-        pthumbwin->Refresh(TRUE);
-    }
-  }
 
   m_bFirstAuto = false;  // Auto open on program start
 
@@ -3371,16 +3381,20 @@ void ChartCanvas::SetUpMode(int mode) {
 bool ChartCanvas::DoCanvasCOGSet(void) {
   if (GetUpMode() == NORTH_UP_MODE) return false;
 
-  if (std::isnan(g_COGAvg)) return true;
+  double cog_use = g_COGAvg;
+  if (g_btenhertz) cog_use = gCog;
+
+  if (std::isnan(cog_use)) return true;
 
   double old_VPRotate = m_VPRotate;
 
   if ((GetUpMode() == HEAD_UP_MODE) && !std::isnan(gHdt)) {
     m_VPRotate = -gHdt * PI / 180.;
   } else if (GetUpMode() == COURSE_UP_MODE)
-    m_VPRotate = -g_COGAvg * PI / 180.;
+    m_VPRotate = -cog_use * PI / 180.;
 
-  SetVPRotation(m_VPRotate);
+  // SetVPRotation(m_VPRotate);
+  VPoint.rotation = m_VPRotate;
   // bool bnew_chart = DoCanvasUpdate();
 
   // if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
@@ -3422,16 +3436,10 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
 
   m_last_movement_time = wxDateTime::UNow();
 
-  /* jumpstart because paint gets called right away, if we want first frame to
-   * move */
-  //    m_last_movement_time -= wxTimeSpan::Milliseconds(100);
-
-  //    Refresh( false );
-
   return true;
 }
-int stvpc;
-void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
+void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon,
+                                       int nstep) {
   // Save the target
   m_target_lat = target_lat;
   m_target_lon = target_lon;
@@ -3442,15 +3450,21 @@ void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon) {
 
   m_VPMovementTimer.Start(1, true);  // oneshot
   m_timed_move_vp_active = true;
-  stvpc = 0;
+  m_stvpc = 0;
+  m_timedVP_step = nstep;
 }
-void ChartCanvas::DoTimedMovementVP() {
-  if (!m_timed_move_vp_active) return;  // not active
 
+void ChartCanvas::DoTimedMovementVP() {
+  if (!m_timed_move_vp_active) return;   // not active
+  if (m_stvpc++ > m_timedVP_step * 2) {  // Backstop
+    StopMovement();
+    return;
+  }
   // Stop condition
   double one_pix = (1. / (1852 * 60)) / GetVP().view_scale_ppm;
   double d2 =
       pow(m_run_lat - m_target_lat, 2) + pow(m_run_lon - m_target_lon, 2);
+  d2 = pow(d2, 0.5);
 
   if (d2 < one_pix) {
     SetViewPoint(m_target_lat, m_target_lon);  // Embeds a refresh
@@ -3464,16 +3478,20 @@ void ChartCanvas::DoTimedMovementVP() {
   //   return;
   // }
 
-  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / 5;
-  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / 5;
+  double new_lat = GetVP().clat + (m_target_lat - m_start_lat) / m_timedVP_step;
+  double new_lon = GetVP().clon + (m_target_lon - m_start_lon) / m_timedVP_step;
 
   m_run_lat = new_lat;
   m_run_lon = new_lon;
 
+  // printf(" Timed\n");
   SetViewPoint(new_lat, new_lon);  // Embeds a refresh
 }
 
-void ChartCanvas::StopMovementVP() { m_timed_move_vp_active = false; }
+void ChartCanvas::StopMovementVP() {
+  // printf("Stop\n");
+  m_timed_move_vp_active = false;
+}
 
 void ChartCanvas::MovementVPTimerEvent(wxTimerEvent &) { DoTimedMovementVP(); }
 
@@ -10037,9 +10055,16 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
   markPoint->m_bRPIsBeingEdited = false;
 
   wxString title_base = _("Waypoint Properties");
-  if (!markPoint->m_bIsInRoute) title_base = _("Mark Properties");
+  if (markPoint->m_bIsInRoute) {
+    RoutePointNameValidator *pRPNameValidator =
+        new RoutePointNameValidator(markPoint);
+    g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
+  } else {
+    title_base = _("Mark Properties");
+    g_pMarkInfoDialog->SetNameValidator(nullptr);
+  }
 
-  g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint *>{markPoint});
+  g_pMarkInfoDialog->SetRoutePoint(markPoint);
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"), title_base, _("Layer"),
@@ -13573,7 +13598,7 @@ void ChartCanvas::AddTileOverlayIndexToNoShow(int index) {
 
 void ChartCanvas::HandlePianoClick(
     int selected_index, const std::vector<int> &selected_dbIndex_array) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!m_pCurrentStack) return;
   if (!ChartData) return;
@@ -13714,7 +13739,7 @@ void ChartCanvas::HandlePianoClick(
 void ChartCanvas::HandlePianoRClick(
     int x, int y, int selected_index,
     const std::vector<int> &selected_dbIndex_array) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
 
@@ -13727,7 +13752,7 @@ void ChartCanvas::HandlePianoRClick(
 void ChartCanvas::HandlePianoRollover(
     int selected_index, const std::vector<int> &selected_dbIndex_array,
     int n_charts, int scale) {
-  if (g_boptionsactive)
+  if (g_options && g_options->IsShown())
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
   if (!ChartData) return;

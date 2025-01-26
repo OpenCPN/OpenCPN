@@ -1,5 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -15,17 +15,26 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
+#include <wx/dialog.h>
+#include <wx/sizer.h>
+
+#include "dialog_base.h"
 
 /**
- * \file
- * Hooks into gui available in model.
+ * Base dialog constructor implements the layout with vertical sizer.
  */
-
-#include <wx/window.h>
-
-static const char* const kTopLevelWindowName = "MainWindow";
-
-/** Return the top level window a k a gFrame. */
-wxWindow* GetTopWindow();
-void PropagateResize(wxWindow* window);
+BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
+    : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
+               style) {
+  m_layout = new wxBoxSizer(wxVERTICAL);
+  m_content = new wxBoxSizer(wxVERTICAL);
+#if wxCHECK_VERSION(3, 1, 2)
+  auto flags = wxSizerFlags().Border(wxALL, FromDIP(kDialogPadding));
+#else
+  auto flags = wxSizerFlags().Border();
+#endif
+  m_layout->Add(m_content, flags);
+  SetSizer(m_layout);
+}

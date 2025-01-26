@@ -183,7 +183,6 @@ extern std::vector<Track*> g_TrackList;
 extern PlugInManager* g_pi_manager;
 extern s52plib* ps52plib;
 extern wxString ChartListFileName;
-extern bool g_boptionsactive;
 extern options* g_options;
 extern ColorScheme global_color_scheme;
 extern wxArrayString g_locale_catalog_array;
@@ -1606,6 +1605,7 @@ void PlugInManager::ClosePlugInPanel(const PlugInContainer* pic,
       pic->m_pplugin->OnCloseToolboxPanel(0, ok_apply_cancel);
       auto loader = PluginLoader::getInstance();
       loader->SetToolboxPanel(pic->m_common_name, false);
+      loader->SetSetupOptions(pic->m_common_name, false);
     }
   }
 }
