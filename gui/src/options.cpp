@@ -5944,6 +5944,7 @@ void options::SetInitialSettings(void) {
 
   m_returnChanges = 0;  // reset the flags
   m_bfontChanged = false;
+  m_font_element_array.Clear();
 
   b_oldhaveWMM = b_haveWMM;
   auto loader = PluginLoader::getInstance();
@@ -6808,7 +6809,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if ((m_returnChanges & FONT_CHANGED) ||
       (m_returnChanges & NEED_NEW_OPTIONS)) {
     gFrame->PrepareOptionsClose(this, m_returnChanges);
-    gFrame->ScheduleReconfigAndSettingsReload(true, true);
+    if (!(m_returnChanges & FONT_CHANGED_SAFE))
+      gFrame->ScheduleReconfigAndSettingsReload(true, true);
   } else {
     //  If we had a config change,
     //  then schedule a re-entry to the settings dialog
@@ -6890,7 +6892,13 @@ void options::ApplyChanges(wxCommandEvent& event) {
       gFrame->GetPrimaryCanvas()->GetglCanvas()->ResetGridFont();
     }
 #endif
+
     m_returnChanges |= FONT_CHANGED;
+
+    // If the font element changed was not "Dialog", then we don't need a full
+    // reload
+    if (m_font_element_array.Index("Dialog") == wxNOT_FOUND)
+      m_returnChanges |= FONT_CHANGED_SAFE;
   }
 
   // Handle Chart Tab
@@ -7463,6 +7471,11 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   if ((m_returnChanges & CONFIG_CHANGED))
     gFrame->ScheduleReconfigAndSettingsReload(false, false);
 
+  // Special case for "Dialog" font edit
+  if ((m_returnChanges & FONT_CHANGED) &&
+      !(m_returnChanges & FONT_CHANGED_SAFE))
+    gFrame->ScheduleDeleteSettingsDialog();
+
   Finish();
   Hide();
 }
@@ -7940,6 +7953,7 @@ void options::OnClose(wxCloseEvent& event) {
 
 void options::OnFontChoice(wxCommandEvent& event) {
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+  m_font_element_array.Add(sel_text_element);
 
   wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
@@ -7956,6 +7970,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
 #endif
 
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+  m_font_element_array.Add(sel_text_element);
   wxFontData font_data;
 
   wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
@@ -8038,6 +8053,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
 #if defined(__WXGTK__) || defined(__WXQT__)
 void options::OnChooseFontColor(wxCommandEvent& event) {
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+  m_font_element_array.Add(sel_text_element);
 
   wxColourData colour_data;
 

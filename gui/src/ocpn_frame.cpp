@@ -2516,6 +2516,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_SETTINGS_DELETE: {
+      delete g_options;
+      g_options = nullptr;
+      break;
+    }
+
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
       /// LoadS57();
@@ -2797,6 +2803,12 @@ bool MyFrame::SetGlobalToolbarViz(bool viz) {
   }
 
   return viz_now;
+}
+
+void MyFrame::ScheduleDeleteSettingsDialog() {
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(ID_SETTINGS_DELETE);
+  GetEventHandler()->AddPendingEvent(evt);
 }
 
 void MyFrame::ScheduleSettingsDialog() {

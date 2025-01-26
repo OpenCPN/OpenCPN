@@ -64,6 +64,7 @@ enum {
   ID_TBSTATBOX,
   ID_MASTERTOGGLE,
   ID_SETTINGS_NEW,
+  ID_SETTINGS_DELETE,
 
   ID_PLUGIN_BASE  // This MUST be the last item in the enum
 };

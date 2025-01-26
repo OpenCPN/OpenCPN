@@ -334,6 +334,7 @@ public:
   void UpdateCanvasConfigDescriptors();
   void ScheduleSettingsDialog();
   void ScheduleSettingsDialogNew();
+  void ScheduleDeleteSettingsDialog();
   void ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog);
   static void RebuildChartDatabase();
   void PositionIENCToolbar();
