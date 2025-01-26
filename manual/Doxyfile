@@ -910,6 +910,7 @@ WARN_LOGFILE           =
 
 INPUT    = ../model/src ../model/include/model  ../gui/src ../gui/include/gui
 INPUT    +=  ../s57 ../include
+INPUT    += ../libs/gui/include
 INPUT    += ../libs/observable/include ../libs/observable/src ../libs/observable
 INPUT    += ../plugins/grib_pi/src  ../plugins/grib_pi/include
 INPUT    += ../plugins/chartdldr_pi/src  ../plugins/chartdldr_pi/include
