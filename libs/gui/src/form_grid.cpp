@@ -22,7 +22,7 @@
 
 FormGrid::FormGrid(wxWindow* parent)
     : wxFlexGridSizer(2, GUI::GetSpacing(parent, 1),
-                      GUI::GetSpacing(parent, 1)) {
+                      GUI::GetSpacing(parent, 2)) {
   AddGrowableCol(0, 0);
-  AddGrowableCol(1, 1);
+  AddGrowableCol(1, 0);
 }

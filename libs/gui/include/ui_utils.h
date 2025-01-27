@@ -16,11 +16,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef UI_UTILS_H
+#define UI_UTILS_H
 
 /**
  * \file
  * GUI library utils and events.
  */
+#include <set>
 #include <wx/window.h>
 #include <wx/scrolwin.h>
 #include <wx/event.h>
@@ -40,6 +43,30 @@ enum class Breakpoint : int {
   kMedium = 767,      // medium
   kLarge = 1024,      // large
   kExtraLarge = 1440  // extra large
+};
+
+/**
+ * Keeps a set of keys.
+ */
+class KeySet {
+public:
+  // Add key to set.
+  void addKey(int key);
+
+  // Remove key from set.
+  void delKey(int key);
+
+  // Check if key exists.
+  bool hasKey(int key) const;
+
+  // Generic check if key exists.
+  template <typename T>
+  bool hasKey(T key) const {
+    return hasKey(static_cast<int>(key));
+  }
+
+private:
+  std::set<int> m_keys;
 };
 
 /**
@@ -70,3 +97,5 @@ void LayoutResizeEvent(wxWindow* ctx);
  */
 Breakpoint GetScreenSize(wxRect* rect);
 }  // namespace GUI
+
+#endif  // UI_UTILS_H

@@ -34,8 +34,9 @@
 #include "model/navutil_base.h"
 #include "navutil.h"
 #include "ocpn_plugin.h"
+#include "print_dialog.h"
 #include "routemanagerdialog.h"
-#include "routeprintout.h"
+#include "route_printout.h"
 #include "RoutePropDlgImpl.h"
 #include "tcmgr.h"
 
@@ -1056,12 +1057,18 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
 }
 
 void RoutePropDlgImpl::PrintOnButtonClick(wxCommandEvent& event) {
-  RoutePrintSelection* dlg = new RoutePrintSelection(this, m_pRoute);
-  DimeControl(dlg);
-  dlg->ShowWindowModalThenDo([this, dlg](int retcode) {
-    if (retcode == wxID_OK) {
-    }
-  });
+  auto& dlg = RoutePrintDialog::GetInstance(m_parent);
+  int result = dlg.ShowModal();
+
+  if (result == wxID_OK) {
+    RoutePrintout printout(m_pRoute, dlg.GetSelected());
+    auto& printer = PrintDialog::GetInstance();
+    printer.Initialize(wxPORTRAIT);
+    printer.EnablePageNumbers(true);
+    printer.Print(m_parent, &printout);
+  }
+
+  event.Skip();
 }
 
 void RoutePropDlgImpl::ExtendOnButtonClick(wxCommandEvent& event) {
