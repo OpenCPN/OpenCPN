@@ -40,9 +40,10 @@
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
+#include "print_dialog.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
-#include "trackprintout.h"
+#include "track_printout.h"
 #include "TrackPropDlg.h"
 
 #ifdef __ANDROID__
@@ -1411,13 +1412,18 @@ void TrackPropDlg::OnTrackPropCopyTxtClick(wxCommandEvent& event) {
 }
 
 void TrackPropDlg::OnPrintBtnClick(wxCommandEvent& event) {
-  TrackPrintSelection* dlg =
-      new TrackPrintSelection(this, m_pTrack, m_lcPoints);
-  DimeControl(dlg);
-  dlg->ShowWindowModalThenDo([this, dlg](int retcode) {
-    if (retcode == wxID_OK) {
-    }
-  });
+  static std::set<int> s_options;  // keep selected options
+  TrackPrintDialog dlg(this, s_options);
+  int result = dlg.ShowModal();
+
+  if (result == wxID_OK) {
+    dlg.GetSelected(s_options);
+    TrackPrintout printout(m_pTrack, m_lcPoints, s_options);
+    auto& printer = PrintDialog::GetInstance();
+    printer.Initialize(wxPORTRAIT);
+    printer.EnablePageNumbers(true);
+    printer.Print(this, &printout);
+  }
 }
 
 void TrackPropDlg::OnTrackPropRightClick(wxListEvent& event) {

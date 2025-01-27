@@ -27,8 +27,6 @@ class ChartPrintout : public BasePrintout {
 public:
   ChartPrintout() : BasePrintout(_("Chart Print").ToStdString()) {};
 
-  bool OnPrintPage(int page);
-
   /**
    * In OperGL mode, make the bitmap capture of the screen before the print
    * method starts as to be sure the "Abort..." dialog does not appear on the
@@ -39,7 +37,7 @@ public:
 private:
   wxBitmap m_gl_bmp;
 
-  void DrawPage(wxDC *dc, int page);
+  void DrawPage(wxDC* dc, int page) override;
 };
 
 #endif  // PRINTOUT_CHART_H
