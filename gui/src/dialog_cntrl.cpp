@@ -25,9 +25,11 @@ TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
                      const wxPoint& pos, const wxSize& size, long style)
     : wxTextCtrl(new wxPanel(parent), id, value, pos, size, style) {
   wxPanel* panel = dynamic_cast<wxPanel*>(GetParent());
-  wxBoxSizer* nameSizer = new wxBoxSizer(wxVERTICAL);
-  nameSizer->Add(this, 0, wxEXPAND);
-  panel->SetSizer(nameSizer);
+  m_sizer = new wxBoxSizer(wxVERTICAL);
+  m_sizer->Add(this, 0, wxEXPAND);
+  m_error_text =
+      new wxStaticText(panel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize);
+  panel->SetSizer(m_sizer);
 }
 
 int TextField::GetSizerIndex(wxSizer* sizer) {
@@ -43,40 +45,19 @@ int TextField::GetSizerIndex(wxSizer* sizer) {
 }
 
 void TextField::onError(const wxString& msg = wxEmptyString) {
-  if (m_errorText) {
-    if (msg.IsEmpty()) {
-      wxSizer* sizer = GetParent()->GetSizer();
-      sizer->Detach(m_errorText.get());
-      m_errorText.reset();
-      PropagateResize(this);
-    } else {
-      m_errorText->ClearBackground();
-      m_errorText->SetLabel(msg);
-      m_errorText->Refresh();
-    }
+  bool has_error = m_error_text->GetLabel().Len() > 0;
+  m_error_text->SetLabel(msg);
+
+  if (msg.IsEmpty()) {
+    m_sizer->Detach(m_error_text);
+    PropagateResize(this);
+  } else if (has_error) {
+    m_error_text->ClearBackground();
+    m_error_text->Refresh();
   } else {
-    if (msg.IsEmpty()) {
-      SetBackgroundColour(*wxWHITE);
-      Refresh();
-
-    } else {
-      wxSizer* sizer = GetParent()->GetSizer();
-      int index = GetSizerIndex(sizer);  // field position in sizer
-
-      if (sizer && index >= 0) {
-        m_errorText.reset(
-            new wxStaticText(GetParent(), wxID_ANY, msg, wxDefaultPosition));
-        m_errorText->SetForegroundColour(*wxRED);
-
-        sizer->Insert(index + 1, m_errorText.get(), 0, wxALL | wxEXPAND, 4);
-        PropagateResize(this);
-      } else {
-        wxMessageDialog popup(this, msg, "Error", wxOK | wxICON_ERROR);
-        popup.ShowModal();
-        SetBackgroundColour(*wxRED);
-        Refresh();
-      }
-    }
+    m_error_text->SetForegroundColour(*wxRED);
+    m_sizer->Insert(1, m_error_text, 0, wxALL | wxEXPAND, 4);
+    PropagateResize(this);
   }
 }
 

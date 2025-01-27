@@ -25,8 +25,6 @@
 #ifndef DIALOG_CNTRL_H
 #define DIALOG_CNTRL_H
 
-#include <memory>
-
 #include <wx/wx.h>
 #include <wx/string.h>
 #include <wx/textctrl.h>
@@ -60,7 +58,8 @@ public:
   void OnTextChanged(wxCommandEvent& event);
 
 private:
-  std::unique_ptr<wxStaticText> m_errorText;
+  wxSizer* m_sizer;
+  wxStaticText* m_error_text;
 };
 
 /**
