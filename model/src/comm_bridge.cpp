@@ -187,6 +187,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     gCog = NAN;
     gRmcDate.Empty();
     gRmcTime.Empty();
+    active_priority_position.recent_active_time = -1;
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -198,6 +199,8 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   if (m_watchdogs.velocity_watchdog <= 0) {
     gSog = NAN;
     gCog = NAN;
+    active_priority_velocity.recent_active_time = -1;
+
     if (g_nNMEADebug && (m_watchdogs.velocity_watchdog == 0))
       wxLogMessage(_T("   ***Velocity Watchdog timeout..."));
     if (m_watchdogs.velocity_watchdog % 5 == 0) {
@@ -216,6 +219,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   m_watchdogs.heading_watchdog--;
   if (m_watchdogs.heading_watchdog <= 0) {
     gHdt = NAN;
+    active_priority_heading.recent_active_time = -1;
     if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
       wxLogMessage(_T("   ***HDT Watchdog timeout..."));
 
@@ -228,6 +232,8 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   m_watchdogs.variation_watchdog--;
   if (m_watchdogs.variation_watchdog <= 0) {
     g_bVAR_Rx = false;
+    active_priority_variation.recent_active_time = -1;
+
     if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
       wxLogMessage(_T("   ***VAR Watchdog timeout..."));
 
@@ -242,6 +248,8 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     g_bSatValid = false;
     g_SatsInView = 0;
     g_priSats = 99;
+    active_priority_satellites.recent_active_time = -1;
+
     if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0))
       wxLogMessage(_T("   ***SAT Watchdog timeout..."));
 
@@ -494,6 +502,7 @@ void CommBridge::PresetPriorityContainer(
   pc.active_source = source;
   pc.active_identifier = this_identifier;
   pc.active_source_address = source_address;
+  pc.recent_active_time = -1;
 }
 
 void CommBridge::PresetPriorityContainers() {
@@ -1340,6 +1349,8 @@ bool CommBridge::EvalPriority(
   active_priority.active_source = source;
   active_priority.active_identifier = this_identifier;
   active_priority.active_source_address = source_address;
+  wxDateTime now = wxDateTime::Now();
+  active_priority.recent_active_time = now.GetTicks();
   if (debug_priority)
     printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
 
