@@ -16,11 +16,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef UI_UTILS_H
+#define UI_UTILS_H
 
 /**
  * \file
  * GUI library utils and events.
  */
+#include <set>
 #include <wx/window.h>
 #include <wx/scrolwin.h>
 #include <wx/event.h>
@@ -49,6 +52,16 @@ enum class Breakpoint : int {
 static const int kSpacing = 6;
 
 /**
+ * Check if a key exists in a set.
+ * @param set Set of keys.
+ * @param key An enum class key (to be cast to int).
+ */
+template <typename T>
+bool HasKey(const std::set<int>& set, T key) {
+  return set.find(static_cast<int>(key)) != set.end();
+}
+
+/**
  * Multiply default spacing with a factor,
  * and calculate device independent pixels.
  * @param ctx Window context.
@@ -70,3 +83,5 @@ void LayoutResizeEvent(wxWindow* ctx);
  */
 Breakpoint GetScreenSize(wxRect* rect);
 }  // namespace GUI
+
+#endif  // UI_UTILS_H

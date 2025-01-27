@@ -1,4 +1,3 @@
-
 /***************************************************************************
  *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
@@ -16,13 +15,40 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
-#include "form_grid.h"
-#include "ui_utils.h"
+ ***************************************************************************
+ */
+#ifndef BUTTON_SWITCH_H
+#define BUTTON_SWITCH_H
 
-FormGrid::FormGrid(wxWindow* parent)
-    : wxFlexGridSizer(2, GUI::GetSpacing(parent, 1),
-                      GUI::GetSpacing(parent, 2)) {
-  AddGrowableCol(0, 0);
-  AddGrowableCol(1, 0);
-}
+#include <wx/wx.h>
+#include <wx/tglbtn.h>
+#include <wx/graphics.h>
+
+/**
+ * On/Off switch button.
+ */
+class SwitchButton : public wxControl {
+public:
+  /**
+   * Toggle key on/off.
+   * @param parent Parent window.
+   * @param key Key identifier.
+   * @param value Initial state.
+   */
+  SwitchButton(wxWindow* parent, int key, bool value = true);
+
+  // Get the key identifier.
+  int GetKey();
+
+  // Return active flag.
+  bool IsActive();
+
+private:
+  int m_key;
+  bool m_flag;
+
+  void OnToggle(wxMouseEvent& event);
+  void OnPaint(wxPaintEvent& event);
+};
+
+#endif  // BUTTON_SWITCH_H

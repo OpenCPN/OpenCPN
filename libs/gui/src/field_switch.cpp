@@ -16,13 +16,17 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
+#include "field_switch.h"
 #include "form_grid.h"
-#include "ui_utils.h"
 
-FormGrid::FormGrid(wxWindow* parent)
-    : wxFlexGridSizer(2, GUI::GetSpacing(parent, 1),
-                      GUI::GetSpacing(parent, 2)) {
-  AddGrowableCol(0, 0);
-  AddGrowableCol(1, 0);
+SwitchField::SwitchField(wxWindow* parent, int key, const std::string& label,
+                         bool value)
+    : SwitchButton(parent, key, value) {
+  auto* grid = dynamic_cast<FormGrid*>(parent->GetSizer());
+  assert(grid && "SwitchField: Invalid parent sizer");
+  wxStaticText* text_label = new wxStaticText(parent, wxID_ANY, label);
+  grid->Add(text_label, wxSizerFlags(0).Align(wxALIGN_CENTER_VERTICAL));
+  grid->Add(this);
 }

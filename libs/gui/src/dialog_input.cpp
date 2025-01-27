@@ -1,4 +1,3 @@
-
 /***************************************************************************
  *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
@@ -16,13 +15,34 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
-#include "form_grid.h"
-#include "ui_utils.h"
+ ***************************************************************************
+ */
+#include <wx/panel.h>
 
-FormGrid::FormGrid(wxWindow* parent)
-    : wxFlexGridSizer(2, GUI::GetSpacing(parent, 1),
-                      GUI::GetSpacing(parent, 2)) {
-  AddGrowableCol(0, 0);
-  AddGrowableCol(1, 0);
+#include "dialog_input.h"
+#include "form_grid.h"
+
+InputDialog::InputDialog(wxWindow* parent, const std::string& title,
+                         const std::string& action)
+    : AlertDialog(parent, title, action) {
+  FormGrid* sizer = new FormGrid(this);
+  sizer->SetHGap(GUI::GetSpacing(this, 4));
+  m_grid = new wxPanel(this);
+  m_grid->SetSizer(sizer);
+  m_content->Add(m_grid);
+}
+
+SwitchField* InputDialog::AddSelection(int key, const std::string& label,
+                                       bool value) {
+  return new SwitchField(m_grid, key, label, value);
+}
+
+void InputDialog::GetSelected(std::set<int>& options) {
+  wxWindowList children = m_grid->GetChildren();
+  options.clear();
+
+  for (auto& child : m_grid->GetChildren()) {
+    auto* select = dynamic_cast<SwitchField*>(child);
+    if (select && select->IsActive()) options.insert(select->GetKey());
+  }
 }
