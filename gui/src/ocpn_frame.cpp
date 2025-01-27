@@ -730,11 +730,9 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
-  log_callbacks.log_is_active = []() {
-    return NMEALogWindow::GetInstance().IsActive();
-  };
+  log_callbacks.log_is_active = []() { return bool(GetNmeaLog()); };
   log_callbacks.log_message = [](Logline ll) {
-    NMEALogWindow::GetInstance().Add(ll);
+    if (auto log = GetNmeaLog()) log->Add(ll);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 

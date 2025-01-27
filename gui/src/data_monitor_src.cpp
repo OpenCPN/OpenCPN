@@ -19,14 +19,8 @@
 
 /**
  * \file
- * Provide a data stream of input messages for the Data Monitor. The
- * messages are intercepted before the multiplexer and have thus no state
- * as defined by the mux. All messages received, whether they are know to
- * the mux or not, are added to the stream
+ * Implement data_monitor_src.h
  */
-
-#ifndef DATA_MONITOR_SRC__
-#define DATA_MONITOR_SRC__
 
 #include <functional>
 #include <memory>
@@ -42,34 +36,40 @@
 #include "observable.h"
 #include "tty_scroll.h"
 
-/**
- * Create a stream of input messages.  The
- * messages are intercepted before the multiplexer and have thus no state
- * as defined by the mux. All messages received, whether they are know to
- * the mux or not, are added to the stream
- * */
-class DataMonitorSrc : public wxEvtHandler {
-  /** Callback function used to forward data to caller. */
-  using SinkFunc = std::function<void(const std::shared_ptr<const NavMsg>&)>;
+#include "data_monitor_src.h"
 
-public:
-  /**
-   *  Create instance which listens and forwards messages using the sink_func
-   *  callback function.
-   */
-  DataMonitorSrc(SinkFunc sink_func);
+DataMonitorSrc::DataMonitorSrc(SinkFunc sink_func) : m_sink_func(sink_func) {
+  ObsListener listener;
+  m_listeners["AIVDM"] = std::move(listener);
+  m_listeners["AIVDM"].Init(Nmea0183Msg("AIVDM"), [&](ObservedEvt& ev) {
+    const std::shared_ptr<const Nmea0183Msg> ptr =
+        UnpackEvtPointer<Nmea0183Msg>(ev);
+    m_sink_func(ptr);
+  });
+  auto messages = NavMsgBus::GetInstance().GetActiveMessages();
+  new_msg_lstnr.Init(NavMsgBus::GetInstance().new_msg_event,
+                     [&](ObservedEvt&) { OnNewMessage(); });
+}
 
-private:
-  SinkFunc m_sink_func;
-  std::unordered_map<std::string, ObsListener> m_listeners;
-  ObsListener new_msg_lstnr;
-  std::string m_last_payload;  // Horrible hack (tm)
+void DataMonitorSrc::OnNewMessage() {
+  auto messages = NavMsgBus::GetInstance().GetActiveMessages();
+  for (const auto& msg : messages) {
+    auto found = m_listeners.find(msg);
+    if (found == m_listeners.end()) {
+      ObsListener listener;
+      std::string type(msg);
+      ocpn::replace(type, "nmea0183::n0183-", "");
+      m_listeners[msg] = std::move(listener);
+      m_listeners[msg].Init(Nmea0183Msg(type),
+                            [&](ObservedEvt& ev) { OnMessage(ev); });
+    }
+  };
+}
 
-  /** Handle new message type detected. */
-  void OnNewMessage();
-
-  /** Handle incoming message. */
-  void OnMessage(ObservedEvt& ev);
-};
-
-#endif  //  DATA_MONITOR_SRC__
+void DataMonitorSrc::OnMessage(ObservedEvt& ev) {
+  auto ptr = UnpackEvtPointer<Nmea0183Msg>(ev);
+  if (ptr && ptr->payload != m_last_payload) {
+    m_last_payload = ptr->payload;
+    m_sink_func(ptr);
+  }
+}
