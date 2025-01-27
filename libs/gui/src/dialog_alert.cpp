@@ -30,22 +30,39 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
       m_action(action),
       m_listener(nullptr) {
   DialogFooter* footer = new DialogFooter();
-  wxButton* ok_button = new wxButton(this, wxID_OK, m_action);
-  wxButton* cancel_button = new wxButton(this, wxID_CANCEL, _("Cancel"));
-  footer->AddButton(cancel_button);
-  footer->AddButton(ok_button);
-  footer->Realize();
 
-  Bind(wxEVT_BUTTON, &AlertDialog::OnConfirm, this, wxID_OK);
-  Bind(wxEVT_BUTTON, &AlertDialog::OnCancel, this, wxID_CANCEL);
+  if (action.empty()) {
+    wxButton* close_button = new wxButton(this, wxID_CLOSE, _("Close"));
+    close_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this, wxID_CLOSE);
+    footer->AddButton(close_button);
+    footer->Realize();
+  } else {
+    wxButton* ok_button = new wxButton(this, wxID_OK, m_action);
+    wxButton* cancel_button = new wxButton(this, wxID_CANCEL, _("Cancel"));
+    ok_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
+    cancel_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
+    footer->AddButton(cancel_button);
+    footer->AddButton(ok_button);
+    footer->Realize();
+  }
+
   auto spacing = GUI::GetSpacing(this, kDialogPadding);
   m_layout->Add(footer, wxSizerFlags().Border(wxALL, spacing).Expand());
+
+  Bind(wxEVT_TIMER, &AlertDialog::OnTimer, this);
 }
 
 AlertDialog::~AlertDialog() {}
 
 void AlertDialog::SetListener(IAlertConfirmation* listener) {
   m_listener = listener;
+}
+
+void AlertDialog::SetTimer(int seconds) {
+  m_timer.SetOwner(this, -1);
+  if (seconds > 0) {
+    m_timer.Start(seconds * 1000, wxTIMER_ONE_SHOT);
+  }
 }
 
 void AlertDialog::SetMessage(const std::string& msg) {
@@ -60,22 +77,25 @@ int AlertDialog::GetConfirmation(wxWindow* parent, const std::string& title,
   return dialog->Show();
 }
 
-void AlertDialog::OnCancel(wxCommandEvent& event) {
-  SetReturnCode(wxID_NO);
+int AlertDialog::ShowModal() {
+  Fit();
+  Center(wxBOTH | wxCENTER_FRAME);
+  return wxDialog::ShowModal();
+}
+
+void AlertDialog::OnClick(wxCommandEvent& event) {
+  SetReturnCode(event.GetId());
   if (m_listener != nullptr) {
-    m_listener->OnConfirm(false);
-    this->Destroy();
+    m_listener->OnConfirm(event.GetId() == wxID_OK);
   } else {
-    EndModal(wxID_NO);
+    EndModal(event.GetId());
   }
 }
 
-void AlertDialog::OnConfirm(wxCommandEvent& event) {
-  SetReturnCode(wxID_YES);
-  if (m_listener != nullptr) {
-    m_listener->OnConfirm(true);
-    this->Destroy();
-  } else {
-    EndModal(wxID_YES);
-  }
+void AlertDialog::OnTimer(wxTimerEvent& evt) {
+  SetReturnCode(wxID_CLOSE);
+  if (IsModal())
+    EndModal(wxID_CLOSE);
+  else
+    Hide();
 }

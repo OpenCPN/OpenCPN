@@ -653,8 +653,8 @@ bool RouteGui::OnDelete(wxWindow *parent, const int count) {
     msg = _("Are you sure you want to delete this route?").ToStdString();
   }
 
-  AlertDialog *dialog = new AlertDialog(parent, title, action);
-  dialog->SetMessage(msg);
-  int result = dialog->ShowModal();
-  return result == wxID_YES;
+  AlertDialog dialog(parent, title, action);
+  dialog.SetMessage(msg);
+  int result = dialog.ShowModal();
+  return result == wxID_OK;
 }

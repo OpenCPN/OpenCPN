@@ -21,6 +21,7 @@
 #define DIALOG_ALERT_H
 
 #include <string>
+#include <wx/timer.h>
 
 #include "dialog_base.h"
 #include "dialog_footer.h"
@@ -44,12 +45,9 @@ public:
  * listener.
  */
 class AlertDialog : public BaseDialog {
-private:
-  std::string m_action;  // confirmation button label
-
 public:
   AlertDialog(wxWindow* parent, const std::string& title,
-              const std::string& action);
+              const std::string& action = "");
   ~AlertDialog();
 
   /**
@@ -59,10 +57,22 @@ public:
   void SetListener(IAlertConfirmation* listener);
 
   /**
+   * Activate timer.
+   * @param seconds Timer in seconds.
+   */
+  void SetTimer(int seconds);
+
+  /**
    * Set alert message.
    * @param msg Alert message.
    */
   void SetMessage(const std::string& msg);
+
+  /**
+   * Show dialog and return response.
+   * @return OK/Cancel response.
+   */
+  int ShowModal() override;
 
   /**
    * Helper that returns the dialog response.
@@ -72,9 +82,11 @@ public:
                              const std::string& action, const std::string& msg);
 
 private:
+  std::string m_action;
+  wxTimer m_timer;
   IAlertConfirmation* m_listener;
-  void OnCancel(wxCommandEvent& event);
-  void OnConfirm(wxCommandEvent& event);
+  void OnClick(wxCommandEvent& event);
+  void OnTimer(wxTimerEvent& evt);
 };
 
 #endif  // DIALOG_ALERT_H
