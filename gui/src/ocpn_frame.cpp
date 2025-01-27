@@ -83,6 +83,7 @@
 #include "model/sys_events.h"
 #include "model/track.h"
 
+#include "dialog_alert.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "ais.h"
@@ -457,8 +458,8 @@ void BuildiENCToolbar(bool bnew) {
   }
 }
 
-int ShowNavWarning() {
-  wxString msg0(
+bool ShowNavWarning() {
+  wxString msg(
       _("\n\
 OpenCPN is distributed in the hope that it will be useful, \
 but WITHOUT ANY WARRANTY; without even the implied \
@@ -468,34 +469,28 @@ See the GNU General Public License for more details.\n\n\
 OpenCPN must only be used in conjunction with approved \
 paper charts and traditional methods of navigation.\n\n\
 DO NOT rely upon OpenCPN for safety of life or property.\n\n\
-Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
+Please click \"Agree\" and proceed, or \"Cancel\" to quit.\n"));
 
   wxString vs = wxString::Format(wxT(" .. Version %s"), VERSION_FULL);
 
 #ifdef __ANDROID__
-  androidShowDisclaimer(_("OpenCPN for Android") + vs, msg0);
+  androidShowDisclaimer(_("OpenCPN for Android") + vs, msg);
   return true;
 #else
-  wxColor fg = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
-  wxString msg1;
-  msg1.Printf(_T("<html><body><font color=#%02x%02x%02x><hr />"), fg.Red(),
-              fg.Green(), fg.Blue());
+  msg.Replace("\n", "<br>");
 
-  for (unsigned int i = 0; i < msg0.Length(); i++) {
-    if (msg0[i] == '\n')
-      msg1 += _T("<br>");
-    else
-      msg1 += msg0[i];
-  }
+  std::stringstream html;
+  html << "<html><body><p>";
+  html << msg.ToStdString();
+  html << "</p></body></html>";
 
-  msg1 << _T("<hr /></font></body></html>");
-
-  OCPN_TimedHTMLMessageDialog infoDlg(
-      gFrame, msg1, _("Welcome to OpenCPN") + vs, -1, wxCANCEL | wxOK);
-
-  infoDlg.ShowModal();
-
-  return (infoDlg.GetReturnCode());
+  std::string title = _("Welcome to OpenCPN").ToStdString();
+  std::string action = _("Agree").ToStdString();
+  AlertDialog *info_dlg = new AlertDialog(gFrame, title, action);
+  info_dlg->SetInitialSize();
+  info_dlg->AddHtmlContent(html);
+  int agreed = info_dlg->ShowModal();
+  return agreed == wxID_YES;
 #endif
 }
 

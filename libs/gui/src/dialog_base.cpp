@@ -17,23 +17,69 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include <wx/display.h>
 #include <wx/dialog.h>
 #include <wx/sizer.h>
+#include <wx/string.h>
+#include <wx/html/htmlwin.h>
+#include <wx/stattext.h>
+#include <sstream>
 
 #include "dialog_base.h"
 
-/**
- * Base dialog constructor implements the layout with vertical sizer.
- */
 BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
                style) {
   m_layout = new wxBoxSizer(wxVERTICAL);
+  SetSizer(m_layout);
+
+  // Add content sizer to layout
   m_content = new wxBoxSizer(wxVERTICAL);
   m_layout->Add(m_content, wxSizerFlags().Border(
                                wxALL, GUI::GetSpacing(this, kDialogPadding)));
-  SetSizer(m_layout);
 
   // Handle layout resize event
   Bind(EVT_LAYOUT_RESIZE, [&](wxCommandEvent&) { Layout(); });
+}
+
+void BaseDialog::SetInitialSize() {
+  wxDisplay display(wxDisplay::GetFromWindow(this));
+  auto rect = display.GetGeometry();
+  int breakpoint = GUI::GetScreenSize(&rect);
+
+  wxSize size;
+  rect = display.GetClientArea();
+  switch (breakpoint) {
+    case BREAKPOINT_XS:
+      size = wxSize(rect.GetWidth(), -1);
+      break;
+    case BREAKPOINT_SM:
+    case BREAKPOINT_MD:
+      size = wxSize((rect.GetWidth() / 2), -1);
+      break;
+    default:
+      size = wxSize((rect.GetWidth() / 3), -1);
+      break;
+  }
+
+  wxDialog::SetInitialSize(size);
+}
+
+int BaseDialog::ShowModal() {
+  Fit();
+  Center(wxBOTH | wxCENTER_FRAME);
+
+  return wxDialog::ShowModal();
+}
+
+void BaseDialog::AddHtmlContent(const std::stringstream& html) {
+  auto* html_window =
+      new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, GetClientSize());
+  bool result = html_window->SetPage(html.str());
+  assert(result && "BaseDialog: HTML page not added");
+
+  auto size = html_window->GetVirtualSize();
+  html_window->SetMinSize(size);  // Fit() needs this size!
+  html_window->SetBackgroundColour(GetBackgroundColour());
+  m_content->Prepend(html_window, wxSizerFlags(1).Expand());
 }

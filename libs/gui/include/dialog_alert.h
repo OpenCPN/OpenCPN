@@ -65,12 +65,6 @@ public:
   void SetMessage(const std::string& msg);
 
   /**
-   * Show dialog and return response.
-   * @return YES/NO response.
-   */
-  int ShowModal() override;
-
-  /**
    * Helper that returns the dialog response.
    * @return YES/NO response.
    */

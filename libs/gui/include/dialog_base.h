@@ -21,16 +21,34 @@
 #define DIALOG_BASE_H
 
 #include <wx/dialog.h>
+#include <wx/string.h>
 
 #include "ui_utils.h"
 
 /**
- * OpenCPN standard dialog layout with content sizer.
+ * Dialog layout with content sizer.
  */
 class BaseDialog : public wxDialog {
 public:
   BaseDialog(wxWindow* parent, const std::string& title,
              long style = wxDEFAULT_DIALOG_STYLE);
+
+  /**
+   * Initialize by display geometry.
+   */
+  void SetInitialSize();
+
+  /**
+   * Show dialog and return response.
+   * @return YES/NO response.
+   */
+  int ShowModal() override;
+
+  /**
+   * Display HTML content.
+   * @param html HTML document.
+   */
+  void AddHtmlContent(const std::stringstream& html);
 
 protected:
   wxBoxSizer* m_layout;

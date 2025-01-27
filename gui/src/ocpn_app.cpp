@@ -680,7 +680,7 @@ ChartCanvas *g_focusCanvas;
 ChartCanvas *g_overlayCanvas;
 
 bool b_inCloseWindow;
-extern int ShowNavWarning();
+extern bool ShowNavWarning();
 bool g_disable_main_toolbar;
 bool g_btenhertz;
 
@@ -1887,7 +1887,7 @@ bool MyApp::OnInit() {
     // qDebug() << "Showing NavWarning";
     wxMilliSleep(500);
 
-    if (wxID_CANCEL == ShowNavWarning()) {
+    if (!ShowNavWarning()) {
       qDebug() << "Closing due to NavWarning Cancel";
       gFrame->Close();
       androidTerminate();
@@ -1905,7 +1905,7 @@ bool MyApp::OnInit() {
   //  or if the version string has changed at all
   //  We defer until here to allow for localization of the message
   if (!n_NavMessageShown || (vs != g_config_version_string)) {
-    if (wxID_CANCEL == ShowNavWarning()) return false;
+    if (!ShowNavWarning()) return false;
     n_NavMessageShown = 1;
     pConfig->Flush();
   }
