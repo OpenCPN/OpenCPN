@@ -27,6 +27,8 @@
 
 #include <wx/wx.h>
 #include <wx/string.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
 
@@ -39,15 +41,11 @@ public:
             const wxString& value = "", const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize, long style = 0);
 
-  int GetSizerIndex(wxSizer* sizer);
-
   /**
-   * Error handler shows an error with the text field.
-   * When the sizer position is found the error is shown
-   * under the text field, otherwise with a popup message.
+   * Shows an error below the text field.
    * @param msg Error message.
    */
-  void onError(const wxString& msg);
+  void OnError(const wxString& msg);
 
   void SetValidator(const wxValidator& validator = wxDefaultValidator) override;
 
