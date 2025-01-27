@@ -109,32 +109,6 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
-class OCPN_TimedHTMLMessageDialog : public wxDialog {
-public:
-  OCPN_TimedHTMLMessageDialog(wxWindow* parent, const wxString& message,
-                              const wxString& caption = wxMessageBoxCaptionStr,
-                              int tSeconds = -1, long style = wxOK | wxCENTRE,
-                              bool bFixedFont = false,
-                              const wxPoint& pos = wxDefaultPosition);
-
-  void OnYes(wxCommandEvent& event);
-  void OnNo(wxCommandEvent& event);
-  void OnCancel(wxCommandEvent& event);
-  void OnClose(wxCloseEvent& event);
-  void OnTimer(wxTimerEvent& evt);
-  void RecalculateSize(void);
-  void OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
-    wxLaunchDefaultBrowser(event.GetLinkInfo().GetHref());
-  }
-
-private:
-  int m_style;
-  wxTimer m_timer;
-  wxHtmlWindow* msgWindow;
-
-  DECLARE_EVENT_TABLE()
-};
-
 //----------------------------------------------------------------------------
 // Generic Auto Timed Window
 // Belongs to the creator, not deleted automatically on application close

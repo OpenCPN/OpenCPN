@@ -20,7 +20,9 @@
 #ifndef DIALOG_BASE_H
 #define DIALOG_BASE_H
 
+#include <wx/wx.h>
 #include <wx/dialog.h>
+#include <wx/html/htmlwin.h>
 #include <wx/string.h>
 
 #include "ui_utils.h"
@@ -37,12 +39,6 @@ public:
    * Initialize by display geometry.
    */
   void SetInitialSize();
-
-  /**
-   * Show dialog and return response.
-   * @return YES/NO response.
-   */
-  int ShowModal() override;
 
   /**
    * Display HTML content.
