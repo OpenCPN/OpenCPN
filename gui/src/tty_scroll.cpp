@@ -49,8 +49,10 @@ static const auto kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
 static const auto kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
 
 TtyScroll::TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter)
-    : wxScrolledWindow(parent), m_n_lines(n_lines), m_filter(filter) {
-  m_is_paused = false;
+    : wxScrolledWindow(parent),
+      m_n_lines(n_lines),
+      m_filter(filter),
+      m_is_paused(false) {
   wxClientDC dc(this);
   dc.GetTextExtent("Line Height", NULL, &m_line_height);
 
@@ -69,8 +71,7 @@ void TtyScroll::OnSize(wxSizeEvent& ev) {
 
 void TtyScroll::Add(struct Logline ll) {
   wxString filter = m_filter.GetValue();
-  if (!m_is_paused && (filter.IsEmpty() || ll.navmsg->to_string().find(
-                                               filter) != std::string::npos)) {
+  if (!m_is_paused) {
     while (m_lines.size() > m_n_lines - 1) m_lines.pop_front();
     m_lines.push_back(ll);
     Refresh(true);
@@ -83,22 +84,23 @@ void TtyScroll::OnDraw(wxDC& dc) {
   CalcUnscrolledPosition(rect_update.x, rect_update.y, &rect_update.x,
                          &rect_update.y);
 
-  size_t line_from = rect_update.y / m_line_height,
-         line_to = rect_update.GetBottom() / m_line_height;
-
+  size_t line_from = rect_update.y / m_line_height;
+  size_t line_to = rect_update.GetBottom() / m_line_height;
   if (line_to > m_n_lines - 1) line_to = m_n_lines - 1;
 
   wxCoord y = line_from * m_line_height;
   for (size_t line = line_from; line <= line_to; line++) {
     wxString ws;
+    auto l = m_lines[line];
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
     ws << wxDateTime::Now().FormatISOTime() << " ";
 #endif
-    auto l = m_lines[line];
     if (l.state.direction == NavmsgStatus::Direction::kOutput)
       ws << " " << kUtfRightArrow << " ";
     else if (l.state.direction == NavmsgStatus::Direction::kInput)
       ws << " " << kUtfLeftwardsArrowToBar << " ";
+    else if (l.state.direction == NavmsgStatus::Direction::kInternal)
+      ws << " " << kUtfLeftRightArrow << " ";
     else
       ws << " " << kUtfLeftArrow << " ";
     wxCoord y_phys;
