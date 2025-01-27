@@ -24,27 +24,16 @@
 TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
                      const wxPoint& pos, const wxSize& size, long style)
     : wxTextCtrl(new wxPanel(parent), id, value, pos, size, style) {
-  wxPanel* panel = dynamic_cast<wxPanel*>(GetParent());
   m_sizer = new wxBoxSizer(wxVERTICAL);
   m_sizer->Add(this, 0, wxEXPAND);
-  m_error_text =
-      new wxStaticText(panel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize);
+
+  auto* panel = dynamic_cast<wxPanel*>(GetParent());
+  assert(panel && "Textfield: Wrong parent type");
   panel->SetSizer(m_sizer);
+  m_error_text = new wxStaticText(panel, wxID_ANY, "");
 }
 
-int TextField::GetSizerIndex(wxSizer* sizer) {
-  if (sizer) {
-    for (size_t i = 0; i < sizer->GetItemCount(); ++i) {
-      wxSizerItem* item = sizer->GetItem(i);
-      if (item->GetWindow() == this) {
-        return static_cast<int>(i);
-      }
-    }
-  }
-  return wxNOT_FOUND;
-}
-
-void TextField::onError(const wxString& msg = wxEmptyString) {
+void TextField::OnError(const wxString& msg = "") {
   bool has_error = m_error_text->GetLabel().Len() > 0;
   m_error_text->SetLabel(msg);
 
@@ -63,22 +52,21 @@ void TextField::onError(const wxString& msg = wxEmptyString) {
 
 void TextField::SetValidator(const wxValidator& validator) {
   wxTextCtrl::SetValidator(validator);
-  onError("");
+  OnError("");
 }
 
 void TextField::OnTextChanged(wxCommandEvent& event) {
-  TextField* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
+  auto* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
   if (textCtrl) {
     textCtrl->Validate();
   }
 }
 
 bool TextValidator::Validate(wxWindow* parent) {
-  TextField* text_field = dynamic_cast<TextField*>(GetWindow());
-
+  auto* text_field = dynamic_cast<TextField*>(GetWindow());
   if (text_field) {
     wxString err = IsValid(text_field->GetValue());
-    text_field->onError(err);
+    text_field->OnError(err);
     return err.IsEmpty();
   } else
     return true;
