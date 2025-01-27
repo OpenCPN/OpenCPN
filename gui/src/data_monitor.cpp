@@ -19,6 +19,7 @@
 #include "tty_scroll.h"
 #include "data_monitor_src.h"
 #include "svg_icons.h"
+#include "model/nmea_log.h"
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
@@ -26,7 +27,7 @@
 using SetLogFunc = std::function<void(int)>;
 
 /** Main window, a rolling log of messages. */
-class TtyPanel : public wxPanel {
+class TtyPanel : public wxPanel, public NmeaLog {
 public:
   TtyPanel(wxWindow* parent, size_t lines)
       : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -42,7 +43,9 @@ public:
     Fit();
   }
 
-  void Add(const Logline& ll) { m_tty_scroll->Add(ll); }
+  void Add(const Logline& ll) override { m_tty_scroll->Add(ll); }
+
+  bool IsActive() const override { return IsShownOnScreen(); }
 
   /** Invoke Add(s) for possibly existing instance. */
   static void AddIfExists(const Logline& ll) {
