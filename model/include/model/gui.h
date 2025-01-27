@@ -23,8 +23,13 @@
  */
 
 #include <wx/window.h>
+#include <model/nmea_log.h>
 
 static const char* const kTopLevelWindowName = "MainWindow";
+static const char* const kNmeaLogWindowName = "TtyPanel";
 
 /** Return the top level window a k a gFrame. */
 wxWindow* GetTopWindow();
+
+/** Return currently active NmeaLog instance  or nullptr. */
+NmeaLog* GetNmeaLog();

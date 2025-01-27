@@ -25,9 +25,16 @@
 #include <wx/frame.h>
 
 #include "model/gui.h"
+#include "model/nmea_log.h"
 
 wxWindow* GetTopWindow() {
   auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
   assert(top_window && "Cannot find MainWindow a k a gFrame");
   return top_window;
+}
+
+NmeaLog* GetNmeaLog() {
+  auto w = wxWindow::FindWindowByName(kNmeaLogWindowName);
+  if (!w || !w->IsShownOnScreen()) return nullptr;
+  return dynamic_cast<NmeaLog*>(w);
 }
