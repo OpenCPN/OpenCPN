@@ -1230,6 +1230,23 @@ bool CommBridge::EvalPriority(
 
   this_priority = priority_map[this_key];
 
+  // Special case priority value linkage:
+  // If this is a "velocity" record, ensure that a "position"
+  // report has been accepted from the same source before accepting the
+  // velocity record.
+  // This ensures that the data source is fully initialized, and is reporting
+  // valid, sensible velocity data.
+  if (!strncmp(active_priority.pcclass.c_str(), "velocity", 8)) {
+    bool pos_ok = false;
+    if (!strcmp(active_priority_position.active_source.c_str(),
+                source.c_str())) {
+      if (active_priority_position.recent_active_time != -1) {
+        pos_ok = true;
+      }
+    }
+    if (!pos_ok) return false;
+  }
+
   for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
     if (debug_priority)
       printf("               priority_map:  %s  %d\n", it->first.c_str(),
@@ -1251,6 +1268,8 @@ bool CommBridge::EvalPriority(
     active_priority.active_source = source;
     active_priority.active_identifier = this_identifier;
     active_priority.active_source_address = source_address;
+    wxDateTime now = wxDateTime::Now();
+    active_priority.recent_active_time = now.GetTicks();
 
     if (debug_priority)
       printf("  Restoring high priority: %s %d\n", source.c_str(),

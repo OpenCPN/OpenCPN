@@ -1713,7 +1713,16 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                GetCanvasScaleFactor() / proposed_scale_onscreen,
                                0, GetVPRotation());
     }
-    if (m_bFollow && g_btenhertz) {
+    // Measure rough jump distance if in bfollow mode
+    // No good reason to do smooth pan for jump more than one degree.
+    bool super_jump = false;
+    if (m_bFollow) {
+      double bearing, distance;
+      if ((fabs(vpLat - m_vLat) > 1) || (fabs(vpLon - m_vLon) > 1))
+        super_jump = true;
+    }
+
+    if (m_bFollow && g_btenhertz && !super_jump) {
       int nstep = 5;
       if (blong_jump) nstep = 20;
       StartTimedMovementVP(vpLat, vpLon, nstep);

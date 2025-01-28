@@ -361,8 +361,8 @@ static wxArrayPtrVoid *UserColorTableArray = 0;
 // Latest "ground truth" fix, and auxiliaries
 double gLat_gt, gLon_gt;
 double gLat_gt_m1, gLon_gt_m1;
-double gLat_gt_m2, gLon_gt_m2;
 uint64_t fix_time_gt;
+uint64_t fix_time_gt_last;
 
 double gSog_gt, gCog_gt, gHdt_gt;
 double gCog_gt_m1, gHdt_gt_m1;
@@ -5033,7 +5033,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
     DistanceBearingMercator(gLat, gLon, gLat_gt, gLon_gt, &brg, &dist);
 
     if (dist > .0001) {  // Avoid duplicate position report
-      uint64_t fix_time_gt_last = fix_time_gt;
+      fix_time_gt_last = fix_time_gt;
       uint64_t fix_time_gt_now =
           msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
       fix_time_interval = (fix_time_gt_now - fix_time_gt_last) / (double)1e9;
@@ -5045,61 +5045,72 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
       // printf ("Fix Interval:  %g\n", fix_time_interval);
       // printf("SOG est: %g %g\n", gSog, implied_sog);
       //  shuffle history data
-      gLat_gt_m2 = gLat_gt_m1;
-      gLon_gt_m2 = gLon_gt_m1;
       gLat_gt_m1 = gLat_gt;
       gLon_gt_m1 = gLon_gt;
-      gCog_gt_m1 = gCog_gt;
-
       gLat_gt = gLat;
       gLon_gt = gLon;
-      gCog_gt = gCog;
-      gSog_gt = gSog;
+
       fix_time_gt = fix_time_gt_now;
-
-      if (!std::isnan(gCog_gt_m1)) {  // Startup
-        if ((fabs(gSog - implied_sog) / gSog) > 0.5) {
-          // Probably a synthetic data stream, with multiple position sources.
-          // Do not try to interpolate position at 10 Hz.
-          gSog_gt = 0;
-          cog_rate_gt = 0;
-        } else {
-          // Calculate an estimated Rate-of-turn
-          int dir = 0;
-          double diff = 0;
-          double difft = 0;
-          if (gCog_gt > gCog_gt_m1) {
-            if ((gCog_gt - gCog_gt_m1) > 180.)
-              dir = 1;  // left
-            else
-              dir = 2;  // right
-          } else {
-            if ((gCog_gt_m1 - gCog_gt) > 180.)
-              dir = 2;  // right
-            else
-              dir = 1;  // left
-          }
-          difft = fabs(gCog_gt - gCog_gt_m1);
-          if (fabs(difft > 180.)) difft = fabs(difft - 360.);
-          if (dir == 1)
-            diff = -difft;
-          else
-            diff = difft;
-
-          // double diff = gCog_gt - gCog_gt_m1;
-          // printf("diff  %g  %d\n", diff, dir);
-          double tentative_cog_rate_gt =
-              diff / (fix_time_gt - fix_time_gt_last);
-          tentative_cog_rate_gt *= 1e9;  // degrees / sec
-          cog_rate_gt = tentative_cog_rate_gt;
-        }
-
-        gCog = gCog_gt_m1;
-
-        // printf("cog_rate_gt  %g %g\n", gCog, cog_rate_gt);
-      }
     }
-  } else if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
+  }
+
+  if (((msg->vflag & COG_UPDATE) == COG_UPDATE) &&
+      ((msg->vflag & SOG_UPDATE) == SOG_UPDATE)) {
+    gCog_gt_m1 = gCog_gt;
+    gCog_gt = gCog;
+    gSog_gt = gSog;
+
+    // In every case, if SOG is too slow, the COG is undefined.
+    if (gSog < 0.1) {
+      gCog_gt = NAN;
+      gCog_gt_m1 = NAN;
+    }
+
+    if (!std::isnan(gCog_gt_m1)) {  // Startup
+#if 0
+              if ((fabs(gSog - implied_sog) / gSog) > 0.5) {
+            // Probably a synthetic data stream, with multiple position sources.
+            // Do not try to interpolate position at 10 Hz.
+            gSog_gt = 0;
+            cog_rate_gt = 0;
+          } else
+#endif
+      if ((fix_time_gt - fix_time_gt_last) > .08) {
+        // Calculate an estimated Rate-of-turn
+        int dir = 0;
+        double diff = 0;
+        double difft = 0;
+        if (gCog_gt > gCog_gt_m1) {
+          if ((gCog_gt - gCog_gt_m1) > 180.)
+            dir = 1;  // left
+          else
+            dir = 2;  // right
+        } else {
+          if ((gCog_gt_m1 - gCog_gt) > 180.)
+            dir = 2;  // right
+          else
+            dir = 1;  // left
+        }
+        difft = fabs(gCog_gt - gCog_gt_m1);
+        if (fabs(difft > 180.)) difft = fabs(difft - 360.);
+        if (dir == 1)
+          diff = -difft;
+        else
+          diff = difft;
+
+        // double diff = gCog_gt - gCog_gt_m1;
+        // printf("diff  %g  %d\n", diff, dir);
+        double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
+        tentative_cog_rate_gt *= 1e9;  // degrees / sec
+        cog_rate_gt = tentative_cog_rate_gt;
+      }
+
+      gCog = gCog_gt_m1;
+    }
+    // printf("cog_rate_gt  %g %g\n", gCog, cog_rate_gt);
+  }
+
+  if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
     if (!std::isnan(gHdt)) {
       // Prepare to estimate the gHdt from prior ground truth measurements
       uint64_t hdt_time_gt_last = hdt_time_gt;
@@ -5742,12 +5753,18 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       if (g_bopengl) {
 #ifdef ocpnUSE_GL
         if (cc->GetglCanvas()) {
+          // Rotation is handled by 10Hz timer, do not duplicate here
           bool b_rotate = cc->GetUpMode() != NORTH_UP_MODE;
-          if (!b_rotate && !g_btenhertz) {
-            if (cc->m_bFollow)
-              cc->DoCanvasUpdate();
-            else
-              cc->Refresh(false);
+          if (!b_rotate) {
+            if (!g_btenhertz) {
+              if (cc->m_bFollow)
+                cc->DoCanvasUpdate();
+              else
+                cc->Refresh(false);
+            } else {
+              // Pick up SOG=0, COG=NAN report at 10Hz.
+              if (std::isnan(gCog)) cc->Refresh(false);
+            }
           }
         }
 #endif
