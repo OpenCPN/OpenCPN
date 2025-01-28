@@ -44,6 +44,7 @@ typedef struct {
   std::string active_source;
   std::string active_identifier;
   int active_source_address;
+  time_t recent_active_time;
 } PriorityContainer;
 
 typedef struct {

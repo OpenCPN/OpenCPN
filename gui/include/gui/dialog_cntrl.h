@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2022 by David S. Register                               *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -27,11 +27,13 @@
 
 #include <wx/wx.h>
 #include <wx/string.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
 
 /**
- * Text field with support for error messages.
+ * Text field with validator and error handler.
  */
 class TextField : public wxTextCtrl {
 public:
@@ -39,27 +41,40 @@ public:
             const wxString& value = "", const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize, long style = 0);
 
-  int GetSizerIndex(wxSizer* sizer);
-  void onError(const wxString& msg);
-  void SetValidator(const wxValidator& validator) override;
+  /**
+   * Shows an error below the text field.
+   * @param msg Error message.
+   */
+  void OnError(const wxString& msg);
 
-  // Text changed event handler
+  void SetValidator(const wxValidator& validator = wxDefaultValidator) override;
+
+  /**
+   * Text changed event handler.
+   * @param event Change event.
+   */
   void OnTextChanged(wxCommandEvent& event);
 
 private:
-  wxStaticText* m_errorText;
+  wxSizer* m_sizer;
+  wxStaticText* m_error_text;
 };
 
 /**
- * Text validator base class. Member must classes implement the IsValid method,
- * and the Clone method to return a new instance of the class.
+ * Base class for member to implement validation rules.
  */
 class TextValidator : public wxTextValidator {
 public:
   bool Validate(wxWindow* parent) override;
+
+  /**
+   * Member to implement the instance clone.
+   */
   virtual wxValidator* Clone() const override = 0;
 
-  // Add validation rules by member
+  /**
+   * Member to implement the validation rules.
+   */
   virtual wxString IsValid(const wxString& val) const override = 0;
 };
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2022 by David S. Register                               *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,97 +21,52 @@
 #include "dialog_cntrl.h"
 #include "model/gui.h"
 
-// Text field constructor
 TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
                      const wxPoint& pos, const wxSize& size, long style)
     : wxTextCtrl(new wxPanel(parent), id, value, pos, size, style) {
-  m_errorText = nullptr;
+  m_sizer = new wxBoxSizer(wxVERTICAL);
+  m_sizer->Add(this, 0, wxEXPAND);
 
-  // Create panel as
-  wxPanel* panel = dynamic_cast<wxPanel*>(GetParent());
-  wxBoxSizer* nameSizer = new wxBoxSizer(wxVERTICAL);
-  nameSizer->Add(this, 0, wxEXPAND);
-  panel->SetSizer(nameSizer);
+  auto* panel = dynamic_cast<wxPanel*>(GetParent());
+  assert(panel && "Textfield: Wrong parent type");
+  panel->SetSizer(m_sizer);
+  m_error_text = new wxStaticText(panel, wxID_ANY, "");
 }
 
-// Get the position index within a sizer.
-int TextField::GetSizerIndex(wxSizer* sizer) {
-  if (sizer) {
-    for (size_t i = 0; i < sizer->GetItemCount(); ++i) {
-      wxSizerItem* item = sizer->GetItem(i);
-      if (item->GetWindow() == this) {
-        return static_cast<int>(i);
-      }
-    }
-  }
-  return wxNOT_FOUND;
-}
+void TextField::OnError(const wxString& msg = "") {
+  bool has_error = m_error_text->GetLabel().Len() > 0;
+  m_error_text->SetLabel(msg);
 
-/**
- * Error handler to show an error with the text field.
- * When the sizer position is found the error is shown
- * under the text field, otherwise with a popup message.
- */
-void TextField::onError(const wxString& msg = wxEmptyString) {
-  if (m_errorText != nullptr) {
-    if (msg == wxEmptyString) {
-      wxSizer* sizer = GetParent()->GetSizer();
-      sizer->Detach(m_errorText);
-      m_errorText = nullptr;
-      PropagateResize(this);
-    } else {
-      m_errorText->SetLabel(msg);
-      Refresh();
-    }
+  if (msg.IsEmpty()) {
+    m_sizer->Detach(m_error_text);
+    PropagateResize(this);
+  } else if (has_error) {
+    m_error_text->ClearBackground();
+    m_error_text->Refresh();
   } else {
-    if (msg == wxEmptyString) {
-      SetBackgroundColour(*wxWHITE);
-      Refresh();
-
-    } else {
-      wxSizer* sizer = GetParent()->GetSizer();
-      int index = GetSizerIndex(sizer);  // field position in sizer
-
-      if (sizer && index >= 0) {
-        m_errorText =
-            new wxStaticText(GetParent(), wxID_ANY, msg, wxDefaultPosition);
-        m_errorText->SetForegroundColour(*wxRED);
-
-        sizer->Insert(index + 1, m_errorText, 0, wxALL | wxEXPAND, 4);
-        PropagateResize(this);
-      } else {
-        wxMessageDialog popup(this, msg, "Error", wxOK | wxICON_ERROR);
-        popup.ShowModal();
-        SetBackgroundColour(*wxRED);
-        Refresh();
-      }
-    }
+    m_error_text->SetForegroundColour(*wxRED);
+    m_sizer->Insert(1, m_error_text, 0, wxALL | wxEXPAND, 4);
+    PropagateResize(this);
   }
 }
 
-// Set the validator and reset error status.
 void TextField::SetValidator(const wxValidator& validator) {
   wxTextCtrl::SetValidator(validator);
-  onError("");
+  OnError("");
 }
 
-// Text changed event handler validates the text.
 void TextField::OnTextChanged(wxCommandEvent& event) {
-  TextField* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
+  auto* textCtrl = dynamic_cast<TextField*>(event.GetEventObject());
   if (textCtrl) {
     textCtrl->Validate();
   }
 }
 
-/**
- * Text field validation with error handling.
- */
 bool TextValidator::Validate(wxWindow* parent) {
-  TextField* text_field = dynamic_cast<TextField*>(GetWindow());
-
+  auto* text_field = dynamic_cast<TextField*>(GetWindow());
   if (text_field) {
     wxString err = IsValid(text_field->GetValue());
-    text_field->onError(err);
+    text_field->OnError(err);
     return err.IsEmpty();
   } else
     return true;

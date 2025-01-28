@@ -1713,7 +1713,16 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                GetCanvasScaleFactor() / proposed_scale_onscreen,
                                0, GetVPRotation());
     }
-    if (m_bFollow && g_btenhertz) {
+    // Measure rough jump distance if in bfollow mode
+    // No good reason to do smooth pan for jump more than one degree.
+    bool super_jump = false;
+    if (m_bFollow) {
+      double bearing, distance;
+      if ((fabs(vpLat - m_vLat) > 1) || (fabs(vpLon - m_vLon) > 1))
+        super_jump = true;
+    }
+
+    if (m_bFollow && g_btenhertz && !super_jump) {
       int nstep = 5;
       if (blong_jump) nstep = 20;
       StartTimedMovementVP(vpLat, vpLon, nstep);
@@ -10054,16 +10063,10 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
 
   markPoint->m_bRPIsBeingEdited = false;
 
-  wxString title_base = _("Waypoint Properties");
+  wxString title_base = _("Mark Properties");
   if (markPoint->m_bIsInRoute) {
-    RoutePointNameValidator *pRPNameValidator =
-        new RoutePointNameValidator(markPoint);
-    g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
-  } else {
-    title_base = _("Mark Properties");
-    g_pMarkInfoDialog->SetNameValidator(nullptr);
+    title_base = _("Waypoint Properties");
   }
-
   g_pMarkInfoDialog->SetRoutePoint(markPoint);
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {

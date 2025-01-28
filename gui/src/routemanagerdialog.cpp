@@ -61,7 +61,6 @@
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
-#include "route_validator.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"
@@ -2643,8 +2642,6 @@ void RouteManagerDialog::WptShowPropertiesDialog(RoutePoint *pWP,
                            // Dialog
     g_pMarkInfoDialog = new MarkInfoDlg(parent);
 
-  RoutePointNameValidator *pRPNameValidator = new RoutePointNameValidator(pWP);
-  g_pMarkInfoDialog->SetNameValidator(pRPNameValidator);
   g_pMarkInfoDialog->SetRoutePoint(pWP);
   g_pMarkInfoDialog->UpdateProperties();
 
