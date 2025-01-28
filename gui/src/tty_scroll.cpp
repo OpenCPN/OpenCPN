@@ -17,6 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <iomanip>
 #include <sstream>
 #include <string>
 
@@ -39,14 +40,57 @@
  * Implement tty_scroll.h
  */
 
-static const auto kUtfCheckMark = wxString::FromUTF8(u8"\u2713");
-static const auto kUtfCircledDivisionSlash = wxString::FromUTF8(u8"\u2298");
-static const auto kUtfFallingDiagonal = wxString::FromUTF8(u8"\u269F");
-static const auto kUtfLeftArrow = wxString::FromUTF8(u8"\u2190");
-static const auto kUtfLeftRightArrow = wxString::FromUTF8(u8"\u2194");
-static const auto kUtfLeftwardsArrowToBar = wxString::FromUTF8(u8"\u21E4");
-static const auto kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
-static const auto kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
+const wxString kUtfCheckMark = wxString::FromUTF8(u8"\u2713");
+const wxString kUtfCircledDivisionSlash = wxString::FromUTF8(u8"\u2298");
+const wxString kUtfFallingDiagonal = wxString::FromUTF8(u8"\u269F");
+const wxString kUtfIdenticalTo = wxString::FromUTF8(u8"\u2261");
+const wxString kUtfLeftArrow = wxString::FromUTF8(u8"\u2190");
+const wxString kUtfLeftRightArrow = wxString::FromUTF8(u8"\u2194");
+const wxString kUtfLeftwardsArrowToBar = wxString::FromUTF8(u8"\u21E4");
+const wxString kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
+const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
+
+/** Draw a single line in the log window. */
+static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
+  wxString ws;
+#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
+  ws << wxDateTime::Now().FormatISOTime() << " ";
+#endif
+  if (ll.state.direction == NavmsgStatus::Direction::kOutput)
+    ws << " " << kUtfRightArrow << " ";
+  else if (ll.state.direction == NavmsgStatus::Direction::kInput)
+    ws << " " << kUtfLeftwardsArrowToBar << " ";
+  else if (ll.state.direction == NavmsgStatus::Direction::kInternal)
+    ws << " " << kUtfLeftRightArrow << " ";
+  else
+    ws << " " << kUtfLeftArrow << " ";
+  if (ll.state.status != NavmsgStatus::State::kOk) {
+    dc.SetTextForeground(wxColour("RED"));
+    ws << kUtfMultiplicationX;
+  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput) {
+    dc.SetTextForeground(wxColour("CORAL"));
+    ws << kUtfFallingDiagonal;
+  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredDropped) {
+    dc.SetTextForeground(wxColour("MAROON"));
+    ws << kUtfCircledDivisionSlash;
+  } else {
+    dc.SetTextForeground(wxColour("GREEN"));
+    ws << kUtfCheckMark;
+  }
+  std::stringstream error_msg;
+  if (ll.state.status != NavmsgStatus::State::kOk) {
+    error_msg << " - "
+              << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
+  }
+  std::string stream(ll.stream_name);
+  if (stream.size() > 20) stream = stream.substr(0, 17) + "...";
+  ws << stream;
+  dc.DrawText(ws, 0, y);
+  ws = "";
+
+  ws << (ll.navmsg ? ll.navmsg->to_string() : "") << error_msg.str();
+  dc.DrawText(ws, data_pos, y);
+}
 
 TtyScroll::TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter)
     : wxScrolledWindow(parent),
@@ -55,7 +99,6 @@ TtyScroll::TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter)
       m_is_paused(false) {
   wxClientDC dc(this);
   dc.GetTextExtent("Line Height", NULL, &m_line_height);
-
   SetScrollRate(0, m_line_height);
   SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
   for (unsigned i = 0; i < m_n_lines; i++) m_lines.push_back(Logline());
@@ -79,11 +122,10 @@ void TtyScroll::Add(struct Logline ll) {
 }
 
 void TtyScroll::OnDraw(wxDC& dc) {
-  // update region is always in device coords, translate to logical ones
+  // Update region is always in device coords, translate to logical ones
   wxRect rect_update = GetUpdateRegion().GetBox();
   CalcUnscrolledPosition(rect_update.x, rect_update.y, &rect_update.x,
                          &rect_update.y);
-
   size_t line_from = rect_update.y / m_line_height;
   size_t line_to = rect_update.GetBottom() / m_line_height;
   if (line_to > m_n_lines - 1) line_to = m_n_lines - 1;
@@ -91,42 +133,7 @@ void TtyScroll::OnDraw(wxDC& dc) {
   wxCoord y = line_from * m_line_height;
   for (size_t line = line_from; line <= line_to; line++) {
     wxString ws;
-    auto l = m_lines[line];
-#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
-    ws << wxDateTime::Now().FormatISOTime() << " ";
-#endif
-    if (l.state.direction == NavmsgStatus::Direction::kOutput)
-      ws << " " << kUtfRightArrow << " ";
-    else if (l.state.direction == NavmsgStatus::Direction::kInput)
-      ws << " " << kUtfLeftwardsArrowToBar << " ";
-    else if (l.state.direction == NavmsgStatus::Direction::kInternal)
-      ws << " " << kUtfLeftRightArrow << " ";
-    else
-      ws << " " << kUtfLeftArrow << " ";
-    wxCoord y_phys;
-    CalcScrolledPosition(0, y, NULL, &y_phys);
-    if (l.state.status != NavmsgStatus::State::kOk) {
-      dc.SetTextForeground(wxColour("RED"));
-      ws << kUtfMultiplicationX;
-    } else if (l.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput) {
-      dc.SetTextForeground(wxColour("CORAL"));
-      ws << kUtfFallingDiagonal;
-    } else if (l.state.accepted == NavmsgStatus::Accepted::kFilteredDropped) {
-      ws << kUtfCircledDivisionSlash;
-      dc.SetTextForeground(wxColour("MAROON"));
-    } else {
-      ws << kUtfCheckMark;
-      dc.SetTextForeground(wxColour("GREEN"));
-    }
-    std::stringstream error_msg;
-    if (l.state.status != NavmsgStatus::State::kOk) {
-      error_msg << " - "
-                << (l.error_msg.size() > 0 ? l.error_msg : "Unknown  errror");
-    }
-    std::string msg = l.navmsg ? l.navmsg->to_string() : "";
-    ws << " (" << l.stream_name << ") " << l.prefix << msg << error_msg.str()
-       << "\n";
-    dc.DrawText(ws, 0, y);
+    DrawLine(dc, m_lines[line], 30 * GetCharWidth(), y);
     y += m_line_height;
   }
 }
