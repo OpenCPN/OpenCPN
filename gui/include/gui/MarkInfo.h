@@ -26,6 +26,8 @@
 #ifndef _MARKINFO_H_
 #define _MARKINFO_H_
 
+#include <memory>
+
 /*!
  * Includes
  */
@@ -52,6 +54,8 @@
 
 #include <wx/dialog.h>
 #include "dialog_cntrl.h"
+
+#include "route_validator.h"
 
 #ifdef __WXGTK__
 // wxTimePickerCtrl is completely broken in Gnome based desktop environments as
@@ -312,6 +316,7 @@ protected:
   wxTextCtrl* m_textLatitude;
   wxTextCtrl* m_textLongitude;
   TextField* m_textName;
+  std::unique_ptr<RoutePointNameValidator> m_name_validator;
   wxTextCtrl* m_textScaMin;
   wxTextCtrl* m_textWaypointRangeRingsStep;
   wxTextCtrl* m_textCtrlPlSpeed;
@@ -381,8 +386,6 @@ public:
   void ValidateMark(void);
   bool SaveChanges();
   void OnActivate(wxActivateEvent& event);
-
-  void SetNameValidator(const wxValidator* validator);
 
   wxSimpleHtmlListBox* GetSimpleBox() {
     return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);
