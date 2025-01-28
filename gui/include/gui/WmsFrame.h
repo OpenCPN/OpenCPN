@@ -11,7 +11,7 @@
 
 #include "model/logger.h"
 
-wxDECLARE_EVENT(WXWMSREQUESTEVENT, wxWMSRequestEvent);
+wxDECLARE_EVENT(WXWMSREQUESTEVENT, wxWMSRequestEvent); //this event triggers a rendering in WmsFrame
 
 class WmsFrame : public wxFrame {
 private:
