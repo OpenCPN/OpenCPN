@@ -33,6 +33,16 @@
  * Scrolled TTY-like window for logging and utilities
  */
 
+extern const wxString kUtfCheckMark;
+extern const wxString kUtfCircledDivisionSlash;
+extern const wxString kUtfFallingDiagonal;
+extern const wxString kUtfIdenticalTo;
+extern const wxString kUtfLeftArrow;
+extern const wxString kUtfLeftRightArrow;
+extern const wxString kUtfLeftwardsArrowToBar;
+extern const wxString kUtfMultiplicationX;
+extern const wxString kUtfRightArrow;
+
 /** Scrolled TTY-like window for logging, etc. */
 class TtyScroll : public wxScrolledWindow {
 public:
