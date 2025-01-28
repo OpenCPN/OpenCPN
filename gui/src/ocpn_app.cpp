@@ -1981,9 +1981,7 @@ bool MyApp::OnInit() {
 void MyApp::EventifyWmsReqParam(WmsReqParams p) {
   wxLogDebug("Eventify called, creating wx event from rendering request");
   wxWMSRequestEvent *e = new wxWMSRequestEvent(WXWMSREQUESTEVENT, wxID_ANY, p);
-
   wmsFrame->GetEventHandler()->QueueEvent(e);
-  
 }
 
 int MyApp::OnExit() {
