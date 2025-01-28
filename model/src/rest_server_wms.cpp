@@ -49,17 +49,6 @@ std::mutex RestServerWms::ret_mutex;
 
 std::function<void(WmsReqParams)> RestServerWms::fCallback;
 
-
-#ifdef RESTSERVERWMS
-//wxFrame* RestServerWms::m_pWxFrame = nullptr;
-//ChartCanvas* RestServerWms::m_pChartCanvas = nullptr;
-//wxStaticText* RestServerWms::pText = nullptr;
-//
-//void* RestServerWms::jpegdatabuffer = new char[1000000];
-#endif
-
-
-
 /** Extract a HTTP variable from query string. */
 inline std::string HttpVarToString(const struct mg_str& query,
                                           const char* var) {
@@ -115,6 +104,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         std::string strHeightPx = HttpVarToString(hm->query, "height");
         std::string strSrs = HttpVarToString(hm->query, "srs");
         std::string strBbox = HttpVarToString(hm->query, "bbox");
+        std::string strColor = HttpVarToString(hm->query, "color");
 
         strBbox = unescape(strBbox);
         strSrs = unescape(strSrs);
@@ -129,9 +119,6 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
  
           RestServerWms::lastSize_W = _w;
           RestServerWms::lastSize_H = _h;
-
-          /* RestServerWms::m_pWxFrame->SetSize(wxSize(_w + 100, _h + 100));
-           RestServerWms::m_pChartCanvas->SetSize(wxSize(_w, _h));*/
         }
 
         // BBox manging
@@ -173,7 +160,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
           mg_http_reply(c, 422, "", err.c_str());
               
           return;
-        }
+        }                    
         
         INFO_LOG << "WMS req " << RestServerWms::m_hitcount << " SW:" << latSW
                  << "," << lonSW << " NE" << latNE << "," << lonNE
@@ -187,98 +174,23 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         p.latSW = latSW;
         p.lonSW = lonSW;
         p.hitcount = RestServerWms::m_hitcount;
-       
+
+        if (strColor == "DAY") {
+          p.color = 1;
+        }
+        else if (strColor == "DUSK") {
+          p.color = 2;
+        } else if (strColor == "NIGHT") {
+          p.color = 3;
+        } else if (strColor == "NIGHTRED") {
+          p.color = 4;
+        }
+
+        p.color = 4;
 
         p.c = c;
 
         RestServerWms::fCallback(p);
-
-        /*
-        // m_pchart
-        RestServerWms::m_pChartCanvas->SetShowGrid(true);
-        RestServerWms::m_pChartCanvas->SetShowENCLights(true);
-        //RestServerWms::m_pChartCanvas->SetShowENCDepth(true);
-        RestServerWms::m_pChartCanvas->SetShowAIS(false);
-        RestServerWms::m_pChartCanvas->SetShowGPS(false);
-        RestServerWms::m_pChartCanvas->SetShowGPSCompassWindow(false);
-        
-        RestServerWms::m_pChartCanvas->canvasChartsRefresh(-1);
-
-        
-        bool ok_setviewpointbycorners = RestServerWms::m_pChartCanvas->SetViewPointByCorners(latSW, lonSW,
-                                                             latNE, lonNE);
-        INFO_LOG << "SetViewpointByCorners ok: " << ok_setviewpointbycorners; 
-
-        //RestServerWms::m_pChartCanvas->SetSize(
-        //    wxSize(std::stoi(strWidthPx),
-        //           std::stoi(strHeightPx)));
-
-        bool update = RestServerWms::m_pChartCanvas->DoCanvasUpdate();
-        INFO_LOG << "CanvasUpdate success:" << update;
-        */
-        //RestServerWms::m_pChartCanvas->
-        /*
-        RestServerWms::m_pChartCanvas->Refresh();
-        RestServerWms::m_pWxFrame->Refresh();
-        RestServerWms::m_pChartCanvas->Update();
-        RestServerWms::m_pWxFrame->Update();
-
-        std::stringstream ssImgInfo;
-        ssImgInfo << RestServerWms::m_hitcount << "\n  NE" << latNE << ", "
-                  << lonNE << "\nSW" << latSW << ", " << lonSW;
-        RestServerWms::pText->SetLabelText(
-            ssImgInfo.str());
-
-      RestServerWms::m_pWxFrame->Update();
-
-      std::this_thread::sleep_for(std::chrono::milliseconds(599));
-        wxClientDC dcWindow(RestServerWms::m_pWxFrame);
-        wxCoord screenWidth, screenHeight;
-
-        dcWindow.GetSize(&screenWidth, &screenHeight);
-
-        wxBitmap screenshot(RestServerWms::lastSize_W,
-                            RestServerWms::lastSize_H, -1);
-        wxMemoryDC memDC;
-        memDC.SelectObject(screenshot);
-        memDC.Clear();
-        memDC.Blit(0, 0,  // Copy to coordinate
-                   RestServerWms::lastSize_W, RestServerWms::lastSize_H, &dcWindow, 0,
-                   0  // offset in the original DC
-        );
-        memDC.SelectObject(wxNullBitmap);
-        std::string filename = "c:\\temp\\opencpn_wms_imgs\\img_" +
-                               std::to_string(RestServerWms::m_hitcount) +
-                               ".jpg";
-        screenshot.SaveFile(filename,
-                            wxBITMAP_TYPE_JPEG);
-        
-        //get byte array for sending
-        wxImage img = screenshot.ConvertToImage();
-        wxJPEGHandler* pH = new wxJPEGHandler();
-        img.AddHandler(pH);
-        wxMemoryOutputStream s;
-        img.SaveFile(s, wxBITMAP_TYPE_JPEG);
-
-        size_t size = s.GetSize();      
-
-        // Copy data from the stream to the external buffer
-        s.CopyTo(RestServerWms::jpegdatabuffer, size);
-
-        //Warning - the reply generation is messed up (or I am an idiot)
-        //this works, mg_http_reply, chunk writing etc did not. Suspecting that nulls inside the char* causes transmission to end prematurely - much like the stringlength counted only to first null.... Waisted a whole day, wireshark finally gave the clue as to what what wrong 
-        mg_printf(c, "HTTP/1.1 200 OK\r\n");
-        mg_printf(c, "Content-Type: image/jpeg\r\n");
-
-        std::string header_conlength = "Content-Length: " + std::to_string(size) + "\r\n\r\n"; 
-        mg_printf(c, header_conlength.c_str());
-        mg_send(c, RestServerWms::jpegdatabuffer, size);
-        c->is_resp = 0;
-        
-        INFO_LOG << "WMS replied to hit:" << RestServerWms::m_hitcount
-                 << " size:" << size;
-
-        */
       }
       catch(const std::exception& ex){
         int j = 0;
@@ -330,25 +242,8 @@ RestServerWms::~RestServerWms() {
   StopServer();
 }
 
-
 bool RestServerWms::StartServer(std::function<void(WmsReqParams)> FCallback) {
   RestServerWms::fCallback = FCallback;
-  //#ifdef RESTSERVERWMS
-  //
-  //m_pWxFrame = new wxFrame(nullptr, -1, "WMS");
-  //m_pWxFrame->Show();
-  //pText = new wxStaticText(m_pWxFrame, wxID_STATIC, wxT("Clean"));
-  //pText->SetForegroundColour(wxColor("red"));
-
-  //m_pChartCanvas = new ChartCanvas(m_pWxFrame, 10);
-  //m_pChartCanvas->SetPosition(wxPoint(0, 0));
-  //m_pChartCanvas->SetSize(wxSize(100, 100));
-
   m_workerthread = std::thread([&]() { RestServerWms::Run(); });
-
-  ////m_pWxFrame->Refresh();
-  ////m_pWxFrame->Update();
-
-  //#endif
   return true;
 }

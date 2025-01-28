@@ -44,10 +44,6 @@
 #include <wx/string.h>
 #include <wx/thread.h>  // for wxSemaphore, std::semaphore is c++20
 
-
-
-
-
 class RestServerWms {
 public:
   RestServerWms();
@@ -57,18 +53,9 @@ public:
   void StopServer();
 
   static unsigned int RestServerWms::m_hitcount;
-  /* static wxFrame* m_pWxFrame;
-  static ChartCanvas* m_pChartCanvas;
-
-   
-
-
-  static wxStaticText* pText;*/
 
   static unsigned int lastSize_W;
   static unsigned int lastSize_H;
-
-  //static void* jpegdatabuffer;
 
   static std::function<void(WmsReqParams)> fCallback;
   static std::mutex ret_mutex;

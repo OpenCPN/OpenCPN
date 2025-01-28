@@ -52,13 +52,12 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
       lastSize_W = event.p.w;
       lastSize_H = event.p.h;
       wxLogMessage("dimension change req to w: %i h:%i", event.p.w, event.p.h);
-      //this->SetSize(wxSize(event.p.w + 100, event.p.h + 100));
-
       
       int newChartW = event.p.w + 2;
-      int newChartH = event.p.h + 174;
+      //int newChartH = event.p.h + 174;
+      int newChartH = event.p.h + 204;
 
-      m_pTgtFrame->SetSize(newChartW+100, newChartH+100);
+      m_pTgtFrame->SetSize(newChartW+300, newChartH+300);
 
       m_pChartCanvas->SetSize(wxSize(newChartW, newChartH));
     }
@@ -71,6 +70,10 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
     m_pChartCanvas->SetShowGPS(false);
     m_pChartCanvas->SetShowGPSCompassWindow(false);
     m_pChartCanvas->SetShowDepthUnits(false);
+
+    //TODO p.color need to hit the application globally (so we need an app ´reference)
+    //m_pTgtFrame.
+    //m_pChartCanvas->SetColorScheme((ColorScheme)event.p.color);
 
     
     //m_pChartCanvas->set<>>SetUserOwnship((false);
