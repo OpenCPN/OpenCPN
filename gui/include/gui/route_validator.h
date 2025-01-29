@@ -25,7 +25,7 @@
 #ifndef ROUTE_VALIDATOR_H
 #define ROUTE_VALIDATOR_H
 
-#include "dialog_cntrl.h"
+#include "field_text.h"
 #include "model/route_point.h"
 
 /**

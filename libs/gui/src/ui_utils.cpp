@@ -1,5 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,17 +17,16 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- *  \file
- *  Implement gui.h.
- */
-#include <wx/dialog.h>
 #include <wx/frame.h>
+#include "ui_utils.h"
 
-#include "model/gui.h"
-
-wxWindow* GetTopWindow() {
-  auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-  assert(top_window && "Cannot find MainWindow a k a gFrame");
-  return top_window;
+void GUI::PropagateResize(wxWindow* window) {
+  wxWindow* parent = window->GetParent();
+  while (parent) {
+    parent->Layout();
+    parent = parent->GetParent();
+    if (wxTopLevelWindow* topLevel = wxDynamicCast(parent, wxTopLevelWindow)) {
+      break;
+    }
+  }
 }

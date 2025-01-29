@@ -29,8 +29,12 @@ set(SRC
     include/dialog_alert.h
     include/dialog_base.h
     include/dialog_footer.h
+    include/field_text.h
+    include/ui_utils.h
     src/dialog_alert.cpp
     src/dialog_base.cpp
+    src/field_text.cpp
+    src/ui_utils.cpp
 )
 
 add_library(GUILIB STATIC ${SRC})
