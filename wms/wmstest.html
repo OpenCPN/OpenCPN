@@ -61,13 +61,12 @@ TODO: It is not updated yet to reflect ideal conditions
 				"lon": 9.714583,
 				"dia": 100
 			},
-
 		]
 
 		//******************************************************************
 		//Control active map request users (rendering engines basically) here
-		const enable_opencpn_leaflet = true;
-		const enable_opencpn_openlayers = false;
+		const enable_opencpn_leaflet = false;
+		const enable_opencpn_openlayers = true;
 
 		//******************************************************************
 		//load opencpn_wms using leaflet
@@ -96,8 +95,8 @@ TODO: It is not updated yet to reflect ideal conditions
 								'LAYERS': 'NAV',
 								'VERSION': "1.1.1",
 								'FORMAT': 'image/jpeg',
-								'WIDTH': '256',
-								'HEIGHT': '256'
+								'WIDTH': '1024',
+								'HEIGHT': '1024'
 							},
 							ratio: 1,
 							serverType: 'geoserver'
@@ -178,11 +177,6 @@ TODO: It is not updated yet to reflect ideal conditions
 				var circleFeature = new ol.Feature(circle);
 				document.saabol_vectorsource.addFeature(circleFeature);
 			}
-
-			//document.map_datfors.render();
-			//document.map_opencpnwms_ol.refresh();
-
-		}
 
 	</script>
 </BODY>
