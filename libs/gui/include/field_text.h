@@ -20,10 +20,10 @@
 
 /**
  * \file
- * Dialog control classes and validator base classes.
+ * Text field classes and text validator base classes.
  */
-#ifndef DIALOG_CNTRL_H
-#define DIALOG_CNTRL_H
+#ifndef TEXT_FIELD_H
+#define TEXT_FIELD_H
 
 #include <wx/wx.h>
 #include <wx/string.h>
@@ -78,4 +78,4 @@ public:
   virtual wxString IsValid(const wxString& val) const override = 0;
 };
 
-#endif  // DIALOG_CNTRL_H
+#endif  // TEXT_FIELD_H

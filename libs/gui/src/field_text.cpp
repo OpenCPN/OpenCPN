@@ -18,8 +18,8 @@
  ***************************************************************************
  */
 
-#include "dialog_cntrl.h"
-#include "model/gui.h"
+#include "field_text.h"
+#include "ui_utils.h"
 
 TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
                      const wxPoint& pos, const wxSize& size, long style)
@@ -39,14 +39,14 @@ void TextField::OnError(const wxString& msg = "") {
 
   if (msg.IsEmpty()) {
     m_sizer->Detach(m_error_text);
-    PropagateResize(this);
+    GUI::PropagateResize(this);
   } else if (has_error) {
     m_error_text->ClearBackground();
     m_error_text->Refresh();
   } else {
     m_error_text->SetForegroundColour(*wxRED);
     m_sizer->Insert(1, m_error_text, 0, wxALL | wxEXPAND, 4);
-    PropagateResize(this);
+    GUI::PropagateResize(this);
   }
 }
 

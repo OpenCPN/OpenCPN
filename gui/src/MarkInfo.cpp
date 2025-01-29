@@ -40,7 +40,6 @@
 #include <wx/bmpbuttn.h>
 
 #include "chcanv.h"
-#include "dialog_cntrl.h"
 #include "gui_lib.h"
 #include "MarkInfo.h"
 #include "model/georef.h"

@@ -53,7 +53,7 @@
 #include <wx/combobox.h>
 
 #include <wx/dialog.h>
-#include "dialog_cntrl.h"
+#include "field_text.h"
 
 #include "route_validator.h"
 
