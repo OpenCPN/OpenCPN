@@ -57,7 +57,7 @@ public:
    *  Create instance which listens and forwards messages using the sink_func
    *  callback function.
    */
-  DataMonitorSrc(SinkFunc sink_func);
+  DataMonitorSrc(const SinkFunc& sink_func);
 
 private:
   SinkFunc m_sink_func;
