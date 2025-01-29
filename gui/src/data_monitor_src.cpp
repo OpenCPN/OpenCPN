@@ -28,6 +28,7 @@
 #include <unordered_map>
 
 #include <wx/event.h>
+#include <wx/log.h>
 
 #include "model/comm_navmsg.h"
 #include "model/comm_navmsg_bus.h"
@@ -38,14 +39,13 @@
 
 #include "data_monitor_src.h"
 
+static void InitListener(ObsListener& ol, NavMsg& msg,
+                         std::function<void(ObservedEvt)> on_message) {
+  ol.Init(msg, on_message);
+}
+
 DataMonitorSrc::DataMonitorSrc(SinkFunc sink_func) : m_sink_func(sink_func) {
   ObsListener listener;
-  m_listeners["AIVDM"] = std::move(listener);
-  m_listeners["AIVDM"].Init(Nmea0183Msg("AIVDM"), [&](ObservedEvt& ev) {
-    const std::shared_ptr<const Nmea0183Msg> ptr =
-        UnpackEvtPointer<Nmea0183Msg>(ev);
-    m_sink_func(ptr);
-  });
   auto messages = NavMsgBus::GetInstance().GetActiveMessages();
   new_msg_lstnr.Init(NavMsgBus::GetInstance().new_msg_event,
                      [&](ObservedEvt&) { OnNewMessage(); });
@@ -58,18 +58,51 @@ void DataMonitorSrc::OnNewMessage() {
     if (found == m_listeners.end()) {
       ObsListener listener;
       std::string type(msg);
-      ocpn::replace(type, "nmea0183::n0183-", "");
-      m_listeners[msg] = std::move(listener);
-      m_listeners[msg].Init(Nmea0183Msg(type),
-                            [&](ObservedEvt& ev) { OnMessage(ev); });
+      size_t pos;
+      NavAddr::Bus bus = NavAddr::Bus::Undef;
+      if ((pos = type.find("::")) != std::string::npos) {
+        auto bus_str = type.substr(0, pos);
+        bus = NavAddr::StringToBus(bus_str);
+        type = type.substr(pos + 2);
+        if ((pos = type.find("-")) != std::string::npos)
+          type = type.substr(pos + 1);
+        m_listeners[msg] = std::move(listener);
+        std::function<void(ObservedEvt)> listen_action = [&](ObservedEvt ev) {
+          OnMessage(ev);
+        };
+        switch (bus) {
+          case NavAddr::Bus::N0183: {
+            auto type_msg = Nmea0183Msg(type);
+            InitListener(m_listeners[msg], type_msg, listen_action);
+          } break;
+          case NavAddr::Bus::N2000: {
+            try {
+              auto type_msg = Nmea2000Msg(std::stoi(type));
+              InitListener(m_listeners[msg], type_msg, listen_action);
+            } catch (...) {
+              wxLogMessage("Bad Nmea2000 type: %s", type.c_str());
+            }
+          } break;
+          case NavAddr::Bus::Plugin: {
+            auto type_msg = PluginMsg(type, "");
+            InitListener(m_listeners[msg], type_msg, listen_action);
+          } break;
+          case NavAddr::Bus::Signalk: {
+            auto type_msg = SignalkMsg();
+            InitListener(m_listeners[msg], type_msg, listen_action);
+          } break;
+          default:
+            break;  // Just ignore other types.
+        }
+      }
     }
-  };
+  }
 }
 
 void DataMonitorSrc::OnMessage(ObservedEvt& ev) {
-  auto ptr = UnpackEvtPointer<Nmea0183Msg>(ev);
-  if (ptr && ptr->payload != m_last_payload) {
-    m_last_payload = ptr->payload;
+  auto ptr = UnpackEvtPointer<NavMsg>(ev);
+  if (ptr && ptr->to_string() != m_last_payload) {
+    m_last_payload = ptr->to_string();
     m_sink_func(ptr);
   }
 }
