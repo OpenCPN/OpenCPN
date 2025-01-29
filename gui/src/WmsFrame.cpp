@@ -35,14 +35,16 @@ WmsFrame::WmsFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 WmsFrame::~WmsFrame() {
 }
 
-void WmsFrame::AssignTargetObjects(wxFrame* pF, ChartCanvas* pC) {
+void WmsFrame::AssignTargetObjects(MyFrame* pF, ChartCanvas* pC) {
   m_pTgtFrame = pF;
   m_pChartCanvas = pC;
 }
 
 void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
   try {
-    // Handle the custom event
+    // All the real work is done in here:
+    // 1. resize if needed
+    // 2. color change if needed
     wxLogMessage("wxWMSRequestEvent event received");
 
     if (event.p.w != lastSize_W || event.p.h != lastSize_H) {
@@ -71,13 +73,25 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
     m_pChartCanvas->SetShowGPSCompassWindow(false);
     m_pChartCanvas->SetShowDepthUnits(false);
 
-    //TODO p.color need to hit the application globally (so we need an app ´reference)
-    //m_pTgtFrame.
-    //m_pChartCanvas->SetColorScheme((ColorScheme)event.p.color);
+    //TODO fix color change
+    if (lastcolor != event.p.color) {
+      lastcolor = event.p.color;
 
+      if (lastcolor == "DAY") {
+        m_pTgtFrame->SetAndApplyColorScheme(
+            ColorScheme::GLOBAL_COLOR_SCHEME_DAY);
+      } else if (lastcolor == "DUSK") {
+        m_pTgtFrame->SetAndApplyColorScheme(
+            ColorScheme::GLOBAL_COLOR_SCHEME_DUSK);
+      } else if (lastcolor == "NIGHT") {
+        m_pTgtFrame->SetAndApplyColorScheme(
+            ColorScheme::GLOBAL_COLOR_SCHEME_NIGHT);
+      } else {
+        m_pTgtFrame->SetAndApplyColorScheme(
+            ColorScheme::GLOBAL_COLOR_SCHEME_DAY); //catch all
+      }
+    }
     
-    //m_pChartCanvas->set<>>SetUserOwnship((false);
-
     m_pChartCanvas->canvasChartsRefresh(-1);
     m_pChartCanvas->SetQuiltMode(true);
 
@@ -85,12 +99,14 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
         event.p.latSW, event.p.lonSW, event.p.latNE, event.p.lonNE);
 
     bool update = m_pChartCanvas->DoCanvasUpdate();
-    INFO_LOG << "CanvasUpdate success:" << update;
+    DEBUG_LOG << "CanvasUpdate success:" << update;
 
+    //intermediate window text update - just to see what is requested
     std::stringstream ssImgInfo;
     ssImgInfo << event.p.hitcount << "\n  NE" << event.p.latNE << ", "
               << event.p.lonNE << "\nSW" << event.p.latSW << ", "
-              << event.p.lonSW;
+              << event.p.lonSW << "\n" << event.p.color;
+
     pText->SetLabelText(ssImgInfo.str());
 
     m_pChartCanvas->Refresh();
@@ -131,7 +147,7 @@ void WmsFrame::OnWmsRequestEvent(wxWMSRequestEvent& event) {
     // Copy data from the stream to the external buffer
     s.CopyTo(jpegdatabuffer, size);
 
-    // Warning - the reply generation is messed up (or I am an idiot)
+    // Warning - the reply generation is to be treated as a rotten mango
     // this works, mg_http_reply, chunk writing etc did not. Suspecting that
     // nulls inside the char* causes transmission to end prematurely - much like
     // the stringlength counted only to first null.... Waisted a whole day,

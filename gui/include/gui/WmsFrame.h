@@ -8,6 +8,7 @@
 
 #include "viewport.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 
 #include "model/logger.h"
 
@@ -15,7 +16,7 @@ wxDECLARE_EVENT(WXWMSREQUESTEVENT, wxWMSRequestEvent); //this event triggers a r
 
 class WmsFrame : public wxFrame {
 private:
-   wxFrame* m_pTgtFrame;
+   MyFrame* m_pTgtFrame;
    ChartCanvas* m_pChartCanvas;
 
    wxStaticText* pText;
@@ -23,16 +24,12 @@ private:
    unsigned int lastSize_W;
    unsigned int lastSize_H;
 
+   std::string lastcolor = "";
+
    void* jpegdatabuffer;
 
 protected:
-
-  // Virtual event handlers, overide them in your derived class
-  //virtual void AboutFrameOnActivate(wxActivateEvent& event) { event.Skip(); }
-
   void OnWmsRequestEvent(wxWMSRequestEvent& event);
-  
-  
 
 public:
   WmsFrame(wxWindow* parent, wxWindowID id = wxID_ANY,
@@ -44,7 +41,7 @@ public:
                           wxTAB_TRAVERSAL);
 
   ~WmsFrame();
-  void AssignTargetObjects(wxFrame* pF, ChartCanvas* pC);
+  void AssignTargetObjects(MyFrame* pF, ChartCanvas* pC);
 };
 
 #endif

@@ -175,19 +175,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
         p.lonSW = lonSW;
         p.hitcount = RestServerWms::m_hitcount;
 
-        if (strColor == "DAY") {
-          p.color = 1;
-        }
-        else if (strColor == "DUSK") {
-          p.color = 2;
-        } else if (strColor == "NIGHT") {
-          p.color = 3;
-        } else if (strColor == "NIGHTRED") {
-          p.color = 4;
-        }
-
-        p.color = 4;
-
+        p.color = strColor; //DAY" "DUSK" "NIGHT"
+         
         p.c = c;
 
         RestServerWms::fCallback(p);
