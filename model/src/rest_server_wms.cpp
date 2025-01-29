@@ -1,6 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2022 David Register                                     *
- *   Copyright (C) 2022-2023  Alec Leamas                                  *
+/***************************************************************************
+ *   Copyright (C) 2025 Jes Ramsing                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
