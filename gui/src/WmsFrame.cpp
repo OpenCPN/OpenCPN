@@ -18,14 +18,9 @@ wxDEFINE_EVENT(WXWMSREQUESTEVENT, wxWMSRequestEvent);
 WmsFrame::WmsFrame(wxWindow* parent, wxWindowID id, const wxString& title,
                    const wxPoint& pos, const wxSize& size, long style)
     : wxFrame(parent, id, title, pos, size, style) {
-  // this->SetSizeHints(wxSize(500, 300), wxDefaultSize);
 
   pText = new wxStaticText(this, wxID_STATIC, wxT("Clean"));
   pText->SetForegroundColour(wxColor("red"));
-
-  //m_pChartCanvas = new ChartCanvas(this, 10);
-  //m_pChartCanvas->SetPosition(wxPoint(0, 0));
-  //m_pChartCanvas->SetSize(wxSize(100, 100));
 
   jpegdatabuffer = new char[10000000];
 
