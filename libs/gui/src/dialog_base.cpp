@@ -30,11 +30,7 @@ BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
                style) {
   m_layout = new wxBoxSizer(wxVERTICAL);
   m_content = new wxBoxSizer(wxVERTICAL);
-#if wxCHECK_VERSION(3, 1, 2)
-  auto flags = wxSizerFlags().Border(wxALL, FromDIP(kDialogPadding));
-#else
-  auto flags = wxSizerFlags().Border();
-#endif
-  m_layout->Add(m_content, flags);
+  m_layout->Add(m_content, wxSizerFlags().Border(
+                               wxALL, GUI::GetSpacing(this, kDialogPadding)));
   SetSizer(m_layout);
 }

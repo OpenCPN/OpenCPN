@@ -38,16 +38,11 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
 
   Bind(wxEVT_BUTTON, &AlertDialog::OnConfirm, this, wxID_OK);
   Bind(wxEVT_BUTTON, &AlertDialog::OnCancel, this, wxID_CANCEL);
-#if wxCHECK_VERSION(3, 2, 0)
-  auto flags = wxSizerFlags().Border(wxALL, FromDIP(kDialogPadding));
-#else
-  auto flags = wxSizerFlags().Border();
-#endif
-  m_layout->Add(footer, flags);
+  m_layout->Add(footer, wxSizerFlags().Border(
+                            wxALL, GUI::GetSpacing(this, kDialogPadding)));
 }
 
-AlertDialog::~AlertDialog() {
-}
+AlertDialog::~AlertDialog() {}
 
 void AlertDialog::SetListener(IAlertConfirmation* listener) {
   m_listener = listener;
@@ -59,7 +54,6 @@ void AlertDialog::SetMessage(const std::string& msg) {
 }
 
 int AlertDialog::ShowModal() {
-
   // Adjust the dialog size.
   m_layout->Fit(this);
   wxSize size(GetSize());

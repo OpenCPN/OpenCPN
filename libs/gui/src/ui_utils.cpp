@@ -18,7 +18,17 @@
  **************************************************************************/
 
 #include <wx/frame.h>
+#include <wx/window.h>
+
 #include "ui_utils.h"
+
+int GUI::GetSpacing(wxWindow* window, int factor) {
+#if wxCHECK_VERSION(3, 2, 0)
+  return window->FromDIP(kSpacing * factor);
+#else
+  return kScaling * factor;
+#endif
+}
 
 void GUI::PropagateResize(wxWindow* window) {
   wxWindow* parent = window->GetParent();

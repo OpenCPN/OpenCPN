@@ -27,5 +27,20 @@
  * Organizes constant variables and methods.
  */
 namespace GUI {
+
+/**
+ * Default spacing in pixels.
+ */
+static const int kSpacing = 6;
+
+/**
+ * Multiply default spacing with a factor,
+ * and calculate device independent pixels.
+ * @param window Owner class.
+ * @param int Scaling factor.
+ * @return Scaling in DIP.
+ */
+int GetSpacing(wxWindow* window, int factor);
+
 void PropagateResize(wxWindow* window);
 }  // namespace GUI
