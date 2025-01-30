@@ -327,10 +327,7 @@ void MarkInfoDlg::Create() {
 
   // Basic properties grid layout
   wxPanel* props_panel = new wxPanel(m_panelBasicProperties);
-  wxFlexGridSizer* props_sizer =
-      new wxFlexGridSizer(2, m_sizeMetric / 2, m_sizeMetric * 2);
-  props_sizer->AddGrowableCol(0, 0);  // first column grows
-  props_sizer->AddGrowableCol(1, 1);  // second column grows
+  FormGrid* props_sizer = new FormGrid(this);
   props_panel->SetSizer(props_sizer);
   bSizerBasicProperties->Add(props_panel, 0, wxALL | wxEXPAND, 16);
   int label_size = m_sizeMetric * 4;
