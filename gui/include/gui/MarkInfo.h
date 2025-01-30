@@ -54,6 +54,7 @@
 
 #include <wx/dialog.h>
 #include "field_text.h"
+#include "form_grid.h"
 
 #include "route_validator.h"
 
@@ -255,7 +256,7 @@ protected:
   wxColourPickerCtrl* m_PickColor;
   wxCheckBox* m_cbEtaPresent;
   wxBoxSizer* bMainSizer;
-  wxFlexGridSizer* fSizerBasicProperties;
+  FormGrid* fSizerBasicProperties;
   wxFlexGridSizer* waypointradarGrid;
   wxFlexGridSizer* waypointrrSelect;
   wxGridBagSizer* bGB_SizerProperties;
