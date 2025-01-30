@@ -35,6 +35,7 @@
 #include <iomanip>
 
 #include "model/comm_driver.h"
+#include "model/ocpn_utils.h"
 
 std::string NavAddr::BusToString(NavAddr::Bus b) {
   switch (b) {
@@ -85,4 +86,11 @@ std::string Nmea2000Msg::to_string() const {
                 [&s](unsigned char c) { s.append(CharToString(c)); });
 
   return NavMsg::to_string() + " " + PGN.to_string() + " " + s;
+}
+
+std::string Nmea0183Msg::to_string() const {
+  std::stringstream ss;
+  ss << NavAddr::BusToString(bus) << " " << key() << " " << talker << type
+     << " " << ocpn::printable(payload);
+  return ss.str();
 }

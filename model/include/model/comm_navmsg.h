@@ -216,6 +216,7 @@ public:
   /** Return unique key used by observable to notify/listen. */
   virtual std::string key() const = 0;
 
+  /** Return printable string for logging etc without trailing nl */
   virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + key();
   }
@@ -297,9 +298,7 @@ public:
 
   std::string key() const { return Nmea0183Msg::MessageKey(type.c_str()); };
 
-  std::string to_string() const {
-    return NavMsg::to_string() + " " + talker + type + " " + payload;
-  }
+  std::string to_string() const;
 
   /** Return key which should be used to listen to given message type. */
   static std::string MessageKey(const char* type = "ALL") {
@@ -336,6 +335,8 @@ public:
   const std::string dest_host;  ///< hostname, ip address or 'localhost'
 
   std::string key() const { return std::string("plug.json-") + name; };
+
+  std::string to_string() const { return name + ": " + message; }
 };
 
 /** A parsed SignalK message over ipv4 */
