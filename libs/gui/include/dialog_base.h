@@ -22,23 +22,22 @@
 
 #include <wx/dialog.h>
 
+#include "ui_utils.h"
+
 /**
  * OpenCPN standard dialog layout with content sizer.
  */
 class BaseDialog : public wxDialog {
 public:
-  static const int kScaling = 6;  // UI guideline default
-
   BaseDialog(wxWindow* parent, const std::string& title,
              long style = wxDEFAULT_DIALOG_STYLE);
-
-  void AddHtmlContent(const wxString& html);
 
 protected:
   wxBoxSizer* m_layout;
   wxBoxSizer* m_content;
 
-  static const int kDialogPadding = 12;
+  // padding scaling factor
+  static const int kDialogPadding = 2;
 };
 
 #endif  // DIALOG_BASE_H
