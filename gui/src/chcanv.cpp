@@ -1714,12 +1714,13 @@ bool ChartCanvas::DoCanvasUpdate(void) {
                                0, GetVPRotation());
     }
     // Measure rough jump distance if in bfollow mode
-    // No good reason to do smooth pan for jump more than one degree.
+    // No good reason to do smooth pan for
+    // jump distance more than one screen width at scale.
     bool super_jump = false;
     if (m_bFollow) {
-      double bearing, distance;
-      if ((fabs(vpLat - m_vLat) > 1) || (fabs(vpLon - m_vLon) > 1))
-        super_jump = true;
+      double pixlt = fabs(vpLat - m_vLat) * 1852 * 60 * GetVPScale();
+      double pixlg = fabs(vpLon - m_vLon) * 1852 * 60 * GetVPScale();
+      if (wxMax(pixlt, pixlg) > GetCanvasWidth()) super_jump = true;
     }
 
     if (m_bFollow && g_btenhertz && !super_jump) {
