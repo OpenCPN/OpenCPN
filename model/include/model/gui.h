@@ -31,6 +31,3 @@ static const char* const kDataMonitorWindowName = "DataMonitor";
 
 /** Return the top level window a k a gFrame. */
 wxWindow* GetTopWindow();
-
-/** Return currently active NmeaLog instance  or nullptr. */
-NmeaLog* GetNmeaLog();
