@@ -33,12 +33,6 @@ wxWindow* GetTopWindow() {
   return top_window;
 }
 
-NmeaLog* GetNmeaLog() {
-  auto w = wxWindow::FindWindowByName(kNmeaLogWindowName);
-  if (!w || !w->IsShownOnScreen()) return nullptr;
-  return dynamic_cast<NmeaLog*>(w);
-}
-
 // Propagate layout resize to all parent windows
 void PropagateResize(wxWindow* window) {
   wxWindow* parent = window->GetParent();
