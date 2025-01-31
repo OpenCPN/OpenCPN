@@ -11,9 +11,14 @@
 #include <wx/panel.h>
 #include <wx/platinfo.h>
 #include <wx/sizer.h>
+#include <wx/sstream.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/wrapsizer.h>
+
+#ifndef ocpnUSE_wxBitmapBundle
+#include <wxSVG/svg.h>
+#endif
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -262,9 +267,16 @@ private:
     m_show_filter = !m_show_filter;
     char buffer[2048];
     strcpy(buffer, m_show_filter ? kNoFunnelSvg : kFunnelSvg);
+#ifdef ocpnUSE_wxBitmapBundle
     auto icon_size = wxSize(2 * GetCharWidth(), GetCharHeight());
     auto bundle = wxBitmapBundle::FromSVG(buffer, icon_size);
     SetBitmap(bundle);
+#else
+    wxStringInputStream wis(buffer);
+    wxSVGDocument svg_doc(wis);
+    wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
+    SetBitmap(wxBitmap(image));
+#endif
     m_quick_filter->Show(m_show_filter);
     SetToolTip(m_show_filter ? _("Close quick filter")
                              : _("Open quick filter"));
