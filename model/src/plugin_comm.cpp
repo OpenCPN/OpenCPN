@@ -32,10 +32,11 @@
 
 #include "model/comm_appmsg.h"
 #include "model/comm_navmsg_bus.h"
-#include "model/plugin_loader.h"
-
-#include "model/plugin_comm.h"
 #include "model/gui.h"
+#include "model/nmea_log.h"
+#include "model/plugin_comm.h"
+#include "model/plugin_loader.h"
+#include "model/ocpn_utils.h"
 
 #include "ocpn_plugin.h"
 
@@ -72,7 +73,8 @@ static std::string MsgToString(PlugIn_Position_Fix fix) {
 
 static void LogMessage(const std::shared_ptr<const NavMsg>& message,
                        const std::string prefix = "") {
-  auto log = GetNmeaLog();
+  auto w = wxWindow::FindWindowByName(kDataMonitorWindowName);
+  auto log = dynamic_cast<NmeaLog*>(w);
   if (log) {
     NavmsgStatus ns;
     ns.direction = NavmsgStatus::Direction::kInternal;
@@ -81,6 +83,7 @@ static void LogMessage(const std::shared_ptr<const NavMsg>& message,
     log->Add(ll);
   }
 }
+
 void SendMessageToAllPlugins(const wxString& message_id,
                              const wxString& message_body) {
   auto msg = std::make_shared<PluginMsg>(
@@ -92,6 +95,7 @@ void SendMessageToAllPlugins(const wxString& message_id,
   wxString body(message_body);
 
   LogMessage(msg);
+  //LogMessage(std::string("internal ALL ") + msg->to_string());  FIXME/leamas
 
   for (auto pic : *PluginLoader::getInstance()->GetPlugInArray()) {
     if (pic->m_enabled && pic->m_init_state) {
@@ -191,7 +195,7 @@ void SendPositionFixToAllPlugIns(GenericPosDatEx* ppos) {
   pfix_ex.Hdm = ppos->kHdm;
 
   auto msg = std::make_shared<PluginMsg>("position-fix", MsgToString(pfix));
-  LogMessage(msg, "Position-fix ");
+  LogMessage(msg, "application ALL gnss-fix ");
 
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
@@ -351,7 +355,7 @@ void SendCursorLatLonToAllPlugIns(double lat, double lon) {
   }
   auto msg = std::make_shared<PluginMsg>(
       PluginMsg("Cursor-pos", Position(lat, lon).to_string()));
-  LogMessage(msg, "Cursor-pos ");
+  LogMessage(msg, "application ALL cursor-pos  ");
 }
 
 void SendNMEASentenceToAllPlugIns(const wxString& sentence) {
@@ -373,7 +377,7 @@ void SendNMEASentenceToAllPlugIns(const wxString& sentence) {
   sigaction(SIGSEGV, &temp, NULL);
 #endif
   auto msg = std::make_shared<PluginMsg>("NMEA-msg", sentence.ToStdString());
-  LogMessage(msg, "NMEA_msg");
+  LogMessage(msg, "internal ALL nmea-msg ");
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
