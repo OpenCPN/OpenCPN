@@ -30,6 +30,7 @@ namespace GUI {
 
 /**
  * Default spacing in pixels.
+ * Use GetSpacing() for DIP.
  */
 static const int kSpacing = 6;
 
