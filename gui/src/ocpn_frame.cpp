@@ -5415,14 +5415,14 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
 
     // printf("                      cog:  %g\n", gCog);
     //   And the same for gHdt
-    if (!std::isnan(gHdt_gt)) {
+    if (!std::isnan(gHdt_gt) && !std::isnan(gHdt_gt_m1)) {
       uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
       double diffc = diff / 1e9;  // sec
       gHdt = gHdt_gt_m1 + (hdt_rate_gt * diffc);
     }
 
     // Estimate lat/lon position
-    if (gSog_gt) {
+    if (gSog_gt && !std::isnan(gCog_gt)) {
       double delta_t = diffc / 3600;        // hours
       double distance = gSog_gt * delta_t;  // NMi
 
