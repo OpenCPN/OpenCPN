@@ -639,6 +639,11 @@ static void OnDriverMsg(const ObservedEvt &ev) {
   OCPNMessageBox(GetTopWindow(), msg, _("Communication Error"));
 }
 
+static NmeaLog *GetDataMonitor() {
+  auto w = wxWindow::FindWindowByName(kDataMonitorWindowName);
+  return dynamic_cast<NmeaLog *>(w);
+}
+
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
@@ -730,9 +735,13 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
-  log_callbacks.log_is_active = []() { return bool(GetNmeaLog()); };
+  log_callbacks.log_is_active = []() {
+    auto log = GetDataMonitor();
+    return log && log->IsActive();
+  };
   log_callbacks.log_message = [](Logline ll) {
-    if (auto log = GetNmeaLog()) log->Add(ll);
+    NmeaLog *monitor = GetDataMonitor();
+    if (monitor && monitor->IsActive()) monitor->Add(ll);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 
