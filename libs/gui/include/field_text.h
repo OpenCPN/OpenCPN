@@ -56,7 +56,6 @@ public:
   void OnTextChanged(wxCommandEvent& event);
 
 private:
-  wxSizer* m_sizer;
   wxStaticText* m_error_text;
 };
 

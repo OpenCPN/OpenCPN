@@ -24,35 +24,36 @@
 TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
                      const wxPoint& pos, const wxSize& size, long style)
     : wxTextCtrl(new wxPanel(parent), id, value, pos, size, style) {
-  m_sizer = new wxBoxSizer(wxVERTICAL);
-  m_sizer->Add(this, 0, wxEXPAND);
-
   auto* panel = dynamic_cast<wxPanel*>(GetParent());
   assert(panel && "Textfield: Wrong parent type");
-  panel->SetSizer(m_sizer);
+
+  // Sizer for field with error text.
   m_error_text = new wxStaticText(panel, wxID_ANY, "");
+  wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+  sizer->Add(this, 0, wxEXPAND);
+  sizer->Add(m_error_text, 0, wxEXPAND);
+  m_error_text->Hide();
+  panel->SetSizer(sizer);
+  sizer->Fit(panel);
 }
 
 void TextField::OnError(const wxString& msg = "") {
   bool has_error = m_error_text->GetLabel().Len() > 0;
+  m_error_text->ClearBackground();
   m_error_text->SetLabel(msg);
+  m_error_text->SetForegroundColour(*wxRED);
+  m_error_text->Show(msg.Len() > 0);
+  m_error_text->Refresh();
 
-  if (msg.IsEmpty()) {
-    m_sizer->Detach(m_error_text);
-    GUI::PropagateResize(this);
-  } else if (has_error) {
-    m_error_text->ClearBackground();
-    m_error_text->Refresh();
-  } else {
-    m_error_text->SetForegroundColour(*wxRED);
-    m_sizer->Insert(1, m_error_text, 0, wxALL | wxEXPAND, 4);
-    GUI::PropagateResize(this);
+  // Update layout when error status changed.
+  if (msg.Len() > 0 != has_error) {
+    GUI::PropagateLayout(this);
   }
 }
 
 void TextField::SetValidator(const wxValidator& validator) {
   wxTextCtrl::SetValidator(validator);
-  OnError("");
+  OnError();
 }
 
 void TextField::OnTextChanged(wxCommandEvent& event) {
