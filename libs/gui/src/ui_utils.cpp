@@ -26,7 +26,7 @@ int GUI::GetSpacing(wxWindow* window, int factor) {
 #if wxCHECK_VERSION(3, 2, 0)
   return window->FromDIP(kSpacing * factor);
 #else
-  return kScaling * factor;
+  return kSpacing * factor;
 #endif
 }
 
