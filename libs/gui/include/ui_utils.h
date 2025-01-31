@@ -42,5 +42,5 @@ static const int kSpacing = 6;
  */
 int GetSpacing(wxWindow* window, int factor);
 
-void PropagateResize(wxWindow* window);
+void PropagateLayout(wxWindow* window);
 }  // namespace GUI

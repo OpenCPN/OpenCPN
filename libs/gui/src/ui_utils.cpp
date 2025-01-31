@@ -30,13 +30,9 @@ int GUI::GetSpacing(wxWindow* window, int factor) {
 #endif
 }
 
-void GUI::PropagateResize(wxWindow* window) {
+void GUI::PropagateLayout(wxWindow* window) {
   wxWindow* parent = window->GetParent();
-  while (parent) {
-    parent->Layout();
-    parent = parent->GetParent();
-    if (wxTopLevelWindow* topLevel = wxDynamicCast(parent, wxTopLevelWindow)) {
-      break;
-    }
-  }
+  parent->Layout();
+  if (parent->IsTopLevel()) return;
+  PropagateLayout(parent);
 }
