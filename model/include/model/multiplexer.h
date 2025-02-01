@@ -84,8 +84,7 @@ private:
 
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
   bool HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  std::string N2K_LogMessage_Detail(unsigned int pgn,
-                                    std::shared_ptr<const Nmea2000Msg> n2k_msg);
+  std::string N2K_LogMessage_Detail(unsigned int pgn);
 
   MuxLogCallbacks m_log_callbacks;
   unsigned int last_pgn_logged;
