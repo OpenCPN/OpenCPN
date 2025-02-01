@@ -1,12 +1,15 @@
 #include <iostream>  // debug junk
+#include <fstream>
 
 #include "data_monitor.h"
 #include "data_monitor_src.h"
 
-#include <wx/choice.h>
 #include <wx/button.h>
+#include <wx/choice.h>
+#include <wx/filedlg.h>
 #include <wx/menu.h>
 #include <wx/panel.h>
+#include <wx/platinfo.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
@@ -19,7 +22,9 @@
 #include "tty_scroll.h"
 #include "data_monitor_src.h"
 #include "svg_icons.h"
+#include "std_filesystem.h"
 #include "model/nmea_log.h"
+#include "model/gui.h"
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
@@ -335,6 +340,66 @@ private:
   }
 };
 
+DataLogger::DataLogger(wxWindow* parent, fs::path path)
+    : m_parent(parent),
+      m_path(path),
+      m_stream(path, std::ios_base::app),
+      m_is_logging(false) {}
+
+DataLogger::DataLogger(wxWindow* parent)
+    : DataLogger(parent, DefaultLogfile()) {}
+
+void DataLogger::SetLogging(bool logging) {
+  // TODO: dialog if no logfile i. e. m_path == DefaultLogfile()
+  m_is_logging = logging;
+}
+
+void DataLogger::SetLogfile(fs::path path) {
+  m_stream = std::ofstream(path, std::ios_base::app);
+}
+
+fs::path DataLogger::DefaultLogfile() {
+  if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
+    return "NUL:";
+  else
+    return "/dev/null";
+}
+
+void DataLogger::Add(const Logline& ll) {
+  if (!m_is_logging) return;
+  wxString ws;
+#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
+  ws << wxDateTime::Now().FormatISOTime() << " ";
+#else
+  ws << "- ";
+#endif
+  if (ll.state.direction == NavmsgStatus::Direction::kOutput)
+    ws << kUtfRightArrow << " ";
+  else if (ll.state.direction == NavmsgStatus::Direction::kInput)
+    ws << kUtfLeftwardsArrowToBar << " ";
+  else if (ll.state.direction == NavmsgStatus::Direction::kInternal)
+    ws << kUtfLeftRightArrow << " ";
+  else
+    ws << kUtfLeftArrow << " ";
+  if (ll.state.status != NavmsgStatus::State::kOk) {
+    ws << kUtfMultiplicationX << " ";
+  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput) {
+    ws << kUtfFallingDiagonal << " ";
+  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredDropped) {
+    ws << kUtfCircledDivisionSlash << " ";
+  } else {
+    ws << kUtfCheckMark << " ";
+  }
+  ws << (ll.stream_name.empty() ? "-" : ll.stream_name) << " ";
+  if (ll.state.status != NavmsgStatus::State::kOk) {
+    ws << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
+  } else {
+    ws << "ok";
+  }
+  ws << " " << (ll.navmsg ? ll.navmsg->to_string() : "") << "\n";
+  m_stream << ws;
+}
+
 DataMonitor::DataMonitor(wxWindow* parent, std::function<void()> on_exit)
     : wxFrame(parent, wxID_ANY, "Data Monitor"),
       m_on_exit(on_exit),
@@ -342,7 +407,8 @@ DataMonitor::DataMonitor(wxWindow* parent, std::function<void()> on_exit)
         auto msg = std::dynamic_pointer_cast<const Nmea0183Msg>(navmsg);
         TtyPanel::AddIfExists(navmsg);
       }),
-      m_quick_filter(new QuickFilterPanel(this)) {
+      m_quick_filter(new QuickFilterPanel(this)),
+      m_logger(parent) {
   auto vbox = new wxBoxSizer(wxVERTICAL);
   auto tty_panel = new TtyPanel(this, 12);
   vbox->Add(tty_panel, wxSizerFlags(1).Expand().Border());
@@ -361,6 +427,17 @@ DataMonitor::DataMonitor(wxWindow* parent, std::function<void()> on_exit)
     m_on_exit();
     Destroy();
   });
+}
+
+void DataMonitor::Add(const Logline& ll) {
+  TtyPanel::AddIfExists(ll);
+  m_logger.Add(ll);
+}
+
+bool DataMonitor::IsActive() const {
+  wxWindow* w = wxWindow::FindWindowByName("TtyPanel");
+  assert(w && "No TtyPanel found");
+  return w->IsShownOnScreen();
 }
 
 #pragma clang diagnostic pop
