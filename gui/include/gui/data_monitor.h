@@ -27,19 +27,55 @@
 
 #include <iostream>  // debug junk
 #include <functional>
+#include <fstream>
 
 #include <wx/frame.h>
 
 #include "data_monitor_src.h"
+#include "std_filesystem.h"
 
-class DataMonitor : public wxFrame {
+class DataLogger {
+public:
+  DataLogger(wxWindow* parent, fs::path path);
+
+  DataLogger(wxWindow* parent);
+
+  void SetLogging(bool logging);
+
+  void SetLogfile(fs::path path);
+
+  void Add(std::string msg);
+
+  void Add(const Logline& ll);
+
+  fs::path GetLogfile() { return m_path; }
+
+private:
+  wxWindow* m_parent;
+  fs::path m_path;
+  std::ofstream m_stream;
+  bool m_is_logging;
+
+  fs::path DefaultLogfile();
+};
+
+/** Overall logging handler, outputs to screen and log file. */
+class DataMonitor : public wxFrame, public NmeaLog {
 public:
   DataMonitor(wxWindow* parent, std::function<void()> on_exit);
+
+  /** Add an input line to log output. */
+  void Add(std::string msg);
+
+  void Add(const Logline& ll) override;
+
+  bool IsActive() const override;
 
 private:
   std::function<void()> m_on_exit;
   DataMonitorSrc m_monitor_src;
   wxWindow* m_quick_filter;
+  DataLogger m_logger;
 };
 
 #endif  //  DATA_MONITOR_DLG__
