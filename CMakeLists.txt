@@ -358,7 +358,7 @@ if (NOT WIN32 AND NOT APPLE)
   if (NOT OCPN_PEDANTIC)
     add_compile_options(
       "-Wno-unused" "-fexceptions" "-rdynamic" "-fno-strict-aliasing"
-      "-Wno-deprecated-declarations"
+      "-Wno-deprecated-declarations" "-Wno-unknown-pragmas"
     )
   endif ()
   if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
