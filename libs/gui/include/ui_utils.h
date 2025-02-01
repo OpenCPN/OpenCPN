@@ -19,9 +19,14 @@
 
 /**
  * \file
- * GUI library related utils.
+ * GUI library utils and events.
  */
 #include <wx/window.h>
+#include <wx/scrolwin.h>
+#include <wx/event.h>
+
+// Declare custom events
+wxDECLARE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
 /**
  * Organizes constant variables and methods.
@@ -29,7 +34,7 @@
 namespace GUI {
 
 /**
- * Default spacing in pixels.
+ * UI guideline default spacing in pixels.
  * Use GetSpacing() for DIP.
  */
 static const int kSpacing = 6;
@@ -43,5 +48,9 @@ static const int kSpacing = 6;
  */
 int GetSpacing(wxWindow* window, int factor);
 
-void PropagateLayout(wxWindow* window);
+/**
+ * Trigger window layout event.
+ * @param ctx Window context.
+ */
+void LayoutResizeEvent(wxWindow* ctx);
 }  // namespace GUI

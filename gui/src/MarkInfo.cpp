@@ -59,6 +59,7 @@
 #include "styles.h"
 #include "svg_utils.h"
 #include "TCWin.h"
+#include "ui_utils.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -210,6 +211,7 @@ EVT_TEXT(ID_LONCTRL, MarkInfoDlg::OnPositionCtlUpdated)
 EVT_CHOICE(ID_WPT_RANGERINGS_NO, MarkInfoDlg::OnWptRangeRingsNoChange)
 // the HTML listbox's events
 EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
+EVT_COMMAND(wxID_ANY, EVT_LAYOUT_RESIZE, MarkInfoDlg::OnLayoutResize)
 EVT_CLOSE(MarkInfoDlg::OnClose)
 
 // EVT_CHOICE( ID_WAYPOINTRANGERINGS, MarkInfoDef::OnWaypointRangeRingSelect )
@@ -313,9 +315,9 @@ void MarkInfoDlg::Create() {
 
   // Basic panel
   m_panelBasicProperties->SetScrollRate(0, 2);
+  m_notebookProperties->AddPage(m_panelBasicProperties, _("Basic"), true);
   bSizerBasicProperties = new wxBoxSizer(wxVERTICAL);
   m_panelBasicProperties->SetSizer(bSizerBasicProperties);
-  m_notebookProperties->AddPage(m_panelBasicProperties, _("Basic"), true);
 
   // Layer notification
   m_staticTextLayer = new wxStaticText(
@@ -333,10 +335,7 @@ void MarkInfoDlg::Create() {
   int label_size = m_sizeMetric * 4;
 
   // Name property
-  wxStaticText* name_label = new wxStaticText(props_panel, wxID_ANY, _("Name"));
-  m_textName = new TextField(props_panel, wxID_ANY, wxEmptyString);
-  props_sizer->Add(name_label, 0, wxALIGN_TOP);
-  props_sizer->Add(m_textName->GetParent(), 0, wxEXPAND);
+  m_textName = new TextField(props_panel, _("Name"));
 
   // Show name checkbox
   wxStaticText* name_cb_label =
@@ -363,21 +362,10 @@ void MarkInfoDlg::Create() {
   props_sizer->Add(icon_label, 0, wxALIGN_CENTER_VERTICAL);
   props_sizer->Add(m_bcomboBoxIcon, 0, wxEXPAND);
 
-  // Latitude property
-  wxStaticText* latitude_label =
-      new wxStaticText(props_panel, wxID_ANY, _("Latitude"));
-  latitude_label->SetMinSize(wxSize(label_size, -1));
-  m_textLatitude = new TextField(props_panel, wxID_ANY, wxEmptyString);
-  props_sizer->Add(latitude_label, 0, wxALIGN_TOP);
-  props_sizer->Add(m_textLatitude->GetParent(), 0, wxEXPAND);
-
-  // Longitude property
-  wxStaticText* longitude_label =
-      new wxStaticText(props_panel, wxID_ANY, _("Longitude"));
-  longitude_label->SetMinSize(wxSize(label_size, -1));
-  m_textLongitude = new TextField(props_panel, wxID_ANY, wxEmptyString);
-  props_sizer->Add(longitude_label, 0, wxALIGN_TOP);
-  props_sizer->Add(m_textLongitude->GetParent(), 0, wxEXPAND);
+  // Lat/lon properties
+  m_textLatitude = new TextField(props_panel, _("Latitude"));
+  m_textLongitude = new TextField(props_panel, _("Longitude"));
+  props_sizer->Fit(props_panel);
 
   // Description box
   wxStaticBox* desc_box =
@@ -1011,6 +999,11 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
 
   event.Skip();
 #endif
+}
+
+void MarkInfoDlg::OnLayoutResize(wxCommandEvent& event) {
+  m_panelBasicProperties->Layout();
+  this->Layout();
 }
 
 void MarkInfoDlg::OnDescChangedExt(wxCommandEvent& event) {

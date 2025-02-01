@@ -356,6 +356,7 @@ protected:
   void OnRightClickLatLon(wxCommandEvent& event);
   void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
   void OnHyperLinkClick(wxHyperlinkEvent& event);
+  void OnLayoutResize(wxCommandEvent& event);
 
   void On_html_link_popupmenu_Click(wxCommandEvent& event);
   void DefautlBtnClicked(wxCommandEvent& event);
