@@ -37,9 +37,17 @@
  */
 class TextField : public wxTextCtrl {
 public:
-  TextField(wxWindow* parent, wxWindowID id = wxID_ANY,
-            const wxString& value = "", const wxPoint& pos = wxDefaultPosition,
-            const wxSize& size = wxDefaultSize, long style = 0);
+  /**
+   * Add new text field to the form grid.
+   * It requires a parent window with form grid,
+   * to layout label and field in the grid columns.
+   * @param parent Parent window.
+   * @param label Field label.
+   * @param value Field value.
+   * @param id Window identifier.
+   */
+  TextField(wxWindow* parent, const wxString& label, const wxString& value = "",
+            wxWindowID id = wxID_ANY);
 
   /**
    * Shows an error below the text field.

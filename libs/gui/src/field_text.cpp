@@ -18,20 +18,31 @@
  ***************************************************************************
  */
 
+#include <wx/notebook.h>
+
 #include "field_text.h"
+#include "form_grid.h"
 #include "ui_utils.h"
 
-TextField::TextField(wxWindow* parent, wxWindowID id, const wxString& value,
-                     const wxPoint& pos, const wxSize& size, long style)
-    : wxTextCtrl(new wxPanel(parent), id, value, pos, size, style) {
+TextField::TextField(wxWindow* parent, const wxString& label,
+                     const wxString& value, wxWindowID id)
+    : wxTextCtrl(new wxPanel(parent), id, value, wxDefaultPosition,
+                 wxDefaultSize, 0) {
   auto* panel = dynamic_cast<wxPanel*>(GetParent());
   assert(panel && "Textfield: Wrong parent type");
+
+  // Add field panel and label
+  auto* grid = dynamic_cast<FormGrid*>(parent->GetSizer());
+  assert(grid && "Textfield: Wrong parent sizer");
+  wxStaticText* text_label = new wxStaticText(parent, wxID_ANY, label);
+  grid->Add(text_label, wxSizerFlags(0).Align(wxALIGN_TOP));
+  grid->Add(panel, wxSizerFlags(0).Expand());
 
   // Sizer for field with error text.
   m_error_text = new wxStaticText(panel, wxID_ANY, "");
   wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-  sizer->Add(this, 0, wxEXPAND);
-  sizer->Add(m_error_text, 0, wxEXPAND);
+  sizer->Add(this, wxSizerFlags(0).Expand());
+  sizer->Add(m_error_text, wxSizerFlags(0).Expand());
   m_error_text->Hide();
   panel->SetSizer(sizer);
   sizer->Fit(panel);
@@ -46,8 +57,8 @@ void TextField::OnError(const wxString& msg = "") {
   m_error_text->Refresh();
 
   // Update layout when error status changed.
-  if (msg.Len() > 0 != has_error) {
-    GUI::PropagateLayout(this);
+  if ((msg.Len() > 0) != has_error) {
+    GUI::LayoutResizeEvent(this);
   }
 }
 

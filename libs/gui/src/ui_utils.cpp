@@ -17,10 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include <wx/frame.h>
-#include <wx/window.h>
-
 #include "ui_utils.h"
+
+// Define custom events
+wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
 int GUI::GetSpacing(wxWindow* window, int factor) {
 #if wxCHECK_VERSION(3, 2, 0)
@@ -30,9 +30,7 @@ int GUI::GetSpacing(wxWindow* window, int factor) {
 #endif
 }
 
-void GUI::PropagateLayout(wxWindow* window) {
-  wxWindow* parent = window->GetParent();
-  parent->Layout();
-  if (parent->IsTopLevel()) return;
-  PropagateLayout(parent);
+void GUI::LayoutResizeEvent(wxWindow* ctx) {
+  wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
+  wxPostEvent(ctx, event);
 }

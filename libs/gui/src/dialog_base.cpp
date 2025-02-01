@@ -33,4 +33,7 @@ BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
   m_layout->Add(m_content, wxSizerFlags().Border(
                                wxALL, GUI::GetSpacing(this, kDialogPadding)));
   SetSizer(m_layout);
+
+  // Handle layout resize event
+  Bind(EVT_LAYOUT_RESIZE, [&](wxCommandEvent&) { Layout(); });
 }
