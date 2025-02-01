@@ -62,49 +62,8 @@ wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
 
 Multiplexer *g_pMUX;
 
-#ifdef HAVE_READLINK
-
-static std::string do_readlink(const char *link) {
-  // Strip possible Serial: or Usb: prefix:
-  const char *colon = strchr(link, ':');
-  const char *path = colon ? colon + 1 : link;
-
-  char target[PATH_MAX + 1] = {0};
-  int r = readlink(path, target, sizeof(target));
-  if (r == -1 && (errno == EINVAL || errno == ENOENT)) {
-    // Not a a symlink
-    return path;
-  }
-  if (r == -1) {
-    wxLogDebug("Error reading device link %s: %s", path, strerror(errno));
-    return path;
-  }
-  if (*target == '/') {
-    return target;
-  }
-  char buff[PATH_MAX + 1];
-  memcpy(buff, path, std::min(strlen(path) + 1, (size_t)PATH_MAX));
-  return std::string(dirname(buff)) + "/" + target;
-}
-
-static bool is_same_device(const char *port1, const char *port2) {
-  std::string dev1 = do_readlink(port1);
-  std::string dev2 = do_readlink(port2);
-  return dev1 == dev2;
-}
-
-#else  // HAVE_READLINK
-
-static bool inline is_same_device(const char *port1, const char *port2) {
-  return strcmp(port1, port2) == 0;
-}
-
-#endif  // HAVE_READLINK
-
 Multiplexer::Multiplexer(MuxLogCallbacks cb, bool &filter_behaviour)
     : m_log_callbacks(cb), m_legacy_input_filter_behaviour(filter_behaviour) {
-  auto &msgbus = NavMsgBus::GetInstance();
-
   m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
                               EVT_N0183_MUX);
   Bind(EVT_N0183_MUX, [&](ObservedEvt ev) {
@@ -121,18 +80,10 @@ Multiplexer::Multiplexer(MuxLogCallbacks cb, bool &filter_behaviour)
 
 Multiplexer::~Multiplexer() {}
 
-static const wxChar SYMBOL_INPUT = 0x2190;     // ← LEFT ARROW
-static const wxChar SYMBOL_OUTPUT = 0x2192;    // → RIGHT ARROW
-static const wxChar SYMBOL_ERROR = 0x2716;     // ✖ MULTIPLICATION X
-static const wxChar SYMBOL_FILTERED = 0x269F;  // ⚟ FALLING DIAGONAL
-static const wxChar SYMBOL_DROPPED = 0x2298;   // ⊘ CIRCLED DIVISION SLASH
-static const wxChar SYMBOL_ACCEPTED = 0x2713;  // ✓ CHECK MARK
-
-void Multiplexer::LogOutputMessage(const std::shared_ptr<const NavMsg> &msg,
-                                   const std::string &stream_name,
-                                   NavmsgStatus status) {
+void Multiplexer::LogOutputMessage(const std::shared_ptr<const NavMsg>& msg,
+                                  const std::string& stream_name,
+                                  NavmsgStatus ns) {
   if (m_log_callbacks.log_is_active()) {
-    NavmsgStatus ns;
     ns.direction = NavmsgStatus::Direction::kOutput;
     Logline ll(msg, ns, stream_name);
     m_log_callbacks.log_message(ll);
@@ -266,10 +217,11 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 #endif
       }
 
+      std::shared_ptr<const Nmea0183Msg> msg = n0183_msg;
       if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
           bpass_input_filter) {
         //  Allow re-transmit on same port (if type is SERIAL),
-        //  or any any other NMEA0183 port supporting output
+        //  or any other NMEA0183 port supporting output
         //  But, do not echo to the source network interface.  This will likely
         //  recurse...
         if ((!params.DisableEcho && params.Type == SERIAL) ||
@@ -282,12 +234,12 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
                                             FILTER_OUTPUT)) {
               // Reset source address. It's const, so make a modified copy
               std::string id("XXXXX");
-              unsigned comma_pos = n0183_msg->payload.find(",");
+              size_t comma_pos = n0183_msg->payload.find(",");
               if (comma_pos != std::string::npos && comma_pos > 5)
                 id = n0183_msg->payload.substr(1, comma_pos - 1);
               auto null_addr = std::make_shared<NavAddr>();
-              auto msg = std::make_shared<Nmea0183Msg>(id, n0183_msg->payload,
-                                                       null_addr);
+              msg = std::make_shared<Nmea0183Msg>(id, n0183_msg->payload,
+                                                  null_addr);
               bxmit_ok = driver->SendMessage(msg, null_addr);
               bout_filter = false;
             }
@@ -308,9 +260,6 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 }
 
 void Multiplexer::InitN2KCommListeners() {
-  // Initialize the comm listeners
-  auto &msgbus = NavMsgBus::GetInstance();
-
   // Create a series of N2K listeners
   // to allow minimal N2K Debug window logging
 
@@ -355,7 +304,7 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
   wxString log_msg;
   log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source, ident,
-                 N2K_LogMessage_Detail(pgn, n2k_msg).c_str());
+                 N2K_LogMessage_Detail(pgn).c_str());
 
   LogInputMessage(n2k_msg, "N2000", false, false);
 
@@ -363,175 +312,122 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   return true;
 }
 
-std::string Multiplexer::N2K_LogMessage_Detail(
-    unsigned int pgn, std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+std::string Multiplexer::N2K_LogMessage_Detail(unsigned int pgn) {
   std::string notused = "Not used by OCPN, maybe by Plugins";
 
   switch (pgn) {
     case 129029:
       return "GNSS Position & DBoard: SAT System";
-      break;
     case 129025:
       return "Position rapid";
-      break;
     case 129026:
       return "COG/SOG rapid";
-      break;
     case 129038:
       return "AIS Class A position report";
-      break;
     case 129039:
       return "AIS Class B position report";
-      break;
     case 129041:
       return "AIS Aids to Navigation (AtoN) Report";
-      break;
     case 129793:
       return "AIS Base Station report";
-      break;
     case 129794:
       return "AIS static data class A";
-      break;
+      ;
     case 129809:
       return "AIS static data class B part A";
-      break;
     case 129810:
       return "AIS static data class B part B";
-      break;
     case 127250:
       return "Heading rapid";
-      break;
     case 129540:
       return "GNSS Sats & DBoard: SAT Status";
-      break;
     //>> Dashboard
     case 127245:
       return "DBoard: Rudder data";
-      break;
     case 127257:
       return "DBoard: Roll Pitch";
-      break;
     case 128259:
       return "DBoard: Speed through water";
-      break;
+      ;
     case 128267:
       return "DBoard: Depth Data";
-      break;
     case 128275:
       return "DBoard: Distance log";
-      break;
     case 130306:
       return "DBoard: Wind data";
-      break;
     case 130310:
       return "DBoard: Envorinment data";
-      break;
     // Not used PGNs
     case 126992:
       return "System time. " + notused;
-      break;
     case 127233:
       return "Man Overboard Notification. " + notused;
-      break;
     case 127237:
       return "Heading/Track control. " + notused;
-      break;
     case 127251:
       return "Rate of turn. " + notused;
-      break;
     case 127258:
       return "Magnetic variation. " + notused;
-      break;
     case 127488:
       return "Engine rapid param. " + notused;
-      break;
     case 127489:
       return "Engine parameters dynamic. " + notused;
-      break;
     case 127493:
       return "Transmission parameters dynamic. " + notused;
-      break;
     case 127497:
       return "Trip Parameters, Engine. " + notused;
-      break;
     case 127501:
       return "Binary status report. " + notused;
-      break;
     case 127505:
       return "Fluid level. " + notused;
-      break;
     case 127506:
       return "DC Detailed Status. " + notused;
-      break;
     case 127507:
       return "Charger Status. " + notused;
-      break;
     case 127508:
       return "Battery Status. " + notused;
-      break;
     case 127513:
       return "Battery Configuration Status. " + notused;
-      break;
     case 128000:
       return "Leeway. " + notused;
-      break;
     case 128776:
       return "Windlass Control Status. " + notused;
-      break;
     case 128777:
       return "Windlass Operating Status. " + notused;
-      break;
     case 128778:
       return "Windlass Monitoring Status. " + notused;
-      break;
     case 129033:
       return "Date,Time & Local offset. " + notused;
-      break;
     case 129539:
       return "GNSS DOP data. " + notused;
-      break;
     case 129283:
       return "Cross Track Error. " + notused;
-      break;
     case 129284:
       return "Navigation info. " + notused;
-      break;
     case 129285:
       return "Waypoint list. " + notused;
-      break;
     case 129802:
       return "AIS Safety Related Broadcast Message. " + notused;
-      break;
     case 130074:
       return "Waypoint list. " + notused;
-      break;
     case 130311:
       return "Environmental parameters. " + notused;
-      break;
     case 130312:
       return "Temperature. " + notused;
-      break;
     case 130313:
       return "Humidity. " + notused;
-      break;
     case 130314:
       return "Actual Pressure. " + notused;
-      break;
     case 130315:
       return "Set Pressure. " + notused;
-      break;
     case 130316:
       return "Temperature extended range. " + notused;
-      break;
     case 130323:
       return "Meteorological Station Data. " + notused;
-      break;
     case 130576:
       return "Trim Tab Position. " + notused;
-      break;
     case 130577:
       return "Direction Data. " + notused;
-      break;
     default:
       return "No description. Not used by OCPN, maybe passed to plugins";
   }
