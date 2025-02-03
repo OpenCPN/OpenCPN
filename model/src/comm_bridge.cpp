@@ -1219,17 +1219,6 @@ bool CommBridge::EvalPriority(
   tka.GetNextToken();
   int source_address = atoi(tka.GetNextToken().ToStdString().c_str());
 
-  // Fetch the established priority for the message
-  int this_priority;
-
-  auto it = priority_map.find(this_key);
-  if (it == priority_map.end()) {
-    // Not found, so make it default highest priority
-    priority_map[this_key] = 0;
-  }
-
-  this_priority = priority_map[this_key];
-
   // Special case priority value linkage:
   // If this is a "velocity" record, ensure that a "position"
   // report has been accepted from the same source before accepting the
@@ -1247,8 +1236,20 @@ bool CommBridge::EvalPriority(
     if (!pos_ok) return false;
   }
 
-  for (auto it = priority_map.begin(); it != priority_map.end(); it++) {
-    if (debug_priority)
+  // Fetch the established priority for the message
+  int this_priority;
+
+  auto it = priority_map.find(this_key);
+  if (it == priority_map.end()) {
+    // Not found, so make it default lowest priority
+    size_t n = priority_map.size();
+    priority_map[this_key] = n;
+  }
+
+  this_priority = priority_map[this_key];
+
+  if (debug_priority) {
+    for (auto it = priority_map.begin(); it != priority_map.end(); it++)
       printf("               priority_map:  %s  %d\n", it->first.c_str(),
              it->second);
   }
