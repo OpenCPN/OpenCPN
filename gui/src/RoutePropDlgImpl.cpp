@@ -39,10 +39,6 @@
 #include "RoutePropDlgImpl.h"
 #include "tcmgr.h"
 
-#define UTCINPUT 0  //!< Format date/time in UTC.
-#define LTINPUT 1   //!< Format date/time using PC local timezone.
-#define LMTINPUT 2  //!< Format date/time using the remote location LMT time.
-
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP 7014
 #define ID_RCLK_MENU_DELETE 7015
@@ -451,59 +447,6 @@ void RoutePropDlgImpl::UpdatePoints() {
     m_dvlcWaypoints->SelectRow(selected_row);
     m_dvlcWaypoints->EnsureVisible(selection);
   }
-}
-
-wxDateTime RoutePropDlgImpl::toUsrDateTime(const wxDateTime ts,
-                                           const int format, const double lon) {
-  if (!ts.IsValid()) {
-    return ts;
-  }
-  wxDateTime dt;
-  switch (m_tz_selection) {
-    case LMTINPUT:  // LMT@Location
-      if (std::isnan(lon)) {
-        dt = wxInvalidDateTime;
-      } else {
-        dt =
-            ts.Add(wxTimeSpan(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.))));
-      }
-      break;
-    case LTINPUT:  // Local@PC
-      // Convert date/time from UTC to local time.
-      dt = ts.FromUTC();
-      break;
-    case UTCINPUT:  // UTC
-      // The date/time is already in UTC.
-      dt = ts;
-      break;
-  }
-  return dt;
-}
-
-wxDateTime RoutePropDlgImpl::fromUsrDateTime(const wxDateTime ts,
-                                             const int format,
-                                             const double lon) {
-  if (!ts.IsValid()) {
-    return ts;
-  }
-  wxDateTime dt;
-  switch (m_tz_selection) {
-    case LMTINPUT:  // LMT@Location
-      if (std::isnan(lon)) {
-        dt = wxInvalidDateTime;
-      } else {
-        dt = ts.Subtract(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.)));
-      }
-      break;
-    case LTINPUT:  // Local@PC
-      // The input date/time is in local time, so convert it to UTC.
-      dt = ts.ToUTC();
-      break;
-    case UTCINPUT:  // UTC
-      dt = ts;
-      break;
-  }
-  return dt;
 }
 
 void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
