@@ -3380,6 +3380,58 @@ bool LogMessageOnce(const wxString &msg) {
 /*          Some assorted utilities                                       */
 /**************************************************************************/
 
+wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
+                         const double lon) {
+  if (!ts.IsValid()) {
+    return ts;
+  }
+  wxDateTime dt;
+  switch (format) {
+    case LMTINPUT:  // LMT@Location
+      if (std::isnan(lon)) {
+        dt = wxInvalidDateTime;
+      } else {
+        dt =
+            ts.Add(wxTimeSpan(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.))));
+      }
+      break;
+    case LTINPUT:  // Local@PC
+      // Convert date/time from UTC to local time.
+      dt = ts.FromUTC();
+      break;
+    case UTCINPUT:  // UTC
+      // The date/time is already in UTC.
+      dt = ts;
+      break;
+  }
+  return dt;
+}
+
+wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
+                           const double lon) {
+  if (!ts.IsValid()) {
+    return ts;
+  }
+  wxDateTime dt;
+  switch (format) {
+    case LMTINPUT:  // LMT@Location
+      if (std::isnan(lon)) {
+        dt = wxInvalidDateTime;
+      } else {
+        dt = ts.Subtract(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.)));
+      }
+      break;
+    case LTINPUT:  // Local@PC
+      // The input date/time is in local time, so convert it to UTC.
+      dt = ts.ToUTC();
+      break;
+    case UTCINPUT:  // UTC
+      dt = ts;
+      break;
+  }
+  return dt;
+}
+
 /**************************************************************************/
 /*          Converts the distance from the units selected by user to NMi  */
 /**************************************************************************/

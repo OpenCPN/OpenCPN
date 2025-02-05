@@ -131,26 +131,6 @@ private:
 
   bool IsThisRouteExtendable();
 
-  /**
-   * Convert the date/time in UTC to the given format.
-   * @param ts The input timestamp in UTC.
-   * @param format The desired output format:
-   *        0 = UTC, 1 = Local@PC, 2 = LMT@Location.
-   * @param lon The longitude for LMT calculation. Default is NaN.
-   * @return wxDateTime The converted timestamp in the specified format.
-   */
-  wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
-                           const double lon = INFINITY - INFINITY);
-  /**
-   * Convert a date/time from a given input format to UTC.
-   * @param ts The input timestamp in the specified format.
-   * @param format The input timestamp format:
-   *        0 = UTC, 1 = Local@PC, 2 = LMT@Location.
-   * @param lon The longitude for LMT calculation. Default is NaN.
-   * @return wxDateTime The converted timestamp in UTC.
-   */
-  wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
-                             const double lon = INFINITY - INFINITY);
   wxString MakeTideInfo(wxString stationName, double lat, double lon,
                         wxDateTime utcTime);
 };
