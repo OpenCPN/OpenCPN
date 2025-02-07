@@ -7181,8 +7181,14 @@ bool leftIsDown;
 
 bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
   if (!m_bChartDragging && !m_bDrawingRoute) {
-    if (m_Compass && m_Compass->IsShown() &&
-        m_Compass->GetRect().Contains(event.GetPosition())) {
+    /*
+     * The m_Compass->GetRect() coordinates are in physical pixels, whereas the
+     * mouse event coordinates are in logical pixels.
+     */
+    wxRect logicalRect = m_Compass->GetLogicalRect();
+    bool isInCompass = m_Compass && m_Compass->IsShown() &&
+                       logicalRect.Contains(event.GetPosition());
+    if (isInCompass) {
       if (m_Compass->MouseEvent(event)) {
         cursor_region = CENTER;
         if (!g_btouch) SetCanvasCursor(event);

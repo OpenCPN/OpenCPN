@@ -34,6 +34,12 @@ extern double gHdt;
 extern double gHdm;
 extern double gVar;
 
+// Indicate whether the Global Navigation Satellite System (GNSS) has a valid
+// position. true  = OpenCPN has obtained a current position from a GNSS
+// receiver. false = OpenCPN unable to determine position, or no GNSS receiver
+// is connected. Note: the variable name uses the term "GPS" for historical
+// reasons; modern GNSS receivers can acquire data from GPS and other satellite
+// systems.
 extern bool bGPSValid;
 
 #endif  // OWN_SHIP_H__
