@@ -36,10 +36,29 @@ public:
              wxColour color);
   ~MyFontDesc();
 
+  /**
+   * UI element identifier, e.g., "AISTargetAlert", "StatusBar".
+   *
+   * Used to identify the font configuration in the list.
+   *
+   * @see [GetFont]
+   */
   wxString m_dialogstring;
+  /**
+   * Configuration key in "locale-hash" format.
+   */
   wxString m_configstring;
+  /**
+   * Platform-specific font descriptor string.
+   */
   wxString m_nativeInfo;
+  /**
+   * Font object.
+   */
   wxFont *m_font;
+  /**
+   * Text color.
+   */
   wxColour m_color;
 };
 

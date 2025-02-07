@@ -67,6 +67,13 @@ extern wxString g_locale;
  * @see g_locale for main locale setting
  */
 wxString s_locale;
+/**
+ * Default font size for user interface elements such as menus, dialogs, etc.
+ *
+ * @note Defaults to 0, which falls back to the system default font size.
+ * @note Currently only set on the Android platform.
+ * @note Can be manually overridden in opencpn.ini (DefaultFontSize parameter).
+ */
 int g_default_font_size;
 wxString g_default_font_facename;
 
@@ -167,14 +174,36 @@ wxString FontMgr::GetFontConfigKey(const wxString &description) {
 }
 
 wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
-  //    Look thru the font list for a match
+  static int sys_font_size = 0;
+  static wxString sys_font_facename;
+  // Get the system default font.
+  if (!sys_font_size) {
+    wxFont sys_font = *wxNORMAL_FONT;
+    sys_font_size = sys_font.GetPointSize();
+    sys_font_facename = sys_font.GetFaceName();
+  }
+  // Look thru the font list for a match
   MyFontDesc *pmfd;
   auto node = m_fontlist->GetFirst();
+
   while (node) {
     pmfd = node->GetData();
-    if (pmfd->m_dialogstring == TextElement) {
-      if (pmfd->m_configstring.BeforeFirst('-') == s_locale)
+    // Check if the font matches both the text element and the requested size.
+    if (pmfd->m_dialogstring == TextElement &&
+        (pmfd->m_configstring.BeforeFirst('-') == s_locale)) {
+      int font_size = pmfd->m_font->GetPointSize();
+      if (requested_font_size == 0) {
+        // Caller did not specify a font size, so return the default font.
+        // The user may have customized the default font in Options->User Fonts,
+        // else the system default font is used.
+        if (g_default_font_size && font_size == g_default_font_size) {
+          return pmfd->m_font;
+        } else if (font_size == sys_font_size) {
+          return pmfd->m_font;
+        }
+      } else if (font_size == requested_font_size) {
         return pmfd->m_font;
+      }
     }
     node = node->GetNext();
   }
@@ -185,11 +214,6 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
   //    Now create a benign, always present native font
   //    with optional user requested default size
 
-  //    Get the system default font.
-  wxFont sys_font = *wxNORMAL_FONT;
-  int sys_font_size = sys_font.GetPointSize();
-  wxString FaceName = sys_font.GetFaceName();
-
   int new_size;
   if (0 == requested_font_size) {
     if (g_default_font_size)
@@ -199,9 +223,10 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
   } else
     new_size = requested_font_size;
 
-  if (g_default_font_facename.Length()) FaceName = g_default_font_facename;
+  if (g_default_font_facename.Length())
+    sys_font_facename = g_default_font_facename;
 
-  wxString nativefont = GetSimpleNativeFont(new_size, FaceName);
+  wxString nativefont = GetSimpleNativeFont(new_size, sys_font_facename);
   wxFont *nf = wxFont::New(nativefont);
 
   wxColor color = GetDefaultFontColor(TextElement);
