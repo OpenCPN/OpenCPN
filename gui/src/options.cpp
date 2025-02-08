@@ -1472,6 +1472,7 @@ EVT_BUTTON(ID_APPLY, options::OnApplyClick)
 EVT_BUTTON(xID_OK, options::OnXidOkClick)
 EVT_BUTTON(wxID_CANCEL, options::OnCancelClick)
 EVT_BUTTON(ID_BUTTONFONTCHOOSE, options::OnChooseFont)
+EVT_BUTTON(ID_BUTTONFONT_RESET, options::OnResetFont)
 EVT_BUTTON(ID_BUTTONECDISHELP, options::OnButtonEcdisHelp)
 
 EVT_CHOICE(ID_CHOICE_FONTELEMENT, options::OnFontChoice)
@@ -5311,16 +5312,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT, wxDefaultPosition,
                    fontChoiceSize, 0, NULL, wxCB_SORT);
 
-  int nFonts = FontMgr::Get().GetNumFonts();
-  for (int it = 0; it < nFonts; it++) {
-    const wxString& t = FontMgr::Get().GetDialogString(it);
-
-    if (FontMgr::Get().GetConfigString(it).StartsWith(g_locale)) {
-      m_itemFontElementListBox->Append(t);
-    }
+  wxArrayString uniqueStrings = FontMgr::Get().GetDialogStrings(g_locale);
+  for (size_t i = 0; i < uniqueStrings.GetCount(); i++) {
+    m_itemFontElementListBox->Append(uniqueStrings[i]);
   }
 
-  if (nFonts) m_itemFontElementListBox->SetSelection(0);
+  if (uniqueStrings.GetCount()) m_itemFontElementListBox->SetSelection(0);
 
   itemFontStaticBoxSizer->Add(m_itemFontElementListBox, 0, wxALL, border_size);
 
@@ -5334,6 +5331,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                    wxDefaultPosition, wxDefaultSize, 0);
   itemFontStaticBoxSizer->Add(itemFontColorButton, 0, wxALL, border_size);
 #endif
+  wxButton* itemFontResetButton =
+      new wxButton(itemPanelFont, ID_BUTTONFONT_RESET, _("Reset to Default"),
+                   wxDefaultPosition, wxDefaultSize, 0);
+  itemFontStaticBoxSizer->Add(itemFontResetButton, 0, wxALL, border_size);
+
   m_textSample = new wxStaticText(itemPanelFont, wxID_ANY, _("Sample"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   itemFontStaticBoxSizer->Add(m_textSample, 0, wxALL, border_size);
@@ -5543,6 +5545,30 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   miscOptions->Add(sliderSizer, 0, wxEXPAND, 5);
   miscOptions->AddSpacer(20);
+}
+
+void options::OnResetFont(wxCommandEvent& event) {
+  wxString itemElement;
+  int i = m_itemFontElementListBox->GetSelection();
+  if (i >= 0) {
+    itemElement = m_itemFontElementListBox->GetString(i);
+
+    if (FontMgr::Get().ResetFontToDefault(itemElement)) {
+      // Update the sample text with new default font
+      wxFont* pFont = FontMgr::Get().GetFont(itemElement);
+      wxColour colour = FontMgr::Get().GetFontColor(itemElement);
+
+      if (pFont) {
+        m_textSample->SetFont(*pFont);
+        m_textSample->SetForegroundColour(colour);
+        m_textSample->Refresh();
+      }
+      // Force immediate update of UI elements
+      gFrame->UpdateAllFonts();
+      m_bfontChanged = true;
+      OnFontChoice(event);
+    }
+  }
 }
 
 void options::OnAlertEnableButtonClick(wxCommandEvent& event) {
@@ -7233,12 +7259,13 @@ void options::ApplyChanges(wxCommandEvent& event) {
       MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui);
 
   //  Only reload the icons if user has actually visted the UI page
-  if (m_bVisitLang)
+  if (m_bVisitLang) {
     if (pWayPointMan) WayPointmanGui(*pWayPointMan).ReloadRoutepointIcons();
+  }
 
-      // FIXME Move these two
-      // g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
-      // g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
+  // FIXME Move these two
+  // g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
+  // g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
 
 #ifdef ocpnUSE_GL
   if (g_bopengl != pOpenGL->GetValue()) m_returnChanges |= GL_CHANGED;
@@ -8660,8 +8687,8 @@ void ChartGroupsUI::PopulateTreeCtrl(wxTreeCtrl* ptc,
       ptc->SetItemText(id, dirname);
       if (pFont) ptc->SetItemFont(id, *pFont);
 
-        // On MacOS, use the default system dialog color, to honor Dark mode.
 #ifndef __WXOSX__
+      // On MacOS, use the default system dialog color, to honor Dark mode.
       ptc->SetItemTextColour(id, col);
 #endif
       ptc->SetItemHasChildren(id);
