@@ -951,7 +951,7 @@ void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
 
   /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
   #ifdef __WXMSW__
-    wxFont *qFont = OCPNGetFont(_("Menu"), 10);
+    wxFont *qFont = OCPNGetFont(_("Menu"), 0);
     item->SetFont(*qFont);
   #endif
   */

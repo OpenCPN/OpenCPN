@@ -222,7 +222,7 @@ void GribRequestSetting::InitRequestConfig() {
   // Set wxSpinCtrl sizing
   int w, h;
   GetTextExtent(_T("-360"), &w, &h, 0, 0,
-                OCPNGetFont(_("Dialog"), 10));  // optimal text control size
+                OCPNGetFont(_("Dialog"), 0));  // optimal text control size
   w += 30;
   h += 4;
   m_sMovingSpeed->SetMinSize(wxSize(w, h));
@@ -311,7 +311,7 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
 void GribRequestSetting::SetRequestDialogSize() {
   int y;
   /*first let's size the mail display space*/
-  GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog"), 10));
+  GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog"), 0));
   m_MailImage->SetMinSize(
       wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
 
@@ -1177,7 +1177,7 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   center.x = x + (zw / 2);
   center.y = y + (zh / 2);
 
-  wxFont fo = *OCPNGetFont(_("Dialog"), 10);
+  wxFont fo = *OCPNGetFont(_("Dialog"), 0);
   fo.SetPointSize(
       (fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor()));
   wxFont *font = &fo;
