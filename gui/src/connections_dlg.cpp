@@ -125,6 +125,25 @@ private:
   EventVar& m_evt_add_connection;
 };
 
+/** Scrollable window wrapping the client i. e., the grid. */
+class ScrolledWindow : public wxScrolledWindow {
+public:
+  ScrolledWindow(wxWindow* parent)
+      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                         wxVSCROLL) {}
+
+  /** Set contents and size limits for scrollable area. */
+  void AddClient(wxWindow* client, wxSize max_size, wxSize min_size) {
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    vbox->Add(client, wxSizerFlags().Border());
+    SetSizer(vbox);
+    SetMinClientSize(min_size);
+    SetMaxSize(max_size);
+    vbox->Layout();
+    SetScrollRate(0, 10);
+  }
+};
+
 /** Grid with existing connections: type, port, status, etc. */
 class Connections : public wxGrid {
 public:
@@ -160,6 +179,12 @@ public:
       OnMouseMove(ev);
       ev.Skip();
     });
+
+    GetGridWindow()->Bind(wxEVT_MOUSEWHEEL, [&](wxMouseEvent& ev) {
+      OnWheel(ev);
+      ev.Skip();
+    });
+
     Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
     Bind(wxEVT_GRID_CELL_LEFT_CLICK,
@@ -171,6 +196,18 @@ public:
     conn_change_lstnr.Init(
         m_conn_states.evt_conn_status_change,
         [&](ObservedEvt&) { OnConnectionChange(m_connections); });
+  }
+
+  void OnWheel(wxMouseEvent& ev) {
+    auto p = GetParent();
+    auto psw = static_cast<ScrolledWindow*>(p);
+    int dir = ev.GetWheelRotation();
+    int xpos, ypos;
+    psw->GetViewStart(&xpos, &ypos);
+    int xsu, ysu;
+    psw->GetScrollPixelsPerUnit(&xsu, &ysu);
+    // Not sure where the factor "4" comes from...
+    psw->Scroll(-1, ypos - (dir / ysu) / 4);
   }
 
   /** Reload grid using data from given list of connections. */
@@ -653,25 +690,6 @@ private:
       });
     }
   };
-};
-
-/** Scrollable window wrapping the client i. e., the grid. */
-class ScrolledWindow : public wxScrolledWindow {
-public:
-  ScrolledWindow(wxWindow* parent)
-      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL) {}
-
-  /** Set contents and size limits for scrollable area. */
-  void AddClient(wxWindow* client, wxSize max_size, wxSize min_size) {
-    auto vbox = new wxBoxSizer(wxVERTICAL);
-    vbox->Add(client, wxSizerFlags().Border());
-    SetSizer(vbox);
-    SetMinClientSize(min_size);
-    SetMaxSize(max_size);
-    vbox->Layout();
-    SetScrollRate(0, 10);
-  }
 };
 
 /** Main window: connections grid, "Add new connection", general options. */
