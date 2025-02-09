@@ -1,6 +1,6 @@
 {
    "filter" : {
-      "name" : "all-nmea",
+      "name" : "nmea-output",
       "buses" : [
          "nmea0183",
          "nmea2000"
