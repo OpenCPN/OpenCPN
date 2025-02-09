@@ -14,6 +14,7 @@
 #include <wx/sstream.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
+#include <wx/translation.h>
 #include <wx/wrapsizer.h>
 
 #ifndef ocpnUSE_wxBitmapBundle
@@ -24,15 +25,26 @@
 #include "androidUTIL.h"
 #endif
 
-#include "tty_scroll.h"
-#include "data_monitor_src.h"
-#include "svg_icons.h"
-#include "std_filesystem.h"
+#include "model/navmsg_filter.h"
 #include "model/nmea_log.h"
 #include "model/gui.h"
 
+#include "data_monitor_src.h"
+#include "svg_icons.h"
+#include "tty_scroll.h"
+
+#include "std_filesystem.h"
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
+
+// Make _() return std::string instead of wxString;
+#undef _
+#if wxCHECK_VERSION(3, 2, 0)
+#define _(s) wxGetTranslation(wxASCII_STR(s)).ToStdString()
+#else
+#define _(s) wxGetTranslation((s)).ToStdString()
+#endif
 
 using SetLogFunc = std::function<void(int)>;
 
@@ -121,17 +133,36 @@ private:
 /** Offer user to select current filter. */
 class FilterChoice : public wxChoice {
 public:
-  FilterChoice(wxWindow* parent) : wxChoice() {
-    wxArrayString choices;
-    choices.Add(_("All data"));
-    choices.Add(_("All NMEA data"));
-    choices.Add(_("Incoming NMEA data"));
-    choices.Add(_("Outgoing NMEA data"));
-    choices.Add(_("Malformed data only"));
-    choices.Add(_("Plugin data"));
-    Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
-    SetSelection(0);
+  FilterChoice(wxWindow* parent) : wxChoice(parent, wxID_ANY) {
+    m_filters = NavmsgFilter::GetSystemFilters();
+    OnFilterListChange();
   }
+
+  void OnFilterListChange() {
+    Clear();
+    for (auto& filter : m_filters) {
+      try {
+        Append(kLabels.at(filter.m_name));
+      } catch (std::out_of_range&) {
+        Append(filter.m_description);
+      }
+    }
+    if (!m_filters.empty()) SetSelection(0);
+  }
+
+private:
+  // Translated labels for system filters by filter name. If not
+  // found the untranslated json description is used.
+  const std::unordered_map<std::string, std::string> kLabels = {
+      {"all-data", _("All data")},
+      {"all-nmea", _("All NMEA data")},
+      {"malformed", _("Malformed messages")},
+      {"nmea-input", _("NMEA input data")},
+      {"nmea-output", _("NMEA output data")},
+      {"plugins", _("Messages to plugins")},
+  };
+
+  std::vector<NavmsgFilter> m_filters;
 };
 
 /** Button to stop/resume messages in main log window. */
