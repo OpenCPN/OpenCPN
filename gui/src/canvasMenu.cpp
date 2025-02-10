@@ -68,7 +68,6 @@
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
-#include "NMEALogWindow.h"
 #include "peer_client_dlg.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
@@ -233,9 +232,8 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
                                      Route *selectedRoute, Track *selectedTrack,
                                      RoutePoint *selectedPoint,
                                      int selectedAIS_MMSI,
-                                     void *selectedTCIndex)
-
-{
+                                     void *selectedTCIndex, wxWindow *nmea_log)
+    : m_nmea_log(nmea_log) {
   parent = parentCanvas;
   m_pSelectedRoute = selectedRoute;
   m_pSelectedTrack = selectedTrack;
@@ -328,7 +326,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   wxMenu *subMenuRedo = new wxMenu("Redo...Ctrl-Y");
 #endif
   wxMenu *subMenuDebug = new wxMenu("");
-  MenuAppend1(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW, "Show NMEA log window");
+  MenuAppend1(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW, _("Show Data Monitor"));
 
   wxMenu *menuFocus = contextMenu;  // This is the one that will be shown
 
@@ -1501,13 +1499,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
     }
 
-    case ID_DGB_MENU_NMEA_WINDOW: {
-      if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
-        auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-        NMEALogWindow::GetInstance().Create(top_window, 35);
-      }
-      wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
-    } break;
+    case ID_DGB_MENU_NMEA_WINDOW:
+      m_nmea_log->Show();
+      break;
 
     case ID_RT_MENU_REVERSE: {
       if (m_pSelectedRoute->m_bIsInLayer) break;

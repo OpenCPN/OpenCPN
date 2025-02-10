@@ -803,7 +803,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
-    ${GUI_HDR_DIR}/NMEALogWindow.h
     ${GUI_HDR_DIR}/ocpCursor.h
     ${GUI_HDR_DIR}/ocpndc.h
     ${GUI_HDR_DIR}/ocpn_app.h
@@ -860,7 +859,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/trackprintout.h
     ${GUI_HDR_DIR}/TrackPropDlg.h
     ${GUI_HDR_DIR}/tty_scroll.h
-    ${GUI_HDR_DIR}/TTYWindow.h
     ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
     ${GUI_HDR_DIR}/update_mgr.h
@@ -929,7 +927,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
-    ${GUI_SRC_DIR}/NMEALogWindow.cpp
     ${GUI_SRC_DIR}/ocpCursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
     ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
@@ -982,7 +979,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/trackprintout.cpp
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
     ${GUI_SRC_DIR}/tty_scroll.cpp
-    ${GUI_SRC_DIR}/TTYWindow.cpp
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
