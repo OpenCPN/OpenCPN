@@ -161,7 +161,7 @@ int wmm_pi::Init(void) {
 
   // pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
   // wxFONTWEIGHT_BOLD );
-  pFontSmall = OCPNGetFont(_("WMM_Live_Overlay"), 10);
+  pFontSmall = OCPNGetFont(_("WMM_Live_Overlay"), 0);
 
   m_shareLocn = *GetpSharedDataLocation() + _T("plugins") +
                 wxFileName::GetPathSeparator() + _T("wmm_pi") +
