@@ -80,18 +80,16 @@ Multiplexer::Multiplexer(MuxLogCallbacks cb, bool &filter_behaviour)
 
 Multiplexer::~Multiplexer() {}
 
-void Multiplexer::LogOutputMessage(const std::shared_ptr<const NavMsg>& msg,
-                                  const std::string& stream_name,
-                                  NavmsgStatus ns) {
+void Multiplexer::LogOutputMessage(const std::shared_ptr<const NavMsg> &msg,
+                                   NavmsgStatus ns) {
   if (m_log_callbacks.log_is_active()) {
     ns.direction = NavmsgStatus::Direction::kOutput;
-    Logline ll(msg, ns, stream_name);
+    Logline ll(msg, ns);
     m_log_callbacks.log_message(ll);
   }
 }
 
 void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
-                                  const std::string &stream_name,
                                   bool is_filtered, bool is_error,
                                   const wxString error_msg) {
   if (m_log_callbacks.log_is_active()) {
@@ -110,7 +108,7 @@ void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
         ns.accepted = NavmsgStatus::Accepted::kOk;
       }
     }
-    Logline ll(msg, ns, stream_name);
+    Logline ll(msg, ns);
     ll.error_msg = error_msg;
     m_log_callbacks.log_message(ll);
   }
@@ -184,8 +182,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     //}
 
     wxString port(n0183_msg->source->iface);
-    LogInputMessage(n0183_msg, port.ToStdString(), !bpass_input_filter, b_error,
-                    error_msg);
+    LogInputMessage(n0183_msg, !bpass_input_filter, b_error, error_msg);
   }
 
   // Detect virtual driver, message comes from plugin API
@@ -251,7 +248,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
             } else {
               if (!bxmit_ok) ns.status = NavmsgStatus::State::kTxError;
             }
-            LogOutputMessage(n0183_msg, driver->iface, ns);
+            LogOutputMessage(n0183_msg, ns);
           }
         }
       }
@@ -306,7 +303,7 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source, ident,
                  N2K_LogMessage_Detail(pgn).c_str());
 
-  LogInputMessage(n2k_msg, "N2000", false, false);
+  LogInputMessage(n2k_msg, false, false);
 
   last_pgn_logged = pgn;
   return true;
