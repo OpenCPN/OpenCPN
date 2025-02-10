@@ -119,6 +119,23 @@ public:
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
     OnClick();
     Disable();
+    Enable(false);
+    UpdateTooltip();
+  }
+
+  void UpdateTooltip() {
+    if (!IsThisEnabled())
+      SetToolTip(_("Set log file using menu to enable"));
+    else if (is_logging)
+      SetToolTip(_("Click to stop logging"));
+    else
+      SetToolTip(_("Click to start logging"));
+  }
+
+  bool Enable(bool enable) override {
+    bool result = wxWindow::Enable(enable);
+    UpdateTooltip();
+    return result;
   }
 
 private:
@@ -128,6 +145,7 @@ private:
   void OnClick() {
     is_logging = !is_logging;
     SetLabel(is_logging ? _("Stop") : _("Start"));
+    UpdateTooltip();
     m_logger.SetLogging(is_logging);
   }
 };
