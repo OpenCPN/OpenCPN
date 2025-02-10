@@ -33,7 +33,7 @@
 class MyFontDesc {
 public:
   MyFontDesc(wxString DialogString, wxString ConfigString, wxFont *pFont,
-             wxColour color);
+             wxColour color, bool is_default = true);
   ~MyFontDesc();
 
   /**
@@ -60,6 +60,8 @@ public:
    * Text color.
    */
   wxColour m_color;
+  /** Indicates if this is the default font entry for the TextElement. */
+  bool m_is_default;
 };
 
 WX_DECLARE_LIST(MyFontDesc, FontList);

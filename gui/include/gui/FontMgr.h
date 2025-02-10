@@ -128,6 +128,15 @@ public:
    * @return UI element name for this font configuration
    */
   const wxString &GetDialogString(int i) const;
+
+  /**
+   * Gets the list of unique dialog strings.
+   *
+   * @param locale If provided, only returns strings for this locale.
+   * @return Vector of unique dialog strings
+   */
+  wxArrayString GetDialogStrings(const wxString &locale = wxEmptyString) const;
+
   /**
    * Gets the native font descriptor string for the font at index i.
    *
@@ -195,14 +204,26 @@ public:
    */
   void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
   /**
-   * Updates font and color for a UI element.
+   * Sets the default font properties for a UI element.
    *
-   * @param TextElement UI element identifier (e.g. "AISTargetAlert")
+   * Updates the font and color of the default font entry for the given
+   * TextElement. Creates a copy of the provided font to avoid memory management
+   * issues. Only affects the default font entry - specific size variants are
+   * unchanged.
+   *
+   * @param TextElement UI element identifier (e.g., "AISTargetAlert")
    * @param pFont New font to use
    * @param color New text color
-   * @return True if element found and updated, false if not found
+   * @return true if default font entry was found and updated, false if not
+   * found
    */
   bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
+  /**
+   * Cleans up stale font entries after a locale change.
+   *
+   * The function preserves customized font settings while removing
+   * outdated entries that might reference old translations.
+   */
   void ScrubList();
   /**
    * Finds font descriptor by its configuration key.
@@ -242,6 +263,20 @@ public:
                             (wxFontWeight)weight, underline, face, encoding);
   }
 
+  /**
+   * Resets the font configuration for a UI element back to system defaults.
+   *
+   * This function:
+   * 1. Creates a font with system default properties.
+   * 2. Updates the font descriptor in the font list to use this default font.
+   * 3. Resets the text color to the default for this element.
+   *
+   * @param TextElement The UI element identifier (e.g. "AISTargetAlert").
+   * @return true if the font was reset successfully, false if element not
+   * found.
+   */
+  bool ResetFontToDefault(const wxString &TextElement);
+
   static void Shutdown();
 
 private:  // private for singleton
@@ -250,8 +285,72 @@ private:  // private for singleton
   FontMgr(const FontMgr &) {}
   FontMgr &operator=(const FontMgr &) { return *this; }
 
-private:
+  /**
+   * Creates a standard native font description string.
+   *
+   * This function generates a platform-independent font description string that
+   * is compatible with wxFont's native font description format. The resulting
+   * string can be used to create a new wxFont using wxFont::New().
+   *
+   * The font is created with default properties:
+   * - Family: wxFONTFAMILY_DEFAULT
+   * - Style: wxFONTSTYLE_NORMAL
+   * - Weight: wxFONTWEIGHT_NORMAL
+   * - No underline
+   *
+   * @param size The point size for the font
+   * @param face The face name to use. If empty, system default face will be
+   * used
+   * @return Native font description string that can be used with wxFont::New()
+   */
   wxString GetSimpleNativeFont(int size, wxString face);
+
+  /**
+   * Determines if a font descriptor represents the default font entry.
+   *
+   * A font entry is considered default if its size matches either:
+   * - The user-specified default size (g_default_font_size) if set, or
+   * - The system default font size if no user default is specified
+   *
+   * This is used to distinguish between default font entries and
+   * entries with specific requested sizes for the same TextElement.
+   *
+   * @param font_desc Pointer to the font descriptor to check
+   * @return true if this is a default font entry, false otherwise
+   */
+  bool IsDefaultFontEntry(const MyFontDesc *font_desc) const;
+  /**
+   * Gets the system default font size.
+   *
+   * This method lazily initializes and caches the system font size from
+   * wxNORMAL_FONT. Used to determine if a font entry represents the system
+   * default when no user default size (g_default_font_size) is specified.
+   *
+   * @return The point size of the system default font
+   */
+  static int GetSystemFontSize();
+  /**
+   * Gets the system default font face name.
+   *
+   * This method lazily initializes and caches the system font face name from
+   * wxNORMAL_FONT. Used when creating new fonts if no user default face name
+   * (g_default_font_facename) is specified.
+   *
+   * @return The face name of the system default font
+   */
+  static wxString GetSystemFontFaceName();
+
+  /**
+   * Gets the default font descriptor for a given TextElement.
+   *
+   * First tries to find the default font entry (m_is_default=true) for the
+   * current locale. If not found, falls back to the first matching entry
+   * for backward compatibility.
+   *
+   * @param TextElement The UI element identifier (e.g., "AISTargetAlert")
+   * @return Pointer to the font descriptor, or NULL if not found
+   */
+  MyFontDesc *GetFontDesc(const wxString &TextElement) const;
 
   static FontMgr *instance;
 
