@@ -62,7 +62,7 @@ private:
 /** Overall logging handler, outputs to screen and log file. */
 class DataMonitor : public wxFrame, public NmeaLog {
 public:
-  DataMonitor(wxWindow* parent, std::function<void()> on_exit);
+  DataMonitor(wxWindow* parent);
 
   /** Add an input line to log output. */
   void Add(std::string msg);
@@ -72,7 +72,6 @@ public:
   bool IsActive() const override;
 
 private:
-  std::function<void()> m_on_exit;
   DataMonitorSrc m_monitor_src;
   wxWindow* m_quick_filter;
   DataLogger m_logger;

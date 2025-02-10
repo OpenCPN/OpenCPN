@@ -116,7 +116,6 @@
 #include "MUIBar.h"
 #include "N2KParser.h"
 #include "navutil.h"
-#include "NMEALogWindow.h"
 #include "ocpn_app.h"
 #include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
@@ -646,11 +645,11 @@ static NmeaLog *GetDataMonitor() {
 
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
-                 const wxSize &size, long style)
+                 const wxSize &size, long style, DataMonitor *data_monitor)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
       comm_overflow_dlg(this),
       m_connections_dlg(nullptr),
-      m_data_monitor(nullptr) {
+      m_data_monitor(data_monitor) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
@@ -664,7 +663,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 #endif
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
-
+  m_data_monitor->Hide();
   m_pStatusBar = NULL;
   m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
@@ -735,11 +734,11 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
-  log_callbacks.log_is_active = []() {
+  log_callbacks.log_is_active = [&]() {
     auto log = GetDataMonitor();
     return log && log->IsActive();
   };
-  log_callbacks.log_message = [](Logline ll) {
+  log_callbacks.log_message = [&](Logline ll) {
     NmeaLog *monitor = GetDataMonitor();
     if (monitor && monitor->IsActive()) monitor->Add(ll);
   };
@@ -1211,7 +1210,8 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
     default:
     case 0:  // a single canvas
       if (!g_canvasArray.GetCount() || !config_array.Item(0)) {
-        cc = new ChartCanvas(this, 0);  // the chart display canvas
+        cc = new ChartCanvas(this, 0,
+                             m_data_monitor);  // the chart display canvas
         g_canvasArray.Add(cc);
       } else {
         cc = g_canvasArray[0];
@@ -1247,7 +1247,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
 
     case 1: {  // two canvas, horizontal
       if (!g_canvasArray.GetCount() || !g_canvasArray[0]) {
-        cc = new ChartCanvas(this, 0);  // the chart display canvas
+        cc = new ChartCanvas(this, 0, m_data_monitor);  // chart display canvas
         g_canvasArray.Add(cc);
       } else {
         cc = g_canvasArray[0];
@@ -1278,7 +1278,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
 
       g_pauimgr->GetPane(cc).CenterPane();
 
-      cc = new ChartCanvas(this, 1);  // the chart display canvas
+      cc = new ChartCanvas(this, 1, m_data_monitor);  // chart display canvas
       g_canvasArray.Add(cc);
 
       //  There is not yet a config descriptor for canvas 2, so create one by
@@ -1854,8 +1854,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     }
   }
 
-  NMEALogWindow::Shutdown();
-
   ReleaseApiListeners();
 
   g_MainToolbar = NULL;
@@ -2398,15 +2396,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     }
 
     case ID_MENU_TOOL_NMEA_DBG_LOG:
-      if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
-        auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-        NMEALogWindow::GetInstance().Create(top_window, 35);
-      }
-      wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+      m_data_monitor->Show();
+      break;
 
     case ID_MENU_TOOL_IO_MONITOR:
-      if (!m_data_monitor)
-        m_data_monitor = new DataMonitor(this, [&] { m_data_monitor = 0; });
       m_data_monitor->Show();
       break;
 
@@ -3677,8 +3670,6 @@ void MyFrame::RegisterGlobalMenuItems() {
 
   wxMenu *tools_menu = new wxMenu();
   tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
-                     _menuText(_("NMEA Debugger"), "Alt-C"));
-  tools_menu->Append(ID_MENU_TOOL_IO_MONITOR,
                      _menuText(_("Data Monitor"), "Alt-C"));
 #ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
@@ -6949,9 +6940,7 @@ void MyFrame::applySettingsString(wxString settings) {
   if (console) console->Raise();
 
   Refresh(false);
-
-  if (NMEALogWindow::GetInstance().IsActive())
-    NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
+  if (m_data_monitor->IsActive()) m_data_monitor->Raise();
 }
 
 #ifdef wxHAS_POWER_EVENTS
