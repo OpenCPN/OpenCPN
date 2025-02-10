@@ -465,7 +465,7 @@ void DataLogger::Add(const Logline& ll) {
   } else {
     ws << kUtfCheckMark << " ";
   }
-  ws << (ll.stream_name.empty() ? "-" : ll.stream_name) << " ";
+  ws << (ll.navmsg ? "-" : ll.navmsg->source->iface) << " ";
   if (ll.state.status != NavmsgStatus::State::kOk) {
     ws << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
   } else {

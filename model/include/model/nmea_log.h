@@ -10,17 +10,12 @@
 struct Logline {
   const std::shared_ptr<const NavMsg> navmsg;
   const NavmsgStatus state;
-  const std::string stream_name;
   std::string error_msg;
   std::string prefix;
 
   Logline() {}
-  Logline(const std::shared_ptr<const NavMsg>& msg, NavmsgStatus sts,
-          const std::string& stream)
-      : navmsg(msg),
-        state(sts),
-        stream_name(stream),
-        error_msg("Unknown error") {}
+  Logline(const std::shared_ptr<const NavMsg>& msg, NavmsgStatus sts)
+      : navmsg(msg), state(sts), error_msg("Unknown error") {}
   Logline(const std::shared_ptr<const NavMsg>& msg) : navmsg(msg), state() {}
 };
 

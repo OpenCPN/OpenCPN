@@ -21,6 +21,10 @@
 #include <sstream>
 #include <string>
 
+#ifdef _WIN32
+#define NOMINMAX  // Disable min/max compiler nacros.
+#endif
+
 #include <wx/clipbrd.h>
 #include <wx/dcclient.h>
 #include <wx/string.h>
@@ -83,10 +87,9 @@ static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
     error_msg << " - "
               << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
   }
-  std::string stream(ll.stream_name);
-  if (stream.empty() && ll.navmsg) stream = ll.navmsg->source->iface;
-  if (stream.size() > 20) stream = stream.substr(0, 17) + "...";
-  ws << stream;
+  std::string iface(ll.navmsg ? ll.navmsg->source->iface : "");
+  if (iface.size() > 20) iface = iface.substr(0, 17) + "...";
+  ws << iface;
   dc.DrawText(ws, 0, y);
   ws = "";
 
@@ -145,7 +148,7 @@ void TtyScroll::Copy(bool n0183) {
   for (auto& line : m_lines) {
     std::string s = line.navmsg->to_string();
     if (n0183) {
-      size_t pos = 0;
+      size_t pos;
       if ((pos = s.find("$")) != std::string::npos) {
         the_text.append(s.substr(pos) + "\n");
       } else if ((pos = s.find("!")) != std::string::npos) {

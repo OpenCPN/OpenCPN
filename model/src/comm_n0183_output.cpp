@@ -57,13 +57,12 @@
 #endif
 
 void LogBroadcastOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
-        const std::string& stream_name,
-        NavmsgStatus ns, NmeaLog& nmea_log) {
-    if (nmea_log.IsActive()) {
-        ns.direction = NavmsgStatus::Direction::kOutput;
-        Logline ll(msg, ns, stream_name);
-        nmea_log.Add(ll);
-    }
+                                    NavmsgStatus ns, NmeaLog& nmea_log) {
+  if (nmea_log.IsActive()) {
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    Logline ll(msg, ns);
+    nmea_log.Add(ll);
+  }
 }
 
 void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
@@ -108,8 +107,7 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
         } else {
           ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
         }
-        LogBroadcastOutputMessageColor(
-            msg_out, params.GetDSPort().ToStdString(), ns, nmea_log);
+        LogBroadcastOutputMessageColor(msg_out, ns, nmea_log);
       }
     }
   }
@@ -486,7 +484,8 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
   } else
 
   {
-    auto address = std::make_shared<NavAddr>();
+    auto address =
+        std::make_shared<NavAddr>(NavAddr::Bus::N0183, drv_n0183->iface);
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = _T ( "EC" );
@@ -572,7 +571,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
         NavmsgStatus ns;
         ns.direction = NavmsgStatus::Direction::kOutput;
-        multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
+        multiplexer.LogOutputMessage(msg_out, ns);
         auto msg =
             wxString("-->GPS Port: ") + com_name + " Sentence: " + snt.Sentence;
         msg.Trim();
@@ -780,7 +779,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
         NavmsgStatus ns;
         ns.direction = NavmsgStatus::Direction::kOutput;
-        multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
+        multiplexer.LogOutputMessage(msg_out, ns);
         wxYield();
 
         //             LogOutputMessage(sentence, dstr->GetPort(), false);
@@ -799,7 +798,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
       NavmsgStatus ns;
       ns.direction = NavmsgStatus::Direction::kOutput;
-      multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
+      multiplexer.LogOutputMessage(msg_out, ns);
       wxYield();
 
       auto msg =
@@ -823,7 +822,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       drv_n0183->SendMessage(msg_out, address);
       NavmsgStatus ns;
       ns.direction = NavmsgStatus::Direction::kOutput;
-      multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
+      multiplexer.LogOutputMessage(msg_out, ns);
 
       auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + rte;
       msg.Trim();
@@ -838,7 +837,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
       ns = NavmsgStatus();
       ns.direction = NavmsgStatus::Direction::kOutput;
-      multiplexer.LogOutputMessage(msg_outf, com_name.ToStdString(), ns);
+      multiplexer.LogOutputMessage(msg_outf, ns);
 
       msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
       msg.Trim();
@@ -1039,7 +1038,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
     NavmsgStatus ns;
     ns.direction = NavmsgStatus::Direction::kOutput;
-    multiplexer.LogOutputMessage(msg_out, com_name.ToStdString(), ns);
+    multiplexer.LogOutputMessage(msg_out, ns);
     auto msg = wxString("-->GPS Port:") + com_name + " Sentence: ";
     msg.Trim();
     wxLogMessage(msg);
