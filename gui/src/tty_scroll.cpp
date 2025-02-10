@@ -93,11 +93,8 @@ static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
   dc.DrawText(ws, data_pos, y);
 }
 
-TtyScroll::TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter)
-    : wxScrolledWindow(parent),
-      m_n_lines(n_lines),
-      m_filter(filter),
-      m_is_paused(false) {
+TtyScroll::TtyScroll(wxWindow* parent, int n_lines)
+    : wxScrolledWindow(parent), m_n_lines(n_lines), m_is_paused(false) {
   wxClientDC dc(this);
   dc.GetTextExtent("Line Height", NULL, &m_line_height);
   SetScrollRate(0, m_line_height);
@@ -114,8 +111,7 @@ void TtyScroll::OnSize(wxSizeEvent& ev) {
 }
 
 void TtyScroll::Add(struct Logline ll) {
-  wxString filter = m_filter.GetValue();
-  if (!m_is_paused) {
+  if (!m_is_paused && m_filter.Pass(ll.state, ll.navmsg)) {
     while (m_lines.size() > m_n_lines - 1) m_lines.pop_front();
     m_lines.push_back(ll);
     Refresh(true);
