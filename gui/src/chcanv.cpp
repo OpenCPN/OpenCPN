@@ -83,7 +83,6 @@
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"
-#include "NMEALogWindow.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
@@ -406,8 +405,9 @@ EVT_TIMER(JUMP_EASE_TIMER, ChartCanvas::OnJumpEaseTimer)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
-ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
-    : wxWindow(frame, wxID_ANY, wxPoint(20, 20), wxSize(5, 5), wxNO_BORDER) {
+ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
+    : wxWindow(frame, wxID_ANY, wxPoint(20, 20), wxSize(5, 5), wxNO_BORDER),
+      m_nmea_log(nmea_log) {
   parent_frame = (MyFrame *)frame;  // save a pointer to parent
   m_canvasIndex = canvasIndex;
 
@@ -3050,11 +3050,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
         }
 
         case 'E':
-          if (!wxWindow::FindWindowByName("NmeaDebugWindow")) {
-            auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-            NMEALogWindow::GetInstance().Create(top_window, 35);
-          }
-          wxWindow::FindWindowByName("NmeaDebugWindow")->Show();
+          m_nmea_log->Show();
           break;
 
         case 'L':
@@ -10629,7 +10625,7 @@ void pupHandler_PasteTrack() {
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
   m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                        m_pFoundRoutePoint, m_FoundAIS_MMSI,
-                                       m_pIDXCandidate);
+                                       m_pIDXCandidate, m_nmea_log);
 
   Connect(
       wxEVT_COMMAND_MENU_SELECTED,
