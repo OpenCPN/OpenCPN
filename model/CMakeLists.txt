@@ -72,6 +72,7 @@ set(
   ${MODEL_HDR_DIR}/conn_params.h
   ${MODEL_HDR_DIR}/conn_states.h
   ${MODEL_HDR_DIR}/cutil.h
+  ${MODEL_HDR_DIR}/datetime.h
   ${MODEL_HDR_DIR}/downloader.h
   ${MODEL_HDR_DIR}/ds_porttype.h
   ${MODEL_HDR_DIR}/garmin_protocol_mgr.h
@@ -173,6 +174,7 @@ set(SRC
   ${MODEL_SRC_DIR}/conn_params.cpp
   ${MODEL_SRC_DIR}/conn_states.cpp
   ${MODEL_SRC_DIR}/cutil.cpp
+  ${MODEL_SRC_DIR}/datetime.cpp
   ${MODEL_SRC_DIR}/downloader.cpp
   ${MODEL_SRC_DIR}/ds_porttype.cpp
   ${MODEL_SRC_DIR}/garmin_protocol_mgr.cpp

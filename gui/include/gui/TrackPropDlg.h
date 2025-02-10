@@ -140,8 +140,12 @@ protected:
   wxTextCtrl* m_tTimeEnroute;
   wxStaticText* m_stShowTime;
   wxRadioButton* m_rbShowTimeUTC;
+  /** Use PC Local timezone to format date/time. */
   wxRadioButton* m_rbShowTimePC;
+  /** Use Local Mean Time (LMT) at the location to format date/time. */
   wxRadioButton* m_rbShowTimeLocal;
+  /** Honor OpenCPN global setting to format date/time. */
+  wxRadioButton* m_rbShowTimeGlobalSettings;
   OCPNTrackListCtrl* m_lcPoints;
   wxScrolledWindow* m_panelAdvanced;
   wxStaticText* m_stDescription;
@@ -218,6 +222,10 @@ public:
 };
 
 class OCPNTrackListCtrl : public wxListCtrl {
+protected:
+  /** Return the longitude at the start point of the track. */
+  double getStartPointLongitude() const;
+
 public:
   OCPNTrackListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                     const wxSize& size, long style);

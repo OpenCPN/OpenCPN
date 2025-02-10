@@ -2221,4 +2221,87 @@ extern DECL_EXP void PluginCenterOwnship(int CanvasIndex);
 extern DECL_EXP bool GetEnableTenHertzUpdate();
 extern DECL_EXP void EnableTenHertzUpdate(bool enable);
 
+struct DateTimeFormatOptions {
+  DateTimeFormatOptions() = default;
+  /**
+   * The format string for date/time.
+   *
+   * The following predefined format strings are supported:
+   * - "$long_date": Thursday December 31, 2021.
+   * - "$short_date": 12/31/2021.
+   * - "$weekday_short_date": Thu 12/31/2021.
+   * - "$hour_minutes_seconds": 15:34:56 zero-padded.
+   * - "$hour_minutes": 15:34 zero-padded.
+   * - "$long_date_time": Thursday December 31, 2021 12:34:56.
+   * - "$short_date_time": 12/31/2021 15:34:56.
+   * - "$weekday_short_date_time": Thu 12/31/2021 15:34:56.
+   *
+   * The default is $weekday_short_date_time.
+   *
+   * The descriptors are resolved to localized date/time string representations.
+   * For example, $short_date is resolved to "12/31/2021" in the US locale and
+   * "31/12/2021" in the UK locale.
+   */
+  wxString format_string = "$weekday_short_date_time";
+  /**
+   * The timezone to use when formatting the date/time. Options include:
+   * - Empty string (default): the date/time is formatted according to
+   *   the OpenCPN global settings. This should be used to ensure consistency
+   *   of the date/time representation across the entire application.
+   * - "UTC": the date/time is formatted in UTC, regardless of the OpenCPN
+   *   global settings.
+   * - "Local Time": the date/time is formatted in the local time, regardless of
+   *   the OpenCPN global settings.
+   *
+   * @note In the future, additional timezone options may be supported:
+   * - "LMT": the date/time is formatted in local mean time. In this
+   *   case, longitude is required.
+   * - Valid timezone name: the date/time is formatted in that timezone.
+   */
+  wxString time_zone = wxEmptyString;
+  /**
+   * The longitude to use when formatting the date/time in Local Mean Time
+   * (LMT). The longitude is required when the time_zone is set to "LMT".
+   */
+  double longitude = NAN;
+
+  // Future date/time formatting fields can be added here.
+
+  int version = 1;  // For future compatibility checks
+
+  DateTimeFormatOptions &SetFormatString(const wxString &fmt) {
+    format_string = fmt;
+    return *this;
+  }
+
+  DateTimeFormatOptions &SetTimezone(const wxString &tz) {
+    time_zone = tz;
+    return *this;
+  }
+
+  DateTimeFormatOptions &SetLongitude(double lon) {
+    longitude = lon;
+    return *this;
+  }
+};
+
+/**
+ * Format a wxDateTime to a localized string representation, conforming to the
+ * global date/time format and timezone settings.
+ *
+ * The function uses the timezone configuration to format the date/time either
+ * in UTC, local time, or local mean time (LMT) based on the longitude.
+ *
+ * @note This function should be used instead of wxDateTime.Format() to ensure
+ * consistent date/time formatting across the entire application.
+ *
+ * @param date_time The date/time to format.
+ * @param options The date/time format options.
+ * @return wxString The formatted date/time string.
+ *
+ */
+extern DECL_EXP wxString ToUsrDateTimeFormat(
+    const wxDateTime date_time,
+    const DateTimeFormatOptions &options = DateTimeFormatOptions());
+
 #endif  //_PLUGIN_H_
