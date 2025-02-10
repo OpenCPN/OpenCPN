@@ -190,7 +190,7 @@ class NavAddrPlugin : public NavAddr {
 public:
   const std::string id;
   NavAddrPlugin(const std::string& _id)
-      : NavAddr(NavAddr::Bus::Plugin, "Plugin"), id(_id) {}
+      : NavAddr(NavAddr::Bus::Plugin, "Internal"), id(_id) {}
 };
 
 class NavAddrSignalK : public NavAddr {
@@ -319,8 +319,8 @@ public:
 
   PluginMsg(const std::string& _name, const std::string& _dest_host,
             const std::string& msg)
-      : NavMsg(NavAddr::Bus::Plugin,
-               std::make_shared<const NavAddr>(NavAddr::Bus::Plugin, "")),
+      : NavMsg(NavAddr::Bus::Plugin, std::make_shared<const NavAddr>(
+                                         NavAddr::Bus::Plugin, "Internal")),
         name(_name),
         message(msg),
         dest_host(_dest_host) {}

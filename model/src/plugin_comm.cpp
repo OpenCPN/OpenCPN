@@ -78,7 +78,7 @@ static void LogMessage(const std::shared_ptr<const NavMsg>& message,
   if (log) {
     NavmsgStatus ns;
     ns.direction = NavmsgStatus::Direction::kInternal;
-    Logline ll(message, ns, "Internal");
+    Logline ll(message, ns);
     ll.prefix = prefix;
     log->Add(ll);
   }
@@ -95,7 +95,7 @@ void SendMessageToAllPlugins(const wxString& message_id,
   wxString body(message_body);
 
   LogMessage(msg);
-  //LogMessage(std::string("internal ALL ") + msg->to_string());  FIXME/leamas
+  // LogMessage(std::string("internal ALL ") + msg->to_string());  FIXME/leamas
 
   for (auto pic : *PluginLoader::getInstance()->GetPlugInArray()) {
     if (pic->m_enabled && pic->m_init_state) {
