@@ -1228,11 +1228,13 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
         }
       }
     } else if (update_path == _T("design.draft")) {
-      if (item["value"].HasMember("maximum") && item["value"].IsNumber()) {
+      if (item["value"].HasMember("maximum") &&
+          item["value"]["maximum"].IsNumber()) {
         pTargetData->Draft = item["value"]["maximum"].GetDouble();
         pTargetData->Euro_Draft = item["value"]["maximum"].GetDouble();
       }
-      if (item["value"].HasMember("current") && item["value"].IsNumber()) {
+      if (item["value"].HasMember("current") &&
+          item["value"]["current"].IsNumber()) {
         double draft = item["value"]["current"].GetDouble();
         if (draft > 0) {
           pTargetData->Draft = draft;
