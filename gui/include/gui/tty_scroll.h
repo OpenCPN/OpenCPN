@@ -27,6 +27,7 @@
 #include <wx/textctrl.h>
 
 #include "model/nmea_log.h"
+#include "model/navmsg_filter.h"
 
 /**
  * \file
@@ -54,7 +55,7 @@ public:
    * or added lines contains filter.GetValue() lines are used; otherwise
    * lines are discarded.
    */
-  TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter);
+  TtyScroll(wxWindow* parent, int n_lines);
 
   virtual ~TtyScroll() = default;
 
@@ -74,12 +75,17 @@ public:
    */
   void Copy(bool n183);
 
+  /**
+   * Apply a display filter
+   */
+  void SetFilter(const NavmsgFilter& filter) { m_filter = filter; }
+
 protected:
   wxCoord m_line_height;  // the height of one line on screen
   size_t m_n_lines;       // the number of lines we draw
 
   std::deque<Logline> m_lines;
-  wxTextCtrl& m_filter;
+  NavmsgFilter m_filter;
   bool m_is_paused;
 
   virtual void OnDraw(wxDC& dc);
