@@ -54,11 +54,10 @@ public:
   ~Multiplexer();
 
   void LogOutputMessage(const std::shared_ptr<const NavMsg>& msg,
-                        const std::string& stream_name, NavmsgStatus status);
+                        NavmsgStatus status);
 
-  void LogOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
-                             const std::string& stream_name,
-                             NavmsgStatus status);
+  // void LogOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
+  //                            NavmsgStatus status);
   /**
    * Logs an input message with context information.
    *
@@ -70,8 +69,8 @@ public:
    * @param error_msg The error message to be logged.
    */
   void LogInputMessage(const std::shared_ptr<const NavMsg>& msg,
-                       const std::string& stream_name, bool is_filtered,
-                       bool is_error, const wxString error_msg = "");
+                       bool is_filtered, bool is_error,
+                       const wxString error_msg = "");
 
   bool IsLogActive() { return m_log_callbacks.log_is_active(); }
 
