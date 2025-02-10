@@ -506,10 +506,9 @@ void DataLogger::Add(const Logline& ll) {
   m_stream << ws;
 }
 
-DataMonitor::DataMonitor(wxWindow* parent, std::function<void()> on_exit)
+DataMonitor::DataMonitor(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, "Data Monitor", wxDefaultPosition,
               wxDefaultSize, wxDEFAULT_FRAME_STYLE, kDataMonitorWindowName),
-      m_on_exit(on_exit),
       m_monitor_src([&](const std::shared_ptr<const NavMsg>& navmsg) {
         auto msg = std::dynamic_pointer_cast<const Nmea0183Msg>(navmsg);
         TtyPanel::AddIfExists(navmsg);
@@ -530,10 +529,7 @@ DataMonitor::DataMonitor(wxWindow* parent, std::function<void()> on_exit)
   Fit();
   Show();
 
-  Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent&) {
-    m_on_exit();
-    Destroy();
-  });
+  Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& ev) { Hide(); });
 }
 
 void DataMonitor::Add(const Logline& ll) {

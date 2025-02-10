@@ -137,7 +137,7 @@ bool isSingleChart(ChartBase* chart);
 class MyFrame : public wxFrame {
 public:
   MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, long style);
+          const wxSize& size, long style, DataMonitor* data_monitor);
 
   ~MyFrame();
 
@@ -260,6 +260,8 @@ public:
   void RefreshGroupIndices(void);
 
   double GetBestVPScale(ChartBase* pchart);
+
+  DataMonitor* GetDataMonitor() const { return m_data_monitor; }
 
   ColorScheme GetColorScheme();
   void SetAndApplyColorScheme(ColorScheme cs);
