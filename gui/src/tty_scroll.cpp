@@ -53,8 +53,9 @@ const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
 /** Draw a single line in the log window. */
 static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
   wxString ws;
+  std::string msg_text = ll.navmsg ? ll.navmsg->to_string() : "";
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
-  ws << wxDateTime::Now().FormatISOTime() << " ";
+  if (!msg_text.empty()) ws << wxDateTime::Now().FormatISOTime() << " ";
 #endif
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
     ws << " " << kUtfRightArrow << " ";
@@ -83,12 +84,13 @@ static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
               << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
   }
   std::string stream(ll.stream_name);
+  if (stream.empty() && ll.navmsg) stream = ll.navmsg->source->iface;
   if (stream.size() > 20) stream = stream.substr(0, 17) + "...";
   ws << stream;
   dc.DrawText(ws, 0, y);
   ws = "";
 
-  ws << (ll.navmsg ? ll.navmsg->to_string() : "") << error_msg.str();
+  ws << msg_text << error_msg.str();
   dc.DrawText(ws, data_pos, y);
 }
 
