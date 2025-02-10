@@ -71,6 +71,8 @@ public:
 
   void OnStop(bool stop) { m_tty_scroll->Pause(stop); }
 
+  void SetFilter(const NavmsgFilter& f) { m_tty_scroll->SetFilter(f); };
+
   /** Invoke Add(s) for possibly existing instance. */
   static void AddIfExists(const Logline& ll) {
     auto window = wxWindow::FindWindowByName("TtyPanel");
@@ -133,21 +135,13 @@ private:
 /** Offer user to select current filter. */
 class FilterChoice : public wxChoice {
 public:
-  FilterChoice(wxWindow* parent) : wxChoice(parent, wxID_ANY) {
+  FilterChoice(wxWindow* parent, TtyPanel* tty_panel)
+      : wxChoice(parent, wxID_ANY), m_tty_panel(tty_panel) {
     m_filters = NavmsgFilter::GetSystemFilters();
+    Bind(wxEVT_CHOICE, [&](wxCommandEvent&) { OnChoice(); });
     OnFilterListChange();
-  }
-
-  void OnFilterListChange() {
-    Clear();
-    for (auto& filter : m_filters) {
-      try {
-        Append(kLabels.at(filter.m_name));
-      } catch (std::out_of_range&) {
-        Append(filter.m_description);
-      }
-    }
-    if (!m_filters.empty()) SetSelection(0);
+    int ix = FindString(_("All data"));
+    if (ix != wxNOT_FOUND) SetSelection(ix);
   }
 
 private:
@@ -163,6 +157,43 @@ private:
   };
 
   std::vector<NavmsgFilter> m_filters;
+  TtyPanel* m_tty_panel;
+
+  void OnChoice() {
+    wxString label = GetString(GetSelection());
+    NavmsgFilter filter = FilterByLabel(label.ToStdString());
+    m_tty_panel->SetFilter(filter);
+  }
+
+  void OnFilterListChange() {
+    Clear();
+    for (auto& filter : m_filters) {
+      try {
+        Append(kLabels.at(filter.m_name));
+      } catch (std::out_of_range&) {
+        Append(filter.m_description);
+      }
+    }
+    if (!m_filters.empty()) SetSelection(0);
+  }
+
+  NavmsgFilter FilterByLabel(const std::string label) {
+    std::string name;
+    for (auto kv : kLabels) {
+      if (kv.second == label) {
+        name = kv.first;
+        break;
+      }
+    }
+    if (!name.empty()) {
+      for (auto& f : m_filters)
+        if (f.m_name == name) return f;
+    } else {
+      for (auto& f : m_filters)
+        if (f.m_description == label) return f;
+    }
+    return NavmsgFilter();
+  }
 };
 
 /** Button to stop/resume messages in main log window. */
@@ -344,7 +375,7 @@ private:
 /** Overall bottom status line. */
 class StatusLine : public wxPanel {
 public:
-  StatusLine(wxWindow* parent, wxWindow* quick_filter,
+  StatusLine(wxWindow* parent, wxWindow* quick_filter, TtyPanel* tty_panel,
              std::function<void(bool)> on_stop, DataLogger& logger)
       : wxPanel(parent), m_is_resized(false), m_logger(logger) {
     // Add a containing sizer for labels, so they can be aligned vertically
@@ -361,7 +392,7 @@ public:
     wbox->Add(m_log_button, flags);
     wbox->Add(GetCharWidth() * 2, 0, 1);  // Stretching horizontal space
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
-    wbox->Add(new FilterChoice(this), flags);
+    wbox->Add(new FilterChoice(this, tty_panel), flags);
     wbox->Add(new StopResumeButton(this, on_stop), flags);
     wbox->Add(new FilterButton(this, quick_filter), flags);
 
@@ -492,7 +523,7 @@ DataMonitor::DataMonitor(wxWindow* parent, std::function<void()> on_exit)
 
   vbox->Add(m_quick_filter, wxSizerFlags());
   auto on_stop = [&, tty_panel](bool stop) { tty_panel->OnStop(stop); };
-  vbox->Add(new StatusLine(this, m_quick_filter, on_stop, m_logger),
+  vbox->Add(new StatusLine(this, m_quick_filter, tty_panel, on_stop, m_logger),
             wxSizerFlags().Expand());
   SetSizer(vbox);
   m_quick_filter->Hide();
