@@ -70,7 +70,7 @@
 #include "Layer.h"
 #include "navutil.h"
 #include "nmea0183.h"
-#include "NMEALogWindow.h"
+
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
