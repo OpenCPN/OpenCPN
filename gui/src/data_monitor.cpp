@@ -58,7 +58,7 @@ public:
         m_filter(this, wxID_ANY),
         m_lines(lines) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
-    m_tty_scroll = new TtyScroll(this, m_lines, m_filter);
+    m_tty_scroll = new TtyScroll(this, m_lines);
     vbox->Add(m_tty_scroll, wxSizerFlags(1).Expand().Border());
     m_filter.Hide();
     SetSizer(vbox);
