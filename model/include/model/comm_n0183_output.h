@@ -54,7 +54,7 @@ class Route;
  */
 #define ERR_GPS_DRIVER_NOT_AVAILAIBLE -3
 
-void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
+void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
                               EventVar& on_msg_sent);
 
 class N0183DlgCtx {

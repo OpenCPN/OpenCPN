@@ -37,6 +37,7 @@
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
 
+#include "model/nmea_log.h"
 #include "ocpndc.h"
 #include "undo.h"
 
@@ -151,7 +152,7 @@ class ChartCanvas : public wxWindow {
   friend class glChartCanvas;
 
 public:
-  ChartCanvas(wxFrame *frame, int canvasIndex);
+  ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log);
   ~ChartCanvas();
 
   void SetupGlCanvas();
@@ -835,6 +836,7 @@ private:
 
   ViewPort VPoint;
   void PositionConsole(void);
+  wxWindow *m_nmea_log;
 
   wxColour PredColor();
   wxColour ShipColor();

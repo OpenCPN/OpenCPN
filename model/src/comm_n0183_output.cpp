@@ -57,15 +57,15 @@
 #endif
 
 void LogBroadcastOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
-                                    NavmsgStatus ns, NmeaLog& nmea_log) {
-  if (nmea_log.IsActive()) {
+                                    NavmsgStatus ns, NmeaLog* nmea_log) {
+  if (nmea_log->IsActive()) {
     ns.direction = NavmsgStatus::Direction::kOutput;
     Logline ll(msg, ns);
-    nmea_log.Add(ll);
+    nmea_log->Add(ll);
   }
 }
 
-void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
+void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
                               EventVar& on_msg_sent) {
   auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::unique_ptr<AbstractCommDriver>>& drivers =
