@@ -26,10 +26,23 @@
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
+#include "model/nmea_log.h"
+#include "model/navmsg_filter.h"
+
 /**
  * \file
- * Scrolled TTY-like window for logging, etc....
+ * Scrolled TTY-like window for logging and utilities
  */
+
+extern const wxString kUtfCheckMark;
+extern const wxString kUtfCircledDivisionSlash;
+extern const wxString kUtfFallingDiagonal;
+extern const wxString kUtfIdenticalTo;
+extern const wxString kUtfLeftArrow;
+extern const wxString kUtfLeftRightArrow;
+extern const wxString kUtfLeftwardsArrowToBar;
+extern const wxString kUtfMultiplicationX;
+extern const wxString kUtfRightArrow;
 
 /** Scrolled TTY-like window for logging, etc. */
 class TtyScroll : public wxScrolledWindow {
@@ -42,7 +55,7 @@ public:
    * or added lines contains filter.GetValue() lines are used; otherwise
    * lines are discarded.
    */
-  TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter);
+  TtyScroll(wxWindow* parent, int n_lines);
 
   virtual ~TtyScroll() = default;
 
@@ -51,7 +64,7 @@ public:
    * Subject to checks with respect to paused state and filter possibly
    * discarding argument line.
    */
-  virtual void Add(const wxString& line);
+  virtual void Add(struct Logline line);
 
   /** Set the window to ignore Add() or not depending on pause. */
   void Pause(bool pause) { m_is_paused = pause; }
@@ -62,12 +75,17 @@ public:
    */
   void Copy(bool n183);
 
+  /**
+   * Apply a display filter
+   */
+  void SetFilter(const NavmsgFilter& filter) { m_filter = filter; }
+
 protected:
   wxCoord m_line_height;  // the height of one line on screen
   size_t m_n_lines;       // the number of lines we draw
 
-  std::deque<wxString> m_lines;
-  wxTextCtrl& m_filter;
+  std::deque<Logline> m_lines;
+  NavmsgFilter m_filter;
   bool m_is_paused;
 
   virtual void OnDraw(wxDC& dc);

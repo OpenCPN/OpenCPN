@@ -23,9 +23,13 @@
  */
 
 #include <wx/window.h>
+#include <model/nmea_log.h>
 
 static const char* const kTopLevelWindowName = "MainWindow";
+static const char* const kNmeaLogWindowName = "TtyPanel";
+static const char* const kDataMonitorWindowName = "DataMonitor";
 
 /** Return the top level window a k a gFrame. */
 wxWindow* GetTopWindow();
+
 void PropagateResize(wxWindow* window);
