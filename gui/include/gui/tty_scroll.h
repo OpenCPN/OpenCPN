@@ -22,6 +22,7 @@
 #define __TTYSCROLL_H__
 
 #include <deque>
+#include <memory>
 
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
@@ -43,6 +44,31 @@ extern const wxString kUtfLeftRightArrow;
 extern const wxString kUtfLeftwardsArrowToBar;
 extern const wxString kUtfMultiplicationX;
 extern const wxString kUtfRightArrow;
+
+/** Functor returning log foreground color for given state. */
+class ColorByState {
+public:
+  virtual wxColor operator()(NavmsgStatus) = 0;
+};
+
+/** Functor returning default color for all states. */
+class NoColorsByState : public ColorByState {
+public:
+  NoColorsByState(wxColor color) : m_color(color) {}
+
+  wxColor operator()(NavmsgStatus ns) { return m_color; }
+
+private:
+  wxColor m_color;
+};
+
+/** The standard colors handler functor. */
+class StdColorsByState : public ColorByState {
+public:
+  StdColorsByState() {};
+
+  wxColor operator()(NavmsgStatus ns);
+};
 
 /** Scrolled TTY-like window for logging, etc. */
 class TtyScroll : public wxScrolledWindow {
@@ -80,6 +106,11 @@ public:
    */
   void SetFilter(const NavmsgFilter& filter) { m_filter = filter; }
 
+  /**
+   * Set color scheme
+   */
+  void SetColors(std::unique_ptr<ColorByState> color_by_state);
+
 protected:
   wxCoord m_line_height;  // the height of one line on screen
   size_t m_n_lines;       // the number of lines we draw
@@ -87,6 +118,7 @@ protected:
   std::deque<Logline> m_lines;
   NavmsgFilter m_filter;
   bool m_is_paused;
+  std::unique_ptr<ColorByState> m_color_by_state;
 
   virtual void OnDraw(wxDC& dc);
   void OnSize(wxSizeEvent& event);
