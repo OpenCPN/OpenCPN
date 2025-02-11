@@ -336,7 +336,7 @@ public:
 
   std::string key() const { return std::string("plug.json-") + name; };
 
-  std::string to_string() const { return name + ": " + message; }
+  std::string to_string() const;
 };
 
 /** A parsed SignalK message over ipv4 */
