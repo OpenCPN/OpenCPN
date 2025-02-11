@@ -80,6 +80,7 @@ NavAddr::Bus s_bus;
 AppMsg::Type s_apptype;
 
 auto shared_navaddr_none = std::make_shared<NavAddr>();
+auto shared_navaddr_none2000 = std::make_shared<NavAddr2000>();
 
 wxLogStderr defaultLog;
 
@@ -189,8 +190,8 @@ public:
       std::string s("payload data");
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
-      auto n2k_msg =
-          std::make_shared<const Nmea2000Msg>(id, payload, shared_navaddr_none);
+      auto n2k_msg = std::make_shared<const Nmea2000Msg>(
+          id, payload, shared_navaddr_none2000);
       Observable observable("1234");
       observable.Notify(n2k_msg);
     }
@@ -313,7 +314,7 @@ public:
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
       auto msg =
-          std::make_unique<Nmea2000Msg>(id, payload, shared_navaddr_none);
+          std::make_unique<Nmea2000Msg>(id, payload, shared_navaddr_none2000);
       NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
@@ -401,7 +402,7 @@ public:
       auto payload = std::vector<unsigned char>(s.begin(), s.end());
       auto id = static_cast<uint64_t>(1234);
       auto msg =
-          std::make_unique<Nmea2000Msg>(id, payload, shared_navaddr_none);
+          std::make_unique<Nmea2000Msg>(id, payload, shared_navaddr_none2000);
       NavMsgBus::GetInstance().Notify(std::move(msg));
     }
   };
@@ -956,7 +957,8 @@ TEST(Navmsg2000, to_string) {
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
-  auto msg = std::make_shared<Nmea2000Msg>(id, payload, shared_navaddr_none);
+  auto msg =
+      std::make_shared<Nmea2000Msg>(id, payload, shared_navaddr_none2000);
   EXPECT_EQ(string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"),
             msg->to_string());
 }
@@ -977,7 +979,7 @@ TEST(FileDriver, output) {
   std::string s("payload data");
   auto payload = std::vector<unsigned char>(s.begin(), s.end());
   auto id = static_cast<uint64_t>(1234);
-  Nmea2000Msg msg(id, payload, shared_navaddr_none);
+  Nmea2000Msg msg(id, payload, shared_navaddr_none2000);
   remove("test-output.txt");
 
   driver->SendMessage(std::make_shared<const Nmea2000Msg>(msg),

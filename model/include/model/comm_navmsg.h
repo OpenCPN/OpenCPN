@@ -43,6 +43,10 @@ struct N2kPGN {
 
   N2kPGN(uint64_t _pgn) { pgn = _pgn; }
 
+  friend bool operator<(const N2kPGN& lhs, const N2kPGN& rhs) {
+    return lhs.pgn < rhs.pgn;
+  }
+
   std::string to_string() const {
     std::stringstream ss;
     ss << pgn;
@@ -62,6 +66,10 @@ struct N2kPGN {
 struct N2kName {
   N2kName() {};
   N2kName(uint64_t name) { value.Name = name; }
+
+  friend bool operator<(const N2kName& lhs, const N2kName& rhs) {
+    return lhs.value.Name < rhs.value.Name;
+  }
 
   std::string to_string() const {
     std::stringstream ss;
@@ -155,6 +163,9 @@ class NavAddr0183 : public NavAddr {
 public:
   NavAddr0183(const std::string iface) : NavAddr(NavAddr::Bus::N0183, iface) {};
 
+  // An empty, illegal N0183 address
+  NavAddr0183() : NavAddr() {}
+
   std::string to_string() const { return iface; }
 };
 
@@ -165,6 +176,9 @@ public:
 
   NavAddr2000(const std::string& iface, unsigned char _address)
       : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address) {};
+
+  // An empty, illegal N2000 address
+  NavAddr2000() : NavAddr() {}
 
   std::string to_string() const { return name.to_string(); }
 
@@ -199,16 +213,23 @@ class NavMsg : public KeyProvider {
 public:
   NavMsg() = delete;
 
+  /** Return unique key used by observable to notify/listen. */
   virtual std::string key() const = 0;
 
+  /** Return printable string for logging etc without trailing nl */
   virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + key();
   }
 
+  /** Alias for key(). */
   std::string GetKey() const { return key(); }
 
   const NavAddr::Bus bus;
 
+  /**
+   * Source address is set by drivers when receiving, unused and should be
+   * empty when sending.
+   */
   std::shared_ptr<const NavAddr> source;
 
 protected:
@@ -224,15 +245,15 @@ public:
   Nmea2000Msg(const uint64_t _pgn)
       : NavMsg(NavAddr::Bus::N2000, std::make_shared<NavAddr>()), PGN(_pgn) {}
 
-  Nmea2000Msg(const uint64_t _pgn, std::shared_ptr<const NavAddr> src)
+  Nmea2000Msg(const uint64_t _pgn, std::shared_ptr<const NavAddr2000> src)
       : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn) {}
 
   Nmea2000Msg(const uint64_t _pgn, const std::vector<unsigned char>& _payload,
-              std::shared_ptr<const NavAddr> src)
+              std::shared_ptr<const NavAddr2000> src)
       : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn), payload(_payload) {}
 
   Nmea2000Msg(const uint64_t _pgn, const std::vector<unsigned char>& _payload,
-              std::shared_ptr<const NavAddr> src, int _priority)
+              std::shared_ptr<const NavAddr2000> src, int _priority)
       : NavMsg(NavAddr::Bus::N2000, src),
         PGN(_pgn),
         payload(_payload),
@@ -277,9 +298,7 @@ public:
 
   std::string key() const { return Nmea0183Msg::MessageKey(type.c_str()); };
 
-  std::string to_string() const {
-    return NavMsg::to_string() + " " + talker + type + " " + payload;
-  }
+  std::string to_string() const;
 
   /** Return key which should be used to listen to given message type. */
   static std::string MessageKey(const char* type = "ALL") {
@@ -316,6 +335,8 @@ public:
   const std::string dest_host;  ///< hostname, ip address or 'localhost'
 
   std::string key() const { return std::string("plug.json-") + name; };
+
+  std::string to_string() const { return name + ": " + message; }
 };
 
 /** A parsed SignalK message over ipv4 */

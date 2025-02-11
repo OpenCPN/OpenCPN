@@ -294,7 +294,7 @@ gui/include/gui/toolbar.h
 gui/include/gui/track_gui.h
 gui/include/gui/trackprintout.h
 gui/include/gui/TrackPropDlg.h
-gui/include/gui/TTYScroll.h
+gui/include/gui/TtyScroll.h
 gui/include/gui/TTYWindow.h
 gui/include/gui/udev_rule_mgr.h
 gui/include/gui/undo.h
@@ -403,7 +403,7 @@ gui/src/toolbar.cpp
 gui/src/track_gui.cpp
 gui/src/trackprintout.cpp
 gui/src/TrackPropDlg.cpp
-gui/src/TTYScroll.cpp
+gui/src/TtyScroll.cpp
 gui/src/TTYWindow.cpp
 gui/src/udev_rule_mgr.cpp
 gui/src/undo.cpp

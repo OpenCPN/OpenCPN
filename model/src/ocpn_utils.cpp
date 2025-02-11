@@ -23,8 +23,10 @@
  */
 #include <algorithm>
 #include <cstdio>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -160,6 +162,21 @@ bool N0183CheckSumOk(const std::string& sentence) {
     calculated_checksum ^= static_cast<unsigned char>(*i);
 
   return calculated_checksum == checksum;
+}
+
+std::string printable(const std::string str) {
+  std::stringstream ss;
+  for (auto it = str.begin(); it != str.end(); it++) {
+    if (std::isprint(*it) && *it != '\r' && *it != '\n') {
+      ss << *it;
+    } else {
+      std::stringstream ss2;
+      ss2 << std::setw(2) << std::setfill('0') << std::uppercase << std::hex
+          << static_cast<int>(*it);
+      ss << "<" << ss2.str() << ">";
+    }
+  }
+  return ss.str();
 }
 
 }  // namespace ocpn

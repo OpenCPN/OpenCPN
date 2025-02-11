@@ -126,11 +126,10 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
         if (bout_filter) {
           std::string id = msg.ToStdString().substr(1, 5);
           auto msg_out = std::make_shared<Nmea0183Msg>(
-              id, msg.ToStdString(),
-              std::make_shared<NavAddr0183>(driver->iface));
+              id, msg.ToStdString(), std::make_shared<NavAddr>());
 
-          bool bxmit_ok = driver->SendMessage(
-              msg_out, std::make_shared<NavAddr0183>(driver->iface));
+          bool bxmit_ok =
+              driver->SendMessage(msg_out, std::make_shared<NavAddr>());
 
           if (bxmit_ok)
             LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<BLUE>",
@@ -536,7 +535,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
   } else
 
   {
-    auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
+    auto address = std::make_shared<NavAddr>();
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = _T ( "EC" );
@@ -614,11 +613,11 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         //  We need only send once for FurunoGP3X models
 
         auto msg_out = std::make_shared<Nmea0183Msg>(
-            std::string("ECWPL"), snt.Sentence.ToStdString(), address);
+            "ECWPL", snt.Sentence.ToStdString(), address);
 
-        drv_n0183->SendMessage(msg_out, address);
+        drv_n0183->SendMessage(msg_out, std::make_shared<NavAddr>());
         if (g_GPS_Ident != "FurunoGP3X")
-          drv_n0183->SendMessage(msg_out, address);
+          drv_n0183->SendMessage(msg_out, std::make_shared<NavAddr>());
 
         multiplexer.LogOutputMessage(snt.Sentence, com_name.ToStdString(),
                                      false);
@@ -824,7 +823,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         wxString sentence = sentence_array[ii];
 
         auto msg_out = std::make_shared<Nmea0183Msg>(
-            std::string("ECRTE"), sentence.ToStdString(), address);
+            "ECRTE", sentence.ToStdString(), std::make_shared<NavAddr>());
         drv_n0183->SendMessage(msg_out, address);
 
         wxString fmsg = FormatPrintableMessage(sentence);
@@ -842,7 +841,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
     } else {
       auto msg_out = std::make_shared<Nmea0183Msg>(
-          std::string("ECRTE"), snt.Sentence.ToStdString(), address);
+          "ECRTE", snt.Sentence.ToStdString(), address);
       drv_n0183->SendMessage(msg_out, address);
 
       wxString fmsg = FormatPrintableMessage(snt.Sentence);
@@ -865,8 +864,8 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       rtep.Printf(",%c%c", 0x0d, 0x0a);
       rte += rtep;
 
-      auto msg_out = std::make_shared<Nmea0183Msg>(std::string("GPRTC"),
-                                                   rte.ToStdString(), address);
+      auto msg_out =
+          std::make_shared<Nmea0183Msg>("GPRTC", rte.ToStdString(), address);
       drv_n0183->SendMessage(msg_out, address);
       multiplexer.LogOutputMessage(rte, com_name.ToStdString(), false);
 
@@ -877,8 +876,8 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       wxString term;
       term.Printf("$PFEC,GPxfr,CTL,E%c%c", 0x0d, 0x0a);
 
-      auto msg_outf = std::make_shared<Nmea0183Msg>(
-          std::string("GPRTC"), term.ToStdString(), address);
+      auto msg_outf =
+          std::make_shared<Nmea0183Msg>("GPRTC", term.ToStdString(), address);
       drv_n0183->SendMessage(msg_outf, address);
 
       multiplexer.LogOutputMessage(term, com_name.ToStdString(), false);
@@ -1031,7 +1030,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
   {  // Standard NMEA mode
     auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
 
-    auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
+    auto address = std::make_shared<NavAddr>();
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = "EC";
@@ -1073,7 +1072,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     }
 
     auto msg_out = std::make_shared<Nmea0183Msg>(
-        std::string("ECWPL"), snt.Sentence.ToStdString(), address);
+        "ECWPL", snt.Sentence.ToStdString(), address);
     drv_n0183->SendMessage(msg_out, address);
 
     multiplexer.LogOutputMessage(snt.Sentence, com_name, false);

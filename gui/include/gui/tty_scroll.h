@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,27 +21,57 @@
 #ifndef __TTYSCROLL_H__
 #define __TTYSCROLL_H__
 
+#include <deque>
+
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
-//    Scrolled TTY-like window for logging, etc....
-class TTYScroll : public wxScrolledWindow {
+/**
+ * \file
+ * Scrolled TTY-like window for logging, etc....
+ */
+
+/** Scrolled TTY-like window for logging, etc. */
+class TtyScroll : public wxScrolledWindow {
 public:
-  TTYScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter);
-  virtual ~TTYScroll();
-  virtual void OnDraw(wxDC &dc);
-  virtual void Add(const wxString &line);
-  void OnSize(wxSizeEvent &event);
-  void Pause(bool pause) { bpause = pause; }
-  void Copy(bool);
+  /**
+   * Create a TtyScroll instance
+   * @param parent Parent window
+   * @param n_lines Number of visible lines i. e., window height.
+   * @param filter Used by Add() to discard lines. If filter is empty
+   * or added lines contains filter.GetValue() lines are used; otherwise
+   * lines are discarded.
+   */
+  TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter);
+
+  virtual ~TtyScroll() = default;
+
+  /**
+   * Add a line to bottom of window, typically discarding top-most line.
+   * Subject to checks with respect to paused state and filter possibly
+   * discarding argument line.
+   */
+  virtual void Add(const wxString& line);
+
+  /** Set the window to ignore Add() or not depending on pause. */
+  void Pause(bool pause) { m_is_paused = pause; }
+
+  /**
+   *  Copy visible content to clipboard.
+   *  @param n0183 If true, copy cleaned up data excluding time stamps etc.
+   */
+  void Copy(bool n183);
 
 protected:
-  wxCoord m_hLine;  // the height of one line on screen
-  size_t m_nLines;  // the number of lines we draw
+  wxCoord m_line_height;  // the height of one line on screen
+  size_t m_n_lines;       // the number of lines we draw
 
-  wxArrayString *m_plineArray;
-  wxTextCtrl &m_tFilter;
-  bool bpause;
+  std::deque<wxString> m_lines;
+  wxTextCtrl& m_filter;
+  bool m_is_paused;
+
+  virtual void OnDraw(wxDC& dc);
+  void OnSize(wxSizeEvent& event);
 };
 
 #endif

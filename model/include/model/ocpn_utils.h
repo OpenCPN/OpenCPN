@@ -65,6 +65,9 @@ void copy_file(const std::string& src_path, const std::string& dest_path);
  */
 bool N0183CheckSumOk(const std::string& sentence);
 
+/** Return copy of str with non-printable chars replaced by hex like "<0D>" */
+std::string printable(const std::string str);
+
 }  // namespace ocpn
 
 #endif  //  _OCPN_UTILS_H__
