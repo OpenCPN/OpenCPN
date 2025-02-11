@@ -50,6 +50,23 @@ const wxString kUtfLeftwardsArrowToBar = wxString::FromUTF8(u8"\u21E4");
 const wxString kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
 const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
 
+wxColor StdColorsByState::operator()(NavmsgStatus ns) {
+  wxColour color;
+  if (ns.status != NavmsgStatus::State::kOk)
+    color = wxColour("RED");
+  else if (ns.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
+    color = wxColour("CORAL");
+  else if (ns.accepted == NavmsgStatus::Accepted::kFilteredDropped)
+    color = wxColour("MAROON");
+  else if (ns.direction == NavmsgStatus::Direction::kOutput)
+    color = wxColour("BLUE");
+  else if (ns.direction == NavmsgStatus::Direction::kInput)
+    color = wxColour("ORANGE");
+  else
+    color = wxColour("GREEN");
+  return color;
+}
+
 /** Draw a single line in the log window. */
 static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
   wxString ws;
@@ -57,49 +74,50 @@ static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
   if (!msg_text.empty()) ws << wxDateTime::Now().FormatISOTime() << " ";
 #endif
+
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
-    ws << " " << kUtfRightArrow << " ";
+    ws << " " << kUtfRightArrow << " ";  // BLUE
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
-    ws << " " << kUtfLeftwardsArrowToBar << " ";
+    ws << " " << kUtfLeftwardsArrowToBar << " ";  // ORANGE
   else if (ll.state.direction == NavmsgStatus::Direction::kInternal)
     ws << " " << kUtfLeftRightArrow << " ";
   else
     ws << " " << kUtfLeftArrow << " ";
-  if (ll.state.status != NavmsgStatus::State::kOk) {
-    dc.SetTextForeground(wxColour("RED"));
+
+  if (ll.state.status != NavmsgStatus::State::kOk)
     ws << kUtfMultiplicationX;
-  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput) {
-    dc.SetTextForeground(wxColour("CORAL"));
+  else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
     ws << kUtfFallingDiagonal;
-  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredDropped) {
-    dc.SetTextForeground(wxColour("MAROON"));
+  else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredDropped)
     ws << kUtfCircledDivisionSlash;
-  } else {
-    dc.SetTextForeground(wxColour("GREEN"));
+  else
     ws << kUtfCheckMark;
-  }
+
   std::stringstream error_msg;
   if (ll.state.status != NavmsgStatus::State::kOk) {
     error_msg << " - "
-              << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
+              << (ll.error_msg.empty() ? "Unknown  errror" : ll.error_msg);
   }
   std::string iface(ll.navmsg ? ll.navmsg->source->iface : "");
   if (iface.size() > 20) iface = iface.substr(0, 17) + "...";
   ws << iface;
+
   dc.DrawText(ws, 0, y);
   ws = "";
-
   ws << msg_text << error_msg.str();
   dc.DrawText(ws, data_pos, y);
 }
 
 TtyScroll::TtyScroll(wxWindow* parent, int n_lines)
     : wxScrolledWindow(parent), m_n_lines(n_lines), m_is_paused(false) {
+  SetName("TtyScroll");
   wxClientDC dc(this);
   dc.GetTextExtent("Line Height", NULL, &m_line_height);
   SetScrollRate(0, m_line_height);
   SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
   for (unsigned i = 0; i < m_n_lines; i++) m_lines.push_back(Logline());
+  SetColors(std::make_unique<StdColorsByState>());
+  // SetColors(std::make_unique<NoColorsByState>(GetForegroundColour()));
   Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
 }
 
@@ -118,6 +136,10 @@ void TtyScroll::Add(struct Logline ll) {
   }
 }
 
+void TtyScroll::SetColors(std::unique_ptr<ColorByState> color_by_state) {
+  m_color_by_state = std::move(color_by_state);
+}
+
 void TtyScroll::OnDraw(wxDC& dc) {
   // Update region is always in device coords, translate to logical ones
   wxRect rect_update = GetUpdateRegion().GetBox();
@@ -130,6 +152,7 @@ void TtyScroll::OnDraw(wxDC& dc) {
   wxCoord y = line_from * m_line_height;
   for (size_t line = line_from; line <= line_to; line++) {
     wxString ws;
+    dc.SetTextForeground((*m_color_by_state)(m_lines[line].state));
     DrawLine(dc, m_lines[line], 30 * GetCharWidth(), y);
     y += m_line_height;
   }
