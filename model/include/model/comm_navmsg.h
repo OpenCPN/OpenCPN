@@ -148,7 +148,9 @@ public:
   NavAddr(Bus b, const std::string& i) : bus(b), iface(i) {};
   NavAddr() : bus(Bus::Undef), iface("") {};
 
-  std::string to_string() const {
+  virtual ~NavAddr() = default;
+
+  virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + iface;
   }
   static std::string BusToString(Bus b);
@@ -336,7 +338,7 @@ public:
 
   std::string key() const { return std::string("plug.json-") + name; };
 
-  std::string to_string() const { return name + ": " + message; }
+  std::string to_string() const;
 };
 
 /** A parsed SignalK message over ipv4 */
