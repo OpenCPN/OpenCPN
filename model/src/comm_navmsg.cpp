@@ -95,3 +95,7 @@ std::string Nmea0183Msg::to_string() const {
      << " " << ocpn::printable(payload);
   return ss.str();
 }
+
+std::string PluginMsg::to_string() const {
+  return name + ": " + ocpn::rtrim(message);
+}
