@@ -158,24 +158,11 @@ void TtyScroll::OnDraw(wxDC& dc) {
   }
 }
 
-void TtyScroll::Copy(bool n0183) {
-  wxString the_text;
-  for (auto& line : m_lines) {
-    std::string s = line.navmsg->to_string();
-    if (n0183) {
-      size_t pos;
-      if ((pos = s.find("$")) != std::string::npos) {
-        the_text.append(s.substr(pos) + "\n");
-      } else if ((pos = s.find("!")) != std::string::npos) {
-        the_text.append(s.substr(pos) + "\n");
-      }
-    } else {
-      the_text += s + "\n";
-    }
-  }
-  // Write scrolled text to the clipboard
+void TtyScroll::CopyToClipboard() const {
+  std::stringstream ss;
+  for (auto& line : m_lines) ss << line.navmsg->to_string() << "\n";
   if (wxTheClipboard->Open()) {
-    wxTheClipboard->SetData(new wxTextDataObject(the_text));
+    wxTheClipboard->SetData(new wxTextDataObject(ss.str()));
     wxTheClipboard->Close();
   }
 }
