@@ -46,8 +46,6 @@
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
 
-using SetLogFunc = std::function<void(int)>;
-
 /** Main window, a rolling log of messages. */
 class TtyPanel : public wxPanel, public NmeaLog {
 public:
@@ -246,7 +244,8 @@ public:
     kLogFormatPretty,
     kLogFormatCsv,
     kLogFormatCantools,
-    kViewColors,
+    kViewStdColors,
+    kViewNoColors,
     kViewTimestamps,
     kViewSource,
     kViewCopy
@@ -273,7 +272,8 @@ public:
     AppendSubMenu(logging, _("Logging..."));
 
     auto view = new wxMenu("");
-    AppendId(view, Id::kViewColors, _("Colors..."));
+    AppendRadioId(view, Id::kViewStdColors, _("Standard Colors"));
+    AppendRadioId(view, Id::kViewNoColors, _("No Colors"));
     AppendCheckId(view, Id::kViewSource, _("Add message source"));
     AppendCheckId(view, Id::kViewTimestamps, _("Add timestamps"));
     AppendId(view, Id::kViewCopy, _("Copy to clipboard"));
@@ -288,9 +288,17 @@ public:
         case Id::kLogFormatCantools:
           m_set_logtype_func(ev.GetId());
           break;
+
         case Id::kLogFile:
           SetLogfile();
           break;
+
+        case Id::kViewStdColors:
+          [[fallthrough]];
+        case Id::kViewNoColors:
+          SetColor(ev.GetId());
+          break;
+
         default:
           std::cout << "Menu id: " << ev.GetId() << "\n";
           break;
@@ -324,6 +332,21 @@ private:
     m_logger = DataLogger(m_parent, fs::path(dlg.GetPath().ToStdString()));
     m_logger.SetLogging(true);
     m_log_button->Enable();
+  }
+
+  void SetColor(int id) {
+    auto* w = wxWindow::FindWindowByName("TtyScroll");
+    TtyScroll* tty_scroll(nullptr);
+    if (w) tty_scroll = dynamic_cast<TtyScroll*>(w);
+    if (!tty_scroll) return;
+
+    if (id == static_cast<int>(Id::kViewStdColors))
+      tty_scroll->SetColors(std::make_unique<StdColorsByState>());
+    else if (id == static_cast<int>(Id::kViewNoColors))
+      tty_scroll->SetColors(
+          std::make_unique<NoColorsByState>(tty_scroll->GetForegroundColour()));
+    else
+      assert(false && "Illegal color type");
   }
 };
 
@@ -373,7 +396,8 @@ public:
                  wxDefaultSize, wxBU_EXACTFIT),
         m_set_logtype_func(set_logtype_func),
         m_logger(logger),
-        m_log_button(log_button) {
+        m_log_button(log_button),
+        m_menu(parent, m_set_logtype_func, m_logger, m_log_button) {
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
     SetLabel(kUtfIdenticalTo);
     SetToolTip(_("Open menu"));
@@ -383,11 +407,9 @@ private:
   std::function<void(int)> m_set_logtype_func;
   DataLogger& m_logger;
   wxWindow* m_log_button;
+  TheMenu m_menu;
 
-  void OnClick() {
-    TheMenu menu(GetParent(), m_set_logtype_func, m_logger, m_log_button);
-    PopupMenu(&menu);
-  }
+  void OnClick() { PopupMenu(&m_menu); }
 };
 
 /** Overall bottom status line. */
