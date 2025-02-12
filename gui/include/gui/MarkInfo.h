@@ -53,7 +53,8 @@
 #include <wx/combobox.h>
 
 #include <wx/dialog.h>
-#include "dialog_cntrl.h"
+#include "field_text.h"
+#include "form_grid.h"
 
 #include "route_validator.h"
 
@@ -255,7 +256,7 @@ protected:
   wxColourPickerCtrl* m_PickColor;
   wxCheckBox* m_cbEtaPresent;
   wxBoxSizer* bMainSizer;
-  wxFlexGridSizer* fSizerBasicProperties;
+  FormGrid* fSizerBasicProperties;
   wxFlexGridSizer* waypointradarGrid;
   wxFlexGridSizer* waypointrrSelect;
   wxGridBagSizer* bGB_SizerProperties;
@@ -355,6 +356,7 @@ protected:
   void OnRightClickLatLon(wxCommandEvent& event);
   void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
   void OnHyperLinkClick(wxHyperlinkEvent& event);
+  void OnLayoutResize(wxCommandEvent& event);
 
   void On_html_link_popupmenu_Click(wxCommandEvent& event);
   void DefautlBtnClicked(wxCommandEvent& event);

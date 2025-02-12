@@ -177,7 +177,7 @@ CommDriverResult WriteCommDriver(
 
     std::string msg(payload->begin(), payload->end());
     std::string id = msg.substr(1, 5);
-    auto address = std::make_shared<NavAddr0183>(d0183->iface);
+    auto address = std::make_shared<NavAddr>();
     auto msg_out = std::make_shared<Nmea0183Msg>(id, msg, address);
     bool xmit_ok = d0183->SendMessage(msg_out, address);
     return xmit_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;

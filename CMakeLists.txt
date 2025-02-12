@@ -358,7 +358,7 @@ if (NOT WIN32 AND NOT APPLE)
   if (NOT OCPN_PEDANTIC)
     add_compile_options(
       "-Wno-unused" "-fexceptions" "-rdynamic" "-fno-strict-aliasing"
-      "-Wno-deprecated-declarations"
+      "-Wno-deprecated-declarations" "-Wno-unknown-pragmas"
     )
   endif ()
   if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
@@ -786,7 +786,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/FlexHash.h
     ${GUI_HDR_DIR}/FontDesc.h
     ${GUI_HDR_DIR}/FontMgr.h
-    ${GUI_HDR_DIR}/dialog_cntrl.h
     ${GUI_HDR_DIR}/GoToPositionDialog.h
     ${GUI_HDR_DIR}/gshhs.h
     ${GUI_HDR_DIR}/gui_lib.h
@@ -858,7 +857,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/track_gui.h
     ${GUI_HDR_DIR}/trackprintout.h
     ${GUI_HDR_DIR}/TrackPropDlg.h
-    ${GUI_HDR_DIR}/TTYScroll.h
+    ${GUI_HDR_DIR}/tty_scroll.h
     ${GUI_HDR_DIR}/TTYWindow.h
     ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
@@ -905,7 +904,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
     ${GUI_SRC_DIR}/FontMgr.cpp
-    ${GUI_SRC_DIR}/dialog_cntrl.cpp
     ${GUI_SRC_DIR}/GoToPositionDialog.cpp
     ${GUI_SRC_DIR}/gshhs.cpp
     ${GUI_SRC_DIR}/gui_lib.cpp
@@ -978,7 +976,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/track_gui.cpp
     ${GUI_SRC_DIR}/trackprintout.cpp
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
-    ${GUI_SRC_DIR}/TTYScroll.cpp
+    ${GUI_SRC_DIR}/tty_scroll.cpp
     ${GUI_SRC_DIR}/TTYWindow.cpp
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp

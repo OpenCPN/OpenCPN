@@ -1,5 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,17 +17,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- *  \file
- *  Implement gui.h.
- */
-#include <wx/dialog.h>
-#include <wx/frame.h>
+#include "ui_utils.h"
 
-#include "model/gui.h"
+// Define custom events
+wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
-wxWindow* GetTopWindow() {
-  auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-  assert(top_window && "Cannot find MainWindow a k a gFrame");
-  return top_window;
+int GUI::GetSpacing(wxWindow* window, int factor) {
+#if wxCHECK_VERSION(3, 2, 0)
+  return window->FromDIP(kSpacing * factor);
+#else
+  return kSpacing * factor;
+#endif
+}
+
+void GUI::LayoutResizeEvent(wxWindow* ctx) {
+  wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
+  wxPostEvent(ctx, event);
 }

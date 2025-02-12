@@ -20,10 +20,10 @@
 
 /**
  * \file
- * Dialog control classes and validator base classes.
+ * Text field classes and text validator base classes.
  */
-#ifndef DIALOG_CNTRL_H
-#define DIALOG_CNTRL_H
+#ifndef TEXT_FIELD_H
+#define TEXT_FIELD_H
 
 #include <wx/wx.h>
 #include <wx/string.h>
@@ -37,9 +37,17 @@
  */
 class TextField : public wxTextCtrl {
 public:
-  TextField(wxWindow* parent, wxWindowID id = wxID_ANY,
-            const wxString& value = "", const wxPoint& pos = wxDefaultPosition,
-            const wxSize& size = wxDefaultSize, long style = 0);
+  /**
+   * Add new text field to the form grid.
+   * It requires a parent window with form grid,
+   * to layout label and field in the grid columns.
+   * @param parent Parent window.
+   * @param label Field label.
+   * @param value Field value.
+   * @param id Window identifier.
+   */
+  TextField(wxWindow* parent, const wxString& label, const wxString& value = "",
+            wxWindowID id = wxID_ANY);
 
   /**
    * Shows an error below the text field.
@@ -56,7 +64,6 @@ public:
   void OnTextChanged(wxCommandEvent& event);
 
 private:
-  wxSizer* m_sizer;
   wxStaticText* m_error_text;
 };
 
@@ -78,4 +85,4 @@ public:
   virtual wxString IsValid(const wxString& val) const override = 0;
 };
 
-#endif  // DIALOG_CNTRL_H
+#endif  // TEXT_FIELD_H

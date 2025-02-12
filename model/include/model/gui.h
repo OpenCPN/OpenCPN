@@ -28,4 +28,3 @@ static const char* const kTopLevelWindowName = "MainWindow";
 
 /** Return the top level window a k a gFrame. */
 wxWindow* GetTopWindow();
-void PropagateResize(wxWindow* window);

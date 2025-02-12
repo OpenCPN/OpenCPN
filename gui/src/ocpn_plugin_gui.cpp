@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn GUI API Functions
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2024 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +17,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "dychart.h"
+/**
+ * \file
+ * PlugIn GUI API Functions
+ */
+
+#include "dychart.h"  // Must be ahead due to buggy GL includes handling
 
 #include <wx/wx.h>
 #include <wx/arrstr.h>
@@ -35,38 +34,39 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
-#include "ocpn_plugin.h"
-#include "pluginmanager.h"
-#include "toolbar.h"
-#include "options.h"
-#include "s52plib.h"
+#include "model/ais_decoder.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/idents.h"
+#include "model/multiplexer.h"
+#include "model/own_ship.h"
 #include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/track.h"
-#include "routemanagerdialog.h"
-#include "model/idents.h"
-#include "model/multiplexer.h"
-#include "chartdb.h"
-#include "OCPNPlatform.h"
-#include "OCPN_AUIManager.h"
-#include "FontMgr.h"
-#include "gui_lib.h"
-#include "model/ais_decoder.h"
-#include "model/comm_navmsg_bus.h"
-#include "model/own_ship.h"
-#include "ocpn_app.h"
-#include "ocpn_frame.h"
-#include "svg_utils.h"
-#include "navutil.h"
-#include "chcanv.h"
-#include "piano.h"
-#include "waypointman_gui.h"
-#include "routeman_gui.h"
-#include "glChartCanvas.h"
-#include "SoundFactory.h"
-#include "SystemCmdSound.h"
+
 #include "ais.h"
+#include "chartdb.h"
+#include "chcanv.h"
 #include "ConfigMgr.h"
+#include "FontMgr.h"
+#include "glChartCanvas.h"
+#include "gui_lib.h"
+#include "navutil.h"
+#include "ocpn_app.h"
+#include "OCPN_AUIManager.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "ocpn_plugin.h"
+#include "options.h"
+#include "piano.h"
+#include "pluginmanager.h"
+#include "routemanagerdialog.h"
+#include "routeman_gui.h"
+#include "s52plib.h"
+#include "SoundFactory.h"
+#include "svg_utils.h"
+#include "SystemCmdSound.h"
+#include "toolbar.h"
+#include "waypointman_gui.h"
 
 extern PlugInManager* s_ppim;
 extern MyConfig* pConfig;

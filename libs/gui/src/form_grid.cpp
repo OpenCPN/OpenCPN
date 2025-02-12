@@ -1,5 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,18 +17,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include "form_grid.h"
+#include "ui_utils.h"
 
-/**
- *  \file
- *  Implement gui.h.
- */
-#include <wx/dialog.h>
-#include <wx/frame.h>
-
-#include "model/gui.h"
-
-wxWindow* GetTopWindow() {
-  auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-  assert(top_window && "Cannot find MainWindow a k a gFrame");
-  return top_window;
+FormGrid::FormGrid(wxWindow* parent)
+    : wxFlexGridSizer(2, GUI::GetSpacing(parent, 1),
+                      GUI::GetSpacing(parent, 1)) {
+  AddGrowableCol(0, 0);
+  AddGrowableCol(1, 1);
 }

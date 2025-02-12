@@ -31,7 +31,7 @@
 #include <wx/dcscreen.h>
 
 #include "TTYWindow.h"
-#include "TTYScroll.h"
+#include "tty_scroll.h"
 #include "WindowDestroyListener.h"
 #include "color_handler.h"
 #include "ocpn_plugin.h"
@@ -56,7 +56,7 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
 
   m_filter = new wxTextCtrl(this, wxID_ANY);
 
-  m_tty_scroll = new TTYScroll(this, n_lines, *m_filter);
+  m_tty_scroll = new TtyScroll(this, n_lines, *m_filter);
   m_tty_scroll->Scroll(-1, 1000);  // start with full scroll down
 
   bSizerOuterContainer->Add(m_tty_scroll, 1, wxEXPAND, 5);

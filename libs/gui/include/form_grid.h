@@ -1,9 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,33 +15,19 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+#ifndef FORM_GRID_H
+#define FORM_GRID_H
+
+#include <wx/wx.h>
+
+/**
+ * Grid layout with 2 columns for form labels and fields.
+ * The flexible grid aligns the form elements with spacing.
  */
-
-#ifndef __TTYSCROLL_H__
-#define __TTYSCROLL_H__
-
-#include <wx/scrolwin.h>
-#include <wx/textctrl.h>
-
-//    Scrolled TTY-like window for logging, etc....
-class TTYScroll : public wxScrolledWindow {
+class FormGrid : public wxFlexGridSizer {
 public:
-  TTYScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter);
-  virtual ~TTYScroll();
-  virtual void OnDraw(wxDC &dc);
-  virtual void Add(const wxString &line);
-  void OnSize(wxSizeEvent &event);
-  void Pause(bool pause) { bpause = pause; }
-  void Copy(bool);
-
-protected:
-  wxCoord m_hLine;  // the height of one line on screen
-  size_t m_nLines;  // the number of lines we draw
-
-  wxArrayString *m_plineArray;
-  wxTextCtrl &m_tFilter;
-  bool bpause;
+  FormGrid(wxWindow* parent);
 };
 
-#endif
+#endif  // FORM_GRID_H

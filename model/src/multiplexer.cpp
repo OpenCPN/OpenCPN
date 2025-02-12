@@ -318,8 +318,15 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
             bool bxmit_ok = true;
             if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
                                             FILTER_OUTPUT)) {
-              bxmit_ok = driver->SendMessage(
-                  n0183_msg, std::make_shared<NavAddr0183>(driver->iface));
+              // Reset source address. It's const, so make a modified copy
+              std::string id("XXXXX");
+              unsigned comma_pos = n0183_msg->payload.find(",");
+              if (comma_pos != std::string::npos && comma_pos > 5)
+                id = n0183_msg->payload.substr(1, comma_pos - 1);
+              auto null_addr = std::make_shared<NavAddr>();
+              auto msg = std::make_shared<Nmea0183Msg>(id, n0183_msg->payload,
+                                                       null_addr);
+              bxmit_ok = driver->SendMessage(msg, null_addr);
               bout_filter = false;
             }
 

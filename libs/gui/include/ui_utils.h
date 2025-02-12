@@ -1,5 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2025 NoCodeHummel                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,16 +18,39 @@
  **************************************************************************/
 
 /**
- *  \file
- *  Implement gui.h.
+ * \file
+ * GUI library utils and events.
  */
-#include <wx/dialog.h>
-#include <wx/frame.h>
+#include <wx/window.h>
+#include <wx/scrolwin.h>
+#include <wx/event.h>
 
-#include "model/gui.h"
+// Declare custom events
+wxDECLARE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
-wxWindow* GetTopWindow() {
-  auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
-  assert(top_window && "Cannot find MainWindow a k a gFrame");
-  return top_window;
-}
+/**
+ * Organizes constant variables and methods.
+ */
+namespace GUI {
+
+/**
+ * UI guideline default spacing in pixels.
+ * Use GetSpacing() for DIP.
+ */
+static const int kSpacing = 6;
+
+/**
+ * Multiply default spacing with a factor,
+ * and calculate device independent pixels.
+ * @param window Owner class.
+ * @param int Scaling factor.
+ * @return Scaling in DIP.
+ */
+int GetSpacing(wxWindow* window, int factor);
+
+/**
+ * Trigger window layout event.
+ * @param ctx Window context.
+ */
+void LayoutResizeEvent(wxWindow* ctx);
+}  // namespace GUI
