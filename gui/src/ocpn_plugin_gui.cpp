@@ -2729,3 +2729,11 @@ bool GetEnableCanvasFocusBar(int CanvasIndex) {
 bool GetEnableTenHertzUpdate() { return g_btenhertz; }
 
 void EnableTenHertzUpdate(bool enable) { g_btenhertz = enable; }
+
+void ConfigFlushAndReload() {
+  if (pConfig) {
+    pConfig->Flush();
+    pConfig->LoadMyConfigRaw(false);
+  }
+}
+}
