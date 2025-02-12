@@ -680,7 +680,6 @@ ChartCanvas *g_focusCanvas;
 ChartCanvas *g_overlayCanvas;
 
 bool b_inCloseWindow;
-extern bool ShowNavWarning();
 bool g_disable_main_toolbar;
 bool g_btenhertz;
 

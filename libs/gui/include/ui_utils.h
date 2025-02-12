@@ -25,13 +25,6 @@
 #include <wx/scrolwin.h>
 #include <wx/event.h>
 
-// Screen breakpoints.
-#define BREAKPOINT_XS 1     // extra small
-#define BREAKPOINT_SM 480   // small
-#define BREAKPOINT_MD 767   // medium
-#define BREAKPOINT_LG 1024  // large
-#define BREAKPOINT_XL 1440  // extra large
-
 // Declare custom events
 wxDECLARE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
@@ -39,6 +32,15 @@ wxDECLARE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
  * Organizes constant variables and methods.
  */
 namespace GUI {
+
+// Screen breakpoints.
+enum class Breakpoint : int {
+  kExtraSmall = 1,    // extra small
+  kSmall = 480,       // small
+  kMedium = 767,      // medium
+  kLarge = 1024,      // large
+  kExtraLarge = 1440  // extra large
+};
 
 /**
  * UI guideline default spacing in pixels.
@@ -66,5 +68,5 @@ void LayoutResizeEvent(wxWindow* ctx);
  * @param rect Display geometry.
  * @return Screen size breakpoint.
  */
-int GetScreenSize(wxRect* rect);
+Breakpoint GetScreenSize(wxRect* rect);
 }  // namespace GUI

@@ -37,16 +37,16 @@ void GUI::LayoutResizeEvent(wxWindow* ctx) {
   wxPostEvent(ctx, event);
 }
 
-int GUI::GetScreenSize(wxRect* rect) {
-  if (rect->GetWidth() < BREAKPOINT_SM) {
-    return BREAKPOINT_XS;
-  } else if (rect->GetWidth() < BREAKPOINT_MD) {
-    return BREAKPOINT_SM;
-  } else if (rect->GetWidth() < BREAKPOINT_LG) {
-    return BREAKPOINT_MD;
-  } else if (rect->GetWidth() < BREAKPOINT_XL) {
-    return BREAKPOINT_LG;
+GUI::Breakpoint GUI::GetScreenSize(wxRect* rect) {
+  if (rect->GetWidth() < static_cast<int>(Breakpoint::kSmall)) {
+    return Breakpoint::kExtraSmall;
+  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kMedium)) {
+    return Breakpoint::kSmall;
+  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kLarge)) {
+    return Breakpoint::kMedium;
+  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kExtraLarge)) {
+    return Breakpoint::kLarge;
   } else {
-    return BREAKPOINT_XL;
+    return Breakpoint::kExtraLarge;
   }
 }

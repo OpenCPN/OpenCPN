@@ -17,13 +17,14 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+
+#include <sstream>
 #include <wx/display.h>
 #include <wx/dialog.h>
-#include <wx/sizer.h>
-#include <wx/string.h>
 #include <wx/html/htmlwin.h>
+#include <wx/sizer.h>
 #include <wx/stattext.h>
-#include <sstream>
+#include <wx/string.h>
 
 #include "dialog_base.h"
 
@@ -44,17 +45,17 @@ BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
 
 void BaseDialog::SetInitialSize() {
   wxDisplay display(wxDisplay::GetFromWindow(this));
-  auto rect = display.GetGeometry();
-  int breakpoint = GUI::GetScreenSize(&rect);
+  wxRect rect(display.GetGeometry());
+  GUI::Breakpoint breakpoint(GUI::GetScreenSize(&rect));
 
   wxSize size;
   rect = display.GetClientArea();
   switch (breakpoint) {
-    case BREAKPOINT_XS:
+    case GUI::Breakpoint::kExtraSmall:
       size = wxSize(rect.GetWidth(), -1);
       break;
-    case BREAKPOINT_SM:
-    case BREAKPOINT_MD:
+    case GUI::Breakpoint::kSmall:
+    case GUI::Breakpoint::kMedium:
       size = wxSize((rect.GetWidth() / 2), -1);
       break;
     default:

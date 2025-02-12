@@ -310,7 +310,6 @@ bool g_backEnabled;
 bool g_bFullscreenSave;
 bool s_optionsActive;
 
-extern bool ShowNavWarning();
 extern bool g_btrackContinuous;
 extern wxString ChartListFileName;
 
