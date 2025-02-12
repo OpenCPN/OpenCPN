@@ -1,5 +1,7 @@
+#include <chrono>
 #include <iostream>  // debug junk
 #include <fstream>
+#include <sstream>
 
 #include "data_monitor.h"
 #include "data_monitor_src.h"
@@ -45,6 +47,50 @@
 #else
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
+
+/** Write a line in the log using the standard format. */
+static void AddCandumpLogline(const Logline& ll, std::ostream& stream) {
+  std::stringstream ss;
+  using namespace std::chrono;
+  auto now = steady_clock::now();
+  auto us = duration_cast<microseconds>(now.time_since_epoch()).count();
+  ss << "[" << us / 1000000 << "." << us % 1000000 << "] ";
+  ss << (ll.navmsg ? "-" : ll.navmsg->source->iface) << " ";
+}
+
+/** Write a line in the log using the standard format. */
+static void AddStdLogline(const Logline& ll, std::ostream& stream) {
+  wxString ws;
+#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
+  ws << wxDateTime::Now().FormatISOTime() << " ";
+#else
+  ws << "- ";
+#endif
+  if (ll.state.direction == NavmsgStatus::Direction::kOutput)
+    ws << kUtfRightArrow << " ";
+  else if (ll.state.direction == NavmsgStatus::Direction::kInput)
+    ws << kUtfLeftwardsArrowToBar << " ";
+  else if (ll.state.direction == NavmsgStatus::Direction::kInternal)
+    ws << kUtfLeftRightArrow << " ";
+  else
+    ws << kUtfLeftArrow << " ";
+  if (ll.state.status != NavmsgStatus::State::kOk)
+    ws << kUtfMultiplicationX << " ";
+  else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
+    ws << kUtfFallingDiagonal << " ";
+  else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredDropped)
+    ws << kUtfCircledDivisionSlash << " ";
+  else
+    ws << kUtfCheckMark << " ";
+
+  ws << (ll.navmsg ? "-" : ll.navmsg->source->iface) << " ";
+  if (ll.state.status != NavmsgStatus::State::kOk)
+    ws << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
+  else
+    ws << "ok";
+  ws << " " << (ll.navmsg ? ll.navmsg->to_string() : "") << "\n";
+  stream << ws;
+}
 
 /** Main window, a rolling log of messages. */
 class TtyPanel : public wxPanel, public NmeaLog {
@@ -524,37 +570,7 @@ fs::path DataLogger::DefaultLogfile() {
 
 void DataLogger::Add(const Logline& ll) {
   if (!m_is_logging) return;
-  wxString ws;
-#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
-  ws << wxDateTime::Now().FormatISOTime() << " ";
-#else
-  ws << "- ";
-#endif
-  if (ll.state.direction == NavmsgStatus::Direction::kOutput)
-    ws << kUtfRightArrow << " ";
-  else if (ll.state.direction == NavmsgStatus::Direction::kInput)
-    ws << kUtfLeftwardsArrowToBar << " ";
-  else if (ll.state.direction == NavmsgStatus::Direction::kInternal)
-    ws << kUtfLeftRightArrow << " ";
-  else
-    ws << kUtfLeftArrow << " ";
-  if (ll.state.status != NavmsgStatus::State::kOk) {
-    ws << kUtfMultiplicationX << " ";
-  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput) {
-    ws << kUtfFallingDiagonal << " ";
-  } else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredDropped) {
-    ws << kUtfCircledDivisionSlash << " ";
-  } else {
-    ws << kUtfCheckMark << " ";
-  }
-  ws << (ll.navmsg ? "-" : ll.navmsg->source->iface) << " ";
-  if (ll.state.status != NavmsgStatus::State::kOk) {
-    ws << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
-  } else {
-    ws << "ok";
-  }
-  ws << " " << (ll.navmsg ? ll.navmsg->to_string() : "") << "\n";
-  m_stream << ws;
+  AddStdLogline(ll, m_stream);
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)
