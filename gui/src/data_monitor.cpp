@@ -274,9 +274,9 @@ public:
     auto view = new wxMenu("");
     AppendRadioId(view, Id::kViewStdColors, _("Standard Colors"));
     AppendRadioId(view, Id::kViewNoColors, _("No Colors"));
-    AppendCheckId(view, Id::kViewSource, _("Add message source"));
-    AppendCheckId(view, Id::kViewTimestamps, _("Add timestamps"));
-    AppendId(view, Id::kViewCopy, _("Copy to clipboard"));
+    // AppendCheckId(view, Id::kViewSource, _("Add message source"));
+    // AppendCheckId(view, Id::kViewTimestamps, _("Add timestamps"));
+    AppendId(view, Id::kViewCopy, _("Copy messages to clipboard"));
     AppendSubMenu(view, _("View..."));
 
     Bind(wxEVT_MENU, [&](wxCommandEvent& ev) {
@@ -297,6 +297,10 @@ public:
           [[fallthrough]];
         case Id::kViewNoColors:
           SetColor(ev.GetId());
+          break;
+
+        case Id::kViewCopy:
+          CopyToClipboard();
           break;
 
         default:
@@ -347,6 +351,13 @@ private:
           std::make_unique<NoColorsByState>(tty_scroll->GetForegroundColour()));
     else
       assert(false && "Illegal color type");
+  }
+
+  void CopyToClipboard() {
+    auto* tty_scroll =
+        dynamic_cast<TtyScroll*>(wxWindow::FindWindowByName("TtyScroll"));
+    if (!tty_scroll) return;
+    tty_scroll->CopyToClipboard();
   }
 };
 
