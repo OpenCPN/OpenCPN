@@ -124,6 +124,8 @@ class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
 class AisTargetData;
 
+bool ShowNavWarning();
+
 bool isSingleChart(ChartBase* chart);
 
 /**

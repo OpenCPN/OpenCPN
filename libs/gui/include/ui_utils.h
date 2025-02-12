@@ -33,6 +33,15 @@ wxDECLARE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
  */
 namespace GUI {
 
+// Screen breakpoints.
+enum class Breakpoint : int {
+  kExtraSmall = 1,    // extra small
+  kSmall = 480,       // small
+  kMedium = 767,      // medium
+  kLarge = 1024,      // large
+  kExtraLarge = 1440  // extra large
+};
+
 /**
  * UI guideline default spacing in pixels.
  * Use GetSpacing() for DIP.
@@ -42,15 +51,22 @@ static const int kSpacing = 6;
 /**
  * Multiply default spacing with a factor,
  * and calculate device independent pixels.
- * @param window Owner class.
+ * @param ctx Window context.
  * @param int Scaling factor.
  * @return Scaling in DIP.
  */
-int GetSpacing(wxWindow* window, int factor);
+int GetSpacing(wxWindow* ctx, int factor);
 
 /**
  * Trigger window layout event.
  * @param ctx Window context.
  */
 void LayoutResizeEvent(wxWindow* ctx);
+
+/**
+ * Get screen size breakpoint.
+ * @param rect Display geometry.
+ * @return Screen size breakpoint.
+ */
+Breakpoint GetScreenSize(wxRect* rect);
 }  // namespace GUI

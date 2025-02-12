@@ -17,14 +17,16 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <wx/display.h>
+
 #include "ui_utils.h"
 
 // Define custom events
 wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
-int GUI::GetSpacing(wxWindow* window, int factor) {
+int GUI::GetSpacing(wxWindow* ctx, int factor) {
 #if wxCHECK_VERSION(3, 2, 0)
-  return window->FromDIP(kSpacing * factor);
+  return ctx->FromDIP(kSpacing * factor);
 #else
   return kSpacing * factor;
 #endif
@@ -33,4 +35,18 @@ int GUI::GetSpacing(wxWindow* window, int factor) {
 void GUI::LayoutResizeEvent(wxWindow* ctx) {
   wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
   wxPostEvent(ctx, event);
+}
+
+GUI::Breakpoint GUI::GetScreenSize(wxRect* rect) {
+  if (rect->GetWidth() < static_cast<int>(Breakpoint::kSmall)) {
+    return Breakpoint::kExtraSmall;
+  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kMedium)) {
+    return Breakpoint::kSmall;
+  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kLarge)) {
+    return Breakpoint::kMedium;
+  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kExtraLarge)) {
+    return Breakpoint::kLarge;
+  } else {
+    return Breakpoint::kExtraLarge;
+  }
 }

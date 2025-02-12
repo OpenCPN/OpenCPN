@@ -26,9 +26,9 @@
 #define TEXT_FIELD_H
 
 #include <wx/wx.h>
-#include <wx/string.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/string.h>
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
 

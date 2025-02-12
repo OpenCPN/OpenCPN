@@ -310,7 +310,6 @@ bool g_backEnabled;
 bool g_bFullscreenSave;
 bool s_optionsActive;
 
-extern int ShowNavWarning();
 extern bool g_btrackContinuous;
 extern wxString ChartListFileName;
 
@@ -2690,7 +2689,8 @@ bool androidStartGPS(wxEvtHandler *consumer) {
   wxLogMessage(s);
   if (s.Upper().Find(_T("DISABLED")) != wxNOT_FOUND) {
     OCPNMessageBox(
-        NULL, _("Your android device has an internal GPS, but it is disabled.\n\
+        NULL,
+        _("Your android device has an internal GPS, but it is disabled.\n\
                        Please visit android Settings/Location dialog to enable GPS"),
         _T("OpenCPN"), wxOK);
 
