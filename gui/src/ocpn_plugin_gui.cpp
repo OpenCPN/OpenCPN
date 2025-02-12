@@ -2736,4 +2736,3 @@ void ConfigFlushAndReload() {
     pConfig->LoadMyConfigRaw(false);
   }
 }
-}
