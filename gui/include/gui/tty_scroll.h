@@ -96,10 +96,9 @@ public:
   void Pause(bool pause) { m_is_paused = pause; }
 
   /**
-   *  Copy visible content to clipboard.
-   *  @param n0183 If true, copy cleaned up data excluding time stamps etc.
+   *  Copy message contents to clipboard.
    */
-  void Copy(bool n183);
+  void CopyToClipboard() const;
 
   /**
    * Apply a display filter
