@@ -49,6 +49,7 @@ extern const wxString kUtfRightArrow;
 class ColorByState {
 public:
   virtual wxColor operator()(NavmsgStatus) = 0;
+  virtual ~ColorByState() = default;
 };
 
 /** Functor returning default color for all states. */
