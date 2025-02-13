@@ -36,6 +36,8 @@
 
 class DataLogger {
 public:
+  enum class Format { kCandump, kDefault };
+
   DataLogger(wxWindow* parent, fs::path path);
 
   DataLogger(wxWindow* parent);
@@ -48,6 +50,8 @@ public:
 
   void Add(const Logline& ll);
 
+  void SetFormat(Format format);
+
   fs::path GetLogfile() { return m_path; }
 
 private:
@@ -55,6 +59,7 @@ private:
   fs::path m_path;
   std::ofstream m_stream;
   bool m_is_logging;
+  Format m_format;
 
   fs::path DefaultLogfile();
 };

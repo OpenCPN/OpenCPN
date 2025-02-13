@@ -117,7 +117,6 @@ TtyScroll::TtyScroll(wxWindow* parent, int n_lines)
   SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
   for (unsigned i = 0; i < m_n_lines; i++) m_lines.push_back(Logline());
   SetColors(std::make_unique<StdColorsByState>());
-  // SetColors(std::make_unique<NoColorsByState>(GetForegroundColour()));
   Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
 }
 
