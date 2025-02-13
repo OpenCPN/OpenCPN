@@ -19,6 +19,7 @@
  */
 
 #include <sstream>
+#include <wx/wx.h>
 #include <wx/display.h>
 #include <wx/dialog.h>
 #include <wx/html/htmlwin.h>
@@ -74,13 +75,16 @@ int BaseDialog::ShowModal() {
 }
 
 void BaseDialog::AddHtmlContent(const std::stringstream& html) {
+  std::string html_str = html.str();
   auto* html_window =
       new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, GetClientSize());
-  bool result = html_window->SetPage(html.str());
+  bool result = html_window->SetPage(html_str.c_str());
   assert(result && "BaseDialog: HTML page not added");
 
-  auto size = html_window->GetVirtualSize();
-  html_window->SetMinSize(size);  // Fit() needs this size!
+  int html_width, html_height;
+  html_window->GetVirtualSize(&html_width, &html_height);
+  html_window->SetMinSize(
+      wxSize(html_width, html_height));  // Fit() needs this size!
   html_window->SetBackgroundColour(GetBackgroundColour());
   m_content->Prepend(html_window, wxSizerFlags(1).Expand());
 }
