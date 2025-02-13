@@ -50,12 +50,12 @@
 
 /** Write a line in the log using the standard format. */
 static void AddCandumpLogline(const Logline& ll, std::ostream& stream) {
-  std::stringstream ss;
   using namespace std::chrono;
   auto now = steady_clock::now();
   auto us = duration_cast<microseconds>(now.time_since_epoch()).count();
-  ss << "[" << us / 1000000 << "." << us % 1000000 << "] ";
-  ss << (ll.navmsg ? "-" : ll.navmsg->source->iface) << " ";
+  stream << "[" << us / 1000000 << "." << us % 1000000 << "] ";
+  stream << (ll.navmsg ? ll.navmsg->source->iface : "-") << " ";
+  stream << "\n";
 }
 
 /** Write a line in the log using the standard format. */
@@ -287,9 +287,9 @@ public:
     kEditFilter,
     kDeleteFilter,
     kLogFile,
-    kLogFormatPretty,
+    kLogFormatDefault,
     kLogFormatCsv,
-    kLogFormatCantools,
+    kLogFormatCandump,
     kViewStdColors,
     kViewNoColors,
     kViewTimestamps,
@@ -297,12 +297,12 @@ public:
     kViewCopy
   };
 
-  TheMenu(wxWindow* parent, std::function<void(int)> set_logtype_func,
-          DataLogger& logger, wxWindow* log_button)
+  TheMenu(wxWindow* parent, wxStaticText* log_label, DataLogger& logger,
+          wxWindow* log_button)
       : m_parent(parent),
         m_log_button(log_button),
         m_logger(logger),
-        m_set_logtype_func(set_logtype_func) {
+        m_log_label(log_label) {
     auto filters = new wxMenu("");
     AppendId(filters, Id::kActiveFilter, _("Select active filter..."));
     AppendId(filters, Id::kNewFilter, _("Create new..."));
@@ -312,9 +312,9 @@ public:
 
     auto logging = new wxMenu("");
     AppendId(logging, Id::kLogFile, _("Log file..."));
-    AppendRadioId(logging, Id::kLogFormatPretty, _("Log format: pretty"));
-    AppendRadioId(logging, Id::kLogFormatCsv, _("Log format: CSV"));
-    AppendRadioId(logging, Id::kLogFormatCantools, _("Log format: cantools"));
+    AppendRadioId(logging, Id::kLogFormatDefault, _("Log format: pretty"));
+    // AppendRadioId(logging, Id::kLogFormatCsv, _("Log format: CSV"));
+    AppendRadioId(logging, Id::kLogFormatCandump, _("Log format: candump"));
     AppendSubMenu(logging, _("Logging..."));
 
     auto view = new wxMenu("");
@@ -327,12 +327,12 @@ public:
 
     Bind(wxEVT_MENU, [&](wxCommandEvent& ev) {
       switch (static_cast<Id>(ev.GetId())) {
-        case Id::kLogFormatPretty:
-          [[fallthrough]];
-        case Id::kLogFormatCsv:
-          [[fallthrough]];
-        case Id::kLogFormatCantools:
-          m_set_logtype_func(ev.GetId());
+        case Id::kLogFormatDefault:
+          SetLogFormat(DataLogger::Format::kDefault, _("Log format: default"));
+          break;
+
+        case Id::kLogFormatCandump:
+          SetLogFormat(DataLogger::Format::kCandump, _("Log format: candump"));
           break;
 
         case Id::kLogFile:
@@ -360,7 +360,7 @@ private:
   wxWindow* m_parent;
   wxWindow* m_log_button;
   DataLogger& m_logger;
-  std::function<void(int)> m_set_logtype_func;
+  wxStaticText* m_log_label;
 
   wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
     return root->Append(static_cast<int>(id), label);
@@ -372,6 +372,12 @@ private:
 
   void AppendCheckId(wxMenu* root, Id id, const wxString& label) {
     root->AppendCheckItem(static_cast<int>(id), label);
+  }
+
+  void SetLogFormat(DataLogger::Format format, const std::string& label) {
+    m_log_label->SetLabel(label);
+    m_logger.SetFormat(format);
+    m_parent->Layout();
   }
 
   void SetLogfile() {
@@ -386,8 +392,7 @@ private:
 
   void SetColor(int id) {
     auto* w = wxWindow::FindWindowByName("TtyScroll");
-    TtyScroll* tty_scroll(nullptr);
-    if (w) tty_scroll = dynamic_cast<TtyScroll*>(w);
+    auto tty_scroll = dynamic_cast<TtyScroll*>(w);
     if (!tty_scroll) return;
 
     if (id == static_cast<int>(Id::kViewStdColors))
@@ -447,24 +452,24 @@ private:
 /** Button invoking the popup menu. */
 class MenuButton : public wxButton {
 public:
-  MenuButton(wxWindow* parent, std::function<void(int)> set_logtype_func,
-             DataLogger& logger, wxWindow* log_button)
+  MenuButton(wxWindow* parent, wxStaticText* log_label, DataLogger& logger,
+             wxWindow* log_button)
       : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
                  wxDefaultSize, wxBU_EXACTFIT),
-        m_set_logtype_func(set_logtype_func),
         m_logger(logger),
         m_log_button(log_button),
-        m_menu(parent, m_set_logtype_func, m_logger, m_log_button) {
+        m_menu(parent, log_label, m_logger, m_log_button),
+        m_log_label(log_label) {
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
     SetLabel(kUtfIdenticalTo);
     SetToolTip(_("Open menu"));
   }
 
 private:
-  std::function<void(int)> m_set_logtype_func;
   DataLogger& m_logger;
   wxWindow* m_log_button;
   TheMenu m_menu;
+  wxStaticText* m_log_label;
 
   void OnClick() { PopupMenu(&m_menu); }
 };
@@ -477,7 +482,7 @@ public:
       : wxPanel(parent), m_is_resized(false), m_logger(logger) {
     // Add a containing sizer for labels, so they can be aligned vertically
     auto log_label_box = new wxBoxSizer(wxVERTICAL);
-    m_log_label = new wxStaticText(this, wxID_ANY, _("Logging: Pretty"));
+    m_log_label = new wxStaticText(this, wxID_ANY, _("Logging: Default"));
     log_label_box->Add(m_log_label);
     auto filter_label_box = new wxBoxSizer(wxVERTICAL);
     filter_label_box->Add(new wxStaticText(this, wxID_ANY, _("View")));
@@ -493,9 +498,7 @@ public:
     wbox->Add(new StopResumeButton(this, on_stop), flags);
     wbox->Add(new FilterButton(this, quick_filter), flags);
 
-    auto set_log_type = [&](int id) { SetLogType(id); };
-    wbox->Add(new MenuButton(this, set_log_type, m_logger, m_log_button),
-              flags);
+    wbox->Add(new MenuButton(this, m_log_label, m_logger, m_log_button), flags);
     SetSizer(wbox);
     Layout();
     Show();
@@ -517,37 +520,17 @@ protected:
 
 private:
   bool m_is_resized;
-  wxControl* m_log_label;
+  wxStaticText* m_log_label;
   wxButton* m_log_button;
   DataLogger& m_logger;
-
-  void SetLogType(int id) {
-    switch (static_cast<TheMenu::Id>(id)) {
-      case TheMenu::Id::kLogFormatPretty:
-        m_log_label->SetLabel(_("Logging: Pretty"));
-        Layout();
-        break;
-      case TheMenu::Id::kLogFormatCsv:
-        m_log_label->SetLabel(_("Logging: CSV"));
-        Layout();
-        break;
-      case TheMenu::Id::kLogFormatCantools:
-        m_log_label->SetLabel(_("Logging: Cantools"));
-        Layout();
-        break;
-      default:
-        std::cout << "Menu id: " << id << "\n";
-        break;
-    }
-    m_log_button->Enable();
-  }
 };
 
 DataLogger::DataLogger(wxWindow* parent, fs::path path)
     : m_parent(parent),
       m_path(path),
       m_stream(path, std::ios_base::app),
-      m_is_logging(false) {}
+      m_is_logging(false),
+      m_format(Format::kDefault) {}
 
 DataLogger::DataLogger(wxWindow* parent)
     : DataLogger(parent, DefaultLogfile()) {}
@@ -561,6 +544,8 @@ void DataLogger::SetLogfile(fs::path path) {
   m_stream = std::ofstream(path, std::ios_base::app);
 }
 
+void DataLogger::SetFormat(DataLogger::Format format) { m_format = format; }
+
 fs::path DataLogger::DefaultLogfile() {
   if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
     return "NUL:";
@@ -570,7 +555,10 @@ fs::path DataLogger::DefaultLogfile() {
 
 void DataLogger::Add(const Logline& ll) {
   if (!m_is_logging) return;
-  AddStdLogline(ll, m_stream);
+  if (m_format == DataLogger::Format::kCandump)
+    AddCandumpLogline(ll, m_stream);
+  else
+    AddStdLogline(ll, m_stream);
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)
