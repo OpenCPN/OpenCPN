@@ -128,6 +128,12 @@ public:
   void SetCtrlBarSizeXY(wxSize p) { m_CtrlBar_Sizexy = p; }
   void SetColorScheme(PI_ColorScheme cs);
   void SetDialogFont(wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog")));
+  /**
+   * Callback invoked by OpenCPN core whenever the current ViewPort changes or
+   * through periodic updates.
+   *
+   * In multi-canvas configurations, each canvas triggers a viewport update.
+   */
   void SetCurrentViewPort(PlugIn_ViewPort &vp) { m_current_vp = vp; }
   PlugIn_ViewPort &GetCurrentViewPort() { return m_current_vp; }
 
@@ -233,6 +239,12 @@ private:
   bool m_bGRIBShowIcon;
 
   bool m_bShowGrib;
+  /**
+   * Stores current viewport.
+   *
+   * In multi-canvas configurations, each canvas triggers independent viewport
+   * updates.
+   */
   PlugIn_ViewPort m_current_vp;
   wxBitmap m_panelBitmap;
 };
