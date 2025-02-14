@@ -17,7 +17,7 @@ jobs:
             ./plugins/dashboard_pi/src/wxJSON
             ./plugins/chartdldr_pi/src/unarr
             ./plugins/chartdldr_pi/src/tinyxml
-            ./plugins/grib_pi/src/bz
+            ./plugins/grib_pi/src/bzip2
           extensions: h,cpp
           clangFormatVersion: 18
           style: file
