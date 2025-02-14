@@ -148,7 +148,7 @@ public:
   NavAddr(Bus b, const std::string& i) : bus(b), iface(i) {};
   NavAddr() : bus(Bus::Undef), iface("") {};
 
-  std::string to_string() const {
+  virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + iface;
   }
   static std::string BusToString(Bus b);
@@ -220,6 +220,9 @@ public:
   virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + key();
   }
+
+  /** Return message in extended candump format. TBD: details */
+  virtual std::string to_candump() const { return ""; }
 
   /** Alias for key(). */
   std::string GetKey() const { return key(); }
@@ -299,6 +302,9 @@ public:
   std::string key() const { return Nmea0183Msg::MessageKey(type.c_str()); };
 
   std::string to_string() const;
+
+  /** Modified candump format, PGN 65392. */
+  virtual std::string to_candump() const;
 
   /** Return key which should be used to listen to given message type. */
   static std::string MessageKey(const char* type = "ALL") {
