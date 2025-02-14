@@ -137,6 +137,17 @@ Open the `OpenCPN.xcodeproj` file in Xcode, and use the “Build”, “Run”,
 “Debug”, etc features as normal. To use the “Run” action you need to
 build the “OpenCPN” target rather than the default “ALL_BUILD” target.
 
+=== Code Signing
+
+When building OpenCPN on Apple Silicon Macs, additional configuration
+may be needed to handle code signing and architecture.
+After building, sign the application with an ad-hoc signature:
+
+ $ codesign --force --deep --sign - /path/bin/OpenCPN.app
+
+Note: These settings create a build that can run locally but
+isn't suitable for distribution through the App Store.
+
 === Creating the installer package
 
 WARNING - Do The Following:
