@@ -53,7 +53,30 @@
 double m_cursor_lat, m_cursor_lon;
 int m_Altitude;
 int m_DialogStyle;
+/**
+ * Persisted version of the GRIB area selection mode.
+ *
+ * This value is saved to and loaded from the OpenCPN config file, allowing the
+ * user's preferred selection mode to persist between sessions. The value is
+ * used to:
+ * - Restore the last used selection mode on startup.
+ * - Keep track of the mode when dialog is closed/reopened.
+ * - Revert to previous mode if changes are cancelled.
+ */
 int m_SavedZoneSelMode;
+/**
+ * Tracks the current state of GRIB area selection for zone coordinates.
+ *
+ * This state controls:
+ * - Whether coordinates come from viewport or mouse area selection.
+ * - When to display the selection overlay during drawing.
+ * - When to update the lat/lon input fields.
+ *
+ * A typical mouse area selection flow:
+ * 1. START_SELECTION when manual mode chosen.
+ * 2. DRAW_SELECTION when user starts Shift+drag.
+ * 3. COMPLETE_SELECTION when user releases mouse button.
+ */
 int m_ZoneSelMode;
 
 extern grib_pi *g_pi;
@@ -160,8 +183,9 @@ void GribTimelineRecordSet::ClearCachedData() {
 
 GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
                              const wxString &title, const wxPoint &pos,
-                             const wxSize &size, long style, grib_pi *ppi)
-    : GRIBUICtrlBarBase(parent, id, title, pos, size, style) {
+                             const wxSize &size, long style, grib_pi *ppi,
+                             double scale_factor)
+    : GRIBUICtrlBarBase(parent, id, title, pos, size, style, scale_factor) {
   pParent = parent;
   pPlugIn = ppi;
   // Preinitialize the vierwport with an existing value, see
@@ -276,6 +300,11 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   m_highlight_lonmax = 0;
   m_highlight_latmin = 0;
   m_highlight_lonmin = 0;
+  // Create the dialog for downloading GRIB files.
+  // This dialog is created here, but not shown until the user requests it.
+  // This is done such that user can draw bounding box on the chart before
+  // the dialog is shown.
+  createRequestDialog();
 }
 
 GRIBUICtrlBar::~GRIBUICtrlBar() {
@@ -349,34 +378,6 @@ GRIBUICtrlBar::~GRIBUICtrlBar() {
   delete m_pTimelineSet;
 }
 
-wxBitmap GRIBUICtrlBar::GetScaledBitmap(wxBitmap bitmap,
-                                        const wxString svgFileName,
-                                        double scale_factor) {
-  int margin = 4;  // there is a small margin around the bitmap drawn by the
-                   // wxBitmapButton
-  int w = bitmap.GetWidth() - margin;
-  int h = bitmap.GetHeight() - margin;
-  w *= scale_factor;
-  h *= scale_factor;
-
-#ifdef ocpnUSE_SVG
-  wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
-                       wxFileName::GetPathSeparator() + _T("grib_pi") +
-                       wxFileName::GetPathSeparator() + _T("data") +
-                       wxFileName::GetPathSeparator();
-  wxString filename = shareLocn + svgFileName + _T(".svg");
-
-  wxBitmap svgbm = GetBitmapFromSVGFile(filename, w, h);
-  if (svgbm.GetWidth() > 0 && svgbm.GetHeight() > 0)
-    return svgbm;
-  else
-#endif  // ocpnUSE_SVG
-  {
-    wxImage a = bitmap.ConvertToImage();
-    return wxBitmap(a.Scale(w, h), wxIMAGE_QUALITY_HIGH);
-  }
-}
-
 void GRIBUICtrlBar::SetScaledBitmap(double factor) {
   //  Round to the nearest "quarter", to avoid rendering artifacts
   m_ScaledFactor = wxRound(factor * 4.0) / 4.0;
@@ -402,7 +403,7 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
   m_bpSettings->SetBitmapLabel(
       GetScaledBitmap(wxBitmap(setting), _T("setting"), m_ScaledFactor));
 
-  SetRequestBitmap(m_ZoneSelMode);
+  SetRequestButtonBitmap(m_ZoneSelMode);
 
   // Careful here, this MinSize() sets the final width of the control bar,
   // overriding the width of the wxChoice above it.
@@ -415,29 +416,11 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
 #endif
 }
 
-void GRIBUICtrlBar::SetRequestBitmap(int type) {
+void GRIBUICtrlBar::SetRequestButtonBitmap(int type) {
   if (nullptr == m_bpRequest) return;
-
-  switch (type) {
-    case AUTO_SELECTION:
-    case SAVED_SELECTION:
-    case START_SELECTION:
-      m_bpRequest->SetBitmapLabel(
-          GetScaledBitmap(wxBitmap(request), _T("request"), m_ScaledFactor));
-      m_bpRequest->SetToolTip(_("Start a request"));
-      break;
-    case DRAW_SELECTION:
-      m_bpRequest->SetBitmapLabel(
-          GetScaledBitmap(wxBitmap(selzone), _T("selzone"), m_ScaledFactor));
-      m_bpRequest->SetToolTip(
-          _("Draw requested Area\nor Click here to stop request"));
-      break;
-    case COMPLETE_SELECTION:
-      m_bpRequest->SetBitmapLabel(GetScaledBitmap(
-          wxBitmap(request_end), _T("request_end"), m_ScaledFactor));
-      m_bpRequest->SetToolTip(_("Valid Area and Continue"));
-      break;
-  }
+  m_bpRequest->SetBitmapLabel(
+      GetScaledBitmap(wxBitmap(request), _T("request"), m_ScaledFactor));
+  m_bpRequest->SetToolTip(_("Start a download request"));
 }
 
 void GRIBUICtrlBar::OpenFile(bool newestFile) {
@@ -934,7 +917,7 @@ void GRIBUICtrlBar::OnMenuEvent(wxMenuEvent &event) {
       OnSettings(evt);
       break;
     case ID_BTNREQUEST:
-      OnRequest(evt);
+      OnRequestForecastData(evt);
   }
   if (alt != m_Altitude) {
     SetDialogsStyleSizePosition(true);
@@ -947,14 +930,16 @@ void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
                                wxMenu *submenu) {
   wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), kind);
   // add a submenu to this item if necessary
-  if (submenu) item->SetSubMenu(submenu);
+  if (submenu) {
+    item->SetSubMenu(submenu);
+  }
 
-    /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
-    #ifdef __WXMSW__
-      wxFont *qFont = OCPNGetFont(_("Menu"), 0);
-      item->SetFont(*qFont);
-    #endif
-    */
+  /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
+  #ifdef __WXMSW__
+    wxFont *qFont = OCPNGetFont(_("Menu"), 0);
+    item->SetFont(*qFont);
+  #endif
+  */
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
   if (!bitmap.IsSameAs(wxNullBitmap)) item->SetBitmap(bitmap);
@@ -1027,7 +1012,7 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
                          m_ZoneSelMode == START_SELECTION;
     bool requeststate3 = m_ZoneSelMode == DRAW_SELECTION;
     MenuAppend(xmenu, ID_BTNREQUEST,
-               requeststate1 ? _("Start a request")
+               requeststate1 ? _("Request forecast data")
                : requeststate3
                    ? _("Draw requested Area or Click here to stop request")
                    : _("Valid Area and Continue"),
@@ -1095,7 +1080,7 @@ void GRIBUICtrlBar::OnClose(wxCloseEvent &event) {
     if (m_ZoneSelMode > START_SELECTION) {
       pReq_Dialog->StopGraphicalZoneSelection();
       m_ZoneSelMode = START_SELECTION;
-      // SetRequestBitmap( m_ZoneSelMode );
+      // SetRequestButtonBitmap( m_ZoneSelMode );
     }
   pPlugIn->SendTimelineMessage(wxInvalidDateTime);
 
@@ -1122,52 +1107,35 @@ void GRIBUICtrlBar::OnPaint(wxPaintEvent &event) {
   }
 }
 
-void GRIBUICtrlBar::OnRequest(wxCommandEvent &event) {
+void GRIBUICtrlBar::createRequestDialog() {
+  ::wxBeginBusyCursor();
+
+  delete pReq_Dialog;  // delete to be re-created
+
+  pReq_Dialog = new GribRequestSetting(*this);
+  pPlugIn->SetDialogFont(pReq_Dialog);
+  pPlugIn->SetDialogFont(pReq_Dialog->m_sScrolledDialog);
+  pReq_Dialog->OnVpChange(m_vp);
+  pReq_Dialog->SetRequestDialogSize();
+  if (::wxIsBusy()) ::wxEndBusyCursor();
+}
+
+void GRIBUICtrlBar::OnRequestForecastData(wxCommandEvent &event) {
   if (m_tPlayStop.IsRunning())
     return;  // do nothing when play back is running !
 
   /*if there is one instance of the dialog already visible, do nothing*/
   if (pReq_Dialog && pReq_Dialog->IsShown()) return;
 
-  /*a second click without selection cancel the process*/
-  if (m_ZoneSelMode == DRAW_SELECTION) {
-    assert(pReq_Dialog);
-    m_ZoneSelMode = START_SELECTION;
-    pReq_Dialog->StopGraphicalZoneSelection();
-    SetRequestBitmap(m_ZoneSelMode);
-    return;
-  }
-
   /*create new request dialog*/
-  if (m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION ||
-      m_ZoneSelMode == START_SELECTION) {
-    ::wxBeginBusyCursor();
+  createRequestDialog();
+  // need to set a position at start
+  int w;
+  ::wxDisplaySize(&w, nullptr);
+  pReq_Dialog->Move((w - pReq_Dialog->GetSize().GetX()) / 2, 30);
+  pReq_Dialog->Show();
 
-    delete pReq_Dialog;  // delete to be re-created
-
-    pReq_Dialog = new GribRequestSetting(*this);
-    pPlugIn->SetDialogFont(pReq_Dialog);
-    pPlugIn->SetDialogFont(pReq_Dialog->m_sScrolledDialog);
-    pReq_Dialog->OnVpChange(m_vp);
-    pReq_Dialog->SetRequestDialogSize();
-    // need to set a position at start
-    int w;
-    ::wxDisplaySize(&w, nullptr);
-    pReq_Dialog->Move((w - pReq_Dialog->GetSize().GetX()) / 2, 30);
-
-  }  // end create new request dialog
-
-  pReq_Dialog->Show(m_ZoneSelMode == AUTO_SELECTION ||
-                    m_ZoneSelMode == SAVED_SELECTION ||
-                    m_ZoneSelMode == COMPLETE_SELECTION);
-  m_ZoneSelMode = m_ZoneSelMode == START_SELECTION      ? DRAW_SELECTION
-                  : m_ZoneSelMode == COMPLETE_SELECTION ? START_SELECTION
-                                                        : m_ZoneSelMode;
-  if (m_ZoneSelMode == START_SELECTION)
-    pReq_Dialog->StopGraphicalZoneSelection();
-  SetRequestBitmap(m_ZoneSelMode);  // set appopriate bitmap
-
-  if (::wxIsBusy()) ::wxEndBusyCursor();
+  SetRequestButtonBitmap(m_ZoneSelMode);  // set appopriate bitmap
 }
 
 void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {

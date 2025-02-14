@@ -4487,9 +4487,23 @@ extern DECL_EXP bool ShuttingDown(void);
  * Gets the currently focused chart canvas.
  *
  * Returns the chart canvas window that currently has input focus in
- * multi-canvas configurations.
+ * multi-canvas configurations. A canvas gains focus when:
+ *
+ * - User clicks within the canvas area
+ * - User uses keyboard shortcuts to switch canvas focus
+ * - Canvas is explicitly given focus programmatically
+ *
+ * Focus determines which canvas:
+ * - Receives keyboard input events
+ * - Is the target for navigation commands
+ * - Shows active canvas indicators
+ * - Gets tool/menu actions by default
  *
  * @return Pointer to focused canvas window, NULL if none focused
+ *
+ * @see GetCanvasIndexUnderMouse() To find canvas under mouse cursor
+ * @see GetCanvasCount() To get total number of canvases
+ * @see GetCanvasByIndex() To get canvas by index number
  */
 extern DECL_EXP wxWindow *PluginGetFocusCanvas();
 /**
@@ -4610,9 +4624,14 @@ extern DECL_EXP wxWindow *GetCanvasUnderMouse();
  * Gets index of chart canvas under mouse cursor.
  *
  * Returns the index of the canvas window that the mouse cursor is currently
- * over in multi-canvas configurations.
+ * positioned over in multi-canvas configurations. Note that having the mouse
+ * over a canvas does not automatically give that canvas focus - it merely
+ * indicates mouse position.
  *
  * @return Canvas index (0-based), -1 if mouse not over any canvas
+ * @note This returns mouse position only - does not affect canvas focus
+ * @see GetFocusCanvas() To determine which canvas has input focus
+ * @see GetCanvasCount() To get total number of canvases
  */
 extern DECL_EXP int GetCanvasIndexUnderMouse();
 // extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();
