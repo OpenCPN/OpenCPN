@@ -57,8 +57,9 @@ extern int m_ZoneSelMode;
 //----------------------------------------------------------------------------------------------------------
 GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
     : GribRequestSettingBase(&parent), m_parent(parent) {
-  m_Vp = 0;
+  m_Vp = nullptr;
   m_oDC = nullptr;
+  m_activeCanvas = nullptr;
 
   m_displayScale = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
@@ -156,6 +157,33 @@ GribRequestSetting::~GribRequestSetting() {
   }
 }
 
+void GribRequestSetting::SaveConfig() {
+  wxFileConfig *pConf = GetOCPNConfigObject();
+  if (pConf) {
+    pConf->SetPath(_T( "/PlugIns/GRIB" ));
+
+    pConf->Write(_T ( "MailRequestConfig" ), m_RequestConfigBase);
+    pConf->Write(_T( "MailSenderAddress" ), m_pSenderAddress->GetValue());
+    pConf->Write(_T( "MailRequestAddresses" ), m_MailToAddresses);
+    pConf->Write(_T( "ZyGribLogin" ), m_pLogin->GetValue());
+    pConf->Write(_T( "ZyGribCode" ), m_pCode->GetValue());
+    pConf->Write(_T( "SendMailMethod" ), m_SendMethod);
+    pConf->Write(_T( "MovingGribSpeed" ), m_sMovingSpeed->GetValue());
+    pConf->Write(_T( "MovingGribCourse" ), m_sMovingCourse->GetValue());
+
+    m_SavedZoneSelMode = m_cUseSavedZone->GetValue()    ? SAVED_SELECTION
+                         : m_cManualZoneSel->GetValue() ? START_SELECTION
+                                                        : AUTO_SELECTION;
+    pConf->Write(_T( "ManualRequestZoneSizingMode" ), m_ZoneSelMode);
+    pConf->Write(_T( "ManualRequestZoneSizing" ), m_SavedZoneSelMode);
+
+    pConf->Write(_T( "RequestZoneMaxLat" ), m_spMaxLat->GetValue());
+    pConf->Write(_T( "RequestZoneMinLat" ), m_spMinLat->GetValue());
+    pConf->Write(_T( "RequestZoneMaxLon" ), m_spMaxLon->GetValue());
+    pConf->Write(_T( "RequestZoneMinLon" ), m_spMinLon->GetValue());
+  }
+}
+
 void GribRequestSetting::InitRequestConfig() {
   wxFileConfig *pConf = GetOCPNConfigObject();
 
@@ -178,25 +206,26 @@ void GribRequestSetting::InitRequestConfig() {
     m_sMovingSpeed->SetValue(m);
     pConf->Read(_T( "MovingGribCourse" ), &m, 0);
     m_sMovingCourse->SetValue(m);
-    m_cManualZoneSel->SetValue(
-        m_SavedZoneSelMode !=
-        AUTO_SELECTION);  // has been read in GriUbICtrlBar dialog
-                          // implementation or updated previously
+    pConf->Read(_T( "ManualRequestZoneSizingMode" ), &m, 0);
+    m_ZoneSelMode = m;
+    pConf->Read(_T( "ManualRequestZoneSizing" ), &m, 0);
+    m_SavedZoneSelMode = m;
     m_cUseSavedZone->SetValue(m_SavedZoneSelMode == SAVED_SELECTION);
-    fgZoneCoordinatesSizer->ShowItems(m_SavedZoneSelMode != AUTO_SELECTION);
-    m_cUseSavedZone->Show(m_SavedZoneSelMode != AUTO_SELECTION);
-    if (m_cManualZoneSel->GetValue()) {
-      pConf->Read(_T( "RequestZoneMaxLat" ), &m, 0);
-      m_spMaxLat->SetValue(m);
-      pConf->Read(_T( "RequestZoneMinLat" ), &m, 0);
-      m_spMinLat->SetValue(m);
-      pConf->Read(_T( "RequestZoneMaxLon" ), &m, 0);
-      m_spMaxLon->SetValue(m);
-      pConf->Read(_T( "RequestZoneMinLon" ), &m, 0);
-      m_spMinLon->SetValue(m);
-
-      SetCoordinatesText();
+    if (m_SavedZoneSelMode == SAVED_SELECTION) {
+      m_ZoneSelMode = DRAW_SELECTION;
     }
+    m_cManualZoneSel->SetValue(m_ZoneSelMode != AUTO_SELECTION);
+    UpdateAreaSelectionState();
+    pConf->Read(_T( "RequestZoneMaxLat" ), &m, 0);
+    m_spMaxLat->SetValue(m);
+    pConf->Read(_T( "RequestZoneMinLat" ), &m, 0);
+    m_spMinLat->SetValue(m);
+    pConf->Read(_T( "RequestZoneMaxLon" ), &m, 0);
+    m_spMaxLon->SetValue(m);
+    pConf->Read(_T( "RequestZoneMinLon" ), &m, 0);
+    m_spMinLon->SetValue(m);
+
+    SetCoordinatesText();
     // if GriDataConfig has been corrupted , take the standard one to fix a
     // crash
     if (m_RequestConfigBase.Len() !=
@@ -215,7 +244,7 @@ void GribRequestSetting::InitRequestConfig() {
   for (unsigned int i = 0; i < (sizeof(s3) / sizeof(wxString)); i++)
     m_pWModel->Append(s3[i]);
   m_rButtonYes->SetLabel(_("Send"));
-  m_rButtonApply->SetLabel(_("Save"));
+  m_rButtonApply->SetLabel(_("OK"));
   m_tResUnit->SetLabel(wxString::Format(_T("\u00B0")));
   m_sCourseUnit->SetLabel(wxString::Format(_T("\u00B0")));
 
@@ -267,7 +296,7 @@ void GribRequestSetting::InitRequestConfig() {
       wxEVT_TIMER, wxTimerEventHandler(GribRequestSetting::OnMouseEventTimer),
       nullptr, this);
 
-  m_RenderZoneOverlay = 0;
+  m_RenderSelectionZoneState = RENDER_NONE;
 
   ApplyRequestConfig(i, j, k);
 
@@ -295,12 +324,13 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
         wxEVT_DOWNLOAD_EVENT,
         (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
   }
-  m_RenderZoneOverlay = 0;  // eventually stop graphical zone display
+  m_RenderSelectionZoneState =
+      RENDER_NONE;  // eventually stop graphical zone display
   RequestRefresh(GetGRIBCanvas());
 
   // allow to be back to old value if changes have not been saved
   m_ZoneSelMode = m_SavedZoneSelMode;
-  m_parent.SetRequestBitmap(m_ZoneSelMode);  // set appopriate bitmap
+  m_parent.SetRequestButtonBitmap(m_ZoneSelMode);  // set appropriate bitmap
   m_parent.m_highlight_latmax = 0;
   m_parent.m_highlight_lonmax = 0;
   m_parent.m_highlight_latmin = 0;
@@ -328,9 +358,10 @@ void GribRequestSetting::SetRequestDialogSize() {
   int w = frame->GetClientSize().x;  // the display size
   int h = frame->GetClientSize().y;
   int dMargin = 80;  // set a margin
-  h -= (m_rButton->GetSize().GetY() +
-        dMargin);  // height available for the scrolled window
-  w -= dMargin;    // width available for the scrolled window
+
+  // height available for the scrolled window.
+  h -= (m_rButtonCancel->GetSize().GetY() + dMargin);
+  w -= dMargin;  // width available for the scrolled window
   m_sScrolledDialog->SetMinSize(
       wxSize(wxMin(w, scroll.x),
              wxMin(h, scroll.y)));  // set scrolled area size with margin
@@ -376,17 +407,33 @@ void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {
 }
 
 bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
+  // Only handle selection when Shift is pressed.
+  if (!event.ShiftDown()) {
+    return false;  // Let the chart handle normal panning
+  }
+  if (event.LeftDown() && !event.Dragging()) {
+    // Automatically switch to manual selection,
+    // without requiring user to set the manual mode checkbox.
+    m_ZoneSelMode = DRAW_SELECTION;
+    m_cManualZoneSel->SetValue(true);  // Update the UI checkbox
+  }
+  // User can still switch back to auto mode by unchecking the manual mode.
   if (m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION ||
       m_ZoneSelMode == START_SELECTION)
     return false;
 
+  wxWindow *sourceCanvas = dynamic_cast<wxWindow *>(event.GetEventObject());
+  if (m_activeCanvas && m_activeCanvas != sourceCanvas) {
+    // Ignore mouse events when the view port changes.
+    return false;
+  }
+
   if (event.Moving())
     return false;  // maintain status bar and tracking dialog updated
 
-  int xm, ym;
-  event.GetPosition(&xm, &ym);
-  xm *= m_displayScale;
-  ym *= m_displayScale;
+  // Mouse event position is in logical pixels.
+  int xm = event.GetX() * m_displayScale;
+  int ym = event.GetY() * m_displayScale;
 
   // This does not work, but something like it should
   //     wxObject *obj = event.GetEventObject();
@@ -394,33 +441,39 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
   //     if( win && (win != PluginGetFocusCanvas()))
   //         return false;
 
-  if (event.LeftDown()) {
+  if (event.LeftDown() && !event.Dragging()) {
     m_parent.pParent->SetFocus();
-    m_ZoneSelMode = DRAW_SELECTION;  // restart a new drawing
-    m_parent.SetRequestBitmap(m_ZoneSelMode);
-    if (this->IsShown())
-      this->Hide();           // eventually hide diaog in case of mode change
-    m_RenderZoneOverlay = 0;  // eventually hide previous drawing
+    m_ZoneSelMode = DRAW_SELECTION;  // Starting a new bounding box selection.
+    m_StartPoint =
+        wxPoint(xm, ym);  // Set the starting point of the bounding box.
+    GetCanvasLLPix(m_Vp, m_StartPoint, &m_StartLat, &m_StartLon);
+    m_parent.SetRequestButtonBitmap(m_ZoneSelMode);
+    // if (this->IsShown())
+    //   this->Hide();  // eventually hide dialog in case of mode change
+    m_RenderSelectionZoneState = RENDER_NONE;  // hide previous drawing
+    m_activeCanvas = sourceCanvas;
   }
 
-  if (event.LeftUp() && m_RenderZoneOverlay == 2) {
+  if (event.LeftUp() && m_RenderSelectionZoneState == RENDER_DRAWING) {
     m_ZoneSelMode = COMPLETE_SELECTION;  // ask to complete selection
-    m_parent.SetRequestBitmap(m_ZoneSelMode);
+    m_parent.SetRequestButtonBitmap(m_ZoneSelMode);
     SetCoordinatesText();
+    UpdateAreaSelectionState();
     m_MailImage->SetValue(WriteMail());
-    m_RenderZoneOverlay = 1;
+    m_RenderSelectionZoneState = RENDER_COMPLETE;
+    // The zone selection is complete, so we can update the grib size estimate.
+    UpdateGribSizeEstimate();
+    m_activeCanvas = nullptr;
   }
 
   if (event.Dragging()) {
-    if (m_RenderZoneOverlay < 2) {
-      m_StartPoint =
-          wxPoint(xm, ym);  // event.GetPosition();  // starting selection point
-      m_RenderZoneOverlay = 2;
+    if (m_RenderSelectionZoneState < RENDER_DRAWING) {
+      m_RenderSelectionZoneState = RENDER_DRAWING;
     }
     m_IsMaxLong = m_StartPoint.x > xm
                       ? true
                       : false;  // find if startpoint is max longitude
-    GetCanvasLLPix(m_Vp, wxPoint(xm, ym) /*event.GetPosition()*/, &m_Lat,
+    GetCanvasLLPix(m_Vp, wxPoint(xm, ym), &m_Lat,
                    &m_Lon);  // extend selection
     if (!m_tMouseEventTimer.IsRunning())
       m_tMouseEventTimer.Start(20, wxTIMER_ONE_SHOT);
@@ -430,23 +483,21 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
 
 void GribRequestSetting::OnMouseEventTimer(wxTimerEvent &event) {
   // compute zone starting point lon/lat for zone drawing
-  double lat, lon;
-  GetCanvasLLPix(m_Vp, m_StartPoint, &lat, &lon);
 
   // compute rounded coordinates
-  if (lat > m_Lat) {
-    m_spMaxLat->SetValue((int)ceil(lat));
+  if (m_StartLat > m_Lat) {
+    m_spMaxLat->SetValue((int)ceil(m_StartLat));
     m_spMinLat->SetValue((int)floor(m_Lat));
   } else {
     m_spMaxLat->SetValue((int)ceil(m_Lat));
-    m_spMinLat->SetValue((int)floor(lat));
+    m_spMinLat->SetValue((int)floor(m_StartLat));
   }
   if (m_IsMaxLong) {
-    m_spMaxLon->SetValue((int)ceil(lon));
+    m_spMaxLon->SetValue((int)ceil(m_StartLon));
     m_spMinLon->SetValue((int)floor(m_Lon));
   } else {
     m_spMaxLon->SetValue((int)ceil(m_Lon));
-    m_spMinLon->SetValue((int)floor(lon));
+    m_spMinLon->SetValue((int)floor(m_StartLon));
   }
 
   RequestRefresh(GetGRIBCanvas());
@@ -577,10 +628,10 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   std::ostringstream oss;
   oss << "https://grib.bosun.io/grib?";
   oss << "model=" << model;
-  oss << "&latmin=" << m_Vp->lat_min;
-  oss << "&latmax=" << m_Vp->lat_max;
-  oss << "&lonmin=" << m_Vp->lon_min;
-  oss << "&lonmax=" << m_Vp->lon_max;
+  oss << "&latmin=" << GetMinLat();
+  oss << "&latmax=" << GetMaxLat();
+  oss << "&lonmin=" << GetMinLon();
+  oss << "&lonmax=" << GetMaxLon();
   oss << "&length=" << LengthSelToHours(m_chForecastLength->GetSelection());
   wxString filename =
       wxString::Format("ocpn_%s_%li_%s.grb2", model.c_str(),
@@ -614,6 +665,7 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
         if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
       }
       m_parent.SetDialogsStyleSizePosition(true);
+      SaveConfig();
       Close();
     } else {
       m_staticTextInfo->SetLabelText(_("Download failed"));
@@ -938,6 +990,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
         if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
       }
       m_parent.SetDialogsStyleSizePosition(true);
+      SaveConfig();
       Close();
     } else {
       m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
@@ -974,7 +1027,8 @@ void GribRequestSetting::EnableDownloadButtons() {
 }
 
 void GribRequestSetting::StopGraphicalZoneSelection() {
-  m_RenderZoneOverlay = 0;  // eventually stop graphical zone display
+  m_RenderSelectionZoneState =
+      RENDER_NONE;  // eventually stop graphical zone display
 
   RequestRefresh(GetGRIBCanvas());
 }
@@ -985,14 +1039,12 @@ void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp) {
   delete m_Vp;
   m_Vp = new PlugIn_ViewPort(*vp);
 
-  GetCanvasPixLL(m_Vp, &m_StartPoint, m_spMaxLat->GetValue(),
-                 m_spMinLon->GetValue());
-
   if (!m_AllowSend) return;
   if (m_cManualZoneSel->GetValue()) return;
 
   SetVpSize(vp);
   // Viewport has changed : XyGrib estimated size must be recalculated
+  // when in automatic selection mode.
   UpdateGribSizeEstimate();
 }
 
@@ -1136,10 +1188,19 @@ void GribRequestSetting::OnTopChange(wxCommandEvent &event) {
   SetRequestDialogSize();
 }
 
+void GribRequestSetting::UpdateAreaSelectionState() {
+  bool readOnly = (m_ZoneSelMode == AUTO_SELECTION);
+  m_spMaxLat->Enable(!readOnly);
+  m_spMaxLon->Enable(!readOnly);
+  m_spMinLat->Enable(!readOnly);
+  m_spMinLon->Enable(!readOnly);
+  m_cUseSavedZone->Enable(m_ZoneSelMode != AUTO_SELECTION);
+}
+
 void GribRequestSetting::OnZoneSelectionModeChange(wxCommandEvent &event) {
   StopGraphicalZoneSelection();  // eventually stop graphical zone display
 
-  if (!m_ZoneSelMode) SetVpSize(m_Vp);  // recompute zone
+  if (m_ZoneSelMode == AUTO_SELECTION) SetVpSize(m_Vp);  // recompute zone
 
   if (event.GetId() == MANSELECT) {
     // set temporarily zone selection mode if manual selection set, put it
@@ -1154,10 +1215,8 @@ void GribRequestSetting::OnZoneSelectionModeChange(wxCommandEvent &event) {
     m_ZoneSelMode =
         m_cUseSavedZone->GetValue() ? SAVED_SELECTION : DRAW_SELECTION;
   }
-  m_parent.SetRequestBitmap(m_ZoneSelMode);  // set appopriate bitmap
-  fgZoneCoordinatesSizer->ShowItems(
-      m_ZoneSelMode != AUTO_SELECTION);  // show coordinate if necessary
-  m_cUseSavedZone->Show(m_ZoneSelMode != AUTO_SELECTION);
+  m_parent.SetRequestButtonBitmap(m_ZoneSelMode);  // set appopriate bitmap
+  UpdateAreaSelectionState();  // update the state of the coordinate spinners
   if (m_AllowSend) m_MailImage->SetValue(WriteMail());
 
   SetRequestDialogSize();
@@ -1295,13 +1354,13 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
 }
 
 bool GribRequestSetting::RenderGlZoneOverlay() {
-  if (m_RenderZoneOverlay == 0) return false;
+  if (m_RenderSelectionZoneState == RENDER_NONE) return false;
   m_pdc = nullptr;  // inform lower layers that this is OpenGL render
   return DoRenderZoneOverlay();
 }
 
 bool GribRequestSetting::RenderZoneOverlay(wxDC &dc) {
-  if (m_RenderZoneOverlay == 0) return false;
+  if (m_RenderSelectionZoneState == RENDER_NONE) return false;
   m_pdc = &dc;
   return DoRenderZoneOverlay();
 }
@@ -1361,7 +1420,7 @@ void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event) {
   SetRequestDialogSize();
 }
 
-void GribRequestSetting::OnSaveMail(wxCommandEvent &event) {
+void GribRequestSetting::OnOK(wxCommandEvent &event) {
   bool IsCOAMPS = m_pModel->GetCurrentSelection() == COAMPS;
   bool IsRTOFS = m_pModel->GetCurrentSelection() == RTOFS;
   bool IsICON = m_pModel->GetCurrentSelection() == ICON;
@@ -1431,31 +1490,7 @@ void GribRequestSetting::OnSaveMail(wxCommandEvent &event) {
     m_p300hpa->IsChecked() ? m_RequestConfigBase.SetChar(21, 'X')
                            : m_RequestConfigBase.SetChar(21, '.');
   }
-
-  wxFileConfig *pConf = GetOCPNConfigObject();
-  if (pConf) {
-    pConf->SetPath(_T( "/PlugIns/GRIB" ));
-
-    pConf->Write(_T ( "MailRequestConfig" ), m_RequestConfigBase);
-    pConf->Write(_T( "MailSenderAddress" ), m_pSenderAddress->GetValue());
-    pConf->Write(_T( "MailRequestAddresses" ), m_MailToAddresses);
-    pConf->Write(_T( "ZyGribLogin" ), m_pLogin->GetValue());
-    pConf->Write(_T( "ZyGribCode" ), m_pCode->GetValue());
-    pConf->Write(_T( "SendMailMethod" ), m_SendMethod);
-    pConf->Write(_T( "MovingGribSpeed" ), m_sMovingSpeed->GetValue());
-    pConf->Write(_T( "MovingGribCourse" ), m_sMovingCourse->GetValue());
-
-    m_SavedZoneSelMode = m_cUseSavedZone->GetValue()    ? SAVED_SELECTION
-                         : m_cManualZoneSel->GetValue() ? START_SELECTION
-                                                        : AUTO_SELECTION;
-    pConf->Write(_T( "ManualRequestZoneSizing" ), m_SavedZoneSelMode);
-
-    pConf->Write(_T( "RequestZoneMaxLat" ), m_spMaxLat->GetValue());
-    pConf->Write(_T( "RequestZoneMinLat" ), m_spMinLat->GetValue());
-    pConf->Write(_T( "RequestZoneMaxLon" ), m_spMaxLon->GetValue());
-    pConf->Write(_T( "RequestZoneMinLon" ), m_spMinLon->GetValue());
-  }
-
+  SaveConfig();
   wxCloseEvent evt;
   OnClose(evt);
 }
@@ -1813,10 +1848,7 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
       m_MailImage->SetValue(error[m_MailError_Nb]);
     }
 
-    m_rButtonCancel->Hide();
-    m_rButtonApply->Hide();
     m_rButtonYes->SetLabel(_("Continue..."));
-    m_rButton->Layout();
     SetRequestDialogSize();
 
     ::wxEndBusyCursor();
@@ -1878,7 +1910,6 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
     m_rButtonYes->Hide();
   }
   m_rButtonYes->SetLabel(_("Continue..."));
-  m_rButton->Layout();
   SetRequestDialogSize();
   delete message;
   ::wxEndBusyCursor();
@@ -1891,10 +1922,10 @@ wxString GribRequestSetting::BuildXyGribUrl() {
   wxString urlStr =
       wxString::Format("http://grbsrv.opengribs.org/getmygribs2.php?");
   // Bounding box
-  urlStr << wxString::Format("la1=%.0f", floor(m_Vp->lat_min));
-  urlStr << wxString::Format("&la2=%.0f", ceil(m_Vp->lat_max));
-  urlStr << wxString::Format("&lo1=%.0f", floor(m_Vp->lon_min));
-  urlStr << wxString::Format("&lo2=%.0f", ceil(m_Vp->lon_max));
+  urlStr << wxString::Format("la1=%.0f", floor(GetMinLat()));
+  urlStr << wxString::Format("&la2=%.0f", ceil(GetMaxLat()));
+  urlStr << wxString::Format("&lo1=%.0f", floor(GetMinLon()));
+  urlStr << wxString::Format("&lo2=%.0f", ceil(GetMaxLon()));
 
   // Atmospheric Model & resolution reference
   urlStr << wxString::Format(
@@ -2003,11 +2034,12 @@ wxString GribRequestSetting::BuildGribFileName() {
   return fileName;
 }
 
-/// @brief Handle action of Download/Cancel button.
-/// This function gathers the current GRIB configuration and handles the
-/// downloading of the GRIB file. If a transfer is already ongoing, it cancels
-/// it.
-/// @param event Event data from the GUI loop
+/*/ Handle action of Download/Cancel button.
+ * This function gathers the current GRIB configuration and handles the
+ * downloading of the GRIB file. If a transfer is already ongoing, it cancels
+ * it.
+ * @param event Event data from the GUI loop
+ */
 void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
   // Check if we are already downloading a GRIB file
   if (m_downloading) {
@@ -2189,6 +2221,7 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
         if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
       }
       m_parent.SetDialogsStyleSizePosition(true);
+      SaveConfig();
       Close();
     } else {
       // Download failed : report error to GUI
@@ -2480,8 +2513,10 @@ void GribRequestSetting::InitializeXygribDialog() {
   ApplyXyGribConfiguration();
 }
 
-/// @brief Apply the configuration stored into the configuration structure to
-/// the UI
+/**
+ * Apply the XyGrib configuration stored into the configuration structure to
+ * the UI.
+ */
 void GribRequestSetting::ApplyXyGribConfiguration() {
   m_xygribPanel->m_atmmodel_choice->SetSelection(
       m_parent.xyGribConfig.atmModelIndex);
@@ -2512,8 +2547,10 @@ void GribRequestSetting::ApplyXyGribConfiguration() {
   UpdateGribSizeEstimate();
 }
 
-/// @brief Apply the configuration stored into the configuration structure to
-/// the UI
+/**
+ * Apply the configuration stored into the configuration structure to
+ * the UI.
+ */
 void GribRequestSetting::MemorizeXyGribConfiguration() {
   m_parent.xyGribConfig.atmModelIndex =
       m_xygribPanel->m_atmmodel_choice->GetSelection();
@@ -2576,10 +2613,10 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
     return;
   }
 
-  double xmax = m_Vp->lon_max;
-  double xmin = m_Vp->lon_min;
-  double ymax = m_Vp->lat_max;
-  double ymin = m_Vp->lat_min;
+  double xmax = GetMaxLon();
+  double xmin = GetMinLon();
+  double ymax = GetMaxLat();
+  double ymin = GetMinLat();
 
   int npts = (int)(ceil(fabs(xmax - xmin) / resolution) *
                    ceil(fabs(ymax - ymin) / resolution));
@@ -2714,4 +2751,32 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
       wxString::Format("%d kB %s", estimate / 1024, warningStr));
 
   m_gribSizeEstimate = estimate;
+}
+
+double GribRequestSetting::GetMinLat() const {
+  if (m_cManualZoneSel && m_cManualZoneSel->GetValue()) {
+    return m_spMinLat->GetValue();
+  }
+  return m_Vp->lat_min;
+}
+
+double GribRequestSetting::GetMaxLat() const {
+  if (m_cManualZoneSel && m_cManualZoneSel->GetValue()) {
+    return m_spMaxLat->GetValue();
+  }
+  return m_Vp->lat_max;
+}
+
+double GribRequestSetting::GetMinLon() const {
+  if (m_cManualZoneSel && m_cManualZoneSel->GetValue()) {
+    return m_spMinLon->GetValue();
+  }
+  return m_Vp->lon_min;
+}
+
+double GribRequestSetting::GetMaxLon() const {
+  if (m_cManualZoneSel && m_cManualZoneSel->GetValue()) {
+    return m_spMaxLon->GetValue();
+  }
+  return m_Vp->lon_max;
 }
