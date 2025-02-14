@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,78 +39,71 @@
 ** You can use it any way you like.
 */
 
-VLW::VLW()
-{
-   Mnemonic = _T("VLW");
-   Empty();
+VLW::VLW() {
+  Mnemonic = _T("VLW");
+  Empty();
 }
 
-VLW::~VLW()
-{
-   Mnemonic.Empty();
-   Empty();
+VLW::~VLW() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void VLW::Empty( void )
-{
-   TotalMileage = 0.0;
-   TripMileage  = 0.0;
-   }
-
-bool VLW::Parse( const SENTENCE& sentence )
-{
-   /*
-   VLW - Distance Traveled through Water
-
-        1   2 3   4 5
-        |   | |   | |
- $--VLW,x.x,N,x.x,N*hh<CR><LF>
-
- Field Number:
-  1) Total cumulative distance
-  2) N = Nautical Miles
-  3) Distance since Reset
-  4) N = Nautical Miles
-  5) Checksum
-
-   */
-
-   /*
-   ** First we check the checksum...
-   */
-
-   if ( sentence.IsChecksumBad( 5 ) == TRUE )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
-
-   TotalMileage = sentence.Double( 1 );
-   TripMileage  = sentence.Double( 3 );
-
-   return( TRUE );
+void VLW::Empty(void) {
+  TotalMileage = 0.0;
+  TripMileage = 0.0;
 }
 
-bool VLW::Write( SENTENCE& sentence )
-{
-   /*
-   ** Let the parent do its thing
-   */
+bool VLW::Parse(const SENTENCE& sentence) {
+  /*
+  VLW - Distance Traveled through Water
 
-   RESPONSE::Write( sentence );
+       1   2 3   4 5
+       |   | |   | |
+$--VLW,x.x,N,x.x,N*hh<CR><LF>
 
-   sentence += TotalMileage;
-   sentence += _T("N");
-   sentence += TripMileage;
-   sentence += _T("N");
-   sentence.Finish();
+Field Number:
+ 1) Total cumulative distance
+ 2) N = Nautical Miles
+ 3) Distance since Reset
+ 4) N = Nautical Miles
+ 5) Checksum
 
-   return( TRUE );
+  */
+
+  /*
+  ** First we check the checksum...
+  */
+
+  if (sentence.IsChecksumBad(5) == TRUE) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
+
+  TotalMileage = sentence.Double(1);
+  TripMileage = sentence.Double(3);
+
+  return (TRUE);
 }
 
-const VLW& VLW::operator = ( const VLW& source )
-{
-   TotalMileage = source.TotalMileage;
-   TripMileage  = source.TripMileage;
-      return( *this );
+bool VLW::Write(SENTENCE& sentence) {
+  /*
+  ** Let the parent do its thing
+  */
+
+  RESPONSE::Write(sentence);
+
+  sentence += TotalMileage;
+  sentence += _T("N");
+  sentence += TripMileage;
+  sentence += _T("N");
+  sentence.Finish();
+
+  return (TRUE);
+}
+
+const VLW& VLW::operator=(const VLW& source) {
+  TotalMileage = source.TotalMileage;
+  TripMileage = source.TripMileage;
+  return (*this);
 }

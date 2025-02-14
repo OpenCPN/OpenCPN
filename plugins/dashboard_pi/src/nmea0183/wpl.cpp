@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,80 +39,70 @@
 ** You can use it any way you like.
 */
 
-//IMPLEMENT_DYNAMIC( WPL, RESPONSE )
+// IMPLEMENT_DYNAMIC( WPL, RESPONSE )
 
-WPL::WPL()
-{
-   Mnemonic = _T("WPL");
-   Empty();
+WPL::WPL() {
+  Mnemonic = _T("WPL");
+  Empty();
 }
 
-WPL::~WPL()
-{
-   Mnemonic.Empty();
-   Empty();
+WPL::~WPL() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void WPL::Empty( void )
-{
-
-   Position.Empty();
-   To.Empty();
+void WPL::Empty(void) {
+  Position.Empty();
+  To.Empty();
 }
 
-bool WPL::Parse( const SENTENCE& sentence )
-{
+bool WPL::Parse(const SENTENCE& sentence) {
+  /*
+  ** WPL - Waypoint Location
+  **
+  **        +-------------------------------- 1) Latitude
+  **        |       +------------------------ 2) N or S (North or South)
+  **        |       | +---------------------- 3) Longitude
+  **        |       | |        +------------- 4) E or W (East or West)
+  **        |       | |        | +----------- 5) Waypoint name
+  **        |       | |        | |    +-------6) Checksum
+  **        |       | |        | |    |
+  ** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
+  */
 
-   /*
-   ** WPL - Waypoint Location
-   **
-   **        +-------------------------------- 1) Latitude
-   **        |       +------------------------ 2) N or S (North or South)
-   **        |       | +---------------------- 3) Longitude
-   **        |       | |        +------------- 4) E or W (East or West)
-   **        |       | |        | +----------- 5) Waypoint name
-   **        |       | |        | |    +-------6) Checksum
-   **        |       | |        | |    |
-   ** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
-   */
+  /*
+  ** First we check the checksum...
+  */
 
-   /*
-   ** First we check the checksum...
-   */
+  if (sentence.IsChecksumBad(6) == NTrue) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
 
-   if ( sentence.IsChecksumBad( 6 ) == NTrue )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
+  Position.Parse(1, 2, 3, 4, sentence);
+  To = sentence.Field(5);
 
-   Position.Parse( 1, 2, 3, 4, sentence );
-   To = sentence.Field( 5 );
-
-   return( TRUE );
+  return (TRUE);
 }
 
-bool WPL::Write( SENTENCE& sentence )
-{
-   /*
-   ** Let the parent do its thing
-   */
+bool WPL::Write(SENTENCE& sentence) {
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += Position;
-   sentence += To;
+  sentence += Position;
+  sentence += To;
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const WPL& WPL::operator = ( const WPL& source )
-{
+const WPL& WPL::operator=(const WPL& source) {
+  Position = source.Position;
+  To = source.To;
 
-   Position = source.Position;
-   To       = source.To;
-
-   return( *this );
+  return (*this);
 }
