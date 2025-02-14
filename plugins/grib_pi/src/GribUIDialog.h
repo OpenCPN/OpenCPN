@@ -77,11 +77,30 @@ class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY(GribRecordSet, ArrayOfGribRecordSets);
 
+/**
+ * Defines the possible states for GRIB area selection.
+ * Used to control how the GRIB download area bounds are determined.
+ */
 enum ZoneSelection {
-  AUTO_SELECTION,
-  SAVED_SELECTION,
+  AUTO_SELECTION,   //!< Area automatically set from current viewport bounds.
+  SAVED_SELECTION,  //!< Area loaded from previously saved coordinates.
+  /**
+   * User has clicked Shift + Left click and is drawing the bounding box
+   * by dragging the mouse.
+   */
   START_SELECTION,
+  /**
+   * Manual mode has been selected.
+   * This state is set immediately after the user has clicked the "Manual
+   * Selection" checkbox in the GRIB request dialog. The user can now draw a
+   * selection box on the chart to specify the download area, or manually enter
+   * coordinates in the dialog.
+   */
   DRAW_SELECTION,
+  /**
+   * Selection box completed in manual mode, coordinates have been captured
+   * after the user has released the mouse button.
+   */
   COMPLETE_SELECTION
 };
 
@@ -162,7 +181,7 @@ class GRIBUICtrlBar : public GRIBUICtrlBarBase {
 public:
   GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString &title,
                 const wxPoint &pos, const wxSize &size, long style,
-                grib_pi *ppi);
+                grib_pi *ppi, double scale_factor);
   ~GRIBUICtrlBar();
 
   void OpenFile(bool newestFile = false);
@@ -201,21 +220,34 @@ public:
   void CreateActiveFileFromNames(const wxArrayString &filenames);
   void PopulateComboDataList();
   void ComputeBestForecastForNow();
-  void SetViewPort(PlugIn_ViewPort *vp);
+  /** Set the ViewPort under the mouse. */
+  void SetViewPortUnderMouse(PlugIn_ViewPort *vp);
+  /** Set the ViewPort that has the focus */
+  void SetViewPortWithFocus(PlugIn_ViewPort *vp);
   void SetDataBackGroundColor();
   void SetTimeLineMax(bool SetValue);
   void SetCursorLatLon(double lat, double lon);
+  /**
+   * Schedules an update of the GRIB data values display at current cursor
+   * position.
+   *
+   * When the cursor moves over the chart or timeline changes occur, this method
+   * schedules a refresh of the data values panel that shows weather parameters
+   * (wind, pressure, temperature etc.) at the cursor location.
+   *
+   * The update is throttled using a 50ms timer to prevent excessive updates
+   * during rapid cursor movement or timeline playback.
+   */
   void UpdateTrackingControl();
   void SetDialogsStyleSizePosition(bool force_recompute = false);
-  void SetRequestBitmap(int type);
+  /** Set the icon and tooltip for the download request button. */
+  void SetRequestButtonBitmap(int type);
   void OnMouseEvent(wxMouseEvent &event);
   GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
   bool InDataPlot(int id) {
     return id > wxID_ANY && id < (int)GribOverlaySettings::GEO_ALTITUDE;
   }
   void SetScaledBitmap(double factor);
-  wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName,
-                           double scale_factor);
   void OpenFileFromJSON(wxString json);
 
   //
@@ -242,7 +274,6 @@ public:
   bool m_CDataIsShown;
   int m_ZoneSelAllowed;
   int m_old_DialogStyle;
-  double m_ScaledFactor;
   void DoZoomToCenter();
   const wxString GetGribDir() {
     if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir)) {
@@ -263,7 +294,24 @@ public:
     return m_grib_dir;
   }
 
-  void GetProjectedLatLon(int &x, int &y);
+  /**
+   * Gets the projected position of vessel based on current course, speed and
+   * forecast time.
+   *
+   * Calculates the projected latitude/longitude position by advancing the
+   * vessel's current position along its course at the specified speed for the
+   * time difference between the current forecast time and the vessel's position
+   * time.
+   *
+   * The projected position is then converted to canvas (x,y) coordinates for
+   * use in UI overlays and cursor tracking.
+   *
+   * @param[out] x The projected x-coordinate on canvas in pixels
+   * @param[out] y The projected y-coordinate on canvas in pixels
+   * @param[in] vp Viewport for coordinate transformation. If NULL, returns
+   * (0,0)
+   */
+  void GetProjectedLatLon(int &x, int &y, PlugIn_ViewPort *vp);
   bool ProjectionEnabled() {
     if (m_ProjectBoatPanel)
       return m_ProjectBoatPanel->ProjectionEnabled();
@@ -305,7 +353,9 @@ private:
   }
   void OnAltitude(wxCommandEvent &event);
   void OnOpenFile(wxCommandEvent &event);
-  void OnRequest(wxCommandEvent &event);
+  /** Callback invoked when user clicks download/request forecast data. */
+  void OnRequestForecastData(wxCommandEvent &event);
+  void createRequestDialog();
   void OnCompositeDialog(wxCommandEvent &event);
 
   void OnTimeline(wxScrollEvent &event);
@@ -330,8 +380,8 @@ private:
   CursorData *m_gCursorData;
   GribGrabberWin *m_gGrabber;
   GRIBUICData *m_gGRIBUICData;
-
-  PlugIn_ViewPort *m_vp;
+  /** ViewPort under the mouse. */
+  PlugIn_ViewPort *m_vpMouse;
   int m_lastdatatype;
 
   int m_TimeLineHours;
