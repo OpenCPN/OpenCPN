@@ -157,6 +157,21 @@ public:
 
   bool MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick = true);
   bool MouseEventProcessObjects(wxMouseEvent &event);
+  /**
+   * Processes mouse events for core chart panning and zooming operations.
+   *
+   * This method handles the main chart navigation interactions:
+   * - Mouse wheel zooming with configurable sensitivity and optional smoothing.
+   * - Left-click chart centering. Centers chart on click point in non-drag
+   * scenarios.
+   * - Click-and-drag panning. Updates chart position continuously during drag.
+   *
+   * @param event The mouse event to process
+   * @return true if event was processed, false to allow focus shifting between
+   * canvases.
+   *
+   * @note Interacts with route creation and measurement tools active states
+   */
   bool MouseEventProcessCanvas(wxMouseEvent &event);
   void SetCanvasCursor(wxMouseEvent &event);
   void OnKillFocus(wxFocusEvent &WXUNUSED(event));

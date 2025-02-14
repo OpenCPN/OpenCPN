@@ -99,6 +99,19 @@ GLboolean QueryExtension(const char *extName);
 class ocpnGLOptions {
 public:
   bool m_bUseAcceleratedPanning;
+  /**
+   * Controls OpenGL canvas hardware-accelerated panning mode.
+   *
+   * When true, uses an OpenGL optimization where the chart is rendered to a
+   * texture (via FBO - Frame Buffer Object) during panning operations.
+   * This texture is then translated/moved using GPU operations rather than
+   * redrawing the entire chart for each pan event, significantly improving
+   * performance during chart panning.
+   *
+   * This is separate from standard chart panning which is enabled by default
+   * and uses left-click + drag. This flag only controls whether that panning
+   * uses hardware acceleration.
+   */
   bool m_bUseCanvasPanning;
 
   bool m_bTextureCompression;
