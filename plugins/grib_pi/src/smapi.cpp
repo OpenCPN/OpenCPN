@@ -85,9 +85,9 @@ wxMapiSession::~wxMapiSession() {
 void wxMapiSession::Initialise() {
   // First make sure the "WIN.INI" entry for MAPI is present aswell
   // as the MAPI32 dll being present on the system
-  bool bMapiInstalled =
-      (GetProfileInt(_T("MAIL"), _T("MAPI"), 0) != 0) &&
-      (SearchPath(nullptr, _T("MAPI32.DLL"), nullptr, 0, nullptr, nullptr) != 0);
+  bool bMapiInstalled = (GetProfileInt(_T("MAIL"), _T("MAPI"), 0) != 0) &&
+                        (SearchPath(nullptr, _T("MAPI32.DLL"), nullptr, 0,
+                                    nullptr, nullptr) != 0);
 
   if (bMapiInstalled) {
     // Load up the MAPI dll and get the function pointers we are interested in
@@ -105,7 +105,8 @@ void wxMapiSession::Initialise() {
           (LPMAPIFREEBUFFER)GetProcAddress(m_data->m_hMapi, "MAPIFreeBuffer");
 
       // If any of the functions are not installed then fail the load
-      if (m_data->m_lpfnMAPILogon == nullptr || m_data->m_lpfnMAPILogoff == nullptr ||
+      if (m_data->m_lpfnMAPILogon == nullptr ||
+          m_data->m_lpfnMAPILogoff == nullptr ||
           m_data->m_lpfnMAPISendMail == nullptr ||
           m_data->m_lpfnMAPIResolveName == nullptr ||
           m_data->m_lpfnMAPIFreeBuffer == nullptr) {
@@ -213,7 +214,9 @@ bool wxMapiSession::Logon(const wxString& sProfileName,
 
 bool wxMapiSession::LoggedOn() const { return (m_data->m_hSession != 0); }
 
-bool wxMapiSession::MapiInstalled() const { return (m_data->m_hMapi != nullptr); }
+bool wxMapiSession::MapiInstalled() const {
+  return (m_data->m_hMapi != nullptr);
+}
 
 bool wxMapiSession::Logoff() {
   wxASSERT(MapiInstalled());           // MAPI must be installed

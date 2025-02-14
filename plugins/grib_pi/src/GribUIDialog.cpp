@@ -257,8 +257,8 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
 
   // connect Timer
   m_tPlayStop.Connect(wxEVT_TIMER,
-                      wxTimerEventHandler(GRIBUICtrlBar::OnPlayStopTimer), nullptr,
-                      this);
+                      wxTimerEventHandler(GRIBUICtrlBar::OnPlayStopTimer),
+                      nullptr, this);
   // connect functions
   Connect(wxEVT_MOVE, wxMoveEventHandler(GRIBUICtrlBar::OnMove));
 
@@ -949,12 +949,12 @@ void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
   // add a submenu to this item if necessary
   if (submenu) item->SetSubMenu(submenu);
 
-  /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
-  #ifdef __WXMSW__
-    wxFont *qFont = OCPNGetFont(_("Menu"), 0);
-    item->SetFont(*qFont);
-  #endif
-  */
+    /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
+    #ifdef __WXMSW__
+      wxFont *qFont = OCPNGetFont(_("Menu"), 0);
+      item->SetFont(*qFont);
+    #endif
+    */
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
   if (!bitmap.IsSameAs(wxNullBitmap)) item->SetBitmap(bitmap);
@@ -968,7 +968,8 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
     // populate menu
     wxMenu *xmenu = new wxMenu();
     xmenu->Connect(wxEVT_COMMAND_MENU_SELECTED,
-                   wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), nullptr, this);
+                   wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), nullptr,
+                   this);
 
     if (m_HasAltitude) {  // eventually populate altitude choice
       wxMenu *smenu = new wxMenu();

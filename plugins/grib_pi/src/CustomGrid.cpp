@@ -87,15 +87,18 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
           wxGridEventHandler(CustomGrid::OnLabeClick), nullptr, this);
   // connect events at grid level
   GetGridWindow()->Connect(wxEVT_LEFT_DOWN,
-                           wxMouseEventHandler(CustomGrid::OnMouseEvent), nullptr,
-                           this);
-  GetGridWindow()->Connect(
-      wxEVT_LEFT_UP, wxMouseEventHandler(CustomGrid::OnMouseEvent), nullptr, this);
-  GetGridWindow()->Connect(
-      wxEVT_MOTION, wxMouseEventHandler(CustomGrid::OnMouseEvent), nullptr, this);
+                           wxMouseEventHandler(CustomGrid::OnMouseEvent),
+                           nullptr, this);
+  GetGridWindow()->Connect(wxEVT_LEFT_UP,
+                           wxMouseEventHandler(CustomGrid::OnMouseEvent),
+                           nullptr, this);
+  GetGridWindow()->Connect(wxEVT_MOTION,
+                           wxMouseEventHandler(CustomGrid::OnMouseEvent),
+                           nullptr, this);
   // timer event
-  m_tRefreshTimer.Connect(
-      wxEVT_TIMER, wxTimerEventHandler(CustomGrid::OnRefreshTimer), nullptr, this);
+  m_tRefreshTimer.Connect(wxEVT_TIMER,
+                          wxTimerEventHandler(CustomGrid::OnRefreshTimer),
+                          nullptr, this);
 }
 
 CustomGrid::~CustomGrid() {

@@ -117,7 +117,8 @@ public:
 
   void DrawText(const wxString &text, wxCoord x, wxCoord y);
   void GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
-                     wxCoord *descent = nullptr, wxCoord *externalLeading = nullptr,
+                     wxCoord *descent = nullptr,
+                     wxCoord *externalLeading = nullptr,
                      wxFont *font = nullptr);
 
   void ResetBoundingBox();

@@ -295,8 +295,8 @@ wxJSONReader::~wxJSONReader() {}
  Next, the overloaded Parse function is called.
 
  @param doc    the JSON text that has to be parsed
- @param val    the wxJSONValue object that contains the parsed text; if nullptr the
-         parser do not store anything but errors and warnings are reported
+ @param val    the wxJSONValue object that contains the parsed text; if nullptr
+ the parser do not store anything but errors and warnings are reported
  @return the total number of errors encontered
 */
 int wxJSONReader::Parse(const wxString& doc, wxJSONValue* val) {

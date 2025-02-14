@@ -309,8 +309,8 @@ levelValue)
     if (rec!=nullptr  &&  rec->getRecordCurrentDate() == dateref)
     {
         std::vector<GribRecord *> *liste = getListOfGribRecords(dataType,
-levelType, levelValue); if (liste != nullptr) { std::vector<GribRecord *>::iterator
-it; for (it=liste->begin(); it!=liste->end() && (*it)!=rec; it++)
+levelType, levelValue); if (liste != nullptr) { std::vector<GribRecord
+*>::iterator it; for (it=liste->begin(); it!=liste->end() && (*it)!=rec; it++)
             {
             }
             if ((*it) == rec) {
@@ -593,7 +593,8 @@ GribRecord *GribReader::getFirstGribRecord(int dataType, int levelType,
                                            int levelValue) {
   std::set<time_t>::iterator it;
   GribRecord *rec = nullptr;
-  for (it = setAllDates.begin(); rec == nullptr && it != setAllDates.end(); it++) {
+  for (it = setAllDates.begin(); rec == nullptr && it != setAllDates.end();
+       it++) {
     time_t date = *it;
     rec = getGribRecord(dataType, levelType, levelValue, date);
   }
