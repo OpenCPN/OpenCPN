@@ -439,9 +439,9 @@ void grib_pi::OnToolbarToolCallback(int id) {
 #ifdef __WXOSX__
     style |= wxSTAY_ON_TOP;
 #endif
-    m_pGribCtrlBar =
-        new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString,
-                          wxDefaultPosition, wxDefaultSize, style, this);
+    m_pGribCtrlBar = new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString,
+                                       wxDefaultPosition, wxDefaultSize, style,
+                                       this, scale_factor);
     m_pGribCtrlBar->SetScaledBitmap(scale_factor);
 
     wxMenu *dummy = new wxMenu(_T("Plugin"));
@@ -558,11 +558,17 @@ bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
     return false;
 
   m_pGRIBOverlayFactory->RenderGribOverlay(dc, vp);
+  if (PluginGetFocusCanvas() == GetCanvasByIndex(canvasIndex)) {
+    m_pGribCtrlBar->SetViewPortWithFocus(vp);
+  }
 
   if (GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse()) {
-    m_pGribCtrlBar->SetViewPort(vp);
-    if (m_pGribCtrlBar->pReq_Dialog)
+    m_pGribCtrlBar->SetViewPortUnderMouse(vp);
+    if (m_pGribCtrlBar->pReq_Dialog &&
+        GetCanvasIndexUnderMouse() ==
+            m_pGribCtrlBar->pReq_Dialog->GetBoundingBoxCanvasIndex()) {
       m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay(dc);
+    }
   }
   if (::wxIsBusy()) ::wxEndBusyCursor();
   return true;
@@ -578,11 +584,17 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
     return false;
 
   m_pGRIBOverlayFactory->RenderGLGribOverlay(pcontext, vp);
+  if (PluginGetFocusCanvas() == GetCanvasByIndex(canvasIndex)) {
+    m_pGribCtrlBar->SetViewPortWithFocus(vp);
+  }
 
   if (GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse()) {
-    m_pGribCtrlBar->SetViewPort(vp);
-    if (m_pGribCtrlBar->pReq_Dialog)
+    m_pGribCtrlBar->SetViewPortUnderMouse(vp);
+    if (m_pGribCtrlBar->pReq_Dialog &&
+        GetCanvasIndexUnderMouse() ==
+            m_pGribCtrlBar->pReq_Dialog->GetBoundingBoxCanvasIndex()) {
       m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
+    }
   }
 
   if (::wxIsBusy()) ::wxEndBusyCursor();
