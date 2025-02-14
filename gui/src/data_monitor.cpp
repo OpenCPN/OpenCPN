@@ -55,6 +55,7 @@ static void AddCandumpLogline(const Logline& ll, std::ostream& stream) {
   auto us = duration_cast<microseconds>(now.time_since_epoch()).count();
   stream << "[" << us / 1000000 << "." << us % 1000000 << "] ";
   stream << (ll.navmsg ? ll.navmsg->source->iface : "-") << " ";
+  stream << ll.navmsg->to_candump();
   stream << "\n";
 }
 
@@ -554,7 +555,8 @@ fs::path DataLogger::DefaultLogfile() {
 }
 
 void DataLogger::Add(const Logline& ll) {
-  if (!m_is_logging) return;
+  if (!m_is_logging || !ll.navmsg) return;
+  if (m_format == Format::kCandump && ll.navmsg->to_candump().empty()) return;
   if (m_format == DataLogger::Format::kCandump)
     AddCandumpLogline(ll, m_stream);
   else
