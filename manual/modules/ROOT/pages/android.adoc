@@ -3,17 +3,15 @@ image::opencpn_dev_android_0.png[width=50]
 
 These instructions describe how to build OpenCPN for Android on Ubuntu 24.04.
 
-====
-*BEWARE: These build instructions are incomplete and under development. Users are encouraged to improve them by using the "Edit this page" button to submit patches and corrections.*
-====
+NOTE: These build instructions are incomplete and under development. Users are encouraged to improve them by using the "Edit this page" button to submit patches and corrections.*
 
 == Build Environment Setup
 
 === 1. Required Tools
 
-[source,bash]
+
+Install basic build tools:
 ----
-# Install basic build tools
 sudo apt update
 sudo apt install -y \
   cmake \
@@ -32,17 +30,11 @@ sudo apt install -y \
   libgles1 \
   default-jdk
 
-# Create a virtual environment in your home directory
-python3 -m venv ~/opencpn-buildenv
+----
 
-# Activate the virtual environment
-source ~/opencpn-buildenv/bin/activate
+Get Java installation path:
 
-# Install required Python packages
-pip install --upgrade pip setuptools
-pip install cloudsmith-cli
-
-# Get Java installation path
+----
 sudo update-alternatives --config java
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ----
@@ -59,12 +51,15 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 .. Check "CMake"
 .. Click "Apply" to download and install
 
-[source,bash]
-----
-# Get path to Android NDK
-~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --list |grep ndk
+Get path to Android NDK:
 
-# Set environment variables
+----
+~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --list |grep ndk
+----
+
+Set environment variables:
+
+----
 export ANDROID_SDK_ROOT=$HOME/Android/Sdk
 export ANDROID_NDK_VERSION=$(ls $ANDROID_SDK_ROOT/ndk | sort -V | tail -1)
 export ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}
@@ -74,16 +69,22 @@ export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
 # API 31: Android 12 (2021)
 # API 33: Android 13 (2022)
 # API 34: Android 14 (2023)
-export OCPN_ANDROID_API=33  # Minimum Android API level to target
 
-# Create required NDK symlink
-ln -sf $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar
+export OCPN_ANDROID_API=33  # Minimum Android API level to target
+----
+
+Create required NDK symlink:
+
+----
+android_x86_64="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64"
+ln -sf $android_x86_64/bin/llvm-ar \
+     $android_x86_64/bin/aarch64-linux-android-ar
 ----
 
 == Building the Core Library
 
 === 1. Clone the repository
-[source,bash]
+
 ----
 git clone https://github.com/OpenCPN/OpenCPN.git
 cd OpenCPN
@@ -91,9 +92,9 @@ cd OpenCPN
 
 === 2. Create build directory and configure
 
-[source,bash]
+For armhf build - 32bit:
+
 ----
-# For armhf build - 32bit
 mkdir build-android-armhf
 cd build-android-armhf
 cmake \
@@ -102,7 +103,11 @@ cmake \
   -Dtool_base="$ANDROID_SDK_ROOT/ndk/${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64" \
   ..
 
-# For arm64 build - 64bit
+----
+
+For arm64 build - 64bit:
+
+----
 mkdir build-android-arm64
 cd build-android-arm64
 cmake \
@@ -114,6 +119,7 @@ cmake \
 
 === 3. Build the core library
 [source,bash]
+
 ----
 make VERBOSE=1
 ----
@@ -124,16 +130,21 @@ After building the core library successfully:
 
 === 1. Setup Qt environment
 [source,bash]
+
 ----
 export QT_ANDROID_ROOT=/path/to/OpenCPN/cache/OCPNAndroidCoreBuildSupport/qt5
+----
 
-# Create APK build directory
+Create APK build directory
+
+----
 mkdir apk_build
 cd apk_build
 ----
 
 === 2. Generate Makefile with qmake
 [source,bash]
+
 ----
 $QT_ANDROID_ROOT/android_armv7/bin/qmake \
   -makefile ../buildandroid/opencpn.pro \
@@ -142,6 +153,7 @@ $QT_ANDROID_ROOT/android_armv7/bin/qmake \
 
 === 3. Build library and prepare for APK
 [source,bash]
+
 ----
 make -f Makefile.android
 make -f Makefile.android install INSTALL_ROOT=./apk_build
@@ -149,6 +161,7 @@ make -f Makefile.android install INSTALL_ROOT=./apk_build
 
 === 4. Create the APK
 [source,bash]
+
 ----
 $QT_ANDROID_ROOT/android_armv7/bin/androiddeployqt \
   --input ./android-libopencpn.so-deployment-settings.json \
