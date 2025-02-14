@@ -58,7 +58,9 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
-  DriverStats GetDriverStats() const { return m_serial_io->GetStats(); }
+  DriverStats GetDriverStats() const override {
+    return m_serial_io->GetStats();
+  }
 
 private:
   std::string m_portstring;
