@@ -217,9 +217,7 @@ public:
   virtual std::string key() const = 0;
 
   /** Return printable string for logging etc without trailing nl */
-  virtual std::string to_string() const {
-    return NavAddr::BusToString(bus) + " " + key();
-  }
+  virtual std::string to_string() const { return key(); }
 
   /** Return message in extended candump format. TBD: details */
   virtual std::string to_candump() const { return ""; }
@@ -368,6 +366,8 @@ public:
   std::string raw_message;
 
   std::string key() const { return std::string("signalK"); };
+
+  std::string to_string() const { return raw_message; }
 };
 
 /** An invalid message, error return value. */

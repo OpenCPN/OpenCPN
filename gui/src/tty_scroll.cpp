@@ -68,9 +68,13 @@ wxColor StdColorsByState::operator()(NavmsgStatus ns) {
 }
 
 /** Draw a single line in the log window. */
-static void DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
+void TtyScroll::DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
   wxString ws;
   std::string msg_text = ll.navmsg ? ll.navmsg->to_string() : "";
+  if (!m_quick_filter.empty() &&
+      msg_text.find(m_quick_filter) == std::string::npos) {
+    return;
+  }
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
   if (!msg_text.empty()) ws << wxDateTime::Now().FormatISOTime() << " ";
 #endif

@@ -86,13 +86,12 @@ std::string Nmea2000Msg::to_string() const {
   std::for_each(payload.begin(), payload.end(),
                 [&s](unsigned char c) { s.append(CharToString(c)); });
 
-  return NavMsg::to_string() + " " + PGN.to_string() + " " + s;
+  return PGN.to_string() + " " + s;
 }
 
 std::string Nmea0183Msg::to_string() const {
   std::stringstream ss;
-  ss << NavAddr::BusToString(bus) << " " << key() << " " << talker << type
-     << " " << ocpn::printable(payload);
+  ss << key() << " " << talker << type << " " << ocpn::printable(payload);
   return ss.str();
 }
 
