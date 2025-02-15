@@ -32,7 +32,7 @@
 
 /**
  * \file
- * Scrolled TTY-like window for logging and utilities
+ * Scrolled TTY-like window for logging, related utilities
  */
 
 extern const wxString kUtfCheckMark;
@@ -107,6 +107,11 @@ public:
   void SetFilter(const NavmsgFilter& filter) { m_filter = filter; }
 
   /**
+   * Apply a quick filter directly matched against lines
+   */
+  void SetQuickFilter(const std::string s) { m_quick_filter = s; }
+
+  /**
    * Set color scheme
    */
   void SetColors(std::unique_ptr<ColorByState> color_by_state);
@@ -119,7 +124,9 @@ protected:
   NavmsgFilter m_filter;
   bool m_is_paused;
   std::unique_ptr<ColorByState> m_color_by_state;
+  std::string m_quick_filter;
 
+  void DrawLine(wxDC& dc, Logline ll, int data_pos, int y);
   virtual void OnDraw(wxDC& dc);
   void OnSize(wxSizeEvent& event);
 };
