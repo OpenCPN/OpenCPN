@@ -27,6 +27,7 @@
 #ifndef _CHCANV_H__
 #define _CHCANV_H__
 
+#include <cstdint>
 #include "bbox.h"
 
 #include <wx/datetime.h>
