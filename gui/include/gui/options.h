@@ -101,6 +101,7 @@ enum {
   ID_BUTTONDELETE,
   ID_BUTTONCOMPRESS,
   ID_BUTTONFONTCHOOSE,
+  ID_BUTTONFONT_RESET,
   ID_BUTTONECDISHELP,
   ID_BUTTONFONTCOLOR,
   ID_BUTTONGROUP,
@@ -648,6 +649,7 @@ private:
 
   void OnAlertEnableButtonClick(wxCommandEvent &event);
   void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
+  void OnResetFont(wxCommandEvent &event);
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
