@@ -499,6 +499,8 @@ bool g_bSoftwareGL;
  * Saved to config as user preference.
  */
 bool g_bsmoothpanzoom;
+// toggle for smooth position jumping
+bool g_bSmoothRecenter = true;
 bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
 bool g_oz_vector_scale;

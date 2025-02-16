@@ -143,19 +143,7 @@ private:
 
 #ifdef __WXMSW__
 #define printf printf2
-
-int __cdecl printf2(const char *format, ...) {
-  char str[1024];
-
-  va_list argptr;
-  va_start(argptr, format);
-  int ret = vsnprintf(str, sizeof(str), format, argptr);
-  va_end(argptr);
-
-  OutputDebugStringA(str);
-
-  return ret;
-}
+int __cdecl printf2(const char *format, ...);
 #endif
 
 #if defined(__ANDROID__)
@@ -3863,6 +3851,7 @@ void glChartCanvas::RenderGLAlertMessage() {
 
 unsigned long quiltHash;
 int refChartIndex;
+extern wxLongLong s_t0;
 
 int n_render;
 void glChartCanvas::Render() {
@@ -3876,8 +3865,6 @@ void glChartCanvas::Render() {
     if (!g_PrintingInProgress) return;
   }
 
-  // printf("                  Render gCOG, rotation  %g %g\n", gCog,
-  // m_pParentCanvas->VPoint.rotation);
   if (m_binPinch) return;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -4039,7 +4026,7 @@ void glChartCanvas::Render() {
     bool b_full = false;
 
     // If the view is the same we do no updates,
-    // cached texture to the framebuffer
+    // Just render cached texture to the framebuffer
     if (m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm &&
         m_cache_vp.rotation == VPoint.rotation &&
         m_cache_vp.clat == VPoint.clat && m_cache_vp.clon == VPoint.clon &&
@@ -4073,6 +4060,15 @@ void glChartCanvas::Render() {
       float dy = 0;
 
       bool accelerated_pan = false;
+      //      if (g_in_inertia)
+      //        printf("---     accpan condition %d %d\n",
+      //               g_GLOptions.m_bUseAcceleratedPanning,
+      //               m_cache_vp.IsValid());
+      //      else
+      //        printf("|||     accpan condition %d %d\n",
+      //               g_GLOptions.m_bUseAcceleratedPanning,
+      //               m_cache_vp.IsValid());
+
       if (g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid() &&
           (VPoint.m_projection_type == PROJECTION_MERCATOR ||
            VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
@@ -4105,6 +4101,10 @@ void glChartCanvas::Render() {
         accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x &&
                           abs(dy) < m_cache_tex_y &&
                           (abs(dx) > 0 || (abs(dy) > 0));
+
+        // if (g_in_inertia && !accelerated_pan)
+        // printf("---     accpan %d %d    %g %g\n", accelerated_pan,
+        // b_whole_pixel, dx, dy);
       }
 
       //  FBO swapping has trouble with Retina display on MacOS Monterey.
@@ -4166,7 +4166,13 @@ void glChartCanvas::Render() {
           //           glClear(GL_COLOR_BUFFER_BIT);
 
           // First render the new content into the update region
+          // if (g_in_inertia)
+          // printf("---     R2a %g\n",
+          //     (wxGetLocalTimeMillis() - s_t0).ToDouble());
           RenderCharts(m_gldc, update_region);
+          // if (g_in_inertia)
+          // printf("---     R2b %g\n",
+          //      (wxGetLocalTimeMillis() - s_t0).ToDouble());
           glDisable(g_texture_rectangle_format);
           glUseProgram(0);
 
@@ -4296,7 +4302,13 @@ void glChartCanvas::Render() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         OCPNRegion rscreen_region(VPoint.rv_rect);
+        // if (g_in_inertia)
+        // printf("---     R2c %g\n",
+        //      (wxGetLocalTimeMillis() - s_t0).ToDouble());
         RenderCharts(m_gldc, rscreen_region);
+        // if (g_in_inertia)
+        // printf("---     R2d %g\n",
+        //      (wxGetLocalTimeMillis() - s_t0).ToDouble());
 
         m_cache_page = !m_cache_page; /* page flip */
 
@@ -4332,6 +4344,9 @@ void glChartCanvas::Render() {
     glGetDoublev(GL_MODELVIEW_MATRIX, mvmatrix);
   }
 #endif
+
+  // if (g_in_inertia)
+  // printf("---     R3 %g\n", (wxGetLocalTimeMillis() - s_t0).ToDouble());
 
   if (useFBO) {
 #if 0  // #ifndef USE_ANDROID_GLES2
@@ -4583,6 +4598,9 @@ void glChartCanvas::Render() {
 
   g_glTextureManager->TextureCrunch(0.8);
   g_glTextureManager->FactoryCrunch(0.6);
+
+  // if (g_in_inertia)
+  // printf("---     Rx %g\n", (wxGetLocalTimeMillis() - s_t0).ToDouble());
 
   m_pParentCanvas->PaintCleanup();
   // OCPNPlatform::HideBusySpinner();

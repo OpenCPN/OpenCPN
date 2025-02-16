@@ -140,6 +140,21 @@ extern double g_mouse_zoom_sensitivity;
 
 #include <vector>
 
+#ifdef __WXMSW__
+#define printf printf2
+
+int __cdecl printf2(const char *format, ...) {
+  char str[1024];
+
+  va_list argptr;
+  va_start(argptr, format);
+  int ret = vsnprintf(str, sizeof(str), format, argptr);
+  va_end(argptr);
+  OutputDebugStringA(str);
+  return ret;
+}
+#endif
+
 #if defined(__MSVC__) && (_MSC_VER < 1700)
 #define trunc(d) ((d > 0) ? floor(d) : ceil(d))
 #endif
@@ -263,6 +278,7 @@ extern bool g_bopengl;
 extern bool g_bFullScreenQuilt;
 
 extern bool g_bsmoothpanzoom;
+extern bool g_bSmoothRecenter;
 
 bool g_bDebugOGL;
 
@@ -384,6 +400,8 @@ EVT_SET_FOCUS(ChartCanvas::OnSetFocus)
 EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
 EVT_TIMER(DEFERRED_FOCUS_TIMER, ChartCanvas::OnDeferredFocusTimerEvent)
 EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
+EVT_TIMER(DRAG_INERTIA_TIMER, ChartCanvas::OnChartDragInertiaTimer)
+EVT_TIMER(wxID_ANY, ChartCanvas::OnJumpEaseTimer)
 
 END_EVENT_TABLE()
 
@@ -562,6 +580,8 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_DoubleClickTimer->Stop();
 
   m_VPMovementTimer.SetOwner(this, MOVEMENT_VP_TIMER);
+  m_chart_drag_inertia_timer.SetOwner(this, DRAG_INERTIA_TIMER);
+  m_chart_drag_inertia_active = false;
 
   m_panx = m_pany = 0;
   m_panspeed = 0;
@@ -2853,9 +2873,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       break;
 
 #ifndef __WXOSX__
-    case WXK_F9:
+    case WXK_F9: {
+      double t0 = wxGetLocalTimeMillis().ToDouble();
+      pConfig->Flush();
+      double t1 = wxGetLocalTimeMillis().ToDouble() - t0;
+
       ToggleCanvasQuiltMode();
       break;
+    }
 #endif
 
     case WXK_F11:
@@ -3410,6 +3435,94 @@ bool ChartCanvas::DoCanvasCOGSet(void) {
   // if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
 
   return true;
+}
+
+double easeOutCubic(double t) {
+  // Starts quickly and slows down toward the end
+  return 1.0 - pow(1.0 - t, 3.0);
+}
+
+void ChartCanvas::StartChartDragInertia() {
+  //
+  // printf("\nStart ChartDragInertia\n");
+  m_bChartDragging = false;
+
+  // Set some parameters
+  m_chart_drag_inertia_time = 750;  // msec
+  m_chart_drag_inertia_start_time = wxGetLocalTimeMillis();
+  m_last_elapsed = 0;
+
+  // Calculate ending drag velocity
+  size_t n_vel = 10;
+  n_vel = wxMin(n_vel, m_drag_vec_t.size());
+  int xacc = 0;
+  int yacc = 0;
+  double tacc = 0;
+  size_t length = m_drag_vec_t.size();
+  for (size_t i = 0; i < n_vel; i++) {
+    xacc += m_drag_vec_x.at(length - 1 - i);
+    yacc += m_drag_vec_y.at(length - 1 - i);
+    tacc += m_drag_vec_t.at(length - 1 - i);
+    // printf("%d  %g\n", xacc, tacc);
+  }
+  m_chart_drag_velocity_x = xacc / tacc;
+  m_chart_drag_velocity_y = yacc / tacc;
+
+  m_chart_drag_inertia_active = true;
+
+  // First callback as fast as possible.
+  m_chart_drag_inertia_timer.Start(1, wxTIMER_ONE_SHOT);
+
+  //  printf("  Drag parms  %d  %d  %g\n", m_chart_drag_total_x,
+  //         m_chart_drag_total_y, m_chart_drag_total_time);
+}
+
+void ChartCanvas::OnChartDragInertiaTimer(wxTimerEvent &event) {
+  if (!m_chart_drag_inertia_active) return;
+
+  // Calculate time fraction from 0..1
+  wxLongLong now = wxGetLocalTimeMillis();
+  double elapsed = (now - m_chart_drag_inertia_start_time).ToDouble();
+  double t = elapsed / m_chart_drag_inertia_time.ToDouble();
+  if (t > 1.0) t = 1.0;
+  double e = 1.0 - easeOutCubic(t);  // 0..1
+
+  double dx =
+      m_chart_drag_velocity_x * ((elapsed - m_last_elapsed) / 1000.) * e;
+  double dy =
+      m_chart_drag_velocity_y * ((elapsed - m_last_elapsed) / 1000.) * e;
+
+  // double distance = pow((pow(dx, 2) + pow(dy, 2)), 0.5);
+  //  printf("     %5g  %5g     %5g   %5g pix/sec\n", elapsed,
+  //         elapsed - m_last_elapsed, distance, distance * 1000 / elapsed);
+
+  m_last_elapsed = elapsed;
+
+  // Ensure that target destination lies on whole-pixel boundary
+  // This allows the render engine to use a faster FBO copy method for drawing
+  double destination_x = (GetCanvasWidth() / 2) + wxRound(dx);
+  double destination_y = (GetCanvasHeight() / 2) + wxRound(dy);
+  double inertia_lat, inertia_lon;
+  GetCanvasPixPoint(destination_x, destination_y, inertia_lat, inertia_lon);
+  SetViewPoint(inertia_lat, inertia_lon);  // about 1 msec
+
+  Refresh(false);
+
+  // Stop condition
+  if ((t >= 1) || (fabs(dx) < 1) || (fabs(dy) < 1)) {
+    m_chart_drag_inertia_timer.Stop();
+    m_chart_drag_inertia_active = false;
+
+    // Disable chart pan movement logic
+    m_target_lat = GetVP().clat;
+    m_target_lon = GetVP().clon;
+    m_pan_drag.x = m_pan_drag.y = 0;
+    m_panx = m_pany = 0;
+
+  } else {
+    int target_redraw_interval = 40;  // msec
+    m_chart_drag_inertia_timer.Start(target_redraw_interval, wxTIMER_ONE_SHOT);
+  }
 }
 
 void ChartCanvas::StopMovement() {
@@ -4744,8 +4857,10 @@ void ChartCanvas::SetbFollow(void) {
     m_OSoffsety = 0;
   }
 
-  DoCanvasUpdate();
-  ReloadVP();
+  if (!g_bSmoothRecenter) {
+    DoCanvasUpdate();
+    ReloadVP();
+  }
   parent_frame->SetChartUpdatePeriod();
 }
 
@@ -4774,6 +4889,28 @@ void ChartCanvas::UpdateFollowButtonState(void) {
 }
 
 void ChartCanvas::JumpToPosition(double lat, double lon, double scale_ppm) {
+  if (g_bSmoothRecenter) {
+    if (StartSmoothJump(lat, lon, scale_ppm))
+      return;
+    else {
+      // move closer to the target destination, and try again
+      double gcDist, gcBearingEnd;
+      Geodesic::GreatCircleDistBear(m_vLon, m_vLat, lon, lat, &gcDist, NULL,
+                                    &gcBearingEnd);
+      gcBearingEnd += 180;
+      double lat_offset = cos(gcBearingEnd * PI / 180.) * 0.5 *
+                          GetCanvasWidth() / GetVPScale();  // meters
+      double lon_offset =
+          sin(gcBearingEnd * PI / 180.) * 0.5 * GetCanvasWidth() / GetVPScale();
+      double new_lat = lat + (lat_offset / (1852 * 60));
+      double new_lon = lon + (lon_offset / (1852 * 60));
+      SetViewPoint(new_lat, new_lon);
+      ReloadVP();
+      StartSmoothJump(lat, lon, scale_ppm);
+      return;
+    }
+  }
+
   if (lon > 180.0) lon -= 360.0;
   m_vLat = lat;
   m_vLon = lon;
@@ -4803,8 +4940,85 @@ void ChartCanvas::JumpToPosition(double lat, double lon, double scale_ppm) {
   //    }
 }
 
+bool ChartCanvas::StartSmoothJump(double lat, double lon, double scale_ppm) {
+  // Check distance to jump, in pixels at current chart scale
+  //  Modify smooth jump dynamics if jump distance is greater than 0.5x screen
+  //  width.
+  double gcDist;
+  Geodesic::GreatCircleDistBear(m_vLon, m_vLat, lon, lat, &gcDist, NULL, NULL);
+  double distance_pixels = gcDist * GetVPScale();
+  if (distance_pixels > 0.5 * GetCanvasWidth()) {
+    // Jump is too far, try again
+    return false;
+  }
+
+  // Save where we're coming from
+  m_startLat = m_vLat;
+  m_startLon = m_vLon;
+  m_startScale = GetVPScale();  // or VPoint.view_scale_ppm
+
+  // Save where we want to end up
+  m_endLat = lat;
+  m_endLon = (lon > 180.0) ? (lon - 360.0) : lon;
+  m_endScale = scale_ppm;
+
+  // Setup timing
+  m_animationDuration = 600;  // ms
+  m_animationStart = wxGetLocalTimeMillis();
+
+  // Stop any previous movement, ensure no conflicts
+  StopMovement();
+  m_bFollow = false;
+
+  m_easeTimer.SetOwner(this);
+  // Start the timer with ~60 FPS (16 ms). Tweak as needed.
+  m_easeTimer.Start(16, wxTIMER_CONTINUOUS);
+
+  return true;
+}
+
+void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
+  // Calculate time fraction from 0..1
+  wxLongLong now = wxGetLocalTimeMillis();
+  double elapsed = (now - m_animationStart).ToDouble();
+  double t = elapsed / m_animationDuration.ToDouble();
+  if (t > 1.0) t = 1.0;
+
+  // Ease function for smoother movement
+  double e = easeOutCubic(t);
+
+  // Interpolate lat/lon/scale
+  double curLat = m_startLat + (m_endLat - m_startLat) * e;
+  double curLon = m_startLon + (m_endLon - m_startLon) * e;
+  double curScale = m_startScale + (m_endScale - m_startScale) * e;
+
+  // Update viewpoint
+  // (Essentially the same code used in JumpToPosition, but skipping the "snap"
+  // portion)
+  SetViewPoint(curLat, curLon, curScale, 0.0, GetVPRotation());
+  ReloadVP();
+
+  // If we reached the end, stop the timer and finalize
+  if (t >= 1.0) {
+    m_easeTimer.Stop();
+    UpdateFollowButtonState();
+    DoCanvasUpdate();
+    ReloadVP();
+  }
+}
+
 bool ChartCanvas::PanCanvas(double dx, double dy) {
   if (!ChartData) return false;
+
+  if (g_btouch) {
+    // Stop bfollow state, without a refresh
+    m_bFollow = false;  // update the follow flag
+    parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, false);
+    UpdateFollowButtonState();
+    // Clear the bfollow offset
+    m_OSoffsetx = 0;
+    m_OSoffsety = 0;
+  }
 
   extendedSectorLegs.clear();
 
@@ -4888,27 +5102,28 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
   }
 
   //  Turn off bFollow only if the ownship has left the screen
-  double offx, offy;
-  toSM(dlat, dlon, gLat, gLon, &offx, &offy);
+  if (m_bFollow) {
+    double offx, offy;
+    toSM(dlat, dlon, gLat, gLon, &offx, &offy);
 
-  double offset_angle = atan2(offy, offx);
-  double offset_distance = sqrt((offy * offy) + (offx * offx));
-  double chart_angle = GetVPRotation();
-  double target_angle = chart_angle - offset_angle;
-  double d_east_mod = offset_distance * cos(target_angle);
-  double d_north_mod = offset_distance * sin(target_angle);
+    double offset_angle = atan2(offy, offx);
+    double offset_distance = sqrt((offy * offy) + (offx * offx));
+    double chart_angle = GetVPRotation();
+    double target_angle = chart_angle - offset_angle;
+    double d_east_mod = offset_distance * cos(target_angle);
+    double d_north_mod = offset_distance * sin(target_angle);
 
-  m_OSoffsetx = d_east_mod * VPoint.view_scale_ppm;
-  m_OSoffsety = -d_north_mod * VPoint.view_scale_ppm;
+    m_OSoffsetx = d_east_mod * VPoint.view_scale_ppm;
+    m_OSoffsety = -d_north_mod * VPoint.view_scale_ppm;
 
-  //   m_OSoffsetx = offx * VPoint.view_scale_ppm;
-  //   m_OSoffsety = offy * VPoint.view_scale_ppm;
+    //   m_OSoffsetx = offx * VPoint.view_scale_ppm;
+    //   m_OSoffsety = offy * VPoint.view_scale_ppm;
 
-  if (m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) ||
-                    (fabs(m_OSoffsety) > VPoint.pix_height / 2))) {
-    m_bFollow = false;  // update the follow flag
-
-    UpdateFollowButtonState();
+    if (m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) ||
+                      (fabs(m_OSoffsety) > VPoint.pix_height / 2))) {
+      m_bFollow = false;  // update the follow flag
+      UpdateFollowButtonState();
+    }
   }
 
   Refresh(false);
@@ -7342,6 +7557,11 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
 
   // Capture LeftUp's and time them, unless it already came from the timer.
 
+  // Detect end of chart dragging
+  if (g_btouch && m_bChartDragging && event.LeftUp()) {
+    StartChartDragInertia();
+  }
+
   if (b_handle_dclick && event.LeftUp() && !singleClickEventIsValid) {
     // Ignore the second LeftUp after the DClick.
     if (m_DoubleClickTimer->IsRunning()) {
@@ -9677,31 +9897,74 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
      *
      * Anyways, guarded it to be active in touch situations only.
      */
+
     if (g_btouch) {
+      struct timespec now;
+      clock_gettime(CLOCK_MONOTONIC, &now);
+      uint64_t tnow = (1e9 * now.tv_sec) + now.tv_nsec;
+
       if (false == m_bChartDragging) {
+        // Reset drag calculation members
         last_drag.x = x, last_drag.y = y;
         m_bChartDragging = true;
+        m_chart_drag_total_time = 0;
+        m_chart_drag_total_x = 0;
+        m_chart_drag_total_y = 0;
+        m_inertia_last_drag_x = x;
+        m_inertia_last_drag_y = y;
+        m_drag_vec_x.clear();
+        m_drag_vec_y.clear();
+        m_drag_vec_t.clear();
+        m_last_drag_time = tnow;
+      }
+
+      // Calculate and store drag dynamics.
+      uint64_t delta_t = tnow - m_last_drag_time;
+      double delta_tf = delta_t / 1e9;
+
+      m_chart_drag_total_time += delta_tf;
+      m_chart_drag_total_x += m_inertia_last_drag_x - x;
+      m_chart_drag_total_y += m_inertia_last_drag_y - y;
+
+      m_drag_vec_x.push_back(m_inertia_last_drag_x - x);
+      m_drag_vec_y.push_back(m_inertia_last_drag_y - y);
+      m_drag_vec_t.push_back(delta_tf);
+
+      m_inertia_last_drag_x = x;
+      m_inertia_last_drag_y = y;
+      m_last_drag_time = tnow;
+
+      if ((last_drag.x != x) || (last_drag.y != y)) {
+        if (!m_routeState) {  // Correct fault on wx32/gtk3, uncommanded
+                              // dragging on route create.
+                              //   github #2994
+          m_bChartDragging = true;
+          StartTimedMovement();
+          m_pan_drag.x += last_drag.x - x;
+          m_pan_drag.y += last_drag.y - y;
+          last_drag.x = x, last_drag.y = y;
+        }
+      }
+    } else {
+      if ((last_drag.x != x) || (last_drag.y != y)) {
+        if (!m_routeState) {  // Correct fault on wx32/gtk3, uncommanded
+                              // dragging on route create.
+                              //   github #2994
+          m_bChartDragging = true;
+          StartTimedMovement();
+          m_pan_drag.x += last_drag.x - x;
+          m_pan_drag.y += last_drag.y - y;
+          last_drag.x = x, last_drag.y = y;
+        }
       }
     }
 
-    if ((last_drag.x != x) || (last_drag.y != y)) {
-      if (!m_routeState) {  // Correct fault on wx32/gtk3, uncommanded dragging
-                            // on route create.
-                            //   github #2994
-        m_bChartDragging = true;
-        StartTimedMovement();
-        m_pan_drag.x += last_drag.x - x;
-        m_pan_drag.y += last_drag.y - y;
-
-        last_drag.x = x, last_drag.y = y;
-      }
-
-      if (g_btouch) {
-        if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
-          // deactivate next LeftUp to ovoid creating an unexpected point
-          m_DoubleClickTimer->Start();
-          singleClickEventIsValid = false;
-        }
+    // Handle some special cases
+    if (g_btouch) {
+      if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
+        // deactivate next LeftUp to ovoid creating an unexpected point
+        m_DoubleClickTimer->Start();
+        singleClickEventIsValid = false;
       }
     }
   }

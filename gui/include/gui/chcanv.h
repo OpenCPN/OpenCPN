@@ -604,6 +604,7 @@ public:
   bool GetShowGPSCompassWindow() { return m_bShowCompassWin; }
   void FreezePiano() { m_pianoFrozen = true; }
   void ThawPiano() { m_pianoFrozen = false; }
+  void StartChartDragInertia();
 
   // Todo build more accessors
   bool m_bFollow;
@@ -1183,6 +1184,36 @@ private:
   bool m_timed_move_vp_active;
   int m_timedVP_step;
   int m_stvpc;
+
+  // Chart drag inertia support
+  wxTimer m_chart_drag_inertia_timer;
+  void OnChartDragInertiaTimer(wxTimerEvent &event);
+
+  uint64_t m_last_drag_time;
+  int m_chart_drag_total_x;
+  int m_chart_drag_total_y;
+  double m_chart_drag_total_time;
+  double m_chart_drag_velocity_x;
+  double m_chart_drag_velocity_y;
+  wxLongLong m_chart_drag_inertia_time;
+  wxLongLong m_chart_drag_inertia_start_time;
+  bool m_chart_drag_inertia_active;
+  double m_last_elapsed;
+  std::vector<int> m_drag_vec_x;
+  std::vector<int> m_drag_vec_y;
+  std::vector<double> m_drag_vec_t;
+  int m_inertia_last_drag_x;
+  int m_inertia_last_drag_y;
+
+  // For Jump animation
+  wxTimer m_easeTimer;
+  wxLongLong m_animationStart;
+  wxLongLong m_animationDuration;  // e.g. 300 ms
+  double m_startLat, m_startLon, m_startScale;
+  double m_endLat, m_endLon, m_endScale;
+
+  void OnJumpEaseTimer(wxTimerEvent &event);
+  bool StartSmoothJump(double lat, double lon, double scale_ppm);
 
   DECLARE_EVENT_TABLE()
 };
