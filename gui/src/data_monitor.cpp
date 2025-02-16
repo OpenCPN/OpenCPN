@@ -60,36 +60,36 @@ static void AddCandumpLogline(const Logline& ll, std::ostream& stream) {
 }
 
 /** Write a line in the log using the standard format. */
-static void AddStdLogline(const Logline& ll, std::ostream& stream) {
+static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
   wxString ws;
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
-  ws << wxDateTime::Now().FormatISOTime() << " ";
+  ws << wxDateTime::Now().FormatISOTime() << fs;
 #else
   ws << "- ";
 #endif
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
-    ws << kUtfRightArrow << " ";
+    ws << kUtfRightArrow << fs;
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
-    ws << kUtfLeftwardsArrowToBar << " ";
+    ws << kUtfLeftwardsArrowToBar << fs;
   else if (ll.state.direction == NavmsgStatus::Direction::kInternal)
-    ws << kUtfLeftRightArrow << " ";
+    ws << kUtfLeftRightArrow << fs;
   else
-    ws << kUtfLeftArrow << " ";
+    ws << kUtfLeftArrow << fs;
   if (ll.state.status != NavmsgStatus::State::kOk)
-    ws << kUtfMultiplicationX << " ";
+    ws << kUtfMultiplicationX << fs;
   else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
-    ws << kUtfFallingDiagonal << " ";
+    ws << kUtfFallingDiagonal << fs;
   else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredDropped)
-    ws << kUtfCircledDivisionSlash << " ";
+    ws << kUtfCircledDivisionSlash << fs;
   else
-    ws << kUtfCheckMark << " ";
+    ws << kUtfCheckMark << fs;
 
-  ws << (ll.navmsg ? "-" : ll.navmsg->source->iface) << " ";
+  ws << (ll.navmsg ? "-" : ll.navmsg->source->iface) << fs;
   if (ll.state.status != NavmsgStatus::State::kOk)
     ws << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
   else
     ws << "ok";
-  ws << " " << (ll.navmsg ? ll.navmsg->to_string() : "") << "\n";
+  ws << fs << (ll.navmsg ? ll.navmsg->to_string() : "") << "\n";
   stream << ws;
 }
 
@@ -283,7 +283,6 @@ private:
 class TheMenu : public wxMenu {
 public:
   enum class Id {
-    kActiveFilter,
     kNewFilter,
     kEditFilter,
     kDeleteFilter,
@@ -305,16 +304,15 @@ public:
         m_logger(logger),
         m_log_label(log_label) {
     auto filters = new wxMenu("");
-    AppendId(filters, Id::kActiveFilter, _("Select active filter..."));
     AppendId(filters, Id::kNewFilter, _("Create new..."));
     AppendId(filters, Id::kEditFilter, _("Edit..."));
     AppendId(filters, Id::kDeleteFilter, _("Delete..."));
-    AppendSubMenu(filters, _("Filters..."));
+    //AppendSubMenu(filters, _("Filters..."));    FIXME: leamas: Implement
 
     auto logging = new wxMenu("");
     AppendId(logging, Id::kLogFile, _("Log file..."));
     AppendRadioId(logging, Id::kLogFormatDefault, _("Log format: pretty"));
-    // AppendRadioId(logging, Id::kLogFormatCsv, _("Log format: CSV"));
+    AppendRadioId(logging, Id::kLogFormatCsv, _("Log format: CSV"));
     AppendRadioId(logging, Id::kLogFormatCandump, _("Log format: candump"));
     AppendSubMenu(logging, _("Logging..."));
 
@@ -334,6 +332,10 @@ public:
 
         case Id::kLogFormatCandump:
           SetLogFormat(DataLogger::Format::kCandump, _("Log format: candump"));
+          break;
+
+        case Id::kLogFormatCsv:
+          SetLogFormat(DataLogger::Format::kCsv, _("Log format: csv"));
           break;
 
         case Id::kLogFile:
@@ -560,7 +562,8 @@ void DataLogger::Add(const Logline& ll) {
   if (m_format == DataLogger::Format::kCandump)
     AddCandumpLogline(ll, m_stream);
   else
-    AddStdLogline(ll, m_stream);
+    AddStdLogline(ll, m_stream,
+		  m_format == DataLogger::Format::kCsv ? '|' : ' ');
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)
