@@ -10,13 +10,18 @@
 struct Logline {
   const std::shared_ptr<const NavMsg> navmsg;
   const NavmsgStatus state;
+  const std::string message;
   std::string error_msg;
   std::string prefix;
 
   Logline() {}
-  Logline(const std::shared_ptr<const NavMsg>& msg, NavmsgStatus sts)
-      : navmsg(msg), state(sts), error_msg("Unknown error") {}
-  Logline(const std::shared_ptr<const NavMsg>& msg) : navmsg(msg), state() {}
+  Logline(const std::shared_ptr<const NavMsg>& navmsg, NavmsgStatus sts)
+      : navmsg(navmsg),
+        state(sts),
+        message(navmsg ? navmsg->to_string() : ""),
+        error_msg("Unknown error") {}
+  Logline(const std::shared_ptr<const NavMsg>& navmsg)
+      : Logline(navmsg, NavmsgStatus()) {}
 };
 
 class NmeaLog {
