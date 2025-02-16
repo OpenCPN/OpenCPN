@@ -90,7 +90,7 @@ static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
     ws << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
   else
     ws << "ok";
-  ws << fs << (ll.navmsg ? ll.navmsg->to_string() : "") << "\n";
+  ws << fs << ll.message << "\n";
   stream << ws;
 }
 
@@ -318,7 +318,7 @@ public:
     AppendId(filters, Id::kNewFilter, _("Create new..."));
     AppendId(filters, Id::kEditFilter, _("Edit..."));
     AppendId(filters, Id::kDeleteFilter, _("Delete..."));
-    //AppendSubMenu(filters, _("Filters..."));    FIXME: leamas: Implement
+    // AppendSubMenu(filters, _("Filters..."));    FIXME: leamas: Implement
 
     auto logging = new wxMenu("");
     AppendId(logging, Id::kLogFile, _("Log file..."));
@@ -574,7 +574,7 @@ void DataLogger::Add(const Logline& ll) {
     AddCandumpLogline(ll, m_stream);
   else
     AddStdLogline(ll, m_stream,
-		  m_format == DataLogger::Format::kCsv ? '|' : ' ');
+                  m_format == DataLogger::Format::kCsv ? '|' : ' ');
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)
