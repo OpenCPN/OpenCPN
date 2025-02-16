@@ -96,24 +96,16 @@ public:
   /** Set the window to ignore Add() or not depending on pause. */
   void Pause(bool pause) { m_is_paused = pause; }
 
-  /**
-   *  Copy message contents to clipboard.
-   */
+  /**  Copy message contents to clipboard.  */
   void CopyToClipboard() const;
 
-  /**
-   * Apply a display filter
-   */
+  /** Apply a display filter */
   void SetFilter(const NavmsgFilter& filter) { m_filter = filter; }
 
-  /**
-   * Apply a quick filter directly matched against lines
-   */
+  /** Apply a quick filter directly matched against lines */
   void SetQuickFilter(const std::string s) { m_quick_filter = s; }
 
-  /**
-   * Set color scheme
-   */
+  /** Set color scheme */
   void SetColors(std::unique_ptr<ColorByState> color_by_state);
 
 protected:
