@@ -56,6 +56,7 @@ const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
 
 wxColor StdColorsByState::operator()(NavmsgStatus ns) {
   wxColour color;
+  static const wxColor kDarkGreen(30, 72, 56);
   if (ns.status != NavmsgStatus::State::kOk)
     color = wxColour("RED");
   else if (ns.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
@@ -67,7 +68,7 @@ wxColor StdColorsByState::operator()(NavmsgStatus ns) {
   else if (ns.direction == NavmsgStatus::Direction::kInput)
     color = wxColour("ORANGE");
   else
-    color = wxColour("GREEN");
+    color = kDarkGreen;
   return color;
 }
 
