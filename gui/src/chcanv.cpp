@@ -7403,13 +7403,15 @@ bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
     wxRect logicalRect = m_Compass->GetLogicalRect();
     bool isInCompass = m_Compass && m_Compass->IsShown() &&
                        logicalRect.Contains(event.GetPosition());
-    if (isInCompass) {
+    if (isInCompass || m_mouseWasInCompass) {
       if (m_Compass->MouseEvent(event)) {
         cursor_region = CENTER;
         if (!g_btouch) SetCanvasCursor(event);
+        m_mouseWasInCompass = isInCompass;
         return true;
       }
     }
+    m_mouseWasInCompass = isInCompass;
 
     if (MouseEventToolbar(event)) return true;
 
