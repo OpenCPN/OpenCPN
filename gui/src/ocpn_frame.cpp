@@ -5392,45 +5392,44 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
 
   bool b_update = false;
   if (g_btenhertz) {
-    if (std::isnan(gCog)) return;
-    if (std::isnan(gSog)) return;
+    if (!std::isnan(gCog) && !std::isnan(gSog)) {
+      // Estimate current state by extrapolating from last "ground truth" state
 
-    // Estimate current state by extrapolating from last "ground truth" state
-
-    struct timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - fix_time_gt;
-    double diffc = diff / 1e9;  // sec
-
-    // Set gCog as estimated from last two ground truth fixes
-    double gCog_tentative = gCog_gt_m1 + (cog_rate_gt * diffc);
-    if (gCog_tentative >= 360.) gCog_tentative -= 360.;
-    if (gCog_tentative < 0.) gCog_tentative += 360.;
-    gCog = gCog_tentative;
-
-    // printf("                      cog:  %g\n", gCog);
-    //   And the same for gHdt
-    if (!std::isnan(gHdt_gt) && !std::isnan(gHdt_gt_m1)) {
-      uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
+      struct timespec now;
+      clock_gettime(CLOCK_MONOTONIC, &now);
+      uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - fix_time_gt;
       double diffc = diff / 1e9;  // sec
-      gHdt = gHdt_gt_m1 + (hdt_rate_gt * diffc);
-    }
 
-    // Estimate lat/lon position
-    if (gSog_gt && !std::isnan(gCog_gt)) {
-      double delta_t = diffc / 3600;        // hours
-      double distance = gSog_gt * delta_t;  // NMi
+      // Set gCog as estimated from last two ground truth fixes
+      double gCog_tentative = gCog_gt_m1 + (cog_rate_gt * diffc);
+      if (gCog_tentative >= 360.) gCog_tentative -= 360.;
+      if (gCog_tentative < 0.) gCog_tentative += 360.;
+      gCog = gCog_tentative;
 
-      // spherical (close enough)
-      double angr = gCog_gt / 180 * M_PI;
-      double latr = gLat_gt * M_PI / 180;
-      double D = distance / 3443;  // earth radius in nm
-      double sD = sin(D), cD = cos(D);
-      double sy = sin(latr), cy = cos(latr);
-      double sa = sin(angr), ca = cos(angr);
+      // printf("                      cog:  %g\n", gCog);
+      //   And the same for gHdt
+      if (!std::isnan(gHdt_gt) && !std::isnan(gHdt_gt_m1)) {
+        uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
+        double diffc = diff / 1e9;  // sec
+        gHdt = gHdt_gt_m1 + (hdt_rate_gt * diffc);
+      }
 
-      gLon = gLon_gt + asin(sa * sD / cy) * 180 / M_PI;
-      gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
+      // Estimate lat/lon position
+      if (gSog_gt && !std::isnan(gCog_gt)) {
+        double delta_t = diffc / 3600;        // hours
+        double distance = gSog_gt * delta_t;  // NMi
+
+        // spherical (close enough)
+        double angr = gCog_gt / 180 * M_PI;
+        double latr = gLat_gt * M_PI / 180;
+        double D = distance / 3443;  // earth radius in nm
+        double sD = sin(D), cD = cos(D);
+        double sy = sin(latr), cy = cos(latr);
+        double sa = sin(angr), ca = cos(angr);
+
+        gLon = gLon_gt + asin(sa * sD / cy) * 180 / M_PI;
+        gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
+      }
     }
 
     b_update = true;
@@ -5450,9 +5449,9 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
     for (ChartCanvas *cc : g_canvasArray) {
       if (cc) {
         if (g_bopengl) {
-          if (b_rotate || cc->m_bFollow)
+          if (b_rotate || cc->m_bFollow) {
             cc->DoCanvasUpdate();
-          else
+          } else
             cc->Refresh();
         }
       }

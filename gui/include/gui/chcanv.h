@@ -1186,6 +1186,9 @@ private:
   int m_timedVP_step;
   int m_stvpc;
 
+  double meters_to_shift = 0;
+  double dir_to_shift = 0;
+
   // Chart drag inertia support
   wxTimer m_chart_drag_inertia_timer;
   void OnChartDragInertiaTimer(wxTimerEvent &event);
