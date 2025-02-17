@@ -10915,7 +10915,7 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
   }
   routeInfo << _T(" ") << FormatDistanceAdaptive(dist);
 
-  //To make it easier to misuse a route as a bearing on a charted object add for (only)
+  //To make it easier to use a route as a bearing on a charted object add for
   //the first leg also the reverse bearing.
   if (np==1){
     routeInfo << "\nReverse: ";
