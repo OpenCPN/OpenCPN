@@ -959,8 +959,7 @@ TEST(Navmsg2000, to_string) {
   auto id = static_cast<uint64_t>(1234);
   auto msg =
       std::make_shared<Nmea2000Msg>(id, payload, shared_navaddr_none2000);
-  EXPECT_EQ(string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"),
-            msg->to_string());
+  EXPECT_EQ(string("1234 7061796c6f61642064617461"), msg->to_string());
 }
 
 TEST(FileDriver, Registration) {
@@ -987,8 +986,7 @@ TEST(FileDriver, output) {
   std::ifstream f("test-output.txt");
   stringstream ss;
   ss << f.rdbuf();
-  EXPECT_EQ(ss.str(),
-            string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"));
+  EXPECT_EQ(ss.str(), string("1234 7061796c6f61642064617461"));
 }
 
 #if 0
