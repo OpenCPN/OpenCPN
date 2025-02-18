@@ -108,7 +108,7 @@ if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   # We don't have a session bus available when testing flatpak
   # so these can just be run in native builds.
   gtest_add_tests(TARGET ipc-srv-tests)
-  gtest_add_tests(TARGET dbus_tests)
+  # gtest_add_tests(TARGET dbus_tests)      dbus tests broken on wayland
 endif ()
 
 set(_CLI_SRV_SRC cli_server.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
