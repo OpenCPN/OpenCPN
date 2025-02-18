@@ -809,13 +809,15 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/OCPNListCtrl.h
     ${GUI_HDR_DIR}/ocpn_pixel.h
     ${GUI_HDR_DIR}/OCPNPlatform.h
-    ${GUI_HDR_DIR}/ocpn_print.h
     ${GUI_HDR_DIR}/OCPN_AUIManager.h
     ${GUI_HDR_DIR}/OCPNRegion.h
     ${GUI_HDR_DIR}/options.h
     ${GUI_HDR_DIR}/piano.h
     ${GUI_HDR_DIR}/peer_client_dlg.h
     ${GUI_HDR_DIR}/pluginmanager.h
+    ${GUI_HDR_DIR}/print_dialog.h
+    ${GUI_HDR_DIR}/printout_base.h
+    ${GUI_HDR_DIR}/printout_chart.h
     ${GUI_HDR_DIR}/printtable.h
     ${GUI_HDR_DIR}/priority_gui.h
     ${GUI_HDR_DIR}/Quilt.h
@@ -934,13 +936,15 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/OCPNListCtrl.cpp
     ${GUI_SRC_DIR}/ocpn_pixel.cpp
     ${GUI_SRC_DIR}/OCPNPlatform.cpp
-    ${GUI_SRC_DIR}/ocpn_print.cpp
     ${GUI_SRC_DIR}/OCPNRegion.cpp
     ${GUI_SRC_DIR}/options.cpp
     ${GUI_SRC_DIR}/Osenc.cpp
     ${GUI_SRC_DIR}/peer_client_dlg.cpp
     ${GUI_SRC_DIR}/piano.cpp
     ${GUI_SRC_DIR}/pluginmanager.cpp
+    ${GUI_SRC_DIR}/print_dialog.cpp
+    ${GUI_SRC_DIR}/printout_base.cpp
+    ${GUI_SRC_DIR}/printout_chart.cpp
     ${GUI_SRC_DIR}/printtable.cpp
     ${GUI_SRC_DIR}/priority_gui.cpp
     ${GUI_SRC_DIR}/Quilt.cpp

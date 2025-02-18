@@ -38,13 +38,13 @@
 
 #include "model/ocpn_types.h"
 #include "navutil.h"
-#include "printtable.h"
 #include "ocpn_frame.h"
+#include "printout_base.h"
+#include "printtable.h"
 
-class MyRoutePrintout : public MyPrintout {
+class MyRoutePrintout : public BasePrintout {
 public:
-  MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
-                  const wxString& title = _T( "My Route printout" ));
+  MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route);
   virtual bool OnPrintPage(int page);
   void DrawPage(wxDC* dc);
   virtual void OnPreparePrinting();

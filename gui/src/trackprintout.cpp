@@ -55,22 +55,19 @@ using namespace std;
 #include <psapi.h>
 #endif
 
-#include "trackprintout.h"
-#include "printtable.h"
-#include "model/track.h"
 #include "gui_lib.h"
+#include "model/track.h"
+#include "print_dialog.h"
+#include "printtable.h"
+#include "trackprintout.h"
 
 enum { PRINT_POSITION, PRINT_DISTANCE, PRINT_BEARING, PRINT_TIME, PRINT_SPEED };
 
-// Global print data, to remember settings during the session
-extern wxPrintData* g_printData;
-// Global page setup data
-extern wxPageSetupData* g_pageSetupData;
-
 MyTrackPrintout::MyTrackPrintout(std::vector<bool> _toPrintOut, Track* track,
-                                 OCPNTrackListCtrl* lcPoints,
-                                 const wxString& title)
-    : MyPrintout(title), myTrack(track), toPrintOut(_toPrintOut) {
+                                 OCPNTrackListCtrl* lcPoints)
+    : BasePrintout(_("Track Print").ToStdString()),
+      myTrack(track),
+      toPrintOut(_toPrintOut) {
   // Let's have at least some device units margin
   marginX = 100;
   marginY = 100;
@@ -387,27 +384,11 @@ void TrackPrintSelection::OnTrackpropOkClick(wxCommandEvent& event) {
   toPrintOut.push_back(m_checkBoxTime->GetValue());
   toPrintOut.push_back(m_checkBoxSpeed->GetValue());
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxPORTRAIT);
-    g_pageSetupData = new wxPageSetupDialogData;
-  }
-
-  MyTrackPrintout* mytrackprintout1 =
-      new MyTrackPrintout(toPrintOut, track, m_lcPoints, _("Track Print"));
-
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(true);
-
-  wxPrinter printer(&printDialogData);
-  if (!printer.Print(this, mytrackprintout1, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T( "OpenCPN" ), wxOK);
-    }
-  }
+  MyTrackPrintout mytrackprintout1(toPrintOut, track, m_lcPoints);
+  auto& printer = PrintDialog::GetInstance();
+  printer.Initialize(wxPORTRAIT);
+  printer.EnablePageNumbers(true);
+  printer.Print(this, &mytrackprintout1);
 
   Close();  // Hide();
   event.Skip();

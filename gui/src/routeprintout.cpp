@@ -64,12 +64,13 @@
 #endif
 #include "routeprintout.h"
 
-#include "printtable.h"
-#include "model/wx28compat.h"
-#include "model/track.h"
-#include "model/route.h"
 #include "gui_lib.h"
 #include "model/navutil_base.h"
+#include "model/route.h"
+#include "model/track.h"
+#include "model/wx28compat.h"
+#include "print_dialog.h"
+#include "printtable.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1
@@ -79,14 +80,10 @@
 
 using namespace std;
 
-// Global print data, to remember settings during the session
-extern wxPrintData* g_printData;
-// Global page setup data
-extern wxPageSetupData* g_pageSetupData;
-
-MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
-                                 const wxString& title)
-    : MyPrintout(title), myRoute(route), toPrintOut(_toPrintOut) {
+MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route)
+    : BasePrintout(_("Route Print").ToStdString()),
+      myRoute(route),
+      toPrintOut(_toPrintOut) {
   // Let's have at least some device units margin
   marginX = 100;
   marginY = 100;
@@ -457,27 +454,11 @@ void RoutePrintSelection::OnRoutepropOkClick(wxCommandEvent& event) {
   toPrintOut.push_back(m_checkBoxWPDistanceToNext->GetValue());
   toPrintOut.push_back(m_checkBoxWPDescription->GetValue());
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxPORTRAIT);
-    g_pageSetupData = new wxPageSetupDialogData;
-  }
-
-  MyRoutePrintout* myrouteprintout1 =
-      new MyRoutePrintout(toPrintOut, route, _("Route Print"));
-
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(true);
-
-  wxPrinter printer(&printDialogData);
-  if (!printer.Print(this, myrouteprintout1, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T( "OpenCPN" ), wxOK);
-    }
-  }
+  MyRoutePrintout myrouteprintout1(toPrintOut, route);
+  auto& printer = PrintDialog::GetInstance();
+  printer.Initialize(wxPORTRAIT);
+  printer.EnablePageNumbers(true);
+  printer.Print(this, &myrouteprintout1);
 
   Close();
   event.Skip();
