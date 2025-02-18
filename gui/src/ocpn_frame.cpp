@@ -123,6 +123,7 @@
 #include "OCPN_Sound.h"
 #include "options.h"
 #include "pluginmanager.h"
+#include "printout_chart.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
@@ -234,8 +235,6 @@ extern int g_COGAvgSec;
 extern ActiveTrack *g_pActiveTrack;
 extern std::vector<Track *> g_TrackList;
 extern double gQueryVar;
-extern wxPrintData *g_printData;
-extern wxPageSetupData *g_pageSetupData;
 extern int g_ChartUpdatePeriod;
 extern int g_SkewCompUpdatePeriod;
 extern bool g_bCourseUp;
@@ -1728,9 +1727,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   pConfig->DeleteGroup(_T ( "/Routes" ));
   pConfig->DeleteGroup(_T ( "/Marks" ));
   pConfig->Flush();
-
-  delete g_printData;
-  delete g_pageSetupData;
 
   if (g_pAboutDlg) g_pAboutDlg->Destroy();
   if (g_pAboutDlgLegacy) g_pAboutDlgLegacy->Destroy();
@@ -6307,35 +6303,12 @@ void MyFrame::DoPrint(void) {
 #endif
     Refresh();
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxLANDSCAPE);
-    g_pageSetupData = new wxPageSetupDialogData;
-  }
+  ChartPrintout printout(wxT("Chart Print"));
+  printout.SetOrientation(wxLANDSCAPE);
+  printout.EnablePageNumbers(false);
 
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(false);
-
-  wxPrinter printer(&printDialogData);
-
-  MyPrintout printout(wxT("Chart Print"));
-
-  //  In OperGL mode, make the bitmap capture of the screen before the print
-  //  method starts as to be sure the "Abort..." dialog does not appear on
-  //  the image
   if (g_bopengl) printout.GenerateGLbmp();
-
-  if (!printer.Print(this, &printout, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR)
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T("OpenCPN"), wxOK);
-    //        else
-    //            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
-  } else {
-    (*g_printData) = printer.GetPrintDialogData().GetPrintData();
-  }
+  printout.Print(this, true);
 
   // Pass two printout objects: for preview, and possible printing.
   /*
