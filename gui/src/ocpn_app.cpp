@@ -339,12 +339,6 @@ ChartDummy *pDummyChart;
 
 ocpnStyle::StyleManager *g_StyleManager;
 
-// Global print data, to remember settings during the session
-wxPrintData *g_printData = (wxPrintData *)NULL;
-
-// Global page setup data
-wxPageSetupData *g_pageSetupData = (wxPageSetupData *)NULL;
-
 bool g_bShowOutlines;
 bool g_bShowDepthUnits;
 bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
