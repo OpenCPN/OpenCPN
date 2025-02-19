@@ -1,11 +1,13 @@
 #include <cstdio>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #include <wx/dialog.h>
 #include <wx/filename.h>
 #include <wx/sizer.h>
 
+#include "dialog_alert.h"
 #include "model/cmdline.h"
 #include "gui_lib.h"
 #include "model/ocpn_utils.h"
@@ -13,8 +15,6 @@
 #include "model/safe_mode.h"
 
 namespace safe_mode {
-
-static const int TIMEOUT_SECONDS = 15;
 
 static const char* LAST_RUN_ERROR_MSG =
     _("<p>The last opencpn run seems to have failed. Do you want to run\n"
@@ -35,13 +35,21 @@ void check_last_start() {
     dest.close();
     return;
   }
-  long style = wxYES | wxNO | wxNO_DEFAULT | wxICON_QUESTION;
-  auto dlg = new OCPN_TimedHTMLMessageDialog(0, LAST_RUN_ERROR_MSG,
-                                             _("Safe restart"), TIMEOUT_SECONDS,
-                                             style, false, wxDefaultPosition);
-  int reply = dlg->ShowModal();
-  safe_mode = reply == wxID_YES;
-  dlg->Destroy();
+
+  std::string title = _("Safe Restart").ToStdString();
+  std::string action = _("Safe mode").ToStdString();
+  AlertDialog dlg(0, title, action);
+  dlg.SetInitialSize();
+  dlg.SetTimer(15);
+
+  std::stringstream html;
+  html << "<html><body>";
+  html << LAST_RUN_ERROR_MSG;
+  html << "</body></html>";
+  dlg.AddHtmlContent(html);
+
+  int reply = dlg.ShowModal();
+  safe_mode = reply == wxID_OK;
 }
 
 }  // namespace safe_mode
