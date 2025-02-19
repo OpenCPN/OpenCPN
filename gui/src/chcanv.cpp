@@ -2895,6 +2895,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
         // testing
         bool b = GetEnableTenHertzUpdate();
         EnableTenHertzUpdate(!b);
+        UpdateGPSCompassStatusBox(true);
       } else
         ToggleChartOutlines();
       break;
