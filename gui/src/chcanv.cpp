@@ -584,6 +584,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_chart_drag_inertia_active = false;
 
   m_easeTimer.SetOwner(this, JUMP_EASE_TIMER);
+  m_animationActive = false;
 
   m_panx = m_pany = 0;
   m_panspeed = 0;
@@ -4969,6 +4970,7 @@ bool ChartCanvas::StartSmoothJump(double lat, double lon, double scale_ppm) {
 
   // Start the timer with ~60 FPS (16 ms). Tweak as needed.
   m_easeTimer.Start(16, wxTIMER_CONTINUOUS);
+  m_animationActive = true;
 
   return true;
 }
@@ -4997,6 +4999,7 @@ void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
   // If we reached the end, stop the timer and finalize
   if (t >= 1.0) {
     m_easeTimer.Stop();
+    m_animationActive = false;
     UpdateFollowButtonState();
     DoCanvasUpdate();
     ReloadVP();
@@ -5864,6 +5867,7 @@ void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
 void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                                      wxPoint GPSOffsetPixels,
                                      wxPoint2DDouble lGPSPoint) {
+  if (m_animationActive) return;
   // Develop a uniform length for course predictor line dash length, based on
   // physical display size Use this reference length to size all other graphics
   // elements

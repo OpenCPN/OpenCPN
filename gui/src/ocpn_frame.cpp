@@ -5751,9 +5751,11 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
           bool b_rotate = cc->GetUpMode() != NORTH_UP_MODE;
           if (!b_rotate) {
             if (!g_btenhertz) {
-              if (cc->m_bFollow)
+              if (cc->m_bFollow) {
                 cc->DoCanvasUpdate();
-              else
+                if (bnew_view)
+                  cc->Refresh(false);  // honor ownship state update
+              } else
                 cc->Refresh(false);
             } else {
               // Pick up SOG=0, COG=NAN report at 10Hz.

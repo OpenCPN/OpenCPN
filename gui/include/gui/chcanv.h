@@ -1210,7 +1210,7 @@ private:
   wxLongLong m_animationDuration;  // e.g. 300 ms
   double m_startLat, m_startLon, m_startScale;
   double m_endLat, m_endLon, m_endScale;
-
+  bool m_animationActive;
   void OnJumpEaseTimer(wxTimerEvent &event);
   bool StartSmoothJump(double lat, double lon, double scale_ppm);
 

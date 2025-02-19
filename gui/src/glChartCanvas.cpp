@@ -2277,10 +2277,6 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
   float pCog = std::isnan(gCog) ? 0 : gCog;
   float pSog = std::isnan(gSog) ? 0 : gSog;
 
-  m_pParentCanvas->GetDoubleCanvasPointPixVP(m_pParentCanvas->GetVP(), gLat,
-                                             gLon, &lGPSPoint);
-  lShipMidPoint = lGPSPoint;
-
   // In "b_follow" mode, we have a-priori information about the desired screen
   // coordinates of ownship
   // Here, calculate the ownship location on screen, and make it so.
@@ -2298,8 +2294,16 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       shift_dy = m_pParentCanvas->meters_to_shift * cos(angle) *
                  m_pParentCanvas->GetVPScale();
       lGPSPoint.m_y += shift_dy / cos(gLat * PI / 180.);
+    } else {
+      lGPSPoint.m_x -= m_pParentCanvas->m_OSoffsetx;
+      lGPSPoint.m_y += m_pParentCanvas->m_OSoffsety;
     }
+  } else {
+    m_pParentCanvas->GetDoubleCanvasPointPixVP(m_pParentCanvas->GetVP(), gLat,
+                                               gLon, &lGPSPoint);
   }
+
+  lShipMidPoint = lGPSPoint;
 
   //  Draw the icon rotated to the COG
   //  or to the Hdt if available
