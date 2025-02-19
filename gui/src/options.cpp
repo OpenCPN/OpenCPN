@@ -716,8 +716,10 @@ public:
 
   virtual ~OCPNCheckedListCtrl() {}
 
-  unsigned int Append(wxString& label, bool benable = true);
+  unsigned int Append(wxString& label, bool benable = true, bool bsizerLayout = true);
   unsigned int GetCount() { return m_list.GetCount(); }
+
+  void RunLayout();
 
   void Clear();
   void Check(int index, bool val);
@@ -749,12 +751,12 @@ bool OCPNCheckedListCtrl::Create(wxWindow* parent, wxWindowID id,
   return TRUE;
 }
 
-unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable) {
+unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable, bool bsizerLayout) {
   wxCheckBox* cb = new wxCheckBox(this, wxID_ANY, label);
   cb->Enable(benable);
   cb->SetValue(!benable);
   m_sizer->Add(cb);
-  m_sizer->Layout();
+  if (bsizerLayout) m_sizer->Layout();
 
   m_list.Append(cb);
 
@@ -778,12 +780,12 @@ bool OCPNCheckedListCtrl::IsChecked(int index) {
     return false;
 }
 
+void OCPNCheckedListCtrl::RunLayout() {
+  m_sizer->Layout();
+}
+
 void OCPNCheckedListCtrl::Clear() {
-  for (unsigned int i = 0; i < m_list.GetCount(); i++) {
-    wxCheckBox* cb = m_list[i];
-    delete cb;
-  }
-  m_list.Clear();
+  WX_CLEAR_LIST(CBList, m_list);
   Scroll(0, 0);
 }
 
@@ -6371,7 +6373,7 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd) {
       // The ListBox control will insert entries in sorted order, which means
       // we need to
       // keep track of already inserted items that gets pushed down the line.
-      int newpos = ps57CtlListBox->Append(item, benable);
+      int newpos = ps57CtlListBox->Append(item, benable, false);
       marinersStdXref.push_back(newpos);
       for (size_t i = 0; i < iPtr; i++) {
         if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
@@ -6390,6 +6392,10 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd) {
 
       ps57CtlListBox->Check(newpos, bviz);
     }
+
+    // Deferred layout instead of after every appended checkbox
+    ps57CtlListBox->RunLayout();
+
     //  Force the wxScrolledWindow to recalculate its scroll bars
     wxSize s = ps57CtlListBox->GetSize();
     ps57CtlListBox->SetSize(s.x, s.y - 1);
@@ -6436,8 +6442,10 @@ void options::SetInitialVectorSettings(void) {
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
       ChartCanvas* cc = g_canvasArray.Item(i);
       if (cc) {
-        if (cc->GetENCDisplayCategory() == MARINERS_STANDARD)
+        if (cc->GetENCDisplayCategory() == MARINERS_STANDARD) {
           benableMarStd = true;
+          break;
+        }
       }
     }
 
