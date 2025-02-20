@@ -1740,7 +1740,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         else {
           SendToGpsDlg dlg;
           dlg.SetWaypoint(m_pFoundRoutePoint);
-          wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+          wxFont fo = GetOCPNGUIScaledFont(_("Dialog"));
           dlg.SetFont(fo);
 
           dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));

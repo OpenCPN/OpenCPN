@@ -4675,7 +4675,7 @@ OCPNSoundPanel::OCPNSoundPanel(wxWindow* parent, wxWindowID id,
                                wxString title, wxString checkLegend,
                                wxString selectLegend, wxString* pSoundFile)
     : wxPanel(parent, id, pos, size, wxBORDER_NONE), m_soundPlaying(false) {
-  wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
+  wxFont* pif = FontMgr::Get().GetFont(_("Dialog"));
   SetFont(*pif);
 
   m_pSoundFile = pSoundFile;

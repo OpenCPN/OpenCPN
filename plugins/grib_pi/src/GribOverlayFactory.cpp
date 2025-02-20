@@ -375,7 +375,7 @@ void GRIBOverlayFactory::Reset() {
 void GRIBOverlayFactory::SetMessageFont() {
   wxFont fo;
 #ifdef __WXQT__
-  fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+  fo = GetOCPNGUIScaledFont_PlugIn(_("Dialog"));
 #else
   fo = *OCPNGetFont(_("Dialog"), 0);
   fo.SetPointSize(
@@ -1985,7 +1985,7 @@ void GRIBOverlayFactory::DrawNumbers(wxPoint p, double value, int settings,
 #else
 
 #ifdef __WXQT__
-    wxFont font = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+    wxFont font = GetOCPNGUIScaledFont_PlugIn(_("Dialog"));
 #else
     wxFont font(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                 wxFONTWEIGHT_NORMAL);

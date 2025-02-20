@@ -193,7 +193,7 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
                            const wxPoint& pos, const wxSize& size, long style) {
   SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
-  wxFont* pF = OCPNGetFont(_T("Dialog"), 0);
+  wxFont* pF = OCPNGetFont(_("Dialog"), 0);
   SetFont(*pF);
 
   wxDialog::Create(parent, id, caption, pos, size, style);

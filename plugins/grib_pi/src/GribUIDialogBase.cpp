@@ -3518,7 +3518,7 @@ GRIBTableBase::GRIBTableBase(wxWindow* parent, wxWindowID id,
 
   wxStdDialogButtonSizer* m_pButtonTable = new wxStdDialogButtonSizer();
   m_pButtonTableOK = new wxButton(this, wxID_OK, _("Close"));
-  m_pButtonTableOK->SetFont(GetOCPNGUIScaledFont_PlugIn(_T("Dialog")));
+  m_pButtonTableOK->SetFont(GetOCPNGUIScaledFont_PlugIn(_("Dialog")));
   m_pButtonTable->AddButton(m_pButtonTableOK);
   m_pButtonTable->Realize();
 
