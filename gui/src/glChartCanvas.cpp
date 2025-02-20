@@ -2280,9 +2280,10 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
   // In "b_follow" mode, we have a-priori information about the desired screen
   // coordinates of ownship
   // Here, calculate the ownship location on screen, and make it so.
+  // Special case:  No need for such precision on chart drag operations
   double shift_dx = 0;
   double shift_dy = 0;
-  if (m_pParentCanvas->m_bFollow) {
+  if (m_pParentCanvas->m_bFollow && !m_pParentCanvas->m_bChartDragging) {
     lGPSPoint.m_x = m_pParentCanvas->GetVP().pix_width / 2;
     lGPSPoint.m_y = m_pParentCanvas->GetVP().pix_height / 2;
     if (m_pParentCanvas->m_bLookAhead) {
