@@ -79,14 +79,9 @@
 
 using namespace std;
 
-// Global print data, to remember settings during the session
-extern wxPrintData* g_printData;
-// Global page setup data
-extern wxPageSetupData* g_pageSetupData;
-
 MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
                                  const wxString& title)
-    : MyPrintout(title), myRoute(route), toPrintOut(_toPrintOut) {
+    : BasePrintout(title), myRoute(route), toPrintOut(_toPrintOut) {
   // Let's have at least some device units margin
   marginX = 100;
   marginY = 100;
@@ -457,27 +452,11 @@ void RoutePrintSelection::OnRoutepropOkClick(wxCommandEvent& event) {
   toPrintOut.push_back(m_checkBoxWPDistanceToNext->GetValue());
   toPrintOut.push_back(m_checkBoxWPDescription->GetValue());
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxPORTRAIT);
-    g_pageSetupData = new wxPageSetupDialogData;
-  }
-
   MyRoutePrintout* myrouteprintout1 =
       new MyRoutePrintout(toPrintOut, route, _("Route Print"));
-
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(true);
-
-  wxPrinter printer(&printDialogData);
-  if (!printer.Print(this, myrouteprintout1, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T( "OpenCPN" ), wxOK);
-    }
-  }
+  myrouteprintout1->SetOrientation(wxPORTRAIT);
+  myrouteprintout1->EnablePageNumbers(true);
+  myrouteprintout1->Print(this, true);
 
   Close();
   event.Skip();
