@@ -542,7 +542,7 @@ void OCPNwxFontList::FreeAll(void) {
   m_fontVector.clear();
 }
 
-static wxString FontCandidates[] = {_T("AISTargetAlert"),
+static wxString FontCandidates[] = {_("AISTargetAlert"),
                                     _T("AISTargetQuery"),
                                     _T("StatusBar"),
                                     _T("AIS Target Name" ),
