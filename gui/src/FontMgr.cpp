@@ -545,7 +545,7 @@ void OCPNwxFontList::FreeAll(void) {
 static wxString FontCandidates[] = {_("AISTargetAlert"),
                                     _("AISTargetQuery"),
                                     _("StatusBar"),
-                                    _T("AIS Target Name" ),
+                                    _("AIS Target Name"),
                                     _T("ObjectQuery"),
                                     _T("RouteLegInfoRollover"),
                                     _T("ExtendedTideIcon"),
