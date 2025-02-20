@@ -4841,13 +4841,6 @@ void ChartCanvas::ClearbFollow(void) {
 }
 
 void ChartCanvas::SetbFollow(void) {
-  JumpToPosition(gLat, gLon, GetVPScale());
-  m_bFollow = true;
-
-  parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, true);
-
-  UpdateFollowButtonState();
-
   // Is the OWNSHIP on-screen?
   // If not, then reset the OWNSHIP offset to 0 (center screen)
   if ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) ||
@@ -4855,6 +4848,22 @@ void ChartCanvas::SetbFollow(void) {
     m_OSoffsetx = 0;
     m_OSoffsety = 0;
   }
+
+  // Apply the present b_follow offset values to ship position
+  wxPoint2DDouble p;
+  GetDoubleCanvasPointPix(gLat, gLon, &p);
+  p.m_x += m_OSoffsetx;
+  p.m_y -= m_OSoffsety;
+
+  // compute the target center screen lat/lon
+  double dlat, dlon;
+  GetCanvasPixPoint(p.m_x, p.m_y, dlat, dlon);
+
+  JumpToPosition(dlat, dlon, GetVPScale());
+  m_bFollow = true;
+
+  parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, true);
+  UpdateFollowButtonState();
 
   if (!g_bSmoothRecenter) {
     DoCanvasUpdate();
