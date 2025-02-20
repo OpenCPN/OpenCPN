@@ -1619,12 +1619,10 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       //    avoid jumping of the vp center point during slow maneuvering, or at
       //    anchor....
       if (!std::isnan(gSog)) {
-        if (gSog < 1.0)
+        if (gSog < 2.0)
           pixel_delta = 0.;
-        else if (gSog >= 3.0)
-          pixel_delta = pixel_delta_tent;
         else
-          pixel_delta = pixel_delta_tent * (gSog - 1.0) / 2.0;
+          pixel_delta = pixel_delta_tent;
       }
 
       meters_to_shift = 0;
