@@ -1809,7 +1809,7 @@ void RouteManagerDialog::OnRteSendToGPSClick(wxCommandEvent &event) {
   SendToGpsDlg *pdlg = new SendToGpsDlg();
   pdlg->SetRoute(route);
 
-  wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+  wxFont fo = GetOCPNGUIScaledFont(_("Dialog"));
   pdlg->SetFont(fo);
 
   wxString source;

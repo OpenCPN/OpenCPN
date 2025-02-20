@@ -887,7 +887,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
                                      const wxString& title, const wxPoint& pos,
                                      const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style) {
-  wxFont* pFont = OCPNGetFont(_T("Dialog"), 0);
+  wxFont* pFont = OCPNGetFont(_("Dialog"), 0);
   if (pFont) SetFont(*pFont);
 
   this->SetSizeHints(wxDefaultSize, wxDefaultSize);
