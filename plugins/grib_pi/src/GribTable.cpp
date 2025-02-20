@@ -57,9 +57,9 @@ void GRIBTable::InitGribTable(int zone, ArrayOfGribRecordSets *rsa,
       .Append(_T("   "))
       .Append(toSDMM_PlugIn(2, m_cursor_lon));
   m_pCursorPosition->SetLabel(l);
-  m_pCursorPosition->SetFont(GetOCPNGUIScaledFont_PlugIn(_("Dialog")).MakeBold());
-  m_pPositionText->SetFont(
+  m_pCursorPosition->SetFont(
       GetOCPNGUIScaledFont_PlugIn(_("Dialog")).MakeBold());
+  m_pPositionText->SetFont(GetOCPNGUIScaledFont_PlugIn(_("Dialog")).MakeBold());
 
   // create as columns as necessary
   m_pGribTable->AppendCols(rsa->GetCount());
