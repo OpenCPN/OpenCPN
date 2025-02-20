@@ -882,14 +882,14 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu(
     wxMenuItem* delItem =
         new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
 #ifdef __ANDROID__
-    wxFont* pf = OCPNGetFont(_T("Menu"), 0);
+    wxFont* pf = OCPNGetFont(_("Menu"), 0);
     editItem->SetFont(*pf);
     moveUpItem->SetFont(*pf);
     moveDownItem->SetFont(*pf);
     delItem->SetFont(*pf);
 #endif
 #if defined(__WXMSW__)
-    wxFont* pf = GetOCPNScaledFont(_T("Menu"));
+    wxFont* pf = GetOCPNScaledFont(_("Menu"));
     editItem->SetFont(*pf);
     moveUpItem->SetFont(*pf);
     moveDownItem->SetFont(*pf);
@@ -919,7 +919,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu(
       new wxMenuItem(&menu, ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text"));
 
 #if defined(__WXMSW__)
-  wxFont* qFont = GetOCPNScaledFont(_T("Menu"));
+  wxFont* qFont = GetOCPNScaledFont(_("Menu"));
   copyItem->SetFont(*qFont);
 #endif
 

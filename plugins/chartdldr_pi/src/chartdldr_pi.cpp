@@ -569,7 +569,7 @@ void ChartDldrPanelImpl::OnContextMenu(wxMouseEvent &event) {
   wxPoint mouseClient = ScreenToClient(mouseScreen);
 
 #ifdef __OCPN__ANDROID__
-  wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+  wxFont *pf = OCPNGetFont(_("Menu"), 0);
 
   // add stuff
   wxMenuItem *item1 = new wxMenuItem(&menu, ID_MNU_SELALL, _("Select all"));

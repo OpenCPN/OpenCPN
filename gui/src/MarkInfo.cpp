@@ -1116,7 +1116,7 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
       }
     }
 
-    wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+    wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
 
     wxMenu* popup = new wxMenu();
     {

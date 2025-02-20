@@ -558,7 +558,7 @@ static wxString FontCandidates[] = {_("AISTargetAlert"),
                                     _("ChartTexts"),
                                     _("ToolTips"),
                                     _("Dialog"),
-                                    _T("Menu"),
+                                    _("Menu"),
                                     _T("GridText"),
                                     _T("END_OF_LIST")};
 

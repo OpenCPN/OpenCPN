@@ -5551,7 +5551,7 @@ void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
   wxMenu *contextMenu = new wxMenu();
 
 #ifdef __WXQT__
-  wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+  wxFont *pf = OCPNGetFont(_("Menu"), 0);
 
   // add stuff
   wxMenuItem *item1 =

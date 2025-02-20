@@ -289,7 +289,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
 #endif
 
 #ifdef __ANDROID__
-  wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
   item->SetFont(sFont);
 #endif
 
@@ -1112,10 +1112,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   androidEnableBackButton(false);
   androidEnableOptionsMenu(false);
 
-  setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_T("Menu")));
-  setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_T("Menu")));
-  setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_T("Menu")));
-  setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_T("Menu")));
+  setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_("Menu")));
 #endif
 
   parent->PopupMenu(menuFocus, x, y);
