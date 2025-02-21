@@ -148,7 +148,7 @@ public:
   NavAddr(Bus b, const std::string& i) : bus(b), iface(i) {};
   NavAddr() : bus(Bus::Undef), iface("") {};
 
-  std::string to_string() const {
+  virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + iface;
   }
   static std::string BusToString(Bus b);
@@ -190,7 +190,7 @@ class NavAddrPlugin : public NavAddr {
 public:
   const std::string id;
   NavAddrPlugin(const std::string& _id)
-      : NavAddr(NavAddr::Bus::Plugin, "Plugin"), id(_id) {}
+      : NavAddr(NavAddr::Bus::Plugin, "Internal"), id(_id) {}
 };
 
 class NavAddrSignalK : public NavAddr {
@@ -217,9 +217,10 @@ public:
   virtual std::string key() const = 0;
 
   /** Return printable string for logging etc without trailing nl */
-  virtual std::string to_string() const {
-    return NavAddr::BusToString(bus) + " " + key();
-  }
+  virtual std::string to_string() const { return key(); }
+
+  /** Return message in extended candump format. TBD: details */
+  virtual std::string to_candump() const { return ""; }
 
   /** Alias for key(). */
   std::string GetKey() const { return key(); }
@@ -300,6 +301,9 @@ public:
 
   std::string to_string() const;
 
+  /** Modified candump format, PGN 65392. */
+  virtual std::string to_candump() const;
+
   /** Return key which should be used to listen to given message type. */
   static std::string MessageKey(const char* type = "ALL") {
     static const char* const prefix = "n0183-";
@@ -319,8 +323,8 @@ public:
 
   PluginMsg(const std::string& _name, const std::string& _dest_host,
             const std::string& msg)
-      : NavMsg(NavAddr::Bus::Plugin,
-               std::make_shared<const NavAddr>(NavAddr::Bus::Plugin, "")),
+      : NavMsg(NavAddr::Bus::Plugin, std::make_shared<const NavAddr>(
+                                         NavAddr::Bus::Plugin, "Internal")),
         name(_name),
         message(msg),
         dest_host(_dest_host) {}
@@ -336,7 +340,7 @@ public:
 
   std::string key() const { return std::string("plug.json-") + name; };
 
-  std::string to_string() const { return name + ": " + message; }
+  std::string to_string() const;
 };
 
 /** A parsed SignalK message over ipv4 */
@@ -362,6 +366,8 @@ public:
   std::string raw_message;
 
   std::string key() const { return std::string("signalK"); };
+
+  std::string to_string() const { return raw_message; }
 };
 
 /** An invalid message, error return value. */

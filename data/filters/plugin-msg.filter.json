@@ -1,0 +1,8 @@
+{
+   "filter" : {
+      "name" : "plugins",
+      "description" : "Messages to plugins",
+      "buses" : [
+         "Plugin"
+      ]
+}
