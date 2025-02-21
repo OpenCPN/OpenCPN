@@ -48,7 +48,7 @@ void GRIBTable::InitGribTable(int zone, ArrayOfGribRecordSets *rsa,
 
   // init row attr
   wxGridCellAttr *datarow = new wxGridCellAttr();
-  datarow->SetFont(GetOCPNGUIScaledFont_PlugIn(_T("Dialog")));
+  datarow->SetFont(GetOCPNGUIScaledFont_PlugIn(_("Dialog")));
   datarow->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
 
   // populate "cursor position" display
@@ -58,9 +58,8 @@ void GRIBTable::InitGribTable(int zone, ArrayOfGribRecordSets *rsa,
       .Append(toSDMM_PlugIn(2, m_cursor_lon));
   m_pCursorPosition->SetLabel(l);
   m_pCursorPosition->SetFont(
-      GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold());
-  m_pPositionText->SetFont(
-      GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold());
+      GetOCPNGUIScaledFont_PlugIn(_("Dialog")).MakeBold());
+  m_pPositionText->SetFont(GetOCPNGUIScaledFont_PlugIn(_("Dialog")).MakeBold());
 
   // create as columns as necessary
   m_pGribTable->AppendCols(rsa->GetCount());

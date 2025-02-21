@@ -57,7 +57,7 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
     m_NumRowVal.push_back(std::vector<double>());
   }
   // init labels attr
-  wxFont labelfont = GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold();
+  wxFont labelfont = GetOCPNGUIScaledFont_PlugIn(_("Dialog")).MakeBold();
   SetLabelFont(labelfont);
   wxColour colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
   if (colour.Red() > 128) {

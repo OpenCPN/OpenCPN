@@ -77,7 +77,7 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   m_prioTree = new wxTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
   stcSizer->Add(m_prioTree, 1, wxALL | wxEXPAND, 5);
-  wxFont* pF = OCPNGetFont(_T("Dialog"), 0);
+  wxFont* pF = OCPNGetFont(_("Dialog"), 0);
   m_pF = pF;
   m_prioTree->SetFont(*pF);
 #ifdef __ANDROID__

@@ -363,7 +363,7 @@ void wmm_pi::OnToolbarToolCallback(int id) {
   if (!m_buseable) return;
   if (NULL == m_pWmmDialog) {
     m_pWmmDialog = new WmmUIDialog(*this, m_parent_window);
-    wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+    wxFont *pFont = OCPNGetFont(_("Dialog"), 0);
     m_pWmmDialog->SetFont(*pFont);
 
     m_pWmmDialog->Move(wxPoint(m_wmm_dialog_x, m_wmm_dialog_y));
@@ -906,7 +906,7 @@ void wmm_pi::ShowPreferencesDialog(wxWindow *parent) {
 
 void wmm_pi::ShowPlotSettings() {
   WmmPlotSettingsDialog *dialog = new WmmPlotSettingsDialog(m_parent_window);
-  wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+  wxFont *pFont = OCPNGetFont(_("Dialog"), 0);
   dialog->SetFont(*pFont);
 
   dialog->Fit();
