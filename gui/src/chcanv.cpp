@@ -11171,6 +11171,7 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
   }
 
   wxString routeInfo;
+  double varBrg;
   if (g_bShowTrue)
     routeInfo << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8), (int)brg,
                                   0x00B0);
@@ -11178,13 +11179,24 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
   if (g_bShowMag) {
     double latAverage = (m_cursor_lat + render_lat) / 2;
     double lonAverage = (m_cursor_lon + render_lon) / 2;
-    double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
+    varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
 
     routeInfo << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8),
                                   (int)varBrg, 0x00B0);
   }
-
   routeInfo << _T(" ") << FormatDistanceAdaptive(dist);
+
+  //To make it easier to misuse a route as a bearing on a charted object add for (only)
+  //the first leg also the reverse bearing.
+  if (np==1){
+    routeInfo << "\nReverse: ";
+    if (g_bShowTrue)
+    routeInfo << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8), (int)(brg+180.)%360,
+                                  0x00B0);
+    if (g_bShowMag)
+      routeInfo << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8),
+                                    (int)(varBrg+180.)%360, 0x00B0);
+  }
 
   wxString s0;
   if (!route->m_bIsInLayer)
