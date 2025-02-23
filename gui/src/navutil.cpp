@@ -833,6 +833,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("CatalogCustomURL", &g_catalog_custom_url);
   Read("CatalogChannel", &g_catalog_channel);
 
+  Read("NetmaskBits", &g_netmask_bits);
+
   //  NMEA connection options.
   if (!bAsTemplate) {
     Read(_T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog);
@@ -2415,6 +2417,7 @@ void MyConfig::UpdateSettings() {
   Write(_T( "CatalogCustomURL"), g_catalog_custom_url);
   Write(_T( "CatalogChannel"), g_catalog_channel);
 
+  Write("NetmaskBits", g_netmask_bits);
   Write(_T ( "FilterNMEA_Avg" ), g_bfilter_cogsog);
   Write(_T ( "FilterNMEA_Sec" ), g_COGFilterSec);
 
