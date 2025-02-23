@@ -1636,7 +1636,7 @@ bool ChartCanvas::DoCanvasUpdate(void) {
         vpLat = gLat;
         vpLon = gLon;
       }
-    } else if (m_bLookAhead && !bGPSValid) {
+    } else if (m_bLookAhead && (!bGPSValid || m_MouseDragging)) {
       m_OSoffsetx = 0;  // center ownship on loss of GPS
       m_OSoffsety = 0;
       vpLat = gLat;
@@ -4769,17 +4769,26 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
       GetVPScale() * (GetVP().chart_scale / proposed_scale_onscreen);
 
   if (b_do_zoom) {
-    if (can_zoom_to_cursor && g_bEnableZoomToCursor) {
+    // Disable ZTC if lookahead is ON, and currently b_follow is active
+    bool b_allow_ztc = true;
+    if (m_bFollow && m_bLookAhead) b_allow_ztc = false;
+    if (can_zoom_to_cursor && g_bEnableZoomToCursor && b_allow_ztc) {
+      if (m_bLookAhead) {
+        double brg, distance;
+        ll_gc_ll_reverse(gLat, gLon, GetVP().clat, GetVP().clon, &brg,
+                         &distance);
+        dir_to_shift = brg;
+        meters_to_shift = distance * 1852;
+      }
       //  Arrange to combine the zoom and pan into one operation for smoother
       //  appearance
       SetVPScale(new_scale, false);  // adjust, but deferred refresh
-
       wxPoint r;
       GetCanvasPointPix(zlat, zlon, &r);
-      PanCanvas(r.x - mouse_x, r.y - mouse_y);  // this will give the Refresh()
+      // this will emit the Refresh()
+      PanCanvas(r.x - mouse_x, r.y - mouse_y);
     } else {
       SetVPScale(new_scale);
-
       if (m_bFollow) DoCanvasUpdate();
     }
   }
@@ -5125,9 +5134,6 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
 
     m_OSoffsetx = d_east_mod * VPoint.view_scale_ppm;
     m_OSoffsety = -d_north_mod * VPoint.view_scale_ppm;
-
-    //   m_OSoffsetx = offx * VPoint.view_scale_ppm;
-    //   m_OSoffsety = offy * VPoint.view_scale_ppm;
 
     if (m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) ||
                       (fabs(m_OSoffsety) > VPoint.pix_height / 2))) {
