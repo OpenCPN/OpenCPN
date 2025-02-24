@@ -236,6 +236,19 @@ AisDecoder::~AisDecoder(void) {
 #endif
 }
 
+bool IsTargetOnTheIgnoreList(const int &mmsi) {
+  // Check the MMSI-Prop list if the target shall be ignored
+  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
+      MmsiProperties *props = g_MMSI_Props_Array[i];
+      if (props->m_bignore) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void AisDecoder::InitCommListeners(void) {
   // Initialize the comm listeners
 
@@ -409,9 +422,12 @@ bool AisDecoder::HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (ParseN2kPGN129038(v, MessageID, Repeat, UserID, Latitude, Longitude,
                         Accuracy, RAIM, Seconds, COG, SOG, Heading, ROT,
                         NavStat, AISTransceiverInformation)) {
+    int mmsi = UserID;
+    // Stop here if the target shall be ignored
+    if (IsTargetOnTheIgnoreList(mmsi)) return false;
+
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    int mmsi = UserID;
     long mmsi_long = mmsi;
     std::shared_ptr<AisTargetData> pTargetData = 0;
     bool bnewtarget = false;
@@ -516,9 +532,12 @@ bool AisDecoder::HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
                         Accuracy, RAIM, Seconds, COG, SOG,
                         AISTransceiverInformation, Heading, Unit, Display, DSC,
                         Band, Msg22, Mode, State)) {
+    int mmsi = UserID;
+    // Stop here if the target shall be ignored
+    if (IsTargetOnTheIgnoreList(mmsi)) return false;
+
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    int mmsi = UserID;
     long mmsi_long = mmsi;
     std::shared_ptr<AisTargetData> pTargetData = 0;
     bool bnewtarget = false;
@@ -601,9 +620,12 @@ bool AisDecoder::HandleN2K_129041(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 #endif
 
   if (ParseN2kPGN129041(v, data)) {
+    int mmsi = data.UserID;
+    // Stop here if the target shall be ignored
+    if (IsTargetOnTheIgnoreList(mmsi)) return false;
+
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    int mmsi = data.UserID;
     long mmsi_long = mmsi;
     std::shared_ptr<AisTargetData> pTargetData = 0;
     bool bnewtarget = false;
@@ -694,9 +716,12 @@ bool AisDecoder::HandleN2K_129794(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
                         VesselType, Length, Beam, PosRefStbd, PosRefBow,
                         ETAdate, ETAtime, Draught, Destination, AISversion,
                         GNSStype, DTE, AISinfo)) {
+    int mmsi = UserID;
+    // Stop here if the target shall be ignored
+    if (IsTargetOnTheIgnoreList(mmsi)) return false;
+
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    int mmsi = UserID;
     long mmsi_long = mmsi;
     std::shared_ptr<AisTargetData> pTargetData = 0;
     bool bnewtarget = false;
@@ -766,9 +791,12 @@ bool AisDecoder::HandleN2K_129809(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   char Name[21];
 
   if (ParseN2kPGN129809(v, MessageID, Repeat, UserID, Name)) {
+    int mmsi = UserID;
+    // Stop here if the target shall be ignored
+    if (IsTargetOnTheIgnoreList(mmsi)) return false;
+
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    int mmsi = UserID;
     long mmsi_long = mmsi;
     std::shared_ptr<AisTargetData> pTargetData = 0;
     bool bnewtarget = false;
@@ -819,9 +847,12 @@ bool AisDecoder::HandleN2K_129810(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (ParseN2kPGN129810(v, MessageID, Repeat, UserID, VesselType, Vendor,
                         Callsign, Length, Beam, PosRefStbd, PosRefBow,
                         MothershipID)) {
+    int mmsi = UserID;
+    // Stop here if the target shall be ignored
+    if (IsTargetOnTheIgnoreList(mmsi)) return false;
+
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    int mmsi = UserID;
     long mmsi_long = mmsi;
     std::shared_ptr<AisTargetData> pTargetData = 0;
     bool bnewtarget = false;
@@ -1066,14 +1097,8 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   }
 
   // Stop here if the target shall be ignored
-  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-    if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
-      MmsiProperties *props = g_MMSI_Props_Array[i];
-      if (props->m_bignore) {
-        return;
-      }
-    }
-  }
+  if (IsTargetOnTheIgnoreList(mmsi)) return;
+
 #if 0
     wxString dbg;
     wxJSONWriter writer;
