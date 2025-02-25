@@ -613,7 +613,6 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_upMode = NORTH_UP_MODE;
   m_bLookAhead = false;
-  m_VPRotate = 0;
 
   // Set some benign initial values
 
@@ -3418,25 +3417,16 @@ void ChartCanvas::SetUpMode(int mode) {
 
 bool ChartCanvas::DoCanvasCOGSet(void) {
   if (GetUpMode() == NORTH_UP_MODE) return false;
-
   double cog_use = g_COGAvg;
   if (g_btenhertz) cog_use = gCog;
 
-  if (std::isnan(cog_use)) return true;
-
-  double old_VPRotate = m_VPRotate;
-
+  double rotation = 0;
   if ((GetUpMode() == HEAD_UP_MODE) && !std::isnan(gHdt)) {
-    m_VPRotate = -gHdt * PI / 180.;
-  } else if (GetUpMode() == COURSE_UP_MODE)
-    m_VPRotate = -cog_use * PI / 180.;
+    rotation = -gHdt * PI / 180.;
+  } else if ((GetUpMode() == COURSE_UP_MODE) && !std::isnan(cog_use))
+    rotation = -cog_use * PI / 180.;
 
-  // SetVPRotation(m_VPRotate);
-  VPoint.rotation = m_VPRotate;
-  // bool bnew_chart = DoCanvasUpdate();
-
-  // if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
-
+  SetVPRotation(rotation);
   return true;
 }
 
@@ -5328,14 +5318,12 @@ bool ChartCanvas::SetVPRotation(double angle) {
   return SetViewPoint(VPoint.clat, VPoint.clon, VPoint.view_scale_ppm,
                       VPoint.skew, angle);
 }
-
 bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
                                double skew, double rotation, int projection,
                                bool b_adjust, bool b_refresh) {
   bool b_ret = false;
   if (skew > PI) /* so our difference tests work, put in range of +-Pi */
     skew -= 2 * PI;
-
   //  Any sensible change?
   if (VPoint.IsValid()) {
     if ((fabs(VPoint.view_scale_ppm - scale_ppm) / scale_ppm < 1e-5) &&
@@ -5346,7 +5334,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
          projection == PROJECTION_UNKNOWN))
       return false;
   }
-
   if (VPoint.m_projection_type != projection)
     VPoint.InvalidateTransformCache();  // invalidate
 

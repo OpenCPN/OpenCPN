@@ -701,7 +701,6 @@ public:
   int m_routeState;
   int m_upMode;
   bool m_bLookAhead;
-  double m_VPRotate;
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   double m_oldVPSScale;
