@@ -38,8 +38,8 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
 
   Bind(wxEVT_BUTTON, &AlertDialog::OnConfirm, this, wxID_OK);
   Bind(wxEVT_BUTTON, &AlertDialog::OnCancel, this, wxID_CANCEL);
-  m_layout->Add(footer, wxSizerFlags().Border(
-                            wxALL, GUI::GetSpacing(this, kDialogPadding)));
+  auto spacing = GUI::GetSpacing(this, kDialogPadding);
+  m_layout->Add(footer, wxSizerFlags().Border(wxALL, spacing).Expand());
 }
 
 AlertDialog::~AlertDialog() {}
