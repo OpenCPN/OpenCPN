@@ -2734,5 +2734,6 @@ void ConfigFlushAndReload() {
   if (pConfig) {
     pConfig->Flush();
     pConfig->LoadMyConfigRaw(false);
+    pConfig->LoadCanvasConfigs(false);
   }
 }
