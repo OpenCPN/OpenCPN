@@ -716,7 +716,8 @@ public:
 
   virtual ~OCPNCheckedListCtrl() {}
 
-  unsigned int Append(wxString& label, bool benable = true, bool bsizerLayout = true);
+  unsigned int Append(wxString& label, bool benable = true,
+                      bool bsizerLayout = true);
   unsigned int GetCount() { return m_list.GetCount(); }
 
   void RunLayout();
@@ -751,7 +752,8 @@ bool OCPNCheckedListCtrl::Create(wxWindow* parent, wxWindowID id,
   return TRUE;
 }
 
-unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable, bool bsizerLayout) {
+unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable,
+                                         bool bsizerLayout) {
   wxCheckBox* cb = new wxCheckBox(this, wxID_ANY, label);
   cb->Enable(benable);
   cb->SetValue(!benable);
@@ -780,9 +782,7 @@ bool OCPNCheckedListCtrl::IsChecked(int index) {
     return false;
 }
 
-void OCPNCheckedListCtrl::RunLayout() {
-  m_sizer->Layout();
-}
+void OCPNCheckedListCtrl::RunLayout() { m_sizer->Layout(); }
 
 void OCPNCheckedListCtrl::Clear() {
   WX_CLEAR_LIST(CBList, m_list);
