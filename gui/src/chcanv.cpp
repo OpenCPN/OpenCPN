@@ -8264,7 +8264,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       else {
         FindRoutePointsAtCursor(SelectRadius, true);  // Not creating Route
       }
-    }       // !g_btouch
+    }  // !g_btouch
     else {  // g_btouch
 
       if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
