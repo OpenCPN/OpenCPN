@@ -8264,7 +8264,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       else {
         FindRoutePointsAtCursor(SelectRadius, true);  // Not creating Route
       }
-    }  // !g_btouch
+    }       // !g_btouch
     else {  // g_btouch
 
       if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
@@ -10915,16 +10915,16 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
   }
   routeInfo << _T(" ") << FormatDistanceAdaptive(dist);
 
-  //To make it easier to use a route as a bearing on a charted object add for
-  //the first leg also the reverse bearing.
-  if (np==1){
+  // To make it easier to use a route as a bearing on a charted object add for
+  // the first leg also the reverse bearing.
+  if (np == 1) {
     routeInfo << "\nReverse: ";
     if (g_bShowTrue)
-    routeInfo << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8), (int)(brg+180.)%360,
-                                  0x00B0);
+      routeInfo << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8),
+                                    (int)(brg + 180.) % 360, 0x00B0);
     if (g_bShowMag)
       routeInfo << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8),
-                                    (int)(varBrg+180.)%360, 0x00B0);
+                                    (int)(varBrg + 180.) % 360, 0x00B0);
   }
 
   wxString s0;
