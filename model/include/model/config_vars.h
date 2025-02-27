@@ -75,6 +75,7 @@ extern int g_maxWPNameLength;
 extern int g_mbtilesMaxLayers;
 extern int g_nCOMPortCheck;
 extern int g_nDepthUnitDisplay;
+extern int g_netmask_bits;
 extern int g_nNMEADebug;
 extern int g_nTrackPrecision;
 extern int g_route_line_width;

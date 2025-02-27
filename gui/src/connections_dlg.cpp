@@ -9,6 +9,7 @@
 #include <wx/grid.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
+#include <wx/spinctrl.h>
 #include <wx/textctrl.h>
 #include <wx/window.h>
 
@@ -602,6 +603,7 @@ public:
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
     sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
+    sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
     sizer->Add(new PrioritiesBtn(this), wxSizerFlags().Border());
     SetSizer(sizer);
   }
@@ -679,6 +681,50 @@ private:
     void Cancel() override { text_ctrl->SetValue(g_TalkerIdText); }
   };
 
+  class NetmaskRow : public wxPanel, public ApplyCancel {
+  public:
+    NetmaskRow(wxWindow* parent)
+        : wxPanel(parent),
+          m_spin_ctrl(new wxSpinCtrl(this, wxID_ANY)),
+          m_text(new wxStaticText(this, wxID_ANY, "")) {
+      m_spin_ctrl->SetRange(8, 32);
+      auto hbox = new wxBoxSizer(wxHORIZONTAL);
+      auto flags = wxSizerFlags().Align(wxALIGN_CENTRE_VERTICAL).Border();
+      hbox->Add(new wxStaticText(this, wxID_ANY, _("Netmask: ")), flags);
+      hbox->Add(m_text, flags);
+      hbox->Add(new wxStaticText(this, wxID_ANY, _("length (bits): ")), flags);
+      hbox->Add(m_spin_ctrl, flags);
+      SetSizer(hbox);
+      Cancel();
+
+      Bind(wxEVT_SPINCTRL, [&](wxSpinEvent& ev) {
+        m_text->SetLabel(BitsToDottedMask(m_spin_ctrl->GetValue()));
+        Layout();
+      });
+    }
+
+    void Apply() override { g_netmask_bits = m_spin_ctrl->GetValue(); }
+
+    void Cancel() override {
+      m_spin_ctrl->SetValue(g_netmask_bits);
+      m_text->SetLabel(BitsToDottedMask(m_spin_ctrl->GetValue()));
+    }
+
+  private:
+    wxSpinCtrl* m_spin_ctrl;
+    wxStaticText* m_text;
+
+    std::string BitsToDottedMask(unsigned bits) {
+      uint32_t mask = 0xffffffff << (32 - bits);
+      std::stringstream ss;
+      ss << ((mask & 0xff000000) >> 24) << ".";
+      ss << ((mask & 0x00ff0000) >> 16) << ".";
+      ss << ((mask & 0x0000ff00) >> 8) << ".";
+      ss << (mask & 0x000000ff);
+      return ss.str();
+    }
+  };
+
   /** Button invokes "Adjust communication priorities" GUI. */
   class PrioritiesBtn : public wxButton {
   public:
@@ -735,18 +781,18 @@ ConnectionsDlg::ConnectionsDlg(
   m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_update_connections);
 };
 
+void ConnectionsDlg::OnResize() {
+  Layout();
+  Refresh();
+  Update();
+}
+
 void ConnectionsDlg::DoApply(wxWindow* root) {
   for (wxWindow* child : root->GetChildren()) {
     auto widget = dynamic_cast<ApplyCancel*>(child);
     if (widget) widget->Apply();
     DoApply(child);
   }
-}
-
-void ConnectionsDlg::OnResize() {
-  Layout();
-  Refresh();
-  Update();
 }
 
 void ConnectionsDlg::DoCancel(wxWindow* root) {

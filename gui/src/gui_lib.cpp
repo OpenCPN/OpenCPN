@@ -320,7 +320,7 @@ OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog(
   int center_flag = wxEXPAND;
   if (style & wxYES_NO) center_flag = wxALIGN_CENTRE;
   wxSizer* sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
-  if (sizerBtn) topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10);
+  if (sizerBtn) topsizer->Add(sizerBtn, wxSizerFlags().Border().Expand());
 
   SetSizer(topsizer);
 
