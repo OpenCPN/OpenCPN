@@ -391,6 +391,7 @@ private:
   int m_ChartUpdatePeriod;
   bool m_last_bGPSValid;
   bool m_last_bVelocityValid;
+  double m_last_hdt;
 
   wxString prev_locale;
 

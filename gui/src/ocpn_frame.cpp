@@ -5106,6 +5106,18 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   }
 
   if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
+#if 0
+// Lowpass filter, 10 samples
+static double hdt_avg;
+    double hdt_norm = gHdt;
+    if(gHdt > 180) hdt_norm -= 360;
+
+    hdt_avg *= 0.9;
+    hdt_avg +=  hdt_norm * 0.1;
+    gHdt = hdt_avg;
+    if( gHdt < 0) gHdt += 360.;
+#endif
+
     if (!std::isnan(gHdt)) {
       // Prepare to estimate the gHdt from prior ground truth measurements
       uint64_t hdt_time_gt_last = hdt_time_gt;
@@ -5708,7 +5720,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       if (!bGPSValid) cc->SetOwnShipState(SHIP_INVALID);
 
       if ((bGPSValid != m_last_bGPSValid) ||
-          (bVelocityValid != m_last_bVelocityValid)) {
+          (bVelocityValid != m_last_bVelocityValid) ||
+          (!isnan(gHdt) && (gHdt != m_last_hdt))) {
         if (!g_bopengl) cc->UpdateShips();
 
         bnew_view = true;  // force a full Refresh()
@@ -5718,6 +5731,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   m_last_bGPSValid = bGPSValid;
   m_last_bVelocityValid = bVelocityValid;
+  m_last_hdt = gHdt;
 
   //    If any PlugIn requested dynamic overlay callbacks, force a full canvas
   //    refresh thus, ensuring at least 1 Hz. callback.
