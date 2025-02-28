@@ -80,6 +80,7 @@ bool exists(const std::string& name) {
 #endif
 }
 
+/** @deprecated Using std::filesystem instead. */
 void mkdir(const std::string path) {
 #if defined(_WIN32) && !defined(__MINGW32__)
   _mkdir(path.c_str());
@@ -90,17 +91,19 @@ void mkdir(const std::string path) {
 #endif
 }
 
-std::string ltrim(std::string s) {
+std::string ltrim(const std::string& arg) {
   using namespace std;
 
+  string s(arg);
   s.erase(s.begin(),
           find_if(s.begin(), s.end(), [](int ch) { return !isspace(ch); }));
   return s;
 }
 
-std::string rtrim(std::string s) {
+std::string rtrim(const std::string& arg) {
   using namespace std;
 
+  string s(arg);
   s.erase(
       find_if(s.rbegin(), s.rend(), [](int ch) { return !isspace(ch); }).base(),
       s.end());
@@ -164,7 +167,7 @@ bool N0183CheckSumOk(const std::string& sentence) {
   return calculated_checksum == checksum;
 }
 
-std::string printable(const std::string str) {
+std::string printable(const std::string& str) {
   std::stringstream ss;
   for (auto it = str.begin(); it != str.end(); it++) {
     if (std::isprint(*it) && *it != '\r' && *it != '\n') {

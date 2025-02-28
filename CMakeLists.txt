@@ -778,6 +778,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connection_edit.h
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
+    ${GUI_HDR_DIR}/data_monitor.h
     ${GUI_HDR_DIR}/DetailSlider.h
     ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
@@ -801,7 +802,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
-    ${GUI_HDR_DIR}/NMEALogWindow.h
     ${GUI_HDR_DIR}/ocpCursor.h
     ${GUI_HDR_DIR}/ocpndc.h
     ${GUI_HDR_DIR}/ocpn_app.h
@@ -858,7 +858,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/trackprintout.h
     ${GUI_HDR_DIR}/TrackPropDlg.h
     ${GUI_HDR_DIR}/tty_scroll.h
-    ${GUI_HDR_DIR}/TTYWindow.h
     ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
     ${GUI_HDR_DIR}/update_mgr.h
@@ -898,6 +897,8 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/connection_edit.cpp
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
+    ${GUI_SRC_DIR}/data_monitor.cpp
+    ${GUI_SRC_DIR}/data_monitor_src.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
@@ -924,7 +925,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
-    ${GUI_SRC_DIR}/NMEALogWindow.cpp
     ${GUI_SRC_DIR}/ocpCursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
     ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
@@ -977,7 +977,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/trackprintout.cpp
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
     ${GUI_SRC_DIR}/tty_scroll.cpp
-    ${GUI_SRC_DIR}/TTYWindow.cpp
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
@@ -1627,6 +1626,15 @@ set(s57data
     data/s57data/chartsymbols.xml
 )
 
+set(filters
+    data/filters/all-data.filter.json
+    data/filters/all-nmea.filter.json
+    data/filters/malformed.filter.json
+    data/filters/nmea-input.filter.json
+    data/filters/nmea-output.filter.json
+    data/filters/plugin-msg.filter.json
+)
+
 if (OCPN_BUNDLE_TCDATA)
   set(tcData
       data/tcdata/HARMONICS_NO_US data/tcdata/HARMONICS_NO_US.IDX
@@ -1662,13 +1670,17 @@ if (APPLE)
     ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata
   )
   set_source_files_properties(
+    ${filters} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/filters
+  )
+  set_source_files_properties(
     ${s57data} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data
   )
   if (OCPN_BUNDLE_TCDATA)
     set_source_files_properties(
       ${tcData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
     )
-  endif (OCPN_BUNDLE_TCDATA)
+  endif ()
+
 
   set_source_files_properties(
     data/license.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
@@ -1844,6 +1856,7 @@ if (APPLE)
             ${basemap_shp}
             ${ssfnData}
             ${uiData}
+            ${filters}
             ${s57data}
             ${tcData}
             data/license.html
@@ -1945,6 +1958,7 @@ if (NOT APPLE)
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
+  install(FILES ${filters} DESTINATION ${PREFIX_PKGDATA}/filters)
   install(DIRECTORY data/svg/markicons/
           DESTINATION ${PREFIX_PKGDATA}/uidata/markicons
   )
