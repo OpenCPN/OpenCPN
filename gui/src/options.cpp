@@ -197,6 +197,7 @@ extern bool g_bFullscreenToolbar;
 extern bool g_bTransparentToolbar;
 extern bool g_bTransparentToolbarInOpenGLOK;
 
+extern int g_OwnShipmmsi;
 extern int g_OwnShipIconType;
 extern double g_n_ownship_length_meters;
 extern double g_n_ownship_beam_meters;
@@ -2048,6 +2049,34 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                    LineColorNChoices, m_LineColorChoices, 0);
   m_shipToActiveColor->SetSelection(0);
   shipToActiveGrid->Add(m_shipToActiveColor, 0, wxALL, 5);
+
+  // Ship's data
+  wxStaticBox* shipdata =
+      new wxStaticBox(itemPanelShip, wxID_ANY, _("Ship's identifier"));
+  wxStaticBoxSizer* datasizer = new wxStaticBoxSizer(shipdata, wxVERTICAL);
+  ownShip->Add(datasizer, 0, wxGROW | wxALL, border_size);
+
+  wxFlexGridSizer* ownmmsisizer =
+      new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
+  ownmmsisizer->AddGrowableCol(1);
+  datasizer->Add(ownmmsisizer, 0, wxALL | wxEXPAND, border_size);
+
+  // Enter own ship mmsi for a AIS transponder connection.
+  // Especially N2k devices may lack that info.
+  wxStaticText* pStatic_ownshipmmsi =
+      new wxStaticText(itemPanelShip, wxID_ANY,
+                       _("Own ship's MMSI. (If available) Nine digits"));
+  ownmmsisizer->Add(pStatic_ownshipmmsi, 0);
+
+  // Make a rule for mmsi txt control input
+  const wxString AllowDigits[] = {"0", "1", "2", "3", "4",
+                                  "5", "6", "7", "8", "9"};
+  wxArrayString ArrayAllowDigits(10, AllowDigits);
+  wxTextValidator mmsiVal(wxFILTER_INCLUDE_CHAR_LIST);
+  mmsiVal.SetIncludes(ArrayAllowDigits);
+  m_pTxt_OwnMMSI = new wxTextCtrl(itemPanelShip, wxID_ANY, "",
+                                  wxDefaultPosition, wxDefaultSize, 0, mmsiVal);
+  ownmmsisizer->Add(m_pTxt_OwnMMSI, 0, wxALIGN_RIGHT);
 
   //  Tracks
   wxStaticBox* trackText =
@@ -6115,6 +6144,12 @@ void options::SetInitialSettings(void) {
     s.Printf(_T("%4.0f"), g_ownship_HDTpredictor_miles);
   m_pText_OSHDT_Predictor->SetValue(s);
 
+  if (g_OwnShipmmsi > 0) {
+    wxString s = wxString::Format("%i", g_OwnShipmmsi);
+    m_pTxt_OwnMMSI->SetValue(s);
+  } else
+    m_pTxt_OwnMMSI->SetValue("");
+
   m_pShipIconType->SetSelection(g_OwnShipIconType);
   wxCommandEvent eDummy;
   OnShipTypeSelect(eDummy);
@@ -7055,6 +7090,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
     gVar = g_UserVar;
   }
 
+  g_OwnShipmmsi = wxAtoi(m_pTxt_OwnMMSI->GetValue());
   m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
   m_pText_OSHDT_Predictor->GetValue().ToDouble(&g_ownship_HDTpredictor_miles);
 

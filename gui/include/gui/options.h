@@ -417,7 +417,7 @@ public:
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxCheckBox *pZoomButtons, *pChartBarEX;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
-  wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
+  wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor, *m_pTxt_OwnMMSI;
 
   wxTextCtrl *pCmdSoundString;
 
