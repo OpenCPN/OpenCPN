@@ -455,7 +455,7 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
   if (!_is_usable) {
     return;
   }
-  if (!_reader) {
+  if (!_reader && !_loading) {
     _loading = true;
     _loaded = std::async(std::launch::async, [&]() {
       bool ret = LoadSHP();
@@ -523,6 +523,23 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
 
 bool ShapeBaseChart::CrossesLand(double &lat1, double &lon1, double &lat2,
                                  double &lon2) {
+  if (!_reader && !_loading) {
+    _loading = true;
+    _loaded = std::async(std::launch::async, [&]() {
+      bool ret = LoadSHP();
+      _loading = false;
+      return ret;
+    });
+  }
+  if (_loading) {
+    if (_loaded.wait_for(std::chrono::milliseconds(0)) ==
+        std::future_status::ready) {
+      _is_usable = _loaded.get();
+    } else {
+      // Chart not yet loaded. Assume no land crossing.
+      return false;
+    }
+  }
   double latmin = std::min(lat1, lat2);
   double lonmin = std::min(lon1, lon2);
   double latmax = std::min(lat1, lat2);
