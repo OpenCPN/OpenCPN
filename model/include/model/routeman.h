@@ -36,6 +36,7 @@
 #include <wx/string.h>
 
 #include "model/MarkIcon.h"
+
 #include "model/nav_object_database.h"
 #include "model/nmea_log.h"
 #include "model/ocpn_types.h"
@@ -116,7 +117,7 @@ class Routeman {
 
 public:
   Routeman(struct RoutePropDlgCtx prop_dlg_ctx,
-           struct RoutemanDlgCtx route_dlg_ctx, NmeaLog &nmea_log);
+           struct RoutemanDlgCtx route_dlg_ctx, NmeaLog *nmea_log);
   ~Routeman();
 
   bool DeleteTrack(Track *pTrack);
@@ -223,7 +224,7 @@ private:
   int m_arrival_test;
   struct RoutePropDlgCtx m_prop_dlg_ctx;
   struct RoutemanDlgCtx m_route_dlg_ctx;
-  NmeaLog &m_nmea_log;
+  NmeaLog *m_nmea_log;
 
   ObsListener msg_sent_listener;
   ObsListener active_route_listener;
