@@ -374,6 +374,9 @@ public:
    */
   bool CrossesLand(double lat1, double lon1, double lat2, double lon2) {
     if (IsUsable()) {
+      // Geometry intersection implementation
+      // return HighestQualityBaseMap().CrossesLand(lat1, lon1, lat2, lon2);
+      // Distance field implementation
       return HighestQualityBaseMap().CrossesLandWithDistanceField(lat1, lon1, lat2, lon2);
     }
     return false;
