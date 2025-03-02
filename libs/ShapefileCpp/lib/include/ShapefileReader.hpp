@@ -33,8 +33,21 @@ namespace shp {
 
             int count = -1;
             int shapeType = -1;
+            /**
+             * Minimum bounds of all shapes in the file [x, y, z, m].
+             * x and y represent spatial coordinates, while z is elevation
+             * and m is measure value (when present in shapefile).
+             */
             double min[4];
+            /**
+             * Maximum bounds of all shapes in the file [x, y, z, m].
+             * x and y represent spatial coordinates, while z is elevation
+             * and m is measure value (when present in shapefile).
+             */
             double max[4];
+            /**
+             * Total number of features (records) from the DBF file.
+             */
             int numberOfFeatures = 0;
 
             void getShapeInfo();

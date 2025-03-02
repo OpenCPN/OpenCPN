@@ -295,6 +295,8 @@ bool ShapeBaseChart::LoadSHP() {
         return false;
       }
       auto f1 = feature.getAttributes();
+      // Create a LatLonKey using the 'y' (latitude) and 'x' (longitude)
+      // attributes These values represent the top-left corner of the tiles
       _tiles[LatLonKey(std::any_cast<int>(feature.getAttributes()["y"]),
                        std::any_cast<int>(feature.getAttributes()["x"]))]
           .push_back(feat);
@@ -455,7 +457,7 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
   if (!_is_usable) {
     return;
   }
-  if (!_reader) {
+  if (!_reader && !_loading) {
     _loading = true;
     _loaded = std::async(std::launch::async, [&]() {
       bool ret = LoadSHP();
@@ -475,12 +477,16 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
   int pmod = _dmod;
   LLBBox bbox = vp.GetBBox();
 
+  // Calculate the starting latitude for the tiles grid
+  // Using floor() aligns with the top-left corner tile model
   int lat_start = floor(bbox.GetMinLat());
   if (lat_start < 0)
     lat_start = lat_start - (pmod + (lat_start % pmod));
   else
     lat_start = lat_start - (lat_start % pmod);
 
+  // Calculate the starting longitude for the tiles grid
+  // Using floor() aligns with the top-left corner tile model
   int lon_start = floor(bbox.GetMinLon());
   if (lon_start < 0)
     lon_start = lon_start - (pmod + (lon_start % pmod));
@@ -523,32 +529,74 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
 
 bool ShapeBaseChart::CrossesLand(double &lat1, double &lon1, double &lat2,
                                  double &lon2) {
-  double latmin = std::min(lat1, lat2);
-  double lonmin = std::min(lon1, lon2);
-  double latmax = std::min(lat1, lat2);
-  double lonmax = std::min(lon1, lon2);
+  if (!_reader && !_loading) {
+    _loading = true;
+    _loaded = std::async(std::launch::async, [&]() {
+      bool ret = LoadSHP();
+      _loading = false;
+      return ret;
+    });
+  }
+  if (_loading) {
+    if (_loaded.wait_for(std::chrono::milliseconds(0)) ==
+        std::future_status::ready) {
+      _is_usable = _loaded.get();
+    } else {
+      // Chart not yet loaded. Assume no land crossing.
+      return false;
+    }
+  }
 
-  auto A = std::make_pair(lat1, lon1);
-  auto B = std::make_pair(lat2, lon2);
+  double norm_lon1 = lon1;
+  double norm_lon2 = lon2;
+
+  while (norm_lon1 < -180) norm_lon1 += 360;
+  while (norm_lon1 > 180) norm_lon1 -= 360;
+  while (norm_lon2 < -180) norm_lon2 += 360;
+  while (norm_lon2 > 180) norm_lon2 -= 360;
+
+  // Create normalized coordinate pairs
+  auto A = std::make_pair(lat1, norm_lon1);
+  auto B = std::make_pair(lat2, norm_lon2);
 
   if (_is_tiled) {
-    for (int i = floor(latmin); i < ceil(latmax); i++) {
-      for (int j = floor(lonmin); j < ceil(lonmax); j++) {
-        int lon{j};
-        if (j < -180) {
-          lon = j + 360;
-        } else if (j >= 180) {
-          lon = j - 360;
-        }
-        for (auto fid : _tiles[LatLonKey(i, lon)]) {
-          auto const &feature = _reader->getFeature(fid);
-          if (PolygonLineIntersect(feature, A, B)) {
-            return true;
+    // Calculate grid-aligned min/max coordinates based on _dmod
+    double minLat = std::min(lat1, lat2);
+    double maxLat = std::max(lat1, lat2);
+    double minLon = std::min(norm_lon1, norm_lon2);
+    double maxLon = std::max(norm_lon1, norm_lon2);
+
+    // Calculate grid-aligned indices based on the top-left corner model
+    // For latitudes: ceil(lat) gives the top edge of the tile containing that
+    // latitude For longitudes: floor(lon) gives the left edge of the tile
+    // containing that longitude
+    int latmax = ceil(maxLat / _dmod) * _dmod;
+    int latmin = floor(minLat / _dmod) * _dmod;
+    int lonmin = floor(minLon / _dmod) * _dmod;
+    int lonmax = ceil(maxLon / _dmod) * _dmod;
+
+    // Adjust the loop to iterate through all relevant tiles
+    for (int i = latmin; i <= latmax; i += _dmod) {
+      for (int j = lonmin; j < lonmax; j += _dmod) {
+        int lon = j;
+        // Normalize tile longitude to valid range
+        while (lon < -180) lon += 360;
+        while (lon >= 180) lon -= 360;
+
+        // Check if the tile exists in our map
+        auto tileIter = _tiles.find(LatLonKey(i, lon));
+        if (tileIter != _tiles.end()) {
+          for (auto fid : tileIter->second) {
+            auto const &feature = _reader->getFeature(fid);
+            if (PolygonLineIntersect(feature, A, B)) {
+              return true;
+            }
           }
         }
       }
     }
   } else {
+    // Non-tiled case: check all features
     for (auto const &feature : *_reader) {
       if (PolygonLineIntersect(feature, A, B)) {
         return true;
@@ -572,57 +620,124 @@ bool ShapeBaseChart::LineLineIntersect(const std::pair<double, double> &A,
                                        const std::pair<double, double> &B,
                                        const std::pair<double, double> &C,
                                        const std::pair<double, double> &D) {
+  constexpr double EPSILON = 1e-9;  // Tolerance for floating-point comparisons
+
+  // Fast bounding box check - early rejection for improved performance
+  double minABx = std::min(A.first, B.first);
+  double maxABx = std::max(A.first, B.first);
+  double minCDx = std::min(C.first, D.first);
+  double maxCDx = std::max(C.first, D.first);
+
+  if (maxABx < minCDx || maxCDx < minABx) return false;
+
+  double minABy = std::min(A.second, B.second);
+  double maxABy = std::max(A.second, B.second);
+  double minCDy = std::min(C.second, D.second);
+  double maxCDy = std::max(C.second, D.second);
+
+  if (maxABy < minCDy || maxCDy < minABy) return false;
+
   // Line AB represented as a1x + b1y = c1
   double a1 = B.second - A.second;
   double b1 = A.first - B.first;
-  double c1 = a1 * (A.first) + b1 * (A.second);
+  double c1 = a1 * A.first + b1 * A.second;
 
   // Line CD represented as a2x + b2y = c2
   double a2 = D.second - C.second;
   double b2 = C.first - D.first;
-  double c2 = a2 * (C.first) + b2 * (C.second);
+  double c2 = a2 * C.first + b2 * C.second;
 
   double determinant = a1 * b2 - a2 * b1;
 
-  if (determinant == 0) {
-    // The lines are parallel
-    return false;
-  } else {
-    // The lines intersect at x,y
-    double x = (b2 * c1 - b1 * c2) / determinant;
-    double y = (a1 * c2 - a2 * c1) / determinant;
-    // x,y must be on both the segments we are checking
-    if (std::min(A.first, B.first) <= x && x <= std::max(A.first, B.first) &&
-        std::min(A.second, B.second) <= y &&
-        y <= std::max(A.second, B.second) && std::min(C.first, D.first) <= x &&
-        x <= std::max(C.first, D.first) && std::min(C.second, D.second) <= y &&
-        y <= std::max(C.second, D.second)) {
-      return true;
+  if (std::abs(determinant) < EPSILON) {
+    // Lines are parallel or collinear.
+    // Check if collinear by testing if points from one segment lie on the other
+    // line.
+    if (std::abs(a1 * C.first + b1 * C.second - c1) < EPSILON &&
+        std::abs(a1 * D.first + b1 * D.second - c1) < EPSILON) {
+      // Segments are collinear, check for overlap
+      return !(maxABx < minCDx || maxCDx < minABx || maxABy < minCDy ||
+               maxCDy < minABy);
     }
+    return false;  // Parallel but not collinear
   }
-  return false;
+
+  // Calculate intersection point
+  double x = (b2 * c1 - b1 * c2) / determinant;
+  double y = (a1 * c2 - a2 * c1) / determinant;
+
+  // Check if intersection point lies on both segments
+  return (minABx <= x && x <= maxABx && minABy <= y && y <= maxABy &&
+          minCDx <= x && x <= maxCDx && minCDy <= y && y <= maxCDy);
 }
 
 bool ShapeBaseChart::PolygonLineIntersect(const shp::Feature &feature,
                                           const std::pair<double, double> &A,
                                           const std::pair<double, double> &B) {
-  auto polygon = static_cast<shp::Polygon *>(feature.getGeometry());
-  std::pair<double, double> previous_point;
+  auto geometry = feature.getGeometry();
+  if (!geometry) {
+    return false;
+  }
+
+  // Try to cast to polygon - if this fails, the geometry isn't a polygon
+  auto polygon = dynamic_cast<shp::Polygon *>(geometry);
+  if (!polygon) {
+    return false;
+  }
+
+  // Calculate line segment bounding box (lat, lon)
+  double minLat = std::min(A.first, B.first);
+  double maxLat = std::max(A.first, B.first);
+  double minLon = std::min(A.second, B.second);
+  double maxLon = std::max(A.second, B.second);
+
   for (auto &ring : polygon->getRings()) {
-    size_t cnt{0};
-    for (auto &point : ring.getPoints()) {
-      auto pnt = std::make_pair(point.getY(), point.getX());
-      if (cnt > 0) {
-        // TODO: Is it faster to first check if we are in the boundong box of
-        // the line?
-        if (LineLineIntersect(A, B, previous_point, pnt)) {
-          return true;
-        }
+    const auto &points = ring.getPoints();
+    if (points.size() < 3) continue;
+
+    // Quick bounding box check for ring
+    double minRingLat = std::numeric_limits<double>::max();
+    double maxRingLat = std::numeric_limits<double>::lowest();
+    double minRingLon = std::numeric_limits<double>::max();
+    double maxRingLon = std::numeric_limits<double>::lowest();
+
+    // Pre-compute all point pairs to avoid repeated getX/getY calls
+    std::vector<std::pair<double, double>> ringPoints;
+    ringPoints.reserve(points.size());
+
+    for (const auto &point : points) {
+      double lat = point.getY();
+      double lon = point.getX();
+
+      minRingLat = std::min(minRingLat, lat);
+      maxRingLat = std::max(maxRingLat, lat);
+      minRingLon = std::min(minRingLon, lon);
+      maxRingLon = std::max(maxRingLon, lon);
+
+      ringPoints.emplace_back(lat, lon);
+    }
+
+    // Early reject if bounding boxes don't overlap
+    if (maxLat < minRingLat || minLat > maxRingLat || maxLon < minRingLon ||
+        minLon > maxRingLon) {
+      continue;
+    }
+
+    // Check each edge for intersection
+    size_t numPoints = ringPoints.size();
+    std::pair<double, double> previous = ringPoints.back();
+
+    for (size_t i = 0; i < numPoints; i++) {
+      const auto &current = ringPoints[i];
+
+      if (LineLineIntersect(A, B, previous, current)) {
+        return true;
       }
-      previous_point = pnt;
-      cnt++;
+
+      previous = current;
     }
   }
+
   return false;
 }
 
