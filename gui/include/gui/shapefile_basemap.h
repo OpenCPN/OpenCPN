@@ -217,8 +217,22 @@ public:
    */
   bool CrossesLand(double &lat1, double &lon1, double &lat2, double &lon2);
 
+  bool CrossesLandWithDistanceField(double &lat1, double &lon1, double &lat2,
+                                    double &lon2);
+
   /** Cancel the chart loading operation. */
   void CancelLoading();
+
+  /**
+   * Get the distance to land from a specified point.
+   * Uses the distance field for efficient calculation.
+   *
+   * @param lat Latitude of the point.
+   * @param lon Longitude of the point.
+   * @return Distance to nearest coastline in nautical miles. Positive values
+   * indicate water.
+   */
+  double GetDistanceToLand(double lat, double lon);
 
 private:
   std::future<bool> _loaded;
@@ -361,7 +375,11 @@ public:
    */
   bool CrossesLand(double lat1, double lon1, double lat2, double lon2) {
     if (IsUsable()) {
-      return HighestQualityBaseMap().CrossesLand(lat1, lon1, lat2, lon2);
+      // Geometry intersection implementation
+      // return HighestQualityBaseMap().CrossesLand(lat1, lon1, lat2, lon2);
+      // Distance field implementation
+      return HighestQualityBaseMap().CrossesLandWithDistanceField(lat1, lon1,
+                                                                  lat2, lon2);
     }
     return false;
   }
@@ -374,6 +392,24 @@ public:
     _loaded = false;
   }
   void Reset();
+
+  /**
+   * Get the distance to land from a specified point.
+   * Uses the highest quality chart available.
+   *
+   * @param lat Latitude of the point.
+   * @param lon Longitude of the point.
+   * @return Distance to nearest coastline in nautical miles. Positive values
+   * indicate water.
+   */
+  double GetDistanceToLand(double lat, double lon) {
+    if (IsUsable()) {
+      // Use ShapeBaseChartDF cast to access GetDistanceToLand
+      ShapeBaseChart &chart = HighestQualityBaseMap();
+      return chart.GetDistanceToLand(lat, lon);
+    }
+    return std::numeric_limits<double>::infinity();
+  }
 
 private:
   void LoadBasemaps(const std::string &dir);
