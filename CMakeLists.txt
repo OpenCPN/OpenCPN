@@ -780,6 +780,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/DetailSlider.h
     ${GUI_HDR_DIR}/displays.h
+    ${GUI_HDR_DIR}/distance_field.h
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
@@ -900,6 +901,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
     ${GUI_SRC_DIR}/displays.cpp
+    ${GUI_SRC_DIR}/distance_field.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp

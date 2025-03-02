@@ -29,6 +29,7 @@
 // error when compiling with VS2022
 #include "OCPNPlatform.h"
 #include "shapefile_basemap.h"
+#include "distance_field.h"
 #include "chartbase.h"
 #include "glChartCanvas.h"
 
@@ -747,4 +748,168 @@ void ShapeBaseChartSet::RenderViewOnDC(ocpnDC &dc, ViewPort &vp) {
     chart.SetColor(land_color);
     chart.RenderViewOnDC(dc, vp);
   }
+}
+
+/**
+ * Check if a line between two points crosses land using distance field
+ * approach. This implementation is a replacement for the original
+ * polygon-intersection method and delivers near-constant time performance for
+ * any number of coastline polygons.
+ *
+ * @param lat1 Latitude of first point.
+ * @param lon1 Longitude of first point.
+ * @param lat2 Latitude of second point.
+ * @param lon2 Longitude of second point.
+ * @return True if the line crosses land, false otherwise.
+ */
+bool ShapeBaseChart::CrossesLandWithDistanceField(double &lat1, double &lon1,
+                                                  double &lat2, double &lon2) {
+  if (!_is_usable) {
+    return false;
+  }
+  if (!_reader && !_loading) {
+    // Load the shapefile if not already loaded
+    _loading = true;
+    _loaded = std::async(std::launch::async, [&]() {
+      bool ret = LoadSHP();
+      _loading = false;
+      return ret;
+    });
+  }
+  if (_loading) {
+    if (_loaded.wait_for(std::chrono::milliseconds(0)) ==
+        std::future_status::ready) {
+      _is_usable = _loaded.get();
+    } else {
+      // Chart not yet loaded. Assume no land crossing.
+      return false;
+    }
+  }
+
+  // Use the DistanceFieldManager to check for land crossings
+  auto &dfManager = DistanceFieldManager::GetInstance();
+  // Normalize longitudes to range [-180, 180)]
+  while (lon1 < -180) lon1 += 360;
+  while (lon1 >= 180) lon1 -= 360;
+  while (lon2 < -180) lon2 += 360;
+  while (lon2 >= 180) lon2 -= 360;
+
+  // Get all relevant tiles for this line segment
+  double latmin = std::min(lat1, lat2);
+  double lonmin = std::min(lon1, lon2);
+  double latmax = std::max(lat1, lat2);
+  double lonmax = std::max(lon1, lon2);
+
+  // Build a list of tiles to check
+  std::vector<LatLonKey> relevantTiles;
+
+  // Handle the case where the line might cross the date line
+  bool crossesDateLine = false;
+  if (lonmax - lonmin > 180) {
+    crossesDateLine = true;
+  }
+
+  int latStart = floor(latmin);
+  int latEnd = floor(latmax);
+  int lonStart = floor(lonmin);
+  int lonEnd = floor(lonmax);
+
+  // Adjust for 10-degree tiles if needed
+  int pmod = _dmod;
+  if (pmod > 1) {
+    latStart = latStart - (latStart % pmod);
+    latEnd = latEnd - (latEnd % pmod);
+    lonStart = lonStart - (lonStart % pmod);
+    lonEnd = lonEnd - (lonEnd % pmod);
+  }
+
+  // Add all tiles in the bounding box
+  for (int i = latStart; i <= latEnd; i += pmod) {
+    for (int j = lonStart; j <= lonEnd; j += pmod) {
+      int lon = j;
+      if (j < -180) {
+        lon = j + 360;
+      } else if (j >= 180) {
+        lon = j - 360;
+      }
+      relevantTiles.emplace_back(i, lon);
+    }
+  }
+
+  // Additional tiles if crossing date line
+  if (crossesDateLine) {
+    // Add tiles on the other side of the date line
+    for (int i = latStart; i <= latEnd; i += pmod) {
+      for (int j = -180; j < lonStart; j += pmod) {
+        relevantTiles.emplace_back(i, j);
+      }
+      for (int j = lonEnd + pmod; j < 180; j += pmod) {
+        relevantTiles.emplace_back(i, j);
+      }
+    }
+  }
+
+  // Check if the line crosses land using the distance field
+  return dfManager.CrossesLand(lat1, lon1, lat2, lon2, relevantTiles, _tiles,
+                               _reader);
+}
+
+/**
+ * Get the distance to land from a point.
+ * This is a new function that leverages the distance field to provide
+ * distance-to-land information for routing and safety calculations.
+ *
+ * @param lat Latitude of the point.
+ * @param lon Longitude of the point.
+ * @return Distance to land in nautical miles. Positive values indicate water.
+ */
+double ShapeBaseChart::GetDistanceToLand(double lat, double lon) {
+  if (!_is_usable) {
+    return std::numeric_limits<double>::infinity();
+  }
+  if (!_reader && !_loading) {
+    // Load the shapefile if not already loaded
+    _loading = true;
+    _loaded = std::async(std::launch::async, [&]() {
+      bool ret = LoadSHP();
+      _loading = false;
+      return ret;
+    });
+  }
+  if (_loading) {
+    if (_loaded.wait_for(std::chrono::milliseconds(0)) ==
+        std::future_status::ready) {
+      _is_usable = _loaded.get();
+    } else {
+      // Chart not yet loaded. Return infinite distance.
+      return std::numeric_limits<double>::infinity();
+    }
+  }
+
+  // Use the DistanceFieldManager to get the distance to land
+  auto &dfManager = DistanceFieldManager::GetInstance();
+
+  // Determine which tile contains this point
+  int latTile = floor(lat);
+  int lonTile = floor(lon);
+
+  // Adjust for 10-degree tiles if needed
+  int pmod = _dmod;
+  if (pmod > 1) {
+    latTile = latTile - (latTile % pmod);
+    lonTile = lonTile - (lonTile % pmod);
+  }
+
+  // Normalize longitude
+  if (lonTile < -180) {
+    lonTile += 360;
+  } else if (lonTile >= 180) {
+    lonTile -= 360;
+  }
+
+  // Create a relevant tiles list with just this tile
+  std::vector<LatLonKey> relevantTiles = {LatLonKey(latTile, lonTile)};
+
+  // Query the distance field
+  return dfManager.GetDistanceToLand(lat, lon, relevantTiles, _tiles, _reader);
 }

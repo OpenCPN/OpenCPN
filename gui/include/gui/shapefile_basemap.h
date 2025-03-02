@@ -173,12 +173,14 @@ public:
   int _dmod;
 
   /**
-   * Loads the shapefile data into memory. Validates the file for geographical
-   * bounds
-   * (-180 to 180 longitude, -90 to 90 latitude) and ensures it contains polygon
-   * geometry. If the shapefile is tiled (contains 'x' and 'y' attributes), it
-   * organizes features by their tile location using the LatLonKey indexing
-   * system.
+   * Loads the shapefile data into memory and validates the file for
+   * geographical bounds and ensures it contains polygon geometry.
+   *
+   * [-180, 180) longitude, -180 included and 180 excluded
+   * [-90 to 90] latitude
+   *
+   * If the shapefile is tiled (contains 'x' and 'y' attributes), it organizes
+   * features by their tile location using the LatLonKey indexing system.
    * @return true if the shapefile was successfully loaded and is valid, false
    * otherwise.
    */
@@ -211,14 +213,28 @@ public:
    * water, or the line segment is entirely over land.
    *
    * @note The longitude of the line segment coordinates are normalized to the
-   * -180 to 180 range before performing the intersection test. This ensures
+   * [-180, 180) range before performing the intersection test. This ensures
    * that the line segment and polygon edges use the same longitude convention,
    * which is necessary for accurate intersection detection.
    */
   bool CrossesLand(double &lat1, double &lon1, double &lat2, double &lon2);
 
+  bool CrossesLandWithDistanceField(double &lat1, double &lon1, double &lat2,
+                                    double &lon2);
+
   /** Cancel the chart loading operation. */
   void CancelLoading();
+
+  /**
+   * Get the distance to land from a specified point.
+   * Uses the distance field for efficient calculation.
+   *
+   * @param lat Latitude of the point.
+   * @param lon Longitude of the point.
+   * @return Distance to nearest coastline in nautical miles. Positive values
+   * indicate water.
+   */
+  double GetDistanceToLand(double lat, double lon);
 
 private:
   std::future<bool> _loaded;
@@ -276,8 +292,8 @@ private:
    * of the input points, typically in (latitude, longitude) format.
    *
    * @note This function assumes that the line segment coordinates and the
-   * polygon feature coordinates use the same longitude convention (e.g., both
-   * in -180 to 180 range). No normalization is performed on the coordinates
+   * polygon feature coordinates use the same longitude convention, e.g., both
+   * in [-180, 180) range. No normalization is performed on the coordinates
    * before the intersection test, which may lead to false negatives if the line
    * segment and polygon edges use different longitude ranges or if either
    * crosses the international date line.
@@ -304,8 +320,8 @@ private:
    * against the line segment.
    *
    * @note This function assumes that the line segment coordinates and the
-   * polygon feature coordinates use the same longitude convention (e.g., both
-   * in -180 to 180 range). No normalization is performed on the coordinates
+   * polygon feature coordinates use the same longitude convention, e.g., both
+   * in [-180, 180) range. No normalization is performed on the coordinates
    * before the intersection test, which may lead to false negatives if the line
    * segment and polygon edges use different longitude ranges or if either
    * crosses the international date line.
@@ -361,7 +377,11 @@ public:
    */
   bool CrossesLand(double lat1, double lon1, double lat2, double lon2) {
     if (IsUsable()) {
-      return HighestQualityBaseMap().CrossesLand(lat1, lon1, lat2, lon2);
+      // Geometry intersection implementation
+      // return HighestQualityBaseMap().CrossesLand(lat1, lon1, lat2, lon2);
+      // Distance field implementation
+      return HighestQualityBaseMap().CrossesLandWithDistanceField(lat1, lon1,
+                                                                  lat2, lon2);
     }
     return false;
   }
@@ -374,6 +394,24 @@ public:
     _loaded = false;
   }
   void Reset();
+
+  /**
+   * Get the distance to land from a specified point.
+   * Uses the highest quality chart available.
+   *
+   * @param lat Latitude of the point.
+   * @param lon Longitude of the point.
+   * @return Distance to nearest coastline in nautical miles. Positive values
+   * indicate water.
+   */
+  double GetDistanceToLand(double lat, double lon) {
+    if (IsUsable()) {
+      // Use ShapeBaseChartDF cast to access GetDistanceToLand
+      ShapeBaseChart &chart = HighestQualityBaseMap();
+      return chart.GetDistanceToLand(lat, lon);
+    }
+    return std::numeric_limits<double>::infinity();
+  }
 
 private:
   void LoadBasemaps(const std::string &dir);
