@@ -225,6 +225,7 @@ extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 extern bool g_bUseGreenShip;
 
+extern int g_OwnShipmmsi;
 extern int g_OwnShipIconType;
 extern double g_n_ownship_length_meters;
 extern double g_n_ownship_beam_meters;
@@ -989,6 +990,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "OwnshipHDTPredictorWidth" ), &g_ownship_HDTpredictor_width);
   Read(_T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles);
 
+  Read(_T ( "OwnShipMMSINumber" ), &g_OwnShipmmsi);
   Read(_T ( "OwnShipIconType" ), &g_OwnShipIconType);
   Read(_T ( "OwnShipLength" ), &g_n_ownship_length_meters);
   Read(_T ( "OwnShipWidth" ), &g_n_ownship_beam_meters);
@@ -2478,6 +2480,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "OwnshipHDTPredictorColor" ), g_ownship_HDTpredictor_color);
   Write(_T ( "OwnshipHDTPredictorEndmarker" ),
         g_ownship_HDTpredictor_endmarker);
+  Write(_T ( "OwnShipMMSINumber" ), g_OwnShipmmsi);
   Write(_T ( "OwnshipHDTPredictorWidth" ), g_ownship_HDTpredictor_width);
   Write(_T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles);
 
