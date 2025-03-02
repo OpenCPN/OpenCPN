@@ -786,6 +786,11 @@ bool ShapeBaseChart::CrossesLandWithDistanceField(double &lat1, double &lon1, do
 
   // Use the DistanceFieldManager to check for land crossings
   auto& dfManager = DistanceFieldManager::GetInstance();
+  // Normalize longitudes to range [-180, 180)]
+  while (lon1 < -180) lon1 += 360;
+  while (lon1 >= 180) lon1 -= 360;
+  while (lon2 < -180) lon2 += 360;
+  while (lon2 >= 180) lon2 -= 360;
   
   // Get all relevant tiles for this line segment
   double latmin = std::min(lat1, lat2);
