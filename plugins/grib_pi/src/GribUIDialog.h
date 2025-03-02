@@ -77,11 +77,30 @@ class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY(GribRecordSet, ArrayOfGribRecordSets);
 
+/**
+ * Defines the possible states for GRIB area selection.
+ * Used to control how the GRIB download area bounds are determined.
+ */
 enum ZoneSelection {
-  AUTO_SELECTION,
-  SAVED_SELECTION,
+  AUTO_SELECTION,   //!< Area automatically set from current viewport bounds.
+  SAVED_SELECTION,  //!< Area loaded from previously saved coordinates.
+  /**
+   * User has clicked Shift + Left click and is drawing the bounding box
+   * by dragging the mouse.
+   */
   START_SELECTION,
+  /**
+   * Manual mode has been selected.
+   * This state is set immediately after the user has clicked the "Manual
+   * Selection" checkbox in the GRIB request dialog. The user can now draw a
+   * selection box on the chart to specify the download area, or manually enter
+   * coordinates in the dialog.
+   */
   DRAW_SELECTION,
+  /**
+   * Selection box completed in manual mode, coordinates have been captured
+   * after the user has released the mouse button.
+   */
   COMPLETE_SELECTION
 };
 
@@ -207,7 +226,8 @@ public:
   void SetCursorLatLon(double lat, double lon);
   void UpdateTrackingControl();
   void SetDialogsStyleSizePosition(bool force_recompute = false);
-  void SetRequestBitmap(int type);
+  /** Set the icon and tooltip for the download request button. */
+  void SetRequestButtonBitmap(int type);
   void OnMouseEvent(wxMouseEvent &event);
   GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
   bool InDataPlot(int id) {
@@ -305,7 +325,9 @@ private:
   }
   void OnAltitude(wxCommandEvent &event);
   void OnOpenFile(wxCommandEvent &event);
-  void OnRequest(wxCommandEvent &event);
+  /** Callback invoked when user clicks download/request forecast data. */
+  void OnRequestForecastData(wxCommandEvent &event);
+  void createRequestDialog();
   void OnCompositeDialog(wxCommandEvent &event);
 
   void OnTimeline(wxScrollEvent &event);

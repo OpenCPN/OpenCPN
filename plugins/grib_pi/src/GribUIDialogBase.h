@@ -82,7 +82,8 @@
 #define ID_TIMELINE 1009
 #define ID_BTNOPENFILE 1010
 #define ID_BTNSETTING 1011
-#define ID_BTNREQUEST 1012
+#define ID_BTNREQUEST \
+  1012  //!< ID of button for requesting/downloading GRIB data.
 // GRIBUICDataBase
 #define CURSOR_DATA 1013
 #define ID_CB_WIND 1014
@@ -203,7 +204,7 @@ protected:
   virtual void OnTimeline(wxScrollEvent& event) { event.Skip(); }
   virtual void OnOpenFile(wxCommandEvent& event) { event.Skip(); }
   virtual void OnSettings(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnRequest(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnRequestForecastData(wxCommandEvent& event) { event.Skip(); }
   virtual void OnCompositeDialog(wxCommandEvent& event) { event.Skip(); }
 
 public:
@@ -426,6 +427,11 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 class GribRequestSettingBase : public wxDialog {
 private:
+  wxStaticBoxSizer* createAreaSelectionSection(wxWindow* parent);
+  void createWorldPanel();
+  void createLocalModelsPanel();
+  void createEmailPanel();
+
 protected:
   wxNotebook* m_notebookGetGrib;
   wxPanel* m_panelWorld;
@@ -464,13 +470,17 @@ protected:
   wxCheckBox* m_cManualZoneSel;
   wxFlexGridSizer* fgZoneCoordinatesSizer;
   wxCheckBox* m_cUseSavedZone;
+  /** A spinner for the max latitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMaxLat;
   wxStaticText* m_stMaxLatNS;
   wxStaticText* m_staticText36;
+  /** A spinner for the max longitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMaxLon;
   wxStaticText* m_stMaxLonEW;
+  /** A spinner for the min latitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMinLat;
   wxStaticText* m_stMinLatNS;
+  /** A spinner for the min longitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMinLon;
   wxStaticText* m_stMinLonEW;
   wxCheckBox* m_pWind;
@@ -495,13 +505,16 @@ protected:
   wxFlexGridSizer* m_fgFixedSizer;
   wxStaticText* m_tFileSize;
   wxStaticText* m_tLimit;
-  wxStdDialogButtonSizer* m_rButton;
+  /** Button to Send a download request through e-mail. */
   wxButton* m_rButtonYes;
+  /** Button to Save the "download request" configuration. */
   wxButton* m_rButtonApply;
+  /** Button to Cancel a request to download, close the dialog without saving
+   * the configuration. */
   wxButton* m_rButtonCancel;
   XyGribPanel* m_xygribPanel;
 
-  // Virtual event handlers, overide them in your derived class
+  // Virtual event handlers, override them in your derived class
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
   virtual void OnNotebookPageChanged(wxNotebookEvent& event) { event.Skip(); }
   virtual void OnWorldLengthChoice(wxCommandEvent& event) { event.Skip(); }
@@ -520,13 +533,27 @@ protected:
     event.Skip();
   }
   virtual void OnCoordinatesChange(wxSpinEvent& event) { event.Skip(); }
-  virtual void OnSaveMail(wxCommandEvent& event) { event.Skip(); }
+  /**
+   * Callback invoked when the user clicks the "OK" button in the "download"
+   * dialog.
+   */
+  virtual void OnOK(wxCommandEvent& event) { event.Skip(); }
+  /**
+   * Callback invoked when the user clicks the "Cancel" button in the "download"
+   * dialog.
+   */
   virtual void OnCancel(wxCommandEvent& event) { event.Skip(); }
+  /**
+   * Callback invoked when the user clicks the "Send" button in the "e-mail"
+   * tab.
+   */
   virtual void OnSendMaiL(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribDownloadButton(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribAtmModelChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribWaveModelChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribConfigChange(wxCommandEvent& event) { event.Skip(); }
+  // Save configuration before closing
+  virtual void SaveConfig() {};
 
 public:
   wxScrolledWindow* m_sScrolledDialog;
