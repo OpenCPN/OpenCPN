@@ -115,7 +115,13 @@ public:
 
   bool IsActive() const override { return IsShownOnScreen(); }
 
-  void OnStop(bool stop) { m_tty_scroll->Pause(stop); }
+  void OnStop(bool stop) {
+    m_tty_scroll->Pause(stop);
+    if (stop)
+      m_tty_scroll->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
+    else
+      m_tty_scroll->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
+  }
 
   void SetFilter(const NavmsgFilter& f) { m_tty_scroll->SetFilter(f); };
 
