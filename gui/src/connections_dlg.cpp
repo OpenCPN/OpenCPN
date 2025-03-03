@@ -681,6 +681,7 @@ private:
     void Cancel() override { text_ctrl->SetValue(g_TalkerIdText); }
   };
 
+  /** Global netmask configuration bound to g_netmask_bits. */
   class NetmaskRow : public wxPanel, public ApplyCancel {
   public:
     NetmaskRow(wxWindow* parent)
@@ -708,6 +709,7 @@ private:
     void Cancel() override {
       m_spin_ctrl->SetValue(g_netmask_bits);
       m_text->SetLabel(BitsToDottedMask(m_spin_ctrl->GetValue()));
+      Layout();
     }
 
   private:

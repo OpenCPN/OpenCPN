@@ -54,6 +54,7 @@ extern Select *pSelectAIS;
 extern wxString AISTargetNameFileName;
 extern AisDecoder *g_pAIS;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
+extern int g_OwnShipmmsi;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,

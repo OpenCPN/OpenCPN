@@ -17,7 +17,7 @@ is the ultimate source for how to build on Linux.
 == Debian/Ubuntu
 
 === 1. Download source code
-    $ git clone git://github.com/OpenCPN/OpenCPN.git
+    $ git clone https://github.com/OpenCPN/OpenCPN.git
     $ cd OpenCPN
 
 === 2. Install build dependencies
