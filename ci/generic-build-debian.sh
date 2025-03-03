@@ -20,7 +20,7 @@ if [[ $(lsb_release -rs) == 20.04 ]]; then
     sudo apt-get install kitware-archive-keyring
 fi
 pushd "${src_tree_root}"
-if [ -n "$PACKAGE_BRANCH" ]; then
+if [[ -n "$PACKAGE_BRANCH" && -z "$CIRCLE_PR_NUMBER" ]]; then
     # Initiate git environment
     git config --global user.name "OpenCPN auto builds"
     git config --global user.email "opencpn-builds@nowhere.net"
