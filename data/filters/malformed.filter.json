@@ -1,0 +1,10 @@
+{
+   "filter" : {
+      "name" : "malformed",
+      "description" : "Malformed messages",
+      "status" : [
+          "checksum-err",
+          "malformed"
+      ]
+   }
+}
