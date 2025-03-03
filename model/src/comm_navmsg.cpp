@@ -81,6 +81,10 @@ static std::string CharToString(unsigned char c) {
   return ss.str();
 }
 
+static std::string CharToString(char c) {
+  return CharToString(static_cast<unsigned char>(c));
+}
+
 std::string Nmea2000Msg::to_string() const {
   std::string s;
   std::for_each(payload.begin(), payload.end(),
@@ -96,7 +100,14 @@ std::string Nmea0183Msg::to_string() const {
 }
 
 std::string PluginMsg::to_string() const {
-  return name + ": " + ocpn::rtrim(message);
+  std::stringstream ss;
+  for (char c : ocpn::rtrim(message)) {
+    if (c >= ' ' && c <= '~')
+      ss << c;
+    else
+      ss << CharToString(c);
+  }
+  return name + ": " + ss.str();
 }
 
 /**
