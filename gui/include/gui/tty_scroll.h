@@ -109,8 +109,9 @@ public:
   void SetColors(std::unique_ptr<ColorByState> color_by_state);
 
 protected:
-  wxCoord m_line_height;  // the height of one line on screen
-  size_t m_n_lines;       // the number of lines we draw
+  wxCoord m_line_height;  // height of one line on screen
+  size_t m_n_lines;       // number of lines we draw
+  wxCoord m_text_width;   // Width of widest line displayed
 
   std::deque<Logline> m_lines;
   NavmsgFilter m_filter;

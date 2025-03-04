@@ -79,9 +79,9 @@ void TtyScroll::DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
   if (!ll.message.empty()) ws << wxDateTime::Now().FormatISOTime() << " ";
 #endif
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
-    ws << " " << kUtfRightArrow << " ";  // BLUE
+    ws << " " << kUtfRightArrow << " ";
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
-    ws << " " << kUtfLeftwardsArrowToBar << " ";  // ORANGE
+    ws << " " << kUtfLeftwardsArrowToBar << " ";
   else if (ll.state.direction == NavmsgStatus::Direction::kInternal)
     ws << " " << kUtfLeftRightArrow << " ";
   else
@@ -111,6 +111,8 @@ void TtyScroll::DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
   ws = "";
   ws << ll.message << error_msg.str();
   dc.DrawText(ws, data_pos, y);
+  m_text_width =
+      std::max(m_text_width, GetTextExtent(ws).GetWidth() + data_pos);
 }
 
 TtyScroll::TtyScroll(wxWindow* parent, int n_lines)
@@ -118,8 +120,7 @@ TtyScroll::TtyScroll(wxWindow* parent, int n_lines)
   SetName("TtyScroll");
   wxClientDC dc(this);
   dc.GetTextExtent("Line Height", NULL, &m_line_height);
-  SetScrollRate(0, m_line_height);
-  SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
+  SetScrollRate(m_line_height, m_line_height);
   for (unsigned i = 0; i < m_n_lines; i++) m_lines.push_back(Logline());
   SetColors(std::make_unique<StdColorsByState>());
   Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
@@ -128,7 +129,6 @@ TtyScroll::TtyScroll(wxWindow* parent, int n_lines)
 void TtyScroll::OnSize(wxSizeEvent& ev) {
   m_n_lines = ev.GetSize().y / GetCharHeight();
   while (m_lines.size() < m_n_lines) m_lines.push_back(Logline());
-  SetVirtualSize(-1, (m_n_lines + 1) * m_line_height);
   ev.Skip();
 }
 
@@ -155,12 +155,14 @@ void TtyScroll::OnDraw(wxDC& dc) {
   if (line_to > m_n_lines - 1) line_to = m_n_lines - 1;
 
   wxCoord y = line_from * m_line_height;
+  m_text_width = 0;
   for (size_t line = line_from; line <= line_to; line++) {
     wxString ws;
     dc.SetTextForeground((*m_color_by_state)(m_lines[line].state));
     DrawLine(dc, m_lines[line], 40 * GetCharWidth(), y);
     y += m_line_height;
   }
+  SetVirtualSize(m_text_width, (m_n_lines + 1) * m_line_height);
 }
 
 void TtyScroll::CopyToClipboard() const {
