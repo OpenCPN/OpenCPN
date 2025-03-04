@@ -745,18 +745,17 @@ wxString getUsrTempUnit_Plugin(int unit) { return getUsrTempUnit(unit); }
 
 bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
                               double lon2) {
-  // TODO: Enable call to gShapeBasemap.CrossesLand after fixing performance
-  // issues. if (gShapeBasemap.IsUsable()) {
-  //   return gShapeBasemap.CrossesLand(lat1, lon1, lat2, lon2);
-  // } else {
-  //  Fall back to the GSHHS data.
-  static bool loaded = false;
-  if (!loaded) {
-    gshhsCrossesLandInit();
-    loaded = true;
+  if (gShapeBasemap.IsUsable()) {
+    return gShapeBasemap.CrossesLand(lat1, lon1, lat2, lon2);
+  } else {
+    // Fall back to the GSHHS data.
+    static bool loaded = false;
+    if (!loaded) {
+      gshhsCrossesLandInit();
+      loaded = true;
+    }
+    return gshhsCrossesLand(lat1, lon1, lat2, lon2);
   }
-  return gshhsCrossesLand(lat1, lon1, lat2, lon2);
-  //}
 }
 
 void PlugInPlaySound(wxString& sound_file) {
