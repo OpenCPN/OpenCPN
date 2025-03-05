@@ -1026,7 +1026,7 @@
                     <property name="window_extra_style"></property>
                     <property name="window_name"></property>
                     <property name="window_style"></property>
-                    <event name="OnButtonClick">OnRequest</event>
+                    <event name="OnButtonClick">OnRequestForecastData</event>
                     <event name="OnRightDown">OnMouseEvent</event>
                   </object>
                 </object>
@@ -15958,9 +15958,9 @@
                       <property name="Save">0</property>
                       <property name="Yes">1</property>
                       <property name="minimum_size"></property>
-                      <property name="name">m_rButton</property>
+                      <property name="name">m_rEmailButtons</property>
                       <property name="permission">protected</property>
-                      <event name="OnApplyButtonClick">OnSaveMail</event>
+                      <event name="OnApplyButtonClick">OnOK</event>
                       <event name="OnCancelButtonClick">OnCancel</event>
                       <event name="OnYesButtonClick">OnSendMaiL</event>
                     </object>
