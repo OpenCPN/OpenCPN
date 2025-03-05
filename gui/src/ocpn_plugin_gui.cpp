@@ -2740,7 +2740,18 @@ void EnableTenHertzUpdate(bool enable) { g_btenhertz = enable; }
 void ConfigFlushAndReload() {
   if (pConfig) {
     pConfig->Flush();
+
+    // Handle system general configuration options
     pConfig->LoadMyConfigRaw(false);
+
+    // Handle chart canvas window configuration options
     pConfig->LoadCanvasConfigs(false);
+    auto& config_array = ConfigMgr::Get().GetCanvasConfigArray();
+    for (auto pcc : config_array) {
+      if (pcc && pcc->canvas) {
+        pcc->canvas->ApplyCanvasConfig(pcc);
+        pcc->canvas->Refresh();
+      }
+    }
   }
 }
