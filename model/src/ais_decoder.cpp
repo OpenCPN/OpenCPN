@@ -4292,6 +4292,13 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       }
     }
 
+    // Check if the target has recently been set as own MMSI
+    if (xtd->MMSI == g_OwnShipmmsi) {
+      remove_array.push_back(xtd->MMSI);  // Add this target to removal list
+      xtd->b_removed = true;
+      plugin_msg.Notify(xtd, "");
+    }
+
     ++it;
   }
 
