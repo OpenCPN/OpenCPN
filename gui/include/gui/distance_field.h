@@ -236,20 +236,6 @@ private:
   void InitializeGrid();
 
   /**
-   * Extract boundary features from shapefiles.
-   * Marks grid cells containing boundary features as boundary points.
-   *
-   * @param featureIndices Vector of indices of polygon features to extract
-   * boundary features from. These indices are positions in the shapefile being
-   * read and must remain valid for the duration of the call.
-   * @param reader Non-owning pointer to the shapefile reader containing
-   * boundary feature data. Must not be null and must remain valid for the
-   * duration of the call.
-   */
-  void ExtractBoundaryFeatures(const std::vector<size_t>& featureIndices,
-                               shp::ShapefileReader* reader);
-
-  /**
    * Extract coastline boundaries from shapefiles (legacy method).
    * Marks grid cells containing coastlines as boundary points.
    *
@@ -262,6 +248,20 @@ private:
    */
   void ExtractCoastlineBoundaries(const std::vector<size_t>& featureIndices,
                                   shp::ShapefileReader* reader);
+
+  /**
+   * Rasterize a line segment into the grid at the specified resolution level.
+   * Marks all grid cells intersected by the line segment as boundary points.
+   *
+   * @param lat1 Latitude of first endpoint.
+   * @param lon1 Longitude of first endpoint.
+   * @param lat2 Latitude of second endpoint.
+   * @param lon2 Longitude of second endpoint.
+   * @param level Resolution level of the grid to rasterize into.
+   * @return Number of new boundary cells marked during rasterization.
+   */
+  int RasterizeLineSegment(double lat1, double lon1, double lat2, double lon2,
+                           ResolutionLevel level);
 
   /**
    * Compute the distance field using Fast Marching Method.

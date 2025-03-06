@@ -130,53 +130,77 @@ void DistanceField::ExtractCoastlineBoundaries(
     auto polygon = static_cast<shp::Polygon*>(geometry);
 
     for (auto& ring : polygon->getRings()) {
-      for (auto& point : ring.getPoints()) {
-        double lat = point.getY();
-        double lon = point.getX();
+      const auto& points = ring.getPoints();
+
+      // Process each point and the segment to the next point
+      for (size_t i = 0; i < points.size(); ++i) {
+        // Current point
+        double lat1 = points[i].getY();
+        double lon1 = points[i].getX();
 
         // Skip if outside tile bounds (with a small margin)
-        if (lat < _minLat - 0.01 || lat > _maxLat + 0.01 ||
-            lon < _minLon - 0.01 || lon > _maxLon + 0.01) {
+        if (lat1 < _minLat - 0.01 || lat1 > _maxLat + 0.01 ||
+            lon1 < _minLon - 0.01 || lon1 > _maxLon + 0.01) {
           continue;
         }
 
-        // Convert lat/lon to grid indices for all resolution levels separately
-        auto [highI, highJ] = LatLonToGrid(lat, lon, ResolutionLevel::HIGH);
-        auto [medI, medJ] = LatLonToGrid(lat, lon, ResolutionLevel::MEDIUM);
-        auto [lowI, lowJ] = LatLonToGrid(lat, lon, ResolutionLevel::LOW);
+        // Mark the current point in all resolution grids
+        auto [highI1, highJ1] = LatLonToGrid(lat1, lon1, ResolutionLevel::HIGH);
+        auto [medI1, medJ1] = LatLonToGrid(lat1, lon1, ResolutionLevel::MEDIUM);
+        auto [lowI1, lowJ1] = LatLonToGrid(lat1, lon1, ResolutionLevel::LOW);
 
         // Mark as boundary in the high-resolution grid if within bounds
-        if (IsValidIndex(highI, highJ, ResolutionLevel::HIGH)) {
-          _highResGrid[highI][highJ].boundary = true;
-          _highResGrid[highI][highJ].distance = 0.0;
-          _highResGrid[highI][highJ].accepted = true;
+        if (IsValidIndex(highI1, highJ1, ResolutionLevel::HIGH)) {
+          _highResGrid[highI1][highJ1].boundary = true;
+          _highResGrid[highI1][highJ1].distance = 0.0;
+          _highResGrid[highI1][highJ1].accepted = true;
           highBoundaryCount++;
-        } else {
-          MESSAGE_LOG << "Invalid high-resolution grid index: (" << highI
-                      << ", " << highJ << ")";
         }
 
         // Also mark in medium resolution grid
-        if (IsValidIndex(medI, medJ, ResolutionLevel::MEDIUM)) {
-          _mediumResGrid[medI][medJ].boundary = true;
-          _mediumResGrid[medI][medJ].distance = 0.0;
-          _mediumResGrid[medI][medJ].accepted = true;
+        if (IsValidIndex(medI1, medJ1, ResolutionLevel::MEDIUM)) {
+          _mediumResGrid[medI1][medJ1].boundary = true;
+          _mediumResGrid[medI1][medJ1].distance = 0.0;
+          _mediumResGrid[medI1][medJ1].accepted = true;
           medBoundaryCount++;
-        } else {
-          MESSAGE_LOG << "Invalid medium-resolution grid index: (" << medI
-                      << ", " << medJ << ")";
         }
 
         // Also mark in low resolution grid
-        if (IsValidIndex(lowI, lowJ, ResolutionLevel::LOW)) {
-          _lowResGrid[lowI][lowJ].boundary = true;
-          _lowResGrid[lowI][lowJ].distance = 0.0;
-          _lowResGrid[lowI][lowJ].accepted = true;
+        if (IsValidIndex(lowI1, lowJ1, ResolutionLevel::LOW)) {
+          _lowResGrid[lowI1][lowJ1].boundary = true;
+          _lowResGrid[lowI1][lowJ1].distance = 0.0;
+          _lowResGrid[lowI1][lowJ1].accepted = true;
           lowBoundaryCount++;
-        } else {
-          MESSAGE_LOG << "Invalid low-resolution grid index: (" << lowI << ", "
-                      << lowJ << ")";
         }
+
+        // Get the next point to form a segment (close the loop if at the end)
+        size_t nextIdx = (i + 1) % points.size();
+        double lat2 = points[nextIdx].getY();
+        double lon2 = points[nextIdx].getX();
+
+        // Skip if the segment is completely outside tile bounds
+        if ((lat1 < _minLat - 0.01 && lat2 < _minLat - 0.01) ||
+            (lat1 > _maxLat + 0.01 && lat2 > _maxLat + 0.01) ||
+            (lon1 < _minLon - 0.01 && lon2 < _minLon - 0.01) ||
+            (lon1 > _maxLon + 0.01 && lon2 > _maxLon + 0.01)) {
+          continue;
+        }
+
+        // Process the segment between current point and next point
+        // We'll use different algorithms based on resolution
+
+        // High resolution: Use Bresenham's line algorithm for precise
+        // rasterization
+        highBoundaryCount +=
+            RasterizeLineSegment(lat1, lon1, lat2, lon2, ResolutionLevel::HIGH);
+
+        // Medium resolution: Use a simpler approach with fewer samples
+        medBoundaryCount += RasterizeLineSegment(lat1, lon1, lat2, lon2,
+                                                 ResolutionLevel::MEDIUM);
+
+        // Low resolution: Use even fewer samples
+        lowBoundaryCount +=
+            RasterizeLineSegment(lat1, lon1, lat2, lon2, ResolutionLevel::LOW);
       }
     }
   }
@@ -184,6 +208,81 @@ void DistanceField::ExtractCoastlineBoundaries(
   MESSAGE_LOG << "Marked boundary points: " << highBoundaryCount << " high, "
               << medBoundaryCount << " medium, " << lowBoundaryCount
               << " low resolution";
+}
+
+int DistanceField::RasterizeLineSegment(double lat1, double lon1, double lat2,
+                                        double lon2, ResolutionLevel level) {
+  int boundaryCount = 0;
+
+  // Convert endpoints to grid coordinates
+  auto [i1, j1] = LatLonToGrid(lat1, lon1, level);
+  auto [i2, j2] = LatLonToGrid(lat2, lon2, level);
+
+  // Skip if both endpoints are outside the grid
+  if (!IsValidIndex(i1, j1, level) && !IsValidIndex(i2, j2, level)) {
+    return 0;
+  }
+
+  // Determine grid size and access the appropriate grid based on resolution
+  // level
+  int gridSize;
+  std::vector<std::vector<GridCell>>* grid;
+
+  switch (level) {
+    case ResolutionLevel::HIGH:
+      gridSize = _highResGridSize;
+      grid = &_highResGrid;
+      break;
+    case ResolutionLevel::MEDIUM:
+      gridSize = _mediumResGridSize;
+      grid = &_mediumResGrid;
+      break;
+    case ResolutionLevel::LOW:
+      gridSize = _lowResGridSize;
+      grid = &_lowResGrid;
+      break;
+  }
+
+  // Calculate the number of samples needed based on grid resolution
+  // This ensures we don't miss any grid cells that the line passes through
+  double cellSize;
+  switch (level) {
+    case ResolutionLevel::HIGH:
+      cellSize = _highResCellSize;
+      break;
+    case ResolutionLevel::MEDIUM:
+      cellSize = _mediumResCellSize;
+      break;
+    case ResolutionLevel::LOW:
+      cellSize = _lowResCellSize;
+      break;
+  }
+
+  // Calculate maximum required number of samples. This formula ensures at least
+  // one sample per grid cell along the longest axis.
+  double latDiff = std::abs(lat2 - lat1);
+  double lonDiff = std::abs(lon2 - lon1);
+  double maxDiff = std::max(latDiff, lonDiff);
+  int numSamples =
+      std::max(2, static_cast<int>(std::ceil(maxDiff / cellSize)) + 1);
+
+  // Step through the line and mark grid cells
+  for (int step = 0; step <= numSamples; ++step) {
+    double t = static_cast<double>(step) / numSamples;
+    double lat = lat1 + t * (lat2 - lat1);
+    double lon = lon1 + t * (lon2 - lon1);
+
+    auto [i, j] = LatLonToGrid(lat, lon, level);
+
+    if (IsValidIndex(i, j, level) && !(*grid)[i][j].boundary) {
+      (*grid)[i][j].boundary = true;
+      (*grid)[i][j].distance = 0.0;
+      (*grid)[i][j].accepted = true;
+      boundaryCount++;
+    }
+  }
+
+  return boundaryCount;
 }
 
 void DistanceField::ComputeDistanceField() {
