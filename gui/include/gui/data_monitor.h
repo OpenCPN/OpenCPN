@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2024  Alec Leamas                                       *
+ *   Copyright (C) 2025  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,45 +19,67 @@
 
 /**
  * \file
- * Implement win_watch_daemon.h
+ * New NMEA Debugger successor main window.
  */
 
-#include <winsock2.h>
-#include <windows.h>
-#include <Dbt.h>
+#ifndef DATA_MONITOR_DLG__
+#define DATA_MONITOR_DLG__
+
+#include <iostream>  // debug junk
+#include <functional>
+#include <fstream>
 
 #include <wx/frame.h>
-#include <wx/log.h>
-#include <wx/window.h>
 
-#include "model/gui.h"
-#include "model/sys_events.h"
-#include "model/win_usb_watch.h"
+#include "data_monitor_src.h"
+#include "std_filesystem.h"
 
-class UsbListenFrame : public wxFrame {
+class DataLogger {
 public:
-  UsbListenFrame() : wxFrame(GetTopWindow(), wxID_ANY, "") {}
+  enum class Format { kCandump, kDefault, kCsv };
 
-  virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam,
-                                  WXLPARAM lParam) {
-    if (nMsg == WM_DEVICECHANGE) {
-      wxLogDebug("WM_DEVICECHANGE %x %x", wParam, lParam);
-      if (wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE) {
-        SystemEvents::GetInstance().evt_dev_change.Notify();
-      }
-    }
-    return wxFrame::MSWWindowProc(nMsg, wParam, lParam);
-  }
+  DataLogger(wxWindow* parent, fs::path path);
+
+  DataLogger(wxWindow* parent);
+
+  void SetLogging(bool logging);
+
+  void SetLogfile(fs::path path);
+
+  void Add(std::string msg);
+
+  void Add(const Logline& ll);
+
+  void SetFormat(Format format);
+
+  fs::path GetLogfile() { return m_path; }
+
+private:
+  wxWindow* m_parent;
+  fs::path m_path;
+  std::ofstream m_stream;
+  bool m_is_logging;
+  Format m_format;
+
+  fs::path DefaultLogfile();
 };
 
-void WinUsbWatchDaemon::Start() {
-  if (m_frame) return;
-  m_frame = new UsbListenFrame();
-  m_frame->Hide();
-}
+/** Overall logging handler, outputs to screen and log file. */
+class DataMonitor : public wxFrame, public NmeaLog {
+public:
+  DataMonitor(wxWindow* parent);
 
-void WinUsbWatchDaemon::Stop() {
-  if (!m_frame) return;
-  delete m_frame;
-  m_frame = 0;
-}
+  /** Add an input line to log output. */
+  void Add(std::string msg);
+
+  void Add(const Logline& ll) override;
+
+  bool IsActive() const override;
+
+private:
+  DataMonitorSrc m_monitor_src;
+  wxWindow* m_quick_filter;
+  DataLogger m_logger;
+};
+
+#endif  //  DATA_MONITOR_DLG__
