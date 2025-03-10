@@ -107,7 +107,7 @@ void ConnectionParams::Deserialize(const wxString& configStr) {
     DisableEcho = wxAtoi(prms[22]);
   }
   if (prms.Count() >= 24) {
-    AuthToken = prms[22];
+    AuthToken = prms[23];
   }
 }
 
