@@ -36,7 +36,7 @@
 
 class DataLogger {
 public:
-  enum class Format { kCandump, kDefault, kCsv };
+  enum class Format { kVdr, kDefault, kCsv };
 
   DataLogger(wxWindow* parent, fs::path path);
 
