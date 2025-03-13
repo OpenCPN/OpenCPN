@@ -3949,8 +3949,6 @@ void glChartCanvas::Render() {
       !g_GLOptions.m_bTextureCompressionCaching)
     g_glTextureManager->ClearJobList();
 
-  wxPaintDC(this);
-
   ocpnDC gldc(*this);
 
   int gl_width, gl_height;
