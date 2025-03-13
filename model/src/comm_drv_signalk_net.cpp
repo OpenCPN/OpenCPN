@@ -400,6 +400,13 @@ void CommDriverSignalKNet::handle_SK_sentence(
     return;
   }
 
+  if (!root.IsObject()) {
+    wxLogMessage(wxString::Format(
+        _T("SignalKDataStream ERROR: Message is not a JSON Object: %s"),
+        msg->c_str()));
+    return;
+  }
+
   // Decode just enough of string to extract some identifiers
   // such as the sK version, "self" context, and target context
   if (root.HasMember("version")) {
