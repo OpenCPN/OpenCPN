@@ -236,9 +236,6 @@ public:
    */
   virtual std::string to_vdr() const { return to_string(); }
 
-  /** Return message in extended candump format. TBD: details */
-  virtual std::string to_candump() const { return ""; }
-
   /** Alias for key(). */
   std::string GetKey() const { return key(); }
 
@@ -279,7 +276,9 @@ public:
 
   virtual ~Nmea2000Msg() = default;
 
-  std::string key() const { return std::string("n2000-") + PGN.to_string(); };
+  std::string key() const override {
+    return std::string("n2000-") + PGN.to_string();
+  };
 
   /** Print "bus key id payload" */
   std::string to_string() const override;
@@ -321,9 +320,6 @@ public:
   std::string to_string() const override;
 
   std::string to_vdr() const override;
-
-  /** Modified candump format, PGN 65392. */
-  virtual std::string to_candump() const;
 
   /** Return key which should be used to listen to given message type. */
   static std::string MessageKey(const char* type = "ALL") {
