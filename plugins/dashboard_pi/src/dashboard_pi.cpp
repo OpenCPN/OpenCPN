@@ -4099,7 +4099,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
     : wxDialog(parent, id, _("Dashboard preferences"), wxDefaultPosition,
                wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
 #ifdef __WXQT__
-  wxFont *pF = OCPNGetFont(_("Dialog"), 0);
+  wxFont *pF = OCPNGetFont(_("Dialog"));
   SetFont(*pF);
 #endif
 
@@ -4890,7 +4890,7 @@ void DashboardPreferencesDialog::OnInstrumentAdd(wxCommandEvent &event) {
   AddInstrumentDlg pdlg((wxWindow *)event.GetEventObject(), wxID_ANY);
 
 #ifdef __OCPN__ANDROID__
-  wxFont *pF = OCPNGetFont(_("Dialog"), 0);
+  wxFont *pF = OCPNGetFont(_("Dialog"));
   pdlg.SetFont(*pF);
 
   wxSize esize;
@@ -5181,7 +5181,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
   m_pListCtrlInstruments->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
   m_pListCtrlInstruments->InsertColumn(0, _("Instruments"));
 
-  wxFont *pF = OCPNGetFont(_("Dialog"), 0);
+  wxFont *pF = OCPNGetFont(_("Dialog"));
   m_pListCtrlInstruments->SetFont(*pF);
 
 #ifdef __OCPN__ANDROID__
@@ -5551,7 +5551,7 @@ void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
   wxMenu *contextMenu = new wxMenu();
 
 #ifdef __WXQT__
-  wxFont *pf = OCPNGetFont(_("Menu"), 0);
+  wxFont *pf = OCPNGetFont(_("Menu"));
 
   // add stuff
   wxMenuItem *item1 =
@@ -6185,7 +6185,7 @@ bool OCPNFontButton::Create(wxWindow *parent, wxWindowID id,
 void OCPNFontButton::OnButtonClick(wxCommandEvent &WXUNUSED(ev)) {
   // update the wxFontData to be shown in the dialog
   m_data.SetInitialFont(m_selectedFont);
-  wxFont *pF = OCPNGetFont(_("Dialog"), 0);
+  wxFont *pF = OCPNGetFont(_("Dialog"));
 
 #ifdef __WXGTK__
   // Use a smaller font picker dialog (ocpnGenericFontDialog) for small displays
