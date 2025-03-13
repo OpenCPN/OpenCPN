@@ -201,7 +201,12 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
       } else if (requested_font_size != 0 &&
                  pmfd->m_font->GetPointSize() == requested_font_size) {
         return pmfd->m_font;
-      }
+      } else
+        // There is a list entry, but no font found, so create one
+        return FindOrCreateFont(
+            requested_font_size, pmfd->m_font->GetFamily(),
+            pmfd->m_font->GetStyle(), pmfd->m_font->GetWeight(), false,
+            pmfd->m_font->GetFaceName(), pmfd->m_font->GetEncoding());
     }
     node = node->GetNext();
   }
