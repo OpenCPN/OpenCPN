@@ -569,7 +569,7 @@ void ChartDldrPanelImpl::OnContextMenu(wxMouseEvent &event) {
   wxPoint mouseClient = ScreenToClient(mouseScreen);
 
 #ifdef __OCPN__ANDROID__
-  wxFont *pf = OCPNGetFont(_("Menu"), 0);
+  wxFont *pf = OCPNGetFont(_("Menu"));
 
   // add stuff
   wxMenuItem *item1 = new wxMenuItem(&menu, ID_MNU_SELALL, _("Select all"));
@@ -2216,7 +2216,7 @@ bool ChartDldrGuiAddSourceDlg::LoadSection(const wxTreeItemId &root,
       item = m_treeCtrlPredefSrcs->AppendItem(
           root, wxString::FromUTF8(element.first_child().value()), 0, 0);
 
-      wxFont *pFont = OCPNGetFont(_("Dialog"), 0);
+      wxFont *pFont = OCPNGetFont(_("Dialog"));
       if (pFont) m_treeCtrlPredefSrcs->SetItemFont(item, *pFont);
     }
     if (!strcmp(element.name(), "sections")) LoadSections(item, element);
@@ -2253,7 +2253,7 @@ bool ChartDldrGuiAddSourceDlg::LoadCatalog(const wxTreeItemId &root,
   ChartSource *cs = new ChartSource(name, location, dir);
   wxTreeItemId id = m_treeCtrlPredefSrcs->AppendItem(root, name, 1, 1, cs);
 
-  wxFont *pFont = OCPNGetFont(_("Dialog"), 0);
+  wxFont *pFont = OCPNGetFont(_("Dialog"));
   if (pFont) m_treeCtrlPredefSrcs->SetItemFont(id, *pFont);
 
   return true;

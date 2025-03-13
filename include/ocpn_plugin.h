@@ -2332,7 +2332,7 @@ extern "C" DECL_EXP wxWindow *GetOCPNCanvasWindow();
  * Time to Go (TTG). By default, the text is large and green, optimized for
  * visibility.
  */
-extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size);
+extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size = 0);
 
 /**
  * Gets shared application data location.

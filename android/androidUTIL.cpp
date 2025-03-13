@@ -4593,7 +4593,7 @@ MigrateAssistantDialog::MigrateAssistantDialog(wxWindow *parent, bool bskipScan,
 
   m_statusTimer.SetOwner(this, MIGRATION_STATUS_TIMER);
 
-  wxFont *qFont = OCPNGetFont(_("Dialog"), 0);
+  wxFont *qFont = OCPNGetFont(_("Dialog"));
   SetFont(*qFont);
 
   CreateControls();

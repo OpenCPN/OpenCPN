@@ -450,7 +450,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
                        wxEmptyString, wxITEM_NORMAL);
     /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
     #ifdef __WXMSW__
-        wxFont *qFont = OCPNGetFont(_("Menu"), 0);
+        wxFont *qFont = OCPNGetFont(_("Menu"));
         table->SetFont(*qFont);
     #endif
     */
@@ -479,8 +479,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
       starting = true;
     }
     // the dialog font could have been changed since grib plugin opened
-    if (m_pGribCtrlBar->GetFont() != *OCPNGetFont(_("Dialog"), 0))
-      starting = true;
+    if (m_pGribCtrlBar->GetFont() != *OCPNGetFont(_("Dialog"))) starting = true;
     if (starting) {
       m_pGRIBOverlayFactory->SetMessageFont();
       SetDialogFont(m_pGribCtrlBar);

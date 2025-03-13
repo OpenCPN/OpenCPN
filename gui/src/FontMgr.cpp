@@ -659,8 +659,7 @@ void FontMgr::ScrubList() {
       break;
     }
 
-    GetFont(wxGetTranslation(candidate), g_default_font_size);
-
+    GetFont(wxGetTranslation(candidate));
     i++;
   }
 }
