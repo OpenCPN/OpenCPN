@@ -1506,7 +1506,7 @@ char *s52plib::_getParamVal(ObjRazRules *rzRules, char *str, char *buf, int bsz)
     //    Special case for conversion of some vertical (height) attributes to
     //    feet
     if ((!strncmp(buf, "VERCLR", 6)) || (!strncmp(buf, "VERCCL", 6)) ||
-        (!strncmp(buf, "VERCOP", 6))) {
+        (!strncmp(buf, "VERCOP", 6)) || (!strncmp(buf, "ELEVAT", 6)) ) {
       switch (m_nDepthUnitDisplay) {
         case 0:  // feet
         case 2:  // fathoms
@@ -11302,4 +11302,3 @@ unsigned int crc32buf(unsigned char *buf, size_t len) {
 
   return ~oldcrc32;
 }
-

@@ -5337,7 +5337,7 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
       //    As a special case, convert some attribute values to feet.....
       if ((curAttrName == _T("VERCLR")) || (curAttrName == _T("VERCCL")) ||
           (curAttrName == _T("VERCOP")) || (curAttrName == _T("HEIGHT")) ||
-          (curAttrName == _T("HORCLR"))) {
+          (curAttrName == _T("HORCLR")) || (curAttrName == _T("ELEVAT"))) {
         switch (ps52plib->m_nDepthUnitDisplay) {
           case 0:                          // feet
           case 2:                          // fathoms
@@ -5481,7 +5481,7 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
       //    As a special case, convert some attribute values to feet.....
       if ((AttrName == _T("VERCLR")) || (AttrName == _T("VERCCL")) ||
           (AttrName == _T("VERCOP")) || (AttrName == _T("HEIGHT")) ||
-          (AttrName == _T("HORCLR"))) {
+          (AttrName == _T("HORCLR")) || (AttrName == _T("ELEVAT"))) {
         switch (ps52plib->m_nDepthUnitDisplay) {
           case 0:                          // feet
           case 2:                          // fathoms
