@@ -87,10 +87,14 @@ static std::string CharToString(char c) {
 
 std::string Nmea2000Msg::to_string() const {
   std::string s;
-  std::for_each(payload.begin(), payload.end(),
-                [&s](unsigned char c) { s.append(CharToString(c)); });
-
+  for (auto c : payload) s.append(CharToString(c));
   return PGN.to_string() + " " + s;
+}
+
+std::string Nmea2000Msg::to_vdr() const {
+  std::string s;
+  for (auto c : payload) s.append(CharToString(c) + " ");
+  return s;
 }
 
 std::string Nmea0183Msg::to_string() const {
@@ -98,6 +102,8 @@ std::string Nmea0183Msg::to_string() const {
   ss << key() << " " << talker << type << " " << ocpn::printable(payload);
   return ss.str();
 }
+
+std::string Nmea0183Msg::to_vdr() const { return ocpn::printable(payload); }
 
 std::string PluginMsg::to_string() const {
   std::stringstream ss;
@@ -108,32 +114,4 @@ std::string PluginMsg::to_string() const {
       ss << CharToString(c);
   }
   return name + ": " + ss.str();
-}
-
-/**
-length (1):      0x13
- * priority (1);    0x02
- * PGN (3):         0x01 0xF8 0x01
- * destination(1):  0xFF
- * source (1):      0x01
- * time (4):        0x76 0xC2 0x52 0x00
- * len (1):         0x08
- * data (len):      08 70 EB 14 E8 8E 52 D2
- * packet CRC:      0xBB
- *
-11FB1000 00 3E 78 6C 21 50 25 21  -> PGN 1FB10
- https://www.thehulltruth.com/marine-electronics-forum/
- 1147866-reading-raw-nmea-2000-data.html
-
- Fake PGN 65392 65395
-**/
-
-std::string Nmea0183Msg::to_candump() const {
-  std::stringstream ss;
-  ss << "10FF7000 ";  // 1 -> misc, 0FF70 -> PGN 65392, 00-> misc
-  for (auto c : payload) {
-    ss << std::hex << static_cast<int>(c) / 16 << static_cast<int>(c) % 16;
-    ss << " ";
-  }
-  return ss.str();
 }
