@@ -48,15 +48,63 @@
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
 
-/** Write a line in the log using the standard format. */
-static void AddCandumpLogline(const Logline& ll, std::ostream& stream) {
+// clang-format: off
+static const std::unordered_map<NavAddr::Bus, std::string> kSourceByBus = {
+    {NavAddr::Bus::N0183, "NMEA0183"},
+    {NavAddr::Bus::N2000, "NMEA2000"},
+    {NavAddr::Bus::Signalk, "SignalK"}};
+// clang-format: on
+
+/**
+ * Quote arg string as required by VDR plugin, see
+ * https://opencpn-manuals.github.io/main/vdr/log_format.html
+ * @param arg unquoted string
+ * @return Possibly quoted string handling double quotes in arg.
+ */
+static std::string VdrQuote(const std::string arg) {
+  auto static const npos = std::string::npos;
+  if (arg.find(',') == npos && arg.find('"') == npos) return arg;
+  std::string s;
+  for (auto c : arg) {
+    if (c == '"')
+      s += "\"\"";
+    else
+      s += c;
+  }
+  return "\"" + s + "\"";
+}
+
+/**
+ * Write a line in the log using the VDR plugin format as defined in
+ * https://opencpn-manuals.github.io/main/vdr/log_format.html
+ */
+static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
+  if (kSourceByBus.find(ll.navmsg->bus) == kSourceByBus.end()) return;
+
   using namespace std::chrono;
   auto now = steady_clock::now();
-  auto us = duration_cast<microseconds>(now.time_since_epoch()).count();
-  stream << "[" << us / 1000000 << "." << us % 1000000 << "] ";
-  stream << (ll.navmsg ? ll.navmsg->source->iface : "-") << " ";
-  stream << ll.navmsg->to_vdr();
-  stream << "\n";
+  auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
+  stream << ms << ",";
+
+  stream << kSourceByBus.at(ll.navmsg->bus) << ",";
+  stream << ll.navmsg->source->iface << ",";
+  switch (ll.navmsg->bus) {
+    case NavAddr::Bus::N0183: {
+      auto msg0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(ll.navmsg);
+      stream << msg0183->talker << msg0183->type << ",";
+    } break;
+    case NavAddr::Bus::N2000: {
+      auto msg2000 = std::dynamic_pointer_cast<const Nmea2000Msg>(ll.navmsg);
+      stream << msg2000->PGN.to_string() << ",";
+    } break;
+    case NavAddr::Bus::Signalk: {
+      auto msgSignalK = std::dynamic_pointer_cast<const SignalkMsg>(ll.navmsg);
+      stream << "\"" << msgSignalK->context_self << "\",";
+    } break;
+    default:
+      assert(false && "Illegal message type");
+  };
+  stream << VdrQuote(ll.navmsg->to_vdr()) << "\n";
 }
 
 /** Write a line in the log using the standard format. */
@@ -311,7 +359,7 @@ public:
     kLogFile,
     kLogFormatDefault,
     kLogFormatCsv,
-    kLogFormatCandump,
+    kLogFormatVdr,
     kViewStdColors,
     kViewNoColors,
     kViewTimestamps,
@@ -333,9 +381,9 @@ public:
 
     auto logging = new wxMenu("");
     AppendId(logging, Id::kLogFile, _("Log file..."));
-    AppendRadioId(logging, Id::kLogFormatDefault, _("Log format: pretty"));
+    AppendRadioId(logging, Id::kLogFormatDefault, _("Log format: standard"));
     AppendRadioId(logging, Id::kLogFormatCsv, _("Log format: CSV"));
-    AppendRadioId(logging, Id::kLogFormatCandump, _("Log format: candump"));
+    AppendRadioId(logging, Id::kLogFormatVdr, _("Log format: VDR"));
     AppendSubMenu(logging, _("Logging..."));
 
     auto view = new wxMenu("");
@@ -352,8 +400,8 @@ public:
           SetLogFormat(DataLogger::Format::kDefault, _("Log format: default"));
           break;
 
-        case Id::kLogFormatCandump:
-          SetLogFormat(DataLogger::Format::kCandump, _("Log format: candump"));
+        case Id::kLogFormatVdr:
+          SetLogFormat(DataLogger::Format::kVdr, _("Log format: VDR"));
           break;
 
         case Id::kLogFormatCsv:
@@ -402,6 +450,7 @@ private:
   void SetLogFormat(DataLogger::Format format, const std::string& label) {
     m_log_label->SetLabel(label);
     m_logger.SetFormat(format);
+    m_log_button->Disable();
     m_parent->Layout();
   }
 
@@ -410,8 +459,7 @@ private:
                      m_logger.GetLogfile().string(), _("Log Files (*.log)"),
                      wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     if (dlg.ShowModal() == wxID_CANCEL) return;
-    m_logger = DataLogger(m_parent, fs::path(dlg.GetPath().ToStdString()));
-    m_logger.SetLogging(true);
+    m_logger.SetLogfile(fs::path(dlg.GetPath().ToStdString()));
     m_log_button->Enable();
   }
 
@@ -560,13 +608,13 @@ DataLogger::DataLogger(wxWindow* parent, fs::path path)
 DataLogger::DataLogger(wxWindow* parent)
     : DataLogger(parent, DefaultLogfile()) {}
 
-void DataLogger::SetLogging(bool logging) {
-  // TODO: dialog if no logfile i. e. m_path == DefaultLogfile()
-  m_is_logging = logging;
-}
+void DataLogger::SetLogging(bool logging) { m_is_logging = logging; }
 
 void DataLogger::SetLogfile(fs::path path) {
-  m_stream = std::ofstream(path, std::ios_base::app);
+  m_stream = std::ofstream(path);
+  m_stream << "# timestamp_format: EPOCH_MILLIS\n";
+  m_stream << "received_at,protocol,msg_type,source,raw_data\n";
+  m_stream << std::flush;
 }
 
 void DataLogger::SetFormat(DataLogger::Format format) { m_format = format; }
@@ -580,9 +628,9 @@ fs::path DataLogger::DefaultLogfile() {
 
 void DataLogger::Add(const Logline& ll) {
   if (!m_is_logging || !ll.navmsg) return;
-  if (m_format == Format::kCandump && ll.navmsg->to_vdr().empty()) return;
-  if (m_format == DataLogger::Format::kCandump)
-    AddCandumpLogline(ll, m_stream);
+  if (m_format == Format::kVdr && ll.navmsg->to_vdr().empty()) return;
+  if (m_format == DataLogger::Format::kVdr)
+    AddVdrLogline(ll, m_stream);
   else
     AddStdLogline(ll, m_stream,
                   m_format == DataLogger::Format::kCsv ? '|' : ' ');
