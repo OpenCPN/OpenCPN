@@ -56,6 +56,10 @@ public:
    * "StatusBar")
    * @param requested_font_size Requested font size in points, 0 to use
    * system/user default
+   * @deprecated requested_font_size This parameter is deprecated as it
+   * overrides user font customization settings. Hard-coded font sizes make it
+   * impossible for OpenCPN to honor user font preferences. Always use 0 to
+   * respect user's font customization choices.
    * @return Pointer to the font to use
    */
   wxFont *GetFont(const wxString &TextElement, int requested_font_size = 0);

@@ -2443,37 +2443,48 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules,
       else
         fontweight_t = wxFONTWEIGHT_BOLD;
 
-      wxFont sys_font = *wxNORMAL_FONT;
-      int default_size = sys_font.GetPointSize();
+      // Get the configured "ChartText" font, which may be the default system
+      // font or another font that has been customized by the user.
+      // The user may have customized both the font face and the font size.
+      // We will use the user-configured font size as the base size for the
+      // text rendering, and adjust the size based on the S52 text size
+      // specification.
+      wxFont *templateFont = GetOCPNScaledFont_PlugIn(_("ChartTexts"));
+      int default_size = templateFont->GetPointSize();
 
-#ifdef __WXOSX__
-      default_size += 1;  // default to 1pt larger than system UI font
-#else
-      default_size += 2;  // default to 2pt larger than system UI font
-#endif
-
-      wxFont *templateFont =
-          GetOCPNScaledFont_PlugIn(_("ChartTexts"), default_size);
-
-        // NOAA ENC fles requests font size up to 20 points, which looks very
-        // disproportioned. Let's scale those sizes down to more reasonable
-        // values.
+      // In S52, the "body size" refers to the base size of the text characters
+      // in display units (typically pixels). This is part of the text style
+      // parameters that control how chart text elements are rendered.
+      // The S52 standard (IHO S-52 Presentation Library) uses this parameter
+      // as part of the text placement and styling rules for chart text elements.
+      // The body size is used as a reference unit for Text scaling.
+      //
+      // NOAA ENC files requests font size up to 20 points, which looks very
+      // disproportioned. Let's scale those sizes down to more reasonable
+      // values.
       int fontSize = text->bsize;
 
-      if (fontSize > 18)
-        fontSize -= 8;
-      else if (fontSize > 13)
-        fontSize -= 3;
+      const int maxInputSize = 20; // Largest expected input size.
+      const int normalizedRange = 4;
+      // Clamp the input size.
+      fontSize = wxMin(maxInputSize, fontSize);
 
-      // Now factor in the users selected font size.
-      fontSize += templateFont->GetPointSize() - 8;
+      // Normalize the font size by mapping from [0, maxInputSize] to
+      // [0, normalizedRange] in a linear, proportional way.
+      // The transformation is inherently monotonic - larger input values will
+      // always produce larger output values before clamping.
+      fontSize = (static_cast<float>(fontSize) / static_cast<float>(maxInputSize)) * normalizedRange;
+      // The normalized value is added to the default font size to get the final
+      // font size.
+      // This respects user preferences while still adapting to chart specifications.
+      fontSize += default_size;
 
       // In no case should font size be less than 10, since it becomes
       // unreadable
       fontSize = wxMax(10, fontSize);
 
       text->pFont = FindOrCreateFont_PlugIn(
-            fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight_t,
+            fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
             false, templateFont->GetFaceName());
   }
 

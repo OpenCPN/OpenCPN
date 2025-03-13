@@ -127,8 +127,7 @@ public:
   void SetCursorDataXY(wxPoint p) { m_CursorDataxy = p; }
   void SetCtrlBarSizeXY(wxSize p) { m_CtrlBar_Sizexy = p; }
   void SetColorScheme(PI_ColorScheme cs);
-  void SetDialogFont(wxWindow *window,
-                     wxFont *font = OCPNGetFont(_("Dialog"), 0));
+  void SetDialogFont(wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog")));
   void SetCurrentViewPort(PlugIn_ViewPort &vp) { m_current_vp = vp; }
   PlugIn_ViewPort &GetCurrentViewPort() { return m_current_vp; }
 
