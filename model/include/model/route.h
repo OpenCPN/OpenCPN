@@ -72,6 +72,26 @@ const int StyleValues[] = {-1,          wxSOLID,      wxDOT,
                            wxLONG_DASH, wxSHORT_DASH, wxDOT_DASH};
 const int WidthValues[] = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
+/**
+ * Represents a navigational route in the navigation system.
+ *
+ * The Route class manages an ordered list of RoutePoints that define a
+ * navigational path between waypoints. It provides functionality for route
+ * creation, manipulation, and navigation calculations such as distances,
+ * bearings, and estimated times.
+ *
+ * A Route can be:
+ * - Active or inactive for navigation
+ * - Visible or hidden on the chart
+ * - Temporary or persistent
+ * - Part of a layer or standalone
+ *
+ * The class supports various route operations like adding, inserting, or
+ * removing waypoints, calculating segment distances, and handling waypoint
+ * sharing between multiple routes. It also maintains navigation-related
+ * attributes like planned speeds, departure times, and style attributes for
+ * rendering.
+ */
 class Route : public wxObject {
   friend class RouteGui;
 
