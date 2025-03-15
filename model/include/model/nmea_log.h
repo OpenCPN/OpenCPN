@@ -3,13 +3,34 @@
 
 #include <wx/string.h>
 
+#include "model/comm_navmsg.h"
+#include "model/navmsg_filter.h"
+
+/** Item in the log window. */
+struct Logline {
+  const std::shared_ptr<const NavMsg> navmsg;
+  const NavmsgStatus state;
+  const std::string message;
+  std::string error_msg;
+  std::string prefix;
+
+  Logline() {}
+  Logline(const std::shared_ptr<const NavMsg>& navmsg, NavmsgStatus sts)
+      : navmsg(navmsg),
+        state(sts),
+        message(navmsg ? navmsg->to_string() : ""),
+        error_msg("Unknown error") {}
+  Logline(const std::shared_ptr<const NavMsg>& navmsg)
+      : Logline(navmsg, NavmsgStatus()) {}
+};
+
 class NmeaLog {
 public:
   /** Add an formatted string to log output. */
-  virtual void Add(const wxString& s) = 0;
+  virtual void Add(const Logline& l) = 0;
 
   /** Return true if log is visible i. e., if it's any point using Add(). */
-  virtual bool Active() const = 0;
+  virtual bool IsActive() const = 0;
 };
 
 #endif  // _ABSTRACT_NMEA_LOG__
