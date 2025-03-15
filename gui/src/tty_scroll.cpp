@@ -54,6 +54,12 @@ const wxString kUtfLeftwardsArrowToBar = wxString::FromUTF8(u8"\u21E4");
 const wxString kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
 const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
 
+/** Return true if s matches ll's source interface or message. */
+static bool IsFilterMatch(const struct Logline& ll, const std::string& s) {
+  if (ll.navmsg->source->iface.find(s) != std::string::npos) return true;
+  return ll.message.find(s) != std::string::npos;
+}
+
 wxColor StdColorsByState::operator()(NavmsgStatus ns) {
   wxColour color;
   static const wxColor kDarkGreen(30, 72, 56);
@@ -134,8 +140,7 @@ void TtyScroll::OnSize(wxSizeEvent& ev) {
 
 void TtyScroll::Add(struct Logline ll) {
   if (m_is_paused || !m_filter.Pass(ll.state, ll.navmsg)) return;
-  const auto& filter = m_quick_filter;
-  if (!filter.empty() && ll.message.find(filter) == std::string::npos) return;
+  if (!m_quick_filter.empty() && !IsFilterMatch(ll, m_quick_filter)) return;
   while (m_lines.size() > m_n_lines - 1) m_lines.pop_front();
   m_lines.push_back(ll);
   Refresh(true);
