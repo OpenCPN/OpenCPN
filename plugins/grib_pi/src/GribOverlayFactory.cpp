@@ -377,7 +377,7 @@ void GRIBOverlayFactory::SetMessageFont() {
 #ifdef __WXQT__
   fo = GetOCPNGUIScaledFont_PlugIn(_("Dialog"));
 #else
-  fo = *OCPNGetFont(_("Dialog"), 0);
+  fo = *OCPNGetFont(_("Dialog"));
   fo.SetPointSize(
       (fo.GetPointSize() * g_ContentScaleFactor / OCPN_GetWinDIPScaleFactor()));
 #endif

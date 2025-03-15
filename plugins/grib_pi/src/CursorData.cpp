@@ -142,7 +142,7 @@ void CursorData::PopulateTrackingControls(bool vertical) {
 
   this->Fit();
   // Get text controls sizing data
-  wxFont *font = OCPNGetFont(_("Dialog"), 0);
+  wxFont *font = OCPNGetFont(_("Dialog"));
   int wn, wd, ws, wl;
   GetTextExtent(_T("abcdefghihjk"), &wn, nullptr, 0, 0,
                 font);  // normal width text control size
@@ -742,7 +742,7 @@ void CursorData::MenuAppend(wxMenu *menu, int id, wxString label, int setting) {
   wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), wxITEM_CHECK);
 
 #ifdef __WXMSW__
-  wxFont *qFont = OCPNGetFont(_("Menu"), 0);
+  wxFont *qFont = OCPNGetFont(_("Menu"));
   item->SetFont(*qFont);
 #endif
 
