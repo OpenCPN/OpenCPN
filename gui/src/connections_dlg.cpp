@@ -210,11 +210,11 @@ public:
 
     // Build default bitmaps
     double bmp_size = GetParent()->GetCharHeight() * 15 / 10;
-    if (IsWindows()) {
-      bmp_size = GetParent()->GetCharHeight() * 20 / 10;
-      // Apply Windows scale factor
-      bmp_size *= (double)(GetParent()->ToDIP(100)) / 100.;
-    }
+#ifdef __WXMSW__
+    bmp_size = GetParent()->GetCharHeight() * 20 / 10;
+    // Apply Windows scale factor
+    bmp_size *= (double)(GetParent()->ToDIP(100)) / 100.;
+#endif
     // Force minimum physical size for touch screens
     if (g_btouch) {
       double pixel_per_mm =
