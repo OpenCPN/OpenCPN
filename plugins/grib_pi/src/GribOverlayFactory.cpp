@@ -606,7 +606,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   }
   if (m_dlg.ProjectionEnabled()) {
     int x, y;
-    m_dlg.GetProjectedLatLon(x, y);
+    m_dlg.GetProjectedLatLon(x, y, vp);
     DrawProjectedPosition(x, y);
   }
   if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append(_T("\n"));
