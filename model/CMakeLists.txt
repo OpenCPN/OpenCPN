@@ -76,6 +76,7 @@ set(
   ${MODEL_HDR_DIR}/datetime.h
   ${MODEL_HDR_DIR}/downloader.h
   ${MODEL_HDR_DIR}/ds_porttype.h
+  ${MODEL_HDR_DIR}/filters_on_disk.h
   ${MODEL_HDR_DIR}/garmin_protocol_mgr.h
   ${MODEL_HDR_DIR}/garmin_wrapper.h
   ${MODEL_HDR_DIR}/geodesic.h
@@ -183,6 +184,7 @@ set(SRC
   ${MODEL_SRC_DIR}/datetime.cpp
   ${MODEL_SRC_DIR}/downloader.cpp
   ${MODEL_SRC_DIR}/ds_porttype.cpp
+  ${MODEL_SRC_DIR}/filters_on_disk.cpp
   ${MODEL_SRC_DIR}/garmin_protocol_mgr.cpp
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
