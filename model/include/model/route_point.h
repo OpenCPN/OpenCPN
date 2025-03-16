@@ -50,6 +50,21 @@ extern int g_LayerIdx;
 
 extern wxRect g_blink_rect;
 
+/**
+ * Represents a waypoint or mark within the navigation system.
+ *
+ * RoutePoint represents both standalone marks and waypoints that are part of
+ * routes or tracks. A RoutePoint contains geographical coordinates, display
+ * properties, and various navigation-related attributes.
+ *
+ * RoutePoints can exist in several states:
+ * - As standalone marks (isolated waypoints)
+ * - As part of one or more routes
+ * - As shared waypoints (used in multiple routes)
+ *
+ * The class manages visual properties like icons, visibility, and range rings,
+ * as well as navigation data like arrival radius, planned speed, and ETAs.
+ */
 class RoutePoint {
   friend class RoutePointGui;
 
@@ -173,7 +188,8 @@ public:
   bool m_bRPIsBeingEdited;
 
   bool m_bIsInRoute;
-  bool m_bIsolatedMark;  // This is an isolated mark
+  /** Flag indicating if the waypoint is a standalone mark. */
+  bool m_bIsolatedMark;
 
   bool m_bIsVisible;  // true if should be drawn, false if invisible
   bool m_bIsListed;
