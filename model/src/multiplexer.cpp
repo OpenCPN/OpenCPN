@@ -227,13 +227,14 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
               params.IOSelect == DS_TYPE_OUTPUT) {
             bool bout_filter = true;
             bool bxmit_ok = true;
+            std::string id("XXXXX");
+            size_t comma_pos = n0183_msg->payload.find(",");
+            if (comma_pos != std::string::npos && comma_pos > 5)
+              id = n0183_msg->payload.substr(1, comma_pos - 1);
             if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
                                             FILTER_OUTPUT)) {
               // Reset source address. It's const, so make a modified copy
-              std::string id("XXXXX");
-              size_t comma_pos = n0183_msg->payload.find(",");
-              if (comma_pos != std::string::npos && comma_pos > 5)
-                id = n0183_msg->payload.substr(1, comma_pos - 1);
+
               auto null_addr = std::make_shared<NavAddr>();
               msg = std::make_shared<Nmea0183Msg>(id, n0183_msg->payload,
                                                   null_addr);
@@ -248,7 +249,10 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
             } else {
               if (!bxmit_ok) ns.status = NavmsgStatus::State::kTxError;
             }
-            LogOutputMessage(n0183_msg, ns);
+            auto logaddr = std::make_shared<NavAddr0183>(driver->iface);
+            auto logmsg =
+                std::make_shared<Nmea0183Msg>(id, n0183_msg->payload, logaddr);
+            LogOutputMessage(logmsg, ns);
           }
         }
       }
