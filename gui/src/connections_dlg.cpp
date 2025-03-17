@@ -56,7 +56,7 @@ static inline bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
 }
 
-/** Standard icons bitmaps: setttings gear, trash bin, etc.. */
+/** Standard icons bitmaps: settings gear, trash bin, etc. */
 class StdIcons {
 private:
   const double m_size;
@@ -480,7 +480,7 @@ private:
 
   /** Handle connections driver statistics status changes event. */
   void OnConnectionChange(const std::vector<ConnectionParams*>& connections) {
-    bool b_need_refresh = false;
+    bool refresh_needed = false;
     for (auto it = connections.begin(); it != connections.end(); it++) {
       ConnState state = m_conn_states.GetDriverState(
           (*it)->GetCommProtocol(), (*it)->GetStrippedDSPort());
@@ -492,7 +492,7 @@ private:
           if (m_renderer_status_vector[row]->status != ConnState::Disabled) {
             m_renderer_status_vector[row]->SetBitmap(m_icons.filled_circle);
             m_renderer_status_vector[row]->status = ConnState::Disabled;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("Disabled");
           break;
@@ -500,7 +500,7 @@ private:
           if (m_renderer_status_vector[row]->status != ConnState::NoStats) {
             m_renderer_status_vector[row]->SetBitmap(m_icons.open_circle);
             m_renderer_status_vector[row]->status = ConnState::NoStats;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("No driver statistics available");
           break;
@@ -508,7 +508,7 @@ private:
           if (m_renderer_status_vector[row]->status != ConnState::NoData) {
             m_renderer_status_vector[row]->SetBitmap(m_icons.exclaim_mark);
             m_renderer_status_vector[row]->status = ConnState::NoData;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("No data flowing through connection");
           break;
@@ -516,7 +516,7 @@ private:
           if (m_renderer_status_vector[row]->status != ConnState::Unavailable) {
             m_renderer_status_vector[row]->SetBitmap(m_icons.x_mult);
             m_renderer_status_vector[row]->status = ConnState::Unavailable;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("The device is unavailable");
           break;
@@ -524,13 +524,13 @@ private:
           if (m_renderer_status_vector[row]->status != ConnState::Ok) {
             m_renderer_status_vector[row]->SetBitmap(m_icons.check_mark);
             m_renderer_status_vector[row]->status = ConnState::Ok;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("Data is flowing");
           break;
       }
     }
-    if (b_need_refresh) ForceRefresh();
+    if (refresh_needed) ForceRefresh();
   }
 
   void SetSortingColumn(int col) {
