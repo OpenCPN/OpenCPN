@@ -40,6 +40,8 @@
 #include "model/local_api.h"
 #include "model/rest_server.h"
 #include "model/usb_watch_daemon.h"
+#include "data_monitor.h"
+
 class Track;
 
 class MyApp : public wxApp {
@@ -93,6 +95,8 @@ private:
   void InitRestListeners();
   ObsListener rest_activate_listener;
   ObsListener rest_reverse_listener;
+
+  DataMonitor* m_data_monitor;
 };
 
 wxDECLARE_APP(MyApp);
