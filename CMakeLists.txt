@@ -970,6 +970,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/shapefile_basemap.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
+    ${GUI_SRC_DIR}/svg_icons.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
     ${GUI_SRC_DIR}/TCDataFactory.cpp
     ${GUI_SRC_DIR}/TCDataSource.cpp
