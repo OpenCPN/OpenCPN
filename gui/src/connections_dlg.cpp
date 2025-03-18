@@ -107,9 +107,9 @@ public:
 };
 
 // Custom renderer class for rendering bitmap in a grid cell
-class wxBitmapCellRenderer : public wxGridCellRenderer {
+class BitmapCellRenderer : public wxGridCellRenderer {
 public:
-  wxBitmapCellRenderer(const wxBitmap& bitmap)
+  BitmapCellRenderer(const wxBitmap& bitmap)
       : status(ConnState::Disabled), m_bitmap(bitmap) {}
 
   // Update the bitmap dynamically
@@ -132,9 +132,7 @@ public:
     return wxSize(m_bitmap.GetWidth(), m_bitmap.GetHeight());
   }
 
-  wxBitmapCellRenderer* Clone() const {
-    return new wxBitmapCellRenderer(m_bitmap);
-  }
+  BitmapCellRenderer* Clone() const { return new BitmapCellRenderer(m_bitmap); }
   ConnState status;
 
 private:
@@ -320,13 +318,13 @@ public:
       SetCellValue(row, 2, (*it)->GetIOTypeValueStr());
       SetCellValue(row, 3, (*it)->GetStrippedDSPort());
       m_tooltips[row][3] = (*it)->UserComment;
-      SetCellRenderer(row, 5, new wxBitmapCellRenderer(m_icons.settings));
+      SetCellRenderer(row, 5, new BitmapCellRenderer(m_icons.settings));
       m_tooltips[row][5] = _("Edit connection");
-      SetCellRenderer(row, 6, new wxBitmapCellRenderer(m_icons.trashbin));
+      SetCellRenderer(row, 6, new BitmapCellRenderer(m_icons.trashbin));
       m_tooltips[row][6] = _("Delete connection");
       SetCellValue(row, 7, (*it)->GetKey());
 
-      auto stat_renderer = new wxBitmapCellRenderer(m_icons.filled_circle);
+      auto stat_renderer = new BitmapCellRenderer(m_icons.filled_circle);
       stat_renderer->status = ConnState::Disabled;
       m_renderer_status_vector.push_back(stat_renderer);
       SetCellRenderer(row, 4, stat_renderer);
@@ -633,7 +631,7 @@ private:
   EventVar& m_on_conn_delete;
   int m_last_tooltip_cell;
   StdIcons m_icons;
-  std::vector<wxBitmapCellRenderer*> m_renderer_status_vector;
+  std::vector<BitmapCellRenderer*> m_renderer_status_vector;
 };
 
 /** Indeed: the General  panel. */
