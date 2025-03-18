@@ -64,15 +64,12 @@ private:
 
   /** Return platform dependent icon size. */
   double GetSize(wxWindow* parent) {
-    double size = parent->GetCharHeight() * 15 / 10;
-    if (IsWindows()) {
-      size = parent->GetCharHeight() * 20 / 10;
-      // Apply scale factor, mostly for Windows. Other platforms
-      // does this in the toolkit, ToDIP() is aware of this.
+    double size = parent->GetCharHeight() * (IsWindows() ? 1.3 : 1.0);
 #if wxCHECK_VERSION(3, 1, 2)
-      size *= static_cast<double>(parent->ToDIP(100)) / 100.;
+    // Apply scale factor, mostly for Windows. Other platforms
+    // does this in the toolkits, ToDIP() is aware of this.
+    size *= static_cast<double>(parent->ToDIP(100)) / 100.;
 #endif
-    }
     // Force minimum physical size for touch screens
     if (g_btouch) {
       double pixel_per_mm =
