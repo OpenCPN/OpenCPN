@@ -44,6 +44,7 @@
 #include "ixwebsocket/IXWebSocket.h"
 #include "ixwebsocket/IXUserAgent.h"
 #include "ixwebsocket/IXSocketTLSOptions.h"
+using namespace std::literals::chrono_literals;
 
 const int kTimerSocket = 9006;
 
@@ -115,6 +116,8 @@ public:
                   wxEvtHandler* consumer, const std::string& token);
   virtual void* Entry();
 
+  DriverStats GetStats() const;
+
 private:
   void HandleMessage(const std::string& message);
   wxEvtHandler* s_wsSKConsumer;
@@ -124,6 +127,8 @@ private:
   std::string m_token;
   ix::WebSocket ws;
   ObsListener resume_listener;
+  DriverStats m_driver_stats;
+  mutable std::mutex m_stats_mutex;
 };
 
 WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
@@ -177,9 +182,15 @@ void* WebSocketThread::Entry() {
       HandleMessage(msg->str);
     } else if (msg->type == ix::WebSocketMessageType::Open) {
       wxLogDebug("websocket: Connection established");
+      std::lock_guard lock(m_stats_mutex);
+      m_driver_stats.available = true;
     } else if (msg->type == ix::WebSocketMessageType::Close) {
       wxLogDebug("websocket: Connection disconnected");
+      std::lock_guard lock(m_stats_mutex);
+      m_driver_stats.available = false;
     } else if (msg->type == ix::WebSocketMessageType::Error) {
+      std::lock_guard lock(m_stats_mutex);
+      m_driver_stats.error_count++;
       wxLogDebug("websocket: error: %s", msg->errorInfo.reason.c_str());
       ws.getUrl() == wsAddress.str() ? ws.setUrl(wssAddress.str())
                                      : ws.setUrl(wsAddress.str());
@@ -187,6 +198,14 @@ void* WebSocketThread::Entry() {
   };
 
   ws.setOnMessageCallback(message_callback);
+
+  {
+    std::lock_guard lock(m_stats_mutex);
+    m_driver_stats.driver_bus = NavAddr::Bus::Signalk;
+    m_driver_stats.driver_iface = m_parentStream->m_params.GetStrippedDSPort();
+    m_driver_stats.available = false;
+  }
+
   ws.start();
 
   while (m_parentStream->m_Thread_run_flag > 0) {
@@ -196,8 +215,17 @@ void* WebSocketThread::Entry() {
   ws.stop();
   m_parentStream->SetThreadRunning(false);
   m_parentStream->m_Thread_run_flag = -1;
+  {
+    std::lock_guard lock(m_stats_mutex);
+    m_driver_stats.available = false;
+  }
 
   return 0;
+}
+
+DriverStats WebSocketThread::GetStats() const {
+  std::lock_guard lock(m_stats_mutex);
+  return m_driver_stats;
 }
 
 void WebSocketThread::HandleMessage(const std::string& message) {
@@ -207,6 +235,7 @@ void WebSocketThread::HandleMessage(const std::string& message) {
 
     signalKEvent.SetPayload(buffer);
     s_wsSKConsumer->AddPendingEvent(signalKEvent);
+    m_driver_stats.rx_count++;
   }
 }
 
@@ -221,7 +250,8 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
     : CommDriverSignalK(params->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
       m_params(*params),
-      m_listener(listener) {
+      m_listener(listener),
+      m_stats_timer(*this, 2s) {
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_SIGNALK_NET, &CommDriverSignalKNet::handle_SK_sentence,
        this);
@@ -233,10 +263,22 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
   m_wsThread = NULL;
   m_threadActive = false;
 
+  // Dummy Driver Stats, may be polled before worker thread is active
+  m_driver_stats.driver_bus = NavAddr::Bus::Signalk;
+  m_driver_stats.driver_iface = m_params.GetStrippedDSPort();
+  m_driver_stats.available = false;
+
   Open();
 }
 
 CommDriverSignalKNet::~CommDriverSignalKNet() { Close(); }
+
+DriverStats CommDriverSignalKNet::GetDriverStats() const {
+  if (m_wsThread)
+    return m_wsThread->GetStats();
+  else
+    return m_driver_stats;
+}
 
 void CommDriverSignalKNet::Open(void) {
   wxString discoveredIP;

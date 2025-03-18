@@ -42,6 +42,7 @@
 #include "rapidjson/fwd.h"
 #include "model/conn_params.h"
 #include "model/comm_drv_signalk.h"
+#include "comm_drv_stats.h"
 
 #define SIGNALK_SOCKET_ID 5011
 #define N_DOG_TIMEOUT 5             // seconds
@@ -53,7 +54,9 @@ class WebSocketThread;
 class OCPN_WebSocketMessageHandler;
 class CommDriverSignalKNetEvent;
 
-class CommDriverSignalKNet : public CommDriverSignalK, public wxEvtHandler {
+class CommDriverSignalKNet : public CommDriverSignalK,
+                             public wxEvtHandler,
+                             public DriverStatsProvider {
 public:
   CommDriverSignalKNet(const ConnectionParams *params, DriverListener &l);
   virtual ~CommDriverSignalKNet();
@@ -76,6 +79,8 @@ public:
   void OpenWebSocket();
   void CloseWebSocket();
   bool IsThreadRunning() { return m_threadActive == 1; }
+
+  DriverStats GetDriverStats() const;
 
   std::string m_self;
   std::string m_context;
@@ -109,8 +114,9 @@ private:
   bool SetOutputSocketOptions(wxSocketBase *sock);
 
   std::string m_token;
-
   WebSocketThread *m_wsThread;
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 };
 
 #endif  // _SIGNALK_NET_H
