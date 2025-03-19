@@ -482,6 +482,7 @@ private:
       if (!(*it)->bEnabled) state = ConnState::Disabled;
       auto row = static_cast<int>(it - connections.begin());
       EnsureRows(row);
+      if (m_renderer_status_vector.size() < (size_t)(row + 1)) continue;
       switch (state) {
         case ConnState::Disabled:
           if (m_renderer_status_vector[row]->status != ConnState::Disabled) {
