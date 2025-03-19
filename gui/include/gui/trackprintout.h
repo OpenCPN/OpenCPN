@@ -39,10 +39,10 @@
 #include "model/ocpn_types.h"
 #include "navutil.h"
 #include "TrackPropDlg.h"
+#include "printout_base.h"
 #include "printtable.h"
-#include "ocpn_frame.h"
 
-class MyTrackPrintout : public MyPrintout {
+class MyTrackPrintout : public BasePrintout {
 public:
   MyTrackPrintout(std::vector<bool> _toPrintOut, Track* track,
                   OCPNTrackListCtrl* lcPoints,

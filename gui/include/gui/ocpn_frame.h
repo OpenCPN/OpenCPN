@@ -43,7 +43,6 @@
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
 #include "observable_evtvar.h"
-#include "ocpn_print.h"
 #include "s52s57.h"
 #include "s57registrar_mgr.h"
 #include "SencManager.h"

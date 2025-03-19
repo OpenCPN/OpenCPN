@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Application print support
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,29 +18,32 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _OCPN_PRINT_H__
-#define _OCPN_PRINT_H__
+#ifndef PRINTOUT_CHART_H
+#define PRINTOUT_CHART_H
 
-#include <wx/dc.h>
-#include <wx/bitmap.h>
-#include <wx/print.h>
-#include <wx/string.h>
+#include "printout_base.h"
 
-class MyPrintout : public wxPrintout {
+class ChartPrintout : public BasePrintout {
 public:
-  MyPrintout(const wxChar *title = _T("My printout")) : wxPrintout(title) {}
-  virtual bool OnPrintPage(int page);
-  virtual bool HasPage(int page);
-  virtual bool OnBeginDocument(int startPage, int endPage);
-  virtual void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
-                           int *selPageTo);
+  ChartPrintout(const wxString &title);
 
-  void DrawPageOne(wxDC *dc);
+  /**
+   * Print chart.
+   * @param page Page number.
+   */
+  bool OnPrintPage(int page) override;
 
-  void GenerateGLbmp(void);
+  /**
+   * In OperGL mode, make the bitmap capture of the screen before the print
+   * method starts as to be sure the "Abort..." dialog does not appear on the
+   * image.
+   */
+  void GenerateGLbmp();
 
 private:
-  wxBitmap m_GLbmp;
+  wxBitmap m_gl_bmp;
+
+  void DrawPage(wxDC *dc, int page);
 };
 
-#endif  //  _OCPN_PRINT_H__
+#endif  // PRINTOUT_CHART_H

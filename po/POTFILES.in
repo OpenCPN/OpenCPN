@@ -246,7 +246,6 @@ gui/include/gui/ocpn_frame.h
 gui/include/gui/OCPNListCtrl.h
 gui/include/gui/ocpn_pixel.h
 gui/include/gui/OCPNPlatform.h
-gui/include/gui/ocpn_print.h
 gui/include/gui/OCPNRegion.h
 gui/include/gui/options.h
 gui/include/gui/Osenc.h
@@ -363,7 +362,6 @@ gui/src/ocpn_frame.cpp
 gui/src/OCPNListCtrl.cpp
 gui/src/ocpn_pixel.cpp
 gui/src/OCPNPlatform.cpp
-gui/src/ocpn_print.cpp
 gui/src/OCPNRegion.cpp
 gui/src/options.cpp
 gui/src/Osenc.cpp
