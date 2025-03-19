@@ -56,10 +56,60 @@ static inline bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
 }
 
-// Custom renderer class for rendering bitmap in a grid cell
-class wxBitmapCellRenderer : public wxGridCellRenderer {
+/** Standard icons bitmaps: settings gear, trash bin, etc. */
+class StdIcons {
+private:
+  const double m_size;
+  const fs::path m_svg_dir;
+
+  /** Return platform dependent icon size. */
+  double GetSize(wxWindow* parent) {
+    double size = parent->GetCharHeight() * (IsWindows() ? 1.3 : 1.0);
+#if wxCHECK_VERSION(3, 1, 2)
+    // Apply scale factor, mostly for Windows. Other platforms
+    // does this in the toolkits, ToDIP() is aware of this.
+    size *= static_cast<double>(parent->ToDIP(100)) / 100.;
+#endif
+    // Force minimum physical size for touch screens
+    if (g_btouch) {
+      double pixel_per_mm =
+          wxGetDisplaySize().x / g_Platform->GetDisplaySizeMM();
+      size = std::max(size, 7.0 * pixel_per_mm);
+    }
+    return size;
+  }
+
+  wxBitmap LoadIcon(const std::string filename) {
+    fs::path path = m_svg_dir / filename;
+    return LoadSVG(path.string(), m_size, m_size);
+  }
+
 public:
-  wxBitmapCellRenderer(const wxBitmap& bitmap)
+  StdIcons(wxWindow* parent)
+      : m_size(GetSize(parent)),
+        m_svg_dir(fs::path(g_Platform->GetSharedDataDir().ToStdString()) /
+                  "uidata" / "MUI_flat"),
+        trashbin(LoadIcon("trash_bin.svg")),
+        settings(LoadIcon("setting_gear.svg")),
+        filled_circle(LoadIcon("circle-on.svg")),
+        open_circle(LoadIcon("circle-off.svg")),
+        exclaim_mark(LoadIcon("exclaim_mark.svg")),
+        x_mult(LoadIcon("X_mult.svg")),
+        check_mark(LoadIcon("check_mark.svg")) {}
+
+  const wxBitmap trashbin;
+  const wxBitmap settings;
+  const wxBitmap filled_circle;
+  const wxBitmap open_circle;
+  const wxBitmap exclaim_mark;
+  const wxBitmap x_mult;
+  const wxBitmap check_mark;
+};
+
+// Custom renderer class for rendering bitmap in a grid cell
+class BitmapCellRenderer : public wxGridCellRenderer {
+public:
+  BitmapCellRenderer(const wxBitmap& bitmap)
       : status(ConnState::Disabled), m_bitmap(bitmap) {}
 
   // Update the bitmap dynamically
@@ -82,9 +132,7 @@ public:
     return wxSize(m_bitmap.GetWidth(), m_bitmap.GetHeight());
   }
 
-  wxBitmapCellRenderer* Clone() const {
-    return new wxBitmapCellRenderer(m_bitmap);
-  }
+  BitmapCellRenderer* Clone() const { return new BitmapCellRenderer(m_bitmap); }
   ConnState status;
 
 private:
@@ -193,7 +241,8 @@ public:
       : wxGrid(parent, wxID_ANY),
         m_connections(connections),
         m_on_conn_delete(on_conn_update),
-        m_last_tooltip_cell(100) {
+        m_last_tooltip_cell(100),
+        m_icons(parent) {
     SetTable(new wxGridStringTable(), false);
     GetTable()->AppendCols(8);
     HideCol(7);
@@ -207,31 +256,6 @@ public:
     }
     HideRowLabels();
     SetColAttributes(parent);
-
-    // Build default bitmaps
-    double bmp_size = GetParent()->GetCharHeight() * 15 / 10;
-#ifdef __WXMSW__
-    bmp_size = GetParent()->GetCharHeight() * 20 / 10;
-    // Apply Windows scale factor
-    bmp_size *= (double)(GetParent()->ToDIP(100)) / 100.;
-#endif
-    // Force minimum physical size for touch screens
-    if (g_btouch) {
-      double pixel_per_mm =
-          wxGetDisplaySize().x / g_Platform->GetDisplaySizeMM();
-      bmp_size = wxMax(bmp_size, 7.0 * pixel_per_mm);
-    }
-    wxString svgDir = g_Platform->GetSharedDataDir() + _T("uidata") +
-                      wxFileName::GetPathSeparator() + "MUI_flat" +
-                      wxFileName::GetPathSeparator();
-
-    bm_trashbin = LoadSVG(svgDir + "trash_bin.svg", bmp_size, bmp_size);
-    bm_settings = LoadSVG(svgDir + "setting_gear.svg", bmp_size, bmp_size);
-    bm_filled_circle = LoadSVG(svgDir + "circle-on.svg", bmp_size, bmp_size);
-    bm_open_circle = LoadSVG(svgDir + "circle-off.svg", bmp_size, bmp_size);
-    bm_exclaim_mark = LoadSVG(svgDir + "exclaim_mark.svg", bmp_size, bmp_size);
-    bm_x_mult = LoadSVG(svgDir + "X_mult.svg", bmp_size, bmp_size);
-    bm_check_mark = LoadSVG(svgDir + "check_mark.svg", bmp_size, bmp_size);
 
     ReloadGrid(connections);
     DisableDragColSize();
@@ -294,13 +318,13 @@ public:
       SetCellValue(row, 2, (*it)->GetIOTypeValueStr());
       SetCellValue(row, 3, (*it)->GetStrippedDSPort());
       m_tooltips[row][3] = (*it)->UserComment;
-      SetCellRenderer(row, 5, new wxBitmapCellRenderer(bm_settings));
+      SetCellRenderer(row, 5, new BitmapCellRenderer(m_icons.settings));
       m_tooltips[row][5] = _("Edit connection");
-      SetCellRenderer(row, 6, new wxBitmapCellRenderer(bm_trashbin));
+      SetCellRenderer(row, 6, new BitmapCellRenderer(m_icons.trashbin));
       m_tooltips[row][6] = _("Delete connection");
       SetCellValue(row, 7, (*it)->GetKey());
 
-      auto stat_renderer = new wxBitmapCellRenderer(bm_filled_circle);
+      auto stat_renderer = new BitmapCellRenderer(m_icons.filled_circle);
       stat_renderer->status = ConnState::Disabled;
       m_renderer_status_vector.push_back(stat_renderer);
       SetCellRenderer(row, 4, stat_renderer);
@@ -451,7 +475,7 @@ private:
 
   /** Handle connections driver statistics status changes event. */
   void OnConnectionChange(const std::vector<ConnectionParams*>& connections) {
-    bool b_need_refresh = false;
+    bool refresh_needed = false;
     for (auto it = connections.begin(); it != connections.end(); it++) {
       ConnState state = m_conn_states.GetDriverState(
           (*it)->GetCommProtocol(), (*it)->GetStrippedDSPort());
@@ -461,47 +485,47 @@ private:
       switch (state) {
         case ConnState::Disabled:
           if (m_renderer_status_vector[row]->status != ConnState::Disabled) {
-            m_renderer_status_vector[row]->SetBitmap(bm_filled_circle);
+            m_renderer_status_vector[row]->SetBitmap(m_icons.filled_circle);
             m_renderer_status_vector[row]->status = ConnState::Disabled;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("Disabled");
           break;
         case ConnState::NoStats:
           if (m_renderer_status_vector[row]->status != ConnState::NoStats) {
-            m_renderer_status_vector[row]->SetBitmap(bm_open_circle);
+            m_renderer_status_vector[row]->SetBitmap(m_icons.open_circle);
             m_renderer_status_vector[row]->status = ConnState::NoStats;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("No driver statistics available");
           break;
         case ConnState::NoData:
           if (m_renderer_status_vector[row]->status != ConnState::NoData) {
-            m_renderer_status_vector[row]->SetBitmap(bm_exclaim_mark);
+            m_renderer_status_vector[row]->SetBitmap(m_icons.exclaim_mark);
             m_renderer_status_vector[row]->status = ConnState::NoData;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("No data flowing through connection");
           break;
         case ConnState::Unavailable:
           if (m_renderer_status_vector[row]->status != ConnState::Unavailable) {
-            m_renderer_status_vector[row]->SetBitmap(bm_x_mult);
+            m_renderer_status_vector[row]->SetBitmap(m_icons.x_mult);
             m_renderer_status_vector[row]->status = ConnState::Unavailable;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("The device is unavailable");
           break;
         case ConnState::Ok:
           if (m_renderer_status_vector[row]->status != ConnState::Ok) {
-            m_renderer_status_vector[row]->SetBitmap(bm_check_mark);
+            m_renderer_status_vector[row]->SetBitmap(m_icons.check_mark);
             m_renderer_status_vector[row]->status = ConnState::Ok;
-            b_need_refresh = true;
+            refresh_needed = true;
           }
           m_tooltips[row][4] = _("Data is flowing");
           break;
       }
     }
-    if (b_need_refresh) ForceRefresh();
+    if (refresh_needed) ForceRefresh();
   }
 
   void SetSortingColumn(int col) {
@@ -606,9 +630,8 @@ private:
   const std::vector<ConnectionParams*>& m_connections;
   EventVar& m_on_conn_delete;
   int m_last_tooltip_cell;
-  wxBitmap bm_filled_circle, bm_open_circle, bm_exclaim_mark, bm_x_mult,
-      bm_check_mark, bm_trashbin, bm_settings;
-  std::vector<wxBitmapCellRenderer*> m_renderer_status_vector;
+  StdIcons m_icons;
+  std::vector<BitmapCellRenderer*> m_renderer_status_vector;
 };
 
 /** Indeed: the General  panel. */
