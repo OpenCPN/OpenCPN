@@ -33,6 +33,7 @@
 #include "config.h"
 #include "model/comm_drv_n2k.h"
 #include "model/conn_params.h"
+#include "model/comm_drv_stats.h"
 
 #ifndef __ANDROID__
 #include "serial/serial.h"
@@ -47,11 +48,14 @@
 
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
+using namespace std::literals::chrono_literals;
 
 class CommDriverN2KSerialThread;  // fwd
 class CommDriverN2KSerialEvent;
 
-class CommDriverN2KSerial : public CommDriverN2K, public wxEvtHandler {
+class CommDriverN2KSerial : public CommDriverN2K,
+                            public wxEvtHandler,
+                            public DriverStatsProvider {
 public:
   CommDriverN2KSerial();
   CommDriverN2KSerial(const ConnectionParams* params, DriverListener& listener);
@@ -86,7 +90,10 @@ public:
   void handle_N2K_SERIAL_RAW(CommDriverN2KSerialEvent& event);
   int GetMfgCode();
 
+  DriverStats GetDriverStats() const;
+
   std::atomic_int m_Thread_run_flag;
+  ConnectionParams m_params;
 
 private:
   void ProcessManagementPacket(std::vector<unsigned char>* payload);
@@ -107,7 +114,6 @@ private:
   CommDriverN2KSerialThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
 
-  ConnectionParams m_params;
   DriverListener& m_listener;
 
   bool m_bmg47_resp;
@@ -120,6 +126,8 @@ private:
   uint64_t NAME;
   int m_manufacturers_code;
   bool m_got_mfg_code;
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 };
 
 #endif  // guard
