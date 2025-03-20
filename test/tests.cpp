@@ -37,6 +37,7 @@
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "model/semantic_vers.h"
 #include "model/std_instance_chk.h"
 #include "model/wait_continue.h"
 #include "model/wx_instance_chk.h"
@@ -1095,4 +1096,16 @@ TEST(FormatTime, Basic) {
   EXPECT_EQ(s, " 2M  0S");
   s = formatTimeDelta(wxLongLong(110));
   EXPECT_EQ(s, " 1M 50S");
+}
+
+TEST(SemanticVersion, Basic) {
+  std::string v1 = SemanticVersion::parse("v1.2.3").to_string();
+  std::string v2 = SemanticVersion::parse("1.2.4").to_string();
+  EXPECT_EQ(v1, "1.2.3");
+  EXPECT_TRUE(v2 > v1);
+  EXPECT_FALSE(v2 == v1);
+  v2 = SemanticVersion::parse("1.2.3-1").to_string();
+  EXPECT_TRUE(v2 > v1);
+  v2 = SemanticVersion::parse("1.2.3").to_string();
+  EXPECT_TRUE(v1 == v2);
 }
