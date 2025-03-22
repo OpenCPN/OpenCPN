@@ -2156,6 +2156,9 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     ChartTableEntry *pEntry = NULL;
     wxString table_file_name;
 
+    //  Allow multiple cm93 chart sets #4217
+    if (b_found_cm93) collision = false;
+
     if (collision) {
       pEntry = &active_chartTable[collision_ptr->second];
       table_file_name = pEntry->GetFullSystemPath();
