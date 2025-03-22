@@ -25,6 +25,7 @@
 #include <wx/frame.h>
 
 #include "model/gui.h"
+#include "model/nmea_log.h"
 
 wxWindow* GetTopWindow() {
   auto top_window = wxWindow::FindWindowByName(kTopLevelWindowName);
