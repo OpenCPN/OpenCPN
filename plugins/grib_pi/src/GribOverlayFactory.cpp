@@ -1300,24 +1300,51 @@ void GRIBOverlayFactory::RenderGribBarbedArrows(int settings, GribRecord **pGR,
 #endif
 
   if (m_Settings.Settings[settings].m_bBarbArrFixSpac) {
-    // set spacing between arrows
-    int space = adjustSpacing(m_Settings.Settings[settings].m_iBarbArrSpacing);
-
-    PlugIn_ViewPort uvp = *vp;
-    uvp.rotation = uvp.skew = 0;
-
+    // Get spacing in pixels from settings
+    int space_pixels =
+        adjustSpacing(m_Settings.Settings[settings].m_iBarbArrSpacing);
     int arrowSize = 16;
+    int total_spacing = space_pixels + arrowSize;  // Physical pixels.
 
-    for (int i = 0; i < m_ParentSize.GetWidth(); i += (space + arrowSize)) {
-      for (int j = 0; j < m_ParentSize.GetHeight(); j += (space + arrowSize)) {
-        double lat, lon;
-        GetCanvasLLPix(vp, wxPoint(i, j), &lat, &lon);
+    // Convert pixel spacing to geographic spacing
+    // We need to create a reference point and move it by the spacing to find
+    // the geo difference
+    wxPoint center(vp->pix_width / 2, vp->pix_height / 2);
+    double center_lat, center_lon;
+    GetCanvasLLPix(vp, center, &center_lat, &center_lon);
 
+    // Find lat/lon of a point offset by total_spacing
+    wxPoint offset_point(center.x + total_spacing, center.y + total_spacing);
+    double offset_lat, offset_lon;
+    GetCanvasLLPix(vp, offset_point, &offset_lat, &offset_lon);
+
+    // Calculate spacing in geographic coordinates
+    double lat_spacing = fabs(center_lat - offset_lat);
+    double lon_spacing = fabs(center_lon - offset_lon);
+
+    // Generate grid in geographic coordinates
+    // Find grid origin that aligns with whole-number multiples of spacing
+    double start_lat = floor(vp->lat_min / lat_spacing) * lat_spacing;
+    double start_lon = floor(vp->lon_min / lon_spacing) * lon_spacing;
+
+    // Expand bounds slightly to ensure we cover the viewport edges
+    double end_lat = vp->lat_max + lat_spacing;
+    double end_lon = vp->lon_max + lon_spacing;
+
+    // Draw grid of arrows based on geographical coordinates
+    for (double lat = start_lat; lat <= end_lat; lat += lat_spacing) {
+      for (double lon = start_lon; lon <= end_lon; lon += lon_spacing) {
+        // Convert geographic point to screen coordinates
+        wxPoint p;
+        GetCanvasPixLL(vp, &p, lat, lon);
+
+        // Get data value at this location
         double vkn, ang;
-        if (GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, lon, lat))
-          drawWindArrowWithBarbs(settings, i, j, vkn * 3.6 / 1.852,
+        if (GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, lon, lat)) {
+          drawWindArrowWithBarbs(settings, p.x, p.y, vkn * 3.6 / 1.852,
                                  (ang - 90) * M_PI / 180, (lat < 0.), colour,
                                  vp->rotation);
+        }
       }
     }
   } else {
@@ -1573,22 +1600,52 @@ void GRIBOverlayFactory::RenderGribDirectionArrows(int settings,
 #endif
 
   if (m_Settings.Settings[settings].m_bDirArrFixSpac) {  // fixed spacing
+    // Get spacing in pixels from settings
+    int space_pixels =
+        adjustSpacing(m_Settings.Settings[settings].m_iBarbArrSpacing);
+    int arrowSize = 16;
+    int total_spacing = space_pixels + arrowSize;  // Physical pixels.
 
-    // Set spacing between arrows
-    int space = adjustSpacing(m_Settings.Settings[settings].m_iDirArrSpacing);
+    // Convert pixel spacing to geographic spacing
+    // We need to create a reference point and move it by the spacing to find
+    // the geo difference
+    wxPoint center(vp->pix_width / 2, vp->pix_height / 2);
+    double center_lat, center_lon;
+    GetCanvasLLPix(vp, center, &center_lat, &center_lon);
 
-    for (int i = 0; i < m_ParentSize.GetWidth(); i += (space + arrowSize)) {
-      for (int j = 0; j < m_ParentSize.GetHeight(); j += (space + arrowSize)) {
-        double lat, lon, sh, dir;
+    // Find lat/lon of a point offset by total_spacing
+    wxPoint offset_point(center.x + total_spacing, center.y + total_spacing);
+    double offset_lat, offset_lon;
+    GetCanvasLLPix(vp, offset_point, &offset_lat, &offset_lon);
+
+    // Calculate spacing in geographic coordinates
+    double lat_spacing = fabs(center_lat - offset_lat);
+    double lon_spacing = fabs(center_lon - offset_lon);
+
+    // Generate grid in geographic coordinates
+    // Find grid origin that aligns with whole-number multiples of spacing
+    double start_lat = floor(vp->lat_min / lat_spacing) * lat_spacing;
+    double start_lon = floor(vp->lon_min / lon_spacing) * lon_spacing;
+
+    // Expand bounds slightly to ensure we cover the viewport edges
+    double end_lat = vp->lat_max + lat_spacing;
+    double end_lon = vp->lon_max + lon_spacing;
+
+    // Draw grid of arrows based on geographical coordinates
+    for (double lat = start_lat; lat <= end_lat; lat += lat_spacing) {
+      for (double lon = start_lon; lon <= end_lon; lon += lon_spacing) {
+        // Convert geographic point to screen coordinates
+        wxPoint p;
+        GetCanvasPixLL(vp, &p, lat, lon);
+
+        double sh, dir;
         double scale = 1.0;
-        GetCanvasLLPix(vp, wxPoint(i, j), &lat, &lon);
 
         if (polar) {  // wave arrows
           sh = pGRX->getInterpolatedValue(lon, lat, true);
           dir = pGRY->getInterpolatedValue(lon, lat, true, true);
 
           if (dir == GRIB_NOTDEF || sh == GRIB_NOTDEF) continue;
-
         } else {  // current arrows
           if (!GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat))
             continue;
@@ -1599,13 +1656,13 @@ void GRIBOverlayFactory::RenderGribDirectionArrows(int settings,
 
         // draw arrows
         if (m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
-          drawSingleArrow(i, j, dir + vp->rotation, colour, arrowWidth,
+          drawSingleArrow(p.x, p.y, dir + vp->rotation, colour, arrowWidth,
                           arrowSizeIdx, scale);
         else if (m_Settings.Settings[settings].m_iDirectionArrowForm == 1)
-          drawDoubleArrow(i, j, dir + vp->rotation, colour, arrowWidth,
+          drawDoubleArrow(p.x, p.y, dir + vp->rotation, colour, arrowWidth,
                           arrowSizeIdx, scale);
         else
-          drawSingleArrow(i, j, dir + vp->rotation, colour,
+          drawSingleArrow(p.x, p.y, dir + vp->rotation, colour,
                           wxMax(1, wxMin(8, (int)(sh + 0.5))), arrowSizeIdx,
                           scale);
       }
