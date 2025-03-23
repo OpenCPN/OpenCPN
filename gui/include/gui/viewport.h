@@ -155,6 +155,35 @@ public:
   wxRect GetVPRectIntersect(size_t n, float *llpoints);
   ViewPort BuildExpandedVP(int width, int height);
 
+  /**
+   * Computes the bounding box coordinates for the current viewport.
+   * This function is responsible for determining the lat/lon boundaries of the
+   * current viewport, which are used for various purposes including plugin
+   * rendering.
+   *
+   * The function calculates a larger "virtual" pixel window size when rotation
+   * is applied to ensure that enough chart data is fetched to fill the rotated
+   * screen. It then computes the viewport lat/lon reference points based on
+   * screen coordinates.
+   *
+   * Different algorithms are used depending on the projection type (POLAR,
+   * ORTHOGRAPHIC, STEREOGRAPHIC, GNOMONIC, MERCATOR, EQUIRECTANGULAR).
+   *
+   * Edge cases are handled such as:
+   * - IDL (International Date Line) crossings
+   * - Poles being visible on screen
+   * - Non-rectangular mappings between screen space and geographical
+   * coordinates
+   *
+   * The computed bounding box is stored in vpBBox and is used by various parts
+   * of the program to determine which chart features should be rendered and
+   * which are outside the visible area.
+   *
+   * @note When rotation or skew is applied, the function creates a larger
+   * rectangle that encompasses the rotated viewport, which can lead to data
+   * being fetched and rendered for areas that may be just outside the visible
+   * part of the screen.
+   */
   void SetBoxes(void);
   /**
    * Set the physical to logical pixel ratio for the display.
@@ -245,8 +274,9 @@ public:
   }
 
 private:
-  LLBBox vpBBox;  // An un-skewed rectangular lat/lon bounding box
-                  // which contains the entire vieport
+  /** An un-skewed rectangular lat/lon bounding box which contains the entire
+   * viewport. */
+  LLBBox vpBBox;
 
   bool bValid;  // This VP is valid
 

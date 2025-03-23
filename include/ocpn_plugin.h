@@ -2260,24 +2260,26 @@ extern "C" DECL_EXP void RequestRefresh(wxWindow *);
 extern "C" DECL_EXP bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
 /**
- * Converts lat/lon to canvas pixel coordinates.
+ * Converts lat/lon to canvas physical pixel coordinates.
  *
- * Transforms geographic coordinates to screen pixels for the given viewport.
+ * Transforms geographic coordinates to screen physical pixels for the given
+ * viewport.
  *
  * @param vp Current viewport
- * @param pp Will receive pixel coordinates
+ * @param pp Will receive physical pixel coordinates
  * @param lat Latitude in decimal degrees
  * @param lon Longitude in decimal degrees
  */
 extern "C" DECL_EXP void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp,
                                         double lat, double lon);
 /**
- * Converts canvas pixel coordinates to lat/lon.
+ * Converts canvas physical pixel coordinates to lat/lon.
  *
- * Transforms screen pixels to geographic coordinates for the given viewport.
+ * Transforms screen physical pixels to geographic coordinates for the given
+ * viewport.
  *
  * @param vp Current viewport
- * @param p Pixel coordinates
+ * @param p Physical pixel coordinates
  * @param plat Will receive latitude in decimal degrees
  * @param plon Will receive longitude in decimal degrees
  */

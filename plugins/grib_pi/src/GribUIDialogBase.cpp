@@ -1197,7 +1197,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   wxStaticText* m_staticText41;
   m_staticText41 =
-      new wxStaticText(m_scSetDataPanel, wxID_ANY, _("Spacing(pixels)"),
+      new wxStaticText(m_scSetDataPanel, wxID_ANY, _("Spacing (pixels)"),
                        wxDefaultPosition, wxDefaultSize, 0);
   m_staticText41->Wrap(-1);
   fgSizer42->Add(m_staticText41, 0, wxALL, 5);
@@ -1301,7 +1301,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   wxStaticText* m_staticText42;
   m_staticText42 =
-      new wxStaticText(m_scSetDataPanel, wxID_ANY, _("Spacing(pixels)"),
+      new wxStaticText(m_scSetDataPanel, wxID_ANY, _("Spacing (pixels)"),
                        wxDefaultPosition, wxDefaultSize, 0);
   m_staticText42->Wrap(-1);
   fgSizer43->Add(m_staticText42, 0, wxALL, 5);
@@ -1374,7 +1374,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   wxStaticText* m_staticText43;
   m_staticText43 =
-      new wxStaticText(m_scSetDataPanel, wxID_ANY, _("Spacing(pixels)"),
+      new wxStaticText(m_scSetDataPanel, wxID_ANY, _("Spacing (pixels)"),
                        wxDefaultPosition, wxDefaultSize, 0);
   m_staticText43->Wrap(-1);
   m_fgNumData1->Add(m_staticText43, 0, wxALL, 5);
