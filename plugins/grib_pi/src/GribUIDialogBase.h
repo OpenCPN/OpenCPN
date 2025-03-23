@@ -314,10 +314,29 @@ protected:
   wxCheckBox* m_cbBarbedArrows;
   wxFlexGridSizer* m_fgBarbedData1;
   wxChoice* m_cBarbedColours;
+  /**
+   * Flag to determine barbed arrow layout mode.
+   *
+   * When true, wind/current barbs are drawn using a fixed spacing grid where
+   * arrows are evenly distributed across the screen at intervals specified
+   * by m_iBarbArrSpacing. This mode creates a regular pattern of barbs.
+   */
   wxCheckBox* m_cBarbArrFixSpac;
   wxCheckBox* m_cBarbArrMinSpac;
   wxFlexGridSizer* m_fgBarbedData2;
   wxCheckBox* m_cBarbedVisibility;
+  /**
+   * Spacing between barbed arrows in fixed spacing mode.
+   *
+   * This value defines the pixel distance between adjacent wind/current barbs
+   * when using fixed spacing mode (m_bBarbArrFixSpac = true). The spacing
+   * is measured in screen pixels, but is converted to geographic coordinates
+   * during rendering to ensure proper movement when panning.
+   *
+   * Higher values create a sparser grid with fewer barbs, while lower values
+   * create a denser grid with more barbs. The actual on-screen distance
+   * includes this spacing plus the size of the barbed arrow itself.
+   */
   wxSpinCtrl* m_sBarbArrSpacing;
   wxCheckBox* m_cbIsoBars;
   wxFlexGridSizer* m_fIsoBarSpacing;
