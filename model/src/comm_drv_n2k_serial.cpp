@@ -43,6 +43,20 @@
 #include "model/comm_drv_stats.h"
 
 #include <N2kMsg.h>
+
+/* Copied from canboat Project
+ * https://github.com/canboat/canboat
+ *
+ * The following startup command reverse engineered from Actisense NMEAreader.
+ * It instructs the NGT1 to clear its PGN message TX list, thus it starts
+ * sending all PGNs that it knows about.
+ */
+static unsigned char NGT_STARTUP_SEQ[] = {
+    0x11, /* msg byte 1, meaning ? */
+    0x02, /* msg byte 2, meaning ? */
+    0x00  /* msg byte 3, meaning ? */
+};
+
 std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg);
 
 template <typename T>
@@ -238,6 +252,9 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
 
   wxMilliSleep(100);
   GetMfgCode();
+
+  //  Initialize the device clearing all rx/tx filterx
+  SendMgmtMsg(NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
 
 #if 0
   // Testing TX of Heartbeat
@@ -575,34 +592,10 @@ int CommDriverN2KSerial::SendMgmtMsg(unsigned char* string, size_t string_size,
   return 0;
 }
 
-/* Copied from canboat Project
- * https://github.com/canboat/canboat
- *
- * The following startup command reverse engineered from Actisense NMEAreader.
- * It instructs the NGT1 to clear its PGN message TX list, thus it starts
- * sending all PGNs.
- */
-static unsigned char NGT_STARTUP_SEQ[] = {
-    0x11, /* msg byte 1, meaning ? */
-    0x02, /* msg byte 2, meaning ? */
-    0x00  /* msg byte 3, meaning ? */
-};
-
 int CommDriverN2KSerial::SetTXPGN(int pgn) {
-  // Try to detect Actisense NGT-xx, has Mfg_code == 273
-  //   if (m_got_mfg_code) {
-  //     if (m_manufacturers_code != 273)
-  //       return 0;  // Not Actisense, no error
-  //   }
-
-  SendMgmtMsg(NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
-
-#if 0
   //  Enable PGN message
-  unsigned char request_enable[] = { 0x47,
-                      0x00, 0x00, 0x00,           //pgn
-                      0x00, 0x01,
-                      0xFF, 0xFF, 0xFF, 0xFF};
+  unsigned char request_enable[] = {0x47, 0x00, 0x00, 0x00,  // pgn
+                                    0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF};
 
   int PGN = 0;
   unsigned char* c = (unsigned char*)&pgn;
@@ -610,23 +603,19 @@ int CommDriverN2KSerial::SetTXPGN(int pgn) {
   request_enable[2] = c[1];
   request_enable[3] = c[2];
 
-  int aa = SendMgmtMsg( request_enable, sizeof(request_enable), 0x47, 2000, &m_bmg47_resp);
-//   if (aa)
-//     return -1;
+  int aa = SendMgmtMsg(request_enable, sizeof(request_enable), 0x47, 2000,
+                       &m_bmg47_resp);
+  if (aa) return 0;  // Probably YDNU-02 device
 
   //  Commit message
-  unsigned char request_commit[] = { 0x01 };
-  int bb = SendMgmtMsg( request_commit, sizeof(request_commit), 0x01, 2000, &m_bmg01_resp);
-//   if (bb)
-//     return -2;
-
+  unsigned char request_commit[] = {0x01};
+  int bb = SendMgmtMsg(request_commit, sizeof(request_commit), 0x01, 2000,
+                       &m_bmg01_resp);
 
   // Activate message
-  unsigned char request_activate[] = { 0x4B };
-  int cc = SendMgmtMsg( request_activate, sizeof(request_activate), 0x4B, 2000, &m_bmg4B_resp);
-//   if (cc)
-//     return -3;
-#endif
+  unsigned char request_activate[] = {0x4B};
+  int cc = SendMgmtMsg(request_activate, sizeof(request_activate), 0x4B, 2000,
+                       &m_bmg4B_resp);
 
   return 0;
 }
