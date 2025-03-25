@@ -691,6 +691,7 @@ Serial::SerialImpl::write (const uint8_t *data, size_t length)
                           " in the list, this shouldn't happen!");
     }
   }
+  flush();
   return bytes_written;
 }
 
