@@ -22,6 +22,7 @@
  * Implement win_watch_daemon.h
  */
 
+#include <winsock2.h>
 #include <windows.h>
 #include <Dbt.h>
 
