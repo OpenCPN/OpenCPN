@@ -26,14 +26,18 @@
 #include "model/comm_navmsg_bus.h"
 
 void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  auto key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
+  std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
+  RegisterKey(key);
+  Observable(*msg).Notify(msg);
+}
+
+void NavMsgBus::RegisterKey(const std::string& key) {
   {
     std::lock_guard lock(m_mutex);
     if (m_active_messages.find(key) == m_active_messages.end())
       new_msg_event.Notify();
     m_active_messages.insert(key);
   }
-  Observable(*msg).Notify(msg);
 }
 
 NavMsgBus& NavMsgBus::GetInstance() {

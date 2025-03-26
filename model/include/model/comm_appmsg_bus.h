@@ -42,7 +42,7 @@
 class AppMsgBus {
 public:
   /** Send message to everyone listening to given message type. */
-  void Notify(std::shared_ptr<const AppMsg> msg);
+  void Notify(const std::shared_ptr<const AppMsg>& msg);
 
   /**
    * Set the priority for a given data source providing data.
