@@ -27,16 +27,13 @@ wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
 sudo apt-key adv \
     --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
 # Needed on 20.04: sudo add-apt-repository -y ppa:alexlarsson/flatpak
-
-#  Make sure packagekit is stopped, update not needed on CI build
-sudo systemctl stop packagekit
-sudo systemctl mask packagekit
-sudo dpkg-divert --divert /etc/PackageKit/20packagekit.distrib --rename  /etc/apt/apt.conf.d/20packagekit
-
-sudo apt update -q -y
+# sudo apt update -q -y
 
 # Avoid using outdated TLS certificates, see #2419.
 sudo apt install --reinstall  ca-certificates
+
+# https://stackoverflow.com/questions/73397110
+sudo sed -i "/{restart}/s/i/a/" /etc/needrestart/needrestart.conf
 
 # Install required packages
 sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2
