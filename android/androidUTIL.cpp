@@ -2689,8 +2689,7 @@ bool androidStartGPS(wxEvtHandler *consumer) {
   wxLogMessage(s);
   if (s.Upper().Find(_T("DISABLED")) != wxNOT_FOUND) {
     OCPNMessageBox(
-        NULL,
-        _("Your android device has an internal GPS, but it is disabled.\n\
+        NULL, _("Your android device has an internal GPS, but it is disabled.\n\
                        Please visit android Settings/Location dialog to enable GPS"),
         _T("OpenCPN"), wxOK);
 
@@ -4417,7 +4416,7 @@ int doAndroidPersistState() {
         node = node->GetNext();
       }
 
-      wxString name = now.Format();
+      wxString name = ocpn::toUsrDateTimeFormat(now);
       name.Prepend(_("Anchorage created "));
       RoutePoint *pWP =
           new RoutePoint(gLat, gLon, _T("anchorage"), name, _T(""));

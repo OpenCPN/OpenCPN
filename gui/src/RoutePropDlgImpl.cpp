@@ -39,6 +39,13 @@
 #include "RoutePropDlgImpl.h"
 #include "tcmgr.h"
 
+#define UTCINPUT 0  //!< Format date/time in UTC.
+#define LTINPUT \
+  1  //!< Format date/time using timezone configured in the operating system.
+#define LMTINPUT 2  //!< Format date/time using the remote location LMT time.
+/** Format date/time according to global OpenCPN settings. */
+#define GLOBAL_SETTINGS_INPUT 3
+
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP 7014
 #define ID_RCLK_MENU_DELETE 7015
@@ -173,6 +180,23 @@ static double getLMT(double ut, double lon) {
       return (t - 24.);
   else
     return (t + 24.);
+}
+
+/**
+ * Return the date/time timezone setting for the given selection.
+ */
+static wxString getDatetimeTimezoneSelector(int selection) {
+  switch (selection) {
+    case UTCINPUT:
+      return "UTC";
+    case LTINPUT:
+      return "Local Time";
+    case LMTINPUT:
+      return "LMT";
+    case GLOBAL_SETTINGS_INPUT:
+    default:
+      return wxEmptyString;
+  }
 }
 
 static int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime) {
@@ -338,11 +362,13 @@ void RoutePropDlgImpl::UpdatePoints() {
                               pnode->GetData()->GetLongitude(), gLat, gLon,
                               &bearing, &distance);
       if (m_pRoute->m_PlannedDeparture.IsValid()) {
+        DateTimeFormatOptions opts =
+            DateTimeFormatOptions()
+                .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
+                .SetLongitude(pnode->GetData()->m_lon);
         eta = wxString::Format(
-            "Start: %s", toUsrDateTime(m_pRoute->m_PlannedDeparture,
-                                       m_tz_selection, pnode->GetData()->m_lon)
-                             .Format(ETA_FORMAT_STR)
-                             .c_str());
+            "Start: %s",
+            ocpn::toUsrDateTimeFormat(m_pRoute->m_PlannedDeparture, opts));
         eta.Append(wxString::Format(
             _T(" (%s)"),
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
@@ -362,9 +388,11 @@ void RoutePropDlgImpl::UpdatePoints() {
       distance = pnode->GetData()->GetDistance();
       bearing = pnode->GetData()->GetCourse();
       if (pnode->GetData()->GetETA().IsValid()) {
-        eta = toUsrDateTime(pnode->GetData()->GetETA(), m_tz_selection,
-                            pnode->GetData()->m_lon)
-                  .Format(ETA_FORMAT_STR);
+        DateTimeFormatOptions opts =
+            DateTimeFormatOptions()
+                .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
+                .SetLongitude(pnode->GetData()->m_lon);
+        eta = ocpn::toUsrDateTimeFormat(pnode->GetData()->GetETA(), opts);
         eta.Append(wxString::Format(
             _T(" (%s)"),
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
@@ -386,9 +414,11 @@ void RoutePropDlgImpl::UpdatePoints() {
     wxString etd;
     if (pnode->GetData()->GetManualETD().IsValid()) {
       // GetManualETD() returns time in UTC, always. So use it as such.
-      etd = toUsrDateTime(pnode->GetData()->GetManualETD(),
-                          0 /*m_tz_selection*/, pnode->GetData()->m_lon)
-                .Format(ETA_FORMAT_STR);
+      DateTimeFormatOptions opts =
+          DateTimeFormatOptions()
+              .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
+              .SetLongitude(pnode->GetData()->m_lon);
+      etd = ocpn::toUsrDateTimeFormat(pnode->GetData()->GetManualETD(), opts);
       if (pnode->GetData()->GetManualETD().IsValid() &&
           pnode->GetData()->GetETA().IsValid() &&
           pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA()) {
@@ -474,7 +504,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     if (!pR->m_PlannedDeparture.IsValid())
       pR->m_PlannedDeparture = wxDateTime::Now().ToUTC();
 
-    m_tz_selection = LTINPUT;  // Local PC time by default
+    m_tz_selection = GLOBAL_SETTINGS_INPUT;  // Honor global setting by default
     if (pR != m_pRoute) {
       if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
         m_tz_selection = UTCINPUT;
@@ -959,6 +989,9 @@ void RoutePropDlgImpl::SaveChanges() {
       case LMTINPUT:
         m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_LOCAL;
         break;
+      case GLOBAL_SETTINGS_INPUT:
+        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_GLOBAL;
+        break;
       case UTCINPUT:
       default:
         m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
@@ -1138,12 +1171,14 @@ wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
 
   int offset =
       ptcmgr->GetStationTimeOffset((IDX_entry*)ptcmgr->GetIDX_entry(stationID));
-
-  tide_form.Append(
-      toUsrDateTime(dtm, m_tz_selection, lon).Format(ETA_FORMAT_STR));
+  DateTimeFormatOptions opts =
+      DateTimeFormatOptions()
+          .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
+          .SetLongitude(lon);
+  tide_form.Append(ocpn::toUsrDateTimeFormat(dtm, opts));
   dtm.Add(wxTimeSpan(0, offset, 0));
   tide_form.Append(wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"),
-                                    dtm.Format(ETA_FORMAT_STR),
+                                    ocpn::toUsrDateTimeFormat(dtm, opts),
                                     stationName.c_str()));
 
   return tide_form;

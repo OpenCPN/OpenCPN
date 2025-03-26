@@ -91,6 +91,7 @@ wxString g_hostname;
 wxString g_SART_sound_file;
 wxString g_TalkerIdText;
 wxString g_winPluginDir;
+wxString g_datetime_format;
 
 static wxConfigBase* the_base_config = 0;
 

@@ -18,7 +18,10 @@ endif ()
 
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
-set(SRC tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+set(SRC
+  tests.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+)
 
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
