@@ -86,14 +86,21 @@ private:
 class AppMsg : public KeyProvider {
 public:
   enum class Type;
+
   AppMsg(AppMsg::Type t)
       : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
 
-  virtual std::string key() const { return std::string("@!appmsg-") + name; }
+  virtual ~AppMsg() = default;
 
+  /** Return unique key used by Observable. */
+  virtual std::string key() const { return "appmsg::" + name; }
+
+  /** Alias for key(). */
   std::string GetKey() const { return key(); }
 
   std::string TypeToString(const Type t) const;
+
+  virtual std::string to_string() const { return "appmsg::" + name; }
 
   const Type type;
   const std::string name;  // Must be unique, probably using TypeToString().
@@ -136,9 +143,8 @@ public:
         time(t),
         quality(q),
         satellites_used(s_used) {};
-  virtual ~GnssFix() = default;
 
-  std::string to_string() const {
+  std::string to_string() const override {
     std::stringstream buf;
     buf << pos.to_string() << " " << TimeToString(time);
     return buf.str();
@@ -183,6 +189,8 @@ public:
 
   virtual ~BasicNavDataMsg() = default;
 
+  virtual std::string to_string() const;
+
   const Position pos;
   const double sog;
   const double cog;
@@ -211,6 +219,8 @@ public:
 /** AIS data point for a vessel. */
 class AisData : public AppMsg {
 public:
+  std::string key() const override { return "appmsg::aisdata"; }
+  std::string to_string() const override;
   time_t time;
   Position pos;
   float sog;           // Speed over ground, knots.
@@ -235,9 +245,7 @@ class CustomMsg : public AppMsg {
   CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
       : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
 
-  std::string key() const override {
-    return std::string("@##_appmsg-custom-") + id;
-  }
+  std::string key() const override { return "appmsg::custom-" + id; }
 
   const std::string id;  // Must be unique.
   std::shared_ptr<const void> payload;
