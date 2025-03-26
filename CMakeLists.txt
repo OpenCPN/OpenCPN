@@ -905,6 +905,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/DetailSlider.cpp
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
+    ${GUI_SRC_DIR}/filter_dlg.cpp
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
     ${GUI_SRC_DIR}/FontMgr.cpp

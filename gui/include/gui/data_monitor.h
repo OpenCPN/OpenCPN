@@ -38,13 +38,13 @@ class DataLogger {
 public:
   enum class Format { kVdr, kDefault, kCsv };
 
-  DataLogger(wxWindow* parent, fs::path path);
+  DataLogger(wxWindow* parent, const fs::path& path);
 
   DataLogger(wxWindow* parent);
 
   void SetLogging(bool logging);
 
-  void SetLogfile(fs::path path);
+  void SetLogfile(const fs::path& path);
 
   void Add(const Logline& ll);
 
@@ -75,9 +75,16 @@ public:
   bool IsActive() const override;
 
 private:
+  void OnFilterListChange();
+  void OnFilterUpdate(const std::string& name);
+  void OnFilterApply(const std::string& name);
+
   DataMonitorSrc m_monitor_src;
   wxWindow* m_quick_filter;
   DataLogger m_logger;
+  ObsListener m_filter_list_lstnr;
+  ObsListener m_filter_update_lstnr;
+  ObsListener m_filter_apply_lstnr;
 };
 
 #endif  //  DATA_MONITOR_DLG__
