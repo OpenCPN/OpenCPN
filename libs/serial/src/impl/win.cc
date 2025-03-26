@@ -448,7 +448,6 @@ Serial::SerialImpl::write (const uint8_t *data, size_t length)
 //    ss << "Error while writing to the serial port: " << GetLastError();
 //    THROW (IOException, ss.str().c_str());
 //  }
-  flush();
   return (size_t) (bytes_written);
 }
 
@@ -738,3 +737,4 @@ Serial::SerialImpl::writeUnlock()
 }
 
 #endif // #if defined(_WIN32)
+
