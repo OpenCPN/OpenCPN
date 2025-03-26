@@ -199,10 +199,7 @@ void StdSerialIo::CloseComPortPhysical() {
 ssize_t StdSerialIo::WriteComPortPhysical(const char* msg) {
   if (m_serial.isOpen()) {
     try {
-      auto r = m_serial.write((uint8_t*)msg, strlen(msg));
-      m_serial.flushOutput();
-      return static_cast<ssize_t>(r);
-
+      return static_cast<ssize_t>(m_serial.write((uint8_t*)msg, strlen(msg)));
     } catch (std::exception& e) {
       DEBUG_LOG << "Unhandled Exception while writing to serial port: "
                 << e.what();
