@@ -6,6 +6,7 @@
 #include "data_monitor.h"
 #include "data_monitor_src.h"
 
+#include <wx/app.h>
 #include <wx/button.h>
 #include <wx/choice.h>
 #include <wx/filedlg.h>
@@ -27,6 +28,7 @@
 #include "androidUTIL.h"
 #endif
 
+#include "model/filters_on_disk.h"
 #include "model/navmsg_filter.h"
 #include "model/nmea_log.h"
 #include "model/gui.h"
@@ -34,6 +36,7 @@
 #include "data_monitor_src.h"
 #include "svg_icons.h"
 #include "tty_scroll.h"
+#include "filter_dlg.h"
 
 #include "std_filesystem.h"
 
@@ -48,6 +51,8 @@
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
 
+static const char* const kFilterChoiceName = "FilterChoiceWindow";
+
 // clang-format: off
 static const std::unordered_map<NavAddr::Bus, std::string> kSourceByBus = {
     {NavAddr::Bus::N0183, "NMEA0183"},
@@ -61,7 +66,7 @@ static const std::unordered_map<NavAddr::Bus, std::string> kSourceByBus = {
  * @param arg unquoted string
  * @return Possibly quoted string handling double quotes in arg.
  */
-static std::string VdrQuote(const std::string arg) {
+static std::string VdrQuote(const std::string& arg) {
   auto static const npos = std::string::npos;
   if (arg.find(',') == npos && arg.find('"') == npos) return arg;
   std::string s;
@@ -201,7 +206,7 @@ public:
   QuickFilterPanel(wxWindow* parent, std::function<void()> on_text_evt)
       : wxPanel(parent),
         m_text_ctrl(new wxTextCtrl(this, wxID_ANY)),
-        m_on_text_evt(on_text_evt) {
+        m_on_text_evt(std::move(on_text_evt)) {
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     auto flags = wxSizerFlags(0).Border();
     auto label_box = new wxBoxSizer(wxVERTICAL);
@@ -270,11 +275,61 @@ class FilterChoice : public wxChoice {
 public:
   FilterChoice(wxWindow* parent, TtyPanel* tty_panel)
       : wxChoice(parent, wxID_ANY), m_tty_panel(tty_panel) {
-    m_filters = NavmsgFilter::GetSystemFilters();
+    SetName(kFilterChoiceName);
     Bind(wxEVT_CHOICE, [&](wxCommandEvent&) { OnChoice(); });
     OnFilterListChange();
     int ix = FindString(_("All data"));
     if (ix != wxNOT_FOUND) SetSelection(ix);
+  }
+
+  void OnFilterListChange() {
+    m_filters = NavmsgFilter::GetAllFilters();
+    int select_ix = GetSelection();
+    std::string selected;
+    if (select_ix != wxNOT_FOUND) selected = GetString(select_ix).ToStdString();
+    Clear();
+    for (auto& filter : m_filters) {
+      try {
+        Append(kLabels.at(filter.m_name));
+      } catch (std::out_of_range&) {
+        if (filter.m_description.empty())
+          Append(filter.m_name);
+        else
+          Append(filter.m_description);
+      }
+    }
+    if (!selected.empty()) {
+      int ix = FindString(selected);
+      SetSelection(ix == wxNOT_FOUND ? 0 : ix);
+    }
+  }
+
+  void OnFilterUpdate(const std::string& name) {
+    m_filters = NavmsgFilter::GetAllFilters();
+    int select_ix = GetSelection();
+    if (select_ix == wxNOT_FOUND) return;
+
+    std::string selected = GetString(select_ix).ToStdString();
+    if (selected != name) return;
+
+    NavmsgFilter filter = filters_on_disk::Read(name);
+    m_tty_panel->SetFilter(filter);
+  }
+
+  void OnApply(const std::string& name) {
+    int found = FindString(name);
+    if (found == wxNOT_FOUND) {
+      for (auto& filter : m_filters) {
+        if (filter.m_name == name) {
+          found = FindString(filter.m_description);
+          break;
+        }
+      }
+    }
+    if (found == wxNOT_FOUND) return;
+
+    SetSelection(found);
+    OnFilterUpdate(name);
   }
 
 private:
@@ -298,21 +353,9 @@ private:
     m_tty_panel->SetFilter(filter);
   }
 
-  void OnFilterListChange() {
-    Clear();
-    for (auto& filter : m_filters) {
-      try {
-        Append(kLabels.at(filter.m_name));
-      } catch (std::out_of_range&) {
-        Append(filter.m_description);
-      }
-    }
-    if (!m_filters.empty()) SetSelection(0);
-  }
-
-  NavmsgFilter FilterByLabel(const std::string label) {
+  NavmsgFilter FilterByLabel(const std::string& label) {
     std::string name;
-    for (auto kv : kLabels) {
+    for (const auto& kv : kLabels) {
       if (kv.second == label) {
         name = kv.first;
         break;
@@ -333,7 +376,9 @@ private:
 class PauseResumeButton : public wxButton {
 public:
   PauseResumeButton(wxWindow* parent, std::function<void(bool)> on_stop)
-      : wxButton(parent, wxID_ANY), is_paused(true), m_on_stop(on_stop) {
+      : wxButton(parent, wxID_ANY),
+        is_paused(true),
+        m_on_stop(std::move(on_stop)) {
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
     OnClick();
   }
@@ -352,7 +397,7 @@ private:
 /** The monitor popup menu. */
 class TheMenu : public wxMenu {
 public:
-  enum class Id {
+  enum class Id : char {
     kNewFilter = 1,  // MacOS does not want ids to be 0.
     kEditFilter,
     kDeleteFilter,
@@ -377,7 +422,7 @@ public:
     AppendId(filters, Id::kNewFilter, _("Create new..."));
     AppendId(filters, Id::kEditFilter, _("Edit..."));
     AppendId(filters, Id::kDeleteFilter, _("Delete..."));
-    // AppendSubMenu(filters, _("Filters..."));    FIXME: leamas: Implement
+    AppendSubMenu(filters, _("Filters..."));
 
     auto logging = new wxMenu("");
     AppendId(logging, Id::kLogFile, _("Log file..."));
@@ -389,8 +434,6 @@ public:
     auto view = new wxMenu("");
     AppendRadioId(view, Id::kViewStdColors, _("Standard Colors"));
     AppendRadioId(view, Id::kViewNoColors, _("No Colors"));
-    // AppendCheckId(view, Id::kViewSource, _("Add message source"));
-    // AppendCheckId(view, Id::kViewTimestamps, _("Add timestamps"));
     AppendId(view, Id::kViewCopy, _("Copy messages to clipboard"));
     AppendSubMenu(view, _("View..."));
 
@@ -422,6 +465,18 @@ public:
           CopyToClipboard();
           break;
 
+        case Id::kNewFilter:
+          CreateFilterDlg(parent);
+          break;
+
+        case Id::kEditFilter:
+          EditFilterDlg(wxTheApp->GetTopWindow());
+          break;
+
+        case Id::kDeleteFilter:
+          RemoveFilterDlg(parent);
+          break;
+
         default:
           std::cout << "Menu id: " << ev.GetId() << "\n";
           break;
@@ -441,10 +496,6 @@ private:
 
   void AppendRadioId(wxMenu* root, Id id, const wxString& label) {
     root->AppendRadioItem(static_cast<int>(id), label);
-  }
-
-  void AppendCheckId(wxMenu* root, Id id, const wxString& label) {
-    root->AppendCheckItem(static_cast<int>(id), label);
   }
 
   void SetLogFormat(DataLogger::Format format, const std::string& label) {
@@ -568,7 +619,7 @@ public:
     wbox->Add(GetCharWidth() * 2, 0, 1);  // Stretching horizontal space
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     wbox->Add(new FilterChoice(this, tty_panel), flags);
-    wbox->Add(new PauseResumeButton(this, on_stop), flags);
+    wbox->Add(new PauseResumeButton(this, std::move(on_stop)), flags);
     wbox->Add(new FilterButton(this, quick_filter), flags);
 
     wbox->Add(new MenuButton(this, m_log_label, m_logger, m_log_button), flags);
@@ -598,7 +649,7 @@ private:
   DataLogger& m_logger;
 };
 
-DataLogger::DataLogger(wxWindow* parent, fs::path path)
+DataLogger::DataLogger(wxWindow* parent, const fs::path& path)
     : m_parent(parent),
       m_path(path),
       m_stream(path, std::ios_base::app),
@@ -610,7 +661,7 @@ DataLogger::DataLogger(wxWindow* parent)
 
 void DataLogger::SetLogging(bool logging) { m_is_logging = logging; }
 
-void DataLogger::SetLogfile(fs::path path) {
+void DataLogger::SetLogfile(const fs::path& path) {
   m_stream = std::ofstream(path);
   m_stream << "# timestamp_format: EPOCH_MILLIS\n";
   m_stream << "received_at,protocol,msg_type,source,raw_data\n";
@@ -673,6 +724,15 @@ DataMonitor::DataMonitor(wxWindow* parent)
   Show();
 
   Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& ev) { Hide(); });
+  m_filter_list_lstnr.Init(FilterEvents::GetInstance().filter_list_change,
+                           [&](ObservedEvt&) { OnFilterListChange(); });
+  m_filter_update_lstnr.Init(
+      FilterEvents::GetInstance().filter_update,
+      [&](ObservedEvt& ev) { OnFilterUpdate(ev.GetString().ToStdString()); });
+
+  m_filter_apply_lstnr.Init(
+      FilterEvents::GetInstance().filter_apply,
+      [&](ObservedEvt& ev) { OnFilterApply(ev.GetString().ToStdString()); });
 }
 
 void DataMonitor::Add(const Logline& ll) {
@@ -684,6 +744,30 @@ bool DataMonitor::IsActive() const {
   wxWindow* w = wxWindow::FindWindowByName("TtyPanel");
   assert(w && "No TtyPanel found");
   return w->IsShownOnScreen();
+}
+
+void DataMonitor::OnFilterListChange() {
+  wxWindow* w = wxWindow::FindWindowByName(kFilterChoiceName);
+  if (!w) return;
+  auto filter_choice = dynamic_cast<FilterChoice*>(w);
+  assert(filter_choice && "Wrong FilterChoice type (!)");
+  filter_choice->OnFilterListChange();
+}
+
+void DataMonitor::OnFilterUpdate(const std::string& name) {
+  wxWindow* w = wxWindow::FindWindowByName("TtyScroll");
+  if (!w) return;
+  auto tty_scroll = dynamic_cast<TtyScroll*>(w);
+  assert(tty_scroll && "Wrong TtyScroll type (!)");
+  tty_scroll->SetFilter(filters_on_disk::Read(name));
+}
+
+void DataMonitor::OnFilterApply(const std::string& name) {
+  wxWindow* w = wxWindow::FindWindowByName(kFilterChoiceName);
+  if (!w) return;
+  auto filter_choice = dynamic_cast<FilterChoice*>(w);
+  assert(filter_choice && "Wrong FilterChoice type (!)");
+  filter_choice->OnApply(name);
 }
 
 #pragma clang diagnostic pop
