@@ -49,6 +49,9 @@ public:
   void SendMessage(std::shared_ptr<const NavMsg> message,
                    std::shared_ptr<const NavAddr> address);
 
+  /** Register a message type in list the GetActiveMessages() list. */
+  void RegisterKey(const std::string& key);
+
   /** Accept message received by driver, make it available for upper layers. */
   void Notify(std::shared_ptr<const NavMsg> message);
 
