@@ -742,6 +742,7 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(
 #endif
     try {
       status = m_serial.write((uint8_t*)msg.data(), msg.size());
+      m_serial.flushOutput();
     } catch (std::exception& e) {
       WARNING_LOG << "Unhandled Exception while writing to serial port: "
                   << e.what();
@@ -759,6 +760,7 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
     ssize_t status;
     try {
       status = m_serial.write((uint8_t*)msg, length);
+      m_serial.flushOutput();
     } catch (std::exception&) {
       //       std::cerr << "Unhandled Exception while writing to serial port: "
       //       << e.what() << std::endl;
