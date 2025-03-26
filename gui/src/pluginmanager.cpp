@@ -94,6 +94,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
+#include "model/datetime.h"
 #include "model/downloader.h"
 #include "model/georef.h"
 #include "model/json_event.h"
@@ -5303,6 +5304,11 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString& url,
 #else
   return OCPN_DL_FAILED;
 #endif
+}
+
+wxString toUsrDateTimeFormat_Plugin(const wxDateTime date_time,
+                                    const DateTimeFormatOptions& options) {
+  return ocpn::toUsrDateTimeFormat(date_time, options);
 }
 
 //  Non-Blocking download of single file

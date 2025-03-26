@@ -117,6 +117,7 @@
 #include "navutil.h"
 #include "NMEALogWindow.h"
 #include "ocpn_app.h"
+#include "ocpn_plugin.h"
 #include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
@@ -3018,10 +3019,8 @@ void MyFrame::ActivateMOB(void) {
   //    The MOB point
   wxDateTime mob_time = wxDateTime::Now();
   wxString mob_label(_("MAN OVERBOARD"));
-  mob_label += _(" at ");
-  mob_label += mob_time.FormatTime();
   mob_label += _(" on ");
-  mob_label += mob_time.FormatISODate();
+  mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
   RoutePoint *pWP_MOB =
       new RoutePoint(gLat, gLon, _T ( "mob" ), mob_label, wxEmptyString);
@@ -3082,7 +3081,7 @@ void MyFrame::ActivateMOB(void) {
 
   wxString mob_message(_("MAN OVERBOARD"));
   mob_message += _(" Time: ");
-  mob_message += mob_time.Format();
+  mob_message += ocpn::toUsrDateTimeFormat(mob_time);
   mob_message += _("  Position: ");
   mob_message += toSDMM(1, gLat);
   mob_message += _T("   ");
@@ -6738,10 +6737,8 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   //    The MOB point
   wxDateTime mob_time = wxDateTime::Now();
   wxString mob_label(_("AIS MAN OVERBOARD"));
-  mob_label += _(" at ");
-  mob_label += mob_time.FormatTime();
   mob_label += _(" on ");
-  mob_label += mob_time.FormatISODate();
+  mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
   RoutePoint *pWP_MOB = new RoutePoint(ptarget->Lat, ptarget->Lon, _T ( "mob" ),
                                        mob_label, wxEmptyString);
@@ -6797,7 +6794,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
 
   wxString mob_message(_("AIS MAN OVERBOARD"));
   mob_message += _(" Time: ");
-  mob_message += mob_time.Format();
+  mob_message += ocpn::toUsrDateTimeFormat(mob_time);
   mob_message += _("  Ownship Position: ");
   mob_message += toSDMM(1, gLat);
   mob_message += _T("   ");
@@ -6838,7 +6835,7 @@ void MyFrame::UpdateAISMOBRoute(const AisTargetData *ptarget) {
 
     wxString mob_message(_("AIS MAN OVERBOARD UPDATE"));
     mob_message += _(" Time: ");
-    mob_message += mob_time.Format();
+    mob_message += ocpn::toUsrDateTimeFormat(mob_time);
     mob_message += _("  Ownship Position: ");
     mob_message += toSDMM(1, gLat);
     mob_message += _T("   ");

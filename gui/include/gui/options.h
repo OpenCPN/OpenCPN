@@ -219,7 +219,9 @@ enum {
   ID_AISALERTAUDIO,
   ID_AISALERTDIALOG,
   ID_TEMPUNITSCHOICE,
-  ID_BUTTONMIGRATE
+  ID_BUTTONMIGRATE,
+  ID_TIMEZONE_UTC,
+  ID_TIMEZONE_LOCAL_TIME
 };
 
 /* Define an int bit field for dialog return value
@@ -418,7 +420,16 @@ public:
   wxCheckBox *pZoomButtons, *pChartBarEX;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor, *m_pTxt_OwnMMSI;
+  // Radio buttons to control the date/time format.
+  // In the future, other date/time formats may be added here. For example:
+  // 1. Local Mean Time (LMT) at the location.
+  // 2. Custom timezone, such as for route planning purpose.
 
+  /** Specify date/time should be formatted in timezone as configured in the
+   * operating system. */
+  wxRadioButton *pTimezoneLocalTime;
+  /** Specify date/time should be formatted in UTC. */
+  wxRadioButton *pTimezoneUTC;
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;

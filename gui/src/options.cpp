@@ -22,6 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <chrono>
 #include <memory>
 
 #ifdef __linux__
@@ -4056,7 +4057,32 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
 
+    // Selection of timezone for date/time display format:
+    // UTC, local time, or specific time zone.
+    generalSizer->Add(
+        new wxStaticText(pDisplayPanel, wxID_ANY, _("Date and Time")),
+        groupLabelFlags);
+
+    wxBoxSizer* timezoneStyleBox = new wxBoxSizer(wxHORIZONTAL);
+    generalSizer->Add(timezoneStyleBox, groupInputFlags);
+    wxBoxSizer* itemTimezoneBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    timezoneStyleBox->Add(itemTimezoneBoxSizer, 1, wxEXPAND | wxALL,
+                          border_size);
+    pTimezoneLocalTime =
+        new wxRadioButton(pDisplayPanel, ID_TIMEZONE_LOCAL_TIME,
+                          _("Local Time"), wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneLocalTime, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+    pTimezoneUTC = new wxRadioButton(pDisplayPanel, ID_TIMEZONE_UTC, _("UTC"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneUTC, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+
     if (!g_useMUI) {
+      // spacer
+      generalSizer->Add(0, border_size * 4);
+      generalSizer->Add(0, border_size * 4);
+
       // Display Options
       generalSizer->Add(
           new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Features")),
@@ -5320,6 +5346,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_itemLangListBox->Disable();
 #endif
 
+  // Fonts
   wxStaticBox* itemFontStaticBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
 
@@ -6215,6 +6242,15 @@ void options::SetInitialSettings(void) {
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
+
+  if (g_datetime_format == "Local Time") {
+    pTimezoneLocalTime->SetValue(true);
+  } else if (g_datetime_format == "UTC") {
+    pTimezoneUTC->SetValue(true);
+  } else {
+    // Default to UTC if no saved timezone or if it's not in the list.
+    pTimezoneUTC->SetValue(true);
+  }
 
   pTrackDaily->SetValue(g_bTrackDaily);
   pTrackRotateLMT->SetValue(g_track_rotate_time_type == TIME_TYPE_LMT);
@@ -7172,6 +7208,11 @@ void options::ApplyChanges(wxCommandEvent& event) {
     g_track_rotate_time_type = TIME_TYPE_COMPUTER;
 
   g_bHighliteTracks = pTrackHighlite->GetValue();
+
+  if (pTimezoneUTC->GetValue())
+    g_datetime_format = "UTC";
+  else if (pTimezoneLocalTime->GetValue())
+    g_datetime_format = "Local Time";
 
   if (pEnableZoomToCursor)
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();

@@ -136,7 +136,16 @@ public:
 
   wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
   wxPoint GetCursorDataXY() { return m_CursorDataxy; }
-  int GetTimeZone() { return m_bTimeZone; }
+  const wxString GetTimezoneSelector() {
+    switch (m_bTimeZone) {
+      case 0:
+        return "UTC";
+      case 1:
+        return "Local Time";
+      default:
+        return wxEmptyString;
+    }
+  }
   void SetTimeZone(int tz);
   int GetStartOptions() { return m_bStartOptions; }
   /**

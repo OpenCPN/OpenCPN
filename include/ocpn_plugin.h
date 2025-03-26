@@ -2701,6 +2701,154 @@ extern DECL_EXP wxString getUsrSpeedUnit_Plugin(int unit = -1);
  * @return Localized unit string ("°C" or "°F")
  */
 extern DECL_EXP wxString getUsrTempUnit_Plugin(int unit = -1);
+
+/**
+ * Configuration options for date and time formatting.
+ *
+ * This structure holds formatting options that determine how dates and times
+ * are displayed throughout the application. It allows configuring format
+ * strings, timezone settings, and geographic reference for local time
+ * calculations.
+ *
+ * The format settings use standard date/time format specifiers (like strftime)
+ * for creating custom date/time representations based on user preferences.
+ * Timezone settings allow displaying times in UTC, system local time, or a
+ * custom zone based on the vessel's current position.
+ */
+struct DateTimeFormatOptions {
+  DateTimeFormatOptions() = default;
+  /**
+   * The format string for date/time.
+   *
+   * The following predefined format strings are supported:
+   * - "$long_date": Thursday December 31, 2021.
+   * - "$short_date": 12/31/2021.
+   * - "$weekday_short_date": Thu 12/31/2021.
+   * - "$hour_minutes_seconds": 15:34:56 zero-padded.
+   * - "$hour_minutes": 15:34 zero-padded.
+   * - "$long_date_time": Thursday December 31, 2021 12:34:56.
+   * - "$short_date_time": 12/31/2021 15:34:56.
+   * - "$weekday_short_date_time": Thu 12/31/2021 15:34:56.
+   *
+   * The default is $weekday_short_date_time.
+   *
+   * The descriptors are resolved to localized date/time string representations.
+   * For example, $short_date is resolved to "12/31/2021" in the US locale and
+   * "31/12/2021" in the UK locale.
+   */
+  wxString format_string = "$weekday_short_date_time";
+  /**
+   * The timezone to use when formatting the date/time. Supported options are:
+   * - Empty string (default): the date/time is formatted according to
+   *   the OpenCPN global settings. This should be used to ensure consistency
+   *   of the date/time representation across the entire application.
+   * - "UTC": the date/time is formatted in UTC, regardless of the OpenCPN
+   *   global settings.
+   * - "Local Time": the date/time is formatted in the local time, regardless of
+   *   the OpenCPN global settings.
+   *
+   * @note In the future, additional timezone options may be supported:
+   * - "LMT": the date/time is formatted in local mean time. In this
+   *   case, longitude is required.
+   * - Valid timezone name: the date/time is formatted in that timezone.
+   */
+  wxString time_zone = wxEmptyString;
+  /**
+   * The longitude to use when formatting the date/time in Local Mean Time
+   * (LMT). The longitude is required when the time_zone is set to "LMT".
+   */
+  double longitude = NAN;
+
+  int version = 1;  // For future compatibility checks
+
+  /**
+   * Sets the date/time format pattern string.
+   *
+   * @param format String containing date/time format specifiers.
+   *
+   * This method configures the format pattern used when displaying dates and
+   * times. The following predefined format strings are supported:
+   * - "$long_date": Thursday December 31, 2021.
+   * - "$short_date": 12/31/2021.
+   * - "$weekday_short_date": Thu 12/31/2021.
+   * - "$hour_minutes_seconds": 15:34:56 zero-padded.
+   * - "$hour_minutes": 15:34 zero-padded.
+   * - "$long_date_time": Thursday December 31, 2021 12:34:56.
+   * - "$short_date_time": 12/31/2021 15:34:56.
+   * - "$weekday_short_date_time": Thu 12/31/2021 15:34:56.
+   *
+   * The default is $weekday_short_date_time.
+   */
+  DateTimeFormatOptions &SetFormatString(const wxString &fmt) {
+    format_string = fmt;
+    return *this;
+  }
+
+  /**
+   * Sets the timezone mode for date/time display
+   *
+   * @param timezone Specifies the timezone mode:
+   * - Empty string (default): the date/time is formatted according to
+   *   the OpenCPN global settings. This should be used to ensure consistency
+   *   of the date/time representation across the entire application.
+   * - "UTC": the date/time is formatted in UTC, regardless of the OpenCPN
+   *   global settings.
+   * - "Local Time": the date/time is formatted in the local time, regardless of
+   *   the OpenCPN global settings.
+   *
+   * This method configures how time values are adjusted for timezone display.
+   * - When set to empty or UTC, all times are shown in universal time without
+   *   adjustment.
+   * - When set to "Local Time", times are adjusted to match the
+   *   timezone settings of the computer running OpenCPN.
+   */
+  DateTimeFormatOptions &SetTimezone(const wxString &tz) {
+    time_zone = tz;
+    return *this;
+  }
+
+  /**
+   * Sets the reference longitude for Local Mean Time (LMT) calculations.
+   *
+   * @param lon Longitude in decimal degrees (-180 to +180)
+   *
+   * When timezone mode is set to local time at vessel position,
+   * this method provides the longitude used to calculate the Local Mean Time
+   * (LMT).
+   *
+   * LMT is calculated based on the sun's position relative to the local
+   * meridian, with solar noon occurring when the sun crosses the meridian. Each
+   * 15 degrees of longitude represents approximately 1 hour of time difference.
+   *
+   * Unlike standard timezone offsets which use fixed boundaries, LMT provides a
+   * continuous time representation based precisely on the vessel's longitude,
+   * useful for celestial navigation and traditional maritime timekeeping.
+   */
+  DateTimeFormatOptions &SetLongitude(double lon) {
+    longitude = lon;
+    return *this;
+  }
+};
+
+/**
+ * Format a wxDateTime to a localized string representation, conforming to the
+ * global date/time format and timezone settings.
+ *
+ * The function uses the timezone configuration to format the date/time either
+ * in UTC, local time, or local mean time (LMT) based on the longitude.
+ *
+ * @note This function should be used instead of wxDateTime.Format() to ensure
+ * consistent date/time formatting across the entire application.
+ *
+ * @param date_time The date/time to format.
+ * @param options The date/time format options.
+ * @return wxString The formatted date/time string.
+ *
+ */
+extern DECL_EXP wxString toUsrDateTimeFormat_Plugin(
+    const wxDateTime date_time,
+    const DateTimeFormatOptions &options = DateTimeFormatOptions());
+
 /**
  * Generates a new globally unique identifier (GUID).
  *

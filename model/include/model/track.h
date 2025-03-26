@@ -32,6 +32,7 @@
 #include <list>
 #include <vector>
 
+#include "model/datetime.h"
 #include "bbox.h"
 #include "hyperlink.h"
 #include "route.h"
@@ -106,36 +107,26 @@ public:
 
   void ClearHighlights();
 
+  /* Return the name of the track, or the start date/time of the track if no
+   * name has been set. */
   wxString GetName(bool auto_if_empty = false) const {
     if (!auto_if_empty || !m_TrackNameString.IsEmpty()) {
       return m_TrackNameString;
     } else {
-      wxString name;
-      TrackPoint *rp = NULL;
-      if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
-      if (rp && rp->GetCreateTime().IsValid())
-        name = rp->GetCreateTime().FormatISODate() + _T(" ") +
-               rp->GetCreateTime()
-                   .FormatISOTime();  // name = rp->m_CreateTime.Format();
-      else
-        name = _("(Unnamed Track)");
-      return name;
+      return GetDateTime(_("(Unnamed Track)"));
     }
   }
   void SetName(const wxString name) { m_TrackNameString = name; }
 
-  wxString GetDate(bool auto_if_empty = false) const {
-    wxString name;
-    TrackPoint *rp = NULL;
-    if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
-    if (rp && rp->GetCreateTime().IsValid())
-      name = rp->GetCreateTime().FormatISODate() + _T(" ") +
-             rp->GetCreateTime()
-                 .FormatISOTime();  // name = rp->m_CreateTime.Format();
-    else
-      name = _("(Unknown Date)");
-    return name;
-  }
+  /* Return the start date/time of the track, formatted as ISO 8601 timestamp.
+   * The separator between date and time is a space character. */
+  wxString GetIsoDateTime(
+      const wxString label_for_invalid_date = _("(Unknown Date)")) const;
+
+  /* Return the start date/time of the track, formatted using the global
+   * timezone settings. */
+  wxString GetDateTime(
+      const wxString label_for_invalid_date = _("(Unknown Date)")) const;
 
   wxString m_GUID;
   bool m_bIsInLayer;
