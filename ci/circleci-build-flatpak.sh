@@ -31,6 +31,7 @@ sudo apt-key adv \
 #  Make sure packagekit is stopped, update not needed on CI build
 sudo systemctl stop packagekit
 sudo systemctl mask packagekit
+dpkg-divert --divert /etc/PackageKit/20packagekit.distrib --rename  /etc/apt/apt.conf.d/20packagekit
 
 sudo apt update -q -y
 
