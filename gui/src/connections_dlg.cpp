@@ -725,7 +725,6 @@ public:
     sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
-    sizer->Add(new PrioritiesBtn(this), wxSizerFlags().Border());
     SetSizer(sizer);
   }
 
@@ -847,18 +846,18 @@ private:
       return ss.str();
     }
   };
+};
 
-  /** Button invokes "Adjust communication priorities" GUI. */
-  class PrioritiesBtn : public wxButton {
-  public:
-    PrioritiesBtn(wxWindow* parent)
-        : wxButton(parent, wxID_ANY, _("Adjust communication priorities...")) {
-      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
-        PriorityDlg dialog(this);
-        dialog.ShowModal();
-      });
-    }
-  };
+/** Button invokes "Adjust communication priorities" GUI. */
+class PrioritiesBtn : public wxButton {
+public:
+  PrioritiesBtn(wxWindow* parent)
+      : wxButton(parent, wxID_ANY, _("Adjust Nav data priorities...")) {
+    Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
+      PriorityDlg dialog(this);
+      dialog.ShowModal();
+    });
+  }
 };
 
 /** Main window: connections grid, "Add new connection", general options. */
@@ -876,7 +875,8 @@ ConnectionsDlg::ConnectionsDlg(
   vbox->Add(scrolled_window, wxSizerFlags(5).Expand().Border());
   vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
             wxSizerFlags().Border());
-  vbox->Add(0, wxWindow::GetCharHeight(), 1);  // Expanding spacer
+  vbox->Add(new PrioritiesBtn(this), wxSizerFlags().Border());
+  vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
   auto panel_flags = wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
   vbox->Add(new GeneralPanel(this), panel_flags);
 
