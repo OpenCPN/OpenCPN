@@ -155,9 +155,12 @@ public:
                 wxTAB_TRAVERSAL, "TtyPanel"),
         m_tty_scroll(nullptr),
         m_filter(this, wxID_ANY),
-        m_lines(lines) {
+        m_lines(lines),
+        m_on_right_click([] {}) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     m_tty_scroll = new TtyScroll(this, m_lines);
+    m_tty_scroll->Bind(wxEVT_RIGHT_UP,
+                       [&](wxMouseEvent&) { m_on_right_click(); });
     vbox->Add(m_tty_scroll, wxSizerFlags(1).Expand().Border());
     m_filter.Hide();
     SetSizer(vbox);
@@ -182,6 +185,10 @@ public:
     m_tty_scroll->SetQuickFilter(filter);
   }
 
+  void SetOnRightClick(std::function<void()> f) {
+    m_on_right_click = std::move(f);
+  }
+
   /** Invoke Add(s) for possibly existing instance. */
   static void AddIfExists(const Logline& ll) {
     auto window = wxWindow::FindWindowByName("TtyPanel");
@@ -199,6 +206,7 @@ private:
   TtyScroll* m_tty_scroll;
   wxTextCtrl m_filter;
   size_t m_lines;
+  std::function<void()> m_on_right_click;
 };
 
 class QuickFilterPanel : public wxPanel {
@@ -603,10 +611,14 @@ class StatusLine : public wxPanel {
 public:
   StatusLine(wxWindow* parent, wxWindow* quick_filter, TtyPanel* tty_panel,
              std::function<void(bool)> on_stop, DataLogger& logger)
-      : wxPanel(parent), m_is_resized(false), m_logger(logger) {
+      : wxPanel(parent),
+        m_is_resized(false),
+        m_logger(logger),
+        m_log_button(new LogButton(this, logger)),
+        m_log_label(new wxStaticText(this, wxID_ANY, _("Logging: Default"))),
+        m_menu(this, m_log_label, logger, m_log_button) {
     // Add a containing sizer for labels, so they can be aligned vertically
     auto log_label_box = new wxBoxSizer(wxVERTICAL);
-    m_log_label = new wxStaticText(this, wxID_ANY, _("Logging: Default"));
     log_label_box->Add(m_log_label);
     auto filter_label_box = new wxBoxSizer(wxVERTICAL);
     filter_label_box->Add(new wxStaticText(this, wxID_ANY, _("View")));
@@ -614,7 +626,6 @@ public:
     auto flags = wxSizerFlags(0).Border();
     auto wbox = new wxWrapSizer(wxHORIZONTAL);
     wbox->Add(log_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
-    m_log_button = new LogButton(this, m_logger);
     wbox->Add(m_log_button, flags);
     wbox->Add(GetCharWidth() * 2, 0, 1);  // Stretching horizontal space
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
@@ -630,7 +641,10 @@ public:
       m_is_resized = true;
       ev.Skip();
     });
+    Bind(wxEVT_RIGHT_UP, [&](wxMouseEvent& ev) { PopupMenu(&m_menu); });
   }
+
+  void OnContextClick() { PopupMenu(&m_menu); }
 
 protected:
   // Make sure the initial size is sane, don't meddle when user resizes
@@ -644,9 +658,10 @@ protected:
 
 private:
   bool m_is_resized;
-  wxStaticText* m_log_label;
-  wxButton* m_log_button;
   DataLogger& m_logger;
+  wxButton* m_log_button;
+  wxStaticText* m_log_label;
+  TheMenu m_menu;
 };
 
 DataLogger::DataLogger(wxWindow* parent, const fs::path& path)
@@ -711,19 +726,24 @@ DataMonitor::DataMonitor(wxWindow* parent)
   vbox->Add(m_quick_filter, wxSizerFlags());
 
   auto on_stop = [&, tty_panel](bool stop) { tty_panel->OnStop(stop); };
-  vbox->Add(new StatusLine(this, m_quick_filter, tty_panel, on_stop, m_logger),
-            wxSizerFlags().Expand());
+  auto status_line =
+      new StatusLine(this, m_quick_filter, tty_panel, on_stop, m_logger);
+  vbox->Add(status_line, wxSizerFlags().Expand());
   SetSizer(vbox);
+  Fit();
+  Show();
 
   m_quick_filter->Bind(wxEVT_TEXT, [&, tty_panel](wxCommandEvent&) {
     tty_panel->SetQuickFilter(GetLabel().ToStdString());
   });
   m_quick_filter->Hide();
-
-  Fit();
-  Show();
+  tty_panel->SetOnRightClick([status_line] { status_line->OnContextClick(); });
 
   Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& ev) { Hide(); });
+  Bind(wxEVT_RIGHT_UP, [status_line](wxMouseEvent& ev) {
+    status_line->OnContextClick();
+    ev.Skip();
+  });
   m_filter_list_lstnr.Init(FilterEvents::GetInstance().filter_list_change,
                            [&](ObservedEvt&) { OnFilterListChange(); });
   m_filter_update_lstnr.Init(
