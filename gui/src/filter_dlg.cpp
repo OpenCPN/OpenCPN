@@ -245,7 +245,6 @@ private:
   }
 
   std::string m_text;
-  ;
   bool m_is_editing;
   std::function<void()> m_on_update;
   const int kEditBtnId;
