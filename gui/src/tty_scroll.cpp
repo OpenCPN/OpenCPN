@@ -60,6 +60,32 @@ static bool IsFilterMatch(const struct Logline& ll, const std::string& s) {
   return ll.message.find(s) != std::string::npos;
 }
 
+static std::string Timestamp() {
+  using namespace std::chrono;
+  using namespace std;
+  auto now = system_clock::now().time_since_epoch();
+  auto _hours = duration_cast<hours>(now);
+  now -= _hours;
+  auto _minutes = duration_cast<minutes>(now);
+  now -= _minutes;
+  auto _seconds = duration_cast<seconds>(now);
+  now -= _seconds;
+  auto ms = duration_cast<milliseconds>(now);
+#ifdef CSTDIO_TTYSCROLL_TIMESTAMP
+  // Perhaps faster, but not type safe.  Needs <cstdio>
+  char buf[128];
+  snprintf(buf, sizeof(buf), "%02ld:%02ld:%02ld.%03ld", _hours.count() % 24,
+           _minutes.count(), _seconds.count(), ms.count());
+  return buf;
+#else
+  std::stringstream ss;
+  ss << setw(2) << setfill('0') << _hours.count() % 24 << ":" << setw(2)
+     << _minutes.count() << ":" << setw(2) << _seconds.count() << "." << setw(3)
+     << ms.count();
+  return ss.str();
+#endif
+}
+
 wxColor StdColorsByState::operator()(NavmsgStatus ns) {
   wxColour color;
   static const wxColor kDarkGreen(30, 72, 56);
@@ -79,11 +105,9 @@ wxColor StdColorsByState::operator()(NavmsgStatus ns) {
 }
 
 /** Draw a single line in the log window. */
-void TtyScroll::DrawLine(wxDC& dc, Logline ll, int data_pos, int y) {
+void TtyScroll::DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y) {
   wxString ws;
-#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
-  if (!ll.message.empty()) ws << wxDateTime::Now().FormatISOTime() << " ";
-#endif
+  if (!ll.message.empty()) ws << Timestamp() << " ";
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
     ws << " " << kUtfRightArrow << " ";
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
@@ -138,7 +162,7 @@ void TtyScroll::OnSize(wxSizeEvent& ev) {
   ev.Skip();
 }
 
-void TtyScroll::Add(struct Logline ll) {
+void TtyScroll::Add(const Logline& ll) {
   if (m_is_paused || !m_filter.Pass(ll.state, ll.navmsg)) return;
   if (!m_quick_filter.empty() && !IsFilterMatch(ll, m_quick_filter)) return;
   while (m_lines.size() > m_n_lines - 1) m_lines.pop_front();
