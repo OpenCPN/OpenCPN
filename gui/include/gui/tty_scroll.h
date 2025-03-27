@@ -91,7 +91,7 @@ public:
    * Subject to checks with respect to paused state and filter possibly
    * discarding argument line.
    */
-  virtual void Add(struct Logline line);
+  virtual void Add(const Logline& line);
 
   /** Set the window to ignore Add() or not depending on pause. */
   void Pause(bool pause) { m_is_paused = pause; }
@@ -119,7 +119,7 @@ protected:
   std::unique_ptr<ColorByState> m_color_by_state;
   std::string m_quick_filter;
 
-  void DrawLine(wxDC& dc, Logline ll, int data_pos, int y);
+  void DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y);
   virtual void OnDraw(wxDC& dc);
   void OnSize(wxSizeEvent& event);
 };
