@@ -71,6 +71,10 @@ class SENTENCE
       virtual void Finish( void );
       virtual int GetNumberOfDataFields( void ) const;
       virtual int Integer( int field_number ) const;
+      virtual NMEA0183_BOOLEAN IsChecksumBad() const;
+      // @todo: it's awkward to request the caller to specify the checksum field number.
+      // NMEA sentences have a well-defined format where the checksum always comes at
+      // the end after the '*' character.
       virtual NMEA0183_BOOLEAN IsChecksumBad( int checksum_field_number ) const;
       virtual LEFTRIGHT LeftOrRight( int field_number ) const;
       virtual NORTHSOUTH NorthOrSouth( int field_number ) const;
