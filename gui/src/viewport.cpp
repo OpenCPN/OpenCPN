@@ -267,6 +267,8 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL(double lat, double lon) {
 
 void ViewPort::GetLLFromPix(const wxPoint2DDouble &p, double *lat,
                             double *lon) {
+  // Calculate distance from the center of the viewport to the given point in
+  // physical pixels.
   double dx = p.m_x - (pix_width / 2.0);
   double dy = (pix_height / 2.0) - p.m_y;
 
@@ -819,9 +821,9 @@ wxRect ViewPort::GetVPRectIntersect(size_t n, float *llpoints) {
 }
 
 void ViewPort::SetBoxes(void) {
-  //  In the case where canvas rotation is applied, we need to define a larger
-  //  "virtual" pixel window size to ensure that enough chart data is fatched
-  //  and available to fill the rotated screen.
+  // In the case where canvas rotation is applied, we need to define a larger
+  // "virtual" pixel window size to ensure that enough chart data is fatched
+  // and available to fill the rotated screen.
   rv_rect = wxRect(0, 0, pix_width, pix_height);
 
   //  Specify the minimum required rectangle in unrotated screen space which
@@ -858,8 +860,9 @@ void ViewPort::SetBoxes(void) {
   double rotation_save = rotation;
   SetRotationAngle(0.0);
 
-  wxPoint ul(rv_rect.x, rv_rect.y),
-      lr(rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height);
+  wxPoint ul(rv_rect.x, rv_rect.y);  // Upper left.
+  wxPoint lr(rv_rect.x + rv_rect.width,
+             rv_rect.y + rv_rect.height);  // Lower right.
   double dlat_min, dlat_max, dlon_min, dlon_max;
 
   bool hourglass = false;

@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN ViewPort
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2015 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,12 +14,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- *
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************/
 
 #ifndef __OCPNVIEWPORT_H__
 #define __OCPNVIEWPORT_H__
@@ -76,10 +66,17 @@ typedef enum ColorScheme
 #define INVALID_COORD (-2147483647 - 1)
 
 /**
- * Represents the view port for chart display in OpenCPN. Encapsulates all
- * parameters that define the current view of the chart, including position,
- * scale, rotation, and projection type. Provides methods for coordinate
- * conversions and viewport manipulations.
+ * ViewPort - Core geographic projection and coordinate transformation engine
+ *
+ * Represents the fundamental viewing parameters and coordinate transformations
+ * for chart display. This class serves as the mathematical foundation for
+ * mapping between geographic coordinates (latitude/longitude) and screen
+ * coordinates (pixels). It encapsulates all parameters that define how a chart
+ * section is viewed, including position, scale, rotation, and projection.
+ *
+ * ViewPort is designed to be a relatively lightweight, data-focused class that
+ * handles the complex mathematical operations needed for accurate chart
+ * rendering without direct dependencies on UI components.
  */
 class ViewPort {
 public:
@@ -92,6 +89,8 @@ public:
    * @param lat Latitude in degrees.
    * @param lon Longitude in degrees.
    * @return wxPoint Pixel coordinates.
+   *
+   * @see ChartCanvas::GetCanvasPointPix() for the canvas-level implementation.
    */
   wxPoint GetPixFromLL(double lat, double lon);
   /**
@@ -100,6 +99,8 @@ public:
    * @param p Physical pixel coordinates.
    * @param lat Pointer to store resulting latitude.
    * @param lon Pointer to store resulting longitude.
+   *
+   * @see ChartCanvas::GetCanvasPixPoint() for the canvas-level implementation.
    */
   void GetLLFromPix(const wxPoint &p, double *lat, double *lon) {
     GetLLFromPix(wxPoint2DDouble(p), lat, lon);
@@ -155,6 +156,35 @@ public:
   wxRect GetVPRectIntersect(size_t n, float *llpoints);
   ViewPort BuildExpandedVP(int width, int height);
 
+  /**
+   * Computes the bounding box coordinates for the current viewport.
+   * This function is responsible for determining the lat/lon boundaries of the
+   * current viewport, which are used for various purposes including plugin
+   * rendering.
+   *
+   * The function calculates a larger "virtual" pixel window size when rotation
+   * is applied to ensure that enough chart data is fetched to fill the rotated
+   * screen. It then computes the viewport lat/lon reference points based on
+   * screen coordinates.
+   *
+   * Different algorithms are used depending on the projection type (POLAR,
+   * ORTHOGRAPHIC, STEREOGRAPHIC, GNOMONIC, MERCATOR, EQUIRECTANGULAR).
+   *
+   * Edge cases are handled such as:
+   * - IDL (International Date Line) crossings
+   * - Poles being visible on screen
+   * - Non-rectangular mappings between screen space and geographical
+   * coordinates
+   *
+   * The computed bounding box is stored in vpBBox and is used by various parts
+   * of the program to determine which chart features should be rendered and
+   * which are outside the visible area.
+   *
+   * @note When rotation or skew is applied, the function creates a larger
+   * rectangle that encompasses the rotated viewport, which can lead to data
+   * being fetched and rendered for areas that may be just outside the visible
+   * part of the screen.
+   */
   void SetBoxes(void);
   /**
    * Set the physical to logical pixel ratio for the display.
@@ -215,7 +245,14 @@ public:
   /** The nominal scale of the "reference chart" for this view. */
   double ref_scale;
 
-  /** Width of the viewport in physical pixels. */
+  /**
+   * Width of the viewport in physical pixels.
+   *
+   * This may be larger than the actual screen width if the viewport is expanded
+   * for operations like text rendering or to accommodate rotation.
+   *
+   * @see BuildExpandedVP() for how this is modified for text rendering
+   */
   int pix_width;
   /** Height of the viewport in physical pixels. */
   int pix_height;
@@ -245,8 +282,9 @@ public:
   }
 
 private:
-  LLBBox vpBBox;  // An un-skewed rectangular lat/lon bounding box
-                  // which contains the entire vieport
+  /** An un-skewed rectangular lat/lon bounding box which contains the entire
+   * viewport. */
+  LLBBox vpBBox;
 
   bool bValid;  // This VP is valid
 
