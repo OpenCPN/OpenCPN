@@ -373,11 +373,11 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
   const std::vector<uint8_t> mv = BufferToActisenseFormat(N2kMsg);
 
-  //    printf("mv\n");
-  //    for(size_t i=0; i< mv.size(); i++){
-  //        printf("%02X ", mv.at(i));
-  //      }
-  //    printf("\n\n");
+  // printf("mv\n");
+  // for(size_t i=0; i< mv.size(); i++){
+  //     printf("%02X ", mv.at(i));
+  //   }
+  // printf("\n\n");
 
   if (GetSecondaryThread()) {
     if (IsSecThreadActive()) {
@@ -618,6 +618,15 @@ int CommDriverN2KSerial::SetTXPGN(int pgn) {
                        &m_bmg4B_resp);
 
   return 0;
+}
+void CommDriverN2KSerial::AddTXGPN(int pgn) {
+  auto it = std::find(pgn_tx_list.begin(), pgn_tx_list.end(), pgn);
+  if (it != pgn_tx_list.end())
+    return;
+  else {
+    SetTXPGN(pgn);
+    pgn_tx_list.push_back(pgn);
+  }
 }
 
 #ifndef __ANDROID__

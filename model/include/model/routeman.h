@@ -142,8 +142,13 @@ public:
   bool UpdateAutopilot();
   bool DeactivateRoute(bool b_arrival = false);
   bool IsAnyRouteActive(void) { return (pActiveRoute != NULL); }
+  bool GetArrival() { return m_bArrival; }
 
   Route *GetpActiveRoute() { return pActiveRoute; }
+  RoutePoint *GetpActiveRouteSegmentBeginPoint() {
+    return pActiveRouteSegmentBeginPoint;
+  }
+
   RoutePoint *GetpActivePoint() { return pActivePoint; }
   double GetCurrentRngToActivePoint() { return CurrentRngToActivePoint; }
   double GetCurrentBrgToActivePoint() { return CurrentBrgToActivePoint; }
@@ -171,7 +176,10 @@ public:
   wxString GetRouteReverseMessage(void);
   wxString GetRouteResequenceMessage(void);
   struct RoutemanDlgCtx &GetDlgContext() { return m_route_dlg_ctx; }
-
+  NMEA0183 GetNMEA0183() { return m_NMEA0183; }
+  NmeaLog &GetNmeaLog() { return m_nmea_log; }
+  EventVar &GetMessageSentEventVar() { return on_message_sent; }
+  std::vector<DriverHandle> GetOutpuDriverArray() { return m_output_drivers; }
   bool m_bDataValid;
 
   /**
@@ -227,6 +235,9 @@ private:
 
   ObsListener msg_sent_listener;
   ObsListener active_route_listener;
+  std::vector<DriverHandle> m_output_drivers;
+  bool m_have_n0183_out;
+  bool m_have_n2000_out;
 };
 
 //----------------------------------------------------------------------------
