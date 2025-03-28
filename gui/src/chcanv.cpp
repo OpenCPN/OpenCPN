@@ -782,15 +782,16 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   if (!g_bdisable_opengl) m_pQuilt->EnableHighDefinitionZoom(true);
 #endif
 
-  int gridFontSize = 8;
-#if defined(__WXOSX__) || defined(__WXGTK3__)
-  // Support scaled HDPI displays.
-  gridFontSize *= GetContentScaleFactor();
-#endif
+  //   int gridFontSize = 8;
+  // #if defined(__WXOSX__) || defined(__WXGTK3__)
+  //   // Support scaled HDPI displays.
+  //   gridFontSize *= GetContentScaleFactor();
+  // #endif
 
-  m_pgridFont = FontMgr::Get().FindOrCreateFont(
-      gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
-      FALSE, wxString(_T ( "Arial" )));
+  m_pgridFont = FontMgr::Get().GetFont(_("GridText"));
+  //   FontMgr::Get().FindOrCreateFont(
+  //       gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+  //       wxFONTWEIGHT_NORMAL, FALSE, wxString(_T ( "Arial" )));
 
   m_Piano = new Piano(this);
 
@@ -6503,7 +6504,7 @@ void ChartCanvas::GridDraw(ocpnDC &dc) {
   wxPen GridPen(GetGlobalColor(_T ( "SNDG1" )), 1, wxPENSTYLE_SOLID);
   dc.SetPen(GridPen);
   dc.SetFont(*m_pgridFont);
-  dc.SetTextForeground(GetGlobalColor(_T ( "SNDG1" )));
+  dc.SetTextForeground(FontMgr::Get().GetFontColor(_("GridText")));
 
   w = m_canvas_width;
   h = m_canvas_height;
@@ -8505,7 +8506,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       else {
         FindRoutePointsAtCursor(SelectRadius, true);  // Not creating Route
       }
-    }  // !g_btouch
+    }       // !g_btouch
     else {  // g_btouch
 
       if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {

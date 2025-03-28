@@ -1961,8 +1961,9 @@ void glChartCanvas::GridDraw() {
 
     m_gridfont.SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
     m_gridfont.Build(font, 1, dpi_factor);
+    wxColour GridTextC = FontMgr::Get().GetFontColor(_("GridText"));
+    m_gridfont.SetColor(GridTextC);
   }
-  m_gridfont.SetColor(GridColor);
 
   w = vp.pix_width;
   h = vp.pix_height;
@@ -3001,7 +3002,7 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
 
   for (std::list<double *>::iterator i = combine_work_data.begin();
        i != combine_work_data.end(); i++)
-    delete[] *i;
+    delete[] * i;
   combine_work_data.clear();
 }
 
@@ -3819,7 +3820,7 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
           RenderTextures(dc, coords, uv, 4, m_pParentCanvas->GetpVP());
         }
       }  // type 'T"
-    }  // loop
+    }    // loop
 
 #endif
 
