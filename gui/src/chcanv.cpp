@@ -9813,6 +9813,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 bool panleftIsDown;
 
 bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
+  // Skip all mouse processing if shift is held.
+  // This allows plugins to implement shift+drag behaviors.
+  if (event.ShiftDown()) {
+    return false;
+  }
   int x, y;
   event.GetPosition(&x, &y);
 
