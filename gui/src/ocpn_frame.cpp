@@ -487,11 +487,11 @@ Please click \"Agree\" and proceed, or \"Cancel\" to quit.\n"));
 
   std::string title = _("Welcome to OpenCPN").ToStdString();
   std::string action = _("Agree").ToStdString();
-  AlertDialog *info_dlg = new AlertDialog(gFrame, title, action);
-  info_dlg->SetInitialSize();
-  info_dlg->AddHtmlContent(html);
-  int agreed = info_dlg->ShowModal();
-  return agreed == wxID_YES;
+  AlertDialog info_dlg(gFrame, title, action);
+  info_dlg.SetInitialSize();
+  info_dlg.AddHtmlContent(html);
+  int agreed = info_dlg.ShowModal();
+  return agreed == wxID_OK;
 #endif
 }
 
