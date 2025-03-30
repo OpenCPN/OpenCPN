@@ -309,6 +309,7 @@ extern int g_nAutoHideToolbar;
 extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
+
 ShapeBaseChartSet gShapeBasemap;
 
 //  TODO why are these static?
@@ -6412,22 +6413,28 @@ void CalcGridSpacing(float view_scale_ppm, float &MajorSpacing,
   // [0] view_scale ppm
   // [1] spacing between major grid lines in degrees
   // [2] spacing between minor grid lines in degrees
-  const float lltab[][3] = {{0.0f, 90.0f, 30.0f},
-                            {.000001f, 45.0f, 15.0f},
-                            {.0002f, 30.0f, 10.0f},
-                            {.0003f, 10.0f, 2.0f},
-                            {.0008f, 5.0f, 1.0f},
-                            {.001f, 2.0f, 30.0f / 60.0f},
-                            {.003f, 1.0f, 20.0f / 60.0f},
-                            {.006f, 0.5f, 10.0f / 60.0f},
-                            {.03f, 15.0f / 60.0f, 5.0f / 60.0f},
-                            {.01f, 10.0f / 60.0f, 2.0f / 60.0f},
-                            {.06f, 5.0f / 60.0f, 1.0f / 60.0f},
-                            {.1f, 2.0f / 60.0f, 1.0f / 60.0f},
-                            {.4f, 1.0f / 60.0f, 0.5f / 60.0f},
-                            {.6f, 0.5f / 60.0f, 0.1f / 60.0f},
-                            {1.0f, 0.2f / 60.0f, 0.1f / 60.0f},
-                            {1e10f, 0.1f / 60.0f, 0.05f / 60.0f}};
+  float lltab[][3] = {{0.0f, 90.0f, 30.0f},
+                      {.000001f, 45.0f, 15.0f},
+                      {.0002f, 30.0f, 10.0f},
+                      {.0003f, 10.0f, 2.0f},
+                      {.0008f, 5.0f, 1.0f},
+                      {.001f, 2.0f, 30.0f / 60.0f},
+                      {.003f, 1.0f, 20.0f / 60.0f},
+                      {.006f, 0.5f, 10.0f / 60.0f},
+                      {.03f, 15.0f / 60.0f, 5.0f / 60.0f},
+                      {.01f, 10.0f / 60.0f, 2.0f / 60.0f},  //
+                      {.06f, 5.0f / 60.0f, 1.0f / 60.0f},   //
+                      {.1f, 2.0f / 60.0f, 1.0f / 60.0f},
+                      {.4f, 1.0f / 60.0f, 0.5f / 60.0f},
+                      {.6f, 0.5f / 60.0f, 0.1f / 60.0f},  //
+                      {1.0f, 0.2f / 60.0f, 0.1f / 60.0f},
+                      {1e10f, 0.1f / 60.0f, 0.05f / 60.0f}};
+  // Divide meridians in 6 instead of 5 when using seconds
+  if (g_iSDMMFormat == 2) {
+    lltab[9][2] = 0.0277777777778f;
+    lltab[10][2] = 0.0138888888889f;
+    lltab[13][2] = 0.00138888888889f;
+  }
 
   unsigned int tabi;
   for (tabi = 0; tabi < ((sizeof lltab) / (sizeof *lltab)) - 1; tabi++)
@@ -6450,6 +6457,7 @@ void CalcGridSpacing(float view_scale_ppm, float &MajorSpacing,
 wxString CalcGridText(float latlon, float spacing, bool bPostfix) {
   int deg = (int)fabs(latlon);                    // degrees
   float min = fabs((fabs(latlon) - deg) * 60.0);  // Minutes
+
   char postfix;
 
   // calculate postfix letter (NSEW)
@@ -6472,11 +6480,15 @@ wxString CalcGridText(float latlon, float spacing, bool bPostfix) {
 
   wxString ret;
   if (spacing >= 1.0) {
-    ret.Printf(_T("%3d%c %c"), deg, 0x00b0, postfix);
+    ret.Printf(_T("%3d%c %c"), deg, 0x00B0, postfix);
   } else if (spacing >= (1.0 / 60.0)) {
-    ret.Printf(_T("%3d%c%02.0f %c"), deg, 0x00b0, min, postfix);
+    ret.Printf(_T("%3d%c%02.0f' %c"), deg, 0x00B0, min, postfix);
   } else {
-    ret.Printf(_T("%3d%c%02.2f %c"), deg, 0x00b0, min, postfix);
+    if (g_iSDMMFormat == 2) {  // format degrees  minutes seconds
+      float sec = fabs((fabs(min) - int(fabs(min))) * 60.0);  // seconds (arc)
+      ret.Printf(_T("%3d%c%02.0f'%02.0f\" %c"), deg, 0x00B0, min, sec, postfix);
+    } else
+      ret.Printf(_T("%3d%c%02.1f' %c"), deg, 0x00B0, min, postfix);
   }
 
   return ret;
@@ -6562,8 +6574,10 @@ void ChartCanvas::GridDraw(ocpnDC &dc) {
     wxPoint r;
     wxString st = CalcGridText(lon, gridlonMajor, false);
     GetCanvasPointPix((nlat + slat) / 2, lon, &r);
-    dc.DrawLine(r.x, 0, r.x, h, false);
-    dc.DrawText(st, r.x, 0);
+    wxCoord wt, ht;
+    dc.GetTextExtent(st, &wt, &ht);
+    dc.DrawLine(r.x, ht, r.x, h - ht, false);
+    dc.DrawText(st, r.x - wt / 2, 0);
     lon = lon + gridlonMajor;
     if (lon > 180.0) {
       lon = lon - 360.0;

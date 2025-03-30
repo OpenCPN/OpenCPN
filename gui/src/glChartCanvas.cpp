@@ -2036,6 +2036,8 @@ void glChartCanvas::GridDraw() {
   }
 
   // draw major longitude grid lines
+  int th;
+  m_gridfont.GetTextExtent(_T("0"), 0, &th);
   float lat_step = nlat - slat;
   if (!straight_longitudes) lat_step /= ceil(lat_step / curved_step);
 
@@ -2046,7 +2048,7 @@ void glChartCanvas::GridDraw() {
     for (lat = slat; lat < nlat + lat_step / 2; lat += lat_step) {
       m_pParentCanvas->GetCanvasPointPix(lat, lon, &r);
       if (s.x != INVALID_COORD && s.y != INVALID_COORD) {
-        gldc.DrawLine(s.x, s.y, r.x, r.y, false);
+        gldc.DrawLine(s.x, s.y, r.x, r.y + th, false);
       }
       s = r;
     }
@@ -2072,8 +2074,8 @@ void glChartCanvas::GridDraw() {
 
       wxString st =
           CalcGridText(lat, gridlatMajor, true);  // get text for grid line
-      int iy;
-      m_gridfont.GetTextExtent(st, 0, &iy);
+      int ix, iy;
+      m_gridfont.GetTextExtent(st, &ix, &iy);
 
       if (straight_latitudes) {
         wxPoint r, s;
@@ -2139,8 +2141,8 @@ void glChartCanvas::GridDraw() {
         xlon += 360.0;
 
       wxString st = CalcGridText(xlon, gridlonMajor, false);
-      int ix;
-      m_gridfont.GetTextExtent(st, &ix, 0);
+      int ix, iy;
+      m_gridfont.GetTextExtent(st, &ix, &iy);
 
       if (straight_longitudes) {
         float x = -1, y = 0;
@@ -2150,7 +2152,7 @@ void glChartCanvas::GridDraw() {
           y = (float)(r.y * s.x - s.y * r.x + (s.y - r.y) * x) / (s.x - r.x);
         }
 
-        m_gridfont.RenderString(st, x, y);
+        m_gridfont.RenderString(st, x - ix / 2, y);
       } else {
         // iteratively attempt to find where the latitude line crosses x=0
         wxPoint2DDouble r;
