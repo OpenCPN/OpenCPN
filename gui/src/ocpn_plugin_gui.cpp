@@ -743,6 +743,21 @@ wxString getUsrWindSpeedUnit_Plugin(int unit) {
 
 wxString getUsrTempUnit_Plugin(int unit) { return getUsrTempUnit(unit); }
 
+/*
+ * Depth Conversion Functions
+ */
+double toUsrDepth_Plugin(double m_depth, int unit) {
+  return toUsrDepth(m_depth, unit);
+}
+
+double fromUsrDepth_Plugin(double usr_depth, int unit) {
+  return fromUsrDepth(usr_depth, unit);
+}
+
+wxString getUsrDepthUnit_Plugin(int unit) { return getUsrDepthUnit(unit); }
+
+double fromDMM_PlugIn(wxString sdms) { return fromDMM(sdms); }
+
 bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
                               double lon2) {
   // TODO: Enable call to gShapeBasemap.CrossesLand after fixing performance

@@ -46,13 +46,15 @@ class MyTrackPrintout : public BasePrintout {
 public:
   MyTrackPrintout(std::vector<bool> _toPrintOut, Track* track,
                   OCPNTrackListCtrl* lcPoints);
-  virtual bool OnPrintPage(int page);
+  virtual bool OnPrintPage(int page) override;
   void DrawPage(wxDC* dc);
-  virtual void OnPreparePrinting();
-  virtual bool HasPage(int num) { return num > 0 && num <= numberOfPages; };
+  virtual void OnPreparePrinting() override;
+  virtual bool HasPage(int num) override {
+    return num > 0 && num <= numberOfPages;
+  };
 
   virtual void GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                           int* selPageTo);
+                           int* selPageTo) override;
 
 protected:
   wxDC* myDC;

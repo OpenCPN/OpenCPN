@@ -27,7 +27,7 @@ class ChartPrintout : public BasePrintout {
 public:
   ChartPrintout() : BasePrintout(_("Chart Print").ToStdString()) {};
 
-  bool OnPrintPage(int page) override;
+  bool OnPrintPage(int page);
 
   /**
    * In OperGL mode, make the bitmap capture of the screen before the print

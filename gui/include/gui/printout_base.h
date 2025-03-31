@@ -36,7 +36,7 @@ public:
   bool OnBeginDocument(int startPage, int endPage) override;
   void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
                    int *selPageTo) override;
-  virtual bool OnPrintPage(int page) = 0;
+  virtual bool OnPrintPage(int page) override = 0;
 
 protected:
   int m_pages;
