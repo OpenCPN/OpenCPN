@@ -427,6 +427,23 @@ void TCWin::OnCloseWindow(wxCloseEvent &event) {
   Destroy();  // that hurts
 }
 
+void TCWin::SetSegmentTime(wxDateTime etd, wxDateTime eta) {
+  m_graphday = etd;  // move graph to ETD day
+  m_segment_etd = etd;
+  m_segment_eta = eta;
+
+  wxDateTime graph_etd_00 = etd.ResetTime();
+  time_t t_graph_etd_00 = graph_etd_00.GetTicks();
+
+  if (!graph_etd_00.IsDST() && m_graphday.IsDST()) t_graph_etd_00 -= 3600;
+  if (graph_etd_00.IsDST() && !m_graphday.IsDST()) t_graph_etd_00 += 3600;
+
+  m_t_graphday_GMT = t_graph_etd_00;
+
+  btc_valid = false;
+  Refresh();
+}
+
 void TCWin::NXEvent(wxCommandEvent &event) {
   wxTimeSpan dt(24, 0, 0, 0);
   m_graphday.Add(dt);
@@ -593,26 +610,54 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     bool cur_time = !gTimeSource.IsValid();
     if (cur_time) this_now = wxDateTime::Now();
 
-    time_t t_now = this_now.GetTicks();  // now, in ticks
-    t_now -= m_diff_mins * 60;
-    if (m_tzoneDisplay == 0)  // LMT @ Station
-      t_now += m_stationOffset_mins * 60;
+    // only draw the line on the same day.
+    if (this_now.IsSameDate(m_graphday)) {
+      time_t t_now = this_now.GetTicks();  // now, in ticks
+      t_now -= m_diff_mins * 60;
+      if (m_tzoneDisplay == 0)  // LMT @ Station
+        t_now += m_stationOffset_mins * 60;
 
-    float t_ratio =
-        m_graph_rect.width * (t_now - m_t_graphday_GMT) / (25 * 3600.0f);
+      float t_ratio =
+          m_graph_rect.width * (t_now - m_t_graphday_GMT) / (25 * 3600.0f);
 
-    // must eliminate line outside the graph (in that case put it outside the
-    // window)
-    int xnow = (t_ratio < 0 || t_ratio > m_graph_rect.width)
-                   ? -1
-                   : m_graph_rect.x + (int)t_ratio;
-    dc.SetPen(*pred_2);
-    dc.DrawLine(xnow, m_graph_rect.y, xnow,
-                m_graph_rect.y + m_graph_rect.height);
-    dc.SetPen(*pblack_1);
+      int xnow = m_graph_rect.x + (int)t_ratio;
+      dc.SetPen(*pred_2);
+      dc.DrawLine(xnow, m_graph_rect.y, xnow,
+                  m_graph_rect.y + m_graph_rect.height);
+      dc.SetPen(*pblack_1);
+    }
+
+    if (m_segment_etd.IsValid() && m_segment_etd.IsSameDate(m_graphday)) {
+      time_t t_etd = m_segment_etd.GetTicks();  // etd, in ticks
+      t_etd -= m_diff_mins * 60;
+      if (m_tzoneDisplay == 0)  // LMT @ Station
+        t_etd += m_stationOffset_mins * 60;
+
+      float t_ratio =
+          m_graph_rect.width * (t_etd - m_t_graphday_GMT) / (25 * 3600.0f);
+      int xetd = m_graph_rect.x + (int)t_ratio;
+      dc.SetPen(*pblack_2);
+      dc.DrawLine(xetd, m_graph_rect.y, xetd,
+                  m_graph_rect.y + m_graph_rect.height);
+      dc.SetPen(*pblack_1);
+    }
+
+    if (m_segment_eta.IsValid() && m_segment_eta.IsSameDate(m_graphday)) {
+      time_t t_eta = m_segment_eta.GetTicks();  // etd, in ticks
+      t_eta -= m_diff_mins * 60;
+      if (m_tzoneDisplay == 0)  // LMT @ Station
+        t_eta += m_stationOffset_mins * 60;
+
+      float t_ratio =
+          m_graph_rect.width * (t_eta - m_t_graphday_GMT) / (25 * 3600.0f);
+      int xeta = m_graph_rect.x + (int)t_ratio;
+      dc.SetPen(*pblack_2);
+      dc.DrawLine(xeta, m_graph_rect.y, xeta,
+                  m_graph_rect.y + m_graph_rect.height);
+      dc.SetPen(*pblack_1);
+    }
 
     //    Build the array of values, capturing max and min and HW/LW list
-
     if (!btc_valid) {
       float dir;
       tcmax = -10;
