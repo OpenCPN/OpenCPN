@@ -60,6 +60,17 @@ static const std::unordered_map<NavAddr::Bus, std::string> kSourceByBus = {
     {NavAddr::Bus::Signalk, "SignalK"}};
 // clang-format: on
 
+/** Return true if given filter is defined by user. */
+static bool IsUserFilter(const std::string& filter_name) {
+  std::vector<std::string> filters = filters_on_disk::List();
+  auto found = std::find(filters.begin(), filters.end(), filter_name);
+  if (found != filters.end()) return true;
+  for (auto& f : filters) {
+    NavmsgFilter nf = filters_on_disk::Read(f);
+    if (nf.m_description == filter_name) return true;
+  }
+  return false;
+};
 /**
  * Quote arg string as required by VDR plugin, see
  * https://opencpn-manuals.github.io/main/vdr/log_format.html
@@ -409,6 +420,7 @@ public:
     kNewFilter = 1,  // MacOS does not want ids to be 0.
     kEditFilter,
     kDeleteFilter,
+    kEditActiveFilter,
     kLogFile,
     kLogFormatDefault,
     kLogFormatCsv,
@@ -431,7 +443,8 @@ public:
     AppendId(filters, Id::kEditFilter, _("Edit..."));
     AppendId(filters, Id::kDeleteFilter, _("Delete..."));
     AppendSubMenu(filters, _("Filters..."));
-
+    if (IsUserFilter(m_filter))
+      Append(static_cast<int>(Id::kEditActiveFilter), _("Edit active filter"));
     auto logging = new wxMenu("");
     AppendId(logging, Id::kLogFile, _("Log file..."));
     AppendRadioId(logging, Id::kLogFormatDefault, _("Log format: standard"));
@@ -481,6 +494,10 @@ public:
           EditFilterDlg(wxTheApp->GetTopWindow());
           break;
 
+        case Id::kEditActiveFilter:
+          EditOneFilterDlg(wxTheApp->GetTopWindow(), m_filter);
+          break;
+
         case Id::kDeleteFilter:
           RemoveFilterDlg(parent);
           break;
@@ -492,11 +509,19 @@ public:
     });
   }
 
+  void SetFilterName(const std::string& filter) {
+    int id = static_cast<int>(Id::kEditActiveFilter);
+    if (FindItem(id)) Delete(id);
+    if (IsUserFilter(filter)) Append(id, _("Edit active filter"));
+    m_filter = filter;
+  }
+
 private:
   wxWindow* m_parent;
   wxWindow* m_log_button;
   DataLogger& m_logger;
   wxStaticText* m_log_label;
+  std::string m_filter;
 
   wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
     return root->Append(static_cast<int>(id), label);
@@ -584,26 +609,25 @@ private:
 /** Button invoking the popup menu. */
 class MenuButton : public wxButton {
 public:
-  MenuButton(wxWindow* parent, wxStaticText* log_label, DataLogger& logger,
-             wxWindow* log_button)
+  MenuButton(wxWindow* parent, TheMenu& menu,
+             std::function<std::string()> get_current_filter)
       : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
                  wxDefaultSize, wxBU_EXACTFIT),
-        m_logger(logger),
-        m_log_button(log_button),
-        m_menu(parent, log_label, m_logger, m_log_button),
-        m_log_label(log_label) {
+        m_menu(menu),
+        m_get_current_filter(std::move(get_current_filter)) {
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
     SetLabel(kUtfIdenticalTo);
     SetToolTip(_("Open menu"));
   }
 
 private:
-  DataLogger& m_logger;
-  wxWindow* m_log_button;
-  TheMenu m_menu;
-  wxStaticText* m_log_label;
+  TheMenu& m_menu;
+  std::function<std::string()> m_get_current_filter;
 
-  void OnClick() { PopupMenu(&m_menu); }
+  void OnClick() {
+    m_menu.SetFilterName(m_get_current_filter());
+    PopupMenu(&m_menu);
+  }
 };
 
 /** Overall bottom status line. */
@@ -616,6 +640,7 @@ public:
         m_logger(logger),
         m_log_button(new LogButton(this, logger)),
         m_log_label(new wxStaticText(this, wxID_ANY, _("Logging: Default"))),
+        m_filter_choice(new FilterChoice(this, tty_panel)),
         m_menu(this, m_log_label, logger, m_log_button) {
     // Add a containing sizer for labels, so they can be aligned vertically
     auto log_label_box = new wxBoxSizer(wxVERTICAL);
@@ -629,22 +654,31 @@ public:
     wbox->Add(m_log_button, flags);
     wbox->Add(GetCharWidth() * 2, 0, 1);  // Stretching horizontal space
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
-    wbox->Add(new FilterChoice(this, tty_panel), flags);
+    wbox->Add(m_filter_choice, flags);
     wbox->Add(new PauseResumeButton(this, std::move(on_stop)), flags);
     wbox->Add(new FilterButton(this, quick_filter), flags);
-
-    wbox->Add(new MenuButton(this, m_log_label, m_logger, m_log_button), flags);
+    auto get_current_filter = [&] {
+      return m_filter_choice->GetStringSelection().ToStdString();
+    };
+    wbox->Add(new MenuButton(this, m_menu, get_current_filter), flags);
     SetSizer(wbox);
     Layout();
     Show();
+
     Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
       m_is_resized = true;
       ev.Skip();
     });
-    Bind(wxEVT_RIGHT_UP, [&](wxMouseEvent& ev) { PopupMenu(&m_menu); });
+    Bind(wxEVT_RIGHT_UP, [&](wxMouseEvent& ev) {
+      m_menu.SetFilterName(m_filter_choice->GetStringSelection().ToStdString());
+      PopupMenu(&m_menu);
+    });
   }
 
-  void OnContextClick() { PopupMenu(&m_menu); }
+  void OnContextClick() {
+    m_menu.SetFilterName(m_filter_choice->GetStringSelection().ToStdString());
+    PopupMenu(&m_menu);
+  }
 
 protected:
   // Make sure the initial size is sane, don't meddle when user resizes
@@ -661,6 +695,7 @@ private:
   DataLogger& m_logger;
   wxButton* m_log_button;
   wxStaticText* m_log_label;
+  wxChoice* m_filter_choice;
   TheMenu m_menu;
 };
 
@@ -737,7 +772,8 @@ DataMonitor::DataMonitor(wxWindow* parent)
     tty_panel->SetQuickFilter(GetLabel().ToStdString());
   });
   m_quick_filter->Hide();
-  tty_panel->SetOnRightClick([status_line] { status_line->OnContextClick(); });
+  tty_panel->SetOnRightClick(
+      [&, status_line] { status_line->OnContextClick(); });
 
   Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& ev) { Hide(); });
   Bind(wxEVT_RIGHT_UP, [status_line](wxMouseEvent& ev) {
