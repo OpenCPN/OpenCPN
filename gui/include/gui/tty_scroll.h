@@ -102,6 +102,9 @@ public:
   /** Apply a display filter */
   void SetFilter(const NavmsgFilter& filter) { m_filter = filter; }
 
+  /** Return current display filter */
+  const NavmsgFilter& GetFilter() { return m_filter; }
+
   /** Apply a quick filter directly matched against lines */
   void SetQuickFilter(const std::string s) { m_quick_filter = s; }
 
