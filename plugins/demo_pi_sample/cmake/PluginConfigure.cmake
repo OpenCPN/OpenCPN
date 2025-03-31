@@ -6,13 +6,6 @@
 
 SET(PLUGIN_SOURCE_DIR .)
 
-# This should be 2.8.0 to have FindGTK2 module
-IF (COMMAND cmake_policy)
-  CMAKE_POLICY(SET CMP0003 OLD)
-  CMAKE_POLICY(SET CMP0005 OLD)
-  CMAKE_POLICY(SET CMP0011 OLD)
-ENDIF (COMMAND cmake_policy)
-
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
 #configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
@@ -172,4 +165,3 @@ ENDIF(QT_ANDROID)
 SET(BUILD_SHARED_LIBS TRUE)
 
 FIND_PACKAGE(Gettext REQUIRED)
-

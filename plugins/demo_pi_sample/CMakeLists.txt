@@ -19,14 +19,17 @@
 # ***************************************************************************
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.1.1)
+cmake_minimum_required(VERSION 3.5)
+cmake_policy(SET CMP0003 NEW)
+cmake_policy(SET CMP0005 NEW)
+cmake_policy(SET CMP0011 NEW)
 
 project(demo_pi)
 
 set(PACKAGE_NAME demo_pi)
 set(VERBOSE_NAME demo)
 set(TITLE_NAME demo)
-set(CPACK_PACKAGE_CONTARCT "Pavel Kalian")
+set(CPACK_PACKAGE_CONTACT "Pavel Kalian")
 
 message(STATUS "*** Building ${PACKAGE_NAME} ***")
 
