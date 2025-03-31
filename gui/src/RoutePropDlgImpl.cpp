@@ -912,7 +912,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu(
     wxMenuItem* delItem =
         new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
 #ifdef __ANDROID__
-    wxFont* pf = OCPNGetFont(_("Menu"), 0);
+    wxFont* pf = OCPNGetFont(_("Menu"));
     editItem->SetFont(*pf);
     moveUpItem->SetFont(*pf);
     moveDownItem->SetFont(*pf);

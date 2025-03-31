@@ -733,43 +733,21 @@ void CommDriverN2KSerialThread::ThreadMessage(const wxString& msg) {
 
 size_t CommDriverN2KSerialThread::WriteComPortPhysical(
     std::vector<unsigned char> msg) {
-  if (m_serial.isOpen()) {
-    ssize_t status = 0;
-#if 0
-    printf("X                ");
-    for (size_t i = 0; i < msg.size(); i++) printf("%02X ", msg[i]);
-    printf("\n");
-#endif
-    try {
-      status = m_serial.write((uint8_t*)msg.data(), msg.size());
-      m_serial.flushOutput();
-    } catch (std::exception& e) {
-      WARNING_LOG << "Unhandled Exception while writing to serial port: "
-                  << e.what();
-      return -1;
-    }
-    return status;
-  } else {
-    return -1;
-  }
+  return WriteComPortPhysical(msg.data(), msg.size());
 }
 
 size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
                                                        size_t length) {
-  if (m_serial.isOpen()) {
-    ssize_t status;
-    try {
-      status = m_serial.write((uint8_t*)msg, length);
-      m_serial.flushOutput();
-    } catch (std::exception&) {
-      //       std::cerr << "Unhandled Exception while writing to serial port: "
-      //       << e.what() << std::endl;
-      return -1;
-    }
+  if (!m_serial.isOpen()) return 0;
+  try {
+    size_t status = m_serial.write((uint8_t*)msg, length);
+    if (status) m_serial.flushOutput();
     return status;
-  } else {
-    return -1;
+  } catch (std::exception& e) {
+    DEBUG_LOG << "Unhandled Exception while writing to serial port: "
+              << e.what();
   }
+  return 0;
 }
 
 bool CommDriverN2KSerialThread::SetOutMsg(

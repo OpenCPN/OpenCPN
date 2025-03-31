@@ -223,7 +223,7 @@ class PlugIn_Position_Fix {
 public:
   double Lat;  //!< Latitude in decimal degrees
   double Lon;  //!< Longitude in decimal degrees
-  double Cog;  //!< Course over ground in degrees true
+  double Cog;  //!< Course over ground in degrees
   double Sog;  //!< Speed over ground in knots
   double Var;  //!< Magnetic variation in degrees, typically from RMC message
   time_t FixTime;  //!< UTC time of fix as time_t value
@@ -231,19 +231,71 @@ public:
 };
 /**
  * Extended position fix information.
+ *
+ * This class provides position and navigation data that may come from various
+ * sources:
+ * - GNSS receiver (primary source)
+ * - Last known position (when GNSS signal is lost)
+ * - User-defined position (when manually moved on map)
+ * - Dead reckoning (calculated from last known position and movement)
  */
 class PlugIn_Position_Fix_Ex {
 public:
-  double Lat;  //!< Latitude in decimal degrees
-  double Lon;  //!< Longitude in decimal degrees
-  double Cog;  //!< Course over ground in degrees true
-  double Sog;  //!< Speed over ground in knots
-  double Var;  //!< Magnetic variation in degrees, typically from RMC message
-  double Hdm;  //!< Heading magnetic in degrees
-  double Hdt;  //!< Heading true in degrees
-  time_t FixTime;  //!< UTC time of fix from the most recent GNSS message, or
-                   //!< system time if GNSS watchdog has expired
-  int nSats;       //!< Number of satellites used in the fix
+  /**
+   * Latitude in decimal degrees.
+   * May represent last known position rather than current true position if:
+   * - GNSS signal is lost
+   * - Position has been manually set by user on map
+   */
+  double Lat;
+
+  /**
+   * Longitude in decimal degrees.
+   * May represent last known position rather than current true position if:
+   * - GNSS signal is lost
+   * - Position has been manually set by user on map
+   */
+  double Lon;
+
+  /** Course over ground in degrees */
+  double Cog;
+
+  /**
+   * Speed over ground in knots.
+   * May be NaN if speed cannot be determined.
+   */
+  double Sog;
+
+  /** Magnetic variation in degrees, typically from RMC message */
+  double Var;
+
+  /**
+   * Heading magnetic in degrees.
+   * May be NaN if heading sensor data is not available.
+   */
+  double Hdm;
+
+  /**
+   * Heading true in degrees.
+   * May be NaN if true heading cannot be calculated (requires both magnetic
+   * heading and variation).
+   */
+  double Hdt;
+
+  /**
+   * UTC time of fix.
+   * - If GNSS available: Time from most recent GNSS message
+   * - If GNSS watchdog expired: Current system time
+   */
+  time_t FixTime;
+
+  /**
+   * Number of satellites used in the fix.
+   * Will be 0 if:
+   * - GNSS watchdog has expired
+   * - Position is not from GNSS
+   */
+  int nSats;
 };
 
 /**
@@ -278,7 +330,7 @@ public:
   int Class;               //!< AIS class (Class A: 0, Class B: 1)
   int NavStatus;           //!< Navigational status (0-15 as per ITU-R M.1371)
   double SOG;              //!< Speed over ground in knots
-  double COG;              //!< Course over ground in degrees true
+  double COG;              //!< Course over ground in degrees
   double HDG;              //!< Heading in degrees true
   double Lon;              //!< Longitude in decimal degrees
   double Lat;              //!< Latitude in decimal degrees
@@ -1433,7 +1485,7 @@ public:
    * @param pfix Position fix data containing:
    *   - Lat: Latitude in decimal degrees
    *   - Lon: Longitude in decimal degrees
-   *   - Cog: Course over ground in degrees true
+   *   - Cog: Course over ground in degrees
    *   - Sog: Speed over ground in knots
    *   - Var: Magnetic variation in degrees
    *   - FixTime: UTC timestamp of fix
@@ -2278,7 +2330,7 @@ extern "C" DECL_EXP wxWindow *GetOCPNCanvasWindow();
  * Time to Go (TTG). By default, the text is large and green, optimized for
  * visibility.
  */
-extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size);
+extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size = 0);
 
 /**
  * Gets shared application data location.
@@ -5480,7 +5532,7 @@ struct PluginNavdata {
   double lat;   //!< Latitude in decimal degrees
   double lon;   //!< Longitude in decimal degrees
   double sog;   //!< Speed over ground in knots
-  double cog;   //!< Course over ground in degrees true
+  double cog;   //!< Course over ground in degrees
   double var;   //!< Magnetic variation in degrees
   double hdt;   //!< True heading in degrees
   time_t time;  //!< UTC timestamp of data
