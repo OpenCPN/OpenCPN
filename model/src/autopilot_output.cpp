@@ -293,9 +293,9 @@ bool UpdateAutopilotN2K(Routeman &routeman) {
   // N2K serial drivers require maintenance of an enabled PGN TX list
   auto drv_serial = dynamic_cast<CommDriverN2KSerial *>(found);
   if (drv_serial) {
-    drv_serial->AddTXGPN(129283);
-    drv_serial->AddTXGPN(129284);
-    drv_serial->AddTXGPN(129285);
+    drv_serial->AddTxPGN(129283);
+    drv_serial->AddTxPGN(129284);
+    drv_serial->AddTxPGN(129285);
   }
 
   fail_any |= !SendPGN129285(routeman, found);

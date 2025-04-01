@@ -70,7 +70,7 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
-  void AddTXGPN(int pgn);
+  void AddTxPGN(int pgn);
 
   int SetTXPGN(int pgn) override;
 

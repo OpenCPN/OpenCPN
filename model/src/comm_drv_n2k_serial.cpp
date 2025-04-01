@@ -619,7 +619,7 @@ int CommDriverN2KSerial::SetTXPGN(int pgn) {
 
   return 0;
 }
-void CommDriverN2KSerial::AddTXGPN(int pgn) {
+void CommDriverN2KSerial::AddTxPGN(int pgn) {
   auto it = std::find(pgn_tx_list.begin(), pgn_tx_list.end(), pgn);
   if (it != pgn_tx_list.end())
     return;
