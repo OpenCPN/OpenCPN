@@ -78,10 +78,12 @@ protected:
   wxStaticText* m_stEnroute;
   wxTextCtrl* m_tcEnroute;
   wxStaticText* m_stDeparture;
+  /** The date picker for the departure date of the route. */
   wxDatePickerCtrl* m_dpDepartureDate;
 #ifdef __WXGTK__
   TimeCtrl* m_tpDepartureTime;
 #else
+  /** The time picker for the departure time of the route. */
   wxTimePickerCtrl* m_tpDepartureTime;
 #endif
   wxStaticText* m_stTimeZone;

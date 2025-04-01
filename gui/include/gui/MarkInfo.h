@@ -214,6 +214,26 @@ class MarkInfoDlg : public DIALOG_PARENT {
   friend class SaveDefaultsDialog;
 
 private:
+  /**
+   * The waypoint being edited in this dialog.
+   * This pointer references the actual waypoint object being modified, not a
+   * copy. Changes made in the dialog directly affect this object when applied.
+   *
+   * In OpenCPN, a waypoint can:
+   * - Exist independently (not part of any route)
+   * - Be part of a single route
+   * - Be shared between multiple routes
+   * - Be part of a layer (in which case it's read-only)
+   *
+   * The dialog adapts its interface based on the waypoint's context:
+   * - Shows additional fields when the waypoint is in a route (planned speed,
+   * arrival radius)
+   * - Disables editing when the waypoint is in a layer
+   * - Changes ETD/ETA labeling based on position in route(s)
+   *
+   * The original state of the waypoint is saved when the dialog opens,
+   * allowing for restoration if the user cancels the edit operation.
+   */
   RoutePoint* m_pRoutePoint;
   static bool instanceFlag;
   int i_htmlList_item;
@@ -254,7 +274,24 @@ protected:
   wxCheckBox* m_checkBoxVisible;
   wxChoice* m_choiceWaypointRangeRingsUnits;
   wxColourPickerCtrl* m_PickColor;
-  wxCheckBox* m_cbEtaPresent;
+  /**
+   * Checkbox control that enables/disables manual ETD setting for a waypoint.
+   *
+   * This control allows users to specify a custom Estimated Time of Departure
+   * (ETD) for a waypoint instead of using the automatically calculated value.
+   * When checked:
+   * 1. The date/time controls become active for manual ETD selection
+   * 2. The waypoint's m_manual_etd flag is set to true
+   * 3. The selected date/time is stored as the waypoint's m_seg_etd value
+   *
+   * A manual ETD overrides the default behavior where ETD would be set equal to
+   * the waypoint's ETA (creating a continuous timing chain). This affects ETA
+   * calculations for all subsequent waypoints in the route.
+   *
+   * The control is only visible and relevant for waypoints that are part of a
+   * route.
+   */
+  wxCheckBox* m_cbEtdPresent;
   wxBoxSizer* bMainSizer;
   FormGrid* fSizerBasicProperties;
   wxFlexGridSizer* waypointradarGrid;
@@ -295,7 +332,8 @@ protected:
   wxStaticText* m_staticTextRR4;
   wxStaticText* m_staticTextArrivalUnits;
   wxStaticText* m_staticTextPlSpeed;
-  wxStaticText* m_staticTextEta;
+  /** Label for the Estimated Time of Departure field. */
+  wxStaticText* m_staticTextEtd;
   wxStaticText* m_staticTextPlSpeedUnits;
   wxStdDialogButtonSizer* m_sdbSizerButtons;
   wxTextCtrl* m_textArrivalRadius;
@@ -320,16 +358,38 @@ protected:
   std::unique_ptr<RoutePointNameValidator> m_name_validator;
   wxTextCtrl* m_textScaMin;
   wxTextCtrl* m_textWaypointRangeRingsStep;
+  /**
+   * Text control for waypoint planned speed.
+   * Allows user input of the planned vessel speed for ETD/ETA calculations.
+   * This field is only shown when a waypoint is part of a route.
+   * Input value is in user-selected speed units (knots, km/h, etc.) and
+   * converted to internal units when saved.
+   * If value is empty or 0, no planned speed is assumed for this waypoint.
+   */
   wxTextCtrl* m_textCtrlPlSpeed;
   wxBitmap _img_MUI_settings_svg;
   wxButton* m_sdbSizerButtonsCancel;
   wxButton* m_sdbSizerButtonsOK;
 
-  wxDatePickerCtrl* m_EtaDatePickerCtrl;
+  /**
+   * Date picker control for setting the Estimated Time of Departure (ETD).
+   * Allows the user to select a calendar date for planned departure from a
+   * waypoint. Works in conjunction with m_EtdTimePickerCtrl to form a complete
+   * date/time value. The selected date is used for route planning and ETA
+   * calculations for subsequent waypoints based on the planned speed.
+   */
+  wxDatePickerCtrl* m_EtdDatePickerCtrl;
 #ifdef __WXGTK__
-  TimeCtrl* m_EtaTimePickerCtrl;
+  TimeCtrl* m_EtdTimePickerCtrl;
 #else
-  wxTimePickerCtrl* m_EtaTimePickerCtrl;
+  /**
+   * Time picker control for setting the Estimated Time of Departure (ETD).
+   * Allows the user to select the time of day for planned departure from a
+   * waypoint. Works in conjunction with m_EtdDatePickerCtrl to form a complete
+   * date/time value. The selected time is used for route planning and ETA
+   * calculations for subsequent waypoints based on the planned speed.
+   */
+  wxTimePickerCtrl* m_EtdTimePickerCtrl;
 #endif
   wxArrayString m_choiceTideChoices;
   wxBitmap m_bmTide;
@@ -361,7 +421,7 @@ protected:
   void On_html_link_popupmenu_Click(wxCommandEvent& event);
   void DefautlBtnClicked(wxCommandEvent& event);
   void OnNotebookPageChanged(wxNotebookEvent& event);
-  void OnTimeChanged(wxDateEvent& event) { m_cbEtaPresent->SetValue(true); }
+  void OnTimeChanged(wxDateEvent& event) { m_cbEtdPresent->SetValue(true); }
   void OnTideStationCombobox(wxCommandEvent& event);
   void OnClose(wxCloseEvent& event);
   void ShowTidesBtnClicked(wxCommandEvent& event);

@@ -1330,6 +1330,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
             g_pRouteMan->GetRouteArrayContaining(m_pFoundRoutePoint);
         if (proute_array) {
           pWayPointMan->DestroyWaypoint(m_pFoundRoutePoint);
+          delete proute_array;
         } else {
           parent->undo->BeforeUndoableAction(
               Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded,

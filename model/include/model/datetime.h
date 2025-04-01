@@ -29,12 +29,24 @@ extern wxString g_datetime_format;
 namespace ocpn {
 
 /**
- * Format a date/time to a localized string representation, conforming to the
- * formatting options.
+ * Return the date/time format to use when formatting date/time strings.
+ * This is a global setting that affects all date/time formatting in OpenCPN.
  *
- * @param date_time The date/time to format.
+ * @details Supported values are:
+ * - "UTC": Format date/time in Coordinated Universal Time (UTC).
+ * - "Local Time": Format date/time using the operating system timezone
+ *   configuration.
+ */
+wxString getUsrDateTimeFormat();
+
+/**
+ * Format a date/time to a localized string representation, conforming to
+ * the formatting options.
+ *
+ * @param date_time The date/time to format, must be local time.
  * @param options The date/time format options.
- * @return wxString The formatted date/time string.
+ * @return wxString The formatted date/time string with appropriate timezone
+ * indicator.
  *
  * @note This function should be used instead of wxDateTime.Format() to ensure
  * consistent date/time formatting across the entire application, including

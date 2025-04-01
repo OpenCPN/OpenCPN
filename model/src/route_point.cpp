@@ -336,6 +336,7 @@ bool RoutePoint::IsSharedInVisibleRoute() {
           break;
         }
       }
+      delete proute_array;
     }
 
     return brp_viz;
@@ -477,6 +478,9 @@ wxDateTime RoutePoint::GetETD() {
         wxString tz(parse_return);
 
         if (tz.Find(_T("UT")) != wxNOT_FOUND) {
+          // TODO: This is error-prone. It would match any string containing
+          // these characters, not just time zone codes For example, "UT" would
+          // match "UTC+2".
           m_seg_etd = etd;
         } else {
           if (tz.Find(_T("LMT")) != wxNOT_FOUND) {
@@ -537,6 +541,9 @@ bool RoutePoint::SetETD(const wxString &ts) {
   }
   wxDateTime tmp;
   wxString::const_iterator end;
+  // No timezone conversion is done because the serialized string
+  // does not include timezone information, e.g., "2025-03-26T18:57:01"
+  // The input string is assumed to be in UTC format.
   if (tmp.ParseISOCombined(ts)) {
     SetETD(tmp);
     return TRUE;

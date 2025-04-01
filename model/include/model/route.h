@@ -124,6 +124,25 @@ public:
   void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
   void DeSelectRoute();
   void FinalizeForRendering();
+  /**
+   * Updates the navigation data for a single route segment between two
+   * waypoints.
+   *
+   * This function calculates and updates the following data for a route
+   * segment:
+   * - Distance between the two waypoints (stored in the destination waypoint)
+   * - Course from the source to destination waypoint
+   * - Contribution to the total route length
+   * - Segment VMG (Velocity Made Good) based on planned speed
+   * - ETE (Estimated Time Enroute) for the segment
+   * - ETD (Estimated Time of Departure) from the source waypoint
+   * - ETA (Estimated Time of Arrival) at the destination waypoint
+   *
+   * @param prp0 Pointer to the source waypoint (departure point)
+   * @param prp Pointer to the destination waypoint (arrival point)
+   * @param planspeed Default planned speed in knots, used if the destination
+   * waypoint doesn't specify its own speed
+   */
   void UpdateSegmentDistance(RoutePoint *prp0, RoutePoint *prp,
                              double planspeed = -1.0);
   void UpdateSegmentDistances(double planspeed = -1.0);
@@ -154,6 +173,11 @@ public:
 
   double GetRouteArrivalRadius(void) { return m_ArrivalRadius; }
   void SetRouteArrivalRadius(double radius) { m_ArrivalRadius = radius; }
+  /**
+   * Set the departure time of the route.
+   *
+   * @param dt The departure date and time to set, in UTC.
+   */
   void SetDepartureDate(const wxDateTime &dt) {
     if (dt.IsValid()) m_PlannedDeparture = dt;
   }
@@ -185,6 +209,7 @@ public:
   int m_lastMousePointIndex;
   bool m_NextLegGreatCircle;
   double m_PlannedSpeed;
+  /** The departure time of the route, in UTC. */
   wxDateTime m_PlannedDeparture;
   wxString m_TimeDisplayFormat;
 

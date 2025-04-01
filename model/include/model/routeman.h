@@ -129,12 +129,82 @@ public:
   Track *FindTrackByGUID(const wxString &guid);
   Route *FindRouteContainingWaypoint(RoutePoint *pWP);
   Route *FindVisibleRouteContainingWaypoint(RoutePoint *pWP);
+  /**
+   * Find all routes that contain the given waypoint.
+   *
+   * This function searches through all routes in the route list
+   * and returns an array of route pointers for each route that
+   * contains the specified waypoint.
+   *
+   * @param pWP Pointer to the waypoint to search for.
+   * @return Pointer to wxArrayPtrVoid containing routes, or nullptr if no
+   * routes contain the waypoint. The caller is responsible for deleting the
+   * returned array when done with it.
+   */
   wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
   bool DoesRouteContainSharedPoints(Route *pRoute);
   void RemovePointFromRoute(RoutePoint *point, Route *route, int route_state);
 
+  /**
+   * Activates a route for navigation.
+   *
+   * This function sets up a route for active navigation by:
+   * 1. Setting up the route for plugin notifications
+   * 2. Configuring output drivers for navigation data
+   * 3. Creating a "virtual" waypoint at the vessel's current position if
+   * starting at the beginning of the route
+   * 4. Activating the first/selected waypoint as the active navigation target
+   * 5. Initializing arrival detection parameters
+   *
+   * When a route is activated, OpenCPN starts providing navigation data to
+   * autopilot systems and plugins, updating the display to show the active
+   * route, and monitoring for waypoint arrivals.
+   *
+   * @param pRouteToActivate Pointer to the Route object to activate
+   * @param pStartPoint Optional pointer to a specific RoutePoint to start from
+   *                    (if NULL, starts from the first point in the route)
+   * @return true if route was successfully activated
+   */
   bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
+  /**
+   * Activates a specific waypoint within a route for navigation.
+   *
+   * This function sets up navigation to a specific waypoint by:
+   * 1. Setting up waypoint plugin notifications
+   * 2. Establishing the active waypoint and its preceding segment
+   * 3. Creating a "virtual" waypoint at the vessel's current position if this
+   * is the first point in the route
+   * 4. Setting up visual indicators (making the active point blink)
+   * 5. Initializing arrival detection parameters
+   *
+   * This function is called by ActivateRoute() and is also used when manually
+   * changing the active waypoint during navigation.
+   *
+   * @param pA Pointer to the route containing the waypoint
+   * @param pRP_target Pointer to the RoutePoint to set as the active target
+   * @return true if waypoint was successfully activated
+   */
   bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
+  /**
+   * Activates the next waypoint in a route when the current waypoint is
+   * reached.
+   *
+   * This function handles the transition between waypoints by:
+   * 1. Deactivating the current waypoint
+   * 2. Sending arrival notifications to plugins
+   * 3. Finding and activating the next waypoint in sequence
+   * 4. Setting up visual indicators for the new active waypoint
+   * 5. Resetting arrival detection parameters
+   *
+   * This function is called automatically when a waypoint arrival is detected,
+   * or manually when skipping a waypoint.
+   *
+   * @param pr Pointer to the active route
+   * @param skipped Boolean indicating if this is a manual skip (true) or normal
+   * arrival (false)
+   * @return true if successfully activated the next waypoint, false if at the
+   * end of the route
+   */
   bool ActivateNextPoint(Route *pr, bool skipped);
   RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon,
                                     double cog, double sog);

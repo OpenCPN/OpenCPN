@@ -994,7 +994,7 @@ wxString Track::GetDateTime(const wxString label_for_invalid_date) const {
   TrackPoint *rp = NULL;
   if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
   if (rp && rp->GetCreateTime().IsValid())
-    name = ocpn::toUsrDateTimeFormat(rp->GetCreateTime());
+    name = ocpn::toUsrDateTimeFormat(rp->GetCreateTime().FromUTC());
   else
     name = label_for_invalid_date;
   return name;
