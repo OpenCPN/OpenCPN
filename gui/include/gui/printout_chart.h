@@ -1,6 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *   Copyright (C) 2022 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,32 +18,28 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- * Implement comm_navmsg_bus.h i. e., NavMsgBus.
- */
+#ifndef PRINTOUT_CHART_H
+#define PRINTOUT_CHART_H
 
-#include "model/comm_navmsg_bus.h"
+#include "printout_base.h"
 
-void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
-  RegisterKey(key);
-  Observable(*msg).Notify(msg);
-}
+class ChartPrintout : public BasePrintout {
+public:
+  ChartPrintout() : BasePrintout(_("Chart Print").ToStdString()) {};
 
-void NavMsgBus::RegisterKey(const std::string& key) {
-  {
-    std::lock_guard lock(m_mutex);
-    if (m_active_messages.find(key) == m_active_messages.end())
-      new_msg_event.Notify();
-    m_active_messages.insert(key);
-  }
-}
+  bool OnPrintPage(int page) override;
 
-NavMsgBus& NavMsgBus::GetInstance() {
-  static NavMsgBus instance;
-  return instance;
-}
+  /**
+   * In OperGL mode, make the bitmap capture of the screen before the print
+   * method starts as to be sure the "Abort..." dialog does not appear on the
+   * image.
+   */
+  void GenerateGLbmp();
 
-/** Handle changes in driver list. */
-void NavMsgBus::Notify(AbstractCommDriver const&) {}
+private:
+  wxBitmap m_gl_bmp;
+
+  void DrawPage(wxDC *dc, int page);
+};
+
+#endif  // PRINTOUT_CHART_H

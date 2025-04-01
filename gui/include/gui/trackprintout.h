@@ -39,14 +39,13 @@
 #include "model/ocpn_types.h"
 #include "navutil.h"
 #include "TrackPropDlg.h"
+#include "printout_base.h"
 #include "printtable.h"
-#include "ocpn_frame.h"
 
-class MyTrackPrintout : public MyPrintout {
+class MyTrackPrintout : public BasePrintout {
 public:
   MyTrackPrintout(std::vector<bool> _toPrintOut, Track* track,
-                  OCPNTrackListCtrl* lcPoints,
-                  const wxString& title = _T( "My Track printout" ));
+                  OCPNTrackListCtrl* lcPoints);
   virtual bool OnPrintPage(int page);
   void DrawPage(wxDC* dc);
   virtual void OnPreparePrinting();

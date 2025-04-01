@@ -1,6 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *   Copyright (C) 2022 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,33 +17,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef PRINTOUT_BASE_H
+#define PRINTOUT_BASE_H
+
+#include <string>
+#include <wx/dc.h>
+#include <wx/print.h>
 
 /**
- * \file
- * Implement comm_navmsg_bus.h i. e., NavMsgBus.
+ * Application print support.
  */
+class BasePrintout : public wxPrintout {
+public:
+  BasePrintout(const std::string &title = _("OpenCPN print").ToStdString());
 
-#include "model/comm_navmsg_bus.h"
+  // Methods required by wxPrintout.
+  bool HasPage(int page) override;
+  bool OnBeginDocument(int startPage, int endPage) override;
+  void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
+                   int *selPageTo) override;
+  virtual bool OnPrintPage(int page) = 0;
 
-void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
-  RegisterKey(key);
-  Observable(*msg).Notify(msg);
-}
+protected:
+  int m_pages;
+};
 
-void NavMsgBus::RegisterKey(const std::string& key) {
-  {
-    std::lock_guard lock(m_mutex);
-    if (m_active_messages.find(key) == m_active_messages.end())
-      new_msg_event.Notify();
-    m_active_messages.insert(key);
-  }
-}
-
-NavMsgBus& NavMsgBus::GetInstance() {
-  static NavMsgBus instance;
-  return instance;
-}
-
-/** Handle changes in driver list. */
-void NavMsgBus::Notify(AbstractCommDriver const&) {}
+#endif  // PRINTOUT_BASE_H

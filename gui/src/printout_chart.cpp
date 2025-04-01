@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement ocpn_print.h
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,12 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include "config.h"
 
 #include "chcanv.h"
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"
-#include "ocpn_print.h"
+#include "printout_chart.h"
 
 extern bool g_bopengl;
 extern MyFrame* gFrame;
@@ -35,78 +29,61 @@ extern MyFrame* gFrame;
 class ChartCanvas;
 ChartCanvas* GetFocusCanvas();
 
-bool MyPrintout::OnPrintPage(int page) {
+bool ChartPrintout::OnPrintPage(int page) {
   wxDC* dc = GetDC();
-  if (dc) {
-    if (page == 1) DrawPageOne(dc);
-
+  if (dc && page == 1) {
+    DrawPage(dc, page);
     return true;
   } else
     return false;
 }
 
-bool MyPrintout::OnBeginDocument(int startPage, int endPage) {
-  if (!wxPrintout::OnBeginDocument(startPage, endPage)) return false;
-
-  return true;
-}
-
-void MyPrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                             int* selPageTo) {
-  *minPage = 1;
-  *maxPage = 1;
-  *selPageFrom = 1;
-  *selPageTo = 1;
-}
-
-bool MyPrintout::HasPage(int pageNum) { return (pageNum == 1); }
-
-void MyPrintout::DrawPageOne(wxDC* dc) {
+void ChartPrintout::DrawPage(wxDC* dc, int page) {
   // Get the Size of the Chart Canvas
   int sx, sy;
   gFrame->GetFocusCanvas()->GetClientSize(&sx, &sy);  // of the canvas
 
-  float maxX = sx;
-  float maxY = sy;
+  float max_x = sx;
+  float max_y = sy;
 
   // Let's have at least some device units margin
-  float marginX = 50;
-  float marginY = 50;
+  float margin_x = 50;
+  float margin_y = 50;
 
   // Add the margin to the graphic size
-  maxX += (2 * marginX);
-  maxY += (2 * marginY);
+  max_x += (2 * margin_x);
+  max_y += (2 * margin_y);
 
   // Get the size of the DC in pixels
   int w, h;
   dc->GetSize(&w, &h);
 
   // Calculate a suitable scaling factor
-  float scaleX = (float)(w / maxX);
-  float scaleY = (float)(h / maxY);
+  float scale_x = (float)(w / max_x);
+  float scale_y = (float)(h / max_y);
 
   // Use x or y scaling factor, whichever fits on the DC
-  float actualScale = wxMin(scaleX, scaleY);
+  float actual_scale = wxMin(scale_x, scale_y);
 
   // Calculate the position on the DC for centring the graphic
-  float posX = (float)((w - (maxX * actualScale)) / 2.0);
-  float posY = (float)((h - (maxY * actualScale)) / 2.0);
+  float pos_x = (float)((w - (max_x * actual_scale)) / 2.0);
+  float pos_y = (float)((h - (max_y * actual_scale)) / 2.0);
 
-  posX = wxMax(posX, marginX);
-  posY = wxMax(posY, marginY);
+  pos_x = wxMax(pos_x, margin_x);
+  pos_y = wxMax(pos_y, margin_y);
 
   // Set the scale and origin
-  dc->SetUserScale(actualScale, actualScale);
-  dc->SetDeviceOrigin((long)posX, (long)posY);
+  dc->SetUserScale(actual_scale, actual_scale);
+  dc->SetDeviceOrigin((long)pos_x, (long)pos_y);
 
   //  Get the latest bitmap as rendered by the ChartCanvas
 
   if (g_bopengl) {
 #ifdef ocpnUSE_GL
-    if (m_GLbmp.IsOk()) {
+    if (m_gl_bmp.IsOk()) {
       wxMemoryDC mdc;
-      mdc.SelectObject(m_GLbmp);
-      dc->Blit(0, 0, m_GLbmp.GetWidth(), m_GLbmp.GetHeight(), &mdc, 0, 0);
+      mdc.SelectObject(m_gl_bmp);
+      dc->Blit(0, 0, m_gl_bmp.GetWidth(), m_gl_bmp.GetHeight(), &mdc, 0, 0);
       mdc.SelectObject(wxNullBitmap);
     }
 #endif
@@ -122,7 +99,7 @@ void MyPrintout::DrawPageOne(wxDC* dc) {
   }
 }
 
-void MyPrintout::GenerateGLbmp() {
+void ChartPrintout::GenerateGLbmp() {
   if (g_bopengl) {
 #ifdef ocpnUSE_GL
     int gsx = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().x;
@@ -145,7 +122,7 @@ void MyPrintout::GenerateGLbmp() {
     wxImage image(gsx, gsy);
     image.SetData(e);
     wxImage mir_imag = image.Mirror(false);
-    m_GLbmp = wxBitmap(mir_imag);
+    m_gl_bmp = wxBitmap(mir_imag);
 #endif
   }
 }

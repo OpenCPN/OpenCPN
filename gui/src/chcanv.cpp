@@ -312,9 +312,26 @@ extern wxString g_CmdSoundString;
 ShapeBaseChartSet gShapeBasemap;
 
 //  TODO why are these static?
-/** The current mouse X position in canvas coordinates (physical pixels). */
+
+/**
+ * The current mouse X position in physical pixels relative to the active
+ * canvas.
+ *
+ * - (0,0) represents the top-left corner of the chart area within the canvas.
+ * - This is updated during mouse events via MouseEventSetup()
+ * - In multi-canvas configurations, this represents the position within
+ *   the canvas receiving mouse events.
+ */
 static int mouse_x;
-/** The current mouse Y position in canvas coordinates (physical pixels). */
+/**
+ * The current mouse Y position in physical pixels relative to the active
+ * canvas.
+ *
+ * - (0,0) represents the top-left corner of the chart area within the canvas.
+ * - This is updated during mouse events via MouseEventSetup()
+ * - In multi-canvas configurations, this represents the position within
+ *   the canvas receiving mouse events.
+ */
 static int mouse_y;
 static bool mouse_leftisdown;
 
@@ -5388,10 +5405,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
   // recompute cursor position
   // and send to interested plugins if the mouse is actually in this window
-
-  const wxPoint pt = wxGetMousePosition();
-  int mouseX = pt.x - GetScreenPosition().x;
-  int mouseY = pt.y - GetScreenPosition().y;
+  int mouseX = mouse_x;
+  int mouseY = mouse_y;
   if ((mouseX > 0) && (mouseX < VPoint.pix_width) && (mouseY > 0) &&
       (mouseY < VPoint.pix_height)) {
     double lat, lon;
@@ -5592,12 +5607,14 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
         //  Allow the quilt to adjust the new ViewPort for performance
         //  optimization This will normally be only a fractional (i.e.
         //  sub-pixel) adjustment...
-        if (b_adjust) m_pQuilt->AdjustQuiltVP(last_vp, VPoint);
+        if (b_adjust) {
+          m_pQuilt->AdjustQuiltVP(last_vp, VPoint);
+        }
 
-          //                ChartData->ClearCacheInUseFlags();
-          //                unsigned long hash1 = m_pQuilt->GetXStackHash();
+        //                ChartData->ClearCacheInUseFlags();
+        //                unsigned long hash1 = m_pQuilt->GetXStackHash();
 
-          //                wxStopWatch sw;
+        //                wxStopWatch sw;
 
 #ifdef __ANDROID__
         // This is an optimization for panning on touch screen systems.
@@ -9796,6 +9813,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 bool panleftIsDown;
 
 bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
+  // Skip all mouse processing if shift is held.
+  // This allows plugins to implement shift+drag behaviors.
+  if (event.ShiftDown()) {
+    return false;
+  }
   int x, y;
   event.GetPosition(&x, &y);
 

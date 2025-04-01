@@ -31,8 +31,11 @@
 #endif  // precompiled headers
 
 #include "model/comm_appmsg_bus.h"
+#include "model/comm_navmsg_bus.h"
 
-void AppMsgBus::Notify(std::shared_ptr<const AppMsg> msg) {
+void AppMsgBus::Notify(const std::shared_ptr<const AppMsg>& msg) {
+  std::string key = "Internal::" + msg->GetKey();
+  NavMsgBus::GetInstance().RegisterKey(key);
   Observable(*msg).Notify(msg);
 }
 

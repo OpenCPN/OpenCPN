@@ -4649,7 +4649,7 @@ void glChartCanvas::RenderS57TextOverlay(ViewPort &VPoint) {
         }
 
         // Grow the ViewPort a bit laterally, to minimize "jumping" of text
-        // elements at left side of screen
+        // elements at right side of screen
         ViewPort vpx = VPoint;
         vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
 

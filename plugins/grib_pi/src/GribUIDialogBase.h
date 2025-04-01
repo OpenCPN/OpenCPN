@@ -64,6 +64,7 @@
 #include <wx/notebook.h>
 #include <wx/treectrl.h>
 #include <wx/html/htmlwin.h>
+#include <wx/tglbtn.h>
 #include "CustomGrid.h"
 #include "XyGribPanel.h"
 
@@ -82,7 +83,8 @@
 #define ID_TIMELINE 1009
 #define ID_BTNOPENFILE 1010
 #define ID_BTNSETTING 1011
-#define ID_BTNREQUEST 1012
+#define ID_BTNREQUEST \
+  1012  //!< ID of button for requesting/downloading GRIB data.
 // GRIBUICDataBase
 #define CURSOR_DATA 1013
 #define ID_CB_WIND 1014
@@ -126,8 +128,9 @@
 #define MAXLON 1050
 #define MINLAT 1051
 #define MINLON 1052
-#define MANSELECT 1053
-#define SAVEDZONE 1054
+#define AUTOSELECT 1053  //!< Automatic selection mode.
+#define MANSELECT 1054   //!< Manual selection mode.
+#define SAVEDZONE 1055   //!< Save zone.
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ProjectBoatPanel
@@ -186,6 +189,7 @@ protected:
   wxFlexGridSizer* m_fgCDataSizer;
   wxFlexGridSizer* m_fgCtrlGrabberSize;
   ProjectBoatPanel* m_ProjectBoatPanel;
+  double m_ScaledFactor;
 
   // Virtual event handlers, overide them in your derived class
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
@@ -203,7 +207,7 @@ protected:
   virtual void OnTimeline(wxScrollEvent& event) { event.Skip(); }
   virtual void OnOpenFile(wxCommandEvent& event) { event.Skip(); }
   virtual void OnSettings(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnRequest(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnRequestForecastData(wxCommandEvent& event) { event.Skip(); }
   virtual void OnCompositeDialog(wxCommandEvent& event) { event.Skip(); }
 
 public:
@@ -214,8 +218,14 @@ public:
                     const wxString& title = wxEmptyString,
                     const wxPoint& pos = wxDefaultPosition,
                     const wxSize& size = wxDefaultSize,
-                    long style = wxDEFAULT_DIALOG_STYLE | wxSYSTEM_MENU);
+                    long style = wxDEFAULT_DIALOG_STYLE | wxSYSTEM_MENU,
+                    double scale_factor = 1.0);
   ~GRIBUICtrlBarBase();
+
+  void SetScaleFactor(double factor) { m_ScaledFactor = factor; }
+  double GetScaleFactor() { return m_ScaledFactor; }
+  static wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName,
+                                  double scale_factor);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -304,10 +314,29 @@ protected:
   wxCheckBox* m_cbBarbedArrows;
   wxFlexGridSizer* m_fgBarbedData1;
   wxChoice* m_cBarbedColours;
+  /**
+   * Flag to determine barbed arrow layout mode.
+   *
+   * When true, wind/current barbs are drawn using a fixed spacing grid where
+   * arrows are evenly distributed across the screen at intervals specified
+   * by m_iBarbArrSpacing. This mode creates a regular pattern of barbs.
+   */
   wxCheckBox* m_cBarbArrFixSpac;
   wxCheckBox* m_cBarbArrMinSpac;
   wxFlexGridSizer* m_fgBarbedData2;
   wxCheckBox* m_cBarbedVisibility;
+  /**
+   * Spacing between barbed arrows in fixed spacing mode.
+   *
+   * This value defines the pixel distance between adjacent wind/current barbs
+   * when using fixed spacing mode (m_bBarbArrFixSpac = true). The spacing
+   * is measured in screen pixels, but is converted to geographic coordinates
+   * during rendering to ensure proper movement when panning.
+   *
+   * Higher values create a sparser grid with fewer barbs, while lower values
+   * create a denser grid with more barbs. The actual on-screen distance
+   * includes this spacing plus the size of the barbed arrow itself.
+   */
   wxSpinCtrl* m_sBarbArrSpacing;
   wxCheckBox* m_cbIsoBars;
   wxFlexGridSizer* m_fIsoBarSpacing;
@@ -426,6 +455,12 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 class GribRequestSettingBase : public wxDialog {
 private:
+  wxStaticBoxSizer* createAreaSelectionSection(wxWindow* parent,
+                                               GRIBUICtrlBarBase* ctrlBar);
+  void createWorldPanel();
+  void createLocalModelsPanel();
+  void createEmailPanel();
+
 protected:
   wxNotebook* m_notebookGetGrib;
   wxPanel* m_panelWorld;
@@ -461,16 +496,31 @@ protected:
   wxChoice* m_pInterval;
   wxChoice* m_pTimeRange;
   wxStaticText* m_staticText21;
-  wxCheckBox* m_cManualZoneSel;
+  /**
+   * Radio button selected to indicate the download area is based on
+   * the visible area of the chart in the canvas which is currently
+   * in focus.
+   */
+  wxRadioButton* m_rbCurrentView;
+  /**
+   * Radio button selected to indicate the download area is based on
+   * the area selected by the user.
+   */
+  wxRadioButton* m_rbManualSelect;
+  wxBitmapToggleButton* m_bpManualSelection;
   wxFlexGridSizer* fgZoneCoordinatesSizer;
   wxCheckBox* m_cUseSavedZone;
+  /** A spinner for the max latitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMaxLat;
   wxStaticText* m_stMaxLatNS;
   wxStaticText* m_staticText36;
+  /** A spinner for the max longitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMaxLon;
   wxStaticText* m_stMaxLonEW;
+  /** A spinner for the min latitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMinLat;
   wxStaticText* m_stMinLatNS;
+  /** A spinner for the min longitude of the bounding box for downloads. */
   wxSpinCtrl* m_spMinLon;
   wxStaticText* m_stMinLonEW;
   wxCheckBox* m_pWind;
@@ -495,13 +545,16 @@ protected:
   wxFlexGridSizer* m_fgFixedSizer;
   wxStaticText* m_tFileSize;
   wxStaticText* m_tLimit;
-  wxStdDialogButtonSizer* m_rButton;
+  /** Button to Send a download request through e-mail. */
   wxButton* m_rButtonYes;
+  /** Button to Save the "download request" configuration. */
   wxButton* m_rButtonApply;
+  /** Button to Cancel a request to download, close the dialog without saving
+   * the configuration. */
   wxButton* m_rButtonCancel;
   XyGribPanel* m_xygribPanel;
 
-  // Virtual event handlers, overide them in your derived class
+  // Virtual event handlers, override them in your derived class
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
   virtual void OnNotebookPageChanged(wxNotebookEvent& event) { event.Skip(); }
   virtual void OnWorldLengthChoice(wxCommandEvent& event) { event.Skip(); }
@@ -520,18 +573,32 @@ protected:
     event.Skip();
   }
   virtual void OnCoordinatesChange(wxSpinEvent& event) { event.Skip(); }
-  virtual void OnSaveMail(wxCommandEvent& event) { event.Skip(); }
+  /**
+   * Callback invoked when the user clicks the "OK" button in the "download"
+   * dialog.
+   */
+  virtual void OnOK(wxCommandEvent& event) { event.Skip(); }
+  /**
+   * Callback invoked when the user clicks the "Cancel" button in the "download"
+   * dialog.
+   */
   virtual void OnCancel(wxCommandEvent& event) { event.Skip(); }
+  /**
+   * Callback invoked when the user clicks the "Send" button in the "e-mail"
+   * tab.
+   */
   virtual void OnSendMaiL(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribDownloadButton(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribAtmModelChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribWaveModelChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribConfigChange(wxCommandEvent& event) { event.Skip(); }
+  // Save configuration before closing
+  virtual void SaveConfig() {};
 
 public:
   wxScrolledWindow* m_sScrolledDialog;
 
-  GribRequestSettingBase(wxWindow* parent, wxWindowID id = wxID_ANY,
+  GribRequestSettingBase(GRIBUICtrlBarBase* parent, wxWindowID id = wxID_ANY,
                          const wxString& title = _("Get forecast..."),
                          const wxPoint& pos = wxDefaultPosition,
                          const wxSize& size = wxSize(-1, -1),

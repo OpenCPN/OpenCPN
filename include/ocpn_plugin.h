@@ -1466,8 +1466,15 @@ public:
   /**
    * Notifies plugin of viewport changes.
    *
-   * This method is called when the chart viewport changes (pan/zoom).
-   * Must be implemented if plugin needs viewport awareness.
+   * This method is called whenever the chart viewport changes on any canvas due
+   * to:
+   * - User pan/zoom operations
+   * - Periodic canvas updates
+   * - Course/heading changes affecting chart orientation
+   *
+   * For multi-canvas configurations (e.g. split screen), this is called
+   * separately for each canvas's viewport changes, regardless of which canvas
+   * has focus or mouse interaction.
    *
    * @param vp New viewport parameters
    *
@@ -2260,24 +2267,26 @@ extern "C" DECL_EXP void RequestRefresh(wxWindow *);
 extern "C" DECL_EXP bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
 /**
- * Converts lat/lon to canvas pixel coordinates.
+ * Converts lat/lon to canvas physical pixel coordinates.
  *
- * Transforms geographic coordinates to screen pixels for the given viewport.
+ * Transforms geographic coordinates to screen physical pixels for the given
+ * viewport.
  *
  * @param vp Current viewport
- * @param pp Will receive pixel coordinates
+ * @param pp Will receive physical pixel coordinates
  * @param lat Latitude in decimal degrees
  * @param lon Longitude in decimal degrees
  */
 extern "C" DECL_EXP void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp,
                                         double lat, double lon);
 /**
- * Converts canvas pixel coordinates to lat/lon.
+ * Converts canvas physical pixel coordinates to lat/lon.
  *
- * Transforms screen pixels to geographic coordinates for the given viewport.
+ * Transforms screen physical pixels to geographic coordinates for the given
+ * viewport.
  *
  * @param vp Current viewport
- * @param p Pixel coordinates
+ * @param p Physical pixel coordinates
  * @param plat Will receive latitude in decimal degrees
  * @param plon Will receive longitude in decimal degrees
  */
@@ -4687,9 +4696,23 @@ extern DECL_EXP bool ShuttingDown(void);
  * Gets the currently focused chart canvas.
  *
  * Returns the chart canvas window that currently has input focus in
- * multi-canvas configurations.
+ * multi-canvas configurations. A canvas gains focus when:
+ *
+ * - User clicks within the canvas area
+ * - User uses keyboard shortcuts to switch canvas focus
+ * - Canvas is explicitly given focus programmatically
+ *
+ * Focus determines which canvas:
+ * - Receives keyboard input events
+ * - Is the target for navigation commands
+ * - Shows active canvas indicators
+ * - Gets tool/menu actions by default
  *
  * @return Pointer to focused canvas window, NULL if none focused
+ *
+ * @see GetCanvasIndexUnderMouse() To find canvas under mouse cursor
+ * @see GetCanvasCount() To get total number of canvases
+ * @see GetCanvasByIndex() To get canvas by index number
  */
 extern DECL_EXP wxWindow *PluginGetFocusCanvas();
 /**
@@ -4810,9 +4833,14 @@ extern DECL_EXP wxWindow *GetCanvasUnderMouse();
  * Gets index of chart canvas under mouse cursor.
  *
  * Returns the index of the canvas window that the mouse cursor is currently
- * over in multi-canvas configurations.
+ * positioned over in multi-canvas configurations. Note that having the mouse
+ * over a canvas does not automatically give that canvas focus - it merely
+ * indicates mouse position.
  *
  * @return Canvas index (0-based), -1 if mouse not over any canvas
+ * @note This returns mouse position only - does not affect canvas focus
+ * @see GetFocusCanvas() To determine which canvas has input focus
+ * @see GetCanvasCount() To get total number of canvases
  */
 extern DECL_EXP int GetCanvasIndexUnderMouse();
 // extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();

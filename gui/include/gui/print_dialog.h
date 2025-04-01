@@ -1,6 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *   Copyright (C) 2022 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,33 +16,49 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef PRINT_DIALOG_H
+#define PRINT_DIALOG_H
+
+#include <wx/print.h>
 
 /**
- * \file
- * Implement comm_navmsg_bus.h i. e., NavMsgBus.
+ * Handle the print process and dialog.
  */
+class PrintDialog {
+public:
+  PrintDialog(wxPrintOrientation orientation) = delete;
+  PrintDialog& operator=(const PrintDialog&) = delete;
 
-#include "model/comm_navmsg_bus.h"
+  /**
+   * Get instance to handle the print process,
+   * @return Singleton instance to handle print process.
+   */
+  static PrintDialog& GetInstance();
 
-void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
-  RegisterKey(key);
-  Observable(*msg).Notify(msg);
-}
+  /**
+   * Initialize the printer with default setup.
+   * @param orientation Default page orientation.
+   */
+  void Initialize(wxPrintOrientation orientation);
 
-void NavMsgBus::RegisterKey(const std::string& key) {
-  {
-    std::lock_guard lock(m_mutex);
-    if (m_active_messages.find(key) == m_active_messages.end())
-      new_msg_event.Notify();
-    m_active_messages.insert(key);
-  }
-}
+  /**
+   * Print page numbers.
+   * @param enable Enable or disable page numbers.
+   */
+  void EnablePageNumbers(bool enable);
 
-NavMsgBus& NavMsgBus::GetInstance() {
-  static NavMsgBus instance;
-  return instance;
-}
+  /**
+   * Start print process and opens the print dialog.
+   * @param parent Parent window.
+   * @param output Printer output.
+   */
+  void Print(wxWindow* parent, wxPrintout* output);
 
-/** Handle changes in driver list. */
-void NavMsgBus::Notify(AbstractCommDriver const&) {}
+private:
+  PrintDialog();
+
+  bool m_initialized;
+  wxPrintDialogData m_print_data;
+};
+
+#endif  // PRINT_DIALOG_H

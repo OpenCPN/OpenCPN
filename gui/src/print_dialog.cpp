@@ -1,6 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *   Copyright (C) 2022 Alec Leamas                                        *
+
+/***************************************************************************
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,32 +18,46 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- * Implement comm_navmsg_bus.h i. e., NavMsgBus.
- */
+#include "gui_lib.h"
+#include "print_dialog.h"
 
-#include "model/comm_navmsg_bus.h"
-
-void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
-  RegisterKey(key);
-  Observable(*msg).Notify(msg);
+PrintDialog::PrintDialog() {
+  wxPrintData data;
+  m_initialized = false;
 }
 
-void NavMsgBus::RegisterKey(const std::string& key) {
-  {
-    std::lock_guard lock(m_mutex);
-    if (m_active_messages.find(key) == m_active_messages.end())
-      new_msg_event.Notify();
-    m_active_messages.insert(key);
-  }
-}
-
-NavMsgBus& NavMsgBus::GetInstance() {
-  static NavMsgBus instance;
+PrintDialog& PrintDialog::GetInstance() {
+  static PrintDialog instance;
   return instance;
 }
 
-/** Handle changes in driver list. */
-void NavMsgBus::Notify(AbstractCommDriver const&) {}
+void PrintDialog::Initialize(wxPrintOrientation orientation) {
+  if (!m_initialized) {
+    wxPrintData data;
+    data.SetOrientation(orientation);
+    m_print_data = wxPrintDialogData(data);
+    m_initialized = true;
+  }
+}
+
+void PrintDialog::EnablePageNumbers(bool enable) {
+  m_print_data.EnablePageNumbers(enable);
+}
+
+void PrintDialog::Print(wxWindow* parent, wxPrintout* output) {
+  assert(m_initialized);
+  wxPrinter printer(&m_print_data);
+  if (!printer.Print(parent, output, true)) {
+    if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
+      OCPNMessageBox(
+          NULL,
+          _("There was a problem printing.\nPerhaps your current printer is "
+            "not set correctly?"),
+          _("OpenCPN"), wxOK);
+    }
+
+  } else {
+    wxPrintData data = printer.GetPrintDialogData().GetPrintData();
+    m_print_data.SetPrintData(data);
+  }
+}
