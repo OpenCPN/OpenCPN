@@ -597,6 +597,13 @@ void TrackPropDlg::CreateControlsCompact() {
 
   m_sdbBtmBtnsSizerExtend = new wxButton(this, wxID_ANY, _("Extend"),
                                          wxDefaultPosition, wxDefaultSize, 0);
+  m_sdbBtmBtnsSizerExtend->SetToolTip(
+      _("Extends this track by connecting it to another track.\n"
+        "Disabled when the track is active, the track is in a layer, or no "
+        "suitable track to connect to exists.\n"
+        "A suitable track is one that is visible, is different from this "
+        "track, and has its last point's timestamp earlier than or equal to "
+        "this track's first point's timestamp."));
   itemBoxSizerAux->Add(m_sdbBtmBtnsSizerExtend, 0,
                        wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
@@ -1875,7 +1882,7 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
             DateTimeFormatOptions()
                 .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
                 .SetLongitude(getStartPointLongitude());
-        ret = ocpn::toUsrDateTimeFormat(timestamp, opts);
+        ret = ocpn::toUsrDateTimeFormat(timestamp.FromUTC(), opts);
       } else
         ret = _T("----");
     } break;

@@ -189,6 +189,7 @@ public:
   void ContextMenuItemCallback(int id);
   void SetFactoryOptions();
 
+  /** Returns the selected time in the GRIB timeline widget. */
   wxDateTime TimelineTime();
   /**
    * Retrieves or creates a temporally interpolated GRIB record set for a
@@ -459,7 +460,8 @@ public:
     return &m_GribRecordSetArray;
   }
   /**
-   * Gets reference datetime of the GRIB data.
+   * Returns the reference datetime of the GRIB data, as the number of seconds
+   * since the epoch.
    *
    * The reference time is when the model run started (analysis time).
    * This differs from the forecast time of individual records which is

@@ -75,6 +75,19 @@ extern double toUsrDepth(double cel_depth, int unit = -1);
 extern double fromUsrDepth(double usr_depth, int unit = -1);
 extern wxString getUsrDepthUnit(int unit = -1);
 
+/**
+ * This function parses a string containing a GPX time representation
+ * and returns a wxDateTime containing the UTC corresponding to the
+ * input. The function return value is a pointer past the last valid
+ * character parsed (if successful) or NULL (if the string is invalid).
+ *
+ * Valid GPX time strings are in ISO 8601 format as follows:
+ *
+ *   [-]<YYYY>-<MM>-<DD>T<hh>:<mm>:<ss>Z|(+|-<hh>:<mm>)
+ *
+ * For example, 2010-10-30T14:34:56Z and 2010-10-30T14:34:56-04:00
+ * are the same time. The first is UTC and the second is EDT.
+ */
 const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime);
 
 extern wxString formatTimeDelta(wxTimeSpan span);

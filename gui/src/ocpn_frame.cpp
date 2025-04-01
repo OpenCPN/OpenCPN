@@ -3113,8 +3113,6 @@ void MyFrame::TrackOn(void) {
   }
 
   wxJSONValue v;
-  wxDateTime now;
-  now = now.Now().ToUTC();
   wxString name = g_pActiveTrack->GetName();
   if (name.IsEmpty()) {
     TrackPoint *tp = g_pActiveTrack->GetPoint(0);

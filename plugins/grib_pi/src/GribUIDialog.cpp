@@ -456,7 +456,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
           DateTimeFormatOptions().SetTimezone(pPlugIn->GetTimezoneSelector());
       title.append(" (" +
                    toUsrDateTimeFormat_Plugin(
-                       m_bGRIBActiveFile->GetRefDateTime(), opts) +
+                       wxDateTime(m_bGRIBActiveFile->GetRefDateTime()), opts) +
                    ")");
 
       if (rsa->GetCount() > 1) {
@@ -1339,12 +1339,12 @@ void GRIBUICtrlBar::TimelineChanged() {
     SaveSelectionString();  // memorize index and label
     DateTimeFormatOptions opts =
         DateTimeFormatOptions().SetTimezone(pPlugIn->GetTimezoneSelector());
-    m_cRecordForecast->SetString(
-        m_Selection_index,
-        toUsrDateTimeFormat_Plugin(time, opts));  // replace it by the
+    wxString formattedTime = toUsrDateTimeFormat_Plugin(time, opts);
+    m_cRecordForecast->SetString(m_Selection_index,
+                                 formattedTime);  // replace it by the
                                                   // interpolated time label
-    m_cRecordForecast->SetStringSelection(toUsrDateTimeFormat_Plugin(
-        time, opts));  // ensure it's visible in the box
+    m_cRecordForecast->SetStringSelection(
+        formattedTime);  // ensure it's visible in the box
   }
 
   UpdateTrackingControl();
@@ -1401,7 +1401,7 @@ wxDateTime GRIBUICtrlBar::GetNow() {
 
   ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
-  // verifie if we are outside of the file time range
+  // Verify if we are outside of the file time range
   now = (now > rsa->Item(rsa->GetCount() - 1).m_Reference_Time)
             ? rsa->Item(rsa->GetCount() - 1).m_Reference_Time
         : (now < rsa->Item(0).m_Reference_Time) ? rsa->Item(0).m_Reference_Time
@@ -1911,12 +1911,11 @@ void GRIBUICtrlBar::ComputeBestForecastForNow() {
   SaveSelectionString();  // memorize the new selected wxChoice date time label
   DateTimeFormatOptions opts =
       DateTimeFormatOptions().SetTimezone(pPlugIn->GetTimezoneSelector());
-  m_cRecordForecast->SetString(
-      m_Selection_index,
-      toUsrDateTimeFormat_Plugin(now, opts));  // write the now date time label
-                                               // in the right place in wxChoice
-  m_cRecordForecast->SetStringSelection(
-      toUsrDateTimeFormat_Plugin(now, opts));  // put it in the box
+  wxString nowTime = toUsrDateTimeFormat_Plugin(now, opts);
+  m_cRecordForecast->SetString(m_Selection_index,
+                               nowTime);  // write the now date time label
+                                          // in the right place in wxChoice
+  m_cRecordForecast->SetStringSelection(nowTime);  // put it in the box
 
   UpdateTrackingControl();
 

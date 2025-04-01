@@ -74,7 +74,8 @@ void GRIBTable::InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
         DateTimeFormatOptions()
             .SetFormatString("$short_date\n$hour_minutes")
             .SetTimezone(zone);
-    m_pGribTable->SetColLabelValue(i, toUsrDateTimeFormat_Plugin(time, opts));
+    m_pGribTable->SetColLabelValue(
+        i, toUsrDateTimeFormat_Plugin(wxDateTime(time), opts));
     nrows = -1;
     GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
     if (pTimeset == 0) continue;
