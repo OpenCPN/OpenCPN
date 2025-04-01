@@ -38,6 +38,7 @@
 #include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
+#include "model/autopilot_output.h"
 #include "model/base_platform.h"
 #include "model/comm_n0183_output.h"
 #include "model/comm_vars.h"
@@ -53,6 +54,8 @@
 #include "model/track.h"
 
 #include "observable_globvar.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_drv_n0183_serial.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -263,6 +266,33 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ACTIVATED");
   if (g_bPluginHandleAutopilotRoute) return true;
 
+  // Capture and maintain a list of data connections configured as "output"
+  // This is performed on "Activate()" to allow dynamic re-config of drivers
+  m_have_n0183_out = false;
+  m_have_n2000_out = false;
+
+  m_output_drivers.clear();
+  for (const auto &handle : GetActiveDrivers()) {
+    const auto &attributes = GetAttributes(handle);
+    if (attributes.find("protocol") == attributes.end()) continue;
+    if (attributes.at("protocol") == "nmea0183") {
+      if (attributes.find("ioDirection") != attributes.end()) {
+        if ((attributes.at("ioDirection") == "IN/OUT") ||
+            (attributes.at("ioDirection") == "OUT")) {
+          m_output_drivers.push_back(handle);
+          m_have_n0183_out = true;
+        }
+      }
+      continue;
+    }
+    // N2K is always configured for output
+    if (attributes.at("protocol") == "nmea2000") {
+      m_output_drivers.push_back(handle);
+      m_have_n2000_out = true;
+      continue;
+    }
+  }
+
   pActiveRoute = pRouteToActivate;
   g_active_route = pActiveRoute->GetGUID();
 
@@ -320,7 +350,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
     if (pRouteActivatePoint) delete pRouteActivatePoint;
 
     pRouteActivatePoint =
-        new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")),
+        new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("Begin")),
                        wxEmptyString, false);  // Current location
     pRouteActivatePoint->m_bShowName = false;
 
@@ -452,6 +482,63 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 
 bool Routeman::UpdateAutopilot() {
   if (!bGPSValid) return false;
+  bool rv = false;
+
+  // Set max WP name length
+  int maxName = 6;
+  if ((g_maxWPNameLength >= 3) && (g_maxWPNameLength <= 32))
+    maxName = g_maxWPNameLength;
+#if 0
+
+
+  auto& registry = CommDriverRegistry::GetInstance();
+  const std::vector<DriverPtr>& drivers = registry.GetDrivers();
+
+  //  Look for configured  ports
+  bool have_n0183 = false;
+  bool have_n2000 = false;
+
+//  AbstractCommDriver* found = nullptr;
+  for (auto key : m_output_drivers) {
+    for (auto &d : drivers) {
+      if (d->Key() == key) {
+        std::unordered_map<std::string, std::string> attributes =
+            GetAttributes(key);
+        auto protocol_it = attributes.find("protocol");
+        if (protocol_it != attributes.end()) {
+          std::string protocol = protocol_it->second;
+
+          if (protocol == "nmea0183") {
+            have_n0183 = true;
+          } else if (protocol == "nmea2000") {
+            have_n2000 = true;
+          }
+        }
+      }
+    }
+  }
+#endif
+
+  if (m_have_n0183_out) rv |= UpdateAutopilotN0183(*this);
+
+  if (m_have_n2000_out) rv |= UpdateAutopilotN2K(*this);
+
+  // Send active leg info directly to plugins
+
+  ActiveLegDat leg_info;
+  leg_info.Btw = CurrentBrgToActivePoint;
+  leg_info.Dtw = CurrentRngToActivePoint;
+  leg_info.Xte = CurrentXTEToActivePoint;
+  if (XTEDir < 0) {
+    leg_info.Xte = -leg_info.Xte;  // Left side of the track -> negative XTE
+  }
+  leg_info.wp_name = pActivePoint->GetName().Truncate(maxName);
+  leg_info.arrival = m_bArrival;
+
+  json_leg_info.Notify(std::make_shared<ActiveLegDat>(leg_info), "");
+
+#if 0
+
 
   // Send all known Autopilot messages upstream
 
@@ -670,6 +757,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Xte.Write(snt);
     BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
   }
+#endif
 
   return true;
 }

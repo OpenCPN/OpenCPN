@@ -32,6 +32,7 @@ set(
   ${MODEL_HDR_DIR}/ais_state_vars.h
   ${MODEL_HDR_DIR}/ais_target_data.h
   ${MODEL_HDR_DIR}/atomic_queue.h
+  ${MODEL_HDR_DIR}/autopilot_output.h
   ${MODEL_HDR_DIR}/base_platform.h
   ${MODEL_HDR_DIR}/catalog_handler.h
   ${MODEL_HDR_DIR}/catalog_parser.h
@@ -136,6 +137,7 @@ set(SRC
   ${MODEL_SRC_DIR}/ais_decoder.cpp
   ${MODEL_SRC_DIR}/ais_state_vars.cpp
   ${MODEL_SRC_DIR}/ais_target_data.cpp
+  ${MODEL_SRC_DIR}/autopilot_output.cpp
   ${MODEL_SRC_DIR}/base_platform.cpp
   ${MODEL_SRC_DIR}/catalog_handler.cpp
   ${MODEL_SRC_DIR}/catalog_parser.cpp
