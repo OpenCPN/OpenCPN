@@ -1637,6 +1637,7 @@ set(s57data
 set(filters
     data/filters/all-data.filter.json
     data/filters/all-nmea.filter.json
+    data/filters/default.filter.json
     data/filters/malformed.filter.json
     data/filters/nmea-input.filter.json
     data/filters/nmea-output.filter.json
