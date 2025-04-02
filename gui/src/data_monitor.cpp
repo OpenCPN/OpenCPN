@@ -453,8 +453,7 @@ public:
     AppendSubMenu(logging, _("Logging..."));
 
     auto view = new wxMenu("");
-    AppendRadioId(view, Id::kViewStdColors, _("Standard Colors"));
-    AppendRadioId(view, Id::kViewNoColors, _("No Colors"));
+    AppendCheckId(view, Id::kViewStdColors, _("Use colors"));
     AppendId(view, Id::kViewCopy, _("Copy messages to clipboard"));
     AppendSubMenu(view, _("View..."));
 
@@ -477,9 +476,7 @@ public:
           break;
 
         case Id::kViewStdColors:
-          [[fallthrough]];
-        case Id::kViewNoColors:
-          SetColor(ev.GetId());
+          SetColor(static_cast<int>(Id::kViewStdColors));
           break;
 
         case Id::kViewCopy:
@@ -531,6 +528,10 @@ private:
     root->AppendRadioItem(static_cast<int>(id), label);
   }
 
+  void AppendCheckId(wxMenu* root, Id id, const wxString& label) {
+    root->AppendCheckItem(static_cast<int>(id), label);
+  }
+
   void SetLogFormat(DataLogger::Format format, const std::string& label) {
     m_log_label->SetLabel(label);
     m_logger.SetFormat(format);
@@ -552,13 +553,14 @@ private:
     auto tty_scroll = dynamic_cast<TtyScroll*>(w);
     if (!tty_scroll) return;
 
-    if (id == static_cast<int>(Id::kViewStdColors))
+    wxMenuItem* item = FindItem(id);
+    if (!item) return;
+
+    if (item->IsCheck() && item->IsChecked())
       tty_scroll->SetColors(std::make_unique<StdColorsByState>());
-    else if (id == static_cast<int>(Id::kViewNoColors))
+    else
       tty_scroll->SetColors(
           std::make_unique<NoColorsByState>(tty_scroll->GetForegroundColour()));
-    else
-      assert(false && "Illegal color type");
   }
 
   void CopyToClipboard() {
@@ -637,7 +639,6 @@ public:
              std::function<void(bool)> on_stop, DataLogger& logger)
       : wxPanel(parent),
         m_is_resized(false),
-        m_logger(logger),
         m_log_button(new LogButton(this, logger)),
         m_log_label(new wxStaticText(this, wxID_ANY, _("Logging: Default"))),
         m_filter_choice(new FilterChoice(this, tty_panel)),
@@ -692,7 +693,6 @@ protected:
 
 private:
   bool m_is_resized;
-  DataLogger& m_logger;
   wxButton* m_log_button;
   wxStaticText* m_log_label;
   wxChoice* m_filter_choice;
