@@ -37,11 +37,13 @@ BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
 
   // Add content sizer to layout
   m_content = new wxBoxSizer(wxVERTICAL);
-  m_layout->Add(m_content, wxSizerFlags().Border(
-                               wxALL, GUI::GetSpacing(this, kDialogPadding)));
+  auto spacing = GUI::GetSpacing(this, kDialogPadding);
+  m_layout->Add(m_content, wxSizerFlags().Border(wxALL, spacing).Expand());
 
-  // Handle layout resize event
   Bind(EVT_LAYOUT_RESIZE, [&](wxCommandEvent&) { Layout(); });
+  Bind(wxEVT_HTML_LINK_CLICKED, [this](wxHtmlLinkEvent& event) {
+    wxLaunchDefaultBrowser(event.GetLinkInfo().GetHref());
+  });
 }
 
 void BaseDialog::SetInitialSize() {
@@ -65,13 +67,6 @@ void BaseDialog::SetInitialSize() {
   }
 
   wxDialog::SetInitialSize(size);
-}
-
-int BaseDialog::ShowModal() {
-  Fit();
-  Center(wxBOTH | wxCENTER_FRAME);
-
-  return wxDialog::ShowModal();
 }
 
 void BaseDialog::AddHtmlContent(const std::stringstream& html) {
