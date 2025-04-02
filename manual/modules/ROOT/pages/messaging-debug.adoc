@@ -1,0 +1,58 @@
+= Debugging messages
+
+From 5.12 the internal messaging could be debugged using the Data Monitor.
+The monitor can be started
+
+. From the menu as Tools | Data Monitor
+. Using the E shortcut on the chart canvas
+. Using the chart canvas context menu, under Debug (must be enabled in GUI settings)
+
+The monitor is a mostly self explanatory GUI program which supports displaying
+messages, applying all sorts of filters and also logging messages to file.
+
+The monitor replaces the former NMEA debugger
+One difference is that it supports all sorts of messages.
+Another is that it oriented to events generated when messages are recieved or
+sent.
+
+A typical log line might look like: image:monitor.png[]
+
+
+== Message directions - 1
+
+The old debugger basically just had input or output messages. The new has four
+directions. In the monitor, they are marked like:
+
+⇤ An input message. This is a low level event, before message processing. All
+messages generates an input event, even if they are not otherwise recognized.
+
+← A received message. This event is generated if and when the input message is
+recognized and further processing is applied,
+
+→ An output message.
+
+↔ An internal message, typically sent from the core to plugins.
+Could also be for example a message exchanged between plugins.
+
+== Filtering status - 2
+
+After being received filtering is applied to the message. The result
+is displayed in the monitor:
+
+x Message contains errors and cannot be processed.
+
+✓ The message passes all filters
+
+⇥ The message is received and accepted, but not forwarded to output channel(s)
+
+| The message is blocked on input  and not processed in any way.
+
+
+== Event type  - 3, 4
+
+All messages have two attributes related to how they are processed in the
+event system.
+These are the event type and the message key.
+They are closely related to the underlying message types e g for nmea0183,
+but not identical.
+Important info when debugging the internal event system.
