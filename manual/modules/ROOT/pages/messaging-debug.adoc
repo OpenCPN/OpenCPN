@@ -1,0 +1,67 @@
+= Debugging messages - Data Monitor
+
+From 5.12 the internal messaging could be debugged using the Data Monitor.
+The monitor can be started
+
+. From the menu as Tools | Data Monitor
+. Using the E shortcut on the chart canvas
+. Using the chart canvas context menu, under Debug (must be enabled in GUI settings)
+
+The monitor is a mostly self explanatory GUI program which supports displaying
+messages, applying all sorts of filters and also logging messages to file.
+
+The monitor replaces the former NMEA debugger
+One difference is that it supports all sorts of messages.
+Another is that it is oriented to events generated when messages are recieved or
+sent.
+
+Some typical log lines might look like: image:monitor.png[]
+
+
+== Message directions - 1
+
+The old debugger basically just had input or output messages. The new has four
+directions. In the monitor, they are marked like:
+
+⇤ An input message. This is a low level event, before message processing. All
+messages generates an input event, even if they are not otherwise recognized.
+
+← A received message. This event is generated if and when the input message is
+recognized and further processing is applied,
+
+→ An output message.
+
+↔ An internal message, typically sent from the core to plugins.
+Could also be for example a message exchanged between plugins.
+
+== Filtering status - 2
+
+After being received filtering is applied to the message. The result
+is displayed in the monitor:
+
+x Message contains errors and cannot be processed.
+
+✓ The message passes all filters
+
+⇥ The message is received and accepted, but not forwarded to output channel(s)
+
+| The message is blocked on input  and not processed in any way.
+
+== Interface - 3
+
+The interface used to receive or send message, actual formatting depends on
+the underlying transport. The *Internal* interface refers to messages sent from
+core to plugin or, in some cases, between plugins.
+
+
+== Event type - 4
+
+All messages have attributes related to how they are processed in the
+event system.
+The most important is the message key.
+This is the overall, common message identifier used for everything from
+NMEA0183 to internal messages.
+
+== The rest...
+is depending on actual message type. In general, it's the message content in some
+printable representation.
