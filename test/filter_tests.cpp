@@ -79,5 +79,5 @@ TEST(Filter, Create) {
 
 TEST(Filter, ListSystemFilters) {
   auto filters = NavmsgFilter::GetFilters(FILTER_DIR);
-  ASSERT_EQ(filters.size(), 6);
+  ASSERT_EQ(filters.size(), 7);
 }
