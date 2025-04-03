@@ -105,7 +105,7 @@ static void ActivatePersistedRoute(Routeman *routeman) {
 //--------------------------------------------------------------------------------
 
 Routeman::Routeman(struct RoutePropDlgCtx ctx,
-                   struct RoutemanDlgCtx route_dlg_ctx, NmeaLog &nmea_log)
+                   struct RoutemanDlgCtx route_dlg_ctx, NmeaLog *nmea_log)
     : pActiveRoute(0),
       pActivePoint(0),
       pRouteActivatePoint(0),
@@ -605,7 +605,7 @@ bool Routeman::UpdateAutopilot() {
       wp_len -= 1;
     } while (snt.Sentence.size() > 82 && wp_len > 0);
 
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
 
   // RMC
@@ -659,7 +659,7 @@ bool Routeman::UpdateAutopilot() {
 
     m_NMEA0183.Rmc.Write(snt);
 
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
 
   // APB
@@ -729,7 +729,7 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Apb.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
 
   // XTE
@@ -755,7 +755,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Xte.CrossTrackUnits = _T("N");
 
     m_NMEA0183.Xte.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
 #endif
 

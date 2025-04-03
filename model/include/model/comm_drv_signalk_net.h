@@ -80,7 +80,7 @@ public:
   void CloseWebSocket();
   bool IsThreadRunning() { return m_threadActive == 1; }
 
-  DriverStats GetDriverStats() const;
+  DriverStats GetDriverStats() const override;
 
   std::string m_self;
   std::string m_context;

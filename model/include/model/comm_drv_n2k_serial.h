@@ -92,7 +92,7 @@ public:
   void handle_N2K_SERIAL_RAW(CommDriverN2KSerialEvent& event);
   int GetMfgCode();
 
-  DriverStats GetDriverStats() const;
+  DriverStats GetDriverStats() const override;
 
   std::atomic_int m_Thread_run_flag;
   ConnectionParams m_params;

@@ -1093,8 +1093,7 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   if (g_pMUX && g_pMUX->IsLogActive()) {
     wxString logmsg;
     logmsg.Printf("AIS :MMSI: %ld", mmsi);
-    std::string source = sK_msg->source->to_string();
-    g_pMUX->LogInputMessage(logmsg, source, false, false);
+    g_pMUX->LogInputMessage(sK_msg, false, false);
   }
 
   // Stop here if the target shall be ignored
