@@ -31,6 +31,8 @@
 #include <wx/hashmap.h>
 
 #include <stdlib.h>
+#include <iostream>
+#include <iomanip>
 #include <math.h>
 #include <time.h>
 
@@ -39,6 +41,10 @@
 #include "tcmgr.h"
 #include "model/georef.h"
 #include "model/logger.h"
+#include "model/navutil_base.h"
+
+// Global Tide and Current Manager
+extern TCMgr *ptcmgr;
 
 //-----------------------------------------------------------------------------------
 //    TIDELIB
@@ -1070,6 +1076,100 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
     }
   }  // end for loop
   return (jx);
+}
+
+TideEvent::TideEvent() {}
+
+TideEvent::TideEvent(int station_id, wxDateTime ref_dt, double lat,
+                     double lon) {
+  this->m_station_id = station_id;
+  this->m_ref_dt = ref_dt;
+  this->m_lat = lat;
+  this->m_lon = lon;
+
+  if (this->m_ref_dt.IsValid()) {
+    IDX_entry *idx = (IDX_entry *)ptcmgr->GetIDX_entry(this->m_station_id);
+    this->m_offset = ptcmgr->GetStationTimeOffset(idx);
+
+    time_t dtmtt = this->m_ref_dt.FromUTC().GetTicks();
+    this->m_event = ptcmgr->GetNextBigEvent(&dtmtt, this->m_station_id);
+    this->m_event_dt.Set(dtmtt).MakeUTC();
+  }
+}
+
+std::wstring TideEvent::GetEventStr() {
+  switch (this->m_event) {
+    case 1:
+      return _("LW").wc_str();
+    case 2:
+      return _("HW").wc_str();
+    default:
+      return _("Unavailable").wc_str();
+  }
+}
+
+wxDateTime TideEvent::GetLocalTime() {
+  wxDateTime loc_dt = this->m_event_dt;
+  return loc_dt.Add(wxTimeSpan(0, this->m_offset, 0));
+}
+
+std::wstring TideEvent::GetEventStr(std::wstring dt_type,
+                                    const char *dt_format) {
+  std::wstring evnt_str = this->GetEventStr();
+  if (this->m_event > 0) {
+    evnt_str.append(L": ");
+    evnt_str.append(toUsrDateTime(this->m_event_dt, dt_type, this->m_lon)
+                        .Format(dt_format));
+  }
+  return evnt_str;
+}
+
+std::wstring TideEvent::GetLocalTimeStr(const char *dt_format) {
+  if (this->m_event > 0) {
+    wxDateTime loc_dt = GetLocalTime();
+    return loc_dt.Format(dt_format).wc_str();
+  } else {
+    return std::wstring();
+  }
+}
+
+std::string TideEvent::GetLocalOffsetStr(std::wstring dt_type) {
+  wxDateTime usr_dt = toUsrDateTime(this->m_event_dt, dt_type, this->m_lon);
+  wxDateTime loc_dt = GetLocalTime();
+  wxTimeSpan diff = usr_dt - loc_dt;
+
+  std::ostringstream offset_str;
+  if (loc_dt < usr_dt) {
+    offset_str << "-";
+  } else {
+    offset_str << "+";
+  }
+
+  // Format with leading zeros
+  offset_str << std::setw(2) << std::setfill('0') << diff.GetHours() << ":"
+             << std::setw(2) << std::setfill('0') << diff.GetMinutes();
+
+  return offset_str.str();
+}
+
+void TideEvent::SetStationName(const std::wstring &name) {
+  m_station_name = name;
+}
+
+TideEvent TCMgr::GetTideEvent(std::wstring station_name, wxDateTime utc_time,
+                              double lat, double lon) {
+  if (station_name.length() == 0 || !utc_time.IsValid()) {
+    return TideEvent();
+  }
+
+  int station_id = GetStationIDXbyName(station_name, lat, lon);
+  if (station_id > 0) {
+    TideEvent tide_event = TideEvent(station_id, utc_time, lat, lon);
+    tide_event.SetStationName(station_name);
+    return tide_event;
+  } else {
+    return TideEvent();
+  }
 }
 
 /* $Id: tide_db_default.h 1092 2006-11-16 03:02:42Z flaterco $ */

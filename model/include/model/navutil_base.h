@@ -29,8 +29,20 @@
 #include <wx/datetime.h>
 #include <wx/string.h>
 #include <wx/utils.h>
+#include <wx/datetime.h>
+#include <math.h>
 
 #include "model/config_vars.h"
+
+// Locale specific format e.g. "%d/%m/%Y %H:%M"
+#define DT_FORMAT_LOCALE "%x %H:%M"
+// ISO 8601 standard format
+#define DT_FORMAT_ISO "%Y-%m-%d %H:%M"
+
+// User date time options.
+#define DATE_TIME_DISP_UTC _T("UTC")
+#define DATE_TIME_DISP_PC _T("PC")
+#define DATE_TIME_DISP_LOCAL _T("LOCAL")
 
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 enum { WSPEED_KTS = 0, WSPEED_MS, WSPEED_MPH, WSPEED_KMH };
@@ -66,6 +78,11 @@ extern wxString getUsrTempUnit(int unit = -1);
 extern wxString FormatDistanceAdaptive(double distance);
 extern double toUsrTemp(double cel_temp, int unit = -1);
 
+extern wxDateTime toUsrDateTime(const wxDateTime ts, const wxString format,
+                                const double lon = INFINITY - INFINITY);
+extern wxDateTime fromUsrDateTime(const wxDateTime ts, const wxString format,
+                                  const double lon = INFINITY - INFINITY);
+
 extern double toUsrDistance(double nm_distance, int unit = -1);
 extern wxString getUsrDistanceUnit(int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit, int default_val);
@@ -85,4 +102,10 @@ extern double fromDMM(wxString sdms);
 
 extern double toMagnetic(double deg_true);
 extern double toMagnetic(double deg_true, double variation);
+
+extern wxString GetDaylightString(int index);
+int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime);
+extern double getDaylightEvent(double glat, double glong, int riset,
+                               double altitude, int y, int m, int d);
+
 #endif  // _NAVUTIL_BASE__

@@ -63,6 +63,8 @@ protected:
   static const int pN = 5;       // number of fields sofar
   int pageToPrint;
   int numberOfPages;
+  int pageSizeX;
+  int pageSizeY;
   int marginX;
   int marginY;
   int textOffsetX;
@@ -76,7 +78,7 @@ protected:
   wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
 #define SYMBOL_ROUTEPRINT_SELECTION_TITLE _("Print Route Selection")
 #define SYMBOL_ROUTEPRINT_SELECTION_IDNAME ID_ROUTEPRINTSELECTION
-#define SYMBOL_ROUTEPRINT_SELECTION_SIZE wxSize(750, 300)
+#define SYMBOL_ROUTEPRINT_SELECTION_SIZE wxSize(750, 450)
 #define SYMBOL_ROUTEPRINT_SELECTION_POSITION wxDefaultPosition
 
 #define ID_ROUTEPRINT_SELECTION_OK 9001
@@ -123,6 +125,9 @@ public:
   wxCheckBox* m_checkBoxWPCourse;
   wxCheckBox* m_checkBoxWPDistanceToNext;
   wxCheckBox* m_checkBoxWPDescription;
+  wxCheckBox* m_checkBoxWPSpeed;
+  wxCheckBox* m_checkBoxWPETA;
+  wxCheckBox* m_checkBoxWPTide;
 
   Route* route;
 };
