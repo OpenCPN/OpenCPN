@@ -917,10 +917,18 @@ bool RoutePointGui::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
   if (0 == result)
     msg = _("Waypoint(s) Transmitted.");
   else {
-    if (result == ERR_GARMIN_INITIALIZE)
-      msg = _("Error on Waypoint Upload.  Garmin GPS not connected");
-    else
-      msg = _("Error on Waypoint Upload.  Please check logfiles...");
+    switch (result) {
+      case ERR_GARMIN_INITIALIZE:
+        msg = _("Error on Waypoint Upload. Garmin GPS not connected");
+        break;
+      case ERR_GPS_DRIVER_NOT_AVAILAIBLE:
+        msg = _("Error on Waypoint Upload. GPS driver not available");
+        break;
+      case ERR_GARMIN_SEND_MESSAGE:
+      default:
+        msg = _("Error on Waypoint Upload. Please check logfiles...");
+        break;
+    }
   }
 
   OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
