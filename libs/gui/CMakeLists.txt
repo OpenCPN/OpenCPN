@@ -34,6 +34,7 @@ set(SRC
     include/edit_button.h
     include/form_grid.h
     include/svg_icons.h
+    include/text_entry.h
     include/ui_utils.h
     src/dialog_alert.cpp
     src/dialog_base.cpp
@@ -41,6 +42,7 @@ set(SRC
     src/field_text.cpp
     src/form_grid.cpp
     src/svg_icons.cpp
+    src/text_entry.cpp
     src/ui_utils.cpp
 )
 
