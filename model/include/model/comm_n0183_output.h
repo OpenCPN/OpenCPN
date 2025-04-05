@@ -41,9 +41,18 @@
 class RoutePoint;
 class Route;
 
-//      Garmin interface private error codes
+/**
+ * Failed to initialize Garmin device.
+ */
 #define ERR_GARMIN_INITIALIZE -1
-#define ERR_GARMIN_GENERAL -2
+/**
+ * Failed to send message to Garmin device.
+ */
+#define ERR_GARMIN_SEND_MESSAGE -2
+/**
+ * GPS driver not available.
+ */
+#define ERR_GPS_DRIVER_NOT_AVAILAIBLE -3
 
 void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
                               EventVar& on_msg_sent);

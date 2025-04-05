@@ -405,7 +405,7 @@ int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
       MESSAGE_LOG << "Error Sending Waypoint to Garmin USB, last error: "
                   << GetLastGarminError();
 
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
     } else
       ret_val = 0;
 
@@ -432,6 +432,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
                                 b_restoreStream, btempStream);
 
   auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
+  if (!drv_n0183) {
+    return ERR_GPS_DRIVER_NOT_AVAILAIBLE;
+  }
 
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
@@ -464,7 +467,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       if (ret1 != 1) {
         MESSAGE_LOG << " Error sending routes, last garmin error: "
                     << GetLastGarminError();
-        ret_val = ERR_GARMIN_GENERAL;
+        ret_val = ERR_GARMIN_SEND_MESSAGE;
       } else
         ret_val = 0;
     }
@@ -519,7 +522,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       MESSAGE_LOG << "Error Sending Route to Garmin GPS on port: " << short_com
                   << " Error Code: " << lret_val
                   << " LastGarminError: " << GetLastGarminError();
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
       goto ret_point;
     } else {
       ret_val = 0;
@@ -961,7 +964,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
       MESSAGE_LOG << "Error Sending Waypoint to Garmin USB, last error: "
                   << GetLastGarminError();
 
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
     } else
       ret_val = 0;
 
@@ -1018,7 +1021,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
       MESSAGE_LOG << "Error Sending Waypoint(s) to Garmin GPS on port, "
                   << com_name << " error code: " << ret_val
                   << ", last garmin error: " << GetLastGarminError();
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
       goto ret_point;
     } else
       ret_val = 0;
@@ -1029,6 +1032,10 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
   {  // Standard NMEA mode
     auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
+    if (!drv_n0183) {
+      ret_val = ERR_GPS_DRIVER_NOT_AVAILAIBLE;
+      goto ret_point;
+    }
 
     auto address = std::make_shared<NavAddr>();
     SENTENCE snt;
