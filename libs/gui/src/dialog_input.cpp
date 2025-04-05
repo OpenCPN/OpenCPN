@@ -15,45 +15,36 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
+#include <wx/panel.h>
 
-#include <wx/wx.h>
-#include <wx/display.h>
+#include "dialog_input.h"
+#include "form_grid.h"
 
-#include "ui_utils.h"
-
-// Define custom events
-wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
-
-int GUI::GetSpacing(wxWindow* ctx, int factor) {
-#if wxCHECK_VERSION(3, 2, 0)
-  return ctx->FromDIP(kSpacing * factor);
-#else
-  return kSpacing * factor;
-#endif
+InputDialog::InputDialog(wxWindow* parent, const std::string& title,
+                         const std::string& action)
+    : AlertDialog(parent, title, action) {
+  FormGrid* sizer = new FormGrid(this);
+  sizer->SetHGap(GUI::GetSpacing(this, 4));
+  m_grid = new wxPanel(this);
+  m_grid->SetSizer(sizer);
+  m_content->Add(m_grid);
 }
 
-void GUI::LayoutResizeEvent(wxWindow* ctx) {
-  wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
-  wxPostEvent(ctx, event);
+SwitchField* InputDialog::AddSelection(int key, const std::string& label,
+                                       bool value) {
+  return new SwitchField(m_grid, key, label, value);
 }
 
-GUI::Breakpoint GUI::GetScreenSize(wxRect* rect) {
-  if (rect->GetWidth() < static_cast<int>(Breakpoint::kSmall)) {
-    return Breakpoint::kExtraSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kMedium)) {
-    return Breakpoint::kSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kLarge)) {
-    return Breakpoint::kMedium;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kExtraLarge)) {
-    return Breakpoint::kLarge;
-  } else {
-    return Breakpoint::kExtraLarge;
+GUI::KeySet InputDialog::GetSelected() {
+  wxWindowList children = m_grid->GetChildren();
+  GUI::KeySet selected;
+
+  int numChildren = children.GetCount();
+  for (int i = 0; i < numChildren; ++i) {
+    auto* select = dynamic_cast<SwitchField*>(children[i]);
+    if (select && select->IsActive()) selected.addKey(select->GetKey());
   }
+  return selected;
 }
-
-void GUI::KeySet::addKey(int key) { m_keys.insert(key); }
-
-void GUI::KeySet::delKey(int key) { m_keys.erase(key); }
-
-bool GUI::KeySet::hasKey(int key) const { return m_keys.count(key) > 0; }

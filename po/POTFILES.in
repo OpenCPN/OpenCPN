@@ -264,7 +264,7 @@ gui/include/gui/route_gui.h
 gui/include/gui/routemanagerdialog.h
 gui/include/gui/routeman_gui.h
 gui/include/gui/route_point_gui.h
-gui/include/gui/routeprintout.h
+gui/include/gui/route_printout.h
 gui/include/gui/RoutePropDlg.h
 gui/include/gui/RoutePropDlgImpl.h
 gui/include/gui/s57chart.h
@@ -293,7 +293,7 @@ gui/include/gui/timers.h
 gui/include/gui/time_textbox.h
 gui/include/gui/toolbar.h
 gui/include/gui/track_gui.h
-gui/include/gui/trackprintout.h
+gui/include/gui/track_printout.h
 gui/include/gui/TrackPropDlg.h
 gui/include/gui/TtyScroll.h
 gui/include/gui/TTYWindow.h

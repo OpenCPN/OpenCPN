@@ -15,45 +15,16 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
+#ifndef FIELD_SWITCH_H
+#define FIELD_SWITCH_H
 
-#include <wx/wx.h>
-#include <wx/display.h>
+#include "button_switch.h"
 
-#include "ui_utils.h"
+class SwitchField : public SwitchButton {
+public:
+  SwitchField(wxWindow* parent, int key, const std::string& label, bool value);
+};
 
-// Define custom events
-wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
-
-int GUI::GetSpacing(wxWindow* ctx, int factor) {
-#if wxCHECK_VERSION(3, 2, 0)
-  return ctx->FromDIP(kSpacing * factor);
-#else
-  return kSpacing * factor;
-#endif
-}
-
-void GUI::LayoutResizeEvent(wxWindow* ctx) {
-  wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
-  wxPostEvent(ctx, event);
-}
-
-GUI::Breakpoint GUI::GetScreenSize(wxRect* rect) {
-  if (rect->GetWidth() < static_cast<int>(Breakpoint::kSmall)) {
-    return Breakpoint::kExtraSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kMedium)) {
-    return Breakpoint::kSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kLarge)) {
-    return Breakpoint::kMedium;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kExtraLarge)) {
-    return Breakpoint::kLarge;
-  } else {
-    return Breakpoint::kExtraLarge;
-  }
-}
-
-void GUI::KeySet::addKey(int key) { m_keys.insert(key); }
-
-void GUI::KeySet::delKey(int key) { m_keys.erase(key); }
-
-bool GUI::KeySet::hasKey(int key) const { return m_keys.count(key) > 0; }
+#endif  // FIELD_SWITCH_H

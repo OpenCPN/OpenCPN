@@ -22,7 +22,7 @@
 #include "printout_base.h"
 
 BasePrintout::BasePrintout(const std::string& title)
-    : wxPrintout(title), m_pages(1) {}
+    : wxPrintout(title), m_pages(1), m_margin_x(100), m_margin_y(100) {}
 
 bool BasePrintout::HasPage(int page) { return page > 0 && page <= m_pages; }
 
@@ -37,4 +37,13 @@ void BasePrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
   *maxPage = m_pages;
   *selPageFrom = 1;
   *selPageTo = m_pages;
+}
+
+bool BasePrintout::OnPrintPage(int page) {
+  wxDC* dc = GetDC();
+  if (dc && page <= m_pages) {
+    DrawPage(dc, page);
+    return true;
+  } else
+    return false;
 }

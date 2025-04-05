@@ -15,45 +15,42 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
+#ifndef DIALOG_INPUT_H
+#define DIALOG_INPUT_H
 
-#include <wx/wx.h>
-#include <wx/display.h>
+#include <set>
+#include <wx/panel.h>
 
+#include "dialog_alert.h"
+#include "field_switch.h"
 #include "ui_utils.h"
 
-// Define custom events
-wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
+/**
+ * Input dialog with panel and flex grid sizer.
+ */
+class InputDialog : public AlertDialog {
+public:
+  InputDialog(wxWindow* parent, const std::string& title,
+              const std::string& action = _("Continue").ToStdString());
 
-int GUI::GetSpacing(wxWindow* ctx, int factor) {
-#if wxCHECK_VERSION(3, 2, 0)
-  return ctx->FromDIP(kSpacing * factor);
-#else
-  return kSpacing * factor;
-#endif
-}
+  /**
+   * Add key selection switch.
+   * @param key Key identifier.
+   * @param label Selection label.
+   * @param value Default value.
+   * @return Selection field.
+   */
+  SwitchField* AddSelection(int key, const std::string& label, bool value);
 
-void GUI::LayoutResizeEvent(wxWindow* ctx) {
-  wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
-  wxPostEvent(ctx, event);
-}
+  /**
+   * Get selected keys.
+   */
+  GUI::KeySet GetSelected();
 
-GUI::Breakpoint GUI::GetScreenSize(wxRect* rect) {
-  if (rect->GetWidth() < static_cast<int>(Breakpoint::kSmall)) {
-    return Breakpoint::kExtraSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kMedium)) {
-    return Breakpoint::kSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kLarge)) {
-    return Breakpoint::kMedium;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kExtraLarge)) {
-    return Breakpoint::kLarge;
-  } else {
-    return Breakpoint::kExtraLarge;
-  }
-}
+private:
+  wxPanel* m_grid;
+};
 
-void GUI::KeySet::addKey(int key) { m_keys.insert(key); }
-
-void GUI::KeySet::delKey(int key) { m_keys.erase(key); }
-
-bool GUI::KeySet::hasKey(int key) const { return m_keys.count(key) > 0; }
+#endif  // DIALOG_INPUT_H
