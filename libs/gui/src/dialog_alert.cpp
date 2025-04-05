@@ -69,6 +69,13 @@ void AlertDialog::SetMessage(const std::string& msg) {
   m_content->Add(new wxStaticText(this, wxID_ANY, msg));
 }
 
+void AlertDialog::SetDefaultButton(int id) {
+  auto* button = dynamic_cast<wxButton*>(FindWindowById(id));
+  assert(button && "AlertDialog: Button not found");
+  button->SetDefault();
+  button->SetFocus();
+}
+
 int AlertDialog::GetConfirmation(wxWindow* parent, const std::string& title,
                                  const std::string& action,
                                  const std::string& msg) {

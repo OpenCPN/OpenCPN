@@ -69,6 +69,12 @@ public:
   void SetMessage(const std::string& msg);
 
   /**
+   * Set default button.
+   * @param id Button ID.
+   */
+  void SetDefaultButton(int id);
+
+  /**
    * Show dialog and return response.
    * @return OK/Cancel response.
    */
