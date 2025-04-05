@@ -52,6 +52,9 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
   Bind(wxEVT_TIMER, &AlertDialog::OnTimer, this);
 }
 
+AlertDialog::AlertDialog(wxWindow* parent, const std::string& title)
+    : AlertDialog(parent, title, "") {}
+
 AlertDialog::~AlertDialog() {}
 
 void AlertDialog::SetListener(IAlertConfirmation* listener) {
@@ -67,6 +70,20 @@ void AlertDialog::SetTimer(int seconds) {
 
 void AlertDialog::SetMessage(const std::string& msg) {
   m_content->Add(new wxStaticText(this, wxID_ANY, msg));
+  SetInitialSize();
+}
+
+void AlertDialog::SetDefaultButton(int id) {
+  auto* button = dynamic_cast<wxButton*>(FindWindowById(id));
+  assert(button && "AlertDialog: Button not found");
+  button->SetDefault();
+  button->SetFocus();
+}
+
+void AlertDialog::SetCancelLabel(const std::string& label) {
+  auto* cancel = dynamic_cast<wxButton*>(FindWindowById(wxID_CANCEL));
+  assert(cancel && "AlertDialog: Cancel button not found");
+  cancel->SetLabel(label);
 }
 
 int AlertDialog::GetConfirmation(wxWindow* parent, const std::string& title,
@@ -74,7 +91,7 @@ int AlertDialog::GetConfirmation(wxWindow* parent, const std::string& title,
                                  const std::string& msg) {
   AlertDialog* dialog = new AlertDialog(parent, title, action);
   dialog->SetMessage(msg);
-  return dialog->Show();
+  return dialog->ShowModal();
 }
 
 int AlertDialog::ShowModal() {

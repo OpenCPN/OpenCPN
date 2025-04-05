@@ -37,8 +37,10 @@ void check_last_start() {
   }
 
   std::string title = _("Safe Restart").ToStdString();
-  std::string action = _("Safe mode").ToStdString();
+  std::string action = _("Safe mode start").ToStdString();
   AlertDialog dlg(0, title, action);
+  dlg.SetCancelLabel(_("Normal start").ToStdString());
+  dlg.SetDefaultButton(wxID_CANCEL);
   dlg.SetInitialSize();
   dlg.SetTimer(15);
 
