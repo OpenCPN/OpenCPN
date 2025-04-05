@@ -2339,7 +2339,8 @@ extern "C" DECL_EXP wxWindow *GetOCPNCanvasWindow();
  * Time to Go (TTG). By default, the text is large and green, optimized for
  * visibility.
  */
-extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement, int default_size = 0);
+extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement,
+                                        int default_size = 0);
 
 /**
  * Gets shared application data location.
@@ -2758,10 +2759,87 @@ extern DECL_EXP wxString getUsrSpeedUnit_Plugin(int unit = -1);
  * Gets display string for user's preferred temperature unit.
  *
  * @param unit Override unit choice (-1 for user preference):
- *             0=Celsius, 1=Fahrenheit
- * @return Localized unit string ("°C" or "°F")
+ *             0=Celsius, 1=Fahrenheit, 2=Kelvin
+ * @return Localized unit string ("°C", "°F", or "K")
  */
 extern DECL_EXP wxString getUsrTempUnit_Plugin(int unit = -1);
+
+/**
+ * Gets display string for user's preferred wind speed unit.
+ *
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=knots, 1=m/s, 2=mph, 3=km/h
+ * @return Localized unit string (e.g. "kts", "m/s", "mph", "km/h")
+ */
+extern DECL_EXP wxString getUsrWindSpeedUnit_Plugin(int unit = -1);
+
+/**
+ * Converts knots to user's preferred wind speed unit.
+ *
+ * @param kts_wspeed Wind speed in knots
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=knots, 1=m/s, 2=mph, 3=km/h
+ * @return Wind speed in user's preferred unit
+ */
+extern DECL_EXP double toUsrWindSpeed_Plugin(double kts_wspeed, int unit = -1);
+
+/**
+ * Converts from user's preferred wind speed unit to knots.
+ *
+ * @param usr_wspeed Wind speed in user's unit
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=knots, 1=m/s, 2=mph, 3=km/h
+ * @return Wind speed in knots
+ */
+extern DECL_EXP double fromUsrWindSpeed_Plugin(double usr_wspeed,
+                                               int unit = -1);
+
+/**
+ * Gets display string for user's preferred depth unit.
+ *
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=feet, 1=meters, 2=fathoms
+ * @return Localized unit string (e.g. "ft", "m", "fa")
+ */
+extern DECL_EXP wxString getUsrDepthUnit_Plugin(int unit = -1);
+
+/**
+ * Converts meters to user's preferred depth unit.
+ *
+ * @param m_depth Depth in meters
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=feet, 1=meters, 2=fathoms
+ * @return Depth in user's preferred unit
+ */
+extern DECL_EXP double toUsrDepth_Plugin(double m_depth, int unit = -1);
+
+/**
+ * Converts from user's preferred depth unit to meters.
+ *
+ * @param usr_depth Depth in user's unit
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=feet, 1=meters, 2=fathoms
+ * @return Depth in meters
+ */
+extern DECL_EXP double fromUsrDepth_Plugin(double usr_depth, int unit = -1);
+
+/**
+ * Parse a formatted coordinate string to get decimal degrees.
+ *
+ * This function attempts to parse a wide variety of formatted coordinate
+ * strings and convert them to decimal degrees. It handles formats like:
+ * - 37°54.204' N
+ * - N37 54 12
+ * - 37°54'12"
+ * - 37.9034
+ * - 122°18.621' W
+ * - 122w 18 37
+ * - -122.31035
+ *
+ * @param sdms The formatted coordinate string to parse
+ * @return The decimal degrees value, or NaN if parsing failed
+ */
+extern DECL_EXP double fromDMM_PlugIn(wxString sdms);
 
 /**
  * Configuration options for date and time formatting.
@@ -3091,14 +3169,18 @@ int DECL_EXP OCPNMessageBox_PlugIn(wxWindow *parent, const wxString &message,
                                    int style = wxOK, int x = -1, int y = -1);
 
 /**
- * Formats latitude/longitude in degrees and decimal minutes.
+ * Convert decimal degrees to a formatted string.
  *
- * Converts decimal degrees to deg/min format with N/S/E/W indicator.
+ * Converts a decimal degrees value to a string formatted in the currently
+ * specified format. For example, -123.456 can be converted to "123° 27.36' W".
  *
- * @param NEflag North/East flag (true=N/E, false=S/W)
- * @param a Decimal degrees value
- * @param hi_precision True for higher precision output
- * @return Formatted string like "50° 12.345' N"
+ * @param NEflag North/East flags: 1 = N/S, 2 = E/W
+ * @param a Degrees decimal in the range -180.0 to 180.0
+ * @param hi_precision If true, format with 4 decimal places instead of 1
+ * @return Formatted string in one of these formats depending on preferences:
+ *         - DD° MM.mmm'
+ *         - DD.ddddd°
+ *         - DD° MM' SS.sss"
  */
 extern DECL_EXP wxString toSDMM_PlugIn(int NEflag, double a,
                                        bool hi_precision = true);

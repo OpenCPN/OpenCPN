@@ -45,14 +45,16 @@
 class MyRoutePrintout : public BasePrintout {
 public:
   MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route);
-  virtual bool OnPrintPage(int page);
+  virtual bool OnPrintPage(int page) override;
   void DrawPage(wxDC* dc);
-  virtual void OnPreparePrinting();
+  virtual void OnPreparePrinting() override;
 
-  virtual bool HasPage(int num) { return num > 0 && num <= numberOfPages; };
+  virtual bool HasPage(int num) override {
+    return num > 0 && num <= numberOfPages;
+  };
 
   virtual void GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                           int* selPageTo);
+                           int* selPageTo) override;
 
 protected:
   wxDC* myDC;
