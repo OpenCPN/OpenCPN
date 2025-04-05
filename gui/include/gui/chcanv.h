@@ -45,6 +45,8 @@
 #include "emboss_data.h"
 #include "S57Sector.h"
 #include "gshhs.h"
+#include "notification_manager_gui.h"
+#include "observable.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -977,6 +979,7 @@ private:
   void DrawEmboss(ocpnDC &dc, emboss_data *pemboss);
 
   void ShowBrightnessLevelTimedPopup(int brightness, int min, int max);
+  void HandleNotificationMouseClick();
 
   //    Data
   /** The width of the canvas in physical pixels. */
@@ -1260,6 +1263,9 @@ private:
   void OnJumpEaseTimer(wxTimerEvent &event);
   bool StartSmoothJump(double lat, double lon, double scale_ppm);
 
+  NotificationButton *m_notification_button;
+  NotificationsList *m_NotificationsList;
+  ObservableListener evt_notificationlist_change_listener;
   DECLARE_EVENT_TABLE()
 };
 

@@ -98,6 +98,8 @@ set(
   ${MODEL_HDR_DIR}/navutil_base.h
   ${MODEL_HDR_DIR}/nmea_log.h
   ${MODEL_HDR_DIR}/nmea_ctx_factory.h
+  ${MODEL_HDR_DIR}/notification.h
+  ${MODEL_HDR_DIR}/notification_manager.h
   ${MODEL_HDR_DIR}/ocpn_types.h
   ${MODEL_HDR_DIR}/ocpn_utils.h
   ${MODEL_HDR_DIR}/own_ship.h
@@ -195,6 +197,8 @@ set(SRC
   ${MODEL_SRC_DIR}/multiplexer.cpp
   ${MODEL_SRC_DIR}/nav_object_database.cpp
   ${MODEL_SRC_DIR}/navutil_base.cpp
+  ${MODEL_SRC_DIR}/notification.cpp
+  ${MODEL_SRC_DIR}/notification_manager.cpp
   ${MODEL_SRC_DIR}/ocpn_plugin.cpp
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/own_ship.cpp

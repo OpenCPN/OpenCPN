@@ -180,6 +180,7 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 #include "linmath.h"
 #include "shaders.h"
+#include "model/notification_manager.h"
 #endif
 
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
@@ -4595,6 +4596,18 @@ void glChartCanvas::Render() {
       g_bShowCompassWin)
     m_pParentCanvas->m_Compass->Paint(gldc);
 
+  if (m_pParentCanvas->IsPrimaryCanvas()) {
+    auto &noteman = NotificationManager::GetInstance();
+    if (noteman.GetNotificationCount()) {
+      m_pParentCanvas->m_notification_button->SetIconSeverity(
+          noteman.GetMaxSeverity());
+      if (m_pParentCanvas->m_notification_button->UpdateStatus()) Refresh();
+      m_pParentCanvas->m_notification_button->Show(true);
+      m_pParentCanvas->m_notification_button->Paint(gldc);
+    } else {
+      m_pParentCanvas->m_notification_button->Show(false);
+    }
+  }
   RenderGLAlertMessage();
 #endif
 
