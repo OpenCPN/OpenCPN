@@ -781,6 +781,7 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
           else
             return true;
         }
+        delete pRA;
       }
 
       if (pnode) pnode = pnode->GetNext();

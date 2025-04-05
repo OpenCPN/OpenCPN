@@ -592,6 +592,10 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(
       m_comboBoxTideStation, 0, wxALL | wxEXPAND | wxALIGN_CENTRE_VERTICAL, 5);
 #endif
+  m_comboBoxTideStation->SetToolTip(
+      _("Associate this waypoint with a tide station to quickly access tide "
+        "predictions. Select from nearby stations or leave empty for no "
+        "association."));
 
   m_buttonShowTides = new wxBitmapButton(
       sbSizerExtProperties->GetStaticBox(), ID_BTN_SHOW_TIDES, m_bmTide,
@@ -606,6 +610,10 @@ void MarkInfoDlg::Create() {
   m_textArrivalRadius =
       new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
                      wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+  m_textArrivalRadius->SetToolTip(
+      _("Distance from the waypoint at which OpenCPN will consider the "
+        "waypoint reached. Used for automatic waypoint advancement during "
+        "active navigation."));
   gbSizerInnerExtProperties1->Add(m_textArrivalRadius, 0, wxALL | wxEXPAND, 5);
   m_staticTextArrivalUnits =
       new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
@@ -621,6 +629,13 @@ void MarkInfoDlg::Create() {
   m_textCtrlPlSpeed =
       new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
                      wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+  m_textCtrlPlSpeed->SetToolTip(_(
+      "Enter the planned vessel speed for the leg FOLLOWING this waypoint. "
+      "This speed is used when traveling FROM this waypoint TO the next "
+      "waypoint in the route. The value is used to calculate estimated time "
+      "of arrival at the next waypoint based on the ETD from this waypoint.\n\n"
+      "If left blank, the route's default speed will be used for this leg. "
+      "Individual waypoint speeds override the route-level speed setting."));
   gbSizerInnerExtProperties1->Add(m_textCtrlPlSpeed, 0, wxALL | wxEXPAND, 5);
   m_staticTextPlSpeedUnits =
       new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
@@ -628,32 +643,45 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(m_staticTextPlSpeedUnits, 0,
                                   wxALIGN_CENTRE_VERTICAL, 0);
 
-  m_staticTextEta = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
-                                     wxID_ANY, _("ETD (UTC)"));
-  gbSizerInnerExtProperties1->Add(m_staticTextEta, 0, wxALIGN_CENTRE_VERTICAL,
+  // The value of m_staticTextEtd is updated in UpdateProperties() based on
+  // the date/time format specified in the "Options" dialog.
+  m_staticTextEtd = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
+                                     wxID_ANY, _("ETD"));
+  gbSizerInnerExtProperties1->Add(m_staticTextEtd, 0, wxALIGN_CENTRE_VERTICAL,
                                   0);
   wxBoxSizer* bsTimestamp = new wxBoxSizer(wxHORIZONTAL);
-  m_cbEtaPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
+  m_cbEtdPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
                                   wxID_ANY, wxEmptyString);
-  bsTimestamp->Add(m_cbEtaPresent, 0, wxALL | wxEXPAND, 5);
-  m_EtaDatePickerCtrl = new wxDatePickerCtrl(
+  m_cbEtdPresent->SetToolTip(
+      _("Enable to manually set a planned departure time (ETD) for this "
+        "waypoint.\n"
+        "When checked, the specified date and time will be used instead of the "
+        "automatically calculated ETD. This affects ETA calculations for "
+        "subsequent waypoints in the route."));
+  bsTimestamp->Add(m_cbEtdPresent, 0, wxALL | wxEXPAND, 5);
+  m_EtdDatePickerCtrl = new wxDatePickerCtrl(
       sbSizerExtProperties->GetStaticBox(), ID_ETA_DATEPICKERCTRL,
       wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT,
       wxDefaultValidator);
-  bsTimestamp->Add(m_EtaDatePickerCtrl, 0, wxALL | wxEXPAND, 5);
+  m_EtdDatePickerCtrl->SetToolTip(_(
+      "Select the planned departure date (ETD) for this waypoint.\nUsed "
+      "together with the time control to calculate arrival times at subsequent "
+      "waypoints.\nETD information is only used for route planning "
+      "and does not affect navigation."));
+  bsTimestamp->Add(m_EtdDatePickerCtrl, 0, wxALL | wxEXPAND, 5);
 
 #ifdef __WXGTK__
-  m_EtaTimePickerCtrl =
+  m_EtdTimePickerCtrl =
       new TimeCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL,
                    wxDefaultDateTime, wxDefaultPosition, wxDefaultSize);
 #else
-  m_EtaTimePickerCtrl = new wxTimePickerCtrl(
+  m_EtdTimePickerCtrl = new wxTimePickerCtrl(
       sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL,
       wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT,
       wxDefaultValidator);
 #endif
 
-  bsTimestamp->Add(m_EtaTimePickerCtrl, 0, wxALL | wxEXPAND, 5);
+  bsTimestamp->Add(m_EtdTimePickerCtrl, 0, wxALL | wxEXPAND, 5);
   gbSizerInnerExtProperties1->Add(bsTimestamp, 0, wxEXPAND, 0);
   sbSizerExtProperties->Add(gbSizerInnerExtProperties, 0, wxALL | wxEXPAND, 5);
   sbSizerExtProperties->Add(sbRangeRingsExtProperties, 0, wxALL | wxEXPAND, 5);
@@ -699,8 +727,8 @@ void MarkInfoDlg::Create() {
   m_notebookProperties->Connect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
       wxNotebookEventHandler(MarkInfoDlg::OnNotebookPageChanged), NULL, this);
-  // m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler(
-  // MarkInfoDlg::OnTimeChanged ), NULL, this ); m_EtaDatePickerCtrl->Connect(
+  // m_EtdTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler(
+  // MarkInfoDlg::OnTimeChanged ), NULL, this ); m_EtdDatePickerCtrl->Connect(
   // wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL,
   // this );
   m_comboBoxTideStation->Connect(
@@ -822,10 +850,10 @@ MarkInfoDlg::~MarkInfoDlg() {
   m_notebookProperties->Disconnect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
       wxNotebookEventHandler(MarkInfoDlg::OnNotebookPageChanged), NULL, this);
-  m_EtaTimePickerCtrl->Disconnect(
+  m_EtdTimePickerCtrl->Disconnect(
       wxEVT_TIME_CHANGED, wxDateEventHandler(MarkInfoDlg::OnTimeChanged), NULL,
       this);
-  m_EtaDatePickerCtrl->Disconnect(
+  m_EtdDatePickerCtrl->Disconnect(
       wxEVT_DATE_CHANGED, wxDateEventHandler(MarkInfoDlg::OnTimeChanged), NULL,
       this);
 
@@ -1474,6 +1502,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       }
     }
 
+    m_staticTextPlSpeedUnits->SetLabel(getUsrSpeedUnit());
     if (m_pRoutePoint->GetPlannedSpeed() > .01) {
       m_textCtrlPlSpeed->SetValue(wxString::Format(
           "%.1f", toUsrSpeed(m_pRoutePoint->GetPlannedSpeed())));
@@ -1481,22 +1510,64 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textCtrlPlSpeed->SetValue(wxEmptyString);
     }
 
+    bool isLastWaypoint = false;
+    if (m_pRoutePoint && m_pRoutePoint->m_bIsInRoute) {
+      // Get routes containing this waypoint
+      wxArrayPtrVoid* pRouteArray =
+          g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+      if (pRouteArray) {
+        isLastWaypoint = true;
+        // Check if this waypoint is the last across all routes.
+        for (unsigned int i = 0; i < pRouteArray->GetCount(); i++) {
+          Route* route = (Route*)pRouteArray->Item(i);
+          if (route->GetLastPoint()->m_GUID != m_pRoutePoint->m_GUID) {
+            isLastWaypoint = false;
+            break;
+          }
+        }
+        delete pRouteArray;
+      }
+    }
     wxDateTime etd;
     etd = m_pRoutePoint->GetManualETD();
-    if (etd.IsValid()) {
-      m_cbEtaPresent->SetValue(true);
-      m_EtaDatePickerCtrl->SetValue(etd.GetDateOnly());
-      m_EtaTimePickerCtrl->SetValue(etd);
-    } else {
-      m_cbEtaPresent->SetValue(false);
+    if (isLastWaypoint) {
+      // If this is the last waypoint in a route, uncheck the checkbox and set
+      // the date/time to empty, as the ETD is meaningless.
+      etd = wxDateTime();
     }
+    if (etd.IsValid()) {
+      m_cbEtdPresent->SetValue(true);
+      wxString dtFormat = ocpn::getUsrDateTimeFormat();
+      if (dtFormat == "Local Time") {
+        // The ETD is in UTC and needs to be converted to local time for display
+        // purpose.
+        etd.MakeFromUTC();
+      } else if (dtFormat == "UTC") {
+        // The date/time is already in UTC.
+      } else {
+        // This code path is not expected to be reached, unless
+        // the global date/time format is enhanced in the future
+        // to include new format options.
+        wxLogError(
+            "MarkInfoDlg::UpdateProperties. Unexpected date/time format: %s",
+            dtFormat);
+        etd = wxInvalidDateTime;
+      }
+      m_EtdDatePickerCtrl->SetValue(etd.GetDateOnly());
+      m_EtdTimePickerCtrl->SetValue(etd);
+    } else {
+      m_cbEtdPresent->SetValue(false);
+    }
+    // Inherit the date/time format from the user settings.
+    m_staticTextEtd->SetLabel(
+        wxString::Format("%s (%s)", _("ETD"), ocpn::getUsrDateTimeFormat()));
 
     m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
     m_textCtrlPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
-    m_staticTextEta->Show(m_pRoutePoint->m_bIsInRoute);
-    m_EtaDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
-    m_EtaTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
-    m_cbEtaPresent->Show(m_pRoutePoint->m_bIsInRoute);
+    m_staticTextEtd->Show(m_pRoutePoint->m_bIsInRoute);
+    m_EtdDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
+    m_EtdTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
+    m_cbEtdPresent->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextPlSpeedUnits->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextArrivalUnits->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1524,9 +1595,9 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textWaypointRangeRingsStep->SetEditable(false);
       m_PickColor->Enable(false);
       DefaultsBtn->Enable(false);
-      m_EtaDatePickerCtrl->Enable(false);
-      m_EtaTimePickerCtrl->Enable(false);
-      m_cbEtaPresent->Enable(false);
+      m_EtdDatePickerCtrl->Enable(false);
+      m_EtdTimePickerCtrl->Enable(false);
+      m_cbEtdPresent->Enable(false);
       m_notebookProperties->SetSelection(0);  // Show Basic page
       m_comboBoxTideStation->Enable(false);
     } else {
@@ -1548,11 +1619,14 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textWaypointRangeRingsStep->SetEditable(true);
       m_PickColor->Enable(true);
       DefaultsBtn->Enable(true);
-      m_EtaDatePickerCtrl->Enable(true);
-      m_EtaTimePickerCtrl->Enable(true);
-      m_cbEtaPresent->Enable(true);
       m_notebookProperties->SetSelection(0);
       m_comboBoxTideStation->Enable(true);
+
+      // If this is the last waypoint in a route, disable the ETD as it does not
+      // make sense to have an ETD for the last waypoint in a route.
+      m_EtdDatePickerCtrl->Enable(!isLastWaypoint);
+      m_EtdTimePickerCtrl->Enable(!isLastWaypoint);
+      m_cbEtdPresent->Enable(!isLastWaypoint);
     }
 
     // Fill the icon selector combo box
@@ -1673,16 +1747,38 @@ bool MarkInfoDlg::SaveChanges() {
       }
     }
 
-    if (m_cbEtaPresent->GetValue()) {
-      wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
-      dt.SetHour(m_EtaTimePickerCtrl->GetValue().GetHour());
-      dt.SetMinute(m_EtaTimePickerCtrl->GetValue().GetMinute());
-      dt.SetSecond(m_EtaTimePickerCtrl->GetValue().GetSecond());
+    if (m_cbEtdPresent->GetValue()) {
+      wxDateTime dt = m_EtdDatePickerCtrl->GetValue();
+      wxDateTime t = m_EtdTimePickerCtrl->GetValue();
+      int hour = t.GetHour();
+      dt.SetHour(hour);
+      dt.SetMinute(m_EtdTimePickerCtrl->GetValue().GetMinute());
+      dt.SetSecond(m_EtdTimePickerCtrl->GetValue().GetSecond());
       if (dt.IsValid()) {
-        m_pRoutePoint->SetETD(dt.FormatISOCombined());
+        // The date/time in the UI is specified according to the global settings
+        // in Options -> Date/Time format. The date/time format is either "Local
+        // Time" or "UTC". If the date/time format is "Local Time", convert to
+        // UTC. Otherwise, it is already in UTC.
+        wxString dtFormat = ocpn::getUsrDateTimeFormat();
+        if (dtFormat == "Local Time") {
+          m_pRoutePoint->SetETD(dt.MakeUTC());
+        } else if (dtFormat == "UTC") {
+          m_pRoutePoint->SetETD(dt);
+        } else {
+          // This code path should never be reached, as the date/time format is
+          // either "Local Time" or "UTC".
+          // In the future, other date/time formats may be supported in
+          // global settings (Options -> Display -> Date/Time Format).
+          // When/if this happens, this code will need to be updated to
+          // handle the new formats.
+          wxLogError(
+              "Failed to configured ETD. Unsupported date/time format: %s",
+              dtFormat);
+          m_pRoutePoint->SetETD(wxInvalidDateTime);
+        }
       }
     } else {
-      m_pRoutePoint->SetETD(wxEmptyString);
+      m_pRoutePoint->SetETD(wxInvalidDateTime);
     }
 
     if (m_pRoutePoint->m_bIsInRoute) {

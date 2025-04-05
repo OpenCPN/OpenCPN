@@ -139,7 +139,8 @@ public:
     }
   }
 
-  /** Reference time for this set of records. */
+  /** Reference time for this set of records, as the number of seconds since the
+   * epoch. */
   time_t m_Reference_Time;
   /** Unique identifier for this record set. */
   unsigned int m_ID;

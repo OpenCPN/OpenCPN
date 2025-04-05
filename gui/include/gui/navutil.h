@@ -61,17 +61,30 @@ extern wxString formatAngle(double angle);
   3  //!< Date/time according to global OpenCPN settings.
 
 /**
- * Convert the date/time in UTC to the given format.
- * @param ts The input timestamp in UTC.
+ * Converts a timestamp from UTC to the user's preferred time format.
+ *
+ * This function transforms a timestamp based on the specified format or the
+ * global application setting. It supports Universal Time (UTC), Local Mean Time
+ * (LMT) based on longitude, and Local time based on the user's system timezone.
+ *
+ * @param ts The timestamp to convert, must be in UTC.
  * @param format The desired output format:
  *        0 = UTC, 1 = Local@PC, 2 = LMT@Location, 3 = Global settings.
- * @param lon The longitude for LMT calculation. Default is NaN.
- * @return wxDateTime The converted timestamp in the specified format.
+ * @param lon The longitude in degrees for LMT calculation (positive for east,
+ * negative for west). Default is NaN.
+ * @return wxDateTime The converted timestamp in the specified format, or
+ * wxInvalidDateTime if conversion fails.
  */
 wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
                          const double lon = INFINITY - INFINITY);
 /**
- * Convert a date/time from a given input format to UTC.
+ * Converts a timestamp from a user's preferred time format to UTC.
+ *
+ * This function is the inverse of toUsrDateTime, transforming a timestamp from
+ * the specified format back to UTC. It handles Universal Time (UTC), Local Mean
+ * Time (LMT) based on longitude, and Local time based on the user's system
+ * timezone.
+ *
  * @param ts The input timestamp in the specified format.
  * @param format The input timestamp format:
  *        0 = UTC, 1 = Local@PC, 2 = LMT@Location, 3 = Global settings.
