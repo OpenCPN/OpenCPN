@@ -39,15 +39,29 @@ public:
 };
 
 /**
- * A modal message dialog with a cancel and confirmation button.
+ * A modal message dialog with confirmation button and cancel button.
  * Can be used with a listener to handle the response.
  * Alternatively the static GetConfirmation function can be used without
  * listener.
  */
 class AlertDialog : public BaseDialog {
 public:
+  /**
+   * Alert dialog with close button.
+   * @param parent Parent window.
+   * @param title Dialog title.
+   */
+  AlertDialog(wxWindow* parent, const std::string& title);
+
+  /**
+   * Alert dialog with labelled confirmation button and cancel.
+   * @param parent Parent window.
+   * @param title Dialog title.
+   * @param action Action button label.
+   */
   AlertDialog(wxWindow* parent, const std::string& title,
-              const std::string& action = "");
+              const std::string& action);
+
   ~AlertDialog();
 
   /**
@@ -69,6 +83,18 @@ public:
   void SetMessage(const std::string& msg);
 
   /**
+   * Set default button (for enter).
+   * @param id Button ID.
+   */
+  void SetDefaultButton(int id);
+
+  /**
+   * Overwrite cancel button label.
+   * @param label Label for cancel button.
+   */
+  void SetCancelLabel(const std::string& label);
+
+  /**
    * Show dialog and return response.
    * @return OK/Cancel response.
    */
@@ -76,7 +102,7 @@ public:
 
   /**
    * Helper that returns the dialog response.
-   * @return YES/NO response.
+   * @return OK/Cancel response.
    */
   static int GetConfirmation(wxWindow* parent, const std::string& title,
                              const std::string& action, const std::string& msg);

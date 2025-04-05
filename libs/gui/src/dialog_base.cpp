@@ -43,7 +43,7 @@ BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
   auto separator = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                     wxDefaultSize, wxLI_HORIZONTAL);
 
-  m_layout->Add(separator, 0, wxEXPAND | wxALL, GUI::GetSpacing(this, kDialogPadding));
+  m_layout->Add(separator, wxSizerFlags().Border(wxALL, spacing).Expand());
 
   Bind(EVT_LAYOUT_RESIZE, [&](wxCommandEvent&) { Layout(); });
   Bind(wxEVT_HTML_LINK_CLICKED, [this](wxHtmlLinkEvent& event) {
