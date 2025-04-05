@@ -55,6 +55,7 @@
 #include "filter_dlg.h"
 #include "std_filesystem.h"
 #include "svg_icons.h"
+#include "edit_button.h"
 
 // Make _() return const char* instead of wxString;
 #undef _
@@ -135,41 +136,6 @@ class BadFilterNameDlg : public wxMessageDialog {
 public:
   BadFilterNameDlg(wxWindow* parent)
       : wxMessageDialog(parent, _(kFilterExists)) {}
-};
-
-/**
- *  Two state button showing either an 'edit'(pen) or 'done' (checkmark)
- *  icon.
- */
-class EditButton : public wxButton {
-public:
-  EditButton(wxWindow* parent, int id, std::function<void()> on_click)
-      : wxButton(parent, id, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-                 wxBU_EXACTFIT | wxBU_BOTTOM),
-        m_on_click(std::move(on_click)) {
-    Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { m_on_click(); });
-    SetIcon(false);
-  }
-
-  void SetIcon(bool is_editing) {
-    char buffer[2048];
-    strcpy(buffer, is_editing ? kCheckmarkSvg : kEditPenSvg);
-#ifdef ocpnUSE_wxBitmapBundle
-    auto icon_size = wxSize(GetCharHeight(), GetCharHeight());
-    auto bundle = wxBitmapBundle::FromSVG(buffer, icon_size);
-    assert(bundle.IsOk() && "Cannot load svg icon");
-    SetBitmap(bundle);
-#else
-    wxStringInputStream wis(buffer);
-    wxSVGDocument svg_doc(wis);
-    wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
-    assert(wxBitmap(image).IsOk() && "Cannot load svg icon");
-    SetBitmap(wxBitmap(image));
-#endif
-  }
-
-private:
-  std::function<void()> m_on_click;
 };
 
 /**
