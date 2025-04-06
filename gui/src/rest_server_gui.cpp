@@ -43,12 +43,11 @@
 #endif
 
 extern RouteManagerDialog* pRouteManagerDialog;
-extern MyFrame* gFrame;
 
 static wxDialog* DisplayDlg(const std::string& msg, const std::string& txt1) {
   auto dlg = new PINCreateDialog(
-      dynamic_cast<wxWindow*>(gFrame), wxID_ANY, _("OpenCPN Server Message"),
-      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE);
+      wxTheApp->GetTopWindow(), wxID_ANY, _("OpenCPN Server Message"), "",
+      wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE);
   dlg->SetMessage(msg);
   dlg->SetText1Message(txt1);
   dlg->Show();
@@ -81,7 +80,7 @@ RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
                                  const wxString& check1msg) {
     return RunAcceptObjectDlg(msg, check1msg);
   };
-  ctx.top_level_refresh = []() { dynamic_cast<wxWindow*>(gFrame)->Refresh(); };
+  ctx.top_level_refresh = []() { wxTheApp->GetTopWindow()->Refresh(); };
   return ctx;
 }
 
@@ -238,8 +237,8 @@ PINCreateDialog::~PINCreateDialog() {
 wxDialog* PINCreateDialog::Initiate(const std::string& msg,
                                     const std::string& text1) {
   auto dlg = new PINCreateDialog(
-      dynamic_cast<wxWindow*>(gFrame), wxID_ANY, _("OpenCPN Server Message"),
-      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE);
+      wxTheApp->GetTopWindow(), wxID_ANY, _("OpenCPN Server Message"), "",
+      wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE);
   dlg->SetMessage(msg);
   dlg->SetText1Message(text1);
   dlg->Show();

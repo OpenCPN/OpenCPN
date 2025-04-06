@@ -47,8 +47,6 @@
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 
-extern MyFrame* gFrame;
-
 class PriorityEntry : public wxTreeItemData {
 public:
   PriorityEntry(int category, int index) {
@@ -145,12 +143,13 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   dc.GetTextExtent("W", &char_width, &char_height, NULL, NULL, m_pF);
 
   int stcw = wxMax(m_maxStringLength * 15 / 10, 15 * char_width);
+  wxWindow* top_frame = wxTheApp->GetTopWindow();
   wxSize min_size = wxSize(
-      stcw, wxMin(gFrame->GetSize().y * 2 / 4, n_lines * GetCharHeight()));
+      stcw, wxMin(top_frame->GetSize().y * 2 / 4, n_lines * GetCharHeight()));
 
   stcSizer->SetMinSize(min_size);
 
-  SetMaxSize(gFrame->GetSize());
+  SetMaxSize(top_frame->GetSize());
 
   Layout();
   Fit();

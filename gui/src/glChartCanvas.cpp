@@ -302,7 +302,6 @@ extern bool b_skipout;
 extern wxSize pprog_size;
 extern int pprog_count;
 extern int pprog_threads;
-extern MyFrame *gFrame;
 
 // #if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't
 //  support vla */ const #endif extern int g_mipmap_max_level;
