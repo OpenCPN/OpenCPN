@@ -58,6 +58,9 @@ endif ()
 
 target_include_directories(GUILIB PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(GUILIB PRIVATE ${wxWidgets_LIBRARIES})
+if (TARGET ocpn::wxsvg)
+   target_link_libraries(GUILIB PRIVATE ocpn::wxsvg)
+endif ()
 
 target_include_directories(
   GUILIB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

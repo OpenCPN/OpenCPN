@@ -1117,9 +1117,6 @@ endif ()
 
 find_package(Gettext REQUIRED)
 
-# UI components
-add_subdirectory(libs/gui)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::guilib)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
@@ -1478,6 +1475,9 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
 
 add_subdirectory(libs/s57-charts)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s57-charts)
+
+add_subdirectory(libs/gui)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::guilib)
 
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
