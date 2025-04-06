@@ -44,8 +44,6 @@
 #include "FontMgr.h"
 #include "gui_lib.h"
 
-extern MyFrame* gFrame;
-
 struct MemoryStruct {
   char* memory;
   size_t size;

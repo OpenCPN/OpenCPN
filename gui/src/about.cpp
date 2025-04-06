@@ -53,7 +53,6 @@
 #include "ocpn_frame.h"
 
 extern OCPNPlatform* g_Platform;
-extern MyFrame* gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern about* g_pAboutDlgLegacy;
 extern bool g_bresponsive;
@@ -572,7 +571,7 @@ void about::OnXidOkClick(wxCommandEvent& event) { Close(); }
 
 void about::OnClose(wxCloseEvent& event) {
 #ifdef __WXGTK__
-  gFrame->Raise();
+  wxTheApp->GetTopWindow()->Raise();
 #endif
   Destroy();
   g_pAboutDlgLegacy = NULL;

@@ -55,7 +55,6 @@ extern bool g_bopengl;
 #ifdef ocpnUSE_GL
 extern GLenum g_texture_rectangle_format;
 #endif
-extern MyFrame *gFrame;
 extern BasePlatform *g_BasePlatform;
 
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
