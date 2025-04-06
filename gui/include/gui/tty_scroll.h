@@ -78,9 +78,6 @@ public:
    * Create a TtyScroll instance
    * @param parent Parent window
    * @param n_lines Number of visible lines i. e., window height.
-   * @param filter Used by Add() to discard lines. If filter is empty
-   * or added lines contains filter.GetValue() lines are used; otherwise
-   * lines are discarded.
    */
   TtyScroll(wxWindow* parent, int n_lines);
 

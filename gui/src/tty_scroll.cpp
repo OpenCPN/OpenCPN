@@ -132,10 +132,9 @@ void TtyScroll::DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y) {
               << (ll.error_msg.empty() ? "Unknown  errror" : ll.error_msg);
   }
   std::string iface(ll.navmsg ? ll.navmsg->source->iface : "");
-  if (iface.size() > 20)
-    iface = std::string("...") + iface.substr(iface.size() - 17);
+  if (iface.size() > 30)
+    iface = std::string("...") + iface.substr(iface.size() - 27);
   ws << iface << " ";
-  ws << (ll.navmsg ? NavAddr::BusToString(ll.navmsg->bus) : "-") << " ";
 
   dc.DrawText(ws, 0, y);
   ws = "";

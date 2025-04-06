@@ -107,7 +107,8 @@ static BridgeLogCallbacks GetLogCallbacks() {
 class AppNavMsg : public NavMsg {
 public:
   AppNavMsg(const std::shared_ptr<const AppMsg>& msg, const std::string& name)
-      : NavMsg(NavAddr::Bus::AppMsg, std::make_shared<const NavAddr>()),
+      : NavMsg(NavAddr::Bus::AppMsg,
+               std::make_shared<const NavAddrPlugin>("AppMsg")),
         m_to_string(msg->to_string()),
         m_name(name) {}
 
