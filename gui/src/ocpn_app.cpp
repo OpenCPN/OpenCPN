@@ -1644,6 +1644,7 @@ bool MyApp::OnInit() {
 
   gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size,
                        app_style);  // Gunther
+  wxTheApp->SetTopWindow(gFrame);
 
   //  Do those platform specific initialization things that need gFrame
   g_Platform->Initialize_3();
