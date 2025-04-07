@@ -5,8 +5,13 @@
 
 /**
  *
- *  Two state button showing either an 'edit'(pen) or 'done' (checkmark)
- *  icon.
+ * Two state button showing either an edit
+ * \image{inline}  html edit-button-2.png "Edit"
+ * or done icon
+ * \image{inline} html edit-button-1.png "Done"
+ *
+ * Example: filter_dlg.cpp
+ *  .
  */
 class EditButton : public wxButton {
 public:
