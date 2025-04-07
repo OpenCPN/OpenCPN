@@ -41,6 +41,11 @@
 /** Application layer messaging, a singleton. */
 class AppMsgBus {
 public:
+  static AppMsgBus& GetInstance();
+
+  AppMsgBus(const AppMsgBus&) = delete;
+  AppMsgBus& operator=(const AppMsgBus&) = delete;
+
   /** Send message to everyone listening to given message type. */
   void Notify(const std::shared_ptr<const AppMsg>& msg);
 
@@ -50,7 +55,8 @@ public:
    */
   void set_priority(AppMsg::Type data, const NavAddr& src, unsigned prio);
 
-  static AppMsgBus& GetInstance();
+private:
+  AppMsgBus() = default;
 };
 
 #endif  // APP_MSG_BUS_H
