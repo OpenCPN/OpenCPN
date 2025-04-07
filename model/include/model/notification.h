@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Notification Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,10 +16,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ * Class Notification.
+ */
+
 #ifndef _NOTIFICATION_H__
 #define _NOTIFICATION_H__
 
 #include <string>
+
+#include <wx/datetime.h>
 
 enum class NotificationSeverity : int {
   kInformational = 0,
@@ -33,6 +35,7 @@ enum class NotificationSeverity : int {
   kCritical = 2
 };
 
+/** User visible notification. */
 class Notification {
 public:
   Notification(NotificationSeverity _severity, const std::string &_message,
@@ -55,4 +58,5 @@ private:
   const size_t message_hash;
   int auto_timeout_secs;
 };
+
 #endif
