@@ -37,23 +37,22 @@ class Notification {
 public:
   Notification(NotificationSeverity _severity, const std::string &_message,
                int _timeout_secs = -1);
-  virtual ~Notification() {}
+  virtual ~Notification() = default;
 
   std::string GetMessage() { return message; }
-  NotificationSeverity GetSeverity() { return severity; }
-  time_t GetActivateTime() { return activate_time; }
-  std::string GetGuid() { return guid; }
-  void SetGuid(std::string _guid) { guid = _guid; }
-  size_t GetStringHash() { return message_hash; }
-  int GetTimeoutCount() { return auto_timeout_secs; }
+  NotificationSeverity GetSeverity() const { return severity; }
+  time_t GetActivateTime() const { return activate_time; }
+  std::string GetGuid() const { return guid; }
+  size_t GetStringHash() const { return message_hash; }
+  int GetTimeoutCount() const { return auto_timeout_secs; }
   void DecrementTimoutCount() { auto_timeout_secs--; }
 
 private:
   NotificationSeverity severity;
-  std::string message;
-  std::string guid;
-  time_t activate_time;
-  size_t message_hash;
+  const std::string message;
+  const time_t activate_time;
+  const std::string guid;
+  const size_t message_hash;
   int auto_timeout_secs;
 };
 #endif
