@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Notification Manager
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ * Class NotificationManager.
+ */
+
 #ifndef _NOTIFICATION_MANAGER_H__
 #define _NOTIFICATION_MANAGER_H__
 
@@ -29,28 +29,51 @@
 #include "notification.h"
 #include "observable_evtvar.h"
 
+/** The global list of user notifications, a singleton. */
 class NotificationManager {
 public:
   static NotificationManager& GetInstance();
 
-  NotificationManager();
+  NotificationManager(const NotificationManager&) = delete;
+  NotificationManager& operator=(const NotificationManager&) = delete;
 
   std::string AddNotification(std::shared_ptr<Notification> _notification);
+
+  /**
+   * Add a new notification.
+   * @param severity Notification type.
+   * @param message string, possibly multiline.
+   * @oaram timeout_secs If given, the notifications is automatically
+   *     removed after timeout_secs seconds if still existing.
+   */
   std::string AddNotification(NotificationSeverity _severity,
                               const std::string& _message,
                               int timeout_secs = -1);
+  /**
+   * User ack on a notification which eventually will remove it
+   * @param guid  Guid obtained from AddNotification() or GetUUID().
+   * @return true if the notification corresponding to guid exists.
+   */
+  bool AcknowledgeNotification(const std::string& guid);
 
-  bool AcknowledgeNotification(std::string GUID);
+  /** Return max severity among current active notifications. */
   NotificationSeverity GetMaxSeverity();
-  void OnTimer(wxTimerEvent& event);
 
-  std::vector<std::shared_ptr<Notification>> GetNotifications() {
+  /** Return current active notifications. */
+  const std::vector<std::shared_ptr<Notification>>& GetNotifications() const {
     return active_notifications;
   }
-  size_t GetNotificationCount() { return active_notifications.size(); }
+
+  size_t GetNotificationCount() const { return active_notifications.size(); }
+
+  /** Notified without data when a notification is added or removed. */
   EventVar evt_notificationlist_change;
 
 private:
+  NotificationManager();
+
+  void OnTimer(wxTimerEvent& event);
+
   std::vector<std::shared_ptr<Notification>> active_notifications;
   wxTimer m_timeout_timer;
 };

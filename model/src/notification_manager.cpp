@@ -82,7 +82,7 @@ std::string NotificationManager::AddNotification(NotificationSeverity _severity,
   return notification->GetGuid();
 }
 
-bool NotificationManager::AcknowledgeNotification(std::string GUID) {
+bool NotificationManager::AcknowledgeNotification(const std::string& GUID) {
   if (!GUID.length()) return false;
 
   size_t target_message_hash = 0;
