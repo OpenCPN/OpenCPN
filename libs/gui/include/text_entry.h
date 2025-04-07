@@ -5,9 +5,9 @@
 /**
  * A label, a text entry and an EditButton allows for user text input
  * Depending in state it looks like
- * \image html text-entry-1.png
+ * \image html ./text-entry-1.png
  * or
- * \image html text-entry-2.png
+ * \image html ./text-entry-2.png
  *
  *  The leftmost label is fixed, possibly empty.
  *

@@ -6,9 +6,9 @@
 /**
  *
  * Two state button showing either an edit
- * \image{inline}  html edit-button-2.png "Edit"
+ * \image{inline}  html ./edit-button-2.png "Edit"
  * or done icon
- * \image{inline} html edit-button-1.png "Done"
+ * \image{inline} html ./edit-button-1.png "Done"
  *
  * Example: filter_dlg.cpp
  *  .
