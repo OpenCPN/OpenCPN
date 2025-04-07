@@ -64,7 +64,6 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
-#include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"  // FIXME for GetOCPNScaledFont_PlugIn
 #include "options.h"
@@ -1775,16 +1774,18 @@ void ConnectionEditDialog::OnCbAdvanced(wxCommandEvent& event) {
 }
 
 void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
-  if (!m_cbNMEADebug->GetValue()) {
-    NMEALogWindow::GetInstance().DestroyWindow();
-  } else {
-    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->GetParent()), 35);
-
-    // Try to ensure that the log window is at least a little bit visible
-    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
-                   NMEALogWindow::GetInstance().GetPosY(),
-                   NMEALogWindow::GetInstance().GetSizeW(),
-                   NMEALogWindow::GetInstance().GetSizeH());
+  //  if (!m_cbNMEADebug->GetValue()) {
+  //    NMEALogWindow::GetInstance().DestroyWindow();
+  //  } else {
+  //    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->GetParent()),
+  //    35);
+  //
+  //    // Try to ensure that the log window is at least a little bit visible
+  //    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
+  //                   NMEALogWindow::GetInstance().GetPosY(),
+  //                   NMEALogWindow::GetInstance().GetSizeW(),
+  //                   NMEALogWindow::GetInstance().GetSizeH());
+  // FIXME (leamas)
 
 #if 0
     if (m_container->GetRect().Contains(logRect)) {
@@ -1795,8 +1796,8 @@ void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
       NMEALogWindow::Get().Move();
     }
 #endif
-    m_parent->Raise();
-  }
+  m_parent->Raise();
+  //  }
 }
 void ConnectionEditDialog::SetNMEAFormForSerialProtocol() {
   bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() ==

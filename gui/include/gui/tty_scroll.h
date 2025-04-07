@@ -22,14 +22,54 @@
 #define __TTYSCROLL_H__
 
 #include <deque>
+#include <memory>
 
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
+#include "model/nmea_log.h"
+#include "model/navmsg_filter.h"
+
 /**
  * \file
- * Scrolled TTY-like window for logging, etc....
+ * Scrolled TTY-like window for logging, related utilities
  */
+
+extern const wxString kUtfCheckMark;
+extern const wxString kUtfCircledDivisionSlash;
+extern const wxString kUtfFallingDiagonal;
+extern const wxString kUtfIdenticalTo;
+extern const wxString kUtfLeftArrow;
+extern const wxString kUtfLeftRightArrow;
+extern const wxString kUtfLeftwardsArrowToBar;
+extern const wxString kUtfMultiplicationX;
+extern const wxString kUtfRightArrow;
+
+/** Functor returning log foreground color for given state. */
+class ColorByState {
+public:
+  virtual wxColor operator()(NavmsgStatus) = 0;
+  virtual ~ColorByState() = default;
+};
+
+/** Functor returning default color for all states. */
+class NoColorsByState : public ColorByState {
+public:
+  NoColorsByState(wxColor color) : m_color(color) {}
+
+  wxColor operator()(NavmsgStatus ns) { return m_color; }
+
+private:
+  wxColor m_color;
+};
+
+/** The standard colors handler functor. */
+class StdColorsByState : public ColorByState {
+public:
+  StdColorsByState() {};
+
+  wxColor operator()(NavmsgStatus ns);
+};
 
 /** Scrolled TTY-like window for logging, etc. */
 class TtyScroll : public wxScrolledWindow {
@@ -38,11 +78,8 @@ public:
    * Create a TtyScroll instance
    * @param parent Parent window
    * @param n_lines Number of visible lines i. e., window height.
-   * @param filter Used by Add() to discard lines. If filter is empty
-   * or added lines contains filter.GetValue() lines are used; otherwise
-   * lines are discarded.
    */
-  TtyScroll(wxWindow* parent, int n_lines, wxTextCtrl& filter);
+  TtyScroll(wxWindow* parent, int n_lines);
 
   virtual ~TtyScroll() = default;
 
@@ -51,25 +88,38 @@ public:
    * Subject to checks with respect to paused state and filter possibly
    * discarding argument line.
    */
-  virtual void Add(const wxString& line);
+  virtual void Add(const Logline& line);
 
   /** Set the window to ignore Add() or not depending on pause. */
   void Pause(bool pause) { m_is_paused = pause; }
 
-  /**
-   *  Copy visible content to clipboard.
-   *  @param n0183 If true, copy cleaned up data excluding time stamps etc.
-   */
-  void Copy(bool n183);
+  /**  Copy message contents to clipboard.  */
+  void CopyToClipboard() const;
+
+  /** Apply a display filter */
+  void SetFilter(const NavmsgFilter& filter) { m_filter = filter; }
+
+  /** Return current display filter */
+  const NavmsgFilter& GetFilter() { return m_filter; }
+
+  /** Apply a quick filter directly matched against lines */
+  void SetQuickFilter(const std::string s) { m_quick_filter = s; }
+
+  /** Set color scheme */
+  void SetColors(std::unique_ptr<ColorByState> color_by_state);
 
 protected:
-  wxCoord m_line_height;  // the height of one line on screen
-  size_t m_n_lines;       // the number of lines we draw
+  wxCoord m_line_height;  // height of one line on screen
+  size_t m_n_lines;       // number of lines we draw
+  wxCoord m_text_width;   // Width of widest line displayed
 
-  std::deque<wxString> m_lines;
-  wxTextCtrl& m_filter;
+  std::deque<Logline> m_lines;
+  NavmsgFilter m_filter;
   bool m_is_paused;
+  std::unique_ptr<ColorByState> m_color_by_state;
+  std::string m_quick_filter;
 
+  void DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y);
   virtual void OnDraw(wxDC& dc);
   void OnSize(wxSizeEvent& event);
 };

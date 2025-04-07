@@ -37,6 +37,7 @@
 
 #include "model/comm_decoder.h"
 #include "model/comm_navmsg.h"
+#include "model/nmea_log.h"
 
 typedef struct {
   std::string pcclass;
@@ -55,6 +56,13 @@ typedef struct {
   int satellite_watchdog;
 
 } Watchdogs;
+
+struct BridgeLogCallbacks {
+  std::function<bool()> log_is_active;
+  std::function<void(Logline)> log_message;
+  BridgeLogCallbacks()
+      : log_is_active([]() { return false; }), log_message([](Logline) {}) {}
+};
 
 class CommBridge : public wxEvtHandler {
 public:
@@ -175,6 +183,8 @@ private:
   std::unordered_map<std::string, int> priority_map_satellites;
 
   int n_LogWatchdogPeriod;
+
+  BridgeLogCallbacks m_log_callbacks;
 
   DECLARE_EVENT_TABLE()
 };

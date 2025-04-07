@@ -40,6 +40,7 @@
 #include "comm_overflow_dlg.h"
 #include "connections_dlg.h"
 #include "color_handler.h"
+#include "data_monitor.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
 #include "observable_evtvar.h"
@@ -135,7 +136,7 @@ bool isSingleChart(ChartBase* chart);
 class MyFrame : public wxFrame {
 public:
   MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, long style);
+          const wxSize& size, long style, DataMonitor* data_monitor);
 
   ~MyFrame();
 
@@ -258,6 +259,8 @@ public:
   void RefreshGroupIndices(void);
 
   double GetBestVPScale(ChartBase* pchart);
+
+  DataMonitor* GetDataMonitor() const { return m_data_monitor; }
 
   ColorScheme GetColorScheme();
   void SetAndApplyColorScheme(ColorScheme cs);
@@ -424,6 +427,7 @@ private:
   wxArrayString pathArray;
   double restoreScale[4];
   unsigned int last_canvasConfig;
+  DataMonitor* m_data_monitor;
 
   DECLARE_EVENT_TABLE()
 };

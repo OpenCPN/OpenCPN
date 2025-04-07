@@ -57,6 +57,9 @@ std::string NavAddr::BusToString(NavAddr::Bus b) {
     case NavAddr::Bus::TestBus:
       return "TestBus";
       break;
+    case NavAddr::Bus::AppMsg:
+      return "AppMsg";
+      break;
     case NavAddr::Bus::Undef:
       return "??";
       break;
@@ -71,6 +74,7 @@ NavAddr::Bus NavAddr::StringToBus(const std::string& s) {
   if (s == "Onenet") return NavAddr::Bus::Onenet;
   if (s == "Plugin") return NavAddr::Bus::Plugin;
   if (s == "TestBus") return NavAddr::Bus::TestBus;
+  if (s == "AppMsg") return NavAddr::Bus::AppMsg;
   return NavAddr::Bus::Undef;
 }
 
@@ -81,21 +85,40 @@ static std::string CharToString(unsigned char c) {
   return ss.str();
 }
 
+static std::string CharToString(char c) {
+  return CharToString(static_cast<unsigned char>(c));
+}
+
 std::string Nmea2000Msg::to_string() const {
   std::string s;
-  std::for_each(payload.begin(), payload.end(),
-                [&s](unsigned char c) { s.append(CharToString(c)); });
+  for (auto c : payload) s.append(CharToString(c));
+  return PGN.to_string() + " " + s;
+}
 
-  return NavMsg::to_string() + " " + PGN.to_string() + " " + s;
+std::string Nmea2000Msg::to_vdr() const {
+  std::string s;
+  for (auto c : payload) s.append(CharToString(c) + " ");
+  return s;
 }
 
 std::string Nmea0183Msg::to_string() const {
   std::stringstream ss;
-  ss << NavAddr::BusToString(bus) << " " << key() << " " << talker << type
-     << " " << ocpn::printable(payload);
+  ss << key() << " " << talker << type << " " << ocpn::printable(payload);
   return ss.str();
 }
 
+std::string Nmea0183Msg::to_vdr() const { return ocpn::printable(payload); }
+
 std::string PluginMsg::to_string() const {
-  return name + ": " + ocpn::rtrim(message);
+  /** Avoid messing with utf string. */
+  if (name == "position-fix") return name + ":" + ocpn::rtrim(message);
+
+  std::stringstream ss;
+  for (char c : ocpn::rtrim(message)) {
+    if (c >= ' ' && c <= '~')
+      ss << c;
+    else
+      ss << CharToString(c);
+  }
+  return name + ": " + ss.str();
 }
