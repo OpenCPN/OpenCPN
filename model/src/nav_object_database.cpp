@@ -190,6 +190,9 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
               if (!strcmp(attr.name(), "planned_speed"))
                 plan_speed = attr.as_double();
               else if (!strcmp(attr.name(), "etd"))
+                // The timestamp is serialized without timezone information,
+                // e.g., etd="2025-04-03T20:00:27"
+                // So assume the ETD has always been saved in UTC.
                 etd = attr.as_string();
             }
           }
@@ -801,8 +804,12 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
         use.set_value(
             wxString::Format(_T("%.1lf"), pr->GetPlannedSpeed()).mb_str());
       }
-      if (pr->m_manual_etd) {
+      if (pr->m_manual_etd && pr->GetManualETD().IsValid()) {
         pugi::xml_attribute use = child.append_attribute("etd");
+        // Currently, the serialization format is YYYY-MM-DDTHH:MM:SS
+        // without timezone information, e.g., etd="2025-04-03T20:00:27"
+        // TODO: serialize using ISO 8601 or RFC 3339 format to ensure
+        // the serialized date/time is unambiguous.
         use.set_value(pr->GetManualETD().FormatISOCombined().mb_str());
       }
     }

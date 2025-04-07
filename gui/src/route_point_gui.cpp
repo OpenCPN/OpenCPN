@@ -952,6 +952,7 @@ int RoutePointGui::GetIconImageIndex() {
           break;
         }
       }
+      delete proute_array;
     }
 
     if (brp_viz)

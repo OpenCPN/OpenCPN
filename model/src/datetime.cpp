@@ -27,6 +27,8 @@
 
 namespace ocpn {
 
+wxString getUsrDateTimeFormat() { return ::g_datetime_format; }
+
 // date/time in the desired time zone format.
 wxString toUsrDateTimeFormat(const wxDateTime date_time,
                              const DateTimeFormatOptions& options) {
@@ -92,20 +94,22 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
     // operating system. For example "2021-10-31 01:30:00 EDT" is unambiguous,
     // while "2021-10-31 01:30:00 LOC" is not.
     wxString tzName = t.Format("%Z");
-    ret = t.Format(format, wxDateTime::Local) + " " + tzName;
+    ret = t.Format(format) + " " + tzName;
   } else if (effective_time_zone == "UTC") {
-    ret = t.Format(format, wxDateTime::UTC) + " " + _("UTC");
+    // Convert to UTC and format date/time.
+    ret = t.ToUTC().Format(format) + " " + _("UTC");
   } else if (effective_time_zone == "LMT") {
     // Local mean solar time at the current location.
+    t = t.ToUTC();
     if (std::isnan(options.longitude)) {
       t = wxInvalidDateTime;
     } else {
       t.Add(wxTimeSpan(0, 0, wxLongLong(options.longitude * 3600. / 15.)));
     }
-    ret = t.Format(format, wxDateTime::UTC) + " " + _("LMT");
+    ret = t.Format(format) + " " + _("LMT");
   } else {
     // Fallback to UTC if the timezone is not recognized.
-    ret = t.Format(format, wxDateTime::UTC) + " " + _("UTC");
+    ret = t.ToUTC().Format(format) + " " + _("UTC");
   }
   return ret;
 }

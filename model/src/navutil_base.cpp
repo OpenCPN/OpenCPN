@@ -562,18 +562,6 @@ double vVectorMagnitude(pVector2D v0) {
   return (dMagnitude);
 }
 
-// This function parses a string containing a GPX time representation
-// and returns a wxDateTime containing the UTC corresponding to the
-// input. The function return value is a pointer past the last valid
-// character parsed (if successful) or NULL (if the string is invalid).
-//
-// Valid GPX time strings are in ISO 8601 format as follows:
-//
-//   [-]<YYYY>-<MM>-<DD>T<hh>:<mm>:<ss>Z|(+|-<hh>:<mm>)
-//
-// For example, 2010-10-30T14:34:56Z and 2010-10-30T14:34:56-04:00
-// are the same time. The first is UTC and the second is EDT.
-
 const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
   long sign, hrs_west, mins_west;
   const wxChar *end;

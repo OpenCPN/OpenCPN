@@ -2970,19 +2970,21 @@ struct DateTimeFormatOptions {
 };
 
 /**
- * Format a wxDateTime to a localized string representation, conforming to the
+ * Format a date/time to a localized string representation, conforming to the
  * global date/time format and timezone settings.
  *
- * The function uses the timezone configuration to format the date/time either
- * in UTC, local time, or local mean time (LMT) based on the longitude.
+ * The function expects date_time to be in local time and formats it according to the 
+ * timezone configuration either in:
+ * - UTC: Coordinated Universal Time (default)
+ * - Local Time: System's configured timezone with proper DST handling
+ * - LMT: Local Mean Time calculated based on the longitude specified in options
  *
  * @note This function should be used instead of wxDateTime.Format() to ensure
  * consistent date/time formatting across the entire application.
  *
- * @param date_time The date/time to format.
- * @param options The date/time format options.
- * @return wxString The formatted date/time string.
- *
+ * @param date_time The date/time to format, must be in local time.
+ * @param options The date/time format options including target timezone and formatting preferences.
+ * @return wxString The formatted date/time string with appropriate timezone indicator.
  */
 extern DECL_EXP wxString toUsrDateTimeFormat_Plugin(
     const wxDateTime date_time,

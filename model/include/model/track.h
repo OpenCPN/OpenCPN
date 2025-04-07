@@ -57,7 +57,26 @@ public:
   TrackPoint(TrackPoint *orig);
   ~TrackPoint();
 
+  /**
+   * Retrieves the creation timestamp of a track point as a wxDateTime object.
+   *
+   * @return wxDateTime object representing the creation time in UTC.
+   *         If the internal timestamp string is invalid or empty, the
+   *         returned wxDateTime may be invalid.
+   */
   wxDateTime GetCreateTime(void);
+  /**
+   * Sets the creation timestamp for a track point.
+   *
+   * @param dt The wxDateTime object containing the timestamp to set.
+   *           Should be in UTC time already, as no time zone conversion is
+   * performed. The time is directly formatted and marked with 'Z' (UTC
+   * indicator). If the provided datetime is invalid, an empty string will be
+   * stored.
+   *
+   * Format: YYYY-MM-DDThh:mm:ssZ
+   * Example: 2023-04-15T14:22:38Z
+   */
   void SetCreateTime(wxDateTime dt);
   const char *GetTimeString() { return m_stimestring.c_str(); }
   bool HasValidTimestamp() {
@@ -69,6 +88,19 @@ public:
   int m_GPXTrkSegNo;
 
 private:
+  /**
+   * Sets the creation timestamp for a track point from a string.
+   *
+   * @param ts The timestamp string to store. Should be in ISO 8601 format.
+   *           If empty, the track point will have no timestamp.
+   *
+   * For example:
+   * - "2023-04-15T14:22:38Z" (UTC)
+   * - "2023-04-15T10:22:38-04:00" (EDT, 4 hours west of UTC)
+   *
+   * Time zone information will be correctly interpreted when the timestamp is
+   * read via GetCreateTime() which will return a wxDateTime object in UTC.
+   */
   void SetCreateTime(wxString ts);
   std::string m_stimestring;
 };

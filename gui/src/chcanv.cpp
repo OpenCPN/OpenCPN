@@ -7401,6 +7401,7 @@ void ChartCanvas::FindRoutePointsAtCursor(float selectRadius,
 
     //    Get an array of all routes using this point
     m_pEditRouteArray = g_pRouteMan->GetRouteArrayContaining(frp);
+    // TODO: delete m_pEditRouteArray after use?
 
     // Use route array to determine actual visibility for the point
     bool brp_viz = false;
@@ -8189,6 +8190,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 break;
               }
             }
+            delete proute_array;
             if (!brp_viz &&
                 frp->IsShared())  // is not visible as part of route, but still
                                   // exists as a waypoint
@@ -8290,6 +8292,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 break;
               }
             }
+            delete proute_array;
             if (!brp_viz &&
                 pNearbyPoint->IsShared())  // is not visible as part of route,
                                            // but still exists as a waypoint
@@ -9252,6 +9255,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     pr->m_bIsBeingEdited = false;
                   }
                 }
+                delete lastEditRouteArray;
               }
             }
           }

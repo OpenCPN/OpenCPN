@@ -540,6 +540,12 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   m_btnExtend = new wxButton(this, wxID_ANY, _("Extend"), wxDefaultPosition,
                              wxDefaultSize, 0);
+  m_btnExtend->SetToolTip(_(
+      "Extend this route by connecting it to another route. The button is "
+      "disabled when: the route is active, is part of a layer, or there is no "
+      "suitable route to connect to. A suitable route must be visible, "
+      "different from this route, and share a common waypoint with this route "
+      "(or have a waypoint very close to the last point of this route)."));
   wSizerCustomBtns->Add(m_btnExtend, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
   m_btnSplit = new wxButton(this, wxID_ANY, _("Split"), wxDefaultPosition,
