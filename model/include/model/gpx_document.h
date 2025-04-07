@@ -1,5 +1,5 @@
 /**************************************************************************
- *   Copyright (C) 2025 by David S. Register                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,44 +19,20 @@
 
 /**
  * \file
- * Class Notification.
+ * Class GpxDocument
  */
 
-#ifndef _NOTIFICATION_H__
-#define _NOTIFICATION_H__
+#include <wx/string.h>
 
-#include <string>
-
-#include <wx/datetime.h>
-
-enum class NotificationSeverity : int {
-  kInformational = 0,
-  kWarning = 1,
-  kCritical = 2
-};
-
-/** User visible notification. */
-class Notification {
+/** Utility to manage unique GUID strings. */
+class GpxDocument {
 public:
-  Notification(NotificationSeverity _severity, const std::string &_message,
-               int _timeout_secs = -1);
-  virtual ~Notification() = default;
+  /** Return a unique RFC4122 version 4 compliant GUID string. */
+  static wxString GetUUID(void);
 
-  std::string GetMessage() { return message; }
-  NotificationSeverity GetSeverity() const { return severity; }
-  time_t GetActivateTime() const { return activate_time; }
-  std::string GetGuid() const { return guid; }
-  size_t GetStringHash() const { return message_hash; }
-  int GetTimeoutCount() const { return auto_timeout_secs; }
-  void DecrementTimoutCount() { auto_timeout_secs--; }
+  /** Seed the random generator used by GetUUID(). */
+  static void SeedRandom();
 
 private:
-  NotificationSeverity severity;
-  const std::string message;
-  const time_t activate_time;
-  const std::string guid;
-  const size_t message_hash;
-  int auto_timeout_secs;
+  static int GetRandomNumber(int min, int max);
 };
-
-#endif

@@ -59,7 +59,7 @@ void NotificationManager::OnTimer(wxTimerEvent& event) {
 NotificationSeverity NotificationManager::GetMaxSeverity() {
   int rv = 0;
   for (auto note : active_notifications) {
-    int severity = static_cast<int>(note.get()->GetSeverity());
+    int severity = static_cast<int>(note->GetSeverity());
     if (severity > rv) rv = severity;
   }
   return static_cast<NotificationSeverity>(rv);
@@ -67,10 +67,9 @@ NotificationSeverity NotificationManager::GetMaxSeverity() {
 
 std::string NotificationManager::AddNotification(
     std::shared_ptr<Notification> _notification) {
-  _notification.get()->SetGuid(GpxDocument::GetUUID().ToStdString());
   active_notifications.push_back(_notification);
   evt_notificationlist_change.Notify();
-  return _notification.get()->GetGuid();
+  return _notification->GetGuid();
 }
 
 std::string NotificationManager::AddNotification(NotificationSeverity _severity,
@@ -78,13 +77,12 @@ std::string NotificationManager::AddNotification(NotificationSeverity _severity,
                                                  int _timeout_secs) {
   auto notification =
       std::make_shared<Notification>(_severity, _message, _timeout_secs);
-  notification.get()->SetGuid(GpxDocument::GetUUID().ToStdString());
   active_notifications.push_back(notification);
   evt_notificationlist_change.Notify();
-  return notification.get()->GetGuid();
+  return notification->GetGuid();
 }
 
-bool NotificationManager::AcknowledgeNotification(std::string GUID) {
+bool NotificationManager::AcknowledgeNotification(const std::string& GUID) {
   if (!GUID.length()) return false;
 
   size_t target_message_hash = 0;

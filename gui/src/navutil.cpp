@@ -3650,16 +3650,6 @@ void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
   }
 }
 
-void GpxDocument::SeedRandom() {
-  /* Fill with random. Miliseconds hopefully good enough for our usage, reading
-   * /dev/random would be much better on linux and system guid function on
-   * Windows as well */
-  wxDateTime x = wxDateTime::UNow();
-  long seed = x.GetMillisecond();
-  seed *= x.GetTicks();
-  srand(seed);
-}
-
 void DimeControl(wxWindow *ctrl) {
 #ifdef __WXOSX__
   // On macOS 10.14+, we use the native colours in both light mode and dark

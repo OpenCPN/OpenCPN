@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Notification Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,18 +16,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include <cmath>
-#include <memory>
-#include <vector>
-#include <wx/datetime.h>
 
+#include "model/gpx_document.h"
 #include "model/notification.h"
 
+/**
+ * \file
+ * Implement notification.h
+ */
+
 Notification::Notification(NotificationSeverity _severity,
-                           const std::string &_message, int _timeout_secs) {
-  severity = _severity;
-  message = _message;
-  activate_time = wxDateTime::Now().GetTicks();
-  message_hash = std::hash<std::string>{}(_message);
-  auto_timeout_secs = _timeout_secs;
-}
+                           const std::string &_message, int _timeout_secs)
+    : severity(_severity),
+      message(_message),
+      activate_time(wxDateTime::Now().GetTicks()),
+      guid(GpxDocument::GetUUID()),
+      message_hash(std::hash<std::string>{}(_message)),
+      auto_timeout_secs(_timeout_secs) {}

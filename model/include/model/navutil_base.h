@@ -31,6 +31,7 @@
 #include <wx/utils.h>
 
 #include "model/config_vars.h"
+#include "model/gpx_document.h"
 
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 enum { WSPEED_KTS = 0, WSPEED_MS, WSPEED_MPH, WSPEED_KMH };
@@ -46,15 +47,6 @@ enum {
   DISTANCE_FA,
   DISTANCE_IN,
   DISTANCE_CM
-};
-
-class GpxDocument {
-public:
-  static wxString GetUUID(void);
-  static void SeedRandom();
-
-private:
-  static int GetRandomNumber(int min, int max);
 };
 
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
