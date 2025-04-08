@@ -1905,26 +1905,26 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->m_GUID = src->m_GUID;
 
   //  Transcribe (clone) the html HyperLink List, if present
-  if (src->m_HyperlinkList == nullptr) return;
+  if (src->m_HyperlinkList) {
+    delete dst->m_HyperlinkList;
+    dst->m_HyperlinkList = nullptr;
 
-  delete dst->m_HyperlinkList;
-  dst->m_HyperlinkList = nullptr;
+    if (src->m_HyperlinkList->GetCount() > 0) {
+      dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-  if (src->m_HyperlinkList->GetCount() > 0) {
-    dst->m_HyperlinkList = new Plugin_HyperlinkList;
+      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      while (linknode) {
+        Hyperlink* link = linknode->GetData();
 
-    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
+        Plugin_Hyperlink* h = new Plugin_Hyperlink();
+        h->DescrText = link->DescrText;
+        h->Link = link->Link;
+        h->Type = link->LType;
 
-      Plugin_Hyperlink* h = new Plugin_Hyperlink();
-      h->DescrText = link->DescrText;
-      h->Link = link->Link;
-      h->Type = link->LType;
+        dst->m_HyperlinkList->Append(h);
 
-      dst->m_HyperlinkList->Append(h);
-
-      linknode = linknode->GetNext();
+        linknode = linknode->GetNext();
+      }
     }
   }
 
@@ -1941,6 +1941,8 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->scamax = src->GetScaMax();
   dst->m_PlannedSpeed = src->GetPlannedSpeed();
   dst->m_ETD = src->GetManualETD();
+  dst->m_WaypointArrivalRadius = src->GetWaypointArrivalRadius();
+  dst->m_bShowWaypointRangeRings = src->GetShowWaypointRangeRings();
 }
 
 static void cloneHyperlinkListEx(RoutePoint* dst,
@@ -1989,7 +1991,10 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
   pWP->SetWaypointRangeRingsNumber(src->nrange_rings);
   pWP->SetWaypointRangeRingsStep(src->RangeRingSpace);
   pWP->SetWaypointRangeRingsColour(src->RangeRingColor);
+  pWP->SetWaypointArrivalRadius(src->m_WaypointArrivalRadius);
+  pWP->SetShowWaypointRangeRings(src->m_bShowWaypointRangeRings);
   pWP->SetScaMin(src->scamin);
+  pWP->SetScaMax(src->scamax);
   pWP->SetUseSca(src->b_useScamin);
   pWP->SetNameShown(src->IsNameVisible);
   pWP->SetVisible(src->IsVisible);
@@ -1998,7 +2003,6 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
     pWP->SetETD(src->m_ETD);
   else
     pWP->SetETD(wxEmptyString);
-  pWP->SetScaMax(src->scamax);
 
   return pWP;
 }
@@ -2097,6 +2101,8 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     prp->SetNameShown(pwaypoint->IsNameVisible);
 
     prp->SetShowWaypointRangeRings(pwaypoint->nrange_rings > 0);
+    prp->SetWaypointArrivalRadius(pwaypoint->m_WaypointArrivalRadius);
+    prp->SetShowWaypointRangeRings(pwaypoint->m_bShowWaypointRangeRings);
 
     if (prp) prp->ReLoadIcon();
 

@@ -5117,10 +5117,12 @@ public:
   double scamax;       //!< Maximum display scale (1:X) for waypoint visibility
   bool b_useScamin;    //!< True to enable scale-dependent visibility
   bool IsNameVisible;  //!< True to show waypoint name on chart
+  double m_WaypointArrivalRadius; //!< Arrival radius in nautical miles
 
   int nrange_rings;       //!< Number of range rings to display around waypoint
   double RangeRingSpace;  //!< Distance between range rings in preferred units
   wxColour RangeRingColor;  //!< Color to draw range rings
+  bool m_bShowWaypointRangeRings; //!< True to show range rings on chart
 
   wxString IconName;         //!< Name of icon to use for waypoint symbol
   wxString IconDescription;  //!< User-friendly description of icon
