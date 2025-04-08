@@ -1938,6 +1938,10 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->scamin = src->GetScaMin();
   dst->b_useScamin = src->GetUseSca();
   dst->IsActive = src->m_bIsActive;
+  dst->scamax = src->GetScaMax();
+  dst->m_PlannedSpeed = src->GetPlannedSpeed();
+  dst->m_ETD = src->GetETD();
+  dst->m_ManualETD = src->GetManualETD().IsValid();
 }
 
 static void cloneHyperlinkListEx(RoutePoint* dst,
@@ -1990,6 +1994,9 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
   pWP->SetUseSca(src->b_useScamin);
   pWP->SetNameShown(src->IsNameVisible);
   pWP->SetVisible(src->IsVisible);
+  pWP->SetPlannedSpeed(src->m_PlannedSpeed);
+  if (src->m_ETD.IsValid()) pWP->SetETD(src->m_ETD);
+  pWP->SetScaMax(src->scamax);
 
   return pWP;
 }
@@ -2083,6 +2090,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     prp->SetWaypointRangeRingsStep(pwaypoint->RangeRingSpace);
     prp->SetWaypointRangeRingsColour(pwaypoint->RangeRingColor);
     prp->SetScaMin(pwaypoint->scamin);
+    prp->SetScaMax(pwaypoint->scamax);
     prp->SetUseSca(pwaypoint->b_useScamin);
     prp->SetNameShown(pwaypoint->IsNameVisible);
 
@@ -2104,6 +2112,12 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
+
+    prp->SetPlannedSpeed(pwaypoint->m_PlannedSpeed);
+    if (pwaypoint->m_ETD.IsValid())
+      prp->SetETD(pwaypoint->m_ETD);
+    else
+      prp->SetETD(wxEmptyString);
   }
 
   return b_found;
