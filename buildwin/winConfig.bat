@@ -166,7 +166,7 @@ set "wxDIR=%OCPN_DIR%\..\ocpn_wxWidgets"
 set "wxWidgets_ROOT_DIR=%wxDIR%"
 set "wxWidgets_LIB_DIR=%wxDIR%\lib\vc_dll"
 set "wxMajor=v3.2"
-set "wxMinor=6"
+set "wxMinor=7"
 set "wxVER=%wxMajor%.%wxMinor%"
 if [%VisualStudioVersion%]==[16.0] (
   set VCver=16
@@ -349,9 +349,10 @@ if [%ocpn_rebuild%]==[1] (
 set netok=0
 if not ["%gitcmd%"]==[] (
   @echo Checking network connection...
-  echo %cd%
+  @echo %cd%
   "%gitcmd%" fetch --dry-run >nul 2>&1 && set netok=1
 )
+@echo netok=%netok%
 if [%ocpn_clean%]==[1] (
   if [%netok%]==[1] echo Network ok
   if [%netok%]==[0] echo Network not working
@@ -578,8 +579,8 @@ if exist "%wxDIR%\.git" (
   if not "[%gitcmd%]"=="[]" (
     pushd "%wxDIR%"
     "%gitcmd%" submodule update
-    "%gitcmd%" checkout "%wxVer%" --recurse-submodules
-    "%gitcmd%" pull --recurse-submodules
+    "%gitcmd%" fetch --recurse-submodules
+    "%gitcmd%" checkout "%wxVer%" --recurse-submodules --force
     popd
   )
 )
