@@ -1595,11 +1595,31 @@ DECL_EXP bool PlugIn_Waypoint_Ex::GetFSStatus() { return true; }
 
 DECL_EXP int PlugIn_Waypoint_Ex::GetRouteMembershipCount() { return 0; }
 
+DECL_EXP PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2() {}
+DECL_EXP PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2(
+    double lat, double lon, const wxString &icon_ident, const wxString &wp_name,
+    const wxString &GUID, const double ScaMin, const double ScaMax,
+    const bool bNameVisible, const int nRangeRings, const double RangeDistance,
+    const int RangeDistanceUnits, const wxColor RangeColor,
+    const double WaypointArrivalRadius, const bool ShowWaypointRangeRings,
+    const double PlannedSpeed, const wxString TideStation) {}
+
+DECL_EXP PlugIn_Waypoint_ExV2::~PlugIn_Waypoint_ExV2() {}
+
+DECL_EXP void PlugIn_Waypoint_ExV2::InitDefaults() {}
+
+DECL_EXP bool PlugIn_Waypoint_ExV2::GetFSStatus() { return true; }
+
+DECL_EXP int PlugIn_Waypoint_ExV2::GetRouteMembershipCount() { return 0; }
+
 DECL_EXP PlugIn_Route::PlugIn_Route(void) {}
 DECL_EXP PlugIn_Route::~PlugIn_Route(void) {}
 
 DECL_EXP PlugIn_Route_Ex::PlugIn_Route_Ex(void) {}
 DECL_EXP PlugIn_Route_Ex::~PlugIn_Route_Ex(void) {}
+
+DECL_EXP PlugIn_Route_ExV2::PlugIn_Route_ExV2() {}
+DECL_EXP PlugIn_Route_ExV2::~PlugIn_Route_ExV2() {}
 
 DECL_EXP wxArrayString GetRouteGUIDArray(void) { return dummy_array_string; }
 DECL_EXP wxArrayString GetTrackGUIDArray(void) { return dummy_array_string; }

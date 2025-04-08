@@ -190,7 +190,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
   if (m_point.m_iWaypointRangeRingsNumber &&
       m_point.m_bShowWaypointRangeRings) {
     double factor = 1.00;
-    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // nautical miles
+    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // convert km to NMi
       factor = 1 / 1.852;
 
     factor *= m_point.m_fWaypointRangeRingsStep;
@@ -250,8 +250,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
       if (m_point.m_bShowWaypointRangeRings &&
           (m_point.m_iWaypointRangeRingsNumber > 0)) {
         double factor = 1.00;
-        if (m_point.m_iWaypointRangeRingsStepUnits ==
-            1)  // convert kilometers to NMi
+        if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // convert km to NMi
           factor = 1 / 1.852;
 
         double radius = factor * m_point.m_iWaypointRangeRingsNumber *
@@ -585,7 +584,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   if (m_point.m_iWaypointRangeRingsNumber &&
       m_point.m_bShowWaypointRangeRings) {
     double factor = 1.00;
-    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // nautical miles
+    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // convert km to NMi
       factor = 1 / 1.852;
 
     factor *= m_point.m_fWaypointRangeRingsStep;
