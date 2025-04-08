@@ -2770,3 +2770,120 @@ void ConfigFlushAndReload() {
     }
   }
 }
+
+PlugIn_NavigationProfile::PlugIn_NavigationProfile() {
+  // Initialize with most common safety constraints active by default
+  m_ActiveNavigationTypes = kNavSafetyLand | kNavSafetyDepth | kNavSafetyHazard;
+
+  // Set default vessel draft.
+  m_Draft = 1.5;
+
+  // Default safety margins for different constraint types
+  // Land avoidance - default margins
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDay, kNavConstraintHard, 0.1);
+  SetSafetyMargin(kNavSafetyLand, kNavTimeNight, kNavConstraintHard, 0.25);
+  SetSafetyMargin(kNavSafetyLand, kNavTimeTwilight, kNavConstraintHard, 0.15);
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDefault, kNavConstraintHard, 0.1);
+
+  // Soft constraints for land (warning zone)
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDay, kNavConstraintSoft, 0.25);
+  SetSafetyMargin(kNavSafetyLand, kNavTimeNight, kNavConstraintSoft, 0.5);
+  SetSafetyMargin(kNavSafetyLand, kNavTimeTwilight, kNavConstraintSoft, 0.3);
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDefault, kNavConstraintSoft, 0.25);
+
+  // Hazard avoidance - default margins
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeDay, kNavConstraintHard, 0.1);
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeNight, kNavConstraintHard, 0.2);
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeTwilight, kNavConstraintHard, 0.15);
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeDefault, kNavConstraintHard, 0.1);
+
+  // Soft constraints for hazards (warning zone)
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeDay, kNavConstraintSoft, 0.2);
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeNight, kNavConstraintSoft, 0.3);
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeTwilight, kNavConstraintSoft, 0.25);
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeDefault, kNavConstraintSoft, 0.2);
+
+  // User hazard avoidance - default margins
+  SetSafetyMargin(kNavSafetyUserHazard, kNavTimeDay, kNavConstraintHard, 0.1);
+  SetSafetyMargin(kNavSafetyUserHazard, kNavTimeNight, kNavConstraintHard, 0.2);
+  SetSafetyMargin(kNavSafetyUserHazard, kNavTimeTwilight, kNavConstraintHard,
+                  0.15);
+  SetSafetyMargin(kNavSafetyUserHazard, kNavTimeDefault, kNavConstraintHard,
+                  0.1);
+
+  // Dynamic hazard (AIS targets) avoidance - default margins
+  SetSafetyMargin(kNavSafetyeDynamicHazard, kNavTimeDay, kNavConstraintHard,
+                  0.5);
+  SetSafetyMargin(kNavSafetyeDynamicHazard, kNavTimeNight, kNavConstraintHard,
+                  1.0);
+  SetSafetyMargin(kNavSafetyeDynamicHazard, kNavTimeTwilight,
+                  kNavConstraintHard, 0.75);
+  SetSafetyMargin(kNavSafetyeDynamicHazard, kNavTimeDefault, kNavConstraintHard,
+                  0.5);
+
+  // Default marker safety margins
+  SetMarkerSafetyMargin(kNavMarkerUnlighted, kNavConstraintHard, 0.1);
+  SetMarkerSafetyMargin(kNavMarkerLighted, kNavConstraintHard, 0.05);
+  SetMarkerSafetyMargin(kNavMarkerAis, kNavConstraintHard, 0.05);
+  SetMarkerSafetyMargin(kNavMarkerRacon, kNavConstraintHard, 0.05);
+  SetMarkerSafetyMargin(kNavMarkerRadio, kNavConstraintHard, 0.05);
+
+  // Soft constraints for markers (warning zone)
+  SetMarkerSafetyMargin(kNavMarkerUnlighted, kNavConstraintSoft, 0.2);
+  SetMarkerSafetyMargin(kNavMarkerLighted, kNavConstraintSoft, 0.1);
+  SetMarkerSafetyMargin(kNavMarkerAis, kNavConstraintSoft, 0.1);
+  SetMarkerSafetyMargin(kNavMarkerRacon, kNavConstraintSoft, 0.1);
+  SetMarkerSafetyMargin(kNavMarkerRadio, kNavConstraintSoft, 0.1);
+}
+
+PlugIn_NavigationProfile::~PlugIn_NavigationProfile() {}
+
+void PlugIn_NavigationProfile::SetSafetyMargin(
+    PI_NavigationType navigationType, PI_NavigationTimeContext timeContext,
+    PI_NavigationConstraintType constraintType, double margin) {
+  // Validate parameters
+  if (navigationType == kNavSafetyNoConstraint || margin < 0) {
+    return;  // Invalid parameters, ignore the request
+  }
+
+  // Check if this is a single safety type, not a bitmask of multiple types
+  if ((navigationType & (navigationType - 1)) != 0) {
+    // This is a bitmask with multiple bits set, not a single type
+    return;  // Method requires a single navigation type
+  }
+
+  // Create a composite key for the safety margin map
+  // Key format: navigationType | (timeContext << 16) | (constraintType << 24)
+  unsigned int key = static_cast<unsigned int>(navigationType) |
+                     (static_cast<unsigned int>(timeContext) << 16) |
+                     (static_cast<unsigned int>(constraintType) << 24);
+
+  // Store the safety margin
+  m_SafetyMargins[key] = margin;
+}
+
+bool PlugIn_NavigationProfile::SetMarkerSafetyMargin(
+    MarkerType markerType, PI_NavigationConstraintType constraintType,
+    double margin, PI_NavigationErrorCode* error) {
+  // Validate parameters
+  if (margin < 0) {
+    if (error) {
+      *error = kNavCodeInvalidParameter;
+    }
+    return false;
+  }
+
+  // Create a composite key for the marker safety margin map
+  // Key format: markerType | (constraintType << 8)
+  unsigned int key = static_cast<unsigned int>(markerType) |
+                     (static_cast<unsigned int>(constraintType) << 8);
+
+  // Store the marker safety margin
+  m_MarkerSafetyMargins[key] = margin;
+
+  if (error) {
+    *error = kNavCodeSuccess;
+  }
+
+  return true;
+}

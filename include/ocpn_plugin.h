@@ -2973,8 +2973,8 @@ struct DateTimeFormatOptions {
  * Format a date/time to a localized string representation, conforming to the
  * global date/time format and timezone settings.
  *
- * The function expects date_time to be in local time and formats it according to the 
- * timezone configuration either in:
+ * The function expects date_time to be in local time and formats it according
+ * to the timezone configuration either in:
  * - UTC: Coordinated Universal Time (default)
  * - Local Time: System's configured timezone with proper DST handling
  * - LMT: Local Mean Time calculated based on the longitude specified in options
@@ -2983,8 +2983,10 @@ struct DateTimeFormatOptions {
  * consistent date/time formatting across the entire application.
  *
  * @param date_time The date/time to format, must be in local time.
- * @param options The date/time format options including target timezone and formatting preferences.
- * @return wxString The formatted date/time string with appropriate timezone indicator.
+ * @param options The date/time format options including target timezone and
+ * formatting preferences.
+ * @return wxString The formatted date/time string with appropriate timezone
+ * indicator.
  */
 extern DECL_EXP wxString toUsrDateTimeFormat_Plugin(
     const wxDateTime date_time,
@@ -6304,5 +6306,367 @@ extern DECL_EXP void EnableTenHertzUpdate(bool enable);
  * settings.
  */
 extern DECL_EXP void ConfigFlushAndReload();
+
+/**
+ * Contains information about a single navigation or safety violation in a
+ * route.
+ */
+class DECL_EXP PlugIn_NavigationViolation {
+public:
+  PlugIn_NavigationViolation();
+  virtual ~PlugIn_NavigationViolation();
+
+  int m_SegmentIndex;   //!< Index of waypoint where violation occurred.
+  int m_ViolationType;  //!< Safety type bitmask of PI_NavigationType indicating
+                        //!< what was violated.
+  double m_ViolationDistance;  //!< Distance to nearest safety constraint (nm)
+  double m_ClosestLat;         //!< Latitude of closest constraint point
+  double m_ClosestLon;         //!< Longitude of closest constraint point
+};
+
+WX_DECLARE_LIST(PlugIn_NavigationViolation, PlugIn_NavigationViolationList);
+
+/**
+ * Navigation profile for different navigation contexts.
+ *
+ * Allows defining varying navigation and safety constraints based on situation
+ * (e.g., tighter constraints at night, looser constraints near ports).
+ */
+class DECL_EXP PlugIn_NavigationProfile {
+public:
+  PlugIn_NavigationProfile();
+  virtual ~PlugIn_NavigationProfile();
+
+  /**
+   * Bitmask defining the types of navigation and safety constraints that can be
+   * checked. Can be combined with bitwise OR to check multiple constraints
+   * simultaneously.
+   */
+  enum PI_NavigationType {
+    kNavSafetyNoConstraint = 0x00,  //!< No navigation or safety constraints
+    /**
+     * Land avoidance.
+     * Used to maintain safe distance from shore and islands.
+     * Data sources include:
+     * - S57 chart objects:
+     *   - LNDARE (Land Area): Shoreline and land masses
+     *   - COALNE (Coastline): Line representation of the land-water boundary
+     * - GSHHS (Global Self-consistent Hierarchical High-resolution Shoreline)
+     * - OSMSHP (OpenStreetMap shapefile data for coastlines and land)
+     */
+    kNavSafetyLand = 0x01,
+    /**
+     * Depth contour safety.
+     * Used to avoid shallow areas based on chart data.
+     * Data sources include:
+     * - S57 chart objects:
+     *   - DEPARE (Depth Area): areas of specific depth ranges
+     *   - DEPCNT (Depth Contour): contour lines showing depths
+     *   - SOUNDG (Soundings): individual depth measurement points
+     *
+     * Use the following depth contour types:
+     * - S52_MAR_SAFETY_DEPTH - critical boundary between "safe" and "unsafe"
+     * water.
+     * - S52_MAR_SHALLOW_CONTOUR - boundary between very shallow and moderately
+     * shallow water.
+     * - S52_MAR_DEEP_CONTOUR - boundary between moderate and deep water.
+     */
+    kNavSafetyDepth = 0x02,
+    /**
+     * Avoid navigational hazards (rocks, wrecks, waves, etc.)
+     * Used to navigate away from known dangerous objects.
+     * Data sources include:
+     * - S57 chart objects:
+     *   - WRECKS (Wrecks): Shipwrecks that pose navigation hazards
+     *   - OBSTRN (Obstructions): Various underwater obstructions
+     *   - UWTROC (Underwater Rocks): Rocks that may pose danger to navigation
+     *   - DMPGRD (Dumping Ground): Areas where dredged material is disposed
+     *   - FSHFAC (Fishing Facility): Fishing structures that can be
+     * obstructions
+     *   - OFSPLF (Offshore Platform): Oil/gas platforms requiring wide
+     * clearance
+     *   - WATTUR (Water Turbulence): Areas with chaotic water movement
+     */
+    kNavSafetyHazard = 0x04,
+    /**
+     * User-defined hazard markers.
+     * Used to navigate around user-marked hazards not present in charts.
+     * Data sources include:
+     * - ODraw plugin objects:
+     *   - Closed-path boundary objects marked as "Exclusion Zone"
+     *   - Individual boundary points marked as "Exclusion"
+     * - User-created marks designated as wrecks or hazards
+     */
+    kNavSafetyUserHazard = 0x08,
+    /**
+     * Dynamic real-time hazards.
+     * Used to avoid moving or temporary hazards reported in real-time.
+     * Data sources include:
+     * - AIS targets (proximity and CPA/TCPA calculations)
+     */
+    kNavSafetyeDynamicHazard = 0x10,
+
+    kNavSafetyAll = 0xFFFFFF  //!< All safety constraints
+  };
+
+  /**
+   * Error codes for navigation and safety-related functions.
+   */
+  enum PI_NavigationErrorCode {
+    /** Operation completed successfully. */
+    kNavCodeSuccess = 0,
+    /** Invalid parameter provided. */
+    kNavCodeInvalidParameter = -1,
+    /**
+     * Required data not loaded/available. For example, kNavSafetyDepth is
+     * requested but no ENC data is loaded.
+     */
+    kNavCodeDataNotAvailable = -2,
+    /**
+     * Requested navigation/safety type not not implemented.
+     * For example, a safety constraint is requested but not implemented in
+     * the OpenCPN version.
+     */
+    kNavCodeNotImplemented = -3,
+    /** No valid route satisfies all navigation and safety constraints. */
+    kNavCodeNoValidRoute = -4,
+  };
+
+  /**
+   * Navigation time context that affects safety margin constraints.
+   * Allows specifying different navigation and safety margins depending on time
+   * of day. For example, land margin might be 1 mile during day and 2 miles at
+   * night.
+   */
+  enum PI_NavigationTimeContext {
+    /** Default time context (no specific conditions) */
+    kNavTimeDefault = 0,
+    /** Daytime navigation (typically smaller margins) */
+    kNavTimeDay = 1,
+    /** Nighttime navigation (typically larger margins) */
+    kNavTimeNight = 2,
+    /** Twilight/dusk/dawn conditions (transitional margins) */
+    kNavTimeTwilight = 3
+  };
+
+  /**
+   * Navigation constraint type.
+   */
+  enum PI_NavigationConstraintType {
+    /** Hard constraint - must not be violated. */
+    kNavConstraintHard = 0,
+    /** Soft constraint - avoid if possible. */
+    kNavConstraintSoft = 1
+  };
+
+  /**
+   * Marker types with different visibility characteristics.
+   */
+  enum MarkerType {
+    kNavMarkerUnlighted = 0,  //!< Unlighted buoys or marks
+    kNavMarkerLighted = 1,    //!< Buoys or marks with lights
+    kNavMarkerAis = 2,        //!< Markers with AIS transmission
+    kNavMarkerRacon = 3,      //!< Markers with radar transponders
+    kNavMarkerRadio = 4       //!< Markers with radio transmission (e.g., ODAS)
+  };
+
+  /**
+   * Set safety margin for a specific marker type.
+   *
+   * Context-aware marker safety helps manage navigation constraints based on
+   * intent and visibility. During open-water night navigation, unlighted buoys
+   * require greater clearance to avoid collision, but when approaching a
+   * destination mark (like a port entrance buoy or mooring), we need the
+   * flexibility to safely navigate in close proximity regardless of time of
+   * day.
+   *
+   * Data sources include:
+   * - S57 chart objects:
+   *   - LIGHTS (Lights): Navigation lights
+   *   - LNDMRK (Landmarks): Visible landmarks used for navigation
+   *   - BOYXXX (Buoys): Various types of buoys and markers
+   *
+   * @param markerType Type of marker (lighted, unlighted, etc.)
+   * @param constraintType Hard or soft constraint
+   * @param margin Safety margin in nautical miles
+   * @param error Pointer to receive error code if operation fails
+   * @return True if setting was successful, false otherwise with error code set
+   */
+  bool SetMarkerSafetyMargin(MarkerType markerType,
+                             PI_NavigationConstraintType constraintType,
+                             double margin,
+                             PI_NavigationErrorCode *error = nullptr);
+
+  /**
+   * Get safety margin for a specific marker type.
+   *
+   * @param markerType Type of marker (lighted, unlighted, etc.)
+   * @param constraintType Hard or soft constraint
+   * @param error Pointer to receive error code if operation fails
+   * @return Safety margin in nautical miles, or NaN if an error occurred
+   */
+  double GetMarkerSafetyMargin(MarkerType markerType,
+                               PI_NavigationConstraintType constraintType,
+                               PI_NavigationErrorCode *error = nullptr);
+  /**
+   * Reset safety margin for a specific marker type to default value.
+   *
+   * @param markerType Type of marker (lighted, unlighted, etc.)
+   * @param constraintType Hard or soft constraint
+   * @param error Pointer to receive error code if operation fails
+   * @return True if reset was successful, false otherwise
+   */
+  bool ResetMarkerSafetyMargin(MarkerType markerType,
+                               PI_NavigationConstraintType constraintType,
+                               PI_NavigationErrorCode *error = nullptr);
+
+  /**
+   * Set safety margin for a specific safety type in a specific context
+   *
+   * @param navigationType Single safety type (not a bitmask)
+   * @param timeContext Time of day context affecting safety margins
+   * @param constraintType Hard or soft constraint
+   * @param margin Safety margin in nautical miles
+   */
+  void SetSafetyMargin(PI_NavigationType navigationType,
+                       PI_NavigationTimeContext timeContext,
+                       PI_NavigationConstraintType constraintType,
+                       double margin);
+  /**
+   * Get safety margin for a specific safety type in a specific context
+   *
+   * @param navigationType Single safety type (not a bitmask)
+   * @param timeContext Time of day context affecting safety margins
+   * @param constraintType Hard or soft constraint
+   * @return Safety margin in nautical miles
+   */
+  double GetSafetyMargin(PI_NavigationType navigationType,
+                         PI_NavigationTimeContext timeContext,
+                         PI_NavigationConstraintType constraintType);
+
+  /**
+   * Set vessel draft for depth-related safety constraints.
+   *
+   * @param draft Vessel draft in meters
+   */
+  void SetDraft(double draft) { m_Draft = draft; }
+
+  /**
+   * Get vessel draft used for depth-related safety constraints.
+   *
+   * @return Vessel draft in meters
+   */
+  double GetDraft() { return m_Draft; }
+
+  /**
+   * Reset (remove) a specific safety constraint
+   *
+   * @param navigationType Single safety type (not a bitmask)
+   * @param timeContext Time of day context affecting safety margins
+   * @param constraintType Hard or soft constraint
+   */
+  void ResetSafetyConstraint(PI_NavigationType navigationType,
+                             PI_NavigationTimeContext timeContext,
+                             PI_NavigationConstraintType constraintType);
+
+  /**
+   * Get the distance to nearest safety constraint.
+   *
+   * @param lat Latitude in decimal degrees
+   * @param lon Longitude in decimal degrees
+   * @param distance Output parameter to receive distance result
+   * @param activeTypes Output parameter to receive bitmask of types actually
+   * checked
+   * @return Error code (kNavCodeSuccess if successful)
+   */
+  PI_NavigationErrorCode GetSafetyDistance(double lat, double lon,
+                                           double *distance,
+                                           int *activeTypes = nullptr);
+
+  /**
+   * Checks if a great circle route leg crosses any safety constraints using
+   * this profile.
+   *
+   * @param lat1 Start latitude in decimal degrees
+   * @param lon1 Start longitude in decimal degrees
+   * @param lat2 End latitude in decimal degrees
+   * @param lon2 End longitude in decimal degrees
+   * @param violations Output parameter for violation details
+   * @return Error code (kNavCodeSuccess if successful)
+   */
+  PI_NavigationErrorCode CrossesSafetyConstraint(
+      double lat1, double lon1, double lat2, double lon2,
+      PlugIn_NavigationViolationList *violations);
+  /**
+   * Check if a route passes any safety constraints using this profile.
+   *
+   * @param proute Route to check
+   * @param violations Output parameter for violation details
+   * @return Error code (kNavCodeSuccess if successful)
+   */
+  PI_NavigationErrorCode CheckRouteForSafety(
+      PlugIn_Route *proute, PlugIn_NavigationViolationList *violations);
+
+  /**
+   * Generate routes between two points using this navigation profile.
+   *
+   * Creates one or more routes between the specified start and end coordinates
+   * that complies with all constraints defined in this profile. The generated
+   * routes are added to the route manager and can be accessed using
+   * GetRoute_Plugin() with the returned GUIDs.
+   *
+   * @param start_lat Starting point latitude in decimal degrees
+   * @param start_lon Starting point longitude in decimal degrees
+   * @param end_lat Ending point latitude in decimal degrees
+   * @param end_lon Ending point longitude in decimal degrees
+   * @param routeGUIDs Output array to receive GUIDs of generated safe routes
+   * @param violations Optional output for safety violation details
+   * @return Error code indicating success or specific failure reason
+   */
+  PI_NavigationErrorCode PlanRoute(
+      double start_lat, double start_lon, double end_lat, double end_lon,
+      wxArrayString *routeGUIDs,
+      PlugIn_NavigationViolationList *violations = nullptr);
+
+  /**
+   * Optimizes a route using this navigation profile.
+   *
+   * This method analyzes an existing route for navigation and safety violations
+   * or creates optimized alternatives that complies with all constraints
+   * defined in this profile. The generated routes are added to the route
+   * manager and can be accessed using GetRoute_Plugin() with the returned
+   * GUIDs.
+   *
+   * @param route Input route to optimize.
+   * @param routeGUIDs Output array to receive GUIDs of generated safe routes
+   * @param violations Optional output for detailed violation information.
+   * @return Error code indicating success or specific failure reason
+   *
+   * @note May return the original route GUID if it is already safe.
+   */
+  PI_NavigationErrorCode PlanRoute(
+      PlugIn_Route_Ex *route, wxArrayString *routeGUIDs,
+      PlugIn_NavigationViolationList *violations = nullptr);
+
+  /**
+   * Active navigation and safety constraints bitmask of PI_NavigationType
+   * values. Defines which constraint types this profile will check.
+   */
+  int m_ActiveNavigationTypes;
+
+  /**
+   * Vessel draft in meters.
+   * Used for depth-related safety constraints.
+   */
+  double m_Draft;
+
+private:
+  // Map to store safety margins for various navigation types, contexts, and
+  // constraint types
+  std::map<unsigned int, double> m_SafetyMargins;
+
+  // Map to store safety margins for various marker types and constraint types
+  std::map<unsigned int, double> m_MarkerSafetyMargins;
+};
 
 #endif  //_PLUGIN_H_
