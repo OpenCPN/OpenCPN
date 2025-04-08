@@ -1029,7 +1029,7 @@ DECL_EXP void SetToolbarToolBitmapsSVG(int item, wxString SVGfile,
                                        wxString SVGfileRollover,
                                        wxString SVGfileToggled) {}
 DECL_EXP void RemoveCanvasContextMenuItem(int item) {}
-DECL_EXP void JumpToPosition(double lat, double lon, double scale){};
+DECL_EXP void JumpToPosition(double lat, double lon, double scale) {};
 DECL_EXP void SetCanvasContextMenuItemViz(int item, bool viz) {}
 DECL_EXP void SetCanvasContextMenuItemGrey(int item, bool grey) {}
 DECL_EXP void RequestRefresh(wxWindow *) {}
@@ -1110,7 +1110,7 @@ DECL_EXP bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
   return true;
 }
 
-DECL_EXP void PlugInPlaySound(wxString &sound_file){};
+DECL_EXP void PlugInPlaySound(wxString &sound_file) {};
 
 // API 1.10 Route and Waypoint Support
 DECL_EXP wxBitmap *FindSystemWaypointIcon(wxString &icon_name) { return 0; }
@@ -1532,7 +1532,7 @@ DECL_EXP void PlugInHandleAutopilotRoute(bool enable) {}
 wxString *GetpSharedDataLocation(void) {
   return g_BasePlatform->GetSharedDataDirPtr();
 }
-DECL_EXP ArrayOfPlugIn_AIS_Targets* GetAISTargetArray() { return 0; }
+DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray() { return 0; }
 DECL_EXP bool ShuttingDown(void) { return true; }
 
 DECL_EXP wxWindow *PluginGetFocusCanvas() { return 0; }
@@ -1579,8 +1579,8 @@ DECL_EXP int GetLatLonFormat(void) { return 0; }
 DECL_EXP void ZeroXTE() {}
 
 DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint() {}
-DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint(double, double, const wxString&,
-                  const wxString&, const wxString&) {}
+DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint(double, double, const wxString &,
+                                          const wxString &, const wxString &) {}
 DECL_EXP PlugIn_Waypoint::~PlugIn_Waypoint() {}
 
 DECL_EXP PlugIn_Waypoint_Ex::PlugIn_Waypoint_Ex() {}
@@ -1594,6 +1594,28 @@ DECL_EXP void PlugIn_Waypoint_Ex::InitDefaults() {}
 DECL_EXP bool PlugIn_Waypoint_Ex::GetFSStatus() { return true; }
 
 DECL_EXP int PlugIn_Waypoint_Ex::GetRouteMembershipCount() { return 0; }
+
+DECL_EXP PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2() : PlugIn_Waypoint_Ex() {
+  InitExV2Defaults();
+}
+
+DECL_EXP PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2(
+    double lat, double lon, const wxString &icon_ident, const wxString &wp_name,
+    const wxString &GUID, const double ScaMin, const bool bNameVisible,
+    const int nRanges, const double RangeDistance, const wxColor RangeColor)
+    : PlugIn_Waypoint_Ex(lat, lon, icon_ident, wp_name, GUID, ScaMin,
+                         bNameVisible, nRanges, RangeDistance, RangeColor) {
+  InitExV2Defaults();
+}
+
+DECL_EXP void PlugIn_Waypoint_ExV2::InitExV2Defaults() {
+  scamax = 1e6;
+  m_PlannedSpeed = 0.0;
+  m_WaypointArrivalRadius = 0.0;
+  m_bShowWaypointRangeRings = false;
+}
+
+DECL_EXP PlugIn_Waypoint_ExV2::~PlugIn_Waypoint_ExV2() {}
 
 DECL_EXP PlugIn_Route::PlugIn_Route(void) {}
 DECL_EXP PlugIn_Route::~PlugIn_Route(void) {}
