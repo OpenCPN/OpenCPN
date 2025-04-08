@@ -122,7 +122,7 @@ NotificationPanel::NotificationPanel(
   wxString stime = wxString::Format(
       "%s", ocpn::toUsrDateTimeFormat(
                 act_time, DateTimeFormatOptions().SetFormatString(
-                              "$short_date\n$hour_minutes_seconds")));
+                              "$short_date\n$24_hour_minutes_seconds")));
   auto timetextbox = new wxStaticText(this, wxID_ANY, stime);
   itemBoxSizer01->Add(timetextbox, 0,
                       /*wxEXPAND|*/ wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -131,7 +131,7 @@ NotificationPanel::NotificationPanel(
                                 GetSize().x * 5 / 10);
 
   auto textbox = new wxStaticText(this, wxID_ANY, wrapper.GetWrapped());
-  itemBoxSizer01->Add(textbox, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+  itemBoxSizer01->Add(textbox, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
 
   itemBoxSizer01->AddStretchSpacer(1);
 
@@ -569,13 +569,13 @@ void NotificationButton::CreateBmp(bool newColorScheme) {
     if (orient == wxTB_VERTICAL) style->SetOrientation(wxTB_VERTICAL);
   }
 
-  int width = noteBg.GetWidth() + leftmargin;
+  // int width = noteBg.GetWidth();// + leftmargin;
+  int height = noteBg.GetHeight() + topmargin + style->GetCompassBottomMargin();
+  int width = height;  // + leftmargin;
+  // if (!style->marginsInvisible)
+  // width += leftmargin + style->GetToolSeparation();
 
-  if (!style->marginsInvisible)
-    width += leftmargin + style->GetToolSeparation();
-
-  m_StatBmp.Create(
-      width, noteBg.GetHeight() + topmargin + style->GetCompassBottomMargin());
+  m_StatBmp.Create(width, height);
 
   m_rect.width = m_StatBmp.GetWidth();
   m_rect.height = m_StatBmp.GetHeight();
@@ -618,13 +618,17 @@ void NotificationButton::CreateBmp(bool newColorScheme) {
                              radius);
   wxPoint offset(leftmargin, topmargin);
 
-  offset.x += style->GetToolSeparation();
-
   //  Notification Icon
   int twidth = style->GetToolSize().x * m_scale;
   int theight = style->GetToolSize().y * m_scale;
   int swidth = wxMax(twidth, theight);
   int sheight = wxMin(twidth, theight);
+
+  swidth = swidth * 35 / 50;
+  sheight = sheight * 35 / 50;
+
+  offset.x = ((m_StatBmp.GetWidth() - swidth) / 2);
+  offset.y = ((m_StatBmp.GetHeight() - sheight) / 2);
 
   wxFileName icon_path;
   wxString file_name = m_NoteIconName + ".svg";
@@ -634,13 +638,8 @@ void NotificationButton::CreateBmp(bool newColorScheme) {
   wxBitmap gicon = LoadSVG(icon_path.GetFullPath(), swidth, sheight);
 
   wxBitmap iconBm;
-  if (style->HasBackground()) {
-    iconBm = MergeBitmaps(noteBg, gicon, wxSize(0, 0));
-  } else {
-    iconBm = gicon;
-  }
+  iconBm = gicon;
 
-  iconBm = ConvertTo24Bit(wxColor(0, 0, 0), iconBm);
   mdc.DrawBitmap(iconBm, offset);
   mdc.SelectObject(wxNullBitmap);
 
