@@ -1502,6 +1502,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_DGB_MENU_NMEA_WINDOW:
       m_nmea_log->Show();
+      m_nmea_log->Raise();
       break;
 
     case ID_RT_MENU_REVERSE: {

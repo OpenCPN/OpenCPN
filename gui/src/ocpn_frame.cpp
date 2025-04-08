@@ -2395,6 +2395,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_MENU_TOOL_NMEA_DBG_LOG:
       m_data_monitor->Show();
+      m_data_monitor->Raise();
       break;
 
     case ID_MENU_TOOL_IO_MONITOR:

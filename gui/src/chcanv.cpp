@@ -3100,6 +3100,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
         case 'E':
           m_nmea_log->Show();
+          m_nmea_log->Raise();
           break;
 
         case 'L':
