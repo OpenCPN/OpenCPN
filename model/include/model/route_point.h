@@ -370,7 +370,7 @@ public:
   bool m_manual_etd{false};
 
   /**
-   * Flag indicating if this waypoint is currently being edited.
+   * Flag indicating if this waypoint is currently selected.
    */
   bool m_bPtIsSelected;
   /**

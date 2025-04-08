@@ -1029,7 +1029,7 @@ DECL_EXP void SetToolbarToolBitmapsSVG(int item, wxString SVGfile,
                                        wxString SVGfileRollover,
                                        wxString SVGfileToggled) {}
 DECL_EXP void RemoveCanvasContextMenuItem(int item) {}
-DECL_EXP void JumpToPosition(double lat, double lon, double scale){};
+DECL_EXP void JumpToPosition(double lat, double lon, double scale) {};
 DECL_EXP void SetCanvasContextMenuItemViz(int item, bool viz) {}
 DECL_EXP void SetCanvasContextMenuItemGrey(int item, bool grey) {}
 DECL_EXP void RequestRefresh(wxWindow *) {}
@@ -1110,7 +1110,7 @@ DECL_EXP bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
   return true;
 }
 
-DECL_EXP void PlugInPlaySound(wxString &sound_file){};
+DECL_EXP void PlugInPlaySound(wxString &sound_file) {};
 
 // API 1.10 Route and Waypoint Support
 DECL_EXP wxBitmap *FindSystemWaypointIcon(wxString &icon_name) { return 0; }
@@ -1532,7 +1532,7 @@ DECL_EXP void PlugInHandleAutopilotRoute(bool enable) {}
 wxString *GetpSharedDataLocation(void) {
   return g_BasePlatform->GetSharedDataDirPtr();
 }
-DECL_EXP ArrayOfPlugIn_AIS_Targets* GetAISTargetArray() { return 0; }
+DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray() { return 0; }
 DECL_EXP bool ShuttingDown(void) { return true; }
 
 DECL_EXP wxWindow *PluginGetFocusCanvas() { return 0; }
@@ -1579,8 +1579,8 @@ DECL_EXP int GetLatLonFormat(void) { return 0; }
 DECL_EXP void ZeroXTE() {}
 
 DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint() {}
-DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint(double, double, const wxString&,
-                  const wxString&, const wxString&) {}
+DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint(double, double, const wxString &,
+                                          const wxString &, const wxString &) {}
 DECL_EXP PlugIn_Waypoint::~PlugIn_Waypoint() {}
 
 DECL_EXP PlugIn_Waypoint_Ex::PlugIn_Waypoint_Ex() {}
