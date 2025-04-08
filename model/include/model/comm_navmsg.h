@@ -25,6 +25,7 @@
 #ifndef _DRIVER_NAVMSG_H
 #define _DRIVER_NAVMSG_H
 
+#include <chrono>
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -37,6 +38,8 @@
 #endif
 
 #include "observable.h"
+
+using NavmsgTimePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
 struct N2kPGN {
   uint64_t pgn;
@@ -247,9 +250,11 @@ public:
    */
   std::shared_ptr<const NavAddr> source;
 
+  const NavmsgTimePoint created_at;
+
 protected:
   NavMsg(const NavAddr::Bus& _bus, std::shared_ptr<const NavAddr> src)
-      : bus(_bus), source(src) {};
+      : bus(_bus), source(src), created_at(std::chrono::steady_clock::now()) {};
 };
 
 /**
