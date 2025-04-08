@@ -60,10 +60,11 @@ static bool IsFilterMatch(const struct Logline& ll, const std::string& s) {
   return ll.message.find(s) != std::string::npos;
 }
 
-static std::string Timestamp() {
-  using namespace std::chrono;
+static std::string Timestamp(const NavmsgTimePoint& when) {
   using namespace std;
-  auto now = system_clock::now().time_since_epoch();
+  using namespace std::chrono;
+
+  auto now = when.time_since_epoch();
   auto _hours = duration_cast<hours>(now);
   now -= _hours;
   auto _minutes = duration_cast<minutes>(now);
@@ -78,7 +79,7 @@ static std::string Timestamp() {
            _minutes.count(), _seconds.count(), ms.count());
   return buf;
 #else
-  std::stringstream ss;
+  stringstream ss;
   ss << setw(2) << setfill('0') << _hours.count() % 24 << ":" << setw(2)
      << _minutes.count() << ":" << setw(2) << _seconds.count() << "." << setw(3)
      << ms.count();
@@ -107,7 +108,7 @@ wxColor StdColorsByState::operator()(NavmsgStatus ns) {
 /** Draw a single line in the log window. */
 void TtyScroll::DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y) {
   wxString ws;
-  if (!ll.message.empty()) ws << Timestamp() << " ";
+  if (!ll.message.empty()) ws << Timestamp(ll.navmsg->created_at) << " ";
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
     ws << " " << kUtfRightArrow << " ";
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
