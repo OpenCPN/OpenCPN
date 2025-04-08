@@ -1940,8 +1940,7 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->IsActive = src->m_bIsActive;
   dst->scamax = src->GetScaMax();
   dst->m_PlannedSpeed = src->GetPlannedSpeed();
-  dst->m_ETD = src->GetETD();
-  dst->m_ManualETD = src->GetManualETD().IsValid();
+  dst->m_ETD = src->GetManualETD();
 }
 
 static void cloneHyperlinkListEx(RoutePoint* dst,

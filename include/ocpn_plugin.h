@@ -5133,8 +5133,7 @@ public:
   Plugin_HyperlinkList *m_HyperlinkList;
 
   double m_PlannedSpeed;  //!< Planned speed for next leg (knots)
-  wxDateTime m_ETD;       //!< Estimated departure time
-  bool m_ManualETD;       //!< Whether ETD was manually set
+  wxDateTime m_ETD;       //!< Estimated departure time, or wxInvalidDateTime if not set.
 };
 
 WX_DECLARE_LIST(PlugIn_Waypoint_Ex, Plugin_WaypointExList);
