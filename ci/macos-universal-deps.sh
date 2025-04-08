@@ -30,8 +30,8 @@ mpg123_version="1.32.8"
 lame_version="3.100"
 libsndfile_version="1.2.2"
 libusb_version="1.0.27"
-openssl_version="3.0.15"
-wx_version="3.2.6"
+openssl_version="3.0.16"
+wx_version="3.2.7"
 
 macos_deployment_target="10.13"
 
@@ -241,6 +241,7 @@ cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" \
     -DCMAKE_INSTALL_RPATH=${cache_dir}/lib \
     -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE \
     -DOCPN_BUILD_SAMPLE=ON \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     ..
 #-DCMAKE_MACOSX_RPATH=FALSE ..
 make -j ${ncp}
@@ -319,7 +320,7 @@ tar xJf libsndfile-${libsndfile_version}.tar.xz
 cd libsndfile-${libsndfile_version}
 mkdir build
 cd build
-cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_EXTERNAL_LIBS=false -Dmpg123_INCLUDE_DIR="${cache_dir}/include" -Dmpg123_LIBRARY="${cache_dir}/lib/libmpg123.dylib" -DMP3LAME_INCLUDE_DIR="${cache_dir}/include" -DMP3LAME_LIBRARY="${cache_dir}/lib/libmp3lame.dylib" -DBUILD_SHARED_LIBS=1 -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE ..
+cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_EXTERNAL_LIBS=false -Dmpg123_INCLUDE_DIR="${cache_dir}/include" -Dmpg123_LIBRARY="${cache_dir}/lib/libmpg123.dylib" -DMP3LAME_INCLUDE_DIR="${cache_dir}/include" -DMP3LAME_LIBRARY="${cache_dir}/lib/libmp3lame.dylib" -DBUILD_SHARED_LIBS=1 -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
 #-DCMAKE_MACOSX_RPATH=FALSE ..
 make -j ${ncpu}
 make install
@@ -407,6 +408,7 @@ patch < $(dirname "${scriptpath}")/../buildosx/wx_slider_patch.diff
       --enable-macosx_arch=$(echo ${arch} | tr ';' ',') \
       --enable-universal_binary=$(echo ${arch} | tr ';' ',') \
       --disable-sys-libs \
+      --disable-xrc \
       --with-osx-cocoa \
       --enable-aui \
       --disable-debug \
