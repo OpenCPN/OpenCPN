@@ -5128,6 +5128,10 @@ public:
    * Ownership is transferred to waypoint.
    */
   Plugin_HyperlinkList *m_HyperlinkList;
+
+  double m_PlannedSpeed;     //!< Planned speed for next leg (knots)
+  wxDateTime m_ETD;          //!< Estimated departure time
+  bool m_ManualETD;          //!< Whether ETD was manually set
 };
 
 WX_DECLARE_LIST(PlugIn_Waypoint_Ex, Plugin_WaypointExList);
