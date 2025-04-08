@@ -73,6 +73,7 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
       {"$hour_minutes_seconds", "%X"},
 #endif
       {"$hour_minutes", "%H:%M"},
+      {"$24_hour_minutes_seconds", "%H:%M:%S"},
   };
   wxString format = options.format_string;
   if (format == wxEmptyString) {
