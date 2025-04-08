@@ -17,8 +17,13 @@ sent.
 
 Some typical log lines might look like: image:monitor.png[]
 
+== Timestamp - 1
+The time when opencpn received the message. This is printed with milliseconds,
+but operating system buffering tends to delay and deliver messages in bursts
+which often is visible as common time stamps for more than one message.
 
-== Message directions - 1
+
+== Message directions - 2
 
 The old debugger basically just had input or output messages. The new has four
 directions. In the monitor, they are marked like:
@@ -34,7 +39,7 @@ recognized and further processing is applied,
 ↔ An internal message, typically sent from the core to plugins.
 Could also be for example a message exchanged between plugins.
 
-== Filtering status - 2
+== Filtering status - 3
 
 After being received filtering is applied to the message. The result
 is displayed in the monitor:
@@ -47,14 +52,14 @@ x Message contains errors and cannot be processed.
 
 | The message is blocked on input  and not processed in any way.
 
-== Interface - 3
+== Interface - 4
 
 The interface used to receive or send message, actual formatting depends on
 the underlying transport. The *Internal* interface refers to messages sent from
 core to plugin or, in some cases, between plugins.
 
 
-== Event type - 4
+== Event type - 5
 
 All messages have attributes related to how they are processed in the
 event system.
