@@ -54,7 +54,7 @@ jobs:
   build-flatpak:
     working_directory: ~/OpenCPN
     machine:
-      image: ubuntu-2204:current
+      image: ubuntu-2404:current
     environment:
       - OCPN_TARGET: flatpak
     steps:
