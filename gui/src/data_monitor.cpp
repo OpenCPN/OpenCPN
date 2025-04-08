@@ -125,6 +125,7 @@ static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
 
 /** Write a line in the log using the standard format. */
 static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
+  if (!ll.navmsg) return;
   wxString ws;
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
   ws << wxDateTime::Now().FormatISOTime() << fs;
@@ -148,10 +149,10 @@ static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
   else
     ws << kUtfCheckMark << fs;
 
-  ws << (ll.navmsg ? ll.navmsg->source->iface : ".") << fs;
-  ws << (ll.navmsg ? NavAddr::BusToString(ll.navmsg->bus) : "-") << fs;
+  ws << ll.navmsg->source->iface << fs;
+  ws << NavAddr::BusToString(ll.navmsg->bus) << fs;
   if (ll.state.status != NavmsgStatus::State::kOk)
-    ws << (ll.error_msg.size() > 0 ? ll.error_msg : "Unknown  errror");
+    ws << (!ll.error_msg.empty() ? ll.error_msg : "Unknown  errror");
   else
     ws << "ok";
   ws << fs << ll.message << "\n";
