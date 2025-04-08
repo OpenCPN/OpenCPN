@@ -565,7 +565,7 @@ if (APPLE)
   # Bundle all of wxWidgets as a courtesy for plugins, see #2153
   set(wxWidgets_FIND_COMPONENTS
       net xml html adv aui core base media propgrid qa ribbon richtext webview
-      stc xrc
+      stc
   )
 elseif (_wx_selected_config MATCHES "qt-armv7")
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
