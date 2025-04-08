@@ -1994,7 +1994,10 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
   pWP->SetNameShown(src->IsNameVisible);
   pWP->SetVisible(src->IsVisible);
   pWP->SetPlannedSpeed(src->m_PlannedSpeed);
-  if (src->m_ETD.IsValid()) pWP->SetETD(src->m_ETD);
+  if (src->m_ETD.IsValid())
+    pWP->SetETD(src->m_ETD);
+  else
+    pWP->SetETD(wxEmptyString);
   pWP->SetScaMax(src->scamax);
 
   return pWP;
