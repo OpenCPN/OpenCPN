@@ -218,8 +218,8 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
       auto msg = std::make_shared<GPSWatchdogMsg>(
           GPSWatchdogMsg::WDSource::position, m_watchdogs.position_watchdog);
       auto& msgbus = AppMsgBus::GetInstance();
-      msgbus.Notify(std::move(msg));
       LogAppMsg(msg, "watchdog", m_log_callbacks);
+      msgbus.Notify(std::move(msg));
 
       if (m_watchdogs.position_watchdog % n_LogWatchdogPeriod == 0) {
         wxString logmsg;
