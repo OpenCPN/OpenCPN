@@ -96,13 +96,14 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
       if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
           params.IOSelect == DS_TYPE_OUTPUT) {
         std::string id = msg.ToStdString().substr(1, 5);
-        auto msg_out = std::make_shared<Nmea0183Msg>(
-            id, msg.ToStdString(), std::make_shared<NavAddr>());
+        auto source_addr =
+            std::make_shared<NavAddr>(NavAddr0183(params.GetStrippedDSPort()));
+        auto msg_out =
+            std::make_shared<Nmea0183Msg>(id, msg.ToStdString(), source_addr);
         NavmsgStatus ns;
         ns.direction = NavmsgStatus::Direction::kOutput;
         if (params.SentencePassesFilter(msg, FILTER_OUTPUT)) {
-          bool xmit_ok =
-              driver->SendMessage(msg_out, std::make_shared<NavAddr>());
+          bool xmit_ok = driver->SendMessage(msg_out, source_addr);
           if (!xmit_ok) ns.status = NavmsgStatus::State::kTxError;
         } else {
           ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
