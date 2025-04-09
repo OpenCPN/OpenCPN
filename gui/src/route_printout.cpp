@@ -67,7 +67,8 @@
 
 using namespace std;
 
-RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options)
+RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
+                             const int tz_selection)
     : BasePrintout(_("Route Print").ToStdString()), m_route(route) {
   // Offset text from the edge of the cell (Needed on Linux)
   m_text_offset_x = 5;
@@ -78,7 +79,7 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options)
   m_table << _("Leg");
 
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointName)) {
-    m_table << _("To Waypoint");
+    m_table << _("Waypoint");
   }
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointPosition)) {
     m_table << _("Position");
@@ -89,6 +90,18 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options)
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointDistance)) {
     m_table << _("Distance");
   }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointSpeed)) {
+    m_table << _("Speed");
+  }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETA)) {
+    m_table << _("ETA");
+  }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETD)) {
+    m_table << _("ETD");
+  }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointTideEvent)) {
+    m_table << _("Next tide event");
+  }
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointDescription)) {
     m_table << _("Description");
   }
@@ -98,19 +111,31 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options)
   m_table << 20;
 
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointName)) {
-    m_table << 40;
+    m_table << 60;
   }
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointPosition)) {
-    m_table << 40;
+    m_table << 60;
   }
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointCourse)) {
     m_table << 40;
   }
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointDistance)) {
+    m_table << 40;
+  }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointSpeed)) {
+    m_table << 40;
+  }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETA)) {
     m_table << 80;
   }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETD)) {
+    m_table << 80;
+  }
+  if (GUI::HasKey(options, RoutePrintOptions::kWaypointTideEvent)) {
+    m_table << 120;
+  }
   if (GUI::HasKey(options, RoutePrintOptions::kWaypointDescription)) {
-    m_table << 100;
+    m_table << 120;
   }
 
   m_table.StartFillData();
@@ -151,6 +176,37 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options)
       } else {
         m_table << "---";
       }
+    }
+    if (GUI::HasKey(options, RoutePrintOptions::kWaypointSpeed)) {
+      std::wostringstream point_speed;
+      if (n > 1) {
+        point_speed << std::fixed << std::setprecision(1);
+        if (point->GetPlannedSpeed() < .1) {
+          point_speed << toUsrSpeed(m_route->m_PlannedSpeed);
+        } else {
+          point_speed << toUsrSpeed(point->GetPlannedSpeed());
+        }
+        point_speed << getUsrSpeedUnit().wc_str();
+        m_table << point_speed.str();
+      } else {
+        m_table << "---";
+      }
+    }
+    if (GUI::HasKey(options, RoutePrintOptions::kWaypointETA)) {
+      m_table << toUsrDateTime(point->GetETA(), tz_selection, point->m_lon)
+                     .FormatISOCombined(' ');
+    }
+    if (GUI::HasKey(options, RoutePrintOptions::kWaypointETD)) {
+      if (point->GetManualETD().IsValid()) {
+        m_table << toUsrDateTime(point->GetManualETD(), tz_selection,
+                                 point->m_lon)
+                       .FormatISOCombined(' ');
+      } else {
+        m_table << "---";
+      }
+    }
+    if (GUI::HasKey(options, RoutePrintOptions::kWaypointTideEvent)) {
+      m_table << "---";
     }
     if (GUI::HasKey(options, RoutePrintOptions::kWaypointDescription)) {
       m_table << point->GetDescription();
