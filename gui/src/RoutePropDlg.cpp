@@ -150,6 +150,10 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_tcDistance =
       new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_READONLY);
+  m_tcDistance->SetToolTip(
+      _("Total route distance calculated using rhumb line (Mercator) distances "
+        "between waypoints. Rhumb lines maintain a constant bearing but may "
+        "not represent the shortest path between points."));
   m_tcDistance->SetMaxSize(wxSize(maxFieldSize, -1));
   m_tcDistance->SetMinSize(wxSize(maxFieldSize, -1));
 
@@ -168,6 +172,11 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_tcPlanSpeed =
       new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_PROCESS_ENTER);
+  m_tcPlanSpeed->SetToolTip(
+      _("Default speed in knots used for route time calculations. This speed "
+        "is used for all legs unless individual waypoints have their own "
+        "planned speed values. Time calculations use both the planned speed "
+        "and the rhumb line distances between waypoints."));
   m_tcPlanSpeed->SetMaxSize(wxSize(maxFieldSize, -1));
   m_tcPlanSpeed->SetMinSize(wxSize(maxFieldSize, -1));
 
@@ -186,6 +195,12 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   m_tcEnroute = new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString,
                                wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+  m_tcEnroute->SetToolTip(
+      _("Estimated total time to complete the route based on planned speeds "
+        "and rhumb line distances. For each leg, the calculation uses the "
+        "waypoint's planned speed if available, or the route's default speed "
+        "if not specified. The time is calculated as: distance ÷ speed for "
+        "each leg, then summed for the entire route."));
   m_tcEnroute->SetMaxSize(wxSize(maxFieldSize, -1));
   m_tcEnroute->SetMinSize(wxSize(maxFieldSize, -1));
 

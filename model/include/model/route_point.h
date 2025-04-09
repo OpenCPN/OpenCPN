@@ -64,6 +64,8 @@ extern wxRect g_blink_rect;
  *
  * The class manages visual properties like icons, visibility, and range rings,
  * as well as navigation data like arrival radius, planned speed, and ETAs.
+ *
+ * @see Route
  */
 class RoutePoint {
   friend class RoutePointGui;
