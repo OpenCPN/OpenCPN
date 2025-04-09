@@ -18,6 +18,8 @@
  ***************************************************************************
  */
 
+#include <wx/graphics.h>
+
 #include "button_switch.h"
 #include "ui_utils.h"
 
