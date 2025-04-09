@@ -176,7 +176,7 @@ int wmm_pi::Init(void) {
 
   if (!MAG_robustReadMagModels(
           const_cast<char *>((const char *)cof_filename.mb_str()),
-          &MagneticModels, 1)) {
+          (MAGtype_MagneticModel * (*)[]) & MagneticModels[0], 1)) {
     WMMLogMessage1(_T("initialization error"));
     m_buseable = false;
   } else {
