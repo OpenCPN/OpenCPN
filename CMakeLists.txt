@@ -750,8 +750,8 @@ message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
 set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(GUI_HDRS
-    ${GUI_HDR_DIR}/AboutFrame.h
-    ${GUI_HDR_DIR}/AboutFrameImpl.h
+    ${GUI_HDR_DIR}/about_frame.h
+    ${GUI_HDR_DIR}/about_frame_impl.h
     ${GUI_HDR_DIR}/about.h
     ${GUI_HDR_DIR}/ais.h
     ${GUI_HDR_DIR}/ais_info_gui.h
@@ -874,8 +874,8 @@ set(GUI_HDRS
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(GUI_SRC
     ${GUI_SRC_DIR}/about.cpp
-    ${GUI_SRC_DIR}/AboutFrame.cpp
-    ${GUI_SRC_DIR}/AboutFrameImpl.cpp
+    ${GUI_SRC_DIR}/about_frame.cpp
+    ${GUI_SRC_DIR}/about_frame_impl.cpp
     ${GUI_SRC_DIR}/ais.cpp
     ${GUI_SRC_DIR}/ais_info_gui.cpp
     ${GUI_SRC_DIR}/AISTargetAlertDialog.cpp

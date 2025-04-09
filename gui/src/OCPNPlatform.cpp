@@ -73,7 +73,7 @@
 #include "model/plugin_paths.h"
 #include "model/select.h"
 
-#include "AboutFrameImpl.h"
+#include "about_frame_impl.h"
 #include "about.h"
 #include "displays.h"
 #include "FontMgr.h"

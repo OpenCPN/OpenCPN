@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "AboutFrameImpl.h"
+#include "about_frame_impl.h"
 #include "config.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
