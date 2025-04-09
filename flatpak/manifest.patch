@@ -1,0 +1,29 @@
+--- org.opencpn.OpenCPN.yaml.BAK	2025-04-09 15:22:08.455442710 +0200
++++ org.opencpn.OpenCPN.yaml	2025-04-09 15:23:09.985703030 +0200
+@@ -103,4 +103,5 @@
+ 
+     - name: wxGTK3
++      buildsystem: cmake
+       sources:
+           - type: archive
+@@ -110,12 +111,12 @@
+             paths:
+               - org.opencpn.OpenCPN/patches/0101-Support-EGL-1.4-on-wxGTK.patch
+-      config-opts:
+-          - --with-gtk=3
+-          - --with-opengl
+-          - --with-sdl
+-          - --with-libmspack
+-          - --enable-intl
+-          - --disable-rpath
+-          - --enable-ipv6
++      # config-opts:
++      #     - --with-gtk=3
++      #     - --with-opengl
++      #     - --with-sdl
++      #     - --with-libmspack
++      #     - --enable-intl
++      #     - --disable-rpath
++      #     - --enable-ipv6
+       cleanup:
+           - /include/

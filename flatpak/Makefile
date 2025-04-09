@@ -33,6 +33,7 @@ manifest: submodules
 	        -e '/name: opencpn/,$$s/commit:.*/branch: master/' \
 	             org.opencpn.OpenCPN.yaml
 ci-build: manifest
+	cd ../flatpak; patch  -p0 < ./manifest.patch
 	flatpak-builder --repo=$(CURDIR)/repo --force-clean \
 	    --default-branch=devel \
 	    app ../flatpak/org.opencpn.OpenCPN.yaml
