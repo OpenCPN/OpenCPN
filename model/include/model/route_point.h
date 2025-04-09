@@ -37,6 +37,33 @@
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
 
+/**
+ * Waypoint passing constraint flags.
+ * Defines how a vessel should approach and pass a waypoint.
+ * These can be combined with bitwise OR to apply multiple constraints.
+ */
+enum WaypointPassingFlag {
+  /** No specific constraints. */
+  WPT_PASSING_NONE = 0x00,
+
+  /** Pass waypoint to port side (keep waypoint on vessel's left). */
+  WPT_PASSING_PORT = 0x01,
+
+  /** Pass waypoint to starboard side (keep waypoint on vessel's right). */
+  WPT_PASSING_STARBOARD = 0x02,
+
+  /** Pass as close as possible to waypoint. */
+  WPT_PASSING_CLOSE = 0x04,
+
+  /** Must pass within specified radius of waypoint. */
+  WPT_PASSING_WITHIN = 0x08,
+
+  /** Stay outside specified radius of waypoint (for marking hazards). */
+  WPT_PASSING_OUTSIDE = 0x10
+};
+
+typedef int WaypointPassingFlags;  // To clarify it's a bitfield
+
 // minimal allowed ScaMin setting. prevents always hiding
 #define SCAMIN_MIN 800
 
@@ -138,6 +165,69 @@ public:
   };
   double GetWaypointArrivalRadius();
   bool GetShowWaypointRangeRings(void) { return m_bShowWaypointRangeRings; };
+
+  /**
+   * Gets the waypoint passing constraint flags.
+   *
+   * @return Bitfield of waypoint passing constraints that apply to this
+   * waypoint
+   */
+  WaypointPassingFlags GetPassingFlags() { return m_PassingFlags; }
+
+  /**
+   * Sets all waypoint passing constraints at once.
+   *
+   * @param flags Bitfield of waypoint passing constraints
+   * @return True if constraints were set successfully, false if validation
+   * failed
+   */
+  bool SetPassingFlags(WaypointPassingFlags flags) {
+    // Validate that port and starboard are not both set
+    if ((flags & WPT_PASSING_PORT) && (flags & WPT_PASSING_STARBOARD)) {
+      return false;  // Cannot pass on both port and starboard sides
+    }
+
+    // Validate that CLOSE and OUTSIDE are not both set (contradictory
+    // constraints)
+    if ((flags & WPT_PASSING_CLOSE) && (flags & WPT_PASSING_OUTSIDE)) {
+      return false;  // Cannot be both "as close as possible" and "stay outside"
+    }
+
+    // If we made it here, the flags are valid
+    m_PassingFlags = flags;
+    return true;
+  }
+
+  /**
+   * Adds a specific waypoint passing constraint.
+   *
+   * @param flag The constraint flag to add
+   * @return True if the flag was added, false if it would create an invalid
+   * combination
+   */
+  bool AddPassingFlag(WaypointPassingFlag flag) {
+    // Create a temporary set of flags with the new flag added
+    WaypointPassingFlags newFlags = m_PassingFlags | flag;
+
+    // Use SetPassingFlags to validate the new combination
+    return SetPassingFlags(newFlags);
+  }
+
+  /**
+   * Removes a specific waypoint passing constraint.
+   *
+   * @param flag The constraint flag to remove
+   */
+  void RemovePassingFlag(WaypointPassingFlag flag) { m_PassingFlags &= ~flag; }
+  /**
+   * Checks if a specific passing constraint is applied.
+   *
+   * @param flag The flag to check
+   * @return True if the specified constraint is applied
+   */
+  bool HasPassingFlag(WaypointPassingFlag flag) {
+    return (m_PassingFlags & flag) != 0;
+  }
   int GetWaypointRangeRingsNumber(void);
   float GetWaypointRangeRingsStep(void);
   int GetWaypointRangeRingsStepUnits(void);
@@ -575,6 +665,12 @@ private:
   bool m_bsharedMark;
   unsigned int m_dragIconTexture;
   int m_dragIconTextureWidth, m_dragIconTextureHeight;
+
+  /**
+   * Waypoint passing constraint flags.
+   * Bitfield defining how a vessel should approach and pass this waypoint.
+   */
+  WaypointPassingFlags m_PassingFlags{WPT_PASSING_NONE};
 };
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member

@@ -1875,6 +1875,28 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   return nCount;
 }
 
+/**
+ * Sets waypoint passing flags with validation.
+ *
+ * @param flags The passing flags to set
+ * @return True if the flags were set successfully, false if validation failed
+ */
+bool PlugIn_Waypoint_Ex::SetPassingFlags(PI_WaypointPassingFlags flags) {
+  if ((flags & PI_WAYPOINT_PASSING_PORT) &&
+      (flags & PI_WAYPOINT_PASSING_STARBOARD)) {
+    return false;  // Cannot pass on both port and starboard sides
+  }
+
+  // Validate that CLOSE and OUTSIDE are not both set (contradictory
+  // constraints)
+  if ((flags & PI_WAYPOINT_PASSING_CLOSE) &&
+      (flags & PI_WAYPOINT_PASSING_OUTSIDE)) {
+    return false;  // Cannot be both "as close as possible" and "stay outside"
+  }
+  m_PassingFlags = flags;
+  return true;
+}
+
 PlugIn_Waypoint_Ex::~PlugIn_Waypoint_Ex() {}
 
 //      PlugInRouteExtended implementation
@@ -1943,6 +1965,7 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->m_ETD = src->GetManualETD();
   dst->m_WaypointArrivalRadius = src->GetWaypointArrivalRadius();
   dst->m_bShowWaypointRangeRings = src->GetShowWaypointRangeRings();
+  dst->m_PassingFlags = src->GetPassingFlags();
 }
 
 static void cloneHyperlinkListEx(RoutePoint* dst,
@@ -2003,6 +2026,9 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
     pWP->SetETD(src->m_ETD);
   else
     pWP->SetETD(wxEmptyString);
+  // Set passing flags - ignore validation failures as this comes from plugin
+  // API
+  pWP->SetPassingFlags(src->m_PassingFlags);
 
   return pWP;
 }
@@ -2126,6 +2152,9 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
       prp->SetETD(pwaypoint->m_ETD);
     else
       prp->SetETD(wxEmptyString);
+    // Set passing flags - ignore validation failures as this comes from plugin
+    // API
+    prp->SetPassingFlags(pwaypoint->m_PassingFlags);
   }
 
   return b_found;

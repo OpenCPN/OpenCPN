@@ -172,6 +172,34 @@ class wxGLCanvas;
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
+
+/**
+ * Waypoint passing constraint flags for plugin API.
+ * Defines how a vessel should approach and pass a waypoint.
+ * These can be combined with bitwise OR to apply multiple constraints.
+ */
+enum PI_WaypointPassingFlag {
+  /** No specific constraints. */
+  PI_WAYPOINT_PASSING_NONE = 0x00,
+
+  /** Pass waypoint to port side (keep waypoint on vessel's left). */
+  PI_WAYPOINT_PASSING_PORT = 0x01,
+
+  /** Pass waypoint to starboard side (keep waypoint on vessel's right). */
+  PI_WAYPOINT_PASSING_STARBOARD = 0x02,
+
+  /** Pass as close as possible to waypoint. */
+  PI_WAYPOINT_PASSING_CLOSE = 0x04,
+
+  /** Must pass within specified radius of waypoint. */
+  PI_WAYPOINT_PASSING_WITHIN = 0x08,
+
+  /** Stay outside specified radius of waypoint (for marking hazards). */
+  PI_WAYPOINT_PASSING_OUTSIDE = 0x10
+};
+
+typedef int PI_WaypointPassingFlags;  // To clarify it's a bitfield
+
 /**
  * Enumeration of color schemes.
  */
@@ -5117,12 +5145,12 @@ public:
   double scamax;       //!< Maximum display scale (1:X) for waypoint visibility
   bool b_useScamin;    //!< True to enable scale-dependent visibility
   bool IsNameVisible;  //!< True to show waypoint name on chart
-  double m_WaypointArrivalRadius; //!< Arrival radius in nautical miles
+  double m_WaypointArrivalRadius;  //!< Arrival radius in nautical miles
 
   int nrange_rings;       //!< Number of range rings to display around waypoint
   double RangeRingSpace;  //!< Distance between range rings in preferred units
-  wxColour RangeRingColor;  //!< Color to draw range rings
-  bool m_bShowWaypointRangeRings; //!< True to show range rings on chart
+  wxColour RangeRingColor;         //!< Color to draw range rings
+  bool m_bShowWaypointRangeRings;  //!< True to show range rings on chart
 
   wxString IconName;         //!< Name of icon to use for waypoint symbol
   wxString IconDescription;  //!< User-friendly description of icon
@@ -5135,7 +5163,30 @@ public:
   Plugin_HyperlinkList *m_HyperlinkList;
 
   double m_PlannedSpeed;  //!< Planned speed for next leg (knots)
-  wxDateTime m_ETD;       //!< Estimated departure time, or wxInvalidDateTime if not set.
+  wxDateTime
+      m_ETD;  //!< Estimated departure time, or wxInvalidDateTime if not set.
+
+  /**
+   * Waypoint passing constraints bitfield.
+   * Controls how the vessel should approach and pass this waypoint.
+   * @see PI_WaypointPassingFlag for possible values
+   */
+  int m_PassingFlags = 0;
+
+  /**
+   * Sets waypoint passing flags with validation.
+   *
+   * @param flags The passing flags to set
+   * @return True if the flags were set successfully, false if validation failed
+   */
+  bool SetPassingFlags(PI_WaypointPassingFlags flags);
+
+  /**
+   * Gets the current waypoint passing flags.
+   *
+   * @return The current passing constraints for this waypoint
+   */
+  PI_WaypointPassingFlags GetPassingFlags() const { return m_PassingFlags; }
 };
 
 WX_DECLARE_LIST(PlugIn_Waypoint_Ex, Plugin_WaypointExList);

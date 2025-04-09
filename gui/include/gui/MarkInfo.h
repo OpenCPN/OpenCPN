@@ -133,6 +133,9 @@ class OCPNIconCombo;
 #define ID_BTN_LINK_MENU 8024
 #define ID_DEFAULT 8025
 #define ID_BTN_SHOW_TIDES 8026
+#define ID_CHECKBOX_PASS_PORT 8027
+#define ID_CHECKBOX_PASS_STARBOARD 8028
+#define ID_CHECKBOX_PASS_CLOSE 8029
 
 ////@end control identifiers
 
@@ -335,6 +338,12 @@ protected:
   /** Label for the Estimated Time of Departure field. */
   wxStaticText* m_staticTextEtd;
   wxStaticText* m_staticTextPlSpeedUnits;
+
+  // Passing Constraints UI
+  wxCheckBox* m_checkBoxPassPort;
+  wxCheckBox* m_checkBoxPassStarboard;
+  wxCheckBox* m_checkBoxPassClose;
+
   wxStdDialogButtonSizer* m_sdbSizerButtons;
   wxTextCtrl* m_textArrivalRadius;
   wxTextCtrl* m_textCtrlExtDescription;
@@ -453,6 +462,9 @@ public:
     return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);
   }
   void OnHtmlCellClicked(wxHtmlCellEvent& event);
+
+  // Passing constraints handlers
+  void OnPassingConstraintChange(wxCommandEvent& event);
 
   SaveDefaultsDialog* m_SaveDefaultDlg;
 };
