@@ -1595,6 +1595,24 @@ DECL_EXP bool PlugIn_Waypoint_Ex::GetFSStatus() { return true; }
 
 DECL_EXP int PlugIn_Waypoint_Ex::GetRouteMembershipCount() { return 0; }
 
+DECL_EXP PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2() : PlugIn_Waypoint_Ex() {
+  InitExV2Defaults();
+}
+
+DECL_EXP PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2(
+    double lat, double lon, const wxString &icon_ident, const wxString &wp_name,
+    const wxString &GUID, const double ScaMin, const bool bNameVisible,
+    const int nRanges, const double RangeDistance, const wxColor RangeColor)
+    : PlugIn_Waypoint_Ex(lat, lon, icon_ident, wp_name, GUID, ScaMin,
+                         bNameVisible, nRanges, RangeDistance, RangeColor) {
+  InitExV2Defaults();
+}
+
+DECL_EXP void PlugIn_Waypoint_ExV2::InitExV2Defaults() {
+}
+
+DECL_EXP PlugIn_Waypoint_ExV2::~PlugIn_Waypoint_ExV2() {}
+
 DECL_EXP PlugIn_Route::PlugIn_Route(void) {}
 DECL_EXP PlugIn_Route::~PlugIn_Route(void) {}
 

@@ -1844,6 +1844,23 @@ void PlugIn_Waypoint_Ex::InitDefaults() {
   m_lon = 0;
 }
 
+PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2() : PlugIn_Waypoint_Ex() {
+  InitExV2Defaults();
+}
+
+PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2(
+    double lat, double lon, const wxString& icon_ident, const wxString& wp_name,
+    const wxString& GUID, const double ScaMin, const bool bNameVisible,
+    const int nRanges, const double RangeDistance, const wxColor RangeColor)
+    : PlugIn_Waypoint_Ex(lat, lon, icon_ident, wp_name, GUID, ScaMin,
+                         bNameVisible, nRanges, RangeDistance, RangeColor) {
+  InitExV2Defaults();
+}
+
+void PlugIn_Waypoint_ExV2::InitExV2Defaults() {}
+
+PlugIn_Waypoint_ExV2::~PlugIn_Waypoint_ExV2() {}
+
 bool PlugIn_Waypoint_Ex::GetFSStatus() {
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(m_GUID);
   if (!prp) return false;
@@ -1873,6 +1890,20 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   }
 
   return nCount;
+}
+
+/**
+ * Sets waypoint passing flags with validation.
+ *
+ * @param flags The passing flags to set
+ * @return True if the flags were set successfully, false if validation failed
+ */
+bool PlugIn_Waypoint_ExV2::SetPassingFlags(PI_WaypointPassingFlags flags) {
+  if ((flags & kWaypointPassingPort) && (flags & kWaypointPassingStarboard)) {
+    return false;  // Cannot pass on both port and starboard sides
+  }
+  m_PassingFlags = flags;
+  return true;
 }
 
 PlugIn_Waypoint_Ex::~PlugIn_Waypoint_Ex() {}
@@ -1938,6 +1969,11 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->scamin = src->GetScaMin();
   dst->b_useScamin = src->GetUseSca();
   dst->IsActive = src->m_bIsActive;
+
+  PlugIn_Waypoint_ExV2* dstV2 = dynamic_cast<PlugIn_Waypoint_ExV2*>(dstV2);
+  if (dstV2) {
+    dstV2->m_PassingFlags = src->GetPassingFlags();
+  }
 }
 
 static void cloneHyperlinkListEx(RoutePoint* dst,
@@ -1990,6 +2026,13 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
   pWP->SetUseSca(src->b_useScamin);
   pWP->SetNameShown(src->IsNameVisible);
   pWP->SetVisible(src->IsVisible);
+  // Set passing flags - ignore validation failures as this comes from plugin
+  // API
+  const PlugIn_Waypoint_ExV2* srcV2 =
+      dynamic_cast<const PlugIn_Waypoint_ExV2*>(src);
+  if (srcV2) {
+    pWP->SetPassingFlags(srcV2->m_PassingFlags);
+  }
 
   return pWP;
 }
@@ -2104,6 +2147,10 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
+
+    PlugIn_Waypoint_ExV2* pwaypointV2 =
+        dynamic_cast<PlugIn_Waypoint_ExV2*>(pwaypoint);
+    prp->SetPassingFlags(pwaypointV2->m_PassingFlags);
   }
 
   return b_found;
