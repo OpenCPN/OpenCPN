@@ -25,7 +25,7 @@
 #ifndef _ABOUTFRAMEIMPL_H_
 #define _ABOUTFRAMEIMPL_H_
 
-#include "AboutFrame.h"
+#include "about_frame.h"
 
 /**
  * Implements the AboutFrame class with additional functionality. Extends
