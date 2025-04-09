@@ -47,7 +47,7 @@
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 #include "navutil.h"
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 #include "ocpn_frame.h"
