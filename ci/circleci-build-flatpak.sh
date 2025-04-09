@@ -27,7 +27,7 @@ wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
 sudo apt-key adv \
     --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
 # Needed on 20.04: sudo add-apt-repository -y ppa:alexlarsson/flatpak
-# sudo apt update -q -y
+sudo apt update -q -y
 
 # Avoid using outdated TLS certificates, see #2419.
 sudo apt install --reinstall  ca-certificates

@@ -36,10 +36,19 @@ public:
   bool OnBeginDocument(int startPage, int endPage) override;
   void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
                    int *selPageTo) override;
-  virtual bool OnPrintPage(int page) override = 0;
+  bool OnPrintPage(int page) override;
 
 protected:
   int m_pages;
+  int m_margin_x;
+  int m_margin_y;
+
+  /**
+   * Called by the print framework to draw the page.
+   * @param dc Device context to draw on.
+   * @param page Page number to draw.
+   */
+  virtual void DrawPage(wxDC *dc, int page) = 0;
 };
 
 #endif  // PRINTOUT_BASE_H

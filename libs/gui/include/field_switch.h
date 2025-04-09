@@ -1,4 +1,3 @@
-
 /***************************************************************************
  *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
@@ -16,13 +15,21 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
-#include "form_grid.h"
-#include "ui_utils.h"
+ ***************************************************************************
+ */
+#ifndef FIELD_SWITCH_H
+#define FIELD_SWITCH_H
 
-FormGrid::FormGrid(wxWindow* parent)
-    : wxFlexGridSizer(2, GUI::GetSpacing(parent, 1),
-                      GUI::GetSpacing(parent, 2)) {
-  AddGrowableCol(0, 0);
-  AddGrowableCol(1, 0);
-}
+#include "button_switch.h"
+
+/**
+ * Switch field contains switch button with label
+ * to be included in a two column form sizer.
+ */
+class SwitchField : public SwitchButton {
+public:
+  SwitchField(wxWindow* parent, int key, const std::string& label,
+              bool value = true);
+};
+
+#endif  // FIELD_SWITCH_H

@@ -29,15 +29,6 @@ extern MyFrame* gFrame;
 class ChartCanvas;
 ChartCanvas* GetFocusCanvas();
 
-bool ChartPrintout::OnPrintPage(int page) {
-  wxDC* dc = GetDC();
-  if (dc && page == 1) {
-    DrawPage(dc, page);
-    return true;
-  } else
-    return false;
-}
-
 void ChartPrintout::DrawPage(wxDC* dc, int page) {
   // Get the Size of the Chart Canvas
   int sx, sy;
