@@ -42,7 +42,11 @@ enum class RoutePrintOptions {
   kWaypointPosition,
   kWaypointCourse,
   kWaypointDistance,
-  kWaypointDescription
+  kWaypointDescription,
+  kWaypointSpeed,
+  kWaypointETA,
+  kWaypointETD,
+  kWaypointTideEvent
 };
 
 /**
@@ -60,6 +64,14 @@ public:
                  _("Print Waypoint Course to Next").ToStdString());
     AddSelection(options, RoutePrintOptions::kWaypointDistance,
                  _("Print Waypoint Distance to Next").ToStdString());
+    AddSelection(options, RoutePrintOptions::kWaypointSpeed,
+                 _("Waypoint Leg Speed").ToStdString());
+    AddSelection(options, RoutePrintOptions::kWaypointETA,
+                 _("Waypoint Estimated Time Arrival").ToStdString());
+    AddSelection(options, RoutePrintOptions::kWaypointETD,
+                 _("Waypoint Estimated Time Departure").ToStdString());
+    AddSelection(options, RoutePrintOptions::kWaypointTideEvent,
+                 _("Waypoint Next Tide Event").ToStdString());
     AddSelection(options, RoutePrintOptions::kWaypointDescription,
                  _("Print Waypoint Description").ToStdString());
   };
@@ -75,8 +87,10 @@ public:
    * Create route prinout.
    * @param route Route to print.
    * @param options Selected print options.
+   * @param tz_selection Timezone selection.
    */
-  RoutePrintout(Route* route, const std::set<int>& options);
+  RoutePrintout(Route* route, const std::set<int>& options,
+                const int tz_selection);
 
   void OnPreparePrinting() override;
 
