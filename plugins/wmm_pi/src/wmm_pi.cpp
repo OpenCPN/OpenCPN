@@ -176,7 +176,7 @@ int wmm_pi::Init(void) {
 
   if (!MAG_robustReadMagModels(
           const_cast<char *>((const char *)cof_filename.mb_str()),
-          &MagneticModels)) {
+          (MAGtype_MagneticModel * (*)[]) & MagneticModels[0], 1)) {
     WMMLogMessage1(_T("initialization error"));
     m_buseable = false;
   } else {
@@ -288,7 +288,7 @@ wxString wmm_pi::GetLongDescription() {
 Implements the NOAA World Magnetic Model\n\
 More information:\n\
 https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n\
-The bundled WMM2020 model expires on December 31, 2025.\n\
+The bundled WMM2025 model is valid until late 2029.\n\
 After then, if new version of the plugin will not be released\n\
 in time, get a new WMM.COF from NOAA and place it to the\n\
 location you can find in the OpenCPN logfile.");
