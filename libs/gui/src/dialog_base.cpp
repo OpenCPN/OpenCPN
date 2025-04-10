@@ -43,7 +43,7 @@ BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
   auto separator = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                     wxDefaultSize, wxLI_HORIZONTAL);
 
-  m_layout->Add(separator, 0, wxEXPAND | wxALL, GUI::GetSpacing(this, kDialogPadding));
+  m_layout->Add(separator, wxSizerFlags().Border(wxALL, spacing).Expand());
 
   Bind(EVT_LAYOUT_RESIZE, [&](wxCommandEvent&) { Layout(); });
   Bind(wxEVT_HTML_LINK_CLICKED, [this](wxHtmlLinkEvent& event) {
@@ -82,7 +82,9 @@ void BaseDialog::AddHtmlContent(const std::stringstream& html) {
   assert(result && "BaseDialog: HTML page not added");
 
   int html_width, html_height;
+  html_window->SetBorders(0);
   html_window->GetVirtualSize(&html_width, &html_height);
+  html_width += GUI::GetSpacing(this, kDialogPadding * 2);  // prevent scrollbar
   html_window->SetMinSize(
       wxSize(html_width, html_height));  // Fit() needs this size!
   html_window->SetBackgroundColour(GetBackgroundColour());
