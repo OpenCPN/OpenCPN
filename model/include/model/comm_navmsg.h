@@ -320,7 +320,9 @@ public:
 
   virtual ~Nmea0183Msg() = default;
 
-  std::string key() const { return Nmea0183Msg::MessageKey(type.c_str()); };
+  std::string key() const override {
+    return Nmea0183Msg::MessageKey(type.c_str());
+  };
 
   std::string to_string() const override;
 
