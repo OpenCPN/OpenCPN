@@ -44,8 +44,6 @@ void SwitchButton::OnToggle(wxMouseEvent& event) {
 
 void SwitchButton::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
-  wxGraphicsContext* gc = wxGraphicsContext::Create(dc);
-  assert(gc);
 
   int slider_width = GetSize().x;
   int slider_height = GetSize().y;
@@ -55,16 +53,14 @@ void SwitchButton::OnPaint(wxPaintEvent& event) {
   wxColour shadowColor = wxColour(200, 200, 200);
 
   // Draw the background with state colour.
-  gc->SetBrush(wxBrush(m_flag ? *wxBLUE : *wxGREY_BRUSH));
-  gc->DrawRoundedRectangle(0, 0, slider_width, slider_height, button_size / 2);
+  dc.SetBrush(m_flag ? *wxBLUE_BRUSH : *wxGREY_BRUSH);
+  dc.SetPen(wxPen(borderColor, 1));
+  dc.DrawRoundedRectangle(0, 0, slider_width, slider_height, button_size / 2);
 
   // Draw the switch knob
   int x_offset = m_flag ? slider_width - button_size - 2 : 2;
-  wxDouble x = m_flag ? GetSize().GetWidth() - 28 : 2;
-  gc->SetBrush(wxBrush(wxColour(255, 255, 255)));
-  gc->SetPen(wxPen(shadowColor, 1));
-  gc->DrawRoundedRectangle(x_offset, 2, button_size, button_size,
-                           button_size / 2);
-
-  delete gc;
+  dc.SetBrush(wxBrush(wxColour(255, 255, 255)));
+  dc.SetPen(wxPen(shadowColor, 1));
+  dc.DrawRoundedRectangle(x_offset, 2, button_size, button_size,
+                          button_size / 2);
 }
