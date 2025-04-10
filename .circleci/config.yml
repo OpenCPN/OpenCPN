@@ -65,11 +65,11 @@ jobs:
       # - run: echo "CIRCLE_BUILD_NUM: $CIRCLE_BUILD_NUM"
       - run: echo $((CIRCLE_BUILD_NUM % 2)) > .buildstamp
       - restore_cache:
-          key: fp-v1-{{checksum ".buildstamp"}}
+          key: fp-v2-{{checksum ".buildstamp"}}
       - run: ci/circleci-build-flatpak.sh
       - run: echo $(((CIRCLE_BUILD_NUM + 1) % 2)) > .buildstamp
       - save_cache:
-          key: fp-v1-{{checksum ".buildstamp"}}
+          key: fp-v2-{{checksum ".buildstamp"}}
           paths:
             - build/.flatpak-builder/cache
             - build/.flatpak-builder/ccache
