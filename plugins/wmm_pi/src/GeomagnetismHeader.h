@@ -276,9 +276,6 @@ void MAG_Gradient(MAGtype_Ellipsoid Ellip, MAGtype_CoordGeodetic CoordGeodetic,
                   MAGtype_MagneticModel *TimedMagneticModel,
                   MAGtype_Gradient *Gradient);
 
-int MAG_robustReadMagneticModel_Large(char *filename, char *filenameSV,
-                                      MAGtype_MagneticModel **MagneticModel);
-
 int MAG_robustReadMagModels(char *filename,
                             MAGtype_MagneticModel *(*magneticmodels)[],
                             int array_size);
@@ -333,9 +330,6 @@ void MAG_PrintSHDFFormat(char *filename,
                          MAGtype_MagneticModel *(*MagneticModel)[], int epochs);
 
 int MAG_readMagneticModel(char *filename, MAGtype_MagneticModel *MagneticModel);
-
-int MAG_readMagneticModel_Large(char *filename, char *filenameSV,
-                                MAGtype_MagneticModel *MagneticModel);
 
 int MAG_readMagneticModel_SHDF(char *filename,
                                MAGtype_MagneticModel *(*magneticmodels)[],
