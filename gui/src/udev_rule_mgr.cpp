@@ -45,6 +45,7 @@
 
 #include "model/linux_devices.h"
 #include "model/logger.h"
+#include "model/notification_manager.h"
 #include "model/ocpn_utils.h"
 
 #include "gui_lib.h"
@@ -486,7 +487,10 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
     return true;
   }
   if (!ocpn::exists(device)) {
-    DeviceNotFoundDlg::Create(parent, device);
+    auto& noteman = NotificationManager::GetInstance();
+    std::string msg = "Device not found: ";
+    msg += device;
+    noteman.AddNotification(NotificationSeverity::kInformational, msg, 60);
     return false;
   }
   int result = 0;
