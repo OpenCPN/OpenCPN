@@ -58,7 +58,7 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
   m_htmlWinLicense->LoadFile(wxString::Format(
       "%s/license.html", g_Platform->GetSharedDataDir().c_str()));
   m_htmlWinAuthors->LoadFile(wxString::Format(
-      "%s/authors.html", g_Platform->GetSharedDataDir().c_str()));
+      "%s/Authors.html", g_Platform->GetSharedDataDir().c_str()));
   wxBitmap logo(wxString::Format("%s/opencpn.png",
                                  g_Platform->GetSharedDataDir().c_str()),
                 wxBITMAP_TYPE_ANY);
