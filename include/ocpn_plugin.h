@@ -6307,6 +6307,7 @@ extern DECL_EXP void EnableTenHertzUpdate(bool enable);
  */
 extern DECL_EXP void ConfigFlushAndReload();
 
+namespace NavProfile {
 /**
  * Contains information about a single navigation or safety violation in a
  * route.
@@ -6335,6 +6336,15 @@ WX_DECLARE_LIST(PlugIn_NavigationViolation, PlugIn_NavigationViolationList);
 class DECL_EXP PlugIn_NavigationProfile {
 public:
   PlugIn_NavigationProfile();
+  /**
+   * Create a navigation profile with specific identification.
+   *
+   * @param guid Unique identifier for the profile
+   * @param name User-friendly name for the profile
+   * @param description Detailed description of the profile's purpose
+   */
+  PlugIn_NavigationProfile(const wxString &guid, const wxString &name,
+                           const wxString &description);
   virtual ~PlugIn_NavigationProfile();
 
   /**
@@ -6470,6 +6480,52 @@ public:
     kNavMarkerRadio = 4       //!< Markers with radio transmission (e.g., ODAS)
   };
 
+  void SetDefaultNavigationSettings();
+
+  /**
+   * Get the unique identifier of this profile.
+   *
+   * @return GUID string for this profile
+   */
+  wxString GetGUID() const { return m_GUID; }
+
+  /**
+   * Set the unique identifier of this profile.
+   *
+   * @param guid New GUID for this profile
+   */
+  void SetGUID(const wxString &guid) { m_GUID = guid; }
+
+  /**
+   * Get the user-friendly name of this profile.
+   *
+   * @return Name of this profile
+   */
+  wxString GetName() const { return m_Name; }
+
+  /**
+   * Set the user-friendly name of this profile.
+   *
+   * @param name New name for this profile
+   */
+  void SetName(const wxString &name) { m_Name = name; }
+
+  /**
+   * Get the detailed description of this profile.
+   *
+   * @return Description of this profile
+   */
+  wxString GetDescription() const { return m_Description; }
+
+  /**
+   * Set the detailed description of this profile.
+   *
+   * @param description New description for this profile
+   */
+  void SetDescription(const wxString &description) {
+    m_Description = description;
+  }
+
   /**
    * Set safety margin for a specific marker type.
    *
@@ -6545,6 +6601,17 @@ public:
                          PI_NavigationConstraintType constraintType);
 
   /**
+   * Reset (remove) a specific safety constraint
+   *
+   * @param navigationType Single safety type (not a bitmask)
+   * @param timeContext Time of day context affecting safety margins
+   * @param constraintType Hard or soft constraint
+   */
+  void ResetSafetyConstraint(PI_NavigationType navigationType,
+                             PI_NavigationTimeContext timeContext,
+                             PI_NavigationConstraintType constraintType);
+
+  /**
    * Set vessel draft for depth-related safety constraints.
    *
    * @param draft Vessel draft in meters
@@ -6559,96 +6626,6 @@ public:
   double GetDraft() { return m_Draft; }
 
   /**
-   * Reset (remove) a specific safety constraint
-   *
-   * @param navigationType Single safety type (not a bitmask)
-   * @param timeContext Time of day context affecting safety margins
-   * @param constraintType Hard or soft constraint
-   */
-  void ResetSafetyConstraint(PI_NavigationType navigationType,
-                             PI_NavigationTimeContext timeContext,
-                             PI_NavigationConstraintType constraintType);
-
-  /**
-   * Get the distance to nearest safety constraint.
-   *
-   * @param lat Latitude in decimal degrees
-   * @param lon Longitude in decimal degrees
-   * @param distance Output parameter to receive distance result
-   * @param activeTypes Output parameter to receive bitmask of types actually
-   * checked
-   * @return Error code (kNavCodeSuccess if successful)
-   */
-  PI_NavigationErrorCode GetSafetyDistance(double lat, double lon,
-                                           double *distance,
-                                           int *activeTypes = nullptr);
-
-  /**
-   * Checks if a great circle route leg crosses any safety constraints using
-   * this profile.
-   *
-   * @param lat1 Start latitude in decimal degrees
-   * @param lon1 Start longitude in decimal degrees
-   * @param lat2 End latitude in decimal degrees
-   * @param lon2 End longitude in decimal degrees
-   * @param violations Output parameter for violation details
-   * @return Error code (kNavCodeSuccess if successful)
-   */
-  PI_NavigationErrorCode CrossesSafetyConstraint(
-      double lat1, double lon1, double lat2, double lon2,
-      PlugIn_NavigationViolationList *violations);
-  /**
-   * Check if a route passes any safety constraints using this profile.
-   *
-   * @param proute Route to check
-   * @param violations Output parameter for violation details
-   * @return Error code (kNavCodeSuccess if successful)
-   */
-  PI_NavigationErrorCode CheckRouteForSafety(
-      PlugIn_Route *proute, PlugIn_NavigationViolationList *violations);
-
-  /**
-   * Generate routes between two points using this navigation profile.
-   *
-   * Creates one or more routes between the specified start and end coordinates
-   * that complies with all constraints defined in this profile. The generated
-   * routes are added to the route manager and can be accessed using
-   * GetRoute_Plugin() with the returned GUIDs.
-   *
-   * @param start_lat Starting point latitude in decimal degrees
-   * @param start_lon Starting point longitude in decimal degrees
-   * @param end_lat Ending point latitude in decimal degrees
-   * @param end_lon Ending point longitude in decimal degrees
-   * @param routeGUIDs Output array to receive GUIDs of generated safe routes
-   * @param violations Optional output for safety violation details
-   * @return Error code indicating success or specific failure reason
-   */
-  PI_NavigationErrorCode PlanRoute(
-      double start_lat, double start_lon, double end_lat, double end_lon,
-      wxArrayString *routeGUIDs,
-      PlugIn_NavigationViolationList *violations = nullptr);
-
-  /**
-   * Optimizes a route using this navigation profile.
-   *
-   * This method analyzes an existing route for navigation and safety violations
-   * or creates optimized alternatives that complies with all constraints
-   * defined in this profile. The generated routes are added to the route
-   * manager and can be accessed using GetRoute_Plugin() with the returned
-   * GUIDs.
-   *
-   * @param route Input route to optimize.
-   * @param routeGUIDs Output array to receive GUIDs of generated safe routes
-   * @param violations Optional output for detailed violation information.
-   * @return Error code indicating success or specific failure reason
-   *
-   * @note May return the original route GUID if it is already safe.
-   */
-  PI_NavigationErrorCode PlanRoute(
-      PlugIn_Route_Ex *route, wxArrayString *routeGUIDs,
-      PlugIn_NavigationViolationList *violations = nullptr);
-
-  /**
    * Active navigation and safety constraints bitmask of PI_NavigationType
    * values. Defines which constraint types this profile will check.
    */
@@ -6660,13 +6637,170 @@ public:
    */
   double m_Draft;
 
-private:
-  // Map to store safety margins for various navigation types, contexts, and
-  // constraint types
-  std::map<unsigned int, double> m_SafetyMargins;
+  /** Unique identifier for this profile. */
+  wxString m_GUID;
 
-  // Map to store safety margins for various marker types and constraint types
-  std::map<unsigned int, double> m_MarkerSafetyMargins;
+  /** User-friendly name for this profile. */
+  wxString m_Name;
+
+  /** Detailed description of this profile. */
+  wxString m_Description;
 };
+
+/**
+ * Creates a new navigation profile with default settings.
+ *
+ * @param name User-friendly name for the new profile
+ * @param description Detailed description of the profile's purpose
+ * @return GUID of the newly created profile, or empty string on failure
+ */
+DECL_EXP wxString CreateNavigationProfile(const wxString &name,
+                                          const wxString &description);
+
+/**
+ * Updates an existing navigation profile.
+ *
+ * @param profileGUID GUID of the profile to update
+ * @param profile New profile settings to apply. The ownership of this object
+ *                remains with the caller and is not transferred.
+ * @return True if update was successful, false otherwise
+ *
+ * @note This function supports polymorphic updates. If the provided profile
+ *       is a specialized subclass of PlugIn_NavigationProfile, its specific
+ *       properties will be preserved during the update if the target profile
+ *       is of the same type. Otherwise, only the base class properties will
+ *       be updated.
+ */
+DECL_EXP bool UpdateNavigationProfile(const wxString &profileGUID,
+                                      const PlugIn_NavigationProfile &profile);
+
+/**
+ * Deletes a navigation profile.
+ *
+ * @param profileGUID GUID of the profile to delete
+ * @return True if deletion was successful, false otherwise
+ */
+DECL_EXP bool DeleteNavigationProfile(const wxString &profileGUID);
+
+/**
+ * Get a navigation profile by GUID.
+ *
+ * @param profileGUID GUID of the profile to retrieve
+ * @param[out] profile Pointer to receive the profile data. The object is owned
+ *                     by the core application and should not be deleted by the
+ * caller.
+ * @return True if profile was found and data copied, false otherwise
+ */
+DECL_EXP bool GetNavigationProfile(const wxString &profileGUID,
+                                   PlugIn_NavigationProfile *profile);
+
+/**
+ * Get a list of all available navigation profiles.
+ *
+ * @param profileGUIDs Output array to receive the GUIDs of all profiles
+ * @return Number of profiles found
+ */
+DECL_EXP int GetAllNavigationProfiles(wxArrayString *profileGUIDs);
+
+/**
+ * Get information about a navigation profile without retrieving the full
+ * profile.
+ *
+ * @param profileGUID GUID of the profile to get information about
+ * @param name Output parameter to receive the profile name
+ * @param description Output parameter to receive the profile description
+ * @return True if profile was found, false otherwise
+ */
+DECL_EXP bool GetNavigationProfileInfo(const wxString &profileGUID,
+                                       wxString *name, wxString *description);
+
+/**
+ * Get the distance to nearest safety constraint.
+ *
+ * @param profile Navigation profile containing safety constraints
+ * @param lat Latitude in decimal degrees
+ * @param lon Longitude in decimal degrees
+ * @param distance Output parameter to receive distance result
+ * @param activeTypes Output parameter to receive bitmask of types actually
+ * checked
+ * @return Error code (kNavCodeSuccess if successful)
+ */
+DECL_EXP PlugIn_NavigationProfile::PI_NavigationErrorCode GetSafetyDistance(
+    const PlugIn_NavigationProfile &profile, double lat, double lon,
+    double *distance, int *activeTypes = nullptr);
+
+/**
+ * Checks if a great circle route leg crosses any safety constraints.
+ *
+ * @param profile Navigation profile containing safety constraints
+ * @param lat1 Start latitude in decimal degrees
+ * @param lon1 Start longitude in decimal degrees
+ * @param lat2 End latitude in decimal degrees
+ * @param lon2 End longitude in decimal degrees
+ * @param violations Output parameter for violation details
+ * @return Error code (kNavCodeSuccess if successful)
+ */
+DECL_EXP PlugIn_NavigationProfile::PI_NavigationErrorCode
+CrossesSafetyConstraint(const PlugIn_NavigationProfile &profile, double lat1,
+                        double lon1, double lat2, double lon2,
+                        PlugIn_NavigationViolationList *violations);
+
+/**
+ * Check if a route passes any safety constraints.
+ *
+ * @param profile Navigation profile containing safety constraints
+ * @param proute Route to check
+ * @param violations Output parameter for violation details
+ * @return Error code (kNavCodeSuccess if successful)
+ */
+DECL_EXP PlugIn_NavigationProfile::PI_NavigationErrorCode CheckRouteForSafety(
+    const PlugIn_NavigationProfile &profile, PlugIn_Route *proute,
+    PlugIn_NavigationViolationList *violations);
+
+/**
+ * Generate routes between two points using the navigation profile.
+ *
+ * Creates one or more routes between the specified start and end coordinates
+ * that complies with all constraints defined in this profile. The generated
+ * routes are added to the route manager and can be accessed using
+ * GetRoute_Plugin() with the returned GUIDs.
+ *
+ * @param profile Navigation profile containing safety constraints
+ * @param start_lat Starting point latitude in decimal degrees
+ * @param start_lon Starting point longitude in decimal degrees
+ * @param end_lat Ending point latitude in decimal degrees
+ * @param end_lon Ending point longitude in decimal degrees
+ * @param routeGUIDs Output array to receive GUIDs of generated safe routes
+ * @param violations Optional output for detailed violation information.
+ * @return Error code indicating success or specific failure reason
+ *
+ * @note May return the original route GUID if it is already safe.
+ */
+DECL_EXP PlugIn_NavigationProfile::PI_NavigationErrorCode PlanRoute(
+    const PlugIn_NavigationProfile &profile, double start_lat, double start_lon,
+    double end_lat, double end_lon, wxArrayString *routeGUIDs,
+    PlugIn_NavigationViolationList *violations = nullptr);
+
+/**
+ * Optimizes a pathway (draft route) using the navigation profile.
+ *
+ * This method analyzes an existing pathway (draft route) for navigation and
+ * safety violations or creates optimized alternatives that comply with all
+ * constraints defined in the navigation profile. The generated routes are added
+ * to the route manager and can be accessed using GetRoute_Plugin() with the
+ * returned GUIDs.
+ *
+ * @param profile Navigation profile containing safety constraints
+ * @param pathwayGUID GUID of input pathway (draft route) to optimize
+ * @param routeGUIDs Output array to receive GUIDs of generated safe routes
+ * @param violations Optional output for detailed violation information.
+ * @return Error code indicating success or specific failure reason
+ */
+DECL_EXP PlugIn_NavigationProfile::PI_NavigationErrorCode PlanRoute(
+    const PlugIn_NavigationProfile &profile, const wxString &pathwayGUID,
+    wxArrayString *routeGUIDs,
+    PlugIn_NavigationViolationList *violations = nullptr);
+
+}  // namespace NavProfile
 
 #endif  //_PLUGIN_H_
