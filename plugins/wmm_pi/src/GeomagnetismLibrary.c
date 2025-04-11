@@ -331,58 +331,6 @@ int MAG_SetDefaults(MAGtype_Ellipsoid *Ellip, MAGtype_Geoid *Geoid)
   return TRUE;
 } /*MAG_SetDefaults */
 
-int MAG_robustReadMagneticModel_Large(char *filename, char *filenameSV,
-                                      MAGtype_MagneticModel **MagneticModel) {
-  char line[MAXLINELENGTH],
-      ModelName[] = "Enhanced Magnetic Model"; /*Model Name must be no longer
-                                                  than 31 characters*/
-  int n, nMax = 0, nMaxSV = 0, num_terms, a, epochlength = 5, i;
-  FILE *MODELFILE;
-  MODELFILE = fopen(filename, "r");
-  if (MODELFILE == 0) {
-    return 0;
-  }
-  if (NULL == fgets(line, MAXLINELENGTH, MODELFILE)) {
-    return 0;
-  }
-  do {
-    if (NULL == fgets(line, MAXLINELENGTH, MODELFILE)) break;
-    a = sscanf(line, "%d", &n);
-    if (n > nMax && (n < 99999 && a == 1 && n > 0)) nMax = n;
-  } while (n < 99999 && a == 1);
-  fclose(MODELFILE);
-  MODELFILE = fopen(filenameSV, "r");
-  if (MODELFILE == 0) {
-    return 0;
-  }
-  n = 0;
-  if (NULL == fgets(line, MAXLINELENGTH, MODELFILE)) return 0;
-  do {
-    if (NULL == fgets(line, MAXLINELENGTH, MODELFILE)) break;
-    a = sscanf(line, "%d", &n);
-    if (n > nMaxSV && (n < 99999 && a == 1 && n > 0)) nMaxSV = n;
-  } while (n < 99999 && a == 1);
-  fclose(MODELFILE);
-  num_terms = CALCULATE_NUMTERMS(nMax);
-  *MagneticModel = MAG_AllocateModelMemory(num_terms);
-  (*MagneticModel)->nMax = nMax;
-  (*MagneticModel)->nMaxSecVar = nMaxSV;
-  if (nMaxSV > 0) (*MagneticModel)->SecularVariationUsed = TRUE;
-  for (i = 0; i < num_terms; i++) {
-    (*MagneticModel)->Main_Field_Coeff_G[i] = 0;
-    (*MagneticModel)->Main_Field_Coeff_H[i] = 0;
-    (*MagneticModel)->Secular_Var_Coeff_G[i] = 0;
-    (*MagneticModel)->Secular_Var_Coeff_H[i] = 0;
-  }
-  MAG_readMagneticModel_Large(filename, filenameSV, *MagneticModel);
-  (*MagneticModel)->CoefficientFileEndDate =
-      (*MagneticModel)->epoch + epochlength;
-  MAG_strlcpy_equivalent((*MagneticModel)->ModelName, ModelName,
-                         sizeof((*MagneticModel)->ModelName));
-  (*MagneticModel)->EditionDate = (*MagneticModel)->epoch;
-  return 1;
-} /*MAG_robustReadMagneticModel_Large*/
-
 int MAG_robustReadMagModels(char *filename,
                             MAGtype_MagneticModel *(*magneticmodels)[],
                             int array_size) {
@@ -1384,7 +1332,7 @@ int MAG_readMagneticModel(char *filename,
   MagneticModel->Secular_Var_Coeff_G[0] = 0.0;
 
   char header_fmt[sizeof(c_str)];
-  snprintf(header_fmt, sizeof(header_fmt), "%%lf %%%ds %%%ds",
+  snprintf(header_fmt, sizeof(header_fmt), "%%lf %%%lus %%%ds",
            sizeof(MagneticModel->ModelName), date_size);
 
   fgets(c_str, sizeof(c_str), MAG_COF_File);
@@ -1425,94 +1373,6 @@ int MAG_readMagneticModel(char *filename,
   fclose(MAG_COF_File);
   return TRUE;
 } /*MAG_readMagneticModel*/
-
-int MAG_readMagneticModel_Large(char *filename, char *filenameSV,
-                                MAGtype_MagneticModel *MagneticModel)
-
-/*  To read the high-degree model coefficients (for example, NGDC 720)
-   INPUT :  filename   file name for static coefficients
-                        filenameSV file name for secular variation coefficients
-
-                        MagneticModel : Pointer to the data structure with the
-   following fields required as inputs nMaxSecVar : Number of secular variation
-   coefficients nMax : 	Number of static coefficients UPDATES : MagneticModel :
-   Pointer to the data structure with the following fields populated double
-   epoch;       Base time of Geomagnetic model epoch (yrs) double
-   *Main_Field_Coeff_G;          C - Gauss coefficients of main geomagnetic
-   model (nT) double *Main_Field_Coeff_H;          C - Gauss coefficients of
-   main geomagnetic model (nT) double *Secular_Var_Coeff_G;  CD - Gauss
-   coefficients of secular geomagnetic model (nT/yr) double
-   *Secular_Var_Coeff_H;  CD - Gauss coefficients of secular geomagnetic model
-   (nT/yr) CALLS : none
-
- */
-{
-  FILE *MAG_COF_File;
-  FILE *MAG_COFSV_File;
-  char c_str[81], c_str2[81]; /* these strings are used to read a line from
-                                 coefficient file */
-  int i, m, n, index, a, b;
-  double epoch, gnm, hnm, dgnm, dhnm;
-  MAG_COF_File = fopen(filename, "r");
-  MAG_COFSV_File = fopen(filenameSV, "r");
-  if (MAG_COF_File == NULL || MAG_COFSV_File == NULL) {
-    MAG_Error(20);
-    return FALSE;
-  }
-  MagneticModel->Main_Field_Coeff_H[0] = 0.0;
-  MagneticModel->Main_Field_Coeff_G[0] = 0.0;
-  MagneticModel->Secular_Var_Coeff_H[0] = 0.0;
-  MagneticModel->Secular_Var_Coeff_G[0] = 0.0;
-  if (NULL == fgets(c_str, sizeof(c_str), MAG_COF_File)) {
-    fclose(MAG_COF_File);
-    fclose(MAG_COFSV_File);
-    return FALSE;
-  }
-  snprintf(c_str, sizeof(c_str), "%lf%s", epoch, MagneticModel->ModelName);
-  MagneticModel->epoch = epoch;
-  a = CALCULATE_NUMTERMS(MagneticModel->nMaxSecVar);
-  b = CALCULATE_NUMTERMS(MagneticModel->nMax);
-  for (i = 0; i < a; i++) {
-    if (NULL == fgets(c_str, sizeof(c_str), MAG_COF_File)) {
-      fclose(MAG_COF_File);
-      fclose(MAG_COFSV_File);
-      return FALSE;
-    }
-    sscanf(c_str, "%d%d%lf%lf", &n, &m, &gnm, &hnm);
-    if (NULL == fgets(c_str2, sizeof(c_str2), MAG_COFSV_File)) {
-      fclose(MAG_COF_File);
-      fclose(MAG_COFSV_File);
-      return FALSE;
-    }
-    sscanf(c_str2, "%d%d%lf%lf", &n, &m, &dgnm, &dhnm);
-    if (m <= n) {
-      index = (n * (n + 1) / 2 + m);
-      MagneticModel->Main_Field_Coeff_G[index] = gnm;
-      MagneticModel->Secular_Var_Coeff_G[index] = dgnm;
-      MagneticModel->Main_Field_Coeff_H[index] = hnm;
-      MagneticModel->Secular_Var_Coeff_H[index] = dhnm;
-    }
-  }
-  for (i = a; i < b; i++) {
-    if (NULL == fgets(c_str, sizeof(c_str), MAG_COF_File)) {
-      fclose(MAG_COF_File);
-      fclose(MAG_COFSV_File);
-      return FALSE;
-    }
-    sscanf(c_str, "%d%d%lf%lf", &n, &m, &gnm, &hnm);
-    if (m <= n) {
-      index = (n * (n + 1) / 2 + m);
-      MagneticModel->Main_Field_Coeff_G[index] = gnm;
-      MagneticModel->Main_Field_Coeff_H[index] = hnm;
-    }
-  }
-  if (MAG_COF_File != NULL && MAG_COFSV_File != NULL) {
-    fclose(MAG_COF_File);
-    fclose(MAG_COFSV_File);
-  }
-
-  return TRUE;
-} /*MAG_readMagneticModel_Large*/
 
 int MAG_readMagneticModel_SHDF(char *filename,
                                MAGtype_MagneticModel *(*magneticmodels)[],
