@@ -62,26 +62,26 @@ wxString OpenCPNVersion("\n      Version ");
 // clang-format off
 
 const wxString AboutText =
-    wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2024  The OpenCPN Authors<br><br>");
+    "<br>OpenCPN<br>"
+    "(c) 2000-2024  The OpenCPN Authors<br><br>";
 
 const wxString OpenCPNInfo =
-    wxT("<br><br>")
-    wxT("OpenCPN is a Free Software project, built by sailors. ")
-    wxT("It is freely available to download and distribute ")
-    wxT("without charge at opencpn.org.<br><br>")
-    wxT("If you use OpenCPN, please consider contributing ")
-    wxT("or donating funds to the project.<br><br>")
-    wxT("For more information, visit http://opencpn.org<br><br>");
+    "<br><br>"
+    "OpenCPN is a Free Software project, built by sailors. "
+    "It is freely available to download and distribute "
+    "without charge at opencpn.org.<br><br>"
+    "If you use OpenCPN, please consider contributing "
+    "or donating funds to the project.<br><br>"
+    "For more information, visit http://opencpn.org<br><br>";
 
 const wxString OpenCPNInfoAlt =
-    wxT("<br><br>")
-    wxT("OpenCPN is a Free Software project, built by sailors.")
-    wxT("The complete source code and many other resources ")
-    wxT("are freely available for your download and use, ")
-    wxT("subject to applicable License agreements.")
-    wxT("<br><br>")
-    wxT("For more information, visit http://opencpn.org<br><br>");
+    "<br><br>"
+    "OpenCPN is a Free Software project, built by sailors."
+    "The complete source code and many other resources "
+    "are freely available for your download and use, "
+    "subject to applicable License agreements."
+    "<br><br>"
+    "For more information, visit http://opencpn.org<br><br>";
 
 // clang-format on
 
@@ -168,8 +168,8 @@ void about::Populate(void) {
 
   // The HTML Header
   wxString aboutText = wxString::Format(
-      _T( "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>" ),
-      bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green());
+      "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>", bg.Red(),
+      bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green());
 
   wxFont* dFont = FontMgr::Get().GetFont(_("Dialog"));
 
@@ -185,13 +185,13 @@ void about::Populate(void) {
   wxString face = dFont->GetFaceName();
   pAboutHTMLCtl->SetFonts(face, face, sizes);
 
-  if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) aboutText.Append(_T("<i>"));
+  if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) aboutText.Append("<i>");
 
 #ifdef __OCPN__ANDROID__
   wxString msg;
-  msg.Printf(_T(" [%d]"), androidGetVersionCode());
+  msg.Printf(" [%d]", androidGetVersionCode());
   wxString OpenCPNVersionAndroid =
-      _T("OpenCPN for Android Version ") + androidGetVersionName() + msg;
+      "OpenCPN for Android Version " + androidGetVersionName() + msg;
 
   aboutText.Append(AboutText + OpenCPNVersionAndroid + OpenCPNInfoAlt);
 #else
@@ -199,23 +199,21 @@ void about::Populate(void) {
 #endif
 
   // Show where the log file is going to be placed
-  wxString log_string = _T("Logfile location: ") + g_Platform->GetLogFileName();
-  log_string.Replace(_T("/"),
-                     _T("/ "));  // allow line breaks, in a cheap way...
+  wxString log_string = "Logfile location: " + g_Platform->GetLogFileName();
+  log_string.Replace("/", "/ ");  // allow line breaks, in a cheap way...
 
   aboutText.Append(log_string);
 
   // Show where the config file is going to be placed
   wxString config_string =
-      _T("<br><br>Config file location: ") + g_Platform->GetConfigFileName();
-  config_string.Replace(_T("/"),
-                        _T("/ "));  // allow line breaks, in a cheap way...
+      "<br><br>Config file location: " + g_Platform->GetConfigFileName();
+  config_string.Replace("/", "/ ");  // allow line breaks, in a cheap way...
   aboutText.Append(config_string);
 
-  if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) aboutText.Append(_T("</i>"));
+  if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) aboutText.Append("</i>");
 
   // The HTML Footer
-  aboutText.Append(_T("</font></body></html>"));
+  aboutText.Append("</font></body></html>");
 
   pAboutHTMLCtl->SetPage(aboutText);
 
@@ -311,7 +309,7 @@ void about::CreateControls(void) {
   mainSizer->Add(buttonSizer, 0, wxALL, 0);
 
   wxButton* donateButton = new wxBitmapButton(
-      this, ID_DONATE, g_StyleManager->GetCurrentStyle()->GetIcon(_T("donate")),
+      this, ID_DONATE, g_StyleManager->GetCurrentStyle()->GetIcon("donate"),
       wxDefaultPosition, wxDefaultSize, 0);
 
   buttonSizer->Add(
@@ -433,31 +431,31 @@ void about::OnNBPageChange(wxNotebookEvent& event) {
 
     // The HTML Header
     wxString licenseText = wxString::Format(
-        _T( "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>" ),
+        "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>",
         bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green());
 
     pLicenseHTMLCtl->SetFonts(face, face, sizes);
 
-    wxTextFile license_filea(m_DataLocn + _T("license.txt"));
+    wxTextFile license_filea(m_DataLocn + "license.txt");
     if (license_filea.Open()) {
       for (wxString str = license_filea.GetFirstLine(); !license_filea.Eof();
            str = license_filea.GetNextLine())
-        licenseText.Append(str + _T("<br>"));
+        licenseText.Append(str + "<br>");
       license_filea.Close();
     } else {
-      wxLogMessage(_T("Could not open License file: ") + m_DataLocn);
+      wxLogMessage("Could not open License file: " + m_DataLocn);
     }
 
     wxString suppLicense = g_Platform->GetSupplementalLicenseString();
 
-    wxStringTokenizer st(suppLicense, _T("\n"), wxTOKEN_DEFAULT);
+    wxStringTokenizer st(suppLicense, "\n", wxTOKEN_DEFAULT);
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
-      licenseText.Append(s1 + _T("<br>"));
+      licenseText.Append(s1 + "<br>");
     }
 
     // The HTML Footer
-    licenseText.Append(_T("</font></body></html>"));
+    licenseText.Append("</font></body></html>");
 
     pLicenseHTMLCtl->SetPage(licenseText);
 
@@ -480,7 +478,7 @@ void about::OnClose(wxCloseEvent& event) {
 
 void about::OnDonateClick(wxCommandEvent& event) {
   wxLaunchDefaultBrowser(
-      _T("https://sourceforge.net/donate/index.php?group_id=180842"));
+      "https://sourceforge.net/donate/index.php?group_id=180842");
 }
 
 void about::OnCopyClick(wxCommandEvent& event) {
@@ -491,7 +489,7 @@ void about::OnCopyClick(wxCommandEvent& event) {
   wxFFile file(filename);
 
   if (!file.IsOpened()) {
-    wxLogMessage(_T("Failed to open file for Copy to Clipboard."));
+    wxLogMessage("Failed to open file for Copy to Clipboard.");
     return;
   }
 
@@ -507,10 +505,10 @@ void about::OnCopyClick(wxCommandEvent& event) {
 
   if (event.GetId() == ID_COPYLOG) {
     wxString lastLogs = fileContent;
-    int pos = lastLogs.Find(_T("________"));
+    int pos = lastLogs.Find("________");
     while (pos != wxNOT_FOUND && lastLogs.Length() > 65000) {
       lastLogs = lastLogs.Right(lastLogs.Length() - pos - 8);
-      pos = lastLogs.Find(_T("________"));
+      pos = lastLogs.Find("________");
     }
     fileContent = lastLogs;
   }
@@ -518,10 +516,10 @@ void about::OnCopyClick(wxCommandEvent& event) {
   ::wxBeginBusyCursor();
   if (wxTheClipboard->Open()) {
     if (!wxTheClipboard->SetData(new wxTextDataObject(fileContent)))
-      wxLogMessage(_T("wxTheClipboard->Open() failed."));
+      wxLogMessage("wxTheClipboard->Open() failed.");
     wxTheClipboard->Close();
   } else {
-    wxLogMessage(_T("wxTheClipboard->Open() failed."));
+    wxLogMessage("wxTheClipboard->Open() failed.");
   }
   ::wxEndBusyCursor();
 }
