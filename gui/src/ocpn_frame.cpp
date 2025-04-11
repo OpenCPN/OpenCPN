@@ -85,7 +85,7 @@
 #include "model/track.h"
 
 #include "dialog_alert.h"
-#include "AboutFrameImpl.h"
+#include "about_frame_impl.h"
 #include "about.h"
 #include "ais.h"
 #include "ais_info_gui.h"
@@ -171,7 +171,7 @@ extern TrackPropDlg *pTrackPropDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
 extern S57QueryDialog *g_pObjectQueryDialog;
-extern about *g_pAboutDlgLegacy;
+extern About *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
 extern double vLat, vLon;
@@ -384,6 +384,55 @@ static bool LoadAllPlugIns(bool load_enabled) {
   bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
   AbstractPlatform::HideBusySpinner();
   return b;
+}
+
+static void LaunchLocalHelp(void) {
+#ifdef __ANDROID__
+  androidLaunchHelpView();
+#else
+  wxString def_lang_canonical = _T("en_US");
+
+#if wxUSE_XLOCALE
+  if (plocale_def_lang)
+    def_lang_canonical = plocale_def_lang->GetCanonicalName();
+#endif
+
+  wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
+
+  wxString help_try = help_locn + def_lang_canonical + _T(".html");
+
+  if (!::wxFileExists(help_try)) {
+    help_try = help_locn + _T("en_US") + _T(".html");
+
+    if (!::wxFileExists(help_try)) {
+      help_try = help_locn + _T("web") + _T(".html");
+    }
+
+    if (!::wxFileExists(help_try)) return;
+  }
+
+  wxLaunchDefaultBrowser(wxString(_T("file:///")) + help_try);
+#endif
+}
+
+static void DoHelpDialog(void) {
+#ifndef __ANDROID__
+  if (!g_pAboutDlg) {
+    g_pAboutDlg = new AboutFrameImpl(gFrame);
+  } else {
+    g_pAboutDlg->SetFocus();
+  }
+  g_pAboutDlg->Show();
+
+#else
+  if (!g_pAboutDlgLegacy)
+    g_pAboutDlgLegacy = new About(gFrame, g_Platform->GetSharedDataDir(),
+                                  [] { LaunchLocalHelp(); });
+  else
+    g_pAboutDlgLegacy->SetFocus();
+  g_pAboutDlgLegacy->Show();
+
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2558,12 +2607,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case wxID_ABOUT:
     case ID_ABOUT: {
-      g_Platform->DoHelpDialog();
+      DoHelpDialog();
       break;
     }
 
     case wxID_HELP: {
-      g_Platform->LaunchLocalHelp();
+      LaunchLocalHelp();
       break;
     }
 

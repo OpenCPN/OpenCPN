@@ -1,11 +1,29 @@
-///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct 26 2018)
-// http://www.wxformbuilder.org/
-//
-// PLEASE DO *NOT* EDIT THIS FILE!
-///////////////////////////////////////////////////////////////////////////
+/**************************************************************************
+ *   Copyright (C) 2019 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
-#pragma once
+/**
+ * \file
+ * Class AboutFrame
+ */
+
+#ifndef ABOUT__FRAME__H
+#define ABOUT__FRAME__H
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
@@ -31,11 +49,10 @@
 #include <wx/panel.h>
 #include <wx/frame.h>
 
-///////////////////////////////////////////////////////////////////////////
-
 /**
- * Represents the main frame for the About dialog. Implements the main frame
- * that contains various controls to display information about OpenCPN.
+ * About dialog main frame, various controls to display information about
+ * OpenCPN. This is  the updated version used on all platforms besides
+ * Android.
  */
 class AboutFrame : public wxFrame {
 private:
@@ -94,3 +111,5 @@ public:
 
   ~AboutFrame();
 };
+
+#endif  // ABOUT__FRAME__H

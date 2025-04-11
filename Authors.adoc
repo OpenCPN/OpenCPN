@@ -1,0 +1,140 @@
+= OpenCPN Developers
+
+*David S Register* +
+_OpenCPN Lead Developer_
+
+*Pavel Kalian* +
+_Packaging and PlugIn development_
+
+*Alec Leamas* +
+_Packaging, App configuration and build optimization_
+
+*Rick Gleason* +
+_Plugin Packaging and development,
+Documentation and Wiki support_
+
+*Mike Rossiter* +
+_Plugn Packaging and development_
+
+*Håkan Svensson* +
+_Comms and Plugin integration_
+
+*Sean D'Epagnier* +
+_OpenGL Architecture_
+
+*J.P. Joubert* +
+_GRIB PlugIn enhancements_
+
+*Thomas Höckne* +
+_Documentation and Wiki support_
+
+*Didier Gautheron* +
+_App debugging and optimization_
+
+*Håkan Svensson* +
+_App debugging and optimization_
+
+*Jon Gough* +
+_Plugin interface development_
+
+*Manuel Bouyer* +
+_App debugging and optimization_
+
+*Taru Karttunen* +
+_App debugging and optimization_
+
+*Anton Samsonov* +
+_App debugging and optimization_
+
+*transmitterDan* +
+_App debugging and optimization_
+
+*Wiets Wilken* +
+_Extended vector Icon implementation_
+
+*Gene Seybold* +
+_Extended vector Icon design_
+
+*Caesar Schinas* +
+_User Interface and OS X improvements_
+
+*Jesper Weissglas* +
+_Vector Chart Rendering_
+
+*Jean-Eudes Onfray* +
+_Dashboard and Dialog enhancements_
+
+*Kathleen Boswell* +
+_Icon and Website design_
+
+*Flavius Bindea* +
+_CM93 Offset and AIS enhancements_
+
+*Gunther Pilz* +
+_Windows Installer enhancements_
+
+*Alan Bleasby* +
+_Garmin jeeps module_
+
+*Piotr Carlson* +
+_General usability enhancements_
+
+*Anders Lund* +
+_RouteManagerDialog_
+
+*Thomas Haller* +
+_GPX Import/Export Implementation_
+
+*Will Kamp* +
+_Toolbar Icon design_
+
+*Richard Smith* +
+_OpenCPN CoDeveloper, MacOSX_
+
+*Philip Lange* +
+_OpenCPN Documentation_
+
+*Ron Kuris* +
+_wxWidgets Support_
+
+*Julian Smart, Robert Roebling et al* +
+_wxWidgets Authors_
+
+*Sylvain Duclos* +
+_S52 Presentation Library code_
+
+*Manish P. Pagey* +
+_Serial Port Library_
+
+*David Flater* +
+_XTIDE tide and current code_
+
+*Frank Warmerdam* +
+_GDAL Class Library_
+
+*Mike Higgins* +
+_BSB Chart Format Detail_
+
+*Samuel R. Blackburn* +
+_NMEA0183 Class Library_
+
+*Atul Narkhede* +
+_Polygon Graphics utilities_
+
+*Stuart Cunningham, et al* +
+_BSB Chart Georeferencing Algorithms_
+
+*John F. Waers* +
+_UTM Conversion Algorithms_
+
+*Carsten Tschach* +
+_UTM Conversion Algorithms_
+
+*Ed Williams* +
+_Great Circle Formulary_
+
+*Philippe Bekaert* +
+_CIE->RGB Color Conversion Matrix_
+
+*Robert Lipe* +
+_Garmin USB GPS Interface_

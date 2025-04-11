@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  About Dialog
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +17,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "AboutFrameImpl.h"
+/**
+ * \file
+ * Implement about_frame_impl.h
+ */
+
+#include "about_frame_impl.h"
 #include "config.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
@@ -59,7 +58,7 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
   m_htmlWinLicense->LoadFile(wxString::Format(
       "%s/license.html", g_Platform->GetSharedDataDir().c_str()));
   m_htmlWinAuthors->LoadFile(wxString::Format(
-      "%s/authors.html", g_Platform->GetSharedDataDir().c_str()));
+      "%s/Authors.html", g_Platform->GetSharedDataDir().c_str()));
   wxBitmap logo(wxString::Format("%s/opencpn.png",
                                  g_Platform->GetSharedDataDir().c_str()),
                 wxBITMAP_TYPE_ANY);
