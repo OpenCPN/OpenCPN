@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  About Dialog
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,16 +14,21 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
+/**
+ * \file
+ * class About
  */
 
 #ifndef _ABOUT_H_
 #define _ABOUT_H_
 
 #include <wx/notebook.h>
+#include <wx/html/htmlwin.h>
+#include <wx/dialog.h>
+#include <wx/textctrl.h>
 
 //      Constants
 
@@ -43,11 +42,10 @@
 
 #define ID_NOTEBOOK_HELP 10002
 
-class wxHtmlWindow;
-
 /**
- * Represents the About dialog for OpenCPN. Implements a dialog that displays
- * information about OpenCPN, including version, authors, license, and tips.
+ * The OpenCPN About dialog displaying information including
+ * version, authors, license, and tips. This is a legacy variant
+ * used on Android only.
  */
 class about : public wxDialog {
   DECLARE_EVENT_TABLE()
@@ -90,8 +88,6 @@ private:
   wxPanel* itemPanelLicense;
   wxPanel* itemPanelTips;
 
-  wxTextCtrl* pAuthorTextCtl;
-  wxTextCtrl* pLicenseTextCtl;
   wxNotebook* pNotebook;
   wxHtmlWindow* pAboutHTMLCtl;
   wxHtmlWindow* pLicenseHTMLCtl;
