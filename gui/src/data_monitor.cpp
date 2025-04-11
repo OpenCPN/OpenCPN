@@ -784,7 +784,7 @@ DataMonitor::DataMonitor(wxWindow* parent)
   vbox->Add(status_line, wxSizerFlags().Expand());
   SetSizer(vbox);
   Fit();
-  Show();
+  Hide();
 
   m_quick_filter->Bind(wxEVT_TEXT, [&, tty_panel](wxCommandEvent&) {
     tty_panel->SetQuickFilter(GetLabel().ToStdString());
