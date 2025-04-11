@@ -177,8 +177,6 @@ public:
   //--------------------------------------------------------------------------
   void setChartTypeMaskSel(int mask, wxString &indicator);
   bool isPlatformCapable(int flag);
-  void LaunchLocalHelp();
-  void DoHelpDialog(void);
 
   int platformApplyPrivateSettingsString(wxString settings,
                                          ArrayOfCDI *pDirArray);

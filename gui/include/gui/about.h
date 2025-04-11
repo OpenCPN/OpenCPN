@@ -22,6 +22,8 @@
  * class About
  */
 
+#include <functional>
+
 #ifndef _ABOUT_H_
 #define _ABOUT_H_
 
@@ -53,6 +55,7 @@ class About : public wxDialog {
 public:
   explicit About();
   explicit About(wxWindow* parent, wxString License_Data_Locn,
+                 std::function<void()> launch_local_help,
                  wxWindowID id = ID_DIALOG,
                  const wxString& caption = SYMBOL_ABOUT_TITLE,
                  const wxPoint& pos = wxDefaultPosition,
@@ -80,6 +83,7 @@ private:
 
   wxString m_DataLocn;
   wxWindow* m_parent;
+  std::function<void()> m_launch_local_help;
   bool m_btips_loaded;
   bool m_blicensePageSet;
 
