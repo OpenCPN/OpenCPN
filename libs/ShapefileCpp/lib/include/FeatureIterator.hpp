@@ -18,6 +18,7 @@ namespace shp {
         public:
 
             FeatureIterator(ShapefileReader& shp, int i);
+            FeatureIterator(const ShapefileReader& shp, int i);
 
             typedef Feature value_type;
             typedef std::ptrdiff_t difference_type;

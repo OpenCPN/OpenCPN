@@ -36,6 +36,7 @@
 #include "ShapefileReader.hpp"
 #include "poly_math.h"
 #include "ocpndc.h"
+#include "spatial_rtree.h"
 
 #if (defined(OCPN_GHC_FILESYSTEM) || \
      (defined(__clang_major__) && (__clang_major__ < 15)))
@@ -143,6 +144,7 @@ public:
         _min_scale(min_scale),
         _filename(filename),
         _reader(nullptr),
+        _rtree(nullptr),
         _color(color) {
     _is_usable = fs::exists(filename);
   }
@@ -153,6 +155,7 @@ public:
     this->_is_tiled = t._is_tiled;
     this->_min_scale = t._min_scale;
     this->_reader = nullptr;
+    this->_rtree = nullptr;  // Will be recreated when LoadSHP() is called
     this->_color = t._color;
     this->_dmod = t._dmod;
     this->_loading = t._loading;
@@ -160,6 +163,8 @@ public:
   ~ShapeBaseChart() {
     CancelLoading();  // Ensure async operation is done before cleanup.
     delete _reader;
+    // _rtree is managed by a std::unique_ptr so it will be automatically
+    // cleaned up
   }
 
   void SetColor(wxColor color) { _color = color; }
@@ -263,6 +268,12 @@ private:
    * for efficient spatial queries.
    */
   std::unordered_map<LatLonKey, std::vector<size_t>> _tiles;
+  /**
+   * R-tree spatial index for efficient spatial queries. Provides logarithmic
+   * search time for finding features that intersect with a given bounding box
+   * or line segment. Built during LoadSHP() and used by CrossesLand().
+   */
+  std::unique_ptr<RTree> _rtree;
   /**
    * The color used for rendering land areas in this specific chart instance.
    * Initially set during construction from the parent ShapeBaseChartSet's

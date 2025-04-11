@@ -24,7 +24,19 @@ namespace shp {
         }
     }
 
+    void ShapefileReader::getShapeInfo() const {
+        if (count == -1) {
+            SHPGetInfo(shp, &count, &shapeType, min, max);
+            numberOfFeatures = DBFGetRecordCount(dbf);
+        }
+    }
+
     int ShapefileReader::getCount() {
+        getShapeInfo();
+        return numberOfFeatures;
+    }
+
+    int ShapefileReader::getCount() const {
         getShapeInfo();
         return numberOfFeatures;
     }
@@ -251,6 +263,14 @@ namespace shp {
 
     FeatureIterator ShapefileReader::end() {
         return FeatureIterator(*this, this->getCount());
+    }
+
+    FeatureIterator ShapefileReader::begin() const {
+        return FeatureIterator(*this, 0);
+    }
+    
+    FeatureIterator ShapefileReader::end() const {
+        return FeatureIterator(*this, getCount());
     }
 
 }

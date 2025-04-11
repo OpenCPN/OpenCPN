@@ -31,26 +31,27 @@ namespace shp {
             SHPHandle shp;
             DBFHandle dbf;
 
-            int count = -1;
-            int shapeType = -1;
+            mutable int count = -1;
+            mutable int shapeType = -1;
             /**
              * Minimum bounds of all shapes in the file [x, y, z, m].
              * x and y represent spatial coordinates, while z is elevation
              * and m is measure value (when present in shapefile).
              */
-            double min[4];
+            mutable double min[4];
             /**
              * Maximum bounds of all shapes in the file [x, y, z, m].
              * x and y represent spatial coordinates, while z is elevation
              * and m is measure value (when present in shapefile).
              */
-            double max[4];
+            mutable double max[4];
             /**
              * Total number of features (records) from the DBF file.
              */
-            int numberOfFeatures = 0;
+            mutable int numberOfFeatures = 0;
 
             void getShapeInfo();
+            void getShapeInfo() const;
 
             bool isPoint(int shapeType);
             bool isMultiPoint(int shapeType);
@@ -79,6 +80,7 @@ namespace shp {
             bool isOpen();
 
             int getCount();
+            int getCount() const;
 
             GeometryType getGeometryType(); 
 
@@ -93,6 +95,9 @@ namespace shp {
             FeatureIterator begin();
 
             FeatureIterator end();
+
+            FeatureIterator begin() const;
+            FeatureIterator end() const;
 
     };
 

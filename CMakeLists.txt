@@ -842,6 +842,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/safe_mode_gui.h
     ${GUI_HDR_DIR}/SendToGpsDlg.h
     ${GUI_HDR_DIR}/SendToPeerDlg.h
+    ${GUI_HDR_DIR}/spatial_rtree.h
     ${GUI_HDR_DIR}/Station_Data.h
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/svg_utils.h

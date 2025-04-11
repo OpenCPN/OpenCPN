@@ -250,6 +250,8 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
 }
 
 bool ShapeBaseChart::LoadSHP() {
+  // Initialize the R-tree spatial index
+  _rtree = std::make_unique<RTree>();
   if (!fs::exists(_filename)) {
     _is_usable = false;
     return false;
@@ -286,7 +288,7 @@ bool ShapeBaseChart::LoadSHP() {
     }
   }
   _is_tiled = (has_x && has_y);
-  if (_is_usable && _is_tiled) {
+  if (_is_usable) {
     size_t feat{0};
     for (auto const &feature : *temp_reader) {
       if (!_loading) {
@@ -294,12 +296,20 @@ bool ShapeBaseChart::LoadSHP() {
         _is_usable = false;
         return false;
       }
-      auto f1 = feature.getAttributes();
-      // Create a LatLonKey using the 'y' (latitude) and 'x' (longitude)
-      // attributes These values represent the top-left corner of the tiles
-      _tiles[LatLonKey(std::any_cast<int>(feature.getAttributes()["y"]),
-                       std::any_cast<int>(feature.getAttributes()["x"]))]
+
+      // Build the R-tree with feature bounding boxes
+      RTreeBBox featureBBox = RTreeBBox::FromFeature(feature);
+      _rtree->Insert(feat, featureBBox);
+
+      // If tiled, also maintain the traditional tile-based index
+      if (_is_tiled) {
+        auto f1 = feature.getAttributes();
+        // Create a LatLonKey using the 'y' (latitude) and 'x' (longitude)
+        // attributes These values represent the top-left corner of the tiles
+        _tiles[LatLonKey(std::any_cast<int>(feature.getAttributes()["y"]),
+                       std::any_cast<int>(feature.getAttributes()["x"])))
           .push_back(feat);
+      }
       feat++;
     }
   }
@@ -559,6 +569,24 @@ bool ShapeBaseChart::CrossesLand(double &lat1, double &lon1, double &lat2,
   auto A = std::make_pair(lat1, norm_lon1);
   auto B = std::make_pair(lat2, norm_lon2);
 
+  // Use the R-tree to efficiently find potential intersecting polygons
+  if (_rtree) {
+    // Query the R-tree for features that might intersect with the line segment
+    std::vector<size_t> potentialFeatures =
+        _rtree->SearchLineIntersection(lat1, norm_lon1, lat2, norm_lon2);
+
+    // Check each candidate feature for actual intersection
+    for (size_t fid : potentialFeatures) {
+      auto const &feature = _reader->getFeature(fid);
+      if (PolygonLineIntersect(feature, A, B)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // Fall back to tile-based or linear search if R-tree is not available
   if (_is_tiled) {
     // Calculate grid-aligned min/max coordinates based on _dmod
     double minLat = std::min(lat1, lat2);
