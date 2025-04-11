@@ -208,6 +208,10 @@ EVT_TEXT(ID_DESCR_CTR_BASIC, MarkInfoDlg::OnDescChangedBasic)
 EVT_TEXT(ID_LATCTRL, MarkInfoDlg::OnPositionCtlUpdated)
 EVT_TEXT(ID_LONCTRL, MarkInfoDlg::OnPositionCtlUpdated)
 EVT_CHOICE(ID_WPT_RANGERINGS_NO, MarkInfoDlg::OnWptRangeRingsNoChange)
+// Passing constraints events
+EVT_CHECKBOX(ID_CHECKBOX_PASS_PORT, MarkInfoDlg::OnPassingConstraintChange)
+EVT_CHECKBOX(ID_CHECKBOX_PASS_STARBOARD, MarkInfoDlg::OnPassingConstraintChange)
+EVT_CHECKBOX(ID_CHECKBOX_PASS_CLOSE, MarkInfoDlg::OnPassingConstraintChange)
 // the HTML listbox's events
 EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
 EVT_COMMAND(wxID_ANY, EVT_LAYOUT_RESIZE, MarkInfoDlg::OnLayoutResize)
@@ -686,6 +690,37 @@ void MarkInfoDlg::Create() {
   sbSizerExtProperties->Add(sbRangeRingsExtProperties, 0, wxALL | wxEXPAND, 5);
   sbSizerExtProperties->Add(gbSizerInnerExtProperties2, 0, wxALL | wxEXPAND, 5);
   sbSizerExtProperties->Add(gbSizerInnerExtProperties1, 0, wxALL | wxEXPAND, 5);
+
+  // Waypoint Passing Constraints
+  wxStaticBoxSizer* sbPassingConstraints =
+      new wxStaticBoxSizer(wxVERTICAL, sbSizerExtProperties->GetStaticBox(),
+                           _("Passing Constraints"));
+  wxGridSizer* gbPassingConstraints = new wxGridSizer(3, 0, 0);
+
+  // Port side passing
+  m_checkBoxPassPort = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
+                                      ID_CHECKBOX_PASS_PORT, _("Port side"));
+  m_checkBoxPassPort->SetToolTip(_("Pass with this waypoint on port side."));
+  gbPassingConstraints->Add(m_checkBoxPassPort, 0, wxALL, 5);
+
+  // Starboard side passing
+  m_checkBoxPassStarboard =
+      new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
+                     ID_CHECKBOX_PASS_STARBOARD, _("Starboard side"));
+  m_checkBoxPassStarboard->SetToolTip(
+      _("Pass with this waypoint on starboard side."));
+  gbPassingConstraints->Add(m_checkBoxPassStarboard, 0, wxALL, 5);
+
+  // Close rounding
+  m_checkBoxPassClose =
+      new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
+                     ID_CHECKBOX_PASS_CLOSE, _("Close rounding"));
+  m_checkBoxPassClose->SetToolTip(
+      _("Navigate as close as safely possible to this waypoint."));
+  gbPassingConstraints->Add(m_checkBoxPassClose, 0, wxALL, 5);
+
+  sbPassingConstraints->Add(gbPassingConstraints, 0, wxALL | wxEXPAND, 5);
+  sbSizerExtProperties->Add(sbPassingConstraints, 0, wxALL | wxEXPAND, 5);
 
   fSizerExtProperties->Add(sbSizerExtProperties, 1, wxALL | wxEXPAND);
 
@@ -1561,6 +1596,14 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     m_staticTextEtd->SetLabel(
         wxString::Format("%s (%s)", _("ETD"), ocpn::getUsrDateTimeFormat()));
 
+    // Update passing constraints checkboxes
+    m_checkBoxPassPort->SetValue(
+        m_pRoutePoint->HasPassingFlag(kWptPassingPort));
+    m_checkBoxPassStarboard->SetValue(
+        m_pRoutePoint->HasPassingFlag(kWptPassingStarboard));
+    m_checkBoxPassClose->SetValue(
+        m_pRoutePoint->HasPassingFlag(kWptPassingCloseRounding));
+
     m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
     m_textCtrlPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextEtd->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1599,6 +1642,9 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_cbEtdPresent->Enable(false);
       m_notebookProperties->SetSelection(0);  // Show Basic page
       m_comboBoxTideStation->Enable(false);
+      m_checkBoxPassPort->Enable(false);
+      m_checkBoxPassStarboard->Enable(false);
+      m_checkBoxPassClose->Enable(false);
     } else {
       m_staticTextLayer->Enable(false);
       m_staticTextLayer->Show(false);
@@ -1735,6 +1781,15 @@ bool MarkInfoDlg::SaveChanges() {
     if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND)
       m_pRoutePoint->SetWaypointRangeRingsStepUnits(
           m_RangeRingUnits->GetSelection());
+
+    // Get passing constraints from UI
+    int passingFlags = kWptPassingNone;
+    if (m_checkBoxPassPort->GetValue()) passingFlags |= kWptPassingPort;
+    if (m_checkBoxPassStarboard->GetValue())
+      passingFlags |= kWptPassingStarboard;
+    if (m_checkBoxPassClose->GetValue())
+      passingFlags |= kWptPassingCloseRounding;
+    m_pRoutePoint->SetPassingFlags(passingFlags);
 
     m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
     if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {
@@ -1914,4 +1969,29 @@ void MarkInfoDlg::ShowTidesBtnClicked(wxCommandEvent& event) {
     msg += m_comboBoxTideStation->GetStringSelection();
     OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxCENTER, 10);
   }
+}
+
+void MarkInfoDlg::OnPassingConstraintChange(wxCommandEvent& event) {
+  if (!m_pRoutePoint || m_pRoutePoint->m_bIsInLayer) return;
+
+  // Handle potential contradictions in passing flags
+  if (event.GetId() == ID_CHECKBOX_PASS_PORT &&
+      m_checkBoxPassPort->GetValue() && m_checkBoxPassStarboard->GetValue()) {
+    // If port is checked and starboard is already checked, uncheck starboard
+    m_checkBoxPassStarboard->SetValue(false);
+  } else if (event.GetId() == ID_CHECKBOX_PASS_STARBOARD &&
+             m_checkBoxPassStarboard->GetValue() &&
+             m_checkBoxPassPort->GetValue()) {
+    // If starboard is checked and port is already checked, uncheck port
+    m_checkBoxPassPort->SetValue(false);
+  }
+
+  // Build passing flags from UI controls
+  int passingFlags = kWptPassingNone;
+  if (m_checkBoxPassPort->GetValue()) passingFlags |= kWptPassingPort;
+  if (m_checkBoxPassStarboard->GetValue()) passingFlags |= kWptPassingStarboard;
+  if (m_checkBoxPassClose->GetValue()) passingFlags |= kWptPassingCloseRounding;
+
+  // Apply the changes to the RoutePoint
+  m_pRoutePoint->SetPassingFlags(passingFlags);
 }
