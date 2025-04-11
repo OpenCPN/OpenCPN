@@ -22,6 +22,7 @@
  * Implement about.h
  */
 
+#include <fstream>
 #include <sstream>
 
 #include <wx/wxprec.h>
@@ -221,7 +222,7 @@ void About::Populate(void) {
   // The HTML Header
   //
   fs::path data_path(g_Platform->GetSharedDataDir().ToStdString());
-  std::ifstream istream(data_path / "authors.html");
+  std::ifstream istream(data_path / "Authors.html");
   std::stringstream ss;
   ss << istream.rdbuf();
   pAuthorHTMLCtl->SetPage(ss.str());
