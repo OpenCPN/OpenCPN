@@ -47,12 +47,12 @@
  * version, authors, license, and tips. This is a legacy variant
  * used on Android only.
  */
-class about : public wxDialog {
+class About : public wxDialog {
   DECLARE_EVENT_TABLE()
 
 public:
-  explicit about();
-  explicit about(wxWindow* parent, wxString License_Data_Locn,
+  explicit About();
+  explicit About(wxWindow* parent, wxString License_Data_Locn,
                  wxWindowID id = ID_DIALOG,
                  const wxString& caption = SYMBOL_ABOUT_TITLE,
                  const wxPoint& pos = wxDefaultPosition,

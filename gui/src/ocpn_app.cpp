@@ -572,7 +572,7 @@ int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
 bool g_bPreserveScaleOnX;
 
 AboutFrameImpl *g_pAboutDlg;
-about *g_pAboutDlgLegacy;
+About *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
