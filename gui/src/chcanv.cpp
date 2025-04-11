@@ -7466,11 +7466,10 @@ bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
     if (m_notification_button && m_notification_button->IsShown()) {
       wxRect logicalRect = m_notification_button->GetLogicalRect();
       bool isinButton = logicalRect.Contains(event.GetPosition());
-      if (isinButton && event.LeftDown()) {
-        HandleNotificationMouseClick();
-        // if (m_notification_button->MouseEvent(event)) {
-        // return true;
-        //}
+      if (isinButton) {
+        SetCursor(*pCursorArrow);
+        if (event.LeftDown()) HandleNotificationMouseClick();
+        return true;
       }
     }
 
