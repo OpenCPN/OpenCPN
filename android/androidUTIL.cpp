@@ -138,7 +138,7 @@ extern bool g_bSleep;
 androidUtilHandler *g_androidUtilHandler;
 extern wxDateTime g_start_time;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern about *g_pAboutDlgLegacy;
+extern About *g_pAboutDlgLegacy;
 extern bool g_bFullscreen;
 extern OCPNPlatform *g_Platform;
 

@@ -52,7 +52,7 @@
 
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern about* g_pAboutDlgLegacy;
+extern About* g_pAboutDlgLegacy;
 extern bool g_bresponsive;
 
 wxString OpenCPNVersion("\n      Version ");
@@ -85,15 +85,15 @@ const wxString OpenCPNInfoAlt =
 
 // clang-format on
 
-BEGIN_EVENT_TABLE(about, wxDialog)
-EVT_BUTTON(xID_OK, about::OnXidOkClick)
-EVT_BUTTON(ID_DONATE, about::OnDonateClick)
-EVT_BUTTON(ID_COPYINI, about::OnCopyClick)
-EVT_BUTTON(ID_COPYLOG, about::OnCopyClick)
-EVT_CLOSE(about::OnClose)
+BEGIN_EVENT_TABLE(About, wxDialog)
+EVT_BUTTON(xID_OK, About::OnXidOkClick)
+EVT_BUTTON(ID_DONATE, About::OnDonateClick)
+EVT_BUTTON(ID_COPYINI, About::OnCopyClick)
+EVT_BUTTON(ID_COPYLOG, About::OnCopyClick)
+EVT_CLOSE(About::OnClose)
 END_EVENT_TABLE()
 
-about::about(void)
+About::About(void)
     : m_DataLocn(wxEmptyString), m_parent(NULL), m_btips_loaded(FALSE) {
   pAboutHTMLCtl = NULL;
   pLicenseHTMLCtl = NULL;
@@ -101,7 +101,7 @@ about::about(void)
   m_blicensePageSet = false;
 }
 
-about::about(wxWindow* parent, wxString Data_Locn, wxWindowID id,
+About::About(wxWindow* parent, wxString Data_Locn, wxWindowID id,
              const wxString& caption, const wxPoint& pos, const wxSize& size,
              long style)
     : m_DataLocn(Data_Locn), m_parent(parent), m_btips_loaded(FALSE) {
@@ -118,7 +118,7 @@ about::about(wxWindow* parent, wxString Data_Locn, wxWindowID id,
   Create(parent, id, caption, pos, size, style);
 }
 
-bool about::Create(wxWindow* parent, wxWindowID id, const wxString& caption,
+bool About::Create(wxWindow* parent, wxWindowID id, const wxString& caption,
                    const wxPoint& pos, const wxSize& size, long style) {
   m_parent = parent;
 #ifdef __WXOSX__
@@ -139,7 +139,7 @@ bool about::Create(wxWindow* parent, wxWindowID id, const wxString& caption,
   return TRUE;
 }
 
-void about::SetColorScheme(void) {
+void About::SetColorScheme(void) {
   DimeControl(this);
   wxColor bg = GetBackgroundColour();
   if (pAboutHTMLCtl) pAboutHTMLCtl->SetBackgroundColour(bg);
@@ -162,7 +162,7 @@ void about::SetColorScheme(void) {
 #endif
 }
 
-void about::Populate(void) {
+void About::Populate(void) {
   wxColor bg = GetBackgroundColour();
   wxColor fg = wxColour(0, 0, 0);
 
@@ -264,7 +264,7 @@ void about::Populate(void) {
   SetColorScheme();
 }
 
-void about::RecalculateSize(void) {
+void About::RecalculateSize(void) {
   //  Make an estimate of the dialog size, without scrollbars showing
 
   wxSize esize;
@@ -285,7 +285,7 @@ void about::RecalculateSize(void) {
   Centre();
 }
 
-void about::CreateControls(void) {
+void About::CreateControls(void) {
   //  Set the nominal vertical size of the embedded controls
 
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -330,7 +330,7 @@ void about::CreateControls(void) {
                              wxSize(-1, -1), wxNB_TOP);
 
   pNotebook->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                     wxNotebookEventHandler(about::OnNBPageChange), NULL, this);
+                     wxNotebookEventHandler(About::OnNBPageChange), NULL, this);
 
   pNotebook->InheritAttributes();
   mainSizer->Add(pNotebook, 1,
@@ -401,7 +401,7 @@ void about::CreateControls(void) {
   mainSizer->Add(closeButton, 0, wxALIGN_RIGHT | wxALL, 5);
 }
 
-void about::OnNBPageChange(wxNotebookEvent& event) {
+void About::OnNBPageChange(wxNotebookEvent& event) {
   unsigned int i = event.GetSelection();
 
   if (i == 3) {
@@ -466,9 +466,9 @@ void about::OnNBPageChange(wxNotebookEvent& event) {
   }
 }
 
-void about::OnXidOkClick(wxCommandEvent& event) { Close(); }
+void About::OnXidOkClick(wxCommandEvent& event) { Close(); }
 
-void about::OnClose(wxCloseEvent& event) {
+void About::OnClose(wxCloseEvent& event) {
 #ifdef __WXGTK__
   wxTheApp->GetTopWindow()->Raise();
 #endif
@@ -476,12 +476,12 @@ void about::OnClose(wxCloseEvent& event) {
   g_pAboutDlgLegacy = NULL;
 }
 
-void about::OnDonateClick(wxCommandEvent& event) {
+void About::OnDonateClick(wxCommandEvent& event) {
   wxLaunchDefaultBrowser(
       "https://sourceforge.net/donate/index.php?group_id=180842");
 }
 
-void about::OnCopyClick(wxCommandEvent& event) {
+void About::OnCopyClick(wxCommandEvent& event) {
   wxString filename = event.GetId() == ID_COPYLOG
                           ? g_Platform->GetLogFileName()
                           : g_Platform->GetConfigFileName();

@@ -205,7 +205,7 @@ extern wxArrayString g_locale_catalog_array;
 #endif
 extern int options_lastPage;
 extern AboutFrameImpl *g_pAboutDlg;
-extern about *g_pAboutDlgLegacy;
+extern About *g_pAboutDlgLegacy;
 extern wxColour g_colourTrackLineColour;
 extern int g_n_ownship_min_mm;
 
