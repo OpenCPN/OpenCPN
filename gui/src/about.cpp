@@ -102,10 +102,14 @@ About::About(void)
   m_blicensePageSet = false;
 }
 
-About::About(wxWindow* parent, wxString Data_Locn, wxWindowID id,
+About::About(wxWindow* parent, wxString Data_Locn,
+             std::function<void()> launch_local_help, wxWindowID id,
              const wxString& caption, const wxPoint& pos, const wxSize& size,
              long style)
-    : m_DataLocn(Data_Locn), m_parent(parent), m_btips_loaded(FALSE) {
+    : m_DataLocn(Data_Locn),
+      m_parent(parent),
+      m_launch_local_help(launch_local_help),
+      m_btips_loaded(FALSE) {
   pAboutHTMLCtl = NULL;
   pLicenseHTMLCtl = NULL;
   pAuthorHTMLCtl = NULL;
@@ -406,7 +410,7 @@ void About::OnNBPageChange(wxNotebookEvent& event) {
   unsigned int i = event.GetSelection();
 
   if (i == 3) {
-    g_Platform->LaunchLocalHelp();
+    m_launch_local_help();
     pNotebook->ChangeSelection(0);
   }
 

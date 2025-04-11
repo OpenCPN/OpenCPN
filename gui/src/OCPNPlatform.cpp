@@ -2241,54 +2241,6 @@ bool OCPNPlatform::isPlatformCapable(int flag) {
 #endif
 }
 
-void OCPNPlatform::DoHelpDialog(void) {
-#ifndef __ANDROID__
-  if (!g_pAboutDlg) {
-    g_pAboutDlg = new AboutFrameImpl(gFrame);
-  } else {
-    g_pAboutDlg->SetFocus();
-  }
-  g_pAboutDlg->Show();
-
-#else
-  if (!g_pAboutDlgLegacy)
-    g_pAboutDlgLegacy = new about(gFrame, GetSharedDataDir());
-  else
-    g_pAboutDlgLegacy->SetFocus();
-  g_pAboutDlgLegacy->Show();
-
-#endif
-}
-
-void OCPNPlatform::LaunchLocalHelp(void) {
-#ifdef __ANDROID__
-  androidLaunchHelpView();
-#else
-  wxString def_lang_canonical = _T("en_US");
-
-#if wxUSE_XLOCALE
-  if (plocale_def_lang)
-    def_lang_canonical = plocale_def_lang->GetCanonicalName();
-#endif
-
-  wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
-
-  wxString help_try = help_locn + def_lang_canonical + _T(".html");
-
-  if (!::wxFileExists(help_try)) {
-    help_try = help_locn + _T("en_US") + _T(".html");
-
-    if (!::wxFileExists(help_try)) {
-      help_try = help_locn + _T("web") + _T(".html");
-    }
-
-    if (!::wxFileExists(help_try)) return;
-  }
-
-  wxLaunchDefaultBrowser(wxString(_T("file:///")) + help_try);
-#endif
-}
-
 void OCPNPlatform::platformLaunchDefaultBrowser(wxString URL) {
 #ifdef __ANDROID__
   androidLaunchBrowser(URL);
