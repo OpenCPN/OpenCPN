@@ -378,6 +378,7 @@ private:
   wxDateTime m_MMEAeventTime;
   unsigned long m_ulLastNMEATicktime;
   int m_tick_idx;
+  wxDateTime m_fix_start_time;
 
   wxString m_last_reported_chart_name;
   wxString m_last_reported_chart_pubdate;
