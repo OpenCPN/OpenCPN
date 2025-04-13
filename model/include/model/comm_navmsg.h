@@ -226,6 +226,7 @@ public:
 class NavMsg : public KeyProvider {
 public:
   NavMsg() = delete;
+  virtual ~NavMsg() = default;
 
   /** Return unique key used by observable to notify/listen. */
   virtual std::string key() const = 0;
