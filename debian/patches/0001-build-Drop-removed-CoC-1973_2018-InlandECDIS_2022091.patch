@@ -10,22 +10,13 @@ Not acceptable upstream.
 
 Forwarded: not-needed
 ---
- CMakeLists.txt | 18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+ CMakeLists.txt | 16 ----------------
+ 1 file changed, 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 765bbca..35aaecf 100644
+index 765bbca..f45c8b2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1393,7 +1393,7 @@ if (OCPN_USE_SVG)
- endif ()
- 
- if (OCPN_USE_NEWSERIAL)
--  add_subdirectory("libs/serial")
-+  # add_subdirectory("libs/serial")
-   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
-   message(STATUS "Using new serial library...")
- endif ()
 @@ -1725,16 +1725,6 @@ if (APPLE)
      data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )

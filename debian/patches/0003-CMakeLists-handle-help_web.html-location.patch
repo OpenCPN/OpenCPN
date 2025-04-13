@@ -3,15 +3,14 @@ Date: Sun, 13 Apr 2025 06:06:47 +0200
 Subject: CMakeLists: handle help_web.html location
 
 ---
- CMakeLists.txt                                     |  8 +--
- ...-CMakeLists-handle-help_web.html-location.patch | 75 +++++-----------------
- 2 files changed, 21 insertions(+), 62 deletions(-)
+ CMakeLists.txt | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 536ee34..0cfb117 100644
+index 53bfbd4..3c5511a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1823,7 +1823,7 @@ if (APPLE)
+@@ -1825,7 +1825,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -20,7 +19,7 @@ index 536ee34..0cfb117 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1863,11 +1863,11 @@ if (APPLE)
+@@ -1865,11 +1865,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
@@ -34,7 +33,7 @@ index 536ee34..0cfb117 100644
    endif ()
  
    target_sources(
-@@ -2031,7 +2031,7 @@ if (NOT APPLE)
+@@ -2033,7 +2033,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()
@@ -43,4 +42,3 @@ index 536ee34..0cfb117 100644
    endif ()
  
    if (UNIX)
-
