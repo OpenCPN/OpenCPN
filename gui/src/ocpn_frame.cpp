@@ -4976,7 +4976,7 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
       m_fixtime = 0;  // Invalidate fix time
       if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
 
-      // Possible notification on position watchdog timeout..
+      // Possible notification on position watchdog timeout...
       // if fix has been valid for at least 5 minutes, and then lost,
       // then post a critical notification
       if (m_fix_start_time.IsValid()) {

@@ -48,6 +48,7 @@
 #include "model/ocpn_types.h"
 #include "model/own_ship.h"
 #include "model/multiplexer.h"
+#include "model/notification_manager.h"
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -195,6 +196,17 @@ void CommBridge::PresetWatchdogs() {
   m_watchdogs.satellite_watchdog = 20;
 }
 
+bool CommBridge::IsNextLowerPriorityAvailable(
+    const std::unordered_map<std::string, int>& map, PriorityContainer& pc) {
+  int best_prio = 100;
+  for (auto it = map.begin(); it != map.end(); it++) {
+    if (it->second > pc.active_priority) {
+      best_prio = wxMin(best_prio, it->second);
+    }
+  }
+  return best_prio != pc.active_priority;
+}
+
 void CommBridge::SelectNextLowerPriority(
     const std::unordered_map<std::string, int>& map, PriorityContainer& pc) {
   int best_prio = 100;
@@ -237,7 +249,10 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
-    SelectNextLowerPriority(priority_map_position, active_priority_position);
+    if (IsNextLowerPriorityAvailable(priority_map_position,
+                                     active_priority_position)) {
+      SelectNextLowerPriority(priority_map_position, active_priority_position);
+    }
   }
 
   //  Update and check watchdog timer for SOG/COG data source
@@ -1418,6 +1433,21 @@ bool CommBridge::EvalPriority(
   active_priority.recent_active_time = now.GetTicks();
   if (debug_priority)
     printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
+
+  if (active_priority.pcclass == "position") {
+    if (this_priority != m_last_position_priority) {
+      m_last_position_priority = this_priority;
+
+      wxString msg;
+      msg.Printf("GNSS position fix priority shift: %s\n %s \n -> %s",
+                 this_identifier.c_str(), m_last_position_source.c_str(),
+                 source.c_str());
+      auto& noteman = NotificationManager::GetInstance();
+      noteman.AddNotification(NotificationSeverity::kInformational,
+                              msg.ToStdString());
+    }
+    m_last_position_source = source;
+  }
 
   return true;
 }

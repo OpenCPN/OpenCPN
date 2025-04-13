@@ -166,6 +166,9 @@ private:
   void PresetPriorityContainer(
       PriorityContainer &pc,
       const std::unordered_map<std::string, int> &priority_map);
+
+  bool IsNextLowerPriorityAvailable(
+      const std::unordered_map<std::string, int> &map, PriorityContainer &pc);
   void SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,
                                PriorityContainer &pc);
 
@@ -185,6 +188,8 @@ private:
   int n_LogWatchdogPeriod;
 
   BridgeLogCallbacks m_log_callbacks;
+  int m_last_position_priority;
+  std::string m_last_position_source;
 
   DECLARE_EVENT_TABLE()
 };
