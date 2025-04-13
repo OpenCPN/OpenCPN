@@ -71,6 +71,8 @@ public:
 
 private:
   NotificationManager();
+  void PersistNotificationAsFile(
+      const std::shared_ptr<Notification> _notification);
 
   void OnTimer(wxTimerEvent& event);
 

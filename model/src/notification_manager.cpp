@@ -25,10 +25,15 @@
 #include <cmath>
 #include <memory>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
+#include "model/base_platform.h"
 #include "model/navutil_base.h"
 #include "model/notification.h"
 #include "model/notification_manager.h"
+
+extern BasePlatform* g_BasePlatform;
 
 NotificationManager& NotificationManager::GetInstance() {
   static NotificationManager instance;
@@ -56,6 +61,31 @@ void NotificationManager::OnTimer(wxTimerEvent& event) {
   }
 }
 
+void NotificationManager::PersistNotificationAsFile(
+    const std::shared_ptr<Notification> _notification) {
+  wxString note_directory = g_BasePlatform->GetPrivateDataDir() +
+                            wxFileName::GetPathSeparator() + "notifications" +
+                            wxFileName::GetPathSeparator();
+  if (!wxDirExists(note_directory)) wxMkdir(note_directory);
+  wxString severity_prefix = "Info_";
+  NotificationSeverity severity = _notification->GetSeverity();
+  if (severity == NotificationSeverity::kWarning)
+    severity_prefix = "Warning_";
+  else if (severity == NotificationSeverity::kCritical)
+    severity_prefix = "Critical_";
+  wxString file_name = wxString(_notification.get()->GetGuid().c_str());
+  file_name.Prepend(severity_prefix);
+  file_name.Prepend(note_directory);
+
+  std::stringstream ss;
+  ss << _notification->GetMessage() << std::endl;
+
+  std::ofstream outputFile(file_name);
+  if (outputFile.is_open()) {
+    outputFile << ss.str();
+  }
+}
+
 NotificationSeverity NotificationManager::GetMaxSeverity() {
   int rv = 0;
   for (auto note : active_notifications) {
@@ -68,6 +98,7 @@ NotificationSeverity NotificationManager::GetMaxSeverity() {
 std::string NotificationManager::AddNotification(
     std::shared_ptr<Notification> _notification) {
   active_notifications.push_back(_notification);
+  PersistNotificationAsFile(_notification);
   evt_notificationlist_change.Notify();
   return _notification->GetGuid();
 }
@@ -77,9 +108,7 @@ std::string NotificationManager::AddNotification(NotificationSeverity _severity,
                                                  int _timeout_secs) {
   auto notification =
       std::make_shared<Notification>(_severity, _message, _timeout_secs);
-  active_notifications.push_back(notification);
-  evt_notificationlist_change.Notify();
-  return notification->GetGuid();
+  return AddNotification(notification);
 }
 
 bool NotificationManager::AcknowledgeNotification(const std::string& GUID) {
