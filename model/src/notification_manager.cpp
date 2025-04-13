@@ -32,6 +32,7 @@
 #include "model/navutil_base.h"
 #include "model/notification.h"
 #include "model/notification_manager.h"
+#include "wx/filename.h"
 
 extern BasePlatform* g_BasePlatform;
 
@@ -80,7 +81,7 @@ void NotificationManager::PersistNotificationAsFile(
   std::stringstream ss;
   ss << _notification->GetMessage() << std::endl;
 
-  std::ofstream outputFile(file_name);
+  std::ofstream outputFile(file_name.ToStdString().c_str(), std::ios::out);
   if (outputFile.is_open()) {
     outputFile << ss.str();
   }
