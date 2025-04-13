@@ -67,7 +67,7 @@ static wxBitmap* LoadSVG(const wxString filename, unsigned int width,
 
 
 wxBitmap* opencpn_plugin::GetPlugInBitmap() {
-  auto bitmap =  PluginLoader::getInstance()->GetPluginDefaultIcon();
+  auto bitmap =  PluginLoader::GetInstance()->GetPluginDefaultIcon();
   return const_cast<wxBitmap*>(bitmap);
 }
 

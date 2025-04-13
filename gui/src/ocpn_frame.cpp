@@ -85,7 +85,7 @@
 #include "model/track.h"
 
 #include "dialog_alert.h"
-#include "AboutFrameImpl.h"
+#include "about_frame_impl.h"
 #include "about.h"
 #include "ais.h"
 #include "ais_info_gui.h"
@@ -171,7 +171,7 @@ extern TrackPropDlg *pTrackPropDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
 extern S57QueryDialog *g_pObjectQueryDialog;
-extern about *g_pAboutDlgLegacy;
+extern About *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
 extern double vLat, vLon;
@@ -381,9 +381,58 @@ void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
   AbstractPlatform::ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::GetInstance()->LoadAllPlugIns(load_enabled);
   AbstractPlatform::HideBusySpinner();
   return b;
+}
+
+static void LaunchLocalHelp(void) {
+#ifdef __ANDROID__
+  androidLaunchHelpView();
+#else
+  wxString def_lang_canonical = _T("en_US");
+
+#if wxUSE_XLOCALE
+  if (plocale_def_lang)
+    def_lang_canonical = plocale_def_lang->GetCanonicalName();
+#endif
+
+  wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
+
+  wxString help_try = help_locn + def_lang_canonical + _T(".html");
+
+  if (!::wxFileExists(help_try)) {
+    help_try = help_locn + _T("en_US") + _T(".html");
+
+    if (!::wxFileExists(help_try)) {
+      help_try = help_locn + _T("web") + _T(".html");
+    }
+
+    if (!::wxFileExists(help_try)) return;
+  }
+
+  wxLaunchDefaultBrowser(wxString(_T("file:///")) + help_try);
+#endif
+}
+
+static void DoHelpDialog(void) {
+#ifndef __ANDROID__
+  if (!g_pAboutDlg) {
+    g_pAboutDlg = new AboutFrameImpl(gFrame);
+  } else {
+    g_pAboutDlg->SetFocus();
+  }
+  g_pAboutDlg->Show();
+
+#else
+  if (!g_pAboutDlgLegacy)
+    g_pAboutDlgLegacy = new About(gFrame, g_Platform->GetSharedDataDir(),
+                                  [] { LaunchLocalHelp(); });
+  else
+    g_pAboutDlgLegacy->SetFocus();
+  g_pAboutDlgLegacy->Show();
+
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1722,7 +1771,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   pConfig->UpdateSettings();
 
   //    Deactivate the PlugIns
-  auto plugin_loader = PluginLoader::getInstance();
+  auto plugin_loader = PluginLoader::GetInstance();
   if (plugin_loader) {
     plugin_loader->DeactivateAllPlugIns();
   }
@@ -1809,8 +1858,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
-  if (PluginLoader::getInstance())
-    PluginLoader::getInstance()->UnLoadAllPlugIns();
+  if (PluginLoader::GetInstance())
+    PluginLoader::GetInstance()->UnLoadAllPlugIns();
 
   if (g_pi_manager) {
     delete g_pi_manager;
@@ -2558,12 +2607,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case wxID_ABOUT:
     case ID_ABOUT: {
-      g_Platform->DoHelpDialog();
+      DoHelpDialog();
       break;
     }
 
     case wxID_HELP: {
-      g_Platform->LaunchLocalHelp();
+      LaunchLocalHelp();
       break;
     }
 
@@ -4704,7 +4753,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       if (m_initializing) break;
       m_initializing = true;
       AbstractPlatform::ShowBusySpinner();
-      PluginLoader::getInstance()->LoadAllPlugIns(true);
+      PluginLoader::GetInstance()->LoadAllPlugIns(true);
       AbstractPlatform::HideBusySpinner();
       //            RequestNewToolbars();
       RequestNewMasterToolbar();
@@ -5765,7 +5814,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   //    refresh thus, ensuring at least 1 Hz. callback.
   bool brq_dynamic = false;
   if (g_pi_manager) {
-    auto *pplugin_array = PluginLoader::getInstance()->GetPlugInArray();
+    auto *pplugin_array = PluginLoader::GetInstance()->GetPlugInArray();
     for (unsigned int i = 0; i < pplugin_array->GetCount(); i++) {
       PlugInContainer *pic = pplugin_array->Item(i);
       if (pic->m_enabled && pic->m_init_state) {
@@ -5889,7 +5938,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
 double MyFrame::GetMag(double a, double lat, double lon) {
   double Variance = std::isnan(gVar) ? g_UserVar : gVar;
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   if (loader && loader->IsPlugInAvailable(_T("WMM"))) {
     // Request variation at a specific lat/lon
 
@@ -7805,8 +7854,8 @@ void ApplyLocale() {
   //  Compliant Plugins will reload their locale message catalog during the
   //  Init() method. So it is sufficient to simply deactivate, and then
   //  re-activate, all "active" plugins.
-  PluginLoader::getInstance()->DeactivateAllPlugIns();
-  PluginLoader::getInstance()->UpdatePlugIns();
+  PluginLoader::GetInstance()->DeactivateAllPlugIns();
+  PluginLoader::GetInstance()->UpdatePlugIns();
 
   //         // Make sure the perspective saved in the config file is
   //         "reasonable"

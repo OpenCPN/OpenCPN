@@ -202,7 +202,7 @@ class InstallButton : public wxPanel {
 public:
   InstallButton(wxWindow* parent, PluginMetadata metadata)
       : wxPanel(parent), m_metadata(metadata), m_remove(false) {
-    auto loader = PluginLoader::getInstance();
+    auto loader = PluginLoader::GetInstance();
     PlugInContainer* found =
         PlugInByName(metadata.name, loader->GetPlugInArray());
     std::string label(_("Install"));

@@ -1,13 +1,6 @@
-/***************************************************************************
- *
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010-2023 by David S. Register                          *
- *   Copyright (C) 2023 Alec Leamas
+/**************************************************************************
+ *   Copyright (C) 2010 - 2023 by David S. Register                        *
+ *   Copyright (C) 2023 - 2025  Alec Leamas                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,6 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ * Low level code to load plugins from disk, notably the PluginLoader class
+ */
 
 #ifndef PLUGIN_LOADER_H_GUARD
 #define PLUGIN_LOADER_H_GUARD
@@ -59,7 +57,6 @@ enum class PluginStatus {
 };
 
 class PlugInContainer;  // forward
-class PlugInData;       // forward
 
 /** Basic data for a loaded plugin, trivially copyable */
 class PlugInData {
@@ -108,6 +105,7 @@ public:
   destroy_t* m_destroy_fn;
 };
 
+/** Error condition when loading a plugin. */
 class LoadError {
 public:
   enum class Type {
@@ -139,7 +137,7 @@ WX_DEFINE_ARRAY_PTR(PlugInContainer*, ArrayOfPlugIns);
  *
  * The general usage pattern to process events, here using EVT_LOAD_PLUGIN:
  *
- *   PluginLoader::getInstance()->evt_load_plugin.listen(this, EVT_LOAD_PLUGIN)
+ *   PluginLoader::GetInstance()->evt_load_plugin.listen(this, EVT_LOAD_PLUGIN)
  *   Bind(EVT_LOAD_PLUGIN, [&](ObservedEvt ev) {
  *          code to run on event...
  *   });
@@ -150,12 +148,18 @@ WX_DEFINE_ARRAY_PTR(PlugInContainer*, ArrayOfPlugIns);
  * function. There is a also a generic std::shared_ptr available as using
  * GetSharedPtr();
  *
- * Examples: PlugInManager::PlugInManager() in pluginmanager.cpp
+ * See: PlugInManager::PlugInManager() in pluginmanager.cpp
  */
 class PluginLoader {
 public:
-  static PluginLoader* getInstance();
+  static PluginLoader* GetInstance();
   virtual ~PluginLoader() = default;
+
+  /**
+   * Mark a library file (complete path) as loadable i. e., remove possible
+   * stamp
+   */
+  static void MarkAsLoadable(const std::string& library_path);
   /**
    *  Update PlugInContainer status using data from PluginMetadata and manifest.
    */
@@ -178,10 +182,12 @@ public:
   EventVar evt_unreadable_plugin;
 
   /**
-   *  Carries a malloc'ed read-only copy of a PlugInContainer owned by listener.
+   *  Carries a malloc'ed read-only copy of a PlugInContainer owned: by
+   * listener.
    */
   EventVar evt_deactivate_plugin;
 
+  /** Notified without data after all plugins loaded ot updated. */
   EventVar evt_update_chart_types;
 
   /**
@@ -190,6 +196,7 @@ public:
    */
   EventVar evt_plugin_loadall_finalize;
 
+  /** FIXME (leamas) not notified. */
   EventVar evt_version_incompatible_plugin;
 
   /**

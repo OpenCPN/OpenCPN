@@ -138,7 +138,7 @@ extern bool g_bSleep;
 androidUtilHandler *g_androidUtilHandler;
 extern wxDateTime g_start_time;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern about *g_pAboutDlgLegacy;
+extern About *g_pAboutDlgLegacy;
 extern bool g_bFullscreen;
 extern OCPNPlatform *g_Platform;
 
@@ -4365,7 +4365,7 @@ int doAndroidPersistState() {
   }
 
   //    Deactivate the PlugIns, allowing them to save state
-  PluginLoader::getInstance()->DeactivateAllPlugIns();
+  PluginLoader::GetInstance()->DeactivateAllPlugIns();
 
   /*
    Automatically drop an anchorage waypoint, if enabled
@@ -4475,7 +4475,7 @@ int doAndroidPersistState() {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
-  PluginLoader::getInstance()->UnLoadAllPlugIns();
+  PluginLoader::GetInstance()->UnLoadAllPlugIns();
   if (g_pi_manager) {
     delete g_pi_manager;
     g_pi_manager = NULL;

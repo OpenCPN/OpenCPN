@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,16 +17,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/**
+ * \file
+ * Class AboutFrameImpl
+ */
+
 #pragma once
 #ifndef _ABOUTFRAMEIMPL_H_
 #define _ABOUTFRAMEIMPL_H_
 
-#include "AboutFrame.h"
+#include "about_frame.h"
 
 /**
- * Implements the AboutFrame class with additional functionality. Extends
- * AboutFrame and provides implementation for various event handlers and
- * additional methods.
+ * Extends AboutFrame,  providing implementation for various event
+ * handlers and additional methods.
  */
 class AboutFrameImpl : public AboutFrame {
 protected:

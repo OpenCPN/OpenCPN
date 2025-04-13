@@ -120,7 +120,7 @@ using namespace std::literals::chrono_literals;
 #include "model/select.h"
 #include "model/track.h"
 
-#include "AboutFrameImpl.h"
+#include "about_frame_impl.h"
 #include "about.h"
 #include "ais_info_gui.h"
 #include "AISTargetAlertDialog.h"
@@ -572,7 +572,7 @@ int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
 bool g_bPreserveScaleOnX;
 
 AboutFrameImpl *g_pAboutDlg;
-about *g_pAboutDlgLegacy;
+About *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
@@ -728,7 +728,7 @@ void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
   g_Platform->ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::GetInstance()->LoadAllPlugIns(load_enabled);
   g_Platform->HideBusySpinner();
   return b;
 }
@@ -1547,7 +1547,7 @@ bool MyApp::OnInit() {
   auto style = g_StyleManager->GetCurrentStyle();
   auto bitmap = new wxBitmap(style->GetIcon("default_pi", 32, 32));
   if (bitmap->IsOk())
-    PluginLoader::getInstance()->SetPluginDefaultIcon(bitmap);
+    PluginLoader::GetInstance()->SetPluginDefaultIcon(bitmap);
   else
     wxLogWarning("Cannot initiate plugin default jigsaw icon.");
 

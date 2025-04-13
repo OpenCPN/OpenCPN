@@ -2619,7 +2619,7 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
   pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
   gFrame->RefreshAllCanvas();
 
-  // g_pMarkInfoDialog = MarkInfoImpl::getInstance( GetParent() );
+  // g_pMarkInfoDialog = MarkInfoImpl::GetInstance( GetParent() );
   // There is on global instance of the MarkProp Dialog
   if (!g_pMarkInfoDialog) g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
 

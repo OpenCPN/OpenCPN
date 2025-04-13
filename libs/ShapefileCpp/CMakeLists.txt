@@ -6,7 +6,6 @@ endif ()
 
 project(ShapefileCpp)
 
-add_definitions("-std=c++17")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 #find_package(shapelib REQUIRED)
@@ -18,5 +17,6 @@ add_subdirectory(lib)
 #add_subdirectory(app)
 
 add_library(ocpn::ShapefileCpp ALIAS ShapefileCppLib)
+target_compile_features(ShapefileCppLib PUBLIC cxx_std_17)
 
 set(SHAPEFILECPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/include")
