@@ -1,5 +1,5 @@
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Sun, 13 Apr 2025 05:55:24 +0200
+Date: Mon, 10 Jun 2024 09:58:18 +0200
 Subject: Add missing libs like tinyxml Debian work-around
 
 Since we remove some bundled libs when repacking the sources,
@@ -11,16 +11,17 @@ the sources.
 
 Forwarded: not-needed
 ---
----
- CMakeLists.txt             | 1 -
- cmake/in-files/config.h.in | 1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ CMakeLists.txt             |  1 -
+ cmake/SystemLibs.cmake     | 28 ++++++++++++++++++++++++++++
+ cmake/in-files/config.h.in |  1 +
+ 3 files changed, 29 insertions(+), 1 deletion(-)
+ create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 35aaecf..536ee34 100644
+index 9934fab..d0288f5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1467,7 +1467,6 @@ message(STATUS "    Adding local LIBTESS2")
+@@ -1526,7 +1526,6 @@ message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
  
@@ -28,6 +29,40 @@ index 35aaecf..536ee34 100644
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
  
  message(STATUS "    Adding local wxserverdisc")
+diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
+new file mode 100644
+index 0000000..473722c
+--- /dev/null
++++ b/cmake/SystemLibs.cmake
+@@ -0,0 +1,28 @@
++# Dummy definitions for systems like Debian which removes some bundled libs
++# in the packaging
++
++find_package(TinyXML REQUIRED)
++message(STATUS "Building with system tinyxml")
++add_library(TINYXML INTERFACE)
++target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
++target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
++add_library(ocpn::tinyxml ALIAS TINYXML)
++
++message(STATUS "Building with system serial lib")
++add_library(SERIAL_IF INTERFACE)
++find_library(LibSerial cxx-serial REQUIRED)
++find_file(SerialHeader NAME serial.h  REQUIRED)
++target_link_libraries(SERIAL_IF INTERFACE ${LibSerial})
++add_library(ocpn::serial ALIAS SERIAL_IF)
++set(HAVE_SYS_SERIAL_LIB ON CACHE BOOL "")
++
++# The system libserial serial.h lives in /usr/include, not
++# /usr/includ/7serial. Create a link which make the source code using
++# "#include serial/serial.h" work.
++if (NOT EXISTS ${CMAKE_BINARY_DIR}/include)
++  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
++endif ()
++execute_process(COMMAND ln -s /usr/include ${CMAKE_BINARY_DIR}/include/serial)
++
++find_path(HAVE_STDINT_H NAMES stdint.h)
++find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
 index 25ec4ee..19c2647 100644
 --- a/cmake/in-files/config.h.in
