@@ -1771,12 +1771,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   pConfig->UpdateSettings();
 
   //    Deactivate the PlugIns
-  auto plugin_loader = PluginLoader::GetInstance();
-  if (plugin_loader) {
-    plugin_loader->DeactivateAllPlugIns();
-  }
-
-  wxLogMessage(_T("opencpn::MyFrame exiting cleanly."));
+  PluginLoader::GetInstance()->DeactivateAllPlugIns();
+  wxLogMessage("opencpn::MyFrame exiting cleanly.");
 
   quitflag++;
 
@@ -1858,8 +1854,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
-  if (PluginLoader::GetInstance())
-    PluginLoader::GetInstance()->UnLoadAllPlugIns();
+  PluginLoader::GetInstance()->UnLoadAllPlugIns();
 
   if (g_pi_manager) {
     delete g_pi_manager;
