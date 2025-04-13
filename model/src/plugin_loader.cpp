@@ -1,12 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
+ /**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
- *   Copyright (C) 2022 Alec Leamas                                        *
+ *   Copyright (C) 2022-2025 Alec Leamas                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,6 +18,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/**
+* \file
+* Implement config_loader.h
+*/
+
 #include "config.h"
 
 #include <algorithm>
@@ -35,17 +34,6 @@
 #include <elf.h>
 #include <libelf.h>
 #include <gelf.h>
-#endif
-
-#if (defined(OCPN_GHC_FILESYSTEM) || \
-     (defined(__clang_major__) && (__clang_major__ < 15)))
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-
-#else
-#include <filesystem>
-#include <utility>
-namespace fs = std::filesystem;
 #endif
 
 #if defined(__linux__) && !defined(__ANDROID__)
@@ -83,6 +71,7 @@ namespace fs = std::filesystem;
 #include "model/safe_mode.h"
 #include "model/semantic_vers.h"
 #include "observable_confvar.h"
+#include "std_filesystem.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -100,8 +89,7 @@ static const std::vector<std::string> SYSTEM_PLUGINS = {
 /** Return complete PlugInContainer matching pic. */
 static PlugInContainer* GetContainer(const PlugInData& pd,
                                      const ArrayOfPlugIns& plugin_array) {
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    const auto& p = plugin_array.Item(i);
+  for (const auto& p : plugin_array) {
     if (p->m_common_name == pd.m_common_name) return p;
   }
   return nullptr;
@@ -146,6 +134,7 @@ static std::string GetInstalledVersion(const PlugInData& pd) {
   return version;
 }
 
+/** Return metadata corresponding to a PlugInContainer. */
 static PluginMetadata CreateMetadata(const PlugInContainer* pic) {
   auto catalogHdlr = CatalogHandler::getInstance();
 
@@ -162,6 +151,7 @@ static PluginMetadata CreateMetadata(const PlugInContainer* pic) {
   return mdata;
 }
 
+/** Return path for loadstamp file created when loading. */
 static fs::path LoadStampPath(const std::string& file_path) {
   fs::path path(g_BasePlatform->DefaultPrivateDataDir().ToStdString());
   path = path / "load_stamps";
