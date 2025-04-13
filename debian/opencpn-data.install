@@ -2,6 +2,7 @@
 
 # license.html and license.txt is referenced in the code.
 usr/share/locale/*/LC_MESSAGES/*.mo
+usr/share/opencpn/Authors.html
 usr/share/opencpn/filters
 usr/share/opencpn/license.html
 usr/share/opencpn/license.txt
