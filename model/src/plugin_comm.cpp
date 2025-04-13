@@ -105,7 +105,7 @@ void SendMessageToAllPlugins(const wxString& message_id,
   LogMessage(msg);
   // LogMessage(std::string("internal ALL ") + msg->to_string());  FIXME/leamas
 
-  for (auto pic : *PluginLoader::getInstance()->GetPlugInArray()) {
+  for (auto pic : *PluginLoader::GetInstance()->GetPlugInArray()) {
     if (pic->m_enabled && pic->m_init_state) {
       if (pic->m_cap_flag & WANTS_PLUGIN_MESSAGING) {
         switch (pic->m_api_version) {
@@ -158,7 +158,7 @@ void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v) {
 void SendAISSentenceToAllPlugIns(const wxString& sentence) {
   // decouple 'const wxString &' to keep interface.
   wxString decouple_sentence(sentence);
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -182,7 +182,7 @@ void SendPositionFixToAllPlugIns(GenericPosDatEx* ppos) {
   pfix.FixTime = ppos->FixTime;
   pfix.nSats = ppos->nSats;
 
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -242,7 +242,7 @@ void SendActiveLegInfoToAllPlugIns(const ActiveLegDat* leg_info) {
   leg.wp_name = leg_info->wp_name;
   leg.Xte = leg_info->Xte;
   leg.arrival = leg_info->arrival;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -275,7 +275,7 @@ void SendActiveLegInfoToAllPlugIns(const ActiveLegDat* leg_info) {
 
 bool SendMouseEventToPlugins(wxMouseEvent& event) {
   bool bret = false;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -304,7 +304,7 @@ bool SendMouseEventToPlugins(wxMouseEvent& event) {
 
 bool SendKeyEventToPlugins(wxKeyEvent& event) {
   bool bret = false;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -334,7 +334,7 @@ bool SendKeyEventToPlugins(wxKeyEvent& event) {
 }
 
 void SendPreShutdownHookToPlugins() {
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -354,7 +354,7 @@ void SendPreShutdownHookToPlugins() {
 }
 
 void SendCursorLatLonToAllPlugIns(double lat, double lon) {
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -387,7 +387,7 @@ void SendNMEASentenceToAllPlugIns(const wxString& sentence) {
 #endif
   auto msg = std::make_shared<PluginMsg>("NMEA-msg", sentence.ToStdString());
   LogMessage(msg, "internal ALL nmea-msg ");
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state) {
@@ -418,7 +418,7 @@ void SendNMEASentenceToAllPlugIns(const wxString& sentence) {
 
 int GetJSONMessageTargetCount() {
   int rv = 0;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state &&
@@ -434,7 +434,7 @@ void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
   wxString decouple_chart(chart);
   wxString decouple_feature(feature);
   wxString decouple_objname(objname);
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = (*plugin_array)[i];
     if (pic->m_enabled && pic->m_init_state) {

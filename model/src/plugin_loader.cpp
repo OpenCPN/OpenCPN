@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *   Copyright (C) 2022-2025 Alec Leamas                                   *
  *                                                                         *
@@ -19,9 +19,9 @@
  **************************************************************************/
 
 /**
-* \file
-* Implement config_loader.h
-*/
+ * \file
+ * Implement config_loader.h
+ */
 
 #include "config.h"
 
@@ -118,7 +118,7 @@ static bool IsSystemPluginName(const std::string& name) {
 static std::string GetInstalledVersion(const PlugInData& pd) {
   std::string path = PluginHandler::versionPath(pd.m_common_name.ToStdString());
   if (path == "" || !wxFileName::IsFileReadable(path)) {
-    auto loader = PluginLoader::getInstance();
+    auto loader = PluginLoader::GetInstance();
     auto pic = GetContainer(pd, *loader->GetPlugInArray());
     if (!pic || !pic->m_pplugin) {
       return SemanticVersion(0, 0, -1).to_string();
@@ -186,7 +186,7 @@ void PluginLoader::MarkAsLoadable(const std::string& library_path) {
 std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
     std::function<const PluginMetadata(const std::string&)> get_metadata) {
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   auto pic = GetContainer(pd, *loader->GetPlugInArray());
   if (!pic) {
     return SemanticVersion(0, 0, -1).to_string();
@@ -324,7 +324,7 @@ static void ProcessLateInit(PlugInContainer* pic) {
   }
 }
 
-PluginLoader* PluginLoader::getInstance() {
+PluginLoader* PluginLoader::GetInstance() {
   static PluginLoader* instance = nullptr;
 
   if (!instance) instance = new PluginLoader();
@@ -351,7 +351,7 @@ bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
 
 void PluginLoader::ShowPreferencesDialog(const PlugInData& pd,
                                          wxWindow* parent) {
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   auto pic = GetContainer(pd, *loader->GetPlugInArray());
   if (pic) pic->m_pplugin->ShowPreferencesDialog(parent);
 }
@@ -378,7 +378,7 @@ void PluginLoader::NotifySetupOptionsPlugin(const PlugInData* pd) {
             auto ppi = dynamic_cast<opencpn_plugin_19*>(pic->m_pplugin);
             if (ppi) {
               ppi->OnSetupOptions();
-              auto loader = PluginLoader::getInstance();
+              auto loader = PluginLoader::GetInstance();
               loader->SetToolboxPanel(pic->m_common_name, true);
             }
             break;

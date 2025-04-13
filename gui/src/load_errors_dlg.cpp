@@ -152,7 +152,7 @@ static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
 }
 
 LoadErrorsDlgCtrl::LoadErrorsDlgCtrl(wxWindow* parent) : m_parent(parent) {
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
 
   load_complete_listener.Listen(loader->evt_plugin_loadall_finalize, this,
                                 EVT_LOAD_COMPLETE);

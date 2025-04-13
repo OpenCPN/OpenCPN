@@ -691,7 +691,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
 
 static bool LoadAllPlugIns(bool load_enabled) {
   g_Platform->ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::GetInstance()->LoadAllPlugIns(load_enabled);
   g_Platform->HideBusySpinner();
   return b;
 }
@@ -1519,7 +1519,7 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
   GlobalVar<wxString> compat_os(&g_compatOS);
   compat_os_listener.Listen(compat_os, this, EVT_COMPAT_OS_CHANGE);
   Bind(EVT_COMPAT_OS_CHANGE, [&](wxCommandEvent&) {
-    PluginLoader::getInstance()->LoadAllPlugIns(false);
+    PluginLoader::GetInstance()->LoadAllPlugIns(false);
     m_pPlugInCtrl->ReloadPluginPanels();
   });
   auto action = [&](wxCommandEvent& evt) {
@@ -1664,7 +1664,7 @@ void options::Init(void) {
   m_pagePlugins = -1;
   m_pageConnections = -1;
 
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
   b_oldhaveWMM = b_haveWMM;
 
@@ -6031,7 +6031,7 @@ void options::SetInitialSettings(void) {
   m_font_element_array.Clear();
 
   b_oldhaveWMM = b_haveWMM;
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
 
   // Canvas configuration
@@ -7119,7 +7119,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   g_bShowTrue = pCBTrueShow->GetValue();
   g_bShowMag = pCBMagShow->GetValue();
 
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
   if (!b_haveWMM && !b_oldhaveWMM) {
     pMagVar->GetValue().ToDouble(&g_UserVar);
@@ -7520,7 +7520,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   // PlugIn Manager Panel
 
   // Pick up any changes to selections
-  if (PluginLoader::getInstance()->UpdatePlugIns())
+  if (PluginLoader::GetInstance()->UpdatePlugIns())
     m_returnChanges |= TOOLBAR_CHANGED;
 
   // And keep config in sync
@@ -8429,7 +8429,7 @@ void options::DoOnPageChange(size_t page) {
   } else if (m_pagePlugins == i) {  // 7 is the index of "Plugins" page
     // load the disabled plugins finally because the user might want to enable
     // them
-    auto loader = PluginLoader::getInstance();
+    auto loader = PluginLoader::GetInstance();
     if (LoadAllPlugIns(false)) {
       delete m_pPlugInCtrl;
       m_pPlugInCtrl = NULL;

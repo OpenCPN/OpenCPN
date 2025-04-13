@@ -728,7 +728,7 @@ void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
   g_Platform->ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::GetInstance()->LoadAllPlugIns(load_enabled);
   g_Platform->HideBusySpinner();
   return b;
 }
@@ -1547,7 +1547,7 @@ bool MyApp::OnInit() {
   auto style = g_StyleManager->GetCurrentStyle();
   auto bitmap = new wxBitmap(style->GetIcon("default_pi", 32, 32));
   if (bitmap->IsOk())
-    PluginLoader::getInstance()->SetPluginDefaultIcon(bitmap);
+    PluginLoader::GetInstance()->SetPluginDefaultIcon(bitmap);
   else
     wxLogWarning("Cannot initiate plugin default jigsaw icon.");
 

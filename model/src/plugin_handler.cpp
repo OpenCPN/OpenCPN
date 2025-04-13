@@ -939,7 +939,7 @@ bool PluginHandler::isPluginWritable(std::string name) {
   if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
     return true;
   }
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   return PlugInIxByName(name, loader->GetPlugInArray()) == -1;
 }
 
@@ -1159,7 +1159,7 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   using namespace std;
   vector<PluginMetadata> plugins;
 
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount(); i += 1) {
     const PlugInContainer* p = loader->GetPlugInArray()->Item(i);
     PluginMetadata plugin;
@@ -1182,7 +1182,7 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
 }
 
 void PluginHandler::SetInstalledMetadata(const PluginMetadata& pm) {
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   ssize_t ix = PlugInIxByName(pm.name, loader->GetPlugInArray());
   if (ix == -1) return;  // no such plugin
 
@@ -1269,7 +1269,7 @@ bool PluginHandler::ExtractMetadata(const std::string& path,
 
 bool PluginHandler::ClearInstallData(const std::string plugin_name) {
   auto ix = PlugInIxByName(plugin_name,
-                           PluginLoader::getInstance()->GetPlugInArray());
+                           PluginLoader::GetInstance()->GetPlugInArray());
   if (ix != -1) {
     MESSAGE_LOG << "Attempt to remove installation data for loaded plugin";
     return false;
@@ -1308,7 +1308,7 @@ bool PluginHandler::DoClearInstallData(const std::string plugin_name) {
 bool PluginHandler::uninstall(const std::string plugin_name) {
   using namespace std;
 
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   auto ix = PlugInIxByName(plugin_name, loader->GetPlugInArray());
   if (ix < 0) {
     MESSAGE_LOG << "trying to uninstall non-existing plugin " << plugin_name;
