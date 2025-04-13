@@ -5158,6 +5158,8 @@ class DECL_EXP PlugIn_Route_Ex {
 public:
   PlugIn_Route_Ex(void);
   ~PlugIn_Route_Ex(void);
+  PlugIn_Route_Ex(const PlugIn_Route_Ex&) = default;
+  PlugIn_Route_Ex& operator=(PlugIn_Route_Ex&) = default;
 
   wxString m_NameString;   //!< User-visible name of the route
   wxString m_StartString;  //!< Description of route start point
