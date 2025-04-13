@@ -1139,7 +1139,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         String ret = "";
 
-        GoogleApiAvailability av = GoogleApiAvailability.getInstance();
+        GoogleApiAvailability av = GoogleApiAvailability.GetInstance();
         if(av != null)
             ret = av.getOpenSourceSoftwareLicenseInfo (this);
 

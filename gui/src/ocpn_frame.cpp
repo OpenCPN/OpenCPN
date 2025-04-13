@@ -381,7 +381,7 @@ void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
   AbstractPlatform::ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::GetInstance()->LoadAllPlugIns(load_enabled);
   AbstractPlatform::HideBusySpinner();
   return b;
 }
@@ -1771,7 +1771,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   pConfig->UpdateSettings();
 
   //    Deactivate the PlugIns
-  auto plugin_loader = PluginLoader::getInstance();
+  auto plugin_loader = PluginLoader::GetInstance();
   if (plugin_loader) {
     plugin_loader->DeactivateAllPlugIns();
   }
@@ -1858,8 +1858,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
-  if (PluginLoader::getInstance())
-    PluginLoader::getInstance()->UnLoadAllPlugIns();
+  if (PluginLoader::GetInstance())
+    PluginLoader::GetInstance()->UnLoadAllPlugIns();
 
   if (g_pi_manager) {
     delete g_pi_manager;
@@ -4753,7 +4753,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       if (m_initializing) break;
       m_initializing = true;
       AbstractPlatform::ShowBusySpinner();
-      PluginLoader::getInstance()->LoadAllPlugIns(true);
+      PluginLoader::GetInstance()->LoadAllPlugIns(true);
       AbstractPlatform::HideBusySpinner();
       //            RequestNewToolbars();
       RequestNewMasterToolbar();
@@ -5814,7 +5814,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   //    refresh thus, ensuring at least 1 Hz. callback.
   bool brq_dynamic = false;
   if (g_pi_manager) {
-    auto *pplugin_array = PluginLoader::getInstance()->GetPlugInArray();
+    auto *pplugin_array = PluginLoader::GetInstance()->GetPlugInArray();
     for (unsigned int i = 0; i < pplugin_array->GetCount(); i++) {
       PlugInContainer *pic = pplugin_array->Item(i);
       if (pic->m_enabled && pic->m_init_state) {
@@ -5938,7 +5938,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
 double MyFrame::GetMag(double a, double lat, double lon) {
   double Variance = std::isnan(gVar) ? g_UserVar : gVar;
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   if (loader && loader->IsPlugInAvailable(_T("WMM"))) {
     // Request variation at a specific lat/lon
 
@@ -7854,8 +7854,8 @@ void ApplyLocale() {
   //  Compliant Plugins will reload their locale message catalog during the
   //  Init() method. So it is sufficient to simply deactivate, and then
   //  re-activate, all "active" plugins.
-  PluginLoader::getInstance()->DeactivateAllPlugIns();
-  PluginLoader::getInstance()->UpdatePlugIns();
+  PluginLoader::GetInstance()->DeactivateAllPlugIns();
+  PluginLoader::GetInstance()->UpdatePlugIns();
 
   //         // Make sure the perspective saved in the config file is
   //         "reasonable"

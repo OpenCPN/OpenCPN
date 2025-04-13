@@ -107,7 +107,7 @@ public class LicenseChecker implements ServiceConnection {
     private static PublicKey generatePublicKey(String encodedPublicKey) {
         try {
             byte[] decodedKey = Base64.decode(encodedPublicKey);
-            KeyFactory keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM);
+            KeyFactory keyFactory = KeyFactory.GetInstance(KEY_FACTORY_ALGORITHM);
 
             return keyFactory.generatePublic(new X509EncodedKeySpec(decodedKey));
         } catch (NoSuchAlgorithmException e) {

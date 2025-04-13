@@ -186,7 +186,7 @@ public:
     using namespace std;
     wxImage::AddHandler(new wxPNGHandler());
     g_BasePlatform->GetSharedDataDir();  // See #2619
-    PluginLoader::getInstance()->LoadAllPlugIns(false);
+    PluginLoader::GetInstance()->LoadAllPlugIns(false);
     auto plugins = PluginHandler::getInstance()->getInstalled();
     for (const auto& p : plugins) {
       if (p.version == "0.0") continue;
@@ -210,7 +210,7 @@ public:
   void uninstall_plugin(const std::string& plugin) {
     using namespace std;
     g_BasePlatform->GetSharedDataDir();  // See #2619
-    PluginLoader::getInstance()->LoadAllPlugIns(false);
+    PluginLoader::GetInstance()->LoadAllPlugIns(false);
     auto plugins = PluginHandler::getInstance()->getInstalled();
     vector<PluginMetadata> found;
     copy_if(plugins.begin(), plugins.end(), back_inserter(found),
@@ -284,7 +284,7 @@ public:
   }
 
   bool load_plugin(const std::string& plugin) {
-    auto loader = PluginLoader::getInstance();
+    auto loader = PluginLoader::GetInstance();
     wxImage::AddHandler(new wxPNGHandler());
     g_BasePlatform->GetSharedDataDir();  // See #2619
     wxDEFINE_EVENT(EVT_FILE_NOTFOUND, wxCommandEvent);

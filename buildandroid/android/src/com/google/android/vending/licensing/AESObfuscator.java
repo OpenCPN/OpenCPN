@@ -61,7 +61,7 @@ public class AESObfuscator implements Obfuscator {
             SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
             mEncryptor = Cipher.getInstance(CIPHER_ALGORITHM);
             mEncryptor.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(IV));
-            mDecryptor = Cipher.getInstance(CIPHER_ALGORITHM);
+            mDecryptor = Cipher.GetInstance(CIPHER_ALGORITHM);
             mDecryptor.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(IV));
         } catch (GeneralSecurityException e) {
             // This can't happen on a compatible Android device.

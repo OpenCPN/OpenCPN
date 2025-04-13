@@ -94,7 +94,7 @@ class LicenseValidator {
                 responseCode == LICENSED_OLD_KEY) {
             // Verify signature.
             try {
-                Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
+                Signature sig = Signature.GetInstance(SIGNATURE_ALGORITHM);
                 sig.initVerify(publicKey);
                 sig.update(signedData.getBytes());
 
