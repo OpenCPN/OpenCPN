@@ -82,7 +82,9 @@ void BaseDialog::AddHtmlContent(const std::stringstream& html) {
   assert(result && "BaseDialog: HTML page not added");
 
   int html_width, html_height;
+  html_window->SetBorders(0);
   html_window->GetVirtualSize(&html_width, &html_height);
+  html_width += GUI::GetSpacing(this, kDialogPadding * 2);  // prevent scrollbar
   html_window->SetMinSize(
       wxSize(html_width, html_height));  // Fit() needs this size!
   html_window->SetBackgroundColour(GetBackgroundColour());
