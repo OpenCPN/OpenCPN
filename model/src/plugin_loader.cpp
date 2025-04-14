@@ -491,7 +491,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
                 << " failed at last attempt";
     return false;
   }
-  CreateLoadStamp(file_name.ToStdString());
+  CreateLoadStamp(plugin_file.ToStdString());
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
   wxLog::FlushActive();
 
@@ -683,7 +683,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   } else {  // pic == 0
     return false;
   }
-  ClearLoadStamp(file_name.ToStdString());
+  ClearLoadStamp(plugin_file.ToStdString());
   return true;
 }
 
