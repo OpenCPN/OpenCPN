@@ -1,6 +1,6 @@
 project(ShapefileCppLib)
 
-set(ShapefileCppLib_SOURCES 
+set(ShapefileCppLib_SOURCES
 	src/ShapefileReader.cpp
 	src/Schema.cpp
 	src/FeatureIterator.cpp
@@ -22,7 +22,7 @@ set(ShapefileCppLib_SOURCES
 add_library(ShapefileCppLib STATIC ${ShapefileCppLib_SOURCES})
 
 target_include_directories(ShapefileCppLib
-	PUBLIC include shapelib::shapelib
+	PUBLIC include
 	PRIVATE src
 )
-target_link_libraries(ShapefileCppLib shapelib::shapelib)
+target_link_libraries(ShapefileCppLib ocpn::shapelib)
