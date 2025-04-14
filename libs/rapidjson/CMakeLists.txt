@@ -55,6 +55,12 @@ else ()
   if (${CMAKE_VERSION} VERSION_LESS 3.20)
     message(WARNING "Using downloaded sources requires cmake >= 3.20")
   endif ()
+
+  if (POLICY CMP0169)
+    # FetchContent_Populate cannot be used if NEW
+    cmake_policy(SET CMP0169 OLD)
+  endif ()
+
   include(FetchContent)
   FetchContent_Declare(rapidjson_src URL ${src_url} URL_HASH ${src_hash})
   FetchContent_Populate(rapidjson_src)
