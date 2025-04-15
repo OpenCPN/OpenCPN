@@ -2770,3 +2770,137 @@ void ConfigFlushAndReload() {
     }
   }
 }
+
+namespace NavProfile {
+PlugIn_NavigationProfile::PlugIn_NavigationProfile(const wxString& guid,
+                                                   const wxString& name,
+                                                   const wxString& description)
+    : m_GUID(guid), m_Name(name), m_Description(description) {
+  SetDefaultNavigationSettings();
+}
+
+PlugIn_NavigationProfile::PlugIn_NavigationProfile()
+    : m_GUID(GetNewGUID()),
+      m_Name(_("Default Navigation Profile")),
+      m_Description(
+          _("Default navigation profile with standard safety margins")) {
+  SetDefaultNavigationSettings();
+}
+
+void PlugIn_NavigationProfile::SetDefaultNavigationSettings() {
+  // Initialize with most common safety constraints active by default
+  m_ActiveNavigationTypes = kNavSafetyLand | kNavSafetyDepth | kNavSafetyHazard;
+
+  // Set default vessel draft.
+  m_Draft = 1.5;
+
+  // Default safety margins for different constraint types
+  // TODO: hard vs soft is overly simplistic.
+  // A hard constraint near a rocky, surf-pounded coastline should be much
+  // larger than the same constraint near a protected channel with proper
+  // markers. Context-Sensitive Constraints
+
+  // Very tight margins for land in harbor/channel context
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDay, kNavConstraintHard,
+                  0.005);  // ~10 meters
+  SetSafetyMargin(kNavSafetyLand, kNavTimeNight, kNavConstraintHard,
+                  0.01);  // ~20 meters
+  SetSafetyMargin(kNavSafetyLand, kNavTimeTwilight, kNavConstraintHard,
+                  0.008);  // ~15 meters
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDefault, kNavConstraintHard, 0.005);
+
+  // Minimal soft constraints for channels
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDay, kNavConstraintSoft,
+                  0.01);  // ~20 meters
+  SetSafetyMargin(kNavSafetyLand, kNavTimeNight, kNavConstraintSoft,
+                  0.02);  // ~40 meters
+  SetSafetyMargin(kNavSafetyLand, kNavTimeTwilight, kNavConstraintSoft,
+                  0.015);  // ~30 meters
+  SetSafetyMargin(kNavSafetyLand, kNavTimeDefault, kNavConstraintSoft, 0.01);
+
+  // Minimal margins for hazards in harbor context
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeDay, kNavConstraintHard,
+                  0.005);  // ~10 meters
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeNight, kNavConstraintHard,
+                  0.01);  // ~20 meters
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeTwilight, kNavConstraintHard,
+                  0.008);
+  SetSafetyMargin(kNavSafetyHazard, kNavTimeDefault, kNavConstraintHard, 0.005);
+
+  // Very close approach to markers/beacons in channel contexts
+  SetMarkerSafetyMargin(kNavMarkerUnlighted, kNavConstraintHard,
+                        0.003);  // ~5-6 meters
+  SetMarkerSafetyMargin(kNavMarkerLighted, kNavConstraintHard,
+                        0.002);                                     // ~4 meters
+  SetMarkerSafetyMargin(kNavMarkerAis, kNavConstraintHard, 0.002);  // ~4 meters
+  SetMarkerSafetyMargin(kNavMarkerRacon, kNavConstraintHard,
+                        0.002);  // ~4 meters
+  SetMarkerSafetyMargin(kNavMarkerRadio, kNavConstraintHard,
+                        0.002);  // ~4 meters
+
+  // Soft warnings still give a bit more room
+  SetMarkerSafetyMargin(kNavMarkerUnlighted, kNavConstraintSoft,
+                        0.005);  // ~10 meters
+  SetMarkerSafetyMargin(kNavMarkerLighted, kNavConstraintSoft,
+                        0.004);                                     // ~8 meters
+  SetMarkerSafetyMargin(kNavMarkerAis, kNavConstraintSoft, 0.004);  // ~8 meters
+  SetMarkerSafetyMargin(kNavMarkerRacon, kNavConstraintSoft,
+                        0.004);  // ~8 meters
+  SetMarkerSafetyMargin(kNavMarkerRadio, kNavConstraintSoft,
+                        0.004);  // ~8 meters
+}
+
+PlugIn_NavigationProfile::~PlugIn_NavigationProfile() {}
+
+void PlugIn_NavigationProfile::SetSafetyMargin(
+    PI_NavigationType navigationType, PI_NavigationTimeContext timeContext,
+    PI_NavigationConstraintType constraintType, double margin) {
+  // Validate parameters
+  if (navigationType == kNavSafetyNoConstraint || margin < 0) {
+    return;  // Invalid parameters, ignore the request
+  }
+
+  // Check if this is a single safety type, not a bitmask of multiple types
+  if ((navigationType & (navigationType - 1)) != 0) {
+    // This is a bitmask with multiple bits set, not a single type
+    return;
+  }
+
+  // Create a composite key for the safety margin map
+  // Key format: navigationType | (timeContext << 16) | (constraintType << 24)
+  unsigned int key = static_cast<unsigned int>(navigationType) |
+                     (static_cast<unsigned int>(timeContext) << 16) |
+                     (static_cast<unsigned int>(constraintType) << 24);
+
+  // Store the safety margin
+  // TODO
+  // m_SafetyMargins[key] = margin;
+}
+
+bool PlugIn_NavigationProfile::SetMarkerSafetyMargin(
+    MarkerType markerType, PI_NavigationConstraintType constraintType,
+    double margin, PI_NavigationErrorCode* error) {
+  // Validate parameters
+  if (margin < 0) {
+    if (error) {
+      *error = kNavCodeInvalidParameter;
+    }
+    return false;
+  }
+
+  // Create a composite key for the marker safety margin map
+  // Key format: markerType | (constraintType << 8)
+  unsigned int key = static_cast<unsigned int>(markerType) |
+                     (static_cast<unsigned int>(constraintType) << 8);
+
+  // Store the marker safety margin
+  // TODO
+  // m_MarkerSafetyMargins[key] = margin;
+
+  if (error) {
+    *error = kNavCodeSuccess;
+  }
+
+  return true;
+}
+}  // namespace NavProfile
