@@ -5131,6 +5131,10 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
     }
 
     if (new_ref_dbIndex == -1) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+      // The compiler sees a -1 index being used. Does not happen, though.
+
       // for whatever reason, no reference chart is known
       // Probably panned out of the coverage region
       // If any charts are anywhere on-screen, choose the smallest
@@ -5153,6 +5157,7 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
                      VPoint.rotation);
         ReloadVP();
       }
+#pragma GCC diagnostic pop
     }
   }
 
