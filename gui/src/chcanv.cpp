@@ -312,6 +312,7 @@ extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
 ShapeBaseChartSet gShapeBasemap;
+extern bool g_CanvasHideNotificationIcon;
 
 //  TODO why are these static?
 
@@ -11911,16 +11912,17 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
     if (m_Compass) m_Compass->Paint(scratch_dc);
 
-    auto &noteman = NotificationManager::GetInstance();
-    if (noteman.GetNotificationCount()) {
-      m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
-      if (m_notification_button->UpdateStatus()) Refresh();
-      m_notification_button->Show(true);
-      m_notification_button->Paint(scratch_dc);
-    } else {
-      m_notification_button->Show(false);
+    if (!g_CanvasHideNotificationIcon) {
+      auto &noteman = NotificationManager::GetInstance();
+      if (noteman.GetNotificationCount()) {
+        m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
+        if (m_notification_button->UpdateStatus()) Refresh();
+        m_notification_button->Show(true);
+        m_notification_button->Paint(scratch_dc);
+      } else {
+        m_notification_button->Show(false);
+      }
     }
-
     RenderAlertMessage(mscratch_dc, GetVP());
   }
 

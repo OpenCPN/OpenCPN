@@ -570,6 +570,7 @@ int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
                      // no chart database, inform user, 2 - Start update right
                      // away
 bool g_bPreserveScaleOnX;
+bool g_CanvasHideNotificationIcon;
 
 AboutFrameImpl *g_pAboutDlg;
 About *g_pAboutDlgLegacy;

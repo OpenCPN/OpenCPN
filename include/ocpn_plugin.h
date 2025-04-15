@@ -6328,4 +6328,38 @@ extern DECL_EXP void EnableTenHertzUpdate(bool enable);
  */
 extern DECL_EXP void ConfigFlushAndReload();
 
+/**
+ * Plugin Notification Framework support
+ */
+
+enum class PI_NotificationSeverity : int {
+  PI_kInformational = 0,
+  PI_kWarning = 1,
+  PI_kCritical = 2
+};
+
+class PI_Notification {
+public:
+  PI_Notification(PI_NotificationSeverity _severity,
+                  const std::string &_message, int _timeout_secs,
+                  std::string _guid);
+  virtual ~PI_Notification() {};
+
+private:
+  PI_NotificationSeverity severity;
+  std::string message;
+  int auto_timeout_secs;
+  std::string guid;
+};
+
+extern DECL_EXP int GetActiveNotificationCount();
+extern DECL_EXP PI_NotificationSeverity GetMaxActiveNotificationLevel();
+extern DECL_EXP std::string RaiseNotification(
+    const PI_NotificationSeverity _severity, const std::string &_message,
+    int timeout_secs = -1);
+extern DECL_EXP bool AcknowledgePINotification(const std::string &guid);
+extern DECL_EXP std::vector<std::shared_ptr<PI_Notification>>
+GetActiveNotifications();
+extern DECL_EXP void EnableNotificationCanvasIcon(bool enable);
+
 #endif  //_PLUGIN_H_
