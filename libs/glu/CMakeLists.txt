@@ -75,3 +75,8 @@ target_include_directories(
   GLU_static PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include
 )
 target_link_libraries(GLU_static PRIVATE ocpn::gl-headers)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(
+    GLU_static PRIVATE -Wno-array-parameter  -Wno-stringop-overflow
+  )
+endif ()
