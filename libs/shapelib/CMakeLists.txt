@@ -29,6 +29,7 @@ set(src_hash MD5=ccdcabbc685eb575120fa3eb61003280)
 list(APPEND patches
   0001-cmake-Add-guard-for-multiple-inclusions.patch
   0002-cmake-Make-BUILD_TESTING-an-option.patch
+  0003-shapefil.h-Use-correct-include-gdal-cpol.h-path.patch
 )
 
 if (POLICY CMP0135)
@@ -84,6 +85,7 @@ if (NOT TARGET shp)
   set(BUILD_TESTING OFF CACHE BOOL "")
   set(BUILD_APPS OFF CACHE BOOL "")
   set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
+  set(USE_CPL OFF CACHE BOOL "")
   add_subdirectory(${src_dir} shapelib_dir)
 endif ()
 target_link_libraries(_SHAPELIB_IF INTERFACE shp)
