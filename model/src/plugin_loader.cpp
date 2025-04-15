@@ -171,6 +171,7 @@ static bool HasLoadStamp(const std::string& filename) {
 }
 
 static void ClearLoadStamp(const std::string& filename) {
+  if (filename.empty()) return;
   auto path = LoadStampPath(filename);
   if (exists(path)) {
     if (!remove(path)) {
@@ -486,12 +487,14 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
                                        bool load_enabled) {
   wxString plugin_file = wxFileName(file_name).GetFullName();
   wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
-  if (HasLoadStamp(plugin_file.ToStdString())) {
+
+  wxString plugin_loadstamp = wxFileName(file_name).GetName();
+  if (HasLoadStamp(plugin_loadstamp.ToStdString())) {
     MESSAGE_LOG << "Refusing to load " << file_name
                 << " failed at last attempt";
     return false;
   }
-  CreateLoadStamp(plugin_file.ToStdString());
+  CreateLoadStamp(plugin_loadstamp.ToStdString());
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
   wxLog::FlushActive();
 
@@ -536,7 +539,11 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
     }
   }
 
-  if (loaded) return true;
+  if (loaded) {
+    ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
+    return true;
+  }
+
   // Avoid loading/testing legacy plugins installed in base plugin path.
   wxFileName fn_plugin_file(file_name);
   wxString plugin_file_path =
@@ -550,6 +557,8 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       if (!IsSystemPluginPath(file_name.ToStdString())) {
         DEBUG_LOG << "Skipping plugin " << file_name << " in "
                   << g_BasePlatform->GetPluginDir();
+
+        ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
         return false;
       }
     }
@@ -557,6 +566,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
 
   if (!IsSystemPluginPath(file_name.ToStdString()) && safe_mode::get_mode()) {
     DEBUG_LOG << "Skipping plugin " << file_name << " in safe mode";
+    ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
     return false;
   }
 
@@ -589,6 +599,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
     pic->m_destroy_fn(pic->m_pplugin);
     delete pic;
     wxLogMessage("Skipping not enabled candidate.");
+    ClearLoadStamp(plugin_loadstamp.ToStdString());
     return true;
   }
 
@@ -683,7 +694,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   } else {  // pic == 0
     return false;
   }
-  ClearLoadStamp(plugin_file.ToStdString());
+  ClearLoadStamp(plugin_loadstamp.ToStdString());
   return true;
 }
 

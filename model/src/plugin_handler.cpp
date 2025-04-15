@@ -569,8 +569,11 @@ static bool win_entry_set_install_path(struct archive_entry* entry,
     DEBUG_LOG << msg;
     return false;
   }
+  if (is_library) {
+    wxFileName nm(path);
+    PluginLoader::MarkAsLoadable(nm.GetName().ToStdString());
+  }
   wxString s(path);
-  if (is_library) PluginLoader::MarkAsLoadable(path);
   s.Replace("/", "\\");  // std::regex_replace FTBS on gcc 4.8.4
   s.Replace("\\\\", "\\");
   archive_entry_set_pathname(entry, s.c_str());
@@ -608,7 +611,8 @@ static bool flatpak_entry_set_install_path(struct archive_entry* entry,
 
   PluginPaths* paths = PluginPaths::getInstance();
   if (dest.find(paths->UserLibdir()) != std::string::npos) {
-    PluginLoader::MarkAsLoadable(dest);
+    wxFileName nm(path);
+    PluginLoader::MarkAsLoadable(nm.GetName().ToStdString());
   }
 
   return true;
@@ -668,12 +672,18 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
              "/plugins/lib/" + suffix;
       is_library = true;
     }
+  } else {
+    if (ocpn::startswith(location, "lib") &&
+        ocpn::startswith(suffix, "opencpn/") && ocpn::endswith(suffix, ".so")) {
+      is_library = true;
+    }
   }
 
-  PluginPaths* paths = PluginPaths::getInstance();
-  if (is_library || dest.find(paths->UserLibdir()) != std::string::npos) {
-    PluginLoader::MarkAsLoadable(dest);
+  if (is_library) {
+    wxFileName nm(suffix);
+    PluginLoader::MarkAsLoadable(nm.GetName().ToStdString());
   }
+
   archive_entry_set_pathname(entry, dest.c_str());
   return true;
 }
@@ -719,7 +729,11 @@ static bool apple_entry_set_install_path(struct archive_entry* entry,
     return false;
   }
   archive_entry_set_pathname(entry, dest.c_str());
-  if (is_library) PluginLoader::MarkAsLoadable(dest);
+  if (is_library) {
+    wxFileName nm(dest);
+    PluginLoader::MarkAsLoadable(nm.GetName().ToStdString());
+  }
+
   return true;
 }
 
@@ -774,7 +788,10 @@ static bool android_entry_set_install_path(struct archive_entry* entry,
   string dest = installPaths[location] + "/" + suffix;
 
   archive_entry_set_pathname(entry, dest.c_str());
-  if (is_library) PluginLoader::MarkAsLoadable(dest);
+  if (is_library) {
+    wxFileName nm(suffix);
+    PluginLoader::MarkAsLoadable(nm.GetName().ToStdString());
+  }
   return true;
 }
 
@@ -1203,7 +1220,6 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
   saveFilelist(filelist, plugin.name);
   saveDirlist(plugin.name);
   saveVersion(plugin.name, plugin.version);
-
   return true;
 }
 
