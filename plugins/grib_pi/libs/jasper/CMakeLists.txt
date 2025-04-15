@@ -101,6 +101,12 @@ target_compile_definitions(JASPER
     -DJASPER
 )
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # We trust this old and well tested code
+  target_compile_options(JASPER PRIVATE -Wno-stringop-overflow)
+endif ()
+
+
 # FIXME: this hides some nasty warnings, some of which fixed upstream.
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     target_compile_definitions(JASPER PRIVATE "-D_GNU_SOURCE=1")
