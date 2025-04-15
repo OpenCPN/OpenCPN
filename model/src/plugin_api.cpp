@@ -40,6 +40,7 @@
 #include "model/comm_navmsg_bus.h"
 
 #include "ocpn_plugin.h"
+#include "model/comm_drv_factory.h"
 using namespace std;
 
 vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
@@ -255,3 +256,47 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
 wxString* GetpPrivateApplicationDataLocation(void) {
   return g_BasePlatform->GetPrivateDataDirPtr();
 }
+
+void DoFlushAndReloadComms() {
+  // Called from plugin API ReloadConfigConnections();
+
+  // Close all connections
+
+  // Connect Datastreams
+
+  for (auto* cp : TheConnectionParams()) {
+    if (cp->bEnabled) {
+      MakeCommDriver(cp);
+      cp->b_IsSetup = TRUE;
+    }
+  }
+}
+
+// useful
+#if 0
+// Recreate datastreams that are new, or have been edited
+for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+  ConnectionParams* cp = TheConnectionParams()->Item(i);
+
+  if (cp->b_IsSetup) continue;
+
+  // Connection is new, or edited, or disabled
+
+  // Terminate and remove any existing driver, if present in registry
+  StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
+
+  // Stop and remove  "previous" port, in case other params have changed.
+  StopAndRemoveCommDriver(cp->GetLastDSPort(), cp->GetLastCommProtocol());
+
+  // Internal BlueTooth driver stacks commonly need a time delay to purge
+  // their buffers, etc. before restating with new parameters...
+  if (cp->Type == INTERNAL_BT) wxSleep(1);
+
+  // Connection has been disabled
+  if (!cp->bEnabled) continue;
+
+  // Make any new or re-enabled drivers
+  MakeCommDriver(cp);
+  cp->b_IsSetup = TRUE;
+}
+#endif
