@@ -1267,9 +1267,9 @@ add_subdirectory("libs/shapelib")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::shapelib)
 
 add_subdirectory("libs/ShapefileCpp")
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::ShapefileCpp)
-target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
-target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::shapefile_cpp)
+# target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
+# target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
 
 if (NOT QT_ANDROID)
   add_subdirectory("libs/libdnet")
