@@ -22,10 +22,15 @@
  * Implement about_frame_impl.h
  */
 
+#include <fstream>
+#include <sstream>
+#include <string>
+
 #include "about_frame_impl.h"
 #include "config.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
+#include "std_filesystem.h"
 
 #ifdef __WXMSW__
 #define EXTEND_WIDTH 70
@@ -36,6 +41,15 @@
 #endif
 
 extern OCPNPlatform* g_Platform;
+
+/** Load utf-8 encoded HTML page, works around wxHtmlWindow LoadFile() bugs */
+static void LoadAuthors(wxHtmlWindow& hyperlink) {
+  fs::path datadir(g_Platform->GetSharedDataDir().ToStdString());
+  std::ifstream stream(datadir / "Authors.html");
+  std::stringstream ss;
+  ss << stream.rdbuf();
+  hyperlink.SetPage(wxString::FromUTF8(ss.str().c_str()));
+}
 
 AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
                                const wxString& title, const wxPoint& pos,
@@ -57,8 +71,7 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
   m_btnBack->Hide();
   m_htmlWinLicense->LoadFile(wxString::Format(
       "%s/license.html", g_Platform->GetSharedDataDir().c_str()));
-  m_htmlWinAuthors->LoadFile(wxString::Format(
-      "%s/Authors.html", g_Platform->GetSharedDataDir().c_str()));
+  LoadAuthors(*m_htmlWinAuthors);
   wxBitmap logo(wxString::Format("%s/opencpn.png",
                                  g_Platform->GetSharedDataDir().c_str()),
                 wxBITMAP_TYPE_ANY);
