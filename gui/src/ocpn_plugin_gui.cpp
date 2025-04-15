@@ -1844,6 +1844,28 @@ void PlugIn_Waypoint_Ex::InitDefaults() {
   m_lon = 0;
 }
 
+PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2() : PlugIn_Waypoint_Ex() {
+  InitExV2Defaults();
+}
+
+PlugIn_Waypoint_ExV2::PlugIn_Waypoint_ExV2(
+    double lat, double lon, const wxString& icon_ident, const wxString& wp_name,
+    const wxString& GUID, const double ScaMin, const bool bNameVisible,
+    const int nRanges, const double RangeDistance, const wxColor RangeColor)
+    : PlugIn_Waypoint_Ex(lat, lon, icon_ident, wp_name, GUID, ScaMin,
+                         bNameVisible, nRanges, RangeDistance, RangeColor) {
+  InitExV2Defaults();
+}
+
+void PlugIn_Waypoint_ExV2::InitExV2Defaults() {
+  scamax = 1e6;
+  m_PlannedSpeed = 0.0;
+  m_WaypointArrivalRadius = 0.0;
+  m_bShowWaypointRangeRings = false;
+}
+
+PlugIn_Waypoint_ExV2::~PlugIn_Waypoint_ExV2() {}
+
 bool PlugIn_Waypoint_Ex::GetFSStatus() {
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(m_GUID);
   if (!prp) return false;
@@ -1905,26 +1927,26 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->m_GUID = src->m_GUID;
 
   //  Transcribe (clone) the html HyperLink List, if present
-  if (src->m_HyperlinkList == nullptr) return;
+  if (src->m_HyperlinkList) {
+    delete dst->m_HyperlinkList;
+    dst->m_HyperlinkList = nullptr;
 
-  delete dst->m_HyperlinkList;
-  dst->m_HyperlinkList = nullptr;
+    if (src->m_HyperlinkList->GetCount() > 0) {
+      dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-  if (src->m_HyperlinkList->GetCount() > 0) {
-    dst->m_HyperlinkList = new Plugin_HyperlinkList;
+      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      while (linknode) {
+        Hyperlink* link = linknode->GetData();
 
-    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
+        Plugin_Hyperlink* h = new Plugin_Hyperlink();
+        h->DescrText = link->DescrText;
+        h->Link = link->Link;
+        h->Type = link->LType;
 
-      Plugin_Hyperlink* h = new Plugin_Hyperlink();
-      h->DescrText = link->DescrText;
-      h->Link = link->Link;
-      h->Type = link->LType;
+        dst->m_HyperlinkList->Append(h);
 
-      dst->m_HyperlinkList->Append(h);
-
-      linknode = linknode->GetNext();
+        linknode = linknode->GetNext();
+      }
     }
   }
 
@@ -1938,6 +1960,15 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->scamin = src->GetScaMin();
   dst->b_useScamin = src->GetUseSca();
   dst->IsActive = src->m_bIsActive;
+
+  PlugIn_Waypoint_ExV2* dst_v2 = dynamic_cast<PlugIn_Waypoint_ExV2*>(dst);
+  if (dst_v2) {
+    dst_v2->scamax = src->GetScaMax();
+    dst_v2->m_PlannedSpeed = src->GetPlannedSpeed();
+    dst_v2->m_ETD = src->GetManualETD();
+    dst_v2->m_WaypointArrivalRadius = src->GetWaypointArrivalRadius();
+    dst_v2->m_bShowWaypointRangeRings = src->GetShowWaypointRangeRings();
+  }
 }
 
 static void cloneHyperlinkListEx(RoutePoint* dst,
@@ -1991,6 +2022,18 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
   pWP->SetNameShown(src->IsNameVisible);
   pWP->SetVisible(src->IsVisible);
 
+  const PlugIn_Waypoint_ExV2* dst_v2 =
+      dynamic_cast<const PlugIn_Waypoint_ExV2*>(src);
+  if (dst_v2) {
+    pWP->SetWaypointArrivalRadius(dst_v2->m_WaypointArrivalRadius);
+    pWP->SetShowWaypointRangeRings(dst_v2->m_bShowWaypointRangeRings);
+    pWP->SetScaMax(dst_v2->scamax);
+    pWP->SetPlannedSpeed(dst_v2->m_PlannedSpeed);
+    if (dst_v2->m_ETD.IsValid())
+      pWP->SetETD(dst_v2->m_ETD);
+    else
+      pWP->SetETD(wxEmptyString);
+  }
   return pWP;
 }
 bool GetSingleWaypointEx(wxString GUID, PlugIn_Waypoint_Ex* pwaypoint) {
@@ -2104,6 +2147,19 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
+
+    PlugIn_Waypoint_ExV2* waypoint_v2 =
+        dynamic_cast<PlugIn_Waypoint_ExV2*>(pwaypoint);
+    if (waypoint_v2) {
+      prp->SetPlannedSpeed(waypoint_v2->m_PlannedSpeed);
+      if (waypoint_v2->m_ETD.IsValid())
+        prp->SetETD(waypoint_v2->m_ETD);
+      else
+        prp->SetETD(wxEmptyString);
+      prp->SetWaypointArrivalRadius(waypoint_v2->m_WaypointArrivalRadius);
+      prp->SetShowWaypointRangeRings(waypoint_v2->m_bShowWaypointRangeRings);
+      prp->SetScaMax(waypoint_v2->scamax);
+    }
   }
 
   return b_found;
