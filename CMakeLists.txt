@@ -511,7 +511,10 @@ message(STATUS "Building version ${PACKAGE_VERSION}")
 
 # Detect the Apple Version of the build machine
 if (APPLE)
-  exec_program(uname ARGS -v OUTPUT_VARIABLE DARWIN_VERSION)
+  execute_process(
+    COMMAND uname  -v
+    OUTPUT_VARIABLE DARWIN_VERSION
+  )
   string(REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
   message(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
   if (DARWIN_VERSION GREATER 11)
