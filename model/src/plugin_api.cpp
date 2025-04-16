@@ -28,8 +28,10 @@
 #include <vector>
 
 #include <wx/event.h>
+#include <wx/fileconf.h>
 #include <wx/jsonval.h>
 #include <wx/jsonreader.h>
+#include <wx/tokenzr.h>
 
 #include "model/base_platform.h"
 #include "model/comm_appmsg.h"
@@ -257,13 +259,30 @@ wxString* GetpPrivateApplicationDataLocation(void) {
   return g_BasePlatform->GetPrivateDataDirPtr();
 }
 
-void DoFlushAndReloadComms() {
-  // Called from plugin API ReloadConfigConnections();
+void ReloadConfigConnections() {
+  // Close and delete all active comm drivers
+  auto& registry = CommDriverRegistry::GetInstance();
+  registry.CloseAllDrivers();
 
-  // Close all connections
+  // Reload config file connections parameters.
+  wxFileConfig* pConf = GetOCPNConfigObject();
+  if (pConf) {
+    pConf->SetPath(_T ( "/Settings/NMEADataSource" ));
 
-  // Connect Datastreams
+    wxString connectionconfigs;
+    pConf->Read(_T( "DataConnections" ), &connectionconfigs);
+    if (!connectionconfigs.IsEmpty()) {
+      wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+      TheConnectionParams().clear();
+      for (size_t i = 0; i < confs.Count(); i++) {
+        ConnectionParams* prm = new ConnectionParams(confs[i]);
+        if (!prm->Valid) continue;
+        TheConnectionParams().push_back(prm);
+      }
+    }
+  }
 
+  // Reconnect enabled connections
   for (auto* cp : TheConnectionParams()) {
     if (cp->bEnabled) {
       MakeCommDriver(cp);
@@ -271,32 +290,3 @@ void DoFlushAndReloadComms() {
     }
   }
 }
-
-// useful
-#if 0
-// Recreate datastreams that are new, or have been edited
-for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-  ConnectionParams* cp = TheConnectionParams()->Item(i);
-
-  if (cp->b_IsSetup) continue;
-
-  // Connection is new, or edited, or disabled
-
-  // Terminate and remove any existing driver, if present in registry
-  StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
-
-  // Stop and remove  "previous" port, in case other params have changed.
-  StopAndRemoveCommDriver(cp->GetLastDSPort(), cp->GetLastCommProtocol());
-
-  // Internal BlueTooth driver stacks commonly need a time delay to purge
-  // their buffers, etc. before restating with new parameters...
-  if (cp->Type == INTERNAL_BT) wxSleep(1);
-
-  // Connection has been disabled
-  if (!cp->bEnabled) continue;
-
-  // Make any new or re-enabled drivers
-  MakeCommDriver(cp);
-  cp->b_IsSetup = TRUE;
-}
-#endif

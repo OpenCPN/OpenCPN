@@ -2973,8 +2973,8 @@ struct DateTimeFormatOptions {
  * Format a date/time to a localized string representation, conforming to the
  * global date/time format and timezone settings.
  *
- * The function expects date_time to be in local time and formats it according to the 
- * timezone configuration either in:
+ * The function expects date_time to be in local time and formats it according
+ * to the timezone configuration either in:
  * - UTC: Coordinated Universal Time (default)
  * - Local Time: System's configured timezone with proper DST handling
  * - LMT: Local Mean Time calculated based on the longitude specified in options
@@ -2983,8 +2983,10 @@ struct DateTimeFormatOptions {
  * consistent date/time formatting across the entire application.
  *
  * @param date_time The date/time to format, must be in local time.
- * @param options The date/time format options including target timezone and formatting preferences.
- * @return wxString The formatted date/time string with appropriate timezone indicator.
+ * @param options The date/time format options including target timezone and
+ * formatting preferences.
+ * @return wxString The formatted date/time string with appropriate timezone
+ * indicator.
  */
 extern DECL_EXP wxString toUsrDateTimeFormat_Plugin(
     const wxDateTime date_time,
@@ -6304,5 +6306,10 @@ extern DECL_EXP void EnableTenHertzUpdate(bool enable);
  * settings.
  */
 extern DECL_EXP void ConfigFlushAndReload();
+
+/*
+ * Reload and restore all connections by direct read of config file
+ */
+extern DECL_EXP void ReloadConfigConnections();
 
 #endif  //_PLUGIN_H_
