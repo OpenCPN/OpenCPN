@@ -83,6 +83,8 @@ double getValue(int animationType, double t);
 #define ID_SCALE_OK 8302
 #define ID_SCALECTRL 8303
 
+static inline void IgnoreRetval(size_t n) { (void)n; }
+
 class SetScaleDialog : public wxDialog {
   DECLARE_EVENT_TABLE()
 
@@ -489,7 +491,7 @@ ssfn_font_t* load_font(const char* filename) {
   gzread(g, fontdata, size);
   gzclose(g);
 #else
-  fread(fontdata, size, 1, f);
+  IgnoreRetval(fread(fontdata, size, 1, f));
   fclose(f);
 #endif
 
