@@ -1638,6 +1638,10 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
       pic->m_pplugin = dynamic_cast<opencpn_plugin_119*>(plug_in);
       break;
 
+    case 120:
+      pic->m_pplugin = dynamic_cast<opencpn_plugin_120*>(plug_in);
+      break;
+
     default:
       break;
   }

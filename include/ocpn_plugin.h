@@ -65,7 +65,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less than the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR 1
-#define API_VERSION_MINOR 19
+#define API_VERSION_MINOR 20
 
 //    Fwd Definitions
 class wxFileConfig;
@@ -77,7 +77,7 @@ class wxGLCanvas;
 
 //---------------------------------------------------------------------------------------------------------
 //
-//    Bitfield PlugIn Capabilites flag definition
+//    Bitfield PlugIn Capabilities flag definition
 //
 //---------------------------------------------------------------------------------------------------------
 /** Receive callbacks to render custom overlay graphics on the chart.
@@ -1963,6 +1963,11 @@ public:
    * @note Core subsystems are still available during this call
    */
   virtual void PreShutdownHook();
+};
+
+class DECL_EXP opencpn_plugin_120 : public opencpn_plugin_119 {
+public:
+  opencpn_plugin_120(void *pmgr);
 };
 
 //------------------------------------------------------------------
@@ -5807,7 +5812,7 @@ extern DECL_EXP CommDriverResult WriteCommDriverN2K(
 extern DECL_EXP CommDriverResult RegisterTXPGNs(DriverHandle handle,
                                                 std::vector<int> &pgn_list);
 
-// API 1.19
+// API 1.20
 //
 
 /**
@@ -6328,6 +6333,11 @@ extern DECL_EXP void EnableTenHertzUpdate(bool enable);
  */
 extern DECL_EXP void ConfigFlushAndReload();
 
+/*
+ * Reload and restore all connections by direct read of config file
+ */
+extern DECL_EXP void ReloadConfigConnections();
+
 /**
  * Plugin Notification Framework support
  */
@@ -6360,10 +6370,5 @@ extern DECL_EXP bool AcknowledgePINotification(const std::string &guid);
 extern DECL_EXP std::vector<std::shared_ptr<PI_Notification>>
 GetActiveNotifications();
 extern DECL_EXP void EnableNotificationCanvasIcon(bool enable);
-
-/*
- * Reload and restore all connections by direct read of config file
- */
-extern DECL_EXP void ReloadConfigConnections();
 
 #endif  //_PLUGIN_H_
