@@ -1070,6 +1070,12 @@ elseif (QT_ANDROID)
 endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
+  target_compile_options(
+    ${PACKAGE_NAME} PUBLIC -Werror -Wno-unknown-warning-option
+  )
+endif ()
+
 set_target_properties(
   ${PACKAGE_NAME}
   PROPERTIES ENABLE_EXPORTS 1
