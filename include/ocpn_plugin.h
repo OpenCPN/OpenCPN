@@ -6331,7 +6331,6 @@ extern DECL_EXP void ConfigFlushAndReload();
 /**
  * Plugin Notification Framework support
  */
-
 enum class PI_NotificationSeverity : int {
   PI_kInformational = 0,
   PI_kWarning = 1,
@@ -6361,5 +6360,10 @@ extern DECL_EXP bool AcknowledgePINotification(const std::string &guid);
 extern DECL_EXP std::vector<std::shared_ptr<PI_Notification>>
 GetActiveNotifications();
 extern DECL_EXP void EnableNotificationCanvasIcon(bool enable);
+
+/*
+ * Reload and restore all connections by direct read of config file
+ */
+extern DECL_EXP void ReloadConfigConnections();
 
 #endif  //_PLUGIN_H_

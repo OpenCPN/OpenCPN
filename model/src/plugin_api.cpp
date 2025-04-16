@@ -28,8 +28,10 @@
 #include <vector>
 
 #include <wx/event.h>
+#include <wx/fileconf.h>
 #include <wx/jsonval.h>
 #include <wx/jsonreader.h>
+#include <wx/tokenzr.h>
 
 #include "model/base_platform.h"
 #include "model/comm_appmsg.h"
@@ -40,6 +42,7 @@
 #include "model/comm_navmsg_bus.h"
 
 #include "ocpn_plugin.h"
+#include "model/comm_drv_factory.h"
 using namespace std;
 
 vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
@@ -254,4 +257,36 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
 
 wxString* GetpPrivateApplicationDataLocation(void) {
   return g_BasePlatform->GetPrivateDataDirPtr();
+}
+
+void ReloadConfigConnections() {
+  // Close and delete all active comm drivers
+  auto& registry = CommDriverRegistry::GetInstance();
+  registry.CloseAllDrivers();
+
+  // Reload config file connections parameters.
+  wxFileConfig* pConf = GetOCPNConfigObject();
+  if (pConf) {
+    pConf->SetPath(_T ( "/Settings/NMEADataSource" ));
+
+    wxString connectionconfigs;
+    pConf->Read(_T( "DataConnections" ), &connectionconfigs);
+    if (!connectionconfigs.IsEmpty()) {
+      wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+      TheConnectionParams().clear();
+      for (size_t i = 0; i < confs.Count(); i++) {
+        ConnectionParams* prm = new ConnectionParams(confs[i]);
+        if (!prm->Valid) continue;
+        TheConnectionParams().push_back(prm);
+      }
+    }
+  }
+
+  // Reconnect enabled connections
+  for (auto* cp : TheConnectionParams()) {
+    if (cp->bEnabled) {
+      MakeCommDriver(cp);
+      cp->b_IsSetup = TRUE;
+    }
+  }
 }
