@@ -1333,7 +1333,7 @@ int MAG_readMagneticModel(char *filename,
 
   char header_fmt[sizeof(c_str)];
   snprintf(header_fmt, sizeof(header_fmt), "%%lf %%%lus %%%ds",
-           sizeof(MagneticModel->ModelName), date_size);
+           (unsigned long)sizeof(MagneticModel->ModelName), date_size);
 
   fgets(c_str, sizeof(c_str), MAG_COF_File);
   sscanf(c_str, header_fmt, &epoch, MagneticModel->ModelName, edit_date);
