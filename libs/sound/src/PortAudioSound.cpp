@@ -45,6 +45,8 @@ static const int BUFSIZE = 1024;  // Frames per buffer.
 static const int LOCK_SLEEP_MS = 2;
 static const int LOCK_MAX_TRIES = 100;
 
+static inline void IgnoreRetval(FILE* f) { (void)f; }
+
 /*
  * Called by the PortAudio engine when audio is needed. It may called at
  * interrupt level on some platforms so calls which might block such as
@@ -134,13 +136,14 @@ static bool writeSynchronous(int deviceIx,
 
 PortAudioSound::PortAudioSound()
     : m_soundLoader(SoundLoaderFactory()), m_lock(ATOMIC_FLAG_INIT) {
-  if (!getenv("OCPN_DEBUG_ALSA")) freopen("/dev/null", "w", stderr);
+  if (!getenv("OCPN_DEBUG_ALSA"))
+    IgnoreRetval(freopen("/dev/null", "w", stderr));
   m_stream = NULL;
   m_isAsynch = false;
   m_isPaInitialized = false;
   PaError err = Pa_Initialize();
   if (err != paNoError) {
-    freopen("/dev/tty", "w", stderr);
+    IgnoreRetval(freopen("/dev/tty", "w", stderr));
     wxLogError("PortAudio; cannot initialize: %s", Pa_GetErrorText(err));
     return;
   }
@@ -150,7 +153,7 @@ PortAudioSound::PortAudioSound()
     const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
     wxLogDebug("Device: %d: %s", i, info->name);
   }
-  freopen("/dev/tty", "w", stderr);
+  IgnoreRetval(freopen("/dev/tty", "w", stderr));
 }
 
 PortAudioSound::~PortAudioSound() {
