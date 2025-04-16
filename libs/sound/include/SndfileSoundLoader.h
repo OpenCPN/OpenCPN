@@ -33,32 +33,28 @@
  * The original sound file loader supports WAV files only, the same format
  * as supported by the wxSound widget.
  */
-class SndfileSoundLoader: public AbstractSoundLoader
-{
+class SndfileSoundLoader : public AbstractSoundLoader {
+public:
+  SndfileSoundLoader() {};
 
-    public:
+  virtual ~SndfileSoundLoader();
 
-        SndfileSoundLoader() {};
+  virtual bool Load(const char* path);
+  virtual void UnLoad();
 
-        virtual ~SndfileSoundLoader();
+  virtual bool Reset();
 
-        virtual bool Load(const char* path);
-        virtual void UnLoad();
+  virtual size_t Get(void* samples, size_t length);
 
-        virtual bool Reset();
+  unsigned GetBytesPerSample() const { return 2 * m_sfinfo.channels; };
 
-        virtual size_t Get(void* samples, size_t length);
+  unsigned GetChannelCount() const;
 
-        unsigned GetBytesPerSample() const { return 2 * m_sfinfo.channels; };
+  unsigned GetSamplingRate() const;
 
-        unsigned GetChannelCount() const;
-
-        unsigned GetSamplingRate() const;
-
-    protected:
-        SNDFILE* m_sndfile;
-        SF_INFO m_sfinfo;
+protected:
+  SNDFILE* m_sndfile;
+  SF_INFO m_sfinfo;
 };
 
-
-#endif // SNDFILE_SOUND_LOADER_H
+#endif  // SNDFILE_SOUND_LOADER_H

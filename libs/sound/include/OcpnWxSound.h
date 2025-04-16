@@ -40,25 +40,22 @@
  *
  */
 
-class OcpnWxSound: public OcpnSound
-{
+class OcpnWxSound : public OcpnSound {
+public:
+  OcpnWxSound() {};
+  ~OcpnWxSound() { Stop(); };
 
-    public:
-        OcpnWxSound() {};
-        ~OcpnWxSound() { Stop(); };
+  bool Load(const char* path, int deviceIndex = -1) override;
+  void UnLoad() override {};
+  bool Play() override;
+  bool Stop() override;
+  std::string GetDeviceInfo(int deviceIndex) override;
 
-        bool Load(const char* path, int deviceIndex = -1) override;
-        void UnLoad() override {};
-        bool Play() override;
-        bool Stop() override;
-        std::string GetDeviceInfo(int deviceIndex) override;
-
-    private:
-        void worker();
-        std::string m_path;
-        bool m_isPlaying;
-        wxSound m_sound;
+private:
+  void worker();
+  std::string m_path;
+  bool m_isPlaying;
+  wxSound m_sound;
 };
 
-
-#endif // __WX_SOUND_H__
+#endif  // __WX_SOUND_H__

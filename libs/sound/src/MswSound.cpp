@@ -30,47 +30,39 @@
 
 #include "MswSound.h"
 
-
-bool MswSound::Load(const char* path, int deviceIndex)
-{
-    m_path = wxString(path).ToStdWstring();
-    m_isPlaying = false;
-    m_OK = true;
-    return m_OK;
+bool MswSound::Load(const char* path, int deviceIndex) {
+  m_path = wxString(path).ToStdWstring();
+  m_isPlaying = false;
+  m_OK = true;
+  return m_OK;
 }
 
-
-bool MswSound::Stop(void)
-{
-    m_isPlaying = false;
-    return PlaySound(NULL, NULL, 0);
+bool MswSound::Stop(void) {
+  m_isPlaying = false;
+  return PlaySound(NULL, NULL, 0);
 }
 
-
-void MswSound::worker(void)
-{
-    wxLogDebug("mswSound::worker()");
-    m_isPlaying = true;
-    PlaySound(m_path.c_str(), NULL, SND_FILENAME);
-    if  (m_onFinished) {
-        m_onFinished(m_callbackData);
-        m_onFinished = 0;
-    }
-    m_isPlaying = false;
+void MswSound::worker(void) {
+  wxLogDebug("mswSound::worker()");
+  m_isPlaying = true;
+  PlaySound(m_path.c_str(), NULL, SND_FILENAME);
+  if (m_onFinished) {
+    m_onFinished(m_callbackData);
+    m_onFinished = 0;
+  }
+  m_isPlaying = false;
 }
 
-
-bool MswSound::Play()
-{
-    wxLogDebug("mswSound::Play()");
-    if( !m_OK || m_isPlaying) {
-        wxLogWarning("MswSound: cannot play: not loaded or busy playing.");
-        return false;
-    }
-    if  (m_onFinished) {
-        std::thread t([this]() { worker(); });
-        t.detach();
-        return true;
-    }
-    return PlaySound(m_path.c_str(), NULL, SND_FILENAME);
+bool MswSound::Play() {
+  wxLogDebug("mswSound::Play()");
+  if (!m_OK || m_isPlaying) {
+    wxLogWarning("MswSound: cannot play: not loaded or busy playing.");
+    return false;
+  }
+  if (m_onFinished) {
+    std::thread t([this]() { worker(); });
+    t.detach();
+    return true;
+  }
+  return PlaySound(m_path.c_str(), NULL, SND_FILENAME);
 }

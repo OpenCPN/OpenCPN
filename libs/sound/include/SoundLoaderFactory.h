@@ -24,7 +24,6 @@
 #ifndef SOUND_LOADER_FACTORY_H
 #define SOUND_LOADER_FACTORY_H
 
-
 #include "SoundFileLoader.h"
 
 /** Returnm the sound loader to use as configured by cmake. */
