@@ -26,54 +26,45 @@
 
 #include "SndfileSoundLoader.h"
 
-
-bool SndfileSoundLoader::Load(const char* path)
-{
-    memset(&m_sfinfo, 0, sizeof(m_sfinfo));
-    m_sndfile = sf_open(path, SFM_READ, &m_sfinfo);
-    if (m_sndfile == NULL) {
-        const char* err = sf_strerror(NULL);
-        wxLogWarning("Cannot open file %s: %s", path, err);
-        return false;
-    }
-    wxLogMessage("Using libsndfile sound loader.");
-    return true;
+bool SndfileSoundLoader::Load(const char* path) {
+  memset(&m_sfinfo, 0, sizeof(m_sfinfo));
+  m_sndfile = sf_open(path, SFM_READ, &m_sfinfo);
+  if (m_sndfile == NULL) {
+    const char* err = sf_strerror(NULL);
+    wxLogWarning("Cannot open file %s: %s", path, err);
+    return false;
+  }
+  wxLogMessage("Using libsndfile sound loader.");
+  return true;
 }
 
-void SndfileSoundLoader::UnLoad()
-{
-    if (m_sndfile) sf_close(m_sndfile);
-    m_sndfile = 0;
+void SndfileSoundLoader::UnLoad() {
+  if (m_sndfile) sf_close(m_sndfile);
+  m_sndfile = 0;
 }
 
-bool SndfileSoundLoader::Reset()
-{
-    if (!m_sndfile) {
-        wxLogWarning("SndfileLoader: Attempt to reset unloaded file.");
-        return false;
-    }
-    return sf_seek(m_sndfile, 0L, SEEK_SET) != -1;
+bool SndfileSoundLoader::Reset() {
+  if (!m_sndfile) {
+    wxLogWarning("SndfileLoader: Attempt to reset unloaded file.");
+    return false;
+  }
+  return sf_seek(m_sndfile, 0L, SEEK_SET) != -1;
 }
 
-size_t SndfileSoundLoader::Get(void* buff, size_t length)
-{
-    short* dest = static_cast<short*>(buff);
-    size_t done = sf_read_short(m_sndfile, dest, length/2);
-    return done * 2;
+size_t SndfileSoundLoader::Get(void* buff, size_t length) {
+  short* dest = static_cast<short*>(buff);
+  size_t done = sf_read_short(m_sndfile, dest, length / 2);
+  return done * 2;
 }
 
-
-unsigned SndfileSoundLoader::GetChannelCount()  const
-{
-    return m_sfinfo.channels;
+unsigned SndfileSoundLoader::GetChannelCount() const {
+  return m_sfinfo.channels;
 }
 
-unsigned SndfileSoundLoader::GetSamplingRate() const
-{
-    return m_sfinfo.samplerate;
+unsigned SndfileSoundLoader::GetSamplingRate() const {
+  return m_sfinfo.samplerate;
 }
 
-SndfileSoundLoader::~SndfileSoundLoader()
-{
-    if (m_sndfile) sf_close(m_sndfile);
+SndfileSoundLoader::~SndfileSoundLoader() {
+  if (m_sndfile) sf_close(m_sndfile);
 }

@@ -30,6 +30,7 @@ brew install zstd
 brew install libarchive
 brew install wxwidgets
 brew install create-dmg
+brew install gpatch
 
 if [ -d /usr/local/include ]; then
   ln -sf /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h

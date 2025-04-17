@@ -34,6 +34,11 @@ if (APPLE)
   endif ()
 endif ()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  add_compile_definitions(_CRT_SECURE_NO_WARNING)
+  add_compile_options(/wd4996)
+endif ()
+
 set(
   LIBDNET_PATCH
   ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in-Fix-wrong-return-type.patch

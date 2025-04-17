@@ -1,293 +1,92 @@
-# Top-level CMakeLists.txt for the CMake-based build and test system
-# of the shapelib software.
+# ~~~
+# Add linkage to the shapelib library
 #
-# Copyright (C) 2012-2013, Alan W. Irwin
+# On hosts having the package installed in system locations found by
+# cmake use the system code. If not, download sources from shapelib
+# github site and apply patches.
 #
-# SPDX-License-Identifier: MIT OR LGPL-2.0-or-later
+# Exports: ocpn::shapelib transitive link target
 #
-# See README.CMake
+# License:      GPLv3+
+# Copyright (c) 2023 Alec Leamas
+# ~~~
 
-# Version 3.7 or above of cmake is currently required for all platforms.
-cmake_minimum_required(VERSION 3.10)
-project(shapelib C CXX)
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
 
-message(STATUS "CMake version = ${CMAKE_VERSION}")
-message(STATUS "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
+cmake_minimum_required(VERSION 3.10.0)
 
-set(PROJECT_VERSION_MAJOR 1)
-set(PROJECT_VERSION_MINOR 6)
-set(PROJECT_VERSION_PATCH 0)
-set(shp_LIB_VERSIONINFO "4:0:0")
-set(PROJECT_VERSION
-  "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+if (TARGET ocpn::shapelib)
+  return ()
+endif ()
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(shapelib "https://github.com/OSGeo/shapelib")
+set(src_url "${shapelib}/archive/refs/tags/v1.6.1.tar.gz")
+set(src_hash MD5=ccdcabbc685eb575120fa3eb61003280)
 
-# libraries are all shared by default.
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-
-# Option to build contributed utilities
-option(BUILD_SHAPELIB_CONTRIB "Build utilities (from contrib)" OFF)
-
-# Use rpath?
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  # No rpath on Darwin. Setting it will only cause trouble.
-else()
-  option(USE_RPATH "Use -rpath when linking libraries, executables" ON)
-endif()
-
-# In windows all created dlls are gathered in the dll directory
-# if you add this directory to your PATH all shared libraries are available
-if(BUILD_SHARED_LIBS AND WIN32 AND NOT CYGWIN)
-  set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/dll)
-endif()
-
-set(PACKAGE shp)
-
-# Set up install locations.
-set(
-  CMAKE_INSTALL_BINDIR bin
-  CACHE PATH "install location for user executables"
+list(APPEND patches
+  0001-cmake-Add-guard-for-multiple-inclusions.patch
+  0002-cmake-Make-BUILD_TESTING-an-option.patch
+  0003-shapefil.h-Use-correct-include-gdal-cpol.h-path.patch
 )
 
-set(
-  CMAKE_INSTALL_LIBDIR lib
-  CACHE PATH "install location for object code libraries"
-)
+if (POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif ()
 
-set(
-  CMAKE_INSTALL_INCLUDEDIR include
-  CACHE PATH "install location for C header files"
-)
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-set(
-  CMAKE_INSTALL_CMAKEDIR share/${PROJECT_NAME}
-  CACHE PATH "install location for read-only architecture-independent shp data"
-)
+add_library(_SHAPELIB_IF INTERFACE)
+add_library(ocpn::shapelib ALIAS _SHAPELIB_IF)
 
-file(RELATIVE_PATH RELATIVE_LIBDIR
-  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
-  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
-)
+#  Check for system lib and use it if found. Done.
+#
+find_package(Shapelib)
+if (SHAPELIB_FOUND)
+  message(STATUS "Using system shapelib ")
+  target_link_libraries(_SHAPELIB_IF INTERFACE shapelib::shapelib)
+  return ()
+endif ()
 
-message(STATUS "CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}")
+# Download sources from github
+#
+if (${CMAKE_VERSION} VERSION_LESS 3.20)
+  message(WARNING "Using downloaded sources requires cmake >= 3.20")
+endif ()
 
-if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-  # Set a default build type for single-configuration cmake generators
-  # if no build type is set.
-  set(CMAKE_BUILD_TYPE Release)
-endif()
+if (POLICY CMP0169)
+  # FetchContent_Populate cannot be used if NEW
+  cmake_policy(SET CMP0169 OLD)
+endif ()
 
-# Export build information to help other projects link installed
-# shapelib software.  Only one of these signatures is required
-# for the export_shp name.
-#install(EXPORT targets
-#  NAMESPACE ${PROJECT_NAME}::
-#  DESTINATION ${CMAKE_INSTALL_CMAKEDIR}
-#  FILE "${PROJECT_NAME}-targets.cmake"
-#)
+include(FetchContent)
+FetchContent_Declare(shapelib_src URL ${src_url} URL_HASH ${src_hash})
+FetchContent_Populate(shapelib_src)
+FetchContent_GetProperties(shapelib_src SOURCE_DIR src_dir)
+message(STATUS "Using downloaded shapelib at ${src_dir}")
 
-# Initial boilerplate done, now build library and executables.
-
-if(MSVC)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif()
-
-set(lib_SRC
-  shpopen.c
-  dbfopen.c
-  safileio.c
-  shptree.c
-  sbnsearch.c
-  shapefil.h
-)
-
-add_library(${PACKAGE} ${lib_SRC})
-
-target_include_directories(${PACKAGE}
-  INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
-)
-
-if(NOT MSVC)
-  target_compile_options(${PACKAGE} PRIVATE -Wall -Wextra -pedantic)
-endif()
-
-if(WIN32 AND NOT CYGWIN)
-  set_target_properties(${PACKAGE} PROPERTIES
-    COMPILE_DEFINITIONS SHAPELIB_DLLEXPORT
+# Apply patches
+#
+foreach (patch ${patches})
+  execute_process(
+    COMMAND ${CMAKE_COMMAND}
+      -Dpatch_file=${CMAKE_CURRENT_SOURCE_DIR}/patches/${patch}
+      -Dpatch_dir=${src_dir}
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchFile.cmake
+    COMMAND ${CMAKE_COMMAND} -E echo "-- Applying patch ${patch}"
   )
-endif()
+endforeach ()
 
-if(UNIX)
-  find_library(M_LIB m)
-  if(M_LIB)
-    target_link_libraries(${PACKAGE} -lm)
-  endif()
-endif()
-
-# Convert shp_LIB_VERSIONINFO libtool version format into SOVERSION
-# Convert from ":" separated into CMake list format using ";"
-string(REPLACE ":" ";" shp_LIB_VERSIONINFO ${shp_LIB_VERSIONINFO})
-list(GET shp_LIB_VERSIONINFO 0 shp_LIB_VERSION_CURRENT)
-list(GET shp_LIB_VERSIONINFO 2 shp_LIB_VERSION_AGE)
-math(EXPR shp_SOVERSION "${shp_LIB_VERSION_CURRENT} - ${shp_LIB_VERSION_AGE}")
-set(shp_VERSION ${PROJECT_VERSION})
-set_target_properties(${PACKAGE} PROPERTIES
-  SOVERSION ${shp_SOVERSION}
-  VERSION ${shp_VERSION}
-  INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}"
-)
-
-if(USE_RPATH)
-  set_target_properties(${PACKAGE} PROPERTIES
-    INSTALL_RPATH "${CMAKE_INSTALL_LIBDIR}"
-  )
-endif()
-
-#install(TARGETS ${PACKAGE}
-#  EXPORT targets
-#  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-#)
-
-# executables to be built and installed.
-set(executables
-  shpcreate
-  shpadd
-  shpdump
-  shprewind
-  dbfcreate
-  dbfadd
-  dbfdump
-  shptreedump
-)
-
-if(MSVC)
-  # TODO(schwehr): How to test on Windows?
+# Configure
+#
+if (NOT TARGET shp)
   set(BUILD_TESTING OFF CACHE BOOL "")
-else()
-  # TODO(schwehr): Temporary work around.
-  ## cmake_policy(SET CMP0026 OLD)   we don't build tests anyway
-endif()
-
-find_program(BASH_EXECUTABLE bash)
-find_program(SED_EXECUTABLE sed)
-if(BASH_EXECUTABLE AND SED_EXECUTABLE)
-  set(BUILD_TESTING ON CACHE BOOL "")
-else()
-  message(STATUS "WARNING: sed or bash not available so disabling testing")
-endif()
-
-set(BUILD_TESTING OFF)           ## Quick hack to avoid building test code
-cmake_policy(SET CMP0026 NEW)    ## Test code need  needs OLD
-
-# For the first series of tests, the user needs to have downloaded
-# from http://dl.maptools.org/dl/shapelib/shape_eg_data.zip, unpacked
-# that file, and specified the location of that directory with
-# the cmake option, -DEG_DATA:PATH=whatever
-if(BUILD_TESTING)
-  if(EG_DATA)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/script.sed "s?/u/www/projects/shapelib/eg_data?${EG_DATA}?\n")
-  else()
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/script.sed "")
-    message(STATUS "WARNING: EG_DATA:PATH not set to point to downloaded eg_data directory so the eg_data part of testing will be ignored.")
-  endif()
-endif()
-
-if(NOT MSVC)
-  # Set the run time path for shared libraries for non-Windows machines.
-  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    # See also INSTALL_RPATH property on the tools.
-    set(CMAKE_MACOSX_RPATH ON)
-  else()
-    # Use relative path so that package is relocatable
-    set(CMAKE_INSTALL_RPATH "\$ORIGIN/${RELATIVE_LIBDIR}")
-  endif()
-endif()
-
-#foreach(executable ${executables})
-#  add_executable(${executable} ${executable}.c)
-#  target_link_libraries(${executable} ${PACKAGE})
-#  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-#    # Ensure that the package is relocatable
-#    set_target_properties(${TOOLS} PROPERTIES
-#      INSTALL_RPATH "@loader_path/${RELATIVE_LIBDIR}")
-#  endif()
-#  if(BUILD_TESTING)
-#    get_target_property(${executable}_LOC ${executable} LOCATION)
-#    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/script.sed "s?\\./${executable}?${${executable}_LOC}?\n")
-#  endif()
-#  if(NOT MSVC)
-#    target_compile_options(${executable} PRIVATE -Wall -Wextra)
-#  endif()
-#endforeach(executable ${executables})
-
-#install(TARGETS ${executables}
-#  EXPORT targets DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-# Install header
-#install(FILES shapefil.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-# For compatibility with older installation
-#install(FILES shapefil.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/shapelib)
-
-if(BUILD_TESTING)
-  # Set up tests:
-
-  enable_testing()
-
-  # Other executables to be built to facilitate tests.
-  foreach(executable shptest shputils)
-    add_executable(${executable} ${executable}.c)
-    target_link_libraries(${executable} ${PACKAGE})
-    get_target_property(${executable}_LOC ${executable} LOCATION)
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/script.sed "s?\\./${executable}?${${executable}_LOC}?\n")
-  endforeach(executable shptest shputils)
-
-  # Write this as a shell script since execute_process cannot handle
-  # anything like redirection.
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/script.sh "${SED_EXECUTABLE} -f script.sed < $1 >| $2")
-  execute_process(
-    COMMAND
-    ${BASH_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/script.sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/test1.sh ${CMAKE_CURRENT_BINARY_DIR}/sed_scripted_test1.sh
-  )
-
-  execute_process(
-    COMMAND
-    ${BASH_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/script.sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/test2.sh ${CMAKE_CURRENT_BINARY_DIR}/sed_scripted_test2.sh
-  )
-
-  execute_process(
-    COMMAND
-    ${BASH_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/script.sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/test3.sh ${CMAKE_CURRENT_BINARY_DIR}/sed_scripted_test3.sh
-  )
-
-  if(EG_DATA)
-    # These tests correspond to everything in test1.sh
-    add_test(
-      NAME test1
-      COMMAND ${BASH_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/sed_scripted_test1.sh
-    )
-  endif()
-  # These tests correspond to everything in test2.sh
-  add_test(
-    NAME test2
-    COMMAND ${BASH_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/sed_scripted_test2.sh
-  )
-
-  # These tests correspond to everything in test3.sh
-  add_test(
-    NAME test3
-    COMMAND ${BASH_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/sed_scripted_test3.sh
-  )
-endif()
-
-include(cmake/contrib.cmake)
-
-add_subdirectory (cmake)
-
-add_library(shapelib::shapelib ALIAS ${PACKAGE})
+  set(BUILD_APPS OFF CACHE BOOL "")
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
+  set(USE_CPL OFF CACHE BOOL "")
+  add_subdirectory(${src_dir} shapelib_dir)
+endif ()
+target_link_libraries(_SHAPELIB_IF INTERFACE shp)
+target_include_directories(_SHAPELIB_IF INTERFACE "${src_dir}")

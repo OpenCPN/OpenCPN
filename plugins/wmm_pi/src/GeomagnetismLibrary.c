@@ -1333,7 +1333,7 @@ int MAG_readMagneticModel(char *filename,
 
   char header_fmt[sizeof(c_str)];
   snprintf(header_fmt, sizeof(header_fmt), "%%lf %%%lus %%%ds",
-           sizeof(MagneticModel->ModelName), date_size);
+           (unsigned long)sizeof(MagneticModel->ModelName), date_size);
 
   fgets(c_str, sizeof(c_str), MAG_COF_File);
   sscanf(c_str, header_fmt, &epoch, MagneticModel->ModelName, edit_date);
@@ -2894,7 +2894,9 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
     pm2 = pm1;
     pm1 = plm;
   }
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+  // Compiler sees  PreSqr as not initialized. However, it is.
   pmm = PreSqr[2] * scalef;
   rescalem = 1.0 / scalef;
   kstart = 0;
@@ -2926,6 +2928,7 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
       pm2 = pm1;
       pm1 = plm;
     }
+#pragma GCC diagnostic pop
   }
 
   /* Calculate Pcup(nMax,nMax)*/

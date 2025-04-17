@@ -2268,12 +2268,12 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
     double vkn, ang;
     for (int i = 0; i < 20; i++) {
       // random position in the grib area
-      p[0] =
-          (float)rand() / RAND_MAX * (pGRX->getLonMax() - pGRX->getLonMin()) +
-          pGRX->getLonMin();
-      p[1] =
-          (float)rand() / RAND_MAX * (pGRX->getLatMax() - pGRX->getLatMin()) +
-          pGRX->getLatMin();
+      p[0] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
+                 (pGRX->getLonMax() - pGRX->getLonMin()) +
+             pGRX->getLonMin();
+      p[1] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
+                 (pGRX->getLatMax() - pGRX->getLatMin()) +
+             pGRX->getLatMin();
 
       if (GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, p[0], p[1]) &&
           vkn > 0 && vkn < 100)

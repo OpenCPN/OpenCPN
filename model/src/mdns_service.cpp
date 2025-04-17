@@ -28,10 +28,8 @@
 #include <vector>
 #include <thread>
 
-#ifdef _WIN32
-#ifndef _CRT_SECURE_NO_WARNINGS
+#if defined(_WIN32) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS 1
-#endif
 #endif
 
 #include <stdio.h>

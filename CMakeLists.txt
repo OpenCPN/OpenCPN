@@ -511,7 +511,10 @@ message(STATUS "Building version ${PACKAGE_VERSION}")
 
 # Detect the Apple Version of the build machine
 if (APPLE)
-  exec_program(uname ARGS -v OUTPUT_VARIABLE DARWIN_VERSION)
+  execute_process(
+    COMMAND uname  -v
+    OUTPUT_VARIABLE DARWIN_VERSION
+  )
   string(REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
   message(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
   if (DARWIN_VERSION GREATER 11)
@@ -1067,6 +1070,12 @@ elseif (QT_ANDROID)
 endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
+  target_compile_options(
+    ${PACKAGE_NAME} PUBLIC -Werror -Wno-unknown-warning-option
+  )
+endif ()
+
 set_target_properties(
   ${PACKAGE_NAME}
   PROPERTIES ENABLE_EXPORTS 1
@@ -1263,19 +1272,13 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
-find_package(Shapelib)
-if (SHAPELIB_FOUND)
-  message(STATUS "Using system shapelib")
-else ()
-  message(STATUS "Using bundled shapelib")
-  add_subdirectory("libs/shapelib")
-endif ()
-target_link_libraries(${PACKAGE_NAME} PRIVATE shapelib::shapelib)
+add_subdirectory("libs/shapelib")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::shapelib)
 
 add_subdirectory("libs/ShapefileCpp")
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::ShapefileCpp)
-target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
-target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::shapefile_cpp)
+# target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
+# target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
 
 if (NOT QT_ANDROID)
   add_subdirectory("libs/libdnet")

@@ -21,8 +21,7 @@
 
 set(SRC_CONSOLE console.cpp api_shim.cpp)
 add_executable(opencpn-cmd ${SRC_CONSOLE})
-
-target_link_libraries(opencpn-cmd PUBLIC -rdynamic)
+set_property(TARGET opencpn-cmd PROPERTY ENABLE_EXPORTS ON)
 if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
   target_link_libraries(opencpn-cmd PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
