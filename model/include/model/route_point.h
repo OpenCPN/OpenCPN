@@ -168,20 +168,6 @@ public:
   void SetUseSca(bool value) { b_UseScamin = value; };
   bool IsDragHandleEnabled() { return m_bDrawDragHandle; }
   void SetPlannedSpeed(double spd);
-  /**
-   * Return the planned speed associated with this waypoint.
-   *
-   * For a waypoint within a route, this represents the speed to be used when
-   * traveling FROM this waypoint TO the next waypoint in the route. For the
-   * last waypoint in a route, this value has no navigational significance.
-   *
-   * This value is used for:
-   * - Calculating the ETA at the next waypoint
-   * - Determining the total time to complete a route segment
-   * - Route planning and navigation displays
-   *
-   * The speed is stored in knots (nautical miles per hour).
-   */
   double GetPlannedSpeed();
   /**
    * Retrieves the Estimated Time of Departure for this waypoint, in UTC.
@@ -281,11 +267,8 @@ public:
   void SetETE(wxLongLong secs);
 
   double m_lat, m_lon;
-  /**
-   * Length of the leg from previous waypoint to this waypoint in nautical
-   * miles. Undefined for the starting point of a route.
-   */
-  double m_seg_len;
+  double m_seg_len;  // length in NMI to this point
+                     // undefined for starting point
 
   /**
    * Planned speed for traveling FROM this waypoint TO the next waypoint.
@@ -299,7 +282,8 @@ public:
    * default planned speed will be used instead. The unit is knots (nautical
    * miles per hour).
    *
-   * Not applicable for the last waypoint in a route.
+   * For the last waypoint in a route, this value has no navigational
+   * significance.
    */
   double m_seg_vmg;
   /**
@@ -369,177 +353,66 @@ public:
    */
   bool m_manual_etd{false};
 
-  /**
-   * Flag indicating if this waypoint is currently selected.
-   */
   bool m_bPtIsSelected;
-  /**
-   * Flag indicating if this waypoint is currently being edited.
-   */
   bool m_bRPIsBeingEdited;
 
-  /**
-   * Flag indicating if this waypoint is part of a route.
-   */
   bool m_bIsInRoute;
   /** Flag indicating if the waypoint is a standalone mark. */
   bool m_bIsolatedMark;
-  /**
-   * Flag indicating if the waypoint should be drawn on the chart.
-   * When false, the waypoint is invisible.
-   */
-  bool m_bIsVisible;
-  /**
-   * Flag indicating if the waypoint should be included in lists.
-   */
+
+  bool m_bIsVisible;  // true if should be drawn, false if invisible
   bool m_bIsListed;
-  /**
-   * Flag indicating if this waypoint is active for navigation.
-   */
   bool m_bIsActive;
-  /**
-   * Flag indicating if the waypoint icon needs to be reloaded or redrawn.
-   */
   bool m_IconIsDirty;
-  /**
-   * Description text for the waypoint.
-   * May contain encoded information like ETD or planned speed.
-   */
   wxString m_MarkDescription;
-  /**
-   * Globally Unique Identifier for the waypoint.
-   */
   wxString m_GUID;
 
-  /**
-   * Associated tide station identifier.
-   */
   wxString m_TideStation;
-  /**
-   * Font used for rendering the waypoint name.
-   */
+
   wxFont *m_pMarkFont;
-  /**
-   * Color used for rendering the waypoint name.
-   */
   wxColour m_FontColor;
 
-  /**
-   * Size of the waypoint name text when rendered.
-   */
   wxSize m_NameExtents;
-  /**
-   * Flag indicating if the waypoint should blink when displayed.
-   */
+
   bool m_bBlink;
-  /**
-   * Flag indicating if the waypoint name should be shown.
-   */
-  bool m_bShowName;
-  /**
-   * Flag indicating if waypoint data should be shown with the name.
-   */
-  bool m_bShowNameData;
-  /**
-   * Current rectangle occupied by the waypoint in the display.
-   */
+  bool m_bShowName, m_bShowNameData;
   wxRect CurrentRect_in_DC;
-  /**
-   * Horizontal offset for waypoint name placement relative to the icon.
-   */
   int m_NameLocationOffsetX;
-  /**
-   * Vertical offset for waypoint name placement relative to the icon.
-   */
   int m_NameLocationOffsetY;
-  /**
-   * Flag indicating if the waypoint belongs to a layer.
-   */
   bool m_bIsInLayer;
-  /**
-   * Layer identifier if the waypoint belongs to a layer.
-   */
   int m_LayerID;
-  /**
-   * Course from this waypoint to the next waypoint in a route in degrees.
-   */
-  double m_routeprop_course;
-  /**
-   * Distance from this waypoint to the next waypoint in a route in nautical
-   * miles.
-   */
-  double m_routeprop_distance;
-  /**
-   * Flag indicating if this is a temporary waypoint.
-   */
+
+  double m_routeprop_course;  // course from this waypoint to the next waypoint
+                              // if in a route.
+  double m_routeprop_distance;  // distance from this waypoint to the next
+                                // waypoint if in a route.
+
   bool m_btemp;
-  /**
-   * Flag indicating if range rings should be shown around the waypoint.
-   */
+
   bool m_bShowWaypointRangeRings;
-  /**
-   * Number of range rings to display around the waypoint.
-   */
   int m_iWaypointRangeRingsNumber;
-  /**
-   * Distance between consecutive range rings in nautical miles.
-   */
+
   float m_fWaypointRangeRingsStep;
-  /**
-   * Units for the range rings step (0=nm, 1=km, 2=miles).
-   */
   int m_iWaypointRangeRingsStepUnits;
-  /**
-   * Color for the range rings display.
-   */
   wxColour m_wxcWaypointRangeRingsColour;
-  /**
-   * Texture identifier for rendered text.
-   */
+
   unsigned int m_iTextTexture;
-  /**
-   * Width of the text texture in pixels.
-   */
-  int m_iTextTextureWidth;
-  /**
-   * Height of the text texture in pixels.
-   */
-  int m_iTextTextureHeight;
-  /**
-   * Bounding box for the waypoint.
-   */
+  int m_iTextTextureWidth, m_iTextTextureHeight;
+
   LLBBox m_wpBBox;
   double m_wpBBox_view_scale_ppm, m_wpBBox_rotation;
-  /**
-   * Flag indicating if the waypoint is currently visible on screen.
-   */
+
   bool m_pos_on_screen;
-  /**
-   * Cached screen position of the waypoint for drawing arrows and points.
-   */
-  wxPoint2DDouble m_screen_pos;
-  /**
-   * Arrival radius in nautical miles.
-   * Distance from waypoint at which it's considered reached.
-   */
+  wxPoint2DDouble m_screen_pos;  // cached for arrows and points
+
   double m_WaypointArrivalRadius;
-  /**
-   * List of hyperlinks associated with this waypoint.
-   */
   HyperlinkList *m_HyperlinkList;
-  /**
-   * String representation of the waypoint creation time.
-   */
+
   wxString m_timestring;
-  /**
-   * Creation timestamp for the waypoint.
-   */
+
   wxDateTime m_CreateTimeX;
 
 private:
-  /**
-   * Name of the waypoint.
-   */
   wxString m_MarkName;
   wxBitmap *m_pbmIcon;
   wxString m_IconName;
@@ -555,19 +428,8 @@ private:
   int m_drag_line_length_man, m_drag_icon_offset;
   double m_dragHandleLat, m_dragHandleLon;
   int m_draggingOffsetx, m_draggingOffsety;
-  /**
-   * Flag indicating whether to use ScaMin visibility controls.
-   */
   bool b_UseScamin;
-  /**
-   * Minimum scale at which the waypoint is visible.
-   * Waypoint is not shown at scales larger than this value.
-   */
   long m_ScaMin;
-  /**
-   * Maximum scale at which the waypoint is visible.
-   * Waypoint is not shown at scales smaller than this value.
-   */
   long m_ScaMax;
   /**
    * The planned speed associated with this waypoint.
@@ -584,11 +446,10 @@ private:
    * The speed is stored in knots (nautical miles per hour).
    */
   double m_PlannedSpeed;
-  /**
-   * Flag indicating if this is a shared mark that is part of a route.
-   * When true, the waypoint should not be deleted when the route is deleted.
-   */
-  bool m_bsharedMark;
+
+  bool m_bsharedMark /*m_bKeepXRoute*/;  // This is an isolated mark which is
+                                         // also part of a route. It should not
+                                         // be deleted with route.
   unsigned int m_dragIconTexture;
   int m_dragIconTextureWidth, m_dragIconTextureHeight;
 };

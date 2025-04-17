@@ -2978,8 +2978,8 @@ struct DateTimeFormatOptions {
  * Format a date/time to a localized string representation, conforming to the
  * global date/time format and timezone settings.
  *
- * The function expects date_time to be in local time and formats it according
- * to the timezone configuration either in:
+ * The function expects date_time to be in local time and formats it according to the 
+ * timezone configuration either in:
  * - UTC: Coordinated Universal Time (default)
  * - Local Time: System's configured timezone with proper DST handling
  * - LMT: Local Mean Time calculated based on the longitude specified in options
@@ -2988,10 +2988,8 @@ struct DateTimeFormatOptions {
  * consistent date/time formatting across the entire application.
  *
  * @param date_time The date/time to format, must be in local time.
- * @param options The date/time format options including target timezone and
- * formatting preferences.
- * @return wxString The formatted date/time string with appropriate timezone
- * indicator.
+ * @param options The date/time format options including target timezone and formatting preferences.
+ * @return wxString The formatted date/time string with appropriate timezone indicator.
  */
 extern DECL_EXP wxString toUsrDateTimeFormat_Plugin(
     const wxDateTime date_time,
@@ -5073,7 +5071,7 @@ public:
                      const double ScaMin = 1e9, const bool bNameVisible = false,
                      const int nRanges = 0, const double RangeDistance = 1.0,
                      const wxColor RangeColor = wxColor(255, 0, 0));
-  virtual ~PlugIn_Waypoint_Ex();
+  ~PlugIn_Waypoint_Ex();
   /**
    * Initializes waypoint properties to default values.
    *
@@ -5139,27 +5137,6 @@ public:
 
 WX_DECLARE_LIST(PlugIn_Waypoint_Ex, Plugin_WaypointExList);
 
-class DECL_EXP PlugIn_Waypoint_ExV2 : public PlugIn_Waypoint_Ex {
-public:
-  PlugIn_Waypoint_ExV2();
-  PlugIn_Waypoint_ExV2(double lat, double lon, const wxString &icon_ident,
-                       const wxString &wp_name, const wxString &GUID = "",
-                       const double ScaMin = 1e9,
-                       const bool bNameVisible = false, const int nRanges = 0,
-                       const double RangeDistance = 1.0,
-                       const wxColor RangeColor = wxColor(255, 0, 0));
-  virtual ~PlugIn_Waypoint_ExV2();
-  double scamax;  //!< Maximum display scale (1:X) for waypoint visibility
-  double m_PlannedSpeed;           //!< Planned speed for next leg (knots)
-  bool m_bShowWaypointRangeRings;  //!< True to show range rings on chart
-  double m_WaypointArrivalRadius;  //!< Arrival radius in nautical miles
-  /** Estimated departure time, or wxInvalidDateTime if not set. */
-  wxDateTime m_ETD;
-
-private:
-  void InitExV2Defaults();
-};
-
 /**
  * Extended route class for managing complex route features.
  *
@@ -5185,7 +5162,7 @@ private:
 class DECL_EXP PlugIn_Route_Ex {
 public:
   PlugIn_Route_Ex(void);
-  virtual ~PlugIn_Route_Ex(void);
+  ~PlugIn_Route_Ex(void);
 
   wxString m_NameString;   //!< User-visible name of the route
   wxString m_StartString;  //!< Description of route start point

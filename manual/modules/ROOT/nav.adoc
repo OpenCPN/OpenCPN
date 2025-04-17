@@ -10,7 +10,6 @@
 ** xref:create-deb-package.adoc[Create Debian packages]
 * xref:unit-tests.adoc[Unit tests]
 * xref:rest-interface.adoc[REST server]
-* xref:plugin-api.adoc[Plugin API]
 * xref:odraw-messaging.adoc[ODraw Messaging API]
 * xref:plugin-messaging.adoc[New Message Plugin API]
 * xref:messaging-debug.adoc[Data Monitor concepts]

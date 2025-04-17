@@ -1,13 +1,13 @@
 = Handling Communications Messages in Plugins
 
-Since 5.8.0 OpenCPN has a new system for handling messages in plugins.
+Since 5.8.0 opencpn has a new system for handling messages in plugins.
 The new model is based on that a plugin subscribes to the messages it is
 interested in rather then the old model where plugins get all messages.
 
 The new system is the only way to handle the new NMEA2000 devices.
-For N0183 devices a compatibility layer is installed which makes things work
+For N0183 devices a compatiblity layer is installed which makes things work
 as earlier.
-However, the new system can be used also for NMEA0183 where it offers more
+However, the new system can be used also for nmea0183 where it offers more
 flexibility and performance.
 
 == Receiving messages
@@ -26,7 +26,7 @@ The code handling messages must live in a wxEventClass instance.
 In almost all cases this means that the code should be implemented in a wxWindow.
 If there is a wxWindow available with a suitable lifespan, this could be used.
 If there is no such window, it needs to be created (it can be hidden) or an
-existing one can be modified to always exist, using Show()/Hide() to enable and
+existing one can be modified to alwasy exist, using Show()/Hide() to enable and
 disable.
 
 As an example, the *ShipDrivergui_impl*  class is used.
@@ -185,8 +185,8 @@ Plugins may access comm ports for direct output.
 The general program flow for a plugin may look something like this
 pseudo-code:
 
-.  Plugin will query OpenCPN core for a list of active comm drivers.
-.  Plugin will inspect the list, and query OpenCPN core for driver attributes.
+.  Plugin will query OCPN core for a list of active comm drivers.
+.  Plugin will inspect the list, and query OCPN core for driver attributes.
 .  Plugin will select a comm driver with appropriate attributes for output.
 .  Plugin will register a list of PGNs expected to be transmitted (N2K
    specific)
@@ -195,10 +195,10 @@ pseudo-code:
 
 The mechanism for specifying a particular comm driver uses the notion of
 "handles". Each active comm driver has an associated opaque handle, managed
-by OpenCPN core. All references by a plugin to a driver are by means of its
+by OCPN core. All references by a plugin to a driver are by means of its
 handle. Handles should be considered to be "opaque", meaning that the exact
 contents of the handle are of no specific value to the plugin, and only have
-meaning to the OpenCPN core management of drivers.
+meaning to the OCPN core management of drivers.
 
 Some example code sending `payload_msg` to the */dev/ttyUSB0* port:
 
