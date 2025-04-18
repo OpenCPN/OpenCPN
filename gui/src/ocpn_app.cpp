@@ -113,6 +113,7 @@ using namespace std::literals::chrono_literals;
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
+#include "model/notification_manager.h"
 #include "model/own_ship.h"
 #include "model/plugin_handler.h"
 #include "model/route.h"
@@ -1140,6 +1141,10 @@ bool MyApp::OnInit() {
                    wxFONTWEIGHT_NORMAL, FALSE, wxString(_T("")),
                    wxFONTENCODING_SYSTEM);
   temp_font.SetDefaultEncoding(wxFONTENCODING_SYSTEM);
+
+  //  Start the Notification Manager and remove old persisted messages
+  auto &noteman = NotificationManager::GetInstance();
+  noteman.ScrubNotificationDirectory(30);
 
   //      Establish Log File location
   if (!g_Platform->InitializeLogFile()) {

@@ -27,6 +27,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <wx/dir.h>
 
 #include "model/base_platform.h"
 #include "model/navutil_base.h"
@@ -59,6 +60,24 @@ void NotificationManager::OnTimer(wxTimerEvent& event) {
       AcknowledgeNotification(note->GetGuid());
       note->DecrementTimoutCount();
       break;
+    }
+  }
+}
+
+void NotificationManager::ScrubNotificationDirectory(int days_to_retain) {
+  wxString note_directory = g_BasePlatform->GetPrivateDataDir() +
+                            wxFileName::GetPathSeparator() + "notifications" +
+                            wxFileName::GetPathSeparator();
+  if (!wxDirExists(note_directory)) return;
+
+  wxDateTime now = wxDateTime::Now();
+  wxArrayString file_list;
+  wxDir::GetAllFiles(note_directory, &file_list);
+  for (size_t i = 0; i < file_list.GetCount(); i++) {
+    wxFileName fn(file_list[i]);
+    wxTimeSpan age = now.Subtract(fn.GetModificationTime());
+    if (age.IsLongerThan(wxTimeSpan(days_to_retain * 24))) {
+      wxRemoveFile(file_list[i]);
     }
   }
 }

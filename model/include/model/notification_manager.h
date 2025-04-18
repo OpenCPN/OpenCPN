@@ -65,6 +65,7 @@ public:
   }
 
   size_t GetNotificationCount() const { return active_notifications.size(); }
+  void ScrubNotificationDirectory(int days_to_retain);
 
   /** Notified without data when a notification is added or removed. */
   EventVar evt_notificationlist_change;
