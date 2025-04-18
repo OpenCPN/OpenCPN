@@ -1965,6 +1965,11 @@ void RouteManagerDialog::OnTrkMenuSelected(wxCommandEvent &event) {
         mergeList.push_back(track);
       }
 
+      if (!mergeList.size()) {
+        ::wxEndBusyCursor();
+        break;
+      }
+
       std::sort(mergeList.begin(), mergeList.end(), CompareTracks);
 
       targetTrack = mergeList[0];
