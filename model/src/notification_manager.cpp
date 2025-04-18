@@ -33,6 +33,7 @@
 #include "model/notification.h"
 #include "model/notification_manager.h"
 #include "wx/filename.h"
+#include "model/datetime.h"
 
 extern BasePlatform* g_BasePlatform;
 
@@ -77,8 +78,16 @@ void NotificationManager::PersistNotificationAsFile(
   wxString file_name = wxString(_notification.get()->GetGuid().c_str());
   file_name.Prepend(severity_prefix);
   file_name.Prepend(note_directory);
+  file_name += ".txt";
+
+  wxDateTime act_time = wxDateTime(_notification->GetActivateTime());
+  wxString stime = wxString::Format(
+      "%s", ocpn::toUsrDateTimeFormat(
+                act_time, DateTimeFormatOptions().SetFormatString(
+                              "$short_date  $24_hour_minutes_seconds")));
 
   std::stringstream ss;
+  ss << stime.ToStdString() << std::endl;
   ss << _notification->GetMessage() << std::endl;
 
   std::ofstream outputFile(file_name.ToStdString().c_str(), std::ios::out);
