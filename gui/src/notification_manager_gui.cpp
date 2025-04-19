@@ -96,13 +96,14 @@ NotificationPanel::NotificationPanel(
   wxBitmap bitmap;
   wxFileName path;
   if (notification->GetSeverity() == NotificationSeverity::kInformational) {
-    path = wxFileName(g_Platform->GetSharedDataDir(), "notification-info.svg");
+    path =
+        wxFileName(g_Platform->GetSharedDataDir(), "notification-info-1.svg");
   } else if (notification->GetSeverity() == NotificationSeverity::kWarning) {
-    path =
-        wxFileName(g_Platform->GetSharedDataDir(), "notification-warning.svg");
+    path = wxFileName(g_Platform->GetSharedDataDir(),
+                      "notification-warning-1.svg");
   } else {
-    path =
-        wxFileName(g_Platform->GetSharedDataDir(), "notification-critical.svg");
+    path = wxFileName(g_Platform->GetSharedDataDir(),
+                      "notification-critical-1.svg");
   }
   path.AppendDir("uidata");
   path.AppendDir("MUI_flat");
@@ -351,7 +352,7 @@ NotificationButton::NotificationButton(ChartCanvas* parent) {
 
   m_scale = 1.0;
   m_cs = GLOBAL_COLOR_SCHEME_RGB;
-  m_NoteIconName = "notification-info";
+  m_NoteIconName = "notification-info-1";
 }
 
 NotificationButton::~NotificationButton() {
@@ -368,11 +369,11 @@ NotificationButton::~NotificationButton() {
 void NotificationButton::SetIconSeverity(NotificationSeverity _severity) {
   wxString icon_name;
   if (_severity == NotificationSeverity::kInformational) {
-    icon_name = "notification-info";
+    icon_name = "notification-info-1";
   } else if (_severity == NotificationSeverity::kWarning) {
-    icon_name = "notification-warning";
+    icon_name = "notification-warning-1";
   } else {
-    icon_name = "notification-critical";
+    icon_name = "notification-critical-1";
   }
 
   SetIconName(icon_name);
