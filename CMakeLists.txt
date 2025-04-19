@@ -1069,7 +1069,7 @@ elseif (QT_ANDROID)
 endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU" AND NOT OCPN_PEDANTIC)
   target_compile_options(
     ${PACKAGE_NAME} PUBLIC -Werror -Wno-unknown-warning-option
   )
