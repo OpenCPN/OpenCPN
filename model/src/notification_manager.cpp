@@ -35,8 +35,10 @@
 #include "model/notification_manager.h"
 #include "wx/filename.h"
 #include "model/datetime.h"
+#include "model/comm_appmsg_bus.h"
 
 extern BasePlatform* g_BasePlatform;
+extern std::shared_ptr<ObservableListener> ack_listener;
 
 NotificationManager& NotificationManager::GetInstance() {
   static NotificationManager instance;
@@ -51,12 +53,12 @@ NotificationManager::NotificationManager() {
 
 void NotificationManager::OnTimer(wxTimerEvent& event) {
   for (auto note : active_notifications) {
-    if (note->GetTimeoutCount() > 0) {
+    if (note->GetTimeoutLeft() > 0) {
       note->DecrementTimoutCount();
     }
   }
   for (auto note : active_notifications) {
-    if (note->GetTimeoutCount() == 0) {
+    if (note->GetTimeoutLeft() == 0) {
       AcknowledgeNotification(note->GetGuid());
       note->DecrementTimoutCount();
       break;
@@ -129,6 +131,11 @@ std::string NotificationManager::AddNotification(
   active_notifications.push_back(_notification);
   PersistNotificationAsFile(_notification);
   evt_notificationlist_change.Notify();
+
+  // Send notification to listeners
+  auto msg = std::make_shared<NotificationMsg>("POST", _notification);
+  AppMsgBus::GetInstance().Notify(std::move(msg));
+
   return _notification->GetGuid();
 }
 
@@ -162,6 +169,11 @@ bool NotificationManager::AcknowledgeNotification(const std::string& GUID) {
          it != active_notifications.end();) {
       if ((*it)->GetStringHash() == target_message_hash) {
         active_notifications.erase(it);
+
+        // Send notification to listeners
+        auto msg = std::make_shared<NotificationMsg>("ACK", *it);
+        AppMsgBus::GetInstance().Notify(std::move(msg));
+
         rv = true;
         break;
       } else
@@ -170,7 +182,9 @@ bool NotificationManager::AcknowledgeNotification(const std::string& GUID) {
     }
   }
 
-  if (rv) evt_notificationlist_change.Notify();
+  if (rv) {
+    evt_notificationlist_change.Notify();
+  }
 
   return rv;
 }

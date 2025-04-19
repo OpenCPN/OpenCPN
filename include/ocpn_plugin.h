@@ -2978,8 +2978,8 @@ struct DateTimeFormatOptions {
  * Format a date/time to a localized string representation, conforming to the
  * global date/time format and timezone settings.
  *
- * The function expects date_time to be in local time and formats it according to the 
- * timezone configuration either in:
+ * The function expects date_time to be in local time and formats it according
+ * to the timezone configuration either in:
  * - UTC: Coordinated Universal Time (default)
  * - Local Time: System's configured timezone with proper DST handling
  * - LMT: Local Mean Time calculated based on the longitude specified in options
@@ -2988,8 +2988,10 @@ struct DateTimeFormatOptions {
  * consistent date/time formatting across the entire application.
  *
  * @param date_time The date/time to format, must be in local time.
- * @param options The date/time format options including target timezone and formatting preferences.
- * @return wxString The formatted date/time string with appropriate timezone indicator.
+ * @param options The date/time format options including target timezone and
+ * formatting preferences.
+ * @return wxString The formatted date/time string with appropriate timezone
+ * indicator.
  */
 extern DECL_EXP wxString toUsrDateTimeFormat_Plugin(
     const wxDateTime date_time,
@@ -6327,15 +6329,18 @@ enum class PI_NotificationSeverity : int {
 class PI_Notification {
 public:
   PI_Notification(PI_NotificationSeverity _severity,
-                  const std::string &_message, int _timeout_secs,
-                  std::string _guid);
+                  const std::string &_message, int _timeout_start,
+                  int _timeout_left, std::string _guid);
   virtual ~PI_Notification() {};
 
-private:
   PI_NotificationSeverity severity;
   std::string message;
-  int auto_timeout_secs;
+  int auto_timeout_left;
+  int auto_timeout_start;
   std::string guid;
+  std::string action_verb;  // Either "ACK" or "POST", when set by a
+                            // PI_Notification message payload.
+                            // Empty otherwise
 };
 
 extern DECL_EXP int GetActiveNotificationCount();
@@ -6343,9 +6348,59 @@ extern DECL_EXP PI_NotificationSeverity GetMaxActiveNotificationLevel();
 extern DECL_EXP std::string RaiseNotification(
     const PI_NotificationSeverity _severity, const std::string &_message,
     int timeout_secs = -1);
-extern DECL_EXP bool AcknowledgePINotification(const std::string &guid);
+extern DECL_EXP bool AcknowledgeNotification(const std::string &guid);
 extern DECL_EXP std::vector<std::shared_ptr<PI_Notification>>
 GetActiveNotifications();
 extern DECL_EXP void EnableNotificationCanvasIcon(bool enable);
+
+/*
+ * Messaging interface for Notification Framework
+ *
+ */
+
+/*
+ * Typical use pattern
+ *
+ * 1)  Establish listener
+  wxDEFINE_EVENT(EVT_NOTIFICATION_FRAME, ObservedEvt);
+  static std::shared_ptr<ObservableListener> listener_note;
+  NotificationMsgId note_id = NotificationMsgId();
+  listener_note = GetListener(note_id, EVT_NOTIFICATION_FRAME, this);
+  Bind(EVT_NOTIFICATION_FRAME, [&](ObservedEvt ev) { HandleNotification(ev); });
+ *
+ *
+ *
+ * 2)  Define actions on receipt
+  static void HandleNotification(ObservedEvt &ev) {
+    NotificationMsgId id;
+    std::shared_ptr<PI_Notification>payload=GetNotificationMsgPayload(id, ev);
+    if (payload->action_verb == "ACK"){
+      // Do Acknowledge notification actions
+    }
+    else if (payload->action_verb == "POST") {
+      // Do Add Notification actions
+    }
+  }
+
+*/
+/** Facade for NotificationMsg. */
+struct NotificationMsgId {
+  const std::string id;
+  NotificationMsgId(const std::string &s) : id(s) {};
+  NotificationMsgId() {};
+};
+
+/**
+ * Return listener for Notification Framework messages
+ * interface.
+ */
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
+    NotificationMsgId id, wxEventType ev, wxEvtHandler *handler);
+
+/**
+ * Retrieve the Notification Event in a Notification message
+ */
+extern DECL_EXP std::shared_ptr<PI_Notification> GetNotificationMsgPayload(
+    NotificationMsgId id, ObservedEvt ev);
 
 #endif  //_PLUGIN_H_

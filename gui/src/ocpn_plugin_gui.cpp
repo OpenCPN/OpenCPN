@@ -2774,54 +2774,8 @@ void ConfigFlushAndReload() {
 }
 
 /**
- * Plugin Notification Framework support
+ * Plugin Notification Framework GUI support
  */
-
-PI_Notification::PI_Notification(PI_NotificationSeverity _severity,
-                                 const std::string& _message, int _timeout_secs,
-                                 std::string _guid) {
-  severity = _severity;
-  message = _message;
-  auto_timeout_secs = _timeout_secs;
-  guid = _guid;
-}
-
-int GetActiveNotificationCount() {
-  auto& noteman = NotificationManager::GetInstance();
-  return noteman.GetNotificationCount();
-}
-
-PI_NotificationSeverity GetMaxActiveNotificationLevel() {
-  auto& noteman = NotificationManager::GetInstance();
-  return (PI_NotificationSeverity)noteman.GetMaxSeverity();
-}
-
-std::string RaiseNotification(const PI_NotificationSeverity _severity,
-                              const std::string& _message, int timeout_secs) {
-  auto& noteman = NotificationManager::GetInstance();
-  auto notification = std::make_shared<Notification>(
-      (NotificationSeverity)_severity, _message, timeout_secs);
-  return noteman.AddNotification(notification);
-}
-
-bool AcknowledgePINotification(const std::string& guid) {
-  auto& noteman = NotificationManager::GetInstance();
-  return noteman.AcknowledgeNotification(guid);
-}
-
-std::vector<std::shared_ptr<PI_Notification>> GetActiveNotifications() {
-  auto& noteman = NotificationManager::GetInstance();
-  std::vector<std::shared_ptr<PI_Notification>> pi_notes;
-  for (auto note : noteman.GetNotifications()) {
-    auto pi_note = std::make_shared<PI_Notification>(
-        (PI_NotificationSeverity)note->GetSeverity(), note->GetMessage(),
-        note->GetTimeoutCount(), note->GetGuid());
-    pi_notes.push_back(pi_note);
-  }
-
-  return pi_notes;
-}
-
 void EnableNotificationCanvasIcon(bool enable) {
   g_CanvasHideNotificationIcon = !enable;
 }

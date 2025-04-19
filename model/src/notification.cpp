@@ -32,4 +32,5 @@ Notification::Notification(NotificationSeverity _severity,
       activate_time(wxDateTime::Now().GetTicks()),
       guid(GpxDocument::GetUUID()),
       message_hash(std::hash<std::string>{}(_message)),
-      auto_timeout_secs(_timeout_secs) {}
+      auto_timeout_start(_timeout_secs),
+      auto_timeout_left(_timeout_secs) {}

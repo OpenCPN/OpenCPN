@@ -47,8 +47,9 @@ public:
   time_t GetActivateTime() const { return activate_time; }
   std::string GetGuid() const { return guid; }
   size_t GetStringHash() const { return message_hash; }
-  int GetTimeoutCount() const { return auto_timeout_secs; }
-  void DecrementTimoutCount() { auto_timeout_secs--; }
+  int GetTimeoutStart() const { return auto_timeout_start; }
+  int GetTimeoutLeft() const { return auto_timeout_left; }
+  void DecrementTimoutCount() { auto_timeout_left--; }
 
 private:
   NotificationSeverity severity;
@@ -56,7 +57,8 @@ private:
   const time_t activate_time;
   const std::string guid;
   const size_t message_hash;
-  int auto_timeout_secs;
+  int auto_timeout_start;
+  int auto_timeout_left;
 };
 
 #endif

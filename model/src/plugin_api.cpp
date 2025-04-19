@@ -40,7 +40,7 @@
 #include "model/comm_drv_n2k.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
-
+#include "model/notification_manager.h"
 #include "ocpn_plugin.h"
 #include "model/comm_drv_factory.h"
 using namespace std;
@@ -90,6 +90,17 @@ std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev) {
   return static_pointer_cast<void>(std::make_shared<wxJSONValue>(root));
 }
 
+std::shared_ptr<PI_Notification> GetNotificationMsgPayload(NotificationMsgId id,
+                                                           ObservedEvt ev) {
+  auto msg = UnpackEvtPointer<NotificationMsg>(ev);
+  auto note = msg->notification;
+  auto rv = std::make_shared<PI_Notification>(
+      (PI_NotificationSeverity)note->GetSeverity(), note->GetMessage(),
+      note->GetTimeoutStart(), note->GetTimeoutLeft(), note->GetGuid());
+  rv->action_verb = msg->action_verb;
+  return rv;
+}
+
 shared_ptr<ObservableListener> GetListener(NMEA2000Id id, wxEventType et,
                                            wxEvtHandler* eh) {
   return make_shared<ObservableListener>(Nmea2000Msg(id.id), eh, et);
@@ -113,6 +124,12 @@ shared_ptr<ObservableListener> GetListener(NavDataId id, wxEventType et,
 std::shared_ptr<ObservableListener> GetListener(PluginMsgId id, wxEventType et,
                                                 wxEvtHandler* eh) {
   return make_shared<ObservableListener>(PluginMsg(id.id, ""), eh, et);
+}
+
+std::shared_ptr<ObservableListener> GetListener(NotificationMsgId id,
+                                                wxEventType et,
+                                                wxEvtHandler* eh) {
+  return make_shared<ObservableListener>(NotificationMsg(), eh, et);
 }
 
 PluginNavdata GetEventNavdata(ObservedEvt ev) {
@@ -289,4 +306,55 @@ void ReloadConfigConnections() {
       cp->b_IsSetup = TRUE;
     }
   }
+}
+
+/**
+ * Plugin Notification Framework support
+ */
+
+PI_Notification::PI_Notification(PI_NotificationSeverity _severity,
+                                 const std::string& _message,
+                                 int _timeout_start, int _timeout_left,
+                                 std::string _guid) {
+  severity = _severity;
+  message = _message;
+  auto_timeout_start = _timeout_start;
+  auto_timeout_left = _timeout_left;
+  guid = _guid;
+}
+
+int GetActiveNotificationCount() {
+  auto& noteman = NotificationManager::GetInstance();
+  return noteman.GetNotificationCount();
+}
+
+PI_NotificationSeverity GetMaxActiveNotificationLevel() {
+  auto& noteman = NotificationManager::GetInstance();
+  return (PI_NotificationSeverity)noteman.GetMaxSeverity();
+}
+
+std::string RaiseNotification(const PI_NotificationSeverity _severity,
+                              const std::string& _message, int timeout_secs) {
+  auto& noteman = NotificationManager::GetInstance();
+  auto notification = std::make_shared<Notification>(
+      (NotificationSeverity)_severity, _message, timeout_secs);
+  return noteman.AddNotification(notification);
+}
+
+bool AcknowledgeNotification(const std::string& guid) {
+  auto& noteman = NotificationManager::GetInstance();
+  return noteman.AcknowledgeNotification(guid);
+}
+
+std::vector<std::shared_ptr<PI_Notification>> GetActiveNotifications() {
+  auto& noteman = NotificationManager::GetInstance();
+  std::vector<std::shared_ptr<PI_Notification>> pi_notes;
+  for (auto note : noteman.GetNotifications()) {
+    auto pi_note = std::make_shared<PI_Notification>(
+        (PI_NotificationSeverity)note->GetSeverity(), note->GetMessage(),
+        note->GetTimeoutStart(), note->GetTimeoutLeft(), note->GetGuid());
+    pi_notes.push_back(pi_note);
+  }
+
+  return pi_notes;
 }
