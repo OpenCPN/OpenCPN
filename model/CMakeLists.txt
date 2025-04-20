@@ -82,7 +82,6 @@ set(
   ${MODEL_HDR_DIR}/geodesic.h
   ${MODEL_HDR_DIR}/georef.h
   ${MODEL_HDR_DIR}/gpx_document.h
-  ${MODEL_HDR_DIR}/gui.h
   ${MODEL_HDR_DIR}/hyperlink.h
   ${MODEL_HDR_DIR}/idents.h
   ${MODEL_HDR_DIR}/instance_check.h
@@ -189,7 +188,6 @@ set(SRC
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
   ${MODEL_SRC_DIR}/gpx_document.cpp
-  ${MODEL_SRC_DIR}/gui.cpp
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
