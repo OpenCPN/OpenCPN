@@ -40,7 +40,6 @@
 #include "model/ocpn_utils.h"
 
 #include "observable.h"
-#include "tty_scroll.h"
 
 /**
  * Create a stream of input messages.  The
