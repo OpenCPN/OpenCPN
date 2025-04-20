@@ -136,7 +136,7 @@ bool isSingleChart(ChartBase* chart);
 class MyFrame : public wxFrame {
 public:
   MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, long style, DataMonitor* data_monitor);
+          const wxSize& size, long style);
 
   ~MyFrame();
 

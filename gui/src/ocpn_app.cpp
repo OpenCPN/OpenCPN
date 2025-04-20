@@ -1229,9 +1229,6 @@ bool MyApp::OnInit() {
   //      overwhelm the log
   pMessageOnceArray = new wxArrayString;
 
-  // Created here to be available for Routenman, reparented later.
-  m_data_monitor = new DataMonitor(nullptr);
-
   //      Init the Route Manager
   g_pRouteMan =
       new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx());
@@ -1649,9 +1646,8 @@ bool MyApp::OnInit() {
   wxLogMessage(fmsg);
 
   gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size,
-                       app_style, m_data_monitor);
+                       app_style);
   wxTheApp->SetTopWindow(gFrame);
-  m_data_monitor->Reparent(gFrame);
 
   //  Do those platform specific initialization things that need gFrame
   g_Platform->Initialize_3();
