@@ -871,9 +871,10 @@ public:
   void OnMMSIEditCancelClick(wxCommandEvent &event);
   void OnMMSIEditOKClick(wxCommandEvent &event);
   void OnCtlUpdated(wxCommandEvent &event);
+  void OnMMSIChanged(wxCommandEvent &event);
 
   MmsiProperties *m_props;
-  wxTextCtrl *m_MMSICtl, m_ShipNameCtl;  // Has ToDo take away?
+  wxTextCtrl *m_MMSICtl, *m_ShipNameCtl;  // Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
   wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton,

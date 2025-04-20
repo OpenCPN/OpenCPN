@@ -910,50 +910,102 @@ void MMSIEditDialog::CreateControls(void) {
   wxStaticBoxSizer* mmsiSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
   mainSizer->Add(mmsiSizer, 0, wxEXPAND | wxALL, 5);
 
-  mmsiSizer->Add(new wxStaticText(this, wxID_STATIC, _("MMSI")), 0,
-                 wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+  wxStaticText* mmsiLabel = new wxStaticText(this, wxID_STATIC, _("MMSI"));
+  mmsiLabel->SetToolTip(
+      _("Maritime Mobile Service Identity - A unique 9-digit number assigned "
+        "to a vessel or navigation aid. Used to identify vessels and devices "
+        "in AIS transmissions and DSC calls."));
+  mmsiSizer->Add(mmsiLabel, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
 
   m_MMSICtl = new wxTextCtrl(this, ID_MMSI_CTL, wxEmptyString,
                              wxDefaultPosition, wxSize(180, -1), 0);
+  m_MMSICtl->SetToolTip(
+      _("Enter the 9-digit MMSI number for this vessel or station"));
   mmsiSizer->Add(m_MMSICtl, 0,
                  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+  m_MMSICtl->Bind(wxEVT_TEXT, &MMSIEditDialog::OnMMSIChanged, this);
 
-  wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(
-      new wxStaticBox(this, wxID_ANY, _("Tracking")), wxVERTICAL);
+  wxStaticText* userLabelText = new wxStaticText(this, wxID_STATIC, _("Name"));
+  userLabelText->SetToolTip(
+      _("Display name for this vessel or device - can override names received "
+        "in AIS messages"));
+  mmsiSizer->Add(userLabelText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+
+  m_ShipNameCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
+                                 wxDefaultPosition, wxSize(180, -1), 0);
+  m_ShipNameCtl->SetToolTip(_(
+      "Set the name for this vessel or device. If specified, this name takes "
+      "precedence over names received via AIS messages. Note that standard AIS "
+      "only supports uppercase letters (A-Z), numbers, and limited "
+      "punctuation. Your manual entries are stored in the mmsitoname.csv file "
+      "and preserved across sessions."));
+  mmsiSizer->Add(m_ShipNameCtl, 0,
+                 wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+
+  wxStaticBox* trackBox = new wxStaticBox(this, wxID_ANY, _("Tracking"));
+  trackBox->SetToolTip(_("Control how tracks are created for this MMSI"));
+  wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(trackBox, wxVERTICAL);
 
   wxGridSizer* gridSizer = new wxGridSizer(0, 3, 0, 0);
 
   m_rbTypeTrackDefault =
       new wxRadioButton(this, wxID_ANY, _("Default tracking"),
                         wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+  m_rbTypeTrackDefault->SetToolTip(
+      _("Use the global tracking settings for this vessel"));
   m_rbTypeTrackDefault->SetValue(TRUE);
   gridSizer->Add(m_rbTypeTrackDefault, 0, wxALL, 5);
 
   m_rbTypeTrackAlways = new wxRadioButton(this, wxID_ANY, _("Always track"));
+  m_rbTypeTrackAlways->SetToolTip(_(
+      "Always create a track for this vessel, regardless of global settings"));
   gridSizer->Add(m_rbTypeTrackAlways, 0, wxALL, 5);
 
   m_rbTypeTrackNever = new wxRadioButton(this, wxID_ANY, _(" Never track"));
+  m_rbTypeTrackNever->SetToolTip(
+      _("Never create a track for this vessel, regardless of global settings"));
   gridSizer->Add(m_rbTypeTrackNever, 0, wxALL, 5);
 
   m_cbTrackPersist = new wxCheckBox(this, wxID_ANY, _("Persistent"));
+  m_cbTrackPersist->SetToolTip(
+      _("Save this vessel's track between OpenCPN sessions. Useful for vessels "
+        "you want to monitor continuously over time."));
   gridSizer->Add(m_cbTrackPersist, 0, wxALL, 5);
 
   trackSizer->Add(gridSizer, 0, wxEXPAND, 0);
   mmsiSizer->Add(trackSizer, 0, wxEXPAND, 0);
 
   m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
+  m_IgnoreButton->SetToolTip(
+      _("When checked, AIS data for this MMSI will be ignored and the vessel "
+        "will not appear on the chart. Useful for suppressing shore stations, "
+        "permanently moored vessels, or duplicate AIS signals that you don't "
+        "need to monitor."));
   mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
 
   m_MOBButton = new wxCheckBox(this, wxID_ANY,
                                _("Handle this MMSI as SART/PLB(AIS) MOB."));
+  m_MOBButton->SetToolTip(
+      _("When checked, OpenCPN will display a special icon for this device, "
+        "sound a distinctive alarm, and automatically create a temporary MOB "
+        "route from your vessel to this device in emergency. For crew safety "
+        "devices, you can assign the crew member's name using the Name "
+        "field above for quick identification."));
   mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
 
   m_VDMButton =
       new wxCheckBox(this, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI"));
+  m_VDMButton->SetToolTip(
+      _("When checked, converts AIS messages for this vessel from AIVDM (other "
+        "vessel) to AIVDO (own vessel) format."));
   mmsiSizer->Add(m_VDMButton, 0, wxEXPAND, 5);
 
   m_FollowerButton = new wxCheckBox(
       this, wxID_ANY, _("This MMSI is my Follower - No CPA Alert"));
+  m_FollowerButton->SetToolTip(
+      _("When checked, disables CPA (Closest Point of Approach) alerts for "
+        "this vessel as it's considered intentionally following your vessel. "
+        "Follower vessels are displayed with a special own-ship style icon."));
   mmsiSizer->Add(m_FollowerButton, 0, wxEXPAND, 5);
 
   wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -973,6 +1025,11 @@ void MMSIEditDialog::CreateControls(void) {
   else
     sMMSI = _T("");
   m_MMSICtl->AppendText(sMMSI);
+
+  // Initialize user label with existing ship name if available
+  if (!m_props->m_ShipName.IsEmpty()) {
+    m_ShipNameCtl->SetValue(m_props->m_ShipName);
+  }
 
   switch (m_props->TrackType) {
     case TRACKTYPE_ALWAYS:
@@ -1014,7 +1071,21 @@ void MMSIEditDialog::Persist() {
     m_props->m_bVDM = m_VDMButton->GetValue();
     m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
-    if (m_props->m_ShipName == wxEmptyString) {
+
+    // Get user-defined ship name if provided.
+    wxString shipName = m_ShipNameCtl->GetValue().Upper();
+    if (!shipName.IsEmpty()) {
+      m_props->m_ShipName = shipName;
+
+      // Save the custom name to mmsitoname.csv file
+      wxString mmsi = m_MMSICtl->GetValue();
+      if (!mmsi.IsEmpty() && mmsi.Length() == 9 && mmsi.IsNumber()) {
+        g_pAIS->UpdateMMSItoNameFile(mmsi, shipName);
+      }
+    }
+    // If no user label provided and no existing name, try to get from AIS data
+    // or file
+    else if (m_props->m_ShipName == wxEmptyString) {
       auto proptarget = g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
       if (proptarget) {
         wxString s = proptarget->GetFullName();
@@ -1055,6 +1126,31 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
 }
 
 void MMSIEditDialog::OnCtlUpdated(wxCommandEvent& event) {}
+
+void MMSIEditDialog::OnMMSIChanged(wxCommandEvent& event) {
+  wxString mmsi = m_MMSICtl->GetValue();
+
+  // Only proceed if we have a valid MMSI (9 digits)
+  if (!mmsi.IsEmpty() && mmsi.Length() == 9 && mmsi.IsNumber()) {
+    // First check for a stored name in mmsitoname.csv
+    wxString shipName = g_pAIS->GetMMSItoNameEntry(mmsi);
+
+    // If no stored name found, try to get from AIS data
+    if (shipName.IsEmpty()) {
+      auto target = g_pAIS->Get_Target_Data_From_MMSI(wxAtoi(mmsi));
+      if (target) {
+        shipName = target->GetFullName();
+      }
+    }
+
+    // Update the ship name field if we found a name
+    if (!shipName.IsEmpty()) {
+      m_ShipNameCtl->SetValue(shipName);
+    }
+  }
+
+  event.Skip();
+}
 
 BEGIN_EVENT_TABLE(MMSIListCtrl, wxListCtrl)
 EVT_LIST_ITEM_SELECTED(ID_MMSI_PROPS_LIST, MMSIListCtrl::OnListItemClick)
