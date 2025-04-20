@@ -95,8 +95,6 @@ private:
   void InitRestListeners();
   ObsListener rest_activate_listener;
   ObsListener rest_reverse_listener;
-
-  DataMonitor* m_data_monitor;
 };
 
 wxDECLARE_APP(MyApp);

@@ -697,11 +697,11 @@ static NmeaLog *GetDataMonitor() {
 
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
-                 const wxSize &size, long style, DataMonitor *data_monitor)
+                 const wxSize &size, long style)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
       comm_overflow_dlg(this),
       m_connections_dlg(nullptr),
-      m_data_monitor(data_monitor) {
+      m_data_monitor(new DataMonitor(this)) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
