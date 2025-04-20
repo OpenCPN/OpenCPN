@@ -31,7 +31,7 @@
 
 #include <wx/frame.h>
 
-#include "data_monitor_src.h"
+#include "model/data_monitor_src.h"
 #include "tty_scroll.h"
 #include "std_filesystem.h"
 

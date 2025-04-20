@@ -32,11 +32,10 @@
 
 #include "model/comm_navmsg.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/data_monitor_src.h"
 #include "model/ocpn_utils.h"
 
 #include "observable.h"
-
-#include "data_monitor_src.h"
 
 static void InitListener(ObsListener& ol, NavMsg& msg,
                          const std::function<void(ObservedEvt)>& on_message) {
