@@ -904,7 +904,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/data_monitor.cpp
-    ${GUI_SRC_DIR}/data_monitor_src.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
