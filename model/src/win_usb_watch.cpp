@@ -26,6 +26,7 @@
 #include <windows.h>
 #include <Dbt.h>
 
+#include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/log.h>
 #include <wx/window.h>
@@ -36,7 +37,7 @@
 
 class UsbListenFrame : public wxFrame {
 public:
-  UsbListenFrame() : wxFrame(GetTopWindow(), wxID_ANY, "") {}
+  UsbListenFrame() : wxFrame(wxTheApp->GetTopWindow(), wxID_ANY, "") {}
 
   virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam,
                                   WXLPARAM lParam) {
