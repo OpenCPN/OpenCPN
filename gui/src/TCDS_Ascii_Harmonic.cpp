@@ -424,7 +424,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX) {
     //                 Harbor, New York Current
     //                            as found in HARMONIC
     if ((!slackcmp(psd->station_name, pIDX->IDX_reference_name)) &&
-        (toupper(pIDX->IDX_type) == psd->station_type)) {
+        (toupper(pIDX->IDX_type) == static_cast<int>(psd->station_type))) {
       pIDX->pref_sta_data = psd;  // save for later
       return TC_NO_ERROR;
     }
