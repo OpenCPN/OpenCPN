@@ -105,14 +105,13 @@ static void ActivatePersistedRoute(Routeman *routeman) {
 //--------------------------------------------------------------------------------
 
 Routeman::Routeman(struct RoutePropDlgCtx ctx,
-                   struct RoutemanDlgCtx route_dlg_ctx, NmeaLog *nmea_log)
+                   struct RoutemanDlgCtx route_dlg_ctx)
     : pActiveRoute(0),
       pActivePoint(0),
       pRouteActivatePoint(0),
       m_NMEA0183(NmeaCtxFactory()),
       m_prop_dlg_ctx(ctx),
-      m_route_dlg_ctx(route_dlg_ctx),
-      m_nmea_log(nmea_log) {
+      m_route_dlg_ctx(route_dlg_ctx) {
   GlobalVar<wxString> active_route(&g_active_route);
   auto route_action = [&](wxCommandEvent) {
     if (g_persist_active_route) ActivatePersistedRoute(this);

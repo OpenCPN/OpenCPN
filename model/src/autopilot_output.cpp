@@ -35,7 +35,9 @@
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
 #include "model/georef.h"
+#include "model/gui.h"
 #include "model/nmea_ctx_factory.h"
+#include "model/nmea_log.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "N2kMsg.h"
@@ -46,6 +48,13 @@
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
+
+static NmeaLog *GetNmeaLog() {
+  auto w = wxWindow::FindWindowByName(kDataMonitorWindowName);
+  auto log = dynamic_cast<NmeaLog *>(w);
+  assert(log);
+  return log;
+}
 
 bool UpdateAutopilotN0183(Routeman &routeman) {
   NMEA0183 nmea0183 = routeman.GetNMEA0183();
@@ -102,7 +111,7 @@ bool UpdateAutopilotN0183(Routeman &routeman) {
       wp_len -= 1;
     } while (snt.Sentence.size() > 82 && wp_len > 0);
 
-    BroadcastNMEA0183Message(snt.Sentence, routeman.GetNmeaLog(),
+    BroadcastNMEA0183Message(snt.Sentence, GetNmeaLog(),
                              routeman.GetMessageSentEventVar());
   }
 
@@ -157,7 +166,7 @@ bool UpdateAutopilotN0183(Routeman &routeman) {
 
     nmea0183.Rmc.Write(snt);
 
-    BroadcastNMEA0183Message(snt.Sentence, routeman.GetNmeaLog(),
+    BroadcastNMEA0183Message(snt.Sentence, GetNmeaLog(),
                              routeman.GetMessageSentEventVar());
   }
 
@@ -229,7 +238,7 @@ bool UpdateAutopilotN0183(Routeman &routeman) {
     }
 
     nmea0183.Apb.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence, routeman.GetNmeaLog(),
+    BroadcastNMEA0183Message(snt.Sentence, GetNmeaLog(),
                              routeman.GetMessageSentEventVar());
   }
 
@@ -257,7 +266,7 @@ bool UpdateAutopilotN0183(Routeman &routeman) {
     nmea0183.Xte.CrossTrackUnits = _T("N");
 
     nmea0183.Xte.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence, routeman.GetNmeaLog(),
+    BroadcastNMEA0183Message(snt.Sentence, GetNmeaLog(),
                              routeman.GetMessageSentEventVar());
   }
 

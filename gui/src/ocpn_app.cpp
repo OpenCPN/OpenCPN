@@ -1233,8 +1233,8 @@ bool MyApp::OnInit() {
   m_data_monitor = new DataMonitor(nullptr);
 
   //      Init the Route Manager
-  g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(),
-                             RoutemanGui::GetDlgCtx(), m_data_monitor);
+  g_pRouteMan =
+      new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();
