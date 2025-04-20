@@ -757,7 +757,8 @@ void DataLogger::Add(const Logline& ll) {
 
 DataMonitor::DataMonitor(wxWindow* parent)
     : wxFrame(parent, wxID_ANY, "Data Monitor", wxDefaultPosition,
-              wxDefaultSize, wxDEFAULT_FRAME_STYLE, kDataMonitorWindowName),
+              wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT,
+              kDataMonitorWindowName),
       m_monitor_src([&](const std::shared_ptr<const NavMsg>& navmsg) {
         auto msg = std::dynamic_pointer_cast<const Nmea0183Msg>(navmsg);
         TtyPanel::AddIfExists(navmsg);
