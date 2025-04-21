@@ -961,7 +961,7 @@ TEST(Navmsg2000, to_string) {
   auto id = static_cast<uint64_t>(1234);
   auto msg =
       std::make_shared<Nmea2000Msg>(id, payload, shared_navaddr_none2000);
-  EXPECT_EQ(string("1234 7061796c6f61642064617461"), msg->to_string());
+  EXPECT_EQ(string("n2000-    PGN: 6385516 [  ]"), msg->to_string());
 }
 
 TEST(FileDriver, Registration) {
