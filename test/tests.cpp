@@ -988,7 +988,7 @@ TEST(FileDriver, output) {
   std::ifstream f("test-output.txt");
   stringstream ss;
   ss << f.rdbuf();
-  EXPECT_EQ(ss.str(), string("1234 7061796c6f61642064617461"));
+  EXPECT_EQ(ss.str(), string("n2000-    PGN: 6385516 [  ]"));
 }
 
 #if 0
