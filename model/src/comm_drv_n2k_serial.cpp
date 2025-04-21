@@ -353,6 +353,11 @@ void CommDriverN2KSerial::Close() {
     m_bsec_thread_active = false;
   }
 }
+static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
+  uint64_t name;
+  memcpy(&name, reinterpret_cast<const void*>(payload.data()), sizeof(name));
+  return name;
+}
 
 bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                       std::shared_ptr<const NavAddr> addr) {
@@ -371,19 +376,25 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
   for (size_t i = 0; i < load.size(); i++) N2kMsg.AddByte(load.at(i));  // data
 
-  const std::vector<uint8_t> mv = BufferToActisenseFormat(N2kMsg);
+  const std::vector<uint8_t> acti_pkg = BufferToActisenseFormat(N2kMsg);
 
-  // printf("mv\n");
-  // for(size_t i=0; i< mv.size(); i++){
-  //     printf("%02X ", mv.at(i));
-  //   }
-  // printf("\n\n");
+  // Create the internal message for all N2K listeners
+  std::vector<unsigned char> msg_payload;
+  for (int i = 2; i < acti_pkg.size() - 2; i++)
+    msg_payload.push_back(acti_pkg[i]);
+  auto name = PayloadToName(load);
+  auto msg_all =
+      std::make_shared<const Nmea2000Msg>(1, msg_payload, GetAddress(name));
+
+  // Notify listeners
+  m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_all));
 
   if (GetSecondaryThread()) {
     if (IsSecThreadActive()) {
       int retry = 10;
       while (retry) {
-        if (GetSecondaryThread()->SetOutMsg(mv))
+        if (GetSecondaryThread()->SetOutMsg(acti_pkg))
           return true;
         else
           retry--;
@@ -443,12 +454,6 @@ void CommDriverN2KSerial::ProcessManagementPacket(
     default:
       break;
   }
-}
-
-static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
-  uint64_t name;
-  memcpy(&name, reinterpret_cast<const void*>(payload.data()), sizeof(name));
-  return name;
 }
 
 void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(

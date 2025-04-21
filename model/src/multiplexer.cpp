@@ -276,40 +276,58 @@ void Multiplexer::InitN2KCommListeners() {
 bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (!m_log_callbacks.log_is_active()) return false;
 
+  auto payload = n2k_msg.get()->payload;
   // extract PGN
   unsigned int pgn = 0;
   pgn += n2k_msg.get()->payload.at(3);
   pgn += n2k_msg.get()->payload.at(4) << 8;
   pgn += n2k_msg.get()->payload.at(5) << 16;
 
-  // extract data source
-  std::string source = n2k_msg.get()->source->to_string();
-
-  // extract source ID
-  unsigned char source_id = n2k_msg.get()->payload.at(7);
-  char ss[4];
-  sprintf(ss, "%d", source_id);
-  std::string ident = std::string(ss);
-
-  if (pgn == last_pgn_logged) {
-    n_N2K_repeat++;
-    return false;
-  } else {
-    if (n_N2K_repeat) {
-      wxString repeat_log_msg;
-      repeat_log_msg.Printf("...Repeated %d times\n", n_N2K_repeat);
-      // LogInputMessage(repeat_log_msg, "N2000", false, false);  FIXME(leamas)
-      n_N2K_repeat = 0;
-    }
+#if 0
+  printf(" %d: payload\n", pgn);
+  for(size_t i=0; i< payload.size(); i++){
+    printf("%02X ", payload.at(i));
   }
+  printf("\n");
+  std::string pretty = n2k_msg->to_string();
+  printf("%s\n\n", pretty.c_str());
+#endif
 
-  wxString log_msg;
-  log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source, ident,
-                 N2K_LogMessage_Detail(pgn).c_str());
+  //  Input, or output?
+  if (payload.at(0) == 0x94) {  // output
+    NavmsgStatus ns;
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    LogOutputMessage(n2k_msg, ns);
+  } else {  // input
+    // extract data source
+    std::string source = n2k_msg.get()->source->to_string();
 
-  LogInputMessage(n2k_msg, false, false);
+    // extract source ID
+    unsigned char source_id = n2k_msg.get()->payload.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
 
-  last_pgn_logged = pgn;
+    if (pgn == last_pgn_logged) {
+      n_N2K_repeat++;
+      return false;
+    } else {
+      if (n_N2K_repeat) {
+        wxString repeat_log_msg;
+        repeat_log_msg.Printf("...Repeated %d times\n", n_N2K_repeat);
+        // LogInputMessage(repeat_log_msg, "N2000", false, false); FIXME(leamas)
+        n_N2K_repeat = 0;
+      }
+    }
+
+    wxString log_msg;
+    log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source, ident,
+                   N2K_LogMessage_Detail(pgn).c_str());
+
+    LogInputMessage(n2k_msg, false, false);
+
+    last_pgn_logged = pgn;
+  }
   return true;
 }
 

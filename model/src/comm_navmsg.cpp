@@ -100,11 +100,14 @@ std::string Nmea2000Msg::to_string() const {
   *c++ = payload.at(5);
 
   std::string st;
+  int data_start = 12;
+  if (payload.at(0) == 0x94) data_start = 7;
   size_t i = 0;
   while (i < payload.size() - 1) {
-    if (i > 12) {
+    if (i > data_start) {
       for (int j = 0; j < 8; j++) {
         st.append(CharToString(payload[i]));
+        st.append(" ");
         i++;
         if (i >= payload.size() - 1) {
           break;
