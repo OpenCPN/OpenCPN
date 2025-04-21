@@ -134,7 +134,6 @@ std::string Nmea2000Msg::to_vdr() const {
 std::string Nmea0183Msg::to_string() const {
   std::stringstream ss;
   ss << key() << " " << talker << type << " " << ocpn::printable(payload);
-  printf("%s\n", ss.str().c_str());
   return ss.str();
 }
 
