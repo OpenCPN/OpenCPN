@@ -380,7 +380,7 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
   // Create the internal message for all N2K listeners
   std::vector<unsigned char> msg_payload;
-  for (int i = 2; i < acti_pkg.size() - 2; i++)
+  for (size_t i = 2; i < acti_pkg.size() - 2; i++)
     msg_payload.push_back(acti_pkg[i]);
   auto name = PayloadToName(load);
   auto msg_all =

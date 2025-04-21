@@ -100,7 +100,7 @@ std::string Nmea2000Msg::to_string() const {
   *c++ = payload.at(5);
 
   std::string st;
-  int data_start = 12;
+  size_t data_start = 12;
   if (payload.at(0) == 0x94) data_start = 7;
   size_t i = 0;
   while (i < payload.size() - 1) {
