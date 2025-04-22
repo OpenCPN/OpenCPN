@@ -94,6 +94,7 @@ private:
   ObsListener m_filter_update_lstnr;
   ObsListener m_filter_apply_lstnr;
   fs::path GetDefaultLogfile();
+  std::string m_current_filter;
 };
 
 #endif  //  DATA_MONITOR_DLG__
