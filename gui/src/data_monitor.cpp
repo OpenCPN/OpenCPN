@@ -848,6 +848,7 @@ void DataMonitor::OnFilterListChange() {
 }
 
 void DataMonitor::OnFilterUpdate(const std::string& name) {
+  if (name != m_current_filter) return;
   wxWindow* w = wxWindow::FindWindowByName("TtyScroll");
   if (!w) return;
   auto tty_scroll = dynamic_cast<TtyScroll*>(w);
@@ -860,6 +861,7 @@ void DataMonitor::OnFilterApply(const std::string& name) {
   if (!w) return;
   auto filter_choice = dynamic_cast<FilterChoice*>(w);
   assert(filter_choice && "Wrong FilterChoice type (!)");
+  m_current_filter = name;
   filter_choice->OnApply(name);
 }
 

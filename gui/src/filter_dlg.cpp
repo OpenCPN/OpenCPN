@@ -615,8 +615,8 @@ void CreateFilterDlg(wxWindow* parent) {
   dlg.ShowModal();
   auto name = dlg.GetValue().ToStdString();
   if (name.empty()) {
-    wxMessageDialog dlg(wxTheApp->GetTopWindow(), _("Illegal name"));
-    dlg.ShowModal();
+    wxMessageDialog msg_dlg(wxTheApp->GetTopWindow(), _("Illegal name"));
+    msg_dlg.ShowModal();
     return;
   }
   if (filters_on_disk::Exists(name)) {
@@ -642,11 +642,12 @@ void RemoveFilterDlg(wxWindow* parent) {
   fs::path path(dlg.GetStringSelection().ToStdString());
   if (filters_on_disk::Remove(path.stem().string())) {
     FilterEvents::GetInstance().filter_list_change.Notify();
-    wxMessageDialog dlg(wxTheApp->GetTopWindow(), _("Filter removed"));
-    dlg.ShowModal();
+    wxMessageDialog msg_dlg(wxTheApp->GetTopWindow(), _("Filter removed"));
+    msg_dlg.ShowModal();
   } else {
-    wxMessageDialog dlg(wxTheApp->GetTopWindow(), _("Cannot remove filter"));
-    dlg.ShowModal();
+    wxMessageDialog msg_dlg(wxTheApp->GetTopWindow(),
+                            _("Cannot remove filter"));
+    msg_dlg.ShowModal();
   }
 }
 
