@@ -444,9 +444,6 @@ public:
     kLogFormatCsv,
     kLogFormatVdr,
     kViewStdColors,
-    kViewNoColors,
-    kViewTimestamps,
-    kViewSource,
     kViewCopy
   };
 
