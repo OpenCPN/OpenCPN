@@ -76,11 +76,7 @@ public:
   /** Add an input line to log output. */
   void Add(const Logline& ll) override;
 
-#pragma GCC diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-  using NmeaLog::IsActive;
-  virtual bool IsActive() const override;
-#pragma GCC diagnostic pop
+  virtual bool IsVisible() const override;
 
 private:
   void OnFilterListChange();
