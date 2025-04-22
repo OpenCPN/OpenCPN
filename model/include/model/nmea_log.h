@@ -30,7 +30,7 @@ public:
   virtual void Add(const Logline& l) = 0;
 
   /** Return true if log is visible i. e., if it's any point using Add(). */
-  virtual bool IsActive() const = 0;
+  virtual bool IsVisible() const = 0;
 };
 
 #endif  // _ABSTRACT_NMEA_LOG__

@@ -96,11 +96,11 @@ static BridgeLogCallbacks GetLogCallbacks() {
   BridgeLogCallbacks log_callbacks;
   log_callbacks.log_is_active = [&]() {
     auto log = GetDataMonitor();
-    return log && log->IsActive();
+    return log && log->IsVisible();
   };
   log_callbacks.log_message = [&](Logline ll) {
     NmeaLog* monitor = GetDataMonitor();
-    if (monitor && monitor->IsActive()) monitor->Add(ll);
+    if (monitor && monitor->IsVisible()) monitor->Add(ll);
   };
   return log_callbacks;
 }

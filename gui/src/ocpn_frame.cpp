@@ -788,11 +788,11 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   struct MuxLogCallbacks log_callbacks;
   log_callbacks.log_is_active = [&]() {
     auto log = GetDataMonitor();
-    return log && log->IsActive();
+    return log && log->IsVisible();
   };
   log_callbacks.log_message = [&](Logline ll) {
     NmeaLog *monitor = GetDataMonitor();
-    if (monitor && monitor->IsActive()) monitor->Add(ll);
+    if (monitor && monitor->IsVisible()) monitor->Add(ll);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 
@@ -6978,7 +6978,7 @@ void MyFrame::applySettingsString(wxString settings) {
   if (console) console->Raise();
 
   Refresh(false);
-  if (m_data_monitor->IsActive()) m_data_monitor->Raise();
+  if (m_data_monitor->IsVisible()) m_data_monitor->Raise();
 }
 
 #ifdef wxHAS_POWER_EVENTS

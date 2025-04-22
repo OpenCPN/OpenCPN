@@ -82,7 +82,7 @@
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
 class NmeaLogDummy : public NmeaLog {
-  bool IsActive() const { return false; }
+  bool IsVisible() const { return false; }
   void Add(const Logline& s) {};
 };
 

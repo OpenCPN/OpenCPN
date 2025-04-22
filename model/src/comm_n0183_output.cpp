@@ -58,7 +58,7 @@
 
 void LogBroadcastOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
                                     NavmsgStatus ns, NmeaLog* nmea_log) {
-  if (nmea_log->IsActive()) {
+  if (nmea_log->IsVisible()) {
     ns.direction = NavmsgStatus::Direction::kOutput;
     Logline ll(msg, ns);
     nmea_log->Add(ll);

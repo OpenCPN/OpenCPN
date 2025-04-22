@@ -196,7 +196,7 @@ public:
 
   void Add(const Logline& ll) override { m_tty_scroll->Add(ll); }
 
-  bool IsActive() const override { return IsShownOnScreen(); }
+  bool IsVisible() const override { return IsShownOnScreen(); }
 
   void OnStop(bool stop) {
     m_tty_scroll->Pause(stop);
@@ -833,7 +833,7 @@ void DataMonitor::Add(const Logline& ll) {
   m_logger.Add(ll);
 }
 
-bool DataMonitor::IsActive() const {
+bool DataMonitor::IsVisible() const {
   wxWindow* w = wxWindow::FindWindowByName("TtyPanel");
   assert(w && "No TtyPanel found");
   return w->IsShownOnScreen();
