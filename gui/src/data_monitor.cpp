@@ -25,6 +25,7 @@
 #include "androidUTIL.h"
 #endif
 
+#include "model/base_platform.h"
 #include "model/data_monitor_src.h"
 #include "model/filters_on_disk.h"
 #include "model/navmsg_filter.h"
@@ -48,6 +49,7 @@
 #else
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
+extern BasePlatform* g_BasePlatform;
 
 static const char* const kFilterChoiceName = "FilterChoiceWindow";
 
@@ -462,10 +464,11 @@ public:
     if (IsUserFilter(m_filter))
       Append(static_cast<int>(Id::kEditActiveFilter), _("Edit active filter"));
     auto logging = new wxMenu("");
-    AppendId(logging, Id::kLogFile, _("Log file..."));
+
     AppendRadioId(logging, Id::kLogFormatDefault, _("Log format: standard"));
     AppendRadioId(logging, Id::kLogFormatCsv, _("Log format: CSV"));
     AppendRadioId(logging, Id::kLogFormatVdr, _("Log format: VDR"));
+    AppendId(logging, Id::kLogFile, _("Log file..."));
     AppendSubMenu(logging, _("Logging..."));
 
     auto view = new wxMenu("");
@@ -556,8 +559,10 @@ private:
   }
 
   void SetLogfile() {
-    wxFileDialog dlg(m_parent, _("Select logfile"), "",
-                     m_logger.GetLogfile().string(), _("Log Files (*.log)"),
+    wxFileDialog dlg(m_parent, _("Select logfile"),
+                     m_logger.GetDefaultLogfile().parent_path().string(),
+                     m_logger.GetDefaultLogfile().stem().string(),
+                     m_logger.GetFileDlgTypes(),
                      wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     if (dlg.ShowModal() == wxID_CANCEL) return;
     m_logger.SetLogfile(fs::path(dlg.GetPath().ToStdString()));
@@ -722,8 +727,7 @@ DataLogger::DataLogger(wxWindow* parent, const fs::path& path)
       m_is_logging(false),
       m_format(Format::kDefault) {}
 
-DataLogger::DataLogger(wxWindow* parent)
-    : DataLogger(parent, DefaultLogfile()) {}
+DataLogger::DataLogger(wxWindow* parent) : DataLogger(parent, NullLogfile()) {}
 
 void DataLogger::SetLogging(bool logging) { m_is_logging = logging; }
 
@@ -732,15 +736,31 @@ void DataLogger::SetLogfile(const fs::path& path) {
   m_stream << "# timestamp_format: EPOCH_MILLIS\n";
   m_stream << "received_at,protocol,msg_type,source,raw_data\n";
   m_stream << std::flush;
+  m_path = path;
 }
 
 void DataLogger::SetFormat(DataLogger::Format format) { m_format = format; }
 
-fs::path DataLogger::DefaultLogfile() {
+fs::path DataLogger::NullLogfile() {
   if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
     return "NUL:";
   else
     return "/dev/null";
+}
+
+fs::path DataLogger::GetDefaultLogfile() {
+  if (m_path.stem() != NullLogfile().stem()) return m_path;
+  fs::path path(g_BasePlatform->GetHomeDir().ToStdString());
+  path /= "monitor";
+  path += (m_format == Format::kDefault ? ".log" : ".csv");
+  return path;
+}
+
+std::string DataLogger::GetFileDlgTypes() {
+  if (m_format == Format::kDefault)
+    return _("Log file (*.log)|*.log");
+  else
+    return _("Spreadsheet csv file(*.csv)|*.csv");
 }
 
 void DataLogger::Add(const Logline& ll) {

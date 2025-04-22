@@ -34,7 +34,10 @@
 #include "model/data_monitor_src.h"
 #include "tty_scroll.h"
 #include "std_filesystem.h"
-
+/**
+ * Internal helper class
+ * \internal
+ */
 class DataLogger {
 public:
   enum class Format { kVdr, kDefault, kCsv };
@@ -53,14 +56,18 @@ public:
 
   fs::path GetLogfile() { return m_path; }
 
+  fs::path NullLogfile();
+
+  std::string GetFileDlgTypes();
+
+  fs::path GetDefaultLogfile();
+
 private:
   wxWindow* m_parent;
   fs::path m_path;
   std::ofstream m_stream;
   bool m_is_logging;
   Format m_format;
-
-  fs::path DefaultLogfile();
 };
 
 /** Overall logging handler, outputs to screen and log file. */
@@ -86,6 +93,7 @@ private:
   ObsListener m_filter_list_lstnr;
   ObsListener m_filter_update_lstnr;
   ObsListener m_filter_apply_lstnr;
+  fs::path GetDefaultLogfile();
 };
 
 #endif  //  DATA_MONITOR_DLG__
