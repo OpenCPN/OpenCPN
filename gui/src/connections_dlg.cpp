@@ -642,13 +642,23 @@ public:
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
     SetSizer(sizer);
     auto flags = wxSizerFlags().Border();
-    auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    hbox->Add(new wxStaticText(this, wxID_ANY, _("Upload format:")), flags);
-    hbox->Add(new UploadOptionsChoice(this), flags);
-    sizer->Add(hbox, flags);
+    sizer->Add(new UploadOptionsChoice(this), flags);
+    sizer->Add(new PrioritiesBtn(this), flags);
   }
 
 private:
+  /** Button invokes "Adjust communication priorities" GUI. */
+  class PrioritiesBtn : public wxButton {
+  public:
+    PrioritiesBtn(wxWindow* parent)
+        : wxButton(parent, wxID_ANY, _("Adjust Nav data priorities...")) {
+      Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
+        PriorityDlg dialog(this);
+        dialog.ShowModal();
+      });
+    }
+  };
+
   /** The select Generic, Garmin or Furuno upload options choice */
   class UploadOptionsChoice : public wxChoice, public ApplyCancel {
   public:
@@ -686,7 +696,8 @@ private:
     }
 
     const std::array<wxString, 3> choices = {
-        _("Generic"), _("Use Garmin GRMN (Host) mode for uploads"),
+        _("Use generic Nmea 0183 format for uploads"),
+        _("Use Garmin GRMN (Host) mode for uploads"),
         _("Format uploads for Furuno GP4X")};
   };
 };
@@ -853,18 +864,6 @@ private:
   };
 };
 
-/** Button invokes "Adjust communication priorities" GUI. */
-class PrioritiesBtn : public wxButton {
-public:
-  PrioritiesBtn(wxWindow* parent)
-      : wxButton(parent, wxID_ANY, _("Adjust Nav data priorities...")) {
-    Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
-      PriorityDlg dialog(this);
-      dialog.ShowModal();
-    });
-  }
-};
-
 /** Main window: connections grid, "Add new connection", general options. */
 ConnectionsDlg::ConnectionsDlg(
     wxWindow* parent, const std::vector<ConnectionParams*>& connections)
@@ -880,7 +879,6 @@ ConnectionsDlg::ConnectionsDlg(
   vbox->Add(scrolled_window, wxSizerFlags(5).Expand().Border());
   vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
             wxSizerFlags().Border());
-  vbox->Add(new PrioritiesBtn(this), wxSizerFlags().Border());
   vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
   auto panel_flags = wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
   vbox->Add(new GeneralPanel(this), panel_flags);
