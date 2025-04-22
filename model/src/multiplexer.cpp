@@ -126,64 +126,62 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Send to the Debug Window, if open
   //  Special formatting for non-printable characters helps debugging NMEA
   //  problems
-  if (m_log_callbacks.log_is_active()) {
-    std::string str = n0183_msg->payload;
+  ////if (m_log_callbacks.log_is_active()) {
+  std::string str = n0183_msg->payload;
 
-    // Get the params for the driver sending this message
-    ConnectionParams params;
-    auto drv_serial =
-        dynamic_cast<CommDriverN0183Serial *>(source_driver.get());
-    if (drv_serial) {
-      params = drv_serial->GetParams();
-    } else {
-      auto drv_net = dynamic_cast<CommDriverN0183Net *>(source_driver.get());
-      if (drv_net) {
-        params = drv_net->GetParams();
-      }
+  // Get the params for the driver sending this message
+  ConnectionParams params;
+  auto drv_serial = dynamic_cast<CommDriverN0183Serial *>(source_driver.get());
+  if (drv_serial) {
+    params = drv_serial->GetParams();
+  } else {
+    auto drv_net = dynamic_cast<CommDriverN0183Net *>(source_driver.get());
+    if (drv_net) {
+      params = drv_net->GetParams();
+    }
 #ifdef __ANDROID__
-      else {
-        auto drv_bluetooth =
-            dynamic_cast<CommDriverN0183AndroidBT *>(source_driver.get());
+    else {
+      auto drv_bluetooth =
+          dynamic_cast<CommDriverN0183AndroidBT *>(source_driver.get());
 
-        if (drv_bluetooth) {
-          params = drv_bluetooth->GetParams();
-        }
+      if (drv_bluetooth) {
+        params = drv_bluetooth->GetParams();
       }
+    }
 #endif
-    }
+  }
 
-    // Check to see if the message passes the source's input filter
-    bpass_input_filter =
-        params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
+  // Check to see if the message passes the source's input filter
+  bpass_input_filter =
+      params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
 
-    bool b_error = false;
-    wxString error_msg;
-    for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
-      if (isprint(*it))
-        fmsg += *it;
-      else {
-        wxString bin_print;
-        bin_print.Printf(_T("<0x%02X>"), *it);
-        fmsg += bin_print;
-        if ((*it != 0x0a) && (*it != 0x0d)) {
-          b_error = true;
-          error_msg = _("Non-printable character in NMEA0183 message");
-        }
+  bool b_error = false;
+  wxString error_msg;
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    if (isprint(*it))
+      fmsg += *it;
+    else {
+      wxString bin_print;
+      bin_print.Printf(_T("<0x%02X>"), *it);
+      fmsg += bin_print;
+      if ((*it != 0x0a) && (*it != 0x0d)) {
+        b_error = true;
+        error_msg = _("Non-printable character in NMEA0183 message");
       }
     }
-
-    // FIXME (dave)  Flag checksum errors, but fix and process the sentence
-    // anyway
-    // std::string goodMessage(message);
-    // bool checksumOK = CheckSumCheck(event.GetNMEAString());
-    // if (!checksumOK) {
-    // goodMessage = stream->FixChecksum(goodMessage);
-    // goodEvent->SetNMEAString(goodMessage);
-    //}
-
-    wxString port(n0183_msg->source->iface);
-    LogInputMessage(n0183_msg, !bpass_input_filter, b_error, error_msg);
   }
+
+  // FIXME (dave)  Flag checksum errors, but fix and process the sentence
+  // anyway
+  // std::string goodMessage(message);
+  // bool checksumOK = CheckSumCheck(event.GetNMEAString());
+  // if (!checksumOK) {
+  // goodMessage = stream->FixChecksum(goodMessage);
+  // goodEvent->SetNMEAString(goodMessage);
+  //}
+
+  wxString port(n0183_msg->source->iface);
+  LogInputMessage(n0183_msg, !bpass_input_filter, b_error, error_msg);
 
   // Detect virtual driver, message comes from plugin API
   // Set such source iface to "" for later test
@@ -241,18 +239,21 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
               bxmit_ok = driver->SendMessage(msg, null_addr);
               bout_filter = false;
             }
+
             // Send to the Debug Window, if open
-            NavmsgStatus ns;
-            ns.direction = NavmsgStatus::Direction::kOutput;
-            if (bout_filter) {
-              ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
-            } else {
-              if (!bxmit_ok) ns.status = NavmsgStatus::State::kTxError;
+            if (m_log_callbacks.log_is_active()) {
+              NavmsgStatus ns;
+              ns.direction = NavmsgStatus::Direction::kOutput;
+              if (bout_filter) {
+                ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
+              } else {
+                if (!bxmit_ok) ns.status = NavmsgStatus::State::kTxError;
+              }
+              auto logaddr = std::make_shared<NavAddr0183>(driver->iface);
+              auto logmsg = std::make_shared<Nmea0183Msg>(
+                  id, n0183_msg->payload, logaddr);
+              LogOutputMessage(logmsg, ns);
             }
-            auto logaddr = std::make_shared<NavAddr0183>(driver->iface);
-            auto logmsg =
-                std::make_shared<Nmea0183Msg>(id, n0183_msg->payload, logaddr);
-            LogOutputMessage(logmsg, ns);
           }
         }
       }
