@@ -54,8 +54,6 @@ public:
 
   void SetFormat(Format format);
 
-  fs::path GetLogfile() { return m_path; }
-
   fs::path NullLogfile();
 
   std::string GetFileDlgTypes();
@@ -76,11 +74,13 @@ public:
   DataMonitor(wxWindow* parent);
 
   /** Add an input line to log output. */
-  void Add(std::string msg);
-
   void Add(const Logline& ll) override;
 
-  bool IsActive() const override;
+#pragma GCC diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+  using NmeaLog::IsActive;
+  virtual bool IsActive() const override;
+#pragma GCC diagnostic pop
 
 private:
   void OnFilterListChange();
@@ -93,7 +93,6 @@ private:
   ObsListener m_filter_list_lstnr;
   ObsListener m_filter_update_lstnr;
   ObsListener m_filter_apply_lstnr;
-  fs::path GetDefaultLogfile();
   std::string m_current_filter;
 };
 
