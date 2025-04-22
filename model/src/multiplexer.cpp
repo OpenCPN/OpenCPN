@@ -126,7 +126,6 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Send to the Debug Window, if open
   //  Special formatting for non-printable characters helps debugging NMEA
   //  problems
-  ////if (m_log_callbacks.log_is_active()) {
   std::string str = n0183_msg->payload;
 
   // Get the params for the driver sending this message
