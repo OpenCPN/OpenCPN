@@ -4640,7 +4640,7 @@ extern DECL_EXP wxEventType wxEVT_DOWNLOAD_EVENT;
 /* API 1.14  adds some more common functions to avoid unnecessary code
  * duplication */
 
-bool LaunchDefaultBrowser_Plugin(wxString url);
+extern DECL_EXP bool LaunchDefaultBrowser_Plugin(wxString url);
 
 // API 1.14 Extra canvas Support
 
