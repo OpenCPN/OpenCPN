@@ -190,6 +190,9 @@ private:
   bool SendSentenceNetwork(std::vector<std::vector<unsigned char>> payload);
   bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char>& payload);
   bool PrepareForTX();
+  std::vector<unsigned char> PrepareLogPayload(
+      std::shared_ptr<const Nmea2000Msg>& msg,
+      std::shared_ptr<const NavAddr2000> addr);
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;

@@ -477,6 +477,24 @@ bool CommDriverN2KNet::SendMessage(std::shared_ptr<const NavMsg> msg,
   return SendN2KNetwork(msg_n2k, dest_addr_n2k);
 }
 
+std::vector<unsigned char> CommDriverN2KNet::PrepareLogPayload(
+    std::shared_ptr<const Nmea2000Msg>& msg,
+    std::shared_ptr<const NavAddr2000> addr) {
+  std::vector<unsigned char> data;
+  data.push_back(0x94);
+  data.push_back(0x13);
+  data.push_back(msg->priority);
+  data.push_back(msg->PGN.pgn & 0xFF);
+  data.push_back((msg->PGN.pgn >> 8) & 0xFF);
+  data.push_back((msg->PGN.pgn >> 16) & 0xFF);
+  data.push_back(addr->address);
+  data.push_back(addr->address);
+  for (size_t n = 0; n < msg->payload.size(); n++)
+    data.push_back(msg->payload[n]);
+  data.push_back(0x55);  // CRC dummy, not checked
+  return data;
+}
+
 std::vector<unsigned char> CommDriverN2KNet::PushCompleteMsg(
     const CanHeader header, int position, const can_frame frame) {
   std::vector<unsigned char> data;
@@ -1891,6 +1909,15 @@ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
 
   std::vector<std::vector<unsigned char>> out_data = GetTxVector(msg, addr);
   SendSentenceNetwork(out_data);
+
+  // Create the internal message for all N2K listeners
+  std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
+  auto msg_all = std::make_shared<const Nmea2000Msg>(1, msg_payload, addr);
+
+  // Notify listeners
+  m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_all));
+
   return true;
 };
 
