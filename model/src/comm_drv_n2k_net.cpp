@@ -197,7 +197,8 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_io_select(params->IOSelect),
       m_connection_type(params->Type),
-      m_bok(false)
+      m_bok(false),
+      m_TX_available(false)
 
 {
   m_addr.Hostname(params->NetworkAddress);
@@ -274,7 +275,6 @@ bool CommDriverN2KNet::HandleMgntMsg(uint64_t pgn,
       b_handled = true;
       break;
     }
-
     default:
       break;
   }
@@ -1524,8 +1524,39 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
       break;
     case N2KFormat_Actisense_RAW_ASCII: {
       //  00:34:02.718 R 15FD0800 FF 00 01 CA 6F FF FF FF
-      if (!IsFastMessagePGN(msg->PGN.pgn) && msg->payload.size() < 8) {
-        // Single packet
+      if (!IsFastMessagePGN(msg->PGN.pgn) && msg->payload.size() <= 8) {
+        // Single packet message
+        std::vector<unsigned char> header_vec;
+        std::vector<unsigned char> out_vec;
+
+        // Craft the canID
+        // No need to specify the source address
+        // The TX frame will adopt the gateway's claimed N2K address.
+        unsigned long can_id =
+            BuildCanID(msg->priority, 0, dest_addr->address, msg->PGN.pgn);
+        wxString scan_id;
+        scan_id.Printf("%08X", can_id);
+        std::string sscan_id = scan_id.ToStdString();
+        for (unsigned char s : sscan_id) header_vec.push_back(s);
+        header_vec.push_back(' ');
+
+        // constant header
+        for (unsigned char s : header_vec) out_vec.push_back(s);
+
+        // single data packet
+        std::string ssdata;
+        for (unsigned int k = 0; k < msg->payload.size(); k++) {
+          char tb[4];
+          snprintf(tb, 4, "%02X ", msg->payload.data()[k]);
+          ssdata += tb;
+        }
+        for (unsigned char s : ssdata) out_vec.push_back(s);
+        out_vec.pop_back();  // drop the last space character
+
+        out_vec.push_back(0x0d);  // terminate the string
+        out_vec.push_back(0x0a);
+
+        tx_vector.push_back(out_vec);
       } else {
         std::vector<unsigned char> header_vec;
         std::vector<unsigned char> out_vec;
@@ -1600,9 +1631,6 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
 
           out_vec.push_back(0x0d);  // terminate the string
           out_vec.push_back(0x0a);
-
-          // for (char s :out_vec)
-          // printf( "%c", s);
 
           tx_vector.push_back(out_vec);
         }  // for loop
@@ -1811,38 +1839,47 @@ bool CommDriverN2KNet::PrepareForTX() {
   //  Logic:  Actisense gateway will not respond to TX_FORMAT_YDEN,
   //  so if we get sensible response, the gw must be YDEN type.
 
-  prod_info_map.clear();
+  // Already tested?
+  if (m_TX_available)
+    return true;
+  else {
+    prod_info_map.clear();
 
-  // Send a broadcast request for PGN 126996, Product Information
-  std::vector<unsigned char> payload;
-  payload.push_back(0x14);
-  payload.push_back(0xF0);
-  payload.push_back(0x01);
+    // Send a broadcast request for PGN 126996, Product Information
+    std::vector<unsigned char> payload;
+    payload.push_back(0x14);
+    payload.push_back(0xF0);
+    payload.push_back(0x01);
 
-  std::vector<std::vector<unsigned char>> out_data;
-  std::vector<unsigned char> msg_vec =
-      MakeSimpleOutMsg(N2KFormat_YD_RAW, 59904, payload);
-  out_data.push_back(msg_vec);
-  SendSentenceNetwork(out_data);
+    std::vector<std::vector<unsigned char>> out_data;
+    std::vector<unsigned char> msg_vec =
+        MakeSimpleOutMsg(N2KFormat_YD_RAW, 59904, payload);
+    out_data.push_back(msg_vec);
+    SendSentenceNetwork(out_data);
 
-  // Wait some time, and study results
-  wxMilliSleep(200);
-  wxYield();
+    // Wait some time, and study results
+    wxMilliSleep(200);
+    wxYield();
 
-  // Check the results of the PGN 126996 capture
-  for (const auto& [key, value] : prod_info_map) {
-    auto prod_info = value;
-    if (prod_info.Model_ID.find("YDEN") != std::string::npos) {
-      // Found a YDEN device
-      // If this configured port is actually connector to YDEN,
-      // then the device will have marked the received TCP packet
-      // with "T" indicator.  Check it.
-      if (prod_info.RT_flag == 'T') b_found = true;
-      break;
+    // Check the results of the PGN 126996 capture
+    for (const auto& [key, value] : prod_info_map) {
+      auto prod_info = value;
+      if (prod_info.Model_ID.find("YDEN") != std::string::npos) {
+        // Found a YDEN device
+        // If this configured port is actually connector to YDEN,
+        // then the device will have marked the received TCP packet
+        // with "T" indicator.  Check it.
+        if (prod_info.RT_flag == 'T') b_found = true;
+        break;
+      }
     }
-  }
 
-  if (b_found) return true;
+    if (b_found) {
+      m_TX_available = true;
+      return true;
+    } else
+      return false;
+  }
 
   //  No acceptable TX device found
   return false;
@@ -1887,7 +1924,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
             }
             ret = false;
           }
-          wxMilliSleep(200);
+          wxMilliSleep(2);
         } else
           ret = false;
       }

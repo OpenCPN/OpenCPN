@@ -225,6 +225,7 @@ private:
   N2K_Format m_n2k_format;
   uint8_t m_order;
   char m_TX_flag;
+  bool m_TX_available;
 
   ObsListener resume_listener;
 
