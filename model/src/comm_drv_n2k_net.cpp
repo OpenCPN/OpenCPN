@@ -216,6 +216,10 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_NET, &CommDriverN2KNet::handle_N2K_MSG, this);
 
+  m_prodinfo_timer.Connect(
+      wxEVT_TIMER, wxTimerEventHandler(CommDriverN2KNet::OnProdInfoTimer), NULL,
+      this);
+
   m_mrq_container = new MrqContainer;
   m_ib = 0;
   m_bInMsg = false;
@@ -279,6 +283,25 @@ bool CommDriverN2KNet::HandleMgntMsg(uint64_t pgn,
       break;
   }
   return b_handled;
+}
+
+void CommDriverN2KNet::OnProdInfoTimer(wxTimerEvent& ev) {
+  // Check the results of the PGN 126996 capture
+  bool b_found = false;
+  for (const auto& [key, value] : prod_info_map) {
+    auto prod_info = value;
+    if (prod_info.Model_ID.find("YDEN") != std::string::npos) {
+      // Found a YDEN device
+      // If this configured port is actually connector to YDEN,
+      // then the device will have marked the received TCP packet
+      // with "T" indicator.  Check it.
+      if (prod_info.RT_flag == 'T') b_found = true;
+      break;
+    }
+  }
+
+  if (b_found) m_TX_available = true;
+  prod_info_map.clear();
 }
 
 void CommDriverN2KNet::handle_N2K_MSG(CommDriverN2KNetEvent& event) {
@@ -1857,12 +1880,10 @@ bool CommDriverN2KNet::PrepareForTX() {
   //  Logic:  Actisense gateway will not respond to TX_FORMAT_YDEN,
   //  so if we get sensible response, the gw must be YDEN type.
 
-  // Already tested?
+  // Already tested and found available?
   if (m_TX_available)
     return true;
   else {
-    prod_info_map.clear();
-
     // Send a broadcast request for PGN 126996, Product Information
     std::vector<unsigned char> payload;
     payload.push_back(0x14);
@@ -1876,27 +1897,7 @@ bool CommDriverN2KNet::PrepareForTX() {
     SendSentenceNetwork(out_data);
 
     // Wait some time, and study results
-    wxMilliSleep(200);
-    wxYield();
-
-    // Check the results of the PGN 126996 capture
-    for (const auto& [key, value] : prod_info_map) {
-      auto prod_info = value;
-      if (prod_info.Model_ID.find("YDEN") != std::string::npos) {
-        // Found a YDEN device
-        // If this configured port is actually connector to YDEN,
-        // then the device will have marked the received TCP packet
-        // with "T" indicator.  Check it.
-        if (prod_info.RT_flag == 'T') b_found = true;
-        break;
-      }
-    }
-
-    if (b_found) {
-      m_TX_available = true;
-      return true;
-    } else
-      return false;
+    m_prodinfo_timer.Start(200, true);
   }
 
   //  No acceptable TX device found

@@ -193,6 +193,7 @@ private:
   std::vector<unsigned char> PrepareLogPayload(
       std::shared_ptr<const Nmea2000Msg>& msg,
       std::shared_ptr<const NavAddr2000> addr);
+  void OnProdInfoTimer(wxTimerEvent& ev);
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
@@ -229,6 +230,7 @@ private:
   uint8_t m_order;
   char m_TX_flag;
   bool m_TX_available;
+  wxTimer m_prodinfo_timer;
 
   ObsListener resume_listener;
 
