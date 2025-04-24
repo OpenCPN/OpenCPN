@@ -582,7 +582,6 @@ public:
     kEditActiveFilter,
     kLogSetup,
     kViewStdColors,
-    kViewCopy
   };
 
   TheMenu(wxWindow* parent, wxStaticText* log_label, DataLogger& logger,
@@ -591,6 +590,7 @@ public:
         m_log_button(log_button),
         m_logger(logger),
         m_log_label(log_label) {
+    AppendCheckItem(static_cast<int>(Id::kViewStdColors), _("Use colors"));
     Append(static_cast<int>(Id::kLogSetup), _("Logging Setup..."));
     auto filters = new wxMenu("");
     AppendId(filters, Id::kNewFilter, _("Create new..."));
@@ -599,12 +599,6 @@ public:
     AppendSubMenu(filters, _("Filters..."));
     if (IsUserFilter(m_filter))
       Append(static_cast<int>(Id::kEditActiveFilter), _("Edit active filter"));
-    auto logging = new wxMenu("");
-
-    auto view = new wxMenu("");
-    AppendCheckId(view, Id::kViewStdColors, _("Use colors"));
-    AppendId(view, Id::kViewCopy, _("Copy messages to clipboard"));
-    AppendSubMenu(view, _("View..."));
 
     Bind(wxEVT_MENU, [&](wxCommandEvent& ev) {
       switch (static_cast<Id>(ev.GetId())) {
@@ -614,10 +608,6 @@ public:
 
         case Id::kViewStdColors:
           SetColor(static_cast<int>(Id::kViewStdColors));
-          break;
-
-        case Id::kViewCopy:
-          CopyToClipboard();
           break;
 
         case Id::kNewFilter:
@@ -699,8 +689,19 @@ private:
       tty_scroll->SetColors(
           std::make_unique<NoColorsByState>(tty_scroll->GetForegroundColour()));
   }
+};
 
-  void CopyToClipboard() {
+/** Copy to clipboard button */
+class CopyClipboardButton : public SvgButton {
+public:
+  CopyClipboardButton(wxWindow* parent) : SvgButton(parent) {
+    LoadIcon(kCopyIconSvg);
+    SetToolTip(_("Copy to clipboard"));
+    Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
+  }
+
+private:
+  void OnClick() {
     auto* tty_scroll =
         dynamic_cast<TtyScroll*>(wxWindow::FindWindowByName("TtyScroll"));
     if (!tty_scroll) return;
@@ -778,7 +779,7 @@ public:
     wbox->Add(m_log_button, flags);
     // Stretching horizontal space. Does not work with a WrapSizer, known
     // wx bug. Left in place if it becomes fixed.
-    wbox->Add(GetCharWidth() * 4, 0, 1);
+    wbox->Add(GetCharWidth() * 2, 0, 1);
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     wbox->Add(m_filter_choice, flags);
     wbox->Add(new PauseResumeButton(this, std::move(on_stop)), flags);
@@ -786,6 +787,7 @@ public:
     auto get_current_filter = [&] {
       return m_filter_choice->GetStringSelection().ToStdString();
     };
+    wbox->Add(new CopyClipboardButton(this), flags);
     wbox->Add(new MenuButton(this, m_menu, get_current_filter), flags);
     SetSizer(wbox);
     Layout();
