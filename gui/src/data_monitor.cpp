@@ -183,6 +183,29 @@ static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
   stream << ws;
 }
 
+class SvgButton : public wxButton {
+protected:
+  SvgButton(wxWindow* parent)
+      : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                 wxDefaultSize, wxBU_EXACTFIT | wxBU_BOTTOM) {}
+
+  void LoadIcon(const char* svg) {
+    char buffer[2048];
+    assert(strlen(svg) < sizeof(buffer) && "svg icon too long");
+    strcpy(buffer, svg);
+#ifdef ocpnUSE_wxBitmapBundle
+    auto icon_size = wxSize(GetCharHeight(), GetCharHeight());
+    auto bundle = wxBitmapBundle::FromSVG(buffer, icon_size);
+    SetBitmap(bundle);
+#else
+    wxStringInputStream wis(buffer);
+    wxSVGDocument svg_doc(wis);
+    wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
+    SetBitmap(wxBitmap(image));
+#endif
+  }
+};
+
 /** Main window, a rolling log of messages. */
 class TtyPanel : public wxPanel, public NmeaLog {
 public:
@@ -686,13 +709,10 @@ private:
 };
 
 /** Button opening the filter dialog */
-class FilterButton : public wxButton {
+class FilterButton : public SvgButton {
 public:
   FilterButton(wxWindow* parent, wxWindow* quick_filter)
-      : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                 wxDefaultSize, wxBU_EXACTFIT | wxBU_BOTTOM),
-        m_quick_filter(quick_filter),
-        m_show_filter(true) {
+      : SvgButton(parent), m_quick_filter(quick_filter), m_show_filter(true) {
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
     OnClick();
   }
@@ -702,19 +722,8 @@ private:
   bool m_show_filter;
 
   void OnClick() {
+    LoadIcon(m_show_filter ? kFunnelSvg : kNoFunnelSvg);
     m_show_filter = !m_show_filter;
-    char buffer[2048];
-    strcpy(buffer, m_show_filter ? kNoFunnelSvg : kFunnelSvg);
-#ifdef ocpnUSE_wxBitmapBundle
-    auto icon_size = wxSize(2 * GetCharWidth(), GetCharHeight());
-    auto bundle = wxBitmapBundle::FromSVG(buffer, icon_size);
-    SetBitmap(bundle);
-#else
-    wxStringInputStream wis(buffer);
-    wxSVGDocument svg_doc(wis);
-    wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
-    SetBitmap(wxBitmap(image));
-#endif
     m_quick_filter->Show(m_show_filter);
     SetToolTip(m_show_filter ? _("Close quick filter")
                              : _("Open quick filter"));
