@@ -1,5 +1,4 @@
 #include <chrono>
-#include <iostream>  // debug junk
 #include <fstream>
 #include <sstream>
 
@@ -625,10 +624,6 @@ public:
         case Id::kDeleteFilter:
           RemoveFilterDlg(parent);
           break;
-
-        default:
-          std::cout << "Menu id: " << ev.GetId() << "\n";
-          break;
       }
     });
     Check(static_cast<int>(Id::kViewStdColors), true);
@@ -650,14 +645,6 @@ private:
 
   wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
     return root->Append(static_cast<int>(id), label);
-  }
-
-  void AppendRadioId(wxMenu* root, Id id, const wxString& label) {
-    root->AppendRadioItem(static_cast<int>(id), label);
-  }
-
-  void AppendCheckId(wxMenu* root, Id id, const wxString& label) {
-    root->AppendCheckItem(static_cast<int>(id), label);
   }
 
   void SetLogFormat(DataLogger::Format format, const std::string& label) {
@@ -697,15 +684,11 @@ public:
   CopyClipboardButton(wxWindow* parent) : SvgButton(parent) {
     LoadIcon(kCopyIconSvg);
     SetToolTip(_("Copy to clipboard"));
-    Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
-  }
-
-private:
-  void OnClick() {
-    auto* tty_scroll =
-        dynamic_cast<TtyScroll*>(wxWindow::FindWindowByName("TtyScroll"));
-    if (!tty_scroll) return;
-    tty_scroll->CopyToClipboard();
+    Bind(wxEVT_BUTTON, [&](wxCommandEvent&) {
+      auto* tty_scroll =
+          dynamic_cast<TtyScroll*>(wxWindow::FindWindowByName("TtyScroll"));
+      if (tty_scroll) tty_scroll->CopyToClipboard();
+    });
   }
 };
 
