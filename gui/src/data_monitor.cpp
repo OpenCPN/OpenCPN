@@ -618,6 +618,7 @@ public:
           break;
       }
     });
+    Check(static_cast<int>(Id::kViewStdColors), true);
   }
 
   void SetFilterName(const std::string& filter) {
@@ -766,7 +767,9 @@ public:
     auto wbox = new wxWrapSizer(wxHORIZONTAL);
     wbox->Add(log_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     wbox->Add(m_log_button, flags);
-    wbox->Add(GetCharWidth() * 2, 0, 1);  // Stretching horizontal space
+    // Stretching horizontal space. Does not work with a WrapSizer, known
+    // wx bug. Left in place if it becomes fixed.
+    wbox->Add(GetCharWidth() * 4, 0, 1);
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     wbox->Add(m_filter_choice, flags);
     wbox->Add(new PauseResumeButton(this, std::move(on_stop)), flags);
