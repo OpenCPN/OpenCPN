@@ -49,7 +49,16 @@
 #else
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
+
+using SetFormatFunc = std::function<void(DataLogger::Format, std::string)>;
+
 extern BasePlatform* g_BasePlatform;
+
+/** Return window with given id (which must exist) casted to T*. */
+template <typename T>
+T* GetWindowById(int id) {
+  return dynamic_cast<T*>(wxWindow::FindWindowById(id));
+};
 
 static const char* const kFilterChoiceName = "FilterChoiceWindow";
 
@@ -431,6 +440,115 @@ private:
   }
 };
 
+class LoggingSetup : public wxDialog {
+public:
+  class ThePanel : public wxPanel {
+  public:
+    /** Top part above buttons */
+    ThePanel(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
+        : wxPanel(parent),
+          m_overwrite(false),
+          m_set_logtype(set_logtype),
+          m_logger(logger),
+          kFilenameLabelId(wxWindow::NewControlId()) {
+      auto flags = wxSizerFlags(0).Border();
+
+      /* left column: Select log format. */
+      auto vdr_btn = new wxRadioButton(this, wxID_ANY, "VDR");
+      vdr_btn->Bind(wxEVT_RADIOBUTTON, [&](wxCommandEvent e) {
+        m_set_logtype(DataLogger::Format::kVdr, "VDR");
+      });
+      auto default_btn = new wxRadioButton(this, wxID_ANY, "Default");
+      default_btn->Bind(wxEVT_RADIOBUTTON, [&](wxCommandEvent e) {
+        m_set_logtype(DataLogger::Format::kDefault, _("Default"));
+      });
+      default_btn->SetValue(true);
+      auto csv_btn = new wxRadioButton(this, wxID_ANY, "CSV");
+      csv_btn->Bind(wxEVT_RADIOBUTTON, [&](wxCommandEvent e) {
+        m_set_logtype(DataLogger::Format::kCsv, "CSV");
+      });
+      auto left_vbox = new wxStaticBoxSizer(wxVERTICAL, this, _("Log format"));
+      left_vbox->Add(default_btn, flags.DoubleBorder());
+      left_vbox->Add(vdr_btn, flags);
+      left_vbox->Add(csv_btn, flags);
+
+      /* Right column: log file */
+      auto label = new wxStaticText(this, kFilenameLabelId,
+                                    m_logger.GetDefaultLogfile().string());
+      auto path_btn = new wxButton(this, wxID_ANY, _("Change..."));
+      path_btn->Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnFileDialog(); });
+      auto force_box =
+          new wxCheckBox(this, wxID_ANY, _("Overwrite existing file"));
+      force_box->Bind(wxEVT_CHECKBOX,
+                      [&](wxCommandEvent& e) { m_overwrite = e.IsChecked(); });
+      auto right_vbox = new wxStaticBoxSizer(wxVERTICAL, this, _("Log file"));
+      right_vbox->Add(label, flags);
+      right_vbox->Add(path_btn, flags);
+      right_vbox->Add(force_box, flags);
+
+      /* Top part above buttons */
+      auto hbox = new wxBoxSizer(wxHORIZONTAL);
+      hbox->Add(left_vbox, flags);
+      hbox->Add(GetCharWidth() * 10, 0, 1);
+      hbox->Add(right_vbox, flags);
+      SetSizer(hbox);
+      Layout();
+      Show();
+
+      m_set_logtype(DataLogger::Format::kDefault, _("Default"));
+    }
+
+    void OnFileDialog() {
+      long options = wxFD_SAVE;
+      if (!m_overwrite) options |= wxFD_OVERWRITE_PROMPT;
+      wxFileDialog dlg(m_parent, _("Select logfile"),
+                       m_logger.GetDefaultLogfile().parent_path().string(),
+                       m_logger.GetDefaultLogfile().stem().string(),
+                       m_logger.GetFileDlgTypes(), options);
+      if (dlg.ShowModal() == wxID_CANCEL) return;
+      m_logger.SetLogfile(fs::path(dlg.GetPath().ToStdString()));
+      auto file_label = GetWindowById<wxStaticText>(kFilenameLabelId);
+      file_label->SetLabel(dlg.GetPath());
+    }
+
+    bool m_overwrite;
+    SetFormatFunc m_set_logtype;
+    DataLogger& m_logger;
+    const int kFilenameLabelId;
+  };
+
+  LoggingSetup(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
+      : wxDialog(parent, wxID_ANY, _("Logging setup"), wxDefaultPosition,
+                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+        m_logger(logger),
+        m_set_logtype(set_logtype) {
+    auto flags = wxSizerFlags(0).Border();
+
+    /* Buttons at bottom */
+    auto buttons = new wxStdDialogButtonSizer();
+    auto close_btn = new wxButton(this, wxID_CLOSE);
+    close_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                    [&](wxCommandEvent& ev) { Destroy(); });
+    buttons->AddButton(close_btn);
+    buttons->Realize();
+    buttons->Fit(parent);
+
+    /* Overall vbox setup */
+    auto panel = new ThePanel(this, m_set_logtype, m_logger);
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    vbox->Add(panel, flags.Expand());
+    vbox->Add(new wxStaticLine(this, wxID_ANY), flags.Expand());
+    vbox->Add(buttons, flags.Expand());
+    SetSizer(vbox);
+    Fit();
+    Show();
+  }
+
+private:
+  DataLogger& m_logger;
+  SetFormatFunc m_set_logtype;
+};
+
 /** The monitor popup menu. */
 class TheMenu : public wxMenu {
 public:
@@ -439,10 +557,7 @@ public:
     kEditFilter,
     kDeleteFilter,
     kEditActiveFilter,
-    kLogFile,
-    kLogFormatDefault,
-    kLogFormatCsv,
-    kLogFormatVdr,
+    kLogSetup,
     kViewStdColors,
     kViewCopy
   };
@@ -453,6 +568,7 @@ public:
         m_log_button(log_button),
         m_logger(logger),
         m_log_label(log_label) {
+    Append(static_cast<int>(Id::kLogSetup), _("Logging Setup..."));
     auto filters = new wxMenu("");
     AppendId(filters, Id::kNewFilter, _("Create new..."));
     AppendId(filters, Id::kEditFilter, _("Edit..."));
@@ -462,12 +578,6 @@ public:
       Append(static_cast<int>(Id::kEditActiveFilter), _("Edit active filter"));
     auto logging = new wxMenu("");
 
-    AppendRadioId(logging, Id::kLogFormatDefault, _("Log format: standard"));
-    AppendRadioId(logging, Id::kLogFormatCsv, _("Log format: CSV"));
-    AppendRadioId(logging, Id::kLogFormatVdr, _("Log format: VDR"));
-    AppendId(logging, Id::kLogFile, _("Log file..."));
-    AppendSubMenu(logging, _("Logging..."));
-
     auto view = new wxMenu("");
     AppendCheckId(view, Id::kViewStdColors, _("Use colors"));
     AppendId(view, Id::kViewCopy, _("Copy messages to clipboard"));
@@ -475,20 +585,8 @@ public:
 
     Bind(wxEVT_MENU, [&](wxCommandEvent& ev) {
       switch (static_cast<Id>(ev.GetId())) {
-        case Id::kLogFormatDefault:
-          SetLogFormat(DataLogger::Format::kDefault, _("Log format: default"));
-          break;
-
-        case Id::kLogFormatVdr:
-          SetLogFormat(DataLogger::Format::kVdr, _("Log format: VDR"));
-          break;
-
-        case Id::kLogFormatCsv:
-          SetLogFormat(DataLogger::Format::kCsv, _("Log format: csv"));
-          break;
-
-        case Id::kLogFile:
-          SetLogfile();
+        case Id::kLogSetup:
+          LogSetup();
           break;
 
         case Id::kViewStdColors:
@@ -549,21 +647,18 @@ private:
   }
 
   void SetLogFormat(DataLogger::Format format, const std::string& label) {
-    m_log_label->SetLabel(label);
+    m_log_label->SetLabel(_("Log type: ") + label);
     m_logger.SetFormat(format);
-    m_log_button->Disable();
-    m_parent->Layout();
+    m_log_button->Enable();
   }
 
-  void SetLogfile() {
-    wxFileDialog dlg(m_parent, _("Select logfile"),
-                     m_logger.GetDefaultLogfile().parent_path().string(),
-                     m_logger.GetDefaultLogfile().stem().string(),
-                     m_logger.GetFileDlgTypes(),
-                     wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    if (dlg.ShowModal() == wxID_CANCEL) return;
-    m_logger.SetLogfile(fs::path(dlg.GetPath().ToStdString()));
-    m_log_button->Enable();
+  void LogSetup() {
+    auto dlg = new LoggingSetup(
+        m_parent,
+        [&](DataLogger::Format f, std::string s) { SetLogFormat(f, s); },
+        m_logger);
+    dlg->ShowModal();
+    m_parent->GetParent()->Layout();
   }
 
   void SetColor(int id) {
