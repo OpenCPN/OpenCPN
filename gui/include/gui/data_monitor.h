@@ -50,6 +50,8 @@ public:
 
   void SetLogfile(const fs::path& path);
 
+  fs::path GetLogfile() const { return m_path; }
+
   void Add(const Logline& ll);
 
   void SetFormat(Format format);
