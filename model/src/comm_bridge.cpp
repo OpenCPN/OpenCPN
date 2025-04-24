@@ -1279,21 +1279,23 @@ bool CommBridge::EvalPriority(
   tka.GetNextToken();
   int source_address = atoi(tka.GetNextToken().ToStdString().c_str());
 
-  // Special case priority value linkage:
+  // Special case priority value linkage for N0183 messages:
   // If this is a "velocity" record, ensure that a "position"
   // report has been accepted from the same source before accepting the
   // velocity record.
   // This ensures that the data source is fully initialized, and is reporting
   // valid, sensible velocity data.
-  if (!strncmp(active_priority.pcclass.c_str(), "velocity", 8)) {
-    bool pos_ok = false;
-    if (!strcmp(active_priority_position.active_source.c_str(),
-                source.c_str())) {
-      if (active_priority_position.recent_active_time != -1) {
-        pos_ok = true;
+  if (msg->bus == NavAddr::Bus::N0183) {
+    if (!strncmp(active_priority.pcclass.c_str(), "velocity", 8)) {
+      bool pos_ok = false;
+      if (!strcmp(active_priority_position.active_source.c_str(),
+                  source.c_str())) {
+        if (active_priority_position.recent_active_time != -1) {
+          pos_ok = true;
+        }
       }
+      if (!pos_ok) return false;
     }
-    if (!pos_ok) return false;
   }
 
   // Fetch the established priority for the message
