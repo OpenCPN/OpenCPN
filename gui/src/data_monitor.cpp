@@ -10,15 +10,10 @@
 #include <wx/panel.h>
 #include <wx/platinfo.h>
 #include <wx/sizer.h>
-#include <wx/sstream.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/translation.h>
 #include <wx/wrapsizer.h>
-
-#ifndef ocpnUSE_wxBitmapBundle
-#include <wxSVG/svg.h>
-#endif
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -32,11 +27,11 @@
 #include "model/gui.h"
 
 #include "data_monitor.h"
+#include "std_filesystem.h"
+#include "svg_button.h"
 #include "svg_icons.h"
 #include "tty_scroll.h"
 #include "filter_dlg.h"
-
-#include "std_filesystem.h"
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
@@ -65,8 +60,7 @@ static const char* const kFilterChoiceName = "FilterChoiceWindow";
 static const std::unordered_map<NavAddr::Bus, std::string> kSourceByBus = {
     {NavAddr::Bus::N0183, "NMEA0183"},
     {NavAddr::Bus::N2000, "NMEA2000"},
-    {NavAddr::Bus::Signalk, "SignalK"}};
-// clang-format: on
+    {NavAddr::Bus::Signalk, "SignalK"}};  // clang-format: on
 
 /** Return true if given filter is defined by user. */
 static bool IsUserFilter(const std::string& filter_name) {
@@ -80,6 +74,7 @@ static bool IsUserFilter(const std::string& filter_name) {
   return false;
 };
 
+/** Return logging milliseconds timestamp. */
 static std::string TimeStamp(const NavmsgTimePoint& when) {
   using namespace std::chrono;
   using namespace std;
@@ -98,6 +93,7 @@ static std::string TimeStamp(const NavmsgTimePoint& when) {
      << msecs.count();
   return ss.str();
 }
+
 /**
  * Quote arg string as required by VDR plugin, see
  * https://opencpn-manuals.github.io/main/vdr/log_format.html
@@ -182,29 +178,6 @@ static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
   stream << ws;
 }
 
-class SvgButton : public wxButton {
-protected:
-  SvgButton(wxWindow* parent)
-      : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                 wxDefaultSize, wxBU_EXACTFIT | wxBU_BOTTOM) {}
-
-  void LoadIcon(const char* svg) {
-    char buffer[2048];
-    assert(strlen(svg) < sizeof(buffer) && "svg icon too long");
-    strcpy(buffer, svg);
-#ifdef ocpnUSE_wxBitmapBundle
-    auto icon_size = wxSize(GetCharHeight(), GetCharHeight());
-    auto bundle = wxBitmapBundle::FromSVG(buffer, icon_size);
-    SetBitmap(bundle);
-#else
-    wxStringInputStream wis(buffer);
-    wxSVGDocument svg_doc(wis);
-    wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
-    SetBitmap(wxBitmap(image));
-#endif
-  }
-};
-
 /** Main window, a rolling log of messages. */
 class TtyPanel : public wxPanel, public NmeaLog {
 public:
@@ -267,6 +240,7 @@ private:
   std::function<void()> m_on_right_click;
 };
 
+/** The quick filter above the status line, invoked by funnel button. */
 class QuickFilterPanel : public wxPanel {
 public:
   QuickFilterPanel(wxWindow* parent, std::function<void()> on_text_evt)
@@ -462,6 +436,7 @@ private:
   }
 };
 
+/** Log setup window invoked from menu "Logging" item. */
 class LoggingSetup : public wxDialog {
 public:
   class ThePanel : public wxPanel {
@@ -537,13 +512,11 @@ public:
     SetFormatFunc m_set_logtype;
     DataLogger& m_logger;
     const int kFilenameLabelId;
-  };
+  };  // ThePanel
 
   LoggingSetup(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
       : wxDialog(parent, wxID_ANY, _("Logging setup"), wxDefaultPosition,
-                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-        m_logger(logger),
-        m_set_logtype(set_logtype) {
+                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
     auto flags = wxSizerFlags(0).Border();
 
     /* Buttons at bottom */
@@ -556,7 +529,7 @@ public:
     buttons->Fit(parent);
 
     /* Overall vbox setup */
-    auto panel = new ThePanel(this, m_set_logtype, m_logger);
+    auto panel = new ThePanel(this, set_logtype, logger);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(panel, flags.Expand());
     vbox->Add(new wxStaticLine(this, wxID_ANY), flags.Expand());
@@ -565,10 +538,6 @@ public:
     Fit();
     Show();
   }
-
-private:
-  DataLogger& m_logger;
-  SetFormatFunc m_set_logtype;
 };
 
 /** The monitor popup menu. */
@@ -637,12 +606,6 @@ public:
   }
 
 private:
-  wxWindow* m_parent;
-  wxWindow* m_log_button;
-  DataLogger& m_logger;
-  wxStaticText* m_log_label;
-  std::string m_filter;
-
   wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
     return root->Append(static_cast<int>(id), label);
   }
@@ -669,13 +632,18 @@ private:
 
     wxMenuItem* item = FindItem(id);
     if (!item) return;
-
     if (item->IsCheck() && item->IsChecked())
       tty_scroll->SetColors(std::make_unique<StdColorsByState>());
     else
       tty_scroll->SetColors(
           std::make_unique<NoColorsByState>(tty_scroll->GetForegroundColour()));
   }
+
+  wxWindow* m_parent;
+  wxWindow* m_log_button;
+  DataLogger& m_logger;
+  wxStaticText* m_log_label;
+  std::string m_filter;
 };
 
 /** Copy to clipboard button */

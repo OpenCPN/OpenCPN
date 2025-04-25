@@ -17,37 +17,33 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include <functional>
-
-#include <wx/button.h>
-#include <wx/window.h>
-
 /**
- *
- * Two state button showing either an edit
- * \image{inline}  html ./edit-button-2.png "Edit"
- * or done icon
- * \image{inline} html ./edit-button-1.png "Done"
- *
- * Example: filter_dlg.cpp
- *  .
+ * \file
+ * Implement svg_button.h
  */
-class EditButton : public wxButton {
-public:
-  /**
-   * Create a new instance.
-   * @param parent Containing window.
-   * @param id Window id, possibly wxID_ANY
-   * @param on_click Callback invoked when user clicks on button.
-   */
-  EditButton(wxWindow* parent, int id, std::function<void()> on_click);
 
-  /**
-   * Set icon to either pen or checkmark.
-   * @param is_editing If true set icon to checkmark, else set it ri pen.
-   */
-  void SetIcon(bool is_editing);
+#include "svg_button.h"
 
-private:
-  std::function<void()> m_on_click;
-};
+void SvgButton::LoadIcon(const char* svg) {
+    char buffer[2048];
+    assert(strlen(svg) < sizeof(buffer) && "svg icon too long");
+    strcpy(buffer, svg);
+#ifdef ocpnUSE_wxBitmapBundle
+    auto icon_size = wxSize(GetCharHeight(), GetCharHeight());
+    auto bundle = wxBitmapBundle::FromSVG(buffer, icon_size);
+    SetBitmap(bundle);
+#else
+    wxStringInputStream wis(buffer);
+    wxSVGDocument svg_doc(wis);
+    wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
+    SetBitmap(wxBitmap(image));
+#endif
+  }
+
+void SvgButton::LoadIcon(const fs::path& path) {
+  std::ifstream stream(path);
+  if (!stream.is_open()) return;
+  std::stringstream ss;
+  ss << stream.rdbuf();
+  LoadIcon(ss.str());
+}
