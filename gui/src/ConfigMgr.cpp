@@ -112,6 +112,7 @@ extern bool g_bFullscreenToolbar;
 extern bool g_bShowLayers;
 extern bool g_bTransparentToolbar;
 extern bool g_bPermanentMOBIcon;
+extern bool g_btenhertz;
 
 extern bool g_bShowDepthUnits;
 extern bool g_bAutoAnchorMark;
@@ -857,6 +858,8 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write(_T ( "CourseUpMode" ), g_bCourseUp);
   if (!g_bInlandEcdis) conf->Write(_T ( "LookAheadMode" ), g_bLookAhead);
+  conf->Write(_T ( "TenHzUpdate" ), g_btenhertz);
+
   conf->Write(_T ( "COGUPAvgSeconds" ), g_COGAvgSec);
   conf->Write(_T ( "UseMagAPB" ), g_bMagneticAPB);
 

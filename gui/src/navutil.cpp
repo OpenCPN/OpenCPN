@@ -155,6 +155,7 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
+extern bool g_btenhertz;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -869,6 +870,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "COGUPAvgSeconds" ), &g_COGAvgSec);
   Read(_T ( "LookAheadMode" ), &g_bLookAhead);
   Read(_T ( "SkewToNorthUp" ), &g_bskew_comp);
+  Read(_T ( "TenHzUpdate" ), &g_btenhertz, 0);
 
   Read(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
 
@@ -2465,6 +2467,8 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "CourseUpMode" ), g_bCourseUp);
   if (!g_bInlandEcdis) Write(_T ( "LookAheadMode" ), g_bLookAhead);
+  Write(_T ( "TenHzUpdate" ), g_btenhertz);
+
   Write(_T ( "COGUPAvgSeconds" ), g_COGAvgSec);
   Write(_T ( "UseMagAPB" ), g_bMagneticAPB);
 
