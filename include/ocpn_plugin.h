@@ -54,6 +54,7 @@
 #include <wx/bitmap.h>
 #endif  // ocpnUSE_SVG
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 #include <unordered_map>
