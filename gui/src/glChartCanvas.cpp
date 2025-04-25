@@ -2277,8 +2277,6 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
   float pCog = std::isnan(gCog) ? 0 : gCog;
   float pSog = std::isnan(gSog) ? 0 : gSog;
 
-  // In "b_follow" mode, we have a-priori information about the desired screen
-  // coordinates of ownship
   // Here, calculate the ownship location on screen, and make it so.
   // Special case:  No need for such precision on chart drag operations
   double shift_dx = 0;
@@ -2287,14 +2285,22 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
     lGPSPoint.m_x = m_pParentCanvas->GetVP().pix_width / 2;
     lGPSPoint.m_y = m_pParentCanvas->GetVP().pix_height / 2;
     if (m_pParentCanvas->m_bLookAhead) {
-      double angle = m_pParentCanvas->dir_to_shift * PI / 180.;
-      angle += m_pParentCanvas->GetVPRotation();
-      shift_dx = m_pParentCanvas->meters_to_shift * sin(angle) *
-                 m_pParentCanvas->GetVPScale();
-      lGPSPoint.m_x -= shift_dx / cos(gLat * PI / 180.);
-      shift_dy = m_pParentCanvas->meters_to_shift * cos(angle) *
-                 m_pParentCanvas->GetVPScale();
-      lGPSPoint.m_y += shift_dy / cos(gLat * PI / 180.);
+      // In "b_follow" mode, we have a-priori information about the desired
+      // screen coordinates of ownship, as a pixel offset from center.
+      // Use this information as a performance optimization,
+      // at larger viewing scales.
+      if (m_pParentCanvas->GetVPChartScale() < 2e6) {
+        double angle = m_pParentCanvas->dir_to_shift * PI / 180.;
+        angle += m_pParentCanvas->GetVPRotation();
+        shift_dx = m_pParentCanvas->meters_to_shift * sin(angle) *
+                   m_pParentCanvas->GetVPScale();
+        lGPSPoint.m_x -= shift_dx / cos(gLat * PI / 180.);
+        shift_dy = m_pParentCanvas->meters_to_shift * cos(angle) *
+                   m_pParentCanvas->GetVPScale();
+        lGPSPoint.m_y += shift_dy / cos(gLat * PI / 180.);
+      } else {
+        m_pParentCanvas->GetDoubleCanvasPointPix(gLat, gLon, &lGPSPoint);
+      }
     } else {
       lGPSPoint.m_x -= m_pParentCanvas->m_OSoffsetx;
       lGPSPoint.m_y += m_pParentCanvas->m_OSoffsety;
