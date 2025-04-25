@@ -168,11 +168,12 @@ bool NotificationManager::AcknowledgeNotification(const std::string& GUID) {
     for (auto it = active_notifications.begin();
          it != active_notifications.end();) {
       if ((*it)->GetStringHash() == target_message_hash) {
-        active_notifications.erase(it);
-
         // Send notification to listeners
         auto msg = std::make_shared<NotificationMsg>("ACK", *it);
         AppMsgBus::GetInstance().Notify(std::move(msg));
+
+        //  Drop the notification
+        active_notifications.erase(it);
 
         rv = true;
         break;
