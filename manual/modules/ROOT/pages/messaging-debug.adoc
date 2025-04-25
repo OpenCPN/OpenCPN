@@ -15,15 +15,16 @@ One difference is that it supports all sorts of messages.
 Another is that it is oriented to events generated when messages are recieved or
 sent.
 
+== The main window
 Some typical log lines might look like: image:monitor.png[]
 
-== Timestamp - 1
+=== Timestamp - 1
 The time when opencpn received the message. This is printed with milliseconds,
 but operating system buffering tends to delay and deliver messages in bursts
 which often is visible as common time stamps for more than one message.
 
 
-== Message directions - 2
+=== Message directions - 2
 
 The old debugger basically just had input or output messages. The new has four
 directions. In the monitor, they are marked like:
@@ -39,7 +40,7 @@ recognized and further processing is applied,
 ↔ An internal message, typically sent from the core to plugins.
 Could also be for example a message exchanged between plugins.
 
-== Filtering status - 3
+=== Filtering status - 3
 
 After being received filtering is applied to the message. The result
 is displayed in the monitor:
@@ -52,14 +53,14 @@ x Message contains errors and cannot be processed.
 
 | The message is blocked on input  and not processed in any way.
 
-== Interface - 4
+=== Interface - 4
 
 The interface used to receive or send message, actual formatting depends on
 the underlying transport. The *Internal* interface refers to messages sent from
 core to plugin or, in some cases, between plugins.
 
 
-== Event type - 5
+=== Event type - 5
 
 All messages have attributes related to how they are processed in the
 event system.
@@ -67,6 +68,26 @@ The most important is the message key.
 This is the overall, common message identifier used for everything from
 NMEA0183 to internal messages.
 
-== The rest...
+=== The rest...
 is depending on actual message type. In general, it's the message content in some
 printable representation.
+
+== Logging formats
+
+Logging can be done using three formats.
+
+1. The default format resembles the visible log on screen.
+It is aimed for human consumption.
+
+2. The VDR format is based on the spec in
+xref:vdr::log_format.adoc[specification].
+The main  purpose of this format is that it eventually shall be possible to
+replay using the xref:vdr::index.adoc[VDR plugin].
+However, at the time of writing this is yet not implemented, tracked in
+https://github.com/rgleason/vdr_pi/issues/108[VDR bug #108] +
+ +
+This format is also suitable for importing logs into spreadsheets
+like MS Excel or LibreOffice Calc.
+
+3. The CSV format is a simplified VDR format using | as field separator
+targetting traditional, command line post processing tools.
