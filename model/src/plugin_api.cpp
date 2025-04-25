@@ -284,13 +284,13 @@ void ReloadConfigConnections() {
   // Reload config file connections parameters.
   wxFileConfig* pConf = GetOCPNConfigObject();
   if (pConf) {
+    TheConnectionParams().clear();
     pConf->SetPath(_T ( "/Settings/NMEADataSource" ));
 
     wxString connectionconfigs;
     pConf->Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-      TheConnectionParams().clear();
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams* prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) continue;
