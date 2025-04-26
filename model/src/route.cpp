@@ -395,7 +395,13 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
   pSelect->DeleteAllSelectableRoutePoints(this);
   pSelect->DeleteAllSelectableRouteSegments(this);
 
-  pRoutePointList->DeleteObject(rp);
+  // Arrange to remove all references to the same routepoint
+  // within the route.  This can happen with circular or "round-trip" routes.
+  pRoutePointList->DeleteContents(false);
+  bool deleted = pRoutePointList->DeleteObject(rp);
+  while (deleted) {
+    deleted = pRoutePointList->DeleteObject(rp);
+  }
 
   // check all other routes to see if this point appears in any other route
   Route *pcontainer_route = FindRouteContainingWaypoint(rp);
