@@ -62,6 +62,9 @@ public:
 
   fs::path GetDefaultLogfile();
 
+  /** Notified with new path on filename change. */
+  EventVar OnNewLogfile;
+
 private:
   wxWindow* m_parent;
   fs::path m_path;

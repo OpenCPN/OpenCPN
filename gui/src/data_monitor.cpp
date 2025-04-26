@@ -439,9 +439,9 @@ private:
 /** Log setup window invoked from menu "Logging" item. */
 class LoggingSetup : public wxDialog {
 public:
+  /** Top part above buttons */
   class ThePanel : public wxPanel {
   public:
-    /** Top part above buttons */
     ThePanel(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
         : wxPanel(parent),
           m_overwrite(false),
@@ -470,6 +470,7 @@ public:
       left_vbox->Add(csv_btn, flags);
 
       /* Right column: log file */
+      m_logger.SetLogfile(m_logger.GetDefaultLogfile());
       auto label = new wxStaticText(this, kFilenameLabelId,
                                     m_logger.GetDefaultLogfile().string());
       auto path_btn = new wxButton(this, wxID_ANY, _("Change..."));
@@ -493,6 +494,9 @@ public:
       Show();
 
       m_set_logtype(DataLogger::Format::kDefault, _("Default"));
+      FilenameLstnr.Init(logger.OnNewLogfile, [&](ObservedEvt& ev) {
+        GetWindowById<wxStaticText>(kFilenameLabelId)->SetLabel(ev.GetString());
+      });
     }
 
     void OnFileDialog() {
@@ -512,11 +516,13 @@ public:
     SetFormatFunc m_set_logtype;
     DataLogger& m_logger;
     const int kFilenameLabelId;
+    ObsListener FilenameLstnr;
   };  // ThePanel
 
   LoggingSetup(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
       : wxDialog(parent, wxID_ANY, _("Logging setup"), wxDefaultPosition,
-                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
+                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+        m_logger(logger) {
     auto flags = wxSizerFlags(0).Border();
 
     /* Buttons at bottom */
@@ -538,6 +544,8 @@ public:
     Fit();
     Show();
   }
+  DataLogger& m_logger;
+  ObsListener FilenameLstnr;
 };
 
 /** The monitor popup menu. */
@@ -559,7 +567,7 @@ public:
         m_logger(logger),
         m_log_label(log_label) {
     AppendCheckItem(static_cast<int>(Id::kViewStdColors), _("Use colors"));
-    Append(static_cast<int>(Id::kLogSetup), _("Logging Setup..."));
+    Append(static_cast<int>(Id::kLogSetup), _("Logging..."));
     auto filters = new wxMenu("");
     AppendId(filters, Id::kNewFilter, _("Create new..."));
     AppendId(filters, Id::kEditFilter, _("Edit..."));
@@ -614,6 +622,11 @@ private:
     m_log_label->SetLabel(_("Log type: ") + label);
     m_logger.SetFormat(format);
     m_log_button->Enable();
+    std::string extension =
+        format == DataLogger::Format::kDefault ? ".log" : ".csv";
+    fs::path path = m_logger.GetLogfile();
+    path = path.parent_path() / (path.stem().string() + extension);
+    m_logger.SetLogfile(path);
   }
 
   void LogSetup() {
@@ -794,6 +807,7 @@ void DataLogger::SetLogfile(const fs::path& path) {
   m_stream << "received_at,protocol,msg_type,source,raw_data\n";
   m_stream << std::flush;
   m_path = path;
+  OnNewLogfile.Notify(path.string());
 }
 
 void DataLogger::SetFormat(DataLogger::Format format) { m_format = format; }
