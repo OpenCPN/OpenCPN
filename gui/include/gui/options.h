@@ -221,7 +221,8 @@ enum {
   ID_TEMPUNITSCHOICE,
   ID_BUTTONMIGRATE,
   ID_TIMEZONE_UTC,
-  ID_TIMEZONE_LOCAL_TIME
+  ID_TIMEZONE_LOCAL_TIME,
+  ID_TENHZCHECKBOX
 };
 
 /* Define an int bit field for dialog return value
@@ -585,7 +586,7 @@ public:
   wxTextCtrl *m_pText_TP_Secs, *m_pText_TP_Dist;
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
-  wxCheckBox *pTransparentToolbar;
+  wxCheckBox *pEnableTenHertz, *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
   wxStaticText *pStatic_CallSign;

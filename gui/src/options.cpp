@@ -284,6 +284,7 @@ extern wxString g_default_wp_icon;
 extern int osMajor, osMinor;
 extern bool g_bShowMuiZoomButtons;
 extern MyConfig* pConfig;
+extern bool g_btenhertz;
 
 #ifdef __ANDROID__
 extern int g_Android_SDK_Version;
@@ -4053,6 +4054,11 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pEnableZoomToCursor->SetValue(FALSE);
     boxCtrls->Add(pEnableZoomToCursor, verticleInputFlags);
 
+    pEnableTenHertz = new wxCheckBox(pDisplayPanel, ID_TENHZCHECKBOX,
+                                     _("Enable Ten Hz screen update"));
+    pEnableTenHertz->SetValue(FALSE);
+    boxCtrls->Add(pEnableTenHertz, verticleInputFlags);
+
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
@@ -6225,6 +6231,7 @@ void options::SetInitialSettings(void) {
   pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
 
   if (pEnableZoomToCursor) pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
+  pEnableTenHertz->SetValue(g_btenhertz);
 
   if (pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
@@ -7216,6 +7223,9 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
   if (pEnableZoomToCursor)
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
+
+  g_btenhertz = pEnableTenHertz->GetValue();
+
 #ifdef __ANDROID__
   g_bEnableZoomToCursor = false;
 #endif
