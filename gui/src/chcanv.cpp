@@ -11881,40 +11881,11 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   // May get an unexpected OnPaint call while switching display modes
   // Guard for that.
   if (!g_bopengl) {
-    //    Draw the rest of the overlay objects directly on the scratch dc
     ocpnDC scratch_dc(mscratch_dc);
-    DrawOverlayObjects(scratch_dc, ru);
-
-    if (m_bShowTide) {
-      RebuildTideSelectList(GetVP().GetBBox());
-      DrawAllTidesInBBox(scratch_dc, GetVP().GetBBox());
-    }
-
-    if (m_bShowCurrent) {
-      RebuildCurrentSelectList(GetVP().GetBBox());
-      DrawAllCurrentsInBBox(scratch_dc, GetVP().GetBBox());
-    }
-
-    if (m_brepaint_piano && g_bShowChartBar) {
-      m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), mscratch_dc);
-    }
-
-    if (m_Compass) m_Compass->Paint(scratch_dc);
-
-    if (!g_CanvasHideNotificationIcon) {
-      auto &noteman = NotificationManager::GetInstance();
-      if (noteman.GetNotificationCount()) {
-        m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
-        if (m_notification_button->UpdateStatus()) Refresh();
-        m_notification_button->Show(true);
-        m_notification_button->Paint(scratch_dc);
-      } else {
-        m_notification_button->Show(false);
-      }
-    }
     RenderAlertMessage(mscratch_dc, GetVP());
   }
 
+#if 0
   // quiting?
   if (g_bquiting) {
 #ifdef ocpnUSE_DIBSECTION
@@ -11939,6 +11910,8 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
     q_dc.SelectObject(wxNullBitmap);
   }
+#endif
+
 #if 0
     //  It is possible that this two-step method may be reuired for some platforms.
     //  So, retain in the code base to aid recovery if necessary
@@ -12027,6 +12000,10 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
     }
   }
 
+  //  Now that charts are fully rendered, apply the overlay objects as decals.
+  ocpnDC scratch_dc(mscratch_dc);
+  DrawOverlayObjects(scratch_dc, ru);
+
   //    And finally, blit the scratch dc onto the physical dc
   wxRegionIterator upd_final(rgn_blit);
   while (upd_final) {
@@ -12035,20 +12012,6 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
             rect.y);
     upd_final++;
   }
-
-  //  Test code to validate the dc drawing rectangle....
-  /*
-      wxRegionIterator upd_ru ( rgn_blit ); // get the update rect list
-       while ( upd_ru )
-       {
-       wxRect rect = upd_ru.GetRect();
-
-       dc.SetPen(wxPen(*wxRED));
-       dc.SetBrush(wxBrush(*wxRED, wxTRANSPARENT));
-       dc.DrawRectangle(rect);
-       upd_ru ++ ;
-       }
-  */
 
   //    Deselect the chart bitmap from the temp_dc, so that it will not be
   //    destroyed in the temp_dc dtor
@@ -12436,6 +12399,17 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex,
                                                 OVERLAY_OVER_EMBOSS);
   }
+
+  if (m_bShowTide) {
+    RebuildTideSelectList(GetVP().GetBBox());
+    DrawAllTidesInBBox(dc, GetVP().GetBBox());
+  }
+
+  if (m_bShowCurrent) {
+    RebuildCurrentSelectList(GetVP().GetBBox());
+    DrawAllCurrentsInBBox(dc, GetVP().GetBBox());
+  }
+
   if (!g_PrintingInProgress) {
     if (IsPrimaryCanvas()) {
       if (g_MainToolbar) g_MainToolbar->DrawDC(dc, 1.0);
@@ -12460,6 +12434,23 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
     if (m_pAISRolloverWin) {
       m_pAISRolloverWin->Draw(dc);
       m_brepaint_piano = true;
+    }
+    if (m_brepaint_piano && g_bShowChartBar) {
+      m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), dc);
+    }
+
+    if (m_Compass) m_Compass->Paint(dc);
+
+    if (!g_CanvasHideNotificationIcon) {
+      auto &noteman = NotificationManager::GetInstance();
+      if (noteman.GetNotificationCount()) {
+        m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
+        if (m_notification_button->UpdateStatus()) Refresh();
+        m_notification_button->Show(true);
+        m_notification_button->Paint(dc);
+      } else {
+        m_notification_button->Show(false);
+      }
     }
   }
   if (g_pi_manager) {
