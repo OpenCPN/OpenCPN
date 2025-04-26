@@ -2916,16 +2916,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
 #ifndef __WXOSX__
     case WXK_F9: {
-      double t0 = wxGetLocalTimeMillis().ToDouble();
-      pConfig->Flush();
-      double t1 = wxGetLocalTimeMillis().ToDouble() - t0;
-
       ToggleCanvasQuiltMode();
-      auto &noteman = NotificationManager::GetInstance();
-      noteman.AddNotification(NotificationSeverity::kCritical,
-                              "Test Notification long message.\nMultiline "
-                              "message that may be many, many chars wide.");
-
       break;
     }
 #endif
@@ -2938,13 +2929,6 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
     case WXK_F12: {
       if (m_modkeys == wxMOD_ALT) {
         // m_nMeasureState = *(volatile int *)(0);  // generate a fault for
-        // testing
-        bool b = GetEnableTenHertzUpdate();
-        EnableTenHertzUpdate(!b);
-        UpdateGPSCompassStatusBox(true);
-        auto &noteman = NotificationManager::GetInstance();
-        noteman.AddNotification(NotificationSeverity::kInformational,
-                                "Test Timed Notification", 10);
       } else {
         ToggleChartOutlines();
       }
