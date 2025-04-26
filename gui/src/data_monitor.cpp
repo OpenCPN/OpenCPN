@@ -75,11 +75,12 @@ static bool IsUserFilter(const std::string& filter_name) {
 };
 
 /** Return logging milliseconds timestamp. */
-static std::string TimeStamp(const NavmsgTimePoint& when) {
+static std::string TimeStamp(const NavmsgTimePoint& when,
+                             const NavmsgTimePoint& since) {
   using namespace std::chrono;
   using namespace std;
 
-  auto duration = when.time_since_epoch();
+  auto duration = when - since;
   std::stringstream ss;
   auto hrs = duration_cast<hours>(duration) % 24;
   duration -= duration_cast<hours>(duration) / 24;
@@ -88,9 +89,9 @@ static std::string TimeStamp(const NavmsgTimePoint& when) {
   auto secs = duration_cast<seconds>(duration) % 60;
   duration -= duration_cast<seconds>(duration) / 60;
   auto msecs = duration_cast<milliseconds>(duration);
-  ss << setw(2) << setfill('0') << hrs.count() % 24 << ":" << setw(2)
-     << mins.count() << ":" << setw(2) << secs.count() << "." << setw(3)
-     << msecs.count();
+  ss << setw(2) << setfill('0') << hrs.count() << ":" << setw(2) << mins.count()
+     << ":" << setw(2) << secs.count() << "." << setw(3)
+     << msecs.count() % 1000;
   return ss.str();
 }
 
@@ -147,10 +148,11 @@ static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
 }
 
 /** Write a line in the log using the standard format. */
-static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
+static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs,
+                          const NavmsgTimePoint log_start) {
   if (!ll.navmsg) return;
   wxString ws;
-  ws << TimeStamp(ll.navmsg->created_at) << fs;
+  ws << TimeStamp(ll.navmsg->created_at, log_start) << fs;
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
     ws << kUtfRightArrow << fs;
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
@@ -521,8 +523,7 @@ public:
 
   LoggingSetup(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
       : wxDialog(parent, wxID_ANY, _("Logging setup"), wxDefaultPosition,
-                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-        m_logger(logger) {
+                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
     auto flags = wxSizerFlags(0).Border();
 
     /* Buttons at bottom */
@@ -544,7 +545,6 @@ public:
     Fit();
     Show();
   }
-  DataLogger& m_logger;
   ObsListener FilenameLstnr;
 };
 
@@ -795,7 +795,8 @@ DataLogger::DataLogger(wxWindow* parent, const fs::path& path)
       m_path(path),
       m_stream(path, std::ios_base::app),
       m_is_logging(false),
-      m_format(Format::kDefault) {}
+      m_format(Format::kDefault),
+      m_log_start(std::chrono::steady_clock::now()) {}
 
 DataLogger::DataLogger(wxWindow* parent) : DataLogger(parent, NullLogfile()) {}
 
@@ -804,6 +805,9 @@ void DataLogger::SetLogging(bool logging) { m_is_logging = logging; }
 void DataLogger::SetLogfile(const fs::path& path) {
   m_stream = std::ofstream(path);
   m_stream << "# timestamp_format: EPOCH_MILLIS\n";
+  const auto now = std::chrono::system_clock::now();
+  const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
+  m_stream << "# Created at: " << std::ctime(&t_c) << " \n";
   m_stream << "received_at,protocol,msg_type,source,raw_data\n";
   m_stream << std::flush;
   m_path = path;
@@ -841,7 +845,8 @@ void DataLogger::Add(const Logline& ll) {
     AddVdrLogline(ll, m_stream);
   else
     AddStdLogline(ll, m_stream,
-                  m_format == DataLogger::Format::kCsv ? '|' : ' ');
+                  m_format == DataLogger::Format::kCsv ? '|' : ' ',
+                  m_log_start);
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)

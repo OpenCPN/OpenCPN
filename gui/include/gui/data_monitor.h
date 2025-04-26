@@ -71,6 +71,7 @@ private:
   std::ofstream m_stream;
   bool m_is_logging;
   Format m_format;
+  const NavmsgTimePoint m_log_start;
 };
 
 /** Overall logging handler, outputs to screen and log file. */
