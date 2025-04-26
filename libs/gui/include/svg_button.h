@@ -17,37 +17,48 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include <functional>
+#ifndef SVG__BUTTON__H_
+#define SVG__BUTTON__H_
+#include <fstream>
+#include <sstream>
 
 #include <wx/button.h>
-#include <wx/window.h>
+#include <wx/sstream.h>
+
+#ifndef ocpnUSE_wxBitmapBundle
+#include <wxSVG/svg.h>
+#endif
+
+#include "std_filesystem.h"
+
 
 /**
+ * A button capable of loading an svg image. The image is scaled to roughly
+ * the size of a character, and the button is made to fit the image.
  *
- * Two state button showing either an edit
- * \image{inline}  html ./edit-button-2.png "Edit"
- * or done icon
- * \image{inline} html ./edit-button-1.png "Done"
+ * Internally uses wxBitmapBundle available from wxWidgets 3.2 if available,
+ * otherwise falling back to the wxSvg library.
  *
- * Example: filter_dlg.cpp
- *  .
+ * Examples:   \image{inline} html ./svg-button.png "Example"
  */
-class EditButton : public wxButton {
-public:
-  /**
-   * Create a new instance.
-   * @param parent Containing window.
-   * @param id Window id, possibly wxID_ANY
-   * @param on_click Callback invoked when user clicks on button.
-   */
-  EditButton(wxWindow* parent, int id, std::function<void()> on_click);
+class SvgButton : public wxButton {
+protected:
+  SvgButton(wxWindow* parent)
+      : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                 wxDefaultSize, wxBU_EXACTFIT | wxBU_BOTTOM) {}
 
   /**
-   * Set icon to either pen or checkmark.
-   * @param is_editing If true set icon to checkmark, else set it ri pen.
+   * Load an svg icon available in memory.
+   * @param svg SVG icon smaller than 2048 chars.
    */
-  void SetIcon(bool is_editing);
+  void LoadIcon(const char* svg);
 
-private:
-  std::function<void()> m_on_click;
+  /**
+   * Load icon from svg file on disk
+   * @param path Path to svg icon less than 2048 chars.
+   */
+  void LoadIcon(const fs::path& path);
+
 };
+
+#endif  //  SVG__BUTTON__H_

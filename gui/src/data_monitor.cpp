@@ -1,5 +1,4 @@
 #include <chrono>
-#include <iostream>  // debug junk
 #include <fstream>
 #include <sstream>
 
@@ -11,15 +10,10 @@
 #include <wx/panel.h>
 #include <wx/platinfo.h>
 #include <wx/sizer.h>
-#include <wx/sstream.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/translation.h>
 #include <wx/wrapsizer.h>
-
-#ifndef ocpnUSE_wxBitmapBundle
-#include <wxSVG/svg.h>
-#endif
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -33,11 +27,11 @@
 #include "model/gui.h"
 
 #include "data_monitor.h"
+#include "std_filesystem.h"
+#include "svg_button.h"
 #include "svg_icons.h"
 #include "tty_scroll.h"
 #include "filter_dlg.h"
-
-#include "std_filesystem.h"
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
@@ -66,8 +60,7 @@ static const char* const kFilterChoiceName = "FilterChoiceWindow";
 static const std::unordered_map<NavAddr::Bus, std::string> kSourceByBus = {
     {NavAddr::Bus::N0183, "NMEA0183"},
     {NavAddr::Bus::N2000, "NMEA2000"},
-    {NavAddr::Bus::Signalk, "SignalK"}};
-// clang-format: on
+    {NavAddr::Bus::Signalk, "SignalK"}};  // clang-format: on
 
 /** Return true if given filter is defined by user. */
 static bool IsUserFilter(const std::string& filter_name) {
@@ -81,11 +74,13 @@ static bool IsUserFilter(const std::string& filter_name) {
   return false;
 };
 
-static std::string TimeStamp(const NavmsgTimePoint& when) {
+/** Return logging milliseconds timestamp. */
+static std::string TimeStamp(const NavmsgTimePoint& when,
+                             const NavmsgTimePoint& since) {
   using namespace std::chrono;
   using namespace std;
 
-  auto duration = when.time_since_epoch();
+  auto duration = when - since;
   std::stringstream ss;
   auto hrs = duration_cast<hours>(duration) % 24;
   duration -= duration_cast<hours>(duration) / 24;
@@ -94,11 +89,12 @@ static std::string TimeStamp(const NavmsgTimePoint& when) {
   auto secs = duration_cast<seconds>(duration) % 60;
   duration -= duration_cast<seconds>(duration) / 60;
   auto msecs = duration_cast<milliseconds>(duration);
-  ss << setw(2) << setfill('0') << hrs.count() % 24 << ":" << setw(2)
-     << mins.count() << ":" << setw(2) << secs.count() << "." << setw(3)
-     << msecs.count();
+  ss << setw(2) << setfill('0') << hrs.count() << ":" << setw(2) << mins.count()
+     << ":" << setw(2) << secs.count() << "." << setw(3)
+     << msecs.count() % 1000;
   return ss.str();
 }
+
 /**
  * Quote arg string as required by VDR plugin, see
  * https://opencpn-manuals.github.io/main/vdr/log_format.html
@@ -152,10 +148,11 @@ static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
 }
 
 /** Write a line in the log using the standard format. */
-static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
+static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs,
+                          const NavmsgTimePoint log_start) {
   if (!ll.navmsg) return;
   wxString ws;
-  ws << TimeStamp(ll.navmsg->created_at) << fs;
+  ws << TimeStamp(ll.navmsg->created_at, log_start) << fs;
   if (ll.state.direction == NavmsgStatus::Direction::kOutput)
     ws << kUtfRightArrow << fs;
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
@@ -182,29 +179,6 @@ static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs) {
   ws << fs << ll.message << "\n";
   stream << ws;
 }
-
-class SvgButton : public wxButton {
-protected:
-  SvgButton(wxWindow* parent)
-      : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                 wxDefaultSize, wxBU_EXACTFIT | wxBU_BOTTOM) {}
-
-  void LoadIcon(const char* svg) {
-    char buffer[2048];
-    assert(strlen(svg) < sizeof(buffer) && "svg icon too long");
-    strcpy(buffer, svg);
-#ifdef ocpnUSE_wxBitmapBundle
-    auto icon_size = wxSize(GetCharHeight(), GetCharHeight());
-    auto bundle = wxBitmapBundle::FromSVG(buffer, icon_size);
-    SetBitmap(bundle);
-#else
-    wxStringInputStream wis(buffer);
-    wxSVGDocument svg_doc(wis);
-    wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
-    SetBitmap(wxBitmap(image));
-#endif
-  }
-};
 
 /** Main window, a rolling log of messages. */
 class TtyPanel : public wxPanel, public NmeaLog {
@@ -268,6 +242,7 @@ private:
   std::function<void()> m_on_right_click;
 };
 
+/** The quick filter above the status line, invoked by funnel button. */
 class QuickFilterPanel : public wxPanel {
 public:
   QuickFilterPanel(wxWindow* parent, std::function<void()> on_text_evt)
@@ -463,11 +438,12 @@ private:
   }
 };
 
+/** Log setup window invoked from menu "Logging" item. */
 class LoggingSetup : public wxDialog {
 public:
+  /** Top part above buttons */
   class ThePanel : public wxPanel {
   public:
-    /** Top part above buttons */
     ThePanel(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
         : wxPanel(parent),
           m_overwrite(false),
@@ -496,6 +472,7 @@ public:
       left_vbox->Add(csv_btn, flags);
 
       /* Right column: log file */
+      m_logger.SetLogfile(m_logger.GetDefaultLogfile());
       auto label = new wxStaticText(this, kFilenameLabelId,
                                     m_logger.GetDefaultLogfile().string());
       auto path_btn = new wxButton(this, wxID_ANY, _("Change..."));
@@ -519,6 +496,9 @@ public:
       Show();
 
       m_set_logtype(DataLogger::Format::kDefault, _("Default"));
+      FilenameLstnr.Init(logger.OnNewLogfile, [&](ObservedEvt& ev) {
+        GetWindowById<wxStaticText>(kFilenameLabelId)->SetLabel(ev.GetString());
+      });
     }
 
     void OnFileDialog() {
@@ -538,13 +518,12 @@ public:
     SetFormatFunc m_set_logtype;
     DataLogger& m_logger;
     const int kFilenameLabelId;
-  };
+    ObsListener FilenameLstnr;
+  };  // ThePanel
 
   LoggingSetup(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
       : wxDialog(parent, wxID_ANY, _("Logging setup"), wxDefaultPosition,
-                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-        m_logger(logger),
-        m_set_logtype(set_logtype) {
+                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
     auto flags = wxSizerFlags(0).Border();
 
     /* Buttons at bottom */
@@ -557,7 +536,7 @@ public:
     buttons->Fit(parent);
 
     /* Overall vbox setup */
-    auto panel = new ThePanel(this, m_set_logtype, m_logger);
+    auto panel = new ThePanel(this, set_logtype, logger);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(panel, flags.Expand());
     vbox->Add(new wxStaticLine(this, wxID_ANY), flags.Expand());
@@ -566,10 +545,7 @@ public:
     Fit();
     Show();
   }
-
-private:
-  DataLogger& m_logger;
-  SetFormatFunc m_set_logtype;
+  ObsListener FilenameLstnr;
 };
 
 /** The monitor popup menu. */
@@ -591,7 +567,7 @@ public:
         m_logger(logger),
         m_log_label(log_label) {
     AppendCheckItem(static_cast<int>(Id::kViewStdColors), _("Use colors"));
-    Append(static_cast<int>(Id::kLogSetup), _("Logging Setup..."));
+    Append(static_cast<int>(Id::kLogSetup), _("Logging..."));
     auto filters = new wxMenu("");
     AppendId(filters, Id::kNewFilter, _("Create new..."));
     AppendId(filters, Id::kEditFilter, _("Edit..."));
@@ -625,10 +601,6 @@ public:
         case Id::kDeleteFilter:
           RemoveFilterDlg(parent);
           break;
-
-        default:
-          std::cout << "Menu id: " << ev.GetId() << "\n";
-          break;
       }
     });
     Check(static_cast<int>(Id::kViewStdColors), true);
@@ -642,28 +614,19 @@ public:
   }
 
 private:
-  wxWindow* m_parent;
-  wxWindow* m_log_button;
-  DataLogger& m_logger;
-  wxStaticText* m_log_label;
-  std::string m_filter;
-
   wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
     return root->Append(static_cast<int>(id), label);
-  }
-
-  void AppendRadioId(wxMenu* root, Id id, const wxString& label) {
-    root->AppendRadioItem(static_cast<int>(id), label);
-  }
-
-  void AppendCheckId(wxMenu* root, Id id, const wxString& label) {
-    root->AppendCheckItem(static_cast<int>(id), label);
   }
 
   void SetLogFormat(DataLogger::Format format, const std::string& label) {
     m_log_label->SetLabel(_("Log type: ") + label);
     m_logger.SetFormat(format);
     m_log_button->Enable();
+    std::string extension =
+        format == DataLogger::Format::kDefault ? ".log" : ".csv";
+    fs::path path = m_logger.GetLogfile();
+    path = path.parent_path() / (path.stem().string() + extension);
+    m_logger.SetLogfile(path);
   }
 
   void LogSetup() {
@@ -682,13 +645,18 @@ private:
 
     wxMenuItem* item = FindItem(id);
     if (!item) return;
-
     if (item->IsCheck() && item->IsChecked())
       tty_scroll->SetColors(std::make_unique<StdColorsByState>());
     else
       tty_scroll->SetColors(
           std::make_unique<NoColorsByState>(tty_scroll->GetForegroundColour()));
   }
+
+  wxWindow* m_parent;
+  wxWindow* m_log_button;
+  DataLogger& m_logger;
+  wxStaticText* m_log_label;
+  std::string m_filter;
 };
 
 /** Copy to clipboard button */
@@ -697,15 +665,11 @@ public:
   CopyClipboardButton(wxWindow* parent) : SvgButton(parent) {
     LoadIcon(kCopyIconSvg);
     SetToolTip(_("Copy to clipboard"));
-    Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
-  }
-
-private:
-  void OnClick() {
-    auto* tty_scroll =
-        dynamic_cast<TtyScroll*>(wxWindow::FindWindowByName("TtyScroll"));
-    if (!tty_scroll) return;
-    tty_scroll->CopyToClipboard();
+    Bind(wxEVT_BUTTON, [&](wxCommandEvent&) {
+      auto* tty_scroll =
+          dynamic_cast<TtyScroll*>(wxWindow::FindWindowByName("TtyScroll"));
+      if (tty_scroll) tty_scroll->CopyToClipboard();
+    });
   }
 };
 
@@ -831,7 +795,8 @@ DataLogger::DataLogger(wxWindow* parent, const fs::path& path)
       m_path(path),
       m_stream(path, std::ios_base::app),
       m_is_logging(false),
-      m_format(Format::kDefault) {}
+      m_format(Format::kDefault),
+      m_log_start(std::chrono::steady_clock::now()) {}
 
 DataLogger::DataLogger(wxWindow* parent) : DataLogger(parent, NullLogfile()) {}
 
@@ -840,9 +805,13 @@ void DataLogger::SetLogging(bool logging) { m_is_logging = logging; }
 void DataLogger::SetLogfile(const fs::path& path) {
   m_stream = std::ofstream(path);
   m_stream << "# timestamp_format: EPOCH_MILLIS\n";
+  const auto now = std::chrono::system_clock::now();
+  const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
+  m_stream << "# Created at: " << std::ctime(&t_c) << " \n";
   m_stream << "received_at,protocol,msg_type,source,raw_data\n";
   m_stream << std::flush;
   m_path = path;
+  OnNewLogfile.Notify(path.string());
 }
 
 void DataLogger::SetFormat(DataLogger::Format format) { m_format = format; }
@@ -876,7 +845,8 @@ void DataLogger::Add(const Logline& ll) {
     AddVdrLogline(ll, m_stream);
   else
     AddStdLogline(ll, m_stream,
-                  m_format == DataLogger::Format::kCsv ? '|' : ' ');
+                  m_format == DataLogger::Format::kCsv ? '|' : ' ',
+                  m_log_start);
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)

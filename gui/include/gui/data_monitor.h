@@ -62,12 +62,16 @@ public:
 
   fs::path GetDefaultLogfile();
 
+  /** Notified with new path on filename change. */
+  EventVar OnNewLogfile;
+
 private:
   wxWindow* m_parent;
   fs::path m_path;
   std::ofstream m_stream;
   bool m_is_logging;
   Format m_format;
+  const NavmsgTimePoint m_log_start;
 };
 
 /** Overall logging handler, outputs to screen and log file. */
