@@ -115,6 +115,8 @@ public:
   int GetNumTargets(void) { return m_n_targets; }
   bool IsAISSuppressed(void) { return m_bSuppressed; }
   bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
+  void UpdateMMSItoNameFile(const wxString &mmsi, const wxString &name);
+  wxString GetMMSItoNameEntry(const wxString &mmsi);
   AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos,
                            wxString *acc);
   void DeletePersistentTrack(Track *track);
