@@ -1,0 +1,128 @@
+= Plugin API
+
+== Introduction for Core Developers
+
+This section provides guidance for OpenCPN core developers who are creating or extending the plugin API. Unlike other parts of the developer manual that focus on plugin developers using the API, this section covers best practices, design principles, and implementation considerations for those maintaining and evolving the API itself.
+
+The plugin API serves as the contract between OpenCPN core and its plugins. Any changes to this API must be carefully considered to maintain backward compatibility while enabling new features. As a core developer, your decisions about the plugin API will affect both the stability of existing plugins and the capabilities available to future plugin authors.
+
+== API Design Principles
+
+=== Maintaining Stable ABI
+
+* Changes to the plugin API must preserve both source (API) and binary (ABI) compatibility.
+* Plugins compiled against an older version of the API should continue to work with newer versions of OpenCPN.
+
+=== API Documentation
+
+* Document all functions, classes, and parameters.
+* Include usage examples for complex features.
+
+=== Sharing Content Between Plugins and Core
+
+*Create dedicated classes for shared content*
+
+* When plugins and the core application need to share data structures (either unidirectionally or bidirectionally), create a specific class to encapsulate this shared content.
+* Example: `PlugIn_Waypoint` for sharing waypoint data between core and plugins.
+* These classes provide clear boundaries and interfaces for data exchange.
+
+=== API Stability and Compatibility
+
+*Never modify published classes*
+
+* Once a new OpenCPN version has been published along with a new version of the plugin API, do not:
+** Add new fields to existing classes
+** Remove fields from existing classes
+** Reorder fields within classes
+** Change the meaning or interpretation of existing fields
+* Any of these changes could break binary compatibility with existing plugins.
+
+*Use virtual destructors in all API classes*
+
+* Always include a virtual destructor in base classes:
++
+[source,cpp]
+----
+virtual ~PlugIn_Waypoint();
+----
+* This ensures that when a derived object is deleted through a base pointer, the correct (derived) destructor will be called.
+* Without a virtual destructor, deleting a derived class through a base pointer will only call the base class destructor, potentially causing memory leaks.
+* This becomes a critical issue when introducing class inheritance in future releases, even if it seems unnecessary in the initial implementation.
+
+*Avoid passing classes by value*
+
+* Do not pass or return API classes by value. Instead, use pointers or references:
++
+[source,cpp]
+----
+// Good
+bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint);
+
+// Bad
+bool UpdateSingleWaypoint(PlugIn_Waypoint pwaypoint);
+----
+* Passing by value may work initially, but becomes a serious problem in future releases when derived classes are added - passing them to a function expecting the base class will cause slicing. This would force developers to create new functions such as `UpdateSingleWaypointV2`, causing the plugin API to be bloated.
+* A key consideration is that new fields cannot be added to the base class after the plugin API has been published. Changing a class would break ABI compatibility.
+* Example of slicing problem:
++
+[source,cpp]
+----
+void ProcessWaypoint(PlugIn_Waypoint wp) { /* uses only base class members */ }
+
+PlugIn_WaypointV2 myPoint;
+myPoint.scamax = 1000000;  // V2-specific field
+ProcessWaypoint(myPoint);  // The scamax value is lost in the function!
+----
+
+=== API Evolution
+
+*Use versioned class names for API evolution*
+
+* Instead of adding "_Ex" or similar suffixes (which don't scale well), use explicit version numbering:
++
+[source,cpp]
+----
+// Good
+class PlugIn_WaypointV1 { ... };
+class PlugIn_WaypointV2 : public PlugIn_WaypointV1 { ... };
+class PlugIn_WaypointV3 : public PlugIn_WaypointV2 { ... };
+
+// Avoid
+class PlugIn_Waypoint { ... };
+class PlugIn_Waypoint_Ex { ... };
+class PlugIn_Waypoint_Ex_Ex { ... };  // Awkward naming!
+----
+* Clear versioning makes the evolution path obvious and reduces confusion
+* For the first version, you can omit the version suffix, but be prepared to introduce explicit versioning in future updates
+
+*Create subclasses for new fields*
+
+* When new fields need to be added in future plugin API versions, create a subclass rather than modifying the existing class:
++
+[source,cpp]
+----
+class PlugIn_WaypointV2 : public PlugIn_Waypoint {
+public:
+  double scamax;
+  double m_PlannedSpeed;
+  // New fields here...
+};
+----
+* This allows for backward compatibility - older plugins continue working with the base class
+* Newer plugins can benefit from the extended functionality
+* Use dynamic casting to detect and utilize the extended classes:
++
+[source,cpp]
+----
+PlugIn_WaypointV2* dst_v2 = dynamic_cast<PlugIn_WaypointV2*>(dst);
+if (dst_v2) {
+  // use extended fields
+}
+----
+
+=== Memory Management
+
+*Clear ownership semantics*
+
+* Define clear ownership rules for every object passed through the API
+* Document whether the receiver takes ownership of passed objects

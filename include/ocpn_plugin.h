@@ -6220,7 +6220,6 @@ extern DECL_EXP void EnableCanvasFocusBar(bool enable, int CanvasIndex);
  */
 extern DECL_EXP bool GetEnableCanvasFocusBar(int CanvasIndex);
 
-
 /*
  *  Allow plugin control of "Chart Panel Options" dialog
  */
@@ -6544,7 +6543,6 @@ extern DECL_EXP void EnableTenHertzUpdate(bool enable);
  * settings.
  */
 extern DECL_EXP void ConfigFlushAndReload();
-
 
 /*
  * Reload and restore all connections by direct read of config file
