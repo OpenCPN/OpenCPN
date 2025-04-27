@@ -73,6 +73,8 @@ public:
    */
   bool AcknowledgeNotification(const std::string& guid);
 
+  bool AcknowledgeAllNotifications();
+
   /** Return max severity among current active notifications. */
   NotificationSeverity GetMaxSeverity();
 

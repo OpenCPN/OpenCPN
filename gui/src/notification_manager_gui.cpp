@@ -37,6 +37,7 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "glChartCanvas.h"
+#include "gui_lib.h"
 #include "svg_utils.h"
 #include "model/datetime.h"
 
@@ -246,54 +247,36 @@ BEGIN_EVENT_TABLE(NotificationsList, wxDialog)
 EVT_CLOSE(NotificationsList::OnClose)
 END_EVENT_TABLE()
 
-NotificationsList::NotificationsList(wxWindow* parent)
-    : wxDialog()
+NotificationsList::NotificationsList(wxWindow* parent) : wxDialog() {
+  wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
+  SetFont(*qFont);
 
-{
-  //  wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
-  //  SetFont(*qFont);
-
-  long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
+  long mstyle = wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX | wxFRAME_NO_TASKBAR;
 #ifdef __WXOSX__
   mstyle |= wxSTAY_ON_TOP;
 #endif
 
-  wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
-                   mstyle);
+  wxDialog::Create(parent, wxID_ANY, _("OpenCPN Notifications"),
+                   wxDefaultPosition, wxDefaultSize, mstyle);
 
   wxBoxSizer* topsizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topsizer);
 
-  // m_sWindow = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition,
-  //                                  wxDefaultSize, wxVSCROLL |
-  //                                  wxSUNKEN_BORDER);
-  // topsizer->Add(m_sWindow, 1, wxEXPAND);
-
-  // m_sWindow->SetScrollRate(0, 5);
-
-  int border_size = 4;
+  int border_size = 2;
   int group_item_spacing = 0;
   int interGroupSpace = border_size * 2;
 
-  wxSizerFlags verticalInputFlags = wxSizerFlags(0)
-                                        .Align(wxALIGN_LEFT)
-                                        .Expand()
-                                        .Border(wxALL, group_item_spacing);
-  wxSizerFlags inputFlags =
-      wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
+  auto acksizer = new wxBoxSizer(wxHORIZONTAL);
+  topsizer->Add(acksizer, 0, wxEXPAND);
 
-  // wxScrolledWindow* pDisplayPanel = m_sWindow;
+  // Ack All button
+  acksizer->AddStretchSpacer(1);
 
-  // wxBoxSizer* generalSizer = new wxBoxSizer(wxVERTICAL);
-  // pDisplayPanel->SetSizer(generalSizer);
-
-  //  Options Label
-  wxStaticText* optionsLabelBox =
-      new wxStaticText(this, wxID_ANY, _("OpenCPN Notifications"));
-  topsizer->Add(optionsLabelBox, 0, wxALL | wxEXPAND, 4);
-  wxStaticLine* m_staticLine121 = new wxStaticLine(
-      this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
-  topsizer->Add(m_staticLine121, 0, wxALL | wxEXPAND, 4);
+  m_ackall_button = new wxButton(this, wxID_ANY, "ACK All");
+  acksizer->Add(m_ackall_button, 0, wxALIGN_CENTER_VERTICAL | wxALL, 2);
+  m_ackall_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                        &NotificationsList::OnAckAllButton, this);
+  acksizer->AddSpacer(10);
 
   // spacer
   topsizer->Add(0, interGroupSpace);
@@ -315,7 +298,12 @@ void NotificationsList::ReloadNotificationList() {
   }
 }
 
-void NotificationsList::OnClose(wxCloseEvent& event) {}
+void NotificationsList::OnAckAllButton(wxCommandEvent& event) {
+  NotificationManager& noteman = NotificationManager::GetInstance();
+  noteman.AcknowledgeAllNotifications();
+}
+
+void NotificationsList::OnClose(wxCloseEvent& event) { Hide(); }
 
 /*
  * Notification Button Widget
@@ -625,8 +613,8 @@ void NotificationButton::CreateBmp(bool newColorScheme) {
   int swidth = wxMax(twidth, theight);
   int sheight = wxMin(twidth, theight);
 
-  swidth = swidth * 35 / 50;
-  sheight = sheight * 35 / 50;
+  swidth = swidth * 45 / 50;
+  sheight = sheight * 45 / 50;
 
   offset.x = ((m_StatBmp.GetWidth() - swidth) / 2);
   offset.y = ((m_StatBmp.GetHeight() - sheight) / 2);

@@ -189,3 +189,14 @@ bool NotificationManager::AcknowledgeNotification(const std::string& GUID) {
 
   return rv;
 }
+
+bool NotificationManager::AcknowledgeAllNotifications() {
+  bool rv = false;
+
+  while (active_notifications.size()) {
+    AcknowledgeNotification(active_notifications[0]->GetGuid());
+    rv = true;
+  }
+
+  return rv;
+}

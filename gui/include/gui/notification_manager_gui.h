@@ -83,10 +83,12 @@ public:
 
   void OnClose(wxCloseEvent &event);
   void ReloadNotificationList();
+  void OnAckAllButton(wxCommandEvent &event);
 
 private:
   wxScrolledWindow *m_sWindow;
   NotificationListPanel *m_notifications_list_panel;
+  wxButton *m_ackall_button;
   DECLARE_EVENT_TABLE()
 };
 
