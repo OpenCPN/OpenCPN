@@ -496,6 +496,7 @@ public:
    * is needed
    */
   virtual int Init(const wxString &full_path, int init_flags);
+
   /**
    * Sets the color scheme for chart display.
    *
@@ -674,6 +675,7 @@ public:
    * @see GetCOVRTablePoints, GetCOVRTableHead
    */
   virtual int GetCOVREntries() { return 0; }
+
   /**
    * Returns the number of points in a specific coverage table entry.
    *
@@ -690,6 +692,7 @@ public:
    * @see GetCOVREntries, GetCOVRTableHead
    */
   virtual int GetCOVRTablePoints(int iTable) { return 0; }
+
   /**
    * Alternative method to get the number of points in a coverage table entry.
    *
@@ -704,6 +707,7 @@ public:
    * @see GetCOVRTablePoints
    */
   virtual int GetCOVRTablenPoints(int iTable) { return 0; }
+
   /**
    * Returns a pointer to the coverage table data for a specific entry.
    *
@@ -790,6 +794,7 @@ public:
    * @note This value affects how OpenCPN treats the chart in various operations
    */
   virtual ChartTypeEnumPI GetChartType() { return m_ChartType; }
+
   /**
    * Returns the chart family classification.
    *
@@ -804,6 +809,7 @@ public:
    *         - CHART_FAMILY_DONTCARE: Chart family not relevant
    */
   virtual ChartFamilyEnumPI GetChartFamily() { return m_ChartFamily; }
+
   /**
    * Returns the projection type used by the chart.
    *
@@ -824,6 +830,7 @@ public:
    * projection
    */
   virtual OcpnProjTypePI GetChartProjection() { return m_projection; }
+
   /**
    * Returns the chart's name or title.
    *
@@ -837,6 +844,7 @@ public:
    * @note The name should not normally include the file extension
    */
   virtual wxString GetName() { return m_Name; }
+
   /**
    * Returns a descriptive text about the chart.
    *
@@ -848,6 +856,7 @@ public:
    * @note Can include information like area coverage, source, etc.
    */
   virtual wxString GetDescription() { return m_Description; }
+
   /**
    * Returns a unique identifier for the chart.
    *
@@ -860,6 +869,7 @@ public:
    * @note For standard chart types, use the official chart number/ID
    */
   virtual wxString GetID() { return m_ID; }
+
   /**
    * Returns the chart's source edition identifier.
    *
@@ -874,6 +884,7 @@ public:
    * @note For derived charts, this can indicate the source data
    */
   virtual wxString GetSE() { return m_SE; }
+
   /**
    * Returns the depth units used in the chart.
    *
@@ -890,6 +901,7 @@ public:
    * @note Should be properly capitalized for display purposes
    */
   virtual wxString GetDepthUnits() { return m_DepthUnits; }
+
   /**
    * Returns the vertical datum used for soundings in the chart.
    *
@@ -907,6 +919,7 @@ public:
    * @note Critical for tide calculations and safe navigation
    */
   virtual wxString GetSoundingsDatum() { return m_SoundingsDatum; }
+
   /**
    * Returns the horizontal geodetic datum of the chart.
    *
@@ -923,6 +936,7 @@ public:
    * @note OpenCPN applies datum shifts if necessary
    */
   virtual wxString GetDatumString() { return m_datum_str; }
+
   /**
    * Returns additional information about the chart.
    *
@@ -937,6 +951,7 @@ public:
    * @note Can include information about updates or modifications
    */
   virtual wxString GetExtraInfo() { return m_ExtraInfo; }
+
   /**
    * Returns the publication date/year of the chart.
    *
@@ -950,6 +965,7 @@ public:
    * @note Used for chart information display, not for update checking
    */
   virtual wxString GetPubDate() { return m_PubYear; }
+
   /**
    * Returns the error factor for the chart.
    *
@@ -964,6 +980,7 @@ public:
    * @note Typically based on source data quality and survey methods
    */
   virtual double GetChartErrorFactor() { return m_Chart_Error_Factor; }
+
   /**
    * Returns the depth unit type identifier.
    *
@@ -980,6 +997,7 @@ public:
    * @note Used for internal unit conversion and display settings
    */
   virtual ChartDepthUnitTypePI GetDepthUnitId() { return m_depth_unit_id; }
+
   /**
    * Indicates whether the chart is ready for rendering.
    *
@@ -995,6 +1013,7 @@ public:
    * @note OpenCPN may delay display until this returns True
    */
   virtual bool IsReadyToRender() { return m_bReadyToRender; }
+
   /**
    * Returns the native scale of the chart.
    *
@@ -1008,6 +1027,7 @@ public:
    * @note Lower values (larger fractions) represent more detailed charts
    */
   virtual int GetNativeScale() { return m_Chart_Scale; };
+
   /**
    * Returns the skew/rotation angle of the chart.
    *
@@ -1021,6 +1041,7 @@ public:
    * @note Affects all coordinate transformations and display orientation
    */
   virtual double GetChartSkew() { return m_Chart_Skew; }
+
   /**
    * Returns the edition date of the chart.
    *
@@ -1073,6 +1094,7 @@ public:
    * @note Used primarily by raster chart (CHART_FAMILY_RASTER) plugins
    */
   virtual double GetRasterScaleFactor();
+
   /**
    * Gets pixel data for a portion of a raster chart.
    *
@@ -1094,6 +1116,7 @@ public:
    * @note Buffer format depends on the chart's native pixel format
    */
   virtual bool GetChartBits(wxRect &source, unsigned char *pPix, int sub_samp);
+
   /**
    * Gets the width of the chart in pixels.
    *
@@ -1106,6 +1129,7 @@ public:
    * @note For vector charts, this may be a nominal value
    */
   virtual int GetSize_X();
+
   /**
    * Gets the height of the chart in pixels.
    *
@@ -1118,6 +1142,7 @@ public:
    * @note For vector charts, this may be a nominal value
    */
   virtual int GetSize_Y();
+
   /**
    * Converts geographic coordinates to chart pixel coordinates.
    *
@@ -1134,6 +1159,7 @@ public:
    */
   virtual void latlong_to_chartpix(double lat, double lon, double &pixx,
                                    double &pixy);
+
   /**
    * Converts chart pixel coordinates to geographic coordinates.
    *
@@ -1220,11 +1246,13 @@ public:
    *   - etc. (see enum definitions)
    */
   virtual int Init(void);
+
   /**
    * Clean up plugin resources.
    *
-   * This required method is called by OpenCPN during plugin unloading or
-   * program shutdown. It should release any resources allocated by the plugin.
+   * Called by OpenCPN when plugin is disabled.
+   * Shall release any resources allocated by the plugin.
+   * Good place to persist plugin configuration.
    *
    * @return True if cleanup successful, False if error
    */
@@ -1243,6 +1271,7 @@ public:
    * @note Current API major version is defined by API_VERSION_MAJOR
    */
   virtual int GetAPIVersionMajor();
+
   /**
    * Returns the minor version number of the plugin API that this plugin
    * supports.
@@ -1256,6 +1285,7 @@ public:
    * @note Current API minor version is defined by API_VERSION_MINOR
    */
   virtual int GetAPIVersionMinor();
+
   /**
    * Returns the major version number of the plugin itself.
    *
@@ -1268,6 +1298,7 @@ public:
    * @note Major version changes indicate incompatible API changes
    */
   virtual int GetPlugInVersionMajor();
+
   /**
    * Returns the minor version number of the plugin itself.
    *
@@ -1280,6 +1311,7 @@ public:
    * @note Minor version changes indicate backward-compatible feature additions
    */
   virtual int GetPlugInVersionMinor();
+
   /**
    * Get the plugin's icon bitmap.
    *
@@ -1310,6 +1342,7 @@ public:
    * @note Used by the plugin manager GUI
    */
   virtual wxString GetCommonName();
+
   /**
    * Get a brief description of the plugin.
    *
@@ -1322,6 +1355,7 @@ public:
    * @note Used in plugin manager list view
    */
   virtual wxString GetShortDescription();
+
   /**
    * Get detailed plugin information.
    *
@@ -1367,6 +1401,7 @@ public:
    * @note Called during plugin initialization
    */
   virtual int GetToolbarToolCount(void);
+
   /**
    * Returns the number of preference pages this plugin provides.
    *
@@ -1380,6 +1415,7 @@ public:
    * @note Called during preferences dialog creation
    */
   virtual int GetToolboxPanelCount(void);
+
   /**
    * Creates a plugin preferences page.
    *
@@ -1389,11 +1425,13 @@ public:
    * @param page_sel Index of page to create (0 to GetToolboxPanelCount()-1)
    * @param pnotebook Parent notebook to add page to
    *
+   * @Deprecated  Does not invoke any action, will be removed.
    * @note Called once for each page index
    * @note Use standard wxWidgets controls for consistent look
    * @note Parent notebook uses wxAUI manager
    */
   virtual void SetupToolboxPanel(int page_sel, wxNotebook *pnotebook);
+
   /**
    * Handles preference page closure.
    *
@@ -1405,11 +1443,12 @@ public:
    *        - 0 = OK (apply changes)
    *        - 1 = APPLY (apply but don't close)
    *        - 2 = CANCEL (discard changes)
-   *
+   * @Deprecated  Does not invoke any action, will be removed.
    * @note Only called if plugin implements SetupToolboxPanel()
    * @note Good place to save settings to config
    */
   virtual void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
+
   /**
    * Shows the plugin preferences dialog.
    *
@@ -1451,6 +1490,7 @@ public:
    * @note Companion to RenderGLOverlay() for OpenGL-specific rendering
    */
   virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+
   /**
    * Receives cursor lat/lon position updates.
    *
@@ -1463,6 +1503,7 @@ public:
    * @note High frequency updates - keep processing quick
    * @note Only called when cursor over chart window
    */
+
   virtual void SetCursorLatLon(double lat, double lon);
   /**
    * Notifies plugin of viewport changes.
@@ -1502,6 +1543,7 @@ public:
    * @note Only called if plugin declares WANTS_NMEA_EVENTS capability
    * @note For extended data including heading, use SetPositionFixEx()
    */
+
   virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
   /**
    * Receive all NMEA 0183 sentences from OpenCPN.
@@ -1516,6 +1558,7 @@ public:
    * href="https://opencpn-manuals.github.io/main/opencpn-dev/plugin-messaging.html">Plugin
    * Message API Documentation</a> \endhtmlonly
    */
+
   virtual void SetNMEASentence(wxString &sentence);
   /**
    * Receive all AIS sentences from OpenCPN.
@@ -1545,6 +1588,7 @@ public:
    * @param y New window height in pixels
    */
   virtual void ProcessParentResize(int x, int y);
+
   /**
    * Updates plugin color scheme.
    *
@@ -1567,6 +1611,7 @@ public:
    * @param id The tool ID assigned when tool was added via InsertPlugInTool()
    */
   virtual void OnToolbarToolCallback(int id);
+
   /**
    * Handles context menu item selection.
    *
@@ -1576,6 +1621,7 @@ public:
    * @param id The menu item ID assigned when item was added
    */
   virtual void OnContextMenuItemCallback(int id);
+
   /**
    * Updates AUI manager status.
    *
@@ -1633,6 +1679,7 @@ public:
    * @note For API v1.18+, use RenderOverlayMultiCanvas() to specify priority
    */
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+
   /**
    * Receives plugin-to-plugin messages.
    *
@@ -1694,6 +1741,7 @@ public:
    */
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+
   /**
    * Updates plugin with extended position fix data.
    *
@@ -1725,6 +1773,7 @@ public:
    *
    * Called when OpenCPN preferences dialog is opened. Plugin can add its own
    * option panels to the preferences dialog.
+   *
    */
   virtual void OnSetupOptions(void);
 };
@@ -1758,6 +1807,7 @@ public:
    * @return True if event was handled, false to pass to OpenCPN
    */
   virtual bool MouseEventHook(wxMouseEvent &event);
+
   /**
    * Receives vector chart object information.
    *
@@ -1793,6 +1843,7 @@ public:
    * @return True if event was handled, false to pass to OpenCPN
    */
   virtual bool KeyboardEventHook(wxKeyEvent &event);
+
   /**
    * Handles toolbar button press.
    *
@@ -1801,6 +1852,7 @@ public:
    * @param id The tool ID assigned when tool was added
    */
   virtual void OnToolbarToolDownCallback(int id);
+
   /**
    * Handles toolbar button release.
    *
@@ -1841,6 +1893,7 @@ public:
    */
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex);
+
   /**
    * Renders plugin overlay graphics with canvas selection.
    *
@@ -1946,14 +1999,13 @@ public:
   opencpn_plugin_119(void *pmgr);
 
   /**
-   * Called just before OpenCPN begins shutdown sequence.
+   * Called just before OpenCPN exits.
    *
-   * Provides plugins an opportunity to perform cleanup and save state before
-   * OpenCPN shutdown completes. This hook is called early in the shutdown
-   * process, before core subsystems are terminated.
+   * Provides an opportunity to perform cleanup and save state before
+   * OpenCPN shutdown completes. Called early in the shutdown process before
+   * DeInit() and before core subsystems are terminated. Rarely needed.
    *
    * Typical uses include:
-   * - Saving plugin configuration/state
    * - Closing network connections
    * - Releasing system resources
    * - Stopping background threads
@@ -2016,6 +2068,7 @@ public:
    * Default constructor - creates waypoint at 0,0
    */
   PlugIn_Waypoint();
+
   /**
    * Creates a waypoint at specified position with icon and name.
    *
@@ -2139,6 +2192,7 @@ extern "C" DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap,
  * @param tool_id Tool ID returned by InsertPlugInTool()
  */
 extern "C" DECL_EXP void RemovePlugInTool(int tool_id);
+
 /**
  * Temporarily changes toolbar tool visibility.
  *
@@ -2148,6 +2202,7 @@ extern "C" DECL_EXP void RemovePlugInTool(int tool_id);
  * @param viz True to show tool, false to hide
  */
 extern "C" DECL_EXP void SetToolbarToolViz(int item, bool viz);
+
 /**
  * Sets toolbar item toggle state.
  *
@@ -2157,6 +2212,7 @@ extern "C" DECL_EXP void SetToolbarToolViz(int item, bool viz);
  * @param toggle True for pressed state, false for unpressed
  */
 extern "C" DECL_EXP void SetToolbarItemState(int item, bool toggle);
+
 /**
  * Updates toolbar tool bitmaps.
  *
@@ -2191,6 +2247,7 @@ extern "C" DECL_EXP int InsertPlugInToolSVG(
     wxString SVGfileToggled, wxItemKind kind, wxString shortHelp,
     wxString longHelp, wxObject *clientData, int position, int tool_sel,
     opencpn_plugin *pplugin);
+
 /**
  * Updates SVG graphics for toolbar tool.
  *
@@ -2223,6 +2280,7 @@ extern "C" DECL_EXP int AddCanvasContextMenuItem(wxMenuItem *pitem,
  * @param item Menu item ID returned from AddCanvasContextMenuItem()
  */
 extern "C" DECL_EXP void RemoveCanvasContextMenuItem(int item);
+
 /**
  * Temporarily changes context menu item visibility.
  *
@@ -2232,6 +2290,7 @@ extern "C" DECL_EXP void RemoveCanvasContextMenuItem(int item);
  * @param viz True to show item, false to hide
  */
 extern "C" DECL_EXP void SetCanvasContextMenuItemViz(int item, bool viz);
+
 /**
  * Sets menu item enabled/disabled state.
  *
@@ -2261,6 +2320,7 @@ extern "C" DECL_EXP wxFileConfig *GetOCPNConfigObject(void);
  * @param window Window to refresh
  */
 extern "C" DECL_EXP void RequestRefresh(wxWindow *);
+
 /**
  * Gets a global color value.
  *
@@ -2361,6 +2421,7 @@ extern "C" DECL_EXP wxFont *OCPNGetFont(wxString TextElement,
  * @note Path includes trailing separator
  */
 extern "C" DECL_EXP wxString *GetpSharedDataLocation();
+
 /**
  * Gets array of AIS targets.
  *
@@ -2370,6 +2431,7 @@ extern "C" DECL_EXP wxString *GetpSharedDataLocation();
  * @note Array contents owned by core - do not delete targets
  */
 extern "C" DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
+
 /**
  * Gets main frame AUI manager.
  *
@@ -2380,6 +2442,7 @@ extern "C" DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
  * @note Only available if plugin declares USES_AUI_MANAGER capability
  */
 extern "C" DECL_EXP wxAuiManager *GetFrameAuiManager(void);
+
 /**
  * Adds a locale catalog for translations.
  *
@@ -2479,6 +2542,7 @@ extern "C" DECL_EXP void PositionBearingDistanceMercator_Plugin(
     double lat, double lon, double brg, double dist, double *dlat,
     double *dlon);
 /**
+
  * Calculates bearing and distance between two points.
  * Uses Mercator projection math.
  *
@@ -2492,6 +2556,7 @@ extern "C" DECL_EXP void PositionBearingDistanceMercator_Plugin(
 extern "C" DECL_EXP void DistanceBearingMercator_Plugin(
     double lat0, double lon0, double lat1, double lon1, double *brg,
     double *dist);
+
 /**
  * Calculates great circle distance between two points.
  *
@@ -2515,6 +2580,7 @@ extern "C" DECL_EXP double DistGreatCircle_Plugin(double slat, double slon,
  */
 extern "C" DECL_EXP void toTM_Plugin(float lat, float lon, float lat0,
                                      float lon0, double *x, double *y);
+
 /**
  * Converts Transverse Mercator coordinates to geographic.
  *
@@ -2527,6 +2593,7 @@ extern "C" DECL_EXP void toTM_Plugin(float lat, float lon, float lat0,
  */
 extern "C" DECL_EXP void fromTM_Plugin(double x, double y, double lat0,
                                        double lon0, double *lat, double *lon);
+
 /**
  * Converts geographic coordinates to Simple Mercator projection.
  *
@@ -2539,6 +2606,7 @@ extern "C" DECL_EXP void fromTM_Plugin(double x, double y, double lat0,
  */
 extern "C" DECL_EXP void toSM_Plugin(double lat, double lon, double lat0,
                                      double lon0, double *x, double *y);
+
 /**
  * Converts Simple Mercator coordinates to geographic.
  *
@@ -2551,6 +2619,7 @@ extern "C" DECL_EXP void toSM_Plugin(double lat, double lon, double lat0,
  */
 extern "C" DECL_EXP void fromSM_Plugin(double x, double y, double lat0,
                                        double lon0, double *lat, double *lon);
+
 /**
  * Converts geographic coordinates to Elliptical Simple Mercator projection.
  *
@@ -2563,6 +2632,7 @@ extern "C" DECL_EXP void fromSM_Plugin(double x, double y, double lat0,
  */
 extern "C" DECL_EXP void toSM_ECC_Plugin(double lat, double lon, double lat0,
                                          double lon0, double *x, double *y);
+
 /**
  * Converts Elliptical Simple Mercator coordinates to geographic.
  *
@@ -2576,6 +2646,7 @@ extern "C" DECL_EXP void toSM_ECC_Plugin(double lat, double lon, double lat0,
 extern "C" DECL_EXP void fromSM_ECC_Plugin(double x, double y, double lat0,
                                            double lon0, double *lat,
                                            double *lon);
+
 /**
  * Decodes a single VDO (Own Ship AIS) message.
  *
@@ -2589,11 +2660,13 @@ extern "C" DECL_EXP void fromSM_ECC_Plugin(double x, double y, double lat0,
 extern "C" DECL_EXP bool DecodeSingleVDOMessage(const wxString &str,
                                                 PlugIn_Position_Fix_Ex *pos,
                                                 wxString *acc);
+
 /**
  * Gets height of chart bar in pixels.
  *
  * @return Height of chart bar widget
  */
+
 extern "C" DECL_EXP int GetChartbarHeight(void);
 /**
  * Gets GPX representation of active route waypoint.
@@ -2675,8 +2748,10 @@ typedef enum OptionsParentPI {
  */
 extern DECL_EXP wxScrolledWindow *AddOptionsPage(OptionsParentPI parent,
                                                  wxString title);
+
 /**
- * Removes a previously added options page.
+ * Remove a previously added options page. Should be called from  plugin's
+ * DeInit() method.
  *
  * @param page Pointer to page previously returned by AddOptionsPage()
  * @return True if page was successfully removed
@@ -2699,6 +2774,7 @@ extern DECL_EXP bool DeleteOptionsPage(wxScrolledWindow *page);
  */
 extern "C" DECL_EXP double toUsrDistance_Plugin(double nm_distance,
                                                 int unit = -1);
+
 /**
  * Converts from user's preferred distance unit to nautical miles.
  *
@@ -2709,6 +2785,7 @@ extern "C" DECL_EXP double toUsrDistance_Plugin(double nm_distance,
  */
 extern "C" DECL_EXP double fromUsrDistance_Plugin(double usr_distance,
                                                   int unit = -1);
+
 /**
  * Converts knots to user's preferred speed unit.
  *
@@ -2718,6 +2795,7 @@ extern "C" DECL_EXP double fromUsrDistance_Plugin(double usr_distance,
  * @return Speed in user's preferred unit
  */
 extern "C" DECL_EXP double toUsrSpeed_Plugin(double kts_speed, int unit = -1);
+
 /**
  * Converts from user's preferred speed unit to knots.
  *
@@ -2727,6 +2805,7 @@ extern "C" DECL_EXP double toUsrSpeed_Plugin(double kts_speed, int unit = -1);
  * @return Speed in knots
  */
 extern "C" DECL_EXP double fromUsrSpeed_Plugin(double usr_speed, int unit = -1);
+
 /**
  * Converts Celsius to user's preferred temperature unit.
  *
@@ -2736,6 +2815,7 @@ extern "C" DECL_EXP double fromUsrSpeed_Plugin(double usr_speed, int unit = -1);
  * @return Temperature in user's preferred unit
  */
 extern "C" DECL_EXP double toUsrTemp_Plugin(double cel_temp, int unit = -1);
+
 /**
  * Converts from user's preferred temperature unit to Celsius.
  *
@@ -2745,6 +2825,7 @@ extern "C" DECL_EXP double toUsrTemp_Plugin(double cel_temp, int unit = -1);
  * @return Temperature in Celsius
  */
 extern "C" DECL_EXP double fromUsrTemp_Plugin(double usr_temp, int unit = -1);
+
 /**
  * Gets display string for user's preferred distance unit.
  *
@@ -2753,6 +2834,7 @@ extern "C" DECL_EXP double fromUsrTemp_Plugin(double usr_temp, int unit = -1);
  * @return Localized unit string (e.g. "nm", "km", "mi", "fathoms")
  */
 extern DECL_EXP wxString getUsrDistanceUnit_Plugin(int unit = -1);
+
 /**
  * Gets display string for user's preferred speed unit.
  *
@@ -2761,6 +2843,7 @@ extern DECL_EXP wxString getUsrDistanceUnit_Plugin(int unit = -1);
  * @return Localized unit string (e.g. "kts", "km/h", "mph", "m/s")
  */
 extern DECL_EXP wxString getUsrSpeedUnit_Plugin(int unit = -1);
+
 /**
  * Gets display string for user's preferred temperature unit.
  *
@@ -2882,6 +2965,7 @@ struct DateTimeFormatOptions {
    * "31/12/2021" in the UK locale.
    */
   wxString format_string = "$weekday_short_date_time";
+
   /**
    * The timezone to use when formatting the date/time. Supported options are:
    * - Empty string (default): the date/time is formatted according to
@@ -2898,6 +2982,7 @@ struct DateTimeFormatOptions {
    * - Valid timezone name: the date/time is formatted in that timezone.
    */
   wxString time_zone = wxEmptyString;
+
   /**
    * The longitude to use when formatting the date/time in Local Mean Time
    * (LMT). The longitude is required when the time_zone is set to "LMT".
@@ -3010,6 +3095,7 @@ extern DECL_EXP wxString toUsrDateTimeFormat_Plugin(
  * @note Thread-safe and collision resistant
  */
 extern DECL_EXP wxString GetNewGUID();
+
 /**
  * Checks if a great circle route crosses land.
  *
@@ -3043,6 +3129,7 @@ extern DECL_EXP void PlugInPlaySound(wxString &sound_file);
  * @return Pointer to wxBitmap of icon, NULL if not found
  */
 extern DECL_EXP wxBitmap *FindSystemWaypointIcon(wxString &icon_name);
+
 /**
  * Adds a custom waypoint icon.
  *
@@ -3055,6 +3142,7 @@ extern DECL_EXP wxBitmap *FindSystemWaypointIcon(wxString &icon_name);
  */
 extern DECL_EXP bool AddCustomWaypointIcon(wxBitmap *pimage, wxString key,
                                            wxString description);
+
 /**
  * Adds a single waypoint.
  *
@@ -3066,6 +3154,7 @@ extern DECL_EXP bool AddCustomWaypointIcon(wxBitmap *pimage, wxString key,
  */
 extern DECL_EXP bool AddSingleWaypoint(PlugIn_Waypoint *pwaypoint,
                                        bool b_permanent = true);
+
 /**
  * Deletes a single waypoint.
  *
@@ -3075,6 +3164,7 @@ extern DECL_EXP bool AddSingleWaypoint(PlugIn_Waypoint *pwaypoint,
  * @return True if successfully deleted
  */
 extern DECL_EXP bool DeleteSingleWaypoint(wxString &GUID);
+
 /**
  * Updates a single waypoint.
  *
@@ -3084,6 +3174,7 @@ extern DECL_EXP bool DeleteSingleWaypoint(wxString &GUID);
  * @return True if successfully updated
  */
 extern DECL_EXP bool UpdateSingleWaypoint(PlugIn_Waypoint *pwaypoint);
+
 /**
  * Adds a new route.
  *
@@ -3095,6 +3186,7 @@ extern DECL_EXP bool UpdateSingleWaypoint(PlugIn_Waypoint *pwaypoint);
  */
 extern DECL_EXP bool AddPlugInRoute(PlugIn_Route *proute,
                                     bool b_permanent = true);
+
 /**
  * Deletes a route.
  *
@@ -3104,6 +3196,7 @@ extern DECL_EXP bool AddPlugInRoute(PlugIn_Route *proute,
  * @return True if successfully deleted
  */
 extern DECL_EXP bool DeletePlugInRoute(wxString &GUID);
+
 /**
  * Updates an existing route.
  *
@@ -3126,6 +3219,7 @@ extern DECL_EXP bool UpdatePlugInRoute(PlugIn_Route *proute);
  */
 extern DECL_EXP bool AddPlugInTrack(PlugIn_Track *ptrack,
                                     bool b_permanent = true);
+
 /**
  * Deletes a track.
  *
@@ -3135,6 +3229,7 @@ extern DECL_EXP bool AddPlugInTrack(PlugIn_Track *ptrack,
  * @return True if successfully deleted
  */
 extern DECL_EXP bool DeletePlugInTrack(wxString &GUID);
+
 /**
  * Updates an existing track.
  *
@@ -3194,6 +3289,7 @@ int DECL_EXP OCPNMessageBox_PlugIn(wxWindow *parent, const wxString &message,
  */
 extern DECL_EXP wxString toSDMM_PlugIn(int NEflag, double a,
                                        bool hi_precision = true);
+
 /**
  * Gets private application data directory.
  *
@@ -3204,6 +3300,7 @@ extern DECL_EXP wxString toSDMM_PlugIn(int NEflag, double a,
  * @note Path includes trailing separator
  */
 extern "C" DECL_EXP wxString *GetpPrivateApplicationDataLocation();
+
 /**
  * Gets OpenCPN executable path.
  *
@@ -3212,6 +3309,7 @@ extern "C" DECL_EXP wxString *GetpPrivateApplicationDataLocation();
  * @return wxString containing executable path
  */
 extern DECL_EXP wxString GetOCPN_ExePath(void);
+
 /**
  * Gets plugins directory location.
  *
@@ -3221,6 +3319,7 @@ extern DECL_EXP wxString GetOCPN_ExePath(void);
  * @note Do not delete the returned pointer
  */
 extern "C" DECL_EXP wxString *GetpPlugInLocation();
+
 /**
  * Gets the installation path for a specific plugin.
  *
@@ -3249,6 +3348,7 @@ extern "C" DECL_EXP int AddChartToDBInPlace(wxString &full_path,
  * @return 0 if successful, -1 if failed
  */
 extern "C" DECL_EXP int RemoveChartFromDBInPlace(wxString &full_path);
+
 /**
  * Gets system locale canonical name.
  *
@@ -3278,14 +3378,17 @@ extern DECL_EXP wxString GetLocaleCanonicalName();
  * Enables batched line rendering using vertex buffers.
  * Optimizes performance by reducing draw calls. */
 #define PLIB_CAPS_LINE_BUFFER 1 << 1
+
 /** Support for single geometry buffers
  * Allows combining multiple geometries into a single buffer.
  * Reduces memory usage and draw calls. */
 #define PLIB_CAPS_SINGLEGEO_BUFFER 1 << 2
+
 /** Support for object segment lists
  * Enables breaking complex geometries into optimized segments.
  * Improves culling and rendering of large objects. */
 #define PLIB_CAPS_OBJSEGLIST 1 << 3
+
 /** Support for object category mutation
  * Allows dynamic changes to object display categories.
  * Required for runtime S52 display category changes. */
@@ -3350,6 +3453,7 @@ public:
   virtual ListOfPI_S57Obj *GetObjRuleListAtLatLon(float lat, float lon,
                                                   float select_radius,
                                                   PlugIn_ViewPort *VPoint);
+
   /**
    * Creates description text for chart objects.
    *
@@ -3360,12 +3464,14 @@ public:
    * @return Formatted description text
    */
   virtual wxString CreateObjDescriptions(ListOfPI_S57Obj *obj_list);
+
   /**
    * Gets number of no-coverage areas in chart.
    *
    * @return Number of no-coverage table entries (0 if none)
    */
   virtual int GetNoCOVREntries();
+
   /**
    * Gets number of points in no-coverage area boundary.
    *
@@ -3373,6 +3479,7 @@ public:
    * @return Number of points in boundary polygon
    */
   virtual int GetNoCOVRTablePoints(int iTable);
+
   /**
    * Alternative to GetNoCOVRTablePoints().
    *
@@ -3380,6 +3487,7 @@ public:
    * @return Number of points in boundary polygon
    */
   virtual int GetNoCOVRTablenPoints(int iTable);
+
   /**
    * Gets coordinate data for no-coverage area boundary.
    *
@@ -3472,6 +3580,7 @@ public:
    */
   virtual wxBitmap &RenderRegionViewOnDCNoText(const PlugIn_ViewPort &VPoint,
                                                const wxRegion &Region);
+
   /**
    * Standard DC text-only rendering.
    *
@@ -3485,6 +3594,7 @@ public:
   virtual bool RenderRegionViewOnDCTextOnly(wxMemoryDC &dc,
                                             const PlugIn_ViewPort &VPoint,
                                             const wxRegion &Region);
+
   /**
    * OpenGL rendering without text.
    *
@@ -3526,6 +3636,7 @@ public:
   virtual int GetNoCOVRTablePoints(int iTable);
   virtual int GetNoCOVRTablenPoints(int iTable);
   virtual float *GetNoCOVRTableHead(int iTable);
+
   /**
    * Clears any cached text elements.
    *
@@ -3760,6 +3871,7 @@ wxString DECL_EXP PI_GetPLIBColorScheme();
  *         2 = Fathoms
  */
 int DECL_EXP PI_GetPLIBDepthUnitInt();
+
 /**
  * Gets configured S52 symbol style.
  *
@@ -3768,6 +3880,7 @@ int DECL_EXP PI_GetPLIBDepthUnitInt();
  *         1 = Traditional paper chart symbols
  */
 int DECL_EXP PI_GetPLIBSymbolStyle();
+
 /**
  * Gets configured S52 boundary style.
  *
@@ -3776,6 +3889,7 @@ int DECL_EXP PI_GetPLIBSymbolStyle();
  *         1 = Symbolized boundaries
  */
 int DECL_EXP PI_GetPLIBBoundaryStyle();
+
 /**
  * Gets hash value representing current PLIB state.
  * Used to detect configuration changes.
@@ -3783,12 +3897,14 @@ int DECL_EXP PI_GetPLIBBoundaryStyle();
  * @return Integer hash of PLIB settings
  */
 int DECL_EXP PI_GetPLIBStateHash();
+
 /**
  * Gets configured safety contour depth.
  *
  * @return Safety contour depth in configured units
  */
 double DECL_EXP PI_GetPLIBMarinerSafetyContour();
+
 /**
  * Gets geographic bounding box of S57 object.
  *
@@ -3802,6 +3918,7 @@ double DECL_EXP PI_GetPLIBMarinerSafetyContour();
 bool DECL_EXP PI_GetObjectRenderBox(PI_S57Obj *pObj, double *lat_min,
                                     double *lat_max, double *lon_min,
                                     double *lon_max);
+
 /**
  * Updates rendering context for S57 object.
  *
@@ -3817,6 +3934,7 @@ void DECL_EXP PI_UpdateContext(PI_S57Obj *pObj);
  * @return True if object should be rendered
  */
 bool DECL_EXP PI_PLIBObjectRenderCheck(PI_S57Obj *pObj, PlugIn_ViewPort *vp);
+
 /**
  * Gets Look-Up Table (LUP) name for object.
  *
@@ -3829,6 +3947,7 @@ bool DECL_EXP PI_PLIBObjectRenderCheck(PI_S57Obj *pObj, PlugIn_ViewPort *vp);
  * @return LUP name enum value
  */
 PI_LUPname DECL_EXP PI_GetObjectLUPName(PI_S57Obj *pObj);
+
 /**
  * Gets display priority for object.
  *
@@ -3836,6 +3955,7 @@ PI_LUPname DECL_EXP PI_GetObjectLUPName(PI_S57Obj *pObj);
  * @return Display priority enum value
  */
 PI_DisPrio DECL_EXP PI_GetObjectDisplayPriority(PI_S57Obj *pObj);
+
 /**
  * Gets display category for object.
  *
@@ -3843,6 +3963,7 @@ PI_DisPrio DECL_EXP PI_GetObjectDisplayPriority(PI_S57Obj *pObj);
  * @return Display category enum value
  */
 PI_DisCat DECL_EXP PI_GetObjectDisplayCategory(PI_S57Obj *pObj);
+
 /**
  * Sets rendering priority for line feature.
  *
@@ -3850,17 +3971,20 @@ PI_DisCat DECL_EXP PI_GetObjectDisplayCategory(PI_S57Obj *pObj);
  * @param prio New priority value
  */
 void DECL_EXP PI_PLIBSetLineFeaturePriority(PI_S57Obj *pObj, int prio);
+
 /**
  * Prepares PLIB for new rendering pass.
  * Clears internal caches and states.
  */
 void DECL_EXP PI_PLIBPrepareForNewRender(void);
+
 /**
  * Frees S52 PLIB context.
  *
  * @param pContext Context pointer to free
  */
 void DECL_EXP PI_PLIBFreeContext(void *pContext);
+
 /**
  * Sets rendering capability flags.
  *
@@ -3871,6 +3995,7 @@ void DECL_EXP PI_PLIBFreeContext(void *pContext);
  *        etc.
  */
 void DECL_EXP PI_PLIBSetRenderCaps(unsigned int flags);
+
 /**
  * Sets S52 PLIB rendering context for an object.
  *
@@ -3898,6 +4023,7 @@ bool DECL_EXP PI_PLIBSetContext(PI_S57Obj *pObj);
  */
 int DECL_EXP PI_PLIBRenderObjectToDC(wxDC *pdc, PI_S57Obj *pObj,
                                      PlugIn_ViewPort *vp);
+
 /**
  * Renders an S57 area object using standard device context.
  *
@@ -3990,6 +4116,7 @@ int DECL_EXP PI_PLIBRenderObjectToGL(const wxGLContext &glcc, PI_S57Obj *pObj,
  * @return True if viewport is normalized, false if not
  */
 extern DECL_EXP bool PlugInHasNormalizedViewPort(PlugIn_ViewPort *vp);
+
 /**
  * Applies viewport transformation matrix.
  *
@@ -4006,6 +4133,7 @@ extern DECL_EXP bool PlugInHasNormalizedViewPort(PlugIn_ViewPort *vp);
  */
 extern DECL_EXP void PlugInMultMatrixViewport(PlugIn_ViewPort *vp,
                                               float lat = 0, float lon = 0);
+
 /**
  * Normalizes viewport parameters.
  *
@@ -4024,6 +4152,7 @@ extern DECL_EXP void PlugInNormalizeViewport(PlugIn_ViewPort *vp, float lat = 0,
                                              float lon = 0);
 
 class wxPoint2DDouble;
+
 /**
  * Converts lat/lon to canvas pixels with double precision.
  *
@@ -4052,6 +4181,7 @@ extern "C" DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp,
  * @return Position in decimal degrees, or 0.0 if invalid format
  */
 extern DECL_EXP double fromDMM_Plugin(wxString sdms);
+
 /**
  * Sets chart display rotation angle.
  *
@@ -4063,6 +4193,7 @@ extern DECL_EXP double fromDMM_Plugin(wxString sdms);
  *                 etc.
  */
 extern DECL_EXP void SetCanvasRotation(double rotation);
+
 /**
  * Sets chart projection type.
  *
@@ -4075,6 +4206,7 @@ extern DECL_EXP void SetCanvasRotation(double rotation);
  *                   etc.
  */
 extern DECL_EXP void SetCanvasProjection(int projection);
+
 /**
  * Gets waypoint data by GUID.
  *
@@ -4086,6 +4218,7 @@ extern DECL_EXP void SetCanvasProjection(int projection);
  */
 extern DECL_EXP bool GetSingleWaypoint(wxString GUID,
                                        PlugIn_Waypoint *pwaypoint);
+
 /**
  * Checks if chart should pan when cursor near edge.
  *
@@ -4100,6 +4233,7 @@ extern DECL_EXP bool GetSingleWaypoint(wxString GUID,
  */
 extern DECL_EXP bool CheckEdgePan_PlugIn(int x, int y, bool dragging,
                                          int margin, int delta);
+
 /**
  * Gets icon bitmap by name.
  *
@@ -4109,6 +4243,7 @@ extern DECL_EXP bool CheckEdgePan_PlugIn(int x, int y, bool dragging,
  * @return Bitmap containing the icon
  */
 extern DECL_EXP wxBitmap GetIcon_PlugIn(const wxString &name);
+
 /**
  * Sets mouse cursor.
  *
@@ -4117,6 +4252,7 @@ extern DECL_EXP wxBitmap GetIcon_PlugIn(const wxString &name);
  * @param pPlugin_Cursor Pointer to cursor to use, NULL for default
  */
 extern DECL_EXP void SetCursor_PlugIn(wxCursor *pPlugin_Cursor = NULL);
+
 /**
  * Retrieves a platform-normalized font scaled for consistent physical size.
  *
@@ -4154,6 +4290,7 @@ extern DECL_EXP void SetCursor_PlugIn(wxCursor *pPlugin_Cursor = NULL);
  */
 extern DECL_EXP wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement,
                                                  int default_size = 0);
+
 /**
  * Gets a uniquely scaled font copy for responsive UI elements.
  *
@@ -4168,6 +4305,7 @@ extern DECL_EXP wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement,
  * @see GetOCPNScaledFont_PlugIn()
  */
 extern DECL_EXP wxFont GetOCPNGUIScaledFont_PlugIn(wxString item);
+
 /**
  * Gets GUI scaling factor for a specific scaling level.
  *
@@ -4184,6 +4322,7 @@ extern DECL_EXP wxFont GetOCPNGUIScaledFont_PlugIn(wxString item);
  * @note Takes system DPI into account
  */
 extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaledFactor);
+
 /**
  * Gets current global GUI scaling factor.
  *
@@ -4199,6 +4338,7 @@ extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaledFactor);
  * @note Takes system DPI into account
  */
 extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn();
+
 /**
  * Gets chart rendering scale factor.
  *
@@ -4214,6 +4354,7 @@ extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn();
  * @note Affects chart text, symbols and features
  */
 extern DECL_EXP float GetOCPNChartScaleFactor_Plugin();
+
 /**
  * Gets color configured for a UI text element.
  *
@@ -4234,6 +4375,7 @@ extern DECL_EXP wxColour GetFontColour_PlugIn(wxString TextElement);
  *         90 = Horizontal view
  */
 extern DECL_EXP double GetCanvasTilt();
+
 /**
  * Gets current canvas tilt angle.
  *
@@ -4253,6 +4395,7 @@ extern DECL_EXP void SetCanvasTilt(double tilt);
  */
 extern DECL_EXP bool PlugInPlaySoundEx(wxString &sound_file,
                                        int deviceIndex = -1);
+
 /**
  * Adds a chart directory to OpenCPN's chart database.
  *
@@ -4266,6 +4409,7 @@ extern DECL_EXP bool PlugInPlaySoundEx(wxString &sound_file,
  * @note Path should use platform-appropriate separators
  */
 extern DECL_EXP void AddChartDirectory(wxString &path);
+
 /**
  * Forces an update of the chart database.
  *
@@ -4277,6 +4421,7 @@ extern DECL_EXP void AddChartDirectory(wxString &path);
  * @note May take several seconds for large chart sets
  */
 extern DECL_EXP void ForceChartDBUpdate();
+
 /**
  * Forces complete rebuild of chart database.
  *
@@ -4296,12 +4441,14 @@ extern DECL_EXP void ForceChartDBRebuild();
  * @return Path to writeable documents directory
  */
 extern DECL_EXP wxString GetWritableDocumentsDir(void);
+
 /**
  * Gets pointer to active options dialog.
  *
  * @return Pointer to active wxDialog, NULL if no dialog shown
  */
 extern DECL_EXP wxDialog *GetActiveOptionsDialog();
+
 /**
  * Gets array of all waypoint/marks GUIDs.
  *
@@ -4313,6 +4460,7 @@ extern DECL_EXP wxDialog *GetActiveOptionsDialog();
  * @see GetSingleWaypointEx()
  */
 extern DECL_EXP wxArrayString GetWaypointGUIDArray(void);
+
 /**
  * Gets array of available waypoint icons.
  *
@@ -4331,6 +4479,7 @@ extern DECL_EXP wxArrayString GetIconNameArray(void);
  * @see OCPNGetFont()
  */
 extern DECL_EXP bool AddPersistentFontKey(wxString TextElement);
+
 /**
  * Gets name of currently active style sheet.
  *
@@ -4362,6 +4511,7 @@ extern DECL_EXP wxString GetActiveStyleName();
 extern DECL_EXP wxBitmap GetBitmapFromSVGFile(wxString filename,
                                               unsigned int width,
                                               unsigned int height);
+
 /**
  * Checks if touch interface mode is enabled.
  *
@@ -4398,6 +4548,7 @@ extern DECL_EXP bool IsTouchInterface_PlugIn(void);
 extern DECL_EXP int PlatformDirSelectorDialog(wxWindow *parent,
                                               wxString *file_spec,
                                               wxString Title, wxString initDir);
+
 /**
  * Shows platform-optimized file selector dialog.
  *
@@ -4596,7 +4747,6 @@ extern DECL_EXP bool OCPN_isOnline();
  * A PlugIn may safely destroy its EvtHandler after receipt of an
  * OCPN_downloadEvent with getDLEventCondition == OCPN_DL_EVENT_TYPE_END
  */
-
 class DECL_EXP OCPN_downloadEvent : public wxEvent {
 public:
   OCPN_downloadEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
@@ -4662,6 +4812,7 @@ extern DECL_EXP bool LaunchDefaultBrowser_Plugin(wxString url);
  */
 extern DECL_EXP void PlugInAISDrawGL(wxGLCanvas *glcanvas,
                                      const PlugIn_ViewPort &vp);
+
 /**
  * Sets text color for a UI element.
  *
@@ -4728,6 +4879,7 @@ extern DECL_EXP wxFont *FindOrCreateFont_PlugIn(
  * @note Quality selection affects chart drawing performance
  */
 extern DECL_EXP int PlugInGetMinAvailableGshhgQuality();
+
 /**
  * Gets maximum available GSHHS coastline data quality.
  *
@@ -4807,6 +4959,7 @@ extern DECL_EXP bool ShuttingDown(void);
  * @see GetCanvasByIndex() To get canvas by index number
  */
 extern DECL_EXP wxWindow *PluginGetFocusCanvas();
+
 /**
  * Gets the canvas currently designated for overlay rendering.
  *
@@ -4850,6 +5003,7 @@ extern "C" DECL_EXP int AddCanvasMenuItem(wxMenuItem *pitem,
  * @param name Optional canvas name for multi-canvas configs (empty for default)
  */
 extern "C" DECL_EXP void RemoveCanvasMenuItem(int item, const char *name = "");
+
 /**
  * Temporarily changes context menu item visibility.
  *
@@ -4861,6 +5015,7 @@ extern "C" DECL_EXP void RemoveCanvasMenuItem(int item, const char *name = "");
  */
 extern "C" DECL_EXP void SetCanvasMenuItemViz(int item, bool viz,
                                               const char *name = "");
+
 /**
  * Sets menu item enabled/disabled state.
  *
@@ -4880,12 +5035,14 @@ extern "C" DECL_EXP void SetCanvasMenuItemGrey(int item, bool grey,
  * @return GUID string, empty if no waypoint selected
  */
 extern DECL_EXP wxString GetSelectedWaypointGUID_Plugin();
+
 /**
  * Gets GUID of currently selected route.
  *
  * @return GUID string, empty if no route selected
  */
 extern DECL_EXP wxString GetSelectedRouteGUID_Plugin();
+
 /**
  * Gets GUID of currently selected track.
  *
@@ -4901,6 +5058,7 @@ extern DECL_EXP wxString GetSelectedTrackGUID_Plugin();
  */
 extern DECL_EXP std::unique_ptr<PlugIn_Waypoint> GetWaypoint_Plugin(
     const wxString &);
+
 /**
  * Gets route details by GUID.
  *
@@ -4908,6 +5066,7 @@ extern DECL_EXP std::unique_ptr<PlugIn_Waypoint> GetWaypoint_Plugin(
  * @return Unique pointer to route data, NULL if not found
  */
 extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin(const wxString &);
+
 /**
  * Gets track details by GUID.
  *
@@ -4915,12 +5074,14 @@ extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin(const wxString &);
  * @return Unique pointer to track data, NULL if not found
  */
 extern DECL_EXP std::unique_ptr<PlugIn_Track> GetTrack_Plugin(const wxString &);
+
 /**
  * Gets canvas window under mouse cursor.
  *
  * @return Pointer to canvas window, NULL if mouse not over any canvas
  */
 extern DECL_EXP wxWindow *GetCanvasUnderMouse();
+
 /**
  * Gets index of chart canvas under mouse cursor.
  *
@@ -4935,6 +5096,7 @@ extern DECL_EXP wxWindow *GetCanvasUnderMouse();
  * @see GetCanvasCount() To get total number of canvases
  */
 extern DECL_EXP int GetCanvasIndexUnderMouse();
+
 // extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();
 /**
  * Gets chart canvas window by index.
@@ -4949,6 +5111,7 @@ extern DECL_EXP int GetCanvasIndexUnderMouse();
  * @note Valid indices are 0 to GetCanvasCount()-1
  */
 extern DECL_EXP wxWindow *GetCanvasByIndex(int canvasIndex);
+
 /**
  * Gets total number of chart canvases.
  *
@@ -4960,6 +5123,7 @@ extern DECL_EXP wxWindow *GetCanvasByIndex(int canvasIndex);
  * @note Maximum depends on available screen space
  */
 extern DECL_EXP int GetCanvasCount();
+
 /**
  * Checks if chart should pan when cursor near edge.
  *
@@ -4977,6 +5141,7 @@ extern DECL_EXP int GetCanvasCount();
 extern DECL_EXP bool CheckMUIEdgePan_PlugIn(int x, int y, bool dragging,
                                             int margin, int delta,
                                             int canvasIndex);
+
 /**
  * Sets mouse cursor for specific canvas.
  *
@@ -5075,6 +5240,7 @@ public:
                      const int nRanges = 0, const double RangeDistance = 1.0,
                      const wxColor RangeColor = wxColor(255, 0, 0));
   ~PlugIn_Waypoint_Ex();
+
   /**
    * Initializes waypoint properties to default values.
    *
@@ -5191,6 +5357,7 @@ public:
  * @return Array of route GUID strings
  */
 extern DECL_EXP wxArrayString GetRouteGUIDArray(void);
+
 /**
  * Gets array of track GUIDs.
  *
@@ -5223,6 +5390,7 @@ extern DECL_EXP bool GetSingleWaypointEx(wxString GUID,
  */
 extern DECL_EXP bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint,
                                          bool b_permanent = true);
+
 /**
  * Updates an existing extended waypoint.
  *
@@ -5282,6 +5450,7 @@ extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(
  * @return GUID string, empty if no active waypoint
  */
 extern DECL_EXP wxString GetActiveWaypointGUID(void);
+
 /**
  * Gets GUID of currently active route.
  *
@@ -5331,6 +5500,7 @@ extern DECL_EXP double OCPN_GetWinDIPScaleFactor();
  * @return Vector of priority map names
  */
 extern DECL_EXP std::vector<std::string> GetPriorityMaps();
+
 /**
  * Gets list of active priority identifiers.
  *
@@ -5379,6 +5549,7 @@ typedef enum _OBJECT_LAYER_REQ {
  * @note Routes may exist independently or as part of one or more layers
  */
 extern DECL_EXP wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req);
+
 /**
  * Gets array of track GUIDs with layer filtering.
  *
@@ -5395,6 +5566,7 @@ extern DECL_EXP wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req);
  * @note Layer membership affects track visibility and management
  */
 extern DECL_EXP wxArrayString GetTrackGUIDArray(OBJECT_LAYER_REQ req);
+
 /**
  * Gets array of waypoint/track GUIDs with layer filtering.
  *
@@ -5455,6 +5627,7 @@ public:
   ObservedEvt(const ObservedEvt &event) : wxCommandEvent(event) {
     this->m_shared_ptr = event.m_shared_ptr;
   }
+
   /**
    * Creates a cloned copy of this event.
    *
@@ -5463,12 +5636,14 @@ public:
    * @return Pointer to new copy of this event
    */
   wxEvent *Clone() const { return new ObservedEvt(*this); }
+
   /**
    * Gets the event's payload data.
    *
    * @return Shared pointer to the payload data
    */
   std::shared_ptr<const void> GetSharedPtr() const { return m_shared_ptr; }
+
   /**
    * Sets the event's payload data.
    *
@@ -5868,30 +6043,35 @@ extern DECL_EXP void ExitOCPN();
  */
 extern "C" DECL_EXP void RequestWindowRefresh(wxWindow *win,
                                               bool eraseBackground);
+
 /**
  * Gets full screen state.
  *
  * @return True if application is in full screen mode
  */
 extern DECL_EXP bool GetFullScreen();
+
 /**
  * Sets full screen mode.
  *
  * @param full_screen_on True to enable full screen mode, false for windowed
  */
 extern DECL_EXP void SetFullScreen(bool full_screen_on);
+
 /**
  * Enables/disables touch interface mode.
  *
  * @param enable True to enable touch optimized interface
  */
 extern DECL_EXP void EnableTouchMode(bool enable);
+
 /**
  * Gets touch interface mode state.
  *
  * @return True if touch interface is enabled
  */
 extern DECL_EXP bool GetTouchMode();
+
 /**
  * Sets a color in the global color scheme.
  *
@@ -5901,6 +6081,7 @@ extern DECL_EXP bool GetTouchMode();
  */
 extern DECL_EXP void SetGlobalColor(std::string table, std::string name,
                                     wxColor color);
+
 /**
  * Gets a color from the global color scheme.
  *
@@ -5909,24 +6090,28 @@ extern DECL_EXP void SetGlobalColor(std::string table, std::string name,
  * @return Color value, or wxNullColour if not found
  */
 extern DECL_EXP wxColor GetGlobalColorD(std::string map_name, std::string name);
+
 /**
  * Shows/hides the status bar.
  *
  * @param enable True to show status bar, false to hide
  */
 extern DECL_EXP void EnableStatusBar(bool enable);
+
 /**
  * Shows/hides the main menu bar.
  *
  * @param enable True to show menu bar, false to hide
  */
 extern DECL_EXP void EnableMenu(bool enable);
+
 /**
  * Gets status bar visibility state.
  *
  * @return True if status bar is enabled/visible
  */
 extern DECL_EXP bool GetEnableStatusBar();
+
 /**
  * Gets menu bar visibility state.
  *
@@ -5944,6 +6129,7 @@ extern DECL_EXP bool GetEnableMenu();
  * @param CanvasIndex Index of target canvas (0-based)
  */
 extern DECL_EXP void SetNavigationMode(PI_NavMode mode, int CanvasIndex);
+
 /**
  * Gets current navigation mode for a canvas.
  *
@@ -5951,6 +6137,7 @@ extern DECL_EXP void SetNavigationMode(PI_NavMode mode, int CanvasIndex);
  * @return Current navigation mode
  */
 extern DECL_EXP PI_NavMode GetNavigationMode(int CanvasIndex);
+
 /**
  * Enables/disables look-ahead mode for a canvas.
  * Look-ahead mode shifts chart view ahead of vessel position.
@@ -5959,6 +6146,7 @@ extern DECL_EXP PI_NavMode GetNavigationMode(int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableLookaheadMode(bool enable, int CanvasIndex);
+
 /**
  * Gets look-ahead mode state for a canvas.
  *
@@ -5966,6 +6154,7 @@ extern DECL_EXP void EnableLookaheadMode(bool enable, int CanvasIndex);
  * @return True if look-ahead mode enabled
  */
 extern DECL_EXP bool GetEnableLookaheadMode(int CanvasIndex);
+
 /**
  * Controls visibility of MUI (Mobile/Touch User Interface) bar.
  *
@@ -5973,6 +6162,7 @@ extern DECL_EXP bool GetEnableLookaheadMode(int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableMUIBar(bool enable, int CanvasIndex);
+
 /**
  * Controls visibility of compass/GPS status icon.
  *
@@ -5980,6 +6170,7 @@ extern DECL_EXP void EnableMUIBar(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableCompassGPSIcon(bool enable, int CanvasIndex);
+
 /**
  * Controls visibility of chart info bar.
  *
@@ -5987,6 +6178,7 @@ extern DECL_EXP void EnableCompassGPSIcon(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableChartBar(bool enable, int CanvasIndex);
+
 /**
  * Gets MUI bar visibility state.
  *
@@ -5994,6 +6186,7 @@ extern DECL_EXP void EnableChartBar(bool enable, int CanvasIndex);
  * @return True if MUI bar is visible
  */
 extern DECL_EXP bool GetEnableMUIBar(int CanvasIndex);
+
 /**
  * Gets compass icon visibility state.
  *
@@ -6001,6 +6194,7 @@ extern DECL_EXP bool GetEnableMUIBar(int CanvasIndex);
  * @return True if compass icon is visible
  */
 extern DECL_EXP bool GetEnableCompassGPSIcon(int CanvasIndex);
+
 /**
  * Gets chart bar visibility state.
  *
@@ -6008,6 +6202,7 @@ extern DECL_EXP bool GetEnableCompassGPSIcon(int CanvasIndex);
  * @return True if chart bar is visible
  */
 extern DECL_EXP bool GetEnableChartBar(int CanvasIndex);
+
 /**
  * Controls visibility of canvas focus indicator.
  * Shows which canvas currently has input focus.
@@ -6016,6 +6211,7 @@ extern DECL_EXP bool GetEnableChartBar(int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableCanvasFocusBar(bool enable, int CanvasIndex);
+
 /**
  * Gets focus indicator visibility state.
  *
@@ -6023,6 +6219,7 @@ extern DECL_EXP void EnableCanvasFocusBar(bool enable, int CanvasIndex);
  * @return True if focus indicator is visible
  */
 extern DECL_EXP bool GetEnableCanvasFocusBar(int CanvasIndex);
+
 
 /*
  *  Allow plugin control of "Chart Panel Options" dialog
@@ -6035,6 +6232,7 @@ extern DECL_EXP bool GetEnableCanvasFocusBar(int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableLatLonGrid(bool enable, int CanvasIndex);
+
 /**
  * Controls chart outline display.
  *
@@ -6042,6 +6240,7 @@ extern DECL_EXP void EnableLatLonGrid(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableChartOutlines(bool enable, int CanvasIndex);
+
 /**
  * Controls depth unit display.
  *
@@ -6049,6 +6248,7 @@ extern DECL_EXP void EnableChartOutlines(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableDepthUnitDisplay(bool enable, int CanvasIndex);
+
 /**
  * Controls AIS target display.
  *
@@ -6056,6 +6256,7 @@ extern DECL_EXP void EnableDepthUnitDisplay(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableAisTargetDisplay(bool enable, int CanvasIndex);
+
 /**
  * Controls tide station icon display.
  *
@@ -6063,6 +6264,7 @@ extern DECL_EXP void EnableAisTargetDisplay(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableTideStationsDisplay(bool enable, int CanvasIndex);
+
 /**
  * Controls current station icon display.
  *
@@ -6070,6 +6272,7 @@ extern DECL_EXP void EnableTideStationsDisplay(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableCurrentStationsDisplay(bool enable, int CanvasIndex);
+
 /**
  * Controls ENC text label display.
  *
@@ -6077,6 +6280,7 @@ extern DECL_EXP void EnableCurrentStationsDisplay(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableENCTextDisplay(bool enable, int CanvasIndex);
+
 /**
  * Controls ENC depth sounding display.
  *
@@ -6085,6 +6289,7 @@ extern DECL_EXP void EnableENCTextDisplay(bool enable, int CanvasIndex);
  */
 extern DECL_EXP void EnableENCDepthSoundingsDisplay(bool enable,
                                                     int CanvasIndex);
+
 /**
  * Controls buoy/light name label display.
  *
@@ -6092,6 +6297,7 @@ extern DECL_EXP void EnableENCDepthSoundingsDisplay(bool enable,
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableBuoyLightLabelsDisplay(bool enable, int CanvasIndex);
+
 /**
  * Controls light icon display.
  *
@@ -6099,6 +6305,7 @@ extern DECL_EXP void EnableBuoyLightLabelsDisplay(bool enable, int CanvasIndex);
  * @param CanvasIndex Index of target canvas
  */
 extern DECL_EXP void EnableLightsDisplay(bool enable, int CanvasIndex);
+
 /**
  * Controls light description text display.
  *
@@ -6107,6 +6314,7 @@ extern DECL_EXP void EnableLightsDisplay(bool enable, int CanvasIndex);
  */
 extern DECL_EXP void EnableLightDescriptionsDisplay(bool enable,
                                                     int CanvasIndex);
+
 /**
  * Sets ENC (Electronic Navigation Chart) feature display category.
  *
@@ -6122,6 +6330,7 @@ extern DECL_EXP void SetENCDisplayCategory(PI_DisCat cat, int CanvasIndex);
  * @return True if lat/lon grid lines are visible
  */
 extern DECL_EXP bool GetEnableLatLonGrid(int CanvasIndex);
+
 /**
  * Gets chart outline visibility state.
  *
@@ -6129,6 +6338,7 @@ extern DECL_EXP bool GetEnableLatLonGrid(int CanvasIndex);
  * @return True if chart boundaries are visible
  */
 extern DECL_EXP bool GetEnableChartOutlines(int CanvasIndex);
+
 /**
  * Gets depth unit display state.
  *
@@ -6136,6 +6346,7 @@ extern DECL_EXP bool GetEnableChartOutlines(int CanvasIndex);
  * @return True if depth unit indicators are shown
  */
 extern DECL_EXP bool GetEnableDepthUnitDisplay(int CanvasIndex);
+
 /**
  * Gets AIS target display state.
  *
@@ -6143,6 +6354,7 @@ extern DECL_EXP bool GetEnableDepthUnitDisplay(int CanvasIndex);
  * @return True if AIS targets are visible
  */
 extern DECL_EXP bool GetEnableAisTargetDisplay(int CanvasIndex);
+
 /**
  * Gets tide station icon visibility.
  *
@@ -6150,6 +6362,7 @@ extern DECL_EXP bool GetEnableAisTargetDisplay(int CanvasIndex);
  * @return True if tide station markers are shown
  */
 extern DECL_EXP bool GetEnableTideStationsDisplay(int CanvasIndex);
+
 /**
  * Gets current station icon visibility.
  *
@@ -6157,6 +6370,7 @@ extern DECL_EXP bool GetEnableTideStationsDisplay(int CanvasIndex);
  * @return True if current station markers are shown
  */
 extern DECL_EXP bool GetEnableCurrentStationsDisplay(int CanvasIndex);
+
 /**
  * Gets ENC text label visibility.
  *
@@ -6164,6 +6378,7 @@ extern DECL_EXP bool GetEnableCurrentStationsDisplay(int CanvasIndex);
  * @return True if ENC feature text labels are shown
  */
 extern DECL_EXP bool GetEnableENCTextDisplay(int CanvasIndex);
+
 /**
  * Gets ENC depth sounding visibility.
  *
@@ -6171,6 +6386,7 @@ extern DECL_EXP bool GetEnableENCTextDisplay(int CanvasIndex);
  * @return True if depth soundings are shown
  */
 extern DECL_EXP bool GetEnableENCDepthSoundingsDisplay(int CanvasIndex);
+
 /**
  * Gets buoy/light label visibility.
  *
@@ -6178,6 +6394,7 @@ extern DECL_EXP bool GetEnableENCDepthSoundingsDisplay(int CanvasIndex);
  * @return True if buoy/light name labels are shown
  */
 extern DECL_EXP bool GetEnableBuoyLightLabelsDisplay(int CanvasIndex);
+
 /**
  * Gets light icon visibility.
  *
@@ -6185,6 +6402,7 @@ extern DECL_EXP bool GetEnableBuoyLightLabelsDisplay(int CanvasIndex);
  * @return True if light icons are shown
  */
 extern DECL_EXP bool GetEnableLightsDisplay(int CanvasIndex);
+
 /**
  * Gets light description text visibility.
  *
@@ -6192,6 +6410,7 @@ extern DECL_EXP bool GetEnableLightsDisplay(int CanvasIndex);
  * @return True if light descriptions are shown
  */
 extern DECL_EXP bool GetEnableLightDescriptionsDisplay(int CanvasIndex);
+
 /**
  * Gets current ENC display category.
  *
@@ -6203,6 +6422,7 @@ extern DECL_EXP bool GetEnableLightDescriptionsDisplay(int CanvasIndex);
  *         etc.
  */
 extern DECL_EXP PI_DisCat GetENCDisplayCategory(int CanvasIndex);
+
 /**
  * Set follow mode for a specific canvas.
  * When follow mode is enabled, the chart will automatically move with the
@@ -6212,6 +6432,7 @@ extern DECL_EXP PI_DisCat GetENCDisplayCategory(int CanvasIndex);
  * @param enable_follow True to enable follow mode, false to disable.
  */
 extern DECL_EXP void PluginSetFollowMode(int CanvasIndex, bool enable_follow);
+
 /**
  * Get the current follow mode status for a specific canvas.
  *
@@ -6219,6 +6440,7 @@ extern DECL_EXP void PluginSetFollowMode(int CanvasIndex, bool enable_follow);
  * @return True if follow mode is enabled, false otherwise.
  */
 extern DECL_EXP bool PluginGetFollowMode(int CanvasIndex);
+
 /**
  * Enable or disable tracking mode.
  * When tracking mode is enabled, the vessel's position is recorded in the
@@ -6227,12 +6449,14 @@ extern DECL_EXP bool PluginGetFollowMode(int CanvasIndex);
  * @param enable True to enable tracking, false to disable.
  */
 extern DECL_EXP void SetTrackingMode(bool enable);
+
 /**
  * Get the current tracking mode status.
  *
  * @return True if tracking mode is enabled, false otherwise.
  */
 extern DECL_EXP bool GetTrackingMode();
+
 /**
  * Set the application color scheme.
  * Changes the color scheme for the entire application including charts, UI
@@ -6241,6 +6465,7 @@ extern DECL_EXP bool GetTrackingMode();
  * @param cs The color scheme to apply (DAY, DUSK, or NIGHT).
  */
 extern DECL_EXP void SetAppColorScheme(PI_ColorScheme cs);
+
 /**
  * Get the current application color scheme.
  *
@@ -6268,29 +6493,34 @@ extern DECL_EXP void EnableSplitScreenLayout(bool enable = true);
  * @param factor Zoom factor to apply.
  */
 extern DECL_EXP void PluginZoomCanvas(int CanvasIndex, double factor);
+
 /**
  * Check if the main toolbar is enabled.
  *
  * @return True if the main toolbar is currently visible, false otherwise.
  */
 extern DECL_EXP bool GetEnableMainToolbar();
+
 /**
  * Show or hide the main toolbar.
  *
  * @param enable True to show the toolbar, false to hide it.
  */
 extern DECL_EXP void SetEnableMainToolbar(bool enable);
+
 /**
  * Display the global settings dialog.
  * Opens the main OpenCPN options/preferences dialog.
  */
 extern DECL_EXP void ShowGlobalSettingsDialog();
+
 /**
  * Center the chart view on the own ship position for a specific canvas.
  *
  * @param CanvasIndex Index of the target canvas (0 for the first canvas).
  */
 extern DECL_EXP void PluginCenterOwnship(int CanvasIndex);
+
 /**
  * Check if 10 Hz update rate is enabled.
  * When enabled, position updates and screen redraws occur at approximately 10
@@ -6299,6 +6529,7 @@ extern DECL_EXP void PluginCenterOwnship(int CanvasIndex);
  * @return True if 10 Hz update is enabled, false otherwise.
  */
 extern DECL_EXP bool GetEnableTenHertzUpdate();
+
 /**
  * Enable or disable 10 Hz update rate.
  * Controls the frequency of position updates and screen redraws.
@@ -6306,12 +6537,14 @@ extern DECL_EXP bool GetEnableTenHertzUpdate();
  * @param enable True to enable 10 Hz updates, false for standard update rate.
  */
 extern DECL_EXP void EnableTenHertzUpdate(bool enable);
+
 /**
  * Flush configuration changes to disk and reload settings.
  * Forces immediate saving of any pending configuration changes and reloads all
  * settings.
  */
 extern DECL_EXP void ConfigFlushAndReload();
+
 
 /*
  * Reload and restore all connections by direct read of config file

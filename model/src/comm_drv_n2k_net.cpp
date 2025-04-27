@@ -70,6 +70,8 @@
 
 #define N_DOG_TIMEOUT 8
 
+using namespace std::literals::chrono_literals;
+
 static const int kNotFound = -1;
 
 class MrqContainer {
@@ -187,6 +189,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
     : CommDriverN2K(params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
+      m_stats_timer(*this, 2s),
       m_net_port(wxString::Format("%i", params->NetworkPort)),
       m_net_protocol(params->NetProtocol),
       m_sock(NULL),
@@ -198,11 +201,12 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_io_select(params->IOSelect),
       m_connection_type(params->Type),
       m_bok(false),
-      m_TX_available(false)
-
-{
+      m_TX_available(false) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
+
+  m_driver_stats.driver_bus = NavAddr::Bus::N2000;
+  m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
   m_socket_timer.SetOwner(this, TIMER_SOCKET_N2KNET);
   m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET_N2KNET + 1);
@@ -322,7 +326,7 @@ void CommDriverN2KNet::handle_N2K_MSG(CommDriverN2KNetEvent& event) {
       std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
   auto msg_all =
       std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
-
+  m_driver_stats.rx_count += payload->size();
   m_listener.Notify(std::move(msg));
   m_listener.Notify(std::move(msg_all));
 }
@@ -380,6 +384,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
                          wxSOCKET_LOST_FLAG);
     GetSock()->Notify(TRUE);
     GetSock()->SetTimeout(1);  // Short timeout
+    m_driver_stats.available = true;
   }
 
   // Set up another socket for transmit
@@ -398,6 +403,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
       bool bam = GetTSock()->SetOption(
           SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
     }
+    m_driver_stats.available = true;
   }
 
   // In case the connection is lost before acquired....
@@ -1280,6 +1286,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 
       event.GetSocket()->Read(&data.front(), RD_BUF_SIZE);
       if (!event.GetSocket()->Error()) {
+        m_driver_stats.available = true;
         size_t count = event.GetSocket()->LastCount();
         if (count) {
           if (1 /*FIXME !g_benableUDPNullHeader*/) {
@@ -1338,6 +1345,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 #if 1
 
     case wxSOCKET_LOST: {
+      m_driver_stats.available = false;
       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
         if (GetBrxConnectEvent())
           wxLogMessage(wxString::Format(
@@ -1369,6 +1377,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_CONNECTION: {
+      m_driver_stats.available = true;
       if (GetProtocol() == GPSD) {
         //      Sign up for watcher mode, Cooked NMEA
         //      Note that SIRF devices will be converted by gpsd into
@@ -1403,6 +1412,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 void CommDriverN2KNet::OnServerSocketEvent(wxSocketEvent& event) {
   switch (event.GetSocketEvent()) {
     case wxSOCKET_CONNECTION: {
+      m_driver_stats.available = true;
       SetSock(GetSockServer()->Accept(false));
 
       if (GetSock()) {
@@ -1910,6 +1920,7 @@ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
 
   std::vector<std::vector<unsigned char>> out_data = GetTxVector(msg, addr);
   SendSentenceNetwork(out_data);
+  m_driver_stats.tx_count += msg->payload.size();
 
   // Create the internal message for all N2K listeners
   std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
@@ -1935,6 +1946,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
     case TCP:
       for (std::vector<unsigned char>& v : payload) {
         if (GetSock() && GetSock()->IsOk()) {
+          m_driver_stats.available = true;
           // printf("---%s", v.data());
           GetSock()->Write(v.data(), v.size());
           if (GetSock()->Error()) {
@@ -1953,8 +1965,10 @@ bool CommDriverN2KNet::SendSentenceNetwork(
             ret = false;
           }
           wxMilliSleep(2);
-        } else
+        } else {
+          m_driver_stats.available = false;
           ret = false;
+        }
       }
       break;
     case UDP:
@@ -1987,6 +2001,7 @@ void CommDriverN2KNet::Close() {
                         sizeof(m_mrq_container->m_mrq));
     m_sock->Notify(FALSE);
     m_sock->Destroy();
+    m_driver_stats.available = false;
   }
 
   if (m_tsock) {

@@ -34,6 +34,7 @@
 
 #include "model/comm_can_util.h"
 #include "model/comm_drv_n2k.h"
+#include "model/comm_drv_stats.h"
 #include "model/conn_params.h"
 
 #include <wx/datetime.h>
@@ -102,12 +103,16 @@ private:
   bool full_ = 0;
 };
 
-class CommDriverN2KNet : public CommDriverN2K, public wxEvtHandler {
+class CommDriverN2KNet : public CommDriverN2K,
+                         public wxEvtHandler,
+                         public DriverStatsProvider {
 public:
   CommDriverN2KNet();
   CommDriverN2KNet(const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN2KNet();
+
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
 
   void SetListener(DriverListener& l) override {};
 
@@ -194,6 +199,9 @@ private:
       std::shared_ptr<const Nmea2000Msg>& msg,
       std::shared_ptr<const NavAddr2000> addr);
   void OnProdInfoTimer(wxTimerEvent& ev);
+
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
