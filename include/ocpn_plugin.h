@@ -1769,10 +1769,10 @@ public:
   virtual ~opencpn_plugin_19();
 
   /**
-   * Allows plugin to add custom setup options.
+   * Allows plugin to add pages to global Options dialog.
    *
-   * Called when OpenCPN preferences dialog is opened. Plugin can add its own
-   * option panels to the preferences dialog.
+   * Called during plugin loading step, after Init().
+   * Plugin can add its own pages to the Options dialog.
    *
    */
   virtual void OnSetupOptions(void);
@@ -6220,7 +6220,6 @@ extern DECL_EXP void EnableCanvasFocusBar(bool enable, int CanvasIndex);
  */
 extern DECL_EXP bool GetEnableCanvasFocusBar(int CanvasIndex);
 
-
 /*
  *  Allow plugin control of "Chart Panel Options" dialog
  */
@@ -6544,7 +6543,6 @@ extern DECL_EXP void EnableTenHertzUpdate(bool enable);
  * settings.
  */
 extern DECL_EXP void ConfigFlushAndReload();
-
 
 /*
  * Reload and restore all connections by direct read of config file
