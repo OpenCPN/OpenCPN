@@ -40,6 +40,14 @@ Use C++ standard library components over wxWidgets and old style C equivalents:
   like wxWidgets.
 . Use `std::unique_ptr` or `std::shared_ptr` for better memory management.
 
+=== Const Correctness
+
+. Use `const` wherever applicable to clearly express your intent:
+.. For function parameters that won't be modified
+.. For member functions that don't modify object state
+.. For local variables that shouldn't change after initialization
+.. For return values that shouldn't be modified
+
 === String Handling
 
 . Use double-quoted strings for unicode strings.
