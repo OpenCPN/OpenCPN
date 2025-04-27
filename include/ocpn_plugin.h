@@ -1223,8 +1223,9 @@ public:
   /**
    * Clean up plugin resources.
    *
-   * This required method is called by OpenCPN during plugin unloading or
-   * program shutdown. It should release any resources allocated by the plugin.
+   * Called by OpenCPN when plugin is disabled.
+   * Shall release any resources allocated by the plugin.
+   * Good place to persist plugin configuration.
    *
    * @return True if cleanup successful, False if error
    */
@@ -1379,6 +1380,7 @@ public:
    * @note Return 0 if no preference pages
    * @note Called during preferences dialog creation
    */
+
   virtual int GetToolboxPanelCount(void);
   /**
    * Creates a plugin preferences page.
@@ -1389,11 +1391,13 @@ public:
    * @param page_sel Index of page to create (0 to GetToolboxPanelCount()-1)
    * @param pnotebook Parent notebook to add page to
    *
+   * @Deprecated  Does not invoke any action, will be removed.
    * @note Called once for each page index
    * @note Use standard wxWidgets controls for consistent look
    * @note Parent notebook uses wxAUI manager
    */
   virtual void SetupToolboxPanel(int page_sel, wxNotebook *pnotebook);
+
   /**
    * Handles preference page closure.
    *
@@ -1405,11 +1409,12 @@ public:
    *        - 0 = OK (apply changes)
    *        - 1 = APPLY (apply but don't close)
    *        - 2 = CANCEL (discard changes)
-   *
+   * @Deprecated  Does not invoke any action, will be removed.
    * @note Only called if plugin implements SetupToolboxPanel()
    * @note Good place to save settings to config
    */
   virtual void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
+
   /**
    * Shows the plugin preferences dialog.
    *
@@ -1450,6 +1455,7 @@ public:
    * @note Performance critical - keep drawing efficient
    * @note Companion to RenderGLOverlay() for OpenGL-specific rendering
    */
+
   virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
   /**
    * Receives cursor lat/lon position updates.
@@ -1463,6 +1469,7 @@ public:
    * @note High frequency updates - keep processing quick
    * @note Only called when cursor over chart window
    */
+
   virtual void SetCursorLatLon(double lat, double lon);
   /**
    * Notifies plugin of viewport changes.
@@ -1502,6 +1509,7 @@ public:
    * @note Only called if plugin declares WANTS_NMEA_EVENTS capability
    * @note For extended data including heading, use SetPositionFixEx()
    */
+
   virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
   /**
    * Receive all NMEA 0183 sentences from OpenCPN.
@@ -1516,6 +1524,7 @@ public:
    * href="https://opencpn-manuals.github.io/main/opencpn-dev/plugin-messaging.html">Plugin
    * Message API Documentation</a> \endhtmlonly
    */
+
   virtual void SetNMEASentence(wxString &sentence);
   /**
    * Receive all AIS sentences from OpenCPN.
@@ -1544,6 +1553,7 @@ public:
    * @param x New window width in pixels
    * @param y New window height in pixels
    */
+
   virtual void ProcessParentResize(int x, int y);
   /**
    * Updates plugin color scheme.
@@ -1566,6 +1576,7 @@ public:
    *
    * @param id The tool ID assigned when tool was added via InsertPlugInTool()
    */
+
   virtual void OnToolbarToolCallback(int id);
   /**
    * Handles context menu item selection.
@@ -1575,6 +1586,7 @@ public:
    *
    * @param id The menu item ID assigned when item was added
    */
+
   virtual void OnContextMenuItemCallback(int id);
   /**
    * Updates AUI manager status.
@@ -1632,6 +1644,7 @@ public:
    * @note Drawing should respect current viewport parameters
    * @note For API v1.18+, use RenderOverlayMultiCanvas() to specify priority
    */
+
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   /**
    * Receives plugin-to-plugin messages.
@@ -1694,6 +1707,7 @@ public:
    */
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+
   /**
    * Updates plugin with extended position fix data.
    *
@@ -1725,6 +1739,7 @@ public:
    *
    * Called when OpenCPN preferences dialog is opened. Plugin can add its own
    * option panels to the preferences dialog.
+   *
    */
   virtual void OnSetupOptions(void);
 };
@@ -1758,6 +1773,7 @@ public:
    * @return True if event was handled, false to pass to OpenCPN
    */
   virtual bool MouseEventHook(wxMouseEvent &event);
+
   /**
    * Receives vector chart object information.
    *
@@ -1793,6 +1809,7 @@ public:
    * @return True if event was handled, false to pass to OpenCPN
    */
   virtual bool KeyboardEventHook(wxKeyEvent &event);
+
   /**
    * Handles toolbar button press.
    *
@@ -1801,6 +1818,7 @@ public:
    * @param id The tool ID assigned when tool was added
    */
   virtual void OnToolbarToolDownCallback(int id);
+
   /**
    * Handles toolbar button release.
    *
@@ -1841,6 +1859,7 @@ public:
    */
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex);
+
   /**
    * Renders plugin overlay graphics with canvas selection.
    *
@@ -1946,14 +1965,13 @@ public:
   opencpn_plugin_119(void *pmgr);
 
   /**
-   * Called just before OpenCPN begins shutdown sequence.
+   * Called just before OpenCPN exits.
    *
-   * Provides plugins an opportunity to perform cleanup and save state before
-   * OpenCPN shutdown completes. This hook is called early in the shutdown
-   * process, before core subsystems are terminated.
+   * Provides an opportunity to perform cleanup and save state before
+   * OpenCPN shutdown completes. Called early in the shutdown process before
+   * DeInit() and before core subsystems are terminated. Rarely needed.
    *
    * Typical uses include:
-   * - Saving plugin configuration/state
    * - Closing network connections
    * - Releasing system resources
    * - Stopping background threads
@@ -2676,7 +2694,8 @@ typedef enum OptionsParentPI {
 extern DECL_EXP wxScrolledWindow *AddOptionsPage(OptionsParentPI parent,
                                                  wxString title);
 /**
- * Removes a previously added options page.
+ * Remove a previously added options page. Should be called from  plugin's
+ * DeInit() method.
  *
  * @param page Pointer to page previously returned by AddOptionsPage()
  * @return True if page was successfully removed
