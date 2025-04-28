@@ -82,11 +82,12 @@ _runtime-version:_. Install the proper runtime and Sdk, for example:
     $ cd build
     $ make -f ../flatpak/Makefile build
 
-The makefile will build the flatpak version and also install it.
+The makefile will build the flatpak version and also install it in
+the _devel_ branch
 
 === 4. Run
 
-    $ flatpak run org.opencpn.OpenCPN
+    $ flatpak run org.opencpn.OpenCPN//devel
 
 === 5. Debugging
 
