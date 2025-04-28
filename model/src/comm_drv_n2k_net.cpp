@@ -23,6 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <iomanip>
+#include <sstream>
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <ws2tcpip.h>
@@ -1447,10 +1450,9 @@ std::vector<unsigned char> MakeSimpleOutMsg(
     case N2KFormat_Actisense_RAW_ASCII: {
       // Craft the canID
       unsigned can_id = BuildCanID(6, 0xff, 0xff, pgn);
-      wxString scan_id;
-      scan_id.Printf("%08X", can_id);
-      std::string sscan_id = scan_id.ToStdString();
-      for (unsigned char s : sscan_id) out_vec.push_back(s);
+      std::stringstream ss;
+      ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
+      for (unsigned char s : ss.str()) out_vec.push_back(s);
       out_vec.push_back(' ');
 
       // Data payload
@@ -1585,10 +1587,10 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
         // The TX frame will adopt the gateway's claimed N2K address.
         unsigned long can_id =
             BuildCanID(msg->priority, 0, dest_addr->address, msg->PGN.pgn);
-        wxString scan_id;
-        scan_id.Printf("%08X", can_id);
-        std::string sscan_id = scan_id.ToStdString();
-        for (unsigned char s : sscan_id) header_vec.push_back(s);
+
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
+        for (unsigned char s : ss.str()) header_vec.push_back(s);
         header_vec.push_back(' ');
 
         // constant header
@@ -1631,10 +1633,9 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
         // The TX frame will adopt the gateway's claimed N2K address.
         unsigned long can_id =
             BuildCanID(msg->priority, 0, dest_addr->address, msg->PGN.pgn);
-        wxString scan_id;
-        scan_id.Printf("%08X", can_id);
-        std::string sscan_id = scan_id.ToStdString();
-        for (unsigned char s : sscan_id) header_vec.push_back(s);
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
+        for (unsigned char s : ss.str()) header_vec.push_back(s);
         header_vec.push_back(' ');
 
         // format the required number of short packets, in a loop
