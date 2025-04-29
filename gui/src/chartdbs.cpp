@@ -1309,22 +1309,6 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
   if (1)  // TODO why can't this be cte.GetbValid()?
   {
     wxString line;
-    line = _(" ChartFile:  ");
-    wxString longline = *(cte.GetpsFullPath());
-
-    if (longline.Len() > target_width) {
-      line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
-      max_width = wxMax(max_width, target_width + 4);
-      lc += ncr;
-    } else {
-      line += longline;
-      max_width = wxMax(max_width, line.Len() + 4);
-    }
-
-    r += line;
-    r += _T("\n");
-    lc++;
-
     line.Empty();
     if (pc) {
       line = _(" Name:  ");
@@ -1359,16 +1343,26 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
     max_width = wxMax(max_width, line.Len());
     r += line;
     lc++;
-
     if (pc) {
-      line.Empty();
-      line = _(" ID:  ");
-      line += pc->GetID();
+      wxDateTime ed = pc->GetEditionDate();
+      if (ed.IsValid()) {
+        line = _(" Updated:  ");
+        line += ed.FormatISODate();
+        line += _T("\n");
+        max_width = wxMax(max_width, line.Len());
+        r += line;
+      }
+      lc++;
+
+      line = _(" Source Edition:  ");
+      line += pc->GetSE();
       line += _T("\n");
       max_width = wxMax(max_width, line.Len());
       r += line;
       lc++;
+    }
 
+    if (pc) {
       line.Empty();
       line = _(" Depth Units:  ");
       line += pc->GetDepthUnits();
@@ -1412,23 +1406,6 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
 
     line.Empty();
     if (pc) {
-      line = _(" Source Edition:  ");
-      line += pc->GetSE();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-
-      line.Empty();
-      wxDateTime ed = pc->GetEditionDate();
-      if (ed.IsValid()) {
-        line = _(" Updated:  ");
-        line += ed.FormatISODate();
-        line += _T("\n");
-        max_width = wxMax(max_width, line.Len());
-        r += line;
-      }
-      lc++;
     }
 
     line.Empty();
@@ -1439,6 +1416,29 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
       r += line;
       lc++;
     }
+    if (pc) {
+      line.Empty();
+      line = _(" ID:  ");
+      line += pc->GetID();
+      line += _T("\n");
+      max_width = wxMax(max_width, line.Len());
+      r += line;
+      lc++;
+    }
+
+    line = _(" ChartFile:  ");
+    wxString longline = *(cte.GetpsFullPath());
+    if (longline.Len() > target_width) {
+      line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
+      max_width = wxMax(max_width, target_width + 4);
+      lc += ncr;
+    } else {
+      line += longline;
+      max_width = wxMax(max_width, line.Len() + 4);
+    }
+    r += line;
+    r += _T("\n");
+    lc++;
   }
 
   if (line_count) *line_count = lc;
