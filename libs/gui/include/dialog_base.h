@@ -41,7 +41,8 @@ public:
   void SetInitialSize();
 
   /**
-   * Display HTML content.
+   * Display HTML content with dark support.
+   * The HTML should contain a <body> tag.
    * @param html HTML document.
    */
   void AddHtmlContent(const std::stringstream& html);
