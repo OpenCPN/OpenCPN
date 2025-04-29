@@ -1306,140 +1306,124 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
   unsigned int target_width = 60;
 
   const ChartTableEntry &cte = GetChartTableEntry(dbIndex);
-  if (1)  // TODO why can't this be cte.GetbValid()?
-  {
-    wxString line;
-    line.Empty();
-    if (pc) {
-      line = _(" Name:  ");
-      wxString longline = pc->GetName();
+  wxString line;
+  line.Empty();
+  if (pc) {
+    line = _(" Name:  ");
+    wxString longline = pc->GetName();
 
-      wxString tkz;
-      if (longline.Find(' ') != wxNOT_FOUND)  // assume a proper name
-        tkz = _T(" ");
-      else
-        tkz = _T("/,\\");  // else a file name
-
-      if (longline.Len() > target_width) {
-        line += SplitPath(pc->GetName(), tkz, target_width, 12, &ncr);
-        max_width = wxMax(max_width, target_width + 4);
-        lc += ncr;
-      } else {
-        line += longline;
-        max_width = wxMax(max_width, line.Len() + 4);
-      }
-    }
-
-    line += _T("\n");
-    r += line;
-    lc++;
-
-    if (pc)  // chart is loaded and available
-      line.Printf(_T(" %s:  1:%d"), _("Scale"), pc->GetNativeScale());
+    wxString tkz;
+    if (longline.Find(' ') != wxNOT_FOUND)  // assume a proper name
+      tkz = _T(" ");
     else
-      line.Printf(_T(" %s:  1:%d"), _("Scale"), cte.GetScale());
+      tkz = _T("/,\\");  // else a file name
 
-    line += _T("\n");
-    max_width = wxMax(max_width, line.Len());
-    r += line;
-    lc++;
-    if (pc) {
-      wxDateTime ed = pc->GetEditionDate();
-      if (ed.IsValid()) {
-        line = _(" Updated:  ");
-        line += ed.FormatISODate();
-        line += _T("\n");
-        max_width = wxMax(max_width, line.Len());
-        r += line;
-      }
-      lc++;
-
-      line = _(" Source Edition:  ");
-      line += pc->GetSE();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-    }
-
-    if (pc) {
-      line.Empty();
-      line = _(" Depth Units:  ");
-      line += pc->GetDepthUnits();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-
-      line.Empty();
-      line = _(" Soundings:  ");
-      line += pc->GetSoundingsDatum();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-
-      line.Empty();
-      line = _(" Datum:  ");
-      line += pc->GetDatumString();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-    }
-
-    line = _(" Projection:  ");
-    if (PROJECTION_UNKNOWN == cte.GetChartProjectionType())
-      line += _("Unknown");
-    else if (PROJECTION_MERCATOR == cte.GetChartProjectionType())
-      line += _("Mercator");
-    else if (PROJECTION_TRANSVERSE_MERCATOR == cte.GetChartProjectionType())
-      line += _("Transverse Mercator");
-    else if (PROJECTION_POLYCONIC == cte.GetChartProjectionType())
-      line += _("Polyconic");
-    else if (PROJECTION_WEB_MERCATOR == cte.GetChartProjectionType())
-      line += _("Web Mercator (EPSG:3857)");
-    line += _T("\n");
-    max_width = wxMax(max_width, line.Len());
-    r += line;
-    lc++;
-
-    line.Empty();
-    if (pc) {
-    }
-
-    line.Empty();
-    if (pc && pc->GetExtraInfo().Len()) {
-      line += pc->GetExtraInfo();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-    }
-    if (pc) {
-      line.Empty();
-      line = _(" ID:  ");
-      line += pc->GetID();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-    }
-
-    line = _(" ChartFile:  ");
-    wxString longline = *(cte.GetpsFullPath());
     if (longline.Len() > target_width) {
-      line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
+      line += SplitPath(pc->GetName(), tkz, target_width, 12, &ncr);
       max_width = wxMax(max_width, target_width + 4);
       lc += ncr;
     } else {
       line += longline;
       max_width = wxMax(max_width, line.Len() + 4);
     }
+  }
+
+  line += _T("\n");
+  r += line;
+  lc++;
+
+  if (pc)  // chart is loaded and available
+    line.Printf(_T(" %s:  1:%d"), _("Scale"), pc->GetNativeScale());
+  else
+    line.Printf(_T(" %s:  1:%d"), _("Scale"), cte.GetScale());
+
+  line += _T("\n");
+  max_width = wxMax(max_width, line.Len());
+  r += line;
+  lc++;
+  if (pc) {
+    wxDateTime ed = pc->GetEditionDate();
+    if (ed.IsValid()) {
+      line = _(" Updated:  ") + ed.FormatISODate() + "\n";
+      max_width = wxMax(max_width, line.Len());
+      r += line;
+    }
+    lc++;
+
+    line = _(" Source Edition:  ") + pc->GetSE() + "\n";
+    max_width = wxMax(max_width, line.Len());
     r += line;
-    r += _T("\n");
     lc++;
   }
+
+  if (pc) {
+    line = _(" Depth Units:  ") + pc->GetDepthUnits() + "\n";
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+
+    line = _(" Soundings:  ") + pc->GetSoundingsDatum() + "\n";
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+
+    line = _(" Datum:  ") + pc->GetDatumString() + "\n";
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+  }
+
+  line = _(" Projection:  ");
+  if (PROJECTION_UNKNOWN == cte.GetChartProjectionType())
+    line += _("Unknown");
+  else if (PROJECTION_MERCATOR == cte.GetChartProjectionType())
+    line += _("Mercator");
+  else if (PROJECTION_TRANSVERSE_MERCATOR == cte.GetChartProjectionType())
+    line += _("Transverse Mercator");
+  else if (PROJECTION_POLYCONIC == cte.GetChartProjectionType())
+    line += _("Polyconic");
+  else if (PROJECTION_WEB_MERCATOR == cte.GetChartProjectionType())
+    line += _("Web Mercator (EPSG:3857)");
+  line += _T("\n");
+  max_width = wxMax(max_width, line.Len());
+  r += line;
+  lc++;
+
+  line.Empty();
+  if (pc) {
+  }
+
+  line.Empty();
+  if (pc && pc->GetExtraInfo().Len()) {
+    line += pc->GetExtraInfo();
+    line += _T("\n");
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+  }
+  if (pc) {
+    line.Empty();
+    line = _(" ID:  ");
+    line += pc->GetID();
+    line += _T("\n");
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+  }
+
+  line = _(" ChartFile:  ");
+  wxString longline = *(cte.GetpsFullPath());
+  if (longline.Len() > target_width) {
+    line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
+    max_width = wxMax(max_width, target_width + 4);
+    lc += ncr;
+  } else {
+    line += longline;
+    max_width = wxMax(max_width, line.Len() + 4);
+  }
+  r += line;
+  r += _T("\n");
+  lc++;
 
   if (line_count) *line_count = lc;
 
