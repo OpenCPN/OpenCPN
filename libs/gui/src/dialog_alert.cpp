@@ -33,16 +33,38 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
 
   if (action.empty()) {
     wxButton* close_button = new wxButton(this, wxID_CLOSE, _("Close"));
+
+    // Fix button height in footer when dialog has no parent.
+    if (!parent) {
+#ifdef _WIN32
+      close_button->SetMinSize(close_button->GetSize());
+#else
+      close_button->SetMinSize(wxSize(-1, GetCharHeight() * 4));
+#endif
+    }
+
     close_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this, wxID_CLOSE);
-    footer->AddButton(close_button);
+    footer->SetCancelButton(close_button);
     footer->Realize();
   } else {
     wxButton* ok_button = new wxButton(this, wxID_OK, m_action);
     wxButton* cancel_button = new wxButton(this, wxID_CANCEL, _("Cancel"));
+
+    // Fix button height in footer when dialog has no parent.
+    if (!parent) {
+#ifdef _WIN32
+      ok_button->SetMinSize(ok_button->GetSize());
+      cancel_button->SetMinSize(cancel_button->GetSize());
+#else
+      ok_button->SetMinSize(wxSize(-1, GetCharHeight() * 4));
+      cancel_button->SetMinSize(wxSize(-1, GetCharHeight() * 4));
+#endif
+    }
+
     ok_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
     cancel_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
-    footer->AddButton(cancel_button);
-    footer->AddButton(ok_button);
+    footer->SetCancelButton(cancel_button);
+    footer->SetAffirmativeButton(ok_button);
     footer->Realize();
   }
 
