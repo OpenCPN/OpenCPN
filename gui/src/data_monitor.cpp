@@ -733,14 +733,14 @@ public:
         m_log_button(new LogButton(this, logger, m_menu)) {
     // Add a containing sizer for labels, so they can be aligned vertically
     auto filter_label_box = new wxBoxSizer(wxVERTICAL);
-    filter_label_box->Add(new wxStaticText(this, wxID_ANY, _("View")));
+    filter_label_box->Add(new wxStaticText(this, wxID_ANY, _("Filter")));
 
     auto flags = wxSizerFlags(0).Border();
     auto wbox = new wxWrapSizer(wxHORIZONTAL);
     wbox->Add(m_log_button, flags);
     // Stretching horizontal space. Does not work with a WrapSizer, known
     // wx bug. Left in place if it becomes fixed.
-    wbox->Add(GetCharWidth() * 2, 0, 1);
+    wbox->Add(GetCharWidth() * 5, 0, 1);
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     wbox->Add(m_filter_choice, flags);
     wbox->Add(new PauseResumeButton(this, std::move(on_stop)), flags);
