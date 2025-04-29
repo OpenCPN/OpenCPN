@@ -18,6 +18,7 @@
  ***************************************************************************
  */
 
+#include <regex>
 #include <sstream>
 #include <wx/wx.h>
 #include <wx/display.h>
@@ -76,6 +77,16 @@ void BaseDialog::SetInitialSize() {
 
 void BaseDialog::AddHtmlContent(const std::stringstream& html) {
   std::string html_str = html.str();
+
+  // Inject the font color to support dark mode.
+  std::string fg_color =
+      GetForegroundColour().GetAsString(wxC2S_HTML_SYNTAX).ToStdString();
+  std::regex body_regex(R"(<body[^>]*>)");
+  std::regex body_end_regex(R"(</body>)");
+  std::string font_tag = "<font color='" + fg_color + "'>";
+  html_str = std::regex_replace(html_str, body_regex, "$&" + font_tag);
+  html_str = std::regex_replace(html_str, body_end_regex, "</font>$&");
+
   auto* html_window =
       new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, GetClientSize());
   bool result = html_window->SetPage(html_str.c_str());
