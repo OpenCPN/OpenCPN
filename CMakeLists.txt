@@ -1265,9 +1265,6 @@ if (OCPN_USE_CRASHREPORT)
   endif ()
 endif ()
 
-add_subdirectory("libs/sqlite")
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
-
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
@@ -1957,6 +1954,7 @@ add_subdirectory(libs/picosha2)
 add_subdirectory(libs/pugixml)
 add_subdirectory(libs/rapidjson)
 add_subdirectory(libs/s52plib)
+add_subdirectory(libs/sqlite)
 
 if (QT_ANDROID)
   set(SOUND_WX_INCLUDE_DIR "${ANDROID_WX_INCLUDES}" CACHE STRING "")
