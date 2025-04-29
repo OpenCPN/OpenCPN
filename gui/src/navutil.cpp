@@ -1256,11 +1256,11 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (!bAsTemplate) {
     SetPath(_T ( "/Settings/NMEADataSource" ));
 
+    TheConnectionParams().clear();
     wxString connectionconfigs;
     Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-      TheConnectionParams().clear();
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
