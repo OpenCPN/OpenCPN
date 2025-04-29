@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include "model/georef.h"
+#include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
@@ -1049,9 +1050,9 @@ void TrackPropDlg::SetTrackAndUpdate(Track* pt) {
   if (m_pMyLinkList) delete m_pMyLinkList;
   m_pMyLinkList = new HyperlinkList();
 
-  int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
+  int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = m_pTrack->m_HyperlinkList->GetFirst();
+    wxHyperlinkListNode* linknode = m_pTrack->m_TrackHyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1126,8 +1127,8 @@ bool TrackPropDlg::UpdateProperties() {
       }
     }
     ///        m_scrolledWindowLinks->DestroyChildren();
-    int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-    HyperlinkList* hyperlinklist = m_pTrack->m_HyperlinkList;
+    int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
+    HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
     //            int len = 0;
     if (NbrOfLinks > 0) {
       wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
@@ -1342,13 +1343,14 @@ void TrackPropDlg::OnSplitBtnClick(wxCommandEvent& event) {
     Track* pTail = new Track();
     pHead->Clone(m_pTrack, 0, m_nSelected - 1, _("_A"));
     pTail->Clone(m_pTrack, m_nSelected - 1, m_pTrack->GetnPoints(), _("_B"));
+
     g_TrackList.push_back(pHead);
-    pConfig->AddNewTrack(pHead);
+    NavObj_dB::GetInstance().AddNewTrack(pHead);
 
     g_TrackList.push_back(pTail);
-    pConfig->AddNewTrack(pTail);
+    NavObj_dB::GetInstance().AddNewTrack(pTail);
 
-    pConfig->DeleteConfigTrack(m_pTrack);
+    NavObj_dB::GetInstance().DeleteTrack(m_pTrack);
 
     pSelect->DeleteAllSelectableTrackSegments(m_pTrack);
     RoutemanGui(*g_pRouteMan).DeleteTrack(m_pTrack);
@@ -1542,8 +1544,8 @@ void TrackPropDlg::OnDeleteLink(wxCommandEvent& event) {
   }
 
   ///    m_scrolledWindowLinks->DestroyChildren();
-  int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-  HyperlinkList* hyperlinklist = m_pTrack->m_HyperlinkList;
+  int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
+  HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
   //      int len = 0;
   if (NbrOfLinks > 0) {
     wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
@@ -1588,8 +1590,8 @@ void TrackPropDlg::OnEditLink(wxCommandEvent& event) {
   LinkPropDlg->ShowWindowModalThenDo([this, LinkPropDlg, findurl,
                                       findlabel](int retcode) {
     if (retcode == wxID_OK) {
-      int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-      HyperlinkList* hyperlinklist = m_pTrack->m_HyperlinkList;
+      int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
+      HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
       //            int len = 0;
       if (NbrOfLinks > 0) {
         wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
@@ -1652,7 +1654,7 @@ void TrackPropDlg::OnAddLink(wxCommandEvent& event) {
       h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
       h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
       h->LType = wxEmptyString;
-      m_pTrack->m_HyperlinkList->Append(h);
+      m_pTrack->m_TrackHyperlinkList->Append(h);
     }
   });
   //    sbSizerLinks->Layout();
@@ -1755,7 +1757,8 @@ bool TrackPropDlg::SaveChanges(void) {
     m_pTrack->m_style = (wxPenStyle)::StyleValues[m_cStyle->GetSelection()];
     m_pTrack->m_width = ::WidthValues[m_cWidth->GetSelection()];
 
-    pConfig->UpdateTrack(m_pTrack);
+    NavObj_dB::GetInstance().UpdateDBTrackAttributes(m_pTrack);
+
     pConfig->UpdateSettings();
   }
 

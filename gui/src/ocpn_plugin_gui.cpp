@@ -69,6 +69,7 @@
 #include "toolbar.h"
 #include "waypointman_gui.h"
 #include "shapefile_basemap.h"
+#include "model/navobj_db.h"
 
 extern PlugInManager* s_ppim;
 extern MyConfig* pConfig;
@@ -1265,8 +1266,8 @@ bool AddPlugInTrack(PlugIn_Track* ptrack, bool b_permanent) {
   track->m_btemp = (b_permanent == false);
 
   g_TrackList.push_back(track);
-
-  if (b_permanent) pConfig->AddNewTrack(track);
+  if (b_permanent) NavObj_dB::GetInstance().AddNewTrack(track);
+  // if (b_permanent) pConfig->AddNewTrack(track);
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateTrkListCtrl();
@@ -1280,6 +1281,7 @@ bool DeletePlugInTrack(wxString& GUID) {
   //  Find the Route
   Track* pTrack = g_pRouteMan->FindTrackByGUID(GUID);
   if (pTrack) {
+    NavObj_dB::GetInstance().DeleteTrack(pTrack);
     RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
     b_found = true;
   }
@@ -1299,6 +1301,7 @@ bool UpdatePlugInTrack(PlugIn_Track* ptrack) {
 
   if (b_found) {
     bool b_permanent = (pTrack->m_btemp == false);
+    NavObj_dB::GetInstance().DeleteTrack(pTrack);
     RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
 
     b_found = AddPlugInTrack(ptrack, b_permanent);

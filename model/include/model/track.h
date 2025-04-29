@@ -83,6 +83,8 @@ public:
     if (m_stimestring.size() < strlen("YYYY-MM-DDTHH:MM:SSZ")) return false;
     return true;
   };
+  std::string GetGUID() { return m_GUID; }
+  void SetGUID(const std::string &_guid);
 
   double m_lat, m_lon;
   int m_GPXTrkSegNo;
@@ -103,6 +105,7 @@ private:
    */
   void SetCreateTime(wxString ts);
   std::string m_stimestring;
+  std::string m_GUID;
 };
 
 /**
@@ -179,15 +182,13 @@ public:
 
   int m_CurrentTrackSeg;
 
-  HyperlinkList *m_HyperlinkList;
+  HyperlinkList *m_TrackHyperlinkList;
   int m_HighlightedTrackPoint;
 
   void Clone(Track *psourcetrack, int start_nPoint, int end_nPoint,
              const wxString &suffix);
 
 protected:
-  //  void Segments(ChartCanvas *cc, std::list<std::list<wxPoint> > &pointlists,
-  //                const LLBBox &box, double scale);
   void DouglasPeuckerReducer(std::vector<TrackPoint *> &list,
                              std::vector<bool> &keeplist, int from, int to,
                              double delta);
@@ -199,9 +200,6 @@ protected:
   std::vector<std::vector<SubTrack> > SubTracks;
 
 private:
-  //  void GetPointLists(ChartCanvas *cc,
-  //                     std::list<std::list<wxPoint> > &pointlists, ViewPort
-  //                     &VP, const LLBBox &box);
   void Finalize();
   double ComputeScale(int left, int right);
   void InsertSubTracks(LLBBox &box, int level, int pos);

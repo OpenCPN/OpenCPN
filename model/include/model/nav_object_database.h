@@ -127,6 +127,7 @@ public:
                          bool b_compute_bbox = false);
   int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz,
                                wxCheckBoxState b_namesviz);
+  bool LoadAllGPXTrackObjects();
 
   bool SaveFile(const wxString filename);
 

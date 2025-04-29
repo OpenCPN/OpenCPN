@@ -96,6 +96,7 @@ millions of points.
 #include "model/routeman.h"
 #include "model/select.h"
 #include "ocpn_plugin.h"
+#include "model/navobj_db.h"
 
 std::vector<Track *> g_TrackList;
 
@@ -121,20 +122,25 @@ private:
 TrackPoint::TrackPoint(double lat, double lon, wxString ts)
     : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(ts);
+  SetGUID(GpxDocument::GetUUID().ToStdString());
 }
 
 TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
     : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(dt);
+  SetGUID(GpxDocument::GetUUID().ToStdString());
 }
 
 // Copy Constructor
 TrackPoint::TrackPoint(TrackPoint *orig)
     : m_lat(orig->m_lat), m_lon(orig->m_lon), m_GPXTrkSegNo(1) {
   SetCreateTime(orig->GetCreateTime());
+  SetGUID(orig->GetGUID());
 }
 
 TrackPoint::~TrackPoint() {}
+
+void TrackPoint::SetGUID(const std::string &_guid) { m_GUID = _guid; }
 
 wxDateTime TrackPoint::GetCreateTime() {
   wxDateTime CreateTimeX;
@@ -180,14 +186,14 @@ Track::Track() {
   m_bIsInLayer = false;
   m_btemp = false;
 
-  m_HyperlinkList = new HyperlinkList;
+  m_TrackHyperlinkList = new HyperlinkList;
   m_HighlightedTrackPoint = -1;
 }
 
 Track::~Track(void) {
   for (size_t i = 0; i < TrackPoints.size(); i++) delete TrackPoints[i];
 
-  delete m_HyperlinkList;
+  delete m_TrackHyperlinkList;
 }
 
 #define TIMER_TRACK1 778
@@ -679,8 +685,10 @@ TrackPoint *Track::AddNewPoint(vector2D point, wxDateTime time) {
 
   AddPointFinalized(tPoint);
 
-  NavObjectChanges::getInstance()->AddNewTrackPoint(
-      tPoint, m_GUID);  // This will update the "changes" file only
+  // NavObjectChanges::getInstance()->AddNewTrackPoint(
+  //   tPoint, m_GUID);  // This will update the "changes" file only
+
+  NavObj_dB::GetInstance().AddTrackPoint(this, tPoint);
 
   // send a wxJson message to all plugins
   wxJSONValue v;

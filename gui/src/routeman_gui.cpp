@@ -52,6 +52,7 @@
 #include "routeman_gui.h"
 #include "TrackPropDlg.h"
 #include "vector2D.h"
+#include "model/navobj_db.h"
 
 extern bool g_bShowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
@@ -306,7 +307,8 @@ void RoutemanGui::DeleteAllTracks() {
 
     g_pAIS->DeletePersistentTrack(ptrack);
     NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-    NavObjectChanges::getInstance()->DeleteConfigTrack(ptrack);
+    // NavObjectChanges::getInstance()->DeleteConfigTrack(ptrack);
+    NavObj_dB::GetInstance().DeleteTrack(ptrack);
     DeleteTrack(ptrack);
     NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
   }
