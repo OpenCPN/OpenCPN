@@ -66,6 +66,7 @@ public:
   AISTargetAlertDialog();
 
   ~AISTargetAlertDialog();
+  using OCPN_AlertDialog::Create;
   bool Create(int target_mmsi, wxWindow* parent, AisDecoder* pdecoder,
               bool b_jumpto, bool b_createWP, bool b_ack,
               wxWindowID id = wxID_ANY,

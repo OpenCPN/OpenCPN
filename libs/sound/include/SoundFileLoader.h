@@ -28,6 +28,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <cstdint>
 
 /**
  * A sound loader loads data from a sound file into memory, making it
