@@ -475,6 +475,7 @@ target_link_libraries(
     ocpn::nmea0183
     ocpn::pugixml
     ocpn::rapidjson
+    ocpn::sqlite
     ocpn::s52plib
     ocpn::sound
     ocpn::wxjson
