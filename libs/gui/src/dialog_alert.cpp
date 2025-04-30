@@ -20,9 +20,17 @@
 #include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/event.h>
+#include <wx/platinfo.h>
 #include <wx/sizer.h>
 
 #include "dialog_alert.h"
+
+static void EnsureBtnSize(wxWindow* btn) {
+  if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
+    btn->SetMinSize(btn->GetSize());
+  else
+    btn->SetMinSize(wxSize(-1, btn->GetCharHeight() * 4));
+}
 
 AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
                          const std::string& action)
@@ -35,13 +43,7 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
     wxButton* close_button = new wxButton(this, wxID_CLOSE, _("Close"));
 
     // Fix button height in footer when dialog has no parent.
-    if (!parent) {
-#ifdef _WIN32
-      close_button->SetMinSize(close_button->GetSize());
-#else
-      close_button->SetMinSize(wxSize(-1, GetCharHeight() * 4));
-#endif
-    }
+    if (!parent) EnsureBtnSize(close_button);
 
     close_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this, wxID_CLOSE);
     footer->SetCancelButton(close_button);
@@ -52,13 +54,8 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
 
     // Fix button height in footer when dialog has no parent.
     if (!parent) {
-#ifdef _WIN32
-      ok_button->SetMinSize(ok_button->GetSize());
-      cancel_button->SetMinSize(cancel_button->GetSize());
-#else
-      ok_button->SetMinSize(wxSize(-1, GetCharHeight() * 4));
-      cancel_button->SetMinSize(wxSize(-1, GetCharHeight() * 4));
-#endif
+      EnsureBtnSize(ok_button);
+      EnsureBtnSize(cancel_button);
     }
 
     ok_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
