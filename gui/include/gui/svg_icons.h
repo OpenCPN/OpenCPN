@@ -13,3 +13,4 @@ extern const char* kNoFunnelSvg;
 extern const char* kEditPenSvg;
 extern const char* kCheckmarkSvg;
 extern const char* kCopyIconSvg;
+extern const char* kMenuSvg;

@@ -698,16 +698,15 @@ private:
 };
 
 /** Button invoking the popup menu. */
-class MenuButton : public wxButton {
+class MenuButton : public SvgButton {
 public:
   MenuButton(wxWindow* parent, TheMenu& menu,
              std::function<std::string()> get_current_filter)
-      : wxButton(parent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                 wxDefaultSize, wxBU_EXACTFIT),
+      : SvgButton(parent),
         m_menu(menu),
         m_get_current_filter(std::move(get_current_filter)) {
+    LoadIcon(kMenuSvg);
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
-    SetLabel(kUtfIdenticalTo);
     SetToolTip(_("Open menu"));
   }
 

@@ -64,3 +64,11 @@ z m 5 5 c 0 -1.644531 1.355469 -3 3 -3 h 5 c 1.644531 0 3 1.355469 3 3 v 5 c 0
 -0.429688 -1 -1 -1 h -5 c -0.570312 0 -1 0.429688 -1 1 z m 0 0" fill="#222222"/>
 </svg>
 )--";
+
+const char* kMenuSvg = R"--(
+<svg xmlns="http://www.w3.org/2000/svg"
+  height="16px" viewBox="0 0 16 16" width="16px"><g fill="#222222">
+  <path d="m 2 3 h 12 v 2 h -12 z m 0 0"/>
+  <path d="m 2 7 h 12 v 2 h -12 z m 0 0"/>
+  <path d="m 2 11 h 12 v 2 h -12 z m 0 0"/></g></svg>
+)--";
