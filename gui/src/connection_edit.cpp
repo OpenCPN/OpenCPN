@@ -265,7 +265,6 @@ void ConnectionEditDialog::Init() {
   bSizer15 = new wxBoxSizer(wxHORIZONTAL);
 
   sbSizerConnectionProps->Add(bSizer15, 0, wxTOP | wxEXPAND, 5);
-  //  bSizer4->Add(bSizerOuterContainer, 1, wxEXPAND, 5);
 
   m_rbTypeSerial =
       new wxRadioButton(m_scrolledwin, wxID_ANY, _("Serial"), wxDefaultPosition,
@@ -600,6 +599,11 @@ void ConnectionEditDialog::Init() {
   fgSizer5->AddSpacer(1);
 
   // Authentication token
+  m_more = new wxStaticText(m_scrolledwin, wxID_ANY, "4 chars",
+                            wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+  m_more->SetLabelMarkup(MORE);
+  fgSizer5->Add(m_more, wxSizerFlags().Border());
+  fgSizer5->Add(new wxStaticText(m_scrolledwin, wxID_ANY, ""));
 
   m_stAuthToken = new wxStaticText(m_scrolledwin, wxID_ANY, _("Auth Token"),
                                    wxDefaultPosition, wxDefaultSize, 0);
@@ -758,11 +762,6 @@ void ConnectionEditDialog::Init() {
   bSizer12->AddSpacer(GetCharWidth() * 5);
 
   sbSizerConnectionProps->AddSpacer(20);
-
-  m_more = new wxStaticText(m_scrolledwin, wxID_ANY, "4 chars",
-                            wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
-  m_more->SetLabelMarkup(MORE);
-  sbSizerConnectionProps->Add(m_more, wxSizerFlags().Border());
 
   ConnectControls();
 
