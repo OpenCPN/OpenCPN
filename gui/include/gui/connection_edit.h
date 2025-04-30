@@ -36,6 +36,7 @@
 #include "model/comm_util.h"
 
 #include "observable.h"
+#include "expand_icon.h"
 
 class options;
 class ConnectionParamsPanel;
@@ -98,6 +99,7 @@ public:
   void OnConnValChange(wxCommandEvent &event);
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
+  void OnCollapsedToggle(bool collapsed);
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
@@ -209,8 +211,8 @@ public:
 
   // DECLARE_EVENT_TABLE()
 protected:
-  wxString MORE, LESS;
-  wxStaticText *m_more;
+  ExpandableIcon m_expandable_icon;
+  wxSizer *m_collapse_box;
 };
 
 class SentenceListDlg : public wxDialog {
