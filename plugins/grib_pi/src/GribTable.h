@@ -77,13 +77,11 @@ public:
   /**
    * Initialize the GRIB data table.
    *
-   * @param zone Time zone for displaying timestamps.
    * @param rsa Array of GRIB record sets containing the weather data.
    * @param NowIndex Index of the current time point to highlight.
    */
-  void InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa);
-  void InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
-                     int NowIndex);
+  void InitGribTable(ArrayOfGribRecordSets *rsa);
+  void InitGribTable(ArrayOfGribRecordSets *rsa, int NowIndex);
   /**
    * Set the table size and position relative to viewport.
    *

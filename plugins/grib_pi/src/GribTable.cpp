@@ -41,8 +41,7 @@ extern double m_cursor_lat, m_cursor_lon;
 GRIBTable::GRIBTable(GRIBUICtrlBar &parent)
     : GRIBTableBase(&parent), m_pGDialog(&parent) {}
 
-void GRIBTable::InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
-                              int NowIndex) {
+void GRIBTable::InitGribTable(ArrayOfGribRecordSets *rsa, int NowIndex) {
   m_pGribTable->m_gParent = this;
   m_pIndex = NowIndex;
 
@@ -71,9 +70,7 @@ void GRIBTable::InitGribTable(const wxString zone, ArrayOfGribRecordSets *rsa,
     // populate time labels
     time = rsa->Item(i).m_Reference_Time;
     DateTimeFormatOptions opts =
-        DateTimeFormatOptions()
-            .SetFormatString("$short_date\n$hour_minutes")
-            .SetTimezone(zone);
+        DateTimeFormatOptions().SetFormatString("$short_date\n$hour_minutes");
     m_pGribTable->SetColLabelValue(
         i, toUsrDateTimeFormat_Plugin(wxDateTime(time), opts));
     nrows = -1;

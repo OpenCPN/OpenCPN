@@ -187,7 +187,6 @@ public:
   }
   void SetMessageFont();
   void SetMessage(wxString message) { m_Message = message; }
-  void SetTimeZone(int TimeZone) { m_TimeZone = TimeZone; }
   void SetParentSize(int w, int h) {
     m_ParentSize.SetWidth(w);
     m_ParentSize.SetHeight(h);
@@ -349,7 +348,6 @@ private:
 
   wxString m_Message;
   wxString m_Message_Hiden;
-  int m_TimeZone;
 
   wxDC *m_pdc;
 #if wxUSE_GRAPHICS_CONTEXT

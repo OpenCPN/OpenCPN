@@ -239,7 +239,6 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_cZoomToCenterAtInit->SetValue(m_bZoomToCenterAtInit);
   Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
   Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
-  Pref->m_rbTimeFormat->SetSelection(m_bTimeZone);
   Pref->m_rbLoadOptions->SetSelection(m_bLoadLastOpenFile);
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
 
@@ -310,12 +309,6 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
     updatelevel = 1;
   }
 
-  if (m_bTimeZone != Pref->m_rbTimeFormat->GetSelection()) {
-    m_bTimeZone = Pref->m_rbTimeFormat->GetSelection();
-    if (m_pGRIBOverlayFactory) m_pGRIBOverlayFactory->SetTimeZone(m_bTimeZone);
-    updatelevel = 2;
-  }
-
   bool copyrec = Pref->m_cbCopyFirstCumulativeRecord->GetValue();
   bool copywave = Pref->m_cbCopyMissingWaveRecord->GetValue();
   if (m_bCopyFirstCumRec != copyrec || m_bCopyMissWaveRec != copywave) {
@@ -338,6 +331,8 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         break;
       case 2:
         // only rebuild  data list with current index and new timezone
+        // This no longer applicable because the timezone is set in the
+        // OpenCPN core global settings (Options -> Display -> General)
         m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
@@ -460,7 +455,6 @@ void grib_pi::OnToolbarToolCallback(int id) {
     // Create the drawing factory
     m_pGRIBOverlayFactory = new GRIBOverlayFactory(*m_pGribCtrlBar);
     m_pGRIBOverlayFactory->SetMessageFont();
-    m_pGRIBOverlayFactory->SetTimeZone(m_bTimeZone);
     m_pGRIBOverlayFactory->SetParentSize(m_display_width, m_display_height);
     m_pGRIBOverlayFactory->SetSettings(m_bGRIBUseHiDef, m_bGRIBUseGradualColors,
                                        m_bDrawBarbedArrowHead);
@@ -779,7 +773,6 @@ bool grib_pi::LoadConfig(void) {
   pConf->Read(_T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1);
   pConf->Read(_T( "ZoomToCenterAtInit"), &m_bZoomToCenterAtInit, 1);
   pConf->Read(_T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1);
-  pConf->Read(_T( "GRIBTimeZone" ), &m_bTimeZone, 2);
   pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
   pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
 #ifdef __WXMSW__
@@ -812,7 +805,6 @@ bool grib_pi::SaveConfig(void) {
   pConf->Write(_T ( "ShowGRIBIcon" ), m_bGRIBShowIcon);
   pConf->Write(_T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef);
   pConf->Write(_T ( "GRIBUseGradualColors" ), m_bGRIBUseGradualColors);
-  pConf->Write(_T ( "GRIBTimeZone" ), m_bTimeZone);
   pConf->Write(_T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec);
   pConf->Write(_T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec);
   pConf->Write(_T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead);
