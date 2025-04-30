@@ -26,4 +26,32 @@ const char* kCheckmark = R"--(
   0.71875 -0.34375 z m 0 0" fill="#222222"/></svg>
 )--";
 
+const char* kExpandSvg = R"--(
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <style
+        type="text/css"
+        id="current-color-scheme">
+        .ColorScheme-Text {
+            color:#232629;
+        }
+    </style>
+    <path d="M2 4v1h12V4zm.707 3L2 7.707l6 6 6-6L13.293 7 8 12.293 2.707 7z"
+     class="ColorScheme-Text" fill="currentColor"/>
+</svg>
+)--";
+
+const char* kCollapseSvg = R"--(
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <style
+        type="text/css"
+        id="current-color-scheme">
+        .ColorScheme-Text {
+            color:#232629;
+        }
+    </style>
+    <path class="ColorScheme-Text"
+         d="M2 4v1h12V4zm6 2.293l-6 6 .707.707L8 7.707 13.293 13l.707-.707z"
+         fill="currentColor"/>
+</svg>
+)--";
 }  // namespace gui_icons

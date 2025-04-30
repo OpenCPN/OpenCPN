@@ -12,5 +12,7 @@ namespace gui_icons {
 
 extern const char* kEditPen;
 extern const char* kCheckmark;
+extern const char* kExpandSvg;
+extern const char* kCollapseSvg;
 
 }  // namespace gui_icons
