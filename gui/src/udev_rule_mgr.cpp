@@ -48,6 +48,7 @@
 #include "model/notification_manager.h"
 #include "model/ocpn_utils.h"
 
+#include "expand_panel.h"
 #include "gui_lib.h"
 #include "udev_rule_mgr.h"
 
@@ -222,54 +223,23 @@ public:
   }
 };
 
-/** A clickable triangle which controls child window hide/show. */
-class HideShowPanel : public wxPanel {
-public:
-  HideShowPanel(wxWindow* parent, wxWindow* child)
-      : wxPanel(parent), m_show(true), m_child(child) {
-    m_arrow = new wxStaticText(this, wxID_ANY, "");
-    m_arrow->Bind(wxEVT_LEFT_DOWN, [&](wxMouseEvent& ev) { Toggle(); });
-    if (m_child) {
-      Toggle();
-    }
-  }
-
-protected:
-  bool m_show;
-  wxWindow* m_child;
-  wxStaticText* m_arrow;
-
-  void Toggle() {
-    static const auto ARROW_DOWN = L"\u25BC";
-    static const auto ARROW_RIGHT = L"\u25BA";
-
-    m_show = !m_show;
-    m_child->Show(m_show);
-    m_arrow->SetLabel(std::string(" ") + (m_show ? ARROW_DOWN : ARROW_RIGHT));
-    GetGrandParent()->Fit();
-    GetGrandParent()->Layout();
-  }
-};
-
 /**  Manual instructions dynamic display. */
-class ManualInstructions : public HideShowPanel {
+class ManualInstructions : public ExpandablePanel {
 public:
   ManualInstructions(wxWindow* parent, const char* cmd)
-      : HideShowPanel(parent, 0) {
-    m_child = GetCmd(parent, cmd);
-    Toggle();
+      : ExpandablePanel(parent, nullptr) {
+    Create(GetCmd(parent, cmd));
     auto flags = wxSizerFlags().Expand();
-
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
+
     const char* label = _("Manual command line instructions");
     hbox->Add(new wxStaticText(this, wxID_ANY, label), flags);
-    hbox->Add(m_arrow);
+    hbox->Add(GetIcon());
 
     auto vbox = new wxBoxSizer(wxVERTICAL);
-
     vbox->Add(hbox);
     flags = flags.Border(wxLEFT);
-    vbox->Add(m_child, flags.ReserveSpaceEvenIfHidden());
+    vbox->Add(GetChild(), flags.ReserveSpaceEvenIfHidden());
 
     SetSizer(vbox);
     SetAutoLayout(true);
@@ -288,24 +258,23 @@ private:
 };
 
 /** Review rule dynamic display. */
-class ReviewRule : public HideShowPanel {
+class ReviewRule : public ExpandablePanel {
 public:
   ReviewRule(wxWindow* parent, const std::string& rule)
-      : HideShowPanel(parent, 0) {
+      : ExpandablePanel(parent) {
     int from = rule[0] == '\n' ? 1 : 0;
-    m_child = new wxStaticText(this, wxID_ANY, rule.substr(from));
-    Toggle();
+    Create(new wxStaticText(this, wxID_ANY, rule.substr(from)));
 
     auto flags = wxSizerFlags().Expand();
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Review rule")), flags);
-    hbox->Add(m_arrow);
-
+    hbox->Add(GetIcon(), flags);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(hbox);
     auto indent = parent->GetTextExtent("ABCDE").GetWidth();
     flags = flags.Border(wxLEFT, indent);
-    vbox->Add(m_child, flags.ReserveSpaceEvenIfHidden());
+
+    vbox->Add(GetChild(), flags.ReserveSpaceEvenIfHidden());
     SetSizer(vbox);
     SetAutoLayout(true);
     Show();
