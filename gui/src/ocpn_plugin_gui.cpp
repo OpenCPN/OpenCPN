@@ -2258,6 +2258,11 @@ std::vector<std::string> GetPriorityMaps() {
   return (app.m_comm_bridge.GetPriorityMaps());
 }
 
+void UpdateAndApplyPriorityMaps(std::vector<std::string> map) {
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.UpdateAndApplyMaps(map);
+}
+
 std::vector<std::string> GetActivePriorityIdentifiers() {
   std::vector<std::string> result;
 

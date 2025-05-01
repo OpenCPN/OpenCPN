@@ -5501,6 +5501,12 @@ extern DECL_EXP double OCPN_GetWinDIPScaleFactor();
 extern DECL_EXP std::vector<std::string> GetPriorityMaps();
 
 /**
+ * Sets and applies new priority mapping scheme.
+ *
+ */
+extern DECL_EXP void UpdateAndApplyPriorityMaps(std::vector<std::string> map);
+
+/**
  * Gets list of active priority identifiers.
  *
  * Returns list of currently active data source priority identifiers.
