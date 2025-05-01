@@ -1907,26 +1907,26 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
   dst->m_GUID = src->m_GUID;
 
   //  Transcribe (clone) the html HyperLink List, if present
-  if (src->m_HyperlinkList == nullptr) return;
+  if (src->m_HyperlinkList) {
+    delete dst->m_HyperlinkList;
+    dst->m_HyperlinkList = nullptr;
 
-  delete dst->m_HyperlinkList;
-  dst->m_HyperlinkList = nullptr;
+    if (src->m_HyperlinkList->GetCount() > 0) {
+      dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-  if (src->m_HyperlinkList->GetCount() > 0) {
-    dst->m_HyperlinkList = new Plugin_HyperlinkList;
+      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      while (linknode) {
+        Hyperlink* link = linknode->GetData();
 
-    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
+        Plugin_Hyperlink* h = new Plugin_Hyperlink();
+        h->DescrText = link->DescrText;
+        h->Link = link->Link;
+        h->Type = link->LType;
 
-      Plugin_Hyperlink* h = new Plugin_Hyperlink();
-      h->DescrText = link->DescrText;
-      h->Link = link->Link;
-      h->Type = link->LType;
+        dst->m_HyperlinkList->Append(h);
 
-      dst->m_HyperlinkList->Append(h);
-
-      linknode = linknode->GetNext();
+        linknode = linknode->GetNext();
+      }
     }
   }
 

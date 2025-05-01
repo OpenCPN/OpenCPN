@@ -5240,7 +5240,6 @@ public:
                      const int nRanges = 0, const double RangeDistance = 1.0,
                      const wxColor RangeColor = wxColor(255, 0, 0));
   ~PlugIn_Waypoint_Ex();
-
   /**
    * Initializes waypoint properties to default values.
    *
