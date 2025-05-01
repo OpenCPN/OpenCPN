@@ -152,8 +152,6 @@ void DemoPi::UpdateAuiStatus(void) {
   wxAuiPaneInfo& pane = m_aui_mgr->GetPane(m_demo_window.get());
   if (!pane.IsOk()) return;
 
-  printf("update %d\n", pane.IsShown());
-
   SetCanvasContextMenuItemViz(m_hide_id, pane.IsShown());
   SetCanvasContextMenuItemViz(m_show_id, !pane.IsShown());
 }
@@ -220,7 +218,7 @@ DemoWindow::DemoWindow(wxWindow* parent, wxWindowID id)
   Bind(EVT_DEMO_GGA, [&](ObservedEvt ev) { HandleGga(ev); });
 }
 
-void DemoWindow::OnSize(wxSizeEvent&) { printf("demoWindow OnSize()\n"); }
+void DemoWindow::OnSize(wxSizeEvent&) {}
 
 void DemoWindow::SetNavdata(ObservedEvt ev) {
   const PluginNavdata nav_data = GetEventNavdata(ev);
