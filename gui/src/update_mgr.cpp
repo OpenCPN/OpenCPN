@@ -42,6 +42,7 @@
 #include <wx/textwrapper.h>
 
 #include "catalog_mgr.h"
+#include "expand_icon.h"
 #include "update_mgr.h"
 #include "model/plugin_loader.h"
 #include "model/downloader.h"
@@ -112,22 +113,6 @@ static PlugInContainer* PlugInByName(const std::string name,
   return ix == -1 ? 0 : plugins->Item(ix);
 }
 
-/** Load a png icon rescaled to size x size. */
-static void LoadPNGIcon(const char* path, int size, wxBitmap& bitmap) {
-  wxPNGHandler handler;
-  if (!wxImage::FindHandler(handler.GetName())) {
-    wxImage::AddHandler(new wxPNGHandler());
-  }
-  auto img = new wxImage();
-  bool ok = img->LoadFile(path, wxBITMAP_TYPE_PNG);
-  if (!ok) {
-    bitmap = wxBitmap();
-    return;
-  }
-  img->Rescale(size, size);
-  bitmap = wxBitmap(*img);
-}
-
 /**
  * A plugin icon, scaled to about 2/3 of available space
  *
@@ -145,7 +130,7 @@ public:
     Bind(wxEVT_PAINT, &PluginIconPanel::OnPaint, this);
   }
 
-  void OnPaint(wxPaintEvent& event) {
+  void OnPaint(wxPaintEvent&) {
     auto size = GetClientSize();
     int minsize = wxMin(size.GetHeight(), size.GetWidth());
     auto offset = minsize / 10;
@@ -201,7 +186,7 @@ protected:
 class InstallButton : public wxPanel {
 public:
   InstallButton(wxWindow* parent, PluginMetadata metadata)
-      : wxPanel(parent), m_metadata(metadata), m_remove(false) {
+      : wxPanel(parent), m_metadata(metadata) {
     auto loader = PluginLoader::GetInstance();
     PlugInContainer* found =
         PlugInByName(metadata.name, loader->GetPlugInArray());
@@ -209,17 +194,15 @@ public:
     if (found &&
         ((found->m_version_major > 0) || (found->m_version_minor > 0))) {
       label = getUpdateLabel(found, metadata);
-      m_remove = true;
     }
     auto button = new wxButton(this, wxID_ANY, label);
-    auto pluginHandler = PluginHandler::getInstance();
     auto box = new wxBoxSizer(wxHORIZONTAL);
     box->Add(button);
     SetSizer(box);
     Bind(wxEVT_COMMAND_BUTTON_CLICKED, &InstallButton::OnClick, this);
   }
 
-  void OnClick(wxCommandEvent& event) {
+  void OnClick(wxCommandEvent&) {
     wxLogMessage("Selected update: %s", m_metadata.name.c_str());
     auto top_parent = GetParent()->GetParent()->GetParent();
     auto dialog = dynamic_cast<UpdateDialog*>(top_parent);
@@ -230,7 +213,6 @@ public:
 
 private:
   PluginMetadata m_metadata;
-  bool m_remove;
 
   const char* getUpdateLabel(PlugInContainer* pic, PluginMetadata metadata) {
     SemanticVersion currentVersion(pic->m_version_major, pic->m_version_minor);
@@ -298,20 +280,13 @@ class PluginTextPanel : public wxPanel {
 public:
   PluginTextPanel(wxWindow* parent, const PluginMetadata* plugin,
                   CandidateButtonsPanel* buttons, bool bshowTuple = false)
-      : wxPanel(parent), m_descr(0), m_buttons(buttons) {
+      : wxPanel(parent),
+        m_isDesc(false),
+        m_descr(0),
+        m_more(new ExpandableIcon(this,
+                                  [&](bool collapsed) { OnClick(collapsed); })),
+        m_buttons(buttons) {
     auto flags = wxSizerFlags().Border();
-    m_isDesc = false;
-
-    MORE = "<span foreground=\'blue\'>";
-    MORE += _("More");
-    MORE += "...</span>";
-    LESS = "<span foreground=\'blue\'>";
-    LESS += _("Less");
-    LESS += "...</span>";
-
-    //  For small displays, skip the "More" text.
-    if (g_Platform->getDisplaySize().x < 80 * GetCharWidth()) MORE = "";
-
     auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
     m_widthDescription = g_options->GetSize().x * 4 / 10;
 
@@ -324,12 +299,9 @@ public:
     m_summary->Wrap(m_widthDescription);
 
     HardBreakWrapper wrapper(this, m_summaryText, m_widthDescription);
-    m_summaryLineCount = wrapper.GetLineCount() + 1;
 
     sum_hbox->Add(m_summary);
     sum_hbox->AddSpacer(10);
-    m_more = staticText("4 Chars");
-    m_more->SetLabelMarkup(MORE);
     sum_hbox->Add(m_more, wxSizerFlags());
 
     auto vbox = new wxBoxSizer(wxVERTICAL);
@@ -360,20 +332,12 @@ public:
     vbox->Add(sum_hbox, flags);
     vbox->Add(m_descr, 0);
     Fit();
-
-    m_more->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
-    m_descr->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
   }
 
-  void OnClick(wxMouseEvent& event) {
-    m_descr->Show(!m_descr->IsShown());
-    m_descr->SetLabel(_T(""));
+  void OnClick() {
     m_descr->SetLabel(m_descText);
     m_descr->Wrap(m_widthDescription);
-    Layout();
-    wxSize asize = GetEffectiveMinSize();
-
-    m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
+    GetParent()->Layout();
     m_buttons->HideDetails(!m_descr->IsShown());
 
     auto swin = dynamic_cast<UpdateDialog*>(GetGrandParent());
@@ -382,19 +346,26 @@ public:
     }
   }
 
-  int m_summaryLineCount;
+  void OnClick(wxMouseEvent&) {
+    m_descr->Show(!m_descr->IsShown());
+    OnClick();
+  }
+
+  void OnClick(bool collapsed) {
+    m_descr->Show(!collapsed);
+    m_isDesc = !collapsed;
+    OnClick();
+  }
   bool m_isDesc;
 
 protected:
-  wxString MORE, LESS;
-
   wxStaticText* staticText(const wxString& text) {
     return new wxStaticText(this, wxID_ANY, text, wxDefaultPosition,
                             wxDefaultSize, wxALIGN_LEFT);
   }
 
   wxStaticText* m_descr;
-  wxStaticText* m_more;
+  ExpandableIcon* m_more;
   wxStaticText* m_summary;
   CandidateButtonsPanel* m_buttons;
   int m_widthDescription;
@@ -425,17 +396,10 @@ public:
     SetSizer(box);
     SetMinSize(GetEffectiveMinSize());
     SetScrollRate(1, 1);
+    SetAutoLayout(true);
   };
 
   void populateGrid(wxFlexGridSizer* grid) {
-    /** Compare two PluginMetadata objects, a named c++ requirement. */
-    struct metadata_compare {
-      bool operator()(const PluginMetadata& lhs,
-                      const PluginMetadata& rhs) const {
-        return lhs.key() < rhs.key();
-      }
-    };
-
     auto flags = wxSizerFlags();
     grid->SetCols(3);
     grid->AddGrowableCol(2);
@@ -489,33 +453,10 @@ UpdateDialog::~UpdateDialog() {
 }
 
 void UpdateDialog::RecalculateSize() {
-  int calcHeight = 0;
-  int calcWidth = 0;
-  wxWindowList& kids = m_scrwin->GetChildren();
-  for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
-    wxWindow* win = node->GetData();
-
-    auto panel = dynamic_cast<PluginTextPanel*>(win);
-    if (panel) {
-      if (panel->m_isDesc) {
-        wxSize tsize = win->GetEffectiveMinSize();
-        calcHeight += tsize.y + GetCharHeight();
-        calcWidth = tsize.x * 2;
-      }
-    }
-  }
-
-  calcHeight += 3 * GetCharHeight();  // "dismiss" button
-  calcWidth = wxMin(calcWidth, g_Platform->getDisplaySize().x);
-
-  m_scrwin->SetMinSize(wxSize(calcWidth, calcHeight));
-
-#ifdef __OCPN__ANDROID__
+  m_scrwin->SetMinClientSize(m_scrwin->GetSizer()->GetMinSize());
+#ifdef __ANDROID__
   SetMinSize(g_Platform->getDisplaySize());
 #endif
-
-  Fit();
   SetMaxSize(g_Platform->getDisplaySize());
-  Layout();
+  Fit();
 }
