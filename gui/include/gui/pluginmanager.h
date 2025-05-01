@@ -353,8 +353,6 @@ public:
 
 WX_DEFINE_ARRAY_PTR(PluginPanel*, ArrayOfPluginPanel);
 
-class PluginDownloadDialog;
-
 /*
  * Panel with a single + sign which opens the "Add/download plugins" dialog.
  */
