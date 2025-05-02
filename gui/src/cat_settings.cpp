@@ -86,11 +86,11 @@ private:
   }
 
   wxArrayString getLabels() {
-    auto plug_handler = PluginHandler::getInstance();
+    auto plug_handler = PluginHandler::GetInstance();
     wxArrayString labels;
     labels.Add(_("Select new flavour"));
     labels.Add(_("Default setting"));
-    for (const auto& c : plug_handler->getCountByTarget()) {
+    for (const auto& c : plug_handler->GetCountByTarget()) {
       std::stringstream ss;
       ss << c.first << "   (" << c.second << ")";
       labels.Add(ss.str());

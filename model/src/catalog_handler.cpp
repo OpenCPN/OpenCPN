@@ -85,7 +85,7 @@ CatalogCtx* CatalogHandler::GetActiveCatalogContext() {
     return &m_catalogctx;
   }
 
-  auto path = PluginHandler::getInstance()->getMetadataPath();
+  auto path = PluginHandler::GetInstance()->GetMetadataPath();
 
   if (!ocpn::exists(path)) {
     m_catalog_status = ServerStatus::FILE_ERROR;
@@ -177,7 +177,7 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
   std::string url;
 
   bool ok = ::ParseCatalog(xml, ctx);
-  for (auto path : PluginHandler::getInstance()->GetImportPaths()) {
+  for (auto path : PluginHandler::GetInstance()->GetImportPaths()) {
     std::ifstream plugin_xml(path);
     std::stringstream ss;
     ss << plugin_xml.rdbuf();
@@ -286,7 +286,7 @@ void CatalogHandler::LoadCatalogData(const std::string& path,
 
 CatalogData CatalogHandler::UserCatalogData() {
   if (user_data.undef) {
-    auto plugin_handler = PluginHandler::getInstance();
+    auto plugin_handler = PluginHandler::GetInstance();
     std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
     path += SEP;
     path += "ocpn-plugins.xml";
@@ -297,7 +297,7 @@ CatalogData CatalogHandler::UserCatalogData() {
 
 CatalogData CatalogHandler::DefaultCatalogData() {
   if (default_data.undef) {
-    auto plugin_handler = PluginHandler::getInstance();
+    auto plugin_handler = PluginHandler::GetInstance();
     std::string path = g_BasePlatform->GetSharedDataDir().ToStdString();
     path += SEP;
     path += "ocpn-plugins.xml";

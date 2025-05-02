@@ -111,7 +111,7 @@ Commands:
   install-plugin <plugin name>:
       Download and install given plugin
 
-  uninstall-plugin <plugin name>:
+  Uninstall-plugin <plugin name>:
       Uninstall given plugin
 
   list-plugins:
@@ -186,7 +186,7 @@ public:
     wxImage::AddHandler(new wxPNGHandler());
     g_BasePlatform->GetSharedDataDir();  // See #2619
     PluginLoader::GetInstance()->LoadAllPlugIns(false);
-    auto plugins = PluginHandler::getInstance()->getInstalled();
+    auto plugins = PluginHandler::GetInstance()->GetInstalled();
     for (const auto& p : plugins) {
       if (p.version == "0.0") continue;
       auto path = PluginHandler::ImportedMetadataPath(p.name);
@@ -197,10 +197,10 @@ public:
 
   void list_available() {
     using namespace std;
-    auto handler = PluginHandler::getInstance();
-    auto plugins = handler->getAvailable();
+    auto handler = PluginHandler::GetInstance();
+    auto plugins = handler->GetAvailable();
     for (const auto& p : plugins) {
-      if (handler->isCompatible(p)) {
+      if (handler->IsCompatible(p)) {
         cout << left << setw(25) << p.name << p.version << "\n";
       }
     }
@@ -210,7 +210,7 @@ public:
     using namespace std;
     g_BasePlatform->GetSharedDataDir();  // See #2619
     PluginLoader::GetInstance()->LoadAllPlugIns(false);
-    auto plugins = PluginHandler::getInstance()->getInstalled();
+    auto plugins = PluginHandler::GetInstance()->GetInstalled();
     vector<PluginMetadata> found;
     copy_if(plugins.begin(), plugins.end(), back_inserter(found),
             [plugin](const PluginMetadata& m) { return m.name == plugin; });
@@ -218,22 +218,22 @@ public:
       cerr << "No such plugin installed\n";
       exit(2);
     }
-    PluginHandler::getInstance()->uninstall(found[0].name);
+    PluginHandler::GetInstance()->Uninstall(found[0].name);
   }
 
   void import_plugin(const std::string& tarball_path) {
-    auto handler = PluginHandler::getInstance();
+    auto handler = PluginHandler::GetInstance();
     PluginMetadata metadata;
     bool ok = handler->ExtractMetadata(tarball_path, metadata);
     if (!ok) {
       std::cerr << "Cannot extract metadata (malformed tarball?)\n";
       exit(2);
     }
-    if (!PluginHandler::isCompatible(metadata)) {
+    if (!PluginHandler::IsCompatible(metadata)) {
       std::cerr << "Incompatible plugin detected\n";
       exit(2);
     }
-    ok = handler->installPlugin(metadata, tarball_path);
+    ok = handler->InstallPlugin(metadata, tarball_path);
     if (!ok) {
       std::cerr << "Error extracting import plugin tarball.\n";
       exit(2);
@@ -254,12 +254,12 @@ public:
     using namespace std;
     g_BasePlatform->GetSharedDataDir();  // See #2619
     wxImage::AddHandler(new wxPNGHandler());
-    auto handler = PluginHandler::getInstance();
-    auto plugins = handler->getAvailable();
+    auto handler = PluginHandler::GetInstance();
+    auto plugins = handler->GetAvailable();
     vector<PluginMetadata> found;
     copy_if(plugins.begin(), plugins.end(), back_inserter(found),
             [plugin, handler](const PluginMetadata& m) {
-              return m.name == plugin && handler->isCompatible(m);
+              return m.name == plugin && handler->IsCompatible(m);
             });
     if (found.size() == 0) {
       cerr << "No such plugin available\n";
@@ -272,13 +272,13 @@ public:
       cerr << "Cannot download data from " << found[0].tarball_url << "\n";
       exit(1);
     }
-    PluginHandler::getInstance()->installPlugin(path);
+    PluginHandler::GetInstance()->InstallPlugin(path);
     remove(path.c_str());
     exit(0);
   }
 
   void plugin_by_file(const std::string& filename) {
-    auto plugin = PluginHandler::getInstance()->getPluginByLibrary(filename);
+    auto plugin = PluginHandler::GetInstance()->GetPluginByLibrary(filename);
     std::cout << (plugin != "" ? plugin : "Not found") << "\n";
   }
 
@@ -373,7 +373,7 @@ public:
       url = std::string(DOWNLOAD_REPO_PROTO);
       ocpn::replace(url, "@branch@", catalog);
     }
-    auto path = PluginHandler::getInstance()->getMetadataPath();
+    auto path = PluginHandler::GetInstance()->GetMetadataPath();
     auto cat_handler = CatalogHandler::getInstance();
     auto status = cat_handler->DownloadCatalog(path, url);
     if (status != CatalogHandler::ServerStatus::OK) {

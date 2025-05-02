@@ -207,7 +207,7 @@ protected:
       using CmdEvt = wxCommandEvent;
 
       auto grid = new wxFlexGridSizer(4, 0, 0);
-      auto plugin_handler = PluginHandler::getInstance();
+      auto plugin_handler = PluginHandler::GetInstance();
       grid->AddGrowableCol(0);
       grid->AddGrowableCol(1);
       grid->AddGrowableCol(2);
@@ -302,7 +302,7 @@ protected:
     }
 
     std::string GetPrivateCatalogPath() {
-      auto plugin_handler = PluginHandler::getInstance();
+      auto plugin_handler = PluginHandler::GetInstance();
       std::string path = g_Platform->GetPrivateDataDir().ToStdString();
       path += SEP + "ocpn-plugins.xml";
       return path;

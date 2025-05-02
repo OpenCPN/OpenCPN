@@ -183,7 +183,7 @@ static std::string dirListPath(std::string name) {
   return pluginsConfigDir() + SEP + name + ".dirs";
 }
 
-std::string PluginHandler::pluginsInstallDataPath() {
+std::string PluginHandler::PluginsInstallDataPath() {
   return pluginsConfigDir();
 }
 
@@ -372,7 +372,7 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
 
 PluginHandler::PluginHandler() {}
 
-bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
+bool PluginHandler::IsCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
   static const SemanticVersion kMinApi = SemanticVersion(1, 16);
   static const SemanticVersion kMaxApi = SemanticVersion(1, 20);
@@ -425,12 +425,12 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   return rv;
 }
 
-std::string PluginHandler::fileListPath(std::string name) {
+std::string PluginHandler::FileListPath(std::string name) {
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
   return pluginsConfigDir() + SEP + name + ".files";
 }
 
-std::string PluginHandler::versionPath(std::string name) {
+std::string PluginHandler::VersionPath(std::string name) {
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
   return pluginsConfigDir() + SEP + name + ".version";
 }
@@ -461,7 +461,7 @@ static pathmap_t getInstallPaths() {
 
 static void saveFilelist(std::string filelist, std::string name) {
   using namespace std;
-  string listpath = PluginHandler::fileListPath(name);
+  string listpath = PluginHandler::FileListPath(name);
   ofstream diskfiles(listpath);
   if (!diskfiles.is_open()) {
     MESSAGE_LOG << "Cannot create installed files list.";
@@ -487,7 +487,7 @@ static void saveDirlist(std::string name) {
 
 static void saveVersion(const std::string& name, const std::string& version) {
   using namespace std;
-  string path = PluginHandler::versionPath(name);
+  string path = PluginHandler::VersionPath(name);
   ofstream stream(path);
   if (!stream.is_open()) {
     MESSAGE_LOG << "Cannot create version file.";
@@ -826,7 +826,7 @@ static bool entry_set_install_path(struct archive_entry* entry,
   return rv;
 }
 
-bool PluginHandler::archive_check(int r, const char* msg, struct archive* a) {
+bool PluginHandler::ArchiveCheck(int r, const char* msg, struct archive* a) {
   if (r < ARCHIVE_OK) {
     std::string s(msg);
 
@@ -837,7 +837,7 @@ bool PluginHandler::archive_check(int r, const char* msg, struct archive* a) {
   return r >= ARCHIVE_WARN;
 }
 
-bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
+bool PluginHandler::ExplodeTarball(struct archive* src, struct archive* dest,
                                    std::string& filelist,
                                    const std::string& metadata_path,
                                    bool only_metadata) {
@@ -852,7 +852,7 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
       }
       return is_metadata_ok;
     }
-    if (!archive_check(r, "archive read header error", src)) {
+    if (!ArchiveCheck(r, "archive read header error", src)) {
       return false;
     }
     std::string path = archive_entry_pathname(entry);
@@ -877,15 +877,15 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
       filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
     }
     r = archive_write_header(dest, entry);
-    archive_check(r, "archive write install header error", dest);
+    ArchiveCheck(r, "archive write install header error", dest);
     if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
       r = copy_data(src, dest);
-      if (!archive_check(r, "archive copy data error", dest)) {
+      if (!ArchiveCheck(r, "archive copy data error", dest)) {
         return false;
       }
     }
     r = archive_write_finish_entry(dest);
-    if (!archive_check(r, "archive finish write error", dest)) {
+    if (!ArchiveCheck(r, "archive finish write error", dest)) {
       return false;
     }
   }
@@ -921,7 +921,7 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
  *   @return true if tarball contains metadata.xml file, false otherwise.
  *
  */
-bool PluginHandler::extractTarball(const std::string path,
+bool PluginHandler::ExtractTarball(const std::string path,
                                    std::string& filelist,
                                    const std::string metadata_path,
                                    bool only_metadata) {
@@ -938,13 +938,13 @@ bool PluginHandler::extractTarball(const std::string path,
   }
   struct archive* dest = archive_write_disk_new();
   archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
-  bool ok = explodeTarball(src, dest, filelist, metadata_path, only_metadata);
+  bool ok = ExplodeTarball(src, dest, filelist, metadata_path, only_metadata);
   archive_read_free(src);
   archive_write_free(dest);
   return ok;
 }
 
-PluginHandler* PluginHandler::getInstance() {
+PluginHandler* PluginHandler::GetInstance() {
   static PluginHandler* instance = 0;
   if (!instance) {
     instance = new (PluginHandler);
@@ -952,8 +952,8 @@ PluginHandler* PluginHandler::getInstance() {
   return instance;
 }
 
-bool PluginHandler::isPluginWritable(std::string name) {
-  if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
+bool PluginHandler::IsPluginWritable(std::string name) {
+  if (isRegularFile(PluginHandler::FileListPath(name).c_str())) {
     return true;
   }
   auto loader = PluginLoader::GetInstance();
@@ -1006,11 +1006,11 @@ bool PluginHandler::InstallPlugin(const std::string& path,
                                   std::string& filelist,
                                   const std::string metadata_path,
                                   bool only_metadata) {
-  if (!extractTarball(path, filelist, metadata_path, only_metadata)) {
+  if (!ExtractTarball(path, filelist, metadata_path, only_metadata)) {
     std::ostringstream os;
     os << "Cannot unpack plugin tarball at : " << path;
     MESSAGE_LOG << os.str();
-    if (filelist != "") cleanup(filelist, "unknown_name");
+    if (filelist != "") Cleanup(filelist, "unknown_name");
     last_error_msg = os.str();
     return false;
   }
@@ -1033,7 +1033,7 @@ bool PluginHandler::InstallPlugin(const std::string& path,
   return true;
 }
 
-std::string PluginHandler::getMetadataPath() {
+std::string PluginHandler::GetMetadataPath() {
   if (metadataPath.size() > 0) {
     return metadataPath;
   }
@@ -1042,9 +1042,9 @@ std::string PluginHandler::getMetadataPath() {
   return metadataPath;
 }
 
-const std::map<std::string, int> PluginHandler::getCountByTarget() {
-  auto plugins = getInstalled();
-  auto a = getAvailable();
+const std::map<std::string, int> PluginHandler::GetCountByTarget() {
+  auto plugins = GetInstalled();
+  auto a = GetAvailable();
   plugins.insert(plugins.end(), a.begin(), a.end());
   std::map<std::string, int> count_by_target;
   for (const auto& p : plugins) {
@@ -1065,13 +1065,13 @@ std::vector<std::string> PluginHandler::GetImportPaths() {
   return glob_dir(importsDir(), "*.xml");
 }
 
-void PluginHandler::cleanupFiles(const std::string& manifestFile,
+void PluginHandler::CleanupFiles(const std::string& manifestFile,
                                  const std::string& plugname) {
   std::ifstream diskfiles(manifestFile);
   if (diskfiles.is_open()) {
     std::stringstream buffer;
     buffer << diskfiles.rdbuf();
-    PluginHandler::cleanup(buffer.str(), plugname);
+    PluginHandler::Cleanup(buffer.str(), plugname);
   }
 }
 
@@ -1094,7 +1094,7 @@ static void PurgeEmptyDirs(const std::string& root) {
   }
 }
 
-void PluginHandler::cleanup(const std::string& filelist,
+void PluginHandler::Cleanup(const std::string& filelist,
                             const std::string& plugname) {
   MESSAGE_LOG << "Cleaning up failed install of " << plugname;
 
@@ -1109,12 +1109,12 @@ void PluginHandler::cleanup(const std::string& filelist,
   }
   for (const auto& path : paths) PurgeEmptyDirs(path);
 
-  std::string path = PluginHandler::fileListPath(plugname);
+  std::string path = PluginHandler::FileListPath(plugname);
   if (ocpn::exists(path)) remove(path.c_str());
 
   // Best effort tries, failures are non-critical
   remove(dirListPath(plugname).c_str());
-  remove(PluginHandler::versionPath(plugname).c_str());
+  remove(PluginHandler::VersionPath(plugname).c_str());
 }
 
 /**
@@ -1133,18 +1133,18 @@ std::vector<PluginMetadata> PluginHandler::getCompatiblePlugins() {
   std::vector<PluginMetadata> returnArray;
 
   std::set<PluginMetadata, metadata_compare> unique_plugins;
-  for (const auto& plugin : getAvailable()) {
+  for (const auto& plugin : GetAvailable()) {
     unique_plugins.insert(plugin);
   }
   for (const auto& plugin : unique_plugins) {
-    if (isCompatible(plugin)) {
+    if (IsCompatible(plugin)) {
       returnArray.push_back(plugin);
     }
   }
   return returnArray;
 }
 
-const std::vector<PluginMetadata> PluginHandler::getAvailable() {
+const std::vector<PluginMetadata> PluginHandler::GetAvailable() {
   using namespace std;
   CatalogCtx* ctx;
 
@@ -1163,7 +1163,7 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable() {
 
 std::vector<std::string> PluginHandler::GetInstalldataPlugins() {
   std::vector<std::string> names;
-  fs::path dirpath(pluginsInstallDataPath());
+  fs::path dirpath(PluginsInstallDataPath());
   for (const auto& entry : fs::directory_iterator(dirpath)) {
     const std::string name(entry.path().filename().string());
     if (ocpn::endswith(name, ".files"))
@@ -1172,7 +1172,7 @@ std::vector<std::string> PluginHandler::GetInstalldataPlugins() {
   return names;
 }
 
-const std::vector<PluginMetadata> PluginHandler::getInstalled() {
+const std::vector<PluginMetadata> PluginHandler::GetInstalled() {
   using namespace std;
   vector<PluginMetadata> plugins;
 
@@ -1186,8 +1186,8 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
     std::stringstream ss;
     ss << p->m_version_major << "." << p->m_version_minor;
     plugin.version = ss.str();
-    plugin.readonly = !isPluginWritable(plugin.name);
-    string path = PluginHandler::versionPath(plugin.name);
+    plugin.readonly = !IsPluginWritable(plugin.name);
+    string path = PluginHandler::VersionPath(plugin.name);
     if (path != "" && wxFileName::IsFileReadable(path)) {
       std::ifstream stream;
       stream.open(path, ifstream::in);
@@ -1207,14 +1207,14 @@ void PluginHandler::SetInstalledMetadata(const PluginMetadata& pm) {
   plugins[ix]->m_managed_metadata = pm;
 }
 
-bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
+bool PluginHandler::InstallPlugin(PluginMetadata plugin, std::string path) {
   std::string filelist;
-  if (!extractTarball(path, filelist)) {
+  if (!ExtractTarball(path, filelist)) {
     std::ostringstream os;
     os << "Cannot unpack plugin: " << plugin.name << " at " << path;
     MESSAGE_LOG << os.str();
     last_error_msg = os.str();
-    PluginHandler::cleanup(filelist, plugin.name);
+    PluginHandler::Cleanup(filelist, plugin.name);
     return false;
   }
   saveFilelist(filelist, plugin.name);
@@ -1223,7 +1223,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
   return true;
 }
 
-bool PluginHandler::installPlugin(PluginMetadata plugin) {
+bool PluginHandler::InstallPlugin(PluginMetadata plugin) {
   std::string path = tmpfile_path();
   if (path.empty()) {
     MESSAGE_LOG << "Cannot create temporary file";
@@ -1236,27 +1236,27 @@ bool PluginHandler::installPlugin(PluginMetadata plugin) {
   auto downloader = Downloader(plugin.tarball_url);
   downloader.download(&stream);
 
-  return installPlugin(plugin, path);
+  return InstallPlugin(plugin, path);
 }
 
-bool PluginHandler::installPlugin(const std::string& path) {
+bool PluginHandler::InstallPlugin(const std::string& path) {
   PluginMetadata metadata;
   if (!ExtractMetadata(path, metadata)) {
     MESSAGE_LOG << "Cannot extract metadata from tarball";
     return false;
   }
-  return installPlugin(metadata, path);
+  return InstallPlugin(metadata, path);
 }
 
 bool PluginHandler::ExtractMetadata(const std::string& path,
                                     PluginMetadata& metadata) {
   std::string filelist;
   std::string temp_path = tmpfile_path();
-  if (!extractTarball(path, filelist, temp_path, true)) {
+  if (!ExtractTarball(path, filelist, temp_path, true)) {
     std::ostringstream os;
     os << "Cannot unpack plugin " << metadata.name << " tarball at: " << path;
     MESSAGE_LOG << os.str();
-    if (filelist != "") cleanup(filelist, "unknown_name");
+    if (filelist != "") Cleanup(filelist, "unknown_name");
     last_error_msg = os.str();
     return false;
   }
@@ -1294,7 +1294,7 @@ bool PluginHandler::ClearInstallData(const std::string plugin_name) {
 }
 
 bool PluginHandler::DoClearInstallData(const std::string plugin_name) {
-  std::string path = PluginHandler::fileListPath(plugin_name);
+  std::string path = PluginHandler::FileListPath(plugin_name);
   if (!ocpn::exists(path)) {
     MESSAGE_LOG << "Cannot find installation data for " << plugin_name << " ("
                 << path << ")";
@@ -1316,18 +1316,18 @@ bool PluginHandler::DoClearInstallData(const std::string plugin_name) {
   }
   // Best effort tries, failures are OK.
   remove(dirListPath(plugin_name).c_str());
-  remove(PluginHandler::versionPath(plugin_name).c_str());
+  remove(PluginHandler::VersionPath(plugin_name).c_str());
   remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
   return true;
 }
 
-bool PluginHandler::uninstall(const std::string plugin_name) {
+bool PluginHandler::Uninstall(const std::string plugin) {
   using namespace std;
 
   auto loader = PluginLoader::GetInstance();
-  auto ix = PlugInIxByName(plugin_name, loader->GetPlugInArray());
+  auto ix = PlugInIxByName(plugin, loader->GetPlugInArray());
   if (ix < 0) {
-    MESSAGE_LOG << "trying to uninstall non-existing plugin " << plugin_name;
+    MESSAGE_LOG << "trying to Uninstall non-existing plugin " << plugin;
     return false;
   }
   auto pic = loader->GetPlugInArray()->Item(ix);
@@ -1336,7 +1336,7 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
   string libfile = pic->m_plugin_file.ToStdString();
   loader->UnLoadPlugIn(ix);
 
-  bool ok = DoClearInstallData(plugin_name);
+  bool ok = DoClearInstallData(plugin);
 
   //  If this is an orphan plugin, there may be no installation record
   //  So make sure that the library file (.so/.dylib/.dll) is removed
@@ -1414,10 +1414,10 @@ static std::string PluginNameCase(const std::string& name) {
   // Look for matching plugin in list of installed and available.
   // This often fails since the lists are not yet available when
   // plugins are loaded, but is otherwise a safe bet.
-  for (const auto& plugin : PluginHandler::getInstance()->getInstalled()) {
+  for (const auto& plugin : PluginHandler::GetInstance()->GetInstalled()) {
     if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
   }
-  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
+  for (const auto& plugin : PluginHandler::GetInstance()->GetAvailable()) {
     if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
   }
 
@@ -1453,7 +1453,7 @@ static void LoadPluginMapFile(PluginMap& map, const std::string& path) {
 /** For each installed plugin: map[plugin name] = list of files. */
 static void LoadPluginMap(PluginMap& map) {
   map.clear();
-  wxDir root(PluginHandler::pluginsInstallDataPath());
+  wxDir root(PluginHandler::PluginsInstallDataPath());
   if (!root.IsOpened()) return;
   wxString filename;
   bool cont = root.GetFirst(&filename, "*.files", wxDIR_FILES);
@@ -1464,17 +1464,17 @@ static void LoadPluginMap(PluginMap& map) {
   }
 }
 
-std::string PluginHandler::getPluginByLibrary(const std::string& filename) {
+std::string PluginHandler::GetPluginByLibrary(const std::string& filename) {
   auto basename = wxFileName(filename).GetFullName().ToStdString();
-  if (files_by_plugin.size() == 0) LoadPluginMap(files_by_plugin);
-  for (const auto& it : files_by_plugin) {
+  if (FilesByPlugin.size() == 0) LoadPluginMap(FilesByPlugin);
+  for (const auto& it : FilesByPlugin) {
     auto found = std::find(it.second.begin(), it.second.end(), basename);
     if (found != it.second.end()) return it.first;
   }
   return "";
 }
 
-bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
+bool PluginHandler::InstallPluginFromCache(PluginMetadata plugin) {
   // Look for the desired file
   wxURI uri(wxString(plugin.tarball_url.c_str()));
   wxFileName fn(uri.GetPath());
@@ -1497,7 +1497,7 @@ bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {
 
   if (cacheFile != "") {
     MESSAGE_LOG << "Installing " << tarballFile << " from local cache";
-    bool bOK = installPlugin(plugin, cacheFile);
+    bool bOK = InstallPlugin(plugin, cacheFile);
     if (!bOK) {
       evt_download_failed.Notify(cacheFile);
       return false;

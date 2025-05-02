@@ -116,7 +116,7 @@ static bool IsSystemPluginName(const std::string& name) {
 
 /** Return version string from installation or as fallback API data */
 static std::string GetInstalledVersion(const PlugInData& pd) {
-  std::string path = PluginHandler::versionPath(pd.m_common_name.ToStdString());
+  std::string path = PluginHandler::VersionPath(pd.m_common_name.ToStdString());
   if (path == "" || !wxFileName::IsFileReadable(path)) {
     auto loader = PluginLoader::GetInstance();
     auto pic = GetContainer(pd, *loader->GetPlugInArray());
@@ -636,7 +636,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       wxLog::FlushActive();
 
       std::string found_version;
-      for (const auto& p : PluginHandler::getInstance()->getInstalled()) {
+      for (const auto& p : PluginHandler::GetInstance()->GetInstalled()) {
         if (ocpn::tolower(p.name) == pic->m_common_name.Lower()) {
           found_version = p.readonly ? "" : p.version;
           break;
@@ -670,7 +670,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       bool is_system = found != SYSTEM_PLUGINS.end();
 
       if (!is_system) {
-        auto available = PluginHandler::getInstance()->getCompatiblePlugins();
+        auto available = PluginHandler::GetInstance()->getCompatiblePlugins();
         wxString name = pic->m_common_name;
         auto it = find_if(
             available.begin(), available.end(),
@@ -894,7 +894,7 @@ bool PluginLoader::UnLoadPlugIn(size_t ix) {
 
 static std::string VersionFromManifest(const std::string& plugin_name) {
   std::string version;
-  std::string path = PluginHandler::versionPath(plugin_name);
+  std::string path = PluginHandler::VersionPath(plugin_name);
   if (!path.empty() && wxFileName::IsFileReadable(path)) {
     std::ifstream stream;
     stream.open(path, std::ifstream::in);
@@ -919,7 +919,7 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
     return pd;
   }
 
-  auto available = PluginHandler::getInstance()->getCompatiblePlugins();
+  auto available = PluginHandler::GetInstance()->getCompatiblePlugins();
   vector<PluginMetadata> matches;
   copy_if(available.begin(), available.end(), back_inserter(matches),
           [name](const PluginMetadata& md) { return md.name == name; });
@@ -996,7 +996,7 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
       md.is_imported = isRegularFile(import_path.c_str());
       if (md.is_imported) {
         plugin->m_status = PluginStatus::Imported;
-      } else if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
+      } else if (isRegularFile(PluginHandler::FileListPath(md.name).c_str())) {
         // This is an installed plugin
         PluginLoader::UpdatePlugin(plugin, md);
       } else if (IsSystemPluginName(md.name)) {

@@ -1,9 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
- *   Copyright (C) 2019 Alec Leamas                                        *
+/**************************************************************************
+ *   Copyright (C) 2019 - 2025 Alec Leamas                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,12 +15,49 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+
+/**
+ * \file
+ * PLugin remote repositories installation and Uninstall/list operations
  */
+
+#ifndef PLUGIN_HANDLER_H__
+#define PLUGIN_HANDLER_H__
+
+#include "config.h"
+
+#include <map>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include <wx/cmdline.h>
+
+#include <archive.h>
+
+#include "model/catalog_parser.h"
+#include "observable_evtvar.h"
+
+bool isRegularFile(const char* path);
+
+/** Internal helper wrapping host OS and version. */
+class CompatOs {
+public:
+  static CompatOs* getInstance();
+  std::string name() const { return _name; }
+  std::string version() const { return _version; }
+
+private:
+  CompatOs();
+  std::string _name;
+  std::string _version;
+};
 
 /**
  * Handle plugin install from remote repositories and local operations
- * to uninstall and list plugins. The plugin maintains an internal list
+ * to Uninstall and list plugins. The plugin maintains an internal list
  * and is a singleton.
  *
  * Remote repositories are based on XML files describing metadata and
@@ -50,61 +83,38 @@
  *      ~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn
  *    - flatpak:
  *        /app/lib/opencpn:/app/extensions/lib/opencpn:~/.var/app/opencpn/lib
- *
  */
-
-#ifndef PLUGIN_HANDLER_H__
-#define PLUGIN_HANDLER_H__
-
-#include "config.h"
-
-#include <map>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
-#include <wx/cmdline.h>
-
-#include <archive.h>
-
-#include "model/catalog_parser.h"
-#include "observable_evtvar.h"
-
-bool isRegularFile(const char* path);
-
-class CompatOs {
-public:
-  static CompatOs* getInstance();
-  std::string name() const { return _name; }
-  std::string version() const { return _version; }
-
-private:
-  CompatOs();
-  std::string _name;
-  std::string _version;
-};
-
 class PluginHandler {
 public:
+  /** Singleton factory. */
+  static PluginHandler* GetInstance();
+
+  PluginHandler(const PluginHandler&) = delete;
+  PluginHandler& operator=(const PluginHandler&) = delete;
+
+  /**
+   * Notified with plugin name + version string after successful download
+   * from repository
+   */
   EventVar evt_download_ok;
+
+  /** Notified with plugin name after failed download attempt. */
   EventVar evt_download_failed;
 
-  static PluginHandler* getInstance();
-
   /** Cleanup failed installation attempt using filelist for plugin. */
-  static void cleanup(const std::string& filelist, const std::string& plugname);
-  static void cleanupFiles(const std::string& manifestFile,
+  static void Cleanup(const std::string& filelist, const std::string& plugname);
+
+  static void CleanupFiles(const std::string& manifestFile,
                            const std::string& plugname);
 
   /** Return base directory for installation data. */
-  static std::string pluginsInstallDataPath();
+  static std::string PluginsInstallDataPath();
 
   /** Return path to installation manifest for given plugin. */
-  static std::string fileListPath(std::string name);
+  static std::string FileListPath(std::string name);
 
   /** Return path to file containing version for given plugin. */
-  static std::string versionPath(std::string name);
+  static std::string VersionPath(std::string name);
 
   /** Return path to imported metadata for given plugin. */
   static std::string ImportedMetadataPath(std::string name);
@@ -113,15 +123,15 @@ public:
   static std::vector<std::string> GetImportPaths();
 
   /** Return true if given plugin is loadable on given os/version. */
-  static bool isCompatible(const PluginMetadata& metadata,
+  static bool IsCompatible(const PluginMetadata& metadata,
                            const char* os = PKG_TARGET,
                            const char* os_version = PKG_TARGET_VERSION);
 
   /** Check if given plugin can be installed/updated. */
-  bool isPluginWritable(std::string name);
+  bool IsPluginWritable(std::string name);
 
   /** Return list of all installed  and loaded plugins. */
-  const std::vector<PluginMetadata> getInstalled();
+  const std::vector<PluginMetadata> GetInstalled();
 
   /**
    *  Return list of installed plugins lower case names, not necessarily
@@ -133,7 +143,7 @@ public:
   void SetInstalledMetadata(const PluginMetadata& pm);
 
   /** Update catalog and return list of available, not installed plugins. */
-  const std::vector<PluginMetadata> getAvailable();
+  const std::vector<PluginMetadata> GetAvailable();
 
   /**
    * Return list of available, unique and compatible plugins from
@@ -142,39 +152,37 @@ public:
   std::vector<PluginMetadata> getCompatiblePlugins();
 
   /** Map of available plugin targets -> number of occurences. */
-  const std::map<std::string, int> getCountByTarget();
+  const std::map<std::string, int> GetCountByTarget();
 
   /** Return plugin containing given filename or "" if not found. */
-  std::string getPluginByLibrary(const std::string& filename);
+  std::string GetPluginByLibrary(const std::string& filename);
 
   /** Return path to metadata XML file. */
-  std::string getMetadataPath();
+  std::string GetMetadataPath();
 
   /** Set path to metadata XML file. */
   void setMetadata(std::string path) { metadataPath = path; }
 
   /** Download and install a new, not installed plugin. */
-  bool installPlugin(PluginMetadata plugin);
+  bool InstallPlugin(PluginMetadata plugin);
 
   /** Install a new, downloaded but not installed plugin tarball. */
-  bool installPlugin(PluginMetadata plugin, std::string path);
+  bool InstallPlugin(PluginMetadata plugin, std::string path);
 
   /** Extract metadata in given tarball path. */
   bool ExtractMetadata(const std::string& path, PluginMetadata& metadata);
 
   /* Install a new, downloaded but not installed plugin tarball. */
-  bool installPlugin(const std::string& path);
+  bool InstallPlugin(const std::string& path);
 
   /** Uninstall an installed  and loaded plugin. */
-  bool uninstall(const std::string plugin);
+  bool Uninstall(const std::string plugin);
 
   /** Remove installation data for not loaded plugin. */
   bool ClearInstallData(const std::string plugin_name);
 
   /** Install plugin tarball from local cache. */
-  bool installPluginFromCache(PluginMetadata plugin);
-
-  std::string getLastErrorMsg() { return last_error_msg; }
+  bool InstallPluginFromCache(PluginMetadata plugin);
 
   CatalogData* GetCatalogData() { return &catalogData; }
 
@@ -202,7 +210,7 @@ private:
    *   @return true if tarball could be extracted and contains metadata.xml
    * file. false otherwise.
    */
-  bool explodeTarball(struct archive* src, struct archive* dest,
+  bool ExplodeTarball(struct archive* src, struct archive* dest,
                       std::string& filelist, const std::string& metadata_path,
                       bool only_metadata);
   /**
@@ -217,11 +225,13 @@ private:
    *   @return true if tarball could be extracted and contains metadata.xml
    * file. false otherwise.
    */
-  bool extractTarball(const std::string path, std::string& filelist,
+  bool ExtractTarball(const std::string path, std::string& filelist,
                       const std::string metadata_path = "",
                       bool only_metadata = false);
-  bool archive_check(int r, const char* msg, struct archive* a);
-  std::unordered_map<std::string, std::vector<std::string>> files_by_plugin;
+  bool ArchiveCheck(int r, const char* msg, struct archive* a);
+
+  std::unordered_map<std::string, std::vector<std::string>> FilesByPlugin;
+
   bool DoClearInstallData(const std::string plugin_name);
 };
 

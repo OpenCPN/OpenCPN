@@ -271,10 +271,10 @@ static SemanticVersion ParseVersion(const PluginMetadata& metadata) {
 
 static bool IsUpdateAvailable(const PluginMetadata& metadata) {
   auto imported_version = ParseVersion(metadata);
-  for (auto& md : PluginHandler::getInstance()->getAvailable()) {
+  for (auto& md : PluginHandler::GetInstance()->GetAvailable()) {
     if (md.name != metadata.name) continue;
     if (md.is_imported) continue;
-    if (!PluginHandler::getInstance()->isCompatible(md)) continue;
+    if (!PluginHandler::GetInstance()->IsCompatible(md)) continue;
     if (ParseVersion(md) >= imported_version) return true;
   }
   return false;
@@ -427,11 +427,11 @@ static std::vector<PluginMetadata> getCompatiblePlugins() {
   std::vector<PluginMetadata> returnArray;
 
   std::set<PluginMetadata, metadata_compare> unique_plugins;
-  for (auto plugin : PluginHandler::getInstance()->getAvailable()) {
+  for (auto plugin : PluginHandler::GetInstance()->GetAvailable()) {
     unique_plugins.insert(plugin);
   }
   for (auto plugin : unique_plugins) {
-    if (PluginHandler::isCompatible(plugin)) {
+    if (PluginHandler::IsCompatible(plugin)) {
       returnArray.push_back(plugin);
     }
   }
@@ -450,7 +450,7 @@ static SemanticVersion metadata_version(const PluginMetadata pm) {
 // TODO: Get version from API for api level 117+
 SemanticVersion getInstalledVersion(const std::string name) {
   std::string installed;
-  std::string path = PluginHandler::versionPath(name);
+  std::string path = PluginHandler::VersionPath(name);
   if (path == "" || !wxFileName::IsFileReadable(path)) {
     return SemanticVersion(-1, -1);
   }
@@ -493,7 +493,7 @@ static void gui_uninstall(const PlugInData* pic, const char* plugin) {
   PluginLoader::GetInstance()->UpdatePlugIns();
 
   wxLogMessage("Uninstalling %s", plugin);
-  PluginHandler::getInstance()->uninstall(plugin);
+  PluginHandler::GetInstance()->Uninstall(plugin);
   PluginLoader::GetInstance()->UpdatePlugIns();
   g_Platform->HideBusySpinner();
 }
@@ -508,10 +508,10 @@ static bool LoadAllPlugIns(bool load_enabled, bool keep_orphans = false) {
 
 /** Unload and uninstall plugin with given name. */
 static void UninstallPlugin(const std::string& name) {
-  auto handler = PluginHandler::getInstance();
+  auto handler = PluginHandler::GetInstance();
   auto loader = PluginLoader::GetInstance();
   auto finder = [name](const PluginMetadata pm) { return pm.name == name; };
-  const auto& installed = handler->getInstalled();
+  const auto& installed = handler->GetInstalled();
   auto found = std::find_if(installed.begin(), installed.end(), finder);
   if (found != installed.end()) {
     for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++) {
@@ -522,7 +522,7 @@ static void UninstallPlugin(const std::string& name) {
         break;
       }
     }
-    handler->uninstall(found->name);
+    handler->Uninstall(found->name);
     DEBUG_LOG << "Uninstalling: " << found->name;
   }
 }
@@ -549,12 +549,12 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
 
   wxLogMessage("Installing %s", update.name.c_str());
 
-  auto pluginHandler = PluginHandler::getInstance();
+  auto pluginHandler = PluginHandler::GetInstance();
   auto path = ocpn::lookup_tarball(update.tarball_url.c_str());
   if (uninstall && path != "") {
     gui_uninstall(pic, update.name.c_str());
   }
-  bool cacheResult = pluginHandler->installPluginFromCache(update);
+  bool cacheResult = pluginHandler->InstallPluginFromCache(update);
 
   if (!cacheResult) {
     g_Platform->ShowBusySpinner();  // Will be cancelled in downloader->run()
@@ -568,10 +568,10 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
 
     // Provisional error check
     bool bOK = true;
-    std::string manifestPath = PluginHandler::fileListPath(update.name);
+    std::string manifestPath = PluginHandler::FileListPath(update.name);
     if (!isRegularFile(manifestPath.c_str())) {
       wxLogMessage("Installation of %s failed", update.name.c_str());
-      PluginHandler::cleanupFiles(manifestPath, update.name);
+      PluginHandler::CleanupFiles(manifestPath, update.name);
       bOK = false;
     }
 
@@ -600,7 +600,7 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
   wxString pispec = _T("_pi.so");
 #endif
 
-  std::string manifestPath = PluginHandler::fileListPath(update.name);
+  std::string manifestPath = PluginHandler::FileListPath(update.name);
   wxTextFile manifest_file(manifestPath);
   wxString pluginFile;
   if (manifest_file.Open()) {
@@ -620,7 +620,7 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
           OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
                          wxICON_INFORMATION | wxOK, 10);
 
-          PluginHandler::cleanupFiles(manifestPath, update.name);
+          PluginHandler::CleanupFiles(manifestPath, update.name);
         } else {
           pluginFile = str;
         }
@@ -639,7 +639,7 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
 
   // This is installed from catalog, remove possible imported
   // metadata leftovers
-  auto handler = PluginHandler::getInstance();
+  auto handler = PluginHandler::GetInstance();
   std::remove(handler->ImportedMetadataPath(update.name).c_str());
 
   //  Reload all plugins, which will bring in the action results.
@@ -741,7 +741,7 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
       downloader->run(plugin_list_panel, false);
 
       // Provisional error check
-      std::string manifestPath = PluginHandler::fileListPath(pluginName);
+      std::string manifestPath = PluginHandler::FileListPath(pluginName);
       if (isRegularFile(manifestPath.c_str())) {
         // dynamically deactivate the legacy plugin, making way for the upgrade.
         for (unsigned i = 0; i < loader->GetPlugInArray()->GetCount(); i += 1) {
@@ -755,7 +755,7 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
         //  Reload all plugins, which will bring in the new, managed version.
         LoadAllPlugIns(false);
       } else {
-        PluginHandler::cleanupFiles(manifestPath,
+        PluginHandler::CleanupFiles(manifestPath,
                                     actionPIC->m_managed_metadata.name);
       }
       plugin_list_panel->ReloadPluginPanels();
@@ -793,7 +793,7 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
       wxLogMessage("Uninstalling %s",
                    actionPIC->m_managed_metadata.name.c_str());
 
-      PluginHandler::getInstance()->uninstall(
+      PluginHandler::GetInstance()->Uninstall(
           actionPIC->m_managed_metadata.name);
 
       //  Reload all plugins, which will bring in the action results.
@@ -2327,7 +2327,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   // Reset the PluginHandler catalog file source.
   // This will case the Handler to find, load, and parse the just-downloaded
   // catalog as copied to g_Platform->GetPrivateDataDir()...
-  auto pluginHandler = PluginHandler::getInstance();
+  auto pluginHandler = PluginHandler::GetInstance();
   pluginHandler->setMetadata("");
 
   // Also clear the cached values in the CatalogHandler, forcing
@@ -2371,7 +2371,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
   if (response != wxID_OK) {
     return;
   }
-  auto handler = PluginHandler::getInstance();
+  auto handler = PluginHandler::GetInstance();
   PluginMetadata metadata;
   bool ok = handler->ExtractMetadata(path.ToStdString(), metadata);
   if (!ok) {
@@ -2381,14 +2381,14 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
         _("OpenCPN Plugin Import Error"));
     return;
   }
-  if (!PluginHandler::isCompatible(metadata)) {
+  if (!PluginHandler::IsCompatible(metadata)) {
     OCPNMessageBox(this, _("Incompatible import plugin detected."),
                    _("OpenCPN Plugin Import Error"));
-    handler->uninstall(metadata.name);
+    handler->Uninstall(metadata.name);
     return;
   }
   UninstallPlugin(metadata.name);
-  ok = handler->installPlugin(metadata, path.ToStdString());
+  ok = handler->InstallPlugin(metadata, path.ToStdString());
   if (!ok) {
     OCPNMessageBox(this, _("Error extracting import plugin tarball."),
                    _("OpenCPN Plugin Import Error"));
@@ -2403,7 +2403,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
                 << " for imported plugin: " << metadata.name;
   }
   LoadAllPlugIns(false, true);
-  PluginHandler::getInstance()->SetInstalledMetadata(metadata);
+  PluginHandler::GetInstance()->SetInstalledMetadata(metadata);
   m_PluginListPanel->ReloadPluginPanels();
   wxString ws(_("Plugin"));
   ws += metadata.name + _(" successfully imported");
@@ -2425,7 +2425,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
 #ifndef __ANDROID__
   //  Get the version from the currently active catalog, by which we mean
   //  the latest catalog parsed.
-  auto pluginHandler = PluginHandler::getInstance();
+  auto pluginHandler = PluginHandler::GetInstance();
   std::string date = pluginHandler->GetCatalogData()->date;
 
   catalog += wxString("  ") + _("Last change: ") + " " + date;
@@ -2509,7 +2509,7 @@ std::vector<const PlugInData*> GetInstalled() {
 /* Is plugin with given name present in loaded or safe list if installed? */
 static bool IsPluginLoaded(const std::string& name) {
   if (safe_mode::get_mode()) {
-    auto installed = PluginHandler::getInstance()->GetInstalldataPlugins();
+    auto installed = PluginHandler::GetInstance()->GetInstalldataPlugins();
     auto found =
         std::find(installed.begin(), installed.end(), ocpn::tolower(name));
     return found != installed.end();
@@ -2546,7 +2546,7 @@ void PluginListPanel::ReloadPluginPanels() {
 
   if (safe_mode::get_mode()) {
     /** Add panels for installed, unloaded plugins. */
-    auto installed = PluginHandler::getInstance()->GetInstalldataPlugins();
+    auto installed = PluginHandler::GetInstance()->GetInstalldataPlugins();
     for (const auto& name : installed) AddPlugin(name);
   } else {
     /* The catalog entries. */
@@ -2741,10 +2741,10 @@ void PluginListPanel::MoveDown(PluginPanel* pi) {
 }
 
 static bool canUninstall(std::string name) {
-  PluginHandler* pluginHandler = PluginHandler::getInstance();
+  PluginHandler* pluginHandler = PluginHandler::GetInstance();
   // std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-  for (auto plugin : pluginHandler->getInstalled()) {
+  for (auto plugin : pluginHandler->GetInstalled()) {
     if (plugin.name == name) {
       if (safe_mode::get_mode())
         return true;
@@ -2794,7 +2794,7 @@ PluginPanel::PluginPanel(wxPanel* parent, const std::string& name)
         OCPNMessageBox(gFrame, std::string(_("Uninstall plugin ")) + n + "?",
                        _("Un-Installation"), wxICON_QUESTION | wxOK | wxCANCEL);
     if (result != wxID_OK) return;
-    PluginHandler::getInstance()->ClearInstallData(n);
+    PluginHandler::GetInstance()->ClearInstallData(n);
     m_PluginListPanel->ReloadPluginPanels();
   };
   m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, uninstall);
@@ -3130,7 +3130,7 @@ void PluginPanel::DoPluginSelect() {
  * empty PluginMetadata() if not found.
  */
 static PluginMetadata GetMetadataByName(const std::string& name) {
-  auto plugins = PluginHandler::getInstance()->getInstalled();
+  auto plugins = PluginHandler::GetInstance()->GetInstalled();
   auto predicate = [name](const PluginMetadata& pm) { return pm.name == name; };
   auto found = std::find_if(plugins.begin(), plugins.end(), predicate);
   if (found == plugins.end()) {

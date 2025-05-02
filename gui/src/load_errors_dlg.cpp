@@ -96,9 +96,9 @@ public:
     std::vector<std::string> libs;
 
     FormatCtx(const std::vector<LoadError> errors) {
-      auto handler = PluginHandler::getInstance();
+      auto handler = PluginHandler::GetInstance();
       for (const auto& e : errors) {
-        auto plugin = handler->getPluginByLibrary(e.lib_path);
+        auto plugin = handler->GetPluginByLibrary(e.lib_path);
         if (plugin != "") plugins.push_back(plugin);
         if (e.lib_path != "") libs.push_back(e.lib_path);
       }
@@ -109,7 +109,7 @@ public:
       : OCPNMessageDialog(parent, wxString(FormatMsg(format_ctx))) {}
 
   std::string FormatMsg(const FormatCtx& ctx) {
-    auto handler = PluginHandler::getInstance();
+    auto handler = PluginHandler::GetInstance();
     std::stringstream ss;
     if (ctx.plugins.size() > 0) {
       ss << (ctx.plugins.size() == 1 ? kBadPluginIntro : kBadPluginsIntro);
@@ -143,7 +143,7 @@ static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
 #endif
   if (sts == wxID_YES || sts == wxID_OK) {
     for (const auto& plugin : format_ctx.plugins) {
-      PluginHandler::getInstance()->uninstall(plugin);
+      PluginHandler::GetInstance()->Uninstall(plugin);
     }
     for (const auto& lib : format_ctx.libs) {
       if (isRegularFile(lib.c_str())) remove(lib.c_str());

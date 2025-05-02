@@ -159,12 +159,12 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current) {
     downloaded = true;
   }
 
-  auto pluginHandler = PluginHandler::getInstance();
+  auto pluginHandler = PluginHandler::GetInstance();
   if (remove_current) {
     wxLogMessage("Uninstalling %s", m_plugin.name.c_str());
-    pluginHandler->uninstall(m_plugin.name);
+    pluginHandler->Uninstall(m_plugin.name);
   }
-  ok = pluginHandler->installPlugin(m_plugin, path);
+  ok = pluginHandler->InstallPlugin(m_plugin, path);
   if (!ok) {
     showErrorDialog("Installation error");
     return "";
