@@ -111,7 +111,7 @@ Commands:
   install-plugin <plugin name>:
       Download and install given plugin
 
-  Uninstall-plugin <plugin name>:
+  uninstall-plugin <plugin name>:
       Uninstall given plugin
 
   list-plugins:
