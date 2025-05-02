@@ -400,6 +400,11 @@ private:
   // XyGrib panel configuration
   XyGribConfig_t xyGribConfig;
   bool m_gtk_started;
+
+  wxTimer m_tFormatRefresh;
+  wxString m_sLastTimeFormat;  // Used to detect time format changes
+
+  void OnFormatRefreshTimer(wxTimerEvent &event);
 };
 
 /**

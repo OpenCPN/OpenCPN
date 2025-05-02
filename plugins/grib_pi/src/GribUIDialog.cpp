@@ -192,6 +192,19 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   this->Layout();
   m_fgCtrlBarSizer->Fit(this);
 
+  // Initialize the time format check timer
+  m_tFormatRefresh.Connect(
+      wxEVT_TIMER, wxTimerEventHandler(GRIBUICtrlBar::OnFormatRefreshTimer),
+      nullptr, this);
+
+  // Sample the current time format using a fixed reference date (January 1,
+  // 2021 at noon)
+  wxDateTime referenceDate(1, wxDateTime::Jan, 2021, 12, 0, 0);
+  m_sLastTimeFormat = toUsrDateTimeFormat_Plugin(referenceDate);
+
+  // Start timer to check for time format changes (every 5 seconds)
+  m_tFormatRefresh.Start(5000);
+
   if (pConf) {
     pConf->SetPath(_T ( "/Settings/GRIB" ));
     pConf->Read(_T ( "WindPlot" ), &m_bDataPlot[GribOverlaySettings::WIND],
@@ -452,11 +465,9 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
       title.Prepend(_("Error! ")).Append(_(" contains no valid data!"));
     } else {
       PopulateComboDataList();
-      DateTimeFormatOptions opts =
-          DateTimeFormatOptions().SetTimezone(pPlugIn->GetTimezoneSelector());
       title.append(" (" +
                    toUsrDateTimeFormat_Plugin(
-                       wxDateTime(m_bGRIBActiveFile->GetRefDateTime()), opts) +
+                       wxDateTime(m_bGRIBActiveFile->GetRefDateTime())) +
                    ")");
 
       if (rsa->GetCount() > 1) {
@@ -1040,8 +1051,7 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id) {
   ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
   GRIBTable *table = new GRIBTable(*this);
 
-  table->InitGribTable(pPlugIn->GetTimezoneSelector(), rsa,
-                       GetNearestIndex(GetNow(), 0));
+  table->InitGribTable(rsa, GetNearestIndex(GetNow(), 0));
   table->SetTableSizePosition(m_vpMouse->pix_width, m_vpMouse->pix_height);
 
   table->ShowModal();
@@ -1337,9 +1347,7 @@ void GRIBUICtrlBar::TimelineChanged() {
   } else {
     m_cRecordForecast->SetSelection(GetNearestIndex(time, 2));
     SaveSelectionString();  // memorize index and label
-    DateTimeFormatOptions opts =
-        DateTimeFormatOptions().SetTimezone(pPlugIn->GetTimezoneSelector());
-    wxString formattedTime = toUsrDateTimeFormat_Plugin(time, opts);
+    wxString formattedTime = toUsrDateTimeFormat_Plugin(time);
     m_cRecordForecast->SetString(m_Selection_index,
                                  formattedTime);  // replace it by the
                                                   // interpolated time label
@@ -1721,11 +1729,9 @@ void GRIBUICtrlBar::PopulateComboDataList() {
   }
 
   ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-  DateTimeFormatOptions opts =
-      DateTimeFormatOptions().SetTimezone(pPlugIn->GetTimezoneSelector());
   for (size_t i = 0; i < rsa->GetCount(); i++) {
     wxDateTime t(rsa->Item(i).m_Reference_Time);
-    m_cRecordForecast->Append(toUsrDateTimeFormat_Plugin(t, opts));
+    m_cRecordForecast->Append(toUsrDateTimeFormat_Plugin(t));
   }
   m_cRecordForecast->SetSelection(index);
 }
@@ -1909,9 +1915,7 @@ void GRIBUICtrlBar::ComputeBestForecastForNow() {
                               // wxChoice date time label
   m_cRecordForecast->SetSelection(GetNearestIndex(now, 2));
   SaveSelectionString();  // memorize the new selected wxChoice date time label
-  DateTimeFormatOptions opts =
-      DateTimeFormatOptions().SetTimezone(pPlugIn->GetTimezoneSelector());
-  wxString nowTime = toUsrDateTimeFormat_Plugin(now, opts);
+  wxString nowTime = toUsrDateTimeFormat_Plugin(now);
   m_cRecordForecast->SetString(m_Selection_index,
                                nowTime);  // write the now date time label
                                           // in the right place in wxChoice
@@ -1964,6 +1968,29 @@ void GRIBUICtrlBar::SetFactoryOptions() {
 
   UpdateTrackingControl();
   RequestRefresh(GetGRIBCanvas());
+}
+
+void GRIBUICtrlBar::OnFormatRefreshTimer(wxTimerEvent &event) {
+  // Check if time format has changed by comparing current format with saved
+  // format
+  wxDateTime referenceDate(1, wxDateTime::Jan, 2021, 12, 0, 0);
+  wxString currentFormat = toUsrDateTimeFormat_Plugin(referenceDate);
+
+  if (currentFormat != m_sLastTimeFormat) {
+    // Time format has changed, update all time displays
+    m_sLastTimeFormat = currentFormat;
+
+    if (m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()) {
+      // Refresh the time format in the dropdown list
+      PopulateComboDataList();
+
+      // Update the timeline display
+      TimelineChanged();
+
+      // Request a refresh to update any on-screen displays
+      RequestRefresh(GetGRIBCanvas());
+    }
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------

@@ -4155,31 +4155,6 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pEnableTenHertz->SetValue(FALSE);
     boxCtrls->Add(pEnableTenHertz, verticleInputFlags);
 
-    // spacer
-    generalSizer->Add(0, border_size * 4);
-    generalSizer->Add(0, border_size * 4);
-
-    // Selection of timezone for date/time display format:
-    // UTC, local time, or specific time zone.
-    generalSizer->Add(
-        new wxStaticText(pDisplayPanel, wxID_ANY, _("Date and Time")),
-        groupLabelFlags);
-
-    wxBoxSizer* timezoneStyleBox = new wxBoxSizer(wxHORIZONTAL);
-    generalSizer->Add(timezoneStyleBox, groupInputFlags);
-    wxBoxSizer* itemTimezoneBoxSizer = new wxBoxSizer(wxHORIZONTAL);
-    timezoneStyleBox->Add(itemTimezoneBoxSizer, 1, wxEXPAND | wxALL,
-                          border_size);
-    pTimezoneLocalTime =
-        new wxRadioButton(pDisplayPanel, ID_TIMEZONE_LOCAL_TIME,
-                          _("Local Time"), wxDefaultPosition, wxDefaultSize, 0);
-    itemTimezoneBoxSizer->Add(pTimezoneLocalTime, 0,
-                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
-    pTimezoneUTC = new wxRadioButton(pDisplayPanel, ID_TIMEZONE_UTC, _("UTC"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
-    itemTimezoneBoxSizer->Add(pTimezoneUTC, 0,
-                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
-
     if (!g_useMUI) {
       // spacer
       generalSizer->Add(0, border_size * 4);
@@ -4589,6 +4564,30 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     unitsSizer->Add(0, border_size * 4);
     unitsSizer->Add(0, border_size * 4);
 
+    // Selection of timezone for date/time display format:
+    // UTC, local time, or specific time zone.
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Date and Time")),
+                    groupLabelFlags);
+
+    wxBoxSizer* timezoneStyleBox = new wxBoxSizer(wxHORIZONTAL);
+    unitsSizer->Add(timezoneStyleBox, groupInputFlags);
+    wxBoxSizer* itemTimezoneBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    timezoneStyleBox->Add(itemTimezoneBoxSizer, 1, wxEXPAND | wxALL,
+                          border_size);
+    pTimezoneLocalTime =
+        new wxRadioButton(panelUnits, ID_TIMEZONE_LOCAL_TIME, _("Local Time"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneLocalTime, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+    pTimezoneUTC = new wxRadioButton(panelUnits, ID_TIMEZONE_UTC, _("UTC"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneUTC, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+
+    // spacer
+    unitsSizer->Add(0, border_size * 4);
+    unitsSizer->Add(0, border_size * 4);
+
     // bearings (magnetic/true, variation)
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Bearings")),
                     groupLabelFlags);
@@ -4725,6 +4724,30 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
                      wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats);
     unitsSizer->Add(pSDMMFormat, inputFlags);
+
+    // spacer
+    unitsSizer->Add(0, border_size * 4);
+    unitsSizer->Add(0, border_size * 4);
+
+    // Selection of timezone for date/time display format:
+    // UTC, local time, or specific time zone.
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Date and Time")),
+                    groupLabelFlags);
+
+    wxBoxSizer* timezoneStyleBox = new wxBoxSizer(wxHORIZONTAL);
+    unitsSizer->Add(timezoneStyleBox, groupInputFlags);
+    wxBoxSizer* itemTimezoneBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    timezoneStyleBox->Add(itemTimezoneBoxSizer, 1, wxEXPAND | wxALL,
+                          border_size);
+    pTimezoneLocalTime =
+        new wxRadioButton(panelUnits, ID_TIMEZONE_LOCAL_TIME, _("Local Time"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneLocalTime, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+    pTimezoneUTC = new wxRadioButton(panelUnits, ID_TIMEZONE_UTC, _("UTC"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneUTC, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
 
     // spacer
     unitsSizer->Add(0, border_size * 4);

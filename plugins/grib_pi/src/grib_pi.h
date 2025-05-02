@@ -141,17 +141,6 @@ public:
 
   wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
   wxPoint GetCursorDataXY() { return m_CursorDataxy; }
-  const wxString GetTimezoneSelector() {
-    switch (m_bTimeZone) {
-      case 0:
-        return "UTC";
-      case 1:
-        return "Local Time";
-      default:
-        return wxEmptyString;
-    }
-  }
-  void SetTimeZone(int tz);
   int GetStartOptions() { return m_bStartOptions; }
   /**
    * Returns true if cumulative parameters like precipitation and cloud cover
@@ -214,7 +203,6 @@ private:
   bool m_bGRIBUseHiDef;
   bool m_bGRIBUseGradualColors;
   bool m_bDrawBarbedArrowHead;
-  int m_bTimeZone;
   /** Controls whether cumulative parameters like precipitation and cloud cover
    * should initialize their start values from the first record. This avoids
    * artificial zero values at the beginning of the time series.
