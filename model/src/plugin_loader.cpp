@@ -162,14 +162,26 @@ static fs::path LoadStampPath(const std::string& file_path) {
   return path.parent_path() / path.stem();
 }
 
+/** Create a load stamp which marks filename as "load started" */
 static void CreateLoadStamp(const std::string& filename) {
   std::ofstream(LoadStampPath(filename).string());
 }
 
+/**
+ * Check if a load stamp exists for given file. If a load stamp exists
+ * when opencpn is started it means that the attempt to load the file
+ * on previous start failed.
+ * @param filename Base name without directory.
+ * @return true if load stamp exists
+ */
 static bool HasLoadStamp(const std::string& filename) {
   return exists(LoadStampPath(filename));
 }
 
+/**
+ * Remove a load stamp i. e., mark the file as successfully loaded.
+ * @param filename  Basename of file without directory part.
+ */
 static void ClearLoadStamp(const std::string& filename) {
   if (filename.empty()) return;
   auto path = LoadStampPath(filename);

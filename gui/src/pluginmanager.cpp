@@ -1040,12 +1040,6 @@ wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::GetInstance();
 
-  evt_blacklisted_plugin_listener.Listen(loader->evt_blacklisted_plugin, this,
-                                         EVT_BLACKLISTED_PLUGIN);
-  Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent& ev) {
-    m_blacklist_ui->message(ev.GetString().ToStdString());
-  });
-
   loader->SetOnDeactivateCb(
       [&](const PlugInContainer* pic) { OnPluginDeactivate(pic); });
   evt_pluglist_change_listener.Listen(loader->evt_pluglist_change, this,
