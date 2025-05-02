@@ -173,6 +173,33 @@ class wxGLCanvas;
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
+
+/**
+ * Waypoint passing constraint flags that specify how a vessel should approach
+ * and pass a waypoint/mark. These can be combined with bitwise OR to apply
+ * multiple constraints.
+ */
+enum PI_WaypointPassingFlag : int {
+  /** No specific constraints. */
+  kWaypointPassingNone = 0x00,
+
+  /** Pass waypoint to port side (keep waypoint on vessel's left). */
+  kWaypointPassingPort = 0x01,
+
+  /** Pass waypoint to starboard side (keep waypoint on vessel's right). */
+  kWaypointPassingStarboard = 0x02,
+
+  /**
+   * Pass with a close rounding.
+   * When enabled, routing algorithms will prioritize a path that brings
+   * the vessel within minimal safe distance of the waypoint, rather than
+   * simply ensuring the waypoint is passed.
+   */
+  kWaypointPassingCloseRounding = 0x04
+};
+
+typedef int PI_WaypointPassingFlags;
+
 /**
  * Enumeration of color schemes.
  */
@@ -5239,7 +5266,7 @@ public:
                      const double ScaMin = 1e9, const bool bNameVisible = false,
                      const int nRanges = 0, const double RangeDistance = 1.0,
                      const wxColor RangeColor = wxColor(255, 0, 0));
-  ~PlugIn_Waypoint_Ex();
+  virtual ~PlugIn_Waypoint_Ex();
   /**
    * Initializes waypoint properties to default values.
    *
@@ -5305,6 +5332,43 @@ public:
 
 WX_DECLARE_LIST(PlugIn_Waypoint_Ex, Plugin_WaypointExList);
 
+class DECL_EXP PlugIn_Waypoint_ExV2 : public PlugIn_Waypoint_Ex {
+public:
+  PlugIn_Waypoint_ExV2();
+  PlugIn_Waypoint_ExV2(double lat, double lon, const wxString &icon_ident,
+                       const wxString &wp_name, const wxString &GUID = "",
+                       const double ScaMin = 1e9,
+                       const bool bNameVisible = false, const int nRanges = 0,
+                       const double RangeDistance = 1.0,
+                       const wxColor RangeColor = wxColor(255, 0, 0));
+  virtual ~PlugIn_Waypoint_ExV2();
+
+  /**
+   * Waypoint passing constraints bitfield.
+   * Controls how the vessel should approach and pass this waypoint.
+   * @see PI_WaypointPassingFlag for possible values
+   */
+  int m_PassingFlags = 0;
+
+  /**
+   * Sets waypoint passing flags with validation.
+   *
+   * @param flags The passing flags to set
+   * @return True if the flags were set successfully, false if validation failed
+   */
+  bool SetPassingFlags(PI_WaypointPassingFlags flags);
+
+  /**
+   * Gets the current waypoint passing flags.
+   *
+   * @return The current passing constraints for this waypoint
+   */
+  PI_WaypointPassingFlags GetPassingFlags() const { return m_PassingFlags; }
+
+private:
+  void InitExV2Defaults();
+};
+
 /**
  * Extended route class for managing complex route features.
  *
@@ -5330,7 +5394,7 @@ WX_DECLARE_LIST(PlugIn_Waypoint_Ex, Plugin_WaypointExList);
 class DECL_EXP PlugIn_Route_Ex {
 public:
   PlugIn_Route_Ex(void);
-  ~PlugIn_Route_Ex(void);
+  virtual ~PlugIn_Route_Ex(void);
 
   wxString m_NameString;   //!< User-visible name of the route
   wxString m_StartString;  //!< Description of route start point
