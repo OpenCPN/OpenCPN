@@ -76,19 +76,14 @@ bool CreateTables(sqlite3* db) {
 
         CREATE TABLE IF NOT EXISTS trk_points (
             guid TEXT PRIMARY KEY,
+            track_guid TEXT NOT NULL,
             latitude REAL NOT NULL,
             longitude REAL NOT NULL,
-            timestamp TEXT NOT NULL
+            timestamp TEXT NOT NULL,
+            point_order INTEGER,
+            FOREIGN KEY (track_guid) REFERENCES tracks(guid) ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS track_points_link (
-            track_guid TEXT,
-            point_guid TEXT,
-            point_order INTEGER,
-            PRIMARY KEY (track_guid, point_guid),
-            FOREIGN KEY (track_guid) REFERENCES tracks(guid) ON DELETE CASCADE,
-            FOREIGN KEY (point_guid) REFERENCES trk_points(guid) ON DELETE CASCADE
-        );
 
         CREATE TABLE IF NOT EXISTS track_html_links (
             guid TEXT PRIMARY KEY,
@@ -100,6 +95,17 @@ bool CreateTables(sqlite3* db) {
         );
 
         )";
+
+#if 0
+  CREATE TABLE IF NOT EXISTS track_points_link (
+      track_guid TEXT,
+      point_guid TEXT,
+      point_order INTEGER,
+      PRIMARY KEY (track_guid, point_guid),
+      FOREIGN KEY (track_guid) REFERENCES tracks(guid) ON DELETE CASCADE,
+      FOREIGN KEY (point_guid) REFERENCES trk_points(guid) ON DELETE CASCADE
+  );
+#endif
 
   executeSQL(db, create_tables_sql);
 
@@ -215,8 +221,9 @@ NavObj_dB::NavObj_dB() {
   int m_open_result = sqlite3_open_v2(db_filename.ToStdString().c_str(), &m_db,
                                       SQLITE_OPEN_READWRITE, NULL);
   sqlite3_exec(m_db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
-  sqlite3_exec(m_db, "PRAGMA journal_mode = WAL;", nullptr, nullptr, nullptr);
-  sqlite3_exec(m_db, "PRAGMA synchronous = NORMAL;", nullptr, nullptr, nullptr);
+  // sqlite3_exec(m_db, "PRAGMA journal_mode = WAL;", nullptr, nullptr,
+  // nullptr); sqlite3_exec(m_db, "PRAGMA synchronous = NORMAL;", nullptr,
+  // nullptr, nullptr);
 
   ImportLegacyNavobj();
   sqlite3_close_v2(m_db);
@@ -282,19 +289,31 @@ int getNextPointOrder(sqlite3* db, const std::string& track_guid) {
   return next_order;
 }
 
-void InsertTrackPoint(sqlite3* db, const std::string& point_guid, double lat,
-                      double lon, const std::string& timestamp) {
+#if 0
+guid TEXT PRIMARY KEY,
+    track_guid TEXT NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    timestamp TEXT NOT NULL,
+    point_order INTEGER,
+#endif
+
+void InsertTrackPoint(sqlite3* db, const std::string& point_guid,
+                      const std::string& track_guid, double lat, double lon,
+                      const std::string& timestamp, int i_point) {
   const char* sql = R"(
-        INSERT INTO trk_points (guid, latitude, longitude, timestamp)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO trk_points (guid, track_guid, latitude, longitude, timestamp, point_order)
+        VALUES (?, ?, ?, ?, ?, ?)
     )";
   sqlite3_stmt* stmt;
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, point_guid.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_double(stmt, 2, lat);
-    sqlite3_bind_double(stmt, 3, lon);
-    sqlite3_bind_text(stmt, 4, timestamp.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, point_guid.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, track_guid.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 3, lat);
+    sqlite3_bind_double(stmt, 4, lon);
+    sqlite3_bind_text(stmt, 5, timestamp.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 6, i_point);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
   } else {
@@ -363,15 +382,17 @@ bool NavObj_dB::AddNewTrack(Track* track) {
   for (int i = 0; i < track->GetnPoints(); i++) {
     auto point = track->GetPoint(i);
     //  Add the bare trkpoint
-    InsertTrackPoint(m_db, point->GetGUID(), point->m_lat, point->m_lon,
-                     point->GetTimeString());
+    InsertTrackPoint(m_db, point->GetGUID(), track->m_GUID.ToStdString(),
+                     point->m_lat, point->m_lon, point->GetTimeString(), i);
   }
 
+#if 0
   //  Link the existing trkpoints
   for (int i = 0; i < track->GetnPoints(); i++) {
     linkTrkPointToTrack(m_db, track->m_GUID.ToStdString(),
                         track->GetPoint(i)->GetGUID(), i + 1);
   }
+#endif
 
   //  Add HTML links to track
   int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
@@ -488,17 +509,14 @@ bool NavObj_dB::AddTrackPoint(Track* track, TrackPoint* point) {
   //  If track does not yet exist in dB, return
   if (!TrackExists(m_db, track->m_GUID.ToStdString())) return false;
 
-  // Add the bare point to the dB
-  InsertTrackPoint(m_db, point->GetGUID(), point->m_lat, point->m_lon,
-                   point->GetTimeString());
-
   // Get next point order
-  int this_point_index =
-      getNextPointOrder(m_db, track->m_GUID.ToStdString().c_str());
+  int this_point_index = track->GetnPoints();
 
-  // Link the point
-  linkTrkPointToTrack(m_db, track->m_GUID.ToStdString(), point->GetGUID(),
-                      this_point_index);
+  // Add the linked point to the dB
+  InsertTrackPoint(m_db, point->GetGUID(), track->m_GUID.ToStdString(),
+                   point->m_lat, point->m_lon, point->GetTimeString(),
+                   this_point_index - 1);
+
   return true;
 }
 
@@ -541,12 +559,27 @@ void NavObj_dB::LoadAllTracks() {
     Track* new_trk = NULL;
 
     //  Add the trk_points
-    const char* sql = R"(
+    const char* sqld = R"(
         SELECT tp.point_order, p.guid, p.latitude, p.longitude, p.timestamp
         FROM track_points_link tp
         JOIN trk_points p ON p.guid = tp.point_guid
         WHERE tp.track_guid = ?
         ORDER BY tp.point_order ASC
+    )";
+#if 0
+guid TEXT PRIMARY KEY,
+    track_guid TEXT NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    timestamp TEXT NOT NULL,
+    point_order INTEGER,
+#endif
+
+    const char* sql = R"(
+        SELECT guid, latitude, longitude, timestamp, point_order
+        FROM trk_points
+        WHERE track_guid = ?
+        ORDER BY point_order ASC
     )";
 
     sqlite3_stmt* stmtp;
@@ -575,13 +608,13 @@ void NavObj_dB::LoadAllTracks() {
 
       GPXSeg += 1;
 
-      int point_order = sqlite3_column_int(stmtp, 0);
       std::string point_guid =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 1));
-      double latitude = sqlite3_column_double(stmtp, 2);
-      double longitude = sqlite3_column_double(stmtp, 3);
+          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 0));
+      double latitude = sqlite3_column_double(stmtp, 1);
+      double longitude = sqlite3_column_double(stmtp, 2);
       std::string timestamp =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 4));
+          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 3));
+      int point_order = sqlite3_column_int(stmtp, 4);
 
       auto point = new TrackPoint(latitude, longitude, timestamp);
       point->SetGUID(point_guid);
@@ -591,52 +624,54 @@ void NavObj_dB::LoadAllTracks() {
     }
     sqlite3_finalize(stmtp);
 
-    new_trk->SetCurrentTrackSeg(GPXSeg);
+    if (new_trk) {
+      new_trk->SetCurrentTrackSeg(GPXSeg);
 
-    //    Add the HTML links
-    const char* sqlh = R"(
+      //    Add the HTML links
+      const char* sqlh = R"(
         SELECT guid, html_link, html_description, html_type
         FROM track_html_links
         WHERE track_guid = ?
         ORDER BY html_type ASC
     )";
 
-    sqlite3_stmt* stmt;
+      sqlite3_stmt* stmt;
 
-    if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
-      sqlite3_bind_text(stmt, 1, new_trk->m_GUID.ToStdString().c_str(), -1,
-                        SQLITE_TRANSIENT);
+      if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, new_trk->m_GUID.ToStdString().c_str(), -1,
+                          SQLITE_TRANSIENT);
 
-      while (sqlite3_step(stmt) == SQLITE_ROW) {
-        std::string link_guid =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        std::string link_link =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        std::string link_description =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        std::string link_type =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+          std::string link_guid =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+          std::string link_link =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+          std::string link_description =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+          std::string link_type =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
 
-        Hyperlink* h = new Hyperlink();
-        h->DescrText = link_description;
-        h->Link = link_link;
-        h->LType = link_type;
+          Hyperlink* h = new Hyperlink();
+          h->DescrText = link_description;
+          h->Link = link_link;
+          h->LType = link_type;
 
-        new_trk->m_TrackHyperlinkList->Append(h);
-        int yyp = 4;
+          new_trk->m_TrackHyperlinkList->Append(h);
+          int yyp = 4;
+        }
+
+        sqlite3_finalize(stmt);
+
+      } else {
+        std::cerr << "Failed to prepare comment query: " << sqlite3_errmsg(m_db)
+                  << "\n";
       }
 
-      sqlite3_finalize(stmt);
-
-    } else {
-      std::cerr << "Failed to prepare comment query: " << sqlite3_errmsg(m_db)
-                << "\n";
+      //  Insert the track into the global list
+      g_TrackList.push_back(new_trk);
+      //    Add the selectable points and segments of the track
+      pSelect->AddAllSelectableTrackSegments(new_trk);
     }
-
-    //  Insert the track into the global list
-    g_TrackList.push_back(new_trk);
-    //    Add the selectable points and segments of the track
-    pSelect->AddAllSelectableTrackSegments(new_trk);
   }
 }
 
