@@ -75,7 +75,6 @@ bool CreateTables(sqlite3* db) {
         );
 
         CREATE TABLE IF NOT EXISTS trk_points (
-            guid TEXT PRIMARY KEY,
             track_guid TEXT NOT NULL,
             latitude REAL NOT NULL,
             longitude REAL NOT NULL,
@@ -298,22 +297,20 @@ guid TEXT PRIMARY KEY,
     point_order INTEGER,
 #endif
 
-void InsertTrackPoint(sqlite3* db, const std::string& point_guid,
-                      const std::string& track_guid, double lat, double lon,
-                      const std::string& timestamp, int i_point) {
+void InsertTrackPoint(sqlite3* db, const std::string& track_guid, double lat,
+                      double lon, const std::string& timestamp, int i_point) {
   const char* sql = R"(
-        INSERT INTO trk_points (guid, track_guid, latitude, longitude, timestamp, point_order)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO trk_points (track_guid, latitude, longitude, timestamp, point_order)
+        VALUES (?, ?, ?, ?, ?)
     )";
   sqlite3_stmt* stmt;
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, point_guid.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 2, track_guid.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_double(stmt, 3, lat);
-    sqlite3_bind_double(stmt, 4, lon);
-    sqlite3_bind_text(stmt, 5, timestamp.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(stmt, 6, i_point);
+    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 2, lat);
+    sqlite3_bind_double(stmt, 3, lon);
+    sqlite3_bind_text(stmt, 4, timestamp.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 5, i_point);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
   } else {
@@ -382,8 +379,8 @@ bool NavObj_dB::AddNewTrack(Track* track) {
   for (int i = 0; i < track->GetnPoints(); i++) {
     auto point = track->GetPoint(i);
     //  Add the bare trkpoint
-    InsertTrackPoint(m_db, point->GetGUID(), track->m_GUID.ToStdString(),
-                     point->m_lat, point->m_lon, point->GetTimeString(), i);
+    InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
+                     point->m_lon, point->GetTimeString(), i);
   }
 
 #if 0
@@ -513,9 +510,8 @@ bool NavObj_dB::AddTrackPoint(Track* track, TrackPoint* point) {
   int this_point_index = track->GetnPoints();
 
   // Add the linked point to the dB
-  InsertTrackPoint(m_db, point->GetGUID(), track->m_GUID.ToStdString(),
-                   point->m_lat, point->m_lon, point->GetTimeString(),
-                   this_point_index - 1);
+  InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
+                   point->m_lon, point->GetTimeString(), this_point_index - 1);
 
   return true;
 }
@@ -576,7 +572,7 @@ guid TEXT PRIMARY KEY,
 #endif
 
     const char* sql = R"(
-        SELECT guid, latitude, longitude, timestamp, point_order
+        SELECT  latitude, longitude, timestamp, point_order
         FROM trk_points
         WHERE track_guid = ?
         ORDER BY point_order ASC
@@ -608,16 +604,13 @@ guid TEXT PRIMARY KEY,
 
       GPXSeg += 1;
 
-      std::string point_guid =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 0));
-      double latitude = sqlite3_column_double(stmtp, 1);
-      double longitude = sqlite3_column_double(stmtp, 2);
+      double latitude = sqlite3_column_double(stmtp, 0);
+      double longitude = sqlite3_column_double(stmtp, 1);
       std::string timestamp =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 3));
-      int point_order = sqlite3_column_int(stmtp, 4);
+          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 2));
+      int point_order = sqlite3_column_int(stmtp, 3);
 
       auto point = new TrackPoint(latitude, longitude, timestamp);
-      point->SetGUID(point_guid);
 
       point->m_GPXTrkSegNo = GPXSeg;
       new_trk->AddPoint(point);

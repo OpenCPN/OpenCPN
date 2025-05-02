@@ -122,25 +122,20 @@ private:
 TrackPoint::TrackPoint(double lat, double lon, wxString ts)
     : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(ts);
-  SetGUID(GpxDocument::GetUUID().ToStdString());
 }
 
 TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
     : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(dt);
-  SetGUID(GpxDocument::GetUUID().ToStdString());
 }
 
 // Copy Constructor
 TrackPoint::TrackPoint(TrackPoint *orig)
     : m_lat(orig->m_lat), m_lon(orig->m_lon), m_GPXTrkSegNo(1) {
   SetCreateTime(orig->GetCreateTime());
-  SetGUID(orig->GetGUID());
 }
 
 TrackPoint::~TrackPoint() {}
-
-void TrackPoint::SetGUID(const std::string &_guid) { m_GUID = _guid; }
 
 wxDateTime TrackPoint::GetCreateTime() {
   wxDateTime CreateTimeX;

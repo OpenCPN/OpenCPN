@@ -83,8 +83,6 @@ public:
     if (m_stimestring.size() < strlen("YYYY-MM-DDTHH:MM:SSZ")) return false;
     return true;
   };
-  std::string GetGUID() { return m_GUID; }
-  void SetGUID(const std::string &_guid);
 
   double m_lat, m_lon;
   int m_GPXTrkSegNo;
@@ -105,7 +103,6 @@ private:
    */
   void SetCreateTime(wxString ts);
   std::string m_stimestring;
-  std::string m_GUID;
 };
 
 /**
