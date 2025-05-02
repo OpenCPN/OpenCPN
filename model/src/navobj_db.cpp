@@ -367,6 +367,8 @@ bool NavObj_dB::AddNewTrack(Track* track) {
   if (TrackExists(m_db, track->m_GUID.ToStdString())) return false;
 
   bool rv = false;
+  char* errMsg = 0;
+  sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
 
   // Insert a new track
   wxString sql = wxString::Format("INSERT INTO tracks (guid) VALUES ('%s')",
@@ -383,14 +385,6 @@ bool NavObj_dB::AddNewTrack(Track* track) {
                      point->m_lon, point->GetTimeString(), i);
   }
 
-#if 0
-  //  Link the existing trkpoints
-  for (int i = 0; i < track->GetnPoints(); i++) {
-    linkTrkPointToTrack(m_db, track->m_GUID.ToStdString(),
-                        track->GetPoint(i)->GetGUID(), i + 1);
-  }
-#endif
-
   //  Add HTML links to track
   int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
@@ -406,6 +400,8 @@ bool NavObj_dB::AddNewTrack(Track* track) {
       linknode = linknode->GetNext();
     }
   }
+  sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
+  if (errMsg) rv = false;
 
   return rv;
 };
