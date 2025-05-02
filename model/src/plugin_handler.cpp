@@ -324,7 +324,7 @@ private:
   std::string m_major_version;
 };
 
-CompatOs* CompatOs::getInstance() {
+CompatOs* CompatOs::GetInstance() {
   static std::string last_global_os("");
   static CompatOs* instance = 0;
 
@@ -394,7 +394,7 @@ bool PluginHandler::IsCompatible(const PluginMetadata& metadata, const char* os,
     DEBUG_LOG << "Returning true for plugin abi \"all\"";
     return true;
   }
-  auto compatOS = CompatOs::getInstance();
+  auto compatOS = CompatOs::GetInstance();
   Host host(compatOS);
 
   auto found = std::find(simple_abis.begin(), simple_abis.end(), plugin.abi());
@@ -451,7 +451,7 @@ static pathmap_t getInstallPaths() {
   using namespace std;
 
   pathmap_t pathmap;
-  PluginPaths* paths = PluginPaths::getInstance();
+  PluginPaths* paths = PluginPaths::GetInstance();
   pathmap["bin"] = paths->UserBindir();
   pathmap["lib"] = paths->UserLibdir();
   pathmap["lib64"] = paths->UserLibdir();
@@ -609,7 +609,7 @@ static bool flatpak_entry_set_install_path(struct archive_entry* entry,
   string dest = installPaths[location] + "/" + suffix;
   archive_entry_set_pathname(entry, dest.c_str());
 
-  PluginPaths* paths = PluginPaths::getInstance();
+  PluginPaths* paths = PluginPaths::GetInstance();
   if (dest.find(paths->UserLibdir()) != std::string::npos) {
     wxFileName nm(path);
     PluginLoader::MarkAsLoadable(nm.GetName().ToStdString());
@@ -692,7 +692,7 @@ static bool apple_entry_set_install_path(struct archive_entry* entry,
                                          pathmap_t installPaths) {
   using namespace std;
 
-  const string base = PluginPaths::getInstance()->Homedir() +
+  const string base = PluginPaths::GetInstance()->Homedir() +
                       "/Library/Application Support/OpenCPN";
 
   string path = archive_entry_pathname(entry);
@@ -1148,7 +1148,7 @@ const std::vector<PluginMetadata> PluginHandler::GetAvailable() {
   using namespace std;
   CatalogCtx* ctx;
 
-  auto catalogHandler = CatalogHandler::getInstance();
+  auto catalogHandler = CatalogHandler::GetInstance();
 
   ctx = catalogHandler->GetActiveCatalogContext();
   auto status = catalogHandler->GetCatalogStatus();
@@ -1387,7 +1387,7 @@ static std::string FindMatchingDataDir(std::regex name_re) {
  */
 static std::string FindMatchingLibFile(std::regex name_re) {
   using namespace std;
-  for (const auto& lib : PluginPaths::getInstance()->Libdirs()) {
+  for (const auto& lib : PluginPaths::GetInstance()->Libdirs()) {
     wxDir dir(lib);
     wxString filename;
     bool cont = dir.GetFirst(&filename, "", wxDIR_FILES);

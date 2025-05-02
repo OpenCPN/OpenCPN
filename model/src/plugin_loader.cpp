@@ -136,7 +136,7 @@ static std::string GetInstalledVersion(const PlugInData& pd) {
 
 /** Return metadata corresponding to a PlugInContainer. */
 static PluginMetadata CreateMetadata(const PlugInContainer* pic) {
-  auto catalogHdlr = CatalogHandler::getInstance();
+  auto catalogHdlr = CatalogHandler::GetInstance();
 
   PluginMetadata mdata;
   mdata.name = pic->m_common_name.ToStdString();
@@ -282,7 +282,7 @@ static void setLoadPath() {
   using namespace std;
 
   auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
-  auto dirs = PluginPaths::getInstance()->Libdirs();
+  auto dirs = PluginPaths::GetInstance()->Libdirs();
   if (osSystemId & wxOS_UNIX_LINUX) {
     string path = ocpn::join(dirs, ':');
     wxString envPath;
@@ -316,7 +316,7 @@ static void setLoadPath() {
       wxLogWarning("SetLoadPath: Unsupported platform.");
   }
   if (osSystemId & wxOS_MAC || osSystemId & wxOS_UNIX_LINUX) {
-    dirs = PluginPaths::getInstance()->Bindirs();
+    dirs = PluginPaths::GetInstance()->Bindirs();
     string path = ocpn::join(dirs, ':');
     wxString envPath;
     wxGetEnv("PATH", &envPath);
@@ -467,7 +467,7 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled, bool keep_orphans) {
   using namespace std;
 
   static const wxString sep = wxFileName::GetPathSeparator();
-  vector<string> dirs = PluginPaths::getInstance()->Libdirs();
+  vector<string> dirs = PluginPaths::GetInstance()->Libdirs();
   wxLogMessage("PluginLoader: loading plugins from %s", ocpn::join(dirs, ';'));
   setLoadPath();
   bool any_dir_loaded = false;
@@ -682,7 +682,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
           // to satisfy minimal PIM functionality
 
           auto oprhan_metadata = CreateMetadata(pic);
-          auto catalogHdlr = CatalogHandler::getInstance();
+          auto catalogHdlr = CatalogHandler::GetInstance();
           catalogHdlr->AddMetadataToActiveContext(oprhan_metadata);
         }
       }

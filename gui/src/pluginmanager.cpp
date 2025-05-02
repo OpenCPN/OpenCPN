@@ -2274,7 +2274,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   std::string filePath =
       wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
 
-  auto catalogHdlr = CatalogHandler::getInstance();
+  auto catalogHdlr = CatalogHandler::GetInstance();
 
   g_Platform->ShowBusySpinner();
   auto status = catalogHdlr->DownloadCatalog(filePath, url);
@@ -2332,7 +2332,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
 
   // Also clear the cached values in the CatalogHandler, forcing
   // a reload and parse of the catalog.
-  auto cataloghdlr = CatalogHandler::getInstance();
+  auto cataloghdlr = CatalogHandler::GetInstance();
   cataloghdlr->ClearCatalogData();
 
   //  Reload all plugins, which will also update the status fields

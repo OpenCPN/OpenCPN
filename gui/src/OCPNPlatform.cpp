@@ -1006,14 +1006,14 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
 
   // And then for managed plugins
-  std::string dir = PluginPaths::getInstance()->UserDatadir();
+  std::string dir = PluginPaths::GetInstance()->UserDatadir();
   wxString managed_locale_location(dir + "/locale");
   wxLocale::AddCatalogLookupPathPrefix(managed_locale_location);
 #endif
 
 #ifdef __WXOSX__
   std::string macDir =
-      PluginPaths::getInstance()->Homedir() +
+      PluginPaths::GetInstance()->Homedir() +
       "/Library/Application Support/OpenCPN/Contents/Resources";
   wxString Mac_managed_locale_location(macDir);
   wxLocale::AddCatalogLookupPathPrefix(Mac_managed_locale_location);

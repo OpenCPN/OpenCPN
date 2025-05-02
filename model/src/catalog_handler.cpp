@@ -64,7 +64,7 @@ CatalogHandler::CatalogHandler()
   }
 }
 
-CatalogHandler* CatalogHandler::getInstance() {
+CatalogHandler* CatalogHandler::GetInstance() {
   static CatalogHandler* instance = 0;
   if (!instance) {
     instance = new (CatalogHandler);

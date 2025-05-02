@@ -74,7 +74,7 @@ private:
       // "Default Setting"
       g_compatOsVersion = "";
       compat_os.Set("");
-      auto newOS = CompatOs::getInstance();
+      auto newOS = CompatOs::GetInstance();
       m_selected->SetLabel(newOS->name() + ":" + newOS->version());
     } else {
       auto current = GetString(GetSelection());
@@ -150,7 +150,7 @@ private:
 class CompatText : public wxStaticText {
 public:
   CompatText(wxWindow* parent) : wxStaticText(parent, wxID_ANY, "") {
-    auto compatOs = CompatOs::getInstance();
+    auto compatOs = CompatOs::GetInstance();
     SetLabel(compatOs->name() + ":" + compatOs->version());
   }
 };

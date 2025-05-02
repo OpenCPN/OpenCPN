@@ -62,7 +62,7 @@ public:
     FILE_ERROR
   };
 
-  static CatalogHandler* getInstance();
+  static CatalogHandler* GetInstance();
 
   /** Download channel json data, possibly return error code. */
   ServerStatus LoadChannels(std::ostream* json);

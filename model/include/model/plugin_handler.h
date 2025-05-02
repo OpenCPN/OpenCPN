@@ -45,7 +45,7 @@ bool isRegularFile(const char* path);
 /** Internal helper wrapping host OS and version. */
 class CompatOs {
 public:
-  static CompatOs* getInstance();
+  static CompatOs* GetInstance();
   std::string name() const { return _name; }
   std::string version() const { return _version; }
 
