@@ -112,7 +112,9 @@ public:
   virtual wxString GetName(void) { return m_MarkName; }
   wxString GetDescription(void) { return m_MarkDescription; }
 
+  /** Returns the Create Time of this RoutePoint in UTC. */
   wxDateTime GetCreateTime(void);
+  /** Sets the create time of this RoutePoint in UTC. */
   void SetCreateTime(wxDateTime dt);
 
   wxString GetIconName(void) { return m_IconName; }
@@ -158,6 +160,7 @@ public:
   void SetWaypointRangeRingsColour(wxColour wxc_WaypointRangeRingsColour) {
     m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour;
   };
+  void SetTideStation(wxString TideStation) { m_TideStation = TideStation; };
   void SetScaMin(wxString str);
   void SetScaMin(long val);
   long GetScaMin() { return m_ScaMin; };
@@ -284,6 +287,7 @@ public:
   /**
    * Length of the leg from previous waypoint to this waypoint in nautical
    * miles. Undefined for the starting point of a route.
+   * @note Calculated field - Length of leg from previous waypoint.
    */
   double m_seg_len;
 
@@ -337,6 +341,8 @@ public:
    *   * The distance to the first waypoint
    *   * The vessel's current or planned speed
    *
+   * @note Calculated field - calculated from ETD + travel time.
+   *
    * The relationship between waypoints creates a timing chain:
    * The ETA at one waypoint determines the default ETD from that waypoint,
    * which then affects the ETA at the next waypoint, and so on through the
@@ -347,16 +353,14 @@ public:
    * Estimated Time Enroute for the leg leading to this waypoint.
    *
    * This value represents the expected travel time (in seconds) from the
-   * previous waypoint to this one. It is calculated based on:
-   * - The distance between the previous waypoint and this one (m_seg_len)
-   * - The planned speed for this leg (m_seg_vmg)
+   * previous waypoint to this one.
    *
    * For the first waypoint in a route during active navigation, this represents
    * the estimated time from the vessel's current position to the first
    * waypoint.
    *
-   * The formula used is: ETE = (distance in nautical miles / speed in knots) *
-   * 3600
+   * @note Calculated field - derived from segment length to this waypoint and
+   * planned speed for this leg (m_seg_vmg)
    */
   wxLongLong m_seg_ete = 0;
   /**
@@ -371,17 +375,23 @@ public:
 
   /**
    * Flag indicating if this waypoint is currently selected.
+   * @note Calculated field - set to true when the waypoint is selected.
    */
   bool m_bPtIsSelected;
   /**
    * Flag indicating if this waypoint is currently being edited.
+   * @note Calculated field - set to true when the waypoint is in edit mode.
    */
   bool m_bRPIsBeingEdited;
   /**
    * Flag indicating if this waypoint is part of a route.
+   * @note Calculated field - set to true if the waypoint is part of a route.
    */
   bool m_bIsInRoute;
-  /** Flag indicating if the waypoint is a standalone mark. */
+  /**
+   * Flag indicating if the waypoint is a standalone mark.
+   * @note a RoutePoint is either an isolated mark or part of a route.
+   */
   bool m_bIsolatedMark;
 
   /**
@@ -390,7 +400,8 @@ public:
    */
   bool m_bIsVisible;
   /**
-   * Flag indicating if the waypoint should be included in lists.
+   * Flag indicating if the waypoint should appear in the Route Manager dialog's
+   * waypoint list.
    */
   bool m_bIsListed;
   /**
@@ -420,10 +431,12 @@ public:
   wxFont *m_pMarkFont;
   /**
    * Color used for rendering the waypoint name.
+   * @note Calculated field - Obtained from the font manager.
    */
   wxColour m_FontColor;
   /**
    * Size of the waypoint name text when rendered.
+   * @note Calculated field - Calculated based on font and text.
    */
   wxSize m_NameExtents;
   /**
@@ -459,12 +472,13 @@ public:
    */
   int m_LayerID;
   /**
-   * Course from this waypoint to the next waypoint in a route in degrees.
+   * Course from this waypoint to the next waypoint, in degrees.
+   * @note Calculated field - Calculated from bearing between points.
    */
   double m_routeprop_course;
   /**
-   * Distance from this waypoint to the next waypoint in a route in nautical
-   * miles.
+   * Distance from this waypoint to the next waypoint, in nautical miles.
+   * @note Calculated field - Calculated from distance between points.
    */
   double m_routeprop_distance;
   /**
@@ -480,11 +494,12 @@ public:
    */
   int m_iWaypointRangeRingsNumber;
   /**
-   * Distance between consecutive range rings in nautical miles.
+   * Distance between consecutive range rings.
+   * @note Units depend on m_iWaypointRangeRingsStepUnits (0=nm, 1=km).
    */
   float m_fWaypointRangeRingsStep;
   /**
-   * Units for the range rings step (0=nm, 1=km, 2=miles).
+   * Units for the range rings step (0=nm, 1=km).
    */
   int m_iWaypointRangeRingsStepUnits;
   /**
@@ -505,15 +520,18 @@ public:
   int m_iTextTextureHeight;
   /**
    * Bounding box for the waypoint.
+   * @note Calculated field - Calculated from icon size and position.
    */
   LLBBox m_wpBBox;
   double m_wpBBox_view_scale_ppm, m_wpBBox_rotation;
   /**
    * Flag indicating if the waypoint is currently visible on screen.
+   * @note Calculated field - Calculated from lat/lon and current view.
    */
   bool m_pos_on_screen;
   /**
    * Cached screen position of the waypoint for drawing arrows and points.
+   * @note Calculated field - Calculated from lat/lon and current view.
    */
   wxPoint2DDouble m_screen_pos;
   /**
@@ -530,7 +548,7 @@ public:
    */
   wxString m_timestring;
   /**
-   * Creation timestamp for the waypoint.
+   * Creation timestamp for the waypoint, in UTC.
    */
   wxDateTime m_CreateTimeX;
 
