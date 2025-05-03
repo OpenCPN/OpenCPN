@@ -29,8 +29,7 @@
 #include "notification.h"
 #include "observable_evtvar.h"
 #include "comm_appmsg.h"
-#include <sqlite3.h>  //We need some defines
-#include <SQLiteCpp/SQLiteCpp.h>
+#include <sqlite3.h>
 #include "track.h"
 
 /** The navobj SQLite container object, a singleton. */

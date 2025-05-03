@@ -39,9 +39,6 @@
 #include "wx/filename.h"
 #include "model/datetime.h"
 #include "model/comm_appmsg_bus.h"
-#include "../../libs/SQLiteCpp/include/SQLiteCpp/Statement.h"
-#include <SQLiteCpp/SQLiteCpp.h>
-#include <sqlite3.h>
 
 extern BasePlatform* g_BasePlatform;
 extern std::shared_ptr<ObservableListener> ack_listener;

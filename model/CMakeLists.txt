@@ -295,7 +295,7 @@ target_include_directories(
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/include
-        "/home/dsr/Projects/opencpn/libs/SQLiteCpp/include"
+    ${CMAKE_SOURCE_DIR}/libs/sqlite/include
 )
 
 if (LINUX)
