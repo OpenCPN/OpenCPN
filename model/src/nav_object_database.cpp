@@ -423,8 +423,8 @@ Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz, bool b_layer,
   }
 
   if (linklist) {
-    delete pTentTrack->m_HyperlinkList;  // created in TrackPoint ctor
-    pTentTrack->m_HyperlinkList = linklist;
+    delete pTentTrack->m_TrackHyperlinkList;  // created in TrackPoint ctor
+    pTentTrack->m_TrackHyperlinkList = linklist;
   }
 
   return pTentTrack;
@@ -858,7 +858,7 @@ static bool GPXCreateTrk(pugi::xml_node node, Track *pTrack,
   }
 
   // Hyperlinks
-  HyperlinkList *linklist = pTrack->m_HyperlinkList;
+  HyperlinkList *linklist = pTrack->m_TrackHyperlinkList;
   if (linklist && linklist->GetCount()) {
     wxHyperlinkListNode *linknode = linklist->GetFirst();
     while (linknode) {
@@ -1363,7 +1363,7 @@ bool NavObjectCollection1::CreateAllGPXObjects() {
 
   CreateNavObjGPXPoints();
   CreateNavObjGPXRoutes();
-  CreateNavObjGPXTracks();
+  // CreateNavObjGPXTracks();
 
   return true;
 }
@@ -1493,10 +1493,10 @@ bool NavObjectCollection1::LoadAllGPXObjects(bool b_full_viz,
         wpt_duplicates++;
       }
     } else if (!strcmp(object.name(), "trk")) {
-      Track *pTrack = GPXLoadTrack1(object, b_full_viz, false, false, 0);
-      if (InsertTrack(pTrack) && b_compute_bbox && pTrack->IsVisible()) {
-        // BBox.Expand(pTrack->GetBBox());
-      }
+      // Track *pTrack = GPXLoadTrack1(object, b_full_viz, false, false, 0);
+      // if (InsertTrack(pTrack) && b_compute_bbox && pTrack->IsVisible()) {
+      //  BBox.Expand(pTrack->GetBBox());
+      //}
     } else if (!strcmp(object.name(), "rte")) {
       Route *pRoute = GPXLoadRoute1(object, b_full_viz, false, false, 0, false);
       if (InsertRouteA(pRoute, this) && b_compute_bbox && pRoute->IsVisible()) {
@@ -1545,6 +1545,20 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id,
   }
 
   return n_obj;
+}
+
+bool NavObjectCollection1::LoadAllGPXTrackObjects() {
+  pugi::xml_node objects = this->child("gpx");
+
+  for (pugi::xml_node object = objects.first_child(); object;
+       object = object.next_sibling()) {
+    if (!strcmp(object.name(), "trk")) {
+      Track *pTrack = GPXLoadTrack1(object, true, false, false, 0);
+      InsertTrack(pTrack);
+    }
+  }
+
+  return true;
 }
 
 NavObjectChanges::NavObjectChanges(wxString file_name)

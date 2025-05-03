@@ -1,9 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+/**************************************************************************
+ *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,15 +15,51 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
+ * Class NavObj_dB.
  */
 
-#include "model/hyperlink.h"
-#include "model/gpx_document.h"
+#ifndef _NAVOBJ_DB_H__
+#define _NAVOBJ_DB_H__
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(HyperlinkList);  // toh, 2009.02.22
+#include <wx/timer.h>
+#include "notification.h"
+#include "observable_evtvar.h"
+#include "comm_appmsg.h"
+#include <sqlite3.h>
+#include "track.h"
 
-Hyperlink::Hyperlink() { GUID = GpxDocument::GetUUID().ToStdString(); }
+/** The navobj SQLite container object, a singleton. */
+class NavObj_dB {
+public:
+  static NavObj_dB &GetInstance();
 
-Hyperlink::~Hyperlink() {}
+  NavObj_dB(const NavObj_dB &) = delete;
+  NavObj_dB &operator=(const NavObj_dB &) = delete;
+
+  void Close();
+  void LoadNavObjects();
+
+  // Tracks
+  bool LoadAllTracks();
+  bool AddNewTrack(Track *track);
+  bool AddTrackPoint(Track *track, TrackPoint *point);
+  bool UpdateDBTrackAttributes(Track *track);
+  bool DeleteTrack(Track *track);
+
+  // Legacy navobj import
+  bool ImportLegacyNavobj();
+  bool ImportLegacyTracks();
+
+private:
+  NavObj_dB();
+  ~NavObj_dB();
+
+  int m_open_result;
+  sqlite3 *m_db;
+};
+
+#endif

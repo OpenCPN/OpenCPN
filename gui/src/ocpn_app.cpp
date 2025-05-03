@@ -111,6 +111,7 @@ using namespace std::literals::chrono_literals;
 #include "model/mdns_query.h"
 #include "model/mdns_service.h"
 #include "model/multiplexer.h"
+#include "model/navobj_db.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
 #include "model/notification_manager.h"
@@ -1270,6 +1271,9 @@ bool MyApp::OnInit() {
   pLayerList = new LayerList;
   //  Routes
   pRouteList = new RouteList;
+
+  //  Initialize the NavObj_db
+  auto &navobj_db = NavObj_dB::GetInstance();
 
   //      (Optionally) Capture the user and file(effective) ids
   //  Some build environments may need root privileges for hardware

@@ -73,6 +73,7 @@
 #include "model/local_api.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
+#include "model/navobj_db.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
 #include "model/notification_manager.h"
@@ -1780,6 +1781,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   pConfig->m_pNavObjectChangesSet->reset();
 
+  NavObj_dB::GetInstance().Close();
+
   // Remove any leftover Routes and Waypoints from config file as they were
   // saved to navobj before
   pConfig->DeleteGroup(_T ( "/Routes" ));
@@ -3145,7 +3148,7 @@ void MyFrame::TrackOn(void) {
 
   g_TrackList.push_back(g_pActiveTrack);
   if (pConfig) pConfig->AddNewTrack(g_pActiveTrack);
-
+  NavObj_dB::GetInstance().AddNewTrack(g_pActiveTrack);
   g_pActiveTrack->Start();
 
   // The main toolbar may still be NULL here, and we will do nothing...
@@ -3196,12 +3199,14 @@ Track *MyFrame::TrackOff(bool do_add_point) {
     g_pActiveTrack->Stop(do_add_point);
 
     if (g_pActiveTrack->GetnPoints() < 2) {
+      NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
       RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
       return_val = NULL;
     } else {
       if (g_bTrackDaily) {
         Track *pExtendTrack = g_pActiveTrack->DoExtendDaily();
         if (pExtendTrack) {
+          NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
           RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
           return_val = pExtendTrack;
         }
@@ -4699,6 +4704,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       }
 
       pConfig->LoadNavObjects();
+      NavObj_dB::GetInstance().LoadNavObjects();
+
       //    Re-enable anchor watches if set in config file
       if (!g_AW1GUID.IsEmpty()) {
         pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID(g_AW1GUID);

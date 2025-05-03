@@ -88,6 +88,7 @@
 #include "track_gui.h"
 #include "TrackPropDlg.h"
 #include "undo.h"
+#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -1912,8 +1913,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         if (m_pSelectedTrack == g_pActiveTrack)
           m_pSelectedTrack = parent->parent_frame->TrackOff();
         g_pAIS->DeletePersistentTrack(m_pSelectedTrack);
-        pConfig->DeleteConfigTrack(m_pSelectedTrack);
-
+        // pConfig->DeleteConfigTrack(m_pSelectedTrack);
+        NavObj_dB::GetInstance().DeleteTrack(m_pSelectedTrack);
         RoutemanGui(*g_pRouteMan).DeleteTrack(m_pSelectedTrack);
 
         if (TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&

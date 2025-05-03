@@ -41,6 +41,7 @@
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "routemanagerdialog.h"
+#include "model/navobj_db.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ColorScheme global_color_scheme;
@@ -161,9 +162,8 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
         }
 
         g_TrackList.push_back(t);
-        pConfig->AddNewTrack(t);
-        //                t->RebuildGUIDList(); // ensure the GUID list is
-        //                intact and good
+        // pConfig->AddNewTrack(t);
+        NavObj_dB::GetInstance().AddNewTrack(t);
 
         if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
           pRouteManagerDialog->UpdateTrkListCtrl();

@@ -179,15 +179,13 @@ public:
 
   int m_CurrentTrackSeg;
 
-  HyperlinkList *m_HyperlinkList;
+  HyperlinkList *m_TrackHyperlinkList;
   int m_HighlightedTrackPoint;
 
   void Clone(Track *psourcetrack, int start_nPoint, int end_nPoint,
              const wxString &suffix);
 
 protected:
-  //  void Segments(ChartCanvas *cc, std::list<std::list<wxPoint> > &pointlists,
-  //                const LLBBox &box, double scale);
   void DouglasPeuckerReducer(std::vector<TrackPoint *> &list,
                              std::vector<bool> &keeplist, int from, int to,
                              double delta);
@@ -199,9 +197,6 @@ protected:
   std::vector<std::vector<SubTrack> > SubTracks;
 
 private:
-  //  void GetPointLists(ChartCanvas *cc,
-  //                     std::list<std::list<wxPoint> > &pointlists, ViewPort
-  //                     &VP, const LLBBox &box);
   void Finalize();
   double ComputeScale(int left, int right);
   void InsertSubTracks(LLBBox &box, int level, int pos);
