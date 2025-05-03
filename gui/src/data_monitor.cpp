@@ -1,4 +1,5 @@
 #include <chrono>
+#include <ctime>
 #include <fstream>
 #include <sstream>
 
@@ -114,6 +115,13 @@ static std::string VdrQuote(const std::string& arg) {
   return "\"" + s + "\"";
 }
 
+static std::string GetMonitorHeading() {
+  std::time_t t = std::time(nullptr);
+  char buff[128];
+  std::strftime(buff, sizeof(buff), "%x %X", std::localtime(&t));
+  return std::string("Data Monitor: ") + buff;
+}
+
 /**
  * Write a line in the log using the VDR plugin format as defined in
  * https://opencpn-manuals.github.io/main/vdr/log_format.html
@@ -122,7 +130,7 @@ static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
   if (kSourceByBus.find(ll.navmsg->bus) == kSourceByBus.end()) return;
 
   using namespace std::chrono;
-  auto now = steady_clock::now();
+  auto now = system_clock::now();
   auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
   stream << ms << ",";
 
@@ -784,7 +792,7 @@ DataLogger::DataLogger(wxWindow* parent, const fs::path& path)
       m_stream(path, std::ios_base::app),
       m_is_logging(false),
       m_format(Format::kDefault),
-      m_log_start(std::chrono::steady_clock::now()) {}
+      m_log_start(NavmsgClock::now()) {}
 
 DataLogger::DataLogger(wxWindow* parent) : DataLogger(parent, NullLogfile()) {}
 
@@ -838,7 +846,7 @@ void DataLogger::Add(const Logline& ll) {
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)
-    : wxFrame(parent, wxID_ANY, "Data Monitor", wxDefaultPosition,
+    : wxFrame(parent, wxID_ANY, GetMonitorHeading(), wxDefaultPosition,
               wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT,
               kDataMonitorWindowName),
       m_monitor_src([&](const std::shared_ptr<const NavMsg>& navmsg) {

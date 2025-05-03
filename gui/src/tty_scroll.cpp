@@ -61,11 +61,16 @@ static bool IsFilterMatch(const struct Logline& ll, const std::string& s) {
 }
 
 static std::string Timestamp(const NavmsgTimePoint& when) {
+  static const NavmsgTimePoint started_at = NavmsgClock::now();
   using namespace std;
   using namespace std::chrono;
 
-  auto now = when.time_since_epoch();
+  int days = 0;
+  auto now = when - started_at;
   auto _hours = duration_cast<hours>(now);
+  /** duration_cast<days> is C++ 20 */
+  auto _days = _hours / 24;
+  _hours = _hours % 24;
   now -= _hours;
   auto _minutes = duration_cast<minutes>(now);
   now -= _minutes;
@@ -80,9 +85,9 @@ static std::string Timestamp(const NavmsgTimePoint& when) {
   return buf;
 #else
   stringstream ss;
-  ss << setw(2) << setfill('0') << _hours.count() % 24 << ":" << setw(2)
-     << _minutes.count() << ":" << setw(2) << _seconds.count() << "." << setw(3)
-     << ms.count();
+  ss << setw(3) << _days.count() << ":" << setw(2) << setfill('0')
+     << _hours.count() % 24 << ":" << setw(2) << _minutes.count() << ":"
+     << setw(2) << _seconds.count() << "." << setw(3) << ms.count();
   return ss.str();
 #endif
 }
