@@ -110,6 +110,15 @@ bool getDisplayMetrics();
 
 #define CHART_DIR "Charts"
 
+static wxString FormatBytes(double bytes) {
+  if (bytes <= 0) return "?";
+  return wxString::Format(_T("%.1fMB"), bytes / 1024 / 1024);
+}
+
+static wxString FormatBytes(long bytes) {
+  return FormatBytes(static_cast<double>(bytes));
+}
+
 void write_file(const wxString extract_file, char *data,
                 unsigned long datasize) {
   wxFileName fn(extract_file);
@@ -1342,8 +1351,8 @@ void ChartDldrPanelImpl::DownloadCharts() {
     if (!isChartChecked(i)) continue;
     m_bTransferComplete = false;
     m_bTransferSuccess = true;
-    m_totalsize = _("Unknown");
-    m_transferredsize = _T("0");
+    m_totalsize = -1;
+    m_transferredsize = 0;
     m_downloading++;
     if (pPlugIn->m_pChartCatalog.charts.at(index)->NeedsManualDownload()) {
       if (wxID_YES ==
@@ -1413,11 +1422,12 @@ After downloading the charts, please extract them to %s"),
         SetChartInfo(wxString::Format(
             _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
             m_downloading, to_download, m_failed_downloads,
-            m_transferredsize.c_str(), m_totalsize.c_str()));
+            FormatBytes(m_transferredsize), FormatBytes(m_totalsize)));
       else
-        SetChartInfo(wxString::Format(
-            _("Downloading chart %u of %u (%s / %s)"), m_downloading,
-            to_download, m_transferredsize.c_str(), m_totalsize.c_str()));
+        SetChartInfo(wxString::Format(_("Downloading chart %u of %u (%s / %s)"),
+                                      m_downloading, to_download,
+                                      FormatBytes(m_transferredsize),
+                                      FormatBytes(m_totalsize)));
 
       Update();
       Refresh();
@@ -2438,10 +2448,6 @@ bool ChartDldrGuiAddSourceDlg::ValidateUrl(const wxString Url,
   return re.Matches(Url);
 }
 
-static wxString FormatBytes(double bytes) {
-  return wxString::Format(_T("%.1fMB"), bytes / 1024 / 1024);
-}
-
 void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev) {
   //    wxString msg;
   //    msg.Printf(_T("onDLEvent  %d %d"),ev.getDLEventCondition(),
@@ -2455,8 +2461,10 @@ void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev) {
       break;
 
     case OCPN_DL_EVENT_TYPE_PROGRESS:
-      m_totalsize = FormatBytes(ev.getTotal());
-      m_transferredsize = FormatBytes(ev.getTransferred());
+      if (ev.getTransferred() > m_transferredsize) {
+        m_totalsize = ev.getTotal();
+        m_transferredsize = ev.getTransferred();
+      }
 
       break;
     default:
