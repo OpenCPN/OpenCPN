@@ -6830,4 +6830,18 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
 extern DECL_EXP std::shared_ptr<PI_Notification> GetNotificationMsgPayload(
     NotificationMsgId id, ObservedEvt ev);
 
+//   * Plugin polled Comm Status support
+enum class PI_Conn_Bus : int { N0183 = 0, Signalk = 1, N2000 = 2 };
+
+enum class PI_Comm_State : int {
+  Disabled = 0,
+  NoStats = 1,
+  NoData = 2,
+  Unavailable = 3,
+  Ok = 4
+};
+
+extern DECL_EXP PI_Comm_State GetConnState(const std::string &iface,
+                                           PI_Conn_Bus _bus);
+
 #endif  //_PLUGIN_H_

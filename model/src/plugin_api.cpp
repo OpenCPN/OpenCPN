@@ -43,6 +43,8 @@
 #include "model/notification_manager.h"
 #include "ocpn_plugin.h"
 #include "model/comm_drv_factory.h"
+#include "model/comm_drv_n2k_net.h"
+#include "model/comm_drv_n2k_serial.h"
 using namespace std;
 
 vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
@@ -357,4 +359,53 @@ std::vector<std::shared_ptr<PI_Notification>> GetActiveNotifications() {
   }
 
   return pi_notes;
+}
+
+/**
+ * Plugin polled Comm Status support
+ */
+PI_Comm_State GetConnState(const std::string& iface, PI_Conn_Bus _bus) {
+  //  Translate API bus to internal NavAddr::Bus
+  NavAddr::Bus ibus = NavAddr::Bus::Undef;
+  switch (_bus) {
+    case PI_Conn_Bus::N0183:
+      ibus = NavAddr::Bus::N0183;
+      break;
+
+    case PI_Conn_Bus::Signalk:
+      ibus = NavAddr::Bus::Signalk;
+      break;
+
+    case PI_Conn_Bus::N2000:
+      ibus = NavAddr::Bus::N2000;
+      break;
+
+    default:
+      break;
+  }
+
+  DriverStats stats;
+  if (ibus != NavAddr::Bus::Undef) {
+    auto& registry = CommDriverRegistry::GetInstance();
+    auto& drivers = registry.GetDrivers();
+    auto& found_driver = FindDriver(drivers, iface, ibus);
+    if (found_driver) {
+      auto stats_provider =
+          dynamic_cast<DriverStatsProvider*>(found_driver.get());
+      if (stats_provider) {
+        stats = stats_provider->GetDriverStats();
+      }
+    }
+  }
+
+  PI_Comm_State rv;
+  if (stats.available) {
+    if (stats.rx_count)
+      rv = PI_Comm_State::Ok;
+    else
+      rv = PI_Comm_State::NoData;
+  } else
+    rv = PI_Comm_State::Unavailable;
+
+  return rv;
 }
