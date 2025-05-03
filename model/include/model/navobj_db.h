@@ -41,14 +41,15 @@ public:
   NavObj_dB(const NavObj_dB &) = delete;
   NavObj_dB &operator=(const NavObj_dB &) = delete;
 
+  void Close();
   void LoadNavObjects();
 
   // Tracks
-  void LoadAllTracks();
+  bool LoadAllTracks();
   bool AddNewTrack(Track *track);
   bool AddTrackPoint(Track *track, TrackPoint *point);
   bool UpdateDBTrackAttributes(Track *track);
-  void DeleteTrack(Track *track);
+  bool DeleteTrack(Track *track);
 
   // Legacy navobj import
   bool ImportLegacyNavobj();

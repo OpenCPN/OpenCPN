@@ -1781,6 +1781,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   pConfig->m_pNavObjectChangesSet->reset();
 
+  NavObj_dB::GetInstance().Close();
+
   // Remove any leftover Routes and Waypoints from config file as they were
   // saved to navobj before
   pConfig->DeleteGroup(_T ( "/Routes" ));

@@ -46,15 +46,16 @@
 extern BasePlatform* g_BasePlatform;
 extern std::shared_ptr<ObservableListener> ack_listener;
 
-static void executeSQL(sqlite3* db, const char* sql) {
+static bool executeSQL(sqlite3* db, const char* sql) {
   char* errMsg = nullptr;
   if (sqlite3_exec(db, sql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-    std::cerr << "SQL error: " << errMsg << "\n";
     sqlite3_free(errMsg);
+    return false;
   }
+  return true;
 }
 
-static void executeSQL(sqlite3* db, wxString& sql) {
+static bool executeSQL(sqlite3* db, wxString& sql) {
   return executeSQL(db, sql.ToStdString().c_str());
 }
 
@@ -95,33 +96,9 @@ bool CreateTables(sqlite3* db) {
 
         )";
 
-#if 0
-  CREATE TABLE IF NOT EXISTS track_points_link (
-      track_guid TEXT,
-      point_guid TEXT,
-      point_order INTEGER,
-      PRIMARY KEY (track_guid, point_guid),
-      FOREIGN KEY (track_guid) REFERENCES tracks(guid) ON DELETE CASCADE,
-      FOREIGN KEY (point_guid) REFERENCES trk_points(guid) ON DELETE CASCADE
-  );
-#endif
-
-  executeSQL(db, create_tables_sql);
+  if (!executeSQL(db, create_tables_sql)) return false;
 
   return true;
-}
-
-void DeleteOrphanedTrackPoints(sqlite3* db) {
-  const char* sql = R"(
-        DELETE FROM trk_points
-        WHERE guid NOT IN (SELECT point_guid FROM track_points_link)
-    )";
-  char* errMsg = nullptr;
-
-  if (sqlite3_exec(db, sql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-    std::cerr << "Failed to delete orphaned points: " << errMsg << "\n";
-    sqlite3_free(errMsg);
-  }
 }
 
 bool TrackExists(sqlite3* db, const std::string& track_guid) {
@@ -138,9 +115,8 @@ bool TrackExists(sqlite3* db, const std::string& track_guid) {
 
     sqlite3_finalize(stmt);
   } else {
-    std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << "\n";
+    return false;
   }
-
   return exists;
 }
 
@@ -158,146 +134,29 @@ bool TrackHtmlLinkExists(sqlite3* db, const std::string& link_guid) {
 
     sqlite3_finalize(stmt);
   } else {
-    std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << "\n";
+    return false;
   }
-
   return exists;
 }
 
-void DeleteAllCommentsForTrack(sqlite3* db, const std::string& track_guid) {
+bool DeleteAllCommentsForTrack(sqlite3* db, const std::string& track_guid) {
   const char* sql = R"(
         DELETE FROM track_html_links WHERE track_guid = ?
     )";
-
   sqlite3_stmt* stmt;
-
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
     sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_STATIC);
-
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       std::cerr << "Failed to delete comments: " << sqlite3_errmsg(db) << "\n";
     }
     sqlite3_finalize(stmt);
   } else {
-    std::cerr << "Failed to prepare comment deletion: " << sqlite3_errmsg(db)
-              << "\n";
+    return false;
   }
-}
-
-NavObj_dB& NavObj_dB::GetInstance() {
-  static NavObj_dB instance;
-  return instance;
-}
-
-NavObj_dB::NavObj_dB() {
-  // Does dB file exist?
-  wxString db_filename = g_BasePlatform->GetPrivateDataDir() +
-                         wxFileName::GetPathSeparator() + "navobj.db";
-  if (!wxFileExists(db_filename)) {
-    int create_result = sqlite3_open_v2(
-        db_filename.ToStdString().c_str(),
-        &m_db,  // sqlite3 **ppDb,         /* OUT: SQLite db handle */
-        SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,  // int flags, /* Flags */
-        NULL  // char *zVfs        /* Name of VFS module to use */
-    );
-    if (create_result != SQLITE_OK) {
-      wxLogMessage("Cannot create new navobj.db database file");
-      return;
-    }
-
-    // Create initial database tables
-    CreateTables(m_db);
-
-    // Save/Close the database
-    int close_result = sqlite3_close_v2(m_db);
-    if (close_result != SQLITE_OK) {
-      wxLogMessage("Cannot save/close new navobj.db database file");
-      return;
-    }
-  }
-
-  // Open the existing database file
-  int m_open_result = sqlite3_open_v2(db_filename.ToStdString().c_str(), &m_db,
-                                      SQLITE_OPEN_READWRITE, NULL);
-  sqlite3_exec(m_db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
-  // sqlite3_exec(m_db, "PRAGMA journal_mode = WAL;", nullptr, nullptr,
-  // nullptr); sqlite3_exec(m_db, "PRAGMA synchronous = NORMAL;", nullptr,
-  // nullptr, nullptr);
-
-  ImportLegacyNavobj();
-  sqlite3_close_v2(m_db);
-
-  m_open_result = sqlite3_open_v2(db_filename.ToStdString().c_str(), &m_db,
-                                  SQLITE_OPEN_READWRITE, NULL);
-  sqlite3_exec(m_db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
-}
-
-NavObj_dB::~NavObj_dB() { sqlite3_close_v2(m_db); }
-
-bool NavObj_dB::ImportLegacyNavobj() {
-  ImportLegacyTracks();
   return true;
 }
 
-bool NavObj_dB::ImportLegacyTracks() {
-  auto input_set = new NavObjectCollection1();
-  wxString navobj_filename = g_BasePlatform->GetPrivateDataDir() +
-                             wxFileName::GetPathSeparator() + "navobj.xml";
-
-  if (::wxFileExists(navobj_filename) &&
-      input_set->load_file(navobj_filename.ToStdString().c_str()).status ==
-          pugi::xml_parse_status::status_ok) {
-    input_set->LoadAllGPXTrackObjects();
-  }
-
-  //  Add all tracks to database
-  for (Track* track_import : g_TrackList) {
-    AddNewTrack(track_import);
-  }
-
-  //  Delete all in-core tracks
-  std::vector<Track*> to_del = g_TrackList;
-  for (Track* ptrack : to_del) {
-    if (ptrack->m_bIsInLayer) continue;
-    g_pRouteMan->DeleteTrack(ptrack);
-  }
-
-  delete input_set;
-  return true;
-}
-
-void NavObj_dB::LoadNavObjects() { LoadAllTracks(); }
-
-int getNextPointOrder(sqlite3* db, const std::string& track_guid) {
-  const char* sql =
-      "SELECT MAX(point_order) + 1 FROM track_points_link WHERE track_guid = ?";
-  sqlite3_stmt* stmt;
-  int next_order = 1;  // default to 1 if none exist
-
-  if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_STATIC);
-
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-      if (sqlite3_column_type(stmt, 0) != SQLITE_NULL)
-        next_order = sqlite3_column_int(stmt, 0);
-    }
-
-    sqlite3_finalize(stmt);
-  }
-
-  return next_order;
-}
-
-#if 0
-guid TEXT PRIMARY KEY,
-    track_guid TEXT NOT NULL,
-    latitude REAL NOT NULL,
-    longitude REAL NOT NULL,
-    timestamp TEXT NOT NULL,
-    point_order INTEGER,
-#endif
-
-void InsertTrackPoint(sqlite3* db, const std::string& track_guid, double lat,
+bool InsertTrackPoint(sqlite3* db, const std::string& track_guid, double lat,
                       double lon, const std::string& timestamp, int i_point) {
   const char* sql = R"(
         INSERT INTO trk_points (track_guid, latitude, longitude, timestamp, point_order)
@@ -314,32 +173,12 @@ void InsertTrackPoint(sqlite3* db, const std::string& track_guid, double lat,
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
   } else {
-    const char* errMsg = sqlite3_errmsg(db);
-    std::cerr << "Failed to prepare INSERT: " << sqlite3_errmsg(db) << "\n";
+    return false;
   }
+  return true;
 }
 
-void linkTrkPointToTrack(sqlite3* db, const std::string& track_guid,
-                         const std::string& point_guid, int point_order) {
-  const char* sql = R"(
-        INSERT INTO track_points_link (track_guid, point_guid, point_order)
-        VALUES (?, ?, ?)
-    )";
-  sqlite3_stmt* stmt;
-
-  if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, point_guid.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 3, point_order);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
-  } else {
-    const char* errMsg = sqlite3_errmsg(db);
-    std::cerr << "Failed to prepare LINK: " << sqlite3_errmsg(db) << "\n";
-  }
-}
-
-void InsertTrackHTML(sqlite3* db, const std::string& track_guid,
+bool InsertTrackHTML(sqlite3* db, const std::string& track_guid,
                      const std::string& link_guid, const std::string& descrText,
                      const std::string& link, const std::string& ltype) {
   const char* sql = R"(
@@ -357,11 +196,117 @@ void InsertTrackHTML(sqlite3* db, const std::string& track_guid,
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
   } else {
-    const char* errMsg = sqlite3_errmsg(db);
-    std::cerr << "Failed to prepare INSERT for HTML link: "
-              << sqlite3_errmsg(db) << "\n";
+    return false;
   }
+  return true;
 }
+
+void errorLogCallback(void* pArg, int iErrCode, const char* zMsg) {
+  wxString msg =
+      wxString::Format("navobj database error. %d: %s", iErrCode, zMsg);
+  wxLogMessage(msg);
+  auto& noteman = NotificationManager::GetInstance();
+  noteman.AddNotification(NotificationSeverity::kCritical, msg.ToStdString());
+}
+
+NavObj_dB& NavObj_dB::GetInstance() {
+  static NavObj_dB instance;
+  return instance;
+}
+
+NavObj_dB::NavObj_dB() {
+  // Set SQLite per-process config options
+  int ie = sqlite3_config(SQLITE_CONFIG_LOG, errorLogCallback, nullptr);
+
+  // Does dB file exist?
+  wxString db_filename = g_BasePlatform->GetPrivateDataDir() +
+                         wxFileName::GetPathSeparator() + "navobj.db";
+  if (!wxFileExists(db_filename)) {
+    //  Make a safety backup of current navobj.xml
+    wxString noxml_filename = g_BasePlatform->GetPrivateDataDir() +
+                              wxFileName::GetPathSeparator() + "navobj.xml";
+    if (wxFileExists(noxml_filename)) {
+      wxCopyFile(noxml_filename, noxml_filename + ".backup");
+    }
+
+    // Create the new database file navobj.db
+
+    int create_result = sqlite3_open_v2(
+        db_filename.ToStdString().c_str(),
+        &m_db,  // sqlite3 **ppDb,         /* OUT: SQLite db handle */
+        SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,  // int flags, /* Flags */
+        NULL  // char *zVfs        /* Name of VFS module to use */
+    );
+    if (create_result != SQLITE_OK) {
+      wxLogMessage("Cannot create new navobj.db database file");
+      m_db = nullptr;
+      return;
+    }
+
+    // Create initial database tables
+    CreateTables(m_db);
+
+    // Save/Close the database
+    int close_result = sqlite3_close_v2(m_db);
+    if (close_result != SQLITE_OK) {
+      return;
+    }
+  }
+
+  // Open the existing database file
+  int m_open_result = sqlite3_open_v2(db_filename.ToStdString().c_str(), &m_db,
+                                      SQLITE_OPEN_READWRITE, NULL);
+  sqlite3_exec(m_db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
+  ImportLegacyNavobj();
+  sqlite3_close_v2(m_db);
+
+  m_open_result = sqlite3_open_v2(db_filename.ToStdString().c_str(), &m_db,
+                                  SQLITE_OPEN_READWRITE, NULL);
+  sqlite3_exec(m_db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
+}
+
+NavObj_dB::~NavObj_dB() { sqlite3_close_v2(m_db); }
+
+void NavObj_dB::Close() {
+  sqlite3_close_v2(m_db);
+  m_db = nullptr;
+}
+
+bool NavObj_dB::ImportLegacyNavobj() {
+  bool rv = ImportLegacyTracks();
+  return rv;
+}
+
+bool NavObj_dB::ImportLegacyTracks() {
+  auto input_set = new NavObjectCollection1();
+  wxString navobj_filename = g_BasePlatform->GetPrivateDataDir() +
+                             wxFileName::GetPathSeparator() + "navobj.xml";
+
+  if (::wxFileExists(navobj_filename) &&
+      input_set->load_file(navobj_filename.ToStdString().c_str()).status ==
+          pugi::xml_parse_status::status_ok) {
+    input_set->LoadAllGPXTrackObjects();
+  }
+
+  std::vector<Track*> tracks_added;
+  //  Add all tracks to database
+  for (Track* track_import : g_TrackList) {
+    if (AddNewTrack(track_import)) {
+      tracks_added.push_back(track_import);
+    }
+  }
+
+  //  Delete all tracks that were successfully added
+  for (Track* ptrack : tracks_added) {
+    if (ptrack->m_bIsInLayer) continue;
+    g_pRouteMan->DeleteTrack(ptrack);
+  }
+
+  delete input_set;
+  return true;
+}
+
+void NavObj_dB::LoadNavObjects() { LoadAllTracks(); }
 
 bool NavObj_dB::AddNewTrack(Track* track) {
   if (TrackExists(m_db, track->m_GUID.ToStdString())) return false;
@@ -373,7 +318,10 @@ bool NavObj_dB::AddNewTrack(Track* track) {
   // Insert a new track
   wxString sql = wxString::Format("INSERT INTO tracks (guid) VALUES ('%s')",
                                   track->m_GUID.ToStdString().c_str());
-  executeSQL(m_db, sql);
+  if (!executeSQL(m_db, sql)) {
+    sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
+    return false;
+  }
 
   UpdateDBTrackAttributes(track);
 
@@ -401,6 +349,7 @@ bool NavObj_dB::AddNewTrack(Track* track) {
     }
   }
   sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
+  rv = true;
   if (errMsg) rv = false;
 
   return rv;
@@ -438,16 +387,11 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
     sqlite3_bind_text(stmt, 9, track->m_GUID.c_str(), track->m_GUID.size(),
                       SQLITE_TRANSIENT);
   } else {
-    const char* errMsg = sqlite3_errmsg(m_db);
-    std::cerr << "Failed to prepare UPDATE: " << sqlite3_errmsg(m_db) << "\n";
+    return false;
   }
 
   if (sqlite3_step(stmt) != SQLITE_DONE) {
-    std::cerr << "Failed to update track name: " << sqlite3_errmsg(m_db)
-              << "\n";
-  } else {
-    // std::cout << "Track '" << track_guid << "' updated to name: " << new_name
-    // << "\n";
+    return false;
   }
 
   sqlite3_finalize(stmt);
@@ -485,8 +429,7 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
                             SQLITE_TRANSIENT);
         }
         if (sqlite3_step(stmt) != SQLITE_DONE) {
-          std::cerr << "Failed to update track HTML links: "
-                    << sqlite3_errmsg(m_db) << "\n";
+          return false;
         }
         sqlite3_finalize(stmt);
       }
@@ -506,13 +449,15 @@ bool NavObj_dB::AddTrackPoint(Track* track, TrackPoint* point) {
   int this_point_index = track->GetnPoints();
 
   // Add the linked point to the dB
-  InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
-                   point->m_lon, point->GetTimeString(), this_point_index - 1);
+  if (!InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
+                        point->m_lon, point->GetTimeString(),
+                        this_point_index - 1))
+    return false;
 
   return true;
 }
 
-void NavObj_dB::LoadAllTracks() {
+bool NavObj_dB::LoadAllTracks() {
   const char* sql = R"(
         SELECT guid, name,
         description, visibility, start_string, end_string,
@@ -524,9 +469,7 @@ void NavObj_dB::LoadAllTracks() {
 
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
-    std::cerr << "Failed to prepare track query: " << sqlite3_errmsg(m_db)
-              << "\n";
-    return;
+    return false;
   }
 
   while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -551,22 +494,6 @@ void NavObj_dB::LoadAllTracks() {
     Track* new_trk = NULL;
 
     //  Add the trk_points
-    const char* sqld = R"(
-        SELECT tp.point_order, p.guid, p.latitude, p.longitude, p.timestamp
-        FROM track_points_link tp
-        JOIN trk_points p ON p.guid = tp.point_guid
-        WHERE tp.track_guid = ?
-        ORDER BY tp.point_order ASC
-    )";
-#if 0
-guid TEXT PRIMARY KEY,
-    track_guid TEXT NOT NULL,
-    latitude REAL NOT NULL,
-    longitude REAL NOT NULL,
-    timestamp TEXT NOT NULL,
-    point_order INTEGER,
-#endif
-
     const char* sql = R"(
         SELECT  latitude, longitude, timestamp, point_order
         FROM trk_points
@@ -576,8 +503,7 @@ guid TEXT PRIMARY KEY,
 
     sqlite3_stmt* stmtp;
     if (sqlite3_prepare_v2(m_db, sql, -1, &stmtp, nullptr) != SQLITE_OK) {
-      std::cerr << "Failed to prepare point query: " << sqlite3_errmsg(m_db)
-                << "\n";
+      return false;
     }
 
     sqlite3_bind_text(stmtp, 1, guid.c_str(), -1, SQLITE_STATIC);
@@ -652,8 +578,7 @@ guid TEXT PRIMARY KEY,
         sqlite3_finalize(stmt);
 
       } else {
-        std::cerr << "Failed to prepare comment query: " << sqlite3_errmsg(m_db)
-                  << "\n";
+        return false;
       }
 
       //  Insert the track into the global list
@@ -662,9 +587,10 @@ guid TEXT PRIMARY KEY,
       pSelect->AddAllSelectableTrackSegments(new_trk);
     }
   }
+  return true;
 }
 
-void NavObj_dB::DeleteTrack(Track* track) {
+bool NavObj_dB::DeleteTrack(Track* track) {
   std::string track_guid = track->m_GUID.ToStdString();
   const char* sql = "DELETE FROM tracks WHERE guid = ?";
   sqlite3_stmt* stmt;
@@ -672,13 +598,13 @@ void NavObj_dB::DeleteTrack(Track* track) {
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
     sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_STATIC);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
-      std::cerr << "Failed to delete track: " << sqlite3_errmsg(m_db) << "\n";
+      return false;
     }
     sqlite3_finalize(stmt);
-    DeleteOrphanedTrackPoints(m_db);
   } else {
-    std::cerr << "Failed to prepare delete: " << sqlite3_errmsg(m_db) << "\n";
+    return false;
   }
+  return true;
 }
 
 #if 0
