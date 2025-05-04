@@ -4758,7 +4758,8 @@ bool isBuoyMmsi(const int msi) {
   // Consider any not valid MMSI number for a class B target (message 18 or 19)
   // to be a "net buoy"
   int mid = msi / 1000000;
-  if ((mid > 200 && mid < 800) || mid >= 970) {
+  if ((mid > 200 && mid < 880) || mid >= 970) {
+    // MID is stated to be >200 <800. Handheld AIS starts with 8+mid thus 880
     return false;
   } else {
     return true;

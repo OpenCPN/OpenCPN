@@ -529,8 +529,11 @@ wxString AisTargetData::BuildQueryResult(void) {
                  ? _("Nation")
                  : _("Flag"))
          << rowEnd << _T("</font></td></tr>") << rowStartH
-         << _T("<font size=-1><b>") << GetCountryCode(true) << rowEnd
-         << _T("</font></table></td></tr>");
+         << _T("<font size=-1><b>") << GetCountryCode(true);
+  if (Class == AIS_CLASS_B && MMSIstr.StartsWith("8")) {
+    html << "<td align=right>" << _("Handheld");
+  }
+  html << rowEnd << _T("</font></table></td></tr>");
 
   wxString navStatStr;
   if ((Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) &&
