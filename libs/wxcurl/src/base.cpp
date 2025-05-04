@@ -53,7 +53,7 @@ static bool replace(std::string& str, const std::string& from,
 
 
 static std::string GetUserAgent() {
-  std::string ua = "Mozilla/5.0 (OpenCPN @o_version@; @abi@; @abi_version@)";
+  std::string ua = "Mozilla/5.0 (@abi@; @abi_version@) OpenCPN/@o_version@";
   ua += " curl/@curl_version@";
   replace(ua, "@o_version@", WXCURL_OCPN_VERSION);
   replace(ua, "@abi@", WXCURL_ABI);
