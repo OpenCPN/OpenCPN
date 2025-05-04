@@ -80,6 +80,8 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
+
 private:
   class SocketTimer : public wxTimer {
   public:
@@ -112,8 +114,6 @@ private:
   void OpenNetworkUdp(unsigned int addr);
   void HandleN0183Msg(const std::string& sentence);
   bool SendSentenceNetwork(const wxString& payload);
-
-  DriverStats GetDriverStats() const override { return m_driver_stats; }
 
   const ConnectionParams m_params;
   DriverListener& m_listener;
