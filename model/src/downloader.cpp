@@ -41,7 +41,7 @@ static size_t throw_cb(void* ptr, size_t size, size_t nmemb, void* data) {
 }
 
 static std::string GetUserAgent() {
-  std::string ua = "Mozilla/5.0 (OpenCPN @o_version@; @abi@; @abi_version@)";
+  std::string ua = "Mozilla/5.0 (@abi@; @abi_version@) OpenCPN/@o_version@";
   ua += " curl/@curl_version@";
   ocpn::replace(ua, "@o_version@", VERSION_FULL);
   ocpn::replace(ua, "@abi@", PKG_TARGET);
