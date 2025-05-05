@@ -1254,9 +1254,7 @@ std::string CommBridge::GetPriorityKey(std::shared_ptr<const NavMsg> msg) {
       auto addr_sk =
           std::static_pointer_cast<const NavAddrSignalK>(msg->source);
       std::string source = addr_sk->to_string();
-      this_identifier = "signalK";
-      this_address = msg->source->iface;
-      key = source + ":" + this_address + ";" + this_identifier;
+      key = source;  // Simplified, parsing sK for more info is expensive
     }
   }
 
