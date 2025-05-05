@@ -156,6 +156,7 @@ extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern bool g_btenhertz;
+extern bool g_declutter_anchorage;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -871,6 +872,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "LookAheadMode" ), &g_bLookAhead);
   Read(_T ( "SkewToNorthUp" ), &g_bskew_comp);
   Read(_T ( "TenHzUpdate" ), &g_btenhertz, 0);
+  Read(_T ( "DeclutterAnchorage" ), &g_declutter_anchorage, 0);
 
   Read(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
 
