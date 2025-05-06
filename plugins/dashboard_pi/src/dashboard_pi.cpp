@@ -2384,138 +2384,125 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
   NMEA2000Id id_130306(130306);
   std::vector<uint8_t> v = GetN2000Payload(id_130306, ev);
 
-  // Get a uniqe ID to prioritize source(s)
-  unsigned char source_id = v.at(7);
-  char ss[4];
-  sprintf(ss, "%d", source_id);
-  std::string ident = std::string(ss);
-  std::string source = GetN2000Source(id_130306, ev);
-  source += ":" + ident;
+  // No source prioritization for 130306 because there are
+  // multiple variables that can come from different sources.
 
-  if (mPriWDN >= 1) {
-    if (mPriWDN == 1) {
-      if (source != prio130306) return;
-    } else {
-      prio130306 = source;
-    }
+  unsigned char SID;
+  double WindSpeed, WindAngle;
+  tN2kWindReference WindReference;
 
-    unsigned char SID;
-    double WindSpeed, WindAngle;
-    tN2kWindReference WindReference;
+  // Get wind data
+  if (ParseN2kPGN130306(v, SID, WindSpeed, WindAngle, WindReference)) {
+    if (!N2kIsNA(WindSpeed) && !N2kIsNA(WindAngle)) {
+      double wind_angle_degr = GEODESIC_RAD2DEG(WindAngle);
+      double wind_speed_kn = MS2KNOTS(WindSpeed);
+      bool sendTWA = false, sendTWS = false;
 
-    // Get wind data
-    if (ParseN2kPGN130306(v, SID, WindSpeed, WindAngle, WindReference)) {
-      if (!N2kIsNA(WindSpeed) && !N2kIsNA(WindAngle)) {
-        double m_twaangle, m_twaspeed_kn;
-        bool sendTrueWind = false;
-
-        switch (WindReference) {
-          case 0:  // N2kWind direction True North
-            if (mPriWDN >= 1) {
-              double m_twdT = GEODESIC_RAD2DEG(WindAngle);
-              SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT,
-                                           _T("\u00B0"));
-              mPriWDN = 1;
-              mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
-            }
-            break;
-          case 1:  // N2kWind direction Magnetic North
-            if (mPriWDN >= 1) {
-              double m_twdT = GEODESIC_RAD2DEG(WindAngle);
-              // Make it true if variation is available
-              if (!std::isnan(mVar)) {
-                m_twdT = (m_twdT) + mVar;
-                if (m_twdT > 360.) {
-                  m_twdT -= 360;
-                } else if (m_twdT < 0.) {
-                  m_twdT += 360;
-                }
-              }
-              SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT,
-                                           _T("\u00B0"));
-              mPriWDN = 1;
-              mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
-            }
-            break;
-          case 2:  // N2kWind_Apparent_centerline
-            if (mPriAWA >= 1) {
-              double m_awaangle, m_awaspeed_kn, calc_angle;
-              // Angle equals 0-360 degr
-              m_awaangle = GEODESIC_RAD2DEG(WindAngle);
-              calc_angle = m_awaangle;
-              wxString m_awaunit = _T("\u00B0R");
-              // Should be unit "L" and 0-180 to port
-              if (m_awaangle > 180.0) {
-                m_awaangle = 360.0 - m_awaangle;
-                m_awaunit = _T("\u00B0L");
-              }
-              SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle,
-                                           m_awaunit);
-              // Speed
-              m_awaspeed_kn = MS2KNOTS(WindSpeed);
-              SendSentenceToAllInstruments(
-                  OCPN_DBP_STC_AWS,
-                  toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
-                  getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-              mPriAWA = 1;
-              mMWVA_Watchdog = gps_watchdog_timeout_ticks;
-
-              // If not N2K true wind data are recently received calculate it.
-              if (mPriTWA != 1) {
-                // Wants -+ angle instead of "L"/"R"
-                if (calc_angle > 180) calc_angle -= 360.0;
-                CalculateAndUpdateTWDS(m_awaspeed_kn, calc_angle);
-                mPriTWA = 2;
-                mPriWDN = 2;
-                mMWVT_Watchdog = gps_watchdog_timeout_ticks;
-                mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
-              }
-            }
-            break;
-          case 3:  // N2kWind_True_centerline_boat(ground)
-            if (mPriTWA >= 1 && g_bDBtrueWindGround) {
-              m_twaangle = GEODESIC_RAD2DEG(WindAngle);
-              m_twaspeed_kn = MS2KNOTS(WindSpeed);
-              sendTrueWind = true;
-            }
-            break;
-          case 4:  // N2kWind_True_Centerline__water
-            if (mPriTWA >= 1 && !g_bDBtrueWindGround) {
-              m_twaangle = GEODESIC_RAD2DEG(WindAngle);
-              m_twaspeed_kn = MS2KNOTS(WindSpeed);
-              sendTrueWind = true;
-            }
-            break;
-          case 6:  // N2kWind_Error
-            break;
-          case 7:  // N2kWind_Unavailable
-            break;
-          default:
-            break;
-        }
-
-        if (sendTrueWind) {
-          // Wind angle is 0-360 degr
-          wxString m_twaunit = _T("\u00B0R");
-          // Should be unit "L" and 0-180 to port
-          if (m_twaangle > 180.0) {
-            m_twaangle = 360.0 - m_twaangle;
-            m_twaunit = _T("\u00B0L");
+      switch (WindReference) {
+        case 0:  // N2kWind direction True North
+          if (mPriWDN >= 1) {
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, wind_angle_degr,
+                                         _T("\u00B0"));
+            mPriWDN = 1;
+            sendTWS = true;
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           }
-          SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
-          // Wind speed
-          SendSentenceToAllInstruments(
-              OCPN_DBP_STC_TWS,
-              toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
-              getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-          SendSentenceToAllInstruments(
-              OCPN_DBP_STC_TWS2,
-              toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
-              getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-          mPriTWA = 1;
-          mPriWDN = 1;  // For source prio
-          mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+          break;
+        case 1:  // N2kWind direction Magnetic North
+          if (mPriWDN >= 1) {
+            // Make it true if variation is available
+            if (!std::isnan(mVar)) {
+              wind_angle_degr += mVar;
+              if (wind_angle_degr > 360.) {
+                wind_angle_degr -= 360;
+              } else if (wind_angle_degr < 0.) {
+                wind_angle_degr += 360;
+              }
+            }
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, wind_angle_degr,
+                                         _T("\u00B0"));
+            mPriWDN = 1;
+            sendTWS = true;
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
+          }
+          break;
+        case 2:  // N2kWind_Apparent_centerline
+          if (mPriAWA >= 1) {
+            double calc_angle = wind_angle_degr;
+            // Angle equals 0-360 degr
+            wxString m_awaunit = _T("\u00B0R");
+            // Should be unit "L" and 0-180 to port
+            if (wind_angle_degr > 180.0) {
+              wind_angle_degr = 360.0 - wind_angle_degr;
+              m_awaunit = _T("\u00B0L");
+            }
+            SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, wind_angle_degr,
+                                         m_awaunit);
+            // Speed
+            SendSentenceToAllInstruments(
+                OCPN_DBP_STC_AWS,
+                toUsrSpeed_Plugin(wind_speed_kn, g_iDashWindSpeedUnit),
+                getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+            mPriAWA = 1;
+            mMWVA_Watchdog = gps_watchdog_timeout_ticks;
+
+            // If not N2K true wind data are recently received calculate it.
+            if (mPriTWA != 1) {
+              // Wants -+ angle instead of "L"/"R"
+              if (calc_angle > 180) calc_angle -= 360.0;
+              CalculateAndUpdateTWDS(wind_speed_kn, calc_angle);
+              mPriTWA = 2;
+              mPriWDN = 2;
+              mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+              mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
+            }
+          }
+          break;
+        case 3:  // N2kWind_True_centerline_boat(ground)
+          if (mPriTWA >= 1 && g_bDBtrueWindGround) {
+            sendTWA = true;
+            sendTWS = true;
+            mPriTWA = 1;
+          }
+          break;
+        case 4:  // N2kWind_True_Centerline__water
+          if (mPriTWA >= 1 && !g_bDBtrueWindGround) {
+            sendTWA = true;
+            sendTWS = true;
+            mPriTWA = 1;
+          }
+          break;
+        case 6:  // N2kWind_Error
+          break;
+        case 7:  // N2kWind_Unavailable
+          break;
+        default:
+          break;
+      }
+
+      if (sendTWA) {
+        // Wind angle is 0-360 degr
+        wxString m_twaunit = _T("\u00B0R");
+        // Should be unit "L" and 0-180 to port
+        if (wind_angle_degr > 180.0) {
+          wind_angle_degr = 360.0 - wind_angle_degr;
+          m_twaunit = _T("\u00B0L");
         }
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, wind_angle_degr,
+                                     m_twaunit);
+      }
+
+      // Wind speed
+      if (sendTWS) {
+        SendSentenceToAllInstruments(
+            OCPN_DBP_STC_TWS,
+            toUsrSpeed_Plugin(wind_speed_kn, g_iDashWindSpeedUnit),
+            getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+        SendSentenceToAllInstruments(
+            OCPN_DBP_STC_TWS2,
+            toUsrSpeed_Plugin(wind_speed_kn, g_iDashWindSpeedUnit),
+            getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+        mMWVT_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
   }
