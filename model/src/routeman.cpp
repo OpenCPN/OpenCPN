@@ -480,6 +480,8 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 }
 
 bool Routeman::UpdateAutopilot() {
+  if (!pActiveRoute) return false;
+
   if (!bGPSValid) return false;
   bool rv = false;
 
