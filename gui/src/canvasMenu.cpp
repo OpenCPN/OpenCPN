@@ -519,8 +519,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _("Move Boat Here"));
   }
 
-  if (!g_bBasicMenus &&
-      (!(g_pRouteMan->GetpActiveRoute() || (seltype & SELTYPE_MARKPOINT))))
+  if (!g_bBasicMenus && !g_pRouteMan->GetpActiveRoute() &&
+      (!(seltype & SELTYPE_MARKPOINT) ||
+       (m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer)))
     MenuAppend1(contextMenu, ID_DEF_MENU_GOTO_HERE, _("Navigate To Here"));
 
   if (!g_bBasicMenus)
