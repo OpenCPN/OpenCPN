@@ -491,7 +491,7 @@ public:
     auto buttons = new wxStdDialogButtonSizer();
     auto close_btn = new wxButton(this, wxID_CLOSE);
     close_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                    [&](wxCommandEvent& ev) { Destroy(); });
+                    [&](wxCommandEvent& ev) { EndModal(0); });
     buttons->AddButton(close_btn);
     buttons->Realize();
     buttons->Fit(parent);
@@ -576,7 +576,9 @@ public:
         [&](DataLogger::Format f, std::string s) { SetLogFormat(f, s); },
         m_logger);
     dlg->ShowModal();
-    m_parent->GetParent()->Layout();
+    auto monitor = wxWindow::FindWindowByName(kDataMonitorWindowName);
+    assert(monitor);
+    monitor->Layout();
   }
 
 private:
@@ -591,15 +593,6 @@ private:
     fs::path path = m_logger.GetLogfile();
     path = path.parent_path() / (path.stem().string() + extension);
     m_logger.SetLogfile(path);
-  }
-
-  void LogSetup() {
-    auto dlg = new LoggingSetup(
-        m_parent,
-        [&](DataLogger::Format f, std::string s) { SetLogFormat(f, s); },
-        m_logger);
-    dlg->ShowModal();
-    m_parent->GetParent()->Layout();
   }
 
   void SetColor(int id) {
