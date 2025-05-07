@@ -364,7 +364,7 @@ std::vector<std::shared_ptr<PI_Notification>> GetActiveNotifications() {
 /**
  * Plugin polled Comm Status support
  */
-PI_Comm_State GetConnState(const std::string& iface, PI_Conn_Bus _bus) {
+PI_Comm_Status GetConnState(const std::string& iface, PI_Conn_Bus _bus) {
   //  Translate API bus to internal NavAddr::Bus
   NavAddr::Bus ibus = NavAddr::Bus::Undef;
   switch (_bus) {
@@ -398,14 +398,18 @@ PI_Comm_State GetConnState(const std::string& iface, PI_Conn_Bus _bus) {
     }
   }
 
-  PI_Comm_State rv;
+  PI_Comm_Status rv;
   if (stats.available) {
     if (stats.rx_count)
-      rv = PI_Comm_State::Ok;
+      rv.state = PI_Comm_State::Ok;
     else
-      rv = PI_Comm_State::NoData;
+      rv.state = PI_Comm_State::NoData;
   } else
-    rv = PI_Comm_State::Unavailable;
+    rv.state = PI_Comm_State::Unavailable;
+
+  rv.rx_count = stats.rx_count;
+  rv.tx_count = stats.tx_count;
+  rv.error_count = stats.error_count;
 
   return rv;
 }

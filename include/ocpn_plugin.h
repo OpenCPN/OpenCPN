@@ -6841,7 +6841,15 @@ enum class PI_Comm_State : int {
   Ok = 4
 };
 
-extern DECL_EXP PI_Comm_State GetConnState(const std::string &iface,
-                                           PI_Conn_Bus _bus);
+class PI_Comm_Status {
+public:
+  PI_Comm_State state;
+  unsigned rx_count;     ///< Number of bytes received since program start.
+  unsigned tx_count;     ///< Number of bytes sent since program start.
+  unsigned error_count;  ///< Number of detected errors since program start.
+};
+
+extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
+                                            PI_Conn_Bus _bus);
 
 #endif  //_PLUGIN_H_
