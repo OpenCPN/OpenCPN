@@ -122,7 +122,7 @@ static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
   if (kSourceByBus.find(ll.navmsg->bus) == kSourceByBus.end()) return;
 
   using namespace std::chrono;
-  auto now = steady_clock::now();
+  auto now = system_clock::now();
   auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
   stream << ms << ",";
 
@@ -784,7 +784,7 @@ DataLogger::DataLogger(wxWindow* parent, const fs::path& path)
       m_stream(path, std::ios_base::app),
       m_is_logging(false),
       m_format(Format::kDefault),
-      m_log_start(std::chrono::steady_clock::now()) {}
+      m_log_start(NavmsgClock::now()) {}
 
 DataLogger::DataLogger(wxWindow* parent) : DataLogger(parent, NullLogfile()) {}
 
