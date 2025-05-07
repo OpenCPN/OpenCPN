@@ -47,6 +47,7 @@ endif ()
 target_include_directories(WXCURL
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC ${CURL_INCLUDE_DIRS}
+    PRIVATE ${CMAKE_BINARY_DIR}/include
 )
 target_link_libraries(WXCURL ${CURL_LIBRARIES})# ${wxWidgets_LIBRARIES})
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
