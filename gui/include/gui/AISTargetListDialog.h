@@ -94,6 +94,7 @@ private:
   void OnHideAllTracks(wxCommandEvent &event);
   void OnToggleTrack(wxCommandEvent &event);
   void OnCopyMMSI(wxCommandEvent &event);
+  void OnLockAisTargetList(wxCommandEvent &event);
   void OnLimitRange(wxCommandEvent &event);
   void OnCloseButton(wxCommandEvent &event);
   void OnAutosortCB(wxCommandEvent &event);
@@ -110,6 +111,7 @@ private:
   wxButton *m_pButtonShowAllTracks;
   wxButton *m_pButtonToggleTrack;
   wxButton *m_pButtonCopyMMSI;
+  wxButton *m_pButtonLockAISTargetList;
   wxStaticText *m_pStaticTextRange;
   wxSpinCtrl *m_pSpinCtrlRange;
   wxStaticText *m_pStaticTextCount;
@@ -118,6 +120,7 @@ private:
   wxCheckBox *m_pCBAutosort;
 
   bool m_bautosort_force;
+  bool m_lockAISTargetList;
 
   DECLARE_EVENT_TABLE()
 };
