@@ -893,7 +893,10 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
   pWP->m_btemp = (b_permanent == false);
 
   pSelect->AddSelectableRoutePoint(pwaypoint->m_lat, pwaypoint->m_lon, pWP);
-  if (b_permanent) pConfig->AddNewWayPoint(pWP, -1);
+  if (b_permanent) {
+    // pConfig->AddNewWayPoint(pWP, -1);
+    NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+  }
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
@@ -971,7 +974,10 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
       pFind->m_slon = pwaypoint->m_lon;
     }
 
-    if (!prp->m_btemp) pConfig->UpdateWayPoint(prp);
+    if (!prp->m_btemp) {
+      // pConfig->UpdateWayPoint(prp);
+      NavObj_dB::GetInstance().UpdateRoutePoint(prp);
+    }
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
@@ -1195,8 +1201,10 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
 
   pRouteList->Append(route);
 
-  if (b_permanent) pConfig->AddNewRoute(route);
-
+  if (b_permanent) {
+    // pConfig->AddNewRoute(route);
+    NavObj_dB::GetInstance().InsertRoute(route);
+  }
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateRouteListCtrl();
 
@@ -1209,7 +1217,7 @@ bool DeletePlugInRoute(wxString& GUID) {
   //  Find the Route
   Route* pRoute = g_pRouteMan->FindRouteByGUID(GUID);
   if (pRoute) {
-    g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
+    g_pRouteMan->DeleteRoute(pRoute);
     b_found = true;
   }
   return b_found;
@@ -1224,8 +1232,7 @@ bool UpdatePlugInRoute(PlugIn_Route* proute) {
 
   if (b_found) {
     bool b_permanent = (pRoute->m_btemp == false);
-    g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
-
+    g_pRouteMan->DeleteRoute(pRoute);
     b_found = AddPlugInRoute(proute, b_permanent);
   }
 
@@ -1265,7 +1272,7 @@ bool AddPlugInTrack(PlugIn_Track* ptrack, bool b_permanent) {
   track->m_btemp = (b_permanent == false);
 
   g_TrackList.push_back(track);
-  if (b_permanent) NavObj_dB::GetInstance().AddNewTrack(track);
+  if (b_permanent) NavObj_dB::GetInstance().InsertTrack(track);
   // if (b_permanent) pConfig->AddNewTrack(track);
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
@@ -2146,7 +2153,10 @@ bool AddSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypointex,
   pWP->SetShowWaypointRangeRings(pwaypointex->nrange_rings > 0);
 
   pSelect->AddSelectableRoutePoint(pWP->m_lat, pWP->m_lon, pWP);
-  if (b_permanent) pConfig->AddNewWayPoint(pWP, -1);
+  if (b_permanent) {
+    // pConfig->AddNewWayPoint(pWP, -1);
+    NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+  }
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
@@ -2220,7 +2230,10 @@ bool UpdateSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypoint) {
       pFind->m_slon = pwaypoint->m_lon;
     }
 
-    if (!prp->m_btemp) pConfig->UpdateWayPoint(prp);
+    if (!prp->m_btemp) {
+      // pConfig->UpdateWayPoint(prp);
+      NavObj_dB::GetInstance().UpdateRoutePoint(prp);
+    }
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
@@ -2293,7 +2306,10 @@ bool AddPlugInRouteExV2(PlugIn_Route_ExV2* proute, bool b_permanent) {
 
   pRouteList->Append(route);
 
-  if (b_permanent) pConfig->AddNewRoute(route);
+  if (b_permanent) {
+    // pConfig->AddNewRoute(route);
+    NavObj_dB::GetInstance().InsertRoute(route);
+  }
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateRouteListCtrl();
@@ -2310,7 +2326,7 @@ bool UpdatePlugInRouteExV2(PlugIn_Route_ExV2* proute) {
 
   if (b_found) {
     bool b_permanent = !pRoute->m_btemp;
-    g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
+    g_pRouteMan->DeleteRoute(pRoute);
 
     b_found = AddPlugInRouteExV2(proute, b_permanent);
   }
@@ -2500,8 +2516,10 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypointex, bool b_permanent) {
   pWP->SetShowWaypointRangeRings(pwaypointex->nrange_rings > 0);
 
   pSelect->AddSelectableRoutePoint(pWP->m_lat, pWP->m_lon, pWP);
-  if (b_permanent) pConfig->AddNewWayPoint(pWP, -1);
-
+  if (b_permanent) {
+    // pConfig->AddNewWayPoint(pWP, -1);
+    NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+  }
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
 
@@ -2572,7 +2590,10 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
       pFind->m_slon = pwaypoint->m_lon;
     }
 
-    if (!prp->m_btemp) pConfig->UpdateWayPoint(prp);
+    if (!prp->m_btemp) {
+      // pConfig->UpdateWayPoint(prp);
+      NavObj_dB::GetInstance().UpdateRoutePoint(prp);
+    }
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
@@ -2629,7 +2650,10 @@ bool AddPlugInRouteEx(PlugIn_Route_Ex* proute, bool b_permanent) {
 
   pRouteList->Append(route);
 
-  if (b_permanent) pConfig->AddNewRoute(route);
+  if (b_permanent) {
+    // pConfig->AddNewRoute(route);
+    NavObj_dB::GetInstance().InsertRoute(route);
+  }
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateRouteListCtrl();
@@ -2646,8 +2670,7 @@ bool UpdatePlugInRouteEx(PlugIn_Route_Ex* proute) {
 
   if (b_found) {
     bool b_permanent = !pRoute->m_btemp;
-    g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
-
+    g_pRouteMan->DeleteRoute(pRoute);
     b_found = AddPlugInRouteEx(proute, b_permanent);
   }
 

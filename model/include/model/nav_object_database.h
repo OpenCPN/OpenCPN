@@ -128,6 +128,8 @@ public:
   int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz,
                                wxCheckBoxState b_namesviz);
   bool LoadAllGPXTrackObjects();
+  bool LoadAllGPXRouteObjects();
+  bool LoadAllGPXPointObjects();
 
   bool SaveFile(const wxString filename);
 
@@ -136,75 +138,6 @@ public:
   LLBBox &GetBBox() { return BBox; };
 
   LLBBox BBox;
-  bool m_bSkipChangeSetUpdate;
-};
-
-class NavObjectChanges : public NavObjectCollection1 {
-  friend class MyConfig;
-
-public:
-  static std::unique_ptr<NavObjectChanges> getTempInstance() {
-    return std::unique_ptr<NavObjectChanges>(new NavObjectChanges());
-  }
-
-  static NavObjectChanges *getInstance() {
-    static NavObjectChanges *instance = 0;
-    if (!instance) instance = new NavObjectChanges();
-    return instance;
-  }
-
-  void Init(const wxString &path) {
-    m_filename = path;
-    m_changes_file = fopen(m_filename.mb_str(), "a");
-  }
-
-  NavObjectChanges(const NavObjectChanges &) = delete;
-  void operator=(const NavObjectChanges &) = delete;
-  ~NavObjectChanges();
-
-  void AddRoute(Route *pr, const char *action);  // support "changes" file set
-  void AddTrack(Track *pr, const char *action);
-  void AddWP(RoutePoint *pr, const char *action);
-  void AddTrackPoint(TrackPoint *pWP, const char *action,
-                     const wxString &parent_GUID);
-
-  virtual void AddNewRoute(Route *pr);
-  virtual void UpdateRoute(Route *pr);
-  virtual void DeleteConfigRoute(Route *pr);
-
-  virtual void AddNewTrack(Track *pt);
-  virtual void UpdateTrack(Track *pt);
-  virtual void DeleteConfigTrack(Track *pt);
-
-  virtual void AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
-  virtual void UpdateWayPoint(RoutePoint *pWP);
-  virtual void DeleteWayPoint(RoutePoint *pWP);
-  virtual void AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID);
-
-  bool ApplyChanges(void);
-  bool IsDirty() { return m_bdirty; }
-
-  /**
-   * Notified when Routeman (?) should delete a track. Event contains a
-   * shared_ptr<Track>
-   */
-  EventVar evt_delete_track;
-  /**
-   * Notified when Routeman (?) should delete a Route*. Event contains a
-   * shared_ptr<Route>
-   */
-  EventVar evt_delete_route;
-
-private:
-  NavObjectChanges() : NavObjectCollection1() {
-    m_changes_file = 0;
-    m_bdirty = false;
-  }
-  NavObjectChanges(wxString file_name);
-
-  wxString m_filename;
-  FILE *m_changes_file;
-  bool m_bdirty;
 };
 
 #endif  // _NAVOBJECTCOLLECTION_H__

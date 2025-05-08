@@ -49,6 +49,7 @@
 #include "routemanagerdialog.h"
 #include "styles.h"
 #include "undo.h"
+#include "model/navobj_db.h"
 
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
@@ -122,7 +123,7 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
       Route* pr = (Route*)routeArray->Item(ir);
       pr->FinalizeForRendering();
       pr->UpdateSegmentDistances();
-      pConfig->UpdateRoute(pr);
+      NavObj_dB::GetInstance().UpdateRoute(pr);
     }
     delete routeArray;
   }
@@ -131,7 +132,8 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
 void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
-  pConfig->AddNewWayPoint(point, -1);
+  NavObj_dB::GetInstance().InsertRoutePoint(point);
+
   // transfer ownership to WayPointman which eventually deletes it.
   // This is certainly not how things should be and needs an overhaul.
   if (NULL != pWayPointMan) pWayPointMan->AddRoutePoint(point);
@@ -141,7 +143,7 @@ void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
 
 void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
-  pConfig->DeleteWayPoint(point);
+  NavObj_dB::GetInstance().DeleteRoutePoint(point);
   pSelect->DeleteSelectablePoint(point, SELTYPE_ROUTEPOINT);
   if (NULL != pWayPointMan) pWayPointMan->RemoveRoutePoint(point);
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
@@ -160,7 +162,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   gFrame->InvalidateAllGL();
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
-    pConfig->DeleteWayPoint(point);
+    NavObj_dB::GetInstance().DeleteRoutePoint(point);
     pSelect->DeleteSelectablePoint(point, SELTYPE_ROUTEPOINT);
     if (NULL != pWayPointMan) pWayPointMan->RemoveRoutePoint(point);
   }
@@ -188,7 +190,7 @@ void doRedoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   Route* route = (Route*)action->after[0];
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
-    pConfig->AddNewWayPoint(point, -1);
+    NavObj_dB::GetInstance().InsertRoutePoint(point);
     pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
   }
 

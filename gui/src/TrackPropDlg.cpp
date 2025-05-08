@@ -1345,10 +1345,10 @@ void TrackPropDlg::OnSplitBtnClick(wxCommandEvent& event) {
     pTail->Clone(m_pTrack, m_nSelected - 1, m_pTrack->GetnPoints(), _("_B"));
 
     g_TrackList.push_back(pHead);
-    NavObj_dB::GetInstance().AddNewTrack(pHead);
+    NavObj_dB::GetInstance().InsertTrack(pHead);
 
     g_TrackList.push_back(pTail);
-    NavObj_dB::GetInstance().AddNewTrack(pTail);
+    NavObj_dB::GetInstance().InsertTrack(pTail);
 
     NavObj_dB::GetInstance().DeleteTrack(m_pTrack);
 

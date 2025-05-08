@@ -59,6 +59,7 @@
 #include "svg_utils.h"
 #include "TCWin.h"
 #include "ui_utils.h"
+#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -1794,13 +1795,15 @@ bool MarkInfoDlg::SaveChanges() {
           pr->FinalizeForRendering();
           pr->UpdateSegmentDistances();
 
-          pConfig->UpdateRoute(pr);
+          // pConfig->UpdateRoute(pr);
+          NavObj_dB::GetInstance().UpdateRoute(pr);
         }
         delete pEditRouteArray;
       }
-    } else
-      pConfig->UpdateWayPoint(m_pRoutePoint);
-    // No general settings need be saved pConfig->UpdateSettings();
+    } else {
+      // pConfig->UpdateWayPoint(m_pRoutePoint);
+      NavObj_dB::GetInstance().UpdateRoutePoint(m_pRoutePoint);
+    }
   }
   return true;
 }
