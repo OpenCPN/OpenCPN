@@ -138,6 +138,10 @@ static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
         s2 = _T("-");
       break;
 
+    case tlFLAG:
+      s1 = t1->GetCountryCode(true);
+      s2 = t2->GetCountryCode(true);
+      break;
     case tlNAVSTATUS: {
       if ((t1->NavStatus <= 15) && (t1->NavStatus >= 0)) {
         if (t1->Class == AIS_SART) {
@@ -587,6 +591,15 @@ void AISTargetListDialog::CreateControls() {
   }
   m_pListCtrlAISTargets->InsertColumn(tlTYPE, _("Type"), wxLIST_FORMAT_LEFT,
                                       width);
+  s_width = tkz.GetNextToken();
+
+  width = dx * 12;
+  if (s_width.ToLong(&lwidth)) {
+    width = wxMax(dx * 2, lwidth);
+    width = wxMin(width, dx * 30);
+  }
+  m_pListCtrlAISTargets->InsertColumn(tlNAVSTATUS, _("Flag"),
+                                      wxLIST_FORMAT_LEFT, width);
   s_width = tkz.GetNextToken();
 
   width = dx * 12;
