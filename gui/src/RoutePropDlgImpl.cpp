@@ -1060,7 +1060,7 @@ void RoutePropDlgImpl::PrintOnButtonClick(wxCommandEvent& event) {
 
   if (result == wxID_OK) {
     dlg.GetSelected(s_options);
-    RoutePrintout printout(m_pRoute, s_options);
+    RoutePrintout printout(m_pRoute, s_options, m_tz_selection);
     auto& printer = PrintDialog::GetInstance();
     printer.Initialize(wxPORTRAIT);
     printer.EnablePageNumbers(true);
