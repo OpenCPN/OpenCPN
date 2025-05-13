@@ -50,6 +50,7 @@
 #include "model/multiplexer.h"
 #include "model/notification_manager.h"
 #include "model/nav_object_database.h"
+#include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
@@ -125,7 +126,6 @@
 #include "glChartCanvas.h"
 #include "notification_manager_gui.h"
 #include "model/notification_manager.h"
-#include "model/navobj_db.h"
 #endif
 
 #ifdef __VISUALC__

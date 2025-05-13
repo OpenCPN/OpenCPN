@@ -297,3 +297,12 @@ void opencpn_plugin_119::PreShutdownHook() { return; }
 
 //    Opencpn_Plugin_120 Implementation
 opencpn_plugin_120::opencpn_plugin_120(void* pmgr) : opencpn_plugin_119(pmgr) {}
+
+DateTimeFormatOptions::DateTimeFormatOptions()
+    : format_string("$weekday_short_date_time"),
+      time_zone(wxEmptyString),
+      show_timezone(true),
+      longitude(NAN),
+      version(1) {}
+
+DateTimeFormatOptions::~DateTimeFormatOptions() {}
