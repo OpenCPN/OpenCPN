@@ -21,6 +21,9 @@
 #define DATETIME_API_H__
 
 #include <wx/wx.h>
+#if wxCHECK_VERSION(3, 1, 6)
+#include <wx/uilocale.h>
+#endif
 
 #include "ocpn_plugin.h"
 
@@ -45,6 +48,8 @@ wxString getUsrDateTimeFormat();
  *
  * @param date_time The date/time to format, must be local time.
  * @param options The date/time format options.
+ * @param locale The locale to use for formatting. If not provided, the
+ *              current locale is used.
  * @return wxString The formatted date/time string with appropriate timezone
  * indicator.
  *
@@ -54,7 +59,12 @@ wxString getUsrDateTimeFormat();
  */
 wxString toUsrDateTimeFormat(
     const wxDateTime date_time,
-    const ::DateTimeFormatOptions &options = ::DateTimeFormatOptions());
+    const ::DateTimeFormatOptions& options = ::DateTimeFormatOptions()
+#if wxCHECK_VERSION(3, 1, 6)
+        ,
+    const wxUILocale& locale = wxUILocale::GetCurrent()
+#endif
+);
 }  // namespace ocpn
 
 #endif  // DATETIME_API_H__

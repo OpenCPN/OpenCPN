@@ -2943,8 +2943,10 @@ extern DECL_EXP double fromDMM_PlugIn(wxString sdms);
  * Timezone settings allow displaying times in UTC, system local time, or a
  * custom zone based on the vessel's current position.
  */
-struct DateTimeFormatOptions {
-  DateTimeFormatOptions() = default;
+struct DECL_EXP DateTimeFormatOptions {
+  DateTimeFormatOptions();
+  virtual ~DateTimeFormatOptions();
+
   /**
    * The format string for date/time.
    *
@@ -2964,7 +2966,7 @@ struct DateTimeFormatOptions {
    * For example, $short_date is resolved to "12/31/2021" in the US locale and
    * "31/12/2021" in the UK locale.
    */
-  wxString format_string = "$weekday_short_date_time";
+  wxString format_string;
 
   /**
    * The timezone to use when formatting the date/time. Supported options are:
@@ -2981,13 +2983,21 @@ struct DateTimeFormatOptions {
    *   case, longitude is required.
    * - Valid timezone name: the date/time is formatted in that timezone.
    */
-  wxString time_zone = wxEmptyString;
+  wxString time_zone;
+
+  /**
+   * Whether to show timezone information in the formatted date/time string.
+   * When true, the timezone abbreviation (e.g., "EDT", "UTC", "LMT") is
+   * appended to the date/time string. When false, no timezone information
+   * is included.
+   */
+  bool show_timezone;
 
   /**
    * The longitude to use when formatting the date/time in Local Mean Time
    * (LMT). The longitude is required when the time_zone is set to "LMT".
    */
-  double longitude = NAN;
+  double longitude;
 
   int version = 1;  // For future compatibility checks
 
@@ -3034,6 +3044,17 @@ struct DateTimeFormatOptions {
    */
   DateTimeFormatOptions &SetTimezone(const wxString &tz) {
     time_zone = tz;
+    return *this;
+  }
+
+  /**
+   * Sets whether to show timezone information in the formatted output.
+   *
+   * @param show Whether to show timezone information
+   * @return Reference to this object for method chaining
+   */
+  DateTimeFormatOptions &SetShowTimezone(bool show) {
+    show_timezone = show;
     return *this;
   }
 
