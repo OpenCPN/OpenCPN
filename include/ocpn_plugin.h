@@ -4911,19 +4911,18 @@ extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
 // API 1.16
 //
 /**
- * Return the plugin data directory for a given directory name.
+ * Returns an installed plugin's data directory given a plugin name.
  *
- * On Linux, the returned data path is an existing directory ending in
- * "opencpn/plugins/<plugin_name>" where the last part is the plugin_name
- * argument. The prefix part is one of the directories listed in the
- * environment variable XDG_DATA_DIRS, by default
- * ~/.local/share:/usr/local/share:/usr/share.
+ * Platform-specific behavior:
+ * - On Linux: Searches directories from XDG_DATA_DIRS env variable for
+ *   "opencpn/plugins/<plugin_name>"
+ * - On other platforms: Checks GetSharedDataDir() + "/opencpn/plugins/" +
+ * plugin_name
  *
- * On other platforms, the returned value is GetSharedDataDir() +
- * "/opencpn/plugins/" + plugin_name (with native path separators)
- * if that path exists.
- *
- * Return "" if no existing directory is found.
+ * @param plugin_name The name of the plugin to find data for (e.g.,
+ * "weather_routing_pi")
+ * @return Path to the plugin's data directory if found, empty string if not
+ * found
  */
 extern DECL_EXP wxString GetPluginDataDir(const char *plugin_name);
 

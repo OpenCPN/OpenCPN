@@ -5194,17 +5194,28 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pCheck_CPA_Max = new wxCheckBox(
       panelAIS, -1,
       _("No (T)CPA Alerts if target range is greater than (NMi)"));
+  m_pCheck_CPA_Max->SetToolTip(
+      _("Disable CPA (Closest Point of Approach) and TCPA (Time to CPA) alerts "
+        "for targets beyond this distance from your vessel"));
   pCPAGrid->Add(m_pCheck_CPA_Max, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_Max = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_CPA_Max->SetToolTip(
+      _("Maximum distance in nautical miles at which Closest Point of Approach "
+        "alerts will be triggered"));
   pCPAGrid->Add(m_pText_CPA_Max, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_CPA_Warn =
       new wxCheckBox(panelAIS, -1, _("Warn if CPA less than (NMi)"));
+  m_pCheck_CPA_Warn->SetToolTip(
+      _("Enable warning alerts when targets have a Closest Point of Approach "
+        "less than this distance"));
   pCPAGrid->Add(m_pCheck_CPA_Warn, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_Warn =
       new wxTextCtrl(panelAIS, -1, "TEXT  ", wxDefaultPosition, wxSize(-1, -1));
+  m_pText_CPA_Warn->SetToolTip(
+      _("Distance threshold in nautical miles for CPA warning alerts"));
   pCPAGrid->Add(m_pText_CPA_Warn, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_CPA_Warn->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -5213,9 +5224,14 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_CPA_WarnT =
       new wxCheckBox(panelAIS, -1, _("...and TCPA is less than (min)"));
+  m_pCheck_CPA_WarnT->SetToolTip(
+      _("Additional time constraint - alerts only occur if the Time to Closest "
+        "Point of Approach is less than this value"));
   pCPAGrid->Add(m_pCheck_CPA_WarnT, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_WarnT = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_CPA_WarnT->SetToolTip(
+      _("Time threshold in minutes for TCPA constraints"));
   pCPAGrid->Add(m_pText_CPA_WarnT, 0, wxALL | wxALIGN_RIGHT,
                 group_item_spacing);
 
@@ -5230,17 +5246,28 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Mark_Lost =
       new wxCheckBox(panelAIS, -1, _("Mark targets as lost after (min)"));
+  m_pCheck_Mark_Lost->SetToolTip(
+      _("Targets will be considered lost when no update is received for this "
+        "time period"));
   pLostGrid->Add(m_pCheck_Mark_Lost, 1, wxALL, group_item_spacing);
 
   m_pText_Mark_Lost = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_Mark_Lost->SetToolTip(
+      _("Time in minutes after which targets with no updates are marked as "
+        "lost"));
   pLostGrid->Add(m_pText_Mark_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
   m_pCheck_Remove_Lost =
       new wxCheckBox(panelAIS, -1, _("Remove lost targets after (min)"));
+  m_pCheck_Remove_Lost->SetToolTip(
+      _("Lost targets will be completely removed from display after this "
+        "additional time period"));
   pLostGrid->Add(m_pCheck_Remove_Lost, 1, wxALL, group_item_spacing);
 
   m_pText_Remove_Lost = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_Remove_Lost->SetToolTip(_(
+      "Time in minutes after which lost targets are removed from the display"));
   pLostGrid->Add(m_pText_Remove_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
@@ -5257,9 +5284,15 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_COG = new wxCheckBox(
       panelAIS, -1, _("Show target COG predictor arrow, length (min)"));
+  m_pCheck_Show_COG->SetToolTip(
+      _("Display a predictor arrow for each AIS target, showing its projected "
+        "course over ground for the specified number of minutes."));
   pDisplayGrid->Add(m_pCheck_Show_COG, 1, wxALL | wxEXPAND, group_item_spacing);
 
   m_pText_COG_Predictor = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_COG_Predictor->SetToolTip(
+      _("Set the length in minutes for the COG predictor arrow for AIS "
+        "targets."));
   pDisplayGrid->Add(m_pText_COG_Predictor, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -5275,6 +5308,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_Tracks =
       new wxCheckBox(panelAIS, -1, _("Show target tracks, length (min)"));
+  m_pCheck_Show_Tracks->SetToolTip(
+      _("Display the recent track (history) of each AIS target for the "
+        "specified number of minutes."));
   pDisplayGrid->Add(m_pCheck_Show_Tracks, 1, wxALL, group_item_spacing);
 
   m_pText_Track_Length = new wxTextCtrl(panelAIS, -1, "TEXT  ");
@@ -5283,6 +5319,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Hide_Moored = new wxCheckBox(
       panelAIS, -1, _("Suppress anchored/moored targets, speed max (kn)"));
+  m_pCheck_Hide_Moored->SetToolTip(
+      _("Hide AIS targets that are moving slower than this speed, typically "
+        "indicating they are anchored or moored."));
   pDisplayGrid->Add(m_pCheck_Hide_Moored, 1, wxALL, group_item_spacing);
 
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1, "TEXT  ");
@@ -5291,6 +5330,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Draw_Realtime_Prediction = new wxCheckBox(
       panelAIS, -1, _("Draw AIS realtime prediction, target speed min (kn)"));
+  m_pCheck_Draw_Realtime_Prediction->SetToolTip(
+      _("Show a real-time prediction vector for AIS targets moving faster than "
+        "this speed."));
   pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL,
                     group_item_spacing);
 
@@ -5301,6 +5343,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pCheck_Scale_Priority = new wxCheckBox(
       panelAIS, -1,
       _("Allow attenuation of less critical targets if more than ... targets"));
+  m_pCheck_Scale_Priority->SetToolTip(
+      _("Reduce the display prominence of less critical AIS targets when the "
+        "number of targets exceeds the specified value."));
   pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
 
   m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1, "TEXT  ");
@@ -5309,6 +5354,8 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_Area_Notices = new wxCheckBox(
       panelAIS, -1, _("Show area notices (from AIS binary messages)"));
+  m_pCheck_Show_Area_Notices->SetToolTip(
+      _("Display area notices received via AIS binary messages on the chart."));
   pDisplayGrid->Add(m_pCheck_Show_Area_Notices, 1, wxALL, group_item_spacing);
 
   wxStaticText* pStatic_Dummy5 = new wxStaticText(panelAIS, -1, _T(""));
@@ -5316,6 +5363,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Draw_Target_Size =
       new wxCheckBox(panelAIS, -1, _("Show AIS targets real size"));
+  m_pCheck_Draw_Target_Size->SetToolTip(
+      _("Display AIS targets using their actual reported size and shape on the "
+        "chart."));
   pDisplayGrid->Add(m_pCheck_Draw_Target_Size, 1, wxALL, group_item_spacing);
 
   wxStaticText* pStatic_Dummy6 = new wxStaticText(panelAIS, -1, _T(""));
@@ -5323,6 +5373,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_Target_Name = new wxCheckBox(
       panelAIS, -1, _("Show names with AIS targets at scale greater than 1:"));
+  m_pCheck_Show_Target_Name->SetToolTip(
+      _("Display the name of AIS targets when the chart scale is greater than "
+        "the specified value."));
   pDisplayGrid->Add(m_pCheck_Show_Target_Name, 1, wxALL, group_item_spacing);
 
   m_pText_Show_Target_Name_Scale = new wxTextCtrl(panelAIS, -1, "TEXT     ");
@@ -5331,11 +5384,18 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_use_Wpl = new wxCheckBox(
       panelAIS, -1, _("Use WPL position messages. Action when received:"));
+  m_pCheck_use_Wpl->SetToolTip(
+      _("Enable processing of WPL (Waypoint Location) position messages from "
+        "AIS and select the action to take when received."));
   pDisplayGrid->Add(m_pCheck_use_Wpl, 1, wxALL, group_item_spacing);
 
   wxString Wpl_Action[] = {_("APRS position report"), _("Create mark")};
   m_pWplAction = new wxChoice(panelAIS, wxID_ANY, wxDefaultPosition,
                               wxDefaultSize, 2, Wpl_Action);
+  m_pWplAction->SetToolTip(
+      _("Select the action to perform when a WPL message is received: create "
+        "an Automatic Packet Reporting System (APRS) report or a mark on the "
+        "chart."));
   pDisplayGrid->Add(m_pWplAction, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   // Rollover
@@ -5346,6 +5406,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   pRollover = new wxCheckBox(panelAIS, ID_ROLLOVERBOX,
                              _("Enable route/AIS info block"));
+  pRollover->SetToolTip(
+      _("Show a popup info block with details about routes and AIS targets "
+        "when hovering over them."));
   rolloverSizer->Add(pRollover, 1, wxALL, 2 * group_item_spacing);
 
   pRollover->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -5354,16 +5417,27 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   pStatic_CallSign =
       new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
+  pStatic_CallSign->SetToolTip(
+      _("Display the ship name and MMSI (call sign) in the rollover info "
+        "block."));
   rolloverSizer->Add(pStatic_CallSign, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_Class =
       new wxCheckBox(panelAIS, -1, _("[Class] Type (Status)"));
+  m_pCheck_Rollover_Class->SetToolTip(
+      _("Show the AIS class, type, and status in the rollover info block."));
   rolloverSizer->Add(m_pCheck_Rollover_Class, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_COG = new wxCheckBox(panelAIS, -1, _("SOG COG"));
+  m_pCheck_Rollover_COG->SetToolTip(
+      _("Show speed over ground (SOG) and course over ground (COG) in the "
+        "rollover info block."));
   rolloverSizer->Add(m_pCheck_Rollover_COG, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_CPA = new wxCheckBox(panelAIS, -1, _("CPA TCPA"));
+  m_pCheck_Rollover_CPA->SetToolTip(
+      _("Show Closest Point of Approach (CPA) and time to CPA (TCPA) in the "
+        "rollover info block."));
   rolloverSizer->Add(m_pCheck_Rollover_CPA, 1, wxALL, 2 * group_item_spacing);
 
   //      Alert Box

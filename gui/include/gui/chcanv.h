@@ -426,6 +426,18 @@ public:
 
   bool StartTimedMovement(bool stoptimer = true);
   void DoTimedMovement();
+  /**
+   * Performs a step of smooth movement animation on the chart canvas.
+   *
+   * This function is called to update the canvas position, scale, or rotation
+   * during animated panning, zooming, or rotating operations. The amount of
+   * movement performed is determined by the elapsed time parameter @p dt, and
+   * the operation continues as long as the internal movement timer is nonzero.
+   *
+   * @param dt Elapsed time in milliseconds since the last movement step.
+   *
+   * @see StartTimedMovement(), StopMovement(), m_mustmove
+   */
   void DoMovement(long dt);
   void StopMovement();
 
@@ -1148,6 +1160,11 @@ private:
   double m_panspeed;
   bool m_bmouse_key_mod;
   double m_zoom_factor, m_rotation_speed;
+  /**
+   * Timer/counter for smooth movement operations (panning, zooming, rotating).
+   * Represents the remaining duration (in milliseconds) for which movement
+   * should continue. Used to control animation steps.
+   */
   int m_mustmove;
 
   wxDateTime m_last_movement_time;
