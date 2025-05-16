@@ -60,7 +60,6 @@ model/include/model/logger.h
 model/include/model/macutils.h
 model/include/model/MarkIcon.h
 model/include/model/mdns_query.h
-model/include/model/mDNS_service.h
 model/include/model/meteo_points.h
 model/include/model/multiplexer.h
 model/include/model/nav_object_database.h
@@ -142,7 +141,6 @@ model/src/garmin_protocol_mgr.cpp
 model/src/garmin_wrapper.cpp
 model/src/geodesic.cpp
 model/src/georef.cpp
-model/src/gui.cpp
 model/src/hyperlink.cpp
 model/src/instance_handler.cpp
 model/src/ipc_api.cpp
@@ -151,8 +149,6 @@ model/src/linux_usb_watch.cpp
 model/src/local_api.cpp
 model/src/logger.cpp
 model/src/macutils.c
-model/src/mDNS_query.cpp
-model/src/mDNS_service.cpp
 model/src/multiplexer.cpp
 model/src/nav_object_database.cpp
 model/src/navutil_base.cpp
@@ -182,8 +178,6 @@ model/src/track.cpp
 model/src/usb_watch_factory.cpp
 model/src/win_usb_watch.cpp
 model/src/wx_instance_chk.cpp
-gui/include/gui/AboutFrame.h
-gui/include/gui/AboutFrameImpl.h
 gui/include/gui/about.h
 gui/include/gui/ais.h
 gui/include/gui/ais_info_gui.h
@@ -208,7 +202,6 @@ gui/include/gui/compass.h
 gui/include/gui/concanv.h
 gui/include/gui/ConfigMgr.h
 gui/include/gui/connection_edit.h
-gui/include/gui/connections_dialog.h
 gui/include/gui/conn_params_panel.h
 gui/include/gui/crashprint.h
 gui/include/gui/DetailSlider.h
@@ -237,7 +230,6 @@ gui/include/gui/mbtiles.h
 gui/include/gui/MUIBar.h
 gui/include/gui/n0183_ctx_factory.h
 gui/include/gui/navutil.h
-gui/include/gui/NMEALogWindow.h
 gui/include/gui/ocpCursor.h
 gui/include/gui/ocpn_app.h
 gui/include/gui/OCPN_AUIManager.h
@@ -295,8 +287,6 @@ gui/include/gui/toolbar.h
 gui/include/gui/track_gui.h
 gui/include/gui/track_printout.h
 gui/include/gui/TrackPropDlg.h
-gui/include/gui/TtyScroll.h
-gui/include/gui/TTYWindow.h
 gui/include/gui/udev_rule_mgr.h
 gui/include/gui/undo.h
 gui/include/gui/update_mgr.h
@@ -307,8 +297,6 @@ gui/include/gui/WindowDestroyListener.h
 gui/include/gui/wiz_ui.h
 gui/include/gui/wiz_ui_proto.h
 gui/src/about.cpp
-gui/src/AboutFrame.cpp
-gui/src/AboutFrameImpl.cpp
 gui/src/ais.cpp
 gui/src/ais_info_gui.cpp
 gui/src/AISTargetAlertDialog.cpp
@@ -330,7 +318,6 @@ gui/src/compass.cpp
 gui/src/concanv.cpp
 gui/src/ConfigMgr.cpp
 gui/src/connection_edit.cpp
-gui/src/connections_dialog.cpp
 gui/src/conn_params_panel.cpp
 gui/src/crashprint.cpp
 gui/src/DetailSlider.cpp
@@ -355,7 +342,6 @@ gui/src/load_errors_dlg.cpp
 gui/src/MarkInfo.cpp
 gui/src/MUIBar.cpp
 gui/src/navutil.cpp
-gui/src/NMEALogWindow.cpp
 gui/src/ocpCursor.cpp
 gui/src/ocpn_app.cpp
 gui/src/OCPN_AUIManager.cpp
@@ -380,7 +366,6 @@ gui/src/route_gui.cpp
 gui/src/routemanagerdialog.cpp
 gui/src/routeman_gui.cpp
 gui/src/route_point_gui.cpp
-gui/src/routeprintout.cpp
 gui/src/RoutePropDlg.cpp
 gui/src/RoutePropDlgImpl.cpp
 gui/src/s57chart.cpp
@@ -402,10 +387,7 @@ gui/src/TCWin.cpp
 gui/src/thumbwin.cpp
 gui/src/toolbar.cpp
 gui/src/track_gui.cpp
-gui/src/trackprintout.cpp
 gui/src/TrackPropDlg.cpp
-gui/src/TtyScroll.cpp
-gui/src/TTYWindow.cpp
 gui/src/udev_rule_mgr.cpp
 gui/src/undo.cpp
 gui/src/update_mgr.cpp
