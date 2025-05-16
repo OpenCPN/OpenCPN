@@ -4284,7 +4284,7 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
       false;  // since we don't want to pan to an unknown cursor position
 
   //  This is needed to recognise changes in zoom-scale factors
-  GetPrimaryCanvas()->DoZoomCanvas(1.0001);
+  GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
   g_bEnableZoomToCursor = ztc;
 
   //  Pick up chart object icon size changes (g_ChartScaleFactorExp)

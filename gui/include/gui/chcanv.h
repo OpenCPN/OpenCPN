@@ -545,21 +545,6 @@ public:
    */
   void ZoomCanvasSimple(double factor);
 
-  /**
-   * Internal function that implements the actual zoom operation.
-   *
-   * This function handles the core zoom functionality including scale
-   * calculations, chart selection and viewport updates.
-   *
-   * @param factor The zoom factor to apply:
-   *              - factor > 1: Zoom in, e.g. 2.0 makes objects twice as large
-   *              - factor < 1: Zoom out, e.g. 0.5 makes objects half as large
-   *
-   * @param can_zoom_to_cursor If true, zoom operation will be centered on
-   * cursor position. If false, zoom operation centers on viewport center.
-   */
-  void DoZoomCanvas(double factor, bool can_zoom_to_cursor = true);
-
   void RotateCanvas(double dir);
   void DoRotateCanvas(double rotation);
   void DoTiltCanvas(double tilt);
@@ -837,6 +822,21 @@ public:
   void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
 
 private:
+  /**
+   * Internal function that implements the actual zoom operation.
+   *
+   * This function handles the core zoom functionality including scale
+   * calculations, chart selection and viewport updates.
+   *
+   * @param factor The zoom factor to apply:
+   *              - factor > 1: Zoom in, e.g. 2.0 makes objects twice as large
+   *              - factor < 1: Zoom out, e.g. 0.5 makes objects half as large
+   *
+   * @param can_zoom_to_cursor If true, zoom operation will be centered on
+   * cursor position. If false, zoom operation centers on viewport center.
+   */
+  void DoZoomCanvas(double factor, bool can_zoom_to_cursor = true);
+
   int AdjustQuiltRefChart();
 
   bool UpdateS52State();
