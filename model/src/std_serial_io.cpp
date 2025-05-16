@@ -126,7 +126,7 @@ void* StdSerialIo::Entry() {
       auto line = line_buf.GetLine();
       {
         std::lock_guard lock(m_stats_mutex);
-        m_stats.tx_count += line.size();
+        m_stats.rx_count += line.size();
       }
       m_send_msg_func(line);
     }
