@@ -70,6 +70,7 @@ enum {
   tlMMSI,
   tlCLASS,
   tlTYPE,
+  tlFLAG,
   tlNAVSTATUS,
   tlBRG,
   tlRNG,
