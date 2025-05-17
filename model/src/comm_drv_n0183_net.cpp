@@ -525,6 +525,8 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 
       } else
         ret = false;
+      m_driver_stats.available = ret;
+
       break;
     case UDP:
       udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
