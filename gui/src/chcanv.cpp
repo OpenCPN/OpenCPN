@@ -5046,6 +5046,7 @@ void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
     m_easeTimer.Stop();
     m_animationActive = false;
     UpdateFollowButtonState();
+    ZoomCanvasSimple(1.0001);
     DoCanvasUpdate();
     ReloadVP();
   }
