@@ -110,7 +110,6 @@ class NavObjectCollection;
 class wxGenericProgressDialog;
 class ocpnDC;
 class NavObjectCollection1;
-class NavObjectChanges;
 class TrackPoint;
 class RouteList;
 class canvasConfig;
@@ -178,20 +177,6 @@ public:
 
   int LoadMyConfig();
   void LoadS57Config();
-  wxString FindNewestUsableBackup() const;
-  void LoadNavObjects();
-  virtual void AddNewRoute(Route *pr);
-  virtual void UpdateRoute(Route *pr);
-  virtual void DeleteConfigRoute(Route *pr);
-
-  virtual void AddNewTrack(Track *pt);
-  virtual void UpdateTrack(Track *pt);
-  virtual void DeleteConfigTrack(Track *pt);
-
-  virtual void AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
-  virtual void UpdateWayPoint(RoutePoint *pWP);
-  virtual void DeleteWayPoint(RoutePoint *pWP);
-  virtual void AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID);
 
   virtual void CreateConfigGroups(ChartGroupArray *pGroupArray);
   virtual void DestroyConfigGroups(void);
@@ -206,20 +191,11 @@ public:
   virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
   virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
   virtual void UpdateSettings();
-  virtual void UpdateNavObj(bool bRecreate = false);
-  virtual void UpdateNavObjOnly();
-  virtual bool IsChangesFileDirty();
 
   bool LoadLayers(wxString &path);
   int LoadMyConfigRaw(bool bAsTemplate = false);
 
-  void CreateRotatingNavObjBackup();
-
-  wxString m_sNavObjSetFile;
-  wxString m_sNavObjSetChangesFile;
-
-  NavObjectChanges *m_pNavObjectChangesSet;
-  NavObjectCollection1 *m_pNavObjectInputSet;
+private:
 };
 
 void SwitchInlandEcdisMode(bool Switch);

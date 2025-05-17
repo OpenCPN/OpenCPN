@@ -1515,7 +1515,9 @@ bool MyFrame::DropMarker(bool atOwnShip) {
       new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
   pWP->m_bIsolatedMark = true;  // This is an isolated mark
   pSelect->AddSelectableRoutePoint(lat, lon, pWP);
-  pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+  // pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
   if (canvas)
     if (!RoutePointGui(*pWP).IsVisibleSelectable(canvas))
       RoutePointGui(*pWP).ShowScaleWarningMessage(canvas);
@@ -1750,7 +1752,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
             // caveat: this is accurate only on the Equator
             if ((l * 60. * 1852.) < (.25 * 1852.)) {
-              pConfig->DeleteWayPoint(pr);
+              // pConfig->DeleteWayPoint(pr);
+              NavObj_dB::GetInstance().DeleteRoutePoint(pr);
               pSelect->DeleteSelectablePoint(pr, SELTYPE_ROUTEPOINT);
               delete pr;
               break;
@@ -1768,7 +1771,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       pWP->m_bShowName = false;
       pWP->m_bIsolatedMark = true;
 
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
     }
   }
 
@@ -1780,10 +1783,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   wxLogMessage("opencpn::MyFrame exiting cleanly.");
 
   quitflag++;
-
-  pConfig->UpdateNavObj();
-
-  pConfig->m_pNavObjectChangesSet->reset();
 
   NavObj_dB::GetInstance().Close();
 
@@ -2670,9 +2669,6 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
         g_bTrackCarryOver = true;
       } else {
         TrackOff(true);  // catch the last point
-        if (pConfig && pConfig->IsChangesFileDirty()) {
-          pConfig->UpdateNavObj(true);
-        }
         g_bTrackCarryOver = false;
         RefreshAllCanvas(true);
       }
@@ -3088,7 +3084,7 @@ void MyFrame::ActivateMOB(void) {
       -1.0);  // Negative distance is code to signal "Never Arrive"
   pWP_MOB->SetUseSca(false);  // Do not use scaled hiding for MOB
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_MOB);
-  pConfig->AddNewWayPoint(pWP_MOB, -1);  // use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP_MOB);
 
   if (bGPSValid && !std::isnan(gCog) && !std::isnan(gSog)) {
     //    Create a point that is one mile along the present course
@@ -3151,8 +3147,7 @@ void MyFrame::TrackOn(void) {
   g_pActiveTrack = new ActiveTrack();
 
   g_TrackList.push_back(g_pActiveTrack);
-  if (pConfig) pConfig->AddNewTrack(g_pActiveTrack);
-  NavObj_dB::GetInstance().AddNewTrack(g_pActiveTrack);
+  NavObj_dB::GetInstance().InsertTrack(g_pActiveTrack);
   g_pActiveTrack->Start();
 
   // The main toolbar may still be NULL here, and we will do nothing...
@@ -3282,12 +3277,7 @@ bool MyFrame::ShouldRestartTrack(void) {
 
 void MyFrame::TrackDailyRestart(void) {
   if (!g_pActiveTrack) return;
-
   Track *pPreviousTrack = TrackOff(true);
-  if (pConfig && pConfig->IsChangesFileDirty()) {
-    pConfig->UpdateNavObj(true);
-  }
-
   TrackOn();
 
   //  Set the restarted track's current state such that the current track
@@ -4707,7 +4697,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
-      pConfig->LoadNavObjects();
+      NavObj_dB::GetInstance().ImportLegacyNavobj();
       NavObj_dB::GetInstance().LoadNavObjects();
 
       //    Re-enable anchor watches if set in config file
@@ -5912,26 +5902,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     }
   }
 
-#ifdef __ANDROID__
-
-  // Update the navobj file on a fixed schedule (5 minutes)
-  // This will do nothing if the navobj.changes file is empty and clean
-  if (((g_tick % g_FlushNavobjChangesTimeout) == 0) || g_FlushNavobjChanges) {
-    if (pConfig && pConfig->IsChangesFileDirty()) {
-      androidShowBusyIcon();
-      wxStopWatch update_sw;
-      pConfig->UpdateNavObj(true);
-      wxString msg = wxString::Format(
-          _T("OpenCPN periodic navobj update took %ld ms."), update_sw.Time());
-      wxLogMessage(msg);
-      qDebug() << msg.mb_str();
-      g_FlushNavobjChanges = false;
-      androidHideBusyIcon();
-    }
-  }
-
-#endif
-
   // Reset pending next AppMsgBus notification
 
   if (g_unit_test_2)
@@ -6804,8 +6774,10 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   pWP_MOB->SetShared(true);
   pWP_MOB->m_bIsolatedMark = true;
   pSelect->AddSelectableRoutePoint(ptarget->Lat, ptarget->Lon, pWP_MOB);
-  pConfig->AddNewWayPoint(pWP_MOB, -1);  // use auto next num
-  pWP_MOB->SetUseSca(false);             // Do not use scaled hiding for MOB
+  // pConfig->AddNewWayPoint(pWP_MOB, -1);  // use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP_MOB);
+
+  pWP_MOB->SetUseSca(false);  // Do not use scaled hiding for MOB
 
   /* We want to start tracking any MOB in range (Which will trigger false alarms
   with messages received over the network etc., but will a) not discard nearby

@@ -118,7 +118,8 @@ void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
           new RoutePoint(td->Lat, td->Lon, g_default_wp_icon, n, wxEmptyString);
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
       pSelect->AddSelectableRoutePoint(td->Lat, td->Lon, pWP);
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      // pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
 
       if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
         pRouteManagerDialog->UpdateWptListCtrl();
@@ -163,7 +164,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
 
         g_TrackList.push_back(t);
         // pConfig->AddNewTrack(t);
-        NavObj_dB::GetInstance().AddNewTrack(t);
+        NavObj_dB::GetInstance().InsertTrack(t);
 
         if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
           pRouteManagerDialog->UpdateTrkListCtrl();

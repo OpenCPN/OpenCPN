@@ -45,14 +45,30 @@ public:
 
   // Tracks
   bool LoadAllTracks();
-  bool AddNewTrack(Track *track);
+  bool InsertTrack(Track *track);
   bool AddTrackPoint(Track *track, TrackPoint *point);
   bool UpdateDBTrackAttributes(Track *track);
   bool DeleteTrack(Track *track);
 
+  // Routes
+  bool LoadAllRoutes();
+  bool InsertRoute(Route *route);
+  bool UpdateRoute(Route *route);
+  bool UpdateDBRouteAttributes(Route *route);
+  bool UpdateDBRoutePointAttributes(RoutePoint *point);
+  bool DeleteRoute(Route *route);
+
+  // RoutePoints
+  bool LoadAllPoints();
+  bool InsertRoutePoint(RoutePoint *point);
+  bool DeleteRoutePoint(RoutePoint *point);
+  bool UpdateRoutePoint(RoutePoint *point);
+
   // Legacy navobj import
   bool ImportLegacyNavobj();
   bool ImportLegacyTracks();
+  bool ImportLegacyRoutes();
+  bool ImportLegacyPoints();
 
 private:
   NavObj_dB();
@@ -60,6 +76,7 @@ private:
 
   int m_open_result;
   sqlite3 *m_db;
+  bool m_importing;
 };
 
 #endif

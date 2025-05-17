@@ -56,6 +56,7 @@
 #include "observable_globvar.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_drv_n0183_serial.h"
+#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -151,6 +152,25 @@ Route *Routeman::FindRouteContainingWaypoint(RoutePoint *pWP) {
   return NULL;  // not found
 }
 
+//    Make a 2-D search to find the route containing a given waypoint, by GUID
+Route *Routeman::FindRouteContainingWaypoint(const std::string &guid) {
+  wxRouteListNode *node = pRouteList->GetFirst();
+  while (node) {
+    Route *proute = node->GetData();
+
+    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
+    while (pnode) {
+      RoutePoint *prp = pnode->GetData();
+      if (prp->m_GUID == guid) return proute;
+      pnode = pnode->GetNext();
+    }
+
+    node = node->GetNext();
+  }
+
+  return NULL;  // not found
+}
+
 //    Make a 2-D search to find the visual route containing a given waypoint
 Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
   wxRouteListNode *node = pRouteList->GetFirst();
@@ -213,8 +233,7 @@ void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
   //  Check for 1 point routes. If we are creating a route, this is an undo, so
   //  keep the 1 point.
   if (route->GetnPoints() <= 1 && route_state == 0) {
-    NavObjectChanges::getInstance()->DeleteConfigRoute(route);
-    g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
+    g_pRouteMan->DeleteRoute(route);
     route = NULL;
   }
   //  Add this point back into the selectables
@@ -834,7 +853,7 @@ bool Routeman::DeleteTrack(Track *pTrack) {
   return false;
 }
 
-bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
+bool Routeman::DeleteRoute(Route *pRoute) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
@@ -856,7 +875,7 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
     /// }
     m_prop_dlg_ctx.hide(pRoute);
 
-    nav_obj_changes->DeleteConfigRoute(pRoute);
+    // if (nav_obj_changes) nav_obj_changes->DeleteConfigRoute(pRoute);
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
@@ -877,10 +896,6 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
         prp->m_bIsInRoute =
             false;  // Take this point out of this (and only) route
         if (!prp->IsShared()) {
-          //    This does not need to be done with navobj.xml storage, since the
-          //    waypoints are stored with the route
-          //                              pConfig->DeleteWayPoint(prp);
-
           pSelect->DeleteSelectablePoint(prp, SELTYPE_ROUTEPOINT);
 
           // Remove all instances of this point from the list.
@@ -891,10 +906,12 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
           }
 
           pnode = NULL;
+          NavObj_dB::GetInstance().DeleteRoutePoint(prp);
           delete prp;
         } else {
           prp->m_bIsolatedMark = true;  // This has become an isolated mark
           prp->SetShared(false);        // and is no longer part of a route
+          NavObj_dB::GetInstance().UpdateRoutePoint(prp);
         }
       }
       if (pnode)
@@ -903,6 +920,7 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
         pnode = pRoute->pRoutePointList->GetFirst();  // restart the list
     }
 
+    NavObj_dB::GetInstance().DeleteRoute(pRoute);
     delete pRoute;
 
     ::wxEndBusyCursor();
@@ -910,7 +928,7 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes) {
   return true;
 }
 
-void Routeman::DeleteAllRoutes(NavObjectChanges *nav_obj_changes) {
+void Routeman::DeleteAllRoutes() {
   ::wxBeginBusyCursor();
 
   //    Iterate on the RouteList
@@ -928,10 +946,7 @@ void Routeman::DeleteAllRoutes(NavObjectChanges *nav_obj_changes) {
     node = node->GetNext();
     if (proute->m_bIsInLayer) continue;
 
-    nav_obj_changes->m_bSkipChangeSetUpdate = true;
-    nav_obj_changes->DeleteConfigRoute(proute);
-    DeleteRoute(proute, nav_obj_changes);
-    nav_obj_changes->m_bSkipChangeSetUpdate = false;
+    DeleteRoute(proute);
   }
 
   ::wxEndBusyCursor();
@@ -1063,6 +1078,8 @@ WayPointman::~WayPointman() {
     temp_list.Append(pr);
     node = node->GetNext();
   }
+
+  int a = temp_list.GetCount();
 
   temp_list.DeleteContents(true);
   temp_list.Clear();
@@ -1575,10 +1592,6 @@ RoutePoint *WayPointman::FindWaypointByGuid(const std::string &guid) {
   return 0;
 }
 void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
-  if (!b_update_changeset)
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-  // turn OFF change-set updating if requested
-
   if (pRp) {
     // Get a list of all routes containing this point
     // and remove the point from them all
@@ -1598,12 +1611,7 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
       for (unsigned int ir = 0; ir < proute_array->GetCount(); ir++) {
         Route *pr = (Route *)proute_array->Item(ir);
         if (pr->GetnPoints() < 2) {
-          bool prev_bskip =
-              NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate;
-          NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-          NavObjectChanges::getInstance()->DeleteConfigRoute(pr);
-          g_pRouteMan->DeleteRoute(pr, NavObjectChanges::getInstance());
-          NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = prev_bskip;
+          g_pRouteMan->DeleteRoute(pr);
         }
       }
 
@@ -1611,8 +1619,8 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
     }
 
     // Now it is safe to delete the point
-    NavObjectChanges::getInstance()->DeleteWayPoint(pRp);
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
+    // NavObjectChanges::getInstance()->DeleteWayPoint(pRp);
+    // NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
 
     pSelect->DeleteSelectableRoutePoint(pRp);
 

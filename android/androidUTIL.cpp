@@ -934,12 +934,6 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
         //  Persist the config file, especially to capture the viewport
         //  location,scale etc.
         pConfig->UpdateSettings();
-
-        //  There may be unsaved objects at this point, and a navobj.xml.changes
-        //  restore file.
-        //  We commit the navobj deltas
-        //  No need to flush or recreate a new empty "changes" file
-        pConfig->UpdateNavObjOnly();
       }
 
       break;
@@ -4453,14 +4447,6 @@ int doAndroidPersistState() {
   }
 
   pConfig->UpdateSettings();
-  pConfig->UpdateNavObj();
-
-  pConfig->m_pNavObjectChangesSet->reset();
-
-  // Remove any leftover Routes and Waypoints from config file as they were
-  // saved to navobj before
-  pConfig->DeleteGroup(_T ( "/Routes" ));
-  pConfig->DeleteGroup(_T ( "/Marks" ));
   pConfig->Flush();
 
   delete pConfig;  // All done

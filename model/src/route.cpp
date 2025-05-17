@@ -48,6 +48,7 @@
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "model/navobj_db.h"
 
 WayPointman *pWayPointMan;
 double g_defaultBoatSpeed;
@@ -369,7 +370,6 @@ void Route::DeletePoint(RoutePoint *rp, bool bRenamePoints) {
 
   pSelect->DeleteAllSelectableRoutePoints(this);
   pSelect->DeleteAllSelectableRouteSegments(this);
-  NavObjectChanges::getInstance()->DeleteWayPoint(rp);
 
   pRoutePointList->DeleteObject(rp);
 
@@ -380,8 +380,6 @@ void Route::DeletePoint(RoutePoint *rp, bool bRenamePoints) {
   if (GetnPoints() > 1) {
     pSelect->AddAllSelectableRouteSegments(this);
     pSelect->AddAllSelectableRoutePoints(this);
-
-    NavObjectChanges::getInstance()->UpdateRoute(this);
 
     FinalizeForRendering();
     UpdateSegmentDistances();
@@ -409,6 +407,7 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
   if (pcontainer_route == NULL) {
     rp->m_bIsInRoute = false;    // Take this point out of this (and only) route
     rp->m_bIsolatedMark = true;  // This has become an isolated mark
+    NavObj_dB::GetInstance().UpdateRoutePoint(rp);
   }
 
   if (bRenamePoints) RenameRoutePoints();
@@ -418,8 +417,8 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
     pSelect->AddAllSelectableRouteSegments(this);
     pSelect->AddAllSelectableRoutePoints(this);
 
-    NavObjectChanges::getInstance()->UpdateRoute(this);
-
+    // NavObjectChanges::getInstance()->UpdateRoute(this);
+    NavObj_dB::GetInstance().UpdateRoute(this);
     FinalizeForRendering();
     UpdateSegmentDistances();
   }

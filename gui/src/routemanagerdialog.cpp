@@ -1161,7 +1161,7 @@ void RouteManagerDialog::OnShowAllRteCBClicked(wxCommandEvent &event) {
 
     m_pRouteListCtrl->SetItemImage(item, !viz);  // visible
 
-    pConfig->UpdateRoute(pR);
+    NavObj_dB::GetInstance().UpdateRoute(pR);
   }
 
   UpdateWptListCtrlViz();
@@ -1185,7 +1185,7 @@ void RouteManagerDialog::OnShowAllWpCBClicked(wxCommandEvent &event) {
       pRP->SetVisible(true);
 
     m_pWptListCtrl->SetItemImage(item, RoutePointGui(*pRP).GetIconImageIndex());
-    pConfig->UpdateWayPoint(pRP);
+    NavObj_dB::GetInstance().UpdateRoutePoint(pRP);
   }
 
   gFrame->RefreshAllCanvas();
@@ -1361,7 +1361,7 @@ void RouteManagerDialog::MakeAllRoutesInvisible() {
       (*it)->SetVisible(false);
       m_pRouteListCtrl->SetItemImage(m_pRouteListCtrl->FindItem(-1, index),
                                      1);  // Likely not same order :0
-      pConfig->UpdateRoute(*it);          // auch, flushes config to disk. FIXME
+      NavObj_dB::GetInstance().UpdateRoute(*it);
     }
   }
 }
@@ -1419,8 +1419,8 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event) {
     for (unsigned int i = 0; i < list.GetCount(); i++) {
       Route *route = list.Item(i)->GetData();
       if (route) {
-        pConfig->DeleteConfigRoute(route);
-        g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
+        NavObj_dB::GetInstance().DeleteRoute(route);
+        g_pRouteMan->DeleteRoute(route);
       }
     }
 
@@ -1444,11 +1444,7 @@ void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event) {
 
     gFrame->CancelAllMouseRoute();
 
-    g_pRouteMan->DeleteAllRoutes(NavObjectChanges::getInstance());
-    // TODO Seth
-    //            m_pSelectedRoute = NULL;
-    //            m_pFoundRoutePoint = NULL;
-    //            m_pFoundRoutePointSecond = NULL;
+    g_pRouteMan->DeleteAllRoutes();
 
     m_lastRteItem = -1;
     UpdateRouteListCtrl();
@@ -1505,7 +1501,7 @@ void RouteManagerDialog::OnRteZoomtoClick(wxCommandEvent &event) {
   if (!route->IsVisible()) {
     route->SetVisible(true);
     m_pRouteListCtrl->SetItemImage(item, route->IsVisible() ? 0 : 1);
-    pConfig->UpdateRoute(route);
+    NavObj_dB::GetInstance().UpdateRoute(route);
   }
 
   ZoomtoRoute(route);
@@ -1538,7 +1534,8 @@ void RouteManagerDialog::OnRteReverseClick(wxCommandEvent &event) {
       startend.append(_(" - ") + route->m_RouteEndString);
     m_pRouteListCtrl->SetItem(item, 2, startend);
 
-    pConfig->UpdateRoute(route);
+    NavObj_dB::GetInstance().UpdateRoute(route);
+
     gFrame->RefreshAllCanvas();
   }
 
@@ -1710,7 +1707,7 @@ void RouteManagerDialog::OnRteActivateClick(wxCommandEvent &event) {
 
   UpdateRouteListCtrl();
 
-  pConfig->UpdateRoute(route);
+  NavObj_dB::GetInstance().UpdateRoute(route);
 
   gFrame->RefreshAllCanvas();
 
@@ -1737,7 +1734,8 @@ void RouteManagerDialog::OnRteToggleVisibility(wxMouseEvent &event) {
 
     ::wxBeginBusyCursor();
 
-    pConfig->UpdateRoute(route);
+    NavObj_dB::GetInstance().UpdateRoute(route);
+
     gFrame->RefreshAllCanvas();
 
     //   We need to update the waypoint list control since the visibility of
@@ -1780,7 +1778,6 @@ void RouteManagerDialog::OnRteSelected(wxListEvent &event) {
   Route *route = (Route *)m_pRouteListCtrl->GetItemData(clicked_index);
   //    route->SetVisible(!route->IsVisible());
   m_pRouteListCtrl->SetItemImage(clicked_index, route->IsVisible() ? 0 : 1);
-  //    pConfig->UpdateRoute(route);
 
   gFrame->RefreshAllCanvas();
 
@@ -2201,10 +2198,6 @@ void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event) {
 
 void RouteManagerDialog::OnTrkNewClick(wxCommandEvent &event) {
   gFrame->TrackOff();
-  if (pConfig && pConfig->IsChangesFileDirty()) {
-    pConfig->UpdateNavObj(true);
-  }
-
   gFrame->TrackOn();
 
   UpdateTrkListCtrl();
@@ -2269,10 +2262,6 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
     m_lastTrkItem = -1;
     //        UpdateRouteListCtrl();
     UpdateTrkListCtrl();
-
-    if (pConfig && pConfig->IsChangesFileDirty()) {
-      pConfig->UpdateNavObj(true);
-    }
 
     gFrame->InvalidateAllCanvasUndo();
     gFrame->RefreshAllCanvas();
@@ -2577,7 +2566,7 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
       m_pWptListCtrl->SetItemImage(clicked_index,
                                    RoutePointGui(*wp).GetIconImageIndex());
 
-      pConfig->UpdateWayPoint(wp);
+      NavObj_dB::GetInstance().UpdateRoutePoint(wp);
     }
 
     // Manage "show all" checkbox
@@ -2606,7 +2595,7 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
         !g_bOverruleScaMin) {
       RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
       wp->SetUseSca(!wp->GetUseSca());
-      pConfig->UpdateWayPoint(wp);
+      NavObj_dB::GetInstance().UpdateRoutePoint(wp);
       gFrame->RefreshAllCanvas();
       wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
       if (!wp->GetUseSca()) scamin = _("Always");
@@ -2622,7 +2611,8 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
                                    wxEmptyString);
   pWP->m_bIsolatedMark = true;  // This is an isolated mark
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP);
-  pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
   gFrame->RefreshAllCanvas();
 
   // g_pMarkInfoDialog = MarkInfoImpl::GetInstance( GetParent() );
@@ -3042,7 +3032,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->m_bIsInLayer = false;
       pRoute->m_LayerID = 0;
-      g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
+      g_pRouteMan->DeleteRoute(pRoute);
     }
     node1 = next_node;
   }

@@ -398,129 +398,9 @@ void appendOSDirSlash(wxString *pString);
 
 MyConfig::MyConfig(const wxString &LocalFileName)
     : wxFileConfig(_T (""), _T (""), LocalFileName, _T (""),
-                   wxCONFIG_USE_LOCAL_FILE) {
-  //    Create the default NavObjectCollection FileName
-  wxFileName config_file(LocalFileName);
-  m_sNavObjSetFile =
-      config_file.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-  m_sNavObjSetFile += _T ( "navobj.xml" );
-  m_sNavObjSetChangesFile = m_sNavObjSetFile + _T ( ".changes" );
-
-  m_pNavObjectInputSet = NULL;
-  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
-}
+                   wxCONFIG_USE_LOCAL_FILE) {}
 
 MyConfig::~MyConfig() {}
-
-void MyConfig::CreateRotatingNavObjBackup() {
-  // Avoid nonsense log errors...
-#ifdef __ANDROID__
-  wxLogNull logNo;
-#endif
-  // Monthly backup, keep max 3
-  if (wxFileExists(m_sNavObjSetFile)) {
-    int month = wxDateTime::Now().GetMonth() + 1;
-    wxString fn =
-        wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), month);
-    if (!wxFileExists(fn)) {
-      wxCopyFile(m_sNavObjSetFile, fn);
-    }
-    if (month > 3) {
-      for (wxDateTime::wxDateTime_t i = 1; i <= month - 3; i++) {
-        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-      for (wxDateTime::wxDateTime_t i = month + 1; i <= 12; i++) {
-        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    } else {
-      for (wxDateTime::wxDateTime_t i = month + 1; i <= 12 - month; i++) {
-        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    }
-    // Weekly backup, we want to keep max 4
-    wxDateTime::wxDateTime_t week = wxDateTime::Now().GetWeekOfYear();
-    fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), week);
-    if (!wxFileExists(fn)) {
-      wxCopyFile(m_sNavObjSetFile, fn);
-    }
-    if (week > 4) {
-      for (wxDateTime::wxDateTime_t i = 1; i <= week - 4; i++) {
-        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-      for (wxDateTime::wxDateTime_t i = week + 1; i <= 53; i++) {
-        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    } else {
-      for (wxDateTime::wxDateTime_t i = week + 1; i <= 53 - week; i++) {
-        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    }
-  }
-
-  // Rotate navobj backups, but just in case there are some changes in the
-  // current version to prevent the user trying to "fix" the problem by
-  // continuously starting the application to overwrite all of his good
-  // backups...
-  if (g_navobjbackups > 0) {
-    wxFile f;
-    wxString oldname = m_sNavObjSetFile;
-    wxString newname = wxString::Format(_T("%s.1"), m_sNavObjSetFile.c_str());
-
-    wxFileOffset s_diff = 1;
-    if (::wxFileExists(newname)) {
-      if (f.Open(oldname)) {
-        s_diff = f.Length();
-        f.Close();
-      }
-
-      if (f.Open(newname)) {
-        s_diff -= f.Length();
-        f.Close();
-      }
-    }
-
-    if (s_diff != 0) {
-      for (int i = g_navobjbackups - 1; i >= 1; i--) {
-        oldname = wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i);
-        newname =
-            wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i + 1);
-        if (wxFile::Exists(oldname)) wxCopyFile(oldname, newname);
-      }
-
-      wxULongLong size = wxFileName::GetSize(m_sNavObjSetFile);
-      if (wxFile::Exists(m_sNavObjSetFile) && size > 0) {
-        newname = wxString::Format(_T("%s.1"), m_sNavObjSetFile.c_str());
-        wxCopyFile(m_sNavObjSetFile, newname);
-      }
-    }
-  }
-  // try to clean the backups the user doesn't want - breaks if he deleted some
-  // by hand as it tries to be effective...
-  for (int i = g_navobjbackups + 1; i <= 99; i++)
-    if (wxFile::Exists(
-            wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
-      wxRemoveFile(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i));
-    else
-      break;
-}
 
 int MyConfig::LoadMyConfig() {
   int display_width, display_height;
@@ -1498,8 +1378,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read(_T ( "TrackPrecision" ), &g_nTrackPrecision);
 
-  Read(_T ( "NavObjectFileName" ), m_sNavObjSetFile);
-
   Read(_T ( "RouteLineWidth" ), &g_route_line_width);
   Read(_T ( "TrackLineWidth" ), &g_track_line_width);
 
@@ -1654,144 +1532,6 @@ void MyConfig::LoadS57Config() {
   }
 }
 
-/** Load changes from a pending changes file path. */
-static bool ReloadPendingChanges(const wxString &changes_path) {
-  wxULongLong size = wxFileName::GetSize(changes_path);
-
-  // We crashed last time :(
-  // That's why this file still exists...
-  // Let's reconstruct the unsaved changes
-  auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
-  pNavObjectChangesSet->Init(changes_path);
-  auto res = pNavObjectChangesSet->load_file(changes_path.fn_str());
-
-  //  Remove the file before applying the changes,
-  //  just in case the changes file itself causes a fault.
-  //  If it does fault, at least the next restart will proceed without fault.
-  if (::wxFileExists(changes_path)) ::wxRemoveFile(changes_path);
-
-  if (size == 0 || res.status != pugi::xml_parse_status::status_ok) {
-    wxLogMessage(changes_path + " seems corrupted, not applying it.");
-    pNavObjectChangesSet->reset();
-    return false;
-  }
-
-  wxLogMessage(_T("Applying NavObjChanges"));
-  pNavObjectChangesSet->ApplyChanges();
-  return true;
-}
-
-wxString MyConfig::FindNewestUsableBackup() const {
-  wxString newest_backup;
-  pugi::xml_document doc;
-  for (int i = 1; i <= g_navobjbackups; i++) {
-    wxString backup = m_sNavObjSetFile + "." + wxString::Format("%d", i);
-    if (wxFileExists(backup) && wxFileName::GetSize(backup) > 461 &&
-        doc.load_file(backup.fn_str()).status ==
-            pugi::xml_parse_status::status_ok) {
-      newest_backup = backup;
-      break;
-    }
-  }
-  return newest_backup;
-}
-
-void MyConfig::LoadNavObjects() {
-  //      next thing to do is read tracks, etc from the NavObject XML file,
-  wxLogMessage(_T("Loading navobjects from navobj.xml"));
-
-  if (NULL == m_pNavObjectInputSet)
-    m_pNavObjectInputSet = new NavObjectCollection1();
-
-  int wpt_dups = 0;
-  wxString newest_backup;
-  if (::wxFileExists(m_sNavObjSetFile)) {
-    if (wxFileName::GetSize(m_sNavObjSetFile) <
-        461) {  // Empty navobj.xml file with just the gpx tag is 461 bytes, so
-                // anything smaller is obvious sign of a fatal crash while
-                // saving it last time, replace it with latest backup if
-                // available
-      wxLogMessage("Navobjects file exists, but seems truncated!");
-      newest_backup = FindNewestUsableBackup();
-      if (wxFileExists(newest_backup)) {
-        wxLogMessage("We do have a backup " + newest_backup +
-                     " that looks healthy and will use it.");
-        wxCopyFile(newest_backup, m_sNavObjSetFile, true);
-      }
-    }
-  } else {  // File does not exist, try to recover from a backup
-    newest_backup = FindNewestUsableBackup();
-    if (wxFileExists(newest_backup)) {
-      wxLogMessage("We do have a backup " + newest_backup +
-                   " that looks healthy and will use it.");
-      wxCopyFile(newest_backup, m_sNavObjSetFile, true);
-    } else {
-      wxLogMessage(
-          "No navobjects.xml file or usable backup exist, will create a new "
-          "one.");
-    }
-  }
-  bool success = false;
-  // We did all we could to have an usable navobj.xml file in scenarios where it
-  // did not exist or was clearly corrupted, let's try to load it
-  if (::wxFileExists(m_sNavObjSetFile) &&
-      m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()).status ==
-          pugi::xml_parse_status::status_ok) {
-    CreateRotatingNavObjBackup();  // We only create backups when data is good,
-                                   // there is no point in saving something we
-                                   // can't even load
-    success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
-  } else {
-    // It was still not valid after all our efforts and did not load as XML,
-    // let's rename it to a corrupted file and try to recover from a backup on
-    // last time
-    wxString corrupted_file =
-        m_sNavObjSetFile +
-        wxDateTime::Now().Format(".corrupted.%Y-%m-%d-%H-%M-%S");
-    wxRenameFile(m_sNavObjSetFile, corrupted_file, true);
-    wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile +
-                 ", the corrupted file was renamed to " + corrupted_file);
-    // If we got here with existing navobj.xml file, but it's corrupted, we can
-    // still try to recover from a backup
-    if (newest_backup
-            .IsEmpty()) {  // If we got here with empty newest_backup,
-                           // navobj.xml probably did exist, but was corrupted
-                           // XML-wise, so we need to find a new backup
-      newest_backup = FindNewestUsableBackup();
-    }
-    m_pNavObjectInputSet->reset();
-    if (wxFileExists(newest_backup) &&
-        m_pNavObjectInputSet->load_file(newest_backup.fn_str()).status ==
-            pugi::xml_parse_status::status_ok) {
-      success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
-      wxLogMessage("We do have a healthy backup " + newest_backup +
-                   " and did load it.");
-    } else {
-      wxLogMessage(
-          "No usable backup found, a new navobj.xml file will be created.");
-      m_pNavObjectInputSet->reset();
-    }
-  }
-  if (success) {
-    wxLogMessage(_T("Done loading navobjects, %d duplicate waypoints ignored"),
-                 wpt_dups);
-  } else {
-    wxLogMessage(
-        _T("Failed to load navobjects, creating a new navobj.xml file."));
-  }
-  delete m_pNavObjectInputSet;
-
-  if (::wxFileExists(m_sNavObjSetChangesFile)) {
-    if (ReloadPendingChanges(m_sNavObjSetChangesFile)) {
-      UpdateNavObj();
-    }
-  }
-  m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
-  // Signal to listeners to g_active_route that it's possible to look up guid.
-  GlobalVar<wxString> active_route(&g_active_route);
-  active_route.Notify();
-}
-
 bool MyConfig::LoadLayers(wxString &path) {
   wxArrayString file_array;
   wxDir dir;
@@ -1940,42 +1680,6 @@ bool MyConfig::LoadChartDirArray(ArrayOfCDI &ChartDirArray) {
   }
 
   return true;
-}
-
-void MyConfig::AddNewRoute(Route *r) { m_pNavObjectChangesSet->AddNewRoute(r); }
-
-void MyConfig::UpdateRoute(Route *r) { m_pNavObjectChangesSet->UpdateRoute(r); }
-
-void MyConfig::DeleteConfigRoute(Route *pr) {
-  m_pNavObjectChangesSet->DeleteConfigRoute(pr);
-}
-
-void MyConfig::AddNewTrack(Track *pt) {
-  m_pNavObjectChangesSet->AddNewTrack(pt);
-}
-
-void MyConfig::UpdateTrack(Track *pt) {
-  m_pNavObjectChangesSet->UpdateTrack(pt);
-}
-
-void MyConfig::DeleteConfigTrack(Track *pt) {
-  m_pNavObjectChangesSet->DeleteConfigTrack(pt);
-}
-
-void MyConfig::AddNewWayPoint(RoutePoint *pWP, int crm) {
-  m_pNavObjectChangesSet->AddNewWayPoint(pWP);
-}
-
-void MyConfig::UpdateWayPoint(RoutePoint *pWP) {
-  m_pNavObjectChangesSet->UpdateWayPoint(pWP);
-}
-
-void MyConfig::DeleteWayPoint(RoutePoint *pWP) {
-  m_pNavObjectChangesSet->DeleteWayPoint(pWP);
-}
-
-void MyConfig::AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID) {
-  m_pNavObjectChangesSet->AddNewTrackPoint(pWP, parent_GUID);
 }
 
 bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
@@ -2914,46 +2618,6 @@ void MyConfig::UpdateSettings() {
   SendMessageToAllPlugins("GLOBAL_SETTINGS_UPDATED", wxEmptyString);
 }
 
-void MyConfig::UpdateNavObjOnly() {
-  //   Create the NavObjectCollection, and save to specified file
-  NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
-
-  pNavObjectSet->CreateAllGPXObjects();
-  pNavObjectSet->SaveFile(m_sNavObjSetFile);
-
-  delete pNavObjectSet;
-}
-
-void MyConfig::UpdateNavObj(bool bRecreate) {
-  //   Create the NavObjectCollection, and save to specified file
-  NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
-
-  pNavObjectSet->CreateAllGPXObjects();
-  pNavObjectSet->SaveFile(m_sNavObjSetFile);
-
-  delete pNavObjectSet;
-
-  if (m_pNavObjectChangesSet->m_changes_file)
-    fclose(m_pNavObjectChangesSet->m_changes_file);
-
-  if (::wxFileExists(m_sNavObjSetChangesFile)) {
-    wxLogNull logNo;  // avoid silly log error message.
-    wxRemoveFile(m_sNavObjSetChangesFile);
-  }
-
-  if (bRecreate) {
-    m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
-
-    m_pNavObjectChangesSet->reset();
-    if (m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str())
-            .status != pugi::xml_parse_status::status_ok) {
-      wxLogMessage("Error while loading " + m_sNavObjSetChangesFile +
-                   ", ignoring contents of the file.");
-      m_pNavObjectChangesSet->reset();
-    }
-  }
-}
-
 static wxFileName exportFileName(wxWindow *parent,
                                  const wxString suggestedName) {
   wxFileName ret;
@@ -2991,10 +2655,6 @@ static wxFileName exportFileName(wxWindow *parent,
     ret = fn;
   }
   return ret;
-}
-
-bool MyConfig::IsChangesFileDirty() {
-  return m_pNavObjectChangesSet->IsDirty();
 }
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,

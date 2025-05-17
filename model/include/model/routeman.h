@@ -121,14 +121,15 @@ public:
   ~Routeman();
 
   bool DeleteTrack(Track *pTrack);
-  bool DeleteRoute(Route *pRoute, NavObjectChanges *nav_obj_changes);
-  void DeleteAllRoutes(NavObjectChanges *nav_obj_changes);
+  bool DeleteRoute(Route *pRoute);
+  void DeleteAllRoutes();
 
   bool IsRouteValid(Route *pRoute);
 
   Route *FindRouteByGUID(const wxString &guid);
   Track *FindTrackByGUID(const wxString &guid);
   Route *FindRouteContainingWaypoint(RoutePoint *pWP);
+  Route *FindRouteContainingWaypoint(const std::string &guid);
   Route *FindVisibleRouteContainingWaypoint(RoutePoint *pWP);
   /**
    * Find all routes that contain the given waypoint.

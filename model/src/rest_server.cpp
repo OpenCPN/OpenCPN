@@ -47,6 +47,7 @@
 
 #include "mongoose.h"
 #include "observable_evt.h"
+#include "model/navobj_db.h"
 
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
@@ -657,11 +658,12 @@ void RestServer::HandleRoute(pugi::xml_node object,
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
       //  Remove the existing duplicate route before adding new route
-      m_route_ctx.delete_route(duplicate);
+      m_route_ctx.delete_route(duplicate);  // Also handles the navobj.db delete
     }
     // Add the route to the global list
     NavObjectCollection1 pSet;
     if (InsertRouteA(route, &pSet)) {
+      NavObj_dB::GetInstance().InsertRoute(route);
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
         activate_route.Notify(route->GetGUID().ToStdString());
@@ -699,14 +701,14 @@ void RestServer::HandleTrack(pugi::xml_node object,
   }
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
+      NavObj_dB::GetInstance().DeleteTrack(duplicate);
       m_route_ctx.delete_track(duplicate);
     }
     // Add the track to the global list
-    NavObjectCollection1 pSet;
-
-    if (InsertTrack(track, false))
+    if (InsertTrack(track, false)) {
+      NavObj_dB::GetInstance().InsertTrack(track);
       UpdateReturnStatus(RestServerResult::NoError);
-    else
+    } else
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     m_dlg_ctx.top_level_refresh();
   }
@@ -739,11 +741,13 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   }
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
+      NavObj_dB::GetInstance().DeleteRoutePoint(duplicate);
       m_route_ctx.delete_waypoint(duplicate);
     }
-    if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force))
+    if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force)) {
       UpdateReturnStatus(RestServerResult::NoError);
-    else
+      NavObj_dB::GetInstance().InsertRoutePoint(rp);
+    } else
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     m_dlg_ctx.top_level_refresh();
   }

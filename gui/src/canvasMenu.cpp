@@ -1222,7 +1222,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
                                        wxEmptyString, wxEmptyString);
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
       pSelect->AddSelectableRoutePoint(zlat, zlon, pWP);
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
       if (!RoutePointGui(*pWP).IsVisibleSelectable(this->parent))
         RoutePointGui(*pWP).ShowScaleWarningMessage(parent);
 
@@ -1335,7 +1336,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           parent->undo->BeforeUndoableAction(
               Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded,
               NULL /*m_pFoundPoint*/);
-          pConfig->DeleteWayPoint(m_pFoundRoutePoint);
+          NavObj_dB::GetInstance().DeleteRoutePoint(m_pFoundRoutePoint);
           pSelect->DeleteSelectablePoint(m_pFoundRoutePoint,
                                          SELTYPE_ROUTEPOINT);
           if (NULL != pWayPointMan)
@@ -1519,7 +1520,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         m_pSelectedRoute->Reverse(ask_return == wxID_YES);
         pSelect->AddAllSelectableRouteSegments(m_pSelectedRoute);
 
-        pConfig->UpdateRoute(m_pSelectedRoute);
+        NavObj_dB::GetInstance().UpdateRoute(m_pSelectedRoute);
 
         if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
           pRoutePropDialog->SetRouteAndUpdate(m_pSelectedRoute);
@@ -1568,9 +1569,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         if (m_pSelectedRoute->m_bIsInLayer) break;
 
-        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute,
-                                      NavObjectChanges::getInstance()))
-          break;
+        NavObj_dB::GetInstance().DeleteRoute(m_pSelectedRoute);
+        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute)) break;
 
         if (RouteManagerDialog::getInstanceFlag()) {
           if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
@@ -1641,7 +1641,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
        }
        }
        */
-      pConfig->UpdateRoute(m_pSelectedRoute);
+      NavObj_dB::GetInstance().UpdateRoute(m_pSelectedRoute);
 
       if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
         pRoutePropDialog->SetRouteAndUpdate(m_pSelectedRoute, true);
@@ -1693,17 +1693,16 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + splitMode,
                           m_pSelectedRoute->GetnPoints(), _("_B"), dupFirstWpt);
       pRouteList->Append(m_pHead);
-      pConfig->AddNewRoute(m_pHead);
+      NavObj_dB::GetInstance().InsertRoute(m_pHead);
 
       pRouteList->Append(m_pTail);
-      pConfig->AddNewRoute(m_pTail);
+      NavObj_dB::GetInstance().InsertRoute(m_pTail);
 
-      pConfig->DeleteConfigRoute(m_pSelectedRoute);
+      NavObj_dB::GetInstance().DeleteRoute(m_pSelectedRoute);
 
       pSelect->DeleteAllSelectableRoutePoints(m_pSelectedRoute);
       pSelect->DeleteAllSelectableRouteSegments(m_pSelectedRoute);
-      g_pRouteMan->DeleteRoute(m_pSelectedRoute,
-                               NavObjectChanges::getInstance());
+      g_pRouteMan->DeleteRoute(m_pSelectedRoute);
       pSelect->AddAllSelectableRouteSegments(m_pTail);
       pSelect->AddAllSelectableRoutePoints(m_pTail);
       pSelect->AddAllSelectableRouteSegments(m_pHead);

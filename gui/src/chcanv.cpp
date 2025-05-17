@@ -125,6 +125,7 @@
 #include "glChartCanvas.h"
 #include "notification_manager_gui.h"
 #include "model/notification_manager.h"
+#include "model/navobj_db.h"
 #endif
 
 #ifdef __VISUALC__
@@ -2633,8 +2634,7 @@ bool ChartCanvas::IsChartLargeEnoughToRender(ChartBase *chart, ViewPort &vp) {
 void ChartCanvas::StartMeasureRoute() {
   if (!m_routeState) {  // no measure tool if currently creating route
     if (m_bMeasure_Active) {
-      g_pRouteMan->DeleteRoute(m_pMeasureRoute,
-                               NavObjectChanges::getInstance());
+      g_pRouteMan->DeleteRoute(m_pMeasureRoute);
       m_pMeasureRoute = NULL;
     }
 
@@ -2652,7 +2652,7 @@ void ChartCanvas::CancelMeasureRoute() {
   m_nMeasureState = 0;
   m_bDrawingRoute = false;
 
-  g_pRouteMan->DeleteRoute(m_pMeasureRoute, NavObjectChanges::getInstance());
+  g_pRouteMan->DeleteRoute(m_pMeasureRoute);
   m_pMeasureRoute = NULL;
 
   SetCursor(*pCursorArrow);
@@ -8252,6 +8252,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         if (m_routeState == 1) {
           m_pMouseRoute = new Route();
+          NavObj_dB::GetInstance().InsertRoute(m_pMouseRoute);
           pRouteList->Append(m_pMouseRoute);
           r_rband.x = x;
           r_rband.y = y;
@@ -8398,7 +8399,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                        _T(""), wxEmptyString);
           pMousePoint->SetNameShown(false);
 
-          pConfig->AddNewWayPoint(pMousePoint, -1);  // use auto next num
+          // pConfig->AddNewWayPoint(pMousePoint, -1);  // use auto next num
+
           pSelect->AddSelectableRoutePoint(rlat, rlon, pMousePoint);
 
           if (m_routeState > 1)
@@ -8410,6 +8412,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           if (m_routeState == 1) {
             // First point in the route.
             m_pMouseRoute->AddPoint(pMousePoint);
+            // NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
           } else {
             if (m_pMouseRoute->m_NextLegGreatCircle) {
               double rhumbBearing, rhumbDist, gcBearing, gcDist;
@@ -8455,7 +8458,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     gcPoint = new RoutePoint(gcCoord.y, gcCoord.x, _T("xmblue"),
                                              _T(""), wxEmptyString);
                     gcPoint->SetNameShown(false);
-                    pConfig->AddNewWayPoint(gcPoint, -1);
+                    // pConfig->AddNewWayPoint(gcPoint, -1);
+                    NavObj_dB::GetInstance().InsertRoutePoint(gcPoint);
+
                     pSelect->AddSelectableRoutePoint(gcCoord.y, gcCoord.x,
                                                      gcPoint);
                   } else {
@@ -8970,7 +8975,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                        _T(""), wxEmptyString);
           pMousePoint->SetNameShown(false);
 
-          pConfig->AddNewWayPoint(pMousePoint, -1);  // use auto next num
+          // pConfig->AddNewWayPoint(pMousePoint, -1);  // use auto next num
+          NavObj_dB::GetInstance().InsertRoutePoint(pMousePoint);
+
           pSelect->AddSelectableRoutePoint(rlat, rlon, pMousePoint);
 
           if (m_routeState > 1)
@@ -9025,7 +9032,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   gcPoint = new RoutePoint(gcCoord.y, gcCoord.x, _T("xmblue"),
                                            _T(""), wxEmptyString);
                   gcPoint->SetNameShown(false);
-                  pConfig->AddNewWayPoint(gcPoint, -1);
+                  // pConfig->AddNewWayPoint(gcPoint, -1);
+                  NavObj_dB::GetInstance().InsertRoutePoint(gcPoint);
+
                   pSelect->AddSelectableRoutePoint(gcCoord.y, gcCoord.x,
                                                    gcPoint);
                 } else {
@@ -9475,7 +9484,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 }
                 pr->FinalizeForRendering();
                 pr->UpdateSegmentDistances();
-                if (m_bRoutePoinDragging) pConfig->UpdateRoute(pr);
+                if (m_bRoutePoinDragging) {
+                  // pConfig->UpdateRoute(pr);
+                  NavObj_dB::GetInstance().UpdateRoute(pr);
+                }
               }
             }
           }
@@ -9503,7 +9515,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             }
           }
           if (pMousePoint) {  // clear all about the dragged point
-            pConfig->DeleteWayPoint(m_pRoutePointEditTarget);
+            // pConfig->DeleteWayPoint(m_pRoutePointEditTarget);
+            NavObj_dB::GetInstance().DeleteRoutePoint(m_pRoutePointEditTarget);
             pWayPointMan->RemoveRoutePoint(m_pRoutePointEditTarget);
             // Hide mark properties dialog if open on the replaced point
             if ((NULL != g_pMarkInfoDialog) && (g_pMarkInfoDialog->IsShown()))
@@ -9521,8 +9534,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
       else if (m_bMarkEditing) {  // End of way point drag
         if (m_pRoutePointEditTarget)
-          if (m_bRoutePoinDragging)
-            pConfig->UpdateWayPoint(m_pRoutePointEditTarget);
+          if (m_bRoutePoinDragging) {
+            // pConfig->UpdateWayPoint(m_pRoutePointEditTarget);
+            NavObj_dB::GetInstance().UpdateRoutePoint(m_pRoutePointEditTarget);
+          }
       }
 
       if (m_pRoutePointEditTarget)
@@ -9551,7 +9566,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         current->FinalizeForRendering();
         current->m_bIsBeingEdited = false;
         FinishRoute();
-        g_pRouteMan->DeleteRoute(tail, NavObjectChanges::getInstance());
+        g_pRouteMan->DeleteRoute(tail);
       }
       if (inserting) {
         pSelect->DeleteAllSelectableRoutePoints(current);
@@ -9563,7 +9578,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         pSelect->AddAllSelectableRoutePoints(current);
         current->FinalizeForRendering();
         current->m_bIsBeingEdited = false;
-        g_pRouteMan->DeleteRoute(tail, NavObjectChanges::getInstance());
+        g_pRouteMan->DeleteRoute(tail);
       }
 
       //    Update the RouteProperties Dialog, if currently shown
@@ -9736,8 +9751,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 pr->UpdateSegmentDistances();
                 pr->m_bIsBeingEdited = false;
 
-                if (m_bRoutePoinDragging) pConfig->UpdateRoute(pr);
-
+                if (m_bRoutePoinDragging) {
+                  // pConfig->UpdateRoute(pr);
+                  NavObj_dB::GetInstance().UpdateRoute(pr);
+                }
                 pr->SetHiLite(0);
               }
             }
@@ -9760,7 +9777,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             current->FinalizeForRendering();
             current->m_bIsBeingEdited = false;
             FinishRoute();
-            g_pRouteMan->DeleteRoute(tail, NavObjectChanges::getInstance());
+            g_pRouteMan->DeleteRoute(tail);
           }
           if (inserting) {
             pSelect->DeleteAllSelectableRoutePoints(current);
@@ -9772,7 +9789,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             pSelect->AddAllSelectableRoutePoints(current);
             current->FinalizeForRendering();
             current->m_bIsBeingEdited = false;
-            g_pRouteMan->DeleteRoute(tail, NavObjectChanges::getInstance());
+            g_pRouteMan->DeleteRoute(tail);
           }
 
           //    Update the RouteProperties Dialog, if currently shown
@@ -9791,7 +9808,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           }
 
           if (pMousePoint) {
-            pConfig->DeleteWayPoint(m_pRoutePointEditTarget);
+            // pConfig->DeleteWayPoint(m_pRoutePointEditTarget);
+            NavObj_dB::GetInstance().DeleteRoutePoint(m_pRoutePointEditTarget);
             pWayPointMan->RemoveRoutePoint(m_pRoutePointEditTarget);
             // Hide mark properties dialog if open on the replaced point
             if ((NULL != g_pMarkInfoDialog) && (g_pMarkInfoDialog->IsShown()))
@@ -9823,8 +9841,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
       else if (m_bMarkEditing) {  // end of Waypoint drag
         if (m_pRoutePointEditTarget) {
-          if (m_bRoutePoinDragging)
-            pConfig->UpdateWayPoint(m_pRoutePointEditTarget);
+          if (m_bRoutePoinDragging) {
+            // pConfig->UpdateWayPoint(m_pRoutePointEditTarget);
+            NavObj_dB::GetInstance().UpdateRoutePoint(m_pRoutePointEditTarget);
+          }
           undo->AfterUndoableAction(m_pRoutePointEditTarget);
           m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
           if (!g_bopengl) {
@@ -10538,7 +10558,9 @@ void pupHandler_PasteWaypoint() {
     newPoint->m_bIsolatedMark = true;
     pSelect->AddSelectableRoutePoint(newPoint->m_lat, newPoint->m_lon,
                                      newPoint);
-    pConfig->AddNewWayPoint(newPoint, -1);
+    // pConfig->AddNewWayPoint(newPoint, -1);
+    NavObj_dB::GetInstance().InsertRoutePoint(newPoint);
+
     pWayPointMan->AddRoutePoint(newPoint);
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
@@ -10646,7 +10668,8 @@ void pupHandler_PasteRoute() {
       newRoute->AddPoint(newPoint);
       pSelect->AddSelectableRoutePoint(newPoint->m_lat, newPoint->m_lon,
                                        newPoint);
-      pConfig->AddNewWayPoint(newPoint, -1);
+      // pConfig->AddNewWayPoint(newPoint, -1);
+      NavObj_dB::GetInstance().InsertRoutePoint(newPoint);
       pWayPointMan->AddRoutePoint(newPoint);
     }
     if (i > 1 && createNewRoute)
@@ -10658,7 +10681,8 @@ void pupHandler_PasteRoute() {
 
   if (createNewRoute) {
     pRouteList->Append(newRoute);
-    pConfig->AddNewRoute(newRoute);  // use auto next num
+    // pConfig->AddNewRoute(newRoute);  // use auto next num
+    NavObj_dB::GetInstance().InsertRoute(newRoute);
 
     if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
       pRoutePropDialog->SetRouteAndUpdate(newRoute);
@@ -10709,7 +10733,8 @@ void pupHandler_PasteTrack() {
   }
 
   g_TrackList.push_back(newTrack);
-  pConfig->AddNewTrack(newTrack);
+  // pConfig->AddNewTrack(newTrack);
+  NavObj_dB::GetInstance().InsertTrack(newTrack);
 
   gFrame->InvalidateAllGL();
   gFrame->RefreshAllCanvas(false);
@@ -10784,14 +10809,15 @@ void ChartCanvas::FinishRoute(void) {
   SetCursor(*pCursorArrow);
 
   if (m_pMouseRoute) {
-    if (m_bAppendingRoute)
-      pConfig->UpdateRoute(m_pMouseRoute);
-    else {
+    if (m_bAppendingRoute) {
+      // pConfig->UpdateRoute(m_pMouseRoute);
+      NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
+    } else {
       if (m_pMouseRoute->GetnPoints() > 1) {
-        pConfig->AddNewRoute(m_pMouseRoute);
+        // pConfig->AddNewRoute(m_pMouseRoute);
+        NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
       } else {
-        g_pRouteMan->DeleteRoute(m_pMouseRoute,
-                                 NavObjectChanges::getInstance());
+        g_pRouteMan->DeleteRoute(m_pMouseRoute);
         m_pMouseRoute = NULL;
       }
     }

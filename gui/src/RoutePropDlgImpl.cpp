@@ -39,6 +39,7 @@
 #include "route_printout.h"
 #include "RoutePropDlgImpl.h"
 #include "tcmgr.h"
+#include "model/navobj_db.h"
 
 #define UTCINPUT 0  //!< Format date/time in UTC.
 #define LTINPUT \
@@ -852,7 +853,8 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
         pSelect->AddAllSelectableRouteSegments(m_pRoute);
         pSelect->AddAllSelectableRoutePoints(m_pRoute);
 
-        pConfig->UpdateRoute(m_pRoute);
+        // pConfig->UpdateRoute(m_pRoute);
+        NavObj_dB::GetInstance().UpdateRoute(m_pRoute);
 
         m_pRoute->FinalizeForRendering();
         m_pRoute->UpdateSegmentDistances();
@@ -881,6 +883,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
             static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
 
         g_pRouteMan->RemovePointFromRoute(pRP, m_pRoute, 0);
+
         gFrame->InvalidateAllGL();
         UpdatePoints();
       }
@@ -995,7 +998,8 @@ void RoutePropDlgImpl::SaveChanges() {
         m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
     }
 
-    pConfig->UpdateRoute(m_pRoute);
+    // pConfig->UpdateRoute(m_pRoute);
+    NavObj_dB::GetInstance().UpdateRoute(m_pRoute);
     pConfig->UpdateSettings();
     m_pRoute = nullptr;
   }
@@ -1030,16 +1034,19 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
     m_pTail->CloneRoute(m_pRoute, nSelected, m_pRoute->GetnPoints(), _("_B"),
                         true);
     pRouteList->Append(m_pHead);
-    pConfig->AddNewRoute(m_pHead);
+    // pConfig->AddNewRoute(m_pHead);
+    NavObj_dB::GetInstance().InsertRoute(m_pHead);
 
     pRouteList->Append(m_pTail);
-    pConfig->AddNewRoute(m_pTail);
+    // pConfig->AddNewRoute(m_pTail);
+    NavObj_dB::GetInstance().InsertRoute(m_pTail);
 
-    pConfig->DeleteConfigRoute(m_pRoute);
+    // pConfig->DeleteConfigRoute(m_pRoute);
+    NavObj_dB::GetInstance().DeleteRoute(m_pRoute);
 
     pSelect->DeleteAllSelectableRoutePoints(m_pRoute);
     pSelect->DeleteAllSelectableRouteSegments(m_pRoute);
-    g_pRouteMan->DeleteRoute(m_pRoute, NavObjectChanges::getInstance());
+    g_pRouteMan->DeleteRoute(m_pRoute);
     pSelect->AddAllSelectableRouteSegments(m_pTail);
     pSelect->AddAllSelectableRoutePoints(m_pTail);
     pSelect->AddAllSelectableRouteSegments(m_pHead);
