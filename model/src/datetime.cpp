@@ -95,6 +95,9 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
     // operating system. For example "2021-10-31 01:30:00 EDT" is unambiguous,
     // while "2021-10-31 01:30:00 LOC" is not.
     wxString tzName = t.Format("%Z");
+#ifdef __WXMSW__
+    tzName = "LOC";
+#endif
     ret = t.Format(format) + " " + tzName;
   } else if (effective_time_zone == "UTC") {
     // Convert to UTC and format date/time.
