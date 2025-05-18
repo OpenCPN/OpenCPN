@@ -52,6 +52,7 @@
 #include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
+#include "model/navobj_db.h"
 #include "model/own_ship.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
@@ -4400,7 +4401,7 @@ int doAndroidPersistState() {
 
           // caveat: this is accurate only on the Equator
           if ((l * 60. * 1852.) < (.25 * 1852.)) {
-            pConfig->DeleteWayPoint(pr);
+            NavObj_dB::GetInstance().DeleteRoutePoint(pr);
             pSelect->DeleteSelectablePoint(pr, SELTYPE_ROUTEPOINT);
             delete pr;
             break;
@@ -4417,7 +4418,7 @@ int doAndroidPersistState() {
       pWP->m_bShowName = false;
       pWP->m_bIsolatedMark = true;
 
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
     }
   }
 
