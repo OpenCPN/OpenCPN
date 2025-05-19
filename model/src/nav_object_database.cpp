@@ -41,7 +41,7 @@ NavObjectCollection1::~NavObjectCollection1() {}
 
 RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
                              wxString GUID, bool b_fullviz, bool b_layer,
-                             bool b_layerviz, int layer_id) {
+                             bool b_layerviz, int layer_id, bool b_nameviz) {
   bool bviz = false;
   bool bviz_name = false;
   bool bshared = false;
@@ -237,6 +237,9 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
     pWP->m_bShowName = true;
   else
     pWP->m_bShowName = false;
+
+  // Special case handling of un-named points in a route
+  if (!b_nameviz && !b_propvizname) pWP->m_bShowName = false;
 
   if (b_propviz)
     pWP->m_bIsVisible = bviz;
@@ -533,7 +536,7 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
       else if (load_points && ChildName == _T ( "rtept" )) {
         RoutePoint *tpWp =
             ::GPXLoadWaypoint1(tschild, _T("square"), _T(""), b_fullviz,
-                               b_layer, b_layerviz, layer_id);
+                               b_layer, b_layerviz, layer_id, false);
         RoutePoint *erp = NULL;
         if (!b_layer) erp = ::WaypointExists(tpWp->m_GUID);
         // 1) if b_change is true, that means we are after crash - load the

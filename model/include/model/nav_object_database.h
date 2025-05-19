@@ -97,7 +97,8 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
 
 RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString symbol_name,
                              wxString GUID, bool b_fullviz, bool b_layer,
-                             bool b_layerviz, int layer_id);
+                             bool b_layerviz, int layer_id,
+                             bool b_nameviz = true);
 
 bool InsertRouteA(Route *pTentRoute, NavObjectCollection1 *navobj);
 bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false);
