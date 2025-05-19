@@ -4697,7 +4697,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
-      NavObj_dB::GetInstance().ImportLegacyNavobj();
+      NavObj_dB::GetInstance().ImportLegacyNavobj(this);
       NavObj_dB::GetInstance().LoadNavObjects();
 
       //    Re-enable anchor watches if set in config file

@@ -65,18 +65,26 @@ public:
   bool UpdateRoutePoint(RoutePoint *point);
 
   // Legacy navobj import
-  bool ImportLegacyNavobj();
-  bool ImportLegacyTracks();
-  bool ImportLegacyRoutes();
-  bool ImportLegacyPoints();
+  bool ImportLegacyNavobj(wxFrame *frame);
 
 private:
   NavObj_dB();
   ~NavObj_dB();
 
+  bool ImportLegacyTracks();
+  bool ImportLegacyRoutes();
+  bool ImportLegacyPoints();
+  void CountImportNavObjects();
+
   int m_open_result;
   sqlite3 *m_db;
   bool m_importing;
+  int m_nimportPoints;
+  int m_nimportRoutes;
+  int m_nimportTracks;
+  int m_nImportObjects;
+  int m_import_progesscount;
+  wxProgressDialog *m_pImportProgress;
 };
 
 #endif

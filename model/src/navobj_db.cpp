@@ -30,6 +30,7 @@
 #include <iostream>
 #include <string>
 #include <wx/dir.h>
+#include <wx/toplevel.h>
 
 #include "model/base_platform.h"
 #include "model/navobj_db.h"
@@ -498,6 +499,8 @@ NavObj_dB& NavObj_dB::GetInstance() {
 }
 
 NavObj_dB::NavObj_dB() {
+  m_pImportProgress = nullptr;
+
   // Set SQLite per-process config options
   int ie = sqlite3_config(SQLITE_CONFIG_LOG, errorLogCallback, nullptr);
 
@@ -568,84 +571,36 @@ void NavObj_dB::Close() {
   m_db = nullptr;
 }
 
-bool NavObj_dB::ImportLegacyNavobj() {
+bool NavObj_dB::ImportLegacyNavobj(wxFrame* frame) {
   wxString navobj_filename = g_BasePlatform->GetPrivateDataDir() +
                              wxFileName::GetPathSeparator() + "navobj.xml";
   bool rv = false;
   if (::wxFileExists(navobj_filename)) {
     m_importing = true;
+    CountImportNavObjects();
+    m_pImportProgress = new wxProgressDialog(_("Importing Navobj database"), "",
+                                             m_nImportObjects, frame);
+    m_import_progesscount = 0;
+
     rv = ImportLegacyPoints();
     rv |= ImportLegacyRoutes();
     rv |= ImportLegacyTracks();
     m_importing = false;
+    m_pImportProgress->Destroy();
   }
 
-  // Delete the legacy navobj.xml
+  // Delete the imported navobj.xml
   if (::wxFileExists(navobj_filename)) ::wxRemoveFile(navobj_filename);
 
   return rv;
 }
 
-bool NavObj_dB::ImportLegacyTracks() {
-  auto input_set = new NavObjectCollection1();
-  wxString navobj_filename = g_BasePlatform->GetPrivateDataDir() +
-                             wxFileName::GetPathSeparator() + "navobj.xml";
+void NavObj_dB::CountImportNavObjects() {
+  m_nImportObjects = 0;
+  m_nimportPoints = 0;
+  m_nimportRoutes = 0;
+  m_nimportTracks = 0;
 
-  if (::wxFileExists(navobj_filename) &&
-      input_set->load_file(navobj_filename.ToStdString().c_str()).status ==
-          pugi::xml_parse_status::status_ok) {
-    input_set->LoadAllGPXTrackObjects();
-  }
-
-  std::vector<Track*> tracks_added;
-  //  Add all tracks to database
-  for (Track* track_import : g_TrackList) {
-    if (InsertTrack(track_import)) {
-      tracks_added.push_back(track_import);
-    }
-  }
-
-  //  Delete all tracks that were successfully added
-  for (Track* ptrack : tracks_added) {
-    if (ptrack->m_bIsInLayer) continue;
-    g_pRouteMan->DeleteTrack(ptrack);
-  }
-
-  delete input_set;
-  return true;
-}
-
-bool NavObj_dB::ImportLegacyRoutes() {
-  auto input_set = new NavObjectCollection1();
-  wxString navobj_filename = g_BasePlatform->GetPrivateDataDir() +
-                             wxFileName::GetPathSeparator() + "navobj.xml";
-
-  if (::wxFileExists(navobj_filename) &&
-      input_set->load_file(navobj_filename.ToStdString().c_str()).status ==
-          pugi::xml_parse_status::status_ok) {
-    input_set->LoadAllGPXRouteObjects();
-  }
-
-  std::vector<Route*> routes_added;
-  //  Add all routes to database
-  for (wxRouteListNode* node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route* route_import = node->GetData();
-    if (InsertRoute(route_import)) {
-      routes_added.push_back(route_import);
-    }
-  }
-
-  //  Delete all routes that were successfully added
-  for (Route* route : routes_added) {
-    g_pRouteMan->DeleteRoute(route);
-  }
-
-  delete input_set;
-  return true;
-}
-
-bool NavObj_dB::ImportLegacyPoints() {
   auto input_set = new NavObjectCollection1();
   wxString navobj_filename = g_BasePlatform->GetPrivateDataDir() +
                              wxFileName::GetPathSeparator() + "navobj.xml";
@@ -654,10 +609,94 @@ bool NavObj_dB::ImportLegacyPoints() {
       input_set->load_file(navobj_filename.ToStdString().c_str()).status ==
           pugi::xml_parse_status::status_ok) {
     input_set->LoadAllGPXPointObjects();
+    auto pointlist = pWayPointMan->GetWaypointList();
+    wxRoutePointListNode* prpnode = pointlist->GetFirst();
+    while (prpnode) {
+      RoutePoint* point = prpnode->GetData();
+      if (point->m_bIsolatedMark) {
+        m_nImportObjects++;
+        m_nimportPoints++;
+      }
+      prpnode = prpnode->GetNext();  // RoutePoint
+    }
+
+    input_set->LoadAllGPXRouteObjects();
+    for (wxRouteListNode* node = pRouteList->GetFirst(); node;
+         node = node->GetNext()) {
+      Route* route_import = node->GetData();
+      m_nImportObjects++;
+      m_nimportRoutes++;
+      m_nImportObjects += route_import->GetnPoints();
+    }
+
+    input_set->LoadAllGPXTrackObjects();
+    m_nImportObjects += g_TrackList.size();
+    m_nimportTracks = g_TrackList.size();
+
+    for (Track* track_import : g_TrackList) {
+      m_nImportObjects += track_import->GetnPoints();
+    }
+  }
+  delete input_set;
+}
+
+bool NavObj_dB::ImportLegacyTracks() {
+  std::vector<Track*> tracks_added;
+  //  Add all tracks to database
+  int ntrack = 0;
+  for (Track* track_import : g_TrackList) {
+    if (InsertTrack(track_import)) {
+      tracks_added.push_back(track_import);
+    }
+    ntrack++;
+    m_import_progesscount += track_import->GetnPoints() + 1;
+    wxString msg = wxString::Format("Tracks  %d/%d", ntrack, m_nimportTracks);
+    m_pImportProgress->Update(m_import_progesscount, msg);
+    m_pImportProgress->Show();
   }
 
+  //  Delete all tracks that were successfully added
+  for (Track* ptrack : tracks_added) {
+    if (ptrack->m_bIsInLayer) continue;
+    g_pRouteMan->DeleteTrack(ptrack);
+  }
+
+  return true;
+}
+
+bool NavObj_dB::ImportLegacyRoutes() {
+  std::vector<Route*> routes_added;
+  //  Add all routes to database
+  int nroute = 0;
+  for (wxRouteListNode* node = pRouteList->GetFirst(); node;
+       node = node->GetNext()) {
+    Route* route_import = node->GetData();
+    if (InsertRoute(route_import)) {
+      routes_added.push_back(route_import);
+    }
+    nroute++;
+    m_import_progesscount += route_import->GetnPoints() + 1;
+    wxString msg = wxString::Format("Routes  %d/%d", nroute, m_nimportRoutes);
+    m_pImportProgress->Update(m_import_progesscount, msg);
+    m_pImportProgress->Show();
+  }
+
+  //  Delete all routes that were successfully added
+  for (Route* route : routes_added) {
+    g_pRouteMan->DeleteRoute(route);
+  }
+
+  return true;
+}
+
+bool NavObj_dB::ImportLegacyPoints() {
   std::vector<RoutePoint*> points_added;
   //  Add all isolated points to database
+  int npoint = 0;
+  int nmod = 1;
+  if (m_nimportPoints > 1000) nmod = 10;
+  if (m_nimportPoints > 10000) nmod = 100;
+
   auto pointlist = pWayPointMan->GetWaypointList();
   wxRoutePointListNode* prpnode = pointlist->GetFirst();
   while (prpnode) {
@@ -666,7 +705,16 @@ bool NavObj_dB::ImportLegacyPoints() {
       if (InsertRoutePointDB(m_db, point)) {
         points_added.push_back(point);
       }
+
       UpdateDBRoutePointAttributes(point);
+      m_import_progesscount += 1;
+      if ((npoint % nmod) == 0) {
+        wxString msg =
+            wxString::Format("Points  %d/%d", npoint, m_nimportPoints);
+        m_pImportProgress->Update(m_import_progesscount, msg);
+        m_pImportProgress->Show();
+      }
+      npoint++;
     }
     prpnode = prpnode->GetNext();  // RoutePoint
   }
@@ -677,7 +725,6 @@ bool NavObj_dB::ImportLegacyPoints() {
     delete point;
   }
 
-  delete input_set;
   return true;
 }
 
