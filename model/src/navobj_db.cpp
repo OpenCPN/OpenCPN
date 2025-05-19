@@ -1319,7 +1319,8 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
     sqlite3_bind_text(stmt, 6, point->m_TideStation.ToStdString().c_str(), -1,
                       SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, 7, point->GetPlannedSpeed());
-    time_t etd = point->GetETD().GetTicks();
+    time_t etd = -1;
+    if (point->GetETD().IsValid()) etd = point->GetETD().GetTicks();
     sqlite3_bind_int(stmt, 8, etd);
     sqlite3_bind_text(stmt, 9, "type", -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 10, point->m_timestring.ToStdString().c_str(), -1,
