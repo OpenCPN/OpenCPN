@@ -54,8 +54,11 @@ public:
   bool LoadAllRoutes();
   bool InsertRoute(Route *route);
   bool UpdateRoute(Route *route);
+  bool UpdateRouteViz(Route *route);
+
   bool UpdateDBRouteAttributes(Route *route);
   bool UpdateDBRoutePointAttributes(RoutePoint *point);
+  bool UpdateDBRoutePointViz(RoutePoint *point);
   bool DeleteRoute(Route *route);
 
   // RoutePoints

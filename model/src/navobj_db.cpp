@@ -185,7 +185,7 @@ bool TrackExists(sqlite3* db, const std::string& track_guid) {
   bool exists = false;
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
       exists = true;  // found a match
@@ -205,7 +205,7 @@ bool TrackHtmlLinkExists(sqlite3* db, const std::string& link_guid) {
   bool exists = false;
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, link_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, link_guid.c_str(), -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
       exists = true;  // found a match
@@ -224,7 +224,7 @@ bool DeleteAllCommentsForTrack(sqlite3* db, const std::string& track_guid) {
 
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("DeleteAllCommentsForTrack:step");
       return false;
@@ -299,7 +299,7 @@ bool DeleteAllCommentsForRoute(sqlite3* db, const std::string& route_guid) {
     )";
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("DeleteAllCommentsForRoute:step");
       sqlite3_finalize(stmt);
@@ -318,7 +318,7 @@ bool RouteHtmlLinkExists(sqlite3* db, const std::string& link_guid) {
   bool exists = false;
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, link_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, link_guid.c_str(), -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
       exists = true;  // found a match
@@ -337,7 +337,7 @@ bool RouteExistsDB(sqlite3* db, const std::string& route_guid) {
   bool exists = false;
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
       exists = true;  // found a match
@@ -383,7 +383,7 @@ bool RoutePointExists(sqlite3* db, const std::string& routepoint_guid) {
   bool exists = false;
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, routepoint_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, routepoint_guid.c_str(), -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
       exists = true;  // found a match
@@ -403,7 +403,7 @@ bool DeleteAllCommentsForRoutePoint(sqlite3* db,
 
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, routepoint_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, routepoint_guid.c_str(), -1, SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("DeleteAllCommentsForRoutepoint:step");
       return false;
@@ -590,7 +590,7 @@ bool NavObj_dB::ImportLegacyNavobj(wxFrame* frame) {
   }
 
   // Delete the imported navobj.xml
-  if (::wxFileExists(navobj_filename)) ::wxRemoveFile(navobj_filename);
+  // if (::wxFileExists(navobj_filename)) ::wxRemoveFile(navobj_filename);
 
   return rv;
 }
@@ -796,15 +796,15 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
 
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, track->GetName().ToStdString().c_str(),
-                      track->GetName().Length(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 1, track->GetName().ToStdString().c_str(), -1,
+                      SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 2, track->m_TrackDescription.ToStdString().c_str(),
-                      track->m_TrackDescription.Length(), SQLITE_TRANSIENT);
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 3, track->m_bVisible);
     sqlite3_bind_text(stmt, 4, track->m_TrackStartString.ToStdString().c_str(),
-                      track->m_TrackStartString.Length(), SQLITE_TRANSIENT);
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 5, track->m_TrackEndString.ToStdString().c_str(),
-                      track->m_TrackEndString.Length(), SQLITE_TRANSIENT);
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 6, track->m_width);
     sqlite3_bind_int(stmt, 7,
                      (int)(track->m_style));  // track->m_style.c_str(),
@@ -937,7 +937,7 @@ bool NavObj_dB::LoadAllTracks() {
       return false;
     }
 
-    sqlite3_bind_text(stmtp, 1, guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmtp, 1, guid.c_str(), -1, SQLITE_TRANSIENT);
 
     int GPXSeg = 0;
     while (sqlite3_step(stmtp) == SQLITE_ROW) {
@@ -1028,7 +1028,7 @@ bool NavObj_dB::DeleteTrack(Track* track) {
   sqlite3_stmt* stmt;
 
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, track_guid.c_str(), -1, SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("DeleteTrack:step");
       sqlite3_finalize(stmt);
@@ -1176,6 +1176,26 @@ bool NavObj_dB::UpdateRoute(Route* route) {
   return rv;
 };
 
+bool NavObj_dB::UpdateRouteViz(Route* route) {
+  bool rv = false;
+  char* errMsg = 0;
+  if (!RouteExistsDB(m_db, route->m_GUID.ToStdString())) return false;
+
+  UpdateDBRouteAttributes(route);
+  // update routepoints visibility
+  for (int i = 0; i < route->GetnPoints(); i++) {
+    auto point = route->GetPoint(i + 1);
+    //  Add the bare point
+    if (point) {
+      UpdateDBRoutePointViz(point);
+    }
+  }
+  rv = true;
+  if (errMsg) rv = false;
+
+  return rv;
+};
+
 bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
   const char* sql =
       "UPDATE routes SET "
@@ -1195,20 +1215,20 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
 
   sqlite3_stmt* stmt;
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, route->GetName().ToStdString().c_str(),
-                      route->GetName().Length(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 1, route->GetName().ToStdString().c_str(), -1,
+                      SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 2, route->m_RouteDescription.ToStdString().c_str(),
-                      route->m_RouteDescription.Length(), SQLITE_TRANSIENT);
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 3, route->m_RouteStartString.ToStdString().c_str(),
-                      route->m_RouteStartString.Length(), SQLITE_TRANSIENT);
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 4, route->m_RouteEndString.ToStdString().c_str(),
-                      route->m_RouteEndString.Length(), SQLITE_TRANSIENT);
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 5, route->IsVisible());
     sqlite3_bind_int(stmt, 6, route->GetSharedWPViz());
     sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
     sqlite3_bind_double(stmt, 8, route->m_PlannedSpeed);
     sqlite3_bind_text(stmt, 9, route->m_TimeDisplayFormat.ToStdString().c_str(),
-                      route->m_TimeDisplayFormat.Length(), SQLITE_TRANSIENT);
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 10, route->m_width);
     sqlite3_bind_int(stmt, 11,
                      (int)(route->m_style));  // track->m_style.c_str(),
@@ -1366,6 +1386,33 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
   return true;
 }
 
+bool NavObj_dB::UpdateDBRoutePointViz(RoutePoint* point) {
+  const char* sql =
+      "UPDATE routepoints SET "
+      "visibility = ? "
+      "WHERE guid = ?";
+
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+    sqlite3_bind_int(stmt, 1, point->IsVisible());
+    sqlite3_bind_text(stmt, 2, point->m_GUID.ToStdString().c_str(), -1,
+                      SQLITE_TRANSIENT);
+
+  } else {
+    return false;
+  }
+
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    ReportError("UpdateDBRoutePointVizA:step");
+    sqlite3_finalize(stmt);
+    return false;
+  }
+
+  sqlite3_finalize(stmt);
+
+  return true;
+}
+
 bool NavObj_dB::DeleteRoute(Route* route) {
   if (m_importing) return false;
   if (!route) return false;
@@ -1374,7 +1421,7 @@ bool NavObj_dB::DeleteRoute(Route* route) {
   sqlite3_stmt* stmt;
 
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("DeleteRoute:step");
       sqlite3_finalize(stmt);
@@ -1481,7 +1528,7 @@ bool NavObj_dB::LoadAllRoutes() {
       return false;
     }
 
-    sqlite3_bind_text(stmtp, 1, guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmtp, 1, guid.c_str(), -1, SQLITE_TRANSIENT);
 
     int GPXSeg = 0;
     int errcode = SQLITE_OK;
@@ -1826,7 +1873,7 @@ bool NavObj_dB::DeleteRoutePoint(RoutePoint* point) {
   sqlite3_stmt* stmt;
 
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("DeleteRoutePoint:step");
       sqlite3_finalize(stmt);
