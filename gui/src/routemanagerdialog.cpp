@@ -2711,10 +2711,14 @@ void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event) {
               OCPNMessageBox(this,
                              _("The waypoint you want to delete is used in a "
                                "route, do you really want to delete it?"),
-                             _("OpenCPN Alert"), wxYES_NO))
+                             _("OpenCPN Alert"), wxYES_NO)) {
+            NavObj_dB::GetInstance().DeleteRoutePoint(wp);
             pWayPointMan->DestroyWaypoint(wp);
-        } else
+          }
+        } else {
+          NavObj_dB::GetInstance().DeleteRoutePoint(wp);
           pWayPointMan->DestroyWaypoint(wp);
+        }
       }
     }
 
