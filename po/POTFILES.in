@@ -179,6 +179,8 @@ model/src/usb_watch_factory.cpp
 model/src/win_usb_watch.cpp
 model/src/wx_instance_chk.cpp
 gui/include/gui/about.h
+gui/include/gui/about_frame.h
+gui/include/gui/about_frame_impl.h
 gui/include/gui/ais.h
 gui/include/gui/ais_info_gui.h
 gui/include/gui/AISTargetAlertDialog.h
@@ -287,6 +289,7 @@ gui/include/gui/toolbar.h
 gui/include/gui/track_gui.h
 gui/include/gui/track_printout.h
 gui/include/gui/TrackPropDlg.h
+gui/include/gui/track_printout.h
 gui/include/gui/udev_rule_mgr.h
 gui/include/gui/undo.h
 gui/include/gui/update_mgr.h
@@ -297,6 +300,8 @@ gui/include/gui/WindowDestroyListener.h
 gui/include/gui/wiz_ui.h
 gui/include/gui/wiz_ui_proto.h
 gui/src/about.cpp
+gui/src/about_frame.cpp
+gui/src/ais_info_gui.cpp
 gui/src/ais.cpp
 gui/src/ais_info_gui.cpp
 gui/src/AISTargetAlertDialog.cpp
@@ -317,12 +322,15 @@ gui/src/color_handler.cpp
 gui/src/compass.cpp
 gui/src/concanv.cpp
 gui/src/ConfigMgr.cpp
+gui/src/connections_dlg.cpp
 gui/src/connection_edit.cpp
 gui/src/conn_params_panel.cpp
 gui/src/crashprint.cpp
+gui/src/data_monitor.cpp
 gui/src/DetailSlider.cpp
 gui/src/displays.cpp
 gui/src/download_mgr.cpp
+gui/src/filter_dlg.cpp
 gui/src/FlexHash.cpp
 gui/src/FontDesc.cpp
 gui/src/FontMgr.cpp
@@ -333,6 +341,7 @@ gui/src/glTextureManager.cpp
 gui/src/GoToPositionDialog.cpp
 gui/src/gshhs.cpp
 gui/src/gui_lib.cpp
+gui/src/hotkeys_dlg.cpp
 gui/src/IDX_entry.cpp
 gui/src/iENCToolbar.cpp
 gui/src/kml.cpp
@@ -342,10 +351,12 @@ gui/src/load_errors_dlg.cpp
 gui/src/MarkInfo.cpp
 gui/src/MUIBar.cpp
 gui/src/navutil.cpp
+gui/src/notification_manager_gui.cpp
 gui/src/ocpCursor.cpp
 gui/src/ocpn_app.cpp
 gui/src/OCPN_AUIManager.cpp
 gui/src/ocpndc.cpp
+gui/src/ocpn_fontdlg.cpp
 gui/src/ocpn_frame.cpp
 gui/src/OCPNListCtrl.cpp
 gui/src/ocpn_pixel.cpp
@@ -366,6 +377,7 @@ gui/src/route_gui.cpp
 gui/src/routemanagerdialog.cpp
 gui/src/routeman_gui.cpp
 gui/src/route_point_gui.cpp
+gui/src/route_printout.cpp
 gui/src/RoutePropDlg.cpp
 gui/src/RoutePropDlgImpl.cpp
 gui/src/s57chart.cpp
@@ -388,6 +400,7 @@ gui/src/thumbwin.cpp
 gui/src/toolbar.cpp
 gui/src/track_gui.cpp
 gui/src/TrackPropDlg.cpp
+gui/src/track_printout.cpp
 gui/src/udev_rule_mgr.cpp
 gui/src/undo.cpp
 gui/src/update_mgr.cpp
