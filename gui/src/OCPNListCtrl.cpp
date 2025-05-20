@@ -215,6 +215,14 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
           ret = _("-");
         break;
       }
+      case tlFLAG: {
+        ret = wxGetTranslation(pAISTarget->GetCountryCode(true));
+
+        if (ret.IsEmpty()) {
+          ret = _("-");
+        }
+        break;
+      }
 
       default:
         break;
