@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="DOWNLOADING_FILE">Descargando archivo…</string>
-    <string name="DEFAULT">Por defecto</string>
+    <string name="DOWNLOADING_FILE">Descargando el archivo …</string>
+    <string name="DEFAULT">Predeterminada</string>
     <string name="CUSTOM">Personalizar</string>
     <string name="ocpn_GRIB_activity_Display">Ajustes de Visualización GRIB</string>
     <string name="ocpn_GRIB_activity_Choose">Elegir archivo GRIB local</string>

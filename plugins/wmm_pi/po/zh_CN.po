@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 11:56-0300\n"
-"PO-Revision-Date: 2024-06-24 02:23\n"
+"POT-Creation-Date: 2025-05-16 16:56-0400\n"
+"PO-Revision-Date: 2025-05-20 02:02\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -16,173 +16,47 @@ msgstr ""
 "X-Crowdin-Language: zh-CN\n"
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 "X-Crowdin-File-ID: 128\n"
-#
-msgid ""
-"\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic "
-"variation values printed on many raster charts.\n"
-"\n"
+
+#: src/wmm_pi.cpp:87
+msgid "\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
 "Variation is the angle between true and magnetic north.\n"
 "Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
-"\t20000 to 66000\n"
-"\n"
-"The plotted lines are similar to a topographic map.  The space between them "
-"can be adjusted; more space takes less time to calculate.\n"
-"\n"
-"The Step size and Pole accuracy sliders allow a trade off for speed vs "
-"computation time.\n"
-"\n"
-"The World Magnetic Model Plugin was written by Pavel Kalian and extended by "
-"Sean D'Epagnier to support plotting."
-msgstr ""
-"\n"
-"全球地磁模型测绘插件可使用户交叉检查许多栅格海图上的磁偏差数值.\n"
-"\n"
+"\t20000 to 66000\n\n"
+"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
+msgstr "\n"
+"全球地磁模型测绘插件可使用户交叉检查许多栅格海图上的磁偏差数值.\n\n"
 "磁偏差是指真北和磁北之间的夹角.\n"
 "倾角是磁场的垂直角度.\n"
 "\t(+- 90 磁极上)\n"
 "场强度是磁场以纳特为单位从\n"
-"\t20000 到 66000\n"
-"\n"
-"所测得的线类似地形图.  它们之间的空间可以调节; 空间越大耗时越短.\n"
-"\n"
-"梯级大小和磁极精度滑杆可使速度和计算时间交替换位.\n"
-"\n"
+"\t20000 到 66000\n\n"
+"所测得的线类似地形图.  它们之间的空间可以调节; 空间越大耗时越短.\n\n"
+"梯级大小和磁极精度滑杆可使速度和计算时间交替换位.\n\n"
 "全球磁模型插件由Pavel Kalian编制并有Sean D'Epagnier开发以支持测绘."
-#
-msgid "(DIP) - Geomagnetic Inclination "
-msgstr "(倾角) - 地磁倾角 "
-#
-msgid "About"
-msgstr "关于"
-#
-msgid "Boat"
-msgstr "船只"
-#
-msgid "Building Magnetic Map"
-msgstr "创建磁图"
-#
-msgid "Cancel"
-msgstr "取消"
-#
-msgid "Cursor"
-msgstr "光标"
-#
-msgid "Degrees"
-msgstr "度"
-#
-msgid "Dialog"
-msgstr ""
-#
-msgid "East Component"
-msgstr "东部"
-#
-msgid "Enable plot"
-msgstr "启用测绘"
-#
-msgid "Error, see log."
-msgstr "出错，参见日志"
-#
-msgid "Extended"
-msgstr "扩展的"
-#
-msgid "F "
-msgstr ""
-#
-msgid "Field Strength"
-msgstr "场强"
-#
-msgid "H "
-msgstr ""
-#
-msgid "Horizontal Intensity"
-msgstr "水平强度"
-#
-msgid "Incl"
-msgstr "倾角"
-#
-msgid "Inclination"
-msgstr "倾斜"
-#
-msgid "Magnetic Plot Settings"
-msgstr "磁测绘设置"
-#
-msgid "Magnetic Variation"
-msgstr "磁偏差"
-#
-msgid "Nano Tesla"
-msgstr "纳特"
-#
-msgid "North Component"
-msgstr "北部"
-#
-msgid "Plot"
-msgstr "测绘"
-#
-msgid "Pole Accuracy"
-msgstr "极精度"
-#
-msgid "Save"
-msgstr "保存"
-#
-msgid "Settings..."
-msgstr "设置..."
-#
-msgid "Show Plot Options"
-msgstr "显示测绘选项"
-#
-msgid "Show also data at cursor position"
-msgstr "光标处一并显示数据"
-#
-msgid "Show data in toolbar icon"
-msgstr "工具图标显示数据"
-#
-msgid "Show toolbar icon"
-msgstr "显示工具栏图标"
-#
-msgid "Step Size"
-msgstr "梯级大小"
-#
-msgid "Total Intensity"
-msgstr "总强度"
-#
-msgid "Vari"
-msgstr ""
-#
-msgid "Variation"
-msgstr "偏差"
-#
-msgid "Variation only"
-msgstr "仅偏差"
-#
-msgid "Vertical Component"
-msgstr "垂直部分"
-#
-msgid "View"
-msgstr "视图"
-#
-msgid "WMM"
-msgstr ""
-#
+
+#: src/wmm_pi.cpp:103
 msgid "WMM Plugin"
 msgstr "WMM插件"
-#
-msgid "WMM Preferences"
-msgstr "WMM首选项"
-#
+
+#: src/wmm_pi.cpp:164
 msgid "WMM_Live_Overlay"
 msgstr ""
-#
-msgid "Window transparency"
-msgstr "窗口透明"
-#
+
+#: src/wmm_pi.cpp:221 src/wmm_pi.cpp:279 src/WmmUIDialog.h:85
+msgid "WMM"
+msgstr ""
+
+#: src/wmm_pi.cpp:282
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "OpenCPN全球磁模型插件"
-#
-msgid ""
-"World Magnetic Model PlugIn for OpenCPN\n"
+
+#: src/wmm_pi.cpp:287
+msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information:\n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
@@ -191,12 +65,171 @@ msgid ""
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
 msgstr ""
-#
+
+#: src/wmm_pi.cpp:366 src/wmm_pi.cpp:909
+msgid "Dialog"
+msgstr ""
+
+#: src/wmm_pi.cpp:479 src/wmm_pi.cpp:647
+msgid "Error, see log."
+msgstr "出错，参见日志"
+
+#: src/wmm_pi.cpp:879 src/WmmUIDialog.h:118
+msgid "WMM Preferences"
+msgstr "WMM首选项"
+
+#: src/wmm_pi.h:86 src/WmmUIDialog.h:158
+msgid "Magnetic Plot Settings"
+msgstr "磁测绘设置"
+
+#: src/WmmUIDialog.cpp:36
+msgid "Boat"
+msgstr "船只"
+
+#: src/WmmUIDialog.cpp:44 src/WmmUIDialog.cpp:154
+msgid "F "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:47 src/WmmUIDialog.cpp:157
+msgid "Total Intensity"
+msgstr "总强度"
+
+#: src/WmmUIDialog.cpp:56 src/WmmUIDialog.cpp:166
+msgid "H "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:59 src/WmmUIDialog.cpp:169
+msgid "Horizontal Intensity"
+msgstr "水平强度"
+
+#: src/WmmUIDialog.cpp:68 src/WmmUIDialog.cpp:178
 msgid "X "
 msgstr ""
-#
+
+#: src/WmmUIDialog.cpp:71 src/WmmUIDialog.cpp:181
+msgid "North Component"
+msgstr "北部"
+
+#: src/WmmUIDialog.cpp:80 src/WmmUIDialog.cpp:190
 msgid "Y "
 msgstr ""
-#
+
+#: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:193
+msgid "East Component"
+msgstr "东部"
+
+#: src/WmmUIDialog.cpp:92 src/WmmUIDialog.cpp:202
 msgid "Z "
 msgstr ""
+
+#: src/WmmUIDialog.cpp:95 src/WmmUIDialog.cpp:205
+msgid "Vertical Component"
+msgstr "垂直部分"
+
+#: src/WmmUIDialog.cpp:104 src/WmmUIDialog.cpp:214
+msgid "Incl"
+msgstr "倾角"
+
+#: src/WmmUIDialog.cpp:107 src/WmmUIDialog.cpp:217
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(倾角) - 地磁倾角 "
+
+#: src/WmmUIDialog.cpp:125 src/WmmUIDialog.cpp:235
+msgid "Vari"
+msgstr ""
+
+#: src/WmmUIDialog.cpp:128 src/WmmUIDialog.cpp:238
+msgid "Magnetic Variation"
+msgstr "磁偏差"
+
+#: src/WmmUIDialog.cpp:146
+msgid "Cursor"
+msgstr "光标"
+
+#: src/WmmUIDialog.cpp:260
+msgid "Plot"
+msgstr "测绘"
+
+#: src/WmmUIDialog.cpp:269
+msgid "Enable plot"
+msgstr "启用测绘"
+
+#: src/WmmUIDialog.cpp:274
+msgid "Settings..."
+msgstr "设置..."
+
+#: src/WmmUIDialog.cpp:343
+msgid "Extended"
+msgstr "扩展的"
+
+#: src/WmmUIDialog.cpp:343
+msgid "Variation only"
+msgstr "仅偏差"
+
+#: src/WmmUIDialog.cpp:345
+msgid "View"
+msgstr "视图"
+
+#: src/WmmUIDialog.cpp:351
+msgid "Show Plot Options"
+msgstr "显示测绘选项"
+
+#: src/WmmUIDialog.cpp:356
+msgid "Show also data at cursor position"
+msgstr "光标处一并显示数据"
+
+#: src/WmmUIDialog.cpp:360
+msgid "Show toolbar icon"
+msgstr "显示工具栏图标"
+
+#: src/WmmUIDialog.cpp:364
+msgid "Show data in toolbar icon"
+msgstr "工具图标显示数据"
+
+#: src/WmmUIDialog.cpp:370
+msgid "Window transparency"
+msgstr "窗口透明"
+
+#: src/WmmUIDialog.cpp:381 src/WmmUIDialog.cpp:490
+msgid "Cancel"
+msgstr "取消"
+
+#: src/WmmUIDialog.cpp:412 src/MagneticPlotMap.cpp:399
+msgid "Variation"
+msgstr "偏差"
+
+#: src/WmmUIDialog.cpp:422 src/WmmUIDialog.cpp:436
+msgid "Degrees"
+msgstr "度"
+
+#: src/WmmUIDialog.cpp:427 src/MagneticPlotMap.cpp:400
+msgid "Inclination"
+msgstr "倾斜"
+
+#: src/WmmUIDialog.cpp:441 src/MagneticPlotMap.cpp:401
+msgid "Field Strength"
+msgstr "场强"
+
+#: src/WmmUIDialog.cpp:450
+msgid "Nano Tesla"
+msgstr "纳特"
+
+#: src/WmmUIDialog.cpp:463
+msgid "Step Size"
+msgstr "梯级大小"
+
+#: src/WmmUIDialog.cpp:477
+msgid "Pole Accuracy"
+msgstr "极精度"
+
+#: src/WmmUIDialog.cpp:482
+msgid "About"
+msgstr "关于"
+
+#: src/WmmUIDialog.cpp:486
+msgid "Save"
+msgstr "保存"
+
+#: src/MagneticPlotMap.cpp:398
+msgid "Building Magnetic Map"
+msgstr "创建磁图"

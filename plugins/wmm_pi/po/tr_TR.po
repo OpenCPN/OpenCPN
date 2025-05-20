@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 11:56-0300\n"
-"PO-Revision-Date: 2024-06-09 01:20\n"
+"POT-Creation-Date: 2025-05-16 16:56-0400\n"
+"PO-Revision-Date: 2025-05-20 02:02\n"
 "Last-Translator: \n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
@@ -16,177 +16,46 @@ msgstr ""
 "X-Crowdin-Language: tr\n"
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 "X-Crowdin-File-ID: 128\n"
-#
-msgid ""
-"\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic "
-"variation values printed on many raster charts.\n"
-"\n"
+
+#: src/wmm_pi.cpp:87
+msgid "\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
 "Variation is the angle between true and magnetic north.\n"
 "Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
-"\t20000 to 66000\n"
-"\n"
-"The plotted lines are similar to a topographic map.  The space between them "
-"can be adjusted; more space takes less time to calculate.\n"
-"\n"
-"The Step size and Pole accuracy sliders allow a trade off for speed vs "
-"computation time.\n"
-"\n"
-"The World Magnetic Model Plugin was written by Pavel Kalian and extended by "
-"Sean D'Epagnier to support plotting."
-msgstr ""
-"\n"
-"Dünya Manyetik Modeli Plotlaması, kullanıcıların birçok raster harita "
-"üzerinde basılmış olan manyetik sapma değerlerini çapraz referans yapmasına "
-"izin verir.\n"
-"\n"
+"\t20000 to 66000\n\n"
+"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
+msgstr "\n"
+"Dünya Manyetik Modeli Plotlaması, kullanıcıların birçok raster harita üzerinde basılmış olan manyetik sapma değerlerini çapraz referans yapmasına izin verir.\n\n"
 "Deklinasyon gerçek kuzey ile manyetik kuzey arasındaki açıdır.\n"
 "İnklinasyon manyetik alanın düşey açısıdır.\n"
 "\t(kutuplarda +- 90) \n"
-"Alan Dayanımı, 20000'den 66000'e nano tesla'daki manyetik alandır.\n"
-"\n"
-"Çizilen çizgiler, bir topoğrafya haritasına benzer. Aralarındaki boşluk "
-"ayarlanabilir; Daha fazla alan hesaplamak için daha az zaman alır.\n"
-"\n"
-"Adım boyutu ve Kutup doğruluğu kaydırıcıları hız ve hesaplama zamanı arasında "
-"bir ticaret yapma olanağı sağlar.\n"
-"\n"
-"Dünya Manyetik Model Eklentisi, Pavel Kalian tarafından yazılmış ve çizimi "
-"desteklemek için Sean D'Epagnier tarafından genişletilmiştir."
-#
-msgid "(DIP) - Geomagnetic Inclination "
-msgstr "(DIP) - Coğrafi Sapma Eğilimi "
-#
-msgid "About"
-msgstr "Hakkında"
-#
-msgid "Boat"
-msgstr "Tekne"
-#
-msgid "Building Magnetic Map"
-msgstr "Manyetik Harita Oluştur"
-#
-msgid "Cancel"
-msgstr "iptal"
-#
-msgid "Cursor"
-msgstr "Fare"
-#
-msgid "Degrees"
-msgstr "Derece"
-#
-msgid "Dialog"
-msgstr ""
-#
-msgid "East Component"
-msgstr "Doğu Bileşeni"
-#
-msgid "Enable plot"
-msgstr "Çizimi etkinleştir"
-#
-msgid "Error, see log."
-msgstr "Hata. kütüğe bakın."
-#
-msgid "Extended"
-msgstr "Uzatılmış"
-#
-msgid "F "
-msgstr ""
-#
-msgid "Field Strength"
-msgstr "Alan şiddeti"
-#
-msgid "H "
-msgstr ""
-#
-msgid "Horizontal Intensity"
-msgstr "Yatay Yoğunluk"
-#
-msgid "Incl"
-msgstr "Sapma"
-#
-msgid "Inclination"
-msgstr "Eğilim"
-#
-msgid "Magnetic Plot Settings"
-msgstr "Manyetik Sapma Ayarları"
-#
-msgid "Magnetic Variation"
-msgstr "Manyetik Sapma"
-#
-msgid "Nano Tesla"
-msgstr "Nano Tesla"
-#
-msgid "North Component"
-msgstr "Kuzey Bileşeni"
-#
-msgid "Plot"
-msgstr "Çizim"
-#
-msgid "Pole Accuracy"
-msgstr "Kutup doğruluğu"
-#
-msgid "Save"
-msgstr "Kaydet"
-#
-msgid "Settings..."
-msgstr "Ayarlar..."
-#
-msgid "Show Plot Options"
-msgstr "Çizim Seçeneklerini Göster"
-#
-msgid "Show also data at cursor position"
-msgstr "Veriyi, farenin ucunda da göster"
-#
-msgid "Show data in toolbar icon"
-msgstr "Veriyi, araç çubuğunda göster"
-#
-msgid "Show toolbar icon"
-msgstr "Araçkutusu simgesini göster"
-#
-msgid "Step Size"
-msgstr "Adım Boyutu"
-#
-msgid "Total Intensity"
-msgstr "Toplam Yoğunluk"
-#
-msgid "Vari"
-msgstr "Sapma"
-#
-msgid "Variation"
-msgstr "Varyasyon"
-#
-msgid "Variation only"
-msgstr "Sadece Sapma"
-#
-msgid "Vertical Component"
-msgstr "Dikey Bileşen"
-#
-msgid "View"
-msgstr "Görünüm"
-#
-msgid "WMM"
-msgstr "Manyetik Sapma (WMM)"
-#
+"Alan Dayanımı, 20000'den 66000'e nano tesla'daki manyetik alandır.\n\n"
+"Çizilen çizgiler, bir topoğrafya haritasına benzer. Aralarındaki boşluk ayarlanabilir; Daha fazla alan hesaplamak için daha az zaman alır.\n\n"
+"Adım boyutu ve Kutup doğruluğu kaydırıcıları hız ve hesaplama zamanı arasında bir ticaret yapma olanağı sağlar.\n\n"
+"Dünya Manyetik Model Eklentisi, Pavel Kalian tarafından yazılmış ve çizimi desteklemek için Sean D'Epagnier tarafından genişletilmiştir."
+
+#: src/wmm_pi.cpp:103
 msgid "WMM Plugin"
 msgstr "WMM Eklentisi"
-#
-msgid "WMM Preferences"
-msgstr "WMM Seçenekleri"
-#
+
+#: src/wmm_pi.cpp:164
 msgid "WMM_Live_Overlay"
 msgstr ""
-#
-msgid "Window transparency"
-msgstr "Pencere geçirgenliği"
-#
+
+#: src/wmm_pi.cpp:221 src/wmm_pi.cpp:279 src/WmmUIDialog.h:85
+msgid "WMM"
+msgstr "Manyetik Sapma (WMM)"
+
+#: src/wmm_pi.cpp:282
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "OpenCPN Dünya Manyetik Sapma Modeli (WMM) Eklentisi"
-#
-msgid ""
-"World Magnetic Model PlugIn for OpenCPN\n"
+
+#: src/wmm_pi.cpp:287
+msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information:\n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
@@ -195,12 +64,171 @@ msgid ""
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
 msgstr ""
-#
+
+#: src/wmm_pi.cpp:366 src/wmm_pi.cpp:909
+msgid "Dialog"
+msgstr ""
+
+#: src/wmm_pi.cpp:479 src/wmm_pi.cpp:647
+msgid "Error, see log."
+msgstr "Hata. kütüğe bakın."
+
+#: src/wmm_pi.cpp:879 src/WmmUIDialog.h:118
+msgid "WMM Preferences"
+msgstr "WMM Seçenekleri"
+
+#: src/wmm_pi.h:86 src/WmmUIDialog.h:158
+msgid "Magnetic Plot Settings"
+msgstr "Manyetik Sapma Ayarları"
+
+#: src/WmmUIDialog.cpp:36
+msgid "Boat"
+msgstr "Tekne"
+
+#: src/WmmUIDialog.cpp:44 src/WmmUIDialog.cpp:154
+msgid "F "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:47 src/WmmUIDialog.cpp:157
+msgid "Total Intensity"
+msgstr "Toplam Yoğunluk"
+
+#: src/WmmUIDialog.cpp:56 src/WmmUIDialog.cpp:166
+msgid "H "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:59 src/WmmUIDialog.cpp:169
+msgid "Horizontal Intensity"
+msgstr "Yatay Yoğunluk"
+
+#: src/WmmUIDialog.cpp:68 src/WmmUIDialog.cpp:178
 msgid "X "
 msgstr ""
-#
+
+#: src/WmmUIDialog.cpp:71 src/WmmUIDialog.cpp:181
+msgid "North Component"
+msgstr "Kuzey Bileşeni"
+
+#: src/WmmUIDialog.cpp:80 src/WmmUIDialog.cpp:190
 msgid "Y "
 msgstr ""
-#
+
+#: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:193
+msgid "East Component"
+msgstr "Doğu Bileşeni"
+
+#: src/WmmUIDialog.cpp:92 src/WmmUIDialog.cpp:202
 msgid "Z "
 msgstr ""
+
+#: src/WmmUIDialog.cpp:95 src/WmmUIDialog.cpp:205
+msgid "Vertical Component"
+msgstr "Dikey Bileşen"
+
+#: src/WmmUIDialog.cpp:104 src/WmmUIDialog.cpp:214
+msgid "Incl"
+msgstr "Sapma"
+
+#: src/WmmUIDialog.cpp:107 src/WmmUIDialog.cpp:217
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(DIP) - Coğrafi Sapma Eğilimi "
+
+#: src/WmmUIDialog.cpp:125 src/WmmUIDialog.cpp:235
+msgid "Vari"
+msgstr "Sapma"
+
+#: src/WmmUIDialog.cpp:128 src/WmmUIDialog.cpp:238
+msgid "Magnetic Variation"
+msgstr "Manyetik Sapma"
+
+#: src/WmmUIDialog.cpp:146
+msgid "Cursor"
+msgstr "Fare"
+
+#: src/WmmUIDialog.cpp:260
+msgid "Plot"
+msgstr "Çizim"
+
+#: src/WmmUIDialog.cpp:269
+msgid "Enable plot"
+msgstr "Çizimi etkinleştir"
+
+#: src/WmmUIDialog.cpp:274
+msgid "Settings..."
+msgstr "Ayarlar..."
+
+#: src/WmmUIDialog.cpp:343
+msgid "Extended"
+msgstr "Uzatılmış"
+
+#: src/WmmUIDialog.cpp:343
+msgid "Variation only"
+msgstr "Sadece Sapma"
+
+#: src/WmmUIDialog.cpp:345
+msgid "View"
+msgstr "Görünüm"
+
+#: src/WmmUIDialog.cpp:351
+msgid "Show Plot Options"
+msgstr "Çizim Seçeneklerini Göster"
+
+#: src/WmmUIDialog.cpp:356
+msgid "Show also data at cursor position"
+msgstr "Veriyi, farenin ucunda da göster"
+
+#: src/WmmUIDialog.cpp:360
+msgid "Show toolbar icon"
+msgstr "Araçkutusu simgesini göster"
+
+#: src/WmmUIDialog.cpp:364
+msgid "Show data in toolbar icon"
+msgstr "Veriyi, araç çubuğunda göster"
+
+#: src/WmmUIDialog.cpp:370
+msgid "Window transparency"
+msgstr "Pencere geçirgenliği"
+
+#: src/WmmUIDialog.cpp:381 src/WmmUIDialog.cpp:490
+msgid "Cancel"
+msgstr "iptal"
+
+#: src/WmmUIDialog.cpp:412 src/MagneticPlotMap.cpp:399
+msgid "Variation"
+msgstr "Varyasyon"
+
+#: src/WmmUIDialog.cpp:422 src/WmmUIDialog.cpp:436
+msgid "Degrees"
+msgstr "Derece"
+
+#: src/WmmUIDialog.cpp:427 src/MagneticPlotMap.cpp:400
+msgid "Inclination"
+msgstr "Eğilim"
+
+#: src/WmmUIDialog.cpp:441 src/MagneticPlotMap.cpp:401
+msgid "Field Strength"
+msgstr "Alan şiddeti"
+
+#: src/WmmUIDialog.cpp:450
+msgid "Nano Tesla"
+msgstr "Nano Tesla"
+
+#: src/WmmUIDialog.cpp:463
+msgid "Step Size"
+msgstr "Adım Boyutu"
+
+#: src/WmmUIDialog.cpp:477
+msgid "Pole Accuracy"
+msgstr "Kutup doğruluğu"
+
+#: src/WmmUIDialog.cpp:482
+msgid "About"
+msgstr "Hakkında"
+
+#: src/WmmUIDialog.cpp:486
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/MagneticPlotMap.cpp:398
+msgid "Building Magnetic Map"
+msgstr "Manyetik Harita Oluştur"

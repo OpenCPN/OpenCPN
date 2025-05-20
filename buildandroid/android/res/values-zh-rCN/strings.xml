@@ -1,8 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="DOWNLOADING_FILE"></string>
+    <string name="DEFAULT"></string>
+    <string name="CUSTOM">自定义</string>
+    <string name="ocpn_GRIB_download_dialog_NO_INTERNET">Internet不可用\n 请检查设备移动数据或WiFi设置.</string>
+    <string name="ocpn_action_follow">自动跟随船</string>
+    <string name="ocpn_action_mob"></string>
+    <string name="ocpn_action_routemanager">显示航线管理器</string>
+    <string name="ocpn_action_tracktoggle_on">开始航迹记录</string>
+    <string name="ocpn_action_tracktoggle_off">停止航迹记录</string>
+    <string name="ocpn_action_createroute">创建新航线</string>
+    <string name="ocpn_action_endroute">完成新航线</string>
+    <string name="ocpn_action_tides">显示/隐藏潮汐</string>
+    <string name="ocpn_action_currents">显示/隐藏海流</string>
+    <string name="ocpn_action_encLights">切换ENC光线</string>
+    <string name="ocpn_action_googlemaps">切换到谷歌地图</string>
+    <string name="ocpn_action_toggle_fullscreen">切换全屏</string>
     <!-- Preferences Headers -->
+    <string name="ocpn_prefs_header_display">显示设置</string>
+    <string name="ocpn_prefs_header_charts">海图</string>
+    <string name="ocpn_prefs_header_connections">连接设置</string>
+    <string name="ocpn_prefs_header_summary_display">海图显示选项</string>
+    <string name="ocpn_prefs_header_summary_charts">海图来源及选项</string>
+    <string name="ocpn_prefs_header_summary_connections">GPS/AIS 位置选项</string>
     <!-- Display Preferences -->
+    <string name="ocpn_prefs_display_navigation_mode">导航模式</string>
+    <string name="ocpn_prefs_display_lookahead_mode">艏向上模式</string>
+    <string name="ocpn_prefs_display_enablequilt">启用海图拼接</string>
+    <string name="ocpn_prefs_display_showgrid">显示网格</string>
+    <string name="ocpn_prefs_display_showoutlines">显示海图轮廓</string>
+    <string name="ocpn_prefs_display_lockwaypoints">锁定航点</string>
+    <string name="ocpn_prefs_display_confirmdelete">确认删除操作</string>
+    <string name="ocpn_prefs_display_uiscalefactor">用户界面缩放因子</string>
+    <string name="ocpn_prefs_display_chartscalefactor">海图显示比例尺</string>
+    <string name="ocpn_prefs_display_summary_nav_mode">显示航向前方更多海图</string>
+    <string name="ocpn_prefs_display_summary_quilt">在您的位置显示多张海图</string>
+    <string name="ocpn_prefs_display_summary_confirmdelete">在航线和航迹上</string>
+    <string name="ocpn_prefs_display_summary_depthunits">在海图上显示深度单位</string>
+    <string name="ocpn_prefs_display_summary_uiscalefactor">影响工具栏、对话框和图形界面字体。</string>
+    <string name="ocpn_prefs_display_summary_chartscalefactor">影响海图对象，如标记、浮标、文本等。</string>
+    <string name="ocpn_prefs_display_summary_expertmode">显示工具栏和扩展菜单</string>
+    <string name="ocpn_prefs_display_navigation_mode_NU">北向上</string>
+    <string name="ocpn_prefs_display_navigation_mode_CU">航向向上</string>
+    <string name="ocpn_prefs_display_nosleep">禁用休眠</string>
     <!-- Charts Preferences -->
+    <string name="ocpn_prefs_charts_vectorchartsettings">矢量海图设置</string>
+    <string name="ocpn_prefs_charts_summary_chartfiles">配置已安装的海图</string>
+    <string name="ocpn_prefs_charts_summary_vectorchartsettings">设置矢量海图显示选项</string>
+    <string name="ocpn_prefs_charts_vectordisplaygraphstyle">海图图形样式</string>
+    <string name="ocpn_prefs_charts_vectordisplayareaboundstyle">海图区域边界样式</string>
+    <string name="ocpn_prefs_charts_vectordisplaychartcolors">海图颜色</string>
     <!-- Connections Preferences -->
     <!-- Grib Display Headers -->
     <!-- Grib Fragment prefs -->
