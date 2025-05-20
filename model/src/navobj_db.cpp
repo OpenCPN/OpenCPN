@@ -590,7 +590,7 @@ bool NavObj_dB::ImportLegacyNavobj(wxFrame* frame) {
   }
 
   // Delete the imported navobj.xml
-  // if (::wxFileExists(navobj_filename)) ::wxRemoveFile(navobj_filename);
+  if (::wxFileExists(navobj_filename)) ::wxRemoveFile(navobj_filename);
 
   return rv;
 }
