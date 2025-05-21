@@ -2747,6 +2747,10 @@ add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
 if (OCPN_BUILD_TEST)
+  if(DEFINED ENV{CIRCLECI})
+    add_definitions(-DCCI_BUILD)
+  endif()
+
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
   add_custom_target(

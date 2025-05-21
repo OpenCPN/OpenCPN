@@ -14,7 +14,10 @@
 #include <wx/fileconf.h>
 #include <wx/jsonval.h>
 #include <wx/timer.h>
-// #include <wx/uilocale.h>
+
+#ifndef CCI_BUILD
+#include <wx/uilocale.h>
+#endif
 
 #include <gtest/gtest.h>
 
@@ -209,7 +212,7 @@ TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
   EXPECT_EQ(result, "2023-01-22 12:45:57 UTC");
 }
 
-#if 0
+#ifndef CCI_BUILD
 // Test with Local Time in EST timezone
 TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
   // Set timezone to EST for this test (UTC-5)
@@ -220,55 +223,53 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
   // Set the UI local locale to US English to ensure consistent formatting
   // regardless of the system locale where the test is run.
   wxUILocale us_locale = wxUILocale::FromTag("en_US.UTF-8");
-  if (us_locale.IsSupported()) {
-    EXPECT_TRUE(us_locale.IsSupported())
-        << "US English locale is not supported on this system";
+  EXPECT_TRUE(us_locale.IsSupported())
+      << "US English locale is not supported on this system";
 
-    // Test 1: request to format in Local Time with custom format.
-    DateTimeFormatOptions opts = DateTimeFormatOptions()
-                                     .SetFormatString("%A, %B %d, %Y %H:%M:%S")
-                                     .SetTimezone("Local Time");
-    wxString result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-    EXPECT_TRUE(result.StartsWith("Wednesday, February 22, 2023 07:45:57"))
-        << "Actual date/time: " << result;
-    // Check for timezone abbreviation since we set it to EST
-    EXPECT_TRUE(result.Contains(" EST") || result.Contains("LOC"))
-        << "Actual timezone: " << result;
+  // Test 1: request to format in Local Time with custom format.
+  DateTimeFormatOptions opts = DateTimeFormatOptions()
+                                   .SetFormatString("%A, %B %d, %Y %H:%M:%S")
+                                   .SetTimezone("Local Time");
+  wxString result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+  EXPECT_TRUE(result.StartsWith("Wednesday, February 22, 2023 07:45:57"))
+      << "Actual date/time: " << result;
+  // Check for timezone abbreviation since we set it to EST
+  EXPECT_TRUE(result.Contains(" EST") || result.Contains("LOC"))
+      << "Actual timezone: " << result;
 
-    // Test 2: request with default date/time format.
-    // This should use the default format string which is
-    // $weekday_short_date_time
-    opts = DateTimeFormatOptions().SetTimezone("Local Time");
-    result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-    EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
-        << "Actual date/time: " << result;
+  // Test 2: request with default date/time format.
+  // This should use the default format string which is
+  // $weekday_short_date_time
+  opts = DateTimeFormatOptions().SetTimezone("Local Time");
+  result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+  EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
+      << "Actual date/time: " << result;
 
-    // Test 3: request with date/time format set to $weekday_short_date_time
-    opts = DateTimeFormatOptions()
-               .SetFormatString("$weekday_short_date_time")
-               .SetTimezone("Local Time");
-    result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-    EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
-        << "Actual date/time: " << result;
+  // Test 3: request with date/time format set to $weekday_short_date_time
+  opts = DateTimeFormatOptions()
+             .SetFormatString("$weekday_short_date_time")
+             .SetTimezone("Local Time");
+  result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+  EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
+      << "Actual date/time: " << result;
 
-    // Test 4: request to format date/time in UTC.
-    opts = DateTimeFormatOptions()
-               .SetFormatString("%A, %B %d, %Y %H:%M:%S")
-               .SetTimezone("UTC");
-    result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-    EXPECT_EQ(result, "Wednesday, February 22, 2023 12:45:57 UTC")
-        << "Actual date/time: '" << result << "'";
+  // Test 4: request to format date/time in UTC.
+  opts = DateTimeFormatOptions()
+             .SetFormatString("%A, %B %d, %Y %H:%M:%S")
+             .SetTimezone("UTC");
+  result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+  EXPECT_EQ(result, "Wednesday, February 22, 2023 12:45:57 UTC")
+      << "Actual date/time: '" << result << "'";
 
-    // Test 5: request to format in Local Time with $hour_minutes_seconds
-    // format.
-    opts = DateTimeFormatOptions()
-               .SetFormatString("$hour_minutes_seconds")
-               .SetTimezone("Local Time");
-    result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-    EXPECT_TRUE(result.Contains("07:45:57 AM EST") ||
-                result.Contains("07:45:57 AM LOC"))
-        << "Actual date/time: '" << result << "'";
-  }
+  // Test 5: request to format in Local Time with $hour_minutes_seconds
+  // format.
+  opts = DateTimeFormatOptions()
+             .SetFormatString("$hour_minutes_seconds")
+             .SetTimezone("Local Time");
+  result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+  EXPECT_TRUE(result.Contains("07:45:57 AM EST") ||
+              result.Contains("07:45:57 AM LOC"))
+      << "Actual date/time: '" << result << "'";
 }
 
 // Test with Local Time in CET timezone with Swedish locale (Västeuropa,
@@ -281,53 +282,50 @@ TEST_F(DateTimeFormatTest, LocalTimezoneCETSwedish) {
   // regardless of the system locale where the test is run.
   // Note: This requires a system where we can simulate the Swedish locale
   wxUILocale locale = wxUILocale::FromTag("sv_SE.UTF-8");
-  if (locale.IsSupported()) {
-    EXPECT_TRUE(locale.IsSupported())
-        << "Swedish locale is not supported on this system";
+  EXPECT_TRUE(locale.IsSupported())
+      << "Swedish locale is not supported on this system";
 
-    // Summer time date (DST active)
-    wxDateTime testDateSummer(21, wxDateTime::Jun, 2024, 15, 15, 31);
-    testDateSummer.MakeFromTimezone(wxDateTime::UTC);
+  // Summer time date (DST active)
+  wxDateTime testDateSummer(21, wxDateTime::Jun, 2024, 15, 15, 31);
+  testDateSummer.MakeFromTimezone(wxDateTime::UTC);
 
-    // Test 1: ISO format with Local Time and timezone shown
-    DateTimeFormatOptions opts =
-        DateTimeFormatOptions()
-            .SetFormatString("$weekday_short_date_time")
-            .SetTimezone("Local Time");
-    wxString result = ocpn::toUsrDateTimeFormat(testDateSummer, opts, locale);
-    EXPECT_TRUE(result.StartsWith("Fri 2024-06-21 17:15:31"))
-        << "Actual date/time: " << result;
-    // Check that timezone is shown but doesn't contain the "Västeuropa,
-    // sommartid" text Instead, it should use the standardized "CEST"
-    // abbreviation
-    EXPECT_TRUE(result.Contains(" CEST") || result.Contains("LOC"))
-        << "Actual timezone: " << result;
-    EXPECT_FALSE(result.Contains("sommartid"))
-        << "Should not contain 'sommartid' suffix: " << result;
+  // Test 1: ISO format with Local Time and timezone shown
+  DateTimeFormatOptions opts = DateTimeFormatOptions()
+                                   .SetFormatString("$weekday_short_date_time")
+                                   .SetTimezone("Local Time");
+  wxString result = ocpn::toUsrDateTimeFormat(testDateSummer, opts, locale);
+  EXPECT_TRUE(result.StartsWith("Fri 2024-06-21 17:15:31"))
+      << "Actual date/time: " << result;
+  // Check that timezone is shown but doesn't contain the "Västeuropa,
+  // sommartid" text Instead, it should use the standardized "CEST"
+  // abbreviation
+  EXPECT_TRUE(result.Contains(" CEST") || result.Contains("LOC"))
+      << "Actual timezone: " << result;
+  EXPECT_FALSE(result.Contains("sommartid"))
+      << "Should not contain 'sommartid' suffix: " << result;
 
-    // Test 2: With timezone display turned off
-    opts = DateTimeFormatOptions()
-               .SetFormatString("%Y-%m-%d %H:%M:%S")
-               .SetTimezone("Local Time")
-               .SetShowTimezone(false);
-    result = ocpn::toUsrDateTimeFormat(testDateSummer, opts, locale);
-    EXPECT_EQ(result, "2024-06-21 17:15:31") << "Actual date/time: " << result;
+  // Test 2: With timezone display turned off
+  opts = DateTimeFormatOptions()
+             .SetFormatString("%Y-%m-%d %H:%M:%S")
+             .SetTimezone("Local Time")
+             .SetShowTimezone(false);
+  result = ocpn::toUsrDateTimeFormat(testDateSummer, opts, locale);
+  EXPECT_EQ(result, "2024-06-21 17:15:31") << "Actual date/time: " << result;
 
-    // Test 3: US date format with Local Time
-    opts = DateTimeFormatOptions()
-               .SetFormatString("%a %m/%d/%Y %I:%M:%S %p")
-               .SetTimezone("Local Time");
-    result = ocpn::toUsrDateTimeFormat(testDateSummer, opts, locale);
-    // Check that it has proper formatting
-    EXPECT_TRUE(result.StartsWith("Fri 06/21/2024"))
-        << "Actual date/time: " << result;
+  // Test 3: US date format with Local Time
+  opts = DateTimeFormatOptions()
+             .SetFormatString("%a %m/%d/%Y %I:%M:%S %p")
+             .SetTimezone("Local Time");
+  result = ocpn::toUsrDateTimeFormat(testDateSummer, opts, locale);
+  // Check that it has proper formatting
+  EXPECT_TRUE(result.StartsWith("Fri 06/21/2024"))
+      << "Actual date/time: " << result;
 
-    // Should contain time but not "Västeuropa, sommartid"
-    EXPECT_TRUE(result.Contains("05:15:31 PM CEST") ||
-                result.Contains("05:15:31 PM LOC"))
-        << "Actual time portion: " << result;
-    EXPECT_FALSE(result.Contains("sommartid"))
-        << "Should not contain 'sommartid' suffix: " << result;
-  }
+  // Should contain time but not "Västeuropa, sommartid"
+  EXPECT_TRUE(result.Contains("05:15:31 PM CEST") ||
+              result.Contains("05:15:31 PM LOC"))
+      << "Actual time portion: " << result;
+  EXPECT_FALSE(result.Contains("sommartid"))
+      << "Should not contain 'sommartid' suffix: " << result;
 }
 #endif
