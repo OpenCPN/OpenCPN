@@ -17,8 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "model/datetime.h"
+#include <wx/tokenzr.h>
+#include <iomanip>
+#include <sstream>
 
+#include "model/datetime.h"
 #include "ocpn_plugin.h"
 
 #if wxCHECK_VERSION(3, 1, 6)
@@ -31,7 +34,12 @@ wxString getUsrDateTimeFormat() { return ::g_datetime_format; }
 
 // date/time in the desired time zone format.
 wxString toUsrDateTimeFormat(const wxDateTime date_time,
-                             const DateTimeFormatOptions& options) {
+                             const DateTimeFormatOptions& options
+#if wxCHECK_VERSION(3, 1, 6)
+                             ,
+                             const wxUILocale& locale
+#endif
+) {
   wxDateTime t(date_time);
   wxString effective_time_zone = options.time_zone;
   if (effective_time_zone == wxEmptyString) {
@@ -44,24 +52,18 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
   std::vector<std::pair<wxString, wxString>> formatMap = {
 #if wxCHECK_VERSION(3, 1, 6)
       // Note: the GetInfo() method may return special unicode characters, such
-      // as
-      // narrow no-break space (U+202F).
-      {"$long_date_time",
-       wxUILocale::GetCurrent().GetInfo(wxLOCALE_LONG_DATE_FMT) + " " +
-           wxUILocale::GetCurrent().GetInfo(wxLOCALE_TIME_FMT)},
-      {"$long_date", wxUILocale::GetCurrent().GetInfo(wxLOCALE_LONG_DATE_FMT)},
-      {"$weekday_short_date_time",
-       "%a " + wxUILocale::GetCurrent().GetInfo(wxLOCALE_SHORT_DATE_FMT) + " " +
-           wxUILocale::GetCurrent().GetInfo(wxLOCALE_TIME_FMT)},
-      {"$weekday_short_date",
-       "%a " + wxUILocale::GetCurrent().GetInfo(wxLOCALE_SHORT_DATE_FMT)},
-      {"short_date_time",
-       wxUILocale::GetCurrent().GetInfo(wxLOCALE_SHORT_DATE_FMT) + " " +
-           wxUILocale::GetCurrent().GetInfo(wxLOCALE_TIME_FMT)},
-      {"$short_date",
-       wxUILocale::GetCurrent().GetInfo(wxLOCALE_SHORT_DATE_FMT)},
-      {"$hour_minutes_seconds",
-       wxUILocale::GetCurrent().GetInfo(wxLOCALE_TIME_FMT)},
+      // as narrow no-break space (U+202F).
+      {"$long_date_time", locale.GetInfo(wxLOCALE_LONG_DATE_FMT) + " " +
+                              locale.GetInfo(wxLOCALE_TIME_FMT)},
+      {"$long_date", locale.GetInfo(wxLOCALE_LONG_DATE_FMT)},
+      {"$weekday_short_date_time", "%a " +
+                                       locale.GetInfo(wxLOCALE_SHORT_DATE_FMT) +
+                                       " " + locale.GetInfo(wxLOCALE_TIME_FMT)},
+      {"$weekday_short_date", "%a " + locale.GetInfo(wxLOCALE_SHORT_DATE_FMT)},
+      {"short_date_time", locale.GetInfo(wxLOCALE_SHORT_DATE_FMT) + " " +
+                              locale.GetInfo(wxLOCALE_TIME_FMT)},
+      {"$short_date", locale.GetInfo(wxLOCALE_SHORT_DATE_FMT)},
+      {"$hour_minutes_seconds", locale.GetInfo(wxLOCALE_TIME_FMT)},
 #else
       {"$long_date_time", "%x %X"},
       {"$long_date", "%x"},  // There is no descriptor for localized long date.
@@ -79,43 +81,55 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
   if (format == wxEmptyString) {
     format = "$weekday_short_date_time";
   }
-  // Replace custom specifiers with actual format strings
+  // Iterate through the formatMap and replace each key with its value in
+  // the format string.
   for (const auto& pair : formatMap) {
-    format.Replace(pair.first, pair.second);
+    if (format.Contains(pair.first)) {
+      format.Replace(pair.first, pair.second);
+    }
   }
+  // wxDateTime::Format() does not work when the format string contains 0x202F
+  // (narrow no-break space). Replace it with a regular space.
+  format.Replace(wxString(wxUniChar(0x202F)), " ");
   wxString ret;
+  wxString tzName;
   if (effective_time_zone == "Local Time") {
     wxDateTime now = wxDateTime::Now();
     if ((now == (now.ToGMT())) &&
         t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
       t.Add(wxTimeSpan(1, 0, 0, 0));
-    // Get the abbreviated name of the timezone configured in the operating
-    // system. Formatting with the actual timezone (rather than "LOC") makes the
-    // labels unambiguous, even if the user changes the timezone settings in the
-    // operating system. For example "2021-10-31 01:30:00 EDT" is unambiguous,
-    // while "2021-10-31 01:30:00 LOC" is not.
-    wxString tzName = t.Format("%Z");
+    if (options.show_timezone) {
 #ifdef __WXMSW__
-    tzName = "LOC";
+      tzName = _("LOC");
+#else
+      // Get the name of the timezone configured in the operating system.
+      // Formatting with the actual timezone (rather than "LOC") makes the
+      // labels unambiguous, even if the user changes the timezone settings in
+      // the operating system. For example "2021-10-31 01:30:00 EDT" is
+      // unambiguous, while "2021-10-31 01:30:00 LOC" is not.
+      tzName = t.Format("%Z");
 #endif
-    ret = t.Format(format) + " " + tzName;
-  } else if (effective_time_zone == "UTC") {
-    // Convert to UTC and format date/time.
-    ret = t.ToUTC().Format(format) + " " + _("UTC");
+    }
   } else if (effective_time_zone == "LMT") {
     // Local mean solar time at the current location.
-    t = t.ToUTC();
+    t.MakeUTC();
+    tzName = _("LMT");
     if (std::isnan(options.longitude)) {
       t = wxInvalidDateTime;
     } else {
       t.Add(wxTimeSpan(0, 0, wxLongLong(options.longitude * 3600. / 15.)));
     }
-    ret = t.Format(format) + " " + _("LMT");
   } else {
-    // Fallback to UTC if the timezone is not recognized.
-    ret = t.ToUTC().Format(format) + " " + _("UTC");
+    // UTC, or fallback to UTC if the timezone is not recognized.
+    t.MakeUTC();
+    tzName = _("UTC");
   }
-  return ret;
+  wxString formattedDate = t.Format(format);
+  if (options.show_timezone) {
+    return formattedDate + " " + tzName;
+  } else {
+    return formattedDate;
+  }
 }
 
 }  // namespace ocpn
