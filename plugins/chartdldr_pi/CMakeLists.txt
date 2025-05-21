@@ -57,9 +57,6 @@ set(SRC_CHARTDLDR
     src/base64.h
     src/chartcatalog.cpp
     src/chartcatalog.h
-    src/pugiconfig.hpp
-    src/pugixml.hpp
-    src/pugixml.cpp
 )
 
 if (QT_ANDROID)
