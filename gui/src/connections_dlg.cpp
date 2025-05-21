@@ -29,6 +29,7 @@
 #include "gui_lib.h"
 #include "navutil.h"
 #include "priority_gui.h"
+#include "model/notification_manager.h"
 #include "std_filesystem.h"
 #include "svg_utils.h"
 #include "OCPNPlatform.h"
@@ -199,8 +200,17 @@ private:
     if (rv == wxID_OK) {
       ConnectionParams* cp = dialog.GetParamsFromControls();
       if (cp) {
-        cp->b_IsSetup = false;  // Trigger new stream
-        TheConnectionParams().push_back(cp);
+        if (cp->Type == SERIAL && cp->GetPortStr() == "") {
+          wxString msg =
+              _("Unable to create a serial connection as configured. "
+                "Connected serial port was missing.");
+          auto& noteman = NotificationManager::GetInstance();
+          noteman.AddNotification(NotificationSeverity::kWarning,
+                                  msg.ToStdString(), 60);
+        } else {
+          cp->b_IsSetup = false;  // Trigger new stream
+          TheConnectionParams().push_back(cp);
+        }
       }
       UpdateDatastreams();
       m_evt_add_connection.Notify();
