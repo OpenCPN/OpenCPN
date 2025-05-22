@@ -409,97 +409,104 @@ InitReturn ChartMbTiles::Init(const wxString& name, ChartInitFlag init_flags) {
   wxCharBuffer utf8CB = name.ToUTF8();  // the UTF-8 buffer
   if (utf8CB.data()) name_utf8 = utf8CB.data();
 
-  SQLite::Database db(name_utf8);
+  try {
+    SQLite::Database db(name_utf8);
 
-  int zoom_factor = m_min_zoom;
-  int min_region_zoom = -1;
-  bool covr_populated = false;
+    int zoom_factor = m_min_zoom;
+    int min_region_zoom = -1;
+    bool covr_populated = false;
 
-  m_n_tiles = 0;
-  while ((zoom_factor <= m_max_zoom) && (min_region_zoom < 0)) {
-    LLRegion covr_region_zoom;
-    wxRegion region_zoom;
-    char qrs[100];
+    m_n_tiles = 0;
+    while ((zoom_factor <= m_max_zoom) && (min_region_zoom < 0)) {
+      LLRegion covr_region_zoom;
+      wxRegion region_zoom;
+      char qrs[100];
 
-    // Protect against trying to create the exact coverage for the brutal large
-    // scale layers contianing tens of thousand tiles.
-    sprintf(qrs, "select count(*) from tiles where zoom_level = %d ",
-            zoom_factor);
-    SQLite::Statement query_size(db, qrs);
+      // Protect against trying to create the exact coverage for the brutal
+      // large scale layers contianing tens of thousand tiles.
+      sprintf(qrs, "select count(*) from tiles where zoom_level = %d ",
+              zoom_factor);
+      SQLite::Statement query_size(db, qrs);
 
-    if (query_size.executeStep()) {
-      const char* col_value = query_size.getColumn(0);
-      int tile_at_zoom = atoi(col_value);
-      m_n_tiles += tile_at_zoom;
+      if (query_size.executeStep()) {
+        const char* col_value = query_size.getColumn(0);
+        int tile_at_zoom = atoi(col_value);
+        m_n_tiles += tile_at_zoom;
 
-      if (tile_at_zoom > 1000) {
-        zoom_factor++;
-        if (!covr_populated) {
-          covr_populated = true;
-          covr_region = extent_box;
+        if (tile_at_zoom > 1000) {
+          zoom_factor++;
+          if (!covr_populated) {
+            covr_populated = true;
+            covr_region = extent_box;
+          }
+          continue;
         }
-        continue;
       }
-    }
 
-    // query the database
-    sprintf(qrs,
-            "select tile_column, tile_row from tiles where zoom_level = %d ",
-            zoom_factor);
+      // query the database
+      sprintf(qrs,
+              "select tile_column, tile_row from tiles where zoom_level = %d ",
+              zoom_factor);
 
-    // Compile a SQL query, getting the specific  data
-    SQLite::Statement query(db, qrs);
-    covr_populated = true;
+      // Compile a SQL query, getting the specific  data
+      SQLite::Statement query(db, qrs);
+      covr_populated = true;
 
-    while (query.executeStep()) {
-      const char* col_value = query.getColumn(0);
-      const char* c2 = query.getColumn(1);
-      int tile_x_found = atoi(col_value);  // m_tile_x
-      int tile_y_found = atoi(c2);         // m_tile_y
+      while (query.executeStep()) {
+        const char* col_value = query.getColumn(0);
+        const char* c2 = query.getColumn(1);
+        int tile_x_found = atoi(col_value);  // m_tile_x
+        int tile_y_found = atoi(c2);         // m_tile_y
 
-      region_zoom.Union(tile_x_found, tile_y_found - 1, 1, 1);
+        region_zoom.Union(tile_x_found, tile_y_found - 1, 1, 1);
 
-    }  // inner while
+      }  // inner while
 
-    wxRegionIterator upd(region_zoom);  // get the  rect list
-    double eps_factor = kEps * 100;     // roughly 1 m
+      wxRegionIterator upd(region_zoom);  // get the  rect list
+      double eps_factor = kEps * 100;     // roughly 1 m
 
-    while (upd) {
-      wxRect rect = upd.GetRect();
+      while (upd) {
+        wxRect rect = upd.GetRect();
 
-      double lonmin = round(MbTileDescriptor::Tilex2long(rect.x, zoom_factor) /
-                            eps_factor) *
-                      eps_factor;
-      double lonmax =
-          round(MbTileDescriptor::Tilex2long(rect.x + rect.width, zoom_factor) /
-                eps_factor) *
-          eps_factor;
-      double latmin =
-          round(MbTileDescriptor::Tiley2lat(rect.y, zoom_factor) / eps_factor) *
-          eps_factor;
-      double latmax =
-          round(MbTileDescriptor::Tiley2lat(rect.y + rect.height, zoom_factor) /
-                eps_factor) *
-          eps_factor;
+        double lonmin =
+            round(MbTileDescriptor::Tilex2long(rect.x, zoom_factor) /
+                  eps_factor) *
+            eps_factor;
+        double lonmax = round(MbTileDescriptor::Tilex2long(rect.x + rect.width,
+                                                           zoom_factor) /
+                              eps_factor) *
+                        eps_factor;
+        double latmin = round(MbTileDescriptor::Tiley2lat(rect.y, zoom_factor) /
+                              eps_factor) *
+                        eps_factor;
+        double latmax = round(MbTileDescriptor::Tiley2lat(rect.y + rect.height,
+                                                          zoom_factor) /
+                              eps_factor) *
+                        eps_factor;
 
-      LLBBox box;
-      box.Set(latmin, lonmin, latmax, lonmax);
+        LLBBox box;
+        box.Set(latmin, lonmin, latmax, lonmax);
 
-      LLRegion tile_region(box);
-      // if(i <= 1)
-      covr_region_zoom.Union(tile_region);
+        LLRegion tile_region(box);
+        // if(i <= 1)
+        covr_region_zoom.Union(tile_region);
 
-      upd++;
-      min_region_zoom =
-          zoom_factor;  // We take the first populated (lowest) zoom
-                        // level region as the final chart region
-    }
+        upd++;
+        min_region_zoom =
+            zoom_factor;  // We take the first populated (lowest) zoom
+                          // level region as the final chart region
+      }
 
-    covr_region.Union(covr_region_zoom);
+      covr_region.Union(covr_region_zoom);
 
-    zoom_factor++;
+      zoom_factor++;
 
-  }  // while
+    }  // while
+  } catch (std::exception& e) {
+    const char* t = e.what();
+    wxLogMessage("mbtiles exception: %s", e.what());
+    return INIT_FAIL_REMOVE;
+  }
 
   //  The coverage region must be reduced if necessary to include only the db
   //  specified bounds.
@@ -554,9 +561,15 @@ InitReturn ChartMbTiles::PostInit(void) {
   wxCharBuffer utf8CB = m_FullPath.ToUTF8();  // the UTF-8 buffer
   if (utf8CB.data()) name_UTF8 = utf8CB.data();
 
-  m_db = std::make_unique<SQLite::Database>(name_UTF8);
-  m_db->exec("PRAGMA locking_mode=EXCLUSIVE");
-  m_db->exec("PRAGMA cache_size=-10000");
+  try {
+    m_db = std::make_unique<SQLite::Database>(name_UTF8);
+    // m_db->exec("PRAGMA locking_mode=EXCLUSIVE");
+    m_db->exec("PRAGMA cache_size=-10000");
+  } catch (std::exception& e) {
+    const char* t = e.what();
+    wxLogMessage("mbtiles exception: %s", e.what());
+    return INIT_FAIL_REMOVE;
+  }
 
   bReadyToRender = true;
   return INIT_OK;
