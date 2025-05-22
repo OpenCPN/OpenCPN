@@ -20,6 +20,13 @@ set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC datetime_tests.cpp tests.cpp filter_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 
+if (DEFINED ENV{CIRCLECI})
+  # Circle ci does not have a working local environment:
+  set_source_files_properties(
+    datetime_tests.cpp PROPERTIES COMPILE_FLAGS -DDISABLE_LOCALE_TESTS
+  )
+endif ()
+
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
 endif ()
