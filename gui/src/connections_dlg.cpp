@@ -200,16 +200,16 @@ private:
     if (rv == wxID_OK) {
       ConnectionParams* cp = dialog.GetParamsFromControls();
       if (cp) {
-        if (cp->Type == SERIAL && cp->GetPortStr() == "") {
+        if (cp->GetValidPort()) {
+          cp->b_IsSetup = false;  // Trigger new stream
+          TheConnectionParams().push_back(cp);
+        } else {
           wxString msg =
-              _("Unable to create a serial connection as configured. "
-                "Connected serial port was missing.");
+              _("Unable to create a connection as configured. "
+                "Connected port or address was missing.");
           auto& noteman = NotificationManager::GetInstance();
           noteman.AddNotification(NotificationSeverity::kWarning,
                                   msg.ToStdString(), 60);
-        } else {
-          cp->b_IsSetup = false;  // Trigger new stream
-          TheConnectionParams().push_back(cp);
         }
       }
       UpdateDatastreams();

@@ -120,6 +120,7 @@ public:
   wxString GetIOTypeValueStr() const;
   wxString GetFiltersStr() const;
   wxString GetDSPort() const;
+  bool GetValidPort() const;
   std::string GetLastDSPort() const;
   NavAddr::Bus GetLastCommProtocol();
   wxString GetPortStr() const { return Port; }

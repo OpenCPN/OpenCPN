@@ -303,6 +303,17 @@ wxString ConnectionParams::GetDSPort() const {
     return _T("");
 }
 
+bool ConnectionParams::GetValidPort() const {
+  if (Type == SERIAL && Port == "")
+    return false;
+  else if (Type == NETWORK && (NetworkAddress == "" || !NetworkPort))
+    return false;
+  else if (Type == INTERNAL_BT && Port == "")
+    return false;
+  else
+    return true;
+}
+
 std::string ConnectionParams::GetStrippedDSPort() const {
   if (Type == SERIAL) {
     wxString t = wxString::Format(_T("Serial:%s"), Port.c_str());
