@@ -52,7 +52,7 @@ if [[ -n "$PACKAGE_BRANCH" && -z "$CIRCLE_PR_NUMBER" ]]; then
     cd ../opencpn-5.11.0*
 
     # Build package and move artifacts to expected build/ dir
-    debuild -us -uc -j4
+    debuild -us -uc -j4 --preserve-envvar CIRCLECI
     test -d ../project/build || mkdir ../project/build
     mv ../*deb ../project/build
 else
