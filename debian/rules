@@ -4,6 +4,12 @@ include  /usr/share/dpkg/architecture.mk
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
+ifneq  ($(filter circleci,$(DEB_BUILD_PROFILES)),)
+    DISABLE_LOCALE_TESTS = ON
+else
+    DISABLE_LOCALE_TESTS = OFF
+endif
+
 %:
 	dh $@
 
@@ -20,6 +26,7 @@ override_dh_auto_configure:
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
             -DOCPN_FORCE_GTK3=ON \
             -DOCPN_DISTRO_BUILD=ON \
+            -DDISABLE_LOCALE_TESTS=$(DISABLE_LOCALE_TESTS) \
             -DCHARTDLDR_USE_UNARR=OFF
 
 override_dh_auto_test:
