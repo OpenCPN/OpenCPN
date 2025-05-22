@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 message(STATUS "Building tests")
 
+option(DISABLE_LOCALE_TESTS "Disable tests requiring locale support" OFF)
+
 enable_testing ()
 
 add_library(win32_libs INTERFACE)
@@ -20,7 +22,7 @@ set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC datetime_tests.cpp tests.cpp filter_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 
-if (DEFINED ENV{CIRCLECI})
+if (DISABLE_LOCALE_TESTS OR DEFINED ENV{CIRCLECI})
   # Circle ci does not have a working local environment:
   set_source_files_properties(
     datetime_tests.cpp PROPERTIES COMPILE_FLAGS -DDISABLE_LOCALE_TESTS
