@@ -51,8 +51,11 @@ if [[ -n "$PACKAGE_BRANCH" && -z "$CIRCLE_PR_NUMBER" ]]; then
     (cd ..; tar xf *xz)
     cd ../opencpn-5.11.0*
 
+    # Make sure the build uses the circleci profile to disable locale tests
+    export DEB_BUILD_PROFILES=circleci
+
     # Build package and move artifacts to expected build/ dir
-    debuild -us -uc -j4 -eCIRCLECI
+    debuild -us -uc -j4
     test -d ../project/build || mkdir ../project/build
     mv ../*deb ../project/build
 else

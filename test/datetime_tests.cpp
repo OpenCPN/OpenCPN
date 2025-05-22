@@ -15,7 +15,7 @@
 #include <wx/jsonval.h>
 #include <wx/timer.h>
 
-#ifndef CCI_BUILD
+#ifndef DISABLE_LOCALE_TESTS
 #include <wx/uilocale.h>
 #endif
 
@@ -212,7 +212,7 @@ TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
   EXPECT_EQ(result, "2023-01-22 12:45:57 UTC");
 }
 
-#ifndef CCI_BUILD
+#ifndef DISABLE_LOCALE_TESTS
 // Test with Local Time in EST timezone
 TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
   // Set timezone to EST for this test (UTC-5)
@@ -328,4 +328,4 @@ TEST_F(DateTimeFormatTest, LocalTimezoneCETSwedish) {
   EXPECT_FALSE(result.Contains("sommartid"))
       << "Should not contain 'sommartid' suffix: " << result;
 }
-#endif
+#endif  // DISABLE_LOCALE_TESTS

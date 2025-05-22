@@ -256,12 +256,6 @@ option(OCPN_USE_SYSTEM_LIBARCHIVE
 
 add_definitions(-D__OCPN_USE_GLEW__)
 
-if(DEFINED ENV{CIRCLECI})
-  add_definitions(-DCCI_BUILD)
-  message(STATUS "*** Host Build Environment is CircleCI")
-endif()
-
-
 if (WIN32)
   set(cmd_snd_default OFF)
 else ()
@@ -2753,6 +2747,7 @@ add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
 if (OCPN_BUILD_TEST)
+
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
   add_custom_target(
