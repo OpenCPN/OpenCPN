@@ -83,3 +83,25 @@ int NextPow2(int size) {
 
   return n + 1;
 }
+#ifdef __WXMSW__
+extern "C" int clock_gettime_monotonic(struct timespec *tv) {
+  static LARGE_INTEGER ticksPerSec;
+  LARGE_INTEGER ticks;
+
+  if (!ticksPerSec.QuadPart) {
+    QueryPerformanceFrequency(&ticksPerSec);
+    if (!ticksPerSec.QuadPart) {
+      errno = ENOTSUP;
+      return -1;
+    }
+  }
+
+  QueryPerformanceCounter(&ticks);
+
+  tv->tv_sec = (long)(ticks.QuadPart / ticksPerSec.QuadPart);
+  tv->tv_nsec = (long)(((ticks.QuadPart % ticksPerSec.QuadPart) * 1e9) /
+                       ticksPerSec.QuadPart);
+
+  return 0;
+}
+#endif

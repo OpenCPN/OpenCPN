@@ -50,10 +50,8 @@
 #include "model/comm_drv_n2k_socketcan.h"
 #endif
 
-std::shared_ptr<AbstractCommDriver> MakeCommDriver(
-    const ConnectionParams* params) {
-  wxLogMessage(
-      wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
+void MakeCommDriver(const ConnectionParams* params) {
+  wxLogMessage("MakeCommDriver: %s", params->GetDSPort().c_str());
 
   auto& msgbus = NavMsgBus::GetInstance();
   auto& registry = CommDriverRegistry::GetInstance();
@@ -61,41 +59,35 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
     case SERIAL:
       switch (params->Protocol) {
         case PROTO_NMEA2000: {
-          auto driver = std::make_shared<CommDriverN2KSerial>(params, msgbus);
-          registry.Activate(driver);
-          return driver;
+          auto driver = std::make_unique<CommDriverN2KSerial>(params, msgbus);
+          registry.Activate(std::move(driver));
           break;
         }
         default: {
-          auto driver = std::make_shared<CommDriverN0183Serial>(params, msgbus);
-          registry.Activate(driver);
-          return driver;
-
+          auto driver = std::make_unique<CommDriverN0183Serial>(params, msgbus);
+          registry.Activate(std::move(driver));
           break;
         }
       }
+      break;
     case NETWORK:
       switch (params->NetProtocol) {
         case SIGNALK: {
-          auto driver = std::make_shared<CommDriverSignalKNet>(params, msgbus);
-          registry.Activate(driver);
-          return driver;
+          auto driver = std::make_unique<CommDriverSignalKNet>(params, msgbus);
+          registry.Activate(std::move(driver));
           break;
         }
         default: {
           switch (params->Protocol) {
             case PROTO_NMEA0183: {
               auto driver =
-                  std::make_shared<CommDriverN0183Net>(params, msgbus);
-              registry.Activate(driver);
-              return driver;
+                  std::make_unique<CommDriverN0183Net>(params, msgbus);
+              registry.Activate(std::move(driver));
               break;
             }
             case PROTO_NMEA2000: {
-              auto driver = std::make_shared<CommDriverN2KNet>(params, msgbus);
-              registry.Activate(driver);
-              return driver;
-
+              auto driver = std::make_unique<CommDriverN2KNet>(params, msgbus);
+              registry.Activate(std::move(driver));
               break;
             }
             default:
@@ -105,27 +97,25 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
         }
       }
 
+      break;
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
     case SOCKETCAN: {
       auto driver = CommDriverN2KSocketCAN::Create(params, msgbus);
-      registry.Activate(driver);
-      return driver;
+      registry.Activate(std::move(driver));
       break;
     }
 #endif
 
 #ifdef __ANDROID__
     case INTERNAL_GPS: {
-      auto driver = std::make_shared<CommDriverN0183AndroidInt>(params, msgbus);
-      registry.Activate(driver);
-      return driver;
+      auto driver = std::make_unique<CommDriverN0183AndroidInt>(params, msgbus);
+      registry.Activate(std::move(driver));
       break;
     }
 
     case INTERNAL_BT: {
-      auto driver = std::make_shared<CommDriverN0183AndroidBT>(params, msgbus);
-      registry.Activate(driver);
-      return driver;
+      auto driver = std::make_unique<CommDriverN0183AndroidBT>(params, msgbus);
+      registry.Activate(std::move(driver));
       break;
     }
 #endif
@@ -133,7 +123,6 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
     default:
       break;
   }
-  return NULL;
 };
 
 void initIXNetSystem() { CommDriverSignalKNet::initIXNetSystem(); };

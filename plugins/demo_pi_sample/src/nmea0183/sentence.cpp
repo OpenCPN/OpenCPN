@@ -29,22 +29,19 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 #include <math.h>
 
 #if !defined(NAN)
 
-//static const long long lNaN = 0x7fffffffffffffff;
+// static const long long lNaN = 0x7fffffffffffffff;
 
-//#define NaN (*(double*)&lNaN)
-//#else
+// #define NaN (*(double*)&lNaN)
+// #else
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 
 #endif
-
-
 
 /*
 ** Author: Samuel R. Blackburn
@@ -54,671 +51,535 @@ static const long long lNaN = 0xfff8000000000000;
 ** You can use it any way you like.
 */
 
+SENTENCE::SENTENCE() { Sentence.Empty(); }
 
-SENTENCE::SENTENCE()
-{
-   Sentence.Empty();
+SENTENCE::~SENTENCE() { Sentence.Empty(); }
+
+NMEA0183_BOOLEAN SENTENCE::Boolean(int field_number) const {
+  //   ASSERT_VALID( this );
+
+  wxString field_data;
+
+  field_data = Field(field_number);
+
+  if (field_data.StartsWith(_T("A"))) {
+    return (NTrue);
+  } else if (field_data.StartsWith(_T("V"))) {
+    return (NFalse);
+  } else {
+    return (Unknown0183);
+  }
 }
 
-SENTENCE::~SENTENCE()
-{
-   Sentence.Empty();
+COMMUNICATIONS_MODE SENTENCE::CommunicationsMode(int field_number) const {
+  //   ASSERT_VALID( this );
+
+  wxString field_data;
+
+  field_data = Field(field_number);
+
+  if (field_data == _T("d")) {
+    return (F3E_G3E_SimplexTelephone);
+  } else if (field_data == _T("e")) {
+    return (F3E_G3E_DuplexTelephone);
+  } else if (field_data == _T("m")) {
+    return (J3E_Telephone);
+  } else if (field_data == _T("o")) {
+    return (H3E_Telephone);
+  } else if (field_data == _T("q")) {
+    return (F1B_J2B_FEC_NBDP_TelexTeleprinter);
+  } else if (field_data == _T("s")) {
+    return (F1B_J2B_ARQ_NBDP_TelexTeleprinter);
+  } else if (field_data == _T("w")) {
+    return (F1B_J2B_ReceiveOnlyTeleprinterDSC);
+  } else if (field_data == _T("x")) {
+    return (A1A_MorseTapeRecorder);
+  } else if (field_data == _T("{")) {
+    return (A1A_MorseKeyHeadset);
+  } else if (field_data == _T("|")) {
+    return (F1C_F2C_F3C_FaxMachine);
+  } else {
+    return (CommunicationsModeUnknown);
+  }
 }
 
-NMEA0183_BOOLEAN SENTENCE::Boolean( int field_number ) const
-{
-//   ASSERT_VALID( this );
+unsigned char SENTENCE::ComputeChecksum(void) const {
+  unsigned char checksum_value = 0;
 
-   wxString field_data;
+  int string_length = Sentence.Length();
+  int index = 1;  // Skip over the $ at the begining of the sentence
 
-   field_data = Field( field_number );
+  while (index < string_length && Sentence[index] != '*' &&
+         Sentence[index] != CARRIAGE_RETURN && Sentence[index] != LINE_FEED) {
+    checksum_value ^= (char)Sentence[index];
+    index++;
+  }
 
-   if ( field_data.StartsWith(_T("A")) )
-   {
-      return( NTrue );
-   }
-   else if ( field_data.StartsWith(_T("V")) )
-   {
-      return( NFalse );
-   }
-   else
-   {
-      return( Unknown0183 );
-   }
+  return (checksum_value);
 }
 
-COMMUNICATIONS_MODE SENTENCE::CommunicationsMode( int field_number ) const
-{
-//   ASSERT_VALID( this );
+double SENTENCE::Double(int field_number) const {
+  //  ASSERT_VALID( this );
+  if (Field(field_number).Len() == 0) return (NAN);
 
-   wxString field_data;
+  wxCharBuffer abuf = Field(field_number).ToUTF8();
+  if (!abuf.data())  // badly formed sentence?
+    return (NAN);
 
-   field_data = Field( field_number );
-
-   if ( field_data == _T("d") )
-   {
-      return( F3E_G3E_SimplexTelephone );
-   }
-   else if ( field_data == _T("e") )
-   {
-      return( F3E_G3E_DuplexTelephone );
-   }
-   else if ( field_data == _T("m") )
-   {
-      return( J3E_Telephone );
-   }
-   else if ( field_data == _T("o") )
-   {
-      return( H3E_Telephone );
-   }
-   else if ( field_data == _T("q") )
-   {
-      return( F1B_J2B_FEC_NBDP_TelexTeleprinter );
-   }
-   else if ( field_data == _T("s") )
-   {
-      return( F1B_J2B_ARQ_NBDP_TelexTeleprinter );
-   }
-   else if ( field_data == _T("w") )
-   {
-      return( F1B_J2B_ReceiveOnlyTeleprinterDSC );
-   }
-   else if ( field_data == _T("x") )
-   {
-      return( A1A_MorseTapeRecorder );
-   }
-   else if ( field_data == _T("{") )
-   {
-      return( A1A_MorseKeyHeadset );
-   }
-   else if ( field_data == _T("|") )
-   {
-      return( F1C_F2C_F3C_FaxMachine );
-   }
-   else
-   {
-      return( CommunicationsModeUnknown );
-   }
+  return (::atof(abuf.data()));
 }
 
-unsigned char SENTENCE::ComputeChecksum( void ) const
-{
-   unsigned char checksum_value = 0;
+EASTWEST SENTENCE::EastOrWest(int field_number) const {
+  //   ASSERT_VALID( this );
 
-   int string_length = Sentence.Length();
-   int index = 1; // Skip over the $ at the begining of the sentence
+  wxString field_data;
 
-   while( index < string_length    &&
-       Sentence[ index ] != '*' &&
-       Sentence[ index ] != CARRIAGE_RETURN &&
-       Sentence[ index ] != LINE_FEED )
-   {
-       checksum_value ^= (char)Sentence[ index ];
-         index++;
-   }
+  field_data = Field(field_number);
 
-   return( checksum_value );
+  if (field_data == _T("E")) {
+    return (East);
+  } else if (field_data == _T("W")) {
+    return (West);
+  } else {
+    return (EW_Unknown);
+  }
 }
 
-double SENTENCE::Double( int field_number ) const
-{
- //  ASSERT_VALID( this );
-      if(Field( field_number ).Len() == 0)
-            return (NAN);
+const wxString& SENTENCE::Field(int desired_field_number) const {
+  //   ASSERT_VALID( this );
 
-      wxCharBuffer abuf = Field( field_number).ToUTF8();
-      if( !abuf.data() )                            // badly formed sentence?
-        return (NAN);
+  static wxString return_string;
+  return_string.Empty();
 
-      return( ::atof( abuf.data() ));
+  int index = 1;  // Skip over the $ at the begining of the sentence
+  int current_field_number = 0;
+  int string_length = 0;
 
-}
+  string_length = Sentence.Len();
 
+  while (current_field_number < desired_field_number && index < string_length) {
+    if (Sentence[index] == ',' || Sentence[index] == '*') {
+      current_field_number++;
+    }
 
-EASTWEST SENTENCE::EastOrWest( int field_number ) const
-{
-//   ASSERT_VALID( this );
+    if (Sentence[index] == '*') return_string += Sentence[index];
+    index++;
+  }
 
-   wxString field_data;
-
-   field_data = Field( field_number );
-
-   if ( field_data == _T("E") )
-   {
-      return( East );
-   }
-   else if ( field_data == _T("W") )
-   {
-      return( West );
-   }
-   else
-   {
-      return( EW_Unknown );
-   }
-}
-
-const wxString& SENTENCE::Field( int desired_field_number ) const
-{
-//   ASSERT_VALID( this );
-
-   static wxString return_string;
-   return_string.Empty();
-
-   int index                = 1; // Skip over the $ at the begining of the sentence
-   int current_field_number = 0;
-   int string_length        = 0;
-
-   string_length = Sentence.Len();
-
-   while( current_field_number < desired_field_number && index < string_length )
-   {
-      if ( Sentence[ index ] == ',' || Sentence[ index ] == '*' )
-      {
-         current_field_number++;
-      }
-
-      if( Sentence[ index ] == '*')
-          return_string += Sentence[ index ];
+  if (current_field_number == desired_field_number) {
+    while (index < string_length && Sentence[index] != ',' &&
+           Sentence[index] != '*' && Sentence[index] != 0x00) {
+      return_string += Sentence[index];
       index++;
-   }
+    }
+  }
 
-   if ( current_field_number == desired_field_number )
-   {
-      while( index < string_length    &&
-             Sentence[ index ] != ',' &&
-             Sentence[ index ] != '*' &&
-             Sentence[ index ] != 0x00 )
-      {
-         return_string += Sentence[ index ];
-         index++;
-      }
-   }
-
-
-   return( return_string );
+  return (return_string);
 }
 
-int SENTENCE::GetNumberOfDataFields( void ) const
-{
-//   ASSERT_VALID( this );
+int SENTENCE::GetNumberOfDataFields(void) const {
+  //   ASSERT_VALID( this );
 
-   int index                = 1; // Skip over the $ at the begining of the sentence
-   int current_field_number = 0;
-   int string_length        = 0;
+  int index = 1;  // Skip over the $ at the begining of the sentence
+  int current_field_number = 0;
+  int string_length = 0;
 
-   string_length = Sentence.Len();
+  string_length = Sentence.Len();
 
-   while( index < string_length )
-   {
-      if ( Sentence[ index ] == '*' )
-      {
-         return( (int) current_field_number );
-      }
+  while (index < string_length) {
+    if (Sentence[index] == '*') {
+      return ((int)current_field_number);
+    }
 
-      if ( Sentence[ index ] == ',' )
-      {
-         current_field_number++;
-      }
+    if (Sentence[index] == ',') {
+      current_field_number++;
+    }
 
-      index++;
-   }
+    index++;
+  }
 
-   return( (int) current_field_number );
+  return ((int)current_field_number);
 }
 
-void SENTENCE::Finish( void )
-{
-//   ASSERT_VALID( this );
+void SENTENCE::Finish(void) {
+  //   ASSERT_VALID( this );
 
-   unsigned char checksum = ComputeChecksum();
+  unsigned char checksum = ComputeChecksum();
 
-   wxString temp_string;
+  wxString temp_string;
 
-   temp_string.Printf(_T("*%02X%c%c"), (int) checksum, CARRIAGE_RETURN, LINE_FEED );
-   Sentence += temp_string;
+  temp_string.Printf(_T("*%02X%c%c"), (int)checksum, CARRIAGE_RETURN,
+                     LINE_FEED);
+  Sentence += temp_string;
 }
 
-int SENTENCE::Integer( int field_number ) const
-{
-//   ASSERT_VALID( this );
-    wxCharBuffer abuf = Field( field_number).ToUTF8();
-    if( !abuf.data() )                            // badly formed sentence?
-        return 0;
+int SENTENCE::Integer(int field_number) const {
+  //   ASSERT_VALID( this );
+  wxCharBuffer abuf = Field(field_number).ToUTF8();
+  if (!abuf.data())  // badly formed sentence?
+    return 0;
 
-    return( ::atoi( abuf.data() ));
+  return (::atoi(abuf.data()));
 }
 
-NMEA0183_BOOLEAN SENTENCE::IsChecksumBad( int checksum_field_number ) const
-{
-//   ASSERT_VALID( this );
+NMEA0183_BOOLEAN SENTENCE::IsChecksumBad(int checksum_field_number) const {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Checksums are optional, return TRUE if an existing checksum is known to be bad
-   */
+  /*
+  ** Checksums are optional, return TRUE if an existing checksum is known to be
+  *bad
+  */
 
-   wxString checksum_in_sentence = Field( checksum_field_number );
+  wxString checksum_in_sentence = Field(checksum_field_number);
 
-   if ( checksum_in_sentence == _T("") )
-   {
-      return( Unknown0183 );
-   }
+  if (checksum_in_sentence == _T("")) {
+    return (Unknown0183);
+  }
 
-   wxString check = checksum_in_sentence.Mid( 1 );
-   if ( ComputeChecksum() != HexValue( check ) )
-   {
-      return( NTrue );
-   }
+  wxString check = checksum_in_sentence.Mid(1);
+  if (ComputeChecksum() != HexValue(check)) {
+    return (NTrue);
+  }
 
-   return( NFalse );
+  return (NFalse);
 }
 
-LEFTRIGHT SENTENCE::LeftOrRight( int field_number ) const
-{
-//   ASSERT_VALID( this );
+LEFTRIGHT SENTENCE::LeftOrRight(int field_number) const {
+  //   ASSERT_VALID( this );
 
-   wxString field_data;
+  wxString field_data;
 
-   field_data = Field( field_number );
+  field_data = Field(field_number);
 
-   if ( field_data == _T("L") )
-   {
-      return( Left );
-   }
-   else if ( field_data == _T("R") )
-   {
-      return( Right );
-   }
-   else
-   {
-      return( LR_Unknown );
-   }
+  if (field_data == _T("L")) {
+    return (Left);
+  } else if (field_data == _T("R")) {
+    return (Right);
+  } else {
+    return (LR_Unknown);
+  }
 }
 
-NORTHSOUTH SENTENCE::NorthOrSouth( int field_number ) const
-{
-//   ASSERT_VALID( this );
+NORTHSOUTH SENTENCE::NorthOrSouth(int field_number) const {
+  //   ASSERT_VALID( this );
 
-   wxString field_data;
+  wxString field_data;
 
-   field_data = Field( field_number );
+  field_data = Field(field_number);
 
-   if ( field_data == _T("N") )
-   {
-      return( North );
-   }
-   else if ( field_data == _T("S") )
-   {
-      return( South );
-   }
-   else
-   {
-      return( NS_Unknown );
-   }
+  if (field_data == _T("N")) {
+    return (North);
+  } else if (field_data == _T("S")) {
+    return (South);
+  } else {
+    return (NS_Unknown);
+  }
 }
 
-REFERENCE SENTENCE::Reference( int field_number ) const
-{
-//   ASSERT_VALID( this );
+REFERENCE SENTENCE::Reference(int field_number) const {
+  //   ASSERT_VALID( this );
 
-   wxString field_data;
+  wxString field_data;
 
-   field_data = Field( field_number );
+  field_data = Field(field_number);
 
-   if ( field_data == _T("B") )
-   {
-      return( BottomTrackingLog );
-   }
-   else if ( field_data == _T("M") )
-   {
-      return( ManuallyEntered );
-   }
-   else if ( field_data == _T("W") )
-   {
-      return( WaterReferenced );
-   }
-   else if ( field_data == _T("R") )
-   {
-      return( RadarTrackingOfFixedTarget );
-   }
-   else if ( field_data == _T("P") )
-   {
-      return( PositioningSystemGroundReference );
-   }
-   else
-   {
-      return( ReferenceUnknown );
-   }
+  if (field_data == _T("B")) {
+    return (BottomTrackingLog);
+  } else if (field_data == _T("M")) {
+    return (ManuallyEntered);
+  } else if (field_data == _T("W")) {
+    return (WaterReferenced);
+  } else if (field_data == _T("R")) {
+    return (RadarTrackingOfFixedTarget);
+  } else if (field_data == _T("P")) {
+    return (PositioningSystemGroundReference);
+  } else {
+    return (ReferenceUnknown);
+  }
 }
 
-TRANSDUCER_TYPE SENTENCE::TransducerType( int field_number ) const
-{
-//   ASSERT_VALID( this );
+TRANSDUCER_TYPE SENTENCE::TransducerType(int field_number) const {
+  //   ASSERT_VALID( this );
 
-   wxString field_data;
+  wxString field_data;
 
-   field_data = Field( field_number );
+  field_data = Field(field_number);
 
-   if ( field_data == _T("A") )
-   {
-      return( AngularDisplacementTransducer );
-   }
-   else if ( field_data == _T("D") )
-   {
-      return( LinearDisplacementTransducer );
-   }
-   else if ( field_data == _T("C") )
-   {
-      return( TemperatureTransducer );
-   }
-   else if ( field_data == _T("F") )
-   {
-      return( FrequencyTransducer );
-   }
-   else if ( field_data == _T("N") )
-   {
-      return( ForceTransducer );
-   }
-   else if ( field_data == _T("P") )
-   {
-      return( PressureTransducer );
-   }
-   else if ( field_data == _T("R") )
-   {
-      return( FlowRateTransducer );
-   }
-   else if ( field_data == _T("T") )
-   {
-      return( TachometerTransducer );
-   }
-   else if ( field_data == _T("H") )
-   {
-      return( HumidityTransducer );
-   }
-   else if ( field_data == _T("V") )
-   {
-      return( VolumeTransducer );
-   }
-   else
-   {
-      return( TransducerUnknown );
-   }
+  if (field_data == _T("A")) {
+    return (AngularDisplacementTransducer);
+  } else if (field_data == _T("D")) {
+    return (LinearDisplacementTransducer);
+  } else if (field_data == _T("C")) {
+    return (TemperatureTransducer);
+  } else if (field_data == _T("F")) {
+    return (FrequencyTransducer);
+  } else if (field_data == _T("N")) {
+    return (ForceTransducer);
+  } else if (field_data == _T("P")) {
+    return (PressureTransducer);
+  } else if (field_data == _T("R")) {
+    return (FlowRateTransducer);
+  } else if (field_data == _T("T")) {
+    return (TachometerTransducer);
+  } else if (field_data == _T("H")) {
+    return (HumidityTransducer);
+  } else if (field_data == _T("V")) {
+    return (VolumeTransducer);
+  } else {
+    return (TransducerUnknown);
+  }
 }
 
 /*
 ** Operators
 */
 
-SENTENCE::operator wxString() const
-{
-//   ASSERT_VALID( this );
+SENTENCE::operator wxString() const {
+  //   ASSERT_VALID( this );
 
-   return( Sentence );
+  return (Sentence);
 }
 
-const SENTENCE& SENTENCE::operator = ( const SENTENCE& source )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator=(const SENTENCE& source) {
+  //   ASSERT_VALID( this );
 
-   Sentence = source.Sentence;
+  Sentence = source.Sentence;
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator = ( const wxString& source )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator=(const wxString& source) {
+  //   ASSERT_VALID( this );
 
-   Sentence = source;
+  Sentence = source;
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( const wxString& source )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(const wxString& source) {
+  //   ASSERT_VALID( this );
 
-    Sentence += _T(",");
-   Sentence += source;
+  Sentence += _T(",");
+  Sentence += source;
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( double value )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(double value) {
+  //   ASSERT_VALID( this );
 
-   wxString temp_string;
+  wxString temp_string;
 
-   temp_string.Printf(_T("%.3f"), value );
+  temp_string.Printf(_T("%.3f"), value);
 
-   Sentence += _T(",");
-   Sentence += temp_string;
+  Sentence += _T(",");
+  Sentence += temp_string;
 
-   return( *this );
+  return (*this);
 }
 
-SENTENCE& SENTENCE::Add ( double value, int precision )
-{
-//   ASSERT_VALID( this );
+SENTENCE& SENTENCE::Add(double value, int precision) {
+  //   ASSERT_VALID( this );
 
-    wxString temp_string;
-    wxString s_Precision;
+  wxString temp_string;
+  wxString s_Precision;
 
-    s_Precision.Printf(_T("%c.%if"), '%', precision );
-    temp_string.Printf( s_Precision, value );
+  s_Precision.Printf(_T("%c.%if"), '%', precision);
+  temp_string.Printf(s_Precision, value);
 
-    Sentence += _T(",");
-    Sentence += temp_string;
+  Sentence += _T(",");
+  Sentence += temp_string;
 
-    return( *this );
+  return (*this);
 }
-const SENTENCE& SENTENCE::operator += ( COMMUNICATIONS_MODE mode )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(COMMUNICATIONS_MODE mode) {
+  //   ASSERT_VALID( this );
 
-    Sentence += _T(",");
+  Sentence += _T(",");
 
-   switch( mode )
-   {
-      case F3E_G3E_SimplexTelephone:
+  switch (mode) {
+    case F3E_G3E_SimplexTelephone:
 
-          Sentence += _T("d");
-               break;
+      Sentence += _T("d");
+      break;
 
-      case F3E_G3E_DuplexTelephone:
+    case F3E_G3E_DuplexTelephone:
 
-          Sentence += _T("e");
-               break;
+      Sentence += _T("e");
+      break;
 
-      case J3E_Telephone:
+    case J3E_Telephone:
 
-          Sentence += _T("m");
-               break;
+      Sentence += _T("m");
+      break;
 
-      case H3E_Telephone:
+    case H3E_Telephone:
 
-          Sentence += _T("o");
-               break;
+      Sentence += _T("o");
+      break;
 
-      case F1B_J2B_FEC_NBDP_TelexTeleprinter:
+    case F1B_J2B_FEC_NBDP_TelexTeleprinter:
 
-          Sentence += _T("q");
-               break;
+      Sentence += _T("q");
+      break;
 
-      case F1B_J2B_ARQ_NBDP_TelexTeleprinter:
+    case F1B_J2B_ARQ_NBDP_TelexTeleprinter:
 
-          Sentence += _T("s");
-               break;
+      Sentence += _T("s");
+      break;
 
-      case F1B_J2B_ReceiveOnlyTeleprinterDSC:
+    case F1B_J2B_ReceiveOnlyTeleprinterDSC:
 
-          Sentence += _T("w");
-               break;
+      Sentence += _T("w");
+      break;
 
-      case A1A_MorseTapeRecorder:
+    case A1A_MorseTapeRecorder:
 
-          Sentence += _T("x");
-               break;
+      Sentence += _T("x");
+      break;
 
-      case A1A_MorseKeyHeadset:
+    case A1A_MorseKeyHeadset:
 
-          Sentence += _T("{");
-               break;
+      Sentence += _T("{");
+      break;
 
-       case F1C_F2C_F3C_FaxMachine:
+    case F1C_F2C_F3C_FaxMachine:
 
-           Sentence += _T("|");
-           break;
+      Sentence += _T("|");
+      break;
 
-       case CommunicationsModeUnknown:
+    case CommunicationsModeUnknown:
 
-           break;
-   }
+      break;
+  }
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( TRANSDUCER_TYPE transducer )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(TRANSDUCER_TYPE transducer) {
+  //   ASSERT_VALID( this );
 
-    Sentence += _T(",");
+  Sentence += _T(",");
 
-   switch( transducer )
-   {
-      case TemperatureTransducer:
+  switch (transducer) {
+    case TemperatureTransducer:
 
-          Sentence += _T("C");
-               break;
+      Sentence += _T("C");
+      break;
 
-      case AngularDisplacementTransducer:
+    case AngularDisplacementTransducer:
 
-          Sentence += _T("A");
-               break;
+      Sentence += _T("A");
+      break;
 
-      case LinearDisplacementTransducer:
+    case LinearDisplacementTransducer:
 
-          Sentence += _T("D");
-               break;
+      Sentence += _T("D");
+      break;
 
-      case FrequencyTransducer:
+    case FrequencyTransducer:
 
-          Sentence += _T("F");
-               break;
+      Sentence += _T("F");
+      break;
 
-      case ForceTransducer:
+    case ForceTransducer:
 
-          Sentence += _T("N");
-               break;
+      Sentence += _T("N");
+      break;
 
-      case PressureTransducer:
+    case PressureTransducer:
 
-          Sentence += _T("P");
-               break;
+      Sentence += _T("P");
+      break;
 
-      case FlowRateTransducer:
+    case FlowRateTransducer:
 
-          Sentence += _T("R");
-               break;
+      Sentence += _T("R");
+      break;
 
-      case TachometerTransducer:
+    case TachometerTransducer:
 
-          Sentence += _T("T");
-               break;
+      Sentence += _T("T");
+      break;
 
-      case HumidityTransducer:
+    case HumidityTransducer:
 
-          Sentence += _T("H");
-               break;
+      Sentence += _T("H");
+      break;
 
-      case VolumeTransducer:
+    case VolumeTransducer:
 
-          Sentence += _T("V");
-               break;
+      Sentence += _T("V");
+      break;
 
-      case TransducerUnknown:
+    case TransducerUnknown:
 
-          Sentence += _T("?");
-               break;
+      Sentence += _T("?");
+      break;
+  }
 
-   }
-
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( NORTHSOUTH northing )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(NORTHSOUTH northing) {
+  //   ASSERT_VALID( this );
 
-    Sentence += _T(",");
+  Sentence += _T(",");
 
-   if ( northing == North )
-   {
-       Sentence += _T("N");
-   }
-   else if ( northing == South )
-   {
-       Sentence += _T("S");
-   }
+  if (northing == North) {
+    Sentence += _T("N");
+  } else if (northing == South) {
+    Sentence += _T("S");
+  }
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( int value )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(int value) {
+  //   ASSERT_VALID( this );
 
-   wxString temp_string;
+  wxString temp_string;
 
-   temp_string.Printf(_T("%d"), value );
+  temp_string.Printf(_T("%d"), value);
 
-   Sentence += _T(",");
-   Sentence += temp_string;
+  Sentence += _T(",");
+  Sentence += temp_string;
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( EASTWEST easting )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(EASTWEST easting) {
+  //   ASSERT_VALID( this );
 
-    Sentence += _T(",");
+  Sentence += _T(",");
 
-   if ( easting == East )
-   {
-       Sentence += _T("E");
-   }
-   else if ( easting == West )
-   {
-       Sentence += _T("W");
-   }
+  if (easting == East) {
+    Sentence += _T("E");
+  } else if (easting == West) {
+    Sentence += _T("W");
+  }
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( NMEA0183_BOOLEAN boolean )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(NMEA0183_BOOLEAN boolean) {
+  //   ASSERT_VALID( this );
 
-    Sentence += _T(",");
+  Sentence += _T(",");
 
-   if ( boolean == NTrue )
-   {
-       Sentence += _T("A");
-   }
-   else if ( boolean == NFalse )
-   {
-       Sentence += _T("V");
-   }
+  if (boolean == NTrue) {
+    Sentence += _T("A");
+  } else if (boolean == NFalse) {
+    Sentence += _T("V");
+  }
 
-   return( *this );
+  return (*this);
 }
 
-const SENTENCE& SENTENCE::operator += ( LATLONG& source )
-{
-//   ASSERT_VALID( this );
+const SENTENCE& SENTENCE::operator+=(LATLONG& source) {
+  //   ASSERT_VALID( this );
 
-   source.Write( *this );
+  source.Write(*this);
 
-   return( *this );
+  return (*this);
 }

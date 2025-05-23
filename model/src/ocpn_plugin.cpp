@@ -67,7 +67,7 @@ static wxBitmap* LoadSVG(const wxString filename, unsigned int width,
 
 
 wxBitmap* opencpn_plugin::GetPlugInBitmap() {
-  auto bitmap =  PluginLoader::getInstance()->GetPluginDefaultIcon();
+  auto bitmap =  PluginLoader::GetInstance()->GetPluginDefaultIcon();
   return const_cast<wxBitmap*>(bitmap);
 }
 
@@ -289,3 +289,20 @@ bool opencpn_plugin_118::RenderOverlayMultiCanvas(wxDC& dc, PlugIn_ViewPort* vp,
                                                   int priority) {
   return false;
 }
+
+//    Opencpn_Plugin_119 Implementation
+opencpn_plugin_119::opencpn_plugin_119(void* pmgr) : opencpn_plugin_118(pmgr) {}
+
+void opencpn_plugin_119::PreShutdownHook() { return; }
+
+//    Opencpn_Plugin_120 Implementation
+opencpn_plugin_120::opencpn_plugin_120(void* pmgr) : opencpn_plugin_119(pmgr) {}
+
+DateTimeFormatOptions::DateTimeFormatOptions()
+    : format_string("$weekday_short_date_time"),
+      time_zone(wxEmptyString),
+      show_timezone(true),
+      longitude(NAN),
+      version(1) {}
+
+DateTimeFormatOptions::~DateTimeFormatOptions() {}

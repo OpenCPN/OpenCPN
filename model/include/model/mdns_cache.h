@@ -21,6 +21,11 @@
 #ifndef MDNS_CACHE_H
 #define MDNS_CACHE_H
 
+/**
+ *  \file
+ *   MdnsCache mDNS host lookups cache.
+ */
+
 #include <mutex>
 #include <string>
 #include <vector>

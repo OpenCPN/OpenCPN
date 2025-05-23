@@ -17,11 +17,16 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file win_watch_daemon.cpp Implement win_watch_daemon.h */
+/**
+ * \file
+ * Implement win_watch_daemon.h
+ */
 
+#include <winsock2.h>
 #include <windows.h>
 #include <Dbt.h>
 
+#include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/log.h>
 #include <wx/window.h>
@@ -32,7 +37,7 @@
 
 class UsbListenFrame : public wxFrame {
 public:
-  UsbListenFrame() : wxFrame(GetTopWindow(), wxID_ANY, "") {}
+  UsbListenFrame() : wxFrame(wxTheApp->GetTopWindow(), wxID_ANY, "") {}
 
   virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam,
                                   WXLPARAM lParam) {

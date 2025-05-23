@@ -8,7 +8,7 @@
 # Exports
 #     ocpn::sound transitive link target
 #
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 # Debug junk
 message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")

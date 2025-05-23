@@ -42,6 +42,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bopengl;
+extern bool g_btenhertz;
 
 #ifndef GL_RGBA8
 #define GL_RGBA8 0x8058
@@ -171,7 +172,14 @@ void ocpnCompass::Paint(ocpnDC& dc) {
 }
 
 bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
-  if (!m_shown || !m_rect.Contains(event.GetPosition())) return false;
+  wxRect logicalRect = GetLogicalRect();
+  if (!m_shown) {
+    return false;
+  }
+  if (!logicalRect.Contains(event.GetPosition())) {
+    // User is moving away from compass widget.
+    return false;
+  }
 
   if (event.LeftDown()) {
     if (m_parent->GetUpMode() == NORTH_UP_MODE)
@@ -188,6 +196,25 @@ bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
 void ocpnCompass::SetColorScheme(ColorScheme cs) {
   m_cs = cs;
   UpdateStatus(true);
+}
+
+wxRect ocpnCompass::GetLogicalRect(void) const {
+#ifdef wxHAS_DPI_INDEPENDENT_PIXELS
+#if wxCHECK_VERSION(3, 1, 6)
+  wxRect logicalRect = wxRect(m_parent->FromPhys(m_rect.GetPosition()),
+                              m_parent->FromPhys(m_rect.GetSize()));
+#else
+  double scaleFactor = m_parent->GetContentScaleFactor();
+  wxRect logicalRect(
+      wxPoint(m_rect.GetX() / scaleFactor, m_rect.GetY() / scaleFactor),
+      wxSize(m_rect.GetWidth() / scaleFactor,
+             m_rect.GetHeight() / scaleFactor));
+#endif
+#else
+  // On platforms without DPI-independent pixels, logical = physical.
+  wxRect logicalRect = m_rect;
+#endif
+  return logicalRect;
 }
 
 void ocpnCompass::UpdateStatus(bool bnew) {
@@ -405,6 +432,15 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
   iconBm = ConvertTo24Bit(wxColor(0, 0, 0), iconBm);
 
   mdc.DrawBitmap(iconBm, offset);
+
+  if (g_btenhertz) {
+    mdc.SetPen(wxPen(GetGlobalColor("BLUE3"), 1));
+    mdc.SetBrush(wxBrush(GetGlobalColor("BLUE3"), wxBRUSHSTYLE_SOLID));
+    int hight = m_StatBmp.GetHeight();
+    int dot_diam = wxMax(2, hight / 12);
+    mdc.DrawCircle(5, hight - 5, dot_diam);
+  }
+
   offset.x += iconBm.GetWidth();
   offset.x += style->GetToolSeparation();
 

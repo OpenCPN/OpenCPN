@@ -31,22 +31,19 @@
  * Sound backend on the windows PlaySound() API.
  */
 
-class MswSound: public OcpnSound
-{
+class MswSound : public OcpnSound {
+public:
+  MswSound() {};
+  ~MswSound() { Stop(); };
 
-    public:
-        MswSound() {};
-        ~MswSound() { Stop(); };
+  bool Load(const char* path, int deviceIndex = -1) override;
+  bool Play() override;
+  bool Stop() override;
 
-        bool Load(const char* path, int deviceIndex = -1) override;
-        bool Play() override;
-        bool Stop() override;
-
-    private:
-        void worker();
-        std::wstring m_path;
-        bool m_isPlaying;
+private:
+  void worker();
+  std::wstring m_path;
+  bool m_isPlaying;
 };
 
-
-#endif // __MSW_SOUND_H__
+#endif  // __MSW_SOUND_H__

@@ -74,14 +74,17 @@ class ChInfoWin;
 class glChartCanvas;
 class Track;
 
-//----------------------------------------------------------------------------
-// CanvasMenuHandler
-//----------------------------------------------------------------------------
+/**
+ * Handles context menu events for the chart canvas. Manages the creation and
+ * handling of context menus that appear when right-clicking on the chart
+ * canvas.
+ */
 class CanvasMenuHandler : public wxEvtHandler {
 public:
   CanvasMenuHandler(ChartCanvas *parentCanvas, Route *selectedRoute,
                     Track *selectedTrack, RoutePoint *selectedPoint,
-                    int selectedAIS_MMSI, void *selectedTCIndex);
+                    int selectedAIS_MMSI, void *selectedTCIndex,
+                    wxWindow *nmea_log);
 
   ~CanvasMenuHandler();
 
@@ -107,6 +110,7 @@ private:
   int m_FoundAIS_MMSI;
   void *m_pIDXCandidate;
   double m_DIPFactor;
+  wxWindow *m_nmea_log;
 };
 
 #endif

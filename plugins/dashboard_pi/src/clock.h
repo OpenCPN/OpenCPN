@@ -44,10 +44,17 @@
 #include "instrument.h"
 extern int g_iUTCOffset;  // get offset from dashboard_pi.cpp
 
+/**
+ * A dashboard instrument that displays the GNSS clock time, if available.
+ *
+ * A dashboard instrument that shows the current time from GNSS source.
+ * Can display in either UTC or local time based on user preference.
+ * Time format is configurable through the format string parameter.
+ */
 class DashboardInstrument_Clock : public DashboardInstrument_Single {
 public:
   DashboardInstrument_Clock(wxWindow *parent, wxWindowID id, wxString title,
-                            InstrumentProperties* Properties,
+                            InstrumentProperties *Properties,
                             DASH_CAP cap_flag = OCPN_DBP_STC_CLK,
                             wxString format = _T("%02i:%02i:%02i UTC"));
 
@@ -58,15 +65,24 @@ public:
   wxString GetDisplayTime(wxDateTime UTCtime);
   bool getUTC() { return bUTC; }
   void setUTC(bool flag) { bUTC = flag; }
-  InstrumentProperties* m_Properties;
+  InstrumentProperties *m_Properties;
 
 private:
   bool bUTC;
 };
 
+/**
+ * A dashboard instrument that displays current moon phase information.
+ *
+ * Calculates and displays:
+ * - Visual moon phase representation
+ * - Current lunar phase
+ * - Hemisphere information
+ */
 class DashboardInstrument_Moon : public DashboardInstrument_Clock {
 public:
-  DashboardInstrument_Moon(wxWindow *parent, wxWindowID id, wxString title, InstrumentProperties* Properties);
+  DashboardInstrument_Moon(wxWindow *parent, wxWindowID id, wxString title,
+                           InstrumentProperties *Properties);
   ~DashboardInstrument_Moon() {}
 
   wxSize GetSize(int orient, wxSize hint);
@@ -81,10 +97,13 @@ private:
   wxString m_hemisphere;
 };
 
+/**
+ * A dashboard instrument that displays sunrise and sunset times.
+ */
 class DashboardInstrument_Sun : public DashboardInstrument_Clock {
 public:
   DashboardInstrument_Sun(wxWindow *parent, wxWindowID id, wxString title,
-                          InstrumentProperties* Properties,
+                          InstrumentProperties *Properties,
                           wxString format = _T( "%02i:%02i:%02i UTC" ));
 
   ~DashboardInstrument_Sun() {}
@@ -105,10 +124,13 @@ private:
                     wxDateTime &sunset);
 };
 
+/**
+ * A dashboard instrument that displays the current computer time.
+ */
 class DashboardInstrument_CPUClock : public DashboardInstrument_Clock {
 public:
   DashboardInstrument_CPUClock(wxWindow *parent, wxWindowID id, wxString title,
-                               InstrumentProperties* Properties,
+                               InstrumentProperties *Properties,
                                wxString format = _T( "%02i:%02i:%02i UTC" ));
 
   ~DashboardInstrument_CPUClock() {}

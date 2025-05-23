@@ -27,16 +27,10 @@
 #ifdef HAVE_SNDFILE
 #include "SndfileSoundLoader.h"
 
-AbstractSoundLoader* SoundLoaderFactory()
-{
-    return new SndfileSoundLoader();
-}
+AbstractSoundLoader* SoundLoaderFactory() { return new SndfileSoundLoader(); }
 
 #else
 
-AbstractSoundLoader* SoundLoaderFactory()
-{
-    return new SoundFileLoader();
-}
+AbstractSoundLoader* SoundLoaderFactory() { return new SoundFileLoader(); }
 
 #endif

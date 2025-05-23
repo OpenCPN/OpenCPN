@@ -48,6 +48,10 @@ class wxAuiManagerEvent;
 
 WX_DEFINE_SORTED_ARRAY_INT(int, ArrayOfMMSI);
 
+/**
+ * Dialog for displaying a list of AIS targets. Shows a list of AIS targets,
+ * allowing users to view and interact with multiple AIS targets.
+ */
 class AISTargetListDialog : public wxPanel {
   DECLARE_CLASS(AISTargetListDialog)
 

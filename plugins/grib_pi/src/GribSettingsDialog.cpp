@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Grib Settings Dialog
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2015 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref GribSettingsDialog.h
  */
-
 #include "pi_gl.h"
 
 #include "grib_pi.h"
@@ -667,25 +662,25 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
   }
   // Set Bitmap
   m_biAltitude->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(altitude), _T("altitude"), parent.m_ScaledFactor));
-  m_biNow->SetBitmap(
-      parent.GetScaledBitmap(wxBitmap(now), _T("now"), parent.m_ScaledFactor));
+      wxBitmap(altitude), _T("altitude"), parent.GetScaleFactor()));
+  m_biNow->SetBitmap(parent.GetScaledBitmap(wxBitmap(now), _T("now"),
+                                            parent.GetScaleFactor()));
   m_biZoomToCenter->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(zoomto), _T("zoomto"), parent.m_ScaledFactor));
+      wxBitmap(zoomto), _T("zoomto"), parent.GetScaleFactor()));
   m_biShowCursorData->SetBitmap(parent.GetScaledBitmap(
       parent.m_CDataIsShown ? wxBitmap(curdata) : wxBitmap(ncurdata),
       parent.m_CDataIsShown ? _T("curdata") : _T("ncurdata"),
-      parent.m_ScaledFactor));
+      parent.GetScaleFactor()));
   m_biPlay->SetBitmap(parent.GetScaledBitmap(wxBitmap(play), _T("play"),
-                                             parent.m_ScaledFactor));
+                                             parent.GetScaleFactor()));
   m_biTimeSlider->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(slider), _T("slider"), parent.m_ScaledFactor));
+      wxBitmap(slider), _T("slider"), parent.GetScaleFactor()));
   m_biOpenFile->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(openfile), _T("openfile"), parent.m_ScaledFactor));
+      wxBitmap(openfile), _T("openfile"), parent.GetScaleFactor()));
   m_biSettings->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(setting), _T("setting"), parent.m_ScaledFactor));
+      wxBitmap(setting), _T("setting"), parent.GetScaleFactor()));
   m_biRequest->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(request), _T("request"), parent.m_ScaledFactor));
+      wxBitmap(request), _T("request"), parent.GetScaleFactor()));
   // read bookpage
   wxFileConfig *pConf = GetOCPNConfigObject();
   if (pConf) {
@@ -733,7 +728,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
   ReadDataTypeSettings(m_lastdatatype);
   m_sButtonApply->SetLabel(_("Apply"));
 
-  DimeWindow(this);  // aplly global colours scheme
+  DimeWindow(this);  // apply global colours scheme
 
 #ifdef __OCPN__ANDROID__
   GetHandle()->setStyleSheet(qtStyleSheet);
@@ -931,11 +926,11 @@ void GribSettingsDialog::ShowFittingSettings(int settings) {
   // Hide all Parameters
   ShowSettings(B_ARROWS, false);
   ShowSettings(ISO_LINE, false);
-  if (m_fIsoBarSpacing->GetItem(m_sIsoBarSpacing) != NULL)
+  if (m_fIsoBarSpacing->GetItem(m_sIsoBarSpacing) != nullptr)
     m_fIsoBarSpacing->Detach(m_sIsoBarSpacing);
-  if (m_fIsoBarVisibility->GetItem(m_sIsoBarSpacing) != NULL)
+  if (m_fIsoBarVisibility->GetItem(m_sIsoBarSpacing) != nullptr)
     m_fIsoBarVisibility->Detach(m_sIsoBarSpacing);
-  if (m_fIsoBarVisibility->GetItem(m_sIsoBarVisibility) != NULL)
+  if (m_fIsoBarVisibility->GetItem(m_sIsoBarVisibility) != nullptr)
     m_fIsoBarVisibility->Detach(m_sIsoBarVisibility);
   ShowSettings(ISO_ABBR, false);
   ShowSettings(D_ARROWS, false);

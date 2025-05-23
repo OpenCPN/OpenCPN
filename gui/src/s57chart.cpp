@@ -48,6 +48,7 @@
 #include "model/georef.h"
 #include "navutil.h"  // for LogMessageOnce
 #include "model/navutil_base.h"
+#include "model/plugin_comm.h"
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
 #include "s52utils.h"
@@ -69,12 +70,8 @@
 #include "Quilt.h"
 #include "ocpn_frame.h"
 
-#ifdef __MSVC__
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
 #endif
 
 #ifdef ocpnUSE_GL
@@ -93,6 +90,10 @@
 
 #ifdef __MSVC__
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
+#endif
+
+#ifdef __ANDROID__
+#include "crashlytics.h"
 #endif
 
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName,
@@ -267,7 +268,6 @@ s57chart::s57chart() {
   m_this_chart_context = 0;
   m_Chart_Skew = 0;
   m_vbo_byte_length = 0;
-  m_SENCthreadStatus = THREAD_INACTIVE;
   bReadyToRender = false;
   m_RAZBuilt = false;
   m_disableBackgroundSENC = false;
@@ -2527,6 +2527,11 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
   }
   m_FullPath = name;
 
+#ifdef __ANDROID__
+  firebase::crashlytics::SetCustomKey("s57chartInit",
+                                      name.ToStdString().c_str());
+#endif
+
   //    Use a static semaphore flag to prevent recursion
   if (s_bInS57) {
     //          printf("s57chart::Init() recursion..., retry\n");
@@ -4059,7 +4064,7 @@ int s57chart::BuildSENCFile(const wxString &FullPath000,
       ticket->m_SENCFileName = SENCFileName;
       ticket->m_chart = this;
 
-      m_SENCthreadStatus = g_SencThreadManager->ScheduleJob(ticket);
+      g_SencThreadManager->ScheduleJob(ticket);
       bReadyToRender = true;
       return BUILD_SENC_PENDING;
 
@@ -4179,18 +4184,16 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
     const wxString objnam = obj->GetAttrValueAsString("OBJNAM");
     if (objnam.Len() > 0) {
       const wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-      g_pi_manager->SendVectorChartObjectInfo(FullPath, fe_name, objnam,
-                                              obj->m_lat, obj->m_lon, scale,
-                                              nativescale);
+      SendVectorChartObjectInfo(FullPath, fe_name, objnam, obj->m_lat,
+                                obj->m_lon, scale, nativescale);
     }
     // If there is a localized object name and it actually is different from the
     // object name, send it as well...
     const wxString nobjnam = obj->GetAttrValueAsString("NOBJNM");
     if (nobjnam.Len() > 0 && nobjnam != objnam) {
       const wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-      g_pi_manager->SendVectorChartObjectInfo(FullPath, fe_name, nobjnam,
-                                              obj->m_lat, obj->m_lon, scale,
-                                              nativescale);
+      SendVectorChartObjectInfo(FullPath, fe_name, nobjnam, obj->m_lat,
+                                obj->m_lon, scale, nativescale);
     }
 
     switch (obj->Primitive_type) {
@@ -5334,7 +5337,7 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
       //    As a special case, convert some attribute values to feet.....
       if ((curAttrName == _T("VERCLR")) || (curAttrName == _T("VERCCL")) ||
           (curAttrName == _T("VERCOP")) || (curAttrName == _T("HEIGHT")) ||
-          (curAttrName == _T("HORCLR"))) {
+          (curAttrName == _T("HORCLR")) || (curAttrName == _T("ELEVAT"))) {
         switch (ps52plib->m_nDepthUnitDisplay) {
           case 0:                          // feet
           case 2:                          // fathoms
@@ -5478,7 +5481,7 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
       //    As a special case, convert some attribute values to feet.....
       if ((AttrName == _T("VERCLR")) || (AttrName == _T("VERCCL")) ||
           (AttrName == _T("VERCOP")) || (AttrName == _T("HEIGHT")) ||
-          (AttrName == _T("HORCLR"))) {
+          (AttrName == _T("HORCLR")) || (AttrName == _T("ELEVAT"))) {
         switch (ps52plib->m_nDepthUnitDisplay) {
           case 0:                          // feet
           case 2:                          // fathoms
@@ -5763,6 +5766,21 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
             file.Assign(GetFullPath());
             file.Assign(file.GetPath(), value);
             file.Normalize();
+            // Make the filecheck case-unsensitive (linux)
+            if (file.IsCaseSensitive()) {
+              wxDir dir(file.GetPath());
+              wxString filename;
+              bool cont = dir.GetFirst(&filename, "", wxDIR_FILES);
+              while (cont) {
+                if (filename.IsSameAs(value, false)) {
+                  value = filename;
+                  file.Assign(file.GetPath(), value);
+                  break;
+                }
+                cont = dir.GetNext(&filename);
+              }
+            }
+
             if (file.IsOk()) {
               if (file.Exists())
                 value =

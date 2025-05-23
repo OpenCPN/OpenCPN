@@ -95,14 +95,10 @@ The standard message for a new version is "New upstream Release".
 
 === Import a release tag into upstream/latest
 
-For now, the debian directory needs to be removed. After that, create a
-tarball based on HEAD. Using v5.9.3-beta3 as example:
+Create an archive based on a tag.
+Using the tag v5.9.3-beta3 as example:
 
-    $ git checkout git checkout v5.9.3-beta3
-    $ git switch -c tmp-build
-    $ git rm -r debian
-    $ git commit -m "Remove unused debian/ dir"
-    $ git archive --prefix opencpn-5.9.3-beta3/ --output ../opencpn.tar.gz HEAD
+    $ git archive --prefix opencpn-5.9.3-beta3/ --output ../opencpn.tar.gz v5.9.3-beta3
 
 The `--prefix` part should be modified to reflect current version, but is not
 critical. Note the trailing slash!
@@ -140,36 +136,25 @@ above>> creating a downstream release goes like:
 
 1. Initiate the environment as described <<setup, above>>.
 2. Clone and checkout all branches, see <<create-clone, above>>.
-3. Create a orig.tar.xz tarball in ..
-
-       $ gbp export-orig
-
-This is a one time setup, the results can be used in various branches like
-ubuntu/jammy and debian/bookworm.
 
 For each release do:
 
 1. Checkout the actual branch like ubuntu/jammy.
    Work on ubuntu branches must be done on an ubuntu host
-2. Create a provisional version entry in _debian/changelog_ using `dch -R`.
-3. Merge upstream changes using `gbp import-ref -u5.9.3-beta3`. The -u argument is
-   the last part of an upstream tag like `upstream/5.9.3-beta3`
-   This command fails in some branch(es), see below.
-4. Do possible changes in the new release.
+2. Create a provisional version entry in _debian/changelog_ using 
+   something like `dch -v 1:5.10.2+dfsg-1ubuntu1~bpo20.04+2`.
+3. Create a orig.tar.xz tarball in .. using `gbp export-orig`.
+4. Merge upstream changes using `gbp import-ref -u5.9.3-beta3`. 
+   The -u argument is the last part of an upstream tag like 
+   `upstream/5.9.3-beta3`.
+5. Do possible changes in the new release.
    Note that only files in the _debian/_ directory can be modified;
    changes in other files are handled using patches in _debian/patches_.
    See Modifying Sources <<edit-src,below>>
-5. Commit all changes.
-6. Finalize the changelog entry using `dch -r`.
-7. Commit the change in _debian/changelog_
-8. Push the actual branch, for example `git push upstream ubuntu/jammy`
-
-If `gbp import-ref` fails, use the tarball created by `gbp export-orig`
-instead. For this to work, the corresponding tag should be deleted.
-Something like
-
-    $ git tag -d upstream/5.8.4+dfsg
-    $ gbp import-orig ../opencpn_5.8.4~beta4+dfsg.orig.tar.xz
+6. Commit all changes.
+7. Finalize the changelog entry using `dch -r`.
+8. Commit the change in _debian/changelog_
+9. Push the actual branch, for example `git push upstream ubuntu/jammy`
 
 [#publish]
 == Publish existing downstream release to PPA

@@ -165,7 +165,7 @@ protected:
    * the hidden part.
    */
   wxSize getWindowSize() {
-    auto uri = CatalogHandler::getInstance()->GetDefaultUrl();
+    auto uri = CatalogHandler::GetInstance()->GetDefaultUrl();
     auto size = GetTextExtent(uri);
     size.SetWidth(size.GetWidth() * 120 / 100);
     size.SetHeight(size.GetHeight() * 130 / 100);
@@ -187,7 +187,7 @@ protected:
       auto flags =
           wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL);
       sizer->Add(staticText(_("Catalog URL status: ")), flags);
-      auto catalog = CatalogHandler::getInstance();
+      auto catalog = CatalogHandler::GetInstance();
       int channels = catalog->GetChannels().size();
       auto text = staticText(channels > 0 ? _("OK") : _("Error"));
       sizer->Add(text, flags);
@@ -207,7 +207,7 @@ protected:
       using CmdEvt = wxCommandEvent;
 
       auto grid = new wxFlexGridSizer(4, 0, 0);
-      auto plugin_handler = PluginHandler::getInstance();
+      auto plugin_handler = PluginHandler::GetInstance();
       grid->AddGrowableCol(0);
       grid->AddGrowableCol(1);
       grid->AddGrowableCol(2);
@@ -217,14 +217,14 @@ protected:
 
       /* Cell 0..3 */
       CatalogData catalog_data =
-          CatalogHandler::getInstance()->UserCatalogData();
+          CatalogHandler::GetInstance()->UserCatalogData();
       grid->Add(staticText(_("Current active plugin catalog")), flags);
       grid->Add(staticText(""), flags);
       grid->Add(staticText(""), flags);
       grid->Add(staticText(""), flags);
 
       /* Cell 4..7 */
-      catalog_data = CatalogHandler::getInstance()->DefaultCatalogData();
+      catalog_data = CatalogHandler::GetInstance()->DefaultCatalogData();
       grid->Add(staticText(_("Default catalog")), flags);
       grid->Add(staticText(""), flags);
       grid->Add(staticText(""), flags);
@@ -234,7 +234,7 @@ protected:
                         [=](CmdEvt& e) { useDefaultCatalog(); });
 
       /* Cell 8..11 */
-      catalog_data = CatalogHandler::getInstance()->LatestCatalogData();
+      catalog_data = CatalogHandler::GetInstance()->LatestCatalogData();
       grid->Add(staticText(_("Latest available catalog:")), flags);
       grid->Add(staticText(""), flags);
       grid->Add(staticText(""), flags);
@@ -264,12 +264,12 @@ protected:
      * catalog.
      */
     void UpdateVersions() {
-      CatalogData data = CatalogHandler::getInstance()->UserCatalogData();
+      CatalogData data = CatalogHandler::GetInstance()->UserCatalogData();
       auto grid = dynamic_cast<wxSizer*>(GetSizer());
       UpdateVersion(grid, data, 1);
-      data = CatalogHandler::getInstance()->DefaultCatalogData();
+      data = CatalogHandler::GetInstance()->DefaultCatalogData();
       UpdateVersion(grid, data, 5);
-      data = CatalogHandler::getInstance()->LatestCatalogData();
+      data = CatalogHandler::GetInstance()->LatestCatalogData();
       UpdateVersion(grid, data, 9);
       Refresh(true);
       Update();
@@ -283,7 +283,7 @@ protected:
     }
 
     void ReloadAvailableVersion() {
-      auto handler = CatalogHandler::getInstance();
+      auto handler = CatalogHandler::GetInstance();
       std::ostringstream xml;
       auto status = handler->DownloadCatalog(&xml);
       std::string message;
@@ -302,7 +302,7 @@ protected:
     }
 
     std::string GetPrivateCatalogPath() {
-      auto plugin_handler = PluginHandler::getInstance();
+      auto plugin_handler = PluginHandler::GetInstance();
       std::string path = g_Platform->GetPrivateDataDir().ToStdString();
       path += SEP + "ocpn-plugins.xml";
       return path;
@@ -312,12 +312,12 @@ protected:
       auto src = GetDefaultCatalogPath();
       auto dest = GetPrivateCatalogPath();
       ocpn::copy_file(src, dest);
-      CatalogHandler::getInstance()->ClearCatalogData();
+      CatalogHandler::GetInstance()->ClearCatalogData();
       UpdateVersions();
     }
 
     void UseLatestCatalog() {
-      auto catalog = CatalogHandler::getInstance();
+      auto catalog = CatalogHandler::GetInstance();
       std::ofstream dest(GetPrivateCatalogPath());
       catalog->DownloadCatalog(&dest);
       dest.close();
@@ -357,7 +357,7 @@ protected:
     }
 
     void useDefaultUrl() {
-      auto url = CatalogHandler::getInstance()->GetDefaultUrl();
+      auto url = CatalogHandler::GetInstance()->GetDefaultUrl();
       m_parent->m_url_edit->setText(url);
     }
 
@@ -365,7 +365,7 @@ protected:
 
     void updateUrl() {
       auto text = m_parent->m_url_edit->getText();
-      CatalogHandler::getInstance()->SetCustomUrl(text.c_str());
+      CatalogHandler::GetInstance()->SetCustomUrl(text.c_str());
       m_catalog_grid->ReloadAvailableVersion();
     }
 
@@ -381,14 +381,14 @@ protected:
       auto flags =
           wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL);
       sizer->Add(staticText(_("Catalog channel: ")), flags);
-      auto catalog = CatalogHandler::getInstance();
+      auto catalog = CatalogHandler::GetInstance();
       wxArrayString channel_list;
       for (auto channel : catalog->GetChannels()) {
         channel_list.Add(channel.c_str());
       }
       auto channels = new wxChoice(this, wxID_ANY, wxDefaultPosition,
                                    wxDefaultSize, channel_list);
-      auto current = CatalogHandler::getInstance()->GetActiveChannel();
+      auto current = CatalogHandler::GetInstance()->GetActiveChannel();
       int ix = channels->FindString(current.c_str());
       channels->SetSelection(ix != wxNOT_FOUND ? ix : 0);
       channels->Bind(wxEVT_CHOICE,
@@ -400,7 +400,7 @@ protected:
     }
 
     void onChannelChange(wxCommandEvent& ev) {
-      CatalogHandler::getInstance()->SetActiveChannel(ev.GetString());
+      CatalogHandler::GetInstance()->SetActiveChannel(ev.GetString());
       m_catalog_grid->ReloadAvailableVersion();
     };
 
@@ -419,7 +419,7 @@ protected:
       sizer->Add(url_location, flags);
 
       auto url_edit = new wxBoxSizer(wxHORIZONTAL);
-      auto uri = CatalogHandler::getInstance()->GetCustomUrl();
+      auto uri = CatalogHandler::GetInstance()->GetCustomUrl();
       m_url_ctrl = new wxTextCtrl(this, wxID_ANY, uri);
       auto the_parent = dynamic_cast<CatalogUpdate*>(GetParent());
       m_url_ctrl->SetMinClientSize(the_parent->getWindowSize());
@@ -513,7 +513,7 @@ public:
       m_buttons->ActivateOk();
     } else {
       CatalogData catalog_data;
-      auto handler = CatalogHandler::getInstance();
+      auto handler = CatalogHandler::GetInstance();
       catalog_data = handler->LatestCatalogData();
       Hide();
       Refresh(true);
@@ -524,7 +524,7 @@ public:
 
   /** Runs in separate, detached thread, started from ctor. */
   void Worker() {
-    auto catalog = CatalogHandler::getInstance();
+    auto catalog = CatalogHandler::GetInstance();
     std::ostringstream json;
 
     auto status = catalog->LoadChannels(&json);
@@ -565,7 +565,7 @@ public:
       grid->Add(staticText(""), flags);
       grid->Add(staticText(""), flags);
       grid->Add(staticText(""), flags);
-      auto url = CatalogHandler::getInstance()->GetCustomUrl();
+      auto url = CatalogHandler::GetInstance()->GetCustomUrl();
       if (url != "") {
         grid->Add(staticText(_("Custom URL")), flags);
         grid->Add(staticText(url.c_str()), flags);

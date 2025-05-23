@@ -92,12 +92,8 @@
 
 #include "ais.h"
 
-#ifdef __MSVC__
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
 #endif
 
 #ifndef __WXMSW__
@@ -131,13 +127,10 @@ ViewPort::ViewPort() {
   b_MercatorProjectionOverride = false;
   lat0_cache = NAN;
   m_projection_type = PROJECTION_MERCATOR;
+  m_displayScale = 1.0;
 }
 
-void ViewPort::PixelScale(float scale) {
-  pix_width *= scale;
-  pix_height *= scale;
-  view_scale_ppm *= scale;
-}
+void ViewPort::SetPixelScale(double scale) { m_displayScale = scale; }
 
 // TODO: eliminate the use of this function
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) {
@@ -260,12 +253,22 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL(double lat, double lon) {
     dxr = epix * cos(angle) + npix * sin(angle);
     dyr = npix * cos(angle) - epix * sin(angle);
   }
-
-  return wxPoint2DDouble((pix_width / 2.0) + dxr, (pix_height / 2.0) - dyr);
+  double x = (pix_width / 2.0) + dxr;
+  double y = (pix_height / 2.0) - dyr;
+  if (!g_bopengl) {
+    // Convert from physical to logical pixels when not using OpenGL.
+    // This ensures that the viewport corner coordinates remain the
+    // same in OpenGL and no-OpenGL mode (especially in MacOS).
+    x /= m_displayScale;
+    y /= m_displayScale;
+  }
+  return wxPoint2DDouble(x, y);
 }
 
 void ViewPort::GetLLFromPix(const wxPoint2DDouble &p, double *lat,
                             double *lon) {
+  // Calculate distance from the center of the viewport to the given point in
+  // physical pixels.
   double dx = p.m_x - (pix_width / 2.0);
   double dy = (pix_height / 2.0) - p.m_y;
 
@@ -818,9 +821,9 @@ wxRect ViewPort::GetVPRectIntersect(size_t n, float *llpoints) {
 }
 
 void ViewPort::SetBoxes(void) {
-  //  In the case where canvas rotation is applied, we need to define a larger
-  //  "virtual" pixel window size to ensure that enough chart data is fatched
-  //  and available to fill the rotated screen.
+  // In the case where canvas rotation is applied, we need to define a larger
+  // "virtual" pixel window size to ensure that enough chart data is fatched
+  // and available to fill the rotated screen.
   rv_rect = wxRect(0, 0, pix_width, pix_height);
 
   //  Specify the minimum required rectangle in unrotated screen space which
@@ -857,8 +860,9 @@ void ViewPort::SetBoxes(void) {
   double rotation_save = rotation;
   SetRotationAngle(0.0);
 
-  wxPoint ul(rv_rect.x, rv_rect.y),
-      lr(rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height);
+  wxPoint ul(rv_rect.x, rv_rect.y);  // Upper left.
+  wxPoint lr(rv_rect.x + rv_rect.width,
+             rv_rect.y + rv_rect.height);  // Lower right.
   double dlat_min, dlat_max, dlon_min, dlon_max;
 
   bool hourglass = false;
