@@ -30,6 +30,7 @@ brew install zstd
 brew install libarchive
 brew install wxwidgets
 brew install create-dmg
+brew install gpatch
 
 if [ -d /usr/local/include ]; then
   ln -sf /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
@@ -60,6 +61,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn \
   -DOCPN_RELEASE=0 \
   -DOCPN_BUILD_TEST=ON \
+  -DOCPN_BUILD_SAMPLE=ON \
   ..
 
 # Compile OpenCPN

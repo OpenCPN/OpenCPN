@@ -40,6 +40,8 @@
 #include "model/local_api.h"
 #include "model/rest_server.h"
 #include "model/usb_watch_daemon.h"
+#include "data_monitor.h"
+
 class Track;
 
 class MyApp : public wxApp {

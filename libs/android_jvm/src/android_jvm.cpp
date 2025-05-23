@@ -17,7 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file android_jvm.cpp   Singleton Android Java JVM interface */
+/**
+ *  \file
+ *  Singleton Android Java JVM interface implementation
+ */
+
 #include <string>
 #include <wx/string.h>
 #include <QString>

@@ -8,7 +8,23 @@
 // Copyright:   (c) Julian Smart
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * Email Request System for GRIB Data.
+ *
+ * Provides portable email functionality for requesting GRIB weather data from
+ * email-based services. Features:
+ * - Cross-platform email sending capabilities
+ * - Support for multiple sending methods:
+ *   - Direct sendmail on Unix systems
+ *   - xdg-email for desktop integration
+ *   - System-specific methods for other platforms
+ * - Profile-based configuration
+ * - Message template handling
+ *
+ * The system allows mariners to request GRIB files through email services
+ * when direct downloads are not available or preferred.
+ */
 #ifndef _WX_EMAIL_H_
 #define _WX_EMAIL_H_
 

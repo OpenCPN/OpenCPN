@@ -420,7 +420,7 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath,
   } else if (chartExt == wxT("GEO")) {
     pch = new ChartGEO;
   } else if (chartExt == wxT("MBTILES")) {
-    pch = new ChartMBTiles;
+    pch = new ChartMbTiles;
   } else if (chartExt == wxT("000") || chartExt == wxT("S57")) {
     LoadS57();
     pch = new s57chart;
@@ -1175,7 +1175,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
       Ch = new ChartGEO();
 
     else if (chart_type == CHART_TYPE_MBTILES)
-      Ch = new ChartMBTiles();
+      Ch = new ChartMbTiles();
 
     else if (chart_type == CHART_TYPE_S57) {
       LoadS57();

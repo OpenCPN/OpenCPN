@@ -22,6 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <chrono>
 #include <memory>
 
 #ifdef __linux__
@@ -40,28 +41,26 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/progdlg.h>
-#include <wx/radiobox.h>
-#include <wx/listbox.h>
-#include <wx/imaglist.h>
-#include <wx/display.h>
 #include <wx/choice.h>
-#include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
+#include <wx/dirdlg.h>
+#include <wx/dir.h>
+#include <wx/display.h>
 #include <wx/fontdata.h>
 #include <wx/fontdlg.h>
-#include <wx/stdpaths.h>
-#include <wx/tokenzr.h>
+#include <wx/imaglist.h>
+#include <wx/listbox.h>
 #include <wx/mediactrl.h>
-#include <wx/dir.h>
 #include <wx/odcombo.h>
-#include <wx/statline.h>
+#include <wx/progdlg.h>
+#include <wx/radiobox.h>
 #include <wx/regex.h>
 #include <wx/renderer.h>
+#include <wx/statline.h>
+#include <wx/stdpaths.h>
 #include <wx/textwrapper.h>
+#include <wx/tokenzr.h>
 
-#include "model/comm_drv_factory.h"
-#include "model/comm_util.h"
 #include "conn_params_panel.h"
 
 #if defined(__WXGTK__) || defined(__WXQT__)
@@ -78,6 +77,8 @@
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/cmdline.h"
+#include "model/comm_drv_factory.h"
+#include "model/comm_util.h"
 #include "model/config_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
@@ -93,6 +94,7 @@
 #include "chcanv.h"
 #include "cm93.h"
 #include "ConfigMgr.h"
+#include "connections_dlg.h"
 #include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -162,9 +164,6 @@ extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
 extern Multiplexer* g_pMUX;
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -199,6 +198,7 @@ extern bool g_bFullscreenToolbar;
 extern bool g_bTransparentToolbar;
 extern bool g_bTransparentToolbarInOpenGLOK;
 
+extern int g_OwnShipmmsi;
 extern int g_OwnShipIconType;
 extern double g_n_ownship_length_meters;
 extern double g_n_ownship_beam_meters;
@@ -284,6 +284,7 @@ extern wxString g_default_wp_icon;
 extern int osMajor, osMinor;
 extern bool g_bShowMuiZoomButtons;
 extern MyConfig* pConfig;
+extern bool g_btenhertz;
 
 #ifdef __ANDROID__
 extern int g_Android_SDK_Version;
@@ -691,7 +692,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
 
 static bool LoadAllPlugIns(bool load_enabled) {
   g_Platform->ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::GetInstance()->LoadAllPlugIns(load_enabled);
   g_Platform->HideBusySpinner();
   return b;
 }
@@ -718,8 +719,11 @@ public:
 
   virtual ~OCPNCheckedListCtrl() {}
 
-  unsigned int Append(wxString& label, bool benable = true);
+  unsigned int Append(wxString& label, bool benable = true,
+                      bool bsizerLayout = true);
   unsigned int GetCount() { return m_list.GetCount(); }
+
+  void RunLayout();
 
   void Clear();
   void Check(int index, bool val);
@@ -751,12 +755,13 @@ bool OCPNCheckedListCtrl::Create(wxWindow* parent, wxWindowID id,
   return TRUE;
 }
 
-unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable) {
+unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable,
+                                         bool bsizerLayout) {
   wxCheckBox* cb = new wxCheckBox(this, wxID_ANY, label);
   cb->Enable(benable);
   cb->SetValue(!benable);
   m_sizer->Add(cb);
-  m_sizer->Layout();
+  if (bsizerLayout) m_sizer->Layout();
 
   m_list.Append(cb);
 
@@ -780,12 +785,10 @@ bool OCPNCheckedListCtrl::IsChecked(int index) {
     return false;
 }
 
+void OCPNCheckedListCtrl::RunLayout() { m_sizer->Layout(); }
+
 void OCPNCheckedListCtrl::Clear() {
-  for (unsigned int i = 0; i < m_list.GetCount(); i++) {
-    wxCheckBox* cb = m_list[i];
-    delete cb;
-  }
-  m_list.Clear();
+  WX_CLEAR_LIST(CBList, m_list);
   Scroll(0, 0);
 }
 
@@ -907,50 +910,102 @@ void MMSIEditDialog::CreateControls(void) {
   wxStaticBoxSizer* mmsiSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
   mainSizer->Add(mmsiSizer, 0, wxEXPAND | wxALL, 5);
 
-  mmsiSizer->Add(new wxStaticText(this, wxID_STATIC, _("MMSI")), 0,
-                 wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+  wxStaticText* mmsiLabel = new wxStaticText(this, wxID_STATIC, _("MMSI"));
+  mmsiLabel->SetToolTip(
+      _("Maritime Mobile Service Identity - A unique 9-digit number assigned "
+        "to a vessel or navigation aid. Used to identify vessels and devices "
+        "in AIS transmissions and DSC calls."));
+  mmsiSizer->Add(mmsiLabel, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
 
   m_MMSICtl = new wxTextCtrl(this, ID_MMSI_CTL, wxEmptyString,
                              wxDefaultPosition, wxSize(180, -1), 0);
+  m_MMSICtl->SetToolTip(
+      _("Enter the 9-digit MMSI number for this vessel or station"));
   mmsiSizer->Add(m_MMSICtl, 0,
                  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+  m_MMSICtl->Bind(wxEVT_TEXT, &MMSIEditDialog::OnMMSIChanged, this);
 
-  wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(
-      new wxStaticBox(this, wxID_ANY, _("Tracking")), wxVERTICAL);
+  wxStaticText* userLabelText = new wxStaticText(this, wxID_STATIC, _("Name"));
+  userLabelText->SetToolTip(
+      _("Display name for this vessel or device - can override names received "
+        "in AIS messages"));
+  mmsiSizer->Add(userLabelText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+
+  m_ShipNameCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
+                                 wxDefaultPosition, wxSize(180, -1), 0);
+  m_ShipNameCtl->SetToolTip(_(
+      "Set the name for this vessel or device. If specified, this name takes "
+      "precedence over names received via AIS messages. Note that standard AIS "
+      "only supports uppercase letters (A-Z), numbers, and limited "
+      "punctuation. Your manual entries are stored in the mmsitoname.csv file "
+      "and preserved across sessions."));
+  mmsiSizer->Add(m_ShipNameCtl, 0,
+                 wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+
+  wxStaticBox* trackBox = new wxStaticBox(this, wxID_ANY, _("Tracking"));
+  trackBox->SetToolTip(_("Control how tracks are created for this MMSI"));
+  wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(trackBox, wxVERTICAL);
 
   wxGridSizer* gridSizer = new wxGridSizer(0, 3, 0, 0);
 
   m_rbTypeTrackDefault =
       new wxRadioButton(this, wxID_ANY, _("Default tracking"),
                         wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+  m_rbTypeTrackDefault->SetToolTip(
+      _("Use the global tracking settings for this vessel"));
   m_rbTypeTrackDefault->SetValue(TRUE);
   gridSizer->Add(m_rbTypeTrackDefault, 0, wxALL, 5);
 
   m_rbTypeTrackAlways = new wxRadioButton(this, wxID_ANY, _("Always track"));
+  m_rbTypeTrackAlways->SetToolTip(_(
+      "Always create a track for this vessel, regardless of global settings"));
   gridSizer->Add(m_rbTypeTrackAlways, 0, wxALL, 5);
 
   m_rbTypeTrackNever = new wxRadioButton(this, wxID_ANY, _(" Never track"));
+  m_rbTypeTrackNever->SetToolTip(
+      _("Never create a track for this vessel, regardless of global settings"));
   gridSizer->Add(m_rbTypeTrackNever, 0, wxALL, 5);
 
   m_cbTrackPersist = new wxCheckBox(this, wxID_ANY, _("Persistent"));
+  m_cbTrackPersist->SetToolTip(
+      _("Save this vessel's track between OpenCPN sessions. Useful for vessels "
+        "you want to monitor continuously over time."));
   gridSizer->Add(m_cbTrackPersist, 0, wxALL, 5);
 
   trackSizer->Add(gridSizer, 0, wxEXPAND, 0);
   mmsiSizer->Add(trackSizer, 0, wxEXPAND, 0);
 
   m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
+  m_IgnoreButton->SetToolTip(
+      _("When checked, AIS data for this MMSI will be ignored and the vessel "
+        "will not appear on the chart. Useful for suppressing shore stations, "
+        "permanently moored vessels, or duplicate AIS signals that you don't "
+        "need to monitor."));
   mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
 
   m_MOBButton = new wxCheckBox(this, wxID_ANY,
                                _("Handle this MMSI as SART/PLB(AIS) MOB."));
+  m_MOBButton->SetToolTip(
+      _("When checked, OpenCPN will display a special icon for this device, "
+        "sound a distinctive alarm, and automatically create a temporary MOB "
+        "route from your vessel to this device in emergency. For crew safety "
+        "devices, you can assign the crew member's name using the Name "
+        "field above for quick identification."));
   mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
 
   m_VDMButton =
       new wxCheckBox(this, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI"));
+  m_VDMButton->SetToolTip(
+      _("When checked, converts AIS messages for this vessel from AIVDM (other "
+        "vessel) to AIVDO (own vessel) format."));
   mmsiSizer->Add(m_VDMButton, 0, wxEXPAND, 5);
 
   m_FollowerButton = new wxCheckBox(
       this, wxID_ANY, _("This MMSI is my Follower - No CPA Alert"));
+  m_FollowerButton->SetToolTip(
+      _("When checked, disables CPA (Closest Point of Approach) alerts for "
+        "this vessel as it's considered intentionally following your vessel. "
+        "Follower vessels are displayed with a special own-ship style icon."));
   mmsiSizer->Add(m_FollowerButton, 0, wxEXPAND, 5);
 
   wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -970,6 +1025,11 @@ void MMSIEditDialog::CreateControls(void) {
   else
     sMMSI = _T("");
   m_MMSICtl->AppendText(sMMSI);
+
+  // Initialize user label with existing ship name if available
+  if (!m_props->m_ShipName.IsEmpty()) {
+    m_ShipNameCtl->SetValue(m_props->m_ShipName);
+  }
 
   switch (m_props->TrackType) {
     case TRACKTYPE_ALWAYS:
@@ -1011,7 +1071,21 @@ void MMSIEditDialog::Persist() {
     m_props->m_bVDM = m_VDMButton->GetValue();
     m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
-    if (m_props->m_ShipName == wxEmptyString) {
+
+    // Get user-defined ship name if provided.
+    wxString shipName = m_ShipNameCtl->GetValue().Upper();
+    if (!shipName.IsEmpty()) {
+      m_props->m_ShipName = shipName;
+
+      // Save the custom name to mmsitoname.csv file
+      wxString mmsi = m_MMSICtl->GetValue();
+      if (!mmsi.IsEmpty() && mmsi.Length() == 9 && mmsi.IsNumber()) {
+        g_pAIS->UpdateMMSItoNameFile(mmsi, shipName);
+      }
+    }
+    // If no user label provided and no existing name, try to get from AIS data
+    // or file
+    else if (m_props->m_ShipName == wxEmptyString) {
       auto proptarget = g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
       if (proptarget) {
         wxString s = proptarget->GetFullName();
@@ -1052,6 +1126,31 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
 }
 
 void MMSIEditDialog::OnCtlUpdated(wxCommandEvent& event) {}
+
+void MMSIEditDialog::OnMMSIChanged(wxCommandEvent& event) {
+  wxString mmsi = m_MMSICtl->GetValue();
+
+  // Only proceed if we have a valid MMSI (9 digits)
+  if (!mmsi.IsEmpty() && mmsi.Length() == 9 && mmsi.IsNumber()) {
+    // First check for a stored name in mmsitoname.csv
+    wxString shipName = g_pAIS->GetMMSItoNameEntry(mmsi);
+
+    // If no stored name found, try to get from AIS data
+    if (shipName.IsEmpty()) {
+      auto target = g_pAIS->Get_Target_Data_From_MMSI(wxAtoi(mmsi));
+      if (target) {
+        shipName = target->GetFullName();
+      }
+    }
+
+    // Update the ship name field if we found a name
+    if (!shipName.IsEmpty()) {
+      m_ShipNameCtl->SetValue(shipName);
+    }
+  }
+
+  event.Skip();
+}
 
 BEGIN_EVENT_TABLE(MMSIListCtrl, wxListCtrl)
 EVT_LIST_ITEM_SELECTED(ID_MMSI_PROPS_LIST, MMSIListCtrl::OnListItemClick)
@@ -1474,6 +1573,7 @@ EVT_BUTTON(ID_APPLY, options::OnApplyClick)
 EVT_BUTTON(xID_OK, options::OnXidOkClick)
 EVT_BUTTON(wxID_CANCEL, options::OnCancelClick)
 EVT_BUTTON(ID_BUTTONFONTCHOOSE, options::OnChooseFont)
+EVT_BUTTON(ID_BUTTONFONT_RESET, options::OnResetFont)
 EVT_BUTTON(ID_BUTTONECDISHELP, options::OnButtonEcdisHelp)
 
 EVT_CHOICE(ID_CHOICE_FONTELEMENT, options::OnFontChoice)
@@ -1506,7 +1606,7 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
 
   SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
-  wxDialog::Create(parent, id, caption, pos, size, style);
+  wxDialog::Create(parent, id, caption, pos, size, style, "Options");
   SetFont(*dialogFont);
 
   CreateControls();
@@ -1516,7 +1616,7 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
   GlobalVar<wxString> compat_os(&g_compatOS);
   compat_os_listener.Listen(compat_os, this, EVT_COMPAT_OS_CHANGE);
   Bind(EVT_COMPAT_OS_CHANGE, [&](wxCommandEvent&) {
-    PluginLoader::getInstance()->LoadAllPlugIns(false);
+    PluginLoader::GetInstance()->LoadAllPlugIns(false);
     m_pPlugInCtrl->ReloadPluginPanels();
   });
   auto action = [&](wxCommandEvent& evt) {
@@ -1661,7 +1761,7 @@ void options::Init(void) {
   m_pagePlugins = -1;
   m_pageConnections = -1;
 
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
   b_oldhaveWMM = b_haveWMM;
 
@@ -1828,7 +1928,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
 bool options::DeletePluginPage(wxScrolledWindow* page) {
   for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
     wxNotebookPage* pg = m_pListbook->GetPage(i);
-    wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
+    auto nb = dynamic_cast<wxNotebook*>(pg);
 
     if (nb) {
       for (size_t j = 0; j < nb->GetPageCount(); j++) {
@@ -1862,7 +1962,14 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                                int group_item_spacing) {
   m_pNMEAForm = AddPage(parent, _("NMEA"));
 
-  comm_dialog = std::make_shared<ConnectionsDialog>(m_pNMEAForm, this);
+  comm_dialog =
+      std::make_shared<ConnectionsDlg>(m_pNMEAForm, TheConnectionParams());
+  // Hijacks the options | Resize event for use by comm_dialog only.
+  // Needs new solution if other pages also have a need to act on it.
+  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
+    comm_dialog->OnResize();
+    ev.Skip();
+  });
 }
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,
@@ -1990,7 +2097,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   radarGrid->Add(m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size);
 
   wxStaticText* colourText =
-      new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Colour"));
+      new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Color"));
   radarGrid->Add(colourText, 1, wxEXPAND | wxALL, group_item_spacing);
 
   m_colourOwnshipRangeRingColour = new OCPNColourPickerCtrl(
@@ -2040,6 +2147,34 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                    LineColorNChoices, m_LineColorChoices, 0);
   m_shipToActiveColor->SetSelection(0);
   shipToActiveGrid->Add(m_shipToActiveColor, 0, wxALL, 5);
+
+  // Ship's data
+  wxStaticBox* shipdata =
+      new wxStaticBox(itemPanelShip, wxID_ANY, _("Ship's identifier"));
+  wxStaticBoxSizer* datasizer = new wxStaticBoxSizer(shipdata, wxVERTICAL);
+  ownShip->Add(datasizer, 0, wxGROW | wxALL, border_size);
+
+  wxFlexGridSizer* ownmmsisizer =
+      new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
+  ownmmsisizer->AddGrowableCol(1);
+  datasizer->Add(ownmmsisizer, 0, wxALL | wxEXPAND, border_size);
+
+  // Enter own ship mmsi for a AIS transponder connection.
+  // Especially N2k devices may lack that info.
+  wxStaticText* pStatic_ownshipmmsi =
+      new wxStaticText(itemPanelShip, wxID_ANY,
+                       _("Own ship's MMSI. (If available) Nine digits"));
+  ownmmsisizer->Add(pStatic_ownshipmmsi, 0);
+
+  // Make a rule for mmsi txt control input
+  const wxString AllowDigits[] = {"0", "1", "2", "3", "4",
+                                  "5", "6", "7", "8", "9"};
+  wxArrayString ArrayAllowDigits(10, AllowDigits);
+  wxTextValidator mmsiVal(wxFILTER_INCLUDE_CHAR_LIST);
+  mmsiVal.SetIncludes(ArrayAllowDigits);
+  m_pTxt_OwnMMSI = new wxTextCtrl(itemPanelShip, wxID_ANY, "",
+                                  wxDefaultPosition, wxDefaultSize, 0, mmsiVal);
+  ownmmsisizer->Add(m_pTxt_OwnMMSI, 0, wxALIGN_RIGHT);
 
   //  Tracks
   wxStaticBox* trackText =
@@ -2103,7 +2238,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   hTrackGrid->Add(pTrackHighlite, 1, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL,
                   border_size);
   wxStaticText* trackColourText =
-      new wxStaticText(itemPanelShip, wxID_STATIC, _("Highlight Colour"));
+      new wxStaticText(itemPanelShip, wxID_STATIC, _("Highlight Color"));
   hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL,
                   border_size);
   m_colourTrackLineColour = new OCPNColourPickerCtrl(
@@ -2158,8 +2293,6 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0,
                                   wxALIGN_RIGHT | wxALL, group_item_spacing);
-
-  // DimeControl(itemPanelShip);
 }
 
 void options::CreatePanel_Routes(size_t parent, int border_size,
@@ -2350,7 +2483,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                          wxALIGN_RIGHT | wxALL, border_size);
 
   wxStaticText* waypointrangeringsColour = new wxStaticText(
-      itemPanelRoutes, wxID_STATIC, _("Waypoint Range Ring Colours"));
+      itemPanelRoutes, wxID_STATIC, _("Waypoint Range Ring Colors"));
   waypointradarGrid->Add(waypointrangeringsColour, 1, wxEXPAND | wxALL, 1);
 
   m_colourWaypointRangeRingsColour = new OCPNColourPickerCtrl(
@@ -2706,9 +2839,9 @@ void options::ClearConfigList() {
     for (unsigned int i = 0; i < kids.GetCount(); i++) {
       wxWindowListNode* node = kids.Item(i);
       wxWindow* win = node->GetData();
-      wxPanel* pcp = wxDynamicCast(win, wxPanel);
+      auto pcp = dynamic_cast<wxPanel*>(win);
       if (pcp) {
-        ConfigPanel* cPanel = wxDynamicCast(pcp, ConfigPanel);
+        auto cPanel = dynamic_cast<ConfigPanel*>(pcp);
         if (cPanel) {
           cPanel->Destroy();
         }
@@ -2822,9 +2955,9 @@ void options::OnApplyConfig(wxCommandEvent& event) {
     for (unsigned int i = 0; i < kids.GetCount(); i++) {
       wxWindowListNode* node = kids.Item(i);
       wxWindow* win = node->GetData();
-      wxPanel* pcp = wxDynamicCast(win, wxPanel);
+      auto pcp = dynamic_cast<wxPanel*>(win);
       if (pcp) {
-        ConfigPanel* cPanel = wxDynamicCast(pcp, ConfigPanel);
+        auto cPanel = dynamic_cast<ConfigPanel*>(pcp);
         if (cPanel) {
           cPanel->SetBackgroundColour(m_panelBackgroundUnselected);
         }
@@ -2844,15 +2977,15 @@ void options::OnConfigMouseSelected(wxMouseEvent& event) {
   wxPanel* selectedPanel = NULL;
   wxObject* obj = event.GetEventObject();
   if (obj) {
-    wxPanel* panel = wxDynamicCast(obj, wxPanel);
+    auto panel = dynamic_cast<wxPanel*>(obj);
     if (panel) {
       selectedPanel = panel;
     }
     // Clicked on child?
     else {
-      wxWindow* win = wxDynamicCast(obj, wxWindow);
+      auto win = dynamic_cast<wxWindow*>(obj);
       if (win) {
-        wxPanel* parentpanel = wxDynamicCast(win->GetParent(), wxPanel);
+        auto parentpanel = dynamic_cast<wxPanel*>(win->GetParent());
         if (parentpanel) {
           selectedPanel = parentpanel;
         }
@@ -2864,12 +2997,12 @@ void options::OnConfigMouseSelected(wxMouseEvent& event) {
       for (unsigned int i = 0; i < kids.GetCount(); i++) {
         wxWindowListNode* node = kids.Item(i);
         wxWindow* win = node->GetData();
-        wxPanel* panel = wxDynamicCast(win, wxPanel);
+        auto panel = dynamic_cast<wxPanel*>(win);
         if (panel) {
           if (panel == selectedPanel) {
             panel->SetBackgroundColour(wxSystemSettings::GetColour(
                 wxSystemColour::wxSYS_COLOUR_HIGHLIGHT));
-            ConfigPanel* cPanel = wxDynamicCast(panel, ConfigPanel);
+            auto cPanel = dynamic_cast<ConfigPanel*>(panel);
             if (cPanel) m_selectedConfigPanelGUID = cPanel->GetConfigGUID();
           } else
             panel->SetBackgroundColour(m_panelBackgroundUnselected);
@@ -4017,11 +4150,16 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pEnableZoomToCursor->SetValue(FALSE);
     boxCtrls->Add(pEnableZoomToCursor, verticleInputFlags);
 
-    // spacer
-    generalSizer->Add(0, border_size * 4);
-    generalSizer->Add(0, border_size * 4);
+    pEnableTenHertz = new wxCheckBox(pDisplayPanel, ID_TENHZCHECKBOX,
+                                     _("Enable Ten Hz screen update"));
+    pEnableTenHertz->SetValue(FALSE);
+    boxCtrls->Add(pEnableTenHertz, verticleInputFlags);
 
     if (!g_useMUI) {
+      // spacer
+      generalSizer->Add(0, border_size * 4);
+      generalSizer->Add(0, border_size * 4);
+
       // Display Options
       generalSizer->Add(
           new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Features")),
@@ -4256,8 +4394,9 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    m_Text_def_boat_speed = new wxStaticText( pDisplayPanel, wxID_ANY,
-               _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+    m_Text_def_boat_speed = new wxStaticText(
+        pDisplayPanel, wxID_ANY,
+        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
     defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),
@@ -4425,6 +4564,30 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     unitsSizer->Add(0, border_size * 4);
     unitsSizer->Add(0, border_size * 4);
 
+    // Selection of timezone for date/time display format:
+    // UTC, local time, or specific time zone.
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Date and Time")),
+                    groupLabelFlags);
+
+    wxBoxSizer* timezoneStyleBox = new wxBoxSizer(wxHORIZONTAL);
+    unitsSizer->Add(timezoneStyleBox, groupInputFlags);
+    wxBoxSizer* itemTimezoneBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    timezoneStyleBox->Add(itemTimezoneBoxSizer, 1, wxEXPAND | wxALL,
+                          border_size);
+    pTimezoneLocalTime =
+        new wxRadioButton(panelUnits, ID_TIMEZONE_LOCAL_TIME, _("Local Time"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneLocalTime, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+    pTimezoneUTC = new wxRadioButton(panelUnits, ID_TIMEZONE_UTC, _("UTC"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneUTC, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+
+    // spacer
+    unitsSizer->Add(0, border_size * 4);
+    unitsSizer->Add(0, border_size * 4);
+
     // bearings (magnetic/true, variation)
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Bearings")),
                     groupLabelFlags);
@@ -4566,6 +4729,30 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     unitsSizer->Add(0, border_size * 4);
     unitsSizer->Add(0, border_size * 4);
 
+    // Selection of timezone for date/time display format:
+    // UTC, local time, or specific time zone.
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Date and Time")),
+                    groupLabelFlags);
+
+    wxBoxSizer* timezoneStyleBox = new wxBoxSizer(wxHORIZONTAL);
+    unitsSizer->Add(timezoneStyleBox, groupInputFlags);
+    wxBoxSizer* itemTimezoneBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    timezoneStyleBox->Add(itemTimezoneBoxSizer, 1, wxEXPAND | wxALL,
+                          border_size);
+    pTimezoneLocalTime =
+        new wxRadioButton(panelUnits, ID_TIMEZONE_LOCAL_TIME, _("Local Time"),
+                          wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneLocalTime, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+    pTimezoneUTC = new wxRadioButton(panelUnits, ID_TIMEZONE_UTC, _("UTC"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+    itemTimezoneBoxSizer->Add(pTimezoneUTC, 0,
+                              wxALIGN_CENTER_VERTICAL | wxRIGHT, border_size);
+
+    // spacer
+    unitsSizer->Add(0, border_size * 4);
+    unitsSizer->Add(0, border_size * 4);
+
     // bearings (magnetic/true, variation)
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Bearings")),
                     groupLabelFlags);
@@ -4670,7 +4857,7 @@ OCPNSoundPanel::OCPNSoundPanel(wxWindow* parent, wxWindowID id,
                                wxString title, wxString checkLegend,
                                wxString selectLegend, wxString* pSoundFile)
     : wxPanel(parent, id, pos, size, wxBORDER_NONE), m_soundPlaying(false) {
-  wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
+  wxFont* pif = FontMgr::Get().GetFont(_("Dialog"));
   SetFont(*pif);
 
   m_pSoundFile = pSoundFile;
@@ -5007,17 +5194,28 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pCheck_CPA_Max = new wxCheckBox(
       panelAIS, -1,
       _("No (T)CPA Alerts if target range is greater than (NMi)"));
+  m_pCheck_CPA_Max->SetToolTip(
+      _("Disable CPA (Closest Point of Approach) and TCPA (Time to CPA) alerts "
+        "for targets beyond this distance from your vessel"));
   pCPAGrid->Add(m_pCheck_CPA_Max, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_Max = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_CPA_Max->SetToolTip(
+      _("Maximum distance in nautical miles at which Closest Point of Approach "
+        "alerts will be triggered"));
   pCPAGrid->Add(m_pText_CPA_Max, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_CPA_Warn =
       new wxCheckBox(panelAIS, -1, _("Warn if CPA less than (NMi)"));
+  m_pCheck_CPA_Warn->SetToolTip(
+      _("Enable warning alerts when targets have a Closest Point of Approach "
+        "less than this distance"));
   pCPAGrid->Add(m_pCheck_CPA_Warn, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_Warn =
       new wxTextCtrl(panelAIS, -1, "TEXT  ", wxDefaultPosition, wxSize(-1, -1));
+  m_pText_CPA_Warn->SetToolTip(
+      _("Distance threshold in nautical miles for CPA warning alerts"));
   pCPAGrid->Add(m_pText_CPA_Warn, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_CPA_Warn->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -5026,9 +5224,14 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_CPA_WarnT =
       new wxCheckBox(panelAIS, -1, _("...and TCPA is less than (min)"));
+  m_pCheck_CPA_WarnT->SetToolTip(
+      _("Additional time constraint - alerts only occur if the Time to Closest "
+        "Point of Approach is less than this value"));
   pCPAGrid->Add(m_pCheck_CPA_WarnT, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_WarnT = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_CPA_WarnT->SetToolTip(
+      _("Time threshold in minutes for TCPA constraints"));
   pCPAGrid->Add(m_pText_CPA_WarnT, 0, wxALL | wxALIGN_RIGHT,
                 group_item_spacing);
 
@@ -5043,17 +5246,28 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Mark_Lost =
       new wxCheckBox(panelAIS, -1, _("Mark targets as lost after (min)"));
+  m_pCheck_Mark_Lost->SetToolTip(
+      _("Targets will be considered lost when no update is received for this "
+        "time period"));
   pLostGrid->Add(m_pCheck_Mark_Lost, 1, wxALL, group_item_spacing);
 
   m_pText_Mark_Lost = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_Mark_Lost->SetToolTip(
+      _("Time in minutes after which targets with no updates are marked as "
+        "lost"));
   pLostGrid->Add(m_pText_Mark_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
   m_pCheck_Remove_Lost =
       new wxCheckBox(panelAIS, -1, _("Remove lost targets after (min)"));
+  m_pCheck_Remove_Lost->SetToolTip(
+      _("Lost targets will be completely removed from display after this "
+        "additional time period"));
   pLostGrid->Add(m_pCheck_Remove_Lost, 1, wxALL, group_item_spacing);
 
   m_pText_Remove_Lost = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_Remove_Lost->SetToolTip(_(
+      "Time in minutes after which lost targets are removed from the display"));
   pLostGrid->Add(m_pText_Remove_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
@@ -5070,9 +5284,15 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_COG = new wxCheckBox(
       panelAIS, -1, _("Show target COG predictor arrow, length (min)"));
+  m_pCheck_Show_COG->SetToolTip(
+      _("Display a predictor arrow for each AIS target, showing its projected "
+        "course over ground for the specified number of minutes."));
   pDisplayGrid->Add(m_pCheck_Show_COG, 1, wxALL | wxEXPAND, group_item_spacing);
 
   m_pText_COG_Predictor = new wxTextCtrl(panelAIS, -1, "TEXT  ");
+  m_pText_COG_Predictor->SetToolTip(
+      _("Set the length in minutes for the COG predictor arrow for AIS "
+        "targets."));
   pDisplayGrid->Add(m_pText_COG_Predictor, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -5088,6 +5308,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_Tracks =
       new wxCheckBox(panelAIS, -1, _("Show target tracks, length (min)"));
+  m_pCheck_Show_Tracks->SetToolTip(
+      _("Display the recent track (history) of each AIS target for the "
+        "specified number of minutes."));
   pDisplayGrid->Add(m_pCheck_Show_Tracks, 1, wxALL, group_item_spacing);
 
   m_pText_Track_Length = new wxTextCtrl(panelAIS, -1, "TEXT  ");
@@ -5096,6 +5319,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Hide_Moored = new wxCheckBox(
       panelAIS, -1, _("Suppress anchored/moored targets, speed max (kn)"));
+  m_pCheck_Hide_Moored->SetToolTip(
+      _("Hide AIS targets that are moving slower than this speed, typically "
+        "indicating they are anchored or moored."));
   pDisplayGrid->Add(m_pCheck_Hide_Moored, 1, wxALL, group_item_spacing);
 
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1, "TEXT  ");
@@ -5104,6 +5330,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Draw_Realtime_Prediction = new wxCheckBox(
       panelAIS, -1, _("Draw AIS realtime prediction, target speed min (kn)"));
+  m_pCheck_Draw_Realtime_Prediction->SetToolTip(
+      _("Show a real-time prediction vector for AIS targets moving faster than "
+        "this speed."));
   pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL,
                     group_item_spacing);
 
@@ -5114,6 +5343,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pCheck_Scale_Priority = new wxCheckBox(
       panelAIS, -1,
       _("Allow attenuation of less critical targets if more than ... targets"));
+  m_pCheck_Scale_Priority->SetToolTip(
+      _("Reduce the display prominence of less critical AIS targets when the "
+        "number of targets exceeds the specified value."));
   pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
 
   m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1, "TEXT  ");
@@ -5122,6 +5354,8 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_Area_Notices = new wxCheckBox(
       panelAIS, -1, _("Show area notices (from AIS binary messages)"));
+  m_pCheck_Show_Area_Notices->SetToolTip(
+      _("Display area notices received via AIS binary messages on the chart."));
   pDisplayGrid->Add(m_pCheck_Show_Area_Notices, 1, wxALL, group_item_spacing);
 
   wxStaticText* pStatic_Dummy5 = new wxStaticText(panelAIS, -1, _T(""));
@@ -5129,6 +5363,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Draw_Target_Size =
       new wxCheckBox(panelAIS, -1, _("Show AIS targets real size"));
+  m_pCheck_Draw_Target_Size->SetToolTip(
+      _("Display AIS targets using their actual reported size and shape on the "
+        "chart."));
   pDisplayGrid->Add(m_pCheck_Draw_Target_Size, 1, wxALL, group_item_spacing);
 
   wxStaticText* pStatic_Dummy6 = new wxStaticText(panelAIS, -1, _T(""));
@@ -5136,6 +5373,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_Show_Target_Name = new wxCheckBox(
       panelAIS, -1, _("Show names with AIS targets at scale greater than 1:"));
+  m_pCheck_Show_Target_Name->SetToolTip(
+      _("Display the name of AIS targets when the chart scale is greater than "
+        "the specified value."));
   pDisplayGrid->Add(m_pCheck_Show_Target_Name, 1, wxALL, group_item_spacing);
 
   m_pText_Show_Target_Name_Scale = new wxTextCtrl(panelAIS, -1, "TEXT     ");
@@ -5144,11 +5384,18 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   m_pCheck_use_Wpl = new wxCheckBox(
       panelAIS, -1, _("Use WPL position messages. Action when received:"));
+  m_pCheck_use_Wpl->SetToolTip(
+      _("Enable processing of WPL (Waypoint Location) position messages from "
+        "AIS and select the action to take when received."));
   pDisplayGrid->Add(m_pCheck_use_Wpl, 1, wxALL, group_item_spacing);
 
   wxString Wpl_Action[] = {_("APRS position report"), _("Create mark")};
   m_pWplAction = new wxChoice(panelAIS, wxID_ANY, wxDefaultPosition,
                               wxDefaultSize, 2, Wpl_Action);
+  m_pWplAction->SetToolTip(
+      _("Select the action to perform when a WPL message is received: create "
+        "an Automatic Packet Reporting System (APRS) report or a mark on the "
+        "chart."));
   pDisplayGrid->Add(m_pWplAction, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   // Rollover
@@ -5159,6 +5406,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   pRollover = new wxCheckBox(panelAIS, ID_ROLLOVERBOX,
                              _("Enable route/AIS info block"));
+  pRollover->SetToolTip(
+      _("Show a popup info block with details about routes and AIS targets "
+        "when hovering over them."));
   rolloverSizer->Add(pRollover, 1, wxALL, 2 * group_item_spacing);
 
   pRollover->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -5167,16 +5417,27 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   pStatic_CallSign =
       new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
+  pStatic_CallSign->SetToolTip(
+      _("Display the ship name and MMSI (call sign) in the rollover info "
+        "block."));
   rolloverSizer->Add(pStatic_CallSign, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_Class =
       new wxCheckBox(panelAIS, -1, _("[Class] Type (Status)"));
+  m_pCheck_Rollover_Class->SetToolTip(
+      _("Show the AIS class, type, and status in the rollover info block."));
   rolloverSizer->Add(m_pCheck_Rollover_Class, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_COG = new wxCheckBox(panelAIS, -1, _("SOG COG"));
+  m_pCheck_Rollover_COG->SetToolTip(
+      _("Show speed over ground (SOG) and course over ground (COG) in the "
+        "rollover info block."));
   rolloverSizer->Add(m_pCheck_Rollover_COG, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_CPA = new wxCheckBox(panelAIS, -1, _("CPA TCPA"));
+  m_pCheck_Rollover_CPA->SetToolTip(
+      _("Show Closest Point of Approach (CPA) and time to CPA (TCPA) in the "
+        "rollover info block."));
   rolloverSizer->Add(m_pCheck_Rollover_CPA, 1, wxALL, 2 * group_item_spacing);
 
   //      Alert Box
@@ -5284,6 +5545,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_itemLangListBox->Disable();
 #endif
 
+  // Fonts
   wxStaticBox* itemFontStaticBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
 
@@ -5307,16 +5569,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT, wxDefaultPosition,
                    fontChoiceSize, 0, NULL, wxCB_SORT);
 
-  int nFonts = FontMgr::Get().GetNumFonts();
-  for (int it = 0; it < nFonts; it++) {
-    const wxString& t = FontMgr::Get().GetDialogString(it);
-
-    if (FontMgr::Get().GetConfigString(it).StartsWith(g_locale)) {
-      m_itemFontElementListBox->Append(t);
-    }
+  wxArrayString uniqueStrings = FontMgr::Get().GetDialogStrings(g_locale);
+  for (size_t i = 0; i < uniqueStrings.GetCount(); i++) {
+    m_itemFontElementListBox->Append(uniqueStrings[i]);
   }
 
-  if (nFonts) m_itemFontElementListBox->SetSelection(0);
+  if (uniqueStrings.GetCount()) m_itemFontElementListBox->SetSelection(0);
 
   itemFontStaticBoxSizer->Add(m_itemFontElementListBox, 0, wxALL, border_size);
 
@@ -5330,6 +5588,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                    wxDefaultPosition, wxDefaultSize, 0);
   itemFontStaticBoxSizer->Add(itemFontColorButton, 0, wxALL, border_size);
 #endif
+  wxButton* itemFontResetButton =
+      new wxButton(itemPanelFont, ID_BUTTONFONT_RESET, _("Reset to Default"),
+                   wxDefaultPosition, wxDefaultSize, 0);
+  itemFontStaticBoxSizer->Add(itemFontResetButton, 0, wxALL, border_size);
+
   m_textSample = new wxStaticText(itemPanelFont, wxID_ANY, _("Sample"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   itemFontStaticBoxSizer->Add(m_textSample, 0, wxALL, border_size);
@@ -5391,7 +5654,6 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pToolbarAutoHideCB =
       new wxCheckBox(itemPanelFont, wxID_ANY, _("Enable Toolbar auto-hide"));
   pToolbarAutoHide->Add(pToolbarAutoHideCB, 0, wxALL, group_item_spacing);
-
   pToolbarHideSecs =
       new wxTextCtrl(itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                      wxSize(50, -1), wxTE_RIGHT);
@@ -5399,6 +5661,14 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   pToolbarAutoHide->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("seconds")),
                         group_item_spacing);
+
+  auto enable_debug_cb = new wxCheckBox(itemPanelFont, wxID_ANY,
+                                        _("Enable Debug in root context menu"));
+  enable_debug_cb->Bind(wxEVT_CHECKBOX, [enable_debug_cb](wxCommandEvent&) {
+    g_enable_root_menu_debug = enable_debug_cb->IsChecked();
+  });
+  enable_debug_cb->SetValue(g_enable_root_menu_debug);
+  miscOptions->Add(enable_debug_cb, 0, wxALL, group_item_spacing);
 
   wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
   miscOptions->Add(pShipsBellsSizer, 0, wxALL, group_item_spacing);
@@ -5532,6 +5802,30 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   miscOptions->Add(sliderSizer, 0, wxEXPAND, 5);
   miscOptions->AddSpacer(20);
+}
+
+void options::OnResetFont(wxCommandEvent& event) {
+  wxString itemElement;
+  int i = m_itemFontElementListBox->GetSelection();
+  if (i >= 0) {
+    itemElement = m_itemFontElementListBox->GetString(i);
+
+    if (FontMgr::Get().ResetFontToDefault(itemElement)) {
+      // Update the sample text with new default font
+      wxFont* pFont = FontMgr::Get().GetFont(itemElement);
+      wxColour colour = FontMgr::Get().GetFontColor(itemElement);
+
+      if (pFont) {
+        m_textSample->SetFont(*pFont);
+        m_textSample->SetForegroundColour(colour);
+        m_textSample->Refresh();
+      }
+      // Force immediate update of UI elements
+      gFrame->UpdateAllFonts();
+      m_bfontChanged = true;
+      OnFontChoice(event);
+    }
+  }
 }
 
 void options::OnAlertEnableButtonClick(wxCommandEvent& event) {
@@ -5768,7 +6062,7 @@ void options::CreateControls(void) {
   wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
   itemBoxSizer2->Add(buttons, 0, wxALIGN_RIGHT | wxALL, border_size);
 
-  m_OKButton = new wxButton(itemDialog1, xID_OK, _("OK"));
+  m_OKButton = new wxButton(itemDialog1, xID_OK, _("Ok"));
   m_OKButton->SetDefault();
   buttons->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
@@ -5933,9 +6227,10 @@ void options::SetInitialSettings(void) {
 
   m_returnChanges = 0;  // reset the flags
   m_bfontChanged = false;
+  m_font_element_array.Clear();
 
   b_oldhaveWMM = b_haveWMM;
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
 
   // Canvas configuration
@@ -6075,6 +6370,12 @@ void options::SetInitialSettings(void) {
     s.Printf(_T("%4.0f"), g_ownship_HDTpredictor_miles);
   m_pText_OSHDT_Predictor->SetValue(s);
 
+  if (g_OwnShipmmsi > 0) {
+    wxString s = wxString::Format("%i", g_OwnShipmmsi);
+    m_pTxt_OwnMMSI->SetValue(s);
+  } else
+    m_pTxt_OwnMMSI->SetValue("");
+
   m_pShipIconType->SetSelection(g_OwnShipIconType);
   wxCommandEvent eDummy;
   OnShipTypeSelect(eDummy);
@@ -6123,6 +6424,7 @@ void options::SetInitialSettings(void) {
   pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
 
   if (pEnableZoomToCursor) pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
+  pEnableTenHertz->SetValue(g_btenhertz);
 
   if (pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
@@ -6140,6 +6442,15 @@ void options::SetInitialSettings(void) {
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
+
+  if (g_datetime_format == "Local Time") {
+    pTimezoneLocalTime->SetValue(true);
+  } else if (g_datetime_format == "UTC") {
+    pTimezoneUTC->SetValue(true);
+  } else {
+    // Default to UTC if no saved timezone or if it's not in the list.
+    pTimezoneUTC->SetValue(true);
+  }
 
   pTrackDaily->SetValue(g_bTrackDaily);
   pTrackRotateLMT->SetValue(g_track_rotate_time_type == TIME_TYPE_LMT);
@@ -6294,9 +6605,6 @@ void options::SetInitialSettings(void) {
   delete m_pSerialArray;
   m_pSerialArray = NULL;
   m_pSerialArray = EnumerateSerialPorts();
-
-  comm_dialog->SetInitialSettings();
-
   m_bForceNewToolbaronCancel = false;
 }
 
@@ -6336,7 +6644,7 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd) {
       // The ListBox control will insert entries in sorted order, which means
       // we need to
       // keep track of already inserted items that gets pushed down the line.
-      int newpos = ps57CtlListBox->Append(item, benable);
+      int newpos = ps57CtlListBox->Append(item, benable, false);
       marinersStdXref.push_back(newpos);
       for (size_t i = 0; i < iPtr; i++) {
         if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
@@ -6355,6 +6663,10 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd) {
 
       ps57CtlListBox->Check(newpos, bviz);
     }
+
+    // Deferred layout instead of after every appended checkbox
+    ps57CtlListBox->RunLayout();
+
     //  Force the wxScrolledWindow to recalculate its scroll bars
     wxSize s = ps57CtlListBox->GetSize();
     ps57CtlListBox->SetSize(s.x, s.y - 1);
@@ -6401,8 +6713,10 @@ void options::SetInitialVectorSettings(void) {
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
       ChartCanvas* cc = g_canvasArray.Item(i);
       if (cc) {
-        if (cc->GetENCDisplayCategory() == MARINERS_STANDARD)
+        if (cc->GetENCDisplayCategory() == MARINERS_STANDARD) {
           benableMarStd = true;
+          break;
+        }
       }
     }
 
@@ -6792,6 +7106,26 @@ void options::UpdateWorkArrayFromDisplayPanel(void) {
 }
 
 void options::OnApplyClick(wxCommandEvent& event) {
+  ApplyChanges(event);
+
+  // Complete processing
+  //  Force reload of options dialog to pick up font changes, locale changes,
+  //  or other major layout changes
+  if ((m_returnChanges & FONT_CHANGED) ||
+      (m_returnChanges & NEED_NEW_OPTIONS)) {
+    gFrame->PrepareOptionsClose(this, m_returnChanges);
+    if (!(m_returnChanges & FONT_CHANGED_SAFE))
+      gFrame->ScheduleReconfigAndSettingsReload(true, true);
+  } else {
+    //  If we had a config change,
+    //  then schedule a re-entry to the settings dialog
+    if ((m_returnChanges & CONFIG_CHANGED)) {
+      gFrame->ScheduleReconfigAndSettingsReload(true, false);
+    }
+  }
+}
+
+void options::ApplyChanges(wxCommandEvent& event) {
   //::wxBeginBusyCursor();
   // FIXME This function is in ConnectionsDialog StopBTScan();
 
@@ -6863,7 +7197,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
       gFrame->GetPrimaryCanvas()->GetglCanvas()->ResetGridFont();
     }
 #endif
+
     m_returnChanges |= FONT_CHANGED;
+
+    // If the font element changed was not "Dialog", then we don't need a full
+    // reload
+    if (m_font_element_array.Index("Dialog") == wxNOT_FOUND)
+      m_returnChanges |= FONT_CHANGED_SAFE;
   }
 
   // Handle Chart Tab
@@ -6979,13 +7319,14 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bShowTrue = pCBTrueShow->GetValue();
   g_bShowMag = pCBMagShow->GetValue();
 
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
   if (!b_haveWMM && !b_oldhaveWMM) {
     pMagVar->GetValue().ToDouble(&g_UserVar);
     gVar = g_UserVar;
   }
 
+  g_OwnShipmmsi = wxAtoi(m_pTxt_OwnMMSI->GetValue());
   m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
   m_pText_OSHDT_Predictor->GetValue().ToDouble(&g_ownship_HDTpredictor_miles);
 
@@ -7068,8 +7409,16 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bHighliteTracks = pTrackHighlite->GetValue();
 
+  if (pTimezoneUTC->GetValue())
+    g_datetime_format = "UTC";
+  else if (pTimezoneLocalTime->GetValue())
+    g_datetime_format = "Local Time";
+
   if (pEnableZoomToCursor)
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
+
+  g_btenhertz = pEnableTenHertz->GetValue();
+
 #ifdef __ANDROID__
   g_bEnableZoomToCursor = false;
 #endif
@@ -7198,12 +7547,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
       MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui);
 
   //  Only reload the icons if user has actually visted the UI page
-  if (m_bVisitLang)
+  if (m_bVisitLang) {
     if (pWayPointMan) WayPointmanGui(*pWayPointMan).ReloadRoutepointIcons();
+  }
 
-      // FIXME Move these two
-      // g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
-      // g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
+  // FIXME Move these two
+  // g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
+  // g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
 
 #ifdef ocpnUSE_GL
   if (g_bopengl != pOpenGL->GetValue()) m_returnChanges |= GL_CHANGED;
@@ -7373,7 +7723,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // PlugIn Manager Panel
 
   // Pick up any changes to selections
-  if (PluginLoader::getInstance()->UpdatePlugIns())
+  if (PluginLoader::GetInstance()->UpdatePlugIns())
     m_returnChanges |= TOOLBAR_CHANGED;
 
   // And keep config in sync
@@ -7395,18 +7745,19 @@ void options::OnApplyClick(wxCommandEvent& event) {
     TideCurrentDataSet.push_back(setName.ToStdString());
   }
 
-  if (event.GetId() != ID_APPLY)  // only on ID_OK
-    g_canvasConfig = m_screenConfig;
+  if (g_canvasConfig != m_screenConfig) m_returnChanges |= CONFIG_CHANGED;
+  g_canvasConfig = m_screenConfig;
 
-  if (event.GetId() == ID_APPLY) {
+  // if (event.GetId() == ID_APPLY)
+  {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
     m_CurrentDirList =
         *m_pWorkDirList;  // Perform a deep copy back to main database.
 
     //  We can clear a few flag bits on "Apply", so they won't be recognised at
-    //  the "OK" click. Their actions have already been accomplished once...
-    m_returnChanges &= ~(CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE);
-    k_charts = 0;
+    //  the "Close" click. Their actions have already been accomplished once...
+    // m_returnChanges &= ~(CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE);
+    // k_charts = 0;
 
     gFrame->RefreshAllCanvas();
   }
@@ -7426,11 +7777,22 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   // second is empty??
   if (event.GetEventObject() == NULL) return;
 
-  OnApplyClick(event);
-  SetReturnCode(m_returnChanges);
-  if (event.GetInt() == wxID_STOP) return;
+  ApplyChanges(event);
+
+  // Complete processing
+  gFrame->PrepareOptionsClose(this, m_returnChanges);
+
+  //  If we had a config change, then do it now
+  if ((m_returnChanges & CONFIG_CHANGED))
+    gFrame->ScheduleReconfigAndSettingsReload(false, false);
+
+  // Special case for "Dialog" font edit
+  if ((m_returnChanges & FONT_CHANGED) &&
+      !(m_returnChanges & FONT_CHANGED_SAFE))
+    gFrame->ScheduleDeleteSettingsDialog();
 
   Finish();
+  Hide();
 }
 
 void options::Finish(void) {
@@ -7448,9 +7810,6 @@ void options::Finish(void) {
   pConfig->SetPath("/Settings");
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
-
-  SetReturnCode(m_returnChanges);
-  EndModal(m_returnChanges);
 }
 
 ArrayOfCDI options::GetSelectedChartDirs() {
@@ -7876,6 +8235,7 @@ void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
 
 void options::OnCancelClick(wxCommandEvent& event) {
   m_pListbook->ChangeSelection(0);
+  comm_dialog->CancelSettings();
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -7886,9 +8246,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  int rv = 0;
-  if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
-  EndModal(rv);
+  Hide();
 }
 
 void options::OnClose(wxCloseEvent& event) {
@@ -7904,11 +8262,13 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  EndModal(0);
+  gFrame->PrepareOptionsClose(this, m_returnChanges);
+  Hide();
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+  m_font_element_array.Add(sel_text_element);
 
   wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
@@ -7925,6 +8285,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
 #endif
 
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+  m_font_element_array.Add(sel_text_element);
   wxFontData font_data;
 
   wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
@@ -8007,6 +8368,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
 #if defined(__WXGTK__) || defined(__WXQT__)
 void options::OnChooseFontColor(wxCommandEvent& event) {
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+  m_font_element_array.Add(sel_text_element);
 
   wxColourData colour_data;
 
@@ -8133,6 +8495,8 @@ void options::DoOnPageChange(size_t page) {
 
   //  Sometimes there is a (-1) page selected.
   if (page > 10) return;
+
+  lastSubPage = 0;  // Reset sub-page
 
   lastPage = i;
 
@@ -8268,7 +8632,7 @@ void options::DoOnPageChange(size_t page) {
   } else if (m_pagePlugins == i) {  // 7 is the index of "Plugins" page
     // load the disabled plugins finally because the user might want to enable
     // them
-    auto loader = PluginLoader::getInstance();
+    auto loader = PluginLoader::GetInstance();
     if (LoadAllPlugIns(false)) {
       delete m_pPlugInCtrl;
       m_pPlugInCtrl = NULL;
@@ -8611,8 +8975,8 @@ void ChartGroupsUI::PopulateTreeCtrl(wxTreeCtrl* ptc,
       ptc->SetItemText(id, dirname);
       if (pFont) ptc->SetItemFont(id, *pFont);
 
-        // On MacOS, use the default system dialog color, to honor Dark mode.
 #ifndef __WXOSX__
+      // On MacOS, use the default system dialog color, to honor Dark mode.
       ptc->SetItemTextColour(id, col);
 #endif
       ptc->SetItemHasChildren(id);

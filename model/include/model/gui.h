@@ -17,11 +17,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file gui.h  Hooks int gui available in model. */
+/**
+ * \file
+ * Hooks into gui available in model.
+ */
 
 #include <wx/window.h>
+#include <model/nmea_log.h>
 
 static const char* const kTopLevelWindowName = "MainWindow";
+static const char* const kNmeaLogWindowName = "TtyPanel";
+static const char* const kDataMonitorWindowName = "DataMonitor";
 
 /** Return the top level window a k a gFrame. */
 wxWindow* GetTopWindow();

@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,18 +39,17 @@
 ** You can use it any way you like.
 */
 
-int HexValue( const wxString& hex_string )
-{
-   int return_value = 0;
+int HexValue(const wxString& hex_string) {
+  int return_value = 0;
 
-   long scan_value = 0;
+  long scan_value = 0;
 
-   wxCharBuffer abuf = hex_string.ToUTF8();
-   if( !abuf.data() )                            // badly formed sentence?
-        return 0;
+  wxCharBuffer abuf = hex_string.ToUTF8();
+  if (!abuf.data())  // badly formed sentence?
+    return 0;
 
-   sscanf( abuf.data(), "%lx",  &scan_value );
+  sscanf(abuf.data(), "%lx", &scan_value);
 
-   return_value = (int)scan_value;
-   return( return_value );
+  return_value = (int)scan_value;
+  return (return_value);
 }

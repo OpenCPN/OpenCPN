@@ -355,7 +355,8 @@ void CanvasOptions::OnOptionChange(wxCommandEvent& event) {
 }
 
 void CanvasOptions::RefreshControlValues(void) {
-  ChartCanvas* parentCanvas = wxDynamicCast(m_parent, ChartCanvas);
+  auto parentCanvas = dynamic_cast<ChartCanvas*>(m_parent);
+  ;
   if (!parentCanvas) return;
 
   m_bmode_change_while_hidden = !wxWindow::IsShown();
@@ -460,7 +461,7 @@ void CanvasOptions::SetENCAvailable(bool avail) {
 }
 
 void CanvasOptions::UpdateCanvasOptions(void) {
-  ChartCanvas* parentCanvas = wxDynamicCast(m_parent, ChartCanvas);
+  auto parentCanvas = dynamic_cast<ChartCanvas*>(m_parent);
   if (!parentCanvas) return;
 
   bool b_needRefresh = false;

@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( HDG_CLASS_HEADER )
+#if !defined(HDG_CLASS_HEADER)
 #define HDG_CLASS_HEADER
 
 /*
@@ -41,37 +40,34 @@
 ** You can use it any way you like.
 */
 
-class HDG : public RESPONSE
-{
+class HDG : public RESPONSE {
+public:
+  HDG();
+  ~HDG();
 
-   public:
+  /*
+  ** Data
+  */
 
-      HDG();
-     ~HDG();
+  double MagneticSensorHeadingDegrees;
+  double MagneticDeviationDegrees;
+  EASTWEST MagneticDeviationDirection;
+  double MagneticVariationDegrees;
+  EASTWEST MagneticVariationDirection;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      double   MagneticSensorHeadingDegrees;
-      double   MagneticDeviationDegrees;
-      EASTWEST MagneticDeviationDirection;
-      double   MagneticVariationDegrees;
-      EASTWEST MagneticVariationDirection;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const HDG& operator = ( const HDG& source );
+  virtual const HDG& operator=(const HDG& source);
 };
 
-#endif // HDG_CLASS_HEADER
+#endif  // HDG_CLASS_HEADER

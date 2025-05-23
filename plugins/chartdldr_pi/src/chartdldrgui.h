@@ -125,7 +125,6 @@ protected:
   wxButton* m_bUpdateChartList;
   wxButton* m_bUpdateAllCharts;
   wxStaticText* m_stCatalogInfo;
-  // wxButton* m_bHelp;
   wxButton* m_bDnldCharts;
   // wxButton* m_bShowLocal;
 #if defined(CHART_LIST)
@@ -157,7 +156,7 @@ protected:
   virtual void OnShowLocalDir(wxCommandEvent& event) { event.Skip(); }
   virtual void OnSize(wxSizeEvent& event);
 #ifdef HAVE_WX_GESTURE_EVENTS
-  void OnLongPress(wxLongPressEvent &event);
+  void OnLongPress(wxLongPressEvent& event);
 #endif
 
 #if defined(CHART_LIST)
@@ -208,6 +207,7 @@ protected:
   wxStaticLine* m_staticline1;
   wxCheckBox* m_cbBulkUpdate;
   wxStdDialogButtonSizer* m_sdbSizerBtns;
+  wxButton* m_bHelp;
   wxButton* m_sdbSizerBtnsOK;
   wxButton* m_sdbSizerBtnsCancel;
   wxButton* m_buttonChartDirectory;
@@ -244,9 +244,9 @@ public:
   wxCheckBox* GetCB() { return m_cb; }
   bool isNew() { return (m_stat == _("New")); }
   bool isUpdated() { return (m_stat == _("Out of date")); }
-  void OnLeftUp(wxMouseEvent &event);
+  void OnLeftUp(wxMouseEvent& event);
 #ifdef HAVE_WX_GESTURE_EVENTS
-    void OnLongPress(wxLongPressEvent &event);
+  void OnLongPress(wxLongPressEvent& event);
 #endif
 
 private:

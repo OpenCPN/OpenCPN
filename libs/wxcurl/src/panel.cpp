@@ -53,7 +53,6 @@ enum
     UseProxy = wxID_HIGHEST+1
 };
 
-IMPLEMENT_DYNAMIC_CLASS( wxCurlConnectionSettingsPanel, wxPanel )
 BEGIN_EVENT_TABLE( wxCurlConnectionSettingsPanel, wxPanel )
     EVT_CHECKBOX( UseProxy, wxCurlConnectionSettingsPanel::OnUseProxy )
 END_EVENT_TABLE()
@@ -207,5 +206,3 @@ void wxCurlConnectionSettingsPanel::OnUseProxy(wxCommandEvent &ev)
     m_pProxyPassword->Enable(ev.IsChecked());
     m_pProxyPort->Enable(ev.IsChecked());
 }
-
-

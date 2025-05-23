@@ -38,7 +38,7 @@ OcpnSound* SoundFactory(const char* not_used) { return new PortAudioSound(); }
 #include "SystemCmdSound.h"
 
 OcpnSound* SoundFactory(const char* sound_cmd) {
-    return new SystemCmdSound(sound_cmd ? sound_cmd : OCPN_SOUND_CMD);
+  return new SystemCmdSound(sound_cmd ? sound_cmd : OCPN_SOUND_CMD);
 }
 
 #elif defined(__WXMSW__)
@@ -46,9 +46,8 @@ OcpnSound* SoundFactory(const char* sound_cmd) {
 
 OcpnSound* SoundFactory(const char* not_used) { return new MswSound(); }
 
-
 #else
-#include  "OcpnWxSound.h"
+#include "OcpnWxSound.h"
 
 OcpnSound* SoundFactory(const char* not_used) { return new OcpnWxSound(); }
 

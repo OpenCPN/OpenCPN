@@ -83,6 +83,8 @@ double getValue(int animationType, double t);
 #define ID_SCALE_OK 8302
 #define ID_SCALECTRL 8303
 
+static inline void IgnoreRetval(size_t n) { (void)n; }
+
 class SetScaleDialog : public wxDialog {
   DECLARE_EVENT_TABLE()
 
@@ -489,7 +491,7 @@ ssfn_font_t* load_font(const char* filename) {
   gzread(g, fontdata, size);
   gzclose(g);
 #else
-  fread(fontdata, size, 1, f);
+  IgnoreRetval(fread(fontdata, size, 1, f));
   fclose(f);
 #endif
 
@@ -687,7 +689,8 @@ void MUITextButton::BuildBitmap() {
 
   if (m_ssfn_status != SSFN_OK) return;
 
-  int wbox, hbox;
+  int wbox = 0;
+  int hbox = 0;
   std::string t = m_text.ToStdString();
   ssfn_bbox(&ctx, (char*)t.c_str(), 0, &wbox, &hbox);
 
@@ -866,7 +869,7 @@ bool MUIBar::MouseEvent(wxMouseEvent& event) {
 }
 
 void MUIBar::OnScaleSelected(wxMouseEvent& event) {
-  ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+  auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
   if (!pcc) return;
 
   SetScaleDialog dlg(pcc);
@@ -882,13 +885,13 @@ void MUIBar::OnScaleSelected(wxMouseEvent& event) {
       dScale = wxMax(dScale, 1000);
       double displayScaleNow = pcc->GetScaleValue();
       double factor = displayScaleNow / dScale;
-      pcc->DoZoomCanvas(factor, false);
+      pcc->ZoomCanvasSimple(factor);
 
       // Run the calculation again, to reduce roundoff error in large scale
       // jumps.
       displayScaleNow = pcc->GetScaleValue();
       factor = displayScaleNow / dScale;
-      pcc->DoZoomCanvas(factor, false);
+      pcc->ZoomCanvasSimple(factor);
     }
   }
 }
@@ -900,6 +903,12 @@ void MUIBar::SetCanvasENCAvailable(bool avail) {
 
 void MUIBar::CreateControls() {
   wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
+
+  // Build one button to get sizes
+  MUIButton* tb = new MUIButton(m_parentCanvas, ID_ZOOMIN, m_scaleFactor,
+                                iconDir + _T("MUI_zoom-in.svg"));
+  wxSize button_size = tb->m_size;
+  delete tb;
 
   if (m_orientation == wxHORIZONTAL) {
     // Buttons
@@ -945,7 +954,7 @@ void MUIBar::CreateControls() {
     m_menuButton->m_position = wxPoint(xoff, 0);
     xoff += m_menuButton->m_size.x;
     m_size.x = xoff;
-    m_size.y = m_zinButton->m_size.y;
+    m_size.y = button_size.y;
 
   } else {
     int yoff = 0;
@@ -978,7 +987,7 @@ void MUIBar::CreateControls() {
     yoff += m_menuButton->m_size.y;
 
     m_size.y = yoff;
-    m_size.x = m_zinButton->m_size.x;
+    m_size.x = button_size.x;
   }
 }
 
@@ -1351,7 +1360,7 @@ void MUIBar::PullCanvasOptions() {
   m_animationTotalTime = 200;  // msec
 
   m_pushPull = CO_PULL;
-  ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+  auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
   pcc->m_b_paint_enable = false;
 
   // Start the animation....
@@ -1389,7 +1398,7 @@ void MUIBar::PushCanvasOptions() {
   m_animateSteps = 5;
   m_animationTotalTime = 100;  // msec
   m_pushPull = CO_PUSH;
-  ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+  auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
 
   // Start the animation....
   m_animateStep = 0;
@@ -1446,7 +1455,7 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent(wxTimerEvent& event) {
     m_currentCOPos = m_targetCOPos;
     m_canvasOptions->Show(m_pushPull == CO_PULL);
 
-    ChartCanvas* pcc = wxDynamicCast(m_parentCanvas, ChartCanvas);
+    auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
     if (pcc) {
       pcc->m_b_paint_enable = true;
 

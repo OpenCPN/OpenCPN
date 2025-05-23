@@ -1,4 +1,4 @@
-/***************************************************************************
+/**************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Track Properties Dialog
@@ -25,8 +25,10 @@
 #include "config.h"
 
 #include "model/georef.h"
+#include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -39,18 +41,24 @@
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
+#include "print_dialog.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
-#include "trackprintout.h"
+#include "track_printout.h"
 #include "TrackPropDlg.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
-#define UTCINPUT 0
-#define LTINPUT 1   // i.e. this PC local time
-#define LMTINPUT 2  // i.e. the remote location LMT time
+#define UTCINPUT 0  //!< Format date/time in UTC.
+#define LTINPUT \
+  1  //!< Format date/time using timezone configured in the operating system.
+#define LMTINPUT \
+  2  //!< Format date/time using Local Mean Time (LMT) at a given point.
+/** Format date/time according to global OpenCPN settings. */
+#define GLOBAL_SETTINGS_INPUT 3
+
 #define INPUT_FORMAT 1
 #define DISPLAY_FORMAT 2
 #define TIMESTAMP_FORMAT 3
@@ -61,33 +69,6 @@ extern Routeman* g_pRouteMan;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern MyConfig* pConfig;
 extern MyFrame* gFrame;
-extern PlugInManager* g_pi_manager;
-
-wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
-                     int format) {
-  wxString s = _T("");
-  wxString f;
-  if (format == INPUT_FORMAT)
-    f = _T("%x %H:%M");
-  else if (format == TIMESTAMP_FORMAT)
-    f = _T("%x %H:%M:%S");
-  else
-    f = _T(" %x %H:%M");
-  switch (tz_selection) {
-    case UTCINPUT:
-      s.Append(ts.Format(f));
-      if (format != INPUT_FORMAT) s.Append(_T(" UT"));
-      break;
-    case LTINPUT:
-      s.Append(ts.FromUTC().Format(f));
-      break;
-    case LMTINPUT:
-      wxTimeSpan lmt(0, 0, (int)LMT_offset, 0);
-      s.Append(ts.Add(lmt).Format(f));
-      if (format != INPUT_FORMAT) s.Append(_T(" LMT"));
-  }
-  return (s);
-}
 
 ///////////////////////////////////////////////////////////////////////////
 bool TrackPropDlg::instanceFlag = false;
@@ -190,6 +171,11 @@ TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
         wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
 
+  if (m_rbShowTimeGlobalSettings)
+    m_rbShowTimeGlobalSettings->Connect(
+        wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+        wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
+
   m_pMyLinkList = NULL;
 }
 
@@ -256,12 +242,30 @@ TrackPropDlg::~TrackPropDlg() {
     m_rbShowTimeLocal->Disconnect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
         wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
+  if (m_rbShowTimeGlobalSettings)
+    m_rbShowTimeGlobalSettings->Disconnect(
+        wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+        wxCommandEventHandler(TrackPropDlg::OnShowTimeTZ), NULL, this);
 
   instanceFlag = false;
 }
 
+static wxString getDatetimeTimezoneSelector(int selection) {
+  switch (selection) {
+    case UTCINPUT:
+      return "UTC";
+    case LTINPUT:
+      return "Local Time";
+    case LMTINPUT:
+      return "LMT";
+    case GLOBAL_SETTINGS_INPUT:
+    default:
+      return wxEmptyString;
+  }
+}
+
 void TrackPropDlg::OnActivate(wxActivateEvent& event) {
-  DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
+  auto pWin = dynamic_cast<DIALOG_PARENT*>(event.GetEventObject());
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
@@ -300,12 +304,14 @@ void TrackPropDlg::RecalculateSize(void) {
 
 static void addColumns(wxListCtrl* lctrl, int dx) {
   lctrl->InsertColumn(0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6);
-  lctrl->InsertColumn(1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10);
+  lctrl->InsertColumn(1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 11);
   lctrl->InsertColumn(2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8);
-  lctrl->InsertColumn(3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11);
-  lctrl->InsertColumn(4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11);
-  // Width of timestamp is typically 19 characters: 'MM/DD/YYYY HH:MM:SS'.
-  lctrl->InsertColumn(5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 19);
+  // Width of lat/lon may be up to 15 characters: 'DDD° MM.MMMM' W'.
+  lctrl->InsertColumn(3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 15);
+  lctrl->InsertColumn(4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 15);
+  // Width of timestamp may  be be up to 26 characters: 'MM/DD/YYYY HH:MM:SS PM
+  // UTC'.
+  lctrl->InsertColumn(5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 26);
   lctrl->InsertColumn(6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8);
 
   lctrl->SetMinSize(wxSize(-1, 50));
@@ -441,7 +447,8 @@ void TrackPropDlg::CreateControlsCompact() {
      wxRIGHT | wxBOTTOM, 5 );
   */
 
-  wxString pDispTimeZone[] = {_("UTC"), _("Local @ PC"), _("LMT @ Location")};
+  wxString pDispTimeZone[] = {_("UTC"), _("Local Time"), _("LMT@Location"),
+                              _("Honor Global Settings")};
 
   wxStaticText* itemStaticText12b =
       new wxStaticText(itemDialog1, wxID_STATIC, _("Time shown as"),
@@ -455,15 +462,21 @@ void TrackPropDlg::CreateControlsCompact() {
       m_rbShowTimeUTC, 0,
       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
-  m_rbShowTimePC = new wxRadioButton(itemDialog1, wxID_ANY, _("Local @ PC"));
+  m_rbShowTimePC = new wxRadioButton(itemDialog1, wxID_ANY, _("Local Time"));
   itemBoxSizer2->Add(
       m_rbShowTimePC, 0,
       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
   m_rbShowTimeLocal =
-      new wxRadioButton(itemDialog1, wxID_ANY, _("LMT @ Location"));
+      new wxRadioButton(itemDialog1, wxID_ANY, _("LMT@Location"));
   itemBoxSizer2->Add(
       m_rbShowTimeLocal, 0,
+      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+
+  m_rbShowTimeGlobalSettings =
+      new wxRadioButton(itemDialog1, wxID_ANY, _("Honor Global Settings"));
+  itemBoxSizer2->Add(
+      m_rbShowTimeGlobalSettings, 0,
       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
   wxFlexGridSizer* itemFlexGridSizer6b = new wxFlexGridSizer(3, 2, 0, 0);
@@ -586,6 +599,13 @@ void TrackPropDlg::CreateControlsCompact() {
 
   m_sdbBtmBtnsSizerExtend = new wxButton(this, wxID_ANY, _("Extend"),
                                          wxDefaultPosition, wxDefaultSize, 0);
+  m_sdbBtmBtnsSizerExtend->SetToolTip(
+      _("Extends this track by connecting it to another track.\n"
+        "Disabled when the track is active, the track is in a layer, or no "
+        "suitable track to connect to exists.\n"
+        "A suitable track is one that is visible, is different from this "
+        "track, and has its last point's timestamp earlier than or equal to "
+        "this track's first point's timestamp."));
   itemBoxSizerAux->Add(m_sdbBtmBtnsSizerExtend, 0,
                        wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
@@ -819,20 +839,27 @@ void TrackPropDlg::CreateControls(void) {
                       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
                       5);
 
-  m_rbShowTimePC = new wxRadioButton(m_panel0, wxID_ANY, _("Local @ PC"),
+  m_rbShowTimePC = new wxRadioButton(m_panel0, wxID_ANY, _("Local Time"),
                                      wxDefaultPosition, wxDefaultSize, 0);
   bSizerShowTime->Add(m_rbShowTimePC, 0,
                       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
                       5);
 
   m_rbShowTimeLocal =
-      new wxRadioButton(m_panel0, wxID_ANY, _("LMT @ Track Start"),
+      new wxRadioButton(m_panel0, wxID_ANY, _("LMT@Track Start"),
                         wxDefaultPosition, wxDefaultSize, 0);
   bSizerShowTime->Add(m_rbShowTimeLocal, 0,
                       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
                       5);
 
-  m_rbShowTimePC->SetValue(true);
+  m_rbShowTimeGlobalSettings =
+      new wxRadioButton(m_panel0, wxID_ANY, _("Honor Global Settings"),
+                        wxDefaultPosition, wxDefaultSize, 0);
+  bSizerShowTime->Add(m_rbShowTimeGlobalSettings, 0,
+                      wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
+                      5);
+
+  m_rbShowTimeGlobalSettings->SetValue(true);
 
   sbSizerPoints->Add(bSizerShowTime, 0, wxEXPAND, 5);
 
@@ -1023,9 +1050,9 @@ void TrackPropDlg::SetTrackAndUpdate(Track* pt) {
   if (m_pMyLinkList) delete m_pMyLinkList;
   m_pMyLinkList = new HyperlinkList();
 
-  int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
+  int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = m_pTrack->m_HyperlinkList->GetFirst();
+    wxHyperlinkListNode* linknode = m_pTrack->m_TrackHyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1088,21 +1115,20 @@ bool TrackPropDlg::UpdateProperties() {
       wxWindowListNode* node = kids.Item(i);
       wxWindow* win = node->GetData();
 
-      if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-        ((wxHyperlinkCtrl*)win)
-            ->Disconnect(
-                wxEVT_COMMAND_HYPERLINK,
-                wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
-        ((wxHyperlinkCtrl*)win)
-            ->Disconnect(
-                wxEVT_RIGHT_DOWN,
-                wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
+      auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+      if (link_win) {
+        link_win->Disconnect(
+            wxEVT_COMMAND_HYPERLINK,
+            wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
+        link_win->Disconnect(
+            wxEVT_RIGHT_DOWN,
+            wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
         win->Destroy();
       }
     }
     ///        m_scrolledWindowLinks->DestroyChildren();
-    int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-    HyperlinkList* hyperlinklist = m_pTrack->m_HyperlinkList;
+    int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
+    HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
     //            int len = 0;
     if (NbrOfLinks > 0) {
       wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
@@ -1317,13 +1343,14 @@ void TrackPropDlg::OnSplitBtnClick(wxCommandEvent& event) {
     Track* pTail = new Track();
     pHead->Clone(m_pTrack, 0, m_nSelected - 1, _("_A"));
     pTail->Clone(m_pTrack, m_nSelected - 1, m_pTrack->GetnPoints(), _("_B"));
+
     g_TrackList.push_back(pHead);
-    pConfig->AddNewTrack(pHead);
+    NavObj_dB::GetInstance().InsertTrack(pHead);
 
     g_TrackList.push_back(pTail);
-    pConfig->AddNewTrack(pTail);
+    NavObj_dB::GetInstance().InsertTrack(pTail);
 
-    pConfig->DeleteConfigTrack(m_pTrack);
+    NavObj_dB::GetInstance().DeleteTrack(m_pTrack);
 
     pSelect->DeleteAllSelectableTrackSegments(m_pTrack);
     RoutemanGui(*g_pRouteMan).DeleteTrack(m_pTrack);
@@ -1387,13 +1414,18 @@ void TrackPropDlg::OnTrackPropCopyTxtClick(wxCommandEvent& event) {
 }
 
 void TrackPropDlg::OnPrintBtnClick(wxCommandEvent& event) {
-  TrackPrintSelection* dlg =
-      new TrackPrintSelection(this, m_pTrack, m_lcPoints);
-  DimeControl(dlg);
-  dlg->ShowWindowModalThenDo([this, dlg](int retcode) {
-    if (retcode == wxID_OK) {
-    }
-  });
+  static std::set<int> s_options;  // keep selected options
+  TrackPrintDialog dlg(this, s_options);
+  int result = dlg.ShowModal();
+
+  if (result == wxID_OK) {
+    dlg.GetSelected(s_options);
+    TrackPrintout printout(m_pTrack, m_lcPoints, s_options);
+    auto& printer = PrintDialog::GetInstance();
+    printer.Initialize(wxPORTRAIT);
+    printer.EnablePageNumbers(true);
+    printer.Print(this, &printout);
+  }
 }
 
 void TrackPropDlg::OnTrackPropRightClick(wxListEvent& event) {
@@ -1499,21 +1531,21 @@ void TrackPropDlg::OnDeleteLink(wxCommandEvent& event) {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_COMMAND_HYPERLINK,
-                       wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(
-              wxEVT_RIGHT_DOWN,
-              wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
+    auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+    if (link_win) {
+      link_win->Disconnect(
+          wxEVT_COMMAND_HYPERLINK,
+          wxHyperlinkEventHandler(TrackPropDlg::OnHyperLinkClick));
+      link_win->Disconnect(
+          wxEVT_RIGHT_DOWN,
+          wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
       win->Destroy();
     }
   }
 
   ///    m_scrolledWindowLinks->DestroyChildren();
-  int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-  HyperlinkList* hyperlinklist = m_pTrack->m_HyperlinkList;
+  int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
+  HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
   //      int len = 0;
   if (NbrOfLinks > 0) {
     wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
@@ -1558,8 +1590,8 @@ void TrackPropDlg::OnEditLink(wxCommandEvent& event) {
   LinkPropDlg->ShowWindowModalThenDo([this, LinkPropDlg, findurl,
                                       findlabel](int retcode) {
     if (retcode == wxID_OK) {
-      int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-      HyperlinkList* hyperlinklist = m_pTrack->m_HyperlinkList;
+      int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
+      HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
       //            int len = 0;
       if (NbrOfLinks > 0) {
         wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
@@ -1622,7 +1654,7 @@ void TrackPropDlg::OnAddLink(wxCommandEvent& event) {
       h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
       h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
       h->LType = wxEmptyString;
-      m_pTrack->m_HyperlinkList->Append(h);
+      m_pTrack->m_TrackHyperlinkList->Append(h);
     }
   });
   //    sbSizerLinks->Layout();
@@ -1699,8 +1731,12 @@ void TrackPropDlg::OnShowTimeTZ(wxCommandEvent& event) {
     m_lcPoints->m_tz_selection = UTCINPUT;
   else if (m_rbShowTimePC && m_rbShowTimePC->GetValue())
     m_lcPoints->m_tz_selection = LTINPUT;
-  else
+  else if (m_rbShowTimeLocal && m_rbShowTimeLocal->GetValue())
     m_lcPoints->m_tz_selection = LMTINPUT;
+  else if (m_rbShowTimeGlobalSettings && m_rbShowTimeGlobalSettings->GetValue())
+    m_lcPoints->m_tz_selection = GLOBAL_SETTINGS_INPUT;
+  else
+    throw std::logic_error("Unexpected time zone selection");
   m_lcPoints->DeleteAllItems();
   InitializeList();
 }
@@ -1721,7 +1757,8 @@ bool TrackPropDlg::SaveChanges(void) {
     m_pTrack->m_style = (wxPenStyle)::StyleValues[m_cStyle->GetSelection()];
     m_pTrack->m_width = ::WidthValues[m_cWidth->GetSelection()];
 
-    pConfig->UpdateTrack(m_pTrack);
+    NavObj_dB::GetInstance().UpdateDBTrackAttributes(m_pTrack);
+
     pConfig->UpdateSettings();
   }
 
@@ -1731,7 +1768,7 @@ bool TrackPropDlg::SaveChanges(void) {
     v[_T("Name")] = m_pTrack->GetName();
     v[_T("GUID")] = m_pTrack->m_GUID;
     wxString msg_id(_T("OCPN_TRK_ACTIVATED"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   }
 
   return true;
@@ -1783,11 +1820,19 @@ OCPNTrackListCtrl::OCPNTrackListCtrl(wxWindow* parent, wxWindowID id,
                                      long style)
     : wxListCtrl(parent, id, pos, size, style) {
   m_parent = parent;
-  m_tz_selection = LTINPUT;
+  m_tz_selection = GLOBAL_SETTINGS_INPUT;
   m_LMT_Offset = 0;
 }
 
 OCPNTrackListCtrl::~OCPNTrackListCtrl() {}
+
+double OCPNTrackListCtrl::getStartPointLongitude() const {
+  if (m_pTrack->GetnPoints()) {
+    TrackPoint* prp = m_pTrack->GetPoint(0);
+    if (prp) return prp->m_lon;
+  }
+  return NAN;
+}
 
 wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
@@ -1841,10 +1886,13 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
 
     case 5: {
       wxDateTime timestamp = this_point->GetCreateTime();
-      if (timestamp.IsValid())
-        ret = timestamp2s(timestamp, m_tz_selection, m_LMT_Offset,
-                          TIMESTAMP_FORMAT);
-      else
+      if (timestamp.IsValid()) {
+        DateTimeFormatOptions opts =
+            DateTimeFormatOptions()
+                .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
+                .SetLongitude(getStartPointLongitude());
+        ret = ocpn::toUsrDateTimeFormat(timestamp.FromUTC(), opts);
+      } else
         ret = _T("----");
     } break;
 

@@ -22,6 +22,7 @@
  **************************************************************************/
 
 #include <locale>
+#include <set>
 
 #include <wx/gdicmn.h>
 #include <wx/tokenzr.h>
@@ -58,7 +59,22 @@ private:
 
 extern wxString g_locale;
 
+/**
+ * Static copy of effective UI locale.
+ *
+ * Used by FontMgr to support locale-specific font configurations. Allows for
+ * different fonts per language.
+ * Updated whenever UI locale changes via platform ChangeLocale().
+ * @see g_locale for main locale setting
+ */
 wxString s_locale;
+/**
+ * Default font size for user interface elements such as menus, dialogs, etc.
+ *
+ * @note Defaults to 0, which falls back to the system default font size.
+ * @note Currently only set on the Android platform.
+ * @note Can be manually overridden in opencpn.ini (DefaultFontSize parameter).
+ */
 int g_default_font_size;
 wxString g_default_font_facename;
 
@@ -99,37 +115,17 @@ FontMgr::~FontMgr() {
 void FontMgr::SetLocale(wxString &newLocale) { s_locale = newLocale; }
 
 wxColour FontMgr::GetFontColor(const wxString &TextElement) const {
-  //    Look thru the font list for a match
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
-    if (pmfd->m_dialogstring == TextElement) {
-      if (pmfd->m_configstring.BeforeFirst('-') == s_locale)
-        return pmfd->m_color;
-    }
-    node = node->GetNext();
-  }
-
-  return wxColour(0, 0, 0);
+  MyFontDesc *pmfd = GetFontDesc(TextElement);
+  return pmfd ? pmfd->m_color : wxColour(0, 0, 0);
 }
 
 bool FontMgr::SetFontColor(const wxString &TextElement,
                            const wxColour color) const {
-  //    Look thru the font list for a match
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
-    if (pmfd->m_dialogstring == TextElement) {
-      if (pmfd->m_configstring.BeforeFirst('-') == s_locale) {
-        pmfd->m_color = color;
-        return true;
-      }
-    }
-    node = node->GetNext();
+  MyFontDesc *pmfd = GetFontDesc(TextElement);
+  if (pmfd) {
+    pmfd->m_color = color;
+    return true;
   }
-
   return false;
 }
 
@@ -158,15 +154,54 @@ wxString FontMgr::GetFontConfigKey(const wxString &description) {
   return configkey;
 }
 
-wxFont *FontMgr::GetFont(const wxString &TextElement, int user_default_size) {
-  //    Look thru the font list for a match
+int FontMgr::GetSystemFontSize() {
+  static int sys_font_size = 0;
+  if (!sys_font_size) {
+    wxFont sys_font = *wxNORMAL_FONT;
+    sys_font_size = sys_font.GetPointSize();
+  }
+  return sys_font_size;
+}
+
+wxString FontMgr::GetSystemFontFaceName() {
+  static wxString sys_font_facename;
+  if (sys_font_facename.IsEmpty()) {
+    wxFont sys_font = *wxNORMAL_FONT;
+    sys_font_facename = sys_font.GetFaceName();
+  }
+  return sys_font_facename;
+}
+
+bool FontMgr::IsDefaultFontEntry(const MyFontDesc *font_desc) const {
+  return font_desc && font_desc->m_is_default;
+  /*
+  if (!font_desc || !font_desc->m_font) return false;
+
+  int font_size = font_desc->m_font->GetPointSize();
+  return (g_default_font_size && font_size == g_default_font_size) ||
+         (!g_default_font_size && font_size == GetSystemFontSize());
+  */
+}
+
+wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
+  // Look thru the font list for a match
   MyFontDesc *pmfd;
   auto node = m_fontlist->GetFirst();
+
   while (node) {
     pmfd = node->GetData();
-    if (pmfd->m_dialogstring == TextElement) {
-      if (pmfd->m_configstring.BeforeFirst('-') == s_locale)
+    // Check if the font matches both the text element and the requested size.
+    if (pmfd->m_dialogstring == TextElement &&
+        (pmfd->m_configstring.BeforeFirst('-') == s_locale)) {
+      if (requested_font_size == 0 && IsDefaultFontEntry(pmfd)) {
+        // Caller did not specify a font size, so return the default font.
+        // The user may have customized the default font in Options->User Fonts,
+        // else the system default font is used.
         return pmfd->m_font;
+      } else if (requested_font_size != 0 &&
+                 pmfd->m_font->GetPointSize() == requested_font_size) {
+        return pmfd->m_font;
+      }
     }
     node = node->GetNext();
   }
@@ -177,31 +212,54 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int user_default_size) {
   //    Now create a benign, always present native font
   //    with optional user requested default size
 
-  //    Get the system default font.
-  wxFont sys_font = *wxNORMAL_FONT;
-  int sys_font_size = sys_font.GetPointSize();
-  wxString FaceName = sys_font.GetFaceName();
-
   int new_size;
-  if (0 == user_default_size) {
-    if (g_default_font_size)
-      new_size = g_default_font_size;
-    else
-      new_size = sys_font_size;
+  if (0 == requested_font_size) {
+    new_size = g_default_font_size ? g_default_font_size : GetSystemFontSize();
   } else
-    new_size = user_default_size;
+    new_size = requested_font_size;
 
-  if (g_default_font_facename.Length()) FaceName = g_default_font_facename;
+  wxString face_name = g_default_font_facename.Length()
+                           ? g_default_font_facename
+                           : GetSystemFontFaceName();
 
-  wxString nativefont = GetSimpleNativeFont(new_size, FaceName);
+  wxString nativefont = GetSimpleNativeFont(new_size, face_name);
   wxFont *nf = wxFont::New(nativefont);
 
   wxColor color = GetDefaultFontColor(TextElement);
 
-  MyFontDesc *pnewfd = new MyFontDesc(TextElement, configkey, nf, color);
+  bool is_default = (requested_font_size == 0);
+  MyFontDesc *pnewfd =
+      new MyFontDesc(TextElement, configkey, nf, color, is_default);
   m_fontlist->Append(pnewfd);
 
   return pnewfd->m_font;
+}
+
+MyFontDesc *FontMgr::GetFontDesc(const wxString &TextElement) const {
+  // First try to find the default font entry
+  MyFontDesc *pmfd;
+  auto node = m_fontlist->GetFirst();
+  while (node) {
+    pmfd = node->GetData();
+    if (pmfd->m_dialogstring == TextElement && pmfd->m_is_default &&
+        pmfd->m_configstring.BeforeFirst('-') == s_locale) {
+      return pmfd;
+    }
+    node = node->GetNext();
+  }
+
+  // No default entry found, fall back to first matching entry
+  node = m_fontlist->GetFirst();
+  while (node) {
+    pmfd = node->GetData();
+    if (pmfd->m_dialogstring == TextElement &&
+        pmfd->m_configstring.BeforeFirst('-') == s_locale) {
+      return pmfd;
+    }
+    node = node->GetNext();
+  }
+
+  return NULL;
 }
 
 wxColour FontMgr::GetDefaultFontColor(const wxString &TextElement) {
@@ -247,31 +305,20 @@ wxString FontMgr::GetSimpleNativeFont(int size, wxString face) {
 bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont,
                       wxColour color) {
   //    Look thru the font list for a match
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
-    if (pmfd->m_dialogstring == TextElement) {
-      if (pmfd->m_configstring.BeforeFirst('-') == s_locale) {
-        // Todo Think about this
-        //
+  MyFontDesc *pmfd = GetFontDesc(TextElement);
+  // Todo Think about this
+  //
+  //      Cannot delete the present font, since it may be in use elsewhere
+  //      This WILL leak....but only on font changes
+  //              delete pmfd->m_font;                            // purge
+  //              any old value
+  if (pmfd) {
+    pmfd->m_font = pFont;
+    pmfd->m_nativeInfo = pFont->GetNativeFontInfoDesc();
+    pmfd->m_color = color;
 
-        //      Cannot delete the present font, since it may be in use elsewhere
-        //      This WILL leak....but only on font changes
-
-        //              delete pmfd->m_font;                            // purge
-        //              any old value
-
-        pmfd->m_font = pFont;
-        pmfd->m_nativeInfo = pFont->GetNativeFontInfoDesc();
-        pmfd->m_color = color;
-
-        return true;
-      }
-    }
-    node = node->GetNext();
+    return true;
   }
-
   return false;
 }
 
@@ -285,6 +332,26 @@ const wxString &FontMgr::GetConfigString(int i) const {
 const wxString &FontMgr::GetDialogString(int i) const {
   MyFontDesc *pfd = m_fontlist->Item(i)->GetData();
   return pfd->m_dialogstring;
+}
+
+wxArrayString FontMgr::GetDialogStrings(const wxString &locale) const {
+  std::set<wxString> uniqueStrings;
+
+  auto node = m_fontlist->GetFirst();
+  while (node) {
+    MyFontDesc *pmfd = node->GetData();
+    if (locale.IsEmpty() || pmfd->m_configstring.BeforeFirst('-') == locale) {
+      uniqueStrings.insert(pmfd->m_dialogstring);
+    }
+    node = node->GetNext();
+  }
+  wxArrayString strings;
+  strings.reserve(uniqueStrings.size());  // Pre-allocate for efficiency
+  for (const auto &str : uniqueStrings) {
+    strings.Add(str);
+  }
+
+  return strings;
 }
 
 const wxString &FontMgr::GetNativeDesc(int i) const {
@@ -475,24 +542,24 @@ void OCPNwxFontList::FreeAll(void) {
   m_fontVector.clear();
 }
 
-static wxString FontCandidates[] = {_T("AISTargetAlert"),
-                                    _T("AISTargetQuery"),
-                                    _T("StatusBar"),
-                                    _T("AIS Target Name" ),
-                                    _T("ObjectQuery"),
-                                    _T("RouteLegInfoRollover"),
-                                    _T("ExtendedTideIcon"),
-                                    _T("CurrentValue"),
-                                    _T("Console Legend"),
-                                    _T("Console Value"),
-                                    _T("AISRollover"),
-                                    _T("TideCurrentGraphRollover"),
-                                    _T("Marks"),
-                                    _T("ChartTexts"),
-                                    _T("ToolTips"),
-                                    _T("Dialog"),
-                                    _T("Menu"),
-                                    _T("GridText"),
+static wxString FontCandidates[] = {_("AISTargetAlert"),
+                                    _("AISTargetQuery"),
+                                    _("StatusBar"),
+                                    _("AIS Target Name"),
+                                    _("ObjectQuery"),
+                                    _("RouteLegInfoRollover"),
+                                    _("ExtendedTideIcon"),
+                                    _("CurrentValue"),
+                                    _("Console Legend"),
+                                    _("Console Value"),
+                                    _("AISRollover"),
+                                    _("TideCurrentGraphRollover"),
+                                    _("Marks"),
+                                    _("ChartTexts"),
+                                    _("ToolTips"),
+                                    _("Dialog"),
+                                    _("Menu"),
+                                    _("GridText"),
                                     _T("END_OF_LIST")};
 
 void FontMgr::ScrubList() {
@@ -592,8 +659,7 @@ void FontMgr::ScrubList() {
       break;
     }
 
-    GetFont(wxGetTranslation(candidate), g_default_font_size);
-
+    GetFont(wxGetTranslation(candidate));
     i++;
   }
 }
@@ -604,4 +670,26 @@ bool FontMgr::AddAuxKey(wxString key) {
   }
   m_AuxKeyArray.Add(key);
   return true;
+}
+
+bool FontMgr::ResetFontToDefault(const wxString &TextElement) {
+  // Create default font with system settings
+  int size = g_default_font_size ? g_default_font_size : GetSystemFontSize();
+  wxString face = g_default_font_facename.Length() ? g_default_font_facename
+                                                   : GetSystemFontFaceName();
+  wxString native = GetSimpleNativeFont(size, face);
+  wxFont *defaultFont = wxFont::New(native);
+
+  // Find and update the font descriptor
+  MyFontDesc *desc = GetFontDesc(TextElement);
+  if (desc) {
+    // Update font properties
+    desc->m_font = defaultFont;
+    desc->m_nativeInfo = native;
+    desc->m_color = GetDefaultFontColor(TextElement);
+    desc->m_is_default = true;
+    return true;
+  }
+
+  return false;
 }

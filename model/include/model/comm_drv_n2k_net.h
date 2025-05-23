@@ -34,6 +34,7 @@
 
 #include "model/comm_can_util.h"
 #include "model/comm_drv_n2k.h"
+#include "model/comm_drv_stats.h"
 #include "model/conn_params.h"
 
 #include <wx/datetime.h>
@@ -102,15 +103,17 @@ private:
   bool full_ = 0;
 };
 
-class CommDriverN2KNet : public CommDriverN2K, public wxEvtHandler {
+class CommDriverN2KNet : public CommDriverN2K,
+                         public wxEvtHandler,
+                         public DriverStatsProvider {
 public:
   CommDriverN2KNet();
   CommDriverN2KNet(const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN2KNet();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
+
   void SetListener(DriverListener& l) override {};
 
   void Open();
@@ -192,6 +195,13 @@ private:
   bool SendSentenceNetwork(std::vector<std::vector<unsigned char>> payload);
   bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char>& payload);
   bool PrepareForTX();
+  std::vector<unsigned char> PrepareLogPayload(
+      std::shared_ptr<const Nmea2000Msg>& msg,
+      std::shared_ptr<const NavAddr2000> addr);
+  void OnProdInfoTimer(wxTimerEvent& ev);
+
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
@@ -227,6 +237,8 @@ private:
   N2K_Format m_n2k_format;
   uint8_t m_order;
   char m_TX_flag;
+  bool m_TX_available;
+  wxTimer m_prodinfo_timer;
 
   ObsListener resume_listener;
 

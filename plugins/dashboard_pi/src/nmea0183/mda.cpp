@@ -38,101 +38,93 @@
 ** You can use it any way you like.
 */
 
-//IMPLEMENT_DYNAMIC( MDA, RESPONSE )
-// TODO: Read rest of MDA sentece.
+// IMPLEMENT_DYNAMIC( MDA, RESPONSE )
+//  TODO: Read rest of MDA sentece.
 
-MDA::MDA()
-{
-   Mnemonic = _T("MDA");
-   Empty();
+MDA::MDA() {
+  Mnemonic = _T("MDA");
+  Empty();
 }
 
-MDA::~MDA()
-{
-   Mnemonic.Empty();
-   Empty();
+MDA::~MDA() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void MDA::Empty( void )
-{
-//   ASSERT_VALID( this );
+void MDA::Empty(void) {
+  //   ASSERT_VALID( this );
 
-   Pressure = 0.0;
-   UnitOfMeasurement.Empty();
-   AirTemp = 999.0;
+  Pressure = 0.0;
+  UnitOfMeasurement.Empty();
+  AirTemp = 999.0;
 }
 
-bool MDA::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool MDA::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-/*Wind speed, meters/second
-**Wind speed, knots
-**Wind direction,
-**degrees Magnetic
-**Wind direction, degrees True
-**$
-**--
-**MDA,x.x,I,x.x,B,x.x,C,x.x,C,x.x,x.x,x.x,C,x.x,T,x.x,M,x.x,N,x.x,M*hh<CR><LF>
-**    |   |  |  |          Dew point, degrees C
-**    |   |  |  |          Absolute humidity, percent
-**    |   |  |  |          Relative humidity, percent
-**    |   |  |  |        Water temperature, degrees C
-**    |   |  |  |          Air temperature, degrees C
-**    |   |  |----Barometric pressure, bars
-**    |----- Barometric pressure, inches of mercur
-*/
+  /*Wind speed, meters/second
+  **Wind speed, knots
+  **Wind direction,
+  **degrees Magnetic
+  **Wind direction, degrees True
+  **$
+  **--
+  **MDA,x.x,I,x.x,B,x.x,C,x.x,C,x.x,x.x,x.x,C,x.x,T,x.x,M,x.x,N,x.x,M*hh<CR><LF>
+  **    |   |  |  |          Dew point, degrees C
+  **    |   |  |  |          Absolute humidity, percent
+  **    |   |  |  |          Relative humidity, percent
+  **    |   |  |  |        Water temperature, degrees C
+  **    |   |  |  |          Air temperature, degrees C
+  **    |   |  |----Barometric pressure, bars
+  **    |----- Barometric pressure, inches of mercur
+  */
 
+  /*
+  ** First we check the checksum...
+  */
 
-   /*
-   ** First we check the checksum...
-   */
+  if (sentence.IsChecksumBad(sentence.GetNumberOfDataFields() + 1) == TRUE ||
+      FALSE)  // diferent vendors have different length of data message and not
+              // 24 field as in standard.
+  {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
 
-   if ( sentence.IsChecksumBad( sentence.GetNumberOfDataFields() +1) == TRUE || FALSE ) //diferent vendors have different length of data message and not 24 field as in standard.
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
+  Pressure = sentence.Double(3);
+  UnitOfMeasurement = sentence.Field(4);
+  AirTemp = sentence.Double(5);
+  Humidity = sentence.Double(9);
 
-Pressure       = sentence.Double( 3 );
-UnitOfMeasurement = sentence.Field( 4 );
-AirTemp = sentence.Double(5);
-Humidity = sentence.Double(9);
+  if (UnitOfMeasurement == wxT("B")) {
+    Pressure = sentence.Double(3);  // from bar to Hecto pascal
+  }
 
-if(UnitOfMeasurement==wxT("B"))
-{
-   Pressure       = sentence.Double( 3 ); //from bar to Hecto pascal
-
+  return (TRUE);
 }
 
+bool MDA::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   return( TRUE );
+  /*
+  ** Let the parent do its thing
+  */
+
+  RESPONSE::Write(sentence);
+
+  sentence += Pressure;
+  sentence += UnitOfMeasurement;
+
+  sentence.Finish();
+
+  return (TRUE);
 }
 
-bool MDA::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+const MDA& MDA::operator=(const MDA& source) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  Pressure = source.Pressure;
+  UnitOfMeasurement = source.UnitOfMeasurement;
 
-   RESPONSE::Write( sentence );
-
-   sentence += Pressure;
-   sentence += UnitOfMeasurement;
-
-   sentence.Finish();
-
-   return( TRUE );
-}
-
-const MDA& MDA::operator = ( const MDA& source )
-{
-//   ASSERT_VALID( this );
-
-   Pressure       = source.Pressure;
-   UnitOfMeasurement = source.UnitOfMeasurement;
-
-   return( *this );
+  return (*this);
 }

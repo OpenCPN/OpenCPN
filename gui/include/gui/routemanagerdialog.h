@@ -69,8 +69,7 @@ public:
   void UpdateLists();
 
   void OnTabSwitch(wxNotebookEvent &event);
-  static void WptShowPropertiesDialog(std::vector<RoutePoint *> wpts,
-                                      wxWindow *parent);
+  static void WptShowPropertiesDialog(RoutePoint *wp, wxWindow *parent);
   void TrackToRoute(Track *track);
 
 private:

@@ -74,7 +74,7 @@ private:
       // "Default Setting"
       g_compatOsVersion = "";
       compat_os.Set("");
-      auto newOS = CompatOs::getInstance();
+      auto newOS = CompatOs::GetInstance();
       m_selected->SetLabel(newOS->name() + ":" + newOS->version());
     } else {
       auto current = GetString(GetSelection());
@@ -86,11 +86,11 @@ private:
   }
 
   wxArrayString getLabels() {
-    auto plug_handler = PluginHandler::getInstance();
+    auto plug_handler = PluginHandler::GetInstance();
     wxArrayString labels;
     labels.Add(_("Select new flavour"));
     labels.Add(_("Default setting"));
-    for (const auto& c : plug_handler->getCountByTarget()) {
+    for (const auto& c : plug_handler->GetCountByTarget()) {
       std::stringstream ss;
       ss << c.first << "   (" << c.second << ")";
       labels.Add(ss.str());
@@ -150,7 +150,7 @@ private:
 class CompatText : public wxStaticText {
 public:
   CompatText(wxWindow* parent) : wxStaticText(parent, wxID_ANY, "") {
-    auto compatOs = CompatOs::getInstance();
+    auto compatOs = CompatOs::GetInstance();
     SetLabel(compatOs->name() + ":" + compatOs->version());
   }
 };

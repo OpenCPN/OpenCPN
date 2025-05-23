@@ -249,12 +249,7 @@ void ConsoleCanvas::OnContextMenuSelection(wxCommandEvent& event) {
 }
 
 void ConsoleCanvas::ToggleRouteTotalDisplay() {
-  if (m_speedUsed == SPEED_VMG) {
-    m_speedUsed = SPEED_SOG;
-  } else {
-    m_speedUsed = SPEED_VMG;
-    g_bShowRouteTotal = !g_bShowRouteTotal;
-  }
+  m_speedUsed = m_speedUsed == SPEED_VMG ? SPEED_SOG : SPEED_VMG;
   LegRoute();
 }
 

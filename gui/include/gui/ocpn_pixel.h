@@ -286,9 +286,6 @@ protected:
 #ifdef __WXX11__
   bool CreateFromocpnXImage(ocpnXImage *poXI, int width, int height, int depth);
 #endif
-
-private:
-  DECLARE_DYNAMIC_CLASS(ocpnBitmap)
 };
 
 #endif  // ocpnUSE_ocpnBitmap
@@ -317,8 +314,6 @@ private:
 #ifdef ocpnUSE_DIBSECTION
   wxDIB *m_pselectedDIB;
 #endif
-
-  DECLARE_DYNAMIC_CLASS(ocpnMemDC)
 };
 
 #endif  // _OCPN_PIXEL_H_

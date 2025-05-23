@@ -42,7 +42,6 @@ extern MyFrame* gFrame;
  * GoToPositionDialog type definition
  */
 
-IMPLEMENT_DYNAMIC_CLASS(GoToPositionDialog, wxDialog)
 /*!
  * GoToPositionDialog event table definition
  */

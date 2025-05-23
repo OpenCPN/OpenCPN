@@ -30,6 +30,8 @@
 #include <map>
 #include <vector>
 
+#include <wx/datetime.h>
+
 #include "Station_Data.h"
 #include "IDX_entry.h"
 #include "TC_Error_Code.h"
@@ -104,6 +106,8 @@ public:
 
   int GetStationTimeOffset(IDX_entry *pIDX);
   int GetNextBigEvent(time_t *tm, int idx);
+  std::wstring GetTidalEventStr(int station_id, wxDateTime ref_dt, double lat,
+                                double lon, int dt_type);
   double GetStationLat(IDX_entry *pIDX);
   double GetStationLon(IDX_entry *pIDX);
 

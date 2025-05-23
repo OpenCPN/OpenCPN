@@ -25,6 +25,32 @@
 #ifndef __GLCHARTCANVAS_H__
 #define __GLCHARTCANVAS_H__
 
+// We need to set up our openGL environment before including
+// glcanvas.h which includes GL/gl.h
+#ifdef __ANDROID__
+#include <qopengl.h>
+#include <GL/gl_private.h>  // this is a cut-down version of gl.h
+#include <GLES2/gl2.h>
+
+#elif defined(ocpnUSE_GL)
+#if defined(__MSVC__)
+#include "glew.h"
+
+#elif defined(__WXOSX__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+typedef void (*_GLUfuncptr)();
+#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
+
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#include <GL/glu.h>
+
+#else
+#error platform not supported.
+#endif  // __ANDROID__
+#endif  // ocpnUSE_GL
+
 #include <wx/glcanvas.h>
 
 #include "dychart.h"
@@ -73,6 +99,19 @@ GLboolean QueryExtension(const char *extName);
 class ocpnGLOptions {
 public:
   bool m_bUseAcceleratedPanning;
+  /**
+   * Controls OpenGL canvas hardware-accelerated panning mode.
+   *
+   * When true, uses an OpenGL optimization where the chart is rendered to a
+   * texture (via FBO - Frame Buffer Object) during panning operations.
+   * This texture is then translated/moved using GPU operations rather than
+   * redrawing the entire chart for each pan event, significantly improving
+   * performance during chart panning.
+   *
+   * This is separate from standard chart panning which is enabled by default
+   * and uses left-click + drag. This flag only controls whether that panning
+   * uses hardware acceleration.
+   */
   bool m_bUseCanvasPanning;
 
   bool m_bTextureCompression;
@@ -96,6 +135,11 @@ class emboss_data;
 class Route;
 class ChartBaseBSB;
 
+/**
+ * OpenGL chart rendering canvas. Implements OpenGL-based rendering of charts
+ * and overlays. Handles initialization of OpenGL context, rendering loop,
+ * and interface with chart objects for drawing.
+ */
 class glChartCanvas : public wxGLCanvas {
 public:
   static bool CanClipViewport(const ViewPort &vp);
@@ -156,6 +200,13 @@ public:
   void OnEvtPinchGesture(wxQT_PinchGestureEvent &event);
   void onGestureTimerEvent(wxTimerEvent &event);
   void onGestureFinishTimerEvent(wxTimerEvent &event);
+#else
+#ifdef HAVE_WX_GESTURE_EVENTS
+  void OnEvtPanGesture(wxPanGestureEvent &event);
+  void OnEvtZoomGesture(wxZoomGestureEvent &event);
+  void onGestureTimerEvent(wxTimerEvent &event);
+  void onGestureFinishTimerEvent(wxTimerEvent &event);
+#endif
 #endif
 
   void onZoomTimerEvent(wxTimerEvent &event);
@@ -234,6 +285,8 @@ protected:
   void DrawGLCurrentsInBBox(ocpnDC &dc, LLBBox &BBox);
 
   void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
+  wxBitmap &GetTouchBackingBitmap(ViewPort &vp);
+  void CreateBackingTexture();
 
   void RendertoTexture(GLint tex);
 
@@ -322,7 +375,16 @@ protected:
   int m_glcanvas_width;
   int m_glcanvas_height;
 
+  float m_total_zoom_val;
+  float m_final_zoom_val;
+
   bool m_bUseGLSL;
+
+  wxBitmap m_touch_backing_bitmap;
+  unsigned int m_TouchBackingTexture;
+  int m_tex_w, m_tex_h, m_image_width, m_image_height;
+  ViewPort m_texVP;
+  float m_zoom_inc;
 
   DECLARE_EVENT_TABLE()
 };
