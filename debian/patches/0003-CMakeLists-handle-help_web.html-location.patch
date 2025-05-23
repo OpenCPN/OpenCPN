@@ -1,16 +1,19 @@
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Sun, 21 Jul 2024 10:37:32 +0200
-Subject: CMakeLists: help_web.html path error fix
+Date: Sun, 21 Jul 2024 03:35:57 +0200
+Subject: CMakeLists: handle help_web.html location3
 
+Not acceptable upstream, this is a consequence of us removing the manual.
+
+Forwarded: not-needed
 ---
  CMakeLists.txt | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1cc2073..5f6e029 100644
+index 3d38655..6356fb1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1849,7 +1849,7 @@ if (APPLE)
+@@ -1825,7 +1825,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -19,7 +22,7 @@ index 1cc2073..5f6e029 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1889,11 +1889,11 @@ if (APPLE)
+@@ -1865,11 +1865,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
@@ -33,7 +36,7 @@ index 1cc2073..5f6e029 100644
    endif ()
  
    target_sources(
-@@ -2054,7 +2054,7 @@ if (NOT APPLE)
+@@ -2034,7 +2034,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()
