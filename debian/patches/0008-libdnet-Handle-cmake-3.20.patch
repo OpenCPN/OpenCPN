@@ -1,0 +1,25 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Fri, 23 May 2025 14:15:58 +0200
+Subject: libdnet: Handle cmake < 3.20
+
+---
+ libs/libdnet/cmake/PatchFile.cmake | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/libs/libdnet/cmake/PatchFile.cmake b/libs/libdnet/cmake/PatchFile.cmake
+index 70dfec8..79395d8 100644
+--- a/libs/libdnet/cmake/PatchFile.cmake
++++ b/libs/libdnet/cmake/PatchFile.cmake
+@@ -29,7 +29,11 @@ find_package(Git REQUIRED)
+ 
+ set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDOUT)
+ 
+-cmake_path(GET patch FILENAME patch_name)
++if (${CMAKE_VERSION} VERSION_LESS 3.20.0)
++  get_filename_component(name ${patch_name} NAME)
++else ()
++  cmake_path(GET patch FILENAME patch_name)
++endif ()
+ 
+ execute_process(
+   COMMAND ${GIT_EXECUTABLE} --git-dir= apply -p1 --ignore-whitespace "${patch}"
