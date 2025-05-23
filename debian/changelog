@@ -1,8 +1,12 @@
-opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
   * New upstream beta release
+  * Drop upstream patches, rebase the rest
+  * New patch: Disable locale-dependent tests
+  * Update installation paths
+  * Drop obsolete lintian-overrides
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 13:16:43 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 13:36:09 +0200
 
 opencpn (1:5.10.2+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
