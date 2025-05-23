@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 if (TARGET ocpn::wxcurl)
     return ()
 endif ()
 
 if (POLICY CMP0077)
-    CMAKE_POLICY(SET CMP0077 OLD)
+  CMAKE_POLICY(SET CMP0077 NEW)
 endif ()
 
 set(SRC

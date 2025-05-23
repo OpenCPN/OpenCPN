@@ -32,6 +32,9 @@ sudo apt update -q -y
 # Avoid using outdated TLS certificates, see #2419.
 sudo apt install --reinstall  ca-certificates
 
+# https://stackoverflow.com/questions/73397110
+sudo sed -i "/{restart}/s/i/a/" /etc/needrestart/needrestart.conf
+
 # Install required packages
 sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2
 

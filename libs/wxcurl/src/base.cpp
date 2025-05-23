@@ -273,8 +273,6 @@ std::string wxCurlProgressBaseEvent::GetHumanReadableSpeed(const std::string &in
 
 DEFINE_EVENT_TYPE(wxCURL_DOWNLOAD_EVENT);
 
-IMPLEMENT_DYNAMIC_CLASS(wxCurlDownloadEvent, wxEvent);
-
 wxCurlDownloadEvent::wxCurlDownloadEvent()
 : wxCurlProgressBaseEvent(-1, wxCURL_DOWNLOAD_EVENT),
   m_rDownloadTotal(0.0), m_rDownloadNow(0.0)
@@ -307,8 +305,6 @@ wxCurlDownloadEvent::wxCurlDownloadEvent(const wxCurlDownloadEvent& event)
 //////////////////////////////////////////////////////////////////////
 
 DEFINE_EVENT_TYPE(wxCURL_UPLOAD_EVENT);
-
-IMPLEMENT_DYNAMIC_CLASS(wxCurlUploadEvent, wxEvent);
 
 wxCurlUploadEvent::wxCurlUploadEvent()
 : wxCurlProgressBaseEvent(-1, wxCURL_UPLOAD_EVENT),
@@ -343,8 +339,6 @@ wxCurlUploadEvent::wxCurlUploadEvent(const wxCurlUploadEvent& event)
 
 DEFINE_EVENT_TYPE(wxCURL_BEGIN_PERFORM_EVENT);
 
-IMPLEMENT_DYNAMIC_CLASS(wxCurlBeginPerformEvent, wxEvent);
-
 wxCurlBeginPerformEvent::wxCurlBeginPerformEvent()
 : wxEvent(-1, wxCURL_BEGIN_PERFORM_EVENT)
 {
@@ -371,8 +365,6 @@ wxCurlBeginPerformEvent::wxCurlBeginPerformEvent(const wxCurlBeginPerformEvent& 
 //////////////////////////////////////////////////////////////////////
 
 DEFINE_EVENT_TYPE(wxCURL_END_PERFORM_EVENT);
-
-IMPLEMENT_DYNAMIC_CLASS(wxCurlEndPerformEvent, wxEvent);
 
 wxCurlEndPerformEvent::wxCurlEndPerformEvent()
 : wxEvent(-1, wxCURL_END_PERFORM_EVENT),

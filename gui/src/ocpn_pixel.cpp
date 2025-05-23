@@ -448,8 +448,6 @@ unsigned char *PixelCache::GetpData(void) const { return pData; }
 // ----------------------------------------------------------------------------
 #define M_BMPDATA wx_static_cast(wxBitmapRefData *, m_refData)
 
-IMPLEMENT_DYNAMIC_CLASS(ocpnBitmap, wxBitmap /*wxGDIObject*/)
-
 // class wxBitmapRefData;
 
 // ============================================================================
@@ -1062,8 +1060,6 @@ bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
 // ============================================================================
 // ocpnMemDC implementation
 // ============================================================================
-
-IMPLEMENT_DYNAMIC_CLASS(ocpnMemDC, wxMemoryDC)
 
 ocpnMemDC::ocpnMemDC() {}
 

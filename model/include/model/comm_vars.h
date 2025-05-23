@@ -35,6 +35,11 @@ extern int g_priSats;
 extern int g_SatsInView;
 
 extern bool g_bVAR_Rx;
+/**
+ * Indicates valid GNSS reception status based on satellite visibility
+ * and successful parsing of NMEA0183, SignalK, or NMEA2000 data.
+ * Reset to false if no valid signal is received within watchdog timeout period.
+ */
 extern bool g_bSatValid;
 extern wxString g_ownshipMMSI_SK;
 #endif  // COMM_VARS_H__

@@ -54,6 +54,11 @@ private:
   wxWindow* m_pparent;
 };
 
+/**
+ * Dialog for displaying AIS target alerts. Shows alerts for specific AIS
+ * targets, allowing user interaction such as acknowledging or silencing the
+ * alert.
+ */
 class AISTargetAlertDialog : public OCPN_AlertDialog {
   DECLARE_CLASS(AISTargetAlertDialog)
   DECLARE_EVENT_TABLE()
@@ -61,6 +66,7 @@ public:
   AISTargetAlertDialog();
 
   ~AISTargetAlertDialog();
+  using OCPN_AlertDialog::Create;
   bool Create(int target_mmsi, wxWindow* parent, AisDecoder* pdecoder,
               bool b_jumpto, bool b_createWP, bool b_ack,
               wxWindowID id = wxID_ANY,

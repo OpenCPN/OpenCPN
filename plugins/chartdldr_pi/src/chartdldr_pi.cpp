@@ -59,7 +59,7 @@
 #include "unarr.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS
 #endif
 
@@ -71,9 +71,6 @@
 #include <jni.h>
 #endif
 
-
-
-
 #ifdef __WXMAC__
 #define CATALOGS_NAME_WIDTH 300
 #define CATALOGS_DATE_WIDTH 120
@@ -82,7 +79,7 @@
 #define CHARTS_STATUS_WIDTH 100
 #define CHARTS_DATE_WIDTH 120
 #else
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
 #define CATALOGS_NAME_WIDTH 350
 #define CATALOGS_DATE_WIDTH 500
@@ -103,7 +100,7 @@
 #endif
 #endif  // __WXMAC__
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <QtAndroidExtras/QAndroidJniObject>
 #include "qdebug.h"
 
@@ -113,24 +110,19 @@ bool getDisplayMetrics();
 
 #define CHART_DIR "Charts"
 
-void write_file(const wxString extract_file, char *data,
-                unsigned long datasize) {
-  wxFileName fn(extract_file);
-  if (wxDirExists(fn.GetPath())) {
-    if (!wxFileName::Mkdir(fn.GetPath(), 0755, wxPATH_MKDIR_FULL)) {
-      wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
-      return;
-    }
-  }
-  wxFileOutputStream f(extract_file);
-  f.Write(data, datasize);
-  f.Close();
+static wxString FormatBytes(double bytes) {
+  if (bytes <= 0) return "?";
+  return wxString::Format(_T("%.1fMB"), bytes / 1024 / 1024);
+}
+
+static wxString FormatBytes(long bytes) {
+  return FormatBytes(static_cast<double>(bytes));
 }
 
 int g_Android_SDK_Version;
 
 bool IsDLDirWritable(wxFileName fn) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   return fn.IsDirWritable();
 #else
   if (g_Android_SDK_Version >= 30) {  // scoped storage?
@@ -180,7 +172,6 @@ chartdldr_pi::chartdldr_pi(void *ppimgr) : opencpn_plugin_113(ppimgr) {
   m_pOptionsPage = NULL;
   m_selected_source = -1;
   m_dldrpanel = NULL;
-  m_leftclick_tool_id = -1;
   m_schartdldr_sources = wxEmptyString;
 
   g_pi = this;
@@ -199,7 +190,7 @@ int chartdldr_pi::Init(void) {
 
   m_pChartSource = NULL;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidGetSDKVersion();
 #endif
 
@@ -284,7 +275,7 @@ void chartdldr_pi::OnSetupOptions(void) {
 void chartdldr_pi::OnCloseToolboxPanel(int page_sel, int ok_apply_cancel) {
   /* TODO: Seth */
   m_dldrpanel->CancelDownload();
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   OCPN_cancelDownloadFileBackground(
       0);  // Stop the thread, is something like this needed on Android as well?
 #endif
@@ -362,30 +353,30 @@ void SetBackColor(wxWindow *ctrl, wxColour col) {
     wxWindowListNode *node = kids.Item(i);
     wxWindow *win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxListBox)))
-      ((wxListBox *)win)->SetBackgroundColour(col);
+    if (dynamic_cast<wxListBox *>(win))
+      dynamic_cast<wxListBox *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxTextCtrl)))
-      ((wxTextCtrl *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxTextCtrl *>(win))
+      dynamic_cast<wxTextCtrl *>(win)->SetBackgroundColour(col);
 
     //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
     //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
 
-    else if (win->IsKindOf(CLASSINFO(wxChoice)))
-      ((wxChoice *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxChoice *>(win))
+      dynamic_cast<wxChoice *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxComboBox)))
-      ((wxComboBox *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxComboBox *>(win))
+      dynamic_cast<wxComboBox *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxRadioButton)))
-      ((wxRadioButton *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxRadioButton *>(win))
+      dynamic_cast<wxRadioButton *>(win)->SetBackgroundColour(col);
 
-    else if (win->IsKindOf(CLASSINFO(wxScrolledWindow))) {
-      ((wxScrolledWindow *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxScrolledWindow *>(win)) {
+      dynamic_cast<wxScrolledWindow *>(win)->SetBackgroundColour(col);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxButton))) {
-      ((wxButton *)win)->SetBackgroundColour(col);
+    else if (dynamic_cast<wxButton *>(win)) {
+      dynamic_cast<wxButton *>(win)->SetBackgroundColour(col);
     }
 
     else {
@@ -404,10 +395,10 @@ void SetBackColor(wxWindow *ctrl, wxColour col) {
 void chartdldr_pi::ShowPreferencesDialog(wxWindow *parent) {
   ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(parent);
 
-  wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+  wxFont fo = GetOCPNGUIScaledFont_PlugIn(_("Dialog"));
   dialog->SetFont(fo);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (m_parent_window) {
     int xmax = m_parent_window->GetSize().GetWidth();
     int ymax = m_parent_window->GetParent()
@@ -440,7 +431,7 @@ void chartdldr_pi::UpdatePrefs(ChartDldrPrefsDlgImpl *dialog) {
 }
 
 bool getDisplayMetrics() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   g_androidDPmm = 4.0;  // nominal default
 
@@ -542,7 +533,6 @@ ChartSource::~ChartSource() { m_update_data.clear(); }
 
 enum { ThreadId = wxID_HIGHEST + 1 };
 
-IMPLEMENT_DYNAMIC_CLASS(ChartDldrPanelImpl, ChartDldrPanel)
 BEGIN_EVENT_TABLE(ChartDldrPanelImpl, ChartDldrPanel)
 END_EVENT_TABLE()
 
@@ -572,8 +562,8 @@ void ChartDldrPanelImpl::OnContextMenu(wxMouseEvent &event) {
   wxPoint mouseScreen = wxGetMousePosition();
   wxPoint mouseClient = ScreenToClient(mouseScreen);
 
-#ifdef __OCPN__ANDROID__
-  wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+#ifdef __ANDROID__
+  wxFont *pf = OCPNGetFont(_("Menu"));
 
   // add stuff
   wxMenuItem *item1 = new wxMenuItem(&menu, ID_MNU_SELALL, _("Select all"));
@@ -713,16 +703,16 @@ void ChartDldrPanelImpl::FillFromFile(wxString url, wxString dir, bool selnew,
       wxString status;
       wxString latest;
       bool bcheck = false;
-      wxString file =
+      wxString file_ =
           pPlugIn->m_pChartCatalog.charts.at(i)->GetChartFilename(true);
       if (!pPlugIn->m_pChartSource->ExistsLocaly(
-              pPlugIn->m_pChartCatalog.charts.at(i)->number, file)) {
+              pPlugIn->m_pChartCatalog.charts.at(i)->number, file_)) {
         m_newCharts++;
         status = _("New");
         if (selnew) bcheck = true;
       } else {
         if (pPlugIn->m_pChartSource->IsNewerThanLocal(
-                pPlugIn->m_pChartCatalog.charts.at(i)->number, file,
+                pPlugIn->m_pChartCatalog.charts.at(i)->number, file_,
                 pPlugIn->m_pChartCatalog.charts.at(i)->GetUpdateDatetime())) {
           m_updatedCharts++;
           status = _("Out of date");
@@ -861,7 +851,7 @@ void ChartDldrPanelImpl::AppendCatalog(std::unique_ptr<ChartSource> &cs) {
           pPlugIn->m_pChartCatalog.GetReleaseDate().Format(
               _T("%Y-%m-%d %H:%M")));
       m_lbChartSources->SetItem(id, 2, path);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       m_lbChartSources->GetHandle()->resizeColumnToContents(0);
       m_lbChartSources->GetHandle()->resizeColumnToContents(1);
       m_lbChartSources->GetHandle()->resizeColumnToContents(2);
@@ -961,7 +951,7 @@ void ChartDldrPanelImpl::UpdateChartList(wxCommandEvent &event) {
 
   bool bok = false;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxString file_URI = _T("file://") + fn.GetFullPath();
 
   //     wxFile testFile(tfn.GetFullPath().c_str(), wxFile::write);
@@ -1111,7 +1101,7 @@ void ChartSource::SaveUpdateData() {
   wxString fn;
   fn = GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   fn = AndroidGetCacheDir() + wxFileName::GetPathSeparator() +
        _T(UPDATE_DATA_FILENAME);
 #endif
@@ -1128,7 +1118,7 @@ void ChartSource::SaveUpdateData() {
 
   outfile.close();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   AndroidSecureCopyFile(
       fn, GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME));
 #endif
@@ -1346,8 +1336,8 @@ void ChartDldrPanelImpl::DownloadCharts() {
     if (!isChartChecked(i)) continue;
     m_bTransferComplete = false;
     m_bTransferSuccess = true;
-    m_totalsize = _("Unknown");
-    m_transferredsize = _T("0");
+    m_totalsize = -1;
+    m_transferredsize = 0;
     m_downloading++;
     if (pPlugIn->m_pChartCatalog.charts.at(index)->NeedsManualDownload()) {
       if (wxID_YES ==
@@ -1389,7 +1379,7 @@ After downloading the charts, please extract them to %s"),
     wxString title = pPlugIn->m_pChartCatalog.charts.at(index)->GetChartTitle();
 
     //  Ready to start download
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString file_path = _T("file://") + fn.GetFullPath();
 #else
     wxString file_path = fn.GetFullPath();
@@ -1417,11 +1407,12 @@ After downloading the charts, please extract them to %s"),
         SetChartInfo(wxString::Format(
             _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
             m_downloading, to_download, m_failed_downloads,
-            m_transferredsize.c_str(), m_totalsize.c_str()));
+            FormatBytes(m_transferredsize), FormatBytes(m_totalsize)));
       else
-        SetChartInfo(wxString::Format(
-            _("Downloading chart %u of %u (%s / %s)"), m_downloading,
-            to_download, m_transferredsize.c_str(), m_totalsize.c_str()));
+        SetChartInfo(wxString::Format(_("Downloading chart %u of %u (%s / %s)"),
+                                      m_downloading, to_download,
+                                      FormatBytes(m_transferredsize),
+                                      FormatBytes(m_totalsize)));
 
       Update();
       Refresh();
@@ -1484,7 +1475,7 @@ ChartDldrPanelImpl::~ChartDldrPanelImpl() {
       (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
   m_bconnected = false;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   OCPN_cancelDownloadFileBackground(
       0);  // Stop the thread, is something like this needed on Android as well?
 #endif
@@ -1508,7 +1499,6 @@ ChartDldrPanelImpl::ChartDldrPanelImpl(chartdldr_pi *plugin, wxWindow *parent,
                                  CATALOGS_PATH_WIDTH);
   m_lbChartSources->Enable();
   m_bInfoHold = false;
-  downloadInProgress = false;
   cancelled = true;
   to_download = -1;
   m_downloading = -1;
@@ -1577,7 +1567,7 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
   dialog->SetSize(sz.GetWidth(), sz.GetHeight());
   dialog->Center();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
 #endif
 
@@ -1607,7 +1597,7 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
     pPlugIn->m_ChartSources.push_back(std::move(cs));
     pPlugIn->SaveConfig();
   }
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableRotation();
 #endif
 
@@ -1749,7 +1739,7 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
   }
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   else if (aFile.Lower().EndsWith(_T("tar")) ||
            aFile.Lower().EndsWith(_T("gz")) ||
            aFile.Lower().EndsWith(_T("bz2")) ||
@@ -1790,7 +1780,7 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
 }
 
 #ifdef DLDR_USE_LIBARCHIVE
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 static int copy_data(struct archive *ar, struct archive *aw) {
   int r;
   const void *buff;
@@ -1816,7 +1806,7 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
                                           const wxString &aTargetDir,
                                           bool aStripPath, wxDateTime aMTime,
                                           bool aRemoveArchive) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   struct archive *a;
   struct archive *ext;
   struct archive_entry *entry;
@@ -2008,7 +1998,7 @@ bool chartdldr_pi::ExtractZipFiles(const wxString &aZipFile,
                                    wxDateTime aMTime, bool aRemoveZip) {
   bool ret = true;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   int nStrip = 0;
   if (aStripPath) nStrip = 1;
 
@@ -2107,7 +2097,7 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg(wxWindow *parent)
   int w = 16;  // default for desktop
   int h = 16;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   w = 6 * g_androidDPmm;  // mm nominal size
   h = w;
 
@@ -2148,7 +2138,7 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg(wxWindow *parent)
   p_iconList->Add(imb);
 
   m_treeCtrlPredefSrcs->AssignImageList(p_iconList);
-#endif /* __OCPN__ANDROID__ */
+#endif /* __ANDROID__ */
 
   m_treeCtrlPredefSrcs->SetIndent(w);
 
@@ -2220,7 +2210,7 @@ bool ChartDldrGuiAddSourceDlg::LoadSection(const wxTreeItemId &root,
       item = m_treeCtrlPredefSrcs->AppendItem(
           root, wxString::FromUTF8(element.first_child().value()), 0, 0);
 
-      wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+      wxFont *pFont = OCPNGetFont(_("Dialog"));
       if (pFont) m_treeCtrlPredefSrcs->SetItemFont(item, *pFont);
     }
     if (!strcmp(element.name(), "sections")) LoadSections(item, element);
@@ -2257,7 +2247,7 @@ bool ChartDldrGuiAddSourceDlg::LoadCatalog(const wxTreeItemId &root,
   ChartSource *cs = new ChartSource(name, location, dir);
   wxTreeItemId id = m_treeCtrlPredefSrcs->AppendItem(root, name, 1, 1, cs);
 
-  wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+  wxFont *pFont = OCPNGetFont(_("Dialog"));
   if (pFont) m_treeCtrlPredefSrcs->SetItemFont(id, *pFont);
 
   return true;
@@ -2442,10 +2432,6 @@ bool ChartDldrGuiAddSourceDlg::ValidateUrl(const wxString Url,
   return re.Matches(Url);
 }
 
-static wxString FormatBytes(double bytes) {
-  return wxString::Format(_T("%.1fMB"), bytes / 1024 / 1024);
-}
-
 void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev) {
   //    wxString msg;
   //    msg.Printf(_T("onDLEvent  %d %d"),ev.getDLEventCondition(),
@@ -2459,8 +2445,10 @@ void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev) {
       break;
 
     case OCPN_DL_EVENT_TYPE_PROGRESS:
-      m_totalsize = FormatBytes(ev.getTotal());
-      m_transferredsize = FormatBytes(ev.getTransferred());
+      if (ev.getTransferred() > m_transferredsize) {
+        m_totalsize = ev.getTotal();
+        m_transferredsize = ev.getTransferred();
+      }
 
       break;
     default:

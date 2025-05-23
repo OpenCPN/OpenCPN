@@ -29,56 +29,47 @@
 
 #include "OcpnWxSound.h"
 
-
-std::string OcpnWxSound::GetDeviceInfo(int deviceIndex)
-{
+std::string OcpnWxSound::GetDeviceInfo(int deviceIndex) {
   return "OcpnWxSound";
 }
 
-bool OcpnWxSound::Load(const char* path, int deviceIndex)
-{
-    m_OK = m_sound.Create(path);
-    m_isPlaying = false;
-    if (m_OK) {
-        m_path = path;
-    }
-    return m_OK;
+bool OcpnWxSound::Load(const char* path, int deviceIndex) {
+  m_OK = m_sound.Create(path);
+  m_isPlaying = false;
+  if (m_OK) {
+    m_path = path;
+  }
+  return m_OK;
 }
 
+bool OcpnWxSound::Stop(void) {
+  m_sound.Stop();
+  m_OK = false;
+  m_isPlaying = false;
+  return false;
+}
 
-bool OcpnWxSound::Stop(void)
-{
-    m_sound.Stop();
-    m_OK = false;
-    m_isPlaying = false;
+void OcpnWxSound::worker(void) {
+  wxLogDebug("wxSound::worker()");
+  m_isPlaying = true;
+  m_sound.Play(wxSOUND_SYNC);
+  if (m_onFinished) {
+    m_onFinished(m_callbackData);
+    m_onFinished = 0;
+  }
+  m_isPlaying = false;
+}
+
+bool OcpnWxSound::Play() {
+  wxLogDebug("wxSound::Play()");
+  if (!m_OK || m_isPlaying) {
+    wxLogWarning("OcpnWxSound: cannot play: not loaded or busy playing.");
     return false;
-}
-
-
-void OcpnWxSound::worker(void)
-{
-    wxLogDebug("wxSound::worker()");
-    m_isPlaying = true;
-    m_sound.Play(wxSOUND_SYNC);
-    if  (m_onFinished) {
-        m_onFinished(m_callbackData);
-        m_onFinished = 0;
-    }
-    m_isPlaying = false;
-}
-
-
-bool OcpnWxSound::Play()
-{
-    wxLogDebug("wxSound::Play()");
-    if( !m_OK || m_isPlaying) {
-        wxLogWarning("OcpnWxSound: cannot play: not loaded or busy playing.");
-        return false;
-    }
-    if  (m_onFinished) {
-        std::thread t([this]() { worker(); });
-        t.detach();
-        return true;
-    }
-    return m_sound.Play(wxSOUND_SYNC);
+  }
+  if (m_onFinished) {
+    std::thread t([this]() { worker(); });
+    t.detach();
+    return true;
+  }
+  return m_sound.Play(wxSOUND_SYNC);
 }

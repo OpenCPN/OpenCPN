@@ -1,0 +1,12 @@
+{
+   "filter" : {
+      "name" : "nmea-input",
+      "buses" : [
+         "nmea0183",
+         "nmea2000"
+      ],
+      "directions" : [
+         "received"
+      ],
+      "description" : "NMEA input data"
+}

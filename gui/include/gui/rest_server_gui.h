@@ -50,7 +50,6 @@
  * "Accept Object" Dialog Definition
  */
 class AcceptObjectDialog : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(AcceptObjectDialog)
   DECLARE_EVENT_TABLE()
 
 public:
@@ -87,7 +86,6 @@ private:
 };
 
 class PINCreateDialog : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(PINCreateDialog)
   DECLARE_EVENT_TABLE()
 
 public:

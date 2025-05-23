@@ -95,6 +95,8 @@ millions of points.
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "ocpn_plugin.h"
+#include "model/navobj_db.h"
 
 std::vector<Track *> g_TrackList;
 
@@ -179,14 +181,14 @@ Track::Track() {
   m_bIsInLayer = false;
   m_btemp = false;
 
-  m_HyperlinkList = new HyperlinkList;
+  m_TrackHyperlinkList = new HyperlinkList;
   m_HighlightedTrackPoint = -1;
 }
 
 Track::~Track(void) {
   for (size_t i = 0; i < TrackPoints.size(); i++) delete TrackPoints[i];
 
-  delete m_HyperlinkList;
+  delete m_TrackHyperlinkList;
 }
 
 #define TIMER_TRACK1 778
@@ -678,8 +680,10 @@ TrackPoint *Track::AddNewPoint(vector2D point, wxDateTime time) {
 
   AddPointFinalized(tPoint);
 
-  NavObjectChanges::getInstance()->AddNewTrackPoint(
-      tPoint, m_GUID);  // This will update the "changes" file only
+  // NavObjectChanges::getInstance()->AddNewTrackPoint(
+  //   tPoint, m_GUID);  // This will update the "changes" file only
+
+  NavObj_dB::GetInstance().AddTrackPoint(this, tPoint);
 
   // send a wxJson message to all plugins
   wxJSONValue v;
@@ -975,4 +979,26 @@ double Track::GetXTE(TrackPoint *fm1, TrackPoint *fm2, TrackPoint *to) {
   return GetXTE(fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat,
                 to->m_lon);
   ;
+}
+
+wxString Track::GetIsoDateTime(const wxString label_for_invalid_date) const {
+  wxString name;
+  TrackPoint *rp = NULL;
+  if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
+  if (rp && rp->GetCreateTime().IsValid())
+    name = rp->GetCreateTime().FormatISOCombined(' ');
+  else
+    name = label_for_invalid_date;
+  return name;
+}
+
+wxString Track::GetDateTime(const wxString label_for_invalid_date) const {
+  wxString name;
+  TrackPoint *rp = NULL;
+  if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
+  if (rp && rp->GetCreateTime().IsValid())
+    name = ocpn::toUsrDateTimeFormat(rp->GetCreateTime().FromUTC());
+  else
+    name = label_for_invalid_date;
+  return name;
 }

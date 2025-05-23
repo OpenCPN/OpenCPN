@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,10 +14,12 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref grib_pi.h
  */
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -88,7 +84,7 @@ grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
   else
     wxLogMessage(_T("    GRIB panel icon NOT loaded"));
 
-  m_pLastTimelineSet = NULL;
+  m_pLastTimelineSet = nullptr;
   m_bShowGrib = false;
   m_GUIScaleFactor = -1.;
   g_pi = this;
@@ -107,8 +103,8 @@ int grib_pi::Init(void) {
   m_CtrlBarxy = wxPoint(0, 0);
   m_CursorDataxy = wxPoint(0, 0);
 
-  m_pGribCtrlBar = NULL;
-  m_pGRIBOverlayFactory = NULL;
+  m_pGribCtrlBar = nullptr;
+  m_pGRIBOverlayFactory = nullptr;
 
   ::wxDisplaySize(&m_display_width, &m_display_height);
 
@@ -161,7 +157,7 @@ int grib_pi::Init(void) {
     wxLogMessage(normalIcon);
     m_leftclick_tool_id = InsertPlugInToolSVG(
         _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, _("Grib"),
-        _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
+        _T(""), nullptr, GRIB_TOOL_POSITION, 0, this);
   }
 
   if (!QualifyCtrlBarPosition(m_CtrlBarxy, m_CtrlBar_Sizexy)) {
@@ -179,11 +175,11 @@ bool grib_pi::DeInit(void) {
   if (m_pGribCtrlBar) {
     m_pGribCtrlBar->Close();
     delete m_pGribCtrlBar;
-    m_pGribCtrlBar = NULL;
+    m_pGribCtrlBar = nullptr;
   }
 
   delete m_pGRIBOverlayFactory;
-  m_pGRIBOverlayFactory = NULL;
+  m_pGRIBOverlayFactory = nullptr;
 
   return true;
 }
@@ -243,7 +239,6 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_cZoomToCenterAtInit->SetValue(m_bZoomToCenterAtInit);
   Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
   Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
-  Pref->m_rbTimeFormat->SetSelection(m_bTimeZone);
   Pref->m_rbLoadOptions->SetSelection(m_bLoadLastOpenFile);
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
 
@@ -314,12 +309,6 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
     updatelevel = 1;
   }
 
-  if (m_bTimeZone != Pref->m_rbTimeFormat->GetSelection()) {
-    m_bTimeZone = Pref->m_rbTimeFormat->GetSelection();
-    if (m_pGRIBOverlayFactory) m_pGRIBOverlayFactory->SetTimeZone(m_bTimeZone);
-    updatelevel = 2;
-  }
-
   bool copyrec = Pref->m_cbCopyFirstCumulativeRecord->GetValue();
   bool copywave = Pref->m_cbCopyMissingWaveRecord->GetValue();
   if (m_bCopyFirstCumRec != copyrec || m_bCopyMissWaveRec != copywave) {
@@ -342,6 +331,8 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         break;
       case 2:
         // only rebuild  data list with current index and new timezone
+        // This no longer applicable because the timezone is set in the
+        // OpenCPN core global settings (Options -> Display -> General)
         m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
@@ -384,7 +375,7 @@ bool grib_pi::QualifyCtrlBarPosition(
                                 ? position.y + 30
                                 : position.y + size.y;
 
-  if (NULL == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
+  if (nullptr == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
     b_reset_pos = true;
 #else
   wxRect window_title_rect;  // conservative estimate
@@ -443,9 +434,9 @@ void grib_pi::OnToolbarToolCallback(int id) {
 #ifdef __WXOSX__
     style |= wxSTAY_ON_TOP;
 #endif
-    m_pGribCtrlBar =
-        new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString,
-                          wxDefaultPosition, wxDefaultSize, style, this);
+    m_pGribCtrlBar = new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString,
+                                       wxDefaultPosition, wxDefaultSize, style,
+                                       this, scale_factor);
     m_pGribCtrlBar->SetScaledBitmap(scale_factor);
 
     wxMenu *dummy = new wxMenu(_T("Plugin"));
@@ -454,7 +445,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
                        wxEmptyString, wxITEM_NORMAL);
     /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
     #ifdef __WXMSW__
-        wxFont *qFont = OCPNGetFont(_("Menu"), 10);
+        wxFont *qFont = OCPNGetFont(_("Menu"));
         table->SetFont(*qFont);
     #endif
     */
@@ -464,7 +455,6 @@ void grib_pi::OnToolbarToolCallback(int id) {
     // Create the drawing factory
     m_pGRIBOverlayFactory = new GRIBOverlayFactory(*m_pGribCtrlBar);
     m_pGRIBOverlayFactory->SetMessageFont();
-    m_pGRIBOverlayFactory->SetTimeZone(m_bTimeZone);
     m_pGRIBOverlayFactory->SetParentSize(m_display_width, m_display_height);
     m_pGRIBOverlayFactory->SetSettings(m_bGRIBUseHiDef, m_bGRIBUseGradualColors,
                                        m_bDrawBarbedArrowHead);
@@ -483,8 +473,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
       starting = true;
     }
     // the dialog font could have been changed since grib plugin opened
-    if (m_pGribCtrlBar->GetFont() != *OCPNGetFont(_("Dialog"), 10))
-      starting = true;
+    if (m_pGribCtrlBar->GetFont() != *OCPNGetFont(_("Dialog"))) starting = true;
     if (starting) {
       m_pGRIBOverlayFactory->SetMessageFont();
       SetDialogFont(m_pGribCtrlBar);
@@ -551,7 +540,7 @@ void grib_pi::OnGribCtrlBarClose() {
 
   if (m_DialogStyleChanged) {
     m_pGribCtrlBar->Destroy();
-    m_pGribCtrlBar = NULL;
+    m_pGribCtrlBar = nullptr;
     m_DialogStyleChanged = false;
   }
 }
@@ -563,11 +552,17 @@ bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
     return false;
 
   m_pGRIBOverlayFactory->RenderGribOverlay(dc, vp);
+  if (PluginGetFocusCanvas() == GetCanvasByIndex(canvasIndex)) {
+    m_pGribCtrlBar->SetViewPortWithFocus(vp);
+  }
 
   if (GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse()) {
-    m_pGribCtrlBar->SetViewPort(vp);
-    if (m_pGribCtrlBar->pReq_Dialog)
+    m_pGribCtrlBar->SetViewPortUnderMouse(vp);
+    if (m_pGribCtrlBar->pReq_Dialog &&
+        GetCanvasIndexUnderMouse() ==
+            m_pGribCtrlBar->pReq_Dialog->GetBoundingBoxCanvasIndex()) {
       m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay(dc);
+    }
   }
   if (::wxIsBusy()) ::wxEndBusyCursor();
   return true;
@@ -583,11 +578,17 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
     return false;
 
   m_pGRIBOverlayFactory->RenderGLGribOverlay(pcontext, vp);
+  if (PluginGetFocusCanvas() == GetCanvasByIndex(canvasIndex)) {
+    m_pGribCtrlBar->SetViewPortWithFocus(vp);
+  }
 
   if (GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse()) {
-    m_pGribCtrlBar->SetViewPort(vp);
-    if (m_pGribCtrlBar->pReq_Dialog)
+    m_pGribCtrlBar->SetViewPortUnderMouse(vp);
+    if (m_pGribCtrlBar->pReq_Dialog &&
+        GetCanvasIndexUnderMouse() ==
+            m_pGribCtrlBar->pReq_Dialog->GetBoundingBoxCanvasIndex()) {
       m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
+    }
   }
 
   if (::wxIsBusy()) ::wxEndBusyCursor();
@@ -729,7 +730,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
     if (!m_pGribCtrlBar) OnToolbarToolCallback(0);
 
     GribTimelineRecordSet *set =
-        m_pGribCtrlBar ? m_pGribCtrlBar->GetTimeLineRecordSet(time) : NULL;
+        m_pGribCtrlBar ? m_pGribCtrlBar->GetTimeLineRecordSet(time) : nullptr;
 
     char ptr[64];
     snprintf(ptr, sizeof ptr, "%p", set);
@@ -772,7 +773,6 @@ bool grib_pi::LoadConfig(void) {
   pConf->Read(_T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1);
   pConf->Read(_T( "ZoomToCenterAtInit"), &m_bZoomToCenterAtInit, 1);
   pConf->Read(_T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1);
-  pConf->Read(_T( "GRIBTimeZone" ), &m_bTimeZone, 1);
   pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
   pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
 #ifdef __WXMSW__
@@ -805,7 +805,6 @@ bool grib_pi::SaveConfig(void) {
   pConf->Write(_T ( "ShowGRIBIcon" ), m_bGRIBShowIcon);
   pConf->Write(_T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef);
   pConf->Write(_T ( "GRIBUseGradualColors" ), m_bGRIBUseGradualColors);
-  pConf->Write(_T ( "GRIBTimeZone" ), m_bTimeZone);
   pConf->Write(_T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec);
   pConf->Write(_T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec);
   pConf->Write(_T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead);

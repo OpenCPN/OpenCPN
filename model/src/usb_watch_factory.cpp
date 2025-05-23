@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file usb_watch_factory.cpp UsbWatchDaemon factory */
+/**
+ *  \file
+ *  UsbWatchDaemon factory
+ */
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #include "model/linux_usb_watch.h"

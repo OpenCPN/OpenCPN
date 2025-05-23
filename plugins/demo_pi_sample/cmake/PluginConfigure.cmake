@@ -6,13 +6,6 @@
 
 SET(PLUGIN_SOURCE_DIR .)
 
-# This should be 2.8.0 to have FindGTK2 module
-IF (COMMAND cmake_policy)
-  CMAKE_POLICY(SET CMP0003 OLD)
-  CMAKE_POLICY(SET CMP0005 OLD)
-  CMAKE_POLICY(SET CMP0011 OLD)
-ENDIF (COMMAND cmake_policy)
-
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
 #configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
@@ -23,7 +16,6 @@ FILE(REMOVE ${PROJECT_SOURCE_DIR}/include/wxWTranslateCatalog.h)
 MESSAGE(STATUS "SKIP_VERSION_CONFIG: ${SKIP_VERSION_CONFIG}")
 IF(NOT SKIP_VERSION_CONFIG)
     SET(BUILD_INCLUDE_PATH ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
-    MESSAGE(STATUS "translate directory: ${BUILD_INCLUDE_PATH}")
     configure_file(cmake/version.h.in ${BUILD_INCLUDE_PATH}/include/version.h)
     configure_file(cmake/wxWTranslateCatalog.h.in ${BUILD_INCLUDE_PATH}/include/wxWTranslateCatalog.h)
     INCLUDE_DIRECTORIES(${BUILD_INCLUDE_PATH}/include)
@@ -36,7 +28,6 @@ SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
     get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
-    MESSAGE(STATUS "INCLUDE_DIRECTORIES: ${inc_dirs}")
 
 # SET(PROFILING 1)
 
@@ -172,4 +163,3 @@ ENDIF(QT_ANDROID)
 SET(BUILD_SHARED_LIBS TRUE)
 
 FIND_PACKAGE(Gettext REQUIRED)
-

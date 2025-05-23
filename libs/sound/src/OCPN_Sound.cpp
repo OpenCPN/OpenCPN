@@ -24,22 +24,17 @@
 
 #include "OCPN_Sound.h"
 
-OcpnSound::OcpnSound()
-{
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
+OcpnSound::OcpnSound() {
+  m_OK = false;
+  m_deviceIx = -1;
+  m_soundfile = "";
+  m_onFinished = 0;
+  m_callbackData = 0;
 }
 
+OcpnSound::~OcpnSound() {}
 
-OcpnSound::~OcpnSound()
-{
-}
-
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
+void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData) {
+  m_onFinished = cb;
+  m_callbackData = userData;
 }

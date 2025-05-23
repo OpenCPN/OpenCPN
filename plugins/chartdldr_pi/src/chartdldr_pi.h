@@ -132,8 +132,6 @@ private:
   wxScrolledWindow* m_pOptionsPage;
   bool LoadConfig(void);
 
-  int m_leftclick_tool_id;
-
   wxString m_schartdldr_sources;
   int m_selected_source;
 
@@ -178,7 +176,6 @@ class ChartDldrPanelImpl : public ChartDldrPanel {
 
 private:
   bool DownloadChart(wxString url, wxString file, wxString title);
-  bool downloadInProgress;
   int to_download;
 
   int updatingAll;
@@ -194,8 +191,8 @@ private:
 
   bool m_bTransferComplete;
   bool m_bTransferSuccess;
-  wxString m_totalsize;
-  wxString m_transferredsize;
+  long m_totalsize;
+  long m_transferredsize;
   int m_failed_downloads;
   int m_downloading;
 
@@ -208,12 +205,12 @@ private:
 protected:
   // Handlers for ChartDldrPanel events.
   void SetSource(int id);
-  void SelectSource(wxListEvent& event);
-  void AddSource(wxCommandEvent& event);
-  void DeleteSource(wxCommandEvent& event);
-  void EditSource(wxCommandEvent& event);
-  void UpdateChartList(wxCommandEvent& event);
-  void OnDownloadCharts(wxCommandEvent& event);
+  void SelectSource(wxListEvent& event) override;
+  void AddSource(wxCommandEvent& event) override;
+  void DeleteSource(wxCommandEvent& event) override;
+  void EditSource(wxCommandEvent& event) override;
+  void UpdateChartList(wxCommandEvent& event) override;
+  void OnDownloadCharts(wxCommandEvent& event) override;
 
   void OnSelectChartItem(wxCommandEvent& event);
   void OnSelectNewCharts(wxCommandEvent& event);
@@ -221,7 +218,7 @@ protected:
   void OnSelectAllCharts(wxCommandEvent& event);
 
   void DownloadCharts();
-  void DoHelp(wxCommandEvent& event) {
+  void DoHelp(wxCommandEvent& event) override {
 #ifdef __WXMSW__
     wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
                            _T("plugins/chartdldr_pi/data/doc/index.html"));
@@ -230,16 +227,16 @@ protected:
                            _T("plugins/chartdldr_pi/data/doc/index.html"));
 #endif
   }
-  void UpdateAllCharts(wxCommandEvent& event);
-  void OnShowLocalDir(wxCommandEvent& event);
-  void OnPaint(wxPaintEvent& event);
-  void OnLeftDClick(wxMouseEvent& event);
+  void UpdateAllCharts(wxCommandEvent& event) override;
+  void OnShowLocalDir(wxCommandEvent& event) override;
+  void OnPaint(wxPaintEvent& event) override;
+  void OnLeftDClick(wxMouseEvent& event) override;
 
   void CleanForm();
   void FillFromFile(wxString url, wxString dir, bool selnew = false,
                     bool selupd = false);
 
-  void OnContextMenu(wxMouseEvent& event);
+  void OnContextMenu(wxMouseEvent& event) override;
   void SetBulkUpdate(bool bulk_update);
 
   int GetChartCount();
@@ -270,7 +267,6 @@ public:
   }
 
 private:
-  DECLARE_DYNAMIC_CLASS(ChartDldrPanelImpl)
   DECLARE_EVENT_TABLE()
 };
 

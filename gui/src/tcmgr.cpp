@@ -27,7 +27,6 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
-#include <wx/datetime.h>
 #include <wx/hashmap.h>
 
 #include <stdlib.h>
@@ -36,6 +35,7 @@
 
 #include "gui_lib.h"
 #include "dychart.h"
+#include "navutil.h"
 #include "tcmgr.h"
 #include "model/georef.h"
 #include "model/logger.h"
@@ -991,6 +991,31 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx) {
     q = tcvalue[0];
     *tm += 60;
   }
+}
+
+std::wstring TCMgr::GetTidalEventStr(int station_id, wxDateTime ref_dt,
+                                     double lat, double lon, int dt_type) {
+  IDX_entry *idx = (IDX_entry *)GetIDX_entry(station_id);
+  time_t dtmtt = ref_dt.FromUTC().GetTicks();
+  int event = GetNextBigEvent(&dtmtt, station_id);
+  wxDateTime event_dt = wxDateTime(dtmtt).MakeUTC();
+
+  std::wstring event_str;
+  if (event == 1) {
+    event_str = _("LW").ToStdWstring();
+  } else if (event == 2) {
+    event_str = _("HW").ToStdWstring();
+  } else {
+    event_str = _("Unavailable").ToStdWstring();
+  }
+
+  if (event > 0) {
+    event_str.append(L": ");
+    event_str.append(
+        toUsrDateTime(event_dt, dt_type, lon).FormatISOCombined(' '));
+  }
+
+  return event_str;
 }
 
 std::map<double, const IDX_entry *> TCMgr::GetStationsForLL(double xlat,
@@ -7216,6 +7241,10 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
   /*  If the value covers more than 1 byte, store it.                     */
 
   else {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+    // Compiler is confused about bit manipulated index, but it looks ok.
+
     /*  Here we mask out data prior to the start bit of the first byte. */
 
     buffer[start_byte] &= mask[start_bit];
@@ -7250,6 +7279,7 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
     /*  bits in the value so that it will fit in the last byte.         */
 
     buffer[start_byte] |= (value << (8 - end_bit));
+#pragma GCC diagnostic pop
   }
 }
 

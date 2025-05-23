@@ -36,8 +36,11 @@
 
 #include "model/conn_params.h"
 
-class options;
-
+/**
+ * Panel for displaying and editing connection parameters. Shows the details of
+ * a specific connection and allows for enabling/disabling and editing of the
+ * connection parameters.
+ */
 class ConnectionParamsPanel : public wxPanel {
 public:
   ConnectionParamsPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos,

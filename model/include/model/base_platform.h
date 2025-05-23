@@ -131,6 +131,13 @@ public:
   virtual double GetDisplaySizeMM() { return 1.0; }
   virtual double GetDisplayDPmm() { return 1.0; }
   virtual unsigned int GetSelectRadiusPix();
+
+  /**
+   * Get the display scaling factor for DPI-aware rendering.
+   *
+   * @note Only applies scaling on Windows. Other platforms return 1.0 as they
+   *       handle DPI scaling differently (e.g., macOS uses logical pixels).
+   */
   double GetDisplayDIPMult(wxWindow* win);
 
   static void ShowBusySpinner();

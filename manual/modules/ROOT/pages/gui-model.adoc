@@ -36,16 +36,8 @@ and used without paying attention to the Gui as long as the interface
 is kept stable.
 This considerably simplifies code maintenance.
 
-
-
-== Definition of the Gui and Model parts
-
-At the time of writing, the Model is defined by the variable MODEL_SRC
-in the top level CMakeLists.txt.
-Remaining source file makes up the Gui.
-Work to make this more visible is likely to be done, for example
-by creating separate subdirectories like src/gui and src/model instead
-of a single src/ directory.
+The model files indeed lives in the _model/_ subdirectory and the gui parts 
+in _gui/_
 
 == Model -> Gui communication.
 

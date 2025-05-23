@@ -51,6 +51,7 @@
 #include "routemanagerdialog.h"
 #include "SoundFactory.h"
 #include "undo.h"
+#include "model/navobj_db.h"
 
 wxDEFINE_EVENT(EVT_AIS_DEL_TRACK, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_INFO, ObservedEvt);
@@ -78,7 +79,8 @@ static void onSoundFinished(void *ptr) {
 }
 
 static void OnNewAisWaypoint(RoutePoint *pWP) {
-  pConfig->AddNewWayPoint(pWP, -1);  // , -1 use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
   if (gFrame->GetPrimaryCanvas()) {
@@ -125,7 +127,7 @@ AisInfoGui::AisInfoGui() {
   ais_new_track_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_NEW_TRACK);
   Bind(EVT_AIS_NEW_TRACK, [&](wxCommandEvent ev) {
     auto t = static_cast<Track *>(ev.GetClientData());
-    pConfig->AddNewTrack(t);
+    NavObj_dB::GetInstance().InsertTrack(t);
   });
 
   ais_del_track_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_DEL_TRACK);

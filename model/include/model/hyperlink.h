@@ -31,9 +31,12 @@
 class Hyperlink  // toh, 2009.02.14
 {
 public:
+  Hyperlink();
+  virtual ~Hyperlink();
   wxString DescrText;
   wxString Link;
   wxString LType;
+  std::string GUID;
 };
 
 WX_DECLARE_LIST(Hyperlink, HyperlinkList);  // establish class as list member

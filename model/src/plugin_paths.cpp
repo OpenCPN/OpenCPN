@@ -35,7 +35,7 @@ static std::string expand(const std::string& s) {
   return fn.GetFullPath().ToStdString();
 }
 
-PluginPaths* PluginPaths::getInstance() {
+PluginPaths* PluginPaths::GetInstance() {
   static PluginPaths* instance = 0;
   if (!instance) {
     instance = new (PluginPaths);
@@ -43,19 +43,19 @@ PluginPaths* PluginPaths::getInstance() {
   return instance;
 }
 
-void PluginPaths::initWindowsPaths() {
+void PluginPaths::InitWindowsPaths() {
   using namespace std;
 
   if (g_bportable) {
     m_userLibdir =
         g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_libdirs.push_back(m_userLibdir);
-    m_userBindir =
+    m_user_bindir =
         g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
     m_bindirs = m_libdirs;
-    m_userDatadir =
+    m_user_datadir =
         g_BasePlatform->GetPrivateDataDir().ToStdString() + "\\plugins";
-    m_datadirs.push_back(m_userDatadir);
+    m_datadirs.push_back(m_user_datadir);
     return;
   }
 
@@ -63,8 +63,8 @@ void PluginPaths::initWindowsPaths() {
   const string winPluginBaseDir =
       g_BasePlatform->GetWinPluginBaseDir().ToStdString();
   m_userLibdir = winPluginBaseDir;
-  m_userBindir = winPluginBaseDir;
-  m_userDatadir = winPluginBaseDir;
+  m_user_bindir = winPluginBaseDir;
+  m_user_datadir = winPluginBaseDir;
 
   m_libdirs.push_back(m_userLibdir);
   m_libdirs.push_back(g_BasePlatform->GetPluginDir().ToStdString());
@@ -74,13 +74,13 @@ void PluginPaths::initWindowsPaths() {
   m_datadirs.push_back(winPluginBaseDir);
 }
 
-void PluginPaths::initFlatpackPaths() {
+void PluginPaths::InitFlatpakPaths() {
   using namespace std;
 
   const string flathome = m_home + "/.var/app/org.opencpn.OpenCPN";
   m_userLibdir = flathome + "/lib";
-  m_userBindir = flathome + "/bin";
-  m_userDatadir = flathome + "/data";
+  m_user_bindir = flathome + "/bin";
+  m_user_datadir = flathome + "/data";
 
   m_libdirs.push_back(flathome + "/lib");
   m_libdirs.push_back("/app/extensions/lib/opencpn");
@@ -95,25 +95,25 @@ void PluginPaths::initFlatpackPaths() {
   m_datadirs.push_back("/app/share/opencpn/plugins");
 }
 
-void PluginPaths::initLinuxPaths() {
+void PluginPaths::InitLinuxPaths() {
   using namespace std;
 
   if (g_bportable) {
     m_userLibdir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
                    "/plugins/lib";  // m_home + "/.local/lib";
     m_libdirs.push_back(m_userLibdir);
-    m_userBindir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
-                   "/plugins/bin";  // m_home + "/.local/bin";
+    m_user_bindir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
+                    "/plugins/bin";  // m_home + "/.local/bin";
     m_bindirs = m_libdirs;
-    m_userDatadir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
-                    "/plugins/share";  // m_home + "/.local/share";
-    m_datadirs.push_back(m_userDatadir);
+    m_user_datadir = g_BasePlatform->GetPrivateDataDir().ToStdString() +
+                     "/plugins/share";  // m_home + "/.local/share";
+    m_datadirs.push_back(m_user_datadir);
     return;
   }
 
   m_userLibdir = m_home + "/.local/lib";
-  m_userBindir = m_home + "/.local/bin";
-  m_userDatadir = m_home + "/.local/share";
+  m_user_bindir = m_home + "/.local/bin";
+  m_user_datadir = m_home + "/.local/share";
 
   std::vector<std::string> base_plugin_paths;
 #if defined(__WXGTK__) || defined(__WXQT__)
@@ -168,13 +168,13 @@ void PluginPaths::initLinuxPaths() {
   }
 }
 
-void PluginPaths::initApplePaths() {
+void PluginPaths::InitApplePaths() {
   using namespace std;
 
   const string mac_home = m_home + "/Library/Application Support/OpenCPN";
   m_userLibdir = mac_home + "/Contents/PlugIns";
-  m_userBindir = m_userLibdir;
-  m_userDatadir = mac_home + "/Contents";
+  m_user_bindir = m_userLibdir;
+  m_user_datadir = mac_home + "/Contents";
 
   m_libdirs.push_back(m_userLibdir);
   wxFileName fn_exe(g_BasePlatform->GetExePath());
@@ -186,20 +186,20 @@ void PluginPaths::initApplePaths() {
   // m_libdirs.push_back("/Applications/OpenCPN.app/Contents/Plugins");
   m_bindirs = m_libdirs;
 
-  m_datadirs.push_back(m_userDatadir);
+  m_datadirs.push_back(m_user_datadir);
   m_datadirs.push_back("/Applications/OpenCPN.app/Contents/PlugIns");
 }
 
-void PluginPaths::initAndroidPaths() {
+void PluginPaths::InitAndroidPaths() {
   using namespace std;
 
   const string platform_dir = g_BasePlatform->GetPluginDir().ToStdString();
 
   m_userLibdir =
       platform_dir + "/manPlug";  //("/data/user/0/org.opencpn.opencpn");
-  m_userBindir =
+  m_user_bindir =
       platform_dir + "/manPlug";  //("/data/user/0/org.opencpn.opencpn");
-  m_userDatadir =
+  m_user_datadir =
       g_BasePlatform->GetPrivateDataDir()
           .ToStdString();  //(
                            //"/storage/emulated/0/android/data/org.opencpn.opencpn/files");
@@ -219,22 +219,22 @@ PluginPaths::PluginPaths() {
 
   auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
   if (osSystemId & wxOS_WINDOWS) {
-    initWindowsPaths();
+    InitWindowsPaths();
   } else if (g_BasePlatform->isFlatpacked()) {
-    initFlatpackPaths();
+    InitFlatpakPaths();
   } else if (osSystemId & wxOS_UNIX_LINUX) {
 #ifdef __OCPN__ANDROID__
-    initAndroidPaths();
+    InitAndroidPaths();
 #else
-    initLinuxPaths();
+    InitLinuxPaths();
 #endif
   } else if (osSystemId & wxOS_MAC) {
-    initApplePaths();
+    InitApplePaths();
   } else {
     wxString os_name = wxPlatformInfo::Get().GetPortIdName();
     wxLogMessage(_T("OS_NAME: ") + os_name);
     if (os_name.Contains(_T("wxQT"))) {
-      initAndroidPaths();
+      InitAndroidPaths();
     } else
       wxLogWarning("PluginPaths: Unknown platform");
   }

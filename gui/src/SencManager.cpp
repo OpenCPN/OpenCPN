@@ -32,6 +32,7 @@
 
 #include "s57chart.h"
 #include "Osenc.h"
+#include "chartbase.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
 

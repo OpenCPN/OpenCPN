@@ -44,8 +44,6 @@
 #include "FontMgr.h"
 #include "gui_lib.h"
 
-extern MyFrame* gFrame;
-
 struct MemoryStruct {
   char* memory;
   size_t size;
@@ -61,7 +59,7 @@ PinConfirmDlg::PinConfirmDlg(wxWindow* parent, wxWindowID id,
                              const wxString& caption, const wxString& hint,
                              const wxPoint& pos, const wxSize& size,
                              long style) {
-  wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
+  wxFont* pif = FontMgr::Get().GetFont(_("Dialog"));
   SetFont(*pif);
   Create(parent, id, caption, hint, pos, size, style);
 }

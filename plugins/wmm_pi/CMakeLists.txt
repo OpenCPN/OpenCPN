@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 cmake_policy(SET CMP0043 NEW)
 
 project(wmm_pi)
@@ -28,7 +28,6 @@ if (NOT CMAKE_BUILD_TYPE)
   )
 endif (NOT CMAKE_BUILD_TYPE)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
 
 if (APPLE)
   include_directories(${CMAKE_SOURCE_DIR}/buildosx/include)
@@ -78,6 +77,9 @@ set(SRC_JSON
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
 
+target_include_directories(
+  ${PACKAGE_NAME} BEFORE PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include
+)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::opencpn)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
@@ -128,6 +130,7 @@ if (APPLE)
 endif (APPLE)
 
 # target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
 
 # Copy shared library to execution folder for debugging if not CI build
 if (NOT OCPN_CI_BUILD)

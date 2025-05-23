@@ -86,7 +86,7 @@ protected:
   void OnHyperlinkClick(wxHyperlinkEvent& event);
   void HyperlinkContextMenu(wxMouseEvent& event);
   void m_scrolledWindowLinksOnContextMenu(wxMouseEvent& event);
-
+  /** Returns the departure time of the route, in UTC. */
   wxDateTime GetDepartureTS();
   void SaveChanges();
   void ResetChanges();
@@ -104,15 +104,68 @@ private:
   static bool instanceFlag;
   static RoutePropDlgImpl* single;
 
+  /**
+   * Pointer to the route being edited or displayed.
+   * This is the route currently shown in the dialog. Changes are made directly
+   * to this route.
+   */
   Route* m_pRoute;
+  /**
+   * Original route state, stored when dialog opens.
+   * Used to restore original route properties if changes are canceled.
+   * Only selected properties are preserved (speed and departure time).
+   */
   Route m_OrigRoute;
-  Route* m_pHead;  // for route splitting
+  /**
+   * First segment when splitting a route.
+   * Created when the Split button is clicked and the user confirms. Contains
+   * the first portion of the original route, from start up to the selected
+   * waypoint.
+   */
+  Route* m_pHead;
+  /**
+   * Second segment when splitting a route.
+   * Created when the Split button is clicked and the user confirms. Contains
+   * the second portion of the original route, from the selected waypoint to the
+   * end.
+   */
   Route* m_pTail;
+  /**
+   * Waypoint to start the extension from when extending a route.
+   * This is typically the last point of the current route, or a point from
+   * another route that is near the last point of the current route.
+   */
   RoutePoint* m_pExtendPoint;
+  /**
+   * Route to extend from when extending the current route.
+   * This route contains m_pExtendPoint and is used as the source for
+   * extending the current route.
+   */
   Route* m_pExtendRoute;
+  /**
+   * Currently selected waypoint when navigating the route.
+   * This is the active waypoint when the route is being navigated.
+   * Used to highlight the active leg in the route display.
+   */
   RoutePoint* m_pEnroutePoint;
+  /**
+   * Flag indicating whether the route should start navigation immediately.
+   * When true, the route will be activated for navigation as soon as the dialog
+   * is closed with OK. This is typically set when a route is newly created and
+   * the user chooses to start navigating it right away.
+   */
   bool m_bStartNow;
 
+  /**
+   * The timezone to use for formatting the departure date/time.
+   * Possible values are:
+   * - 0: UTC
+   * - 1: Timezone configured in operating system
+   * - 2: Mean solar time at the location, based on the average time it takes
+   * for the sun to cross the meridian (appear at its highest point in the sky)
+   * at that specific location
+   * - 3: Honor OpenCPN global setting for timezone display
+   */
   int m_tz_selection;
 
   wxDataViewColumn* etd_col;
@@ -120,10 +173,7 @@ private:
   wxHyperlinkCtrl* m_pEditedLink;
 
   bool IsThisRouteExtendable();
-  wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
-                           const double lon = INFINITY - INFINITY);
-  wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
-                             const double lon = INFINITY - INFINITY);
+
   wxString MakeTideInfo(wxString stationName, double lat, double lon,
                         wxDateTime utcTime);
 };

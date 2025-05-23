@@ -41,6 +41,8 @@
 #include "qdebug.h"
 #endif
 
+#include "version.h"
+
 float g_piGLMinSymbolLineWidth = 0.9;
 
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
@@ -159,7 +161,7 @@ int wmm_pi::Init(void) {
 
   // pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
   // wxFONTWEIGHT_BOLD );
-  pFontSmall = OCPNGetFont(_("WMM_Live_Overlay"), 10);
+  pFontSmall = OCPNGetFont(_("WMM_Live_Overlay"));
 
   m_shareLocn = *GetpSharedDataLocation() + _T("plugins") +
                 wxFileName::GetPathSeparator() + _T("wmm_pi") +
@@ -174,7 +176,7 @@ int wmm_pi::Init(void) {
 
   if (!MAG_robustReadMagModels(
           const_cast<char *>((const char *)cof_filename.mb_str()),
-          &MagneticModels)) {
+          (MAGtype_MagneticModel * (*)[]) & MagneticModels[0], 1)) {
     WMMLogMessage1(_T("initialization error"));
     m_buseable = false;
   } else {
@@ -286,7 +288,7 @@ wxString wmm_pi::GetLongDescription() {
 Implements the NOAA World Magnetic Model\n\
 More information:\n\
 https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n\
-The bundled WMM2020 model expires on December 31, 2025.\n\
+The bundled WMM2025 model is valid until late 2029.\n\
 After then, if new version of the plugin will not be released\n\
 in time, get a new WMM.COF from NOAA and place it to the\n\
 location you can find in the OpenCPN logfile.");
@@ -361,7 +363,7 @@ void wmm_pi::OnToolbarToolCallback(int id) {
   if (!m_buseable) return;
   if (NULL == m_pWmmDialog) {
     m_pWmmDialog = new WmmUIDialog(*this, m_parent_window);
-    wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+    wxFont *pFont = OCPNGetFont(_("Dialog"));
     m_pWmmDialog->SetFont(*pFont);
 
     m_pWmmDialog->Move(wxPoint(m_wmm_dialog_x, m_wmm_dialog_y));
@@ -413,16 +415,16 @@ bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   if (!m_bShowPlot) return true;
 
   if (!m_oDC) {
-    #ifdef ocpnUSE_GL
-      //  Set the minimum line width
-      GLint parms[2];
-    #ifndef USE_ANDROID_GLES2
-      glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-    #else
-      glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-    #endif
-      g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
-    #endif
+#ifdef ocpnUSE_GL
+    //  Set the minimum line width
+    GLint parms[2];
+#ifndef USE_ANDROID_GLES2
+    glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+#else
+    glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+#endif
+    g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+#endif
     m_oDC = new pi_ocpnDC();
   }
 
@@ -559,8 +561,8 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   scale = wxRound(scale * 4.0) / 4.0;
   scale *= OCPN_GetWinDIPScaleFactor();
 
-  //scale =
-    //  wxMax(1.0, scale);  // Let the upstream processing handle minification.
+  // scale =
+  //   wxMax(1.0, scale);  // Let the upstream processing handle minification.
 
   if (m_bShowIcon && m_bShowLiveIcon &&
       ((m_LastVal != NewVal) || (scale != m_scale))) {
@@ -904,7 +906,7 @@ void wmm_pi::ShowPreferencesDialog(wxWindow *parent) {
 
 void wmm_pi::ShowPlotSettings() {
   WmmPlotSettingsDialog *dialog = new WmmPlotSettingsDialog(m_parent_window);
-  wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+  wxFont *pFont = OCPNGetFont(_("Dialog"));
   dialog->SetFont(*pFont);
 
   dialog->Fit();

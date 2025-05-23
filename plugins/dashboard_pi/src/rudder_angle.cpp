@@ -41,9 +41,10 @@
 #endif
 
 DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle(
-    wxWindow* parent, wxWindowID id, wxString title, InstrumentProperties* Properties)
-    : DashboardInstrument_Dial(parent, id, title, Properties, OCPN_DBP_STC_RSA, 100, 160,
-                               -40, +40) {
+    wxWindow* parent, wxWindowID id, wxString title,
+    InstrumentProperties* Properties)
+    : DashboardInstrument_Dial(parent, id, title, Properties, OCPN_DBP_STC_RSA,
+                               100, 160, -40, +40) {
   // Default Rudder position is centered
   m_MainValue = 0;
 
@@ -95,7 +96,7 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc) {
   wxSize size = GetClientSize();
   wxColour cl;
 
-  int drawHeight=GetDataBottom(size.y) - m_DataTop;
+  int drawHeight = GetDataBottom(size.y) - m_DataTop;
   InitTitleAndDataPosition(drawHeight);
 
   m_cx = size.x / 2;

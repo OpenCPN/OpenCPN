@@ -54,8 +54,6 @@ class RoutePoint;
 #define OUT_VIZ 1 << 9        //  Output point viz, if non-zero(true)
 #define OUT_VIZ_NAME 1 << 10  //  Output point name viz, if non-zero(true)
 #define OUT_SHARED 1 << 11    //  Output point shared state, if non-zero(true)
-#define OUT_AUTO_NAME \
-  1 << 12  //  Output point auto_name state, if non-zero(true)
 #define OUT_HYPERLINKS 1 << 13  //  Output point Hyperlinks, if present
 #define OUT_ACTION_ADD 1 << 14  //  opencpn:action node support
 #define OUT_ACTION_DEL 1 << 15
@@ -68,11 +66,11 @@ class RoutePoint;
 #define OUT_RTE_PROPERTIES 1 << 22
 
 #define OPT_TRACKPT OUT_TIME
-#define OPT_WPT                                                         \
-  (OUT_TYPE) + (OUT_TIME) + (OUT_NAME) + (OUT_DESC) + (OUT_SYM_FORCE) + \
-      (OUT_GUID) + (OUT_VIZ) + (OUT_VIZ_NAME) + (OUT_SHARED) +          \
-      (OUT_AUTO_NAME) + (OUT_HYPERLINKS) + (OUT_ARRIVAL_RADIUS) +       \
-      (OUT_WAYPOINT_RANGE_RINGS) + (OUT_WAYPOINT_SCALE) + (OUT_TIDE_STATION)
+#define OPT_WPT                                                              \
+  (OUT_TYPE) + (OUT_TIME) + (OUT_NAME) + (OUT_DESC) + (OUT_SYM_FORCE) +      \
+      (OUT_GUID) + (OUT_VIZ) + (OUT_VIZ_NAME) + (OUT_SHARED) +               \
+      (OUT_HYPERLINKS) + (OUT_ARRIVAL_RADIUS) + (OUT_WAYPOINT_RANGE_RINGS) + \
+      (OUT_WAYPOINT_SCALE) + (OUT_TIDE_STATION)
 #define OPT_ROUTEPT OPT_WPT + (OUT_RTE_PROPERTIES)
 
 //      Bitfield definitions controlling the GPX nodes output for Route.Track
@@ -99,7 +97,8 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
 
 RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString symbol_name,
                              wxString GUID, bool b_fullviz, bool b_layer,
-                             bool b_layerviz, int layer_id);
+                             bool b_layerviz, int layer_id,
+                             bool b_nameviz = true);
 
 bool InsertRouteA(Route *pTentRoute, NavObjectCollection1 *navobj);
 bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false);
@@ -129,6 +128,9 @@ public:
                          bool b_compute_bbox = false);
   int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz,
                                wxCheckBoxState b_namesviz);
+  bool LoadAllGPXTrackObjects();
+  bool LoadAllGPXRouteObjects();
+  bool LoadAllGPXPointObjects();
 
   bool SaveFile(const wxString filename);
 
@@ -137,75 +139,6 @@ public:
   LLBBox &GetBBox() { return BBox; };
 
   LLBBox BBox;
-  bool m_bSkipChangeSetUpdate;
-};
-
-class NavObjectChanges : public NavObjectCollection1 {
-  friend class MyConfig;
-
-public:
-  static std::unique_ptr<NavObjectChanges> getTempInstance() {
-    return std::unique_ptr<NavObjectChanges>(new NavObjectChanges());
-  }
-
-  static NavObjectChanges *getInstance() {
-    static NavObjectChanges *instance = 0;
-    if (!instance) instance = new NavObjectChanges();
-    return instance;
-  }
-
-  void Init(const wxString &path) {
-    m_filename = path;
-    m_changes_file = fopen(m_filename.mb_str(), "a");
-  }
-
-  NavObjectChanges(const NavObjectChanges &) = delete;
-  void operator=(const NavObjectChanges &) = delete;
-  ~NavObjectChanges();
-
-  void AddRoute(Route *pr, const char *action);  // support "changes" file set
-  void AddTrack(Track *pr, const char *action);
-  void AddWP(RoutePoint *pr, const char *action);
-  void AddTrackPoint(TrackPoint *pWP, const char *action,
-                     const wxString &parent_GUID);
-
-  virtual void AddNewRoute(Route *pr);
-  virtual void UpdateRoute(Route *pr);
-  virtual void DeleteConfigRoute(Route *pr);
-
-  virtual void AddNewTrack(Track *pt);
-  virtual void UpdateTrack(Track *pt);
-  virtual void DeleteConfigTrack(Track *pt);
-
-  virtual void AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
-  virtual void UpdateWayPoint(RoutePoint *pWP);
-  virtual void DeleteWayPoint(RoutePoint *pWP);
-  virtual void AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID);
-
-  bool ApplyChanges(void);
-  bool IsDirty() { return m_bdirty; }
-
-  /**
-   * Notified when Routeman (?) should delete a track. Event contains a
-   * shared_ptr<Track>
-   */
-  EventVar evt_delete_track;
-  /**
-   * Notified when Routeman (?) should delete a Route*. Event contains a
-   * shared_ptr<Route>
-   */
-  EventVar evt_delete_route;
-
-private:
-  NavObjectChanges() : NavObjectCollection1() {
-    m_changes_file = 0;
-    m_bdirty = false;
-  }
-  NavObjectChanges(wxString file_name);
-
-  wxString m_filename;
-  FILE *m_changes_file;
-  bool m_bdirty;
 };
 
 #endif  // _NAVOBJECTCOLLECTION_H__
