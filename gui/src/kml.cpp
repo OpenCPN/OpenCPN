@@ -50,8 +50,6 @@
 #include "ocpn_frame.h"
 #include "model/own_ship.h"
 
-extern MyFrame* gFrame;
-
 int Kml::seqCounter = 0;
 bool Kml::insertQtVlmExtendedData = false;
 
@@ -578,7 +576,7 @@ wxString Kml::MakeKmlFromWaypoint(RoutePoint* routepoint) {
 }
 
 void Kml::CopyRouteToClipboard(Route* route) {
-  KmlFormatDialog* formatDlg = new KmlFormatDialog(gFrame);
+  KmlFormatDialog* formatDlg = new KmlFormatDialog(wxTheApp->GetTopWindow());
   int format = formatDlg->ShowModal();
 
   if (format != wxID_CANCEL) {

@@ -1,6 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
+ * Purpose:  Route Point Object
  *
  ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
@@ -60,7 +61,6 @@ RoutePoint::RoutePoint() {
   m_manual_etd = false;
 
   m_seg_eta = wxInvalidDateTime;
-  m_bDynamicName = false;
   m_bPtIsSelected = false;
   m_bRPIsBeingEdited = false;
   m_bIsActive = false;
@@ -126,7 +126,6 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
   m_seg_etd = orig->m_seg_etd;
   m_manual_etd = false;
 
-  m_bDynamicName = orig->m_bDynamicName;
   m_bPtIsSelected = orig->m_bPtIsSelected;
   m_bRPIsBeingEdited = orig->m_bRPIsBeingEdited;
   m_bIsActive = orig->m_bIsActive;
@@ -193,7 +192,6 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_seg_etd = wxInvalidDateTime;
   m_manual_etd = false;
 
-  m_bDynamicName = false;
   m_bPtIsSelected = false;
   m_bRPIsBeingEdited = false;
   m_bIsActive = false;
@@ -338,6 +336,7 @@ bool RoutePoint::IsSharedInVisibleRoute() {
           break;
         }
       }
+      delete proute_array;
     }
 
     return brp_viz;
@@ -359,6 +358,32 @@ bool RoutePoint::IsSame(RoutePoint *pOtherRP) {
       IsSame = true;
   }
   return IsSame;
+}
+
+/*!
+ * Check if the name is dynamic for resequencing purposes.
+ * If the name is part of a route, and has 3 numeric characters,
+ * then it is dynamic and can be resequenced.
+ */
+bool RoutePoint::IsNameDynamic() {
+  bool b_numeric = false;
+  if (m_bIsInRoute) {
+    if (GetName().Len() >= 2) {
+      wxString substring = GetName().Left(2);
+      if (substring == "NM") {
+        substring = GetName().substr(2, 3);
+      } else {
+        substring = GetName().Left(3);
+      }
+      b_numeric = true;  // assume it is numeric
+      for (unsigned int i = 0; i < substring.Len(); i++) {
+        if (b_numeric == true) {
+          b_numeric = wxIsdigit(substring[i]);
+        }  // don't change the value if it is already false
+      }
+    }
+  }
+  return b_numeric;
 }
 
 double RoutePoint::GetWaypointArrivalRadius() {
@@ -453,6 +478,9 @@ wxDateTime RoutePoint::GetETD() {
         wxString tz(parse_return);
 
         if (tz.Find(_T("UT")) != wxNOT_FOUND) {
+          // TODO: This is error-prone. It would match any string containing
+          // these characters, not just time zone codes For example, "UT" would
+          // match "UTC+2".
           m_seg_etd = etd;
         } else {
           if (tz.Find(_T("LMT")) != wxNOT_FOUND) {
@@ -513,6 +541,9 @@ bool RoutePoint::SetETD(const wxString &ts) {
   }
   wxDateTime tmp;
   wxString::const_iterator end;
+  // No timezone conversion is done because the serialized string
+  // does not include timezone information, e.g., "2025-03-26T18:57:01"
+  // The input string is assumed to be in UTC format.
   if (tmp.ParseISOCombined(ts)) {
     SetETD(tmp);
     return TRUE;

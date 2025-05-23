@@ -749,10 +749,9 @@ static void AISSetMetrics() {
   AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
   AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
-  AIS_icon_diameter = AIS_intercept_bar_circle_diameter *
-                      AIS_user_scale_factor * AIS_scale_factor;
+  AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
 
-  wxFont *font = FontMgr::Get().GetFont(_("AIS Target Name"), 12);
+  wxFont *font = FontMgr::Get().GetFont(_("AIS Target Name"), 0);
   double scaler = DPIscale;
 
   AIS_NameFont = FindOrCreateFont_PlugIn(
@@ -1279,7 +1278,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   }
 
   //        Actually Draw the target
-  if (td->Class == AIS_ARPA) {
+  if (td->Class == AIS_ARPA || td->Class == AIS_BUOY) {
     wxPen target_pen(UBLCK, 2);
 
     dc.SetPen(target_pen);

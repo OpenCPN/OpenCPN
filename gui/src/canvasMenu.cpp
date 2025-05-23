@@ -44,11 +44,13 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui.h"
 #include "model/mdns_cache.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 #include "model/nav_object_database.h"
 #include "model/own_ship.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -75,6 +77,7 @@
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
+#include "s52s57.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "SendToGpsDlg.h"
 #include "SendToPeerDlg.h"
@@ -85,6 +88,7 @@
 #include "track_gui.h"
 #include "TrackPropDlg.h"
 #include "undo.h"
+#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -205,6 +209,9 @@ enum {
   ID_DEF_MENU_CURRENTINFO,
   ID_DEF_ZERO_XTE,
 
+  ID_DEF_MENU_DEBUG,
+  ID_DGB_MENU_NMEA_WINDOW,
+
   ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are
                           // created dynamically
 
@@ -226,9 +233,8 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
                                      Route *selectedRoute, Track *selectedTrack,
                                      RoutePoint *selectedPoint,
                                      int selectedAIS_MMSI,
-                                     void *selectedTCIndex)
-
-{
+                                     void *selectedTCIndex, wxWindow *nmea_log)
+    : m_nmea_log(nmea_log) {
   parent = parentCanvas;
   m_pSelectedRoute = selectedRoute;
   m_pSelectedTrack = selectedTrack;
@@ -282,7 +288,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
 #endif
 
 #ifdef __ANDROID__
-  wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
   item->SetFont(sFont);
 #endif
 
@@ -320,6 +326,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #else
   wxMenu *subMenuRedo = new wxMenu("Redo...Ctrl-Y");
 #endif
+  wxMenu *subMenuDebug = new wxMenu("");
+  MenuAppend1(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW, _("Show Data Monitor"));
 
   wxMenu *menuFocus = contextMenu;  // This is the one that will be shown
 
@@ -511,8 +519,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _("Move Boat Here"));
   }
 
-  if (!g_bBasicMenus &&
-      (!(g_pRouteMan->GetpActiveRoute() || (seltype & SELTYPE_MARKPOINT))))
+  if (!g_bBasicMenus && !g_pRouteMan->GetpActiveRoute() &&
+      (!(seltype & SELTYPE_MARKPOINT) ||
+       (m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer)))
     MenuAppend1(contextMenu, ID_DEF_MENU_GOTO_HERE, _("Navigate To Here"));
 
   if (!g_bBasicMenus)
@@ -701,6 +710,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
     }
   }
+  if (g_enable_root_menu_debug)
+    contextMenu->AppendSubMenu(subMenuDebug, _("Debug"));
 
   if (seltype & SELTYPE_ROUTESEGMENT) {
     if (!g_bBasicMenus && m_pSelectedRoute) {
@@ -1101,10 +1112,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   androidEnableBackButton(false);
   androidEnableOptionsMenu(false);
 
-  setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_T("Menu")));
-  setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_T("Menu")));
-  setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_T("Menu")));
-  setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_T("Menu")));
+  setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_("Menu")));
 #endif
 
   parent->PopupMenu(menuFocus, x, y);
@@ -1211,7 +1222,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
                                        wxEmptyString, wxEmptyString);
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
       pSelect->AddSelectableRoutePoint(zlat, zlon, pWP);
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
       if (!RoutePointGui(*pWP).IsVisibleSelectable(this->parent))
         RoutePointGui(*pWP).ShowScaleWarningMessage(parent);
 
@@ -1319,11 +1331,12 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
             g_pRouteMan->GetRouteArrayContaining(m_pFoundRoutePoint);
         if (proute_array) {
           pWayPointMan->DestroyWaypoint(m_pFoundRoutePoint);
+          delete proute_array;
         } else {
           parent->undo->BeforeUndoableAction(
               Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded,
               NULL /*m_pFoundPoint*/);
-          pConfig->DeleteWayPoint(m_pFoundRoutePoint);
+          NavObj_dB::GetInstance().DeleteRoutePoint(m_pFoundRoutePoint);
           pSelect->DeleteSelectablePoint(m_pFoundRoutePoint,
                                          SELTYPE_ROUTEPOINT);
           if (NULL != pWayPointMan)
@@ -1366,7 +1379,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         wxJSONValue v;
         v[_T("GUID")] = guid;
         wxString msg_id(_T("OCPN_ANCHOR_WATCH_CLEARED"));
-        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+        SendJSONMessageToAllPlugins(msg_id, v);
       }
       break;
     }
@@ -1398,7 +1411,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         wxJSONValue v;
         v[_T("GUID")] = guid;
         wxString msg_id(_T("OCPN_ANCHOR_WATCH_SET"));
-        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+        SendJSONMessageToAllPlugins(msg_id, v);
       }
       break;
     }
@@ -1438,8 +1451,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
     }
     case ID_DEF_MENU_AIS_QUERY: {
-      wxWindow *pwin = wxDynamicCast(parent, wxWindow);
-      ShowAISTargetQueryDialog(pwin, m_FoundAIS_MMSI);
+      ShowAISTargetQueryDialog(parent, m_FoundAIS_MMSI);
       break;
     }
 
@@ -1490,6 +1502,12 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       break;
     }
+
+    case ID_DGB_MENU_NMEA_WINDOW:
+      m_nmea_log->Show();
+      m_nmea_log->Raise();
+      break;
+
     case ID_RT_MENU_REVERSE: {
       if (m_pSelectedRoute->m_bIsInLayer) break;
 
@@ -1502,7 +1520,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         m_pSelectedRoute->Reverse(ask_return == wxID_YES);
         pSelect->AddAllSelectableRouteSegments(m_pSelectedRoute);
 
-        pConfig->UpdateRoute(m_pSelectedRoute);
+        NavObj_dB::GetInstance().UpdateRoute(m_pSelectedRoute);
 
         if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
           pRoutePropDialog->SetRouteAndUpdate(m_pSelectedRoute);
@@ -1543,23 +1561,16 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_RT_MENU_DELETE: {
-      int dlg_return = wxID_YES;
-      if (g_bConfirmObjectDelete) {
-        dlg_return = OCPNMessageBox(
-            parent, _("Are you sure you want to delete this route?"),
-            _("OpenCPN Route Delete"),
-            (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-      }
+      bool confirmed = RouteGui::OnDelete(parent);
 
-      if (dlg_return == wxID_YES) {
+      if (confirmed) {
         if (g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute)
           g_pRouteMan->DeactivateRoute();
 
         if (m_pSelectedRoute->m_bIsInLayer) break;
 
-        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute,
-                                      NavObjectChanges::getInstance()))
-          break;
+        NavObj_dB::GetInstance().DeleteRoute(m_pSelectedRoute);
+        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute)) break;
 
         if (RouteManagerDialog::getInstanceFlag()) {
           if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
@@ -1630,7 +1641,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
        }
        }
        */
-      pConfig->UpdateRoute(m_pSelectedRoute);
+      NavObj_dB::GetInstance().UpdateRoute(m_pSelectedRoute);
 
       if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
         pRoutePropDialog->SetRouteAndUpdate(m_pSelectedRoute, true);
@@ -1682,17 +1693,16 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + splitMode,
                           m_pSelectedRoute->GetnPoints(), _("_B"), dupFirstWpt);
       pRouteList->Append(m_pHead);
-      pConfig->AddNewRoute(m_pHead);
+      NavObj_dB::GetInstance().InsertRoute(m_pHead);
 
       pRouteList->Append(m_pTail);
-      pConfig->AddNewRoute(m_pTail);
+      NavObj_dB::GetInstance().InsertRoute(m_pTail);
 
-      pConfig->DeleteConfigRoute(m_pSelectedRoute);
+      NavObj_dB::GetInstance().DeleteRoute(m_pSelectedRoute);
 
       pSelect->DeleteAllSelectableRoutePoints(m_pSelectedRoute);
       pSelect->DeleteAllSelectableRouteSegments(m_pSelectedRoute);
-      g_pRouteMan->DeleteRoute(m_pSelectedRoute,
-                               NavObjectChanges::getInstance());
+      g_pRouteMan->DeleteRoute(m_pSelectedRoute);
       pSelect->AddAllSelectableRouteSegments(m_pTail);
       pSelect->AddAllSelectableRoutePoints(m_pTail);
       pSelect->AddAllSelectableRouteSegments(m_pHead);
@@ -1727,7 +1737,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         else {
           SendToGpsDlg dlg;
           dlg.SetWaypoint(m_pFoundRoutePoint);
-          wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+          wxFont fo = GetOCPNGUIScaledFont(_("Dialog"));
           dlg.SetFont(fo);
 
           dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
@@ -1903,8 +1913,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         if (m_pSelectedTrack == g_pActiveTrack)
           m_pSelectedTrack = parent->parent_frame->TrackOff();
         g_pAIS->DeletePersistentTrack(m_pSelectedTrack);
-        pConfig->DeleteConfigTrack(m_pSelectedTrack);
-
+        // pConfig->DeleteConfigTrack(m_pSelectedTrack);
+        NavObj_dB::GetInstance().DeleteTrack(m_pSelectedTrack);
         RoutemanGui(*g_pRouteMan).DeleteTrack(m_pSelectedTrack);
 
         if (TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&

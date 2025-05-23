@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  comm_oveflow_dlg.cpp Implement comm_oveflow_dlg.cpp.h. */
+/**
+ *  \file
+ *  Implement comm_oveflow_dlg.cpp.h.
+ */
 
 #include <cassert>
 

@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
+/**
+ * \file
+ * \implements \ref GribV2Record.h
+ */
 /*
 ** File: unpackgrib2.c
 **
@@ -216,7 +220,7 @@ static int dec_jpeg2000(char *injpc, int bufsize, int *outfld)
 {
   int ier;
   int i, j, k;
-  jas_image_t *image = 0;
+  jas_image_t *image = nullptr;
   jas_stream_t *jpcstream;
   jas_image_cmpt_t *pcmpt;
   char *opts = 0;
@@ -238,7 +242,7 @@ static int dec_jpeg2000(char *injpc, int bufsize, int *outfld)
   //     Decode JPEG200 codestream into jas_image_t structure.
   //
   image = jpc_decode(jpcstream, opts);
-  if (image == 0) {
+  if (image == nullptr) {
     printf(" jpc_decode return = %d \n", ier);
     return -3;
   }
@@ -725,9 +729,9 @@ static bool unpackBMS(GRIBMessage *grib_msg) {
       break;
     case 255:  // A bit map does not apply to this product.
       delete[] grib_msg->md.bitmap;
-      grib_msg->md.bitmap = NULL;
+      grib_msg->md.bitmap = nullptr;
       delete[] grib_msg->md.bms;
-      grib_msg->md.bms = NULL;
+      grib_msg->md.bms = nullptr;
       grib_msg->md.bmssize = 0;
       break;
     default:
@@ -762,7 +766,7 @@ static bool unpackDS(GRIBMessage *grib_msg) {
     case 0:
       grib_msg->grids.gridpoints = new double[npoints];
       for (l = 0; l < npoints; l++) {
-        if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
+        if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
           getBits(grib_msg->buffer, &pval, off, grib_msg->md.pack_width);
           grib_msg->grids.gridpoints[l] = grib_msg->md.R + pval * E / D;
           off += grib_msg->md.pack_width;
@@ -854,7 +858,7 @@ static bool unpackDS(GRIBMessage *grib_msg) {
             groups.group_miss_val = GRIB_MISSING_VALUE;
           }
           for (int i = 0; i < groups.lengths[n];) {
-            if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
+            if (grib_msg->md.bitmap != nullptr && grib_msg->md.bitmap[l] == 0) {
               grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
             } else {
               getBits(grib_msg->buffer, &pval, off, groups.widths[n]);
@@ -871,7 +875,7 @@ static bool unpackDS(GRIBMessage *grib_msg) {
           }
         } else {  // constant group XXX bitmap?
           for (int i = 0; i < groups.lengths[n];) {
-            if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
+            if (grib_msg->md.bitmap != nullptr && grib_msg->md.bitmap[l] == 0) {
               grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
             } else {
               if (groups.ref_vals[n] == groups.miss_val) {
@@ -986,7 +990,7 @@ static bool unpackDS(GRIBMessage *grib_msg) {
                      jvals);
       cnt = 0;
       for (l = 0; l < npoints; l++) {
-        if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
+        if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
           if (len == 0) jvals[cnt] = 0;
           grib_msg->grids.gridpoints[l] = grib_msg->md.R + jvals[cnt++] * E / D;
         } else
@@ -1540,8 +1544,8 @@ void GribV2Record::readDataSet(ZUFILE *file) {
   bool DS = false;
   int len, sec_num;
 
-  data = NULL;
-  BMSbits = NULL;
+  data = nullptr;
+  BMSbits = nullptr;
   hasBMS = false;
   knownData = false;
   IsDuplicated = false;
@@ -1706,9 +1710,9 @@ void GribV2Record::readDataSet(ZUFILE *file) {
 GribV2Record::GribV2Record(ZUFILE *file, int id_) {
   id = id_;
   seekStart = zu_tell(file);  // moved to section 0 read
-  data = NULL;
+  data = nullptr;
   BMSsize = 0;
-  BMSbits = NULL;
+  BMSbits = nullptr;
   hasBMS = false;
   eof = false;
   knownData = false;
@@ -1816,9 +1820,9 @@ static bool unpackIS(ZUFILE *fp, GRIBMessage *grib_msg) {
   int status;
   size_t num;
 
-  if (grib_msg->buffer != NULL) {
+  if (grib_msg->buffer != nullptr) {
     delete[] grib_msg->buffer;
-    grib_msg->buffer = NULL;
+    grib_msg->buffer = nullptr;
   }
   grib_msg->num_grids = 0;
 

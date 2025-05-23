@@ -26,6 +26,8 @@
 #ifndef _MARKINFO_H_
 #define _MARKINFO_H_
 
+#include <memory>
+
 /*!
  * Includes
  */
@@ -51,6 +53,10 @@
 #include <wx/combobox.h>
 
 #include <wx/dialog.h>
+#include "field_text.h"
+#include "form_grid.h"
+
+#include "route_validator.h"
 
 #ifdef __WXGTK__
 // wxTimePickerCtrl is completely broken in Gnome based desktop environments as
@@ -145,10 +151,11 @@ WX_DECLARE_OBJARRAY(wxBitmap, ArrayOfBitmaps);
 
 class SaveDefaultsDialog;
 
-/*!
- * OCPNIconCombo class declaration
+/**
+ * Custom combobox for selecting waypoint icons. Extends wxOwnerDrawnComboBox to
+ * provide a combobox with custom-drawn items, specifically for selecting
+ * waypoint icons.
  */
-
 class OCPNIconCombo : public wxOwnerDrawnComboBox {
 public:
   OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
@@ -181,7 +188,6 @@ private:
 extern /*expdecl*/ const wxEventType EVT_LLCHANGE;
 
 class LatLonTextCtrl : public wxTextCtrl {
-  //    DECLARE_DYNAMIC_CLASS( LatLonTextCtrl )
   DECLARE_EVENT_TABLE()
 
 public:
@@ -197,16 +203,38 @@ public:
   wxEvtHandler* m_pParentEventHandler;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class MarkInfoDef
-///////////////////////////////////////////////////////////////////////////////
+/**
+ * Dialog for displaying and editing waypoint properties.
+ * Provides a comprehensive interface for viewing and modifying
+ * waypoint properties in OpenCPN. Includes functionality for
+ * editing basic and extended properties, managing links, and setting defaults.
+ */
 class MarkInfoDlg : public DIALOG_PARENT {
   DECLARE_EVENT_TABLE()
   friend class SaveDefaultsDialog;
 
 private:
+  /**
+   * The waypoint being edited in this dialog.
+   * This pointer references the actual waypoint object being modified, not a
+   * copy. Changes made in the dialog directly affect this object when applied.
+   *
+   * In OpenCPN, a waypoint can:
+   * - Exist independently (not part of any route)
+   * - Be part of a single route
+   * - Be shared between multiple routes
+   * - Be part of a layer (in which case it's read-only)
+   *
+   * The dialog adapts its interface based on the waypoint's context:
+   * - Shows additional fields when the waypoint is in a route (planned speed,
+   * arrival radius)
+   * - Disables editing when the waypoint is in a layer
+   * - Changes ETD/ETA labeling based on position in route(s)
+   *
+   * The original state of the waypoint is saved when the dialog opens,
+   * allowing for restoration if the user cancels the edit operation.
+   */
   RoutePoint* m_pRoutePoint;
-  std::vector<RoutePoint*> m_pRoutePoints;
   static bool instanceFlag;
   int i_htmlList_item;
 
@@ -230,12 +258,12 @@ private:
   wxDateTime m_ArrETA_save;
   std::map<double, const IDX_entry*> m_tss;
   wxString m_lasttspos;
-  void SetRoutePoint(RoutePoint* pRP);
 
 protected:
   OCPNIconCombo* m_bcomboBoxIcon;
   wxBoxSizer* bSizerBasicProperties;
   wxBoxSizer* bSizerLinks;
+  wxButton* m_buttonOkay;
   wxButton* m_buttonExtDescription;
   wxButton* m_buttonLinksMenu;
   wxBitmapButton* m_buttonShowTides;
@@ -246,9 +274,26 @@ protected:
   wxCheckBox* m_checkBoxVisible;
   wxChoice* m_choiceWaypointRangeRingsUnits;
   wxColourPickerCtrl* m_PickColor;
-  wxCheckBox* m_cbEtaPresent;
+  /**
+   * Checkbox control that enables/disables manual ETD setting for a waypoint.
+   *
+   * This control allows users to specify a custom Estimated Time of Departure
+   * (ETD) for a waypoint instead of using the automatically calculated value.
+   * When checked:
+   * 1. The date/time controls become active for manual ETD selection
+   * 2. The waypoint's m_manual_etd flag is set to true
+   * 3. The selected date/time is stored as the waypoint's m_seg_etd value
+   *
+   * A manual ETD overrides the default behavior where ETD would be set equal to
+   * the waypoint's ETA (creating a continuous timing chain). This affects ETA
+   * calculations for all subsequent waypoints in the route.
+   *
+   * The control is only visible and relevant for waypoints that are part of a
+   * route.
+   */
+  wxCheckBox* m_cbEtdPresent;
   wxBoxSizer* bMainSizer;
-  wxFlexGridSizer* fSizerBasicProperties;
+  FormGrid* fSizerBasicProperties;
   wxFlexGridSizer* waypointradarGrid;
   wxFlexGridSizer* waypointrrSelect;
   wxGridBagSizer* bGB_SizerProperties;
@@ -287,7 +332,8 @@ protected:
   wxStaticText* m_staticTextRR4;
   wxStaticText* m_staticTextArrivalUnits;
   wxStaticText* m_staticTextPlSpeed;
-  wxStaticText* m_staticTextEta;
+  /** Label for the Estimated Time of Departure field. */
+  wxStaticText* m_staticTextEtd;
   wxStaticText* m_staticTextPlSpeedUnits;
   wxStdDialogButtonSizer* m_sdbSizerButtons;
   wxTextCtrl* m_textArrivalRadius;
@@ -308,19 +354,42 @@ protected:
   wxTextCtrl* m_textDescription;
   wxTextCtrl* m_textLatitude;
   wxTextCtrl* m_textLongitude;
-  wxTextCtrl* m_textName;
+  TextField* m_textName;
+  std::unique_ptr<RoutePointNameValidator> m_name_validator;
   wxTextCtrl* m_textScaMin;
   wxTextCtrl* m_textWaypointRangeRingsStep;
+  /**
+   * Text control for waypoint planned speed.
+   * Allows user input of the planned vessel speed for ETD/ETA calculations.
+   * This field is only shown when a waypoint is part of a route.
+   * Input value is in user-selected speed units (knots, km/h, etc.) and
+   * converted to internal units when saved.
+   * If value is empty or 0, no planned speed is assumed for this waypoint.
+   */
   wxTextCtrl* m_textCtrlPlSpeed;
   wxBitmap _img_MUI_settings_svg;
   wxButton* m_sdbSizerButtonsCancel;
   wxButton* m_sdbSizerButtonsOK;
 
-  wxDatePickerCtrl* m_EtaDatePickerCtrl;
+  /**
+   * Date picker control for setting the Estimated Time of Departure (ETD).
+   * Allows the user to select a calendar date for planned departure from a
+   * waypoint. Works in conjunction with m_EtdTimePickerCtrl to form a complete
+   * date/time value. The selected date is used for route planning and ETA
+   * calculations for subsequent waypoints based on the planned speed.
+   */
+  wxDatePickerCtrl* m_EtdDatePickerCtrl;
 #ifdef __WXGTK__
-  TimeCtrl* m_EtaTimePickerCtrl;
+  TimeCtrl* m_EtdTimePickerCtrl;
 #else
-  wxTimePickerCtrl* m_EtaTimePickerCtrl;
+  /**
+   * Time picker control for setting the Estimated Time of Departure (ETD).
+   * Allows the user to select the time of day for planned departure from a
+   * waypoint. Works in conjunction with m_EtdDatePickerCtrl to form a complete
+   * date/time value. The selected time is used for route planning and ETA
+   * calculations for subsequent waypoints based on the planned speed.
+   */
+  wxTimePickerCtrl* m_EtdTimePickerCtrl;
 #endif
   wxArrayString m_choiceTideChoices;
   wxBitmap m_bmTide;
@@ -330,6 +399,7 @@ protected:
   void initialize_images(void);
   void OnBitmapCombClick(wxCommandEvent& event);
   void OnPositionCtlUpdated(wxCommandEvent& event);
+  void OnFocusEvent(wxFocusEvent& event);
   void OnExtDescriptionClick(wxCommandEvent& event);
   void OnDescChangedExt(wxCommandEvent& event);
   void OnDescChangedBasic(wxCommandEvent& event);
@@ -346,11 +416,12 @@ protected:
   void OnRightClickLatLon(wxCommandEvent& event);
   void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
   void OnHyperLinkClick(wxHyperlinkEvent& event);
+  void OnLayoutResize(wxCommandEvent& event);
 
   void On_html_link_popupmenu_Click(wxCommandEvent& event);
   void DefautlBtnClicked(wxCommandEvent& event);
   void OnNotebookPageChanged(wxNotebookEvent& event);
-  void OnTimeChanged(wxDateEvent& event) { m_cbEtaPresent->SetValue(true); }
+  void OnTimeChanged(wxDateEvent& event) { m_cbEtdPresent->SetValue(true); }
   void OnTideStationCombobox(wxCommandEvent& event);
   void OnClose(wxCloseEvent& event);
   void ShowTidesBtnClicked(wxCommandEvent& event);
@@ -368,7 +439,7 @@ public:
   void RecalculateSize(void);
   RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
-  void SetRoutePoints(const std::vector<RoutePoint*>&);
+  void SetRoutePoint(RoutePoint* pRP);
   void ClearData();
   void SetBulkEdit(bool bBulkEdit);
   void UpdateHtmlList();
@@ -379,17 +450,18 @@ public:
   void OnActivate(wxActivateEvent& event);
 
   wxSimpleHtmlListBox* GetSimpleBox() {
-    return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox);
+    return dynamic_cast<wxSimpleHtmlListBox*>(m_htmlList);
   }
   void OnHtmlCellClicked(wxHtmlCellEvent& event);
 
   SaveDefaultsDialog* m_SaveDefaultDlg;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class SaveDefaultsDialog
-///////////////////////////////////////////////////////////////////////////////
-
+/**
+ * Dialog for saving default waypoint properties. Allows users to select
+ * which properties of the current waypoint should be saved as defaults for
+ * future waypoints.
+ */
 class SaveDefaultsDialog : public wxDialog {
   friend class MarkInfoDlg;
 

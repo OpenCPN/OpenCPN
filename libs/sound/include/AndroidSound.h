@@ -34,28 +34,26 @@
  * Sound backend supports synchronous mode on Android devices.
  */
 
-class AndroidSound: public OcpnSound
-{
-    public:
-        ~AndroidSound();
+class AndroidSound : public OcpnSound {
+public:
+  ~AndroidSound();
 
-        bool Load(const char*, int deviceIndex = -1) override;
-        void UnLoad() override {};
-        bool Reset() /*override*/ { return true; };
-        bool Play() override;
-        bool Stop() override;
-        void SetFinishedCallback(AudioDoneCallback cb, void* userData);
-        void OnSoundDone();
+  bool Load(const char*, int deviceIndex = -1) override;
+  void UnLoad() override {};
+  bool Reset() /*override*/ { return true; };
+  bool Play() override;
+  bool Stop() override;
+  void SetFinishedCallback(AudioDoneCallback cb, void* userData);
+  void OnSoundDone();
 
-    protected:
-        bool canPlay();
-        std::string m_soundfile;
-        bool m_isPlaying;
+protected:
+  bool canPlay();
+  std::string m_soundfile;
+  bool m_isPlaying;
 
-   private:
-        std::mutex mtx;
-        std::condition_variable done;
+private:
+  std::mutex mtx;
+  std::condition_variable done;
 };
 
-
-#endif // ANDROID_SOUND_H__
+#endif  // ANDROID_SOUND_H__

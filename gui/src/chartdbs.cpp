@@ -64,18 +64,6 @@ static int s_dbVersion;  //    Database version currently in use at runtime
                          //  above....
 ///////////////////////////////////////////////////////////////////////
 
-bool FindMatchingFile(const wxString &theDir, const wxChar *theRegEx,
-                      int nameLength, wxString &theMatch) {
-  wxDir dir(theDir);
-  wxRegEx rePattern(theRegEx);
-  for (bool fileFound = dir.GetFirst(&theMatch); fileFound;
-       fileFound = dir.GetNext(&theMatch))
-    if (theMatch.length() == (unsigned int)nameLength &&
-        rePattern.Matches(theMatch))
-      return true;
-  return false;
-}
-
 static ChartFamilyEnum GetChartFamily(int charttype) {
   ChartFamilyEnum cf;
 
@@ -1091,7 +1079,7 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void) {
     m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
         _T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR));
     m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
-        _T("ChartMBTiles"), _T("*.mbtiles"), BUILTIN_DESCRIPTOR));
+        _T("ChartMbTiles"), _T("*.mbtiles"), BUILTIN_DESCRIPTOR));
   }
   //    If the PlugIn Manager exists, get the array of dynamically loadable
   //    chart class names
@@ -1318,140 +1306,124 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
   unsigned int target_width = 60;
 
   const ChartTableEntry &cte = GetChartTableEntry(dbIndex);
-  if (1)  // TODO why can't this be cte.GetbValid()?
-  {
-    wxString line;
-    line = _(" ChartFile:  ");
-    wxString longline = *(cte.GetpsFullPath());
+  wxString line;
+  line.Empty();
+  if (pc) {
+    line = _(" Name:  ");
+    wxString longline = pc->GetName();
+
+    wxString tkz;
+    if (longline.Find(' ') != wxNOT_FOUND)  // assume a proper name
+      tkz = _T(" ");
+    else
+      tkz = _T("/,\\");  // else a file name
 
     if (longline.Len() > target_width) {
-      line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
+      line += SplitPath(pc->GetName(), tkz, target_width, 12, &ncr);
       max_width = wxMax(max_width, target_width + 4);
       lc += ncr;
     } else {
       line += longline;
       max_width = wxMax(max_width, line.Len() + 4);
     }
-
-    r += line;
-    r += _T("\n");
-    lc++;
-
-    line.Empty();
-    if (pc) {
-      line = _(" Name:  ");
-      wxString longline = pc->GetName();
-
-      wxString tkz;
-      if (longline.Find(' ') != wxNOT_FOUND)  // assume a proper name
-        tkz = _T(" ");
-      else
-        tkz = _T("/,\\");  // else a file name
-
-      if (longline.Len() > target_width) {
-        line += SplitPath(pc->GetName(), tkz, target_width, 12, &ncr);
-        max_width = wxMax(max_width, target_width + 4);
-        lc += ncr;
-      } else {
-        line += longline;
-        max_width = wxMax(max_width, line.Len() + 4);
-      }
-    }
-
-    line += _T("\n");
-    r += line;
-    lc++;
-
-    if (pc)  // chart is loaded and available
-      line.Printf(_T(" %s:  1:%d"), _("Scale"), pc->GetNativeScale());
-    else
-      line.Printf(_T(" %s:  1:%d"), _("Scale"), cte.GetScale());
-
-    line += _T("\n");
-    max_width = wxMax(max_width, line.Len());
-    r += line;
-    lc++;
-
-    if (pc) {
-      line.Empty();
-      line = _(" ID:  ");
-      line += pc->GetID();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-
-      line.Empty();
-      line = _(" Depth Units:  ");
-      line += pc->GetDepthUnits();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-
-      line.Empty();
-      line = _(" Soundings:  ");
-      line += pc->GetSoundingsDatum();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-
-      line.Empty();
-      line = _(" Datum:  ");
-      line += pc->GetDatumString();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-    }
-
-    line = _(" Projection:  ");
-    if (PROJECTION_UNKNOWN == cte.GetChartProjectionType())
-      line += _("Unknown");
-    else if (PROJECTION_MERCATOR == cte.GetChartProjectionType())
-      line += _("Mercator");
-    else if (PROJECTION_TRANSVERSE_MERCATOR == cte.GetChartProjectionType())
-      line += _("Transverse Mercator");
-    else if (PROJECTION_POLYCONIC == cte.GetChartProjectionType())
-      line += _("Polyconic");
-    else if (PROJECTION_WEB_MERCATOR == cte.GetChartProjectionType())
-      line += _("Web Mercator (EPSG:3857)");
-    line += _T("\n");
-    max_width = wxMax(max_width, line.Len());
-    r += line;
-    lc++;
-
-    line.Empty();
-    if (pc) {
-      line = _(" Source Edition:  ");
-      line += pc->GetSE();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-
-      line.Empty();
-      wxDateTime ed = pc->GetEditionDate();
-      if (ed.IsValid()) {
-        line = _(" Updated:  ");
-        line += ed.FormatISODate();
-        line += _T("\n");
-        max_width = wxMax(max_width, line.Len());
-        r += line;
-      }
-      lc++;
-    }
-
-    line.Empty();
-    if (pc && pc->GetExtraInfo().Len()) {
-      line += pc->GetExtraInfo();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
-      lc++;
-    }
   }
+
+  line += _T("\n");
+  r += line;
+  lc++;
+
+  if (pc)  // chart is loaded and available
+    line.Printf(_T(" %s:  1:%d"), _("Scale"), pc->GetNativeScale());
+  else
+    line.Printf(_T(" %s:  1:%d"), _("Scale"), cte.GetScale());
+
+  line += _T("\n");
+  max_width = wxMax(max_width, line.Len());
+  r += line;
+  lc++;
+  if (pc) {
+    wxDateTime ed = pc->GetEditionDate();
+    if (ed.IsValid()) {
+      line = _(" Updated:  ") + ed.FormatISODate() + "\n";
+      max_width = wxMax(max_width, line.Len());
+      r += line;
+    }
+    lc++;
+
+    line = _(" Source Edition:  ") + pc->GetSE() + "\n";
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+  }
+
+  if (pc) {
+    line = _(" Depth Units:  ") + pc->GetDepthUnits() + "\n";
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+
+    line = _(" Soundings:  ") + pc->GetSoundingsDatum() + "\n";
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+
+    line = _(" Datum:  ") + pc->GetDatumString() + "\n";
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+  }
+
+  line = _(" Projection:  ");
+  if (PROJECTION_UNKNOWN == cte.GetChartProjectionType())
+    line += _("Unknown");
+  else if (PROJECTION_MERCATOR == cte.GetChartProjectionType())
+    line += _("Mercator");
+  else if (PROJECTION_TRANSVERSE_MERCATOR == cte.GetChartProjectionType())
+    line += _("Transverse Mercator");
+  else if (PROJECTION_POLYCONIC == cte.GetChartProjectionType())
+    line += _("Polyconic");
+  else if (PROJECTION_WEB_MERCATOR == cte.GetChartProjectionType())
+    line += _("Web Mercator (EPSG:3857)");
+  line += _T("\n");
+  max_width = wxMax(max_width, line.Len());
+  r += line;
+  lc++;
+
+  line.Empty();
+  if (pc) {
+  }
+
+  line.Empty();
+  if (pc && pc->GetExtraInfo().Len()) {
+    line += pc->GetExtraInfo();
+    line += _T("\n");
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+  }
+  if (pc) {
+    line.Empty();
+    line = _(" ID:  ");
+    line += pc->GetID();
+    line += _T("\n");
+    max_width = wxMax(max_width, line.Len());
+    r += line;
+    lc++;
+  }
+
+  line = _(" ChartFile:  ");
+  wxString longline = *(cte.GetpsFullPath());
+  if (longline.Len() > target_width) {
+    line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
+    max_width = wxMax(max_width, target_width + 4);
+    lc += ncr;
+  } else {
+    line += longline;
+    max_width = wxMax(max_width, line.Len() + 4);
+  }
+  r += line;
+  r += _T("\n");
+  lc++;
 
   if (line_count) *line_count = lc;
 
@@ -1482,6 +1454,47 @@ bool ChartDatabase::Create(ArrayOfCDI &dir_array,
   m_dbversion = DB_VERSION_CURRENT;
 
   return true;
+}
+
+/*
+ * Traverse a directory recursively and find the GSHHG directory
+ * that contains GSHHG data files.
+ */
+class GshhsTraverser : public wxDirTraverser {
+public:
+  GshhsTraverser() {}
+  virtual wxDirTraverseResult OnFile(const wxString &filename) override {
+    wxFileName fn(filename);
+    wxFileName dir(fn.GetPath());
+    if (fn.GetFullName().Matches(_T("poly-*-1.dat")) &&
+        dir.GetFullName().IsSameAs(_T("GSHHG"), false)) {
+      parent_dir = fn.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
+      return wxDIR_STOP;
+    }
+    return wxDIR_CONTINUE;
+  }
+  virtual wxDirTraverseResult OnDir(const wxString &dirname) override {
+    // Always recurse into directories.
+    return wxDIR_CONTINUE;
+  }
+  wxString GetGshhsDir() const { return parent_dir; }
+
+private:
+  wxString parent_dir;
+};
+
+/*
+ * Find and return the full path a of directory containing GSHHG data files.
+ * Search recursively starting from directory.
+ */
+wxString findGshhgDirectory(const wxString &directory) {
+  wxDir dir(directory);
+  if (!dir.IsOpened()) {
+    return wxEmptyString;
+  }
+  GshhsTraverser traverser;
+  dir.Traverse(traverser, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
+  return traverser.GetGshhsDir();
 }
 
 // ----------------------------------------------------------------------------
@@ -1526,15 +1539,16 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 #endif
 
     wxString dir_magic;
-
-    if (dir_info.fullpath.Find(_T("GSHHG")) != wxNOT_FOUND) {
-      if (!wxDir::FindFirst(dir_info.fullpath, "poly-*-1.dat").empty()) {
-        // If some polygons exist in the directory, set it as the one to use for
-        // GSHHG
-        // TODO: We should probably compare the version and maybe resolutions
-        // available with what is currently used...
-        gWorldMapLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
-      }
+    // Recursively search for a directory that contains GSHHG files starting
+    // from dir_info.
+    wxString gshhg_dir = findGshhgDirectory(dir_info.fullpath);
+    if (!gshhg_dir.empty()) {
+      // If some polygons exist in the directory, set it as the one to use for
+      // GSHHG
+      // TODO: We should probably compare the version and maybe resolutions
+      // available with what is currently used...
+      wxLogMessage("Updating GSHHG directory: %s", gshhg_dir.c_str());
+      gWorldMapLocation = gshhg_dir;
     }
     if (dir_info.fullpath.Find(_T("OSMSHP")) != wxNOT_FOUND) {
       if (!wxDir::FindFirst(dir_info.fullpath, "basemap_*.shp").empty()) {
@@ -2125,6 +2139,9 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     bool file_time_is_same = false;
     ChartTableEntry *pEntry = NULL;
     wxString table_file_name;
+
+    //  Allow multiple cm93 chart sets #4217
+    if (b_found_cm93) collision = false;
 
     if (collision) {
       pEntry = &active_chartTable[collision_ptr->second];

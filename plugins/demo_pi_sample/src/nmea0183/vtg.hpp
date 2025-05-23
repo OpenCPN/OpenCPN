@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( VTG_CLASS_HEADER )
+#if !defined(VTG_CLASS_HEADER)
 #define VTG_CLASS_HEADER
 
 /*
@@ -41,36 +40,33 @@
 ** You can use it any way you like.
 */
 
-class VTG : public RESPONSE
-{
+class VTG : public RESPONSE {
+public:
+  VTG();
+  ~VTG();
 
-   public:
+  /*
+  ** Data
+  */
 
-      VTG();
-     ~VTG();
+  double TrackDegreesTrue;
+  double TrackDegreesMagnetic;
+  double SpeedKnots;
+  double SpeedKilometersPerHour;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      double TrackDegreesTrue;
-      double TrackDegreesMagnetic;
-	   double SpeedKnots;
-	   double SpeedKilometersPerHour;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const VTG& operator = ( const VTG& source );
+  virtual const VTG& operator=(const VTG& source);
 };
 
-#endif // VTG_CLASS_HEADER
+#endif  // VTG_CLASS_HEADER

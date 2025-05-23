@@ -32,16 +32,17 @@
 #endif
 
 #include <memory>
+#include <vector>
 
 #include <wx/listbook.h>
 #include <wx/dirctrl.h>
+#include <wx/frame.h>
 #include <wx/spinctrl.h>
 #include <wx/listctrl.h>
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
 #include <wx/colourdata.h>
-#include "connections_dialog.h"
 
 #if wxUSE_TIMEPICKCTRL
 #include <wx/timectrl.h>
@@ -53,18 +54,11 @@
 #include "time_textbox.h"
 #endif
 
-#include <vector>
-
-#if wxCHECK_VERSION(2, 9, 0)
-#include <wx/frame.h>
-#else
-#include "scrollingdialog.h"
-#endif
-
 #include "chartdbs.h"
 #include "pluginmanager.h"  // FIXME: Refactor
+#include "connections_dlg.h"
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #define __OCPN__OPTIONS_USE_LISTBOOK__
 #endif
 
@@ -107,6 +101,7 @@ enum {
   ID_BUTTONDELETE,
   ID_BUTTONCOMPRESS,
   ID_BUTTONFONTCHOOSE,
+  ID_BUTTONFONT_RESET,
   ID_BUTTONECDISHELP,
   ID_BUTTONFONTCOLOR,
   ID_BUTTONGROUP,
@@ -224,7 +219,10 @@ enum {
   ID_AISALERTAUDIO,
   ID_AISALERTDIALOG,
   ID_TEMPUNITSCHOICE,
-  ID_BUTTONMIGRATE
+  ID_BUTTONMIGRATE,
+  ID_TIMEZONE_UTC,
+  ID_TIMEZONE_LOCAL_TIME,
+  ID_TENHZCHECKBOX
 };
 
 /* Define an int bit field for dialog return value
@@ -246,6 +244,7 @@ enum {
 #define NEED_NEW_OPTIONS 1 << 14
 #define PARSE_ENC 1 << 15
 #define CONFIG_CHANGED 1 << 16
+#define FONT_CHANGED_SAFE 1 << 17
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -421,8 +420,17 @@ public:
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxCheckBox *pZoomButtons, *pChartBarEX;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
-  wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
+  wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor, *m_pTxt_OwnMMSI;
+  // Radio buttons to control the date/time format.
+  // In the future, other date/time formats may be added here. For example:
+  // 1. Local Mean Time (LMT) at the location.
+  // 2. Custom timezone, such as for route planning purpose.
 
+  /** Specify date/time should be formatted in timezone as configured in the
+   * operating system. */
+  wxRadioButton *pTimezoneLocalTime;
+  /** Specify date/time should be formatted in UTC. */
+  wxRadioButton *pTimezoneUTC;
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
@@ -578,7 +586,7 @@ public:
   wxTextCtrl *m_pText_TP_Secs, *m_pText_TP_Dist;
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
-  wxCheckBox *pTransparentToolbar;
+  wxCheckBox *pEnableTenHertz, *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
   wxStaticText *pStatic_CallSign;
@@ -653,6 +661,7 @@ private:
 
   void OnAlertEnableButtonClick(wxCommandEvent &event);
   void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
+  void OnResetFont(wxCommandEvent &event);
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
@@ -667,8 +676,9 @@ private:
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
   ObservableListener compat_os_listener;
+  void ApplyChanges(wxCommandEvent &event);
 
-  int m_screenConfig;
+  unsigned int m_screenConfig;
 
   wxNotebookPage *m_groupsPage;
   wxFont *dialogFont;
@@ -679,6 +689,8 @@ private:
   bool m_bcompact;
   int m_fontHeight, m_scrollRate;
   bool m_bfontChanged;
+  wxArrayString m_font_element_array;
+
   bool m_bVectorInit;
 
   wxBoxSizer *m_boxSizerConfigs;
@@ -689,7 +701,7 @@ private:
   wxSize m_sliderSize;
   bool m_bneedNew;
 
-  std::shared_ptr<ConnectionsDialog> comm_dialog;
+  std::shared_ptr<ConnectionsDlg> comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };
@@ -859,9 +871,10 @@ public:
   void OnMMSIEditCancelClick(wxCommandEvent &event);
   void OnMMSIEditOKClick(wxCommandEvent &event);
   void OnCtlUpdated(wxCommandEvent &event);
+  void OnMMSIChanged(wxCommandEvent &event);
 
   MmsiProperties *m_props;
-  wxTextCtrl *m_MMSICtl, m_ShipNameCtl;  // Has ToDo take away?
+  wxTextCtrl *m_MMSICtl, *m_ShipNameCtl;  // Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
   wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton,

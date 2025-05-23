@@ -6,8 +6,8 @@
  *
  *
  *      Revision Number: $Revision: 1437 $
- *      Last changed by: $Author: awoods $
- *      Last changed on: $Date: 2016-03-01 10:49:40 -0700 (Tue, 01 Mar 2016) $
+ *      Last changed by: $Author: Li-Yin Young $
+ *      Last changed on: $Date: 2024-11-08 10:49:40 -0700 $
  *
  *
  */
@@ -27,7 +27,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 #define READONLYMODE "r"
 #define MAXLINELENGTH (1024)
@@ -50,14 +50,23 @@ extern "C" {
 /*These error values are the NCEI error model
  *
  */
-#define WMM_UNCERTAINTY_F 145
-#define WMM_UNCERTAINTY_H 128
-#define WMM_UNCERTAINTY_X 131
-#define WMM_UNCERTAINTY_Y 94
-#define WMM_UNCERTAINTY_Z 157
-#define WMM_UNCERTAINTY_I 0.21
+#define WMMHR_UNCERTAINTY_F 134
+#define WMMHR_UNCERTAINTY_H 130
+#define WMMHR_UNCERTAINTY_X 135
+#define WMMHR_UNCERTAINTY_Y 85
+#define WMMHR_UNCERTAINTY_Z 134
+#define WMMHR_UNCERTAINTY_I 0.19
+#define WMMHR_UNCERTAINTY_D_OFFSET 0.25
+#define WMMHR_UNCERTAINTY_D_COEF 5205
+
+#define WMM_UNCERTAINTY_F 138
+#define WMM_UNCERTAINTY_H 133
+#define WMM_UNCERTAINTY_X 137
+#define WMM_UNCERTAINTY_Y 89
+#define WMM_UNCERTAINTY_Z 141
+#define WMM_UNCERTAINTY_I 0.20
 #define WMM_UNCERTAINTY_D_OFFSET 0.26
-#define WMM_UNCERTAINTY_D_COEF 5625
+#define WMM_UNCERTAINTY_D_COEF 5417
 
 #ifndef M_PI
 #define M_PI ((2) * (acos(0.0)))
@@ -94,6 +103,8 @@ extern "C" {
 #define ALT_BOUND_MIN -10
 #define NO_ALT_MAX -99999
 #define USER_GAVE_UP -1
+#define DEC_YEAR_BOUND_MIN 2024.866
+#define DEC_YEAR_BOUND_MAX 2030
 
 #define WGS84ON 1
 #define MSLON 2
@@ -106,24 +117,10 @@ July 28, 2009
 
 manoj.c.nair@noaa.gov*/
 
-#define MODEL_RELEASE_DATE "10 Dec 2019"
-#define VERSIONDATE_LARGE \
-  "$Date: 2019-12-10 10:40:43 -0700 (Tue, 10 Dec 2019) $"
-
-typedef enum {
-  DECLINATION,
-  INCLINATION,
-  HOR_INTENSITY,
-  TOTAL_INTENSITY,
-  X_COMPONENT,
-  Y_COMPONENT,
-  Z_COMPONENT,
-  ALL
-} MAGenum_Comp;
-
 typedef struct {
   double EditionDate;
   double epoch; /*Base time of Geomagnetic model epoch (yrs)*/
+  double min_year;
   char ModelName[32];
   double *Main_Field_Coeff_G;  /* C - Gauss coefficients of main geomagnetic
                                   model (nT) Index is (n * (n + 1) / 2 + m) */
@@ -279,11 +276,9 @@ void MAG_Gradient(MAGtype_Ellipsoid Ellip, MAGtype_CoordGeodetic CoordGeodetic,
                   MAGtype_MagneticModel *TimedMagneticModel,
                   MAGtype_Gradient *Gradient);
 
-int MAG_robustReadMagneticModel_Large(char *filename, char *filenameSV,
-                                      MAGtype_MagneticModel **MagneticModel);
-
 int MAG_robustReadMagModels(char *filename,
-                            MAGtype_MagneticModel *(*magneticmodels)[1]);
+                            MAGtype_MagneticModel *(*magneticmodels)[],
+                            int array_size);
 
 int MAG_SetDefaults(MAGtype_Ellipsoid *Ellip, MAGtype_Geoid *Geoid);
 
@@ -291,25 +286,12 @@ int MAG_SetDefaults(MAGtype_Ellipsoid *Ellip, MAGtype_Geoid *Geoid);
 
 void MAG_Error(int control);
 
-int MAG_GetUserGrid(MAGtype_CoordGeodetic *minimum,
-                    MAGtype_CoordGeodetic *maximum, double *step_size,
-                    double *a_step_size, double *step_time,
-                    MAGtype_Date *StartDate, MAGtype_Date *EndDate,
-                    int *ElementOption, int *PrintOption, char *OutputFile,
-                    MAGtype_Geoid *Geoid);
-
-int MAG_GetUserInput(MAGtype_MagneticModel *MagneticModel, MAGtype_Geoid *Geoid,
-                     MAGtype_CoordGeodetic *CoordGeodetic,
-                     MAGtype_Date *MagneticDate);
-
 void MAG_PrintGradient(MAGtype_Gradient Gradient);
 
 void MAG_PrintUserData(MAGtype_GeoMagneticElements GeomagElements,
                        MAGtype_CoordGeodetic SpaceInput, MAGtype_Date TimeInput,
                        MAGtype_MagneticModel *MagneticModel,
                        MAGtype_Geoid *Geoid);
-
-int MAG_ValidateDMSstring(char *input, int min, int max, char *Error);
 
 int MAG_Warnings(int control, double value,
                  MAGtype_MagneticModel *MagneticModel);
@@ -345,15 +327,13 @@ void MAG_PrintEMMFormat(char *filename, char *filenameSV,
                         MAGtype_MagneticModel *MagneticModel);
 
 void MAG_PrintSHDFFormat(char *filename,
-                         MAGtype_MagneticModel *(*MagneticModel)[1]);
+                         MAGtype_MagneticModel *(*MagneticModel)[], int epochs);
 
 int MAG_readMagneticModel(char *filename, MAGtype_MagneticModel *MagneticModel);
 
-int MAG_readMagneticModel_Large(char *filename, char *filenameSV,
-                                MAGtype_MagneticModel *MagneticModel);
-
 int MAG_readMagneticModel_SHDF(char *filename,
-                               MAGtype_MagneticModel *(*magneticmodels)[1]);
+                               MAGtype_MagneticModel *(*magneticmodels)[],
+                               int array_size);
 
 char *MAG_Trim(char *str);
 
@@ -521,19 +501,17 @@ void MAG_EquivalentLatLon(double lat, double lon, double *repairedLat,
                           double *repairedLon);
 
 void MAG_WMMErrorCalc(double H, MAGtype_GeoMagneticElements *Uncertainty);
+void MAG_WMMHRErrorCalc(double H, MAGtype_GeoMagneticElements *Uncertainty);
 void MAG_PrintUserDataWithUncertainty(
     MAGtype_GeoMagneticElements GeomagElements,
     MAGtype_GeoMagneticElements Errors, MAGtype_CoordGeodetic SpaceInput,
     MAGtype_Date TimeInput, MAGtype_MagneticModel *MagneticModel,
     MAGtype_Geoid *Geoid);
-
-void MAG_GetDeg(char *Query_String, double *latitude, double bounds[2]);
-int MAG_GetAltitude(char *Query_String, MAGtype_Geoid *Geoid,
-                    MAGtype_CoordGeodetic *coords, int bounds[2],
-                    int AltitudeSetting);
+double MAG_dtstr_to_dyear(char *edit_date);
+size_t MAG_strlcpy_equivalent(char *dst, char *src, size_t dstlen);
 
 #ifdef __cplusplus
 }
-#endif /* __cplusplus */
+#endif
 
 #endif /*GEOMAGHEADER_H*/

@@ -43,7 +43,7 @@
 #include "model/comm_drv_n2k_net.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 #include "navutil.h"
 #include "svg_utils.h"
 #ifndef __ANDROID__

@@ -7,7 +7,10 @@
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * \implements \ref jsonwriter.h
+ */
 #ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow
 // must be defined before including debug.h
@@ -307,7 +310,7 @@ void wxJSONWriter::SetDoubleFmtString(const char* fmt) { m_fmt = (char*)fmt; }
  This is a recursive function that gets the type of the \c value object and
  calls several protected functions depending on the type:
 
- \li \c WriteNullvalue for type NULL
+ \li \c WriteNullvalue for type nullptr
  \li \c WriteStringValue() for STRING and CSTRING types
  \li \c WriteIntValue for INT types
  \li \c WriteUIntValue for UINT types
@@ -324,7 +327,7 @@ int wxJSONWriter::DoWrite(wxOutputStream& os, const wxJSONValue& value,
   // note that this function is recursive
 
   // some variables that cannot be allocated in the switch statement
-  const wxJSONInternalMap* map = 0;
+  const wxJSONInternalMap* map = nullptr;
   int size;
   m_colNo = 1;
   m_lineNo = 1;
@@ -362,7 +365,7 @@ int wxJSONWriter::DoWrite(wxOutputStream& os, const wxJSONValue& value,
     return lastChar;
   }
 
-  // now write the key if it is not NULL
+  // now write the key if it is not nullptr
   if (key) {
     lastChar = WriteKey(os, *key);
   }
@@ -654,7 +657,7 @@ int wxJSONWriter::WriteStringValue(wxOutputStream& os, const wxString& str) {
 
   // NOTE: in ANSI builds UTF-8 conversion may fail (see samples/test5.cpp,
   // test 7.3) although I do not know why
-  if (writeBuff == 0) {
+  if (writeBuff == nullptr) {
     const char* err =
         "<wxJSONWriter::WriteStringValue(): error converting the string to a "
         "UTF8 buffer>";
@@ -811,7 +814,7 @@ int wxJSONWriter::WriteString(wxOutputStream& os, const wxString& str) {
   wxLogTrace(writerTraceMask, _T("(%s) string to write=%s"),
              __PRETTY_FUNCTION__, str.c_str());
   int lastChar = 0;
-  char* writeBuff = 0;
+  char* writeBuff = nullptr;
 
   // the buffer that has to be written is either UTF-8 or ANSI c_str() depending
   // on the 'm_noUtf8' flag
@@ -830,7 +833,7 @@ int wxJSONWriter::WriteString(wxOutputStream& os, const wxString& str) {
 
   // NOTE: in ANSI builds UTF-8 conversion may fail (see samples/test5.cpp,
   // test 7.3) although I do not know why
-  if (writeBuff == 0) {
+  if (writeBuff == nullptr) {
     const char* err =
         "<wxJSONWriter::WriteComment(): error converting the string to UTF-8>";
     os.Write(err, strlen(err));
@@ -848,7 +851,7 @@ int wxJSONWriter::WriteString(wxOutputStream& os, const wxString& str) {
   return lastChar;
 }
 
-//! Write the NULL JSON value to the output stream.
+//! Write the nullptr JSON value to the output stream.
 /*!
  The function writes the \b null literal string to the output stream.
 */
@@ -1025,7 +1028,7 @@ int wxJSONWriter::WriteKey(wxOutputStream& os, const wxString& key) {
  An invalid wxJSONValue is a value that was not initialized and it is
  an error. You should never write invalid values to JSON text because
  the output is not valid JSON text.
- Note that the NULL value is a legal JSON text and it is written:
+ Note that the nullptr value is a legal JSON text and it is written:
  \code
   null
  \endcode

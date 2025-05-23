@@ -55,6 +55,7 @@
 #include "pluginmanager.h"  // for PlugInManager
 #include "OCPNPlatform.h"
 #include "model/wx28compat.h"
+#include "model/plugin_comm.h"
 #include "model/chartdata_input_stream.h"
 #include "DetailSlider.h"
 #include "chcanv.h"
@@ -69,12 +70,8 @@
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-#ifdef __MSVC__
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
 #endif
 
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
@@ -86,8 +83,6 @@ extern PopUpDSlide *pPopupDetailSlider;
 extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 extern bool g_bopengl;
-extern PlugInManager *g_pi_manager;
-
 extern bool g_b_EnableVBO;
 
 // TODO  These should be gotten from the ctor
@@ -2275,9 +2270,8 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
         if (objnam.Len() > 0) {
           wxString cellname =
               wxString::Format(_T("%i_%i"), cell_index, subcell);
-          g_pi_manager->SendVectorChartObjectInfo(cellname, fe_name, objnam,
-                                                  obj->m_lat, obj->m_lon, scale,
-                                                  nativescale);
+          SendVectorChartObjectInfo(cellname, fe_name, objnam, obj->m_lat,
+                                    obj->m_lon, scale, nativescale);
         }
         //      Build/Maintain the ATON floating/rigid arrays
         if (GEO_POINT == obj->Primitive_type) {

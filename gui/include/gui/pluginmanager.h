@@ -27,30 +27,21 @@
 #ifndef _PLUGINMGR_H_
 #define _PLUGINMGR_H_
 
-#include <wx/wx.h>
-#include <wx/dynarray.h>
-#include <wx/dynlib.h>
-
-#include <memory>
 #include <atomic>
+#include <memory>
+#include <string>
+
 #include "config.h"
 
-#include "ocpn_plugin.h"
-#include "OCPN_Sound.h"
-#include "chartimg.h"
-#include "model/catalog_parser.h"
-#include "model/plugin_blacklist.h"
-#include "observable.h"
-#include "model/ais_target_data.h"
-#include "model/comm_navmsg.h"
-#include "s57chart.h"  // for Object list
-#include "model/semantic_vers.h"
-
-// For widgets...
-#include <wx/hyperlink.h>
-#include <wx/choice.h>
-#include <wx/tglbtn.h>
+#include <wx/wx.h>
 #include <wx/bmpcbox.h>
+#include <wx/choice.h>
+#include <wx/dynarray.h>
+#include <wx/dynlib.h>
+#include <wx/hyperlink.h>
+#include <wx/json_defs.h>
+#include <wx/jsonwriter.h>
+#include <wx/tglbtn.h>
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
@@ -59,21 +50,18 @@
 #endif
 #endif
 
-//    Include wxJSON headers
-//    We undefine MIN/MAX so avoid warning of redefinition coming from
-//    json_defs.h
-//    Definitions checked manually, and are identical
-#ifdef MIN
-#undef MIN
-#endif
-
-#ifdef MAX
-#undef MAX
-#endif
-
-#include <wx/json_defs.h>
-#include <wx/jsonwriter.h>
+#include "model/ais_target_data.h"
+#include "model/catalog_parser.h"
+#include "model/comm_navmsg.h"
+#include "model/plugin_blacklist.h"
 #include "model/plugin_loader.h"
+#include "model/semantic_vers.h"
+#include "chartimg.h"
+#include "observable.h"
+#include "ocpndc.h"
+#include "ocpn_plugin.h"
+#include "OCPN_Sound.h"
+#include "s57chart.h"  // for Object list
 
 //    Assorted static helper routines
 
@@ -123,7 +111,8 @@ enum ActionVerb {
   REINSTALL_MANAGED_VERSION,
   DOWNGRADE_INSTALLED_MANAGED_VERSION,
   UNINSTALL_MANAGED_VERSION,
-  INSTALL_MANAGED_VERSION
+  INSTALL_MANAGED_VERSION,
+  UPDATE_IMPORTED_VERSION
 };
 
 class PlugInMenuItemContainer {
@@ -188,7 +177,7 @@ public:
   bool RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
                                        const ViewPort& vp, int canvasIndex,
                                        int priority);
-  void SendCursorLatLonToAllPlugIns(double lat, double lon);
+  // void SendCursorLatLonToAllPlugIns(double lat, double lon);
   void SendViewPortToRequestingPlugIns(ViewPort& vp);
   void PrepareAllPluginContextMenus();
 
@@ -231,17 +220,9 @@ public:
   void SetCanvasContextMenuItemViz(int item, bool viz, const char* name = "");
   void SetCanvasContextMenuItemGrey(int item, bool grey, const char* name = "");
 
-  static void SendNMEASentenceToAllPlugIns(const wxString& sentence);
-  void SendPositionFixToAllPlugIns(GenericPosDatEx* ppos);
-  void SendActiveLegInfoToAllPlugIns(const ActiveLegDat* infos);
-  void SendAISSentenceToAllPlugIns(const wxString& sentence);
-  void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v);
-  void SendMessageToAllPlugins(const wxString& message_id,
-                               const wxString& message_body);
   bool UpDateChartDataTypes();
   void FinalizePluginLoadall();
 
-  int GetJSONMessageTargetCount();
   bool UpdateConfig();
   void SendResizeEventToAllPlugIns(int x, int y);
   void SetColorSchemeForAllPlugIns(ColorScheme cs);
@@ -249,13 +230,6 @@ public:
   bool CallLateInit(void);
 
   bool IsAnyPlugInChartEnabled();
-
-  void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
-                                 const wxString& objname, double& lat,
-                                 double& lon, double& scale, int& nativescale);
-
-  bool SendMouseEventToPlugins(wxMouseEvent& event);
-  bool SendKeyEventToPlugins(wxKeyEvent& event);
 
   void SendBaseConfigToAllPlugIns();
   void SendS52ConfigToAllPlugIns(bool bReconfig = false);
@@ -265,7 +239,21 @@ public:
   bool CheckBlacklistedPlugin(const PluginMetadata plugin);
 
   void InitCommListeners(void);
+  /**
+   * Process incoming NMEA 0183 messages from the message bus.
+   * Filters messages based on their source configuration and distributes
+   * valid messages to all interested plugins.
+   *
+   * @param n0183_msg Message container with NMEA 0183 sentence and metadata
+   */
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  /**
+   * Process incoming SignalK messages from the message bus.
+   * Validates and forwards SignalK data to plugins that have registered
+   * interest in SignalK messages.
+   *
+   * @param sK_msg Message container with SignalK data and metadata
+   */
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);
@@ -364,8 +352,6 @@ public:
 };
 
 WX_DEFINE_ARRAY_PTR(PluginPanel*, ArrayOfPluginPanel);
-
-class PluginDownloadDialog;
 
 /*
  * Panel with a single + sign which opens the "Add/download plugins" dialog.
