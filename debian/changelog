@@ -1,3 +1,9 @@
+opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+4) focal; urgency=medium
+
+  * Rebuild
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 22:24:58 +0200
+
 opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+3) focal; urgency=medium
 
   * d/patches: libdnet cmake < 3.20 bugfix
