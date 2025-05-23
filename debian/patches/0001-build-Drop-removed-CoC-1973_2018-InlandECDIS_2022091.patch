@@ -10,14 +10,15 @@ Not acceptable upstream.
 
 Forwarded: not-needed
 ---
- CMakeLists.txt | 21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+CMakeLists.txt                                      | 21 ++++-----------------
+...-removed-CoC-1973_2018-InlandECDIS_2022091.patch | 18 ++++++++----------
+2 files changed, 12 insertions(+), 27 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c22b62b..9ec5c6a 100644
+index 9d94b4fd5..bb3edbb58 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1460,8 +1460,10 @@ if (OCPN_USE_SVG)
+@@ -1391,8 +1391,10 @@ if (OCPN_USE_SVG)
    endif ()
  endif ()
  
@@ -29,7 +30,7 @@ index c22b62b..9ec5c6a 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif ()
-@@ -1531,6 +1533,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+@@ -1462,6 +1464,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
  add_subdirectory(libs/std_filesystem)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
  
@@ -37,7 +38,7 @@ index c22b62b..9ec5c6a 100644
  message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
-@@ -1748,16 +1751,6 @@ if (APPLE)
+@@ -1724,16 +1727,6 @@ if (APPLE)
      data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )
  
@@ -54,8 +55,8 @@ index c22b62b..9ec5c6a 100644
    set_source_files_properties(
      ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml PROPERTIES MACOSX_PACKAGE_LOCATION
                                                           SharedSupport
-@@ -1916,8 +1909,6 @@ if (APPLE)
-             data/authors.html
+@@ -1892,8 +1885,6 @@ if (APPLE)
+             data/license.html
              data/opencpn.png
              data/ocpn-plugins.xml
 -            data/CoC-909_2013-InlandECDIS_20170308s.pdf
@@ -63,7 +64,7 @@ index c22b62b..9ec5c6a 100644
              ${SOUND_FILES}
              buildosx/opencpn.icns
              buildosx/MainMenu.xib
-@@ -2046,10 +2037,6 @@ if (NOT APPLE)
+@@ -2026,10 +2017,6 @@ if (NOT APPLE)
    file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
    install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
  
@@ -73,4 +74,4 @@ index c22b62b..9ec5c6a 100644
 -  )
    install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
    install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
-   install(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
+   install(FILES ${CMAKE_BINARY_DIR}/Authors.html DESTINATION ${PREFIX_PKGDATA})
