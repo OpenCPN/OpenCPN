@@ -5,3 +5,4 @@
 0005-build-add-latomic-linkage.patch
 0006-Add-wrongly-removed-libs-shapelib.patch
 0007-tests-disable-tests-requiring-locale.patch
+0008-libdnet-Handle-cmake-3.20.patch
