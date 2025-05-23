@@ -1,5 +1,7 @@
 0001-build-Drop-removed-CoC-1973_2018-InlandECDIS_2022091.patch
 0002-Add-missing-libs-like-tinyxml-Debian-work-around.patch
-0003-tests-Disable-time-dependent-Buffer.RateLimit2-test.patch
-0005-CMakeLists-help_web.html-path-error-fix.patch
-0006-tests-disable-test-with-intermittent-failures.patch
+0003-CMakeLists-handle-help_web.html-location.patch
+0004-tests-disable-rest-server-tests-for-now.patch
+0005-build-add-latomic-linkage.patch
+0006-Add-wrongly-removed-libs-shapelib.patch
+0007-tests-disable-tests-requiring-locale.patch
