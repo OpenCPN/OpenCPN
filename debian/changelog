@@ -1,3 +1,9 @@
+opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+2) focal; urgency=medium
+
+  * New patch: libdnet: Handle cmake < 3.20
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 14:56:19 +0200
+
 opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
   * New upstream beta release
