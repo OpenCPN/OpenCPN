@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 16:54-0400\n"
-"PO-Revision-Date: 2025-05-20 02:02\n"
+"POT-Creation-Date: 2025-05-20 10:05-0400\n"
+"PO-Revision-Date: 2025-05-20 14:13\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -17,8 +17,8 @@ msgstr ""
 "X-Crowdin-File: /po/opencpn.pot\n"
 "X-Crowdin-File-ID: 102\n"
 
-#: model/include/model/track.h:148 gui/src/ocpn_frame.cpp:3184
-#: gui/src/ocpn_frame.cpp:6534 gui/src/ocpn_frame.cpp:6652
+#: model/include/model/track.h:148 gui/src/ocpn_frame.cpp:3179
+#: gui/src/ocpn_frame.cpp:6504 gui/src/ocpn_frame.cpp:6622
 msgid "(Unnamed Track)"
 msgstr "(безымянный путь)"
 
@@ -413,13 +413,13 @@ msgid "SAR Aircraft"
 msgstr "Поисково-спасательный самолёт"
 
 #: model/src/ais_target_data.cpp:490 model/src/ais_target_data.cpp:502
-#: model/src/ais_target_data.cpp:518 gui/src/AISTargetListDialog.cpp:570
+#: model/src/ais_target_data.cpp:518 gui/src/AISTargetListDialog.cpp:575
 #: gui/src/options.cpp:913 gui/src/options.cpp:1331
 msgid "MMSI"
 msgstr "Идентификатор морской передвижной службы"
 
 #: model/src/ais_target_data.cpp:491 model/src/ais_target_data.cpp:504
-#: model/src/ais_target_data.cpp:520 gui/src/AISTargetListDialog.cpp:579
+#: model/src/ais_target_data.cpp:520 gui/src/AISTargetListDialog.cpp:584
 msgid "Class"
 msgstr "Класс"
 
@@ -431,7 +431,7 @@ msgstr "Судовой идентификатор Международной м�
 msgid "Nation"
 msgstr "Страна"
 
-#: model/src/ais_target_data.cpp:530
+#: model/src/ais_target_data.cpp:530 gui/src/AISTargetListDialog.cpp:602
 msgid "Flag"
 msgstr "Флаг"
 
@@ -440,13 +440,13 @@ msgid "Handheld"
 msgstr ""
 
 #: model/src/ais_target_data.cpp:546 model/src/ais_target_data.cpp:1128
-#: gui/src/AISTargetListDialog.cpp:145 gui/src/AISTargetListDialog.cpp:160
+#: gui/src/AISTargetListDialog.cpp:150 gui/src/AISTargetListDialog.cpp:165
 #: gui/src/OCPNListCtrl.cpp:139
 msgid "Active"
 msgstr "Эксплуатируемый"
 
 #: model/src/ais_target_data.cpp:548 model/src/ais_target_data.cpp:1130
-#: gui/src/AISTargetListDialog.cpp:147 gui/src/AISTargetListDialog.cpp:162
+#: gui/src/AISTargetListDialog.cpp:152 gui/src/AISTargetListDialog.cpp:167
 #: gui/src/OCPNListCtrl.cpp:141
 msgid "Testing"
 msgstr "На испытаниях"
@@ -478,7 +478,8 @@ msgid " (Last Known)"
 msgstr " (последнее известное)"
 
 #: model/src/ais_target_data.cpp:695 gui/src/GoToPositionDialog.cpp:112
-#: gui/src/priority_gui.cpp:216 gui/src/initwiz/wiz_ui_proto.cpp:98
+#: gui/src/priority_gui.cpp:216 gui/src/route_printout.cpp:88
+#: gui/src/track_printout.cpp:71 gui/src/initwiz/wiz_ui_proto.cpp:98
 msgid "Position"
 msgstr "Местоположение"
 
@@ -494,8 +495,9 @@ msgstr "выпущен (UTC)"
 msgid "Report as of"
 msgstr "Данные по состоянию на"
 
-#: model/src/ais_target_data.cpp:732 gui/src/RoutePropDlgImpl.cpp:783
-#: gui/src/TrackPropDlg.cpp:371 gui/src/TrackPropDlg.cpp:1376
+#: model/src/ais_target_data.cpp:732 gui/src/route_printout.cpp:306
+#: gui/src/RoutePropDlgImpl.cpp:784 gui/src/TrackPropDlg.cpp:371
+#: gui/src/TrackPropDlg.cpp:1376
 msgid "Destination"
 msgstr "Пункт назначения"
 
@@ -512,13 +514,15 @@ msgid "Left"
 msgstr "Влево"
 
 #: model/src/ais_target_data.cpp:841 gui/src/options.cpp:4485
-#: gui/src/options.cpp:4666 gui/src/RoutePropDlg.cpp:411
-#: gui/src/TrackPropDlg.cpp:315 gui/src/TrackPropDlg.cpp:1378
+#: gui/src/options.cpp:4666 gui/src/route_printout.cpp:97
+#: gui/src/RoutePropDlg.cpp:411 gui/src/TrackPropDlg.cpp:315
+#: gui/src/TrackPropDlg.cpp:1378 gui/src/track_printout.cpp:83
 #: gui/src/initwiz/wiz_ui_proto.cpp:71
 msgid "Speed"
 msgstr "Скорость"
 
-#: model/src/ais_target_data.cpp:842 gui/src/RoutePropDlg.cpp:423
+#: model/src/ais_target_data.cpp:842 gui/src/route_printout.cpp:91
+#: gui/src/RoutePropDlg.cpp:423 gui/src/track_printout.cpp:74
 msgid "Course"
 msgstr "Курс"
 
@@ -530,7 +534,7 @@ msgstr "Направление"
 msgid "Turn Rate"
 msgstr "Скорость поворота"
 
-#: model/src/ais_target_data.cpp:857 gui/src/AISTargetListDialog.cpp:615
+#: model/src/ais_target_data.cpp:857 gui/src/AISTargetListDialog.cpp:629
 msgid "Range"
 msgstr "Дальность"
 
@@ -544,7 +548,7 @@ msgid "in "
 msgstr "через"
 
 #: model/src/ais_target_data.cpp:872 model/src/ais_target_data.cpp:1179
-#: gui/src/AISTargetListDialog.cpp:641 gui/src/chcanv.cpp:6993
+#: gui/src/AISTargetListDialog.cpp:655 gui/src/chcanv.cpp:6994
 msgid "CPA"
 msgstr "Точка минимального подхода"
 
@@ -1858,7 +1862,7 @@ msgstr "Неподвижное сооружение"
 msgid "Spare"
 msgstr "Запасной маяк(?)"
 
-#: model/src/ais_target_data.cpp:2014
+#: model/src/ais_target_data.cpp:2014 gui/src/ocpn_fontdlg.cpp:305
 msgid "Light"
 msgstr "Маяк световой"
 
@@ -2192,7 +2196,7 @@ msgstr "Ввод"
 msgid "Output"
 msgstr "Вывод"
 
-#: model/src/conn_params.cpp:242
+#: model/src/conn_params.cpp:242 gui/src/connections_dlg.cpp:250
 msgid "In/Out"
 msgstr "Ввод/Вывод"
 
@@ -2251,7 +2255,7 @@ msgstr "F"
 msgid "K"
 msgstr "K"
 
-#: model/src/navutil_base.cpp:284 gui/src/MarkInfo.cpp:539
+#: model/src/navutil_base.cpp:284 gui/src/MarkInfo.cpp:540
 msgid "NMi"
 msgstr "м. м."
 
@@ -2259,7 +2263,7 @@ msgstr "м. м."
 msgid "mi"
 msgstr "ми."
 
-#: model/src/navutil_base.cpp:290 gui/src/MarkInfo.cpp:539
+#: model/src/navutil_base.cpp:290 gui/src/MarkInfo.cpp:540
 msgid "km"
 msgstr "км"
 
@@ -2314,8 +2318,8 @@ msgstr "M "
 msgid "S"
 msgstr "S"
 
-#: model/src/navutil_base.cpp:657 gui/src/RoutePropDlgImpl.cpp:381
-#: gui/src/RoutePropDlgImpl.cpp:386
+#: model/src/navutil_base.cpp:657 gui/src/RoutePropDlgImpl.cpp:382
+#: gui/src/RoutePropDlgImpl.cpp:387
 msgid "N/A"
 msgstr "н/д"
 
@@ -2389,94 +2393,95 @@ msgstr "        Обнаружена версия API: "
 msgid "        PlugIn Version detected: "
 msgstr "        Обнаружена версия API: "
 
-#: model/src/rest_server.cpp:367
+#: model/src/rest_server.cpp:368
 msgid "No error"
 msgstr "Без ошибок"
 
-#: model/src/rest_server.cpp:369
+#: model/src/rest_server.cpp:370
 msgid "Server Generic Error"
 msgstr "Обобщающая ошибка сервера"
 
-#: model/src/rest_server.cpp:371
+#: model/src/rest_server.cpp:372
 msgid "Peer rejected object"
 msgstr "Отклонено"
 
-#: model/src/rest_server.cpp:373
+#: model/src/rest_server.cpp:374
 msgid "Peer rejected duplicate object"
 msgstr "Дублирующийся объект отклонён"
 
-#: model/src/rest_server.cpp:375
+#: model/src/rest_server.cpp:376
 msgid "Peer internal error (insert)"
 msgstr " Внутренняя ошибка OpenCPN в сети (вставка)"
 
-#: model/src/rest_server.cpp:377
+#: model/src/rest_server.cpp:378
 msgid "Peer requests new pincode"
 msgstr "Подключение запрашивает новый PIN-код"
 
-#: model/src/rest_server.cpp:379
+#: model/src/rest_server.cpp:380
 msgid "XML parse error"
 msgstr "Ошибка разбора XML"
 
-#: model/src/rest_server.cpp:381
+#: model/src/rest_server.cpp:382
 msgid "Unspecified error"
 msgstr "Неопределенная ошибка"
 
-#: model/src/rest_server.cpp:517
+#: model/src/rest_server.cpp:518
 msgid "wants to send you new data."
 msgstr "хочет отправить вам новые данные."
 
-#: model/src/rest_server.cpp:518
+#: model/src/rest_server.cpp:519
 msgid "Please enter the following PIN number on "
 msgstr "Пожалуйста, введите PIN-код на "
 
-#: model/src/rest_server.cpp:519
+#: model/src/rest_server.cpp:520
 msgid "to pair with this device"
 msgstr "подключаться к этому устройству"
 
-#: model/src/rest_server.cpp:645
+#: model/src/rest_server.cpp:646
 msgid "The received route already exists on this system.\n"
 "Replace?"
 msgstr "Полученный маршрут уже существует в этой системе.\n"
 "Заменить?"
 
-#: model/src/rest_server.cpp:646 model/src/rest_server.cpp:688
-#: model/src/rest_server.cpp:729
+#: model/src/rest_server.cpp:647 model/src/rest_server.cpp:690
+#: model/src/rest_server.cpp:731
 msgid "Always replace objects?"
 msgstr "Всегда заменять объекты?"
 
-#: model/src/rest_server.cpp:687
+#: model/src/rest_server.cpp:689
 msgid "The received track already exists on this system.\n"
 "Replace?"
 msgstr "Полученный маршрут уже существует в этой системе.\n"
 "Заменить?"
 
-#: model/src/rest_server.cpp:728
+#: model/src/rest_server.cpp:730
 msgid "The received waypoint already exists on this system.\n"
 "Replace?"
 msgstr "Полученная путевая точка уже существует в этой системе.\n"
 "Заменить?"
 
-#: model/src/routeman.cpp:987
+#: model/src/routeman.cpp:1002
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
 msgstr "Путевые точки можно переименовать в соответствии с новым порядком, имена будут «001», «002» и т. д.\n\n"
 "Хотите выполнить автоматическое переименование?"
 
-#: model/src/routeman.cpp:993
+#: model/src/routeman.cpp:1008
 msgid "Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
 msgstr "Путевые точки будут переименованы в соответствии с естественным порядком, имена будут '001', '002' и т. д.\n\n"
 "Вы хотите переименовать путевые точки?"
 
-#: gui/include/gui/about.h:39 gui/src/ocpn_frame.cpp:3766
-#: gui/src/ocpn_frame.cpp:7179
+#: gui/include/gui/about.h:39 gui/include/gui/about_frame.h:105
+#: gui/include/gui/about_frame_impl.h:76 gui/src/ocpn_frame.cpp:3756
+#: gui/src/ocpn_frame.cpp:7151
 msgid "About OpenCPN"
 msgstr "О программе OpenCPN"
 
-#: gui/include/gui/AISTargetAlertDialog.h:48 gui/src/routemanagerdialog.cpp:1440
-#: gui/src/routemanagerdialog.cpp:2238 gui/src/routemanagerdialog.cpp:2344
-#: gui/src/routemanagerdialog.cpp:2692 gui/src/routemanagerdialog.cpp:2724
-#: gui/src/routemanagerdialog.cpp:2859 gui/src/routemanagerdialog.cpp:3023
+#: gui/include/gui/AISTargetAlertDialog.h:48 gui/src/routemanagerdialog.cpp:1456
+#: gui/src/routemanagerdialog.cpp:2247 gui/src/routemanagerdialog.cpp:2349
+#: gui/src/routemanagerdialog.cpp:2698 gui/src/routemanagerdialog.cpp:2730
+#: gui/src/routemanagerdialog.cpp:2869 gui/src/routemanagerdialog.cpp:3033
 #: gui/src/toolbar.cpp:2274
 msgid "OpenCPN Alert"
 msgstr "OpenCPN — Предупреждение"
@@ -2488,11 +2493,11 @@ msgstr "OpenCPN — Предупреждение АИС"
 #: gui/include/gui/AISTargetQueryDialog.h:50
 #: gui/include/gui/AISTargetQueryDialog.h:61 gui/include/gui/S57QueryDialog.h:47
 #: gui/include/gui/S57QueryDialog.h:56 gui/src/canvasMenu.cpp:485
-#: gui/src/canvasMenu.cpp:494 gui/src/chcanv.cpp:10268
+#: gui/src/canvasMenu.cpp:494 gui/src/chcanv.cpp:10289
 msgid "Object Query"
 msgstr "Сведения об объектах в точке"
 
-#: gui/include/gui/GoToPositionDialog.h:44 gui/src/AISTargetListDialog.cpp:700
+#: gui/include/gui/GoToPositionDialog.h:44 gui/src/AISTargetListDialog.cpp:714
 #: gui/src/canvasMenu.cpp:529
 msgid "Center view"
 msgstr "Показать на карте"
@@ -2502,8 +2507,8 @@ msgid "Link Properties"
 msgstr "Параметры гиперссылки"
 
 #: gui/include/gui/MarkInfo.h:106 gui/include/gui/MarkInfo.h:432
-#: gui/src/chcanv.cpp:10431 gui/src/routemanagerdialog.cpp:2657
-#: gui/src/RoutePropDlgImpl.cpp:905
+#: gui/src/chcanv.cpp:10452 gui/src/routemanagerdialog.cpp:2663
+#: gui/src/RoutePropDlgImpl.cpp:908
 msgid "Waypoint Properties"
 msgstr "Параметры путевой точки"
 
@@ -2515,19 +2520,19 @@ msgstr "Перезаписать маршрут Garmin устройства но
 msgid "OpenCPN Message"
 msgstr "OpenCPN сообщение"
 
-#: gui/include/gui/options.h:90 gui/src/ocpn_frame.cpp:3756
-#: gui/src/ocpn_frame.cpp:4070 gui/src/ocpn_frame.cpp:4887
-#: gui/src/ocpn_frame.cpp:7138 gui/src/options.cpp:3398
+#: gui/include/gui/options.h:90 gui/src/ocpn_frame.cpp:3746
+#: gui/src/ocpn_frame.cpp:4060 gui/src/ocpn_frame.cpp:4877
+#: gui/src/ocpn_frame.cpp:7110 gui/src/options.cpp:3398
 msgid "Options"
 msgstr "Настройки"
 
 #: gui/include/gui/peer_client_dlg.h:41 gui/include/gui/rest_server_gui.h:44
 #: gui/include/gui/SendToGpsDlg.h:40 gui/src/canvasMenu.cpp:787
 #: gui/src/canvasMenu.cpp:887 gui/src/canvasMenu.cpp:938
-#: gui/src/canvasMenu.cpp:1744 gui/src/canvasMenu.cpp:1755
-#: gui/src/canvasMenu.cpp:1789 gui/src/canvasMenu.cpp:1800
-#: gui/src/routemanagerdialog.cpp:499 gui/src/routemanagerdialog.cpp:1818
-#: gui/src/routemanagerdialog.cpp:2829
+#: gui/src/canvasMenu.cpp:1743 gui/src/canvasMenu.cpp:1754
+#: gui/src/canvasMenu.cpp:1788 gui/src/canvasMenu.cpp:1799
+#: gui/src/routemanagerdialog.cpp:499 gui/src/routemanagerdialog.cpp:1831
+#: gui/src/routemanagerdialog.cpp:2839
 msgid "Send to GPS"
 msgstr "Отправить в GPS"
 
@@ -2580,8 +2585,8 @@ msgid "Print Waypoint Description"
 msgstr ""
 
 #: gui/include/gui/RoutePropDlg.h:173 gui/include/gui/RoutePropDlgImpl.h:97
-#: gui/src/canvasMenu.cpp:1894 gui/src/chcanv.cpp:8205
-#: gui/src/RoutePropDlgImpl.cpp:495
+#: gui/src/canvasMenu.cpp:1893 gui/src/chcanv.cpp:8206
+#: gui/src/RoutePropDlgImpl.cpp:496
 msgid "Route Properties"
 msgstr "Параметры маршрута"
 
@@ -2628,27 +2633,28 @@ msgid "OpenCPN Initial Configuration"
 msgstr "Начальная Настройка OpenCPN"
 
 #: gui/src/about.cpp:135 gui/src/about.cpp:179 gui/src/about.cpp:303
-#: gui/src/about.cpp:421 gui/src/AISTargetListDialog.cpp:326
-#: gui/src/canvasMenu.cpp:1741 gui/src/CanvasOptions.cpp:73
-#: gui/src/chcanv.cpp:12537 gui/src/chcanv.cpp:12570 gui/src/ChInfoWin.cpp:53
+#: gui/src/about.cpp:421 gui/src/AISTargetListDialog.cpp:331
+#: gui/src/canvasMenu.cpp:1740 gui/src/CanvasOptions.cpp:73
+#: gui/src/chcanv.cpp:12564 gui/src/chcanv.cpp:12597 gui/src/ChInfoWin.cpp:53
 #: gui/src/cm93.cpp:6241 gui/src/concanv.cpp:103 gui/src/connection_edit.cpp:240
 #: gui/src/conn_params_panel.cpp:84 gui/src/conn_params_panel.cpp:130
 #: gui/src/conn_params_panel.cpp:789 gui/src/FontMgr.cpp:560
 #: gui/src/glChartCanvas.cpp:3857 gui/src/glTextureManager.cpp:1447
-#: gui/src/gui_lib.cpp:156 gui/src/LinkPropDlg.cpp:37 gui/src/MarkInfo.cpp:223
-#: gui/src/MarkInfo.cpp:275 gui/src/ocpn_frame.cpp:4516
-#: gui/src/ocpn_frame.cpp:8216 gui/src/OCPNPlatform.cpp:1635
-#: gui/src/OCPNPlatform.cpp:1894 gui/src/OCPNPlatform.cpp:1933
-#: gui/src/options.cpp:645 gui/src/options.cpp:673 gui/src/options.cpp:1300
-#: gui/src/options.cpp:1789 gui/src/options.cpp:4860 gui/src/options.cpp:8900
-#: gui/src/options.cpp:9138 gui/src/options.cpp:9377 gui/src/options.cpp:9514
-#: gui/src/Osenc.cpp:1688 gui/src/peer_client_dlg.cpp:62
-#: gui/src/priority_gui.cpp:78 gui/src/rest_server_gui.cpp:111
-#: gui/src/rest_server_gui.cpp:221 gui/src/routemanagerdialog.cpp:320
-#: gui/src/routemanagerdialog.cpp:1814 gui/src/RoutePropDlg.cpp:83
-#: gui/src/SendToPeerDlg.cpp:196 gui/src/TCWin.cpp:78 gui/src/TCWin.cpp:175
-#: gui/src/toolbar.cpp:2367 gui/src/TrackPropDlg.cpp:93
-#: gui/src/TrackPropDlg.cpp:330 gui/src/TrackPropDlg.cpp:671
+#: gui/src/gui_lib.cpp:156 gui/src/LinkPropDlg.cpp:37 gui/src/MarkInfo.cpp:224
+#: gui/src/MarkInfo.cpp:276 gui/src/notification_manager_gui.cpp:251
+#: gui/src/ocpn_frame.cpp:4506 gui/src/ocpn_frame.cpp:8188
+#: gui/src/OCPNPlatform.cpp:1635 gui/src/OCPNPlatform.cpp:1894
+#: gui/src/OCPNPlatform.cpp:1933 gui/src/options.cpp:645 gui/src/options.cpp:673
+#: gui/src/options.cpp:1300 gui/src/options.cpp:1789 gui/src/options.cpp:4860
+#: gui/src/options.cpp:8900 gui/src/options.cpp:9138 gui/src/options.cpp:9377
+#: gui/src/options.cpp:9514 gui/src/Osenc.cpp:1688
+#: gui/src/peer_client_dlg.cpp:62 gui/src/priority_gui.cpp:78
+#: gui/src/rest_server_gui.cpp:111 gui/src/rest_server_gui.cpp:221
+#: gui/src/routemanagerdialog.cpp:320 gui/src/routemanagerdialog.cpp:1827
+#: gui/src/RoutePropDlg.cpp:83 gui/src/SendToPeerDlg.cpp:196
+#: gui/src/TCWin.cpp:78 gui/src/TCWin.cpp:175 gui/src/toolbar.cpp:2367
+#: gui/src/TrackPropDlg.cpp:93 gui/src/TrackPropDlg.cpp:330
+#: gui/src/TrackPropDlg.cpp:671
 msgid "Dialog"
 msgstr "Диалог (шрифт)"
 
@@ -2672,17 +2678,102 @@ msgstr "О программе"
 msgid "Authors"
 msgstr "Авторы"
 
-#: gui/src/about.cpp:381
+#: gui/src/about.cpp:381 gui/src/about_frame.cpp:265
 msgid "License"
 msgstr "Лицензия"
 
-#: gui/src/about.cpp:396
+#: gui/src/about.cpp:396 gui/src/about_frame.cpp:254
 msgid "Help"
 msgstr "Справка"
 
-#: gui/src/about.cpp:402 gui/src/AISTargetListDialog.cpp:796
+#: gui/src/about.cpp:402 gui/src/AISTargetListDialog.cpp:810
 msgid "Close"
 msgstr "Закрыть"
+
+#: gui/src/about_frame.cpp:52
+msgid "< Back"
+msgstr ""
+
+#: gui/src/about_frame.cpp:68 gui/src/print_dialog.cpp:56
+#: gui/src/udev_rule_mgr.cpp:347
+msgid "OpenCPN"
+msgstr "OpenCPN"
+
+#: gui/src/about_frame.cpp:97
+msgid "The OpenCPN Authors"
+msgstr ""
+
+#: gui/src/about_frame.cpp:109
+msgid "OpenCPN is a Free Software project, built by sailors.\n"
+"It is freely available to download and distribute without charge."
+msgstr ""
+
+#: gui/src/about_frame.cpp:119
+msgid "Want to help?"
+msgstr ""
+
+#: gui/src/about_frame.cpp:125
+msgid "Donate"
+msgstr ""
+
+#: gui/src/about_frame.cpp:134
+msgid "or"
+msgstr ""
+
+#: gui/src/about_frame.cpp:140
+msgid "get involved!"
+msgstr ""
+
+#: gui/src/about_frame.cpp:155
+msgid "Logfile:"
+msgstr ""
+
+#: gui/src/about_frame.cpp:177
+msgid "Config file:"
+msgstr ""
+
+#: gui/src/about_frame.cpp:190 gui/src/data_monitor.cpp:661
+msgid "Copy to clipboard"
+msgstr ""
+
+#: gui/src/about_frame.cpp:198
+msgid "Plugin API: "
+msgstr ""
+
+#: gui/src/about_frame.cpp:242
+msgid "OpenCPN Website"
+msgstr ""
+
+#: gui/src/ais_info_gui.cpp:95
+msgid "\n"
+"This AIS target has Persistent Tracking selected by MMSI properties\n"
+"A Persistent track recording will therefore be restarted for this target.\n\n"
+"Do you instead want to stop Persistent Tracking for this target?\n"
+msgstr "\n"
+"Эта цель АИС имеет постоянное отслеживание, выбранное свойствами MMSI\n"
+"Поэтому постоянная запись трека будет перезапущена для этой цели.\n\n"
+"Вы хотите остановить постоянное отслеживание для этой цели?\n"
+
+#: gui/src/ais_info_gui.cpp:103 gui/src/AISTargetQueryDialog.cpp:179
+#: gui/src/connection_edit.cpp:2495 gui/src/connection_edit.cpp:2508
+#: gui/src/LinkPropDlg.cpp:134 gui/src/MarkInfo.cpp:1918
+#: gui/src/navutil.cpp:2967 gui/src/ocpn_frame.cpp:810
+#: gui/src/ocpn_frame.cpp:958 gui/src/ocpn_frame.cpp:4149
+#: gui/src/options.cpp:1114 gui/src/options.cpp:2950 gui/src/options.cpp:8172
+#: gui/src/options.cpp:8209 gui/src/pluginmanager.cpp:305
+#: gui/src/pluginmanager.cpp:620 gui/src/pluginmanager.cpp:875
+#: gui/src/route_gui.cpp:646 gui/src/route_point_gui.cpp:933
+#: gui/src/SendToPeerDlg.cpp:61 gui/src/SendToPeerDlg.cpp:76
+#: gui/src/SendToPeerDlg.cpp:84 gui/src/SendToPeerDlg.cpp:92
+#: gui/src/SendToPeerDlg.cpp:99 gui/src/SendToPeerDlg.cpp:106
+#: gui/src/SendToPeerDlg.cpp:113 gui/src/tcmgr.cpp:685
+#: gui/src/udev_rule_mgr.cpp:376
+msgid "OpenCPN Info"
+msgstr "OpenCPN — Сведения"
+
+#: gui/src/ais_info_gui.cpp:200 gui/src/options.cpp:5041
+msgid "AIS Alert"
+msgstr "АИС"
 
 #: gui/src/ais.cpp:85
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
@@ -3080,178 +3171,147 @@ msgstr "Не определено (по умолчанию)"
 msgid "AIS Target Name"
 msgstr "Наименование цели АИС"
 
-#: gui/src/ais_info_gui.cpp:93
-msgid "\n"
-"This AIS target has Persistent Tracking selected by MMSI properties\n"
-"A Persistent track recording will therefore be restarted for this target.\n\n"
-"Do you instead want to stop Persistent Tracking for this target?\n"
-msgstr "\n"
-"Эта цель АИС имеет постоянное отслеживание, выбранное свойствами MMSI\n"
-"Поэтому постоянная запись трека будет перезапущена для этой цели.\n\n"
-"Вы хотите остановить постоянное отслеживание для этой цели?\n"
-
-#: gui/src/ais_info_gui.cpp:101 gui/src/AISTargetQueryDialog.cpp:178
-#: gui/src/connection_edit.cpp:2495 gui/src/connection_edit.cpp:2508
-#: gui/src/LinkPropDlg.cpp:134 gui/src/MarkInfo.cpp:1915
-#: gui/src/navutil.cpp:3307 gui/src/ocpn_frame.cpp:810
-#: gui/src/ocpn_frame.cpp:958 gui/src/ocpn_frame.cpp:4159
-#: gui/src/options.cpp:1114 gui/src/options.cpp:2950 gui/src/options.cpp:8172
-#: gui/src/options.cpp:8209 gui/src/pluginmanager.cpp:305
-#: gui/src/pluginmanager.cpp:620 gui/src/pluginmanager.cpp:875
-#: gui/src/route_gui.cpp:646 gui/src/route_point_gui.cpp:933
-#: gui/src/SendToPeerDlg.cpp:61 gui/src/SendToPeerDlg.cpp:76
-#: gui/src/SendToPeerDlg.cpp:84 gui/src/SendToPeerDlg.cpp:92
-#: gui/src/SendToPeerDlg.cpp:99 gui/src/SendToPeerDlg.cpp:106
-#: gui/src/SendToPeerDlg.cpp:113 gui/src/tcmgr.cpp:685
-#: gui/src/udev_rule_mgr.cpp:376
-msgid "OpenCPN Info"
-msgstr "OpenCPN — Сведения"
-
-#: gui/src/ais_info_gui.cpp:198 gui/src/options.cpp:5041
-msgid "AIS Alert"
-msgstr "АИС"
-
-#: gui/src/AISTargetAlertDialog.cpp:146 gui/src/AISTargetAlertDialog.cpp:247
+#: gui/src/AISTargetAlertDialog.cpp:147 gui/src/AISTargetAlertDialog.cpp:248
 #: gui/src/FontMgr.cpp:545
 msgid "AISTargetAlert"
 msgstr "Предупреждение о цели АИС"
 
-#: gui/src/AISTargetAlertDialog.cpp:191
+#: gui/src/AISTargetAlertDialog.cpp:192
 msgid "&Silence Alert"
 msgstr "&Выключить сигнал тревоги"
 
-#: gui/src/AISTargetAlertDialog.cpp:197
+#: gui/src/AISTargetAlertDialog.cpp:198
 msgid "&Jump To"
 msgstr "&Показать опасность"
 
-#: gui/src/AISTargetAlertDialog.cpp:204 gui/src/AISTargetQueryDialog.cpp:276
+#: gui/src/AISTargetAlertDialog.cpp:205 gui/src/AISTargetQueryDialog.cpp:277
 msgid "Create Waypoint"
 msgstr "Создать путевую точку"
 
-#: gui/src/AISTargetAlertDialog.cpp:210
+#: gui/src/AISTargetAlertDialog.cpp:211
 msgid "&Acknowledge"
 msgstr "&Подтвердить принятие сигнала"
 
-#: gui/src/AISTargetAlertDialog.cpp:213
+#: gui/src/AISTargetAlertDialog.cpp:214
 msgid "&Close Alert"
 msgstr "&Отключить Тревогу"
 
-#: gui/src/AISTargetListDialog.cpp:151 gui/src/AISTargetListDialog.cpp:166
+#: gui/src/AISTargetListDialog.cpp:156 gui/src/AISTargetListDialog.cpp:171
 #: gui/src/OCPNListCtrl.cpp:84 gui/src/OCPNListCtrl.cpp:94
 #: gui/src/OCPNListCtrl.cpp:131 gui/src/OCPNListCtrl.cpp:146
 #: gui/src/OCPNListCtrl.cpp:154 gui/src/OCPNListCtrl.cpp:166
 #: gui/src/OCPNListCtrl.cpp:173 gui/src/OCPNListCtrl.cpp:189
 #: gui/src/OCPNListCtrl.cpp:197 gui/src/OCPNListCtrl.cpp:205
-#: gui/src/OCPNListCtrl.cpp:215
+#: gui/src/OCPNListCtrl.cpp:215 gui/src/OCPNListCtrl.cpp:222
 msgid "-"
 msgstr "—"
 
-#: gui/src/AISTargetListDialog.cpp:351 gui/src/canvasMenu.cpp:705
-#: gui/src/ocpn_frame.cpp:3718
+#: gui/src/AISTargetListDialog.cpp:356 gui/src/canvasMenu.cpp:705
+#: gui/src/ocpn_frame.cpp:3708
 msgid "AIS target list"
 msgstr "Список целей АИС"
 
-#: gui/src/AISTargetListDialog.cpp:543
+#: gui/src/AISTargetListDialog.cpp:548
 msgid "Trk"
 msgstr "Траектория"
 
-#: gui/src/AISTargetListDialog.cpp:552 gui/src/MarkInfo.cpp:337
+#: gui/src/AISTargetListDialog.cpp:557 gui/src/MarkInfo.cpp:338
 #: gui/src/options.cpp:928 gui/src/RoutePropDlg.cpp:101
-#: gui/src/RoutePropDlgImpl.cpp:781 gui/src/TrackPropDlg.cpp:348
+#: gui/src/RoutePropDlgImpl.cpp:782 gui/src/TrackPropDlg.cpp:348
 #: gui/src/TrackPropDlg.cpp:697 gui/src/TrackPropDlg.cpp:1374
 msgid "Name"
 msgstr "Название"
 
-#: gui/src/AISTargetListDialog.cpp:561
+#: gui/src/AISTargetListDialog.cpp:566
 msgid "Call"
 msgstr "Позывной"
 
-#: gui/src/AISTargetListDialog.cpp:588 gui/src/conn_params_panel.cpp:169
+#: gui/src/AISTargetListDialog.cpp:593 gui/src/conn_params_panel.cpp:169
 #: gui/src/conn_params_panel.cpp:261 gui/src/conn_params_panel.cpp:391
 #: gui/src/conn_params_panel.cpp:494 gui/src/conn_params_panel.cpp:594
 msgid "Type"
 msgstr "Тип"
 
-#: gui/src/AISTargetListDialog.cpp:597
+#: gui/src/AISTargetListDialog.cpp:611
 msgid "Nav Status"
 msgstr "Навиг. статус"
 
-#: gui/src/AISTargetListDialog.cpp:606
+#: gui/src/AISTargetListDialog.cpp:620
 msgid "Brg"
 msgstr "Пеленг"
 
-#: gui/src/AISTargetListDialog.cpp:624
+#: gui/src/AISTargetListDialog.cpp:638
 msgid "CoG"
 msgstr "Курс (COG)"
 
-#: gui/src/AISTargetListDialog.cpp:633
+#: gui/src/AISTargetListDialog.cpp:647
 msgid "SoG"
 msgstr "Скорость (SOG)"
 
-#: gui/src/AISTargetListDialog.cpp:649
+#: gui/src/AISTargetListDialog.cpp:663
 msgid "TCPA"
 msgstr "Время до минимального подхода"
 
-#: gui/src/AISTargetListDialog.cpp:691
+#: gui/src/AISTargetListDialog.cpp:705
 msgid "Target info"
 msgstr "Сведения о цели"
 
-#: gui/src/AISTargetListDialog.cpp:708
+#: gui/src/AISTargetListDialog.cpp:722
 msgid "Center-Info-Close"
 msgstr "Запрос цели"
 
-#: gui/src/AISTargetListDialog.cpp:717
+#: gui/src/AISTargetListDialog.cpp:731
 msgid "Create WPT"
 msgstr "Создать пут. точку"
 
-#: gui/src/AISTargetListDialog.cpp:726
+#: gui/src/AISTargetListDialog.cpp:740
 msgid "Hide All Tracks"
 msgstr "Скрыть Все Пути"
 
-#: gui/src/AISTargetListDialog.cpp:734
+#: gui/src/AISTargetListDialog.cpp:748
 msgid "Show All Tracks"
 msgstr "Показать Все Пути"
 
-#: gui/src/AISTargetListDialog.cpp:742
+#: gui/src/AISTargetListDialog.cpp:756
 msgid "Toggle track"
 msgstr "Вкл/Выкл отслеживание пути"
 
-#: gui/src/AISTargetListDialog.cpp:750
+#: gui/src/AISTargetListDialog.cpp:764
 msgid "Copy MMSI"
 msgstr "Копировать MMSI цели"
 
-#: gui/src/AISTargetListDialog.cpp:758
+#: gui/src/AISTargetListDialog.cpp:772
 msgid "AutoSort"
 msgstr "Сортировать автоматически"
 
-#: gui/src/AISTargetListDialog.cpp:769
+#: gui/src/AISTargetListDialog.cpp:783
 msgid "Limit range: NM"
 msgstr "Граница дальности, м. м."
 
-#: gui/src/AISTargetListDialog.cpp:785
+#: gui/src/AISTargetListDialog.cpp:799
 msgid "Target Count"
 msgstr "Количество целей"
 
-#: gui/src/AISTargetListDialog.cpp:1253
+#: gui/src/AISTargetListDialog.cpp:1268
 msgid "Undock Target List"
 msgstr "Открепить Список целей АИС"
 
-#: gui/src/AISTargetQueryDialog.cpp:142 gui/src/AISTargetQueryDialog.cpp:280
-#: gui/src/AISTargetQueryDialog.cpp:311
+#: gui/src/AISTargetQueryDialog.cpp:143 gui/src/AISTargetQueryDialog.cpp:281
+#: gui/src/AISTargetQueryDialog.cpp:312
 msgid "Record Track"
 msgstr "Записать путь"
 
-#: gui/src/AISTargetQueryDialog.cpp:175
+#: gui/src/AISTargetQueryDialog.cpp:176
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
 msgstr "Путь движения этой цели был записан.\n"
 "Желаете продолжить запись до конца текущего сеанса работы OpenCPN?"
 
-#: gui/src/AISTargetQueryDialog.cpp:197 gui/src/FontMgr.cpp:546
+#: gui/src/AISTargetQueryDialog.cpp:198 gui/src/FontMgr.cpp:546
 msgid "AISTargetQuery"
 msgstr "Сведения о цели АИС"
 
-#: gui/src/AISTargetQueryDialog.cpp:285 gui/src/catalog_mgr.cpp:192
+#: gui/src/AISTargetQueryDialog.cpp:286 gui/src/catalog_mgr.cpp:192
 #: gui/src/catalog_mgr.cpp:584 gui/src/catalog_mgr.cpp:605 gui/src/cm93.cpp:6326
 #: gui/src/GoToPositionDialog.cpp:149 gui/src/MUIBar.cpp:196
 #: gui/src/options.cpp:863 gui/src/options.cpp:1017 gui/src/TCWin.cpp:115
@@ -3260,7 +3320,7 @@ msgstr "Сведения о цели АИС"
 msgid "OK"
 msgstr "OK"
 
-#: gui/src/AISTargetQueryDialog.cpp:309
+#: gui/src/AISTargetQueryDialog.cpp:310
 msgid "Stop Tracking"
 msgstr "Прекратить отслеживание"
 
@@ -3269,9 +3329,9 @@ msgstr "Прекратить отслеживание"
 #: gui/src/canvasMenu.cpp:1064 gui/src/canvasMenu.cpp:1087
 #: gui/src/canvasMenu.cpp:1115 gui/src/canvasMenu.cpp:1116
 #: gui/src/canvasMenu.cpp:1117 gui/src/canvasMenu.cpp:1118
-#: gui/src/FontMgr.cpp:561 gui/src/MarkInfo.cpp:1146 gui/src/options.cpp:1252
-#: gui/src/RoutePropDlgImpl.cpp:913 gui/src/RoutePropDlgImpl.cpp:920
-#: gui/src/RoutePropDlgImpl.cpp:950
+#: gui/src/FontMgr.cpp:561 gui/src/MarkInfo.cpp:1147 gui/src/options.cpp:1252
+#: gui/src/RoutePropDlgImpl.cpp:916 gui/src/RoutePropDlgImpl.cpp:923
+#: gui/src/RoutePropDlgImpl.cpp:953
 msgid "Menu"
 msgstr "Меню"
 
@@ -3329,7 +3389,7 @@ msgstr "Поместить судно в эту точку"
 msgid "Navigate To Here"
 msgstr "Маршрут в эту точку"
 
-#: gui/src/canvasMenu.cpp:534 gui/src/ocpn_frame.cpp:3613
+#: gui/src/canvasMenu.cpp:534 gui/src/ocpn_frame.cpp:3603
 msgid "Course Up Mode"
 msgstr "Ориентация Карты по Курсу"
 
@@ -3338,8 +3398,8 @@ msgid "Heading Up Mode"
 msgstr "Ориентация карты по направлению"
 
 #: gui/src/canvasMenu.cpp:538 gui/src/canvasMenu.cpp:545
-#: gui/src/ocpn_frame.cpp:3319 gui/src/ocpn_frame.cpp:3612
-#: gui/src/ocpn_frame.cpp:6080
+#: gui/src/ocpn_frame.cpp:3309 gui/src/ocpn_frame.cpp:3602
+#: gui/src/ocpn_frame.cpp:6050
 msgid "North Up Mode"
 msgstr "Ориентация Карты по Северу"
 
@@ -3348,7 +3408,7 @@ msgid "Chart Up Mode"
 msgstr "Ориентация Карты Согласно Карте"
 
 #: gui/src/canvasMenu.cpp:554 gui/src/canvasMenu.cpp:561
-#: gui/src/ocpn_frame.cpp:3694
+#: gui/src/ocpn_frame.cpp:3684
 msgid "Toggle Full Screen"
 msgstr "Полноэкранный режим"
 
@@ -3430,7 +3490,7 @@ msgstr "Скрыть"
 msgid "Show"
 msgstr "Показ"
 
-#: gui/src/canvasMenu.cpp:709 gui/src/chcanv.cpp:6988
+#: gui/src/canvasMenu.cpp:709 gui/src/chcanv.cpp:6989
 msgid "CPA alarm "
 msgstr "Тревога CPA "
 
@@ -3459,17 +3519,17 @@ msgid "Activate Next Waypoint"
 msgstr "Следующая пут. точка"
 
 #: gui/src/canvasMenu.cpp:738 gui/src/canvasMenu.cpp:756
-#: gui/src/routemanagerdialog.cpp:1348
+#: gui/src/routemanagerdialog.cpp:1364
 msgid "Deactivate"
 msgstr "Деактивировать"
 
 #: gui/src/canvasMenu.cpp:741 gui/src/canvasMenu.cpp:759
 #: gui/src/canvasMenu.cpp:851 gui/src/canvasMenu.cpp:858
-#: gui/src/routemanagerdialog.cpp:1342
+#: gui/src/routemanagerdialog.cpp:1358
 msgid "Activate"
 msgstr "Активировать"
 
-#: gui/src/canvasMenu.cpp:745 gui/src/chcanv.cpp:4032 gui/src/chcanv.cpp:11288
+#: gui/src/canvasMenu.cpp:745 gui/src/chcanv.cpp:4032 gui/src/chcanv.cpp:11315
 #: gui/src/concanv.cpp:142 gui/src/concanv.cpp:157 gui/src/concanv.cpp:196
 msgid "Route"
 msgstr "Маршрут"
@@ -3478,7 +3538,7 @@ msgstr "Маршрут"
 msgid "Insert Waypoint"
 msgstr "Вставить пут. точку"
 
-#: gui/src/canvasMenu.cpp:763 gui/src/undo.cpp:90
+#: gui/src/canvasMenu.cpp:763 gui/src/undo.cpp:91
 msgid "Append Waypoint"
 msgstr "Добавить путевые точки"
 
@@ -3493,8 +3553,8 @@ msgstr "Скопировать в буфер в формате KML"
 
 #: gui/src/canvasMenu.cpp:771 gui/src/canvasMenu.cpp:825
 #: gui/src/canvasMenu.cpp:882 gui/src/canvasMenu.cpp:933
-#: gui/src/connection_edit.cpp:2355 gui/src/MarkInfo.cpp:410
-#: gui/src/MarkInfo.cpp:1110 gui/src/MarkInfo.cpp:1151 gui/src/options.cpp:1248
+#: gui/src/connection_edit.cpp:2355 gui/src/MarkInfo.cpp:411
+#: gui/src/MarkInfo.cpp:1111 gui/src/MarkInfo.cpp:1152 gui/src/options.cpp:1248
 #: gui/src/route_gui.cpp:654 gui/src/RoutePropDlg.cpp:486
 #: gui/src/TrackPropDlg.cpp:934
 msgid "Delete"
@@ -3536,7 +3596,7 @@ msgstr "Безымянная Путевая точка"
 msgid "Layer Waypoint"
 msgstr "Метка (в слое)"
 
-#: gui/src/canvasMenu.cpp:853
+#: gui/src/canvasMenu.cpp:853 gui/src/route_printout.cpp:85
 msgid "Waypoint"
 msgstr "Путевая точка"
 
@@ -3584,8 +3644,8 @@ msgstr "Cведения о Приливных Течениях"
 msgid "Temporary GOTO Route"
 msgstr "Временный маршрут движения к точке"
 
-#: gui/src/canvasMenu.cpp:1207 gui/src/canvasMenu.cpp:1278
-#: gui/src/routemanagerdialog.cpp:2781
+#: gui/src/canvasMenu.cpp:1207 gui/src/canvasMenu.cpp:1279
+#: gui/src/routemanagerdialog.cpp:2791
 msgid "Here"
 msgstr "Сюда"
 
@@ -3593,47 +3653,47 @@ msgstr "Сюда"
 msgid "There"
 msgstr "Отсюда"
 
-#: gui/src/canvasMenu.cpp:1274 gui/src/routemanagerdialog.cpp:2416
-#: gui/src/routemanagerdialog.cpp:2777
+#: gui/src/canvasMenu.cpp:1275 gui/src/routemanagerdialog.cpp:2421
+#: gui/src/routemanagerdialog.cpp:2787
 msgid "(Unnamed Waypoint)"
 msgstr "(безымянная путевая точка)"
 
-#: gui/src/canvasMenu.cpp:1275 gui/src/routemanagerdialog.cpp:2778
+#: gui/src/canvasMenu.cpp:1276 gui/src/routemanagerdialog.cpp:2788
 msgid "Go to "
 msgstr "Двигаться к "
 
-#: gui/src/canvasMenu.cpp:1515 gui/src/canvasMenu.cpp:1549
-#: gui/src/routemanagerdialog.cpp:1527
+#: gui/src/canvasMenu.cpp:1516 gui/src/canvasMenu.cpp:1550
+#: gui/src/routemanagerdialog.cpp:1539
 msgid "Rename Waypoints?"
 msgstr "Переименовать путевые точки?"
 
-#: gui/src/canvasMenu.cpp:1692 gui/src/RoutePropDlgImpl.cpp:1029
+#: gui/src/canvasMenu.cpp:1692 gui/src/RoutePropDlgImpl.cpp:1033
 #: gui/src/TrackPropDlg.cpp:1344
 msgid "_A"
 msgstr " (начальная часть)"
 
-#: gui/src/canvasMenu.cpp:1694 gui/src/RoutePropDlgImpl.cpp:1030
+#: gui/src/canvasMenu.cpp:1694 gui/src/RoutePropDlgImpl.cpp:1034
 #: gui/src/TrackPropDlg.cpp:1345
 msgid "_B"
 msgstr " (конечная часть)"
 
-#: gui/src/canvasMenu.cpp:1773
+#: gui/src/canvasMenu.cpp:1772
 msgid "Send Waypoint to OpenCPN Peer"
 msgstr "Отправить пут. точку(и) в OpenCPN по Сети"
 
-#: gui/src/canvasMenu.cpp:1818
+#: gui/src/canvasMenu.cpp:1817
 msgid "Send Route to OpenCPN Peer"
 msgstr "Отправить маршрут(ы) в OpenCPN по Сети"
 
-#: gui/src/canvasMenu.cpp:1908
+#: gui/src/canvasMenu.cpp:1907
 msgid "Are you sure you want to delete this track?"
 msgstr "Уверены, что хотите удалить этот путь?"
 
-#: gui/src/canvasMenu.cpp:1909 gui/src/routeman_gui.cpp:267
+#: gui/src/canvasMenu.cpp:1908 gui/src/routeman_gui.cpp:267
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN — Удаление пути"
 
-#: gui/src/canvasMenu.cpp:1951
+#: gui/src/canvasMenu.cpp:1950
 msgid "Send Track to OpenCPN Peer"
 msgstr "Отправить путь(и) в OpenCPN по Сети"
 
@@ -3669,8 +3729,8 @@ msgstr "Заглядывать вперёд по курсу"
 msgid "Display Options"
 msgstr "Параметры Отображения"
 
-#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3637
-#: gui/src/ocpn_frame.cpp:3643 gui/src/options.cpp:4125 gui/src/options.cpp:4314
+#: gui/src/CanvasOptions.cpp:185 gui/src/ocpn_frame.cpp:3627
+#: gui/src/ocpn_frame.cpp:3633 gui/src/options.cpp:4125 gui/src/options.cpp:4314
 msgid "Enable Chart Quilting"
 msgstr "Сшивание Карты из Фрагментов"
 
@@ -3679,8 +3739,8 @@ msgstr "Сшивание Карты из Фрагментов"
 msgid "Show Grid"
 msgstr "Координатная Сетка"
 
-#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3639
-#: gui/src/ocpn_frame.cpp:3645 gui/src/options.cpp:4175 gui/src/options.cpp:4363
+#: gui/src/CanvasOptions.cpp:199 gui/src/ocpn_frame.cpp:3629
+#: gui/src/ocpn_frame.cpp:3635 gui/src/options.cpp:4175 gui/src/options.cpp:4363
 msgid "Show Chart Outlines"
 msgstr "Рамки Карт"
 
@@ -3705,7 +3765,7 @@ msgstr "Приливы и течения"
 msgid "Show Tide stations"
 msgstr "Станции Прилива\\Отлива"
 
-#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3681
+#: gui/src/CanvasOptions.cpp:248 gui/src/ocpn_frame.cpp:3671
 msgid "Show Currents"
 msgstr "Приливные Течения"
 
@@ -3757,8 +3817,9 @@ msgstr "Отображаемый набор объектов карты"
 msgid "Standard"
 msgstr "Стандартный"
 
-#: gui/src/CanvasOptions.cpp:326 gui/src/options.cpp:3457
-#: gui/src/options.cpp:3660
+#: gui/src/CanvasOptions.cpp:326 gui/src/filter_dlg.cpp:223
+#: gui/src/filter_dlg.cpp:228 gui/src/filter_dlg.cpp:396
+#: gui/src/options.cpp:3457 gui/src/options.cpp:3660
 msgid "All"
 msgstr "Все объекты"
 
@@ -3856,7 +3917,7 @@ msgstr "Ошибка: "
 
 #: gui/src/catalog_mgr.cpp:603 gui/src/connection_edit.cpp:230
 #: gui/src/connection_edit.cpp:2359 gui/src/GoToPositionDialog.cpp:145
-#: gui/src/LinkPropDlg.cpp:76 gui/src/MarkInfo.cpp:707 gui/src/MarkInfo.cpp:1885
+#: gui/src/LinkPropDlg.cpp:76 gui/src/MarkInfo.cpp:708 gui/src/MarkInfo.cpp:1888
 #: gui/src/MUIBar.cpp:192 gui/src/options.cpp:860 gui/src/options.cpp:1014
 #: gui/src/options.cpp:6069 gui/src/options.cpp:9438
 #: gui/src/priority_gui.cpp:107 gui/src/rest_server_gui.cpp:167
@@ -3916,9 +3977,9 @@ msgstr "Настройки каталога модулей"
 msgid " Name:  "
 msgstr "Название: "
 
-#: gui/src/chartdbs.cpp:1336 gui/src/chartdbs.cpp:1338 gui/src/chcanv.cpp:5790
-#: gui/src/chcanv.cpp:5793 gui/src/chcanv.cpp:5797 gui/src/chcanv.cpp:5800
-#: gui/src/chcanv.cpp:5803 gui/src/chcanv.cpp:5829
+#: gui/src/chartdbs.cpp:1336 gui/src/chartdbs.cpp:1338 gui/src/chcanv.cpp:5791
+#: gui/src/chcanv.cpp:5794 gui/src/chcanv.cpp:5798 gui/src/chcanv.cpp:5801
+#: gui/src/chcanv.cpp:5804 gui/src/chcanv.cpp:5830
 #: gui/src/routemanagerdialog.cpp:750
 msgid "Scale"
 msgstr "Масштаб"
@@ -3983,23 +4044,23 @@ msgstr "OpenCPN — Сканирование папок…"
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN — Добавление карт…"
 
-#: gui/src/chcanv.cpp:1442 gui/src/chcanv.cpp:1457
+#: gui/src/chcanv.cpp:1443 gui/src/chcanv.cpp:1458
 msgid "Group \""
 msgstr "Группа карт «"
 
-#: gui/src/chcanv.cpp:1447
+#: gui/src/chcanv.cpp:1448
 msgid "\" is empty."
 msgstr "\" пусто."
 
-#: gui/src/chcanv.cpp:1449 gui/src/chcanv.cpp:1464
+#: gui/src/chcanv.cpp:1450 gui/src/chcanv.cpp:1465
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN — Пустая группа карт"
 
-#: gui/src/chcanv.cpp:1462
+#: gui/src/chcanv.cpp:1463
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "» пусто, будут показываться все активные карты."
 
-#: gui/src/chcanv.cpp:4034 gui/src/chcanv.cpp:11290
+#: gui/src/chcanv.cpp:4034 gui/src/chcanv.cpp:11317
 msgid "Layer Route: "
 msgstr "Маршрут (в слое): "
 
@@ -4043,215 +4104,215 @@ msgstr "Всего пути: "
 msgid "Segment Created: "
 msgstr "Отрезок создан: "
 
-#: gui/src/chcanv.cpp:5820 gui/src/FontMgr.cpp:547 gui/src/ocpn_frame.cpp:2218
-#: gui/src/ocpn_frame.cpp:2241 gui/src/OCPNPlatform.cpp:1723
+#: gui/src/chcanv.cpp:5821 gui/src/FontMgr.cpp:547 gui/src/ocpn_frame.cpp:2217
+#: gui/src/ocpn_frame.cpp:2240 gui/src/OCPNPlatform.cpp:1723
 msgid "StatusBar"
 msgstr "Строка состояния"
 
-#: gui/src/chcanv.cpp:6981
+#: gui/src/chcanv.cpp:6982
 msgid "ON"
 msgstr "ВКЛ."
 
-#: gui/src/chcanv.cpp:6984
+#: gui/src/chcanv.cpp:6985
 msgid "OFF"
 msgstr "ВЫКЛ"
 
-#: gui/src/chcanv.cpp:6992
+#: gui/src/chcanv.cpp:6993
 msgid "CPA Alarm is switched"
 msgstr "Тревога CPA вкл"
 
-#: gui/src/chcanv.cpp:7161
+#: gui/src/chcanv.cpp:7162
 msgid "Composite of "
 msgstr "Составной из "
 
-#: gui/src/chcanv.cpp:7166
+#: gui/src/chcanv.cpp:7167
 msgid "charts"
 msgstr "карты"
 
-#: gui/src/chcanv.cpp:7168
+#: gui/src/chcanv.cpp:7169
 msgid "chart"
 msgstr "карта"
 
-#: gui/src/chcanv.cpp:7172
+#: gui/src/chcanv.cpp:7173
 msgid "Chart scale"
 msgstr "Масштаб карты"
 
-#: gui/src/chcanv.cpp:7179
+#: gui/src/chcanv.cpp:7180
 msgid "Zoom in for more information"
 msgstr "Увеличить масштаб для получения дополнительной информации"
 
-#: gui/src/chcanv.cpp:8295 gui/src/chcanv.cpp:8890
+#: gui/src/chcanv.cpp:8297 gui/src/chcanv.cpp:8896
 msgid "Use nearby waypoint?"
 msgstr "Использовать ближайшую пут. точку?"
 
-#: gui/src/chcanv.cpp:8300
+#: gui/src/chcanv.cpp:8302
 msgid "Use nearby nameless waypoint and name it M with a unique number?"
 msgstr ""
 
-#: gui/src/chcanv.cpp:8306 gui/src/chcanv.cpp:8354 gui/src/chcanv.cpp:8375
-#: gui/src/chcanv.cpp:8437 gui/src/chcanv.cpp:8890 gui/src/chcanv.cpp:8928
-#: gui/src/chcanv.cpp:8948 gui/src/chcanv.cpp:9006 gui/src/chcanv.cpp:9404
-#: gui/src/chcanv.cpp:9422 gui/src/chcanv.cpp:9664 gui/src/chcanv.cpp:9682
+#: gui/src/chcanv.cpp:8308 gui/src/chcanv.cpp:8356 gui/src/chcanv.cpp:8377
+#: gui/src/chcanv.cpp:8441 gui/src/chcanv.cpp:8896 gui/src/chcanv.cpp:8934
+#: gui/src/chcanv.cpp:8954 gui/src/chcanv.cpp:9014 gui/src/chcanv.cpp:9414
+#: gui/src/chcanv.cpp:9432 gui/src/chcanv.cpp:9680 gui/src/chcanv.cpp:9698
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN — Создание маршрута"
 
-#: gui/src/chcanv.cpp:8346 gui/src/chcanv.cpp:8920
+#: gui/src/chcanv.cpp:8348 gui/src/chcanv.cpp:8926
 msgid "Insert first part of this route in the new route?"
 msgstr "Вставить первую часть этого маршрута в новый маршрут?"
 
-#: gui/src/chcanv.cpp:8350 gui/src/chcanv.cpp:8924
+#: gui/src/chcanv.cpp:8352 gui/src/chcanv.cpp:8930
 msgid "Insert this route in the new route?"
 msgstr "Вставить этот маршрут в новый маршрут?"
 
-#: gui/src/chcanv.cpp:8365 gui/src/chcanv.cpp:8939
+#: gui/src/chcanv.cpp:8367 gui/src/chcanv.cpp:8945
 msgid "Append last part of this route to the new route?"
 msgstr "Добавить последнюю часть этого маршрута к новому маршруту?"
 
-#: gui/src/chcanv.cpp:8368 gui/src/chcanv.cpp:8942
+#: gui/src/chcanv.cpp:8370 gui/src/chcanv.cpp:8948
 msgid "Append this route to the new route?"
 msgstr "Добавить этот маршрут к новому маршруту?"
 
-#: gui/src/chcanv.cpp:8427 gui/src/chcanv.cpp:8998
+#: gui/src/chcanv.cpp:8431 gui/src/chcanv.cpp:9006
 msgid "For this leg the Great Circle route is "
 msgstr "Для этого плеча маршрута, ортодромический путь на "
 
-#: gui/src/chcanv.cpp:8429 gui/src/chcanv.cpp:9000
+#: gui/src/chcanv.cpp:8433 gui/src/chcanv.cpp:9008
 msgid " shorter than rhumbline.\n\n"
 msgstr " короче локсодромического.\n\n"
 
-#: gui/src/chcanv.cpp:8430 gui/src/chcanv.cpp:9001
+#: gui/src/chcanv.cpp:8434 gui/src/chcanv.cpp:9009
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Хотите добавить ортодромические промежуточные точки для этого плеча?"
 
-#: gui/src/chcanv.cpp:9370 gui/src/chcanv.cpp:9631
+#: gui/src/chcanv.cpp:9380 gui/src/chcanv.cpp:9647
 msgid "Replace this RoutePoint by the nearby Waypoint?"
 msgstr "Заменить эту точку маршрута на ближайшую пут. точку?"
 
-#: gui/src/chcanv.cpp:9372 gui/src/chcanv.cpp:9633
+#: gui/src/chcanv.cpp:9382 gui/src/chcanv.cpp:9649
 msgid "OpenCPN RoutePoint change"
 msgstr "OpenCPN - Изменение точки маршрута"
 
-#: gui/src/chcanv.cpp:9397 gui/src/chcanv.cpp:9657
+#: gui/src/chcanv.cpp:9407 gui/src/chcanv.cpp:9673
 msgid "Last part of route to be appended to dragged route?"
 msgstr "Последняя часть маршрута будет добавлена к перетаскиваемому маршруту?"
 
-#: gui/src/chcanv.cpp:9401 gui/src/chcanv.cpp:9661
+#: gui/src/chcanv.cpp:9411 gui/src/chcanv.cpp:9677
 msgid "Full route to be appended to dragged route?"
 msgstr "Полный маршрут будет добавлен к перетаскиваемому маршруту?"
 
-#: gui/src/chcanv.cpp:9415 gui/src/chcanv.cpp:9675
+#: gui/src/chcanv.cpp:9425 gui/src/chcanv.cpp:9691
 msgid "First part of route to be inserted into dragged route?"
 msgstr "Первая часть маршрута будет вставлена в перетаскиваемый маршрут?"
 
-#: gui/src/chcanv.cpp:9419 gui/src/chcanv.cpp:9679
+#: gui/src/chcanv.cpp:9429 gui/src/chcanv.cpp:9695
 msgid "Full route to be inserted into dragged route?"
 msgstr "Полный маршрут будет добавлен к перетаскиваемому маршруту?"
 
-#: gui/src/chcanv.cpp:9435 gui/src/chcanv.cpp:9695
+#: gui/src/chcanv.cpp:9445 gui/src/chcanv.cpp:9711
 msgid "Do you really want to delete and replace this WayPoint"
 msgstr "Вы действительно хотите удалить и заменить эту точку"
 
-#: gui/src/chcanv.cpp:9437 gui/src/chcanv.cpp:9697
+#: gui/src/chcanv.cpp:9447 gui/src/chcanv.cpp:9713
 msgid "which has been created manually?"
 msgstr "был создан вручную?"
 
-#: gui/src/chcanv.cpp:10263 gui/src/chcanv.cpp:10273 gui/src/FontMgr.cpp:549
+#: gui/src/chcanv.cpp:10284 gui/src/chcanv.cpp:10294 gui/src/FontMgr.cpp:549
 #: gui/src/S57QueryDialog.cpp:104 gui/src/S57QueryDialog.cpp:292
 msgid "ObjectQuery"
 msgstr "Сведения об объектах на карте"
 
-#: gui/src/chcanv.cpp:10429
+#: gui/src/chcanv.cpp:10450
 msgid "Mark Properties"
 msgstr "Параметры Метки"
 
-#: gui/src/chcanv.cpp:10436 gui/src/routemanagerdialog.cpp:2660
-#: gui/src/RoutePropDlgImpl.cpp:499
+#: gui/src/chcanv.cpp:10457 gui/src/routemanagerdialog.cpp:2666
+#: gui/src/RoutePropDlgImpl.cpp:500
 msgid "Layer"
 msgstr "Слой"
 
-#: gui/src/chcanv.cpp:10522
+#: gui/src/chcanv.cpp:10543
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "В месте вставки уже присутствует путевая точка. Хотите объединить вставляемые данные с имеющимися?\n\n"
 
-#: gui/src/chcanv.cpp:10524
+#: gui/src/chcanv.cpp:10545
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "При ответе «Нет» будет создана новая путевая точка в том же самом месте."
 
-#: gui/src/chcanv.cpp:10525
+#: gui/src/chcanv.cpp:10546
 msgid "Merge waypoint?"
 msgstr "Объединить пут. точку?"
 
-#: gui/src/chcanv.cpp:10590
+#: gui/src/chcanv.cpp:10613
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "В месте вставки уже присутствуют путевые точки. Хотите объединить вставляемые данные с имеющимися?\n\n"
 
-#: gui/src/chcanv.cpp:10593
+#: gui/src/chcanv.cpp:10616
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "При ответе «Нет» будут созданы все новые путевые точки для этого маршрута."
 
-#: gui/src/chcanv.cpp:10594
+#: gui/src/chcanv.cpp:10617
 msgid "Merge waypoints?"
 msgstr "Объединить путевые точки?"
 
-#: gui/src/chcanv.cpp:11076 gui/src/FontMgr.cpp:275 gui/src/FontMgr.cpp:550
+#: gui/src/chcanv.cpp:11103 gui/src/FontMgr.cpp:275 gui/src/FontMgr.cpp:550
 #: gui/src/RolloverWin.cpp:143 gui/src/RolloverWin.cpp:310
 msgid "RouteLegInfoRollover"
 msgstr "Плечо маршрута"
 
-#: gui/src/chcanv.cpp:11894 gui/src/mbtiles/mbtiles.cpp:988
+#: gui/src/chcanv.cpp:11921 gui/src/mbtiles/mbtiles.cpp:988
 msgid "MBTile requires OpenGL to be enabled"
 msgstr "Для MBTile требуется включить OpenGL"
 
-#: gui/src/chcanv.cpp:12555 gui/src/options.cpp:4516 gui/src/options.cpp:4690
+#: gui/src/chcanv.cpp:12582 gui/src/options.cpp:4516 gui/src/options.cpp:4690
 #: gui/src/initwiz/wiz_ui_proto.cpp:47
 msgid "Feet"
 msgstr "фт"
 
-#: gui/src/chcanv.cpp:12557 gui/src/options.cpp:4473 gui/src/options.cpp:4517
+#: gui/src/chcanv.cpp:12584 gui/src/options.cpp:4473 gui/src/options.cpp:4517
 #: gui/src/options.cpp:4658 gui/src/options.cpp:4691
 #: gui/src/initwiz/wiz_ui_proto.cpp:47 gui/src/initwiz/wiz_ui_proto.cpp:62
 msgid "Meters"
 msgstr "м"
 
-#: gui/src/chcanv.cpp:12559 gui/src/options.cpp:4518 gui/src/options.cpp:4692
+#: gui/src/chcanv.cpp:12586 gui/src/options.cpp:4518 gui/src/options.cpp:4692
 #: gui/src/initwiz/wiz_ui_proto.cpp:47
 msgid "Fathoms"
 msgstr "мор. саж"
 
-#: gui/src/chcanv.cpp:12562
+#: gui/src/chcanv.cpp:12589
 msgid "OverZoom"
 msgstr "Завышение масштаба"
 
-#: gui/src/chcanv.cpp:12930 gui/src/chcanv.cpp:12931 gui/src/FontMgr.cpp:279
+#: gui/src/chcanv.cpp:12957 gui/src/chcanv.cpp:12958 gui/src/FontMgr.cpp:279
 #: gui/src/FontMgr.cpp:551
 msgid "ExtendedTideIcon"
 msgstr "Значок прилива"
 
-#: gui/src/chcanv.cpp:13255 gui/src/chcanv.cpp:13256 gui/src/FontMgr.cpp:552
+#: gui/src/chcanv.cpp:13282 gui/src/chcanv.cpp:13283 gui/src/FontMgr.cpp:552
 msgid "CurrentValue"
 msgstr "Течение"
 
-#: gui/src/chcanv.cpp:13485 gui/src/ocpn_frame.cpp:1161
+#: gui/src/chcanv.cpp:13512 gui/src/ocpn_frame.cpp:1161
 msgid "AIS Target Query"
 msgstr "Сведения о цели АИС"
 
-#: gui/src/chcanv.cpp:13728
+#: gui/src/chcanv.cpp:13755
 msgid "Show all AIS Targets"
 msgstr "Цели АИС"
 
-#: gui/src/chcanv.cpp:13729 gui/src/ocpn_frame.cpp:3701
+#: gui/src/chcanv.cpp:13756 gui/src/ocpn_frame.cpp:3691
 msgid "Attenuate less critical AIS targets"
 msgstr "Уменьшать некритические цели АИС"
 
-#: gui/src/chcanv.cpp:13730
+#: gui/src/chcanv.cpp:13757
 msgid "Hide AIS Targets"
 msgstr "Скрыть цели АИС"
 
-#: gui/src/chcanv.cpp:14349
+#: gui/src/chcanv.cpp:14376
 msgid "Show This Chart"
 msgstr "Отобразить эту карту"
 
-#: gui/src/chcanv.cpp:14354
+#: gui/src/chcanv.cpp:14381
 msgid "Hide This Chart"
 msgstr "Скрыть эту карту"
 
@@ -4347,9 +4408,9 @@ msgid "Title"
 msgstr "Название"
 
 #: gui/src/ConfigMgr.cpp:460 gui/src/connection_edit.cpp:546
-#: gui/src/MarkInfo.cpp:371 gui/src/MarkInfo.cpp:451 gui/src/options.cpp:836
-#: gui/src/RoutePropDlg.cpp:419 gui/src/RoutePropDlg.cpp:444
-#: gui/src/TrackPropDlg.cpp:899
+#: gui/src/MarkInfo.cpp:372 gui/src/MarkInfo.cpp:452 gui/src/options.cpp:836
+#: gui/src/route_printout.cpp:109 gui/src/RoutePropDlg.cpp:419
+#: gui/src/RoutePropDlg.cpp:444 gui/src/TrackPropDlg.cpp:899
 msgid "Description"
 msgstr "Описание"
 
@@ -4361,13 +4422,127 @@ msgstr "Шаблон восстановления"
 msgid "Apply this template to return to a known safe configuration"
 msgstr "Применить этот шаблон, чтобы вернуться к последней сохраненной конфигурации"
 
+#: gui/src/connections_dlg.cpp:184
+msgid "Add new connection..."
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:193
+msgid "Configure new connection"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:250 gui/src/connection_edit.cpp:520
+#: gui/src/conn_params_panel.cpp:187 gui/src/conn_params_panel.cpp:279
+msgid "Protocol"
+msgstr "Протокол"
+
+#: gui/src/connections_dlg.cpp:250 gui/src/connection_edit.cpp:480
+msgid "Data port"
+msgstr "Порт данных"
+
+#: gui/src/connections_dlg.cpp:250
+msgid "Status"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:313 gui/src/connections_dlg.cpp:566
+msgid "Enabled, click to disable"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:315 gui/src/connections_dlg.cpp:568
+msgid "Disabled, click to enable"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:322
+msgid "Edit connection"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:324
+msgid "Delete connection"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:493 gui/src/pluginmanager.cpp:2185
+msgid "Disabled"
+msgstr "Отключено"
+
+#: gui/src/connections_dlg.cpp:501
+msgid "No driver statistics available"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:509
+msgid "No data flowing through connection"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:517
+msgid "The device is unavailable"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:525
+msgid "Data is flowing"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:585 gui/src/connection_edit.cpp:252
+#: gui/src/connection_edit.cpp:805
+msgid "Edit Selected Connection"
+msgstr "Изменить подключение"
+
+#: gui/src/connections_dlg.cpp:614
+msgid "Ok to delete connection on "
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:615
+msgid "Delete connection?"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:642 gui/src/options.cpp:4070
+msgid "General"
+msgstr "Общие параметры"
+
+#: gui/src/connections_dlg.cpp:654
+msgid "Adjust Nav data priorities..."
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:699
+msgid "Use generic Nmea 0183 format for uploads"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:700
+msgid "Use Garmin GRMN (Host) mode for uploads"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:701
+msgid "Format uploads for Furuno GP4X"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:717 gui/src/connections_dlg.cpp:723
+msgid "Advanced "
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:748
+msgid "Use magnetic bearing in output sentence APB"
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:767
+msgid "Filter NMEA course and speed data. Filter period: "
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:801
+msgid "NMEA 0183 Talker Id: "
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:806
+msgid "Enter a two-letter talker ID to override the default ID in NMEA sentences generated by OpenCPN (e.g., GP, HC, EC). This affects only sentences created by OpenCPN, not those forwarded from other devices."
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:830
+msgid "Netmask: "
+msgstr ""
+
+#: gui/src/connections_dlg.cpp:832
+msgid "length (bits): "
+msgstr ""
+
 #: gui/src/connection_edit.cpp:182
 msgid "Connection Edit"
 msgstr "Настройка датчика"
-
-#: gui/src/connection_edit.cpp:252 gui/src/connection_edit.cpp:805
-msgid "Edit Selected Connection"
-msgstr "Изменить подключение"
 
 #: gui/src/connection_edit.cpp:287 gui/src/conn_params_panel.cpp:428
 msgid "Built-in GPS"
@@ -4412,10 +4587,6 @@ msgstr "Порт"
 #: gui/src/connection_edit.cpp:451
 msgid "socketCAN Source"
 msgstr "socketCAN"
-
-#: gui/src/connection_edit.cpp:480
-msgid "Data port"
-msgstr "Порт данных"
 
 #: gui/src/connection_edit.cpp:495 gui/src/conn_params_panel.cpp:199
 msgid "Baudrate"
@@ -4476,11 +4647,6 @@ msgstr "460800"
 #: gui/src/connection_edit.cpp:505
 msgid "921600"
 msgstr "921600"
-
-#: gui/src/connection_edit.cpp:520 gui/src/conn_params_panel.cpp:187
-#: gui/src/conn_params_panel.cpp:279
-msgid "Protocol"
-msgstr "Протокол"
 
 #: gui/src/connection_edit.cpp:561
 msgid "User Comment"
@@ -4620,7 +4786,7 @@ msgid "OpenCPN Warning"
 msgstr "OpenCPN — Предупреждение"
 
 #: gui/src/connection_edit.cpp:1722 gui/src/options.cpp:7161
-#: gui/src/routemanagerdialog.cpp:1920
+#: gui/src/routemanagerdialog.cpp:1933
 msgid "OpenCPN info"
 msgstr "OpenCPN — Сведения"
 
@@ -4707,6 +4873,144 @@ msgstr "Встроенный Bluetooth"
 msgid "Driver"
 msgstr "Драйвер"
 
+#: gui/src/data_monitor.cpp:255
+msgid "Quick filter:"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:344
+msgid "All data"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:345
+msgid "All NMEA data"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:346
+msgid "Malformed messages"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:347
+msgid "NMEA input data"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:348
+msgid "NMEA output data"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:349
+msgid "Messages to plugins"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:398
+msgid "Resume"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:398
+msgid "Pause"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:423 gui/src/data_monitor.cpp:459
+#: gui/src/options.cpp:1184 gui/src/options.cpp:2011 gui/src/options.cpp:2124
+#: gui/src/RoutePropDlg.cpp:301 gui/src/RoutePropDlg.cpp:321
+#: gui/src/TrackPropDlg.cpp:511 gui/src/TrackPropDlg.cpp:530
+#: gui/src/TrackPropDlg.cpp:760 gui/src/TrackPropDlg.cpp:773
+msgid "Default"
+msgstr "По умолчанию"
+
+#: gui/src/data_monitor.cpp:430
+msgid "Log format"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:439
+msgid "Change..."
+msgstr ""
+
+#: gui/src/data_monitor.cpp:442
+msgid "Overwrite existing file"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:445
+msgid "Log file"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:468
+msgid "Select logfile"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:486
+msgid "Logging setup"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:526
+msgid "Use colors"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:527
+msgid "Logging..."
+msgstr ""
+
+#: gui/src/data_monitor.cpp:529
+msgid "Create new..."
+msgstr ""
+
+#: gui/src/data_monitor.cpp:530
+msgid "Edit..."
+msgstr ""
+
+#: gui/src/data_monitor.cpp:531
+msgid "Delete..."
+msgstr ""
+
+#: gui/src/data_monitor.cpp:532
+msgid "Filters..."
+msgstr ""
+
+#: gui/src/data_monitor.cpp:534 gui/src/data_monitor.cpp:569
+msgid "Edit active filter"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:633
+msgid "Click to stop logging"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:635
+msgid "Click to start logging"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:650
+msgid "Stop logging"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:650
+msgid "Start logging"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:687
+msgid "Close quick filter"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:688
+msgid "Open quick filter"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:703
+msgid "Open menu"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:728 gui/src/routemanagerdialog.cpp:380
+#: gui/src/routemanagerdialog.cpp:557 gui/src/routemanagerdialog.cpp:700
+#: gui/src/routemanagerdialog.cpp:891
+msgid "Filter"
+msgstr "Фильтр"
+
+#: gui/src/data_monitor.cpp:824
+msgid "Log file (*.log)|*.log"
+msgstr ""
+
+#: gui/src/data_monitor.cpp:826
+msgid "Spreadsheet csv file(*.csv)|*.csv"
+msgstr ""
+
 #: gui/src/DetailSlider.cpp:88
 msgid "CM93 Detail Level"
 msgstr "Детализация CM93"
@@ -4739,6 +5043,86 @@ msgstr "Установка завершена"
 #: gui/src/download_mgr.cpp:203 gui/src/pluginmanager.cpp:1103
 msgid "Installation error"
 msgstr "Ошибка установки"
+
+#: gui/src/filter_dlg.cpp:117
+msgid "New filter name"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:124
+msgid "Remove filter (name):"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:124
+msgid "Remove filter"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:131
+msgid "Edit filter (name):"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:132
+msgid "Edit filter"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:160
+msgid "Message Types"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:164
+msgid "Include messages"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:168
+msgid "Exclude messages"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:170
+msgid "Check all"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:171
+msgid "Clear all"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:231 gui/src/filter_dlg.cpp:398
+msgid " of "
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:475
+msgid "Use interfaces"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:497
+msgid "Use message buses"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:518
+msgid "Use directions"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:534
+msgid "Use Accepted states"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:565
+msgid "Edit filter: "
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:618
+msgid "Illegal name"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:634 gui/src/filter_dlg.cpp:675
+msgid "No filters created"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:645
+msgid "Filter removed"
+msgstr ""
+
+#: gui/src/filter_dlg.cpp:649
+msgid "Cannot remove filter"
+msgstr ""
 
 #: gui/src/FontMgr.cpp:273 gui/src/FontMgr.cpp:557
 #: gui/src/routemanagerdialog.cpp:689 gui/src/route_point_gui.cpp:122
@@ -4778,20 +5162,120 @@ msgstr "Ожидается завершение сжатия растровой 
 msgid "OpenCPN Compressed Cache Update"
 msgstr "OpenCPN — Обновление кэша текстур"
 
-#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8254
+#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8226
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Расстояние от собственного судна: %4.0f м. м."
 
-#: gui/src/GoToPositionDialog.cpp:119 gui/src/MarkInfo.cpp:365
+#: gui/src/GoToPositionDialog.cpp:119 gui/src/MarkInfo.cpp:366
 #: gui/src/RoutePropDlg.cpp:395 gui/src/TrackPropDlg.cpp:310
 msgid "Latitude"
 msgstr "Широта"
 
-#: gui/src/GoToPositionDialog.cpp:131 gui/src/MarkInfo.cpp:366
+#: gui/src/GoToPositionDialog.cpp:131 gui/src/MarkInfo.cpp:367
 #: gui/src/RoutePropDlg.cpp:399 gui/src/TrackPropDlg.cpp:311
 msgid "Longitude"
 msgstr "Долгота"
+
+#: gui/src/hotkeys_dlg.cpp:45
+msgid "Browse manual"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:94 gui/src/hotkeys_dlg.cpp:119
+msgid "Zoom in"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:95 gui/src/hotkeys_dlg.cpp:120
+msgid "Zoom out"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:96 gui/src/hotkeys_dlg.cpp:121
+msgid "Fine zoom in"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:97 gui/src/hotkeys_dlg.cpp:122
+msgid "Fine zoom out"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:98 gui/src/hotkeys_dlg.cpp:123
+msgid "Fine zoom"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:98 gui/src/hotkeys_dlg.cpp:123
+msgid "Ctrl scroll-wheel"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:100 gui/src/hotkeys_dlg.cpp:125
+msgid "Panning"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:101 gui/src/hotkeys_dlg.cpp:126
+msgid "Slow panning"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:102 gui/src/hotkeys_dlg.cpp:127
+msgid "Larger scale chart"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:103 gui/src/hotkeys_dlg.cpp:128
+msgid "Smaller scale chart"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:104 gui/src/hotkeys_dlg.cpp:129
+msgid "Toggle quilting "
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:105 gui/src/hotkeys_dlg.cpp:130
+msgid "Toggle auto-follow"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:106 gui/src/hotkeys_dlg.cpp:131
+msgid "Toggle outlines"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:107 gui/src/hotkeys_dlg.cpp:132
+msgid "Toggle range rings"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:108 gui/src/hotkeys_dlg.cpp:133
+msgid "Toggle chart bar"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:109 gui/src/hotkeys_dlg.cpp:134
+msgid "Change color scheme"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:110 gui/src/hotkeys_dlg.cpp:135
+msgid "Toggle full screen"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:113 gui/src/hotkeys_dlg.cpp:138
+msgid "Start measure mode"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:114 gui/src/hotkeys_dlg.cpp:139
+msgid "Stop measure mode"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:115 gui/src/hotkeys_dlg.cpp:140
+msgid "Drop mark"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:115 gui/src/hotkeys_dlg.cpp:140
+msgid "Ctrl O, space bar"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:116
+msgid "Open Data Monitor"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:145
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: gui/src/hotkeys_dlg.cpp:150
+msgid "More keys are available in the manual."
+msgstr ""
 
 #: gui/src/kml.cpp:471
 msgid "OpenCPN Route"
@@ -4895,196 +5379,197 @@ msgstr "\n\n"
 "Эти библиотеки будут удалены. Вы можете переустановить их\n"
 "связанный модуль после обновления каталога."
 
-#: gui/src/MarkInfo.cpp:317 gui/src/RoutePropDlg.cpp:438
+#: gui/src/MarkInfo.cpp:318 gui/src/RoutePropDlg.cpp:438
 #: gui/src/TrackPropDlg.cpp:657
 msgid "Basic"
 msgstr "Основные"
 
-#: gui/src/MarkInfo.cpp:324
+#: gui/src/MarkInfo.cpp:325
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr "Редактирование невозможно"
 
-#: gui/src/MarkInfo.cpp:341 gui/src/MarkInfo.cpp:503
+#: gui/src/MarkInfo.cpp:342 gui/src/MarkInfo.cpp:504
 msgid "Show waypoint name"
 msgstr "Название путевой точки"
 
-#: gui/src/MarkInfo.cpp:354 gui/src/options.cpp:2343 gui/src/options.cpp:2406
+#: gui/src/MarkInfo.cpp:355 gui/src/options.cpp:2343 gui/src/options.cpp:2406
 msgid "Combo!"
 msgstr "Комбинация! (Фаталити?)"
 
-#: gui/src/MarkInfo.cpp:359 gui/src/MarkInfo.cpp:1837
+#: gui/src/MarkInfo.cpp:360 gui/src/MarkInfo.cpp:1840
 #: gui/src/routemanagerdialog.cpp:748
 msgid "Icon"
 msgstr "Значок"
 
-#: gui/src/MarkInfo.cpp:388 gui/src/RoutePropDlg.cpp:456
+#: gui/src/MarkInfo.cpp:389 gui/src/RoutePropDlg.cpp:456
 #: gui/src/TrackPropDlg.cpp:910
 msgid "Links"
 msgstr "Гиперссылки"
 
-#: gui/src/MarkInfo.cpp:415 gui/src/MarkInfo.cpp:1111 gui/src/MarkInfo.cpp:1159
+#: gui/src/MarkInfo.cpp:416 gui/src/MarkInfo.cpp:1112 gui/src/MarkInfo.cpp:1160
 #: gui/src/options.cpp:1245 gui/src/RoutePropDlg.cpp:476
 #: gui/src/RoutePropDlg.cpp:506 gui/src/TrackPropDlg.cpp:924
 #: gui/src/TrackPropDlg.cpp:957
 msgid "Edit"
 msgstr "Редактировать"
 
-#: gui/src/MarkInfo.cpp:420 gui/src/MarkInfo.cpp:427
+#: gui/src/MarkInfo.cpp:421 gui/src/MarkInfo.cpp:428
 #: gui/src/RoutePropDlg.cpp:481 gui/src/RoutePropDlg.cpp:525
 #: gui/src/TrackPropDlg.cpp:929
 msgid "Add new"
 msgstr "Добавить новое"
 
-#: gui/src/MarkInfo.cpp:468
+#: gui/src/MarkInfo.cpp:469
 msgid "Extended"
 msgstr "Дополнительные"
 
-#: gui/src/MarkInfo.cpp:472
+#: gui/src/MarkInfo.cpp:473
 msgid "Extended Properties"
 msgstr "Расширенные параметры"
 
-#: gui/src/MarkInfo.cpp:482 gui/src/routemanagerdialog.cpp:979
+#: gui/src/MarkInfo.cpp:483 gui/src/routemanagerdialog.cpp:979
 #: gui/src/TrackPropDlg.cpp:384 gui/src/TrackPropDlg.cpp:734
 msgid "Show on chart"
 msgstr "Показывать на карте"
 
-#: gui/src/MarkInfo.cpp:491
+#: gui/src/MarkInfo.cpp:492
 msgid "Show at scale > 1 :"
 msgstr "Показывать в масштабе > 1:"
 
-#: gui/src/MarkInfo.cpp:509 gui/src/MarkInfo.cpp:1851
+#: gui/src/MarkInfo.cpp:510 gui/src/MarkInfo.cpp:1854
 msgid "Range rings"
 msgstr "Количество колец"
 
-#: gui/src/MarkInfo.cpp:515
+#: gui/src/MarkInfo.cpp:516
 msgid "Number"
 msgstr "Номер"
 
-#: gui/src/MarkInfo.cpp:518 gui/src/options.cpp:4470 gui/src/options.cpp:4655
-#: gui/src/RoutePropDlg.cpp:145 gui/src/RoutePropDlg.cpp:382
-#: gui/src/TrackPropDlg.cpp:307 gui/src/initwiz/wiz_ui_proto.cpp:56
+#: gui/src/MarkInfo.cpp:519 gui/src/options.cpp:4470 gui/src/options.cpp:4655
+#: gui/src/route_printout.cpp:94 gui/src/RoutePropDlg.cpp:145
+#: gui/src/RoutePropDlg.cpp:382 gui/src/TrackPropDlg.cpp:307
+#: gui/src/track_printout.cpp:77 gui/src/initwiz/wiz_ui_proto.cpp:56
 msgid "Distance"
 msgstr "Расстояние"
 
-#: gui/src/MarkInfo.cpp:522 gui/src/options.cpp:2134
+#: gui/src/MarkInfo.cpp:523 gui/src/options.cpp:2134
 #: gui/src/RoutePropDlg.cpp:273 gui/src/TrackPropDlg.cpp:487
 #: gui/src/TrackPropDlg.cpp:738
 msgid "Color"
 msgstr "Цвет:"
 
-#: gui/src/MarkInfo.cpp:525 gui/src/options.cpp:2066 gui/src/options.cpp:2307
+#: gui/src/MarkInfo.cpp:526 gui/src/options.cpp:2066 gui/src/options.cpp:2307
 #: gui/src/options.cpp:2735
 msgid "None"
 msgstr "Нет"
 
-#: gui/src/MarkInfo.cpp:535
+#: gui/src/MarkInfo.cpp:536
 msgid "0.05"
 msgstr "0.05"
 
-#: gui/src/MarkInfo.cpp:560
+#: gui/src/MarkInfo.cpp:561
 msgid "GUID"
 msgstr "GUID"
 
-#: gui/src/MarkInfo.cpp:574
+#: gui/src/MarkInfo.cpp:575
 msgid "Tide Station"
 msgstr "Приливная станция"
 
-#: gui/src/MarkInfo.cpp:595
+#: gui/src/MarkInfo.cpp:596
 msgid "Associate this waypoint with a tide station to quickly access tide predictions. Select from nearby stations or leave empty for no association."
 msgstr ""
 
-#: gui/src/MarkInfo.cpp:606
+#: gui/src/MarkInfo.cpp:607
 msgid "Arrival Radius"
 msgstr "Радиус Подхода"
 
-#: gui/src/MarkInfo.cpp:613
+#: gui/src/MarkInfo.cpp:614
 msgid "Distance from the waypoint at which OpenCPN will consider the waypoint reached. Used for automatic waypoint advancement during active navigation."
 msgstr ""
 
-#: gui/src/MarkInfo.cpp:625
+#: gui/src/MarkInfo.cpp:626
 msgid "Planned Speed"
 msgstr "Планируемая скорость"
 
-#: gui/src/MarkInfo.cpp:632
+#: gui/src/MarkInfo.cpp:633
 msgid "Enter the planned vessel speed for the leg FOLLOWING this waypoint. This speed is used when traveling FROM this waypoint TO the next waypoint in the route. The value is used to calculate estimated time of arrival at the next waypoint based on the ETD from this waypoint.\n\n"
 "If left blank, the route's default speed will be used for this leg. Individual waypoint speeds override the route-level speed setting."
 msgstr ""
 
-#: gui/src/MarkInfo.cpp:648 gui/src/MarkInfo.cpp:1562
-#: gui/src/RoutePropDlg.cpp:427
+#: gui/src/MarkInfo.cpp:649 gui/src/MarkInfo.cpp:1563
+#: gui/src/route_printout.cpp:103 gui/src/RoutePropDlg.cpp:427
 msgid "ETD"
 msgstr "ETD"
 
-#: gui/src/MarkInfo.cpp:655
+#: gui/src/MarkInfo.cpp:656
 msgid "Enable to manually set a planned departure time (ETD) for this waypoint.\n"
 "When checked, the specified date and time will be used instead of the automatically calculated ETD. This affects ETA calculations for subsequent waypoints in the route."
 msgstr ""
 
-#: gui/src/MarkInfo.cpp:666
+#: gui/src/MarkInfo.cpp:667
 msgid "Select the planned departure date (ETD) for this waypoint.\n"
 "Used together with the time control to calculate arrival times at subsequent waypoints.\n"
 "ETD information is only used for route planning and does not affect navigation."
 msgstr ""
 
-#: gui/src/MarkInfo.cpp:1113 gui/src/MarkInfo.cpp:1168
+#: gui/src/MarkInfo.cpp:1114 gui/src/MarkInfo.cpp:1169
 msgid "Add New"
 msgstr "Добавить новый"
 
-#: gui/src/MarkInfo.cpp:1269
+#: gui/src/MarkInfo.cpp:1270
 msgid "Copy"
 msgstr "Скопировать в буфер"
 
-#: gui/src/MarkInfo.cpp:1270
+#: gui/src/MarkInfo.cpp:1271
 msgid "Copy lat/long"
 msgstr "Скопировать координаты"
 
-#: gui/src/MarkInfo.cpp:1271
+#: gui/src/MarkInfo.cpp:1272
 msgid "Paste"
 msgstr "Вставить"
 
-#: gui/src/MarkInfo.cpp:1272
+#: gui/src/MarkInfo.cpp:1273
 msgid "Paste lat/long"
 msgstr "Вставить координаты"
 
-#: gui/src/MarkInfo.cpp:1809
+#: gui/src/MarkInfo.cpp:1812
 msgid "Save some defaults"
 msgstr "Сохранять по умолчанию"
 
-#: gui/src/MarkInfo.cpp:1818
+#: gui/src/MarkInfo.cpp:1821
 msgid "Check which properties of current waypoint\n"
 " should be set as default for NEW waypoints."
 msgstr "Проверьте, какие свойства текущей путевой точки\n"
 " должны быть установлены по умолчанию для новых путевых точек."
 
-#: gui/src/MarkInfo.cpp:1825 gui/src/MarkInfo.cpp:1845
+#: gui/src/MarkInfo.cpp:1828 gui/src/MarkInfo.cpp:1848
 msgid "Do use"
 msgstr "Использовать"
 
-#: gui/src/MarkInfo.cpp:1826 gui/src/MarkInfo.cpp:1850
+#: gui/src/MarkInfo.cpp:1829 gui/src/MarkInfo.cpp:1853
 msgid "Don't use"
 msgstr "Не использовать"
 
-#: gui/src/MarkInfo.cpp:1828
+#: gui/src/MarkInfo.cpp:1831
 msgid "Show Waypoint Name"
 msgstr "Название путевой точки"
 
-#: gui/src/MarkInfo.cpp:1859
+#: gui/src/MarkInfo.cpp:1862
 msgid "Arrival radius"
 msgstr "Радиус Подхода"
 
-#: gui/src/MarkInfo.cpp:1870
+#: gui/src/MarkInfo.cpp:1873
 msgid "Show only if"
 msgstr "Показывать только если"
 
-#: gui/src/MarkInfo.cpp:1872
+#: gui/src/MarkInfo.cpp:1875
 msgid "Show always"
 msgstr "Показывать всегда"
 
-#: gui/src/MarkInfo.cpp:1873
+#: gui/src/MarkInfo.cpp:1876
 msgid "Show only at scale"
 msgstr "Показывать только на масштабе"
 
-#: gui/src/MarkInfo.cpp:1912
+#: gui/src/MarkInfo.cpp:1915
 msgid "Tide Station not found"
 msgstr "Приливная станция не найдена"
 
@@ -5096,30 +5581,38 @@ msgstr "Установить масштаб"
 msgid "Chart Scale"
 msgstr "Масштаб Карты"
 
-#: gui/src/navutil.cpp:1867 gui/src/navutil.cpp:3269 gui/src/options.cpp:969
+#: gui/src/navutil.cpp:1607 gui/src/navutil.cpp:2929 gui/src/options.cpp:969
 #: gui/src/options.cpp:1196
 msgid "Persistent"
 msgstr "Постоянно"
 
-#: gui/src/navutil.cpp:2976 gui/src/navutil.cpp:3080
+#: gui/src/navutil.cpp:2640 gui/src/navutil.cpp:2740
 msgid "Export GPX file"
 msgstr "Экспортировать файл в формате GPX"
 
-#: gui/src/navutil.cpp:2986
+#: gui/src/navutil.cpp:2650
 msgid "Overwrite existing file?"
 msgstr "Перезаписать существующий файл?"
 
-#: gui/src/navutil.cpp:3170 gui/src/navutil.cpp:3202
+#: gui/src/navutil.cpp:2830 gui/src/navutil.cpp:2862
 msgid "Import GPX file"
 msgstr "Импортировать файл в формате GPX"
 
-#: gui/src/navutil.cpp:3269
+#: gui/src/navutil.cpp:2929
 msgid "Temporary"
 msgstr "Временный"
 
-#: gui/src/navutil.cpp:3304
+#: gui/src/navutil.cpp:2964
 msgid "duplicate waypoints detected during import and ignored."
 msgstr "игнорирование дубликатов путевых точек при импорте."
+
+#: gui/src/notification_manager_gui.cpp:117
+msgid "Repeat:"
+msgstr ""
+
+#: gui/src/notification_manager_gui.cpp:259
+msgid "OpenCPN Notifications"
+msgstr ""
 
 #: gui/src/ocpn_app.cpp:825
 msgid "Cannot load route or waypoint file: "
@@ -5157,6 +5650,124 @@ msgstr "Получение первоначального каталога ка�
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "Инициализация OpenCPN выполнена за %ld мс."
+
+#: gui/src/ocpn_fontdlg.cpp:75
+msgid "ABCDEFGabcdefg12345"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:295
+msgid "Roman"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:296
+msgid "Decorative"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:297
+msgid "Modern"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:298
+msgid "Script"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:299
+msgid "Swiss"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:300
+msgid "Teletype"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:301 gui/src/ocpn_fontdlg.cpp:304
+msgid "Normal"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:302
+msgid "Italic"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:303
+msgid "Slant"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:306
+msgid "Bold"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:342
+msgid "&Font family:"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:349 gui/src/ocpn_fontdlg.cpp:350
+msgid "The font family."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:356
+msgid "&Style:"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:362 gui/src/ocpn_fontdlg.cpp:363
+msgid "The font style."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:369
+msgid "&Weight:"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:375 gui/src/ocpn_fontdlg.cpp:376
+msgid "The font weight."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:384
+msgid "C&olour:"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:394 gui/src/ocpn_fontdlg.cpp:395
+msgid "The font colour."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:402
+msgid "&Point size:"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:411 gui/src/ocpn_fontdlg.cpp:412
+#: gui/src/ocpn_fontdlg.cpp:417 gui/src/ocpn_fontdlg.cpp:418
+msgid "The font point size."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:428
+msgid "&Underline"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:431 gui/src/ocpn_fontdlg.cpp:433
+msgid "Whether the font is underlined."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:441
+msgid "Preview:"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:446 gui/src/ocpn_fontdlg.cpp:447
+msgid "Shows the font preview."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:455 gui/src/ocpn_fontdlg.cpp:477
+msgid "&Cancel"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:458 gui/src/ocpn_fontdlg.cpp:480
+msgid "Click to cancel the font selection."
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:461 gui/src/ocpn_fontdlg.cpp:469
+msgid "&OK"
+msgstr ""
+
+#: gui/src/ocpn_fontdlg.cpp:464 gui/src/ocpn_fontdlg.cpp:466
+#: gui/src/ocpn_fontdlg.cpp:472 gui/src/ocpn_fontdlg.cpp:474
+msgid "Click to confirm the font selection."
+msgstr ""
 
 #: gui/src/ocpn_frame.cpp:516
 msgid "\n"
@@ -5207,275 +5818,275 @@ msgstr "Предполагаемое время: "
 msgid "Remaining time : "
 msgstr "Оставшееся время: "
 
-#: gui/src/ocpn_frame.cpp:975 gui/src/ocpn_frame.cpp:4509
-#: gui/src/ocpn_frame.cpp:4519
+#: gui/src/ocpn_frame.cpp:975 gui/src/ocpn_frame.cpp:4499
+#: gui/src/ocpn_frame.cpp:4509
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN — Обновление карт"
 
-#: gui/src/ocpn_frame.cpp:1765
+#: gui/src/ocpn_frame.cpp:1768
 msgid "Anchorage created "
 msgstr "Якорная стоянка "
 
-#: gui/src/ocpn_frame.cpp:2703 gui/src/ocpn_frame.cpp:2828
+#: gui/src/ocpn_frame.cpp:2699 gui/src/ocpn_frame.cpp:2824
 msgid "Show Toolbar"
 msgstr "Показать панель инструментов"
 
-#: gui/src/ocpn_frame.cpp:2704 gui/src/ocpn_frame.cpp:2830
-#: gui/src/ocpn_frame.cpp:7131
+#: gui/src/ocpn_frame.cpp:2700 gui/src/ocpn_frame.cpp:2826
+#: gui/src/ocpn_frame.cpp:7103
 msgid "Hide Toolbar"
 msgstr "Скрыть панель инструментов"
 
-#: gui/src/ocpn_frame.cpp:3079 gui/src/ocpn_frame.cpp:3140
+#: gui/src/ocpn_frame.cpp:3075 gui/src/ocpn_frame.cpp:3136
 msgid "MAN OVERBOARD"
 msgstr "ЧЕЛОВЕК ЗА БОРТОМ"
 
-#: gui/src/ocpn_frame.cpp:3080 gui/src/ocpn_frame.cpp:6799
+#: gui/src/ocpn_frame.cpp:3076 gui/src/ocpn_frame.cpp:6769
 msgid " on "
 msgstr " на "
 
-#: gui/src/ocpn_frame.cpp:3100
+#: gui/src/ocpn_frame.cpp:3096
 msgid "1.0 NM along COG"
 msgstr "1 ММ по COG"
 
-#: gui/src/ocpn_frame.cpp:3112
+#: gui/src/ocpn_frame.cpp:3108
 msgid "Temporary MOB Route"
 msgstr "Временный маршрут «Человек за бортом»"
 
-#: gui/src/ocpn_frame.cpp:3113
+#: gui/src/ocpn_frame.cpp:3109
 msgid "Assumed 1 Mile Point"
 msgstr "Предполагаемая 1-мильная точка"
 
-#: gui/src/ocpn_frame.cpp:3141 gui/src/ocpn_frame.cpp:6855
-#: gui/src/ocpn_frame.cpp:6896
+#: gui/src/ocpn_frame.cpp:3137 gui/src/ocpn_frame.cpp:6827
+#: gui/src/ocpn_frame.cpp:6868
 msgid " Time: "
 msgstr " Время: "
 
-#: gui/src/ocpn_frame.cpp:3143
+#: gui/src/ocpn_frame.cpp:3139
 msgid "  Position: "
 msgstr "  Положение: "
 
-#: gui/src/ocpn_frame.cpp:3161 gui/src/ocpn_frame.cpp:7210
+#: gui/src/ocpn_frame.cpp:3156 gui/src/ocpn_frame.cpp:7182
 msgid "Disable Tracking"
 msgstr "Выключить отслеживание пути"
 
-#: gui/src/ocpn_frame.cpp:3233 gui/src/ocpn_frame.cpp:3610
-#: gui/src/ocpn_frame.cpp:7156
+#: gui/src/ocpn_frame.cpp:3228 gui/src/ocpn_frame.cpp:3600
+#: gui/src/ocpn_frame.cpp:7128
 msgid "Enable Tracking"
 msgstr "Включить отслеживание пути"
 
-#: gui/src/ocpn_frame.cpp:3609
+#: gui/src/ocpn_frame.cpp:3599
 msgid "Auto Follow"
 msgstr "Автоматически центрировать"
 
-#: gui/src/ocpn_frame.cpp:3614
+#: gui/src/ocpn_frame.cpp:3604
 msgid "Head Up Mode"
 msgstr "По Направлению"
 
-#: gui/src/ocpn_frame.cpp:3617 gui/src/ocpn_frame.cpp:3620
+#: gui/src/ocpn_frame.cpp:3607 gui/src/ocpn_frame.cpp:3610
 msgid "Zoom In"
 msgstr "Приблизить"
 
-#: gui/src/ocpn_frame.cpp:3618 gui/src/ocpn_frame.cpp:3621
+#: gui/src/ocpn_frame.cpp:3608 gui/src/ocpn_frame.cpp:3611
 msgid "Zoom Out"
 msgstr "Отдалить"
 
-#: gui/src/ocpn_frame.cpp:3625
+#: gui/src/ocpn_frame.cpp:3615
 msgid "Larger Scale Chart"
 msgstr "Карта большего масштаба"
 
-#: gui/src/ocpn_frame.cpp:3627
+#: gui/src/ocpn_frame.cpp:3617
 msgid "Smaller Scale Chart"
 msgstr "Карта меньшего масштаба"
 
-#: gui/src/ocpn_frame.cpp:3630
+#: gui/src/ocpn_frame.cpp:3620
 msgid "Exit OpenCPN"
 msgstr "Выйти из OpenCPN"
 
-#: gui/src/ocpn_frame.cpp:3632
+#: gui/src/ocpn_frame.cpp:3622
 msgid "&Navigate"
 msgstr "&Навигация"
 
-#: gui/src/ocpn_frame.cpp:3648 gui/src/options.cpp:5642
+#: gui/src/ocpn_frame.cpp:3638 gui/src/options.cpp:5642
 msgid "Show Chart Bar"
 msgstr "Панель Выбора Карт"
 
-#: gui/src/ocpn_frame.cpp:3653 gui/src/ocpn_frame.cpp:3666
+#: gui/src/ocpn_frame.cpp:3643 gui/src/ocpn_frame.cpp:3656
 msgid "Show ENC text"
 msgstr "Надписи на карте"
 
-#: gui/src/ocpn_frame.cpp:3655 gui/src/ocpn_frame.cpp:3668
+#: gui/src/ocpn_frame.cpp:3645 gui/src/ocpn_frame.cpp:3658
 msgid "Show ENC Lights"
 msgstr "Огни"
 
-#: gui/src/ocpn_frame.cpp:3657 gui/src/ocpn_frame.cpp:3670
+#: gui/src/ocpn_frame.cpp:3647 gui/src/ocpn_frame.cpp:3660
 msgid "Show ENC Soundings"
 msgstr "Отметки Глубин"
 
-#: gui/src/ocpn_frame.cpp:3659 gui/src/ocpn_frame.cpp:3672
+#: gui/src/ocpn_frame.cpp:3649 gui/src/ocpn_frame.cpp:3662
 msgid "Show ENC Anchoring Info"
 msgstr "Якорная Информация"
 
-#: gui/src/ocpn_frame.cpp:3661 gui/src/ocpn_frame.cpp:3675
+#: gui/src/ocpn_frame.cpp:3651 gui/src/ocpn_frame.cpp:3665
 msgid "Show ENC Data Quality"
 msgstr "Качество данных ENC"
 
-#: gui/src/ocpn_frame.cpp:3663 gui/src/ocpn_frame.cpp:3677
+#: gui/src/ocpn_frame.cpp:3653 gui/src/ocpn_frame.cpp:3667
 msgid "Show Navobjects"
 msgstr "Навигационные Объекты (Маршруты, Пути, Пут.Точки)"
 
-#: gui/src/ocpn_frame.cpp:3680
+#: gui/src/ocpn_frame.cpp:3670
 msgid "Show Tides"
 msgstr "Станции Прилива\\Отлива"
 
-#: gui/src/ocpn_frame.cpp:3685 gui/src/ocpn_frame.cpp:3688
-#: gui/src/ocpn_frame.cpp:7161
+#: gui/src/ocpn_frame.cpp:3675 gui/src/ocpn_frame.cpp:3678
+#: gui/src/ocpn_frame.cpp:7133
 msgid "Change Color Scheme"
 msgstr "Сменить цветовую схему"
 
-#: gui/src/ocpn_frame.cpp:3696
+#: gui/src/ocpn_frame.cpp:3686
 msgid "&View"
 msgstr "&Вид"
 
-#: gui/src/ocpn_frame.cpp:3699
+#: gui/src/ocpn_frame.cpp:3689
 msgid "Show AIS Targets"
 msgstr "Цели АИС, САРП, ЦИВ"
 
-#: gui/src/ocpn_frame.cpp:3704
+#: gui/src/ocpn_frame.cpp:3694
 msgid "Hide Moored AIS Targets"
 msgstr "Скрывать пришвартованные цели АИС"
 
-#: gui/src/ocpn_frame.cpp:3705
+#: gui/src/ocpn_frame.cpp:3695
 msgid "Show AIS Target Tracks"
 msgstr "Показывать пути целей АИС"
 
-#: gui/src/ocpn_frame.cpp:3706
+#: gui/src/ocpn_frame.cpp:3696
 msgid "Show CPA Alert Dialogs"
 msgstr "Показывать предупреждения о столкновении"
 
-#: gui/src/ocpn_frame.cpp:3707
+#: gui/src/ocpn_frame.cpp:3697
 msgid "Sound CPA Alarms"
 msgstr "Звуковое предупреждение о столкновении"
 
-#: gui/src/ocpn_frame.cpp:3711 gui/src/ocpn_frame.cpp:3714
+#: gui/src/ocpn_frame.cpp:3701 gui/src/ocpn_frame.cpp:3704
 msgid "Show CPA Warnings"
 msgstr "Показывать предупреждения о Столкновении"
 
-#: gui/src/ocpn_frame.cpp:3719
+#: gui/src/ocpn_frame.cpp:3709
 msgid "&AIS"
 msgstr "&АИС"
 
-#: gui/src/ocpn_frame.cpp:3723
+#: gui/src/ocpn_frame.cpp:3713
 msgid "Data Monitor"
 msgstr ""
 
-#: gui/src/ocpn_frame.cpp:3726 gui/src/ocpn_frame.cpp:3729
+#: gui/src/ocpn_frame.cpp:3716 gui/src/ocpn_frame.cpp:3719
 msgid "Measure Distance"
 msgstr "Измерение Расстояния"
 
-#: gui/src/ocpn_frame.cpp:3733
+#: gui/src/ocpn_frame.cpp:3723
 msgid "Route && Mark Manager..."
 msgstr "Диспетчер маршрутов и меток..."
 
-#: gui/src/ocpn_frame.cpp:3735 gui/src/ocpn_frame.cpp:7144
+#: gui/src/ocpn_frame.cpp:3725 gui/src/ocpn_frame.cpp:7116
 msgid "Create Route"
 msgstr "Создать маршрут"
 
-#: gui/src/ocpn_frame.cpp:3738
+#: gui/src/ocpn_frame.cpp:3728
 msgid "Drop Mark at Boat"
 msgstr "Поставить метку под судном"
 
-#: gui/src/ocpn_frame.cpp:3740
+#: gui/src/ocpn_frame.cpp:3730
 msgid "Drop Mark at Cursor"
 msgstr "Поставить метку под курсором"
 
-#: gui/src/ocpn_frame.cpp:3746 gui/src/ocpn_frame.cpp:3753
-#: gui/src/ocpn_frame.cpp:7188
+#: gui/src/ocpn_frame.cpp:3736 gui/src/ocpn_frame.cpp:3743
+#: gui/src/ocpn_frame.cpp:7160
 msgid "Drop MOB Marker"
 msgstr "Установить метку «Человек за бортом»"
 
-#: gui/src/ocpn_frame.cpp:3750 gui/src/pluginmanager.cpp:2969
+#: gui/src/ocpn_frame.cpp:3740 gui/src/pluginmanager.cpp:2969
 #: gui/src/pluginmanager.cpp:2990
 msgid "Preferences"
 msgstr "Настройки"
 
-#: gui/src/ocpn_frame.cpp:3758
+#: gui/src/ocpn_frame.cpp:3748
 msgid "&Tools"
 msgstr "&Инструменты"
 
-#: gui/src/ocpn_frame.cpp:3762
+#: gui/src/ocpn_frame.cpp:3752
 msgid "&Window"
 msgstr "&Окно"
 
-#: gui/src/ocpn_frame.cpp:3767
+#: gui/src/ocpn_frame.cpp:3757
 msgid "OpenCPN Help"
 msgstr "Справка по OpenCPN"
 
-#: gui/src/ocpn_frame.cpp:3768
+#: gui/src/ocpn_frame.cpp:3758
 msgid "&Help"
 msgstr "&Помощь"
 
-#: gui/src/ocpn_frame.cpp:4158
+#: gui/src/ocpn_frame.cpp:4148
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Пожалуйста, перезапустите OpenCPN, чтобы активировать изменения языка или стиля."
 
-#: gui/src/ocpn_frame.cpp:5277
+#: gui/src/ocpn_frame.cpp:5267
 msgid " Ship "
 msgstr " Судно "
 
-#: gui/src/ocpn_frame.cpp:6074
+#: gui/src/ocpn_frame.cpp:6044
 msgid "Rotated Mode"
 msgstr "Режим Циркуляции"
 
-#: gui/src/ocpn_frame.cpp:6578 gui/src/ocpn_frame.cpp:6635
-#: gui/src/routemanagerdialog.cpp:1270
+#: gui/src/ocpn_frame.cpp:6548 gui/src/ocpn_frame.cpp:6605
+#: gui/src/routemanagerdialog.cpp:1286
 msgid "(Unnamed Route)"
 msgstr "(безымянный маршрут)"
 
-#: gui/src/ocpn_frame.cpp:6798 gui/src/ocpn_frame.cpp:6854
+#: gui/src/ocpn_frame.cpp:6768 gui/src/ocpn_frame.cpp:6826
 msgid "AIS MAN OVERBOARD"
 msgstr "АИС - ЧЕЛОВЕК ЗА БОРТОМ"
 
-#: gui/src/ocpn_frame.cpp:6816 gui/src/options.cpp:1977
+#: gui/src/ocpn_frame.cpp:6788 gui/src/options.cpp:1977
 msgid "Own ship"
 msgstr "Собственное судно"
 
-#: gui/src/ocpn_frame.cpp:6828
+#: gui/src/ocpn_frame.cpp:6800
 msgid "Temporary AISMOB Route"
 msgstr "Временный маршрут до человека за бортом"
 
-#: gui/src/ocpn_frame.cpp:6829
+#: gui/src/ocpn_frame.cpp:6801
 msgid "Present own ship"
 msgstr "Текущее местоположение"
 
-#: gui/src/ocpn_frame.cpp:6857 gui/src/ocpn_frame.cpp:6898
+#: gui/src/ocpn_frame.cpp:6829 gui/src/ocpn_frame.cpp:6870
 msgid "  Ownship Position: "
 msgstr "  Местоположение:  "
 
-#: gui/src/ocpn_frame.cpp:6861 gui/src/ocpn_frame.cpp:6902
+#: gui/src/ocpn_frame.cpp:6833 gui/src/ocpn_frame.cpp:6874
 msgid "  MOB Position: "
 msgstr "  Местоположение ЧЗБ "
 
-#: gui/src/ocpn_frame.cpp:6895
+#: gui/src/ocpn_frame.cpp:6867
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "АИС - ЧЗБ - ОБНОВЛЕНО"
 
-#: gui/src/ocpn_frame.cpp:7150 gui/src/routemanagerdialog.cpp:317
+#: gui/src/ocpn_frame.cpp:7122 gui/src/routemanagerdialog.cpp:317
 msgid "Route & Mark Manager"
 msgstr "Диспетчер маршрутов и меток"
 
-#: gui/src/ocpn_frame.cpp:7174
+#: gui/src/ocpn_frame.cpp:7146
 msgid "Print Chart"
 msgstr "Напечатать карту"
 
-#: gui/src/ocpn_frame.cpp:7188
+#: gui/src/ocpn_frame.cpp:7160
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Пробел)"
 
-#: gui/src/ocpn_frame.cpp:8219
+#: gui/src/ocpn_frame.cpp:8191
 msgid "OpenCPN ENC Prepare"
 msgstr "OpenCPN — Подготовка карт"
 
-#: gui/src/ocpn_frame.cpp:8285
+#: gui/src/ocpn_frame.cpp:8257
 msgid "ENC Completed."
 msgstr "Подготовка карты завершена."
 
@@ -5581,15 +6192,8 @@ msgid "An MMSI Id is generally a number of nine digits.\n"
 msgstr "Идентификатор судна (MMSI) должен состоять из 9 цифр.\n\n"
 "Исправьте введённый номер или отмените операцию."
 
-#: gui/src/options.cpp:1184 gui/src/options.cpp:2011 gui/src/options.cpp:2124
-#: gui/src/RoutePropDlg.cpp:301 gui/src/RoutePropDlg.cpp:321
-#: gui/src/TrackPropDlg.cpp:511 gui/src/TrackPropDlg.cpp:530
-#: gui/src/TrackPropDlg.cpp:760 gui/src/TrackPropDlg.cpp:773
-msgid "Default"
-msgstr "По умолчанию"
-
-#: gui/src/options.cpp:1187 gui/src/routemanagerdialog.cpp:2411
-#: gui/src/routemanagerdialog.cpp:2612
+#: gui/src/options.cpp:1187 gui/src/routemanagerdialog.cpp:2416
+#: gui/src/routemanagerdialog.cpp:2617
 msgid "Always"
 msgstr "Всегда"
 
@@ -6011,7 +6615,7 @@ msgid "Add Directory..."
 msgstr "Добавить папку…"
 
 #: gui/src/options.cpp:2609 gui/src/options.cpp:3913
-#: gui/src/RoutePropDlgImpl.cpp:911
+#: gui/src/RoutePropDlgImpl.cpp:914
 msgid "Remove Selected"
 msgstr "Удалить выделенное"
 
@@ -6313,10 +6917,6 @@ msgstr "Новая группа…"
 #: gui/src/options.cpp:4035
 msgid "Delete Group"
 msgstr "Удалить группу"
-
-#: gui/src/options.cpp:4070
-msgid "General"
-msgstr "Общие параметры"
 
 #: gui/src/options.cpp:4130 gui/src/options.cpp:4319
 msgid "Preserve scale when switching charts"
@@ -7181,10 +7781,6 @@ msgstr "Импортировать модуль..."
 msgid "Settings..."
 msgstr "Настройки..."
 
-#: gui/src/pluginmanager.cpp:2185
-msgid "Disabled"
-msgstr "Отключено"
-
 #: gui/src/pluginmanager.cpp:2210
 msgid "Update Plugin Catalog: master"
 msgstr "Каталог обновления модулей: Мастер"
@@ -7303,10 +7899,6 @@ msgid "There was a problem printing.\n"
 msgstr "При печати возникла проблема.\n"
 "Возможно, ваш принтер неправильно настроен."
 
-#: gui/src/print_dialog.cpp:56 gui/src/udev_rule_mgr.cpp:347
-msgid "OpenCPN"
-msgstr "OpenCPN"
-
 #: gui/src/priority_gui.cpp:61
 msgid "Adjust Comm Priorities"
 msgstr "Настройка Приоритетов"
@@ -7315,11 +7907,11 @@ msgstr "Настройка Приоритетов"
 msgid "Priority List"
 msgstr "Список приоритетов"
 
-#: gui/src/priority_gui.cpp:89 gui/src/RoutePropDlgImpl.cpp:907
+#: gui/src/priority_gui.cpp:89 gui/src/RoutePropDlgImpl.cpp:910
 msgid "Move Up"
 msgstr "Переместить вверх"
 
-#: gui/src/priority_gui.cpp:90 gui/src/RoutePropDlgImpl.cpp:909
+#: gui/src/priority_gui.cpp:90 gui/src/RoutePropDlgImpl.cpp:912
 msgid "Move Down"
 msgstr "Переместить вниз"
 
@@ -7380,11 +7972,6 @@ msgstr "Уверены, что хотите удалить этот маршру
 #: gui/src/routemanagerdialog.cpp:357
 msgid "Routes"
 msgstr "Маршруты"
-
-#: gui/src/routemanagerdialog.cpp:380 gui/src/routemanagerdialog.cpp:557
-#: gui/src/routemanagerdialog.cpp:700 gui/src/routemanagerdialog.cpp:891
-msgid "Filter"
-msgstr "Фильтр"
 
 #: gui/src/routemanagerdialog.cpp:394
 msgid "Show all routes"
@@ -7549,95 +8136,95 @@ msgstr "Названия Пут.точек"
 msgid "List contents"
 msgstr "Раскрыть содержимое"
 
-#: gui/src/routemanagerdialog.cpp:1275 gui/src/routemanagerdialog.cpp:1538
+#: gui/src/routemanagerdialog.cpp:1291 gui/src/routemanagerdialog.cpp:1550
 msgid " - "
 msgstr " — "
 
-#: gui/src/routemanagerdialog.cpp:1439
+#: gui/src/routemanagerdialog.cpp:1455
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "Уверены, что хотите удалить ВСЕ маршруты?"
 
-#: gui/src/routemanagerdialog.cpp:1611
+#: gui/src/routemanagerdialog.cpp:1624
 msgid "Send Route(s) to OpenCPN Peer"
 msgstr "Отправить маршрут(ы) в OpenCPN по Сети"
 
-#: gui/src/routemanagerdialog.cpp:1644
+#: gui/src/routemanagerdialog.cpp:1657
 msgid "Send Waypoint(s) to OpenCPN Peer"
 msgstr "Отправить пут. точку(и) в OpenCPN по Сети"
 
-#: gui/src/routemanagerdialog.cpp:1677
+#: gui/src/routemanagerdialog.cpp:1690
 msgid "Send Track(s) to OpenCPN Peer"
 msgstr "Отправить путь(и) в OpenCPN по Сети"
 
-#: gui/src/routemanagerdialog.cpp:1845
+#: gui/src/routemanagerdialog.cpp:1858
 msgid "&Merge Selected Tracks"
 msgstr "&Объединить выбранные пути"
 
-#: gui/src/routemanagerdialog.cpp:1847
+#: gui/src/routemanagerdialog.cpp:1860
 msgid "Reduce Data..."
 msgstr "Упростить данные…"
 
-#: gui/src/routemanagerdialog.cpp:1849
+#: gui/src/routemanagerdialog.cpp:1862
 msgid "&Copy as text"
 msgstr "&Скопировать в буфер как текст"
 
-#: gui/src/routemanagerdialog.cpp:1878
+#: gui/src/routemanagerdialog.cpp:1891
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr "Выберите допуск (в метрах)\n"
 "для упрощённых данных:"
 
-#: gui/src/routemanagerdialog.cpp:1880
+#: gui/src/routemanagerdialog.cpp:1893
 msgid "Reduce Data Precision"
 msgstr "Сократить точность данных"
 
-#: gui/src/routemanagerdialog.cpp:1918
+#: gui/src/routemanagerdialog.cpp:1931
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr "Объём данных пути\n"
 " был сокращён на %d %%."
 
-#: gui/src/routemanagerdialog.cpp:2021
+#: gui/src/routemanagerdialog.cpp:2034
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr "Текущий путь не был объединён с другими.\n"
 "Вы можете выполнить объединение после завершения пути."
 
-#: gui/src/routemanagerdialog.cpp:2237 gui/src/routemanagerdialog.cpp:2691
+#: gui/src/routemanagerdialog.cpp:2246 gui/src/routemanagerdialog.cpp:2697
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Уверены, что хотите удалить этот объект?"
 
-#: gui/src/routemanagerdialog.cpp:2309
+#: gui/src/routemanagerdialog.cpp:2314
 msgid "OpenCPN Converting Track to Route...."
 msgstr "OpenCPN — Преобразование пути в маршрут…"
 
-#: gui/src/routemanagerdialog.cpp:2310
+#: gui/src/routemanagerdialog.cpp:2315
 msgid "Processing Waypoints..."
 msgstr "Обрабатываю путевые точки…"
 
-#: gui/src/routemanagerdialog.cpp:2321
+#: gui/src/routemanagerdialog.cpp:2326
 msgid "Done."
 msgstr "Готово."
 
-#: gui/src/routemanagerdialog.cpp:2343
+#: gui/src/routemanagerdialog.cpp:2348
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "Уверены, что хотите удалить ВСЕ пути?"
 
-#: gui/src/routemanagerdialog.cpp:2412
+#: gui/src/routemanagerdialog.cpp:2417
 msgid "Overruled"
 msgstr "Перекрытие"
 
-#: gui/src/routemanagerdialog.cpp:2722
+#: gui/src/routemanagerdialog.cpp:2728
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
 msgstr "Путевая точка, которую вы хотите удалить, задействована в маршруте.\n"
 "Действительно желаете удалить её?"
 
-#: gui/src/routemanagerdialog.cpp:2846
+#: gui/src/routemanagerdialog.cpp:2856
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Уверены, что хотите удалить ВСЕ путевые точки?"
 
-#: gui/src/routemanagerdialog.cpp:2851
+#: gui/src/routemanagerdialog.cpp:2861
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
@@ -7646,15 +8233,15 @@ msgstr "Некоторые путевые точки задействованы 
 "Их удаление приведёт к изменению или исчезновению маршрутов и отключению слежения за якорем.\n"
 "Ответьте «Да» для удаления всех точек, «Нет» для удаления только неиспользуемых точек."
 
-#: gui/src/routemanagerdialog.cpp:3014
+#: gui/src/routemanagerdialog.cpp:3024
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
 msgstr "Уверены, что хотите удалить слой и ВСЁ его содержимое?"
 
-#: gui/src/routemanagerdialog.cpp:3018
+#: gui/src/routemanagerdialog.cpp:3028
 msgid "The file will also be deleted from OpenCPN's layer directory."
 msgstr "Файл также будет удален из директории слоя OpenCPN."
 
-#: gui/src/routemanagerdialog.cpp:3296
+#: gui/src/routemanagerdialog.cpp:3306
 msgid "(Unnamed Layer)"
 msgstr "(безымянный слой)"
 
@@ -7690,11 +8277,34 @@ msgstr ""
 msgid "Error on Waypoint Upload. Please check logfiles..."
 msgstr ""
 
-#: gui/src/RoutePropDlg.cpp:115 gui/src/TrackPropDlg.cpp:710
+#: gui/src/route_printout.cpp:75
+msgid "Route Print"
+msgstr ""
+
+#: gui/src/route_printout.cpp:82 gui/src/RoutePropDlg.cpp:374
+#: gui/src/TrackPropDlg.cpp:306 gui/src/track_printout.cpp:68
+msgid "Leg"
+msgstr "Плечо"
+
+#: gui/src/route_printout.cpp:100 gui/src/RoutePropDlg.cpp:407
+msgid "ETA"
+msgstr "Время прибытия (ETA)"
+
+#: gui/src/route_printout.cpp:106 gui/src/RoutePropDlg.cpp:415
+msgid "Next tide event"
+msgstr "Ближайший прилив-отлив"
+
+#: gui/src/route_printout.cpp:295
+msgid "Total distance "
+msgstr ""
+
+#: gui/src/route_printout.cpp:299 gui/src/RoutePropDlg.cpp:115
+#: gui/src/TrackPropDlg.cpp:710
 msgid "From"
 msgstr "Откуда"
 
-#: gui/src/RoutePropDlg.cpp:124 gui/src/TrackPropDlg.cpp:719
+#: gui/src/route_printout.cpp:302 gui/src/RoutePropDlg.cpp:124
+#: gui/src/TrackPropDlg.cpp:719
 msgid "To"
 msgstr "Куда"
 
@@ -7722,7 +8332,7 @@ msgstr ""
 msgid "Departure"
 msgstr "Отправление"
 
-#: gui/src/RoutePropDlg.cpp:250
+#: gui/src/RoutePropDlg.cpp:250 gui/src/track_printout.cpp:80
 msgid "Time"
 msgstr "Время"
 
@@ -7789,10 +8399,6 @@ msgstr "Пут.тчк."
 msgid "To WP"
 msgstr "К Пут.тчк."
 
-#: gui/src/RoutePropDlg.cpp:374 gui/src/TrackPropDlg.cpp:306
-msgid "Leg"
-msgstr "Плечо"
-
 #: gui/src/RoutePropDlg.cpp:390
 msgid "Total Distance"
 msgstr "Общее расстояние"
@@ -7801,19 +8407,11 @@ msgstr "Общее расстояние"
 msgid "ETE"
 msgstr "Время в пути (ETE)"
 
-#: gui/src/RoutePropDlg.cpp:407
-msgid "ETA"
-msgstr "Время прибытия (ETA)"
-
-#: gui/src/RoutePropDlg.cpp:415
-msgid "Next tide event"
-msgstr "Ближайший прилив-отлив"
-
 #: gui/src/RoutePropDlg.cpp:468 gui/src/TrackPropDlg.cpp:919
 msgid "wxFB Website"
 msgstr "Веб-сайт инструментария wxFormBuilder"
 
-#: gui/src/RoutePropDlg.cpp:512 gui/src/RoutePropDlgImpl.cpp:1347
+#: gui/src/RoutePropDlg.cpp:512 gui/src/RoutePropDlgImpl.cpp:1354
 #: gui/src/TrackPropDlg.cpp:962 gui/src/TrackPropDlg.cpp:1674
 msgid "Links are opened in the default browser."
 msgstr "Гиперссылки открываются в веб-браузере по умолчанию."
@@ -7836,102 +8434,102 @@ msgstr ""
 msgid "Split"
 msgstr "Разделить"
 
-#: gui/src/RoutePropDlgImpl.cpp:97
+#: gui/src/RoutePropDlgImpl.cpp:98
 msgid "MoTwilight"
 msgstr "утр. сумерки"
 
-#: gui/src/RoutePropDlgImpl.cpp:99
+#: gui/src/RoutePropDlgImpl.cpp:100
 msgid "Sunrise"
 msgstr "восход"
 
-#: gui/src/RoutePropDlgImpl.cpp:101
+#: gui/src/RoutePropDlgImpl.cpp:102
 msgid "Daytime"
 msgstr "день"
 
-#: gui/src/RoutePropDlgImpl.cpp:103
+#: gui/src/RoutePropDlgImpl.cpp:104
 msgid "Sunset"
 msgstr "закат"
 
-#: gui/src/RoutePropDlgImpl.cpp:105
+#: gui/src/RoutePropDlgImpl.cpp:106
 msgid "EvTwilight"
 msgstr "веч. сумерки"
 
-#: gui/src/RoutePropDlgImpl.cpp:107
+#: gui/src/RoutePropDlgImpl.cpp:108
 msgid "Nighttime"
 msgstr "ночь"
 
-#: gui/src/RoutePropDlgImpl.cpp:438
+#: gui/src/RoutePropDlgImpl.cpp:439
 msgid "Arrived"
 msgstr "Прибытие"
 
-#: gui/src/RoutePropDlgImpl.cpp:782 gui/src/TrackPropDlg.cpp:357
+#: gui/src/RoutePropDlgImpl.cpp:783 gui/src/TrackPropDlg.cpp:357
 #: gui/src/TrackPropDlg.cpp:1375
 msgid "Depart From"
 msgstr "Пункт отправления"
 
-#: gui/src/RoutePropDlgImpl.cpp:784 gui/src/TrackPropDlg.cpp:395
+#: gui/src/RoutePropDlgImpl.cpp:785 gui/src/TrackPropDlg.cpp:395
 #: gui/src/TrackPropDlg.cpp:792 gui/src/TrackPropDlg.cpp:1377
 msgid "Total distance"
 msgstr "Суммарное расстояние"
 
-#: gui/src/RoutePropDlgImpl.cpp:785
+#: gui/src/RoutePropDlgImpl.cpp:786
 msgid "Speed (Kts)"
 msgstr "Скорость (уз.)"
 
-#: gui/src/RoutePropDlgImpl.cpp:787 gui/src/TrackPropDlg.cpp:1380
+#: gui/src/RoutePropDlgImpl.cpp:788 gui/src/TrackPropDlg.cpp:1380
 msgid "Departure Time"
 msgstr "Время отбытия"
 
-#: gui/src/RoutePropDlgImpl.cpp:789 gui/src/TrackPropDlg.cpp:811
+#: gui/src/RoutePropDlgImpl.cpp:790 gui/src/TrackPropDlg.cpp:811
 #: gui/src/TrackPropDlg.cpp:1382
 msgid "Time enroute"
 msgstr "Время в пути"
 
-#: gui/src/RoutePropDlgImpl.cpp:834
+#: gui/src/RoutePropDlgImpl.cpp:835
 msgid "Are you sure you want to move Up this waypoint?"
 msgstr "Вы уверены, что хотите переместить эту точку вверх?"
 
-#: gui/src/RoutePropDlgImpl.cpp:835
+#: gui/src/RoutePropDlgImpl.cpp:836
 msgid "Are you sure you want to move Down this waypoint?"
 msgstr "Вы уверены, что хотите переместить эту точку вниз?"
 
-#: gui/src/RoutePropDlgImpl.cpp:837
+#: gui/src/RoutePropDlgImpl.cpp:838
 msgid "OpenCPN Move Waypoint"
 msgstr "OpenCPN Переместит пут. точку"
 
-#: gui/src/RoutePropDlgImpl.cpp:871
+#: gui/src/RoutePropDlgImpl.cpp:873
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Уверены, что хотите удалить эту пут. точку?"
 
-#: gui/src/RoutePropDlgImpl.cpp:872
+#: gui/src/RoutePropDlgImpl.cpp:874
 msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN — Удаление путевой точки"
 
-#: gui/src/RoutePropDlgImpl.cpp:947 gui/src/TrackPropDlg.cpp:1435
+#: gui/src/RoutePropDlgImpl.cpp:950 gui/src/TrackPropDlg.cpp:1435
 msgid "&Copy all as text"
 msgstr "&Скопировать всё в буфер как текст"
 
-#: gui/src/RoutePropDlgImpl.cpp:1081 gui/src/TrackPropDlg.cpp:1320
+#: gui/src/RoutePropDlgImpl.cpp:1088 gui/src/TrackPropDlg.cpp:1320
 msgid "_plus"
 msgstr "(Объединённый маршрут/путь)"
 
-#: gui/src/RoutePropDlgImpl.cpp:1157
+#: gui/src/RoutePropDlgImpl.cpp:1164
 msgid "Invalid date/time!"
 msgstr "Неверное Время/Дата!"
 
-#: gui/src/RoutePropDlgImpl.cpp:1161
+#: gui/src/RoutePropDlgImpl.cpp:1168
 msgid "Unknown station!"
 msgstr "Неизвестная станция!"
 
-#: gui/src/RoutePropDlgImpl.cpp:1176
+#: gui/src/RoutePropDlgImpl.cpp:1183
 msgid "Unavailable: "
 msgstr "Недоступно: "
 
-#: gui/src/RoutePropDlgImpl.cpp:1190
+#: gui/src/RoutePropDlgImpl.cpp:1197
 msgid "Local"
 msgstr "Местное"
 
-#: gui/src/RoutePropDlgImpl.cpp:1345 gui/src/TrackPropDlg.cpp:1671
+#: gui/src/RoutePropDlgImpl.cpp:1352 gui/src/TrackPropDlg.cpp:1671
 msgid "Links are opened for editing."
 msgstr "Гиперссылки открываются для редактирования."
 
@@ -8228,6 +8826,14 @@ msgstr "путь"
 msgid "--"
 msgstr "—"
 
+#: gui/src/track_printout.cpp:60
+msgid "Track Print"
+msgstr ""
+
+#: gui/src/track_printout.cpp:101
+msgid " "
+msgstr ""
+
 #: gui/src/udev_rule_mgr.cpp:69
 msgid "\n"
 "An OpenCPN dongle is detected but cannot be used due to missing permissions.\n\n"
@@ -8334,15 +8940,15 @@ msgstr "Управление правилом udev ключа"
 msgid "Manage device udev rule"
 msgstr "Управление правилом udev устройства"
 
-#: gui/src/undo.cpp:81
+#: gui/src/undo.cpp:82
 msgid "Create Mark"
 msgstr "Создать Метку"
 
-#: gui/src/undo.cpp:84
+#: gui/src/undo.cpp:85
 msgid "Delete Mark"
 msgstr "Удалить Метку"
 
-#: gui/src/undo.cpp:87
+#: gui/src/undo.cpp:88
 msgid "Move Waypoint"
 msgstr "Передвинуть пут. точку"
 

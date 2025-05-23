@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-16 16:56-0400\n"
-"PO-Revision-Date: 2025-05-20 02:02\n"
+"PO-Revision-Date: 2025-05-20 04:44\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -1131,7 +1131,7 @@ msgstr "A descarregar ficheiro GRIB"
 #: src/GribRequestDialog.cpp:565 src/GribRequestDialog.cpp:570
 #, c-format
 msgid "Downloading... %li / ???"
-msgstr "A descarregar... %li / ???"
+msgstr "A descarregar... %li / "
 
 #: src/GribRequestDialog.cpp:594 src/GribRequestDialog.cpp:800
 #: src/GribRequestDialog.cpp:853 src/GribRequestDialog.cpp:904
