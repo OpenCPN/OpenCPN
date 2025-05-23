@@ -54,11 +54,12 @@
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "routemanagerdialog.h"
-#include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
 #include "svg_utils.h"
 #include "TCWin.h"
+#include "ui_utils.h"
+#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -202,9 +203,6 @@ EVT_BUTTON(ID_BTN_DESC_BASIC, MarkInfoDlg::OnExtDescriptionClick)
 EVT_BUTTON(ID_DEFAULT, MarkInfoDlg::DefautlBtnClicked)
 EVT_BUTTON(ID_BTN_SHOW_TIDES, MarkInfoDlg::ShowTidesBtnClicked)
 EVT_COMBOBOX(ID_BITMAPCOMBOCTRL, MarkInfoDlg::OnBitmapCombClick)
-EVT_CHECKBOX(ID_SHOWNAMECHECKBOXBASIC,
-             MarkInfoDlg::OnShowWaypointNameSelectBasic)
-EVT_CHECKBOX(ID_SHOWNAMECHECKBOX_EXT, MarkInfoDlg::OnShowWaypointNameSelectExt)
 EVT_CHECKBOX(ID_CHECKBOX_SCAMIN_VIS, MarkInfoDlg::OnSelectScaMinExt)
 EVT_TEXT(ID_DESCR_CTR_DESC, MarkInfoDlg::OnDescChangedExt)
 EVT_TEXT(ID_DESCR_CTR_BASIC, MarkInfoDlg::OnDescChangedBasic)
@@ -213,6 +211,7 @@ EVT_TEXT(ID_LONCTRL, MarkInfoDlg::OnPositionCtlUpdated)
 EVT_CHOICE(ID_WPT_RANGERINGS_NO, MarkInfoDlg::OnWptRangeRingsNoChange)
 // the HTML listbox's events
 EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
+EVT_COMMAND(wxID_ANY, EVT_LAYOUT_RESIZE, MarkInfoDlg::OnLayoutResize)
 EVT_CLOSE(MarkInfoDlg::OnClose)
 
 // EVT_CHOICE( ID_WAYPOINTRANGERINGS, MarkInfoDef::OnWaypointRangeRingSelect )
@@ -250,7 +249,7 @@ MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
 }
 
 void MarkInfoDlg::OnActivate(wxActivateEvent& event) {
-  DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
+  auto pWin = dynamic_cast<DIALOG_PARENT*>(event.GetEventObject());
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
@@ -302,8 +301,9 @@ void MarkInfoDlg::Create() {
   SetSizer(bSizer1);
   bSizer1->SetSizeHints(this);  // set size hints to honour minimum size
 
-  m_notebookProperties =
-      new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+  // Notebook with fixed width tabs
+  m_notebookProperties = new wxNotebook(this, wxID_ANY, wxDefaultPosition,
+                                        wxDefaultSize, wxNB_FIXEDWIDTH);
 
   m_panelBasicProperties = new wxScrolledWindow(
       m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -313,168 +313,95 @@ void MarkInfoDlg::Create() {
       getAdjustedDialogStyleSheet());
 #endif
 
+  // Basic panel
   m_panelBasicProperties->SetScrollRate(0, 2);
-
   m_notebookProperties->AddPage(m_panelBasicProperties, _("Basic"), true);
-
   bSizerBasicProperties = new wxBoxSizer(wxVERTICAL);
   m_panelBasicProperties->SetSizer(bSizerBasicProperties);
 
-  wxStaticBoxSizer* sbSizerProperties;
-  sbSizerProperties = new wxStaticBoxSizer(
-      new wxStaticBox(m_panelBasicProperties, wxID_ANY, _("Properties")),
-      wxVERTICAL);
-
-  wxBoxSizer* bSizerInnerProperties = new wxBoxSizer(wxHORIZONTAL);
-
-  //    m_bitmapIcon = new wxStaticBitmap( m_panelBasicProperties, wxID_ANY,
-  //    wxNullBitmap,
-  //            wxDefaultPosition, wxDefaultSize, 0 );
-  //    bSizerInnerProperties->Add( m_bitmapIcon, 0, wxALL, 5 );
-  //    m_bitmapIcon->Show( false );
-
-  wxBoxSizer* bSizerTextProperties;
-  bSizerTextProperties = new wxBoxSizer(wxVERTICAL);
-
+  // Layer notification
   m_staticTextLayer = new wxStaticText(
       m_panelBasicProperties, wxID_ANY,
       _("This waypoint is part of a layer and can't be edited"),
       wxDefaultPosition, wxDefaultSize, 0);
   m_staticTextLayer->Enable(false);
+  bSizerBasicProperties->Add(m_staticTextLayer, 0, wxALL, 5);
 
-  bSizerTextProperties->Add(m_staticTextLayer, 0, wxALL, 5);
+  // Basic properties grid layout
+  wxPanel* props_panel = new wxPanel(m_panelBasicProperties);
+  FormGrid* props_sizer = new FormGrid(this);
+  props_panel->SetSizer(props_sizer);
+  bSizerBasicProperties->Add(props_panel, 0, wxALL | wxEXPAND, 16);
+  int label_size = m_sizeMetric * 4;
 
-  wxBoxSizer* bSizerName;
-  bSizerName = new wxBoxSizer(wxHORIZONTAL);
+  // Name property
+  m_textName = new TextField(props_panel, _("Name"));
 
-  m_staticTextName =
-      new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Name"),
-                       wxDefaultPosition, wxDefaultSize, 0);
-  // m_staticTextName->Wrap( -1 );
-  bSizerName->Add(m_staticTextName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  wxBoxSizer* bSizerNameValue = new wxBoxSizer(wxVERTICAL);
-
+  // Show name checkbox
+  wxStaticText* name_cb_label =
+      new wxStaticText(props_panel, wxID_ANY, _("Show waypoint name"));
   m_checkBoxShowName =
-      new wxCheckBox(m_panelBasicProperties, wxID_ANY, wxEmptyString,
-                     wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_VERTICAL);
-  bSizerName->Add(m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+      new wxCheckBox(props_panel, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxDefaultSize, wxALIGN_CENTER_VERTICAL);
+  m_checkBoxShowName->Bind(wxEVT_CHECKBOX,
+                           &MarkInfoDlg::OnShowWaypointNameSelectBasic, this);
+  props_sizer->Add(name_cb_label, 0, wxALIGN_TOP);
+  props_sizer->Add(m_checkBoxShowName, 0, wxEXPAND);
 
-  m_textName = new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
-                              wxDefaultPosition, wxDefaultSize, 0);
-  bSizerNameValue->Add(m_textName, 0, wxALL | wxEXPAND, 5);
-  bSizerName->Add(bSizerNameValue, 1, wxEXPAND, 5);
-  bSizerTextProperties->Add(bSizerName, 0, wxEXPAND, 5);
-
-  ///
-  wxBoxSizer* bSizer8 = new wxBoxSizer(wxHORIZONTAL);
-  bSizerTextProperties->Add(bSizer8, 0, wxEXPAND, 5);
-
-  m_staticTextIcon =
-      new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Icon"),
-                       wxDefaultPosition, wxDefaultSize, 0);
-  bSizer8->Add(m_staticTextIcon, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_bcomboBoxIcon = new OCPNIconCombo(m_panelBasicProperties, wxID_ANY,
-                                      _("Combo!"), wxDefaultPosition,
-                                      wxDefaultSize, 0, NULL, wxCB_READONLY);
-
+  // Icon property (with icon scaling)
+  int icon_size = m_sizeMetric * 2;
+  icon_size = wxMax(icon_size, (32 * g_MarkScaleFactorExp) + 4);
+  m_bcomboBoxIcon =
+      new OCPNIconCombo(props_panel, wxID_ANY, _("Combo!"), wxDefaultPosition,
+                        wxDefaultSize, 0, NULL, wxCB_READONLY);
   m_bcomboBoxIcon->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+  m_bcomboBoxIcon->SetMinSize(wxSize(-1, icon_size));
 
-  //  Accomodate scaling of icon
-  int min_size = m_sizeMetric * 2;
-  min_size = wxMax(min_size, (32 * g_MarkScaleFactorExp) + 4);
-  m_bcomboBoxIcon->SetMinSize(wxSize(-1, min_size));
+  wxStaticText* icon_label = new wxStaticText(props_panel, wxID_ANY, _("Icon"));
+  icon_label->SetMinSize(wxSize(label_size, -1));
+  props_sizer->Add(icon_label, 0, wxALIGN_CENTER_VERTICAL);
+  props_sizer->Add(m_bcomboBoxIcon, 0, wxEXPAND);
 
-  bSizer8->Add(m_bcomboBoxIcon, 1, wxALL, 5);
+  // Lat/lon properties
+  m_textLatitude = new TextField(props_panel, _("Latitude"));
+  m_textLongitude = new TextField(props_panel, _("Longitude"));
+  props_sizer->Fit(props_panel);
 
-  bSizerTextProperties->AddSpacer(5);
-
-  wxFlexGridSizer* LLGrid = new wxFlexGridSizer(0, 2, 1, 1);
-  LLGrid->AddGrowableCol(1);
-  bSizerTextProperties->Add(LLGrid, 0, wxEXPAND, 0);
-
-  int w, h;
-  GetTextExtent(_T("179 59.9999 W"), &w, &h);
-
-  wxGridBagSizer* gridBagSizer = new wxGridBagSizer(5, 5);
-
-  m_staticTextLatitude =
-      new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Latitude"));
-  gridBagSizer->Add(m_staticTextLatitude, wxGBPosition(0, 0), wxDefaultSpan,
-                    wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_textLatitude =
-      new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
-                     wxDefaultPosition, wxSize(w + 20, -1), 0);
-  gridBagSizer->Add(m_textLatitude, wxGBPosition(0, 1), wxDefaultSpan,
-                    wxALIGN_LEFT | wxEXPAND, 5);
-
-  m_staticTextLongitude =
-      new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Longitude"));
-  gridBagSizer->Add(m_staticTextLongitude, wxGBPosition(0, 2), wxDefaultSpan,
-                    wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_textLongitude =
-      new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
-                     wxDefaultPosition, wxSize(w + 20, -1), 0);
-  gridBagSizer->Add(m_textLongitude, wxGBPosition(0, 3), wxDefaultSpan,
-                    wxALIGN_LEFT | wxEXPAND, 5);
-
-  bSizerTextProperties->Add(gridBagSizer, 0, wxEXPAND | wxALL, 5);
-
-  m_staticTextDescription =
-      new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Description"),
-                       wxDefaultPosition, wxDefaultSize, 0);
-  bSizerTextProperties->Add(m_staticTextDescription, 0, wxALL, 5);
-
-  wxBoxSizer* bSizer14;
-  bSizer14 = new wxBoxSizer(wxHORIZONTAL);
-
+  // Description box
+  wxStaticBox* desc_box =
+      new wxStaticBox(m_panelBasicProperties, wxID_ANY, _("Description"));
+  wxStaticBoxSizer* desc_sizer = new wxStaticBoxSizer(desc_box, wxHORIZONTAL);
+  bSizerBasicProperties->Add(desc_sizer, 1, wxALL | wxEXPAND, 8);
   m_textDescription = new wxTextCtrl(
       m_panelBasicProperties, ID_DESCR_CTR_BASIC, wxEmptyString,
       wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
   m_textDescription->SetMinSize(wxSize(-1, 80));
-  bSizer14->Add(m_textDescription, 1, wxALL | wxEXPAND, 5);
+  desc_sizer->Add(m_textDescription, 1, wxEXPAND);
 
+  // Description expand button
   m_buttonExtDescription =
       new wxButton(m_panelBasicProperties, ID_BTN_DESC_BASIC, _T("..."),
                    wxDefaultPosition, wxSize(GetCharHeight() * 15 / 10, -1), 0);
-  bSizer14->Add(m_buttonExtDescription, 0, wxALL | wxEXPAND, 5);
+  desc_sizer->Add(m_buttonExtDescription, 0, wxEXPAND);
 
-  bSizerTextProperties->Add(bSizer14, 1, wxEXPAND, 5);
-
-  bSizerInnerProperties->Add(bSizerTextProperties, 1, wxEXPAND, 5);
-
-  sbSizerProperties->Add(bSizerInnerProperties, 1, wxEXPAND, 5);
-
-  bSizerBasicProperties->Add(sbSizerProperties, 2, wxALL | wxEXPAND, 5);
+  // Links box
+  wxStaticBox* links_box =
+      new wxStaticBox(m_panelBasicProperties, wxID_ANY, _("Links"));
+  wxStaticBoxSizer* links_sizer = new wxStaticBoxSizer(links_box, wxHORIZONTAL);
+  bSizerBasicProperties->Add(links_sizer, 1, wxALL | wxEXPAND, 8);
 
 #ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
-  wxStaticText* staticTextLinks =
-      new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Links"),
-                       wxDefaultPosition, wxDefaultSize, 0);
-  bSizerTextProperties->Add(staticTextLinks, 0, wxALL, 5);
-
-  wxBoxSizer* bSizer19 = new wxBoxSizer(wxHORIZONTAL);
-  bSizerTextProperties->Add(bSizer19, 1, wxEXPAND, 5);
-
   m_htmlList = new wxSimpleHtmlListBox(m_panelBasicProperties, wxID_ANY,
                                        wxDefaultPosition, wxDefaultSize, 0);
-  bSizer19->Add(m_htmlList, 1, wxALL | wxEXPAND, 5);
+  links_sizer->Add(m_htmlList, 1, wxEXPAND);
 #else
-
-  sbSizerLinks = new wxStaticBoxSizer(
-      new wxStaticBox(m_panelBasicProperties, wxID_ANY, _("Links")),
-      wxVERTICAL);
-  bSizerBasicProperties->Add(sbSizerLinks, 1, wxALL | wxEXPAND, 5);
 
   m_scrolledWindowLinks =
       new wxScrolledWindow(m_panelBasicProperties, wxID_ANY, wxDefaultPosition,
                            wxSize(-1, 100), wxHSCROLL | wxVSCROLL);
   m_scrolledWindowLinks->SetMinSize(wxSize(-1, 80));
   m_scrolledWindowLinks->SetScrollRate(2, 2);
-  sbSizerLinks->Add(m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5);
+  links_sizer->Add(m_scrolledWindowLinks, 1, wxEXPAND);
 
   bSizerLinks = new wxBoxSizer(wxVERTICAL);
   m_scrolledWindowLinks->SetSizer(bSizerLinks);
@@ -506,7 +433,7 @@ void MarkInfoDlg::Create() {
                            wxCommandEventHandler(MarkInfoDlg::OnAddLink), NULL,
                            this);
 
-  sbSizerLinks->Add(bSizer9, 0, wxEXPAND, 5);
+  links_sizer->Add(bSizer9, 0, wxEXPAND, 5);
 
 #endif
 
@@ -568,12 +495,14 @@ void MarkInfoDlg::Create() {
   m_textScaMin = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY);
   gbSizerInnerExtProperties->Add(m_textScaMin, 0, wxALL | wxEXPAND, 5);
 
-  m_checkBoxShowNameExt =
-      new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
-                     ID_SHOWNAMECHECKBOX_EXT, wxEmptyString);
+  m_checkBoxShowNameExt = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
+                                         wxID_ANY, wxEmptyString);
+  m_checkBoxShowNameExt->Bind(wxEVT_CHECKBOX,
+                              &MarkInfoDlg::OnShowWaypointNameSelectExt, this);
   gbSizerInnerExtProperties->Add(m_checkBoxShowNameExt);
   m_staticTextShowNameExt = new wxStaticText(
       sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show waypoint name"));
+
   gbSizerInnerExtProperties->Add(m_staticTextShowNameExt);
   gbSizerInnerExtProperties->Add(0, 0, 1, wxEXPAND, 0);
 
@@ -663,6 +592,10 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(
       m_comboBoxTideStation, 0, wxALL | wxEXPAND | wxALIGN_CENTRE_VERTICAL, 5);
 #endif
+  m_comboBoxTideStation->SetToolTip(
+      _("Associate this waypoint with a tide station to quickly access tide "
+        "predictions. Select from nearby stations or leave empty for no "
+        "association."));
 
   m_buttonShowTides = new wxBitmapButton(
       sbSizerExtProperties->GetStaticBox(), ID_BTN_SHOW_TIDES, m_bmTide,
@@ -677,6 +610,10 @@ void MarkInfoDlg::Create() {
   m_textArrivalRadius =
       new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
                      wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+  m_textArrivalRadius->SetToolTip(
+      _("Distance from the waypoint at which OpenCPN will consider the "
+        "waypoint reached. Used for automatic waypoint advancement during "
+        "active navigation."));
   gbSizerInnerExtProperties1->Add(m_textArrivalRadius, 0, wxALL | wxEXPAND, 5);
   m_staticTextArrivalUnits =
       new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
@@ -692,6 +629,13 @@ void MarkInfoDlg::Create() {
   m_textCtrlPlSpeed =
       new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
                      wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+  m_textCtrlPlSpeed->SetToolTip(_(
+      "Enter the planned vessel speed for the leg FOLLOWING this waypoint. "
+      "This speed is used when traveling FROM this waypoint TO the next "
+      "waypoint in the route. The value is used to calculate estimated time "
+      "of arrival at the next waypoint based on the ETD from this waypoint.\n\n"
+      "If left blank, the route's default speed will be used for this leg. "
+      "Individual waypoint speeds override the route-level speed setting."));
   gbSizerInnerExtProperties1->Add(m_textCtrlPlSpeed, 0, wxALL | wxEXPAND, 5);
   m_staticTextPlSpeedUnits =
       new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
@@ -699,32 +643,45 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(m_staticTextPlSpeedUnits, 0,
                                   wxALIGN_CENTRE_VERTICAL, 0);
 
-  m_staticTextEta = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
-                                     wxID_ANY, _("ETD (UTC)"));
-  gbSizerInnerExtProperties1->Add(m_staticTextEta, 0, wxALIGN_CENTRE_VERTICAL,
+  // The value of m_staticTextEtd is updated in UpdateProperties() based on
+  // the date/time format specified in the "Options" dialog.
+  m_staticTextEtd = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
+                                     wxID_ANY, _("ETD"));
+  gbSizerInnerExtProperties1->Add(m_staticTextEtd, 0, wxALIGN_CENTRE_VERTICAL,
                                   0);
   wxBoxSizer* bsTimestamp = new wxBoxSizer(wxHORIZONTAL);
-  m_cbEtaPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
+  m_cbEtdPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
                                   wxID_ANY, wxEmptyString);
-  bsTimestamp->Add(m_cbEtaPresent, 0, wxALL | wxEXPAND, 5);
-  m_EtaDatePickerCtrl = new wxDatePickerCtrl(
+  m_cbEtdPresent->SetToolTip(
+      _("Enable to manually set a planned departure time (ETD) for this "
+        "waypoint.\n"
+        "When checked, the specified date and time will be used instead of the "
+        "automatically calculated ETD. This affects ETA calculations for "
+        "subsequent waypoints in the route."));
+  bsTimestamp->Add(m_cbEtdPresent, 0, wxALL | wxEXPAND, 5);
+  m_EtdDatePickerCtrl = new wxDatePickerCtrl(
       sbSizerExtProperties->GetStaticBox(), ID_ETA_DATEPICKERCTRL,
       wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT,
       wxDefaultValidator);
-  bsTimestamp->Add(m_EtaDatePickerCtrl, 0, wxALL | wxEXPAND, 5);
+  m_EtdDatePickerCtrl->SetToolTip(_(
+      "Select the planned departure date (ETD) for this waypoint.\nUsed "
+      "together with the time control to calculate arrival times at subsequent "
+      "waypoints.\nETD information is only used for route planning "
+      "and does not affect navigation."));
+  bsTimestamp->Add(m_EtdDatePickerCtrl, 0, wxALL | wxEXPAND, 5);
 
 #ifdef __WXGTK__
-  m_EtaTimePickerCtrl =
+  m_EtdTimePickerCtrl =
       new TimeCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL,
                    wxDefaultDateTime, wxDefaultPosition, wxDefaultSize);
 #else
-  m_EtaTimePickerCtrl = new wxTimePickerCtrl(
+  m_EtdTimePickerCtrl = new wxTimePickerCtrl(
       sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL,
       wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT,
       wxDefaultValidator);
 #endif
 
-  bsTimestamp->Add(m_EtaTimePickerCtrl, 0, wxALL | wxEXPAND, 5);
+  bsTimestamp->Add(m_EtdTimePickerCtrl, 0, wxALL | wxEXPAND, 5);
   gbSizerInnerExtProperties1->Add(bsTimestamp, 0, wxEXPAND, 0);
   sbSizerExtProperties->Add(gbSizerInnerExtProperties, 0, wxALL | wxEXPAND, 5);
   sbSizerExtProperties->Add(sbRangeRingsExtProperties, 0, wxALL | wxEXPAND, 5);
@@ -734,7 +691,7 @@ void MarkInfoDlg::Create() {
   fSizerExtProperties->Add(sbSizerExtProperties, 1, wxALL | wxEXPAND);
 
   //-----------------
-  bSizer1->Add(m_notebookProperties, 1, wxEXPAND | wxALL, 5);
+  bSizer1->Add(m_notebookProperties, 1, wxEXPAND);
 
   wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
   bSizer1->Add(btnSizer, 0, wxEXPAND, 0);
@@ -746,7 +703,8 @@ void MarkInfoDlg::Create() {
   btnSizer->Add(0, 0, 1, wxEXPAND);  // spacer
 
   m_sdbSizerButtons = new wxStdDialogButtonSizer();
-  m_sdbSizerButtons->AddButton(new wxButton(this, wxID_OK));
+  m_buttonOkay = new wxButton(this, wxID_OK);
+  m_sdbSizerButtons->AddButton(m_buttonOkay);
   m_sdbSizerButtons->AddButton(new wxButton(this, wxID_CANCEL, _("Cancel")));
   m_sdbSizerButtons->Realize();
   btnSizer->Add(m_sdbSizerButtons, 0, wxALL, 5);
@@ -769,8 +727,8 @@ void MarkInfoDlg::Create() {
   m_notebookProperties->Connect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
       wxNotebookEventHandler(MarkInfoDlg::OnNotebookPageChanged), NULL, this);
-  // m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler(
-  // MarkInfoDlg::OnTimeChanged ), NULL, this ); m_EtaDatePickerCtrl->Connect(
+  // m_EtdTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler(
+  // MarkInfoDlg::OnTimeChanged ), NULL, this ); m_EtdDatePickerCtrl->Connect(
   // wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL,
   // this );
   m_comboBoxTideStation->Connect(
@@ -892,10 +850,10 @@ MarkInfoDlg::~MarkInfoDlg() {
   m_notebookProperties->Disconnect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
       wxNotebookEventHandler(MarkInfoDlg::OnNotebookPageChanged), NULL, this);
-  m_EtaTimePickerCtrl->Disconnect(
+  m_EtdTimePickerCtrl->Disconnect(
       wxEVT_TIME_CHANGED, wxDateEventHandler(MarkInfoDlg::OnTimeChanged), NULL,
       this);
-  m_EtaDatePickerCtrl->Disconnect(
+  m_EtdDatePickerCtrl->Disconnect(
       wxEVT_DATE_CHANGED, wxDateEventHandler(MarkInfoDlg::OnTimeChanged), NULL,
       this);
 
@@ -911,23 +869,8 @@ void MarkInfoDlg::InitialFocus(void) {
 
 void MarkInfoDlg::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
-void MarkInfoDlg::SetBulkEdit(bool bBulkEdit) {
-  m_textName->Enable(!bBulkEdit);
-  m_textLatitude->Enable(!bBulkEdit);
-  m_textLongitude->Enable(!bBulkEdit);
-  m_textDescription->Enable(!bBulkEdit);
-  m_textCtrlExtDescription->Enable(!bBulkEdit);
-}
-
-void MarkInfoDlg::SetRoutePoints(const std::vector<RoutePoint*>& points) {
-  m_pRoutePoints = points;
-  SetRoutePoint(m_pRoutePoints[0]);
-  SetBulkEdit(points.size() > 1);
-}
-
 void MarkInfoDlg::ClearData() {
   m_pRoutePoint = NULL;
-  m_pRoutePoints.clear();
   UpdateProperties();
 }
 
@@ -964,7 +907,6 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
       }
     }
   }
-  SetBulkEdit(m_pRoutePoints.size() > 1);
 }
 
 void MarkInfoDlg::UpdateHtmlList() {
@@ -989,13 +931,14 @@ void MarkInfoDlg::UpdateHtmlList() {
     wxWindowListNode* node = kids.Item(i);
     wxWindow* win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxHyperlinkCtrl))) {
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_COMMAND_HYPERLINK,
-                       wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick));
-      ((wxHyperlinkCtrl*)win)
-          ->Disconnect(wxEVT_RIGHT_DOWN,
-                       wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu));
+    auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+    if (link_win) {
+      link_win->Disconnect(
+          wxEVT_COMMAND_HYPERLINK,
+          wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick));
+      link_win->Disconnect(
+          wxEVT_RIGHT_DOWN,
+          wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu));
       win->Destroy();
     }
   }
@@ -1086,6 +1029,11 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
 #endif
 }
 
+void MarkInfoDlg::OnLayoutResize(wxCommandEvent& event) {
+  m_panelBasicProperties->Layout();
+  this->Layout();
+}
+
 void MarkInfoDlg::OnDescChangedExt(wxCommandEvent& event) {
   if (m_panelDescription->IsShownOnScreen()) {
     m_textDescription->ChangeValue(m_textCtrlExtDescription->GetValue());
@@ -1107,13 +1055,11 @@ void MarkInfoDlg::OnExtDescriptionClick(wxCommandEvent& event) {
 }
 
 void MarkInfoDlg::OnShowWaypointNameSelectBasic(wxCommandEvent& event) {
-  if (m_panelBasicProperties->IsShownOnScreen())
-    m_checkBoxShowNameExt->SetValue(m_checkBoxShowName->GetValue());
+  m_checkBoxShowNameExt->SetValue(m_checkBoxShowName->GetValue());
   event.Skip();
 }
 void MarkInfoDlg::OnShowWaypointNameSelectExt(wxCommandEvent& event) {
-  if (m_panelExtendedProperties->IsShownOnScreen())
-    m_checkBoxShowName->SetValue(m_checkBoxShowNameExt->GetValue());
+  m_checkBoxShowName->SetValue(m_checkBoxShowNameExt->GetValue());
   event.Skip();
 }
 
@@ -1146,7 +1092,6 @@ void MarkInfoDlg::OnPositionCtlUpdated(wxCommandEvent& event) {
 }
 
 void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
-  if (m_pRoutePoints.size() > 1) return;
 #ifndef __ANDROID__
   // SimpleHtmlList->HitTest doesn't seem to work under msWin, so we use a
   // custom made version
@@ -1177,7 +1122,7 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
   delete popup;
 #else
 
-  m_pEditedLink = wxDynamicCast(event.GetEventObject(), wxHyperlinkCtrl);
+  m_pEditedLink = dynamic_cast<wxHyperlinkCtrl*>(event.GetEventObject());
 
   if (m_pEditedLink) {
     wxString url = m_pEditedLink->GetURL();
@@ -1199,7 +1144,7 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
       }
     }
 
-    wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+    wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
 
     wxMenu* popup = new wxMenu();
     {
@@ -1454,8 +1399,6 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
     }
   }
 
-  m_pRoutePoints.clear();
-
   m_lasttspos.Clear();
 
 #ifdef __WXGTK__
@@ -1481,7 +1424,6 @@ void MarkInfoDlg::OnMarkInfoOKClick(wxCommandEvent& event) {
     OnPositionCtlUpdated(event);
     SaveChanges();  // write changes to globals and update config
   }
-  m_pRoutePoints.clear();
 
 #ifdef __WXGTK__
   gFrame->Raise();
@@ -1537,6 +1479,19 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
     m_PickColor->SetColour(col);
 
+    if (m_pRoutePoint->m_bIsInRoute) {
+      if (m_name_validator) m_name_validator.reset();
+      m_name_validator =
+          std::make_unique<RoutePointNameValidator>(m_pRoutePoint);
+      m_textName->SetValidator(*m_name_validator);
+      m_textName->Bind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
+      m_textName->Bind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
+    } else {
+      m_textName->SetValidator();
+      m_textName->Unbind(wxEVT_TEXT, &TextField::OnTextChanged, m_textName);
+      m_textName->Unbind(wxEVT_KILL_FOCUS, &MarkInfoDlg::OnFocusEvent, this);
+    }
+
     if (m_comboBoxTideStation->GetStringSelection() !=
         m_pRoutePoint->m_TideStation) {
       m_comboBoxTideStation->Clear();
@@ -1547,6 +1502,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       }
     }
 
+    m_staticTextPlSpeedUnits->SetLabel(getUsrSpeedUnit());
     if (m_pRoutePoint->GetPlannedSpeed() > .01) {
       m_textCtrlPlSpeed->SetValue(wxString::Format(
           "%.1f", toUsrSpeed(m_pRoutePoint->GetPlannedSpeed())));
@@ -1554,22 +1510,64 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textCtrlPlSpeed->SetValue(wxEmptyString);
     }
 
+    bool isLastWaypoint = false;
+    if (m_pRoutePoint && m_pRoutePoint->m_bIsInRoute) {
+      // Get routes containing this waypoint
+      wxArrayPtrVoid* pRouteArray =
+          g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+      if (pRouteArray) {
+        isLastWaypoint = true;
+        // Check if this waypoint is the last across all routes.
+        for (unsigned int i = 0; i < pRouteArray->GetCount(); i++) {
+          Route* route = (Route*)pRouteArray->Item(i);
+          if (route->GetLastPoint()->m_GUID != m_pRoutePoint->m_GUID) {
+            isLastWaypoint = false;
+            break;
+          }
+        }
+        delete pRouteArray;
+      }
+    }
     wxDateTime etd;
     etd = m_pRoutePoint->GetManualETD();
-    if (etd.IsValid()) {
-      m_cbEtaPresent->SetValue(true);
-      m_EtaDatePickerCtrl->SetValue(etd.GetDateOnly());
-      m_EtaTimePickerCtrl->SetValue(etd);
-    } else {
-      m_cbEtaPresent->SetValue(false);
+    if (isLastWaypoint) {
+      // If this is the last waypoint in a route, uncheck the checkbox and set
+      // the date/time to empty, as the ETD is meaningless.
+      etd = wxDateTime();
     }
+    if (etd.IsValid()) {
+      m_cbEtdPresent->SetValue(true);
+      wxString dtFormat = ocpn::getUsrDateTimeFormat();
+      if (dtFormat == "Local Time") {
+        // The ETD is in UTC and needs to be converted to local time for display
+        // purpose.
+        etd.MakeFromUTC();
+      } else if (dtFormat == "UTC") {
+        // The date/time is already in UTC.
+      } else {
+        // This code path is not expected to be reached, unless
+        // the global date/time format is enhanced in the future
+        // to include new format options.
+        wxLogError(
+            "MarkInfoDlg::UpdateProperties. Unexpected date/time format: %s",
+            dtFormat);
+        etd = wxInvalidDateTime;
+      }
+      m_EtdDatePickerCtrl->SetValue(etd.GetDateOnly());
+      m_EtdTimePickerCtrl->SetValue(etd);
+    } else {
+      m_cbEtdPresent->SetValue(false);
+    }
+    // Inherit the date/time format from the user settings.
+    m_staticTextEtd->SetLabel(
+        wxString::Format("%s (%s)", _("ETD"), ocpn::getUsrDateTimeFormat()));
 
     m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
     m_textCtrlPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
-    m_staticTextEta->Show(m_pRoutePoint->m_bIsInRoute);
-    m_EtaDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
-    m_EtaTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
-    m_cbEtaPresent->Show(m_pRoutePoint->m_bIsInRoute);
+    m_staticTextEtd->Show(m_pRoutePoint->m_bIsInRoute);
+    m_EtdDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
+    m_EtdTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
+    m_cbEtdPresent->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextPlSpeedUnits->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
     m_staticTextArrivalUnits->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1597,9 +1595,9 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textWaypointRangeRingsStep->SetEditable(false);
       m_PickColor->Enable(false);
       DefaultsBtn->Enable(false);
-      m_EtaDatePickerCtrl->Enable(false);
-      m_EtaTimePickerCtrl->Enable(false);
-      m_cbEtaPresent->Enable(false);
+      m_EtdDatePickerCtrl->Enable(false);
+      m_EtdTimePickerCtrl->Enable(false);
+      m_cbEtdPresent->Enable(false);
       m_notebookProperties->SetSelection(0);  // Show Basic page
       m_comboBoxTideStation->Enable(false);
     } else {
@@ -1621,11 +1619,14 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textWaypointRangeRingsStep->SetEditable(true);
       m_PickColor->Enable(true);
       DefaultsBtn->Enable(true);
-      m_EtaDatePickerCtrl->Enable(true);
-      m_EtaTimePickerCtrl->Enable(true);
-      m_cbEtaPresent->Enable(true);
       m_notebookProperties->SetSelection(0);
       m_comboBoxTideStation->Enable(true);
+
+      // If this is the last waypoint in a route, disable the ETD as it does not
+      // make sense to have an ETD for the last waypoint in a route.
+      m_EtdDatePickerCtrl->Enable(!isLastWaypoint);
+      m_EtdTimePickerCtrl->Enable(!isLastWaypoint);
+      m_cbEtdPresent->Enable(!isLastWaypoint);
     }
 
     // Fill the icon selector combo box
@@ -1669,6 +1670,13 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
   return true;
 }
 
+// Focus event handler to validate the dialog.
+void MarkInfoDlg::OnFocusEvent(wxFocusEvent& event) {
+  bool is_valid = Validate();
+  m_buttonOkay->Enable(is_valid);
+  event.Skip();
+}
+
 void MarkInfoDlg::OnBitmapCombClick(wxCommandEvent& event) {
   wxString* icon_name =
       pWayPointMan->GetIconKey(m_bcomboBoxIcon->GetSelection());
@@ -1697,163 +1705,104 @@ void MarkInfoDlg::ValidateMark(void) {
 
 bool MarkInfoDlg::SaveChanges() {
   if (m_pRoutePoint) {
-    if (m_pRoutePoints.size() <=
-        1) {  // We are editing a single point, save everything
-      if (m_pRoutePoint->m_bIsInLayer) return true;
+    if (m_pRoutePoint->m_bIsInLayer) return true;
+    if (!this->Validate()) return false;  // prevent invalid save
 
-      // Get User input Text Fields
-      m_pRoutePoint->SetName(m_textName->GetValue());
-      m_pRoutePoint->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
-      m_pRoutePoint->SetScaMin(m_textScaMin->GetValue());
-      m_pRoutePoint->SetUseSca(m_checkBoxScaMin->GetValue());
-      m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
-      m_pRoutePoint->SetVisible(m_checkBoxVisible->GetValue());
-      m_pRoutePoint->m_bShowName = m_checkBoxShowName->GetValue();
-      m_pRoutePoint->SetPosition(fromDMM(m_textLatitude->GetValue()),
-                                 fromDMM(m_textLongitude->GetValue()));
-      wxString* icon_name =
-          pWayPointMan->GetIconKey(m_bcomboBoxIcon->GetSelection());
-      if (icon_name && icon_name->Length())
-        m_pRoutePoint->SetIconName(*icon_name);
-      m_pRoutePoint->ReLoadIcon();
-      m_pRoutePoint->SetShowWaypointRangeRings(
-          (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
-      m_pRoutePoint->SetWaypointRangeRingsNumber(
-          m_ChoiceWaypointRangeRingsNumber->GetSelection());
-      double value;
-      if (m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
-        m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1));
-      if (m_textArrivalRadius->GetValue().ToDouble(&value))
-        m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
+    // Get User input Text Fields
+    m_pRoutePoint->SetName(m_textName->GetValue());
+    m_pRoutePoint->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
+    m_pRoutePoint->SetScaMin(m_textScaMin->GetValue());
+    m_pRoutePoint->SetUseSca(m_checkBoxScaMin->GetValue());
+    m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
+    m_pRoutePoint->SetVisible(m_checkBoxVisible->GetValue());
+    m_pRoutePoint->m_bShowName = m_checkBoxShowName->GetValue();
+    m_pRoutePoint->SetPosition(fromDMM(m_textLatitude->GetValue()),
+                               fromDMM(m_textLongitude->GetValue()));
+    wxString* icon_name =
+        pWayPointMan->GetIconKey(m_bcomboBoxIcon->GetSelection());
+    if (icon_name && icon_name->Length())
+      m_pRoutePoint->SetIconName(*icon_name);
+    m_pRoutePoint->ReLoadIcon();
+    m_pRoutePoint->SetShowWaypointRangeRings(
+        (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
+    m_pRoutePoint->SetWaypointRangeRingsNumber(
+        m_ChoiceWaypointRangeRingsNumber->GetSelection());
+    double value;
+    if (m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
+      m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1));
+    if (m_textArrivalRadius->GetValue().ToDouble(&value))
+      m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
 
-      if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND)
-        m_pRoutePoint->SetWaypointRangeRingsStepUnits(
-            m_RangeRingUnits->GetSelection());
+    if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND)
+      m_pRoutePoint->SetWaypointRangeRingsStepUnits(
+          m_RangeRingUnits->GetSelection());
 
-      m_pRoutePoint->m_TideStation =
-          m_comboBoxTideStation->GetStringSelection();
-      if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {
-        m_pRoutePoint->SetPlannedSpeed(0.0);
-      } else {
-        double spd;
-        if (m_textCtrlPlSpeed->GetValue().ToDouble(&spd)) {
-          m_pRoutePoint->SetPlannedSpeed(fromUsrSpeed(spd));
-        }
-      }
-
-      if (m_cbEtaPresent->GetValue()) {
-        wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
-        dt.SetHour(m_EtaTimePickerCtrl->GetValue().GetHour());
-        dt.SetMinute(m_EtaTimePickerCtrl->GetValue().GetMinute());
-        dt.SetSecond(m_EtaTimePickerCtrl->GetValue().GetSecond());
-        if (dt.IsValid()) {
-          m_pRoutePoint->SetETD(dt.FormatISOCombined());
-        }
-      } else {
-        m_pRoutePoint->SetETD(wxEmptyString);
-      }
-      // Here is some logic....
-      // If the Markname is completely numeric, and is part of a route,
-      // Then declare it to be of attribute m_bDynamicName = true
-      // This is later used for re-numbering points on actions like
-      // Insert Point, Delete Point, Append Point, etc
-
-      if (m_pRoutePoint->m_bIsInRoute) {
-        bool b_name_is_numeric = true;
-        for (unsigned int i = 0; i < m_pRoutePoint->GetName().Len(); i++) {
-          if (i < 2 && wxChar('N') == m_pRoutePoint->GetName()[0] &&
-              wxChar('M') == m_pRoutePoint->GetName()[1] &&
-              m_pRoutePoint->GetName().Len() > 2)
-            continue;
-          if (wxChar('0') > m_pRoutePoint->GetName()[i])
-            b_name_is_numeric = false;
-          if (wxChar('9') < m_pRoutePoint->GetName()[i])
-            b_name_is_numeric = false;
-        }
-
-        m_pRoutePoint->m_bDynamicName = b_name_is_numeric;
-      } else
-        m_pRoutePoint->m_bDynamicName = false;
-
-      if (m_pRoutePoint->m_bIsInRoute) {
-        // Update the route segment selectables
-        pSelect->UpdateSelectableRouteSegments(m_pRoutePoint);
-
-        // Get an array of all routes using this point
-        wxArrayPtrVoid* pEditRouteArray =
-            g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
-
-        if (pEditRouteArray) {
-          for (unsigned int ir = 0; ir < pEditRouteArray->GetCount(); ir++) {
-            Route* pr = (Route*)pEditRouteArray->Item(ir);
-            pr->FinalizeForRendering();
-            pr->UpdateSegmentDistances();
-
-            pConfig->UpdateRoute(pr);
-          }
-          delete pEditRouteArray;
-        }
-      } else
-        pConfig->UpdateWayPoint(m_pRoutePoint);
-      // No general settings need be saved pConfig->UpdateSettings();
+    m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
+    if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {
+      m_pRoutePoint->SetPlannedSpeed(0.0);
     } else {
-      // We are modifying multiple points, just a subset of properties is to be
-      // modified for each of them and just in case they were actually changed
-      // We need to iterate in reverse order to save the first point in the
-      // vector until the end and be able to compere it's original values for
-      // changes...
-      for (std::vector<RoutePoint*>::reverse_iterator rit =
-               m_pRoutePoints.rbegin();
-           rit != m_pRoutePoints.rend(); ++rit) {
-        RoutePoint* rp = *rit;
-        if (rp->m_bIsInLayer) continue;  // Layer WP, skip it
-        if (m_pRoutePoint->m_WaypointArrivalRadius !=
-            wxAtof(m_textArrivalRadius->GetValue()))
-          rp->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
-        if (m_pRoutePoint->GetScaMin() != wxAtoi(m_textScaMin->GetValue()))
-          rp->SetScaMin(m_textScaMin->GetValue());
-        if (m_pRoutePoint->GetUseSca() != m_checkBoxScaMin->GetValue())
-          rp->SetUseSca(m_checkBoxScaMin->GetValue());
-        if (m_pRoutePoint->GetNameShown() != m_checkBoxShowName->GetValue())
-          rp->SetNameShown(m_checkBoxShowName->GetValue());
-        if (m_pRoutePoint->IsVisible() != m_checkBoxVisible->GetValue())
-          rp->SetVisible(m_checkBoxVisible->GetValue());
-        wxString* icon_name =
-            pWayPointMan->GetIconKey(m_bcomboBoxIcon->GetSelection());
-        if (m_pRoutePoint->GetIconName() != *icon_name) {
-          if (icon_name && icon_name->Length()) rp->SetIconName(*icon_name);
-          rp->ReLoadIcon();
-        }
-        if (m_pRoutePoint->GetShowWaypointRangeRings() !=
-            (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0)) {
-          rp->SetShowWaypointRangeRings(
-              (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
-          rp->SetWaypointRangeRingsNumber(
-              m_ChoiceWaypointRangeRingsNumber->GetSelection());
-        }
-
-        double value;
-        if (m_pRoutePoint->GetWaypointRangeRingsStep() !=
-            fromUsrDistance(wxAtof(m_textWaypointRangeRingsStep->GetValue())))
-          if (m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
-            rp->SetWaypointRangeRingsStep(fromUsrDistance(value, -1));
-
-        if (m_pRoutePoint->GetWaypointRangeRingsStep() !=
-            fromUsrDistance(wxAtof(m_textArrivalRadius->GetValue())))
-          if (m_textArrivalRadius->GetValue().ToDouble(&value))
-            rp->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
-
-        if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND &&
-            m_pRoutePoint->GetWaypointRangeRingsStepUnits() !=
-                m_RangeRingUnits->GetSelection())
-          rp->SetWaypointRangeRingsStepUnits(m_RangeRingUnits->GetSelection());
-
-        if (m_pRoutePoint->m_TideStation !=
-            m_comboBoxTideStation->GetStringSelection())
-          rp->m_TideStation = m_comboBoxTideStation->GetStringSelection();
-        pConfig->UpdateWayPoint(rp);
-        // TODO: Something else? Will we bulk edit routepoints for example?
+      double spd;
+      if (m_textCtrlPlSpeed->GetValue().ToDouble(&spd)) {
+        m_pRoutePoint->SetPlannedSpeed(fromUsrSpeed(spd));
       }
+    }
+
+    if (m_cbEtdPresent->GetValue()) {
+      wxDateTime dt = m_EtdDatePickerCtrl->GetValue();
+      wxDateTime t = m_EtdTimePickerCtrl->GetValue();
+      int hour = t.GetHour();
+      dt.SetHour(hour);
+      dt.SetMinute(m_EtdTimePickerCtrl->GetValue().GetMinute());
+      dt.SetSecond(m_EtdTimePickerCtrl->GetValue().GetSecond());
+      if (dt.IsValid()) {
+        // The date/time in the UI is specified according to the global settings
+        // in Options -> Date/Time format. The date/time format is either "Local
+        // Time" or "UTC". If the date/time format is "Local Time", convert to
+        // UTC. Otherwise, it is already in UTC.
+        wxString dtFormat = ocpn::getUsrDateTimeFormat();
+        if (dtFormat == "Local Time") {
+          m_pRoutePoint->SetETD(dt.MakeUTC());
+        } else if (dtFormat == "UTC") {
+          m_pRoutePoint->SetETD(dt);
+        } else {
+          // This code path should never be reached, as the date/time format is
+          // either "Local Time" or "UTC".
+          // In the future, other date/time formats may be supported in
+          // global settings (Options -> Display -> Date/Time Format).
+          // When/if this happens, this code will need to be updated to
+          // handle the new formats.
+          wxLogError(
+              "Failed to configured ETD. Unsupported date/time format: %s",
+              dtFormat);
+          m_pRoutePoint->SetETD(wxInvalidDateTime);
+        }
+      }
+    } else {
+      m_pRoutePoint->SetETD(wxInvalidDateTime);
+    }
+
+    if (m_pRoutePoint->m_bIsInRoute) {
+      // Update the route segment selectables
+      pSelect->UpdateSelectableRouteSegments(m_pRoutePoint);
+
+      // Get an array of all routes using this point
+      wxArrayPtrVoid* pEditRouteArray =
+          g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+
+      if (pEditRouteArray) {
+        for (unsigned int ir = 0; ir < pEditRouteArray->GetCount(); ir++) {
+          Route* pr = (Route*)pEditRouteArray->Item(ir);
+          pr->FinalizeForRendering();
+          pr->UpdateSegmentDistances();
+
+          // pConfig->UpdateRoute(pr);
+          NavObj_dB::GetInstance().UpdateRoute(pr);
+        }
+        delete pEditRouteArray;
+      }
+    } else {
+      // pConfig->UpdateWayPoint(m_pRoutePoint);
+      NavObj_dB::GetInstance().UpdateRoutePoint(m_pRoutePoint);
     }
   }
   return true;

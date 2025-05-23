@@ -104,10 +104,12 @@ public:
   wxArrayString InputSentenceList;
   ListType OutputSentenceListType;
   wxArrayString OutputSentenceList;
-  int Priority;
   bool bEnabled;
   wxString UserComment;
   wxString AuthToken;
+
+  /** Return string unique for each instance. */
+  std::string GetKey() const;
 
   wxString Serialize() const;
   void Deserialize(const wxString &configStr);
@@ -118,16 +120,16 @@ public:
   wxString GetIOTypeValueStr() const;
   wxString GetFiltersStr() const;
   wxString GetDSPort() const;
+  bool GetValidPort() const;
   std::string GetLastDSPort() const;
   NavAddr::Bus GetLastCommProtocol();
   wxString GetPortStr() const { return Port; }
   void SetPortStr(wxString str) { Port = str; }
-  std::string GetStrippedDSPort();
-  NavAddr::Bus GetCommProtocol();
+  std::string GetStrippedDSPort() const;
+  NavAddr::Bus GetCommProtocol() const;
 
   bool SentencePassesFilter(const wxString &sentence,
-                            FilterDirection direction);
-
+                            FilterDirection direction) const;
   bool Valid;
   bool b_IsSetup;
   ConnectionParamsPanel *m_optionsPanel;
@@ -136,8 +138,6 @@ private:
   wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
 };
 
-WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
-
-wxArrayOfConnPrm *TheConnectionParams();
+std::vector<ConnectionParams *> &TheConnectionParams();
 
 #endif

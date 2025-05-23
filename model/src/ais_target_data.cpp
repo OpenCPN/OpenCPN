@@ -529,8 +529,11 @@ wxString AisTargetData::BuildQueryResult(void) {
                  ? _("Nation")
                  : _("Flag"))
          << rowEnd << _T("</font></td></tr>") << rowStartH
-         << _T("<font size=-1><b>") << GetCountryCode(true) << rowEnd
-         << _T("</font></table></td></tr>");
+         << _T("<font size=-1><b>") << GetCountryCode(true);
+  if (Class == AIS_CLASS_B && MMSIstr.StartsWith("8")) {
+    html << "<td align=right>" << _("Handheld");
+  }
+  html << rowEnd << _T("</font></table></td></tr>");
 
   wxString navStatStr;
   if ((Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) &&
@@ -596,7 +599,8 @@ wxString AisTargetData::BuildQueryResult(void) {
 
     //  Dimensions
 
-    if (NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS) {
+    if (NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS &&
+        Class != AIS_BUOY) {
       if ((Class == AIS_CLASS_B) || (Class == AIS_ATON)) {
         sizeString =
             wxString::Format(_T("%dm x %dm"), (DimA + DimB), (DimC + DimD));
@@ -747,7 +751,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     }
 
     if (Class == AIS_CLASS_A || Class == AIS_CLASS_B || Class == AIS_ARPA ||
-        Class == AIS_APRS || Class == AIS_SART) {
+        Class == AIS_APRS || Class == AIS_SART || Class == AIS_BUOY) {
       int crs = wxRound(COG);
       if (crs < 360) {
         wxString magString, trueString;
@@ -1320,6 +1324,8 @@ wxString AisTargetData::Get_vessel_type_string(bool b_short) {
     i = 55;
   else if (Class == AIS_APRS)
     i = 56;
+  else if (Class == AIS_BUOY)
+    i = 57;
   else if (Class == AIS_DSC)
     i = (ShipType == 12 || ShipType == 16) ? 54 : 53;  // 12 & 16 is distress
 
@@ -1350,10 +1356,12 @@ wxString AisTargetData::Get_class_string(bool b_short) {
       return b_short ? _("SART") : _("SART");
     case AIS_ARPA:
       return b_short ? _("ARPA") : _("ARPA");
+    case AIS_BUOY:
+      return b_short ? _("Buoy") : _("BUOY");
     case AIS_APRS:
       return b_short ? _("APRS") : _("APRS Position Report");
     case AIS_METEO:
-      return b_short ? _("METEO") : _("Meteorologic");
+      return b_short ? _("Meteo") : _("Meteorologic");
 
     default:
       return b_short ? _("Unk") : _("Unknown");
@@ -1396,6 +1404,7 @@ bool AisTargetData::IsValidMID(int mid) {
 // Get country name and code according to ITU 2023-02
 // (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
 wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
+  if (Class == AIS_BUOY) return wxEmptyString;
   /***** Check for a valid MID *****/
   // Meteo adaption
   int tmpMmsi = met_data.original_mmsi ? met_data.original_mmsi : MMSI;
@@ -2033,7 +2042,8 @@ wxString ais_get_type(int index) {
       _("Position Report"),                           // xx        53
       _("Distress"),                                  // xx        54
       _("ARPA radar target"),                         // xx        55
-      _("APRS Position Report")                       // xx        56
+      _("APRS Position Report"),                      // xx        56
+      _("Buoy or similar")                            // xx        57
   };
 
   return ais_type[index];
@@ -2062,43 +2072,44 @@ wxString ais_get_short_type(int index) {
       _("M/T"),       // 8x        18
       _("?"),         //          19
 
-      _("AtoN"),          // 00        20
-      _("Ref. Pt"),       // 01        21
-      _("RACON"),         // 02        22
-      _("Fix.Struct."),   // 03        23
-      _("?"),             // 04        24
-      _("Lt"),            // 05        25
-      _("Lt sect."),      // 06        26
-      _("Ldg Lt Front"),  // 07        27
-      _("Ldg Lt Rear"),   // 08        28
-      _("Card. N"),       // 09        29
-      _("Card. E"),       // 10        30
-      _("Card. S"),       // 11        31
-      _("Card. W"),       // 12        32
-      _("Port"),          // 13        33
-      _("Stbd"),          // 14        34
-      _("Pref. Chnl"),    // 15        35
-      _("Pref. Chnl"),    // 16        36
-      _("Isol. Dngr"),    // 17        37
-      _("Safe Water"),    // 18        38
-      _("Special"),       // 19        39
-      _("Card. N"),       // 20        40
-      _("Card. E"),       // 21        41
-      _("Card. S"),       // 22        42
-      _("Card. W"),       // 23        43
-      _("Port Hand"),     // 24        44
-      _("Stbd Hand"),     // 25        45
-      _("Pref. Chnl"),    // 26        46
-      _("Pref. Chnl"),    // 27        47
-      _("Isol. Dngr"),    // 28        48
-      _("Safe Water"),    // 29        49
-      _("Special"),       // 30        50
-      _("LtV/Rig"),       // 31        51
-      _("Buddy"),         // xx        52
-      _("DSC"),           // xx        53
-      _("Distress"),      // xx        54
-      _("ARPA"),          // xx        55
-      _("APRS")           // xx        56
+      _("AtoN"),            // 00        20
+      _("Ref. Pt"),         // 01        21
+      _("RACON"),           // 02        22
+      _("Fix.Struct."),     // 03        23
+      _("?"),               // 04        24
+      _("Lt"),              // 05        25
+      _("Lt sect."),        // 06        26
+      _("Ldg Lt Front"),    // 07        27
+      _("Ldg Lt Rear"),     // 08        28
+      _("Card. N"),         // 09        29
+      _("Card. E"),         // 10        30
+      _("Card. S"),         // 11        31
+      _("Card. W"),         // 12        32
+      _("Port"),            // 13        33
+      _("Stbd"),            // 14        34
+      _("Pref. Chnl"),      // 15        35
+      _("Pref. Chnl"),      // 16        36
+      _("Isol. Dngr"),      // 17        37
+      _("Safe Water"),      // 18        38
+      _("Special"),         // 19        39
+      _("Card. N"),         // 20        40
+      _("Card. E"),         // 21        41
+      _("Card. S"),         // 22        42
+      _("Card. W"),         // 23        43
+      _("Port Hand"),       // 24        44
+      _("Stbd Hand"),       // 25        45
+      _("Pref. Chnl"),      // 26        46
+      _("Pref. Chnl"),      // 27        47
+      _("Isol. Dngr"),      // 28        48
+      _("Safe Water"),      // 29        49
+      _("Special"),         // 30        50
+      _("LtV/Rig"),         // 31        51
+      _("Buddy"),           // xx        52
+      _("DSC"),             // xx        53
+      _("Distress"),        // xx        54
+      _("ARPA"),            // xx        55
+      _("APRS"),            // xx        56
+      _("Buoy or similar")  // xx        57
   };
   return short_ais_type[index];
 }

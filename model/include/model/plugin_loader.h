@@ -1,13 +1,6 @@
-/***************************************************************************
- *
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010-2023 by David S. Register                          *
- *   Copyright (C) 2023 Alec Leamas
+/**************************************************************************
+ *   Copyright (C) 2010 - 2023 by David S. Register                        *
+ *   Copyright (C) 2023 - 2025  Alec Leamas                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,6 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ * Low level code to load plugins from disk, notably the PluginLoader class
+ */
 
 #ifndef PLUGIN_LOADER_H_GUARD
 #define PLUGIN_LOADER_H_GUARD
@@ -54,11 +52,11 @@ enum class PluginStatus {
   ManagedInstalledUpdateAvailable,
   ManagedInstalledCurrentVersion,
   ManagedInstalledDowngradeAvailable,
+  Imported,
   PendingListRemoval
 };
 
 class PlugInContainer;  // forward
-class PlugInData;       // forward
 
 /** Basic data for a loaded plugin, trivially copyable */
 class PlugInData {
@@ -107,6 +105,7 @@ public:
   destroy_t* m_destroy_fn;
 };
 
+/** Error condition when loading a plugin. */
 class LoadError {
 public:
   enum class Type {
@@ -128,7 +127,6 @@ public:
       : type(t), lib_path(std::move(l)), plugin_version(SemanticVersion()) {}
 };
 
-//    Declare an array of PlugIn Containers
 WX_DEFINE_ARRAY_PTR(PlugInContainer*, ArrayOfPlugIns);
 
 /**
@@ -138,23 +136,28 @@ WX_DEFINE_ARRAY_PTR(PlugInContainer*, ArrayOfPlugIns);
  *
  * The general usage pattern to process events, here using EVT_LOAD_PLUGIN:
  *
- *   PluginLoader::getInstance()->evt_load_plugin.listen(this, EVT_LOAD_PLUGIN)
+ *   PluginLoader::GetInstance()->evt_load_plugin.listen(this, EVT_LOAD_PLUGIN)
  *   Bind(EVT_LOAD_PLUGIN, [&](ObservedEvt ev) {
  *          code to run on event...
  *   });
  *
  * The code in plugin_loader uses evt_load_plugin.Notify() to trigger the
  * event. Notify() might have a string or void* argument; these are
- * available as ev.GetString() or ev.GetClientData() in the Bind() lambda
- * function. There is a also a generic std::shared_ptr available as using
- * GetSharedPtr();
+ * available as ev.GetString() or ev.GetClientData() . There is a also a
+ * generic std::shared_ptr available as using GetSharedPtr();
  *
- * Examples: PlugInManager::PlugInManager() in pluginmanager.cpp
+ * See: PlugInManager::PlugInManager() in pluginmanager.cpp
  */
 class PluginLoader {
 public:
-  static PluginLoader* getInstance();
+  static PluginLoader* GetInstance();
   virtual ~PluginLoader() = default;
+
+  /**
+   * Mark a library file (complete path) as loadable i. e., remove possible
+   * stamp
+   */
+  static void MarkAsLoadable(const std::string& library_path);
   /**
    *  Update PlugInContainer status using data from PluginMetadata and manifest.
    */
@@ -167,20 +170,27 @@ public:
 
   /** Find metadata for given plugin. */
   static PluginMetadata MetadataByName(const std::string& name);
+  ;
 
-  EventVar evt_blacklisted_plugin;
-
+  /** Notified without data when loader starts loading from a new directory. */
   EventVar evt_load_directory;
-  EventVar evt_load_plugin;
-  EventVar evt_plugin_unload;
-  EventVar evt_pluglist_change;
-  EventVar evt_unreadable_plugin;
 
   /**
-   *  Carries a malloc'ed read-only copy of a PlugInContainer owned by listener.
+   * Notified with a PlugInContainer* pointer when a plugin is loaded.
+   * The pointer should be treated as const and is owned by loader
+   */
+  EventVar evt_load_plugin;
+
+  /** Notified without data when the GetPlugInArray() list is changed. */
+  EventVar evt_pluglist_change;
+
+  /**
+   * Carries a malloc'ed read-only copy of a PlugInContainer owned: by
+   * listener.
    */
   EventVar evt_deactivate_plugin;
 
+  /** Notified without data after all plugins loaded ot updated. */
   EventVar evt_update_chart_types;
 
   /**
@@ -188,8 +198,6 @@ public:
    * a std::vector<LoadError> available though GetSharedPtr()
    */
   EventVar evt_plugin_loadall_finalize;
-
-  EventVar evt_version_incompatible_plugin;
 
   /**
    * Update catalog with imported metadata and load all plugin library files.
@@ -222,18 +230,49 @@ public:
   /** Unload, delete and remove item ix in GetPlugInArray(). */
   bool UnLoadPlugIn(size_t ix);
 
+  /** Unload allplugins i. e., release the dynamic libraries. */
   bool UnLoadAllPlugIns();
+
+  /** Deactivate all plugins. */
   bool DeactivateAllPlugIns();
+
+  /** Deactivate given plugin. */
   bool DeactivatePlugIn(PlugInContainer* pic);
+
+  /** Deactivate given plugin. */
   bool DeactivatePlugIn(const PlugInData& pic);
+
+  /** Update the GetPlugInArray() list by reloading all plugins from disk. */
   bool UpdatePlugIns();
+
+  /**
+   * Update all managed plugins i. e., everything besides system, imported
+   * or legacy plugins.
+   * @param keep_orphans If true, Keep any inactive/uninstalled managed plugins
+   * that are no longer available in the current catalog. Otherwise, remove
+   * them. Orphans usuall occur after reverting from Alpha/Beta catalog back
+   * to master.
+   */
   void UpdateManagedPlugins(bool keep_orphans);
+
+  /** Load given plugin file from disk into GetPlugInArray() list. */
   PlugInContainer* LoadPlugIn(const wxString& plugin_file);
+
+  /** Load given plugin file from disk into GetPlugInArray() list. */
   PlugInContainer* LoadPlugIn(const wxString& plugin_file,
                               PlugInContainer* pic);
 
+  /** Return list of currently loaded plugins. */
   const ArrayOfPlugIns* GetPlugInArray() { return &plugin_array; }
+
+  /** Return true if a plugin with given name exists in GetPlugInArray() */
   bool IsPlugInAvailable(const wxString& commonName);
+
+  /**
+   * Check plugin compatibiliet w r t library type. Very platform
+   * dependent.
+   * @return true if library is deemed compatible.
+   */
   bool CheckPluginCompatibility(const wxString& plugin_file);
 
   /** Update enabled/disabled state for plugin with given name. */
@@ -241,6 +280,9 @@ public:
 
   /** Update m_toolbox_panel state for plugin with given name. */
   void SetToolboxPanel(const wxString& common_name, bool value);
+
+  /** Update m_has_setup_options state for plugin with given name. */
+  void SetSetupOptions(const wxString& common_name, bool value);
 
 private:
   PluginLoader();

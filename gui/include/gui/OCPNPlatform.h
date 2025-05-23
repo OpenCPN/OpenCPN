@@ -67,6 +67,12 @@ class ArrayOfCDI;
 // extern QString getQtStyleSheet( void );
 // #endif
 
+/**
+ * Provides platform-specific support utilities for OpenCPN. Extends
+ * BasePlatform to implement platform-specific functionality for various aspects
+ * of the application, including device support, initialization, display
+ * handling, and file operations, and more.
+ */
 class OCPNPlatform : public BasePlatform {
 public:
   OCPNPlatform();
@@ -109,11 +115,30 @@ public:
   virtual void ShowBusySpinner(void);
   virtual void HideBusySpinner(void);
   double getFontPointsperPixel(void);
+  /**
+   * Get the display size in logical pixels.
+   *
+   * Returns the display dimensions in logical pixels, which may differ from
+   * physical pixels on high-DPI displays. For example:
+   * - On a MacBook Pro 16" Retina: returns 1792x1120 (logical) rather than
+   * 4096x2560 (physical).
+   * - On standard displays: logical pixels equal physical pixels.
+   *
+   * @note On Retina/HiDPI displays, multiply by GetContentScaleFactor() to get
+   * physical pixels.
+   * @return wxSize containing the width and height in logical pixels.
+   */
   wxSize getDisplaySize();
+  /**
+   * Get the width of the screen in millimeters.
+   */
   double GetDisplaySizeMM();
   double GetDisplayAreaCM2();
   virtual double GetDisplayDPmm();
 
+  /**
+   * Set the width of the monitor in millimeters.
+   */
   void SetDisplaySizeMM(size_t monitor, double size);
   unsigned int GetSelectRadiusPix();
   double GetToolbarScaleFactor(int GUIScaleFactor);
@@ -152,8 +177,6 @@ public:
   //--------------------------------------------------------------------------
   void setChartTypeMaskSel(int mask, wxString &indicator);
   bool isPlatformCapable(int flag);
-  void LaunchLocalHelp();
-  void DoHelpDialog(void);
 
   int platformApplyPrivateSettingsString(wxString settings,
                                          ArrayOfCDI *pDirArray);

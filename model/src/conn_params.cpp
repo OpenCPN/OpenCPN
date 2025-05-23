@@ -48,11 +48,9 @@
 #define wxAtoi(arg) atoi(arg)
 #endif
 
-static wxArrayOfConnPrm* the_connection_params = 0;
+static std::vector<ConnectionParams*> the_connection_params;
 
-wxArrayOfConnPrm* TheConnectionParams() {
-  if (the_connection_params == 0)
-    the_connection_params = new wxArrayOfConnPrm();
+std::vector<ConnectionParams*>& TheConnectionParams() {
   return the_connection_params;
 }
 
@@ -83,7 +81,6 @@ void ConnectionParams::Deserialize(const wxString& configStr) {
   InputSentenceList = wxStringTokenize(prms[10], _T(","));
   OutputSentenceListType = (ListType)wxAtoi(prms[11]);
   OutputSentenceList = wxStringTokenize(prms[12], _T(","));
-  Priority = wxAtoi(prms[13]);
   Garmin = !!wxAtoi(prms[14]);
   GarminUpload = !!wxAtoi(prms[15]);
   FurunoGP3X = !!wxAtoi(prms[16]);
@@ -110,7 +107,7 @@ void ConnectionParams::Deserialize(const wxString& configStr) {
     DisableEcho = wxAtoi(prms[22]);
   }
   if (prms.Count() >= 24) {
-    AuthToken = prms[22];
+    AuthToken = prms[23];
   }
 }
 
@@ -126,15 +123,27 @@ wxString ConnectionParams::Serialize() const {
     ostcs.Append(OutputSentenceList[i]);
   }
   wxString ret = wxString::Format(
-      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%")
-      _T("d;%s"),
+      "%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s",
       Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol,
       Port.c_str(), Baudrate, ChecksumCheck, IOSelect, InputSentenceListType,
-      istcs.c_str(), OutputSentenceListType, ostcs.c_str(), Priority, Garmin,
-      GarminUpload, FurunoGP3X, bEnabled, UserComment.c_str(), AutoSKDiscover,
-      socketCAN_port.c_str(), NoDataReconnect, DisableEcho, AuthToken.c_str());
+      istcs.c_str(), OutputSentenceListType, ostcs.c_str(), 0 /* Priority */,
+      Garmin, GarminUpload, FurunoGP3X, bEnabled, UserComment.c_str(),
+      AutoSKDiscover, socketCAN_port.c_str(), NoDataReconnect, DisableEcho,
+      AuthToken.c_str());
 
   return ret;
+}
+
+std::string ConnectionParams::GetKey() const {
+  std::stringstream ss;
+  ss << Type << NetProtocol << NetworkAddress << NetworkPort << Protocol << Port
+     << Baudrate << ChecksumCheck << IOSelect << InputSentenceListType
+     << OutputSentenceListType << Garmin << GarminUpload << FurunoGP3X
+     << UserComment << AutoSKDiscover << socketCAN_port << NoDataReconnect
+     << DisableEcho << AuthToken;
+  for (const auto& sentence : OutputSentenceList) ss << sentence;
+  for (const auto& sentence : InputSentenceList) ss << sentence;
+  return ss.str();
 }
 
 ConnectionParams::ConnectionParams() {
@@ -151,7 +160,6 @@ ConnectionParams::ConnectionParams() {
   IOSelect = DS_TYPE_INPUT;
   InputSentenceListType = WHITELIST;
   OutputSentenceListType = WHITELIST;
-  Priority = 0;
   Valid = true;
   bEnabled = true;
   b_IsSetup = false;
@@ -295,7 +303,18 @@ wxString ConnectionParams::GetDSPort() const {
     return _T("");
 }
 
-std::string ConnectionParams::GetStrippedDSPort() {
+bool ConnectionParams::GetValidPort() const {
+  if (Type == SERIAL && Port == "")
+    return false;
+  else if (Type == NETWORK && (NetworkAddress == "" || !NetworkPort))
+    return false;
+  else if (Type == INTERNAL_BT && Port == "")
+    return false;
+  else
+    return true;
+}
+
+std::string ConnectionParams::GetStrippedDSPort() const {
   if (Type == SERIAL) {
     wxString t = wxString::Format(_T("Serial:%s"), Port.c_str());
     wxString comx = t.AfterFirst(':').BeforeFirst(' ');
@@ -329,7 +348,7 @@ std::string ConnectionParams::GetLastDSPort() const {
 }
 
 bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
-                                            FilterDirection direction) {
+                                            FilterDirection direction) const {
   wxArrayString filter;
   bool listype = false;
 
@@ -370,7 +389,7 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
   return !listype;
 }
 
-NavAddr::Bus ConnectionParams::GetCommProtocol() {
+NavAddr::Bus ConnectionParams::GetCommProtocol() const {
   if (Type == NETWORK) {
     if (NetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;

@@ -841,6 +841,25 @@ int ChartSymbols::FindColorTable(const wxString &tableName) {
   return 0;
 }
 
+bool ChartSymbols::UpdateTableColor( std::string table_name, std::string color_name, wxColor& new_color){
+  int table_index = FindColorTable( wxString(table_name.c_str()));
+
+  colTable *colortable = (colTable *)m_colorTables.Item(table_index);
+  wxString key(color_name.c_str(), wxConvUTF8, 5);
+
+  colortable->wxColors[key] = new_color;
+  if (colortable->colors.find(key) != colortable->colors.end()) {
+    S52color *color = &colortable->colors[key];
+    color->R = new_color.Red();
+    color->G = new_color.Green();
+    color->B = new_color.Blue();
+    return true;
+  }
+  else
+    return false;
+}
+
+
 wxString ChartSymbols::HashKey(const char *symbolName) {
   char key[9];
   key[8] = 0;

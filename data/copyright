@@ -15,8 +15,8 @@ Files-Excluded: .*
 
 
 Files: *
-Copyright: 2008-2018 David S Register <bdbcat@yahoo.com>
-           2008-2018 Contributors, see src/about.cpp AuthorText[]
+Copyright: 2008-2025 David S Register <bdbcat@yahoo.com>
+           2008-2025 Contributors, see Authors.adoc
 License: GPL-2+
 
 Files: CMakeLists.txt plugins/CMakeLists.txt
@@ -927,4 +927,3 @@ The data are licensed as follows, from
 License: public-domain
  No copyright is claimed for this software and there are hence no
  restrictions on how to use it.
-

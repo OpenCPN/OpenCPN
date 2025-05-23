@@ -223,7 +223,7 @@ public:
 class Vertex {
 public:
   Vertex(pugi::xml_node &xmldata);
-  virtual ~Vertex(){};
+  virtual ~Vertex() {};
   // public methods
 
   // public properties

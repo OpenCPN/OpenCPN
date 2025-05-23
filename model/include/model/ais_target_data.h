@@ -84,7 +84,8 @@ typedef enum ais_transponder_class {
   AIS_SART,        // SART
   AIS_ARPA,        // ARPA radar target
   AIS_APRS,        // APRS position report
-  AIS_METEO        // Meteorological and Hydrographic data
+  AIS_METEO,       // Meteorological and Hydrographic data
+  AIS_BUOY         // Buoy or a similar non standard target
 } _ais_transponder_class;
 
 //    Describe AIS Alert state

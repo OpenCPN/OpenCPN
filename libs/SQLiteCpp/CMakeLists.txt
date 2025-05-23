@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10.0)
+
 # SQLite3 support required for MBTiles.
 
 if (TARGET ocpn::sqlite_cpp)

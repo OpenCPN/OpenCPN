@@ -179,6 +179,7 @@ public:
   wxString configFileDirectory;
   int ColorTableIndex;
   symbolGraphicsHashMap m_symbolGraphicLocations;
+  bool UpdateTableColor( std::string table_name, std::string color_name, wxColor& new_color);
 
 private:
   void BuildLineStyle(LineStyle &lineStyle);

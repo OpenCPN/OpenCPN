@@ -17,9 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file sys_event.h Suspend/resum and new devices events exchange point */
+/**
+ * \file
+ *  Suspend/resume and new devices events exchange point
+ */
 
-#
 #ifndef SYS__EVENTS_H_
 #define SYS__EVENTS_H_
 #include "observable_evtvar.h"

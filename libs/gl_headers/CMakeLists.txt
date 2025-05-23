@@ -3,7 +3,7 @@
 #
 # Exports: ocpn::gl-headers transitive link target
 
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 if (TARGET ocpn::gl-headers)
   return ()

@@ -28,14 +28,12 @@
 WX_DEFINE_LIST(FontList);
 
 MyFontDesc::MyFontDesc(wxString DialogString, wxString ConfigString,
-                       wxFont *pFont, wxColour color) {
-  m_dialogstring = DialogString;
-  m_configstring = ConfigString;
-
-  m_nativeInfo = pFont->GetNativeFontInfoDesc();
-
-  m_font = pFont;
-  m_color = color;
-}
+                       wxFont *pFont, wxColour color, bool is_default)
+    : m_dialogstring(DialogString),
+      m_configstring(ConfigString),
+      m_nativeInfo(pFont->GetNativeFontInfoDesc()),
+      m_font(pFont),
+      m_color(color),
+      m_is_default(is_default) {}
 
 MyFontDesc::~MyFontDesc() { delete m_font; }

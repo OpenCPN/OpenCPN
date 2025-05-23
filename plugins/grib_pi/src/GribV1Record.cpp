@@ -15,7 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
-
+/**
+ * \file
+ * \implements \ref GribV1Record.h
+ */
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -318,8 +321,8 @@ void GribV1Record::translateDataType() {
 GribV1Record::GribV1Record(ZUFILE* file, int id_) {
   id = id_;
   //   seekStart = zu_tell(file);           // moved to section 0 read
-  data = NULL;
-  BMSbits = NULL;
+  data = nullptr;
+  BMSbits = nullptr;
   eof = false;
   knownData = true;
   IsDuplicated = false;

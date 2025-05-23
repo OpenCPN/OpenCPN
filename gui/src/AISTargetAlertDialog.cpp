@@ -46,6 +46,7 @@
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "routemanagerdialog.h"
+#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include <QDebug>
@@ -143,7 +144,7 @@ bool AISTargetAlertDialog::Create(int target_mmsi, wxWindow *parent,
   m_pdecoder = pdecoder;
   m_pParent = parent;
 
-  wxFont *dFont = FontMgr::Get().GetFont(_("AISTargetAlert"), 12);
+  wxFont *dFont = FontMgr::Get().GetFont(_("AISTargetAlert"), 0);
   int font_size = wxMax(8, dFont->GetPointSize());
   wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
@@ -244,7 +245,7 @@ void AISTargetAlertDialog::UpdateText() {
     int x, y;
     m_pAlertTextCtl->GetViewStart(&x, &y);
 
-    wxFont *dFont = FontMgr::Get().GetFont(_("AISTargetAlert"), 12);
+    wxFont *dFont = FontMgr::Get().GetFont(_("AISTargetAlert"), 0);
     wxString face = dFont->GetFaceName();
     int sizes[7];
     for (int i = -2; i < 5; i++) {
@@ -385,7 +386,7 @@ void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
                                        wxEmptyString, wxEmptyString);
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
       pSelect->AddSelectableRoutePoint(td->Lat, td->Lon, pWP);
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
 
       if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
         pRouteManagerDialog->UpdateWptListCtrl();

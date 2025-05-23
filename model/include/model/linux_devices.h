@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Low-level USB device management
- * Author:   Alec Leamas
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2021 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file linux_devices.h Low level udev usb device management. */
+/**
+ *  \file
+ *  Low level udev usb device management.
+ */
 
 #ifndef LINUX_DEVICES_H
 #define LINUX_DEVICES_H

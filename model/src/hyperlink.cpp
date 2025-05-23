@@ -23,6 +23,11 @@
  */
 
 #include "model/hyperlink.h"
+#include "model/gpx_document.h"
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(HyperlinkList);  // toh, 2009.02.22
+
+Hyperlink::Hyperlink() { GUID = GpxDocument::GetUUID().ToStdString(); }
+
+Hyperlink::~Hyperlink() {}

@@ -239,6 +239,6 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
 }
 
 void FastMessageMap::Remove(int pos) {
-  if ((unsigned int)(pos + 1) >= entries.size())
+  if ((unsigned int)(pos + 1) <= entries.size())
     entries.erase(entries.begin() + pos);
 }

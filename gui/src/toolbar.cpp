@@ -69,6 +69,7 @@ extern wxString g_toolbarConfig;
 extern double g_plus_minus_zoom_factor;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
+extern bool g_disable_main_toolbar;
 
 #ifdef ocpnUSE_GL
 extern GLenum g_texture_rectangle_format;
@@ -508,6 +509,7 @@ wxPoint ocpnFloatingToolbarDialog::GetToolbarPosition() {
 }
 
 bool ocpnFloatingToolbarDialog::MouseEvent(wxMouseEvent &event) {
+  if (g_disable_main_toolbar) return false;
   if (m_ptoolbar) {
     bool bproc = m_ptoolbar->OnMouseEvent(event, m_position);
     if (bproc) m_ptoolbar->CreateBitmap();
@@ -562,6 +564,8 @@ void ocpnFloatingToolbarDialog::DrawDC(ocpnDC &dc, double displayScale) {
 }
 
 void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
+  if (g_disable_main_toolbar) return;
+
 #ifdef ocpnUSE_GL
   if (!m_ptoolbar) return;
 
@@ -1508,8 +1512,6 @@ bool ocpnToolBarSimple::OnMouseEvent(wxMouseEvent &event, wxPoint &position) {
     OnRightClick(tool->GetId(), x, y);
   }
 
-
-
   // Left Button Released.  Only this action confirms selection.
   // If the button is enabled and it is not a toggle tool and it is
   // in the pressed state, then raise the button and call OnLeftClick.
@@ -2312,7 +2314,6 @@ int ToolbarMOBDialog::GetSelection() {
   return 0;
 }
 
-IMPLEMENT_DYNAMIC_CLASS(ToolbarChoicesDialog, wxDialog)
 /*!
  * ToolbarChoicesDialog event table definition
  */

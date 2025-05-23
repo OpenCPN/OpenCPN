@@ -165,8 +165,6 @@ static wxFontWeight ocpnFontWeightStringToInt(const wxString& weight) {
 // ocpnGenericFontDialog
 //-----------------------------------------------------------------------------
 
-wxIMPLEMENT_DYNAMIC_CLASS(ocpnGenericFontDialog, wxDialog);
-
 wxBEGIN_EVENT_TABLE(ocpnGenericFontDialog, wxDialog)
     EVT_CHECKBOX(wxID_FONT_UNDERLINE, ocpnGenericFontDialog::OnChangeFont)
         EVT_CHOICE(wxID_FONT_STYLE, ocpnGenericFontDialog::OnChangeFont)

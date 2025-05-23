@@ -18,7 +18,10 @@
 #*************************************************************************
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
-message(STATUS "CMAKE_MODULE_PATH : ${CMAKE_MODULE_PATH}")
+
+if (UNIX AND NOT APPLE AND NOT QT_ANDROID)
+  set(LINUX "1")
+endif ()
 
 set(MODEL_HDR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/model)
 set(
@@ -29,6 +32,7 @@ set(
   ${MODEL_HDR_DIR}/ais_state_vars.h
   ${MODEL_HDR_DIR}/ais_target_data.h
   ${MODEL_HDR_DIR}/atomic_queue.h
+  ${MODEL_HDR_DIR}/autopilot_output.h
   ${MODEL_HDR_DIR}/base_platform.h
   ${MODEL_HDR_DIR}/catalog_handler.h
   ${MODEL_HDR_DIR}/catalog_parser.h
@@ -40,11 +44,13 @@ set(
   ${MODEL_HDR_DIR}/comm_appmsg_bus.h
   ${MODEL_HDR_DIR}/comm_appmsg.h
   ${MODEL_HDR_DIR}/comm_bridge.h
+  ${MODEL_HDR_DIR}/comm_buffers.h
   ${MODEL_HDR_DIR}/comm_can_util.h
   ${MODEL_HDR_DIR}/comm_decoder.h
   ${MODEL_HDR_DIR}/comm_driver.h
   ${MODEL_HDR_DIR}/comm_drv_factory.h
   ${MODEL_HDR_DIR}/comm_drv_file.h
+  ${MODEL_HDR_DIR}/comm_drv_internal.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_bt.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_int.h
   ${MODEL_HDR_DIR}/comm_drv_n0183.h
@@ -56,6 +62,7 @@ set(
   ${MODEL_HDR_DIR}/comm_drv_registry.h
   ${MODEL_HDR_DIR}/comm_drv_signalk.h
   ${MODEL_HDR_DIR}/comm_drv_signalk_net.h
+  ${MODEL_HDR_DIR}/comm_drv_stats.h
   ${MODEL_HDR_DIR}/comm_n0183_output.h
   ${MODEL_HDR_DIR}/comm_navmsg_bus.h
   ${MODEL_HDR_DIR}/comm_navmsg.h
@@ -64,14 +71,18 @@ set(
   ${MODEL_HDR_DIR}/comm_vars.h
   ${MODEL_HDR_DIR}/config_vars.h
   ${MODEL_HDR_DIR}/conn_params.h
+  ${MODEL_HDR_DIR}/conn_states.h
   ${MODEL_HDR_DIR}/cutil.h
+  ${MODEL_HDR_DIR}/data_monitor_src.h
+  ${MODEL_HDR_DIR}/datetime.h
   ${MODEL_HDR_DIR}/downloader.h
   ${MODEL_HDR_DIR}/ds_porttype.h
+  ${MODEL_HDR_DIR}/filters_on_disk.h
   ${MODEL_HDR_DIR}/garmin_protocol_mgr.h
   ${MODEL_HDR_DIR}/garmin_wrapper.h
   ${MODEL_HDR_DIR}/geodesic.h
   ${MODEL_HDR_DIR}/georef.h
-  ${MODEL_HDR_DIR}/gui.h
+  ${MODEL_HDR_DIR}/gpx_document.h
   ${MODEL_HDR_DIR}/hyperlink.h
   ${MODEL_HDR_DIR}/idents.h
   ${MODEL_HDR_DIR}/instance_check.h
@@ -80,22 +91,29 @@ set(
   ${MODEL_HDR_DIR}/local_api.h
   ${MODEL_HDR_DIR}/logger.h
   ${MODEL_HDR_DIR}/MarkIcon.h
-  ${MODEL_HDR_DIR}/mDNS_query.h
+  ${MODEL_HDR_DIR}/mdns_query.h
   ${MODEL_HDR_DIR}/mdns_cache.h
-  ${MODEL_HDR_DIR}/mDNS_service.h
+  ${MODEL_HDR_DIR}/mdns_service.h
   ${MODEL_HDR_DIR}/meteo_points.h
   ${MODEL_HDR_DIR}/multiplexer.h
   ${MODEL_HDR_DIR}/nav_object_database.h
+  ${MODEL_HDR_DIR}/navmsg_filter.h
+  ${MODEL_HDR_DIR}/navobj_db.h
   ${MODEL_HDR_DIR}/navutil_base.h
   ${MODEL_HDR_DIR}/nmea_log.h
   ${MODEL_HDR_DIR}/nmea_ctx_factory.h
+  ${MODEL_HDR_DIR}/notification.h
+  ${MODEL_HDR_DIR}/notification_manager.h
   ${MODEL_HDR_DIR}/ocpn_types.h
   ${MODEL_HDR_DIR}/ocpn_utils.h
   ${MODEL_HDR_DIR}/own_ship.h
   ${MODEL_HDR_DIR}/peer_client.h
+  ${MODEL_HDR_DIR}/periodic_timer.h
   ${MODEL_HDR_DIR}/pincode.h
+  ${MODEL_HDR_DIR}/periodic_timer.h
   ${MODEL_HDR_DIR}/plugin_blacklist.h
   ${MODEL_HDR_DIR}/plugin_cache.h
+  ${MODEL_HDR_DIR}/plugin_comm.h
   ${MODEL_HDR_DIR}/plugin_handler.h
   ${MODEL_HDR_DIR}/plugin_loader.h
   ${MODEL_HDR_DIR}/plugin_paths.h
@@ -108,8 +126,10 @@ set(
   ${MODEL_HDR_DIR}/select.h
   ${MODEL_HDR_DIR}/select_item.h
   ${MODEL_HDR_DIR}/semantic_vers.h
+  ${MODEL_HDR_DIR}/serial_io.h
   ${MODEL_HDR_DIR}/ser_ports.h
   ${MODEL_HDR_DIR}/sys_events.h
+  ${MODEL_HDR_DIR}/thread_ctrl.h
   ${MODEL_HDR_DIR}/track.h
   ${MODEL_HDR_DIR}/usb_watch_daemon.h
   ${MODEL_HDR_DIR}/wait_continue.h
@@ -123,6 +143,7 @@ set(SRC
   ${MODEL_SRC_DIR}/ais_decoder.cpp
   ${MODEL_SRC_DIR}/ais_state_vars.cpp
   ${MODEL_SRC_DIR}/ais_target_data.cpp
+  ${MODEL_SRC_DIR}/autopilot_output.cpp
   ${MODEL_SRC_DIR}/base_platform.cpp
   ${MODEL_SRC_DIR}/catalog_handler.cpp
   ${MODEL_SRC_DIR}/catalog_parser.cpp
@@ -134,11 +155,13 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_appmsg_bus.cpp
   ${MODEL_SRC_DIR}/comm_appmsg.cpp
   ${MODEL_SRC_DIR}/comm_bridge.cpp
+  ${MODEL_SRC_DIR}/comm_buffers.cpp
   ${MODEL_SRC_DIR}/comm_can_util.cpp
   ${MODEL_SRC_DIR}/comm_decoder.cpp
   #${MODEL_SRC_DIR}/comm_driver.cpp
   ${MODEL_SRC_DIR}/comm_drv_factory.cpp
   ${MODEL_SRC_DIR}/comm_drv_file.cpp
+  ${MODEL_SRC_DIR}/comm_drv_internal.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
@@ -157,31 +180,43 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_vars.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
   ${MODEL_SRC_DIR}/conn_params.cpp
+  ${MODEL_SRC_DIR}/conn_states.cpp
   ${MODEL_SRC_DIR}/cutil.cpp
+  ${MODEL_SRC_DIR}/data_monitor_src.cpp
+  ${MODEL_SRC_DIR}/datetime.cpp
   ${MODEL_SRC_DIR}/downloader.cpp
+  ${MODEL_SRC_DIR}/ds_porttype.cpp
+  ${MODEL_SRC_DIR}/filters_on_disk.cpp
   ${MODEL_SRC_DIR}/garmin_protocol_mgr.cpp
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
-  ${MODEL_SRC_DIR}/gui.cpp
+  ${MODEL_SRC_DIR}/gpx_document.cpp
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
+  ${MODEL_SRC_DIR}/ipc_factories.cpp
   ${MODEL_SRC_DIR}/local_api.cpp
   ${MODEL_SRC_DIR}/logger.cpp
-  ${MODEL_SRC_DIR}/mDNS_query.cpp
+  ${MODEL_SRC_DIR}/mdns_query.cpp
   ${MODEL_SRC_DIR}/mdns_cache.cpp
-  ${MODEL_SRC_DIR}/mDNS_service.cpp
+  ${MODEL_SRC_DIR}/mdns_service.cpp
   ${MODEL_SRC_DIR}/multiplexer.cpp
   ${MODEL_SRC_DIR}/nav_object_database.cpp
+  ${MODEL_SRC_DIR}/navobj_db.cpp
+  ${MODEL_SRC_DIR}/navmsg_filter.cpp
   ${MODEL_SRC_DIR}/navutil_base.cpp
+  ${MODEL_SRC_DIR}/notification.cpp
+  ${MODEL_SRC_DIR}/notification_manager.cpp
   ${MODEL_SRC_DIR}/ocpn_plugin.cpp
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/own_ship.cpp
   ${MODEL_SRC_DIR}/peer_client.cpp
+  ${MODEL_SRC_DIR}/periodic_timer.cpp
   ${MODEL_SRC_DIR}/pincode.cpp
   ${MODEL_SRC_DIR}/plugin_api.cpp
   ${MODEL_SRC_DIR}/plugin_blacklist.cpp
   ${MODEL_SRC_DIR}/plugin_cache.cpp
+  ${MODEL_SRC_DIR}/plugin_comm.cpp
   ${MODEL_SRC_DIR}/plugin_handler.cpp
   ${MODEL_SRC_DIR}/plugin_loader.cpp
   ${MODEL_SRC_DIR}/plugin_paths.cpp
@@ -195,6 +230,7 @@ set(SRC
   ${MODEL_SRC_DIR}/select_item.cpp
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
+  ${MODEL_SRC_DIR}/thread_ctrl.cpp
   ${MODEL_SRC_DIR}/track.cpp
   ${MODEL_SRC_DIR}/usb_watch_factory.cpp
   ${MODEL_SRC_DIR}/wx_instance_chk.cpp
@@ -205,9 +241,11 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
-#if (NOT QT_ANDROID)
-  list(APPEND SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
-#endif ()
+if (QT_ANDROID)
+  list(APPEND HDRS ${MODEL_SRC_DIR}/android_serial_io.cpp)
+else ()
+  list(APPEND SRC ${MODEL_SRC_DIR}/std_serial_io.cpp)
+endif ()
 
 if (LINUX)
   list(APPEND HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_socketcan.h )
@@ -257,7 +295,116 @@ target_include_directories(
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/include
+    ${CMAKE_SOURCE_DIR}/libs/sqlite/include
 )
+
+if (LINUX)
+  find_package(LIBUDEV)
+  if (LIBUDEV_FOUND)
+    target_link_libraries(_OCPN_MODEL INTERFACE ocpn::libudev)
+    set(HAVE_LIBUDEV 1)
+  endif ()
+endif ()
+
+if (OCPN_USE_CURL)
+
+  if (NOT CMAKE_HOST_WIN32)
+    set(OCPN_USE_EXTERN_CURL ON)
+  endif ()
+
+  if (NOT QT_ANDROID)
+    if (OCPN_USE_EXTERN_CURL)
+      find_package(CURL REQUIRED)
+      message(STATUS "ocpn: using external curl libraries...")
+      message(STATUS "  curl includes: " ${CURL_INCLUDE_DIRS})
+      message(STATUS "  curl libraries: " ${CURL_LIBRARIES})
+
+      target_include_directories(_OCPN_MODEL INTERFACE ${CURL_INCLUDE_DIRS})
+    else ()
+      include("Curl")
+      message(STATUS "Using bundled curl library...")
+    endif ()
+
+    pkg_search_module(SYS_WXCURL libwxcurl wxcurl)
+    use_bundled_lib(USE_BUNDLED_WXCURL wxcurl)
+    if (SYS_WXCURL_FOUND AND NOT USE_BUNDLED_WXCURL)
+      message(STATUS "Building with system wxcurl")
+      target_include_directories(
+        _OCPN_MODEL INTERFACE ${CURL_INCLUDE_DIRS} ${SYS_WXCURL_INCLUDE_DIR}
+      )
+      target_link_libraries(_OCPN_MODEL INTERFACE ${SYS_WXCURL_LIBRARIES})
+    else ()
+      message(STATUS "Building with bundled wxcurl")
+      include("Curl")
+      add_subdirectory("${CMAKE_SOURCE_DIR}/libs/wxcurl" ${CMAKE_BINARY_DIR}/curl2)
+      target_link_libraries(_OCPN_MODEL INTERFACE ocpn::wxcurl)
+    endif ()
+
+    target_link_libraries(_OCPN_MODEL INTERFACE ${CURL_LIBRARIES})
+
+    if (WIN32 AND OCPN_USE_EXTERN_CURL)
+      find_library(
+        CURL_LIBRARY_DLL
+        NAMES curl curllib libcurl_imp curllib_static libcurl
+        PATH_SUFFIXES dll
+      )
+      install(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
+    endif ()
+  else ()
+    target_include_directories(
+      _OCPN_MODEL
+        INTERFACE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
+    )
+    target_link_libraries(
+      _OCPN_MODEL
+        INTERFACE
+          ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a
+    )
+  endif ()
+endif ()
+
+if (NOT WIN32)
+  if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+    set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
+  endif()
+  find_package(OpenSSL)
+  if (OPENSSL_FOUND)
+    message(STATUS
+      "OpenSSL found ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}"
+    )
+    target_include_directories(_OCPN_MODEL INTERFACE ${OPENSSL_INCLUDE_DIR})
+    target_include_directories(_OCPN_MODEL INTERFACE ${OPENSSL_INCLUDE_DIR})
+    target_link_libraries(_OCPN_MODEL INTERFACE ${OPENSSL_LIBRARIES})
+  elseif (APPLE)
+    message(STATUS "Model: APPLE: Hardwiring /usr/local OpenSSL...")
+    target_include_directories(
+      _OCPN_MODEL INTERFACE /usr/local/opt/openssl@3/include
+    )
+    target_link_libraries(
+      _OCPN_MODEL
+        INTERFACE
+          /usr/local/opt/openssl@3/lib/libcrypto.3.dylib
+          /usr/local/opt/openssl@3/lib/libssl.3.dylib
+    )
+
+  endif ()
+else ()
+  target_include_directories(
+    _OCPN_MODEL
+    INTERFACE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
+  )
+  target_link_libraries(
+    _OCPN_MODEL
+    INTERFACE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
+  )
+ target_link_libraries(
+    _OCPN_MODEL
+    INTERFACE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
+  )
+endif ()
+
+
+
 
 # check for lzma support for reading compressed charts
 if (OCPN_USE_LZMA)
@@ -325,12 +472,13 @@ target_link_libraries(
     ocpn::geoprim
     ocpn::iso8211
     ocpn::libarchive
-    ocpn::mDNS
+    ocpn::mdns
     ocpn::mongoose
     ocpn::N2KParser
     ocpn::nmea0183
     ocpn::pugixml
     ocpn::rapidjson
+    ocpn::sqlite
     ocpn::s52plib
     ocpn::sound
     ocpn::wxjson
@@ -357,7 +505,6 @@ if (QT_ANDROID)
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
   )
-  target_compile_definitions(_OCPN_MODEL INTERFACE -DMG_ENABLE_OPENSSL)
   target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
     ${CMAKE_SOURCE_DIR}/android

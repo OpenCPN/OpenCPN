@@ -50,9 +50,9 @@
 
 class ChartBase;
 
-//----------------------------------------------------------------------------
-// ThumbWin
-//----------------------------------------------------------------------------
+/**
+ * Window for displaying chart thumbnails.
+ */
 class ThumbWin : public wxWindow {
 public:
   ThumbWin();

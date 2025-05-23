@@ -15,14 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
-
+/**
+ * \file
+ * \implements \ref zuFile.h
+ */
 #include "zuFile.h"
 
 //----------------------------------------------------
 int zu_can_read_file(const char *fname) {
   ZUFILE *f;
   f = zu_open(fname, "rb");
-  if (f == NULL) {
+  if (f == nullptr) {
     return 0;
   } else {
     zu_close(f);
@@ -35,11 +38,11 @@ ZUFILE *zu_open(const char *fname, const char *mode, int type) {
   ZUFILE *f;
   char buf[16];
   if (!fname || strlen(fname) == 0) {
-    return NULL;
+    return nullptr;
   }
   f = (ZUFILE *)malloc(sizeof(ZUFILE));
   if (!f) {
-    return NULL;
+    return nullptr;
   }
 
   f->ok = 1;
@@ -49,7 +52,7 @@ ZUFILE *zu_open(const char *fname, const char *mode, int type) {
   if (type == ZU_COMPRESS_AUTO) {
     char *p = strrchr(f->fname, '.');
     int i = 0;
-    while (p != NULL && *p != '\0' && i < 4) {
+    while (p != nullptr && *p != '\0' && i < 4) {
       buf[i] = tolower(*p);
       i++;
       p++;
@@ -80,24 +83,24 @@ ZUFILE *zu_open(const char *fname, const char *mode, int type) {
       f->faux = fopen(f->fname, mode);
       if (f->faux) {
         int bzerror = BZ_OK;
-        f->zfile = (void *)BZ2_bzReadOpen(&bzerror, f->faux, 0, 0, NULL, 0);
+        f->zfile = (void *)BZ2_bzReadOpen(&bzerror, f->faux, 0, 0, nullptr, 0);
         if (bzerror != BZ_OK) {
           BZ2_bzReadClose(&bzerror, (BZFILE *)(f->zfile));
           fclose(f->faux);
-          f->zfile = NULL;
+          f->zfile = nullptr;
         }
       } else {
-        f->zfile = NULL;
+        f->zfile = nullptr;
       }
       break;
     default:
-      f->zfile = NULL;
+      f->zfile = nullptr;
   }
 
-  if (f->zfile == NULL) {
+  if (f->zfile == nullptr) {
     free(f->fname);
     free(f);
-    f = NULL;
+    f = nullptr;
   }
 
   return f;
@@ -197,11 +200,11 @@ int zu_seek(ZUFILE *f, long offset, int whence) {
         bzerror = BZ_OK;
         rewind(f->faux);
         f->pos = 0;
-        f->zfile = (void *)BZ2_bzReadOpen(&bzerror, f->faux, 0, 0, NULL, 0);
+        f->zfile = (void *)BZ2_bzReadOpen(&bzerror, f->faux, 0, 0, nullptr, 0);
         if (bzerror != BZ_OK) {
           BZ2_bzReadClose(&bzerror, (BZFILE *)(f->zfile));
           fclose(f->faux);
-          f->zfile = NULL;
+          f->zfile = nullptr;
           f->ok = 0;
         }
         res = zu_bzSeekForward(f, offset);

@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  personalized GRID
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,7 +15,28 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * Specialized Grid Control for GRIB Data Display.
+ *
+ * Implements a customized grid control optimized for displaying meteorological
+ * data with:
+ * - Direction arrows for vector quantities (wind, current, waves)
+ * - Numerical formatting for different parameter types
+ * - Custom cell rendering and column headers
+ * - Scrolling and viewport management
+ * - Row/column label handling
+ *
+ * Features:
+ * - Efficient cell visibility detection and rendering
+ * - Direction arrow rendering with custom geometry
+ * - Numerical value formatting and alignment
+ * - Platform-specific optimizations
+ * - Event handling for user interaction
+ *
+ * The grid is designed to efficiently handle large weather datasets while
+ * providing intuitive visualization of both scalar and vector quantities.
  */
 #ifndef __CUSTOMGRID_H__
 #define __CUSTOMGRID_H__

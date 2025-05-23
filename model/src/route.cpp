@@ -48,11 +48,13 @@
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "model/navobj_db.h"
 
 WayPointman *pWayPointMan;
 double g_defaultBoatSpeed;
 
 #include <wx/listimpl.cpp>
+
 WX_DEFINE_LIST(RouteList);
 
 Route::Route() {
@@ -131,6 +133,28 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
   FinalizeForRendering();
 }
 
+wxString Route::IsPointNameValid(RoutePoint *pPoint,
+                                 const wxString &name) const {
+  RoutePoint *point;
+  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  wxString substr = name.SubString(0, 6);
+
+  while (node) {
+    point = node->GetData();
+    wxString exist = point->GetName().SubString(0, 6);
+
+    if (pPoint->m_GUID == point->m_GUID) {
+      node = node->GetNext();
+    } else if (substr == exist) {
+      return wxString("Name is not unique in route");
+    } else {
+      node = node->GetNext();
+    }
+  }
+
+  return wxEmptyString;
+}
+
 void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
                      bool b_deferBoxCalc) {
   if (pNewPoint->m_bIsolatedMark) {
@@ -151,7 +175,6 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
     wxString name;
     name.Printf(_T("%03d"), GetnPoints());
     pNewPoint->SetName(name);
-    pNewPoint->m_bDynamicName = true;
   }
   return;
 }
@@ -197,7 +220,6 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
 
     int insert = insert_after++;
     pNewPoint->m_bIsInRoute = true;
-    pNewPoint->m_bDynamicName = true;
     pNewPoint->SetNameShown(false);
     pRoutePointList->Insert(insert, pNewPoint);
     if (bRenamePoints) RenameRoutePoints();
@@ -285,7 +307,6 @@ RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
                                         GetNewMarkSequenced(), wxEmptyString);
   newpoint->m_bIsInRoute = true;
-  newpoint->m_bDynamicName = true;
   newpoint->SetNameShown(false);
 
   int nRP = pRoutePointList->IndexOf(pRP);
@@ -308,7 +329,6 @@ RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
                                         GetNewMarkSequenced(), wxEmptyString);
   newpoint->m_bIsInRoute = true;
-  newpoint->m_bDynamicName = true;
   newpoint->SetNameShown(false);
 
   pRoutePointList->Insert(nRP, newpoint);
@@ -350,7 +370,6 @@ void Route::DeletePoint(RoutePoint *rp, bool bRenamePoints) {
 
   pSelect->DeleteAllSelectableRoutePoints(this);
   pSelect->DeleteAllSelectableRouteSegments(this);
-  NavObjectChanges::getInstance()->DeleteWayPoint(rp);
 
   pRoutePointList->DeleteObject(rp);
 
@@ -361,8 +380,6 @@ void Route::DeletePoint(RoutePoint *rp, bool bRenamePoints) {
   if (GetnPoints() > 1) {
     pSelect->AddAllSelectableRouteSegments(this);
     pSelect->AddAllSelectableRoutePoints(this);
-
-    NavObjectChanges::getInstance()->UpdateRoute(this);
 
     FinalizeForRendering();
     UpdateSegmentDistances();
@@ -376,15 +393,21 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
   pSelect->DeleteAllSelectableRoutePoints(this);
   pSelect->DeleteAllSelectableRouteSegments(this);
 
-  pRoutePointList->DeleteObject(rp);
+  // Arrange to remove all references to the same routepoint
+  // within the route.  This can happen with circular or "round-trip" routes.
+  pRoutePointList->DeleteContents(false);
+  bool deleted = pRoutePointList->DeleteObject(rp);
+  while (deleted) {
+    deleted = pRoutePointList->DeleteObject(rp);
+  }
 
   // check all other routes to see if this point appears in any other route
   Route *pcontainer_route = FindRouteContainingWaypoint(rp);
 
   if (pcontainer_route == NULL) {
-    rp->m_bIsInRoute = false;  // Take this point out of this (and only) route
-    rp->m_bDynamicName = false;
+    rp->m_bIsInRoute = false;    // Take this point out of this (and only) route
     rp->m_bIsolatedMark = true;  // This has become an isolated mark
+    NavObj_dB::GetInstance().UpdateRoutePoint(rp);
   }
 
   if (bRenamePoints) RenameRoutePoints();
@@ -394,8 +417,8 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
     pSelect->AddAllSelectableRouteSegments(this);
     pSelect->AddAllSelectableRoutePoints(this);
 
-    NavObjectChanges::getInstance()->UpdateRoute(this);
-
+    // NavObjectChanges::getInstance()->UpdateRoute(this);
+    NavObj_dB::GetInstance().UpdateRoute(this);
     FinalizeForRendering();
     UpdateSegmentDistances();
   }
@@ -665,9 +688,19 @@ void Route::RenameRoutePoints(void) {
   int i = 1;
   while (node) {
     RoutePoint *prp = node->GetData();
-    if (prp->m_bDynamicName) {
-      wxString name;
-      name.Printf(_T ( "%03d" ), i);
+    if (prp->IsNameDynamic()) {
+      wxString name = prp->GetName();
+      if (name.Len() == 3) {
+        name.Printf(_T ( "%03d" ), i);
+      } else if (name.Left(2) == "NM") {
+        name.Printf(_T ( "%03d" ), i);
+        if (prp->GetName().Len() >= 5) {
+          name.Append(prp->GetName().Mid(5));
+        }
+      } else {
+        name.Printf(_T ( "%03d" ), i);
+        name.Append(prp->GetName().Mid(3));
+      }
       prp->SetName(name);
     }
 

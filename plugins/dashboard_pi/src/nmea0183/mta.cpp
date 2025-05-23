@@ -38,85 +38,78 @@
 ** You can use it any way you like.
 */
 
-//IMPLEMENT_DYNAMIC( MTA, RESPONSE )
+// IMPLEMENT_DYNAMIC( MTA, RESPONSE )
 
-MTA::MTA()
-{
-   Mnemonic = _T("MTA");
-   Empty();
+MTA::MTA() {
+  Mnemonic = _T("MTA");
+  Empty();
 }
 
-MTA::~MTA()
-{
-   Mnemonic.Empty();
-   Empty();
+MTA::~MTA() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void MTA::Empty( void )
-{
-//   ASSERT_VALID( this );
+void MTA::Empty(void) {
+  //   ASSERT_VALID( this );
 
-   Temperature = 0.0;
-   UnitOfMeasurement.Empty();
+  Temperature = 0.0;
+  UnitOfMeasurement.Empty();
 }
 
-bool MTA::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool MTA::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** MTA - Air Temperature
-   **
-   **        1   2 3
-   **        |   | |
-   ** $--MTA,x.x,C*hh<CR><LF>
-   **
-   ** Field Number:
-   **  1) Degrees
-   **  2) Unit of Measurement, Celcius
-   **  3) Checksum
-   */
+  /*
+  ** MTA - Air Temperature
+  **
+  **        1   2 3
+  **        |   | |
+  ** $--MTA,x.x,C*hh<CR><LF>
+  **
+  ** Field Number:
+  **  1) Degrees
+  **  2) Unit of Measurement, Celcius
+  **  3) Checksum
+  */
 
-   /*
-   ** First we check the checksum...
-   */
+  /*
+  ** First we check the checksum...
+  */
 
-   if ( sentence.IsChecksumBad( 3 ) == TRUE )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
+  if (sentence.IsChecksumBad(3) == TRUE) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
 
-   Temperature       = sentence.Double( 1 );
-   UnitOfMeasurement = sentence.Field( 2 );
+  Temperature = sentence.Double(1);
+  UnitOfMeasurement = sentence.Field(2);
 
-   return( TRUE );
+  return (TRUE);
 }
 
-bool MTA::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool MTA::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += Temperature;
-   sentence += UnitOfMeasurement;
+  sentence += Temperature;
+  sentence += UnitOfMeasurement;
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const MTA& MTA::operator = ( const MTA& source )
-{
-//   ASSERT_VALID( this );
+const MTA& MTA::operator=(const MTA& source) {
+  //   ASSERT_VALID( this );
 
-   Temperature       = source.Temperature;
-   UnitOfMeasurement = source.UnitOfMeasurement;
+  Temperature = source.Temperature;
+  UnitOfMeasurement = source.UnitOfMeasurement;
 
-   return( *this );
+  return (*this);
 }

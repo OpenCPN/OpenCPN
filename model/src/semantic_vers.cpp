@@ -48,6 +48,10 @@ SemanticVersion SemanticVersion::parse(std::string s) {
     vers.pre = s.substr(pos + 1);
     s = s.substr(0, pos);
   }
+
+  // Ignore prefixes like 'v', 'rc'. etc.
+  while (s.size() && (s[0] < '0' || s[0] > '9')) s = s.substr(1);
+
   int r = sscanf(s.c_str(), "%d.%d.%d.%d", &vers.major, &vers.minor,
                  &vers.patch, &vers.post);
   if (r < 2) {

@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,390 +39,377 @@
 ** You can use it any way you like.
 */
 
-wxString& expand_talker_id( const wxString &identifier )
-{
-   static wxString expanded_identifier;
+wxString& expand_talker_id(const wxString& identifier) {
+  static wxString expanded_identifier;
 
-   char first_character  = 0x00;
-   char second_character = 0x00;
+  char first_character = 0x00;
+  char second_character = 0x00;
 
-   first_character  = identifier[ 0 ];
-   second_character = identifier[ 1 ];
+  first_character = identifier[0];
+  second_character = identifier[1];
 
-   /*
-   ** Set up our default return value
-   */
+  /*
+  ** Set up our default return value
+  */
 
-   expanded_identifier = _T("Unknown - ");
-   expanded_identifier += identifier;
+  expanded_identifier = _T("Unknown - ");
+  expanded_identifier += identifier;
 
-   switch( first_character )
-   {
-      case 'A': // AG, AP
+  switch (first_character) {
+    case 'A':  // AG, AP
 
-         switch( second_character )
-         {
-            case 'G': // AG
+      switch (second_character) {
+        case 'G':  // AG
 
-                expanded_identifier = _T("Autopilot - General");
-               break;
+          expanded_identifier = _T("Autopilot - General");
+          break;
 
-            case 'P': // AP
+        case 'P':  // AP
 
-                expanded_identifier = _T("Autopilot - Magnetic");
-               break;
-         }
+          expanded_identifier = _T("Autopilot - Magnetic");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'C': // CD, CS, CT, CV, CX and CC,CM
+    case 'C':  // CD, CS, CT, CV, CX and CC,CM
 
-         switch( second_character )
-         {
-            case 'C': // CC
+      switch (second_character) {
+        case 'C':  // CC
 
-                expanded_identifier = _T("Commputer - Programmed Calculator (outdated)");
-               break;
+          expanded_identifier =
+              _T("Commputer - Programmed Calculator (outdated)");
+          break;
 
-            case 'D': // CD
+        case 'D':  // CD
 
-                expanded_identifier = _T("Communications - Digital Selective Calling (DSC)");
-               break;
+          expanded_identifier =
+              _T("Communications - Digital Selective Calling (DSC)");
+          break;
 
-            case 'M': // CM
+        case 'M':  // CM
 
-                expanded_identifier = _T("Computer - Memory Data (outdated)");
-               break;
+          expanded_identifier = _T("Computer - Memory Data (outdated)");
+          break;
 
-            case 'S': // CS
+        case 'S':  // CS
 
-                expanded_identifier = _T("Communications - Satellite");
-               break;
+          expanded_identifier = _T("Communications - Satellite");
+          break;
 
-            case 'T': // CT
+        case 'T':  // CT
 
-                expanded_identifier = _T("Communications - Radio-Telephone (MF/HF)");
-               break;
+          expanded_identifier = _T("Communications - Radio-Telephone (MF/HF)");
+          break;
 
-            case 'V': // CV
+        case 'V':  // CV
 
-                expanded_identifier = _T("Communications - Radio-Telephone (VHF)");
-               break;
+          expanded_identifier = _T("Communications - Radio-Telephone (VHF)");
+          break;
 
-            case 'X': // CX
+        case 'X':  // CX
 
-                expanded_identifier = _T("Communications - Scanning Receiver");
-               break;
-         }
+          expanded_identifier = _T("Communications - Scanning Receiver");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'D': // DE, DF
+    case 'D':  // DE, DF
 
-         switch( second_character )
-         {
-            case 'E': // DE
+      switch (second_character) {
+        case 'E':  // DE
 
-                expanded_identifier = _T("DECCA Navigation");
-               break;
+          expanded_identifier = _T("DECCA Navigation");
+          break;
 
-            case 'F': // DF
+        case 'F':  // DF
 
-                expanded_identifier = _T("Direction Finder");
-               break;
-         }
+          expanded_identifier = _T("Direction Finder");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'E': // EC, EP, ER
+    case 'E':  // EC, EP, ER
 
-         switch( second_character )
-         {
-            case 'C': // EC
+      switch (second_character) {
+        case 'C':  // EC
 
-                expanded_identifier = _T("Electronic Chart Display & Information System (ECDIS)");
-               break;
+          expanded_identifier =
+              _T("Electronic Chart Display & Information System (ECDIS)");
+          break;
 
-            case 'P': // EP
+        case 'P':  // EP
 
-                expanded_identifier = _T("Emergency Position Indicating Beacon (EPIRB)");
-               break;
+          expanded_identifier =
+              _T("Emergency Position Indicating Beacon (EPIRB)");
+          break;
 
-            case 'R': // ER
+        case 'R':  // ER
 
-                expanded_identifier = _T("Engine Room Monitoring Systems");
-               break;
-         }
+          expanded_identifier = _T("Engine Room Monitoring Systems");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'G': // GP
+    case 'G':  // GP
 
-         switch( second_character )
-         {
-            case 'P': // GP
+      switch (second_character) {
+        case 'P':  // GP
 
-                expanded_identifier = _T("Global Positioning System (GPS)");
-               break;
-         }
+          expanded_identifier = _T("Global Positioning System (GPS)");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'H': // HC, HE, HN
+    case 'H':  // HC, HE, HN
 
-         switch( second_character )
-         {
-            case 'C': // HC
+      switch (second_character) {
+        case 'C':  // HC
 
-                expanded_identifier = _T("Heading - Magnetic Compass");
-               break;
+          expanded_identifier = _T("Heading - Magnetic Compass");
+          break;
 
-            case 'E': // HE
+        case 'E':  // HE
 
-                expanded_identifier = _T("Heading - North Seeking Gyro");
-               break;
+          expanded_identifier = _T("Heading - North Seeking Gyro");
+          break;
 
-            case 'N': // HN
+        case 'N':  // HN
 
-                expanded_identifier = _T("Heading - Non North Seeking Gyro");
-               break;
-         }
+          expanded_identifier = _T("Heading - Non North Seeking Gyro");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'I': // II, IN
+    case 'I':  // II, IN
 
-         switch( second_character )
-         {
-            case 'I': // II
+      switch (second_character) {
+        case 'I':  // II
 
-                expanded_identifier = _T("Integrated Instrumentation");
-               break;
+          expanded_identifier = _T("Integrated Instrumentation");
+          break;
 
-            case 'N': // IN
+        case 'N':  // IN
 
-                expanded_identifier = _T("Integrated Navigation");
-               break;
-         }
+          expanded_identifier = _T("Integrated Navigation");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'L': // LA, LC
+    case 'L':  // LA, LC
 
-         switch( second_character )
-         {
-            case 'A': // LA
+      switch (second_character) {
+        case 'A':  // LA
 
-                expanded_identifier = _T("Loran A");
-               break;
+          expanded_identifier = _T("Loran A");
+          break;
 
-            case 'C': // LC
+        case 'C':  // LC
 
-                expanded_identifier = _T("Loran C");
-               break;
-         }
+          expanded_identifier = _T("Loran C");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'M': // MP
+    case 'M':  // MP
 
-         switch( second_character )
-         {
-            case 'P': // MP
+      switch (second_character) {
+        case 'P':  // MP
 
-                expanded_identifier = _T("Microwave Positioning System (outdated)");
-               break;
-         }
+          expanded_identifier = _T("Microwave Positioning System (outdated)");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'O': // OM, OS
+    case 'O':  // OM, OS
 
-         switch( second_character )
-         {
-            case 'M': // OM
+      switch (second_character) {
+        case 'M':  // OM
 
-                expanded_identifier = _T("OMEGA Navigation System");
-               break;
+          expanded_identifier = _T("OMEGA Navigation System");
+          break;
 
-            case 'S': // OS
+        case 'S':  // OS
 
-                expanded_identifier = _T("Distress Alarm System (outdated)");
-               break;
-         }
+          expanded_identifier = _T("Distress Alarm System (outdated)");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'P': // P
+    case 'P':  // P
 
-         break;
+      break;
 
-      case 'R': // RA
+    case 'R':  // RA
 
-         switch( second_character )
-         {
-            case 'A': // RA
+      switch (second_character) {
+        case 'A':  // RA
 
-                expanded_identifier = _T("RADAR and/or ARPA");
-               break;
-         }
+          expanded_identifier = _T("RADAR and/or ARPA");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'S': // SD, SN, SS
+    case 'S':  // SD, SN, SS
 
-         switch( second_character )
-         {
-            case 'D': // SD
+      switch (second_character) {
+        case 'D':  // SD
 
-                expanded_identifier = _T("Sounder, Depth");
-               break;
+          expanded_identifier = _T("Sounder, Depth");
+          break;
 
-            case 'N': // SN
+        case 'N':  // SN
 
-                expanded_identifier = _T("Electronic Positioning System, other/general");
-               break;
+          expanded_identifier =
+              _T("Electronic Positioning System, other/general");
+          break;
 
-            case 'S': // SS
+        case 'S':  // SS
 
-                expanded_identifier = _T("Sounder, Scanning");
-               break;
-         }
+          expanded_identifier = _T("Sounder, Scanning");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'T': // TI, TR
+    case 'T':  // TI, TR
 
-         switch( second_character )
-         {
-            case 'I': // TI
+      switch (second_character) {
+        case 'I':  // TI
 
-                expanded_identifier = _T("Turn Rate Indicator");
-               break;
+          expanded_identifier = _T("Turn Rate Indicator");
+          break;
 
-            case 'R': // TR
+        case 'R':  // TR
 
-                expanded_identifier = _T("TRANSIT Navigation System");
-               break;
-         }
+          expanded_identifier = _T("TRANSIT Navigation System");
+          break;
+      }
 
-         break;
+      break;
 
-      case 'V': // VD, VM, VW
+    case 'V':  // VD, VM, VW
 
-         switch( second_character )
-         {
-            case 'D': // VD
+      switch (second_character) {
+        case 'D':  // VD
 
-                expanded_identifier = _T("Velocity Sensor, Doppler, other/general");
-               break;
+          expanded_identifier = _T("Velocity Sensor, Doppler, other/general");
+          break;
 
-            case 'M': // VM
+        case 'M':  // VM
 
-                expanded_identifier = _T("Velocity Sensor, Speed Log, Water, Magnetic");
-               break;
+          expanded_identifier =
+              _T("Velocity Sensor, Speed Log, Water, Magnetic");
+          break;
 
-            case 'W': // VW
+        case 'W':  // VW
 
-                expanded_identifier = _T("Velocity Sensor, Speed Log, Water, Mechanical");
-               break;
-         }
+          expanded_identifier =
+              _T("Velocity Sensor, Speed Log, Water, Mechanical");
+          break;
+      }
 
-         break;
+      break;
 
+    case 'W':  // WI
 
-      case 'W': // WI
+      switch (second_character) {
+        case 'I':  // WI
 
-         switch( second_character )
-         {
-            case 'I': // WI
+          expanded_identifier = _T("Weather Instruments");
+          break;
+      }
 
-                expanded_identifier = _T("Weather Instruments");
-               break;
-         }
+      break;
 
-         break;
+    case 'Y':  // YC, YD, YF, YL, YP, YR, YT, YV, YX
 
-      case 'Y': // YC, YD, YF, YL, YP, YR, YT, YV, YX
+      switch (second_character) {
+        case 'C':  // YC
 
-         switch( second_character )
-         {
-            case 'C': // YC
+          expanded_identifier = _T("Transducer - Temperature (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Temperature (outdated)");
-               break;
+        case 'D':  // YD
 
-            case 'D': // YD
+          expanded_identifier =
+              _T("Transducer - Displacement, Angular or Linear (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Displacement, Angular or Linear (outdated)");
-               break;
+        case 'F':  // YF
 
-            case 'F': // YF
+          expanded_identifier = _T("Transducer - Frequency (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Frequency (outdated)");
-               break;
+        case 'L':  // YL
 
-            case 'L': // YL
+          expanded_identifier = _T("Transducer - Level (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Level (outdated)");
-               break;
+        case 'P':  // YP
 
-            case 'P': // YP
+          expanded_identifier = _T("Transducer - Pressure (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Pressure (outdated)");
-               break;
+        case 'R':  // YR
 
-            case 'R': // YR
+          expanded_identifier = _T("Transducer - Flow Rate (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Flow Rate (outdated)");
-               break;
+        case 'T':  // YT
 
-            case 'T': // YT
+          expanded_identifier = _T("Transducer - Tachometer (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Tachometer (outdated)");
-               break;
+        case 'V':  // YV
 
-            case 'V': // YV
+          expanded_identifier = _T("Transducer - Volume (outdated)");
+          break;
 
-                expanded_identifier = _T("Transducer - Volume (outdated)");
-               break;
+        case 'X':  // YX
 
-            case 'X': // YX
+          expanded_identifier = _T("Transducer");
+          break;
+      }
 
-                expanded_identifier = _T("Transducer");
-               break;
+      break;
 
-         }
+    case 'Z':  // ZA, ZC, ZQ, ZV
 
-         break;
+      switch (second_character) {
+        case 'A':  // ZA
 
-      case 'Z': // ZA, ZC, ZQ, ZV
+          expanded_identifier = _T("Timekeeper - Atomic Clock");
+          break;
 
-         switch( second_character )
-         {
-            case 'A': // ZA
+        case 'C':  // ZC
 
-                expanded_identifier = _T("Timekeeper - Atomic Clock");
-               break;
+          expanded_identifier = _T("Timekeeper - Chronometer");
+          break;
 
-            case 'C': // ZC
+        case 'Q':  // ZQ
 
-                expanded_identifier = _T("Timekeeper - Chronometer");
-               break;
+          expanded_identifier = _T("Timekeeper - Quartz");
+          break;
 
-            case 'Q': // ZQ
+        case 'V':  // ZV
 
-                expanded_identifier = _T("Timekeeper - Quartz");
-               break;
+          expanded_identifier = _T("Timekeeper - Radio Update, WWV or WWVH");
+          break;
+      }
 
-            case 'V': // ZV
+      break;
+  }
 
-                expanded_identifier = _T("Timekeeper - Radio Update, WWV or WWVH");
-               break;
-         }
-
-         break;
-   }
-
-   return( expanded_identifier );
+  return (expanded_identifier);
 }

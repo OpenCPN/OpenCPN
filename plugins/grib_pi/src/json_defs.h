@@ -7,7 +7,31 @@
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * JSON Configuration System Definitions.
+ *
+ * Provides core definitions and configuration options for JSON handling in
+ * the GRIB plugin, including:
+ * - Version control macros
+ * - Platform-specific adaptations
+ * - Unicode support configuration
+ * - Integer type handling
+ * - Debug assertions
+ * - String processing options
+ *
+ * Features:
+ * - Shared build configuration
+ * - Version checking capabilities
+ * - Cross-platform compatibility
+ * - Data type definitions
+ * - Error handling macros
+ * - Memory management options
+ *
+ * These definitions ensure consistent JSON handling across different platforms
+ * and build configurations while providing flexibility for different use
+ * cases.
+ */
 #ifndef _WX_JSON_DEFS_H_
 #define _WX_JSON_DEFS_H_
 

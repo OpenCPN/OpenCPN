@@ -140,8 +140,17 @@ protected:
   wxTextCtrl* m_tTimeEnroute;
   wxStaticText* m_stShowTime;
   wxRadioButton* m_rbShowTimeUTC;
+  /** Use system timezone to format date/time, i.e. timezone configured in the
+   * operating system. */
   wxRadioButton* m_rbShowTimePC;
+  /** Use Local Mean Time (LMT) at the location to format date/time. */
   wxRadioButton* m_rbShowTimeLocal;
+  /**
+   * Honor OpenCPN global setting to format date/time. This is the default value
+   * to ensure consistent behavior with all date/time displays across the entire
+   * application.
+   */
+  wxRadioButton* m_rbShowTimeGlobalSettings;
   OCPNTrackListCtrl* m_lcPoints;
   wxScrolledWindow* m_panelAdvanced;
   wxStaticText* m_stDescription;
@@ -218,6 +227,10 @@ public:
 };
 
 class OCPNTrackListCtrl : public wxListCtrl {
+protected:
+  /** Return the longitude at the start point of the track. */
+  double getStartPointLongitude() const;
+
 public:
   OCPNTrackListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                     const wxSize& size, long style);
@@ -227,6 +240,16 @@ public:
   int OnGetItemColumnImage(long item, long column) const;
 
   Track* m_pTrack;
+  /**
+   * The timezone to use when formatting date/time.
+   * Possible values are:
+   * - 0: UTC
+   * - 1: Timezone configured in operating system
+   * - 2: Mean solar time at the location, based on the average time it takes
+   *      for the sun to cross the meridian (appear at its highest point in the
+   * sky) at that specific location.
+   * - 3: Honor OpenCPN global setting for timezone display
+   */
   int m_tz_selection;
   int m_LMT_Offset;
 };

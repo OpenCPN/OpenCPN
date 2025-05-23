@@ -112,11 +112,11 @@ ocpnDC::ocpnDC(wxDC &pdc)
       m_brush(wxNullBrush) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
-  wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
+  auto pmdc = dynamic_cast<wxMemoryDC *>(dc);
   if (pmdc)
     pgc = wxGraphicsContext::Create(*pmdc);
   else {
-    wxClientDC *pcdc = wxDynamicCast(dc, wxClientDC);
+    auto pcdc = dynamic_cast<wxClientDC *>(dc);
     if (pcdc) pgc = wxGraphicsContext::Create(*pcdc);
   }
 #endif
@@ -849,8 +849,8 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
 
 void ocpnDC::StrokeLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2) {
 #if wxUSE_GRAPHICS_CONTEXT
-  if (pgc) {
-    pgc->SetPen(dc->GetPen());
+  if (pgc && dc) {
+    pgc->SetPen(GetPen());
     pgc->StrokeLine(x1, y1, x2, y2);
 
     dc->CalcBoundingBox(x1, y1);
@@ -872,7 +872,7 @@ void ocpnDC::StrokeLines(int n, wxPoint *points) {
       dPoints[i].m_x = points[i].x;
       dPoints[i].m_y = points[i].y;
     }
-    pgc->SetPen(dc->GetPen());
+    pgc->SetPen(GetPen());
     pgc->StrokeLines(n, dPoints);
     free(dPoints);
   } else
@@ -1127,7 +1127,7 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
 
 void ocpnDC::StrokeCircle(wxCoord x, wxCoord y, wxCoord radius) {
 #if wxUSE_GRAPHICS_CONTEXT
-  if (pgc) {
+  if (pgc && dc) {
     wxGraphicsPath gpath = pgc->CreatePath();
     gpath.AddCircle(x, y, radius);
 
@@ -1537,7 +1537,7 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
 void ocpnDC::StrokePolygon(int n, wxPoint points[], wxCoord xoffset,
                            wxCoord yoffset, float scale) {
 #if wxUSE_GRAPHICS_CONTEXT
-  if (pgc) {
+  if (pgc && dc) {
     wxGraphicsPath gpath = pgc->CreatePath();
     gpath.MoveToPoint(points[0].x * scale + xoffset,
                       points[0].y * scale + yoffset);

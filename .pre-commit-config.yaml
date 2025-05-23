@@ -9,4 +9,4 @@ repos:
     rev: v18.1.8
     hooks:
     -   id: clang-format
-        exclude: (?x)^( libs.*| data.*)$
+        exclude: (?x)^( libs.*| data.*| .*java| .*json)$

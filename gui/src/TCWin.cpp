@@ -151,6 +151,9 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
       this, wxID_ANY, wxPoint((sx - (bsx * 2)) / 2, sy - (m_tsy * 12 / 10)),
       wxSize(2 * bsx, bsy), m_choiceTimezoneNChoices, m_choiceTimezoneChoices,
       0);
+  m_choiceTimezone->SetToolTip(
+      _("Select whether tide times are shown in UTC or "
+        "Local Mean Time (LMT) at the station"));
   m_choiceSize_x = bsx * 2;
 
   m_choiceTimezone->SetSelection(m_tzoneDisplay);
@@ -303,11 +306,13 @@ void TCWin::SetTimeFactors() {
   int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
 
   m_stationOffset_mins = station_offset;
-  if (this_now.IsDST()) m_stationOffset_mins += 60;
+  if (this_now.IsDST()) {
+    m_stationOffset_mins += 60;
+  }
 
-    //  Correct a bug in wx3.0.2
-    //  If the system TZ happens to be GMT, with DST active (e.g.summer in
-    //  London), then wxDateTime returns incorrect results for toGMT() method
+  //  Correct a bug in wx3.0.2
+  //  If the system TZ happens to be GMT, with DST active (e.g.summer in
+  //  London), then wxDateTime returns incorrect results for toGMT() method
 #if wxCHECK_VERSION(3, 0, 2)
 //    if(  this_now.IsDST() )
 //        m_corr_mins +=60;
@@ -627,13 +632,13 @@ void TCWin::OnPaint(wxPaintEvent &event) {
       // The tide/current modules calculate values based on PC local time
       // We want UTC, so adjust accordingly
       int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
+      // then eventually we could need LMT at station
+      if (m_tzoneDisplay == 0)
+        tt_localtz -= m_stationOffset_mins * 60;  // LMT at station
 
       // get tide flow sens ( flood or ebb ? )
       ptcmgr->GetTideFlowSens(tt_localtz, BACKWARD_TEN_MINUTES_STEP,
                               pIDX->IDX_rec_num, tcv[0], val, wt);
-
-      if (m_tzoneDisplay == 0)
-        tt_localtz -= m_stationOffset_mins * 60;  // LMT at station
 
       for (i = 0; i < 26; i++) {
         int tt = tt_localtz + (i * FORWARD_ONE_HOUR_STEP);

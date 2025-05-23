@@ -1,5 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/***************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 by Alec Leamas                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_drv_n0183_serial.h  NMEA0183 serial driver */
+/**
+ *  \file
+ *   NMEA0183 serial driver
+ */
 
 #ifndef _COMMDRIVERN0183SERIAL_H
 #define _COMMDRIVERN0183SERIAL_H
@@ -31,81 +35,50 @@
 #include "model/comm_out_queue.h"
 #include "model/conn_params.h"
 #include "model/garmin_protocol_mgr.h"
+#include "model/serial_io.h"
 
-class CommDriverN0183SerialThread;  // Internal
-
-class CommDriverN0183SerialEvent : public wxEvent {
-public:
-  CommDriverN0183SerialEvent(wxEventType commandType, int id);
-  ~CommDriverN0183SerialEvent();
-
-  // accessors
-  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data);
-  std::shared_ptr<std::vector<unsigned char>> GetPayload();
-
-  // required for sending with wxPostEvent()
-  wxEvent* Clone() const;
-
-private:
-  std::shared_ptr<std::vector<unsigned char>> m_payload;
-};
-
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
-
-class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
+class CommDriverN0183Serial : public CommDriverN0183,
+                              public wxEvtHandler,
+                              public DriverStatsProvider {
 public:
   CommDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
 
   virtual ~CommDriverN0183Serial();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
   bool Open();
   void Close();
 
-  //    Secondary thread life toggle
-  //    Used to inform launching object (this) to determine if the thread can
-  //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_sec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_sec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_sec_thread_active; }
+  bool IsSecThreadActive() { return m_serial_io->IsRunning(); }
 
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
-
-  void SetSecondaryThread(CommDriverN0183SerialThread* secondary_Thread) {
-    m_secondary_thread = secondary_Thread;
-  }
-  CommDriverN0183SerialThread* GetSecondaryThread() {
-    return m_secondary_thread;
-  }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
-
-  std::atomic_int m_Thread_run_flag;
 
   ConnectionParams GetParams() const { return m_params; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
+  DriverStats GetDriverStats() const override {
+    return m_serial_io->GetStats();
+  }
+
 private:
-  bool m_ok;
   std::string m_portstring;
-  std::string m_baudrate;
-  int m_handshake;
+  unsigned m_baudrate;
 
-  CommDriverN0183SerialThread* m_secondary_thread;
-  bool m_sec_thread_active;
-
+  std::unique_ptr<SerialIo> m_serial_io;
   GarminProtocolHandler* m_garmin_handler;
 
   ConnectionParams m_params;
   DriverListener& m_listener;
 
-  std::unique_ptr<CommOutQueue> m_out_queue;
+  StatsTimer m_stats_timer;
 
-  void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
+  /**
+   * Send a message to all listeners after applying filtering. Ends up in a
+   * Notify() and can thus be used as a callback in IO threads.
+   */
+  void SendMessage(const std::vector<unsigned char>& msg);
 };
 
 #endif  // guard

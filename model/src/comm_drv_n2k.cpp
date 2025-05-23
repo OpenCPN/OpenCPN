@@ -47,6 +47,6 @@ bool CommDriverN2K::SendMessage(std::shared_ptr<const NavMsg> msg,
 
 void CommDriverN2K::SetListener(DriverListener& l) {};
 
-std::shared_ptr<NavAddr> CommDriverN2K::GetAddress(const N2kName& name) {
-  return std::make_shared<NavAddr>(NavAddr2000(iface, name));
+std::shared_ptr<NavAddr2000> CommDriverN2K::GetAddress(const N2kName& name) {
+  return std::make_shared<NavAddr2000>(NavAddr2000(iface, name));
 }

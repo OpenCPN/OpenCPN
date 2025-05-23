@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2017 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,7 +16,27 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+/**
+ * \file
+ * OpenGL Shader Program Management.
+ *
+ * Provides an interface for managing OpenGL/GLES2 shader programs used in GRIB
+ * data visualization:
+ *
+ * Shader Programs:
+ * - Colored triangle shaders for basic geometry
+ * - 2D texture shaders for overlays and maps
+ * - Circle shaders for particle effects
+ * - Vector field visualization shaders
+ *
+ * Features:
+ * - Cross-platform shader support (OpenGL/GLES2)
+ * - Builder pattern for shader compilation
+ * - Viewport transformation
+ * - Error handling and validation
+ * - Program caching
+ * - Uniform parameter management
+ */
 #ifndef __PISHADERS_H__
 #define __PISHADERS_H__
 
@@ -64,7 +80,7 @@ public:
       glCompileShader(shaderId);
       glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
       if (!success) {
-        glGetShaderInfoLog(shaderId, INFOLOG_LEN, NULL, infoLog);
+        glGetShaderInfoLog(shaderId, INFOLOG_LEN, nullptr, infoLog);
         printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", infoLog);
         // ret_val = false;
       }
@@ -86,7 +102,7 @@ public:
       glGetProgramiv(programId_, GL_LINK_STATUS,
                      &linkSuccess);  // requesting the status
       if (linkSuccess == GL_FALSE) {
-        glGetProgramInfoLog(programId_, INFOLOG_LEN, NULL, infoLog);
+        glGetProgramInfoLog(programId_, INFOLOG_LEN, nullptr, infoLog);
         printf("ERROR::SHADER::LINK_FAILED\n%s\n", infoLog);
       }
 

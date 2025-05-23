@@ -150,7 +150,6 @@ void GSHHSChart::SetColorsDirect(wxColour newLand, wxColour newWater) {
 void GSHHSChart::Reset() {
   if (reader) delete reader;
   reader = NULL;
-  gshhsCrossesLandReset();
 }
 
 int GSHHSChart::GetMinAvailableQuality() {
@@ -1488,34 +1487,40 @@ int GshhsReader::selectBestQuality(ViewPort &vp) {
   return bestQuality;
 }
 
+// A GshhsReader instance which is used to detect if a trajectory
+// crosses land.
+static GshhsReader *gshhs_reader = NULL;
+
 /* so plugins can determine if a line segment crosses land, must call from main
    thread once at startup to initialize array */
-static GshhsReader *reader = NULL;
 void gshhsCrossesLandInit() {
-  if (!reader) {
-    reader = new GshhsReader();
+  wxLogMessage("GSHHSChart::gshhsCrossesLandInit()");
+  if (!gshhs_reader) {
+    gshhs_reader = new GshhsReader();
   }
   /* load best possible quality for crossing tests */
   int bestQuality = 4;
-  while (!reader->qualityAvailable[bestQuality] && bestQuality > 0)
+  while (!gshhs_reader->qualityAvailable[bestQuality] && bestQuality > 0)
     bestQuality--;
-  reader->LoadQuality(bestQuality);
+  gshhs_reader->LoadQuality(bestQuality);
   wxLogMessage("GSHHG: Loaded quality %d for land crossing detection.",
                bestQuality);
 }
 
 void gshhsCrossesLandReset() {
-  if (reader) delete reader;
-  reader = NULL;
+  wxLogMessage("GSHHSChart::gshhsCrossesLandReset()");
+  if (gshhs_reader) delete gshhs_reader;
+  gshhs_reader = NULL;
+  gshhsCrossesLandInit();
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2) {
-  if (!reader) {
+  if (!gshhs_reader) {
     gshhsCrossesLandInit();
   }
   if (lon1 < 0) lon1 += 360;
   if (lon2 < 0) lon2 += 360;
 
   wxLineF trajectWorld(lon1, lat1, lon2, lat2);
-  return reader->crossing1(trajectWorld);
+  return gshhs_reader->crossing1(trajectWorld);
 }

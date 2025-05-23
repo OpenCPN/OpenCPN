@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  XyGrib model definitions
- * Author:   Ronan Demoment
- *
- ***************************************************************************
  *   Copyright (C) 2024 by R. Demoment                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref XyGribModelDef.h
  */
-
 #include <wx/wx.h>
 #include "XyGribModelDef.h"
 

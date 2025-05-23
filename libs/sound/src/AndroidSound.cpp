@@ -39,58 +39,57 @@ static bool androidPlaySound(const wxString soundfile, AndroidSound* sound) {
   std::ostringstream oss;
   oss << sound;
   wxString wxSound(oss.str());
-  wxString result = callActivityMethod_s2s("playSound", soundfile, wxSound.Mid(2));
+  wxString result =
+      callActivityMethod_s2s("playSound", soundfile, wxSound.Mid(2));
   return true;
 }
 
 AndroidSound::~AndroidSound() {}
 
 void AndroidSound::SetFinishedCallback(AudioDoneCallback cb, void* userData) {
-    m_onFinished = cb;
-    m_callbackData = userData;
+  m_onFinished = cb;
+  m_callbackData = userData;
 }
 
-
 bool AndroidSound::Load(const char* path, int deviceIndex) {
-    m_soundfile = path;
-    m_OK = true;
-    if (deviceIndex != -1) {
-        wxLogWarning("Android backend does not support audio device setup.");
-    }
-    return true;
+  m_soundfile = path;
+  m_OK = true;
+  if (deviceIndex != -1) {
+    wxLogWarning("Android backend does not support audio device setup.");
+  }
+  return true;
 }
 
 bool AndroidSound::canPlay(void) {
-    if (m_isPlaying)
-        wxLogWarning("SystemCmdSound: cannot play: already playing");
-    return m_OK && !m_isPlaying;
+  if (m_isPlaying) wxLogWarning("SystemCmdSound: cannot play: already playing");
+  return m_OK && !m_isPlaying;
 }
 
 bool AndroidSound::Stop(void) { return false; }
 
 void AndroidSound::OnSoundDone() {
-    std::unique_lock<std::mutex> lock(mtx);
-    if (m_onFinished) m_onFinished(m_callbackData);
-    m_onFinished = 0;
-    m_isPlaying = false;
-    done.notify_one();
+  std::unique_lock<std::mutex> lock(mtx);
+  if (m_onFinished) m_onFinished(m_callbackData);
+  m_onFinished = 0;
+  m_isPlaying = false;
+  done.notify_one();
 }
 
 bool AndroidSound::Play() {
-    std::unique_lock<std::mutex> lock(mtx);
-    wxLogDebug("AndroidSound::Play()");
-    if (m_isPlaying) {
-        wxLogWarning("AndroidSound: cannot play: already playing");
-        return false;
-    }
-    m_isPlaying = true;
-    bool ok = androidPlaySound(m_soundfile, this);
-    if (!m_onFinished) {
-        wxLogDebug("AndroidSound: waiting for completion");
-        done.wait(lock);
-        return ok;
-    }
-    return true;
+  std::unique_lock<std::mutex> lock(mtx);
+  wxLogDebug("AndroidSound::Play()");
+  if (m_isPlaying) {
+    wxLogWarning("AndroidSound: cannot play: already playing");
+    return false;
+  }
+  m_isPlaying = true;
+  bool ok = androidPlaySound(m_soundfile, this);
+  if (!m_onFinished) {
+    wxLogDebug("AndroidSound: waiting for completion");
+    done.wait(lock);
+    return ok;
+  }
+  return true;
 }
 
 #endif  //  OCPN_ANDROID_SOUND

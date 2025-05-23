@@ -188,6 +188,22 @@ bool CommDecoder::DecodeVTG(std::string s, NavData& temp_data) {
     temp_data.gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
   }
 
+  // If COG-T is not available but COG-M is, then
+  //  create COG-T from COG-M and gVar
+  if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots) &&
+      !std::isnan(m_NMEA0183.Vtg.TrackDegreesMagnetic)) {
+    // establish gVar, if not already set
+    if (std::isnan(gVar) && (g_UserVar != 0.0)) gVar = g_UserVar;
+
+    double cogt = m_NMEA0183.Vtg.TrackDegreesMagnetic + gVar;
+    if (!std::isnan(cogt)) {
+      if (cogt < 0)
+        cogt += 360.0;
+      else if (cogt >= 360)
+        cogt -= 360.0;
+      temp_data.gCog = cogt;
+    }
+  }
   return true;
 }
 

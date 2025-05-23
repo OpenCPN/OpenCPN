@@ -1,0 +1,7 @@
+[requires]
+shapelib/1.5.0
+cli11/1.9.1
+gtest/1.10.0
+
+[generators]
+cmake_find_package
