@@ -1,3 +1,9 @@
+opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo24.04+2) noble; urgency=medium
+
+  * libdnet: Add patch for cmake < 3.20
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 14:20:21 +0200
+
 opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
   * New upstream beta release
