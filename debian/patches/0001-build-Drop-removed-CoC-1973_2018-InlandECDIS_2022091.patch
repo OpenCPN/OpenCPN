@@ -10,12 +10,11 @@ Not acceptable upstream.
 
 Forwarded: not-needed
 ---
-CMakeLists.txt                                      | 21 ++++-----------------
-...-removed-CoC-1973_2018-InlandECDIS_2022091.patch | 18 ++++++++----------
-2 files changed, 12 insertions(+), 27 deletions(-)
+ CMakeLists.txt | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9d94b4fd5..bb3edbb58 100644
+index 9d94b4f..bb3edbb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1391,8 +1391,10 @@ if (OCPN_USE_SVG)

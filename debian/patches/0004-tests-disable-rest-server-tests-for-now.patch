@@ -8,10 +8,10 @@ Bug: https://github.com/OpenCPN/OpenCPN/issues/4090
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 6df1f0b..5b38b9a 100644
+index fe3d0a9..19bb578 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
-@@ -18,7 +18,7 @@ if (MSVC)
+@@ -37,7 +37,7 @@ if (MSVC)
    set(CURL_HINTS C:\\mingw64\\bin C:\\ProgramData\\chocolatey\\bin)
  endif ()
  find_program(CURL NAMES curl HINTS ${CURL_HINTS})
