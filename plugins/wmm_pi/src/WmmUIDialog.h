@@ -81,11 +81,13 @@ public:
   wxCheckBox* m_cbEnablePlot;
   wxButton* m_bPlotSettings;
 
-    WmmUIDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY,
+  WmmUIDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY,
                   const wxString& title = _("WMM"),
                   const wxPoint& pos = wxDefaultPosition,
                   const wxSize& size = wxSize(250, 485),
-                  long style = wxCAPTION | wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR);
+                  long style = wxCAPTION | wxDEFAULT_FRAME_STYLE |
+                               wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT |
+                               wxFRAME_NO_TASKBAR);
   ~WmmUIDialogBase();
   void OnKey(wxKeyEvent& ke);
   void OnClose(wxCloseEvent& event);

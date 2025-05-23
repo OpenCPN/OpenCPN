@@ -76,18 +76,21 @@ public:
 };
 
 struct PolygonFileHeader {
-  int version;
-  int pasx;
-  int pasy;
-  int xmin;
-  int ymin;
-  int xmax;
-  int ymax;
-  int p1;
-  int p2;
-  int p3;
-  int p4;
-  int p5;
+  int version;  // Version number of the GSHHS data format
+  int pasx;     // Longitude step size for cells (1/10th degree)
+  int pasy;     // Latitude step size for cells (1/10th degree)
+  // xmin, ymin, xmax, ymax define the bounding box of the entire grid in 1/10th
+  // of a degree. This allows for quick determination of whether a given point
+  // is within the covered area.
+  int xmin;  // Minimum longitude of the grid (1/10th degree)
+  int ymin;  // Minimum latitude of the grid (1/10th degree)
+  int xmax;  // Maximum longitude of the grid (1/10th degree)
+  int ymax;  // Maximum latitude of the grid (1/10th degree)
+  int p1;    // Spare (reserved for future use)
+  int p2;    // Spare (reserved for future use)
+  int p3;    // Spare (reserved for future use)
+  int p4;    // Spare (reserved for future use)
+  int p5;    // Spare (reserved for future use)
 };
 
 typedef std::vector<wxRealPoint> contour;
@@ -250,6 +253,7 @@ public:
 
   //    bool crossing( wxLineF traject, wxLineF trajectWorld ) const;
   bool crossing1(wxLineF trajectWorld);
+  // Open the polygon file, read and return the version from the header.
   int ReadPolyVersion();
   bool qualityAvailable[6];
 
@@ -260,6 +264,20 @@ public:
 private:
   int quality;  // 5 levels: 0=low ... 4=full
   int selectBestQuality(void);
+  /**
+   * @brief Selects the best available quality level for GSHHS data based on the
+   * scale in the ViewPort.
+   *
+   * This function determines the optimal quality level for GSHHS data based on
+   * the viewport scale. It considers both the desired quality at the current
+   * scale in the ViewPort and the actual availability of quality levels.
+   *
+   * @param vp The current ViewPort, containing information about the current
+   * chart scale display.
+   * @return int The selected quality level, ranging from 0 (lowest) to 4
+   * (highest). Returns the best available quality if the ideal quality is not
+   * available. Returns -1 if no quality level is available at all.
+   */
   int selectBestQuality(ViewPort &vp);
 
   int maxQualityAvailable;
@@ -309,8 +327,20 @@ private:
   GshhsReader *reader;
 };
 
+/*
+ * Create a GSHHS singleton for detecting land crossing and load the data
+ * from GSHHS files on disk.
+ */
 void gshhsCrossesLandInit();
+/*
+ * Reset the GSHHS singleton and reload the data from the GSHHS files on disk.
+ * For example, this should be invoked when new GSHHS files have been installed.
+ */
 void gshhsCrossesLandReset();
+/*
+ * Detects if the rectangle specified with the coordinates crosses land.
+ * The best available quality is used, regardless of the chart scale.
+ */
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2);
 
 #endif

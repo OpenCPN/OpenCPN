@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file linux_usb_watch.h Linux specific hardware events DBus interface */
+/**
+ *  \file
+ *  Linux specific hardware events DBus interface
+ */
 
 #ifndef __linux__
 #error "This file can only be compiled on linux. "

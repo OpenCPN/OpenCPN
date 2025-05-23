@@ -1,3 +1,4 @@
+.lf 1 opencpn-cmd.1
 .\"
 .\" (C) Copyright 2022 Alec Leamas <leamas.alec@gmail.com>,
 .\"
@@ -11,7 +12,7 @@ opencpn-cmd \- Chartplotter and GPS Navigation Software CLI interface
 .SH DESCRIPTION
 opencpn-cmd provides command line  access to some basic functionality
 available in opencpn.
-It is in a very preliminart alpha state.
+It is in alpha state.
 .P
 Currently, opencpn-cmd supports various functions to load plugins and display
 some configuration information.
@@ -20,6 +21,61 @@ some configuration information.
 .TP
 .B \-h, \-\-help
 Show help info.
+
+.SH RUNNING
+
+
+.SS Debian/Ubuntu
+
+After a build opencpn-cmd is available in the build directory and could
+be run directly:
+.PP
+.nf
+    $ cd build
+    $ cmake ...
+    $ make
+    $ ./opencpn-cmd --help
+.fi
+.PP
+After `sudo make install` it is globally available.
+opencpn-cmd is included in the .deb packages.
+
+.SS Flatpak
+
+Make a local Flatpak build as described in
+https://opencpn-manuals.github.io/main/opencpn-dev/linux.html#_flatpak
+This will also make a local installation.
+.PP
+opencpn-cmd needs to run in the Flatpak sandbox. Do:
+.PP
+.nf
+    $ flatpak run --command=bash --devel org.opencpn.OpenCPN
+    \[u1F4E6] opencpn-cmd --help
+.fi
+
+.SS MacOS
+After a local build followed by `sudo make install` opencpn-cmd is available in
+/usr/local/bin/.
+Run using:
+.PP
+.nf
+    $ /usr/local/bin/OpenCPN.app/Contents/MacOS/opencpn-cmd --help
+.fi
+
+The installer installs it under Applications. Run using:
+.PP
+.nf
+    $ /Applications/OpenCPN.app/Contents/MacOS/opencpn-cmd --help
+.fi
+.SS Windows
+
+The NSIS installer installs opencpn-cmd in the installation directory.
+In a standard install do:
+.PP
+.nf
+    > cd "\\Program Files (x86)\\OpenCPN"
+    > opencpn-cmd --help
+.fi
 
 .SH SEE ALSO
 .br

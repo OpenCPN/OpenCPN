@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file  mdns_cache.cpp Implement mdns_cache.h */
+/**
+ *  \file
+ *  Implement mdns_cache.h
+ */
 
 #include <algorithm>
 

@@ -85,7 +85,6 @@ private:
 
   //  static bool fontDialogCancelled;
   wxDECLARE_EVENT_TABLE();
-  wxDECLARE_DYNAMIC_CLASS(ocpnGenericFontDialog);
 };
 
 #endif  // _OCPN_GENERIC_FONTDLGG_H

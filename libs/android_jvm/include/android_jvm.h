@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file android_jvm.h   Singleton Android Java JVM interface */
+/**
+ *  \file
+ *  Singleton Android Java JVM interface
+ */
 
 #ifndef ANDROID_JVM_H
 #define ANDROID_JVM_H

@@ -8,9 +8,9 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-//#ifdef __GNUG__
-//    #pragma implementation "jsonval.cpp"
-//#endif
+// #ifdef __GNUG__
+//     #pragma implementation "jsonval.cpp"
+// #endif
 
 #ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow

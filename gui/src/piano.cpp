@@ -70,7 +70,6 @@ extern bool g_bopengl;
 extern float g_toolbar_scalefactor;
 
 extern OCPNPlatform *g_Platform;
-extern MyFrame *gFrame;
 extern BasePlatform *g_BasePlatform;
 
 //------------------------------------------------------------------------------
@@ -979,7 +978,7 @@ int Piano::GetHeight() {
   height = wxMax(height, 4 * g_Platform->GetDisplayDPmm());
 #endif
 
-  height /= g_BasePlatform->GetDisplayDIPMult(gFrame);
+  height /= g_BasePlatform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
 
   return height;
 }

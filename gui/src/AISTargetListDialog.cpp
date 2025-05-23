@@ -45,6 +45,7 @@
 #include "OCPNPlatform.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
+#include "model/navobj_db.h"
 
 static AisDecoder *s_p_sort_decoder;
 
@@ -138,6 +139,10 @@ static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
         s2 = _T("-");
       break;
 
+    case tlFLAG:
+      s1 = t1->GetCountryCode(true);
+      s2 = t2->GetCountryCode(true);
+      break;
     case tlNAVSTATUS: {
       if ((t1->NavStatus <= 15) && (t1->NavStatus >= 0)) {
         if (t1->Class == AIS_SART) {
@@ -594,6 +599,15 @@ void AISTargetListDialog::CreateControls() {
     width = wxMax(dx * 2, lwidth);
     width = wxMin(width, dx * 30);
   }
+  m_pListCtrlAISTargets->InsertColumn(tlNAVSTATUS, _("Flag"),
+                                      wxLIST_FORMAT_LEFT, width);
+  s_width = tkz.GetNextToken();
+
+  width = dx * 12;
+  if (s_width.ToLong(&lwidth)) {
+    width = wxMax(dx * 2, lwidth);
+    width = wxMin(width, dx * 30);
+  }
   m_pListCtrlAISTargets->InsertColumn(tlNAVSTATUS, _("Nav Status"),
                                       wxLIST_FORMAT_LEFT, width);
   s_width = tkz.GetNextToken();
@@ -962,7 +976,8 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
                        wxEmptyString, wxEmptyString);
     pWP->m_bIsolatedMark = true;  // This is an isolated mark
     pSelect->AddSelectableRoutePoint(pAISTarget->Lat, pAISTarget->Lon, pWP);
-    pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+    // pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+    NavObj_dB::GetInstance().InsertRoutePoint(pWP);
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
@@ -1041,14 +1056,16 @@ void AISTargetListDialog::CenterToTarget(bool close) {
 
   if (pAISTarget) {
     double scale = gFrame->GetFocusCanvas()->GetVPScale();
-    gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                           pAISTarget->Lon, scale);
-    if (close) {
+    if (!close) {
+      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                             pAISTarget->Lon, scale);
+    } else {
       // Set a resonable (1:5000) chart scale to see the target.
       if (scale < 0.7) {  // Don't zoom if already close.
         ChartCanvas *cc = gFrame->GetFocusCanvas();
         double factor = cc->GetScaleValue() / 5000.0;
-        cc->DoZoomCanvas(factor, false);
+        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                               pAISTarget->Lon, scale * factor);
       }
       DoTargetQuery(pAISTarget->MMSI);
       // Close AIS target list

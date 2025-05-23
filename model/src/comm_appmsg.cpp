@@ -36,6 +36,8 @@
 #include "model/comm_appmsg.h"
 #include "model/ocpn_utils.h"
 
+static const auto kUtfDegrees = wxString::FromUTF8(u8"\u00B0");
+
 /* Free functions. */
 
 std::string TimeToString(const time_t t) {
@@ -54,7 +56,7 @@ std::string TimeToString(const time_t t) {
 std::string DegreesToString(double degrees) {
   using namespace std;
   std::stringstream buf;
-  buf << setw(2) << static_cast<int>(trunc(degrees)) << "\u00B0"
+  buf << setw(2) << static_cast<int>(trunc(degrees)) << kUtfDegrees
       << static_cast<int>(trunc(degrees * 100)) % 100 << "," << setw(2)
       << (static_cast<int>(trunc(degrees * 10000)) % 10000) % 100;
   return buf.str();
@@ -175,4 +177,22 @@ std::string AppMsg::TypeToString(const AppMsg::Type t) const {
       break;
   }
   return "????";  // Not reached, for the compiler.
+}
+
+std::string BasicNavDataMsg::to_string() const {
+  std::stringstream ss;
+  ss << AppMsg::to_string() << " pos: " << pos.to_string() << " sog: " << sog
+     << " cog: " << cog << " var: " << var << " hdt: " << hdt
+     << "  vflag: " << vflag << " set_time: " << TimeToString(set_time.tv_sec);
+  return ss.str();
+}
+std::string AisData::to_string() const {
+  std::stringstream ss;
+  ss << TimeToString(time) << " " << pos.to_string() << " sog: " << sog
+     << " cog: " << cog << " heading: " << heading
+     << " rate of turn: " << rate_of_turn << "type: 0x" << std::hex << type
+     << " name " << name << " callsign " << callsign << " dest: " << dest
+     << " length " << std::dec << length << " beam: " << beam
+     << " draft: " << draft << " status: 0x" << std::hex << status;
+  return ss.str();
 }

@@ -27,6 +27,13 @@
 class ocpnDC;
 class ChartCanvas;
 
+/**
+ * Represents a compass display in the OpenCPN navigation system.
+ *
+ * The ocpnCompass class provides a visual compass display for the OpenCPN
+ * application. It shows the current heading and, optionally, GPS status.
+ * This compass is typically displayed as an overlay on the main chart view.
+ */
 class ocpnCompass {
 public:
   ocpnCompass(ChartCanvas *parent, bool bShowGPS = true);
@@ -46,7 +53,17 @@ public:
   void SetScaleFactor(float factor);
 
   void Move(const wxPoint &pt) { m_rect.SetPosition(pt); }
+  /**
+   * Return the coordinates of the compass widget, in physical pixels relative
+   * to the canvas window. Beware when comparing with data returned from
+   * wxWidgets APIs, which return logical pixels.
+   */
   wxRect GetRect(void) const { return m_rect; }
+  /**
+   * Return the coordinates of the compass widget, in logical pixels.
+   * This can be compared with data returned from wxWidgets APIs.
+   */
+  wxRect GetLogicalRect(void) const;
 
 private:
   void CreateBmp(bool bnew = false);
@@ -67,6 +84,10 @@ private:
   int m_yoffset;
   float m_scale;
 
+  /**
+   * The coordinates of the compass widget, in physical pixels relative to the
+   * canvas window.
+   */
   wxRect m_rect;
   bool m_shown;
   bool m_bshowGPS;

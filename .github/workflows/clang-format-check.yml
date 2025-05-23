@@ -1,0 +1,23 @@
+---
+name: test-clang-format
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: DoozyX/clang-format-lint-action@v0.18.2
+        with:
+          source: >-
+            ./model ./gui
+            ./plugins/wmm_pi/src ./plugins/dashboard_pi/src
+            ./plugins/chartdldr_pi/src ./plugins/grib_pi/src
+            ./plugins/demo_pi_sample/src
+          exclude: >-
+            ./plugins/dashboard_pi/src/wxJSON
+            ./plugins/chartdldr_pi/src/unarr
+            ./plugins/chartdldr_pi/src/tinyxml
+            ./plugins/grib_pi/src/bzip2
+          extensions: h,cpp
+          clangFormatVersion: 18
+          style: file

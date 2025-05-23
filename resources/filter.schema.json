@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opencpn.org/filter.schema.json",
+  "title": "Filter",
+  "description": "NMEA Monitor display filter",
+  "type": "object",
+  "properties": {
+    "filter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique single word identifier",
+          "exclusiveMinumum": 0
+        },
+        "description": {
+          "type": "string",
+          "description": "Free text description for used inn GUI"
+        },
+        "buses": {
+          "description": "Constrain to given transport(s)",
+          "type": "array",
+          "items": {
+            "enum": [
+              "namea0183",
+              "nmea2000",
+              "SignalK",
+              "Onenet",
+              "Plugin",
+              "testBus"
+            ]
+          },
+          "minItems": 1
+        },
+        "directions": {
+          "description": "Constrain to given direction(s)",
+          "type": "array",
+          "items": {
+            "enum": [
+              "input",
+              "received",
+              "output",
+              "internal"
+            ]
+          },
+          "minItems": 1
+        },
+        "accepted": {
+          "description": "Constrain w r t multiplexer filter match",
+          "type": "array",
+          "items": {
+            "enum": [
+              "ok",
+              "dropped",
+              "no-output"
+            ]
+          },
+          "minItems": 1
+        },
+        "status": {
+          "description": "Constrain w r t  message being malformed",
+          "type": "array",
+          "items": {
+            "enum": [
+              "ok",
+              "checksum-err",
+              "malformed"
+            ]
+          },
+          "minItems": 1
+        },
+        "include_msg": {
+          "description": "include only  message type constraint",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "exclude_msg": {
+          "description": "Exclude  message type(s) constraint",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "interfaces": {
+          "description": "Include onlh messages to/from interface",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "pgns": {
+          "description": "Include only N2000 msg with given pgn(s)",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1
+        },
+        "src_pgns": {
+          "description": "Include only N2000 msg with given source",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

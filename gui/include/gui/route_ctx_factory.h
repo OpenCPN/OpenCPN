@@ -51,7 +51,7 @@ RouteCtx RouteCtxFactory() {
   };
   ctx.delete_route = [](Route* route) {
     if (!g_pRouteMan) return;
-    g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
+    g_pRouteMan->DeleteRoute(route);
   };
   ctx.delete_track = [](Track* track) {
     auto it = std::find(g_TrackList.begin(), g_TrackList.end(), track);

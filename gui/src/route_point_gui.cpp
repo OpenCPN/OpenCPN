@@ -190,7 +190,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
   if (m_point.m_iWaypointRangeRingsNumber &&
       m_point.m_bShowWaypointRangeRings) {
     double factor = 1.00;
-    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // nautical miles
+    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // convert km to NMi
       factor = 1 / 1.852;
 
     factor *= m_point.m_fWaypointRangeRingsStep;
@@ -250,8 +250,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
       if (m_point.m_bShowWaypointRangeRings &&
           (m_point.m_iWaypointRangeRingsNumber > 0)) {
         double factor = 1.00;
-        if (m_point.m_iWaypointRangeRingsStepUnits ==
-            1)  // convert kilometers to NMi
+        if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // convert km to NMi
           factor = 1 / 1.852;
 
         double radius = factor * m_point.m_iWaypointRangeRingsNumber *
@@ -585,7 +584,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   if (m_point.m_iWaypointRangeRingsNumber &&
       m_point.m_bShowWaypointRangeRings) {
     double factor = 1.00;
-    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // nautical miles
+    if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // convert km to NMi
       factor = 1 / 1.852;
 
     factor *= m_point.m_fWaypointRangeRingsStep;
@@ -917,10 +916,18 @@ bool RoutePointGui::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
   if (0 == result)
     msg = _("Waypoint(s) Transmitted.");
   else {
-    if (result == ERR_GARMIN_INITIALIZE)
-      msg = _("Error on Waypoint Upload.  Garmin GPS not connected");
-    else
-      msg = _("Error on Waypoint Upload.  Please check logfiles...");
+    switch (result) {
+      case ERR_GARMIN_INITIALIZE:
+        msg = _("Error on Waypoint Upload. Garmin GPS not connected");
+        break;
+      case ERR_GPS_DRIVER_NOT_AVAILAIBLE:
+        msg = _("Error on Waypoint Upload. GPS driver not available");
+        break;
+      case ERR_GARMIN_SEND_MESSAGE:
+      default:
+        msg = _("Error on Waypoint Upload. Please check logfiles...");
+        break;
+    }
   }
 
   OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
@@ -944,6 +951,7 @@ int RoutePointGui::GetIconImageIndex() {
           break;
         }
       }
+      delete proute_array;
     }
 
     if (brp_viz)

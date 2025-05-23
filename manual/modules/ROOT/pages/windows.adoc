@@ -1,4 +1,5 @@
 = Compiling on Windows
+:hide-uri-scheme:
 
 == 5.8.0+ Fast Track
 
@@ -64,16 +65,18 @@ The steps here describe an alternative to the "Fast Track" scenario above.  It i
 Quick start:
 
 From the Windows Desktop open _x86 Native Tools Command Prompt for VS 2022_ (or 2019). Then
- enter these 4 commands:
+enter these 4 commands:
 [,console]
 ----
 $ git clone https://github.com/opencpn/opencpn
 $ cd opencpn
-$ ".\buildwin\winConfig.bat"
-$ ".\build\opencpn.sln"
+$ .\buildwin\winConfig.bat
+$ .\build\opencpn.sln
 ----
-When Visual Studio opens, select the desired build configuration (Debug, Release, etc.) and you
-are ready to edit and build. Click the Debug button to build and open OpenCPN in the VS debugger.
+This one-time procedure takes about 10 minutes on a 12-processor Windows 11 computer.
+When Visual Studio opens, select the desired build configuration (Debug or RelWithDebInfo) and you
+are ready to edit and build. Click the "Local Windows Debugger" button in Visual Studio to
+build and run OpenCPN in the VS debugger.
 
 Here are more details with explanations of each step.
 
@@ -106,26 +109,34 @@ $ git clone https://github.com/opencpn/opencpn
 [,console]
 ----
 $ cd opencpn
-$ ".\buildwin\winConfig.bat"
-$ ".\build\opencpn.sln"
+$ .\buildwin\winConfig.bat --debug --relwithdebinfo
+$ .\build\opencpn.sln
 ----
 Now you can browse the code, run & debug OpenCPN from Visual Studio.  Select
-  the desired build configuration (Debug, Release, etc.) and click the Debug button.
+  the desired build configuration (Debug, Release, etc.) and click the "Local Windows Debugger" button.
 
 After you close Visual Studio and the command prompt you can return to Visual Studio
   using just 2 commands. From an _x86 Native Tools Command Prompt_ run:
 [,console]
 ----
-$ ".\buildwin\configDev.bat"
-$ ".\build\opencpn.sln"
+$ .\build\opencpn.sln
 ----
 *Notes:*
 
 * Managed plugins are only supplied as Release builds. Thus, if you want to
   debug OpenCPN when any managed plugins are installed, you must debug OpenCPN in
-  Release or RelWithDebInfo mode.  If you build your own plugin in Debug configuration, then
+  Release or RelWithDebInfo configurations.
+* If you build your own plugin in Debug configuration, then
   you can debug both OpenCPN and your plugin at the same time using the same Visual Studio
-  Debug session.
+  Debug session. One possible plugin debug workflow is:
+** Build your plugin in debug configuration and create the tarball. Remember to include the .pdb file
+for your plugin in the tarball.
+** Open OpenCPN in debug mode using Visual Studio.
+** To step into your plugin set a breakpoint in plugin_loader.cpp at the point where it inits the plugins:
++
+link:https://github.com/OpenCPN/OpenCPN/blob/b9e67db4b31cc1e75f22bc98d25925996974cb3b/model/src/plugin_loader.cpp#L757[`+pic->m_cap_flag = pic->m_pplugin->Init();+`]
+** Import your plugin tarball using the plugin manager. When you step into your plugin you will see
+the source code and can set other breakpoints anywhere in your plugin.
 
 * You can use msbuild as the command line builder instead of CMake.  The reasons for doing so are:
 ** msbuild is faster than CMake or CMake w/Ninja
@@ -155,31 +166,55 @@ $ winget install --id Microsoft.Powershell --source winget
 [,console]
 ----
 $ cd OpenCPN
-$ ".\buildwin\configdev.bat"
-$ cd ".\build\RELWITHDEBINFO"
-$ ".\opencpn" -p
+$ .\buildwin\configdev.bat --debug --relwithdebinfo
+$ cd .\build\relwithdebinfo
+$ .\opencpn -p
 ----
 +
 
-* The 'winConfig.bat' script also has the ability to automatically clean before building.
-  The full list of command line options are as follows:
+* The full list of command line options are as follows:
 +
 [,console]
 ----
- --clean :: clean and reinitialize the build folder
- --rebuild :: rebuild all sources
- --help :: print helpful text
- --relwithdebinfo :: build relwithdebinfo configuration
- --debug :: build debug configuration
- --release :: build release configuration
- --minsizerel :: build release configuration
- --all :: setup and build all four standard configurations (this is the default)
+ --release          Initialize/build Release configuration
+ --relwithdebinfo   Initialize/build RelWithDebInfo configuration
+ --minsizerel       Initialize/build MinSizeRel configuration
+ --debug            Initialize/build Debug configuration
+ --all              Initialize/build all 4 configurations (default)
+ --help             Print help text
+ --Y                Non-interactive mode (for calling from a script)
+ --clean            Delete and reinitialize the build folder
+ --rebuild          Rebuild all build types
+ --package          Create installer package for each built configuration
+ --wxver vn.n[.n]   Build specified version of wxWidgets sources.
+                    Note: This is a tag or branch name.
 ----
-+
+
+*Notes on options:*
+
+* After the first time you initialize a configuration the script remembers which build configurations
+ were selected and only builds those.  You can add additional configurations later
+ simply by running the script again with just the desired configuration switch(s).
+
+* The exception is the --clean option.  It purposely does not remember which configurations
+were previously selected. Therefore, if you do not accompany --clean with selection of configuration
+options, it will initialize all 4 configurations. This feature allows one to chose a different set of configurations
+than the first time. So --clean is basically the same as a first time run except it
+will save the runtime data for all existing configs and restore when a particular configuration
+(debug, release, etc.) is initialized. The --clean option can be used to up or down size the build
+tree to just the configurations you are interested in at the moment.
+
+* Remember, do not try to build a configuration you did not create initially with this script. The results
+will not run or be useful in any meaningful way.  This is why it defaults to all 4 configuration types initially.
+
+* Use the --package option to build installer packages.  The installer will be found in the folder named for
+each built configuration type (.\build\Release, .\build\Debug, etc.)
+
+*Example usage:*
 
 * Useful msbuild command line examples follow. Type these commands after running
   '.\buildwin\configdev.bat' from the root opencpn git managed folder.
-** Clean and build entire OpenCPN project to create debug build
+** Clean and build debug OpenCPN project
 +
 [,console]
 ----
@@ -192,7 +227,10 @@ $ msbuild /m -t:Rebuild -p:Configuration=Debug opencpn.sln
 [,console]
 ----
 $ cd build
+$ cmake -DCMAKE_INSTALL_PREFIX:STRING="C:/Program Files (x86)/OpenCPN" ..
 $ msbuild /v:m /m -p:Configuration=Release PACKAGE.vcxproj
+$ cd ..
+$ .\buildwin\winconfig
 ----
 +
 ** Clean and build every project as a Release build with debug info
@@ -219,7 +257,7 @@ $ cd build
 $ msbuild /m -t:Clean -p:Configuration=Debug opencpn-cmd.vcxproj
 ----
 +
-** Clean and build chart downloader plugin
+** Clean and build debug configuration of chart downloader plugin
 +
 [,console]
 ----
@@ -227,23 +265,31 @@ $ cd build
 $ msbuild /m -t:Rebuild -p:Configuration=Debug plugins\chartdldr_pi\chartdldr_pi.vcxproj
 ----
 +
-* You can use still use CMake if you like. This example will build a Windows installer
-* executable with debug configuration. This can be useful to find otherwise hidden debug asserts.
+* You can also use CMake if you like.
+** This example will clean and build a Release installer package.
+ When finished, restores the environment back to local building mode.
 +
 [,console]
 ----
 $ cd build
-$ cmake -DCMAKE_INSTALL_PREFIX="C:\Program Files (x86)\OpenCPN" ..
-$ cmake --build . --config Debug --target Package
+$ cmake -DCMAKE_INSTALL_PREFIX:STRING="C:/Program Files (x86)/OpenCPN" ..
+$ cmake --build . --config Release --clean-first --target Package
+$ cd ..
+$ .\buildwin\winconfig
 ----
 +
-* This will clean and build a Release build
+** This example will build a Windows installer executable with debug configuration.
+ This can be useful to find otherwise hidden debug asserts.
 +
 [,console]
 ----
 $ cd build
-$ cmake --build . --config Release --clean-first
+$ cmake -DCMAKE_INSTALL_PREFIX:STRING="C:/Program Files (x86)/OpenCPN" ..
+$ cmake --build . --clean-first --config Debug --target Package
+$ cd ..
+$ .\buildwin\winconfig
 ----
+** Note: Plugins built for a non-debug configuration will not load in a debug build configuration build.
 +
 * It is possible to `attach` the Visual Studio debugger to a running instance.
  This is useful if you create an installer, install and run OpenCPN from the start menu.

@@ -7,6 +7,7 @@
  *
  ***************************************************************************
  *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -56,6 +57,7 @@ public:
                              ViewPort &vp);
   int SendToGPS(const wxString &com_name, bool bsend_waypoints,
                 SendToGpsDlg *dialog);
+  static bool OnDelete(wxWindow *parent, const int count = 0);
 
 private:
   Route &m_route;
