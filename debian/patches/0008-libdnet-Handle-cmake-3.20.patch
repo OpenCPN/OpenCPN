@@ -16,7 +16,7 @@ index 70dfec8..79395d8 100644
  
 -cmake_path(GET patch FILENAME patch_name)
 +if (${CMAKE_VERSION} VERSION_LESS 3.20.0)
-+  get_filename_component(name ${patch_name} NAME)
++  get_filename_component(patch_name ${patch} NAME)
 +else ()
 +  cmake_path(GET patch FILENAME patch_name)
 +endif ()
