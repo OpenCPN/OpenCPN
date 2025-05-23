@@ -31,7 +31,7 @@ lame_version="3.100"
 libsndfile_version="1.2.2"
 libusb_version="1.0.27"
 openssl_version="3.0.16"
-wx_version="3.2.7"
+wx_version="3.2.8"
 
 macos_deployment_target="10.13"
 

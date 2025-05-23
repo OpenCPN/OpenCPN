@@ -166,7 +166,7 @@ set "wxDIR=%OCPN_DIR%\..\ocpn_wxWidgets"
 set "wxWidgets_ROOT_DIR=%wxDIR%"
 set "wxWidgets_LIB_DIR=%wxDIR%\lib\vc_dll"
 set "wxMajor=v3.2"
-set "wxMinor=7"
+set "wxMinor=8"
 set "wxVER=%wxMajor%.%wxMinor%"
 if [%VisualStudioVersion%]==[16.0] (
   set VCver=16
