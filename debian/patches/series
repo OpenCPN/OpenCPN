@@ -4,4 +4,3 @@
 0004-CMakeLists-handle-help_web.html-location.patch
 0005-tests-disable-rest-server-tests-for-now.patch
 0006-build-add-latomic-linkage.patch
-0007-chartdldr-Don-t-use-unarr-for-libarchive-3.7.4-4005.patch
