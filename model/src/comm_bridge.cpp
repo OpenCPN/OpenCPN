@@ -1440,7 +1440,7 @@ bool CommBridge::EvalPriority(
       m_last_position_priority = this_priority;
 
       wxString msg;
-      msg.Printf("GNSS position fix priority shift: %s\n %s \n -> %s",
+      msg.Printf(_("GNSS position fix priority shift:") + " %s\n %s \n -> %s",
                  this_identifier.c_str(), m_last_position_source.c_str(),
                  source.c_str());
       auto& noteman = NotificationManager::GetInstance();
