@@ -1,8 +1,13 @@
-opencpn (1:5.11.1~beta1+dfsg-1~bpo12+1) UNRELEASED; urgency=medium
+opencpn (1:5.11.1~beta1+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
-  *  New upstream beta release
+  * New upstream beta release
+  * Drop upstreamed patches, rebase the others.
+  * Add patch for failing locale-dependent tests
+  * Add temporary patch for missing libs/shapelib
+  * Update installation paths
+  * Update d/copyright
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 10:40:48 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 12:45:20 +0200
 
 opencpn (1:5.10.2+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
