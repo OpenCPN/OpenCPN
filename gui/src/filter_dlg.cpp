@@ -352,9 +352,16 @@ public:
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, label), flags);
 
+    // Pre-compute required size of wxCheckListBox
+    // to avoid sizer errors on MacOS
+    wxArrayString array = get_choices();
+    int max_char = 0;
+    for (auto string : array) max_char = wxMax(max_char, string.Length());
+    int hsize = (max_char + 8) * wxWindow::GetCharWidth();
+
     hbox->Add(1, 1, 1);
     auto listbox = new wxCheckListBox(this, kListboxId, wxDefaultPosition,
-                                      wxDefaultSize, get_choices());
+                                      wxSize(hsize, -1), get_choices());
     hbox->Add(listbox, flags);
     auto list_label = new wxStaticText(this, kListLabelId, "");
     hbox->Add(list_label, flags);
@@ -368,7 +375,12 @@ public:
 
     listbox->Hide();
     list_label->Show();
+
+    // Execute a round-trip of OnEditClick() to force MacOS sizers to populate
+    // the listbox.
+    OnEditClick();
     Layout();
+    OnEditClick();
 
     listbox->Bind(wxEVT_CHECKLISTBOX,
                   [&](wxCommandEvent& ev) { OnItemCheck(ev.GetInt()); });
@@ -405,6 +417,7 @@ private:
    */
   void OnEditClick() {
     auto listbox = GetWindowById<wxCheckListBox>(kListboxId);
+    listbox->Layout();
     auto list_label = GetWindowById<wxStaticText>(kListLabelId);
     auto edit_button = GetWindowById<EditButton>(kEditBtnId);
     bool is_editing = listbox->IsShown();
@@ -574,7 +587,8 @@ public:
     SetSizer(vbox);
     vbox->Add(new IfacePanel(this, m_filter, [&] { Update(); }), flags);
     vbox->Add(new wxStaticLine(this), flags.Expand());
-    vbox->Add(new BusPanel(this, m_filter, [&] { Update(); }), flags);
+    auto buspanel = new BusPanel(this, m_filter, [&] { Update(); });
+    vbox->Add(buspanel, flags);
     vbox->Add(new wxStaticLine(this), flags.Expand());
     vbox->Add(new DirectionPanel(this, m_filter, [&] { Update(); }), flags);
     vbox->Add(new wxStaticLine(this), flags.Expand());
