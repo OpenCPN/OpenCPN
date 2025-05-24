@@ -332,10 +332,11 @@ void CommDriverN0183Net::OnTimerSocket() {
       if (m_connect_time == time_point<steady_clock>()) return;
       auto since_connect = steady_clock::now() - m_connect_time;
       if (since_connect > 10s && !m_is_conn_err_reported) {
-        std::stringstream ss;
-        ss << "Cannot connect to remote server " << m_params.NetworkAddress
-           << ":" << m_params.NetworkPort;
-        CommDriverRegistry::GetInstance().evt_driver_msg.Notify(ss.str());
+        wxString ss =
+            wxString::Format(_("Cannot connect to remote server") + " %s:%i",
+                             m_params.NetworkAddress, m_params.NetworkPort);
+        CommDriverRegistry::GetInstance().evt_driver_msg.Notify(
+            ss.ToStdString());
         m_is_conn_err_reported = true;
         m_driver_stats.error_count++;
       }

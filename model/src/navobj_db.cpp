@@ -50,7 +50,8 @@ void ReportError(const std::string zmsg);
 static bool executeSQL(sqlite3* db, const char* sql) {
   char* errMsg = nullptr;
   if (sqlite3_exec(db, sql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-    wxString msg = wxString::Format("navobj database error. %s", errMsg);
+    wxString msg =
+        wxString::Format(_("navobj database error.") + " %s", errMsg);
     wxLogMessage(msg);
     auto& noteman = NotificationManager::GetInstance();
     noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
@@ -480,14 +481,15 @@ void DeleteOrphanedRoutepoint(sqlite3* db) {
 
 void errorLogCallback(void* pArg, int iErrCode, const char* zMsg) {
   wxString msg =
-      wxString::Format("navobj database error. %d: %s", iErrCode, zMsg);
+      wxString::Format(_("navobj database error.") + " %d: %s", iErrCode, zMsg);
   wxLogMessage(msg);
   auto& noteman = NotificationManager::GetInstance();
   noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
 }
 
 void ReportError(const std::string zmsg) {
-  wxString msg = wxString::Format("navobj database error. %s", zmsg.c_str());
+  wxString msg =
+      wxString::Format(_("navobj database error.") + " %s", zmsg.c_str());
   wxLogMessage(msg);
   auto& noteman = NotificationManager::GetInstance();
   noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
