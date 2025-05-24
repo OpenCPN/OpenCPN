@@ -82,9 +82,9 @@ void* StdSerialIo::Entry() {
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_portname, m_baud)) {
-    std::string msg(_("NMEA input device open failed: "));
-    msg += m_portname;
-    CommDriverRegistry::GetInstance().evt_driver_msg.Notify(msg);
+    wxString msg = wxString::Format(_("NMEA input device open failed: ") + "%s",
+                                    m_portname);
+    CommDriverRegistry::GetInstance().evt_driver_msg.Notify(msg.ToStdString());
   }
 
   //    The main loop
