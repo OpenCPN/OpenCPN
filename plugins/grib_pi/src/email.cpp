@@ -8,7 +8,10 @@
 // Copyright:   (c) Julian Smart
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * \implements \ref email.h
+ */
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 

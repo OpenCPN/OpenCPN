@@ -240,11 +240,47 @@ class NMEA0183
 
 //      MANUFACTURER_LIST Manufacturers;
 
+      /**
+       * Performs basic validation of NMEA sentence structure.
+       *
+       * Currently only checks if the sentence starts with '$' character.
+       */
       virtual bool IsGood( void ) const;
+
+      /**
+       * Parse - Full parsing of NMEA sentence including message-specific interpretation.
+       *
+       * This function builds on PreParse by:
+       * 1. First calling PreParse for basic validation
+       * 2. Re-extracting the mnemonic (duplicates PreParse logic)
+       * 3. Setting up error handling infrastructure
+       * 4. Looking up the appropriate parser for this message type in response_table
+       * 5. If found, calls the message-specific parser
+       * 6. Updates parsing status (ErrorMessage, LastSentenceIDParsed, TalkerID)
+       *
+       * The key difference from PreParse is that this function:
+       * - Actually interprets the message contents using type-specific parsers
+       * - Maintains more detailed error state
+       * - Updates additional metadata about the parsed message
+       *
+       * @return bool - Returns true if message was successfully parsed by its handler,
+       *               false if validation failed or no parser was found.
+       */
       virtual bool Parse( void );
+      /**
+       * PreParse - Performs initial validation and basic extraction of NMEA sentence.
+       *
+       * This function:
+       * 1. Validates that the sentence can be converted to UTF-8
+       * 2. Checks if the sentence passes basic NMEA validation (via IsGood())
+       * 3. Extracts the sentence mnemonic (message type identifier)
+       * 4. Handles proprietary messages starting with 'P'
+       *
+       * @return bool - Returns true if basic sentence validation passes, false otherwise
+       */
       virtual bool PreParse( void );
 
-      NMEA0183& operator << ( wxString& source );
+      NMEA0183& operator << ( const wxString& source );
       NMEA0183& operator >> ( wxString& destination );
 };
 

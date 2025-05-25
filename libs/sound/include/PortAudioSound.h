@@ -41,48 +41,42 @@
  * is supported. Otherwise, using the standard loader only .wav files
  * could be used.
  */
-class PortAudioSound: public OcpnSound
-{
-    public:
-        PortAudioSound();
-        ~PortAudioSound();
+class PortAudioSound : public OcpnSound {
+public:
+  PortAudioSound();
+  ~PortAudioSound();
 
-        int DeviceCount() const override;
-        std::string GetDeviceInfo(int deviceIndex) override;
-        bool IsOutputDevice(int deviceIndex) const override;
-        bool Load(const char* path, int deviceIndex = -1) override;
-        void UnLoad() override;
-        bool Play() override;
-        bool Stop() override;
-        void SetFinishedCallback(AudioDoneCallback cb, void* userData = 0);
+  int DeviceCount() const override;
+  std::string GetDeviceInfo(int deviceIndex) override;
+  bool IsOutputDevice(int deviceIndex) const override;
+  bool Load(const char* path, int deviceIndex = -1) override;
+  void UnLoad() override;
+  bool Play() override;
+  bool Stop() override;
+  void SetFinishedCallback(AudioDoneCallback cb, void* userData = 0);
 
-        /**
-         * Invoked from PortAudio when new data is requested.
-         * Possibly called from interrupt context, don't block!
-         * @see: PortAudio.
-         */
-        int SoundCallback(
-            void* outputBuffer,
-            unsigned long framesPerBuffer,
-            const PaStreamCallbackTimeInfo* timeInfo,
-            PaStreamCallbackFlags statusFlags
-        );
+  /**
+   * Invoked from PortAudio when new data is requested.
+   * Possibly called from interrupt context, don't block!
+   * @see: PortAudio.
+   */
+  int SoundCallback(void* outputBuffer, unsigned long framesPerBuffer,
+                    const PaStreamCallbackTimeInfo* timeInfo,
+                    PaStreamCallbackFlags statusFlags);
 
-        /** Invoked when playback done and drained. */
-        void DoneCallback(void);
+  /** Invoked when playback done and drained. */
+  void DoneCallback(void);
 
+protected:
+  bool SetDeviceIndex(int deviceIndex = -1);
+  void lock();
+  void unlock();
 
-    protected:
-        bool SetDeviceIndex(int deviceIndex = -1);
-        void lock();
-        void unlock();
-
-        PaStream* m_stream;
-        std::unique_ptr<AbstractSoundLoader> m_soundLoader;
-        bool m_isPaInitialized;
-        bool m_isAsynch;
-        std::atomic_flag m_lock;
+  PaStream* m_stream;
+  std::unique_ptr<AbstractSoundLoader> m_soundLoader;
+  bool m_isPaInitialized;
+  bool m_isAsynch;
+  std::atomic_flag m_lock;
 };
 
-
-#endif // PORTAUDIO_SOUND_H
+#endif  // PORTAUDIO_SOUND_H

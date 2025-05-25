@@ -23,8 +23,6 @@
 
 #include <wx/log.h>
 
-IMPLEMENT_ABSTRACT_CLASS(wxSVGDocument, wxSvgXmlDocument)
-
 wxSVGDocument::wxSVGDocument(const wxSVGDocument& doc): wxSvgXmlDocument(doc) {
 	Init();
 }

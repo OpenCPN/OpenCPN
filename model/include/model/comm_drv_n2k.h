@@ -38,7 +38,7 @@ public:
   virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) override = 0;
   virtual void SetListener(DriverListener& l) override;
-  virtual std::shared_ptr<NavAddr> GetAddress(const N2kName& name);
+  virtual std::shared_ptr<NavAddr2000> GetAddress(const N2kName& name);
   virtual int SetTXPGN(int pgn) { return 0; }
 };
 

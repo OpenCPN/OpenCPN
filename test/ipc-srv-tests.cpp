@@ -17,6 +17,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/**
+ * \file
+ *
+ * Tests for the wxwidgets IPC server code.
+ *
+ * NOTE: The ` std::thread t([&] {` construct in the various Test* methods
+ * like TestRaise exposes some kind of bug. The wortk around for now is to
+ * always compile this using -O0 i. e. disable optimizations. With higher
+ * levels, the methods crashes on exit.
+ */
+
 #include "config.h"
 
 #include <chrono>
@@ -43,17 +54,6 @@
 #include "model/macutils.h"
 #endif
 
-/**
- * \file
- *
- * Tests for the wxwidgets IPC server code.
- *
- * NOTE: The ` std::thread t([&] {` construct in the various Test* methods
- * like TestRaise exposes some kind of bug. The wortk around for now is to
- * always compile this using -O0 i. e. disable optimizations. With higher
- * levels, the methods crashes on exit.
- */
-
 using namespace std::literals::chrono_literals;
 
 /** Define an action to be performed when a KeyProvider is notified. */
@@ -72,7 +72,6 @@ public:
 private:
   class ObsListener : public wxEvtHandler {
   public:
-
     /** Create an object which does not listen until Init(); */
     ObsListener() {}
 
@@ -107,8 +106,7 @@ private:
 
   void TestRaise(IpcServer& server) {
     int result0 = 5;
-    ObsListener listener(server.on_raise,
-                         [&result0]() { result0 = 17; });
+    ObsListener listener(server.on_raise, [&result0]() { result0 = 17; });
     auto cmd = std::string(CMAKE_BINARY_DIR) + "/test/ipc-client raise";
     FILE* stream = popen(cmd.c_str(), "r");
 
@@ -126,8 +124,7 @@ private:
 
   void TestQuit(IpcServer& server) {
     int result0 = 7;
-    ObsListener listener(server.on_quit,
-                         [&result0]() { result0 = 13; });
+    ObsListener listener(server.on_quit, [&result0]() { result0 = 13; });
     auto cmd = std::string(CMAKE_BINARY_DIR) + "/test/ipc-client quit";
     FILE* stream = popen(cmd.c_str(), "r");
 
@@ -190,7 +187,7 @@ wxIMPLEMENT_APP_NO_MAIN(IpcServerTest);
 
 #ifndef OCPN_FLATPAK
 
-#if wxCHECK_VERSION(3,2,1)
+#if wxCHECK_VERSION(3, 2, 1)
 TEST(IpcServer, Commands) {
   char arg0[32];
   strcpy(arg0, "ipc-srv");

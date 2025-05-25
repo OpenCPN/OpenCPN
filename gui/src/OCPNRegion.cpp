@@ -391,8 +391,6 @@ public:
 #define M_REGIONDATA ((OCPNRegionRefData *)m_refData)
 #define M_REGIONDATA_OF(rgn) ((OCPNRegionRefData *)(rgn.m_refData))
 
-IMPLEMENT_DYNAMIC_CLASS(OCPNRegion, wxGDIObject)
-
 // ----------------------------------------------------------------------------
 // OCPNRegion construction
 // ----------------------------------------------------------------------------

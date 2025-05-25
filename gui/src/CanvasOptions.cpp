@@ -355,8 +355,11 @@ void CanvasOptions::OnOptionChange(wxCommandEvent& event) {
 }
 
 void CanvasOptions::RefreshControlValues(void) {
-  ChartCanvas* parentCanvas = wxDynamicCast(m_parent, ChartCanvas);
+  auto parentCanvas = dynamic_cast<ChartCanvas*>(m_parent);
+  ;
   if (!parentCanvas) return;
+
+  m_bmode_change_while_hidden = !wxWindow::IsShown();
 
   // Control options
   //    pCBToolbar->SetValue(parentCanvas->GetToolbarEnable());
@@ -458,7 +461,7 @@ void CanvasOptions::SetENCAvailable(bool avail) {
 }
 
 void CanvasOptions::UpdateCanvasOptions(void) {
-  ChartCanvas* parentCanvas = wxDynamicCast(m_parent, ChartCanvas);
+  auto parentCanvas = dynamic_cast<ChartCanvas*>(m_parent);
   if (!parentCanvas) return;
 
   bool b_needRefresh = false;
@@ -554,15 +557,17 @@ void CanvasOptions::UpdateCanvasOptions(void) {
     parentCanvas->UpdateCanvasS52PLIBConfig();
   }
 
-  int newMode = NORTH_UP_MODE;
-  if (pCBCourseUp->GetValue())
-    newMode = COURSE_UP_MODE;
-  else if (pCBHeadUp->GetValue())
-    newMode = HEAD_UP_MODE;
+  if (!m_bmode_change_while_hidden) {
+    int newMode = NORTH_UP_MODE;
+    if (pCBCourseUp->GetValue())
+      newMode = COURSE_UP_MODE;
+    else if (pCBHeadUp->GetValue())
+      newMode = HEAD_UP_MODE;
 
-  if (newMode != parentCanvas->GetUpMode()) {
-    parentCanvas->SetUpMode(newMode);
-    b_needReLoad = true;
+    if (newMode != parentCanvas->GetUpMode()) {
+      parentCanvas->SetUpMode(newMode);
+      b_needReLoad = true;
+    }
   }
 
   if (pCBLookAhead->GetValue() != parentCanvas->GetLookahead()) {

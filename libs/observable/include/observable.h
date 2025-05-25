@@ -57,7 +57,6 @@ public:
   virtual std::string GetKey() const = 0;
 };
 
-
 /**
  *  Private helper class. Basically a singleton map of listener lists
  *  where lists are managed by key, one for each key value.
@@ -86,7 +85,7 @@ public:
   Observable(const std::string& _key)
       : key(_key), m_list(ListenersByKey::GetInstance(_key)) {}
 
-  Observable(const KeyProvider& kp)  : Observable(kp.GetKey()) {}
+  Observable(const KeyProvider& kp) : Observable(kp.GetKey()) {}
 
   /** Notify all listeners about variable change. */
   virtual const void Notify();
@@ -117,7 +116,6 @@ protected:
     Notify(nullptr, s, 0, client_data);
   }
 
-
 private:
   /** Set object to send ev_type to listener on variable changes. */
   void Listen(wxEvtHandler* listener, wxEventType ev_type);
@@ -141,14 +139,24 @@ public:
     Listen();
   }
 
-  ObservableListener(const KeyProvider& kp, wxEvtHandler* l, wxEventType e) :
-    ObservableListener(kp.GetKey(), l, e) {}
+  ObservableListener(const KeyProvider& kp, wxEvtHandler* l, wxEventType e)
+      : ObservableListener(kp.GetKey(), l, e) {}
 
   /** A listener can only be transferred using std::move(). */
   ObservableListener(ObservableListener&& other)
       : key(other.key), listener(other.listener), ev_type(other.ev_type) {
     other.Unlisten();
     Listen();
+  }
+
+  /** A listener can only be transferred using std::move(). */
+  ObservableListener& operator=(ObservableListener&& other) {
+    key = other.key;
+    listener = other.listener;
+    ev_type = other.ev_type;
+    other.Unlisten();
+    Listen();
+    return *this;
   }
 
   ObservableListener(const ObservableListener& other) = delete;
@@ -160,7 +168,7 @@ public:
   void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
 
   void Listen(const KeyProvider& kp, wxEvtHandler* l, wxEventType evt) {
-      Listen(kp.GetKey(), l, evt);
+    Listen(kp.GetKey(), l, evt);
   }
 
 private:
@@ -206,12 +214,32 @@ private:
  *       }
  *
  * \endcode
+ *
+ * ObsListener is non-copyable, but can be created and assigned using
+ * std::move like in
+ * \code
+ *
+ *     std::vector<ObsListener> v;
+ *     ObsListener l;
+ *     v[0] = std::move(l);
+ *
+ * \endcode
  */
 class ObsListener : public wxEvtHandler {
 public:
-
   /** Create an object which does not listen until Init(); */
   ObsListener() {}
+
+  /** ObsListener can only be assigned using std::move */
+  ObsListener(ObsListener&& other) {
+    this->m_listener = std::move(other.m_listener);
+  }
+  ObsListener& operator=(ObsListener&& other) {
+    m_listener = std::move(other.m_listener);
+    return *this;
+  }
+  ObsListener(const ObsListener&) = delete;
+  ObsListener& operator=(ObsListener&) = delete;
 
   /** Create object which invokes action when kp is notified. */
   ObsListener(const KeyProvider& kp,
@@ -235,7 +263,6 @@ public:
 private:
   ObservableListener m_listener;
 };
-
 
 /** Shorthand for accessing ObservedEvt.SharedPtr(). */
 template <typename T>

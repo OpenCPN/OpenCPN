@@ -45,6 +45,13 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   message(STATUS "Building for wxQt-Android")
+
+  # Specific NDK setting, avoiding "Unwind" linkage problems with
+  # managed plugins found in later NDK versions.
+  #set( tool_base /home/dsr/Android/Sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/linux-x86_64)
+  #cmake -DOCPN_TARGET_TUPLE:STRING="Android-arm64;16;arm64"   -Dtool_base="$HOME/Android/Sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/linux-x86_64" ..
+  #cmake -DOCPN_TARGET_TUPLE:STRING="Android-armhf;16;armhf"   -Dtool_base="$HOME/Android/Sdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/linux-x86_64" ..
+
   set(CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
   set(QT_ANDROID "ON")
   if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
@@ -351,7 +358,7 @@ if (NOT WIN32 AND NOT APPLE)
   if (NOT OCPN_PEDANTIC)
     add_compile_options(
       "-Wno-unused" "-fexceptions" "-rdynamic" "-fno-strict-aliasing"
-      "-Wno-deprecated-declarations"
+      "-Wno-deprecated-declarations" "-Wno-unknown-pragmas"
     )
   endif ()
   if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
@@ -433,13 +440,13 @@ if (MSVC)
 endif ()
 
 if (QT_ANDROID)
-  set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   add_definitions(-DNOASSERT)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g")
-  set(CMAKE_C_FLAGS "-pthread -fPIC -g")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g -O2")
+  set(CMAKE_C_FLAGS "-pthread -fPIC -g -O2")
 
   add_compile_options(
     "-Wno-inconsistent-missing-override"
@@ -504,7 +511,10 @@ message(STATUS "Building version ${PACKAGE_VERSION}")
 
 # Detect the Apple Version of the build machine
 if (APPLE)
-  exec_program(uname ARGS -v OUTPUT_VARIABLE DARWIN_VERSION)
+  execute_process(
+    COMMAND uname  -v
+    OUTPUT_VARIABLE DARWIN_VERSION
+  )
   string(REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
   message(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
   if (DARWIN_VERSION GREATER 11)
@@ -558,7 +568,7 @@ if (APPLE)
   # Bundle all of wxWidgets as a courtesy for plugins, see #2153
   set(wxWidgets_FIND_COMPONENTS
       net xml html adv aui core base media propgrid qa ribbon richtext webview
-      stc xrc
+      stc
   )
 elseif (_wx_selected_config MATCHES "qt-armv7")
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
@@ -741,12 +751,10 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
-set(GUI_S57_DIR ${CMAKE_SOURCE_DIR}/gui/src/s57)
-
 set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(GUI_HDRS
-    ${GUI_HDR_DIR}/AboutFrame.h
-    ${GUI_HDR_DIR}/AboutFrameImpl.h
+    ${GUI_HDR_DIR}/about_frame.h
+    ${GUI_HDR_DIR}/about_frame_impl.h
     ${GUI_HDR_DIR}/about.h
     ${GUI_HDR_DIR}/ais.h
     ${GUI_HDR_DIR}/ais_info_gui.h
@@ -771,8 +779,9 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/concanv.h
     ${GUI_HDR_DIR}/ConfigMgr.h
     ${GUI_HDR_DIR}/connection_edit.h
-    ${GUI_HDR_DIR}/connections_dialog.h
+    ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
+    ${GUI_HDR_DIR}/data_monitor.h
     ${GUI_HDR_DIR}/DetailSlider.h
     ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
@@ -784,6 +793,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/GoToPositionDialog.h
     ${GUI_HDR_DIR}/gshhs.h
     ${GUI_HDR_DIR}/gui_lib.h
+    ${GUI_HDR_DIR}/hotkeys_dlg.h
     ${GUI_HDR_DIR}/IDX_entry.h
     ${GUI_HDR_DIR}/iENCToolbar.h
     ${GUI_HDR_DIR}/kml.h
@@ -795,7 +805,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
-    ${GUI_HDR_DIR}/NMEALogWindow.h
+    ${GUI_HDR_DIR}/notification_manager_gui.h
     ${GUI_HDR_DIR}/ocpCursor.h
     ${GUI_HDR_DIR}/ocpndc.h
     ${GUI_HDR_DIR}/ocpn_app.h
@@ -803,13 +813,15 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/OCPNListCtrl.h
     ${GUI_HDR_DIR}/ocpn_pixel.h
     ${GUI_HDR_DIR}/OCPNPlatform.h
-    ${GUI_HDR_DIR}/ocpn_print.h
     ${GUI_HDR_DIR}/OCPN_AUIManager.h
     ${GUI_HDR_DIR}/OCPNRegion.h
     ${GUI_HDR_DIR}/options.h
     ${GUI_HDR_DIR}/piano.h
     ${GUI_HDR_DIR}/peer_client_dlg.h
     ${GUI_HDR_DIR}/pluginmanager.h
+    ${GUI_HDR_DIR}/print_dialog.h
+    ${GUI_HDR_DIR}/printout_base.h
+    ${GUI_HDR_DIR}/printout_chart.h
     ${GUI_HDR_DIR}/printtable.h
     ${GUI_HDR_DIR}/priority_gui.h
     ${GUI_HDR_DIR}/Quilt.h
@@ -820,11 +832,14 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/routemanagerdialog.h
     ${GUI_HDR_DIR}/routeman_gui.h
     ${GUI_HDR_DIR}/route_point_gui.h
-    ${GUI_HDR_DIR}/routeprintout.h
+    ${GUI_HDR_DIR}/route_printout.h
+    ${GUI_HDR_DIR}/route_validator.h
     ${GUI_HDR_DIR}/RoutePropDlg.h
     ${GUI_HDR_DIR}/RoutePropDlgImpl.h
+    ${GUI_HDR_DIR}/s57chart.h
     ${GUI_HDR_DIR}/S57Light.h
     ${GUI_HDR_DIR}/S57ObjectDesc.h
+    ${GUI_HDR_DIR}/s57_ocpn_utils.h
     ${GUI_HDR_DIR}/S57QueryDialog.h
     ${GUI_HDR_DIR}/S57Sector.h
     ${GUI_HDR_DIR}/safe_mode_gui.h
@@ -846,10 +861,9 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/time_textbox.h
     ${GUI_HDR_DIR}/toolbar.h
     ${GUI_HDR_DIR}/track_gui.h
-    ${GUI_HDR_DIR}/trackprintout.h
+    ${GUI_HDR_DIR}/track_printout.h
     ${GUI_HDR_DIR}/TrackPropDlg.h
-    ${GUI_HDR_DIR}/TTYScroll.h
-    ${GUI_HDR_DIR}/TTYWindow.h
+    ${GUI_HDR_DIR}/tty_scroll.h
     ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
     ${GUI_HDR_DIR}/update_mgr.h
@@ -859,17 +873,12 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
 )
-list(APPEND  GUI_HDRS
-    ${GUI_S57_DIR}/include/ogr_s57.h
-    ${GUI_S57_DIR}/include/S57ClassRegistrar.h
-    ${GUI_S57_DIR}/include/s57.h
-    ${GUI_S57_DIR}/include/s57RegistrarMgr.h
-)
+
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(GUI_SRC
     ${GUI_SRC_DIR}/about.cpp
-    ${GUI_SRC_DIR}/AboutFrame.cpp
-    ${GUI_SRC_DIR}/AboutFrameImpl.cpp
+    ${GUI_SRC_DIR}/about_frame.cpp
+    ${GUI_SRC_DIR}/about_frame_impl.cpp
     ${GUI_SRC_DIR}/ais.cpp
     ${GUI_SRC_DIR}/ais_info_gui.cpp
     ${GUI_SRC_DIR}/AISTargetAlertDialog.cpp
@@ -892,17 +901,20 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/ConfigMgr.cpp
     ${GUI_SRC_DIR}/connection_edit.cpp
-    ${GUI_SRC_DIR}/connections_dialog.cpp
+    ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
+    ${GUI_SRC_DIR}/data_monitor.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
+    ${GUI_SRC_DIR}/filter_dlg.cpp
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
     ${GUI_SRC_DIR}/FontMgr.cpp
     ${GUI_SRC_DIR}/GoToPositionDialog.cpp
     ${GUI_SRC_DIR}/gshhs.cpp
     ${GUI_SRC_DIR}/gui_lib.cpp
+    ${GUI_SRC_DIR}/hotkeys_dlg.cpp
     ${GUI_SRC_DIR}/IDX_entry.cpp
     ${GUI_SRC_DIR}/iENCToolbar.cpp
     ${GUI_SRC_DIR}/kml.cpp
@@ -911,29 +923,33 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
-    ${GUI_SRC_DIR}/mbtiles/WorkerThread.cpp
-    ${GUI_SRC_DIR}/mbtiles/WorkerThread.hpp
-    ${GUI_SRC_DIR}/mbtiles/TileQueue.hpp
-    ${GUI_SRC_DIR}/mbtiles/TileDescriptor.hpp
-    ${GUI_SRC_DIR}/mbtiles/TileCache.hpp
+    ${GUI_SRC_DIR}/mbtiles/tile_thread.cpp
+    ${GUI_SRC_DIR}/mbtiles/tile_thread.h
+    ${GUI_SRC_DIR}/mbtiles/tile_queue.h
+    ${GUI_SRC_DIR}/mbtiles/tile_descr.h
+    ${GUI_SRC_DIR}/mbtiles/tile_cache.h
+    ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
-    ${GUI_SRC_DIR}/NMEALogWindow.cpp
+    ${GUI_SRC_DIR}/notification_manager_gui.cpp
     ${GUI_SRC_DIR}/ocpCursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
+    ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
     ${GUI_SRC_DIR}/OCPN_AUIManager.cpp
     ${GUI_SRC_DIR}/ocpndc.cpp
     ${GUI_SRC_DIR}/ocpn_frame.cpp
     ${GUI_SRC_DIR}/OCPNListCtrl.cpp
     ${GUI_SRC_DIR}/ocpn_pixel.cpp
     ${GUI_SRC_DIR}/OCPNPlatform.cpp
-    ${GUI_SRC_DIR}/ocpn_print.cpp
     ${GUI_SRC_DIR}/OCPNRegion.cpp
     ${GUI_SRC_DIR}/options.cpp
     ${GUI_SRC_DIR}/Osenc.cpp
     ${GUI_SRC_DIR}/peer_client_dlg.cpp
     ${GUI_SRC_DIR}/piano.cpp
     ${GUI_SRC_DIR}/pluginmanager.cpp
+    ${GUI_SRC_DIR}/print_dialog.cpp
+    ${GUI_SRC_DIR}/printout_base.cpp
+    ${GUI_SRC_DIR}/printout_chart.cpp
     ${GUI_SRC_DIR}/printtable.cpp
     ${GUI_SRC_DIR}/priority_gui.cpp
     ${GUI_SRC_DIR}/Quilt.cpp
@@ -943,9 +959,11 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/routemanagerdialog.cpp
     ${GUI_SRC_DIR}/routeman_gui.cpp
     ${GUI_SRC_DIR}/route_point_gui.cpp
-    ${GUI_SRC_DIR}/routeprintout.cpp
+    ${GUI_SRC_DIR}/route_printout.cpp
+    ${GUI_SRC_DIR}/route_validator.cpp
     ${GUI_SRC_DIR}/RoutePropDlg.cpp
     ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
+    ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
     ${GUI_SRC_DIR}/S57QueryDialog.cpp
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
@@ -955,6 +973,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/shapefile_basemap.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
+    ${GUI_SRC_DIR}/svg_icons.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
     ${GUI_SRC_DIR}/TCDataFactory.cpp
     ${GUI_SRC_DIR}/TCDataSource.cpp
@@ -965,15 +984,15 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/thumbwin.cpp
     ${GUI_SRC_DIR}/toolbar.cpp
     ${GUI_SRC_DIR}/track_gui.cpp
-    ${GUI_SRC_DIR}/trackprintout.cpp
+    ${GUI_SRC_DIR}/track_printout.cpp
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
-    ${GUI_SRC_DIR}/TTYScroll.cpp
-    ${GUI_SRC_DIR}/TTYWindow.cpp
+    ${GUI_SRC_DIR}/tty_scroll.cpp
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
+
 )
 
 if (NOT QT_ANDROID)
@@ -986,16 +1005,6 @@ if (NOT QT_ANDROID)
           ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
           )
 endif ()
-
-list(APPEND GUI_SRC
-  ${GUI_S57_DIR}/src/ogrs57datasource.cpp
-  ${GUI_S57_DIR}/src/ogrs57layer.cpp
-  ${GUI_S57_DIR}/src/s57classregistrar.cpp
-  ${GUI_S57_DIR}/src/s57featuredefns.cpp
-  ${GUI_S57_DIR}/src/s57obj.cpp
-  ${GUI_S57_DIR}/src/s57reader.cpp
-  ${GUI_S57_DIR}/src/s57RegistrarMgr.cpp
-)
 
 if (OCPN_USE_GL)
   list(APPEND GUI_HDRS${GUI_HDR_DIR}/shaders.h)
@@ -1023,10 +1032,8 @@ if (NOT MSVC AND NOT APPLE)
   list(APPEND GUI_SRC ${GUI_SRC_DIR}/ocpn_fontdlg.cpp)
 endif ()
 
-
 set(SRCS ${GUI_SRC})
 set(HDRS ${GUI_HDRS})
-
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
@@ -1061,6 +1068,12 @@ elseif (QT_ANDROID)
   target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/android)
 endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU" AND NOT OCPN_PEDANTIC)
+  target_compile_options(
+    ${PACKAGE_NAME} PUBLIC -Werror -Wno-unknown-warning-option
+  )
+endif ()
 
 set_target_properties(
   ${PACKAGE_NAME}
@@ -1114,6 +1127,7 @@ if (APPLE)
 endif ()
 
 find_package(Gettext REQUIRED)
+
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
@@ -1251,25 +1265,16 @@ if (OCPN_USE_CRASHREPORT)
   endif ()
 endif ()
 
-add_subdirectory("libs/sqlite")
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
-
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
-find_package(Shapelib)
-if (SHAPELIB_FOUND)
-  message(STATUS "Using system shapelib")
-else ()
-  message(STATUS "Using bundled shapelib")
-  add_subdirectory("libs/shapelib")
-endif ()
-target_link_libraries(${PACKAGE_NAME} PRIVATE shapelib::shapelib)
+add_subdirectory("libs/shapelib")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::shapelib)
 
 add_subdirectory("libs/ShapefileCpp")
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::ShapefileCpp)
-target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
-target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::shapefile_cpp)
+# target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
+# target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
 
 if (NOT QT_ANDROID)
   add_subdirectory("libs/libdnet")
@@ -1467,6 +1472,15 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 message(STATUS "    Adding local wxserverdisc")
 add_subdirectory(libs/wxservdisc)
 
+add_subdirectory(libs/manual)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
+
+add_subdirectory(libs/s57-charts)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s57-charts)
+
+add_subdirectory(libs/gui)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::guilib)
+
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
   install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
@@ -1562,6 +1576,24 @@ if (OCPN_BUNDLE_GSHHS)
   )
 endif ()
 
+find_program(ASCIIDOC_PROG NAMES asciidoc)
+if (ASCIIDOC_PROG)
+  add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/Authors.html
+    COMMAND ${ASCIIDOC_PROG} -o ${CMAKE_BINARY_DIR}/Authors.html
+        ${CMAKE_SOURCE_DIR}/Authors.adoc
+    COMMENT "Generated Authors.html"
+  )
+else ()
+  add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/Authors.html
+    COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/data/authors.html
+        ${CMAKE_BINARY_DIR}/Authors.html
+    COMMENT "Reused existing Authors.html"
+  )
+endif ()
+add_custom_target(authors ALL DEPENDS ${CMAKE_BINARY_DIR}/Authors.html)
+
 set(basemap_shp
         data/basemap_shp/basemap_crude_10x10.cpg
         data/basemap_shp/basemap_crude_10x10.prj
@@ -1619,6 +1651,16 @@ set(s57data
     data/s57data/chartsymbols.xml
 )
 
+set(filters
+    data/filters/all-data.filter.json
+    data/filters/all-nmea.filter.json
+    data/filters/default.filter.json
+    data/filters/malformed.filter.json
+    data/filters/nmea-input.filter.json
+    data/filters/nmea-output.filter.json
+    data/filters/plugin-msg.filter.json
+)
+
 if (OCPN_BUNDLE_TCDATA)
   set(tcData
       data/tcdata/HARMONICS_NO_US data/tcdata/HARMONICS_NO_US.IDX
@@ -1626,7 +1668,9 @@ if (OCPN_BUNDLE_TCDATA)
   )
 endif ()
 
-# Mac has trouble finding libgobject-2.0.dylib We look for it explicitely
+set_source_files_properties(${CMAKE_BINARY_DIR}/Authors.html GENERATED)
+
+# Mac has trouble finding libgobject - 2.0.dylib We look for it explicitely
 if (xAPPLE)
   # Assume pkg-config is available.
   pkg_search_module(GOBJECT REQUIRED gobject-2.0)
@@ -1654,20 +1698,26 @@ if (APPLE)
     ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata
   )
   set_source_files_properties(
+    ${filters} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/filters
+  )
+  set_source_files_properties(
     ${s57data} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data
   )
   if (OCPN_BUNDLE_TCDATA)
     set_source_files_properties(
       ${tcData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
     )
-  endif (OCPN_BUNDLE_TCDATA)
+  endif ()
+
 
   set_source_files_properties(
     data/license.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
-    data/authors.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
+    ${CMAKE_BINARY_DIR}/Authors.html
+      GENERATED
+      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
@@ -1836,10 +1886,10 @@ if (APPLE)
             ${basemap_shp}
             ${ssfnData}
             ${uiData}
+            ${filters}
             ${s57data}
             ${tcData}
             data/license.html
-            data/authors.html
             data/opencpn.png
             data/ocpn-plugins.xml
             data/CoC-909_2013-InlandECDIS_20170308s.pdf
@@ -1854,6 +1904,7 @@ if (APPLE)
             ${MUI_FLAT_SVG_FILES}
             ${DOC_FILES}
             ${CONFIG_FILES}
+            ${CMAKE_BINARY_DIR}/Authors.html
   )
   install(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
@@ -1861,6 +1912,7 @@ if (APPLE)
   set_target_properties(
     ${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
                                "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in"
+                               XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES
   )
 endif ()
 
@@ -1890,7 +1942,7 @@ add_subdirectory(libs/gdal)
 add_subdirectory(libs/gl_headers)
 add_subdirectory(libs/geoprim)
 add_subdirectory(libs/iso8211)
-add_subdirectory(libs/mDNS)
+add_subdirectory(libs/mdns)
 
 set(MSVC_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include)
 add_subdirectory(libs/mongoose)
@@ -1902,6 +1954,7 @@ add_subdirectory(libs/picosha2)
 add_subdirectory(libs/pugixml)
 add_subdirectory(libs/rapidjson)
 add_subdirectory(libs/s52plib)
+add_subdirectory(libs/sqlite)
 
 if (QT_ANDROID)
   set(SOUND_WX_INCLUDE_DIR "${ANDROID_WX_INCLUDES}" CACHE STRING "")
@@ -1936,6 +1989,7 @@ if (NOT APPLE)
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
+  install(FILES ${filters} DESTINATION ${PREFIX_PKGDATA}/filters)
   install(DIRECTORY data/svg/markicons/
           DESTINATION ${PREFIX_PKGDATA}/uidata/markicons
   )
@@ -1978,7 +2032,7 @@ if (NOT APPLE)
   )
   install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
   install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
-  install(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
+  install(FILES ${CMAKE_BINARY_DIR}/Authors.html DESTINATION ${PREFIX_PKGDATA})
   install(FILES data/opencpn.png DESTINATION ${PREFIX_PKGDATA})
 
   if (PACKAGE_FORMAT EQUAL "DEB")
@@ -2693,6 +2747,7 @@ add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
 if (OCPN_BUILD_TEST)
+
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
   add_custom_target(

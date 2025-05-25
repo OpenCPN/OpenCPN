@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,8 +15,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 #ifndef CATALOG_PARSER_H__
 #define CATALOG_PARSER_H__
 
@@ -28,8 +23,9 @@
 #include <vector>
 
 /**
- *  Datatypes and  methods to parse ocpn-plugins.xml XML data,
- *  either complete catalog or a single plugin.
+ * \file
+ * Datatypes and  methods to parse ocpn-plugins.xml XML data, either complete
+ * catalog or a single plugin.
  */
 
 /** Overall metadata for the set of plugins used. */

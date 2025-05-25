@@ -35,32 +35,30 @@
  * list is platform dependent.
  */
 
-class SystemCmdSound: public OcpnSound
-{
+class SystemCmdSound : public OcpnSound {
+public:
+  SystemCmdSound(const char* cmd = OCPN_SOUND_CMD)
+      : m_isPlaying(false), m_cmd(cmd), m_path("") {};
+  ~SystemCmdSound() {};
 
-    public:
-        SystemCmdSound(const char* cmd = OCPN_SOUND_CMD)
-            :m_isPlaying(false), m_cmd(cmd), m_path("")  {};
-        ~SystemCmdSound() {};
+  bool Load(const char* path, int deviceIndex = -1) override;
+  void UnLoad() override {};
+  bool Play() override;
+  bool Stop() override;
+  /**
+   * Set system command string in case program wants to change from
+   * default string.
+   */
+  void SetCmd(const char* cmd) { m_cmd = cmd; };
 
-        bool Load(const char* path, int deviceIndex = -1) override;
-        void UnLoad() override {};
-        bool Play() override;
-        bool Stop() override;
-        /**
-         * Set system command string in case program wants to change from
-         * default string.
-         */
-        void SetCmd(const char* cmd ) { m_cmd = cmd; };
-
-    private:
-        void worker();
-        bool canPlay();
-        bool m_isPlaying;
-        std::string m_cmd;
-        std::string m_path;
+private:
+  void worker();
+  bool canPlay();
+  bool m_isPlaying;
+  std::string m_cmd;
+  std::string m_path;
 };
 
-const unsigned maxPlayTime = 200;   // maximum stall time time is 200mS
+const unsigned maxPlayTime = 200;  // maximum stall time time is 200mS
 
-#endif // SYSTEM_CMD_SOUND_H__
+#endif  // SYSTEM_CMD_SOUND_H__

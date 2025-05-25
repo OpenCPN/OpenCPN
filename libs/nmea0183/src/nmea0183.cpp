@@ -366,7 +366,7 @@ wxArrayString NMEA0183::GetRecognizedArray(void)
 
 
 
-NMEA0183& NMEA0183::operator << ( wxString & source )
+NMEA0183& NMEA0183::operator << ( const wxString & source )
 {
 //   ASSERT_VALID( this );
 

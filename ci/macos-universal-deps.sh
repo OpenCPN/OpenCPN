@@ -22,16 +22,16 @@ echo "Installing dependencies for ${arch} into ${cache_dir}"
 ogg_version="1.3.5"
 vorbis_version="1.3.7"
 flac_version="1.4.3"
-opus_version="1.4"
+opus_version="1.5.2"
 blake2_version="0.98.1"
 zstd_version="1.5.6"
-libarchive_version="3.7.3"
-mpg123_version="1.32.4"
+libarchive_version="3.7.7"
+mpg123_version="1.32.8"
 lame_version="3.100"
 libsndfile_version="1.2.2"
 libusb_version="1.0.27"
-openssl_version="3.0.13"
-wx_version="3.2.5"
+openssl_version="3.0.16"
+wx_version="3.2.8"
 
 macos_deployment_target="10.13"
 
@@ -166,7 +166,7 @@ cd ..
 rm -rf opus-${opus_version}
 
 #blake2
-if [ ! -f libb2-${blake2_version}.tar.gz ]; then 
+if [ ! -f libb2-${blake2_version}.tar.gz ]; then
   wget https://github.com/BLAKE2/libb2/releases/download/v${blake2_version}/libb2-${blake2_version}.tar.gz
 fi
 tar xzf libb2-${blake2_version}.tar.gz
@@ -228,7 +228,21 @@ cd libarchive-${libarchive_version}
 #lipo -create libarchive.13.dylib.x86-64 libarchive.13.dylib.arm64 -output .libs/libarchive.13.dylib
 mkdir bld
 cd bld
-cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_LZ4=false -DZSTD_INCLUDE_DIR=${cache_dir}/include -DZSTD_LIBRARY=${cache_dir}/lib/libzstd.dylib -DLIBB2_INCLUDE_DIR=${cache_dir}/include -DLIBB2_LIBRARY=${cache_dir}/lib/libb2.dylib -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE ..
+cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" \
+    -DCMAKE_INSTALL_PREFIX=${cache_dir} \
+    -DENABLE_LZ4=false \
+    -DZSTD_INCLUDE_DIR=${cache_dir}/include \
+    -DZSTD_LIBRARY=${cache_dir}/lib/libzstd.dylib \
+    -DLIBB2_INCLUDE_DIR=${cache_dir}/include \
+    -DLIBB2_LIBRARY=${cache_dir}/lib/libb2.dylib \
+    -DCMAKE_POLICY_DEFAULT_CMP0068=NEW \
+    -DCMAKE_SKIP_BUILD_RPATH=FALSE \
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE \
+    -DCMAKE_INSTALL_RPATH=${cache_dir}/lib \
+    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE \
+    -DOCPN_BUILD_SAMPLE=ON \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    ..
 #-DCMAKE_MACOSX_RPATH=FALSE ..
 make -j ${ncp}
 make install
@@ -306,7 +320,7 @@ tar xJf libsndfile-${libsndfile_version}.tar.xz
 cd libsndfile-${libsndfile_version}
 mkdir build
 cd build
-cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_EXTERNAL_LIBS=false -Dmpg123_INCLUDE_DIR="${cache_dir}/include" -Dmpg123_LIBRARY="${cache_dir}/lib/libmpg123.dylib" -DMP3LAME_INCLUDE_DIR="${cache_dir}/include" -DMP3LAME_LIBRARY="${cache_dir}/lib/libmp3lame.dylib" -DBUILD_SHARED_LIBS=1 -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE ..
+cmake -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_EXTERNAL_LIBS=false -Dmpg123_INCLUDE_DIR="${cache_dir}/include" -Dmpg123_LIBRARY="${cache_dir}/lib/libmpg123.dylib" -DMP3LAME_INCLUDE_DIR="${cache_dir}/include" -DMP3LAME_LIBRARY="${cache_dir}/lib/libmp3lame.dylib" -DBUILD_SHARED_LIBS=1 -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
 #-DCMAKE_MACOSX_RPATH=FALSE ..
 make -j ${ncpu}
 make install
@@ -349,7 +363,7 @@ fi
 tar xjf openssl-${openssl_version}.tar.gz
 cd openssl-${openssl_version}
 if [[ "${arch}" = *"x86_64"* ]]; then
-  ./Configure --prefix="${cache_dir}" darwin64-x86_64-cc shared 
+  ./Configure --prefix="${cache_dir}" darwin64-x86_64-cc shared
   make -j ${ncpu}
   if [[ "${arch}" = *"x86_64"* ]] && [[ "${arch}" = *"arm64"* ]]; then
     mv libcrypto.3.dylib libcrypto.3.dylib.x86-64
@@ -394,6 +408,7 @@ patch < $(dirname "${scriptpath}")/../buildosx/wx_slider_patch.diff
       --enable-macosx_arch=$(echo ${arch} | tr ';' ',') \
       --enable-universal_binary=$(echo ${arch} | tr ';' ',') \
       --disable-sys-libs \
+      --disable-xrc \
       --with-osx-cocoa \
       --enable-aui \
       --disable-debug \

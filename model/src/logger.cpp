@@ -1,9 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,7 +16,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+
+/**
+ *  \file
+ *   Implement logger.h
  */
 
 #include <algorithm>
@@ -137,4 +138,24 @@ void Logger::logMessage(wxLogLevel level, const char* path, int line,
   if (log) {
     log->LogRecord(level, buf, info);
   }
+}
+
+void CountedLogFilter::Log(const std::string& message) {
+  m_not_logged += 1;
+  if (m_not_logged < m_count) return;
+
+  wxLogGeneric(m_level, message.c_str());
+  wxLogGeneric(m_level, "Previous message suppressed %d times", m_count);
+  m_not_logged = 0;
+}
+
+void TimedLogFilter::Log(const std::string& message) {
+  auto now = std::chrono::steady_clock::now();
+  m_not_logged += 1;
+  if (now - m_last_logged < m_interval) return;
+
+  wxLogGeneric(m_level, message.c_str());
+  wxLogGeneric(m_level, "Previous message suppressed %d times", m_not_logged);
+  m_not_logged = 0;
+  m_last_logged = now;
 }

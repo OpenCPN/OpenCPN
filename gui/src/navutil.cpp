@@ -65,6 +65,7 @@
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
@@ -84,10 +85,10 @@
 #include "Layer.h"
 #include "navutil.h"
 #include "nmea0183.h"
-#include "NMEALogWindow.h"
 #include "observable_globvar.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
+#include "ocpn_plugin.h"
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"
 #include "s52plib.h"
@@ -154,6 +155,8 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
+extern bool g_btenhertz;
+extern bool g_declutter_anchorage;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -224,6 +227,7 @@ extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 extern bool g_bUseGreenShip;
 
+extern int g_OwnShipmmsi;
 extern int g_OwnShipIconType;
 extern double g_n_ownship_length_meters;
 extern double g_n_ownship_beam_meters;
@@ -261,10 +265,6 @@ extern wxString g_config_version_string;
 extern wxString g_CmdSoundString;
 
 extern bool g_bDebugGPSD;
-
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 int g_navobjbackups;
 
@@ -398,129 +398,9 @@ void appendOSDirSlash(wxString *pString);
 
 MyConfig::MyConfig(const wxString &LocalFileName)
     : wxFileConfig(_T (""), _T (""), LocalFileName, _T (""),
-                   wxCONFIG_USE_LOCAL_FILE) {
-  //    Create the default NavObjectCollection FileName
-  wxFileName config_file(LocalFileName);
-  m_sNavObjSetFile =
-      config_file.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-  m_sNavObjSetFile += _T ( "navobj.xml" );
-  m_sNavObjSetChangesFile = m_sNavObjSetFile + _T ( ".changes" );
-
-  m_pNavObjectInputSet = NULL;
-  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
-}
+                   wxCONFIG_USE_LOCAL_FILE) {}
 
 MyConfig::~MyConfig() {}
-
-void MyConfig::CreateRotatingNavObjBackup() {
-  // Avoid nonsense log errors...
-#ifdef __ANDROID__
-  wxLogNull logNo;
-#endif
-  // Monthly backup, keep max 3
-  if (wxFileExists(m_sNavObjSetFile)) {
-    int month = wxDateTime::Now().GetMonth() + 1;
-    wxString fn =
-        wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), month);
-    if (!wxFileExists(fn)) {
-      wxCopyFile(m_sNavObjSetFile, fn);
-    }
-    if (month > 3) {
-      for (wxDateTime::wxDateTime_t i = 1; i <= month - 3; i++) {
-        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-      for (wxDateTime::wxDateTime_t i = month + 1; i <= 12; i++) {
-        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    } else {
-      for (wxDateTime::wxDateTime_t i = month + 1; i <= 12 - month; i++) {
-        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    }
-    // Weekly backup, we want to keep max 4
-    wxDateTime::wxDateTime_t week = wxDateTime::Now().GetWeekOfYear();
-    fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), week);
-    if (!wxFileExists(fn)) {
-      wxCopyFile(m_sNavObjSetFile, fn);
-    }
-    if (week > 4) {
-      for (wxDateTime::wxDateTime_t i = 1; i <= week - 4; i++) {
-        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-      for (wxDateTime::wxDateTime_t i = week + 1; i <= 53; i++) {
-        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    } else {
-      for (wxDateTime::wxDateTime_t i = week + 1; i <= 53 - week; i++) {
-        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
-        if (wxFileExists(fn)) {
-          wxRemoveFile(fn);
-        }
-      }
-    }
-  }
-
-  // Rotate navobj backups, but just in case there are some changes in the
-  // current version to prevent the user trying to "fix" the problem by
-  // continuously starting the application to overwrite all of his good
-  // backups...
-  if (g_navobjbackups > 0) {
-    wxFile f;
-    wxString oldname = m_sNavObjSetFile;
-    wxString newname = wxString::Format(_T("%s.1"), m_sNavObjSetFile.c_str());
-
-    wxFileOffset s_diff = 1;
-    if (::wxFileExists(newname)) {
-      if (f.Open(oldname)) {
-        s_diff = f.Length();
-        f.Close();
-      }
-
-      if (f.Open(newname)) {
-        s_diff -= f.Length();
-        f.Close();
-      }
-    }
-
-    if (s_diff != 0) {
-      for (int i = g_navobjbackups - 1; i >= 1; i--) {
-        oldname = wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i);
-        newname =
-            wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i + 1);
-        if (wxFile::Exists(oldname)) wxCopyFile(oldname, newname);
-      }
-
-      wxULongLong size = wxFileName::GetSize(m_sNavObjSetFile);
-      if (wxFile::Exists(m_sNavObjSetFile) && size > 0) {
-        newname = wxString::Format(_T("%s.1"), m_sNavObjSetFile.c_str());
-        wxCopyFile(m_sNavObjSetFile, newname);
-      }
-    }
-  }
-  // try to clean the backups the user doesn't want - breaks if he deleted some
-  // by hand as it tries to be effective...
-  for (int i = g_navobjbackups + 1; i <= 99; i++)
-    if (wxFile::Exists(
-            wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i)))
-      wxRemoveFile(wxString::Format(_T("%s.%d"), m_sNavObjSetFile.c_str(), i));
-    else
-      break;
-}
 
 int MyConfig::LoadMyConfig() {
   int display_width, display_height;
@@ -588,6 +468,7 @@ int MyConfig::LoadMyConfig() {
   g_n_arrival_circle_radius = 0.05;
   g_plus_minus_zoom_factor = 2.0;
   g_mouse_zoom_sensitivity = 1.5;
+  g_datetime_format = "UTC";
 
   g_AISShowTracks_Mins = 20;
   g_AISShowTracks_Limit = 300.0;
@@ -645,7 +526,7 @@ int MyConfig::LoadMyConfig() {
 
   g_nAWDefault = 50;
   g_nAWMax = 1852;
-  g_ObjQFileExt = _T("txt,rtf,png,html,gif,tif");
+  g_ObjQFileExt = _T("txt,rtf,png,html,gif,tif,jpg");
 
   // Load the raw value, with no defaults, and no processing
   int ret_Val = LoadMyConfigRaw();
@@ -836,6 +717,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("CatalogCustomURL", &g_catalog_custom_url);
   Read("CatalogChannel", &g_catalog_channel);
 
+  Read("NetmaskBits", &g_netmask_bits);
+
   //  NMEA connection options.
   if (!bAsTemplate) {
     Read(_T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog);
@@ -868,6 +751,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "COGUPAvgSeconds" ), &g_COGAvgSec);
   Read(_T ( "LookAheadMode" ), &g_bLookAhead);
   Read(_T ( "SkewToNorthUp" ), &g_bskew_comp);
+  Read(_T ( "TenHzUpdate" ), &g_btenhertz, 0);
+  Read(_T ( "DeclutterAnchorage" ), &g_declutter_anchorage, 0);
 
   Read(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
 
@@ -990,6 +875,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "OwnshipHDTPredictorWidth" ), &g_ownship_HDTpredictor_width);
   Read(_T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles);
 
+  Read(_T ( "OwnShipMMSINumber" ), &g_OwnShipmmsi);
   Read(_T ( "OwnShipIconType" ), &g_OwnShipIconType);
   Read(_T ( "OwnShipLength" ), &g_n_ownship_length_meters);
   Read(_T ( "OwnShipWidth" ), &g_n_ownship_beam_meters);
@@ -1014,6 +900,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "TrackRotateTimeType" ), &g_track_rotate_time_type);
   Read(_T ( "HighlightTracks" ), &g_bHighliteTracks);
 
+  Read(_T ( "DateTimeFormat" ), &g_datetime_format);
+
   wxString stps;
   Read(_T ( "PlanSpeed" ), &stps);
   if (!stps.IsEmpty()) stps.ToDouble(&g_PlanSpeed);
@@ -1033,12 +921,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // We allow 0-99 backups ov navobj.xml
   Read(_T ( "KeepNavobjBackups" ), &g_navobjbackups);
 
-  NMEALogWindow::GetInstance().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
-                                       Read(_T("NMEALogWindowSizeY"), 400L));
-  NMEALogWindow::GetInstance().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
-                                      Read(_T("NMEALogWindowPosY"), 10L));
-  NMEALogWindow::GetInstance().CheckPos(display_width, display_height);
-
   // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg
   // filtered but put msg on bus.
   Read(_T ( "LegacyInputCOMPortFilterBehaviour" ),
@@ -1047,6 +929,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // Boolean to cater for sailing when not approaching waypoint
   Read(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
        &g_bAdvanceRouteWaypointOnArrivalOnly);
+  Read("EnableRootMenuDebug", &g_enable_root_menu_debug);
 
   Read(_T ( "EnableRotateKeys" ), &g_benable_rotate);
   Read(_T ( "EmailCrashReport" ), &g_bEmailCrashReport);
@@ -1255,11 +1138,11 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (!bAsTemplate) {
     SetPath(_T ( "/Settings/NMEADataSource" ));
 
+    TheConnectionParams().clear();
     wxString connectionconfigs;
     Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-      TheConnectionParams()->Clear();
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
@@ -1267,7 +1150,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
           delete prm;
           continue;
         }
-        TheConnectionParams()->Add(prm);
+        TheConnectionParams().push_back(prm);
       }
     }
   }
@@ -1495,8 +1378,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read(_T ( "TrackPrecision" ), &g_nTrackPrecision);
 
-  Read(_T ( "NavObjectFileName" ), m_sNavObjSetFile);
-
   Read(_T ( "RouteLineWidth" ), &g_route_line_width);
   Read(_T ( "TrackLineWidth" ), &g_track_line_width);
 
@@ -1651,144 +1532,6 @@ void MyConfig::LoadS57Config() {
   }
 }
 
-/** Load changes from a pending changes file path. */
-static bool ReloadPendingChanges(const wxString &changes_path) {
-  wxULongLong size = wxFileName::GetSize(changes_path);
-
-  // We crashed last time :(
-  // That's why this file still exists...
-  // Let's reconstruct the unsaved changes
-  auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
-  pNavObjectChangesSet->Init(changes_path);
-  auto res = pNavObjectChangesSet->load_file(changes_path.fn_str());
-
-  //  Remove the file before applying the changes,
-  //  just in case the changes file itself causes a fault.
-  //  If it does fault, at least the next restart will proceed without fault.
-  if (::wxFileExists(changes_path)) ::wxRemoveFile(changes_path);
-
-  if (size == 0 || res.status != pugi::xml_parse_status::status_ok) {
-    wxLogMessage(changes_path + " seems corrupted, not applying it.");
-    pNavObjectChangesSet->reset();
-    return false;
-  }
-
-  wxLogMessage(_T("Applying NavObjChanges"));
-  pNavObjectChangesSet->ApplyChanges();
-  return true;
-}
-
-wxString MyConfig::FindNewestUsableBackup() const {
-  wxString newest_backup;
-  pugi::xml_document doc;
-  for (int i = 1; i <= g_navobjbackups; i++) {
-    wxString backup = m_sNavObjSetFile + "." + wxString::Format("%d", i);
-    if (wxFileExists(backup) && wxFileName::GetSize(backup) > 461 &&
-        doc.load_file(backup.fn_str()).status ==
-            pugi::xml_parse_status::status_ok) {
-      newest_backup = backup;
-      break;
-    }
-  }
-  return newest_backup;
-}
-
-void MyConfig::LoadNavObjects() {
-  //      next thing to do is read tracks, etc from the NavObject XML file,
-  wxLogMessage(_T("Loading navobjects from navobj.xml"));
-
-  if (NULL == m_pNavObjectInputSet)
-    m_pNavObjectInputSet = new NavObjectCollection1();
-
-  int wpt_dups = 0;
-  wxString newest_backup;
-  if (::wxFileExists(m_sNavObjSetFile)) {
-    if (wxFileName::GetSize(m_sNavObjSetFile) <
-        461) {  // Empty navobj.xml file with just the gpx tag is 461 bytes, so
-                // anything smaller is obvious sign of a fatal crash while
-                // saving it last time, replace it with latest backup if
-                // available
-      wxLogMessage("Navobjects file exists, but seems truncated!");
-      newest_backup = FindNewestUsableBackup();
-      if (wxFileExists(newest_backup)) {
-        wxLogMessage("We do have a backup " + newest_backup +
-                     " that looks healthy and will use it.");
-        wxCopyFile(newest_backup, m_sNavObjSetFile, true);
-      }
-    }
-  } else {  // File does not exist, try to recover from a backup
-    newest_backup = FindNewestUsableBackup();
-    if (wxFileExists(newest_backup)) {
-      wxLogMessage("We do have a backup " + newest_backup +
-                   " that looks healthy and will use it.");
-      wxCopyFile(newest_backup, m_sNavObjSetFile, true);
-    } else {
-      wxLogMessage(
-          "No navobjects.xml file or usable backup exist, will create a new "
-          "one.");
-    }
-  }
-  bool success = false;
-  // We did all we could to have an usable navobj.xml file in scenarios where it
-  // did not exist or was clearly corrupted, let's try to load it
-  if (::wxFileExists(m_sNavObjSetFile) &&
-      m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()).status ==
-          pugi::xml_parse_status::status_ok) {
-    CreateRotatingNavObjBackup();  // We only create backups when data is good,
-                                   // there is no point in saving something we
-                                   // can't even load
-    success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
-  } else {
-    // It was still not valid after all our efforts and did not load as XML,
-    // let's rename it to a corrupted file and try to recover from a backup on
-    // last time
-    wxString corrupted_file =
-        m_sNavObjSetFile +
-        wxDateTime::Now().Format(".corrupted.%Y-%m-%d-%H-%M-%S");
-    wxRenameFile(m_sNavObjSetFile, corrupted_file, true);
-    wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile +
-                 ", the corrupted file was renamed to " + corrupted_file);
-    // If we got here with existing navobj.xml file, but it's corrupted, we can
-    // still try to recover from a backup
-    if (newest_backup
-            .IsEmpty()) {  // If we got here with empty newest_backup,
-                           // navobj.xml probably did exist, but was corrupted
-                           // XML-wise, so we need to find a new backup
-      newest_backup = FindNewestUsableBackup();
-    }
-    m_pNavObjectInputSet->reset();
-    if (wxFileExists(newest_backup) &&
-        m_pNavObjectInputSet->load_file(newest_backup.fn_str()).status ==
-            pugi::xml_parse_status::status_ok) {
-      success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
-      wxLogMessage("We do have a healthy backup " + newest_backup +
-                   " and did load it.");
-    } else {
-      wxLogMessage(
-          "No usable backup found, a new navobj.xml file will be created.");
-      m_pNavObjectInputSet->reset();
-    }
-  }
-  if (success) {
-    wxLogMessage(_T("Done loading navobjects, %d duplicate waypoints ignored"),
-                 wpt_dups);
-  } else {
-    wxLogMessage(
-        _T("Failed to load navobjects, creating a new navobj.xml file."));
-  }
-  delete m_pNavObjectInputSet;
-
-  if (::wxFileExists(m_sNavObjSetChangesFile)) {
-    if (ReloadPendingChanges(m_sNavObjSetChangesFile)) {
-      UpdateNavObj();
-    }
-  }
-  m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
-  // Signal to listeners to g_active_route that it's possible to look up guid.
-  GlobalVar<wxString> active_route(&g_active_route);
-  active_route.Notify();
-}
-
 bool MyConfig::LoadLayers(wxString &path) {
   wxArrayString file_array;
   wxDir dir;
@@ -1937,42 +1680,6 @@ bool MyConfig::LoadChartDirArray(ArrayOfCDI &ChartDirArray) {
   }
 
   return true;
-}
-
-void MyConfig::AddNewRoute(Route *r) { m_pNavObjectChangesSet->AddNewRoute(r); }
-
-void MyConfig::UpdateRoute(Route *r) { m_pNavObjectChangesSet->UpdateRoute(r); }
-
-void MyConfig::DeleteConfigRoute(Route *pr) {
-  m_pNavObjectChangesSet->DeleteConfigRoute(pr);
-}
-
-void MyConfig::AddNewTrack(Track *pt) {
-  m_pNavObjectChangesSet->AddNewTrack(pt);
-}
-
-void MyConfig::UpdateTrack(Track *pt) {
-  m_pNavObjectChangesSet->UpdateTrack(pt);
-}
-
-void MyConfig::DeleteConfigTrack(Track *pt) {
-  m_pNavObjectChangesSet->DeleteConfigTrack(pt);
-}
-
-void MyConfig::AddNewWayPoint(RoutePoint *pWP, int crm) {
-  m_pNavObjectChangesSet->AddNewWayPoint(pWP);
-}
-
-void MyConfig::UpdateWayPoint(RoutePoint *pWP) {
-  m_pNavObjectChangesSet->UpdateWayPoint(pWP);
-}
-
-void MyConfig::DeleteWayPoint(RoutePoint *pWP) {
-  m_pNavObjectChangesSet->DeleteWayPoint(pWP);
-}
-
-void MyConfig::AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID) {
-  m_pNavObjectChangesSet->AddNewTrackPoint(pWP, parent_GUID);
 }
 
 bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
@@ -2417,6 +2124,7 @@ void MyConfig::UpdateSettings() {
   Write(_T( "CatalogCustomURL"), g_catalog_custom_url);
   Write(_T( "CatalogChannel"), g_catalog_channel);
 
+  Write("NetmaskBits", g_netmask_bits);
   Write(_T ( "FilterNMEA_Avg" ), g_bfilter_cogsog);
   Write(_T ( "FilterNMEA_Sec" ), g_COGFilterSec);
 
@@ -2465,6 +2173,8 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "CourseUpMode" ), g_bCourseUp);
   if (!g_bInlandEcdis) Write(_T ( "LookAheadMode" ), g_bLookAhead);
+  Write(_T ( "TenHzUpdate" ), g_btenhertz);
+
   Write(_T ( "COGUPAvgSeconds" ), g_COGAvgSec);
   Write(_T ( "UseMagAPB" ), g_bMagneticAPB);
 
@@ -2477,6 +2187,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "OwnshipHDTPredictorColor" ), g_ownship_HDTpredictor_color);
   Write(_T ( "OwnshipHDTPredictorEndmarker" ),
         g_ownship_HDTpredictor_endmarker);
+  Write(_T ( "OwnShipMMSINumber" ), g_OwnShipmmsi);
   Write(_T ( "OwnshipHDTPredictorWidth" ), g_ownship_HDTpredictor_width);
   Write(_T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles);
 
@@ -2500,11 +2211,6 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "ChartQuilting" ), g_bQuiltEnable);
 
-  Write(_T ( "NMEALogWindowSizeX" ), NMEALogWindow::GetInstance().GetSizeW());
-  Write(_T ( "NMEALogWindowSizeY" ), NMEALogWindow::GetInstance().GetSizeH());
-  Write(_T ( "NMEALogWindowPosX" ), NMEALogWindow::GetInstance().GetPosX());
-  Write(_T ( "NMEALogWindowPosY" ), NMEALogWindow::GetInstance().GetPosY());
-
   Write(_T ( "PreserveScaleOnX" ), g_bPreserveScaleOnX);
 
   Write(_T ( "StartWithTrackActive" ), g_bTrackCarryOver);
@@ -2513,6 +2219,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "TrackRotateTimeType" ), g_track_rotate_time_type);
   Write(_T ( "HighlightTracks" ), g_bHighliteTracks);
 
+  Write(_T ( "DateTimeFormat" ), g_datetime_format);
   Write(_T ( "InitialStackIndex" ), g_restore_stackindex);
   Write(_T ( "InitialdBIndex" ), g_restore_dbindex);
 
@@ -2595,6 +2302,7 @@ void MyConfig::UpdateSettings() {
         g_b_legacy_input_filter_behaviour);
   Write(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
         g_bAdvanceRouteWaypointOnArrivalOnly);
+  Write("EnableRootMenuDebug", g_enable_root_menu_debug);
 
   // LIVE ETA OPTION
   Write(_T( "LiveETA" ), g_bShowLiveETA);
@@ -2792,9 +2500,9 @@ void MyConfig::UpdateSettings() {
 
   SetPath(_T ( "/Settings/NMEADataSource" ));
   wxString connectionconfigs;
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+  for (size_t i = 0; i < TheConnectionParams().size(); i++) {
     if (i > 0) connectionconfigs.Append(_T("|"));
-    connectionconfigs.Append(TheConnectionParams()->Item(i)->Serialize());
+    connectionconfigs.Append(TheConnectionParams()[i]->Serialize());
   }
   Write(_T ( "DataConnections" ), connectionconfigs);
 
@@ -2907,46 +2615,7 @@ void MyConfig::UpdateSettings() {
   SaveCanvasConfigs();
 
   Flush();
-}
-
-void MyConfig::UpdateNavObjOnly() {
-  //   Create the NavObjectCollection, and save to specified file
-  NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
-
-  pNavObjectSet->CreateAllGPXObjects();
-  pNavObjectSet->SaveFile(m_sNavObjSetFile);
-
-  delete pNavObjectSet;
-}
-
-void MyConfig::UpdateNavObj(bool bRecreate) {
-  //   Create the NavObjectCollection, and save to specified file
-  NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
-
-  pNavObjectSet->CreateAllGPXObjects();
-  pNavObjectSet->SaveFile(m_sNavObjSetFile);
-
-  delete pNavObjectSet;
-
-  if (m_pNavObjectChangesSet->m_changes_file)
-    fclose(m_pNavObjectChangesSet->m_changes_file);
-
-  if (::wxFileExists(m_sNavObjSetChangesFile)) {
-    wxLogNull logNo;  // avoid silly log error message.
-    wxRemoveFile(m_sNavObjSetChangesFile);
-  }
-
-  if (bRecreate) {
-    m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
-
-    m_pNavObjectChangesSet->reset();
-    if (m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str())
-            .status != pugi::xml_parse_status::status_ok) {
-      wxLogMessage("Error while loading " + m_sNavObjSetChangesFile +
-                   ", ignoring contents of the file.");
-      m_pNavObjectChangesSet->reset();
-    }
-  }
+  SendMessageToAllPlugins("GLOBAL_SETTINGS_UPDATED", wxEmptyString);
 }
 
 static wxFileName exportFileName(wxWindow *parent,
@@ -2958,6 +2627,15 @@ static wxFileName exportFileName(wxWindow *parent,
   // MS-DOS file systems have many more
   validName.Replace(_T("/"), _T("-"));
   validName.Replace(_T(":"), _T("_"));
+
+#ifdef __ANDROID__
+  if (!validName.EndsWith(".gpx")) {
+    wxFileName fn(validName);
+    fn.ClearExt();
+    fn.SetExt("gpx");
+    validName = fn.GetFullName();
+  }
+#endif
   int response = g_Platform->DoFileSelectorDialog(
       parent, &path, _("Export GPX file"), g_gpx_path, validName, wxT("*.gpx"));
 
@@ -2977,10 +2655,6 @@ static wxFileName exportFileName(wxWindow *parent,
     ret = fn;
   }
   return ret;
-}
-
-bool MyConfig::IsChangesFileDirty() {
-  return m_pNavObjectChangesSet->IsDirty();
 }
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
@@ -3371,6 +3045,84 @@ bool LogMessageOnce(const wxString &msg) {
 /*          Some assorted utilities                                       */
 /**************************************************************************/
 
+wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
+                         const double lon) {
+  if (!ts.IsValid()) {
+    return ts;
+  }
+  int effective_format = format;
+  if (effective_format == GLOBAL_SETTINGS_INPUT) {
+    if (::g_datetime_format == "UTC") {
+      effective_format = UTCINPUT;
+    } else if (::g_datetime_format == "LMT") {
+      effective_format = LMTINPUT;
+    } else if (::g_datetime_format == "Local Time") {
+      effective_format = LTINPUT;
+    } else {
+      // Default to UTC
+      effective_format = UTCINPUT;
+    }
+  }
+  wxDateTime dt;
+  switch (effective_format) {
+    case LMTINPUT:  // LMT@Location
+      if (std::isnan(lon)) {
+        dt = wxInvalidDateTime;
+      } else {
+        dt =
+            ts.Add(wxTimeSpan(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.))));
+      }
+      break;
+    case LTINPUT:  // Local@PC
+      // Convert date/time from UTC to local time.
+      dt = ts.FromUTC();
+      break;
+    case UTCINPUT:  // UTC
+      // The date/time is already in UTC.
+      dt = ts;
+      break;
+  }
+  return dt;
+}
+
+wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
+                           const double lon) {
+  if (!ts.IsValid()) {
+    return ts;
+  }
+  int effective_format = format;
+  if (effective_format == GLOBAL_SETTINGS_INPUT) {
+    if (::g_datetime_format == "UTC") {
+      effective_format = UTCINPUT;
+    } else if (::g_datetime_format == "LMT") {
+      effective_format = LMTINPUT;
+    } else if (::g_datetime_format == "Local Time") {
+      effective_format = LTINPUT;
+    } else {
+      // Default to UTC
+      effective_format = UTCINPUT;
+    }
+  }
+  wxDateTime dt;
+  switch (effective_format) {
+    case LMTINPUT:  // LMT@Location
+      if (std::isnan(lon)) {
+        dt = wxInvalidDateTime;
+      } else {
+        dt = ts.Subtract(wxTimeSpan(0, 0, wxLongLong(lon * 3600. / 15.)));
+      }
+      break;
+    case LTINPUT:  // Local@PC
+      // The input date/time is in local time, so convert it to UTC.
+      dt = ts.ToUTC();
+      break;
+    case UTCINPUT:  // UTC
+      dt = ts;
+      break;
+  }
+  return dt;
+}
+
 /**************************************************************************/
 /*          Converts the distance from the units selected by user to NMi  */
 /**************************************************************************/
@@ -3552,16 +3304,6 @@ void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
   }
 }
 
-void GpxDocument::SeedRandom() {
-  /* Fill with random. Miliseconds hopefully good enough for our usage, reading
-   * /dev/random would be much better on linux and system guid function on
-   * Windows as well */
-  wxDateTime x = wxDateTime::UNow();
-  long seed = x.GetMillisecond();
-  seed *= x.GetTicks();
-  srand(seed);
-}
-
 void DimeControl(wxWindow *ctrl) {
 #ifdef __WXOSX__
   // On macOS 10.14+, we use the native colours in both light mode and dark
@@ -3641,14 +3383,13 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     wxWindowListNode *node = kids.Item(i);
     wxWindow *win = node->GetData();
 
-    if (win->IsKindOf(CLASSINFO(wxListBox)) ||
-        win->IsKindOf(CLASSINFO(wxListCtrl)) ||
-        win->IsKindOf(CLASSINFO(wxTextCtrl)) ||
-        win->IsKindOf(CLASSINFO(wxTimePickerCtrl))) {
+    if (dynamic_cast<wxListBox *>(win) || dynamic_cast<wxListCtrl *>(win) ||
+        dynamic_cast<wxTextCtrl *>(win) ||
+        dynamic_cast<wxTimePickerCtrl *>(win)) {
       win->SetBackgroundColour(col);
-    } else if (win->IsKindOf(CLASSINFO(wxStaticText)) ||
-               win->IsKindOf(CLASSINFO(wxCheckBox)) ||
-               win->IsKindOf(CLASSINFO(wxRadioButton))) {
+    } else if (dynamic_cast<wxStaticText *>(win) ||
+               dynamic_cast<wxCheckBox *>(win) ||
+               dynamic_cast<wxRadioButton *>(win)) {
       win->SetForegroundColour(uitext);
     }
 #ifndef __WXOSX__
@@ -3656,43 +3397,39 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     // weird coloured boxes around them. Fortunately, however, many of them
     // inherit a colour or tint from the background of their parent.
 
-    else if (win->IsKindOf(CLASSINFO(wxBitmapComboBox)) ||
-             win->IsKindOf(CLASSINFO(wxChoice)) ||
-             win->IsKindOf(CLASSINFO(wxComboBox)) ||
-             win->IsKindOf(CLASSINFO(wxTreeCtrl))) {
+    else if (dynamic_cast<wxBitmapComboBox *>(win) ||
+             dynamic_cast<wxChoice *>(win) || dynamic_cast<wxComboBox *>(win) ||
+             dynamic_cast<wxTreeCtrl *>(win)) {
       win->SetBackgroundColour(col);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxScrolledWindow)) ||
-             win->IsKindOf(CLASSINFO(wxGenericDirCtrl)) ||
-             win->IsKindOf(CLASSINFO(wxListbook)) ||
-             win->IsKindOf(CLASSINFO(wxButton)) ||
-             win->IsKindOf(CLASSINFO(wxToggleButton))) {
+    else if (dynamic_cast<wxScrolledWindow *>(win) ||
+             dynamic_cast<wxGenericDirCtrl *>(win) ||
+             dynamic_cast<wxListbook *>(win) || dynamic_cast<wxButton *>(win) ||
+             dynamic_cast<wxToggleButton *>(win)) {
       win->SetBackgroundColour(window_back_color);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxNotebook))) {
-      ((wxNotebook *)win)->SetBackgroundColour(window_back_color);
-      ((wxNotebook *)win)->SetForegroundColour(text_color);
+    else if (dynamic_cast<wxNotebook *>(win)) {
+      win->SetBackgroundColour(window_back_color);
+      win->SetForegroundColour(text_color);
     }
 #endif
 
-    else if (win->IsKindOf(CLASSINFO(wxHtmlWindow))) {
+    else if (dynamic_cast<wxHtmlWindow *>(win)) {
       if (cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB)
-        ((wxPanel *)win)->SetBackgroundColour(ctrl_back_color);
+        win->SetBackgroundColour(ctrl_back_color);
       else
-        ((wxPanel *)win)->SetBackgroundColour(wxNullColour);
+        win->SetBackgroundColour(wxNullColour);
     }
 
-    else if (win->IsKindOf(CLASSINFO(wxGrid))) {
-      ((wxGrid *)win)->SetDefaultCellBackgroundColour(window_back_color);
-      ((wxGrid *)win)->SetDefaultCellTextColour(uitext);
-      ((wxGrid *)win)->SetLabelBackgroundColour(col);
-      ((wxGrid *)win)->SetLabelTextColour(uitext);
-#if !wxCHECK_VERSION(3, 0, 0)
-      ((wxGrid *)win)->SetDividerPen(wxPen(col));
-#endif
-      ((wxGrid *)win)->SetGridLineColour(gridline);
+    else if (dynamic_cast<wxGrid *>(win)) {
+      dynamic_cast<wxGrid *>(win)->SetDefaultCellBackgroundColour(
+          window_back_color);
+      dynamic_cast<wxGrid *>(win)->SetDefaultCellTextColour(uitext);
+      dynamic_cast<wxGrid *>(win)->SetLabelBackgroundColour(col);
+      dynamic_cast<wxGrid *>(win)->SetLabelTextColour(uitext);
+      dynamic_cast<wxGrid *>(win)->SetGridLineColour(gridline);
     }
 
     if (win->GetChildren().GetCount() > 0) {

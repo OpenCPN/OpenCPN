@@ -23,6 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <iomanip>
+#include <sstream>
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <ws2tcpip.h>
@@ -69,6 +72,8 @@
 #include "model/comm_drv_registry.h"
 
 #define N_DOG_TIMEOUT 8
+
+using namespace std::literals::chrono_literals;
 
 static const int kNotFound = -1;
 
@@ -184,9 +189,10 @@ END_EVENT_TABLE()
 
 CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
                                    DriverListener& listener)
-    : CommDriverN2K(((ConnectionParams*)params)->GetStrippedDSPort()),
+    : CommDriverN2K(params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
+      m_stats_timer(*this, 2s),
       m_net_port(wxString::Format("%i", params->NetworkPort)),
       m_net_protocol(params->NetProtocol),
       m_sock(NULL),
@@ -197,11 +203,13 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_io_select(params->IOSelect),
       m_connection_type(params->Type),
-      m_bok(false)
-
-{
+      m_bok(false),
+      m_TX_available(false) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
+
+  m_driver_stats.driver_bus = NavAddr::Bus::N2000;
+  m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
   m_socket_timer.SetOwner(this, TIMER_SOCKET_N2KNET);
   m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET_N2KNET + 1);
@@ -214,6 +222,10 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_NET, &CommDriverN2KNet::handle_N2K_MSG, this);
+
+  m_prodinfo_timer.Connect(
+      wxEVT_TIMER, wxTimerEventHandler(CommDriverN2KNet::OnProdInfoTimer), NULL,
+      this);
 
   m_mrq_container = new MrqContainer;
   m_ib = 0;
@@ -274,11 +286,29 @@ bool CommDriverN2KNet::HandleMgntMsg(uint64_t pgn,
       b_handled = true;
       break;
     }
-
     default:
       break;
   }
   return b_handled;
+}
+
+void CommDriverN2KNet::OnProdInfoTimer(wxTimerEvent& ev) {
+  // Check the results of the PGN 126996 capture
+  bool b_found = false;
+  for (const auto& [key, value] : prod_info_map) {
+    auto prod_info = value;
+    if (prod_info.Model_ID.find("YDEN") != std::string::npos) {
+      // Found a YDEN device
+      // If this configured port is actually connector to YDEN,
+      // then the device will have marked the received TCP packet
+      // with "T" indicator.  Check it.
+      if (prod_info.RT_flag == 'T') b_found = true;
+      break;
+    }
+  }
+
+  if (b_found) m_TX_available = true;
+  prod_info_map.clear();
 }
 
 void CommDriverN2KNet::handle_N2K_MSG(CommDriverN2KNetEvent& event) {
@@ -299,14 +329,9 @@ void CommDriverN2KNet::handle_N2K_MSG(CommDriverN2KNetEvent& event) {
       std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
   auto msg_all =
       std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
-
+  m_driver_stats.rx_count += payload->size();
   m_listener.Notify(std::move(msg));
   m_listener.Notify(std::move(msg_all));
-}
-
-void CommDriverN2KNet::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-  // TODO: Read input data.
 }
 
 void CommDriverN2KNet::Open(void) {
@@ -362,6 +387,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
                          wxSOCKET_LOST_FLAG);
     GetSock()->Notify(TRUE);
     GetSock()->SetTimeout(1);  // Short timeout
+    m_driver_stats.available = true;
   }
 
   // Set up another socket for transmit
@@ -380,6 +406,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
       bool bam = GetTSock()->SetOption(
           SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
     }
+    m_driver_stats.available = true;
   }
 
   // In case the connection is lost before acquired....
@@ -480,6 +507,24 @@ bool CommDriverN2KNet::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
   auto dest_addr_n2k = std::static_pointer_cast<const NavAddr2000>(addr);
   return SendN2KNetwork(msg_n2k, dest_addr_n2k);
+}
+
+std::vector<unsigned char> CommDriverN2KNet::PrepareLogPayload(
+    std::shared_ptr<const Nmea2000Msg>& msg,
+    std::shared_ptr<const NavAddr2000> addr) {
+  std::vector<unsigned char> data;
+  data.push_back(0x94);
+  data.push_back(0x13);
+  data.push_back(msg->priority);
+  data.push_back(msg->PGN.pgn & 0xFF);
+  data.push_back((msg->PGN.pgn >> 8) & 0xFF);
+  data.push_back((msg->PGN.pgn >> 16) & 0xFF);
+  data.push_back(addr->address);
+  data.push_back(addr->address);
+  for (size_t n = 0; n < msg->payload.size(); n++)
+    data.push_back(msg->payload[n]);
+  data.push_back(0x55);  // CRC dummy, not checked
+  return data;
 }
 
 std::vector<unsigned char> CommDriverN2KNet::PushCompleteMsg(
@@ -1244,6 +1289,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 
       event.GetSocket()->Read(&data.front(), RD_BUF_SIZE);
       if (!event.GetSocket()->Error()) {
+        m_driver_stats.available = true;
         size_t count = event.GetSocket()->LastCount();
         if (count) {
           if (1 /*FIXME !g_benableUDPNullHeader*/) {
@@ -1302,6 +1348,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 #if 1
 
     case wxSOCKET_LOST: {
+      m_driver_stats.available = false;
       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
         if (GetBrxConnectEvent())
           wxLogMessage(wxString::Format(
@@ -1333,6 +1380,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_CONNECTION: {
+      m_driver_stats.available = true;
       if (GetProtocol() == GPSD) {
         //      Sign up for watcher mode, Cooked NMEA
         //      Note that SIRF devices will be converted by gpsd into
@@ -1367,6 +1415,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 void CommDriverN2KNet::OnServerSocketEvent(wxSocketEvent& event) {
   switch (event.GetSocketEvent()) {
     case wxSOCKET_CONNECTION: {
+      m_driver_stats.available = true;
       SetSock(GetSockServer()->Accept(false));
 
       if (GetSock()) {
@@ -1401,10 +1450,9 @@ std::vector<unsigned char> MakeSimpleOutMsg(
     case N2KFormat_Actisense_RAW_ASCII: {
       // Craft the canID
       unsigned can_id = BuildCanID(6, 0xff, 0xff, pgn);
-      wxString scan_id;
-      scan_id.Printf("%08X", can_id);
-      std::string sscan_id = scan_id.ToStdString();
-      for (unsigned char s : sscan_id) out_vec.push_back(s);
+      std::stringstream ss;
+      ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
+      for (unsigned char s : ss.str()) out_vec.push_back(s);
       out_vec.push_back(' ');
 
       // Data payload
@@ -1529,8 +1577,39 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
       break;
     case N2KFormat_Actisense_RAW_ASCII: {
       //  00:34:02.718 R 15FD0800 FF 00 01 CA 6F FF FF FF
-      if (!IsFastMessagePGN(msg->PGN.pgn) && msg->payload.size() < 8) {
-        // Single packet
+      if (!IsFastMessagePGN(msg->PGN.pgn) && msg->payload.size() <= 8) {
+        // Single packet message
+        std::vector<unsigned char> header_vec;
+        std::vector<unsigned char> out_vec;
+
+        // Craft the canID
+        // No need to specify the source address
+        // The TX frame will adopt the gateway's claimed N2K address.
+        unsigned long can_id =
+            BuildCanID(msg->priority, 0, dest_addr->address, msg->PGN.pgn);
+
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
+        for (unsigned char s : ss.str()) header_vec.push_back(s);
+        header_vec.push_back(' ');
+
+        // constant header
+        for (unsigned char s : header_vec) out_vec.push_back(s);
+
+        // single data packet
+        std::string ssdata;
+        for (unsigned int k = 0; k < msg->payload.size(); k++) {
+          char tb[4];
+          snprintf(tb, 4, "%02X ", msg->payload.data()[k]);
+          ssdata += tb;
+        }
+        for (unsigned char s : ssdata) out_vec.push_back(s);
+        out_vec.pop_back();  // drop the last space character
+
+        out_vec.push_back(0x0d);  // terminate the string
+        out_vec.push_back(0x0a);
+
+        tx_vector.push_back(out_vec);
       } else {
         std::vector<unsigned char> header_vec;
         std::vector<unsigned char> out_vec;
@@ -1554,10 +1633,9 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
         // The TX frame will adopt the gateway's claimed N2K address.
         unsigned long can_id =
             BuildCanID(msg->priority, 0, dest_addr->address, msg->PGN.pgn);
-        wxString scan_id;
-        scan_id.Printf("%08X", can_id);
-        std::string sscan_id = scan_id.ToStdString();
-        for (unsigned char s : sscan_id) header_vec.push_back(s);
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
+        for (unsigned char s : ss.str()) header_vec.push_back(s);
         header_vec.push_back(' ');
 
         // format the required number of short packets, in a loop
@@ -1605,9 +1683,6 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
 
           out_vec.push_back(0x0d);  // terminate the string
           out_vec.push_back(0x0a);
-
-          // for (char s :out_vec)
-          // printf( "%c", s);
 
           tx_vector.push_back(out_vec);
         }  // for loop
@@ -1816,38 +1891,25 @@ bool CommDriverN2KNet::PrepareForTX() {
   //  Logic:  Actisense gateway will not respond to TX_FORMAT_YDEN,
   //  so if we get sensible response, the gw must be YDEN type.
 
-  prod_info_map.clear();
+  // Already tested and found available?
+  if (m_TX_available)
+    return true;
+  else {
+    // Send a broadcast request for PGN 126996, Product Information
+    std::vector<unsigned char> payload;
+    payload.push_back(0x14);
+    payload.push_back(0xF0);
+    payload.push_back(0x01);
 
-  // Send a broadcast request for PGN 126996, Product Information
-  std::vector<unsigned char> payload;
-  payload.push_back(0x14);
-  payload.push_back(0xF0);
-  payload.push_back(0x01);
+    std::vector<std::vector<unsigned char>> out_data;
+    std::vector<unsigned char> msg_vec =
+        MakeSimpleOutMsg(N2KFormat_YD_RAW, 59904, payload);
+    out_data.push_back(msg_vec);
+    SendSentenceNetwork(out_data);
 
-  std::vector<std::vector<unsigned char>> out_data;
-  std::vector<unsigned char> msg_vec =
-      MakeSimpleOutMsg(N2KFormat_YD_RAW, 59904, payload);
-  out_data.push_back(msg_vec);
-  SendSentenceNetwork(out_data);
-
-  // Wait some time, and study results
-  wxMilliSleep(200);
-  wxYield();
-
-  // Check the results of the PGN 126996 capture
-  for (const auto& [key, value] : prod_info_map) {
-    auto prod_info = value;
-    if (prod_info.Model_ID.find("YDEN") != std::string::npos) {
-      // Found a YDEN device
-      // If this configured port is actually connector to YDEN,
-      // then the device will have marked the received TCP packet
-      // with "T" indicator.  Check it.
-      if (prod_info.RT_flag == 'T') b_found = true;
-      break;
-    }
+    // Wait some time, and study results
+    m_prodinfo_timer.Start(200, true);
   }
-
-  if (b_found) return true;
 
   //  No acceptable TX device found
   return false;
@@ -1859,6 +1921,16 @@ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
 
   std::vector<std::vector<unsigned char>> out_data = GetTxVector(msg, addr);
   SendSentenceNetwork(out_data);
+  m_driver_stats.tx_count += msg->payload.size();
+
+  // Create the internal message for all N2K listeners
+  std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
+  auto msg_all = std::make_shared<const Nmea2000Msg>(1, msg_payload, addr);
+
+  // Notify listeners
+  m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_all));
+
   return true;
 };
 
@@ -1875,6 +1947,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
     case TCP:
       for (std::vector<unsigned char>& v : payload) {
         if (GetSock() && GetSock()->IsOk()) {
+          m_driver_stats.available = true;
           // printf("---%s", v.data());
           GetSock()->Write(v.data(), v.size());
           if (GetSock()->Error()) {
@@ -1892,9 +1965,11 @@ bool CommDriverN2KNet::SendSentenceNetwork(
             }
             ret = false;
           }
-          wxMilliSleep(200);
-        } else
+          wxMilliSleep(2);
+        } else {
+          m_driver_stats.available = false;
           ret = false;
+        }
       }
       break;
     case UDP:
@@ -1927,6 +2002,7 @@ void CommDriverN2KNet::Close() {
                         sizeof(m_mrq_container->m_mrq));
     m_sock->Notify(FALSE);
     m_sock->Destroy();
+    m_driver_stats.available = false;
   }
 
   if (m_tsock) {

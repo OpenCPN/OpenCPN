@@ -35,6 +35,9 @@
 // Accepted by PluginDownloadDialog, reloads plugin list.
 wxDECLARE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
 
+/**
+ * Dialog for downloading plugins.
+ */
 class PluginDownloadDialog : public wxDialog {
 public:
   PluginDownloadDialog(wxWindow* parent);
@@ -42,8 +45,9 @@ public:
   wxWindow* GetRealParent() { return m_parent; }
 };
 
-/** Add progress and final message dialogs to the basic Downloader. */
-
+/**
+ * Downloader with progress and final message dialogs.
+ */
 class GuiDownloader : public Downloader {
 private:
   long m_downloaded;

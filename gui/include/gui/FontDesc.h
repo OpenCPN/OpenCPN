@@ -33,14 +33,35 @@
 class MyFontDesc {
 public:
   MyFontDesc(wxString DialogString, wxString ConfigString, wxFont *pFont,
-             wxColour color);
+             wxColour color, bool is_default = true);
   ~MyFontDesc();
 
+  /**
+   * UI element identifier, e.g., "AISTargetAlert", "StatusBar".
+   *
+   * Used to identify the font configuration in the list.
+   *
+   * @see [GetFont]
+   */
   wxString m_dialogstring;
+  /**
+   * Configuration key in "locale-hash" format.
+   */
   wxString m_configstring;
+  /**
+   * Platform-specific font descriptor string.
+   */
   wxString m_nativeInfo;
+  /**
+   * Font object.
+   */
   wxFont *m_font;
+  /**
+   * Text color.
+   */
   wxColour m_color;
+  /** Indicates if this is the default font entry for the TextElement. */
+  bool m_is_default;
 };
 
 WX_DECLARE_LIST(MyFontDesc, FontList);

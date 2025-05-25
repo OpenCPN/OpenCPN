@@ -48,8 +48,6 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
-  void Activate() override;
-
   virtual std::shared_ptr<NavAddr> GetAddress();
 
 private:

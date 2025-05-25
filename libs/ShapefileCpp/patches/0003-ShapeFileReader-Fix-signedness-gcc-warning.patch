@@ -1,0 +1,73 @@
+From 3a6a6d4e7b7af7aa06ecef4913fef4cc9d2daeb4 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 15 Apr 2025 10:13:27 +0200
+Subject: [PATCH 3/4] ShapeFileReader: Fix signedness gcc warning
+
+---
+ lib/src/ShapefileReader.cpp | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/lib/src/ShapefileReader.cpp b/lib/src/ShapefileReader.cpp
+index 5bb63fb..b1fa787 100644
+--- a/lib/src/ShapefileReader.cpp
++++ b/lib/src/ShapefileReader.cpp
+@@ -38,7 +38,7 @@ namespace shp {
+             return GeometryType::PointM;
+         } else if (shapeType == SHPT_POINTZ) {
+             return GeometryType::PointZ;
+-        }
++        }
+         // Line
+         else if (shapeType == SHPT_ARC) {
+             return GeometryType::Line;
+@@ -157,7 +157,7 @@ namespace shp {
+             lines.push_back(Line(points));
+         }
+         if (parts > 1) {
+-            std::unique_ptr<Geometry> g = std::make_unique<MultiLine>(lines);
++            std::unique_ptr<Geometry> g = std::make_unique<MultiLine>(lines);
+             return g;
+         } else {
+             std::unique_ptr<Geometry> g = std::make_unique<Line>(lines[0].getPoints());
+@@ -194,23 +194,23 @@ namespace shp {
+     std::unique_ptr<Geometry> ShapefileReader::createGeometry(const SHPObject& obj) {
+         if (obj.nSHPType == SHPT_POINT || obj.nSHPType == SHPT_POINTZ || obj.nSHPType == SHPT_POINTM) {
+             return createPoint(obj, 0);
+-        }
++        }
+         else if (obj.nSHPType == SHPT_ARC || obj.nSHPType == SHPT_ARCZ || obj.nSHPType == SHPT_ARCM) {
+             return createLine(obj);
+-        }
++        }
+         else if (obj.nSHPType == SHPT_POLYGON || obj.nSHPType == SHPT_POLYGONZ || obj.nSHPType == SHPT_POLYGONM) {
+             return createPolygon(obj);
+         }
+         else /*if (obj.nSHPType == SHPT_MULTIPOINT || obj.nSHPType == SHPT_MULTIPOINTZ || obj.nSHPType == SHPT_MULTIPOINTM)*/ {
+             return createMultiPoint(obj);
+-        }
++        }
+     }
+
+     std::map<std::string, std::any> ShapefileReader::getProperties(int index) {
+         std::map<std::string, std::any> attributes;
+         std::vector<Field> fields = getFields();
+-
+-        for(int f = 0; f < fields.size(); f++) {
++
++        for(size_t f = 0; f < fields.size(); f++) {
+             Field field = fields[f];
+             if (field.getType() == FieldType::String) {
+                 attributes[field.getName()] = DBFReadStringAttribute(dbf, index, f);
+@@ -223,8 +223,8 @@ namespace shp {
+             } else {
+                 attributes[field.getName()] = NULL;
+             }
+-        }
+-
++        }
++
+         return attributes;
+     }
+
+--
+2.49.0

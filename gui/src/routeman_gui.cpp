@@ -52,6 +52,7 @@
 #include "routeman_gui.h"
 #include "TrackPropDlg.h"
 #include "vector2D.h"
+#include "model/navobj_db.h"
 
 extern bool g_bShowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
@@ -305,16 +306,9 @@ void RoutemanGui::DeleteAllTracks() {
     if (ptrack->m_bIsInLayer) continue;
 
     g_pAIS->DeletePersistentTrack(ptrack);
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-    NavObjectChanges::getInstance()->DeleteConfigTrack(ptrack);
+    NavObj_dB::GetInstance().DeleteTrack(ptrack);
     DeleteTrack(ptrack);
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
   }
-
-  if (pConfig && pConfig->IsChangesFileDirty()) {
-    pConfig->UpdateNavObj(true);
-  }
-
   ::wxEndBusyCursor();
 }
 
@@ -326,8 +320,7 @@ void RoutemanGui::DoAdvance(void) {
     m_routeman.DeactivateRoute(true);  // this is an arrival
 
     if (pthis_route->m_bDeleteOnArrival && !pthis_route->m_bIsBeingEdited) {
-      NavObjectChanges::getInstance()->DeleteConfigRoute(pthis_route);
-      m_routeman.DeleteRoute(pthis_route, NavObjectChanges::getInstance());
+      m_routeman.DeleteRoute(pthis_route);
     }
 
     if (pRouteManagerDialog) pRouteManagerDialog->UpdateRouteListCtrl();

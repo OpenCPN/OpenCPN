@@ -49,6 +49,7 @@ brew list --versions python3 || {
 brew install cmake
 brew install gettext
 brew install create-dmg
+brew install gpatch
 
 for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
@@ -93,6 +94,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
   -DOCPN_RELEASE=${RELEASE} \
   -DOCPN_BUILD_TEST=OFF \
+  -DOCPN_BUILD_SAMPLE=ON \
   -DOCPN_USE_DEPS_BUNDLE=ON \
   -DCMAKE_OSX_ARCHITECTURES="${ARCHS}" \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
@@ -123,7 +125,16 @@ make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
 # Make sure the code signatures are correct
-codesign --force --deep --sign - /tmp/opencpn/bin/OpenCPN.app
+if [ -z "${APPLE_DEVELOPER_ID}" ]; then
+  # We do not have a paid Apple developer account, let's just reset the signatures
+  codesign --force --deep --sign - /tmp/opencpn/bin/OpenCPN.app
+else
+  # We do have an account and did set up the certificates in ci/mac-sign.sh, let's sign the application bundle
+  codesign --verbose --sign "${APPLE_DEVELOPER_ID}" --options=runtime --timestamp --options=runtime /tmp/opencpn/bin/OpenCPN.app/Contents/PlugIns/*.dylib
+  codesign --deep --force --verbose --sign "${APPLE_DEVELOPER_ID}" --entitlements ../buildosx/entitlements.plist --timestamp --options=runtime /tmp/opencpn/bin/OpenCPN.app
+fi
+
+codesign -dv --verbose /tmp/opencpn/bin/OpenCPN.app
 
 dsymutil -o OpenCPN.dSYM /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/OpenCPN
 tar czf OpenCPN-$(git rev-parse --short HEAD).dSYM.tar.gz OpenCPN.dSYM
@@ -131,6 +142,19 @@ tar czf OpenCPN-$(git rev-parse --short HEAD).dSYM.tar.gz OpenCPN.dSYM
 make create-pkg
 if [[ ! -z "${CREATE_DMG+x}" ]]; then
   make create-dmg
+fi
+
+# Sign the installer if we have an Apple developer account set up
+if [ -n "${APPLE_DEVELOPER_ID}" ]; then
+  shopt -s nullglob
+  for pkg_file in OpenCPN*.pkg; do
+    productsign --sign "${APPLE_DEVELOPER_ID}" "${pkg_file}" pkg.signed
+    mv pkg.signed "${pkg_file}"
+  done
+  # The resulting package has to be submitted to Apple for notarization
+  # xcrun notarytool submit --apple-id <Apple id e-mail> --team-id <APPLE_DEVELOPER_ID> --password <Application specific password> <OpenCPN_*.pkg>
+  # Once succesfully notarized, run the stapler to include the notarization ticket into the installer
+  # xcrun stapler staple <OpenCPN_*.pkg>
 fi
 
 # The build is over, if there is error now it is not ours

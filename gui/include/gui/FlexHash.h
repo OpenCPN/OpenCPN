@@ -32,6 +32,9 @@
 #include <vector>
 #include "ssl/sha1.h"
 
+/**
+ * A class for computing hash of arbitrary length.
+ */
 class FlexHash {
 public:
   FlexHash(size_t output_octets);

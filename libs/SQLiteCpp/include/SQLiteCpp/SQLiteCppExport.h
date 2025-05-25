@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 /*
 * #define SQLITECPP_COMPILE_DLL to compile a DLL under Windows
 * #define SQLITECPP_EXPORT to export symbols when creating the DLL, otherwise it defaults to importing symbols
@@ -23,8 +25,8 @@
         #define SQLITECPP_API __declspec(dllexport)
     #else
         #define SQLITECPP_API __declspec(dllimport)
-    #endif    
-#else    
+    #endif
+#else
     #if __GNUC__ >= 4
         #define SQLITECPP_API __attribute__ ((visibility ("default")))
     #else

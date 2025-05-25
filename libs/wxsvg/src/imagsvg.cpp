@@ -11,8 +11,6 @@
 #include "imagsvg.h"
 #include "SVGDocument.h"
 
-IMPLEMENT_DYNAMIC_CLASS(wxSVGHandler, wxImageHandler)
-
 wxSVGHandler::wxSVGHandler() {
 	m_name = wxT("SVG file");
 	m_extension = wxT("svg");

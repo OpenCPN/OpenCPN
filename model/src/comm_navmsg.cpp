@@ -18,7 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file comm_navmsg.cpp  Implement comm_navmsg.h */
+/**
+ * \file
+ * Implement comm_navmsg.h
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -32,6 +35,7 @@
 #include <iomanip>
 
 #include "model/comm_driver.h"
+#include "model/ocpn_utils.h"
 
 std::string NavAddr::BusToString(NavAddr::Bus b) {
   switch (b) {
@@ -53,6 +57,9 @@ std::string NavAddr::BusToString(NavAddr::Bus b) {
     case NavAddr::Bus::TestBus:
       return "TestBus";
       break;
+    case NavAddr::Bus::AppMsg:
+      return "AppMsg";
+      break;
     case NavAddr::Bus::Undef:
       return "??";
       break;
@@ -65,7 +72,9 @@ NavAddr::Bus NavAddr::StringToBus(const std::string& s) {
   if (s == "nmea2000") return NavAddr::Bus::N2000;
   if (s == "SignalK") return NavAddr::Bus::Signalk;
   if (s == "Onenet") return NavAddr::Bus::Onenet;
+  if (s == "Plugin") return NavAddr::Bus::Plugin;
   if (s == "TestBus") return NavAddr::Bus::TestBus;
+  if (s == "AppMsg") return NavAddr::Bus::AppMsg;
   return NavAddr::Bus::Undef;
 }
 
@@ -76,10 +85,70 @@ static std::string CharToString(unsigned char c) {
   return ss.str();
 }
 
-std::string Nmea2000Msg::to_string() const {
-  std::string s;
-  std::for_each(payload.begin(), payload.end(),
-                [&s](unsigned char c) { s.append(CharToString(c)); });
+static std::string CharToString(char c) {
+  return CharToString(static_cast<unsigned char>(c));
+}
 
-  return NavMsg::to_string() + " " + PGN.to_string() + " " + s;
+std::string Nmea2000Msg::to_string() const {
+  // Arrange to "pretty-print" the N2K message payload
+
+  // extract PGN from payload
+  uint64_t pgn = 0;
+  unsigned char* c = (unsigned char*)&pgn;
+  *c++ = payload.at(3);
+  *c++ = payload.at(4);
+  *c++ = payload.at(5);
+
+  std::string st;
+  size_t data_start = 12;
+  if (payload.at(0) == 0x94) data_start = 7;
+  size_t i = 0;
+  while (i < payload.size() - 1) {
+    if (i > data_start) {
+      for (int j = 0; j < 8; j++) {
+        st.append(CharToString(payload[i]));
+        st.append(" ");
+        i++;
+        if (i >= payload.size() - 1) {
+          break;
+        }
+      }
+      st.append(" ");
+    } else
+      i++;
+  }
+
+  std::stringstream ss1;
+  std::string spgn = "    ";
+  if (PGN.pgn == 1) spgn = "ALL ";
+  ss1 << "n2000-" << spgn << "PGN: " << pgn << " [ " << st << " ]";
+  return ss1.str();
+}
+
+std::string Nmea2000Msg::to_vdr() const {
+  std::string s;
+  for (auto c : payload) s.append(CharToString(c) + " ");
+  return s;
+}
+
+std::string Nmea0183Msg::to_string() const {
+  std::stringstream ss;
+  ss << key() << " " << talker << type << " " << ocpn::printable(payload);
+  return ss.str();
+}
+
+std::string Nmea0183Msg::to_vdr() const { return ocpn::printable(payload); }
+
+std::string PluginMsg::to_string() const {
+  /** Avoid messing with utf string. */
+  if (name == "position-fix") return name + ":" + ocpn::rtrim(message);
+
+  std::stringstream ss;
+  for (char c : ocpn::rtrim(message)) {
+    if (c >= ' ' && c <= '~')
+      ss << c;
+    else
+      ss << CharToString(c);
+  }
+  return name + ": " + ss.str();
 }

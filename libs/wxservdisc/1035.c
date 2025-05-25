@@ -89,7 +89,7 @@ void _label(struct message *m, unsigned char **bufp, unsigned char **namep)
     *name = '\0';
     for(x = 0; x <= 19 && m->_labels[x]; x++)
     {
-        if(strcmp(*namep,m->_labels[x])) continue;
+        if(strcmp((const char *)*namep,(const char *)m->_labels[x])) continue;
         *namep = m->_labels[x];
         return;
     }
@@ -212,7 +212,7 @@ int _rrparse(struct message *m, struct resource *rr, int count, unsigned char **
         {
         case 1:
             if(m->_len + 16 > MAX_PACKET_LEN) return 0;
-            rr[i].known.a.name = m->_packet + m->_len;
+            rr[i].known.a.name = (char *)(m->_packet + m->_len);
             m->_len += 16;
             sprintf(rr[i].known.a.name,"%d.%d.%d.%d",(*bufp)[0],(*bufp)[1],(*bufp)[2],(*bufp)[3]);
             rr[i].known.a.ip = net2long(bufp);

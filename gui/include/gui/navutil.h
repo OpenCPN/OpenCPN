@@ -53,6 +53,47 @@ extern double fromUsrTemp(double usr_temp, int unit = -1);
 extern wxString getUsrTempUnit();
 extern wxString formatAngle(double angle);
 
+// User date formats
+#define UTCINPUT 0  //!< Date/time in UTC.
+#define LTINPUT 1   //!< Date/time using PC local timezone.
+#define LMTINPUT 2  //!< Date/time using the remote location LMT time.
+#define GLOBAL_SETTINGS_INPUT \
+  3  //!< Date/time according to global OpenCPN settings.
+
+/**
+ * Converts a timestamp from UTC to the user's preferred time format.
+ *
+ * This function transforms a timestamp based on the specified format or the
+ * global application setting. It supports Universal Time (UTC), Local Mean Time
+ * (LMT) based on longitude, and Local time based on the user's system timezone.
+ *
+ * @param ts The timestamp to convert, must be in UTC.
+ * @param format The desired output format:
+ *        0 = UTC, 1 = Local@PC, 2 = LMT@Location, 3 = Global settings.
+ * @param lon The longitude in degrees for LMT calculation (positive for east,
+ * negative for west). Default is NaN.
+ * @return wxDateTime The converted timestamp in the specified format, or
+ * wxInvalidDateTime if conversion fails.
+ */
+wxDateTime toUsrDateTime(const wxDateTime ts, const int format,
+                         const double lon = INFINITY - INFINITY);
+/**
+ * Converts a timestamp from a user's preferred time format to UTC.
+ *
+ * This function is the inverse of toUsrDateTime, transforming a timestamp from
+ * the specified format back to UTC. It handles Universal Time (UTC), Local Mean
+ * Time (LMT) based on longitude, and Local time based on the user's system
+ * timezone.
+ *
+ * @param ts The input timestamp in the specified format.
+ * @param format The input timestamp format:
+ *        0 = UTC, 1 = Local@PC, 2 = LMT@Location, 3 = Global settings.
+ * @param lon The longitude for LMT calculation. Default is NaN.
+ * @return wxDateTime The converted timestamp in UTC.
+ */
+wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
+                           const double lon = INFINITY - INFINITY);
+
 extern void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
                           float radius, wxColour color,
                           unsigned char transparency);
@@ -69,7 +110,6 @@ class NavObjectCollection;
 class wxGenericProgressDialog;
 class ocpnDC;
 class NavObjectCollection1;
-class NavObjectChanges;
 class TrackPoint;
 class RouteList;
 class canvasConfig;
@@ -137,20 +177,6 @@ public:
 
   int LoadMyConfig();
   void LoadS57Config();
-  wxString FindNewestUsableBackup() const;
-  void LoadNavObjects();
-  virtual void AddNewRoute(Route *pr);
-  virtual void UpdateRoute(Route *pr);
-  virtual void DeleteConfigRoute(Route *pr);
-
-  virtual void AddNewTrack(Track *pt);
-  virtual void UpdateTrack(Track *pt);
-  virtual void DeleteConfigTrack(Track *pt);
-
-  virtual void AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
-  virtual void UpdateWayPoint(RoutePoint *pWP);
-  virtual void DeleteWayPoint(RoutePoint *pWP);
-  virtual void AddNewTrackPoint(TrackPoint *pWP, const wxString &parent_GUID);
 
   virtual void CreateConfigGroups(ChartGroupArray *pGroupArray);
   virtual void DestroyConfigGroups(void);
@@ -165,20 +191,11 @@ public:
   virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
   virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
   virtual void UpdateSettings();
-  virtual void UpdateNavObj(bool bRecreate = false);
-  virtual void UpdateNavObjOnly();
-  virtual bool IsChangesFileDirty();
 
   bool LoadLayers(wxString &path);
   int LoadMyConfigRaw(bool bAsTemplate = false);
 
-  void CreateRotatingNavObjBackup();
-
-  wxString m_sNavObjSetFile;
-  wxString m_sNavObjSetChangesFile;
-
-  NavObjectChanges *m_pNavObjectChangesSet;
-  NavObjectCollection1 *m_pNavObjectInputSet;
+private:
 };
 
 void SwitchInlandEcdisMode(bool Switch);

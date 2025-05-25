@@ -32,90 +32,78 @@
 #ifdef _WIN32
 #include <windows.h>
 
-static int do_play(const char* cmd, const char* path)
-{
-    wchar_t sound_path[80];
-    MultiByteToWideChar( 0, 0, path, -1, sound_path, 80 );
-    LPCWSTR wide_path = sound_path;
+static int do_play(const char* cmd, const char* path) {
+  wchar_t sound_path[80];
+  MultiByteToWideChar(0, 0, path, -1, sound_path, 80);
+  LPCWSTR wide_path = sound_path;
 
-    PlaySound( wide_path, NULL, SND_FILENAME );
+  PlaySound(wide_path, NULL, SND_FILENAME);
 
-    return 0;
+  return 0;
 }
 
-#else /* _WIN32, i. e. POSIX */
-#include <sys/wait.h> // for WEXITSTATUS & friends
+#else                  /* _WIN32, i. e. POSIX */
+#include <sys/wait.h>  // for WEXITSTATUS & friends
 
-static int do_play(const char* cmd, const char* path)
-{
-    char buff[1024];
-    snprintf(buff, sizeof( buff ), cmd, path);
-    wxLogDebug("Sound command: %s", buff);
+static int do_play(const char* cmd, const char* path) {
+  char buff[1024];
+  snprintf(buff, sizeof(buff), cmd, path);
+  wxLogDebug("Sound command: %s", buff);
 
-    int status = system(buff);
-    if (status == -1) {
-        wxLogWarning("Cannot fork process running %s", buff);
-        return -1;
+  int status = system(buff);
+  if (status == -1) {
+    wxLogWarning("Cannot fork process running %s", buff);
+    return -1;
+  }
+  if (WIFEXITED(status)) {
+    status = WEXITSTATUS(status);
+    if (status != 0) {
+      wxLogWarning("Exit code %d from command %s", status, buff);
     }
-    if (WIFEXITED(status)) {
-        status = WEXITSTATUS(status);
-        if (status != 0) {
-            wxLogWarning("Exit code %d from command %s",
-                status, buff);
-        }
-    } else {
-        wxLogWarning("Strange return code %d (0x%x) running %s",
-                     status, status, buff);
-    }
-    return status;
+  } else {
+    wxLogWarning("Strange return code %d (0x%x) running %s", status, status,
+                 buff);
+  }
+  return status;
 }
 #endif
 
-bool SystemCmdSound::Load(const char* path, int deviceIndex)
-{
-    m_path = path;
-    if (deviceIndex != -1) {
-        wxLogMessage("Selecting device is not supported by SystemCmdSound");
-    }
-    m_OK = wxFileExists(m_path);
-    return m_OK;
+bool SystemCmdSound::Load(const char* path, int deviceIndex) {
+  m_path = path;
+  if (deviceIndex != -1) {
+    wxLogMessage("Selecting device is not supported by SystemCmdSound");
+  }
+  m_OK = wxFileExists(m_path);
+  return m_OK;
 }
 
+bool SystemCmdSound::Stop(void) { return false; }
 
-bool SystemCmdSound::Stop(void)  { return false; }
-
-
-bool SystemCmdSound::canPlay(void)
-{
-    if (m_isPlaying)
-        wxLogWarning("SystemCmdSound: cannot play: already playing");
-    return m_OK && !m_isPlaying;
+bool SystemCmdSound::canPlay(void) {
+  if (m_isPlaying) wxLogWarning("SystemCmdSound: cannot play: already playing");
+  return m_OK && !m_isPlaying;
 }
 
-
-void SystemCmdSound::worker(void)
-{
-    wxLogDebug("SystemCmdSound::worker()");
-    m_isPlaying = true;
-    do_play(m_cmd.c_str(), m_path.c_str());
-    m_onFinished(m_callbackData);
-    m_onFinished = 0;
-    m_isPlaying = false;
+void SystemCmdSound::worker(void) {
+  wxLogDebug("SystemCmdSound::worker()");
+  m_isPlaying = true;
+  do_play(m_cmd.c_str(), m_path.c_str());
+  m_onFinished(m_callbackData);
+  m_onFinished = 0;
+  m_isPlaying = false;
 }
 
-
-bool SystemCmdSound::Play()
-{
-    wxLogDebug("SystemCmdSound::Play()");
-    if (m_isPlaying) {
-        wxLogWarning("SystemCmdSound: cannot play: already playing");
-        return false;
-    }
-    if  (m_onFinished) {
-        std::thread t([this]() { worker(); });
-        t.detach();
-        return true;
-    }
-    int r = do_play(m_cmd.c_str(), m_path.c_str());
-    return r == 0;
+bool SystemCmdSound::Play() {
+  wxLogDebug("SystemCmdSound::Play()");
+  if (m_isPlaying) {
+    wxLogWarning("SystemCmdSound: cannot play: already playing");
+    return false;
+  }
+  if (m_onFinished) {
+    std::thread t([this]() { worker(); });
+    t.detach();
+    return true;
+  }
+  int r = do_play(m_cmd.c_str(), m_path.c_str());
+  return r == 0;
 }

@@ -54,6 +54,7 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 #include <wx/display.h>
+#include <wx/jsonreader.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
@@ -72,16 +73,20 @@
 #include "model/local_api.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
+#include "model/navobj_db.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
+#include "model/notification_manager.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
 #include "model/select.h"
 #include "model/sys_events.h"
 #include "model/track.h"
 
-#include "AboutFrameImpl.h"
+#include "dialog_alert.h"
+#include "about_frame_impl.h"
 #include "about.h"
 #include "ais.h"
 #include "ais_info_gui.h"
@@ -97,7 +102,9 @@
 #include "color_handler.h"
 #include "compass.h"
 #include "concanv.h"
+#include "connections_dlg.h"
 #include "ConfigMgr.h"
+#include "data_monitor.h"
 #include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -111,14 +118,16 @@
 #include "MUIBar.h"
 #include "N2KParser.h"
 #include "navutil.h"
-#include "NMEALogWindow.h"
 #include "ocpn_app.h"
+#include "ocpn_plugin.h"
 #include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"
 #include "options.h"
 #include "pluginmanager.h"
+#include "print_dialog.h"
+#include "printout_chart.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
@@ -163,7 +172,7 @@ extern TrackPropDlg *pTrackPropDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
 extern S57QueryDialog *g_pObjectQueryDialog;
-extern about *g_pAboutDlgLegacy;
+extern About *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
 extern double vLat, vLon;
@@ -230,8 +239,6 @@ extern int g_COGAvgSec;
 extern ActiveTrack *g_pActiveTrack;
 extern std::vector<Track *> g_TrackList;
 extern double gQueryVar;
-extern wxPrintData *g_printData;
-extern wxPageSetupData *g_pageSetupData;
 extern int g_ChartUpdatePeriod;
 extern int g_SkewCompUpdatePeriod;
 extern bool g_bCourseUp;
@@ -248,7 +255,6 @@ extern bool bDBUpdateInProgress;
 extern int quitflag;
 extern int g_tick;
 extern ChartDB *ChartData;
-extern bool g_boptionsactive;
 extern bool g_bDeferredInitDone;
 extern int options_lastPage;
 extern int options_subpage;
@@ -302,9 +308,6 @@ extern wxArrayPtrVoid *UserColourHashTableArray;
 extern wxColorHashMap *pcurrent_user_color_hash;
 
 // probable move to ocpn_app
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
 extern bool g_bHasHwClock;
@@ -320,6 +323,9 @@ extern int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
 extern bool g_config_display_size_manual;
 extern bool g_PrintingInProgress;
+extern bool g_disable_main_toolbar;
+extern bool g_btenhertz;
+extern bool g_declutter_anchorage;
 
 #ifdef __WXMSW__
 // System color control support
@@ -346,12 +352,8 @@ DWORD color_inactiveborder;
 
 #endif
 
-#ifdef __MSVC__
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
 #endif
 
 #if !defined(NAN)
@@ -360,6 +362,17 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 static wxArrayPtrVoid *UserColorTableArray = 0;
+
+// Latest "ground truth" fix, and auxiliaries
+double gLat_gt, gLon_gt;
+double gLat_gt_m1, gLon_gt_m1;
+uint64_t fix_time_gt;
+uint64_t fix_time_gt_last;
+
+double gSog_gt, gCog_gt, gHdt_gt;
+double gCog_gt_m1, gHdt_gt_m1;
+uint64_t hdt_time_gt;
+double cog_rate_gt, hdt_rate_gt;
 
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
@@ -370,9 +383,58 @@ void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
   AbstractPlatform::ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::GetInstance()->LoadAllPlugIns(load_enabled);
   AbstractPlatform::HideBusySpinner();
   return b;
+}
+
+static void LaunchLocalHelp(void) {
+#ifdef __ANDROID__
+  androidLaunchHelpView();
+#else
+  wxString def_lang_canonical = _T("en_US");
+
+#if wxUSE_XLOCALE
+  if (plocale_def_lang)
+    def_lang_canonical = plocale_def_lang->GetCanonicalName();
+#endif
+
+  wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
+
+  wxString help_try = help_locn + def_lang_canonical + _T(".html");
+
+  if (!::wxFileExists(help_try)) {
+    help_try = help_locn + _T("en_US") + _T(".html");
+
+    if (!::wxFileExists(help_try)) {
+      help_try = help_locn + _T("web") + _T(".html");
+    }
+
+    if (!::wxFileExists(help_try)) return;
+  }
+
+  wxLaunchDefaultBrowser(wxString(_T("file:///")) + help_try);
+#endif
+}
+
+static void DoHelpDialog(void) {
+#ifndef __ANDROID__
+  if (!g_pAboutDlg) {
+    g_pAboutDlg = new AboutFrameImpl(gFrame);
+  } else {
+    g_pAboutDlg->SetFocus();
+  }
+  g_pAboutDlg->Show();
+
+#else
+  if (!g_pAboutDlgLegacy)
+    g_pAboutDlgLegacy = new About(gFrame, g_Platform->GetSharedDataDir(),
+                                  [] { LaunchLocalHelp(); });
+  else
+    g_pAboutDlgLegacy->SetFocus();
+  g_pAboutDlgLegacy->Show();
+
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -449,8 +511,8 @@ void BuildiENCToolbar(bool bnew) {
   }
 }
 
-int ShowNavWarning() {
-  wxString msg0(
+bool ShowNavWarning() {
+  wxString msg(
       _("\n\
 OpenCPN is distributed in the hope that it will be useful, \
 but WITHOUT ANY WARRANTY; without even the implied \
@@ -460,34 +522,28 @@ See the GNU General Public License for more details.\n\n\
 OpenCPN must only be used in conjunction with approved \
 paper charts and traditional methods of navigation.\n\n\
 DO NOT rely upon OpenCPN for safety of life or property.\n\n\
-Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
+Please click \"Agree\" and proceed, or \"Cancel\" to quit.\n"));
 
   wxString vs = wxString::Format(wxT(" .. Version %s"), VERSION_FULL);
 
 #ifdef __ANDROID__
-  androidShowDisclaimer(_("OpenCPN for Android") + vs, msg0);
+  androidShowDisclaimer(_("OpenCPN for Android") + vs, msg);
   return true;
 #else
-  wxColor fg = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
-  wxString msg1;
-  msg1.Printf(_T("<html><body><font color=#%02x%02x%02x><hr />"), fg.Red(),
-              fg.Green(), fg.Blue());
+  msg.Replace("\n", "<br>");
 
-  for (unsigned int i = 0; i < msg0.Length(); i++) {
-    if (msg0[i] == '\n')
-      msg1 += _T("<br>");
-    else
-      msg1 += msg0[i];
-  }
+  std::stringstream html;
+  html << "<html><body><p>";
+  html << msg.ToStdString();
+  html << "</p></body></html>";
 
-  msg1 << _T("<hr /></font></body></html>");
-
-  OCPN_TimedHTMLMessageDialog infoDlg(
-      gFrame, msg1, _("Welcome to OpenCPN") + vs, -1, wxCANCEL | wxOK);
-
-  infoDlg.ShowModal();
-
-  return (infoDlg.GetReturnCode());
+  std::string title = _("Welcome to OpenCPN").ToStdString();
+  std::string action = _("Agree").ToStdString();
+  AlertDialog info_dlg(gFrame, title, action);
+  info_dlg.SetInitialSize();
+  info_dlg.AddHtmlContent(html);
+  int agreed = info_dlg.ShowModal();
+  return agreed == wxID_OK;
 #endif
 }
 
@@ -597,6 +653,7 @@ EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
 EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
 EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
+EVT_TIMER(FRANE_TENHZ_TIMER, MyFrame::OnFrameTenHzTimer)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED,
             MyFrame::RequestNewToolbarArgEvent)
@@ -629,11 +686,24 @@ static void onBellsFinishedCB(void *ptr) {
   }
 }
 
+static void OnDriverMsg(const ObservedEvt &ev) {
+  auto msg = ev.GetString().ToStdString();
+  auto &noteman = NotificationManager::GetInstance();
+  noteman.AddNotification(NotificationSeverity::kInformational, msg, 60);
+}
+
+static NmeaLog *GetDataMonitor() {
+  auto w = wxWindow::FindWindowByName(kDataMonitorWindowName);
+  return dynamic_cast<NmeaLog *>(w);
+}
+
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
-      comm_overflow_dlg(this) {
+      comm_overflow_dlg(this),
+      m_connections_dlg(nullptr),
+      m_data_monitor(new DataMonitor(this)) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
@@ -647,7 +717,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 #endif
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
-
+  m_data_monitor->Hide();
   m_pStatusBar = NULL;
   m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
@@ -675,6 +745,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //      Direct the Toolbar Animation timer to this frame
   ToolbarAnimateTimer.SetOwner(this, TOOLBAR_ANIMATE_TIMER);
 
+  FrameTenHzTimer.SetOwner(this, FRANE_TENHZ_TIMER);
+
 #ifdef __ANDROID__
 //    m_PrefTimer.SetOwner( this, ANDROID_PREF_TIMER );
 //    Connect( m_PrefTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler(
@@ -700,21 +772,29 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   gVar = NAN;
   gSog = NAN;
   gCog = NAN;
+  gHdt_gt = NAN;
+  gCog_gt = NAN;
 
   for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
 
   m_fixtime = -1;
+
+  double dt = 2.0;                     // Time interval
+  double process_noise_std = 1.0;      // Process noise standard deviation
+  double measurement_noise_std = 0.5;  // Measurement noise standard deviation
 
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
   initIXNetSystem();
 
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
-  log_callbacks.log_is_active = []() {
-    return NMEALogWindow::GetInstance().Active();
+  log_callbacks.log_is_active = [&]() {
+    auto log = GetDataMonitor();
+    return log && log->IsVisible();
   };
-  log_callbacks.log_message = [](const std::string &s) {
-    NMEALogWindow::GetInstance().Add(s);
+  log_callbacks.log_message = [&](Logline ll) {
+    NmeaLog *monitor = GetDataMonitor();
+    if (monitor && monitor->IsVisible()) monitor->Add(ll);
   };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 
@@ -794,6 +874,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   assert(g_pRouteMan != 0 && "g_pRouteMan not available");
   m_routes_update_listener.Init(g_pRouteMan->on_routes_update,
                                 [&](wxCommandEvent) { Refresh(); });
+  m_evt_drv_msg_listener.Init(CommDriverRegistry::GetInstance().evt_driver_msg,
+                              [&](ObservedEvt &ev) { OnDriverMsg(ev); });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
@@ -803,6 +885,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
 MyFrame::~MyFrame() {
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
   DestroyDeviceNotFoundDialogs();
 
   delete ChartData;
@@ -1181,7 +1264,8 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
     default:
     case 0:  // a single canvas
       if (!g_canvasArray.GetCount() || !config_array.Item(0)) {
-        cc = new ChartCanvas(this, 0);  // the chart display canvas
+        cc = new ChartCanvas(this, 0,
+                             m_data_monitor);  // the chart display canvas
         g_canvasArray.Add(cc);
       } else {
         cc = g_canvasArray[0];
@@ -1217,7 +1301,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
 
     case 1: {  // two canvas, horizontal
       if (!g_canvasArray.GetCount() || !g_canvasArray[0]) {
-        cc = new ChartCanvas(this, 0);  // the chart display canvas
+        cc = new ChartCanvas(this, 0, m_data_monitor);  // chart display canvas
         g_canvasArray.Add(cc);
       } else {
         cc = g_canvasArray[0];
@@ -1248,7 +1332,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
 
       g_pauimgr->GetPane(cc).CenterPane();
 
-      cc = new ChartCanvas(this, 1);  // the chart display canvas
+      cc = new ChartCanvas(this, 1, m_data_monitor);  // chart display canvas
       g_canvasArray.Add(cc);
 
       //  There is not yet a config descriptor for canvas 2, so create one by
@@ -1271,6 +1355,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       cc->ConfigureChartBar();
       cc->SetColorScheme(global_color_scheme);
       cc->SetShowGPS(true);
+      cc->CreateMUIBar();
 
       g_pauimgr->AddPane(cc);
       g_pauimgr->GetPane(cc).Name(_T("ChartCanvas2"));
@@ -1430,7 +1515,9 @@ bool MyFrame::DropMarker(bool atOwnShip) {
       new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
   pWP->m_bIsolatedMark = true;  // This is an isolated mark
   pSelect->AddSelectableRoutePoint(lat, lon, pWP);
-  pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+  // pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
   if (canvas)
     if (!RoutePointGui(*pWP).IsVisibleSelectable(canvas))
       RoutePointGui(*pWP).ShowScaleWarningMessage(canvas);
@@ -1452,7 +1539,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
     int nTargetGTK = -1;
     ChartCanvas *target;
     wxWindow *source = FindFocus();
-    ChartCanvas *test = wxDynamicCast(source, ChartCanvas);
+    auto test = dynamic_cast<ChartCanvas *>(source);
     if (!test) return;
 
     // On linux(GTK), the TAB key causes a loss of focus immediately
@@ -1487,8 +1574,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
                        .Item(nfinalTarget)
                        ->canvas;
           if (target) {
-            wxWindow *win = wxDynamicCast(target, wxWindow);
-            win->SetFocus();
+            target->SetFocus();
             target->Refresh(true);
           }
         }
@@ -1502,6 +1588,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
 
 void MyFrame::FastClose() {
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
   quitflag++;            // signal to the timer loop
   FrameTimer1.Start(1);  // real quick now...
 }
@@ -1555,6 +1642,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       cc->CancelMeasureRoute();
     }
   }
+
+  //  Give any requesting plugins a PreShutdownHook call
+  SendPreShutdownHookToPlugins();
 
   // We save perspective before closing to restore position next time
   // Pane is not closed so the child is not notified (OnPaneClose)
@@ -1616,6 +1706,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   g_bframemax = IsMaximized();
 
   FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
+
   FrameCOGTimer.Stop();
 
   TrackOff();
@@ -1645,27 +1737,31 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     if (!watching_anchor && (g_bCruising) && (gSog < 0.5) &&
         (uptime.IsLongerThan(wxTimeSpan(0, 30, 0, 0))))  // pjotrc 2010.02.15
     {
-      //    First, delete any single anchorage waypoint closer than 0.25 NM from
-      //    this point This will prevent clutter and database congestion....
+      //    First, if enabled, delete any single anchorage waypoints closer
+      //    than 0.25 NM from this point
+      //    This will prevent screen clutter and database congestion.
+      if (g_declutter_anchorage) {
+        wxRoutePointListNode *node =
+            pWayPointMan->GetWaypointList()->GetFirst();
+        while (node) {
+          RoutePoint *pr = node->GetData();
+          if (pr->GetName().StartsWith(_T("Anchorage"))) {
+            double a = gLat - pr->m_lat;
+            double b = gLon - pr->m_lon;
+            double l = sqrt((a * a) + (b * b));
 
-      wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-      while (node) {
-        RoutePoint *pr = node->GetData();
-        if (pr->GetName().StartsWith(_T("Anchorage"))) {
-          double a = gLat - pr->m_lat;
-          double b = gLon - pr->m_lon;
-          double l = sqrt((a * a) + (b * b));
-
-          // caveat: this is accurate only on the Equator
-          if ((l * 60. * 1852.) < (.25 * 1852.)) {
-            pConfig->DeleteWayPoint(pr);
-            pSelect->DeleteSelectablePoint(pr, SELTYPE_ROUTEPOINT);
-            delete pr;
-            break;
+            // caveat: this is accurate only on the Equator
+            if ((l * 60. * 1852.) < (.25 * 1852.)) {
+              // pConfig->DeleteWayPoint(pr);
+              NavObj_dB::GetInstance().DeleteRoutePoint(pr);
+              pSelect->DeleteSelectablePoint(pr, SELTYPE_ROUTEPOINT);
+              delete pr;
+              break;
+            }
           }
-        }
 
-        node = node->GetNext();
+          node = node->GetNext();
+        }
       }
 
       wxString name = now.Format();
@@ -1675,7 +1771,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       pWP->m_bShowName = false;
       pWP->m_bIsolatedMark = true;
 
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
     }
   }
 
@@ -1683,27 +1779,18 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   pConfig->UpdateSettings();
 
   //    Deactivate the PlugIns
-  auto plugin_loader = PluginLoader::getInstance();
-  if (plugin_loader) {
-    plugin_loader->DeactivateAllPlugIns();
-  }
-
-  wxLogMessage(_T("opencpn::MyFrame exiting cleanly."));
+  PluginLoader::GetInstance()->DeactivateAllPlugIns();
+  wxLogMessage("opencpn::MyFrame exiting cleanly.");
 
   quitflag++;
 
-  pConfig->UpdateNavObj();
-
-  pConfig->m_pNavObjectChangesSet->reset();
+  NavObj_dB::GetInstance().Close();
 
   // Remove any leftover Routes and Waypoints from config file as they were
   // saved to navobj before
   pConfig->DeleteGroup(_T ( "/Routes" ));
   pConfig->DeleteGroup(_T ( "/Marks" ));
   pConfig->Flush();
-
-  delete g_printData;
-  delete g_pageSetupData;
 
   if (g_pAboutDlg) g_pAboutDlg->Destroy();
   if (g_pAboutDlgLegacy) g_pAboutDlgLegacy->Destroy();
@@ -1773,8 +1860,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
-  if (PluginLoader::getInstance())
-    PluginLoader::getInstance()->UnLoadAllPlugIns();
+  PluginLoader::GetInstance()->UnLoadAllPlugIns();
 
   if (g_pi_manager) {
     delete g_pi_manager;
@@ -1806,11 +1892,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto *cp : TheConnectionParams()) {
     delete cp;
   }
-  delete TheConnectionParams();
 
   if (pLayerList) {
     LayerList::iterator it;
@@ -1819,8 +1903,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       delete lay;  // automatically removes the layer from list, see Layer dtor
     }
   }
-
-  NMEALogWindow::Shutdown();
 
   ReleaseApiListeners();
 
@@ -2363,6 +2445,15 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_MENU_TOOL_NMEA_DBG_LOG:
+      m_data_monitor->Show();
+      m_data_monitor->Raise();
+      break;
+
+    case ID_MENU_TOOL_IO_MONITOR:
+      m_data_monitor->Show();
+      break;
+
     case ID_MENU_MARK_BOAT: {
       DropMarker(true);
       break;
@@ -2473,6 +2564,17 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_SETTINGS_NEW: {
+      DoSettingsNew();
+      break;
+    }
+
+    case ID_SETTINGS_DELETE: {
+      delete g_options;
+      g_options = nullptr;
+      break;
+    }
+
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
       /// LoadS57();
@@ -2506,12 +2608,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case wxID_ABOUT:
     case ID_ABOUT: {
-      g_Platform->DoHelpDialog();
+      DoHelpDialog();
       break;
     }
 
     case wxID_HELP: {
-      g_Platform->LaunchLocalHelp();
+      LaunchLocalHelp();
       break;
     }
 
@@ -2567,9 +2669,6 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
         g_bTrackCarryOver = true;
       } else {
         TrackOff(true);  // catch the last point
-        if (pConfig && pConfig->IsChangesFileDirty()) {
-          pConfig->UpdateNavObj(true);
-        }
         g_bTrackCarryOver = false;
         RefreshAllCanvas(true);
       }
@@ -2756,10 +2855,48 @@ bool MyFrame::SetGlobalToolbarViz(bool viz) {
   return viz_now;
 }
 
+void MyFrame::ScheduleDeleteSettingsDialog() {
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(ID_SETTINGS_DELETE);
+  GetEventHandler()->AddPendingEvent(evt);
+}
+
 void MyFrame::ScheduleSettingsDialog() {
   wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-  evt.SetId(ID_SETTINGS /*ID_MENU_SETTINGS_BASIC*/);
+  evt.SetId(ID_SETTINGS);
   GetEventHandler()->AddPendingEvent(evt);
+}
+
+void MyFrame::ScheduleSettingsDialogNew() {
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(ID_SETTINGS_NEW);
+  GetEventHandler()->AddPendingEvent(evt);
+}
+
+void MyFrame::ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) {
+  UpdateCanvasConfigDescriptors();
+
+  if ((g_canvasConfig > 0) && (last_canvasConfig == 0))
+    CreateCanvasLayout(true);
+  else
+    CreateCanvasLayout();
+  SendSizeEvent();
+  g_pauimgr->Update();
+
+  ConfigureStatusBar();
+  wxSize lastOptSize = options_lastWindowSize;
+  SendSizeEvent();
+
+  BuildMenuBar();
+  SendSizeEvent();
+  options_lastWindowSize = lastOptSize;
+
+  if (reload) {
+    if (new_dialog)
+      ScheduleSettingsDialogNew();
+    else
+      ScheduleSettingsDialog();
+  }
 }
 
 ChartCanvas *MyFrame::GetFocusCanvas() {
@@ -2852,13 +2989,18 @@ void MyFrame::setStringVP(wxString VPS) {
   cc->SetViewPoint(lat, lon, scale_ppm, 0, cc->GetVPRotation());
 }
 
-void MyFrame::DoSettings() {
-  if (g_boptionsactive) return;
+void MyFrame::DoSettingsNew() {
+  delete g_options;
+  g_options = nullptr;
 
-  bool bnewtoolbar = !(DoOptionsDialog() == 0);
+  DoSettings();
+}
+
+void MyFrame::DoSettings() {
+  DoOptionsDialog();
 
   //              Apply various system settings
-  ApplyGlobalSettings(bnewtoolbar);
+  ApplyGlobalSettings(true);
 
   // ..For each canvas...
   bool b_loadHarmonics = false;
@@ -2931,10 +3073,8 @@ void MyFrame::ActivateMOB(void) {
   //    The MOB point
   wxDateTime mob_time = wxDateTime::Now();
   wxString mob_label(_("MAN OVERBOARD"));
-  mob_label += _(" at ");
-  mob_label += mob_time.FormatTime();
   mob_label += _(" on ");
-  mob_label += mob_time.FormatISODate();
+  mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
   RoutePoint *pWP_MOB =
       new RoutePoint(gLat, gLon, _T ( "mob" ), mob_label, wxEmptyString);
@@ -2944,7 +3084,7 @@ void MyFrame::ActivateMOB(void) {
       -1.0);  // Negative distance is code to signal "Never Arrive"
   pWP_MOB->SetUseSca(false);  // Do not use scaled hiding for MOB
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_MOB);
-  pConfig->AddNewWayPoint(pWP_MOB, -1);  // use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP_MOB);
 
   if (bGPSValid && !std::isnan(gCog) && !std::isnan(gSog)) {
     //    Create a point that is one mile along the present course
@@ -2980,7 +3120,7 @@ void MyFrame::ActivateMOB(void) {
     wxJSONValue v;
     v[_T("GUID")] = temp_route->m_GUID;
     wxString msg_id(_T("OCPN_MAN_OVERBOARD"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   }
 
   if (RouteManagerDialog::getInstanceFlag()) {
@@ -2995,7 +3135,7 @@ void MyFrame::ActivateMOB(void) {
 
   wxString mob_message(_("MAN OVERBOARD"));
   mob_message += _(" Time: ");
-  mob_message += mob_time.Format();
+  mob_message += ocpn::toUsrDateTimeFormat(mob_time);
   mob_message += _("  Position: ");
   mob_message += toSDMM(1, gLat);
   mob_message += _T("   ");
@@ -3007,8 +3147,7 @@ void MyFrame::TrackOn(void) {
   g_pActiveTrack = new ActiveTrack();
 
   g_TrackList.push_back(g_pActiveTrack);
-  if (pConfig) pConfig->AddNewTrack(g_pActiveTrack);
-
+  NavObj_dB::GetInstance().InsertTrack(g_pActiveTrack);
   g_pActiveTrack->Start();
 
   // The main toolbar may still be NULL here, and we will do nothing...
@@ -3030,8 +3169,6 @@ void MyFrame::TrackOn(void) {
   }
 
   wxJSONValue v;
-  wxDateTime now;
-  now = now.Now().ToUTC();
   wxString name = g_pActiveTrack->GetName();
   if (name.IsEmpty()) {
     TrackPoint *tp = g_pActiveTrack->GetPoint(0);
@@ -3044,7 +3181,7 @@ void MyFrame::TrackOn(void) {
   v[_T("Name")] = name;
   v[_T("GUID")] = g_pActiveTrack->m_GUID;
   wxString msg_id(_T("OCPN_TRK_ACTIVATED"));
-  g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+  SendJSONMessageToAllPlugins(msg_id, v);
   g_FlushNavobjChangesTimeout =
       30;  // Every thirty seconds, consider flushing navob changes
 }
@@ -3056,17 +3193,19 @@ Track *MyFrame::TrackOff(bool do_add_point) {
     wxJSONValue v;
     wxString msg_id(_T("OCPN_TRK_DEACTIVATED"));
     v[_T("GUID")] = g_pActiveTrack->m_GUID;
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
 
     g_pActiveTrack->Stop(do_add_point);
 
     if (g_pActiveTrack->GetnPoints() < 2) {
+      NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
       RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
       return_val = NULL;
     } else {
       if (g_bTrackDaily) {
         Track *pExtendTrack = g_pActiveTrack->DoExtendDaily();
         if (pExtendTrack) {
+          NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
           RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
           return_val = pExtendTrack;
         }
@@ -3138,12 +3277,7 @@ bool MyFrame::ShouldRestartTrack(void) {
 
 void MyFrame::TrackDailyRestart(void) {
   if (!g_pActiveTrack) return;
-
   Track *pPreviousTrack = TrackOff(true);
-  if (pConfig && pConfig->IsChangesFileDirty()) {
-    pConfig->UpdateNavObj(true);
-  }
-
   TrackOn();
 
   //  Set the restarted track's current state such that the current track
@@ -3373,7 +3507,7 @@ void MyFrame::SetToolbarItemSVG(int tool_id, wxString normalSVGfile,
   }
 }
 
-void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
+void MyFrame::ConfigureStatusBar() {
   //             ShowDebugWindow as a wxStatusBar
   m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
@@ -3395,6 +3529,10 @@ void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
       SetStatusBar(NULL);
     }
   }
+}
+
+void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
+  ConfigureStatusBar();
 
   wxSize lastOptSize = options_lastWindowSize;
   SendSizeEvent();
@@ -3571,6 +3709,8 @@ void MyFrame::RegisterGlobalMenuItems() {
   m_pMenuBar->Append(ais_menu, _("&AIS"));
 
   wxMenu *tools_menu = new wxMenu();
+  tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
+                     _menuText(_("Data Monitor"), "Alt-C"));
 #ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), _T("M")));
@@ -3863,12 +4003,48 @@ void MyFrame::CenterView(ChartCanvas *cc, const LLBBox &RBBox) {
   JumpToPosition(cc, clat, clon, ppm);
 }
 
-int MyFrame::DoOptionsDialog() {
-  if (g_boptionsactive) return 0;
+void MyFrame::PrepareOptionsClose(options *settings,
+                                  int settings_return_value) {
+  // Capture som values from options dialog before closure
+  options_lastPage = settings->lastPage;
+#ifdef __ANDROID__
+  //  This is necessary to force a manual change to charts page,
+  //  in order to properly refresh the chart directory list.
+  //  Root cause:  In Android, trouble with clearing the wxScrolledWindow
+  if (options_lastPage == 1) options_lastPage = 0;
+#endif
+  options_subpage = settings->lastSubPage;
+  options_lastWindowPos = settings->lastWindowPos;
+  options_lastWindowSize = settings->lastWindowSize;
 
-  g_boptionsactive = true;
-  g_last_ChartScaleFactor = g_ChartScaleFactor;
+#ifdef __ANDROID__
+  androidEnableBackButton(true);
+  androidEnableOptionsMenu(true);
+  androidRestoreFullScreen();
+  androidEnableRotation();
+#endif
 
+#if 0  // Maybe, TODO
+  // If needed, refresh each canvas,
+  // trying to reload the previously displayed chart by name as saved in
+  // pathArray Also, restoring the previous chart VPScale, if possible
+  if (b_refresh) {
+    // ..For each canvas...
+    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+      ChartCanvas *cc = g_canvasArray.Item(i);
+      if (cc) {
+        int index_hint = -1;
+        if (i < pathArray.GetCount())
+          index_hint = ChartData->FinddbIndex(pathArray.Item(i));
+        cc->canvasChartsRefresh(index_hint);
+        if (index_hint != -1) cc->SetVPScale(restoreScale[i]);
+      }
+    }
+  }
+#endif
+}
+
+void MyFrame::DoOptionsDialog() {
   if (NULL == g_options) {
     AbstractPlatform::ShowBusySpinner();
 
@@ -3897,36 +4073,9 @@ int MyFrame::DoOptionsDialog() {
 
   //      Pass a ptr to MyConfig, for updates
   g_options->SetConfigPtr(pConfig);
-
   g_options->SetInitialSettings();
 
   prev_locale = g_locale;
-
-  bool b_sub = false;
-#if 0
-  if (g_MainToolbar && g_MainToolbar->IsShown()) {
-    wxRect bx_rect = g_options->GetScreenRect();
-    wxRect tb_rect = g_MainToolbar->GetScreenRect();
-    if (tb_rect.Intersects(bx_rect)) b_sub = true;
-
-    if (b_sub) g_MainToolbar->Submerge();
-  }
-#endif
-
-#if defined(__WXOSX__) || defined(__WXQT__)
-  bool b_restoreAIS = false;
-  if (g_pAISTargetList && g_pAISTargetList->IsShown()) {
-    b_restoreAIS = true;
-    g_pAISTargetList->Shutdown();
-    g_pAISTargetList = NULL;
-  }
-#endif
-
-#ifdef __WXOSX__
-  // SubmergeAllCanvasToolbars();
-  g_MainToolbar->Submerge();
-#endif
-
   g_options->SetInitialPage(options_lastPage, options_subpage);
 
 #ifndef __ANDROID__  //    if(!g_bresponsive){
@@ -3940,17 +4089,7 @@ int MyFrame::DoOptionsDialog() {
   if (options_lastWindowSize != wxSize(0, 0)) {
     g_options->SetSize(options_lastWindowSize);
   }
-
-  // Correct some fault in Options dialog layout logic on GTK3 by forcing a
-  // re-layout to new slightly reduced size.
-#ifdef __WXGTK3__
-  if (options_lastWindowSize != wxSize(0, 0))
-    g_options->SetSize(options_lastWindowSize.x - 1, options_lastWindowSize.y);
 #endif
-
-#endif
-
-  if (g_MainToolbar) g_MainToolbar->DisableTooltips();
 
 #ifdef __ANDROID__
   androidEnableBackButton(false);
@@ -3958,19 +4097,9 @@ int MyFrame::DoOptionsDialog() {
   androidDisableFullScreen();
 #endif
 
-  // Record current canvas config
-  unsigned int last_canvasConfig = g_canvasConfig;
-  wxSize cc1SizeBefore;
-  if (g_canvasConfig > 0) {
-    canvasConfig *cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
-    if (cc) cc1SizeBefore = g_canvasArray.Item(0)->GetSize();
-  }
-
   //  Capture the full path names and VPScale of charts currently shown in all
   //  canvases
-  wxArrayString pathArray;
-  double restoreScale[4];
-
+  pathArray.Clear();
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -3989,263 +4118,17 @@ int MyFrame::DoOptionsDialog() {
     }
   }
 
-  int rr = g_options->ShowModal();
+  // Record current canvas config
+  last_canvasConfig = g_canvasConfig;
 
-#ifdef __ANDROID__
-  androidEnableBackButton(true);
-  androidEnableOptionsMenu(true);
-  androidRestoreFullScreen();
-  androidEnableRotation();
-#endif
+  // Record current chart scale factor
+  g_last_ChartScaleFactor = g_ChartScaleFactor;
 
-  if (g_MainToolbar) g_MainToolbar->EnableTooltips();
-
-  options_lastPage = g_options->lastPage;
-#ifdef __ANDROID__
-  //  This is necessary to force a manual change to charts page,
-  //  in order to properly refresh the chart directory list.
-  //  Root cause:  In Android, trouble with clearing the wxScrolledWindow
-  if (options_lastPage == 1) options_lastPage = 0;
-#endif
-
-  options_subpage = g_options->lastSubPage;
-
-  options_lastWindowPos = g_options->lastWindowPos;
-  options_lastWindowSize = g_options->lastWindowSize;
-
-  if (1 /*b_sub*/) {  // always surface toolbar, and restart the timer if needed
-#ifdef __ANDROID__
-    g_MainToolbar->SetDockX(-1);
-    g_MainToolbar->SetDockY(-1);
-#endif
-    // g_MainToolbar->Surface();
-    // SurfaceAllCanvasToolbars();
-    GetPrimaryCanvas()->SetFocus();
-  }
-
-#ifdef __WXGTK__
-  Raise();  // I dunno why...
-#endif
-
-  bool ret_val = false;
-  rr = g_options->GetReturnCode();
-
-  if (g_last_ChartScaleFactor != g_ChartScaleFactor) rr |= S52_CHANGED;
-
-  bool b_refresh = true;
-
-#if 0
-    bool ccRightSizeChanged = false;
-    if( g_canvasConfig > 0 ){
-        canvasConfig *cc = g_canvasConfigArray.Item(0);
-        if(cc ){
-            wxSize cc1Size = cc->canvasSize;
-            if(cc1Size.x != cc1SizeBefore.x)
-                ccRightSizeChanged = true;
-        }
-    }
-#endif
-
-  if ((g_canvasConfig != last_canvasConfig) || (rr & GL_CHANGED)) {
-    DestroyPersistentDialogs();
-
-    UpdateCanvasConfigDescriptors();
-
-    if ((g_canvasConfig > 0) && (last_canvasConfig == 0))
-      CreateCanvasLayout(true);
-    else
-      CreateCanvasLayout();
-
-    SendSizeEvent();
-
-    g_pauimgr->Update();
-
-    // We need a yield() here to pick up the size event
-    // so that the toolbars will be sized correctly
-    wxYield();
-
-    // ..For each canvas...
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) cc->CreateMUIBar();
-    }
-
-    rr |= GENERIC_CHANGED;
-
-    if (g_bopengl)  // Force mark/waypoint icon reload
-      rr |= S52_CHANGED;
-
-    b_refresh = true;
-  }
-
-  // Here check for the case wherein the relative sizes of a multicanvas layout
-  // have been changed. We do not need to reqbuild the canvases, we just need to
-  // resize whichever one is docked.
-
-  //     if( (g_canvasConfig > 0)  && ccRightSizeChanged ){
-  //         canvasConfig *cc = g_canvasConfigArray.Item(1);
-  //         if(cc ){
-  //             wxAuiPaneInfo& p = g_pauimgr->GetPane(g_canvasArray.Item(1));
-  //             wxAuiDockInfo *dockRight = g_pauimgr->FindDock(p);
-  //             if(dockRight)
-  //                 g_pauimgr->SetDockSize(dockRight, cc->canvasSize.x);
-  //         }
-  //     }
-
-  if (rr & CONFIG_CHANGED) {
-    // Apply the changed canvas configs to each canvas
-    // ..For each canvas...
-    for (unsigned int i = 0;
-         i < ConfigMgr::Get().GetCanvasConfigArray().GetCount(); i++) {
-      canvasConfig *cc = ConfigMgr::Get().GetCanvasConfigArray().Item(i);
-      if (cc) {
-        ChartCanvas *chartCanvas = cc->canvas;
-        if (chartCanvas) {
-          chartCanvas->ApplyCanvasConfig(cc);
-        }
-      }
-    }
-  }
-
-  if (rr) {
-    bDBUpdateInProgress = true;
-    b_refresh |= ProcessOptionsDialog(rr, g_options->GetWorkDirListPtr());
-    ChartData->GetChartDirArray() =
-        *(g_options->GetWorkDirListPtr());  // Perform a deep copy back to main
-                                            // database.
-    bDBUpdateInProgress = false;
-    ret_val = true;
-  }
-
-  delete pWorkDirArray;
-
-  DoChartUpdate();
-
-  //  We set the compass size first, since that establishes the available space
-  //  for the toolbar.
-  SetGPSCompassScale();
-  // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) {
-      cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
-      cc->UpdateCanvasControlBar();
-    }
-  }
-  UpdateGPSCompassStatusBoxes();
-
-  SetAllToolbarScale();
-  RequestNewToolbars();
-
-  //  Rebuild cursors
-  // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) {
-      cc->RebuildCursors();
-    }
-  }
-
-  // Change of master toolbar scale?
-  bool b_masterScaleChange = false;
-  if (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
-    b_masterScaleChange = true;
-
-  if ((rr & TOOLBAR_CHANGED) || b_masterScaleChange)
-    RequestNewMasterToolbar(true);
-
-  bool bMuiChange = false;
-#ifdef __ANDROID__
-  bMuiChange = true;  // to pick up possible "zoom" button visibility change
-#endif
-
-  // Inform the canvases
-  if (b_masterScaleChange || bMuiChange) {
-    // ..For each canvas...
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) {
-        cc->ProcessNewGUIScale();
-      }
-    }
-  }
-
-  if (g_MainToolbar) {
-    if (IsFullScreen() && !g_bFullscreenToolbar) g_MainToolbar->Submerge();
-  }
-
-#if defined(__WXOSX__) || defined(__WXQT__)
-  if (b_restoreAIS) {
-    g_pAISTargetList = new AISTargetListDialog(this, g_pauimgr, g_pAIS);
-    g_pAISTargetList->UpdateAISTargetList();
-  }
-#endif
-
-  if (console && console->IsShown()) console->Raise();
-
-  auto alert_dlg_active =
-      dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
-  if (alert_dlg_active) alert_dlg_active->Raise();
-
-  if (NMEALogWindow::GetInstance().Active())
-    NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
-
-#ifdef __ANDROID__
-  if (g_pi_manager) g_pi_manager->NotifyAuiPlugIns();
-#endif
-
-  //  Force reload of options dialog to pick up font changes or other major
-  //  layout changes
-  if ((rr & FONT_CHANGED) || (rr & NEED_NEW_OPTIONS)) {
-    delete g_options;
-    g_options = NULL;
-    g_pOptions = NULL;
-  }
-
-  //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
-  if (g_pMarkInfoDialog) {
-    g_pMarkInfoDialog->Hide();
-    g_pMarkInfoDialog->Destroy();
-    g_pMarkInfoDialog = NULL;
-  }
-
-#if wxUSE_XLOCALE
-  if (rr & LOCALE_CHANGED) {
-    g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
-    ApplyLocale();
-  }
-#endif
-
-  // If needed, refresh each canvas,
-  // trying to reload the previously displayed chart by name as saved in
-  // pathArray Also, restoring the previous chart VPScale, if possible
-  if (b_refresh) {
-    // ..For each canvas...
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) {
-        int index_hint = -1;
-        if (i < pathArray.GetCount())
-          index_hint = ChartData->FinddbIndex(pathArray.Item(i));
-        cc->canvasChartsRefresh(index_hint);
-        if (index_hint != -1) cc->SetVPScale(restoreScale[i]);
-      }
-    }
-  }
-
-  g_boptionsactive = false;
-
-  //  If we had a config chamge, then schedule a re-entry to the settings dialog
-  if (rr & CONFIG_CHANGED) {
-    options_subpage = 3;  // Back to the "templates" page
-    ScheduleSettingsDialog();
-  } else
-    options_subpage = 0;
-
-  return ret_val;
+  g_options->Show();
+  return;
 }
 
-bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
+void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   bool b_need_refresh = false;  // Do we need a full reload?
 
   if ((rr & VISIT_CHARTS) &&
@@ -4295,29 +4178,6 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   if (g_pActiveTrack) {
     g_pActiveTrack->SetPrecision(g_nTrackPrecision);
   }
-
-  //     if( ( bPrevQuilt != g_bQuiltEnable ) || ( bPrevFullScreenQuilt !=
-  //     g_bFullScreenQuilt ) ) {
-  //         GetPrimaryCanvas()->SetQuiltMode( g_bQuiltEnable );
-  //         GetPrimaryCanvas()->SetupCanvasQuiltMode();
-  //     }
-
-#if 0
-//TODO Not need with per-canvas CourseUp
-    if( g_bCourseUp ) {
-        //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = NAN;
-        if( !std::isnan(gCog) ) stuff = gCog;
-        if( g_COGAvgSec > 0 ) {
-            for( int i = 0; i < g_COGAvgSec; i++ )
-                COGTable[i] = stuff;
-        }
-
-        g_COGAvg = stuff;
-
-        DoCOGSet();
-    }
-#endif
 
   // reload pens and brushes
   g_pRouteMan->SetColorScheme(global_color_scheme,
@@ -4409,19 +4269,86 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
 
   //  The zoom-scale factor may have changed
   //  so, trigger a recalculation of the reference chart
-
   bool ztc = g_bEnableZoomToCursor;  // record the present state
   g_bEnableZoomToCursor =
       false;  // since we don't want to pan to an unknown cursor position
 
   //  This is needed to recognise changes in zoom-scale factors
-  GetPrimaryCanvas()->DoZoomCanvas(1.0001);
-
+  GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
   g_bEnableZoomToCursor = ztc;
 
+  //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
+  if (g_last_ChartScaleFactor != g_ChartScaleFactor) {
+    if (g_pMarkInfoDialog) {
+      g_pMarkInfoDialog->Hide();
+      g_pMarkInfoDialog->Destroy();
+      g_pMarkInfoDialog = NULL;
+    }
+  }
+
+  //  We set the compass size
+  SetGPSCompassScale();
+  // ..For each canvas...
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
+      cc->UpdateCanvasControlBar();
+    }
+  }
+  UpdateGPSCompassStatusBoxes();
+
+  SetAllToolbarScale();
+  RequestNewToolbars();
+
+  //  Rebuild cursors
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      cc->RebuildCursors();
+    }
+  }
+
+  // Change of master toolbar scale?
+  bool b_masterScaleChange = false;
+  if (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
+    b_masterScaleChange = true;
+
+  if ((rr & TOOLBAR_CHANGED) || b_masterScaleChange)
+    RequestNewMasterToolbar(true);
+
+  bool bMuiChange = false;
+#ifdef __ANDROID__
+  bMuiChange = true;  // to pick up possible "zoom" button visibility change
+#endif
+
+  // Inform the canvases
+  if (b_masterScaleChange || bMuiChange) {
+    // ..For each canvas...
+    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+      ChartCanvas *cc = g_canvasArray.Item(i);
+      if (cc) {
+        cc->ProcessNewGUIScale();
+      }
+    }
+  }
+
+#if wxUSE_XLOCALE
+  if (rr & LOCALE_CHANGED) {
+    g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
+    ApplyLocale();
+    rr |= NEED_NEW_OPTIONS;
+  }
+#endif
+
+#ifdef __ANDROID__
+  if (g_pi_manager) g_pi_manager->NotifyAuiPlugIns();
+#endif
+
+  // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
 
-  return b_need_refresh;
+  return;
 }
 
 bool MyFrame::CheckGroup(int igroup) {
@@ -4508,6 +4435,7 @@ void MyFrame::ChartsRefresh() {
   bool b_run = FrameTimer1.IsRunning();
 
   FrameTimer1.Stop();  // stop other asynchronous activity
+  FrameTenHzTimer.Stop();
 
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -4522,6 +4450,7 @@ void MyFrame::ChartsRefresh() {
   }
 
   if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
   AbstractPlatform::HideBusySpinner();
 }
@@ -4542,6 +4471,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
                                          const wxString &ChartListFileName) {
   bool b_run = FrameTimer1.IsRunning();
   FrameTimer1.Stop();  // stop other asynchronous activity
+  FrameTenHzTimer.Stop();
+
   bool b_runCOGTimer = FrameCOGTimer.IsRunning();
   FrameCOGTimer.Stop();
 
@@ -4587,6 +4518,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
   wxLogMessage(_T("Starting chart database Update..."));
   wxString gshhg_chart_loc = gWorldMapLocation;
   gWorldMapLocation = wxEmptyString;
+  // The Update() function may set gWorldMapLocation if at least one of the
+  // directories contains GSHHS files.
   ChartData->Update(DirArray, b_force, pprog);
   ChartData->SaveBinary(ChartListFileName);
   wxLogMessage(_T("Finished chart database Update"));
@@ -4605,6 +4538,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
       ChartCanvas *cc = g_canvasArray.Item(i);
       if (cc) cc->ResetWorldBackgroundChart();
     }
+    // Reset the GSHHS singleton which is used to detect land crossing.
+    gshhsCrossesLandReset();
   }
 
   delete pprog;
@@ -4615,6 +4550,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
   // Restart timers, if necessary
   if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+
   if (b_runCOGTimer) {
     //    Restart the COG rotation timer, max frequency is 10 hz.
     int period_ms = 100;
@@ -4760,7 +4697,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
-      pConfig->LoadNavObjects();
+      NavObj_dB::GetInstance().ImportLegacyNavobj(this);
+      NavObj_dB::GetInstance().LoadNavObjects();
+
       //    Re-enable anchor watches if set in config file
       if (!g_AW1GUID.IsEmpty()) {
         pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID(g_AW1GUID);
@@ -4787,10 +4726,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 1:
       // Connect Datastreams
 
-      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-        ConnectionParams *cp = TheConnectionParams()->Item(i);
+      for (auto *cp : TheConnectionParams()) {
         if (cp->bEnabled) {
-          auto driver = MakeCommDriver(cp);
+          MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
         }
       }
@@ -4811,7 +4749,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       if (m_initializing) break;
       m_initializing = true;
       AbstractPlatform::ShowBusySpinner();
-      PluginLoader::getInstance()->LoadAllPlugIns(true);
+      PluginLoader::GetInstance()->LoadAllPlugIns(true);
       AbstractPlatform::HideBusySpinner();
       //            RequestNewToolbars();
       RequestNewMasterToolbar();
@@ -5016,7 +4954,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       UpdateStatusBar();
 
       SendSizeEvent();
-
       break;
     }
   }  // switch
@@ -5083,6 +5020,22 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
       bGPSValid = false;
       m_fixtime = 0;  // Invalidate fix time
       if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
+
+      // Possible notification on position watchdog timeout...
+      // if fix has been valid for at least 5 minutes, and then lost,
+      // then post a critical notification
+      if (m_fix_start_time.IsValid()) {
+        wxDateTime now = wxDateTime::Now();
+        wxTimeSpan span = now - m_fix_start_time;
+        if (span.IsLongerThan(wxTimeSpan(0, 5))) {
+          auto &noteman = NotificationManager::GetInstance();
+          wxString msg = _("GNSS Position fix lost");
+          noteman.AddNotification(NotificationSeverity::kCritical,
+                                  msg.ToStdString());
+          m_fix_start_time = wxInvalidDateTime;
+        }
+      }
+
     } else if (msg->wd_source == GPSWatchdogMsg::WDSource::velocity) {
       bool last_bVelocityValid = bVelocityValid;
       bVelocityValid = false;
@@ -5092,9 +5045,7 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
   }
 }
 
-void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
-  m_fixtime = msg->time;
-
+void MyFrame::CalculateCOGAverage() {
   //    Maintain average COG for Course Up Mode
   if (!std::isnan(gCog)) {
     if (g_COGAvgSec > 0) {
@@ -5128,12 +5079,151 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
     } else
       g_COGAvg = gCog;
   }
+}
 
+void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
+  m_fixtime = msg->time;
+  double hdt_data_interval = 0;
+  double fix_time_interval = 0;
+
+  double msgtime = msg->set_time.tv_sec;
+  double m1 = msg->set_time.tv_nsec / 1e9;
+  msgtime += m1;
+
+  if (((msg->vflag & POS_UPDATE) == POS_UPDATE) &&
+      ((msg->vflag & POS_VALID) == POS_VALID)) {
+    // Maintain valid fix start time
+    if (!m_fix_start_time.IsValid()) {
+      m_fix_start_time = wxDateTime::Now();
+    }
+
+    // Check the position change, looking for a valid new fix.
+    double dist, brg;
+    DistanceBearingMercator(gLat, gLon, gLat_gt, gLon_gt, &brg, &dist);
+
+    if (dist > .0001) {  // Avoid duplicate position report
+      fix_time_gt_last = fix_time_gt;
+      uint64_t fix_time_gt_now =
+          msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+      fix_time_interval = (fix_time_gt_now - fix_time_gt_last) / (double)1e9;
+      // printf("interval:  %g\n", fix_time_interval);
+
+      // Calculate an implied SOG from the position change and time interval
+      double implied_sog = dist / (fix_time_interval / 3600);
+
+      // printf ("Fix Interval:  %g\n", fix_time_interval);
+      // printf("SOG est: %g %g\n", gSog, implied_sog);
+      //  shuffle history data
+      gLat_gt_m1 = gLat_gt;
+      gLon_gt_m1 = gLon_gt;
+      gLat_gt = gLat;
+      gLon_gt = gLon;
+
+      fix_time_gt = fix_time_gt_now;
+    }
+  }
+
+  if (((msg->vflag & COG_UPDATE) == COG_UPDATE) &&
+      ((msg->vflag & SOG_UPDATE) == SOG_UPDATE)) {
+    gCog_gt_m1 = gCog_gt;
+    gCog_gt = gCog;
+    gSog_gt = gSog;
+
+    // In every case, if SOG is too slow, the COG is undefined.
+    if (gSog < 0.1) {
+      gCog_gt = NAN;
+      gCog_gt_m1 = NAN;
+    }
+
+    if (!std::isnan(gCog_gt_m1)) {  // Startup
+#if 0
+              if ((fabs(gSog - implied_sog) / gSog) > 0.5) {
+            // Probably a synthetic data stream, with multiple position sources.
+            // Do not try to interpolate position at 10 Hz.
+            gSog_gt = 0;
+            cog_rate_gt = 0;
+          } else
+#endif
+      if ((fix_time_gt - fix_time_gt_last) > .08) {
+        // Calculate an estimated Rate-of-turn
+        int dir = 0;
+        double diff = 0;
+        double difft = 0;
+        if (gCog_gt > gCog_gt_m1) {
+          if ((gCog_gt - gCog_gt_m1) > 180.)
+            dir = 1;  // left
+          else
+            dir = 2;  // right
+        } else {
+          if ((gCog_gt_m1 - gCog_gt) > 180.)
+            dir = 2;  // right
+          else
+            dir = 1;  // left
+        }
+        difft = fabs(gCog_gt - gCog_gt_m1);
+        if (fabs(difft > 180.)) difft = fabs(difft - 360.);
+        if (dir == 1)
+          diff = -difft;
+        else
+          diff = difft;
+
+        // double diff = gCog_gt - gCog_gt_m1;
+        // printf("diff  %g  %d\n", diff, dir);
+        double tentative_cog_rate_gt = diff / (fix_time_gt - fix_time_gt_last);
+        tentative_cog_rate_gt *= 1e9;  // degrees / sec
+        cog_rate_gt = tentative_cog_rate_gt;
+      }
+
+      gCog = gCog_gt_m1;
+    }
+    // printf("cog_rate_gt  %g %g\n", gCog, cog_rate_gt);
+  }
+
+  if ((msg->vflag & HDT_UPDATE) == HDT_UPDATE) {
+#if 0
+// Lowpass filter, 10 samples
+static double hdt_avg;
+    double hdt_norm = gHdt;
+    if(gHdt > 180) hdt_norm -= 360;
+
+    hdt_avg *= 0.9;
+    hdt_avg +=  hdt_norm * 0.1;
+    gHdt = hdt_avg;
+    if( gHdt < 0) gHdt += 360.;
+#endif
+
+    if (!std::isnan(gHdt)) {
+      // Prepare to estimate the gHdt from prior ground truth measurements
+      uint64_t hdt_time_gt_last = hdt_time_gt;
+      hdt_time_gt = msg->set_time.tv_sec * 1e9 + msg->set_time.tv_nsec;
+      hdt_data_interval = (hdt_time_gt - hdt_time_gt_last) / 1e9;
+
+      // Skip data reports that come too frequently
+      if (hdt_data_interval > .09) {
+        // shuffle points
+        gHdt_gt_m1 = gHdt_gt;
+        gHdt_gt = gHdt;
+
+        if (!std::isnan(gHdt_gt_m1)) {  // startup
+          // Calculate an estimated Rate-of-change of gHdt
+          double tentative_hdt_rate_gt =
+              (gHdt_gt - gHdt_gt_m1) / (hdt_time_gt - hdt_time_gt_last);
+          tentative_hdt_rate_gt *= 1e9;  // degrees / sec
+          // Sanity check, and resolve the "phase" problem at +/- North
+          if (fabs(tentative_hdt_rate_gt - hdt_rate_gt) < 180.)
+            hdt_rate_gt = tentative_hdt_rate_gt;
+
+          gHdt = gHdt_gt_m1;
+        }
+      }
+    }
+  }
+
+  if (std::isnan(gHdt)) gHdt_gt = NAN;  // Handle loss of signal
+
+  // Some housekeeping
+  CalculateCOGAverage();
   FilterCogSog();
-
-  //    If gSog is greater than some threshold, we determine that we are
-  //    "cruising"
-  if (gSog > 3.0) g_bCruising = true;
 
   //      Maintain the GPS position validity flag
   //      Determined by source validity of RMC, GGA, GLL (N0183)
@@ -5150,99 +5240,6 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
 
   bVelocityValid = true;
   UpdateStatusBar();
-
-#if 0
-#ifdef ocpnUPDATE_SYSTEM_TIME
-
-  //      Use the fix time to update the local system clock, only once per
-  //      session
-  if (!m_bTimeIsSet) {
-    if (!s_bSetSystemTime) {
-      m_bTimeIsSet = true;
-      return;
-    }
-    wxDateTime Fix_Time(wxDateTime::Now());
-
-    if (6 == sfixtime.Len() ||
-        6 == sfixtime.find('.')) {  // perfectly recognised format?
-      wxString a;
-      long b;
-      a = sfixtime.Mid(0, 2);
-      if (a.ToLong(&b)) Fix_Time.SetHour((wxDateTime::wxDateTime_t)b);
-      a = sfixtime.Mid(2, 2);
-      if (a.ToLong(&b)) Fix_Time.SetMinute((wxDateTime::wxDateTime_t)b);
-      a = sfixtime.Mid(4, 2);
-      if (a.ToLong(&b)) Fix_Time.SetSecond((wxDateTime::wxDateTime_t)b);
-    } else
-      return;  // not a good sfixtime format
-
-    time_t TimeOff = Fix_Time.GetTicks() - wxDateTime::Now().GetTicks();
-
-    if (g_bHasHwClock) {  // if a realtime hardwareclock isavailable we only
-                          // check for time and a max of 2 hours of to prevent
-                          // bogus info from some gps devices
-      if ((abs(TimeOff) > 20) && (abs(TimeOff) < 7200)) {
-        wxString msg;
-        msg.Printf(_T("Setting system time, delta t is %d seconds"), TimeOff);
-        wxLogMessage(msg);
-#ifdef __WXMSW__
-        //      Fix up the fix_time to convert to GMT
-        Fix_Time = Fix_Time.ToGMT();
-
-        //    Code snippet following borrowed from wxDateCtrl, MSW
-        const wxDateTime::Tm tm(Fix_Time.GetTm());
-        SYSTEMTIME stm;
-        stm.wYear = (WXWORD)tm.year;
-        stm.wMonth = (WXWORD)(tm.mon - wxDateTime::Jan + 1);
-        stm.wDay = tm.mday;
-        stm.wDayOfWeek = 0;
-        stm.wHour = Fix_Time.GetHour();
-        stm.wMinute = tm.min;
-        stm.wSecond = tm.sec;
-        stm.wMilliseconds = 0;
-
-        ::SetSystemTime(&stm);  // in GMT
-#else
-        //      This contortion sets the system date/time on POSIX host
-        //      Requires the following line in /etc/sudoers
-        //      "nav ALL=NOPASSWD:/bin/date *" (where nav is your username)
-        //      or "%sudo ALL=NOPASSWD:/bin/date *"
-        wxString CommandStr("sudo /bin/date +%T --utc --set=\"");
-        CommandStr.Append(Fix_Time.Format("%T"));
-        CommandStr.Append("\"");
-        msg.Printf(_T("Linux command is:"));
-        msg += CommandStr;
-        wxLogMessage(msg);
-        wxExecute(CommandStr, wxEXEC_ASYNC);
-#endif                   //__WXMSW__
-      }
-      m_bTimeIsSet = true;
-    } else {  // no hw-clock set both date and time
-      if (gRmcDate.Len() == 6) {
-#if !defined(__WXMSW__)  // not for windows
-        wxString a;
-        long b;
-        Fix_Time.SetMonth((wxDateTime::Month)2);
-        a = gRmcDate.Mid(0, 2);
-        if (a.ToLong(&b)) Fix_Time.SetDay(b);
-        a = gRmcDate.Mid(2, 2);
-        if (a.ToLong(&b)) Fix_Time.SetMonth((wxDateTime::Month)(b - 1));
-        a = gRmcDate.Mid(4, 2);
-        if (a.ToLong(&b))
-          Fix_Time.SetYear(b + 2000);  // TODO fix this before the year 2100
-        wxString msg;
-        wxString CommandStr("sudo /bin/date --utc --set=\"");
-        CommandStr.Append(Fix_Time.Format("%D %T\""));
-        msg.Printf(_T("Set Date/Time, Linux command is: %s"), CommandStr);
-        wxLogMessage(msg);
-        wxExecute(CommandStr, wxEXEC_ASYNC);
-#endif                   // !__WXMSW__
-        m_bTimeIsSet = true;
-      }
-    }
-  }
-#endif                   // ocpnUPDATE_SYSTEM_TIME
-#endif
 }
 
 void MyFrame::UpdateStatusBar() {
@@ -5395,9 +5392,7 @@ void MyFrame::CheckToolbarPosition() {
 #endif
 }
 
-void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
-  CheckToolbarPosition();
-
+void MyFrame::ProcessUnitTest() {
   if (!g_bPauseTest && (g_unit_test_1 || g_unit_test_2)) {
     //            if((0 == ut_index) && GetQuiltMode())
     //                  ToggleQuiltMode();
@@ -5469,20 +5464,103 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       }
     }
   }
-  g_tick++;
+}
+double gCog_last;
 
+void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
+  // Check to see if in non-North-Up mode
+  bool b_rotate = false;
+  for (ChartCanvas *cc : g_canvasArray) {
+    if (cc) b_rotate |= (cc->GetUpMode() != NORTH_UP_MODE);
+  }
+
+  if (!b_rotate && !g_btenhertz) return;  // Nothing to do
+
+  bool b_update = false;
+  if (g_btenhertz) {
+    if (!std::isnan(gCog) && !std::isnan(gSog)) {
+      // Estimate current state by extrapolating from last "ground truth" state
+
+      struct timespec now;
+      clock_gettime(CLOCK_MONOTONIC, &now);
+      uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - fix_time_gt;
+      double diffc = diff / 1e9;  // sec
+
+      // Set gCog as estimated from last two ground truth fixes
+      double gCog_tentative = gCog_gt_m1 + (cog_rate_gt * diffc);
+      if (gCog_tentative >= 360.) gCog_tentative -= 360.;
+      if (gCog_tentative < 0.) gCog_tentative += 360.;
+      gCog = gCog_tentative;
+
+      // printf("                      cog:  %g\n", gCog);
+      //   And the same for gHdt
+      if (!std::isnan(gHdt_gt) && !std::isnan(gHdt_gt_m1)) {
+        uint64_t diff = 1e9 * (now.tv_sec) + now.tv_nsec - hdt_time_gt;
+        double diffc = diff / 1e9;  // sec
+        gHdt = gHdt_gt_m1 + (hdt_rate_gt * diffc);
+      }
+
+      // Estimate lat/lon position
+      if (gSog_gt && !std::isnan(gCog_gt)) {
+        double delta_t = diffc / 3600;        // hours
+        double distance = gSog_gt * delta_t;  // NMi
+
+        // spherical (close enough)
+        double angr = gCog_gt / 180 * M_PI;
+        double latr = gLat_gt * M_PI / 180;
+        double D = distance / 3443;  // earth radius in nm
+        double sD = sin(D), cD = cos(D);
+        double sy = sin(latr), cy = cos(latr);
+        double sa = sin(angr), ca = cos(angr);
+
+        gLon = gLon_gt + asin(sa * sD / cy) * 180 / M_PI;
+        gLat = asin(sy * cD + cy * sD * ca) * 180 / M_PI;
+      }
+    }
+
+    b_update = true;
+  }
+
+  // In a valid rotation mode ?
+  if (b_rotate) {
+    for (ChartCanvas *cc : g_canvasArray) {
+      if (cc) cc->DoCanvasCOGSet();
+    }
+    b_update = true;
+  }
+
+  if (b_update) {
+    // printf("                   gCog:  %g  %g\n", gCog, gCog - gCog_last);
+
+    for (ChartCanvas *cc : g_canvasArray) {
+      if (cc) {
+        if (g_bopengl) {
+          if (b_rotate || cc->m_bFollow) {
+            cc->DoCanvasUpdate();
+          } else
+            cc->Refresh();
+        }
+      }
+    }
+  }
+
+  gCog_last = gCog;
+  FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+}
+
+void MyFrame::ProcessQuitFlag() {
   //      Listen for quitflag to be set, requesting application close
   if (quitflag) {
     wxLogMessage(_T("Got quitflag from SIGNAL"));
     FrameTimer1.Stop();
+    FrameTenHzTimer.Stop();
+
     Close();
     return;
   }
+}
 
-  if (bDBUpdateInProgress) return;
-
-  FrameTimer1.Stop();
-
+void MyFrame::ProcessDeferredTrackOn() {
   //  If tracking carryover was found in config file, enable tracking as soon as
   //  GPS become valid
   if (g_bDeferredStartTrack) {
@@ -5495,29 +5573,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       g_bDeferredStartTrack = false;
     }
   }
+}
 
-  //    Build and send a Position Fix event to PlugIns
-  if (g_pi_manager) {
-    GenericPosDatEx GPSData;
-    GPSData.kLat = gLat;
-    GPSData.kLon = gLon;
-    GPSData.kCog = gCog;
-    GPSData.kSog = gSog;
-    GPSData.kVar = gVar;
-    GPSData.kHdm = gHdm;
-    GPSData.kHdt = gHdt;
-    GPSData.nSats = g_SatsInView;
-
-    wxDateTime tCheck((time_t)m_fixtime);
-
-    if (tCheck.IsValid())
-      GPSData.FixTime = m_fixtime;
-    else
-      GPSData.FixTime = wxDateTime::Now().GetTicks();
-
-    g_pi_manager->SendPositionFixToAllPlugIns(&GPSData);
-  }
-
+void MyFrame::ProcessAnchorWatch() {
   //   Check for anchorwatch alarms                                 // pjotrc
   //   2010.02.15
   if (pAnchorWatchPoint1) {
@@ -5563,10 +5621,41 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   if ((pAnchorWatchPoint1 || pAnchorWatchPoint2) && !bGPSValid)
     AnchorAlertOn1 = true;
+}
 
+void MyFrame::SendFixToPlugins() {
+  //    Build and send a Position Fix event to PlugIns
+  if (g_pi_manager) {
+    GenericPosDatEx GPSData;
+    GPSData.kLat = gLat;
+    GPSData.kLon = gLon;
+    GPSData.kCog = gCog;
+    GPSData.kSog = gSog;
+    GPSData.kVar = gVar;
+    GPSData.kHdm = gHdm;
+    GPSData.kHdt = gHdt;
+    GPSData.nSats = g_SatsInView;
+
+    wxDateTime tCheck((time_t)m_fixtime);
+    if (tCheck.IsValid()) {
+      // As a special case, when no GNSS data is available, m_fixtime is set to
+      // zero. Note wxDateTime(0) is valid, so the zero value is passed to the
+      // plugins. The plugins should check for zero and not use the time in that
+      // case.
+      GPSData.FixTime = m_fixtime;
+    } else {
+      // Note: I don't think this is ever reached, as m_fixtime can never be set
+      // to wxLongLong(wxINT64_MIN), which is the only way to get here.
+      GPSData.FixTime = wxDateTime::Now().GetTicks();
+    }
+
+    SendPositionFixToAllPlugIns(&GPSData);
+  }
+}
+
+void MyFrame::ProcessLogAndBells() {
   //  Send current nav status data to log file on every half hour   // pjotrc
   //  2010.02.09
-
   wxDateTime lognow = wxDateTime::Now();  // pjotrc 2010.02.09
   int hourLOC = lognow.GetHour();
   int minuteLOC = lognow.GetMinute();
@@ -5624,14 +5713,37 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       }
     }
   }
+}
+
+void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+  CheckToolbarPosition();
+
+  ProcessUnitTest();
+  g_tick++;
+  ProcessQuitFlag();
+
+  if (bDBUpdateInProgress) return;
+
+  FrameTimer1.Stop();
+  FrameTenHzTimer.Stop();
+
+  ProcessDeferredTrackOn();
+  SendFixToPlugins();
+  ProcessAnchorWatch();
+  ProcessLogAndBells();
 
   if (ShouldRestartTrack()) TrackDailyRestart();
 
   // If no alerts are on, then safe to resume sleeping
   if (g_bSleep && !AnchorAlertOn1 && !AnchorAlertOn2) {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+    FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
     return;
   }
+
+  //    If gSog is greater than some threshold,
+  //    we determine that we are"cruising"
+  if (gSog > 3.0) g_bCruising = true;
 
   //  Update the Toolbar Status windows and lower status bar
   //  just after start of ticks.
@@ -5644,34 +5756,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     gCog = 0.0;  // say speed is zero to kill ownship predictor
   }
 
-// TODO
-//  Not needed?
-#if 0
-#if !defined(__WXGTK__) && !defined(__WXQT__)
-    {
-        double cursor_lat, cursor_lon;
-        GetPrimaryCanvas()->GetCursorLatLon( &cursor_lat, &cursor_lon );
-        GetPrimaryCanvas()->SetCursorStatus(cursor_lat, cursor_lon);
-    }
-#endif
-#endif
-
   //      Update the chart database and displayed chart
   bool bnew_view = false;
-
-  //    Do the chart update based on the global update period currently set
-  //    If in COG UP mode, the chart update is handled by COG Update timer
-  if (/*!g_bCourseUp &&*/ (0 != g_ChartUpdatePeriod)) {
-    if (0 == m_ChartUpdatePeriod--) {
-      bnew_view = DoChartUpdate();
-      m_ChartUpdatePeriod = g_ChartUpdatePeriod;
-    }
-  }
+  if (!g_btenhertz) bnew_view = DoChartUpdate();
 
   nBlinkerTick++;
 
   // This call sends autopilot output strings to output ports.
-
   bool bactiveRouteUpdate = RoutemanGui(*g_pRouteMan).UpdateProgress();
 
   // For each canvas....
@@ -5703,7 +5794,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       if (!bGPSValid) cc->SetOwnShipState(SHIP_INVALID);
 
       if ((bGPSValid != m_last_bGPSValid) ||
-          (bVelocityValid != m_last_bVelocityValid)) {
+          (bVelocityValid != m_last_bVelocityValid) ||
+          (!isnan(gHdt) && (gHdt != m_last_hdt))) {
         if (!g_bopengl) cc->UpdateShips();
 
         bnew_view = true;  // force a full Refresh()
@@ -5713,12 +5805,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   m_last_bGPSValid = bGPSValid;
   m_last_bVelocityValid = bVelocityValid;
+  m_last_hdt = gHdt;
 
   //    If any PlugIn requested dynamic overlay callbacks, force a full canvas
   //    refresh thus, ensuring at least 1 Hz. callback.
   bool brq_dynamic = false;
   if (g_pi_manager) {
-    auto *pplugin_array = PluginLoader::getInstance()->GetPlugInArray();
+    auto *pplugin_array = PluginLoader::GetInstance()->GetPlugInArray();
     for (unsigned int i = 0; i < pplugin_array->GetCount(); i++) {
       PlugInContainer *pic = pplugin_array->Item(i);
       if (pic->m_enabled && pic->m_init_state) {
@@ -5742,14 +5835,22 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       if (g_bopengl) {
 #ifdef ocpnUSE_GL
         if (cc->GetglCanvas()) {
-          if (m_fixtime - cc->GetglCanvas()->m_last_render_time > 0)
-            bnew_view = true;
+          // Rotation is handled by 10Hz timer, do not duplicate here
+          bool b_rotate = cc->GetUpMode() != NORTH_UP_MODE;
+          if (!b_rotate) {
+            if (!g_btenhertz) {
+              if (cc->m_bFollow) {
+                cc->DoCanvasUpdate();
+                if (bnew_view)
+                  cc->Refresh(false);  // honor ownship state update
+              } else
+                cc->Refresh(false);
+            } else {
+              // Pick up SOG=0, COG=NAN report at 10Hz.
+              if (std::isnan(gCog)) cc->Refresh(false);
+            }
+          }
         }
-
-        if (AnyAISTargetsOnscreen(cc, cc->GetVP())) bnew_view = true;
-
-        if (bnew_view) /* full frame in opengl mode */
-          cc->Refresh(false);
 #endif
       } else {
         //  Invalidate the ChartCanvas window appropriately
@@ -5802,37 +5903,19 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     }
   }
 
-#ifdef __ANDROID__
-
-  // Update the navobj file on a fixed schedule (5 minutes)
-  // This will do nothing if the navobj.changes file is empty and clean
-  if (((g_tick % g_FlushNavobjChangesTimeout) == 0) || g_FlushNavobjChanges) {
-    if (pConfig && pConfig->IsChangesFileDirty()) {
-      androidShowBusyIcon();
-      wxStopWatch update_sw;
-      pConfig->UpdateNavObj(true);
-      wxString msg = wxString::Format(
-          _T("OpenCPN periodic navobj update took %ld ms."), update_sw.Time());
-      wxLogMessage(msg);
-      qDebug() << msg.mb_str();
-      g_FlushNavobjChanges = false;
-      androidHideBusyIcon();
-    }
-  }
-
-#endif
-
   // Reset pending next AppMsgBus notification
 
   if (g_unit_test_2)
     FrameTimer1.Start(TIMER_GFRAME_1 * 3, wxTIMER_CONTINUOUS);
-  else
+  else {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+    FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+  }
 }
 
 double MyFrame::GetMag(double a, double lat, double lon) {
   double Variance = std::isnan(gVar) ? g_UserVar : gVar;
-  auto loader = PluginLoader::getInstance();
+  auto loader = PluginLoader::GetInstance();
   if (loader && loader->IsPlugInAvailable(_T("WMM"))) {
     // Request variation at a specific lat/lon
 
@@ -5858,7 +5941,7 @@ bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon,
     v[_T("Month")] = date.GetMonth();
     v[_T("Day")] = date.GetDay();
 
-    g_pi_manager->SendJSONMessageToAllPlugins(_T("WMM_VARIATION_REQUEST"), v);
+    SendJSONMessageToAllPlugins(_T("WMM_VARIATION_REQUEST"), v);
     return true;
   } else
     return false;
@@ -5896,6 +5979,8 @@ void MyFrame::OnFrameTCTimer(wxTimerEvent &event) {
 //    Keep and update the Viewport rotation angle according to average COG for
 //    COGUP mode
 void MyFrame::OnFrameCOGTimer(wxTimerEvent &event) {
+  return;
+
   // ..For each canvas...
   bool b_rotate = false;
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -6292,41 +6377,20 @@ void MyFrame::DoPrint(void) {
 #endif
     Refresh();
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxLANDSCAPE);
-    g_pageSetupData = new wxPageSetupDialogData;
+  ChartPrintout printout;
+  if (g_bopengl) {
+    printout.GenerateGLbmp();
   }
-
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(false);
-
-  wxPrinter printer(&printDialogData);
-
-  MyPrintout printout(wxT("Chart Print"));
-
-  //  In OperGL mode, make the bitmap capture of the screen before the print
-  //  method starts as to be sure the "Abort..." dialog does not appear on
-  //  the image
-  if (g_bopengl) printout.GenerateGLbmp();
-
-  if (!printer.Print(this, &printout, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR)
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T("OpenCPN"), wxOK);
-    //        else
-    //            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
-  } else {
-    (*g_printData) = printer.GetPrintDialogData().GetPrintData();
-  }
+  auto &printer = PrintDialog::GetInstance();
+  printer.Initialize(wxLANDSCAPE);
+  printer.EnablePageNumbers(false);
+  printer.Print(this, &printout);
 
   // Pass two printout objects: for preview, and possible printing.
   /*
    wxPrintDialogData printDialogData(* g_printData);
-   wxPrintPreview *preview = new wxPrintPreview(new MyPrintout, new MyPrintout,
-   & printDialogData); if (!preview->Ok())
+   wxPrintPreview *preview = new wxPrintPreview(new MyPrintout, new
+   MyPrintout, & printDialogData); if (!preview->Ok())
    {
    delete preview;
    OCPNMessageBox(_T("There was a problem previewing.\nPerhaps your current
@@ -6453,14 +6517,14 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           v[_T("NodeNr")] = i;
           i++;
           wxString msg_id(_T("OCPN_TRACKPOINTS_COORDS"));
-          g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+          SendJSONMessageToAllPlugins(msg_id, v);
         }
         return;
       }
       v[_T("error")] = true;
 
       wxString msg_id(_T("OCPN_TRACKPOINTS_COORDS"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      SendJSONMessageToAllPlugins(msg_id, v);
     }
   } else if (message_ID == _T("OCPN_ROUTE_REQUEST")) {
     wxJSONValue root;
@@ -6512,7 +6576,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
         }
         v[_T("waypoints")] = w;
         wxString msg_id(_T("OCPN_ROUTE_RESPONSE"));
-        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+        SendJSONMessageToAllPlugins(msg_id, v);
         return;
       }
     }
@@ -6520,7 +6584,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     v[_T("error")] = true;
 
     wxString msg_id(_T("OCPN_ROUTE_RESPONSE"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   } else if (message_ID == _T("OCPN_ROUTELIST_REQUEST")) {
     wxJSONValue root;
     wxJSONReader reader;
@@ -6566,12 +6630,12 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
         }
       }
       wxString msg_id(_T("OCPN_ROUTELIST_RESPONSE"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      SendJSONMessageToAllPlugins(msg_id, v);
     } else {
       wxJSONValue v;
       v[0][_T("error")] = true;
       wxString msg_id(_T("OCPN_ROUTELIST_RESPONSE"));
-      g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      SendJSONMessageToAllPlugins(msg_id, v);
     }
   } else if (message_ID == _T("OCPN_ACTIVE_ROUTELEG_REQUEST")) {
     wxJSONValue v;
@@ -6591,7 +6655,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
       }
     }
     wxString msg_id(_T("OCPN_ACTIVE_ROUTELEG_RESPONSE"));
-    g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+    SendJSONMessageToAllPlugins(msg_id, v);
   }
 }
 
@@ -6703,18 +6767,18 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   //    The MOB point
   wxDateTime mob_time = wxDateTime::Now();
   wxString mob_label(_("AIS MAN OVERBOARD"));
-  mob_label += _(" at ");
-  mob_label += mob_time.FormatTime();
   mob_label += _(" on ");
-  mob_label += mob_time.FormatISODate();
+  mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
   RoutePoint *pWP_MOB = new RoutePoint(ptarget->Lat, ptarget->Lon, _T ( "mob" ),
                                        mob_label, wxEmptyString);
   pWP_MOB->SetShared(true);
   pWP_MOB->m_bIsolatedMark = true;
   pSelect->AddSelectableRoutePoint(ptarget->Lat, ptarget->Lon, pWP_MOB);
-  pConfig->AddNewWayPoint(pWP_MOB, -1);  // use auto next num
-  pWP_MOB->SetUseSca(false);             // Do not use scaled hiding for MOB
+  // pConfig->AddNewWayPoint(pWP_MOB, -1);  // use auto next num
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP_MOB);
+
+  pWP_MOB->SetUseSca(false);  // Do not use scaled hiding for MOB
 
   /* We want to start tracking any MOB in range (Which will trigger false alarms
   with messages received over the network etc., but will a) not discard nearby
@@ -6748,7 +6812,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   wxJSONValue v;
   v[_T("GUID")] = pAISMOBRoute->m_GUID;
   wxString msg_id(_T("OCPN_MAN_OVERBOARD"));
-  g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+  SendJSONMessageToAllPlugins(msg_id, v);
   //}
 
   if (RouteManagerDialog::getInstanceFlag()) {
@@ -6762,7 +6826,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
 
   wxString mob_message(_("AIS MAN OVERBOARD"));
   mob_message += _(" Time: ");
-  mob_message += mob_time.Format();
+  mob_message += ocpn::toUsrDateTimeFormat(mob_time);
   mob_message += _("  Ownship Position: ");
   mob_message += toSDMM(1, gLat);
   mob_message += _T("   ");
@@ -6803,7 +6867,7 @@ void MyFrame::UpdateAISMOBRoute(const AisTargetData *ptarget) {
 
     wxString mob_message(_("AIS MAN OVERBOARD UPDATE"));
     mob_message += _(" Time: ");
-    mob_message += mob_time.Format();
+    mob_message += ocpn::toUsrDateTimeFormat(mob_time);
     mob_message += _("  Ownship Position: ");
     mob_message += toSDMM(1, gLat);
     mob_message += _T("   ");
@@ -6853,9 +6917,11 @@ void MyFrame::applySettingsString(wxString settings) {
 
   if (previous_expert != g_bUIexpert) b_newToolbar = true;
 
-  if (rr & TOOLBAR_CHANGED) b_newToolbar = true;
+  if (rr & TOOLBAR_CHANGED) {
+    b_newToolbar = true;
+  }
 
-    //  We do this is one case only to remove an orphan recovery window
+  //  We do this is one case only to remove an orphan recovery window
 #ifdef __ANDROID__
   if (previous_expert && !g_bUIexpert) {
     androidForceFullRepaint();
@@ -6896,9 +6962,7 @@ void MyFrame::applySettingsString(wxString settings) {
   if (console) console->Raise();
 
   Refresh(false);
-
-  if (NMEALogWindow::GetInstance().Active())
-    NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
+  if (m_data_monitor->IsVisible()) m_data_monitor->Raise();
 }
 
 #ifdef wxHAS_POWER_EVENTS
@@ -7241,26 +7305,13 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
 wxColour GetGlobalColor(wxString colorName);  // -> color_handler
 
 static const char *usercolors[] = {
-    "Table:DAY",
-    "GREEN1;120;255;120;",
-    "GREEN2; 45;150; 45;",
-    "GREEN3;200;220;200;",
-    "GREEN4;  0;255;  0;",
-    "BLUE1; 170;170;255;",
-    "BLUE2;  45; 45;170;",
-    "BLUE3;   0;  0;255;",
-    "GREY1; 200;200;200;",
-    "GREY2; 230;230;230;",
-    "RED1;  220;200;200;",
-    "UBLCK;   0;  0;  0;",
-    "UWHIT; 255;255;255;",
-    "URED;  255;  0;  0;",
-    "UGREN;   0;255;  0;",
-    "YELO1; 243;229; 47;",
-    "YELO2; 128; 80;  0;",
-    "TEAL1;   0;128;128;",
-    "GREEN5;170;254;  0;",
-    "COMPT; 245;247;244",
+    "Table:DAY", "GREEN1;120;255;120;", "GREEN2; 45;150; 45;",
+    "GREEN3;200;220;200;", "GREEN4;  0;255;  0;", "BLUE1; 170;170;255;",
+    "BLUE2;  45; 45;170;", "BLUE3;   0;  0;255;", "GREY1; 200;200;200;",
+    "GREY2; 230;230;230;", "RED1;  220;200;200;", "UBLCK;   0;  0;  0;",
+    "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
+    "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;",
+    "GREEN5;170;254;  0;", "COMPT; 245;247;244",
 #ifdef __WXOSX__
     "DILG0; 255;255;255;",  // Dialog Background white
 #else
@@ -7271,30 +7322,17 @@ static const char *usercolors[] = {
     "DILG3;   0;  0;  0;",  // Text
     "UITX1;   0;  0;  0;",  // Menu Text, derived from UINFF
 
-    "CHGRF; 163; 180; 183;",
-    "UINFM; 197;  69; 195;",
-    "UINFG; 104; 228;  86;",
-    "UINFF; 125; 137; 140;",
-    "UINFR; 241;  84; 105;",
-    "SHIPS;   7;   7;   7;",
-    "CHYLW; 244; 218;  72;",
-    "CHWHT; 212; 234; 238;",
+    "CHGRF; 163; 180; 183;", "UINFM; 197;  69; 195;", "UINFG; 104; 228;  86;",
+    "UINFF; 125; 137; 140;", "UINFR; 241;  84; 105;", "SHIPS;   7;   7;   7;",
+    "CHYLW; 244; 218;  72;", "CHWHT; 212; 234; 238;",
 
     "UDKRD; 124; 16;  0;",
     "UARTE; 200;  0;  0;",  // Active Route, Grey on Dusk/Night
 
-    "NODTA; 163; 180; 183;",
-    "CHBLK;   7;   7;   7;",
-    "SNDG1; 125; 137; 140;",
-    "SNDG2;   7;   7;   7;",
-    "SCLBR; 235; 125;  54;",
-    "UIBDR; 125; 137; 140;",
-    "UINFB;  58; 120; 240;",
-    "UINFD;   7;   7;   7;",
-    "UINFO; 235; 125;  54;",
-    "PLRTE; 220;  64;  37;",
-    "CHMGD; 197; 69; 195;",
-    "UIBCK; 212; 234; 238;",
+    "NODTA; 163; 180; 183;", "CHBLK;   7;   7;   7;", "SNDG1; 125; 137; 140;",
+    "SNDG2;   7;   7;   7;", "SCLBR; 235; 125;  54;", "UIBDR; 125; 137; 140;",
+    "UINFB;  58; 120; 240;", "UINFD;   7;   7;   7;", "UINFO; 235; 125;  54;",
+    "PLRTE; 220;  64;  37;", "CHMGD; 197; 69; 195;", "UIBCK; 212; 234; 238;",
 
     "DASHB; 255;255;255;",  // Dashboard Instr background
     "DASHL; 175;175;175;",  // Dashboard Instr Label
@@ -7308,38 +7346,22 @@ static const char *usercolors[] = {
 
     "GREY3;  40; 40; 40;",  // MUIBar/TB background
     "BLUE4; 100;100;200;",  // Canvas Focus Bar
-    "VIO01; 171; 33;141;",
-    "VIO02; 209;115;213;",
+    "VIO01; 171; 33;141;", "VIO02; 209;115;213;",
+    "BLUEBACK; 212;234;238;",  // DEPDW, looks like deep ocean
+    "LANDBACK; 201;185;122;",
+    //<color name="LANDA" r="201" g="185" b="122"/>
 
-    "Table:DUSK",
-    "GREEN1; 60;128; 60;",
-    "GREEN2; 22; 75; 22;",
-    "GREEN3; 80;100; 80;",
-    "GREEN4;  0;128;  0;",
-    "BLUE1;  80; 80;160;",
-    "BLUE2;  30; 30;120;",
-    "BLUE3;   0;  0;128;",
-    "GREY1; 100;100;100;",
-    "GREY2; 128;128;128;",
-    "RED1;  150;100;100;",
-    "UBLCK;   0;  0;  0;",
-    "UWHIT; 255;255;255;",
-    "URED;  120; 54; 11;",
-    "UGREN;  35;110; 20;",
-    "YELO1; 120;115; 24;",
-    "YELO2;  64; 40;  0;",
-    "TEAL1;   0; 64; 64;",
-    "GREEN5; 85;128; 0;",
-    "COMPT; 124;126;121",
+    "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;",
+    "GREEN3; 80;100; 80;", "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;",
+    "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;", "GREY1; 100;100;100;",
+    "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
+    "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;",
+    "YELO1; 120;115; 24;", "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;",
+    "GREEN5; 85;128; 0;", "COMPT; 124;126;121",
 
-    "CHGRF;  41; 46; 46;",
-    "UINFM;  58; 20; 57;",
-    "UINFG;  35; 76; 29;",
-    "UINFF;  41; 46; 46;",
-    "UINFR;  80; 28; 35;",
-    "SHIPS;  71; 78; 79;",
-    "CHYLW;  81; 73; 24;",
-    "CHWHT;  71; 78; 79;",
+    "CHGRF;  41; 46; 46;", "UINFM;  58; 20; 57;", "UINFG;  35; 76; 29;",
+    "UINFF;  41; 46; 46;", "UINFR;  80; 28; 35;", "SHIPS;  71; 78; 79;",
+    "CHYLW;  81; 73; 24;", "CHWHT;  71; 78; 79;",
 
     "DILG0; 110;110;110;",  // Dialog Background
     "DILG1; 110;110;110;",  // Dialog Background
@@ -7349,18 +7371,10 @@ static const char *usercolors[] = {
     "UDKRD;  80;  0;  0;",
     "UARTE;  64; 64; 64;",  // Active Route, Grey on Dusk/Night
 
-    "NODTA;  41;  46;  46;",
-    "CHBLK;  54;  60;  61;",
-    "SNDG1;  41;  46;  46;",
-    "SNDG2;  71;  78;  79;",
-    "SCLBR;  75;  38;  19;",
-    "UIBDR;  54;  60;  61;",
-    "UINFB;  19;  40;  80;",
-    "UINFD;  71;  78;  79;",
-    "UINFO;  75;  38;  19;",
-    "PLRTE;  73;  21;  12;",
-    "CHMGD; 74; 58; 81;",
-    "UIBCK; 7; 7; 7;",
+    "NODTA;  41;  46;  46;", "CHBLK;  54;  60;  61;", "SNDG1;  41;  46;  46;",
+    "SNDG2;  71;  78;  79;", "SCLBR;  75;  38;  19;", "UIBDR;  54;  60;  61;",
+    "UINFB;  19;  40;  80;", "UINFD;  71;  78;  79;", "UINFO;  75;  38;  19;",
+    "PLRTE;  73;  21;  12;", "CHMGD; 74; 58; 81;", "UIBCK; 7; 7; 7;",
 
     "DASHB;  77; 77; 77;",  // Dashboard Instr background
     "DASHL;  54; 54; 54;",  // Dashboard Instr Label
@@ -7374,29 +7388,16 @@ static const char *usercolors[] = {
 
     "GREY3;  20; 20; 20;",  // MUIBar/TB background
     "BLUE4;  80; 80;160;",  // Canvas Focus Bar
-    "VIO01; 128; 25;108;",
-    "VIO02; 171; 33;141;",
+    "VIO01; 128; 25;108;", "VIO02; 171; 33;141;", "BLUEBACK; 186;213;235;",
+    "LANDBACK; 201;185;122;",
 
-    "Table:NIGHT",
-    "GREEN1; 30; 80; 30;",
-    "GREEN2; 15; 60; 15;",
-    "GREEN3; 12; 23;  9;",
-    "GREEN4;  0; 64;  0;",
-    "BLUE1;  60; 60;100;",
-    "BLUE2;  22; 22; 85;",
-    "BLUE3;   0;  0; 40;",
-    "GREY1;  48; 48; 48;",
-    "GREY2;  32; 32; 32;",
-    "RED1;  100; 50; 50;",
-    "UWHIT; 255;255;255;",
-    "UBLCK;   0;  0;  0;",
-    "URED;   60; 27;  5;",
-    "UGREN;  17; 55; 10;",
-    "YELO1;  60; 65; 12;",
-    "YELO2;  32; 20;  0;",
-    "TEAL1;   0; 32; 32;",
-    "GREEN5; 44; 64; 0;",
-    "COMPT;  48; 49; 51",
+    "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;",
+    "GREEN3; 12; 23;  9;", "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;",
+    "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;", "GREY1;  48; 48; 48;",
+    "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
+    "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;",
+    "YELO1;  60; 65; 12;", "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;",
+    "GREEN5; 44; 64; 0;", "COMPT;  48; 49; 51",
     "DILG0;  80; 80; 80;",  // Dialog Background
     "DILG1;  80; 80; 80;",  // Dialog Background
     "DILG2;   0;  0;  0;",  // Control Background
@@ -7405,27 +7406,14 @@ static const char *usercolors[] = {
     "UDKRD;  50;  0;  0;",
     "UARTE;  64; 64; 64;",  // Active Route, Grey on Dusk/Night
 
-    "CHGRF;  16; 18; 18;",
-    "UINFM;  52; 18; 52;",
-    "UINFG;  22; 24;  7;",
-    "UINFF;  31; 34; 35;",
-    "UINFR;  59; 17; 10;",
-    "SHIPS;  37; 41; 41;",
-    "CHYLW;  31; 33; 10;",
-    "CHWHT;  37; 41; 41;",
+    "CHGRF;  16; 18; 18;", "UINFM;  52; 18; 52;", "UINFG;  22; 24;  7;",
+    "UINFF;  31; 34; 35;", "UINFR;  59; 17; 10;", "SHIPS;  37; 41; 41;",
+    "CHYLW;  31; 33; 10;", "CHWHT;  37; 41; 41;",
 
-    "NODTA;   7;   7;   7;",
-    "CHBLK;  31;  34;  35;",
-    "SNDG1;  31;  34;  35;",
-    "SNDG2;  43;  48;  48;",
-    "SCLBR;  52;  28;  12;",
-    "UIBDR;  31;  34;  35;",
-    "UINFB;  21;  29;  69;",
-    "UINFD;  43;  48;  58;",
-    "UINFO;  52;  28;  12;",
-    "PLRTE;  66;  19;  11;",
-    "CHMGD; 52; 18; 52;",
-    "UIBCK; 7; 7; 7;",
+    "NODTA;   7;   7;   7;", "CHBLK;  31;  34;  35;", "SNDG1;  31;  34;  35;",
+    "SNDG2;  43;  48;  48;", "SCLBR;  52;  28;  12;", "UIBDR;  31;  34;  35;",
+    "UINFB;  21;  29;  69;", "UINFD;  43;  48;  58;", "UINFO;  52;  28;  12;",
+    "PLRTE;  66;  19;  11;", "CHMGD; 52; 18; 52;", "UIBCK; 7; 7; 7;",
 
     "DASHB;   0;  0;  0;",  // Dashboard Instr background
     "DASHL;  20; 20; 20;",  // Dashboard Instr Label
@@ -7439,8 +7427,8 @@ static const char *usercolors[] = {
 
     "GREY3;  10; 10; 10;",  // MUIBar/TB background
     "BLUE4;  70; 70;140;",  // Canvas Focus Bar
-    "VIO01;  85; 16; 72;",
-    "VIO02; 128; 25;108;",
+    "VIO01;  85; 16; 72;", "VIO02; 128; 25;108;", "BLUEBACK; 186;213;235;",
+    "LANDBACK; 201;185;122;",
 
     "*****"};
 
@@ -7770,435 +7758,6 @@ bool TestGLCanvas(wxString prog_dir) {
 }
 #endif
 
-OCPN_ThreadMessageEvent::OCPN_ThreadMessageEvent(wxEventType commandType,
-                                                 int id)
-    : wxEvent(id, commandType) {}
-
-OCPN_ThreadMessageEvent::~OCPN_ThreadMessageEvent() {}
-
-wxEvent *OCPN_ThreadMessageEvent::Clone() const {
-  OCPN_ThreadMessageEvent *newevent = new OCPN_ThreadMessageEvent(*this);
-  newevent->m_string = this->m_string;
-  return newevent;
-}
-
-#if 0
-/*************************************************************************
- * Serial port enumeration routines
- *
- * The EnumSerialPort function will populate an array of SSerInfo structs,
- * each of which contains information about one serial port present in
- * the system. Note that this code must be linked with setupapi.lib,
- * which is included with the Win32 SDK.
- *
- * by Zach Gorman <gormanjz@hotmail.com>
- *
- * Copyright (c) 2002 Archetype Auction Software, Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following condition is
- * met: Redistributions of source code must retain the above copyright
- * notice, this condition and the following disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL ARCHETYPE AUCTION SOFTWARE OR ITS
- * AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- ************************************************************************/
-
-// For MFC
-#include <stdafx.h>
-
-// The next 3 includes are needed for serial port enumeration
-#include <objbase.h>
-#include <initguid.h>
-#include <Setupapi.h>
-
-#include "EnumSerial.h"
-
-// The following define is from ntddser.h in the DDK. It is also
-// needed for serial port enumeration.
-#ifndef GUID_CLASS_COMPORT
-DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, \
-0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
-#endif
-
-
-struct SSerInfo {
-    SSerInfo() : bUsbDevice(FALSE) {}
-    CString strDevPath;          // Device path for use with CreateFile()
-    CString strPortName;         // Simple name (i.e. COM1)
-    CString strFriendlyName;     // Full name to be displayed to a user
-    BOOL bUsbDevice;             // Provided through a USB connection?
-    CString strPortDesc;         // friendly name without the COMx
-};
-
-//---------------------------------------------------------------
-// Helpers for enumerating the available serial ports.
-// These throw a CString on failure, describing the nature of
-// the error that occurred.
-
-void EnumPortsWdm(CArray<SSerInfo,SSerInfo&> &asi);
-void EnumPortsWNt4(CArray<SSerInfo,SSerInfo&> &asi);
-void EnumPortsW9x(CArray<SSerInfo,SSerInfo&> &asi);
-void SearchPnpKeyW9x(HKEY hkPnp, BOOL bUsbDevice,
-                     CArray<SSerInfo,SSerInfo&> &asi);
-
-
-//---------------------------------------------------------------
-// Routine for enumerating the available serial ports.
-// Throws a CString on failure, describing the error that
-// occurred. If bIgnoreBusyPorts is TRUE, ports that can't
-// be opened for read/write access are not included.
-
-void EnumSerialPorts(CArray<SSerInfo,SSerInfo&> &asi, BOOL bIgnoreBusyPorts)
-{
-    // Clear the output array
-    asi.RemoveAll();
-
-    // Use different techniques to enumerate the available serial
-    // ports, depending on the OS we're using
-    OSVERSIONINFO vi;
-    vi.dwOSVersionInfoSize = sizeof(vi);
-    if (!::GetVersionEx(&vi)) {
-        CString str;
-        str.Format("Could not get OS version. (err=%lx)",
-                   GetLastError());
-        throw str;
-    }
-    // Handle windows 9x and NT4 specially
-    if (vi.dwMajorVersion < 5) {
-        if (vi.dwPlatformId == VER_PLATFORM_WIN32_NT)
-            EnumPortsWNt4(asi);
-        else
-            EnumPortsW9x(asi);
-    }
-    else {
-        // Win2k and later support a standard API for
-        // enumerating hardware devices.
-        EnumPortsWdm(asi);
-    }
-
-    for (int ii=0; ii<asi.GetSize(); ii++)
-    {
-        SSerInfo& rsi = asi[ii];
-        if (bIgnoreBusyPorts) {
-            // Only display ports that can be opened for read/write
-            HANDLE hCom = CreateFile(rsi.strDevPath,
-                                     GENERIC_READ | GENERIC_WRITE,
-                                     0,    /* comm devices must be opened w/exclusive-access */
-                                     NULL, /* no security attrs */
-                                     OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
-                                     0,    /* not overlapped I/O */
-                                     NULL  /* hTemplate must be NULL for comm devices */
-            );
-            if (hCom == INVALID_HANDLE_VALUE) {
-                // It can't be opened; remove it.
-                asi.RemoveAt(ii);
-                ii--;
-                continue;
-            }
-            else {
-                // It can be opened! Close it and add it to the list
-                ::CloseHandle(hCom);
-            }
-        }
-
-        // Come up with a name for the device.
-        // If there is no friendly name, use the port name.
-        if (rsi.strFriendlyName.IsEmpty())
-            rsi.strFriendlyName = rsi.strPortName;
-
-        // If there is no description, try to make one up from
-            // the friendly name.
-            if (rsi.strPortDesc.IsEmpty()) {
-                // If the port name is of the form "ACME Port (COM3)"
-                // then strip off the " (COM3)"
-                rsi.strPortDesc = rsi.strFriendlyName;
-                int startdex = rsi.strPortDesc.Find(" (");
-                int enddex = rsi.strPortDesc.Find(")");
-                if (startdex > 0 && enddex ==
-                    (rsi.strPortDesc.GetLength()-1))
-                    rsi.strPortDesc = rsi.strPortDesc.Left(startdex);
-            }
-    }
-}
-
-// Helpers for EnumSerialPorts
-
-void EnumPortsWdm(CArray<SSerInfo,SSerInfo&> &asi)
-{
-    CString strErr;
-    // Create a device information set that will be the container for
-    // the device interfaces.
-    GUID *guidDev = (GUID*) &GUID_CLASS_COMPORT;
-
-    HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
-    SP_DEVICE_INTERFACE_DETAIL_DATA *pDetData = NULL;
-
-    try {
-        hDevInfo = SetupDiGetClassDevs( guidDev,
-                                        NULL,
-                                        NULL,
-                                        DIGCF_PRESENT | DIGCF_DEVICEINTERFACE
-        );
-
-        if(hDevInfo == INVALID_HANDLE_VALUE)
-        {
-            strErr.Format("SetupDiGetClassDevs failed. (err=%lx)",
-                          GetLastError());
-            throw strErr;
-        }
-
-        // Enumerate the serial ports
-        BOOL bOk = TRUE;
-        SP_DEVICE_INTERFACE_DATA ifcData;
-        DWORD dwDetDataSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA) + 256;
-        pDetData = (SP_DEVICE_INTERFACE_DETAIL_DATA*) new char[dwDetDataSize];
-        // This is required, according to the documentation. Yes,
-        // it's weird.
-        ifcData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-        pDetData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
-        for (DWORD ii=0; bOk; ii++) {
-            bOk = SetupDiEnumDeviceInterfaces(hDevInfo,
-                                              NULL, guidDev, ii, &ifcData);
-            if (bOk) {
-                // Got a device. Get the details.
-                SP_DEVINFO_DATA devdata = {sizeof(SP_DEVINFO_DATA)};
-                bOk = SetupDiGetDeviceInterfaceDetail(hDevInfo,
-                                                      &ifcData, pDetData, dwDetDataSize, NULL, &devdata);
-                if (bOk) {
-                    CString strDevPath(pDetData->DevicePath);
-                    // Got a path to the device. Try to get some more info.
-                    TCHAR fname[256];
-                    TCHAR desc[256];
-                    BOOL bSuccess = SetupDiGetDeviceRegistryProperty(
-                        hDevInfo, &devdata, SPDRP_FRIENDLYNAME, NULL,
-                        (PBYTE)fname, sizeof(fname), NULL);
-                    bSuccess = bSuccess && SetupDiGetDeviceRegistryProperty(
-                        hDevInfo, &devdata, SPDRP_DEVICEDESC, NULL,
-                        (PBYTE)desc, sizeof(desc), NULL);
-                    BOOL bUsbDevice = FALSE;
-                    TCHAR locinfo[256];
-                    if (SetupDiGetDeviceRegistryProperty(
-                        hDevInfo, &devdata, SPDRP_LOCATION_INFORMATION, NULL,
-                        (PBYTE)locinfo, sizeof(locinfo), NULL))
-                    {
-                        // Just check the first three characters to determine
-                        // if the port is connected to the USB bus. This isn't
-                        // an infallible method; it would be better to use the
-                        // BUS GUID. Currently, Windows doesn't let you query
-                        // that though (SPDRP_BUSTYPEGUID seems to exist in
-                        // documentation only).
-                        bUsbDevice = (strncmp(locinfo, "USB", 3)==0);
-                    }
-                    if (bSuccess) {
-                        // Add an entry to the array
-                        SSerInfo si;
-                        si.strDevPath = strDevPath;
-                        si.strFriendlyName = fname;
-                        si.strPortDesc = desc;
-                        si.bUsbDevice = bUsbDevice;
-                        asi.Add(si);
-                    }
-
-                }
-                else {
-                    strErr.Format("SetupDiGetDeviceInterfaceDetail failed. (err=%lx)",
-                                  GetLastError());
-                    throw strErr;
-                }
-            }
-            else {
-                DWORD err = GetLastError();
-                if (err != ERROR_NO_MORE_ITEMS) {
-                    strErr.Format("SetupDiEnumDeviceInterfaces failed. (err=%lx)", err);
-                    throw strErr;
-                }
-            }
-        }
-    }
-    catch (CString strCatchErr) {
-        strErr = strCatchErr;
-    }
-
-    if (pDetData != NULL)
-        delete [] (char*)pDetData;
-    if (hDevInfo != INVALID_HANDLE_VALUE)
-        SetupDiDestroyDeviceInfoList(hDevInfo);
-
-    if (!strErr.IsEmpty())
-        throw strErr;
-}
-
-void EnumPortsWNt4(CArray<SSerInfo,SSerInfo&> &asi)
-{
-    // NT4's driver model is totally different, and not that
-    // many people use NT4 anymore. Just try all the COM ports
-    // between 1 and 16
-    SSerInfo si;
-    for (int ii=1; ii<=16; ii++) {
-        CString strPort;
-        strPort.Format("COM%d",ii);
-        si.strDevPath = CString("\\\\.\\") + strPort;
-        si.strPortName = strPort;
-        asi.Add(si);
-    }
-}
-
-void EnumPortsW9x(CArray<SSerInfo,SSerInfo&> &asi)
-{
-    // Look at all keys in HKLM\Enum, searching for subkeys named
-    // *PNP0500 and *PNP0501. Within these subkeys, search for
-    // sub-subkeys containing value entries with the name "PORTNAME"
-    // Search all subkeys of HKLM\Enum\USBPORTS for PORTNAME entries.
-
-    // First, open HKLM\Enum
-    HKEY hkEnum = NULL;
-    HKEY hkSubEnum = NULL;
-    HKEY hkSubSubEnum = NULL;
-
-    try {
-        if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Enum", 0, KEY_READ,
-            &hkEnum) != ERROR_SUCCESS)
-            throw CString("Could not read from HKLM\\Enum");
-
-        // Enumerate the subkeys of HKLM\Enum
-            char acSubEnum[128];
-            DWORD dwSubEnumIndex = 0;
-            DWORD dwSize = sizeof(acSubEnum);
-            while (RegEnumKeyEx(hkEnum, dwSubEnumIndex++, acSubEnum, &dwSize,
-                NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
-            {
-                HKEY hkSubEnum = NULL;
-                if (RegOpenKeyEx(hkEnum, acSubEnum, 0, KEY_READ,
-                    &hkSubEnum) != ERROR_SUCCESS)
-                    throw CString("Could not read from HKLM\\Enum\\")+acSubEnum;
-
-                // Enumerate the subkeys of HKLM\Enum\*\, looking for keys
-                    // named *PNP0500 and *PNP0501 (or anything in USBPORTS)
-                    BOOL bUsbDevice = (strcmp(acSubEnum,"USBPORTS")==0);
-                    char acSubSubEnum[128];
-                    dwSize = sizeof(acSubSubEnum);  // set the buffer size
-                    DWORD dwSubSubEnumIndex = 0;
-                    while (RegEnumKeyEx(hkSubEnum, dwSubSubEnumIndex++, acSubSubEnum,
-                        &dwSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
-                    {
-                        BOOL bMatch = (strcmp(acSubSubEnum,"*PNP0500")==0 ||
-                        strcmp(acSubSubEnum,"*PNP0501")==0 ||
-                        bUsbDevice);
-                        if (bMatch) {
-                            HKEY hkSubSubEnum = NULL;
-                            if (RegOpenKeyEx(hkSubEnum, acSubSubEnum, 0, KEY_READ,
-                                &hkSubSubEnum) != ERROR_SUCCESS)
-                                throw CString("Could not read from HKLM\\Enum\\") +
-                                acSubEnum + "\\" + acSubSubEnum;
-                            SearchPnpKeyW9x(hkSubSubEnum, bUsbDevice, asi);
-                            RegCloseKey(hkSubSubEnum);
-                            hkSubSubEnum = NULL;
-                        }
-
-                        dwSize = sizeof(acSubSubEnum);  // restore the buffer size
-                    }
-
-                    RegCloseKey(hkSubEnum);
-                    hkSubEnum = NULL;
-                    dwSize = sizeof(acSubEnum); // restore the buffer size
-            }
-    }
-    catch (CString strError) {
-        if (hkEnum != NULL)
-            RegCloseKey(hkEnum);
-        if (hkSubEnum != NULL)
-            RegCloseKey(hkSubEnum);
-        if (hkSubSubEnum != NULL)
-            RegCloseKey(hkSubSubEnum);
-        throw strError;
-    }
-
-    RegCloseKey(hkEnum);
-}
-
-void SearchPnpKeyW9x(HKEY hkPnp, BOOL bUsbDevice,
-                     CArray<SSerInfo,SSerInfo&> &asi)
-{
-    // Enumerate the subkeys of the given PNP key, looking for values with
-    // the name "PORTNAME"
-    // First, open HKLM\Enum
-    HKEY hkSubPnp = NULL;
-
-    try {
-        // Enumerate the subkeys of HKLM\Enum\*\PNP050[01]
-        char acSubPnp[128];
-        DWORD dwSubPnpIndex = 0;
-        DWORD dwSize = sizeof(acSubPnp);
-        while (RegEnumKeyEx(hkPnp, dwSubPnpIndex++, acSubPnp, &dwSize,
-            NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
-        {
-            HKEY hkSubPnp = NULL;
-            if (RegOpenKeyEx(hkPnp, acSubPnp, 0, KEY_READ,
-                &hkSubPnp) != ERROR_SUCCESS)
-                throw CString("Could not read from HKLM\\Enum\\...\\")
-                + acSubPnp;
-
-            // Look for the PORTNAME value
-                char acValue[128];
-                dwSize = sizeof(acValue);
-                if (RegQueryValueEx(hkSubPnp, "PORTNAME", NULL, NULL, (BYTE*)acValue,
-                    &dwSize) == ERROR_SUCCESS)
-                {
-                    CString strPortName(acValue);
-
-                    // Got the portname value. Look for a friendly name.
-                    CString strFriendlyName;
-                    dwSize = sizeof(acValue);
-                    if (RegQueryValueEx(hkSubPnp, "FRIENDLYNAME", NULL, NULL, (BYTE*)acValue,
-                        &dwSize) == ERROR_SUCCESS)
-                        strFriendlyName = acValue;
-
-                    // Prepare an entry for the output array.
-                        SSerInfo si;
-                        si.strDevPath = CString("\\\\.\\") + strPortName;
-                        si.strPortName = strPortName;
-                        si.strFriendlyName = strFriendlyName;
-                        si.bUsbDevice = bUsbDevice;
-
-                        // Overwrite duplicates.
-                        BOOL bDup = FALSE;
-                        for (int ii=0; ii<asi.GetSize() && !bDup; ii++)
-                        {
-                            if (asi[ii].strPortName == strPortName) {
-                                bDup = TRUE;
-                                asi[ii] = si;
-                            }
-                        }
-                        if (!bDup) {
-                            // Add an entry to the array
-                            asi.Add(si);
-                        }
-                }
-
-                RegCloseKey(hkSubPnp);
-                hkSubPnp = NULL;
-                dwSize = sizeof(acSubPnp);  // restore the buffer size
-        }
-    }
-    catch (CString strError) {
-        if (hkSubPnp != NULL)
-            RegCloseKey(hkSubPnp);
-        throw strError;
-    }
-}
-
-#endif
-
 bool ReloadLocale() {
   bool ret = false;
 
@@ -8215,9 +7774,9 @@ void ApplyLocale() {
   FontMgr::Get().ScrubList();
 
   //  Close and re-init various objects to allow new locale to show.
-  delete g_options;
-  g_options = NULL;
-  g_pOptions = NULL;
+  // delete g_options;
+  // g_options = NULL;
+  // g_pOptions = NULL;
 
   if (pRoutePropDialog) {
     pRoutePropDialog->Hide();
@@ -8274,8 +7833,8 @@ void ApplyLocale() {
   //  Compliant Plugins will reload their locale message catalog during the
   //  Init() method. So it is sufficient to simply deactivate, and then
   //  re-activate, all "active" plugins.
-  PluginLoader::getInstance()->DeactivateAllPlugIns();
-  PluginLoader::getInstance()->UpdatePlugIns();
+  PluginLoader::GetInstance()->DeactivateAllPlugIns();
+  PluginLoader::GetInstance()->UpdatePlugIns();
 
   //         // Make sure the perspective saved in the config file is
   //         "reasonable"

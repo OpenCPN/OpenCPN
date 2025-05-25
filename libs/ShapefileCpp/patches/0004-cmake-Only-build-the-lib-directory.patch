@@ -1,0 +1,39 @@
+From d2e33c754487428bd817a51216036dd4eef0b598 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 15 Apr 2025 10:55:02 +0200
+Subject: [PATCH 4/4] cmake: Only build the lib directory
+
+---
+ CMakeLists.txt | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 30e3873..514e398 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.7)
+
+ project(ShapefileCpp)
+
+-add_definitions("-std=c++17")
+-
+-list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+-find_package(shapelib REQUIRED)
+-find_package(CLI11 REQUIRED)
+-find_package(GTest REQUIRED)
+-
+-enable_testing()
++# add_definitions("-std=c++17")
++
++# list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
++# find_package(shapelib REQUIRED)
++# find_package(CLI11 REQUIRED)
++# find_package(GTest REQUIRED)
++#
++# enable_testing()
+ add_subdirectory(lib)
+-add_subdirectory(app)
+\ No newline at end of file
++# add_subdirectory(app)
+--
+2.49.0

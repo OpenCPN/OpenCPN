@@ -19,7 +19,7 @@
 # ***************************************************************************
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 if (COMMAND cmake_policy)
   if (POLICY CMP0043)
@@ -262,6 +262,7 @@ else (NOT QT_ANDROID)
 endif (NOT QT_ANDROID)
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (NOT WIN32)
