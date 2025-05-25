@@ -174,6 +174,7 @@ model/src/select_item.cpp
 model/src/semantic_vers.cpp
 model/src/ser_ports.cpp
 model/src/std_instance_chk.cpp
+model/src/std_serial_io.cpp
 model/src/track.cpp
 model/src/usb_watch_factory.cpp
 model/src/win_usb_watch.cpp
