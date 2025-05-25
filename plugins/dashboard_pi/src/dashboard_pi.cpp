@@ -71,6 +71,8 @@ int g_iDashSpeedMax;
 int g_iDashCOGDamp;
 int g_iDashSpeedUnit;
 int g_iDashSOGDamp;
+int g_iDashAWADamp;
+int g_iDashAWSDamp;
 int g_iDashDepthUnit;
 int g_iDashDistanceUnit;
 int g_iDashWindSpeedUnit;
@@ -489,7 +491,10 @@ dashboard_pi::dashboard_pi(void *ppimgr)
     : wxTimer(this), opencpn_plugin_18(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
+  // Initialize the infinite impulse response (IIR) filters
   mCOGFilter.setType(IIRFILTER_TYPE_DEG);
+  mAWAFilter.setType(IIRFILTER_TYPE_DEG);
+  mAWSFilter.setType(IIRFILTER_TYPE_LINEAR);
 }
 
 dashboard_pi::~dashboard_pi(void) {
@@ -1419,11 +1424,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                   m_awaunit = _T("\u00B0R");
                   m_awaangle = m_NMEA0183.Mwv.WindAngle;
                 }
-                SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle,
+                SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, mAWAFilter.filter(m_awaangle),
                                              m_awaunit);
                 SendSentenceToAllInstruments(
                     OCPN_DBP_STC_AWS,
-                    toUsrSpeed_Plugin(m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor,
+                    toUsrSpeed_Plugin(mAWSFilter.filter(m_NMEA0183.Mwv.WindSpeed) * m_wSpeedFactor,
                                       g_iDashWindSpeedUnit),
                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
                 mMWVA_Watchdog = gps_watchdog_timeout_ticks;
@@ -2436,13 +2441,14 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               wind_angle_degr = 360.0 - wind_angle_degr;
               m_awaunit = _T("\u00B0L");
             }
-            SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, wind_angle_degr,
+            SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, mAWAFilter.filter(wind_angle_degr),
                                          m_awaunit);
             // Speed
             SendSentenceToAllInstruments(
                 OCPN_DBP_STC_AWS,
-                toUsrSpeed_Plugin(wind_speed_kn, g_iDashWindSpeedUnit),
+                toUsrSpeed_Plugin(mAWSFilter.filter(wind_speed_kn), g_iDashWindSpeedUnit),
                 getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+
             mPriAWA = 1;
             mMWVA_Watchdog = gps_watchdog_timeout_ticks;
 
@@ -2733,7 +2739,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           m_awaunit = _T("\u00B0L");
           m_awaangle *= -1;
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle, m_awaunit);
+        SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, mAWAFilter.filter(m_awaangle), m_awaunit);
         mPriAWA = 2;  // Set prio only here. No need to catch speed if no angle.
         mMWVA_Watchdog = gps_watchdog_timeout_ticks;
       }
@@ -2743,9 +2749,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         if (std::isnan(m_awaspeed_kn)) return;
 
         m_awaspeed_kn = MS2KNOTS(m_awaspeed_kn);
-        SendSentenceToAllInstruments(
-            OCPN_DBP_STC_AWS,
-            toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
+        SendSentenceToAllInstruments(OCPN_DBP_STC_AWS,
+            toUsrSpeed_Plugin(mAWSFilter.filter(m_awaspeed_kn), g_iDashWindSpeedUnit),
             getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
 
         // If no TWA from SK try to use AWS/AWA to calculate it
@@ -3578,6 +3583,8 @@ bool dashboard_pi::LoadConfig(void) {
     pConf->Read(_T("SOGDamp"), &g_iDashSOGDamp, 0);
     pConf->Read(_T("DepthUnit"), &g_iDashDepthUnit, 3);
     g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
+    pConf->Read(_T("AWADamp"), &g_iDashAWADamp, 0);
+    pConf->Read(_T("AWSDamp"), &g_iDashAWSDamp, 0);
 
     pConf->Read(_T("DepthOffset"), &g_dDashDBTOffset, 0);
 
@@ -3816,6 +3823,8 @@ bool dashboard_pi::SaveConfig(void) {
     pConf->Write(_T("COGDamp"), g_iDashCOGDamp);
     pConf->Write(_T("SpeedUnit"), g_iDashSpeedUnit);
     pConf->Write(_T("SOGDamp"), g_iDashSOGDamp);
+    pConf->Write(_T("AWSDamp"), g_iDashAWSDamp);
+    pConf->Write(_T("AWADamp"), g_iDashAWADamp);
     pConf->Write(_T("DepthUnit"), g_iDashDepthUnit);
     pConf->Write(_T("DepthOffset"), g_dDashDBTOffset);
     pConf->Write(_T("DistanceUnit"), g_iDashDistanceUnit);
@@ -4054,11 +4063,24 @@ void dashboard_pi::ApplyConfig(void) {
   }
   m_pauimgr->Update();
 
+  // Initialize the IIR Filter Co-efficients
   double sogFC = g_iDashSOGDamp ? 1.0 / (2.0 * g_iDashSOGDamp) : 0.0;
   double cogFC = g_iDashCOGDamp ? 1.0 / (2.0 * g_iDashCOGDamp) : 0.0;
+  double awaFC = g_iDashAWADamp ? 1.0 / (2.0 * g_iDashAWADamp) : 0.0;
+  double awsFC = g_iDashAWSDamp ? 1.0 / (2.0 * g_iDashAWSDamp) : 0.0;
 
-  if (abs(sogFC - mSOGFilter.getFc()) > 1e-6) mSOGFilter.setFC(sogFC);
-  if (abs(cogFC - mCOGFilter.getFc()) > 1e-6) mCOGFilter.setFC(cogFC);
+  if (abs(sogFC - mSOGFilter.getFc()) > 1e-6) {
+    mSOGFilter.setFC(sogFC);
+  }
+  if (abs(cogFC - mCOGFilter.getFc()) > 1e-6) {
+    mCOGFilter.setFC(cogFC);
+  }
+  if (abs(awaFC - mAWAFilter.getFc()) > 1e-6) {
+    mAWAFilter.setFC(awaFC);
+  }
+  if (abs(awsFC - mAWSFilter.getFc()) > 1e-6) {
+    mAWSFilter.setFC(awsFC);
+  }
 }
 
 void dashboard_pi::PopulateContextMenu(wxMenu *menu) {
@@ -4499,6 +4521,24 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                                   wxSP_ARROW_KEYS, 0, 100, g_iDashCOGDamp);
   itemFlexGridSizer04->Add(m_pSpinCOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
+  wxStaticText* itemStaticText13 =
+    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Wind speed Damping Factor:"),
+      wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer04->Add(itemStaticText13, 0, wxEXPAND | wxALL, border_size);
+  m_pSpinAWSDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString,
+    wxDefaultPosition, wxDefaultSize,
+                                  wxSP_ARROW_KEYS, 0, 100, g_iDashAWSDamp);
+  itemFlexGridSizer04->Add(m_pSpinAWSDamp, 0, wxALIGN_RIGHT | wxALL, 0);
+
+  wxStaticText* itemStaticText14 =
+    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Wind angle Damping Factor:"),
+      wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer04->Add(itemStaticText14, 0, wxEXPAND | wxALL, border_size);
+  m_pSpinAWADamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString,
+    wxDefaultPosition, wxDefaultSize,
+    wxSP_ARROW_KEYS, 0, 100, g_iDashAWADamp);
+  itemFlexGridSizer04->Add(m_pSpinAWADamp, 0, wxALIGN_RIGHT | wxALL, 0);
+
   wxStaticText *itemStaticText12 = new wxStaticText(
       itemPanelNotebook02, wxID_ANY, _("Local Time Offset From UTC:"),
       wxDefaultPosition, wxDefaultSize, 0);
@@ -4712,6 +4752,8 @@ void DashboardPreferencesDialog::SaveDashboardConfig() {
   g_iDashSpeedMax = m_pSpinSpeedMax->GetValue();
   g_iDashCOGDamp = m_pSpinCOGDamp->GetValue();
   g_iDashSOGDamp = m_pSpinSOGDamp->GetValue();
+  g_iDashAWADamp = m_pSpinAWADamp->GetValue();
+  g_iDashAWSDamp = m_pSpinAWSDamp->GetValue();
   g_iUTCOffset = m_pChoiceUTCOffset->GetSelection() - 24;
   g_iDashSpeedUnit = m_pChoiceSpeedUnit->GetSelection() - 1;
   double DashDBTOffset = m_pSpinDBTOffset->GetValue();
