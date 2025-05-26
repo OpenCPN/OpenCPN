@@ -281,7 +281,7 @@ public:
     SetName(kFilterChoiceName);
     Bind(wxEVT_CHOICE, [&](wxCommandEvent&) { OnChoice(); });
     OnFilterListChange();
-    int ix = FindString("Default settings");
+    int ix = FindString(kLabels.at("default"));
     if (ix != wxNOT_FOUND) SetSelection(ix);
     NavmsgFilter filter = filters_on_disk::Read("default.filter");
     m_tty_panel->SetFilter(filter);
@@ -343,6 +343,7 @@ private:
   const std::unordered_map<std::string, std::string> kLabels = {
       {"all-data", _("All data")},
       {"all-nmea", _("All NMEA data")},
+      {"default", _("Default settings")},
       {"malformed", _("Malformed messages")},
       {"nmea-input", _("NMEA input data")},
       {"nmea-output", _("NMEA output data")},
