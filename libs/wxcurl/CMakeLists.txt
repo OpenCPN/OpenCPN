@@ -55,3 +55,10 @@ endif ()
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     target_compile_options(WXCURL PRIVATE "-Wno-varargs")
 endif()
+
+target_compile_definitions(
+  WXCURL PRIVATE
+  WXCURL_OCPN_VERSION="${WXCURL_OCPN_VERSION}"
+  WXCURL_ABI="${WXCURL_ABI}"
+  WXCURL_ABI_VERSION="${WXCURL_ABI_VERSION}"
+)
