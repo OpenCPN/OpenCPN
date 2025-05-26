@@ -5029,8 +5029,9 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
         wxTimeSpan span = now - m_fix_start_time;
         if (span.IsLongerThan(wxTimeSpan(0, 5))) {
           auto &noteman = NotificationManager::GetInstance();
-          std::string msg = "GNSS Position fix lost";
-          noteman.AddNotification(NotificationSeverity::kCritical, msg);
+          wxString msg = _("GNSS Position fix lost");
+          noteman.AddNotification(NotificationSeverity::kCritical,
+                                  msg.ToStdString());
           m_fix_start_time = wxInvalidDateTime;
         }
       }

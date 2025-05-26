@@ -138,7 +138,7 @@ NotificationPanel::NotificationPanel(
   itemBoxSizer01->AddStretchSpacer(1);
 
   // Ack button
-  m_ack_button = new wxButton(this, wxID_ANY, "ACK");
+  m_ack_button = new wxButton(this, wxID_OK);
   itemBoxSizer01->Add(m_ack_button, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
   m_ack_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                      &NotificationPanel::OnAckButton, this);
@@ -272,7 +272,7 @@ NotificationsList::NotificationsList(wxWindow* parent) : wxDialog() {
   // Ack All button
   acksizer->AddStretchSpacer(1);
 
-  m_ackall_button = new wxButton(this, wxID_ANY, "ACK All");
+  m_ackall_button = new wxButton(this, wxID_ANY, _("Acknowledge All"));
   acksizer->Add(m_ackall_button, 0, wxALIGN_CENTER_VERTICAL | wxALL, 2);
   m_ackall_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                         &NotificationsList::OnAckAllButton, this);

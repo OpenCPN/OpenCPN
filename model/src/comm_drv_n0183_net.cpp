@@ -333,7 +333,7 @@ void CommDriverN0183Net::OnTimerSocket() {
       auto since_connect = steady_clock::now() - m_connect_time;
       if (since_connect > 10s && !m_is_conn_err_reported) {
         std::stringstream ss;
-        ss << "Cannot connect to remote server " << m_params.NetworkAddress
+        ss << _("Cannot connect to remote server ") << m_params.NetworkAddress
            << ":" << m_params.NetworkPort;
         CommDriverRegistry::GetInstance().evt_driver_msg.Notify(ss.str());
         m_is_conn_err_reported = true;
