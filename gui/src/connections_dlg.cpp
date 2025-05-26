@@ -881,12 +881,8 @@ ConnectionsDlg::ConnectionsDlg(
               wxTAB_TRAVERSAL, "ConnectionsDlg"),
       m_connections(connections) {
   auto vbox = new wxBoxSizer(wxVERTICAL);
-  auto scrolled_window = new ScrolledWindow(this);
-  auto conn_grid =
-      new Connections(scrolled_window, m_connections, m_evt_add_connection);
-  scrolled_window->AddClient(conn_grid, conn_grid->GetGridMaxSize(),
-                             conn_grid->GetGridMinSize());
-  vbox->Add(scrolled_window, wxSizerFlags(5).Expand().Border());
+  auto conn_grid = new Connections(this, m_connections, m_evt_add_connection);
+  vbox->Add(conn_grid, wxSizerFlags(5).Expand().Border());
   vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
             wxSizerFlags().Border());
   vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
@@ -906,12 +902,9 @@ ConnectionsDlg::ConnectionsDlg(
   SetAutoLayout(true);
   wxWindow::Fit();
 
-  auto on_evt_update_connections = [&, conn_grid,
-                                    scrolled_window](ObservedEvt&) {
+  auto on_evt_update_connections = [&, conn_grid](ObservedEvt&) {
     conn_grid->ReloadGrid(TheConnectionParams());
     conn_grid->Show(conn_grid->GetNumberRows() > 0);
-    scrolled_window->SetMinClientSize(conn_grid->GetGridMinSize());
-    scrolled_window->SetMaxSize(conn_grid->GetGridMaxSize());
     Layout();
   };
   m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_update_connections);
