@@ -968,6 +968,11 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     // Eventually set this menu as the "focused context menu"
     if (menuFocus != menuAIS) menuFocus = menuWaypoint;
   }
+
+  //  Add plugin context items to the correct menu
+  AddPluginContextMenuItems(contextMenu, menuRoute, menuTrack, menuWaypoint,
+                            menuAIS);
+
   /*add the relevant submenus*/
   enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
   int sub_menu = 0;
@@ -976,6 +981,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT) {
       menuFocus->AppendSeparator();
     }
+
     wxMenuItem *subMenu1;
     if (menuWaypoint && menuFocus != menuWaypoint) {
       subMenu1 =
@@ -1024,6 +1030,40 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                 _("Show Current Information"));
   }
 
+  //        Invoke the correct focused drop-down menu
+
+#ifdef __ANDROID__
+  androidEnableBackButton(false);
+  androidEnableOptionsMenu(false);
+
+  setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_("Menu")));
+  setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_("Menu")));
+#endif
+
+  parent->PopupMenu(menuFocus, x, y);
+
+#ifdef __ANDROID__
+  androidEnableBackButton(true);
+  androidEnableOptionsMenu(true);
+#endif
+
+  /* Cleanup if necessary.
+  Do not delete menus witch are submenu as they will be deleted by their parent
+  menu. This could create a crash*/
+  delete menuAIS;
+  if (!(sub_menu & MMMENU)) delete contextMenu;
+  if (!(sub_menu & RTMENU)) delete menuRoute;
+  if (!(sub_menu & TKMENU)) delete menuTrack;
+  if (!(sub_menu & WPMENU)) delete menuWaypoint;
+}
+
+void CanvasMenuHandler::AddPluginContextMenuItems(wxMenu *contextMenu,
+                                                  wxMenu *menuRoute,
+                                                  wxMenu *menuTrack,
+                                                  wxMenu *menuWaypoint,
+                                                  wxMenu *menuAIS) {
   // Give the plugins a chance to update their menu items
   g_pi_manager->PrepareAllPluginContextMenus();
 
@@ -1044,8 +1084,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
            ++it) {
         int id = -1;
         for (unsigned int j = 0; j < item_array.GetCount(); j++) {
-          PlugInMenuItemContainer *pimis = item_array[j];
-          if (pimis->pmenu_item == *it) id = pimis->id;
+          PlugInMenuItemContainer *pimisi = item_array[j];
+          if (pimisi->pmenu_item == *it) id = pimis->id;
         }
 
         wxMenuItem *pmi = new wxMenuItem(submenu, id,
@@ -1105,34 +1145,6 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       dst->Enable(pimis->id, !pimis->b_grey);
     }
   }
-
-  //        Invoke the correct focused drop-down menu
-
-#ifdef __ANDROID__
-  androidEnableBackButton(false);
-  androidEnableOptionsMenu(false);
-
-  setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_("Menu")));
-  setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_("Menu")));
-  setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_("Menu")));
-  setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_("Menu")));
-#endif
-
-  parent->PopupMenu(menuFocus, x, y);
-
-#ifdef __ANDROID__
-  androidEnableBackButton(true);
-  androidEnableOptionsMenu(true);
-#endif
-
-  /* Cleanup if necessary.
-  Do not delete menus witch are submenu as they will be deleted by their parent
-  menu. This could create a crash*/
-  delete menuAIS;
-  if (!(sub_menu & MMMENU)) delete contextMenu;
-  if (!(sub_menu & RTMENU)) delete menuRoute;
-  if (!(sub_menu & TKMENU)) delete menuTrack;
-  if (!(sub_menu & WPMENU)) delete menuWaypoint;
 }
 
 void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
@@ -1996,14 +2008,41 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       for (unsigned int i = 0; i < item_array.GetCount(); i++) {
         PlugInMenuItemContainer *pimis = item_array[i];
-        {
-          if (pimis->id == event.GetId()) {
-            if (pimis->m_pplugin)
-              pimis->m_pplugin->OnContextMenuItemCallback(pimis->id);
+        if (pimis->m_pplugin && (pimis->id == event.GetId())) {
+          int version_major = pimis->m_pplugin->GetPlugInVersionMajor();
+          int version_minor = pimis->m_pplugin->GetPlugInVersionMinor();
+          if ((version_major * 100) + version_minor >= 120) {
+            std::string object_type;
+            std::string object_ident;
+
+            if ((pimis->m_in_menu.IsSameAs("Waypoint")) && m_pFoundRoutePoint) {
+              object_type = "Waypoint";
+              object_ident = m_pFoundRoutePoint->m_GUID.ToStdString();
+            } else if ((pimis->m_in_menu.IsSameAs("Route")) &&
+                       m_pSelectedRoute) {
+              object_type = "Route";
+              object_ident = m_pSelectedRoute->m_GUID.ToStdString();
+            } else if ((pimis->m_in_menu.IsSameAs("Track")) &&
+                       m_pSelectedTrack) {
+              object_type = "Track";
+              object_ident = m_pSelectedTrack->m_GUID.ToStdString();
+            } else if ((pimis->m_in_menu.IsSameAs("AIS")) && m_FoundAIS_MMSI) {
+              object_type = "AIS";
+              wxString sAIS = wxString::Format("%d", m_FoundAIS_MMSI);
+              object_ident = sAIS.ToStdString();
+            }
+
+            opencpn_plugin_120 *ppi =
+                dynamic_cast<opencpn_plugin_120 *>(pimis->m_pplugin);
+            if (ppi)
+              ppi->OnContextMenuItemCallbackExt(pimis->id, object_ident,
+                                                object_type, zlat, zlon);
+
+          } else {
+            pimis->m_pplugin->OnContextMenuItemCallback(pimis->id);
           }
         }
       }
-
       break;
     }
   }  // switch
