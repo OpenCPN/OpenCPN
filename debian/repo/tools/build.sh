@@ -1,18 +1,36 @@
-# $ podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/amd64 \
-#     -v=$PWD:/build -v=/tmp/pkg-amd64:/output -e DOCKER_BUILD=1 \
-#      -ti debian:bookworm-backports
-# # /build/build.sh
-#
-# $ podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/aarch64 \
-#     -v=$PWD:/build -v=/tmp/pkg-aarch64:/output -e DOCKER_BUILD=1 \
-#     -ti debian:bookworm-backports
-# # /build/build.sh
+#!/bin/bash
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+ cat << "EOF"
+
+test -d /tmp/pkg-amd64 || mkdir /tmp/pkg-amd64
+podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/amd64 \
+     -v=$PWD:/build -v=/tmp/pkg-amd64:/output -e DOCKER_BUILD=1 \
+     --name debian_12-amd64 debian:bookworm-backports
+podman start debian_12-amd64
+podman cp ~/.devscripts debian_12-amd64:/root
+podman exec -ti debian_12-amd64 /bin/bash
+# /build/build.sh
+
+
+test -d /tmp/pkg-aarch64 || mkdir /tmp/pkg-aarch64
+podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/aarch64 \
+     -v=$PWD:/build -v=/tmp/pkg-aarch64:/output -e DOCKER_BUILD=1 \
+     --name debian_12-aarch64 debian:bookworm-backports
+podman start debian_12-aarch64
+podman cp ~/.devscripts debian_12-aarch64:/root
+podman exec -ti debian_12-aarch64 /bin/bash
+# /build/build.sh
+
+EOF
+  exit 0
+fi
 
 # Install build tools
 apt update --allow-unauthenticated 
 apt install -y devscripts equivs git-buildpackage
 
 # Clone opencpn
+cd /build
 mkdir opencpn
 cd opencpn/
 git clone -b debian/bookworm-backports https://github.com/opencpn/opencpn.git
@@ -31,4 +49,4 @@ gbp buildpackage --git-upstream-tag=upstream/5.9.1-beta1+dfsg
 
 # Copy out results to /output
 cd ..
-cp *.deb /output
+cp *.deb *.buildinfo *.build *.changes *.dsc /output
