@@ -1424,12 +1424,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                   m_awaunit = _T("\u00B0R");
                   m_awaangle = m_NMEA0183.Mwv.WindAngle;
                 }
-                SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, mAWAFilter.filter(m_awaangle),
-                                             m_awaunit);
+                SendSentenceToAllInstruments(
+                    OCPN_DBP_STC_AWA, mAWAFilter.filter(m_awaangle), m_awaunit);
                 SendSentenceToAllInstruments(
                     OCPN_DBP_STC_AWS,
-                    toUsrSpeed_Plugin(mAWSFilter.filter(m_NMEA0183.Mwv.WindSpeed) * m_wSpeedFactor,
-                                      g_iDashWindSpeedUnit),
+                    toUsrSpeed_Plugin(
+                        mAWSFilter.filter(m_NMEA0183.Mwv.WindSpeed) *
+                            m_wSpeedFactor,
+                        g_iDashWindSpeedUnit),
                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
                 mMWVA_Watchdog = gps_watchdog_timeout_ticks;
               }
@@ -2441,12 +2443,14 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               wind_angle_degr = 360.0 - wind_angle_degr;
               m_awaunit = _T("\u00B0L");
             }
-            SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, mAWAFilter.filter(wind_angle_degr),
+            SendSentenceToAllInstruments(OCPN_DBP_STC_AWA,
+                                         mAWAFilter.filter(wind_angle_degr),
                                          m_awaunit);
             // Speed
             SendSentenceToAllInstruments(
                 OCPN_DBP_STC_AWS,
-                toUsrSpeed_Plugin(mAWSFilter.filter(wind_speed_kn), g_iDashWindSpeedUnit),
+                toUsrSpeed_Plugin(mAWSFilter.filter(wind_speed_kn),
+                                  g_iDashWindSpeedUnit),
                 getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
 
             mPriAWA = 1;
@@ -2739,7 +2743,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           m_awaunit = _T("\u00B0L");
           m_awaangle *= -1;
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, mAWAFilter.filter(m_awaangle), m_awaunit);
+        SendSentenceToAllInstruments(OCPN_DBP_STC_AWA,
+                                     mAWAFilter.filter(m_awaangle), m_awaunit);
         mPriAWA = 2;  // Set prio only here. No need to catch speed if no angle.
         mMWVA_Watchdog = gps_watchdog_timeout_ticks;
       }
@@ -2749,8 +2754,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         if (std::isnan(m_awaspeed_kn)) return;
 
         m_awaspeed_kn = MS2KNOTS(m_awaspeed_kn);
-        SendSentenceToAllInstruments(OCPN_DBP_STC_AWS,
-            toUsrSpeed_Plugin(mAWSFilter.filter(m_awaspeed_kn), g_iDashWindSpeedUnit),
+        SendSentenceToAllInstruments(
+            OCPN_DBP_STC_AWS,
+            toUsrSpeed_Plugin(mAWSFilter.filter(m_awaspeed_kn),
+                              g_iDashWindSpeedUnit),
             getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
 
         // If no TWA from SK try to use AWS/AWA to calculate it
@@ -4521,22 +4528,22 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                                   wxSP_ARROW_KEYS, 0, 100, g_iDashCOGDamp);
   itemFlexGridSizer04->Add(m_pSpinCOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
-  wxStaticText* itemStaticText13 =
-    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Wind speed Damping Factor:"),
+  wxStaticText *itemStaticText13 = new wxStaticText(
+      itemPanelNotebook02, wxID_ANY, _("Wind speed Damping Factor:"),
       wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer04->Add(itemStaticText13, 0, wxEXPAND | wxALL, border_size);
   m_pSpinAWSDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString,
-    wxDefaultPosition, wxDefaultSize,
+                                  wxDefaultPosition, wxDefaultSize,
                                   wxSP_ARROW_KEYS, 0, 100, g_iDashAWSDamp);
   itemFlexGridSizer04->Add(m_pSpinAWSDamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
-  wxStaticText* itemStaticText14 =
-    new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Wind angle Damping Factor:"),
+  wxStaticText *itemStaticText14 = new wxStaticText(
+      itemPanelNotebook02, wxID_ANY, _("Wind angle Damping Factor:"),
       wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer04->Add(itemStaticText14, 0, wxEXPAND | wxALL, border_size);
   m_pSpinAWADamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString,
-    wxDefaultPosition, wxDefaultSize,
-    wxSP_ARROW_KEYS, 0, 100, g_iDashAWADamp);
+                                  wxDefaultPosition, wxDefaultSize,
+                                  wxSP_ARROW_KEYS, 0, 100, g_iDashAWADamp);
   itemFlexGridSizer04->Add(m_pSpinAWADamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
   wxStaticText *itemStaticText12 = new wxStaticText(
