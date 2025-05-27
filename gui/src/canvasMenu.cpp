@@ -2009,8 +2009,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       for (unsigned int i = 0; i < item_array.GetCount(); i++) {
         PlugInMenuItemContainer *pimis = item_array[i];
         if (pimis->m_pplugin && (pimis->id == event.GetId())) {
-          int version_major = pimis->m_pplugin->GetPlugInVersionMajor();
-          int version_minor = pimis->m_pplugin->GetPlugInVersionMinor();
+          int version_major = pimis->m_pplugin->GetAPIVersionMajor();
+          int version_minor = pimis->m_pplugin->GetAPIVersionMinor();
           if ((version_major * 100) + version_minor >= 120) {
             std::string object_type;
             std::string object_ident;
