@@ -1642,7 +1642,7 @@ void PlugInManager::RemoveCanvasContextMenuItem(int item, const char* name) {
   for (unsigned int i = 0; i < m_PlugInMenuItems.GetCount(); i++) {
     PlugInMenuItemContainer* pimis = m_PlugInMenuItems[i];
     {
-      if (pimis->id == item && !strcmp(name, pimis->m_in_menu)) {
+      if (pimis->id == item) {
         m_PlugInMenuItems.Remove(pimis);
         delete pimis;
         break;
