@@ -2011,7 +2011,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           }
         }
 
-        if (pimis->m_pplugin && (event.GetId() == event.GetId())) {
+        if (pimis->m_pplugin && (target_id == event.GetId())) {
           int version_major = pimis->m_pplugin->GetAPIVersionMajor();
           int version_minor = pimis->m_pplugin->GetAPIVersionMinor();
           if ((version_major * 100) + version_minor >= 120) {
