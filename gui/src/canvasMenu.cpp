@@ -1077,48 +1077,36 @@ void CanvasMenuHandler::AddPluginContextMenuItems(wxMenu *contextMenu,
 
     wxMenu *submenu = NULL;
     if (pimis->pmenu_item->GetSubMenu()) {
+      // Create a clone of the submenu referenced in the PlugInMenuItemContainer
+      auto submenu_proto = pimis->pmenu_item->GetSubMenu();
       submenu = new wxMenu();
       const wxMenuItemList &items =
           pimis->pmenu_item->GetSubMenu()->GetMenuItems();
       for (wxMenuItemList::const_iterator it = items.begin(); it != items.end();
            ++it) {
-        int id = -1;
-        for (unsigned int j = 0; j < item_array.GetCount(); j++) {
-          PlugInMenuItemContainer *pimisi = item_array[j];
-          if (pimisi->pmenu_item == *it) id = pimis->id;
-        }
-
-        wxMenuItem *pmi = new wxMenuItem(submenu, id,
-#if wxCHECK_VERSION(3, 0, 0)
-                                         (*it)->GetItemLabelText(),
-#else
-                                         (*it)->GetLabel(),
-#endif
-                                         (*it)->GetHelp(), (*it)->GetKind());
+        int id = (*it)->GetId();
+        wxMenuItem *psmi =
+            new wxMenuItem(submenu, id, (*it)->GetItemLabelText(),
+                           (*it)->GetHelp(), (*it)->GetKind());
 
 #ifdef __WXMSW__
-        pmi->SetFont(m_scaledFont);
+        psmi->SetFont(m_scaledFont);
 #endif
 
 #ifdef __ANDROID__
         wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
-        pmi->SetFont(sFont);
+        psmi->SetFont(sFont);
 #endif
 
-        PrepareMenuItem(pmi);
-        submenu->Append(pmi);
-        pmi->Check((*it)->IsChecked());
+        PrepareMenuItem(psmi);
+        submenu->Append(psmi);
+        psmi->Check((*it)->IsChecked());
       }
     }
 
-    wxMenuItem *pmi = new wxMenuItem(contextMenu, pimis->id,
-#if wxCHECK_VERSION(3, 0, 0)
-                                     pimis->pmenu_item->GetItemLabelText(),
-#else
-                                     pimis->pmenu_item->GetLabel(),
-#endif
-                                     pimis->pmenu_item->GetHelp(),
-                                     pimis->pmenu_item->GetKind(), submenu);
+    wxMenuItem *pmi = new wxMenuItem(
+        contextMenu, pimis->id, pimis->pmenu_item->GetItemLabelText(),
+        pimis->pmenu_item->GetHelp(), pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
     pmi->SetFont(m_scaledFont);
 #endif
@@ -2008,7 +1996,22 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       for (unsigned int i = 0; i < item_array.GetCount(); i++) {
         PlugInMenuItemContainer *pimis = item_array[i];
-        if (pimis->m_pplugin && (pimis->id == event.GetId())) {
+        int target_id = pimis->id;
+
+        // Check submenus, if present.
+        if (pimis->pmenu_item->GetSubMenu()) {
+          const wxMenuItemList &items =
+              pimis->pmenu_item->GetSubMenu()->GetMenuItems();
+          for (wxMenuItemList::const_iterator it = items.begin();
+               it != items.end(); ++it) {
+            if ((*it)->GetId() == event.GetId()) {
+              target_id = (*it)->GetId();
+              break;
+            }
+          }
+        }
+
+        if (pimis->m_pplugin && (event.GetId() == event.GetId())) {
           int version_major = pimis->m_pplugin->GetAPIVersionMajor();
           int version_minor = pimis->m_pplugin->GetAPIVersionMinor();
           if ((version_major * 100) + version_minor >= 120) {
@@ -2035,7 +2038,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
             opencpn_plugin_120 *ppi =
                 dynamic_cast<opencpn_plugin_120 *>(pimis->m_pplugin);
             if (ppi)
-              ppi->OnContextMenuItemCallbackExt(pimis->id, object_ident,
+              ppi->OnContextMenuItemCallbackExt(target_id, object_ident,
                                                 object_type, zlat, zlon);
 
           } else {
