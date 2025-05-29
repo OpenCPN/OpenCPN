@@ -3989,6 +3989,7 @@ bool dashboard_pi::SaveConfig(void) {
         }
       }
     }
+    pConf->Flush();
     return true;
   } else
     return false;
