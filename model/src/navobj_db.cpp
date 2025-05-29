@@ -688,6 +688,10 @@ bool NavObj_dB::ImportLegacyRoutes() {
     g_pRouteMan->DeleteRoute(route);
   }
 
+  //  There may have been some points left as isolated orphans
+  //  Delete them too.
+  pWayPointMan->DeleteAllWaypoints(true);
+
   return true;
 }
 
@@ -1890,6 +1894,7 @@ bool NavObj_dB::DeleteRoutePoint(RoutePoint* point) {
 }
 
 bool NavObj_dB::UpdateRoutePoint(RoutePoint* point) {
+  if (m_importing) return false;
   if (!RoutePointExists(m_db, point->m_GUID.ToStdString())) return false;
   UpdateDBRoutePointAttributes(point);
   return true;
