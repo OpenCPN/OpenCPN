@@ -1758,7 +1758,7 @@ bool NavObj_dB::LoadAllPoints() {
     time_t etd = sqlite3_column_int(stmtp, col++);
     std::string type =
         reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    std::string time =
+    std::string point_time_string =
         reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
     double arrival_radius = sqlite3_column_double(stmtp, col++);
 
@@ -1803,6 +1803,11 @@ bool NavObj_dB::LoadAllPoints() {
       point->SetShared(shared == 1);
       point->m_bIsolatedMark = (isolated == 1);
 
+      if (point_time_string.size()) {
+        wxString sdt(point_time_string.c_str());
+        point->m_timestring = sdt;
+        ParseGPXDateTime(point->m_CreateTimeX, sdt);
+      }
       // Add it here
       pWayPointMan->AddRoutePoint(point);
       pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
