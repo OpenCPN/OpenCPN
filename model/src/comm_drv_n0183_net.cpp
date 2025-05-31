@@ -239,6 +239,7 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
       int broadcastEnable = 1;
       m_tsock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable,
                          sizeof(broadcastEnable));
+      m_driver_stats.available = true;
     }
   }
 
