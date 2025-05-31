@@ -776,3 +776,17 @@ double toMagnetic(double deg_true, double variation) {
   else
     return degm >= 0. ? degm : degm + 360.;
 }
+
+// Function to remove invalid Windows filename characters from a wxString
+wxString SanitizeFileName(const wxString &input) {
+  // List of invalid characters for Windows filenames
+  static const wxString invalidChars = wxT("<>:\"/\\|?*");
+  wxString result;
+  for (wxUniChar ch : input) {
+    if (invalidChars.Contains(ch))
+      result += wxT('_');
+    else
+      result += ch;
+  }
+  return result;
+}
