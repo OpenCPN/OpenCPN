@@ -34,7 +34,6 @@ private:
   const std::vector<ConnectionParams*>& m_connections;
   std::function<void()> m_on_exit;
   EventVar m_evt_add_connection;
-  ObsListener m_add_connection_lstnr;
 };
 
 #endif  //  CONNECT_NEW_DLG__

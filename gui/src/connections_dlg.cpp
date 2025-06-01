@@ -874,46 +874,81 @@ private:
   };
 };
 
+/** Top panel: connections grid, "Add new connection", general options. */
+class TopPanel: public wxPanel {
+public:
+  TopPanel(wxWindow* parent,
+           const std::vector<ConnectionParams*>& connections,
+           EventVar& evt_add_connection)
+       : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                wxTAB_TRAVERSAL, "ConnectionsDlg"),
+         m_connections(connections),
+         m_evt_add_connection(evt_add_connection) {
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    auto conn_grid =
+        new Connections(this, m_connections, m_evt_add_connection);
+    vbox->Add(conn_grid, wxSizerFlags(5).Expand().Border());
+    vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
+              wxSizerFlags().Border());
+    vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
+    auto panel_flags =
+        wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
+    vbox->Add(new GeneralPanel(this), panel_flags);
+  
+    auto advanced_panel = new AdvancedPanel(this);
+    auto on_toggle = [&, advanced_panel, vbox](bool show) {
+      advanced_panel->Show(show);
+      vbox->SetSizeHints(this);
+      vbox->Fit(this);
+    };
+    vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
+    vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
+  
+    SetSizer(vbox);
+    vbox->SetSizeHints(this);
+    vbox->Fit(this);
+    SetAutoLayout(true);
+    wxWindow::Fit();
+    Show();
+
+    auto on_evt_update_connections = [&, conn_grid](ObservedEvt&) {
+      conn_grid->ReloadGrid(TheConnectionParams());
+      conn_grid->Show(conn_grid->GetNumberRows() > 0);
+      Layout();
+    };
+    m_add_connection_lstnr.Init(m_evt_add_connection,
+                                on_evt_update_connections);
+  }
+
+  void OnResize() {
+    Layout();
+    Refresh();
+    Update();
+  }
+
+private:
+  const std::vector<ConnectionParams*>& m_connections;
+  EventVar& m_evt_add_connection;
+  ObsListener m_add_connection_lstnr;
+};
+
+
 /** Main window: connections grid, "Add new connection", general options. */
 ConnectionsDlg::ConnectionsDlg(
     wxWindow* parent, const std::vector<ConnectionParams*>& connections)
-    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-              wxTAB_TRAVERSAL, "ConnectionsDlg"),
-      m_connections(connections) {
+    : wxPanel(parent, wxID_ANY), m_connections(connections) {
   auto vbox = new wxBoxSizer(wxVERTICAL);
-  auto conn_grid = new Connections(this, m_connections, m_evt_add_connection);
-  vbox->Add(conn_grid, wxSizerFlags(5).Expand().Border());
-  vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
-            wxSizerFlags().Border());
-  vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
-  auto panel_flags = wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
-  vbox->Add(new GeneralPanel(this), panel_flags);
-
-  auto advanced_panel = new AdvancedPanel(this);
-  auto on_toggle = [&, advanced_panel, vbox](bool show) {
-    advanced_panel->Show(show);
-    vbox->SetSizeHints(this);
-    vbox->Fit(this);
-  };
-  vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
-  vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
-
+  vbox->Add(new TopPanel(this, connections, m_evt_add_connection));
   SetSizer(vbox);
-  SetAutoLayout(true);
   wxWindow::Fit();
-
-  auto on_evt_update_connections = [&, conn_grid](ObservedEvt&) {
-    conn_grid->ReloadGrid(TheConnectionParams());
-    conn_grid->Show(conn_grid->GetNumberRows() > 0);
-    Layout();
-  };
-  m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_update_connections);
+ 
+  Show();
 };
 
 void ConnectionsDlg::OnResize() {
-  Layout();
-  Refresh();
-  Update();
+//  Layout();
+//  Refresh();
+//  Update();
 }
 
 void ConnectionsDlg::DoApply(wxWindow* root) {
