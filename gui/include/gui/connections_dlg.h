@@ -25,7 +25,7 @@ public:
    */
   void CancelSettings();
 
-  void OnResize();
+  void OnResize(const wxSize& size);
 
 private:
   void DoApply(wxWindow* root);
