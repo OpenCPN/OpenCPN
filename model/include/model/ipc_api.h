@@ -134,6 +134,12 @@ public:
   }
 
   void Serve() {}
+
+protected:
+  /**
+   * Destroy the Dummy Ipc Server object.
+   */
+  ~DummyIpcServer() = default;
 };
 
 class DummyIpcClient : public LocalClientApi {

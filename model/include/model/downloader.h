@@ -30,10 +30,19 @@
 #include <string>
 #include <ostream>
 
-/** Default downloader, usable in a CLI context.*/
+/**
+ * Default downloader, usable in a CLI context.
+ *
+ * @class Downloader downloader.h "model/downloader.h"
+ */
 class Downloader {
 public:
-  Downloader(std::string url);
+  explicit Downloader(std::string url);
+
+  /**
+   * Destroy the Downloader object.
+   */
+  virtual ~Downloader() = default;
 
   /** Download url into stream, return false on errors. */
   bool download(std::ostream* stream);
