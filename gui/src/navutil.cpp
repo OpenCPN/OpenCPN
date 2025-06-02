@@ -2625,11 +2625,11 @@ static wxFileName exportFileName(wxWindow *parent,
   wxString valid_name = SanitizeFileName(suggestedName);
 
 #ifdef __ANDROID__
-  if (!validName.EndsWith(".gpx")) {
-    wxFileName fn(validName);
+  if (!valid_name.EndsWith(".gpx")) {
+    wxFileName fn(valid_name);
     fn.ClearExt();
     fn.SetExt("gpx");
-    validName = fn.GetFullName();
+    valid_name = fn.GetFullName();
   }
 #endif
   int response =
