@@ -184,6 +184,11 @@ private:
  */
 class ApplyCancel {
 public:
+  /**
+   * Destroy the Apply Cancel object.
+   */
+  virtual ~ApplyCancel() = default;
+
   /** Make values set by user actually being used. */
   virtual void Apply() = 0;
 
