@@ -254,9 +254,6 @@ public:
     ReloadGrid(connections);
     DisableDragColSize();
     DisableDragRowSize();
-    wxWindow* options = wxWindow::FindWindowByName("Options");
-    assert(options && "Null Options window!");
-    SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
     wxWindow::Show(GetNumberRows() > 0);
 
     GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent& ev) {
@@ -633,12 +630,14 @@ private:
 /** Indeed: the General  panel. */
 class GeneralPanel : public wxPanel {
 public:
-  explicit GeneralPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
+  explicit GeneralPanel(wxWindow* parent, wxSize max_size)
+      : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
     SetSizer(sizer);
     auto flags = wxSizerFlags().Border();
     sizer->Add(new UploadOptionsChoice(this), flags);
     sizer->Add(new PrioritiesBtn(this), flags);
+    SetMaxSize(max_size);
   }
 
 private:
@@ -725,13 +724,15 @@ private:
 /** Indeed: The "Advanced" panel. */
 class AdvancedPanel : public wxPanel {
 public:
-  explicit AdvancedPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
+  explicit AdvancedPanel(wxWindow* parent, wxSize max_size)
+      : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, "");
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
     sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
     SetSizer(sizer);
+    SetMaxSize(max_size);
   }
 
 private:
@@ -869,15 +870,16 @@ public:
         m_evt_add_connection(evt_add_connection) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto conn_grid = new Connections(this, m_connections, m_evt_add_connection);
-    vbox->Add(conn_grid, wxSizerFlags(5).Expand().Border());
+    wxSize panel_max_size(conn_grid->GetSize().x, -1);
+    vbox->Add(conn_grid, wxSizerFlags(5).Border());
     vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
               wxSizerFlags().Border());
     vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
     auto panel_flags =
         wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
-    vbox->Add(new GeneralPanel(this), panel_flags);
+    vbox->Add(new GeneralPanel(this, panel_max_size), panel_flags);
 
-    auto advanced_panel = new AdvancedPanel(this);
+    auto advanced_panel = new AdvancedPanel(this, panel_max_size);
     auto on_toggle = [&, advanced_panel, vbox](bool show) {
       advanced_panel->Show(show);
       vbox->SetSizeHints(this);
