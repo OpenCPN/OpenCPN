@@ -84,6 +84,7 @@ public:
   void OnClose(wxCloseEvent &event);
   void ReloadNotificationList();
   void OnAckAllButton(wxCommandEvent &event);
+  void SetColorScheme();
 
 private:
   wxScrolledWindow *m_sWindow;

@@ -159,14 +159,18 @@ void NotificationPanel::OnAckButton(wxCommandEvent& event) {
 
 void NotificationPanel::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
+  wxColor back_color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
+  wxBrush bg(back_color, wxBRUSHSTYLE_SOLID);
+  dc.SetBackground(bg);
+  dc.Clear();
 
   int penWidth = 2;  // m_penWidthUnselected;
-  wxColour color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
-  wxColour border = GetDialogColor(DLG_UNSELECTED_ACCENT);
+  wxColour box_color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
+  wxColour box_border = GetGlobalColor("GREY3");
 
-  wxBrush b(color, wxBRUSHSTYLE_SOLID);
+  wxBrush b(box_color, wxBRUSHSTYLE_SOLID);
   dc.SetBrush(b);
-  dc.SetPen(wxPen(border, penWidth));
+  dc.SetPen(wxPen(box_border, penWidth));
 
   dc.DrawRoundedRectangle(5, 5, GetSize().x - 10, GetSize().y - 10, 5);
 }
@@ -229,6 +233,7 @@ void NotificationListPanel::ReloadNotificationPanels() {
 
   for (auto panel : panels) {
     AddNotificationPanel(panel);
+    DimeControl(panel);
   }
 
   GetSizer()->FitInside(this);
@@ -291,6 +296,7 @@ NotificationsList::NotificationsList(wxWindow* parent) : wxDialog() {
 
   DimeControl(this);
 }
+void NotificationsList::SetColorScheme() { DimeControl(this); }
 
 void NotificationsList::ReloadNotificationList() {
   m_notifications_list_panel->ReloadNotificationPanels();
