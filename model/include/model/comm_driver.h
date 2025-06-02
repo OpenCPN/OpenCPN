@@ -42,11 +42,20 @@ enum class CommStatus { Ok, NotImplemented, NotSupported, NameInUse };
 class AbstractCommDriver;  // forward
 
 /**
- * Interface implemented by transport layer and possible other parties
+ * Interface for handling incoming messages.
+ *
+ * Implemented by transport layer and possible other parties
  * like test code which should handle incoming messages
+ *
+ * @interface DriverListener comm_driver.h "model/comm_driver.h"
  */
 class DriverListener {
 public:
+  /**
+   * Destroy the Driver Listener object.
+   */
+  virtual ~DriverListener() = default;
+
   /** Handle a received message. */
   virtual void Notify(std::shared_ptr<const NavMsg> message) = 0;
 
