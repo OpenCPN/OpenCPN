@@ -72,15 +72,9 @@
 
 // GRIBUICtrlBarBase
 #define CONTROL_BAR 1000
-#define ID_BTNPREV 1001
-#define ID_CTRLTIME 1002
-#define ID_BTNNEXT 1003
 #define ID_CTRLALTITUDE 1004
-#define ID_BTNNOW 1005
 #define ID_BTNZOOMTC 1006
 #define ID_BTNSHOWCDATA 1007
-#define ID_BTNPLAY 1008
-#define ID_TIMELINE 1009
 #define ID_BTNOPENFILE 1010
 #define ID_BTNSETTING 1011
 #define ID_BTNREQUEST \
@@ -176,13 +170,8 @@ class GRIBUICtrlBarBase : public wxDialog {
 private:
 protected:
   wxFlexGridSizer* m_fgCtrlBarSizer;
-  wxBitmapButton* m_bpPrev;
-  wxChoice* m_cRecordForecast;
-  wxBitmapButton* m_bpNext;
-  wxBitmapButton* m_bpNow;
   wxBitmapButton* m_bpZoomToCenter;
   wxBitmapButton* m_bpShowCursorData;
-  wxBitmapButton* m_bpPlay;
   wxBitmapButton* m_bpOpenFile;
   wxBitmapButton* m_bpSettings;
   wxBitmapButton* m_bpRequest;
@@ -196,15 +185,9 @@ protected:
   virtual void OnMouseEvent(wxMouseEvent& event) { event.Skip(); }
   virtual void OnPaint(wxPaintEvent& event) { event.Skip(); }
   virtual void OnSize(wxSizeEvent& event) { event.Skip(); }
-  virtual void OnPrev(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnRecordForecast(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnNext(wxCommandEvent& event) { event.Skip(); }
   virtual void OnAltitude(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnNow(wxCommandEvent& event) { event.Skip(); }
   virtual void OnZoomToCenterClick(wxCommandEvent& event) { event.Skip(); }
   virtual void OnShowCursorData(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnPlayStop(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnTimeline(wxScrollEvent& event) { event.Skip(); }
   virtual void OnOpenFile(wxCommandEvent& event) { event.Skip(); }
   virtual void OnSettings(wxCommandEvent& event) { event.Skip(); }
   virtual void OnRequestForecastData(wxCommandEvent& event) { event.Skip(); }
@@ -212,7 +195,6 @@ protected:
 
 public:
   wxBitmapButton* m_bpAltitude;
-  wxSlider* m_sTimeline;
 
   GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id = CONTROL_BAR,
                     const wxString& title = wxEmptyString,

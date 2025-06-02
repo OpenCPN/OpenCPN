@@ -3622,6 +3622,14 @@ wxDateTime GetTimelineSelectedTime() {
   return wxInvalidDateTime;
 }
 
+bool IsTimelinePlayerRunning() {
+  Timeline *timeline = GetGlobalTimeline();
+  if (timeline) {
+    return timeline->IsPlaying();
+  }
+  return false;
+}
+
 void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
   ConfigureStatusBar();
   ConfigureTimeline();

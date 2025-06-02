@@ -78,6 +78,11 @@ public:
    */
   wxDateTime GetSelectedTimestamp() const { return m_selectedTimestamp; }
 
+  /**
+   * Returns true if the timeline is currently playing.
+   */
+  bool IsPlaying() const { return m_isPlaying; }
+
 private:
   // GUI components
   wxStaticText* m_timestampLabel;

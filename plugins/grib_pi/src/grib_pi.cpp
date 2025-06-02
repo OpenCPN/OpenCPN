@@ -326,14 +326,12 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         // with current index
         m_pGribCtrlBar->CreateActiveFileFromNames(
             m_pGribCtrlBar->m_bGRIBActiveFile->GetFileNames());
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 2:
         // only rebuild  data list with current index and new timezone
         // This no longer applicable because the timezone is set in the
         // OpenCPN core global settings (Options -> Display -> General)
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 1:
@@ -867,6 +865,36 @@ void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
     m_boat_time = pfix.FixTime;
   } else {
     m_boat_time = wxDateTime::Now().GetTicks();
+  }
+}
+
+void grib_pi::OnTimelineTimeChanged(const wxDateTime &selectedTime) {
+  // Handle global timeline time change from OpenCPN
+  if (!m_pGribCtrlBar) return;
+
+  if (selectedTime.IsValid()) {
+    // Get the corresponding GRIB record set for this time
+    GribTimelineRecordSet *timelineSet =
+        m_pGribCtrlBar->GetTimeLineRecordSet(selectedTime);
+
+    if (timelineSet) {
+      // Update the GRIB overlay display to show data for the selected time
+      m_pGribCtrlBar->SetGribTimelineRecordSet(timelineSet);
+
+      // Update cursor data tracking for the new time
+      m_pGribCtrlBar->UpdateTrackingControl();
+
+      // Trigger a refresh of the display
+      if (m_parent_window) {
+        RequestRefresh(m_parent_window);
+      }
+    }
+  } else {
+    // Invalid time - clear the timeline set
+    m_pGribCtrlBar->SetGribTimelineRecordSet(nullptr);
+    if (m_parent_window) {
+      RequestRefresh(m_parent_window);
+    }
   }
 }
 

@@ -6905,5 +6905,9 @@ extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
  * time selected
  */
 DECL_EXP wxDateTime GetTimelineSelectedTime();
+/**
+ * Returns true if the timeline player is running.
+ */
+extern "C" DECL_EXP bool IsTimelinePlayerRunning();
 
 #endif  //_PLUGIN_H_
