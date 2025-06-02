@@ -40,6 +40,7 @@
 #include "gui_lib.h"
 #include "svg_utils.h"
 #include "model/datetime.h"
+#include "navutil.h"
 
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -143,6 +144,8 @@ NotificationPanel::NotificationPanel(
   m_ack_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                      &NotificationPanel::OnAckButton, this);
 
+  DimeControl(m_ack_button);
+
   SetAutoLayout(true);
   Fit();
 }
@@ -175,6 +178,7 @@ NotificationListPanel::NotificationListPanel(wxWindow* parent, wxWindowID id,
   SetSizer(new wxBoxSizer(wxVERTICAL));
   SetScrollRate(0, 5);
   ReloadNotificationPanels();
+  DimeControl(this);
 }
 
 NotificationListPanel::~NotificationListPanel() {}
@@ -285,9 +289,7 @@ NotificationsList::NotificationsList(wxWindow* parent) : wxDialog() {
       this, wxID_ANY, wxDefaultPosition, wxSize(-1, 300));
   topsizer->Add(m_notifications_list_panel, 0, wxALL | wxEXPAND, border_size);
 
-  // SetAutoLayout(true);
-
-  // topsizer->Fit(this);
+  DimeControl(this);
 }
 
 void NotificationsList::ReloadNotificationList() {
