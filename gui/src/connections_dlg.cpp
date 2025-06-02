@@ -263,7 +263,8 @@ public:
       OnMouseMove(ev);
       ev.Skip();
     });
-
+    GetGridWindow()->Bind(wxEVT_MOUSEWHEEL,
+                          [&](wxMouseEvent& ev) { OnWheel(ev); });
     Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
     Bind(wxEVT_GRID_CELL_LEFT_CLICK,
@@ -275,6 +276,22 @@ public:
     conn_change_lstnr.Init(
         m_conn_states.evt_conn_status_change,
         [&](ObservedEvt&) { OnConnectionChange(m_connections); });
+  }
+
+  /** Mouse wheel: scroll the TopScroll window */
+  void OnWheel(wxMouseEvent& ev) {
+    auto w = static_cast<wxScrolledWindow*>(
+        wxWindow::FindWindowByName(TopScrollWindowName));
+    assert(w && "No TopScroll window found");
+    int xpos;
+    int ypos;
+    w->GetViewStart(&xpos, &ypos);
+    int x;
+    int y;
+    w->GetScrollPixelsPerUnit(&x, &y);
+    // Not sure where the factor "4" comes from...
+    int dir = ev.GetWheelRotation();
+    w->Scroll(-1, ypos - dir / y / 4);
   }
 
   /** Reload grid using data from given list of connections. */
