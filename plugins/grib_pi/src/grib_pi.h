@@ -106,7 +106,8 @@ public:
   //    The override PlugIn Methods
   bool MouseEventHook(wxMouseEvent &event) override;
   bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
-  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) override;
+  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                int canvasIndex) override;
   void SetCursorLatLon(double lat, double lon) override;
   void OnContextMenuItemCallback(int id) override;
   void SetPluginMessage(wxString &message_id, wxString &message_body) override;

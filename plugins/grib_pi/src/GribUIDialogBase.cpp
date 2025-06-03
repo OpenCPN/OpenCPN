@@ -62,7 +62,8 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
                            wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
     fgSizer51->Add(m_bpShowCursorData, 0, wxALL, 1);
 
-    // Play and timeline controls removed - now handled by global OpenCPN timeline
+    // Play and timeline controls removed - now handled by global OpenCPN
+    // timeline
 
     m_bpOpenFile = nullptr;
     //         m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE,
@@ -230,7 +231,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
   this->Connect(wxEVT_PAINT, wxPaintEventHandler(GRIBUICtrlBarBase::OnPaint));
 #endif
   // Timeline controls removed - event handlers no longer needed
-  
+
   m_bpAltitude->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(GRIBUICtrlBarBase::OnAltitude),
                         nullptr, this);
@@ -320,7 +321,7 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase() {
                    wxPaintEventHandler(GRIBUICtrlBarBase::OnPaint));
   this->Disconnect(wxEVT_SIZE, wxSizeEventHandler(GRIBUICtrlBarBase::OnSize));
   // Timeline controls removed - disconnect events no longer needed
-  
+
   m_bpAltitude->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(GRIBUICtrlBarBase::OnAltitude),
                            nullptr, this);
