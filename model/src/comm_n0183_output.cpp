@@ -211,6 +211,9 @@ bool CreateOutputConnection(const wxString& com_name,
   } else if (com_name.Lower().StartsWith("udp") ||
              com_name.Lower().StartsWith("tcp")) {
     CommDriverN0183Net* drv_net_n0183(nullptr);
+    driver =
+        FindDriver(drivers, com_name.ToStdString(), NavAddr::Bus::N0183).get();
+
     if (!driver) {
       NetworkProtocol protocol = UDP;
       if (com_name.Lower().StartsWith("tcp")) protocol = TCP;
@@ -226,7 +229,7 @@ bool CreateOutputConnection(const wxString& com_name,
       cp.NetProtocol = protocol;
       cp.NetworkAddress = address;
       cp.NetworkPort = port;
-      cp.IOSelect = DS_TYPE_INPUT_OUTPUT;
+      cp.IOSelect = DS_TYPE_OUTPUT;  // DS_TYPE_INPUT_OUTPUT;
 
       MakeCommDriver(&cp);
       auto& me =
@@ -379,9 +382,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
   PrepareOutputChannel(com_name, dlg_ctx, params_save, b_restoreStream,
                        btempStream);
 
+  std::string target_iface =
+      com_name.AfterFirst(':').ToStdString();  // For serial ports
+  if (com_name.Lower().StartsWith("udp") || com_name.Lower().StartsWith("tcp"))
+    target_iface = com_name.ToStdString();  // for network
+
   auto& target_driver =
-      FindDriver(registry.GetDrivers(), com_name.AfterFirst(':').ToStdString(),
-                 NavAddr::Bus::N0183);
+      FindDriver(registry.GetDrivers(), target_iface, NavAddr::Bus::N0183);
 
   auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
   if (!drv_n0183) {
