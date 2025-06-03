@@ -871,7 +871,7 @@ public:
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto conn_grid = new Connections(this, m_connections, m_evt_add_connection);
     wxSize panel_max_size(conn_grid->GetSize().x, -1);
-    vbox->Add(conn_grid, wxSizerFlags(5).Border());
+    vbox->Add(conn_grid, wxSizerFlags().Border());
     vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
               wxSizerFlags().Border());
     vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
