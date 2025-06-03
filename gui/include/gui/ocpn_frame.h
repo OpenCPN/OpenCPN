@@ -219,8 +219,12 @@ public:
   void TogglebFollow(ChartCanvas* cc);
   void ToggleFullScreen();
   void ToggleChartBar(ChartCanvas* cc);
+  /**
+   * Toggles the visibility (show or hide) of the timeline widget.
+   */
   void ToggleTimeline();
-  Timeline* GetGlobalTimeline();  // Global access function for plugin API
+  Timeline* GetTimeline() const { return m_pTimeline; }
+
   void SetbFollow(ChartCanvas* cc);
   void ClearbFollow(ChartCanvas* cc);
   void ToggleChartOutlines(ChartCanvas* cc);
@@ -288,14 +292,15 @@ public:
   void UpdateAISMOBRoute(const AisTargetData* ptarget);
 
   wxStatusBar* m_pStatusBar;
+  /**
+   * Timeline instance for managing time-based events and visualizations.
+   */
   Timeline* m_pTimeline;
   wxMenuBar* m_pMenuBar;
   int nBlinkerTick;
   bool m_bTimeIsSet;
 
   wxTimer InitTimer;
-
-  Timeline* GetTimeline() const { return m_pTimeline; }
 
   int m_iInitCount;
   bool m_initializing;

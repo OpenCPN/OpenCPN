@@ -195,7 +195,8 @@ void Timeline::DrawTimeline(wxDC& dc) {
   /** Draw "now" indicator if it's within the visible range. */
   wxDateTime now = wxDateTime::Now();
   if (m_startTimestamp <= now && now <= m_startTimestamp + m_timelineDuration) {
-    DrawTimeIndicator(dc, now, wxColour(0, 0, 200));  // Blue for "now"
+    DrawTimeIndicator(dc, now,
+                      wxColour(80, 140, 255));  // More visible blue for "now"
   }
 }
 
@@ -524,21 +525,48 @@ void Timeline::DrawTimeIndicator(wxDC& dc, const wxDateTime& timestamp,
 
   // Only draw if the indicator would be visible in the panel (with margin)
   if (x >= -50 && x <= width + 50) {
-    dc.SetPen(wxPen(color, 2));
-    dc.DrawLine(x, 0, x, height);
+    // Check if this is the "now" indicator (blue color means it's the current
+    // time)
+    bool isNowIndicator =
+        (color == wxColour(0, 0, 200) || color == wxColour(50, 150, 255) ||
+         color == wxColour(80, 140, 255));
 
-    // Draw triangles at top and bottom
-    wxPoint points[3];
-    points[0] = wxPoint(x, 0);
-    points[1] = wxPoint(x - 3, 6);
-    points[2] = wxPoint(x + 3, 6);
-    dc.SetBrush(wxBrush(color));
-    dc.DrawPolygon(3, points);
+    if (isNowIndicator) {
+      // Draw dotted line for "now" indicator with more visible blue
+      wxPen dottedPen(wxColour(80, 140, 255),
+                      3);  // Thicker line and more saturated blue
+      dottedPen.SetStyle(wxPENSTYLE_SHORT_DASH);  // Use short dash instead of
+                                                  // dot for better visibility
+      dc.SetPen(dottedPen);
+      dc.DrawLine(x, 0, x, height);
+    } else {
+      // Draw solid line for selected time indicator
+      dc.SetPen(wxPen(color, 2));
+      dc.DrawLine(x, 0, x, height);
 
-    points[0] = wxPoint(x, height);
-    points[1] = wxPoint(x - 3, height - 6);
-    points[2] = wxPoint(x + 3, height - 6);
-    dc.DrawPolygon(3, points);
+      // Draw inverted triangles (tips facing each other) for selected time
+      dc.SetBrush(wxBrush(color));
+      dc.SetPen(wxPen(color, 1));  // Set pen for triangle outline
+
+      // Top triangle - tip pointing down toward center
+      wxPoint topTriangle[3];
+      topTriangle[0] = wxPoint(x, 6);      // Tip pointing down
+      topTriangle[1] = wxPoint(x - 4, 0);  // Left corner at top edge
+      topTriangle[2] = wxPoint(x + 4, 0);  // Right corner at top edge
+      dc.DrawPolygon(3, topTriangle);
+
+      // Bottom triangle - tip pointing up toward center (positioned well within
+      // bounds)
+      wxPoint bottomTriangle[3];
+      bottomTriangle[0] = wxPoint(
+          x, height -
+                 10);  // Tip pointing up, 10px from bottom to ensure visibility
+      bottomTriangle[1] =
+          wxPoint(x - 4, height - 4);  // Left corner 4px from bottom
+      bottomTriangle[2] =
+          wxPoint(x + 4, height - 4);  // Right corner 4px from bottom
+      dc.DrawPolygon(3, bottomTriangle);
+    }
   }  // End visibility check
 }
 

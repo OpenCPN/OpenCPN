@@ -47,7 +47,7 @@
 #define PLUGIN_VERSION_MINOR 0
 
 #define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 16
+#define MY_API_VERSION_MINOR 21
 
 #include "ocpn_plugin.h"
 
@@ -122,6 +122,7 @@ public:
   void MoveDialog(wxDialog *dialog, wxPoint position);
   void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) override;
   void OnTimelineTimeChanged(const wxDateTime &selectedTime) override;
+  bool IsTimeInGribRange(const wxDateTime &time);
 
   // Other public methods
   void SetCtrlBarXY(wxPoint p) { m_CtrlBarxy = p; }

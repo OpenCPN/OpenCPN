@@ -884,7 +884,20 @@ void grib_pi::OnTimelineTimeChanged(const wxDateTime &selectedTime) {
       // Update cursor data tracking for the new time
       m_pGribCtrlBar->UpdateTrackingControl();
 
+      // Provide user feedback about data availability
+      if (IsTimeInGribRange(selectedTime)) {
+        // Data is available - update status or UI as needed
+        // Could add status message here if needed
+      }
+
       // Trigger a refresh of the display
+      if (m_parent_window) {
+        RequestRefresh(m_parent_window);
+      }
+    } else {
+      // No GRIB data available for this time
+      m_pGribCtrlBar->SetGribTimelineRecordSet(nullptr);
+      // Could provide user feedback about no data available
       if (m_parent_window) {
         RequestRefresh(m_parent_window);
       }
@@ -896,6 +909,19 @@ void grib_pi::OnTimelineTimeChanged(const wxDateTime &selectedTime) {
       RequestRefresh(m_parent_window);
     }
   }
+}
+
+bool grib_pi::IsTimeInGribRange(const wxDateTime &time) {
+  if (!m_pGribCtrlBar || !m_pGribCtrlBar->m_bGRIBActiveFile) return false;
+
+  ArrayOfGribRecordSets *rsa =
+      m_pGribCtrlBar->m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  if (rsa->GetCount() == 0) return false;
+
+  wxDateTime start = wxDateTime(rsa->Item(0).m_Reference_Time);
+  wxDateTime end = wxDateTime(rsa->Item(rsa->GetCount() - 1).m_Reference_Time);
+
+  return (time >= start && time <= end);
 }
 
 //----------------------------------------------------------------------------------------------------------

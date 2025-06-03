@@ -242,6 +242,11 @@ public:
   void SetDialogsStyleSizePosition(bool force_recompute = false);
   /** Set the icon and tooltip for the download request button. */
   void SetRequestButtonBitmap(int type);
+
+  // Timeline integration methods
+  void UpdateTimelineWithGribData();
+  void AddGribTimelineDecorations();
+  wxDateTime GetOptimalInitialTime();
   void OnMouseEvent(wxMouseEvent &event);
   GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
   bool InDataPlot(int id) {
@@ -335,16 +340,13 @@ private:
   void MenuAppend(wxMenu *menu, int id, wxString label, wxItemKind kind,
                   wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = nullptr);
   void OnZoomToCenterClick(wxCommandEvent &event);
-  void OnNow(wxCommandEvent &event) {
-    ComputeBestForecastForNow();
-  }
+  void OnNow(wxCommandEvent &event) { ComputeBestForecastForNow(); }
   void OnAltitude(wxCommandEvent &event);
   void OnOpenFile(wxCommandEvent &event);
   /** Callback invoked when user clicks download/request forecast data. */
   void OnRequestForecastData(wxCommandEvent &event);
   void createRequestDialog();
   void OnCompositeDialog(wxCommandEvent &event);
-
 
   void OnShowCursorData(wxCommandEvent &event);
 
@@ -355,7 +357,6 @@ private:
   bool GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin,
                          double *latmax, double *lonmin, double *lonmax);
   wxDateTime GetNow();
-
 
   //    Data
   CursorData *m_gCursorData;
@@ -369,7 +370,6 @@ private:
   int m_FileIntervalIndex;
   bool m_pNowMode;
   bool m_HasAltitude;
-
 
   wxSize m_DialogsOffset;
   double m_projected_lat;

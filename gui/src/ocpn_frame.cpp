@@ -3601,7 +3601,7 @@ void MyFrame::ConfigureTimeline() {
     }
   }
 
-  // Trigger layout update if timeline visibility changed
+  // Trigger layout update if timeline visibility changed.
   if (needsLayoutUpdate) {
     g_pauimgr->Update();
   }
