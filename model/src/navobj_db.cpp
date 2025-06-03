@@ -25,12 +25,8 @@
 #include <cmath>
 #include <memory>
 #include <vector>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 #include <string>
 #include <wx/dir.h>
-#include <wx/toplevel.h>
 
 #include "model/base_platform.h"
 #include "model/navobj_db.h"
@@ -38,7 +34,6 @@
 #include "model/notification.h"
 #include "model/notification_manager.h"
 #include "wx/filename.h"
-#include "model/datetime.h"
 #include "model/comm_appmsg_bus.h"
 
 extern BasePlatform* g_BasePlatform;
@@ -69,7 +64,7 @@ bool CreateTables(sqlite3* db) {
   // Track tables
   const char* create_tables_sql = R"(
         CREATE TABLE IF NOT EXISTS tracks (
-            guid TEXT PRIMARY KEY,
+            guid TEXT PRIMARY KEY NOT NULL,
             name TEXT,
             description TEXT,
             visibility INTEGER,
@@ -102,7 +97,7 @@ bool CreateTables(sqlite3* db) {
 
 
         CREATE TABLE IF NOT EXISTS routes (
-            guid TEXT PRIMARY KEY,
+            guid TEXT PRIMARY KEY NOT NULL,
             name TEXT,
             start_string TEXT,
             end_string TEXT,
@@ -120,7 +115,7 @@ bool CreateTables(sqlite3* db) {
 
 
         CREATE TABLE IF NOT EXISTS routepoints (
-            guid TEXT PRIMARY KEY,
+            guid TEXT PRIMARY KEY NOT NULL,
             lat REAL,
             lon REAL,
             Symbol TEXT,
