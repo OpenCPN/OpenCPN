@@ -20,6 +20,7 @@
 #include "model/config_vars.h"
 #include "model/conn_params.h"
 #include "model/conn_states.h"
+#include "model/notification_manager.h"
 
 #include "connections_dlg.h"
 
@@ -28,11 +29,10 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
+#include "OCPNPlatform.h"
 #include "priority_gui.h"
-#include "model/notification_manager.h"
 #include "std_filesystem.h"
 #include "svg_utils.h"
-#include "OCPNPlatform.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -53,7 +53,7 @@ static const auto kUtfGear = wxString::FromUTF8(u8"\u2699");
 static const auto kUtfMultiplyX = wxString::FromUTF8(u8"\u2715");
 static const auto kUtfTrashbin = wxString::FromUTF8(u8"\U0001f5d1");
 
-const char* const TopScrollWindowName = "TopScroll";
+static const char* const TopScrollWindowName = "TopScroll";
 
 static inline bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
@@ -109,7 +109,7 @@ public:
   const wxBitmap check_mark;
 };
 
-// Custom renderer class for rendering bitmap in a grid cell
+/** Custom renderer class for rendering bitmap in a grid cell */
 class BitmapCellRenderer : public wxGridCellRenderer {
 public:
   BitmapCellRenderer(const wxBitmap& bitmap)
@@ -521,6 +521,7 @@ private:
     if (refresh_needed) ForceRefresh();
   }
 
+  /** HandleSort() helper: change column used to sort. */
   void SetSortingColumn(int col) {
     if (GetSortingColumn() != wxNOT_FOUND) {
       int old_col = GetSortingColumn();
@@ -924,7 +925,7 @@ public:
   }
 };
 
-/** Main window: connections grid, "Add new connection", general options. */
+/** Main window: Panel with a single TopScroll child. */
 ConnectionsDlg::ConnectionsDlg(
     wxWindow* parent, const std::vector<ConnectionParams*>& connections)
     : wxPanel(parent, wxID_ANY), m_connections(connections) {
