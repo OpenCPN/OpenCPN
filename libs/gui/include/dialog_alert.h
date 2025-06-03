@@ -28,9 +28,16 @@
 
 /**
  * Alert confirmation listener interface.
+ *
+ * @interface IAlertConfirmation dialog_alert.h "dialog_alert.h"
  */
 class IAlertConfirmation {
 public:
+  /**
+   * Destroy the IAlertConfirmation object.
+   */
+  virtual ~IAlertConfirmation() = default;
+
   /**
    * Handle confirmation response.
    * @param result User response.
