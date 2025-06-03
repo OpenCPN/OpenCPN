@@ -20,6 +20,7 @@
 #include "model/config_vars.h"
 #include "model/conn_params.h"
 #include "model/conn_states.h"
+#include "model/notification_manager.h"
 
 #include "connections_dlg.h"
 
@@ -28,11 +29,10 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
+#include "OCPNPlatform.h"
 #include "priority_gui.h"
-#include "model/notification_manager.h"
 #include "std_filesystem.h"
 #include "svg_utils.h"
-#include "OCPNPlatform.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -52,6 +52,8 @@ static const auto kUtfFisheye = wxString::FromUTF8(u8"\u25c9");
 static const auto kUtfGear = wxString::FromUTF8(u8"\u2699");
 static const auto kUtfMultiplyX = wxString::FromUTF8(u8"\u2715");
 static const auto kUtfTrashbin = wxString::FromUTF8(u8"\U0001f5d1");
+
+static const char* const TopScrollWindowName = "TopScroll";
 
 static inline bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
@@ -107,7 +109,7 @@ public:
   const wxBitmap check_mark;
 };
 
-// Custom renderer class for rendering bitmap in a grid cell
+/** Custom renderer class for rendering bitmap in a grid cell */
 class BitmapCellRenderer : public wxGridCellRenderer {
 public:
   BitmapCellRenderer(const wxBitmap& bitmap)
@@ -223,25 +225,6 @@ private:
   EventVar& m_evt_add_connection;
 };
 
-/** Scrollable window wrapping the client i. e., the grid. */
-class ScrolledWindow : public wxScrolledWindow {
-public:
-  ScrolledWindow(wxWindow* parent)
-      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL) {}
-
-  /** Set contents and size limits for scrollable area. */
-  void AddClient(wxWindow* client, wxSize max_size, wxSize min_size) {
-    auto vbox = new wxBoxSizer(wxVERTICAL);
-    vbox->Add(client, wxSizerFlags().Border());
-    SetSizer(vbox);
-    SetMinClientSize(min_size);
-    SetMaxSize(max_size);
-    vbox->Layout();
-    SetScrollRate(0, 10);
-  }
-};
-
 /** Grid with existing connections: type, port, status, etc. */
 class Connections : public wxGrid {
 public:
@@ -253,6 +236,7 @@ public:
         m_on_conn_delete(on_conn_update),
         m_last_tooltip_cell(100),
         m_icons(parent) {
+    ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     SetTable(new wxGridStringTable(), false);
     GetTable()->AppendCols(8);
     HideCol(7);
@@ -270,21 +254,14 @@ public:
     ReloadGrid(connections);
     DisableDragColSize();
     DisableDragRowSize();
-    wxWindow* options = wxWindow::FindWindowByName("Options");
-    assert(options && "Null Options window!");
-    SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
     wxWindow::Show(GetNumberRows() > 0);
 
     GetGridWindow()->Bind(wxEVT_MOTION, [&](wxMouseEvent& ev) {
       OnMouseMove(ev);
       ev.Skip();
     });
-
-    GetGridWindow()->Bind(wxEVT_MOUSEWHEEL, [&](wxMouseEvent& ev) {
-      OnWheel(ev);
-      ev.Skip();
-    });
-
+    GetGridWindow()->Bind(wxEVT_MOUSEWHEEL,
+                          [&](wxMouseEvent& ev) { OnWheel(ev); });
     Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
     Bind(wxEVT_GRID_CELL_LEFT_CLICK,
@@ -298,16 +275,20 @@ public:
         [&](ObservedEvt&) { OnConnectionChange(m_connections); });
   }
 
+  /** Mouse wheel: scroll the TopScroll window */
   void OnWheel(wxMouseEvent& ev) {
-    auto p = GetParent();
-    auto psw = static_cast<ScrolledWindow*>(p);
-    int dir = ev.GetWheelRotation();
-    int xpos, ypos;
-    psw->GetViewStart(&xpos, &ypos);
-    int xsu, ysu;
-    psw->GetScrollPixelsPerUnit(&xsu, &ysu);
+    auto w = static_cast<wxScrolledWindow*>(
+        wxWindow::FindWindowByName(TopScrollWindowName));
+    assert(w && "No TopScroll window found");
+    int xpos;
+    int ypos;
+    w->GetViewStart(&xpos, &ypos);
+    int x;
+    int y;
+    w->GetScrollPixelsPerUnit(&x, &y);
     // Not sure where the factor "4" comes from...
-    psw->Scroll(-1, ypos - (dir / ysu) / 4);
+    int dir = ev.GetWheelRotation();
+    w->Scroll(-1, ypos - dir / y / 4);
   }
 
   /** Reload grid using data from given list of connections. */
@@ -472,7 +453,8 @@ private:
       HandleDelete(row);
     }
   }
-  /** Handle mouse movements i. e., the tooltips. */
+
+  /** Handle mouse movements i.e., the tooltips. */
   void OnMouseMove(wxMouseEvent& ev) {
     wxPoint pt = ev.GetPosition();
     int row = YToRow(pt.y);
@@ -539,6 +521,7 @@ private:
     if (refresh_needed) ForceRefresh();
   }
 
+  /** HandleSort() helper: change column used to sort. */
   void SetSortingColumn(int col) {
     if (GetSortingColumn() != wxNOT_FOUND) {
       int old_col = GetSortingColumn();
@@ -648,12 +631,14 @@ private:
 /** Indeed: the General  panel. */
 class GeneralPanel : public wxPanel {
 public:
-  explicit GeneralPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
+  explicit GeneralPanel(wxWindow* parent, wxSize max_size)
+      : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
     SetSizer(sizer);
     auto flags = wxSizerFlags().Border();
     sizer->Add(new UploadOptionsChoice(this), flags);
     sizer->Add(new PrioritiesBtn(this), flags);
+    SetMaxSize(max_size);
   }
 
 private:
@@ -740,13 +725,15 @@ private:
 /** Indeed: The "Advanced" panel. */
 class AdvancedPanel : public wxPanel {
 public:
-  explicit AdvancedPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
+  explicit AdvancedPanel(wxWindow* parent, wxSize max_size)
+      : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, "");
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
     sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
     SetSizer(sizer);
+    SetMaxSize(max_size);
   }
 
 private:
@@ -874,53 +861,87 @@ private:
   };
 };
 
-/** Main window: connections grid, "Add new connection", general options. */
-ConnectionsDlg::ConnectionsDlg(
-    wxWindow* parent, const std::vector<ConnectionParams*>& connections)
-    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-              wxTAB_TRAVERSAL, "ConnectionsDlg"),
-      m_connections(connections) {
-  auto vbox = new wxBoxSizer(wxVERTICAL);
-  auto scrolled_window = new ScrolledWindow(this);
-  auto conn_grid =
-      new Connections(scrolled_window, m_connections, m_evt_add_connection);
-  scrolled_window->AddClient(conn_grid, conn_grid->GetGridMaxSize(),
-                             conn_grid->GetGridMinSize());
-  vbox->Add(scrolled_window, wxSizerFlags(5).Expand().Border());
-  vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
-            wxSizerFlags().Border());
-  vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
-  auto panel_flags = wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
-  vbox->Add(new GeneralPanel(this), panel_flags);
+/** Top panel: connections grid, "Add new connection", general options. */
+class TopPanel : public wxPanel {
+public:
+  TopPanel(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
+           EventVar& evt_add_connection)
+      : wxPanel(parent, wxID_ANY),
+        m_connections(connections),
+        m_evt_add_connection(evt_add_connection) {
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    auto conn_grid = new Connections(this, m_connections, m_evt_add_connection);
+    wxSize panel_max_size(conn_grid->GetSize().x, -1);
+    vbox->Add(conn_grid, wxSizerFlags().Border());
+    vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
+              wxSizerFlags().Border());
+    vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
+    auto panel_flags =
+        wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
+    vbox->Add(new GeneralPanel(this, panel_max_size), panel_flags);
 
-  auto advanced_panel = new AdvancedPanel(this);
-  auto on_toggle = [&, advanced_panel, vbox](bool show) {
-    advanced_panel->Show(show);
+    auto advanced_panel = new AdvancedPanel(this, panel_max_size);
+    auto on_toggle = [&, advanced_panel, vbox](bool show) {
+      advanced_panel->Show(show);
+      vbox->SetSizeHints(this);
+      vbox->Fit(this);
+    };
+    vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
+    vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
+
+    SetSizer(vbox);
     vbox->SetSizeHints(this);
     vbox->Fit(this);
-  };
-  vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
-  vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
+    wxWindow::Fit();
+    Show();
 
-  SetSizer(vbox);
-  SetAutoLayout(true);
-  wxWindow::Fit();
+    auto on_evt_update_connections = [&, conn_grid](ObservedEvt&) {
+      conn_grid->ReloadGrid(TheConnectionParams());
+      conn_grid->Show(conn_grid->GetNumberRows() > 0);
+      Layout();
+    };
+    m_add_connection_lstnr.Init(m_evt_add_connection,
+                                on_evt_update_connections);
+  }
 
-  auto on_evt_update_connections = [&, conn_grid,
-                                    scrolled_window](ObservedEvt&) {
-    conn_grid->ReloadGrid(TheConnectionParams());
-    conn_grid->Show(conn_grid->GetNumberRows() > 0);
-    scrolled_window->SetMinClientSize(conn_grid->GetGridMinSize());
-    scrolled_window->SetMaxSize(conn_grid->GetGridMaxSize());
-    Layout();
-  };
-  m_add_connection_lstnr.Init(m_evt_add_connection, on_evt_update_connections);
+private:
+  const std::vector<ConnectionParams*>& m_connections;
+  EventVar& m_evt_add_connection;
+  ObsListener m_add_connection_lstnr;
 };
 
-void ConnectionsDlg::OnResize() {
-  Layout();
-  Refresh();
-  Update();
+/** Top scroll window, adds scrollbars to TopPanel. */
+class TopScroll : public wxScrolledWindow {
+public:
+  TopScroll(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
+            EventVar& evt_add_connection)
+      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                         wxVSCROLL | wxALWAYS_SHOW_SB, TopScrollWindowName) {
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    vbox->Add(new TopPanel(this, connections, evt_add_connection),
+              wxSizerFlags(1).Expand());
+    SetSizer(vbox);
+    SetScrollRate(0, 10);
+  }
+};
+
+/** Main window: Panel with a single TopScroll child. */
+ConnectionsDlg::ConnectionsDlg(
+    wxWindow* parent, const std::vector<ConnectionParams*>& connections)
+    : wxPanel(parent, wxID_ANY), m_connections(connections) {
+  auto vbox = new wxBoxSizer(wxVERTICAL);
+  vbox->Add(new TopScroll(this, connections, m_evt_add_connection),
+            wxSizerFlags(1).Expand());
+  SetSizer(vbox);
+  wxWindow::Fit();
+  Show();
+};
+
+void ConnectionsDlg::OnResize(const wxSize& size) {
+  auto w = wxWindow::FindWindowByName(TopScrollWindowName);
+  if (!w) return;
+  w->SetMinSize(size);
+  Fit();
 }
 
 void ConnectionsDlg::DoApply(wxWindow* root) {

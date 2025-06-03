@@ -3834,6 +3834,9 @@ void ChartCanvas::SetColorScheme(ColorScheme cs) {
   if (m_muiBar) m_muiBar->SetColorScheme(cs);
 
   if (pWorldBackgroundChart) pWorldBackgroundChart->SetColorScheme(cs);
+
+  if (m_NotificationsList) m_NotificationsList->SetColorScheme();
+
 #ifdef ocpnUSE_GL
   if (g_bopengl && m_glcc) {
     m_glcc->SetColorScheme(cs);

@@ -19,6 +19,9 @@ _Plugn Packaging and development_
 *Håkan Svensson* +
 _Comms and Plugin integration_
 
+*Sebastien Rosset* +
+_Feature and code quality updates_
+
 *Sean D'Epagnier* +
 _OpenGL Architecture_
 

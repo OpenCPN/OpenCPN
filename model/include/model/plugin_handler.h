@@ -160,6 +160,9 @@ public:
   /** Return path to metadata XML file. */
   std::string GetMetadataPath();
 
+  /** Return path to user, writable metadata XML file. */
+  std::string GetUserMetadataPath();
+
   /** Set path to metadata XML file. */
   void setMetadata(std::string path) { metadataPath = path; }
 

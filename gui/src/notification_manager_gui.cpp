@@ -40,6 +40,7 @@
 #include "gui_lib.h"
 #include "svg_utils.h"
 #include "model/datetime.h"
+#include "navutil.h"
 
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -143,6 +144,8 @@ NotificationPanel::NotificationPanel(
   m_ack_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                      &NotificationPanel::OnAckButton, this);
 
+  DimeControl(m_ack_button);
+
   SetAutoLayout(true);
   Fit();
 }
@@ -156,14 +159,18 @@ void NotificationPanel::OnAckButton(wxCommandEvent& event) {
 
 void NotificationPanel::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
+  wxColor back_color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
+  wxBrush bg(back_color, wxBRUSHSTYLE_SOLID);
+  dc.SetBackground(bg);
+  dc.Clear();
 
   int penWidth = 2;  // m_penWidthUnselected;
-  wxColour color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
-  wxColour border = GetDialogColor(DLG_UNSELECTED_ACCENT);
+  wxColour box_color = GetDialogColor(DLG_UNSELECTED_BACKGROUND);
+  wxColour box_border = GetGlobalColor("GREY3");
 
-  wxBrush b(color, wxBRUSHSTYLE_SOLID);
+  wxBrush b(box_color, wxBRUSHSTYLE_SOLID);
   dc.SetBrush(b);
-  dc.SetPen(wxPen(border, penWidth));
+  dc.SetPen(wxPen(box_border, penWidth));
 
   dc.DrawRoundedRectangle(5, 5, GetSize().x - 10, GetSize().y - 10, 5);
 }
@@ -175,6 +182,7 @@ NotificationListPanel::NotificationListPanel(wxWindow* parent, wxWindowID id,
   SetSizer(new wxBoxSizer(wxVERTICAL));
   SetScrollRate(0, 5);
   ReloadNotificationPanels();
+  DimeControl(this);
 }
 
 NotificationListPanel::~NotificationListPanel() {}
@@ -225,6 +233,7 @@ void NotificationListPanel::ReloadNotificationPanels() {
 
   for (auto panel : panels) {
     AddNotificationPanel(panel);
+    DimeControl(panel);
   }
 
   GetSizer()->FitInside(this);
@@ -285,10 +294,9 @@ NotificationsList::NotificationsList(wxWindow* parent) : wxDialog() {
       this, wxID_ANY, wxDefaultPosition, wxSize(-1, 300));
   topsizer->Add(m_notifications_list_panel, 0, wxALL | wxEXPAND, border_size);
 
-  // SetAutoLayout(true);
-
-  // topsizer->Fit(this);
+  DimeControl(this);
 }
+void NotificationsList::SetColorScheme() { DimeControl(this); }
 
 void NotificationsList::ReloadNotificationList() {
   m_notifications_list_panel->ReloadNotificationPanels();
