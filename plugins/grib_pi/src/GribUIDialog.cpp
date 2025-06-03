@@ -474,11 +474,38 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   SetTitle(title);
   SetTimeLineMax(false);
   SetFactoryOptions();
-  if (pPlugIn->GetStartOptions() &&
-      m_TimeLineHours != 0)  // fix a crash for one date files
-    ComputeBestForecastForNow();
-  else
+
+  // Initialize the timeline with appropriate time when a GRIB file is loaded
+  if (m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() && m_TimeLineHours != 0) {
+    // Get the time range of the GRIB file
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if (rsa && rsa->GetCount() > 0) {
+      wxDateTime gribStartTime = rsa->Item(0).m_Reference_Time;
+      wxDateTime gribEndTime = rsa->Item(rsa->GetCount() - 1).m_Reference_Time;
+      wxDateTime now = wxDateTime::Now();
+
+      // Determine the best initial time to display
+      wxDateTime initialTime;
+
+      if (pPlugIn->GetStartOptions()) {
+        // User preference: try to show current time
+        initialTime = now;
+      } else {
+        // User preference: show GRIB data starting point, but if current time
+        // is within the GRIB range, use current time for better UX
+        if (now >= gribStartTime && now <= gribEndTime) {
+          initialTime = now;  // Current time is within GRIB range
+        } else {
+          initialTime = gribStartTime;  // Start with first available GRIB time
+        }
+      }
+
+      // Set the forecast for the chosen initial time
+      ComputeBestForecast(initialTime);
+    }
+  } else {
     TimelineChanged();
+  }
 
   // populate  altitude choice and show if necessary
   if (m_pTimelineSet && m_bGRIBActiveFile)
@@ -1224,14 +1251,29 @@ void GRIBUICtrlBar::TimelineChanged() {
   }
 
   wxDateTime time = TimelineTime();
-  SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
+  GribTimelineRecordSet *timelineSet = GetTimeLineRecordSet(time);
 
-  UpdateTrackingControl();
-
-  RequestRefresh(GetGRIBCanvas());
+  if (timelineSet) {
+    SetGribTimelineRecordSet(timelineSet);
+    UpdateTrackingControl();
+    RequestRefresh(GetGRIBCanvas());
+  } else {
+    // If we can't get a timeline set for the current time,
+    // try to get one for the first available time in the GRIB file
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if (rsa && rsa->GetCount() > 0) {
+      wxDateTime firstTime = rsa->Item(0).m_Reference_Time;
+      timelineSet = GetTimeLineRecordSet(firstTime);
+      if (timelineSet) {
+        SetGribTimelineRecordSet(timelineSet);
+        UpdateTrackingControl();
+        // Send this time to the global timeline
+        pPlugIn->SendTimelineMessage(firstTime);
+        RequestRefresh(GetGRIBCanvas());
+      }
+    }
+  }
 }
-
-
 
 int GRIBUICtrlBar::GetNearestIndex(wxDateTime time, int model) {
   /* get closest index to update combo box */
@@ -1286,6 +1328,29 @@ wxDateTime GRIBUICtrlBar::TimelineTime() {
   if (globalTime.IsValid()) {
     return globalTime;
   }
+
+  // If no global timeline time, try to get a reasonable time from GRIB data
+  if (m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()) {
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if (rsa && rsa->GetCount() > 0) {
+      // Use current time clamped to GRIB data range
+      wxDateTime now = wxDateTime::Now();
+      wxDateTime firstTime = rsa->Item(0).m_Reference_Time;
+      wxDateTime lastTime = rsa->Item(rsa->GetCount() - 1).m_Reference_Time;
+
+      // If current time is within GRIB range, use it
+      if (now >= firstTime && now <= lastTime) {
+        return now;
+      }
+      // Otherwise, use the time closest to now
+      if (now < firstTime) {
+        return firstTime;
+      } else {
+        return lastTime;
+      }
+    }
+  }
+
   return wxDateTime::Now();
 }
 
@@ -1507,8 +1572,6 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues(double &M, double &A, int idx1,
   return true;
 }
 
-
-
 void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
   if (IsTimelinePlayerRunning())
     return;  // do nothing when play back is running !
@@ -1666,21 +1729,45 @@ void GRIBUICtrlBar::DoZoomToCenter() {
   CanvasJumpToPosition(wx, clat, clon, ppm);
 }
 
-void GRIBUICtrlBar::ComputeBestForecastForNow() {
+void GRIBUICtrlBar::ComputeBestForecast(const wxDateTime &time) {
   if (!m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK())) {
     pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(nullptr);
     return;
   }
 
-  wxDateTime now = GetNow();
+  // Get the GRIB data range
+  wxDateTime gribStartTime, gribEndTime;
+  ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  if (rsa && rsa->GetCount() > 0) {
+    gribStartTime = rsa->Item(0).m_Reference_Time;
+    gribEndTime = rsa->Item(rsa->GetCount() - 1).m_Reference_Time;
+  } else {
+    // No GRIB data available
+    pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(nullptr);
+    return;
+  }
 
-  // Get and set the timeline record set for "now"
-  SetGribTimelineRecordSet(GetTimeLineRecordSet(now));
+  // Clamp the requested time to the available GRIB data range
+  wxDateTime selectedTime = time;
+  if (selectedTime < gribStartTime) {
+    selectedTime = gribStartTime;
+  } else if (selectedTime > gribEndTime) {
+    selectedTime = gribEndTime;
+  }
+
+  // Configure the timeline to show the full GRIB range with the best time
+  // positioned optimally for weather forecasting (at 1/4 from start for maximum
+  // forecast view)
+  SetTimelineSelectedTime(selectedTime, gribEndTime - gribStartTime);
+
+  // Get and set the timeline record set for the best time
+  SetGribTimelineRecordSet(GetTimeLineRecordSet(selectedTime));
 
   UpdateTrackingControl();
 
-  // Send the "now" time to the global timeline
-  pPlugIn->SendTimelineMessage(now);
+  // Send the time to other plugins for backwards compatibility
+  // Newer plugins should use the plugin API to get the timeline time.
+  pPlugIn->SendTimelineMessage(selectedTime);
   RequestRefresh(GetGRIBCanvas());
 }
 

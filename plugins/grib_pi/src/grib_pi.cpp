@@ -873,35 +873,11 @@ void grib_pi::OnTimelineTimeChanged(const wxDateTime &selectedTime) {
   if (!m_pGribCtrlBar) return;
 
   if (selectedTime.IsValid()) {
-    // Get the corresponding GRIB record set for this time
-    GribTimelineRecordSet *timelineSet =
-        m_pGribCtrlBar->GetTimeLineRecordSet(selectedTime);
+    // Update the GRIB display for the new timeline time
+    m_pGribCtrlBar->TimelineChanged();
 
-    if (timelineSet) {
-      // Update the GRIB overlay display to show data for the selected time
-      m_pGribCtrlBar->SetGribTimelineRecordSet(timelineSet);
-
-      // Update cursor data tracking for the new time
-      m_pGribCtrlBar->UpdateTrackingControl();
-
-      // Provide user feedback about data availability
-      if (IsTimeInGribRange(selectedTime)) {
-        // Data is available - update status or UI as needed
-        // Could add status message here if needed
-      }
-
-      // Trigger a refresh of the display
-      if (m_parent_window) {
-        RequestRefresh(m_parent_window);
-      }
-    } else {
-      // No GRIB data available for this time
-      m_pGribCtrlBar->SetGribTimelineRecordSet(nullptr);
-      // Could provide user feedback about no data available
-      if (m_parent_window) {
-        RequestRefresh(m_parent_window);
-      }
-    }
+    // Also send the time to other plugins that might be listening
+    SendTimelineMessage(selectedTime);
   } else {
     // Invalid time - clear the timeline set
     m_pGribCtrlBar->SetGribTimelineRecordSet(nullptr);

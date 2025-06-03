@@ -3622,6 +3622,15 @@ wxDateTime GetTimelineSelectedTime() {
   return wxInvalidDateTime;
 }
 
+void SetTimelineSelectedTime(const wxDateTime &selectedTime,
+                             const wxTimeSpan &duration,
+                             double selectedPosition) {
+  Timeline *timeline = GetGlobalTimeline();
+  if (timeline) {
+    timeline->ConfigureTimeline(selectedTime, duration, selectedPosition);
+  }
+}
+
 bool IsTimelinePlayerRunning() {
   Timeline *timeline = GetGlobalTimeline();
   if (timeline) {

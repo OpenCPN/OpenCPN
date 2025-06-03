@@ -219,7 +219,24 @@ public:
   GribTimelineRecordSet *GetTimeLineRecordSet(wxDateTime time);
   void TimelineChanged();
   void CreateActiveFileFromNames(const wxArrayString &filenames);
-  void ComputeBestForecastForNow();
+  /**
+   * Computes and sets the best forecast for the specified time.
+   *
+   * Finds the best available GRIB data for the given time, sets it as the
+   * active timeline record set, and updates the display. If the time falls
+   * outside the GRIB data range, it will use the closest available time.
+   *
+   * @param time The time to get forecast data for
+   */
+  void ComputeBestForecast(const wxDateTime &time);
+
+  /**
+   * Computes and sets the best forecast for the current computer time.
+   *
+   * Convenience method that calls ComputeBestForecast() with the current
+   * computer time, clamped to the GRIB data range if necessary.
+   */
+  void ComputeBestForecastForNow() { ComputeBestForecast(GetNow()); }
   /** Set the ViewPort under the mouse. */
   void SetViewPortUnderMouse(PlugIn_ViewPort *vp);
   /** Set the ViewPort that has the focus */
@@ -340,7 +357,6 @@ private:
   void MenuAppend(wxMenu *menu, int id, wxString label, wxItemKind kind,
                   wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = nullptr);
   void OnZoomToCenterClick(wxCommandEvent &event);
-  void OnNow(wxCommandEvent &event) { ComputeBestForecastForNow(); }
   void OnAltitude(wxCommandEvent &event);
   void OnOpenFile(wxCommandEvent &event);
   /** Callback invoked when user clicks download/request forecast data. */

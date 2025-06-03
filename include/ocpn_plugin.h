@@ -6899,14 +6899,36 @@ extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
 
 /**
- * Gets the currently selected time from the global timeline.
+ * Gets the currently selected time from the timeline widget.
  *
  * @return Currently selected time in local time, or wxInvalidDateTime if no
  * time selected
  */
 DECL_EXP wxDateTime GetTimelineSelectedTime();
+
 /**
- * Returns true if the timeline player is running.
+ * Sets the currently selected time in the timeline widget, with an optional
+ * duration and position.
+ *
+ * @param selectedTime The selected time, in local time.
+ * @param duration Timeline duration (e.g. wxTimeSpan::Days(365) for 1 year)
+ * @param selectedPosition Position of selected time within range (0.0=start,
+ * 0.5=center, 1.0=end)
+ *
+ * Examples:
+ *   // Climatology plugin: Show 1 year centered on selected date
+ *   SetTimelineSelectedTime(selectedDate, wxTimeSpan::Days(365), 0.5);
+ *
+ *   // Tides plugin: Show 48 hours starting from current time
+ *   SetTimelineSelectedTime(now, wxTimeSpan::Days(2), 0.0);
+ */
+DECL_EXP void SetTimelineSelectedTime(
+    const wxDateTime &selectedTime,
+    const wxTimeSpan &duration = wxTimeSpan::Days(10),
+    double selectedPosition = 0.2);
+
+/**
+ * Returns true if the timeline wdiget is currently running.
  */
 extern "C" DECL_EXP bool IsTimelinePlayerRunning();
 

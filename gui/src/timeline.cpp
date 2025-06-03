@@ -920,6 +920,35 @@ int Timeline::GetTimeIndicatorPosition(const wxDateTime& timestamp) const {
   return static_cast<int>(fraction * width);
 }
 
+void Timeline::SetSelectedTimestamp(const wxDateTime& timestamp) {
+  m_selectedTimestamp = timestamp;
+  EnsureTimestampVisible();
+  UpdateTimelineDisplay();
+  NotifyPluginsTimeChanged();
+}
+
+void Timeline::ConfigureTimeline(const wxDateTime& selectedTime,
+                                 const wxTimeSpan& duration,
+                                 double selectedPosition) {
+  // Set the selected time
+  m_selectedTimestamp = selectedTime;
+
+  // Calculate start time based on duration and position
+  wxTimeSpan beforeSelected = wxTimeSpan::Seconds(static_cast<long long>(
+      duration.GetSeconds().ToLong() * selectedPosition));
+  m_startTimestamp = selectedTime - beforeSelected;
+  m_timelineDuration = duration;
+
+  // Ensure the timeline duration is reasonable
+  if (m_timelineDuration.GetSeconds() <= 0) {
+    m_timelineDuration = wxTimeSpan::Days(7);  // Default fallback
+  }
+
+  // Update the display
+  UpdateTimelineDisplay();
+  NotifyPluginsTimeChanged();
+}
+
 void Timeline::NotifyPluginsTimeChanged() {
   // Notify plugins that support the timeline API
   SendTimelineSelectedTimeToPlugins(m_selectedTimestamp);

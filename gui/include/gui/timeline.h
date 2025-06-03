@@ -79,6 +79,23 @@ public:
   wxDateTime GetSelectedTimestamp() const { return m_selectedTimestamp; }
 
   /**
+   * Sets the currently selected timestamp.
+   *
+   * @param timestamp The timestamp to set as selected
+   */
+  void SetSelectedTimestamp(const wxDateTime& timestamp);
+
+  /**
+   * Configures the timeline with comprehensive settings.
+   *
+   * @param selectedTime The currently focused time
+   * @param duration Timeline duration (used if start/end times invalid)
+   * @param selectedPosition Position of selected time (0.0=start, 1.0=end)
+   */
+  void ConfigureTimeline(const wxDateTime& selectedTime,
+                         const wxTimeSpan& duration, double selectedPosition);
+
+  /**
    * Returns true if the timeline is currently playing.
    */
   bool IsPlaying() const { return m_isPlaying; }
