@@ -1042,6 +1042,12 @@ std::string PluginHandler::GetMetadataPath() {
   return metadataPath;
 }
 
+std::string PluginHandler::GetUserMetadataPath() {
+  std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
+  path += SEP;
+  return path + "ocpn-plugins.xml";
+}
+
 const std::map<std::string, int> PluginHandler::GetCountByTarget() {
   auto plugins = GetInstalled();
   auto a = GetAvailable();
