@@ -62,6 +62,23 @@ wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
 
 Multiplexer *g_pMUX;
 
+bool CheckSumCheck(const std::string &sentence) {
+  size_t check_start = sentence.find('*');
+  if (check_start == wxString::npos || check_start > sentence.size() - 3)
+    return false;  // * not found, or it didn't have 2 characters following it.
+
+  std::string check_str = sentence.substr(check_start + 1, 2);
+  unsigned long checksum = strtol(check_str.c_str(), 0, 16);
+  if (checksum == 0L && check_str != "00") return false;
+
+  unsigned char calculated_checksum = 0;
+  for (std::string::const_iterator i = sentence.begin() + 1;
+       i != sentence.end() && *i != '*'; ++i)
+    calculated_checksum ^= static_cast<unsigned char>(*i);
+
+  return calculated_checksum == checksum;
+}
+
 Multiplexer::Multiplexer(MuxLogCallbacks cb, bool &filter_behaviour)
     : m_log_callbacks(cb), m_legacy_input_filter_behaviour(filter_behaviour) {
   m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
@@ -170,14 +187,12 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     }
   }
 
-  // FIXME (dave)  Flag checksum errors, but fix and process the sentence
-  // anyway
-  // std::string goodMessage(message);
-  // bool checksumOK = CheckSumCheck(event.GetNMEAString());
-  // if (!checksumOK) {
-  // goodMessage = stream->FixChecksum(goodMessage);
-  // goodEvent->SetNMEAString(goodMessage);
-  //}
+  // Flag checksum errors
+  bool checksumOK = CheckSumCheck(n0183_msg->payload);
+  if (!checksumOK) {
+    b_error = true;
+    error_msg = _("Checksum error in NMEA0183 message");
+  }
 
   wxString port(n0183_msg->source->iface);
   LogInputMessage(n0183_msg, !bpass_input_filter, b_error, error_msg);
