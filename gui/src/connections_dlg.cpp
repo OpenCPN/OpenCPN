@@ -337,16 +337,6 @@ public:
     AutoSize();
   }
 
-  wxSize GetGridMaxSize() const {
-    return wxSize(GetCharWidth() * 120,
-                  std::min(GetNumberRows() + 3, 10) * 2 * GetCharHeight());
-  }
-
-  wxSize GetGridMinSize() const {
-    return wxSize(GetCharWidth() * 80,
-                  std::min(GetNumberRows() + 3, 6) * 2 * GetCharHeight());
-  }
-
   /** std::sort support: Compare two ConnectionParams w r t state. */
   class ConnStateCompare {
   public:
