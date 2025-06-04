@@ -7749,19 +7749,16 @@ void options::ApplyChanges(wxCommandEvent& event) {
   if (g_canvasConfig != m_screenConfig) m_returnChanges |= CONFIG_CHANGED;
   g_canvasConfig = m_screenConfig;
 
-  // if (event.GetId() == ID_APPLY)
-  {
-    gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
-    m_CurrentDirList =
-        *m_pWorkDirList;  // Perform a deep copy back to main database.
+  gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
+  m_CurrentDirList =
+      *m_pWorkDirList;  // Perform a deep copy back to main database.
 
-    //  We can clear a few flag bits on "Apply", so they won't be recognised at
-    //  the "Close" click. Their actions have already been accomplished once...
-    // m_returnChanges &= ~(CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE);
-    // k_charts = 0;
+  //  We can clear a few flag bits on "Apply", so they won't be recognised at
+  //  the "Close" click. Their actions have already been accomplished once...
+  m_returnChanges &= ~(CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE);
+  k_charts = 0;
 
-    gFrame->RefreshAllCanvas();
-  }
+  gFrame->RefreshAllCanvas();
 
   // Some layout changes requiring a new options instance?
   if (m_bneedNew) m_returnChanges |= NEED_NEW_OPTIONS;
