@@ -621,15 +621,6 @@ void ConnectionEditDialog::Init() {
 
   m_tAuthToken->Hide();
 
-  m_cbCheckCRC = new wxCheckBox(m_scrolledwin, wxID_ANY, _("Control checksum"),
-                                wxDefaultPosition, wxDefaultSize, 0);
-  m_cbCheckCRC->SetValue(TRUE);
-  m_cbCheckCRC->SetToolTip(
-      _("If checked, only the sentences with a valid checksum are passed "
-        "through"));
-  fgSizer5->Add(m_cbCheckCRC, 0, wxALL, 2);
-  fgSizer5->AddSpacer(1);
-
   m_cbGarminHost = new wxCheckBox(m_scrolledwin, wxID_ANY,
                                   _("Use Garmin (GRMN) mode for input"),
                                   wxDefaultPosition, wxDefaultSize, 0);
@@ -963,7 +954,6 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   m_stPrecision->Show(visible && advanced);
   m_choicePrecision->Show(visible && advanced);
   m_stPrecision->Show(visible && advanced);
-  m_cbCheckCRC->Show(visible && advanced);
   m_stAuthToken->Show(visible && advanced);
   m_tAuthToken->Show(visible && advanced);
   if (visible) {
@@ -1145,7 +1135,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
   m_collapse_box->ShowItems(true);
   m_cbInput->Show();
   m_cbOutput->Show();
-  m_cbCheckCRC->Show(advanced);
   m_stPrecision->Show(true);
   m_choicePrecision->Show(true);
 
@@ -1175,7 +1164,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       ShowInFilter(false);
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
-      m_cbCheckCRC->Hide();
       m_stNetDataProtocol->Hide();
       m_choiceNetDataProtocol->Hide();
     } else {
@@ -1205,7 +1193,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
     ShowInFilter(false);
     m_stPrecision->Hide();
     m_choicePrecision->Hide();
-    m_cbCheckCRC->Hide();
     m_cbGarminHost->Hide();
     m_collapse_box->ShowItems(false);
   }
@@ -1241,7 +1228,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
     m_stPrecision->Hide();
     m_choicePrecision->Hide();
-    m_cbCheckCRC->Hide();
 
     m_stNetDataProtocol->Hide();
     m_choiceNetDataProtocol->Hide();
@@ -1256,7 +1242,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbOutput->Hide();
       ShowInFilter(false);
       ShowOutFilter(false);
-      m_cbCheckCRC->Hide();
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
       m_ButtonSKDiscover->Hide();
@@ -1274,7 +1259,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbOutput->Hide();
       ShowInFilter(false);
       ShowOutFilter(false);
-      m_cbCheckCRC->Hide();
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
       m_stNetDataProtocol->Hide();
@@ -1295,7 +1279,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
       if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
           DataProtocol::PROTO_NMEA2000) {
-        m_cbCheckCRC->Hide();
         m_stPrecision->Hide();
         m_choicePrecision->Hide();
 
@@ -1388,7 +1371,6 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
 
   m_comboPort->Select(m_comboPort->FindString(cp->Port));
 
-  m_cbCheckCRC->SetValue(cp->ChecksumCheck);
   m_cbGarminHost->SetValue(cp->Garmin);
   m_cbInput->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
   m_cbOutput->SetValue(cp->IOSelect != DS_TYPE_INPUT);
@@ -1495,7 +1477,6 @@ void ConnectionEditDialog::SetDefaultConnectionParams(void) {
     m_comboPort->Select(0);
     m_comboPort->SetValue(wxEmptyString);  // These two broke it
   }
-  m_cbCheckCRC->SetValue(TRUE);
   m_cbGarminHost->SetValue(FALSE);
   m_cbInput->SetValue(TRUE);
   m_cbOutput->SetValue(FALSE);
@@ -2049,7 +2030,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
         (DataProtocol)m_choiceNetDataProtocol->GetSelection();
 
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
-  pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
+  pConnectionParams->ChecksumCheck = true;
   pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
   pConnectionParams->Garmin = m_cbGarminHost->GetValue();
   pConnectionParams->InputSentenceList =
