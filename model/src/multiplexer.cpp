@@ -191,7 +191,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   bool checksumOK = CheckSumCheck(n0183_msg->payload);
   if (!checksumOK) {
     b_error = true;
-    error_msg = _("Checksum error in NMEA0183 message");
+    error_msg = _("NMEA0183 checksum error");
   }
 
   wxString port(n0183_msg->source->iface);
