@@ -8511,6 +8511,12 @@ void options::DoOnPageChange(size_t page) {
     UpdateChartDirList();
   }
 
+  else if (m_pageConnections == i) {
+    // Only required on some Windows hosts, but should not hurt. See #4570
+    wxWindow* w = m_pListbook->GetCurrentPage();
+    comm_dialog->OnResize(w ? w->GetClientSize() : wxSize());
+  }
+
   else if (m_pageUI == i) {  // 5 is the index of "User Interface" page
     if (!m_itemLangListBox) return;
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
