@@ -418,11 +418,17 @@ bool SendPGN129283(Routeman &routeman, AbstractCommDriver *driver) {
   bool fail_any = false;
   tN2kMsg msg129283;
   RoutePoint *pActivePoint = routeman.GetpActivePoint();
-
+  // N2K, distance units are metres, therefore convert from Nm
+  double xte = routeman.GetCurrentXTEToActivePoint() * 1852.;
+  // N2K, -ve xte, means to the left of the course, steer right, Reverse of
+  // current Routeman logic
+  if (routeman.GetXTEDir() > 0) {
+    xte = -xte;
+  }
   SetN2kPGN129283(msg129283, 0,
                   N2kxtem_Autonomous,  // tN2kXTEMode XTEMode,
                   false,               // bool NavigationTerminated,
-                  routeman.GetCurrentXTEToActivePoint()  // double XTE
+                  xte                  // double XTE
   );
 
   auto dest_addr = std::make_shared<const NavAddr2000>(driver->iface, 255);
