@@ -287,7 +287,7 @@ void SendTimelineSelectedTimeToPlugins(const wxDateTime& selectedTime) {
       switch (pic->m_api_version) {
         case 121: {
           auto* ppi = dynamic_cast<opencpn_plugin_121*>(pic->m_pplugin);
-          if (ppi) ppi->OnTimelineTimeChanged(selectedTime);
+          if (ppi) ppi->OnTimelineSelectedTimeChanged(selectedTime);
           break;
         }
         default:

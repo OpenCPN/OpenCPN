@@ -2031,7 +2031,7 @@ class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
 public:
   opencpn_plugin_121(void *pmgr);
   /**
-   * Notifies plugin when global timeline selection changes.
+   * Notifies plugin when timeline selection changes.
    *
    * Called by OpenCPN when the user changes the selected time in the global
    * timeline widget. Allows plugins to update their display based on the
@@ -2043,7 +2043,7 @@ public:
    * @note Time is in local time.
    * @note Plugin should update its temporal data display to match this time
    */
-  virtual void OnTimelineTimeChanged(const wxDateTime &selectedTime);
+  virtual void OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime);
 };
 
 //------------------------------------------------------------------

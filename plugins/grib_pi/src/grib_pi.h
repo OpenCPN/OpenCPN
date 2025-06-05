@@ -122,7 +122,7 @@ public:
   bool QualifyCtrlBarPosition(wxPoint position, wxSize size);
   void MoveDialog(wxDialog *dialog, wxPoint position);
   void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) override;
-  void OnTimelineTimeChanged(const wxDateTime &selectedTime) override;
+  void OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime) override;
   bool IsTimeInGribRange(const wxDateTime &time);
 
   // Other public methods

@@ -304,7 +304,7 @@ void opencpn_plugin_120::OnContextMenuItemCallbackExt(int id,
 
 // Opencpn_Plugin_121 Implementation
 opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
-void opencpn_plugin_121::OnTimelineTimeChanged(const wxDateTime& selectedTime) {
+void opencpn_plugin_121::OnTimelineSelectedTimeChanged(const wxDateTime& selectedTime) {
 }
 
 DateTimeFormatOptions::DateTimeFormatOptions()
