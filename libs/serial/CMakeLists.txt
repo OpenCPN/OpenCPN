@@ -24,7 +24,7 @@ if(APPLE)
     find_library(FOUNDATION_LIBRARY Foundation)
 endif()
 
-if (CATKIN_ENABLE_TESTING)
+if (NOT ${CATKIN_ENABLE_TESTING} MATCHES "OFF")
     find_package(catkin)
     if(UNIX AND NOT APPLE)
         # If Linux, add rt and pthread
