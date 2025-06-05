@@ -3356,7 +3356,7 @@ void PluginPanel::SetEnabled(bool enabled) {
   if (m_is_safe_panel) return;
   PluginLoader::GetInstance()->SetEnabled(m_plugin.m_common_name, enabled);
   PluginLoader::GetInstance()->UpdatePlugIns();
-  NotifySetupOptionsPlugin(&m_plugin);
+  if (enabled) NotifySetupOptionsPlugin(&m_plugin);
   if (!enabled && !m_bSelected) {
     SetWindowFontStyle(m_pName, wxFONTSTYLE_ITALIC);
     SetWindowFontStyle(m_pVersion, wxFONTSTYLE_ITALIC);
