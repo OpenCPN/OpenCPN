@@ -23,21 +23,22 @@
 #ifndef CONNECT_NEW_DLG__
 #define CONNECT_NEW_DLG__
 
-#include <functional>
+#include <vector>
 
 #include <wx/panel.h>
 #include <wx/scrolwin.h>
+
 #include "model/conn_params.h"
 #include "observable_evtvar.h"
 
 /**
- * The Options | Connections class, basically an UI for maintaining
- * the list of connections.
+ * Options | Connections tab implementaion, basically a UI
+ * for maintaining the list of connections.
  */
 class ConnectionsDlg : public wxPanel {
 public:
   /**
-   * create a new ConnectionsDlg instance.
+   * Create a new ConnectionsDlg instance.
    * @param parent  Containing window
    * @param connections  List of existing connections.
    */
@@ -50,13 +51,13 @@ public:
   void ApplySettings();
 
   /**
-   * Restore all settings in dialog from currently used values, usually globals.
+   * Restore dialog settings from currently used values, usually globals.
    */
   void CancelSettings();
 
   /**
    * Resize the connections tab
-   * @param size New size available for the dialog i.e., GetClintSize()
+   * @param size New size available for the dialog i.e., GetClientSize()
    *   of containing window.
    */
   void OnResize(const wxSize& size);
