@@ -583,7 +583,10 @@ private:
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
     if (cp->bEnabled) MakeCommDriver(cp);
     cp->b_IsSetup = true;
-    if (!cp->bEnabled) SetCellValue(row, 4, kUtfFilledCircle);
+    if (!cp->bEnabled) {
+      SetCellValue(row, 4, kUtfFilledCircle);
+      ForceRefresh();
+    }
   }
 
   /** Handle user click on Edit gear symbol. */
