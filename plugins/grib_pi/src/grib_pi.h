@@ -217,6 +217,13 @@ private:
    */
   bool m_bCopyMissWaveRec;
   int m_bLoadLastOpenFile;
+  /**
+   * Controls the initial date/time selection when loading a GRIB file.
+   * Options include:
+   * - 0: Start at the first forecast in the GRIB file
+   * - 1: Start at the nearest forecast to the current time
+   * - 2: Interpolate to start at the current computer time
+   */
   int m_bStartOptions;
   wxString m_RequestConfig;
   wxString m_bMailToAddresses;

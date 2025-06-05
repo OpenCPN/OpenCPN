@@ -789,11 +789,6 @@ void Timeline::OnMouseMove(wxMouseEvent& event) {
   wxSize panelSize = m_timelinePanel->GetSize();  // Logical pixel size
   int panelWidth = panelSize.GetWidth();          // Logical pixels
 
-  // Debug output for investigating speed mismatch (can be enabled for
-  // debugging) wxLogDebug("Mouse Move: currentX=%d, dragStartX=%d, dx=%d,
-  // panelWidth=%d, offsetX=%d",
-  //           currentX, m_dragStartX, dx, panelWidth, m_dragOffsetX);
-
   if (m_isDraggingIndicator) {
     // Dragging the time indicator: change the selected timestamp
     double fraction = static_cast<double>(dx) / panelWidth;

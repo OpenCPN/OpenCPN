@@ -2038,7 +2038,7 @@ public:
    * selected time.
    *
    * @param selectedTime The newly selected timestamp, or wxInvalidDateTime
-   *                     if no time is selected/timeline is closed
+   *                     if no time is selected.
    *
    * @note Time is in local time.
    * @note Plugin should update its temporal data display to match this time
@@ -6914,6 +6914,11 @@ DECL_EXP wxDateTime GetTimelineSelectedTime();
  * @param duration Timeline duration (e.g. wxTimeSpan::Days(365) for 1 year)
  * @param selectedPosition Position of selected time within range (0.0=start,
  * 0.5=center, 1.0=end)
+ *
+ * @note This function is used to control the timeline display in plugins
+ * like GRIB or climatology. It allows plugins to set the timeline to a
+ * specific time range and position, which is useful for visualizing data
+ * related to the selected time.
  *
  * Examples:
  *   // Climatology plugin: Show 1 year centered on selected date

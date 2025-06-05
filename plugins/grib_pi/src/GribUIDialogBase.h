@@ -417,6 +417,13 @@ public:
   wxCheckBox* m_cbDrawBarbedArrowHead;
   wxCheckBox* m_cZoomToCenterAtInit;
   wxRadioBox* m_rbLoadOptions;
+  /**
+   * Radio box to specify the starting point for the forecast data.
+   * Options include:
+   * - Start at the first forecast in the GRIB file
+   * - Start at the nearest forecast to the current time
+   * - Interpolation to start at the current computer time
+   */
   wxRadioBox* m_rbStartOptions;
   wxString m_grib_dir_sel;
 

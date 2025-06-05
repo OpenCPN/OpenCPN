@@ -475,34 +475,8 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   SetTimeLineMax(false);
   SetFactoryOptions();
 
-  // Initialize the timeline with appropriate time when a GRIB file is loaded
-  if (m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() && m_TimeLineHours != 0) {
-    // Get the time range of the GRIB file
-    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    if (rsa && rsa->GetCount() > 0) {
-      wxDateTime gribStartTime = rsa->Item(0).m_Reference_Time;
-      wxDateTime gribEndTime = rsa->Item(rsa->GetCount() - 1).m_Reference_Time;
-      wxDateTime now = wxDateTime::Now();
-
-      // Determine the best initial time to display
-      wxDateTime initialTime;
-
-      if (pPlugIn->GetStartOptions()) {
-        // User preference: try to show current time
-        initialTime = now;
-      } else {
-        // User preference: show GRIB data starting point, but if current time
-        // is within the GRIB range, use current time for better UX
-        if (now >= gribStartTime && now <= gribEndTime) {
-          initialTime = now;  // Current time is within GRIB range
-        } else {
-          initialTime = gribStartTime;  // Start with first available GRIB time
-        }
-      }
-
-      // Set the forecast for the chosen initial time
-      ComputeBestForecast(initialTime);
-    }
+  if (pPlugIn->GetStartOptions() && m_TimeLineHours != 0) {
+      ComputeBestForecastForNow();
   } else {
     TimelineChanged();
   }
@@ -1156,9 +1130,6 @@ void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {
   ::wxBeginBusyCursor();
 
   dialog->SaveLastPage();
-  if (!m_OverlaySettings.m_bInterpolate) {
-    // Interpolation setting was changed
-  }
   SetTimeLineMax(true);
   SetFactoryOptions();
 
@@ -1782,8 +1753,6 @@ void GRIBUICtrlBar::SetGribTimelineRecordSet(
 }
 
 void GRIBUICtrlBar::SetTimeLineMax(bool SetValue) {
-  // Global timeline now handles time range - this method is no longer needed
-  // but kept for compatibility
   if (SetValue) {
     ComputeBestForecastForNow();
   }
