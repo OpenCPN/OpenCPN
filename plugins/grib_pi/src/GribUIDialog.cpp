@@ -476,7 +476,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   SetFactoryOptions();
 
   if (pPlugIn->GetStartOptions() && m_TimeLineHours != 0) {
-      ComputeBestForecastForNow();
+    ComputeBestForecastForNow();
   } else {
     TimelineChanged();
   }
