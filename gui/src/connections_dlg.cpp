@@ -37,7 +37,6 @@
 
 #include "model/base_platform.h"
 #include "model/comm_drv_factory.h"
-#include "model/comm_drv_registry.h"
 #include "model/comm_util.h"
 #include "model/config_vars.h"
 #include "model/conn_params.h"
@@ -72,6 +71,16 @@ static inline bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
 }
 
+static std::string BitsToDottedMask(unsigned bits) {
+  uint32_t mask = 0xffffffff << (32 - bits);
+  std::stringstream ss;
+  ss << ((mask & 0xff000000) >> 24) << ".";
+  ss << ((mask & 0x00ff0000) >> 16) << ".";
+  ss << ((mask & 0x0000ff00) >> 8) << ".";
+  ss << (mask & 0x000000ff);
+  return ss.str();
+}
+
 /** Standard icons bitmaps: settings gear, trash bin, etc. */
 class StdIcons {
 private:
@@ -79,7 +88,7 @@ private:
   const fs::path m_svg_dir;
 
   /** Return platform dependent icon size. */
-  double GetSize(wxWindow* parent) {
+  double GetSize(const wxWindow* parent) {
     double size = parent->GetCharHeight() * (IsWindows() ? 1.3 : 1.0);
 #if wxCHECK_VERSION(3, 1, 2)
     // Apply scale factor, mostly for Windows. Other platforms
@@ -95,13 +104,13 @@ private:
     return size;
   }
 
-  wxBitmap LoadIcon(const std::string filename) {
+  wxBitmap LoadIcon(const std::string& filename) const {
     fs::path path = m_svg_dir / filename;
     return LoadSVG(path.string(), m_size, m_size);
   }
 
 public:
-  StdIcons(wxWindow* parent)
+  StdIcons(const wxWindow* parent)
       : m_size(GetSize(parent)),
         m_svg_dir(fs::path(g_Platform->GetSharedDataDir().ToStdString()) /
                   "uidata" / "MUI_flat"),
@@ -132,7 +141,7 @@ public:
   void SetBitmap(const wxBitmap& bitmap) { m_bitmap = bitmap; }
 
   void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect,
-            int row, int col, bool isSelected) {
+            int row, int col, bool isSelected) override {
     if (IsWindows()) {
       dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
       dc.DrawRectangle(rect);
@@ -143,12 +152,14 @@ public:
   }
 
   wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row,
-                     int col) {
+                     int col) override {
     // Return the size of the bitmap as the best size for the cell
     return wxSize(m_bitmap.GetWidth(), m_bitmap.GetHeight());
   }
 
-  BitmapCellRenderer* Clone() const { return new BitmapCellRenderer(m_bitmap); }
+  BitmapCellRenderer* Clone() const override {
+    return new BitmapCellRenderer(m_bitmap);
+  }
   ConnState status;
 
 private:
@@ -160,10 +171,10 @@ class ConnCompare {
 public:
   ConnCompare(int col) : m_col(col) {}
 
-  bool operator()(ConnectionParams* p1, ConnectionParams* p2) {
+  bool operator()(const ConnectionParams* p1, const ConnectionParams* p2) {
     switch (m_col) {
       case 0:
-        return int(p1->bEnabled) > int(p2->bEnabled);
+        return static_cast<int>(p1->bEnabled) > static_cast<int>(p2->bEnabled);
       case 1:
         return p1->GetCommProtocol() < p2->GetCommProtocol();
       case 2:
@@ -184,6 +195,8 @@ private:
  */
 class ApplyCancel {
 public:
+  virtual ~ApplyCancel() = default;
+
   /** Make values set by user actually being used. */
   virtual void Apply() = 0;
 
@@ -213,8 +226,7 @@ private:
     dialog.SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
     auto rv = dialog.ShowModal();
     if (rv == wxID_OK) {
-      ConnectionParams* cp = dialog.GetParamsFromControls();
-      if (cp) {
+      if (ConnectionParams* cp = dialog.GetParamsFromControls()) {
         if (cp->GetValidPort()) {
           cp->b_IsSetup = false;  // Trigger new stream
           TheConnectionParams().push_back(cp);
@@ -274,7 +286,8 @@ public:
       ev.Skip();
     });
     GetGridWindow()->Bind(wxEVT_MOUSEWHEEL,
-                          [&](wxMouseEvent& ev) { OnWheel(ev); });
+                          [&](const wxMouseEvent& ev) { OnWheel(ev); });
+    // wxGridEvent.GetCol() and GetRow() are not const until wxWidgets 3.2
     Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
     Bind(wxEVT_GRID_CELL_LEFT_CLICK,
@@ -289,7 +302,7 @@ public:
   }
 
   /** Mouse wheel: scroll the TopScroll window */
-  void OnWheel(wxMouseEvent& ev) {
+  void OnWheel(const wxMouseEvent& ev) {
     auto w = static_cast<wxScrolledWindow*>(
         wxWindow::FindWindowByName(TopScrollWindowName));
     assert(w && "No TopScroll window found");
@@ -341,7 +354,7 @@ public:
   class ConnStateCompare {
   public:
     ConnStateCompare(Connections* connections) : m_conns(connections) {}
-    bool operator()(ConnectionParams* p1, ConnectionParams* p2) {
+    bool operator()(const ConnectionParams* p1, const ConnectionParams* p2) {
       int row1 = m_conns->FindConnectionIndex(p1);
       int row2 = m_conns->FindConnectionIndex(p2);
       if (row1 == -1 && row2 == -1) return false;
@@ -359,9 +372,9 @@ private:
    *  Return pointer to parameters related to row.
    *  @return valid pointer if found, else nullptr.
    */
-  ConnectionParams* FindRowConnection(int row) {
+  ConnectionParams* FindRowConnection(int row) const {
     auto found = find_if(m_connections.begin(), m_connections.end(),
-                         [&](ConnectionParams* p) {
+                         [&](const ConnectionParams* p) {
                            return GetCellValue(row, 7) == p->GetKey();
                          });
     return found != m_connections.end() ? *found : nullptr;
@@ -371,12 +384,12 @@ private:
    * Find index in m_connections for given pointer.
    * @return positive index if found, else -1;
    * */
-  int FindConnectionIndex(ConnectionParams* cp) {
+  int FindConnectionIndex(const ConnectionParams* cp) const {
     using namespace std;
     auto key = cp->GetKey();
-    auto found =
-        find_if(m_connections.begin(), m_connections.end(),
-                [key](ConnectionParams* cp) { return cp->GetKey() == key; });
+    auto found = find_if(
+        m_connections.begin(), m_connections.end(),
+        [key](const ConnectionParams* cp) { return cp->GetKey() == key; });
     if (found == m_connections.end()) return -1;
     return static_cast<int>(found - m_connections.begin());
   }
@@ -392,7 +405,7 @@ private:
   }
 
   /** Set up column attributes: alignment, font size, read-only, etc. */
-  void SetColAttributes(wxWindow* parent) {
+  void SetColAttributes(const wxWindow* parent) {
     if (IsWindows()) {
       // Set all cells to global color scheme
       SetDefaultCellBackgroundColour(GetGlobalColor("DILG1"));
@@ -458,7 +471,7 @@ private:
   }
 
   /** Handle mouse movements i.e., the tooltips. */
-  void OnMouseMove(wxMouseEvent& ev) {
+  void OnMouseMove(const wxMouseEvent& ev) {
     wxPoint pt = ev.GetPosition();
     int row = YToRow(pt.y);
     int col = XToCol(pt.x);
@@ -477,7 +490,8 @@ private:
       if (!(*it)->bEnabled) state = ConnState::Disabled;
       auto row = static_cast<int>(it - connections.begin());
       EnsureRows(row);
-      if (m_renderer_status_vector.size() < (size_t)(row + 1)) continue;
+      if (m_renderer_status_vector.size() < static_cast<size_t>(row + 1))
+        continue;
       switch (state) {
         case ConnState::Disabled:
           if (m_renderer_status_vector[row]->status != ConnState::Disabled) {
@@ -569,13 +583,15 @@ private:
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
     if (cp->bEnabled) MakeCommDriver(cp);
     cp->b_IsSetup = true;
-    if (!cp->bEnabled) SetCellValue(row, 4, kUtfFilledCircle);
+    if (!cp->bEnabled) {
+      SetCellValue(row, 4, kUtfFilledCircle);
+      ForceRefresh();
+    }
   }
 
   /** Handle user click on Edit gear symbol. */
   void HandleEdit(int row) {
-    ConnectionParams* cp = FindRowConnection(row);
-    if (cp) {
+    if (ConnectionParams* cp = FindRowConnection(row)) {
       ConnectionEditDialog dialog(this);
       DimeControl(&dialog);
       dialog.SetPropsLabel(_("Edit Selected Connection"));
@@ -641,7 +657,7 @@ public:
     auto flags = wxSizerFlags().Border();
     sizer->Add(new UploadOptionsChoice(this), flags);
     sizer->Add(new PrioritiesBtn(this), flags);
-    SetMaxSize(max_size);
+    wxWindow::SetMaxSize(max_size);
   }
 
 private:
@@ -664,10 +680,10 @@ private:
       wxArrayString wx_choices;
       for (auto& c : choices) wx_choices.Add(c);
       Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wx_choices);
-      Cancel();
+      UploadOptionsChoice::Cancel();
     }
 
-    void Cancel() {
+    void Cancel() override {
       if (g_bGarminHostUpload)
         SetSelection(1);
       else if (g_GPS_Ident == "FurunoGP3X")
@@ -676,7 +692,7 @@ private:
         SetSelection(0);
     }
 
-    void Apply() {
+    void Apply() override {
       switch (GetSelection()) {
         case 0:
           g_bGarminHostUpload = false;
@@ -690,6 +706,8 @@ private:
           g_bGarminHostUpload = false;
           g_GPS_Ident = "FurunoGP3X";
           break;
+        default:
+          assert(false && "Invalid upload case option");
       }
     }
 
@@ -736,7 +754,7 @@ public:
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
     SetSizer(sizer);
-    SetMaxSize(max_size);
+    wxWindow::SetMaxSize(max_size);
   }
 
 private:
@@ -746,7 +764,6 @@ private:
     BearingsCheckbox(wxWindow* parent)
         : wxCheckBox(parent, wxID_ANY,
                      _("Use magnetic bearing in output sentence APB")) {
-      SetValue(g_bMagneticAPB);
       wxCheckBox::SetValue(g_bMagneticAPB);
     }
 
@@ -773,7 +790,7 @@ private:
       filter_period->SetValue(std::to_string(g_COGFilterSec));
       hbox->Add(filter_period, wxSizerFlags().Border());
       SetSizer(hbox);
-      Cancel();
+      NmeaFilterRow::Cancel();
     }
 
     void Apply() override {
@@ -810,7 +827,7 @@ private:
       text_ctrl->SetValue(g_TalkerIdText);
       hbox->Add(text_ctrl, wxSizerFlags().Border());
       SetSizer(hbox);
-      Cancel();
+      TalkerIdRow::Cancel();
     }
 
     void Apply() override { g_TalkerIdText = text_ctrl->GetValue(); }
@@ -832,7 +849,7 @@ private:
       hbox->Add(new wxStaticText(this, wxID_ANY, _("length (bits): ")), flags);
       hbox->Add(m_spin_ctrl, flags);
       SetSizer(hbox);
-      Cancel();
+      NetmaskRow::Cancel();
 
       Bind(wxEVT_SPINCTRL, [&](wxSpinEvent& ev) {
         m_text->SetLabel(BitsToDottedMask(m_spin_ctrl->GetValue()));
@@ -851,16 +868,6 @@ private:
   private:
     wxSpinCtrl* m_spin_ctrl;
     wxStaticText* m_text;
-
-    std::string BitsToDottedMask(unsigned bits) {
-      uint32_t mask = 0xffffffff << (32 - bits);
-      std::stringstream ss;
-      ss << ((mask & 0xff000000) >> 24) << ".";
-      ss << ((mask & 0x00ff0000) >> 16) << ".";
-      ss << ((mask & 0x0000ff00) >> 8) << ".";
-      ss << (mask & 0x000000ff);
-      return ss.str();
-    }
   };
 };
 
@@ -896,7 +903,7 @@ public:
     vbox->SetSizeHints(this);
     vbox->Fit(this);
     wxWindow::Fit();
-    Show();
+    wxWindow::Show();
 
     auto on_evt_update_connections = [&, conn_grid](ObservedEvt&) {
       conn_grid->ReloadGrid(TheConnectionParams());
@@ -937,7 +944,7 @@ ConnectionsDlg::ConnectionsDlg(
             wxSizerFlags(1).Expand());
   SetSizer(vbox);
   wxWindow::Fit();
-  Show();
+  wxWindow::Show();
 };
 
 void ConnectionsDlg::OnResize(const wxSize& size) {
@@ -949,16 +956,14 @@ void ConnectionsDlg::OnResize(const wxSize& size) {
 
 void ConnectionsDlg::DoApply(wxWindow* root) {
   for (wxWindow* child : root->GetChildren()) {
-    auto widget = dynamic_cast<ApplyCancel*>(child);
-    if (widget) widget->Apply();
+    if (auto widget = dynamic_cast<ApplyCancel*>(child)) widget->Apply();
     DoApply(child);
   }
 }
 
 void ConnectionsDlg::DoCancel(wxWindow* root) {
   for (wxWindow* child : root->GetChildren()) {
-    auto widget = dynamic_cast<ApplyCancel*>(child);
-    if (widget) widget->Cancel();
+    if (auto widget = dynamic_cast<ApplyCancel*>(child)) widget->Cancel();
     DoCancel(child);
   }
 }
