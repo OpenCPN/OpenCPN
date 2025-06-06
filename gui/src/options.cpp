@@ -1761,6 +1761,8 @@ void options::Init(void) {
   m_pagePlugins = -1;
   m_pageConnections = -1;
 
+  pEnableTenHertz = nullptr;
+
   auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
   b_oldhaveWMM = b_haveWMM;
@@ -4151,10 +4153,13 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pEnableZoomToCursor->SetValue(FALSE);
     boxCtrls->Add(pEnableZoomToCursor, verticleInputFlags);
 
+    pEnableTenHertz = nullptr;
+#ifndef ANDROID
     pEnableTenHertz = new wxCheckBox(pDisplayPanel, ID_TENHZCHECKBOX,
                                      _("Enable Ten Hz screen update"));
     pEnableTenHertz->SetValue(FALSE);
     boxCtrls->Add(pEnableTenHertz, verticleInputFlags);
+#endif
 
     if (!g_useMUI) {
       // spacer
@@ -6425,7 +6430,7 @@ void options::SetInitialSettings(void) {
   pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
 
   if (pEnableZoomToCursor) pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
-  pEnableTenHertz->SetValue(g_btenhertz);
+  if (pEnableTenHertz) pEnableTenHertz->SetValue(g_btenhertz);
 
   if (pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
@@ -7418,7 +7423,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   if (pEnableZoomToCursor)
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
 
-  g_btenhertz = pEnableTenHertz->GetValue();
+  if (pEnableTenHertz) g_btenhertz = pEnableTenHertz->GetValue();
 
 #ifdef __ANDROID__
   g_bEnableZoomToCursor = false;

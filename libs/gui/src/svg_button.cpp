@@ -23,8 +23,13 @@
  */
 
 #include "svg_button.h"
+#ifdef ANDROID
+wxBitmap loadAndroidSVG(const char* svg, unsigned int width,
+                        unsigned int height);
+#endif
 
 void SvgButton::LoadIcon(const char* svg) {
+#ifndef ANDROID
     char buffer[2048];
     assert(strlen(svg) < sizeof(buffer) && "svg icon too long");
     strcpy(buffer, svg);
@@ -37,6 +42,10 @@ void SvgButton::LoadIcon(const char* svg) {
     wxSVGDocument svg_doc(wis);
     wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
     SetBitmap(wxBitmap(image));
+#endif
+#else
+    wxBitmap  bm = loadAndroidSVG(svg, GetCharHeight(), GetCharHeight());
+    SetBitmap(bm);
 #endif
   }
 

@@ -4284,6 +4284,11 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
   }
 }
 
+wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
+                        unsigned int height) {
+  return wxBitmap(width, height);
+}
+
 void androidTestCPP() { callActivityMethod_vs("callFromCpp"); }
 
 unsigned int androidColorPicker(unsigned int initialColor) {

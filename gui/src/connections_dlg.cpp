@@ -926,7 +926,8 @@ public:
   TopScroll(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
             EventVar& evt_add_connection)
       : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL | wxALWAYS_SHOW_SB, TopScrollWindowName) {
+                         wxVSCROLL, TopScrollWindowName) {
+    ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new TopPanel(this, connections, evt_add_connection),
               wxSizerFlags(1).Expand());
