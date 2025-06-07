@@ -72,7 +72,7 @@ void BaseDialog::SetInitialSize() {
   rect = display.GetClientArea();
   switch (breakpoint) {
     case GUI::Breakpoint::kExtraSmall:
-      size = wxSize(rect.GetWidth() * 9 / 10, -1);
+      size = wxSize(rect.GetWidth(), -1);
       break;
     case GUI::Breakpoint::kSmall:
     case GUI::Breakpoint::kMedium:
