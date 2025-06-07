@@ -55,10 +55,6 @@
 #include "std_filesystem.h"
 #include "svg_utils.h"
 
-#ifdef __ANDROID__
-#include "androidUTIL.h"
-#endif
-
 extern OCPNPlatform* g_Platform;
 
 static const auto kUtfArrowDown = wxString::FromUTF8(u8"\u25bc");
@@ -69,6 +65,14 @@ static const char* const TopScrollWindowName = "TopScroll";
 
 static inline bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
+}
+
+static inline bool IsAndroid() {
+#ifdef ANDROID
+  return true;
+#else
+  return false;
+#endif
 }
 
 static std::string BitsToDottedMask(unsigned bits) {
@@ -142,10 +146,10 @@ public:
 
   void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect,
             int row, int col, bool isSelected) override {
-    if (IsWindows()) {
-      dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
-      dc.DrawRectangle(rect);
-    }
+    dc.SetBrush(wxBrush(GetGlobalColor("DILG2")));
+    if (IsWindows()) dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
+    dc.DrawRectangle(rect);
+
     // Draw the bitmap centered in the cell
     dc.DrawBitmap(m_bitmap, rect.x + (rect.width - m_bitmap.GetWidth()) / 2,
                   rect.y + (rect.height - m_bitmap.GetHeight()) / 2, true);
@@ -242,9 +246,6 @@ private:
       UpdateDatastreams();
       m_evt_add_connection.Notify();
     }
-#ifdef __ANDROID__
-    androidEnableRotation();
-#endif
   }
 
   EventVar& m_evt_add_connection;
@@ -265,10 +266,21 @@ public:
     SetTable(new wxGridStringTable(), false);
     GetTable()->AppendCols(8);
     HideCol(7);
+    if (IsAndroid()) {
+      SetDefaultRowSize(wxWindow::GetCharHeight() * 2);
+      SetColLabelSize(wxWindow::GetCharHeight() * 2);
+    }
     static const std::array<wxString, 7> headers = {
         "", _("Protocol"), _("In/Out"), _("Data port"), _("Status"), "", ""};
-    for (auto hdr = headers.begin(); hdr != headers.end(); hdr++)
+    int ic = 0;
+    for (auto hdr = headers.begin(); hdr != headers.end(); hdr++, ic++) {
       SetColLabelValue(static_cast<int>(hdr - headers.begin()), *hdr);
+      int col_width = (*hdr).Length() * GetCharWidth();
+      col_width = wxMax(col_width, 6 * GetCharWidth());
+      header_column_widths[ic] = col_width;
+      SetColSize(ic, col_width);
+    }
+
     if (IsWindows()) {
       SetLabelBackgroundColour(GetGlobalColor("DILG1"));
       SetLabelTextColour(GetGlobalColor("DILG3"));
@@ -299,6 +311,12 @@ public:
     conn_change_lstnr.Init(
         m_conn_states.evt_conn_status_change,
         [&](ObservedEvt&) { OnConnectionChange(m_connections); });
+  }
+
+  wxSize GetEstimatedSize() {
+    int rs = 0;
+    for (auto s : header_column_widths) rs += s;
+    return wxSize(rs, -1);
   }
 
   /** Mouse wheel: scroll the TopScroll window */
@@ -345,9 +363,27 @@ public:
       stat_renderer->status = ConnState::Disabled;
       m_renderer_status_vector.push_back(stat_renderer);
       SetCellRenderer(row, 4, stat_renderer);
+      if (IsAndroid()) {
+        wxString sp(protocol);
+        int ssize = sp.Length() * wxWindow::GetCharWidth();
+        header_column_widths[1] = wxMax(header_column_widths[1], ssize);
+        ssize = (*it)->GetIOTypeValueStr().Length() * wxWindow::GetCharWidth();
+        header_column_widths[2] = wxMax(header_column_widths[2], ssize);
+        sp = wxString((*it)->GetStrippedDSPort());
+        ssize = sp.Length() * wxWindow::GetCharWidth();
+        header_column_widths[3] = wxMax(header_column_widths[3], ssize);
+      }
     }
     OnConnectionChange(m_connections);
-    AutoSize();
+
+    if (IsAndroid()) {
+      int ic = 0;
+      for (auto val : header_column_widths) {
+        SetColSize(ic, val);
+        ic++;
+      }
+    } else
+      AutoSize();
   }
 
   /** std::sort support: Compare two ConnectionParams w r t state. */
@@ -645,6 +681,7 @@ private:
   int m_last_tooltip_cell;
   StdIcons m_icons;
   std::vector<BitmapCellRenderer*> m_renderer_status_vector;
+  std::array<int, 7> header_column_widths;
 };
 
 /** Indeed: the General  panel. */
@@ -881,8 +918,11 @@ public:
         m_evt_add_connection(evt_add_connection) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto conn_grid = new Connections(this, m_connections, m_evt_add_connection);
-    wxSize panel_max_size(conn_grid->GetSize().x, -1);
-    vbox->Add(conn_grid, wxSizerFlags().Border());
+    wxSize panel_max_size(conn_grid->GetEstimatedSize());
+    vbox->AddSpacer(wxWindow::GetCharHeight());
+    auto conn_flags = wxSizerFlags().Border();
+    if (IsAndroid()) conn_flags = wxSizerFlags().Border().Expand();
+    vbox->Add(conn_grid, conn_flags);
     vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
               wxSizerFlags().Border());
     vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
@@ -926,13 +966,14 @@ public:
   TopScroll(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
             EventVar& evt_add_connection)
       : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL, TopScrollWindowName) {
+                         wxVSCROLL | wxHSCROLL, TopScrollWindowName) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new TopPanel(this, connections, evt_add_connection),
               wxSizerFlags(1).Expand());
     SetSizer(vbox);
     SetScrollRate(0, 10);
+    if (IsAndroid()) SetScrollRate(1, 1);
   }
 };
 
