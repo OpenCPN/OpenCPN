@@ -30,6 +30,17 @@
 
 #include "dialog_base.h"
 
+/** Given raw_size return a size which is smaller than available screen size */
+static wxSize ActualWindowSize(const wxWindow* context, wxSize raw_size) {
+  int display_ix = wxDisplay::GetFromWindow(context);
+  wxDisplay display(display_ix);
+  wxRect client_area = display.GetClientArea();
+  // some space for OS bars in bottom and/or top.
+  client_area.height -= context->GetCharHeight() * 8;
+  return wxSize(std::min(client_area.width, raw_size.x),
+                std::min(client_area.height, raw_size.y));
+}
+
 BaseDialog::BaseDialog(wxWindow* parent, const std::string& title, long style)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
                style) {
@@ -61,7 +72,7 @@ void BaseDialog::SetInitialSize() {
   rect = display.GetClientArea();
   switch (breakpoint) {
     case GUI::Breakpoint::kExtraSmall:
-      size = wxSize(rect.GetWidth() * 9 / 10, -1);
+      size = wxSize(rect.GetWidth(), -1);
       break;
     case GUI::Breakpoint::kSmall:
     case GUI::Breakpoint::kMedium:
@@ -92,12 +103,10 @@ void BaseDialog::AddHtmlContent(const std::stringstream& html) {
   bool result = html_window->SetPage(html_str.c_str());
   assert(result && "BaseDialog: HTML page not added");
 
-  int html_width, html_height;
   html_window->SetBorders(0);
-  html_window->GetVirtualSize(&html_width, &html_height);
-  html_width += GUI::GetSpacing(this, kDialogPadding * 2);  // prevent scrollbar
-  html_window->SetMinSize(
-      wxSize(html_width, html_height));  // Fit() needs this size!
+  wxSize vsize = html_window->GetVirtualSize();
+  // Fit() needs this size!
+  html_window->SetMinSize(ActualWindowSize(this, vsize));
   html_window->SetBackgroundColour(GetBackgroundColour());
   m_content->Prepend(html_window, wxSizerFlags(1).Expand());
 }
