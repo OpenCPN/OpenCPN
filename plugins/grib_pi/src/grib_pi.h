@@ -47,7 +47,7 @@
 #define PLUGIN_VERSION_MINOR 0
 
 #define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 16
+#define MY_API_VERSION_MINOR 21
 
 #include "ocpn_plugin.h"
 
@@ -85,48 +85,51 @@ enum SettingsDisplay {
   PARTICLES
 };
 
-class grib_pi : public opencpn_plugin_116 {
+class grib_pi : public opencpn_plugin_121 {
 public:
   grib_pi(void *ppimgr);
   ~grib_pi(void);
 
   //    The required PlugIn Methods
-  int Init(void);
-  bool DeInit(void);
+  int Init(void) override;
+  bool DeInit(void) override;
 
-  int GetAPIVersionMajor();
-  int GetAPIVersionMinor();
-  int GetPlugInVersionMajor();
-  int GetPlugInVersionMinor();
-  wxBitmap *GetPlugInBitmap();
-  wxString GetCommonName();
-  wxString GetShortDescription();
-  wxString GetLongDescription();
+  int GetAPIVersionMajor() override;
+  int GetAPIVersionMinor() override;
+  int GetPlugInVersionMajor() override;
+  int GetPlugInVersionMinor() override;
+  wxBitmap *GetPlugInBitmap() override;
+  wxString GetCommonName() override;
+  wxString GetShortDescription() override;
+  wxString GetLongDescription() override;
 
   //    The override PlugIn Methods
-  bool MouseEventHook(wxMouseEvent &event);
-  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
-  void SetCursorLatLon(double lat, double lon);
-  void OnContextMenuItemCallback(int id);
-  void SetPluginMessage(wxString &message_id, wxString &message_body);
-  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+  bool MouseEventHook(wxMouseEvent &event) override;
+  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
+  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                int canvasIndex) override;
+  void SetCursorLatLon(double lat, double lon) override;
+  void OnContextMenuItemCallback(int id) override;
+  void SetPluginMessage(wxString &message_id, wxString &message_body) override;
+  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) override;
   bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
-                                  int canvasIndex);
+                                  int canvasIndex) override;
   void SendTimelineMessage(wxDateTime time);
-  void SetDefaults(void);
+  void SetDefaults(void) override;
   int GetToolBarToolCount(void);
-  void ShowPreferencesDialog(wxWindow *parent);
-  void OnToolbarToolCallback(int id);
+  void ShowPreferencesDialog(wxWindow *parent) override;
+  void OnToolbarToolCallback(int id) override;
   bool QualifyCtrlBarPosition(wxPoint position, wxSize size);
   void MoveDialog(wxDialog *dialog, wxPoint position);
-  void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
+  void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) override;
+  void OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime) override;
+  bool IsTimeInGribRange(const wxDateTime &time);
 
   // Other public methods
   void SetCtrlBarXY(wxPoint p) { m_CtrlBarxy = p; }
   void SetCursorDataXY(wxPoint p) { m_CursorDataxy = p; }
   void SetCtrlBarSizeXY(wxSize p) { m_CtrlBar_Sizexy = p; }
-  void SetColorScheme(PI_ColorScheme cs);
+  void SetColorScheme(PI_ColorScheme cs) override;
   void SetDialogFont(wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog")));
   /**
    * Callback invoked by OpenCPN core whenever the current ViewPort changes or
@@ -134,7 +137,7 @@ public:
    *
    * In multi-canvas configurations, each canvas triggers a viewport update.
    */
-  void SetCurrentViewPort(PlugIn_ViewPort &vp) { m_current_vp = vp; }
+  void SetCurrentViewPort(PlugIn_ViewPort &vp) override { m_current_vp = vp; }
   PlugIn_ViewPort &GetCurrentViewPort() { return m_current_vp; }
 
   void OnGribCtrlBarClose();
@@ -214,6 +217,13 @@ private:
    */
   bool m_bCopyMissWaveRec;
   int m_bLoadLastOpenFile;
+  /**
+   * Controls the initial date/time selection when loading a GRIB file.
+   * Options include:
+   * - 0: Start at the first forecast in the GRIB file
+   * - 1: Start at the nearest forecast to the current time
+   * - 2: Interpolate to start at the current computer time
+   */
   int m_bStartOptions;
   wxString m_RequestConfig;
   wxString m_bMailToAddresses;

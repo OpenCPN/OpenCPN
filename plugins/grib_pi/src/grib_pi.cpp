@@ -70,7 +70,7 @@ bool g_bpause;
 //
 //---------------------------------------------------------------------------------------------------------
 
-grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
+grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_121(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 
@@ -326,14 +326,12 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         // with current index
         m_pGribCtrlBar->CreateActiveFileFromNames(
             m_pGribCtrlBar->m_bGRIBActiveFile->GetFileNames());
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 2:
         // only rebuild  data list with current index and new timezone
         // This no longer applicable because the timezone is set in the
         // OpenCPN core global settings (Options -> Display -> General)
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 1:
@@ -868,6 +866,38 @@ void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   } else {
     m_boat_time = wxDateTime::Now().GetTicks();
   }
+}
+
+void grib_pi::OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime) {
+  // Handle global timeline time change from OpenCPN
+  if (!m_pGribCtrlBar) return;
+
+  if (selectedTime.IsValid()) {
+    // Update the GRIB display for the new timeline time
+    m_pGribCtrlBar->TimelineChanged();
+
+    // Also send the time to other plugins that might be listening
+    SendTimelineMessage(selectedTime);
+  } else {
+    // Invalid time - clear the timeline set
+    m_pGribCtrlBar->SetGribTimelineRecordSet(nullptr);
+    if (m_parent_window) {
+      RequestRefresh(m_parent_window);
+    }
+  }
+}
+
+bool grib_pi::IsTimeInGribRange(const wxDateTime &time) {
+  if (!m_pGribCtrlBar || !m_pGribCtrlBar->m_bGRIBActiveFile) return false;
+
+  ArrayOfGribRecordSets *rsa =
+      m_pGribCtrlBar->m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  if (rsa->GetCount() == 0) return false;
+
+  wxDateTime start = wxDateTime(rsa->Item(0).m_Reference_Time);
+  wxDateTime end = wxDateTime(rsa->Item(rsa->GetCount() - 1).m_Reference_Time);
+
+  return (time >= start && time <= end);
 }
 
 //----------------------------------------------------------------------------------------------------------
