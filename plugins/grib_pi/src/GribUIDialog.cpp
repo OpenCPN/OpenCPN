@@ -1228,21 +1228,10 @@ void GRIBUICtrlBar::TimelineChanged() {
     SetGribTimelineRecordSet(timelineSet);
     UpdateTrackingControl();
     RequestRefresh(GetGRIBCanvas());
-  } else {
-    // If we can't get a timeline set for the current time,
-    // try to get one for the first available time in the GRIB file
-    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    if (rsa && rsa->GetCount() > 0) {
-      wxDateTime firstTime = rsa->Item(0).m_Reference_Time;
-      timelineSet = GetTimeLineRecordSet(firstTime);
-      if (timelineSet) {
-        SetGribTimelineRecordSet(timelineSet);
-        UpdateTrackingControl();
-        // Send this time to the global timeline
-        pPlugIn->SendTimelineMessage(firstTime);
-        RequestRefresh(GetGRIBCanvas());
-      }
-    }
+  }
+  // Always try to have valid data displayed - if timeline set failed, clear the overlay
+  if (!timelineSet) {
+    SetGribTimelineRecordSet(nullptr);
   }
 }
 
@@ -1729,7 +1718,7 @@ void GRIBUICtrlBar::ComputeBestForecast(const wxDateTime &time) {
   // Configure the timeline to show the full GRIB range with the best time
   // positioned optimally for weather forecasting (at 1/4 from start for maximum
   // forecast view)
-  SetTimelineSelectedTime(selectedTime, gribEndTime - gribStartTime);
+  SetTimelineSelectedTime(selectedTime, gribEndTime - gribStartTime, 0.25);
 
   // Get and set the timeline record set for the best time
   SetGribTimelineRecordSet(GetTimeLineRecordSet(selectedTime));
