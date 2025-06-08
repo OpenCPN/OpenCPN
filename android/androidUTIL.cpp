@@ -4290,7 +4290,26 @@ wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
                         unsigned int height) {
   auto doc = std::unique_ptr<lunasvg::Document>();
   doc->loadFromData(svg);
-  return wxBitmap(width, height);
+  lunasvg::Bitmap bitmap = doc->renderToBitmap(
+      width, height);  // uint32_t backgroundColor = 0x00000000) const;
+  bitmap.convertToRGBA();
+  auto data = bitmap.data();
+  uint8_t *idata = new uint8_t[3 * width * height];
+  auto p_data = data;
+  auto p_idata = idata;
+
+  for (unsigned int i = 0; i < height; i++) {
+    for (unsigned int j = 0; j < width; j++) {
+      *p_idata++ = *p_data;
+      *p_idata++ = *p_data;
+      *p_idata++ = *p_data;
+      p_data++;  // alpha channel not used
+    }
+  }
+
+  auto image = wxImage(width, height);
+  image.SetData(idata);
+  return wxBitmap(image);
 }
 
 void androidTestCPP() { callActivityMethod_vs("callFromCpp"); }
