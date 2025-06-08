@@ -1218,6 +1218,7 @@ void RouteManagerDialog::OnShowAllTrkCBClicked(wxCommandEvent &event) {
     Track *track = (Track *)m_pTrkListCtrl->GetItemData(item);
 
     track->SetVisible(viz);
+    NavObj_dB::GetInstance().UpdateDBTrackAttributes(track);
     m_pTrkListCtrl->SetItemImage(item, track->IsVisible() ? 0 : 1);
   }
 
@@ -2185,6 +2186,7 @@ void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event) {
     Track *track = (Track *)m_pTrkListCtrl->GetItemData(clicked_index);
     if (track) {
       track->SetVisible(!track->IsVisible());
+      NavObj_dB::GetInstance().UpdateDBTrackAttributes(track);
       m_pTrkListCtrl->SetItemImage(clicked_index, track->IsVisible() ? 0 : 1);
     }
 
@@ -3126,8 +3128,10 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
   }
 
   for (Track *pTrack : g_TrackList) {
-    if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID))
+    if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID)) {
       pTrack->SetVisible(layer->IsVisibleOnChart());
+      NavObj_dB::GetInstance().UpdateDBTrackAttributes(pTrack);
+    }
   }
 
   // Process waypoints in this layer
