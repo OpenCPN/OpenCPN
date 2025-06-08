@@ -457,6 +457,24 @@ if (QT_ANDROID)
     add_compile_options("-O0")
   endif ()
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
+
+  include(FetchContent)
+  FetchContent_Declare(
+          lunasvg
+          GIT_REPOSITORY https://github.com/sammycage/lunasvg.git
+          GIT_TAG master  # Specify the desired branch or tag
+  )
+  set(LUNASVG_BUILD_EXAMPLES OFF CACHE INTERNAL "Enable lunasvg samples")
+  set(PLUTOVG_BUILD_EXAMPLES OFF CACHE INTERNAL "Enable plutovg samples")
+
+  FetchContent_MakeAvailable(lunasvg)
+
+  #include_directories("/home/dsr/Projects/opencpn/build_android_64_cci_22b/_deps/lunasvg-src/include")
+  include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-src/include")
+
+  # Link LunaSVG to your target
+  #target_link_libraries(_opencpn PRIVATE lunasvg::lunasvg)
+
 endif ()
 
 if (ARCH STREQUAL armhf)

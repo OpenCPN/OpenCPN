@@ -97,6 +97,8 @@
 
 #include "android_jvm.h"
 
+#include "lunasvg.h"
+
 const wxString AndroidSuppLicense = wxT(
     "<br><br>The software included in this product contains copyrighted "
     "software that is licensed under the GPL.")
@@ -4286,6 +4288,8 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
 
 wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
                         unsigned int height) {
+  auto doc = std::unique_ptr<lunasvg::Document>();
+  doc->loadFromData(svg);
   return wxBitmap(width, height);
 }
 
