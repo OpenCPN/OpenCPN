@@ -468,13 +468,7 @@ if (QT_ANDROID)
   set(PLUTOVG_BUILD_EXAMPLES OFF CACHE INTERNAL "Enable plutovg samples")
 
   FetchContent_MakeAvailable(lunasvg)
-
-  #include_directories("/home/dsr/Projects/opencpn/build_android_64_cci_22b/_deps/lunasvg-src/include")
   include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-src/include")
-
-  # Link LunaSVG to your target
-  #target_link_libraries(_opencpn PRIVATE lunasvg::lunasvg)
-
 endif ()
 
 if (ARCH STREQUAL armhf)
@@ -1084,6 +1078,8 @@ elseif (APPLE)
   )
 elseif (QT_ANDROID)
   target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/android)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-build/liblunasvg.a")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-build/plutovg/libplutovg.a")
 endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
 
