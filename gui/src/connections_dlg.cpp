@@ -205,10 +205,9 @@ public:
   void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect,
             int row, int col, bool isSelected) override {
     dc.SetBrush(wxBrush(GetGlobalColor("DILG2")));
-    if (IsWindows()) dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
     if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) && (m_cs != GLOBAL_COLOR_SCHEME_RGB))
-      dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
-
+      dc.SetBrush(wxBrush(GetDialogColor(DLG_BACKGROUND)));
+    if (IsWindows()) dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
     dc.DrawRectangle(rect);
 
     // Draw the bitmap centered in the cell
