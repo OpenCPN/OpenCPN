@@ -54,6 +54,7 @@
 #include "priority_gui.h"
 #include "std_filesystem.h"
 #include "svg_utils.h"
+#include "color_types.h"
 
 extern OCPNPlatform* g_Platform;
 
@@ -90,6 +91,7 @@ class StdIcons {
 private:
   const double m_size;
   const fs::path m_svg_dir;
+  ColorScheme m_cs;
 
   /** Return platform dependent icon size. */
   double GetSize(const wxWindow* parent) {
@@ -113,33 +115,89 @@ private:
     return LoadSVG(path.string(), m_size, m_size);
   }
 
+  wxBitmap IconApplyColorScheme(const wxBitmap proto) const {
+    if (!proto.IsOk()) return wxNullBitmap;
+    if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) &&
+        (m_cs != GLOBAL_COLOR_SCHEME_RGB)) {
+      // Assume the bitmap is monochrome, so simply invert the colors.
+      wxImage image = proto.ConvertToImage();
+      unsigned char* data = image.GetData();
+      unsigned char* p_idata = data;
+      for (unsigned int i = 0; i < m_size; i++) {
+        for (unsigned int j = 0; j < m_size; j++) {
+          unsigned char v = *p_idata;
+          v = 255 - v;
+          *p_idata++ = v;
+          v = *p_idata;
+          v = 255 - v;
+          *p_idata++ = v;
+          v = *p_idata;
+          v = 255 - v;
+          *p_idata++ = v;
+        }
+      }
+      return wxBitmap(image);
+    } else
+      return proto;
+  }
+
 public:
   StdIcons(const wxWindow* parent)
       : m_size(GetSize(parent)),
         m_svg_dir(fs::path(g_Platform->GetSharedDataDir().ToStdString()) /
                   "uidata" / "MUI_flat"),
-        trashbin(LoadIcon("trash_bin.svg")),
-        settings(LoadIcon("setting_gear.svg")),
-        filled_circle(LoadIcon("circle-on.svg")),
-        open_circle(LoadIcon("circle-off.svg")),
-        exclaim_mark(LoadIcon("exclaim_mark.svg")),
-        x_mult(LoadIcon("X_mult.svg")),
-        check_mark(LoadIcon("check_mark.svg")) {}
+        m_cs(GLOBAL_COLOR_SCHEME_RGB),
+        trashbin_proto(LoadIcon("trash_bin.svg")),
+        settings_proto(LoadIcon("setting_gear.svg")),
+        filled_circle_proto(LoadIcon("circle-on.svg")),
+        open_circle_proto(LoadIcon("circle-off.svg")),
+        exclaim_mark_proto(LoadIcon("exclaim_mark.svg")),
+        x_mult_proto(LoadIcon("X_mult.svg")),
+        check_mark_proto(LoadIcon("check_mark.svg")) {
+    trashbin = trashbin_proto;
+    settings = settings_proto;
+    filled_circle = filled_circle_proto;
+    open_circle = open_circle_proto;
+    exclaim_mark = exclaim_mark_proto;
+    x_mult = x_mult_proto;
+    check_mark = check_mark_proto;
+  }
 
-  const wxBitmap trashbin;
-  const wxBitmap settings;
-  const wxBitmap filled_circle;
-  const wxBitmap open_circle;
-  const wxBitmap exclaim_mark;
-  const wxBitmap x_mult;
-  const wxBitmap check_mark;
+  void SetColorScheme(ColorScheme cs) {
+    if (m_cs != cs) {
+      m_cs = cs;
+      trashbin = IconApplyColorScheme(trashbin_proto);
+      settings = IconApplyColorScheme(settings_proto);
+      filled_circle = IconApplyColorScheme(filled_circle_proto);
+      open_circle = IconApplyColorScheme(open_circle_proto);
+      exclaim_mark = IconApplyColorScheme(exclaim_mark_proto);
+      x_mult = IconApplyColorScheme(x_mult_proto);
+      check_mark = IconApplyColorScheme(check_mark_proto);
+    }
+  }
+
+  const wxBitmap trashbin_proto;
+  const wxBitmap settings_proto;
+  const wxBitmap filled_circle_proto;
+  const wxBitmap open_circle_proto;
+  const wxBitmap exclaim_mark_proto;
+  const wxBitmap x_mult_proto;
+  const wxBitmap check_mark_proto;
+
+  wxBitmap trashbin;
+  wxBitmap settings;
+  wxBitmap filled_circle;
+  wxBitmap open_circle;
+  wxBitmap exclaim_mark;
+  wxBitmap x_mult;
+  wxBitmap check_mark;
 };
 
 /** Custom renderer class for rendering bitmap in a grid cell */
 class BitmapCellRenderer : public wxGridCellRenderer {
 public:
-  BitmapCellRenderer(const wxBitmap& bitmap)
-      : status(ConnState::Disabled), m_bitmap(bitmap) {}
+  BitmapCellRenderer(const wxBitmap& bitmap, ColorScheme cs)
+      : status(ConnState::Disabled), m_bitmap(bitmap), m_cs(cs) {}
 
   // Update the bitmap dynamically
   void SetBitmap(const wxBitmap& bitmap) { m_bitmap = bitmap; }
@@ -148,6 +206,9 @@ public:
             int row, int col, bool isSelected) override {
     dc.SetBrush(wxBrush(GetGlobalColor("DILG2")));
     if (IsWindows()) dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
+    if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) && (m_cs != GLOBAL_COLOR_SCHEME_RGB))
+      dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
+
     dc.DrawRectangle(rect);
 
     // Draw the bitmap centered in the cell
@@ -162,12 +223,13 @@ public:
   }
 
   BitmapCellRenderer* Clone() const override {
-    return new BitmapCellRenderer(m_bitmap);
+    return new BitmapCellRenderer(m_bitmap, m_cs);
   }
   ConnState status;
 
 private:
   wxBitmap m_bitmap;
+  ColorScheme m_cs;
 };
 
 /** std::sort support: Compare two ConnectionParams w r t given column */
@@ -312,6 +374,11 @@ public:
         m_conn_states.evt_conn_status_change,
         [&](ObservedEvt&) { OnConnectionChange(m_connections); });
   }
+  void SetColorScheme(ColorScheme cs) {
+    m_cs = cs;
+    m_icons.SetColorScheme(cs);
+    ReloadGrid(m_connections);
+  }
 
   wxSize GetEstimatedSize() {
     int rs = 0;
@@ -353,13 +420,13 @@ public:
       SetCellValue(row, 2, (*it)->GetIOTypeValueStr());
       SetCellValue(row, 3, (*it)->GetStrippedDSPort());
       m_tooltips[row][3] = (*it)->UserComment;
-      SetCellRenderer(row, 5, new BitmapCellRenderer(m_icons.settings));
+      SetCellRenderer(row, 5, new BitmapCellRenderer(m_icons.settings, m_cs));
       m_tooltips[row][5] = _("Edit connection");
-      SetCellRenderer(row, 6, new BitmapCellRenderer(m_icons.trashbin));
+      SetCellRenderer(row, 6, new BitmapCellRenderer(m_icons.trashbin, m_cs));
       m_tooltips[row][6] = _("Delete connection");
       SetCellValue(row, 7, (*it)->GetKey());
 
-      auto stat_renderer = new BitmapCellRenderer(m_icons.filled_circle);
+      auto stat_renderer = new BitmapCellRenderer(m_icons.filled_circle, m_cs);
       stat_renderer->status = ConnState::Disabled;
       m_renderer_status_vector.push_back(stat_renderer);
       SetCellRenderer(row, 4, stat_renderer);
@@ -682,6 +749,7 @@ private:
   StdIcons m_icons;
   std::vector<BitmapCellRenderer*> m_renderer_status_vector;
   std::array<int, 7> header_column_widths;
+  ColorScheme m_cs;
 };
 
 /** Indeed: the General  panel. */
@@ -952,12 +1020,16 @@ public:
     };
     m_add_connection_lstnr.Init(m_evt_add_connection,
                                 on_evt_update_connections);
+    m_conn_grid = conn_grid;
   }
+
+  void SetColorScheme(ColorScheme cs) { m_conn_grid->SetColorScheme(cs); }
 
 private:
   const std::vector<ConnectionParams*>& m_connections;
   EventVar& m_evt_add_connection;
   ObsListener m_add_connection_lstnr;
+  Connections* m_conn_grid;
 };
 
 /** Top scroll window, adds scrollbars to TopPanel. */
@@ -969,12 +1041,18 @@ public:
                          wxVSCROLL | wxHSCROLL, TopScrollWindowName) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     auto vbox = new wxBoxSizer(wxVERTICAL);
-    vbox->Add(new TopPanel(this, connections, evt_add_connection),
-              wxSizerFlags(1).Expand());
+    top_panel = new TopPanel(this, connections, evt_add_connection);
+    vbox->Add(top_panel, wxSizerFlags(1).Expand());
     SetSizer(vbox);
     SetScrollRate(0, 10);
     if (IsAndroid()) SetScrollRate(1, 1);
   }
+  void SetColorScheme(ColorScheme cs) {
+    if (top_panel) top_panel->SetColorScheme(cs);
+  }
+
+private:
+  TopPanel* top_panel;
 };
 
 /** Main window: Panel with a single TopScroll child. */
@@ -1013,3 +1091,9 @@ void ConnectionsDlg::DoCancel(wxWindow* root) {
 void ConnectionsDlg::ApplySettings() { DoApply(this); }
 
 void ConnectionsDlg::CancelSettings() { DoCancel(this); }
+
+void ConnectionsDlg::SetColorScheme(ColorScheme cs) {
+  auto w =
+      static_cast<TopScroll*>(wxWindow::FindWindowByName(TopScrollWindowName));
+  if (w) w->SetColorScheme(cs);
+}

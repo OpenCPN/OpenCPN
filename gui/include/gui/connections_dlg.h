@@ -30,6 +30,7 @@
 
 #include "model/conn_params.h"
 #include "observable_evtvar.h"
+#include "color_types.h"
 
 /**
  * Options | Connections tab implementaion, basically a UI
@@ -61,6 +62,8 @@ public:
    *   of containing window.
    */
   void OnResize(const wxSize& size);
+
+  void SetColorScheme(ColorScheme cs);
 
 private:
   void DoApply(wxWindow* root);
