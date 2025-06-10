@@ -710,8 +710,12 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
     }
   }
-  if (g_enable_root_menu_debug)
-    contextMenu->AppendSubMenu(subMenuDebug, _("Debug"));
+  if (g_enable_root_menu_debug) {
+    wxMenuItem *subItemDebug =
+        contextMenu->AppendSubMenu(subMenuDebug, _("Debug"));
+    if (g_btouch) contextMenu->AppendSeparator();
+    SetMenuItemFont1(subItemDebug);
+  }
 
   if (seltype & SELTYPE_ROUTESEGMENT) {
     if (!g_bBasicMenus && m_pSelectedRoute) {
