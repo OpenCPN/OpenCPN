@@ -4288,22 +4288,24 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
 
 wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
                         unsigned int height) {
-  auto doc = std::unique_ptr<lunasvg::Document>();
+  auto doc = lunasvg::Document::loadFromData(svg);
   doc->loadFromData(svg);
-  lunasvg::Bitmap bitmap = doc->renderToBitmap(
-      width, height);  // uint32_t backgroundColor = 0x00000000) const;
-  bitmap.convertToRGBA();
-  auto data = bitmap.data();
-  uint8_t *idata = new uint8_t[3 * width * height];
-  auto p_data = data;
-  auto p_idata = idata;
+  lunasvg::Bitmap bitmap = doc->renderToBitmap(width, height, 0xFFFFFFFF);
+  uint8_t *data = bitmap.data();
+  uint8_t *p_data = data;
+  uint8_t *idata = (uint8_t *)malloc(3 * width * height);
+  uint8_t *p_idata = idata;
 
   for (unsigned int i = 0; i < height; i++) {
     for (unsigned int j = 0; j < width; j++) {
-      *p_idata++ = *p_data;
-      *p_idata++ = *p_data;
-      *p_idata++ = *p_data;
-      p_data++;  // alpha channel not used
+      auto b = *p_data++;
+      auto g = *p_data++;
+      auto r = *p_data++;
+      auto a = *p_data++;
+
+      *p_idata++ = r;
+      *p_idata++ = g;
+      *p_idata++ = b;
     }
   }
 
