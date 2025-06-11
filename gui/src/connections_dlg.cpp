@@ -123,8 +123,8 @@ private:
       wxImage image = proto.ConvertToImage();
       unsigned char* data = image.GetData();
       unsigned char* p_idata = data;
-      for (unsigned int i = 0; i < m_size; i++) {
-        for (unsigned int j = 0; j < m_size; j++) {
+      for (int i = 0; i < image.GetSize().y; i++) {
+        for (int j = 0; j < image.GetSize().x; j++) {
           unsigned char v = *p_idata;
           v = 255 - v;
           *p_idata++ = v;
