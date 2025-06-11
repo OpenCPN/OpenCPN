@@ -85,6 +85,7 @@ public:
   void ReloadNotificationList();
   void OnAckAllButton(wxCommandEvent &event);
   void SetColorScheme();
+  void RecalculateSize();
 
 private:
   wxScrolledWindow *m_sWindow;

@@ -618,6 +618,18 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
                                    g_options->GetSize().y);
       }
 
+      // Notification dialog
+      if (gFrame->GetPrimaryCanvas()) {
+        auto canvas = gFrame->GetPrimaryCanvas();
+        if (canvas->GetNotificationsList() &&
+            canvas->GetNotificationsList()->IsShown()) {
+          canvas->GetNotificationsList()->Hide();
+          canvas->GetNotificationsList()->RecalculateSize();
+          canvas->GetNotificationsList()->ReloadNotificationList();
+          canvas->GetNotificationsList()->Show();
+        }
+      }
+
       bInConfigChange = false;
 
       break;

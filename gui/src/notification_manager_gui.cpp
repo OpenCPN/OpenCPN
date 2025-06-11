@@ -123,20 +123,32 @@ NotificationPanel::NotificationPanel(
   // Time
   wxDateTime act_time = wxDateTime(notification->GetActivateTime());
   wxString stime = wxString::Format(
-      "%s", ocpn::toUsrDateTimeFormat(
-                act_time, DateTimeFormatOptions().SetFormatString(
-                              "$short_date\n$24_hour_minutes_seconds")));
+      "%s",
+      ocpn::toUsrDateTimeFormat(act_time, DateTimeFormatOptions()
+                                              .SetFormatString("$short_date")
+                                              .SetShowTimezone(false)));
+  stime = stime.BeforeFirst(' ');
+  wxString stime1 = wxString::Format(
+      "%s", ocpn::toUsrDateTimeFormat(act_time,
+                                      DateTimeFormatOptions().SetFormatString(
+                                          "$24_hour_minutes_seconds")));
+  stime += "\n";
+  stime += stime1;
+
   auto timetextbox = new wxStaticText(this, wxID_ANY, stime);
   itemBoxSizer01->Add(timetextbox, 0,
                       /*wxEXPAND|*/ wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   PanelHardBreakWrapper wrapper(this, notification->GetMessage(),
-                                GetSize().x * 5 / 10);
+                                GetSize().x * 50 / 100);
 
   auto textbox = new wxStaticText(this, wxID_ANY, wrapper.GetWrapped());
   itemBoxSizer01->Add(textbox, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
 
-  itemBoxSizer01->AddStretchSpacer(1);
+  if (!g_btouch)
+    itemBoxSizer01->AddStretchSpacer(1);
+  else
+    itemBoxSizer01->AddSpacer(5 * wxWindow::GetCharWidth());
 
   // Ack button
   m_ack_button = new wxButton(this, wxID_OK);
@@ -181,6 +193,10 @@ NotificationListPanel::NotificationListPanel(wxWindow* parent, wxWindowID id,
     : wxScrolledWindow(parent, id, pos, size, wxTAB_TRAVERSAL | wxVSCROLL) {
   SetSizer(new wxBoxSizer(wxVERTICAL));
   SetScrollRate(0, 5);
+  if (g_btouch) {
+    ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
+    SetScrollRate(0, 1);
+  }
   ReloadNotificationPanels();
   DimeControl(this);
 }
@@ -245,7 +261,7 @@ void NotificationListPanel::ReloadNotificationPanels() {
 }
 
 void NotificationListPanel::AddNotificationPanel(NotificationPanel* _panel) {
-  GetSizer()->Add(_panel, 0, wxEXPAND);
+  GetSizer()->Add(_panel, 0, wxEXPAND);  //| wxALL, 10);
 }
 
 //------------------------------------------------------------------------------
@@ -309,6 +325,34 @@ void NotificationsList::ReloadNotificationList() {
 void NotificationsList::OnAckAllButton(wxCommandEvent& event) {
   NotificationManager& noteman = NotificationManager::GetInstance();
   noteman.AcknowledgeAllNotifications();
+}
+
+void NotificationsList::RecalculateSize() {
+  // calculate and set best size and position for Notification list
+  wxSize parent_size = GetParent()->GetSize();
+  wxPoint ClientUpperRight =
+      GetParent()->ClientToScreen(wxPoint(parent_size.x, 0));
+  wxPoint list_bottom =
+      GetParent()->ClientToScreen(wxPoint(0, parent_size.y / 2));
+  int size_y = list_bottom.y - (ClientUpperRight.y + 5);
+  size_y -= GetParent()->GetCharHeight();
+  size_y = wxMax(size_y, 200);  // ensure always big enough to see
+
+  SetSize(wxSize(GetCharWidth() * 80, size_y));
+
+  wxPoint targetNLPos = GetParent()->ClientToScreen(
+      wxPoint(parent_size.x / 2, 3 * GetParent()->GetCharHeight()));
+  // m_notification_button->GetRect().y +
+  //                            m_notification_button->GetRect().height + 5));
+
+  if ((targetNLPos.x + GetSize().x) > ClientUpperRight.x) {
+    targetNLPos.x =
+        GetParent()->ClientToScreen(wxPoint(parent_size.x * 15 / 100, 0)).x;
+    SetSize(parent_size.x * 85 / 100 - (2 * GetParent()->GetCharWidth()),
+            size_y);
+  }
+
+  Move(targetNLPos);
 }
 
 void NotificationsList::OnClose(wxCloseEvent& event) { Hide(); }
