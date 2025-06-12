@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-16 16:56-0400\n"
-"PO-Revision-Date: 2025-05-20 02:02\n"
+"PO-Revision-Date: 2025-06-12 02:25\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:421
 msgid "Start a download request"
-msgstr ""
+msgstr "Запрос на загрузку"
 
 #: src/GribUIDialog.cpp:460
 msgid "File: "
@@ -79,7 +79,7 @@ msgstr "Настройки"
 
 #: src/GribUIDialog.cpp:1013
 msgid "Request forecast data"
-msgstr ""
+msgstr "Запрос прогноза погоды"
 
 #: src/GribUIDialog.cpp:1015
 msgid "Draw requested Area or Click here to stop request"
@@ -405,16 +405,16 @@ msgstr "Стрелки-флюгеры"
 
 #: src/GribUIDialogBase.cpp:1217
 msgid "Default Color"
-msgstr ""
+msgstr "Цвет по умолчанию"
 
 #: src/GribUIDialogBase.cpp:1218
 msgid "Controlled Colors"
-msgstr ""
+msgstr "Контролируемые цвета"
 
 #: src/GribUIDialogBase.cpp:1234 src/GribUIDialogBase.cpp:1338
 #: src/GribUIDialogBase.cpp:1411
 msgid "Spacing (pixels)"
-msgstr ""
+msgstr "Интервал (пикс)"
 
 #: src/GribUIDialogBase.cpp:1240 src/GribUIDialogBase.cpp:1343
 #: src/GribUIDialogBase.cpp:1416
@@ -695,7 +695,7 @@ msgstr "Выбор области"
 
 #: src/GribUIDialogBase.cpp:2392
 msgid "Current View"
-msgstr ""
+msgstr "Текущий вид"
 
 #: src/GribUIDialogBase.cpp:2394
 msgid "Manual Selection"
@@ -703,7 +703,7 @@ msgstr "Ручной выбор области"
 
 #: src/GribUIDialogBase.cpp:2416
 msgid "Click to select the download area, or Shift + Click + Drag on the canvas"
-msgstr ""
+msgstr "Щелкните, чтобы выбрать область загрузки, выделите курсором область покрытия прогноза погоды на карте."
 
 #: src/GribUIDialogBase.cpp:2427
 msgid "Max Lat"
@@ -1076,7 +1076,7 @@ msgstr "Течение, Скорость"
 
 #: src/GribRequestDialog.cpp:92
 msgid "<h1>OpenCPN ECMWF forecast</h1><p>Free service based on ECMWF Open Data published under the terms of Creative Commons CC-4.0-BY license</p><p>The IFS model GRIB files include information about surface temperature, atmospheric pressure, wind strength, wind direction, wave height and direction for the whole world on a 0.25 degree resolution grid with 3 hour step in the first 144 hours and 6 hour step up to 10 days.</p>The AIFS model contains data for wind, pressure and temperature on a 0.25 degree grid with 6 hour step for up to 15 days<p>The data is updated twice a day as soon as the 00z and 12z model runs finish and the results are published by ECMWF, which usually means new forecast data is available shortly after 8AM and 8PM UTC.</p><p>The grib downloaded covers the area of the primary chart canvas.</p><p>The service is provided on best effort basis and comes with no guarantees. The server is hosted by a volunteer and the service is provided free of charge and without accepting any liability whatsoever for its continuous availability, or for any loss or damage arising from its use. If you find the service useful, please consider making a donation to the OpenCPN project.</p><p>This service is based on data and products of the European Centre for Medium-Range Weather Forecasts (ECMWF).</p><p>Source: www.ecmwf.int</p><p>Disclaimer: ECMWF does not accept any liability whatsoever for any error or omission in the data, their availability, or for any loss or damage arising from their use.</p></font></body></html>"
-msgstr ""
+msgstr "<h1>Прогноз ECMWF</h1><p>Бесплатный сервис на основе открытых данных ECMWF, опубликованных в соответствии с условиями лицензии Creative Commons CC-4.0-BY</p><p>Файлы GRIB модели IFS включают информацию о температуре поверхности, атмосферном давлении, скорости и направлении ветра, высоте и направлении волн для всего мира на сетке с разрешением 0,25 градуса с шагом 3 часа в первые 144 часа и шагом 6 часов до 10 дней.</p>Модель AIFS содержит данные о ветре, давлении и температуре на сетке 0,25 градуса с шагом 6 часов до 15 дней<p>Данные обновляются дважды в день, как только заканчиваются прогоны модели 00z и 12z, а результаты публикуются ECMWF, что обычно означает, что новые данные прогноза становятся доступны вскоре после 8:00 и 20:00 UTC.</p><p>Загруженный GRIB охватывает область текущего вида карты.</p><p>Услуга предоставляется по принципу \"как есть\" и не имеет никаких гарантий. Услуга предоставляется бесплатно и без принятия какой-либо ответственности за ее постоянную доступность или за любые убытки или ущерб, возникающие в результате ее использования. Если вы найдете услугу полезной, пожалуйста, рассмотрите возможность сделать пожертвование проекту OpenCPN.</p><p>Эта услуга основана на данных и продуктах Европейского центра среднесрочных прогнозов погоды (ECMWF).</p><p>Источник: www.ecmwf.int</p><p>Отказ от ответственности: ECMWF не несет никакой ответственности за любые ошибки или упущения в данных, их доступности или за любые убытки или ущерб, возникающие в результате их использования.</p></font></body></html>"
 
 #: src/GribRequestDialog.cpp:133
 msgid "<h1>Grib weather forecasts</h1><p>Collection of local weather models from various sources available for download over the internet.</p></font></body></html>"
@@ -1084,7 +1084,7 @@ msgstr "<h1>Прогнозы погоды Grib</h1><p>Коллекция лок�
 
 #: src/GribRequestDialog.cpp:249
 msgid "OK"
-msgstr ""
+msgstr "Ок"
 
 #: src/GribRequestDialog.cpp:268
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
