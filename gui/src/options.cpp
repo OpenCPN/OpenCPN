@@ -8252,6 +8252,12 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
+#ifdef __ANDROID__
+  androidEnableBackButton(true);
+  androidEnableRotation();
+  androidEnableOptionItems(true);
+#endif
+
   Hide();
 }
 
