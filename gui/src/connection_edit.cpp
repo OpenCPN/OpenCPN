@@ -2071,6 +2071,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     pConnectionParams->NetworkPort = 0;
     pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     pConnectionParams->Baudrate = 0;
+    pConnectionParams->Port = "Internal GPS";
   }
 
   if (pConnectionParams->Type == INTERNAL_BT) {
