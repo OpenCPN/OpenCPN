@@ -248,6 +248,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
     pConf->SetPath(_T ( "/Directories" ));
     pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
     Pref->m_grib_dir_sel = l_grib_dir;
+    Pref->m_textDirectory->ChangeValue(l_grib_dir);
   }
 
 #ifdef __WXMSW__

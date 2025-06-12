@@ -2137,7 +2137,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
 
   m_sdbSizer2->Realize();
 
-  itemBoxSizerMainPanel->Add(m_sdbSizer2, 0, wxEXPAND, 5);
+  itemBoxSizerMainPanel->Add(m_sdbSizer2, 0, wxEXPAND | wxALL, 5);
 
   wxStaticBoxSizer* sbSizer9;
   sbSizer9 = new wxStaticBoxSizer(
@@ -2194,6 +2194,20 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_rbLoadOptions->SetSelection(0);
   bSizerPrefsMain->Add(m_rbLoadOptions, 0, wxALL | wxEXPAND, 5);
 
+  wxStaticBoxSizer* sbSizerFolder;
+  sbSizerFolder = new wxStaticBoxSizer(
+      new wxStaticBox(this, wxID_ANY, _("Grib File Directory")), wxHORIZONTAL);
+
+  m_textDirectory =
+      new wxTextCtrl(scrollWin, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxDefaultSize, wxTE_READONLY);
+  sbSizerFolder->Add(m_textDirectory, 1, wxALL, 5);
+
+  wxButton* dbFolderButton = new wxButton(scrollWin, wxID_ANY, _("Browse..."));
+  sbSizerFolder->Add(dbFolderButton, 0, wxALL, 5);
+
+  bSizerPrefsMain->Add(sbSizerFolder, 0, wxALL | wxEXPAND, 5);
+
   wxString m_rbStartOptionsChoices[] = {
       _("Start at the first forecast in GRIB file"),
       _("Start at the nearest forecast to current time"),
@@ -2221,15 +2235,6 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
   bSizerPrefsMain->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
 #endif
-
-  wxButton* SetSaveButton =
-      new wxButton(scrollWin, wxID_ANY, _("Select GRIB download directory"));
-  bSizerPrefsMain->Add(SetSaveButton, 0, wxALL | wxEXPAND, 5);
-  SetSaveButton->Connect(
-      wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribPreferencesDialogBase::OnDirSelClick), nullptr,
-      this);
-
   Layout();
   Fit();
 
@@ -2241,6 +2246,10 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_sdbSizer2OK->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribPreferencesDialogBase::OnOKClick), nullptr,
+      this);
+  dbFolderButton->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribPreferencesDialogBase::OnDirSelClick), nullptr,
       this);
 }
 #else
@@ -2368,6 +2377,7 @@ void GribPreferencesDialogBase::OnDirSelClick(wxCommandEvent& event) {
 
   if (response == wxID_OK) {
     m_grib_dir_sel = dir_spec;
+    m_textDirectory->ChangeValue(dir_spec);
   }
 }
 
