@@ -31,6 +31,7 @@ cmake \
   -Dtool_base="$HOME/android-sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64"\
   ..
 
+make lunasvg
 make VERBOSE=1
 
 # Make sure that the upload script finds the files
