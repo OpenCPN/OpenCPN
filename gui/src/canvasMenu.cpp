@@ -2021,30 +2021,34 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           if ((version_major * 100) + version_minor >= 120) {
             std::string object_type;
             std::string object_ident;
+            if (!pimis->m_in_menu.IsEmpty()) {
+              if ((pimis->m_in_menu.IsSameAs("Waypoint")) &&
+                  m_pFoundRoutePoint) {
+                object_type = "Waypoint";
+                object_ident = m_pFoundRoutePoint->m_GUID.ToStdString();
+              } else if ((pimis->m_in_menu.IsSameAs("Route")) &&
+                         m_pSelectedRoute) {
+                object_type = "Route";
+                object_ident = m_pSelectedRoute->m_GUID.ToStdString();
+              } else if ((pimis->m_in_menu.IsSameAs("Track")) &&
+                         m_pSelectedTrack) {
+                object_type = "Track";
+                object_ident = m_pSelectedTrack->m_GUID.ToStdString();
+              } else if ((pimis->m_in_menu.IsSameAs("AIS")) &&
+                         m_FoundAIS_MMSI) {
+                object_type = "AIS";
+                wxString sAIS = wxString::Format("%d", m_FoundAIS_MMSI);
+                object_ident = sAIS.ToStdString();
+              }
 
-            if ((pimis->m_in_menu.IsSameAs("Waypoint")) && m_pFoundRoutePoint) {
-              object_type = "Waypoint";
-              object_ident = m_pFoundRoutePoint->m_GUID.ToStdString();
-            } else if ((pimis->m_in_menu.IsSameAs("Route")) &&
-                       m_pSelectedRoute) {
-              object_type = "Route";
-              object_ident = m_pSelectedRoute->m_GUID.ToStdString();
-            } else if ((pimis->m_in_menu.IsSameAs("Track")) &&
-                       m_pSelectedTrack) {
-              object_type = "Track";
-              object_ident = m_pSelectedTrack->m_GUID.ToStdString();
-            } else if ((pimis->m_in_menu.IsSameAs("AIS")) && m_FoundAIS_MMSI) {
-              object_type = "AIS";
-              wxString sAIS = wxString::Format("%d", m_FoundAIS_MMSI);
-              object_ident = sAIS.ToStdString();
+              opencpn_plugin_120 *ppi =
+                  dynamic_cast<opencpn_plugin_120 *>(pimis->m_pplugin);
+              if (ppi)
+                ppi->OnContextMenuItemCallbackExt(target_id, object_ident,
+                                                  object_type, zlat, zlon);
+            } else {
+              pimis->m_pplugin->OnContextMenuItemCallback(pimis->id);
             }
-
-            opencpn_plugin_120 *ppi =
-                dynamic_cast<opencpn_plugin_120 *>(pimis->m_pplugin);
-            if (ppi)
-              ppi->OnContextMenuItemCallbackExt(target_id, object_ident,
-                                                object_type, zlat, zlon);
-
           } else {
             pimis->m_pplugin->OnContextMenuItemCallback(pimis->id);
           }
