@@ -7800,6 +7800,9 @@ void options::OnXidOkClick(wxCommandEvent& event) {
       !(m_returnChanges & FONT_CHANGED_SAFE))
     gFrame->ScheduleDeleteSettingsDialog();
 
+  // And for locale change
+  if (m_returnChanges & LOCALE_CHANGED) gFrame->ScheduleDeleteSettingsDialog();
+
   Finish();
   Hide();
 }
