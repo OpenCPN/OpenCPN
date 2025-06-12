@@ -466,6 +466,7 @@ if (QT_ANDROID)
   )
   set(LUNASVG_BUILD_EXAMPLES OFF CACHE INTERNAL "Enable lunasvg samples")
   set(PLUTOVG_BUILD_EXAMPLES OFF CACHE INTERNAL "Enable plutovg samples")
+  set( CMAKE_SIZEOF_VOID_P 32 )
 
   FetchContent_MakeAvailable(lunasvg)
   include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-src/include")
