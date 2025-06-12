@@ -333,7 +333,8 @@ public:
       SetColLabelSize(wxWindow::GetCharHeight() * 2);
     }
     static const std::array<wxString, 7> headers = {
-        "", _("Protocol"), _("In/Out"), _("Data port"), _("Status"), "", ""};
+        "", _("Protocol") + "  ", _("In/Out"), _("Data port"), _("Status"), "",
+        ""};
     int ic = 0;
     for (auto hdr = headers.begin(); hdr != headers.end(); hdr++, ic++) {
       SetColLabelValue(static_cast<int>(hdr - headers.begin()), *hdr);
