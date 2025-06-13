@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-16 16:55-0400\n"
-"PO-Revision-Date: 2025-05-23 00:11\n"
+"PO-Revision-Date: 2025-06-12 02:25\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: src/chartcatalog.cpp:39
 msgid "Catalog is not valid."
-msgstr "Le catalogue n'est pas valide."
+msgstr "Le catalogue est invalide."
 
 #: src/chartcatalog.cpp:385
 #, c-format
@@ -37,7 +37,7 @@ msgstr "Téléchargeur de cartes"
 
 #: src/chartdldr_pi.cpp:244
 msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr "Téléchargeur de cartes"
+msgstr "Module téléchargeur de cartes pour OpenCPN"
 
 #: src/chartdldr_pi.cpp:249
 msgid "Chart Downloader PlugIn for OpenCPN\n"
@@ -66,11 +66,11 @@ msgstr "Menu"
 
 #: src/chartdldr_pi.cpp:569 src/chartdldr_pi.cpp:592
 msgid "Select all"
-msgstr "Sélectionner tout"
+msgstr "Tout sélectionner"
 
 #: src/chartdldr_pi.cpp:573 src/chartdldr_pi.cpp:593
 msgid "Deselect all"
-msgstr "Désélectionner tout"
+msgstr "Tout désélectionner"
 
 #: src/chartdldr_pi.cpp:578 src/chartdldr_pi.cpp:594
 msgid "Invert selection"
@@ -78,7 +78,7 @@ msgstr "Inverser la sélection"
 
 #: src/chartdldr_pi.cpp:582 src/chartdldr_pi.cpp:595
 msgid "Select updated"
-msgstr "Sélectionner les mises à jour"
+msgstr "Mises à jour : Sélectionner"
 
 #: src/chartdldr_pi.cpp:586 src/chartdldr_pi.cpp:596
 msgid "Select new"
@@ -103,7 +103,7 @@ msgstr "Nouveau"
 
 #: src/chartdldr_pi.cpp:718 src/chartdldrgui.h:176 src/chartdldrgui.h:246
 msgid "Out of date"
-msgstr "date dépassée"
+msgstr "Pas à jour"
 
 #: src/chartdldr_pi.cpp:721
 msgid "Up to date"
@@ -118,7 +118,7 @@ msgstr "%lu de toutes les cartes, %lu mises à jour, %lu nouvelles"
 #: src/chartdldr_pi.cpp:1263 src/chartdldr_pi.cpp:1280 src/chartdldr_pi.cpp:1299
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
-msgstr "%lu Cartes, dont %lu mises à jour, %lu nouvelles , %lu mises à jour"
+msgstr "%lu Cartes, dont %lu mises à jour, %lu nouvelles , %lu sélectionnées"
 
 #: src/chartdldr_pi.cpp:834 src/chartdldr_pi.cpp:1628
 msgid "(Please update first)"

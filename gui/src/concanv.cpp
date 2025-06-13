@@ -79,7 +79,7 @@ END_EVENT_TABLE()
 
 // Define a constructor for my canvas
 ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
-  m_speedUsed = SPEED_VMG;
+  m_speedUsed = SPEED_SOG;
   pbackBrush = NULL;
   m_bNeedClear = false;
 
@@ -249,7 +249,19 @@ void ConsoleCanvas::OnContextMenuSelection(wxCommandEvent& event) {
 }
 
 void ConsoleCanvas::ToggleRouteTotalDisplay() {
-  m_speedUsed = m_speedUsed == SPEED_VMG ? SPEED_SOG : SPEED_VMG;
+  // Implement 3-state logic
+  //  Route/SOG -> LEG/SOG -> LEG/VMG -> ....
+
+  if (g_bShowRouteTotal) {
+    g_bShowRouteTotal = false;
+    m_speedUsed = SPEED_SOG;
+  } else {
+    if (m_speedUsed == SPEED_VMG) {
+      g_bShowRouteTotal = true;
+      m_speedUsed = SPEED_SOG;
+    } else
+      m_speedUsed = SPEED_VMG;
+  }
   LegRoute();
 }
 

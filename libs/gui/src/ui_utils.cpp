@@ -39,7 +39,8 @@ void GUI::LayoutResizeEvent(wxWindow* ctx) {
 }
 
 GUI::Breakpoint GUI::GetScreenSize(wxRect* rect) {
-  if (rect->GetWidth() < static_cast<int>(Breakpoint::kSmall)) {
+  if (rect->GetWidth() <= static_cast<int>(Breakpoint::kSmall) ||
+      rect->GetHeight() <= static_cast<int>(Breakpoint::kSmall)) {
     return Breakpoint::kExtraSmall;
   } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kMedium)) {
     return Breakpoint::kSmall;

@@ -281,7 +281,7 @@ public:
     SetName(kFilterChoiceName);
     Bind(wxEVT_CHOICE, [&](wxCommandEvent&) { OnChoice(); });
     OnFilterListChange();
-    int ix = FindString("Default settings");
+    int ix = FindString(kLabels.at("default"));
     if (ix != wxNOT_FOUND) SetSelection(ix);
     NavmsgFilter filter = filters_on_disk::Read("default.filter");
     m_tty_panel->SetFilter(filter);
@@ -343,6 +343,7 @@ private:
   const std::unordered_map<std::string, std::string> kLabels = {
       {"all-data", _("All data")},
       {"all-nmea", _("All NMEA data")},
+      {"default", _("Default settings")},
       {"malformed", _("Malformed messages")},
       {"nmea-input", _("NMEA input data")},
       {"nmea-output", _("NMEA output data")},
@@ -397,6 +398,22 @@ private:
     m_on_stop(is_paused);
     SetLabel(is_paused ? _("Resume") : _("Pause"));
   }
+};
+
+/** Button to hide data monitor, used only on Android. */
+class CloseButton : public wxButton {
+public:
+  CloseButton(wxWindow* parent, std::function<void()> on_close)
+      : wxButton(parent, wxID_ANY), m_on_close(std::move(on_close)) {
+    SetLabel(_("Close"));
+    Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
+    OnClick();
+  }
+
+private:
+  std::function<void()> m_on_close;
+
+  void OnClick() { m_on_close(); }
 };
 
 /** Log setup window invoked from menu "Logging" item. */
@@ -717,7 +734,8 @@ private:
 class StatusLine : public wxPanel {
 public:
   StatusLine(wxWindow* parent, wxWindow* quick_filter, TtyPanel* tty_panel,
-             std::function<void(bool)> on_stop, DataLogger& logger)
+             std::function<void(bool)> on_stop, std::function<void()> on_hide,
+             DataLogger& logger)
       : wxPanel(parent),
         m_is_resized(false),
         m_filter_choice(new FilterChoice(this, tty_panel)),
@@ -742,6 +760,9 @@ public:
     };
     wbox->Add(new CopyClipboardButton(this), flags);
     wbox->Add(new MenuButton(this, m_menu, get_current_filter), flags);
+#ifdef ANDROID
+    wbox->Add(new CloseButton(this, std::move(on_hide)), flags);
+#endif
     SetSizer(wbox);
     Layout();
     Show();
@@ -838,8 +859,8 @@ void DataLogger::Add(const Logline& ll) {
 }
 
 DataMonitor::DataMonitor(wxWindow* parent)
-    : wxFrame(parent, wxID_ANY, "Data Monitor", wxDefaultPosition,
-              wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT,
+    : wxFrame(parent, wxID_ANY, _("Data Monitor"), wxPoint(0, 0), wxDefaultSize,
+              wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT,
               kDataMonitorWindowName),
       m_monitor_src([&](const std::shared_ptr<const NavMsg>& navmsg) {
         auto msg = std::dynamic_pointer_cast<const Nmea0183Msg>(navmsg);
@@ -862,8 +883,9 @@ DataMonitor::DataMonitor(wxWindow* parent)
   vbox->Add(m_quick_filter, wxSizerFlags());
 
   auto on_stop = [&, tty_panel](bool stop) { tty_panel->OnStop(stop); };
-  auto status_line =
-      new StatusLine(this, m_quick_filter, tty_panel, on_stop, m_logger);
+  auto on_close = [&, this]() { this->OnHide(); };
+  auto status_line = new StatusLine(this, m_quick_filter, tty_panel, on_stop,
+                                    on_close, m_logger);
   vbox->Add(status_line, wxSizerFlags().Expand());
   SetSizer(vbox);
   Fit();
@@ -928,5 +950,7 @@ void DataMonitor::OnFilterApply(const std::string& name) {
   m_current_filter = name;
   filter_choice->OnApply(name);
 }
+
+void DataMonitor::OnHide() { Hide(); }
 
 #pragma clang diagnostic pop

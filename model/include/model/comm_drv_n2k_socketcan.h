@@ -26,13 +26,16 @@
 #ifndef _COMMDRIVERN2KSOCKETCAN_H
 #define _COMMDRIVERN2KSOCKETCAN_H
 
+#include <chrono>
 #include <memory>
 #include <string>
 
 #include "model/comm_drv_n2k.h"
+#include "model/comm_drv_stats.h"
 #include "model/conn_params.h"
 
-class CommDriverN2KSocketCAN : public CommDriverN2K {
+class CommDriverN2KSocketCAN : public CommDriverN2K,
+                               public DriverStatsProvider {
 public:
   static std::unique_ptr<CommDriverN2KSocketCAN> Create(
       const ConnectionParams* params, DriverListener& listener);
@@ -48,6 +51,8 @@ public:
   virtual void Close() = 0;
 
   void UpdateAttrCanAddress();
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
+  void SetDriverStats(DriverStats _stats) { m_driver_stats = _stats; }
 
 protected:
   CommDriverN2KSocketCAN(const ConnectionParams* params,
@@ -59,6 +64,8 @@ private:
   bool m_ok;
   std::string m_portstring;
   std::string m_baudrate;
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 };
 
 #endif  // guard

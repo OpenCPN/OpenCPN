@@ -331,6 +331,8 @@ std::string ConnectionParams::GetStrippedDSPort() const {
     return rv;
   } else if (Type == INTERNAL_BT) {
     return Port.ToStdString();
+  } else if (Type == INTERNAL_GPS) {
+    return Port.ToStdString();
   } else
     return "";
 }
