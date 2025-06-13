@@ -457,6 +457,19 @@ if (QT_ANDROID)
     add_compile_options("-O0")
   endif ()
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
+
+  include(FetchContent)
+  FetchContent_Declare(
+          lunasvg
+          GIT_REPOSITORY https://github.com/sammycage/lunasvg.git
+          GIT_TAG master  # Specify the desired branch or tag
+  )
+  set(LUNASVG_BUILD_EXAMPLES OFF CACHE INTERNAL "Enable lunasvg samples")
+  set(PLUTOVG_BUILD_EXAMPLES OFF CACHE INTERNAL "Enable plutovg samples")
+  set( CMAKE_SIZEOF_VOID_P 32 )
+
+  FetchContent_MakeAvailable(lunasvg)
+  include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-src/include")
 endif ()
 
 if (ARCH STREQUAL armhf)
@@ -1066,6 +1079,8 @@ elseif (APPLE)
   )
 elseif (QT_ANDROID)
   target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/android)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-build/liblunasvg.a")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-build/plutovg/libplutovg.a")
 endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
 

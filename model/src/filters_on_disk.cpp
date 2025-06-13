@@ -93,6 +93,4 @@ NavmsgFilter Read(const std::string& name) {
   return NavmsgFilter::Parse(ss.str());
 }
 
-bool IsSystemFilter(std::string& name) { return true; }
-
 }  // namespace filters_on_disk

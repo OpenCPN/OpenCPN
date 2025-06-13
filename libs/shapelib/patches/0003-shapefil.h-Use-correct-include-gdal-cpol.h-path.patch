@@ -1,0 +1,24 @@
+From cec1e46b403656ab1c3441275219d3ca7ef2a1d2 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 15 Apr 2025 09:13:03 +0200
+Subject: [PATCH] shapefil.h: Use correct include gdal/cpol.h path
+
+---
+ shapefil.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shapefil.h b/shapefil.h
+index 47b2e30..7db28c3 100644
+--- a/shapefil.h
++++ b/shapefil.h
+@@ -19,7 +19,7 @@
+ #include <stdio.h>
+
+ #ifdef USE_CPL
+-#include "cpl_conv.h"
++#include "gdal/cpl_conv.h"
+ #endif
+
+ #ifdef __cplusplus
+--
+2.49.0

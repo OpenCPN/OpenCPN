@@ -68,7 +68,7 @@ get all necessary three branches:
 
 `ubuntu/numbat` is the branch to use when building Ubuntu Numbat (24.04)
 packages.
-Alternatives includes  `ubuntu/jammy`, `ubuntu/focal` and `debian/master`.
+Alternatives includes  `ubuntu/jammy`, `ubuntu/focal` and `debian/sid`.
 The latter builds packages for the rolling Sid distribution.
 
 To update an existing clone:

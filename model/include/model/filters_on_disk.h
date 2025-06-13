@@ -32,7 +32,4 @@ bool Write(const NavmsgFilter& filter, const std::string& name);
 /** Read filter with given name from disk. */
 NavmsgFilter Read(const std::string& name);
 
-/** Return true iff name refers to a read-only system filter. */
-bool IsSystemFilter(std::string& name);
-
 }  // namespace filters_on_disk
