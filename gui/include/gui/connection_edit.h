@@ -85,7 +85,6 @@ public:
   void OnNetProtocolSelected(wxCommandEvent &event);
   void OnBaudrateChoice(wxCommandEvent &event) { OnConnValChange(event); }
   void OnProtocolChoice(wxCommandEvent &event);
-  void OnCrcCheck(wxCommandEvent &event) { OnConnValChange(event); }
   void OnRbAcceptInput(wxCommandEvent &event);
   void OnRbIgnoreInput(wxCommandEvent &event);
   void OnBtnIStcs(wxCommandEvent &event);
@@ -155,8 +154,7 @@ public:
   wxGridSizer *gSizerNetProps, *gSizerSerProps, *gSizerCanProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc;
-  wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
-      *m_cbCheckSKDiscover;
+  wxCheckBox *m_cbGarminHost, *m_cbGarminUploadHost, *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
   wxCheckBox *m_cbMultiCast, *m_cbAdvanced;
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;

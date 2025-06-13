@@ -2021,6 +2021,10 @@ public:
 class DECL_EXP opencpn_plugin_120 : public opencpn_plugin_119 {
 public:
   opencpn_plugin_120(void *pmgr);
+
+  virtual void OnContextMenuItemCallbackExt(int id, std::string obj_ident,
+                                            std::string obj_type, double lat,
+                                            double lon);
 };
 
 //------------------------------------------------------------------
@@ -6871,5 +6875,8 @@ public:
 
 extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
                                             PI_Conn_Bus _bus);
+
+extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
+    wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
 
 #endif  //_PLUGIN_H_

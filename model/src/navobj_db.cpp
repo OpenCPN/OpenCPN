@@ -25,12 +25,8 @@
 #include <cmath>
 #include <memory>
 #include <vector>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 #include <string>
 #include <wx/dir.h>
-#include <wx/toplevel.h>
 
 #include "model/base_platform.h"
 #include "model/navobj_db.h"
@@ -38,7 +34,6 @@
 #include "model/notification.h"
 #include "model/notification_manager.h"
 #include "wx/filename.h"
-#include "model/datetime.h"
 #include "model/comm_appmsg_bus.h"
 
 extern BasePlatform* g_BasePlatform;
@@ -50,7 +45,8 @@ void ReportError(const std::string zmsg);
 static bool executeSQL(sqlite3* db, const char* sql) {
   char* errMsg = nullptr;
   if (sqlite3_exec(db, sql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-    wxString msg = wxString::Format("navobj database error. %s", errMsg);
+    wxString msg =
+        wxString::Format(_("navobj database error.") + " %s", errMsg);
     wxLogMessage(msg);
     auto& noteman = NotificationManager::GetInstance();
     noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
@@ -68,7 +64,7 @@ bool CreateTables(sqlite3* db) {
   // Track tables
   const char* create_tables_sql = R"(
         CREATE TABLE IF NOT EXISTS tracks (
-            guid TEXT PRIMARY KEY,
+            guid TEXT PRIMARY KEY NOT NULL,
             name TEXT,
             description TEXT,
             visibility INTEGER,
@@ -101,7 +97,7 @@ bool CreateTables(sqlite3* db) {
 
 
         CREATE TABLE IF NOT EXISTS routes (
-            guid TEXT PRIMARY KEY,
+            guid TEXT PRIMARY KEY NOT NULL,
             name TEXT,
             start_string TEXT,
             end_string TEXT,
@@ -119,7 +115,7 @@ bool CreateTables(sqlite3* db) {
 
 
         CREATE TABLE IF NOT EXISTS routepoints (
-            guid TEXT PRIMARY KEY,
+            guid TEXT PRIMARY KEY NOT NULL,
             lat REAL,
             lon REAL,
             Symbol TEXT,
@@ -331,6 +327,26 @@ bool RouteHtmlLinkExists(sqlite3* db, const std::string& link_guid) {
   return exists;
 }
 
+bool RoutePointHtmlLinkExists(sqlite3* db, const std::string& link_guid) {
+  const char* sql =
+      "SELECT 1 FROM routepoint_html_links WHERE guid = ? LIMIT 1";
+  sqlite3_stmt* stmt;
+  bool exists = false;
+
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+    sqlite3_bind_text(stmt, 1, link_guid.c_str(), -1, SQLITE_TRANSIENT);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+      exists = true;  // found a match
+    }
+
+    sqlite3_finalize(stmt);
+  } else {
+    return false;
+  }
+  return exists;
+}
+
 bool RouteExistsDB(sqlite3* db, const std::string& route_guid) {
   const char* sql = "SELECT 1 FROM routes WHERE guid = ? LIMIT 1";
   sqlite3_stmt* stmt;
@@ -396,6 +412,33 @@ bool RoutePointExists(sqlite3* db, const std::string& routepoint_guid) {
   return exists;
 }
 
+bool InsertRoutePointHTML(sqlite3* db, const std::string& point_guid,
+                          const std::string& link_guid,
+                          const std::string& descrText, const std::string& link,
+                          const std::string& ltype) {
+  const char* sql = R"(
+        INSERT INTO routepoint_html_links (guid, routepoint_guid, html_link, html_description, html_type)
+        VALUES (?, ?, ?, ?, ?)
+    )";
+  sqlite3_stmt* stmt;
+
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+    sqlite3_bind_text(stmt, 1, link_guid.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, point_guid.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, link.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, descrText.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 5, ltype.c_str(), -1, SQLITE_TRANSIENT);
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+      ReportError("InsertRoutePointHTML:step");
+      sqlite3_finalize(stmt);
+      return false;
+    }
+    sqlite3_finalize(stmt);
+  } else {
+    return false;
+  }
+  return true;
+}
 bool DeleteAllCommentsForRoutePoint(sqlite3* db,
                                     const std::string& routepoint_guid) {
   const char* sql =
@@ -480,14 +523,15 @@ void DeleteOrphanedRoutepoint(sqlite3* db) {
 
 void errorLogCallback(void* pArg, int iErrCode, const char* zMsg) {
   wxString msg =
-      wxString::Format("navobj database error. %d: %s", iErrCode, zMsg);
+      wxString::Format(_("navobj database error.") + " %d: %s", iErrCode, zMsg);
   wxLogMessage(msg);
   auto& noteman = NotificationManager::GetInstance();
   noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
 }
 
 void ReportError(const std::string zmsg) {
-  wxString msg = wxString::Format("navobj database error. %s", zmsg.c_str());
+  wxString msg =
+      wxString::Format(_("navobj database error.") + " %s", zmsg.c_str());
   wxLogMessage(msg);
   auto& noteman = NotificationManager::GetInstance();
   noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
@@ -685,6 +729,10 @@ bool NavObj_dB::ImportLegacyRoutes() {
   for (Route* route : routes_added) {
     g_pRouteMan->DeleteRoute(route);
   }
+
+  //  There may have been some points left as isolated orphans
+  //  Delete them too.
+  pWayPointMan->DeleteAllWaypoints(true);
 
   return true;
 }
@@ -1251,7 +1299,7 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
   // Update the HTML links
   // The list of links is freshly rebuilt when this method is called
   // So start by deleting all existing bcomments
-  DeleteAllCommentsForRoutePoint(m_db, route->m_GUID.ToStdString());
+  DeleteAllCommentsForRoute(m_db, route->m_GUID.ToStdString());
 
   // Now add all the links to db
   int NbrOfLinks = route->m_HyperlinkList->GetCount();
@@ -1340,7 +1388,7 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
                       SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, 7, point->GetPlannedSpeed());
     time_t etd = -1;
-    if (point->GetETD().IsValid()) etd = point->GetETD().GetTicks();
+    if (point->GetManualETD().IsValid()) etd = point->GetManualETD().GetTicks();
     sqlite3_bind_int(stmt, 8, etd);
     sqlite3_bind_text(stmt, 9, "type", -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 10, point->m_timestring.ToStdString().c_str(), -1,
@@ -1382,6 +1430,55 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
   }
 
   sqlite3_finalize(stmt);
+
+  // Update the HTML links
+  // The list of links is freshly rebuilt when this method is called
+  // So start by deleting all existing bcomments
+  DeleteAllCommentsForRoutePoint(m_db, point->m_GUID.ToStdString());
+
+  // Now add all the links to db
+  int NbrOfLinks = point->m_HyperlinkList->GetCount();
+  if (NbrOfLinks > 0) {
+    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
+    while (linknode) {
+      Hyperlink* link = linknode->GetData();
+
+      if (!RoutePointHtmlLinkExists(m_db, link->GUID)) {
+        InsertRoutePointHTML(m_db, point->m_GUID.ToStdString(), link->GUID,
+                             link->DescrText.ToStdString(),
+                             link->Link.ToStdString(),
+                             link->LType.ToStdString());
+      } else {
+        const char* sql =
+            "UPDATE routepoint_html_links SET "
+            "html_link = ?, "
+            "html_description = ?, "
+            "html_type = ? "
+            "WHERE guid = ?";
+        sqlite3_stmt* stmt;
+        if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+          sqlite3_bind_text(stmt, 3, link->Link.ToStdString().c_str(), -1,
+                            SQLITE_TRANSIENT);
+          sqlite3_bind_text(stmt, 4, link->DescrText.ToStdString().c_str(), -1,
+                            SQLITE_TRANSIENT);
+          sqlite3_bind_text(stmt, 5, link->LType.ToStdString().c_str(), -1,
+                            SQLITE_TRANSIENT);
+        }
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+          return false;
+        }
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+          ReportError("UpdateDBRoutePointAttributesB:step-h");
+          sqlite3_finalize(stmt);
+          return false;
+        }
+
+        sqlite3_finalize(stmt);
+      }
+
+      linknode = linknode->GetNext();
+    }
+  }
 
   return true;
 }
@@ -1628,6 +1725,39 @@ bool NavObj_dB::LoadAllRoutes() {
         point->SetNameShown(viz_name == 1);
         point->SetShared(shared == 1);
         point->m_bIsolatedMark = (isolated == 1);
+
+        //    Add the point HTML links
+        const char* sqlh = R"(
+        SELECT guid, html_link, html_description, html_type
+        FROM routepoint_html_links
+        WHERE routepoint_guid = ?
+        ORDER BY html_type ASC
+        )";
+
+        sqlite3_stmt* stmt;
+
+        if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
+          sqlite3_bind_text(stmt, 1, point->m_GUID.ToStdString().c_str(), -1,
+                            SQLITE_TRANSIENT);
+
+          while (sqlite3_step(stmt) == SQLITE_ROW) {
+            std::string link_guid =
+                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            std::string link_link =
+                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+            std::string link_description =
+                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+            std::string link_type =
+                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+
+            Hyperlink* h = new Hyperlink();
+            h->DescrText = link_description;
+            h->Link = link_link;
+            h->LType = link_type;
+
+            point->m_HyperlinkList->Append(h);
+          }
+        }
       }
 
       route->AddPoint(point);
@@ -1728,6 +1858,8 @@ bool NavObj_dB::LoadAllPoints() {
       "p.isolated "
       "FROM routepoints p ";
 
+  RoutePoint* point = nullptr;
+
   sqlite3_stmt* stmtp;
   if (sqlite3_prepare_v2(m_db, sqlp, -1, &stmtp, nullptr) != SQLITE_OK) {
     return false;
@@ -1752,7 +1884,7 @@ bool NavObj_dB::LoadAllPoints() {
     time_t etd = sqlite3_column_int(stmtp, col++);
     std::string type =
         reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    std::string time =
+    std::string point_time_string =
         reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
     double arrival_radius = sqlite3_column_double(stmtp, col++);
 
@@ -1773,7 +1905,7 @@ bool NavObj_dB::LoadAllPoints() {
     int isolated = sqlite3_column_int(stmtp, col++);
 
     if (isolated) {
-      auto point =
+      point =
           new RoutePoint(latitude, longitude, symbol, name, point_guid, false);
 
       point->m_MarkDescription = description;
@@ -1797,6 +1929,11 @@ bool NavObj_dB::LoadAllPoints() {
       point->SetShared(shared == 1);
       point->m_bIsolatedMark = (isolated == 1);
 
+      if (point_time_string.size()) {
+        wxString sdt(point_time_string.c_str());
+        point->m_timestring = sdt;
+        ParseGPXDateTime(point->m_CreateTimeX, sdt);
+      }
       // Add it here
       pWayPointMan->AddRoutePoint(point);
       pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
@@ -1804,46 +1941,45 @@ bool NavObj_dB::LoadAllPoints() {
   }  // points
   sqlite3_finalize(stmtp);
 
-#if 0
-      //    Add the HTML links
-      const char* sqlh = R"(
+  if (point) {
+    //    Add the point HTML links
+    const char* sqlh = R"(
         SELECT guid, html_link, html_description, html_type
-        FROM track_html_links
-        WHERE track_guid = ?
+        FROM routepoint_html_links
+        WHERE routepoint_guid = ?
         ORDER BY html_type ASC
     )";
 
-      sqlite3_stmt* stmt;
+    sqlite3_stmt* stmt;
 
-      if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
-        sqlite3_bind_text(stmt, 1, new_trk->m_GUID.ToStdString().c_str(), -1,
-                          SQLITE_TRANSIENT);
+    if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
+      sqlite3_bind_text(stmt, 1, point->m_GUID.ToStdString().c_str(), -1,
+                        SQLITE_TRANSIENT);
 
-        while (sqlite3_step(stmt) == SQLITE_ROW) {
-          std::string link_guid =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-          std::string link_link =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-          std::string link_description =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-          std::string link_type =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+      while (sqlite3_step(stmt) == SQLITE_ROW) {
+        std::string link_guid =
+            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        std::string link_link =
+            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        std::string link_description =
+            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        std::string link_type =
+            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
 
-          Hyperlink* h = new Hyperlink();
-          h->DescrText = link_description;
-          h->Link = link_link;
-          h->LType = link_type;
+        Hyperlink* h = new Hyperlink();
+        h->DescrText = link_description;
+        h->Link = link_link;
+        h->LType = link_type;
 
-          new_trk->m_TrackHyperlinkList->Append(h);
-          int yyp = 4;
-        }
-
-        sqlite3_finalize(stmt);
-
-      } else {
-        return false;
+        point->m_HyperlinkList->Append(h);
       }
-#endif
+
+      sqlite3_finalize(stmt);
+
+    } else {
+      return false;
+    }
+  }
   return true;
 }
 bool NavObj_dB::InsertRoutePoint(RoutePoint* point) {
@@ -1861,6 +1997,24 @@ bool NavObj_dB::InsertRoutePoint(RoutePoint* point) {
   }
 
   UpdateDBRoutePointAttributes(point);
+
+  //  Add HTML links to routepoint
+  int NbrOfLinks = point->m_HyperlinkList->GetCount();
+  if (NbrOfLinks > 0) {
+    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
+    while (linknode) {
+      Hyperlink* link = linknode->GetData();
+
+      if (!RoutePointHtmlLinkExists(m_db, link->GUID)) {
+        InsertRoutePointHTML(m_db, point->m_GUID.ToStdString(), link->GUID,
+                             link->DescrText.ToStdString(),
+                             link->Link.ToStdString(),
+                             link->LType.ToStdString());
+      }
+      linknode = linknode->GetNext();
+    }
+  }
+
   return true;
 }
 
@@ -1868,12 +2022,15 @@ bool NavObj_dB::DeleteRoutePoint(RoutePoint* point) {
   if (m_importing) return false;
   if (!point) return false;
 
-  std::string route_guid = point->m_GUID.ToStdString();
+  std::string point_guid = point->m_GUID.ToStdString();
+
+  // DeleteAllCommentsForRoutePoint(m_db, point_guid);
+
   const char* sql = "DELETE FROM routepoints WHERE guid = ?";
   sqlite3_stmt* stmt;
 
   if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
-    sqlite3_bind_text(stmt, 1, route_guid.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 1, point_guid.c_str(), -1, SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("DeleteRoutePoint:step");
       sqlite3_finalize(stmt);
@@ -1888,6 +2045,7 @@ bool NavObj_dB::DeleteRoutePoint(RoutePoint* point) {
 }
 
 bool NavObj_dB::UpdateRoutePoint(RoutePoint* point) {
+  if (m_importing) return false;
   if (!RoutePointExists(m_db, point->m_GUID.ToStdString())) return false;
   UpdateDBRoutePointAttributes(point);
   return true;

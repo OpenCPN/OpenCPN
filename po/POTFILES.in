@@ -151,6 +151,7 @@ model/src/logger.cpp
 model/src/macutils.c
 model/src/multiplexer.cpp
 model/src/nav_object_database.cpp
+model/src/navobj_db.cpp
 model/src/navutil_base.cpp
 model/src/ocpn_plugin.cpp
 model/src/ocpn_utils.cpp
@@ -174,6 +175,7 @@ model/src/select_item.cpp
 model/src/semantic_vers.cpp
 model/src/ser_ports.cpp
 model/src/std_instance_chk.cpp
+model/src/std_serial_io.cpp
 model/src/track.cpp
 model/src/usb_watch_factory.cpp
 model/src/win_usb_watch.cpp

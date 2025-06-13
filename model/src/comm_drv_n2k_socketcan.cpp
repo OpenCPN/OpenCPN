@@ -66,6 +66,7 @@ static const int kSocketTimeoutSeconds = 2;
 typedef struct can_frame CanFrame;
 
 class CommDriverN2KSocketCanImpl;  // fwd
+using namespace std::literals::chrono_literals;
 
 /**
  * Manages reading the N2K data stream provided by some N2K gateways from the
@@ -328,11 +329,13 @@ bool CommDriverN2KSocketCanImpl::SendMessage(
 
   frame.can_id = canId | CAN_EFF_FLAG;
 
+  int sentbytes = 0;
+
   if (load.size() <= 8) {
     frame.can_dlc = load.size();
     if (load.size() > 0) memcpy(&frame.data, load.data(), load.size());
 
-    int sentbytes = write(socket, &frame, sizeof(frame));
+    sentbytes += write(socket, &frame, sizeof(frame));
   } else {  // Fast Packet
     int sequence = (m_last_TX_sequence + 0x20) & 0xE0;
     m_last_TX_sequence = sequence;
@@ -346,7 +349,7 @@ bool CommDriverN2KSocketCanImpl::SendMessage(
     int data_len_0 = wxMin(load.size(), 6);
     memcpy(&frame.data[2], load.data(), data_len_0);
 
-    int sentbytes0 = write(socket, &frame, sizeof(frame));
+    sentbytes += write(socket, &frame, sizeof(frame));
 
     data_ptr += data_len_0;
     n_remaining -= data_len_0;
@@ -359,13 +362,17 @@ bool CommDriverN2KSocketCanImpl::SendMessage(
       int data_len_n = wxMin(n_remaining, 7);
       memcpy(&frame.data[1], data_ptr, data_len_n);
 
-      int sentbytesn = write(socket, &frame, sizeof(frame));
+      sentbytes += write(socket, &frame, sizeof(frame));
 
       data_ptr += data_len_n;
       n_remaining -= data_len_n;
       sequence++;
     }
   }
+
+  DriverStats stats = GetDriverStats();
+  stats.tx_count += sentbytes;
+  SetDriverStats(stats);
 
   return true;
 }
@@ -379,11 +386,15 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
       m_listener(listener),
       m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_baudrate(wxString::Format("%i", params->Baudrate)) {
+      m_baudrate(wxString::Format("%i", params->Baudrate)),
+      m_stats_timer(*this, 2s) {
   this->attributes["canPort"] = params->socketCAN_port.ToStdString();
   this->attributes["canAddress"] = std::to_string(DEFAULT_N2K_SOURCE_ADDRESS);
   this->attributes["userComment"] = params->UserComment.ToStdString();
   this->attributes["ioDirection"] = std::string("IN/OUT");
+
+  m_driver_stats.driver_bus = NavAddr::Bus::N2000;
+  m_driver_stats.driver_iface = params->GetStrippedDSPort();
 }
 
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
@@ -507,6 +518,10 @@ int Worker::InitSocket(const std::string port_name) {
     SocketMessage("SocketCAN socket bind() failed: ", port_name);
     return -1;
   }
+  DriverStats stats = m_parent_driver->GetDriverStats();
+  stats.available = true;
+  m_parent_driver->SetDriverStats(stats);
+
   return sock;
 }
 
@@ -549,6 +564,10 @@ void Worker::HandleInput(CanFrame frame) {
     ProcessRxMessages(msg);
     m_parent_driver->m_listener.Notify(std::move(msg));
     m_parent_driver->m_listener.Notify(std::move(msg_all));
+
+    DriverStats stats = m_parent_driver->GetDriverStats();
+    stats.rx_count += vec.size();
+    m_parent_driver->SetDriverStats(stats);
   }
 }
 

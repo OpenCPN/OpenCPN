@@ -1,0 +1,27 @@
+From ace28580bf90631c435293fa20116cbe02826104 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 13 Apr 2025 22:14:47 +0200
+Subject: [PATCH 2/2] cmake: Make BUILD_TESTING an option
+
+Forwarded: https://github.com/leamas/opencpn
+---
+ CMakeLists.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ad794ae..4734b51 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -206,8 +206,9 @@ endif()
+
+ find_program(BASH_EXECUTABLE bash)
+ if(BASH_EXECUTABLE)
+-  set(BUILD_TESTING ON CACHE BOOL "")
++  option(BUILD_TESTING "Build tests"  ON)
+ else()
++  set(BUILD_TESTING OFF CACHE BOOL "Disable tests")
+   message(STATUS "WARNING: bash not available so disabling testing")
+ endif()
+
+--
+2.49.0
