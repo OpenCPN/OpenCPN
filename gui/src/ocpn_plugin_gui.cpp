@@ -225,6 +225,12 @@ void SetCanvasContextMenuItemGrey(int item, bool grey) {
 
 void RemoveCanvasContextMenuItem(int item) { RemoveCanvasMenuItem(item); }
 
+int AddCanvasContextMenuItemExt(wxMenuItem* pitem, opencpn_plugin* pplugin,
+                                const std::string object_type) {
+  /* main context popup menu */
+  return AddCanvasMenuItem(pitem, pplugin, object_type.c_str());
+}
+
 /*  Utility functions  */
 wxFileConfig* GetOCPNConfigObject(void) {
   if (s_ppim)

@@ -820,6 +820,7 @@ public:
    */
   double GetDisplayScale() { return m_displayScale; }
   void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
+  NotificationsList *GetNotificationsList() { return m_NotificationsList; }
 
 private:
   /**

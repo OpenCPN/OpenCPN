@@ -99,6 +99,10 @@ public:
   static wxFont m_scaledFont;
 
 private:
+  void AddPluginContextMenuItems(wxMenu *contextMenu, wxMenu *menuRoute,
+                                 wxMenu *menuTrack, wxMenu *menuWaypoint,
+                                 wxMenu *menuAIS);
+
   int popx, popy;
   ChartCanvas *parent;
   Route *m_pSelectedRoute;

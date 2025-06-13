@@ -358,6 +358,9 @@ private:
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;
+  iirfilter mAWSFilter;
+  iirfilter mAWAFilter;
+
   // protected:
   //      DECLARE_EVENT_TABLE();
 };
@@ -390,6 +393,8 @@ public:
   wxSpinCtrl *m_pSpinSpeedMax;
   wxSpinCtrl *m_pSpinCOGDamp;
   wxSpinCtrl *m_pSpinSOGDamp;
+  wxSpinCtrl *m_pSpinAWSDamp;
+  wxSpinCtrl *m_pSpinAWADamp;
   wxChoice *m_pChoiceUTCOffset;
   wxChoice *m_pChoiceSpeedUnit;
   wxChoice *m_pChoiceDepthUnit;

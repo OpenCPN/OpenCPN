@@ -53,6 +53,8 @@ typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
+using namespace std::literals::chrono_literals;
+
 class CommDriverN0183AndroidInt;  // fwd
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
@@ -176,11 +178,14 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(
     : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
       m_bok(false),
       m_portstring(params->GetDSPort()),
+      m_stats_timer(*this, 2s),
       m_params(*params),
       m_listener(listener) {
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
   this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  m_driver_stats.driver_bus = NavAddr::Bus::N0183;
+  m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
@@ -193,6 +198,7 @@ CommDriverN0183AndroidInt::~CommDriverN0183AndroidInt() { Close(); }
 
 bool CommDriverN0183AndroidInt::Open() {
   androidStartGPS(this);
+  m_driver_stats.available = true;
   return true;
 }
 
@@ -201,6 +207,7 @@ void CommDriverN0183AndroidInt::Close() {
       wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
 
   androidStopGPS();
+  m_driver_stats.available = false;
 
   Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
          &CommDriverN0183AndroidInt::handle_N0183_MSG, this);
@@ -215,6 +222,8 @@ void CommDriverN0183AndroidInt::handle_N0183_MSG(
     CommDriverN0183AndroidIntEvent& event) {
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
+
+  m_driver_stats.rx_count += payload->size();
 
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());

@@ -29,8 +29,6 @@
 
 namespace ocpn {
 
-std::string get_basename(const char* path);
-
 /** Store metadata in metadata cache, return success/fail. */
 bool store_metadata(const char* path);
 

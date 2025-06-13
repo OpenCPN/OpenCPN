@@ -202,6 +202,9 @@ wxString androidGetIpV4Address(void);
 wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
                         unsigned int height);
 
+wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
+                        unsigned int height);
+
 wxString androidGetAndroidSystemLocale();
 bool androidIsDirWritable(wxString dir);
 wxArrayString GetConfigChartDirectories();
