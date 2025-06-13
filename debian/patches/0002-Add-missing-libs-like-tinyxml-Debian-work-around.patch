@@ -18,10 +18,10 @@ Forwarded: not-needed
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bb3edbb..3d38655 100644
+index a030145..4aec2fe 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1469,7 +1469,6 @@ message(STATUS "    Adding local LIBTESS2")
+@@ -1484,7 +1484,6 @@ message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
  
