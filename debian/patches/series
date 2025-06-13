@@ -3,4 +3,3 @@
 0003-CMakeLists-handle-help_web.html-location.patch
 0004-tests-disable-rest-server-tests-for-now.patch
 0005-build-add-latomic-linkage.patch
-0006-Add-wrongly-removed-libs-shapelib.patch
