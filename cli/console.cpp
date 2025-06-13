@@ -373,7 +373,7 @@ public:
       url = std::string(DOWNLOAD_REPO_PROTO);
       ocpn::replace(url, "@branch@", catalog);
     }
-    auto path = PluginHandler::GetInstance()->GetMetadataPath();
+    auto path = PluginHandler::GetInstance()->GetUserMetadataPath();
     auto cat_handler = CatalogHandler::GetInstance();
     auto status = cat_handler->DownloadCatalog(path, url);
     if (status != CatalogHandler::ServerStatus::OK) {

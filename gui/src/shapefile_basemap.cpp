@@ -241,7 +241,7 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
   if (fs::exists(ShapeBaseChart::ConstructPath(dir, "full"))) {
     _basemap_map.insert(std::make_pair(
         Quality::full,
-        ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "full"), 50000,
+        ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "full"), 10000,
                        land_color)));
   }
   _loaded = true;

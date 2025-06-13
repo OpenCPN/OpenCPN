@@ -90,4 +90,6 @@ extern double fromDMM(wxString sdms);
 
 extern double toMagnetic(double deg_true);
 extern double toMagnetic(double deg_true, double variation);
+
+wxString SanitizeFileName(const wxString &input);
 #endif  // _NAVUTIL_BASE__

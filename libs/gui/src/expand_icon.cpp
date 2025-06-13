@@ -40,7 +40,13 @@
 #include "svg_icons.h"
 #include "expand_icon.h"
 
+#ifdef ANDROID
+wxBitmap loadAndroidSVG(const char* svg, unsigned int width,
+                        unsigned int height);
+#endif
+
 static wxBitmap LoadSvgBitmap(const char* svg, wxWindow* parent) {
+#ifndef ANDROID
   char buffer[2048];  // Needs to be larger than any svg icon...
   assert(strlen(svg) < sizeof(buffer));
   std::strcpy(buffer, svg);
@@ -56,6 +62,9 @@ static wxBitmap LoadSvgBitmap(const char* svg, wxWindow* parent) {
       svg_doc.Render(parent->GetCharHeight(), parent->GetCharHeight());
   assert(wxBitmap(image).IsOk() && "Cannot load svg icon");
   return wxBitmap(image);
+#endif
+#else
+  return loadAndroidSVG(svg, parent->GetCharHeight(), parent->GetCharHeight());
 #endif
 }
 

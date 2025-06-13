@@ -2622,22 +2622,19 @@ static wxFileName exportFileName(wxWindow *parent,
                                  const wxString suggestedName) {
   wxFileName ret;
   wxString path;
-  wxString validName{suggestedName};
-  // replace common date characters invalid in filename
-  // MS-DOS file systems have many more
-  validName.Replace(_T("/"), _T("-"));
-  validName.Replace(_T(":"), _T("_"));
+  wxString valid_name = SanitizeFileName(suggestedName);
 
 #ifdef __ANDROID__
-  if (!validName.EndsWith(".gpx")) {
-    wxFileName fn(validName);
+  if (!valid_name.EndsWith(".gpx")) {
+    wxFileName fn(valid_name);
     fn.ClearExt();
     fn.SetExt("gpx");
-    validName = fn.GetFullName();
+    valid_name = fn.GetFullName();
   }
 #endif
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, validName, wxT("*.gpx"));
+  int response =
+      g_Platform->DoFileSelectorDialog(parent, &path, _("Export GPX file"),
+                                       g_gpx_path, valid_name, wxT("*.gpx"));
 
   if (response == wxID_OK) {
     wxFileName fn(path);

@@ -63,13 +63,15 @@ static bool copy_file(const char* src_path, const char* dest_path) {
 #endif
 }
 
-namespace ocpn {
-
-std::string get_basename(const char* path) {
+static std::string get_basename(const char* path) {
   wxString sep(wxFileName::GetPathSeparator());
+  // To parse standard network url, use "/"
+  if (ocpn::startswith(path, "http")) sep = "/";
   auto parts = ocpn::split(path, sep.ToStdString());
   return parts[parts.size() - 1];
 }
+
+namespace ocpn {
 
 static std::string metadata_path(const char* basename, bool create = false) {
   wxFileName dirs(cache_path());

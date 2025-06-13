@@ -1421,8 +1421,8 @@ void OCPNPlatform::SetDefaultOptions(void) {
 
 //      Setup global options on upgrade detected
 //      The global config object (pConfig) has already been loaded, so updates
-//      here override values set by config Direct updates to config for next
-//      boot are also allowed
+//      here override values set by config.
+//      Direct updates to config for next boot are also supported.
 
 void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
 #ifdef __ANDROID__
@@ -1526,6 +1526,15 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
       wxFileName ft(tide);
       if (ft.FileExists()) TideCurrentDataSet.push_back(TCDS_temp[i]);
     }
+
+    //  Force default (baked-in) values for CompatOS
+    // Thus providing for the case when some core dependent elements
+    // are updated. (e.g. flatpak SDK 22.08->24.08->???)
+    g_compatOS = "";
+    g_compatOsVersion = "";
+    pConfig->SetPath(_T ( "/Settings" ));
+    pConfig->Write(_T ( "CompatOS" ), g_compatOS);
+    pConfig->Write(_T ( "CompatOsVersion" ), g_compatOsVersion);
   }
 }
 
