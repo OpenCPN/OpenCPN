@@ -65,17 +65,7 @@ if (QT_ANDROID)
   set(SRC_WMM ${SRC_WMM} src/pi_shaders.cpp)
 endif (QT_ANDROID)
 
-set(SRC_JSON
-    src/json_defs.h
-    src/jsonreader.h
-    src/jsonval.h
-    src/jsonwriter.h
-    src/jsonreader.cpp
-    src/jsonval.cpp
-    src/jsonwriter.cpp
-)
-
-add_library(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
+add_library(${PACKAGE_NAME} SHARED ${SRC_WMM})
 
 target_include_directories(
   ${PACKAGE_NAME} BEFORE PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include

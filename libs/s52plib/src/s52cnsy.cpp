@@ -3399,7 +3399,7 @@ static void *WRECKS02(void *param)
           wrecks02str = wxString(_T(";SY(DANGER51)"));
         else
           wrecks02str = wxString(_T(";SY(DANGER52)"));
-        wrecks02str.Append(_T(";TX('Wk',2,1,2,'15110',1,0,CHBLK,21)"));
+        wrecks02str.Append(_T(";TX('Wk',3,1,2,'15110',2,0,CHBLK,21)"));
         if (7 == quasou)  // Fixes FS 165
           wrecks02str.Append(_T(";SY(WRECKS07)"));
 

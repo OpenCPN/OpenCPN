@@ -60,8 +60,8 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
                                        locale.GetInfo(wxLOCALE_SHORT_DATE_FMT) +
                                        " " + locale.GetInfo(wxLOCALE_TIME_FMT)},
       {"$weekday_short_date", "%a " + locale.GetInfo(wxLOCALE_SHORT_DATE_FMT)},
-      {"short_date_time", locale.GetInfo(wxLOCALE_SHORT_DATE_FMT) + " " +
-                              locale.GetInfo(wxLOCALE_TIME_FMT)},
+      {"$short_date_time", locale.GetInfo(wxLOCALE_SHORT_DATE_FMT) + " " +
+                               locale.GetInfo(wxLOCALE_TIME_FMT)},
       {"$short_date", locale.GetInfo(wxLOCALE_SHORT_DATE_FMT)},
       {"$hour_minutes_seconds", locale.GetInfo(wxLOCALE_TIME_FMT)},
 #else

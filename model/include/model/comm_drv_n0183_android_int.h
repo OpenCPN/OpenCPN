@@ -33,6 +33,7 @@
 
 #include "model/comm_drv_n0183.h"
 #include "model/conn_params.h"
+#include "model/comm_drv_stats.h"
 
 class CommDriverN0183AndroidIntEvent : public wxEvent {
 public:
@@ -53,7 +54,9 @@ private:
 wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
                 CommDriverN0183AndroidIntEvent);
 
-class CommDriverN0183AndroidInt : public CommDriverN0183, public wxEvtHandler {
+class CommDriverN0183AndroidInt : public CommDriverN0183,
+                                  public wxEvtHandler,
+                                  public DriverStatsProvider {
 public:
   CommDriverN0183AndroidInt(const ConnectionParams* params, DriverListener& l);
 
@@ -67,11 +70,16 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
 
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
+
 private:
   bool m_bok;
   std::string m_portstring;
   std::string m_BaudRate;
   int m_handshake;
+
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 
   ConnectionParams m_params;
   DriverListener& m_listener;

@@ -332,7 +332,10 @@ int GetActiveNotificationCount() {
 
 PI_NotificationSeverity GetMaxActiveNotificationLevel() {
   auto& noteman = NotificationManager::GetInstance();
-  return (PI_NotificationSeverity)noteman.GetMaxSeverity();
+  if (noteman.GetNotificationCount())
+    return (PI_NotificationSeverity)noteman.GetMaxSeverity();
+  else
+    return (PI_NotificationSeverity)-1;
 }
 
 std::string RaiseNotification(const PI_NotificationSeverity _severity,

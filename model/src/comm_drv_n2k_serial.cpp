@@ -304,9 +304,11 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
 CommDriverN2KSerial::~CommDriverN2KSerial() { Close(); }
 
 DriverStats CommDriverN2KSerial::GetDriverStats() const {
+#ifndef ANDROID
   if (m_pSecondary_Thread)
     return m_pSecondary_Thread->GetStats();
   else
+#endif
     return m_driver_stats;
 }
 

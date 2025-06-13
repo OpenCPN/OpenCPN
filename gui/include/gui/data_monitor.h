@@ -84,6 +84,8 @@ public:
 
   virtual bool IsVisible() const override;
 
+  void OnHide();
+
 private:
   void OnFilterListChange();
   void OnFilterUpdate(const std::string& name);
