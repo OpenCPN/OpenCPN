@@ -748,12 +748,13 @@ private:
   };
 
   /** The select Generic, Garmin or Furuno upload options choice */
-  class UploadOptionsChoice : public wxChoice, public ApplyCancel {
+  class UploadOptionsChoice : public wxRadioBox, public ApplyCancel {
   public:
-    explicit UploadOptionsChoice(wxWindow* parent) : wxChoice() {
+    explicit UploadOptionsChoice(wxWindow* parent) : wxRadioBox() {
       wxArrayString wx_choices;
       for (auto& c : choices) wx_choices.Add(c);
-      Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wx_choices);
+      Create(parent, wxID_ANY, _("Upload Format"), wxDefaultPosition,
+             wxDefaultSize, wx_choices, 0, wxRA_SPECIFY_ROWS);
       DimeControl(this);
       UploadOptionsChoice::Cancel();
     }
@@ -787,9 +788,7 @@ private:
     }
 
     const std::array<wxString, 3> choices = {
-        _("Use generic Nmea 0183 format for uploads"),
-        _("Use Garmin GRMN (Host) mode for uploads"),
-        _("Format uploads for Furuno GP4X")};
+        _("Generic NMEA 0183"), _("Garmin Host mode"), _("Furuno GP4X")};
   };
 
   UploadOptionsChoice* m_upload_options;
