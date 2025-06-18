@@ -27,6 +27,8 @@
  *
  */
 
+#include "config.h"
+
 #include <cstdio>
 #include <iostream>
 #include <string.h>
@@ -39,8 +41,12 @@
 #include "openssl/applink.c"
 #endif
 
-using namespace std;
+#ifdef HAVE_OCPN_LOG
+#include "model/logger.h"
+#define cerr ERROR_LOG
+#endif
 
+using namespace std;
 /* Generates a 2048-bit RSA key. */
 EVP_PKEY *generate_key() {
   /* Allocate memory for the EVP_PKEY structure. */
