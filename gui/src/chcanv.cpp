@@ -13821,8 +13821,10 @@ void ChartCanvas::UpdateGPSCompassStatusBox(bool b_force_new) {
   if (m_Compass && m_Compass->IsShown())
     m_Compass->UpdateStatus(b_force_new | b_update);
 
-  wxPoint note_point =
-      wxPoint(parent_size.x - 20 * wxWindow::GetCharWidth(), compass_rect.y);
+  double scaler = g_Platform->GetCompassScaleFactor(g_GUIScaleFactor);
+  scaler = wxMax(scaler, 1.0);
+  wxPoint note_point = wxPoint(
+      parent_size.x - (scaler * 20 * wxWindow::GetCharWidth()), compass_rect.y);
   m_notification_button->Move(note_point);
   m_notification_button->UpdateStatus();
 
