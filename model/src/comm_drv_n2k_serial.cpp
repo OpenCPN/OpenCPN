@@ -333,6 +333,8 @@ void CommDriverN2KSerial::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing N2K Driver %s"), m_portstring.c_str()));
 
+  m_stats_timer.Stop();
+
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive

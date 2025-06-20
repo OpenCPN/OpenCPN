@@ -149,7 +149,17 @@ public:
   void OnSize(wxSizeEvent& event);
   void OnMove(wxMoveEvent& event);
   void OnInitTimer(wxTimerEvent& event);
+
+  /**
+   * Main application timer handler called approximately once per second.
+   *
+   * Key responsibilities include anchor watch monitoring, GPS position
+   * updates to plugins, toolbar management, and chart database refreshes.
+   *
+   * @param event The wxTimerEvent that triggered this handler
+   */
   void OnFrameTimer1(wxTimerEvent& event);
+
   bool DoChartUpdate(void);
   void OnEvtPlugInMessage(OCPN_MsgEvent& event);
   void OnMemFootTimer(wxTimerEvent& event);
@@ -157,6 +167,18 @@ public:
   void OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent& event);
   void OnIconize(wxIconizeEvent& event);
   void OnBellsFinished(wxCommandEvent& event);
+
+  /**
+   * High-frequency timer handler running at 10Hz for smooth navigation updates.
+   *
+   * This timer event handler runs at 10Hz to provide smooth, high-frequency
+   * updates for navigation display and position estimation. It serves two
+   * primary purposes: handling compass rose rotation in non-North-Up modes and
+   * providing interpolated position/heading estimates when 10Hz updates are
+   * enabled.
+   *
+   * @param event The wxTimerEvent that triggered this handler (100ms interval)
+   */
   void OnFrameTenHzTimer(wxTimerEvent& event);
 
 #ifdef wxHAS_POWER_EVENTS

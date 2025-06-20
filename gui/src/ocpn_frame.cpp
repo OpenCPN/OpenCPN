@@ -2308,6 +2308,9 @@ void MyFrame::ODoSetSize(void) {
   }
 
 #endif
+  if (GetPrimaryCanvas() && GetPrimaryCanvas()->GetNotificationsList()) {
+    GetPrimaryCanvas()->GetNotificationsList()->RecalculateSize();
+  }
 
   if (g_pauimgr) g_pauimgr->Update();
 }

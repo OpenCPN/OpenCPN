@@ -123,6 +123,7 @@ public:
   bool b_grey;
   int id;
   wxString m_in_menu;
+  bool extended;
 };
 
 //    Define an array of PlugIn MenuItem Containers
@@ -214,8 +215,9 @@ public:
   ArrayOfPlugInMenuItems& GetPluginContextMenuItemArray() {
     return m_PlugInMenuItems;
   }
-  int AddCanvasContextMenuItem(wxMenuItem* pitem, opencpn_plugin* pplugin,
-                               const char* name = "");
+  int AddCanvasContextMenuItemPIM(wxMenuItem* pitem, opencpn_plugin* pplugin,
+                                  const char* name = "",
+                                  bool is_extended = false);
   void RemoveCanvasContextMenuItem(int item, const char* name = "");
   void SetCanvasContextMenuItemViz(int item, bool viz, const char* name = "");
   void SetCanvasContextMenuItemGrey(int item, bool grey, const char* name = "");
