@@ -191,10 +191,9 @@ void SetToolbarToolBitmapsSVG(int item, wxString SVGfile,
 
 /*  Canvas Context Menu support  */
 int AddCanvasMenuItem(wxMenuItem* pitem, opencpn_plugin* pplugin,
-                      const char* name, bool is_extended) {
+                      const char* name) {
   if (s_ppim)
-    return s_ppim->AddCanvasContextMenuItemPIM(pitem, pplugin, name,
-                                               is_extended);
+    return s_ppim->AddCanvasContextMenuItemPIM(pitem, pplugin, name, false);
   else
     return -1;
 }
@@ -213,7 +212,10 @@ void RemoveCanvasMenuItem(int item, const char* name) {
 
 int AddCanvasContextMenuItem(wxMenuItem* pitem, opencpn_plugin* pplugin) {
   /* main context popup menu */
-  return AddCanvasMenuItem(pitem, pplugin, "", false);
+  if (s_ppim)
+    return s_ppim->AddCanvasContextMenuItemPIM(pitem, pplugin, "", false);
+  else
+    return -1;
 }
 
 void SetCanvasContextMenuItemViz(int item, bool viz) {
@@ -229,7 +231,11 @@ void RemoveCanvasContextMenuItem(int item) { RemoveCanvasMenuItem(item); }
 int AddCanvasContextMenuItemExt(wxMenuItem* pitem, opencpn_plugin* pplugin,
                                 const std::string object_type) {
   /* main context popup menu */
-  return AddCanvasMenuItem(pitem, pplugin, object_type.c_str(), true);
+  if (s_ppim)
+    return s_ppim->AddCanvasContextMenuItemPIM(pitem, pplugin,
+                                               object_type.c_str(), true);
+  else
+    return -1;
 }
 
 /*  Utility functions  */
