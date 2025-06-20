@@ -146,7 +146,7 @@ bool CreateTables(sqlite3* db) {
             route_guid TEXT,
             point_guid TEXT,
             point_order INTEGER,
-            PRIMARY KEY (route_guid, point_guid),
+            PRIMARY KEY (route_guid, point_order),
             FOREIGN KEY (route_guid) REFERENCES routes(guid) ON DELETE CASCADE
         );
 
