@@ -7506,6 +7506,7 @@ void ChartCanvas::HandleNotificationMouseClick() {
   if (m_NotificationsList->IsShown()) {
     m_NotificationsList->Hide();
   } else {
+    m_NotificationsList->RecalculateSize();
     m_NotificationsList->ReloadNotificationList();
     m_NotificationsList->Show();
   }

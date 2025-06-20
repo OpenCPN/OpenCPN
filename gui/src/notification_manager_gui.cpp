@@ -188,6 +188,7 @@ NotificationListPanel::NotificationListPanel(wxWindow* parent, wxWindowID id,
                        wxTAB_TRAVERSAL | wxVSCROLL | wxHSCROLL) {
   SetSizer(new wxBoxSizer(wxVERTICAL));
   SetScrollRate(5, 5);
+  ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
   if (g_btouch) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     SetScrollRate(1, 1);
@@ -327,24 +328,27 @@ void NotificationsList::RecalculateSize() {
   wxPoint ClientUpperRight =
       GetParent()->ClientToScreen(wxPoint(parent_size.x, 0));
   wxPoint list_bottom =
-      GetParent()->ClientToScreen(wxPoint(0, parent_size.y / 6));
+      GetParent()->ClientToScreen(wxPoint(0, parent_size.y / 3));
   int size_y = list_bottom.y - (ClientUpperRight.y + 5);
   size_y -= GetParent()->GetCharHeight();
   size_y =
       wxMax(size_y, 8 * GetCharHeight());  // ensure always big enough to see
 
-  SetSize(wxSize(GetCharWidth() * 80, size_y));
+  wxSize target_size = wxSize(GetCharWidth() * 80, size_y);
 
   wxPoint targetNLPos = GetParent()->ClientToScreen(
       wxPoint(parent_size.x / 2, 3 * GetParent()->GetCharHeight()));
 
-  if ((targetNLPos.x + GetSize().x) > ClientUpperRight.x) {
+  // Adjust the size for smaller devices
+  wxSize display_size = g_Platform->getDisplaySize();
+  if (target_size.x * 2 > display_size.x) {
+    target_size.x =
+        display_size.x * 85 / 100 - (2 * GetParent()->GetCharWidth());
     targetNLPos.x =
-        GetParent()->ClientToScreen(wxPoint(parent_size.x * 15 / 100, 0)).x;
-    SetSize(parent_size.x * 85 / 100 - (2 * GetParent()->GetCharWidth()),
-            size_y);
+        GetParent()->ClientToScreen(wxPoint(display_size.x * 15 / 100, 0)).x;
   }
 
+  SetSize(target_size);
   Move(targetNLPos);
   Layout();
 }
