@@ -170,7 +170,9 @@ public:
 
   /** Find metadata for given plugin. */
   static PluginMetadata MetadataByName(const std::string& name);
-  ;
+
+  /** Find highest versioned metadata for given plugin. */
+  static PluginMetadata LatestMetadataByName(const std::string& name);
 
   /** Notified without data when loader starts loading from a new directory. */
   EventVar evt_load_directory;
