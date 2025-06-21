@@ -939,17 +939,6 @@ PluginMetadata PluginLoader::LatestMetadataByName(const std::string& name) {
   using namespace std;
   if (name.empty()) return {};
 
-  auto import_path = PluginHandler::ImportedMetadataPath(name.c_str());
-  if (isRegularFile(import_path.c_str())) {
-    std::ifstream f(import_path.c_str());
-    std::stringstream ss;
-    ss << f.rdbuf();
-    PluginMetadata pd;
-    ParsePlugin(ss.str(), pd);
-    pd.is_imported = true;
-    return pd;
-  }
-
   auto available = PluginHandler::GetInstance()->getCompatiblePlugins();
   vector<PluginMetadata> matches;
   copy_if(available.begin(), available.end(), back_inserter(matches),
