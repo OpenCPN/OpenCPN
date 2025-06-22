@@ -1159,6 +1159,8 @@ bool NavObj_dB::InsertRoute(Route* route) {
 };
 
 bool NavObj_dB::UpdateRoute(Route* route) {
+  sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, nullptr);
+
   bool rv = false;
   char* errMsg = 0;
 
@@ -1217,6 +1219,7 @@ bool NavObj_dB::UpdateRoute(Route* route) {
       linknode = linknode->GetNext();
     }
   }
+  sqlite3_exec(m_db, "COMMIT", 0, 0, nullptr);
 
   rv = true;
   if (errMsg) rv = false;

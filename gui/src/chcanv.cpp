@@ -9756,8 +9756,14 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 pr->m_bIsBeingEdited = false;
 
                 if (m_bRoutePoinDragging) {
-                  // pConfig->UpdateRoute(pr);
-                  NavObj_dB::GetInstance().UpdateRoute(pr);
+                  // Special case optimization.
+                  // Dragging a single point of a route
+                  // without any point additions or re-ordering
+                  if (!pMousePoint)
+                    NavObj_dB::GetInstance().UpdateRoutePoint(
+                        m_pRoutePointEditTarget);
+                  else
+                    NavObj_dB::GetInstance().UpdateRoute(pr);
                 }
                 pr->SetHiLite(0);
               }
