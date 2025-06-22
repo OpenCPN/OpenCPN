@@ -1,11 +1,6 @@
-/**************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  MarkProperties Support
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -1910,6 +1905,11 @@ void MarkInfoDlg::ShowTidesBtnClicked(wxCommandEvent& event) {
                                   fromDMM(m_textLongitude->GetValue())));
   if (pIDX) {
     TCWin* pCwin = new TCWin(gFrame->GetPrimaryCanvas(), 0, 0, pIDX);
+    wxDateTime etd = m_pRoutePoint->GetETD();
+    wxDateTime eta = m_pRoutePoint->GetETA();
+    if (etd.IsValid() && eta.IsValid() && etd.IsLaterThan(wxDateTime::Now())) {
+      pCwin->SetSegmentTime(etd, eta);
+    }
     pCwin->Show();
   } else {
     wxString msg(_("Tide Station not found"));

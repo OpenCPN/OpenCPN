@@ -58,6 +58,13 @@ public:
   void OnCloseWindow(wxCloseEvent &event);
   void TimezoneOnChoice(wxCommandEvent &event);
 
+  /**
+   * Add the segment time.
+   * @param etd Estimated time of departure.
+   * @param eta Estimated time of arrival.
+   */
+  void SetSegmentTime(wxDateTime etd, wxDateTime eta);
+
   void RePosition(void);
 
   void RecalculateSize();
@@ -107,6 +114,8 @@ private:
   wxString m_stz;
   int m_t_graphday_GMT;
   wxDateTime m_graphday;
+  wxDateTime m_segment_etd;
+  wxDateTime m_segment_eta;
   int m_plot_y_offset;
 
   SplineList m_sList;
