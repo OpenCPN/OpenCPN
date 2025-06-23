@@ -65,7 +65,7 @@ enum AISAudioSoundType {
 
 class MmsiProperties {
 public:
-  MmsiProperties() {};
+  MmsiProperties(){};
   MmsiProperties(int mmsi) {
     Init();
     MMSI = mmsi;
@@ -107,8 +107,8 @@ public:
   std::unordered_map<int, std::shared_ptr<AisTargetData>> &GetTargetList(void) {
     return AISTargetList;
   }
-  std::unordered_map<int, std::shared_ptr<AisTargetData>> &
-  GetAreaNoticeSourcesList(void) {
+  std::unordered_map<int, std::shared_ptr<AisTargetData>>
+      &GetAreaNoticeSourcesList(void) {
     return AIS_AreaNotice_Sources;
   }
   std::shared_ptr<AisTargetData> Get_Target_Data_From_MMSI(int mmsi);
@@ -189,8 +189,8 @@ private:
   std::unordered_map<int, std::shared_ptr<AisTargetData>> AISTargetList;
   std::unordered_map<int, std::shared_ptr<AisTargetData>>
       AIS_AreaNotice_Sources;
-  AIS_Target_Name_Hash *AISTargetNamesC;
-  AIS_Target_Name_Hash *AISTargetNamesNC;
+  AIS_Target_Data_Hash *AISTargetDataC;
+  AIS_Target_Data_Hash *AISTargetDataNC;
 
   ObservableListener listener_N0183_VDM;
   ObservableListener listener_N0183_FRPOS;

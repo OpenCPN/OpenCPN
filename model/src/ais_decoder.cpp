@@ -130,33 +130,43 @@ static inline double MS2KNOTS(double ms) { return ms * 1.9438444924406; }
 int AisMeteoNewMmsi(int, int, int, int, int);
 int origin_mmsi = 0;
 
-void AISshipNameCache(AisTargetData *pTargetData,
-                      AIS_Target_Name_Hash *AISTargetNamesC,
-                      AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
+void AISshipCache(AisTargetData *pTargetData,
+                  AIS_Target_Data_Hash *AISTargetDataC,
+                  AIS_Target_Data_Hash *AISTargetNamesNC, long mmsi);
 
 AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
     : m_signalk_selfid(""), m_callbacks(callbacks) {
   // Load cached AIS target names from a file
-  AISTargetNamesC = new AIS_Target_Name_Hash;
-  AISTargetNamesNC = new AIS_Target_Name_Hash;
+  AISTargetDataC = new AIS_Target_Data_Hash;
+  AISTargetDataNC = new AIS_Target_Data_Hash;
 
-  if (g_benableAISNameCache) {
+  if (g_benableAISDataCache) {
     if (wxFileName::FileExists(AISTargetNameFileName)) {
       wxTextFile infile;
       if (infile.Open(AISTargetNameFileName)) {
-        AIS_Target_Name_Hash *HashFile = AISTargetNamesNC;
+        AIS_Target_Data_Hash *HashFile = AISTargetDataNC;
         wxString line = infile.GetFirstLine();
         while (!infile.Eof()) {
           if (line.IsSameAs(wxT("+++==Confirmed Entry's==+++")))
-            HashFile = AISTargetNamesC;
+            HashFile = AISTargetDataC;
           else {
             if (line.IsSameAs(wxT("+++==Non Confirmed Entry's==+++")))
-              HashFile = AISTargetNamesNC;
+              HashFile = AISTargetDataNC;
             else {
               wxStringTokenizer tokenizer(line, _T(","));
               int mmsi = wxAtoi(tokenizer.GetNextToken());
               wxString name = tokenizer.GetNextToken().Trim();
-              (*HashFile)[mmsi] = name;
+              int type = wxAtoi(tokenizer.GetNextToken());
+              int dimA = wxAtoi(tokenizer.GetNextToken());
+              int dimB = wxAtoi(tokenizer.GetNextToken());
+              int dimC = wxAtoi(tokenizer.GetNextToken());
+              int dimD = wxAtoi(tokenizer.GetNextToken());
+              (*HashFile)[mmsi].name = name;
+              (*HashFile)[mmsi].type = type;
+              (*HashFile)[mmsi].DimA = dimA;
+              (*HashFile)[mmsi].DimB = dimB;
+              (*HashFile)[mmsi].DimC = dimC;
+              (*HashFile)[mmsi].DimD = dimD;
             }
           }
           line = infile.GetNextLine();
@@ -201,27 +211,47 @@ AisDecoder::~AisDecoder(void) {
   if (outfile.Open(AISTargetNameFileName)) {
     wxString content;
     content = wxT("+++==Confirmed Entry's==+++");
-    AIS_Target_Name_Hash::iterator it;
-    for (it = AISTargetNamesC->begin(); it != AISTargetNamesC->end(); ++it) {
+    AIS_Target_Data_Hash::iterator it;
+    for (it = AISTargetDataC->begin(); it != AISTargetDataC->end(); ++it) {
       content.append(_T("\r\n"));
       content.append(wxString::Format(wxT("%i"), it->first));
-      content.append(_T(",")).append(it->second);
+      content.append(_T(",")).append(it->second.name);
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.type));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimA));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimB));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimC));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimD));
     }
     content.append(_T("\r\n"));
     content.append(_T("+++==Non Confirmed Entry's==+++"));
-    for (it = AISTargetNamesNC->begin(); it != AISTargetNamesNC->end(); ++it) {
+    for (it = AISTargetDataNC->begin(); it != AISTargetDataNC->end(); ++it) {
       content.append(_T("\r\n"));
       content.append(wxString::Format(wxT("%i"), it->first));
-      content.append(_T(",")).append(it->second);
+      content.append(_T(",")).append(it->second.name);
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.type));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimA));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimB));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimC));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.DimD));
     }
     outfile.Write(content);
     outfile.Commit();
   }
 
-  AISTargetNamesC->clear();
-  delete AISTargetNamesC;
-  AISTargetNamesNC->clear();
-  delete AISTargetNamesNC;
+  AISTargetDataC->clear();
+  delete AISTargetDataC;
+  AISTargetDataNC->clear();
+  delete AISTargetDataNC;
 
   clear_hash_ERI();
 
@@ -1522,8 +1552,8 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
             pTargetData->b_SarAircraftPosnReport = true;
           }
 
-          AISshipNameCache(pTargetData.get(), AISTargetNamesC, AISTargetNamesNC,
-                           mmsi);
+          AISshipCache(pTargetData.get(), AISTargetDataC, AISTargetDataNC,
+                       mmsi);
         }
       }
     } else {
@@ -2371,8 +2401,8 @@ void AisDecoder::CommitAISTarget(std::shared_ptr<AisTargetData> pTargetData,
   if (message_valid) {
     // Print to name cache only if not mmsi = 0
     if (pTargetData->MMSI) {
-      AISshipNameCache(pTargetData.get(), AISTargetNamesC, AISTargetNamesNC,
-                       pTargetData->MMSI);
+      AISshipCache(pTargetData.get(), AISTargetDataC, AISTargetDataNC,
+                   pTargetData->MMSI);
     }
     AISTargetList[pTargetData->MMSI] =
         pTargetData;  // update the hash table entry
@@ -4521,98 +4551,162 @@ wxString MmsiProperties::Serialize(void) {
   return sMMSI;
 }
 
-void AISshipNameCache(AisTargetData *pTargetData,
-                      AIS_Target_Name_Hash *AISTargetNamesC,
-                      AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi) {
-  if (g_benableAISNameCache) {
-    wxString ship_name = wxEmptyString;
+void AISshipCache(AisTargetData *pTargetData,
+                  AIS_Target_Data_Hash *AISTargetDataC,
+                  AIS_Target_Data_Hash *AISTargetNamesNC, long mmsi) {
+  if (!g_benableAISDataCache) {
+    // Exit if AIS cache is not enabled
+    return;
+  }
 
-    // Check for valid name data
+  // Verify if static information has been updated from AIS receiver
+  if ((pTargetData->MID == 5) || (pTargetData->MID == 24) ||
+      (pTargetData->MID == 19) ||
+      (pTargetData->MID == 123) ||  // 123: Has got a name from SignalK
+      (pTargetData->MID == 124)) {  // 124: Has got a name from n2k
+    // Yes : set confirmation status
+    pTargetData->b_staticInfoFromCache = false;
+  }
+
+  wxString ship_name = wxEmptyString;
+  AIS_Target_Data_Hash::iterator itC = AISTargetDataC->find(mmsi);
+  AIS_Target_Data_Hash::iterator itNC = AISTargetNamesNC->find(mmsi);
+
+  if (itC != AISTargetDataC->end()) {
+    // MMSI is in the confirmed list
+    AisTargetCacheData &shipData = (*AISTargetDataC)[mmsi];
+
+    // If MMSI is also in non-confirmed list, erase it to only keep confirmed
+    // copy
+    if (itNC != AISTargetNamesNC->end()) {
+      AISTargetNamesNC->erase(itNC);
+      itNC = AISTargetNamesNC->end();
+    }
+
+    // Process ship type
+    if (pTargetData->ShipType <= 19) {
+      // ShipType <= 19 means the type is unknown. Is that case we copy the type
+      // from the cache.
+      pTargetData->ShipType = shipData.type;
+    } else {
+      // ShipType > 19 means the type is known. Is that case we update the type
+      // in the cache. In most of the cases the value will be the same, but if
+      // the value has been received by AIS while cache value is invalid, cache
+      // will be updated here.
+      shipData.type = pTargetData->ShipType;
+    }
+
+    // Process ship dimensions
+    if ((pTargetData->DimA == 0) && (pTargetData->DimB == 0) &&
+        (pTargetData->DimC == 0) && (pTargetData->DimD == 0)) {
+      // If all dimensions are 0, ship dimensions have not been
+      // defined. So we copy them from cache.
+      pTargetData->DimA = shipData.DimA;
+      pTargetData->DimB = shipData.DimB;
+      pTargetData->DimC = shipData.DimC;
+      pTargetData->DimD = shipData.DimD;
+    } else {
+      // If any dimension is not 0, ship dimensions have been defined, either by
+      // AIS, either by cache. So we copy them to cache to update it in case
+      // cache values would be invalid.
+      shipData.DimA = pTargetData->DimA;
+      shipData.DimB = pTargetData->DimB;
+      shipData.DimC = pTargetData->DimC;
+      shipData.DimD = pTargetData->DimD;
+    }
+
+    // Process name
     if (!pTargetData->b_nameValid) {
-      AIS_Target_Name_Hash::iterator it = AISTargetNamesC->find(mmsi);
-      if (it != AISTargetNamesC->end()) {
-        ship_name = (*AISTargetNamesC)[mmsi].Left(20);
-        strncpy(pTargetData->ShipName, ship_name.mb_str(),
-                ship_name.length() + 1);
-        pTargetData->b_nameValid = true;
-        pTargetData->b_nameFromCache = true;
-      } else if (!g_bUseOnlyConfirmedAISName) {
-        it = AISTargetNamesNC->find(mmsi);
-        if (it != AISTargetNamesNC->end()) {
-          ship_name = (*AISTargetNamesNC)[mmsi].Left(20);
+      // Ship name has not yet been written, either by AIS or by cache
+      // In that case, we fill it from cache
+      ship_name = shipData.name.Left(20);
+      strncpy(pTargetData->ShipName, ship_name.mb_str(),
+              ship_name.length() + 1);
+      pTargetData->b_nameValid = true;
+    } else {
+      // Ship name has already been written. In that case, we update cache with
+      // taget's value. In most of the cases the value will be the same, but if
+      // the value received by AIS as changed cache will be updated here.
+      shipData.name = wxString::FromAscii(pTargetData->ShipName).Trim();
+    }
+  } else {
+    // MMSI is not in the confirmed list
+    if (itNC != AISTargetNamesNC->end()) {
+      // MMSI is in the non-confirmed list
+      if (!g_bUseOnlyConfirmedAISName) {
+        AisTargetCacheData &shipData = (*AISTargetNamesNC)[mmsi];
+
+        // Process ship type
+        if (pTargetData->ShipType <= 19) {
+          // ShipType <= 19 means the type is unknown. Is that case we copy the
+          // type from the cache.
+          pTargetData->ShipType = shipData.type;
+        } else {
+          // ShipType > 19 means the type is known. Is that case we update the
+          // type in the cache. In most of the cases the value will be the same,
+          // but if the value has been received by AIS while cache value is
+          // invalid, cache will be updated here.
+          shipData.type = pTargetData->ShipType;
+        }
+
+        // Process ship dimensions
+        if ((pTargetData->DimA == 0) && (pTargetData->DimB == 0) &&
+            (pTargetData->DimC == 0) && (pTargetData->DimD == 0)) {
+          // If all dimensions are 0, ship dimensions have not been
+          // defined. So we copy them from cache.
+          pTargetData->DimA = shipData.DimA;
+          pTargetData->DimB = shipData.DimB;
+          pTargetData->DimC = shipData.DimC;
+          pTargetData->DimD = shipData.DimD;
+        } else {
+          // If any dimension is not 0, ship dimensions have been defined,
+          // either by AIS, either by cache. So we copy them to cache to update
+          // it in case cache values would be invalid.
+          shipData.DimA = pTargetData->DimA;
+          shipData.DimB = pTargetData->DimB;
+          shipData.DimC = pTargetData->DimC;
+          shipData.DimD = pTargetData->DimD;
+        }
+
+        // Process name
+        if (!pTargetData->b_nameValid) {
+          // Ship name has not yet been written, either by AIS or by cache
+          // In that case, we fill it from cache
+          ship_name = shipData.name.Left(20);
           strncpy(pTargetData->ShipName, ship_name.mb_str(),
                   ship_name.length() + 1);
           pTargetData->b_nameValid = true;
-          pTargetData->b_nameFromCache = true;
+        } else {
+          // Ship name has already been written. In that case, we update cache
+          // with taget's value. In most of the cases the value will be the
+          // same, but if the value received by AIS as changed cache will be
+          // updated here.
+          shipData.name = wxString::FromAscii(pTargetData->ShipName).Trim();
+        }
+
+        // If static info has been confirmed, upgrade target from non-confirmed
+        // to confirmed list
+        if (!pTargetData->b_staticInfoFromCache) {
+          AisTargetCacheData &shipData = (*AISTargetDataC)[mmsi];
+          shipData.name = wxString::FromAscii(pTargetData->ShipName).Trim();
+          shipData.type = pTargetData->ShipType;
+          AISTargetNamesNC->erase(itNC);
+          itNC = AISTargetNamesNC->end();
         }
       }
-    }
-    // else there IS a valid name, lets check if it is in one of the hash lists.
-    else if ((pTargetData->MID == 5) || (pTargetData->MID == 24) ||
-             (pTargetData->MID == 19) ||
-             (pTargetData->MID == 123) ||  // 123: Has got a name from SignalK
-             (pTargetData->MID == 124)) {  // 124: Has got a name from n2k
-      //  This message contains ship static data, so has a name field
-      pTargetData->b_nameFromCache = false;
-      ship_name = trimAISField(pTargetData->ShipName);
-      AIS_Target_Name_Hash::iterator itC = AISTargetNamesC->find(mmsi);
-      AIS_Target_Name_Hash::iterator itNC = AISTargetNamesNC->find(mmsi);
-      if (itC !=
-          AISTargetNamesC->end()) {  // There is a confirmed entry for this mmsi
-        if ((*AISTargetNamesC)[mmsi] ==
-            ship_name) {  // Received name is same as confirmed name
-          if (itNC != AISTargetNamesNC->end()) {  // there is also an entry in
-                                                  // the NC list, delete it
-            AISTargetNamesNC->erase(itNC);
-          }
-        } else {  // There is a confirmed name but that one is different
-          if (itNC != AISTargetNamesNC->end()) {  // there is an entry in the NC
-                                                  // list check if name is same
-            if ((*AISTargetNamesNC)[mmsi] ==
-                ship_name) {  // Same name is already in NC list so promote till
-                              // confirmed list
-              (*AISTargetNamesC)[mmsi] = ship_name;
-              // And delete from NC list
-              AISTargetNamesNC->erase(itNC);
-            } else {  // A different name is in the NC list, update with
-                      // received one
-              (*AISTargetNamesNC)[mmsi] = ship_name;
-            }
-            if (g_bUseOnlyConfirmedAISName)
-              strncpy(pTargetData->ShipName, (*AISTargetNamesC)[mmsi].mb_str(),
-                      (*AISTargetNamesC)[mmsi].Left(20).Length() + 1);
-          } else {  // The C list name is different but no NC entry. Add it.
-            (*AISTargetNamesNC)[mmsi] = ship_name;
-          }
-        }
-      } else {  // No confirmed entry available
-        if (itNC !=
-            AISTargetNamesNC->end()) {  // there is  an entry in the NC list,
-          if ((*AISTargetNamesNC)[mmsi] ==
-              ship_name) {  // Received name same as already in NC list, promote
-                            // to confirmen
-            (*AISTargetNamesC)[mmsi] = ship_name;
-            // And delete from NC list
-            AISTargetNamesNC->erase(itNC);
-          } else {  // entry in NC list is not same as received one
-            (*AISTargetNamesNC)[mmsi] = ship_name;
-          }
-        } else {  // No entry in NC list so add it
-          (*AISTargetNamesNC)[mmsi] = ship_name;
-        }
-        if (g_bUseOnlyConfirmedAISName) {  // copy back previous name
-          pTargetData->ShipName[SHIP_NAME_LEN - 1] = '\0';
-          strncpy(pTargetData->ShipName, "Unknown             ",
-                  SHIP_NAME_LEN - 1);
-        }
-      }
+    } else {
+      // Target is not in any list. Add it to confirmed list since data has
+      // necessarilly been received from AIS.
+      AisTargetCacheData &shipData = (*AISTargetDataC)[mmsi];
+      shipData.name = wxString::FromAscii(pTargetData->ShipName).Trim();
+      shipData.type = pTargetData->ShipType;
     }
   }
 }
 
 wxString GetShipNameFromFile(int nmmsi) {
   wxString name = wxEmptyString;
-  if (g_benableAISNameCache) {
+  if (g_benableAISDataCache) {
     std::ifstream infile(AISTargetNameFileName.mb_str());
     if (infile) {
       std::string line;

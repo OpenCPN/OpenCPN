@@ -286,7 +286,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   b_show_track = g_bAISShowTracks;
   b_SarAircraftPosnReport = false;
   altitude = 0;
-  b_nameFromCache = false;
+  b_staticInfoFromCache = false;
   importance = 0.0;
   for (unsigned int i = 0; i < AIS_TARGETDATA_MAX_CANVAS; i++)
     last_scale[i] = 50;

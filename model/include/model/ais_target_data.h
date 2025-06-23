@@ -149,6 +149,16 @@ struct AisTargetCallbacks {
   AisTargetCallbacks() : get_mag([](double a) { return toMagnetic(a); }) {}
 };
 
+class AisTargetCacheData {
+public:
+  wxString name;
+  uint8_t type;
+  int DimA;
+  int DimB;
+  int DimC;
+  int DimD;
+};
+
 class AisTargetData {
   friend class AisTargetDataMaker;
 
@@ -224,6 +234,7 @@ public:
   bool b_positionDoubtful;
   bool b_positionOnceValid;
   bool b_nameValid;
+  bool b_staticInfoFromCache;
   bool b_isFollower;
   bool b_isDSCtarget;  // DSC flag to a possible simultaneous AIS target
   int m_dscNature;
@@ -262,7 +273,6 @@ public:
   std::unordered_map<int, Ais8_001_22> area_notices;
   bool b_SarAircraftPosnReport;
   int altitude;  // Metres, from special position report(9)
-  bool b_nameFromCache;
   float importance;
   short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
                                                 // AIS_TARGETDATA_MAX_CANVAS is

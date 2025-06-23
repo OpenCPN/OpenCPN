@@ -38,7 +38,7 @@ extern bool g_bCPAMax;
 extern bool g_bCPAWarn;
 extern bool g_bDrawAISRealtime;
 extern bool g_bDrawAISSize;
-extern bool g_benableAISNameCache;
+extern bool g_benableAISDataCache;
 extern bool g_bHideMoored;
 extern bool g_bMarkLost;
 extern bool g_bRemoveLost;

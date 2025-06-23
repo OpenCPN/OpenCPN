@@ -1413,7 +1413,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "EnableRotateKeys" ), &g_benable_rotate);
   CHECK_INT(_T ( "EmailCrashReport" ), &g_bEmailCrashReport);
 
-  CHECK_INT(_T ( "EnableAISNameCache" ), &g_benableAISNameCache);
+  CHECK_INT(_T ( "EnableAISNameCache" ), &g_benableAISDataCache);
 
   CHECK_INT(_T ( "EnableUDPNullHeader" ), &g_benableUDPNullHeader);
 

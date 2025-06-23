@@ -27,6 +27,7 @@
 
 #include <wx/hashmap.h>
 #include <wx/string.h>
+#include "ais_target_data.h"
 
 #define TRACKTYPE_DEFAULT 0
 #define TRACKTYPE_ALWAYS 1
@@ -44,8 +45,8 @@ typedef enum AisError {
   AIS_INCOMPLETE_MULTIPART
 } _AisError;
 
-WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
-                    AIS_Target_Name_Hash);
+WX_DECLARE_HASH_MAP(int, AisTargetCacheData, wxIntegerHash, wxIntegerEqual,
+                    AIS_Target_Data_Hash);
 
 #define TIMER_AIS_MSEC 998
 #define TIMER_AIS_AUDIO_MSEC 2000

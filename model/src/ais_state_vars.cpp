@@ -40,7 +40,7 @@ bool g_bCPAMax;
 bool g_bCPAWarn;
 bool g_bDrawAISRealtime;
 bool g_bDrawAISSize;
-bool g_benableAISNameCache;
+bool g_benableAISDataCache;
 bool g_bHideMoored;
 bool g_bMarkLost;
 bool g_bRemoveLost;
