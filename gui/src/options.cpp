@@ -7213,6 +7213,9 @@ void options::ApplyChanges(wxCommandEvent& event) {
       gFrame->GetPrimaryCanvas()->GetglCanvas()->ResetGridFont();
     }
 #endif
+    if (gFrame->GetPrimaryCanvas()) {
+      gFrame->GetPrimaryCanvas()->ResetGridFont();
+    }
 
     m_returnChanges |= FONT_CHANGED;
 

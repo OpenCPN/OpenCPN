@@ -789,20 +789,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   if (!g_bdisable_opengl) m_pQuilt->EnableHighDefinitionZoom(true);
 #endif
 
-  int gridFontSize = 8;
-#if defined(__WXOSX__) || defined(__WXGTK3__)
-  // Support scaled HDPI displays.
-  gridFontSize *= GetContentScaleFactor();
-#endif
-
-  m_pgridFont = FontMgr::Get().FindOrCreateFont(
-      gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
-      FALSE, wxString(_T ( "Arial" )));
+  SetupGridFont();
 
   m_Piano = new Piano(this);
 
   m_bShowCompassWin = true;
-
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
   m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
@@ -932,6 +923,12 @@ ChartCanvas::~ChartCanvas() {
   delete m_pCurrentStack;
   delete m_Compass;
   delete m_Piano;
+}
+
+void ChartCanvas::SetupGridFont() {
+  wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
+  int font_size = wxMax(10, dFont->GetPointSize());
+  m_pgridFont = dFont;
 }
 
 void ChartCanvas::RebuildCursors() {
@@ -6541,6 +6538,7 @@ void ChartCanvas::GridDraw(ocpnDC &dc) {
   wxCoord w, h;
   wxPen GridPen(GetGlobalColor(_T ( "SNDG1" )), 1, wxPENSTYLE_SOLID);
   dc.SetPen(GridPen);
+  if (!m_pgridFont) SetupGridFont();
   dc.SetFont(*m_pgridFont);
   dc.SetTextForeground(GetGlobalColor(_T ( "SNDG1" )));
 
@@ -6723,6 +6721,7 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     dc.DrawLine(x_origin, y_origin, x_origin + l1, y_origin);
     dc.DrawLine(x_origin + l1, y_origin, x_origin + l1, y_origin - 12);
 
+    if (!m_pgridFont) SetupGridFont();
     dc.SetFont(*m_pgridFont);
     dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
     int w, h;
