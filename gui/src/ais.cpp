@@ -1463,9 +1463,16 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
     //        Draw the inactive cross-out line
     if (!td->b_active) {
-      dc.SetPen(wxPen(UBLCK, 3));
-      dc.StrokeLine(TargetPoint.x - 16, TargetPoint.y, TargetPoint.x + 16,
-                    TargetPoint.y);
+      wxPoint linepoint = TargetPoint;
+      wxPoint p1 = transrot(
+          wxPoint((int)-14 * targetscale / 100, (int)-5 * targetscale / 100),
+          sin_theta, cos_theta, TargetPoint);
+      wxPoint p2 = transrot(
+          wxPoint((int)14 * targetscale / 100, (int)-5 * targetscale / 100),
+          sin_theta, cos_theta, TargetPoint);
+
+      dc.SetPen(wxPen(UBLCK, 2));
+      dc.StrokeLine(p1.x, p1.y, p2.x, p2.y);
     }
 
   } else {  // ship class A or B or a Buddy or DSC
