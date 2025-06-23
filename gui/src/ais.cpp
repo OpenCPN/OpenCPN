@@ -219,6 +219,8 @@ wxString ais8_001_22_notice_names[] = {
     _("Undefined (default)")  //, // 127
 };
 
+static wxColour AISGetColor(AisTargetData *td);
+
 static bool GetCanvasPointPix(ViewPort &vp, ChartCanvas *cp, double rlat,
                               double rlon, wxPoint *r) {
   if (cp != NULL) {
@@ -1027,7 +1029,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     target_brush = wxBrush(GetGlobalColor(_T ( "TEAL1" )));
 
   // Target name comes from cache
-  if (td->b_nameFromCache)
+  if (td->b_staticInfoFromCache)
     target_brush = wxBrush(GetGlobalColor(_T ( "GREEN5" )));
 
   // and....
@@ -1049,6 +1051,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
   if (td->b_positionDoubtful)
     target_brush = wxBrush(GetGlobalColor(_T ( "UINFF" )));
+
+  target_brush = wxBrush(AISGetColor(td));
 
   wxPen target_outline_pen(UBLCK, AIS_width_target_outline);
 
@@ -1948,4 +1952,63 @@ bool AnyAISTargetsOnscreen(ChartCanvas *cc, ViewPort &vp) {
   }
 
   return false;
+}
+
+wxColour distressColor1(0xff, 0x00, 0x00);
+wxColour distressColor2(0x6f, 0x6f, 0x6f);
+wxColour aisUnspecifiedColor(0xd2, 0xd5, 0xda);
+wxColour aisUnknownColor(0x6f, 0x6f, 0x6f);
+wxColour aisFishingColor(0xf7, 0x99, 0x7c);
+wxColour aisPassengerColor(0x19, 0x7a, 0xff);
+wxColour aisDivingColor(0x26, 0xf5, 0xf5);
+wxColour aisPleasureColor(0xe3, 0x3a, 0xff);
+wxColour aisCargoColor(0x90, 0xee, 0x90);
+wxColour aisTankerColor(0xff, 0x31, 0x25);
+wxColour aisHighSpeedColor(0xff, 0xce, 0x1f);
+wxColour aisSpecialColor(0x26, 0xf5, 0xf5);
+
+static wxColour AISGetColor(AisTargetData *td) {
+  bool blink = wxGetCurrentTime() & 0x01;
+  int vesselType = td->ShipType;
+  int vesselType10 = vesselType / 10;
+
+  if ((td->n_alert_state != AIS_NO_ALERT) ||
+      ((td->Class == AIS_DSC) &&
+       ((vesselType == 12) || (vesselType == 16)))) {  // distress(relayed)
+    if (blink) {
+      return distressColor1;
+    } else {
+      return distressColor2;
+    }
+  }
+
+  if (vesselType <= 19) {
+    if (td->NavStatus == 7) {
+      return aisFishingColor;
+    } else if (td->NavStatus == 8) {
+      return aisPleasureColor;
+    } else if (td->Class == AIS_CLASS_B) {
+      return aisPleasureColor;
+    }
+    return aisUnknownColor;
+  } else if (vesselType == 30) {
+    return aisFishingColor;
+  } else if (vesselType == 34) {
+    return aisDivingColor;
+  } else if ((vesselType == 36) || (vesselType == 37)) {
+    return aisPleasureColor;
+  } else if (vesselType10 == 4) {
+    return aisHighSpeedColor;
+  } else if ((vesselType10 == 5) || (vesselType10 == 9) || (vesselType == 31) ||
+             (vesselType == 32) || (vesselType == 33)) {
+    return aisSpecialColor;
+  } else if (vesselType10 == 6) {
+    return aisPassengerColor;
+  } else if (vesselType10 == 7) {
+    return aisCargoColor;
+  } else if (vesselType10 == 8) {
+    return aisTankerColor;
+  } else {
+    return aisUnspecifiedColor;
+  }
 }
