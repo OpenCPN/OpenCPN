@@ -5677,14 +5677,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
     g_enable_root_menu_debug = enable_debug_cb->IsChecked();
   });
   enable_debug_cb->SetValue(g_enable_root_menu_debug);
-  miscOptions->Add(enable_debug_cb, 0, wxALL, group_item_spacing);
+  miscOptions->Add(enable_debug_cb, 0, wxALL, border_size);
 
-  wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
-  miscOptions->Add(pShipsBellsSizer, 0, wxALL, group_item_spacing);
-  // Sound options
+  // Sound option
   pPlayShipsBells =
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-  pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
+  miscOptions->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
 
   //  Mobile/Touchscreen checkboxes
   pMobile = new wxCheckBox(itemPanelFont, ID_MOBILEBOX,
