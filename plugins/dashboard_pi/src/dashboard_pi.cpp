@@ -4767,15 +4767,16 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemFlexGridSizer05->AddGrowableCol(1);
   itemStaticBoxSizer05->Add(itemFlexGridSizer05, 1, wxEXPAND | wxALL, 0);
 
-  m_pUseInternSumLog =
-      new wxCheckBox(itemPanelNotebook02, wxID_ANY, _("Use internal Sumlog."));
-  itemFlexGridSizer05->Add(m_pUseInternSumLog, 1, wxALIGN_LEFT, border_size);
+  m_pUseInternSumLog = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
+                                      _("Use internal Sumlog.") + "   ");
+  itemFlexGridSizer05->Add(m_pUseInternSumLog, 0, wxALIGN_LEFT, border_size);
   m_pUseInternSumLog->SetValue(g_bUseInternSumLog);
   itemFlexGridSizer05->AddSpacer(0);
 
-  auto xtext = new wxStaticText(itemPanelNotebook02, wxID_ANY,
-                                "      " + _("Enter new value if desired"),
-                                wxDefaultPosition, wxDefaultSize, 0);
+  auto xtext =
+      new wxStaticText(itemPanelNotebook02, wxID_ANY,
+                       "      " + _("Enter new value if desired") + "    ",
+                       wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer05->Add(xtext, 1, wxALIGN_LEFT, 0);
   itemFlexGridSizer05->AddSpacer(0);
 
@@ -4795,6 +4796,17 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                                         "ground.\n(Instead of through water)"));
   itemFlexGridSizer05->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
   m_pUseTrueWinddata->SetValue(g_bDBtrueWindGround);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext1 = new wxStaticText(itemPanelNotebook02, wxID_ANY, " ",
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext1, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext2 = new wxStaticText(itemPanelNotebook02, wxID_ANY, " ",
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext2, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
 
 #endif
 
