@@ -50,9 +50,23 @@ struct DriverStats {
         available(false) {}
 };
 
-/** Driver interface providing driver statistics */
+/**
+ * Driver interface providing driver statistics
+ *
+ * @interface DriverStatsProvider comm_drv_stats.h "model/comm_drv_stats.h"
+ */
 class DriverStatsProvider {
 public:
+  /**
+   * Destroy the Driver Stats Provider object.
+   */
+  virtual ~DriverStatsProvider() = default;
+
+  /**
+   * Get the Driver Statistics.
+   *
+   * @return DriverStats Object containing the driver statistics.
+   */
   virtual DriverStats GetDriverStats() const = 0;
 };
 
