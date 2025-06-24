@@ -927,8 +927,11 @@ ChartCanvas::~ChartCanvas() {
 
 void ChartCanvas::SetupGridFont() {
   wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
-  int font_size = wxMax(10, dFont->GetPointSize());
-  m_pgridFont = dFont;
+  double dpi_factor = 1. / g_BasePlatform->GetDisplayDIPMult(this);
+  int gridFontSize = wxMax(10, dFont->GetPointSize() * dpi_factor);
+  m_pgridFont = FontMgr::Get().FindOrCreateFont(
+      gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+      FALSE, wxString(_T ( "Arial" )));
 }
 
 void ChartCanvas::RebuildCursors() {
@@ -6726,6 +6729,11 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
     int w, h;
     dc.GetTextExtent(s, &w, &h);
+    double dpi_factor = 1. / g_BasePlatform->GetDisplayDIPMult(this);
+    if (g_bopengl) {
+      w /= dpi_factor;
+      h /= dpi_factor;
+    }
     dc.DrawText(s, x_origin + l1 / 2 - w / 2, y_origin - h - 1);
   }
 }
