@@ -445,6 +445,9 @@ public:
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;
 
+  // For the OpenGL Options
+  wxButton *bOpenGL;
+
   // For the Display\Units page
   wxStaticText *itemStaticTextUserVar;
   wxStaticText *itemStaticTextUserVar2;
