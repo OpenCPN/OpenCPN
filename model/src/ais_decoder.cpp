@@ -2984,45 +2984,47 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   //  OK, looks like the sentence is OK
 
   //  Use a tokenizer to pull out the first 4 fields
-  wxStringTokenizer tkz(str, ",");
-
-  wxString token;
-  token = tkz.GetNextToken();  // !xxVDx
-
-  token = tkz.GetNextToken();
-  nsentences = atoi(token.mb_str());
-
-  token = tkz.GetNextToken();
-  isentence = atoi(token.mb_str());
-
-  token = tkz.GetNextToken();
-  long lsequence_id = 0;
-  token.ToLong(&lsequence_id);
-
-  token = tkz.GetNextToken();
-  long lchannel;
-  token.ToLong(&lchannel);
-  //  Now, some decisions
-
   string_to_parse.Clear();
 
-  //  Simple case first
-  //  First and only part of a one-part sentence
-  if ((1 == nsentences) && (1 == isentence)) {
-    string_to_parse = tkz.GetNextToken();  // the encapsulated data
-  }
+  if (str.Mid(3, 2).IsSameAs(_T("VD"))) {
+    wxStringTokenizer tkz(str, ",");
 
-  else if (nsentences > 1) {
-    if (1 == isentence) {
-      sentence_accumulator = tkz.GetNextToken();  // the encapsulated data
+    wxString token;
+    token = tkz.GetNextToken();  // !xxVDx
+
+    token = tkz.GetNextToken();
+    nsentences = atoi(token.mb_str());
+
+    token = tkz.GetNextToken();
+    isentence = atoi(token.mb_str());
+
+    token = tkz.GetNextToken();
+    long lsequence_id = 0;
+    token.ToLong(&lsequence_id);
+
+    token = tkz.GetNextToken();
+    long lchannel;
+    token.ToLong(&lchannel);
+    //  Now, some decisions
+
+    //  Simple case first
+    //  First and only part of a one-part sentence
+    if ((1 == nsentences) && (1 == isentence)) {
+      string_to_parse = tkz.GetNextToken();  // the encapsulated data
     }
 
-    else {
-      sentence_accumulator += tkz.GetNextToken();
-    }
+    else if (nsentences > 1) {
+      if (1 == isentence) {
+        sentence_accumulator = tkz.GetNextToken();  // the encapsulated data
+      }
 
-    if (isentence == nsentences) {
-      string_to_parse = sentence_accumulator;
+      else {
+        sentence_accumulator += tkz.GetNextToken();
+      }
+
+      if (isentence == nsentences) {
+        string_to_parse = sentence_accumulator;
+      }
     }
   }
 
