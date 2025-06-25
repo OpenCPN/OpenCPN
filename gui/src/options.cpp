@@ -3060,10 +3060,9 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     OpenGLSizer->Add(pOpenGL, inputFlags);
     pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
-    wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
-                                     _("OpenGL Options") + _T("..."));
+    bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
+                           _("OpenGL Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(options::OnGLClicked), NULL, this);
@@ -3400,10 +3399,9 @@ With a higher value, the same zoom level shows a more detailed chart."));
     pOpenGL->Disable();
 #endif
 
-    wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
-                                     _("Options") + _T("..."));
+    bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
+                           _("Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -6314,6 +6312,7 @@ void options::SetInitialSettings(void) {
   pInlandEcdis->SetValue(g_bInlandEcdis);
 #ifdef ocpnUSE_GL
   pOpenGL->SetValue(g_bopengl);
+  bOpenGL->Enable(pOpenGL->IsChecked());
 #endif
   if (pSmoothPanZoom) pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
   pCBTrueShow->SetValue(g_bShowTrue);
@@ -6921,6 +6920,7 @@ void options::OnWaypointRangeRingSelect(wxCommandEvent& event) {
 void options::OnGLClicked(wxCommandEvent& event) {
   //   if (!g_bTransparentToolbarInOpenGLOK)
   //     pTransparentToolbar->Enable(!pOpenGL->GetValue());
+  bOpenGL->Enable(pOpenGL->IsChecked());
 }
 
 void options::OnOpenGLOptions(wxCommandEvent& event) {
