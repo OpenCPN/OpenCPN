@@ -219,8 +219,6 @@ wxString ais8_001_22_notice_names[] = {
     _("Undefined (default)")  //, // 127
 };
 
-static wxColour AISGetColor(AisTargetData *td);
-
 static bool GetCanvasPointPix(ViewPort &vp, ChartCanvas *cp, double rlat,
                               double rlon, wxPoint *r) {
   if (cp != NULL) {
@@ -1028,14 +1026,16 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   if (td->b_isEuroInland && !g_bInlandEcdis)
     target_brush = wxBrush(GetGlobalColor(_T ( "TEAL1" )));
 
-  // Target name comes from cache
-  if (td->b_staticInfoFromCache)
-    target_brush = wxBrush(GetGlobalColor(_T ( "GREEN5" )));
+  // Target static data has not been confirmed
+  if (!td->b_nameValid) {
+    if (td->b_staticInfoFromCache) {
+      target_brush = wxBrush(GetGlobalColor(_T ( "GREEN5" )));
+    } else {
+      target_brush = wxBrush(GetGlobalColor(_T ( "CHYLW" )));
+    }
+  }
 
-  // and....
   wxColour URED = GetGlobalColor(_T ( "URED" ));
-  if (!td->b_nameValid) target_brush = wxBrush(GetGlobalColor(_T ( "CHYLW" )));
-
   if ((td->Class == AIS_DSC) &&
       ((td->ShipType == 12) || (td->ShipType == 16)))  // distress(relayed)
     target_brush = wxBrush(URED);
@@ -1051,8 +1051,6 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
   if (td->b_positionDoubtful)
     target_brush = wxBrush(GetGlobalColor(_T ( "UINFF" )));
-
-  target_brush = wxBrush(AISGetColor(td));
 
   wxPen target_outline_pen(UBLCK, AIS_width_target_outline);
 
@@ -1467,9 +1465,16 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
     //        Draw the inactive cross-out line
     if (!td->b_active) {
-      dc.SetPen(wxPen(UBLCK, 3));
-      dc.StrokeLine(TargetPoint.x - 16, TargetPoint.y, TargetPoint.x + 16,
-                    TargetPoint.y);
+      wxPoint linepoint = TargetPoint;
+      wxPoint p1 = transrot(
+          wxPoint((int)-14 * targetscale / 100, (int)-5 * targetscale / 100),
+          sin_theta, cos_theta, TargetPoint);
+      wxPoint p2 = transrot(
+          wxPoint((int)14 * targetscale / 100, (int)-5 * targetscale / 100),
+          sin_theta, cos_theta, TargetPoint);
+
+      dc.SetPen(wxPen(UBLCK, 2));
+      dc.StrokeLine(p1.x, p1.y, p2.x, p2.y);
     }
 
   } else {  // ship class A or B or a Buddy or DSC
@@ -1742,7 +1747,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                       TargetPoint.y /*+ (0.5 * h)*/);
 
       }  // If name do not empty
-    }  // if scale
+    }    // if scale
   }
 
   //  Draw tracks if enabled
@@ -1952,63 +1957,4 @@ bool AnyAISTargetsOnscreen(ChartCanvas *cc, ViewPort &vp) {
   }
 
   return false;
-}
-
-wxColour distressColor1(0xff, 0x00, 0x00);
-wxColour distressColor2(0xff, 0xff, 0x00);
-wxColour aisUnspecifiedColor(0xd2, 0xd5, 0xda);
-wxColour aisUnknownColor(0x6f, 0x6f, 0x6f);
-wxColour aisFishingColor(0xf7, 0x99, 0x7c);
-wxColour aisPassengerColor(0x19, 0x7a, 0xff);
-wxColour aisDivingColor(0x26, 0xf5, 0xf5);
-wxColour aisPleasureColor(0xe3, 0x3a, 0xff);
-wxColour aisCargoColor(0x90, 0xee, 0x90);
-wxColour aisTankerColor(0xff, 0x50, 0x40);
-wxColour aisHighSpeedColor(0xff, 0xce, 0x1f);
-wxColour aisSpecialColor(0x26, 0xf5, 0xf5);
-
-static wxColour AISGetColor(AisTargetData *td) {
-  bool blink = wxGetCurrentTime() & 0x01;
-  int vesselType = td->ShipType;
-  int vesselType10 = vesselType / 10;
-
-  if ((td->n_alert_state != AIS_NO_ALERT) ||
-      ((td->Class == AIS_DSC) &&
-       ((vesselType == 12) || (vesselType == 16)))) {  // distress(relayed)
-    if (blink) {
-      return distressColor1;
-    } else {
-      return distressColor2;
-    }
-  }
-
-  if (vesselType <= 19) {
-    if (td->NavStatus == 7) {
-      return aisFishingColor;
-    } else if (td->NavStatus == 8) {
-      return aisPleasureColor;
-    } else if (td->Class == AIS_CLASS_B) {
-      return aisPleasureColor;
-    }
-    return aisUnknownColor;
-  } else if (vesselType == 30) {
-    return aisFishingColor;
-  } else if (vesselType == 34) {
-    return aisDivingColor;
-  } else if ((vesselType == 36) || (vesselType == 37)) {
-    return aisPleasureColor;
-  } else if (vesselType10 == 4) {
-    return aisHighSpeedColor;
-  } else if ((vesselType10 == 5) || (vesselType10 == 9) || (vesselType == 31) ||
-             (vesselType == 32) || (vesselType == 33)) {
-    return aisSpecialColor;
-  } else if (vesselType10 == 6) {
-    return aisPassengerColor;
-  } else if (vesselType10 == 7) {
-    return aisCargoColor;
-  } else if (vesselType10 == 8) {
-    return aisTankerColor;
-  } else {
-    return aisUnspecifiedColor;
-  }
 }
