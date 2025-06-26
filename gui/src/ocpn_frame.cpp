@@ -4907,6 +4907,12 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       InitAppMsgBusListener();
       InitApiListeners();
 
+      // if WMM is not in use..
+      // set the Mag Variation to the user specified value
+      auto loader = PluginLoader::GetInstance();
+      bool b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
+      if (!b_haveWMM) gVar = g_UserVar;
+
       break;
     }
 
