@@ -788,6 +788,10 @@ bool NavObj_dB::InsertTrack(Track* track) {
   bool rv = false;
   char* errMsg = 0;
   sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
+  if (errMsg) {
+    ReportError("InsertTrack:BEGIN TRANSACTION");
+    return false;
+  }
 
   // Insert a new track
   wxString sql = wxString::Format("INSERT INTO tracks (guid) VALUES ('%s')",
@@ -1108,7 +1112,7 @@ bool NavObj_dB::InsertRoute(Route* route) {
 
   sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
   if (errMsg) {
-    ReportError("InsertRoute:transaction");
+    ReportError("InsertRoute:BEGIN TRANSACTION");
     return false;
   }
 
@@ -1159,12 +1163,16 @@ bool NavObj_dB::InsertRoute(Route* route) {
 };
 
 bool NavObj_dB::UpdateRoute(Route* route) {
-  sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, nullptr);
-
   bool rv = false;
   char* errMsg = 0;
 
   if (!RouteExistsDB(m_db, route->m_GUID.ToStdString())) return false;
+
+  sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
+  if (errMsg) {
+    ReportError("UpdateRoute:BEGIN TRANSACTION");
+    return false;
+  }
 
   UpdateDBRouteAttributes(route);
 
