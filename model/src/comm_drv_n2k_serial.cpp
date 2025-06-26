@@ -395,9 +395,11 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto name = PayloadToName(load);
   auto msg_all =
       std::make_shared<const Nmea2000Msg>(1, msg_payload, GetAddress(name));
+  auto msg_internal =
+      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, GetAddress(name));
 
   // Notify listeners
-  m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_internal));
   m_listener.Notify(std::move(msg_all));
 
   if (GetSecondaryThread()) {
