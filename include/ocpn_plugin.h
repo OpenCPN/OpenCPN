@@ -160,14 +160,58 @@ class wxGLCanvas;
     Allows plugins to clean up resources and save state. */
 #define WANTS_PRESHUTDOWN_HOOK 0x00400000
 
-//---------------------------------------------------------------------------------------------------------
-//
-//    Overlay priorities
-//
-//---------------------------------------------------------------------------------------------------------
+/**
+ * Overlay rendering priorities determine the layering order of plugin graphics.
+ *
+ * These constants define the priority levels for overlay rendering in both
+ * OpenGL and standard DC modes. Lower priority values render first
+ * (background), while higher priority values render last (foreground).
+ *
+ * Plugins should render only when the priority parameter matches their intended
+ * layer to ensure proper visual ordering and prevent overlays from appearing
+ * above UI elements like toolbars and menus.
+ */
+
+/**
+ * Default overlay priority for background data visualization.
+ *
+ * Used for chart overlays, weather data, tracks, routes, and other navigation
+ * information that should appear behind ships and interactive features.
+ * Most plugins should render at this priority level.
+ *
+ * Examples: GRIB weather overlays, current displays, depth contours
+ */
 #define OVERLAY_LEGACY 0
+
+/**
+ * Priority for overlays that should appear above ship symbols.
+ *
+ * Used for overlays that need to be visible over vessel icons but still
+ * remain behind embossed chart features and UI elements.
+ *
+ * Examples: AIS collision warnings, proximity alerts
+ */
 #define OVERLAY_OVER_SHIPS 64
+
+/**
+ * Priority for overlays above embossed chart features.
+ *
+ * Used for overlays that should appear above chart relief and 3D effects
+ * but remain behind UI controls.
+ *
+ * Examples: Critical navigation warnings, hazard markers
+ */
 #define OVERLAY_OVER_EMBOSS 96
+
+/**
+ * Highest priority for overlays above all UI elements.
+ *
+ * Reserved for critical overlays that must appear above all other elements
+ * including toolbars, menus, and dialogs. Use sparingly and only for
+ * essential safety-critical information.
+ *
+ * Examples: Emergency alerts, collision imminent warnings
+ */
 #define OVERLAY_OVER_UI 128
 
 //----------------------------------------------------------------------------------------------------------
@@ -1670,21 +1714,41 @@ public:
   using opencpn_plugin::RenderOverlay;
 
   /**
-   * Renders plugin overlay graphics in standard (non-OpenGL) mode.
+   * Renders plugin overlay graphics in standard DC mode for single canvas.
+   *
+   * Legacy method for standard (non-OpenGL) overlay rendering that predates
+   * multi-canvas and priority support. This method renders overlays at
+   * OVERLAY_LEGACY priority level (0) on the primary canvas only.
    *
    * Called by OpenCPN during chart redraw to allow plugins to render custom
-   * visualizations on top of charts. Drawing occurs through piDC device
-   * context that abstracts both standard and OpenGL contexts.
+   * visualization overlays on top of charts. Drawing occurs through standard
+   * wxWidgets device context methods.
    *
-   * Plugins render in their load order within the plugin array.
+   * Plugins render in their load order within the plugin array for overlays
+   * at the same priority level.
    *
-   * @param dc Device context for drawing
-   * @param vp Current viewport parameters
-   * @return True if overlay was rendered, false if no overlay
+   * @param dc Device context for drawing using standard wxWidgets methods
+   *           like DrawLine(), DrawCircle(), DrawText(), DrawBitmap()
+   * @param vp Current viewport settings including scale, position, rotation
+   *
+   * @return True if overlay was rendered, False if no overlay
    *
    * @note Only called if plugin declares WANTS_OVERLAY_CALLBACK capability
    * @note Drawing should respect current viewport parameters
-   * @note For API v1.18+, use RenderOverlayMultiCanvas() to specify priority
+   * @note Use GetCanvasPixLL() to convert lat/lon coordinates to screen pixels
+   * @note Renders only on primary canvas (index 0)
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   * @note Performance critical - keep drawing efficient for smooth navigation
+   *
+   * @deprecated Use RenderOverlayMultiCanvas() for multi-canvas and priority
+   * support
+   *
+   * @see RenderOverlayMultiCanvas() for modern multi-canvas priority-aware
+   * rendering
+   * @see RenderGLOverlay() for OpenGL rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.6
    */
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
 
@@ -1727,25 +1791,41 @@ public:
 
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   /**
-   * Renders plugin overlay graphics in OpenGL mode.
+   * Renders plugin overlay graphics in OpenGL mode for single canvas.
    *
-   * Called by OpenCPN during chart redraw to allow plugins to render custom
-   * visualizations in OpenGL mode. Both RenderOverlay() and RenderGLOverlay()
-   * use the same piDC device context abstraction for drawing, but
-   * RenderGLOverlay() provides direct access to the OpenGL context.
+   * Legacy method for OpenGL overlay rendering that predates multi-canvas
+   * and priority support. This method renders overlays at OVERLAY_LEGACY
+   * priority level (0) on the primary canvas only.
    *
-   * Plugins render in their load order within plugin array
+   * Both RenderOverlay() and RenderGLOverlay() use the same piDC device context
+   * abstraction for drawing, but RenderGLOverlay() provides direct access to
+   * the OpenGL context for advanced OpenGL operations.
    *
-   * @param pcontext OpenGL context for direct GL drawing commands
-   * @param vp Current viewport settings (scale, position, rotation)
-   * @return True if overlay was rendered, false if no overlay
+   * Plugins render in their load order within the plugin array for overlays
+   * at the same priority level.
+   *
+   * @param pcontext OpenGL context for direct GL drawing commands and piDC
+   * operations
+   * @param vp Current viewport settings including scale, position, rotation
+   *
+   * @return True if overlay was rendered, False if no overlay
    *
    * @note Only called if plugin declares WANTS_OPENGL_OVERLAY_CALLBACK
    * capability
    * @note Drawing should respect current viewport parameters
    * @note For OpenGL-specific rendering optimizations
-   * @note Modern plugins should use RenderGLOverlayMultiCanvas() for priority
-   * control
+   * @note Renders only on primary canvas (index 0)
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   *
+   * @deprecated Use RenderGLOverlayMultiCanvas() for multi-canvas and priority
+   * support
+   *
+   * @see RenderGLOverlayMultiCanvas() for modern multi-canvas priority-aware
+   * rendering
+   * @see RenderOverlay() for standard DC rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.7
    */
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
@@ -1894,31 +1974,71 @@ public:
   opencpn_plugin_116(void *pmgr);
   virtual ~opencpn_plugin_116();
   /**
-   * Renders plugin overlay graphics in OpenGL mode with canvas selection.
+   * Renders plugin overlay graphics in OpenGL mode for multi-canvas support.
    *
-   * Extended version of RenderGLOverlay() that supports multiple chart canvases
-   * and overlay priorities.
+   * Legacy version of RenderGLOverlayMultiCanvas without priority control.
+   * This method is called for backward compatibility with plugins that haven't
+   * upgraded to the priority-aware API. The overlay is rendered at
+   * OVERLAY_LEGACY priority level (0), appearing behind ships and other
+   * high-priority elements.
    *
-   * @param pcontext OpenGL context for drawing
-   * @param vp Current viewport parameters
-   * @param canvasIndex Index of target canvas (0-based)
-   * @param priority Drawing priority level (OVERLAY_LEGACY etc)
-   * @return True if overlay was rendered
+   * @param pcontext OpenGL context for drawing operations
+   * @param vp Current viewport parameters including position, scale, rotation
+   * @param canvasIndex Index of the target canvas (0-based)
+   *
+   * @return True if overlay was rendered, False otherwise
+   *
+   * @note Only called if plugin declares WANTS_OPENGL_OVERLAY_CALLBACK
+   * capability
+   * @note Modern plugins should use the priority-aware version instead
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   * @note Drawing should respect current viewport parameters
+   * @note For new plugins, prefer RenderGLOverlayMultiCanvas() with priority
+   * parameter
+   *
+   * @deprecated Use RenderGLOverlayMultiCanvas(wxGLContext*, PlugIn_ViewPort*,
+   * int, int) for priority control
+   *
+   * @see RenderGLOverlayMultiCanvas() with priority parameter
+   * @see RenderGLOverlay() for single-canvas legacy rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.16
    */
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex);
 
   /**
-   * Renders plugin overlay graphics with canvas selection.
+   * Renders plugin overlay graphics in standard DC mode for multi-canvas
+   * support.
    *
-   * Extended version of RenderOverlay() that supports multiple chart canvases
-   * and overlay priorities.
+   * Legacy version of RenderOverlayMultiCanvas without priority control.
+   * This method is called for backward compatibility with plugins that haven't
+   * upgraded to the priority-aware API. The overlay is rendered at
+   * OVERLAY_LEGACY priority level (0), appearing behind ships and other
+   * high-priority elements.
    *
-   * @param dc Device context for drawing
-   * @param vp Current viewport parameters
-   * @param canvasIndex Index of target canvas (0-based)
-   * @param priority Drawing priority level (OVERLAY_LEGACY etc)
-   * @return True if overlay was rendered
+   * @param dc Device context for drawing operations
+   * @param vp Current viewport parameters including position, scale, rotation
+   * @param canvasIndex Index of the target canvas (0-based)
+   *
+   * @return True if overlay was rendered, False otherwise
+   *
+   * @note Only called if plugin declares WANTS_OVERLAY_CALLBACK capability
+   * @note Modern plugins should use the priority-aware version instead
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   * @note Use GetCanvasPixLL() to convert lat/lon coordinates to screen pixels
+   * @note For new plugins, prefer RenderOverlayMultiCanvas() with priority
+   * parameter
+   *
+   * @deprecated Use RenderOverlayMultiCanvas(wxDC&, PlugIn_ViewPort*, int, int)
+   *             for priority control
+   *
+   * @see RenderOverlayMultiCanvas() with priority parameter
+   * @see RenderOverlay() for single-canvas legacy rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.16
    */
   virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                         int canvasIndex);
@@ -1964,14 +2084,63 @@ public:
   using opencpn_plugin_116::RenderGLOverlayMultiCanvas;
   using opencpn_plugin_116::RenderOverlayMultiCanvas;
 
-  /// Render plugin overlay over chart canvas in OpenGL mode
-  ///
-  /// \param pcontext Pointer to the OpenGL context
-  /// \param vp Pointer to the Viewport
-  /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
-  /// \param priority Priority, plugins only upgrading from older API versions
-  ///        should draw only when priority is OVERLAY_LEGACY (0)
-  /// \return true if overlay was rendered, false otherwise
+  /**
+   * Renders plugin overlay graphics in OpenGL mode with priority control.
+   *
+   * This is the recommended method for OpenGL overlay rendering in modern
+   * plugins. It provides precise control over rendering order through priority
+   * levels and supports multi-canvas configurations. OpenCPN calls this method
+   * multiple times with different priority values to build up the complete
+   * overlay stack.
+   *
+   * The plugin should examine the priority parameter and only render overlays
+   * appropriate for that layer. This ensures proper visual ordering where
+   * background data appears behind ships, which appear behind critical alerts.
+   *
+   * For plugins upgrading from older APIs, rendering should typically occur
+   * only when priority equals OVERLAY_LEGACY (0) to maintain compatibility with
+   * existing behavior.
+   *
+   * @param pcontext OpenGL context for drawing operations - use for direct
+   *                 OpenGL commands or OpenCPN's piDC abstraction layer
+   * @param vp Current viewport parameters including:
+   *           - Center position (clat, clon)
+   *           - Scale (view_scale_ppm)
+   *           - Rotation and skew
+   *           - Canvas dimensions (pix_width, pix_height)
+   *           - Visible area bounds (lat_min/max, lon_min/max)
+   * @param canvasIndex Index of the target canvas (0-based). In multi-canvas
+   *                    configurations (split screen), each canvas may have
+   *                    different viewport parameters
+   * @param priority Rendering priority level determining overlay layering:
+   *                 - OVERLAY_LEGACY (0): Background data, most common usage
+   *                 - OVERLAY_OVER_SHIPS (64): Above vessel symbols
+   *                 - OVERLAY_OVER_EMBOSS (96): Above chart relief
+   *                 - OVERLAY_OVER_UI (128): Above all UI elements (use
+   * sparingly)
+   *
+   * @return True if overlay was rendered for this priority level, False if no
+   *         rendering occurred (normal when priority doesn't match plugin's
+   * needs)
+   *
+   * @note Only called if plugin declares WANTS_OPENGL_OVERLAY_CALLBACK
+   * capability
+   * @note Drawing coordinates should be calculated relative to the viewport
+   * parameters
+   * @note Performance critical - keep rendering optimized for smooth chart
+   * updates
+   * @note Plugin should check priority parameter to render only appropriate
+   * overlays
+   * @note For plugins supporting multiple priority levels, maintain separate
+   * rendering paths for each priority to avoid duplicate drawing
+   *
+   * @see RenderOverlayMultiCanvas() for standard DC rendering
+   * @see RenderGLOverlay() for legacy single-canvas OpenGL rendering
+   * @see OVERLAY_LEGACY, OVERLAY_OVER_SHIPS, OVERLAY_OVER_EMBOSS,
+   * OVERLAY_OVER_UI
+   *
+   * @since API v1.18
+   */
 #ifdef _MSC_VER
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex,
@@ -1987,14 +2156,61 @@ public:
   }
 #endif
 
-  /// Render plugin overlay over chart canvas in non-OpenGL mode
-  ///
-  /// \param dc Reference to the "device context"
-  /// \param vp Pointer to the Viewport
-  /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
-  /// \param priority Priority, plugins only upgrading from older API versions
-  ///        should draw only when priority is OVERLAY_LEGACY (0)
-  /// \return true if overlay was rendered, false otherwise
+  /**
+   * Renders plugin overlay graphics in standard DC mode with priority control.
+   *
+   * This is the recommended method for standard (non-OpenGL) overlay rendering
+   * in modern plugins. It provides precise control over rendering order through
+   * priority levels and supports multi-canvas configurations. OpenCPN calls
+   * this method multiple times with different priority values to build up the
+   * complete overlay stack.
+   *
+   * The plugin should examine the priority parameter and only render overlays
+   * appropriate for that layer. This ensures proper visual ordering where
+   * background data appears behind ships, which appear behind critical alerts.
+   *
+   * For plugins upgrading from older APIs, rendering should typically occur
+   * only when priority equals OVERLAY_LEGACY (0) to maintain compatibility with
+   * existing behavior.
+   *
+   * @param dc Device context for drawing operations - supports standard
+   * wxWidgets drawing methods like DrawLine(), DrawCircle(), DrawText(), etc.
+   * @param vp Current viewport parameters including:
+   *           - Center position (clat, clon)
+   *           - Scale (view_scale_ppm)
+   *           - Rotation and skew
+   *           - Canvas dimensions (pix_width, pix_height)
+   *           - Visible area bounds (lat_min/max, lon_min/max)
+   * @param canvasIndex Index of the target canvas (0-based). In multi-canvas
+   *                    configurations (split screen), each canvas may have
+   *                    different viewport parameters
+   * @param priority Rendering priority level determining overlay layering:
+   *                 - OVERLAY_LEGACY (0): Background data, most common usage
+   *                 - OVERLAY_OVER_SHIPS (64): Above vessel symbols
+   *                 - OVERLAY_OVER_EMBOSS (96): Above chart relief
+   *                 - OVERLAY_OVER_UI (128): Above all UI elements (use
+   * sparingly)
+   *
+   * @return True if overlay was rendered for this priority level, False if no
+   *         rendering occurred (normal when priority doesn't match plugin's
+   * needs)
+   *
+   * @note Only called if plugin declares WANTS_OVERLAY_CALLBACK capability
+   * @note Drawing coordinates should be calculated relative to the viewport
+   * parameters
+   * @note Use GetCanvasPixLL() to convert lat/lon coordinates to screen pixels
+   * @note Plugin should check priority parameter to render only appropriate
+   * overlays
+   * @note For plugins supporting multiple priority levels, maintain separate
+   * rendering paths for each priority to avoid duplicate drawing
+   *
+   * @see RenderGLOverlayMultiCanvas() for OpenGL rendering
+   * @see RenderOverlay() for legacy single-canvas DC rendering
+   * @see OVERLAY_LEGACY, OVERLAY_OVER_SHIPS, OVERLAY_OVER_EMBOSS,
+   * OVERLAY_OVER_UI
+   *
+   * @since API v1.18
+   */
 #ifdef _MSC_VER
   virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                         int canvasIndex, int priority = -1);
