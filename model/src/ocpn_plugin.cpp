@@ -302,6 +302,11 @@ void opencpn_plugin_120::OnContextMenuItemCallbackExt(int id,
                                                       std::string obj_type,
                                                       double lat, double lon) {}
 
+// Opencpn_Plugin_121 Implementation
+opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
+void opencpn_plugin_121::OnTimelineSelectedTimeChanged(
+    const wxDateTime& selectedTime) {}
+
 DateTimeFormatOptions::DateTimeFormatOptions()
     : format_string("$weekday_short_date_time"),
       time_zone(wxEmptyString),
