@@ -1033,6 +1033,10 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     } else {
       target_brush = wxBrush(GetGlobalColor(_T ( "CHYLW" )));
     }
+  } else {
+    if (td->b_staticInfoFromCache) {
+      target_brush = wxBrush(GetGlobalColor(_T ( "GREEN5" )));
+    } 
   }
 
   wxColour URED = GetGlobalColor(_T ( "URED" ));

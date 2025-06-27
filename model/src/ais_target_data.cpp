@@ -203,7 +203,7 @@ wxString aisMeteoWaterLevelRef(int refID) {
 }
 
 AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
-  strncpy(ShipName, "Unknown             ", SHIP_NAME_LEN);
+  strncpy(ShipName, "                    ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
   strncpy(Destination, "                    ", DESTINATION_LEN);
   ShipNameExtension[0] = 0;
@@ -262,6 +262,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   b_positionDoubtful = false;
   b_positionOnceValid = false;
   b_nameValid = false;
+  b_staticInfoFromCache = false;
 
   Euro_Length = 0;  // Extensions for European Inland AIS
   Euro_Beam = 0;
@@ -286,7 +287,6 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   b_show_track = g_bAISShowTracks;
   b_SarAircraftPosnReport = false;
   altitude = 0;
-  b_staticInfoFromCache = false;
   importance = 0.0;
   for (unsigned int i = 0; i < AIS_TARGETDATA_MAX_CANVAS; i++)
     last_scale[i] = 50;

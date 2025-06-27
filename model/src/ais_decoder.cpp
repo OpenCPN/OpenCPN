@@ -132,7 +132,7 @@ int origin_mmsi = 0;
 
 void AISshipCache(AisTargetData *pTargetData,
                   AIS_Target_Data_Hash *AISTargetDataC,
-                  AIS_Target_Data_Hash *AISTargetNamesNC, long mmsi);
+                  AIS_Target_Data_Hash *AISTargetDataNC, long mmsi);
 
 AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
     : m_signalk_selfid(""), m_callbacks(callbacks) {
@@ -4551,26 +4551,28 @@ wxString MmsiProperties::Serialize(void) {
   return sMMSI;
 }
 
+/**
+ * Sync AIS target data with static info cache
+ */
 void AISshipCache(AisTargetData *pTargetData,
                   AIS_Target_Data_Hash *AISTargetDataC,
-                  AIS_Target_Data_Hash *AISTargetNamesNC, long mmsi) {
+                  AIS_Target_Data_Hash *AISTargetDataNC, long mmsi) {
   if (!g_benableAISDataCache) {
     // Exit if AIS cache is not enabled
     return;
   }
 
-  // Verify if static information has been updated from AIS receiver
+  wxString ship_name = wxEmptyString;
+  AIS_Target_Data_Hash::iterator itC = AISTargetDataC->find(mmsi);
+  AIS_Target_Data_Hash::iterator itNC = AISTargetDataNC->find(mmsi);
+
   if ((pTargetData->MID == 5) || (pTargetData->MID == 24) ||
       (pTargetData->MID == 19) ||
       (pTargetData->MID == 123) ||  // 123: Has got a name from SignalK
       (pTargetData->MID == 124)) {  // 124: Has got a name from n2k
-    // Yes : set confirmation status
     pTargetData->b_staticInfoFromCache = false;
+    pTargetData->b_nameValid = true;
   }
-
-  wxString ship_name = wxEmptyString;
-  AIS_Target_Data_Hash::iterator itC = AISTargetDataC->find(mmsi);
-  AIS_Target_Data_Hash::iterator itNC = AISTargetNamesNC->find(mmsi);
 
   if (itC != AISTargetDataC->end()) {
     // MMSI is in the confirmed list
@@ -4578,9 +4580,9 @@ void AISshipCache(AisTargetData *pTargetData,
 
     // If MMSI is also in non-confirmed list, erase it to only keep confirmed
     // copy
-    if (itNC != AISTargetNamesNC->end()) {
-      AISTargetNamesNC->erase(itNC);
-      itNC = AISTargetNamesNC->end();
+    if (itNC != AISTargetDataNC->end()) {
+      AISTargetDataNC->erase(itNC);
+      itNC = AISTargetDataNC->end();
     }
 
     // Process ship type
@@ -4620,9 +4622,13 @@ void AISshipCache(AisTargetData *pTargetData,
       // Ship name has not yet been written, either by AIS or by cache
       // In that case, we fill it from cache
       ship_name = shipData.name.Left(20);
-      strncpy(pTargetData->ShipName, ship_name.mb_str(),
-              ship_name.length() + 1);
-      pTargetData->b_nameValid = true;
+      // Only copy name from cache if it is non empty
+      if (ship_name.Trim().Length() > 0) {
+        strncpy(pTargetData->ShipName, ship_name.mb_str(),
+                ship_name.length() + 1);
+        pTargetData->b_nameValid = true;
+        pTargetData->b_staticInfoFromCache = true;
+      }
     } else {
       // Ship name has already been written. In that case, we update cache with
       // taget's value. In most of the cases the value will be the same, but if
@@ -4631,10 +4637,10 @@ void AISshipCache(AisTargetData *pTargetData,
     }
   } else {
     // MMSI is not in the confirmed list
-    if (itNC != AISTargetNamesNC->end()) {
+    if (itNC != AISTargetDataNC->end()) {
       // MMSI is in the non-confirmed list
       if (!g_bUseOnlyConfirmedAISName) {
-        AisTargetCacheData &shipData = (*AISTargetNamesNC)[mmsi];
+        AisTargetCacheData &shipData = (*AISTargetDataNC)[mmsi];
 
         // Process ship type
         if (pTargetData->ShipType <= 19) {
@@ -4673,9 +4679,14 @@ void AISshipCache(AisTargetData *pTargetData,
           // Ship name has not yet been written, either by AIS or by cache
           // In that case, we fill it from cache
           ship_name = shipData.name.Left(20);
-          strncpy(pTargetData->ShipName, ship_name.mb_str(),
-                  ship_name.length() + 1);
-          pTargetData->b_nameValid = true;
+          if (ship_name.Trim().Length() > 0) {
+            memset(pTargetData->ShipName, ' ', 20);
+            strncpy(pTargetData->ShipName, ship_name.mb_str(),
+                    ship_name.length());
+            pTargetData->ShipName[20] = 0;
+            pTargetData->b_nameValid = true;
+            pTargetData->b_staticInfoFromCache = true;
+          }
         } else {
           // Ship name has already been written. In that case, we update cache
           // with taget's value. In most of the cases the value will be the
@@ -4686,20 +4697,23 @@ void AISshipCache(AisTargetData *pTargetData,
 
         // If static info has been confirmed, upgrade target from non-confirmed
         // to confirmed list
-        if (!pTargetData->b_staticInfoFromCache) {
+        if (pTargetData->b_nameValid && !pTargetData->b_staticInfoFromCache) {
           AisTargetCacheData &shipData = (*AISTargetDataC)[mmsi];
           shipData.name = wxString::FromAscii(pTargetData->ShipName).Trim();
           shipData.type = pTargetData->ShipType;
-          AISTargetNamesNC->erase(itNC);
-          itNC = AISTargetNamesNC->end();
+          AISTargetDataNC->erase(itNC);
+          itNC = AISTargetDataNC->end();
         }
       }
     } else {
-      // Target is not in any list. Add it to confirmed list since data has
-      // necessarilly been received from AIS.
-      AisTargetCacheData &shipData = (*AISTargetDataC)[mmsi];
-      shipData.name = wxString::FromAscii(pTargetData->ShipName).Trim();
-      shipData.type = pTargetData->ShipType;
+      // Target is not in any list. Add it to the confirmed cache list if name
+      // is valid/confirmed
+      if (pTargetData->b_nameValid) {
+        // Name is valid -> confirmed list
+        AisTargetCacheData &shipData = (*AISTargetDataC)[mmsi];
+        shipData.name = wxString::FromAscii(pTargetData->ShipName).Trim();
+        shipData.type = pTargetData->ShipType;
+      }
     }
   }
 }
