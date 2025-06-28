@@ -65,7 +65,7 @@ enum AISAudioSoundType {
 
 class MmsiProperties {
 public:
-  MmsiProperties(){};
+  MmsiProperties() {};
   MmsiProperties(int mmsi) {
     Init();
     MMSI = mmsi;
