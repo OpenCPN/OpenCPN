@@ -144,26 +144,24 @@ struct Ais8_001_22 {
   Ais8_001_22_SubAreaList sub_areas;
 };
 
-struct AisTargetCallbacks {
-  std::function<double(double)> get_mag;
-  AisTargetCallbacks() : get_mag([](double a) { return toMagnetic(a); }) {}
-};
-
+/**
+ * Ship/target entry in AIS cache
+ */
 class AisTargetCacheData {
 public:
-  wxString name;
-  uint8_t type;
-  int m_dim_a;
-  int m_dim_b;
-  int m_dim_c;
-  int m_dim_d;
+  wxString name; /** Name of the ship */
+  uint8_t type;  /** Type of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_a; /** 'A' dimension of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_b; /** 'B' dimension of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_c; /** 'C' dimension of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_d; /** 'D' dimension of the ship as per ITU-R M.1371-5 definition */
 };
 
 class AisTargetData {
   friend class AisTargetDataMaker;
 
 public:
-  AisTargetData(AisTargetCallbacks callbacks);
+  AisTargetData();
   ~AisTargetData();
 
   wxString BuildQueryResult(void);
@@ -277,9 +275,6 @@ public:
   short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
                                                 // AIS_TARGETDATA_MAX_CANVAS is
                                                 // the max number of chartcanvas
-
-private:
-  AisTargetCallbacks m_callbacks;
 };
 
 /**
@@ -298,13 +293,11 @@ public:
   AisTargetDataMaker& operator=(const AisTargetDataMaker&) = delete;
 
   std::shared_ptr<AisTargetData> GetTargetData() {
-    return std::make_shared<AisTargetData>(m_callbacks);
+    return std::make_shared<AisTargetData>();
   }
-  void SetCallbacks(AisTargetCallbacks callbacks) { m_callbacks = callbacks; }
 
 private:
-  AisTargetDataMaker() : m_callbacks(AisTargetCallbacks()) {}
-  AisTargetCallbacks m_callbacks;
+  AisTargetDataMaker() {}
 };
 
 wxString trimAISField(char* data);

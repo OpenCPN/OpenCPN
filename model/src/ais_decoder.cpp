@@ -131,27 +131,27 @@ int AisMeteoNewMmsi(int, int, int, int, int);
 int origin_mmsi = 0;
 
 void SyncAisShipCache(AisTargetData *pTargetData,
-                      AIS_Target_Data_Hash *AISTargetDataC,
-                      AIS_Target_Data_Hash *AISTargetDataNC, long mmsi);
+                      AisTargetDataMap *AISTargetDataC,
+                      AisTargetDataMap *AISTargetDataNC, long mmsi);
 
 AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
     : m_signalk_selfid(""), m_callbacks(callbacks) {
   // Load cached AIS target names from a file
-  AISTargetDataC = new AIS_Target_Data_Hash;
-  AISTargetDataNC = new AIS_Target_Data_Hash;
+  m_ais_target_data_c = new AisTargetDataMap;
+  m_ais_target_data_nc = new AisTargetDataMap;
 
   if (g_enable_ais_data_cache) {
     if (wxFileName::FileExists(AISTargetNameFileName)) {
       wxTextFile infile;
       if (infile.Open(AISTargetNameFileName)) {
-        AIS_Target_Data_Hash *HashFile = AISTargetDataNC;
+        AisTargetDataMap *HashFile = m_ais_target_data_nc;
         wxString line = infile.GetFirstLine();
         while (!infile.Eof()) {
           if (line.IsSameAs(wxT("+++==Confirmed Entry's==+++")))
-            HashFile = AISTargetDataC;
+            HashFile = m_ais_target_data_c;
           else {
             if (line.IsSameAs(wxT("+++==Non Confirmed Entry's==+++")))
-              HashFile = AISTargetDataNC;
+              HashFile = m_ais_target_data_nc;
             else {
               wxStringTokenizer tokenizer(line, _T(","));
               int mmsi = wxAtoi(tokenizer.GetNextToken());
@@ -211,8 +211,9 @@ AisDecoder::~AisDecoder(void) {
   if (outfile.Open(AISTargetNameFileName)) {
     wxString content;
     content = wxT("+++==Confirmed Entry's==+++");
-    AIS_Target_Data_Hash::iterator it;
-    for (it = AISTargetDataC->begin(); it != AISTargetDataC->end(); ++it) {
+    AisTargetDataMap::iterator it;
+    for (it = m_ais_target_data_c->begin(); it != m_ais_target_data_c->end();
+         ++it) {
       content.append(_T("\r\n"));
       content.append(wxString::Format(wxT("%i"), it->first));
       content.append(_T(",")).append(it->second.name);
@@ -229,7 +230,8 @@ AisDecoder::~AisDecoder(void) {
     }
     content.append(_T("\r\n"));
     content.append(_T("+++==Non Confirmed Entry's==+++"));
-    for (it = AISTargetDataNC->begin(); it != AISTargetDataNC->end(); ++it) {
+    for (it = m_ais_target_data_nc->begin(); it != m_ais_target_data_nc->end();
+         ++it) {
       content.append(_T("\r\n"));
       content.append(wxString::Format(wxT("%i"), it->first));
       content.append(_T(",")).append(it->second.name);
@@ -248,10 +250,10 @@ AisDecoder::~AisDecoder(void) {
     outfile.Commit();
   }
 
-  AISTargetDataC->clear();
-  delete AISTargetDataC;
-  AISTargetDataNC->clear();
-  delete AISTargetDataNC;
+  m_ais_target_data_c->clear();
+  delete m_ais_target_data_c;
+  m_ais_target_data_nc->clear();
+  delete m_ais_target_data_nc;
 
   clear_hash_ERI();
 
@@ -1552,8 +1554,8 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
             pTargetData->b_SarAircraftPosnReport = true;
           }
 
-          SyncAisShipCache(pTargetData.get(), AISTargetDataC, AISTargetDataNC,
-                           mmsi);
+          SyncAisShipCache(pTargetData.get(), m_ais_target_data_c,
+                           m_ais_target_data_nc, mmsi);
         }
       }
     } else {
@@ -2401,8 +2403,8 @@ void AisDecoder::CommitAISTarget(std::shared_ptr<AisTargetData> pTargetData,
   if (message_valid) {
     // Print to name cache only if not mmsi = 0
     if (pTargetData->MMSI) {
-      SyncAisShipCache(pTargetData.get(), AISTargetDataC, AISTargetDataNC,
-                       pTargetData->MMSI);
+      SyncAisShipCache(pTargetData.get(), m_ais_target_data_c,
+                       m_ais_target_data_nc, pTargetData->MMSI);
     }
     AISTargetList[pTargetData->MMSI] =
         pTargetData;  // update the hash table entry
@@ -4566,16 +4568,16 @@ wxString MmsiProperties::Serialize(void) {
  * @param mmsi MMSI of the AIS target
  */
 void SyncAisShipCache(AisTargetData *p_target_data,
-                      AIS_Target_Data_Hash *ais_target_data_c,
-                      AIS_Target_Data_Hash *ais_target_data_nc, long mmsi) {
+                      AisTargetDataMap *ais_target_data_c,
+                      AisTargetDataMap *ais_target_data_nc, long mmsi) {
   if (!g_enable_ais_data_cache) {
     // Exit if AIS cache is not enabled
     return;
   }
 
   wxString ship_name = wxEmptyString;
-  AIS_Target_Data_Hash::iterator it_c = ais_target_data_c->find(mmsi);
-  AIS_Target_Data_Hash::iterator it_nc = ais_target_data_nc->find(mmsi);
+  AisTargetDataMap::iterator it_c = ais_target_data_c->find(mmsi);
+  AisTargetDataMap::iterator it_nc = ais_target_data_nc->find(mmsi);
 
   // If the last incoming AIS message from this target carried target name then
   // mark it as confirmed

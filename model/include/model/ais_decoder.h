@@ -189,8 +189,8 @@ private:
   std::unordered_map<int, std::shared_ptr<AisTargetData>> AISTargetList;
   std::unordered_map<int, std::shared_ptr<AisTargetData>>
       AIS_AreaNotice_Sources;
-  AIS_Target_Data_Hash *AISTargetDataC;
-  AIS_Target_Data_Hash *AISTargetDataNC;
+  AisTargetDataMap *m_ais_target_data_c;
+  AisTargetDataMap *m_ais_target_data_nc;
 
   ObservableListener listener_N0183_VDM;
   ObservableListener listener_N0183_FRPOS;

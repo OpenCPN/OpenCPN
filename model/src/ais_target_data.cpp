@@ -202,7 +202,7 @@ wxString aisMeteoWaterLevelRef(int refID) {
   return ref;
 }
 
-AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
+AisTargetData::AisTargetData() {
   strncpy(ShipName, "                    ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
   strncpy(Destination, "                    ", DESTINATION_LEN);
@@ -758,8 +758,7 @@ wxString AisTargetData::BuildQueryResult(void) {
         wxString magString, trueString;
         if (g_bShowMag)
           magString << wxString::Format(
-              wxString("%03d%c(M)"), static_cast<int>(m_callbacks.get_mag(COG)),
-              0x00B0);
+              wxString("%03d%c(M)"), static_cast<int>(toMagnetic(COG)), 0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format(wxString("%03d%c "), (int)crs, 0x00B0);
 
@@ -824,8 +823,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     wxString magString, trueString;
     if (g_bShowMag)
       magString << wxString::Format(wxString("%03d%c(M)"),
-                                    static_cast<int>(m_callbacks.get_mag(Brg)),
-                                    0x00B0);
+                                    static_cast<int>(toMagnetic(Brg)), 0x00B0);
     if (g_bShowTrue)
       trueString << wxString::Format(wxString("%03d%c "), (int)Brg, 0x00B0);
 
@@ -1158,9 +1156,9 @@ wxString AisTargetData::GetRolloverString(void) {
       if (crs < 360) {
         wxString magString, trueString;
         if (g_bShowMag)
-          magString << wxString::Format(
-              wxString("%03d%c(M)  "),
-              static_cast<int>(m_callbacks.get_mag(COG)), 0x00B0);
+          magString << wxString::Format(wxString("%03d%c(M)  "),
+                                        static_cast<int>(toMagnetic(COG)),
+                                        0x00B0);
         if (g_bShowTrue)
           trueString << wxString::Format(wxString("%03d%c "), (int)crs, 0x00B0);
 
