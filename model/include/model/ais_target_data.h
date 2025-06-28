@@ -153,10 +153,10 @@ class AisTargetCacheData {
 public:
   wxString name;
   uint8_t type;
-  int DimA;
-  int DimB;
-  int DimC;
-  int DimD;
+  int m_dim_a;
+  int m_dim_b;
+  int m_dim_c;
+  int m_dim_d;
 };
 
 class AisTargetData {
@@ -178,7 +178,7 @@ public:
   void CloneFrom(AisTargetData* q);
   bool IsValidMID(int);
 
-  int MID;
+  int m_mid;
   int MMSI;
   ais_transponder_class Class;
   int NavStatus;
@@ -194,13 +194,13 @@ public:
   char CallSign[CALL_SIGN_LEN];  // includes terminator
   char ShipName[SHIP_NAME_LEN];
   char ShipNameExtension[15];
-  unsigned char ShipType;
+  unsigned char m_ship_type;
   int IMO;
 
-  int DimA;
-  int DimB;
-  int DimC;
-  int DimD;
+  int m_dim_a;
+  int m_dim_b;
+  int m_dim_c;
+  int m_dim_d;
 
   double Euro_Length;  // Extensions for European Inland AIS
   double Euro_Beam;
@@ -233,8 +233,8 @@ public:
   bool b_suppress_audio;
   bool b_positionDoubtful;
   bool b_positionOnceValid;
-  bool b_nameValid;
-  bool b_staticInfoFromCache;
+  bool b_name_valid;
+  bool b_name_from_cache;
   bool b_isFollower;
   bool b_isDSCtarget;  // DSC flag to a possible simultaneous AIS target
   int m_dscNature;

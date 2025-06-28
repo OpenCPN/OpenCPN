@@ -101,12 +101,12 @@ static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
 
     case tlNAME:
       s1 = trimAISField(t1->ShipName);
-      if ((!t1->b_nameValid && (t1->Class == AIS_BASE)) ||
+      if ((!t1->b_name_valid && (t1->Class == AIS_BASE)) ||
           (t1->Class == AIS_SART))
         s1 = _T("-");
 
       s2 = trimAISField(t2->ShipName);
-      if ((!t2->b_nameValid && (t2->Class == AIS_BASE)) ||
+      if ((!t2->b_name_valid && (t2->Class == AIS_BASE)) ||
           (t2->Class == AIS_SART))
         s2 = _T("-");
       break;

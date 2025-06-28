@@ -1388,7 +1388,7 @@ PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget) {
   pret->Lon = ptarget->Lon;
   pret->Lat = ptarget->Lat;
   pret->ROTAIS = ptarget->ROTAIS;
-  pret->ShipType = ptarget->ShipType;
+  pret->ShipType = ptarget->m_ship_type;
   pret->IMO = ptarget->IMO;
 
   pret->Range_NM = ptarget->Range_NM;

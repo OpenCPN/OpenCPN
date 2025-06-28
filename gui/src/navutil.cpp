@@ -176,7 +176,7 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-extern bool g_bUseOnlyConfirmedAISName;
+extern bool g_use_only_confirmed_ais_name;
 extern int g_ScaledNumWeightSOG;
 
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
@@ -464,7 +464,7 @@ int MyConfig::LoadMyConfig() {
   g_bHighliteTracks = 1;
   g_bPreserveScaleOnX = 1;
   g_navobjbackups = 5;
-  g_benableAISDataCache = true;
+  g_enable_ais_data_cache = true;
   g_n_arrival_circle_radius = 0.05;
   g_plus_minus_zoom_factor = 2.0;
   g_mouse_zoom_sensitivity = 1.5;
@@ -934,8 +934,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "EnableRotateKeys" ), &g_benable_rotate);
   Read(_T ( "EmailCrashReport" ), &g_bEmailCrashReport);
 
-  g_benableAISDataCache = true;
-  Read(_T ( "EnableAISNameCache" ), &g_benableAISDataCache);
+  g_enable_ais_data_cache = true;
+  Read(_T ( "EnableAISNameCache" ), &g_enable_ais_data_cache);
 
   Read(_T ( "EnableUDPNullHeader" ), &g_benableUDPNullHeader);
 
@@ -992,8 +992,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   wxString s;
   SetPath(_T ( "/Settings/AIS" ));
 
-  g_bUseOnlyConfirmedAISName = false;
-  Read(_T ( "UseOnlyConfirmedAISName" ), &g_bUseOnlyConfirmedAISName);
+  g_use_only_confirmed_ais_name = false;
+  Read(_T ( "UseOnlyConfirmedAISName" ), &g_use_only_confirmed_ais_name);
 
   Read(_T ( "bNoCPAMax" ), &g_bCPAMax);
 

@@ -520,7 +520,7 @@ static void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius,
   CircleOpen[14] = wxPoint(-3, 4);
   CircleOpen[15] = wxPoint(-1, 5);
 
-  switch (td->ShipType) {
+  switch (td->m_ship_type) {
     case 9:
     case 20:  // Card. N
       dc.SetPen(aton_WhiteBorderPen);
@@ -922,7 +922,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   wxPoint ais_real_size[6];
   bool bcan_draw_size = true;
   if (g_bDrawAISSize) {
-    if (td->DimA + td->DimB == 0 || td->DimC + td->DimD == 0) {
+    if (td->m_dim_a + td->m_dim_b == 0 || td->m_dim_c + td->m_dim_d == 0) {
       bcan_draw_size = false;
     } else {
       double ref_lat, ref_lon;
@@ -930,20 +930,20 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       wxPoint2DDouble b_point = vp.GetDoublePixFromLL(td->Lat, td->Lon);
       wxPoint2DDouble r_point = vp.GetDoublePixFromLL(ref_lat, ref_lon);
       double ppm = r_point.GetDistance(b_point) / 100.;
-      double offwid = (td->DimC + td->DimD) * ppm * 0.25;
-      double offlen = (td->DimA + td->DimB) * ppm * 0.15;
-      ais_real_size[0].x = -td->DimD * ppm;
-      ais_real_size[0].y = -td->DimB * ppm;
-      ais_real_size[1].x = -td->DimD * ppm;
-      ais_real_size[1].y = td->DimA * ppm - offlen;
-      ais_real_size[2].x = -td->DimD * ppm + offwid;
-      ais_real_size[2].y = td->DimA * ppm;
-      ais_real_size[3].x = td->DimC * ppm - offwid;
-      ais_real_size[3].y = td->DimA * ppm;
-      ais_real_size[4].x = td->DimC * ppm;
-      ais_real_size[4].y = td->DimA * ppm - offlen;
-      ais_real_size[5].x = td->DimC * ppm;
-      ais_real_size[5].y = -td->DimB * ppm;
+      double offwid = (td->m_dim_c + td->m_dim_d) * ppm * 0.25;
+      double offlen = (td->m_dim_a + td->m_dim_b) * ppm * 0.15;
+      ais_real_size[0].x = -td->m_dim_d * ppm;
+      ais_real_size[0].y = -td->m_dim_b * ppm;
+      ais_real_size[1].x = -td->m_dim_d * ppm;
+      ais_real_size[1].y = td->m_dim_a * ppm - offlen;
+      ais_real_size[2].x = -td->m_dim_d * ppm + offwid;
+      ais_real_size[2].y = td->m_dim_a * ppm;
+      ais_real_size[3].x = td->m_dim_c * ppm - offwid;
+      ais_real_size[3].y = td->m_dim_a * ppm;
+      ais_real_size[4].x = td->m_dim_c * ppm;
+      ais_real_size[4].y = td->m_dim_a * ppm - offlen;
+      ais_real_size[5].x = td->m_dim_c * ppm;
+      ais_real_size[5].y = -td->m_dim_b * ppm;
 
       if (ais_real_size[4].x - ais_real_size[0].x < 16 ||
           ais_real_size[2].y - ais_real_size[0].y < 30)
@@ -1027,21 +1027,21 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     target_brush = wxBrush(GetGlobalColor(_T ( "TEAL1" )));
 
   // Target static data has not been confirmed
-  if (!td->b_nameValid) {
-    if (td->b_staticInfoFromCache) {
+  if (!td->b_name_valid) {
+    if (td->b_name_from_cache) {
       target_brush = wxBrush(GetGlobalColor(_T ( "GREEN5" )));
     } else {
       target_brush = wxBrush(GetGlobalColor(_T ( "CHYLW" )));
     }
   } else {
-    if (td->b_staticInfoFromCache) {
+    if (td->b_name_from_cache) {
       target_brush = wxBrush(GetGlobalColor(_T ( "GREEN5" )));
-    } 
+    }
   }
 
   wxColour URED = GetGlobalColor(_T ( "URED" ));
-  if ((td->Class == AIS_DSC) &&
-      ((td->ShipType == 12) || (td->ShipType == 16)))  // distress(relayed)
+  if ((td->Class == AIS_DSC) && ((td->m_ship_type == 12) ||
+                                 (td->m_ship_type == 16)))  // distress(relayed)
     target_brush = wxBrush(URED);
 
   if (td->b_SarAircraftPosnReport) target_brush = wxBrush(UINFG);
@@ -1589,7 +1589,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
     // HSC usually have correct ShipType but navstatus == 0...
     // Class B can have (HSC)ShipType but never navstatus.
-    if (((td->ShipType >= 40) && (td->ShipType < 50)) &&
+    if (((td->m_ship_type >= 40) && (td->m_ship_type < 50)) &&
         (navstatus == UNDERWAY_USING_ENGINE || td->Class == AIS_CLASS_B))
       navstatus = HSC;
 
@@ -1886,7 +1886,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
       if (Rang > g_ScaledNumWeightRange) Rang = g_ScaledNumWeightRange;
       Rang = g_ScaledNumWeightRange - Rang;
 
-      Siz = g_ScaledNumWeightSizeOfT / 30 * (td->DimA + td->DimB);
+      Siz = g_ScaledNumWeightSizeOfT / 30 * (td->m_dim_a + td->m_dim_b);
       if (Siz > g_ScaledNumWeightSizeOfT) Siz = g_ScaledNumWeightSizeOfT;
       td->importance = (float)So + Cpa + Rang + Siz;
     }

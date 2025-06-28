@@ -224,12 +224,12 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   b_removed = false;
 
   IMO = 0;
-  MID = 555;
+  m_mid = 555;
   MMSI = 666;
   NavStatus = UNDEFINED;
   SyncState = 888;
   SlotTO = 999;
-  ShipType = 19;  // "Unknown"
+  m_ship_type = 19;  // "Unknown"
   b_isDSCtarget = false;
   m_dscNature = 99;
   m_dscTXmmsi = 666;
@@ -240,7 +240,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   Range_NM = -1.;
   Brg = -1.;
 
-  DimA = DimB = DimC = DimD = 0;
+  m_dim_a = m_dim_b = m_dim_c = m_dim_d = 0;
   ;
 
   ETA_Mo = 0;
@@ -261,8 +261,8 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   b_suppress_audio = false;
   b_positionDoubtful = false;
   b_positionOnceValid = false;
-  b_nameValid = false;
-  b_staticInfoFromCache = false;
+  b_name_valid = false;
+  b_name_from_cache = false;
 
   Euro_Length = 0;  // Extensions for European Inland AIS
   Euro_Beam = 0;
@@ -348,12 +348,12 @@ void AisTargetData::CloneFrom(AisTargetData *q) {
   b_removed = q->b_removed;
 
   IMO = q->IMO;
-  MID = q->MID;
+  m_mid = q->m_mid;
   MMSI = q->MMSI;
   NavStatus = q->NavStatus;
   SyncState = q->SyncState;
   SlotTO = q->SlotTO;
-  ShipType = q->ShipType;
+  m_ship_type = q->m_ship_type;
   b_isDSCtarget = q->b_isDSCtarget;
   m_dscNature = q->m_dscNature;
   m_dscTXmmsi = q->m_dscTXmmsi;
@@ -364,10 +364,10 @@ void AisTargetData::CloneFrom(AisTargetData *q) {
   Range_NM = q->Range_NM;
   Brg = q->Brg;
 
-  DimA = q->DimA;
-  DimB = q->DimB;
-  DimC = q->DimC;
-  DimD = q->DimD;
+  m_dim_a = q->m_dim_a;
+  m_dim_b = q->m_dim_b;
+  m_dim_c = q->m_dim_c;
+  m_dim_d = q->m_dim_d;
 
   ETA_Mo = q->ETA_Mo;
   ETA_Day = q->ETA_Day;
@@ -387,7 +387,7 @@ void AisTargetData::CloneFrom(AisTargetData *q) {
   b_suppress_audio = q->b_suppress_audio;
   b_positionDoubtful = q->b_positionDoubtful;
   b_positionOnceValid = q->b_positionOnceValid;
-  b_nameValid = q->b_nameValid;
+  b_name_valid = q->b_name_valid;
 
   Euro_Length = q->Euro_Length;  // Extensions for European Inland AIS
   Euro_Beam = q->Euro_Beam;
@@ -417,7 +417,7 @@ AisTargetData::~AisTargetData() { m_ptrack.clear(); }
 
 wxString AisTargetData::GetFullName(void) {
   wxString retName;
-  if (b_nameValid) {
+  if (b_name_valid) {
     wxString shipName = trimAISField(ShipName);
     if (shipName == _T("Unknown"))
       retName = wxGetTranslation(shipName);
@@ -451,7 +451,7 @@ wxString AisTargetData::BuildQueryResult(void) {
   wxString IMOstr, MMSIstr, ClassStr;
 
   html << tableStart << _T("<tr><td nowrap colspan=2>");
-  if (b_nameValid) {
+  if (b_name_valid) {
     html << _T("<font size=+2><i><b>") << GetFullName();
     html << _T("</b></i></font>&nbsp;&nbsp;<b>");
   }
@@ -602,10 +602,10 @@ wxString AisTargetData::BuildQueryResult(void) {
     if (NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS &&
         Class != AIS_BUOY) {
       if ((Class == AIS_CLASS_B) || (Class == AIS_ATON)) {
-        sizeString =
-            wxString::Format(_T("%dm x %dm"), (DimA + DimB), (DimC + DimD));
+        sizeString = wxString::Format(_T("%dm x %dm"), (m_dim_a + m_dim_b),
+                                      (m_dim_c + m_dim_d));
       } else if (!b_SarAircraftPosnReport) {
-        if ((DimA + DimB + DimC + DimD) == 0) {
+        if ((m_dim_a + m_dim_b + m_dim_c + m_dim_d) == 0) {
           if (b_isEuroInland) {
             if (Euro_Length == 0.0) {
               if (Euro_Draft > 0.01) {
@@ -632,11 +632,12 @@ wxString AisTargetData::BuildQueryResult(void) {
             }
           }
         } else if (Draft < 0.01) {
-          sizeString << wxString::Format(_T("%dm x %dm x ---m"), (DimA + DimB),
-                                         (DimC + DimD));
+          sizeString << wxString::Format(
+              _T("%dm x %dm x ---m"), (m_dim_a + m_dim_b), (m_dim_c + m_dim_d));
         } else {
           sizeString << wxString::Format(_T("%dm x %dm x %4.1fm"),
-                                         (DimA + DimB), (DimC + DimD), Draft);
+                                         (m_dim_a + m_dim_b),
+                                         (m_dim_c + m_dim_d), Draft);
         }
       }
     }
@@ -656,8 +657,8 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("<b>") << navStatStr;
     html << rowEnd << _T("<tr><td colspan=2>")
          << _T("<b>") << sizeString << rowEnd;
-  } else if (Class == AIS_DSC && (ShipType == 12 || ShipType == 16)) {
-    if (ShipType == 16) {  // Distress relay
+  } else if (Class == AIS_DSC && (m_ship_type == 12 || m_ship_type == 16)) {
+    if (m_ship_type == 16) {  // Distress relay
       html << _T("<tr><td colspan=2>")
            << _T("<b>") << _("Distress relay");
       if (m_dscTXmmsi > 2000000) {
@@ -1061,7 +1062,7 @@ wxString AisTargetData::BuildQueryResult(void) {
 wxString AisTargetData::GetRolloverString(void) {
   wxString result;
   wxString t;
-  if (b_nameValid) {
+  if (b_name_valid) {
     result.Append(_T("\""));
     result.Append(GetFullName());
     result.Append(_T("\" "));
@@ -1257,9 +1258,9 @@ wxString AisTargetData::GetRolloverString(void) {
 wxString AisTargetData::Get_vessel_type_string(bool b_short) {
   int i = 19;
   if (Class == AIS_ATON) {
-    i = ShipType + 20;
+    i = m_ship_type + 20;
   } else
-    switch (ShipType) {
+    switch (m_ship_type) {
       case 30:
         i = 0;
         break;
@@ -1311,13 +1312,13 @@ wxString AisTargetData::Get_vessel_type_string(bool b_short) {
     }
 
   if ((Class == AIS_CLASS_B) || (Class == AIS_CLASS_A)) {
-    if ((ShipType >= 40) && (ShipType < 50)) i = 8;
+    if ((m_ship_type >= 40) && (m_ship_type < 50)) i = 8;
 
-    if ((ShipType >= 60) && (ShipType < 70)) i = 16;
+    if ((m_ship_type >= 60) && (m_ship_type < 70)) i = 16;
 
-    if ((ShipType >= 70) && (ShipType < 80)) i = 17;
+    if ((m_ship_type >= 70) && (m_ship_type < 80)) i = 17;
 
-    if ((ShipType >= 80) && (ShipType < 90)) i = 18;
+    if ((m_ship_type >= 80) && (m_ship_type < 90)) i = 18;
   } else if (Class == AIS_GPSG_BUDDY)
     i = 52;
   else if (Class == AIS_ARPA)
@@ -1327,7 +1328,8 @@ wxString AisTargetData::Get_vessel_type_string(bool b_short) {
   else if (Class == AIS_BUOY)
     i = 57;
   else if (Class == AIS_DSC)
-    i = (ShipType == 12 || ShipType == 16) ? 54 : 53;  // 12 & 16 is distress
+    i = (m_ship_type == 12 || m_ship_type == 16) ? 54
+                                                 : 53;  // 12 & 16 is distress
 
   if (!b_short)
     return ais_get_type(i);
@@ -1348,7 +1350,7 @@ wxString AisTargetData::Get_class_string(bool b_short) {
     case AIS_GPSG_BUDDY:
       return b_short ? _("Buddy") : _("GPSGate Buddy");
     case AIS_DSC:
-      if (ShipType == 12 || (ShipType == 16 && m_dscNature < 13))
+      if (m_ship_type == 12 || (m_ship_type == 16 && m_dscNature < 13))
         return b_short ? _("DSC") : _("DSC Distress");
       else
         return b_short ? _("DSC") : _("DSC Position Report");
