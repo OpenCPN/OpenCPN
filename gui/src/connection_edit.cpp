@@ -170,10 +170,6 @@ static void LoadSerialPorts(wxComboBox* box) {
 //          ConnectionEditDialog Implementation
 //------------------------------------------------------------------------------
 
-// BEGIN_EVENT_TABLE(ConnectionEditDialog, wxDialog)
-// EVT_TIMER(ID_BT_SCANTIMER, ConnectionEditDialog::onBTScanTimer)
-// END_EVENT_TABLE()
-
 // Define constructors
 ConnectionEditDialog::ConnectionEditDialog() {}
 
@@ -340,14 +336,11 @@ void ConnectionEditDialog::Init() {
                           wxDefaultPosition, wxDefaultSize, 0);
     bSizer15a->Add(m_rbTypeInternalBT, 0, wxALL, 5);
 
-    m_buttonScanBT = new wxButton(this, wxID_ANY, _("BT Scan"),
+    m_buttonScanBT = new wxButton(this, wxID_ANY, _("BT Scan") + "    ",
                                   wxDefaultPosition, wxDefaultSize);
     m_buttonScanBT->Hide();
 
-    //     wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
-    //     sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
-
-    sbSizerConnectionProps->Add(m_buttonScanBT, 0, wxALL, 5);
+    sbSizerConnectionProps->Add(m_buttonScanBT, 0, wxALL, 25);
 
     m_stBTPairs = new wxStaticText(this, wxID_ANY, _("Bluetooth Data Sources"),
                                    wxDefaultPosition, wxDefaultSize, 0);
@@ -362,11 +355,9 @@ void ConnectionEditDialog::Init() {
     m_choiceBTDataSources =
         new wxChoice(this, wxID_ANY, wxDefaultPosition,
                      wxSize(40 * ref_size, 2 * ref_size), mt);
-    // m_choiceBTDataSources->Bind(wxEVT_MOUSEWHEEL,
-    // &ConnectionEditDialog::OnWheelChoice, this);
     m_choiceBTDataSources->SetSelection(0);
     m_choiceBTDataSources->Hide();
-    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, wxEXPAND | wxTOP, 5);
+    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, wxEXPAND | wxTOP, 25);
 
   } else
     m_rbTypeInternalBT = NULL;
@@ -857,6 +848,8 @@ void ConnectionEditDialog::OnScanBTClick(wxCommandEvent& event) {
     m_btNoChangeCounter = 0;
     m_btlastResultCount = 0;
 
+    Bind(wxEVT_TIMER, &ConnectionEditDialog::onBTScanTimer, this,
+         ID_BT_SCANTIMER);
     m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
     g_Platform->startBluetoothScan();
     m_BTscanning = 1;
@@ -2200,6 +2193,11 @@ void ConnectionEditDialog::ConnectControls() {
   m_cbOutput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                       wxCommandEventHandler(ConnectionEditDialog::OnCbOutput),
                       NULL, this);
+
+  if (m_buttonScanBT)
+    m_buttonScanBT->Connect(
+        wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(ConnectionEditDialog::OnScanBTClick), NULL, this);
 
   // Input filtering
   // m_rbIAccept->Connect(
