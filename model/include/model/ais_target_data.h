@@ -149,8 +149,8 @@ struct Ais8_001_22 {
  */
 class AisTargetCacheData {
 public:
-  wxString name; /** Name of the ship */
-  uint8_t type;  /** Type of the ship as per ITU-R M.1371-5 definition */
+  std::string name; /** Name of the ship */
+  uint8_t type;     /** Type of the ship as per ITU-R M.1371-5 definition */
   int m_dim_a; /** 'A' dimension of the ship as per ITU-R M.1371-5 definition */
   int m_dim_b; /** 'B' dimension of the ship as per ITU-R M.1371-5 definition */
   int m_dim_c; /** 'C' dimension of the ship as per ITU-R M.1371-5 definition */
@@ -190,7 +190,7 @@ public:
   int ROTAIS;
   int ROTIND;
   char CallSign[CALL_SIGN_LEN];  // includes terminator
-  char ShipName[SHIP_NAME_LEN];
+  char ship_name[SHIP_NAME_LEN];
   char ShipNameExtension[15];
   unsigned char m_ship_type;
   int IMO;

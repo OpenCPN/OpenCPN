@@ -203,7 +203,7 @@ wxString aisMeteoWaterLevelRef(int refID) {
 }
 
 AisTargetData::AisTargetData() {
-  strncpy(ShipName, "                    ", SHIP_NAME_LEN);
+  strncpy(ship_name, "                    ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
   strncpy(Destination, "                    ", DESTINATION_LEN);
   ShipNameExtension[0] = 0;
@@ -328,7 +328,7 @@ AisTargetData::AisTargetData() {
 }
 
 void AisTargetData::CloneFrom(AisTargetData *q) {
-  strncpy(ShipName, q->ShipName, SHIP_NAME_LEN);
+  strncpy(ship_name, q->ship_name, SHIP_NAME_LEN);
   strncpy(CallSign, q->CallSign, 8);
   strncpy(Destination, q->Destination, DESTINATION_LEN);
   ShipNameExtension[0] = 0;
@@ -418,7 +418,7 @@ AisTargetData::~AisTargetData() { m_ptrack.clear(); }
 wxString AisTargetData::GetFullName(void) {
   wxString retName;
   if (b_name_valid) {
-    wxString shipName = trimAISField(ShipName);
+    wxString shipName = trimAISField(ship_name);
     if (shipName == _T("Unknown"))
       retName = wxGetTranslation(shipName);
     else

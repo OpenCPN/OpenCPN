@@ -93,7 +93,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
             (pAISTarget->Class == AIS_SART))
           ret = _("-");
         else {
-          wxString uret = trimAISField(pAISTarget->ShipName);
+          wxString uret = trimAISField(pAISTarget->ship_name);
           if (uret == _T("Unknown"))
             ret = wxGetTranslation(uret);
           else

@@ -1402,7 +1402,7 @@ PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget) {
   pret->alarm_state = (plugin_ais_alarm_type)ptarget->n_alert_state;
 
   memcpy(pret->CallSign, ptarget->CallSign, sizeof(ptarget->CallSign) - 1);
-  memcpy(pret->ShipName, ptarget->ShipName, sizeof(ptarget->ShipName) - 1);
+  memcpy(pret->ShipName, ptarget->ship_name, sizeof(ptarget->ship_name) - 1);
 
   return pret;
 }
