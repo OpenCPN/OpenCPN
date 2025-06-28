@@ -298,7 +298,7 @@ public:
     m_defer = false;
   }
 
-  BlacklistUI() : m_defer(true){};
+  BlacklistUI() : m_defer(true) {};
 
 private:
   void show_msg(wxString msg) {
@@ -3058,7 +3058,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
 PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
                          const wxSize& size, PluginMetadata md)
-    : PluginPanel(parent, id, pos, size, PlugInData(md)){};
+    : PluginPanel(parent, id, pos, size, PlugInData(md)) {};
 
 PluginPanel::~PluginPanel() {
   Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -3953,7 +3953,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext& glc,
           glChartCanvas::DisableClipRegion();
 
         }  //! empty
-      }    // for
+      }  // for
       delete r;
     }
   } else
@@ -4022,7 +4022,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(
           glChartCanvas::DisableClipRegion();
 
         }  //! empty
-      }    // for
+      }  // for
       delete r;
     }
 

@@ -1751,7 +1751,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                       TargetPoint.y /*+ (0.5 * h)*/);
 
       }  // If name do not empty
-    }    // if scale
+    }  // if scale
   }
 
   //  Draw tracks if enabled

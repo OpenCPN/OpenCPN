@@ -107,8 +107,8 @@ public:
   std::unordered_map<int, std::shared_ptr<AisTargetData>> &GetTargetList(void) {
     return AISTargetList;
   }
-  const std::unordered_map<int, std::shared_ptr<AisTargetData>>
-      &GetAreaNoticeSourcesList() const {
+  const std::unordered_map<int, std::shared_ptr<AisTargetData>> &
+  GetAreaNoticeSourcesList() const {
     return AIS_AreaNotice_Sources;
   }
   std::shared_ptr<AisTargetData> Get_Target_Data_From_MMSI(int mmsi);
