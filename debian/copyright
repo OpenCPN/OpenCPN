@@ -402,29 +402,6 @@ Files: libs/IXWebSocket/test/IXDNSLookupTest.cpp
  libs/IXWebSocket/test/IXWebSocketSubProtocolTest.cpp
  libs/IXWebSocket/test/IXWebSocketTestConnectionDisconnection.cpp
  libs/IXWebSocket/test/test_runner.cpp
- libs/IXWebSocket/test/IXExponentialBackoffTest.cpp
- libs/IXWebSocket/test/IXHttpClientTest.cpp
- libs/IXWebSocket/test/IXHttpServerTest.cpp
- libs/IXWebSocket/test/IXHttpTest.cpp
- libs/IXWebSocket/test/IXSentryClientTest.cpp
- libs/IXWebSocket/test/IXSocketConnectTest.cpp
- libs/IXWebSocket/test/IXSocketTest.cpp
- libs/IXWebSocket/test/IXStrCaseCompareTest.cpp
- libs/IXWebSocket/test/IXStreamSqlTest.cpp
- libs/IXWebSocket/test/IXTest.cpp
- libs/IXWebSocket/test/IXTest.h
- libs/IXWebSocket/test/IXUnityBuildsTest.cpp
- libs/IXWebSocket/test/IXUrlParserTest.cpp
- libs/IXWebSocket/test/IXWebSocketBroadcastTest.cpp
- libs/IXWebSocket/test/IXWebSocketChatTest.cpp
- libs/IXWebSocket/test/IXWebSocketCloseTest.cpp
- libs/IXWebSocket/test/IXWebSocketPerMessageDeflateCompressorTest.cpp
- libs/IXWebSocket/test/IXWebSocketPingTest.cpp
- libs/IXWebSocket/test/IXWebSocketPingTimeoutTest.cpp
- libs/IXWebSocket/test/IXWebSocketServerTest.cpp
- libs/IXWebSocket/test/IXWebSocketSubProtocolTest.cpp
- libs/IXWebSocket/test/IXWebSocketTestConnectionDisconnection.cpp
- libs/IXWebSocket/test/test_runner.cpp
 Copyright: 2017-2020, 2022, Machine Zone.
 License: BSD-3-Clause
 Comment: License as of https://github.com/machinezone/IXWebSocket
