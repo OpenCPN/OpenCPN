@@ -2041,6 +2041,11 @@ public:
                                             double lon);
 };
 
+class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
+public:
+  opencpn_plugin_121(void *pmgr);
+};
+
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
 //
@@ -6915,5 +6920,15 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
+
+//  Plugin API121 Utility functions
+
+extern DECL_EXP wxString DropMarkPI(double lat, double lon);
+extern DECL_EXP wxString RouteCreatePI(bool start);
+extern DECL_EXP bool DoMeasurePI(bool start);
+extern DECL_EXP wxString NavToHerePI(double lat, double lon);
+extern DECL_EXP bool ActivateRoutePI(wxString route_guid, bool activate);
+
+extern DECL_EXP void EnableDefaultConsole(bool enable);
 
 #endif  //_PLUGIN_H_

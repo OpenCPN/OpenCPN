@@ -3282,3 +3282,21 @@ void ConfigFlushAndReload() {
 void EnableNotificationCanvasIcon(bool enable) {
   g_CanvasHideNotificationIcon = !enable;
 }
+
+//---------------------------------------------------------------------------
+//    API 1.21
+//---------------------------------------------------------------------------
+
+//  Plugin API121 Utility functions
+
+wxString DropMarkPI(double lat, double lon) { return ""; }
+
+wxString RouteCreatePI(bool start) { return ""; }
+
+bool DoMeasurePI(bool start) { return false; }
+
+wxString NavToHerePI(double lat, double lon) { return ""; }
+
+bool ActivateRoutePI(wxString route_guid, bool activate) { return false; }
+
+void EnableDefaultConsole(bool enable) {}
