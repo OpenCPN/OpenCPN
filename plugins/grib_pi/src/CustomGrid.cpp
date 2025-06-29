@@ -127,8 +127,9 @@ void CustomGrid::DrawColLabel(wxDC& dc, int col) {
   // draw lines aroud label
   dc.SetPen(GetDefaultGridLinePen());
   dc.DrawLine(GetColLeft(col) - 1, 0, GetColRight(col), 0);
-  if (col > -1 && (col == 0 || GetColLabelValue(col).BeforeFirst('-') !=
-                                   GetColLabelValue(col - 1).BeforeFirst('-')))
+  // Increase line width to highlight "day" change at midnight
+  if (col > -1 && (col == 0 || GetColLabelValue(col).BeforeFirst(' ') !=
+                                   GetColLabelValue(col - 1).BeforeFirst(' ')))
     dc.SetPen(wxPen(*wxBLACK, 4));
   dc.DrawLine(GetColLeft(col) - 1, 0, GetColLeft(col) - 1, m_colLabelHeight);
   if (col == m_numCols - 1) {

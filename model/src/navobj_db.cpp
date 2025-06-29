@@ -146,7 +146,7 @@ bool CreateTables(sqlite3* db) {
             route_guid TEXT,
             point_guid TEXT,
             point_order INTEGER,
-            PRIMARY KEY (route_guid, point_guid),
+            PRIMARY KEY (route_guid, point_order),
             FOREIGN KEY (route_guid) REFERENCES routes(guid) ON DELETE CASCADE
         );
 
@@ -788,6 +788,10 @@ bool NavObj_dB::InsertTrack(Track* track) {
   bool rv = false;
   char* errMsg = 0;
   sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
+  if (errMsg) {
+    ReportError("InsertTrack:BEGIN TRANSACTION");
+    return false;
+  }
 
   // Insert a new track
   wxString sql = wxString::Format("INSERT INTO tracks (guid) VALUES ('%s')",
@@ -1108,7 +1112,7 @@ bool NavObj_dB::InsertRoute(Route* route) {
 
   sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
   if (errMsg) {
-    ReportError("InsertRoute:transaction");
+    ReportError("InsertRoute:BEGIN TRANSACTION");
     return false;
   }
 
@@ -1164,6 +1168,12 @@ bool NavObj_dB::UpdateRoute(Route* route) {
 
   if (!RouteExistsDB(m_db, route->m_GUID.ToStdString())) return false;
 
+  sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
+  if (errMsg) {
+    ReportError("UpdateRoute:BEGIN TRANSACTION");
+    return false;
+  }
+
   UpdateDBRouteAttributes(route);
 
   // update routepoints
@@ -1217,6 +1227,7 @@ bool NavObj_dB::UpdateRoute(Route* route) {
       linknode = linknode->GetNext();
     }
   }
+  sqlite3_exec(m_db, "COMMIT", 0, 0, nullptr);
 
   rv = true;
   if (errMsg) rv = false;

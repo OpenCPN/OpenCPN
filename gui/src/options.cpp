@@ -5677,14 +5677,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
     g_enable_root_menu_debug = enable_debug_cb->IsChecked();
   });
   enable_debug_cb->SetValue(g_enable_root_menu_debug);
-  miscOptions->Add(enable_debug_cb, 0, wxALL, group_item_spacing);
+  miscOptions->Add(enable_debug_cb, 0, wxALL, border_size);
 
-  wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
-  miscOptions->Add(pShipsBellsSizer, 0, wxALL, group_item_spacing);
-  // Sound options
+  // Sound option
   pPlayShipsBells =
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-  pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
+  miscOptions->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
 
   //  Mobile/Touchscreen checkboxes
   pMobile = new wxCheckBox(itemPanelFont, ID_MOBILEBOX,
@@ -6068,18 +6066,22 @@ void options::CreateControls(void) {
   m_pListbook->SetImageList(m_topImgList);
   itemBoxSizer2->Add(m_pListbook, 1, wxALL | wxEXPAND, border_size);
 
-  wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
-  itemBoxSizer2->Add(buttons, 0, wxALIGN_RIGHT | wxALL, border_size);
+  m_OK_Cancel_Apply_buttons = new wxBoxSizer(wxHORIZONTAL);
+  itemBoxSizer2->Add(m_OK_Cancel_Apply_buttons, 0, wxALIGN_RIGHT | wxALL,
+                     border_size);
 
   m_OKButton = new wxButton(itemDialog1, xID_OK, _("Ok"));
   m_OKButton->SetDefault();
-  buttons->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
+  m_OK_Cancel_Apply_buttons->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL,
+                                 border_size);
 
   m_CancelButton = new wxButton(itemDialog1, wxID_CANCEL, _("Cancel"));
-  buttons->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
+  m_OK_Cancel_Apply_buttons->Add(m_CancelButton, 0,
+                                 wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
   m_ApplyButton = new wxButton(itemDialog1, ID_APPLY, _("Apply"));
-  buttons->Add(m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
+  m_OK_Cancel_Apply_buttons->Add(m_ApplyButton, 0,
+                                 wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
   m_pageDisplay = CreatePanel(_("Display"));
   CreatePanel_Display(m_pageDisplay, border_size, group_item_spacing);
@@ -7209,6 +7211,9 @@ void options::ApplyChanges(wxCommandEvent& event) {
       gFrame->GetPrimaryCanvas()->GetglCanvas()->ResetGridFont();
     }
 #endif
+    if (gFrame->GetPrimaryCanvas()) {
+      gFrame->GetPrimaryCanvas()->ResetGridFont();
+    }
 
     m_returnChanges |= FONT_CHANGED;
 
