@@ -699,6 +699,8 @@ bool b_inCloseWindow;
 bool g_disable_main_toolbar;
 bool g_btenhertz;
 bool g_declutter_anchorage;
+bool g_bhide_route_console;
+bool g_bhide_context_menus;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;

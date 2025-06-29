@@ -6924,11 +6924,12 @@ extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
 //  Plugin API121 Utility functions
 
 extern DECL_EXP wxString DropMarkPI(double lat, double lon);
-extern DECL_EXP wxString RouteCreatePI(bool start);
-extern DECL_EXP bool DoMeasurePI(bool start);
+extern DECL_EXP wxString RouteCreatePI(int canvas_index, bool start);
+extern DECL_EXP bool DoMeasurePI(int canvas_index, bool start);
 extern DECL_EXP wxString NavToHerePI(double lat, double lon);
 extern DECL_EXP bool ActivateRoutePI(wxString route_guid, bool activate);
 
 extern DECL_EXP void EnableDefaultConsole(bool enable);
+extern DECL_EXP void EnableDefaultContextMenus(bool enable);
 
 #endif  //_PLUGIN_H_

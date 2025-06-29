@@ -762,7 +762,7 @@ public:
   void DrawBlinkObjects(void);
 
   void StartRoute(void);
-  void FinishRoute(void);
+  wxString FinishRoute(void);
 
 #ifdef ocpnUSE_GL
   glChartCanvas *GetglCanvas() { return m_glcc; }

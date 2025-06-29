@@ -122,6 +122,9 @@ extern bool g_bquiting;
 extern bool g_disable_main_toolbar;
 extern bool g_btenhertz;
 extern bool g_CanvasHideNotificationIcon;
+extern wxString g_default_wp_icon;
+extern bool g_bhide_route_console;
+extern bool g_bhide_context_menus;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -3289,14 +3292,96 @@ void EnableNotificationCanvasIcon(bool enable) {
 
 //  Plugin API121 Utility functions
 
-wxString DropMarkPI(double lat, double lon) { return ""; }
+wxString DropMarkPI(double lat, double lon) {
+  if ((fabs(lat) > 80.0) || (fabs(lon) > 180.)) return "";
 
-wxString RouteCreatePI(bool start) { return ""; }
+  RoutePoint* pWP =
+      new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
+  pWP->m_bIsolatedMark = true;  // This is an isolated mark
+  pSelect->AddSelectableRoutePoint(lat, lon, pWP);
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+  return pWP->m_GUID;
+}
 
-bool DoMeasurePI(bool start) { return false; }
+wxString RouteCreatePI(int canvas_index, bool start) {
+  if ((size_t)canvas_index < g_canvasArray.GetCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+    if (cc) {
+      if (start) {
+        cc->StartRoute();
+        return "0";
+      } else {
+        return cc->FinishRoute();
+      }
+    }
+  }
+  return "-1";
+}
 
-wxString NavToHerePI(double lat, double lon) { return ""; }
+bool DoMeasurePI(int canvas_index, bool start) {
+  if ((size_t)canvas_index < g_canvasArray.GetCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+    if (cc) {
+      if (start) {
+        cc->StartMeasureRoute();
+        return true;
+      } else {
+        cc->CancelMeasureRoute();
+        cc->Refresh(false);
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
-bool ActivateRoutePI(wxString route_guid, bool activate) { return false; }
+wxString NavToHerePI(double lat, double lon) {
+  RoutePoint* pWP_dest =
+      new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(lat, lon, pWP_dest);
 
-void EnableDefaultConsole(bool enable) {}
+  RoutePoint* pWP_src = new RoutePoint(gLat, gLon, g_default_wp_icon,
+                                       wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
+
+  Route* temp_route = new Route();
+  pRouteList->Append(temp_route);
+
+  temp_route->AddPoint(pWP_src);
+  temp_route->AddPoint(pWP_dest);
+
+  pSelect->AddSelectableRouteSegment(gLat, gLon, lat, lon, pWP_src, pWP_dest,
+                                     temp_route);
+
+  temp_route->m_RouteNameString = _("Temporary GOTO Route");
+  temp_route->m_RouteStartString = _("Here");
+  temp_route->m_RouteEndString = _("There");
+  temp_route->m_bDeleteOnArrival = true;
+
+  if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+
+  g_pRouteMan->ActivateRoute(temp_route, pWP_dest);
+  return temp_route->m_GUID;
+}
+
+bool ActivateRoutePI(wxString route_guid, bool activate) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return false;
+
+  if (activate) {
+    if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+    RoutePoint* best_point =
+        g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
+    g_pRouteMan->ActivateRoute(route, best_point);
+    route->m_bRtIsSelected = false;
+    return true;
+  } else {
+    g_pRouteMan->DeactivateRoute();
+    route->m_bRtIsSelected = false;
+    return true;
+  }
+  return false;
+}
+
+void EnableDefaultConsole(bool enable) { g_bhide_route_console = !enable; }
+void EnableDefaultContextMenus(bool enable) { g_bhide_context_menus = !enable; }

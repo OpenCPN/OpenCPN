@@ -10814,10 +10814,12 @@ void ChartCanvas::StartRoute(void) {
 #endif
 }
 
-void ChartCanvas::FinishRoute(void) {
+wxString ChartCanvas::FinishRoute(void) {
   m_routeState = 0;
   m_prev_pMousePoint = NULL;
   m_bDrawingRoute = false;
+  wxString rv = "";
+  if (m_pMouseRoute) rv = m_pMouseRoute->m_GUID;
 
   // SetCanvasToolbarItemState(ID_ROUTE, false);
   gFrame->SetMasterToolbarItemState(ID_MENU_ROUTE_NEW, false);
@@ -10865,6 +10867,8 @@ void ChartCanvas::FinishRoute(void) {
   ShowGlobalToolbar();
 
   g_brouteCreating = false;
+
+  return rv;
 }
 
 void ChartCanvas::HideGlobalToolbar() {
