@@ -96,7 +96,7 @@ AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos) {
   bool bdecode_result = Parse_VDXBitstring(&strbit, TargetData.get());
 
   if (bdecode_result) {
-    switch (TargetData->MID) {
+    switch (TargetData->m_mid) {
       case 1:
       case 2:
       case 3:
@@ -148,7 +148,7 @@ bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd) {
   wxDateTime now = wxDateTime::Now();
   now.MakeGMT();
   int message_ID = bstr->GetInt(1, 6);  // Parse on message ID
-  ptd->MID = message_ID;
+  ptd->m_mid = message_ID;
 
   // MMSI is always in the same spot in the bitstream
   ptd->MMSI = bstr->GetInt(9, 30);
