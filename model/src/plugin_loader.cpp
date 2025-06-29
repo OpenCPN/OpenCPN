@@ -934,6 +934,32 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   return found != matches.end() ? *found : matches[0];
 }
 
+/** Find latest metadata for given plugin. */
+PluginMetadata PluginLoader::LatestMetadataByName(const std::string& name) {
+  using namespace std;
+  if (name.empty()) return {};
+
+  auto available = PluginHandler::GetInstance()->getCompatiblePlugins();
+  vector<PluginMetadata> matches;
+  copy_if(available.begin(), available.end(), back_inserter(matches),
+          [name](const PluginMetadata& md) { return md.name == name; });
+  if (matches.size() == 0) return {};
+  if (matches.size() == 1) return matches[0];  // only one found with given name
+
+  // Check for any later version available in the catalog
+  auto version = SemanticVersion::parse(VersionFromManifest(name));
+  auto rv = matches[0];
+  for (auto p : matches) {
+    auto catVersion = SemanticVersion::parse(p.version);
+    if (catVersion > version) {
+      version = catVersion;
+      rv = p;
+    }
+  }
+
+  return rv;
+}
+
 /** Update PlugInContainer using data from PluginMetadata and manifest. */
 void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
                                 const PluginMetadata& md) {
@@ -990,7 +1016,8 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
 
   //  Update from the catalog metadata
   for (auto& plugin : loaded_plugins) {
-    auto md = PluginLoader::MetadataByName(plugin->m_common_name.ToStdString());
+    auto md =
+        PluginLoader::LatestMetadataByName(plugin->m_common_name.ToStdString());
     if (!md.name.empty()) {
       auto import_path = PluginHandler::ImportedMetadataPath(md.name.c_str());
       md.is_imported = isRegularFile(import_path.c_str());

@@ -78,6 +78,10 @@ int g_iDashDistanceUnit;
 int g_iDashWindSpeedUnit;
 int g_iUTCOffset;
 double g_dDashDBTOffset;
+bool g_bUseInternSumLog;
+double g_dSumLogNM;
+double d_tripNM;
+int logCount, confprint;
 bool g_bDBtrueWindGround;
 double g_dHDT;
 double g_dSOG, g_dCOG;
@@ -624,6 +628,11 @@ int dashboard_pi::Init(void) {
     SaveConfig();
   }
 
+  d_tripNM = 0.0;
+  logCount = confprint = 0;
+  // If use internal sumlog update its value
+  if (g_bUseInternSumLog) UpdateSumLog(false);
+
   // initialize NavMsg listeners
   //-----------------------------
 
@@ -921,8 +930,12 @@ void dashboard_pi::Notify() {
 
   mLOG_Watchdog--;
   if (mLOG_Watchdog <= 0) {
-    SendSentenceToAllInstruments(OCPN_DBP_STC_VLW2, NAN, _T("-"));
-    mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+    if (g_bUseInternSumLog) {
+      UpdateSumLog(false);
+    } else {
+      SendSentenceToAllInstruments(OCPN_DBP_STC_VLW2, NAN, _T("-"));
+      mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+    }
   }
   mTrLOG_Watchdog--;
   if (mTrLOG_Watchdog <= 0) {
@@ -3142,6 +3155,19 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
         getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
     SendSentenceToAllInstruments(OCPN_DBP_STC_COG, mCOGFilter.filter(pfix.Cog),
                                  _T("\u00B0"));
+
+    //  Collect distance to update SumLog every second.
+    double logSOG = mSOGFilter.filter(pfix.Sog);
+    if (logSOG > 0.4) {
+      d_tripNM += logSOG / 3600;
+      // Update SumLog instrument every minute when we are under way.
+      if (++logCount > 60) {
+        UpdateSumLog(true);
+        d_tripNM = 0.0;
+        logCount = 0;
+      }
+    }
+
     dMagneticCOG = mCOGFilter.get() - pfix.Var;
     if (dMagneticCOG < 0.0) dMagneticCOG = 360.0 + dMagneticCOG;
     if (dMagneticCOG > 360.0) dMagneticCOG = dMagneticCOG - 360.0;
@@ -3598,6 +3624,8 @@ bool dashboard_pi::LoadConfig(void) {
     pConf->Read(_T("DistanceUnit"), &g_iDashDistanceUnit, 0);
     pConf->Read(_T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0);
     pConf->Read(_T("UseSignKtruewind"), &g_bDBtrueWindGround, 0);
+    pConf->Read("UseInternSumlog", &g_bUseInternSumLog, 0);
+    pConf->Read("SumLogNM", &g_dSumLogNM, 0.0);
     pConf->Read(_T("TemperatureUnit"), &g_iDashTempUnit, 0);
 
     pConf->Read(_T("UTCOffset"), &g_iUTCOffset, 0);
@@ -3836,6 +3864,8 @@ bool dashboard_pi::SaveConfig(void) {
     pConf->Write(_T("DepthOffset"), g_dDashDBTOffset);
     pConf->Write(_T("DistanceUnit"), g_iDashDistanceUnit);
     pConf->Write(_T("WindSpeedUnit"), g_iDashWindSpeedUnit);
+    pConf->Write("UseInternSumlog", g_bUseInternSumLog);
+    pConf->Write("SumLogNM", g_dSumLogNM);
     pConf->Write(_T("UTCOffset"), g_iUTCOffset);
     pConf->Write(_T("UseSignKtruewind"), g_bDBtrueWindGround);
     pConf->Write(_T("TemperatureUnit"), g_iDashTempUnit);
@@ -4150,7 +4180,6 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   SetSizer(itemBoxSizerMainPanel);
 
   wxWindow *dparent = this;
-#ifndef __ANDROID__
   wxScrolledWindow *scrollWin = new wxScrolledWindow(
       this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL | wxHSCROLL);
 
@@ -4161,10 +4190,6 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 
   wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
   scrollWin->SetSizer(itemBoxSizer2);
-#else
-  wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
-  itemBoxSizerMainPanel->Add(itemBoxSizer2, 1, wxEXPAND);
-#endif
 
   auto *DialogButtonSizer = new wxStdDialogButtonSizer();
   DialogButtonSizer->AddButton(new wxButton(this, wxID_OK));
@@ -4353,15 +4378,16 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemBoxSizer03->Add(itemStaticBoxSizer03, 1, wxEXPAND | wxALL, border_size);
 
   wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
-  int vsize = dsize.y * 35 / 100;
+  wxSize list_size = wxSize(-1, dsize.y * 35 / 100);
 
-#ifdef __OCPN__ANDROID__
-  vsize = display_height * 50 / 100;
+#ifdef __ANDROID__
+  int xsize = GetCharWidth() * 30;
+  list_size = wxSize(xsize, dsize.y * 50 / 100);
 #endif
 
-  m_pListCtrlInstruments = new wxListCtrl(
-      m_pPanelDashboard, wxID_ANY, wxDefaultPosition, wxSize(-1, vsize),
-      wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL);
+  m_pListCtrlInstruments =
+      new wxListCtrl(m_pPanelDashboard, wxID_ANY, wxDefaultPosition, list_size,
+                     wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL);
 
   itemStaticBoxSizer03->Add(m_pListCtrlInstruments, 1, wxEXPAND | wxALL,
                             border_size);
@@ -4447,6 +4473,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
       new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Title:"),
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer03->Add(itemStaticText04, 0, wxEXPAND | wxALL, border_size);
+
   m_pFontPickerTitle =
       new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, g_USFontTitle,
                            wxDefaultPosition, wxDefaultSize);
@@ -4654,6 +4681,10 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   m_pChoiceDistanceUnit->SetSize(szDistanceUnit);
   m_pChoiceDistanceUnit->SetSelection(g_iDashDistanceUnit + 1);
   itemFlexGridSizer04->Add(m_pChoiceDistanceUnit, 0, wxALIGN_RIGHT | wxALL, 0);
+  m_pChoiceDistanceUnit->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(DashboardPreferencesDialog::OnDistanceUnitSelect),
+      NULL, this);
 
   wxStaticText *itemStaticText0a =
       new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Wind speed units:"),
@@ -4689,11 +4720,95 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   m_pChoiceTempUnit->SetSelection(g_iDashTempUnit);
   itemFlexGridSizer04->Add(m_pChoiceTempUnit, 0, wxALIGN_RIGHT | wxALL, 0);
 
+  // New static box to include a 3 column flexgrid sizer
+#ifndef __ANDROID__
+  wxStaticBox *itemStaticBox05 =
+      new wxStaticBox(itemPanelNotebook02, wxID_ANY, _("Other selections"));
+  wxStaticBoxSizer *itemStaticBoxSizer05 =
+      new wxStaticBoxSizer(itemStaticBox05, wxHORIZONTAL);
+  itemBoxSizer05->Add(itemStaticBoxSizer05, 0, wxEXPAND | wxALL, border_size);
+
+  wxFlexGridSizer *itemFlexGridSizer05 = new wxFlexGridSizer(3);
+  itemFlexGridSizer05->AddGrowableCol(1);
+  itemStaticBoxSizer05->Add(itemFlexGridSizer05, 1, wxEXPAND | wxALL, 0);
+
+  m_pUseInternSumLog = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
+                                      _("Use internal Sumlog.") + "          " +
+                                          _("Enter new value if desired"));
+  itemFlexGridSizer05->Add(m_pUseInternSumLog, 1, wxALIGN_LEFT, border_size);
+  m_pUseInternSumLog->SetValue(g_bUseInternSumLog);
+
+  m_SumLogUnit =
+      new wxStaticText(itemPanelNotebook02, wxID_ANY,
+                       getUsrDistanceUnit_Plugin(g_iDashDistanceUnit) + ": ",
+                       wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(m_SumLogUnit, 1, wxALIGN_RIGHT, 0);
+
+  m_pSumLogValue = new wxTextCtrl(itemPanelNotebook02, wxID_ANY, "");
+  itemFlexGridSizer05->Add(m_pSumLogValue, 1, wxALIGN_LEFT, 1);
+  m_pSumLogValue->SetValue(wxString::Format(
+      "%.1f", toUsrDistance_Plugin(g_dSumLogNM, g_iDashDistanceUnit)));
+
   m_pUseTrueWinddata = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
                                       _("Use N2K & SignalK true wind data over "
                                         "ground.\n(Instead of through water)"));
+  itemFlexGridSizer05->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
   m_pUseTrueWinddata->SetValue(g_bDBtrueWindGround);
-  itemFlexGridSizer04->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
+
+#else
+
+  wxStaticBox *itemStaticBox05 =
+      new wxStaticBox(itemPanelNotebook02, wxID_ANY, _("Other selections"));
+  wxStaticBoxSizer *itemStaticBoxSizer05 =
+      new wxStaticBoxSizer(itemStaticBox05, wxHORIZONTAL);
+  itemBoxSizer05->Add(itemStaticBoxSizer05, 0, wxEXPAND | wxALL, border_size);
+
+  wxFlexGridSizer *itemFlexGridSizer05 = new wxFlexGridSizer(2);
+  itemFlexGridSizer05->AddGrowableCol(1);
+  itemStaticBoxSizer05->Add(itemFlexGridSizer05, 1, wxEXPAND | wxALL, 0);
+
+  m_pUseInternSumLog = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
+                                      _("Use internal Sumlog.") + "   ");
+  itemFlexGridSizer05->Add(m_pUseInternSumLog, 0, wxALIGN_LEFT, border_size);
+  m_pUseInternSumLog->SetValue(g_bUseInternSumLog);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext =
+      new wxStaticText(itemPanelNotebook02, wxID_ANY,
+                       "      " + _("Enter new value if desired") + "    ",
+                       wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  m_SumLogUnit = new wxStaticText(
+      itemPanelNotebook02, wxID_ANY,
+      getUsrDistanceUnit_Plugin(g_iDashDistanceUnit) + ":     ",
+      wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(m_SumLogUnit, 1, wxALIGN_RIGHT, 0);
+
+  m_pSumLogValue = new wxTextCtrl(itemPanelNotebook02, wxID_ANY, "");
+  itemFlexGridSizer05->Add(m_pSumLogValue, 1, wxALIGN_LEFT, 1);
+  m_pSumLogValue->SetValue(wxString::Format(
+      "%.1f", toUsrDistance_Plugin(g_dSumLogNM, g_iDashDistanceUnit)));
+
+  m_pUseTrueWinddata = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
+                                      _("Use N2K & SignalK true wind data over "
+                                        "ground.\n(Instead of through water)"));
+  itemFlexGridSizer05->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
+  m_pUseTrueWinddata->SetValue(g_bDBtrueWindGround);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext1 = new wxStaticText(itemPanelNotebook02, wxID_ANY, " ",
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext1, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext2 = new wxStaticText(itemPanelNotebook02, wxID_ANY, " ",
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext2, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
+
+#endif
 
   curSel = -1;
   for (size_t i = 0; i < m_Config.GetCount(); i++) {
@@ -4762,6 +4877,12 @@ void DashboardPreferencesDialog::SaveDashboardConfig() {
   g_iDashSOGDamp = m_pSpinSOGDamp->GetValue();
   g_iDashAWADamp = m_pSpinAWADamp->GetValue();
   g_iDashAWSDamp = m_pSpinAWSDamp->GetValue();
+
+  g_bUseInternSumLog = m_pUseInternSumLog->IsChecked();
+  double ursDist;
+  m_pSumLogValue->GetValue().ToDouble(&ursDist);
+  g_dSumLogNM = fromUsrDistance_Plugin(ursDist, g_iDashDistanceUnit);
+
   g_iUTCOffset = m_pChoiceUTCOffset->GetSelection() - 24;
   g_iDashSpeedUnit = m_pChoiceSpeedUnit->GetSelection() - 1;
   double DashDBTOffset = m_pSpinDBTOffset->GetValue();
@@ -5178,6 +5299,14 @@ void DashboardPreferencesDialog::OnInstrumentDown(wxCommandEvent &event) {
                                        wxLIST_STATE_SELECTED);
 
   UpdateButtonsState();
+}
+
+void DashboardPreferencesDialog::OnDistanceUnitSelect(wxCommandEvent &event) {
+  // Distance unit is changed so we need to update the SunLog value control.
+  g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
+  m_SumLogUnit->SetLabel(getUsrDistanceUnit_Plugin(g_iDashDistanceUnit) + ": ");
+  m_pSumLogValue->SetValue(wxString::Format(
+      "%.1f", toUsrDistance_Plugin(g_dSumLogNM, g_iDashDistanceUnit)));
 }
 
 //----------------------------------------------------------------
@@ -5654,6 +5783,7 @@ void DashboardWindow::OnContextMenuSelect(wxCommandEvent &event) {
       // This method sets the correct size of the edited dashboard,
       // but if it's not specified, also a default floating_pos.
       ChangePaneOrientation(GetSizerOrientation(), true, fp.x, fp.y);
+      if (g_bUseInternSumLog) m_plugin->UpdateSumLog(false);
       return;  // Does it's own save.
     }
     case ID_DASH_RESIZE: {
@@ -6493,4 +6623,39 @@ void EditDialog::OnSetdefault(wxCommandEvent &event) {
   GetGlobalColor(_T("BLUE3"), &dummy);
   m_colourPicker4->SetColour(dummy);
   Update();
+}
+
+// Read or write SumLog data to config and update instrument if approropriate
+// The sumlog value will be updated every minute when we are under way.
+void dashboard_pi::UpdateSumLog(bool write) {
+  if (write) {
+    g_dSumLogNM += d_tripNM;
+    // Write to config every 10 minutes to ensure that the sumlog value is
+    // reasonably up to date even if O or the system stops wo SaveConfig().
+    if (++confprint > 10) {
+      wxFileConfig *logConf = (wxFileConfig *)m_pconfig;
+      if (logConf) {
+        logConf->SetPath("/PlugIns/Dashboard");
+        logConf->Write("SumLogNM", g_dSumLogNM);
+        logConf->Flush();
+      }
+      confprint = 0;
+    }
+    // If internal sumlog is used, update the instrument.
+    if (g_bUseInternSumLog) {
+      SendSentenceToAllInstruments(
+          OCPN_DBP_STC_VLW2,
+          toUsrDistance_Plugin(g_dSumLogNM, g_iDashDistanceUnit),
+          getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
+      mLOG_Watchdog = 70;  // We update sumLog every minute
+    }
+  } else {
+    // Update sumlog instrument from config.
+    // This will only run if we use internal sumlog.
+    SendSentenceToAllInstruments(
+        OCPN_DBP_STC_VLW2,
+        toUsrDistance_Plugin(g_dSumLogNM, g_iDashDistanceUnit),
+        getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
+    mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+  }
 }

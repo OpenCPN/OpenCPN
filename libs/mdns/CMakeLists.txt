@@ -42,3 +42,4 @@ endif ()
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
   target_compile_options(_MDNS PRIVATE -fvisibility=default -fPIC)
 endif ()
+target_compile_definitions(_MDNS PRIVATE HAVE_WXWIDGETS)

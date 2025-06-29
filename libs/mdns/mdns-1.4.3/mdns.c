@@ -3,6 +3,8 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
+#include "config.h"
+
 #include <stdio.h>
 
 #include <errno.h>
@@ -30,6 +32,21 @@
 #if defined(MDNS_FUZZING)
 #undef recvfrom
 #endif
+
+#ifdef HAVE_WXWIDGETS
+#define printf(...) log_printf(__VA_ARGS__)
+#include <wx/log.h>
+#endif
+
+static void log_printf(const char* fmt, ...) {
+  if (getenv("OCPN_MDNS_DEBUG") ||
+      wxLog::GetActiveTarget()->GetLogLevel() >= wxLOG_Debug) {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+  }
+}
 
 static char addrbuffer[64];
 static char entrybuffer[256];

@@ -1619,9 +1619,10 @@ void PlugInManager::CloseAllPlugInPanels(int ok_apply_cancel) {
   }
 }
 
-int PlugInManager::AddCanvasContextMenuItem(wxMenuItem* pitem,
-                                            opencpn_plugin* pplugin,
-                                            const char* name) {
+int PlugInManager::AddCanvasContextMenuItemPIM(wxMenuItem* pitem,
+                                               opencpn_plugin* pplugin,
+                                               const char* name,
+                                               bool is_extended) {
   PlugInMenuItemContainer* pmic = new PlugInMenuItemContainer;
   pmic->pmenu_item = pitem;
   pmic->m_pplugin = pplugin;
@@ -1630,6 +1631,7 @@ int PlugInManager::AddCanvasContextMenuItem(wxMenuItem* pitem,
   pmic->b_viz = true;
   pmic->b_grey = false;
   pmic->m_in_menu = name;
+  pmic->extended = is_extended;
 
   m_PlugInMenuItems.Add(pmic);
 

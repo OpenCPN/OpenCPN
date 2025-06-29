@@ -131,6 +131,7 @@ private:
   StatsTimer m_stats_timer;
   DriverStats m_driver_stats;
   std::vector<int> pgn_tx_list;
+  bool m_closing;
 };
 
 #endif  // guard
