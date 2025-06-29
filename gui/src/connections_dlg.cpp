@@ -46,17 +46,19 @@
 #include "connections_dlg.h"
 
 #include "color_handler.h"
+#include "color_types.h"
 #include "connection_edit.h"
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "OCPNPlatform.h"
+#include "options.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
 #include "svg_utils.h"
-#include "color_types.h"
 
 extern OCPNPlatform* g_Platform;
+extern options* g_options;
 
 static const auto kUtfArrowDown = wxString::FromUTF8(u8"\u25bc");
 static const auto kUtfArrowRight = wxString::FromUTF8(u8"\u25ba");
@@ -274,56 +276,36 @@ public:
 /** The "Add new connection" button */
 class AddConnectionButton : public wxButton {
 public:
-  AddConnectionButton(wxWindow* parent, EventVar& evt_add_connection)
+  AddConnectionButton(
+      wxWindow* parent, EventVar& evt_add_connection,
+      std::function<void(ConnectionParams* p, bool editing)> _start_edit_conn)
       : wxButton(parent, wxID_ANY, _("Add new connection...")),
-        m_evt_add_connection(evt_add_connection) {
+        m_evt_add_connection(evt_add_connection),
+        m_start_edit_conn(_start_edit_conn) {
     Bind(wxEVT_COMMAND_BUTTON_CLICKED,
          [&](wxCommandEvent& ev) { OnAddConnection(); });
   }
 
 private:
-  void OnAddConnection() {
-    ConnectionEditDialog dialog(this);
-    dialog.SetPropsLabel(_("Configure new connection"));
-    dialog.SetDefaultConnectionParams();
-    wxWindow* options = wxWindow::FindWindowByName("Options");
-    assert(options && "Null Options window!");
-    dialog.SetSize(wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
-    DimeControl(&dialog);
-    auto rv = dialog.ShowModal();
-    if (rv == wxID_OK) {
-      if (ConnectionParams* cp = dialog.GetParamsFromControls()) {
-        if (cp->GetValidPort()) {
-          cp->b_IsSetup = false;  // Trigger new stream
-          TheConnectionParams().push_back(cp);
-        } else {
-          wxString msg =
-              _("Unable to create a connection as configured. "
-                "Connected port or address was missing.");
-          auto& noteman = NotificationManager::GetInstance();
-          noteman.AddNotification(NotificationSeverity::kWarning,
-                                  msg.ToStdString(), 60);
-        }
-      }
-      UpdateDatastreams();
-      m_evt_add_connection.Notify();
-    }
-  }
+  void OnAddConnection() { m_start_edit_conn(nullptr, false); }
 
   EventVar& m_evt_add_connection;
+  std::function<void(ConnectionParams* p, bool editing)> m_start_edit_conn;
 };
 
 /** Grid with existing connections: type, port, status, etc. */
 class Connections : public wxGrid {
 public:
-  Connections(wxWindow* parent,
-              const std::vector<ConnectionParams*>& connections,
-              EventVar& on_conn_update)
+  Connections(
+      wxWindow* parent, const std::vector<ConnectionParams*>& connections,
+      EventVar& on_conn_update,
+      std::function<void(ConnectionParams* p, bool editing)> on_edit_conn)
       : wxGrid(parent, wxID_ANY),
         m_connections(connections),
         m_on_conn_delete(on_conn_update),
         m_last_tooltip_cell(100),
-        m_icons(parent) {
+        m_icons(parent),
+        m_on_edit_conn(on_edit_conn) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     SetTable(new wxGridStringTable(), false);
     GetTable()->AppendCols(8);
@@ -471,19 +453,6 @@ public:
     Connections* m_conns;
   };
 
-private:
-  /**
-   *  Return pointer to parameters related to row.
-   *  @return valid pointer if found, else nullptr.
-   */
-  ConnectionParams* FindRowConnection(int row) const {
-    auto found = find_if(m_connections.begin(), m_connections.end(),
-                         [&](const ConnectionParams* p) {
-                           return GetCellValue(row, 7) == p->GetKey();
-                         });
-    return found != m_connections.end() ? *found : nullptr;
-  }
-
   /**
    * Find index in m_connections for given pointer.
    * @return positive index if found, else -1;
@@ -496,6 +465,19 @@ private:
         [key](const ConnectionParams* cp) { return cp->GetKey() == key; });
     if (found == m_connections.end()) return -1;
     return static_cast<int>(found - m_connections.begin());
+  }
+
+private:
+  /**
+   *  Return pointer to parameters related to row.
+   *  @return valid pointer if found, else nullptr.
+   */
+  ConnectionParams* FindRowConnection(int row) const {
+    auto found = find_if(m_connections.begin(), m_connections.end(),
+                         [&](const ConnectionParams* p) {
+                           return GetCellValue(row, 7) == p->GetKey();
+                         });
+    return found != m_connections.end() ? *found : nullptr;
   }
 
   /**
@@ -696,28 +678,8 @@ private:
   /** Handle user click on Edit gear symbol. */
   void HandleEdit(int row) {
     if (ConnectionParams* cp = FindRowConnection(row)) {
-      ConnectionEditDialog dialog(this);
-      DimeControl(&dialog);
-      dialog.SetPropsLabel(_("Edit Selected Connection"));
-      dialog.PreloadControls(cp);
-      wxWindow* options = wxWindow::FindWindowByName("Options");
-      assert(options && "Null Options window!");
-      dialog.SetSize(
-          wxSize(options->GetSize().x, options->GetSize().y * 8 / 10));
       Show(GetNumberRows() > 0);
-
-      auto rv = dialog.ShowModal();
-      if (rv == wxID_OK) {
-        ConnectionParams* cp_edited = dialog.GetParamsFromControls();
-        delete cp->m_optionsPanel;
-        StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
-        int index = FindConnectionIndex(cp);
-        assert(index != -1 && "Cannot look up connection index");
-        TheConnectionParams()[index] = cp_edited;
-        cp_edited->b_IsSetup = false;  // Trigger new stream
-        ReloadGrid(m_connections);
-        UpdateDatastreams();
-      }
+      m_on_edit_conn(cp, true);
     }
   }
 
@@ -751,6 +713,7 @@ private:
   std::vector<BitmapCellRenderer*> m_renderer_status_vector;
   std::array<int, 7> header_column_widths;
   ColorScheme m_cs;
+  std::function<void(ConnectionParams* p, bool editing)> m_on_edit_conn;
 };
 
 /** Indeed: the General  panel. */
@@ -785,12 +748,13 @@ private:
   };
 
   /** The select Generic, Garmin or Furuno upload options choice */
-  class UploadOptionsChoice : public wxChoice, public ApplyCancel {
+  class UploadOptionsChoice : public wxRadioBox, public ApplyCancel {
   public:
-    explicit UploadOptionsChoice(wxWindow* parent) : wxChoice() {
+    explicit UploadOptionsChoice(wxWindow* parent) : wxRadioBox() {
       wxArrayString wx_choices;
       for (auto& c : choices) wx_choices.Add(c);
-      Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wx_choices);
+      Create(parent, wxID_ANY, _("Upload Format"), wxDefaultPosition,
+             wxDefaultSize, wx_choices, 0, wxRA_SPECIFY_ROWS);
       DimeControl(this);
       UploadOptionsChoice::Cancel();
     }
@@ -824,9 +788,7 @@ private:
     }
 
     const std::array<wxString, 3> choices = {
-        _("Use generic Nmea 0183 format for uploads"),
-        _("Use Garmin GRMN (Host) mode for uploads"),
-        _("Format uploads for Furuno GP4X")};
+        _("Generic NMEA 0183"), _("Garmin Host mode"), _("Furuno GP4X")};
   };
 
   UploadOptionsChoice* m_upload_options;
@@ -989,24 +951,26 @@ private:
 class TopPanel : public wxPanel {
 public:
   TopPanel(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
-           EventVar& evt_add_connection)
+           EventVar& evt_add_connection,
+           std::function<void(ConnectionParams* p, bool editing)> on_edit_conn)
       : wxPanel(parent, wxID_ANY),
-        m_connections(connections),
-        m_evt_add_connection(evt_add_connection) {
+        m_evt_add_connection(evt_add_connection),
+        m_connections(connections) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
-    auto conn_grid = new Connections(this, m_connections, m_evt_add_connection);
+    auto conn_grid = new Connections(this, m_connections, m_evt_add_connection,
+                                     on_edit_conn);
     wxSize panel_max_size(conn_grid->GetEstimatedSize());
     vbox->AddSpacer(wxWindow::GetCharHeight());
     auto conn_flags = wxSizerFlags().Border();
     if (IsAndroid()) conn_flags = wxSizerFlags().Border().Expand();
     vbox->Add(conn_grid, conn_flags);
-    vbox->Add(new AddConnectionButton(this, m_evt_add_connection),
+    vbox->Add(new AddConnectionButton(this, m_evt_add_connection, on_edit_conn),
               wxSizerFlags().Border());
     vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
     auto panel_flags =
         wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
     m_general_panel = new GeneralPanel(this, panel_max_size);
-    vbox->Add(new GeneralPanel(this, panel_max_size), panel_flags);
+    vbox->Add(m_general_panel, panel_flags);
 
     auto advanced_panel = new AdvancedPanel(this, panel_max_size);
     m_advanced_panel = advanced_panel;
@@ -1038,10 +1002,12 @@ public:
     m_conn_grid->SetColorScheme(cs);
     m_general_panel->SetColorScheme(cs);
   }
+  Connections* GetConnectionsGrid() { return m_conn_grid; }
+
+  EventVar& m_evt_add_connection;
 
 private:
   const std::vector<ConnectionParams*>& m_connections;
-  EventVar& m_evt_add_connection;
   ObsListener m_add_connection_lstnr;
   Connections* m_conn_grid;
   GeneralPanel* m_general_panel;
@@ -1057,18 +1023,126 @@ public:
                          wxVSCROLL | wxHSCROLL, TopScrollWindowName) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     auto vbox = new wxBoxSizer(wxVERTICAL);
-    top_panel = new TopPanel(this, connections, evt_add_connection);
-    vbox->Add(top_panel, wxSizerFlags(1).Expand());
     SetSizer(vbox);
+
+    auto on_edit_connection = [&](ConnectionParams* p, bool editing) {
+      if (editing)
+        HandleEdit(p);
+      else
+        HandleNew(p);
+    };
+
+    top_panel =
+        new TopPanel(this, connections, evt_add_connection, on_edit_connection);
+    vbox->Add(top_panel, wxSizerFlags(1).Expand());
+
+    auto on_edit_click = [&](ConnectionParams* p, bool new_mode,
+                             bool ok_cancel) {
+      HandleEditFinish(p, new_mode, ok_cancel);
+    };
+
+    m_edit_panel = new ConnectionEditDialog(this, on_edit_click);
+    m_edit_panel->SetPropsLabel(_("Edit Selected Connection"));
+    wxWindow* options = wxWindow::FindWindowByName("Options");
+    assert(options && "Null Options window!");
+    int fraction = 9;
+#ifdef ANDROID
+    fraction = 10;
+#endif
+    m_edit_panel->SetSize(
+        wxSize(options->GetSize().x, options->GetSize().y * fraction / 10));
+    vbox->Add(m_edit_panel, wxSizerFlags(0).Expand());
+    m_edit_panel->Hide();
+
+    SetScrollRate(0, 10);
+    if (IsAndroid()) SetScrollRate(1, 1);
+
     SetScrollRate(0, 10);
     if (IsAndroid()) SetScrollRate(1, 1);
   }
+
   void SetColorScheme(ColorScheme cs) {
     if (top_panel) top_panel->SetColorScheme(cs);
   }
 
+  void HandleEdit(ConnectionParams* p) {
+    m_edit_panel->SetPropsLabel(_("Edit Selected Connection"));
+    m_edit_panel->SetNewMode(false);
+    m_edit_panel->PreloadControls(p);
+    m_edit_panel->AddOKCancelButtons();
+    SwitchToEditor();
+  }
+
+  void HandleNew(ConnectionParams* p) {
+    m_edit_panel->SetPropsLabel(_("Configure new connection"));
+    m_edit_panel->SetDefaultConnectionParams();
+    m_edit_panel->SetNewMode(true);
+    m_edit_panel->AddOKCancelButtons();
+    SwitchToEditor();
+  }
+
+  void SwitchToEditor() {
+    top_panel->Hide();  // TopPanel
+    Scroll(0, 0);
+    DimeControl(m_edit_panel);
+    m_edit_panel->Show();
+    g_options->ShowOKButtons(false);
+
+    Layout();
+  }
+
+  void SwitchToGrid() {
+    g_options->ShowOKButtons(true);
+    m_edit_panel->Hide();
+    top_panel->Show();
+    top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
+    Layout();
+    Scroll(0, 0);
+  }
+
+  void HandleEditFinish(ConnectionParams* cp_orig, bool new_mode,
+                        bool ok_cancel) {
+    if (!ok_cancel) {
+      SwitchToGrid();
+      return;
+    }
+    // OK from EDIT mode
+    if (!new_mode) {
+      ConnectionParams* cp_edited = m_edit_panel->GetParamsFromControls();
+      delete cp_orig->m_optionsPanel;
+      StopAndRemoveCommDriver(cp_orig->GetStrippedDSPort(),
+                              cp_orig->GetCommProtocol());
+      int index = top_panel->GetConnectionsGrid()->FindConnectionIndex(cp_orig);
+      assert(index != -1 && "Cannot look up connection index");
+      TheConnectionParams()[index] = cp_edited;
+      cp_edited->b_IsSetup = false;  // Trigger new stream
+    }
+    //  OK from NEW mode
+    else {
+      if (ConnectionParams* cp = m_edit_panel->GetParamsFromControls()) {
+        if (cp->GetValidPort()) {
+          cp->b_IsSetup = false;  // Trigger new stream
+          TheConnectionParams().push_back(cp);
+        } else {
+          wxString msg =
+              _("Unable to create a connection as configured. "
+                "Connected port or address was missing.");
+          auto& noteman = NotificationManager::GetInstance();
+          noteman.AddNotification(NotificationSeverity::kWarning,
+                                  msg.ToStdString(), 60);
+        }
+      }
+      UpdateDatastreams();
+      top_panel->m_evt_add_connection.Notify();
+    }
+
+    SwitchToGrid();
+    UpdateDatastreams();
+  }
+
 private:
   TopPanel* top_panel;
+  ConnectionEditDialog* m_edit_panel;
 };
 
 /** Main window: Panel with a single TopScroll child. */

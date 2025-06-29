@@ -140,15 +140,12 @@ NotificationPanel::NotificationPanel(
                       /*wxEXPAND|*/ wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   PanelHardBreakWrapper wrapper(this, notification->GetMessage(),
-                                GetSize().x * 50 / 100);
+                                GetSize().x * 60 / 100);
 
   auto textbox = new wxStaticText(this, wxID_ANY, wrapper.GetWrapped());
   itemBoxSizer01->Add(textbox, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
 
-  if (!g_btouch)
-    itemBoxSizer01->AddStretchSpacer(1);
-  else
-    itemBoxSizer01->AddSpacer(5 * wxWindow::GetCharWidth());
+  itemBoxSizer01->AddStretchSpacer(1);
 
   // Ack button
   m_ack_button = new wxButton(this, wxID_OK);
@@ -157,9 +154,6 @@ NotificationPanel::NotificationPanel(
                      &NotificationPanel::OnAckButton, this);
 
   DimeControl(m_ack_button);
-
-  SetAutoLayout(true);
-  Fit();
 }
 
 NotificationPanel::~NotificationPanel() {}
@@ -190,12 +184,14 @@ void NotificationPanel::OnPaint(wxPaintEvent& event) {
 NotificationListPanel::NotificationListPanel(wxWindow* parent, wxWindowID id,
                                              const wxPoint& pos,
                                              const wxSize& size)
-    : wxScrolledWindow(parent, id, pos, size, wxTAB_TRAVERSAL | wxVSCROLL) {
+    : wxScrolledWindow(parent, id, pos, size,
+                       wxTAB_TRAVERSAL | wxVSCROLL | wxHSCROLL) {
   SetSizer(new wxBoxSizer(wxVERTICAL));
-  SetScrollRate(0, 5);
+  SetScrollRate(5, 5);
+  ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
   if (g_btouch) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
-    SetScrollRate(0, 1);
+    SetScrollRate(1, 1);
   }
   ReloadNotificationPanels();
   DimeControl(this);
@@ -218,8 +214,9 @@ void NotificationListPanel::ReloadNotificationPanels() {
   NotificationManager& noteman = NotificationManager::GetInstance();
   auto notifications = noteman.GetNotifications();
 
-  wxSize panel_size = GetParent()->GetClientSize();
-  panel_size.y = -1;
+  int panel_size_x = 60 * GetCharWidth();
+  panel_size_x = wxMax(panel_size_x, GetParent()->GetClientSize().x);
+  wxSize panel_size = wxSize(panel_size_x, -1);
 
   for (auto notification : notifications) {
     size_t this_hash = notification->GetStringHash();
@@ -252,8 +249,6 @@ void NotificationListPanel::ReloadNotificationPanels() {
     DimeControl(panel);
   }
 
-  GetSizer()->FitInside(this);
-
   Show();
   Layout();
   Refresh(true);
@@ -261,7 +256,7 @@ void NotificationListPanel::ReloadNotificationPanels() {
 }
 
 void NotificationListPanel::AddNotificationPanel(NotificationPanel* _panel) {
-  GetSizer()->Add(_panel, 0, wxEXPAND);  //| wxALL, 10);
+  GetSizer()->Add(_panel, 0);  //| wxALL, 10);
 }
 
 //------------------------------------------------------------------------------
@@ -307,7 +302,7 @@ NotificationsList::NotificationsList(wxWindow* parent) : wxDialog() {
   topsizer->Add(0, interGroupSpace);
 
   m_notifications_list_panel = new NotificationListPanel(
-      this, wxID_ANY, wxDefaultPosition, wxSize(-1, 300));
+      this, wxID_ANY, wxDefaultPosition, wxSize(-1, parent->GetSize().y));
   topsizer->Add(m_notifications_list_panel, 0, wxALL | wxEXPAND, border_size);
 
   DimeControl(this);
@@ -333,26 +328,29 @@ void NotificationsList::RecalculateSize() {
   wxPoint ClientUpperRight =
       GetParent()->ClientToScreen(wxPoint(parent_size.x, 0));
   wxPoint list_bottom =
-      GetParent()->ClientToScreen(wxPoint(0, parent_size.y / 2));
+      GetParent()->ClientToScreen(wxPoint(0, parent_size.y / 3));
   int size_y = list_bottom.y - (ClientUpperRight.y + 5);
   size_y -= GetParent()->GetCharHeight();
-  size_y = wxMax(size_y, 200);  // ensure always big enough to see
+  size_y =
+      wxMax(size_y, 8 * GetCharHeight());  // ensure always big enough to see
 
-  SetSize(wxSize(GetCharWidth() * 80, size_y));
+  wxSize target_size = wxSize(GetCharWidth() * 80, size_y);
 
   wxPoint targetNLPos = GetParent()->ClientToScreen(
       wxPoint(parent_size.x / 2, 3 * GetParent()->GetCharHeight()));
-  // m_notification_button->GetRect().y +
-  //                            m_notification_button->GetRect().height + 5));
 
-  if ((targetNLPos.x + GetSize().x) > ClientUpperRight.x) {
+  // Adjust the size for smaller devices
+  wxSize display_size = g_Platform->getDisplaySize();
+  if (target_size.x * 2 > display_size.x) {
+    target_size.x =
+        display_size.x * 85 / 100 - (2 * GetParent()->GetCharWidth());
     targetNLPos.x =
-        GetParent()->ClientToScreen(wxPoint(parent_size.x * 15 / 100, 0)).x;
-    SetSize(parent_size.x * 85 / 100 - (2 * GetParent()->GetCharWidth()),
-            size_y);
+        GetParent()->ClientToScreen(wxPoint(display_size.x * 15 / 100, 0)).x;
   }
 
+  SetSize(target_size);
   Move(targetNLPos);
+  Layout();
 }
 
 void NotificationsList::OnClose(wxCloseEvent& event) { Hide(); }

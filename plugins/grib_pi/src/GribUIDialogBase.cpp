@@ -153,11 +153,11 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     m_fgCtrlBarSizer->SetFlexibleDirection(wxHORIZONTAL);
     m_fgCtrlBarSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
 
-    wxFlexGridSizer* fgSizer49;
-    fgSizer49 = new wxFlexGridSizer(0, 1, 0, 0);
+    wxFlexGridSizer* fgSizer49 = new wxFlexGridSizer(0, 1, 0, 0);
     fgSizer49->AddGrowableCol(0);
     fgSizer49->SetFlexibleDirection(wxVERTICAL);
     fgSizer49->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    m_fgCtrlBarSizer->Add(fgSizer49, 1, wxEXPAND, 0);
 
     wxFlexGridSizer* fgSizer50;
     fgSizer50 = new wxFlexGridSizer(0, 15, 0, 0);
@@ -166,6 +166,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     fgSizer50->AddGrowableCol(10);
     fgSizer50->SetFlexibleDirection(wxHORIZONTAL);
     fgSizer50->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    fgSizer49->Add(fgSizer50, 0, wxEXPAND, 5);
 
     m_bpPrev =
         new wxBitmapButton(this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition,
@@ -249,7 +250,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
                            wxDefaultSize, wxBU_AUTODRAW);
     fgSizer50->Add(m_bpRequest, 0, wxALL, 1);
 
-    fgSizer49->Add(fgSizer50, 1, wxEXPAND, 5);
     m_ProjectBoatPanel = new ProjectBoatPanel(this);
     fgSizer49->Add(m_ProjectBoatPanel, 0, wxEXPAND | wxALL, 1);
 
@@ -257,9 +257,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     m_fgCDataSizer->SetFlexibleDirection(wxBOTH);
     m_fgCDataSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-    fgSizer49->Add(m_fgCDataSizer, 1, wxEXPAND, 5);
-
-    m_fgCtrlBarSizer->Add(fgSizer49, 1, wxEXPAND, 0);
+    fgSizer49->Add(m_fgCDataSizer, 0, wxEXPAND, 5);
 
     m_fgCtrlGrabberSize = new wxFlexGridSizer(0, 1, 0, 0);
     m_fgCtrlGrabberSize->SetFlexibleDirection(wxBOTH);
@@ -3639,11 +3637,15 @@ ProjectBoatPanel::ProjectBoatPanel(wxWindow* parent, wxWindowID id,
                                    const wxPoint& pos, const wxSize& size,
                                    long style, const wxString& name)
     : wxPanel(parent, id, pos, size, style, name) {
-  wxBoxSizer* bSizerProjectBoat;
-  bSizerProjectBoat = new wxBoxSizer(wxHORIZONTAL);
+  SetFont(*OCPNGetFont(_("Dialog")));
+
+  SetMinSize(wxSize(-1, GetCharHeight()) * 2);
+
+  wxBoxSizer* bSizerProjectBoat = new wxBoxSizer(wxHORIZONTAL);
+  SetSizer(bSizerProjectBoat);
 
   m_cbProjectPosition = new wxCheckBox(this, wxID_ANY, _("Project position"),
-                                       wxDefaultPosition, wxDefaultSize, 0);
+                                       wxDefaultPosition, wxDefaultSize);
   bSizerProjectBoat->Add(m_cbProjectPosition, 0,
                          wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
@@ -3670,7 +3672,6 @@ ProjectBoatPanel::ProjectBoatPanel(wxWindow* parent, wxWindowID id,
   m_stSpeedUnit->Wrap(-1);
   bSizerProjectBoat->Add(m_stSpeedUnit, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  this->SetSizer(bSizerProjectBoat);
   this->Layout();
 }
 

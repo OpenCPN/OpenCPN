@@ -98,6 +98,8 @@ void CommDriverN0183Serial::Close() {
   wxLogMessage(
       wxString::Format("Closing NMEA Driver %s", m_portstring.c_str()));
 
+  m_stats_timer.Stop();
+
   //    Kill off the secondary RX IO if alive
   if (m_serial_io->IsRunning()) {
     wxLogMessage("Stopping Secondary Thread");
