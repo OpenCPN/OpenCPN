@@ -290,6 +290,8 @@ public:
 
   void OnClose(wxCloseEvent &event);
 
+  void ShowOKButtons(bool _show) { m_OK_Cancel_Apply_buttons->Show(_show); }
+
   void CreateListbookIcons();
   void CreateControls(void);
   size_t CreatePanel(const wxString &title);
@@ -395,6 +397,8 @@ public:
 #else
   wxNotebook *m_pListbook;
 #endif
+
+  wxBoxSizer *m_OK_Cancel_Apply_buttons;
 
   size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips;
   size_t m_pageUI, m_pagePlugins;

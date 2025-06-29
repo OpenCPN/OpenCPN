@@ -173,6 +173,21 @@ const LLRegion &QuiltCandidate::GetCandidateRegion() {
 
         LLRegion t_region = LLRegion(nNoCovrPly, pfp);
 
+        // For performance reasons, we do not support
+        // no-cover regions with "holes" in them.
+        // This leads to the possibility that a cover region may be fully
+        // embedded within a larger no-cover region.
+        // Handle this case by assuming that such cells will contain more than
+        // one cover region. To create a valid no-cover region we may simply
+        // subtract each cover region from the larger no-cover region.
+        if (nAuxPlyEntries > 1) {
+          for (int ipr = 0; ipr < nAuxPlyEntries; ipr++) {
+            float *pfpr = cte.GetpAuxPlyTableEntry(ipr);
+            int nAuxPly = cte.GetAuxCntTableEntry(ipr);
+            t_region.Subtract(LLRegion(nAuxPly, pfpr));
+          }
+        }
+
         //  We do a test removal of the NoCovr region.
         //  If the result iz empty, it must be that the NoCovr region is
         //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
@@ -181,7 +196,6 @@ const LLRegion &QuiltCandidate::GetCandidateRegion() {
         if (!t_region.Empty()) {
           LLRegion test_region = candidate_region;
           test_region.Subtract(t_region);
-
           if (!test_region.Empty()) candidate_region = test_region;
         }
       }

@@ -27,6 +27,8 @@
  *
  */
 
+#include "config.h"
+
 #include <cstdio>
 #include <iostream>
 #include <string.h>
@@ -39,19 +41,25 @@
 #include "openssl/applink.c"
 #endif
 
+#ifdef HAVE_OCPN_LOG
+#include "model/logger.h"
+#define cerr ERROR_LOG
+#endif
+
+using namespace std;
 /* Generates a 2048-bit RSA key. */
 EVP_PKEY *generate_key() {
   /* Allocate memory for the EVP_PKEY structure. */
   EVP_PKEY *pkey = EVP_PKEY_new();
   if (!pkey) {
-    std::cerr << "Unable to create EVP_PKEY structure." << std::endl;
+    cerr << "Unable to create EVP_PKEY structure." << endl;
     return NULL;
   }
 
   /* Generate the RSA key and assign it to pkey. */
   RSA *rsa = RSA_generate_key(2048, RSA_F4, NULL, NULL);
   if (!EVP_PKEY_assign_RSA(pkey, rsa)) {
-    std::cerr << "Unable to generate 2048-bit RSA key." << std::endl;
+    cerr << "Unable to generate 2048-bit RSA key." << endl;
     EVP_PKEY_free(pkey);
     return NULL;
   }
@@ -60,7 +68,7 @@ EVP_PKEY *generate_key() {
   return pkey;
 }
 
-int cs_cert_set_subject_alt_name(X509 *x509_cert, std::string name) {
+int cs_cert_set_subject_alt_name(X509 *x509_cert, string name) {
   const char *subject_alt_name = name.c_str();  //"IP: 192.168.1.1";
   X509_EXTENSION *extension_san = NULL;
   ASN1_OCTET_STRING *subject_alt_name_ASN1 = NULL;
@@ -92,11 +100,11 @@ err:
 }
 
 /* Generates a self-signed x509 certificate. */
-X509 *generate_x509(EVP_PKEY *pkey, std::string ip_v4) {
+X509 *generate_x509(EVP_PKEY *pkey, string ip_v4) {
   /* Allocate memory for the X509 structure. */
   X509 *x509 = X509_new();
   if (!x509) {
-    std::cerr << "Unable to create X509 structure." << std::endl;
+    cerr << "Unable to create X509 structure." << endl;
     return NULL;
   }
 
@@ -129,7 +137,7 @@ X509 *generate_x509(EVP_PKEY *pkey, std::string ip_v4) {
     //    cs_cert_set_subject_alt_name(), above.
 
     GENERAL_NAMES *gens = sk_GENERAL_NAME_new_null();
-    std::string dns_name = "www.example.com";
+    string dns_name = "www.example.com";
     GENERAL_NAME *gen_dns = GENERAL_NAME_new();
     ASN1_IA5STRING *ia5 = ASN1_IA5STRING_new();
     ASN1_STRING_set(ia5, dns_name.data(), dns_name.length());
@@ -148,7 +156,7 @@ X509 *generate_x509(EVP_PKEY *pkey, std::string ip_v4) {
     sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
 #endif
 
-  std::string ext_name("IP: ");
+  string ext_name("IP: ");
   ext_name += ip_v4;
   cs_cert_set_subject_alt_name(x509, ext_name);
 
@@ -157,7 +165,7 @@ X509 *generate_x509(EVP_PKEY *pkey, std::string ip_v4) {
 
   /* Actually sign the certificate with our key. */
   if (!X509_sign(x509, pkey, EVP_sha1())) {
-    std::cerr << "Error signing certificate." << std::endl;
+    cerr << "Error signing certificate." << endl;
     X509_free(x509);
     return NULL;
   }
@@ -165,13 +173,13 @@ X509 *generate_x509(EVP_PKEY *pkey, std::string ip_v4) {
   return x509;
 }
 
-bool write_to_disk(EVP_PKEY *pkey, X509 *x509, std::string cert_directory) {
+bool write_to_disk(EVP_PKEY *pkey, X509 *x509, string cert_directory) {
   /* Open the PEM file for writing the key to disk. */
-  std::string key_file = cert_directory;
+  string key_file = cert_directory;
   key_file += "key.pem";
   FILE *pkey_file = fopen(key_file.c_str(), "wb");
   if (!pkey_file) {
-    std::cerr << "Unable to open \"key.pem\" for writing." << std::endl;
+    cerr << "Unable to open \"key.pem\" for writing." << endl;
     return false;
   }
 
@@ -180,17 +188,17 @@ bool write_to_disk(EVP_PKEY *pkey, X509 *x509, std::string cert_directory) {
   fclose(pkey_file);
 
   if (!ret) {
-    std::cerr << "Unable to write private key to disk." << std::endl;
+    cerr << "Unable to write private key to disk." << endl;
     return false;
   }
 
   /* Open the PEM file for writing the certificate to disk. */
-  std::string cert_file = cert_directory;
+  string cert_file = cert_directory;
   cert_file += "cert.pem";
 
   FILE *x509_file = fopen(cert_file.c_str(), "wb");
   if (!x509_file) {
-    std::cerr << "Unable to open \"cert.pem\" for writing." << std::endl;
+    cerr << "Unable to open \"cert.pem\" for writing." << endl;
     return false;
   }
 
@@ -199,24 +207,23 @@ bool write_to_disk(EVP_PKEY *pkey, X509 *x509, std::string cert_directory) {
   fclose(x509_file);
 
   if (!ret) {
-    std::cerr << "Unable to write certificate to disk." << std::endl;
+    cerr << "Unable to write certificate to disk." << endl;
     return false;
   }
 
   return true;
 }
 
-int make_certificate(std::string ipv4, std::string destination_dir) {
+int make_certificate(string ipv4, string destination_dir) {
   /* Generate the key. */
-  if (getenv("OCPN_DEBUG_CERT"))
-    std::cout << "Generating RSA key..." << std::endl;
+  if (getenv("OCPN_DEBUG_CERT")) cout << "Generating RSA key..." << endl;
 
   EVP_PKEY *pkey = generate_key();
   if (!pkey) return 1;
 
   /* Generate the certificate. */
   if (getenv("OCPN_DEBUG_CERT"))
-    std::cout << "Generating x509 certificate..." << std::endl;
+    cout << "Generating x509 certificate..." << endl;
 
   X509 *x509 = generate_x509(pkey, ipv4);
   if (!x509) {
@@ -226,14 +233,14 @@ int make_certificate(std::string ipv4, std::string destination_dir) {
 
   /* Write the private key and certificate out to disk. */
   if (getenv("OCPN_DEBUG_CERT"))
-    std::cout << "Writing key and certificate to disk..." << std::endl;
+    cout << "Writing key and certificate to disk..." << endl;
 
   bool ret = write_to_disk(pkey, x509, destination_dir);
   EVP_PKEY_free(pkey);
   X509_free(x509);
 
   if (ret) {
-    if (getenv("OCPN_DEBUG_CERT")) std::cout << "Success!" << std::endl;
+    if (getenv("OCPN_DEBUG_CERT")) cout << "Success!" << endl;
     return 0;
   } else
     return 1;
