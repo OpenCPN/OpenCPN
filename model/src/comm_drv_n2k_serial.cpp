@@ -231,7 +231,8 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
       m_listener(listener),
-      m_stats_timer(*this, 2s) {
+      m_stats_timer(*this, 2s),
+      m_closing(false) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
   m_manufacturers_code = 0;
   m_got_mfg_code = false;
@@ -304,6 +305,8 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
 CommDriverN2KSerial::~CommDriverN2KSerial() { Close(); }
 
 DriverStats CommDriverN2KSerial::GetDriverStats() const {
+  if (m_closing) return m_driver_stats;
+
 #ifndef ANDROID
   if (m_pSecondary_Thread)
     return m_pSecondary_Thread->GetStats();
@@ -332,6 +335,9 @@ bool CommDriverN2KSerial::Open() {
 void CommDriverN2KSerial::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing N2K Driver %s"), m_portstring.c_str()));
+
+  m_stats_timer.Stop();
+  m_closing = true;
 
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
@@ -363,6 +369,8 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
 
 bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                       std::shared_ptr<const NavAddr> addr) {
+  if (m_closing) return false;
+
 #ifndef ANDROID
 
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
@@ -387,9 +395,11 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto name = PayloadToName(load);
   auto msg_all =
       std::make_shared<const Nmea2000Msg>(1, msg_payload, GetAddress(name));
+  auto msg_internal =
+      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, GetAddress(name));
 
   // Notify listeners
-  m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_internal));
   m_listener.Notify(std::move(msg_all));
 
   if (GetSecondaryThread()) {

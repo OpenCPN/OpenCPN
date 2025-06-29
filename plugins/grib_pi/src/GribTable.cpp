@@ -69,8 +69,8 @@ void GRIBTable::InitGribTable(ArrayOfGribRecordSets *rsa, int NowIndex) {
   for (unsigned i = 0; i < rsa->GetCount(); i++) {
     // populate time labels
     time = rsa->Item(i).m_Reference_Time;
-    DateTimeFormatOptions opts =
-        DateTimeFormatOptions().SetFormatString("$short_date\n$hour_minutes");
+    DateTimeFormatOptions opts = DateTimeFormatOptions().SetFormatString(
+        "$weekday_short_date\n$hour_minutes");
     m_pGribTable->SetColLabelValue(
         i, toUsrDateTimeFormat_Plugin(wxDateTime(time), opts));
     nrows = -1;

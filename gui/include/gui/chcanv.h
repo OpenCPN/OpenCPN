@@ -164,6 +164,8 @@ public:
   void OnPaint(wxPaintEvent &event);
   void PaintCleanup();
   void Scroll(int dx, int dy);
+  void ResetGridFont() { m_pgridFont = nullptr; }
+
   void OnToolLeftClick(wxCommandEvent &event);
 
   bool MouseEventOverlayWindows(wxMouseEvent &event);
@@ -698,6 +700,7 @@ public:
   void FreezePiano() { m_pianoFrozen = true; }
   void ThawPiano() { m_pianoFrozen = false; }
   void StartChartDragInertia();
+  void SetupGridFont();
 
   // Todo build more accessors
   bool m_bFollow;

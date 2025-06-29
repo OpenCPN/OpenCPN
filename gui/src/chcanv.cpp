@@ -789,20 +789,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   if (!g_bdisable_opengl) m_pQuilt->EnableHighDefinitionZoom(true);
 #endif
 
-  int gridFontSize = 8;
-#if defined(__WXOSX__) || defined(__WXGTK3__)
-  // Support scaled HDPI displays.
-  gridFontSize *= GetContentScaleFactor();
-#endif
-
-  m_pgridFont = FontMgr::Get().FindOrCreateFont(
-      gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
-      FALSE, wxString(_T ( "Arial" )));
+  SetupGridFont();
 
   m_Piano = new Piano(this);
 
   m_bShowCompassWin = true;
-
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
   m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
@@ -932,6 +923,15 @@ ChartCanvas::~ChartCanvas() {
   delete m_pCurrentStack;
   delete m_Compass;
   delete m_Piano;
+}
+
+void ChartCanvas::SetupGridFont() {
+  wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
+  double dpi_factor = 1. / g_BasePlatform->GetDisplayDIPMult(this);
+  int gridFontSize = wxMax(10, dFont->GetPointSize() * dpi_factor);
+  m_pgridFont = FontMgr::Get().FindOrCreateFont(
+      gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+      FALSE, wxString(_T ( "Arial" )));
 }
 
 void ChartCanvas::RebuildCursors() {
@@ -6541,6 +6541,7 @@ void ChartCanvas::GridDraw(ocpnDC &dc) {
   wxCoord w, h;
   wxPen GridPen(GetGlobalColor(_T ( "SNDG1" )), 1, wxPENSTYLE_SOLID);
   dc.SetPen(GridPen);
+  if (!m_pgridFont) SetupGridFont();
   dc.SetFont(*m_pgridFont);
   dc.SetTextForeground(GetGlobalColor(_T ( "SNDG1" )));
 
@@ -6723,10 +6724,16 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     dc.DrawLine(x_origin, y_origin, x_origin + l1, y_origin);
     dc.DrawLine(x_origin + l1, y_origin, x_origin + l1, y_origin - 12);
 
+    if (!m_pgridFont) SetupGridFont();
     dc.SetFont(*m_pgridFont);
     dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
     int w, h;
     dc.GetTextExtent(s, &w, &h);
+    double dpi_factor = 1. / g_BasePlatform->GetDisplayDIPMult(this);
+    if (g_bopengl) {
+      w /= dpi_factor;
+      h /= dpi_factor;
+    }
     dc.DrawText(s, x_origin + l1 / 2 - w / 2, y_origin - h - 1);
   }
 }
@@ -7506,6 +7513,7 @@ void ChartCanvas::HandleNotificationMouseClick() {
   if (m_NotificationsList->IsShown()) {
     m_NotificationsList->Hide();
   } else {
+    m_NotificationsList->RecalculateSize();
     m_NotificationsList->ReloadNotificationList();
     m_NotificationsList->Show();
   }
@@ -8877,6 +8885,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           pRouteList->Append(m_pMouseRoute);
           r_rband.x = x;
           r_rband.y = y;
+          NavObj_dB::GetInstance().InsertRoute(m_pMouseRoute);
         }
 
         //    Check to see if there is a nearby point which may be reused
@@ -8978,9 +8987,6 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                        _T(""), wxEmptyString);
           pMousePoint->SetNameShown(false);
 
-          // pConfig->AddNewWayPoint(pMousePoint, -1);  // use auto next num
-          NavObj_dB::GetInstance().InsertRoutePoint(pMousePoint);
-
           pSelect->AddSelectableRoutePoint(rlat, rlon, pMousePoint);
 
           if (m_routeState > 1)
@@ -8991,6 +8997,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (m_routeState == 1) {
           // First point in the route.
           m_pMouseRoute->AddPoint(pMousePoint);
+          NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
+
         } else {
           if (m_pMouseRoute->m_NextLegGreatCircle) {
             double rhumbBearing, rhumbDist, gcBearing, gcDist;
@@ -9035,9 +9043,6 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   gcPoint = new RoutePoint(gcCoord.y, gcCoord.x, _T("xmblue"),
                                            _T(""), wxEmptyString);
                   gcPoint->SetNameShown(false);
-                  // pConfig->AddNewWayPoint(gcPoint, -1);
-                  NavObj_dB::GetInstance().InsertRoutePoint(gcPoint);
-
                   pSelect->AddSelectableRoutePoint(gcCoord.y, gcCoord.x,
                                                    gcPoint);
                 } else {
@@ -9045,6 +9050,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 }
 
                 m_pMouseRoute->AddPoint(gcPoint);
+                NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
+
                 pSelect->AddSelectableRouteSegment(
                     prevGcPoint->m_lat, prevGcPoint->m_lon, gcPoint->m_lat,
                     gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute);
@@ -9055,6 +9062,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
             } else {
               m_pMouseRoute->AddPoint(pMousePoint);
+              NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
               pSelect->AddSelectableRouteSegment(m_prev_rlat, m_prev_rlon, rlat,
                                                  rlon, m_prev_pMousePoint,
                                                  pMousePoint, m_pMouseRoute);
@@ -9063,6 +9071,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           } else {
             // Ordinary rhumblinesegment.
             m_pMouseRoute->AddPoint(pMousePoint);
+            NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
+
             pSelect->AddSelectableRouteSegment(m_prev_rlat, m_prev_rlon, rlat,
                                                rlon, m_prev_pMousePoint,
                                                pMousePoint, m_pMouseRoute);
@@ -9755,8 +9765,14 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 pr->m_bIsBeingEdited = false;
 
                 if (m_bRoutePoinDragging) {
-                  // pConfig->UpdateRoute(pr);
-                  NavObj_dB::GetInstance().UpdateRoute(pr);
+                  // Special case optimization.
+                  // Dragging a single point of a route
+                  // without any point additions or re-ordering
+                  if (!pMousePoint)
+                    NavObj_dB::GetInstance().UpdateRoutePoint(
+                        m_pRoutePointEditTarget);
+                  else
+                    NavObj_dB::GetInstance().UpdateRoute(pr);
                 }
                 pr->SetHiLite(0);
               }
@@ -13820,8 +13836,10 @@ void ChartCanvas::UpdateGPSCompassStatusBox(bool b_force_new) {
   if (m_Compass && m_Compass->IsShown())
     m_Compass->UpdateStatus(b_force_new | b_update);
 
-  wxPoint note_point =
-      wxPoint(parent_size.x - 20 * wxWindow::GetCharWidth(), compass_rect.y);
+  double scaler = g_Platform->GetCompassScaleFactor(g_GUIScaleFactor);
+  scaler = wxMax(scaler, 1.0);
+  wxPoint note_point = wxPoint(
+      parent_size.x - (scaler * 20 * wxWindow::GetCharWidth()), compass_rect.y);
   m_notification_button->Move(note_point);
   m_notification_button->UpdateStatus();
 

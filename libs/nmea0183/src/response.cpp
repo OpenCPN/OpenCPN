@@ -78,7 +78,10 @@ bool RESPONSE::Write( SENTENCE& sentence )
     else {
         wxString talker_id = container_p->caller_ctx.get_talker_id();
         if ( talker_id.length() == 0) {
-            sentence.Sentence.Append(container_p->TalkerID);
+            if (!container_p->TalkerID.IsEmpty())
+              sentence.Sentence.Append(container_p->TalkerID);
+            else
+              sentence.Sentence.Append("--");
         }
         else {
             sentence.Sentence.Append( talker_id );
