@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-31 11:41-0400\n"
-"PO-Revision-Date: 2025-06-02 10:04\n"
+"POT-Creation-Date: 2025-06-20 08:00+0200\n"
+"PO-Revision-Date: 2025-06-24 20:31\n"
 "Last-Translator: \n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -22,472 +22,484 @@ msgstr ""
 msgid "N"
 msgstr "Β"
 
-#: src/dashboard_pi.cpp:264
+#: src/dashboard_pi.cpp:268
 msgid "Position"
 msgstr "Θέση"
 
-#: src/dashboard_pi.cpp:266
+#: src/dashboard_pi.cpp:270
 msgid "SOG"
 msgstr "SOG (αληθής ταχύτητα)"
 
-#: src/dashboard_pi.cpp:268
+#: src/dashboard_pi.cpp:272
 msgid "Speed SOG"
 msgstr ""
 
-#: src/dashboard_pi.cpp:270
+#: src/dashboard_pi.cpp:274
 msgid "Speed STW"
 msgstr ""
 
-#: src/dashboard_pi.cpp:272
+#: src/dashboard_pi.cpp:276
 msgid "COG"
 msgstr "COG (αληθής πορεία)"
 
-#: src/dashboard_pi.cpp:274
+#: src/dashboard_pi.cpp:278
 msgid "Mag COG"
 msgstr "Μαγν. COG"
 
-#: src/dashboard_pi.cpp:276
+#: src/dashboard_pi.cpp:280
 msgid "GNSS Compass"
 msgstr "Πυξίδα GNSS"
 
-#: src/dashboard_pi.cpp:278
+#: src/dashboard_pi.cpp:282
 msgid "True Compass"
 msgstr "Αληθής πυξίδα"
 
-#: src/dashboard_pi.cpp:280
+#: src/dashboard_pi.cpp:284
 msgid "STW"
 msgstr "Φαινόμενη ταχύτητα (δρομομέτρου)"
 
-#: src/dashboard_pi.cpp:282
+#: src/dashboard_pi.cpp:286
 msgid "True HDG"
 msgstr "Αληθής κατεύθυνση"
 
-#: src/dashboard_pi.cpp:284
+#: src/dashboard_pi.cpp:288
 msgid "Mag HDG"
 msgstr "Μαγνητική κατ. πορείας"
 
-#: src/dashboard_pi.cpp:287
+#: src/dashboard_pi.cpp:291
 msgid "App. Wind Angle & Speed"
 msgstr "Γωνία/ταχύτητα φαιν. ανέμου"
 
-#: src/dashboard_pi.cpp:289
+#: src/dashboard_pi.cpp:293
 msgid "App & True Wind Angle"
 msgstr "Φαιν. & πραγμ. γωνία ανέμου"
 
-#: src/dashboard_pi.cpp:291 src/dashboard_pi.cpp:293
+#: src/dashboard_pi.cpp:295 src/dashboard_pi.cpp:297
 msgid "App. Wind Speed"
 msgstr "Ταχύτητα φαιν. ανέμου"
 
-#: src/dashboard_pi.cpp:295
+#: src/dashboard_pi.cpp:299
 msgid "True Wind Angle & Speed"
 msgstr "Γωνία/ταχύτητα πραγμ. ανέμου"
 
-#: src/dashboard_pi.cpp:297
+#: src/dashboard_pi.cpp:301
 msgid "Altitude"
 msgstr "Υψόμετρο"
 
-#: src/dashboard_pi.cpp:299
+#: src/dashboard_pi.cpp:303
 msgid "Altitude Trace"
 msgstr "Υψομετρική"
 
-#: src/dashboard_pi.cpp:301 src/dashboard_pi.cpp:303
+#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
 msgid "Depth"
 msgstr "Βάθος"
 
-#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
+#: src/dashboard_pi.cpp:309 src/dashboard_pi.cpp:311
 msgid "Barometric pressure"
 msgstr "Βαρομετρική πίεση"
 
-#: src/dashboard_pi.cpp:309
+#: src/dashboard_pi.cpp:313
 msgid "Water Temp."
 msgstr "Θερμ/σία νερού"
 
-#: src/dashboard_pi.cpp:311
+#: src/dashboard_pi.cpp:315
 msgid "Air Temp."
 msgstr "Θερμ/σία αέρος"
 
-#: src/dashboard_pi.cpp:313
+#: src/dashboard_pi.cpp:317
 msgid "App. Wind Angle"
 msgstr "Γωνία φαιν. ανέμου"
 
-#: src/dashboard_pi.cpp:315
+#: src/dashboard_pi.cpp:319
 msgid "True Wind Angle"
 msgstr "Γωνία πραγμ. ανέμου"
 
-#: src/dashboard_pi.cpp:317
+#: src/dashboard_pi.cpp:321
 msgid "True Wind Direction"
 msgstr "Κατεύθυνση πραγμ. ανέμου"
 
-#: src/dashboard_pi.cpp:319
+#: src/dashboard_pi.cpp:323
 msgid "True Wind Speed"
 msgstr "Ταχύτητα πραγμ. ανέμου"
 
-#: src/dashboard_pi.cpp:321
+#: src/dashboard_pi.cpp:325
 msgid "True Wind Dir. & Speed"
 msgstr "Κατεύθυνση/ταχύτητα πραγμ. ανέμου"
 
-#: src/dashboard_pi.cpp:323 src/dashboard_pi.cpp:325
+#: src/dashboard_pi.cpp:327 src/dashboard_pi.cpp:329
 msgid "VMG"
 msgstr "VMG (ταχύτητα στη σωστή κατεύθυνση)"
 
-#: src/dashboard_pi.cpp:327
+#: src/dashboard_pi.cpp:331
 msgid "VMG Wind"
 msgstr ""
 
-#: src/dashboard_pi.cpp:329 src/dashboard_pi.cpp:331
+#: src/dashboard_pi.cpp:333 src/dashboard_pi.cpp:335
 msgid "Rudder Angle"
 msgstr "Γωνία πηδαλίου"
 
-#: src/dashboard_pi.cpp:333
+#: src/dashboard_pi.cpp:337
 msgid "GNSS in use"
 msgstr "GNSS σε χρήση"
 
-#: src/dashboard_pi.cpp:335
+#: src/dashboard_pi.cpp:339
 msgid "GNSS Status"
 msgstr "Κατάσταση GNSS"
 
-#: src/dashboard_pi.cpp:337
+#: src/dashboard_pi.cpp:341
 msgid "Cursor"
 msgstr "Κέρσορας"
 
-#: src/dashboard_pi.cpp:339
+#: src/dashboard_pi.cpp:343
 msgid "GNSS Clock"
 msgstr "Ρολόι GNSS"
 
-#: src/dashboard_pi.cpp:341
+#: src/dashboard_pi.cpp:345
 msgid "Sunrise/Sunset"
 msgstr "Ανατολή/δύση ηλίου"
 
-#: src/dashboard_pi.cpp:343
+#: src/dashboard_pi.cpp:347
 msgid "Moon phase"
 msgstr "Φάση σελήνης"
 
-#: src/dashboard_pi.cpp:345
+#: src/dashboard_pi.cpp:349
 msgid "Wind history"
 msgstr "Ιστορικό Ανέμου"
 
-#: src/dashboard_pi.cpp:347
+#: src/dashboard_pi.cpp:351
 msgid "Barometric history"
 msgstr "Ιστορικό πιέσεων"
 
-#: src/dashboard_pi.cpp:349
+#: src/dashboard_pi.cpp:353
 msgid "Trip Log"
 msgstr "Ημερολ. ταξιδιού"
 
-#: src/dashboard_pi.cpp:351
+#: src/dashboard_pi.cpp:355
 msgid "Sum Log"
 msgstr "Αθροιστικό Log"
 
-#: src/dashboard_pi.cpp:353
+#: src/dashboard_pi.cpp:357
 msgid "From Ownship"
 msgstr "Από ίδιον πλοίο"
 
-#: src/dashboard_pi.cpp:355
+#: src/dashboard_pi.cpp:359
 msgid "Pitch"
 msgstr "Κούνημα"
 
-#: src/dashboard_pi.cpp:357
+#: src/dashboard_pi.cpp:361
 msgid "Heel"
 msgstr "Γέρσιμο"
 
-#: src/dashboard_pi.cpp:359
+#: src/dashboard_pi.cpp:363
 msgid "Local GNSS Clock"
 msgstr "Τοπικό Ρολόι GNSS"
 
-#: src/dashboard_pi.cpp:361
+#: src/dashboard_pi.cpp:365
 msgid "Local CPU Clock"
 msgstr "Τοπική ώρα CPU"
 
-#: src/dashboard_pi.cpp:363
+#: src/dashboard_pi.cpp:367
 msgid "Local Sunrise/Sunset"
 msgstr "Τοπική ώρα ανατολής/δύσης ήλιου"
 
-#: src/dashboard_pi.cpp:365
+#: src/dashboard_pi.cpp:369
 msgid "Humidity"
 msgstr ""
 
-#: src/dashboard_pi.cpp:367
+#: src/dashboard_pi.cpp:371
 msgid "Windlass"
 msgstr ""
 
-#: src/dashboard_pi.cpp:618 src/dashboard_pi.cpp:955 src/dashboard_pi.cpp:3640
-#: src/dashboard_pi.cpp:3656 src/dashboard_pi.cpp:4192 src/dashboard_pi.cpp:4282
-#: src/dashboard_pi.cpp:4902
+#: src/dashboard_pi.cpp:622 src/dashboard_pi.cpp:968 src/dashboard_pi.cpp:3668
+#: src/dashboard_pi.cpp:3684 src/dashboard_pi.cpp:4222 src/dashboard_pi.cpp:4312
+#: src/dashboard_pi.cpp:4970
 msgid "Dashboard"
 msgstr "Πίνακας Οργάνων"
 
-#: src/dashboard_pi.cpp:958
+#: src/dashboard_pi.cpp:971
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Πίνακας οργάνων για το OpenCPN"
 
-#: src/dashboard_pi.cpp:963
+#: src/dashboard_pi.cpp:976
 msgid "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr "Πρόσθετο «Πίνακας Οργάνων»\n"
 "Παρουσιάζει τα ναυτικά όργανα στην οθόνη από πηγή NMEA."
 
-#: src/dashboard_pi.cpp:1834 src/dashboard_pi.cpp:2109 src/dashboard_pi.cpp:3115
-#: src/dashboard_pi.cpp:4415
+#: src/dashboard_pi.cpp:1847 src/dashboard_pi.cpp:2122 src/dashboard_pi.cpp:3128
+#: src/dashboard_pi.cpp:4445
 msgid "Up"
 msgstr "Πάνω"
 
-#: src/dashboard_pi.cpp:1837 src/dashboard_pi.cpp:2111 src/dashboard_pi.cpp:3117
-#: src/dashboard_pi.cpp:4422
+#: src/dashboard_pi.cpp:1850 src/dashboard_pi.cpp:2124 src/dashboard_pi.cpp:3130
+#: src/dashboard_pi.cpp:4452
 msgid "Down"
 msgstr "Κάτω"
 
-#: src/dashboard_pi.cpp:1854 src/dashboard_pi.cpp:2120 src/dashboard_pi.cpp:3104
+#: src/dashboard_pi.cpp:1867 src/dashboard_pi.cpp:2133 src/dashboard_pi.cpp:3117
 msgid "Stbd"
 msgstr "Δεξιά"
 
-#: src/dashboard_pi.cpp:1857 src/dashboard_pi.cpp:2122 src/dashboard_pi.cpp:3106
+#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:2135 src/dashboard_pi.cpp:3119
 msgid "Port"
 msgstr "Αριστερά"
 
-#: src/dashboard_pi.cpp:4125
+#: src/dashboard_pi.cpp:4155
 msgid "Dashboard preferences"
 msgstr "Επιλογές για πίνακα οργάνων"
 
-#: src/dashboard_pi.cpp:4128 src/dashboard_pi.cpp:4939 src/dashboard_pi.cpp:5230
-#: src/dashboard_pi.cpp:6234
+#: src/dashboard_pi.cpp:4158 src/dashboard_pi.cpp:5007 src/dashboard_pi.cpp:5306
+#: src/dashboard_pi.cpp:6311
 msgid "Dialog"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4291
+#: src/dashboard_pi.cpp:4321
 msgid "show this dashboard"
 msgstr "Εμφάνιση αυτού του πίνακα οργάνων"
 
-#: src/dashboard_pi.cpp:4302
+#: src/dashboard_pi.cpp:4332
 msgid "Caption:"
 msgstr "Λεζάντα:"
 
-#: src/dashboard_pi.cpp:4312
+#: src/dashboard_pi.cpp:4342
 msgid "Orientation:"
 msgstr "Προσανατολισμός:"
 
-#: src/dashboard_pi.cpp:4318 src/dashboard_pi.cpp:5620
+#: src/dashboard_pi.cpp:4348 src/dashboard_pi.cpp:5696
 msgid "Vertical"
 msgstr "Κατακόρυφα"
 
-#: src/dashboard_pi.cpp:4319 src/dashboard_pi.cpp:5623
+#: src/dashboard_pi.cpp:4349 src/dashboard_pi.cpp:5699
 msgid "Horizontal"
 msgstr "Οριζόντια"
 
-#: src/dashboard_pi.cpp:4350 src/dashboard_pi.cpp:4369 src/dashboard_pi.cpp:5228
+#: src/dashboard_pi.cpp:4380 src/dashboard_pi.cpp:4399 src/dashboard_pi.cpp:5304
 msgid "Instruments"
 msgstr "Όργανα"
 
-#: src/dashboard_pi.cpp:4382
+#: src/dashboard_pi.cpp:4412
 msgid "Add"
 msgstr "Προσθήκη"
 
-#: src/dashboard_pi.cpp:4391
+#: src/dashboard_pi.cpp:4421
 msgid "Edit"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4407
+#: src/dashboard_pi.cpp:4437
 msgid "Delete"
 msgstr "Διαγραφή"
 
-#: src/dashboard_pi.cpp:4435
+#: src/dashboard_pi.cpp:4465
 msgid "Appearance"
 msgstr "Εμφάνιση"
 
-#: src/dashboard_pi.cpp:4438
+#: src/dashboard_pi.cpp:4468
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 
-#: src/dashboard_pi.cpp:4447 src/dashboard_pi.cpp:6344
+#: src/dashboard_pi.cpp:4477 src/dashboard_pi.cpp:6421
 msgid "Title:"
 msgstr "Τίτλος:"
 
-#: src/dashboard_pi.cpp:4456 src/dashboard_pi.cpp:6363
+#: src/dashboard_pi.cpp:4486 src/dashboard_pi.cpp:6440
 msgid "Data:"
 msgstr "Δεδομένα: "
 
-#: src/dashboard_pi.cpp:4465 src/dashboard_pi.cpp:6382
+#: src/dashboard_pi.cpp:4495 src/dashboard_pi.cpp:6459
 msgid "Label:"
 msgstr "Ετικέτα:"
 
-#: src/dashboard_pi.cpp:4474 src/dashboard_pi.cpp:6391
+#: src/dashboard_pi.cpp:4504 src/dashboard_pi.cpp:6468
 msgid "Small:"
 msgstr "Μικρό:"
 
-#: src/dashboard_pi.cpp:4484
+#: src/dashboard_pi.cpp:4514
 msgid "Reset:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4489
+#: src/dashboard_pi.cpp:4519
 msgid "Set dashboard default fonts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4498
+#: src/dashboard_pi.cpp:4528
 msgid "Units, Ranges, Formats"
 msgstr "Μονάδες, Όρια, Μορφή"
 
-#: src/dashboard_pi.cpp:4506
+#: src/dashboard_pi.cpp:4536
 msgid "Speedometer max value:"
 msgstr "Μέγ. τιμή δρομομέτρου:"
 
-#: src/dashboard_pi.cpp:4515
+#: src/dashboard_pi.cpp:4545
 msgid "Speed Over Ground Damping Factor:"
 msgstr "Συντ. απόσβεσης SOG:"
 
-#: src/dashboard_pi.cpp:4524
+#: src/dashboard_pi.cpp:4554
 msgid "COG Damping Factor:"
 msgstr "Συντελεστής απόσβεσης COG:"
 
-#: src/dashboard_pi.cpp:4533
+#: src/dashboard_pi.cpp:4563
 msgid "Wind speed Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4542
+#: src/dashboard_pi.cpp:4572
 msgid "Wind angle Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4551
+#: src/dashboard_pi.cpp:4581
 msgid "Local Time Offset From UTC:"
 msgstr "Διαφορά τοπικής ώρας από UTC:"
 
-#: src/dashboard_pi.cpp:4576
+#: src/dashboard_pi.cpp:4606
 msgid "Boat speed units:"
 msgstr "Μονάδες ταχύτητας πλοίου:"
 
-#: src/dashboard_pi.cpp:4579 src/dashboard_pi.cpp:4643
+#: src/dashboard_pi.cpp:4609 src/dashboard_pi.cpp:4673
 msgid "Honor OpenCPN settings"
 msgstr "Προεπιλεγμένες ρυθμίσεις"
 
-#: src/dashboard_pi.cpp:4579 src/dashboard_pi.cpp:4662
+#: src/dashboard_pi.cpp:4609 src/dashboard_pi.cpp:4696
 msgid "Kts"
 msgstr "κόμβοι"
 
-#: src/dashboard_pi.cpp:4580 src/dashboard_pi.cpp:4662
+#: src/dashboard_pi.cpp:4610 src/dashboard_pi.cpp:4696
 msgid "mph"
 msgstr "μ.α.ώ."
 
-#: src/dashboard_pi.cpp:4580 src/dashboard_pi.cpp:4662
+#: src/dashboard_pi.cpp:4610 src/dashboard_pi.cpp:4696
 msgid "km/h"
 msgstr "km/h"
 
-#: src/dashboard_pi.cpp:4580 src/dashboard_pi.cpp:4662
+#: src/dashboard_pi.cpp:4610 src/dashboard_pi.cpp:4696
 msgid "m/s"
 msgstr "m/s"
 
-#: src/dashboard_pi.cpp:4594
+#: src/dashboard_pi.cpp:4624
 msgid "Depth units:"
 msgstr " Βαθυμετρικές μονάδες: "
 
-#: src/dashboard_pi.cpp:4598 src/dashboard_pi.cpp:4645
+#: src/dashboard_pi.cpp:4628 src/dashboard_pi.cpp:4675
 msgid "Meters"
 msgstr "μέτρα"
 
-#: src/dashboard_pi.cpp:4598
+#: src/dashboard_pi.cpp:4628
 msgid "Feet"
 msgstr "Πόδια"
 
-#: src/dashboard_pi.cpp:4598
+#: src/dashboard_pi.cpp:4628
 msgid "Fathoms"
 msgstr "Οργιές"
 
-#: src/dashboard_pi.cpp:4599
+#: src/dashboard_pi.cpp:4629
 msgid "Inches"
 msgstr "ίντσες"
 
-#: src/dashboard_pi.cpp:4599
+#: src/dashboard_pi.cpp:4629
 msgid "Centimeters"
 msgstr "﻿Εκατοστά"
 
-#: src/dashboard_pi.cpp:4611
+#: src/dashboard_pi.cpp:4641
 #, c-format
 msgid "Depth Offset (%s):"
 msgstr "Αντιστάθμιση βάθους (%s):"
 
-#: src/dashboard_pi.cpp:4640
+#: src/dashboard_pi.cpp:4670
 msgid "Distance units:"
 msgstr "Μονάδες απόστασης:"
 
-#: src/dashboard_pi.cpp:4644
+#: src/dashboard_pi.cpp:4674
 msgid "Nautical miles"
 msgstr "Ναυτικά μίλια"
 
-#: src/dashboard_pi.cpp:4644
+#: src/dashboard_pi.cpp:4674
 msgid "Statute miles"
 msgstr "Αγγλικά μίλια"
 
-#: src/dashboard_pi.cpp:4645
+#: src/dashboard_pi.cpp:4675
 msgid "Kilometers"
 msgstr "Χιλιόμετρα"
 
-#: src/dashboard_pi.cpp:4659
+#: src/dashboard_pi.cpp:4693
 msgid "Wind speed units:"
 msgstr "Μονάδες ταχύτητας ανέμου:"
 
-#: src/dashboard_pi.cpp:4676
+#: src/dashboard_pi.cpp:4710
 msgid "Temperature units:"
 msgstr "Μονάδες θερμοκρασίας:"
 
-#: src/dashboard_pi.cpp:4679
+#: src/dashboard_pi.cpp:4713
 msgid "Celsius"
 msgstr "Κελσίου"
 
-#: src/dashboard_pi.cpp:4679
+#: src/dashboard_pi.cpp:4713
 msgid "Fahrenheit"
 msgstr "Φαρενάιτ"
 
-#: src/dashboard_pi.cpp:4679
+#: src/dashboard_pi.cpp:4713
 msgid "Kelvin"
 msgstr "Κέλβιν (K)"
 
-#: src/dashboard_pi.cpp:4693
+#: src/dashboard_pi.cpp:4728
+msgid "Other selections"
+msgstr ""
+
+#: src/dashboard_pi.cpp:4738
+msgid "Use internal Sumlog."
+msgstr ""
+
+#: src/dashboard_pi.cpp:4739
+msgid "Enter new value if desired"
+msgstr ""
+
+#: src/dashboard_pi.cpp:4755
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
 msgstr "Χρήση N2K και SignalK δεδομένα αληθούς ανέμου (αντ´ι σε σχέση με το νερό)"
 
-#: src/dashboard_pi.cpp:5190
+#: src/dashboard_pi.cpp:5266
 msgid "Add instrument"
 msgstr "Προσθήκη οργάνου"
 
-#: src/dashboard_pi.cpp:5195
+#: src/dashboard_pi.cpp:5271
 msgid "Select instrument to add:"
 msgstr "Διάλεξε όργανο για προσθήκη:"
 
-#: src/dashboard_pi.cpp:5600
+#: src/dashboard_pi.cpp:5676
 msgid "Menu"
 msgstr ""
 
-#: src/dashboard_pi.cpp:5604 src/dashboard_pi.cpp:5630
+#: src/dashboard_pi.cpp:5680 src/dashboard_pi.cpp:5706
 msgid "Preferences..."
 msgstr "Προτιμήσεις..."
 
-#: src/dashboard_pi.cpp:5609
+#: src/dashboard_pi.cpp:5685
 msgid "Resize..."
 msgstr "Αλλαγή μεγέθους..."
 
-#: src/dashboard_pi.cpp:5617
+#: src/dashboard_pi.cpp:5693
 msgid "Undock"
 msgstr "Αποσύνδεση"
 
-#: src/dashboard_pi.cpp:6211
+#: src/dashboard_pi.cpp:6288
 msgid "Choose font"
 msgstr "Επιλογή γραμματοσειράς"
 
-#: src/dashboard_pi.cpp:6353
+#: src/dashboard_pi.cpp:6430
 msgid "Title background color:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6372
+#: src/dashboard_pi.cpp:6449
 msgid "Data background color:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6400
+#: src/dashboard_pi.cpp:6477
 msgid "Arrow 1 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6410
+#: src/dashboard_pi.cpp:6487
 msgid "Arrow 2 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6437
+#: src/dashboard_pi.cpp:6514
 msgid "Set default"
 msgstr ""
 

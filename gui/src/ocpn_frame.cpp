@@ -2308,6 +2308,9 @@ void MyFrame::ODoSetSize(void) {
   }
 
 #endif
+  if (GetPrimaryCanvas() && GetPrimaryCanvas()->GetNotificationsList()) {
+    GetPrimaryCanvas()->GetNotificationsList()->RecalculateSize();
+  }
 
   if (g_pauimgr) g_pauimgr->Update();
 }
@@ -4903,6 +4906,12 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 6: {
       InitAppMsgBusListener();
       InitApiListeners();
+
+      // if WMM is not in use..
+      // set the Mag Variation to the user specified value
+      auto loader = PluginLoader::GetInstance();
+      bool b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
+      if (!b_haveWMM) gVar = g_UserVar;
 
       break;
     }
