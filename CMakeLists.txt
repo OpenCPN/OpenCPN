@@ -81,7 +81,10 @@ message(STATUS "cmake version: ${CMAKE_VERSION}")
 # Locations where cmake looks for cmake modules.
 set(
   CMAKE_MODULE_PATH
-  ${CMAKE_SOURCE_DIR}/build ${CMAKE_SOURCE_DIR}/ ${CMAKE_SOURCE_DIR}/cmake
+  ${CMAKE_SOURCE_DIR}/build
+  ${CMAKE_SOURCE_DIR}/
+  ${CMAKE_SOURCE_DIR}/cmake
+  ${CMAKE_SOURCE_DIR}/model/cmake
 )
 
 include(FindPkgConfig)
