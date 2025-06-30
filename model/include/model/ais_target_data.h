@@ -255,6 +255,7 @@ public:
   double CPA;           // Nautical Miles
   bool b_show_AIS_CPA;  // TR 2012.06.28: Show AIS-CPA
   bool b_show_track;
+  bool b_show_track_old;  // Previous state of b_show_track
 
   AisMeteoData met_data;
   std::vector<AISTargetTrackPoint> m_ptrack;
