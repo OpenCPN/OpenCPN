@@ -167,6 +167,7 @@ std-filters: &std-filters
         - master
         - build
         - flatpak
+        - dpt
 
 
 workflows:
