@@ -994,6 +994,13 @@ void AISTargetListDialog::OnShowAllTracks(wxCommandEvent &event) {
       auto pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = true;
+
+        // Check for any persistently tracked target, force b_show_track_old ON
+        std::map<int, Track *>::iterator it;
+        it = g_pAIS->m_persistent_tracks.find(pAISTarget->MMSI);
+        if (it != g_pAIS->m_persistent_tracks.end()) {
+          pAISTarget->b_show_track_old = true;
+        }
       }
     }
     UpdateAISTargetList();
@@ -1010,8 +1017,10 @@ void AISTargetListDialog::OnHideAllTracks(wxCommandEvent &event) {
         // Check for any persistently tracked target, force b_show_track ON
         std::map<int, Track *>::iterator it;
         it = g_pAIS->m_persistent_tracks.find(pAISTarget->MMSI);
-        if (it != g_pAIS->m_persistent_tracks.end())
+        if (it != g_pAIS->m_persistent_tracks.end()) {
           pAISTarget->b_show_track = true;
+          pAISTarget->b_show_track_old = false;
+        }
       }
     }
     UpdateAISTargetList();
@@ -1031,6 +1040,7 @@ void AISTargetListDialog::OnToggleTrack(wxCommandEvent &event) {
 
   if (pAISTarget) {
     pAISTarget->b_show_track = !pAISTarget->b_show_track;
+    pAISTarget->b_show_track_old = !pAISTarget->b_show_track_old;
     UpdateAISTargetList();
   }
 }
