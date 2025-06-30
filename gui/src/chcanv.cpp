@@ -314,6 +314,7 @@ extern bool g_bDeferredInitDone;
 extern wxString g_CmdSoundString;
 ShapeBaseChartSet gShapeBasemap;
 extern bool g_CanvasHideNotificationIcon;
+extern bool g_bhide_context_menus;
 
 //  TODO why are these static?
 
@@ -10760,6 +10761,37 @@ void pupHandler_PasteTrack() {
 }
 
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
+  wxJSONValue v;
+  v[_T("CanvasIndex")] = GetCanvasIndexUnderMouse();
+  v[_T("CursorPosition_x")] = x;
+  v[_T("CursorPosition_y")] = y;
+  // Send a limited set of selection types depending on what is
+  // found under the mouse point.
+  if (seltype & SELTYPE_UNKNOWN) v[_T("SelectionType")] = wxT("Canvas");
+  if (seltype & SELTYPE_ROUTEPOINT) v[_T("SelectionType")] = wxT("RoutePoint");
+  if (seltype & SELTYPE_AISTARGET) v[_T("SelectionType")] = wxT("AISTarget");
+
+  wxJSONWriter w;
+  wxString out;
+  w.Write(v, out);
+  SendMessageToAllPlugins("OCPN_CONTEXT_CLICK", out);
+
+  json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_CONTEXT_CLICK");
+
+#if 0
+#define SELTYPE_UNKNOWN 0x0001
+#define SELTYPE_ROUTEPOINT 0x0002
+#define SELTYPE_ROUTESEGMENT 0x0004
+#define SELTYPE_TIDEPOINT 0x0008
+#define SELTYPE_CURRENTPOINT 0x0010
+#define SELTYPE_ROUTECREATE 0x0020
+#define SELTYPE_AISTARGET 0x0040
+#define SELTYPE_MARKPOINT 0x0080
+#define SELTYPE_TRACKSEGMENT 0x0100
+#define SELTYPE_DRAGHANDLE 0x0200
+#endif
+
+  if (g_bhide_context_menus) return true;
   m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                        m_pFoundRoutePoint, m_FoundAIS_MMSI,
                                        m_pIDXCandidate, m_nmea_log);

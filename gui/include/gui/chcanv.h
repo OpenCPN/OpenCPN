@@ -48,6 +48,7 @@
 #include "gshhs.h"
 #include "notification_manager_gui.h"
 #include "observable.h"
+#include "observable_evtvar.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -824,6 +825,12 @@ public:
   double GetDisplayScale() { return m_displayScale; }
   void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
   NotificationsList *GetNotificationsList() { return m_NotificationsList; }
+
+  /**
+   * Notified with message targeting all plugins. Contains a message type
+   * string and a wxJSONValue shared_ptr.
+   */
+  EventVar json_msg;
 
 private:
   /**
