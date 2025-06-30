@@ -29,6 +29,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <cstdint>
 
 #include <wx/datetime.h>
 #include <wx/intl.h>
