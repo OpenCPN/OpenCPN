@@ -51,9 +51,23 @@ std::string ptr_key(const void* ptr);
 class Observable;
 class ObservableListener;
 
-/** Interface implemented by classes which listens. */
+/**
+ * Interface implemented by classes which listens.
+ *
+ * @interface KeyProvider observable.h "observable.h"
+ */
 class KeyProvider {
 public:
+  /**
+   * Destroy the Key Provider object.
+   */
+  virtual ~KeyProvider() = default;
+
+  /**
+   * Get the Key object from the Key Provider.
+   *
+   * @return std::string Key Object.
+   */
   virtual std::string GetKey() const = 0;
 };
 
@@ -86,6 +100,11 @@ public:
       : key(_key), m_list(ListenersByKey::GetInstance(_key)) {}
 
   Observable(const KeyProvider& kp) : Observable(kp.GetKey()) {}
+
+  /**
+   * Destroy the Observable object.
+   */
+  virtual ~Observable() = default;
 
   /** Notify all listeners about variable change. */
   virtual const void Notify();
