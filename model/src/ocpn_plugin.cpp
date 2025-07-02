@@ -297,6 +297,10 @@ void opencpn_plugin_119::PreShutdownHook() { return; }
 
 //    Opencpn_Plugin_120 Implementation
 opencpn_plugin_120::opencpn_plugin_120(void* pmgr) : opencpn_plugin_119(pmgr) {}
+
+//    Opencpn_Plugin_121 Implementation
+opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
+
 void opencpn_plugin_120::OnContextMenuItemCallbackExt(int id,
                                                       std::string obj_ident,
                                                       std::string obj_type,
