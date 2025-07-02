@@ -1465,6 +1465,7 @@ std::vector<unsigned char> MakeSimpleOutMsg(
       for (unsigned char s : sspl) out_vec.push_back(s);
 
       // terminate
+      out_vec.pop_back();
       out_vec.push_back(0x0d);
       out_vec.push_back(0x0a);
       break;
@@ -1925,10 +1926,12 @@ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
 
   // Create the internal message for all N2K listeners
   std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
+  auto msg_one =
+      std::make_shared<const Nmea2000Msg>(msg->PGN.pgn, msg_payload, addr);
   auto msg_all = std::make_shared<const Nmea2000Msg>(1, msg_payload, addr);
 
   // Notify listeners
-  m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_one));
   m_listener.Notify(std::move(msg_all));
 
   return true;
