@@ -162,8 +162,10 @@ static void LoadSerialPorts(wxComboBox* box) {
   for (size_t i = 0; i < ports->GetCount(); i++)
     sorted_ports.insert((*ports)[i].ToStdString());
 
+  auto value = box->GetValue();
   box->Clear();
   for (auto& p : sorted_ports) box->Append(p);
+  if (!value.empty()) box->SetValue(value);
 }
 
 //------------------------------------------------------------------------------
