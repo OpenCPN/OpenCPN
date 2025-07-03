@@ -1176,9 +1176,16 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
     bool n0183ctlenabled =
         (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
         DataProtocol::PROTO_NMEA0183;
+    bool n2kctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
+                         DataProtocol::PROTO_NMEA2000;
     if (!n0183ctlenabled) {
-      m_cbInput->Hide();
-      m_cbOutput->Hide();
+      if (n2kctlenabled) {
+        m_cbInput->Show();
+        m_cbOutput->Show();
+      } else {
+        m_cbInput->Hide();
+        m_cbOutput->Hide();
+      }
       ShowOutFilter(false);
       ShowInFilter(false);
       m_stPrecision->Hide();
