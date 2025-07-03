@@ -981,6 +981,9 @@ void* CommDriverN2KSerialThread::Entry() {
     wxString msg(_T("NMEA input device open failed: "));
     msg.Append(m_PortName);
     ThreadMessage(msg);
+    std::lock_guard lock(m_stats_mutex);
+    m_driver_stats.available = false;
+
     // goto thread_exit; // This means we will not be trying to connect = The
     // device must be connected when the thread is created. Does not seem to be
     // needed/what we want as the reconnection logic is able to pick it up
@@ -988,6 +991,8 @@ void* CommDriverN2KSerialThread::Entry() {
     // expected device name).
   } else {
     SetGatewayOperationMode();
+    std::lock_guard lock(m_stats_mutex);
+    m_driver_stats.available = true;
   }
 
   m_pParentDriver->SetSecThreadActive();  // I am alive
@@ -1026,6 +1031,8 @@ void* CommDriverN2KSerialThread::Entry() {
       wxMilliSleep(250 * retries);
       CloseComPortPhysical();
       if (OpenComPortPhysical(m_PortName, m_baud)) {
+        std::lock_guard lock(m_stats_mutex);
+        m_driver_stats.available = true;
         SetGatewayOperationMode();
         retries = 0;
       } else if (retries < 10)
@@ -1075,6 +1082,8 @@ void* CommDriverN2KSerialThread::Entry() {
               CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
               Nevent.SetPayload(buffer);
               m_pParentDriver->AddPendingEvent(Nevent);
+              std::lock_guard lock(m_stats_mutex);
+              m_driver_stats.rx_count += vec->size();
             } else if (next_byte == STARTOFTEXT) {
               put_ptr = rx_buffer;
               bGotESC = false;
@@ -1131,6 +1140,8 @@ void* CommDriverN2KSerialThread::Entry() {
         retries = 0;
         CloseComPortPhysical();
       }
+      std::lock_guard lock(m_stats_mutex);
+      m_driver_stats.tx_count += qmsg.size();
 
       b_qdata = !out_que.empty();
     }  // while b_qdata
