@@ -3210,6 +3210,7 @@ Track *MyFrame::TrackOff(bool do_add_point) {
         if (pExtendTrack) {
           NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
           RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
+          NavObj_dB::GetInstance().UpdateTrack(pExtendTrack);
           return_val = pExtendTrack;
         }
       }
