@@ -1998,6 +1998,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
 void CommDriverN2KNet::Close() {
   wxLogMessage(wxString::Format(_T("Closing NMEA NetworkDataStream %s"),
                                 GetNetPort().c_str()));
+  m_stats_timer.Stop();
   //    Kill off the TCP Socket if alive
   if (m_sock) {
     if (m_is_multicast)

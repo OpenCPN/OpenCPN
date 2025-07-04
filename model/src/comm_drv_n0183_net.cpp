@@ -551,6 +551,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 
 void CommDriverN0183Net::Close() {
   MESSAGE_LOG << "Closing NMEA NetworkDataStream " << m_params.NetworkPort;
+  m_stats_timer.Stop();
   //    Kill off the TCP Socket if alive
   if (m_sock) {
     if (m_is_multicast)
