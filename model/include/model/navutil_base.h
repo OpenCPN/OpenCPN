@@ -92,4 +92,44 @@ extern double toMagnetic(double deg_true);
 extern double toMagnetic(double deg_true, double variation);
 
 wxString SanitizeFileName(const wxString &input);
+
+/**
+ * Trim white spaces from the left
+ * @param s String to be trimmed
+ */
+void ltrim(std::string &s);
+
+/**
+ * Trim white spaces from the right
+ * @param s String to be trimmed
+ */
+void rtrim(std::string &s);
+
+/**
+ * Trim white spaces from both ends
+ * @param s String to be trimmed
+ */
+void trim(std::string &s);
+
+/**
+ * Trim white spaces from the left
+ * @param s String to be trimmed
+ * @return A trimmed copy of s
+ */
+std::string ltrim_copy(std::string s);
+
+/**
+ * Trim white spaces from the right
+ * @param s String to be trimmed
+ * @return A trimmed copy of s
+ */
+std::string rtrim_copy(std::string s);
+
+/**
+ * Trim white spaces from both ends
+ * @param s String to be trimmed
+ * @return A trimmed copy of s
+ */
+std::string trim_copy(std::string s);
+
 #endif  // _NAVUTIL_BASE__
