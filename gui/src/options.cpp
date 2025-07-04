@@ -5418,9 +5418,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
                                  "Vessel Finder"};
   m_p_ais_color_action = new wxChoice(panelAIS, wxID_ANY, wxDefaultPosition,
                                       wxDefaultSize, 3, ais_color_action);
-  m_p_ais_color_action->SetToolTip(
-      _("Select the colorset to use to render AIS targets : OpenCPN S52, Marine "
-        "Traffic, or Vessel Finder"));
+  m_p_ais_color_action->SetToolTip(_(
+      "Select the colorset to use to render AIS targets : OpenCPN S52, Marine "
+      "Traffic, or Vessel Finder"));
   pDisplayGrid->Add(m_p_ais_color_action, 1, wxALIGN_RIGHT | wxALL,
                     group_item_spacing);
 
