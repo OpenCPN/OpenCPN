@@ -303,10 +303,16 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
       }
       continue;
     }
-    // N2K is always configured for output
+    // Check N2K dirvers for OUTPUT configuration
+    if (attributes.find("protocol") == attributes.end()) continue;
     if (attributes.at("protocol") == "nmea2000") {
-      m_output_drivers.push_back(handle);
-      m_have_n2000_out = true;
+      if (attributes.find("ioDirection") != attributes.end()) {
+        if ((attributes.at("ioDirection") == "IN/OUT") ||
+            (attributes.at("ioDirection") == "OUT")) {
+          m_output_drivers.push_back(handle);
+          m_have_n2000_out = true;
+        }
+      }
       continue;
     }
   }

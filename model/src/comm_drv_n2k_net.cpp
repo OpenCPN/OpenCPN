@@ -218,7 +218,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
   sprintf(port_char, "%d", params->NetworkPort);
   this->attributes["netPort"] = std::string(port_char);
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  this->attributes["ioDirection"] = std::string("IN/OUT");
+  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_NET, &CommDriverN2KNet::handle_N2K_MSG, this);

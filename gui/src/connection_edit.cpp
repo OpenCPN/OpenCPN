@@ -1328,7 +1328,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
 void ConnectionEditDialog::SetDSFormRWStates(void) {
   if (m_rbTypeSerial->GetValue()) {
-    m_cbInput->Enable(FALSE);
+    m_cbInput->Enable(TRUE);
     m_cbOutput->Enable(TRUE);
     ShowInFilter();
     ShowOutFilter(m_cbOutput->IsChecked());
