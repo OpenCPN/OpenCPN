@@ -5407,6 +5407,23 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
         "chart."));
   pDisplayGrid->Add(m_pWplAction, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
+  // AIS target coloring
+  m_p_check_ais_color =
+      new wxStaticText(panelAIS, -1, _("AIS target color scheme"));
+  m_p_check_ais_color->SetToolTip(
+      _("Choose the colorset used to fill AIS targets on the map."));
+  pDisplayGrid->Add(m_p_check_ais_color, 1, wxALL, group_item_spacing);
+
+  wxString ais_color_action[] = {_("OpenCPN S52"), _("Marine Traffic"),
+                                 "Vessel Finder"};
+  m_p_ais_color_action = new wxChoice(panelAIS, wxID_ANY, wxDefaultPosition,
+                                      wxDefaultSize, 3, ais_color_action);
+  m_p_ais_color_action->SetToolTip(
+      _("Select the colorset to use to render AIS targets : OpenCPN S52, Marine "
+        "Traffic, or Vessel Finder"));
+  pDisplayGrid->Add(m_p_ais_color_action, 1, wxALIGN_RIGHT | wxALL,
+                    group_item_spacing);
+
   // Rollover
   wxStaticBox* rolloverBox = new wxStaticBox(panelAIS, wxID_ANY, _("Rollover"));
   wxStaticBoxSizer* rolloverSizer =
@@ -6550,6 +6567,7 @@ void options::SetInitialSettings(void) {
 
   m_pCheck_use_Wpl->SetValue(g_bWplUsePosition);
   m_pWplAction->SetSelection(g_WplAction);
+  m_p_ais_color_action->SetSelection(g_ais_color_set);
 
   // Alerts
   m_pCheck_AlertDialog->SetValue(g_bAIS_CPA_Alert);
@@ -7527,6 +7545,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   g_Show_Target_Name_Scale = (int)wxMax(5000, ais_name_scale);
   g_bWplUsePosition = m_pCheck_use_Wpl->GetValue();
   g_WplAction = m_pWplAction->GetSelection();
+  g_ais_color_set = m_p_ais_color_action->GetSelection();
 
   //   Alert
   g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
