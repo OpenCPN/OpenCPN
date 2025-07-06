@@ -111,7 +111,7 @@ void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
                                   const wxString error_msg) {
   if (m_log_callbacks.log_is_active()) {
     NavmsgStatus ns;
-    ns.direction = NavmsgStatus::Direction::kReceived;
+    ns.direction = NavmsgStatus::Direction::kHandled;
     if (is_error) {
       ns.status = NavmsgStatus::State::kChecksumError;
     } else {

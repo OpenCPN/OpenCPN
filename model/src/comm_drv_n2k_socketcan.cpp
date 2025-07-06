@@ -210,6 +210,7 @@ bool CommDriverN2KSocketCanImpl::Open() {
 
 void CommDriverN2KSocketCanImpl::Close() {
   wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
+  m_stats_timer.Stop();
   m_worker.StopThread();
 
   // We cannot use shared_from_this() since we might be in the destructor.
@@ -384,10 +385,10 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
     : CommDriverN2K(params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
+      m_stats_timer(*this, 2s),
       m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_baudrate(wxString::Format("%i", params->Baudrate)),
-      m_stats_timer(*this, 2s) {
+      m_baudrate(wxString::Format("%i", params->Baudrate)) {
   this->attributes["canPort"] = params->socketCAN_port.ToStdString();
   this->attributes["canAddress"] = std::to_string(DEFAULT_N2K_SOURCE_ADDRESS);
   this->attributes["userComment"] = params->UserComment.ToStdString();

@@ -211,6 +211,7 @@ bool CommDriverN0183AndroidBT::Open() {
 void CommDriverN0183AndroidBT::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing NMEA BT Driver %s"), m_portstring.c_str()));
+  m_stats_timer.Stop();
 
   androidStopBT();
   m_driver_stats.available = false;
