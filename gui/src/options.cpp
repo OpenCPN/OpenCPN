@@ -7797,7 +7797,7 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   gFrame->PrepareOptionsClose(this, m_returnChanges);
 
   //  If we had a config change, then do it now
-  if ((m_returnChanges & CONFIG_CHANGED))
+  if ((m_returnChanges & CONFIG_CHANGED) || (m_returnChanges & GL_CHANGED))
     gFrame->ScheduleReconfigAndSettingsReload(false, false);
 
   // Special case for "Dialog" font edit
