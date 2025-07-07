@@ -671,7 +671,8 @@ private:
     cp->b_IsSetup = true;
     if (!cp->bEnabled) {
       SetCellValue(row, 4, kUtfFilledCircle);
-      ForceRefresh();
+      // ForceRefresh() apparently broken, see #4648
+      ReloadGrid(TheConnectionParams());
     }
   }
 
