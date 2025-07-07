@@ -32,10 +32,15 @@
 using DriverPtr = std::unique_ptr<AbstractCommDriver>;
 
 /**
- * The global driver registry, a singleton. Drivers register here when
- * activated, transport layer finds them.
+ * The global driver registry, a singleton. Drivers are registered here
+ * when activated, transport layer finds them.
  *
- * Also used as exchange point for messages for USB devices hotplug events.
+ * Also used as exchange point for some driver related events>.
+ *
+ * This interface is not synchronized and must only be used from main
+ * thread. The exception is the various EventVar which can be notified
+ * from driver threads. As usual, listening to these events must be done
+ * in main thread.
  */
 class CommDriverRegistry final {
 public:
