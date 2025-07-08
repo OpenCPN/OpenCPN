@@ -5546,12 +5546,19 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   langStyleBox->Add(itemLangStaticBoxSizer, 1, wxEXPAND | wxALL, border_size);
 
-  m_itemLangListBox = new wxChoice(itemPanelFont, ID_CHOICE_LANG);
+  wxSize langChoiceSize = wxSize(-1, -1);
+#ifdef __ANDROID__
+  // Need to set wxChoice vertical size explicitely in Android
+  langChoiceSize = wxSize(-1, m_fontHeight * 3 / 4);
+#endif
+
+  m_itemLangListBox = new wxChoice(itemPanelFont, ID_CHOICE_LANG,
+                                   wxDefaultPosition, langChoiceSize);
 
   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL,
                               border_size);
 #ifdef __ANDROID__
-  m_itemLangListBox->Disable();
+  // m_itemLangListBox->Disable();
 #endif
 
   // Fonts
