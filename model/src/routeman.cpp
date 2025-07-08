@@ -964,8 +964,8 @@ void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
   int scaled_line_width = g_route_line_width;
   int track_scaled_line_width = g_track_line_width;
   if (g_btouch) {
-    // 0.2 mm nominal, but not less than 1 pixel
-    double nominal_line_width_pix = wxMax(1.5, floor(displayDPmm / 5.0));
+    // 0.4 mm nominal, but not less than 2 pixel
+    double nominal_line_width_pix = wxMax(2.0, floor(displayDPmm * 0.4));
 
     double sline_width = wxMax(nominal_line_width_pix, g_route_line_width);
     sline_width *= g_ChartScaleFactorExp;
