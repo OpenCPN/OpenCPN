@@ -2575,6 +2575,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     case ID_SETTINGS_DELETE: {
       delete g_options;
       g_options = nullptr;
+      g_pOptions = nullptr;
       break;
     }
 
