@@ -3410,3 +3410,10 @@ std::shared_ptr<PI_PointContext> GetContextAtPoint(int x, int y,
     return rstruct;
   }
 }
+
+wxBitmap GetObjectIcon_PlugIn(const wxString& name) {
+  if (pWayPointMan) {
+    return *pWayPointMan->GetIconBitmap(name);
+  } else
+    return wxNullBitmap;
+}
