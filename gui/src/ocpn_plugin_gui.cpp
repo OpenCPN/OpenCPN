@@ -3397,3 +3397,16 @@ void SetMinZoomScale(double min_scale) {
 void SetMaxZoomScale(double max_scale) {
   g_maxzoomin = wxRound(wxMax(max_scale, 100.));
 }
+
+std::shared_ptr<PI_PointContext> GetContextAtPoint(int x, int y,
+                                                   int canvas_index) {
+  ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+  if (cc) {
+    return cc->GetCanvasContextAtPoint(x, y);
+  } else {
+    auto rstruct = std::make_shared<PI_PointContext>();
+    rstruct->object_type = OBJECT_UNKNOWN;
+    rstruct->object_ident = "";
+    return rstruct;
+  }
+}

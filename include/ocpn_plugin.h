@@ -6942,7 +6942,8 @@ typedef enum _PI_ContextObjectType {
   OBJECT_CHART = 0,
   OBJECT_ROUTEPOINT,
   OBJECT_ROUTESEGMENT,
-  OBJECT_AISTARGET
+  OBJECT_AISTARGET,
+  OBJECT_UNKNOWN
 } PI_ContextObjectType;
 
 typedef struct _PI_PointContext {
