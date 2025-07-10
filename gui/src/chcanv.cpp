@@ -4803,7 +4803,8 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
     // set a minimum scale
     if ((GetCanvasScaleFactor() / proposed_scale_onscreen) <
         m_absolute_min_scale_ppm)
-      b_do_zoom = false;
+      proposed_scale_onscreen =
+          GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
   }
 
   double new_scale =
@@ -4836,6 +4837,12 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
 
   m_bzooming = false;
 }
+
+void ChartCanvas::SetAbsoluteMinScale(double min_scale) {
+  double x_scale_ppm = GetCanvasScaleFactor() / min_scale;
+  m_absolute_min_scale_ppm = wxMax(m_absolute_min_scale_ppm, x_scale_ppm);
+}
+
 int rot;
 void ChartCanvas::RotateCanvas(double dir) {
   // SetUpMode(NORTH_UP_MODE);

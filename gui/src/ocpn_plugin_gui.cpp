@@ -125,6 +125,7 @@ extern bool g_CanvasHideNotificationIcon;
 extern wxString g_default_wp_icon;
 extern bool g_bhide_route_console;
 extern bool g_bhide_context_menus;
+extern int g_maxzoomin;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -3385,3 +3386,14 @@ bool ActivateRoutePI(wxString route_guid, bool activate) {
 
 void EnableDefaultConsole(bool enable) { g_bhide_route_console = !enable; }
 void EnableDefaultContextMenus(bool enable) { g_bhide_context_menus = !enable; }
+
+void SetMinZoomScale(double min_scale) {
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas* cc = g_canvasArray.Item(i);
+    cc->SetAbsoluteMinScale(min_scale);
+  }
+}
+
+void SetMaxZoomScale(double max_scale) {
+  g_maxzoomin = wxRound(wxMax(max_scale, 100.));
+}

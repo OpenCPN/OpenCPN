@@ -312,6 +312,7 @@ public:
 
   void JumpToPosition(double lat, double lon, double scale);
   void SetFirstAuto(bool b_auto) { m_bFirstAuto = b_auto; }
+  void SetAbsoluteMinScale(double min_scale);
 
   /**
    * Convert latitude/longitude to canvas pixel coordinates (physical pixels)
