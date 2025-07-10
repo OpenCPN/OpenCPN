@@ -579,8 +579,8 @@ void OCPNPlatform::Initialize_2(void) {
 
   // Set the default Import/Export directory for A11+
   if (g_Android_SDK_Version >= 30) {
-    if (!g_gpx_path.StartsWith(androidGetDownloadDirectory())) {
-      g_gpx_path = androidGetDownloadDirectory();
+    if (!g_gpx_path.StartsWith(androidGetDocumentsDirectory())) {
+      g_gpx_path = androidGetDocumentsDirectory();
     }
   }
 
