@@ -24,8 +24,21 @@ struct Logline {
       : Logline(navmsg, NavmsgStatus()) {}
 };
 
+/**
+ * NMEA Log Interface
+ *
+ * Provides interface for interacting with NMEA log.
+ *
+ * @interface NmeaLog nmea_log.h "model/nmea_log.h"
+ *
+ */
 class NmeaLog {
 public:
+  /**
+   * Destroy the NMEA Log object.
+   */
+  virtual ~NmeaLog() = default;
+
   /** Add an formatted string to log output. */
   virtual void Add(const Logline& l) = 0;
 
