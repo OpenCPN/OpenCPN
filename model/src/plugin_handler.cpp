@@ -375,7 +375,7 @@ PluginHandler::PluginHandler() {}
 bool PluginHandler::IsCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
   static const SemanticVersion kMinApi = SemanticVersion(1, 16);
-  static const SemanticVersion kMaxApi = SemanticVersion(1, 20);
+  static const SemanticVersion kMaxApi = SemanticVersion(1, 21);
   auto plugin_api = SemanticVersion::parse(metadata.api_version);
   if (plugin_api.major == -1) {
     DEBUG_LOG << "Cannot parse API version \"" << metadata.api_version << "\"";
