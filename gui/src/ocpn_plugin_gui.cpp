@@ -317,7 +317,7 @@ bool GetGlobalColor(wxString colorName, wxColour* pcolour) {
 }
 
 wxFont* OCPNGetFont(wxString TextElement, int default_size) {
-  return FontMgr::Get().GetFont(TextElement, default_size);
+  return FontMgr::Get().GetFontLegacy(TextElement, default_size);
 }
 
 wxFont* GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size) {
