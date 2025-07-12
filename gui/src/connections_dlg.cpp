@@ -742,7 +742,7 @@ private:
     PrioritiesBtn(wxWindow* parent)
         : wxButton(parent, wxID_ANY, _("Adjust Nav data priorities...")) {
       Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
-        PriorityDlg dialog(this);
+        PriorityDlg dialog(this->GetParent());
         dialog.ShowModal();
       });
     }
