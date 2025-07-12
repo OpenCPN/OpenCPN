@@ -1953,6 +1953,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
           m_driver_stats.available = true;
           // printf("---%s", v.data());
           GetSock()->Write(v.data(), v.size());
+          m_dog_value = N_DOG_TIMEOUT;  // feed the dog
           if (GetSock()->Error()) {
             if (GetSockServer()) {
               GetSock()->Destroy();

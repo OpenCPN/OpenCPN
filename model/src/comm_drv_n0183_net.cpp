@@ -509,6 +509,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
     case TCP:
       if (GetSock() && GetSock()->IsOk()) {
         m_sock->Write(payload.mb_str(), strlen(payload.mb_str()));
+        m_dog_value = N_DOG_TIMEOUT;  // feed the dog
         if (GetSock()->Error()) {
           if (m_socket_server) {
             m_sock->Destroy();
@@ -533,6 +534,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
       udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
       if (udp_socket && udp_socket->IsOk()) {
         udp_socket->SendTo(m_addr, payload.mb_str(), payload.size());
+        m_dog_value = N_DOG_TIMEOUT;  // feed the dog
         if (udp_socket->Error()) ret = false;
       } else {
         ret = false;
