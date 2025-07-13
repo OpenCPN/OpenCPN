@@ -1248,7 +1248,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
     pConfig->SetPath(_T ( "/Settings/GlobalState" ));
     pConfig->Write(_T ( "bShowS57Text" ), true);
     pConfig->Write(_T ( "bShowS57ImportantTextOnly" ), false);
-    pConfig->Write(_T ( "nDisplayCategory" ), (int)(_DisCat)STANDARD);
+    pConfig->Write(_T ( "nDisplayCategory" ), (int)(_DisCat)OTHER);
     pConfig->Write(_T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART);
     pConfig->Write(_T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES);
 
