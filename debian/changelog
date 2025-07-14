@@ -1,13 +1,8 @@
-opencpn (1:5.12.0+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
+opencpn (1:5.12.0+dfsg-1ubuntu1~bpo20.04+2) focal; urgency=medium
 
-  * New upstream release
-  * Drop upstream patches, rebase the rest
-  * New patch: Disable locale-dependent tests
-  * Update installation paths
-  * Drop obsolete lintian-overrides
+  * Force new build
 
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 13:16:16 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 23:27:11 +0200
 
 opencpn (1:5.10.2+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
