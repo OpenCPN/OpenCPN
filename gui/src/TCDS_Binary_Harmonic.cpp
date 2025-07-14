@@ -302,7 +302,10 @@ TCDS_Binary_Harmonic::TCDS_Binary_Harmonic() {
   num_csts = 0;
   num_epochs = 0;
 
-  //  Build the units array
+  m_work_buffer = nullptr;
+  m_cst_epochs = nullptr;
+  m_cst_nodes = nullptr;
+  m_cst_speeds = nullptr;
 }
 
 TCDS_Binary_Harmonic::~TCDS_Binary_Harmonic() {
@@ -317,7 +320,11 @@ TCDS_Binary_Harmonic::~TCDS_Binary_Harmonic() {
 }
 
 TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
-  if (!open_tide_db(data_file_path.mb_str())) return TC_TCD_FILE_CORRUPT;
+  try {
+    if (!open_tide_db(data_file_path.mb_str())) return TC_TCD_FILE_CORRUPT;
+  } catch (...) {
+    return TC_TCD_FILE_CORRUPT;
+  }
 
   // Build the tables of constituent data
 

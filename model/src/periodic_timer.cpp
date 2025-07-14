@@ -29,7 +29,16 @@ PeriodicTimer::PeriodicTimer(std::chrono::milliseconds interval)
       m_run_sts(1),
       m_thread(std::thread([&] { Worker(); })) {}
 
-PeriodicTimer::~PeriodicTimer() { Stop(); }
+PeriodicTimer::~PeriodicTimer() {
+  if (m_run_sts == 1) {
+    Stop();
+  } else if (m_run_sts == 0) {
+    // ongoing stop() operation, wait until completed
+    std::unique_lock lock(m_mutex);
+    m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts < 0; });
+  }
+  if (m_thread.joinable()) m_thread.join();
+}
 
 void PeriodicTimer::Stop() {
   m_run_sts = 0;
@@ -37,7 +46,6 @@ void PeriodicTimer::Stop() {
   std::unique_lock lock(m_mutex);
   m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts < 0; });
   lock.unlock();
-  if (m_thread.joinable()) m_thread.join();
 }
 
 void PeriodicTimer::Worker() {

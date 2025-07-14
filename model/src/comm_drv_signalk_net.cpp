@@ -390,6 +390,7 @@ void CommDriverSignalKNet::CloseWebSocket() {
   if (m_wsThread) {
     if (IsThreadRunning()) {
       wxLogMessage(_T("Stopping Secondary SignalK Thread"));
+      m_stats_timer.Stop();
 
       m_Thread_run_flag = 0;
       int tsec = 10;

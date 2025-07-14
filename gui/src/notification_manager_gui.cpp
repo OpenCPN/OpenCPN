@@ -42,6 +42,14 @@
 #include "model/datetime.h"
 #include "navutil.h"
 
+// This window style value has slipped from the headers, but is useful
+//  on MSW...
+#ifdef __WXMSW__
+#define wxFULL_PAINT_ON_RESIZE 0x00010000
+#else
+#define wxFULL_PAINT_ON_RESIZE 0
+#endif
+
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
@@ -79,7 +87,7 @@ END_EVENT_TABLE()
 NotificationPanel::NotificationPanel(
     wxPanel* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
     std::shared_ptr<Notification> _notification, int _repeat_count)
-    : wxPanel(parent, id, pos, size, wxBORDER_NONE),
+    : wxPanel(parent, id, pos, size, wxBORDER_NONE | wxFULL_PAINT_ON_RESIZE),
       repeat_count(_repeat_count) {
   notification = _notification;
 
@@ -87,7 +95,7 @@ NotificationPanel::NotificationPanel(
   SetSizer(topSizer);
 
   wxBoxSizer* itemBoxSizer01 = new wxBoxSizer(wxHORIZONTAL);
-  topSizer->Add(itemBoxSizer01, 0, wxEXPAND);
+  topSizer->Add(itemBoxSizer01, 1, wxEXPAND);
 
   double iconSize = GetCharWidth() * 3;
   double dpi_mult = g_Platform->GetDisplayDIPMult(this);
@@ -140,12 +148,12 @@ NotificationPanel::NotificationPanel(
                       /*wxEXPAND|*/ wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   PanelHardBreakWrapper wrapper(this, notification->GetMessage(),
-                                GetSize().x * 60 / 100);
+                                GetSize().x * 50 / 100);
 
   auto textbox = new wxStaticText(this, wxID_ANY, wrapper.GetWrapped());
   itemBoxSizer01->Add(textbox, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
 
-  itemBoxSizer01->AddStretchSpacer(1);
+  itemBoxSizer01->AddStretchSpacer();
 
   // Ack button
   m_ack_button = new wxButton(this, wxID_OK);
@@ -178,7 +186,7 @@ void NotificationPanel::OnPaint(wxPaintEvent& event) {
   dc.SetBrush(b);
   dc.SetPen(wxPen(box_border, penWidth));
 
-  dc.DrawRoundedRectangle(5, 5, GetSize().x - 10, GetSize().y - 10, 5);
+  dc.DrawRoundedRectangle(5, 2, GetSize().x - 10, GetSize().y - 4, 5);
 }
 
 NotificationListPanel::NotificationListPanel(wxWindow* parent, wxWindowID id,

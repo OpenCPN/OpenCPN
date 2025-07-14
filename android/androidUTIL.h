@@ -131,6 +131,7 @@ extern wxString
 androidGetCacheDir();  // Used for raster_texture_cache, mmsitoname.csv, etc
 extern wxString androidGetExtStorageDir();  // Used for Chart storage, typically
 extern wxString androidGetDownloadDirectory();
+extern wxString androidGetDocumentsDirectory();
 
 extern int startAndroidFileDownload(const wxString &url,
                                     const wxString &destination,
