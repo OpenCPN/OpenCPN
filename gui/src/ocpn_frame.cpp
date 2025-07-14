@@ -2575,6 +2575,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     case ID_SETTINGS_DELETE: {
       delete g_options;
       g_options = nullptr;
+      g_pOptions = nullptr;
       break;
     }
 
@@ -2900,6 +2901,19 @@ void MyFrame::ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) {
     else
       ScheduleSettingsDialog();
   }
+  // Trying to reload the previously displayed chart by name as saved in
+  // pathArray Also, restoring the previous chart VPScale, if possible
+  // ..For each canvas...
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      int index_hint = -1;
+      if (i < pathArray.GetCount())
+        index_hint = ChartData->FinddbIndex(pathArray.Item(i));
+      cc->canvasChartsRefresh(index_hint);
+      if (index_hint != -1) cc->SetVPScale(restoreScale[i]);
+    }
+  }
 }
 
 ChartCanvas *MyFrame::GetFocusCanvas() {
@@ -3210,6 +3224,7 @@ Track *MyFrame::TrackOff(bool do_add_point) {
         if (pExtendTrack) {
           NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
           RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
+          NavObj_dB::GetInstance().UpdateTrack(pExtendTrack);
           return_val = pExtendTrack;
         }
       }
@@ -4026,25 +4041,6 @@ void MyFrame::PrepareOptionsClose(options *settings,
   androidRestoreFullScreen();
   androidEnableRotation();
 #endif
-
-#if 0  // Maybe, TODO
-  // If needed, refresh each canvas,
-  // trying to reload the previously displayed chart by name as saved in
-  // pathArray Also, restoring the previous chart VPScale, if possible
-  if (b_refresh) {
-    // ..For each canvas...
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) {
-        int index_hint = -1;
-        if (i < pathArray.GetCount())
-          index_hint = ChartData->FinddbIndex(pathArray.Item(i));
-        cc->canvasChartsRefresh(index_hint);
-        if (index_hint != -1) cc->SetVPScale(restoreScale[i]);
-      }
-    }
-  }
-#endif
 }
 
 void MyFrame::DoOptionsDialog() {
@@ -4103,7 +4099,8 @@ void MyFrame::DoOptionsDialog() {
   //  Capture the full path names and VPScale of charts currently shown in all
   //  canvases
   pathArray.Clear();
-  // ..For each canvas...
+  // ..For each canvas.
+  // TODO  FIX ANDROID codepath..
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) {
@@ -4258,17 +4255,6 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) cc->ApplyGlobalSettings();
   }
-
-  //    Do a full Refresh, trying to open the last open chart
-// TODO  This got move up a level.  FIX ANDROID codepath
-#if 0
-    if(b_need_refresh){
-        int index_hint = ChartData->FinddbIndex( chart_file_name );
-        if( -1 == index_hint )
-            b_autofind = true;
-        ChartsRefresh( );
-    }
-#endif
 
   //  The zoom-scale factor may have changed
   //  so, trigger a recalculation of the reference chart

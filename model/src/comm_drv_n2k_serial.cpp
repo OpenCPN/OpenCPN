@@ -238,7 +238,7 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   m_got_mfg_code = false;
   this->attributes["canAddress"] = std::string("-1");
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  this->attributes["ioDirection"] = std::string("IN/OUT");
+  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_SERIAL, &CommDriverN2KSerial::handle_N2K_SERIAL_RAW,
@@ -479,41 +479,24 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
     return;
   }
 
-  // extract PGN
-  uint64_t pgn = 0;
-  unsigned char* c = (unsigned char*)&pgn;
-  *c++ = payload->at(3);
-  *c++ = payload->at(4);
-  *c++ = payload->at(5);
-  // memcpy(&v, &data[3], 1);
-  // printf("          %ld\n", pgn);
+  // If port INPUT is not set, filter the mesage here
+  if (m_params.IOSelect != DS_TYPE_OUTPUT) {
+    // extract PGN
+    uint64_t pgn = 0;
+    unsigned char* c = (unsigned char*)&pgn;
+    *c++ = payload->at(3);
+    *c++ = payload->at(4);
+    *c++ = payload->at(5);
 
-  auto name = PayloadToName(*payload);
-  auto msg =
-      std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
-  auto msg_all =
-      std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
+    auto name = PayloadToName(*payload);
+    auto msg =
+        std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
+    auto msg_all =
+        std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
 
-  m_listener.Notify(std::move(msg));
-  m_listener.Notify(std::move(msg_all));
-
-#if 0  // Debug output
-  size_t packetLength = (size_t)payload->at(1);
-  size_t vector_length = payload->size();
-
-
-  //if(pgn > 120000)
-  {
-    printf("Payload Length: %ld\n", vector_length);
-
-    printf("PGN: %ld\n", pgn);
-
-    for(size_t i=0; i< vector_length ; i++){
-      printf("%02X ", payload->at(i));
-    }
-    printf("\n\n");
+    m_listener.Notify(std::move(msg));
+    m_listener.Notify(std::move(msg_all));
   }
-#endif
 }
 
 int CommDriverN2KSerial::GetMfgCode() {
@@ -981,6 +964,9 @@ void* CommDriverN2KSerialThread::Entry() {
     wxString msg(_T("NMEA input device open failed: "));
     msg.Append(m_PortName);
     ThreadMessage(msg);
+    std::lock_guard lock(m_stats_mutex);
+    m_driver_stats.available = false;
+
     // goto thread_exit; // This means we will not be trying to connect = The
     // device must be connected when the thread is created. Does not seem to be
     // needed/what we want as the reconnection logic is able to pick it up
@@ -988,6 +974,8 @@ void* CommDriverN2KSerialThread::Entry() {
     // expected device name).
   } else {
     SetGatewayOperationMode();
+    std::lock_guard lock(m_stats_mutex);
+    m_driver_stats.available = true;
   }
 
   m_pParentDriver->SetSecThreadActive();  // I am alive
@@ -1026,6 +1014,8 @@ void* CommDriverN2KSerialThread::Entry() {
       wxMilliSleep(250 * retries);
       CloseComPortPhysical();
       if (OpenComPortPhysical(m_PortName, m_baud)) {
+        std::lock_guard lock(m_stats_mutex);
+        m_driver_stats.available = true;
         SetGatewayOperationMode();
         retries = 0;
       } else if (retries < 10)
@@ -1075,6 +1065,8 @@ void* CommDriverN2KSerialThread::Entry() {
               CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
               Nevent.SetPayload(buffer);
               m_pParentDriver->AddPendingEvent(Nevent);
+              std::lock_guard lock(m_stats_mutex);
+              m_driver_stats.rx_count += vec->size();
             } else if (next_byte == STARTOFTEXT) {
               put_ptr = rx_buffer;
               bGotESC = false;
@@ -1131,6 +1123,8 @@ void* CommDriverN2KSerialThread::Entry() {
         retries = 0;
         CloseComPortPhysical();
       }
+      std::lock_guard lock(m_stats_mutex);
+      m_driver_stats.tx_count += qmsg.size();
 
       b_qdata = !out_que.empty();
     }  // while b_qdata
