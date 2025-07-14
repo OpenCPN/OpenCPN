@@ -1,8 +1,13 @@
-opencpn (1:5.12.0+dfsg-1) UNRELEASED; urgency=medium
+opencpn (1:5.12.0+dfsg-1) unstable; urgency=medium
 
   * New upstream release
+  * Drop upstreamed patches:
+     - 0007-chartdldr-Don-t-use-unarr-for-libarchive-3.7.4-4005.patch
+  * Rebase other patches
+  * Update d/copyright to reflect new source
+  * lintian-overrides: drop obsolete entries, add new for appstreamcli
  
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 07:23:34 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 07:59:56 +0200
 
 opencpn (1:5.10.2+dfsg-1) unstable; urgency=medium
 
