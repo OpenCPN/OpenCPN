@@ -35,7 +35,7 @@ TEST(Filter, Create) {
   filter.buses.insert(NavAddr::Bus::N0183);
   filter.buses.insert(NavAddr::Bus::N2000);
 
-  filter.directions.insert(Direction::kReceived);
+  filter.directions.insert(Direction::kHandled);
   filter.directions.insert(Direction::kOutput);
 
   filter.status.insert(State::kOk);

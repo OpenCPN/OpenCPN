@@ -34,9 +34,6 @@ _Documentation and Wiki support_
 *Didier Gautheron* +
 _App debugging and optimization_
 
-*Håkan Svensson* +
-_App debugging and optimization_
-
 *Jon Gough* +
 _Plugin interface development_
 

@@ -218,7 +218,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
   sprintf(port_char, "%d", params->NetworkPort);
   this->attributes["netPort"] = std::string(port_char);
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  this->attributes["ioDirection"] = std::string("IN/OUT");
+  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_NET, &CommDriverN2KNet::handle_N2K_MSG, this);
@@ -1465,6 +1465,7 @@ std::vector<unsigned char> MakeSimpleOutMsg(
       for (unsigned char s : sspl) out_vec.push_back(s);
 
       // terminate
+      out_vec.pop_back();
       out_vec.push_back(0x0d);
       out_vec.push_back(0x0a);
       break;
@@ -1925,10 +1926,12 @@ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
 
   // Create the internal message for all N2K listeners
   std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
+  auto msg_one =
+      std::make_shared<const Nmea2000Msg>(msg->PGN.pgn, msg_payload, addr);
   auto msg_all = std::make_shared<const Nmea2000Msg>(1, msg_payload, addr);
 
   // Notify listeners
-  m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_one));
   m_listener.Notify(std::move(msg_all));
 
   return true;
@@ -1950,6 +1953,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
           m_driver_stats.available = true;
           // printf("---%s", v.data());
           GetSock()->Write(v.data(), v.size());
+          m_dog_value = N_DOG_TIMEOUT;  // feed the dog
           if (GetSock()->Error()) {
             if (GetSockServer()) {
               GetSock()->Destroy();
@@ -1995,6 +1999,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
 void CommDriverN2KNet::Close() {
   wxLogMessage(wxString::Format(_T("Closing NMEA NetworkDataStream %s"),
                                 GetNetPort().c_str()));
+  m_stats_timer.Stop();
   //    Kill off the TCP Socket if alive
   if (m_sock) {
     if (m_is_multicast)

@@ -211,6 +211,12 @@ bool RoutemanGui::UpdateProgress() {
 
     bool bDidArrival = false;
 
+    // Duplicate points can result in NaN for normal crossing range.
+    if (isnan(m_routeman.CurrentRangeToActiveNormalCrossing)) {
+      m_routeman.CurrentRangeToActiveNormalCrossing =
+          m_routeman.CurrentRngToActivePoint;
+    }
+
     // Special signal:  if ArrivalRadius < 0, NEVER arrive...
     //  Used for MOB auto-created routes.
     if (m_routeman.pActivePoint->GetWaypointArrivalRadius() > 0) {

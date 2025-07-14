@@ -57,11 +57,13 @@
 #include "std_filesystem.h"
 
 /**
- * Representation of message status as determined by the multiplexer
+ * Representation of message status as determined by the multiplexer.
+ * kInput is the exception, reflecting messages received but yet not handled
+ * by the mux.
  */
 class NavmsgStatus {
 public:
-  enum class Direction { kInput, kReceived, kOutput, kInternal, kNone };
+  enum class Direction { kInput, kHandled, kOutput, kInternal, kNone };
   enum class Accepted { kOk, kFilteredNoOutput, kFilteredDropped, kNone };
   enum class State { kOk, kChecksumError, kMalformed, kTxError, kNone };
 
