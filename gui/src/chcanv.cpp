@@ -12963,8 +12963,6 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush(
       GetGlobalColor(_T ( "GREEN1" )), wxBRUSHSTYLE_SOLID);
-  //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush (
-  //        GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
   wxBrush *pblue_brush = wxTheBrushList->FindOrCreateBrush(
       GetGlobalColor(cur_time ? _T ( "BLUE2" ) : _T ( "BLUE3" )),
       wxBRUSHSTYLE_SOLID);
@@ -13008,47 +13006,12 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
   //  Compensate for various display resolutions
   float icon_pixelRefDim = 45;
 
-#if 0
-    float nominal_icon_size_mm = g_Platform->GetDisplaySizeMM() *25 / 1000; // Intended physical rendered size onscreen
-    nominal_icon_size_mm = wxMax(nominal_icon_size_mm, 8);
-    nominal_icon_size_mm = wxMin(nominal_icon_size_mm, 15);
-    float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
-#endif
-
-#ifndef __ANDROID__
-  // another method is simply to declare that the icon shall be x times the size
-  // of a raster symbol (e.g.BOYLAT)
-  //  This is a bit of a hack that will suffice until until we get fully
-  //  scalable ENC symbol sets
-  //   float nominal_icon_size_pixels = 48;  // 3 x 16
-  //   float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
-
-  // or, x times size of text font
+  // Tidal report graphic is scaled by the text size of the label in use
   wxScreenDC sdc;
   int height;
   sdc.GetTextExtent("M", NULL, &height, NULL, NULL, plabelFont);
   height *= g_Platform->GetDisplayDIPMult(this);
-  float nominal_icon_size_pixels = 48;  // 3 x 16
-  float pix_factor = (2 * height) / nominal_icon_size_pixels;
-
-#else
-  //  Yet another method goes like this:
-  //  Set the onscreen size of the symbol
-  //  Compensate for various display resolutions
-  //  Develop empirically, making a symbol about 16 mm tall
-  double symHeight =
-      icon_pixelRefDim /
-      GetPixPerMM();  // from draw instructions, symbol is xx pix high
-  double targetHeight0 = 16.0;
-
-  // But we want to scale the size down for smaller displays
-  double displaySize = m_display_size_mm;
-  displaySize = wxMax(displaySize, 100);
-
-  float targetHeight = wxMin(targetHeight0, displaySize / 15);
-
-  double pix_factor = targetHeight / symHeight;
-#endif
+  float pix_factor = (1.5 * height) / icon_pixelRefDim;
 
   scale_factor *= pix_factor;
 
@@ -13308,50 +13271,13 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
   float scale_factor = 1.0;
 
   //  Set the onscreen size of the symbol
-  //  Compensate for various display resolutions
-
-#if 0
-    float nominal_icon_size_mm = g_Platform->GetDisplaySizeMM() *3 / 1000; // Intended physical rendered size onscreen
-    nominal_icon_size_mm = wxMax(nominal_icon_size_mm, 2);
-    nominal_icon_size_mm = wxMin(nominal_icon_size_mm, 4);
-    float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
-#endif
-
-#if 0
-    // another method is simply to declare that the icon shall be x times the size of a raster symbol (e.g.BOYLAT)
-    //  This is a bit of a hack that will suffice until until we get fully scalable ENC symbol sets
-    float nominal_icon_size_pixels = 6;  // 16 / 3
-    float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
-#endif
-
-#ifndef __ANDROID__
-  // or, x times size of text font
+  // Current report graphic is scaled by the text size of the label in use
   wxScreenDC sdc;
   int height;
   sdc.GetTextExtent("M", NULL, &height, NULL, NULL, pTCFont);
   height *= g_Platform->GetDisplayDIPMult(this);
   float nominal_icon_size_pixels = 15;
   float pix_factor = (1 * height) / nominal_icon_size_pixels;
-
-#else
-  //  Yet another method goes like this:
-  //  Set the onscreen size of the symbol
-  //  Compensate for various display resolutions
-  //  Develop empirically....
-  float icon_pixelRefDim = 5;
-
-  double symHeight =
-      icon_pixelRefDim /
-      GetPixPerMM();  // from draw instructions, symbol is xx pix high
-  double targetHeight0 = 2.0;
-
-  // But we want to scale the size down for smaller displays
-  double displaySize = m_display_size_mm;
-  displaySize = wxMax(displaySize, 100);
-
-  float targetHeight = wxMin(targetHeight0, displaySize / 50);
-  double pix_factor = targetHeight / symHeight;
-#endif
 
   scale_factor *= pix_factor;
 
@@ -13418,7 +13344,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
                 a1 = wxMax(1.0, a1);
                 double a2 = log10(a1);
 
-                float cscale = scale_factor * a2 * 0.4;
+                float cscale = scale_factor * a2 * 0.3;
 
                 porange_pen->SetWidth(wxMax(2, (int)(scale_factor + 0.5)));
                 dc.SetPen(*porange_pen);

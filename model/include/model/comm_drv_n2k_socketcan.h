@@ -59,12 +59,12 @@ protected:
                          DriverListener& listener);
   ConnectionParams m_params;
   DriverListener& m_listener;
+  StatsTimer m_stats_timer;
 
 private:
   bool m_ok;
   std::string m_portstring;
   std::string m_baudrate;
-  StatsTimer m_stats_timer;
   DriverStats m_driver_stats;
 };
 

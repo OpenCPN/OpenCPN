@@ -205,6 +205,7 @@ bool CommDriverN0183AndroidInt::Open() {
 void CommDriverN0183AndroidInt::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
+  m_stats_timer.Stop();
 
   androidStopGPS();
   m_driver_stats.available = false;

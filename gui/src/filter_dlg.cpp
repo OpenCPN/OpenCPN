@@ -73,11 +73,11 @@ or Remove to delete it prior to create.)";
 
 static const std::unordered_map<NavmsgStatus::Direction, std::string>
     kStringByDirection = {{NavmsgStatus::Direction::kInput, "Input"},
-                          {NavmsgStatus::Direction::kReceived, "Received"},
+                          {NavmsgStatus::Direction::kHandled, "Handled"},
                           {NavmsgStatus::Direction::kOutput, "Output"},
                           {NavmsgStatus::Direction::kInternal, "Internal"}};
 
-/** Return window with given id (which must exist) casted to T*. */
+/** Return window with given id (which must exist) cast to T*. */
 template <typename T>
 T* GetWindowById(int id) {
   return dynamic_cast<T*>(wxWindow::FindWindowById(id));
@@ -533,7 +533,7 @@ public:
 
 private:
   wxArrayString GetChoices() const {
-    static const char* choices[] = {"Input", "Received", "Output", "Internal"};
+    static const char* choices[] = {"Input", "Handled", "Output", "Internal"};
     return {4, choices};
   }
 };

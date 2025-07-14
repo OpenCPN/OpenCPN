@@ -61,7 +61,10 @@ void canvasConfig::Reset(void) {
   bShowAIS = true;
   bAttenAIS = false;
   bQuilt = true;
-  nENCDisplayCategory = (int)(enum _DisCat)STANDARD;
+  nENCDisplayCategory = (int)(enum _DisCat)OTHER;
+  bShowENCDataQuality = 0;
+  bShowENCBuoyLabels = 0;
+  bShowENCLightDescriptions = 1;
 }
 
 void canvasConfig::LoadFromLegacyConfig(wxFileConfig *conf) {
@@ -73,11 +76,11 @@ void canvasConfig::LoadFromLegacyConfig(wxFileConfig *conf) {
   // S52 stuff
   conf->SetPath(_T ( "/Settings/GlobalState" ));
   conf->Read(_T ( "bShowS57Text" ), &bShowENCText, 1);
-  conf->Read(_T ( "bShowLightDescription" ), &bShowENCLightDescriptions, 0);
+  conf->Read(_T ( "bShowLightDescription" ), &bShowENCLightDescriptions, 1);
   conf->Read(_T ( "nDisplayCategory" ), &nENCDisplayCategory,
-             (enum _DisCat)STANDARD);
+             (enum _DisCat)OTHER);
   conf->Read(_T ( "bShowSoundg" ), &bShowENCDepths, 1);
-  conf->Read(_T ( "bShowAtonText" ), &bShowENCBuoyLabels, 1);
+  conf->Read(_T ( "bShowAtonText" ), &bShowENCBuoyLabels, 0);
   bShowENCLights = true;
 
   conf->SetPath(_T ( "/Settings/AIS" ));

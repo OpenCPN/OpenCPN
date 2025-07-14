@@ -63,7 +63,7 @@ Accepted NavmsgStatus::StringToAccepted(const std::string& s) {
 // clang-format: off
 static const std::unordered_map<const char*, Direction> dir_map = {
     {"input", Direction::kInput},
-    {"received", Direction::kReceived},
+    {"handled", Direction::kHandled},
     {"output", Direction::kOutput},
     {"internal", Direction::kInternal},
     {"none", NavmsgStatus::Direction::kNone}};
@@ -81,6 +81,10 @@ static const std::unordered_map<const char*, Accepted> acceptmap = {
     {"None", Accepted::kNone}};  // clang-format: on
 
 static NavmsgStatus::Direction StringToDirection(const std::string s) {
+  // Transition from 5.12 beta which used "received" isf "handled"; to
+  // be removed
+  if (s == "received") return NavmsgStatus::Direction::kHandled;
+
   for (auto kv : dir_map)
     if (kv.first == s) return kv.second;
   return NavmsgStatus::Direction::kNone;

@@ -833,6 +833,56 @@ bool NavObj_dB::InsertTrack(Track* track) {
   return rv;
 };
 
+bool NavObj_dB::UpdateTrack(Track* track) {
+  bool rv = false;
+  char* errMsg = 0;
+
+  if (!TrackExists(m_db, track->m_GUID.ToStdString())) return false;
+
+  sqlite3_exec(m_db, "BEGIN TRANSACTION", 0, 0, &errMsg);
+  if (errMsg) {
+    ReportError("UpdateTrack:BEGIN TRANSACTION");
+    return false;
+  }
+
+  UpdateDBTrackAttributes(track);
+
+  // Delete and re-add track points
+  const char* sql = "DELETE FROM trk_points WHERE track_guid = ?";
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+    sqlite3_bind_text(stmt, 1, track->m_GUID.ToStdString().c_str(), -1,
+                      SQLITE_TRANSIENT);
+  } else {
+    ReportError("UpdateTrack:prepare");
+    sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
+    return false;
+  }
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    ReportError("UpdateTrack:step");
+    sqlite3_finalize(stmt);
+    sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
+    return false;
+  }
+  sqlite3_finalize(stmt);
+
+  // re-add trackpoints
+  for (int i = 0; i < track->GetnPoints(); i++) {
+    auto point = track->GetPoint(i);
+    //  Add the bare point
+    if (point) {
+      InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
+                       point->m_lon, point->GetTimeString(), i);
+    }
+  }
+
+  sqlite3_exec(m_db, "COMMIT", 0, 0, nullptr);
+
+  rv = true;
+  if (errMsg) rv = false;
+  return rv;
+};
+
 bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
   const char* sql =
       "UPDATE tracks SET "
@@ -1195,11 +1245,13 @@ bool NavObj_dB::UpdateRoute(Route* route) {
     sqlite3_bind_text(stmt, 1, route->m_GUID.ToStdString().c_str(), -1,
                       SQLITE_TRANSIENT);
   } else {
+    sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
     return false;
   }
   if (sqlite3_step(stmt) != SQLITE_DONE) {
     ReportError("UpdateRoute:step");
     sqlite3_finalize(stmt);
+    sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
     return false;
   }
 
