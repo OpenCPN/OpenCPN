@@ -2,7 +2,8 @@ Source: opencpn
 Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
-Build-Depends: debhelper-compat (= 13),
+Build-Depends: debhelper-compat (= 14),
+ asciidoc-base,
  cmake,
  dbus-daemon,
  git,
