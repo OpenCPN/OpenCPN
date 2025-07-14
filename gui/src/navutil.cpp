@@ -2639,9 +2639,9 @@ static wxFileName exportFileName(wxWindow *parent,
   if (response == wxID_OK) {
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
-    fn.SetExt(_T("gpx"));
+    if (!fn.GetExt().StartsWith("gpx")) fn.SetExt(_T("gpx"));
 
-#ifndef __WXMAC__
+#if defined(__WXMSW__) || defined(__WXGTK__)
     if (wxFileExists(fn.GetFullPath())) {
       int answer =
           OCPNMessageBox(NULL, _("Overwrite existing file?"), _T("Confirm"),

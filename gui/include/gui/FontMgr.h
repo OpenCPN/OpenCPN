@@ -38,6 +38,8 @@ class FontMgr {
 public:
   static FontMgr &Get();
 
+  wxFont *GetFontLegacy(const wxString &TextElement, int user_default_size);
+
   void SetLocale(wxString &newLocale);
   /**
    * Gets a font object for a UI element.

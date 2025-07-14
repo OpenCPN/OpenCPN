@@ -2299,7 +2299,7 @@ static void chk_fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
   if (ret != nmemb) {
     //        LOG_ERROR ("libtcd unexpected error: fread failed\n");
     //        LOG_ERROR ("nmemb = %lu, got %lu\n", nmemb, ret);
-    abort();
+    throw std::runtime_error("tcmgr file read exception");
   }
 }
 
@@ -2311,7 +2311,7 @@ static void chk_fwrite(const void *ptr, size_t size, size_t nmemb,
     //        LOG_ERROR ("libtcd unexpected error: fwrite failed\n");
     //        LOG_ERROR ("nmemb = %lu, got %lu\n", nmemb, ret);
     //        LOG_ERROR ("The database is probably corrupt now.\n");
-    abort();
+    throw std::runtime_error("tcmgr file read exception");
   }
 }
 
