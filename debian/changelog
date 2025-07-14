@@ -1,8 +1,13 @@
-opencpn (1:5.12.0+dfsg-1ubuntu1~bpo24.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.12.0+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
-  * New upstrean release
+  * New upstream release
+  * d/control: Add asciidoc-base
+  * d/patches: Import from bookworm-backports
+  * d/opencpn-data.install: Add missing filters and Authors.html
+  * d/lintian-overrides: Drop not existing files
+  * d/copyright: Update from sid
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 10:38:52 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 10:43:13 +0200
 
 opencpn (1:5.11.3~beta3+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
