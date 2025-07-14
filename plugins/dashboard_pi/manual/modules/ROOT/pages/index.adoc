@@ -101,7 +101,7 @@ Window.
 
 image::dash-select-instr_0.png[image,width=260,height=265]
 
-=== 50 Instruments Available
+=== 40 Instruments Available
 
 
 [cols="",]
@@ -156,6 +156,7 @@ image::dash-select-instr_0.png[image,width=260,height=265]
 |VMG Wind (text)
 |Water Temp (text)
 |Wind History (graph)
+|Windlass (text)
 |===
 
 . For the N0183 sentence: DBT, DPT, XDR(D) or SignalK (without offset). If the user option
@@ -183,10 +184,10 @@ Use this tab to set fonts.
 Note:: Depth Transducer Offset is in units of meters regardless of the
 chosen display units.
 
-=== Dampen SOG and COG (IR Filter)
+=== Dampen SOG, COG and Wind speed and angle (IR Filter)
 
-There are 2 parameters in the Dashboard→Preferences→Appearance dialog
-for damping of SOG and COG. A value of 1 means no filtering. Higher
+There are 4 parameters in the Dashboard→Preferences→Appearance dialog
+for damping of SOG, COG, AWS and AWA. A value of 1 means no filtering. Higher
 values mean ever slower response of the instrument. The max filter value
 is 100 which is pretty slow. This filter works almost exactly like a
 mechanical filter that uses an oil damped indicator dial. It will
@@ -205,6 +206,15 @@ image::dash-big-fonts.png[image,width=700,height=691]
 speed dial.
 
 image::33speed12.png[image,width=231,height=250]image::33speed50.png[image,width=231,height=250]
+
+==== Other selections.
+
+If the checkbox *Use internal Sumlog* is enabled the SumLog instrument shows internal calculated data
+instead of data from external source.  The actual value to the right can be adjusted or cleared.
+Independent of the checkbox status SumLog values are saved to the config file all time.
+
+If the checkbox *Use N2K & SignalK true wind data over ground* is enabled these values are used
+if available from the source. Otherwise the data trough water is used.
 
 === Wind History
 

@@ -473,7 +473,6 @@ public:
       Layout();
       Show();
 
-      m_set_logtype(DataLogger::Format::kDefault, _("Default"));
       FilenameLstnr.Init(logger.OnNewLogfile, [&](ObservedEvt& ev) {
         GetWindowById<wxStaticText>(kFilenameLabelId)->SetLabel(ev.GetString());
       });

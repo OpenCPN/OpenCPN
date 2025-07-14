@@ -48,6 +48,8 @@
 #include "androidUTIL.h"
 #endif
 
+using namespace std::literals::chrono_literals;
+
 typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_EMPTY,
   DS_RX_BUFFER_FULL
@@ -177,12 +179,13 @@ CommDriverN0183AndroidBT::CommDriverN0183AndroidBT(
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_params(*params),
-      m_listener(listener) {
-  // m_BaudRate = wxString::Format("%i", params->Baudrate),
-  // SetSecThreadInActive();
+      m_listener(listener),
+      m_stats_timer(*this, 2s) {
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
   this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  m_driver_stats.driver_bus = NavAddr::Bus::N0183;
+  m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
@@ -200,14 +203,18 @@ bool CommDriverN0183AndroidBT::Open() {
   wxString port_uc = m_params.GetDSPort().Upper();
 
   androidStartBT(this, port_uc);
+  m_driver_stats.available = true;
+
   return true;
 }
 
 void CommDriverN0183AndroidBT::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing NMEA BT Driver %s"), m_portstring.c_str()));
+  m_stats_timer.Stop();
 
   androidStopBT();
+  m_driver_stats.available = false;
 
   Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
          &CommDriverN0183AndroidBT::handle_N0183_MSG, this);
@@ -217,6 +224,7 @@ bool CommDriverN0183AndroidBT::SendMessage(
     std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   wxString sentence(msg_0183->payload.c_str());
+  m_driver_stats.tx_count += sentence.Length();
 
   wxString payload = sentence;
   if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
@@ -229,6 +237,7 @@ void CommDriverN0183AndroidBT::handle_N0183_MSG(
     CommDriverN0183AndroidBTEvent& event) {
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
+  m_driver_stats.rx_count += payload->size();
 
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());

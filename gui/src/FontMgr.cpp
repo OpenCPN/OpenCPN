@@ -183,6 +183,23 @@ bool FontMgr::IsDefaultFontEntry(const MyFontDesc *font_desc) const {
   */
 }
 
+/*  Support Legacy (Prior to O5.12) plugin API interface */
+wxFont *FontMgr::GetFontLegacy(const wxString &TextElement,
+                               int user_default_size) {
+  //    Look thru the font list for a match
+  MyFontDesc *pmfd;
+  auto node = m_fontlist->GetFirst();
+  while (node) {
+    pmfd = node->GetData();
+    if (pmfd->m_dialogstring == TextElement) {
+      if (pmfd->m_configstring.BeforeFirst('-') == s_locale)
+        return pmfd->m_font;
+    }
+    node = node->GetNext();
+  }
+  return GetFont(TextElement, user_default_size);
+}
+
 wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
   // Look thru the font list for a match
   MyFontDesc *pmfd;

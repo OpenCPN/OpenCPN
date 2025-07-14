@@ -671,7 +671,8 @@ private:
     cp->b_IsSetup = true;
     if (!cp->bEnabled) {
       SetCellValue(row, 4, kUtfFilledCircle);
-      ForceRefresh();
+      // ForceRefresh() apparently broken, see #4648
+      ReloadGrid(TheConnectionParams());
     }
   }
 
@@ -741,7 +742,7 @@ private:
     PrioritiesBtn(wxWindow* parent)
         : wxButton(parent, wxID_ANY, _("Adjust Nav data priorities...")) {
       Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
-        PriorityDlg dialog(this);
+        PriorityDlg dialog(this->GetParent());
         dialog.ShowModal();
       });
     }
