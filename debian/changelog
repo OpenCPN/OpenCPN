@@ -1,48 +1,13 @@
 opencpn (1:5.12.0+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
-  *  New upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 13:16:16 +0200
-
-opencpn (1:5.11.3~beta3+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
-
-  * new upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 29 Jun 2025 16:53:26 +0200
-
-opencpn (1:5.11.1~beta2+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
-
-  * New upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 13 Jun 2025 22:06:48 +0200
-
-opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+4) focal; urgency=medium
-
-  * Rebuild
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 22:24:58 +0200
-
-opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+3) focal; urgency=medium
-
-  * d/patches: libdnet cmake < 3.20 bugfix
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 16:36:56 +0200
-
-opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+2) focal; urgency=medium
-
-  * New patch: libdnet: Handle cmake < 3.20
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 14:56:19 +0200
-
-opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
-
-  * New upstream beta release
+  * New upstream release
   * Drop upstream patches, rebase the rest
   * New patch: Disable locale-dependent tests
   * Update installation paths
   * Drop obsolete lintian-overrides
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 13:36:09 +0200
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 13:16:16 +0200
 
 opencpn (1:5.10.2+dfsg-1ubuntu1~bpo20.04+1) focal; urgency=medium
 
