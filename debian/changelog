@@ -1,8 +1,11 @@
-opencpn (1:5.12.0+dfsg-1~bpo12+1) UNRELEASED; urgency=medium
+opencpn (1:5.12.0+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release
+  * Drop upstreamed patches:
+      - 0004-tests-Disable-time-dependent-Buffer.RateLimit2-test.
+  * Rebase other patches
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 08:18:11 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 08:43:12 +0200
 
 opencpn (1:5.10.2+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
