@@ -3,6 +3,7 @@ Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
 Build-Depends: debhelper-compat (= 12),
+ asciidoc-base,
  cmake,
  dbus,
  git,
