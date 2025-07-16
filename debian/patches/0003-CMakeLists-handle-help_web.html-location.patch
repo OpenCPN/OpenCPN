@@ -1,16 +1,17 @@
+From a19f7653b9b8308077483861be891a7ae12cd36c Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 13 Apr 2025 06:06:47 +0200
-Subject: CMakeLists: handle help_web.html location
+Subject: [PATCH 3/3] CMakeLists: handle help_web.html location
 
 ---
  CMakeLists.txt | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 53bfbd4..3c5511a 100644
+index 18d610f3e..aea47c881 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1825,7 +1825,7 @@ if (APPLE)
+@@ -1852,7 +1852,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -19,7 +20,7 @@ index 53bfbd4..3c5511a 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1865,11 +1865,11 @@ if (APPLE)
+@@ -1892,11 +1892,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
@@ -33,7 +34,7 @@ index 53bfbd4..3c5511a 100644
    endif ()
  
    target_sources(
-@@ -2033,7 +2033,7 @@ if (NOT APPLE)
+@@ -2062,7 +2062,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()
@@ -42,3 +43,6 @@ index 53bfbd4..3c5511a 100644
    endif ()
  
    if (UNIX)
+-- 
+2.49.0
+

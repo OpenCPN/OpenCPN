@@ -1,6 +1,7 @@
+From 54ff68c7380f1210d75b6fe1eb36cd148db3a049 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 10 Jun 2024 09:58:18 +0200
-Subject: Add missing libs like tinyxml Debian work-around
+Subject: [PATCH 2/3] Add missing libs like tinyxml Debian work-around
 
 Since we remove some bundled libs when repacking the sources,
 references to these libs causes build problems which must
@@ -18,10 +19,10 @@ Forwarded: not-needed
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f45c8b2..53bfbd4 100644
+index 81896b95a..18d610f3e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1392,8 +1392,10 @@ if (OCPN_USE_SVG)
+@@ -1415,8 +1415,10 @@ if (OCPN_USE_SVG)
    endif ()
  endif ()
  
@@ -33,7 +34,7 @@ index f45c8b2..53bfbd4 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif ()
-@@ -1467,7 +1469,6 @@ message(STATUS "    Adding local LIBTESS2")
+@@ -1490,7 +1492,6 @@ message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
  
@@ -43,7 +44,7 @@ index f45c8b2..53bfbd4 100644
  message(STATUS "    Adding local wxserverdisc")
 diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
 new file mode 100644
-index 0000000..473722c
+index 000000000..473722c1b
 --- /dev/null
 +++ b/cmake/SystemLibs.cmake
 @@ -0,0 +1,28 @@
@@ -76,10 +77,10 @@ index 0000000..473722c
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 25ec4ee..19c2647 100644
+index 993fcdb52..b80194454 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
-@@ -45,6 +45,7 @@
+@@ -47,6 +47,7 @@
  #cmakedefine HAVE_SYS_TYPES_H
  #cmakedefine HAVE_SYS_FCNTL_H
  #cmakedefine HAVE_SYS_IOCTL_H
@@ -87,3 +88,6 @@ index 25ec4ee..19c2647 100644
  #cmakedefine OCPN_DISTRO_BUILD
  
  // The os compatible plugins are are built for
+-- 
+2.49.0
+
