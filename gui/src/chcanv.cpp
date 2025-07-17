@@ -186,7 +186,7 @@ extern bool bDBUpdateInProgress;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
 
-extern ConsoleCanvas *console;
+extern APConsole *console;
 extern OCPNPlatform *g_Platform;
 
 extern RouteList *pRouteList;

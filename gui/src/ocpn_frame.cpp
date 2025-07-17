@@ -163,7 +163,7 @@ extern arrayofCanvasPtr g_canvasArray;
 extern MyFrame *gFrame;
 extern AISTargetListDialog *g_pAISTargetList;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern ConsoleCanvas *console;
+extern APConsole *console;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern Routeman *g_pRouteMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
@@ -2316,6 +2316,7 @@ void MyFrame::ODoSetSize(void) {
 }
 
 void MyFrame::PositionConsole(void) {
+#if defined(__WXMSW__) || defined(__WXMAC__)
   if (NULL == GetPrimaryCanvas()) return;
   //    Reposition console based on its size and chartcanvas size
   int ccx, ccy, ccsx, ccsy, consx, consy;
@@ -2341,11 +2342,63 @@ void MyFrame::PositionConsole(void) {
     }
   }
 
-  console->GetSize(&consx, &consy);
+  wxSize csz = console->GetSize();
+  consx = csz.x;
+  consy = csz.y;
 
   wxPoint screen_pos =
       ClientToScreen(wxPoint(ccx + ccsx - consx - 2, ccy + yOffset));
   console->Move(screen_pos);
+#else
+  if (NULL == GetPrimaryCanvas()) return;
+  //    Reposition console based on its size and chartcanvas size
+  int ccx, ccy, ccsx, ccsy, consx, consy;
+  ChartCanvas *consoleHost = GetPrimaryCanvas();
+  if (g_canvasConfig > 0) consoleHost = g_canvasArray[1];
+
+  if (consoleHost) {
+    consoleHost->GetSize(&ccsx, &ccsy);
+    consoleHost->GetPosition(&ccx, &ccy);
+  } else {
+    GetPrimaryCanvas()->GetSize(&ccsx, &ccsy);
+    GetPrimaryCanvas()->GetPosition(&ccx, &ccy);
+    consoleHost = GetPrimaryCanvas();
+  }
+
+  int yTopOffset = 60;
+  int yBottomOffset = 0;
+  if (consoleHost) {
+    if (consoleHost->GetCompass()) {
+      wxRect compass_rect = consoleHost->GetCompass()->GetRect();
+      // Compass is normal upper right position.
+      if (compass_rect.y < 100)
+        yTopOffset = compass_rect.y + compass_rect.height;
+    }
+    if (consoleHost->GetMUIBar()) {
+      wxRect mui_rect = consoleHost->GetMUIBarRect();
+      yBottomOffset = ccsy - mui_rect.y;
+    }
+  }
+
+  wxSize csz = console->GetSize();
+  consx = csz.x;
+  consy = csz.y;
+  int yAvail = ccsy - (yTopOffset + yBottomOffset);
+  int yFinal = 30;
+  if (consy < yAvail) {
+    yFinal = (yAvail - consy) / 2;
+    yFinal += yTopOffset;
+  } else if (console->GetCDI()->IsShown()) {
+    int cdi_height = console->GetCDI()->GetSize().y;
+    int consy_no_cdi = consy - cdi_height;
+    yFinal = (yAvail - consy_no_cdi) / 2;
+    yFinal += yTopOffset;
+    console->ToggleShowHighway();
+  }
+
+  wxPoint in_canvas_pos = wxPoint(ccsx - consx - 2, yFinal);
+  console->Move(in_canvas_pos);
+#endif
 }
 
 void MyFrame::UpdateAllFonts() {
@@ -4722,7 +4775,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
-      console = new ConsoleCanvas(gFrame);  // the console
+      console = new APConsole(g_canvasArray.Item(0));  // the console
       console->SetColorScheme(global_color_scheme);
 
       // Draw console if persisted route is active
