@@ -27834,7 +27834,7 @@ SBTM   20@@@@@@@AAAAA@@@@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR04R000040001500010000180000000000
-SXPO   35white/orange spar bouy, full-chart
+SXPO   35white/orange spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHWHTDCHCOR
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -27858,7 +27858,7 @@ SBTM   11@@@@AA@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR05R000040001500010000180000000000
-SXPO   29yellow spar bouy, full-chart
+SXPO   29yellow spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHWHTDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -36495,7 +36495,7 @@ SBTM   20@@@@@@@@@A@@@@@@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR68R000040001500010000180000000000
-SXPO   35black/yellow spar bouy, full-chart
+SXPO   35black/yellow spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHYLWDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -36625,7 +36625,7 @@ SBTM   20@@@@@@@@@A@@@@@@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR69R000040001500010000180000000000
-SXPO   35yellow/black spar bouy, full-chart
+SXPO   35yellow/black spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHYLWDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -36649,7 +36649,7 @@ SBTM   11@@@@AA@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR70R000040001500010000180000000000
-SXPO   41black/yellow/black spar bouy, full-chart
+SXPO   41black/yellow/black spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHYLWDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -36673,7 +36673,7 @@ SBTM   11@@@@AA@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR71R000040001500010000180000000000
-SXPO   42yellow/black/yellow spar bouy, full-chart
+SXPO   42yellow/black/yellow spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHYLWDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -36697,7 +36697,7 @@ SBTM   11@@@@AA@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR62R000040001500010000180000000000
-SXPO   29yellow spar bouy, full-chart
+SXPO   29yellow spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHYLWDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -37713,7 +37713,7 @@ SBTM   11@@@@AA@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR72R000040001500010000180000000000
-SXPO   38black/red/black spar bouy, full-chart
+SXPO   38black/red/black spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHREDDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -38060,7 +38060,7 @@ SBTM   26@@@@@@@@@@@@A@@@@@@@@@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR60R000040001500010000180000000000
-SXPO   26red spar bouy, full-chart
+SXPO   26red spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHREDDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -38084,7 +38084,7 @@ SBTM   11@@@@AA@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR61R000040001500010000180000000000
-SXPO   28green spar bouy, full-chart
+SXPO   28green spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHGRNDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -38108,7 +38108,7 @@ SBTM   11@@@@AA@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR65R000040001500010000180000000000
-SXPO   32red/white spar bouy, full-chart
+SXPO   32red/white spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHREDDCHWHT
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
@@ -38285,7 +38285,7 @@ SBTM   32@@@@@@@@@@@@@@@A@@@@@@@@@@@@@@@
 0001
 SYMB   10SY00011NIL
 SYMD   39BOYSPR01R000040001500010000180000000000
-SXPO   30default spar bouy, full-chart
+SXPO   30default spar buoy, full-chart
 SCRF   24ADEPMDBCHBLKCCHWHTDCHBLK
 SBTM   11@@@@@@@@@@
 SBTM   11@@@@@AAAA@
