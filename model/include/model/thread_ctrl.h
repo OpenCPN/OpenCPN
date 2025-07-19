@@ -33,6 +33,11 @@ class ThreadCtrl {
 public:
   ThreadCtrl() : m_keep_going(1) {}
 
+  /**
+   * Destroy the Thread Ctrl object.
+   */
+  virtual ~ThreadCtrl() = default;
+
   /** Return true if thread is running. */
   bool IsRunning() const { return KeepGoing(); }
 

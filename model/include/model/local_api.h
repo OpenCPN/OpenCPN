@@ -57,7 +57,11 @@ private:
   std::string reason;
 };
 
-/** Base interface for local server command handling. */
+/**
+ * Base interface for local server command handling.
+ *
+ * @class LocalServerApi local_api.h "model/local_api.h"
+ */
 class LocalServerApi {
 public:
   /** @return Reference to a LocalServerApi implementation. */
@@ -85,6 +89,11 @@ public:
 protected:
   LocalServerApi()
       : get_rest_api_endpoint_cb([]() { return "0.0.0.0/1024"; }) {}
+
+  /**
+   * Destroy the Local Server Api object.
+   */
+  ~LocalServerApi() = default;
 };
 
 /** Base interface for local clients. */

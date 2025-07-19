@@ -25,8 +25,22 @@
 #ifndef __WINDOWDESTROYLISTENER_H__
 #define __WINDOWDESTROYLISTENER_H__
 
+/**
+ * Interface for a listener object that listens for windows to be destroyed.
+ *
+ * @interface WindowDestroyListener
+ * @headerfile WindowDestroyListener.h "gui/WindowDestroyListener/h"
+ */
 class WindowDestroyListener {
 public:
+  /**
+   * Destroy the Window Destroy Listener object.
+   */
+  virtual ~WindowDestroyListener() = default;
+
+  /**
+   * Destroy the window.
+   */
   virtual void DestroyWindow() = 0;
 };
 
