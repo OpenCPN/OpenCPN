@@ -1,0 +1,123 @@
+From d4ebbcb140c1354a3161218bec2ec2cd0cb30e18 Mon Sep 17 00:00:00 2001
+From: Dave <bdbcat@yahoo.com>
+Date: Fri, 18 Jul 2025 22:06:02 -0400
+Subject: [PATCH] Correct SVG in-lined icon rendering on ubuntu focal
+
+focal uses wxwidgets 3.0 which fails to render some inline SVG icons
+correctly. Work around 3.0 wxSVG broken stream semantics and simplify 
+some icons.
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/d4ebbcb14
+
+---
+ libs/gui/src/expand_icon.cpp |  9 ++++++++-
+ libs/gui/src/svg_button.cpp  |  6 ++++--
+ libs/gui/src/svg_icons.cpp   | 35 ++++++++++++++++-------------------
+ 3 files changed, 28 insertions(+), 22 deletions(-)
+
+diff --git a/libs/gui/src/expand_icon.cpp b/libs/gui/src/expand_icon.cpp
+index cf27a8062..be35749d3 100644
+--- a/libs/gui/src/expand_icon.cpp
++++ b/libs/gui/src/expand_icon.cpp
+@@ -29,6 +29,11 @@
+ #include <wx/image.h>
+ #include <wx/sizer.h>
+ 
++#ifndef ocpnUSE_wxBitmapBundle
++#include <wx/sstream.h>
++#include <wxSVG/svg.h>
++#endif
++
+ #if wxCHECK_VERSION(3, 2, 0) || defined(ocpnUSE_wxBitmapBundle)
+ #include <wx/bmpbndl.h>
+ #include <iostream>
+@@ -57,7 +62,9 @@ static wxBitmap LoadSvgBitmap(const char* svg, wxWindow* parent) {
+   return bundle.GetBitmap(icon_size);
+ #else
+   wxStringInputStream wis(buffer);
+-  wxSVGDocument svg_doc(wis);
++  wxSVGDocument svg_doc;
++  svg_doc.Load(wis);
++
+   wxImage image =
+       svg_doc.Render(parent->GetCharHeight(), parent->GetCharHeight());
+   assert(wxBitmap(image).IsOk() && "Cannot load svg icon");
+diff --git a/libs/gui/src/svg_button.cpp b/libs/gui/src/svg_button.cpp
+index d74674142..e448c1712 100644
+--- a/libs/gui/src/svg_button.cpp
++++ b/libs/gui/src/svg_button.cpp
+@@ -29,8 +29,9 @@ wxBitmap loadAndroidSVG(const char* svg, unsigned int width,
+ #endif
+ 
+ void SvgButton::LoadIcon(const char* svg) {
++  //return;
+ #ifndef ANDROID
+-    char buffer[2048];
++    char buffer[12048];
+     assert(strlen(svg) < sizeof(buffer) && "svg icon too long");
+     strcpy(buffer, svg);
+ #ifdef ocpnUSE_wxBitmapBundle
+@@ -39,7 +40,8 @@ void SvgButton::LoadIcon(const char* svg) {
+     SetBitmap(bundle);
+ #else
+     wxStringInputStream wis(buffer);
+-    wxSVGDocument svg_doc(wis);
++    wxSVGDocument svg_doc;
++    svg_doc.Load(wis);
+     wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
+     SetBitmap(wxBitmap(image));
+ #endif
+diff --git a/libs/gui/src/svg_icons.cpp b/libs/gui/src/svg_icons.cpp
+index a0a309b7a..bcdccae17 100644
+--- a/libs/gui/src/svg_icons.cpp
++++ b/libs/gui/src/svg_icons.cpp
+@@ -28,30 +28,27 @@ const char* kCheckmark = R"--(
+ 
+ const char* kExpandSvg = R"--(
+ <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+-    <style
+-        type="text/css"
+-        id="current-color-scheme">
+-        .ColorScheme-Text {
+-            color:#232629;
+-        }
+-    </style>
+-    <path d="M2 4v1h12V4zm.707 3L2 7.707l6 6 6-6L13.293 7 8 12.293 2.707 7z"
+-     class="ColorScheme-Text" fill="currentColor"/>
++<path
++   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1.02459;stroke-dasharray:none"
++   d="M 3.0542669,6.6237237 7.977309,11.57821 12.93017,6.6423611"
++   id="path1721" />
++<path
++   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-dasharray:none"
++   d="m 2.0609236,3.5709029 11.8941734,8.86e-5"
++   id="path5251" />
+ </svg>
+ )--";
+ 
+ const char* kCollapseSvg = R"--(
+ <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+-    <style
+-        type="text/css"
+-        id="current-color-scheme">
+-        .ColorScheme-Text {
+-            color:#232629;
+-        }
+-    </style>
+-    <path class="ColorScheme-Text"
+-         d="M2 4v1h12V4zm6 2.293l-6 6 .707.707L8 7.707 13.293 13l.707-.707z"
+-         fill="currentColor"/>
++<path
++   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1.02459;stroke-dasharray:none"
++   d="M 3.0542669,11.942141 7.977309,6.9876544 12.93017,11.923503"
++   id="path1721" />
++<path
++   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-dasharray:none"
++   d="m 2.0609236,3.5709029 11.8941734,8.86e-5"
++   id="path5251" />
+ </svg>
+ )--";
+ }  // namespace gui_icons
+-- 
+2.49.0
+

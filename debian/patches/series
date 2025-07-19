@@ -3,4 +3,5 @@
 0003-CMakeLists-handle-help_web.html-location.patch
 0004-tests-disable-rest-server-tests-for-now.patch
 0005-build-add-latomic-linkage.patch
+0006-Correct-SVG-in-lined-icon-rendering-on-ubuntu-focal.patch
 0008-libdnet-Handle-cmake-3.20.patch
