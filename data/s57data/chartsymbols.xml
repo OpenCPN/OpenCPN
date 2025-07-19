@@ -39940,7 +39940,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR04</name>
-            <description>white/orange spar bouy, full-chart</description>
+            <description>white/orange spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -39953,7 +39953,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR05</name>
-            <description>yellow spar bouy, full-chart</description>
+            <description>yellow spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -44355,7 +44355,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR68</name>
-            <description>black/yellow spar bouy, full-chart</description>
+            <description>black/yellow spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -44433,7 +44433,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR69</name>
-            <description>yellow/black spar bouy, full-chart</description>
+            <description>yellow/black spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -44446,7 +44446,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR70</name>
-            <description>black/yellow/black spar bouy, full-chart</description>
+            <description>black/yellow/black spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -44459,7 +44459,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR71</name>
-            <description>yellow/black/yellow spar bouy, full-chart</description>
+            <description>yellow/black/yellow spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -44472,7 +44472,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR62</name>
-            <description>yellow spar bouy, full-chart</description>
+            <description>yellow spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -45005,7 +45005,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR72</name>
-            <description>black/red/black spar bouy, full-chart</description>
+            <description>black/red/black spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -45187,7 +45187,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR60</name>
-            <description>red spar bouy, full-chart</description>
+            <description>red spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -45200,7 +45200,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR61</name>
-            <description>green spar bouy, full-chart</description>
+            <description>green spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -45213,7 +45213,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR65</name>
-            <description>red/white spar bouy, full-chart</description>
+            <description>red/white spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
@@ -45317,7 +45317,7 @@
 
         <symbol RCID="11">
             <name>BOYSPR01</name>
-            <description>default spar bouy, full-chart</description>
+            <description>default spar buoy, full-chart</description>
             <bitmap width="10" height="18">
                 <distance min="0" max="0" />
                 <pivot x="4" y="15" />
