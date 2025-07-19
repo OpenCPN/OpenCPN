@@ -526,7 +526,9 @@ public:
   wxCheckBox *m_pCheck_Draw_Target_Size, *m_pCheck_Draw_Realtime_Prediction;
   wxCheckBox *m_pCheck_Show_Target_Name;
   wxChoice *m_pWplAction;
+  wxChoice *m_p_ais_color_action;
   wxCheckBox *m_pCheck_use_Wpl, *m_pCheck_ShowAllCPA;
+  wxStaticText *m_p_check_ais_color;
   wxTextCtrl *m_pText_CPA_Max, *m_pText_CPA_Warn, *m_pText_CPA_WarnT;
   wxTextCtrl *m_pText_Mark_Lost, *m_pText_Remove_Lost, *m_pText_COG_Predictor;
   wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed,
