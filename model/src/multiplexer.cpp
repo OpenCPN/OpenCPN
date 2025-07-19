@@ -206,6 +206,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
   // Perform multiplexer output functions
   for (auto &driver : drivers) {
+    if (!driver) continue;
     if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params;
       auto drv_serial = dynamic_cast<CommDriverN0183Serial *>(driver.get());

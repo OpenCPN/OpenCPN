@@ -212,11 +212,6 @@ void CommDriverN2KSocketCanImpl::Close() {
   wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
   m_stats_timer.Stop();
   m_worker.StopThread();
-
-  // We cannot use shared_from_this() since we might be in the destructor.
-  auto& registry = CommDriverRegistry::GetInstance();
-  auto& me = FindDriver(registry.GetDrivers(), iface, bus);
-  registry.Deactivate(me);
 }
 
 bool CommDriverN2KSocketCanImpl::SendAddressClaim(int proposed_source_address) {

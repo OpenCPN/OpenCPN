@@ -1601,22 +1601,28 @@ if (OCPN_BUNDLE_GSHHS)
 endif ()
 
 find_program(ASCIIDOC_PROG NAMES asciidoc)
+
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/authors.stamp
+  COMMAND cmake -E touch  ${CMAKE_BINARY_DIR}/authors.stamp
+)
 if (ASCIIDOC_PROG)
   add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/Authors.html
-    COMMAND ${ASCIIDOC_PROG} -o ${CMAKE_BINARY_DIR}/Authors.html
+    OUTPUT ${CMAKE_SOURCE_DIR}/data/authors.html
+    COMMAND ${ASCIIDOC_PROG} -o ${CMAKE_SOURCE_DIR}/data/authors.html
         ${CMAKE_SOURCE_DIR}/Authors.adoc
-    COMMENT "Generated Authors.html"
+    COMMENT "Generated authors.html"
+    DEPENDS ${CMAKE_BINARY_DIR}/authors.stamp
   )
 else ()
   add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/Authors.html
-    COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/data/authors.html
-        ${CMAKE_BINARY_DIR}/Authors.html
-    COMMENT "Reused existing Authors.html"
+    OUTPUT ${CMAKE_SOURCE_DIR}/data/authors.html
+    COMMAND cmake -E false
+    COMMENT "asciidoc not found, cannot rebuild authors.html"
+    DEPENDS ${CMAKE_BINARY_DIR}/authors.stamp
   )
 endif ()
-add_custom_target(authors ALL DEPENDS ${CMAKE_BINARY_DIR}/Authors.html)
+add_custom_target(authors DEPENDS ${CMAKE_SOURCE_DIR}/data/authors.html)
 
 set(basemap_shp
         data/basemap_shp/basemap_crude_10x10.cpg
@@ -1692,8 +1698,6 @@ if (OCPN_BUNDLE_TCDATA)
   )
 endif ()
 
-set_source_files_properties(${CMAKE_BINARY_DIR}/Authors.html GENERATED)
-
 # Mac has trouble finding libgobject - 2.0.dylib We look for it explicitely
 if (xAPPLE)
   # Assume pkg-config is available.
@@ -1739,7 +1743,7 @@ if (APPLE)
   )
 
   set_source_files_properties(
-    ${CMAKE_BINARY_DIR}/Authors.html
+    ${CMAKE_SOURCE_DIR}/data/authors.html
       GENERATED
       PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
@@ -1928,7 +1932,7 @@ if (APPLE)
             ${MUI_FLAT_SVG_FILES}
             ${DOC_FILES}
             ${CONFIG_FILES}
-            ${CMAKE_BINARY_DIR}/Authors.html
+            ${CMAKE_SOURCE_DIR}/data/authors.html
   )
   install(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
@@ -2056,7 +2060,8 @@ if (NOT APPLE)
   )
   install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
   install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
-  install(FILES ${CMAKE_BINARY_DIR}/Authors.html DESTINATION ${PREFIX_PKGDATA})
+  install(FILES ${CMAKE_SOURCE_DIR}/data/authors.html
+          DESTINATION ${PREFIX_PKGDATA})
   install(FILES data/opencpn.png DESTINATION ${PREFIX_PKGDATA})
 
   if (PACKAGE_FORMAT EQUAL "DEB")

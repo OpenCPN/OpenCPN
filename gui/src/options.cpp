@@ -5563,12 +5563,19 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   langStyleBox->Add(itemLangStaticBoxSizer, 1, wxEXPAND | wxALL, border_size);
 
-  m_itemLangListBox = new wxChoice(itemPanelFont, ID_CHOICE_LANG);
+  wxSize langChoiceSize = wxSize(-1, -1);
+#ifdef __ANDROID__
+  // Need to set wxChoice vertical size explicitely in Android
+  langChoiceSize = wxSize(-1, m_fontHeight * 3 / 4);
+#endif
+
+  m_itemLangListBox = new wxChoice(itemPanelFont, ID_CHOICE_LANG,
+                                   wxDefaultPosition, langChoiceSize);
 
   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL,
                               border_size);
 #ifdef __ANDROID__
-  m_itemLangListBox->Disable();
+  // m_itemLangListBox->Disable();
 #endif
 
   // Fonts
@@ -7522,6 +7529,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
         it = g_pAIS->m_persistent_tracks.find(pAISTarget->MMSI);
         if (it != g_pAIS->m_persistent_tracks.end())
           pAISTarget->b_show_track = true;
+        pAISTarget->b_show_track_old = g_bAISShowTracks;
       }
     }
   }
@@ -7816,7 +7824,7 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   gFrame->PrepareOptionsClose(this, m_returnChanges);
 
   //  If we had a config change, then do it now
-  if ((m_returnChanges & CONFIG_CHANGED))
+  if ((m_returnChanges & CONFIG_CHANGED) || (m_returnChanges & GL_CHANGED))
     gFrame->ScheduleReconfigAndSettingsReload(false, false);
 
   // Special case for "Dialog" font edit

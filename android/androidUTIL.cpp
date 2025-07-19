@@ -285,6 +285,7 @@ wxString g_androidExtStorageDir;
 wxString g_androidGetFilesDirs0;
 wxString g_androidGetFilesDirs1;
 wxString g_androidDownloadDirectory;
+wxString g_androidDocumentsDirectory;
 wxString g_android_Device_Model;
 
 int g_mask;
@@ -1025,6 +1026,8 @@ bool androidUtilInit(void) {
 
     token = tk.GetNextToken();
     g_androidDownloadDirectory = token;
+    token = tk.GetNextToken();
+    g_androidDocumentsDirectory = token;
   }
 
   g_mask = -1;
@@ -4575,6 +4578,8 @@ void CheckMigrateCharts() {
 }
 
 wxString androidGetDownloadDirectory() { return g_androidDownloadDirectory; }
+
+wxString androidGetDocumentsDirectory() { return g_androidDocumentsDirectory; }
 
 wxString WrapText(wxWindow *win, const wxString &text, int widthMax) {
   class HardBreakWrapper : public wxTextWrapper {

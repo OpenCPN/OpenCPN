@@ -149,11 +149,16 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   stcSizer->SetMinSize(min_size);
 
-  SetMaxSize(top_frame->GetSize());
-
   Layout();
+#ifdef __ANDROID__
+  wxSize max_size =
+      wxSize(top_frame->GetSize().x, top_frame->GetSize().y * 7 / 10);
+  SetSize(max_size);
+  Centre();
+#else
   Fit();
   Centre();
+#endif
 
 #ifdef __ANDROID__
   androidDisableRotation();
