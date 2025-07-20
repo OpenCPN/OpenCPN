@@ -1098,7 +1098,7 @@ void CDI::MouseEvent(wxMouseEvent& event) {
     wxContextMenuEvent cevt;
     cevt.SetPosition(event.GetPosition());
 
-    ConsoleCanvas* ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
+    ConsoleCanvasFrame* ccp = dynamic_cast<ConsoleCanvasFrame*>(GetParent());
     if (ccp) ccp->OnContextMenu(cevt);
   }
 #endif
@@ -1185,7 +1185,7 @@ void CDI::OnPaint(wxPaintEvent& event) {
   dc.Blit(0, 0, sx, sy, &mdc, 0, 0);
 }
 
-#if defined(__WXMSW__) || defined(__WXMAC__)
+#if defined(__WXMSW__) || defined(__WXMAC__) || defined(__ANDROID__)
 APConsole::APConsole(wxWindow* parent) {
   m_con_frame = new ConsoleCanvasFrame(parent);
 }
