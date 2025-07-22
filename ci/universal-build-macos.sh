@@ -50,6 +50,7 @@ brew install cmake
 brew install gettext
 brew install create-dmg
 brew install gpatch
+brew install asciidoc
 
 for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
