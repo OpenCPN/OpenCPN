@@ -1183,7 +1183,7 @@ void CDI::OnPaint(wxPaintEvent& event) {
 
 #if defined(__WXMSW__) || defined(__WXMAC__) || defined(__ANDROID__)
 APConsole::APConsole(wxWindow* parent) {
-  m_con_frame = new ConsoleCanvasFrame(parent);
+  m_con_frame = new ConsoleCanvasFrame(gFrame);
 }
 APConsole::~APConsole() {}
 void APConsole::SetColorScheme(ColorScheme cs) {
