@@ -5927,10 +5927,10 @@ void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
 void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                                      wxPoint GPSOffsetPixels,
                                      wxPoint2DDouble lGPSPoint) {
-  if (m_animationActive) return;
-  // Develop a uniform length for course predictor line dash length, based on
-  // physical display size Use this reference length to size all other graphics
-  // elements
+  // if (m_animationActive) return;
+  //  Develop a uniform length for course predictor line dash length, based on
+  //  physical display size Use this reference length to size all other graphics
+  //  elements
   float ref_dim = m_display_size_mm / 24;
   ref_dim = wxMin(ref_dim, 12);
   ref_dim = wxMax(ref_dim, 6);

@@ -2281,7 +2281,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
   // Special case:  No need for such precision on chart drag operations
   double shift_dx = 0;
   double shift_dy = 0;
-  if (m_pParentCanvas->m_bFollow && !m_pParentCanvas->m_MouseDragging) {
+  if ((!m_pParentCanvas->m_animationActive) && m_pParentCanvas->m_bFollow &&
+      !m_pParentCanvas->m_MouseDragging) {
     lGPSPoint.m_x = m_pParentCanvas->GetVP().pix_width / 2;
     lGPSPoint.m_y = m_pParentCanvas->GetVP().pix_height / 2;
     if (m_pParentCanvas->m_bLookAhead) {
