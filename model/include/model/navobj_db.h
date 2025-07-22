@@ -46,6 +46,7 @@ public:
   // Tracks
   bool LoadAllTracks();
   bool InsertTrack(Track *track);
+  bool UpdateTrack(Track *track);
   bool AddTrackPoint(Track *track, TrackPoint *point);
   bool UpdateDBTrackAttributes(Track *track);
   bool DeleteTrack(Track *track);

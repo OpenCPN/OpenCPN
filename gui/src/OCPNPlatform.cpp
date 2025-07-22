@@ -579,8 +579,8 @@ void OCPNPlatform::Initialize_2(void) {
 
   // Set the default Import/Export directory for A11+
   if (g_Android_SDK_Version >= 30) {
-    if (!g_gpx_path.StartsWith(androidGetDownloadDirectory())) {
-      g_gpx_path = androidGetDownloadDirectory();
+    if (!g_gpx_path.StartsWith(androidGetDocumentsDirectory())) {
+      g_gpx_path = androidGetDocumentsDirectory();
     }
   }
 
@@ -1248,7 +1248,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
     pConfig->SetPath(_T ( "/Settings/GlobalState" ));
     pConfig->Write(_T ( "bShowS57Text" ), true);
     pConfig->Write(_T ( "bShowS57ImportantTextOnly" ), false);
-    pConfig->Write(_T ( "nDisplayCategory" ), (int)(_DisCat)STANDARD);
+    pConfig->Write(_T ( "nDisplayCategory" ), (int)(_DisCat)OTHER);
     pConfig->Write(_T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART);
     pConfig->Write(_T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES);
 

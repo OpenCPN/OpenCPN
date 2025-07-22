@@ -67,6 +67,10 @@ TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path) {
   TC_Error_Code err_code;
   if (m_pfactory) {
     err_code = m_pfactory->LoadData(data_file_path);
+    if (err_code != TC_NO_ERROR) {
+      wxLogMessage("Error loading tide/current data.");
+      return err_code;
+    }
 
     //  Mark the index entries individually with owner
     unsigned int max_index = GetMaxIndex();

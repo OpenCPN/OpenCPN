@@ -32,8 +32,9 @@ directions. In the monitor, they are marked like:
 ⇤ An input message. This is a low level event, before message processing. All
 messages generates an input event, even if they are not otherwise recognized.
 
-← A received message. This event is generated if and when the input message is
-recognized and further processing is applied,
+← A handled message.
+Generated if and when the input message is recognized and further processing
+is applied,
 
 → An output message.
 

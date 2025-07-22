@@ -12,6 +12,12 @@ name: MacOS
       - master
     paths-ignore:
       - 'buildandroid/**'
+  workflow_dispatch:
+    branches:
+      - master
+    paths-ignore:
+      - 'buildandroid/**'
+
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

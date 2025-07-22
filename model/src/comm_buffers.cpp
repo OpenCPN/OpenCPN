@@ -90,12 +90,19 @@ void N0183Buffer::Put(uint8_t ch) {
       break;
     case State::Data:
       // Collect data into m_line until a '*' is found
+      // or until CR or LF character is found if CS may be missing
       if (std::isprint(ch)) {
         m_line.push_back(ch);
         if (ch == '*') m_state = State::CsDigit1;
       } else {
+        if (ch == 0x0d || ch == 0x0a) {
+          //  No checksum present
+          m_lines.emplace_back(m_line.begin(), m_line.end());
+          m_state = State::PrefixWait;
+        }
         // Malformed? Garbage input?
-        m_state = State::PrefixWait;
+        else
+          m_state = State::PrefixWait;
       }
       break;
     case State::CsDigit1:

@@ -59,7 +59,7 @@ extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 extern MyFrame *gFrame;
 
-extern ConsoleCanvas *console;
+extern APConsole *console;
 
 extern std::vector<Track *> g_TrackList;
 extern ActiveTrack *g_pActiveTrack;
@@ -84,7 +84,7 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
     if (console) console->ShowWithFreshFonts();
   };
   ctx.clear_console_background = []() {
-    console->pCDI->ClearBackground();
+    console->GetCDI()->ClearBackground();
     console->Show(false);
   };
   ctx.route_mgr_dlg_update_list_ctrl = []() {
@@ -210,6 +210,12 @@ bool RoutemanGui::UpdateProgress() {
     //      Determine Arrival
 
     bool bDidArrival = false;
+
+    // Duplicate points can result in NaN for normal crossing range.
+    if (isnan(m_routeman.CurrentRangeToActiveNormalCrossing)) {
+      m_routeman.CurrentRangeToActiveNormalCrossing =
+          m_routeman.CurrentRngToActivePoint;
+    }
 
     // Special signal:  if ArrivalRadius < 0, NEVER arrive...
     //  Used for MOB auto-created routes.

@@ -4180,7 +4180,6 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   SetSizer(itemBoxSizerMainPanel);
 
   wxWindow *dparent = this;
-#ifndef __ANDROID__
   wxScrolledWindow *scrollWin = new wxScrolledWindow(
       this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL | wxHSCROLL);
 
@@ -4191,10 +4190,6 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 
   wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
   scrollWin->SetSizer(itemBoxSizer2);
-#else
-  wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
-  itemBoxSizerMainPanel->Add(itemBoxSizer2, 1, wxEXPAND);
-#endif
 
   auto *DialogButtonSizer = new wxStdDialogButtonSizer();
   DialogButtonSizer->AddButton(new wxButton(this, wxID_OK));
@@ -4383,15 +4378,16 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemBoxSizer03->Add(itemStaticBoxSizer03, 1, wxEXPAND | wxALL, border_size);
 
   wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
-  int vsize = dsize.y * 35 / 100;
+  wxSize list_size = wxSize(-1, dsize.y * 35 / 100);
 
-#ifdef __OCPN__ANDROID__
-  vsize = display_height * 50 / 100;
+#ifdef __ANDROID__
+  int xsize = GetCharWidth() * 30;
+  list_size = wxSize(xsize, dsize.y * 50 / 100);
 #endif
 
-  m_pListCtrlInstruments = new wxListCtrl(
-      m_pPanelDashboard, wxID_ANY, wxDefaultPosition, wxSize(-1, vsize),
-      wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL);
+  m_pListCtrlInstruments =
+      new wxListCtrl(m_pPanelDashboard, wxID_ANY, wxDefaultPosition, list_size,
+                     wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL);
 
   itemStaticBoxSizer03->Add(m_pListCtrlInstruments, 1, wxEXPAND | wxALL,
                             border_size);
@@ -4477,6 +4473,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
       new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Title:"),
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer03->Add(itemStaticText04, 0, wxEXPAND | wxALL, border_size);
+
   m_pFontPickerTitle =
       new wxFontPickerCtrl(itemPanelNotebook02, wxID_ANY, g_USFontTitle,
                            wxDefaultPosition, wxDefaultSize);
@@ -4724,6 +4721,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemFlexGridSizer04->Add(m_pChoiceTempUnit, 0, wxALIGN_RIGHT | wxALL, 0);
 
   // New static box to include a 3 column flexgrid sizer
+#ifndef __ANDROID__
   wxStaticBox *itemStaticBox05 =
       new wxStaticBox(itemPanelNotebook02, wxID_ANY, _("Other selections"));
   wxStaticBoxSizer *itemStaticBoxSizer05 =
@@ -4756,6 +4754,61 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                                         "ground.\n(Instead of through water)"));
   itemFlexGridSizer05->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
   m_pUseTrueWinddata->SetValue(g_bDBtrueWindGround);
+
+#else
+
+  wxStaticBox *itemStaticBox05 =
+      new wxStaticBox(itemPanelNotebook02, wxID_ANY, _("Other selections"));
+  wxStaticBoxSizer *itemStaticBoxSizer05 =
+      new wxStaticBoxSizer(itemStaticBox05, wxHORIZONTAL);
+  itemBoxSizer05->Add(itemStaticBoxSizer05, 0, wxEXPAND | wxALL, border_size);
+
+  wxFlexGridSizer *itemFlexGridSizer05 = new wxFlexGridSizer(2);
+  itemFlexGridSizer05->AddGrowableCol(1);
+  itemStaticBoxSizer05->Add(itemFlexGridSizer05, 1, wxEXPAND | wxALL, 0);
+
+  m_pUseInternSumLog = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
+                                      _("Use internal Sumlog.") + "   ");
+  itemFlexGridSizer05->Add(m_pUseInternSumLog, 0, wxALIGN_LEFT, border_size);
+  m_pUseInternSumLog->SetValue(g_bUseInternSumLog);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext =
+      new wxStaticText(itemPanelNotebook02, wxID_ANY,
+                       "      " + _("Enter new value if desired") + "    ",
+                       wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  m_SumLogUnit = new wxStaticText(
+      itemPanelNotebook02, wxID_ANY,
+      getUsrDistanceUnit_Plugin(g_iDashDistanceUnit) + ":     ",
+      wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(m_SumLogUnit, 1, wxALIGN_RIGHT, 0);
+
+  m_pSumLogValue = new wxTextCtrl(itemPanelNotebook02, wxID_ANY, "");
+  itemFlexGridSizer05->Add(m_pSumLogValue, 1, wxALIGN_LEFT, 1);
+  m_pSumLogValue->SetValue(wxString::Format(
+      "%.1f", toUsrDistance_Plugin(g_dSumLogNM, g_iDashDistanceUnit)));
+
+  m_pUseTrueWinddata = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
+                                      _("Use N2K & SignalK true wind data over "
+                                        "ground.\n(Instead of through water)"));
+  itemFlexGridSizer05->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
+  m_pUseTrueWinddata->SetValue(g_bDBtrueWindGround);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext1 = new wxStaticText(itemPanelNotebook02, wxID_ANY, " ",
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext1, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
+
+  auto xtext2 = new wxStaticText(itemPanelNotebook02, wxID_ANY, " ",
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  itemFlexGridSizer05->Add(xtext2, 1, wxALIGN_LEFT, 0);
+  itemFlexGridSizer05->AddSpacer(0);
+
+#endif
 
   curSel = -1;
   for (size_t i = 0; i < m_Config.GetCount(); i++) {
