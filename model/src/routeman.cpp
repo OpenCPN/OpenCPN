@@ -514,39 +514,10 @@ bool Routeman::UpdateAutopilot() {
   int maxName = 6;
   if ((g_maxWPNameLength >= 3) && (g_maxWPNameLength <= 32))
     maxName = g_maxWPNameLength;
-#if 0
 
-
-  auto& registry = CommDriverRegistry::GetInstance();
-  const std::vector<DriverPtr>& drivers = registry.GetDrivers();
-
-  //  Look for configured  ports
-  bool have_n0183 = false;
-  bool have_n2000 = false;
-
-//  AbstractCommDriver* found = nullptr;
-  for (auto key : m_output_drivers) {
-    for (auto &d : drivers) {
-      if (d->Key() == key) {
-        std::unordered_map<std::string, std::string> attributes =
-            GetAttributes(key);
-        auto protocol_it = attributes.find("protocol");
-        if (protocol_it != attributes.end()) {
-          std::string protocol = protocol_it->second;
-
-          if (protocol == "nmea0183") {
-            have_n0183 = true;
-          } else if (protocol == "nmea2000") {
-            have_n2000 = true;
-          }
-        }
-      }
-    }
-  }
-#endif
+  if (!pActiveRoute) return false;
 
   if (m_have_n0183_out) rv |= UpdateAutopilotN0183(*this);
-
   if (m_have_n2000_out) rv |= UpdateAutopilotN2K(*this);
 
   // Send active leg info directly to plugins
