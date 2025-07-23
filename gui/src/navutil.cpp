@@ -64,6 +64,7 @@
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
+#include "model/navobj_db.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
 #include "model/route.h"
@@ -2616,7 +2617,7 @@ void MyConfig::UpdateSettings() {
   SaveCanvasConfigs();
 
   Flush();
-  SendMessageToAllPlugins("GLOBAL_SETTINGS_UPDATED", wxEmptyString);
+  SendMessageToAllPlugins("GLOBAL_SETTINGS_UPDATED", "{\"updated\":\"1\"}");
 }
 
 static wxFileName exportFileName(wxWindow *parent,
@@ -2644,15 +2645,52 @@ static wxFileName exportFileName(wxWindow *parent,
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
     if (wxFileExists(fn.GetFullPath())) {
-      int answer =
-          OCPNMessageBox(NULL, _("Overwrite existing file?"), _T("Confirm"),
-                         wxICON_QUESTION | wxYES_NO | wxCANCEL);
+      int answer = OCPNMessageBox(NULL, _("Overwrite existing file?"),
+                                  _T("Confirm"), wxICON_QUESTION | wxYES_NO);
       if (answer != wxID_YES) return ret;
     }
 #endif
     ret = fn;
   }
   return ret;
+}
+
+int BackupDatabase(wxWindow *parent) {
+  bool backupResult = false;
+  wxDateTime tm = wxDateTime::Now();
+  wxString proposedName = tm.Format("navobj-%Y-%m-%d_%H_%M");
+  wxString acceptedName;
+
+  if (wxID_OK ==
+      g_Platform->DoFileSelectorDialog(parent, &acceptedName, _("Backup"),
+                                       wxStandardPaths::Get().GetDocumentsDir(),
+                                       proposedName, wxT("*.bkp"))) {
+    wxFileName fileName(acceptedName);
+    if (fileName.IsOk()) {
+#if defined(__WXMSW__) || defined(__WXGTK__)
+      if (fileName.FileExists()) {
+        if (wxID_YES != OCPNMessageBox(NULL, _("Overwrite existing file?"),
+                                       _T("Confirm"),
+                                       wxICON_QUESTION | wxYES_NO)) {
+          return wxID_ABORT;  // We've decided not to overwrite a file, aborting
+        }
+      }
+#endif
+
+#ifdef __ANDROID__
+      wxString secureFileName = androidGetCacheDir() +
+                                wxFileName::GetPathSeparator() +
+                                fileName.GetFullName();
+      backupResult =
+          NavObj_dB::GetInstance().Backup(secureFileName.GetFullPath());
+      AndroidSecureCopyFile(secureFileName, fileName.GetFullPath());
+#else
+      backupResult = NavObj_dB::GetInstance().Backup(fileName.GetFullPath());
+#endif
+    }
+    return backupResult ? wxID_YES : wxID_NO;
+  }
+  return wxID_ABORT;  // Cancelled the file open dialog, aborting
 }
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
