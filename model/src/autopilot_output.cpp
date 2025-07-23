@@ -299,10 +299,11 @@ bool UpdateAutopilotN2K(Routeman &routeman) {
     drv_serial->AddTxPGN(129284);
     drv_serial->AddTxPGN(129285);
   }
-
-  fail_any |= !SendPGN129285(routeman, found);
-  fail_any |= !SendPGN129284(routeman, found);
-  fail_any |= !SendPGN129283(routeman, found);
+  if (routeman.IsAnyRouteActive()) {
+    fail_any |= !SendPGN129285(routeman, found);
+    fail_any |= !SendPGN129284(routeman, found);
+    fail_any |= !SendPGN129283(routeman, found);
+  }
 
   return (fail_any == 0);
 }
