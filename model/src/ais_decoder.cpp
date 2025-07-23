@@ -80,7 +80,7 @@ wxEvtHandler *g_pais_alert_dialog_active;
 
 AisDecoder *g_pAIS;
 Select *pSelectAIS;
-bool g_bUseOnlyConfirmedAISName;
+bool g_use_only_confirmed_ais_name;
 wxString GetShipNameFromFile(int);
 wxString AISTargetNameFileName;
 bool isBuoyMmsi(const int);
@@ -130,33 +130,43 @@ static inline double MS2KNOTS(double ms) { return ms * 1.9438444924406; }
 int AisMeteoNewMmsi(int, int, int, int, int);
 int origin_mmsi = 0;
 
-void AISshipNameCache(AisTargetData *pTargetData,
-                      AIS_Target_Name_Hash *AISTargetNamesC,
-                      AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
+void SyncAisShipCache(AisTargetData *pTargetData,
+                      AisTargetDataMap *AISTargetDataC,
+                      AisTargetDataMap *AISTargetDataNC, long mmsi);
 
 AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
     : m_signalk_selfid(""), m_callbacks(callbacks) {
   // Load cached AIS target names from a file
-  AISTargetNamesC = new AIS_Target_Name_Hash;
-  AISTargetNamesNC = new AIS_Target_Name_Hash;
+  m_ais_target_data_c = new AisTargetDataMap;
+  m_ais_target_data_nc = new AisTargetDataMap;
 
-  if (g_benableAISNameCache) {
+  if (g_enable_ais_data_cache) {
     if (wxFileName::FileExists(AISTargetNameFileName)) {
       wxTextFile infile;
       if (infile.Open(AISTargetNameFileName)) {
-        AIS_Target_Name_Hash *HashFile = AISTargetNamesNC;
+        AisTargetDataMap *HashFile = m_ais_target_data_nc;
         wxString line = infile.GetFirstLine();
         while (!infile.Eof()) {
           if (line.IsSameAs(wxT("+++==Confirmed Entry's==+++")))
-            HashFile = AISTargetNamesC;
+            HashFile = m_ais_target_data_c;
           else {
             if (line.IsSameAs(wxT("+++==Non Confirmed Entry's==+++")))
-              HashFile = AISTargetNamesNC;
+              HashFile = m_ais_target_data_nc;
             else {
               wxStringTokenizer tokenizer(line, _T(","));
               int mmsi = wxAtoi(tokenizer.GetNextToken());
               wxString name = tokenizer.GetNextToken().Trim();
-              (*HashFile)[mmsi] = name;
+              int type = wxAtoi(tokenizer.GetNextToken());
+              int dimA = wxAtoi(tokenizer.GetNextToken());
+              int dimB = wxAtoi(tokenizer.GetNextToken());
+              int dimC = wxAtoi(tokenizer.GetNextToken());
+              int dimD = wxAtoi(tokenizer.GetNextToken());
+              (*HashFile)[mmsi].name = name;
+              (*HashFile)[mmsi].type = type;
+              (*HashFile)[mmsi].m_dim_a = dimA;
+              (*HashFile)[mmsi].m_dim_b = dimB;
+              (*HashFile)[mmsi].m_dim_c = dimC;
+              (*HashFile)[mmsi].m_dim_d = dimD;
             }
           }
           line = infile.GetNextLine();
@@ -201,27 +211,49 @@ AisDecoder::~AisDecoder(void) {
   if (outfile.Open(AISTargetNameFileName)) {
     wxString content;
     content = wxT("+++==Confirmed Entry's==+++");
-    AIS_Target_Name_Hash::iterator it;
-    for (it = AISTargetNamesC->begin(); it != AISTargetNamesC->end(); ++it) {
+    AisTargetDataMap::iterator it;
+    for (it = m_ais_target_data_c->begin(); it != m_ais_target_data_c->end();
+         ++it) {
       content.append(_T("\r\n"));
       content.append(wxString::Format(wxT("%i"), it->first));
-      content.append(_T(",")).append(it->second);
+      content.append(_T(",")).append(it->second.name);
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.type));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_a));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_b));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_c));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_d));
     }
     content.append(_T("\r\n"));
     content.append(_T("+++==Non Confirmed Entry's==+++"));
-    for (it = AISTargetNamesNC->begin(); it != AISTargetNamesNC->end(); ++it) {
+    for (it = m_ais_target_data_nc->begin(); it != m_ais_target_data_nc->end();
+         ++it) {
       content.append(_T("\r\n"));
       content.append(wxString::Format(wxT("%i"), it->first));
-      content.append(_T(",")).append(it->second);
+      content.append(_T(",")).append(it->second.name);
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.type));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_a));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_b));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_c));
+      content.append(_T(",")).append(
+          wxString::Format(wxT("%i"), it->second.m_dim_d));
     }
     outfile.Write(content);
     outfile.Commit();
   }
 
-  AISTargetNamesC->clear();
-  delete AISTargetNamesC;
-  AISTargetNamesNC->clear();
-  delete AISTargetNamesNC;
+  m_ais_target_data_c->clear();
+  delete m_ais_target_data_c;
+  m_ais_target_data_nc->clear();
+  delete m_ais_target_data_nc;
 
   clear_hash_ERI();
 
@@ -448,7 +480,7 @@ bool AisDecoder::HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
     // Populate the target_data
     pTargetData->MMSI = mmsi;
-    pTargetData->MID = MessageID;
+    pTargetData->m_mid = MessageID;
     pTargetData->MMSI = mmsi;
     pTargetData->Class = AIS_CLASS_A;
     //    Check for SART and friends by looking at first two digits of MMSI
@@ -558,7 +590,7 @@ bool AisDecoder::HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
     // Populate the target_data
     pTargetData->MMSI = mmsi;
-    pTargetData->MID = MessageID;
+    pTargetData->m_mid = MessageID;
     if (!isBuoyMmsi(mmsi))
       pTargetData->Class = AIS_CLASS_B;
     else
@@ -663,12 +695,12 @@ bool AisDecoder::HandleN2K_129041(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     }
 
     data.AtoNName[34] = 0;
-    strncpy(pTargetData->ShipName, data.AtoNName, SHIP_NAME_LEN - 1);
-    pTargetData->ShipName[sizeof(pTargetData->ShipName) - 1] = '\0';
-    pTargetData->b_nameValid = true;
-    pTargetData->MID = 124;  // Indicates a name from n2k
+    strncpy(pTargetData->ship_name, data.AtoNName, SHIP_NAME_LEN - 1);
+    pTargetData->ship_name[sizeof(pTargetData->ship_name) - 1] = '\0';
+    pTargetData->b_name_valid = true;
+    pTargetData->m_mid = 124;  // Indicates a name from n2k
 
-    pTargetData->ShipType = data.AtoNType;
+    pTargetData->m_ship_type = data.AtoNType;
     pTargetData->Class = AIS_ATON;
 
     if (!N2kIsNA(data.Longitude)) pTargetData->Lon = data.Longitude;
@@ -739,25 +771,25 @@ bool AisDecoder::HandleN2K_129794(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
     // Populate the target_data
     pTargetData->MMSI = mmsi;
-    strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
-    pTargetData->ShipName[sizeof(pTargetData->ShipName) - 1] = '\0';
+    strncpy(pTargetData->ship_name, Name, SHIP_NAME_LEN - 1);
+    pTargetData->ship_name[sizeof(pTargetData->ship_name) - 1] = '\0';
     Name[sizeof(Name) - 1] = 0;
-    pTargetData->b_nameValid = true;
-    pTargetData->MID = 124;  // Indicates a name from n2k
+    pTargetData->b_name_valid = true;
+    pTargetData->m_mid = 124;  // Indicates a name from n2k
 
     pTargetData->b_OwnShip =
         AISinfo ==
         tN2kAISTranceiverInfo::N2kaisti_Own_information_not_broadcast;
 
-    pTargetData->DimA = PosRefBow;
-    pTargetData->DimB = Length - PosRefBow;
-    pTargetData->DimC = Beam - PosRefStbd;
-    pTargetData->DimD = PosRefStbd;
+    pTargetData->m_dim_a = PosRefBow;
+    pTargetData->m_dim_b = Length - PosRefBow;
+    pTargetData->m_dim_c = Beam - PosRefStbd;
+    pTargetData->m_dim_d = PosRefStbd;
     pTargetData->Draft = Draught;
     pTargetData->IMO = IMOnumber;
     strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
     pTargetData->CallSign[sizeof(pTargetData->CallSign) - 1] = '\0';
-    pTargetData->ShipType = (unsigned char)VesselType;
+    pTargetData->m_ship_type = (unsigned char)VesselType;
     strncpy(pTargetData->Destination, Destination, DESTINATION_LEN - 1);
     pTargetData->Destination[sizeof(pTargetData->Destination) - 1] = '\0';
     Destination[sizeof(Destination) - 1] = 0;
@@ -815,9 +847,9 @@ bool AisDecoder::HandleN2K_129809(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     // Populate the target_data
     pTargetData->MMSI = mmsi;
     Name[sizeof(Name) - 1] = 0;
-    strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
-    pTargetData->b_nameValid = true;
-    pTargetData->MID = 124;  // Indicates a name from n2k
+    strncpy(pTargetData->ship_name, Name, SHIP_NAME_LEN - 1);
+    pTargetData->b_name_valid = true;
+    pTargetData->m_mid = 124;  // Indicates a name from n2k
 
     pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
@@ -870,13 +902,13 @@ bool AisDecoder::HandleN2K_129810(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
     // Populate the target_data
     pTargetData->MMSI = mmsi;
-    pTargetData->DimA = PosRefBow;
-    pTargetData->DimB = Length - PosRefBow;
-    pTargetData->DimC = Beam - PosRefStbd;
-    pTargetData->DimD = PosRefStbd;
+    pTargetData->m_dim_a = PosRefBow;
+    pTargetData->m_dim_b = Length - PosRefBow;
+    pTargetData->m_dim_c = Beam - PosRefStbd;
+    pTargetData->m_dim_d = PosRefStbd;
     strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
     pTargetData->CallSign[sizeof(pTargetData->CallSign) - 1] = '\0';
-    pTargetData->ShipType = (unsigned char)VesselType;
+    pTargetData->m_ship_type = (unsigned char)VesselType;
 
     pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
@@ -1138,7 +1170,7 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
       pTargetData->met_data.stationID = meteo_SiteID;
       /* Make a unique "shipname" for each station
          based on position inherited from meteo_SiteID */
-      wxString met_name = pTargetData->ShipName;
+      wxString met_name = pTargetData->ship_name;
       if (met_name.Find("METEO") == wxNOT_FOUND) {
         wxString s_id;
         int id1, id2;
@@ -1147,10 +1179,10 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
         id2 = wxAtoi(s_id.Mid(4, 3));
         met_name = "METEO ";
         met_name << wxString::Format("%03d", (id1 + id2)).Right(3);
-        strncpy(pTargetData->ShipName, met_name, SHIP_NAME_LEN - 1);
+        strncpy(pTargetData->ship_name, met_name, SHIP_NAME_LEN - 1);
       }
-      pTargetData->b_nameValid = true;
-      pTargetData->MID = 123;  // Indicates a name from SignalK
+      pTargetData->b_name_valid = true;
+      pTargetData->m_mid = 123;  // Indicates a name from SignalK
       pTargetData->COG = -1.;
       pTargetData->HDG = 511;
       pTargetData->SOG = -1.;
@@ -1234,12 +1266,12 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
     } else if (update_path == _T("design.aisShipType")) {
       if (item["value"].HasMember("id")) {
         if (!pTargetData->b_isDSCtarget) {
-          pTargetData->ShipType = item["value"]["id"].GetUint();
+          pTargetData->m_ship_type = item["value"]["id"].GetUint();
         }
       }
     } else if (update_path == _T("atonType")) {
       if (item["value"].HasMember("id")) {
-        pTargetData->ShipType = item["value"]["id"].GetUint();
+        pTargetData->m_ship_type = item["value"]["id"].GetUint();
       }
     } else if (update_path == _T("virtual")) {
       if (item["value"].GetBool()) {
@@ -1270,13 +1302,13 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
         }
       }
     } else if (update_path == _T("design.length")) {
-      if (pTargetData->DimB == 0) {
+      if (pTargetData->m_dim_b == 0) {
         if (item["value"].HasMember("overall")) {
           if (item["value"]["overall"].IsNumber()) {
             pTargetData->Euro_Length = item["value"]["overall"].GetDouble();
-            pTargetData->DimA = item["value"]["overall"].GetDouble();
+            pTargetData->m_dim_a = item["value"]["overall"].GetDouble();
           }
-          pTargetData->DimB = 0;
+          pTargetData->m_dim_b = 0;
         }
       }
     } else if (update_path == _T("sensors.ais.class")) {
@@ -1299,30 +1331,30 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
         pTargetData->Class = AIS_ATON;
       }
     } else if (update_path == _T("sensors.ais.fromBow")) {
-      if (pTargetData->DimB == 0 && pTargetData->DimA != 0) {
-        int length = pTargetData->DimA;
+      if (pTargetData->m_dim_b == 0 && pTargetData->m_dim_a != 0) {
+        int length = pTargetData->m_dim_a;
         if (item["value"].IsNumber()) {
-          pTargetData->DimA = item["value"].GetDouble();
-          pTargetData->DimB = length - item["value"].GetDouble();
+          pTargetData->m_dim_a = item["value"].GetDouble();
+          pTargetData->m_dim_b = length - item["value"].GetDouble();
         }
       }
     } else if (update_path == _T("design.beam")) {
-      if (pTargetData->DimD == 0) {
+      if (pTargetData->m_dim_d == 0) {
         if (item["value"].IsNumber()) {
           pTargetData->Euro_Beam = item["value"].GetDouble();
-          pTargetData->DimC = item["value"].GetDouble();
+          pTargetData->m_dim_c = item["value"].GetDouble();
         }
-        pTargetData->DimD = 0;
+        pTargetData->m_dim_d = 0;
       }
     } else if (update_path == _T("sensors.ais.fromCenter")) {
-      if (pTargetData->DimD == 0 && pTargetData->DimC != 0) {
-        int beam = pTargetData->DimC;
+      if (pTargetData->m_dim_d == 0 && pTargetData->m_dim_c != 0) {
+        int beam = pTargetData->m_dim_c;
         int center = beam / 2;
         if (item["value"].IsNumber()) {
           // FIXME (nohal): Dim* are int, but we have seen data streams with
           // doubles in them...
-          pTargetData->DimC = center + item["value"].GetDouble();
-          pTargetData->DimD = beam - pTargetData->DimC;
+          pTargetData->m_dim_c = center + item["value"].GetDouble();
+          pTargetData->m_dim_d = beam - pTargetData->m_dim_c;
         }
       }
     } else if (update_path == _T("navigation.state")) {
@@ -1497,9 +1529,9 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
     } else if (update_path == _T("")) {
       if (item["value"].HasMember("name")) {
         const wxString &name = item["value"]["name"].GetString();
-        strncpy(pTargetData->ShipName, name.c_str(), SHIP_NAME_LEN - 1);
-        pTargetData->b_nameValid = true;
-        pTargetData->MID = 123;  // Indicates a name from SignalK
+        strncpy(pTargetData->ship_name, name.c_str(), SHIP_NAME_LEN - 1);
+        pTargetData->b_name_valid = true;
+        pTargetData->m_mid = 123;  // Indicates a name from SignalK
       } else if (item["value"].HasMember("registrations")) {
         const wxString &imo = item["value"]["registrations"]["imo"].GetString();
         pTargetData->IMO = wxAtoi(imo.Right(7));
@@ -1522,8 +1554,8 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
             pTargetData->b_SarAircraftPosnReport = true;
           }
 
-          AISshipNameCache(pTargetData.get(), AISTargetNamesC, AISTargetNamesNC,
-                           mmsi);
+          SyncAisShipCache(pTargetData.get(), m_ais_target_data_c,
+                           m_ais_target_data_nc, mmsi);
         }
       }
     } else {
@@ -1621,7 +1653,7 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos,
   bool bdecode_result = Parse_VDXBitstring(&strbit, TargetData);
 
   if (bdecode_result) {
-    switch (TargetData->MID) {
+    switch (TargetData->m_mid) {
       case 1:
       case 2:
       case 3:
@@ -2222,10 +2254,10 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         pTargetData->b_positionOnceValid = true;
         pTargetData->COG = gpsg_cog;
         pTargetData->SOG = gpsg_sog;
-        pTargetData->ShipType = 52;  // buddy
+        pTargetData->m_ship_type = 52;  // buddy
         pTargetData->Class = AIS_GPSG_BUDDY;
-        memcpy(pTargetData->ShipName, gpsg_name_str, sizeof(gpsg_name_str));
-        pTargetData->b_nameValid = true;
+        memcpy(pTargetData->ship_name, gpsg_name_str, sizeof(gpsg_name_str));
+        pTargetData->b_name_valid = true;
         pTargetData->b_active = true;
         pTargetData->b_lost = false;
 
@@ -2261,14 +2293,14 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         pTargetData->PositionReportTicks = now.GetTicks();
         pTargetData->StaticReportTicks = now.GetTicks();
         pTargetData->b_positionOnceValid = true;
-        pTargetData->ShipType = 55;  // arpa
+        pTargetData->m_ship_type = 55;  // arpa
         pTargetData->Class = AIS_ARPA;
 
-        memcpy(pTargetData->ShipName, arpa_name_str, sizeof(arpa_name_str));
+        memcpy(pTargetData->ship_name, arpa_name_str, sizeof(arpa_name_str));
         if (arpa_status != _T("Q"))
-          pTargetData->b_nameValid = true;
+          pTargetData->b_name_valid = true;
         else
-          pTargetData->b_nameValid = false;
+          pTargetData->b_name_valid = false;
         pTargetData->b_active = !arpa_lost;
         pTargetData->b_lost = arpa_nottracked;
 
@@ -2293,10 +2325,10 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         pTargetData->Lat = aprs_lat;
         pTargetData->Lon = aprs_lon;
         pTargetData->b_positionOnceValid = true;
-        pTargetData->ShipType = 56;  // aprs
+        pTargetData->m_ship_type = 56;  // aprs
         pTargetData->Class = AIS_APRS;
-        memcpy(pTargetData->ShipName, aprs_name_str, sizeof(aprs_name_str));
-        pTargetData->b_nameValid = true;
+        memcpy(pTargetData->ship_name, aprs_name_str, sizeof(aprs_name_str));
+        pTargetData->b_name_valid = true;
         pTargetData->b_active = true;
         pTargetData->b_lost = false;
 
@@ -2371,8 +2403,8 @@ void AisDecoder::CommitAISTarget(std::shared_ptr<AisTargetData> pTargetData,
   if (message_valid) {
     // Print to name cache only if not mmsi = 0
     if (pTargetData->MMSI) {
-      AISshipNameCache(pTargetData.get(), AISTargetNamesC, AISTargetNamesNC,
-                       pTargetData->MMSI);
+      SyncAisShipCache(pTargetData.get(), m_ais_target_data_c,
+                       m_ais_target_data_nc, pTargetData->MMSI);
     }
     AISTargetList[pTargetData->MMSI] =
         pTargetData;  // update the hash table entry
@@ -2657,17 +2689,17 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
     m_ptentative_dsctarget->b_positionOnceValid = true;
     m_ptentative_dsctarget->COG = 0;
     m_ptentative_dsctarget->SOG = 0;
-    m_ptentative_dsctarget->ShipType = dsc_fmt;
+    m_ptentative_dsctarget->m_ship_type = dsc_fmt;
     m_ptentative_dsctarget->Class = AIS_DSC;
     m_ptentative_dsctarget->b_isDSCtarget = true;
-    m_ptentative_dsctarget->b_nameValid = true;
+    m_ptentative_dsctarget->b_name_valid = true;
     if (dsc_fmt == 12 || (dsc_fmt == 16 && dsc_cat == 12)) {
-      snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d",
+      snprintf(m_ptentative_dsctarget->ship_name, SHIP_NAME_LEN, "DISTRESS %d",
                std::abs(mmsi));
       m_ptentative_dsctarget->m_dscNature = int(dsc_nature);
       m_ptentative_dsctarget->m_dscTXmmsi = dsc_tx_mmsi;
     } else {
-      snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d",
+      snprintf(m_ptentative_dsctarget->ship_name, SHIP_NAME_LEN, "POSITION %d",
                std::abs(mmsi));
     }
 
@@ -2696,8 +2728,8 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
             m_ptentative_dsctarget->Lon +
             ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
         if (dse_shipName.length() > 0) {
-          memset(m_ptentative_dsctarget->ShipName, '\0', SHIP_NAME_LEN);
-          snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(),
+          memset(m_ptentative_dsctarget->ship_name, '\0', SHIP_NAME_LEN);
+          snprintf(m_ptentative_dsctarget->ship_name, dse_shipName.length(),
                    "%s", dse_shipName.ToAscii().data());
         }
         m_ptentative_dsctarget->COG = dse_cog;
@@ -2783,7 +2815,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
   wxDateTime now = wxDateTime::Now();
   now.MakeGMT();
   int message_ID = bstr->GetInt(1, 6);  // Parse on message ID
-  ptd->MID = message_ID;
+  ptd->m_mid = message_ID;
 
   // Save for Ais8_001_31 and ais8_367_33 (class AIS_METEO)
   int met_mmsi = ptd->MMSI;
@@ -2973,15 +3005,15 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
       ptd->m_utc_sec = bstr->GetInt(134, 6);
       // From bit 140 and forward data as of mes 5
-      bstr->GetStr(144, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-      ptd->b_nameValid = true;
+      bstr->GetStr(144, 120, &ptd->ship_name[0], SHIP_NAME_LEN);
+      ptd->b_name_valid = true;
       if (!ptd->b_isDSCtarget) {
-        ptd->ShipType = (unsigned char)bstr->GetInt(264, 8);
+        ptd->m_ship_type = (unsigned char)bstr->GetInt(264, 8);
       }
-      ptd->DimA = bstr->GetInt(272, 9);
-      ptd->DimB = bstr->GetInt(281, 9);
-      ptd->DimC = bstr->GetInt(290, 6);
-      ptd->DimD = bstr->GetInt(296, 6);
+      ptd->m_dim_a = bstr->GetInt(272, 9);
+      ptd->m_dim_b = bstr->GetInt(281, 9);
+      ptd->m_dim_c = bstr->GetInt(290, 6);
+      ptd->m_dim_d = bstr->GetInt(296, 6);
 
       if (!ptd->b_isDSCtarget) {
         // Although outdated, message 19 is used by many "ATON" for net buoys
@@ -3093,16 +3125,16 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->IMO = bstr->GetInt(41, 30);
 
         bstr->GetStr(71, 42, &ptd->CallSign[0], 7);
-        bstr->GetStr(113, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-        ptd->b_nameValid = true;
+        bstr->GetStr(113, 120, &ptd->ship_name[0], SHIP_NAME_LEN);
+        ptd->b_name_valid = true;
         if (!ptd->b_isDSCtarget) {
-          ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
+          ptd->m_ship_type = (unsigned char)bstr->GetInt(233, 8);
         }
 
-        ptd->DimA = bstr->GetInt(241, 9);
-        ptd->DimB = bstr->GetInt(250, 9);
-        ptd->DimC = bstr->GetInt(259, 6);
-        ptd->DimD = bstr->GetInt(265, 6);
+        ptd->m_dim_a = bstr->GetInt(241, 9);
+        ptd->m_dim_b = bstr->GetInt(250, 9);
+        ptd->m_dim_c = bstr->GetInt(259, 6);
+        ptd->m_dim_d = bstr->GetInt(265, 6);
 
         ptd->ETA_Mo = bstr->GetInt(275, 4);
         ptd->ETA_Day = bstr->GetInt(279, 5);
@@ -3124,20 +3156,20 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
     case 24: {  // Static data report
       int part_number = bstr->GetInt(39, 2);
       if (0 == part_number) {
-        bstr->GetStr(41, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-        ptd->b_nameValid = true;
+        bstr->GetStr(41, 120, &ptd->ship_name[0], SHIP_NAME_LEN);
+        ptd->b_name_valid = true;
         parse_result = true;
         n_msg24++;
       } else if (1 == part_number) {
         if (!ptd->b_isDSCtarget) {
-          ptd->ShipType = (unsigned char)bstr->GetInt(41, 8);
+          ptd->m_ship_type = (unsigned char)bstr->GetInt(41, 8);
         }
         bstr->GetStr(91, 42, &ptd->CallSign[0], 7);
 
-        ptd->DimA = bstr->GetInt(133, 9);
-        ptd->DimB = bstr->GetInt(142, 9);
-        ptd->DimC = bstr->GetInt(151, 6);
-        ptd->DimD = bstr->GetInt(157, 6);
+        ptd->m_dim_a = bstr->GetInt(133, 9);
+        ptd->m_dim_b = bstr->GetInt(142, 9);
+        ptd->m_dim_c = bstr->GetInt(151, 6);
+        ptd->m_dim_d = bstr->GetInt(157, 6);
         parse_result = true;
       }
       break;
@@ -3224,16 +3256,16 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
     }
     case 21:  // Test Message (Aid to Navigation)
     {
-      ptd->ShipType = (unsigned char)bstr->GetInt(39, 5);
+      ptd->m_ship_type = (unsigned char)bstr->GetInt(39, 5);
       ptd->IMO = 0;
       ptd->SOG = 0;
       ptd->HDG = 0;
       ptd->COG = 0;
       ptd->ROTAIS = -128;  // i.e. not available
-      ptd->DimA = bstr->GetInt(220, 9);
-      ptd->DimB = bstr->GetInt(229, 9);
-      ptd->DimC = bstr->GetInt(238, 6);
-      ptd->DimD = bstr->GetInt(244, 6);
+      ptd->m_dim_a = bstr->GetInt(220, 9);
+      ptd->m_dim_b = bstr->GetInt(229, 9);
+      ptd->m_dim_c = bstr->GetInt(238, 6);
+      ptd->m_dim_d = bstr->GetInt(244, 6);
       ptd->Draft = 0;
 
       ptd->m_utc_sec = bstr->GetInt(254, 6);
@@ -3250,7 +3282,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         if (offpos) ptd->NavStatus += 1;
       }
 
-      bstr->GetStr(44, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
+      bstr->GetStr(44, 120, &ptd->ship_name[0], SHIP_NAME_LEN);
       // short name only, extension wont fit in Ship structure
 
       if (bstr->GetBitCount() > 276) {
@@ -3261,7 +3293,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->ShipNameExtension[0] = 0;
       }
 
-      ptd->b_nameValid = true;
+      ptd->b_name_valid = true;
 
       parse_result = true;  // so far so good
 
@@ -3455,7 +3487,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->Lat = lat_tentative;
 
             // Try to make unique name for each station based on position
-            wxString x = ptd->ShipName;
+            wxString x = ptd->ship_name;
             if (x.Find("METEO") == wxNOT_FOUND) {
               double id1, id2;
               wxString slat = wxString::Format("%0.3f", lat_tentative);
@@ -3464,7 +3496,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               slon.ToDouble(&id2);
               wxString nameID = "METEO ";
               nameID << wxString::Format("%0.3f", abs(id1) + abs(id2)).Right(3);
-              strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
+              strncpy(ptd->ship_name, nameID, SHIP_NAME_LEN - 1);
             }
 
             ptd->met_data.pos_acc = bstr->GetInt(106, 1);
@@ -3533,7 +3565,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             b_posn_report = true;
             ptd->LastPositionReportTicks = ptd->PositionReportTicks;
             ptd->PositionReportTicks = now.GetTicks();
-            ptd->b_nameValid = true;
+            ptd->b_name_valid = true;
 
             parse_result = true;
           }
@@ -3561,11 +3593,11 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             int Site_ID = bstr->GetInt(slotbit + 77, 7);
 
             // Name the station acc to site ID until message type 1
-            if (!ptd->b_nameValid) {
+            if (!ptd->b_name_valid) {
               wxString nameID = "METEO Site: ";
               nameID << Site_ID;
-              strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
-              ptd->b_nameValid = true;
+              strncpy(ptd->ship_name, nameID, SHIP_NAME_LEN - 1);
+              ptd->b_name_valid = true;
             }
 
             if (type == 0) {  // Location
@@ -3581,8 +3613,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               ptd->b_positionOnceValid = true;
 
             } else if (type == 1) {  // Name
-              bstr->GetStr(slotbit + 84, 84, &ptd->ShipName[0], SHIP_NAME_LEN);
-              ptd->b_nameValid = true;
+              bstr->GetStr(slotbit + 84, 84, &ptd->ship_name[0], SHIP_NAME_LEN);
+              ptd->b_name_valid = true;
 
             } else if (type == 2) {  // Wind
               // Description 1 and 2 are real time values.
@@ -3693,7 +3725,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             b_posn_report = true;
             ptd->LastPositionReportTicks = ptd->PositionReportTicks;
             ptd->PositionReportTicks = now.GetTicks();
-            ptd->b_nameValid = true;
+            ptd->b_name_valid = true;
 
             parse_result = true;
           }
@@ -3938,7 +3970,7 @@ void AisDecoder::UpdateAllAlarms(void) {
 
         //  DSC Distress targets always alert
         if ((td->Class == AIS_DSC) &&
-            ((td->ShipType == 12) || (td->ShipType == 16)))
+            ((td->m_ship_type == 12) || (td->m_ship_type == 16)))
           m_bGeneralAlert = true;
       }
 
@@ -3950,7 +3982,7 @@ void AisDecoder::UpdateAllAlarms(void) {
 
       //  DSC Distress targets always alert
       if ((td->Class == AIS_DSC) &&
-          ((td->ShipType == 12) || (td->ShipType == 16)))
+          ((td->m_ship_type == 12) || (td->m_ship_type == 16)))
         this_alarm = AIS_ALERT_SET;
 
       if (g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
@@ -4002,7 +4034,7 @@ void AisDecoder::UpdateAllAlarms(void) {
 
       if (g_bAIS_ACK_Timeout || (td->Class == AIS_SART) ||
           ((td->Class == AIS_DSC) &&
-           ((td->ShipType == 12) || (td->ShipType == 16)))) {
+           ((td->m_ship_type == 12) || (td->m_ship_type == 16)))) {
         if (td->b_in_ack_timeout) {
           wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
           if (delta.GetMinutes() > g_AckTimeout_Mins)
@@ -4353,7 +4385,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
             }
           }
         } else if ((td->Class == AIS_DSC) &&
-                   ((td->ShipType == 12) || (td->ShipType == 16))) {
+                   ((td->m_ship_type == 12) || (td->m_ship_type == 16))) {
           if (td->b_active) {
             if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
               palert_target_dsc = td;
@@ -4521,90 +4553,199 @@ wxString MmsiProperties::Serialize(void) {
   return sMMSI;
 }
 
-void AISshipNameCache(AisTargetData *pTargetData,
-                      AIS_Target_Name_Hash *AISTargetNamesC,
-                      AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi) {
-  if (g_benableAISNameCache) {
-    wxString ship_name = wxEmptyString;
+/**
+ * Sync AIS target data with static info cache.
+ *
+ * This function compares the provided AIS data structure to the content of the
+ * AIS data caches and synchronizes them as needed. It also handles the status
+ * of the target (confirmed or not-confirmed) by associating it to the right
+ * cache list and by setting the appropriate flags.
+ *
+ * @param p_target_data AIS target data to compare to cache
+ * @param ais_target_data_c pointer to the cache list of confirmed AIS targets
+ * @param ais_target_data_nc pointer to the cache list of non-confirmed AIS
+ * targets
+ * @param mmsi MMSI of the AIS target
+ */
+void SyncAisShipCache(AisTargetData *p_target_data,
+                      AisTargetDataMap *ais_target_data_c,
+                      AisTargetDataMap *ais_target_data_nc, long mmsi) {
+  if (!g_enable_ais_data_cache) {
+    // Exit if AIS cache is not enabled
+    return;
+  }
 
-    // Check for valid name data
-    if (!pTargetData->b_nameValid) {
-      AIS_Target_Name_Hash::iterator it = AISTargetNamesC->find(mmsi);
-      if (it != AISTargetNamesC->end()) {
-        ship_name = (*AISTargetNamesC)[mmsi].Left(20);
-        strncpy(pTargetData->ShipName, ship_name.mb_str(),
+  std::string ship_name = "";
+  AisTargetDataMap::iterator it_c = ais_target_data_c->find(mmsi);
+  AisTargetDataMap::iterator it_nc = ais_target_data_nc->find(mmsi);
+
+  // If the last incoming AIS message from this target carried target name then
+  // mark it as confirmed
+  if ((p_target_data->m_mid == 5) || (p_target_data->m_mid == 24) ||
+      (p_target_data->m_mid == 19) ||
+      (p_target_data->m_mid == 123) ||  // 123: Has got a name from SignalK
+      (p_target_data->m_mid == 124)) {  // 124: Has got a name from n2k
+    // Confirmation is marked by info_from_cache set to false and name_valid set
+    // to true
+    p_target_data->b_name_from_cache = false;
+    p_target_data->b_name_valid = true;
+  }
+
+  // Check if target is listed in confirmed list
+  if (it_c != ais_target_data_c->end()) {
+    // MMSI is in the confirmed list
+    AisTargetCacheData &ship_data = (*ais_target_data_c)[mmsi];
+
+    // If MMSI is also in non-confirmed list, erase it to only keep confirmed
+    // copy
+    if (it_nc != ais_target_data_nc->end()) {
+      ais_target_data_nc->erase(it_nc);
+      it_nc = ais_target_data_nc->end();
+    }
+
+    // Process ship type
+    if (p_target_data->m_ship_type <= 19) {
+      // ShipType <= 19 means the type is unknown. Is that case we copy the type
+      // from the cache.
+      p_target_data->m_ship_type = ship_data.type;
+    } else {
+      // ShipType > 19 means the type is known. Is that case we update the type
+      // in the cache. In most of the cases the value will be the same, but if
+      // the value has been received by AIS while cache value is invalid, cache
+      // will be updated here.
+      ship_data.type = p_target_data->m_ship_type;
+    }
+
+    // Process ship dimensions
+    if ((p_target_data->m_dim_a == 0) && (p_target_data->m_dim_b == 0) &&
+        (p_target_data->m_dim_c == 0) && (p_target_data->m_dim_d == 0)) {
+      // If all dimensions are 0, ship dimensions have not been
+      // defined. So we copy them from cache.
+      p_target_data->m_dim_a = ship_data.m_dim_a;
+      p_target_data->m_dim_b = ship_data.m_dim_b;
+      p_target_data->m_dim_c = ship_data.m_dim_c;
+      p_target_data->m_dim_d = ship_data.m_dim_d;
+    } else {
+      // If any dimension is not 0, ship dimensions have been defined, either by
+      // AIS, either by cache. So we copy them to cache to update it in case
+      // cache values would be invalid.
+      ship_data.m_dim_a = p_target_data->m_dim_a;
+      ship_data.m_dim_b = p_target_data->m_dim_b;
+      ship_data.m_dim_c = p_target_data->m_dim_c;
+      ship_data.m_dim_d = p_target_data->m_dim_d;
+    }
+
+    // Process name
+    if (!p_target_data->b_name_valid) {
+      // Ship name has not yet been written, either by AIS or by cache
+      // In that case, we fill it from cache
+      ship_name = ship_data.name;
+      if (ship_name.length() > 20) {
+        ship_name = ship_name.substr(0, 20);
+      }
+      // Only copy name from cache if it is non empty
+      if (trim_copy(ship_name).length() > 0) {
+        strncpy(p_target_data->ship_name, ship_name.c_str(),
                 ship_name.length() + 1);
-        pTargetData->b_nameValid = true;
-        pTargetData->b_nameFromCache = true;
-      } else if (!g_bUseOnlyConfirmedAISName) {
-        it = AISTargetNamesNC->find(mmsi);
-        if (it != AISTargetNamesNC->end()) {
-          ship_name = (*AISTargetNamesNC)[mmsi].Left(20);
-          strncpy(pTargetData->ShipName, ship_name.mb_str(),
-                  ship_name.length() + 1);
-          pTargetData->b_nameValid = true;
-          pTargetData->b_nameFromCache = true;
+        // Now, name is valid ...
+        p_target_data->b_name_valid = true;
+        // ... and copied from cache
+        p_target_data->b_name_from_cache = true;
+      }
+    } else {
+      // Ship name has already been written. In that case, we update cache with
+      // taget's value. In most of the cases the value will be the same, but if
+      // the value received by AIS as changed cache will be updated here.
+      ship_data.name = std::string(p_target_data->ship_name);
+      trim(ship_data.name);
+    }
+  } else {
+    // MMSI is not in the confirmed list, check if it is listed in non-confirmed
+    // list
+    if (it_nc != ais_target_data_nc->end()) {
+      // MMSI is in the non-confirmed list
+      if (!g_use_only_confirmed_ais_name) {
+        AisTargetCacheData &ship_data = (*ais_target_data_nc)[mmsi];
+
+        // Process ship type
+        if (p_target_data->m_ship_type <= 19) {
+          // ShipType <= 19 means the type is unknown. Is that case we copy the
+          // type from the cache.
+          p_target_data->m_ship_type = ship_data.type;
+        } else {
+          // ShipType > 19 means the type is known. Is that case we update the
+          // type in the cache. In most of the cases the value will be the same,
+          // but if the value has been received by AIS while cache value is
+          // invalid, cache will be updated here.
+          ship_data.type = p_target_data->m_ship_type;
+        }
+
+        // Process ship dimensions
+        if ((p_target_data->m_dim_a == 0) && (p_target_data->m_dim_b == 0) &&
+            (p_target_data->m_dim_c == 0) && (p_target_data->m_dim_d == 0)) {
+          // If all dimensions are 0, ship dimensions have not been
+          // defined. So we copy them from cache.
+          p_target_data->m_dim_a = ship_data.m_dim_a;
+          p_target_data->m_dim_b = ship_data.m_dim_b;
+          p_target_data->m_dim_c = ship_data.m_dim_c;
+          p_target_data->m_dim_d = ship_data.m_dim_d;
+        } else {
+          // If any dimension is not 0, ship dimensions have been defined,
+          // either by AIS, either by cache. So we copy them to cache to update
+          // it in case cache values would be invalid.
+          ship_data.m_dim_a = p_target_data->m_dim_a;
+          ship_data.m_dim_b = p_target_data->m_dim_b;
+          ship_data.m_dim_c = p_target_data->m_dim_c;
+          ship_data.m_dim_d = p_target_data->m_dim_d;
+        }
+
+        // Process name
+        if (!p_target_data->b_name_valid) {
+          // Ship name has not yet been written, either by AIS or by cache
+          // In that case, we fill it from cache
+          ship_name = ship_data.name;
+          if (ship_name.length() > 20) {
+            ship_name = ship_name.substr(0, 20);
+          }
+          // Only copy name from cache if it is non empty
+          if (trim_copy(ship_name).length() > 0) {
+            strncpy(p_target_data->ship_name, ship_name.c_str(),
+                    ship_name.length() + 1);
+            // Now, name is valid ...
+            p_target_data->b_name_valid = true;
+            // ... and copied from cache
+            p_target_data->b_name_from_cache = true;
+          }
+        } else {
+          // Ship name has already been written. In that case, we update cache
+          // with taget's value. In most of the cases the value will be the
+          // same, but if the value received by AIS as changed cache will be
+          // updated here.
+          ship_data.name = wxString::FromAscii(p_target_data->ship_name).Trim();
+        }
+
+        // If static info has been confirmed, upgrade target from non-confirmed
+        // to confirmed list
+        if (p_target_data->b_name_valid && !p_target_data->b_name_from_cache) {
+          AisTargetCacheData &newShipData = (*ais_target_data_c)[mmsi];
+          newShipData = ship_data;
+          ais_target_data_nc->erase(it_nc);
+          it_nc = ais_target_data_nc->end();
         }
       }
-    }
-    // else there IS a valid name, lets check if it is in one of the hash lists.
-    else if ((pTargetData->MID == 5) || (pTargetData->MID == 24) ||
-             (pTargetData->MID == 19) ||
-             (pTargetData->MID == 123) ||  // 123: Has got a name from SignalK
-             (pTargetData->MID == 124)) {  // 124: Has got a name from n2k
-      //  This message contains ship static data, so has a name field
-      pTargetData->b_nameFromCache = false;
-      ship_name = trimAISField(pTargetData->ShipName);
-      AIS_Target_Name_Hash::iterator itC = AISTargetNamesC->find(mmsi);
-      AIS_Target_Name_Hash::iterator itNC = AISTargetNamesNC->find(mmsi);
-      if (itC !=
-          AISTargetNamesC->end()) {  // There is a confirmed entry for this mmsi
-        if ((*AISTargetNamesC)[mmsi] ==
-            ship_name) {  // Received name is same as confirmed name
-          if (itNC != AISTargetNamesNC->end()) {  // there is also an entry in
-                                                  // the NC list, delete it
-            AISTargetNamesNC->erase(itNC);
-          }
-        } else {  // There is a confirmed name but that one is different
-          if (itNC != AISTargetNamesNC->end()) {  // there is an entry in the NC
-                                                  // list check if name is same
-            if ((*AISTargetNamesNC)[mmsi] ==
-                ship_name) {  // Same name is already in NC list so promote till
-                              // confirmed list
-              (*AISTargetNamesC)[mmsi] = ship_name;
-              // And delete from NC list
-              AISTargetNamesNC->erase(itNC);
-            } else {  // A different name is in the NC list, update with
-                      // received one
-              (*AISTargetNamesNC)[mmsi] = ship_name;
-            }
-            if (g_bUseOnlyConfirmedAISName)
-              strncpy(pTargetData->ShipName, (*AISTargetNamesC)[mmsi].mb_str(),
-                      (*AISTargetNamesC)[mmsi].Left(20).Length() + 1);
-          } else {  // The C list name is different but no NC entry. Add it.
-            (*AISTargetNamesNC)[mmsi] = ship_name;
-          }
-        }
-      } else {  // No confirmed entry available
-        if (itNC !=
-            AISTargetNamesNC->end()) {  // there is  an entry in the NC list,
-          if ((*AISTargetNamesNC)[mmsi] ==
-              ship_name) {  // Received name same as already in NC list, promote
-                            // to confirmen
-            (*AISTargetNamesC)[mmsi] = ship_name;
-            // And delete from NC list
-            AISTargetNamesNC->erase(itNC);
-          } else {  // entry in NC list is not same as received one
-            (*AISTargetNamesNC)[mmsi] = ship_name;
-          }
-        } else {  // No entry in NC list so add it
-          (*AISTargetNamesNC)[mmsi] = ship_name;
-        }
-        if (g_bUseOnlyConfirmedAISName) {  // copy back previous name
-          pTargetData->ShipName[SHIP_NAME_LEN - 1] = '\0';
-          strncpy(pTargetData->ShipName, "Unknown             ",
-                  SHIP_NAME_LEN - 1);
-        }
+    } else {
+      // Target is not in any list. Add it to the confirmed cache list if name
+      // is valid/confirmed
+      if (p_target_data->b_name_valid) {
+        // Name is valid, add it to confirmed list
+        AisTargetCacheData &ship_data = (*ais_target_data_c)[mmsi];
+        ship_data.name = std::string(p_target_data->ship_name);
+        trim(ship_data.name);
+        ship_data.type = p_target_data->m_ship_type;
+        ship_data.m_dim_a = p_target_data->m_dim_a;
+        ship_data.m_dim_b = p_target_data->m_dim_b;
+        ship_data.m_dim_c = p_target_data->m_dim_c;
+        ship_data.m_dim_d = p_target_data->m_dim_d;
       }
     }
   }
@@ -4612,7 +4753,7 @@ void AISshipNameCache(AisTargetData *pTargetData,
 
 wxString GetShipNameFromFile(int nmmsi) {
   wxString name = wxEmptyString;
-  if (g_benableAISNameCache) {
+  if (g_enable_ais_data_cache) {
     std::ifstream infile(AISTargetNameFileName.mb_str());
     if (infile) {
       std::string line;
