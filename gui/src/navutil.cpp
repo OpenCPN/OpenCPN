@@ -2661,7 +2661,7 @@ int BackupDatabase(wxWindow *parent) {
   wxString acceptedName;
 
   if (wxID_OK ==
-      g_Platform->DoFileSelectorDialog(parent, &acceptedName, _("Backup..."),
+      g_Platform->DoFileSelectorDialog(parent, &acceptedName, _("Backup"),
                                        wxStandardPaths::Get().GetDocumentsDir(),
                                        proposedName, wxT("*.bkp"))) {
     wxFileName fileName(acceptedName);
@@ -2671,7 +2671,7 @@ int BackupDatabase(wxWindow *parent) {
         if (wxID_YES != OCPNMessageBox(NULL, _("Overwrite existing file?"),
                                        _T("Confirm"),
                                        wxICON_QUESTION | wxYES_NO)) {
-          return wxID_ABORT;  // We've aborted performing a backup
+          return wxID_ABORT;  // We've decided not to overwrite a file, aborting
         }
       }
 #endif
@@ -2687,12 +2687,13 @@ int BackupDatabase(wxWindow *parent) {
       backupResult = NavObj_dB::GetInstance().Backup(fileName.GetFullPath());
 #endif
     }
+    if (backupResult) {
+      return wxID_YES;
+    } else {
+      return wxID_NO;
+    }
   }
-  if (backupResult) {
-    return wxID_YES;
-  } else {
-    return wxID_NO;
-  }
+  return wxID_ABORT;  // Cancelled the file open dialog, aborting
 }
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
