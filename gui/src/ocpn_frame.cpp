@@ -1227,6 +1227,9 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   //  Clear the cache, and thus close all charts to avoid memory leaks
   if (ChartData) ChartData->PurgeCache();
 
+  // If it exists, hide the console, in preparation for re-creation
+  if (console) console->Show(false);
+
   // Detach all canvases from AUI manager
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray[i];
@@ -1398,7 +1401,6 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
 
   g_focusCanvas = GetPrimaryCanvas();
 
-  if (console) console->Show(false);
   delete console;
   if (g_canvasArray.size() > 1)
     console = new APConsole(g_canvasArray.Item(1));  // the console
