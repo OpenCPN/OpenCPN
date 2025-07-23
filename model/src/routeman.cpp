@@ -515,13 +515,14 @@ bool Routeman::UpdateAutopilot() {
   if ((g_maxWPNameLength >= 3) && (g_maxWPNameLength <= 32))
     maxName = g_maxWPNameLength;
 
-  if (!pActiveRoute) return false;
-
   if (m_have_n0183_out) rv |= UpdateAutopilotN0183(*this);
   if (m_have_n2000_out) rv |= UpdateAutopilotN2K(*this);
 
-  // Send active leg info directly to plugins
+  // Route may have been deactivated or deleted during the
+  // N2K port setup conversation.  The message loop runs...
+  if (!pActiveRoute) return false;
 
+  // Send active leg info directly to plugins
   ActiveLegDat leg_info;
   leg_info.Btw = CurrentBrgToActivePoint;
   leg_info.Dtw = CurrentRngToActivePoint;
