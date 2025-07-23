@@ -1227,6 +1227,9 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   //  Clear the cache, and thus close all charts to avoid memory leaks
   if (ChartData) ChartData->PurgeCache();
 
+  // If it exists, hide the console, in preparation for re-creation
+  if (console) console->Show(false);
+
   // Detach all canvases from AUI manager
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray[i];
@@ -1397,6 +1400,21 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   }
 
   g_focusCanvas = GetPrimaryCanvas();
+
+  delete console;
+  if (g_canvasArray.size() > 1)
+    console = new APConsole(g_canvasArray.Item(1));  // the console
+  else
+    console = new APConsole(g_canvasArray.Item(0));
+  console->SetColorScheme(global_color_scheme);
+
+  // Draw console if persisted route is active
+  if (g_pRouteMan) {
+    if (g_pRouteMan->IsAnyRouteActive()) {
+      g_pRouteMan->GetDlgContext().show_with_fresh_fonts();
+    }
+  }
+  PositionConsole();
 }
 
 void MyFrame::RequestNewToolbars(bool bforcenew) {
@@ -4774,17 +4792,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           cp->b_IsSetup = TRUE;
         }
       }
-
-      console = new APConsole(g_canvasArray.Item(0));  // the console
-      console->SetColorScheme(global_color_scheme);
-
-      // Draw console if persisted route is active
-      if (g_pRouteMan) {
-        if (g_pRouteMan->IsAnyRouteActive()) {
-          g_pRouteMan->GetDlgContext().show_with_fresh_fonts();
-        }
-      }
-
       break;
 
     case 2: {

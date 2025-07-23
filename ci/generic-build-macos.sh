@@ -31,6 +31,7 @@ brew install libarchive
 brew install wxwidgets
 brew install create-dmg
 brew install gpatch
+brew install asciidoc
 
 if [ -d /usr/local/include ]; then
   ln -sf /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h

@@ -177,8 +177,6 @@ void ConsoleCanvasWin::OnPaint(wxPaintEvent& event) {
       pThisLegText->Refresh();
       m_bNeedClear = false;
     }
-
-    UpdateRouteData();
   }
 
   if (!g_bShowActiveRouteHighway) pCDI->Hide();
@@ -276,7 +274,6 @@ void ConsoleCanvasWin::ToggleRouteTotalDisplay() {
 
 void ConsoleCanvasWin::UpdateRouteData() {
   wxString str_buf;
-
   if (g_pRouteMan->GetpActiveRoute()) {
     if (g_pRouteMan->m_bDataValid) {
       // Range to the next waypoint is needed always
@@ -588,7 +585,6 @@ void ConsoleCanvasFrame::OnPaint(wxPaintEvent& event) {
       pThisLegText->Refresh();
       m_bNeedClear = false;
     }
-
     UpdateRouteData();
   }
 
@@ -1187,7 +1183,7 @@ void CDI::OnPaint(wxPaintEvent& event) {
 
 #if defined(__WXMSW__) || defined(__WXMAC__) || defined(__ANDROID__)
 APConsole::APConsole(wxWindow* parent) {
-  m_con_frame = new ConsoleCanvasFrame(parent);
+  m_con_frame = new ConsoleCanvasFrame(gFrame);
 }
 APConsole::~APConsole() {}
 void APConsole::SetColorScheme(ColorScheme cs) {
