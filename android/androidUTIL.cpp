@@ -4409,10 +4409,10 @@ int doAndroidPersistState() {
       wxAuiPaneInfo &pane = g_pauimgr->GetPane(g_pAISTargetList);
       g_AisTargetList_perspective = g_pauimgr->SavePaneInfo(pane);
       g_pauimgr->DetachPane(g_pAISTargetList);
-
-      pConfig->SetPath(_T ( "/AUI" ));
-      pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
     }
+
+    pConfig->SetPath(_T ( "/AUI" ));
+    pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
   }
 
   //    Deactivate the PlugIns, allowing them to save state
