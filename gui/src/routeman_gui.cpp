@@ -66,6 +66,7 @@ extern ActiveTrack *g_pActiveTrack;
 extern TrackPropDlg *pTrackPropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyConfig *pConfig;
+extern bool g_bhide_route_console;
 
 static bool ConfirmDeleteAisMob() {
   int r = OCPNMessageBox(NULL,
@@ -81,7 +82,7 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
   ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
   ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
   ctx.show_with_fresh_fonts = [] {
-    if (console) console->ShowWithFreshFonts();
+    if (console && !g_bhide_route_console) console->ShowWithFreshFonts();
   };
   ctx.clear_console_background = []() {
     console->GetCDI()->ClearBackground();

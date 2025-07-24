@@ -66,7 +66,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less than the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR 1
-#define API_VERSION_MINOR 20
+#define API_VERSION_MINOR 21
 
 //    Fwd Definitions
 class wxFileConfig;
@@ -2039,6 +2039,11 @@ public:
   virtual void OnContextMenuItemCallbackExt(int id, std::string obj_ident,
                                             std::string obj_type, double lat,
                                             double lon);
+};
+
+class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
+public:
+  opencpn_plugin_121(void *pmgr);
 };
 
 //------------------------------------------------------------------
@@ -6915,5 +6920,38 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
+
+//  Plugin API121 Utility functions
+
+extern DECL_EXP wxString DropMarkPI(double lat, double lon);
+extern DECL_EXP wxString RouteCreatePI(int canvas_index, bool start);
+extern DECL_EXP bool DoMeasurePI(int canvas_index, bool start);
+extern DECL_EXP wxString NavToHerePI(double lat, double lon);
+extern DECL_EXP bool ActivateRoutePI(wxString route_guid, bool activate);
+
+extern DECL_EXP void EnableDefaultConsole(bool enable);
+extern DECL_EXP void EnableDefaultContextMenus(bool enable);
+
+extern DECL_EXP void SetMinZoomScale(double min_scale);
+extern DECL_EXP void SetMaxZoomScale(double max_scale);
+
+extern DECL_EXP wxBitmap GetObjectIcon_PlugIn(const wxString &name);
+
+//  Plugin Context Menu support
+typedef enum _PI_ContextObjectType {
+  OBJECT_CHART = 0,
+  OBJECT_ROUTEPOINT,
+  OBJECT_ROUTESEGMENT,
+  OBJECT_AISTARGET,
+  OBJECT_UNKNOWN
+} PI_ContextObjectType;
+
+typedef struct _PI_PointContext {
+  _PI_ContextObjectType object_type;
+  std::string object_ident;
+} PI_PointContext;
+
+extern DECL_EXP std::shared_ptr<PI_PointContext> GetContextAtPoint(
+    int x, int y, int canvas_index);
 
 #endif  //_PLUGIN_H_
