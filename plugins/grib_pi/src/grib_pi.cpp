@@ -172,6 +172,9 @@ int grib_pi::Init(void) {
 }
 
 bool grib_pi::DeInit(void) {
+  // Reset timeline to system time before shutting down
+  SendTimelineMessage(wxInvalidDateTime);
+
   if (m_pGribCtrlBar) {
     m_pGribCtrlBar->Close();
     delete m_pGribCtrlBar;
