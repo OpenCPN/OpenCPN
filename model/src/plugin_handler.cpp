@@ -1350,6 +1350,7 @@ bool PluginHandler::Uninstall(const std::string plugin) {
   if (isRegularFile(libfile.c_str())) {
     remove(libfile.c_str());
   }
+  loader->MarkAsLoadable(libfile);
 
   return ok;
 }
