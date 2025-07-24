@@ -937,11 +937,10 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event) {
 void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
   switch (event.GetId()) {
     case SCHEDULED_EVENT_CLEAN_EXIT:
-      //             gFrame->FrameTimer1.Stop();
-      //             gFrame->FrameCOGTimer.Stop();
-      //
-      //             doAndroidPersistState();
-      //             androidTerminate();
+      qDebug() << "SCHEDULED_EVENT_CLEAN_EXIT";
+      gFrame->FrameTimer1.Stop();
+      gFrame->FrameCOGTimer.Stop();
+      doAndroidPersistState();
       break;
 
     case ID_CMD_PERSIST_DATA:
@@ -1423,6 +1422,28 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStop(JNIEnv *env,
 }
 
 extern "C" {
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_cleanExit(JNIEnv *env,
+                                                                jobject obj) {
+  qDebug() << "cleanExit";
+  wxLogMessage(_T("cleanExit"));
+
+  //  App may be summarily killed after this point due to OOM condition.
+  //  So we need to persist some dynamic data.
+
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(SCHEDULED_EVENT_CLEAN_EXIT);
+  if (gFrame && gFrame->GetEventHandler()) {
+    g_androidUtilHandler->AddPendingEvent(evt);
+  }
+
+  g_running = false;
+
+  qDebug() << "cleanExit return 98";
+  return 98;
+}
+}
+
+extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env,
                                                               jobject obj) {
   qDebug() << "onStart";
@@ -1880,12 +1901,7 @@ void androidDisplayToast(wxString message) {
   callActivityMethod_ss("showToast", message);
 }
 
-void androidEnableRotation(void) {
-  //    if(g_detect_smt590)
-  //        return;
-
-  callActivityMethod_vs("EnableRotation");
-}
+void androidEnableRotation(void) { callActivityMethod_vs("EnableRotation"); }
 
 void androidDisableRotation(void) { callActivityMethod_vs("DisableRotation"); }
 
@@ -2515,11 +2531,6 @@ wxSize getAndroidDisplayDimensions(void) {
     long abh = 0;
     token = tk.GetNextToken();  //  ActionBar height, if shown
     if (token.ToLong(&abh)) sz_ret.y -= abh;
-  }
-
-  // Samsung sm-t590/Android 10 has some display problems in portrait mode.....
-  if (g_detect_smt590) {
-    if (sz_ret.x < sz_ret.y) sz_ret.y = 1650;
   }
 
   // qDebug() << "getAndroidDisplayDimensions" << sz_ret.x << sz_ret.y;
