@@ -577,12 +577,6 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
 
 bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
                                 int canvasIndex) {
-#ifndef __ANDROID__
-#ifndef __WXOSX__
-  glewInit();
-#endif
-#endif
-
   if (!m_pGribCtrlBar || !m_pGribCtrlBar->IsShown() || !m_pGRIBOverlayFactory)
     return false;
 
