@@ -659,7 +659,29 @@ public:
   void ShowMarkPropertiesDialog(RoutePoint *markPoint);
   void ShowRoutePropertiesDialog(wxString title, Route *selected);
   void ShowTrackPropertiesDialog(Track *selected);
+  /** Legacy tide dialog creation method. Redirects to ShowSingleTideDialog for
+   * single-instance behavior. */
   void DrawTCWindow(int x, int y, void *pIDX);
+
+  /**
+   * Display tide/current dialog with single-instance management.
+   *
+   * Handles the following scenarios:
+   * - If no dialog exists: Creates new dialog
+   * - If same station clicked: Brings existing dialog to front with visual
+   * feedback
+   * - If different station clicked: Closes current dialog and opens new one
+   * @param x Mouse click x-coordinate in canvas pixels
+   * @param y Mouse click y-coordinate in canvas pixels
+   * @param pvIDX Pointer to IDX_entry for the tide/current station
+   */
+  void ShowSingleTideDialog(int x, int y, void *pvIDX);
+
+  /** @return true if a tide dialog is currently open and visible */
+  bool IsTideDialogOpen() const;
+
+  /** Close any open tide dialog */
+  void CloseTideDialog();
 
   void UpdateGPSCompassStatusBox(bool b_force_new);
   ocpnCompass *GetCompass() { return m_Compass; }

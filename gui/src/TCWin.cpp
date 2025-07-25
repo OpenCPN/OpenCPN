@@ -413,11 +413,22 @@ void TCWin::RecalculateSize() {
 
 void TCWin::OKEvent(wxCommandEvent &event) {
   Hide();
-  pParent->pCwin = NULL;
+
+  // Ensure parent pointer is cleared before any potential deletion
+  if (pParent && pParent->pCwin == this) {
+    pParent->pCwin = NULL;
+  }
+
+  // Clean up global tide window counter and associated resources
   --gpIDXn;
   delete m_pTCRolloverWin;
+  m_pTCRolloverWin = NULL;
   delete m_tList;
-  pParent->Refresh(false);
+  m_tList = NULL;
+
+  if (pParent) {
+    pParent->Refresh(false);
+  }
 
   // Update the config file to set the user specified time zone.
   if (pConfig) {
@@ -430,10 +441,18 @@ void TCWin::OKEvent(wxCommandEvent &event) {
 
 void TCWin::OnCloseWindow(wxCloseEvent &event) {
   Hide();
-  pParent->pCwin = NULL;
+
+  // Ensure parent pointer is cleared before any potential deletion
+  if (pParent && pParent->pCwin == this) {
+    pParent->pCwin = NULL;
+  }
+
+  // Clean up global tide window counter and associated resources
   --gpIDXn;
   delete m_pTCRolloverWin;
+  m_pTCRolloverWin = NULL;
   delete m_tList;
+  m_tList = NULL;
 
   // Update the config file to set the user specified time zone.
   if (pConfig) {
