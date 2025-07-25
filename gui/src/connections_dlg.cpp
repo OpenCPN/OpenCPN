@@ -233,6 +233,26 @@ private:
   ColorScheme m_cs;
 };
 
+/** Custom renderer class for rendering ENABLE in a grid cell */
+/** Allows setting of rendered Icon size */
+class BitmapEnableCellRenderer : public wxGridCellBoolRenderer {
+public:
+  BitmapEnableCellRenderer(int _size, ColorScheme cs) : size(_size), m_cs(cs) {}
+
+  BitmapEnableCellRenderer* Clone() const override {
+    return new BitmapEnableCellRenderer(size, m_cs);
+  }
+
+  wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row,
+                     int col) override {
+    return wxSize(size, size);
+  }
+
+private:
+  int size;
+  ColorScheme m_cs;
+};
+
 /** std::sort support: Compare two ConnectionParams w r t given column */
 class ConnCompare {
 public:
@@ -501,7 +521,13 @@ private:
     }
     auto enable_attr = new wxGridCellAttr();
     enable_attr->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-    enable_attr->SetRenderer(new wxGridCellBoolRenderer());
+
+    if (IsAndroid())
+      enable_attr->SetRenderer(
+          new BitmapEnableCellRenderer(wxWindow::GetCharWidth() * 3 / 2, m_cs));
+    else
+      enable_attr->SetRenderer(new wxGridCellBoolRenderer());
+
     enable_attr->SetEditor(new wxGridCellBoolEditor());
     if (IsWindows()) enable_attr->SetBackgroundColour(GetGlobalColor("DILG1"));
     SetColAttr(0, enable_attr);
