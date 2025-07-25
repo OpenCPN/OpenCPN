@@ -44,6 +44,7 @@ bool g_bUseWptScaMin = false;
 bool g_bWplUsePosition = false;
 bool g_enable_root_menu_debug = false;
 bool g_persist_active_route = false;
+bool g_always_send_rmb_rmc = false;
 
 double g_n_arrival_circle_radius = 0.0;
 double g_PlanSpeed = 0.0;
