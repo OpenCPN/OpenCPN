@@ -59,6 +59,7 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/autopilot_output.h"
 #include "model/cmdline.h"
 #include "model/comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "model/comm_drv_registry.h"
@@ -5818,6 +5819,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (!g_btenhertz) bnew_view = DoChartUpdate();
 
   nBlinkerTick++;
+
+  if (g_always_send_rmb_rmc) SendNoRouteRmbRmc(*g_pRouteMan);
 
   // This call sends autopilot output strings to output ports.
   bool bactiveRouteUpdate = RoutemanGui(*g_pRouteMan).UpdateProgress();

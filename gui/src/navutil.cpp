@@ -622,6 +622,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   SetPath(_T ( "/Settings" ));
   Read("ActiveRoute", &g_active_route);
   Read("PersistActiveRoute", &g_persist_active_route);
+  Read("AlwaysSendRmbRmc", &g_always_send_rmb_rmc);
   Read(_T ( "LastAppliedTemplate" ), &g_lastAppliedTemplateGUID);
   Read(_T ( "CompatOS" ), &g_compatOS);
   Read(_T ( "CompatOsVersion" ), &g_compatOsVersion);
@@ -2251,6 +2252,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "GPSIdent" ), g_GPS_Ident);
   Write("ActiveRoute", g_active_route);
   Write("PersistActiveRoute", g_persist_active_route);
+  Write("AlwaysSendRmbRmc", g_always_send_rmb_rmc);
+
   Write(_T ( "UseGarminHostUpload" ), g_bGarminHostUpload);
 
   Write(_T ( "MobileTouch" ), g_btouch);
