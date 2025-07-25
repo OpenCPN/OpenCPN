@@ -7600,11 +7600,11 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
 
     if (SelectedRoute) {
       if (SelectedRoute->IsVisible()) seltype |= SELTYPE_ROUTEPOINT;
-    } else if (FoundRoutePoint)
+    } else if (FoundRoutePoint) {
       seltype |= SELTYPE_MARKPOINT;
+    }
 
-      //      Highlite the selected point, to verify the proper right click
-      //      selection
+    // Highlight the selected point, to verify the proper right click selection
 #if 0
     if (m_pFoundRoutePoint) {
       m_pFoundRoutePoint->m_bPtIsSelected = true;
@@ -8228,11 +8228,11 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
 
     if (m_pSelectedRoute) {
       if (m_pSelectedRoute->IsVisible()) seltype |= SELTYPE_ROUTEPOINT;
-    } else if (m_pFoundRoutePoint)
+    } else if (m_pFoundRoutePoint) {
       seltype |= SELTYPE_MARKPOINT;
+    }
 
-    //      Highlite the selected point, to verify the proper right click
-    //      selection
+    // Highlight the selected point, to verify the proper right click selection
     if (m_pFoundRoutePoint) {
       m_pFoundRoutePoint->m_bPtIsSelected = true;
       wxRect wp_rect;
@@ -13719,7 +13719,54 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 }
 
 void ChartCanvas::DrawTCWindow(int x, int y, void *pvIDX) {
+  ShowSingleTideDialog(x, y, pvIDX);
+}
+
+void ChartCanvas::ShowSingleTideDialog(int x, int y, void *pvIDX) {
+  if (!pvIDX) return;  // Validate input
+
+  IDX_entry *pNewIDX = (IDX_entry *)pvIDX;
+
+  // Check if a tide dialog is already open and visible
+  if (pCwin && pCwin->IsShown()) {
+    // Same tide station: bring existing dialog to front (preserves user
+    // context)
+    if (pCwin->GetCurrentIDX() == pNewIDX) {
+      pCwin->Raise();
+      pCwin->SetFocus();
+
+      // Provide subtle visual feedback that dialog is already open
+      pCwin->RequestUserAttention(wxUSER_ATTENTION_INFO);
+      return;
+    }
+
+    // Different tide station: close current dialog before opening new one
+    pCwin->Close();  // This sets pCwin = NULL in OnCloseWindow
+  }
+
+  if (pCwin) {
+    // This shouldn't happen but ensures clean state
+    pCwin->Destroy();
+    pCwin = NULL;
+  }
+
+  // Create and display new tide dialog
   pCwin = new TCWin(this, x, y, pvIDX);
+
+  // Ensure the dialog is properly shown and focused
+  if (pCwin) {
+    pCwin->Show();
+    pCwin->Raise();
+    pCwin->SetFocus();
+  }
+}
+
+bool ChartCanvas::IsTideDialogOpen() const { return pCwin && pCwin->IsShown(); }
+
+void ChartCanvas::CloseTideDialog() {
+  if (pCwin) {
+    pCwin->Close();  // This will set pCwin = NULL via OnCloseWindow
+  }
 }
 
 #define NUM_CURRENT_ARROW_POINTS 9
