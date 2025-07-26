@@ -958,7 +958,7 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
   if (!b_nolimit) {
     if (todo_list.GetCount() >= 50) {
       // remove last job which is least important
-      wxJobListNode *node = todo_list.GetLast();
+      JobList::compatibility_iterator node = todo_list.GetLast();
       JobTicket *ticket = node->GetData();
       todo_list.DeleteNode(node);
       delete ticket;
@@ -966,7 +966,7 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
 
     //  Avoid adding duplicate jobs, i.e. the same chart_path, and the same
     //  rectangle
-    wxJobListNode *node = todo_list.GetFirst();
+    JobList::compatibility_iterator node = todo_list.GetFirst();
     while (node) {
       JobTicket *ticket = node->GetData();
       if ((ticket->m_ChartPath == chart_path) && (ticket->m_rect == rect)) {
@@ -981,7 +981,7 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
     }
 
     // avoid duplicate worker jobs
-    wxJobListNode *tnode = running_list.GetFirst();
+    JobList::compatibility_iterator tnode = running_list.GetFirst();
     while (tnode) {
       JobTicket *ticket = tnode->GetData();
       if (ticket->m_rect == rect && ticket->m_ChartPath == chart_path) {
@@ -1044,7 +1044,7 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
 }
 
 bool glTextureManager::StartTopJob() {
-  wxJobListNode *node = todo_list.GetFirst();
+  JobList::compatibility_iterator node = todo_list.GetFirst();
   if (!node) return false;
 
   JobTicket *ticket = node->GetData();
@@ -1099,7 +1099,7 @@ bool glTextureManager::DoThreadJob(JobTicket *pticket) {
 
 bool glTextureManager::AsJob(wxString const &chart_path) const {
   if (chart_path.Len()) {
-    wxJobListNode *tnode = running_list.GetFirst();
+    JobList::compatibility_iterator tnode = running_list.GetFirst();
     while (tnode) {
       JobTicket *ticket = tnode->GetData();
       if (ticket->m_ChartPath.IsSameAs(chart_path)) {
@@ -1114,7 +1114,7 @@ bool glTextureManager::AsJob(wxString const &chart_path) const {
 void glTextureManager::PurgeJobList(wxString chart_path) {
   if (chart_path.Len()) {
     //  Remove all pending jobs relating to the passed chart path
-    wxJobListNode *next, *tnode = todo_list.GetFirst();
+    JobList::compatibility_iterator next, tnode = todo_list.GetFirst();
     while (tnode) {
       JobTicket *ticket = tnode->GetData();
       next = tnode->GetNext();
@@ -1127,7 +1127,7 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
       tnode = next;
     }
 
-    wxJobListNode *node = running_list.GetFirst();
+    JobList::compatibility_iterator node = running_list.GetFirst();
     while (node) {
       JobTicket *ticket = node->GetData();
       if (ticket->m_ChartPath.IsSameAs(chart_path)) {
@@ -1140,7 +1140,7 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
       printf("Pool:  Purge, todo count: %lu\n",
              (long unsigned)todo_list.GetCount());
   } else {
-    wxJobListNode *node = todo_list.GetFirst();
+    JobList::compatibility_iterator node = todo_list.GetFirst();
     while (node) {
       JobTicket *ticket = node->GetData();
       delete ticket;
@@ -1158,7 +1158,7 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
 }
 
 void glTextureManager::ClearJobList() {
-  wxJobListNode *node = todo_list.GetFirst();
+  JobList::compatibility_iterator node = todo_list.GetFirst();
   while (node) {
     JobTicket *ticket = node->GetData();
     delete ticket;
