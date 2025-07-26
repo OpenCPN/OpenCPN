@@ -2747,7 +2747,8 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
     // WPTs
     int ic = 1;
 
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node =
+        pWayPointMan->GetWaypointList()->GetFirst();
     RoutePoint *pr;
     while (node) {
       if (pprog && !(ic % progStep)) {

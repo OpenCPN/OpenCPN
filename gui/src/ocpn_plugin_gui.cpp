@@ -879,7 +879,8 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator prpnode =
+      pWayPointMan->GetWaypointList()->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
 
@@ -1057,7 +1058,7 @@ wxArrayString GetWaypointGUIDArray(void) {
   wxArrayString result;
   const RoutePointList* list = pWayPointMan->GetWaypointList();
 
-  wxRoutePointListNode* prpnode = list->GetFirst();
+  RoutePointList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
     result.Add(prp->m_GUID);
@@ -1096,7 +1097,7 @@ wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
   const RoutePointList* list = pWayPointMan->GetWaypointList();
 
-  wxRoutePointListNode* prpnode = list->GetFirst();
+  RoutePointList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
     switch (req) {
@@ -1627,7 +1628,8 @@ std::unique_ptr<PlugIn_Route> GetRoute_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      route->pRoutePointList->GetFirst();
 
   while (node) {
     src_wp = node->GetData();
@@ -1888,7 +1890,8 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   wxRouteListNode* node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
-    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
+    RoutePointList::compatibility_iterator pnode =
+        (proute->pRoutePointList)->GetFirst();
     while (pnode) {
       RoutePoint* prp = pnode->GetData();
       if (prp == pWP) nCount++;
@@ -1977,7 +1980,8 @@ int PlugIn_Waypoint_ExV2::GetRouteMembershipCount() {
   wxRouteListNode* node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
-    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
+    RoutePointList::compatibility_iterator pnode =
+        (proute->pRoutePointList)->GetFirst();
     while (pnode) {
       RoutePoint* prp = pnode->GetData();
       if (prp == pWP) nCount++;
@@ -2156,7 +2160,8 @@ bool AddSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypointex,
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator prpnode =
+      pWayPointMan->GetWaypointList()->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
 
@@ -2364,7 +2369,8 @@ std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(const wxString& GUID) {
   PlugIn_Route_ExV2* dst_route = r.get();
 
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      route->pRoutePointList->GetFirst();
 
   while (node) {
     src_wp = node->GetData();
@@ -2521,7 +2527,8 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypointex, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator prpnode =
+      pWayPointMan->GetWaypointList()->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
 
@@ -2716,7 +2723,8 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      route->pRoutePointList->GetFirst();
 
   while (node) {
     src_wp = node->GetData();

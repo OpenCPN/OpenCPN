@@ -1622,7 +1622,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
 
   /* Waypoints not drawn as part of routes, and not being edited */
   if (vp.GetBBox().GetValid() && pWayPointMan) {
-    for (wxRoutePointListNode *pnode =
+    for (RoutePointList::compatibility_iterator pnode =
              pWayPointMan->GetWaypointList()->GetFirst();
          pnode; pnode = pnode->GetNext()) {
       RoutePoint *pWP = pnode->GetData();
@@ -1670,7 +1670,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
 
   /* Waypoints not drawn as part of routes, which are being edited right now */
   if (vp.GetBBox().GetValid() && pWayPointMan) {
-    for (wxRoutePointListNode *pnode =
+    for (RoutePointList::compatibility_iterator pnode =
              pWayPointMan->GetWaypointList()->GetFirst();
          pnode; pnode = pnode->GetNext()) {
       RoutePoint *pWP = pnode->GetData();

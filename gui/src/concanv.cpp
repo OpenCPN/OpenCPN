@@ -366,7 +366,8 @@ void ConsoleCanvasWin::UpdateRouteData() {
         float trng = rng;
 
         Route* prt = g_pRouteMan->GetpActiveRoute();
-        wxRoutePointListNode* node = (prt->pRoutePointList)->GetFirst();
+        RoutePointList::compatibility_iterator node =
+            (prt->pRoutePointList)->GetFirst();
         RoutePoint* prp;
 
         int n_addflag = 0;
@@ -776,7 +777,8 @@ void ConsoleCanvasFrame::UpdateRouteData() {
         float trng = rng;
 
         Route* prt = g_pRouteMan->GetpActiveRoute();
-        wxRoutePointListNode* node = (prt->pRoutePointList)->GetFirst();
+        RoutePointList::compatibility_iterator node =
+            (prt->pRoutePointList)->GetFirst();
         RoutePoint* prp;
 
         int n_addflag = 0;

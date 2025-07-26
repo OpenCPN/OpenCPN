@@ -140,7 +140,8 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
       RoutePoint *ps = (RoutePoint *)pFindSel->m_pData1;
 
       //    inner loop iterates on the route's point list
-      wxRoutePointListNode *pnode = (pr->pRoutePointList)->GetFirst();
+      RoutePointList::compatibility_iterator pnode =
+          (pr->pRoutePointList)->GetFirst();
       while (pnode) {
         RoutePoint *prp = pnode->GetData();
 
@@ -166,7 +167,8 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
 
 bool Select::AddAllSelectableRoutePoints(Route *pr) {
   if (pr->pRoutePointList->GetCount()) {
-    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
+    RoutePointList::compatibility_iterator node =
+        (pr->pRoutePointList)->GetFirst();
 
     while (node) {
       RoutePoint *prp = node->GetData();
@@ -183,7 +185,8 @@ bool Select::AddAllSelectableRouteSegments(Route *pr) {
   float slat1, slon1, slat2, slon2;
 
   if (pr->pRoutePointList->GetCount()) {
-    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
+    RoutePointList::compatibility_iterator node =
+        (pr->pRoutePointList)->GetFirst();
 
     RoutePoint *prp0 = node->GetData();
     slat1 = prp0->m_lat;

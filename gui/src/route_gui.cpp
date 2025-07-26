@@ -126,7 +126,8 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
   wxPoint rpt1, rpt2;
   if (m_route.m_bVisible) DrawPointWhich(dc, canvas, 1, &rpt1);
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      m_route.pRoutePointList->GetFirst();
   RoutePoint *prp1 = node->GetData();
   node = node->GetNext();
 
@@ -375,8 +376,9 @@ void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
     DrawGLRouteLines(vp, canvas, dc);
 
   /*  Route points  */
-  for (wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst(); node;
-       node = node->GetNext()) {
+  for (RoutePointList::compatibility_iterator node =
+           m_route.pRoutePointList->GetFirst();
+       node; node = node->GetNext()) {
     RoutePoint *prp = node->GetData();
     // Inflate the bounding box a bit to ensure full drawing in accelerated pan
     // mode.
@@ -450,7 +452,8 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   /* direction arrows.. could probably be further optimized for opengl */
   dc.SetPen(*wxThePenList->FindOrCreatePen(col, 1, wxPENSTYLE_SOLID));
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      m_route.pRoutePointList->GetFirst();
   wxPoint rpt1, rpt2;
   while (node) {
     RoutePoint *prp = node->GetData();
@@ -474,7 +477,8 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
   wxPoint2DDouble r1;
   wxPoint2DDouble lastpoint;
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      m_route.pRoutePointList->GetFirst();
   RoutePoint *prp2 = node->GetData();
   canvas->GetDoubleCanvasPointPix(prp2->m_lat, prp2->m_lon, &lastpoint);
 
@@ -594,7 +598,8 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
   // always be fully contained within the resulting rectangle.
   // Can we prove this?
   if (m_route.m_bVisible) {
-    wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+    RoutePointList::compatibility_iterator node =
+        m_route.pRoutePointList->GetFirst();
     while (node) {
       RoutePoint *prp2 = node->GetData();
       bool blink_save = prp2->m_bBlink;

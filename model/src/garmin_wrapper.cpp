@@ -105,7 +105,7 @@ int Garmin_GPS_SendWaypoints(const wxString &port_name,
   //    Now fill in the useful elements
   for (int i = 0; i < nPoints; i++) {
     GPS_PWay pway = ppway[i];
-    wxRoutePointListNode *node = wplist->Item(i);
+    RoutePointList::compatibility_iterator node = wplist->Item(i);
     RoutePoint *prp = node->GetData();
 
     Garmin_GPS_PrepareWptData(pway, prp);
@@ -165,7 +165,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
   //    Elements 1..n are waypoints
   for (int i = 1; i < *size; i++) {
     GPS_PWay pway = ppway[i];
-    wxRoutePointListNode *node = wplist->Item(i - 1);
+    RoutePointList::compatibility_iterator node = wplist->Item(i - 1);
     RoutePoint *prp = node->GetData();
 
     Garmin_GPS_PrepareWptData(pway, prp);
@@ -221,7 +221,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
     if (i % 2 == 1) /* Odd */
     {
       GPS_PWay pway = ppway[i];
-      wxRoutePointListNode *node = wplist->Item((i - 1) / 2);
+      RoutePointList::compatibility_iterator node = wplist->Item((i - 1) / 2);
       RoutePoint *prp = node->GetData();
 
       Garmin_GPS_PrepareWptData(pway, prp);

@@ -1692,7 +1692,8 @@ void MarkInfoDlg::OnBitmapCombClick(wxCommandEvent& event) {
 void MarkInfoDlg::ValidateMark(void) {
   //    Look in the master list of Waypoints to see if the currently selected
   //    waypoint is still valid It may have been deleted as part of a route
-  wxRoutePointListNode* node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
 
   bool b_found = false;
   while (node) {

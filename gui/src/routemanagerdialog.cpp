@@ -2390,7 +2390,8 @@ void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select,
 
   m_pWptListCtrl->DeleteAllItems();
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
 
   int index = 0;
   bool b_anyHidden = false;
@@ -3069,8 +3070,9 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   }
 
   // Process waypoints in this layer
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-  wxRoutePointListNode *node3;
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node3;
 
   while (node) {
     node3 = node->GetNext();
@@ -3083,7 +3085,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     }
 
     node = node3;
-    node3 = NULL;
+    node3 = RoutePointList::compatibility_iterator();
   }
 
   if (g_pMarkInfoDialog) {
@@ -3135,7 +3137,8 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
   }
 
   // Process waypoints in this layer
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
 
   while (node) {
     RoutePoint *rp = node->GetData();
@@ -3174,7 +3177,8 @@ void RouteManagerDialog::ToggleLayerContentsNames(Layer *layer) {
   while (node1) {
     Route *pRoute = node1->GetData();
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
-      wxRoutePointListNode *node = pRoute->pRoutePointList->GetFirst();
+      RoutePointList::compatibility_iterator node =
+          pRoute->pRoutePointList->GetFirst();
       RoutePoint *prp1 = node->GetData();
       while (node) {
         if (layer->HasVisibleNames() == wxCHK_UNDETERMINED) {
@@ -3189,7 +3193,8 @@ void RouteManagerDialog::ToggleLayerContentsNames(Layer *layer) {
   }
 
   // Process waypoints in this layer
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
 
   while (node) {
     RoutePoint *rp = node->GetData();
@@ -3245,7 +3250,8 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
   //  n.b.  If the waypoint belongs to a track, and is not shared, then do not
   //  list it. This is a performance optimization, allowing large track support.
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
 
   while (node) {
     RoutePoint *rp = node->GetData();
