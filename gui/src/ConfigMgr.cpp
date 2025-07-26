@@ -565,8 +565,9 @@ bool ConfigMgr::LoadCatalog() {
           wxString::FromUTF8(object.attribute("GUID").as_string());
 
       bool bFound = false;
-      for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-           node = node->GetNext()) {
+      for (ConfigObjectList::compatibility_iterator node =
+               configList->GetFirst();
+           node; node = node->GetNext()) {
         OCPNConfigObject *look = node->GetData();
         if (look->m_GUID == testGUID) {
           bFound = true;
@@ -686,8 +687,8 @@ wxPanel *ConfigMgr::GetConfigPanel(wxWindow *parent, wxString GUID) {
 
 OCPNConfigObject *ConfigMgr::GetConfig(wxString GUID) {
   // Find the GUID-matching config in the member list
-  for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-       node = node->GetNext()) {
+  for (ConfigObjectList::compatibility_iterator node = configList->GetFirst();
+       node; node = node->GetNext()) {
     OCPNConfigObject *look = node->GetData();
     if (look->m_GUID == GUID) {
       return look;
@@ -699,8 +700,8 @@ OCPNConfigObject *ConfigMgr::GetConfig(wxString GUID) {
 }
 
 wxString ConfigMgr::GetTemplateTitle(wxString GUID) {
-  for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-       node = node->GetNext()) {
+  for (ConfigObjectList::compatibility_iterator node = configList->GetFirst();
+       node; node = node->GetNext()) {
     OCPNConfigObject *look = node->GetData();
     if (look->m_GUID == GUID) {
       return look->m_title;
@@ -714,8 +715,8 @@ wxString ConfigMgr::GetTemplateTitle(wxString GUID) {
 wxArrayString ConfigMgr::GetConfigGUIDArray() {
   wxArrayString ret_val;
 
-  for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-       node = node->GetNext()) {
+  for (ConfigObjectList::compatibility_iterator node = configList->GetFirst();
+       node; node = node->GetNext()) {
     OCPNConfigObject *look = node->GetData();
     ret_val.Add(look->m_GUID);
   }
