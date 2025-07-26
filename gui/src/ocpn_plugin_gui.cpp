@@ -1180,7 +1180,8 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointList::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwp = pwpnode->GetData();
 
@@ -1266,7 +1267,8 @@ bool AddPlugInTrack(PlugIn_Track* ptrack, bool b_permanent) {
   TrackPoint* pWP_src = 0;
   int ip = 0;
 
-  wxPlugin_WaypointListNode* pwpnode = ptrack->pWaypointList->GetFirst();
+  Plugin_WaypointList::compatibility_iterator pwpnode =
+      ptrack->pWaypointList->GetFirst();
   while (pwpnode) {
     pwp = pwpnode->GetData();
 
