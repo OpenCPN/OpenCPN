@@ -75,4 +75,35 @@ void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
                                const wxString& objname, double& lat,
                                double& lon, double& scale, int& nativescale);
 
+/**
+ * Interface for core components to handle messages before they are sent to
+ * plugins.
+ *
+ * This allows core components to intercept and process messages that would
+ * otherwise be sent to plugins, enabling them to handle specific messages
+ * internally.
+ */
+class CoreMessageHandler {
+public:
+  /** Handle a message before it is sent to plugins.
+   *
+   * @param message_id The ID of the message
+   * @param message_body The body of the message
+   * @return true if the message was handled, false otherwise
+   */
+  virtual bool HandleMessage(const wxString& message_id,
+                             const wxString& message_body) = 0;
+};
+
+/**
+ * Register a core message handler for a specific message ID.
+ * This allows core components to handle messages before they are sent to
+ * plugins.
+ *
+ * @param message_id The ID of the message to handle
+ * @param handler The handler that will process the message
+ */
+void RegisterCoreMessageHandler(const wxString& message_id,
+                                CoreMessageHandler* handler);
+
 #endif  //  PLUGIN__COMM_H

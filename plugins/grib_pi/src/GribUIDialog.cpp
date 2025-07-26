@@ -277,10 +277,6 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   // init zone selection parameters
   m_ZoneSelMode = m_SavedZoneSelMode;
 
-  // connect Timer
-  m_tPlayStop.Connect(wxEVT_TIMER,
-                      wxTimerEventHandler(GRIBUICtrlBar::OnPlayStopTimer),
-                      nullptr, this);
   // connect functions
   Connect(wxEVT_MOVE, wxMoveEventHandler(GRIBUICtrlBar::OnMove));
 
@@ -384,18 +380,10 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
   //  Round to the nearest "quarter", to avoid rendering artifacts
   m_ScaledFactor = wxRound(factor * 4.0) / 4.0;
   // set buttons bitmap
-  m_bpPrev->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(prev), _T("prev"), m_ScaledFactor));
-  m_bpNext->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(next), _T("next"), m_ScaledFactor));
   m_bpAltitude->SetBitmapLabel(
       GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor));
-  m_bpNow->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));
   m_bpZoomToCenter->SetBitmapLabel(
       GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), m_ScaledFactor));
-  m_bpPlay->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
   m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(
       wxBitmap(m_CDataIsShown ? curdata : ncurdata),
       m_CDataIsShown ? _T("curdata") : _T("ncurdata"), m_ScaledFactor));
@@ -406,16 +394,6 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
       GetScaledBitmap(wxBitmap(setting), _T("setting"), m_ScaledFactor));
 
   SetRequestButtonBitmap(m_ZoneSelMode);
-
-  // Careful here, this MinSize() sets the final width of the control bar,
-  // overriding the width of the wxChoice above it.
-#ifdef __OCPN__ANDROID__
-  m_sTimeline->SetSize(wxSize(20 * m_ScaledFactor, -1));
-  m_sTimeline->SetMinSize(wxSize(20 * m_ScaledFactor, -1));
-#else
-  m_sTimeline->SetSize(wxSize(90 * m_ScaledFactor, -1));
-  m_sTimeline->SetMinSize(wxSize(90 * m_ScaledFactor, -1));
-#endif
 }
 
 void GRIBUICtrlBar::SetRequestButtonBitmap(int type) {
@@ -426,20 +404,17 @@ void GRIBUICtrlBar::SetRequestButtonBitmap(int type) {
 }
 
 void GRIBUICtrlBar::OpenFile(bool newestFile) {
-  m_bpPlay->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
-  m_cRecordForecast->Clear();
+  // Show busy cursor while loading file
+  ::wxBeginBusyCursor();
+
   pPlugIn->GetGRIBOverlayFactory()->ClearParticles();
   m_Altitude = 0;
   m_FileIntervalIndex = m_OverlaySettings.m_SlicesPerUpdate;
   delete m_bGRIBActiveFile;
   delete m_pTimelineSet;
   m_pTimelineSet = nullptr;
-  m_sTimeline->SetValue(0);
   m_TimeLineHours = 0;
-  m_InterpolateMode = false;
   m_pNowMode = false;
-  m_SelectionIsSaved = false;
   m_HasAltitude = false;
 
   // get more recent file in default directory if necessary
@@ -468,7 +443,6 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
       m_bGRIBActiveFile = nullptr;
       title.Prepend(_("Error! ")).Append(_(" contains no valid data!"));
     } else {
-      PopulateComboDataList();
       title.append(" (" +
                    toUsrDateTimeFormat_Plugin(
                        wxDateTime(m_bGRIBActiveFile->GetRefDateTime())) +
@@ -507,11 +481,12 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   SetTitle(title);
   SetTimeLineMax(false);
   SetFactoryOptions();
-  if (pPlugIn->GetStartOptions() &&
-      m_TimeLineHours != 0)  // fix a crash for one date files
+
+  if (pPlugIn->GetStartOptions() && m_TimeLineHours != 0) {
     ComputeBestForecastForNow();
-  else
+  } else {
     TimelineChanged();
+  }
 
   // populate  altitude choice and show if necessary
   if (m_pTimelineSet && m_bGRIBActiveFile)
@@ -531,19 +506,12 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   m_bpSettings->Enable(m_pTimelineSet != nullptr);
 #endif
   m_bpZoomToCenter->Enable(m_pTimelineSet != nullptr);
-
-  m_sTimeline->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
-  m_bpPlay->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
-
-  m_bpPrev->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
-  m_bpNext->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
-  m_bpNow->Enable(m_pTimelineSet != nullptr && m_TimeLineHours);
-
   SetCanvasContextMenuItemViz(pPlugIn->m_MenuItem, m_TimeLineHours != 0);
 
   //
   if (m_bGRIBActiveFile == nullptr) {
     // there's no data we can use in this file
+    ::wxEndBusyCursor();
     return;
   }
   //  Try to verify that there will be at least one parameter in the GRIB file
@@ -599,6 +567,9 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
       }
     }
   }
+
+  // End busy cursor
+  ::wxEndBusyCursor();
 }
 
 bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet,
@@ -724,8 +695,6 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
   // initiate tooltips
   m_bpShowCursorData->SetToolTip(m_CDataIsShown ? _("Hide data at cursor")
                                                 : _("Show data at cursor"));
-  m_bpPlay->SetToolTip(_("Start play back"));
-
   m_gGrabber->Hide();
   // then hide and detach cursor data window
   if (m_gCursorData) {
@@ -820,8 +789,6 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
         if (pointSize <= 10) bOK = true;
       }
 
-      m_cRecordForecast->SetFont(*sFont);
-
       Layout();
       Fit();
       Hide();
@@ -900,18 +867,13 @@ void GRIBUICtrlBar::OnMenuEvent(wxMenuEvent &event) {
       m_Altitude = 4;
       break;
     //   end sub menu
-    case ID_BTNNOW:
-      OnNow(evt);
-      break;
     case ID_BTNZOOMTC:
       OnZoomToCenterClick(evt);
       break;
     case ID_BTNSHOWCDATA:
       OnShowCursorData(evt);
       break;
-    case ID_BTNPLAY:
-      OnPlayStop(evt);
-      break;
+
     case ID_BTNOPENFILE:
       OnOpenFile(evt);
       break;
@@ -985,8 +947,6 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
           GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor),
           smenu);
     }
-    MenuAppend(xmenu, ID_BTNNOW, _("Now"), wxITEM_NORMAL,
-               GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));
     MenuAppend(xmenu, ID_BTNZOOMTC, _("Zoom To Center"), wxITEM_NORMAL,
                GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), m_ScaledFactor));
     MenuAppend(
@@ -995,13 +955,6 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
         wxITEM_NORMAL,
         GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata),
                         m_CDataIsShown ? _T("curdata") : _T("ncurdata"),
-                        m_ScaledFactor));
-    MenuAppend(
-        xmenu, ID_BTNPLAY,
-        m_tPlayStop.IsRunning() ? _("Stop play back") : _("Start play back"),
-        wxITEM_NORMAL,
-        GetScaledBitmap(wxBitmap(m_tPlayStop.IsRunning() ? stop : play),
-                        m_tPlayStop.IsRunning() ? _T("stop") : _T("play"),
                         m_ScaledFactor));
     MenuAppend(
         xmenu, ID_BTNOPENFILE, _("Open a new file"), wxITEM_NORMAL,
@@ -1079,7 +1032,6 @@ void GRIBUICtrlBar::SetViewPortWithFocus(PlugIn_ViewPort *vp) {
 }
 
 void GRIBUICtrlBar::OnClose(wxCloseEvent &event) {
-  StopPlayBack();
   if (m_gGRIBUICData) m_gGRIBUICData->Hide();
   if (pReq_Dialog)
     if (m_ZoneSelMode > START_SELECTION) {
@@ -1087,7 +1039,6 @@ void GRIBUICtrlBar::OnClose(wxCloseEvent &event) {
       m_ZoneSelMode = START_SELECTION;
       // SetRequestButtonBitmap( m_ZoneSelMode );
     }
-  pPlugIn->SendTimelineMessage(wxInvalidDateTime);
 
   pPlugIn->OnGribCtrlBarClose();
 }
@@ -1126,7 +1077,7 @@ void GRIBUICtrlBar::createRequestDialog() {
 }
 
 void GRIBUICtrlBar::OnRequestForecastData(wxCommandEvent &event) {
-  if (m_tPlayStop.IsRunning())
+  if (IsTimelinePlayerRunning())
     return;  // do nothing when play back is running !
 
   /*if there is one instance of the dialog already visible, do nothing*/
@@ -1144,7 +1095,7 @@ void GRIBUICtrlBar::OnRequestForecastData(wxCommandEvent &event) {
 }
 
 void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {
-  if (m_tPlayStop.IsRunning())
+  if (IsTimelinePlayerRunning())
     return;  // do nothing when play back is running !
 
   ::wxBeginBusyCursor();
@@ -1189,8 +1140,6 @@ void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {
   ::wxBeginBusyCursor();
 
   dialog->SaveLastPage();
-  if (!m_OverlaySettings.m_bInterpolate)
-    m_InterpolateMode = false;  // Interpolate could have been unchecked
   SetTimeLineMax(true);
   SetFactoryOptions();
 
@@ -1276,102 +1225,24 @@ void GRIBUICtrlBar::OpenFileFromJSON(wxString json) {
   }
 }
 
-void GRIBUICtrlBar::OnPlayStop(wxCommandEvent &event) {
-  if (m_tPlayStop.IsRunning()) {
-    StopPlayBack();
-  } else {
-    m_bpPlay->SetBitmapLabel(
-        GetScaledBitmap(wxBitmap(stop), _T("stop"), m_ScaledFactor));
-    m_bpPlay->SetToolTip(_("Stop play back"));
-    m_tPlayStop.Start(3000 / m_OverlaySettings.m_UpdatesPerSecond,
-                      wxTIMER_CONTINUOUS);
-    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
-  }
-}
-
-void GRIBUICtrlBar::OnPlayStopTimer(wxTimerEvent &event) {
-  if (m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
-    if (m_OverlaySettings.m_bLoopMode) {
-      if (m_OverlaySettings.m_LoopStartPoint) {
-        ComputeBestForecastForNow();
-        if (m_sTimeline->GetValue() >= m_sTimeline->GetMax())
-          StopPlayBack();  // will stop playback
-        return;
-      } else
-        m_sTimeline->SetValue(0);
-    } else {
-      StopPlayBack();  // will stop playback
-      return;
-    }
-  } else {
-    int value = m_pNowMode ? m_OverlaySettings.m_bInterpolate
-                                 ? GetNearestValue(GetNow(), 1)
-                                 : GetNearestIndex(GetNow(), 2)
-                           : m_sTimeline->GetValue();
-    m_sTimeline->SetValue(value + 1);
-  }
-
-  m_pNowMode = false;
-  if (!m_InterpolateMode)
-    m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
-  TimelineChanged();
-}
-
-void GRIBUICtrlBar::StopPlayBack() {
-  if (m_tPlayStop.IsRunning()) {
-    m_tPlayStop.Stop();
-    m_bpPlay->SetBitmapLabel(
-        GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
-    m_bpPlay->SetToolTip(_("Start play back"));
-  }
-}
-
 void GRIBUICtrlBar::TimelineChanged() {
   if (!m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK())) {
     pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(nullptr);
     return;
   }
 
-  RestaureSelectionString();  // eventually restaure the previousely saved time
-                              // label
-
   wxDateTime time = TimelineTime();
-  SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
+  GribTimelineRecordSet *timelineSet = GetTimeLineRecordSet(time);
 
-  if (!m_InterpolateMode) {
-    /* get closest value to update timeline */
-    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    GribRecordSet &sel = rsa->Item(m_cRecordForecast->GetCurrentSelection());
-    wxDateTime t = sel.m_Reference_Time;
-    m_sTimeline->SetValue(m_OverlaySettings.m_bInterpolate
-                              ? wxTimeSpan(t - MinTime()).GetMinutes() /
-                                    m_OverlaySettings.GetMinFromIndex(
-                                        m_OverlaySettings.m_SlicesPerUpdate)
-                              : m_cRecordForecast->GetCurrentSelection());
+  if (timelineSet) {
+    SetGribTimelineRecordSet(timelineSet);
+    UpdateTrackingControl();
+
+    RequestRefresh(GetGRIBCanvas());
   } else {
-    m_cRecordForecast->SetSelection(GetNearestIndex(time, 2));
-    SaveSelectionString();  // memorize index and label
-    wxString formattedTime = toUsrDateTimeFormat_Plugin(time);
-    m_cRecordForecast->SetString(m_Selection_index,
-                                 formattedTime);  // replace it by the
-                                                  // interpolated time label
-    m_cRecordForecast->SetStringSelection(
-        formattedTime);  // ensure it's visible in the box
+    // Clear the overlay if no valid data available
+    SetGribTimelineRecordSet(nullptr);
   }
-
-  UpdateTrackingControl();
-
-  pPlugIn->SendTimelineMessage(time);
-  RequestRefresh(GetGRIBCanvas());
-}
-
-void GRIBUICtrlBar::RestaureSelectionString() {
-  if (!m_SelectionIsSaved) return;
-
-  int sel = m_cRecordForecast->GetSelection();
-  m_cRecordForecast->SetString(m_Selection_index, m_Selection_label);
-  m_cRecordForecast->SetSelection(sel);
-  m_SelectionIsSaved = false;
 }
 
 int GRIBUICtrlBar::GetNearestIndex(wxDateTime time, int model) {
@@ -1422,18 +1293,33 @@ wxDateTime GRIBUICtrlBar::GetNow() {
 }
 
 wxDateTime GRIBUICtrlBar::TimelineTime() {
-  if (m_InterpolateMode) {
-    int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
-    int stepmin =
-        m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
-    return MinTime() + wxTimeSpan(tl * stepmin / 60, (tl * stepmin) % 60);
+  // Get time from global timeline, or return current time as fallback
+  wxDateTime globalTime = GetTimelineSelectedTime();
+  if (globalTime.IsValid()) {
+    return globalTime;
   }
 
-  ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-  unsigned int index = m_cRecordForecast->GetCurrentSelection() < 1
-                           ? 0
-                           : m_cRecordForecast->GetCurrentSelection();
-  if (rsa && index < rsa->GetCount()) return rsa->Item(index).m_Reference_Time;
+  // If no global timeline time, try to get a reasonable time from GRIB data
+  if (m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()) {
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if (rsa && rsa->GetCount() > 0) {
+      // Use current time clamped to GRIB data range
+      wxDateTime now = wxDateTime::Now();
+      wxDateTime firstTime = rsa->Item(0).m_Reference_Time;
+      wxDateTime lastTime = rsa->Item(rsa->GetCount() - 1).m_Reference_Time;
+
+      // If current time is within GRIB range, use it
+      if (now >= firstTime && now <= lastTime) {
+        return now;
+      }
+      // Otherwise, use the time closest to now
+      if (now < firstTime) {
+        return firstTime;
+      } else {
+        return lastTime;
+      }
+    }
+  }
 
   return wxDateTime::Now();
 }
@@ -1656,17 +1542,8 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues(double &M, double &A, int idx1,
   return true;
 }
 
-void GRIBUICtrlBar::OnTimeline(wxScrollEvent &event) {
-  StopPlayBack();
-  m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
-  if (!m_InterpolateMode)
-    m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
-  m_pNowMode = false;
-  TimelineChanged();
-}
-
 void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
-  if (m_tPlayStop.IsRunning())
+  if (IsTimelinePlayerRunning())
     return;  // do nothing when play back is running !
 
 #ifndef __OCPN__ANDROID__
@@ -1723,21 +1600,6 @@ void GRIBUICtrlBar::CreateActiveFileFromNames(const wxArrayString &filenames) {
     m_bGRIBActiveFile = new GRIBFile(filenames, pPlugIn->GetCopyFirstCumRec(),
                                      pPlugIn->GetCopyMissWaveRec());
   }
-}
-
-void GRIBUICtrlBar::PopulateComboDataList() {
-  int index = 0;
-  if (m_cRecordForecast->GetCount()) {
-    index = m_cRecordForecast->GetCurrentSelection();
-    m_cRecordForecast->Clear();
-  }
-
-  ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-  for (size_t i = 0; i < rsa->GetCount(); i++) {
-    wxDateTime t(rsa->Item(i).m_Reference_Time);
-    m_cRecordForecast->Append(toUsrDateTimeFormat_Plugin(t));
-  }
-  m_cRecordForecast->SetSelection(index);
 }
 
 void GRIBUICtrlBar::OnZoomToCenterClick(wxCommandEvent &event) {
@@ -1837,97 +1699,40 @@ void GRIBUICtrlBar::DoZoomToCenter() {
   CanvasJumpToPosition(wx, clat, clon, ppm);
 }
 
-void GRIBUICtrlBar::OnPrev(wxCommandEvent &event) {
-  if (m_tPlayStop.IsRunning())
-    return;  // do nothing when play back is running !
-
-  RestaureSelectionString();
-
-  int selection;
-  if (m_pNowMode)
-    selection = GetNearestIndex(GetNow(), 1);
-  else if (m_InterpolateMode)
-    selection =
-        GetNearestIndex(TimelineTime(), 1); /* set to interpolated entry */
-  else
-    selection = m_cRecordForecast->GetCurrentSelection();
-
-  m_pNowMode = false;
-  m_InterpolateMode = false;
-
-  m_cRecordForecast->SetSelection(selection < 1 ? 0 : selection - 1);
-
-  TimelineChanged();
-}
-
-void GRIBUICtrlBar::OnNext(wxCommandEvent &event) {
-  if (m_tPlayStop.IsRunning())
-    return;  // do nothing when play back is running !
-
-  RestaureSelectionString();
-
-  int selection;
-  if (m_pNowMode)
-    selection = GetNearestIndex(GetNow(), 2);
-  else if (m_InterpolateMode)
-    selection =
-        GetNearestIndex(TimelineTime(), 2); /* set to interpolated entry */
-  else
-    selection = m_cRecordForecast->GetCurrentSelection();
-
-  m_cRecordForecast->SetSelection(selection);
-
-  m_pNowMode = false;
-  m_InterpolateMode = false;
-
-  if (selection == (int)m_cRecordForecast->GetCount() - 1)
-    return;  // end of list
-
-  m_cRecordForecast->SetSelection(selection + 1);
-
-  TimelineChanged();
-}
-
-void GRIBUICtrlBar::ComputeBestForecastForNow() {
+void GRIBUICtrlBar::ComputeBestForecast(const wxDateTime &time) {
   if (!m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK())) {
     pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(nullptr);
     return;
   }
 
-  wxDateTime now = GetNow();
-
-  if (m_OverlaySettings.m_bInterpolate)
-    m_sTimeline->SetValue(GetNearestValue(now, 0));
-  else {
-    m_cRecordForecast->SetSelection(GetNearestIndex(now, 0));
-    m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());
-  }
-
-  if (pPlugIn->GetStartOptions() !=
-      2) {  // no interpolation at start : take the nearest forecast
-    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
-    TimelineChanged();
+  // Get the GRIB data range
+  wxDateTime gribStartTime, gribEndTime;
+  ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  if (rsa && rsa->GetCount() > 0) {
+    gribStartTime = rsa->Item(0).m_Reference_Time;
+    gribEndTime = rsa->Item(rsa->GetCount() - 1).m_Reference_Time;
+  } else {
+    // No GRIB data available
+    pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(nullptr);
     return;
   }
-  // interpolation on 'now' at start
-  m_InterpolateMode = true;
-  m_pNowMode = true;
-  SetGribTimelineRecordSet(
-      GetTimeLineRecordSet(now));  // take current time & interpolate forecast
 
-  RestaureSelectionString();  // eventually restaure the previousely saved
-                              // wxChoice date time label
-  m_cRecordForecast->SetSelection(GetNearestIndex(now, 2));
-  SaveSelectionString();  // memorize the new selected wxChoice date time label
-  wxString nowTime = toUsrDateTimeFormat_Plugin(now);
-  m_cRecordForecast->SetString(m_Selection_index,
-                               nowTime);  // write the now date time label
-                                          // in the right place in wxChoice
-  m_cRecordForecast->SetStringSelection(nowTime);  // put it in the box
+  // Clamp the requested time to the available GRIB data range
+  wxDateTime selectedTime = time;
+  if (selectedTime < gribStartTime) {
+    selectedTime = gribStartTime;
+  } else if (selectedTime > gribEndTime) {
+    selectedTime = gribEndTime;
+  }
+
+  // Get and set the timeline record set for the best time FIRST
+  SetGribTimelineRecordSet(GetTimeLineRecordSet(selectedTime));
+
+  // Only configure the timeline AFTER the GRIB data is properly set
+  SetTimelineSelectedTime(selectedTime, gribEndTime - gribStartTime, 0.25);
 
   UpdateTrackingControl();
 
-  pPlugIn->SendTimelineMessage(now);
   RequestRefresh(GetGRIBCanvas());
 }
 
@@ -1942,26 +1747,8 @@ void GRIBUICtrlBar::SetGribTimelineRecordSet(
 }
 
 void GRIBUICtrlBar::SetTimeLineMax(bool SetValue) {
-  int oldmax = wxMax(m_sTimeline->GetMax(), 1),
-      oldval = m_sTimeline->GetValue();  // memorize the old range and value
-
-  if (m_OverlaySettings.m_bInterpolate) {
-    int stepmin =
-        m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
-    m_sTimeline->SetMax(m_TimeLineHours * 60 / stepmin);
-  } else {
-    if (m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()) {
-      ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-      m_sTimeline->SetMax(rsa->GetCount() - 1);
-    }
-  }
-  // try to retrieve a coherent timeline value with the new timeline range if it
-  // has changed
-  if (SetValue && m_sTimeline->GetMax() != 0) {
-    if (m_pNowMode)
-      ComputeBestForecastForNow();
-    else
-      m_sTimeline->SetValue(m_sTimeline->GetMax() * oldval / oldmax);
+  if (SetValue) {
+    ComputeBestForecastForNow();
   }
 }
 
@@ -1985,9 +1772,6 @@ void GRIBUICtrlBar::OnFormatRefreshTimer(wxTimerEvent &event) {
     m_sLastTimeFormat = currentFormat;
 
     if (m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()) {
-      // Refresh the time format in the dropdown list
-      PopulateComboDataList();
-
       // Update the timeline display
       TimelineChanged();
 
