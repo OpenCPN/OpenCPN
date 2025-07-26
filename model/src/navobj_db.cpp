@@ -654,7 +654,7 @@ void NavObj_dB::CountImportNavObjects() {
           pugi::xml_parse_status::status_ok) {
     input_set->LoadAllGPXPointObjects();
     auto pointlist = pWayPointMan->GetWaypointList();
-    wxRoutePointListNode* prpnode = pointlist->GetFirst();
+    RoutePointList::compatibility_iterator prpnode = pointlist->GetFirst();
     while (prpnode) {
       RoutePoint* point = prpnode->GetData();
       if (point->m_bIsolatedMark) {
@@ -665,7 +665,7 @@ void NavObj_dB::CountImportNavObjects() {
     }
 
     input_set->LoadAllGPXRouteObjects();
-    for (wxRouteListNode* node = pRouteList->GetFirst(); node;
+    for (RouteList::compatibility_iterator node = pRouteList->GetFirst(); node;
          node = node->GetNext()) {
       Route* route_import = node->GetData();
       m_nImportObjects++;
@@ -712,7 +712,7 @@ bool NavObj_dB::ImportLegacyRoutes() {
   std::vector<Route*> routes_added;
   //  Add all routes to database
   int nroute = 0;
-  for (wxRouteListNode* node = pRouteList->GetFirst(); node;
+  for (RouteList::compatibility_iterator node = pRouteList->GetFirst(); node;
        node = node->GetNext()) {
     Route* route_import = node->GetData();
     if (InsertRoute(route_import)) {
@@ -746,7 +746,7 @@ bool NavObj_dB::ImportLegacyPoints() {
   if (m_nimportPoints > 10000) nmod = 100;
 
   auto pointlist = pWayPointMan->GetWaypointList();
-  wxRoutePointListNode* prpnode = pointlist->GetFirst();
+  RoutePointList::compatibility_iterator prpnode = pointlist->GetFirst();
   while (prpnode) {
     RoutePoint* point = prpnode->GetData();
     if (point->m_bIsolatedMark) {
@@ -814,7 +814,8 @@ bool NavObj_dB::InsertTrack(Track* track) {
   //  Add HTML links to track
   int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = track->m_TrackHyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        track->m_TrackHyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -934,7 +935,8 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
   // Now add all the links to db
   int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = track->m_TrackHyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        track->m_TrackHyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1190,7 +1192,8 @@ bool NavObj_dB::InsertRoute(Route* route) {
   //  Add HTML links to route
   int NbrOfLinks = route->m_HyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        route->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1267,7 +1270,8 @@ bool NavObj_dB::UpdateRoute(Route* route) {
   //  Add HTML links to route
   int NbrOfLinks = route->m_HyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        route->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1336,7 +1340,8 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
                       -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 5, route->IsVisible());
     sqlite3_bind_int(stmt, 6, route->GetSharedWPViz());
-    sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
+    if (route->m_PlannedDeparture.IsValid())
+      sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
     sqlite3_bind_double(stmt, 8, route->m_PlannedSpeed);
     sqlite3_bind_text(stmt, 9, route->m_TimeDisplayFormat.ToStdString().c_str(),
                       -1, SQLITE_TRANSIENT);
@@ -1367,7 +1372,8 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
   // Now add all the links to db
   int NbrOfLinks = route->m_HyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        route->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1502,7 +1508,8 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
   // Now add all the links to db
   int NbrOfLinks = point->m_HyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        point->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -2064,7 +2071,8 @@ bool NavObj_dB::InsertRoutePoint(RoutePoint* point) {
   //  Add HTML links to routepoint
   int NbrOfLinks = point->m_HyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        point->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 

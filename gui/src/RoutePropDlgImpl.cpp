@@ -348,7 +348,8 @@ void RoutePropDlgImpl::UpdatePoints() {
                        toUsrDistance(m_pRoute->m_route_length)));
   m_tcEnroute->SetValue(formatTimeDelta(wxLongLong(m_pRoute->m_route_time)));
   //  Iterate on Route Points, inserting blank fields starting with index 0
-  wxRoutePointListNode* pnode = m_pRoute->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator pnode =
+      m_pRoute->pRoutePointList->GetFirst();
   int in = 0;
   wxString slen, eta, ete;
   double bearing, distance, speed;
@@ -526,7 +527,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     if (m_scrolledWindowLinks) {
       wxWindowList kids = m_scrolledWindowLinks->GetChildren();
       for (unsigned int i = 0; i < kids.GetCount(); i++) {
-        wxWindowListNode* node = kids.Item(i);
+        wxWindowList::compatibility_iterator node = kids.Item(i);
         wxWindow* win = node->GetData();
         auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
         if (link_win) {
@@ -542,7 +543,8 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
       int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
       HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
       if (NbrOfLinks > 0) {
-        wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode =
+            hyperlinklist->GetFirst();
         while (linknode) {
           Hyperlink* link = linknode->GetData();
           wxString Link = link->Link;
@@ -1215,7 +1217,8 @@ void RoutePropDlgImpl::ItemEditOnMenuSelection(wxCommandEvent& event) {
       HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
       //            int len = 0;
       if (NbrOfLinks > 0) {
-        wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode =
+            hyperlinklist->GetFirst();
         while (linknode) {
           Hyperlink* link = linknode->GetData();
           wxString Link = link->Link;
@@ -1251,13 +1254,13 @@ void RoutePropDlgImpl::ItemAddOnMenuSelection(wxCommandEvent& event) {
 }
 
 void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
-  wxHyperlinkListNode* nodeToDelete = NULL;
+  HyperlinkList::compatibility_iterator nodeToDelete = NULL;
   wxString findurl = m_pEditedLink->GetURL();
   wxString findlabel = m_pEditedLink->GetLabel();
 
   wxWindowList kids = m_scrolledWindowLinks->GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow* win = node->GetData();
 
     auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
@@ -1277,7 +1280,7 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
   HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
   //      int len = 0;
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+    HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
       wxString Link = link->Link;
