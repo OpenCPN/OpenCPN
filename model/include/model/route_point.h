@@ -32,6 +32,7 @@
 #include <wx/string.h>
 
 #include "model/hyperlink.h"
+#include "model/select_item.h"
 
 #include "bbox.h"
 
@@ -124,9 +125,17 @@ public:
   wxString GetIconName(void) { return m_IconName; }
   void SetIconName(wxString name) { m_IconName = name; }
 
-  void *GetSelectNode(void) { return m_SelectNode; }
-  void SetSelectNode(void *node) { m_SelectNode = node; }
+  SelectableItemList::compatibility_iterator GetSelectNode(void) {
+    return m_SelectNode;
+  }
 
+  void SetSelectNode(SelectableItemList::compatibility_iterator node) {
+    m_SelectNode = node;
+  }
+
+  void SetSelectNode() {
+    m_SelectNode = SelectableItemList::compatibility_iterator();
+  }
   RoutePointList::compatibility_iterator *GetManagerListNode(void) {
     return m_ManagerNode;
   }
@@ -569,7 +578,7 @@ private:
   wxBitmap *m_pbmIcon;
   wxString m_IconName;
 
-  void *m_SelectNode;
+  SelectableItemList::compatibility_iterator m_SelectNode;
   // FIXME (leamas) use a smart pointer, ownership...
   RoutePointList::compatibility_iterator *m_ManagerNode;
 
