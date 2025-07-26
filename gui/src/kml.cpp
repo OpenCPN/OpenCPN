@@ -475,7 +475,7 @@ wxString Kml::MakeKmlFromRoute(Route* route, bool insertSeq) {
   std::stringstream lineStringCoords;
 
   RoutePointList* pointList = route->pRoutePointList;
-  wxRoutePointListNode* pointnode = pointList->GetFirst();
+  RoutePointList::compatibility_iterator pointnode = pointList->GetFirst();
   RoutePoint* routepoint;
 
   while (pointnode) {
