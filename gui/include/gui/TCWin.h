@@ -64,6 +64,10 @@ public:
   void RecalculateSize();
   void SetTimeFactors();
 
+  /** @return Pointer to the IDX_entry for the currently displayed tide/current
+   * station */
+  IDX_entry *GetCurrentIDX() const { return pIDX; }
+
 private:
   wxTextCtrl *m_ptextctrl;
   wxTimer m_TCWinPopupTimer;
