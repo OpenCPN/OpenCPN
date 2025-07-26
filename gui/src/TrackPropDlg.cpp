@@ -1052,7 +1052,8 @@ void TrackPropDlg::SetTrackAndUpdate(Track* pt) {
 
   int NbrOfLinks = m_pTrack->m_TrackHyperlinkList->GetCount();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = m_pTrack->m_TrackHyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        m_pTrack->m_TrackHyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1131,7 +1132,8 @@ bool TrackPropDlg::UpdateProperties() {
     HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
     //            int len = 0;
     if (NbrOfLinks > 0) {
-      wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+      HyperlinkList::compatibility_iterator linknode =
+          hyperlinklist->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
         wxString Link = link->Link;
@@ -1522,7 +1524,7 @@ void TrackPropDlg::PopupMenuHandler(wxCommandEvent& event) {
 }
 
 void TrackPropDlg::OnDeleteLink(wxCommandEvent& event) {
-  wxHyperlinkListNode* nodeToDelete = NULL;
+  HyperlinkList::compatibility_iterator nodeToDelete;
   wxString findurl = m_pEditedLink->GetURL();
   wxString findlabel = m_pEditedLink->GetLabel();
 
@@ -1548,7 +1550,7 @@ void TrackPropDlg::OnDeleteLink(wxCommandEvent& event) {
   HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
   //      int len = 0;
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+    HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
       wxString Link = link->Link;
@@ -1594,7 +1596,8 @@ void TrackPropDlg::OnEditLink(wxCommandEvent& event) {
       HyperlinkList* hyperlinklist = m_pTrack->m_TrackHyperlinkList;
       //            int len = 0;
       if (NbrOfLinks > 0) {
-        wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode =
+            hyperlinklist->GetFirst();
         while (linknode) {
           Hyperlink* link = linknode->GetData();
           wxString Link = link->Link;

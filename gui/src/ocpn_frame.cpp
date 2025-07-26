@@ -6641,7 +6641,8 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           w[i][_T("Description")] = (*itp)->GetDescription();
           w[i][_T("GUID")] = (*itp)->m_GUID;
           w[i][_T("ArrivalRadius")] = (*itp)->GetWaypointArrivalRadius();
-          wxHyperlinkListNode *node = (*itp)->m_HyperlinkList->GetFirst();
+          HyperlinkList::compatibility_iterator node =
+              (*itp)->m_HyperlinkList->GetFirst();
           if (node) {
             int n = 1;
             while (node) {

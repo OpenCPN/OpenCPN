@@ -542,7 +542,8 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
       int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
       HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
       if (NbrOfLinks > 0) {
-        wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode =
+            hyperlinklist->GetFirst();
         while (linknode) {
           Hyperlink* link = linknode->GetData();
           wxString Link = link->Link;
@@ -1215,7 +1216,8 @@ void RoutePropDlgImpl::ItemEditOnMenuSelection(wxCommandEvent& event) {
       HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
       //            int len = 0;
       if (NbrOfLinks > 0) {
-        wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+        HyperlinkList::compatibility_iterator linknode =
+            hyperlinklist->GetFirst();
         while (linknode) {
           Hyperlink* link = linknode->GetData();
           wxString Link = link->Link;
@@ -1251,7 +1253,7 @@ void RoutePropDlgImpl::ItemAddOnMenuSelection(wxCommandEvent& event) {
 }
 
 void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
-  wxHyperlinkListNode* nodeToDelete = NULL;
+  HyperlinkList::compatibility_iterator nodeToDelete;
   wxString findurl = m_pEditedLink->GetURL();
   wxString findlabel = m_pEditedLink->GetLabel();
 
@@ -1277,7 +1279,7 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
   HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
   //      int len = 0;
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+    HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
       wxString Link = link->Link;
