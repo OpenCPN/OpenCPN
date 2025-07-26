@@ -856,7 +856,8 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -962,7 +963,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();
@@ -1024,7 +1025,8 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint* dst,
   if (src->m_HyperlinkList->GetCount() > 0) {
     dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -2035,7 +2037,8 @@ static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
     if (src->m_HyperlinkList->GetCount() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      HyperlinkList::compatibility_iterator linknode =
+          src->m_HyperlinkList->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
 
@@ -2088,7 +2091,8 @@ static void cloneHyperlinkListExV2(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -2206,7 +2210,7 @@ bool UpdateSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();
@@ -2418,7 +2422,8 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
     if (src->m_HyperlinkList->GetCount() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      HyperlinkList::compatibility_iterator linknode =
+          src->m_HyperlinkList->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
 
@@ -2452,7 +2457,8 @@ static void cloneHyperlinkListEx(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -2568,7 +2574,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();

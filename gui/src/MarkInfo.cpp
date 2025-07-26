@@ -891,7 +891,7 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
     m_pMyLinkList = new HyperlinkList();
     int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
     if (NbrOfLinks > 0) {
-      wxHyperlinkListNode* linknode =
+      HyperlinkList::compatibility_iterator linknode =
           m_pRoutePoint->m_HyperlinkList->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
@@ -915,7 +915,8 @@ void MarkInfoDlg::UpdateHtmlList() {
   int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
 
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = m_pRoutePoint->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        m_pRoutePoint->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
       wxString s = wxString::Format(wxT("<a href='%s'>%s</a>"), link->Link,
@@ -946,7 +947,7 @@ void MarkInfoDlg::UpdateHtmlList() {
   int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
   HyperlinkList* hyperlinklist = m_pRoutePoint->m_HyperlinkList;
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+    HyperlinkList::compatibility_iterator linknode = hyperlinklist->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
       wxString Link = link->Link;
@@ -1131,7 +1132,8 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
     HyperlinkList* hyperlinklist = m_pRoutePoint->m_HyperlinkList;
     if (hyperlinklist->GetCount() > 0) {
       int i = 0;
-      wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
+      HyperlinkList::compatibility_iterator linknode =
+          hyperlinklist->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
         if (link->DescrText == label) {
@@ -1213,7 +1215,7 @@ void MarkInfoDlg::OnAddLink(wxCommandEvent& event) {
 void MarkInfoDlg::On_html_link_popupmenu_Click(wxCommandEvent& event) {
   switch (event.GetId()) {
     case ID_RCLK_MENU_DELETE_LINK: {
-      wxHyperlinkListNode* node =
+      HyperlinkList::compatibility_iterator node =
           m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item);
       m_pRoutePoint->m_HyperlinkList->DeleteNode(node);
       UpdateHtmlList();
@@ -1384,7 +1386,8 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
 
     int NbrOfLinks = m_pMyLinkList->GetCount();
     if (NbrOfLinks > 0) {
-      wxHyperlinkListNode* linknode = m_pMyLinkList->GetFirst();
+      HyperlinkList::compatibility_iterator linknode =
+          m_pMyLinkList->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
         Hyperlink* h = new Hyperlink();

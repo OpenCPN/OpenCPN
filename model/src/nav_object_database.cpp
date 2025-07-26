@@ -692,7 +692,7 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
   if (flags & OUT_HYPERLINKS) {
     HyperlinkList *linklist = pr->m_HyperlinkList;
     if (linklist && linklist->GetCount()) {
-      wxHyperlinkListNode *linknode = linklist->GetFirst();
+      HyperlinkList::compatibility_iterator linknode = linklist->GetFirst();
       while (linknode) {
         Hyperlink *link = linknode->GetData();
 
@@ -866,7 +866,7 @@ static bool GPXCreateTrk(pugi::xml_node node, Track *pTrack,
   // Hyperlinks
   HyperlinkList *linklist = pTrack->m_TrackHyperlinkList;
   if (linklist && linklist->GetCount()) {
-    wxHyperlinkListNode *linknode = linklist->GetFirst();
+    HyperlinkList::compatibility_iterator linknode = linklist->GetFirst();
     while (linknode) {
       Hyperlink *link = linknode->GetData();
 
@@ -979,7 +979,7 @@ static bool GPXCreateRoute(pugi::xml_node node, Route *pRoute) {
   // Hyperlinks
   HyperlinkList *linklist = pRoute->m_HyperlinkList;
   if (linklist && linklist->GetCount()) {
-    wxHyperlinkListNode *linknode = linklist->GetFirst();
+    HyperlinkList::compatibility_iterator linknode = linklist->GetFirst();
     while (linknode) {
       Hyperlink *link = linknode->GetData();
 
