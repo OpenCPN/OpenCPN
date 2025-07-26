@@ -2642,7 +2642,8 @@ bool AddPlugInRouteEx(PlugIn_Route_Ex* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointExListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointExList::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwaypointex = pwpnode->GetData();
 
