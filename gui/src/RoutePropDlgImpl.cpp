@@ -348,7 +348,8 @@ void RoutePropDlgImpl::UpdatePoints() {
                        toUsrDistance(m_pRoute->m_route_length)));
   m_tcEnroute->SetValue(formatTimeDelta(wxLongLong(m_pRoute->m_route_time)));
   //  Iterate on Route Points, inserting blank fields starting with index 0
-  wxRoutePointListNode* pnode = m_pRoute->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator pnode =
+      m_pRoute->pRoutePointList->GetFirst();
   int in = 0;
   wxString slen, eta, ete;
   double bearing, distance, speed;

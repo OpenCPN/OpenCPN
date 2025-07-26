@@ -136,7 +136,7 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
 wxString Route::IsPointNameValid(RoutePoint *pPoint,
                                  const wxString &name) const {
   RoutePoint *point;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
   wxString substr = name.SubString(0, 6);
 
   while (node) {
@@ -232,7 +232,7 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
 
 RoutePoint *Route::GetPoint(int nWhichPoint) {
   RoutePoint *prp;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   int i = 1;
   while (node) {
@@ -249,7 +249,7 @@ RoutePoint *Route::GetPoint(int nWhichPoint) {
 
 RoutePoint *Route::GetPoint(const wxString &guid) {
   RoutePoint *prp;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   while (node) {
     prp = node->GetData();
@@ -281,8 +281,9 @@ static void TestLongitude(double lon, double min, double max, bool &lonl,
 }
 
 bool Route::ContainsSharedWP() {
-  for (wxRoutePointListNode *node = pRoutePointList->GetFirst(); node;
-       node = node->GetNext()) {
+  for (RoutePointList::compatibility_iterator node =
+           pRoutePointList->GetFirst();
+       node; node = node->GetNext()) {
     RoutePoint *prp = node->GetData();
     if (prp->IsShared()) return true;
   }
@@ -293,7 +294,7 @@ bool Route::ContainsSharedWP() {
 int s_arrow_icon[] = {0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0};
 void Route::ClearHighlights(void) {
   RoutePoint *prp = NULL;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   while (node) {
     prp = node->GetData();
@@ -425,7 +426,7 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
 }
 
 void Route::DeSelectRoute() {
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   RoutePoint *rp;
   while (node) {
@@ -437,7 +438,7 @@ void Route::DeSelectRoute() {
 }
 
 void Route::ReloadRoutePointIcons() {
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   RoutePoint *rp;
   while (node) {
@@ -455,7 +456,7 @@ LLBBox &Route::GetBBox(void) {
 
   double bbox_lonmin, bbox_lonmax, bbox_latmin, bbox_latmax;
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
   RoutePoint *data = node->GetData();
 
   if (data->m_wpBBox.GetValid()) {
@@ -571,7 +572,7 @@ void Route::UpdateSegmentDistances(double planspeed) {
   m_route_length = 0.0;
   m_route_time = 0.0;
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   if (node) {
     //  Route start point
@@ -610,7 +611,8 @@ void Route::Reverse(bool bRenamePoints) {
     wxString GUID = RoutePointGUIDList[ip];
 
     //    And on the RoutePoints themselves
-    wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator prpnode =
+        pWayPointMan->GetWaypointList()->GetFirst();
     while (prpnode) {
       RoutePoint *prp = prpnode->GetData();
 
@@ -635,7 +637,7 @@ void Route::SetVisible(bool visible, bool includeWpts) {
 
   if (!includeWpts) return;
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
   RoutePoint *rp;
   while (node) {
     rp = node->GetData();
@@ -655,7 +657,7 @@ void Route::SetListed(bool visible) { m_bListed = visible; }
 void Route::AssembleRoute(void) {}
 
 void Route::ShowWaypointNames(bool bshow) {
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   while (node) {
     RoutePoint *prp = node->GetData();
@@ -667,7 +669,7 @@ void Route::ShowWaypointNames(bool bshow) {
 
 bool Route::AreWaypointNamesVisible() {
   bool bvis = false;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   while (node) {
     RoutePoint *prp = node->GetData();
@@ -683,7 +685,7 @@ void Route::RenameRoutePoints(void) {
   //    iterate on the route points.
   //    If dynamically named, rename according to current list position
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node = pRoutePointList->GetFirst();
 
   int i = 1;
   while (node) {
@@ -712,8 +714,10 @@ void Route::RenameRoutePoints(void) {
 //    Is this route equal to another, meaning,
 //    Do all routepoint positions and names match?
 bool Route::IsEqualTo(Route *ptargetroute) {
-  wxRoutePointListNode *pthisnode = (this->pRoutePointList)->GetFirst();
-  wxRoutePointListNode *pthatnode = (ptargetroute->pRoutePointList)->GetFirst();
+  RoutePointList::compatibility_iterator pthisnode =
+      (this->pRoutePointList)->GetFirst();
+  RoutePointList::compatibility_iterator pthatnode =
+      (ptargetroute->pRoutePointList)->GetFirst();
 
   if (NULL == pthisnode) return false;
 

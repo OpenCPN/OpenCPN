@@ -1761,7 +1761,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       //    than 0.25 NM from this point
       //    This will prevent screen clutter and database congestion.
       if (g_declutter_anchorage) {
-        wxRoutePointListNode *node =
+        RoutePointList::compatibility_iterator node =
             pWayPointMan->GetWaypointList()->GetFirst();
         while (node) {
           RoutePoint *pr = node->GetData();

@@ -4076,7 +4076,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
             validActive = true;
 
           if (segShow_point_a != pr->pRoutePointList->GetFirst()->GetData()) {
-            wxRoutePointListNode *node =
+            RoutePointList::compatibility_iterator node =
                 (pr->pRoutePointList)->GetFirst()->GetNext();
             RoutePoint *prp;
             float dist_to_endleg = 0;
@@ -13117,7 +13117,8 @@ void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   if (!pWayPointMan) return;
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
 
   while (node) {
     RoutePoint *pWP = node->GetData();
@@ -13163,7 +13164,8 @@ void ChartCanvas::DrawBlinkObjects(void) {
 
   if (!pWayPointMan) return;
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      pWayPointMan->GetWaypointList()->GetFirst();
 
   while (node) {
     RoutePoint *pWP = node->GetData();
