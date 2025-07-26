@@ -3855,10 +3855,12 @@ M_COVR_Desc *cm93chart::FindM_COVR_InWorkingSet(double lat, double lon) {
   M_COVR_Desc *ret = NULL;
   //    Default is to use the first M_COVR, the usual case
   if (m_CIB.m_cell_mcovr_list.GetCount() == 1) {
-    wxList_Of_M_COVR_DescNode *node0 = m_CIB.m_cell_mcovr_list.GetFirst();
+    List_Of_M_COVR_Desc::compatibility_iterator node0 =
+        m_CIB.m_cell_mcovr_list.GetFirst();
     if (node0) ret = node0->GetData();
   } else {
-    wxList_Of_M_COVR_DescNode *node = m_CIB.m_cell_mcovr_list.GetFirst();
+    List_Of_M_COVR_Desc::compatibility_iterator node =
+        m_CIB.m_cell_mcovr_list.GetFirst();
     while (node) {
       M_COVR_Desc *pmcd = node->GetData();
 
@@ -3879,7 +3881,8 @@ wxPoint2DDouble cm93chart::FindM_COVROffset(double lat, double lon) {
   wxPoint2DDouble ret(0., 0.);
 
   //    Default is to use the first M_COVR, the usual case
-  wxList_Of_M_COVR_DescNode *node0 = m_CIB.m_cell_mcovr_list.GetFirst();
+  List_Of_M_COVR_Desc::compatibility_iterator node0 =
+      m_CIB.m_cell_mcovr_list.GetFirst();
   if (node0) {
     M_COVR_Desc *pmcd0 = node0->GetData();
     ret.m_x = pmcd0->transform_WGS84_offset_x;
@@ -3888,7 +3891,8 @@ wxPoint2DDouble cm93chart::FindM_COVROffset(double lat, double lon) {
 
   //    If there are more than one M_COVR in this cell, need to search
   if (m_CIB.m_cell_mcovr_list.GetCount() > 1) {
-    wxList_Of_M_COVR_DescNode *node = m_CIB.m_cell_mcovr_list.GetFirst();
+    List_Of_M_COVR_Desc::compatibility_iterator node =
+        m_CIB.m_cell_mcovr_list.GetFirst();
     while (node) {
       M_COVR_Desc *pmcd = node->GetData();
 
