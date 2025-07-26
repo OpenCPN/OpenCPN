@@ -210,7 +210,7 @@ NotificationListPanel::~NotificationListPanel() {}
 void NotificationListPanel::ReloadNotificationPanels() {
   wxWindowList kids = GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow* win = node->GetData();
     NotificationPanel* pp = dynamic_cast<NotificationPanel*>(win);
     if (pp) win->Destroy();

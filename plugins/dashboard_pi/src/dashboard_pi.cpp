@@ -760,7 +760,7 @@ void dashboard_pi::Notify() {
       dashboard_window->Refresh();
 #ifdef __OCPN__ANDROID__
       wxWindowList list = dashboard_window->GetChildren();
-      wxWindowListNode *node = list.GetFirst();
+      wxWindowList::compatibility_iterator node = list.GetFirst();
       for (size_t i = 0; i < list.GetCount(); i++) {
         wxWindow *win = node->GetData();
         //                qDebug() << "Refresh Dash child:" << i;
@@ -5862,7 +5862,7 @@ void DashboardWindow::ChangePaneOrientation(int orient, bool updateAUImgr,
 void DashboardWindow::SetSizerOrientation(int orient) {
   itemBoxSizer->SetOrientation(orient);
   /* We must reset all MinSize to ensure we start with new default */
-  wxWindowListNode *node = GetChildren().GetFirst();
+  wxWindowList::compatibility_iterator node = GetChildren().GetFirst();
   while (node) {
     node->GetData()->SetMinSize(wxDefaultSize);
     node = node->GetNext();

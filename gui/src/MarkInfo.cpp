@@ -929,7 +929,7 @@ void MarkInfoDlg::UpdateHtmlList() {
   // Clear the list
   wxWindowList kids = m_scrolledWindowLinks->GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow* win = node->GetData();
 
     auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);

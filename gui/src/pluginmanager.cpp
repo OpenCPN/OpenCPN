@@ -2541,7 +2541,7 @@ void PluginListPanel::ReloadPluginPanels() {
 
   wxWindowList kids = GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow* win = node->GetData();
     PluginPanel* pp = dynamic_cast<PluginPanel*>(win);
     if (pp) win->Destroy();

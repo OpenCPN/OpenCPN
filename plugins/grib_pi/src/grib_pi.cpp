@@ -626,7 +626,7 @@ void grib_pi::OnContextMenuItemCallback(int id) {
 void grib_pi::SetDialogFont(wxWindow *dialog, wxFont *font) {
   dialog->SetFont(*font);
   wxWindowList list = dialog->GetChildren();
-  wxWindowListNode *node = list.GetFirst();
+  wxWindowList::compatibility_iterator node = list.GetFirst();
   for (size_t i = 0; i < list.GetCount(); i++) {
     wxWindow *win = node->GetData();
     win->SetFont(*font);
