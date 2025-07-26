@@ -769,7 +769,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     // Look for a matching entry...
     bool bfound = false;
     ProgressInfoItem *item;
-    wxProgressInfoListNode *tnode = progList.GetFirst();
+    ProgressInfoList::compatibility_iterator tnode = progList.GetFirst();
     while (tnode) {
       item = tnode->GetData();
       if (item->file_path == ticket->m_ChartPath) {
@@ -891,7 +891,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     delete ticket->pFact;
   }
 
-  wxProgressInfoListNode *tnode = progList.GetFirst();
+  ProgressInfoList::compatibility_iterator tnode = progList.GetFirst();
   while (tnode) {
     ProgressInfoItem *item = tnode->GetData();
     if (item->file_path == ticket->m_ChartPath) item->file_path = _T("");
