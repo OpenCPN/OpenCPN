@@ -3386,7 +3386,7 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
 
   wxWindowList kids = ctrl->GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode *node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow *win = node->GetData();
 
     if (dynamic_cast<wxListBox *>(win) || dynamic_cast<wxListCtrl *>(win) ||
