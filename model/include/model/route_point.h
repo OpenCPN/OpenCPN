@@ -43,6 +43,10 @@
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
 
+class RoutePoint;  // forward
+
+WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
+
 // Default color, global state
 extern wxColour g_colourWaypointRangeRingsColour;
 
@@ -123,8 +127,13 @@ public:
   void *GetSelectNode(void) { return m_SelectNode; }
   void SetSelectNode(void *node) { m_SelectNode = node; }
 
-  void *GetManagerListNode(void) { return m_ManagerNode; }
-  void SetManagerListNode(void *node) { m_ManagerNode = node; }
+  RoutePointList::compatibility_iterator *GetManagerListNode(void) {
+    return m_ManagerNode;
+  }
+
+  void SetManagerListNode(RoutePointList::compatibility_iterator *node) {
+    m_ManagerNode = node;
+  }
 
   void SetName(const wxString &name);
   void CalculateNameExtents(void);
@@ -561,7 +570,8 @@ private:
   wxString m_IconName;
 
   void *m_SelectNode;
-  void *m_ManagerNode;
+  // FIXME (leamas) use a smart pointer, ownership...
+  RoutePointList::compatibility_iterator *m_ManagerNode;
 
   float m_IconScaleFactor;
   wxBitmap m_ScaledBMP;
@@ -609,7 +619,5 @@ private:
   unsigned int m_dragIconTexture;
   int m_dragIconTextureWidth, m_dragIconTextureHeight;
 };
-
-WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
 
 #endif  //  _ROUTEPOINT_H__
