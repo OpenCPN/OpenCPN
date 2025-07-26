@@ -1073,7 +1073,7 @@ wxArrayString GetRouteGUIDArray(void) {
   wxArrayString result;
   RouteList* list = pRouteList;
 
-  wxRouteListNode* prpnode = list->GetFirst();
+  RouteList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     Route* proute = prpnode->GetData();
     result.Add(proute->m_GUID);
@@ -1122,7 +1122,7 @@ wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
   RouteList* list = pRouteList;
 
-  wxRouteListNode* prpnode = list->GetFirst();
+  RouteList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     Route* proute = prpnode->GetData();
     switch (req) {
@@ -1887,7 +1887,7 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  wxRouteListNode* node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
     RoutePointList::compatibility_iterator pnode =
@@ -1977,7 +1977,7 @@ int PlugIn_Waypoint_ExV2::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  wxRouteListNode* node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
     RoutePointList::compatibility_iterator pnode =

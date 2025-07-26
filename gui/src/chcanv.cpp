@@ -10942,7 +10942,7 @@ void pupHandler_PasteRoute() {
   // don't create a new route.
   if (mergepoints && answer == wxID_YES &&
       existingWaypointCounter == pasted->GetnPoints()) {
-    wxRouteListNode *route_node = pRouteList->GetFirst();
+    RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
     while (route_node) {
       Route *proute = route_node->GetData();
 
@@ -13083,7 +13083,7 @@ void ChartCanvas::DrawActiveTrackInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Route *active_route = NULL;
 
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
+  for (RouteList::compatibility_iterator node = pRouteList->GetFirst(); node;
        node = node->GetNext()) {
     Route *pRouteDraw = node->GetData();
     if (pRouteDraw->IsActive() || pRouteDraw->IsSelected()) {
@@ -13103,7 +13103,7 @@ void ChartCanvas::DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Route *active_route = NULL;
 
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
+  for (RouteList::compatibility_iterator node = pRouteList->GetFirst(); node;
        node = node->GetNext()) {
     Route *pRouteDraw = node->GetData();
     if (pRouteDraw->IsActive() || pRouteDraw->IsSelected()) {
