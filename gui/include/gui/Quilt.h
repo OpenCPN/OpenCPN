@@ -232,7 +232,7 @@ private:
   wxBitmap *m_pBM;
 
   bool m_bcomposed;
-  wxPatchListNode *cnode;
+  PatchList::compatibility_iterator cnode;
   bool m_bbusy;
   int m_quilt_proj;
 
