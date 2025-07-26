@@ -77,7 +77,6 @@ RoutePoint::RoutePoint() {
   m_NameLocationOffsetY = 8;
   m_pMarkFont = NULL;
   m_btemp = false;
-  m_SelectNode = NULL;
   m_ManagerNode = NULL;
 
   m_iTextTexture = 0;
@@ -153,7 +152,6 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
   m_bIsInLayer = orig->m_bIsInLayer;
   m_GUID = pWayPointMan->CreateGUID(this);
 
-  m_SelectNode = NULL;
   m_ManagerNode = NULL;
 
   m_WaypointArrivalRadius = orig->GetWaypointArrivalRadius();
@@ -210,7 +208,6 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_btemp = false;
   m_bPreScaled = false;
 
-  m_SelectNode = NULL;
   m_ManagerNode = NULL;
   m_IconScaleFactor = 1.0;
   m_ScaMin = MAX_INT_VAL;
