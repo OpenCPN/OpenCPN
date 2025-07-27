@@ -28,6 +28,10 @@
 #include <wx/uilocale.h>
 #endif
 
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
 namespace ocpn {
 
 wxString getUsrDateTimeFormat() { return ::g_datetime_format; }
@@ -48,6 +52,11 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
   if (effective_time_zone == wxEmptyString) {
     effective_time_zone = "UTC";
   }
+#ifdef __ANDROID__
+  wxString aform = androidGetLocalizedDateTime(options, date_time);
+  if (!aform.IsEmpty()) return aform;
+#endif
+
   // Define a map for custom format specifiers.
   std::vector<std::pair<wxString, wxString>> formatMap = {
 #if wxCHECK_VERSION(3, 1, 6)
