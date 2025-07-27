@@ -93,6 +93,19 @@ EVT_CHILD_FOCUS(OCPN_AUIManager::OnChildFocus)
 EVT_AUI_FIND_MANAGER(OCPN_AUIManager::OnFindManager)
 END_EVENT_TABLE()
 
+static bool AuiDockUIPartsAreEqual(const wxAuiDockUIPart& lhs,
+                                   const wxAuiDockUIPart& rhs) {
+  if (lhs.type != rhs.type) return false;
+  if (lhs.orientation != rhs.orientation) return false;
+  if (lhs.dock != rhs.dock) return false;
+  if (lhs.pane != rhs.pane) return false;
+  if (lhs.button != rhs.button) return false;
+  if (lhs.cont_sizer != rhs.cont_sizer) return false;
+  if (lhs.sizer_item != rhs.sizer_item) return false;
+  if (lhs.rect != rhs.rect) return false;
+  return true;
+};
+
 OCPN_AUIManager::OCPN_AUIManager(wxWindow* managed_wnd, unsigned int flags)
     : wxAuiManager(managed_wnd, flags)
 
@@ -114,10 +127,17 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event) {
   if (m_action == actionResize) {
     // It's necessary to reset m_actionPart since it destroyed
     // by the Update within DoEndResizeAction.
-    if (m_currentDragItem != -1)
+    if (m_currentDragItem != -1) {
       m_actionPart = &(m_uiParts.Item(m_currentDragItem));
-    else
-      m_currentDragItem = m_uiParts.Index(*m_actionPart);
+    } else {
+      const wxAuiDockUIPart action_part = *m_actionPart;
+      for (size_t i = 0; i < m_uiParts.GetCount(); i++) {
+        if (AuiDockUIPartsAreEqual(m_uiParts[i], action_part)) {
+          m_currentDragItem = i;
+          break;
+        }
+      }
+    }
 
     if (m_actionPart) {
       wxPoint pos = m_actionPart->rect.GetPosition();
