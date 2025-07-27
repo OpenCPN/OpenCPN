@@ -769,14 +769,14 @@ unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable,
 }
 
 void OCPNCheckedListCtrl::Check(int index, bool val) {
-  CBList::Node* node = m_list.Item(index);
+  CBList::compatibility_iterator node = m_list.Item(index);
   wxCheckBox* cb = node->GetData();
 
   if (cb) cb->SetValue(val);
 }
 
 bool OCPNCheckedListCtrl::IsChecked(int index) {
-  CBList::Node* node = m_list.Item(index);
+  CBList::compatibility_iterator node = m_list.Item(index);
   wxCheckBox* cb = node->GetData();
 
   if (cb)

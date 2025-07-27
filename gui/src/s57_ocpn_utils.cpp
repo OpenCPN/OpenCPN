@@ -123,8 +123,8 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
     int n_attr = 0;
     wxArrayOfS57attVal *attValArray = NULL;
 
-    ListOfObjRazRules::Node *snode = NULL;
-    ListOfPI_S57Obj::Node *pnode = NULL;
+    ListOfObjRazRules::compatibility_iterator snode;
+    ListOfPI_S57Obj::compatibility_iterator pnode;
 
     if (Chs57 && rule_list)
       snode = rule_list->GetLast();
