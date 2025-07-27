@@ -696,7 +696,7 @@ void CursorData::OnMenuCallBack(wxMouseEvent &event) {
   PopupMenu(menu);
 
   // apply new config
-  wxwxMenuItemListNode *node = menu->GetMenuItems().GetFirst();
+  wxMenuItemList::compatibility_iterator node = menu->GetMenuItems().GetFirst();
   while (node) {
     wxMenuItem *it = node->GetData();
     switch (it->GetId()) {

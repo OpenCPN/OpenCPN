@@ -278,7 +278,7 @@ bool NMEA0183::Parse(void) {
 
     //          Traverse the response list to find a mnemonic match
 
-    wxMRLNode *node = response_table.GetFirst();
+    MRL::compatibility_iterator node = response_table.GetFirst();
 
     int comparison = 0;
 
@@ -320,7 +320,7 @@ bool NMEA0183::Parse(void) {
 wxArrayString NMEA0183::GetRecognizedArray(void) {
   wxArrayString ret;
 
-  wxMRLNode *node = response_table.GetFirst();
+  MRL::compatibility_iterator node = response_table.GetFirst();
 
   while (node) {
     RESPONSE *resp = node->GetData();
