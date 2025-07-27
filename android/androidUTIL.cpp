@@ -2734,6 +2734,66 @@ bool androidStopGPS() {
   return true;
 }
 
+wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
+                                     wxDateTime time) {
+  wxDateTime t(time);
+  wxString effective_time_zone = options.time_zone;
+  if (effective_time_zone == wxEmptyString) {
+    effective_time_zone = ::g_datetime_format;
+  }
+  if (effective_time_zone == wxEmptyString) {
+    effective_time_zone = "UTC";
+  }
+
+  wxString tzName;
+  if (effective_time_zone == "Local Time") {
+    wxDateTime now = wxDateTime::Now();
+    if ((now == (now.ToGMT())) &&
+        t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
+      t.Add(wxTimeSpan(1, 0, 0, 0));
+    if (options.show_timezone) {
+      tzName = _("LOC");
+    }
+  } else if (effective_time_zone == "LMT") {
+    // Local mean solar time at the current location.
+    t.MakeUTC();
+    tzName = _("LMT");
+    if (std::isnan(options.longitude)) {
+      t = wxInvalidDateTime;
+    } else {
+      t.Add(wxTimeSpan(0, 0, wxLongLong(options.longitude * 3600. / 15.)));
+    }
+  } else {
+    // UTC, or fallback to UTC if the timezone is not recognized.
+    t.MakeUTC();
+    tzName = _("UTC");
+  }
+
+  wxString format = options.format_string;
+  long epoch_seconds = t.GetTicks();
+  wxString formattedDate;
+
+  wxStringTokenizer tk(format, "$");
+  while (tk.HasMoreTokens()) {
+    wxString token = tk.GetNextToken();
+    if (token.Length()) {
+      token.Trim();
+      wxString partial_result = callActivityMethod_ssl(
+          "getLocalizedDateTime", "$" + token, epoch_seconds);
+      if (partial_result.Length()) {
+        if (!formattedDate.IsEmpty()) formattedDate += "  ";
+        formattedDate += partial_result;
+      }
+    }
+  }
+
+  if (options.show_timezone) {
+    return formattedDate + " " + tzName;
+  } else {
+    return formattedDate;
+  }
+}
+
 wxString androidGPSService(int parm) {
   if (!java_vm) return "NOK";
 
