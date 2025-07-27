@@ -157,7 +157,7 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
       m_table << point->GetName();
     }
     if (GUI::HasKey(options, RoutePrintOptions::kWaypointPosition)) {
-      std::wostringstream point_position;
+      std::ostringstream point_position;
       point_position << toSDMM(1, point->m_lat, false) << "\n"
                      << toSDMM(2, point->m_lon, false);
       m_table << point_position.str();
@@ -181,7 +181,7 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
       }
     }
     if (GUI::HasKey(options, RoutePrintOptions::kWaypointSpeed)) {
-      std::wostringstream point_speed;
+      std::ostringstream point_speed;
       if (n > 1) {
         point_speed << std::fixed << std::setprecision(1);
         if (point->GetPlannedSpeed() < .1) {
@@ -209,7 +209,7 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
       }
     }
     if (GUI::HasKey(options, RoutePrintOptions::kWaypointTideEvent)) {
-      std::wostringstream point_tide;
+      std::ostringstream point_tide;
       if (point->m_TideStation.Len() > 0 && point->GetETA().IsValid()) {
         int station_id = ptcmgr->GetStationIDXbyName(
             point->m_TideStation, point->m_lat, point->m_lon);
@@ -280,9 +280,9 @@ void RoutePrintout::DrawPage(wxDC* dc, int page) {
   int current_x = m_margin_x;
   int current_y = m_margin_y;
 
-  std::wostringstream title;
-  std::wostringstream subtitle;
-  std::wostringstream distance;
+  std::ostringstream title;
+  std::ostringstream subtitle;
+  std::ostringstream distance;
 
   distance << std::fixed << std::setprecision(1)
            << toUsrDistance(m_route->m_route_length)
