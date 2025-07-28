@@ -157,8 +157,6 @@ private:
   void OnTimerDSC(wxTimerEvent &event);
 
   bool NMEACheckSumOK(const wxString &str);
-  bool Parse_VDXBitstring(AisBitstring *bstr,
-                          std::shared_ptr<AisTargetData> ptd);
   void UpdateAllCPA();
   void UpdateOneCPA(AisTargetData *ptarget);
   void UpdateAllAlarms();
