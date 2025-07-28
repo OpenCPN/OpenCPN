@@ -189,25 +189,23 @@ static void PresetPriorityContainer(
   // Extract some info from the preloaded map
   // Find the key corresponding to priority 0, the highest
   std::string key0;
-  for (auto& it : priority_map) {
+  for (const auto& it : priority_map) {
     if (it.second == 0) key0 = it.first;
   }
 
   wxString this_key(key0.c_str());
   wxStringTokenizer tkz(this_key, _T(";"));
-  wxString wxs_this_source = tkz.GetNextToken();
-  std::string source = wxs_this_source.ToStdString();
-  wxString wxs_this_identifier = tkz.GetNextToken();
-  std::string this_identifier = wxs_this_identifier.ToStdString();
+  std::string source = tkz.GetNextToken().ToStdString();
+  std::string this_identifier = tkz.GetNextToken().ToStdString();
 
-  wxStringTokenizer tka(wxs_this_source, _T(":"));
+  wxStringTokenizer tka(source, ":");
   tka.GetNextToken();
-  int source_address = atoi(tka.GetNextToken().ToStdString().c_str());
-
+  std::stringstream ss;
+  ss << tka.GetNextToken();
+  ss >> pc.active_source_address;
   pc.active_priority = 0;
   pc.active_source = source;
   pc.active_identifier = this_identifier;
-  pc.active_source_address = source_address;
   pc.recent_active_time = -1;
 }
 
@@ -271,12 +269,14 @@ static void SelectNextLowerPriority(
 
 // CommBridge implementation
 
-BEGIN_EVENT_TABLE(CommBridge, wxEvtHandler)
-EVT_TIMER(WATCHDOG_TIMER, CommBridge::OnWatchdogTimer)
-END_EVENT_TABLE()
-
-CommBridge::CommBridge() = default;
-
+CommBridge::CommBridge()
+    : wxEvtHandler(),
+      active_priority_heading(),
+      m_n_log_watchdog_period(3600),
+      // every 60 minutes, reduced after first position Rx
+      m_last_position_priority(0) {
+  Bind(wxEVT_TIMER, [&](wxTimerEvent&) { OnWatchdogTimer(); });
+}
 CommBridge::~CommBridge() = default;
 
 bool CommBridge::Initialize() {
@@ -292,10 +292,7 @@ bool CommBridge::Initialize() {
 
   m_watchdog_timer.SetOwner(this, WATCHDOG_TIMER);
   m_watchdog_timer.Start(1000, wxTIMER_CONTINUOUS);
-  n_LogWatchdogPeriod = 3600;  // every 60 minutes,
-                               // reduced after first position Rx
 
-  // Initialize the comm listeners
   InitCommListeners();
 
   // Initialize a listener for driver state changes
@@ -304,7 +301,6 @@ bool CommBridge::Initialize() {
       EVT_DRIVER_CHANGE);
   Bind(EVT_DRIVER_CHANGE,
        [&](const wxCommandEvent& ev) { OnDriverStateChange(); });
-
   return true;
 }
 
@@ -317,7 +313,7 @@ void CommBridge::PresetWatchdogs() {
   m_watchdogs.satellite_watchdog = 20;
 }
 
-void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
+void CommBridge::OnWatchdogTimer() {
   //  Update and check watchdog timer for GPS data source
   m_watchdogs.position_watchdog--;
   if (m_watchdogs.position_watchdog <= 0) {
@@ -329,7 +325,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
       LogAppMsg(msg, "watchdog", m_log_callbacks);
       msgbus.Notify(std::move(msg));
 
-      if (m_watchdogs.position_watchdog % n_LogWatchdogPeriod == 0) {
+      if (m_watchdogs.position_watchdog % m_n_log_watchdog_period == 0) {
         wxString logmsg;
         logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"),
                       gLat, gLon);
@@ -622,7 +618,7 @@ bool CommBridge::HandleN2K_129029(const N2000MsgPtr& n2k_msg) {
       valid_flag += POS_UPDATE;
       valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
-      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+      m_n_log_watchdog_period = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
     }
   }
 
@@ -656,7 +652,7 @@ bool CommBridge::HandleN2K_129025(const N2000MsgPtr& n2k_msg) {
       valid_flag += POS_UPDATE;
       valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
-      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+      m_n_log_watchdog_period = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
     }
   }
   // FIXME (dave) How to notify user of errors?
@@ -775,7 +771,7 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
       gLon = temp_data.gLon;
       valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
-      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+      m_n_log_watchdog_period = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
     }
     valid_flag += POS_UPDATE;
   }
@@ -935,7 +931,7 @@ bool CommBridge::HandleN0183_GGA(const N0183MsgPtr& n0183_msg) {
       gLon = temp_data.gLon;
       valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
-      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+      m_n_log_watchdog_period = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
     }
     valid_flag += POS_UPDATE;
   }
@@ -974,7 +970,7 @@ bool CommBridge::HandleN0183_GLL(const N0183MsgPtr& n0183_msg) {
       gLon = temp_data.gLon;
       valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
-      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+      m_n_log_watchdog_period = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
     }
     valid_flag += POS_UPDATE;
   }
@@ -1003,7 +999,8 @@ bool CommBridge::HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg) {
         valid_flag += POS_UPDATE;
         valid_flag += POS_VALID;
         m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
-        n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+        m_n_log_watchdog_period =
+            N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
       }
     }
 
@@ -1054,7 +1051,7 @@ bool CommBridge::HandleSignalK(const SignalKMsgPtr& sK_msg) {
       valid_flag += POS_UPDATE;
       valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
-      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+      m_n_log_watchdog_period = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
     }
   }
 
@@ -1247,7 +1244,10 @@ bool CommBridge::EvalPriority(
 
   wxStringTokenizer tka(wxs_this_source, _T(":"));
   tka.GetNextToken();
-  int source_address = atoi(tka.GetNextToken().ToStdString().c_str());
+  std::stringstream ss;
+  ss << tka.GetNextToken();
+  int source_address;
+  ss >> source_address;
 
   // Special case priority value linkage for N0183 messages:
   // If this is a "velocity" record, ensure that a "position"
@@ -1275,7 +1275,7 @@ bool CommBridge::EvalPriority(
   if (it == priority_map.end()) {
     // Not found, so make it default the lowest priority
     size_t n = priority_map.size();
-    priority_map[this_key] = n;
+    priority_map[this_key] = static_cast<int>(n);
   }
 
   this_priority = priority_map[this_key];
