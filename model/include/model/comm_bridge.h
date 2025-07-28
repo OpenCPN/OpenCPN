@@ -42,29 +42,37 @@ using N2000MsgPtr = std::shared_ptr<const Nmea2000Msg>;
 using SignalKMsgPtr = std::shared_ptr<const SignalkMsg>;
 using NavMsgPtr = std::shared_ptr<const NavMsg>;
 
-typedef struct {
+struct PriorityContainer {
   std::string pcclass;
   int active_priority;
   std::string active_source;
   std::string active_identifier;
   int active_source_address;
   time_t recent_active_time;
-} PriorityContainer;
+  PriorityContainer()
+      : active_priority(0), active_source_address(0), recent_active_time(0) {}
+};
 
-typedef struct {
+struct Watchdogs {
   int position_watchdog;
   int variation_watchdog;
   int heading_watchdog;
   int velocity_watchdog;
   int satellite_watchdog;
-
-} Watchdogs;
+  Watchdogs()
+      : position_watchdog(0),
+        variation_watchdog(0),
+        heading_watchdog(0),
+        velocity_watchdog(0),
+        satellite_watchdog(0) {}
+};
 
 struct BridgeLogCallbacks {
   std::function<bool()> log_is_active;
   std::function<void(const Logline&)> log_message;
   BridgeLogCallbacks()
-      : log_is_active([]() { return false; }), log_message([](Logline) {}) {}
+      : log_is_active([]() { return false; }),
+        log_message([](const Logline&) {}) {}
 };
 
 /** Process incoming messages. */
@@ -116,7 +124,7 @@ public:
 
   void OnDriverStateChange();
 
-  void OnWatchdogTimer(wxTimerEvent& event);
+  void OnWatchdogTimer();
   bool EvalPriority(const NavMsgPtr& msg, PriorityContainer& active_priority,
                     std::unordered_map<std::string, int>& priority_map);
 
@@ -176,13 +184,11 @@ private:
   std::unordered_map<std::string, int> priority_map_variation;
   std::unordered_map<std::string, int> priority_map_satellites;
 
-  int n_LogWatchdogPeriod;
+  int m_n_log_watchdog_period;
 
   BridgeLogCallbacks m_log_callbacks;
   int m_last_position_priority;
   std::string m_last_position_source;
-
-  DECLARE_EVENT_TABLE()
 };
 
 #endif  // COMM_BRIDGE_H
