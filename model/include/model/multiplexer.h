@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Multiplexer class and helpers
+ */
+
 #ifndef _MULTIPLEXER_H__
 #define _MULTIPLEXER_H__
 
@@ -47,6 +48,9 @@ struct MuxLogCallbacks {
       : log_is_active([]() { return false; }), log_message([](Logline) {}) {}
 };
 
+/**
+ * Handle logging and forwarding of incoming messages.
+ */
 class Multiplexer : public wxEvtHandler {
 public:
   Multiplexer(MuxLogCallbacks log_callbacks,
