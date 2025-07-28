@@ -25,6 +25,10 @@
  */
 
 // For compilers that support precompilation, includes "wx.h".
+
+#include <sstream>
+#include <string>
+
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -74,6 +78,8 @@ wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
 #define N_ACTIVE_LOG_WATCHDOG 300
 
+using std::string;
+
 bool debug_priority = false;
 
 void ClearNavData(NavData& d) {
@@ -106,23 +112,22 @@ static BridgeLogCallbacks GetLogCallbacks() {
 
 class AppNavMsg : public NavMsg {
 public:
-  AppNavMsg(const std::shared_ptr<const AppMsg>& msg, const std::string& name)
+  AppNavMsg(const std::shared_ptr<const AppMsg>& msg, const string& name)
       : NavMsg(NavAddr::Bus::AppMsg,
                std::make_shared<const NavAddrPlugin>("AppMsg")),
         m_to_string(msg->to_string()),
         m_name(name) {}
 
-  [[nodiscard]] std::string to_string() const override { return m_to_string; }
+  [[nodiscard]] string to_string() const override { return m_to_string; }
 
-  [[nodiscard]] std::string key() const override { return "appmsg::" + m_name; }
+  [[nodiscard]] string key() const override { return "appmsg::" + m_name; }
 
-  const std::string m_to_string;
-  const std::string m_name;
+  const string m_to_string;
+  const string m_name;
 };
 
 static void LogAppMsg(const std::shared_ptr<const AppMsg>& msg,
-                      const std::string& name,
-                      const BridgeLogCallbacks& log_cb) {
+                      const string& name, const BridgeLogCallbacks& log_cb) {
   if (!log_cb.log_is_active()) return;
   auto navmsg = std::make_shared<AppNavMsg>(msg, "basic-navdata");
   NavmsgStatus ns;
@@ -149,15 +154,15 @@ static inline double GeodesicRadToDeg(double rads) {
 
 static inline double MS2KNOTS(double ms) { return ms * 1.9438444924406; }
 
-static std::string GetPriorityKey(const NavMsgPtr& msg) {
-  std::string key;
+static string GetPriorityKey(const NavMsgPtr& msg) {
+  string key;
 
-  std::string this_identifier;
-  std::string this_address("0");
+  string this_identifier;
+  string this_address("0");
   if (msg->bus == NavAddr::Bus::N0183) {
     auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
     if (msg_0183) {
-      std::string source = msg->source->to_string();
+      string source = msg->source->to_string();
       this_identifier = msg_0183->talker;
       this_identifier += msg_0183->type;
       key = source + ":" + this_address + ";" + this_identifier;
@@ -175,7 +180,7 @@ static std::string GetPriorityKey(const NavMsgPtr& msg) {
     if (msg_sk) {
       auto addr_sk =
           std::static_pointer_cast<const NavAddrSignalK>(msg->source);
-      std::string source = addr_sk->to_string();
+      string source = addr_sk->to_string();
       key = source;  // Simplified, parsing sK for more info is expensive
     }
   }
@@ -185,18 +190,18 @@ static std::string GetPriorityKey(const NavMsgPtr& msg) {
 
 static void PresetPriorityContainer(
     PriorityContainer& pc,
-    const std::unordered_map<std::string, int>& priority_map) {
+    const std::unordered_map<string, int>& priority_map) {
   // Extract some info from the preloaded map
   // Find the key corresponding to priority 0, the highest
-  std::string key0;
+  string key0;
   for (const auto& it : priority_map) {
     if (it.second == 0) key0 = it.first;
   }
 
   wxString this_key(key0.c_str());
   wxStringTokenizer tkz(this_key, _T(";"));
-  std::string source = tkz.GetNextToken().ToStdString();
-  std::string this_identifier = tkz.GetNextToken().ToStdString();
+  string source = tkz.GetNextToken().ToStdString();
+  string this_identifier = tkz.GetNextToken().ToStdString();
 
   wxStringTokenizer tka(source, ":");
   tka.GetNextToken();
@@ -209,23 +214,23 @@ static void PresetPriorityContainer(
   pc.recent_active_time = -1;
 }
 
-static void ApplyPriorityMap(std::unordered_map<std::string, int>& priority_map,
-                             wxString& new_prio, int category) {
+static void ApplyPriorityMap(std::unordered_map<string, int>& priority_map,
+                             const wxString& new_prio, int category) {
   priority_map.clear();
   wxStringTokenizer tk(new_prio, "|");
   int index = 0;
   while (tk.HasMoreTokens()) {
     wxString entry = tk.GetNextToken();
-    std::string s_entry(entry.c_str());
+    string s_entry(entry.c_str());
     priority_map[s_entry] = index;
     index++;
   }
 }
 
-static std::string GetPriorityMap(std::unordered_map<std::string, int>& map) {
+static string GetPriorityMap(const std::unordered_map<string, int>& map) {
 #define MAX_SOURCES 10
-  std::string sa[MAX_SOURCES];
-  std::string result;
+  string sa[MAX_SOURCES];
+  string result;
 
   for (auto& it : map) {
     if ((it.second >= 0) && (it.second < MAX_SOURCES)) sa[it.second] = it.first;
@@ -243,7 +248,7 @@ static std::string GetPriorityMap(std::unordered_map<std::string, int>& map) {
 }
 
 static bool IsNextLowerPriorityAvailable(
-    const std::unordered_map<std::string, int>& map, PriorityContainer& pc) {
+    const std::unordered_map<string, int>& map, const PriorityContainer& pc) {
   int best_prio = 100;
   for (auto& it : map) {
     if (it.second > pc.active_priority) {
@@ -253,8 +258,8 @@ static bool IsNextLowerPriorityAvailable(
   return best_prio != pc.active_priority;
 }
 
-static void SelectNextLowerPriority(
-    const std::unordered_map<std::string, int>& map, PriorityContainer& pc) {
+static void SelectNextLowerPriority(const std::unordered_map<string, int>& map,
+                                    PriorityContainer& pc) {
   int best_prio = 100;
   for (const auto& it : map) {
     if (it.second > pc.active_priority) {
@@ -563,8 +568,8 @@ void CommBridge::OnDriverStateChange() {
   PresetPriorityContainers();
 }
 
-std::vector<std::string> CommBridge::GetPriorityMaps() {
-  std::vector<std::string> result;
+std::vector<string> CommBridge::GetPriorityMaps() const {
+  std::vector<string> result;
 
   result.push_back(GetPriorityMap(priority_map_position));
   result.push_back(GetPriorityMap(priority_map_velocity));
@@ -575,7 +580,7 @@ std::vector<std::string> CommBridge::GetPriorityMaps() {
   return result;
 }
 
-void CommBridge::ApplyPriorityMaps(std::vector<std::string> new_maps) {
+void CommBridge::ApplyPriorityMaps(const std::vector<string>& new_maps) {
   wxString new_prio_string = wxString(new_maps[0].c_str());
   ApplyPriorityMap(priority_map_position, new_prio_string, 0);
 
@@ -753,7 +758,7 @@ bool CommBridge::HandleN2K_129540(const N2000MsgPtr& n2k_msg) {
 }
 
 bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
 
   NavData temp_data;
   ClearNavData(temp_data);
@@ -803,7 +808,7 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_HDT(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
   NavData temp_data;
   ClearNavData(temp_data);
 
@@ -821,7 +826,7 @@ bool CommBridge::HandleN0183_HDT(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_HDG(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
   NavData temp_data;
   ClearNavData(temp_data);
 
@@ -852,7 +857,7 @@ bool CommBridge::HandleN0183_HDG(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_HDM(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
   NavData temp_data;
   ClearNavData(temp_data);
 
@@ -871,7 +876,7 @@ bool CommBridge::HandleN0183_HDM(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_VTG(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
   NavData temp_data;
   ClearNavData(temp_data);
 
@@ -892,7 +897,7 @@ bool CommBridge::HandleN0183_VTG(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_GSV(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
   NavData temp_data;
   ClearNavData(temp_data);
 
@@ -914,7 +919,7 @@ bool CommBridge::HandleN0183_GSV(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_GGA(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
   NavData temp_data;
   ClearNavData(temp_data);
 
@@ -953,7 +958,7 @@ bool CommBridge::HandleN0183_GGA(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_GLL(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
   NavData temp_data;
   ClearNavData(temp_data);
 
@@ -980,17 +985,16 @@ bool CommBridge::HandleN0183_GLL(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg) {
-  std::string str = n0183_msg->payload;
+  string str = n0183_msg->payload;
 
   GenericPosDatEx gpd;
   wxString sentence(str.c_str());
-
-  int valid_flag = 0;
 
   AisError nerr = AIS_GENERIC_ERROR;
   nerr = DecodeSingleVDO(sentence, &gpd);
 
   if (nerr == AIS_NoError) {
+    int valid_flag = 0;
     if (!std::isnan(gpd.kLat) && !std::isnan(gpd.kLon)) {
       if (EvalPriority(n0183_msg, active_priority_position,
                        priority_map_position)) {
@@ -1030,7 +1034,7 @@ bool CommBridge::HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg) {
 }
 
 bool CommBridge::HandleSignalK(const SignalKMsgPtr& sK_msg) {
-  std::string str = sK_msg->raw_message;
+  string str = sK_msg->raw_message;
 
   //  Here we ignore messages involving contexts other than ownship
   if (sK_msg->context_self != sK_msg->context) return false;
@@ -1151,8 +1155,7 @@ void CommBridge::ClearPriorityMaps() {
   priority_map_satellites.clear();
 }
 
-PriorityContainer& CommBridge::GetPriorityContainer(
-    const std::string& category) {
+PriorityContainer& CommBridge::GetPriorityContainer(const string& category) {
   if (category == "position")
     return active_priority_position;
   else if (category == "velocity")
@@ -1167,7 +1170,7 @@ PriorityContainer& CommBridge::GetPriorityContainer(
     return active_priority_void;
 }
 
-void CommBridge::UpdateAndApplyMaps(const std::vector<std::string>& new_maps) {
+void CommBridge::UpdateAndApplyMaps(const std::vector<string>& new_maps) {
   ApplyPriorityMaps(new_maps);
   SaveConfig();
   PresetPriorityContainers();
@@ -1177,27 +1180,27 @@ bool CommBridge::LoadConfig() {
   if (TheBaseConfig()) {
     TheBaseConfig()->SetPath("/Settings/CommPriority");
 
-    std::vector<std::string> new_maps;
+    std::vector<string> new_maps;
     wxString pri_string;
 
     TheBaseConfig()->Read("PriorityPosition", &pri_string);
-    std::string s_prio = std::string(pri_string.c_str());
+    string s_prio = string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
     TheBaseConfig()->Read("PriorityVelocity", &pri_string);
-    s_prio = std::string(pri_string.c_str());
+    s_prio = string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
     TheBaseConfig()->Read("PriorityHeading", &pri_string);
-    s_prio = std::string(pri_string.c_str());
+    s_prio = string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
     TheBaseConfig()->Read("PriorityVariation", &pri_string);
-    s_prio = std::string(pri_string.c_str());
+    s_prio = string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
     TheBaseConfig()->Read("PrioritySatellites", &pri_string);
-    s_prio = std::string(pri_string.c_str());
+    s_prio = string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
     ApplyPriorityMaps(new_maps);
@@ -1205,12 +1208,12 @@ bool CommBridge::LoadConfig() {
   return true;
 }
 
-bool CommBridge::SaveConfig() {
+bool CommBridge::SaveConfig() const {
   if (TheBaseConfig()) {
     TheBaseConfig()->SetPath("/Settings/CommPriority");
 
-    wxString pri_string;
-    pri_string = wxString(GetPriorityMap(priority_map_position).c_str());
+    wxString pri_string =
+        wxString(GetPriorityMap(priority_map_position).c_str());
     TheBaseConfig()->Write("PriorityPosition", pri_string);
 
     pri_string = wxString(GetPriorityMap(priority_map_velocity).c_str());
@@ -1225,22 +1228,21 @@ bool CommBridge::SaveConfig() {
     pri_string = wxString(GetPriorityMap(priority_map_satellites).c_str());
     TheBaseConfig()->Write("PrioritySatellites", pri_string);
   }
-
   return true;
 }
 
-bool CommBridge::EvalPriority(
-    const NavMsgPtr& msg, PriorityContainer& active_priority,
-    std::unordered_map<std::string, int>& priority_map) {
-  std::string this_key = GetPriorityKey(msg);
+bool CommBridge::EvalPriority(const NavMsgPtr& msg,
+                              PriorityContainer& active_priority,
+                              std::unordered_map<string, int>& priority_map) {
+  string this_key = GetPriorityKey(msg);
   if (debug_priority) printf("This Key: %s\n", this_key.c_str());
 
   // Pull some identifiers from the unique key
   wxStringTokenizer tkz(this_key, _T(";"));
   wxString wxs_this_source = tkz.GetNextToken();
-  std::string source = wxs_this_source.ToStdString();
+  string source = wxs_this_source.ToStdString();
   wxString wxs_this_identifier = tkz.GetNextToken();
-  std::string this_identifier = wxs_this_identifier.ToStdString();
+  string this_identifier = wxs_this_identifier.ToStdString();
 
   wxStringTokenizer tka(wxs_this_source, _T(":"));
   tka.GetNextToken();
