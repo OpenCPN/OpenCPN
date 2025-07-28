@@ -128,12 +128,12 @@ public:
   bool EvalPriority(const NavMsgPtr& msg, PriorityContainer& active_priority,
                     std::unordered_map<std::string, int>& priority_map);
 
-  std::vector<std::string> GetPriorityMaps();
+  std::vector<std::string> GetPriorityMaps() const;
   PriorityContainer& GetPriorityContainer(const std::string& category);
 
   void UpdateAndApplyMaps(const std::vector<std::string>& new_maps);
   bool LoadConfig();
-  bool SaveConfig();
+  bool SaveConfig() const;
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
@@ -166,7 +166,7 @@ private:
   void MakeHDTFromHDM();
   void InitializePriorityContainers();
 
-  void ApplyPriorityMaps(std::vector<std::string> new_maps);
+  void ApplyPriorityMaps(const std::vector<std::string>& new_maps);
 
   void ClearPriorityMaps();
   void PresetPriorityContainers();
