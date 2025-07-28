@@ -133,6 +133,116 @@ int origin_mmsi = 0;
 void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
+static void BuildERIShipTypeHash() {
+  make_hash_ERI(8000, _("Vessel, type unknown"));
+  make_hash_ERI(8150, _("Freightbarge"));
+  make_hash_ERI(8160, _("Tankbarge"));
+  make_hash_ERI(8163, _("Tankbarge, dry cargo as if liquid (e.g. cement)"));
+  make_hash_ERI(8450, _("Service vessel, police patrol, port service"));
+  make_hash_ERI(8430, _("Pushboat, single"));
+  make_hash_ERI(8510, _("Object, not otherwise specified"));
+  make_hash_ERI(8470, _("Object, towed, not otherwise specified"));
+  make_hash_ERI(8490, _("Bunkership"));
+  make_hash_ERI(8010, _("Motor freighter"));
+  make_hash_ERI(8020, _("Motor tanker"));
+  make_hash_ERI(8021, _("Motor tanker, liquid cargo, type N"));
+  make_hash_ERI(8022, _("Motor tanker, liquid cargo, type C"));
+  make_hash_ERI(8023, _("Motor tanker, dry cargo as if liquid (e.g. cement)"));
+  make_hash_ERI(8030, _("Container vessel"));
+  make_hash_ERI(8040, _("Gas tanker"));
+  make_hash_ERI(8050, _("Motor freighter, tug"));
+  make_hash_ERI(8060, _("Motor tanker, tug"));
+  make_hash_ERI(8070, _("Motor freighter with one or more ships alongside"));
+  make_hash_ERI(8080, _("Motor freighter with tanker"));
+  make_hash_ERI(8090, _("Motor freighter pushing one or more freighters"));
+  make_hash_ERI(8100, _("Motor freighter pushing at least one tank-ship"));
+  make_hash_ERI(8110, _("Tug, freighter"));
+  make_hash_ERI(8120, _("Tug, tanker"));
+  make_hash_ERI(8130, _("Tug freighter, coupled"));
+  make_hash_ERI(8140, _("Tug, freighter/tanker, coupled"));
+  make_hash_ERI(8161, _("Tankbarge, liquid cargo, type N"));
+  make_hash_ERI(8162, _("Tankbarge, liquid cargo, type C"));
+  make_hash_ERI(8170, _("Freightbarge with containers"));
+  make_hash_ERI(8180, _("Tankbarge, gas"));
+  make_hash_ERI(8210, _("Pushtow, one cargo barge"));
+  make_hash_ERI(8220, _("Pushtow, two cargo barges"));
+  make_hash_ERI(8230, _("Pushtow, three cargo barges"));
+  make_hash_ERI(8240, _("Pushtow, four cargo barges"));
+  make_hash_ERI(8250, _("Pushtow, five cargo barges"));
+  make_hash_ERI(8260, _("Pushtow, six cargo barges"));
+  make_hash_ERI(8270, _("Pushtow, seven cargo barges"));
+  make_hash_ERI(8280, _("Pushtow, eight cargo barges"));
+  make_hash_ERI(8290, _("Pushtow, nine or more barges"));
+  make_hash_ERI(8310, _("Pushtow, one tank/gas barge"));
+  make_hash_ERI(8320,
+                _("Pushtow, two barges at least one tanker or gas barge"));
+  make_hash_ERI(8330,
+                _("Pushtow, three barges at least one tanker or gas barge"));
+  make_hash_ERI(8340,
+                _("Pushtow, four barges at least one tanker or gas barge"));
+  make_hash_ERI(8350,
+                _("Pushtow, five barges at least one tanker or gas barge"));
+  make_hash_ERI(8360,
+                _("Pushtow, six barges at least one tanker or gas barge"));
+  make_hash_ERI(8370,
+                _("Pushtow, seven barges at least one tanker or gas barge"));
+  make_hash_ERI(8380,
+                _("Pushtow, eight barges at least one tanker or gas barge"));
+  make_hash_ERI(
+      8390, _("Pushtow, nine or more barges at least one tanker or gas barge"));
+  make_hash_ERI(8400, _("Tug, single"));
+  make_hash_ERI(8410, _("Tug, one or more tows"));
+  make_hash_ERI(8420, _("Tug, assisting a vessel or linked combination"));
+  make_hash_ERI(8430, _("Pushboat, single"));
+  make_hash_ERI(8440, _("Passenger ship, ferry, cruise ship, red cross ship"));
+  make_hash_ERI(8441, _("Ferry"));
+  make_hash_ERI(8442, _("Red cross ship"));
+  make_hash_ERI(8443, _("Cruise ship"));
+  make_hash_ERI(8444, _("Passenger ship without accommodation"));
+  make_hash_ERI(8460, _("Vessel, work maintenance craft, floating derrick, "
+                        "cable-ship, buoy-ship, dredge"));
+  make_hash_ERI(8480, _("Fishing boat"));
+  make_hash_ERI(8500, _("Barge, tanker, chemical"));
+  make_hash_ERI(1500, _("General cargo Vessel maritime"));
+  make_hash_ERI(1510, _("Unit carrier maritime"));
+  make_hash_ERI(1520, _("Bulk carrier maritime"));
+  make_hash_ERI(1530, _("Tanker"));
+  make_hash_ERI(1540, _("Liquified gas tanker"));
+  make_hash_ERI(1850, _("Pleasure craft, longer than 20 metres"));
+  make_hash_ERI(1900, _("Fast ship"));
+  make_hash_ERI(1910, _("Hydrofoil"));
+}
+
+// DSE Expansion characters, decode table from ITU-R M.825
+static wxString DecodeDSEExpansionCharacters(const wxString &dseData) {
+  wxString result;
+  char lookupTable[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ',
+                        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+                        'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+                        'W', 'X', 'Y', 'Z', '.', ',', '-', '/', ' '};
+
+  for (size_t i = 0; i < dseData.length(); i += 2) {
+    result.append(1,
+                  lookupTable[strtol(dseData.Mid(i, 2).data(), nullptr, 10)]);
+  }
+  return result;
+}
+
+static void getMmsiProperties(std::shared_ptr<AisTargetData> &pTargetData) {
+  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
+      MmsiProperties *props = g_MMSI_Props_Array[i];
+      pTargetData->b_isFollower = props->m_bFollower;
+      pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
+      if (TRACKTYPE_NEVER == props->TrackType) {
+        pTargetData->b_show_track = false;
+      } else if (TRACKTYPE_ALWAYS == props->TrackType) {
+        pTargetData->b_show_track = true;
+      }
+      break;
+    }
+  }
+}
 
 AisDecoder::AisDecoder(const AisDecoderCallbacks &callbacks)
     : m_signalk_selfid(""), m_callbacks(callbacks) {
@@ -391,7 +501,7 @@ void AisDecoder::InitCommListeners() {
   });
 }
 
-bool AisDecoder::HandleN0183_AIS(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
+bool AisDecoder::HandleN0183_AIS(const N0183MsgPtr &n0183_msg) {
   std::string str = n0183_msg->payload;
   wxString sentence(str.c_str());
   DecodeN0183(sentence);
@@ -399,7 +509,7 @@ bool AisDecoder::HandleN0183_AIS(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   return true;
 }
 
-bool AisDecoder::HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+bool AisDecoder::HandleN2K_129038(const N2000MsgPtr &n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   uint8_t MessageID;
@@ -491,7 +601,7 @@ bool AisDecoder::HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 }
 
 // AIS position reports for Class B
-bool AisDecoder::HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+bool AisDecoder::HandleN2K_129039(const N2000MsgPtr &n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   // Input:
@@ -583,7 +693,7 @@ bool AisDecoder::HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   return true;
 }
 
-bool AisDecoder::HandleN2K_129041(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+bool AisDecoder::HandleN2K_129041(const N2000MsgPtr &n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   tN2kAISAtoNReportData data;
@@ -681,7 +791,7 @@ bool AisDecoder::HandleN2K_129041(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 }
 
 // AIS static data class A
-bool AisDecoder::HandleN2K_129794(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+bool AisDecoder::HandleN2K_129794(const N2000MsgPtr &n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   uint8_t MessageID;
@@ -773,7 +883,7 @@ bool AisDecoder::HandleN2K_129794(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     return false;
 }
 // AIS static data class B part A
-bool AisDecoder::HandleN2K_129809(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+bool AisDecoder::HandleN2K_129809(const N2000MsgPtr &n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   uint8_t MessageID;
@@ -819,7 +929,7 @@ bool AisDecoder::HandleN2K_129809(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 }
 
 // AIS static data class B part B
-bool AisDecoder::HandleN2K_129810(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+bool AisDecoder::HandleN2K_129810(const N2000MsgPtr &n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   uint8_t MessageID;
@@ -876,7 +986,7 @@ bool AisDecoder::HandleN2K_129810(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 }
 
 // AIS Base Station Report
-bool AisDecoder::HandleN2K_129793(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+bool AisDecoder::HandleN2K_129793(const N2000MsgPtr &n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
   uint8_t MessageID;
@@ -938,90 +1048,10 @@ bool AisDecoder::HandleN2K_129793(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 //   return true;
 // }
 
-void AisDecoder::BuildERIShipTypeHash() {
-  make_hash_ERI(8000, _("Vessel, type unknown"));
-  make_hash_ERI(8150, _("Freightbarge"));
-  make_hash_ERI(8160, _("Tankbarge"));
-  make_hash_ERI(8163, _("Tankbarge, dry cargo as if liquid (e.g. cement)"));
-  make_hash_ERI(8450, _("Service vessel, police patrol, port service"));
-  make_hash_ERI(8430, _("Pushboat, single"));
-  make_hash_ERI(8510, _("Object, not otherwise specified"));
-  make_hash_ERI(8470, _("Object, towed, not otherwise specified"));
-  make_hash_ERI(8490, _("Bunkership"));
-  make_hash_ERI(8010, _("Motor freighter"));
-  make_hash_ERI(8020, _("Motor tanker"));
-  make_hash_ERI(8021, _("Motor tanker, liquid cargo, type N"));
-  make_hash_ERI(8022, _("Motor tanker, liquid cargo, type C"));
-  make_hash_ERI(8023, _("Motor tanker, dry cargo as if liquid (e.g. cement)"));
-  make_hash_ERI(8030, _("Container vessel"));
-  make_hash_ERI(8040, _("Gas tanker"));
-  make_hash_ERI(8050, _("Motor freighter, tug"));
-  make_hash_ERI(8060, _("Motor tanker, tug"));
-  make_hash_ERI(8070, _("Motor freighter with one or more ships alongside"));
-  make_hash_ERI(8080, _("Motor freighter with tanker"));
-  make_hash_ERI(8090, _("Motor freighter pushing one or more freighters"));
-  make_hash_ERI(8100, _("Motor freighter pushing at least one tank-ship"));
-  make_hash_ERI(8110, _("Tug, freighter"));
-  make_hash_ERI(8120, _("Tug, tanker"));
-  make_hash_ERI(8130, _("Tug freighter, coupled"));
-  make_hash_ERI(8140, _("Tug, freighter/tanker, coupled"));
-  make_hash_ERI(8161, _("Tankbarge, liquid cargo, type N"));
-  make_hash_ERI(8162, _("Tankbarge, liquid cargo, type C"));
-  make_hash_ERI(8170, _("Freightbarge with containers"));
-  make_hash_ERI(8180, _("Tankbarge, gas"));
-  make_hash_ERI(8210, _("Pushtow, one cargo barge"));
-  make_hash_ERI(8220, _("Pushtow, two cargo barges"));
-  make_hash_ERI(8230, _("Pushtow, three cargo barges"));
-  make_hash_ERI(8240, _("Pushtow, four cargo barges"));
-  make_hash_ERI(8250, _("Pushtow, five cargo barges"));
-  make_hash_ERI(8260, _("Pushtow, six cargo barges"));
-  make_hash_ERI(8270, _("Pushtow, seven cargo barges"));
-  make_hash_ERI(8280, _("Pushtow, eight cargo barges"));
-  make_hash_ERI(8290, _("Pushtow, nine or more barges"));
-  make_hash_ERI(8310, _("Pushtow, one tank/gas barge"));
-  make_hash_ERI(8320,
-                _("Pushtow, two barges at least one tanker or gas barge"));
-  make_hash_ERI(8330,
-                _("Pushtow, three barges at least one tanker or gas barge"));
-  make_hash_ERI(8340,
-                _("Pushtow, four barges at least one tanker or gas barge"));
-  make_hash_ERI(8350,
-                _("Pushtow, five barges at least one tanker or gas barge"));
-  make_hash_ERI(8360,
-                _("Pushtow, six barges at least one tanker or gas barge"));
-  make_hash_ERI(8370,
-                _("Pushtow, seven barges at least one tanker or gas barge"));
-  make_hash_ERI(8380,
-                _("Pushtow, eight barges at least one tanker or gas barge"));
-  make_hash_ERI(
-      8390, _("Pushtow, nine or more barges at least one tanker or gas barge"));
-  make_hash_ERI(8400, _("Tug, single"));
-  make_hash_ERI(8410, _("Tug, one or more tows"));
-  make_hash_ERI(8420, _("Tug, assisting a vessel or linked combination"));
-  make_hash_ERI(8430, _("Pushboat, single"));
-  make_hash_ERI(8440, _("Passenger ship, ferry, cruise ship, red cross ship"));
-  make_hash_ERI(8441, _("Ferry"));
-  make_hash_ERI(8442, _("Red cross ship"));
-  make_hash_ERI(8443, _("Cruise ship"));
-  make_hash_ERI(8444, _("Passenger ship without accommodation"));
-  make_hash_ERI(8460, _("Vessel, work maintenance craft, floating derrick, "
-                        "cable-ship, buoy-ship, dredge"));
-  make_hash_ERI(8480, _("Fishing boat"));
-  make_hash_ERI(8500, _("Barge, tanker, chemical"));
-  make_hash_ERI(1500, _("General cargo Vessel maritime"));
-  make_hash_ERI(1510, _("Unit carrier maritime"));
-  make_hash_ERI(1520, _("Bulk carrier maritime"));
-  make_hash_ERI(1530, _("Tanker"));
-  make_hash_ERI(1540, _("Liquified gas tanker"));
-  make_hash_ERI(1850, _("Pleasure craft, longer than 20 metres"));
-  make_hash_ERI(1900, _("Fast ship"));
-  make_hash_ERI(1910, _("Hydrofoil"));
-}
-
 //----------------------------------------------------------------------------------
 //     Handle events from SignalK
 //----------------------------------------------------------------------------------
-void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
+void AisDecoder::HandleSignalK(const SignalKMsgPtr &sK_msg) {
   rapidjson::Document root;
 
   root.Parse(sK_msg->raw_message);
@@ -1149,7 +1179,7 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   }
 }
 
-void AisDecoder::handleUpdate(std::shared_ptr<AisTargetData> pTargetData,
+void AisDecoder::handleUpdate(const std::shared_ptr<AisTargetData> &pTargetData,
                               bool bnewtarget, const rapidjson::Value &update) {
   wxString sfixtime = "";
 
@@ -1181,7 +1211,7 @@ void AisDecoder::handleUpdate(std::shared_ptr<AisTargetData> pTargetData,
   if (pTargetData->b_show_track) UpdateOneTrack(pTargetData.get());
 }
 
-void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
+void AisDecoder::updateItem(const std::shared_ptr<AisTargetData> &pTargetData,
                             bool bnewtarget, const rapidjson::Value &item,
                             wxString &sfixtime) const {
   if (item.HasMember("path") && item.HasMember("value")) {
@@ -1797,8 +1827,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   } else if (str.Mid(3, 3).IsSameAs(_T("TLL"))) {
     //$--TLL,xx,llll.lll,a,yyyyy.yyy,a,c--c,hhmmss.ss,a,a*hh<CR><LF>
     //"$RATLL,01,5603.370,N,01859.976,E,ALPHA,015200.36,T,*75\r\n"
-    wxString string(str);
-    wxStringTokenizer tkz(string, _T(",*"));
+    wxStringTokenizer tkz(str, ",*");
 
     wxString token;
     token = tkz.GetNextToken();  // 1) Target number 00 - 99
@@ -1864,8 +1893,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
 
   } else if (g_bWplUsePosition && str.Mid(3, 3).IsSameAs(_T("WPL"))) {
     //** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
-    wxString string(str);
-    wxStringTokenizer tkz(string, _T(",*"));
+    wxStringTokenizer tkz(str, ",*");
 
     wxString token;
     token = tkz.GetNextToken();  // Sentence (xxWPL)
@@ -1903,8 +1931,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       // we make sure we are out of the hashes for GPSGate buddies
       // and ARPA by being above 1993*
     } else if (1 == g_WplAction) {  // Create mark
-      RoutePoint *pWP = new RoutePoint(aprs_lat, aprs_lon, wxEmptyString,
-                                       aprs_name_str, wxEmptyString, false);
+      auto *pWP = new RoutePoint(aprs_lat, aprs_lon, wxEmptyString,
+                                 aprs_name_str, wxEmptyString, false);
       pWP->m_bIsolatedMark = true;
       InsertWpt(pWP, true);
     }
@@ -1912,8 +1940,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     // parse a GpsGate Position message            $FRPOS,.....
 
     //  Use a tokenizer to pull out the first 9 fields
-    wxString string(str);
-    wxStringTokenizer tkz(string, _T(",*"));
+    wxStringTokenizer tkz(str, ",*");
 
     wxString token;
     token = tkz.GetNextToken();  // !$FRPOS
@@ -1981,8 +2008,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   //  OK, looks like the sentence is OK
 
   //  Use a tokenizer to pull out the first 4 fields
-  wxString string(str);
-  wxStringTokenizer tkz(string, _T(","));
+  wxStringTokenizer tkz(str, ",");
 
   wxString token;
   token = tkz.GetNextToken();  // !xxVDx
@@ -2313,9 +2339,9 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   return ret;
 }
 
-void AisDecoder::CommitAISTarget(std::shared_ptr<AisTargetData> pTargetData,
-                                 const wxString &str, bool message_valid,
-                                 bool new_target) {
+void AisDecoder::CommitAISTarget(
+    const std::shared_ptr<AisTargetData> &pTargetData, const wxString &str,
+    bool message_valid, bool new_target) {
   m_pLatestTargetData = pTargetData;
 
   if (!str.IsEmpty()) {  // NMEA0183 message
@@ -2432,23 +2458,6 @@ void AisDecoder::getAISTarget(long mmsi,
     pSelectAIS->DeleteSelectablePoint((void *)mmsi, SELTYPE_AISTARGET);
 }
 
-void AisDecoder::getMmsiProperties(
-    std::shared_ptr<AisTargetData> &pTargetData) {
-  for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-    if (pTargetData->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-      MmsiProperties *props = g_MMSI_Props_Array[i];
-      pTargetData->b_isFollower = props->m_bFollower;
-      pTargetData->b_mPropPersistTrack = props->m_bPersistentTrack;
-      if (TRACKTYPE_NEVER == props->TrackType) {
-        pTargetData->b_show_track = false;
-      } else if (TRACKTYPE_ALWAYS == props->TrackType) {
-        pTargetData->b_show_track = true;
-      }
-      break;
-    }
-  }
-}
-
 std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
                                                       bool b_take_dsc) {
   double dsc_lat = 0.;
@@ -2473,8 +2482,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
 
   // parse a DSC Position message            $CDDSx,.....
   //  Use a tokenizer to pull out the first 9 fields
-  wxString string(str);
-  wxStringTokenizer tkz(string, _T(",*"));
+  wxStringTokenizer tkz(str, ",*");
 
   wxString token;
   token = tkz.GetNextToken();  // !$CDDS
@@ -2673,7 +2681,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
         m_ptentative_dsctarget->Lon =
             m_ptentative_dsctarget->Lon +
             ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
-        if (dse_shipName.length() > 0) {
+        if (!dse_shipName.empty() > 0) {
           memset(m_ptentative_dsctarget->ShipName, '\0', SHIP_NAME_LEN);
           snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(),
                    "%s", dse_shipName.ToAscii().data());
@@ -2736,26 +2744,11 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
   return pTargetData;
 }
 
-// DSE Expansion characters, decode table from ITU-R M.825
-wxString AisDecoder::DecodeDSEExpansionCharacters(wxString dseData) {
-  wxString result;
-  char lookupTable[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ',
-                        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-                        'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-                        'W', 'X', 'Y', 'Z', '.', ',', '-', '/', ' '};
-
-  for (size_t i = 0; i < dseData.length(); i += 2) {
-    result.append(1,
-                  lookupTable[strtol(dseData.Mid(i, 2).data(), nullptr, 10)]);
-  }
-  return result;
-}
-
 //----------------------------------------------------------------------------
 //      Parse a NMEA VDM/VDO Bitstring
 //----------------------------------------------------------------------------
-bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
-                                    std::shared_ptr<AisTargetData> ptd) {
+static bool Parse_VDXBitstring(AisBitstring *bstr,
+                               const std::shared_ptr<AisTargetData> &ptd) {
   bool parse_result = false;
   bool b_posn_report = false;
 
@@ -3763,12 +3756,10 @@ void AisDecoder::UpdateAllCPA() {
   }
 }
 
-void AisDecoder::UpdateAllTracks(void) {
-  //    Iterate thru all the targets
+void AisDecoder::UpdateAllTracks() {
   for (const auto &it : GetTargetList()) {
     std::shared_ptr<AisTargetData> td = it.second;
-
-    if (nullptr != td) UpdateOneTrack(td.get());
+    if (td) UpdateOneTrack(td.get());
   }
 }
 
@@ -3776,7 +3767,7 @@ int gdup;
 void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
   if (!ptarget->b_positionOnceValid) return;
   // Reject for unbelievable jumps (corrupted/bad data)
-  if (ptarget->m_ptrack.size() > 0) {
+  if (!ptarget->m_ptrack.empty()) {
     const AISTargetTrackPoint &LastTrackpoint = ptarget->m_ptrack.back();
     if (fabs(LastTrackpoint.m_lat - ptarget->Lat) > .1 ||
         fabs(LastTrackpoint.m_lon - ptarget->Lon) > .1) {
@@ -4056,11 +4047,10 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
     if (ptarget->SOG > 102.2) {
       ptarget->bCPA_Valid = false;
       return;
-    } else if (ptarget->SOG < .01)
-      cpa_calc_target_cog =
-          0.;  // substitute value
-               // for the case where SOG ~= 0, and COG is unknown.
-    else {
+    } else if (ptarget->SOG < .01) {
+      cpa_calc_target_cog = 0.;  // substitute value
+      // for the case where SOG ~= 0, and COG is unknown.
+    } else {
       ptarget->bCPA_Valid = false;
       return;
     }
