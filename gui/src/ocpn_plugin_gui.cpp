@@ -488,9 +488,9 @@ bool UpdateChartDBInplace(wxArrayString dir_array, bool b_force_update,
     cdi.magic_number = _T("");
     ChartDirArray.Add(cdi);
   }
-  bool b_ret = gFrame->UpdateChartDatabaseInplace(ChartDirArray, b_force_update,
-                                                  b_ProgressDialog,
-                                                  ChartData->GetDBFileName());
+  bool b_ret = gFrame->UpdateChartDatabaseInplace(
+      ChartDirArray, b_force_update, b_ProgressDialog, ChartListFileName);
+  gFrame->RefreshGroupIndices();
   gFrame->ChartsRefresh();
   return b_ret;
 }
