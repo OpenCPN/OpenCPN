@@ -50,19 +50,6 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/nmea_log.h"
 
-#ifdef __ANDROID__
-#include "model/comm_drv_n0183_android_bt.h"
-#endif
-
-wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);
-
-wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129025, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
-
 Multiplexer *g_pMUX;
 
 static bool CheckSumCheck(const std::string &sentence) {
@@ -81,6 +68,7 @@ static bool CheckSumCheck(const std::string &sentence) {
 
   return calculated_checksum == checksum;
 }
+
 static std::string N2K_LogMessage_Detail(unsigned int pgn) {
   std::string not_used = "Not used by OCPN, maybe by Plugins";
 
@@ -203,21 +191,20 @@ static std::string N2K_LogMessage_Detail(unsigned int pgn) {
 }
 
 Multiplexer::Multiplexer(const MuxLogCallbacks &cb, bool &filter_behaviour)
+
     : m_log_callbacks(cb),
       m_legacy_input_filter_behaviour(filter_behaviour),
-      last_pgn_logged(0) {
-  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
-                              EVT_N0183_MUX);
-  Bind(EVT_N0183_MUX, [&](const ObservedEvt &ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183(n0183_msg);
-  });
-
-  InitN2KCommListeners();
-  n_N2K_repeat = 0;
-
-  if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = wxT("Generic");
+      m_n0183_all_lstnr(Nmea0183Msg("ALL"),
+                        [&](const ObservedEvt &ev) {
+                          HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+                        }),
+      m_n2k_all_lstnr(Nmea2000Msg(static_cast<uint64_t>(1)),
+                      [&](const ObservedEvt &ev) {
+                        HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
+                      }),
+      m_n2k_repeat_count(0),
+      m_last_pgn_logged(0) {
+  if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = "Generic";
 }
 
 Multiplexer::~Multiplexer() = default;
@@ -324,7 +311,7 @@ void Multiplexer::HandleN0183(
     if (!driver) continue;
     if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params_;
-      auto drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
+      drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
       assert(drv_n0183);
       params_ = drv_n0183->GetParams();
 
@@ -377,19 +364,6 @@ void Multiplexer::HandleN0183(
   }
 }
 
-void Multiplexer::InitN2KCommListeners() {
-  // Create a series of N2K listeners
-  // to allow minimal N2K Debug window logging
-
-  // All N2K
-  //----------------------------------
-  Nmea2000Msg n2k_msg_All(static_cast<uint64_t>(1));
-  listener_N2K_All.Listen(n2k_msg_All, this, EVT_N2K_ALL);
-  Bind(EVT_N2K_ALL, [&](const ObservedEvt &ev) {
-    HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
-}
-
 bool Multiplexer::HandleN2K_Log(
     const std::shared_ptr<const Nmea2000Msg> &n2k_msg) {
   if (!m_log_callbacks.log_is_active()) return false;
@@ -426,16 +400,15 @@ bool Multiplexer::HandleN2K_Log(
     sprintf(ss, "%d", source_id);
     std::string ident = std::string(ss);
 
-    if (pgn == last_pgn_logged) {
-      n_N2K_repeat++;
+    if (pgn == m_last_pgn_logged) {
+      m_n2k_repeat_count++;
       return false;
-    } else {
-      if (n_N2K_repeat) {
-        wxString repeat_log_msg;
-        repeat_log_msg.Printf("...Repeated %d times\n", n_N2K_repeat);
-        // LogInputMessage(repeat_log_msg, "N2000", false, false); FIXME(leamas)
-        n_N2K_repeat = 0;
-      }
+    }
+    if (m_n2k_repeat_count) {
+      wxString repeat_log_msg;
+      repeat_log_msg.Printf("...Repeated %d times\n", m_n2k_repeat_count);
+      // LogInputMessage(repeat_log_msg, "N2000", false, false); FIXME(leamas)
+      m_n2k_repeat_count = 0;
     }
 
     wxString log_msg;
@@ -444,7 +417,7 @@ bool Multiplexer::HandleN2K_Log(
 
     LogInputMessage(n2k_msg, false, false);
 
-    last_pgn_logged = pgn;
+    m_last_pgn_logged = pgn;
   }
   return true;
 }
