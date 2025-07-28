@@ -1,11 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- *
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,6 +16,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * The CommBridge class and helpers.
+ */
 
 #ifndef _COMM_BRIDGE_H
 #define _COMM_BRIDGE_H
@@ -64,6 +63,7 @@ struct BridgeLogCallbacks {
       : log_is_active([]() { return false; }), log_message([](Logline) {}) {}
 };
 
+/** Process incoming messages. */
 class CommBridge : public wxEvtHandler {
 public:
   CommBridge();
