@@ -53,7 +53,7 @@ public:
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
 
-  ConnectionParams GetParams() const { return m_params; }
+  const ConnectionParams& GetParams() const override { return m_params; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
