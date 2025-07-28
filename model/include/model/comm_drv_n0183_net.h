@@ -73,7 +73,7 @@ public:
 
   ~CommDriverN0183Net() override;
 
-  ConnectionParams GetParams() const { return m_params; }
+  const ConnectionParams& GetParams() const override { return m_params; }
 
   const wxSocketBase* GetSock() const { return m_sock; }
 

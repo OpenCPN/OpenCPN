@@ -214,24 +214,9 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     if (!driver) continue;
     if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params;
-      auto drv_serial = dynamic_cast<CommDriverN0183Serial *>(driver.get());
-      if (drv_serial) {
-        params = drv_serial->GetParams();
-      } else {
-        auto drv_net = dynamic_cast<CommDriverN0183Net *>(driver.get());
-        if (drv_net) {
-          params = drv_net->GetParams();
-        }
-#ifdef __ANDROID__
-        else {
-          auto drv_bluetooth =
-              dynamic_cast<CommDriverN0183AndroidBT *>(driver.get());
-          if (drv_bluetooth) {
-            params = drv_bluetooth->GetParams();
-          }
-        }
-#endif
-      }
+      auto drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
+      assert(drv_n0183);
+      params = drv_serial->GetParams();
 
       std::shared_ptr<const Nmea0183Msg> msg = n0183_msg;
       if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
