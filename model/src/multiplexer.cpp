@@ -65,7 +65,7 @@ wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
 
 Multiplexer *g_pMUX;
 
-bool CheckSumCheck(const std::string &sentence) {
+static bool CheckSumCheck(const std::string &sentence) {
   size_t check_start = sentence.find('*');
   if (check_start == wxString::npos || check_start > sentence.size() - 3)
     return false;  // * not found, or it didn't have 2 characters following it.
@@ -279,25 +279,9 @@ void Multiplexer::HandleN0183(
 
   // Get the params for the driver sending this message
   ConnectionParams params;
-  auto drv_serial = dynamic_cast<CommDriverN0183Serial *>(source_driver.get());
-  if (drv_serial) {
-    params = drv_serial->GetParams();
-  } else {
-    auto drv_net = dynamic_cast<CommDriverN0183Net *>(source_driver.get());
-    if (drv_net) {
-      params = drv_net->GetParams();
-    }
-#ifdef __ANDROID__
-    else {
-      auto drv_bluetooth =
-          dynamic_cast<CommDriverN0183AndroidBT *>(source_driver.get());
-
-      if (drv_bluetooth) {
-        params = drv_bluetooth->GetParams();
-      }
-    }
-#endif
-  }
+  auto drv_n0183 = dynamic_cast<CommDriverN0183 *>(source_driver.get());
+  assert(drv_n0183);
+  params = drv_n0183->GetParams();
 
   // Check to see if the message passes the source's input filter
   bpass_input_filter =
@@ -342,7 +326,7 @@ void Multiplexer::HandleN0183(
       ConnectionParams params_;
       auto drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
       assert(drv_n0183);
-      params_ = drv_serial->GetParams();
+      params_ = drv_n0183->GetParams();
 
       std::shared_ptr<const Nmea0183Msg> msg = n0183_msg;
       if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
