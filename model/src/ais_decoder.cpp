@@ -244,6 +244,968 @@ static void getMmsiProperties(std::shared_ptr<AisTargetData> &pTargetData) {
   }
 }
 
+//----------------------------------------------------------------------------
+//      Parse a NMEA VDM/VDO Bitstring
+//----------------------------------------------------------------------------
+static bool Parse_VDXBitstring(AisBitstring *bstr,
+                               const std::shared_ptr<AisTargetData> &ptd) {
+  bool parse_result = false;
+  bool b_posn_report = false;
+
+  wxDateTime now = wxDateTime::Now();
+  now.MakeGMT();
+  int message_ID = bstr->GetInt(1, 6);  // Parse on message ID
+  ptd->MID = message_ID;
+
+  // Save for Ais8_001_31 and ais8_367_33 (class AIS_METEO)
+  int met_mmsi = ptd->MMSI;
+
+  // MMSI is always in the same spot in the bitstream
+  ptd->MMSI = bstr->GetInt(9, 30);
+
+  switch (message_ID) {
+    case 1:  // Position Report
+    case 2:
+    case 3: {
+      n_msg1++;
+
+      ptd->NavStatus = bstr->GetInt(39, 4);
+      ptd->SOG = 0.1 * (bstr->GetInt(51, 10));
+
+      int lon = bstr->GetInt(62, 28);
+      if (lon & 0x08000000)  // negative?
+        lon |= 0xf0000000;
+      double lon_tentative = lon / 600000.;
+
+      int lat = bstr->GetInt(90, 27);
+      if (lat & 0x04000000)  // negative?
+        lat |= 0xf8000000;
+      double lat_tentative = lat / 600000.;
+
+      if ((lon_tentative <= 180.) &&
+          (lat_tentative <=
+           90.))  // Ship does not report Lat or Lon "unavailable"
+      {
+        ptd->Lon = lon_tentative;
+        ptd->Lat = lat_tentative;
+        ptd->b_positionDoubtful = false;
+        ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+        ptd->PositionReportTicks = now.GetTicks();
+      } else
+        ptd->b_positionDoubtful = true;
+
+      //    decode balance of message....
+      ptd->COG = 0.1 * (bstr->GetInt(117, 12));
+      ptd->HDG = 1.0 * (bstr->GetInt(129, 9));
+
+      ptd->ROTAIS = bstr->GetInt(43, 8);
+      double rot_dir = 1.0;
+
+      if (ptd->ROTAIS == 128)
+        ptd->ROTAIS = -128;  // not available codes as -128
+      else if ((ptd->ROTAIS & 0x80) == 0x80) {
+        ptd->ROTAIS = ptd->ROTAIS - 256;  // convert to twos complement
+        rot_dir = -1.0;
+      }
+
+      ptd->ROTIND = wxRound(rot_dir * pow((((double)ptd->ROTAIS) / 4.733),
+                                          2));  // Convert to indicated ROT
+
+      ptd->m_utc_sec = bstr->GetInt(138, 6);
+
+      if ((1 == message_ID) ||
+          (2 == message_ID))  // decode SOTDMA per 7.6.7.2.2
+      {
+        ptd->SyncState = bstr->GetInt(151, 2);
+        ptd->SlotTO = bstr->GetInt(153, 2);
+        if ((ptd->SlotTO == 1) && (ptd->SyncState == 0))  // UTCDirect follows
+        {
+          ptd->m_utc_hour = bstr->GetInt(155, 5);
+
+          ptd->m_utc_min = bstr->GetInt(160, 7);
+
+          if ((ptd->m_utc_hour < 24) && (ptd->m_utc_min < 60) &&
+              (ptd->m_utc_sec < 60)) {
+            wxDateTime rx_time(ptd->m_utc_hour, ptd->m_utc_min, ptd->m_utc_sec);
+            rx_ticks = rx_time.GetTicks();
+            if (!b_firstrx) {
+              first_rx_ticks = rx_ticks;
+              b_firstrx = true;
+            }
+          }
+        }
+      }
+
+      //    Capture Euro Inland special passing arrangement signal ("stbd-stbd")
+      ptd->blue_paddle = bstr->GetInt(144, 2);
+      ptd->b_blue_paddle = (ptd->blue_paddle == 2);  // paddle is set
+
+      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
+
+      //    Check for SART and friends by looking at first two digits of MMSI
+      int mmsi_start = ptd->MMSI / 10000000;
+
+      if (mmsi_start == 97) {
+        ptd->Class = AIS_SART;
+        ptd->StaticReportTicks =
+            now.GetTicks();  // won't get a static report, so fake it here
+
+        //    On receipt of Msg 3, force any existing SART target out of
+        //    acknowledge mode by adjusting its ack_time to yesterday This will
+        //    cause any previously "Acknowledged" SART to re-alert.
+
+        //    On reflection, re-alerting seems a little excessive in real life
+        //    use. After all, the target is on-screen, and in the AIS target
+        //    list. So lets just honor the programmed ACK timout value for SART
+        //    targets as well
+        // ptd->m_ack_time = wxDateTime::Now() - wxTimeSpan::Day();
+      }
+
+      parse_result = true;  // so far so good
+      b_posn_report = true;
+
+      break;
+    }
+
+    case 18: {
+      ptd->NavStatus =
+          UNDEFINED;  // Class B targets have no status.  Enforce this...
+
+      ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
+
+      int lon = bstr->GetInt(58, 28);
+      if (lon & 0x08000000)  // negative?
+        lon |= 0xf0000000;
+      double lon_tentative = lon / 600000.;
+
+      int lat = bstr->GetInt(86, 27);
+      if (lat & 0x04000000)  // negative?
+        lat |= 0xf8000000;
+      double lat_tentative = lat / 600000.;
+
+      if ((lon_tentative <= 180.) &&
+          (lat_tentative <=
+           90.))  // Ship does not report Lat or Lon "unavailable"
+      {
+        ptd->Lon = lon_tentative;
+        ptd->Lat = lat_tentative;
+        ptd->b_positionDoubtful = false;
+        ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+        ptd->PositionReportTicks = now.GetTicks();
+      } else
+        ptd->b_positionDoubtful = true;
+
+      ptd->COG = 0.1 * (bstr->GetInt(113, 12));
+      ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
+
+      ptd->m_utc_sec = bstr->GetInt(134, 6);
+
+      if (!ptd->b_isDSCtarget) {
+        if (!isBuoyMmsi(ptd->MMSI))
+          ptd->Class = AIS_CLASS_B;
+        else
+          ptd->Class = AIS_BUOY;
+      }
+      parse_result = true;  // so far so good
+      b_posn_report = true;
+
+      break;
+    }
+
+    case 19: {  // Class B mes_ID 19 Is same as mes_ID 18 until bit 139
+      ptd->NavStatus =
+          UNDEFINED;  // Class B targets have no status.  Enforce this...
+      ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
+      int lon = bstr->GetInt(58, 28);
+      if (lon & 0x08000000)  // negative?
+        lon |= 0xf0000000;
+      double lon_tentative = lon / 600000.;
+
+      int lat = bstr->GetInt(86, 27);
+      if (lat & 0x04000000)  // negative?
+        lat |= 0xf8000000;
+      double lat_tentative = lat / 600000.;
+
+      if ((lon_tentative <= 180.) &&
+          (lat_tentative <=
+           90.))  // Ship does not report Lat or Lon "unavailable"
+      {
+        ptd->Lon = lon_tentative;
+        ptd->Lat = lat_tentative;
+        ptd->b_positionDoubtful = false;
+        ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+        ptd->PositionReportTicks = now.GetTicks();
+      } else
+        ptd->b_positionDoubtful = true;
+
+      ptd->COG = 0.1 * (bstr->GetInt(113, 12));
+      ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
+      ptd->m_utc_sec = bstr->GetInt(134, 6);
+      // From bit 140 and forward data as of mes 5
+      bstr->GetStr(144, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
+      ptd->b_nameValid = true;
+      if (!ptd->b_isDSCtarget) {
+        ptd->ShipType = (unsigned char)bstr->GetInt(264, 8);
+      }
+      ptd->DimA = bstr->GetInt(272, 9);
+      ptd->DimB = bstr->GetInt(281, 9);
+      ptd->DimC = bstr->GetInt(290, 6);
+      ptd->DimD = bstr->GetInt(296, 6);
+
+      if (!ptd->b_isDSCtarget) {
+        // Although outdated, message 19 is used by many "ATON" for net buoys
+        if (!isBuoyMmsi(ptd->MMSI))
+          ptd->Class = AIS_CLASS_B;
+        else
+          ptd->Class = AIS_BUOY;
+      }
+      parse_result = true;  // so far so good
+      b_posn_report = true;
+
+      break;
+    }
+
+    case 27: {
+      // Long-range automatic identification system broadcast message
+      // This message is used for long-range detection of AIS Class A and Class
+      // B vessels (typically by satellite).
+
+      // Define the constant to do the covertion from the internal encoded
+      // position in message 27. The position is less accuate :  1/10 minute
+      // position resolution.
+      int bitCorrection = 10;
+      int resolution = 10;
+
+      // Default aout of bounce values.
+      double lon_tentative = 181.;
+      double lat_tentative = 91.;
+
+#ifdef AIS_DEBUG
+      printf("AIS Message 27 - received:\r\n");
+      printf("MMSI      : %i\r\n", ptd->MMSI);
+#endif
+
+      // It can be both a CLASS A and a CLASS B vessel - We have decided for
+      // CLASS A
+      // TODO: Lookup to see if we have seen it as a CLASS B, and adjust.
+      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
+
+      ptd->NavStatus = bstr->GetInt(39, 4);
+
+      int lon = bstr->GetInt(45, 18);
+      int lat = bstr->GetInt(63, 17);
+
+      lat_tentative = lat;
+      lon_tentative = lon;
+
+      // Negative latitude?
+      if (lat >= (0x4000000 >> bitCorrection)) {
+        lat_tentative = (0x8000000 >> bitCorrection) - lat;
+        lat_tentative *= -1;
+      }
+
+      // Negative longitude?
+      if (lon >= (0x8000000 >> bitCorrection)) {
+        lon_tentative = (0x10000000 >> bitCorrection) - lon;
+        lon_tentative *= -1;
+      }
+
+      // Decode the internal position format.
+      lat_tentative = lat_tentative / resolution / 60.0;
+      lon_tentative = lon_tentative / resolution / 60.0;
+
+#ifdef AIS_DEBUG
+      printf("Latitude  : %f\r\n", lat_tentative);
+      printf("Longitude : %f\r\n", lon_tentative);
+#endif
+
+      // Get the latency of the position report.
+      int positionLatency = bstr->GetInt(95, 1);
+
+      if ((lon_tentative <= 180.) &&
+          (lat_tentative <=
+           90.))  // Ship does not report Lat or Lon "unavailable"
+      {
+        ptd->Lon = lon_tentative;
+        ptd->Lat = lat_tentative;
+        ptd->b_positionDoubtful = false;
+        ptd->b_positionOnceValid = true;  // Got the position at least once
+        if (positionLatency == 0) {
+// The position is less than 5 seconds old.
+#ifdef AIS_DEBUG
+          printf("Low latency position report.\r\n");
+#endif
+          ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+          ptd->PositionReportTicks = now.GetTicks();
+        }
+      } else
+        ptd->b_positionDoubtful = true;
+
+      ptd->SOG = 1.0 * (bstr->GetInt(80, 6));
+      ptd->COG = 1.0 * (bstr->GetInt(85, 9));
+
+      b_posn_report = true;
+      parse_result = true;
+      break;
+    }
+
+    case 5: {
+      n_msg5++;
+      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
+
+      //          Get the AIS Version indicator
+      //          0 = station compliant with Recommendation ITU-R M.1371-1
+      //          1 = station compliant with Recommendation ITU-R M.1371-3
+      //          2-3 = station compliant with future editions
+      int AIS_version_indicator = bstr->GetInt(39, 2);
+      if (AIS_version_indicator < 4) {
+        ptd->IMO = bstr->GetInt(41, 30);
+
+        bstr->GetStr(71, 42, &ptd->CallSign[0], 7);
+        bstr->GetStr(113, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
+        ptd->b_nameValid = true;
+        if (!ptd->b_isDSCtarget) {
+          ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
+        }
+
+        ptd->DimA = bstr->GetInt(241, 9);
+        ptd->DimB = bstr->GetInt(250, 9);
+        ptd->DimC = bstr->GetInt(259, 6);
+        ptd->DimD = bstr->GetInt(265, 6);
+
+        ptd->ETA_Mo = bstr->GetInt(275, 4);
+        ptd->ETA_Day = bstr->GetInt(279, 5);
+        ptd->ETA_Hr = bstr->GetInt(284, 5);
+        ptd->ETA_Min = bstr->GetInt(289, 6);
+
+        ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
+
+        bstr->GetStr(303, 120, &ptd->Destination[0], DESTINATION_LEN - 1);
+
+        ptd->StaticReportTicks = now.GetTicks();
+
+        parse_result = true;
+      }
+
+      break;
+    }
+
+    case 24: {  // Static data report
+      int part_number = bstr->GetInt(39, 2);
+      if (0 == part_number) {
+        bstr->GetStr(41, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
+        ptd->b_nameValid = true;
+        parse_result = true;
+        n_msg24++;
+      } else if (1 == part_number) {
+        if (!ptd->b_isDSCtarget) {
+          ptd->ShipType = (unsigned char)bstr->GetInt(41, 8);
+        }
+        bstr->GetStr(91, 42, &ptd->CallSign[0], 7);
+
+        ptd->DimA = bstr->GetInt(133, 9);
+        ptd->DimB = bstr->GetInt(142, 9);
+        ptd->DimC = bstr->GetInt(151, 6);
+        ptd->DimD = bstr->GetInt(157, 6);
+        parse_result = true;
+      }
+      break;
+    }
+    case 4:  // base station
+    {
+      ptd->Class = AIS_BASE;
+
+      ptd->m_utc_hour = bstr->GetInt(62, 5);
+      ptd->m_utc_min = bstr->GetInt(67, 6);
+      ptd->m_utc_sec = bstr->GetInt(73, 6);
+      //                              (79,  1);
+      int lon = bstr->GetInt(80, 28);
+      if (lon & 0x08000000)  // negative?
+        lon |= 0xf0000000;
+      double lon_tentative = lon / 600000.;
+
+      int lat = bstr->GetInt(108, 27);
+      if (lat & 0x04000000)  // negative?
+        lat |= 0xf8000000;
+      double lat_tentative = lat / 600000.;
+
+      if ((lon_tentative <= 180.) &&
+          (lat_tentative <=
+           90.))  // Ship does not report Lat or Lon "unavailable"
+      {
+        ptd->Lon = lon_tentative;
+        ptd->Lat = lat_tentative;
+        ptd->b_positionDoubtful = false;
+        ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+        ptd->PositionReportTicks = now.GetTicks();
+      } else
+        ptd->b_positionDoubtful = true;
+
+      ptd->COG = -1.;
+      ptd->HDG = 511;
+      ptd->SOG = -1.;
+
+      parse_result = true;
+      b_posn_report = true;
+
+      break;
+    }
+    case 9:  // Special Position Report (Standard SAR Aircraft Position Report)
+    {
+      ptd->SOG = bstr->GetInt(51, 10);
+
+      int lon = bstr->GetInt(62, 28);
+      if (lon & 0x08000000)  // negative?
+        lon |= 0xf0000000;
+      double lon_tentative = lon / 600000.;
+
+      int lat = bstr->GetInt(90, 27);
+      if (lat & 0x04000000)  // negative?
+        lat |= 0xf8000000;
+      double lat_tentative = lat / 600000.;
+
+      if ((lon_tentative <= 180.) &&
+          (lat_tentative <=
+           90.))  // Ship does not report Lat or Lon "unavailable"
+      {
+        ptd->Lon = lon_tentative;
+        ptd->Lat = lat_tentative;
+        ptd->b_positionDoubtful = false;
+        ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+        ptd->PositionReportTicks = now.GetTicks();
+      } else
+        ptd->b_positionDoubtful = true;
+
+      //    decode balance of message....
+      ptd->COG = 0.1 * (bstr->GetInt(117, 12));
+
+      int alt_tent = bstr->GetInt(39, 12);
+      ptd->altitude = alt_tent;
+
+      ptd->b_SarAircraftPosnReport = true;
+
+      parse_result = true;
+      b_posn_report = true;
+
+      break;
+    }
+    case 21:  // Test Message (Aid to Navigation)
+    {
+      ptd->ShipType = (unsigned char)bstr->GetInt(39, 5);
+      ptd->IMO = 0;
+      ptd->SOG = 0;
+      ptd->HDG = 0;
+      ptd->COG = 0;
+      ptd->ROTAIS = -128;  // i.e. not available
+      ptd->DimA = bstr->GetInt(220, 9);
+      ptd->DimB = bstr->GetInt(229, 9);
+      ptd->DimC = bstr->GetInt(238, 6);
+      ptd->DimD = bstr->GetInt(244, 6);
+      ptd->Draft = 0;
+
+      ptd->m_utc_sec = bstr->GetInt(254, 6);
+
+      int offpos = bstr->GetInt(260, 1);  // off position flag
+      int virt = bstr->GetInt(270, 1);    // virtual flag
+
+      if (virt)
+        ptd->NavStatus = ATON_VIRTUAL;
+      else
+        ptd->NavStatus = ATON_REAL;
+      if (ptd->m_utc_sec <= 59 /*&& !virt*/) {
+        ptd->NavStatus += 1;
+        if (offpos) ptd->NavStatus += 1;
+      }
+
+      bstr->GetStr(44, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
+      // short name only, extension wont fit in Ship structure
+
+      if (bstr->GetBitCount() > 276) {
+        int nx = ((bstr->GetBitCount() - 272) / 6) * 6;
+        bstr->GetStr(273, nx, &ptd->ShipNameExtension[0], 14);
+        ptd->ShipNameExtension[14] = 0;
+      } else {
+        ptd->ShipNameExtension[0] = 0;
+      }
+
+      ptd->b_nameValid = true;
+
+      parse_result = true;  // so far so good
+
+      ptd->Class = AIS_ATON;
+
+      int lon = bstr->GetInt(165, 28);
+
+      if (lon & 0x08000000)  // negative?
+        lon |= 0xf0000000;
+      double lon_tentative = lon / 600000.;
+
+      int lat = bstr->GetInt(193, 27);
+
+      if (lat & 0x04000000)  // negative?
+        lat |= 0xf8000000;
+      double lat_tentative = lat / 600000.;
+
+      if ((lon_tentative <= 180.) &&
+          (lat_tentative <=
+           90.))  // Ship does not report Lat or Lon "unavailable"
+      {
+        ptd->Lon = lon_tentative;
+        ptd->Lat = lat_tentative;
+        ptd->b_positionDoubtful = false;
+        ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+        ptd->PositionReportTicks = now.GetTicks();
+      } else
+        ptd->b_positionDoubtful = true;
+
+      b_posn_report = true;
+      break;
+    }
+    case 8:  // Binary Broadcast
+    {
+      int dac = bstr->GetInt(41, 10);
+      int fi = bstr->GetInt(51, 6);
+
+      if (dac == 200)  // European inland
+      {
+        if (fi == 10)  // "Inland ship static and voyage related data"
+        {
+          ptd->b_isEuroInland = true;
+
+          bstr->GetStr(57, 48, &ptd->Euro_VIN[0], 8);
+          ptd->Euro_Length = ((double)bstr->GetInt(105, 13)) / 10.0;
+          ptd->Euro_Beam = ((double)bstr->GetInt(118, 10)) / 10.0;
+          ptd->UN_shiptype = bstr->GetInt(128, 14);
+          ptd->Euro_Draft = ((double)bstr->GetInt(145, 11)) / 100.0;
+          parse_result = true;
+        }
+      }
+      if (dac == 1 || dac == 366)  // IMO or US
+      {
+        if (fi == 22)  // Area Notice
+        {
+          if (bstr->GetBitCount() >= 111) {
+            Ais8_001_22 an;
+            an.link_id = bstr->GetInt(57, 10);
+            an.notice_type = bstr->GetInt(67, 7);
+            an.month = bstr->GetInt(74, 4);
+            an.day = bstr->GetInt(78, 5);
+            an.hour = bstr->GetInt(83, 5);
+            an.minute = bstr->GetInt(88, 6);
+            an.duration_minutes = bstr->GetInt(94, 18);
+
+            wxDateTime now_ = wxDateTime::Now();
+            now_.MakeGMT();
+
+            an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
+                              now_.GetYear(), an.hour, an.minute);
+
+            // msg is not supposed to be transmitted more than a day before it
+            // comes into effect, so a start_time less than a day or two away
+            // might indicate a month rollover
+            if (an.start_time > now_ + wxTimeSpan::Hours(48))
+              an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
+                                now_.GetYear() - 1, an.hour, an.minute);
+
+            an.expiry_time =
+                an.start_time + wxTimeSpan::Minutes(an.duration_minutes);
+
+            // msg is not supposed to be transmitted beyond expiration, so
+            // taking into account a fudge factor for clock issues, assume an
+            // expiry date in the past indicates incorrect year
+            if (an.expiry_time < now_ - wxTimeSpan::Hours(24)) {
+              an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
+                                now_.GetYear() + 1, an.hour, an.minute);
+              an.expiry_time =
+                  an.start_time + wxTimeSpan::Minutes(an.duration_minutes);
+            }
+
+            // Default case, the IMO format
+            // https://www.e-navigation.nl/content/area-notice-0
+            int subarea_len = 87;
+            int lon_len = 25;
+            int lat_len = 24;
+            float pos_scale = 60000.0;
+            int prec_size = 3;
+            if (dac ==
+                366) {  // Deprecated US format
+                        // https://www.e-navigation.nl/content/area-notice-1
+              subarea_len = 90;
+              lon_len = 28;
+              lat_len = 27;
+              pos_scale = 600000.0;
+              prec_size = 0;  // Not present in the in US format between
+                              // coordinates and radius for some shapes
+            }
+
+            int subarea_count = (bstr->GetBitCount() - 111) / subarea_len;
+            for (int i = 0; i < subarea_count; ++i) {
+              int base = 111 + i * subarea_len;
+              Ais8_001_22_SubArea sa;
+              sa.shape = bstr->GetInt(base + 1, 3);
+              int scale_factor = 1;
+              if (sa.shape == AIS8_001_22_SHAPE_TEXT) {
+                char t[15];
+                t[14] = 0;
+                bstr->GetStr(base + 4, subarea_len - 3, t, 14);
+                sa.text = wxString(t, wxConvUTF8);
+              } else {
+                int scale_multipliers[4] = {1, 10, 100, 1000};
+                scale_factor = scale_multipliers[bstr->GetInt(base + 4, 2)];
+                switch (sa.shape) {
+                  case AIS8_001_22_SHAPE_SECTOR:
+                    sa.left_bound_deg = bstr->GetInt(
+                        base + 6 + lon_len + lat_len + prec_size + 12, 9);
+                    sa.right_bound_deg = bstr->GetInt(
+                        base + 6 + lon_len + lat_len + prec_size + 12 + 9, 9);
+                  case AIS8_001_22_SHAPE_CIRCLE:
+                    sa.radius_m =
+                        bstr->GetInt(base + 6 + lon_len + lat_len + 3, 12) *
+                        scale_factor;
+                    // FALL THROUGH
+                  case AIS8_001_22_SHAPE_RECT:
+                    sa.longitude =
+                        bstr->GetInt(base + 6, lon_len, true) / pos_scale;
+                    sa.latitude =
+                        bstr->GetInt(base + 6 + lon_len, lat_len, true) /
+                        pos_scale;
+                    sa.e_dim_m =
+                        bstr->GetInt(base + 6 + lon_len + lat_len + prec_size,
+                                     8) *
+                        scale_factor;
+                    sa.n_dim_m =
+                        bstr->GetInt(
+                            base + 6 + lon_len + lat_len + prec_size + 8, 8) *
+                        scale_factor;
+                    sa.orient_deg = bstr->GetInt(
+                        base + 6 + lon_len + lat_len + prec_size + 8 + 8, 9);
+                    break;
+                  case AIS8_001_22_SHAPE_POLYLINE:
+                  case AIS8_001_22_SHAPE_POLYGON:
+                    for (int j = 0; j < 4; ++j) {
+                      sa.angles[j] = bstr->GetInt(base + 6 + j * 20, 10) * 0.5;
+                      sa.dists_m[j] =
+                          bstr->GetInt(base + 16 + j * 20, 10) * scale_factor;
+                    }
+                }
+              }
+              an.sub_areas.push_back(sa);
+            }
+            ptd->area_notices[an.link_id] = an;
+            parse_result = true;
+          }
+        }
+
+        // Meteorological and Hydrographic data ref: IMO SN.1/Circ.289
+        if (fi == 31) {
+          if (bstr->GetBitCount() >= 360) {
+            // Ais8_001_31  mmsi can have been changed.
+            if (met_mmsi != 666) ptd->MMSI = met_mmsi;
+
+            // Default out of bounce values.
+            double lon_tentative = 181.;
+            double lat_tentative = 91.;
+
+            int lon = bstr->GetInt(57, 25);
+            int lat = bstr->GetInt(82, 24);
+
+            if (lon & 0x01000000)  // negative?
+              lon |= 0xFE000000;
+            lon_tentative = lon / 60000.;
+
+            if (lat & 0x00800000)  // negative?
+              lat |= 0xFF000000;
+            lat_tentative = lat / 60000.;
+
+            ptd->Lon = lon_tentative;
+            ptd->Lat = lat_tentative;
+
+            // Try to make unique name for each station based on position
+            wxString x = ptd->ShipName;
+            if (x.Find("METEO") == wxNOT_FOUND) {
+              double id1, id2;
+              wxString slat = wxString::Format("%0.3f", lat_tentative);
+              wxString slon = wxString::Format("%0.3f", lon_tentative);
+              slat.ToDouble(&id1);
+              slon.ToDouble(&id2);
+              wxString nameID = "METEO ";
+              nameID << wxString::Format("%0.3f", abs(id1) + abs(id2)).Right(3);
+              strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
+            }
+
+            ptd->met_data.pos_acc = bstr->GetInt(106, 1);
+            ptd->met_data.day = bstr->GetInt(107, 5);
+            ptd->met_data.hour = bstr->GetInt(112, 5);
+            ptd->met_data.minute = bstr->GetInt(117, 6);
+            ptd->met_data.wind_kn = bstr->GetInt(123, 7);
+            ptd->met_data.wind_gust_kn = bstr->GetInt(130, 7);
+            ptd->met_data.wind_dir = bstr->GetInt(137, 9);
+            ptd->met_data.wind_gust_dir = bstr->GetInt(146, 9);
+
+            int tmp = bstr->GetInt(155, 11);
+            if (tmp & 0x00000400)  // negative?
+              tmp |= 0xFFFFF800;
+            ptd->met_data.air_temp = tmp / 10.;
+            ptd->met_data.rel_humid = bstr->GetInt(166, 7);
+            int dew = bstr->GetInt(173, 10);
+            if (dew & 0x00000200)  // negative? (bit 9 = 1)
+              dew |= 0xFFFFFC00;
+            ptd->met_data.dew_point = dew / 10.;
+
+            /*Air pressure, defined as pressure reduced to sea level,
+              in 1 hPa steps.0 = pressure 799 hPa or less
+              1 - 401 = 800 - 1200 hPa*/
+            ptd->met_data.airpress = bstr->GetInt(183, 9) + 799;
+            ptd->met_data.airpress_tend = bstr->GetInt(192, 2);
+
+            int horVis = bstr->GetInt(194, 8);
+            if (horVis & 0x80u) {  // if MSB = 1
+              horVis &= 0x7F;      // We print >x.x
+              ptd->met_data.hor_vis_GT = true;
+            } else
+              ptd->met_data.hor_vis_GT = false;
+
+            ptd->met_data.hor_vis = horVis / 10.0;
+
+            ptd->met_data.water_lev_dev = (bstr->GetInt(202, 12) / 100.) - 10.;
+            ptd->met_data.water_lev_trend = bstr->GetInt(214, 2);
+            ptd->met_data.current = bstr->GetInt(216, 8) / 10.;
+            ptd->met_data.curr_dir = bstr->GetInt(224, 9);
+            ptd->met_data.wave_height = bstr->GetInt(277, 8) / 10.;
+            ptd->met_data.wave_period = bstr->GetInt(285, 6);
+            ptd->met_data.wave_dir = bstr->GetInt(291, 9);
+            ptd->met_data.swell_height = bstr->GetInt(300, 8) / 10;
+            ptd->met_data.swell_per = bstr->GetInt(308, 6);
+            ptd->met_data.swell_dir = bstr->GetInt(314, 9);
+            ptd->met_data.seastate = bstr->GetInt(323, 4);
+
+            int wt = bstr->GetInt(327, 10);
+            if (wt & 0x00000200)  // negative? (bit 9 = 1)
+              wt |= 0xFFFFFC00;
+            ptd->met_data.water_temp = wt / 10.;
+
+            ptd->met_data.precipitation = bstr->GetInt(337, 3);
+            ptd->met_data.salinity = bstr->GetInt(340, 9) / 10.;
+            ptd->met_data.ice = bstr->GetInt(349, 2);
+
+            ptd->Class = AIS_METEO;
+            ptd->COG = -1.;
+            ptd->HDG = 511;
+            ptd->SOG = -1.;
+            ptd->b_NoTrack = true;
+            ptd->b_show_track = false;
+            ptd->b_positionDoubtful = false;
+            ptd->b_positionOnceValid = true;
+            b_posn_report = true;
+            ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+            ptd->PositionReportTicks = now.GetTicks();
+            ptd->b_nameValid = true;
+
+            parse_result = true;
+          }
+        }
+        break;
+      }
+
+      if (dac == 367 && fi == 33) {  //  ais8_367_33
+        // US data acording to DAC367_FI33_em_version_release_3-23mar15_0
+        // We use only the same kind of data as of ais8_001_31 from these
+        // reports.
+        const int size = bstr->GetBitCount();
+        if (size >= 168) {
+          //  Change to meteo mmsi-ID
+          if (met_mmsi != 666) ptd->MMSI = met_mmsi;
+          const int startbits = 56;
+          const int slotsize = 112;
+          const int slots_count = (size - startbits) / slotsize;
+          int slotbit;
+          for (int slot = 0; slot < slots_count; slot++) {
+            slotbit = slot * slotsize;
+            int type = bstr->GetInt(slotbit + 57, 4);
+            ptd->met_data.hour = bstr->GetInt(slotbit + 66, 5);
+            ptd->met_data.minute = bstr->GetInt(slotbit + 71, 6);
+            int Site_ID = bstr->GetInt(slotbit + 77, 7);
+
+            // Name the station acc to site ID until message type 1
+            if (!ptd->b_nameValid) {
+              wxString nameID = "METEO Site: ";
+              nameID << Site_ID;
+              strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
+              ptd->b_nameValid = true;
+            }
+
+            if (type == 0) {  // Location
+              int lon = bstr->GetInt(slotbit + 90, 28);
+              if (lon & 0x08000000)  // negative?
+                lon |= 0xf0000000;
+              ptd->Lon = lon / 600000.;
+
+              int lat = bstr->GetInt(slotbit + 118, 27);
+              if (lat & 0x04000000)  // negative?
+                lat |= 0xf8000000;
+              ptd->Lat = lat / 600000.;
+              ptd->b_positionOnceValid = true;
+
+            } else if (type == 1) {  // Name
+              bstr->GetStr(slotbit + 84, 84, &ptd->ShipName[0], SHIP_NAME_LEN);
+              ptd->b_nameValid = true;
+
+            } else if (type == 2) {  // Wind
+              // Description 1 and 2 are real time values.
+              int descr = bstr->GetInt(slotbit + 116, 3);
+              if (descr == 1 || descr == 2) {
+                ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
+                ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
+                ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
+                ptd->met_data.wind_gust_dir = bstr->GetInt(slotbit + 107, 9);
+              }
+
+            } else if (type == 3) {  // Water level
+              // Description 1 and 2 are real time values.
+              int descr = bstr->GetInt(slotbit + 108, 3);
+              if (descr == 1 || descr == 2) {
+                int wltype = bstr->GetInt(slotbit + 84, 1);
+                int wl = bstr->GetInt(slotbit + 85, 16);  // cm
+                if (wl & 0x00004000)                      // negative?
+                  wl |= 0xffff0000;
+
+                if (wltype == 1)  // 0 = deviation from datum; 1 = water depth
+                  ptd->met_data.water_level = wl / 100.;  // m
+                else
+                  ptd->met_data.water_lev_dev = wl / 100.;  // m
+              }
+              ptd->met_data.water_lev_trend = bstr->GetInt(slotbit + 101, 2);
+              ptd->met_data.vertical_ref = bstr->GetInt(slotbit + 103, 5);
+
+            } else if (type == 6) {  //  Horizontal Current Profil
+              ptd->met_data.current = bstr->GetInt(slotbit + 102, 8) / 10.0;
+              ptd->met_data.curr_dir = bstr->GetInt(slotbit + 110, 9);
+            } else if (type == 7) {  // Sea state
+              int swell_descr =
+                  bstr->GetInt(slotbit + 111, 3);  // Use 1 || 2 real data
+              if (swell_descr == 1 || swell_descr == 2) {
+                ptd->met_data.swell_height =
+                    bstr->GetInt(slotbit + 84, 8) / 10.0;
+                ptd->met_data.swell_per = bstr->GetInt(slotbit + 92, 6);
+                ptd->met_data.swell_dir = bstr->GetInt(slotbit + 98, 9);
+              }
+              ptd->met_data.seastate = bstr->GetInt(slotbit + 107, 4);  // Bf
+              int wt_descr = bstr->GetInt(slotbit + 131, 3);
+              if (wt_descr == 1 || wt_descr == 2)
+                ptd->met_data.water_temp =
+                    bstr->GetInt(slotbit + 114, 10) / 10. - 10.;
+
+              int wawe_descr = bstr->GetInt(slotbit + 157, 3);
+              if (wawe_descr == 1 || wawe_descr == 2) {  // Only real data
+                ptd->met_data.wave_height =
+                    bstr->GetInt(slotbit + 134, 8) / 10.0;
+                ptd->met_data.wave_period = bstr->GetInt(slotbit + 142, 6);
+                ptd->met_data.wave_dir = bstr->GetInt(slotbit + 148, 9);
+              }
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 160, 9 / 10.0);
+
+            } else if (type == 8) {  // Salinity
+              ptd->met_data.water_temp =
+                  bstr->GetInt(slotbit + 84, 10) / 10.0 - 10.0;
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 120, 9) / 10.0;
+
+            } else if (type == 9) {  // Weather
+              int tmp = bstr->GetInt(slotbit + 84, 11);
+              if (tmp & 0x00000400)  // negative?
+                tmp |= 0xFFFFF800;
+              ptd->met_data.air_temp = tmp / 10.;
+              int pp, precip = bstr->GetInt(slotbit + 98, 2);
+              switch (precip) {  // Adapt to IMO precipitation
+                case 0:
+                  pp = 1;
+                case 1:
+                  pp = 5;
+                case 2:
+                  pp = 4;
+                case 3:
+                  pp = 7;
+              }
+              ptd->met_data.precipitation = pp;
+              ptd->met_data.hor_vis = bstr->GetInt(slotbit + 100, 8) / 10.0;
+              ptd->met_data.dew_point =
+                  bstr->GetInt(slotbit + 108, 10) / 10.0 - 20.0;
+              ptd->met_data.airpress = bstr->GetInt(slotbit + 121, 9) + 799;
+              ptd->met_data.airpress_tend = bstr->GetInt(slotbit + 130, 2);
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 135, 9) / 10.0;
+
+            } else if (type == 11) {  // Wind V2
+              // Description 1 and 2 are real time values.
+              int descr = bstr->GetInt(slotbit + 113, 3);
+              if (descr == 1 || descr == 2) {
+                ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
+                ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
+                ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
+              }
+            }
+          }
+
+          if (ptd->b_positionOnceValid) {
+            ptd->Class = AIS_METEO;
+            ptd->COG = -1.;
+            ptd->HDG = 511;
+            ptd->SOG = -1.;
+            ptd->b_NoTrack = true;
+            ptd->b_show_track = false;
+            ptd->b_positionDoubtful = false;
+            b_posn_report = true;
+            ptd->LastPositionReportTicks = ptd->PositionReportTicks;
+            ptd->PositionReportTicks = now.GetTicks();
+            ptd->b_nameValid = true;
+
+            parse_result = true;
+          }
+        }
+        break;
+      }
+      break;
+    }
+    case 14:  // Safety Related Broadcast
+    {
+      //  Always capture the MSG_14 text
+      char msg_14_text[968];
+      if (bstr->GetBitCount() > 40) {
+        int nx = ((bstr->GetBitCount() - 40) / 6) * 6;
+        int nd = bstr->GetStr(41, nx, msg_14_text, 968);
+        nd = wxMax(0, nd);
+        nd = wxMin(nd, 967);
+        msg_14_text[nd] = 0;
+        ptd->MSG_14_text = wxString(msg_14_text, wxConvUTF8);
+      }
+      parse_result = true;  // so far so good
+
+      break;
+    }
+
+    case 6:  // Addressed Binary Message
+      [[fallthrough]];
+    case 7:  // Binary Ack
+      [[fallthrough]];
+    default:
+      break;
+  }
+
+  if (b_posn_report) ptd->b_lost = false;
+
+  if (true == parse_result) {
+    //      Revalidate the target under some conditions
+    if (!ptd->b_active && !ptd->b_positionDoubtful && b_posn_report)
+      ptd->b_active = true;
+  }
+
+  return parse_result;
+}
+
 AisDecoder::AisDecoder(const AisDecoderCallbacks &callbacks)
     : m_signalk_selfid(""), m_callbacks(callbacks) {
   // Load cached AIS target names from a file
@@ -2742,968 +3704,6 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
   }
 
   return pTargetData;
-}
-
-//----------------------------------------------------------------------------
-//      Parse a NMEA VDM/VDO Bitstring
-//----------------------------------------------------------------------------
-static bool Parse_VDXBitstring(AisBitstring *bstr,
-                               const std::shared_ptr<AisTargetData> &ptd) {
-  bool parse_result = false;
-  bool b_posn_report = false;
-
-  wxDateTime now = wxDateTime::Now();
-  now.MakeGMT();
-  int message_ID = bstr->GetInt(1, 6);  // Parse on message ID
-  ptd->MID = message_ID;
-
-  // Save for Ais8_001_31 and ais8_367_33 (class AIS_METEO)
-  int met_mmsi = ptd->MMSI;
-
-  // MMSI is always in the same spot in the bitstream
-  ptd->MMSI = bstr->GetInt(9, 30);
-
-  switch (message_ID) {
-    case 1:  // Position Report
-    case 2:
-    case 3: {
-      n_msg1++;
-
-      ptd->NavStatus = bstr->GetInt(39, 4);
-      ptd->SOG = 0.1 * (bstr->GetInt(51, 10));
-
-      int lon = bstr->GetInt(62, 28);
-      if (lon & 0x08000000)  // negative?
-        lon |= 0xf0000000;
-      double lon_tentative = lon / 600000.;
-
-      int lat = bstr->GetInt(90, 27);
-      if (lat & 0x04000000)  // negative?
-        lat |= 0xf8000000;
-      double lat_tentative = lat / 600000.;
-
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
-      {
-        ptd->Lon = lon_tentative;
-        ptd->Lat = lat_tentative;
-        ptd->b_positionDoubtful = false;
-        ptd->b_positionOnceValid = true;  // Got the position at least once
-        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-        ptd->PositionReportTicks = now.GetTicks();
-      } else
-        ptd->b_positionDoubtful = true;
-
-      //    decode balance of message....
-      ptd->COG = 0.1 * (bstr->GetInt(117, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(129, 9));
-
-      ptd->ROTAIS = bstr->GetInt(43, 8);
-      double rot_dir = 1.0;
-
-      if (ptd->ROTAIS == 128)
-        ptd->ROTAIS = -128;  // not available codes as -128
-      else if ((ptd->ROTAIS & 0x80) == 0x80) {
-        ptd->ROTAIS = ptd->ROTAIS - 256;  // convert to twos complement
-        rot_dir = -1.0;
-      }
-
-      ptd->ROTIND = wxRound(rot_dir * pow((((double)ptd->ROTAIS) / 4.733),
-                                          2));  // Convert to indicated ROT
-
-      ptd->m_utc_sec = bstr->GetInt(138, 6);
-
-      if ((1 == message_ID) ||
-          (2 == message_ID))  // decode SOTDMA per 7.6.7.2.2
-      {
-        ptd->SyncState = bstr->GetInt(151, 2);
-        ptd->SlotTO = bstr->GetInt(153, 2);
-        if ((ptd->SlotTO == 1) && (ptd->SyncState == 0))  // UTCDirect follows
-        {
-          ptd->m_utc_hour = bstr->GetInt(155, 5);
-
-          ptd->m_utc_min = bstr->GetInt(160, 7);
-
-          if ((ptd->m_utc_hour < 24) && (ptd->m_utc_min < 60) &&
-              (ptd->m_utc_sec < 60)) {
-            wxDateTime rx_time(ptd->m_utc_hour, ptd->m_utc_min, ptd->m_utc_sec);
-            rx_ticks = rx_time.GetTicks();
-            if (!b_firstrx) {
-              first_rx_ticks = rx_ticks;
-              b_firstrx = true;
-            }
-          }
-        }
-      }
-
-      //    Capture Euro Inland special passing arrangement signal ("stbd-stbd")
-      ptd->blue_paddle = bstr->GetInt(144, 2);
-      ptd->b_blue_paddle = (ptd->blue_paddle == 2);  // paddle is set
-
-      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
-
-      //    Check for SART and friends by looking at first two digits of MMSI
-      int mmsi_start = ptd->MMSI / 10000000;
-
-      if (mmsi_start == 97) {
-        ptd->Class = AIS_SART;
-        ptd->StaticReportTicks =
-            now.GetTicks();  // won't get a static report, so fake it here
-
-        //    On receipt of Msg 3, force any existing SART target out of
-        //    acknowledge mode by adjusting its ack_time to yesterday This will
-        //    cause any previously "Acknowledged" SART to re-alert.
-
-        //    On reflection, re-alerting seems a little excessive in real life
-        //    use. After all, the target is on-screen, and in the AIS target
-        //    list. So lets just honor the programmed ACK timout value for SART
-        //    targets as well
-        // ptd->m_ack_time = wxDateTime::Now() - wxTimeSpan::Day();
-      }
-
-      parse_result = true;  // so far so good
-      b_posn_report = true;
-
-      break;
-    }
-
-    case 18: {
-      ptd->NavStatus =
-          UNDEFINED;  // Class B targets have no status.  Enforce this...
-
-      ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
-
-      int lon = bstr->GetInt(58, 28);
-      if (lon & 0x08000000)  // negative?
-        lon |= 0xf0000000;
-      double lon_tentative = lon / 600000.;
-
-      int lat = bstr->GetInt(86, 27);
-      if (lat & 0x04000000)  // negative?
-        lat |= 0xf8000000;
-      double lat_tentative = lat / 600000.;
-
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
-      {
-        ptd->Lon = lon_tentative;
-        ptd->Lat = lat_tentative;
-        ptd->b_positionDoubtful = false;
-        ptd->b_positionOnceValid = true;  // Got the position at least once
-        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-        ptd->PositionReportTicks = now.GetTicks();
-      } else
-        ptd->b_positionDoubtful = true;
-
-      ptd->COG = 0.1 * (bstr->GetInt(113, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
-
-      ptd->m_utc_sec = bstr->GetInt(134, 6);
-
-      if (!ptd->b_isDSCtarget) {
-        if (!isBuoyMmsi(ptd->MMSI))
-          ptd->Class = AIS_CLASS_B;
-        else
-          ptd->Class = AIS_BUOY;
-      }
-      parse_result = true;  // so far so good
-      b_posn_report = true;
-
-      break;
-    }
-
-    case 19: {  // Class B mes_ID 19 Is same as mes_ID 18 until bit 139
-      ptd->NavStatus =
-          UNDEFINED;  // Class B targets have no status.  Enforce this...
-      ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
-      int lon = bstr->GetInt(58, 28);
-      if (lon & 0x08000000)  // negative?
-        lon |= 0xf0000000;
-      double lon_tentative = lon / 600000.;
-
-      int lat = bstr->GetInt(86, 27);
-      if (lat & 0x04000000)  // negative?
-        lat |= 0xf8000000;
-      double lat_tentative = lat / 600000.;
-
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
-      {
-        ptd->Lon = lon_tentative;
-        ptd->Lat = lat_tentative;
-        ptd->b_positionDoubtful = false;
-        ptd->b_positionOnceValid = true;  // Got the position at least once
-        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-        ptd->PositionReportTicks = now.GetTicks();
-      } else
-        ptd->b_positionDoubtful = true;
-
-      ptd->COG = 0.1 * (bstr->GetInt(113, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
-      ptd->m_utc_sec = bstr->GetInt(134, 6);
-      // From bit 140 and forward data as of mes 5
-      bstr->GetStr(144, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-      ptd->b_nameValid = true;
-      if (!ptd->b_isDSCtarget) {
-        ptd->ShipType = (unsigned char)bstr->GetInt(264, 8);
-      }
-      ptd->DimA = bstr->GetInt(272, 9);
-      ptd->DimB = bstr->GetInt(281, 9);
-      ptd->DimC = bstr->GetInt(290, 6);
-      ptd->DimD = bstr->GetInt(296, 6);
-
-      if (!ptd->b_isDSCtarget) {
-        // Although outdated, message 19 is used by many "ATON" for net buoys
-        if (!isBuoyMmsi(ptd->MMSI))
-          ptd->Class = AIS_CLASS_B;
-        else
-          ptd->Class = AIS_BUOY;
-      }
-      parse_result = true;  // so far so good
-      b_posn_report = true;
-
-      break;
-    }
-
-    case 27: {
-      // Long-range automatic identification system broadcast message
-      // This message is used for long-range detection of AIS Class A and Class
-      // B vessels (typically by satellite).
-
-      // Define the constant to do the covertion from the internal encoded
-      // position in message 27. The position is less accuate :  1/10 minute
-      // position resolution.
-      int bitCorrection = 10;
-      int resolution = 10;
-
-      // Default aout of bounce values.
-      double lon_tentative = 181.;
-      double lat_tentative = 91.;
-
-#ifdef AIS_DEBUG
-      printf("AIS Message 27 - received:\r\n");
-      printf("MMSI      : %i\r\n", ptd->MMSI);
-#endif
-
-      // It can be both a CLASS A and a CLASS B vessel - We have decided for
-      // CLASS A
-      // TODO: Lookup to see if we have seen it as a CLASS B, and adjust.
-      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
-
-      ptd->NavStatus = bstr->GetInt(39, 4);
-
-      int lon = bstr->GetInt(45, 18);
-      int lat = bstr->GetInt(63, 17);
-
-      lat_tentative = lat;
-      lon_tentative = lon;
-
-      // Negative latitude?
-      if (lat >= (0x4000000 >> bitCorrection)) {
-        lat_tentative = (0x8000000 >> bitCorrection) - lat;
-        lat_tentative *= -1;
-      }
-
-      // Negative longitude?
-      if (lon >= (0x8000000 >> bitCorrection)) {
-        lon_tentative = (0x10000000 >> bitCorrection) - lon;
-        lon_tentative *= -1;
-      }
-
-      // Decode the internal position format.
-      lat_tentative = lat_tentative / resolution / 60.0;
-      lon_tentative = lon_tentative / resolution / 60.0;
-
-#ifdef AIS_DEBUG
-      printf("Latitude  : %f\r\n", lat_tentative);
-      printf("Longitude : %f\r\n", lon_tentative);
-#endif
-
-      // Get the latency of the position report.
-      int positionLatency = bstr->GetInt(95, 1);
-
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
-      {
-        ptd->Lon = lon_tentative;
-        ptd->Lat = lat_tentative;
-        ptd->b_positionDoubtful = false;
-        ptd->b_positionOnceValid = true;  // Got the position at least once
-        if (positionLatency == 0) {
-// The position is less than 5 seconds old.
-#ifdef AIS_DEBUG
-          printf("Low latency position report.\r\n");
-#endif
-          ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-          ptd->PositionReportTicks = now.GetTicks();
-        }
-      } else
-        ptd->b_positionDoubtful = true;
-
-      ptd->SOG = 1.0 * (bstr->GetInt(80, 6));
-      ptd->COG = 1.0 * (bstr->GetInt(85, 9));
-
-      b_posn_report = true;
-      parse_result = true;
-      break;
-    }
-
-    case 5: {
-      n_msg5++;
-      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
-
-      //          Get the AIS Version indicator
-      //          0 = station compliant with Recommendation ITU-R M.1371-1
-      //          1 = station compliant with Recommendation ITU-R M.1371-3
-      //          2-3 = station compliant with future editions
-      int AIS_version_indicator = bstr->GetInt(39, 2);
-      if (AIS_version_indicator < 4) {
-        ptd->IMO = bstr->GetInt(41, 30);
-
-        bstr->GetStr(71, 42, &ptd->CallSign[0], 7);
-        bstr->GetStr(113, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-        ptd->b_nameValid = true;
-        if (!ptd->b_isDSCtarget) {
-          ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
-        }
-
-        ptd->DimA = bstr->GetInt(241, 9);
-        ptd->DimB = bstr->GetInt(250, 9);
-        ptd->DimC = bstr->GetInt(259, 6);
-        ptd->DimD = bstr->GetInt(265, 6);
-
-        ptd->ETA_Mo = bstr->GetInt(275, 4);
-        ptd->ETA_Day = bstr->GetInt(279, 5);
-        ptd->ETA_Hr = bstr->GetInt(284, 5);
-        ptd->ETA_Min = bstr->GetInt(289, 6);
-
-        ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
-
-        bstr->GetStr(303, 120, &ptd->Destination[0], DESTINATION_LEN - 1);
-
-        ptd->StaticReportTicks = now.GetTicks();
-
-        parse_result = true;
-      }
-
-      break;
-    }
-
-    case 24: {  // Static data report
-      int part_number = bstr->GetInt(39, 2);
-      if (0 == part_number) {
-        bstr->GetStr(41, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-        ptd->b_nameValid = true;
-        parse_result = true;
-        n_msg24++;
-      } else if (1 == part_number) {
-        if (!ptd->b_isDSCtarget) {
-          ptd->ShipType = (unsigned char)bstr->GetInt(41, 8);
-        }
-        bstr->GetStr(91, 42, &ptd->CallSign[0], 7);
-
-        ptd->DimA = bstr->GetInt(133, 9);
-        ptd->DimB = bstr->GetInt(142, 9);
-        ptd->DimC = bstr->GetInt(151, 6);
-        ptd->DimD = bstr->GetInt(157, 6);
-        parse_result = true;
-      }
-      break;
-    }
-    case 4:  // base station
-    {
-      ptd->Class = AIS_BASE;
-
-      ptd->m_utc_hour = bstr->GetInt(62, 5);
-      ptd->m_utc_min = bstr->GetInt(67, 6);
-      ptd->m_utc_sec = bstr->GetInt(73, 6);
-      //                              (79,  1);
-      int lon = bstr->GetInt(80, 28);
-      if (lon & 0x08000000)  // negative?
-        lon |= 0xf0000000;
-      double lon_tentative = lon / 600000.;
-
-      int lat = bstr->GetInt(108, 27);
-      if (lat & 0x04000000)  // negative?
-        lat |= 0xf8000000;
-      double lat_tentative = lat / 600000.;
-
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
-      {
-        ptd->Lon = lon_tentative;
-        ptd->Lat = lat_tentative;
-        ptd->b_positionDoubtful = false;
-        ptd->b_positionOnceValid = true;  // Got the position at least once
-        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-        ptd->PositionReportTicks = now.GetTicks();
-      } else
-        ptd->b_positionDoubtful = true;
-
-      ptd->COG = -1.;
-      ptd->HDG = 511;
-      ptd->SOG = -1.;
-
-      parse_result = true;
-      b_posn_report = true;
-
-      break;
-    }
-    case 9:  // Special Position Report (Standard SAR Aircraft Position Report)
-    {
-      ptd->SOG = bstr->GetInt(51, 10);
-
-      int lon = bstr->GetInt(62, 28);
-      if (lon & 0x08000000)  // negative?
-        lon |= 0xf0000000;
-      double lon_tentative = lon / 600000.;
-
-      int lat = bstr->GetInt(90, 27);
-      if (lat & 0x04000000)  // negative?
-        lat |= 0xf8000000;
-      double lat_tentative = lat / 600000.;
-
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
-      {
-        ptd->Lon = lon_tentative;
-        ptd->Lat = lat_tentative;
-        ptd->b_positionDoubtful = false;
-        ptd->b_positionOnceValid = true;  // Got the position at least once
-        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-        ptd->PositionReportTicks = now.GetTicks();
-      } else
-        ptd->b_positionDoubtful = true;
-
-      //    decode balance of message....
-      ptd->COG = 0.1 * (bstr->GetInt(117, 12));
-
-      int alt_tent = bstr->GetInt(39, 12);
-      ptd->altitude = alt_tent;
-
-      ptd->b_SarAircraftPosnReport = true;
-
-      parse_result = true;
-      b_posn_report = true;
-
-      break;
-    }
-    case 21:  // Test Message (Aid to Navigation)
-    {
-      ptd->ShipType = (unsigned char)bstr->GetInt(39, 5);
-      ptd->IMO = 0;
-      ptd->SOG = 0;
-      ptd->HDG = 0;
-      ptd->COG = 0;
-      ptd->ROTAIS = -128;  // i.e. not available
-      ptd->DimA = bstr->GetInt(220, 9);
-      ptd->DimB = bstr->GetInt(229, 9);
-      ptd->DimC = bstr->GetInt(238, 6);
-      ptd->DimD = bstr->GetInt(244, 6);
-      ptd->Draft = 0;
-
-      ptd->m_utc_sec = bstr->GetInt(254, 6);
-
-      int offpos = bstr->GetInt(260, 1);  // off position flag
-      int virt = bstr->GetInt(270, 1);    // virtual flag
-
-      if (virt)
-        ptd->NavStatus = ATON_VIRTUAL;
-      else
-        ptd->NavStatus = ATON_REAL;
-      if (ptd->m_utc_sec <= 59 /*&& !virt*/) {
-        ptd->NavStatus += 1;
-        if (offpos) ptd->NavStatus += 1;
-      }
-
-      bstr->GetStr(44, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-      // short name only, extension wont fit in Ship structure
-
-      if (bstr->GetBitCount() > 276) {
-        int nx = ((bstr->GetBitCount() - 272) / 6) * 6;
-        bstr->GetStr(273, nx, &ptd->ShipNameExtension[0], 14);
-        ptd->ShipNameExtension[14] = 0;
-      } else {
-        ptd->ShipNameExtension[0] = 0;
-      }
-
-      ptd->b_nameValid = true;
-
-      parse_result = true;  // so far so good
-
-      ptd->Class = AIS_ATON;
-
-      int lon = bstr->GetInt(165, 28);
-
-      if (lon & 0x08000000)  // negative?
-        lon |= 0xf0000000;
-      double lon_tentative = lon / 600000.;
-
-      int lat = bstr->GetInt(193, 27);
-
-      if (lat & 0x04000000)  // negative?
-        lat |= 0xf8000000;
-      double lat_tentative = lat / 600000.;
-
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
-      {
-        ptd->Lon = lon_tentative;
-        ptd->Lat = lat_tentative;
-        ptd->b_positionDoubtful = false;
-        ptd->b_positionOnceValid = true;  // Got the position at least once
-        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-        ptd->PositionReportTicks = now.GetTicks();
-      } else
-        ptd->b_positionDoubtful = true;
-
-      b_posn_report = true;
-      break;
-    }
-    case 8:  // Binary Broadcast
-    {
-      int dac = bstr->GetInt(41, 10);
-      int fi = bstr->GetInt(51, 6);
-
-      if (dac == 200)  // European inland
-      {
-        if (fi == 10)  // "Inland ship static and voyage related data"
-        {
-          ptd->b_isEuroInland = true;
-
-          bstr->GetStr(57, 48, &ptd->Euro_VIN[0], 8);
-          ptd->Euro_Length = ((double)bstr->GetInt(105, 13)) / 10.0;
-          ptd->Euro_Beam = ((double)bstr->GetInt(118, 10)) / 10.0;
-          ptd->UN_shiptype = bstr->GetInt(128, 14);
-          ptd->Euro_Draft = ((double)bstr->GetInt(145, 11)) / 100.0;
-          parse_result = true;
-        }
-      }
-      if (dac == 1 || dac == 366)  // IMO or US
-      {
-        if (fi == 22)  // Area Notice
-        {
-          if (bstr->GetBitCount() >= 111) {
-            Ais8_001_22 an;
-            an.link_id = bstr->GetInt(57, 10);
-            an.notice_type = bstr->GetInt(67, 7);
-            an.month = bstr->GetInt(74, 4);
-            an.day = bstr->GetInt(78, 5);
-            an.hour = bstr->GetInt(83, 5);
-            an.minute = bstr->GetInt(88, 6);
-            an.duration_minutes = bstr->GetInt(94, 18);
-
-            wxDateTime now_ = wxDateTime::Now();
-            now_.MakeGMT();
-
-            an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
-                              now_.GetYear(), an.hour, an.minute);
-
-            // msg is not supposed to be transmitted more than a day before it
-            // comes into effect, so a start_time less than a day or two away
-            // might indicate a month rollover
-            if (an.start_time > now_ + wxTimeSpan::Hours(48))
-              an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
-                                now_.GetYear() - 1, an.hour, an.minute);
-
-            an.expiry_time =
-                an.start_time + wxTimeSpan::Minutes(an.duration_minutes);
-
-            // msg is not supposed to be transmitted beyond expiration, so
-            // taking into account a fudge factor for clock issues, assume an
-            // expiry date in the past indicates incorrect year
-            if (an.expiry_time < now_ - wxTimeSpan::Hours(24)) {
-              an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
-                                now_.GetYear() + 1, an.hour, an.minute);
-              an.expiry_time =
-                  an.start_time + wxTimeSpan::Minutes(an.duration_minutes);
-            }
-
-            // Default case, the IMO format
-            // https://www.e-navigation.nl/content/area-notice-0
-            int subarea_len = 87;
-            int lon_len = 25;
-            int lat_len = 24;
-            float pos_scale = 60000.0;
-            int prec_size = 3;
-            if (dac ==
-                366) {  // Deprecated US format
-                        // https://www.e-navigation.nl/content/area-notice-1
-              subarea_len = 90;
-              lon_len = 28;
-              lat_len = 27;
-              pos_scale = 600000.0;
-              prec_size = 0;  // Not present in the in US format between
-                              // coordinates and radius for some shapes
-            }
-
-            int subarea_count = (bstr->GetBitCount() - 111) / subarea_len;
-            for (int i = 0; i < subarea_count; ++i) {
-              int base = 111 + i * subarea_len;
-              Ais8_001_22_SubArea sa;
-              sa.shape = bstr->GetInt(base + 1, 3);
-              int scale_factor = 1;
-              if (sa.shape == AIS8_001_22_SHAPE_TEXT) {
-                char t[15];
-                t[14] = 0;
-                bstr->GetStr(base + 4, subarea_len - 3, t, 14);
-                sa.text = wxString(t, wxConvUTF8);
-              } else {
-                int scale_multipliers[4] = {1, 10, 100, 1000};
-                scale_factor = scale_multipliers[bstr->GetInt(base + 4, 2)];
-                switch (sa.shape) {
-                  case AIS8_001_22_SHAPE_SECTOR:
-                    sa.left_bound_deg = bstr->GetInt(
-                        base + 6 + lon_len + lat_len + prec_size + 12, 9);
-                    sa.right_bound_deg = bstr->GetInt(
-                        base + 6 + lon_len + lat_len + prec_size + 12 + 9, 9);
-                  case AIS8_001_22_SHAPE_CIRCLE:
-                    sa.radius_m =
-                        bstr->GetInt(base + 6 + lon_len + lat_len + 3, 12) *
-                        scale_factor;
-                    // FALL THROUGH
-                  case AIS8_001_22_SHAPE_RECT:
-                    sa.longitude =
-                        bstr->GetInt(base + 6, lon_len, true) / pos_scale;
-                    sa.latitude =
-                        bstr->GetInt(base + 6 + lon_len, lat_len, true) /
-                        pos_scale;
-                    sa.e_dim_m =
-                        bstr->GetInt(base + 6 + lon_len + lat_len + prec_size,
-                                     8) *
-                        scale_factor;
-                    sa.n_dim_m =
-                        bstr->GetInt(
-                            base + 6 + lon_len + lat_len + prec_size + 8, 8) *
-                        scale_factor;
-                    sa.orient_deg = bstr->GetInt(
-                        base + 6 + lon_len + lat_len + prec_size + 8 + 8, 9);
-                    break;
-                  case AIS8_001_22_SHAPE_POLYLINE:
-                  case AIS8_001_22_SHAPE_POLYGON:
-                    for (int j = 0; j < 4; ++j) {
-                      sa.angles[j] = bstr->GetInt(base + 6 + j * 20, 10) * 0.5;
-                      sa.dists_m[j] =
-                          bstr->GetInt(base + 16 + j * 20, 10) * scale_factor;
-                    }
-                }
-              }
-              an.sub_areas.push_back(sa);
-            }
-            ptd->area_notices[an.link_id] = an;
-            parse_result = true;
-          }
-        }
-
-        // Meteorological and Hydrographic data ref: IMO SN.1/Circ.289
-        if (fi == 31) {
-          if (bstr->GetBitCount() >= 360) {
-            // Ais8_001_31  mmsi can have been changed.
-            if (met_mmsi != 666) ptd->MMSI = met_mmsi;
-
-            // Default out of bounce values.
-            double lon_tentative = 181.;
-            double lat_tentative = 91.;
-
-            int lon = bstr->GetInt(57, 25);
-            int lat = bstr->GetInt(82, 24);
-
-            if (lon & 0x01000000)  // negative?
-              lon |= 0xFE000000;
-            lon_tentative = lon / 60000.;
-
-            if (lat & 0x00800000)  // negative?
-              lat |= 0xFF000000;
-            lat_tentative = lat / 60000.;
-
-            ptd->Lon = lon_tentative;
-            ptd->Lat = lat_tentative;
-
-            // Try to make unique name for each station based on position
-            wxString x = ptd->ShipName;
-            if (x.Find("METEO") == wxNOT_FOUND) {
-              double id1, id2;
-              wxString slat = wxString::Format("%0.3f", lat_tentative);
-              wxString slon = wxString::Format("%0.3f", lon_tentative);
-              slat.ToDouble(&id1);
-              slon.ToDouble(&id2);
-              wxString nameID = "METEO ";
-              nameID << wxString::Format("%0.3f", abs(id1) + abs(id2)).Right(3);
-              strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
-            }
-
-            ptd->met_data.pos_acc = bstr->GetInt(106, 1);
-            ptd->met_data.day = bstr->GetInt(107, 5);
-            ptd->met_data.hour = bstr->GetInt(112, 5);
-            ptd->met_data.minute = bstr->GetInt(117, 6);
-            ptd->met_data.wind_kn = bstr->GetInt(123, 7);
-            ptd->met_data.wind_gust_kn = bstr->GetInt(130, 7);
-            ptd->met_data.wind_dir = bstr->GetInt(137, 9);
-            ptd->met_data.wind_gust_dir = bstr->GetInt(146, 9);
-
-            int tmp = bstr->GetInt(155, 11);
-            if (tmp & 0x00000400)  // negative?
-              tmp |= 0xFFFFF800;
-            ptd->met_data.air_temp = tmp / 10.;
-            ptd->met_data.rel_humid = bstr->GetInt(166, 7);
-            int dew = bstr->GetInt(173, 10);
-            if (dew & 0x00000200)  // negative? (bit 9 = 1)
-              dew |= 0xFFFFFC00;
-            ptd->met_data.dew_point = dew / 10.;
-
-            /*Air pressure, defined as pressure reduced to sea level,
-              in 1 hPa steps.0 = pressure 799 hPa or less
-              1 - 401 = 800 - 1200 hPa*/
-            ptd->met_data.airpress = bstr->GetInt(183, 9) + 799;
-            ptd->met_data.airpress_tend = bstr->GetInt(192, 2);
-
-            int horVis = bstr->GetInt(194, 8);
-            if (horVis & 0x80u) {  // if MSB = 1
-              horVis &= 0x7F;      // We print >x.x
-              ptd->met_data.hor_vis_GT = true;
-            } else
-              ptd->met_data.hor_vis_GT = false;
-
-            ptd->met_data.hor_vis = horVis / 10.0;
-
-            ptd->met_data.water_lev_dev = (bstr->GetInt(202, 12) / 100.) - 10.;
-            ptd->met_data.water_lev_trend = bstr->GetInt(214, 2);
-            ptd->met_data.current = bstr->GetInt(216, 8) / 10.;
-            ptd->met_data.curr_dir = bstr->GetInt(224, 9);
-            ptd->met_data.wave_height = bstr->GetInt(277, 8) / 10.;
-            ptd->met_data.wave_period = bstr->GetInt(285, 6);
-            ptd->met_data.wave_dir = bstr->GetInt(291, 9);
-            ptd->met_data.swell_height = bstr->GetInt(300, 8) / 10;
-            ptd->met_data.swell_per = bstr->GetInt(308, 6);
-            ptd->met_data.swell_dir = bstr->GetInt(314, 9);
-            ptd->met_data.seastate = bstr->GetInt(323, 4);
-
-            int wt = bstr->GetInt(327, 10);
-            if (wt & 0x00000200)  // negative? (bit 9 = 1)
-              wt |= 0xFFFFFC00;
-            ptd->met_data.water_temp = wt / 10.;
-
-            ptd->met_data.precipitation = bstr->GetInt(337, 3);
-            ptd->met_data.salinity = bstr->GetInt(340, 9) / 10.;
-            ptd->met_data.ice = bstr->GetInt(349, 2);
-
-            ptd->Class = AIS_METEO;
-            ptd->COG = -1.;
-            ptd->HDG = 511;
-            ptd->SOG = -1.;
-            ptd->b_NoTrack = true;
-            ptd->b_show_track = false;
-            ptd->b_positionDoubtful = false;
-            ptd->b_positionOnceValid = true;
-            b_posn_report = true;
-            ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-            ptd->PositionReportTicks = now.GetTicks();
-            ptd->b_nameValid = true;
-
-            parse_result = true;
-          }
-        }
-        break;
-      }
-
-      if (dac == 367 && fi == 33) {  //  ais8_367_33
-        // US data acording to DAC367_FI33_em_version_release_3-23mar15_0
-        // We use only the same kind of data as of ais8_001_31 from these
-        // reports.
-        const int size = bstr->GetBitCount();
-        if (size >= 168) {
-          //  Change to meteo mmsi-ID
-          if (met_mmsi != 666) ptd->MMSI = met_mmsi;
-          const int startbits = 56;
-          const int slotsize = 112;
-          const int slots_count = (size - startbits) / slotsize;
-          int slotbit;
-          for (int slot = 0; slot < slots_count; slot++) {
-            slotbit = slot * slotsize;
-            int type = bstr->GetInt(slotbit + 57, 4);
-            ptd->met_data.hour = bstr->GetInt(slotbit + 66, 5);
-            ptd->met_data.minute = bstr->GetInt(slotbit + 71, 6);
-            int Site_ID = bstr->GetInt(slotbit + 77, 7);
-
-            // Name the station acc to site ID until message type 1
-            if (!ptd->b_nameValid) {
-              wxString nameID = "METEO Site: ";
-              nameID << Site_ID;
-              strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
-              ptd->b_nameValid = true;
-            }
-
-            if (type == 0) {  // Location
-              int lon = bstr->GetInt(slotbit + 90, 28);
-              if (lon & 0x08000000)  // negative?
-                lon |= 0xf0000000;
-              ptd->Lon = lon / 600000.;
-
-              int lat = bstr->GetInt(slotbit + 118, 27);
-              if (lat & 0x04000000)  // negative?
-                lat |= 0xf8000000;
-              ptd->Lat = lat / 600000.;
-              ptd->b_positionOnceValid = true;
-
-            } else if (type == 1) {  // Name
-              bstr->GetStr(slotbit + 84, 84, &ptd->ShipName[0], SHIP_NAME_LEN);
-              ptd->b_nameValid = true;
-
-            } else if (type == 2) {  // Wind
-              // Description 1 and 2 are real time values.
-              int descr = bstr->GetInt(slotbit + 116, 3);
-              if (descr == 1 || descr == 2) {
-                ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
-                ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
-                ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
-                ptd->met_data.wind_gust_dir = bstr->GetInt(slotbit + 107, 9);
-              }
-
-            } else if (type == 3) {  // Water level
-              // Description 1 and 2 are real time values.
-              int descr = bstr->GetInt(slotbit + 108, 3);
-              if (descr == 1 || descr == 2) {
-                int wltype = bstr->GetInt(slotbit + 84, 1);
-                int wl = bstr->GetInt(slotbit + 85, 16);  // cm
-                if (wl & 0x00004000)                      // negative?
-                  wl |= 0xffff0000;
-
-                if (wltype == 1)  // 0 = deviation from datum; 1 = water depth
-                  ptd->met_data.water_level = wl / 100.;  // m
-                else
-                  ptd->met_data.water_lev_dev = wl / 100.;  // m
-              }
-              ptd->met_data.water_lev_trend = bstr->GetInt(slotbit + 101, 2);
-              ptd->met_data.vertical_ref = bstr->GetInt(slotbit + 103, 5);
-
-            } else if (type == 6) {  //  Horizontal Current Profil
-              ptd->met_data.current = bstr->GetInt(slotbit + 102, 8) / 10.0;
-              ptd->met_data.curr_dir = bstr->GetInt(slotbit + 110, 9);
-            } else if (type == 7) {  // Sea state
-              int swell_descr =
-                  bstr->GetInt(slotbit + 111, 3);  // Use 1 || 2 real data
-              if (swell_descr == 1 || swell_descr == 2) {
-                ptd->met_data.swell_height =
-                    bstr->GetInt(slotbit + 84, 8) / 10.0;
-                ptd->met_data.swell_per = bstr->GetInt(slotbit + 92, 6);
-                ptd->met_data.swell_dir = bstr->GetInt(slotbit + 98, 9);
-              }
-              ptd->met_data.seastate = bstr->GetInt(slotbit + 107, 4);  // Bf
-              int wt_descr = bstr->GetInt(slotbit + 131, 3);
-              if (wt_descr == 1 || wt_descr == 2)
-                ptd->met_data.water_temp =
-                    bstr->GetInt(slotbit + 114, 10) / 10. - 10.;
-
-              int wawe_descr = bstr->GetInt(slotbit + 157, 3);
-              if (wawe_descr == 1 || wawe_descr == 2) {  // Only real data
-                ptd->met_data.wave_height =
-                    bstr->GetInt(slotbit + 134, 8) / 10.0;
-                ptd->met_data.wave_period = bstr->GetInt(slotbit + 142, 6);
-                ptd->met_data.wave_dir = bstr->GetInt(slotbit + 148, 9);
-              }
-              ptd->met_data.salinity = bstr->GetInt(slotbit + 160, 9 / 10.0);
-
-            } else if (type == 8) {  // Salinity
-              ptd->met_data.water_temp =
-                  bstr->GetInt(slotbit + 84, 10) / 10.0 - 10.0;
-              ptd->met_data.salinity = bstr->GetInt(slotbit + 120, 9) / 10.0;
-
-            } else if (type == 9) {  // Weather
-              int tmp = bstr->GetInt(slotbit + 84, 11);
-              if (tmp & 0x00000400)  // negative?
-                tmp |= 0xFFFFF800;
-              ptd->met_data.air_temp = tmp / 10.;
-              int pp, precip = bstr->GetInt(slotbit + 98, 2);
-              switch (precip) {  // Adapt to IMO precipitation
-                case 0:
-                  pp = 1;
-                case 1:
-                  pp = 5;
-                case 2:
-                  pp = 4;
-                case 3:
-                  pp = 7;
-              }
-              ptd->met_data.precipitation = pp;
-              ptd->met_data.hor_vis = bstr->GetInt(slotbit + 100, 8) / 10.0;
-              ptd->met_data.dew_point =
-                  bstr->GetInt(slotbit + 108, 10) / 10.0 - 20.0;
-              ptd->met_data.airpress = bstr->GetInt(slotbit + 121, 9) + 799;
-              ptd->met_data.airpress_tend = bstr->GetInt(slotbit + 130, 2);
-              ptd->met_data.salinity = bstr->GetInt(slotbit + 135, 9) / 10.0;
-
-            } else if (type == 11) {  // Wind V2
-              // Description 1 and 2 are real time values.
-              int descr = bstr->GetInt(slotbit + 113, 3);
-              if (descr == 1 || descr == 2) {
-                ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
-                ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
-                ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
-              }
-            }
-          }
-
-          if (ptd->b_positionOnceValid) {
-            ptd->Class = AIS_METEO;
-            ptd->COG = -1.;
-            ptd->HDG = 511;
-            ptd->SOG = -1.;
-            ptd->b_NoTrack = true;
-            ptd->b_show_track = false;
-            ptd->b_positionDoubtful = false;
-            b_posn_report = true;
-            ptd->LastPositionReportTicks = ptd->PositionReportTicks;
-            ptd->PositionReportTicks = now.GetTicks();
-            ptd->b_nameValid = true;
-
-            parse_result = true;
-          }
-        }
-        break;
-      }
-      break;
-    }
-    case 14:  // Safety Related Broadcast
-    {
-      //  Always capture the MSG_14 text
-      char msg_14_text[968];
-      if (bstr->GetBitCount() > 40) {
-        int nx = ((bstr->GetBitCount() - 40) / 6) * 6;
-        int nd = bstr->GetStr(41, nx, msg_14_text, 968);
-        nd = wxMax(0, nd);
-        nd = wxMin(nd, 967);
-        msg_14_text[nd] = 0;
-        ptd->MSG_14_text = wxString(msg_14_text, wxConvUTF8);
-      }
-      parse_result = true;  // so far so good
-
-      break;
-    }
-
-    case 6:  // Addressed Binary Message
-      [[fallthrough]];
-    case 7:  // Binary Ack
-      [[fallthrough]];
-    default:
-      break;
-  }
-
-  if (b_posn_report) ptd->b_lost = false;
-
-  if (true == parse_result) {
-    //      Revalidate the target under some conditions
-    if (!ptd->b_active && !ptd->b_positionDoubtful && b_posn_report)
-      ptd->b_active = true;
-  }
-
-  return parse_result;
 }
 
 bool AisDecoder::NMEACheckSumOK(const wxString &str_in) {
