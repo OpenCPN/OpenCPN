@@ -56,13 +56,12 @@ class Multiplexer : public wxEvtHandler {
 public:
   Multiplexer(const MuxLogCallbacks& log_callbacks,
               bool& legacy_input_filter_behaviour);
+
   ~Multiplexer() override;
 
   void LogOutputMessage(const std::shared_ptr<const NavMsg>& msg,
                         NavmsgStatus status) const;
 
-  // void LogOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
-  //                            NavmsgStatus status);
   /**
    * Logs an input message with context information.
    *
@@ -80,18 +79,15 @@ public:
   }
 
 private:
-  //  comm event listeners
-  ObservableListener listener_N2K_All;
-  ObservableListener m_listener_N0183_all;
-
-  void InitN2KCommListeners();
+  MuxLogCallbacks m_log_callbacks;
+  bool& m_legacy_input_filter_behaviour;
+  ObsListener m_n0183_all_lstnr;
+  ObsListener m_n2k_all_lstnr;
+  int m_n2k_repeat_count;
+  unsigned int m_last_pgn_logged;
 
   void HandleN0183(const std::shared_ptr<const Nmea0183Msg>& n0183_msg) const;
-  bool HandleN2K_Log(const std::shared_ptr<const Nmea2000Msg>& n2k_msg);
 
-  MuxLogCallbacks m_log_callbacks;
-  int n_N2K_repeat;
-  bool& m_legacy_input_filter_behaviour;
-  unsigned int last_pgn_logged;
+  bool HandleN2K_Log(const std::shared_ptr<const Nmea2000Msg>& n2k_msg);
 };
 #endif  // MULTIPLEXER_H_
