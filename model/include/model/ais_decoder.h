@@ -45,6 +45,11 @@
 #include "model/track.h"
 #include "observable_evtvar.h"
 
+using N0183MsgPtr = std::shared_ptr<const Nmea0183Msg>;
+using N2000MsgPtr = std::shared_ptr<const Nmea2000Msg>;
+using SignalKMsgPtr = std::shared_ptr<const SignalkMsg>;
+using NavMsgPtr = std::shared_ptr<const NavMsg>;
+
 class AisDecoder;             // forward
 class ArrayOfMmsiProperties;  // forward
 
@@ -159,33 +164,31 @@ private:
   void UpdateAllAlarms();
   void UpdateAllTracks();
   void UpdateOneTrack(AisTargetData *ptarget);
-  void BuildERIShipTypeHash();
   std::shared_ptr<AisTargetData> ProcessDSx(const wxString &str,
                                             bool b_take_dsc = false);
 
-  wxString DecodeDSEExpansionCharacters(wxString dseData);
   void getAISTarget(long mmsi, std::shared_ptr<AisTargetData> &pTargetData,
                     std::shared_ptr<AisTargetData> &pStaleTarget,
                     bool &bnewtarget, int &last_report_ticks, wxDateTime &now);
-  void getMmsiProperties(std::shared_ptr<AisTargetData> &pTargetData);
-  void handleUpdate(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
-                    const rapidjson::Value &update);
-  void updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
-                  const rapidjson::Value &item, wxString &sfixtime) const;
-  void CommitAISTarget(std::shared_ptr<AisTargetData> pTargetData,
+  void handleUpdate(const std::shared_ptr<AisTargetData> &pTargetData,
+                    bool bnewtarget, const rapidjson::Value &update);
+  void updateItem(const std::shared_ptr<AisTargetData> &pTargetData,
+                  bool bnewtarget, const rapidjson::Value &item,
+                  wxString &sfixtime) const;
+  void CommitAISTarget(const std::shared_ptr<AisTargetData> &pTargetData,
                        const wxString &str, bool message_valid,
                        bool new_target);
   void InitCommListeners();
-  bool HandleN0183_AIS(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
+  bool HandleN0183_AIS(const N0183MsgPtr &n0183_msg);
+  void HandleSignalK(const SignalKMsgPtr &sK_msg);
 
-  bool HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129041(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129794(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129809(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129810(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129793(std::shared_ptr<const Nmea2000Msg> n2k_msg);
+  bool HandleN2K_129038(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129039(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129041(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129794(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129809(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129810(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129793(const N2000MsgPtr &n2k_msg);
 
   wxString m_signalk_selfid;
   std::unordered_map<int, std::shared_ptr<AisTargetData>> AISTargetList;
