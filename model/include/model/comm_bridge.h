@@ -23,20 +23,24 @@
  * The CommBridge class and helpers.
  */
 
-#ifndef _COMM_BRIDGE_H
-#define _COMM_BRIDGE_H
+#ifndef COMM_BRIDGE_H
+#define COMM_BRIDGE_H
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 #include <wx/event.h>
-#include <wx/log.h>
 #include <wx/timer.h>
 
 #include "model/comm_decoder.h"
 #include "model/comm_navmsg.h"
 #include "model/nmea_log.h"
+
+using N0183MsgPtr = std::shared_ptr<const Nmea0183Msg>;
+using N2000MsgPtr = std::shared_ptr<const Nmea2000Msg>;
+using SignalKMsgPtr = std::shared_ptr<const SignalkMsg>;
+using NavMsgPtr = std::shared_ptr<const NavMsg>;
 
 typedef struct {
   std::string pcclass;
@@ -58,7 +62,7 @@ typedef struct {
 
 struct BridgeLogCallbacks {
   std::function<bool()> log_is_active;
-  std::function<void(Logline)> log_message;
+  std::function<void(const Logline&)> log_message;
   BridgeLogCallbacks()
       : log_is_active([]() { return false; }), log_message([](Logline) {}) {}
 };
@@ -68,25 +72,25 @@ class CommBridge : public wxEvtHandler {
 public:
   CommBridge();
 
-  ~CommBridge();
+  ~CommBridge() override;
 
   bool Initialize();
   void InitCommListeners();
 
-  bool HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129540(std::shared_ptr<const Nmea2000Msg> n2k_msg);
+  bool HandleN2K_129029(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129025(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129026(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_127250(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129540(const N2000MsgPtr& n2k_msg);
 
-  bool HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_RMC(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDT(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDG(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDM(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_VTG(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_GSV(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_GGA(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_GLL(const N0183MsgPtr& n0183_msg);
   /**
    * Processes NMEA 0183 AIVDO sentences containing own vessel's AIS data.
    *
@@ -106,24 +110,22 @@ public:
    * sentence
    * @return true if message was processed, false on decode error
    */
-  bool HandleN0183_AIVDO(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg);
 
-  bool HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
+  bool HandleSignalK(const SignalKMsgPtr& sK_msg);
 
   void OnDriverStateChange();
 
-  void OnWatchdogTimer(wxTimerEvent &event);
-  bool EvalPriority(std::shared_ptr<const NavMsg> msg,
-                    PriorityContainer &active_priority,
-                    std::unordered_map<std::string, int> &priority_map);
-  std::string GetPriorityKey(std::shared_ptr<const NavMsg> msg);
+  void OnWatchdogTimer(wxTimerEvent& event);
+  bool EvalPriority(const NavMsgPtr& msg, PriorityContainer& active_priority,
+                    std::unordered_map<std::string, int>& priority_map);
 
   std::vector<std::string> GetPriorityMaps();
-  PriorityContainer &GetPriorityContainer(const std::string category);
+  PriorityContainer& GetPriorityContainer(const std::string& category);
 
-  void UpdateAndApplyMaps(std::vector<std::string> new_maps);
-  bool LoadConfig(void);
-  bool SaveConfig(void);
+  void UpdateAndApplyMaps(const std::vector<std::string>& new_maps);
+  bool LoadConfig();
+  bool SaveConfig();
 
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
@@ -155,22 +157,11 @@ private:
   void PresetWatchdogs();
   void MakeHDTFromHDM();
   void InitializePriorityContainers();
-  void PresetPriorityContainers();
 
-  std::string GetPriorityMap(std::unordered_map<std::string, int> &map);
-  void ApplyPriorityMap(std::unordered_map<std::string, int> &priority_map,
-                        wxString &new_prio, int category);
   void ApplyPriorityMaps(std::vector<std::string> new_maps);
 
   void ClearPriorityMaps();
-  void PresetPriorityContainer(
-      PriorityContainer &pc,
-      const std::unordered_map<std::string, int> &priority_map);
-
-  bool IsNextLowerPriorityAvailable(
-      const std::unordered_map<std::string, int> &map, PriorityContainer &pc);
-  void SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,
-                               PriorityContainer &pc);
+  void PresetPriorityContainers();
 
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;
@@ -194,4 +185,4 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-#endif  // _COMM_BRIDGE_H
+#endif  // COMM_BRIDGE_H
