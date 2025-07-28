@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,7 +15,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Class AisDecoder and helpers.
  */
 
 #ifndef _AIS_DECODER_H__
@@ -63,6 +64,7 @@ enum AISAudioSoundType {
   AISAUDIO_DSC
 };
 
+/** Process incoming AIS messages. */
 class MmsiProperties {
 public:
   MmsiProperties() {};
