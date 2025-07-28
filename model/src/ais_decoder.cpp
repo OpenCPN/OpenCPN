@@ -28,7 +28,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <algorithm>
 #include <cstdio>
@@ -68,7 +68,6 @@
 #include "model/own_ship.h"
 #include "model/route_point.h"
 #include "model/select.h"
-#include "SoundFactory.h"
 #include "model/track.h"
 #include "N2KParser.h"
 
@@ -84,8 +83,8 @@ Select *pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 wxString AISTargetNameFileName;
-bool isBuoyMmsi(const int);
-extern Multiplexer *g_pMUX;
+bool isBuoyMmsi(int);
+
 int g_OwnShipmmsi;
 
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
@@ -111,7 +110,7 @@ EVT_TIMER(TIMER_AIS1, AisDecoder::OnTimerAIS)
 EVT_TIMER(TIMER_DSC, AisDecoder::OnTimerDSC)
 END_EVENT_TABLE()
 
-static const double ms_to_knot_factor = 1.9438444924406;
+static constexpr double ms_to_knot_factor = 1.9438444924406;
 
 static int n_msgs;
 static int n_msg1;
@@ -135,7 +134,7 @@ void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
 
-AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
+AisDecoder::AisDecoder(const AisDecoderCallbacks &callbacks)
     : m_signalk_selfid(""), m_callbacks(callbacks) {
   // Load cached AIS target names from a file
   AISTargetNamesC = new AIS_Target_Name_Hash;
@@ -179,7 +178,7 @@ AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
   TimerAIS.SetOwner(this, TIMER_AIS1);
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 
-  m_ptentative_dsctarget = NULL;
+  m_ptentative_dsctarget = nullptr;
   m_dsc_timer.SetOwner(this, TIMER_DSC);
 
   //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
@@ -190,7 +189,7 @@ AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
   InitCommListeners();
 }
 
-AisDecoder::~AisDecoder(void) {
+AisDecoder::~AisDecoder() {
   //   for (const auto &it : GetTargetList()) {
   //     AisTargetData *td = it.second;
   //
@@ -200,8 +199,7 @@ AisDecoder::~AisDecoder(void) {
   // Write mmsi-shipsname to file in a safe way
   wxTempFile outfile;
   if (outfile.Open(AISTargetNameFileName)) {
-    wxString content;
-    content = wxT("+++==Confirmed Entry's==+++");
+    wxString content = wxT("+++==Confirmed Entry's==+++");
     AIS_Target_Name_Hash::iterator it;
     for (it = AISTargetNamesC->begin(); it != AISTargetNamesC->end(); ++it) {
       content.append(_T("\r\n"));
@@ -251,16 +249,14 @@ bool IsTargetOnTheIgnoreList(const int &mmsi) {
   return false;
 }
 
-void AisDecoder::InitCommListeners(void) {
+void AisDecoder::InitCommListeners() {
   // Initialize the comm listeners
-
-  auto &msgbus = NavMsgBus::GetInstance();
 
   // NMEA0183
   // VDM
   Nmea0183Msg n0183_msg_VDM("VDM");
   listener_N0183_VDM.Listen(n0183_msg_VDM, this, EVT_N0183_VDM);
-  Bind(EVT_N0183_VDM, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_VDM, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -270,7 +266,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_FRPOS("FRPOS");
   listener_N0183_FRPOS.Listen(n0183_msg_FRPOS, this, EVT_N0183_FRPOS);
 
-  Bind(EVT_N0183_FRPOS, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_FRPOS, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -279,7 +275,7 @@ void AisDecoder::InitCommListeners(void) {
   // CDDSC
   Nmea0183Msg n0183_msg_CDDSC("CDDSC");
   listener_N0183_CDDSC.Listen(n0183_msg_CDDSC, this, EVT_N0183_CDDSC);
-  Bind(EVT_N0183_CDDSC, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_CDDSC, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -288,7 +284,7 @@ void AisDecoder::InitCommListeners(void) {
   // CDDSE
   Nmea0183Msg n0183_msg_CDDSE("CDDSE");
   listener_N0183_CDDSE.Listen(n0183_msg_CDDSE, this, EVT_N0183_CDDSE);
-  Bind(EVT_N0183_CDDSE, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_CDDSE, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -298,7 +294,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea0183Msg n0183_msg_TLL("TLL");
   listener_N0183_TLL.Listen(n0183_msg_TLL, this, EVT_N0183_TLL);
 
-  Bind(EVT_N0183_TLL, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_TLL, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -307,7 +303,7 @@ void AisDecoder::InitCommListeners(void) {
   // TTM
   Nmea0183Msg n0183_msg_ttm("TTM");
   listener_N0183_TTM.Listen(n0183_msg_ttm, this, EVT_N0183_TTM);
-  Bind(EVT_N0183_TTM, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_TTM, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -316,7 +312,7 @@ void AisDecoder::InitCommListeners(void) {
   // OSD
   Nmea0183Msg n0183_msg_OSD("OSD");
   listener_N0183_OSD.Listen(n0183_msg_OSD, this, EVT_N0183_OSD);
-  Bind(EVT_N0183_OSD, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_OSD, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -325,7 +321,7 @@ void AisDecoder::InitCommListeners(void) {
   // WPL
   Nmea0183Msg n0183_msg_WPL("WPL");
   listener_N0183_WPL.Listen(n0183_msg_WPL, this, EVT_N0183_WPL);
-  Bind(EVT_N0183_WPL, [&](ObservedEvt ev) {
+  Bind(EVT_N0183_WPL, [&](const ObservedEvt &ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
     HandleN0183_AIS(n0183_msg);
@@ -334,7 +330,7 @@ void AisDecoder::InitCommListeners(void) {
   // SignalK
   SignalkMsg sk_msg;
   listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
-  Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
+  Bind(EVT_SIGNALK, [&](const ObservedEvt &ev) {
     HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
   });
 
@@ -342,7 +338,7 @@ void AisDecoder::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129038(static_cast<uint64_t>(129038));
   listener_N2K_129038.Listen(n2k_msg_129038, this, EVT_N2K_129038);
-  Bind(EVT_N2K_129038, [&](ObservedEvt ev) {
+  Bind(EVT_N2K_129038, [&](const ObservedEvt &ev) {
     HandleN2K_129038(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
@@ -350,7 +346,7 @@ void AisDecoder::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129039(static_cast<uint64_t>(129039));
   listener_N2K_129039.Listen(n2k_msg_129039, this, EVT_N2K_129039);
-  Bind(EVT_N2K_129039, [&](ObservedEvt ev) {
+  Bind(EVT_N2K_129039, [&](const ObservedEvt &ev) {
     HandleN2K_129039(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
@@ -358,7 +354,7 @@ void AisDecoder::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129041(static_cast<uint64_t>(129041));
   listener_N2K_129041.Listen(n2k_msg_129041, this, EVT_N2K_129041);
-  Bind(EVT_N2K_129041, [&](ObservedEvt ev) {
+  Bind(EVT_N2K_129041, [&](const ObservedEvt &ev) {
     HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
@@ -366,7 +362,7 @@ void AisDecoder::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129794(static_cast<uint64_t>(129794));
   listener_N2K_129794.Listen(n2k_msg_129794, this, EVT_N2K_129794);
-  Bind(EVT_N2K_129794, [&](ObservedEvt ev) {
+  Bind(EVT_N2K_129794, [&](const ObservedEvt &ev) {
     HandleN2K_129794(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
@@ -374,7 +370,7 @@ void AisDecoder::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129809(static_cast<uint64_t>(129809));
   listener_N2K_129809.Listen(n2k_msg_129809, this, EVT_N2K_129809);
-  Bind(EVT_N2K_129809, [&](ObservedEvt ev) {
+  Bind(EVT_N2K_129809, [&](const ObservedEvt &ev) {
     HandleN2K_129809(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
@@ -382,7 +378,7 @@ void AisDecoder::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129810(static_cast<uint64_t>(129810));
   listener_N2K_129810.Listen(n2k_msg_129810, this, EVT_N2K_129810);
-  Bind(EVT_N2K_129810, [&](ObservedEvt ev) {
+  Bind(EVT_N2K_129810, [&](const ObservedEvt &ev) {
     HandleN2K_129810(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
@@ -390,7 +386,7 @@ void AisDecoder::InitCommListeners(void) {
   //-----------------------------
   Nmea2000Msg n2k_msg_129793(static_cast<uint64_t>(129793));
   listener_N2K_129793.Listen(n2k_msg_129793, this, EVT_N2K_129793);
-  Bind(EVT_N2K_129793, [&](ObservedEvt ev) {
+  Bind(EVT_N2K_129793, [&](const ObservedEvt &ev) {
     HandleN2K_129793(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 }
@@ -430,8 +426,7 @@ bool AisDecoder::HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    long mmsi_long = mmsi;
-    std::shared_ptr<AisTargetData> pTargetData = 0;
+    std::shared_ptr<AisTargetData> pTargetData = nullptr;
     bool bnewtarget = false;
 
     auto it = AISTargetList.find(mmsi);
@@ -458,7 +453,7 @@ bool AisDecoder::HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
       // won't get a static report, so fake it here
       pTargetData->StaticReportTicks = now.GetTicks();
     }
-    pTargetData->NavStatus = (ais_nav_status)NavStat;
+    pTargetData->NavStatus = static_cast<ais_nav_status>(NavStat);
     if (!N2kIsNA(SOG)) pTargetData->SOG = MS2KNOTS(SOG);
     if (!N2kIsNA(COG)) pTargetData->COG = GeodesicRadToDeg(COG);
     if (!N2kIsNA(Heading)) pTargetData->HDG = GeodesicRadToDeg(Heading);
@@ -466,8 +461,6 @@ bool AisDecoder::HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     if (!N2kIsNA(Latitude)) pTargetData->Lat = Latitude;
 
     pTargetData->ROTAIS = ROT;
-
-    double rot_dir = 1.0;
 
     // FIXME (dave)
     //     if (ROT == 128)
@@ -524,7 +517,6 @@ bool AisDecoder::HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   double COG;
   double SOG;
   double Heading;
-  tN2kAISNavStatus NavStat = N2kaisns_Under_Way_Motoring;
   tN2kAISTransceiverInformation AISTransceiverInformation;
   tN2kAISUnit Unit;
   bool DSC, Band, Msg22, State, Display;
@@ -534,14 +526,13 @@ bool AisDecoder::HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
                         Accuracy, RAIM, Seconds, COG, SOG,
                         AISTransceiverInformation, Heading, Unit, Display, DSC,
                         Band, Msg22, Mode, State)) {
-    int mmsi = UserID;
+    uint32_t mmsi = UserID;
     // Stop here if the target shall be ignored
     if (mmsi == g_OwnShipmmsi || IsTargetOnTheIgnoreList(mmsi)) return false;
 
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    long mmsi_long = mmsi;
-    std::shared_ptr<AisTargetData> pTargetData = 0;
+    std::shared_ptr<AisTargetData> pTargetData = nullptr;
     bool bnewtarget = false;
 
     auto it = AISTargetList.find(mmsi);
@@ -622,14 +613,13 @@ bool AisDecoder::HandleN2K_129041(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 #endif
 
   if (ParseN2kPGN129041(v, data)) {
-    int mmsi = data.UserID;
+    uint32_t mmsi = data.UserID;
     // Stop here if the target shall be ignored
     if (mmsi == g_OwnShipmmsi || IsTargetOnTheIgnoreList(mmsi)) return false;
 
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    long mmsi_long = mmsi;
-    std::shared_ptr<AisTargetData> pTargetData = 0;
+    std::shared_ptr<AisTargetData> pTargetData = nullptr;
     bool bnewtarget = false;
 
     auto it = AISTargetList.find(mmsi);
@@ -718,14 +708,13 @@ bool AisDecoder::HandleN2K_129794(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
                         VesselType, Length, Beam, PosRefStbd, PosRefBow,
                         ETAdate, ETAtime, Draught, Destination, AISversion,
                         GNSStype, DTE, AISinfo)) {
-    int mmsi = UserID;
+    uint32_t mmsi = UserID;
     // Stop here if the target shall be ignored
     if (mmsi == g_OwnShipmmsi || IsTargetOnTheIgnoreList(mmsi)) return false;
 
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    long mmsi_long = mmsi;
-    std::shared_ptr<AisTargetData> pTargetData = 0;
+    std::shared_ptr<AisTargetData> pTargetData = nullptr;
     bool bnewtarget = false;
 
     auto it = AISTargetList.find(mmsi);
@@ -799,8 +788,7 @@ bool AisDecoder::HandleN2K_129809(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    long mmsi_long = mmsi;
-    std::shared_ptr<AisTargetData> pTargetData = 0;
+    std::shared_ptr<AisTargetData> pTargetData = nullptr;
     bool bnewtarget = false;
 
     auto it = AISTargetList.find(mmsi);
@@ -855,8 +843,7 @@ bool AisDecoder::HandleN2K_129810(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
-    long mmsi_long = mmsi;
-    std::shared_ptr<AisTargetData> pTargetData = 0;
+    std::shared_ptr<AisTargetData> pTargetData = nullptr;
     bool bnewtarget = false;
 
     auto it = AISTargetList.find(mmsi);
@@ -908,8 +895,7 @@ bool AisDecoder::HandleN2K_129793(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
     // Is this target already in the global target list?
     //  Search the current AISTargetList for an MMSI match
     int mmsi = UserID;
-    long mmsi_long = mmsi;
-    std::shared_ptr<AisTargetData> pTargetData = 0;
+    std::shared_ptr<AisTargetData> pTargetData = nullptr;
     bool bnewtarget = false;
 
     auto it = AISTargetList.find(mmsi);
@@ -952,7 +938,7 @@ bool AisDecoder::HandleN2K_129793(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 //   return true;
 // }
 
-void AisDecoder::BuildERIShipTypeHash(void) {
+void AisDecoder::BuildERIShipTypeHash() {
   make_hash_ERI(8000, _("Vessel, type unknown"));
   make_hash_ERI(8150, _("Freightbarge"));
   make_hash_ERI(8160, _("Tankbarge"));
@@ -1112,8 +1098,8 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
     msg.append(dbg);
     wxLogMessage(msg);
 #endif
-  std::shared_ptr<AisTargetData> pTargetData = 0;
-  std::shared_ptr<AisTargetData> pStaleTarget = NULL;
+  std::shared_ptr<AisTargetData> pTargetData = nullptr;
+  std::shared_ptr<AisTargetData> pStaleTarget = nullptr;
   bool bnewtarget = false;
   int last_report_ticks;
   wxDateTime now;
@@ -1495,7 +1481,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData,
     } else if (update_path ==
                "environment.outside.horizontalVisibility.overRange") {
       pTargetData->met_data.hor_vis_GT = item["value"].GetBool();
-    } else if (update_path == _T("")) {
+    } else if (update_path.empty()) {
       if (item["value"].HasMember("name")) {
         const wxString &name = item["value"]["name"].GetString();
         strncpy(pTargetData->ShipName, name.c_str(), SHIP_NAME_LEN - 1);
@@ -1699,7 +1685,6 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   wxString arpa_status;
   wxString arpa_distunit;
   wxString arpa_cogunit;
-  wxString arpa_reftarget;
   double arpa_mins, arpa_degs;
   double arpa_utc_time;
   int arpa_utc_hour = 0;
@@ -1714,8 +1699,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   char aprs_name_str[21];
   double aprs_mins, aprs_degs;
 
-  std::shared_ptr<AisTargetData> pTargetData = 0;
-  std::shared_ptr<AisTargetData> pStaleTarget = NULL;
+  std::shared_ptr<AisTargetData> pTargetData = nullptr;
+  std::shared_ptr<AisTargetData> pStaleTarget = nullptr;
   bool bnewtarget = false;
   int last_report_ticks;
 
@@ -1733,8 +1718,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     //$--TTM,xx,x.x,x.x,a,x.x,x.x,a,x.x,x.x,a,c--c,a,a*hh <CR><LF>
     // or
     //$--TTM,xx,x.x,x.x,a,x.x,x.x,a,x.x,x.x,a,c--c,a,a,hhmmss.ss,a*hh<CR><LF>
-    wxString string(str);
-    wxStringTokenizer tkz(string, _T(",*"));
+    wxStringTokenizer tkz(str, ",*");
 
     wxString token;
     token = tkz.GetNextToken();  // Sentence (xxTTM)
@@ -1785,7 +1769,6 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       arpa_lost = false;
     } else if (arpa_status != wxEmptyString)
       arpa_nottracked = true;
-    arpa_reftarget = tkz.GetNextToken();  // 13) Reference Target
     if (tkz.HasMoreTokens()) {
       token = tkz.GetNextToken();
       token.ToDouble(&arpa_utc_time);
@@ -1814,13 +1797,11 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   } else if (str.Mid(3, 3).IsSameAs(_T("TLL"))) {
     //$--TLL,xx,llll.lll,a,yyyyy.yyy,a,c--c,hhmmss.ss,a,a*hh<CR><LF>
     //"$RATLL,01,5603.370,N,01859.976,E,ALPHA,015200.36,T,*75\r\n"
-    wxString aprs_tll_str;
     wxString string(str);
     wxStringTokenizer tkz(string, _T(",*"));
 
     wxString token;
-    aprs_tll_str = tkz.GetNextToken();  // Sentence (xxTLL)
-    token = tkz.GetNextToken();         // 1) Target number 00 - 99
+    token = tkz.GetNextToken();  // 1) Target number 00 - 99
     token.ToLong(&arpa_tgt_num);
     token = tkz.GetNextToken();  // 2) Latitude, N/S
     token.ToDouble(&arpa_lat);
@@ -1860,17 +1841,13 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       arpa_lost = false;
     else if (arpa_status != wxEmptyString)
       arpa_nottracked = true;
-    arpa_reftarget = tkz.GetNextToken();  // 7) Reference target=R,null
-                                          // otherwise
-    mmsi = arpa_mmsi =
-        199200000 +
-        arpa_tgt_num;  // 199 is INMARSAT-A MID, should not occur ever in AIS
-                       // stream + we make sure we are out of the hashes for
-                       // GPSGate buddies by being above 1992*
+    mmsi = arpa_mmsi = 199200000 + arpa_tgt_num;
+    // 199 is INMARSAT-A MID, should not occur ever in AIS
+    // stream + we make sure we are out of the hashes for
+    // GPSGate buddies by being above 1992*
   } else if (str.Mid(3, 3).IsSameAs(_T("OSD"))) {
     //$--OSD,x.x,A,x.x,a,x.x,a,x.x,x.x,a*hh <CR><LF>
-    wxString string(str);
-    wxStringTokenizer tkz(string, _T(",*"));
+    wxStringTokenizer tkz(str, _T(",*"));
 
     wxString token;
     token = tkz.GetNextToken();  // Sentence (xxOSD)
@@ -2158,15 +2135,15 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
               wxString aivdostr = str;
               aivdostr.replace(1, 5, "AIVDO");
               unsigned char calculated_checksum = 0;
-              wxString::iterator i;
-              for (i = aivdostr.begin() + 1; i != aivdostr.end() && *i != '*';
-                   ++i)
-                calculated_checksum ^= static_cast<unsigned char>(*i);
+              wxString::iterator j;
+              for (j = aivdostr.begin() + 1; j != aivdostr.end() && *j != '*';
+                   ++j)
+                calculated_checksum ^= static_cast<unsigned char>(*j);
               // if i is not at least 3 positons befoere end, there is no
               // checksum added so also no need to add one now.
-              if (i <= aivdostr.end() - 3)
+              if (j <= aivdostr.end() - 3)
                 aivdostr.replace(
-                    i + 1, i + 3,
+                    j + 1, j + 3,
                     wxString::Format(_("%02X"), calculated_checksum));
 
               gps_watchdog_timeout_ticks =
@@ -2318,7 +2295,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     ret = AIS_NoError;
   } else {
     ret = AIS_Partial;  // accumulating parts of a multi-sentence message
-    pTargetData = 0;
+    pTargetData = nullptr;
   }
 
   if (pTargetData) {
@@ -2492,7 +2469,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
 
   int mmsi = 0;
 
-  std::shared_ptr<AisTargetData> pTargetData = NULL;
+  std::shared_ptr<AisTargetData> pTargetData = nullptr;
 
   // parse a DSC Position message            $CDDSx,.....
   //  Use a tokenizer to pull out the first 9 fields
@@ -2552,7 +2529,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
     dsc_quadrant = (int)(dsc_tmp / 1000000000.0);
 
     if (dsc_quadrant > 3)  // Position is "Unspecified", or 9999999999
-      return NULL;
+      return nullptr;
 
     dsc_lat = (int)(dsc_tmp / 100000.0);
     dsc_lon = dsc_tmp - dsc_lat * 100000.0;
@@ -2635,7 +2612,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
 
   //  Search the current AISTargetList for an MMSI match
   auto it = AISTargetList.find(mmsi);
-  std::shared_ptr<AisTargetData> pStaleTarget = NULL;
+  std::shared_ptr<AisTargetData> pStaleTarget = nullptr;
   if (it == AISTargetList.end()) {  // not found
   } else {
     pStaleTarget = it->second;  // find current entry
@@ -2712,11 +2689,11 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
       //  And post the target
 
       //  Search the current AISTargetList for an MMSI match
-      auto it = AISTargetList.find(mmsi);
-      if (it == AISTargetList.end()) {  // not found
+      auto found = AISTargetList.find(mmsi);
+      if (found == AISTargetList.end()) {  // not found
         pTargetData = m_ptentative_dsctarget;
       } else {
-        pTargetData = it->second;  // find current entry
+        pTargetData = found->second;  // find current entry
         std::vector<AISTargetTrackPoint> ptrack =
             std::move(pTargetData->m_ptrack);
         pTargetData->CloneFrom(
@@ -2730,7 +2707,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
       }
 
       //  Reset for next time
-      m_ptentative_dsctarget = NULL;
+      m_ptentative_dsctarget = nullptr;
 
       m_pLatestTargetData = pTargetData;
 
@@ -2768,7 +2745,8 @@ wxString AisDecoder::DecodeDSEExpansionCharacters(wxString dseData) {
                         'W', 'X', 'Y', 'Z', '.', ',', '-', '/', ' '};
 
   for (size_t i = 0; i < dseData.length(); i += 2) {
-    result.append(1, lookupTable[strtol(dseData.Mid(i, 2).data(), NULL, 10)]);
+    result.append(1,
+                  lookupTable[strtol(dseData.Mid(i, 2).data(), nullptr, 10)]);
   }
   return result;
 }
@@ -3329,18 +3307,18 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             an.minute = bstr->GetInt(88, 6);
             an.duration_minutes = bstr->GetInt(94, 18);
 
-            wxDateTime now = wxDateTime::Now();
-            now.MakeGMT();
+            wxDateTime now_ = wxDateTime::Now();
+            now_.MakeGMT();
 
             an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
-                              now.GetYear(), an.hour, an.minute);
+                              now_.GetYear(), an.hour, an.minute);
 
             // msg is not supposed to be transmitted more than a day before it
             // comes into effect, so a start_time less than a day or two away
             // might indicate a month rollover
-            if (an.start_time > now + wxTimeSpan::Hours(48))
+            if (an.start_time > now_ + wxTimeSpan::Hours(48))
               an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
-                                now.GetYear() - 1, an.hour, an.minute);
+                                now_.GetYear() - 1, an.hour, an.minute);
 
             an.expiry_time =
                 an.start_time + wxTimeSpan::Minutes(an.duration_minutes);
@@ -3348,9 +3326,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             // msg is not supposed to be transmitted beyond expiration, so
             // taking into account a fudge factor for clock issues, assume an
             // expiry date in the past indicates incorrect year
-            if (an.expiry_time < now - wxTimeSpan::Hours(24)) {
+            if (an.expiry_time < now_ - wxTimeSpan::Hours(24)) {
               an.start_time.Set(an.day, wxDateTime::Month(an.month - 1),
-                                now.GetYear() + 1, an.hour, an.minute);
+                                now_.GetYear() + 1, an.hour, an.minute);
               an.expiry_time =
                   an.start_time + wxTimeSpan::Minutes(an.duration_minutes);
             }
@@ -3417,10 +3395,10 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
                     break;
                   case AIS8_001_22_SHAPE_POLYLINE:
                   case AIS8_001_22_SHAPE_POLYGON:
-                    for (int i = 0; i < 4; ++i) {
-                      sa.angles[i] = bstr->GetInt(base + 6 + i * 20, 10) * 0.5;
-                      sa.dists_m[i] =
-                          bstr->GetInt(base + 16 + i * 20, 10) * scale_factor;
+                    for (int j = 0; j < 4; ++j) {
+                      sa.angles[j] = bstr->GetInt(base + 6 + j * 20, 10) * 0.5;
+                      sa.dists_m[j] =
+                          bstr->GetInt(base + 16 + j * 20, 10) * scale_factor;
                     }
                 }
               }
@@ -3613,12 +3591,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               ptd->met_data.vertical_ref = bstr->GetInt(slotbit + 103, 5);
 
             } else if (type == 6) {  //  Horizontal Current Profil
-              int readbearing = bstr->GetInt(slotbit + 84, 9);
-              int readdistance = bstr->GetInt(slotbit + 93, 9);
               ptd->met_data.current = bstr->GetInt(slotbit + 102, 8) / 10.0;
               ptd->met_data.curr_dir = bstr->GetInt(slotbit + 110, 9);
-              int readLevel = bstr->GetInt(slotbit + 119, 9);
-
             } else if (type == 7) {  // Sea state
               int swell_descr =
                   bstr->GetInt(slotbit + 111, 3);  // Use 1 || 2 real data
@@ -3721,16 +3695,11 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
     }
 
     case 6:  // Addressed Binary Message
-    {
-      break;
-    }
+      [[fallthrough]];
     case 7:  // Binary Ack
-    {
+      [[fallthrough]];
+    default:
       break;
-    }
-    default: {
-      break;
-    }
   }
 
   if (b_posn_report) ptd->b_lost = false;
@@ -3785,12 +3754,12 @@ bool AisDecoder::NMEACheckSumOK(const wxString &str_in) {
   return false;
 }
 
-void AisDecoder::UpdateAllCPA(void) {
+void AisDecoder::UpdateAllCPA() {
   //    Iterate thru all the targets
   for (const auto &it : GetTargetList()) {
     std::shared_ptr<AisTargetData> td = it.second;
 
-    if (NULL != td) UpdateOneCPA(td.get());
+    if (nullptr != td) UpdateOneCPA(td.get());
   }
 }
 
@@ -3799,7 +3768,7 @@ void AisDecoder::UpdateAllTracks(void) {
   for (const auto &it : GetTargetList()) {
     std::shared_ptr<AisTargetData> td = it.second;
 
-    if (NULL != td) UpdateOneTrack(td.get());
+    if (nullptr != td) UpdateOneTrack(td.get());
   }
 }
 
@@ -3873,12 +3842,12 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
   }
 }
 
-void AisDecoder::DeletePersistentTrack(Track *track) {
-  for (std::map<int, Track *>::iterator iterator = m_persistent_tracks.begin();
-       iterator != m_persistent_tracks.end(); iterator++) {
-    if (iterator->second == track) {
-      int mmsi = iterator->first;
-      m_persistent_tracks.erase(iterator);
+void AisDecoder::DeletePersistentTrack(const Track *track) {
+  for (auto it = m_persistent_tracks.begin(); it != m_persistent_tracks.end();
+       it++) {
+    if (it->second == track) {
+      int mmsi = it->first;
+      m_persistent_tracks.erase(it);
       // Last tracks for this target?
       if (0 == m_persistent_tracks.count(mmsi)) {
         for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
@@ -3907,14 +3876,14 @@ void AisDecoder::DeletePersistentTrack(Track *track) {
   }
 }
 
-void AisDecoder::UpdateAllAlarms(void) {
+void AisDecoder::UpdateAllAlarms() {
   m_bGeneralAlert = false;  // no alerts yet
 
   //    Iterate thru all the targets
   for (const auto &it : GetTargetList()) {
     std::shared_ptr<AisTargetData> td = it.second;
 
-    if (NULL != td) {
+    if (td) {
       //  Maintain General Alert
       if (!m_bGeneralAlert) {
         //    Quick check on basic condition
@@ -4185,7 +4154,8 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   std::vector<int> remove_array;  // collector for MMSI of targets to be removed
 
   while (it != current_targets.end()) {
-    if (it->second == NULL)  // This should never happen, but I saw it once....
+    if (it->second ==
+        nullptr)  // This should never happen, but I saw it once....
     {
       current_targets.erase(it);
       break;  // leave the loop
@@ -4330,16 +4300,15 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   //    Scan all targets, looking for SART, DSC Distress, and CPA incursions
   //    In the case of multiple targets of the same type, select the shortest
   //    range or shortest TCPA
-  std::shared_ptr<AisTargetData> palert_target = NULL;
-  int audioType = AISAUDIO_NONE;
+  std::shared_ptr<AisTargetData> palert_target = nullptr;
 
   if (!g_pais_alert_dialog_active) {
-    pAISMOBRoute = NULL;    // Reset the AISMOB auto route.
-    double tcpa_min = 1e6;  // really long
+    pAISMOBRoute = nullptr;  // Reset the AISMOB auto route.
+    double tcpa_min = 1e6;   // really long
     double sart_range = 1e6;
-    std::shared_ptr<AisTargetData> palert_target_cpa = NULL;
-    std::shared_ptr<AisTargetData> palert_target_sart = NULL;
-    std::shared_ptr<AisTargetData> palert_target_dsc = NULL;
+    std::shared_ptr<AisTargetData> palert_target_cpa = nullptr;
+    std::shared_ptr<AisTargetData> palert_target_sart = nullptr;
+    std::shared_ptr<AisTargetData> palert_target_dsc = nullptr;
 
     for (it = current_targets.begin(); it != current_targets.end(); ++it) {
       std::shared_ptr<AisTargetData> td = it->second;
@@ -4381,16 +4350,13 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     //    Which of multiple targets?
     //    Give priority to SART targets, then DSC Distress, then CPA incursion
     palert_target = palert_target_cpa;
-    if (palert_target) audioType = AISAUDIO_CPA;
 
     if (palert_target_sart) {
       palert_target = palert_target_sart;
-      audioType = AISAUDIO_SART;
     }
 
     if (palert_target_dsc) {
       palert_target = palert_target_dsc;
-      audioType = AISAUDIO_DSC;
     }
   } else {
     // Alert is currently shown, get target from from knowable GUI
@@ -4404,7 +4370,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
 
 std::shared_ptr<AisTargetData> AisDecoder::Get_Target_Data_From_MMSI(int mmsi) {
   if (AISTargetList.find(mmsi) == AISTargetList.end())
-    return NULL;
+    return nullptr;
   else
     return AISTargetList[mmsi];
 }
@@ -4462,9 +4428,9 @@ MmsiProperties::MmsiProperties(wxString &spec) {
   }
 }
 
-MmsiProperties::~MmsiProperties() {}
+MmsiProperties::~MmsiProperties() = default;
 
-void MmsiProperties::Init(void) {
+void MmsiProperties::Init() {
   MMSI = -1;
   TrackType = TRACKTYPE_DEFAULT;
   m_bignore = false;
@@ -4475,7 +4441,7 @@ void MmsiProperties::Init(void) {
   m_ShipName = wxEmptyString;
 }
 
-wxString MmsiProperties::Serialize(void) {
+wxString MmsiProperties::Serialize() {
   wxString sMMSI;
   wxString s;
 
@@ -4731,7 +4697,7 @@ int AisMeteoNewMmsi(int orig_mmsi, int m_lat, int m_lon, int lon_bits = 0,
   static int nextMeteommsi = 199400000;
   auto &points = AisMeteoPoints::GetInstance().GetPoints();
 
-  if (lon_bits != 999 && points.size()) {  // 999 comes from SignalK
+  if (lon_bits != 999 && !points.empty()) {  // 999 comes from SignalK
     wxString t_lat, t_lon;
     for (const auto &point : points) {
       // Does this station position exist
@@ -4746,7 +4712,7 @@ int AisMeteoNewMmsi(int orig_mmsi, int m_lat, int m_lon, int lon_bits = 0,
   if (!found) {
     // Create a new post
     nextMeteommsi++;
-    points.push_back(
+    points.emplace_back(
         AisMeteoPoint(nextMeteommsi, slat, slon, siteID, orig_mmsi));
     new_mmsi = nextMeteommsi;
   }
