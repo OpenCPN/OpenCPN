@@ -84,6 +84,10 @@ Timeline::Timeline(wxWindow* parent, const wxDateTime& timelineStartTs,
       this, wxID_ANY,
       LoadScaledSVG(iconDir + "now.svg", buttonSize, buttonSize),
       wxDefaultPosition, wxSize(buttonSize, buttonSize));
+
+  // Set the pressed state bitmap
+  m_nowButton->SetBitmapPressed(
+      LoadScaledSVG(iconDir + "now_tracking.svg", buttonSize, buttonSize));
   m_leftButton = new wxBitmapButton(
       this, wxID_ANY,
       LoadScaledSVG(iconDir + "prev.svg", buttonSize, buttonSize),
@@ -638,6 +642,10 @@ void Timeline::OnPlayPause(wxCommandEvent& event) {
       wxString iconDir = g_Platform->GetSharedDataDir() + "uidata/timeline/";
       m_nowButton->SetBitmapLabel(LoadScaledSVG(iconDir + "now.svg", 32, 32));
       m_nowButton->SetToolTip(_("Track and follow system time"));
+
+      // Restore normal background color
+      m_nowButton->SetBackgroundColour(wxNullColour);
+      m_nowButton->Refresh();
     }
 
     // Before starting, ensure the selected timestamp is positioned for optimal
@@ -749,6 +757,12 @@ void Timeline::OnNowButton(wxCommandEvent& event) {
     m_nowButton->SetToolTip(
         _("Stop tracking system time (currently following system time)"));
 
+    // Add visual feedback - set a subtle background color to indicate active
+    // state
+    m_nowButton->SetBackgroundColour(
+        wxColour(220, 240, 255));  // Light blue background
+    m_nowButton->Refresh();
+
     // Start the tracking timer - synchronize every minute
     m_trackingTimer->Start(60000);  // 60 seconds
 
@@ -762,6 +776,10 @@ void Timeline::OnNowButton(wxCommandEvent& event) {
     wxString iconDir = g_Platform->GetSharedDataDir() + "uidata/timeline/";
     m_nowButton->SetBitmapLabel(LoadScaledSVG(iconDir + "now.svg", 32, 32));
     m_nowButton->SetToolTip(_("Track and follow system time"));
+
+    // Restore normal background color
+    m_nowButton->SetBackgroundColour(wxNullColour);  // Use default background
+    m_nowButton->Refresh();
   }
 }
 
@@ -844,8 +862,13 @@ void Timeline::OnMoveForward(wxCommandEvent& event) {
 }
 
 void Timeline::OnClose(wxCommandEvent& event) {
+  // Notify core handlers that timeline is closing (no selected time)
+  SendTimelineSelectedTimeToCoreHandlers(wxInvalidDateTime, wxInvalidDateTime,
+                                         wxInvalidDateTime);
+
   // Notify plugins that timeline is closing (no selected time)
-  SendTimelineSelectedTimeToPlugins(wxInvalidDateTime);
+  SendTimelineSelectedTimeToPlugins(wxInvalidDateTime, wxInvalidDateTime,
+                                    wxInvalidDateTime);
 
   // Post a timeline toggle event to the parent frame to hide the timeline
   wxCommandEvent closeEvent(wxEVT_COMMAND_MENU_SELECTED, ID_MENU_UI_TIMELINE);
@@ -869,6 +892,10 @@ void Timeline::OnMouseDown(wxMouseEvent& event) {
     wxString iconDir = g_Platform->GetSharedDataDir() + "uidata/timeline/";
     m_nowButton->SetBitmapLabel(LoadScaledSVG(iconDir + "now.svg", 32, 32));
     m_nowButton->SetToolTip(_("Track and follow system time"));
+
+    // Restore normal background color
+    m_nowButton->SetBackgroundColour(wxNullColour);
+    m_nowButton->Refresh();
   }
 
   m_isDragging = true;
@@ -1163,8 +1190,16 @@ void Timeline::ConfigureTimeline(const wxDateTime& selectedTime,
 }
 
 void Timeline::NotifyPluginsTimeChanged() {
-  // Notify plugins that support the timeline API
-  SendTimelineSelectedTimeToPlugins(m_selectedTimestamp);
+  // Calculate timeline range
+  wxDateTime startTime = m_startTimestamp;
+  wxDateTime endTime = m_startTimestamp + m_timelineDuration;
+
+  // Notify core handlers first (for better performance as they're fewer)
+  SendTimelineSelectedTimeToCoreHandlers(m_selectedTimestamp, startTime,
+                                         endTime);
+
+  // Then notify plugins that support the timeline API
+  SendTimelineSelectedTimeToPlugins(m_selectedTimestamp, startTime, endTime);
 }
 
 void Timeline::StopPlaying() {
@@ -1295,8 +1330,8 @@ wxBitmap Timeline::LoadScaledSVG(const wxString& filename, int buttonWidth,
   return bitmap;
 }
 
-bool Timeline::HandleMessage(const wxString& message_id,
-                             const wxString& message_body) {
+bool Timeline::HandlePluginMessage(const wxString& message_id,
+                                   const wxString& message_body) {
   if (message_id == "GRIB_TIMELINE_REQUEST") {
     // Get current timeline selection or current time as fallback
     wxDateTime timelineTime = GetSelectedTimestamp();
@@ -1338,7 +1373,9 @@ void Timeline::OnZoomGesture(wxZoomGestureEvent& event) {
 #endif
 
 // Global timeline functions for plugin communication
-void SendTimelineSelectedTimeToPlugins(const wxDateTime& selectedTime) {
+void SendTimelineSelectedTimeToPlugins(const wxDateTime& selectedTime,
+                                       const wxDateTime& startTime,
+                                       const wxDateTime& endTime) {
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
@@ -1346,7 +1383,9 @@ void SendTimelineSelectedTimeToPlugins(const wxDateTime& selectedTime) {
       switch (pic->m_api_version) {
         case 121: {
           auto* ppi = dynamic_cast<opencpn_plugin_121*>(pic->m_pplugin);
-          if (ppi) ppi->OnTimelineSelectedTimeChanged(selectedTime);
+          if (ppi)
+            ppi->OnTimelineSelectedTimeChanged(selectedTime, startTime,
+                                               endTime);
           break;
         }
         default:

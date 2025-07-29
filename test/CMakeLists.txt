@@ -18,7 +18,11 @@ endif ()
 
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
-set(SRC tests.cpp filter_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+set(SRC
+  tests.cpp filter_tests.cpp
+  route_tests.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+)
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)
   list(APPEND SRC datetime_tests.cpp)
 endif ()

@@ -102,8 +102,8 @@ public:
    */
   bool IsPlaying() const { return m_isPlaying; }
 
-  bool HandleMessage(const wxString& message_id,
-                     const wxString& message_body) override;
+  bool HandlePluginMessage(const wxString& message_id,
+                           const wxString& message_body) override;
 
 private:
   // GUI components
@@ -275,9 +275,15 @@ private:
  * timeline widget.
  * @param selectedTime The newly selected timestamp in local time,
  *                     or wxInvalidDateTime if no time is selected
+ * @param startTime    The start timestamp of the visible timeline range,
+ *                     or wxInvalidDateTime if no range is set
+ * @param endTime      The end timestamp of the visible timeline range,
+ *                     or wxInvalidDateTime if no range is set
  * @note Only plugins using API v121 and later will receive this notification.
  */
-void SendTimelineSelectedTimeToPlugins(const wxDateTime& selectedTime);
+void SendTimelineSelectedTimeToPlugins(const wxDateTime& selectedTime,
+                                       const wxDateTime& startTime,
+                                       const wxDateTime& endTime);
 
 /**
  * Send timeline message to all plugins that support the GRIB timeline message.

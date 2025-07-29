@@ -317,4 +317,5 @@ opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
 void opencpn_plugin_121::UpdateFollowState(int canvas_index, bool state) {}
 
 void opencpn_plugin_121::OnTimelineSelectedTimeChanged(
-    const wxDateTime& selectedTime) {}
+    const wxDateTime& selectedTime, const wxDateTime& startTime,
+    const wxDateTime& endTime) {}

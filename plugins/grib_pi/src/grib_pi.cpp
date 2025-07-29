@@ -844,7 +844,9 @@ void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   }
 }
 
-void grib_pi::OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime) {
+void grib_pi::OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime,
+                                            const wxDateTime &startTime,
+                                            const wxDateTime &endTime) {
   // Handle global timeline time change from OpenCPN
   if (!m_pGribCtrlBar) return;
 
