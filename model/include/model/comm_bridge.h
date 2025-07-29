@@ -42,6 +42,8 @@ using N2000MsgPtr = std::shared_ptr<const Nmea2000Msg>;
 using SignalKMsgPtr = std::shared_ptr<const SignalkMsg>;
 using NavMsgPtr = std::shared_ptr<const NavMsg>;
 
+using PriorityMap = std::unordered_map<std::string, int>;
+
 struct PriorityContainer {
   std::string pcclass;
   int active_priority;
@@ -83,22 +85,7 @@ public:
   ~CommBridge() override;
 
   bool Initialize();
-  void InitCommListeners();
 
-  bool HandleN2K_129029(const N2000MsgPtr& n2k_msg);
-  bool HandleN2K_129025(const N2000MsgPtr& n2k_msg);
-  bool HandleN2K_129026(const N2000MsgPtr& n2k_msg);
-  bool HandleN2K_127250(const N2000MsgPtr& n2k_msg);
-  bool HandleN2K_129540(const N2000MsgPtr& n2k_msg);
-
-  bool HandleN0183_RMC(const N0183MsgPtr& n0183_msg);
-  bool HandleN0183_HDT(const N0183MsgPtr& n0183_msg);
-  bool HandleN0183_HDG(const N0183MsgPtr& n0183_msg);
-  bool HandleN0183_HDM(const N0183MsgPtr& n0183_msg);
-  bool HandleN0183_VTG(const N0183MsgPtr& n0183_msg);
-  bool HandleN0183_GSV(const N0183MsgPtr& n0183_msg);
-  bool HandleN0183_GGA(const N0183MsgPtr& n0183_msg);
-  bool HandleN0183_GLL(const N0183MsgPtr& n0183_msg);
   /**
    * Processes NMEA 0183 AIVDO sentences containing own vessel's AIS data.
    *
@@ -120,23 +107,32 @@ public:
    */
   bool HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg);
 
-  bool HandleSignalK(const SignalKMsgPtr& sK_msg);
-
-  void OnDriverStateChange();
-
-  void OnWatchdogTimer();
   bool EvalPriority(const NavMsgPtr& msg, PriorityContainer& active_priority,
-                    std::unordered_map<std::string, int>& priority_map);
+                    PriorityMap& priority_map);
 
   std::vector<std::string> GetPriorityMaps() const;
+
   PriorityContainer& GetPriorityContainer(const std::string& category);
 
   void UpdateAndApplyMaps(const std::vector<std::string>& new_maps);
+
   bool LoadConfig();
+
   bool SaveConfig() const;
 
-  Watchdogs m_watchdogs;
-  wxTimer m_watchdog_timer;
+private:
+  PriorityContainer active_priority_position;
+  PriorityContainer active_priority_velocity;
+  PriorityContainer active_priority_heading;
+  PriorityContainer active_priority_variation;
+  PriorityContainer active_priority_satellites;
+  PriorityContainer active_priority_void;
+
+  PriorityMap priority_map_position;
+  PriorityMap priority_map_velocity;
+  PriorityMap priority_map_heading;
+  PriorityMap priority_map_variation;
+  PriorityMap priority_map_satellites;
 
   //  comm event listeners
   ObservableListener listener_N2K_129029;
@@ -161,34 +157,45 @@ public:
 
   CommDecoder m_decoder;
 
-private:
-  void PresetWatchdogs();
-  void MakeHDTFromHDM();
-  void InitializePriorityContainers();
-
-  void ApplyPriorityMaps(const std::vector<std::string>& new_maps);
-
-  void ClearPriorityMaps();
-  void PresetPriorityContainers();
-
-  PriorityContainer active_priority_position;
-  PriorityContainer active_priority_velocity;
-  PriorityContainer active_priority_heading;
-  PriorityContainer active_priority_variation;
-  PriorityContainer active_priority_satellites;
-  PriorityContainer active_priority_void;
-
-  std::unordered_map<std::string, int> priority_map_position;
-  std::unordered_map<std::string, int> priority_map_velocity;
-  std::unordered_map<std::string, int> priority_map_heading;
-  std::unordered_map<std::string, int> priority_map_variation;
-  std::unordered_map<std::string, int> priority_map_satellites;
+  bool HandleN0183_GGA(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_GLL(const N0183MsgPtr& n0183_msg);
 
   int m_n_log_watchdog_period;
 
   BridgeLogCallbacks m_log_callbacks;
   int m_last_position_priority;
   std::string m_last_position_source;
+  Watchdogs m_watchdogs;
+  wxTimer m_watchdog_timer;
+
+  void InitCommListeners();
+
+  void PresetWatchdogs();
+  void MakeHDTFromHDM();
+
+  void InitializePriorityContainers();
+  void ApplyPriorityMaps(const std::vector<std::string>& new_maps);
+  void ClearPriorityMaps();
+  void PresetPriorityContainers();
+  void OnDriverStateChange();
+
+  void OnWatchdogTimer();
+  ;
+
+  bool HandleN2K_129029(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129025(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129026(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_127250(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129540(const N2000MsgPtr& n2k_msg);
+
+  bool HandleN0183_RMC(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDT(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDG(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDM(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_VTG(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_GSV(const N0183MsgPtr& n0183_msg);
+
+  bool HandleSignalK(const SignalKMsgPtr& sK_msg);
 };
 
 #endif  // COMM_BRIDGE_H
