@@ -640,6 +640,31 @@ extern "C" double DistLoxodrome(double slat, double slon, double dlat,
                                 double dlon);
 
 /**
+ * Calculates the destination point using rhumb line (loxodrome) navigation.
+ *
+ * Given an initial position, bearing, and distance, this function calculates
+ * the destination point following a rhumb line path (constant bearing). This
+ * is the proper rhumb line counterpart to PositionBearingDistanceMercator,
+ * which uses great circle calculations.
+ *
+ * A rhumb line is a line of constant bearing, which appears as a straight line
+ * on a Mercator projection chart. While rhumb lines are longer than great
+ * circle routes, they are easier to navigate as the bearing remains constant.
+ *
+ * @param lat Latitude of starting point in decimal degrees
+ * @param lon Longitude of starting point in decimal degrees
+ * @param brg Bearing (course) in decimal degrees (0-360, 0=North, 90=East)
+ * @param dist Distance to travel in nautical miles
+ * @param dlat Pointer to store the latitude of destination point in decimal
+ * degrees
+ * @param dlon Pointer to store the longitude of destination point in decimal
+ * degrees
+ */
+extern "C" void PositionBearingDistanceLoxodrome(double lat, double lon,
+                                                 double brg, double dist,
+                                                 double *dlat, double *dlon);
+
+/**
  * Retrieves the index of a datum based on its name.
  *
  * This function searches for a datum by name in the internal datum database and
@@ -677,15 +702,16 @@ extern "C" void MolodenskyTransform(double lat, double lon, double *to_lat,
  *
  * This function calculates both the distance in nautical miles and the bearing
  * (course) in degrees between two geographic positions using Mercator formulas.
- * It handles special cases for NS and EW courses and adapts calculation methods
- * for longer distances.
+ * It handles special cases for purely north-south and east-west courses and
+ * adapts calculation methods for longer distances (> 1 degree) to improve
+ * accuracy.
  *
- * @param lat1 Latitude of first point in decimal degrees
- * @param lon1 Longitude of first point in decimal degrees
- * @param lat0 Latitude of second point in decimal degrees
- * @param lon0 Longitude of second point in decimal degrees
- * @param brg Pointer to store the bearing from second to first point in decimal
- * degrees
+ * @param lat1 Latitude of destination point in decimal degrees
+ * @param lon1 Longitude of destination point in decimal degrees
+ * @param lat0 Latitude of start point in decimal degrees
+ * @param lon0 Longitude of start point in decimal degrees
+ * @param brg Pointer to store the bearing from start to destination point in
+ * decimal degrees (0-360, where 0=North, 90=East, 180=South, 270=West)
  * @param dist Pointer to store the distance between points in nautical miles
  */
 extern "C" void DistanceBearingMercator(double lat1, double lon1, double lat0,

@@ -12,18 +12,18 @@
   <circle
      cx="12"
      cy="12"
-     r="10"
-     style="fill:#f0f0f0;stroke:#2a2a2a;stroke-width:2" />
+     r="8"
+     style="fill:#e8f4fd;stroke:#1a73e8;stroke-width:2.5" />
   <line
      x1="12"
-     y1="6"
+     y1="8"
      x2="12"
      y2="12"
-     style="stroke:#2a2a2a;stroke-width:2" />
+     style="stroke:#1a73e8;stroke-width:2" />
   <line
      x1="12"
      y1="12"
-     x2="18"
+     x2="16"
      y2="12"
-     style="stroke:#2a2a2a;stroke-width:2" />
+     style="stroke:#1a73e8;stroke-width:2" />
 </svg>
