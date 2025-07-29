@@ -89,11 +89,11 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
         break;
 
       case tlNAME:
-        if ((!pAISTarget->b_nameValid && (pAISTarget->Class == AIS_BASE)) ||
+        if ((!pAISTarget->b_name_valid && (pAISTarget->Class == AIS_BASE)) ||
             (pAISTarget->Class == AIS_SART))
           ret = _("-");
         else {
-          wxString uret = trimAISField(pAISTarget->ShipName);
+          wxString uret = trimAISField(pAISTarget->ship_name);
           if (uret == _T("Unknown"))
             ret = wxGetTranslation(uret);
           else

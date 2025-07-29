@@ -1392,7 +1392,7 @@ PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget) {
   pret->Lon = ptarget->Lon;
   pret->Lat = ptarget->Lat;
   pret->ROTAIS = ptarget->ROTAIS;
-  pret->ShipType = ptarget->ShipType;
+  pret->ShipType = ptarget->m_ship_type;
   pret->IMO = ptarget->IMO;
 
   pret->Range_NM = ptarget->Range_NM;
@@ -1406,7 +1406,7 @@ PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget) {
   pret->alarm_state = (plugin_ais_alarm_type)ptarget->n_alert_state;
 
   memcpy(pret->CallSign, ptarget->CallSign, sizeof(ptarget->CallSign) - 1);
-  memcpy(pret->ShipName, ptarget->ShipName, sizeof(ptarget->ShipName) - 1);
+  memcpy(pret->ShipName, ptarget->ship_name, sizeof(ptarget->ship_name) - 1);
 
   return pret;
 }

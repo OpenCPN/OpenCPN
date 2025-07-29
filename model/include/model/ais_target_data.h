@@ -29,6 +29,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <cstdint>
 
 #include <wx/datetime.h>
 #include <wx/intl.h>
@@ -144,16 +145,24 @@ struct Ais8_001_22 {
   Ais8_001_22_SubAreaList sub_areas;
 };
 
-struct AisTargetCallbacks {
-  std::function<double(double)> get_mag;
-  AisTargetCallbacks() : get_mag([](double a) { return toMagnetic(a); }) {}
+/**
+ * Ship/target entry in AIS cache
+ */
+class AisTargetCacheData {
+public:
+  std::string name; /** Name of the ship */
+  uint8_t type;     /** Type of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_a; /** 'A' dimension of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_b; /** 'B' dimension of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_c; /** 'C' dimension of the ship as per ITU-R M.1371-5 definition */
+  int m_dim_d; /** 'D' dimension of the ship as per ITU-R M.1371-5 definition */
 };
 
 class AisTargetData {
   friend class AisTargetDataMaker;
 
 public:
-  AisTargetData(AisTargetCallbacks callbacks);
+  AisTargetData();
   ~AisTargetData();
 
   wxString BuildQueryResult(void);
@@ -168,7 +177,7 @@ public:
   void CloneFrom(AisTargetData* q);
   bool IsValidMID(int);
 
-  int MID;
+  int m_mid;
   int MMSI;
   ais_transponder_class Class;
   int NavStatus;
@@ -182,15 +191,15 @@ public:
   int ROTAIS;
   int ROTIND;
   char CallSign[CALL_SIGN_LEN];  // includes terminator
-  char ShipName[SHIP_NAME_LEN];
+  char ship_name[SHIP_NAME_LEN];
   char ShipNameExtension[15];
-  unsigned char ShipType;
+  unsigned char m_ship_type;
   int IMO;
 
-  int DimA;
-  int DimB;
-  int DimC;
-  int DimD;
+  int m_dim_a;
+  int m_dim_b;
+  int m_dim_c;
+  int m_dim_d;
 
   double Euro_Length;  // Extensions for European Inland AIS
   double Euro_Beam;
@@ -223,7 +232,8 @@ public:
   bool b_suppress_audio;
   bool b_positionDoubtful;
   bool b_positionOnceValid;
-  bool b_nameValid;
+  bool b_name_valid;
+  bool b_name_from_cache;
   bool b_isFollower;
   bool b_isDSCtarget;  // DSC flag to a possible simultaneous AIS target
   int m_dscNature;
@@ -263,14 +273,10 @@ public:
   std::unordered_map<int, Ais8_001_22> area_notices;
   bool b_SarAircraftPosnReport;
   int altitude;  // Metres, from special position report(9)
-  bool b_nameFromCache;
   float importance;
   short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
                                                 // AIS_TARGETDATA_MAX_CANVAS is
                                                 // the max number of chartcanvas
-
-private:
-  AisTargetCallbacks m_callbacks;
 };
 
 /**
@@ -289,13 +295,11 @@ public:
   AisTargetDataMaker& operator=(const AisTargetDataMaker&) = delete;
 
   std::shared_ptr<AisTargetData> GetTargetData() {
-    return std::make_shared<AisTargetData>(m_callbacks);
+    return std::make_shared<AisTargetData>();
   }
-  void SetCallbacks(AisTargetCallbacks callbacks) { m_callbacks = callbacks; }
 
 private:
-  AisTargetDataMaker() : m_callbacks(AisTargetCallbacks()) {}
-  AisTargetCallbacks m_callbacks;
+  AisTargetDataMaker() {}
 };
 
 wxString trimAISField(char* data);

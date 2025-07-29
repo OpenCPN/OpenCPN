@@ -106,7 +106,7 @@ void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
   if (m_MMSI != 0) {  //  Faulty MMSI could be reported as 0
     auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
     if (td) {
-      wxString n0 = wxString::Format(wxT("%s"), td->ShipName);
+      wxString n0 = wxString::Format(wxT("%s"), td->ship_name);
       n0.Replace(_T("@"), _T(" "));
       n0.Trim();
       wxString mmsi = wxString::Format(wxT("%i "), td->MMSI);
