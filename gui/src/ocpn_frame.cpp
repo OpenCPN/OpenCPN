@@ -4876,17 +4876,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       g_pi_manager->CallLateInit();
 
-      //  If any PlugIn implements PlugIn Charts, we need to re-run the initial
-      //  chart load logic to select the correct chart as saved from the last
-      //  run of the app. This will be triggered at the next DoChartUpdate()
-      if (g_pi_manager->IsAnyPlugInChartEnabled()) {
-        for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-          ChartCanvas *cc = g_canvasArray.Item(i);
-          if (cc) cc->SetFirstAuto(true);
-        }
-
-        b_reloadForPlugins = true;
-      }
+      if (g_pi_manager->IsAnyPlugInChartEnabled()) b_reloadForPlugins = true;
 
       break;
     }
@@ -4979,6 +4969,17 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #endif
 
       if (b_reloadForPlugins) {
+        //  If any PlugIn implements PlugIn Charts, we need to re-run the
+        //  initial chart load logic to select the correct chart as saved from
+        //  the last run of the app. This will be triggered at the next
+        //  DoChartUpdate()
+        if (g_pi_manager->IsAnyPlugInChartEnabled()) {
+          for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if (cc) cc->SetFirstAuto(true);
+          }
+        }
+
         DoChartUpdate();
         ChartsRefresh();
       }
