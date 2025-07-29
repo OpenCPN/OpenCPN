@@ -2045,19 +2045,27 @@ class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
 public:
   opencpn_plugin_121(void *pmgr);
   /**
-   * Notifies plugin when timeline selection changes.
+   * Notifies plugin when timeline selection or range changes.
    *
    * Called by OpenCPN when the user changes the selected time in the global
-   * timeline widget. Allows plugins to update their display based on the
-   * selected time.
+   * timeline widget, or when the timeline range (start/end bounds) changes.
+   * Allows plugins to update their display based on the selected time and
+   * visible timeline range.
    *
    * @param selectedTime The newly selected timestamp, or wxInvalidDateTime
    *                     if no time is selected.
+   * @param startTime    The start timestamp of the visible timeline range,
+   *                     or wxInvalidDateTime if no range is set.
+   * @param endTime      The end timestamp of the visible timeline range,
+   *                     or wxInvalidDateTime if no range is set.
    *
-   * @note Time is in local time.
+   * @note All times are in local time.
    * @note Plugin should update its temporal data display to match this time
+   *       and consider the visible range for optimization.
    */
-  virtual void OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime);
+  virtual void OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime,
+                                             const wxDateTime &startTime,
+                                             const wxDateTime &endTime);
 };
 
 //------------------------------------------------------------------

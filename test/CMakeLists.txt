@@ -20,6 +20,7 @@ set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
   datetime_tests.cpp
+  route_tests.cpp
   tests.cpp filter_tests.cpp
   ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
 )
