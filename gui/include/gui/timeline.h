@@ -102,8 +102,8 @@ public:
    */
   bool IsPlaying() const { return m_isPlaying; }
 
-  bool HandleMessage(const wxString& message_id,
-                     const wxString& message_body) override;
+  bool HandlePluginMessage(const wxString& message_id,
+                           const wxString& message_body) override;
 
 private:
   // GUI components

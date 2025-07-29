@@ -846,6 +846,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/RolloverWin.h
     ${GUI_HDR_DIR}/route_ctx_factory.h
     ${GUI_HDR_DIR}/route_gui.h
+    ${GUI_HDR_DIR}/route_timeline_manager.h
     ${GUI_HDR_DIR}/routemanagerdialog.h
     ${GUI_HDR_DIR}/routeman_gui.h
     ${GUI_HDR_DIR}/route_point_gui.h
@@ -974,6 +975,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/rest_server_gui.cpp
     ${GUI_SRC_DIR}/RolloverWin.cpp
     ${GUI_SRC_DIR}/route_gui.cpp
+    ${GUI_SRC_DIR}/route_timeline_manager.cpp
     ${GUI_SRC_DIR}/routemanagerdialog.cpp
     ${GUI_SRC_DIR}/routeman_gui.cpp
     ${GUI_SRC_DIR}/route_point_gui.cpp

@@ -24,6 +24,8 @@
  */
 
 #include <map>
+#include <vector>
+#include <algorithm>
 
 #include <setjmp.h>
 
@@ -46,14 +48,6 @@
 
 static struct sigaction sa_all_PIM_previous;
 static sigjmp_buf env_PIM;
-
-// Registry for core components
-static std::map<wxString, CoreMessageHandler*> s_coreHandlers;
-
-void RegisterCoreMessageHandler(const wxString& message_id,
-                                CoreMessageHandler* handler) {
-  s_coreHandlers[message_id] = handler;
-}
 
 static void catch_signals_PIM(int signo) {
   switch (signo) {
@@ -102,6 +96,38 @@ static void LogMessage(const std::shared_ptr<const NavMsg>& message,
   }
 }
 
+// Registry for core components
+static std::map<wxString, CoreMessageHandler*> s_coreHandlers;
+static std::vector<CoreMessageHandler*> s_timelineHandlers;
+
+void RegisterCoreMessageHandler(const wxString& message_id,
+                                CoreMessageHandler* handler) {
+  s_coreHandlers[message_id] = handler;
+}
+
+void RegisterCoreTimelineHandler(CoreMessageHandler* handler) {
+  if (std::find(s_timelineHandlers.begin(), s_timelineHandlers.end(),
+                handler) == s_timelineHandlers.end()) {
+    s_timelineHandlers.push_back(handler);
+  }
+}
+
+void UnregisterCoreHandler(CoreMessageHandler* handler) {
+  // Remove from message handlers
+  for (auto it = s_coreHandlers.begin(); it != s_coreHandlers.end();) {
+    if (it->second == handler) {
+      it = s_coreHandlers.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  // Remove from timeline handlers
+  s_timelineHandlers.erase(std::remove(s_timelineHandlers.begin(),
+                                       s_timelineHandlers.end(), handler),
+                           s_timelineHandlers.end());
+}
+
 void SendMessageToAllPlugins(const wxString& message_id,
                              const wxString& message_body) {
   auto msg = std::make_shared<PluginMsg>(
@@ -118,7 +144,7 @@ void SendMessageToAllPlugins(const wxString& message_id,
   // Check if any core component wants to handle this message
   auto it = s_coreHandlers.find(message_id);
   if (it != s_coreHandlers.end()) {
-    if (it->second->HandleMessage(message_id, message_body)) {
+    if (it->second->HandlePluginMessage(message_id, message_body)) {
       // Core component handled it, don't send to plugins
       return;
     }
@@ -492,6 +518,14 @@ void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
             break;
         }
       }
+    }
+  }
+}
+
+void SendTimelineSelectedTimeToCoreHandlers(const wxDateTime& selectedTime) {
+  for (auto* handler : s_timelineHandlers) {
+    if (handler) {
+      handler->OnTimelineSelectedTimeChanged(selectedTime);
     }
   }
 }

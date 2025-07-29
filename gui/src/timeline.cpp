@@ -844,6 +844,9 @@ void Timeline::OnMoveForward(wxCommandEvent& event) {
 }
 
 void Timeline::OnClose(wxCommandEvent& event) {
+  // Notify core handlers that timeline is closing (no selected time)
+  SendTimelineSelectedTimeToCoreHandlers(wxInvalidDateTime);
+
   // Notify plugins that timeline is closing (no selected time)
   SendTimelineSelectedTimeToPlugins(wxInvalidDateTime);
 
@@ -1163,7 +1166,10 @@ void Timeline::ConfigureTimeline(const wxDateTime& selectedTime,
 }
 
 void Timeline::NotifyPluginsTimeChanged() {
-  // Notify plugins that support the timeline API
+  // Notify core handlers first (for better performance as they're fewer)
+  SendTimelineSelectedTimeToCoreHandlers(m_selectedTimestamp);
+
+  // Then notify plugins that support the timeline API
   SendTimelineSelectedTimeToPlugins(m_selectedTimestamp);
 }
 
@@ -1295,8 +1301,8 @@ wxBitmap Timeline::LoadScaledSVG(const wxString& filename, int buttonWidth,
   return bitmap;
 }
 
-bool Timeline::HandleMessage(const wxString& message_id,
-                             const wxString& message_body) {
+bool Timeline::HandlePluginMessage(const wxString& message_id,
+                                   const wxString& message_body) {
   if (message_id == "GRIB_TIMELINE_REQUEST") {
     // Get current timeline selection or current time as fallback
     wxDateTime timelineTime = GetSelectedTimestamp();
