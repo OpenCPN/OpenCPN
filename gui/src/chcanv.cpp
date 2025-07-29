@@ -5258,7 +5258,7 @@ int ChartCanvas::AdjustQuiltRefChart() {
 
       if (VPoint.chart_scale < min_ref_scale) {
         ret = m_pQuilt->AdjustRefOnZoomIn(VPoint.chart_scale);
-      } else if (VPoint.chart_scale > max_ref_scale) {
+      } else if (VPoint.chart_scale > max_ref_scale * 64) {
         ret = m_pQuilt->AdjustRefOnZoomOut(VPoint.chart_scale);
       } else {
         bool brender_ok = IsChartLargeEnoughToRender(pc, VPoint);
