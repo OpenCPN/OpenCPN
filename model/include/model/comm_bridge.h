@@ -45,14 +45,17 @@ using NavMsgPtr = std::shared_ptr<const NavMsg>;
 using PriorityMap = std::unordered_map<std::string, int>;
 
 struct PriorityContainer {
-  std::string pcclass;
+  std::string prio_class;
   int active_priority;
   std::string active_source;
   std::string active_identifier;
   int active_source_address;
   time_t recent_active_time;
-  PriorityContainer()
-      : active_priority(0), active_source_address(0), recent_active_time(0) {}
+  PriorityContainer(const std::string& cls, int prio = 0)
+      : prio_class(cls),
+        active_priority(prio),
+        active_source_address(-1),
+        recent_active_time(0) {}
 };
 
 struct Watchdogs {
@@ -173,7 +176,6 @@ private:
   void PresetWatchdogs();
   void MakeHDTFromHDM();
 
-  void InitializePriorityContainers();
   void ApplyPriorityMaps(const std::vector<std::string>& new_maps);
   void ClearPriorityMaps();
   void PresetPriorityContainers();
