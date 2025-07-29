@@ -275,9 +275,14 @@ static void SelectNextLowerPriority(const PriorityMap& map,
 
 CommBridge::CommBridge()
     : wxEvtHandler(),
-      active_priority_heading(),
-      m_n_log_watchdog_period(3600),
       // every 60 minutes, reduced after first position Rx
+      active_priority_position("position"),
+      active_priority_velocity("velocity"),
+      active_priority_heading("heading"),
+      active_priority_variation("variation"),
+      active_priority_satellites("satellites"),
+      active_priority_void("", -1),
+      m_n_log_watchdog_period(3600),
       m_last_position_priority(0) {
   Bind(wxEVT_TIMER, [&](wxTimerEvent&) { OnWatchdogTimer(); });
 }
@@ -285,7 +290,6 @@ CommBridge::~CommBridge() = default;
 
 bool CommBridge::Initialize() {
   m_log_callbacks = GetLogCallbacks();
-  InitializePriorityContainers();
   ClearPriorityMaps();
 
   LoadConfig();
@@ -569,13 +573,11 @@ void CommBridge::OnDriverStateChange() {
 
 std::vector<string> CommBridge::GetPriorityMaps() const {
   std::vector<string> result;
-
   result.push_back(GetPriorityMap(priority_map_position));
   result.push_back(GetPriorityMap(priority_map_velocity));
   result.push_back(GetPriorityMap(priority_map_heading));
   result.push_back(GetPriorityMap(priority_map_variation));
   result.push_back(GetPriorityMap(priority_map_satellites));
-
   return result;
 }
 
@@ -1112,40 +1114,6 @@ bool CommBridge::HandleSignalK(const SignalKMsgPtr& sK_msg) {
   return true;
 }
 
-void CommBridge::InitializePriorityContainers() {
-  active_priority_position.active_priority = 0;
-  active_priority_velocity.active_priority = 0;
-  active_priority_heading.active_priority = 0;
-  active_priority_variation.active_priority = 0;
-  active_priority_satellites.active_priority = 0;
-
-  active_priority_position.active_source.clear();
-  active_priority_velocity.active_source.clear();
-  active_priority_heading.active_source.clear();
-  active_priority_variation.active_source.clear();
-  active_priority_satellites.active_source.clear();
-
-  active_priority_position.active_identifier.clear();
-  active_priority_velocity.active_identifier.clear();
-  active_priority_heading.active_identifier.clear();
-  active_priority_variation.active_identifier.clear();
-  active_priority_satellites.active_identifier.clear();
-
-  active_priority_position.pcclass = "position";
-  active_priority_velocity.pcclass = "velocity";
-  active_priority_heading.pcclass = "heading";
-  active_priority_variation.pcclass = "variation";
-  active_priority_satellites.pcclass = "satellites";
-
-  active_priority_position.active_source_address = -1;
-  active_priority_velocity.active_source_address = -1;
-  active_priority_heading.active_source_address = -1;
-  active_priority_variation.active_source_address = -1;
-  active_priority_satellites.active_source_address = -1;
-
-  active_priority_void.active_priority = -1;
-}
-
 void CommBridge::ClearPriorityMaps() {
   priority_map_position.clear();
   priority_map_velocity.clear();
@@ -1257,7 +1225,7 @@ bool CommBridge::EvalPriority(const NavMsgPtr& msg,
   // This ensures that the data source is fully initialized, and is reporting
   // valid, sensible velocity data.
   if (msg->bus == NavAddr::Bus::N0183) {
-    if (!strncmp(active_priority.pcclass.c_str(), "velocity", 8)) {
+    if (!strncmp(active_priority.prio_class.c_str(), "velocity", 8)) {
       bool pos_ok = false;
       if (!strcmp(active_priority_position.active_source.c_str(),
                   source.c_str())) {
@@ -1406,7 +1374,7 @@ bool CommBridge::EvalPriority(const NavMsgPtr& msg,
   if (debug_priority)
     printf("  Accepting high priority: %s %d\n", source.c_str(), this_priority);
 
-  if (active_priority.pcclass == "position") {
+  if (active_priority.prio_class == "position") {
     if (this_priority != m_last_position_priority) {
       m_last_position_priority = this_priority;
 
