@@ -188,9 +188,8 @@ static string GetPriorityKey(const NavMsgPtr& msg) {
   return key;
 }
 
-static void PresetPriorityContainer(
-    PriorityContainer& pc,
-    const std::unordered_map<string, int>& priority_map) {
+static void PresetPriorityContainer(PriorityContainer& pc,
+                                    const PriorityMap& priority_map) {
   // Extract some info from the preloaded map
   // Find the key corresponding to priority 0, the highest
   string key0;
@@ -214,7 +213,7 @@ static void PresetPriorityContainer(
   pc.recent_active_time = -1;
 }
 
-static void ApplyPriorityMap(std::unordered_map<string, int>& priority_map,
+static void ApplyPriorityMap(PriorityMap& priority_map,
                              const wxString& new_prio, int category) {
   priority_map.clear();
   wxStringTokenizer tk(new_prio, "|");
@@ -227,7 +226,7 @@ static void ApplyPriorityMap(std::unordered_map<string, int>& priority_map,
   }
 }
 
-static string GetPriorityMap(const std::unordered_map<string, int>& map) {
+static string GetPriorityMap(const PriorityMap& map) {
 #define MAX_SOURCES 10
   string sa[MAX_SOURCES];
   string result;
@@ -247,8 +246,8 @@ static string GetPriorityMap(const std::unordered_map<string, int>& map) {
   return result;
 }
 
-static bool IsNextLowerPriorityAvailable(
-    const std::unordered_map<string, int>& map, const PriorityContainer& pc) {
+static bool IsNextLowerPriorityAvailable(const PriorityMap& map,
+                                         const PriorityContainer& pc) {
   int best_prio = 100;
   for (auto& it : map) {
     if (it.second > pc.active_priority) {
@@ -258,7 +257,7 @@ static bool IsNextLowerPriorityAvailable(
   return best_prio != pc.active_priority;
 }
 
-static void SelectNextLowerPriority(const std::unordered_map<string, int>& map,
+static void SelectNextLowerPriority(const PriorityMap& map,
                                     PriorityContainer& pc) {
   int best_prio = 100;
   for (const auto& it : map) {
@@ -763,15 +762,15 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
   NavData temp_data;
   ClearNavData(temp_data);
 
-  bool bvalid = true;
-  if (!m_decoder.DecodeRMC(str, temp_data)) bvalid = false;
+  bool is_valid = true;
+  if (!m_decoder.DecodeRMC(str, temp_data)) is_valid = false;
 
   if (std::isnan(temp_data.gLat) || std::isnan(temp_data.gLon)) return false;
 
   int valid_flag = 0;
   if (EvalPriority(n0183_msg, active_priority_position,
                    priority_map_position)) {
-    if (bvalid) {
+    if (is_valid) {
       gLat = temp_data.gLat;
       gLon = temp_data.gLon;
       valid_flag += POS_VALID;
@@ -783,7 +782,7 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
 
   if (EvalPriority(n0183_msg, active_priority_velocity,
                    priority_map_velocity)) {
-    if (bvalid) {
+    if (is_valid) {
       gSog = temp_data.gSog;
       valid_flag += SOG_UPDATE;
       gCog = temp_data.gCog;
@@ -795,7 +794,7 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
   if (!std::isnan(temp_data.gVar)) {
     if (EvalPriority(n0183_msg, active_priority_variation,
                      priority_map_variation)) {
-      if (bvalid) {
+      if (is_valid) {
         gVar = temp_data.gVar;
         valid_flag += VAR_UPDATE;
         m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
@@ -990,10 +989,10 @@ bool CommBridge::HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg) {
   GenericPosDatEx gpd;
   wxString sentence(str.c_str());
 
-  AisError nerr = AIS_GENERIC_ERROR;
-  nerr = DecodeSingleVDO(sentence, &gpd);
+  AisError ais_error = AIS_GENERIC_ERROR;
+  ais_error = DecodeSingleVDO(sentence, &gpd);
 
-  if (nerr == AIS_NoError) {
+  if (ais_error == AIS_NoError) {
     int valid_flag = 0;
     if (!std::isnan(gpd.kLat) && !std::isnan(gpd.kLon)) {
       if (EvalPriority(n0183_msg, active_priority_position,
@@ -1233,7 +1232,7 @@ bool CommBridge::SaveConfig() const {
 
 bool CommBridge::EvalPriority(const NavMsgPtr& msg,
                               PriorityContainer& active_priority,
-                              std::unordered_map<string, int>& priority_map) {
+                              PriorityMap& priority_map) {
   string this_key = GetPriorityKey(msg);
   if (debug_priority) printf("This Key: %s\n", this_key.c_str());
 
@@ -1298,7 +1297,7 @@ bool CommBridge::EvalPriority(const NavMsgPtr& msg,
     return false;
   }
 
-  // A channel returning, after being watchdogged out.
+  // A channel returning, after watchdog time out.
   if (this_priority < active_priority.active_priority) {
     active_priority.active_priority = this_priority;
     active_priority.active_source = source;
