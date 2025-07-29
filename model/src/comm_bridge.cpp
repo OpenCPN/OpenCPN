@@ -55,27 +55,6 @@
 #include "model/multiplexer.h"
 #include "model/notification_manager.h"
 
-//  comm event definitions
-wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129025, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
-
-wxDEFINE_EVENT(EVT_N0183_RMC, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_HDT, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_HDG, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_HDM, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_VTG, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_GSV, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_GGA, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_GLL, ObservedEvt);
-wxDEFINE_EVENT(EVT_N0183_AIVDO, ObservedEvt);
-
-wxDEFINE_EVENT(EVT_DRIVER_CHANGE, wxCommandEvent);
-
-wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
-
 #define N_ACTIVE_LOG_WATCHDOG 300
 
 using std::string;
@@ -265,7 +244,6 @@ static void SelectNextLowerPriority(const PriorityMap& map,
       best_prio = wxMin(best_prio, it.second);
     }
   }
-
   pc.active_priority = best_prio;
   pc.active_source.clear();
   pc.active_identifier.clear();
@@ -304,11 +282,10 @@ bool CommBridge::Initialize() {
   InitCommListeners();
 
   // Initialize a listener for driver state changes
-  driver_change_listener.Listen(
-      CommDriverRegistry::GetInstance().evt_driverlist_change.key, this,
-      EVT_DRIVER_CHANGE);
-  Bind(EVT_DRIVER_CHANGE,
-       [&](const wxCommandEvent& ev) { OnDriverStateChange(); });
+  m_driver_change_lstnr.Init(
+      CommDriverRegistry::GetInstance().evt_driverlist_change,
+      [&](const wxCommandEvent& ev) { OnDriverStateChange(); });
+
   return true;
 }
 
@@ -444,124 +421,85 @@ void CommBridge::InitCommListeners() {
   // Initialize the comm listeners
 
   // GNSS Position Data PGN  129029
-  //----------------------------------
-  Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
-  listener_N2K_129029.Listen(n2k_msg_129029, this, EVT_N2K_129029);
-
-  Bind(EVT_N2K_129029, [&](const ObservedEvt& ev) {
-    HandleN2K_129029(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
+  m_n2k_129029_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(129029)),
+                          [&](const ObservedEvt& ev) {
+                            HandleN2K_129029(UnpackEvtPointer<Nmea2000Msg>(ev));
+                          });
 
   // Position rapid   PGN 129025
-  //-----------------------------
-  Nmea2000Msg n2k_msg_129025(static_cast<uint64_t>(129025));
-  listener_N2K_129025.Listen(n2k_msg_129025, this, EVT_N2K_129025);
-  Bind(EVT_N2K_129025, [&](const ObservedEvt& ev) {
-    HandleN2K_129025(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
+  m_n2k_129025_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(129025)),
+                          [&](const ObservedEvt& ev) {
+                            HandleN2K_129025(UnpackEvtPointer<Nmea2000Msg>(ev));
+                          });
 
   // COG SOG rapid   PGN 129026
-  //-----------------------------
-  Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
-  listener_N2K_129026.Listen(n2k_msg_129026, this, EVT_N2K_129026);
-  Bind(EVT_N2K_129026, [&](const ObservedEvt& ev) {
-    HandleN2K_129026(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
+  m_n2k_129026_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(129026)),
+                          [&](const ObservedEvt& ev) {
+                            HandleN2K_129026(UnpackEvtPointer<Nmea2000Msg>(ev));
+                          });
 
   // Heading rapid   PGN 127250
-  //-----------------------------
-  Nmea2000Msg n2k_msg_127250(static_cast<uint64_t>(127250));
-  listener_N2K_127250.Listen(n2k_msg_127250, this, EVT_N2K_127250);
-  Bind(EVT_N2K_127250, [&](const ObservedEvt& ev) {
-    HandleN2K_127250(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
+  m_n2k_127250_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(127250)),
+                          [&](const ObservedEvt& ev) {
+                            HandleN2K_127250(UnpackEvtPointer<Nmea2000Msg>(ev));
+                          });
 
   // GNSS Satellites in View   PGN 129540
-  //-----------------------------
-  Nmea2000Msg n2k_msg_129540(static_cast<uint64_t>(129540));
-  listener_N2K_129540.Listen(n2k_msg_129540, this, EVT_N2K_129540);
-  Bind(EVT_N2K_129540, [&](const ObservedEvt& ev) {
-    HandleN2K_129540(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
+  m_n2k_129540_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(129540)),
+                          [&](const ObservedEvt& ev) {
+                            HandleN2K_129540(UnpackEvtPointer<Nmea2000Msg>(ev));
+                          });
 
   // NMEA0183
   // RMC
   Nmea0183Msg n0183_msg_RMC("RMC");
-  listener_N0183_RMC.Listen(n0183_msg_RMC, this, EVT_N0183_RMC);
-
-  Bind(EVT_N0183_RMC, [&](const ObservedEvt& ev) {
+  m_n0183_rmc_lstnr.Init(Nmea0183Msg("RMC"), [&](const ObservedEvt& ev) {
     HandleN0183_RMC(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDT
-  Nmea0183Msg n0183_msg_HDT("HDT");
-  listener_N0183_HDT.Listen(n0183_msg_HDT, this, EVT_N0183_HDT);
-
-  Bind(EVT_N0183_HDT, [&](const ObservedEvt& ev) {
+  m_n0183_hdt_lstnr.Init(Nmea0183Msg("HDT"), [&](const ObservedEvt& ev) {
     HandleN0183_HDT(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDG
-  Nmea0183Msg n0183_msg_HDG("HDG");
-  listener_N0183_HDG.Listen(n0183_msg_HDG, this, EVT_N0183_HDG);
-
-  Bind(EVT_N0183_HDG, [&](const ObservedEvt& ev) {
+  m_n0183_hdg_lstnr.Init(Nmea0183Msg("HDG"), [&](const ObservedEvt& ev) {
     HandleN0183_HDG(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDM
-  Nmea0183Msg n0183_msg_HDM("HDM");
-  listener_N0183_HDM.Listen(n0183_msg_HDM, this, EVT_N0183_HDM);
-
-  Bind(EVT_N0183_HDM, [&](const ObservedEvt& ev) {
+  m_n0183_hdm_lstnr.Init(Nmea0183Msg("HDM"), [&](const ObservedEvt& ev) {
     HandleN0183_HDM(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // VTG
-  Nmea0183Msg n0183_msg_VTG("VTG");
-  listener_N0183_VTG.Listen(n0183_msg_VTG, this, EVT_N0183_VTG);
-
-  Bind(EVT_N0183_VTG, [&](const ObservedEvt& ev) {
+  m_n0183_vtg_lstnr.Init(Nmea0183Msg("VTG"), [&](const ObservedEvt& ev) {
     HandleN0183_VTG(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GSV
-  Nmea0183Msg n0183_msg_GSV("GSV");
-  listener_N0183_GSV.Listen(n0183_msg_GSV, this, EVT_N0183_GSV);
-
-  Bind(EVT_N0183_GSV, [&](const ObservedEvt& ev) {
+  m_n0183_gsv_lstnr.Init(Nmea0183Msg("GSV"), [&](const ObservedEvt& ev) {
     HandleN0183_GSV(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GGA
-  Nmea0183Msg n0183_msg_GGA("GGA");
-  listener_N0183_GGA.Listen(n0183_msg_GGA, this, EVT_N0183_GGA);
-
-  Bind(EVT_N0183_GGA, [&](const ObservedEvt& ev) {
+  m_n0183_gga_lstnr.Init(Nmea0183Msg("GGA"), [&](const ObservedEvt& ev) {
     HandleN0183_GGA(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // GLL
   Nmea0183Msg n0183_msg_GLL("GLL");
-  listener_N0183_GLL.Listen(n0183_msg_GLL, this, EVT_N0183_GLL);
-
-  Bind(EVT_N0183_GLL, [&](const ObservedEvt& ev) {
+  m_n0183_gll_lstnr.Init(Nmea0183Msg("GLL"), [&](const ObservedEvt& ev) {
     HandleN0183_GLL(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // AIVDO
-  Nmea0183Msg n0183_msg_AIVDO("AIVDO");
-  listener_N0183_AIVDO.Listen(n0183_msg_AIVDO, this, EVT_N0183_AIVDO);
-
-  Bind(EVT_N0183_AIVDO, [&](const ObservedEvt& ev) {
+  m_n0183_aivdo_lstnr.Init(Nmea0183Msg("AIVDO"), [&](const ObservedEvt& ev) {
     HandleN0183_AIVDO(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // SignalK
-  SignalkMsg sk_msg;
-  listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
-
-  Bind(EVT_SIGNALK, [&](const ObservedEvt& ev) {
+  m_signal_k_lstnr.Init(SignalkMsg(), [&](const ObservedEvt& ev) {
     HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
   });
 }
@@ -924,15 +862,15 @@ bool CommBridge::HandleN0183_GGA(const N0183MsgPtr& n0183_msg) {
   NavData temp_data;
   ClearNavData(temp_data);
 
-  bool bvalid = true;
-  if (!m_decoder.DecodeGGA(str, temp_data)) bvalid = false;
+  bool is_valid = true;
+  if (!m_decoder.DecodeGGA(str, temp_data)) is_valid = false;
 
   if (std::isnan(temp_data.gLat) || std::isnan(temp_data.gLon)) return false;
 
   int valid_flag = 0;
   if (EvalPriority(n0183_msg, active_priority_position,
                    priority_map_position)) {
-    if (bvalid) {
+    if (is_valid) {
       gLat = temp_data.gLat;
       gLon = temp_data.gLon;
       valid_flag += POS_VALID;
@@ -944,7 +882,7 @@ bool CommBridge::HandleN0183_GGA(const N0183MsgPtr& n0183_msg) {
 
   if (EvalPriority(n0183_msg, active_priority_satellites,
                    priority_map_satellites)) {
-    if (bvalid) {
+    if (is_valid) {
       if (temp_data.n_satellites >= 0) {
         g_SatsInView = temp_data.n_satellites;
         g_bSatValid = true;
