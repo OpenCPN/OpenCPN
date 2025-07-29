@@ -138,25 +138,25 @@ private:
   PriorityMap priority_map_satellites;
 
   //  comm event listeners
-  ObservableListener listener_N2K_129029;
-  ObservableListener listener_N2K_129025;
-  ObservableListener listener_N2K_129026;
-  ObservableListener listener_N2K_127250;
-  ObservableListener listener_N2K_129540;
+  ObsListener m_n2k_129029_lstnr;
+  ObsListener m_n2k_129025_lstnr;
+  ObsListener m_n2k_129026_lstnr;
+  ObsListener m_n2k_127250_lstnr;
+  ObsListener m_n2k_129540_lstnr;
 
-  ObservableListener listener_N0183_RMC;
-  ObservableListener listener_N0183_HDT;
-  ObservableListener listener_N0183_HDG;
-  ObservableListener listener_N0183_HDM;
-  ObservableListener listener_N0183_VTG;
-  ObservableListener listener_N0183_GSV;
-  ObservableListener listener_N0183_GGA;
-  ObservableListener listener_N0183_GLL;
-  ObservableListener listener_N0183_AIVDO;
+  ObsListener m_n0183_rmc_lstnr;
+  ObsListener m_n0183_hdt_lstnr;
+  ObsListener m_n0183_hdg_lstnr;
+  ObsListener m_n0183_hdm_lstnr;
+  ObsListener m_n0183_vtg_lstnr;
+  ObsListener m_n0183_gsv_lstnr;
+  ObsListener m_n0183_gga_lstnr;
+  ObsListener m_n0183_gll_lstnr;
+  ObsListener m_n0183_aivdo_lstnr;
 
-  ObservableListener listener_SignalK;
+  ObsListener m_signal_k_lstnr;
 
-  ObservableListener driver_change_listener;
+  ObsListener m_driver_change_lstnr;
 
   CommDecoder m_decoder;
 
