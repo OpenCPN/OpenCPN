@@ -850,7 +850,12 @@ void RouteManagerDialog::Create() {
   btnExportViz->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this);
-
+  // SQLite Backup
+  btnBackup = new wxButton(this, -1, _("Backup..."));
+  itemBoxSizer6->Add(btnBackup, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN);
+  btnBackup->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                     wxCommandEventHandler(RouteManagerDialog::OnBackupClick),
+                     NULL, this);
   // Dialog OK button
   wxSize sz = ::wxGetDisplaySize();
   if (sz.y < sz.x) {                           // landscape
@@ -3360,6 +3365,18 @@ void RouteManagerDialog::OnImportClick(wxCommandEvent &event) {
 }
 void RouteManagerDialog::OnExportClick(wxCommandEvent &event) {
   ExportGPX(this);
+}
+
+void RouteManagerDialog::OnBackupClick(wxCommandEvent &event) {
+  int result = BackupDatabase(this);
+  if (result == wxID_YES) {
+    OCPNMessageBox(NULL, _("Backup successful"), _("Backup result"),
+                   wxICON_INFORMATION | wxOK);
+  } else if (result == wxID_NO) {
+    OCPNMessageBox(NULL, _("Backup Failed\nCheck the OpenCPN Logs"),
+                   _("Backup result"), wxICON_INFORMATION | wxOK);
+  }
+  // If the backup was cancelled the result is wxID_ABORT
 }
 
 void RouteManagerDialog::OnExportVizClick(wxCommandEvent &event) {

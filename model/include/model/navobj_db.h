@@ -71,6 +71,9 @@ public:
   // Legacy navobj import
   bool ImportLegacyNavobj(wxFrame *frame);
 
+  // Maintainance
+  bool Backup(wxString fileName);
+
 private:
   NavObj_dB();
   ~NavObj_dB();

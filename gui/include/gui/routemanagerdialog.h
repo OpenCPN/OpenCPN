@@ -148,6 +148,7 @@ private:
   void OnImportClick(wxCommandEvent &event);
   void OnExportClick(wxCommandEvent &event);
   void OnExportVizClick(wxCommandEvent &event);
+  void OnBackupClick(wxCommandEvent &event);
   void OnFilterChanged(wxCommandEvent &event);
   void OnKey(wxKeyEvent &ke);
   void OnShowAllRteCBClicked(wxCommandEvent &event);
@@ -210,6 +211,7 @@ private:
   wxButton *btnImport;
   wxButton *btnExport;
   wxButton *btnExportViz;
+  wxButton *btnBackup;
   wxCheckBox *m_cbShowAllRte;
   wxCheckBox *m_cbShowAllWP;
   wxCheckBox *m_cbShowAllTrk;
