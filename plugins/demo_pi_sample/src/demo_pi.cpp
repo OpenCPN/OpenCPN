@@ -28,6 +28,8 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include <cstdint>
+
 #include <wx/aui/aui.h>
 
 #include "demo_pi.h"

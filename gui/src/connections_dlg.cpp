@@ -856,6 +856,7 @@ public:
       : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, "");
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
+    sizer->Add(new ExtraRmbRmcCheckbox(this), wxSizerFlags().Expand());
     sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
@@ -875,6 +876,18 @@ private:
 
     void Apply() override { g_bMagneticAPB = GetValue(); }
     void Cancel() override { SetValue(g_bMagneticAPB); }
+  };
+
+  class ExtraRmbRmcCheckbox : public wxCheckBox, public ApplyCancel {
+  public:
+    ExtraRmbRmcCheckbox(wxWindow* parent)
+        : wxCheckBox(parent, wxID_ANY,
+                     _("Always send RMB and RMC NMEA0183 data")) {
+      wxCheckBox::SetValue(g_always_send_rmb_rmc);
+    }
+
+    void Apply() override { g_always_send_rmb_rmc = GetValue(); }
+    void Cancel() override { SetValue(g_always_send_rmb_rmc); }
   };
 
   /** NMEA filter setup bound to g_bfilter_cogsog and g_COGFilterSec. */

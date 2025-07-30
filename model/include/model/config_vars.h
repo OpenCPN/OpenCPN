@@ -49,6 +49,12 @@ extern bool g_bWplUsePosition;
 extern bool g_enable_root_menu_debug;
 extern bool g_persist_active_route;
 
+/**
+ * Always send RMB and RMC n0183 messages even if there is no active
+ * route. One use case is the Nasa Marine instruments Clipper GPS
+ */
+extern bool g_always_send_rmb_rmc;
+
 extern double g_n_arrival_circle_radius;
 extern double g_PlanSpeed;
 extern double g_TrackDeltaDistance;

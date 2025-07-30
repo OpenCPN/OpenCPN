@@ -59,6 +59,7 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/autopilot_output.h"
 #include "model/cmdline.h"
 #include "model/comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "model/comm_drv_registry.h"
@@ -893,7 +894,7 @@ MyFrame::~MyFrame() {
   // delete pCurrentStack;
 
   //      Free the Route List
-  wxRouteListNode *node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node = pRouteList->GetFirst();
 
   while (node) {
     Route *pRouteDelete = node->GetData();
@@ -1760,7 +1761,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       //    than 0.25 NM from this point
       //    This will prevent screen clutter and database congestion.
       if (g_declutter_anchorage) {
-        wxRoutePointListNode *node =
+        RoutePointList::compatibility_iterator node =
             pWayPointMan->GetWaypointList()->GetFirst();
         while (node) {
           RoutePoint *pr = node->GetData();
@@ -5814,6 +5815,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   nBlinkerTick++;
 
+  if (g_always_send_rmb_rmc) SendNoRouteRmbRmc(*g_pRouteMan);
+
   // This call sends autopilot output strings to output ports.
   bool bactiveRouteUpdate = RoutemanGui(*g_pRouteMan).UpdateProgress();
 
@@ -6639,7 +6642,8 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           w[i][_T("Description")] = (*itp)->GetDescription();
           w[i][_T("GUID")] = (*itp)->m_GUID;
           w[i][_T("ArrivalRadius")] = (*itp)->GetWaypointArrivalRadius();
-          wxHyperlinkListNode *node = (*itp)->m_HyperlinkList->GetFirst();
+          HyperlinkList::compatibility_iterator node =
+              (*itp)->m_HyperlinkList->GetFirst();
           if (node) {
             int n = 1;
             while (node) {
