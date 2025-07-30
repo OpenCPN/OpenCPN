@@ -10,7 +10,6 @@
 
 class StdInstanceApp : public wxAppConsole {
 public:
-
   StdInstanceApp() : wxAppConsole() {}
 
   bool OnInit() {

@@ -5414,7 +5414,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC &dc,
           m_pDummyBM =
               new wxBitmap(VPoint.rv_rect.width, VPoint.rv_rect.height, -1);
 
-          //    Clear the quilt
+        //    Clear the quilt
 #ifdef ocpnUSE_DIBSECTION
         ocpnMemDC dumm_dc;
 #else

@@ -1199,7 +1199,7 @@ void glChartCanvas::SetupOpenGL() {
   else
     wxLogMessage(_T("OpenGL-> Vertexbuffer Objects unavailable"));
 
-    //      Can we use the stencil buffer in a FBO?
+  //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES
   m_b_useFBOStencil = QueryExtension("GL_OES_packed_depth_stencil");
 #else
@@ -4145,7 +4145,7 @@ void glChartCanvas::Render() {
       //  Especially seen on sparse RNC rendering
       if (fabs(VPoint.rotation) > 0) accelerated_pan = false;
 
-        // do we allow accelerated panning?  can we perform it here?
+      // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 #else  // GLES2
        // enable rendering to texture in framebuffer object

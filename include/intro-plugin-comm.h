@@ -29,13 +29,14 @@ There are other ids for NMEA2000 and SignalK messages available.
 Likewise, there are similar methods to access the payload.
 See the ocpn_plugin.h header file.
 
-To invoke this method when a GPGGA message arrives, initiate the ObsListener like:
+To invoke this method when a GPGGA message arrives, initiate the ObsListener
+like:
 
         listener.Init(NMEA0183Id("GPGGA"),
                       [&](ObservedEvt ev) { HandleGPGA(ev); });
 
-The last line is a lambda expression which could be used to much more than to just
-invoke a method, see Epilog: Using the lambda below.
+The last line is a lambda expression which could be used to much more than to
+just invoke a method, see Epilog: Using the lambda below.
 
 
 \subsection epilog Epilog: Using the lambda

@@ -10,7 +10,6 @@
 
 class WxInstanceApp : public wxAppConsole {
 public:
-
   WxInstanceApp() : wxAppConsole() {}
 
   void OnInitCmdLine(wxCmdLineParser& parser) override {}

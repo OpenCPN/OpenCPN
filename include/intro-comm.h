@@ -3,8 +3,8 @@
 
                   ┌─────────────────────────────────────────────────────────┐
     Plugins       │      Plugins using decoded and raw data messaging       │
-                  └─────────────────────────────────────────────────────────┘           
-                  
+                  └─────────────────────────────────────────────────────────┘
+
                   ┌─────────────────────────────────────────────────────────┐
                   │                    Plugin message API                   │
                   └───────────────────────────────────────────────┐         │
@@ -17,11 +17,11 @@
                   │                                           │   │         │
                   │  nmea0183    nmea2000    signalK   ...    │   │         │
                   └───────────────────────────────────────────┘   └─────────┘
-    
+
                   ┌─────────────────────────────────────────────────────────┐
     Transport     │             Navigation messages (raw data)              │
                   └─────────────────────────────────────────────────────────┘
-    
+
                   ┌─────────────────────────────────────────────────────────┐
                   │                   Driver registry                       │
     Drivers       ├╶╶╶╶╶╶╶-┬╶╶╶╶╶╶╶╶╶╶-┬╶╶╶╶╶╶╶┬╶╶╶╶╶╶╶╶╶╶┬╶╶╶╶╶╶╶╶╶┬╶╶╶╶╶╶╶┤
@@ -29,7 +29,7 @@
                   │        │ NGT-1     │ CAN   │          │ +ipv4   │ ...   │
                   │        │           │       │          │ TCP/IP  │       │
                   └────────┴───────────┴───────┴──────────┴─────────┴───────┘
-    
+
 
 All internal communications described here is based on the \ref observable
 library which is available in *libs*. This library implements a basic
@@ -47,9 +47,9 @@ These messages are of type NavMsg defined in *comm_navmsg.h*.
 This is a unified, common type for all sorts of messages including NMEA2000,
 NMEA0183 and SignalK.
 
-In the core, *CommDecoder* acts as a dispatcher which listens to the 
-message bus and invokes various parts when messages arrives. 
-*CommDecoder* also handles priorities when receiving the same data from 
+In the core, *CommDecoder* acts as a dispatcher which listens to the
+message bus and invokes various parts when messages arrives.
+*CommDecoder* also handles priorities when receiving the same data from
 multiple sources, selecting the data source to use.
 
 For plugins, a simplified API is available, see \ref plugincomms.

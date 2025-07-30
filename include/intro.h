@@ -5,7 +5,7 @@
 
 Only very little of opencpn is documented. Bits and pieces:
 
-  - \ref comm 
+  - \ref comm
   - \ref plugincomms
   - \ref observable
 

@@ -19,10 +19,9 @@ static std::string GetSocketPath() {
   return path.GetFullPath().ToStdString();
 }
 
-class CliServer: public wxConnection {
+class CliServer : public wxConnection {
 public:
-  CliServer(wxAppConsole* app)
-      : wxConnection(), wx_app(app), exit_timer(app) {}
+  CliServer(wxAppConsole* app) : wxConnection(), wx_app(app), exit_timer(app) {}
 
   class ExitTimer : public wxTimer {
   public:
@@ -30,7 +29,6 @@ public:
     ExitTimer(wxAppConsole* app) : wxTimer(), wx_app(app) {}
     void Notify() { wx_app->ExitMainLoop(); }
   };
-
 
   bool OnExec(const wxString&, const wxString& data) {
     std::cout << data << "\n" << std::flush;
@@ -66,21 +64,19 @@ private:
   ExitTimer exit_timer;
 };
 
-
 class ServerFactory : public wxServer {
 public:
-   const bool is_connected;
-   wxAppConsole* wx_app;
+  const bool is_connected;
+  wxAppConsole* wx_app;
 
-   ServerFactory() : wxServer(), is_connected(Create(GetSocketPath())) {}
+  ServerFactory() : wxServer(), is_connected(Create(GetSocketPath())) {}
 
-   wxConnectionBase* OnAcceptConnection(const wxString& topic) {
-     return new CliServer(wx_app);
-   }
+  wxConnectionBase* OnAcceptConnection(const wxString& topic) {
+    return new CliServer(wx_app);
+  }
 };
 
 class ServerApp : public wxAppConsole {
-
   ServerFactory factory;
   void OnInitCmdLine(wxCmdLineParser& parser) override {
     factory.wx_app = this;
@@ -89,11 +85,10 @@ class ServerApp : public wxAppConsole {
     wxLog::SetLogLevel(wxLOG_Warning);
   }
 
-
   bool OnCmdLineParsed(wxCmdLineParser& parser) override {
     wxInitializer initializer;
-    std::cout << "Listening on " << GetSocketPath() << ", connected: " 
-            << (factory.is_connected ? "true\n" : "false\n") << std::flush;
+    std::cout << "Listening on " << GetSocketPath() << ", connected: "
+              << (factory.is_connected ? "true\n" : "false\n") << std::flush;
     return true;
   }
 };

@@ -20,9 +20,9 @@ static std::string SocketPath() {
 
 class _IpcClientFactory;  // forward
 
-class _IpcClient: public wxConnection {
+class _IpcClient : public wxConnection {
 public:
-  _IpcClient(wxAppConsole* app) : wxConnection(),  exit_timer(app) {}
+  _IpcClient(wxAppConsole* app) : wxConnection(), exit_timer(app) {}
 
   class ExitTimer : public wxTimer {
   public:
@@ -30,7 +30,6 @@ public:
     ExitTimer(wxAppConsole* app) : wxTimer(), console_app(app) {}
     void Notify() { console_app->ExitMainLoop(); }
   };
-
 
   bool OnExec(const wxString& tbd, const wxString& data) {
     exit_timer.Start(200, wxTIMER_ONE_SHOT);
@@ -70,23 +69,20 @@ private:
   ExitTimer exit_timer;
 };
 
-
 class _IpcClientFactory : public wxClient {
 public:
-   wxConnectionBase* connection;
-   wxAppConsole* app;
+  wxConnectionBase* connection;
+  wxAppConsole* app;
 
-   _IpcClientFactory(wxAppConsole* _app)
-       : wxClient(), connection(0), app(_app) {}
-   _IpcClientFactory(wxAppConsole* _app, const std::string& path)
-       : wxClient(), app(_app)
-   {
-      connection = MakeConnection("localhost", path, "OpenCPN");
-   }
+  _IpcClientFactory(wxAppConsole* _app)
+      : wxClient(), connection(0), app(_app) {}
+  _IpcClientFactory(wxAppConsole* _app, const std::string& path)
+      : wxClient(), app(_app) {
+    connection = MakeConnection("localhost", path, "OpenCPN");
+  }
 
-   wxConnectionBase* OnMakeConnection() { return new _IpcClient(app); }
+  wxConnectionBase* OnMakeConnection() { return new _IpcClient(app); }
 };
-
 
 class ClientApp : public wxAppConsole {
 public:
@@ -95,7 +91,8 @@ public:
   ClientApp() : wxAppConsole(), factory(this, SocketPath()) {}
 
   void OnInitCmdLine(wxCmdLineParser& parser) override {
-    parser.AddParam("command", wxCMD_LINE_VAL_STRING,  wxCMD_LINE_PARAM_MULTIPLE);
+    parser.AddParam("command", wxCMD_LINE_VAL_STRING,
+                    wxCMD_LINE_PARAM_MULTIPLE);
     wxLog::SetActiveTarget(new wxLogStderr);
     wxLog::SetTimestamp("");
     wxLog::SetLogLevel(wxLOG_Warning);
@@ -107,40 +104,36 @@ public:
     for (size_t i = 0; i < parser.GetParamCount(); i++)
       args.push_back(parser.GetParam(i).ToStdString());
     if (!factory.connection) {
-      std::cout << "Cannot connect to server at " << SocketPath() << "\n" 
-              << std::flush;
+      std::cout << "Cannot connect to server at " << SocketPath() << "\n"
+                << std::flush;
       exit(1);
     }
     if (args.size() < 1) {
       std::cerr << "que?\n";
       exit(1);
-    }
-    else if (args[0] == "raise") {
+    } else if (args[0] == "raise") {
       bool ok = factory.connection->Execute("raise");
       exit(ok ? 0 : 2);
-    }
-    else if (args[0] == "quit") {
+    } else if (args[0] == "quit") {
       bool ok = factory.connection->Execute("quit");
       exit(ok ? 0 : 2);
-    }
-    else if (args[0] == "get_rest_endpoint") {
+    } else if (args[0] == "get_rest_endpoint") {
       auto cmd = std::string(args[0]);
       const void* reply = factory.connection->Request(cmd.c_str(), 0);
       std::cout << static_cast<const char*>(reply) << "\n";
       exit(reply ? 0 : 2);
-    }
-    else if (args[0] == "open") {
+    } else if (args[0] == "open") {
       auto cmd = std::string(args[0]) + " " + args[1];
       const void* reply = factory.connection->Request(cmd.c_str(), 0);
       reply_buff = reply ? static_cast<const char*>(reply) : "";
       std::cout << reply_buff << "\n" << std::flush;
       exit(reply ? 0 : 2);
-    }
-     else {
+    } else {
       std::cerr << "que?\n";
       exit(1);
     }
   }
+
 private:
   std::string reply_buff;
 };

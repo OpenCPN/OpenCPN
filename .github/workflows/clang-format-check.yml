@@ -2,11 +2,18 @@
 name: test-clang-format
 on: [push, pull_request]
 jobs:
-  build:
+  # Primary check with v18 - handles developers still using older clang-format versions.
+  # Falls back to v19 if v18 fails, accommodating devs with newer clang-format installs.
+  # This dual-version approach prevents formatting conflicts during transition period.
+  format-check-v18:
     runs-on: ubuntu-latest
+    continue-on-error: true
+    outputs:
+      v18-result: ${{ steps.format-check.outcome }}
     steps:
       - uses: actions/checkout@v2
-      - uses: DoozyX/clang-format-lint-action@v0.18.2
+      - id: format-check
+        uses: DoozyX/clang-format-lint-action@v0.20
         with:
           source: >-
             ./model ./gui
@@ -20,4 +27,26 @@ jobs:
             ./plugins/grib_pi/src/bzip2
           extensions: h,cpp
           clangFormatVersion: 18
+          style: file
+
+  format-check-v19:
+    runs-on: ubuntu-latest
+    needs: format-check-v18
+    if: needs.format-check-v18.outputs.v18-result == 'failure'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: DoozyX/clang-format-lint-action@v0.20
+        with:
+          source: >-
+            ./model ./gui
+            ./plugins/wmm_pi/src ./plugins/dashboard_pi/src
+            ./plugins/chartdldr_pi/src ./plugins/grib_pi/src
+            ./plugins/demo_pi_sample/src
+          exclude: >-
+            ./plugins/dashboard_pi/src/wxJSON
+            ./plugins/chartdldr_pi/src/unarr
+            ./plugins/chartdldr_pi/src/tinyxml
+            ./plugins/grib_pi/src/bzip2
+          extensions: h,cpp
+          clangFormatVersion: 19
           style: file

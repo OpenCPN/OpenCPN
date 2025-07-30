@@ -1405,8 +1405,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     if (cte.GetChartType() == CHART_TYPE_CM93COMP)
       m_fullscreen_index_array.push_back(i);
 
-      //  On android, SDK > 29, we require that the directory of charts be
-      //  "writable" as determined by Android Java file system
+    //  On android, SDK > 29, we require that the directory of charts be
+    //  "writable" as determined by Android Java file system
 #ifdef __OCPN__ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
     if (!androidIsDirWritable(fn.GetPath())) continue;
@@ -1430,8 +1430,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     if (!m_bquiltskew && fabs(skew_norm) > 1.0) continue;
 
-      //    Special case for S57 ENC
-      //    Add the chart only if the chart's fractional area exceeds n%
+    //    Special case for S57 ENC
+    //    Add the chart only if the chart's fractional area exceeds n%
 #if 0
     if( CHART_TYPE_S57 == cte.GetChartType() ) {
       //Get the fractional area of this candidate
