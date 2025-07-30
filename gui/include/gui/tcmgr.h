@@ -70,7 +70,7 @@
  * spacing is greater than this value (in seconds).
  */
 #define TIDE_TIME_STEP (TIDE_TIME_PREC)
-#define TIDE_BAD_TIME ((time_t) - 1)
+#define TIDE_BAD_TIME ((time_t)-1)
 
 //----------------------------------------------------------------------------
 //   Reference Station Data

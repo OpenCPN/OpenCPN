@@ -484,9 +484,9 @@ void configureShaders(float width, float height) {
   float vp_transform[16];
   mat4x4 m;
   mat4x4_identity(m);
-  mat4x4_scale_aniso((float(*)[4])vp_transform, m, 2.0 / width, -2.0 / height,
+  mat4x4_scale_aniso((float (*)[4])vp_transform, m, 2.0 / width, -2.0 / height,
                      1.0);
-  mat4x4_translate_in_place((float(*)[4])vp_transform, -width / 2, -height / 2,
+  mat4x4_translate_in_place((float (*)[4])vp_transform, -width / 2, -height / 2,
                             0);
 
   mat4x4 I;
