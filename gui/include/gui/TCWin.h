@@ -63,8 +63,20 @@ public:
 
   void RecalculateSize();
   void SetTimeFactors();
+  void CreateLayout();
+  void InitializeStationText();
+  void PaintChart(wxDC &dc, const wxRect &chartRect);
+  void HandleChartMouseMove(int mainWindowX, int mainWindowY,
+                            const wxPoint &chartPanelPos);
 
 private:
+  // Forward declaration for custom chart panel
+  class TideChartPanel;
+
+  wxPanel *m_topPanel;           // Panel containing station info and tide list
+  TideChartPanel *m_chartPanel;  // Panel for the tide chart
+  wxPanel *m_buttonPanel;        // Panel for buttons and controls
+
   wxTextCtrl *m_ptextctrl;
   wxTimer m_TCWinPopupTimer;
   wxTimer m_TimeIndicatorTimer;
