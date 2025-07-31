@@ -3417,3 +3417,16 @@ wxBitmap GetObjectIcon_PlugIn(const wxString& name) {
   } else
     return wxNullBitmap;
 }
+
+bool IsRouteActive(wxString route_guid) {
+  if (g_pRouteMan->GetpActiveRoute())
+    return (route_guid.IsSameAs(g_pRouteMan->GetpActiveRoute()->m_GUID));
+  else
+    return false;
+}
+
+void SetBoatPosition(double zlat, double zlon) {
+  gLat = zlat;
+  gLon = zlon;
+  gFrame->UpdateStatusBar();
+}

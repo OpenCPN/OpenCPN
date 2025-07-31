@@ -6937,6 +6937,9 @@ extern DECL_EXP void SetMaxZoomScale(double max_scale);
 
 extern DECL_EXP wxBitmap GetObjectIcon_PlugIn(const wxString &name);
 
+extern DECL_EXP bool IsRouteActive(wxString route_guid);
+extern DECL_EXP void SetBoatPosition(double zlat, double zlon);
+
 //  Plugin Context Menu support
 typedef enum _PI_ContextObjectType {
   OBJECT_CHART = 0,
