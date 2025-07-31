@@ -1017,7 +1017,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 
     mat4x4 X;
     mat4x4_mul(X,
-               (float(*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()
+               (float (*)[4])m_glchartCanvas->m_pParentCanvas->GetpVP()
                    ->vp_matrix_transform,
                Q);
     shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
@@ -1228,7 +1228,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       mat4x4 X;
       mat4x4_mul(
           X,
-          (float(*)[4])
+          (float (*)[4])
               mvmatrix,  // m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform,
           Q);
 
@@ -1302,7 +1302,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       Q[3][0] = xoffset;
       Q[3][1] = yoffset;
       mat4x4 X;
-      mat4x4_mul(X, (float(*)[4])mvmatrix, Q);
+      mat4x4_mul(X, (float (*)[4])mvmatrix, Q);
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)X);
 
       //  Fill color

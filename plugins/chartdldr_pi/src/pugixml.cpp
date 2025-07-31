@@ -2534,8 +2534,10 @@ PUGI__FN char_t* strconv_escape(char_t* s, gap& g) {
     cursor = append_new_node(cursor, *alloc, TYPE);          \
     if (!cursor) PUGI__THROW_ERROR(status_out_of_memory, s); \
   }
-#define PUGI__POPNODE() \
-  { cursor = cursor->parent; }
+#define PUGI__POPNODE()      \
+  {                          \
+    cursor = cursor->parent; \
+  }
 #define PUGI__SCANFOR(X)         \
   {                              \
     while (*s != 0 && !(X)) ++s; \
@@ -7939,7 +7941,7 @@ PUGI__FN double convert_string_to_number(const char_t* string) {
   // check string format
   if (!check_string_to_number_format(string)) return gen_nan();
 
-    // parse string
+  // parse string
 #ifdef PUGIXML_WCHAR_MODE
   return wcstod(string, 0);
 #else

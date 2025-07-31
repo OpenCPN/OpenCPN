@@ -1678,7 +1678,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         float angle = 0;
         mat4x4_rotate_Z(Q, I, angle);
 
-        mat4x4_dup((float(*)[4])vp->vp_transform, Q);
+        mat4x4_dup((float (*)[4])vp->vp_transform, Q);
 
 #else
         ps52plib->SetReducedBBox(cvp.GetBBox());
