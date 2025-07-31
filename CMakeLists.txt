@@ -1616,12 +1616,7 @@ if (ASCIIDOC_PROG)
     DEPENDS ${CMAKE_BINARY_DIR}/authors.stamp
   )
 else ()
-  add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/data/authors.html
-    COMMAND cmake -E false
-    COMMENT "asciidoc not found, cannot rebuild authors.html"
-    DEPENDS ${CMAKE_BINARY_DIR}/authors.stamp
-  )
+  message(STATUS "asciidoc not found, cannot rebuild authors.html")
 endif ()
 add_custom_target(authors DEPENDS ${CMAKE_SOURCE_DIR}/data/authors.html)
 
