@@ -1277,7 +1277,7 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
 }
 
 Route *FindRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node = pRouteList->GetFirst();
   while (node) {
     Route *proute = node->GetData();
 
@@ -1325,7 +1325,7 @@ bool NavObjectCollection1::CreateNavObjGPXRoutes(void) {
   // Routes
   if (!pRouteList) return false;
 
-  wxRouteListNode *node1 = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
 
@@ -1403,7 +1403,7 @@ bool NavObjectCollection1::AddGPXWaypoint(RoutePoint *pWP) {
 void NavObjectCollection1::AddGPXRoutesList(RouteList *pRoutes) {
   SetRootGPXNode();
 
-  wxRouteListNode *pRoute = pRoutes->GetFirst();
+  RouteList::compatibility_iterator pRoute = pRoutes->GetFirst();
   while (pRoute) {
     Route *pRData = pRoute->GetData();
     AddGPXRoute(pRData);
@@ -1635,7 +1635,7 @@ RoutePoint *WaypointExists(const wxString &guid) {
 bool WptIsInRouteList(RoutePoint *pr) {
   bool IsInList = false;
 
-  wxRouteListNode *node1 = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
@@ -1659,7 +1659,7 @@ bool WptIsInRouteList(RoutePoint *pr) {
 }
 
 Route *RouteExists(const wxString &guid) {
-  wxRouteListNode *route_node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
 
   while (route_node) {
     Route *proute = route_node->GetData();
@@ -1672,7 +1672,7 @@ Route *RouteExists(const wxString &guid) {
 }
 
 Route *RouteExists(Route *pTentRoute) {
-  wxRouteListNode *route_node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator route_node = pRouteList->GetFirst();
   while (route_node) {
     Route *proute = route_node->GetData();
 

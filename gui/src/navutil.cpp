@@ -2768,7 +2768,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
       node = node->GetNext();
     }
     // RTEs and TRKs
-    wxRouteListNode *node1 = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
     while (node1) {
       Route *pRoute = node1->GetData();
 

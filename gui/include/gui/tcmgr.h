@@ -106,8 +106,8 @@ public:
 
   int GetStationTimeOffset(IDX_entry *pIDX);
   int GetNextBigEvent(time_t *tm, int idx);
-  std::wstring GetTidalEventStr(int station_id, wxDateTime ref_dt, double lat,
-                                double lon, int dt_type);
+  std::string GetTidalEventStr(int station_id, wxDateTime ref_dt, double lat,
+                               double lon, int dt_type);
   double GetStationLat(IDX_entry *pIDX);
   double GetStationLon(IDX_entry *pIDX);
 

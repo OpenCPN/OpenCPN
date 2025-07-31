@@ -32,6 +32,7 @@
 #include <wx/string.h>
 
 #include "model/hyperlink.h"
+#include "model/select_item.h"
 
 #include "bbox.h"
 
@@ -42,6 +43,10 @@
 
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
+
+class RoutePoint;  // forward
+
+WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
 
 // Default color, global state
 extern wxColour g_colourWaypointRangeRingsColour;
@@ -120,11 +125,29 @@ public:
   wxString GetIconName(void) { return m_IconName; }
   void SetIconName(wxString name) { m_IconName = name; }
 
-  void *GetSelectNode(void) { return m_SelectNode; }
-  void SetSelectNode(void *node) { m_SelectNode = node; }
+  SelectableItemList::compatibility_iterator GetSelectNode(void) {
+    return m_SelectNode;
+  }
 
-  void *GetManagerListNode(void) { return m_ManagerNode; }
-  void SetManagerListNode(void *node) { m_ManagerNode = node; }
+  void SetSelectNode(SelectableItemList::compatibility_iterator node) {
+    m_SelectNode = node;
+  }
+
+  void ClearSelectNode() {
+    m_SelectNode = SelectableItemList::compatibility_iterator();
+  }
+
+  RoutePointList::compatibility_iterator GetManagerListNode(void) {
+    return m_ManagerNode;
+  }
+
+  void SetManagerListNode(RoutePointList::compatibility_iterator node) {
+    m_ManagerNode = node;
+  }
+
+  void ClearManagerListNode() {
+    m_ManagerNode = RoutePointList::compatibility_iterator();
+  }
 
   void SetName(const wxString &name);
   void CalculateNameExtents(void);
@@ -560,8 +583,8 @@ private:
   wxBitmap *m_pbmIcon;
   wxString m_IconName;
 
-  void *m_SelectNode;
-  void *m_ManagerNode;
+  SelectableItemList::compatibility_iterator m_SelectNode;
+  RoutePointList::compatibility_iterator m_ManagerNode;
 
   float m_IconScaleFactor;
   wxBitmap m_ScaledBMP;
@@ -609,7 +632,5 @@ private:
   unsigned int m_dragIconTexture;
   int m_dragIconTextureWidth, m_dragIconTextureHeight;
 };
-
-WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
 
 #endif  //  _ROUTEPOINT_H__

@@ -893,7 +893,7 @@ MyFrame::~MyFrame() {
   // delete pCurrentStack;
 
   //      Free the Route List
-  wxRouteListNode *node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node = pRouteList->GetFirst();
 
   while (node) {
     Route *pRouteDelete = node->GetData();
