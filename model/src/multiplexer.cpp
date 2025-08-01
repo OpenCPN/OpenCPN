@@ -52,6 +52,16 @@
 
 Multiplexer *g_pMUX;
 
+/** KeyProvider wrapper for a plain key string. */
+class RawKey : public KeyProvider {
+public:
+  explicit RawKey(const std::string &key) : m_key(key) {}
+  [[nodiscard]] std::string GetKey() const override { return m_key; }
+
+private:
+  std::string m_key;
+};
+
 static bool CheckSumCheck(const std::string &sentence) {
   size_t check_start = sentence.find('*');
   if (check_start == wxString::npos || check_start > sentence.size() - 3)
@@ -194,14 +204,8 @@ Multiplexer::Multiplexer(const MuxLogCallbacks &cb, bool &filter_behaviour)
 
     : m_log_callbacks(cb),
       m_legacy_input_filter_behaviour(filter_behaviour),
-      m_n0183_all_lstnr(Nmea0183Msg("ALL"),
-                        [&](const ObservedEvt &ev) {
-                          HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
-                        }),
-      m_n2k_all_lstnr(Nmea2000Msg(static_cast<uint64_t>(1)),
-                      [&](const ObservedEvt &ev) {
-                        HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
-                      }),
+      m_new_msgtype_lstnr(NavMsgBus::GetInstance().new_msg_event,
+                          [&](ObservedEvt &) { OnNewMessageType(); }),
       m_n2k_repeat_count(0),
       m_last_pgn_logged(0) {
   if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = "Generic";
@@ -364,7 +368,7 @@ void Multiplexer::HandleN0183(
   }
 }
 
-bool Multiplexer::HandleN2K_Log(
+bool Multiplexer::HandleN2kLog(
     const std::shared_ptr<const Nmea2000Msg> &n2k_msg) {
   if (!m_log_callbacks.log_is_active()) return false;
 
@@ -420,4 +424,31 @@ bool Multiplexer::HandleN2K_Log(
     m_last_pgn_logged = pgn;
   }
   return true;
+}
+
+void Multiplexer::OnNewMessageType() {
+  for (auto msg_key : NavMsgBus::GetInstance().GetActiveMessages()) {
+    if (m_listeners.find(msg_key) != m_listeners.end()) continue;
+    if (msg_key.find("::") == std::string::npos) continue;
+    auto key_parts = ocpn::split(msg_key, "::");
+    if (key_parts.size() < 2) continue;
+    ObsListener ol;
+    switch (NavMsg::GetBusByKey(msg_key)) {
+      case NavAddr::Bus::N0183: {
+        ol = ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+          HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+        });
+      } break;
+
+      case NavAddr::Bus::N2000:
+        ol = ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+          HandleN2kLog(UnpackEvtPointer<Nmea2000Msg>(ev));
+        });
+        break;
+
+      default:
+        break;
+    }
+    m_listeners[msg_key] = std::move(ol);
+  }
 }
