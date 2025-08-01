@@ -154,14 +154,16 @@ For each release do:
 4. Merge upstream changes using `gbp import-ref -u5.9.3-beta3`. 
    The -u argument is the last part of an upstream tag like 
    `upstream/5.9.3-beta3`.
-5. Do possible changes in the new release.
+5. Rebase possible patches to new version, see
+   <<rebase-patches, Rebase patches>> below
+6. Do possible changes in the new release.
    Note that only files in the _debian/_ directory can be modified;
    changes in other files are handled using patches in _debian/patches_.
    See Modifying Sources <<edit-src,below>>
-6. Commit all changes.
-7. Finalize the changelog entry using `dch -r`.
-8. Commit the change in _debian/changelog_
-9. Push the actual branch, for example `git push upstream ubuntu/jammy`
+7. Commit all changes.
+8. Finalize the changelog entry using `dch -r`.
+9. Commit the change in _debian/changelog_
+10. Push the actual branch, for example `git push upstream ubuntu/jammy`
 
 [#publish]
 == Publish existing downstream release to PPA
@@ -254,7 +256,26 @@ And build package. -j4 builds in  four parallel pipes, depending on processor
 you might want to use another value (I typically use -j12).
 
     $  debuild -us -uc -j4
-    
+
+[#rebase-patches]
+== Rebase patches to current release.
+
+Rebasing patches could be more or less complicated. The canned workflow which
+works in most cases:
+
+    $ gbp pq import --force --time-machine=5
+    $ gbp pg export 
+    $ git add debian/patches
+    $ git commit -m "d/patches: rebased"
+
+Check that all is ok -- if this works the patches are rebased:
+
+    $ gbp pq import --force; gbp pq drop
+
+If this still does not work the patches need to be applied "by hand" using
+`patch -p1` and eventually updated. Seldom required.
+
+
 [#edit-src]
 == Modifying sources in a downstream release.
 
