@@ -280,6 +280,7 @@ public:
 private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
+  void OnNewMessageType();
 
   ObservableListener evt_ais_json_listener;
   ObservableListener evt_blacklisted_plugin_listener;
@@ -294,10 +295,13 @@ private:
   ObservableListener evt_routeman_json_listener;
   ObservableListener evt_routeman_leginfo_listener;
 
-  ObservableListener m_listener_N0183_all;
   ObservableListener m_listener_SignalK;
 
+  ObsListener m_new_msgtype_lstnr;
+
   ObsListener m_on_msg_sent_listener;
+
+  std::unordered_map<std::string, ObsListener> m_0183_listeners;
 
   wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);
