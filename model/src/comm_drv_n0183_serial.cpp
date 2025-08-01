@@ -166,17 +166,13 @@ void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
   if (msg.size() < 6) return;
   if (msg[0] != '$' && msg[0] != '!') return;
 
-  // We use the full src + type to discriminate messages,  like GPGGA
-  std::string identifier(msg.begin() + 1, msg.begin() + 6);
-
-  // notify msg listener and also "ALL" N0183 messages, to support plugin
-  // API using original talker id
+  // notify msg listener
   std::string payload(msg.begin(), msg.end());
-  auto message =
-      std::make_shared<const Nmea0183Msg>(identifier, payload, GetAddress());
-  auto message_all = std::make_shared<const Nmea0183Msg>(*message, "ALL");
-
-  if (m_params.SentencePassesFilter(payload, FILTER_INPUT))
+  if (m_params.SentencePassesFilter(payload, FILTER_INPUT)) {
+    // We use the full src + type to discriminate messages,  like GPGGA
+    std::string id(msg.begin() + 1, msg.begin() + 6);
+    auto message =
+        std::make_shared<const Nmea0183Msg>(id, payload, GetAddress());
     m_listener.Notify(std::move(message));
-  m_listener.Notify(std::move(message_all));
+  }
 }
