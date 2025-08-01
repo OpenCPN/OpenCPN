@@ -10,10 +10,10 @@ Bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81358
  1 file changed, 1 insertion(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d4f50aa..49a38cc 100644
+index 5b07c0c..c7c4ae1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -355,6 +355,7 @@ endif ()
+@@ -358,6 +358,7 @@ endif ()
  # -march=native"
  if (NOT WIN32 AND NOT APPLE)
    add_compile_options("-Wall")
