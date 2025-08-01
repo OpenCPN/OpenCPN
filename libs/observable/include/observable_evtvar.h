@@ -1,9 +1,6 @@
 /*************************************************************************
  *
- * Project:  OpenCPN
- * Purpose: General observable implementation with several specializations.
- *
- * Copyright (C) 2022 Alec Leamas
+ * Copyright (C) 2022 - 2025 Alec Leamas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +17,14 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
+
+/**
+ *\file
+ *
+ * A common variable shared between producer and consumer which supports
+ * Listen() and Notify().
+ */
+
 
 #ifndef OBSERVABLE___EVTVAR__H
 #define OBSERVABLE___EVTVAR__H
