@@ -464,17 +464,11 @@ void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent &event) {
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
-
+    // notify message listener
     auto address = std::make_shared<NavAddr>(NavAddr0183("Android_RAW"));
-
     auto msg =
         std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
     m_listener.Notify(std::move(msg));
-    m_listener.Notify(std::move(msg_all));
   }
 }
 
