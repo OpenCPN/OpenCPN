@@ -148,6 +148,8 @@ private:
  *  Keeps listening over it's lifespan, removes itself on destruction.
  */
 class DECL_EXP ObservableListener final {
+  friend class ObsListener;
+
 public:
   /** Default constructor, does not listen to anything. */
   ObservableListener() : key(""), listener(0), ev_type(wxEVT_NULL) {}
@@ -186,6 +188,7 @@ public:
   /** Set object to send wxEventType ev to listener on changes in key. */
   void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
 
+  /** Set object to send wxEventType ev to listener on changes in key. */
   void Listen(const KeyProvider& kp, wxEvtHandler* l, wxEventType evt) {
     Listen(kp.GetKey(), l, evt);
   }
@@ -247,22 +250,33 @@ private:
 class ObsListener : public wxEvtHandler {
 public:
   /** Create an object which does not listen until Init(); */
-  ObsListener() {}
+  ObsListener() : m_obs_evt(wxNewEventType()) {}
 
   /** ObsListener can only be assigned using std::move */
-  ObsListener(ObsListener&& other) {
-    this->m_listener = std::move(other.m_listener);
+  ObsListener(ObsListener&& other) : m_obs_evt(wxNewEventType()) {
+    m_listener.Unlisten();
+    Unbind(other.m_obs_evt, other.m_action);
+    m_action = other.m_action;
+    Bind(m_obs_evt, m_action);
+    m_listener.Listen(other.m_listener.key, this, m_obs_evt);
   }
+
   ObsListener& operator=(ObsListener&& other) {
-    m_listener = std::move(other.m_listener);
+    m_listener.Unlisten();
+    Unbind(other.m_obs_evt, other.m_action);
+    m_action = other.m_action;
+    Bind(m_obs_evt, m_action);
+    m_listener.Listen(other.m_listener.key, this, m_obs_evt);
     return *this;
   }
+
   ObsListener(const ObsListener&) = delete;
   ObsListener& operator=(ObsListener&) = delete;
 
   /** Create object which invokes action when kp is notified. */
   ObsListener(const KeyProvider& kp,
-              std::function<void(ObservedEvt& ev)> action) {
+              std::function<void(ObservedEvt& ev)> action)
+      : m_obs_evt(wxNewEventType()) {
     Init(kp, action);
   }
 
@@ -273,6 +287,7 @@ public:
   /** Initiate an object yet not listening. */
   void Init(const KeyProvider& kp,
             std::function<void(ObservedEvt& ev)> action) {
+    m_action = action;
     const wxEventTypeTag<ObservedEvt> EvtObs(wxNewEventType());
     // i. e. wxDEFINE_EVENT(), avoiding the evil macro.
     m_listener.Listen(kp, this, EvtObs);
@@ -281,6 +296,8 @@ public:
 
 private:
   ObservableListener m_listener;
+  std::function<void(ObservedEvt& ev)> m_action;
+  const wxEventTypeTag<ObservedEvt> m_obs_evt;
 };
 
 /** Shorthand for accessing ObservedEvt.SharedPtr(). */
