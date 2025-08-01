@@ -29,6 +29,11 @@
 #include <wx/image.h>
 #include <wx/sizer.h>
 
+#ifndef ocpnUSE_wxBitmapBundle
+#include <wx/sstream.h>
+#include <wxSVG/svg.h>
+#endif
+
 #if wxCHECK_VERSION(3, 2, 0) || defined(ocpnUSE_wxBitmapBundle)
 #include <wx/bmpbndl.h>
 #include <iostream>
@@ -57,7 +62,9 @@ static wxBitmap LoadSvgBitmap(const char* svg, wxWindow* parent) {
   return bundle.GetBitmap(icon_size);
 #else
   wxStringInputStream wis(buffer);
-  wxSVGDocument svg_doc(wis);
+  wxSVGDocument svg_doc;
+  svg_doc.Load(wis);
+
   wxImage image =
       svg_doc.Render(parent->GetCharHeight(), parent->GetCharHeight());
   assert(wxBitmap(image).IsOk() && "Cannot load svg icon");

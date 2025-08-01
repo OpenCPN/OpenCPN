@@ -29,8 +29,9 @@ wxBitmap loadAndroidSVG(const char* svg, unsigned int width,
 #endif
 
 void SvgButton::LoadIcon(const char* svg) {
+  //return;
 #ifndef ANDROID
-    char buffer[2048];
+    char buffer[12048];
     assert(strlen(svg) < sizeof(buffer) && "svg icon too long");
     strcpy(buffer, svg);
 #ifdef ocpnUSE_wxBitmapBundle
@@ -39,7 +40,8 @@ void SvgButton::LoadIcon(const char* svg) {
     SetBitmap(bundle);
 #else
     wxStringInputStream wis(buffer);
-    wxSVGDocument svg_doc(wis);
+    wxSVGDocument svg_doc;
+    svg_doc.Load(wis);
     wxImage image = svg_doc.Render(GetCharHeight(), GetCharHeight());
     SetBitmap(wxBitmap(image));
 #endif

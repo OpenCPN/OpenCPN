@@ -186,7 +186,7 @@ extern bool bDBUpdateInProgress;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
 
-extern ConsoleCanvas *console;
+extern APConsole *console;
 extern OCPNPlatform *g_Platform;
 
 extern RouteList *pRouteList;
@@ -5258,7 +5258,7 @@ int ChartCanvas::AdjustQuiltRefChart() {
 
       if (VPoint.chart_scale < min_ref_scale) {
         ret = m_pQuilt->AdjustRefOnZoomIn(VPoint.chart_scale);
-      } else if (VPoint.chart_scale > max_ref_scale) {
+      } else if (VPoint.chart_scale > max_ref_scale * 64) {
         ret = m_pQuilt->AdjustRefOnZoomOut(VPoint.chart_scale);
       } else {
         bool brender_ok = IsChartLargeEnoughToRender(pc, VPoint);
@@ -5927,10 +5927,10 @@ void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
 void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                                      wxPoint GPSOffsetPixels,
                                      wxPoint2DDouble lGPSPoint) {
-  if (m_animationActive) return;
-  // Develop a uniform length for course predictor line dash length, based on
-  // physical display size Use this reference length to size all other graphics
-  // elements
+  // if (m_animationActive) return;
+  //  Develop a uniform length for course predictor line dash length, based on
+  //  physical display size Use this reference length to size all other graphics
+  //  elements
   float ref_dim = m_display_size_mm / 24;
   ref_dim = wxMin(ref_dim, 12);
   ref_dim = wxMax(ref_dim, 6);
