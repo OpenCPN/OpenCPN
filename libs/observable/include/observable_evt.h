@@ -1,9 +1,6 @@
 /*************************************************************************
  *
- * Project:  OpenCPN
- * Purpose: wxCommandEvt subclass which can carry also a shared_ptr<void>
- *
- * Copyright (C) 2022 Alec Leamas
+ * Copyright (C) 2022 - 2025 Alec Leamas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +17,14 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
+
+/**
+ *\file
+ *
+ * wxCommandEvt subclass which can carry also a shared_ptr<void>
+ *
+ * This definition is duplicated and used also in the plugin interface
+ */
 
 #ifndef OBSERVABLE_EVT_H  // Guard also used in ocpn_plugin.h
 #define OBSERVABLE_EVT_H
@@ -47,7 +52,7 @@ public:
 
   [[nodiscard]] std::shared_ptr<const void> GetSharedPtr() const { return m_shared_ptr; }
 
-  void SetSharedPtr(const std::shared_ptr<const void>& p) { m_shared_ptr = p; }
+  void SetSharedPtr(const std::shared_ptr<const void> p) { m_shared_ptr = p; }
 
 private:
   std::shared_ptr<const void> m_shared_ptr;

@@ -1,9 +1,7 @@
 /*************************************************************************
  *
- * Project:  OpenCPN
- * Purpose: General observable implementation with several specializations.
  *
- * Copyright (C) 2022 Alec Leamas
+ * Copyright (C) 2022 - 2025 Alec Leamas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +18,13 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
+
+ /**
+  * \file
+  * General observable implementation with several specializations.
+  *
+  * A Notify() / Listen() library built on top of wxWidget's event handling.
+  */
 
 #ifndef OBSERVABLE_H
 #define OBSERVABLE_H

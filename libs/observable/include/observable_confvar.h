@@ -1,9 +1,6 @@
 /*************************************************************************
  *
- * Project:  OpenCPN
- * Purpose: Notify/listen config var wrapper
- *
- * Copyright (C) 2022 Alec Leamas
+ * Copyright (C) 2022 - 2025 Alec Leamas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +17,12 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Notify()/Listen() configuration variable wrapper
+ */
 
 #ifndef OBSERVABLE_CONFVAR_H
 #define OBSERVABLE_CONFVAR_H
