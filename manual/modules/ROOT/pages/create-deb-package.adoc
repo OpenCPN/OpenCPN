@@ -65,6 +65,7 @@ get all necessary three branches:
     $ git fetch upstream pristine-tar:pristine-tar
     $ git fetch upstream ubuntu/numbat:ubuntu/numbat
     $ git checkout ubuntu/numbat
+    $ git checkout .; git clean -fxd
 
 `ubuntu/numbat` is the branch to use when building Ubuntu Numbat (24.04)
 packages.
