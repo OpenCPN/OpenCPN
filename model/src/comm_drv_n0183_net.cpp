@@ -154,18 +154,15 @@ void CommDriverN0183Net::HandleN0183Msg(const std::string& sentence) {
   if ((sentence[0] == '$' || sentence[0] == '!') && sentence.size() > 5) {
     m_driver_stats.rx_count += sentence.size();
     std::string identifier;
-    // We notify based on full message, including the Talker ID
-    identifier = sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
-    auto msg =
-        std::make_shared<const Nmea0183Msg>(identifier, sentence, GetAddress());
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
-    if (m_params.SentencePassesFilter(sentence, FILTER_INPUT))
+    // notify message listener
+    if (m_params.SentencePassesFilter(sentence, FILTER_INPUT)) {
+      // We notify based on full message, including the Talker ID
+      std::string id = sentence.substr(1, 5);
+      auto msg =
+          std::make_shared<const Nmea0183Msg>(id, sentence, GetAddress());
       m_listener.Notify(std::move(msg));
-    m_listener.Notify(std::move(msg_all));
+    }
   }
 }
 
