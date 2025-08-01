@@ -127,7 +127,9 @@ tarball created by git-archive above do:
 
 === Push upstream changes
 
-Final step is to push these changes:
+Final step is to push these changes. 
+Updates the `pristine-tar` and `upstream/latest` branches and a new tag like 
+`upstream/5.12.2+dfsg`
 
    $ gbp push
 
