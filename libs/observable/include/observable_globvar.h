@@ -21,14 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
 
-#ifndef _OBSERVABLE_GLOBVAR_H
-#define _OBSERVABLE_GLOBVAR_H
-
-#include <memory>
-#include <string>
-#include <vector>
-
-#include <wx/event.h>
+#ifndef OBSERVABLE_GLOBVAR_H
+#define OBSERVABLE_GLOBVAR_H
 
 #include "observable.h"
 
@@ -70,19 +64,20 @@
 template <typename T>
 class GlobalVar : public Observable {
 public:
-  GlobalVar(T* ptr) : Observable(ptr_key(ptr)), variable(ptr) {}
+  explicit GlobalVar(T* ptr) : Observable(ptr_key(ptr)), variable(ptr) {}
+
+  GlobalVar() = delete;
 
   void Set(const T& arg) {
     *variable = arg;
     Observable::Notify();
   }
 
-  const T Get() { return *variable; }
+  T Get() { return *variable; }
 
 private:
-  GlobalVar();  // not implemented
 
   T* const variable;
 };
 
-#endif  // _OBSERVABLE_GLOBVAR_H
+#endif  // OBSERVABLE_GLOBVAR_H
