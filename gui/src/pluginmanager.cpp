@@ -961,7 +961,8 @@ void PlugInManager::InitCommListeners(void) {
 
   auto& msgbus = NavMsgBus::GetInstance();
 
-  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
+  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"),
+                              this,  // FIXME (leamas)
                               EVT_N0183_PLUGIN);
   Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();
