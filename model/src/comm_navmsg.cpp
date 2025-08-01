@@ -152,3 +152,9 @@ std::string PluginMsg::to_string() const {
   }
   return name + ": " + ss.str();
 }
+
+NavAddr::Bus NavMsg::GetBusByKey(const std::string& key) {
+  if (key.find("::") == std::string::npos) return NavAddr::Bus::Undef;
+  auto key_parts = ocpn::split(key, "::");
+  return NavAddr::StringToBus(key_parts[0]);
+}

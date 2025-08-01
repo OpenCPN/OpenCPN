@@ -80,7 +80,13 @@ struct BridgeLogCallbacks {
         log_message([](const Logline&) {}) {}
 };
 
-/** Process incoming messages. */
+/**
+ * Process incoming messages.
+ *
+ * Listem to "known" messages and process them for example by broadcasting
+ * ship data. Also handles message source priorities i.e., which source to
+ * use for broadcasted data.
+ */
 class CommBridge : public wxEvtHandler {
 public:
   CommBridge();

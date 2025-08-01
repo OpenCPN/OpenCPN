@@ -229,6 +229,9 @@ public:
   NavMsg() = delete;
   virtual ~NavMsg() = default;
 
+  /** Return bus corresponding to given key. */
+  static NavAddr::Bus GetBusByKey(const std::string& key);
+
   /** Return unique key used by observable to notify/listen. */
   virtual std::string key() const = 0;
 
