@@ -87,11 +87,14 @@ To update an existing clone:
 _debian/changelog_ is picky about the format. Editing by hand is hard. Instead,
 use the `dch` tool. It has a multitude of options.In preparation of importing a
 new version, first update *debian/changelog* with a new version, something like
-`dch -v 1:5.9.3-beta3+dfsg`
+`dch -v 1:5.9.3-beta3+dfsg-1~bpo24.04+1`
 
 `dch` throws you in an editor loaded with _debian/changelog_.
 Complete the entry as you consider best.
-The standard message for a new version is "New upstream Release".
+The standard message for a new version is "New upstream Release". 
+Commit the update using a like 
+`git commit -am "d/chnangelog: provisionary 1:5.9.3-beta3+dfsg-1~bpo24.04+1"`
+The entry is, as stated in the commit message, provisionary at this point.
 
 === Import a release tag into upstream/latest
 
@@ -119,7 +122,9 @@ see Make a fresh clone <<create-clone, above>>.
 Nest step is to import this tarball into upstream/latest. Using the
 tarball created by git-archive above do:
 
-   $ gbp import-orig ../opencpn_5.9.3~beta3+dfsg.orig.tar.xz
+    $ git clean -fxd; git checkout .
+    $ gbp import-orig ../opencpn_5.9.3~beta3+dfsg.orig.tar.xz
+
 
 === Push upstream changes
 
