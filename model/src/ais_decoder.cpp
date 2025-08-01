@@ -3138,19 +3138,12 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
                   60;  // increase watchdog time up to 1 minute
               // add the changed sentence into nmea message system
               std::string full_sentence = aivdostr.ToStdString();
-              std::string identifier("AIVDO");
-              // We notify based on full message, including the Talker ID
-              // notify message listener and also "ALL" N0183 messages, to
-              // support plugin API using original talker id
               auto address = std::make_shared<NavAddr0183>("virtual");
+              // We notify based on full message, including the Talker ID
+              // Notify message listener
               auto msg = std::make_shared<const Nmea0183Msg>(
-                  identifier, full_sentence, address);
-              auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
-              auto &msgbus = NavMsgBus::GetInstance();
-
-              msgbus.Notify(std::move(msg));
-              msgbus.Notify(std::move(msg_all));
+                  "AIVDO", full_sentence, address);
+              NavMsgBus::GetInstance().Notify(std::move(msg));
             }
           }
           return AIS_NoError;
