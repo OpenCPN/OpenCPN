@@ -452,21 +452,13 @@ void PushNMEABuffer(wxString buf) {
   std::string full_sentence = buf.ToStdString();
 
   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
-    std::string identifier;
     // We notify based on full message, including the Talker ID
-    identifier = full_sentence.substr(1, 5);
+    std::string id = full_sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
+    // notify message listener
     auto address = std::make_shared<NavAddr0183>("virtual");
-    auto msg =
-        std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
-    auto& msgbus = NavMsgBus::GetInstance();
-
-    msgbus.Notify(std::move(msg));
-    msgbus.Notify(std::move(msg_all));
+    auto msg = std::make_shared<const Nmea0183Msg>(id, full_sentence, address);
+    NavMsgBus::GetInstance().Notify(std::move(msg));
   }
 }
 
