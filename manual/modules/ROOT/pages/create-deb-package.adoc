@@ -61,7 +61,7 @@ get all necessary three branches:
     $ cd OpenCPN
     $ git clone --origin upstream  https://github.com/OpenCPN/OpenCPN.git
     $ cd OpenCPN
-    $ git fetch upstream upstream/latest:upstream/latest
+    $ git fetch --tags upstream upstream/latest:upstream/latest
     $ git fetch upstream pristine-tar:pristine-tar
     $ git fetch upstream ubuntu/numbat:ubuntu/numbat
     $ git checkout ubuntu/numbat
@@ -77,7 +77,6 @@ To update an existing clone:
     $ git fetch upstream pristine-tar:pristine-tar
     $ git checkout ubuntu/numbat
     $ git pull upstream ubuntu/numbat
-
 
 [#import-version]
 == Import a new opencpn version into packaging branches.
