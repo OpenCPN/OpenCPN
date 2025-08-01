@@ -26,7 +26,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include <wx/config.h>
 
@@ -68,13 +67,13 @@ class ConfigVar : public Observable {
 public:
   ConfigVar(const std::string& section_, const std::string& key_,
             wxConfigBase* cb);
+  ConfigVar() = delete;
 
   void Set(const T& arg);
 
   const T Get(const T& default_val);
 
 private:
-  ConfigVar();  // not implemented
 
   const std::string section;
   const std::string key;
