@@ -50,7 +50,10 @@ struct MuxLogCallbacks {
 };
 
 /**
- * Handle logging and forwarding of incoming messages.
+ * Handle logging and forwarding of incoming n0183/n2k  messages.
+ *
+ * Listen to all n0183 and n2k messages, whether they are known or not
+ * i.e., anything generating an input event in the Data Monitor parlance.
  */
 class Multiplexer : public wxEvtHandler {
 public:
@@ -81,13 +84,15 @@ public:
 private:
   MuxLogCallbacks m_log_callbacks;
   bool& m_legacy_input_filter_behaviour;
-  ObsListener m_n0183_all_lstnr;
-  ObsListener m_n2k_all_lstnr;
+  std::unordered_map<std::string, ObsListener> m_listeners;
+  ObsListener m_new_msgtype_lstnr;
   int m_n2k_repeat_count;
   unsigned int m_last_pgn_logged;
 
+  void OnNewMessageType();
+
   void HandleN0183(const std::shared_ptr<const Nmea0183Msg>& n0183_msg) const;
 
-  bool HandleN2K_Log(const std::shared_ptr<const Nmea2000Msg>& n2k_msg);
+  bool HandleN2kLog(const std::shared_ptr<const Nmea2000Msg>& n2k_msg);
 };
 #endif  // MULTIPLEXER_H_
