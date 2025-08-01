@@ -1041,7 +1041,7 @@ bool NavObj_dB::LoadAllTracks() {
 
     sqlite3_bind_text(stmtp, 1, guid.c_str(), -1, SQLITE_TRANSIENT);
 
-    int GPXSeg = 0;
+    int GPXTrkSeg = 1;
     while (sqlite3_step(stmtp) == SQLITE_ROW) {
       if (!new_trk) {
         new_trk = new Track;
@@ -1057,8 +1057,6 @@ bool NavObj_dB::LoadAllTracks() {
         new_trk->m_Colour = color;
       }
 
-      GPXSeg += 1;
-
       double latitude = sqlite3_column_double(stmtp, 0);
       double longitude = sqlite3_column_double(stmtp, 1);
       std::string timestamp =
@@ -1067,13 +1065,13 @@ bool NavObj_dB::LoadAllTracks() {
 
       auto point = new TrackPoint(latitude, longitude, timestamp);
 
-      point->m_GPXTrkSegNo = GPXSeg;
+      point->m_GPXTrkSegNo = GPXTrkSeg;
       new_trk->AddPoint(point);
     }
     sqlite3_finalize(stmtp);
 
     if (new_trk) {
-      new_trk->SetCurrentTrackSeg(GPXSeg);
+      new_trk->SetCurrentTrackSeg(GPXTrkSeg);
 
       //    Add the HTML links
       const char* sqlh = R"(

@@ -203,6 +203,14 @@ bool pi_loadShaders() {
   enum Consts { INFOLOG_LEN = 512 };
   GLchar infoLog[INFOLOG_LEN];
 
+  // Some platforms require explicit initialization of GLEW interface
+  // in the plugin module
+#if defined(__linux__) && defined(__OCPN_USE_GLEW__) && \
+    !defined(__ANDROID__) && !defined(__WXOSX)
+  auto GLEW_test = glCreateProgram;  // this is (unsigned int(*)(void))
+  if (!GLEW_test) glewInit();
+#endif
+
   // Are the shaders ready?
 
   // Simple colored triangle shader

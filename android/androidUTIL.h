@@ -37,6 +37,7 @@
 
 #include "OCPN_Sound.h"
 #include "android_jvm.h"
+#include "model/datetime.h"
 
 class ArrayOfCDI;
 
@@ -209,6 +210,8 @@ wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
 wxString androidGetAndroidSystemLocale();
 bool androidIsDirWritable(wxString dir);
 wxArrayString GetConfigChartDirectories();
+wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
+                                     wxDateTime time);
 
 class InProgressIndicator : public wxGauge {
   DECLARE_EVENT_TABLE()
