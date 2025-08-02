@@ -1,10 +1,10 @@
-opencpn (1:5.12.2+dfsg-1~bpo12+1) UNRELEASED; urgency=medium
+opencpn (1:5.12.2+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release
   * Patches: rebased
   * d/opencpn-data.install: Authors.html -> authors.html
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 02 Aug 2025 08:08:06 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 02 Aug 2025 08:26:56 +0200
 
 opencpn (1:5.12.0+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
