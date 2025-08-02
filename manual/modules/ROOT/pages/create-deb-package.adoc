@@ -263,7 +263,8 @@ you might want to use another value (I typically use -j12).
 Rebasing patches could be more or less complicated. The canned workflow which
 works in most cases:
 
-    $ gbp pq import --force --time-machine=5
+    $ gbp pq import --force --time-machine=5A
+    $ git rebase ubuntu/numbat   #  Packaging  branch we work in
     $ gbp pg export 
     $ git add debian/patches
     $ git commit -m "d/patches: rebased"
