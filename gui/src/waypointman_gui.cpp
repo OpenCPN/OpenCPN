@@ -285,11 +285,11 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   pmi = ProcessLegacyIcon(iconDir + _T("Marks-Boundary.svg"), _T("boundary"),
                           _T("Boundary Mark"), displayDPmm);
   if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Buoy-TypeA.svg"), _T("bouy1"),
-                          _T("Bouy Type A"), displayDPmm);
+  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Buoy-TypeA.svg"), _T("buoy1"),
+                          _T("buoy Type A"), displayDPmm);
   if (pmi) pmi->preScaled = true;
-  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Buoy-TypeB.svg"), _T("bouy2"),
-                          _T("Bouy Type B"), displayDPmm);
+  pmi = ProcessLegacyIcon(iconDir + _T("Marks-Buoy-TypeB.svg"), _T("buoy2"),
+                          _T("buoy Type B"), displayDPmm);
   if (pmi) pmi->preScaled = true;
   pmi = ProcessLegacyIcon(iconDir + _T("Activity-Campfire.svg"), _T("campfire"),
                           _T("Campfire"), displayDPmm);
@@ -337,10 +337,10 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
                           _T("MOB"), displayDPmm);
   if (pmi) pmi->preScaled = true;
   pmi = ProcessLegacyIcon(iconDir + _T("Marks-Mooring-Buoy.svg"), _T("mooring"),
-                          _T("Mooring Bouy"), displayDPmm);
+                          _T("Mooring buoy"), displayDPmm);
   if (pmi) pmi->preScaled = true;
   pmi = ProcessLegacyIcon(iconDir + _T("Marks-Mooring-Buoy-Super.svg"),
-                          _T("oilbouy"), _T("Oil Bouy"), displayDPmm);
+                          _T("oilbuoy"), _T("Oil buoy"), displayDPmm);
   if (pmi) pmi->preScaled = true;
   pmi = ProcessLegacyIcon(iconDir + _T("Hazard-Oil-Platform.svg"),
                           _T("platform"), _T("Platform"), displayDPmm);
