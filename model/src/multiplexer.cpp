@@ -136,7 +136,12 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
   const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
   auto &source_driver = FindDriver(drivers, n0183_msg->source->iface);
-  if (!source_driver) return;
+  if (!source_driver) {
+    // might be a message from a "virtual" plugin.
+    if ((n0183_msg->source->iface != "virtual")) {
+      return;
+    }
+  }
 
   wxString fmsg;
   bool bpass_input_filter = true;

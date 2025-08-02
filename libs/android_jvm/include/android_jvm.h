@@ -54,6 +54,7 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1,
 wxString callActivityMethod_s2s2i(const char *method, wxString parm1,
                                   wxString parm2, int parm3, int parm4);
 wxString callActivityMethod_ssi(const char *method, wxString parm1, int parm2);
+wxString callActivityMethod_ssl(const char *method, wxString parm1, long parm2);
 
 void androidTerminate();
 
