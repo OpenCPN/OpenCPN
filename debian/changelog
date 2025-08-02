@@ -1,3 +1,10 @@
+opencpn (1:5.12.2+dfsg-1~bpo20.04+2) focal; urgency=medium
+
+  * new upstream release
+  * Correct patch file name 
+
+ -- dsr <dsr@dsr-VirtualBox>  Sat, 02 Aug 2025 11:32:04 -0400
+
 opencpn (1:5.12.2+dfsg-1~bpo20.04+1) focal; urgency=medium
 
   * New upstream release
