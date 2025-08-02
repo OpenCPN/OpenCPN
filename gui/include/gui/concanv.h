@@ -124,10 +124,10 @@ private:
  * - Toggleable route total/leg display
  * - Dynamic font and color scheme adaptation
  */
-class ConsoleCanvas : public wxFrame {
+class ConsoleCanvasWin : public wxWindow {
 public:
-  ConsoleCanvas(wxWindow *frame);
-  ~ConsoleCanvas();
+  ConsoleCanvasWin(wxWindow *parent);
+  ~ConsoleCanvasWin();
   /**
    * Updates route-related data displays.
    *
@@ -148,6 +148,8 @@ public:
   void OnContextMenu(wxContextMenuEvent &event);
   void OnContextMenuSelection(wxCommandEvent &event);
   void RefreshConsoleData(void);
+  void ToggleShowHighway();
+
   /**
    * Toggles between route total and current leg display modes.
    *
@@ -179,6 +181,87 @@ private:
   char m_speedUsed;
 
   DECLARE_EVENT_TABLE()
+};
+
+class ConsoleCanvasFrame : public wxFrame {
+public:
+  ConsoleCanvasFrame(wxWindow *parent);
+  ~ConsoleCanvasFrame();
+  /**
+   * Updates route-related data displays.
+   *
+   * Calculates and refreshes navigation metrics based on current
+   * route state, vessel position, and selected display mode.
+   */
+  void UpdateRouteData();
+  /**
+   * Recomputes and applies new fonts to console elements.
+   *
+   * Ensures consistent font rendering across different platforms
+   * and display configurations. Triggers layout recalculation.
+   */
+  void ShowWithFreshFonts(void);
+  void UpdateFonts(void);
+  void SetColorScheme(ColorScheme cs);
+  void LegRoute();
+  void OnContextMenu(wxContextMenuEvent &event);
+  void OnContextMenuSelection(wxCommandEvent &event);
+  void RefreshConsoleData(void);
+  void ToggleShowHighway();
+
+  /**
+   * Toggles between route total and current leg display modes.
+   *
+   * Switches speed calculation method and route information
+   * presentation between:
+   * - Current leg metrics
+   * - Total route statistics
+   */
+  void ToggleRouteTotalDisplay();
+
+  wxWindow *m_pParent;
+  wxStaticText *pThisLegText;
+  wxBoxSizer *m_pitemBoxSizerLeg;
+
+  AnnunText *pXTE;
+  AnnunText *pBRG;
+  AnnunText *pRNG;
+  AnnunText *pTTG;
+  AnnunText *pVMG;
+  CDI *pCDI;
+
+  wxFont *pThisLegFont;
+  bool m_bNeedClear;
+  wxBrush *pbackBrush;
+
+private:
+  void OnPaint(wxPaintEvent &event);
+  void OnShow(wxShowEvent &event);
+  char m_speedUsed;
+
+  DECLARE_EVENT_TABLE()
+};
+
+class APConsole {
+public:
+  APConsole(wxWindow *parent);
+  virtual ~APConsole();
+
+  void SetColorScheme(ColorScheme cs);
+  bool IsShown();
+  void UpdateFonts(void);
+  void RefreshConsoleData(void);
+  void Raise();
+  void ShowWithFreshFonts(void);
+  void Show(bool bshow = true);
+  CDI *GetCDI();
+  wxSize GetSize();
+  void ToggleShowHighway();
+  void Move(wxPoint p);
+
+private:
+  ConsoleCanvasWin *m_con_win;
+  ConsoleCanvasFrame *m_con_frame;
 };
 
 #endif

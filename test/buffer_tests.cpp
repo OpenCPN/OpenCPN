@@ -149,8 +149,10 @@ TEST(Buffer, RateAndSizeLimit) {
 TEST(Buffer, OverrunEvent) { OverrunEvent event; }
 
 TEST(N0183Nuffer, Basic) {
+  /* Syntactic OK */
   static const std::string input1("$GPGGA12345*12");
-  static const std::string input2("$GPGGA12\n345*12");
+  /* Missing checksum: allowed. */
+  static const std::string input2("$GPGGA12\n");
 
   N0183Buffer n0183_buffer;
   for (char c : input1) n0183_buffer.Put(c);
@@ -158,9 +160,9 @@ TEST(N0183Nuffer, Basic) {
   EXPECT_EQ(n0183_buffer.GetSentence(), input1);
 
   for (char c : input2) n0183_buffer.Put(c);
-  EXPECT_FALSE(n0183_buffer.HasSentence());
+  EXPECT_TRUE(n0183_buffer.HasSentence());
 
   for (char c : input1) n0183_buffer.Put(c);
   EXPECT_TRUE(n0183_buffer.HasSentence());
-  EXPECT_EQ(n0183_buffer.GetSentence(), input1);
+  EXPECT_EQ(n0183_buffer.GetSentence(), ocpn::rtrim(input2));
 }

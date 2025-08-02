@@ -167,6 +167,7 @@ std-filters: &std-filters
         - master
         - build
         - flatpak
+        - v5.12.x
 
 
 workflows:
