@@ -1,6 +1,8 @@
 opencpn (1:5.12.2+dfsg-1) UNRELEASED; urgency=medium
 
   * New upstream release
+  * Patches: rebased
+  * d/opencpn-data-install: Authors.html -> authors.html
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sat, 02 Aug 2025 07:47:46 +0200
 
