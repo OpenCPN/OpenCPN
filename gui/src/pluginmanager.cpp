@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ * Implement pluginmanager.h
+ */
 #include <algorithm>
 #include <archive.h>
 #include <cstdio>
@@ -218,8 +217,18 @@ enum { CurlThreadId = wxID_HIGHEST + 1 };
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 
-wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
+
+/** KeyProvider wrapper for a plain key string. */
+class RawKey : public KeyProvider {
+public:
+  explicit RawKey(const std::string& key) : m_key(key) {}
+
+  [[nodiscard]] std::string GetKey() const override { return m_key; }
+
+private:
+  std::string m_key;
+};
 
 static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   //  Only send messages if someone is listening...
@@ -961,14 +970,6 @@ void PlugInManager::InitCommListeners(void) {
 
   auto& msgbus = NavMsgBus::GetInstance();
 
-  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
-                              EVT_N0183_PLUGIN);
-  Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183(n0183_msg);
-  });
-
   SignalkMsg sk_msg;
   m_listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
 
@@ -977,6 +978,20 @@ void PlugInManager::InitCommListeners(void) {
   });
 }
 
+void PlugInManager::OnNewMessageType() {
+  for (auto msg_key : NavMsgBus::GetInstance().GetActiveMessages()) {
+    if (m_0183_listeners.find(msg_key) != m_0183_listeners.end()) continue;
+    if (msg_key.find("::") == std::string::npos) continue;
+    auto key_parts = ocpn::split(msg_key, "::");
+    if (key_parts.size() < 2) continue;
+    if (NavMsg::GetBusByKey(msg_key) == NavAddr::Bus::N0183) {
+      ObsListener ol(RawKey(key_parts[1]), [&](ObservedEvt& ev) {
+        HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+      });
+      m_0183_listeners[msg_key] = std::move(ol);
+    }
+  }
+}
 void PlugInManager::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string s = n0183_msg->payload;
   wxString sentence(s.c_str());

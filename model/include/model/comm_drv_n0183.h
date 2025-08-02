@@ -30,6 +30,7 @@
 #include <string>
 
 #include "model/comm_driver.h"
+#include "model/conn_params.h"
 
 /** NMEA0183 drivers common part. */
 class CommDriverN0183 : public AbstractCommDriver {
@@ -41,6 +42,8 @@ public:
 
   virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) override = 0;
+
+  virtual const ConnectionParams& GetParams() const = 0;
 
   void SetListener(DriverListener& l) override {}
 

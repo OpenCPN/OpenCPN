@@ -1,11 +1,4 @@
-/***************************************************************************
- *
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,6 +16,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * PlugInManager and helper classes -- Mostly gui parts (dialogs) and
+ * plugin API stuff.
+ */
 
 #ifndef _PLUGINMGR_H_
 #define _PLUGINMGR_H_
@@ -280,6 +280,7 @@ public:
 private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
+  void OnNewMessageType();
 
   ObservableListener evt_ais_json_listener;
   ObservableListener evt_blacklisted_plugin_listener;
@@ -294,10 +295,13 @@ private:
   ObservableListener evt_routeman_json_listener;
   ObservableListener evt_routeman_leginfo_listener;
 
-  ObservableListener m_listener_N0183_all;
   ObservableListener m_listener_SignalK;
 
+  ObsListener m_new_msgtype_lstnr;
+
   ObsListener m_on_msg_sent_listener;
+
+  std::unordered_map<std::string, ObsListener> m_0183_listeners;
 
   wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);

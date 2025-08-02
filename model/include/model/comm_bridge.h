@@ -1,11 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- *
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,69 +17,84 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _COMM_BRIDGE_H
-#define _COMM_BRIDGE_H
+/**
+ * \file
+ *
+ * The CommBridge class and helpers.
+ */
+
+#ifndef COMM_BRIDGE_H
+#define COMM_BRIDGE_H
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 #include <wx/event.h>
-#include <wx/log.h>
 #include <wx/timer.h>
 
 #include "model/comm_decoder.h"
 #include "model/comm_navmsg.h"
 #include "model/nmea_log.h"
 
-typedef struct {
-  std::string pcclass;
+using N0183MsgPtr = std::shared_ptr<const Nmea0183Msg>;
+using N2000MsgPtr = std::shared_ptr<const Nmea2000Msg>;
+using SignalKMsgPtr = std::shared_ptr<const SignalkMsg>;
+using NavMsgPtr = std::shared_ptr<const NavMsg>;
+
+using PriorityMap = std::unordered_map<std::string, int>;
+
+struct PriorityContainer {
+  std::string prio_class;
   int active_priority;
   std::string active_source;
   std::string active_identifier;
   int active_source_address;
   time_t recent_active_time;
-} PriorityContainer;
+  PriorityContainer(const std::string& cls, int prio = 0)
+      : prio_class(cls),
+        active_priority(prio),
+        active_source_address(-1),
+        recent_active_time(0) {}
+};
 
-typedef struct {
+struct Watchdogs {
   int position_watchdog;
   int variation_watchdog;
   int heading_watchdog;
   int velocity_watchdog;
   int satellite_watchdog;
-
-} Watchdogs;
+  Watchdogs()
+      : position_watchdog(0),
+        variation_watchdog(0),
+        heading_watchdog(0),
+        velocity_watchdog(0),
+        satellite_watchdog(0) {}
+};
 
 struct BridgeLogCallbacks {
   std::function<bool()> log_is_active;
-  std::function<void(Logline)> log_message;
+  std::function<void(const Logline&)> log_message;
   BridgeLogCallbacks()
-      : log_is_active([]() { return false; }), log_message([](Logline) {}) {}
+      : log_is_active([]() { return false; }),
+        log_message([](const Logline&) {}) {}
 };
 
+/**
+ * Process incoming messages.
+ *
+ * Listem to "known" messages and process them for example by broadcasting
+ * ship data. Also handles message source priorities i.e., which source to
+ * use for broadcasted data.
+ */
 class CommBridge : public wxEvtHandler {
 public:
   CommBridge();
 
-  ~CommBridge();
+  ~CommBridge() override;
 
   bool Initialize();
-  void InitCommListeners();
 
-  bool HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_127250(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129540(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-
-  bool HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_HDT(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_HDG(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_HDM(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_VTG(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_GSV(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg);
   /**
    * Processes NMEA 0183 AIVDO sentences containing own vessel's AIS data.
    *
@@ -106,72 +114,22 @@ public:
    * sentence
    * @return true if message was processed, false on decode error
    */
-  bool HandleN0183_AIVDO(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  bool HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg);
 
-  bool HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
+  bool EvalPriority(const NavMsgPtr& msg, PriorityContainer& active_priority,
+                    PriorityMap& priority_map);
 
-  void OnDriverStateChange();
+  std::vector<std::string> GetPriorityMaps() const;
 
-  void OnWatchdogTimer(wxTimerEvent &event);
-  bool EvalPriority(std::shared_ptr<const NavMsg> msg,
-                    PriorityContainer &active_priority,
-                    std::unordered_map<std::string, int> &priority_map);
-  std::string GetPriorityKey(std::shared_ptr<const NavMsg> msg);
+  PriorityContainer& GetPriorityContainer(const std::string& category);
 
-  std::vector<std::string> GetPriorityMaps();
-  PriorityContainer &GetPriorityContainer(const std::string category);
+  void UpdateAndApplyMaps(const std::vector<std::string>& new_maps);
 
-  void UpdateAndApplyMaps(std::vector<std::string> new_maps);
-  bool LoadConfig(void);
-  bool SaveConfig(void);
+  bool LoadConfig();
 
-  Watchdogs m_watchdogs;
-  wxTimer m_watchdog_timer;
-
-  //  comm event listeners
-  ObservableListener listener_N2K_129029;
-  ObservableListener listener_N2K_129025;
-  ObservableListener listener_N2K_129026;
-  ObservableListener listener_N2K_127250;
-  ObservableListener listener_N2K_129540;
-
-  ObservableListener listener_N0183_RMC;
-  ObservableListener listener_N0183_HDT;
-  ObservableListener listener_N0183_HDG;
-  ObservableListener listener_N0183_HDM;
-  ObservableListener listener_N0183_VTG;
-  ObservableListener listener_N0183_GSV;
-  ObservableListener listener_N0183_GGA;
-  ObservableListener listener_N0183_GLL;
-  ObservableListener listener_N0183_AIVDO;
-
-  ObservableListener listener_SignalK;
-
-  ObservableListener driver_change_listener;
-
-  CommDecoder m_decoder;
+  bool SaveConfig() const;
 
 private:
-  void PresetWatchdogs();
-  void MakeHDTFromHDM();
-  void InitializePriorityContainers();
-  void PresetPriorityContainers();
-
-  std::string GetPriorityMap(std::unordered_map<std::string, int> &map);
-  void ApplyPriorityMap(std::unordered_map<std::string, int> &priority_map,
-                        wxString &new_prio, int category);
-  void ApplyPriorityMaps(std::vector<std::string> new_maps);
-
-  void ClearPriorityMaps();
-  void PresetPriorityContainer(
-      PriorityContainer &pc,
-      const std::unordered_map<std::string, int> &priority_map);
-
-  bool IsNextLowerPriorityAvailable(
-      const std::unordered_map<std::string, int> &map, PriorityContainer &pc);
-  void SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,
-                               PriorityContainer &pc);
-
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;
   PriorityContainer active_priority_heading;
@@ -179,19 +137,73 @@ private:
   PriorityContainer active_priority_satellites;
   PriorityContainer active_priority_void;
 
-  std::unordered_map<std::string, int> priority_map_position;
-  std::unordered_map<std::string, int> priority_map_velocity;
-  std::unordered_map<std::string, int> priority_map_heading;
-  std::unordered_map<std::string, int> priority_map_variation;
-  std::unordered_map<std::string, int> priority_map_satellites;
+  PriorityMap priority_map_position;
+  PriorityMap priority_map_velocity;
+  PriorityMap priority_map_heading;
+  PriorityMap priority_map_variation;
+  PriorityMap priority_map_satellites;
 
-  int n_LogWatchdogPeriod;
+  //  comm event listeners
+  ObsListener m_n2k_129029_lstnr;
+  ObsListener m_n2k_129025_lstnr;
+  ObsListener m_n2k_129026_lstnr;
+  ObsListener m_n2k_127250_lstnr;
+  ObsListener m_n2k_129540_lstnr;
+
+  ObsListener m_n0183_rmc_lstnr;
+  ObsListener m_n0183_hdt_lstnr;
+  ObsListener m_n0183_hdg_lstnr;
+  ObsListener m_n0183_hdm_lstnr;
+  ObsListener m_n0183_vtg_lstnr;
+  ObsListener m_n0183_gsv_lstnr;
+  ObsListener m_n0183_gga_lstnr;
+  ObsListener m_n0183_gll_lstnr;
+  ObsListener m_n0183_aivdo_lstnr;
+
+  ObsListener m_signal_k_lstnr;
+
+  ObsListener m_driver_change_lstnr;
+
+  CommDecoder m_decoder;
+
+  bool HandleN0183_GGA(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_GLL(const N0183MsgPtr& n0183_msg);
+
+  int m_n_log_watchdog_period;
 
   BridgeLogCallbacks m_log_callbacks;
   int m_last_position_priority;
   std::string m_last_position_source;
+  Watchdogs m_watchdogs;
+  wxTimer m_watchdog_timer;
 
-  DECLARE_EVENT_TABLE()
+  void InitCommListeners();
+
+  void PresetWatchdogs();
+  void MakeHDTFromHDM();
+
+  void ApplyPriorityMaps(const std::vector<std::string>& new_maps);
+  void ClearPriorityMaps();
+  void PresetPriorityContainers();
+  void OnDriverStateChange();
+
+  void OnWatchdogTimer();
+  ;
+
+  bool HandleN2K_129029(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129025(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129026(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_127250(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_129540(const N2000MsgPtr& n2k_msg);
+
+  bool HandleN0183_RMC(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDT(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDG(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HDM(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_VTG(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_GSV(const N0183MsgPtr& n0183_msg);
+
+  bool HandleSignalK(const SignalKMsgPtr& sK_msg);
 };
 
-#endif  // _COMM_BRIDGE_H
+#endif  // COMM_BRIDGE_H

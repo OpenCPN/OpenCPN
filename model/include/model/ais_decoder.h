@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,11 +15,16 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Class AisDecoder and helpers.
  */
 
-#ifndef _AIS_DECODER_H__
-#define _AIS_DECODER_H__
+#ifndef AIS_DECODER_H_
+#define AIS_DECODER_H_
 
 #include <map>
 #include <unordered_map>
@@ -44,6 +45,11 @@
 #include "model/track.h"
 #include "observable_evtvar.h"
 
+using N0183MsgPtr = std::shared_ptr<const Nmea0183Msg>;
+using N2000MsgPtr = std::shared_ptr<const Nmea2000Msg>;
+using SignalKMsgPtr = std::shared_ptr<const SignalkMsg>;
+using NavMsgPtr = std::shared_ptr<const NavMsg>;
+
 class AisDecoder;             // forward
 class ArrayOfMmsiProperties;  // forward
 
@@ -54,7 +60,7 @@ extern Select *pSelectAIS;
 extern wxString AISTargetNameFileName;
 extern AisDecoder *g_pAIS;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern int g_OwnShipmmsi;
+extern unsigned g_OwnShipmmsi;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,
@@ -63,20 +69,22 @@ enum AISAudioSoundType {
   AISAUDIO_DSC
 };
 
+/** Process incoming AIS messages. */
 class MmsiProperties {
 public:
-  MmsiProperties() {};
-  MmsiProperties(int mmsi) {
+  MmsiProperties() = default;
+
+  explicit MmsiProperties(int mmsi) {
     Init();
     MMSI = mmsi;
   }
-  MmsiProperties(wxString &spec);
+  explicit MmsiProperties(wxString &spec);
 
   ~MmsiProperties();
 
   wxString Serialize();
 
-  void Init(void);
+  void Init();
   int MMSI;
   int TrackType;
   bool m_bignore;
@@ -99,32 +107,32 @@ struct AisDecoderCallbacks {
 
 class AisDecoder : public wxEvtHandler {
 public:
-  AisDecoder(AisDecoderCallbacks callbacks);
+  explicit AisDecoder(const AisDecoderCallbacks &callbacks);
 
-  ~AisDecoder(void);
+  ~AisDecoder() override;
 
   AisError DecodeN0183(const wxString &str);
-  std::unordered_map<int, std::shared_ptr<AisTargetData>> &GetTargetList(void) {
+  std::unordered_map<int, std::shared_ptr<AisTargetData>> &GetTargetList() {
     return AISTargetList;
   }
   std::unordered_map<int, std::shared_ptr<AisTargetData>> &
-  GetAreaNoticeSourcesList(void) {
+  GetAreaNoticeSourcesList() {
     return AIS_AreaNotice_Sources;
   }
-  std::shared_ptr<AisTargetData> Get_Target_Data_From_MMSI(int mmsi);
-  int GetNumTargets(void) { return m_n_targets; }
-  bool IsAISSuppressed(void) { return m_bSuppressed; }
-  bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
+  std::shared_ptr<AisTargetData> Get_Target_Data_From_MMSI(unsigned mmsi);
+  int GetNumTargets() const { return m_n_targets; }
+  bool IsAISSuppressed() const { return m_bSuppressed; }
+  bool IsAISAlertGeneral() const { return m_bGeneralAlert; }
   void UpdateMMSItoNameFile(const wxString &mmsi, const wxString &name);
   wxString GetMMSItoNameEntry(const wxString &mmsi);
   AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos,
                            wxString *acc);
-  void DeletePersistentTrack(Track *track);
+  void DeletePersistentTrack(const Track *track);
   std::map<int, Track *> m_persistent_tracks;
-  bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
+  bool AIS_AlertPlaying() const { return m_bAIS_AlertPlaying; };
 
   /**
-   * Notified when AIS user dialogs should update. Event contains a
+   * Notified when AIS user dialogs should update. Event contains an
    * AIS_Target_data pointer.
    */
   EventVar info_update;
@@ -145,45 +153,40 @@ public:
   EventVar plugin_msg;
 
 private:
-  void OnActivate(wxActivateEvent &event);
   void OnTimerAIS(wxTimerEvent &event);
   void OnTimerDSC(wxTimerEvent &event);
 
   bool NMEACheckSumOK(const wxString &str);
-  bool Parse_VDXBitstring(AisBitstring *bstr,
-                          std::shared_ptr<AisTargetData> ptd);
-  void UpdateAllCPA(void);
+  void UpdateAllCPA();
   void UpdateOneCPA(AisTargetData *ptarget);
-  void UpdateAllAlarms(void);
-  void UpdateAllTracks(void);
+  void UpdateAllAlarms();
+  void UpdateAllTracks();
   void UpdateOneTrack(AisTargetData *ptarget);
-  void BuildERIShipTypeHash(void);
   std::shared_ptr<AisTargetData> ProcessDSx(const wxString &str,
                                             bool b_take_dsc = false);
 
-  wxString DecodeDSEExpansionCharacters(wxString dseData);
   void getAISTarget(long mmsi, std::shared_ptr<AisTargetData> &pTargetData,
                     std::shared_ptr<AisTargetData> &pStaleTarget,
                     bool &bnewtarget, int &last_report_ticks, wxDateTime &now);
-  void getMmsiProperties(std::shared_ptr<AisTargetData> &pTargetData);
-  void handleUpdate(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
-                    const rapidjson::Value &update);
-  void updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bnewtarget,
-                  const rapidjson::Value &item, wxString &sfixtime) const;
-  void CommitAISTarget(std::shared_ptr<AisTargetData> pTargetData,
+  void handleUpdate(const std::shared_ptr<AisTargetData> &pTargetData,
+                    bool bnewtarget, const rapidjson::Value &update);
+  void updateItem(const std::shared_ptr<AisTargetData> &pTargetData,
+                  bool bnewtarget, const rapidjson::Value &item,
+                  wxString &sfixtime) const;
+  void CommitAISTarget(const std::shared_ptr<AisTargetData> &pTargetData,
                        const wxString &str, bool message_valid,
                        bool new_target);
-  void InitCommListeners(void);
-  bool HandleN0183_AIS(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
+  void InitCommListeners();
+  bool HandleN0183_AIS(const N0183MsgPtr &n0183_msg);
+  void HandleSignalK(const SignalKMsgPtr &sK_msg);
 
-  bool HandleN2K_129038(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129039(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129041(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129794(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129809(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129810(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  bool HandleN2K_129793(std::shared_ptr<const Nmea2000Msg> n2k_msg);
+  bool HandleN2K_129038(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129039(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129041(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129794(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129809(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129810(const N2000MsgPtr &n2k_msg);
+  bool HandleN2K_129793(const N2000MsgPtr &n2k_msg);
 
   wxString m_signalk_selfid;
   std::unordered_map<int, std::shared_ptr<AisTargetData>> AISTargetList;
@@ -236,4 +239,4 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-#endif  //  _AIS_DECODER_H__
+#endif  //  AIS_DECODER_H_

@@ -229,6 +229,9 @@ public:
   NavMsg() = delete;
   virtual ~NavMsg() = default;
 
+  /** Return bus corresponding to given key. */
+  static NavAddr::Bus GetBusByKey(const std::string& key);
+
   /** Return unique key used by observable to notify/listen. */
   virtual std::string key() const = 0;
 
@@ -331,7 +334,8 @@ public:
   std::string to_vdr() const override;
 
   /** Return key which should be used to listen to given message type. */
-  static std::string MessageKey(const char* type = "ALL") {
+  static std::string MessageKey(const char* type) {
+    assert(type && strlen(type) != 0);
     static const char* const prefix = "n0183-";
     return std::string(prefix) + type;
   }
