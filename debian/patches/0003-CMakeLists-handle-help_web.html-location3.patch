@@ -1,6 +1,7 @@
+From 969e931085449a487682d12bfb6ed75030973168 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 21 Jul 2024 03:35:57 +0200
-Subject: CMakeLists: handle help_web.html location3
+Subject: [PATCH 3/6] CMakeLists: handle help_web.html location3
 
 Not acceptable upstream, this is a consequence of us removing the manual.
 
@@ -10,10 +11,10 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cadcfa0..d4f50aa 100644
+index 44d6e1d32..651e654ca 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1846,7 +1846,7 @@ if (APPLE)
+@@ -1849,7 +1849,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -22,7 +23,7 @@ index cadcfa0..d4f50aa 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1886,11 +1886,11 @@ if (APPLE)
+@@ -1889,11 +1889,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
@@ -36,7 +37,7 @@ index cadcfa0..d4f50aa 100644
    endif ()
  
    target_sources(
-@@ -2055,7 +2055,7 @@ if (NOT APPLE)
+@@ -2059,7 +2059,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()
@@ -45,3 +46,6 @@ index cadcfa0..d4f50aa 100644
    endif ()
  
    if (UNIX)
+-- 
+2.25.1
+

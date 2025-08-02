@@ -1,6 +1,7 @@
+From a3f330979265fd230665975f4114f6bf95578b92 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sat, 10 Aug 2024 09:49:04 +0200
-Subject: tests: disable rest server tests for now
+Subject: [PATCH 4/6] tests: disable rest server tests for now
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/4090
 ---
@@ -8,7 +9,7 @@ Bug: https://github.com/OpenCPN/OpenCPN/issues/4090
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 6b70259..cf1c76f 100644
+index 6b70259ee..cf1c76f45 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
 @@ -32,7 +32,7 @@ if (MSVC)
@@ -20,3 +21,6 @@ index 6b70259..cf1c76f 100644
    list(APPEND SRC rest-tests.cpp)
  endif ()
  
+-- 
+2.25.1
+

@@ -1,6 +1,7 @@
+From 10d219dbae8904313b3a393203a44d0545bd0154 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Wed, 17 Apr 2024 14:03:26 +0200
-Subject: [PATCH 3/3] build: Drop removed
+Subject: [PATCH 1/6] build: Drop removed
  CoC-1973_2018-InlandECDIS_20220912.pdf
 
 Remove references to pdf file without sources which is
@@ -14,10 +15,10 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index af3a126..d0826a1 100644
+index 11e429677..e9c772d10 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1412,8 +1412,10 @@ if (OCPN_USE_SVG)
+@@ -1416,8 +1416,10 @@ if (OCPN_USE_SVG)
    endif ()
  endif ()
  
@@ -29,7 +30,7 @@ index af3a126..d0826a1 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif ()
-@@ -1483,6 +1485,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+@@ -1487,6 +1489,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
  add_subdirectory(libs/std_filesystem)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
  
@@ -37,7 +38,7 @@ index af3a126..d0826a1 100644
  message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
-@@ -1745,16 +1748,6 @@ if (APPLE)
+@@ -1748,16 +1751,6 @@ if (APPLE)
      data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )
  
@@ -54,7 +55,7 @@ index af3a126..d0826a1 100644
    set_source_files_properties(
      ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml PROPERTIES MACOSX_PACKAGE_LOCATION
                                                           SharedSupport
-@@ -1913,8 +1906,6 @@ if (APPLE)
+@@ -1916,8 +1909,6 @@ if (APPLE)
              data/license.html
              data/opencpn.png
              data/ocpn-plugins.xml
@@ -63,7 +64,7 @@ index af3a126..d0826a1 100644
              ${SOUND_FILES}
              buildosx/opencpn.icns
              buildosx/MainMenu.xib
-@@ -2047,10 +2038,6 @@ if (NOT APPLE)
+@@ -2050,10 +2041,6 @@ if (NOT APPLE)
    file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
    install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
  
@@ -73,4 +74,7 @@ index af3a126..d0826a1 100644
 -  )
    install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
    install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
-   install(FILES ${CMAKE_BINARY_DIR}/Authors.html DESTINATION ${PREFIX_PKGDATA})
+   install(FILES ${CMAKE_SOURCE_DIR}/data/authors.html
+-- 
+2.25.1
+
