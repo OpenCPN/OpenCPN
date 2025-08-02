@@ -1266,7 +1266,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbCheckSKDiscover->Hide();
       m_cbInput->Hide();
       m_cbOutput->Hide();
-      ShowInFilter(false);
+      ShowInFilter(true);
       ShowOutFilter(false);
       m_stPrecision->Hide();
       m_choicePrecision->Hide();

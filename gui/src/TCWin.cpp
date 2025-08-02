@@ -45,6 +45,7 @@ EVT_BUTTON(ID_TCWIN_NX, TCWin::NXEvent)
 EVT_BUTTON(ID_TCWIN_PR, TCWin::PREvent)
 EVT_CLOSE(TCWin::OnCloseWindow)
 EVT_TIMER(TCWININF_TIMER, TCWin::OnTCWinPopupTimerEvent)
+EVT_TIMER(TCWIN_TIME_INDICATOR_TIMER, TCWin::OnTimeIndicatorTimer)
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -163,6 +164,10 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   m_TCWinPopupTimer.SetOwner(this, TCWININF_TIMER);
 
+  // Timer for refreshing time indicators (red line moves with current time)
+  m_TimeIndicatorTimer.SetOwner(this, TCWIN_TIME_INDICATOR_TIMER);
+  m_TimeIndicatorTimer.Start(60000, false);  // Refresh every 60 seconds
+
   wxScreenDC dc;
   int text_height;
   dc.SetFont(*qFont);
@@ -204,10 +209,14 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   pblack_3 = wxThePenList->FindOrCreatePen(
       wxSystemSettings::GetColour(wxSYS_COLOUR_BTNSHADOW),
       wxMax(1, (int)(m_tcwin_scaler + 0.5)), wxPENSTYLE_SOLID);
-  // Current time vertical line
+  // System time vertical line
   pred_2 = wxThePenList->FindOrCreatePen(
       wxColor(230, 54, 54), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
       wxPENSTYLE_SOLID);
+  // Selected time vertical line (from GRIB plugin or timeline widget)
+  pred_time = wxThePenList->FindOrCreatePen(
+      wxColour(0, 100, 255), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
+      wxPENSTYLE_DOT);
   // Graph background
   pltgray = wxTheBrushList->FindOrCreateBrush(this->GetBackgroundColour(),
                                               wxBRUSHSTYLE_SOLID);
@@ -276,7 +285,10 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   m_ptextctrl->ShowPosition(0);
 }
 
-TCWin::~TCWin() { pParent->Refresh(false); }
+TCWin::~TCWin() {
+  m_TimeIndicatorTimer.Stop();
+  pParent->Refresh(false);
+}
 
 void TCWin::SetTimeFactors() {
   //    Figure out this computer timezone minute offset
@@ -520,6 +532,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
   pltgray->SetColour(this->GetBackgroundColour());
   pltgray2->SetColour(this->GetBackgroundColour());
   pred_2->SetColour(GetDimedColor(wxColor(230, 54, 54)));
+  pred_time->SetColour(GetDimedColor(wxColour(0, 100, 255)));
 
   //     if(1/*bForceRedraw*/)
   {
@@ -593,27 +606,63 @@ void TCWin::OnPaint(wxPaintEvent &event) {
       }
     }
 
-    //    Make a line for "right now"
+    // Time indicators - system time and "selected" time (e.g. GRIB time)
+    wxDateTime system_now = wxDateTime::Now();
+
     wxDateTime this_now = gTimeSource;
     bool cur_time = !gTimeSource.IsValid();
     if (cur_time) this_now = wxDateTime::Now();
 
-    time_t t_now = this_now.GetTicks();  // now, in ticks
-    t_now -= m_diff_mins * 60;
+    // Always draw system time indicator (solid red line)
+    time_t t_system_now = system_now.GetTicks();
+    t_system_now -= m_diff_mins * 60;
     if (m_tzoneDisplay == 0)  // LMT @ Station
-      t_now += m_stationOffset_mins * 60;
+      t_system_now += m_stationOffset_mins * 60;
 
-    float t_ratio =
-        m_graph_rect.width * (t_now - m_t_graphday_GMT) / (25 * 3600.0f);
+    float t_system_ratio =
+        m_graph_rect.width * (t_system_now - m_t_graphday_GMT) / (25 * 3600.0f);
+    // Eliminate line outside the graph (in that case put it outside the window)
+    int x_system = (t_system_ratio < 0 || t_system_ratio > m_graph_rect.width)
+                       ? -1
+                       : m_graph_rect.x + (int)t_system_ratio;
 
-    // must eliminate line outside the graph (in that case put it outside the
-    // window)
-    int xnow = (t_ratio < 0 || t_ratio > m_graph_rect.width)
-                   ? -1
-                   : m_graph_rect.x + (int)t_ratio;
-    dc.SetPen(*pred_2);
-    dc.DrawLine(xnow, m_graph_rect.y, xnow,
-                m_graph_rect.y + m_graph_rect.height);
+    if (x_system >= 0) {
+      dc.SetPen(*pred_2);  // solid red line for system time
+      dc.DrawLine(x_system, m_graph_rect.y, x_system,
+                  m_graph_rect.y + m_graph_rect.height);
+    }
+
+    // Draw "selected time" indicator (from timeline widget) if different from
+    // system time.
+    if (gTimeSource.IsValid()) {
+      time_t t_selected_time = gTimeSource.GetTicks();
+
+      // Only draw "selected time" indicator if it's significantly different
+      // from system time.
+      if (abs(t_selected_time - t_system_now) > 300) {
+        t_selected_time -= m_diff_mins * 60;
+        if (m_tzoneDisplay == 0)  // LMT @ Station
+          t_selected_time += m_stationOffset_mins * 60;
+
+        float t_selected_time_ratio = m_graph_rect.width *
+                                      (t_selected_time - m_t_graphday_GMT) /
+                                      (25 * 3600.0f);
+
+        int x_selected_time = (t_selected_time_ratio < 0 ||
+                               t_selected_time_ratio > m_graph_rect.width)
+                                  ? -1
+                                  : m_graph_rect.x + (int)t_selected_time_ratio;
+
+        if (x_selected_time >= 0) {
+          // Create dashed blue pen for "selected time".
+          dc.SetPen(*pred_time);
+          dc.DrawLine(x_selected_time, m_graph_rect.y, x_selected_time,
+                      m_graph_rect.y + m_graph_rect.height);
+        }
+        wxLogMessage("TCWin::OnPaint: Selected time indicator drawn at %d",
+                     x_selected_time);
+      }
+    }
     dc.SetPen(*pblack_1);
 
     //    Build the array of values, capturing max and min and HW/LW list
@@ -1081,4 +1130,9 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
   if (m_pTCRolloverWin && m_pTCRolloverWin->IsShown() && !ShowRollover) {
     m_pTCRolloverWin->Hide();
   }
+}
+
+void TCWin::OnTimeIndicatorTimer(wxTimerEvent &event) {
+  // Refresh to update the red line (system time indicator)
+  Refresh(false);
 }

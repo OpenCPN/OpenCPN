@@ -98,6 +98,7 @@
 #include "chart_ctx_factory.h"
 #include "chartdb.h"
 #include "chcanv.h"
+#include "TCWin.h"
 #include "cm93.h"
 #include "color_handler.h"
 #include "compass.h"
@@ -163,7 +164,7 @@ extern arrayofCanvasPtr g_canvasArray;
 extern MyFrame *gFrame;
 extern AISTargetListDialog *g_pAISTargetList;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern ConsoleCanvas *console;
+extern APConsole *console;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern Routeman *g_pRouteMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
@@ -1227,6 +1228,9 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   //  Clear the cache, and thus close all charts to avoid memory leaks
   if (ChartData) ChartData->PurgeCache();
 
+  // If it exists, hide the console, in preparation for re-creation
+  if (console) console->Show(false);
+
   // Detach all canvases from AUI manager
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray[i];
@@ -1397,6 +1401,21 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   }
 
   g_focusCanvas = GetPrimaryCanvas();
+
+  delete console;
+  if (g_canvasArray.size() > 1)
+    console = new APConsole(g_canvasArray.Item(1));  // the console
+  else
+    console = new APConsole(g_canvasArray.Item(0));
+  console->SetColorScheme(global_color_scheme);
+
+  // Draw console if persisted route is active
+  if (g_pRouteMan) {
+    if (g_pRouteMan->IsAnyRouteActive()) {
+      g_pRouteMan->GetDlgContext().show_with_fresh_fonts();
+    }
+  }
+  PositionConsole();
 }
 
 void MyFrame::RequestNewToolbars(bool bforcenew) {
@@ -2316,6 +2335,7 @@ void MyFrame::ODoSetSize(void) {
 }
 
 void MyFrame::PositionConsole(void) {
+#if defined(__WXMSW__) || defined(__WXMAC__)
   if (NULL == GetPrimaryCanvas()) return;
   //    Reposition console based on its size and chartcanvas size
   int ccx, ccy, ccsx, ccsy, consx, consy;
@@ -2341,11 +2361,63 @@ void MyFrame::PositionConsole(void) {
     }
   }
 
-  console->GetSize(&consx, &consy);
+  wxSize csz = console->GetSize();
+  consx = csz.x;
+  consy = csz.y;
 
   wxPoint screen_pos =
       ClientToScreen(wxPoint(ccx + ccsx - consx - 2, ccy + yOffset));
   console->Move(screen_pos);
+#else
+  if (NULL == GetPrimaryCanvas()) return;
+  //    Reposition console based on its size and chartcanvas size
+  int ccx, ccy, ccsx, ccsy, consx, consy;
+  ChartCanvas *consoleHost = GetPrimaryCanvas();
+  if (g_canvasConfig > 0) consoleHost = g_canvasArray[1];
+
+  if (consoleHost) {
+    consoleHost->GetSize(&ccsx, &ccsy);
+    consoleHost->GetPosition(&ccx, &ccy);
+  } else {
+    GetPrimaryCanvas()->GetSize(&ccsx, &ccsy);
+    GetPrimaryCanvas()->GetPosition(&ccx, &ccy);
+    consoleHost = GetPrimaryCanvas();
+  }
+
+  int yTopOffset = 60;
+  int yBottomOffset = 0;
+  if (consoleHost) {
+    if (consoleHost->GetCompass()) {
+      wxRect compass_rect = consoleHost->GetCompass()->GetRect();
+      // Compass is normal upper right position.
+      if (compass_rect.y < 100)
+        yTopOffset = compass_rect.y + compass_rect.height;
+    }
+    if (consoleHost->GetMUIBar()) {
+      wxRect mui_rect = consoleHost->GetMUIBarRect();
+      yBottomOffset = ccsy - mui_rect.y;
+    }
+  }
+
+  wxSize csz = console->GetSize();
+  consx = csz.x;
+  consy = csz.y;
+  int yAvail = ccsy - (yTopOffset + yBottomOffset);
+  int yFinal = 30;
+  if (consy < yAvail) {
+    yFinal = (yAvail - consy) / 2;
+    yFinal += yTopOffset;
+  } else if (console->GetCDI()->IsShown()) {
+    int cdi_height = console->GetCDI()->GetSize().y;
+    int consy_no_cdi = consy - cdi_height;
+    yFinal = (yAvail - consy_no_cdi) / 2;
+    yFinal += yTopOffset;
+    console->ToggleShowHighway();
+  }
+
+  wxPoint in_canvas_pos = wxPoint(ccsx - consx - 2, yFinal);
+  console->Move(in_canvas_pos);
+#endif
 }
 
 void MyFrame::UpdateAllFonts() {
@@ -4721,17 +4793,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           cp->b_IsSetup = TRUE;
         }
       }
-
-      console = new ConsoleCanvas(gFrame);  // the console
-      console->SetColorScheme(global_color_scheme);
-
-      // Draw console if persisted route is active
-      if (g_pRouteMan) {
-        if (g_pRouteMan->IsAnyRouteActive()) {
-          g_pRouteMan->GetDlgContext().show_with_fresh_fonts();
-        }
-      }
-
       break;
 
     case 2: {
@@ -4815,17 +4876,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       g_pi_manager->CallLateInit();
 
-      //  If any PlugIn implements PlugIn Charts, we need to re-run the initial
-      //  chart load logic to select the correct chart as saved from the last
-      //  run of the app. This will be triggered at the next DoChartUpdate()
-      if (g_pi_manager->IsAnyPlugInChartEnabled()) {
-        for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-          ChartCanvas *cc = g_canvasArray.Item(i);
-          if (cc) cc->SetFirstAuto(true);
-        }
-
-        b_reloadForPlugins = true;
-      }
+      if (g_pi_manager->IsAnyPlugInChartEnabled()) b_reloadForPlugins = true;
 
       break;
     }
@@ -4918,6 +4969,17 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #endif
 
       if (b_reloadForPlugins) {
+        //  If any PlugIn implements PlugIn Charts, we need to re-run the
+        //  initial chart load logic to select the correct chart as saved from
+        //  the last run of the app. This will be triggered at the next
+        //  DoChartUpdate()
+        if (g_pi_manager->IsAnyPlugInChartEnabled()) {
+          for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if (cc) cc->SetFirstAuto(true);
+          }
+        }
+
         DoChartUpdate();
         ChartsRefresh();
       }
@@ -6460,14 +6522,41 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   if (message_ID == _T("GRIB_TIMELINE")) {
     wxJSONReader r;
     wxJSONValue v;
-    r.Parse(message_JSONText, &v);
-    if (v[_T("Day")].AsInt() == -1)
+    int numErrors = r.Parse(message_JSONText, &v);
+
+    if (numErrors > 0) {
+      wxLogMessage("GRIB_TIMELINE: JSON parse error");
+      return;
+    }
+
+    // Store old time source for comparison
+    wxDateTime oldTimeSource = gTimeSource;
+
+    if (v[_T("Day")].AsInt() == -1) {
       gTimeSource = wxInvalidDateTime;
-    else
+      wxLogMessage("GRIB_TIMELINE: Reset to system time");
+    } else {
       gTimeSource.Set(v[_T("Day")].AsInt(),
                       (wxDateTime::Month)v[_T("Month")].AsInt(),
                       v[_T("Year")].AsInt(), v[_T("Hour")].AsInt(),
                       v[_T("Minute")].AsInt(), v[_T("Second")].AsInt());
+    }
+
+    // Refresh tide displays if time source changed
+    if (oldTimeSource != gTimeSource) {
+      // Refresh all canvases that might show tide info
+      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if (cc && (cc->GetbShowTide() || cc->GetbShowCurrent())) {
+          cc->Refresh(false);
+
+          // Also refresh any open tide dialog windows
+          if (cc->pCwin) {  // pCwin is the tide window pointer
+            cc->pCwin->Refresh(false);
+          }
+        }
+      }
+    }
   }
   if (message_ID == _T("OCPN_TRACK_REQUEST")) {
     wxJSONValue root;
