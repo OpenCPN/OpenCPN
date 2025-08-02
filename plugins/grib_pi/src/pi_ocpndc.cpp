@@ -155,6 +155,7 @@ pi_ocpnDC::pi_ocpnDC()
 #ifdef ocpnUSE_GL
   s_odc_tess_work_buf = nullptr;
   pi_loadShaders();
+
 #endif
 }
 

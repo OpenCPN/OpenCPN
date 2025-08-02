@@ -298,11 +298,15 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   m_highlight_lonmax = 0;
   m_highlight_latmin = 0;
   m_highlight_lonmin = 0;
+
+#ifndef __OCPN__ANDROID__
   // Create the dialog for downloading GRIB files.
   // This dialog is created here, but not shown until the user requests it.
   // This is done such that user can draw bounding box on the chart before
   // the dialog is shown.
+
   createRequestDialog();
+#endif
 }
 
 GRIBUICtrlBar::~GRIBUICtrlBar() {

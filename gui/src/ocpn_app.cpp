@@ -263,7 +263,7 @@ bool g_bPauseTest;
 
 MyFrame *gFrame;
 
-ConsoleCanvas *console;
+APConsole *console;
 
 MyConfig *pConfig;
 ChartDB *ChartData;

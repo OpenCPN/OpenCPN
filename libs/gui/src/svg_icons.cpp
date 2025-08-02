@@ -28,30 +28,27 @@ const char* kCheckmark = R"--(
 
 const char* kExpandSvg = R"--(
 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-    <style
-        type="text/css"
-        id="current-color-scheme">
-        .ColorScheme-Text {
-            color:#232629;
-        }
-    </style>
-    <path d="M2 4v1h12V4zm.707 3L2 7.707l6 6 6-6L13.293 7 8 12.293 2.707 7z"
-     class="ColorScheme-Text" fill="currentColor"/>
+<path
+   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1.02459;stroke-dasharray:none"
+   d="M 3.0542669,6.6237237 7.977309,11.57821 12.93017,6.6423611"
+   id="path1721" />
+<path
+   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-dasharray:none"
+   d="m 2.0609236,3.5709029 11.8941734,8.86e-5"
+   id="path5251" />
 </svg>
 )--";
 
 const char* kCollapseSvg = R"--(
 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-    <style
-        type="text/css"
-        id="current-color-scheme">
-        .ColorScheme-Text {
-            color:#232629;
-        }
-    </style>
-    <path class="ColorScheme-Text"
-         d="M2 4v1h12V4zm6 2.293l-6 6 .707.707L8 7.707 13.293 13l.707-.707z"
-         fill="currentColor"/>
+<path
+   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1.02459;stroke-dasharray:none"
+   d="M 3.0542669,11.942141 7.977309,6.9876544 12.93017,11.923503"
+   id="path1721" />
+<path
+   style="opacity:1;fill:#ff0000;fill-opacity:1.19677e-07;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-dasharray:none"
+   d="m 2.0609236,3.5709029 11.8941734,8.86e-5"
+   id="path5251" />
 </svg>
 )--";
 }  // namespace gui_icons
