@@ -1,3 +1,11 @@
+opencpn (1:5.12.2+dfsg-1~bpo20.04+1) focal; urgency=medium
+
+  * New upstream release
+  * Rebase patches
+  * d/opencpn-data.install  rename Authors.html->authors.html 
+
+ -- dsr <dsr@dsr-VirtualBox>  Sat, 02 Aug 2025 11:15:57 -0400
+
 opencpn (1:5.12.0+dfsg-1ubuntu1~bpo20.04+3) focal; urgency=medium
 
   * New patch: Fix broken wxSVG icons handling
