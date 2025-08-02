@@ -1,3 +1,10 @@
+opencpn (1:5.12.2+dfsg-1~bpo22.04+1) jammy; urgency=medium
+
+  * New upstream release
+  * Rebase patches 
+
+ -- dsr <dsr@Jammy.myguest.virtualbox.org>  Fri, 01 Aug 2025 21:44:25 -0400
+
 opencpn (1:5.12.0+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
 
   * New upstream release
