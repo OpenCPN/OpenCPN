@@ -10,10 +10,10 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cadcfa0..d4f50aa 100644
+index 44d6e1d..651e654 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1846,7 +1846,7 @@ if (APPLE)
+@@ -1849,7 +1849,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -22,7 +22,7 @@ index cadcfa0..d4f50aa 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1886,11 +1886,11 @@ if (APPLE)
+@@ -1889,11 +1889,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
@@ -36,7 +36,7 @@ index cadcfa0..d4f50aa 100644
    endif ()
  
    target_sources(
-@@ -2055,7 +2055,7 @@ if (NOT APPLE)
+@@ -2059,7 +2059,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()
