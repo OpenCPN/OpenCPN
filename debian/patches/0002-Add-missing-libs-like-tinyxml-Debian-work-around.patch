@@ -1,6 +1,7 @@
+From f6d536f8b7904822d10d3ea85fab54c1f511dcef Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 10 Jun 2024 09:58:18 +0200
-Subject: Add missing libs like tinyxml Debian work-around
+Subject: [PATCH 2/6] Add missing libs like tinyxml Debian work-around
 
 Since we remove some bundled libs when repacking the sources,
 references to these libs causes build problems which must
@@ -18,10 +19,10 @@ Forwarded: not-needed
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d0826a1..cadcfa0 100644
+index e9c772d10..44d6e1d32 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1490,7 +1490,6 @@ message(STATUS "    Adding local LIBTESS2")
+@@ -1494,7 +1494,6 @@ message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
  
@@ -31,7 +32,7 @@ index d0826a1..cadcfa0 100644
  message(STATUS "    Adding local wxserverdisc")
 diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
 new file mode 100644
-index 0000000..473722c
+index 000000000..473722c1b
 --- /dev/null
 +++ b/cmake/SystemLibs.cmake
 @@ -0,0 +1,28 @@
@@ -64,7 +65,7 @@ index 0000000..473722c
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 993fcdb..b801944 100644
+index 993fcdb52..b80194454 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
 @@ -47,6 +47,7 @@
@@ -75,3 +76,6 @@ index 993fcdb..b801944 100644
  #cmakedefine OCPN_DISTRO_BUILD
  
  // The os compatible plugins are are built for
+-- 
+2.34.1
+
