@@ -186,6 +186,8 @@ Or, a more generic oneliner pushing the most recent _source.changes_ file:
 ```
   $ dput ppa:leamas-alec/opencpn $(ls -t ../*source.changes | head -1)
 ```
+8. Tag the published  release using a tag name like 
+   *ppa/5.12.2+dfsg-1-bpo20.04+2*
 
 [#test-build]
 == Local test build from existing upstream tag.
