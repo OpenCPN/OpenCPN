@@ -360,7 +360,7 @@ private:
   }
 
   NavmsgFilter FilterByLabel(const std::string& label) {
-    std::string name;
+    std::string name = label;
     for (const auto& kv : kLabels) {
       if (kv.second == label) {
         name = kv.first;
