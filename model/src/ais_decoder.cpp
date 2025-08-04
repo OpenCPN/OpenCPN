@@ -83,9 +83,8 @@ Select *pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 wxString AISTargetNameFileName;
-bool isBuoyMmsi(int);
 
-int g_OwnShipmmsi;
+unsigned g_OwnShipmmsi;
 
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);
@@ -126,6 +125,21 @@ static inline double GeodesicRadToDeg(double rads) {
 }
 
 static inline double MS2KNOTS(double ms) { return ms * 1.9438444924406; }
+
+static bool isBuoyMmsi(unsigned msi) {
+  // IMO standard is not yet(?) implemented for (net)buoys
+  // This adaption, based on real-world outcomes, is used instead
+  // Consider any not valid MMSI number for a class B target (message 18 or 19)
+  // to be a "net buoy"
+  int mid = msi / 1000000;
+  if ((mid > 200 && mid < 880) || mid >= 970) {
+    // MID is stated to be >200 <800. Handheld AIS starts with 8+mid thus 880
+    return false;
+  } else {
+    return true;
+  }
+  return false;
+}
 
 int AisMeteoNewMmsi(int, int, int, int, int);
 int origin_mmsi = 0;
@@ -1492,7 +1506,7 @@ bool AisDecoder::HandleN2K_129038(const N2000MsgPtr &n2k_msg) {
   if (ParseN2kPGN129038(v, MessageID, Repeat, UserID, Latitude, Longitude,
                         Accuracy, RAIM, Seconds, COG, SOG, Heading, ROT,
                         NavStat, AISTransceiverInformation)) {
-    int mmsi = UserID;
+    unsigned mmsi = UserID;
     // Stop here if the target shall be ignored
     if (mmsi == g_OwnShipmmsi || IsTargetOnTheIgnoreList(mmsi)) return false;
 
@@ -1854,7 +1868,7 @@ bool AisDecoder::HandleN2K_129809(const N2000MsgPtr &n2k_msg) {
   char Name[21];
 
   if (ParseN2kPGN129809(v, MessageID, Repeat, UserID, Name)) {
-    int mmsi = UserID;
+    unsigned mmsi = UserID;
     // Stop here if the target shall be ignored
     if (mmsi == g_OwnShipmmsi || IsTargetOnTheIgnoreList(mmsi)) return false;
 
@@ -1909,7 +1923,7 @@ bool AisDecoder::HandleN2K_129810(const N2000MsgPtr &n2k_msg) {
   if (ParseN2kPGN129810(v, MessageID, Repeat, UserID, VesselType, Vendor,
                         Callsign, Length, Beam, PosRefStbd, PosRefBow,
                         MothershipID)) {
-    int mmsi = UserID;
+    unsigned mmsi = UserID;
     // Stop here if the target shall be ignored
     if (mmsi == g_OwnShipmmsi || IsTargetOnTheIgnoreList(mmsi)) return false;
 
@@ -2664,7 +2678,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   int gpsg_mmsi = 0;
   int arpa_mmsi = 0;
   int aprs_mmsi = 0;
-  int mmsi = 0;
+  unsigned mmsi = 0;
 
   long arpa_tgt_num = 0;
   double arpa_sog = 0.;
@@ -3097,7 +3111,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     }
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       MmsiProperties *props = g_MMSI_Props_Array[i];
-      if (mmsi == props->MMSI) {
+      if (mmsi == static_cast<unsigned>(props->MMSI)) {
         // Check if this target has a dedicated tracktype
         if (TRACKTYPE_NEVER == props->TrackType) {
           pTargetData->b_show_track = false;
@@ -3431,7 +3445,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
   wxString dse_shipName = wxEmptyString;
   wxString dseSymbol;
 
-  int mmsi = 0;
+  unsigned mmsi = 0;
 
   std::shared_ptr<AisTargetData> pTargetData = nullptr;
 
@@ -3603,13 +3617,13 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
     m_ptentative_dsctarget->b_isDSCtarget = true;
     m_ptentative_dsctarget->b_nameValid = true;
     if (dsc_fmt == 12 || (dsc_fmt == 16 && dsc_cat == 12)) {
-      snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d",
-               std::abs(mmsi));
+      snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %u",
+               mmsi);
       m_ptentative_dsctarget->m_dscNature = int(dsc_nature);
       m_ptentative_dsctarget->m_dscTXmmsi = dsc_tx_mmsi;
     } else {
-      snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d",
-               std::abs(mmsi));
+      snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %u",
+               mmsi);
     }
 
     m_ptentative_dsctarget->b_active = true;
@@ -3830,12 +3844,12 @@ void AisDecoder::DeletePersistentTrack(const Track *track) {
   for (auto it = m_persistent_tracks.begin(); it != m_persistent_tracks.end();
        it++) {
     if (it->second == track) {
-      int mmsi = it->first;
+      unsigned mmsi = it->first;
       m_persistent_tracks.erase(it);
       // Last tracks for this target?
       if (0 == m_persistent_tracks.count(mmsi)) {
         for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-          if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
+          if (mmsi == static_cast<unsigned>(g_MMSI_Props_Array[i]->MMSI)) {
             MmsiProperties *props = g_MMSI_Props_Array[i];
             if (props->m_bPersistentTrack) {
               // Ask if mmsi props should be changed.
@@ -4246,7 +4260,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     }
 
     // Check if the target has recently been set as own MMSI
-    if (xtd->MMSI == g_OwnShipmmsi) {
+    if (static_cast<unsigned>(xtd->MMSI) == g_OwnShipmmsi) {
       remove_array.push_back(xtd->MMSI);  // Add this target to removal list
       xtd->b_removed = true;
       plugin_msg.Notify(xtd, "");
@@ -4351,11 +4365,10 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   TimerAIS.Start(TIMER_AIS_MSEC, wxTIMER_CONTINUOUS);
 }
 
-std::shared_ptr<AisTargetData> AisDecoder::Get_Target_Data_From_MMSI(int mmsi) {
-  if (AISTargetList.find(mmsi) == AISTargetList.end())
-    return nullptr;
-  else
-    return AISTargetList[mmsi];
+std::shared_ptr<AisTargetData> AisDecoder::Get_Target_Data_From_MMSI(
+    unsigned mmsi) {
+  if (AISTargetList.find(mmsi) == AISTargetList.end()) return nullptr;
+  return AISTargetList[mmsi];
 }
 
 ArrayOfMmsiProperties g_MMSI_Props_Array;
@@ -4700,19 +4713,4 @@ int AisMeteoNewMmsi(int orig_mmsi, int m_lat, int m_lon, int lon_bits = 0,
     new_mmsi = nextMeteommsi;
   }
   return new_mmsi;
-}
-
-bool isBuoyMmsi(const int msi) {
-  // IMO standard is not yet(?) implemented for (net)buoys
-  // This adaption, based on real-world outcomes, is used instead
-  // Consider any not valid MMSI number for a class B target (message 18 or 19)
-  // to be a "net buoy"
-  int mid = msi / 1000000;
-  if ((mid > 200 && mid < 880) || mid >= 970) {
-    // MID is stated to be >200 <800. Handheld AIS starts with 8+mid thus 880
-    return false;
-  } else {
-    return true;
-  }
-  return false;
 }

@@ -60,7 +60,7 @@ extern Select *pSelectAIS;
 extern wxString AISTargetNameFileName;
 extern AisDecoder *g_pAIS;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern int g_OwnShipmmsi;
+extern unsigned g_OwnShipmmsi;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,
@@ -119,7 +119,7 @@ public:
   GetAreaNoticeSourcesList() {
     return AIS_AreaNotice_Sources;
   }
-  std::shared_ptr<AisTargetData> Get_Target_Data_From_MMSI(int mmsi);
+  std::shared_ptr<AisTargetData> Get_Target_Data_From_MMSI(unsigned mmsi);
   int GetNumTargets() const { return m_n_targets; }
   bool IsAISSuppressed() const { return m_bSuppressed; }
   bool IsAISAlertGeneral() const { return m_bGeneralAlert; }
