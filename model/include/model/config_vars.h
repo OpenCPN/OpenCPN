@@ -63,6 +63,7 @@ extern int g_COGFilterSec;
 extern int g_NMEAAPBPrecision;
 extern int g_SOGFilterSec;
 extern int g_WplAction;
+extern int g_ais_color_set;
 extern int g_iDistanceFormat;
 extern int g_iSDMMFormat;
 extern int g_iSpeedFormat;

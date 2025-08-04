@@ -1005,6 +1005,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write(_T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale);
   conf->Write(_T ( "bWplIsAprsPositionReport" ), g_bWplUsePosition);
   conf->Write(_T ( "WplSelAction" ), g_WplAction);
+  conf->Write(_T ( "AisColorSet" ), g_ais_color_set);
   conf->Write(_T ( "AISCOGPredictorWidth" ), g_ais_cog_predictor_width);
   conf->Write(_T ( "bShowScaledTargets" ), g_bAllowShowScaled);
   conf->Write(_T ( "AISScaledNumber" ), g_ShowScaled_Num);
@@ -1477,6 +1478,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale);
   CHECK_INT(_T ( "bWplIsAprsPositionReport" ), &g_bWplUsePosition);
   CHECK_INT(_T ( "WplSelAction" ), &g_WplAction);
+  CHECK_INT(_T ( "AisColorSet" ), &g_ais_color_set);
   CHECK_INT(_T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width);
   CHECK_INT(_T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio);
   CHECK_STR(_T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File);
