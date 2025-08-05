@@ -238,18 +238,5 @@ void CommDriverN0183AndroidBT::handle_N0183_MSG(
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
   m_driver_stats.rx_count += payload->size();
-
-  // Extract the NMEA0183 sentence
-  std::string full_sentence = std::string(payload->begin(), payload->end());
-
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
-    // notify message listener
-    if (m_params.SentencePassesFilter(full_sentence, FILTER_INPUT)) {
-      // We notify based on full message, including the Talker ID
-      std::string id = full_sentence.substr(1, 5);
-      auto msg =
-          std::make_shared<const Nmea0183Msg>(id, full_sentence, GetAddress());
-      m_listener.Notify(std::move(msg));
-    }
-  }
+  SendToListener({payload->begin(), payload->end()}, m_listener, m_params);
 }

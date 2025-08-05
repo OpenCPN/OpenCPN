@@ -28,7 +28,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "model/comm_drv_n0183.h"
 
@@ -37,4 +37,20 @@ CommDriverN0183::CommDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s)
     : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
 
-CommDriverN0183::~CommDriverN0183() {}
+CommDriverN0183::~CommDriverN0183() = default;
+
+void CommDriverN0183::SendToListener(const std::string& payload,
+                                     DriverListener& listener,
+                                     const ConnectionParams& params) {
+  if ((payload[0] == '$' || payload[0] == '!') && payload.size() > 5) {
+    std::string identifier;
+
+    // notify message listener
+    if (params.SentencePassesFilter(payload, FILTER_INPUT)) {
+      // We notify based on full message, including the Talker ID
+      std::string id = payload.substr(1, 5);
+      auto msg = std::make_shared<const Nmea0183Msg>(id, payload, GetAddress());
+      listener.Notify(std::move(msg));
+    }
+  }
+}

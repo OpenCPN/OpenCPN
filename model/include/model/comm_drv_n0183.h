@@ -23,8 +23,8 @@
  *  NMEA0183 drivers common base.
  */
 
-#ifndef _COMMDRIVERN0183_H__
-#define _COMMDRIVERN0183_H__
+#ifndef COMMDRIVER_N0183_H_
+#define COMMDRIVER_N0183_H_
 
 #include <memory>
 #include <string>
@@ -38,10 +38,10 @@ public:
   CommDriverN0183();
   CommDriverN0183(NavAddr::Bus b, const std::string& s);
 
-  virtual ~CommDriverN0183();
+  ~CommDriverN0183() override;
 
-  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                           std::shared_ptr<const NavAddr> addr) override = 0;
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
+                   std::shared_ptr<const NavAddr> addr) override = 0;
 
   virtual const ConnectionParams& GetParams() const = 0;
 
@@ -50,6 +50,11 @@ public:
   virtual std::shared_ptr<NavAddr> GetAddress() {
     return std::make_shared<NavAddr>(NavAddr0183(iface));
   }
+
+protected:
+  /** Wrap argument string in NavMsg pointer, forward to listener */
+  void SendToListener(const std::string& payload, DriverListener& listener,
+                      const ConnectionParams& params);
 };
 
-#endif  // guardstring
+#endif  // COMMDRIVER_N0183_H_
