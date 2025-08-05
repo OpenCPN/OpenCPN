@@ -419,26 +419,24 @@ bool Multiplexer::HandleN2kLog(
 void Multiplexer::OnNewMessageType() {
   for (auto msg_key : NavMsgBus::GetInstance().GetActiveMessages()) {
     if (m_listeners.find(msg_key) != m_listeners.end()) continue;
-    if (msg_key.find("::") == std::string::npos) continue;
     auto key_parts = ocpn::split(msg_key, "::");
-    if (key_parts.size() < 2) continue;
-    ObsListener ol;
     switch (NavMsg::GetBusByKey(msg_key)) {
-      case NavAddr::Bus::N0183: {
-        ol = ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
-          HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
-        });
-      } break;
+      case NavAddr::Bus::N0183:
+        m_listeners[msg_key] =
+            ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+              HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+            });
+        break;
 
       case NavAddr::Bus::N2000:
-        ol = ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
-          HandleN2kLog(UnpackEvtPointer<Nmea2000Msg>(ev));
-        });
+        m_listeners[msg_key] =
+            ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+              HandleN2kLog(UnpackEvtPointer<Nmea2000Msg>(ev));
+            });
         break;
 
       default:
         break;
     }
-    m_listeners[msg_key] = std::move(ol);
   }
 }
