@@ -23,10 +23,9 @@
  *   NMEA0183 serial driver
  */
 
-#ifndef _COMMDRIVERN0183SERIAL_H
-#define _COMMDRIVERN0183SERIAL_H
+#ifndef COMMDRIVERN0183SERIAL_H
+#define COMMDRIVERN0183SERIAL_H
 
-#include <atomic>
 #include <string>
 
 #include <wx/event.h>
@@ -43,15 +42,15 @@ class CommDriverN0183Serial : public CommDriverN0183,
 public:
   CommDriverN0183Serial(const ConnectionParams* params, DriverListener& l);
 
-  virtual ~CommDriverN0183Serial();
+  ~CommDriverN0183Serial() override;
 
   bool Open();
   void Close();
 
-  bool IsSecThreadActive() { return m_serial_io->IsRunning(); }
+  bool IsSecThreadActive() const { return m_serial_io->IsRunning(); }
 
-  bool IsGarminThreadActive();
-  void StopGarminUSBIOThread(bool bPause);
+  bool IsGarminThreadActive() const;
+  void StopGarminUSBIOThread(bool bPause) const;
 
   const ConnectionParams& GetParams() const override { return m_params; }
 
@@ -81,4 +80,4 @@ private:
   void SendMessage(const std::vector<unsigned char>& msg);
 };
 
-#endif  // guard
+#endif  //  COMMDRIVERN0183SERIAL_H
