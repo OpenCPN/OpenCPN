@@ -3518,8 +3518,8 @@ void NavigateToWaypoint(wxString waypoint_guid) {
 
 // AIS related
 bool IsAISTrackVisible(wxString ais_mmsi) {
-  int mmsi = 0;
-  ais_mmsi.ToInt(&mmsi);
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
   auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
   if (myptarget)
     return myptarget->b_show_track;
@@ -3528,15 +3528,15 @@ bool IsAISTrackVisible(wxString ais_mmsi) {
 }
 
 void AISToggleShowTrack(wxString ais_mmsi) {
-  int mmsi = 0;
-  ais_mmsi.ToInt(&mmsi);
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
   auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
   if (myptarget) myptarget->ToggleShowTrack();
 }
 
 bool IsAIS_CPAVisible(wxString ais_mmsi) {
-  int mmsi = 0;
-  ais_mmsi.ToInt(&mmsi);
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
   auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
   if (myptarget)
     return myptarget->b_show_AIS_CPA;
@@ -3545,8 +3545,8 @@ bool IsAIS_CPAVisible(wxString ais_mmsi) {
 }
 
 void AISToggleShowCPA(wxString ais_mmsi) {
-  int mmsi = 0;
-  ais_mmsi.ToInt(&mmsi);
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
   auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
   if (myptarget) myptarget->Toggle_AIS_CPA();
 }
@@ -3556,8 +3556,8 @@ void ShowAISTargetQueryDialog(int canvas_index, wxString ais_mmsi) {
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
 
-  int mmsi = 0;
-  ais_mmsi.ToInt(&mmsi);
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
   ShowAISTargetQueryDialog(parent, mmsi);
 }
 
