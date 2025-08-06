@@ -86,11 +86,48 @@ private:
   //---------------------------------------------
   // Data Access
   //---------------------------------------------
+  /**
+   * Reads the Indicator Section containing GRIB header and total record size.
+   * @param file Input file stream positioned at record start
+   * @param b_skip_initial_GRIB 0=search for "GRIB", 1=first 'G' found, 2=full
+   * "GRIB" read
+   * @return true if section read successfully, false on error or EOF
+   */
   bool readGribSection0_IS(ZUFILE* file, unsigned int b_skip_initial_GRIB);
+
+  /**
+   * Reads the Product Definition Section containing metadata about the data.
+   * @param file Input file stream positioned at PDS start
+   * @return true if section read successfully, false on error
+   */
   bool readGribSection1_PDS(ZUFILE* file);
+
+  /**
+   * Reads the Grid Description Section defining the geographic grid structure.
+   * @param file Input file stream positioned at GDS start
+   * @return true if section read successfully, false on error
+   */
   bool readGribSection2_GDS(ZUFILE* file);
+
+  /**
+   * Reads the optional Bit Map Section indicating valid/invalid grid points.
+   * @param file Input file stream positioned at BMS start
+   * @return true if section read successfully, false on error
+   */
   bool readGribSection3_BMS(ZUFILE* file);
+
+  /**
+   * Reads the Binary Data Section containing packed meteorological values.
+   * @param file Input file stream positioned at BDS start
+   * @return true if section read successfully, false on error
+   */
   bool readGribSection4_BDS(ZUFILE* file);
+
+  /**
+   * Reads the End Section marking the record termination with "7777".
+   * @param file Input file stream positioned at ES start
+   * @return true if section read successfully, false on error
+   */
   bool readGribSection5_ES(ZUFILE* file);
 
   //---------------------------------------------

@@ -269,15 +269,18 @@ AtmModelDef_t *xygribAtmModelList[] = {&xyGribGFSModelDef,
 
 WaveModelDef_t xyGribWW3ModelDef = {"WW3", "ww3_p50_",
                                     true,   // Significant height
-                                    true};  // Wind waves
+                                    true,   // Wind waves
+                                    true};  // Swell waves
 
 WaveModelDef_t xyGribGWAMModelDef = {"GWAM", "gwam_p25_",
                                      true,   // Significant height
-                                     true};  // Wind waves
+                                     true,   // Wind waves
+                                     true};  // Swell waves
 
 WaveModelDef_t xyGribEWAMModelDef = {"EWAM", "ewam_p05_",
                                      true,   // Significant height
-                                     true};  // Wind waves
+                                     true,   // Wind waves
+                                     true};  // Swell waves
 
 WaveModelDef_t *xygribWaveModelList[] = {
     &xyGribWW3ModelDef, &xyGribGWAMModelDef, &xyGribEWAMModelDef, nullptr};

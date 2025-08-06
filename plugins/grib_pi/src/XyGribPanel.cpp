@@ -112,53 +112,75 @@ XyGribPanel::XyGribPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                                wxDefaultPosition, wxDefaultSize, 0);
   m_wind_cbox->SetValue(true);
   m_surfacetab_sizer->Add(m_wind_cbox, 0, wxALL, 5);
+  m_wind_cbox->SetToolTip(_("Surface wind speed and direction"));
 
   m_gust_cbox =
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Wind gust (surface)"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_gust_cbox->SetValue(true);
   m_surfacetab_sizer->Add(m_gust_cbox, 0, wxALL, 5);
+  m_gust_cbox->SetToolTip(_("Maximum wind gusts at the surface"));
 
   m_pressure_cbox =
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Pressure (MSL)"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_pressure_cbox, 0, wxALL, 5);
+  m_pressure_cbox->SetToolTip(_("Mean sea level atmospheric pressure (MSLP)"));
 
   m_temperature_cbox =
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Temperature (2m)"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_temperature_cbox, 0, wxALL, 5);
+  m_temperature_cbox->SetToolTip(_("Air temperature at 2 meters above ground"));
 
   m_cape_cbox =
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("CAPE (surface)"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_cape_cbox, 0, wxALL, 5);
+  m_cape_cbox->SetToolTip(
+      _("Convective Available Potential Energy (instability index)"));
 
   m_reflectivity_cbox = new wxCheckBox(m_surfacetab_panel, wxID_ANY,
                                        _("Reflectivity (atmosphere)"),
                                        wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_reflectivity_cbox, 0, wxALL, 5);
+  m_reflectivity_cbox->SetToolTip(
+      _("Composite radar reflectivity (thunderstorm indicator)"));
 
   m_cloudcover_cbox =
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Cloud cover (total)"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_cloudcover_cbox, 0, wxALL, 5);
+  m_cloudcover_cbox->SetToolTip(_("Total cloud cover percentage"));
 
   m_precipitation_cbox =
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Total precipitation"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_precipitation_cbox, 0, wxALL, 5);
+  m_precipitation_cbox->SetToolTip(_("Total precipitation (rainfall)"));
 
   m_waveheight_cbox =
-      new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Wave Significant height"),
+      new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Combined waves"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_waveheight_cbox->SetValue(true);
   m_surfacetab_sizer->Add(m_waveheight_cbox, 0, wxALL, 5);
+  m_waveheight_cbox->SetToolTip(
+      _("Combined significant wave height (all waves). Period and direction "
+        "are not available."));
 
   m_windwave_cbox =
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Wind waves"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_windwave_cbox, 0, wxALL, 5);
+  m_windwave_cbox->SetToolTip(
+      _("Wind-generated wave height, period, and direction"));
+
+  m_swellwave_cbox =
+      new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Swell waves"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  m_surfacetab_sizer->Add(m_swellwave_cbox, 0, wxALL, 5);
+  m_swellwave_cbox->SetToolTip(
+      _("Swell wave height, period, and direction (not wind-driven)"));
 
   m_surfacetab_panel->SetSizer(m_surfacetab_sizer);
   m_surfacetab_panel->Layout();

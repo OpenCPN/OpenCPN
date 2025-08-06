@@ -72,7 +72,7 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   // set row label size
   int w;
   GetTextExtent(_T("Ab"), &w, nullptr, 0, 0, &labelfont);
-  double x = (double)w * 6.5;
+  double x = (double)w * 9.0;
   SetRowLabelSize((int)x);
 
 #ifdef __WXOSX__

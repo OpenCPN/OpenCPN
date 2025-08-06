@@ -45,6 +45,27 @@
 #include "pi_TexFont.h"
 
 /**
+ * Color map indices for different weather parameter visualizations.
+ *
+ * These indices correspond to different color schemes used for rendering
+ * GRIB data overlays. Each parameter type can use any of these color maps
+ * for visualization.
+ */
+enum {
+  GENERIC_GRAPHIC_INDEX,        ///< Generic color map for general use
+  WIND_GRAPHIC_INDEX,           ///< Wind-optimized color map
+  AIRTEMP__GRAPHIC_INDEX,       ///< Air temperature color map
+  SEATEMP_GRAPHIC_INDEX,        ///< Sea temperature color map
+  PRECIPITATION_GRAPHIC_INDEX,  ///< Precipitation/rainfall color map
+  CLOUD_GRAPHIC_INDEX,          ///< Cloud cover color map
+  CURRENT_GRAPHIC_INDEX,        ///< Current velocity color map
+  CAPE_GRAPHIC_INDEX,           ///< CAPE (atmospheric instability) color map
+  REFC_GRAPHIC_INDEX,           ///< Composite reflectivity color map
+  WINDY_GRAPHIC_INDEX,          ///< Windy.com style color map
+  WAVE_GRAPHIC_INDEX            ///< Wave height marine color map (blue to red)
+};
+
+/**
  * Container for rendered GRIB data visualizations in texture or bitmap form.
  *
  * This class manages the rendered representation of GRIB weather data,

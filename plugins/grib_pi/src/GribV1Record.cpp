@@ -299,14 +299,20 @@ void GribV1Record::translateDataType() {
   // translate significant wave height and dir
   if (this->knownData) {
     switch (getDataType()) {
-      case GRB_UOGRD:
-      case GRB_VOGRD:
+      case GRB_UOGRD:  // U component of current
+      case GRB_VOGRD:  // V component of current
         levelType = LV_GND_SURF;
         levelValue = 0;
         break;
-      case GRB_HTSGW:
-      case GRB_WVDIR:
-      case GRB_WVPER:
+      case GRB_HTSGW:  // Combined significant wave height
+      case GRB_WVDIR:  // Wind wave direction
+      case GRB_WVPER:  // Wind wave period
+      case GRB_WVHGT:  // Wind wave height
+      case GRB_SWELL:  // Swell wave height
+      case GRB_SWDIR:  // Swell wave direction
+      case GRB_SWPER:  // Swell wave period
+      case GRB_DIRPW:  // Direction of Primary Wave
+      case GRB_PERPW:  // Period of Primary Wave
         levelType = LV_GND_SURF;
         levelValue = 0;
         break;
@@ -376,18 +382,22 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_) {
 
   ok = readGribSection0_IS(file, b_haveReadGRIB);
   if (ok) {
+    // Read the Product Definition Section (what type of data)
     ok = readGribSection1_PDS(file);
     zu_seek(file, fileOffset1 + sectionSize1, SEEK_SET);
   }
   if (ok) {
+    // Read the Grid Description Section (geographic grid structure)
     ok = readGribSection2_GDS(file);
     zu_seek(file, fileOffset2 + sectionSize2, SEEK_SET);
   }
   if (ok) {
+    // Read the Bit Map Section (valid/invalid grid points)
     ok = readGribSection3_BMS(file);
     zu_seek(file, fileOffset3 + sectionSize3, SEEK_SET);
   }
   if (ok) {
+    // Read the Binary Data Section (meteorological values)
     ok = readGribSection4_BDS(file);
     zu_seek(file, fileOffset4 + sectionSize4, SEEK_SET);
   }
