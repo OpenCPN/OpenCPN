@@ -62,23 +62,6 @@ private:
   std::string m_key;
 };
 
-static bool CheckSumCheck(const std::string &sentence) {
-  size_t check_start = sentence.find('*');
-  if (check_start == wxString::npos || check_start > sentence.size() - 3)
-    return false;  // * not found, or it didn't have 2 characters following it.
-
-  std::string check_str = sentence.substr(check_start + 1, 2);
-  unsigned long checksum = strtol(check_str.c_str(), nullptr, 16);
-  if (checksum == 0L && check_str != "00") return false;
-
-  unsigned char calculated_checksum = 0;
-  for (std::string::const_iterator i = sentence.begin() + 1;
-       i != sentence.end() && *i != '*'; ++i)
-    calculated_checksum ^= static_cast<unsigned char>(*i);
-
-  return calculated_checksum == checksum;
-}
-
 static std::string N2K_LogMessage_Detail(unsigned int pgn) {
   std::string not_used = "Not used by OCPN, maybe by Plugins";
 
@@ -259,36 +242,14 @@ void Multiplexer::HandleN0183(
     }
   }
 
-  std::string str = n0183_msg->payload;
   std::string error_msg;
-
-  bool is_bad = !std::all_of(str.begin(), str.end(), [](char c) {
-    return isprint(c) || c == '\n' || c == '\r';
-  });
-  if (is_bad)
-    error_msg = _("Non-printable character in NMEA0183 message").ToStdString();
-
-  if (!CheckSumCheck(n0183_msg->payload)) {
-    is_bad = true;
-    error_msg = _("NMEA0183 checksum error");
-  }
-  if (source_driver) {
-    // Get the params for the driver sending this message
-    ConnectionParams params;
-    auto drv_n0183 = dynamic_cast<CommDriverN0183 *>(source_driver.get());
-    assert(drv_n0183);
-    params = drv_n0183->GetParams();
-
-    // Check to see if the message passes the source's input filter
-    bool bpass_input_filter =
-        params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
-
-    wxString port(n0183_msg->source->iface);
-    LogInputMessage(n0183_msg, !bpass_input_filter, is_bad, error_msg);
-  } else {
-    // A "virtual" source i.e., an internal message from for example a plugin
-    LogInputMessage(n0183_msg, false, is_bad, error_msg);
-  }
+  if (n0183_msg->state == NavMsg::State::kCannotParse)
+    error_msg = _("Unparsable NMEA0183 message").ToStdString();
+  else if (n0183_msg->state == NavMsg::State::kBadChecksum)
+    error_msg = _("NMEA0183 checksum error").ToStdString();
+  bool is_filtered = n0183_msg->state == NavMsg::State::kFiltered;
+  bool cs_error = n0183_msg->state == NavMsg::State::kBadChecksum;
+  LogInputMessage(n0183_msg, is_filtered, cs_error, error_msg);
 
   // Detect virtual driver, message comes from plugin API
   // Set such source iface to "" for later test
@@ -300,22 +261,19 @@ void Multiplexer::HandleN0183(
   for (auto &driver : drivers) {
     if (!driver) continue;
     if (driver->bus == NavAddr::Bus::N0183) {
-      ConnectionParams params_;
       auto *drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
-      ConnectionParams params = drv_n0183->GetParams();
+      assert(drv_n0183);
 
-      // Check to see if the message passes the source's input filter
-      bool bpass_input_filter =
-          params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
+      bool passes_input_filter = n0183_msg->state != NavMsg::State::kFiltered;
 
-      params_ = drv_n0183->GetParams();
+      ConnectionParams params_ = drv_n0183->GetParams();
       std::shared_ptr<const Nmea0183Msg> msg = n0183_msg;
-      if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
-          bpass_input_filter) {
+      if ((m_legacy_input_filter_behaviour && !passes_input_filter) ||
+          passes_input_filter) {
         //  Allow re-transmit on same port (if type is SERIAL),
         //  or any other NMEA0183 port supporting output
-        //  But, do not echo to the source network interface.  This will likely
-        //  recurse...
+        //  But, do not echo to the source network interface.  This will
+        //  likely recurse...
         if ((!params_.DisableEcho && params_.Type == SERIAL) ||
             driver->iface != source_iface) {
           if (params_.IOSelect == DS_TYPE_INPUT_OUTPUT ||
@@ -329,7 +287,6 @@ void Multiplexer::HandleN0183(
             if (params_.SentencePassesFilter(n0183_msg->payload.c_str(),
                                              FILTER_OUTPUT)) {
               // Reset source address. It's const, so make a modified copy
-
               auto null_addr = std::make_shared<NavAddr>();
               msg = std::make_shared<Nmea0183Msg>(id, n0183_msg->payload,
                                                   null_addr);
@@ -368,16 +325,6 @@ bool Multiplexer::HandleN2kLog(
   pgn += n2k_msg->payload.at(3);
   pgn += n2k_msg->payload.at(4) << 8;
   pgn += n2k_msg->payload.at(5) << 16;
-
-#if 0
-  printf(" %d: payload\n", pgn);
-  for(size_t i=0; i< payload.size(); i++){
-    printf("%02X ", payload.at(i));
-  }
-  printf("\n");
-  std::string pretty = n2k_msg->to_string();
-  printf("%s\n\n", pretty.c_str());
-#endif
 
   //  Input, or output?
   if (payload.at(0) == 0x94) {  // output

@@ -28,6 +28,16 @@
 
 #include "model/conn_params.h"
 #include "model/comm_driver.h"
+/**
+ * DriverListener which handles incoming N0183 data. By default
+ * messages are just handed to NavmsgBus and thus becomes
+ * available for both upper layers and plugins.
+ *
+ * Messages classified as junk, filtered or with bad checksum
+ * are handed to the evt_dropped_msg EventVar on
+ * CommDrvRegistry  to be available for the Data Monitor.
+ */
+class N0183Listener;
 
 /** Create and register a driver for given connection. */
 void MakeCommDriver(const ConnectionParams* params);

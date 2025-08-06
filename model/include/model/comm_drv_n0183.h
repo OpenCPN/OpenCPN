@@ -44,9 +44,6 @@
  *   - Sentences with an incorrect checksum are marked as such.
  *   - Sentences filtered by input filters are marked as such.
  *
- * Garbage and filtered lines are made available for the Data Monitor but
- * are otherwise not processed further. Other lines are forwarded to the
- * listener defined by SetListener().
  */
 class CommDriverN0183 : public AbstractCommDriver {
 public:

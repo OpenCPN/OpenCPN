@@ -32,6 +32,22 @@
 
 #include "model/comm_drv_n0183.h"
 
+/** Return true if checksum in 0183 sentence is correct. */
+static bool Is0183ChecksumOk(const std::string& sentence) {
+  const size_t cs_start = sentence.find('*');
+  if (cs_start == std::string::npos || cs_start > sentence.size() - 3)
+    return false;  // Not found, or didn't have 2 characters following it.
+
+  const std::string cs_str = sentence.substr(cs_start + 1, 2);
+  const unsigned long checksum = strtol(cs_str.c_str(), nullptr, 16);
+  if (checksum == 0L && cs_str != "00") return false;
+
+  unsigned char calculated_checksum = 0;
+  for (const char c : sentence.substr(1, cs_start - 1))
+    calculated_checksum ^= static_cast<unsigned char>(c);
+  return calculated_checksum == checksum;
+}
+
 CommDriverN0183::CommDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 
 CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s)
@@ -42,15 +58,28 @@ CommDriverN0183::~CommDriverN0183() = default;
 void CommDriverN0183::SendToListener(const std::string& payload,
                                      DriverListener& listener,
                                      const ConnectionParams& params) {
-  if ((payload[0] == '$' || payload[0] == '!') && payload.size() > 5) {
-    std::string identifier;
+  if (payload.empty()) return;
 
-    // notify message listener
-    if (params.SentencePassesFilter(payload, FILTER_INPUT)) {
-      // We notify based on full message, including the Talker ID
-      std::string id = payload.substr(1, 5);
-      auto msg = std::make_shared<const Nmea0183Msg>(id, payload, GetAddress());
-      listener.Notify(std::move(msg));
-    }
-  }
+  bool is_garbage = payload.size() < 6;
+  is_garbage |= (payload[0] != '$' && payload[0] != '!');
+  is_garbage |= !std::all_of(payload.begin(), payload.end(), [](char c) {
+    return isprint(c) || c == '\n' || c == '\r';
+  });
+
+  NavMsg::State state;
+  if (is_garbage)
+    state = NavMsg::State::kCannotParse;
+  else if (!params.SentencePassesFilter(payload, FILTER_INPUT))
+    state = NavMsg::State::kFiltered;
+  else if (!Is0183ChecksumOk(payload))
+    state = NavMsg::State::kBadChecksum;
+  else
+    state = NavMsg::State::kOk;
+
+  // We notify based on full message, including the Talker ID
+  std::string id =
+      state == NavMsg::State::kCannotParse ? "TRASH" : payload.substr(1, 5);
+  auto msg =
+      std::make_shared<const Nmea0183Msg>(id, payload, GetAddress(), state);
+  listener.Notify(std::move(msg));
 }
