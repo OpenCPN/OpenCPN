@@ -6941,18 +6941,13 @@ extern DECL_EXP bool IsRouteActive(wxString route_guid);
 extern DECL_EXP void SetBoatPosition(double zlat, double zlon);
 
 extern DECL_EXP void RouteInsertWaypoint(wxString route_guid, double zlat,
-                                         double zlon);  // for Insert Waypoint
-extern DECL_EXP void RouteAppendWaypoint(
-    int canvas_index,
-    wxString route_guid);  // for Append Waypoint
-extern DECL_EXP void FinishRoute(int canvas_index, wxString route_guid);
-extern DECL_EXP bool AreRouteWaypointNamesVisible(
-    wxString route_guid);  // for Show/Hide Waypoint Names
-extern DECL_EXP void ShowRouteWaypointNames(
-    wxString route_guid, bool show);  // for Show/Hide Waypoint Names
-extern DECL_EXP void NavigateToWaypoint(
-    wxString waypoint_guid);  // for Navigate To This (free-standing waypoint
-                              // context menu)
+                                         double zlon);
+extern DECL_EXP void RouteAppendWaypoint(int canvas_index, wxString route_guid);
+extern DECL_EXP void FinishRoute(int canvas_index);
+extern DECL_EXP bool IsRouteBeingCreated(int canvas_index);
+extern DECL_EXP bool AreRouteWaypointNamesVisible(wxString route_guid);
+extern DECL_EXP void ShowRouteWaypointNames(wxString route_guid, bool show);
+extern DECL_EXP void NavigateToWaypoint(wxString waypoint_guid);
 
 // AIS related
 extern DECL_EXP bool IsAISTrackVisible(
@@ -6964,6 +6959,7 @@ extern DECL_EXP bool IsAIS_CPAVisible(
 extern DECL_EXP void AISToggleShowCPA(
     wxString ais_mmsi);  // for Show/Hide Target CPA
 extern DECL_EXP void ShowAISTargetQueryDialog(
+    int canvas_index,
     wxString ais_mmsi);                                    // for Target Query
 extern DECL_EXP void ShowAISTargetList(int canvas_index);  // for Target List
 

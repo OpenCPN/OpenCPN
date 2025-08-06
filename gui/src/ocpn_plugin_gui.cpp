@@ -3462,15 +3462,20 @@ void RouteAppendWaypoint(int canvas_index, wxString route_guid) {
 
   parent->m_bAppendingRoute = true;
 }
-void FinishRoute(int canvas_index, wxString route_guid) {
-  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
-  if (!route) return;
+
+void FinishRoute(int canvas_index) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
 
   parent->FinishRoute();
-  parent->Refresh(false);
+}
+
+bool IsRouteBeingCreated(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return false;
+  return !(parent->m_pMouseRoute == NULL);
 }
 
 bool AreRouteWaypointNamesVisible(wxString route_guid) {
