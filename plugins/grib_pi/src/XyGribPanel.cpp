@@ -160,6 +160,11 @@ XyGribPanel::XyGribPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_windwave_cbox, 0, wxALL, 5);
 
+  m_swellwave_cbox =
+      new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Swell waves"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  m_surfacetab_sizer->Add(m_swellwave_cbox, 0, wxALL, 5);
+
   m_surfacetab_panel->SetSizer(m_surfacetab_sizer);
   m_surfacetab_panel->Layout();
   m_surfacetab_sizer->Fit(m_surfacetab_panel);
