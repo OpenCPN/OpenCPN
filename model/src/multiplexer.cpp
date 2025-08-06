@@ -250,7 +250,6 @@ void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
 void Multiplexer::HandleN0183(
     const std::shared_ptr<const Nmea0183Msg> &n0183_msg) const {
   // Find the driver that originated this message
-
   const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
   auto &source_driver = FindDriver(drivers, n0183_msg->source->iface);
   if (!source_driver) {
@@ -260,49 +259,36 @@ void Multiplexer::HandleN0183(
     }
   }
 
-  wxString fmsg;
-  bool bpass_input_filter = true;
-
-  // Send to the Debug Window, if open
-  //  Special formatting for non-printable characters helps debugging NMEA
-  //  problems
   std::string str = n0183_msg->payload;
+  std::string error_msg;
 
-  // Get the params for the driver sending this message
-  ConnectionParams params;
-  auto drv_n0183 = dynamic_cast<CommDriverN0183 *>(source_driver.get());
-  assert(drv_n0183);
-  params = drv_n0183->GetParams();
+  bool is_bad = !std::all_of(str.begin(), str.end(), [](char c) {
+    return isprint(c) || c == '\n' || c == '\r';
+  });
+  if (is_bad)
+    error_msg = _("Non-printable character in NMEA0183 message").ToStdString();
 
-  // Check to see if the message passes the source's input filter
-  bpass_input_filter =
-      params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
-
-  bool b_error = false;
-  wxString error_msg;
-  for (const auto &it : str) {
-    if (isprint(it))
-      fmsg += it;
-    else {
-      wxString bin_print;
-      bin_print.Printf("<0x%02X>", it);
-      fmsg += bin_print;
-      if ((it != 0x0a) && (it != 0x0d)) {
-        b_error = true;
-        error_msg = _("Non-printable character in NMEA0183 message");
-      }
-    }
-  }
-
-  // Flag checksum errors
-  bool checksumOK = CheckSumCheck(n0183_msg->payload);
-  if (!checksumOK) {
-    b_error = true;
+  if (!CheckSumCheck(n0183_msg->payload)) {
+    is_bad = true;
     error_msg = _("NMEA0183 checksum error");
   }
+  if (source_driver) {
+    // Get the params for the driver sending this message
+    ConnectionParams params;
+    auto drv_n0183 = dynamic_cast<CommDriverN0183 *>(source_driver.get());
+    assert(drv_n0183);
+    params = drv_n0183->GetParams();
 
-  wxString port(n0183_msg->source->iface);
-  LogInputMessage(n0183_msg, !bpass_input_filter, b_error, error_msg);
+    // Check to see if the message passes the source's input filter
+    bool bpass_input_filter =
+        params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
+
+    wxString port(n0183_msg->source->iface);
+    LogInputMessage(n0183_msg, !bpass_input_filter, is_bad, error_msg);
+  } else {
+    // A "virtual" source i.e., an internal message from for example a plugin
+    LogInputMessage(n0183_msg, false, is_bad, error_msg);
+  }
 
   // Detect virtual driver, message comes from plugin API
   // Set such source iface to "" for later test
@@ -315,10 +301,14 @@ void Multiplexer::HandleN0183(
     if (!driver) continue;
     if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params_;
-      drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
-      assert(drv_n0183);
-      params_ = drv_n0183->GetParams();
+      auto *drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
+      ConnectionParams params = drv_n0183->GetParams();
 
+      // Check to see if the message passes the source's input filter
+      bool bpass_input_filter =
+          params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
+
+      params_ = drv_n0183->GetParams();
       std::shared_ptr<const Nmea0183Msg> msg = n0183_msg;
       if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
           bpass_input_filter) {

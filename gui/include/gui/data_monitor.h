@@ -56,9 +56,7 @@ public:
 
   void SetFormat(Format format);
 
-  fs::path NullLogfile();
-
-  std::string GetFileDlgTypes();
+  std::string GetFileDlgTypes() const;
 
   fs::path GetDefaultLogfile();
 
@@ -88,7 +86,7 @@ public:
 
 private:
   void OnFilterListChange();
-  void OnFilterUpdate(const std::string& name);
+  void OnFilterUpdate(const std::string& name) const;
   void OnFilterApply(const std::string& name);
 
   DataMonitorSrc m_monitor_src;
