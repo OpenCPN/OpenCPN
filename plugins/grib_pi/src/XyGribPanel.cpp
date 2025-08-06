@@ -150,7 +150,7 @@ XyGribPanel::XyGribPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   m_surfacetab_sizer->Add(m_precipitation_cbox, 0, wxALL, 5);
 
   m_waveheight_cbox =
-      new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Wave Significant height"),
+      new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Significant wave height"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_waveheight_cbox->SetValue(true);
   m_surfacetab_sizer->Add(m_waveheight_cbox, 0, wxALL, 5);
@@ -159,6 +159,11 @@ XyGribPanel::XyGribPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
       new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Wind waves"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_surfacetab_sizer->Add(m_windwave_cbox, 0, wxALL, 5);
+
+  m_swellwave_cbox =
+      new wxCheckBox(m_surfacetab_panel, wxID_ANY, _("Swell waves"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  m_surfacetab_sizer->Add(m_swellwave_cbox, 0, wxALL, 5);
 
   m_surfacetab_panel->SetSizer(m_surfacetab_sizer);
   m_surfacetab_panel->Layout();
