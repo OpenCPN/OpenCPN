@@ -252,3 +252,4 @@ void CommDriverN0183AndroidBT::handle_N0183_MSG(
       m_listener.Notify(std::move(msg));
     }
   }
+}
