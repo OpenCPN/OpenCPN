@@ -50,7 +50,29 @@
 #include "model/comm_drv_n2k_socketcan.h"
 #endif
 
+class Listener : public DriverListener {
+public:
+  Listener() = default;
+
+  /** Handle driver status change. */
+  void Notify(const AbstractCommDriver& driver) override {}
+
+  void Notify(std::shared_ptr<const NavMsg> message) override {
+    switch (message->state) {
+      case NavMsg::State::kCannotParse:
+      case NavMsg::State::kFiltered:
+        CommDriverRegistry::GetInstance().evt_undelivered_msg.Notify(message);
+        break;
+      default:
+        NavMsgBus::GetInstance().Notify(message);
+        break;
+    }
+  }
+};
+
 void MakeCommDriver(const ConnectionParams* params) {
+  static Listener listener;
+
   wxLogMessage("MakeCommDriver: %s", params->GetDSPort().c_str());
 
   auto& msgbus = NavMsgBus::GetInstance();
@@ -64,7 +86,8 @@ void MakeCommDriver(const ConnectionParams* params) {
           break;
         }
         default: {
-          auto driver = std::make_unique<CommDriverN0183Serial>(params, msgbus);
+          auto driver =
+              std::make_unique<CommDriverN0183Serial>(params, listener);
           registry.Activate(std::move(driver));
           break;
         }
@@ -81,7 +104,7 @@ void MakeCommDriver(const ConnectionParams* params) {
           switch (params->Protocol) {
             case PROTO_NMEA0183: {
               auto driver =
-                  std::make_unique<CommDriverN0183Net>(params, msgbus);
+                  std::make_unique<CommDriverN0183Net>(params, listener);
               registry.Activate(std::move(driver));
               break;
             }
