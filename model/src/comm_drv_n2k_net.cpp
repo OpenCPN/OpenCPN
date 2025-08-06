@@ -327,11 +327,8 @@ void CommDriverN2KNet::handle_N2K_MSG(CommDriverN2KNetEvent& event) {
   auto name = PayloadToName(*payload);
   auto msg =
       std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
-  auto msg_all =
-      std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
   m_driver_stats.rx_count += payload->size();
   m_listener.Notify(std::move(msg));
-  m_listener.Notify(std::move(msg_all));
 }
 
 void CommDriverN2KNet::Open(void) {
