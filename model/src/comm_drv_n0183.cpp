@@ -48,9 +48,23 @@ static bool Is0183ChecksumOk(const std::string& sentence) {
   return calculated_checksum == checksum;
 }
 
+/**
+ * Return part of string starting with '$' or '!' and check length.
+ * In particular, strip v4 tag prefixes.
+ * @return part starting with '$' or '!' guaranteed to be at six least chars
+ * if found in input, else "".
+ */
+static std::string GetPayloadSentence(const std::string& sentence) {
+  size_t start_pos = sentence.find('$');
+  if (start_pos == std::string::npos) start_pos = sentence.find('!');
+  if (start_pos == std::string::npos) return "";
+  if (sentence.size() < start_pos + 6) return "";
+  return sentence.substr(start_pos);
+}
+
 CommDriverN0183::CommDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 
-CommDriverN0183::CommDriverN0183(NavAddr::Bus b, const std::string& s)
+CommDriverN0183::CommDriverN0183(NavAddr::Bus, const std::string& s)
     : AbstractCommDriver(NavAddr::Bus::N0183, s) {}
 
 CommDriverN0183::~CommDriverN0183() = default;
@@ -58,28 +72,31 @@ CommDriverN0183::~CommDriverN0183() = default;
 void CommDriverN0183::SendToListener(const std::string& payload,
                                      DriverListener& listener,
                                      const ConnectionParams& params) {
-  if (payload.empty()) return;
+  const std::string sentence = GetPayloadSentence(payload);
+  if (sentence.empty()) return;
+  assert(sentence[0] == '$' || sentence[0] == '!');
+  assert(sentence.size() >= 6);
 
-  bool is_garbage = payload.size() < 6;
-  is_garbage |= (payload[0] != '$' && payload[0] != '!');
-  is_garbage |= !std::all_of(payload.begin(), payload.end(), [](char c) {
-    return isprint(c) || c == '\n' || c == '\r';
-  });
+  const bool is_garbage =
+      std::any_of(sentence.begin(), sentence.end(),
+                  [](char c) { return !isprint(c) && c != '\n' && c != '\r'; });
+  const bool has_checksum =
+      sentence.find('*', sentence.size() - 6) != std::string::npos;
 
   NavMsg::State state;
   if (is_garbage)
     state = NavMsg::State::kCannotParse;
-  else if (!params.SentencePassesFilter(payload, FILTER_INPUT))
+  else if (!params.SentencePassesFilter(sentence, FILTER_INPUT))
     state = NavMsg::State::kFiltered;
-  else if (!Is0183ChecksumOk(payload))
+  else if (has_checksum && !Is0183ChecksumOk(sentence))
     state = NavMsg::State::kBadChecksum;
   else
     state = NavMsg::State::kOk;
 
   // We notify based on full message, including the Talker ID
   std::string id =
-      state == NavMsg::State::kCannotParse ? "TRASH" : payload.substr(1, 5);
+      state == NavMsg::State::kCannotParse ? "TRASH" : sentence.substr(1, 5);
   auto msg =
-      std::make_shared<const Nmea0183Msg>(id, payload, GetAddress(), state);
+      std::make_shared<const Nmea0183Msg>(id, sentence, GetAddress(), state);
   listener.Notify(std::move(msg));
 }
