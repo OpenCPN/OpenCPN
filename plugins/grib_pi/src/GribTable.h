@@ -105,6 +105,8 @@ private:
   wxString GetWindGust(GribRecord **recordarray, int datatype);
   wxString GetPressure(GribRecord **recordarray);
   wxString GetWaves(GribRecord **recordarray, int datatype, double &wdir);
+  wxString GetWindWaves(GribRecord **recordarray, int datatype, double &wdir);
+  wxString GetSwellWaves(GribRecord **recordarray, int datatype, double &wdir);
   wxString GetRainfall(GribRecord **recordarray);
   wxString GetCloudCover(GribRecord **recordarray);
   wxString GetAirTemp(GribRecord **recordarray);
