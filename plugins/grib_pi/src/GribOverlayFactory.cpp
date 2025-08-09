@@ -2135,7 +2135,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
     for (it = particles.begin(); it != particles.end(); it++)
       for (int i = 0; i < it->m_HistorySize; i++) {
         Particle::ParticleNode &n = it->m_History[i];
-        float(&p)[2] = n.m_Pos;
+        float (&p)[2] = n.m_Pos;
         if (p[0] == -10000) continue;
 
         wxPoint ps;
@@ -2156,7 +2156,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
       for (it = particles.begin(); it != particles.end(); it++)
         for (int i = 0; i < it->m_HistorySize; i++) {
           Particle::ParticleNode &n = it->m_History[i];
-          float(&p)[2] = n.m_Pos;
+          float (&p)[2] = n.m_Pos;
           if (p[0] == -10000) continue;
 
           n.m_Screen[0] += p1.x;
@@ -2186,7 +2186,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
 
       it.m_Duration++;
 
-      float(&pp)[2] = it.m_History[it.m_HistoryPos].m_Pos;
+      float (&pp)[2] = it.m_History[it.m_HistoryPos].m_Pos;
 
       // maximum history size
       if (++it.m_HistorySize > history_size) it.m_HistorySize = history_size;
@@ -2194,7 +2194,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
       if (++it.m_HistoryPos >= history_size) it.m_HistoryPos = 0;
 
       Particle::ParticleNode &n = it.m_History[it.m_HistoryPos];
-      float(&p)[2] = n.m_Pos;
+      float (&p)[2] = n.m_Pos;
       double vkn = 0, ang;
 
       if (it.m_Duration < max_duration - history_size &&
@@ -2349,9 +2349,9 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
     float lcf[4];
 
     for (;;) {
-      float(&dp)[2] = it->m_History[i].m_Pos;
+      float (&dp)[2] = it->m_History[i].m_Pos;
       if (dp[0] != -10000) {
-        float(&sp)[2] = it->m_History[i].m_Screen;
+        float (&sp)[2] = it->m_History[i].m_Screen;
         wxUint8(&ci)[3] = it->m_History[i].m_Color;
 
         wxUint8 c[4] = {ci[0], ci[1], (unsigned char)(ci[2] + 240 - alpha / 2),

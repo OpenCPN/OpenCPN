@@ -607,10 +607,10 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   ViewPort *vp = m_pParentCanvas->GetpVP();
   mat4x4 m;
   mat4x4_identity(m);
-  mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
+  mat4x4_scale_aniso((float (*)[4])vp->vp_matrix_transform, m,
                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
                      1.0);
-  mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
+  mat4x4_translate_in_place((float (*)[4])vp->vp_matrix_transform,
                             -vp->pix_width / 2, -vp->pix_height / 2, 0);
 }
 
@@ -1199,7 +1199,7 @@ void glChartCanvas::SetupOpenGL() {
   else
     wxLogMessage(_T("OpenGL-> Vertexbuffer Objects unavailable"));
 
-    //      Can we use the stencil buffer in a FBO?
+  //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES
   m_b_useFBOStencil = QueryExtension("GL_OES_packed_depth_stencil");
 #else
@@ -3988,10 +3988,10 @@ void glChartCanvas::Render() {
     ViewPort *vp = m_pParentCanvas->GetpVP();
     mat4x4 m;
     mat4x4_identity(m);
-    mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
+    mat4x4_scale_aniso((float (*)[4])vp->vp_matrix_transform, m,
                        2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
                        1.0);
-    mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
+    mat4x4_translate_in_place((float (*)[4])vp->vp_matrix_transform,
                               -vp->pix_width / 2, -vp->pix_height / 2, 0);
   }
 
@@ -4145,7 +4145,7 @@ void glChartCanvas::Render() {
       //  Especially seen on sparse RNC rendering
       if (fabs(VPoint.rotation) > 0) accelerated_pan = false;
 
-        // do we allow accelerated panning?  can we perform it here?
+      // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 #else  // GLES2
        // enable rendering to texture in framebuffer object

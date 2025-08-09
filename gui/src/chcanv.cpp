@@ -7591,8 +7591,8 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
     } else if (FoundRoutePoint)
       seltype |= SELTYPE_MARKPOINT;
 
-      //      Highlite the selected point, to verify the proper right click
-      //      selection
+    //      Highlite the selected point, to verify the proper right click
+    //      selection
 #if 0
     if (m_pFoundRoutePoint) {
       m_pFoundRoutePoint->m_bPtIsSelected = true;
