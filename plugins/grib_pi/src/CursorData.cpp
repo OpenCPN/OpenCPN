@@ -36,7 +36,7 @@ CursorData::CursorData(wxWindow *window, GRIBUICtrlBar &parent)
     : CursorDataBase(window), m_gparent(parent) {
   // transform checkboxes ID to have a formal link to data type and set the
   // initial value
-  wxWindowListNode *node = this->GetChildren().GetFirst();
+  wxWindowList::compatibility_iterator node = this->GetChildren().GetFirst();
   while (node) {
     wxWindow *win = node->GetData();
     if (dynamic_cast<wxCheckBox *>(win)) {
@@ -696,7 +696,7 @@ void CursorData::OnMenuCallBack(wxMouseEvent &event) {
   PopupMenu(menu);
 
   // apply new config
-  wxwxMenuItemListNode *node = menu->GetMenuItems().GetFirst();
+  wxMenuItemList::compatibility_iterator node = menu->GetMenuItems().GetFirst();
   while (node) {
     wxMenuItem *it = node->GetData();
     switch (it->GetId()) {

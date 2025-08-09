@@ -113,7 +113,7 @@ void ConnectionParamsPanel::SetSelected(bool selected) {
 
   wxWindowList kids = GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode *node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow *win = node->GetData();
     win->SetBackgroundColour(m_boxColour);
   }

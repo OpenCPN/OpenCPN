@@ -621,6 +621,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   SetPath(_T ( "/Settings" ));
   Read("ActiveRoute", &g_active_route);
   Read("PersistActiveRoute", &g_persist_active_route);
+  Read("AlwaysSendRmbRmc", &g_always_send_rmb_rmc);
   Read(_T ( "LastAppliedTemplate" ), &g_lastAppliedTemplateGUID);
   Read(_T ( "CompatOS" ), &g_compatOS);
   Read(_T ( "CompatOsVersion" ), &g_compatOsVersion);
@@ -2250,6 +2251,8 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "GPSIdent" ), g_GPS_Ident);
   Write("ActiveRoute", g_active_route);
   Write("PersistActiveRoute", g_persist_active_route);
+  Write("AlwaysSendRmbRmc", g_always_send_rmb_rmc);
+
   Write(_T ( "UseGarminHostUpload" ), g_bGarminHostUpload);
 
   Write(_T ( "MobileTouch" ), g_btouch);
@@ -2745,7 +2748,8 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
     // WPTs
     int ic = 1;
 
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    RoutePointList::compatibility_iterator node =
+        pWayPointMan->GetWaypointList()->GetFirst();
     RoutePoint *pr;
     while (node) {
       if (pprog && !(ic % progStep)) {
@@ -2769,7 +2773,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
       node = node->GetNext();
     }
     // RTEs and TRKs
-    wxRouteListNode *node1 = pRouteList->GetFirst();
+    RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
     while (node1) {
       Route *pRoute = node1->GetData();
 
@@ -3383,7 +3387,7 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
 
   wxWindowList kids = ctrl->GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode *node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow *win = node->GetData();
 
     if (dynamic_cast<wxListBox *>(win) || dynamic_cast<wxListCtrl *>(win) ||

@@ -498,7 +498,8 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
     // Send out the waypoints, in order
     if (bsend_waypoints) {
-      wxRoutePointListNode* node = pr->pRoutePointList->GetFirst();
+      RoutePointList::compatibility_iterator node =
+          pr->pRoutePointList->GetFirst();
 
       int ip = 1;
       while (node) {

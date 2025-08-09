@@ -203,7 +203,7 @@ IsoLine::IsoLine(double val, double coeff, double offset,
 
     m_SegListList.Append(ps);
 
-    MySegList::Node *node;
+    MySegList::compatibility_iterator node;
     Segment *seg;
 
     // recreate the master list, removing used segs
@@ -241,7 +241,7 @@ IsoLine::~IsoLine() {
 }
 
 MySegList *IsoLine::BuildContinuousSegment(void) {
-  MySegList::Node *node;
+  MySegList::compatibility_iterator node;
   Segment *seg;
 
   MySegList *ret_list = new MySegList;
@@ -876,11 +876,7 @@ void GenSpline(wxList *points) {
 
   ocpn_wx_spline_add_point(x1, y1);
 
-  while ((node = node->GetNext())
-#if !wxUSE_STL
-         != nullptr
-#endif  // !wxUSE_STL
-  ) {
+  while ((node = node->GetNext())) {
     p = (wxPoint *)node->GetData();
     x1 = x2;
     y1 = y2;

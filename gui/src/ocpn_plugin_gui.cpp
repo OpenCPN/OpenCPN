@@ -848,7 +848,8 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -870,7 +871,8 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator prpnode =
+      pWayPointMan->GetWaypointList()->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
 
@@ -954,7 +956,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();
@@ -1016,7 +1018,8 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint* dst,
   if (src->m_HyperlinkList->GetCount() > 0) {
     dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
 
@@ -1047,7 +1050,7 @@ wxArrayString GetWaypointGUIDArray(void) {
   wxArrayString result;
   const RoutePointList* list = pWayPointMan->GetWaypointList();
 
-  wxRoutePointListNode* prpnode = list->GetFirst();
+  RoutePointList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
     result.Add(prp->m_GUID);
@@ -1062,7 +1065,7 @@ wxArrayString GetRouteGUIDArray(void) {
   wxArrayString result;
   RouteList* list = pRouteList;
 
-  wxRouteListNode* prpnode = list->GetFirst();
+  RouteList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     Route* proute = prpnode->GetData();
     result.Add(proute->m_GUID);
@@ -1086,7 +1089,7 @@ wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
   const RoutePointList* list = pWayPointMan->GetWaypointList();
 
-  wxRoutePointListNode* prpnode = list->GetFirst();
+  RoutePointList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
     switch (req) {
@@ -1111,7 +1114,7 @@ wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
   RouteList* list = pRouteList;
 
-  wxRouteListNode* prpnode = list->GetFirst();
+  RouteList::compatibility_iterator prpnode = list->GetFirst();
   while (prpnode) {
     Route* proute = prpnode->GetData();
     switch (req) {
@@ -1169,7 +1172,8 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointList::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwp = pwpnode->GetData();
 
@@ -1255,7 +1259,8 @@ bool AddPlugInTrack(PlugIn_Track* ptrack, bool b_permanent) {
   TrackPoint* pWP_src = 0;
   int ip = 0;
 
-  wxPlugin_WaypointListNode* pwpnode = ptrack->pWaypointList->GetFirst();
+  Plugin_WaypointList::compatibility_iterator pwpnode =
+      ptrack->pWaypointList->GetFirst();
   while (pwpnode) {
     pwp = pwpnode->GetData();
 
@@ -1617,7 +1622,8 @@ std::unique_ptr<PlugIn_Route> GetRoute_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      route->pRoutePointList->GetFirst();
 
   while (node) {
     src_wp = node->GetData();
@@ -1875,10 +1881,11 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  wxRouteListNode* node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
-    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
+    RoutePointList::compatibility_iterator pnode =
+        (proute->pRoutePointList)->GetFirst();
     while (pnode) {
       RoutePoint* prp = pnode->GetData();
       if (prp == pWP) nCount++;
@@ -1964,10 +1971,11 @@ int PlugIn_Waypoint_ExV2::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  wxRouteListNode* node = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
-    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
+    RoutePointList::compatibility_iterator pnode =
+        (proute->pRoutePointList)->GetFirst();
     while (pnode) {
       RoutePoint* prp = pnode->GetData();
       if (prp == pWP) nCount++;
@@ -2027,7 +2035,8 @@ static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
     if (src->m_HyperlinkList->GetCount() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      HyperlinkList::compatibility_iterator linknode =
+          src->m_HyperlinkList->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
 
@@ -2080,7 +2089,8 @@ static void cloneHyperlinkListExV2(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -2144,7 +2154,8 @@ bool AddSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypointex,
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator prpnode =
+      pWayPointMan->GetWaypointList()->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
 
@@ -2198,7 +2209,7 @@ bool UpdateSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();
@@ -2275,7 +2286,8 @@ bool AddPlugInRouteExV2(PlugIn_Route_ExV2* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointExV2ListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointExV2List::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwaypointex = pwpnode->GetData();
 
@@ -2352,7 +2364,8 @@ std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(const wxString& GUID) {
   PlugIn_Route_ExV2* dst_route = r.get();
 
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      route->pRoutePointList->GetFirst();
 
   while (node) {
     src_wp = node->GetData();
@@ -2410,7 +2423,8 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
     if (src->m_HyperlinkList->GetCount() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      HyperlinkList::compatibility_iterator linknode =
+          src->m_HyperlinkList->GetFirst();
       while (linknode) {
         Hyperlink* link = linknode->GetData();
 
@@ -2444,7 +2458,8 @@ static void cloneHyperlinkListEx(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -2507,7 +2522,8 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypointex, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePointList::compatibility_iterator prpnode =
+      pWayPointMan->GetWaypointList()->GetFirst();
   while (prpnode) {
     RoutePoint* prp = prpnode->GetData();
 
@@ -2560,7 +2576,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();
@@ -2619,7 +2635,8 @@ bool AddPlugInRouteEx(PlugIn_Route_Ex* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointExListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointExList::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwaypointex = pwpnode->GetData();
 
@@ -2702,7 +2719,8 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+  RoutePointList::compatibility_iterator node =
+      route->pRoutePointList->GetFirst();
 
   while (node) {
     src_wp = node->GetData();

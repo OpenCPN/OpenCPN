@@ -31,6 +31,9 @@
 bool UpdateAutopilotN0183(Routeman &routeman);
 bool UpdateAutopilotN2K(Routeman &routeman);
 
+/** Send RMC + a faked RMB when there is no active route. */
+bool SendNoRouteRmbRmc(Routeman &routeman);
+
 bool SendPGN129283(Routeman &routeman, AbstractCommDriver *driver);
 bool SendPGN129284(Routeman &routeman, AbstractCommDriver *driver);
 bool SendPGN129285(Routeman &routeman, AbstractCommDriver *driver);
