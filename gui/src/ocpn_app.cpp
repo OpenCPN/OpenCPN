@@ -155,6 +155,7 @@ using namespace std::literals::chrono_literals;
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "RoutePropDlgImpl.h"
+#include "route_timeline_manager.h"
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
@@ -598,6 +599,7 @@ int g_click_stop;
 int g_MemFootMB;
 
 bool g_bShowStatusBar;
+bool g_bShowTimeline;
 
 bool g_bquiting;
 int g_BSBImgDebug;
@@ -1662,6 +1664,9 @@ bool MyApp::OnInit() {
   //  Initialize the Plugin Manager
   g_pi_manager = new PlugInManager(gFrame);
 
+  // Initialize the Route Timeline Manager
+  RouteTimelineManager::GetInstance().Initialize();
+
   // g_pauimgr = new wxAuiManager;
   g_pauimgr = new OCPN_AUIManager;
   g_pauidockart = new wxAuiDefaultDockArt;
@@ -2076,6 +2081,9 @@ int MyApp::OnExit() {
 
   delete g_pRouteMan;
   delete pWayPointMan;
+
+  // Cleanup the Route Timeline Manager
+  RouteTimelineManager::GetInstance().Cleanup();
 
   delete pMessageOnceArray;
 

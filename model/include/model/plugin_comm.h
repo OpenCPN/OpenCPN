@@ -28,6 +28,7 @@
 #include <wx/event.h>
 #include <wx/jsonval.h>
 #include <wx/string.h>
+#include <wx/datetime.h>
 
 #include "model/ocpn_types.h"
 
@@ -74,5 +75,90 @@ int GetJSONMessageTargetCount();
 void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
                                const wxString& objname, double& lat,
                                double& lon, double& scale, int& nativescale);
+
+/**
+ * Interface for core components to handle messages and events.
+ *
+ * This interface provides core components with hooks similar to those available
+ * to plugins. Core components can intercept and process messages before they
+ * are sent to plugins, and receive direct notifications for timeline and other
+ * system events.
+ *
+ * All methods have default implementations that do nothing, allowing components
+ * to override only the events they're interested in handling.
+ */
+class CoreMessageHandler {
+public:
+  virtual ~CoreMessageHandler() = default;
+
+  /**
+   * Handle a plugin message before it is sent to plugins.
+   *
+   * @param message_id The ID of the plugin message
+   * @param message_body The body of the plugin message
+   * @return true if the message was handled, false otherwise
+   */
+  virtual bool HandlePluginMessage(const wxString& message_id,
+                                   const wxString& message_body) {
+    return false;
+  }
+
+  /**
+   * Notifies core component when timeline selection changes.
+   *
+   * Called when the user changes the selected time in the global timeline
+   * widget. Allows core components to update their display based on the
+   * selected time.
+   *
+   * @param selectedTime The newly selected timestamp, or wxInvalidDateTime
+   *                     if no time is selected.
+   *
+   * @note Time is in local time.
+   * @note Component should update its temporal data display to match this time
+   */
+  virtual void OnTimelineSelectedTimeChanged(const wxDateTime& selectedTime,
+                                             const wxDateTime& startTime,
+                                             const wxDateTime& endTime) {}
+};
+
+/**
+ * Register a core message handler for a specific message ID.
+ * This allows core components to handle messages before they are sent to
+ * plugins.
+ *
+ * @param message_id The ID of the message to handle
+ * @param handler The handler that will process the message
+ */
+void RegisterCoreMessageHandler(const wxString& message_id,
+                                CoreMessageHandler* handler);
+
+/**
+ * Register a core component to receive timeline selection notifications.
+ * This allows core components to receive OnTimelineSelectedTimeChanged events.
+ *
+ * @param handler The handler that will receive timeline notifications
+ */
+void RegisterCoreTimelineHandler(CoreMessageHandler* handler);
+
+/**
+ * Unregister a core component from all event notifications.
+ * This should be called when a component is being destroyed to prevent
+ * dangling pointer access.
+ *
+ * @param handler The handler to unregister from all notifications
+ */
+void UnregisterCoreHandler(CoreMessageHandler* handler);
+
+/**
+ * Send timeline selection notifications to all registered core handlers.
+ * This should be called when the timeline selection changes.
+ *
+ * @param selectedTime The newly selected timestamp
+ * @param startTime    The start timestamp of the visible timeline range
+ * @param endTime      The end timestamp of the visible timeline range
+ */
+void SendTimelineSelectedTimeToCoreHandlers(const wxDateTime& selectedTime,
+                                            const wxDateTime& startTime,
+                                            const wxDateTime& endTime);
 
 #endif  //  PLUGIN__COMM_H

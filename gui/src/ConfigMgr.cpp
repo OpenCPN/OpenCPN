@@ -115,6 +115,7 @@ extern bool g_bPermanentMOBIcon;
 extern bool g_btenhertz;
 
 extern bool g_bShowDepthUnits;
+extern bool g_bShowTimeline;
 extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
@@ -813,6 +814,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write(_T ( "SpaceDropMark" ), g_bSpaceDropMark);
 
   conf->Write(_T ( "ShowStatusBar" ), g_bShowStatusBar);
+  conf->Write(_T ( "ShowTimeline" ), g_bShowTimeline);
 #ifndef __WXOSX__
   conf->Write(_T ( "ShowMenuBar" ), g_bShowMenuBar);
 #endif
@@ -1323,6 +1325,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod);
 
   CHECK_INT(_T ( "ShowStatusBar" ), &g_bShowStatusBar);
+  CHECK_INT(_T ( "ShowTimeline" ), &g_bShowTimeline);
 #ifndef __WXOSX__
   CHECK_INT(_T ( "ShowMenuBar" ), &g_bShowMenuBar);
 #endif
