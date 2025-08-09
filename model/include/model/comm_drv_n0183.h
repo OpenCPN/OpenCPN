@@ -36,13 +36,13 @@
  * NMEA0183 basic parsing common parts:
  *
  *   - Input is processed as lines.
- *   - Lines missing an initial '$' or '!' is considered as garbage and
+ *   - Lines missing an initial '$' or '!' are considered as garbage and
  *     marked as such.
  *   - Anything preceding first '$' or '!', including v4 tags, is
  *     silently dropped.
- *   - Sentences without checksum is allowed.
- *   - Sentences with an incorrect checksum is marked as such.
- *   - Sentences filtered by input filters marked as such.
+ *   - Sentences without checksum are allowed.
+ *   - Sentences with an incorrect checksum are marked as such.
+ *   - Sentences filtered by input filters are marked as such.
  *
  * Garbage and filtered lines are made available for the Data Monitor but
  * are otherwise not processed further. Other lines are forwarded to the

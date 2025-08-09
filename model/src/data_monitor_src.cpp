@@ -47,9 +47,8 @@ DataMonitorSrc::DataMonitorSrc(const SinkFunc& sink_func)
     : m_sink_func(sink_func) {
   new_msg_lstnr.Init(NavMsgBus::GetInstance().new_msg_event,
                      [&](ObservedEvt&) { OnNewMessage(); });
-  undelivered_msg_lstnr.Init(
-      CommDriverRegistry::GetInstance().evt_undelivered_msg,
-      [&](ObservedEvt& ev) { OnMessage(ev); });
+  undelivered_msg_lstnr.Init(CommDriverRegistry::GetInstance().evt_dropped_msg,
+                             [&](ObservedEvt& ev) { OnMessage(ev); });
 }
 
 void DataMonitorSrc::OnNewMessage() {

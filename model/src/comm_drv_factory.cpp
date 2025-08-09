@@ -61,7 +61,7 @@ public:
     switch (message->state) {
       case NavMsg::State::kCannotParse:
       case NavMsg::State::kFiltered:
-        CommDriverRegistry::GetInstance().evt_undelivered_msg.Notify(message);
+        CommDriverRegistry::GetInstance().evt_dropped_msg.Notify(message);
         break;
       default:
         NavMsgBus::GetInstance().Notify(message);
