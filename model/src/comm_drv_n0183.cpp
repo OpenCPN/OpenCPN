@@ -81,13 +81,15 @@ void CommDriverN0183::SendToListener(const std::string& payload,
   const bool is_garbage =
       std::any_of(sentence.begin(), sentence.end(),
                   [](char c) { return !isprint(c) && c != '\n' && c != '\r'; });
+  const bool has_checksum =
+      sentence.find('*', sentence.size() - 4) != std::string::npos;
 
   NavMsg::State state;
   if (is_garbage)
     state = NavMsg::State::kCannotParse;
   else if (!params.SentencePassesFilter(sentence, FILTER_INPUT))
     state = NavMsg::State::kFiltered;
-  else if (!Is0183ChecksumOk(sentence))
+  else if (has_checksum && !Is0183ChecksumOk(sentence))
     state = NavMsg::State::kBadChecksum;
   else
     state = NavMsg::State::kOk;
