@@ -715,14 +715,14 @@ bool Route::IsEqualTo(Route *ptargetroute) {
   wxRoutePointListNode *pthisnode = (this->pRoutePointList)->GetFirst();
   wxRoutePointListNode *pthatnode = (ptargetroute->pRoutePointList)->GetFirst();
 
-  if (NULL == pthisnode) return false;
+  if (!pthisnode) return false;
 
   if (this->m_bIsInLayer || ptargetroute->m_bIsInLayer) return false;
 
   if (this->GetnPoints() != ptargetroute->GetnPoints()) return false;
 
   while (pthisnode) {
-    if (NULL == pthatnode) return false;
+    if (!pthatnode) return false;
 
     RoutePoint *pthisrp = pthisnode->GetData();
     RoutePoint *pthatrp = pthatnode->GetData();

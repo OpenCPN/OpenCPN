@@ -28,7 +28,7 @@ brew install mpg123
 brew install xz
 brew install zstd
 brew install libarchive
-brew install wxwidgets
+brew install wxwidgets@3.2
 brew install create-dmg
 brew install gpatch
 

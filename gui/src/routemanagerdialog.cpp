@@ -3047,10 +3047,10 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   }
 
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
-    wxRouteListNode *next_node = node1->GetNext();
+    RouteList::compatibility_iterator next_node = node1->GetNext();
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->m_bIsInLayer = false;
       pRoute->m_LayerID = 0;
@@ -3118,7 +3118,7 @@ void RouteManagerDialog::OnLayToggleChartClick(wxCommandEvent &event) {
 
 void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
@@ -3170,7 +3170,7 @@ void RouteManagerDialog::OnLayToggleNamesClick(wxCommandEvent &event) {
 
 void RouteManagerDialog::ToggleLayerContentsNames(Layer *layer) {
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
@@ -3227,7 +3227,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
   ::wxBeginBusyCursor();
 
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
+  RouteList::compatibility_iterator node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {

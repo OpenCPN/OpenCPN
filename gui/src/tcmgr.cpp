@@ -993,24 +993,24 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx) {
   }
 }
 
-std::wstring TCMgr::GetTidalEventStr(int station_id, wxDateTime ref_dt,
-                                     double lat, double lon, int dt_type) {
+std::string TCMgr::GetTidalEventStr(int station_id, wxDateTime ref_dt,
+                                    double lat, double lon, int dt_type) {
   IDX_entry *idx = (IDX_entry *)GetIDX_entry(station_id);
   time_t dtmtt = ref_dt.FromUTC().GetTicks();
   int event = GetNextBigEvent(&dtmtt, station_id);
   wxDateTime event_dt = wxDateTime(dtmtt).MakeUTC();
 
-  std::wstring event_str;
+  std::string event_str;
   if (event == 1) {
-    event_str = _("LW").ToStdWstring();
+    event_str = _("LW").ToStdString();
   } else if (event == 2) {
-    event_str = _("HW").ToStdWstring();
+    event_str = _("HW").ToStdString();
   } else {
-    event_str = _("Unavailable").ToStdWstring();
+    event_str = _("Unavailable").ToStdString();
   }
 
   if (event > 0) {
-    event_str.append(L": ");
+    event_str.append(": ");
     event_str.append(
         toUsrDateTime(event_dt, dt_type, lon).FormatISOCombined(' '));
   }
