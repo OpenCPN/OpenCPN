@@ -23,8 +23,8 @@
  *  NMEA0183 drivers common base.
  */
 
-#ifndef COMMDRIVER_N0183_H_
-#define COMMDRIVER_N0183_H_
+#ifndef COMM_DRIVER_N0183_H_
+#define COMM_DRIVER_N0183_H_
 
 #include <memory>
 #include <string>
@@ -32,7 +32,22 @@
 #include "model/comm_driver.h"
 #include "model/conn_params.h"
 
-/** NMEA0183 drivers common part. */
+/**
+ * NMEA0183 basic parsing common parts:
+ *
+ *   - Input is processed as lines.
+ *   - Lines missing an initial '$' or '!' is considered as garbage and
+ *     marked as such.
+ *   - Anything preceding first '$' or '!', including v4 tags, is
+ *     silently dropped.
+ *   - Sentences without checksum is allowed.
+ *   - Sentences with an incorrect checksum is marked as such.
+ *   - Sentences filtered by input filters marked as such.
+ *
+ * Garbage and filtered lines are made available for the Data Monitor but
+ * are otherwise not processed further. Other lines are forwarded to the
+ * listener defined by SetListener().
+ */
 class CommDriverN0183 : public AbstractCommDriver {
 public:
   CommDriverN0183();
@@ -57,4 +72,4 @@ protected:
                       const ConnectionParams& params);
 };
 
-#endif  // COMMDRIVER_N0183_H_
+#endif  // COMM_DRIVER_N0183_H_
