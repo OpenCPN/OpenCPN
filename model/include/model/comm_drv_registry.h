@@ -71,6 +71,12 @@ public:
   EventVar evt_driver_stats;
 
   /**
+   * Updated by drivers with a shared Navmsg pointer when receiving
+   * data otherwise dropped, for example garbage or filtered.
+   */
+  EventVar evt_dropped_msg;
+
+  /**
    *  Notified for messages from drivers. The generated event contains:
    *  - A wxLogLevel stored as an int.
    *  - A string is with a prefix from originating driver class name e. g.,

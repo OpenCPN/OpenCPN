@@ -860,8 +860,7 @@ DataMonitor::DataMonitor(wxWindow* parent)
               wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT,
               kDataMonitorWindowName),
       m_monitor_src([&](const std::shared_ptr<const NavMsg>& navmsg) {
-        auto msg = std::dynamic_pointer_cast<const Nmea0183Msg>(navmsg);
-        TtyPanel::AddIfExists(navmsg);
+        TtyPanel::AddIfExists(Logline(navmsg));
       }),
       m_quick_filter(nullptr),
       m_logger(parent) {

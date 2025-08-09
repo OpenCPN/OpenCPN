@@ -98,6 +98,11 @@ public:
     Observable::Notify(p, s, n, nullptr);
   }
 
+  /** Notify all listeners about variable change with const* shared_ptr, */
+  void Notify(const std::shared_ptr<const void>& p) {
+    Observable::Notify(p, "", 0, nullptr);
+  }
+
 private:
   std::string Autokey() {
     static std::atomic<unsigned long> last_ix(0);
