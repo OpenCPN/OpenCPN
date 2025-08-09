@@ -842,7 +842,7 @@ Section "-Install Section" SecInstall
 	WriteRegStr SHCTX "${REG_KEY_UN}" "StartMenuPath" "$SMPROGRAMS\$STARTMENU_FOLDER"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "InstallLocation" "$INSTDIR"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "UninstallString" "$\"$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe$\""
-	WriteRegStr SHCTX "${REG_KEY_UN}" "QuietUninstallString" "$\"$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /S$\""
+	WriteRegStr SHCTX "${REG_KEY_UN}" "QuietUninstallString" "$\"$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe$\" /S"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "ConfigLocation" "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "DisplayIcon" "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@"
 	WriteRegStr SHCTX "${REG_KEY_UN}" "Publisher" "@CPACK_PACKAGE_VENDOR@"
