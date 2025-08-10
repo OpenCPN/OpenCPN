@@ -1,0 +1,18 @@
+OpenCPN temporary 5.12 Debian repository
+========================================
+
+This repository contains opencpn 5.12.x builds backported to trixie. These
+will eventually  be uploaded to the Debian repositories after the Trixie
+release.
+
+To use the repository:
+
+  - Add the repository to the apt sources:
+       $ repo=http:/repo.opencpn.org/trixie-backports
+       $ wget -O- $repo/opencpn.list | sudo tee /etc/apt/sources.list.d/opencpn.list
+
+  - Import the signing key:
+       $ wget -O- $repo/KEY.gpg | sudo tee /etc/apt/keyrings/opencpn-trixie.key
+
+  - Update the apt catalog and install or update opencpn:
+       $ sudo apt update && sudo apt install opencpn
