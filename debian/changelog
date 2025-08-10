@@ -1,37 +1,30 @@
 opencpn (1:5.12.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release
-  * Patches: rebased
-  * d/opencpn-data-install: Authors.html -> authors.html
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 02 Aug 2025 08:03:44 +0200
-
-opencpn (1:5.12.0+dfsg-1) unstable; urgency=medium
-
-  * New upstream release
   * Drop upstreamed patches:
      - 0007-chartdldr-Don-t-use-unarr-for-libarchive-3.7.4-4005.patch
   * Rebase other patches
   * Update d/copyright to reflect new source
   * lintian-overrides: drop obsolete entries, add new for appstreamcli
- 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 07:59:56 +0200
+  * d/opencpn-data-install: Authors.html -> authors.html
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 10 Aug 2025 21:35:45 +0200
 
 opencpn (1:5.10.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release
   * Drop upstreamed patches:
      - 0003-build-Use-system-shapelib-if-available.patch
-     - 0007-Build-Don-t-use-march-native-4088.patch                    
-     - 0008-VERSION.cmake-Fix-date-string.patch                        
-     - 0010-Improve-display-detection-on-headless-X11-systems.patch    
-     - 0011-appdata-developer-id-Fix-illegal-CamelCase.patch           
-     - 0012-Explicitly-set-extra-object-info-text-color.4101.patch     
-     - 0014-AIS-Meteo-Correct-typos-missed-brakes.patch                
-     - 0015-Improve-conneciton_edit-dialog-layout-for-handheld-P.patch 
-     - 0016-Correct-faults-on-GRIB-compact-control-bar-display-m.patch 
-     - 0017-Make-ActivateNextpoint-pass-multiple-identical-point.patch 
-     - 0018-Update-the-link-to-known-issues-page.-Fixes-4116.patch     
+     - 0007-Build-Don-t-use-march-native-4088.patch
+     - 0008-VERSION.cmake-Fix-date-string.patch
+     - 0010-Improve-display-detection-on-headless-X11-systems.patch
+     - 0011-appdata-developer-id-Fix-illegal-CamelCase.patch
+     - 0012-Explicitly-set-extra-object-info-text-color.4101.patch
+     - 0014-AIS-Meteo-Correct-typos-missed-brakes.patch
+     - 0015-Improve-conneciton_edit-dialog-layout-for-handheld-P.patch
+     - 0016-Correct-faults-on-GRIB-compact-control-bar-display-m.patch
+     - 0017-Make-ActivateNextpoint-pass-multiple-identical-point.patch
+     - 0018-Update-the-link-to-known-issues-page.-Fixes-4116.patch
 
 
  -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 09:17:35 +0200
