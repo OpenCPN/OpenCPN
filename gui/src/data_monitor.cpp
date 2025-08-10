@@ -83,7 +83,7 @@ static std::string TimeStamp(const NavmsgTimePoint& when,
   duration -= duration_cast<minutes>(duration) / 60;
   auto secs = duration_cast<seconds>(duration) % 60;
   duration -= duration_cast<seconds>(duration) / 60;
-  auto msecs = duration_cast<milliseconds>(duration);
+  const auto msecs = duration_cast<milliseconds>(duration);
   ss << setw(2) << setfill('0') << hrs.count() << ":" << setw(2) << mins.count()
      << ":" << setw(2) << secs.count() << "." << setw(3)
      << msecs.count() % 1000;
@@ -93,8 +93,7 @@ static std::string TimeStamp(const NavmsgTimePoint& when,
 static fs::path NullLogfile() {
   if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
     return "NUL:";
-  else
-    return "/dev/null";
+  return "/dev/null";
 }
 
 /**
@@ -107,7 +106,7 @@ static std::string VdrQuote(const std::string& arg) {
   auto static constexpr npos = std::string::npos;
   if (arg.find(',') == npos && arg.find('"') == npos) return arg;
   std::string s;
-  for (auto c : arg) {
+  for (const auto c : arg) {
     if (c == '"')
       s += "\"\"";
     else
@@ -124,8 +123,8 @@ static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
   if (kSourceByBus.find(ll.navmsg->bus) == kSourceByBus.end()) return;
 
   using namespace std::chrono;
-  auto now = system_clock::now();
-  auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
+  const auto now = system_clock::now();
+  const auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
   stream << ms << ",";
 
   stream << kSourceByBus.at(ll.navmsg->bus) << ",";
@@ -192,7 +191,7 @@ public:
         m_filter(this, wxID_ANY),
         m_lines(lines),
         m_on_right_click([] {}) {
-    auto vbox = new wxBoxSizer(wxVERTICAL);
+    const auto vbox = new wxBoxSizer(wxVERTICAL);
     m_tty_scroll = new TtyScroll(this, static_cast<int>(m_lines));
     m_tty_scroll->Bind(wxEVT_RIGHT_UP,
                        [&](wxMouseEvent&) { m_on_right_click(); });
@@ -285,7 +284,7 @@ public:
     wxWindow::SetName(kFilterChoiceName);
     Bind(wxEVT_CHOICE, [&](wxCommandEvent&) { OnChoice(); });
     OnFilterListChange();
-    int ix = wxChoice::FindString(kLabels.at("default"));
+    const int ix = wxChoice::FindString(kLabels.at("default"));
     if (ix != wxNOT_FOUND) wxChoice::SetSelection(ix);
     NavmsgFilter filter = filters_on_disk::Read("default.filter");
     m_tty_panel->SetFilter(filter);
@@ -603,7 +602,7 @@ public:
   }
 
 private:
-  wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
+  static wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
     return root->Append(static_cast<int>(id), label);
   }
 
