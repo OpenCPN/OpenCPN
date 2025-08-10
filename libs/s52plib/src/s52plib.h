@@ -476,6 +476,7 @@ private:
                   float rot_angle = 0., double uScale = 1.0);
   bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                           float rot_angle = 0.);
+  void SetupSoundingFont();
   bool RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                             wxColor symColor,
                             float rot_angle = 0.);
