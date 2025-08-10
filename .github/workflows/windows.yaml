@@ -50,6 +50,8 @@ jobs:
 
       - name: "Dependencies, configure, build"
         shell: cmd
+        env:
+          VSCMD_DEBUG: 3
         run: ci\appveyor.bat
 
       - name: "Check build results"
