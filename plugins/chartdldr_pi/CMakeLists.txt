@@ -165,6 +165,7 @@ endif ()
 find_package(OcpnLibarchive)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::libarchive)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::nmea0183)
 if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   # If we use system libarchive, we do not bundle the dylib and need to
   # comment it out from the pkg project file
