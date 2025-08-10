@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_factory: Communication driver factory.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 David Register                                     *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ * Implement comm_drv_factory.h: Communication driver factory.
+ */
 
 // FIXME  Why is this needed?
 #ifdef __MSVC__
