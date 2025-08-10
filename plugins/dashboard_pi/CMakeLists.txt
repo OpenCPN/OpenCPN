@@ -51,6 +51,7 @@ IF( APPLE )
    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
 ENDIF( APPLE )
 
+
 # Add some definitions to satisfy MSVC
 IF(MSVC)
     ADD_DEFINITIONS(-D__MSVC__)
@@ -190,7 +191,18 @@ SET(SRC_NMEA0183
 
 SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 SET(BUILD_SHARED_LIBS "ON")
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183} )
+if (MSVC)
+  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183})
+else ()
+  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD})
+endif ()
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(${PACKAGE_NAME} PRIVATE -fvisibility=hidden)
+endif ()
+
+# FIXME (leamas) Remove horrible hack MSVC vs others
+
 target_include_directories(${PACKAGE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/wx
