@@ -994,34 +994,25 @@ void PlugInManager::OnNewMessageType() {
   }
 }
 void PlugInManager::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
-  std::string s = n0183_msg->payload;
-  wxString sentence(s.c_str());
+  assert(n0183_msg->bus == NavAddr::Bus::N0183);
+  const std::string& payload = n0183_msg->payload;
 
-  if (s[0] == '$') {
+  if (payload[0] == '$') {
     const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
     auto& target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
-    bool bpass_input_filter = true;
-
-    // Get the params for the driver sending this message
-    ConnectionParams params;
-    auto drv_serial = dynamic_cast<CommDriverN0183Serial*>(target_driver.get());
-    if (drv_serial) {
-      params = drv_serial->GetParams();
-    } else {
-      auto drv_net = dynamic_cast<CommDriverN0183Net*>(target_driver.get());
-      if (drv_net) {
-        params = drv_net->GetParams();
-      }
+    // Get the params for the driver sending this message, check if it
+    // passes the input filter
+    bool passes_input_filter = true;
+    auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
+    if (drv_n0183) {
+      ConnectionParams params = drv_n0183->GetParams();
+      passes_input_filter =
+          params.SentencePassesFilter(payload.c_str(), FILTER_INPUT);
     }
-
-    // Check to see if the message passes the source's input filter
-    bpass_input_filter = params.SentencePassesFilter(sentence, FILTER_INPUT);
-
-    if (bpass_input_filter) SendNMEASentenceToAllPlugIns(sentence);
-  } else if (s[0] == '!') {
-    // printf("AIS to all: %s", s.c_str());
-    SendAISSentenceToAllPlugIns(sentence);
+    if (passes_input_filter) SendNMEASentenceToAllPlugIns(payload.c_str());
+  } else if (payload[0] == '!') {
+    SendAISSentenceToAllPlugIns(payload.c_str());
   }
 }
 

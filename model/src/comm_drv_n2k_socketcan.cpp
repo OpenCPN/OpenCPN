@@ -555,11 +555,9 @@ void Worker::HandleInput(CanFrame frame) {
     // auto name = N2kName(static_cast<uint64_t>(header.pgn));
     auto src_addr = m_parent_driver->GetAddress(m_parent_driver->node_name);
     auto msg = std::make_shared<const Nmea2000Msg>(header.pgn, vec, src_addr);
-    auto msg_all = std::make_shared<const Nmea2000Msg>(1, vec, src_addr);
 
     ProcessRxMessages(msg);
     m_parent_driver->m_listener.Notify(std::move(msg));
-    m_parent_driver->m_listener.Notify(std::move(msg_all));
 
     DriverStats stats = m_parent_driver->GetDriverStats();
     stats.rx_count += vec.size();

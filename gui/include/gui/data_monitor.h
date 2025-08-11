@@ -22,11 +22,9 @@
  * New NMEA Debugger successor main window.
  */
 
-#ifndef DATA_MONITOR_DLG__
-#define DATA_MONITOR_DLG__
+#ifndef DATA_MONITOR_DLG_
+#define DATA_MONITOR_DLG_
 
-#include <iostream>  // debug junk
-#include <functional>
 #include <fstream>
 
 #include <wx/frame.h>
@@ -44,7 +42,7 @@ public:
 
   DataLogger(wxWindow* parent, const fs::path& path);
 
-  DataLogger(wxWindow* parent);
+  explicit DataLogger(wxWindow* parent);
 
   void SetLogging(bool logging);
 
@@ -75,17 +73,17 @@ private:
 /** Overall logging handler, outputs to screen and log file. */
 class DataMonitor : public wxFrame, public NmeaLog {
 public:
-  DataMonitor(wxWindow* parent);
+  explicit DataMonitor(wxWindow* parent);
 
   /** Add an input line to log output. */
   void Add(const Logline& ll) override;
 
-  virtual bool IsVisible() const override;
+  bool IsVisible() const override;
 
   void OnHide();
 
 private:
-  void OnFilterListChange();
+  static void OnFilterListChange();
   void OnFilterUpdate(const std::string& name) const;
   void OnFilterApply(const std::string& name);
 
@@ -98,4 +96,4 @@ private:
   std::string m_current_filter;
 };
 
-#endif  //  DATA_MONITOR_DLG__
+#endif  //  DATA_MONITOR_DLG_
