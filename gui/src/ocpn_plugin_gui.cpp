@@ -3572,3 +3572,17 @@ void ShowAISTargetList(int canvas_index) {
   if (!parent) return;
   parent->ShowAISTargetList();
 }
+
+bool IsMeasureActive(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return false;
+  return parent->m_bMeasure_Active;
+}
+
+void CancelMeasure(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+  parent->CancelMeasureRoute();
+}

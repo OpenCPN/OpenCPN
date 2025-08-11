@@ -6925,7 +6925,6 @@ extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
 
 extern DECL_EXP wxString DropMarkPI(double lat, double lon);
 extern DECL_EXP wxString RouteCreatePI(int canvas_index, bool start);
-extern DECL_EXP bool DoMeasurePI(int canvas_index, bool start);
 extern DECL_EXP wxString NavToHerePI(double lat, double lon);
 extern DECL_EXP bool ActivateRoutePI(wxString route_guid, bool activate);
 
@@ -6948,6 +6947,9 @@ extern DECL_EXP bool IsRouteBeingCreated(int canvas_index);
 extern DECL_EXP bool AreRouteWaypointNamesVisible(wxString route_guid);
 extern DECL_EXP void ShowRouteWaypointNames(wxString route_guid, bool show);
 extern DECL_EXP void NavigateToWaypoint(wxString waypoint_guid);
+extern DECL_EXP bool DoMeasurePI(int canvas_index, bool start);
+extern DECL_EXP bool IsMeasureActive(int canvas_index);
+extern DECL_EXP void CancelMeasure(int canvas_index);
 
 // AIS related
 extern DECL_EXP bool IsAISTrackVisible(
