@@ -1,3 +1,9 @@
+opencpn (1:5.12.2+dfsg-2) unstable; urgency=medium
+
+  * New patch: Remove some useless and failing tests.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 11 Aug 2025 15:05:07 +0200
+
 opencpn (1:5.12.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release
