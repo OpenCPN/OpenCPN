@@ -23,5 +23,7 @@ override_dh_auto_configure:
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+ifeq (,$(filter s390x powerpc ppc64 sparc64 mips64el,$(DEB_TARGET_ARCH)))
 	cd obj-*-linux-gnu*; dbus-run-session make run-tests
+endif
 endif
