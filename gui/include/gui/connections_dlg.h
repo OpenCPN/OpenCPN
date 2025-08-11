@@ -20,8 +20,8 @@
  * \file
  * The ConnectionsDlg class
  */
-#ifndef CONNECT_NEW_DLG__
-#define CONNECT_NEW_DLG__
+#ifndef CONNECT_NEW_DLG_
+#define CONNECT_NEW_DLG_
 
 #include <vector>
 
@@ -33,7 +33,7 @@
 #include "color_types.h"
 
 /**
- * Options | Connections tab implementaion, basically a UI
+ * Options | Connections tab implementation, basically a UI
  * for maintaining the list of connections.
  */
 class ConnectionsDlg : public wxPanel {
@@ -63,11 +63,11 @@ public:
    */
   void OnResize(const wxSize& size);
 
-  void SetColorScheme(ColorScheme cs);
+  static void SetColorScheme(ColorScheme cs);
 
 private:
-  void DoApply(wxWindow* root);
-  void DoCancel(wxWindow* root);
+  static void DoApply(wxWindow* root);
+  static void DoCancel(wxWindow* root);
 
   const std::vector<ConnectionParams*>& m_connections;
 
@@ -75,4 +75,4 @@ private:
   EventVar m_evt_add_connection;
 };
 
-#endif  //  CONNECT_NEW_DLG__
+#endif  //  CONNECT_NEW_DLG_
