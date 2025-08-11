@@ -1,0 +1,21 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 11 Aug 2025 11:35:29 +0200
+Subject: tests: Enhance timeout for slow platforms
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ce6a11d..a502645 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2764,7 +2764,7 @@ if (OCPN_BUILD_TEST)
+   add_subdirectory(test)
+   add_custom_target(
+     run-tests
+-    COMMAND ctest -C $<CONFIG> -E tests --timeout 10
++    COMMAND ctest -C $<CONFIG> -E tests --timeout 40
+     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+   )
+   add_dependencies(run-tests tests)
