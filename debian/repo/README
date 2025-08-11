@@ -8,7 +8,7 @@ release.
 To use the repository:
 
   - Add the repository to the apt sources:
-       $ repo=http:/repo.opencpn.org/trixie-backports
+       $ repo=http://repo.opencpn.org/trixie-backports
        $ wget -O- $repo/opencpn.list | sudo tee /etc/apt/sources.list.d/opencpn.list
 
   - Import the signing key:
