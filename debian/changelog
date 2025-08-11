@@ -1,3 +1,9 @@
+opencpn (1:5.12.2+dfsg-1~bpo13+1~pre2) trixie-backports; urgency=medium
+
+  * New patch: Increase test timeout for slow platforms
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 11 Aug 2025 11:37:20 +0200
+
 opencpn (1:5.12.2+dfsg-1~bpo13+1~pre1) trixie-backports; urgency=medium
 
   * New upstream release
