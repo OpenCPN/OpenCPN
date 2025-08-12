@@ -31,6 +31,8 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/spinctrl.h>
+#include <wx/statbox.h>
+#include <wx/statline.h>
 #include <wx/textctrl.h>
 #include <wx/window.h>
 
@@ -56,6 +58,8 @@
 #include "std_filesystem.h"
 #include "model/svg_utils.h"
 
+#include <wx/statline.h>
+
 extern OCPNPlatform* g_Platform;
 extern options* g_options;
 
@@ -64,6 +68,21 @@ static wxString UtfArrowRight() { return wxString::FromUTF8(u8"\u25ba"); }
 static wxString UtfFilledCircle() { return wxString::FromUTF8(u8"\u2b24"); }
 
 static const auto TopScrollWindowName = "TopScroll";
+
+static const char* kInfoHeader = _("OpenCPN help").c_str();
+static const char* kInfo = _(R"---(
+Normally OpenCPN sends the RMB (distance and heading to waypoint
+etc) and RMC (position, heading etc.) sentences when there is an
+active waypoint. The talker ID is by default EC.
+
+In certain cases these messages (ECRMB and ECRMC) are required
+also when there is no active waypoint. This option enables this.
+
+Devices needing this includes the NASA Clipper GPS Repeater. In this
+case the output must also be filtered so that ECRMB and ECRMC are
+the only transmitted messages.
+)---")
+                               .c_str();
 
 static bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
@@ -154,7 +173,8 @@ public:
         open_circle_proto(LoadIcon("circle-off.svg")),
         exclaim_mark_proto(LoadIcon("exclaim_mark.svg")),
         x_mult_proto(LoadIcon("X_mult.svg")),
-        check_mark_proto(LoadIcon("check_mark.svg")) {
+        check_mark_proto(LoadIcon("check_mark.svg")),
+        help_info_proto(LoadIcon("help-info.svg")) {
     trash_bin = trash_bin_proto;
     settings = settings_proto;
     filled_circle = filled_circle_proto;
@@ -162,6 +182,7 @@ public:
     exclaim_mark = exclaim_mark_proto;
     x_mult = x_mult_proto;
     check_mark = check_mark_proto;
+    help_info = help_info_proto;
   }
 
   void SetColorScheme(const ColorScheme cs) {
@@ -184,6 +205,7 @@ public:
   const wxBitmap exclaim_mark_proto;
   const wxBitmap x_mult_proto;
   const wxBitmap check_mark_proto;
+  const wxBitmap help_info_proto;
 
   wxBitmap trash_bin;
   wxBitmap settings;
@@ -192,6 +214,7 @@ public:
   wxBitmap exclaim_mark;
   wxBitmap x_mult;
   wxBitmap check_mark;
+  wxBitmap help_info;
 };
 
 /** Custom renderer class for rendering bitmap in a grid cell */
@@ -418,7 +441,7 @@ public:
     ClearGrid();
     m_renderer_status_vector.clear();
 
-    for (auto it = connections.begin(); it != connections.end(); ++it++) {
+    for (auto it = connections.begin(); it != connections.end(); ++it) {
       const auto row = static_cast<int>(it - connections.begin());
       EnsureRows(row);
       SetCellValue(row, 0, (*it)->bEnabled ? "1" : "");
@@ -594,7 +617,7 @@ private:
 
   /** Handle mouse movements i.e., the tooltips. */
   void OnMouseMove(const wxMouseEvent& ev) {
-    wxPoint pt = ev.GetPosition();
+    const wxPoint pt = ev.GetPosition();
     int row = YToRow(pt.y);
     int col = XToCol(pt.x);
     if (col < 0 || col >= 7 || row < 0 || row >= GetNumberRows()) return;
@@ -862,7 +885,7 @@ public:
       : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, "");
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
-    sizer->Add(new ExtraRmbRmcCheckbox(this), wxSizerFlags().Expand());
+    sizer->Add(new ExtraRmbRmcLine(this), wxSizerFlags().Expand());
     sizer->Add(new NmeaFilterRow(this), wxSizerFlags().Expand());
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
@@ -897,10 +920,56 @@ private:
       void Cancel() override { SetValue(g_always_send_rmb_rmc); }
     };
 
+    class HelpButton : public wxButton {
+    public:
+      explicit HelpButton(wxWindow* parent)
+          : wxButton(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                     wxBU_EXACTFIT | wxBORDER_NONE),
+            m_info_panel(new InfoFrame(parent)) {
+        SetBitmap(StdIcons(parent).help_info);
+        Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
+          m_info_panel->Fit();
+          m_info_panel->Show();
+        });
+      }
+
+    private:
+      class InfoFrame : public wxFrame {
+      public:
+        explicit InfoFrame(wxWindow* parent)
+            : wxFrame(parent, wxID_ANY, kInfoHeader) {
+          auto flags = wxSizerFlags().Expand();
+          auto vbox = new wxBoxSizer(wxVERTICAL);
+          vbox->Add(new wxStaticText(this, wxID_ANY, kInfo), flags.Border());
+          vbox->Add(new wxStaticLine(this, wxID_ANY), flags);
+          auto button_sizer = new wxStdDialogButtonSizer();
+          auto ok_btn = new wxButton(this, wxID_OK);
+          ok_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                       [&](wxCommandEvent&) { Hide(); });
+          button_sizer->SetAffirmativeButton(ok_btn);
+          vbox->Add(button_sizer, flags.Border());
+          button_sizer->Realize();
+          SetSizer(vbox);
+          wxWindow::Layout();
+          Hide();
+        }
+      };
+
+      InfoFrame* m_info_panel;
+    };
+
   public:
-    explicit ExtraRmbRmcLine(wxWindow* parent) : wxPanel(parent, wxID_ANY) {}
+    explicit ExtraRmbRmcLine(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
+      auto hbox = new wxBoxSizer(wxHORIZONTAL);
+      hbox->Add(new RmbRmcCheckbox(this), wxSizerFlags().Expand());
+      hbox->Add(1, 1, 1, wxEXPAND);
+      hbox->Add(new HelpButton(this), wxSizerFlags().Border());
+      SetSizer(hbox);
+      wxWindow::Layout();
+      wxWindow::Show();
+    }
   };
-  class ExtraRmbRmcCheckbox : public wxCheckBox, public ApplyCancel {
+  class ExtraRmbRmcCheckbox final : public wxCheckBox, public ApplyCancel {
   public:
     explicit ExtraRmbRmcCheckbox(wxWindow* parent)
         : wxCheckBox(parent, wxID_ANY,
@@ -1041,7 +1110,8 @@ public:
 
     auto advanced_panel = new AdvancedPanel(this, panel_max_size);
     m_advanced_panel = advanced_panel;
-    auto on_toggle = [&, advanced_panel, vbox](bool show) {
+    auto on_toggle = [&, advanced_panel, conn_grid, vbox](bool show) {
+      // FIXME advanced_panel->SetMaxSize({conn_grid->GetSize().x, -1});
       advanced_panel->Show(show);
       vbox->SetSizeHints(this);
       vbox->Fit(this);
