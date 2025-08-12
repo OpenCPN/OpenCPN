@@ -2775,6 +2775,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       arpa_lost = false;
     } else if (arpa_status != wxEmptyString)
       arpa_nottracked = true;
+    wxString arpa_reftarget = tkz.GetNextToken();  // 13) Reference Target
     if (tkz.HasMoreTokens()) {
       token = tkz.GetNextToken();
       token.ToDouble(&arpa_utc_time);
@@ -2806,7 +2807,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     wxStringTokenizer tkz(str, ",*");
 
     wxString token;
-    token = tkz.GetNextToken();  // 1) Target number 00 - 99
+    wxString aprs_tll_str = tkz.GetNextToken();  // Sentence (xxTLL)
+    token = tkz.GetNextToken();                  // 1) Target number 00 - 99
     token.ToLong(&arpa_tgt_num);
     token = tkz.GetNextToken();  // 2) Latitude, N/S
     token.ToDouble(&arpa_lat);
@@ -2846,6 +2848,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       arpa_lost = false;
     else if (arpa_status != wxEmptyString)
       arpa_nottracked = true;
+    wxString arpa_reftarget = tkz.GetNextToken();  // 7) Reference target=R,null
     mmsi = arpa_mmsi = 199200000 + arpa_tgt_num;
     // 199 is INMARSAT-A MID, should not occur ever in AIS
     // stream + we make sure we are out of the hashes for
@@ -3652,7 +3655,7 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
         m_ptentative_dsctarget->Lon =
             m_ptentative_dsctarget->Lon +
             ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
-        if (!dse_shipName.empty() > 0) {
+        if (!dse_shipName.empty()) {
           memset(m_ptentative_dsctarget->ShipName, '\0', SHIP_NAME_LEN);
           snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(),
                    "%s", dse_shipName.ToAscii().data());
