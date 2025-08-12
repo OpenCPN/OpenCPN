@@ -5070,19 +5070,8 @@ void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
 bool ChartCanvas::PanCanvas(double dx, double dy) {
   if (!ChartData) return false;
 
-  if (g_btouch) {
-    // Stop bfollow state, without a refresh
-    m_bFollow = false;  // update the follow flag
-    parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, false);
-    UpdateFollowButtonState();
-    // Clear the bfollow offset
-    m_OSoffsetx = 0;
-    m_OSoffsety = 0;
-  }
-
   extendedSectorLegs.clear();
 
-  // double clat = VPoint.clat, clon = VPoint.clon;
   double dlat, dlon;
   wxPoint2DDouble p(VPoint.pix_width / 2.0, VPoint.pix_height / 2.0);
 
