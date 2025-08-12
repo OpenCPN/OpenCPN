@@ -56,6 +56,7 @@
 
 extern bool g_bShowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
+extern bool g_bArrivalCircleInsteadOfNormalCrossing;
 
 extern MyFrame *gFrame;
 
@@ -208,8 +209,7 @@ bool RoutemanGui::UpdateProgress() {
       }
     }
 
-    //      Determine Arrival
-
+    //Determine Arrival
     bool bDidArrival = false;
 
     // Duplicate points can result in NaN for normal crossing range.
@@ -218,8 +218,14 @@ bool RoutemanGui::UpdateProgress() {
           m_routeman.CurrentRngToActivePoint;
     }
 
+    //Use arrival circle instead of normal crossing
+    if (g_bArrivalCircleInsteadOfNormalCrossing){
+      m_routeman.CurrentRangeToActiveNormalCrossing =
+          m_routeman.CurrentRngToActivePoint;
+    }
+
     // Special signal:  if ArrivalRadius < 0, NEVER arrive...
-    //  Used for MOB auto-created routes.
+    // Used for MOB auto-created routes.
     if (m_routeman.pActivePoint->GetWaypointArrivalRadius() > 0) {
       if (m_routeman.CurrentRangeToActiveNormalCrossing <=
           m_routeman.pActivePoint->GetWaypointArrivalRadius()) {
@@ -230,9 +236,9 @@ bool RoutemanGui::UpdateProgress() {
         DoAdvance();
 
       } else {
-        //      Test to see if we are moving away from the arrival point, and
-        //      have been moving away for 2 seconds.
-        //      If so, we should declare "Arrival"
+        // Test to see if we are moving away from the arrival point, and
+        // have been moving away for 2 seconds.
+        // If so, we should declare "Arrival"
         if ((m_routeman.CurrentRangeToActiveNormalCrossing -
              m_routeman.m_arrival_min) >
             m_routeman.pActivePoint->GetWaypointArrivalRadius()) {

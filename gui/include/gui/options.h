@@ -119,6 +119,7 @@ enum {
   ID_CM93CHECKBOX1,
   ID_CM93ZOOM,
   ID_COURSEUPCHECKBOX,
+  ID_ARRIVALCIRCLE,
   ID_DAILYCHECKBOX,
   ID_DEBUGCHECKBOX1,
   ID_DECLTEXTCHECKBOX,
@@ -591,7 +592,7 @@ public:
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
   wxCheckBox *pEnableTenHertz, *pTransparentToolbar;
-  wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
+  wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pArrivalCircleInsteadOfNormalCrossing, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
   wxStaticText *pStatic_CallSign;
 
