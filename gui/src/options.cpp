@@ -2376,7 +2376,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                   group_item_spacing);
 
   pAdvanceRouteWaypointOnArrivalOnly =
-      new wxCheckBox(itemPanelRoutes, ID_DAILYCHECKBOX,
+      new wxCheckBox(itemPanelRoutes, ID_ADVANCEWAYPOINT,
                      _("Advance route waypoint on arrival only"));
   routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0, wxALL, 5);
 
