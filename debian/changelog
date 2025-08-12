@@ -1,3 +1,9 @@
+opencpn (1:5.12.2+dfsg-3) unstable; urgency=medium
+
+  * Completely disable tests on unused and untestable arches
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 12 Aug 2025 21:02:51 +0200
+
 opencpn (1:5.12.2+dfsg-2) unstable; urgency=medium
 
   * New patch: Remove some useless and failing tests.
