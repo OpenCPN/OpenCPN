@@ -2368,7 +2368,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   routeSizer->Add(pRouteGrid, 0, wxALL | wxEXPAND, border_size);
 
   wxStaticText* raText = new wxStaticText(
-      itemPanelRoutes, wxID_STATIC, _("Waypoint Arrival Circle Radius (NMi)"));
+      itemPanelRoutes, wxID_STATIC, _("Waypoint Arrival Distance (NMi)"));
   pRouteGrid->Add(raText, 1, wxEXPAND | wxALL, group_item_spacing);
 
   m_pText_ACRadius = new wxTextCtrl(itemPanelRoutes, -1, "TEXT  ");
