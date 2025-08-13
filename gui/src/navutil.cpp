@@ -2688,11 +2688,7 @@ int BackupDatabase(wxWindow *parent) {
       backupResult = NavObj_dB::GetInstance().Backup(fileName.GetFullPath());
 #endif
     }
-    if (backupResult) {
-      return wxID_YES;
-    } else {
-      return wxID_NO;
-    }
+    return backupResult ? wxID_YES : wxID_NO;
   }
   return wxID_ABORT;  // Cancelled the file open dialog, aborting
 }
