@@ -58,12 +58,10 @@ jobs:
         run: cmake --build build --config ${{env.BUILD_TYPE}}
 
       - name: Test
+        # Make sure tests always pass until they are refactored for 5.14
         continue-on-error: true
         working-directory: build
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         run: |
-          if make run-tests; then
-            true
-          else
-            cd test && ctest --rerun-failed --output-on-failure || :
-          fi
-
+          make run-tests

@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,8 +16,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _MULTIPLEXER_H__
-#define _MULTIPLEXER_H__
+
+/**
+ * \file
+ *
+ * Multiplexer class and helpers
+ */
+
+#ifndef MULTIPLEXER_H_
+#define MULTIPLEXER_H_
 
 #include <functional>
 
@@ -31,7 +32,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "model/comm_navmsg.h"
 #include "model/nmea_log.h"
@@ -42,52 +43,56 @@ extern Multiplexer* g_pMUX;
 
 struct MuxLogCallbacks {
   std::function<bool()> log_is_active;
-  std::function<void(Logline)> log_message;
+  std::function<void(const Logline&)> log_message;
   MuxLogCallbacks()
-      : log_is_active([]() { return false; }), log_message([](Logline) {}) {}
+      : log_is_active([]() { return false; }),
+        log_message([](const Logline&) {}) {}
 };
 
+/**
+ * Handle logging and forwarding of incoming n0183/n2k  messages.
+ *
+ * Listen to all n0183 and n2k messages, whether they are known or not
+ * i.e., anything generating an input event in the Data Monitor parlance.
+ */
 class Multiplexer : public wxEvtHandler {
 public:
-  Multiplexer(MuxLogCallbacks log_callbacks,
+  Multiplexer(const MuxLogCallbacks& log_callbacks,
               bool& legacy_input_filter_behaviour);
-  ~Multiplexer();
+
+  ~Multiplexer() override;
 
   void LogOutputMessage(const std::shared_ptr<const NavMsg>& msg,
-                        NavmsgStatus status);
+                        NavmsgStatus status) const;
 
-  // void LogOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
-  //                            NavmsgStatus status);
   /**
    * Logs an input message with context information.
    *
    * @param msg The message to be logged.
-   * @param stream_name The name of the stream from which the message
-   * originated.
-   * @param b_filter Indicates whether the message was filtered.
-   * @param b_error Indicates whether the message has an error such as bad CRC.
+   * @param is_filtered Indicates whether the message was filtered.
+   * @param is_error Indicates whether the message has an error such as bad CRC.
    * @param error_msg The error message to be logged.
    */
   void LogInputMessage(const std::shared_ptr<const NavMsg>& msg,
                        bool is_filtered, bool is_error,
-                       const wxString error_msg = "");
+                       const wxString& error_msg = "") const;
 
-  bool IsLogActive() { return m_log_callbacks.log_is_active(); }
+  [[nodiscard]] bool IsLogActive() const {
+    return m_log_callbacks.log_is_active();
+  }
 
 private:
-  //  comm event listeners
-  ObservableListener listener_N2K_All;
-  ObservableListener m_listener_N0183_all;
-
-  void InitN2KCommListeners();
-
-  void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
-  bool HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  std::string N2K_LogMessage_Detail(unsigned int pgn);
-
   MuxLogCallbacks m_log_callbacks;
-  unsigned int last_pgn_logged;
-  int n_N2K_repeat;
   bool& m_legacy_input_filter_behaviour;
+  std::unordered_map<std::string, ObsListener> m_listeners;
+  ObsListener m_new_msgtype_lstnr;
+  int m_n2k_repeat_count;
+  unsigned int m_last_pgn_logged;
+
+  void OnNewMessageType();
+
+  void HandleN0183(const std::shared_ptr<const Nmea0183Msg>& n0183_msg) const;
+
+  bool HandleN2kLog(const std::shared_ptr<const Nmea2000Msg>& n2k_msg);
 };
-#endif  // _MULTIPLEXER_H__
+#endif  // MULTIPLEXER_H_

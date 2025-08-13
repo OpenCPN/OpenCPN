@@ -62,6 +62,7 @@ private:
   SinkFunc m_sink_func;
   std::unordered_map<std::string, ObsListener> m_listeners;
   ObsListener new_msg_lstnr;
+  ObsListener undelivered_msg_lstnr;
   std::string m_last_payload;  // Horrible hack (tm)
 
   /** Handle new message type detected. */

@@ -88,11 +88,13 @@ Serial::SerialImpl::open ()
     switch (create_file_err) {
     case ERROR_FILE_NOT_FOUND:
       // Use this->getPort to convert to a std::string
-      ss << "Specified port, " << this->getPort() << ", does not exist.";
-      THROW (IOException, ss.str().c_str());
+      //ss << "Specified port, " << this->getPort() << ", does not exist.";
+      //THROW (IOException, ss.str().c_str());
+      return;
     default:
-      ss << "Unknown error opening the serial port: " << create_file_err;
-      THROW (IOException, ss.str().c_str());
+      //ss << "Unknown error opening the serial port: " << create_file_err;
+      //THROW (IOException, ss.str().c_str());
+      return;
     }
   }
 
@@ -737,4 +739,3 @@ Serial::SerialImpl::writeUnlock()
 }
 
 #endif // #if defined(_WIN32)
-

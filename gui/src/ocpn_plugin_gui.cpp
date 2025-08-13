@@ -122,6 +122,10 @@ extern bool g_bquiting;
 extern bool g_disable_main_toolbar;
 extern bool g_btenhertz;
 extern bool g_CanvasHideNotificationIcon;
+extern wxString g_default_wp_icon;
+extern bool g_bhide_route_console;
+extern bool g_bhide_context_menus;
+extern int g_maxzoomin;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -448,21 +452,13 @@ void PushNMEABuffer(wxString buf) {
   std::string full_sentence = buf.ToStdString();
 
   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
-    std::string identifier;
     // We notify based on full message, including the Talker ID
-    identifier = full_sentence.substr(1, 5);
+    std::string id = full_sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
+    // notify message listener
     auto address = std::make_shared<NavAddr0183>("virtual");
-    auto msg =
-        std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
-    auto& msgbus = NavMsgBus::GetInstance();
-
-    msgbus.Notify(std::move(msg));
-    msgbus.Notify(std::move(msg_all));
+    auto msg = std::make_shared<const Nmea0183Msg>(id, full_sentence, address);
+    NavMsgBus::GetInstance().Notify(std::move(msg));
   }
 }
 
@@ -484,9 +480,9 @@ bool UpdateChartDBInplace(wxArrayString dir_array, bool b_force_update,
     cdi.magic_number = _T("");
     ChartDirArray.Add(cdi);
   }
-  bool b_ret = gFrame->UpdateChartDatabaseInplace(ChartDirArray, b_force_update,
-                                                  b_ProgressDialog,
-                                                  ChartData->GetDBFileName());
+  bool b_ret = gFrame->UpdateChartDatabaseInplace(
+      ChartDirArray, b_force_update, b_ProgressDialog, ChartListFileName);
+  gFrame->RefreshGroupIndices();
   gFrame->ChartsRefresh();
   return b_ret;
 }
@@ -3281,4 +3277,321 @@ void ConfigFlushAndReload() {
  */
 void EnableNotificationCanvasIcon(bool enable) {
   g_CanvasHideNotificationIcon = !enable;
+}
+
+//---------------------------------------------------------------------------
+//    API 1.21
+//---------------------------------------------------------------------------
+
+//  Plugin API121 Utility functions
+
+wxString DropMarkPI(double lat, double lon) {
+  if ((fabs(lat) > 80.0) || (fabs(lon) > 180.)) return "";
+
+  RoutePoint* pWP =
+      new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
+  pWP->m_bIsolatedMark = true;  // This is an isolated mark
+  pSelect->AddSelectableRoutePoint(lat, lon, pWP);
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+  return pWP->m_GUID;
+}
+
+wxString RouteCreatePI(int canvas_index, bool start) {
+  if ((size_t)canvas_index < g_canvasArray.GetCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+    if (cc) {
+      if (start) {
+        cc->StartRoute();
+        return "0";
+      } else {
+        return cc->FinishRoute();
+      }
+    }
+  }
+  return "-1";
+}
+
+bool DoMeasurePI(int canvas_index, bool start) {
+  if ((size_t)canvas_index < g_canvasArray.GetCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+    if (cc) {
+      if (start) {
+        cc->StartMeasureRoute();
+        return true;
+      } else {
+        cc->CancelMeasureRoute();
+        cc->Refresh(false);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+wxString NavToHerePI(double lat, double lon) {
+  RoutePoint* pWP_dest =
+      new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(lat, lon, pWP_dest);
+
+  RoutePoint* pWP_src = new RoutePoint(gLat, gLon, g_default_wp_icon,
+                                       wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
+
+  Route* temp_route = new Route();
+  pRouteList->Append(temp_route);
+
+  temp_route->AddPoint(pWP_src);
+  temp_route->AddPoint(pWP_dest);
+
+  pSelect->AddSelectableRouteSegment(gLat, gLon, lat, lon, pWP_src, pWP_dest,
+                                     temp_route);
+
+  temp_route->m_RouteNameString = _("Temporary GOTO Route");
+  temp_route->m_RouteStartString = _("Here");
+  temp_route->m_RouteEndString = _("There");
+  temp_route->m_bDeleteOnArrival = true;
+
+  if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+
+  g_pRouteMan->ActivateRoute(temp_route, pWP_dest);
+  return temp_route->m_GUID;
+}
+
+bool ActivateRoutePI(wxString route_guid, bool activate) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return false;
+
+  if (activate) {
+    if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+    RoutePoint* best_point =
+        g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
+    g_pRouteMan->ActivateRoute(route, best_point);
+    route->m_bRtIsSelected = false;
+    return true;
+  } else {
+    g_pRouteMan->DeactivateRoute();
+    route->m_bRtIsSelected = false;
+    return true;
+  }
+  return false;
+}
+
+void EnableDefaultConsole(bool enable) { g_bhide_route_console = !enable; }
+void EnableDefaultContextMenus(bool enable) { g_bhide_context_menus = !enable; }
+
+void SetMinZoomScale(double min_scale) {
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas* cc = g_canvasArray.Item(i);
+    cc->SetAbsoluteMinScale(min_scale);
+  }
+}
+
+void SetMaxZoomScale(double max_scale) {
+  g_maxzoomin = wxRound(wxMax(max_scale, 100.));
+}
+
+std::shared_ptr<PI_PointContext> GetContextAtPoint(int x, int y,
+                                                   int canvas_index) {
+  ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+  if (cc) {
+    return cc->GetCanvasContextAtPoint(x, y);
+  } else {
+    auto rstruct = std::make_shared<PI_PointContext>();
+    rstruct->object_type = OBJECT_UNKNOWN;
+    rstruct->object_ident = "";
+    return rstruct;
+  }
+}
+
+wxBitmap GetObjectIcon_PlugIn(const wxString& name) {
+  if (pWayPointMan) {
+    return *pWayPointMan->GetIconBitmap(name);
+  } else
+    return wxNullBitmap;
+}
+
+bool IsRouteActive(wxString route_guid) {
+  if (g_pRouteMan->GetpActiveRoute())
+    return (route_guid.IsSameAs(g_pRouteMan->GetpActiveRoute()->m_GUID));
+  else
+    return false;
+}
+
+void SetBoatPosition(double zlat, double zlon) {
+  gLat = zlat;
+  gLon = zlon;
+  gFrame->UpdateStatusBar();
+}
+
+void RouteInsertWaypoint(int canvas_index, wxString route_guid, double zlat,
+                         double zlon) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return;
+
+  if (route->m_bIsInLayer) return;
+
+  wxPoint2DDouble pa;
+  parent->GetDoubleCanvasPointPix(zlat, zlon, &pa);
+  int seltype = parent->PrepareContextSelections(pa.m_x, pa.m_y);
+  if ((seltype & SELTYPE_ROUTESEGMENT) != SELTYPE_ROUTESEGMENT) return;
+
+  bool rename = false;
+  route->InsertPointAfter(parent->GetFoundRoutepoint(), zlat, zlon, rename);
+
+  pSelect->DeleteAllSelectableRoutePoints(route);
+  pSelect->DeleteAllSelectableRouteSegments(route);
+  pSelect->AddAllSelectableRouteSegments(route);
+  pSelect->AddAllSelectableRoutePoints(route);
+
+  NavObj_dB::GetInstance().UpdateRoute(route);
+}
+
+void RouteAppendWaypoint(int canvas_index, wxString route_guid) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return;
+
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  parent->m_pMouseRoute = route;
+  parent->m_routeState = route->GetnPoints() + 1;
+  parent->m_pMouseRoute->m_lastMousePointIndex = route->GetnPoints();
+  parent->m_pMouseRoute->SetHiLite(50);
+
+  auto pLast = route->GetLastPoint();
+
+  parent->m_prev_rlat = pLast->m_lat;
+  parent->m_prev_rlon = pLast->m_lon;
+  parent->m_prev_pMousePoint = pLast;
+
+  parent->m_bAppendingRoute = true;
+}
+
+void FinishRoute(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  parent->FinishRoute();
+}
+
+bool IsRouteBeingCreated(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return false;
+  return !(parent->m_pMouseRoute == NULL);
+}
+
+bool AreRouteWaypointNamesVisible(wxString route_guid) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return false;
+  return route->AreWaypointNamesVisible();
+}
+
+void ShowRouteWaypointNames(wxString route_guid, bool show) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return;
+  route->ShowWaypointNames(show);
+}
+
+void NavigateToWaypoint(wxString waypoint_guid) {
+  RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(waypoint_guid);
+  if (!prp) return;
+
+  RoutePoint* pWP_src = new RoutePoint(gLat, gLon, g_default_wp_icon,
+                                       wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
+
+  Route* temp_route = new Route();
+  pRouteList->Append(temp_route);
+
+  temp_route->AddPoint(pWP_src);
+  temp_route->AddPoint(prp);
+  prp->SetShared(true);
+
+  pSelect->AddSelectableRouteSegment(gLat, gLon, prp->m_lat, prp->m_lon,
+                                     pWP_src, prp, temp_route);
+
+  wxString name = prp->GetName();
+  if (name.IsEmpty()) name = _("(Unnamed Waypoint)");
+  wxString rteName = _("Go to ");
+  rteName.Append(name);
+  temp_route->m_RouteNameString = rteName;
+  temp_route->m_RouteStartString = _("Here");
+  temp_route->m_RouteEndString = name;
+  temp_route->m_bDeleteOnArrival = true;
+
+  if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+  g_pRouteMan->ActivateRoute(temp_route, prp);
+}
+
+// AIS related
+bool IsAISTrackVisible(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget)
+    return myptarget->b_show_track;
+  else
+    return false;
+}
+
+void AISToggleShowTrack(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget) myptarget->ToggleShowTrack();
+}
+
+bool IsAIS_CPAVisible(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget)
+    return myptarget->b_show_AIS_CPA;
+  else
+    return false;
+}
+
+void AISToggleShowCPA(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget) myptarget->Toggle_AIS_CPA();
+}
+
+void ShowAISTargetQueryDialog(int canvas_index, wxString ais_mmsi) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  ShowAISTargetQueryDialog(parent, mmsi);
+}
+
+void ShowAISTargetList(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+  parent->ShowAISTargetList();
+}
+
+bool IsMeasureActive(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return false;
+  return parent->m_bMeasure_Active;
+}
+
+void CancelMeasure(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+  parent->CancelMeasureRoute();
 }

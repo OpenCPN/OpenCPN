@@ -1039,19 +1039,13 @@ if errorlevel 1 (
 ) else (
   echo xcopy /Q /Y "%~dp0..\build\%folder%\*.csv" "%~dp0..\tmp\%folder%" OK
 )
+@echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.*" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
 xcopy /Q /Y "%~dp0..\build\%folder%\navobj.*" "%~dp0..\tmp\%folder%"
 if errorlevel 1 (
-  @echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.*" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  @echo [101;93mNOT OK[0m
   if not [%quiet%]==[Y] pause
 ) else (
-  echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.*" "%~dp0..\tmp\%folder%" OK
-)
-xcopy /Q /Y "%~dp0..\build\%folder%\navobj.xml.?" "%~dp0..\tmp\%folder%"
-if errorlevel 1 (
-  @echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.xml.?" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
-  if not [%quiet%]==[Y] pause
-) else (
-  echo xcopy /Q /Y "%~dp0..\build\%folder%\navobj.xml.?" "%~dp0..\tmp\%folder%" OK
+  echo OK
 )
 if exist "%~dp0..\build\%folder%\plugins" (
   :: Convert old winConfig build structure to latest version

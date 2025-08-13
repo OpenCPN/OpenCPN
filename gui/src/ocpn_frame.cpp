@@ -98,6 +98,7 @@
 #include "chart_ctx_factory.h"
 #include "chartdb.h"
 #include "chcanv.h"
+#include "TCWin.h"
 #include "cm93.h"
 #include "color_handler.h"
 #include "compass.h"
@@ -1227,6 +1228,9 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   //  Clear the cache, and thus close all charts to avoid memory leaks
   if (ChartData) ChartData->PurgeCache();
 
+  // If it exists, hide the console, in preparation for re-creation
+  if (console) console->Show(false);
+
   // Detach all canvases from AUI manager
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray[i];
@@ -1398,7 +1402,6 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
 
   g_focusCanvas = GetPrimaryCanvas();
 
-  if (console) console->Show(false);
   delete console;
   if (g_canvasArray.size() > 1)
     console = new APConsole(g_canvasArray.Item(1));  // the console
@@ -4873,17 +4876,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       g_pi_manager->CallLateInit();
 
-      //  If any PlugIn implements PlugIn Charts, we need to re-run the initial
-      //  chart load logic to select the correct chart as saved from the last
-      //  run of the app. This will be triggered at the next DoChartUpdate()
-      if (g_pi_manager->IsAnyPlugInChartEnabled()) {
-        for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-          ChartCanvas *cc = g_canvasArray.Item(i);
-          if (cc) cc->SetFirstAuto(true);
-        }
-
-        b_reloadForPlugins = true;
-      }
+      if (g_pi_manager->IsAnyPlugInChartEnabled()) b_reloadForPlugins = true;
 
       break;
     }
@@ -4976,6 +4969,17 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #endif
 
       if (b_reloadForPlugins) {
+        //  If any PlugIn implements PlugIn Charts, we need to re-run the
+        //  initial chart load logic to select the correct chart as saved from
+        //  the last run of the app. This will be triggered at the next
+        //  DoChartUpdate()
+        if (g_pi_manager->IsAnyPlugInChartEnabled()) {
+          for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if (cc) cc->SetFirstAuto(true);
+          }
+        }
+
         DoChartUpdate();
         ChartsRefresh();
       }
@@ -6518,14 +6522,41 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   if (message_ID == _T("GRIB_TIMELINE")) {
     wxJSONReader r;
     wxJSONValue v;
-    r.Parse(message_JSONText, &v);
-    if (v[_T("Day")].AsInt() == -1)
+    int numErrors = r.Parse(message_JSONText, &v);
+
+    if (numErrors > 0) {
+      wxLogMessage("GRIB_TIMELINE: JSON parse error");
+      return;
+    }
+
+    // Store old time source for comparison
+    wxDateTime oldTimeSource = gTimeSource;
+
+    if (v[_T("Day")].AsInt() == -1) {
       gTimeSource = wxInvalidDateTime;
-    else
+      wxLogMessage("GRIB_TIMELINE: Reset to system time");
+    } else {
       gTimeSource.Set(v[_T("Day")].AsInt(),
                       (wxDateTime::Month)v[_T("Month")].AsInt(),
                       v[_T("Year")].AsInt(), v[_T("Hour")].AsInt(),
                       v[_T("Minute")].AsInt(), v[_T("Second")].AsInt());
+    }
+
+    // Refresh tide displays if time source changed
+    if (oldTimeSource != gTimeSource) {
+      // Refresh all canvases that might show tide info
+      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if (cc && (cc->GetbShowTide() || cc->GetbShowCurrent())) {
+          cc->Refresh(false);
+
+          // Also refresh any open tide dialog windows
+          if (cc->pCwin) {  // pCwin is the tide window pointer
+            cc->pCwin->Refresh(false);
+          }
+        }
+      }
+    }
   }
   if (message_ID == _T("OCPN_TRACK_REQUEST")) {
     wxJSONValue root;

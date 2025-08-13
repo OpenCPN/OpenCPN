@@ -8,7 +8,6 @@
 #include <wx/filedlg.h>
 #include <wx/menu.h>
 #include <wx/panel.h>
-#include <wx/platinfo.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
@@ -46,9 +45,7 @@
 
 using SetFormatFunc = std::function<void(DataLogger::Format, std::string)>;
 
-extern BasePlatform* g_BasePlatform;
-
-/** Return window with given id (which must exist) casted to T*. */
+/** Return window with given id (which must exist) cast to T*. */
 template <typename T>
 T* GetWindowById(int id) {
   return dynamic_cast<T*>(wxWindow::FindWindowById(id));
@@ -67,12 +64,10 @@ static bool IsUserFilter(const std::string& filter_name) {
   std::vector<std::string> filters = filters_on_disk::List();
   auto found = std::find(filters.begin(), filters.end(), filter_name);
   if (found != filters.end()) return true;
-  for (auto& f : filters) {
-    NavmsgFilter nf = filters_on_disk::Read(f);
-    if (nf.m_description == filter_name) return true;
-  }
-  return false;
-};
+  return std::any_of(
+      filters.begin(), filters.end(),
+      [filter_name](const std::string& f) { return f == filter_name; });
+}
 
 /** Return logging milliseconds timestamp. */
 static std::string TimeStamp(const NavmsgTimePoint& when,
@@ -88,11 +83,17 @@ static std::string TimeStamp(const NavmsgTimePoint& when,
   duration -= duration_cast<minutes>(duration) / 60;
   auto secs = duration_cast<seconds>(duration) % 60;
   duration -= duration_cast<seconds>(duration) / 60;
-  auto msecs = duration_cast<milliseconds>(duration);
+  const auto msecs = duration_cast<milliseconds>(duration);
   ss << setw(2) << setfill('0') << hrs.count() << ":" << setw(2) << mins.count()
      << ":" << setw(2) << secs.count() << "." << setw(3)
      << msecs.count() % 1000;
   return ss.str();
+}
+
+static fs::path NullLogfile() {
+  if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
+    return "NUL:";
+  return "/dev/null";
 }
 
 /**
@@ -102,10 +103,10 @@ static std::string TimeStamp(const NavmsgTimePoint& when,
  * @return Possibly quoted string handling double quotes in arg.
  */
 static std::string VdrQuote(const std::string& arg) {
-  auto static const npos = std::string::npos;
+  auto static constexpr npos = std::string::npos;
   if (arg.find(',') == npos && arg.find('"') == npos) return arg;
   std::string s;
-  for (auto c : arg) {
+  for (const auto c : arg) {
     if (c == '"')
       s += "\"\"";
     else
@@ -122,8 +123,8 @@ static void AddVdrLogline(const Logline& ll, std::ostream& stream) {
   if (kSourceByBus.find(ll.navmsg->bus) == kSourceByBus.end()) return;
 
   using namespace std::chrono;
-  auto now = system_clock::now();
-  auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
+  const auto now = system_clock::now();
+  const auto ms = duration_cast<milliseconds>(now.time_since_epoch()).count();
   stream << ms << ",";
 
   stream << kSourceByBus.at(ll.navmsg->bus) << ",";
@@ -173,7 +174,7 @@ static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs,
   ws << ll.navmsg->source->iface << fs;
   ws << NavAddr::BusToString(ll.navmsg->bus) << fs;
   if (ll.state.status != NavmsgStatus::State::kOk)
-    ws << (!ll.error_msg.empty() ? ll.error_msg : "Unknown  errror");
+    ws << (!ll.error_msg.empty() ? ll.error_msg : "Unknown  error");
   else
     ws << "ok";
   ws << fs << ll.message << "\n";
@@ -190,21 +191,21 @@ public:
         m_filter(this, wxID_ANY),
         m_lines(lines),
         m_on_right_click([] {}) {
-    auto vbox = new wxBoxSizer(wxVERTICAL);
-    m_tty_scroll = new TtyScroll(this, m_lines);
+    const auto vbox = new wxBoxSizer(wxVERTICAL);
+    m_tty_scroll = new TtyScroll(this, static_cast<int>(m_lines));
     m_tty_scroll->Bind(wxEVT_RIGHT_UP,
                        [&](wxMouseEvent&) { m_on_right_click(); });
     vbox->Add(m_tty_scroll, wxSizerFlags(1).Expand().Border());
     m_filter.Hide();
     SetSizer(vbox);
-    Fit();
+    wxWindow::Fit();
   }
 
   void Add(const Logline& ll) override { m_tty_scroll->Add(ll); }
 
   bool IsVisible() const override { return IsShownOnScreen(); }
 
-  void OnStop(bool stop) {
+  void OnStop(bool stop) const {
     m_tty_scroll->Pause(stop);
     if (stop)
       m_tty_scroll->ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
@@ -212,9 +213,9 @@ public:
       m_tty_scroll->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
   }
 
-  void SetFilter(const NavmsgFilter& f) { m_tty_scroll->SetFilter(f); };
+  void SetFilter(const NavmsgFilter& f) const { m_tty_scroll->SetFilter(f); };
 
-  void SetQuickFilter(const std::string& filter) {
+  void SetQuickFilter(const std::string& filter) const {
     m_tty_scroll->SetQuickFilter(filter);
   }
 
@@ -232,7 +233,7 @@ public:
 
 protected:
   wxSize DoGetBestClientSize() const override {
-    return wxSize(-1, m_lines * GetCharHeight());
+    return {1, static_cast<int>(m_lines * GetCharHeight())};
   }
 
 private:
@@ -256,17 +257,19 @@ public:
     hbox->Add(label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     hbox->Add(m_text_ctrl, flags);
     SetSizer(hbox);
-    Fit();
-    Show();
+    wxWindow::Fit();
+    wxWindow::Show();
     m_text_ctrl->Bind(wxEVT_TEXT, [&](wxCommandEvent&) { m_on_text_evt(); });
   }
 
-  bool Show(bool show = true) override {
+  bool Show(bool show) override {
     if (!show) m_text_ctrl->SetValue("");
     return wxWindow::Show(show);
   }
 
-  std::string GetValue() { return m_text_ctrl->GetValue().ToStdString(); }
+  [[nodiscard]] std::string GetValue() const {
+    return m_text_ctrl->GetValue().ToStdString();
+  }
 
 private:
   wxTextCtrl* m_text_ctrl;
@@ -278,11 +281,11 @@ class FilterChoice : public wxChoice {
 public:
   FilterChoice(wxWindow* parent, TtyPanel* tty_panel)
       : wxChoice(parent, wxID_ANY), m_tty_panel(tty_panel) {
-    SetName(kFilterChoiceName);
+    wxWindow::SetName(kFilterChoiceName);
     Bind(wxEVT_CHOICE, [&](wxCommandEvent&) { OnChoice(); });
     OnFilterListChange();
-    int ix = FindString(kLabels.at("default"));
-    if (ix != wxNOT_FOUND) SetSelection(ix);
+    const int ix = wxChoice::FindString(kLabels.at("default"));
+    if (ix != wxNOT_FOUND) wxChoice::SetSelection(ix);
     NavmsgFilter filter = filters_on_disk::Read("default.filter");
     m_tty_panel->SetFilter(filter);
   }
@@ -360,7 +363,7 @@ private:
   }
 
   NavmsgFilter FilterByLabel(const std::string& label) {
-    std::string name;
+    std::string name = label;
     for (const auto& kv : kLabels) {
       if (kv.second == label) {
         name = kv.first;
@@ -374,7 +377,7 @@ private:
       for (auto& f : m_filters)
         if (f.m_description == label) return f;
     }
-    return NavmsgFilter();
+    return {};
   }
 };
 
@@ -405,7 +408,7 @@ class CloseButton : public wxButton {
 public:
   CloseButton(wxWindow* parent, std::function<void()> on_close)
       : wxButton(parent, wxID_ANY), m_on_close(std::move(on_close)) {
-    SetLabel(_("Close"));
+    wxButton::SetLabel(_("Close"));
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
     OnClick();
   }
@@ -413,7 +416,7 @@ public:
 private:
   std::function<void()> m_on_close;
 
-  void OnClick() { m_on_close(); }
+  void OnClick() const { m_on_close(); }
 };
 
 /** Log setup window invoked from menu "Logging" item. */
@@ -425,23 +428,23 @@ public:
     ThePanel(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
         : wxPanel(parent),
           m_overwrite(false),
-          m_set_logtype(set_logtype),
+          m_set_logtype(std::move(set_logtype)),
           m_logger(logger),
           kFilenameLabelId(wxWindow::NewControlId()) {
       auto flags = wxSizerFlags(0).Border();
 
       /* left column: Select log format. */
       auto vdr_btn = new wxRadioButton(this, wxID_ANY, "VDR");
-      vdr_btn->Bind(wxEVT_RADIOBUTTON, [&](wxCommandEvent e) {
+      vdr_btn->Bind(wxEVT_RADIOBUTTON, [&](const wxCommandEvent& e) {
         m_set_logtype(DataLogger::Format::kVdr, "VDR");
       });
       auto default_btn = new wxRadioButton(this, wxID_ANY, "Default");
-      default_btn->Bind(wxEVT_RADIOBUTTON, [&](wxCommandEvent e) {
+      default_btn->Bind(wxEVT_RADIOBUTTON, [&](const wxCommandEvent& e) {
         m_set_logtype(DataLogger::Format::kDefault, _("Default"));
       });
       default_btn->SetValue(true);
       auto csv_btn = new wxRadioButton(this, wxID_ANY, "CSV");
-      csv_btn->Bind(wxEVT_RADIOBUTTON, [&](wxCommandEvent e) {
+      csv_btn->Bind(wxEVT_RADIOBUTTON, [&](const wxCommandEvent& e) {
         m_set_logtype(DataLogger::Format::kCsv, "CSV");
       });
       auto left_vbox = new wxStaticBoxSizer(wxVERTICAL, this, _("Log format"));
@@ -457,8 +460,9 @@ public:
       path_btn->Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnFileDialog(); });
       auto force_box =
           new wxCheckBox(this, wxID_ANY, _("Overwrite existing file"));
-      force_box->Bind(wxEVT_CHECKBOX,
-                      [&](wxCommandEvent& e) { m_overwrite = e.IsChecked(); });
+      force_box->Bind(wxEVT_CHECKBOX, [&](const wxCommandEvent& e) {
+        m_overwrite = e.IsChecked();
+      });
       auto right_vbox = new wxStaticBoxSizer(wxVERTICAL, this, _("Log file"));
       right_vbox->Add(label, flags);
       right_vbox->Add(path_btn, flags);
@@ -467,18 +471,18 @@ public:
       /* Top part above buttons */
       auto hbox = new wxBoxSizer(wxHORIZONTAL);
       hbox->Add(left_vbox, flags);
-      hbox->Add(GetCharWidth() * 10, 0, 1);
+      hbox->Add(wxWindow::GetCharWidth() * 10, 0, 1);
       hbox->Add(right_vbox, flags);
       SetSizer(hbox);
-      Layout();
-      Show();
+      wxWindow::Layout();
+      wxWindow::Show();
 
-      FilenameLstnr.Init(logger.OnNewLogfile, [&](ObservedEvt& ev) {
+      FilenameLstnr.Init(logger.OnNewLogfile, [&](const ObservedEvt& ev) {
         GetWindowById<wxStaticText>(kFilenameLabelId)->SetLabel(ev.GetString());
       });
     }
 
-    void OnFileDialog() {
+    void OnFileDialog() const {
       long options = wxFD_SAVE;
       if (!m_overwrite) options |= wxFD_OVERWRITE_PROMPT;
       wxFileDialog dlg(m_parent, _("Select logfile"),
@@ -513,14 +517,14 @@ public:
     buttons->Fit(parent);
 
     /* Overall vbox setup */
-    auto panel = new ThePanel(this, set_logtype, logger);
+    auto panel = new ThePanel(this, std::move(set_logtype), logger);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(panel, flags.Expand());
     vbox->Add(new wxStaticLine(this, wxID_ANY), flags.Expand());
     vbox->Add(buttons, flags.Expand());
     SetSizer(vbox);
-    Fit();
-    Show();
+    wxWindow::Fit();
+    wxDialog::Show();
   }
   ObsListener FilenameLstnr;
 };
@@ -549,7 +553,7 @@ public:
     if (IsUserFilter(m_filter))
       Append(static_cast<int>(Id::kEditActiveFilter), _("Edit active filter"));
 
-    Bind(wxEVT_MENU, [&](wxCommandEvent& ev) {
+    Bind(wxEVT_MENU, [&](const wxCommandEvent& ev) {
       switch (static_cast<Id>(ev.GetId())) {
         case Id::kLogSetup:
           ConfigureLogging();
@@ -586,23 +590,23 @@ public:
     m_filter = filter;
   }
 
-  void ConfigureLogging() {
-    auto dlg = new LoggingSetup(
+  void ConfigureLogging() const {
+    LoggingSetup dlg(
         m_parent,
-        [&](DataLogger::Format f, std::string s) { SetLogFormat(f, s); },
+        [&](DataLogger::Format f, const std::string& s) { SetLogFormat(f, s); },
         m_logger);
-    dlg->ShowModal();
+    dlg.ShowModal();
     auto monitor = wxWindow::FindWindowByName(kDataMonitorWindowName);
     assert(monitor);
     monitor->Layout();
   }
 
 private:
-  wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
+  static wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
     return root->Append(static_cast<int>(id), label);
   }
 
-  void SetLogFormat(DataLogger::Format format, const std::string& label) {
+  void SetLogFormat(DataLogger::Format format, const std::string& label) const {
     m_logger.SetFormat(format);
     std::string extension =
         format == DataLogger::Format::kDefault ? ".log" : ".csv";
@@ -611,7 +615,7 @@ private:
     m_logger.SetLogfile(path);
   }
 
-  void SetColor(int id) {
+  void SetColor(int id) const {
     auto* w = wxWindow::FindWindowByName("TtyScroll");
     auto tty_scroll = dynamic_cast<TtyScroll*>(w);
     if (!tty_scroll) return;
@@ -672,7 +676,7 @@ private:
 /** Copy to clipboard button */
 class CopyClipboardButton : public SvgButton {
 public:
-  CopyClipboardButton(wxWindow* parent) : SvgButton(parent) {
+  explicit CopyClipboardButton(wxWindow* parent) : SvgButton(parent) {
     LoadIcon(kCopyIconSvg);
     SetToolTip(_("Copy to clipboard"));
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) {
@@ -733,8 +737,8 @@ private:
 class StatusLine : public wxPanel {
 public:
   StatusLine(wxWindow* parent, wxWindow* quick_filter, TtyPanel* tty_panel,
-             std::function<void(bool)> on_stop, std::function<void()> on_hide,
-             DataLogger& logger)
+             std::function<void(bool)> on_stop,
+             const std::function<void()>& on_hide, DataLogger& logger)
       : wxPanel(parent),
         m_is_resized(false),
         m_filter_choice(new FilterChoice(this, tty_panel)),
@@ -749,7 +753,7 @@ public:
     wbox->Add(m_log_button, flags);
     // Stretching horizontal space. Does not work with a WrapSizer, known
     // wx bug. Left in place if it becomes fixed.
-    wbox->Add(GetCharWidth() * 5, 0, 1);
+    wbox->Add(wxWindow::GetCharWidth() * 5, 0, 1);
     wbox->Add(filter_label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     wbox->Add(m_filter_choice, flags);
     wbox->Add(new PauseResumeButton(this, std::move(on_stop)), flags);
@@ -763,8 +767,8 @@ public:
     wbox->Add(new CloseButton(this, std::move(on_hide)), flags);
 #endif
     SetSizer(wbox);
-    Layout();
-    Show();
+    wxWindow::Layout();
+    wxWindow::Show();
 
     Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
       m_is_resized = true;
@@ -784,11 +788,11 @@ public:
 protected:
   // Make sure the initial size is sane, don't meddle when user resizes
   // dialog
-  wxSize DoGetBestClientSize() const override {
+  [[nodiscard]] wxSize DoGetBestClientSize() const override {
     if (m_is_resized)
-      return wxSize(-1, -1);
+      return {-1, -1};
     else
-      return wxSize(85 * GetCharWidth(), 2.5 * GetCharHeight());
+      return {85 * GetCharWidth(), 5 * GetCharHeight() / 2};
   }
 
 private:
@@ -824,13 +828,6 @@ void DataLogger::SetLogfile(const fs::path& path) {
 
 void DataLogger::SetFormat(DataLogger::Format format) { m_format = format; }
 
-fs::path DataLogger::NullLogfile() {
-  if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
-    return "NUL:";
-  else
-    return "/dev/null";
-}
-
 fs::path DataLogger::GetDefaultLogfile() {
   if (m_path.stem() != NullLogfile().stem()) return m_path;
   fs::path path(g_BasePlatform->GetHomeDir().ToStdString());
@@ -839,7 +836,7 @@ fs::path DataLogger::GetDefaultLogfile() {
   return path;
 }
 
-std::string DataLogger::GetFileDlgTypes() {
+std::string DataLogger::GetFileDlgTypes() const {
   if (m_format == Format::kDefault)
     return _("Log file (*.log)|*.log");
   else
@@ -862,8 +859,7 @@ DataMonitor::DataMonitor(wxWindow* parent)
               wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT,
               kDataMonitorWindowName),
       m_monitor_src([&](const std::shared_ptr<const NavMsg>& navmsg) {
-        auto msg = std::dynamic_pointer_cast<const Nmea0183Msg>(navmsg);
-        TtyPanel::AddIfExists(navmsg);
+        TtyPanel::AddIfExists(Logline(navmsg));
       }),
       m_quick_filter(nullptr),
       m_logger(parent) {
@@ -887,8 +883,8 @@ DataMonitor::DataMonitor(wxWindow* parent)
                                     on_close, m_logger);
   vbox->Add(status_line, wxSizerFlags().Expand());
   SetSizer(vbox);
-  Fit();
-  Hide();
+  wxWindow::Fit();
+  wxWindow::Hide();
 
   m_quick_filter->Bind(wxEVT_TEXT, [&, tty_panel](wxCommandEvent&) {
     tty_panel->SetQuickFilter(GetLabel().ToStdString());
@@ -904,13 +900,15 @@ DataMonitor::DataMonitor(wxWindow* parent)
   });
   m_filter_list_lstnr.Init(FilterEvents::GetInstance().filter_list_change,
                            [&](ObservedEvt&) { OnFilterListChange(); });
-  m_filter_update_lstnr.Init(
-      FilterEvents::GetInstance().filter_update,
-      [&](ObservedEvt& ev) { OnFilterUpdate(ev.GetString().ToStdString()); });
+  m_filter_update_lstnr.Init(FilterEvents::GetInstance().filter_update,
+                             [&](const ObservedEvt& ev) {
+                               OnFilterUpdate(ev.GetString().ToStdString());
+                             });
 
-  m_filter_apply_lstnr.Init(
-      FilterEvents::GetInstance().filter_apply,
-      [&](ObservedEvt& ev) { OnFilterApply(ev.GetString().ToStdString()); });
+  m_filter_apply_lstnr.Init(FilterEvents::GetInstance().filter_apply,
+                            [&](const ObservedEvt& ev) {
+                              OnFilterApply(ev.GetString().ToStdString());
+                            });
 }
 
 void DataMonitor::Add(const Logline& ll) {
@@ -932,7 +930,7 @@ void DataMonitor::OnFilterListChange() {
   filter_choice->OnFilterListChange();
 }
 
-void DataMonitor::OnFilterUpdate(const std::string& name) {
+void DataMonitor::OnFilterUpdate(const std::string& name) const {
   if (name != m_current_filter) return;
   wxWindow* w = wxWindow::FindWindowByName("TtyScroll");
   if (!w) return;

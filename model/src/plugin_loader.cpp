@@ -497,12 +497,14 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
 
   wxString plugin_loadstamp = wxFileName(file_name).GetName();
-  if (HasLoadStamp(plugin_loadstamp.ToStdString())) {
-    MESSAGE_LOG << "Refusing to load " << file_name
-                << " failed at last attempt";
-    return false;
+  if (!IsSystemPluginPath(plugin_file.ToStdString())) {
+    if (HasLoadStamp(plugin_loadstamp.ToStdString())) {
+      MESSAGE_LOG << "Refusing to load " << file_name
+                  << " failed at last attempt";
+      return false;
+    }
+    CreateLoadStamp(plugin_loadstamp.ToStdString());
   }
-  CreateLoadStamp(plugin_loadstamp.ToStdString());
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
   wxLog::FlushActive();
 
@@ -1668,6 +1670,10 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
 
     case 120:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_120*>(plug_in);
+      break;
+
+    case 121:
+      pic->m_pplugin = dynamic_cast<opencpn_plugin_121*>(plug_in);
       break;
 
     default:

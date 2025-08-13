@@ -73,25 +73,9 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
 
   for (auto& driver : drivers) {
     if (driver->bus == NavAddr::Bus::N0183) {
-      ConnectionParams params;
-      auto drv_serial = dynamic_cast<CommDriverN0183Serial*>(driver.get());
-      if (drv_serial) {
-        params = drv_serial->GetParams();
-      } else {
-        auto drv_net = dynamic_cast<CommDriverN0183Net*>(driver.get());
-        if (drv_net) {
-          params = drv_net->GetParams();
-        }
-#ifdef __ANDROID__
-        else {
-          auto drv_bluetooth =
-              dynamic_cast<CommDriverN0183AndroidBT*>(driver.get());
-          if (drv_bluetooth) {
-            params = drv_bluetooth->GetParams();
-          }
-        }
-#endif
-      }
+      auto drv_n0183 = dynamic_cast<CommDriverN0183*>(driver.get());
+      assert(drv_n0183);
+      ConnectionParams params = drv_n0183->GetParams();
 
       if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
           params.IOSelect == DS_TYPE_OUTPUT) {

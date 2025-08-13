@@ -48,6 +48,8 @@
 #include "gshhs.h"
 #include "notification_manager_gui.h"
 #include "observable.h"
+#include "observable_evtvar.h"
+#include "ocpn_plugin.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -311,6 +313,8 @@ public:
 
   void JumpToPosition(double lat, double lon, double scale);
   void SetFirstAuto(bool b_auto) { m_bFirstAuto = b_auto; }
+  void SetAbsoluteMinScale(double min_scale);
+  std::shared_ptr<PI_PointContext> GetCanvasContextAtPoint(int x, int y);
 
   /**
    * Convert latitude/longitude to canvas pixel coordinates (physical pixels)
@@ -762,7 +766,7 @@ public:
   void DrawBlinkObjects(void);
 
   void StartRoute(void);
-  void FinishRoute(void);
+  wxString FinishRoute(void);
 
 #ifdef ocpnUSE_GL
   glChartCanvas *GetglCanvas() { return m_glcc; }
@@ -825,6 +829,15 @@ public:
   void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
   NotificationsList *GetNotificationsList() { return m_NotificationsList; }
 
+  int PrepareContextSelections(int x, int y);
+  RoutePoint *GetFoundRoutepoint() { return m_pFoundRoutePoint; }
+
+  /**
+   * Notified with message targeting all plugins. Contains a message type
+   * string and a wxJSONValue shared_ptr.
+   */
+  EventVar json_msg;
+
 private:
   /**
    * Internal function that implements the actual zoom operation.
@@ -842,11 +855,8 @@ private:
   void DoZoomCanvas(double factor, bool can_zoom_to_cursor = true);
 
   int AdjustQuiltRefChart();
-
   bool UpdateS52State();
-
   void CallPopupMenu(int x, int y);
-
   bool IsTempMenuBarEnabled();
   bool InvokeCanvasMenu(int x, int y, int seltype);
 

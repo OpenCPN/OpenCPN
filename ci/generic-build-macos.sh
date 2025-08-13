@@ -27,11 +27,10 @@ brew install lz4
 brew install mpg123
 brew install xz
 brew install zstd
+brew install wxwidgets@3.2
 brew install libarchive
-brew install wxwidgets
 brew install create-dmg
 brew install gpatch
-brew install asciidoc
 
 if [ -d /usr/local/include ]; then
   ln -sf /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h

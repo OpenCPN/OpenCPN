@@ -464,17 +464,11 @@ void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent &event) {
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
-
+    // notify message listener
     auto address = std::make_shared<NavAddr>(NavAddr0183("Android_RAW"));
-
     auto msg =
         std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
     m_listener.Notify(std::move(msg));
-    m_listener.Notify(std::move(msg_all));
   }
 }
 
@@ -937,11 +931,10 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event) {
 void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
   switch (event.GetId()) {
     case SCHEDULED_EVENT_CLEAN_EXIT:
-      //             gFrame->FrameTimer1.Stop();
-      //             gFrame->FrameCOGTimer.Stop();
-      //
-      //             doAndroidPersistState();
-      //             androidTerminate();
+      qDebug() << "SCHEDULED_EVENT_CLEAN_EXIT";
+      gFrame->FrameTimer1.Stop();
+      gFrame->FrameCOGTimer.Stop();
+      doAndroidPersistState();
       break;
 
     case ID_CMD_PERSIST_DATA:
@@ -1423,6 +1416,28 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStop(JNIEnv *env,
 }
 
 extern "C" {
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_cleanExit(JNIEnv *env,
+                                                                jobject obj) {
+  qDebug() << "cleanExit";
+  wxLogMessage(_T("cleanExit"));
+
+  //  App may be summarily killed after this point due to OOM condition.
+  //  So we need to persist some dynamic data.
+
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(SCHEDULED_EVENT_CLEAN_EXIT);
+  if (gFrame && gFrame->GetEventHandler()) {
+    g_androidUtilHandler->AddPendingEvent(evt);
+  }
+
+  g_running = false;
+
+  qDebug() << "cleanExit return 98";
+  return 98;
+}
+}
+
+extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env,
                                                               jobject obj) {
   qDebug() << "onStart";
@@ -1880,12 +1895,7 @@ void androidDisplayToast(wxString message) {
   callActivityMethod_ss("showToast", message);
 }
 
-void androidEnableRotation(void) {
-  //    if(g_detect_smt590)
-  //        return;
-
-  callActivityMethod_vs("EnableRotation");
-}
+void androidEnableRotation(void) { callActivityMethod_vs("EnableRotation"); }
 
 void androidDisableRotation(void) { callActivityMethod_vs("DisableRotation"); }
 
@@ -2517,11 +2527,6 @@ wxSize getAndroidDisplayDimensions(void) {
     if (token.ToLong(&abh)) sz_ret.y -= abh;
   }
 
-  // Samsung sm-t590/Android 10 has some display problems in portrait mode.....
-  if (g_detect_smt590) {
-    if (sz_ret.x < sz_ret.y) sz_ret.y = 1650;
-  }
-
   // qDebug() << "getAndroidDisplayDimensions" << sz_ret.x << sz_ret.y;
 
   return sz_ret;
@@ -2721,6 +2726,66 @@ bool androidStopGPS() {
   bGPSEnabled = false;
 
   return true;
+}
+
+wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
+                                     wxDateTime time) {
+  wxDateTime t(time);
+  wxString effective_time_zone = options.time_zone;
+  if (effective_time_zone == wxEmptyString) {
+    effective_time_zone = ::g_datetime_format;
+  }
+  if (effective_time_zone == wxEmptyString) {
+    effective_time_zone = "UTC";
+  }
+
+  wxString tzName;
+  if (effective_time_zone == "Local Time") {
+    wxDateTime now = wxDateTime::Now();
+    if ((now == (now.ToGMT())) &&
+        t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
+      t.Add(wxTimeSpan(1, 0, 0, 0));
+    if (options.show_timezone) {
+      tzName = _("LOC");
+    }
+  } else if (effective_time_zone == "LMT") {
+    // Local mean solar time at the current location.
+    t.MakeUTC();
+    tzName = _("LMT");
+    if (std::isnan(options.longitude)) {
+      t = wxInvalidDateTime;
+    } else {
+      t.Add(wxTimeSpan(0, 0, wxLongLong(options.longitude * 3600. / 15.)));
+    }
+  } else {
+    // UTC, or fallback to UTC if the timezone is not recognized.
+    t.MakeUTC();
+    tzName = _("UTC");
+  }
+
+  wxString format = options.format_string;
+  long epoch_seconds = t.GetTicks();
+  wxString formattedDate;
+
+  wxStringTokenizer tk(format, "$");
+  while (tk.HasMoreTokens()) {
+    wxString token = tk.GetNextToken();
+    if (token.Length()) {
+      token.Trim();
+      wxString partial_result = callActivityMethod_ssl(
+          "getLocalizedDateTime", "$" + token, epoch_seconds);
+      if (partial_result.Length()) {
+        if (!formattedDate.IsEmpty()) formattedDate += "  ";
+        formattedDate += partial_result;
+      }
+    }
+  }
+
+  if (options.show_timezone) {
+    return formattedDate + " " + tzName;
+  } else {
+    return formattedDate;
+  }
 }
 
 wxString androidGPSService(int parm) {
@@ -4398,10 +4463,10 @@ int doAndroidPersistState() {
       wxAuiPaneInfo &pane = g_pauimgr->GetPane(g_pAISTargetList);
       g_AisTargetList_perspective = g_pauimgr->SavePaneInfo(pane);
       g_pauimgr->DetachPane(g_pAISTargetList);
-
-      pConfig->SetPath(_T ( "/AUI" ));
-      pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
     }
+
+    pConfig->SetPath(_T ( "/AUI" ));
+    pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
   }
 
   //    Deactivate the PlugIns, allowing them to save state

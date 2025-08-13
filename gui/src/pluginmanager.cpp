@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ * Implement pluginmanager.h
+ */
 #include <algorithm>
 #include <archive.h>
 #include <cstdio>
@@ -218,8 +217,17 @@ enum { CurlThreadId = wxID_HIGHEST + 1 };
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 
-wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
+
+/** KeyProvider wrapper for a plain key string. */
+class RawKey : public KeyProvider {
+public:
+  explicit RawKey(const std::string& key) : m_key(key) {}
+  [[nodiscard]] std::string GetKey() const override { return m_key; }
+
+private:
+  std::string m_key;
+};
 
 static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   //  Only send messages if someone is listening...
@@ -947,6 +955,8 @@ PlugInManager::PlugInManager(MyFrame* parent) {
     SendNMEASentenceToAllPlugIns(ev.GetString());
   };
   m_on_msg_sent_listener.Init(g_pRouteMan->on_message_sent, msg_sent_action);
+  m_new_msgtype_lstnr.Init(NavMsgBus::GetInstance().new_msg_event,
+                           [&](ObservedEvt&) { OnNewMessageType(); });
 }
 PlugInManager::~PlugInManager() {
 #if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
@@ -961,14 +971,6 @@ void PlugInManager::InitCommListeners(void) {
 
   auto& msgbus = NavMsgBus::GetInstance();
 
-  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
-                              EVT_N0183_PLUGIN);
-  Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183(n0183_msg);
-  });
-
   SignalkMsg sk_msg;
   m_listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
 
@@ -977,35 +979,40 @@ void PlugInManager::InitCommListeners(void) {
   });
 }
 
+void PlugInManager::OnNewMessageType() {
+  for (auto msg_key : NavMsgBus::GetInstance().GetActiveMessages()) {
+    if (m_0183_listeners.find(msg_key) != m_0183_listeners.end()) continue;
+    if (msg_key.find("::") == std::string::npos) continue;
+    auto key_parts = ocpn::split(msg_key, "::");
+    if (key_parts.size() < 2) continue;
+    if (NavMsg::GetBusByKey(msg_key) == NavAddr::Bus::N0183) {
+      ObsListener ol(RawKey(key_parts[1]), [&](ObservedEvt& ev) {
+        HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+      });
+      m_0183_listeners[msg_key] = std::move(ol);
+    }
+  }
+}
 void PlugInManager::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
-  std::string s = n0183_msg->payload;
-  wxString sentence(s.c_str());
+  assert(n0183_msg->bus == NavAddr::Bus::N0183);
+  const std::string& payload = n0183_msg->payload;
 
-  if (s[0] == '$') {
+  if (payload[0] == '$') {
     const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
     auto& target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
-    bool bpass_input_filter = true;
-
-    // Get the params for the driver sending this message
-    ConnectionParams params;
-    auto drv_serial = dynamic_cast<CommDriverN0183Serial*>(target_driver.get());
-    if (drv_serial) {
-      params = drv_serial->GetParams();
-    } else {
-      auto drv_net = dynamic_cast<CommDriverN0183Net*>(target_driver.get());
-      if (drv_net) {
-        params = drv_net->GetParams();
-      }
+    // Get the params for the driver sending this message, check if it
+    // passes the input filter
+    bool passes_input_filter = true;
+    auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
+    if (drv_n0183) {
+      ConnectionParams params = drv_n0183->GetParams();
+      passes_input_filter =
+          params.SentencePassesFilter(payload.c_str(), FILTER_INPUT);
     }
-
-    // Check to see if the message passes the source's input filter
-    bpass_input_filter = params.SentencePassesFilter(sentence, FILTER_INPUT);
-
-    if (bpass_input_filter) SendNMEASentenceToAllPlugIns(sentence);
-  } else if (s[0] == '!') {
-    // printf("AIS to all: %s", s.c_str());
-    SendAISSentenceToAllPlugIns(sentence);
+    if (passes_input_filter) SendNMEASentenceToAllPlugIns(payload.c_str());
+  } else if (payload[0] == '!') {
+    SendAISSentenceToAllPlugIns(payload.c_str());
   }
 }
 
@@ -1133,6 +1140,7 @@ bool PlugInManager::CallLateInit(void) {
       case 118:
       case 119:
       case 120:
+      case 121:
         ProcessLateInit(pic);
         break;
     }
@@ -1377,7 +1385,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
             }
             case 118:
             case 119:
-            case 120: {
+            case 120:
+            case 121: {
               if (priority <= 0) {
                 opencpn_plugin_18* ppi =
                     dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1457,7 +1466,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
             }
             case 118:
             case 119:
-            case 120: {
+            case 120:
+            case 121: {
               if (priority <= 0) {
                 opencpn_plugin_18* ppi =
                     dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1546,7 +1556,8 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
           }
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             if (priority <= 0) {
               opencpn_plugin_18* ppi =
                   dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1711,7 +1722,8 @@ void PlugInManager::PrepareAllPluginContextMenus() {
           case 117:
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             opencpn_plugin_116* ppi =
                 dynamic_cast<opencpn_plugin_116*>(pic->m_pplugin);
             if (ppi) ppi->PrepareContextMenu(canvasIndex);

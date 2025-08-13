@@ -52,6 +52,7 @@ public:
   void OnPaint(wxPaintEvent &event);
   void MouseEvent(wxMouseEvent &event);
   void OnTCWinPopupTimerEvent(wxTimerEvent &event);
+  void OnTimeIndicatorTimer(wxTimerEvent &event);
   void OKEvent(wxCommandEvent &event);
   void NXEvent(wxCommandEvent &event);
   void PREvent(wxCommandEvent &event);
@@ -66,6 +67,7 @@ public:
 private:
   wxTextCtrl *m_ptextctrl;
   wxTimer m_TCWinPopupTimer;
+  wxTimer m_TimeIndicatorTimer;
   RolloverWin *m_pTCRolloverWin;
   int curs_x;
   int curs_y;
@@ -121,6 +123,7 @@ private:
   wxPen *pblack_3;
   wxPen *pblack_4;
   wxPen *pred_2;
+  wxPen *pred_time;
   wxPen *pgraph;
   wxBrush *pltgray;
   wxBrush *pltgray2;

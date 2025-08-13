@@ -1,5 +1,7 @@
 # ---------------------------------------------------------------------------
-# Author:      nohal aka. Pavel Kalian Copyright: License:     wxWidgets License
+# Author:    nohal aka. Pavel Kalian
+# Copyright: 2012-2025, Pavel Kalian
+# License:   wxWidgets License
 # ---------------------------------------------------------------------------
 
 # define minimum cmake version

@@ -1917,29 +1917,32 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   }
   delete[] Array;
 
-  //    Draw all targets in three pass loop, sorted on SOG, GPSGate & DSC on top
-  //    This way, fast targets are not obscured by slow/stationary targets
-  for (const auto &it : current_targets) {
-    auto td = it.second;
-    if ((td->SOG < g_SOGminCOG_kts) &&
-        !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
-      AISDrawTarget(td.get(), dc, vp, cp);
+  if (cp != NULL) {
+    //    Draw all targets in three pass loop, sorted on SOG, GPSGate & DSC on
+    //    top This way, fast targets are not obscured by slow/stationary targets
+    for (const auto &it : current_targets) {
+      auto td = it.second;
+      if ((td->SOG < g_SOGminCOG_kts) &&
+          !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
+        AISDrawTarget(td.get(), dc, vp, cp);
+      }
     }
-  }
 
-  for (const auto &it : current_targets) {
-    auto td = it.second;
-    if ((td->SOG >= g_SOGminCOG_kts) &&
-        !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
-      AISDrawTarget(td.get(), dc, vp, cp);  // yes this is a doubling of code;(
-      if (td->importance > 0) AISDrawTarget(td.get(), dc, vp, cp);
+    for (const auto &it : current_targets) {
+      auto td = it.second;
+      if ((td->SOG >= g_SOGminCOG_kts) &&
+          !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
+        AISDrawTarget(td.get(), dc, vp,
+                      cp);  // yes this is a doubling of code;(
+        if (td->importance > 0) AISDrawTarget(td.get(), dc, vp, cp);
+      }
     }
-  }
 
-  for (const auto &it : current_targets) {
-    auto td = it.second;
-    if ((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))
-      AISDrawTarget(td.get(), dc, vp, cp);
+    for (const auto &it : current_targets) {
+      auto td = it.second;
+      if ((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))
+        AISDrawTarget(td.get(), dc, vp, cp);
+    }
   }
 }
 
