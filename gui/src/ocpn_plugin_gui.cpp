@@ -3423,15 +3423,24 @@ void SetBoatPosition(double zlat, double zlon) {
   gFrame->UpdateStatusBar();
 }
 
-void RouteInsertWaypoint(wxString route_guid, double zlat, double zlon) {
+void RouteInsertWaypoint(int canvas_index, wxString route_guid, double zlat,
+                         double zlon) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
   Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
   if (!route) return;
 
   if (route->m_bIsInLayer) return;
+
+  wxPoint2DDouble pa;
+  parent->GetDoubleCanvasPointPix(zlat, zlon, &pa);
+  int seltype = parent->PrepareContextSelections(pa.m_x, pa.m_y);
+  if ((seltype & SELTYPE_ROUTESEGMENT) != SELTYPE_ROUTESEGMENT) return;
+
   bool rename = false;
-  // TODO
-  //  route->InsertPointAfter(m_pFoundRoutePoint, zlat, zlon,
-  //                                     rename);
+  route->InsertPointAfter(parent->GetFoundRoutepoint(), zlat, zlon, rename);
 
   pSelect->DeleteAllSelectableRoutePoints(route);
   pSelect->DeleteAllSelectableRouteSegments(route);

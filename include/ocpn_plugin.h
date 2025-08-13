@@ -7155,8 +7155,8 @@ extern DECL_EXP wxBitmap GetObjectIcon_PlugIn(const wxString &name);
 extern DECL_EXP bool IsRouteActive(wxString route_guid);
 extern DECL_EXP void SetBoatPosition(double zlat, double zlon);
 
-extern DECL_EXP void RouteInsertWaypoint(wxString route_guid, double zlat,
-                                         double zlon);
+extern DECL_EXP void RouteInsertWaypoint(int canvas_index, wxString route_guid,
+                                         double zlat, double zlon);
 extern DECL_EXP void RouteAppendWaypoint(int canvas_index, wxString route_guid);
 extern DECL_EXP void FinishRoute(int canvas_index);
 extern DECL_EXP bool IsRouteBeingCreated(int canvas_index);
