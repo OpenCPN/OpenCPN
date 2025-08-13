@@ -829,6 +829,9 @@ public:
   void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
   NotificationsList *GetNotificationsList() { return m_NotificationsList; }
 
+  int PrepareContextSelections(int x, int y);
+  RoutePoint *GetFoundRoutepoint() { return m_pFoundRoutePoint; }
+
   /**
    * Notified with message targeting all plugins. Contains a message type
    * string and a wxJSONValue shared_ptr.
@@ -852,11 +855,8 @@ private:
   void DoZoomCanvas(double factor, bool can_zoom_to_cursor = true);
 
   int AdjustQuiltRefChart();
-
   bool UpdateS52State();
-
   void CallPopupMenu(int x, int y);
-
   bool IsTempMenuBarEnabled();
   bool InvokeCanvasMenu(int x, int y, int seltype);
 
