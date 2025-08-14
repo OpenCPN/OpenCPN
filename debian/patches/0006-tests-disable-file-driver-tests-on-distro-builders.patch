@@ -5,7 +5,9 @@ Subject: tests: disable file driver tests on distro builders
 The file driver tests fails for unknown reasons on some esoteric
 Debian platforms like IBM/S390 and mips. Possibly little endian
 problems. We are not particularly interested in the file driver
-or these platforms, so just disable them in distro builds
+on these platforms, so just disable them in distro builds
+
+Forwarded: not-needed
 ---
  test/tests.cpp | 2 ++
  1 file changed, 2 insertions(+)
