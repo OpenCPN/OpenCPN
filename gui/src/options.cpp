@@ -6123,21 +6123,14 @@ void options::CreateControls(void) {
   if (g_Platform->GetDisplayDIPMult(gFrame) < 1) ConnTab = _("Connect");
 
   m_pageConnections = CreatePanel(ConnTab);
-#ifndef __ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
-#else
-  CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
-// CreatePanel_NMEA_Compact(m_pageConnections, border_size, group_item_spacing);
-#endif
 
   //    SetDefaultConnectionParams();
 
   m_pageShips = CreatePanel(_("Ships"));
   CreatePanel_Ownship(m_pageShips, border_size, group_item_spacing);
   CreatePanel_AIS(m_pageShips, border_size, group_item_spacing);
-#ifndef __ANDROID__
   CreatePanel_MMSI(m_pageShips, border_size, group_item_spacing);
-#endif
 
   CreatePanel_Routes(m_pageShips, border_size, group_item_spacing);
 
