@@ -205,9 +205,9 @@ bool AISTargetQueryDialog::Create(wxWindow *parent, wxWindowID id,
   m_basefont = FontMgr::Get().FindOrCreateFont(font_size, wxFONTFAMILY_MODERN,
                                                wxFONTSTYLE_NORMAL,
                                                dFont->GetWeight(), false, face);
-
   m_adjustedFontSize = dFont->GetPointSize();
   m_control_font_size = dFont->GetPointSize();
+  SetFont(*m_basefont);
 
   CreateControls();
 
