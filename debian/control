@@ -35,7 +35,7 @@ Build-Depends: debhelper-compat (= 13),
  lsb-release,
  portaudio19-dev,
  rapidjson-dev
-Standards-Version: 4.7.0
+Standards-Version: 4.7.2
 Vcs-Browser: https://github.com/opencpn/opencpn
 Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/sid
 Homepage: https://opencpn.org
