@@ -78,6 +78,7 @@ void CommDriverN0183::SendToListener(const std::string& payload,
   assert(sentence.size() >= 6);
 
   const bool is_garbage =
+      sentence.size() > 128 ||
       std::any_of(sentence.begin(), sentence.end(),
                   [](char c) { return !isprint(c) && c != '\n' && c != '\r'; });
   const bool has_checksum =
