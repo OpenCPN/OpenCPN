@@ -2859,16 +2859,18 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
         NULL, &path, _("Import GPX file"), g_gpx_path, _T(""), wxT("*.gpx"));
 
     //  Android has trouble with possible UTF-8 chars in filename
-    wxFileName new_file = wxFileName(path);
-    new_file.SetName(_T("temp_import"));
-    AndroidSecureCopyFile(path, new_file.GetFullPath());
+    if (!islayer) {
+      wxFileName new_file = wxFileName(path);
+      new_file.SetName(_T("temp_import"));
+      AndroidSecureCopyFile(path, new_file.GetFullPath());
+      file_array.Add(new_file.GetFullPath());
+    } else {
+      file_array.Add(path);
+    }
 
-    file_array.Add(new_file.GetFullPath());
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
-
 #endif
-
   } else {
     if (isdirectory) {
       if (wxDir::GetAllFiles(dirpath, &file_array, wxT("*.gpx")))
