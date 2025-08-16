@@ -313,6 +313,8 @@ extern int g_chart_zoom_modifier_vector;
 extern bool g_bShowTrackPointTime;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
+extern bool g_bArrivalCircleInsteadOfNormalCrossing;
+
 extern double g_display_size_mm;
 extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
@@ -930,6 +932,9 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // Boolean to cater for sailing when not approaching waypoint
   Read(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
        &g_bAdvanceRouteWaypointOnArrivalOnly);
+  Read(_T( "ArrivalCircleInsteadOfNormalCrossing" ),
+       &g_bArrivalCircleInsteadOfNormalCrossing);
+
   Read("EnableRootMenuDebug", &g_enable_root_menu_debug);
 
   Read(_T ( "EnableRotateKeys" ), &g_benable_rotate);
@@ -2301,8 +2306,12 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "KeepNavobjBackups" ), g_navobjbackups);
   Write(_T ( "LegacyInputCOMPortFilterBehaviour" ),
         g_b_legacy_input_filter_behaviour);
+
   Write(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
         g_bAdvanceRouteWaypointOnArrivalOnly);
+  Write(_T( "ArrivalCircleInsteadOfNormalCrossing" ),
+        g_bArrivalCircleInsteadOfNormalCrossing);
+
   Write("EnableRootMenuDebug", g_enable_root_menu_debug);
 
   // LIVE ETA OPTION
