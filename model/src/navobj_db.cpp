@@ -1335,7 +1335,8 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
                       -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 5, route->IsVisible());
     sqlite3_bind_int(stmt, 6, route->GetSharedWPViz());
-    sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
+    if (route->m_PlannedDeparture.IsValid())
+      sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
     sqlite3_bind_double(stmt, 8, route->m_PlannedSpeed);
     sqlite3_bind_text(stmt, 9, route->m_TimeDisplayFormat.ToStdString().c_str(),
                       -1, SQLITE_TRANSIENT);
