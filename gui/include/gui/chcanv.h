@@ -970,7 +970,10 @@ private:
   void DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox);
   void DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox);
+  void DrawRouteCursorCrosshairs(ocpnDC &dc);  // Helper for both GL and non-GL
   void DrawAnchorWatchPoints(ocpnDC &dc);
+  wxString GenerateRouteRolloverText(
+      Route *pr, SelectItem *pSel);  // Helper for tooltip content
   double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
   void DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox);
