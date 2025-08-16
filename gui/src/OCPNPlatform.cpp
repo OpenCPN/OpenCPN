@@ -514,7 +514,7 @@ void OCPNPlatform::Initialize_1(void) {
 #endif
 
 #ifdef __WXMSW__
-    //     _CrtSetBreakAlloc(25503);
+  //     _CrtSetBreakAlloc(25503);
 #endif
 
 #ifndef __WXMSW__
