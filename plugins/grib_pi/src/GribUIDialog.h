@@ -124,6 +124,7 @@ typedef struct {
   bool precipitation;
   bool waveHeight;
   bool windWaves;
+  bool swellWaves;
 } XyGribConfig_t;
 
 /**
