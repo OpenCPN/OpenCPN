@@ -2151,8 +2151,6 @@ bool NavObj_dB::Backup(wxString fileName) {
       }
     }
   }
-  wxString msg = wxString::Format(_("navobj database backup error.") + " %s",
-                                  sqlite3_errmsg(m_db));
-  wxLogMessage(msg);
+  wxLogMessage("navobj database backup error: %s", sqlite3_errmsg(m_db));
   return false;
 }
