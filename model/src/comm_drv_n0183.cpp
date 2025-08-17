@@ -78,6 +78,7 @@ void CommDriverN0183::SendToListener(const std::string& payload,
   assert(sentence.size() >= 6);
 
   const bool is_garbage =
+      sentence.size() > 128 ||
       std::any_of(sentence.begin(), sentence.end(),
                   [](char c) { return !isprint(c) && c != '\n' && c != '\r'; });
   const bool has_checksum =
@@ -93,10 +94,19 @@ void CommDriverN0183::SendToListener(const std::string& payload,
   else
     state = NavMsg::State::kOk;
 
-  // We notify based on full message, including the Talker ID
   std::string id =
       state == NavMsg::State::kCannotParse ? "TRASH" : sentence.substr(1, 5);
   auto msg =
       std::make_shared<const Nmea0183Msg>(id, sentence, GetAddress(), state);
-  listener.Notify(std::move(msg));
+  if (is_garbage) {
+    auto msg = std::make_shared<const Nmea0183Msg>("TRASH", payload,
+                                                   GetAddress(), state);
+    listener.Notify(std::move(msg));
+  } else {
+    // We notify based on full message, including the Talker ID
+    const std::string id = sentence.substr(1, 5);
+    auto msg =
+        std::make_shared<const Nmea0183Msg>(id, sentence, GetAddress(), state);
+    listener.Notify(std::move(msg));
+  }
 }

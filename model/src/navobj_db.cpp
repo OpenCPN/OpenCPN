@@ -2134,3 +2134,23 @@ bool NavObj_dB::UpdateRoutePoint(RoutePoint* point) {
   UpdateDBRoutePointAttributes(point);
   return true;
 }
+
+bool NavObj_dB::Backup(wxString fileName) {
+  sqlite3_backup* pBackup;
+  sqlite3* backupDatabase;
+
+  if (sqlite3_open(fileName.c_str(), &backupDatabase) == SQLITE_OK) {
+    pBackup = sqlite3_backup_init(backupDatabase, "main", m_db, "main");
+    if (pBackup) {
+      int result = sqlite3_backup_step(pBackup, -1);
+      if ((result == SQLITE_OK) || (result == SQLITE_DONE)) {
+        if (sqlite3_backup_finish(pBackup) == SQLITE_OK) {
+          sqlite3_close_v2(backupDatabase);
+          return true;
+        }
+      }
+    }
+  }
+  wxLogMessage("navobj database backup error: %s", sqlite3_errmsg(m_db));
+  return false;
+}
