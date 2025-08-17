@@ -2260,6 +2260,7 @@ public:
 class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
 public:
   opencpn_plugin_121(void *pmgr);
+  virtual void UpdateFollowState(int canvas_index, bool state);
 };
 
 //------------------------------------------------------------------

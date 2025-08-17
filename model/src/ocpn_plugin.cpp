@@ -306,6 +306,8 @@ void opencpn_plugin_120::OnContextMenuItemCallbackExt(int id,
 //    Opencpn_Plugin_121 Implementation
 opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
 
+void opencpn_plugin_121::UpdateFollowState(int canvas_index, bool state) {}
+
 DateTimeFormatOptions::DateTimeFormatOptions()
     : format_string("$weekday_short_date_time"),
       time_zone(wxEmptyString),

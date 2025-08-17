@@ -4952,6 +4952,24 @@ void ChartCanvas::UpdateFollowButtonState(void) {
       androidSetFollowTool(1);
   }
 #endif
+
+  //        Look for plugin using API-121 or later
+  //        If found, make the follow state callback.
+  if (g_pi_manager) {
+    for (auto pic : *PluginLoader::GetInstance()->GetPlugInArray()) {
+      if (pic->m_enabled && pic->m_init_state) {
+        switch (pic->m_api_version) {
+          case 121: {
+            auto *ppi = dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
+            if (ppi) ppi->UpdateFollowState(m_canvasIndex, m_bFollow);
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+  }
 }
 
 void ChartCanvas::JumpToPosition(double lat, double lon, double scale_ppm) {
