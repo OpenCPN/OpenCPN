@@ -126,6 +126,8 @@ extern wxString g_default_wp_icon;
 extern bool g_bhide_route_console;
 extern bool g_bhide_context_menus;
 extern int g_maxzoomin;
+extern bool g_bhide_depth_units;
+extern bool g_bhide_overzoom_flag;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -3595,3 +3597,7 @@ void CancelMeasure(int canvas_index) {
   if (!parent) return;
   parent->CancelMeasureRoute();
 }
+
+void SetDepthUnitVisible(bool bviz) { g_bhide_depth_units = !bviz; }
+
+void SetOverzoomFlagVisible(bool bviz) { g_bhide_overzoom_flag = !bviz; }

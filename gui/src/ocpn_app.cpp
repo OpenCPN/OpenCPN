@@ -574,6 +574,9 @@ int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
 bool g_bPreserveScaleOnX;
 bool g_CanvasHideNotificationIcon;
 
+bool g_bhide_depth_units;
+bool g_bhide_overzoom_flag;
+
 AboutFrameImpl *g_pAboutDlg;
 About *g_pAboutDlgLegacy;
 

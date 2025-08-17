@@ -315,6 +315,8 @@ extern wxString g_CmdSoundString;
 ShapeBaseChartSet gShapeBasemap;
 extern bool g_CanvasHideNotificationIcon;
 extern bool g_bhide_context_menus;
+extern bool g_bhide_depth_units;
+extern bool g_bhide_overzoom_flag;
 
 //  TODO why are these static?
 
@@ -12790,8 +12792,9 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
                                                 OVERLAY_OVER_SHIPS);
   }
 
-  DrawEmboss(dc, EmbossDepthScale());
-  DrawEmboss(dc, EmbossOverzoomIndicator(dc));
+  if (!g_bhide_depth_units) DrawEmboss(dc, EmbossDepthScale());
+  if (!g_bhide_overzoom_flag) DrawEmboss(dc, EmbossOverzoomIndicator(dc));
+
   if (g_pi_manager) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex,
                                                 OVERLAY_OVER_EMBOSS);
