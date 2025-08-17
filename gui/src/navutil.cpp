@@ -2681,8 +2681,7 @@ int BackupDatabase(wxWindow *parent) {
       wxString secureFileName = androidGetCacheDir() +
                                 wxFileName::GetPathSeparator() +
                                 fileName.GetFullName();
-      backupResult =
-          NavObj_dB::GetInstance().Backup(secureFileName.GetFullPath());
+      backupResult = NavObj_dB::GetInstance().Backup(secureFileName);
       AndroidSecureCopyFile(secureFileName, fileName.GetFullPath());
 #else
       backupResult = NavObj_dB::GetInstance().Backup(fileName.GetFullPath());
