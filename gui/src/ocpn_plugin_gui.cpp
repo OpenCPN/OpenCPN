@@ -3436,9 +3436,7 @@ void RouteInsertWaypoint(int canvas_index, wxString route_guid, double zlat,
 
   if (route->m_bIsInLayer) return;
 
-  wxPoint2DDouble pa;
-  parent->GetDoubleCanvasPointPix(zlat, zlon, &pa);
-  int seltype = parent->PrepareContextSelections(pa.m_x, pa.m_y);
+  int seltype = parent->PrepareContextSelections(zlat, zlon);
   if ((seltype & SELTYPE_ROUTESEGMENT) != SELTYPE_ROUTESEGMENT) return;
 
   bool rename = false;

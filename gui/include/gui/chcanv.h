@@ -829,7 +829,8 @@ public:
   void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
   NotificationsList *GetNotificationsList() { return m_NotificationsList; }
 
-  int PrepareContextSelections(int x, int y);
+  int PrepareContextSelections(double lat, double lon);
+
   RoutePoint *GetFoundRoutepoint() { return m_pFoundRoutePoint; }
 
   /**

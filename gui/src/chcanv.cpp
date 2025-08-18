@@ -8067,11 +8067,11 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   return bret;
 }
 
-int ChartCanvas::PrepareContextSelections(int x, int y) {
+int ChartCanvas::PrepareContextSelections(double lat, double lon) {
   // On general Right Click
   // Look for selectable objects
-  double slat, slon;
-  GetCanvasPixPoint(x, y, slat, slon);
+  double slat = lat;
+  double slon = lon;
 
 #if defined(__WXMAC__) || defined(__ANDROID__)
   wxScreenDC sdc;
@@ -8363,7 +8363,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
     return;
   }
 
-  int seltype = PrepareContextSelections(x, y);
+  int seltype = PrepareContextSelections(m_cursor_lat, m_cursor_lon);
 
   // If tide or current point is selected, then show the TC dialog immediately
   // without context menu
