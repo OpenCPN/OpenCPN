@@ -577,6 +577,13 @@ void OCPNPlatform::Initialize_2(void) {
     ::wxMkdir(GRIBDir);
   }
 
+  wxString VDRDir = GetPrivateDataDir();
+  if (VDRDir.Last() != sep) VDRDir.Append(sep);
+  VDRDir.Append("VDR");
+  if (!::wxDirExists(VDRDir)) {
+    ::wxMkdir(VDRDir);
+  }
+
   // Set the default Import/Export directory for A11+
   if (g_Android_SDK_Version >= 30) {
     if (!g_gpx_path.StartsWith(androidGetDocumentsDirectory())) {
