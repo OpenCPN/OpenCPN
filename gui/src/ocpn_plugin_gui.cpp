@@ -101,6 +101,7 @@ extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 extern wxString g_locale;
 extern ocpnFloatingToolbarDialog* g_MainToolbar;
+extern wxString g_androidFilesDir;
 
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
@@ -1498,8 +1499,18 @@ int PlatformDirSelectorDialog(wxWindow* parent, wxString* file_spec,
 int PlatformFileSelectorDialog(wxWindow* parent, wxString* file_spec,
                                wxString Title, wxString initDir,
                                wxString suggestedName, wxString wildcard) {
+#ifndef __ANDROID__
   return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, initDir,
                                           suggestedName, wildcard);
+#else
+  // Android plugin without special processing are constrained to access
+  // files in the application private directory (and subdirectories) only,
+  //  e.g. /storage/emulated/0/Android/data/org.opencpn.opencpn/files
+
+  wxString ainitDir = g_androidFilesDir;
+  return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, ainitDir,
+                                          suggestedName, wildcard);
+#endif
 }
 
 //---------------------------------------------------------------------------
