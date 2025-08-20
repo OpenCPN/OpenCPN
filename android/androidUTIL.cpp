@@ -346,6 +346,7 @@ wxTransformMatrix g_dummy_transform;
 
 #define SCHEDULED_EVENT_CLEAN_EXIT 5498
 #define ID_CMD_PERSIST_DATA 5499
+#define SCHEDULED_EVENT_UPDATE_RMD 5500
 
 // Implement a small function missing from Android API 16, or so.
 // FIXME This can go away when Android MIN_SDK is raised to 19 (KitKat)
@@ -937,6 +938,12 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
       doAndroidPersistState();
       break;
 
+    case SCHEDULED_EVENT_UPDATE_RMD:
+      qDebug() << "SCHEDULED_EVENT_UPDATE_RMD";
+      if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+        pRouteManagerDialog->UpdateLists();
+      break;
+
     case ID_CMD_PERSIST_DATA:
       qDebug() << "CMD_PERSIST_DATA";
       if (pConfig) {
@@ -1094,6 +1101,24 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onSoundDone(
   DEBUG_LOG << "on SoundDone, ptr: " << soundPtr;
   sound->OnSoundDone();
   return 57;
+}
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_opencpn_OCPNNativeLib_ImportTmpGPX(
+    JNIEnv *env, jobject obj, jstring filePath, bool isLayer,
+    bool isPersistent) {
+  wxArrayString file_array;
+  const char *string = env->GetStringUTFChars(filePath, NULL);
+  file_array.Add(wxString(string));
+  ImportFileArray(file_array, isLayer, isPersistent, "");
+
+  // Update the RouteManagerDialog on the wx event loop
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(SCHEDULED_EVENT_UPDATE_RMD);
+  if (gFrame && gFrame->GetEventHandler()) {
+    g_androidUtilHandler->AddPendingEvent(evt);
+  }
 }
 }
 
@@ -2970,11 +2995,7 @@ int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
   wxString tresult;
 
-  //  Start a timer to poll for results
   if (g_androidUtilHandler) {
-    g_androidUtilHandler->m_eventTimer.Stop();
-    g_androidUtilHandler->m_done = false;
-
     wxString activityResult;
     if (dirOnly)
       activityResult = callActivityMethod_s2s2i("DirChooserDialog", initDir,
@@ -2985,6 +3006,15 @@ int androidFileChooser(wxString *result, const wxString &initDir,
                                               title, suggestion, wildcard);
 
     if (activityResult == _T("OK")) {
+      return wxID_OK;
+    } else if (activityResult == "cancel:") {
+      return wxID_CANCEL;
+    } else {
+      *result = activityResult.AfterFirst(':');
+      return wxID_OK;
+    }
+
+#if 0
       // qDebug() << "ResultOK, starting spin loop";
       g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
       g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
@@ -3017,6 +3047,7 @@ int androidFileChooser(wxString *result, const wxString &initDir,
     } else {
       // qDebug() << "Result NOT OK";
     }
+#endif
   }
 
   return wxID_CANCEL;
