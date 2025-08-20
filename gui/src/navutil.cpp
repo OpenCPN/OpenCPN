@@ -2656,167 +2656,199 @@ static wxFileName exportFileName(wxWindow *parent,
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
                      const wxString suggestedName) {
+#ifndef __ANDROID__
   wxFileName fn = exportFileName(parent, suggestedName);
   if (fn.IsOk()) {
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXRoutesList(pRoutes);
-
-#ifdef __ANDROID__
-    wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
-                   fn.GetFullName();
-    pgpx->SaveFile(fns);
-    AndroidSecureCopyFile(fns, fn.GetFullPath());
-#else
     pgpx->SaveFile(fn.GetFullPath());
-
-#endif
-
     delete pgpx;
-
     return true;
   }
+#else
+  // Create the .GPX file, saving it in the OCPN Android cache directory
+  wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
+                 suggestedName + ".gpx";
+  NavObjectCollection1 *pgpx = new NavObjectCollection1;
+  pgpx->AddGPXRoutesList(pRoutes);
+  pgpx->SaveFile(fns);
+  delete pgpx;
+
+  // Kick off the Android file chooser activity
+  wxString path;
+  int response = g_Platform->DoFileSelectorDialog(
+      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
+      wxT("*.gpx"));
+
+  return true;
+#endif
+
   return false;
 }
 
 bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pTracks,
                      const wxString suggestedName) {
+#ifndef __ANDROID__
   wxFileName fn = exportFileName(parent, suggestedName);
   if (fn.IsOk()) {
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXTracksList(pTracks);
-#ifdef __ANDROID__
-    wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
-                   fn.GetFullName();
-    pgpx->SaveFile(fns);
-    AndroidSecureCopyFile(fns, fn.GetFullPath());
-#else
     pgpx->SaveFile(fn.GetFullPath());
-#endif
     delete pgpx;
-
     return true;
   }
+#else
+  // Create the .GPX file, saving it in the OCPN Android cache directory
+  wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
+                 suggestedName + ".gpx";
+  NavObjectCollection1 *pgpx = new NavObjectCollection1;
+  pgpx->AddGPXTracksList(pTracks);
+  pgpx->SaveFile(fns);
+  delete pgpx;
+
+  // Kick off the Android file chooser activity
+  wxString path;
+  int response = g_Platform->DoFileSelectorDialog(
+      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
+      wxT("*.gpx"));
+
+  return true;
+#endif
+
   return false;
 }
 
 bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
                         const wxString suggestedName) {
+#ifndef __ANDROID__
   wxFileName fn = exportFileName(parent, suggestedName);
   if (fn.IsOk()) {
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXPointsList(pRoutePoints);
-
-#ifdef __ANDROID__
-    wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
-                   fn.GetFullName();
-    pgpx->SaveFile(fns);
-    AndroidSecureCopyFile(fns, fn.GetFullPath());
-#else
     pgpx->SaveFile(fn.GetFullPath());
-#endif
-
     delete pgpx;
-
     return true;
   }
+#else
+  // Create the .GPX file, saving it in the OCPN Android cache directory
+  wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
+                 suggestedName + ".gpx";
+  NavObjectCollection1 *pgpx = new NavObjectCollection1;
+  pgpx->AddGPXPointsList(pRoutePoints);
+  pgpx->SaveFile(fns);
+  delete pgpx;
+
+  // Kick off the Android file chooser activity
+  wxString path;
+  int response = g_Platform->DoFileSelectorDialog(
+      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
+      wxT("*.gpx"));
+
+  return true;
+#endif
+
   return false;
 }
 
 void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
+  NavObjectCollection1 *pgpx = new NavObjectCollection1;
+  wxString fns;
+
+#ifndef __ANDROID__
   wxFileName fn = exportFileName(parent, _T("userobjects.gpx"));
-  if (fn.IsOk()) {
-    ::wxBeginBusyCursor();
-
-    NavObjectCollection1 *pgpx = new NavObjectCollection1;
-
-    wxGenericProgressDialog *pprog = nullptr;
-    int count = pWayPointMan->GetWaypointList()->GetCount();
-    int progStep = count / 32;
-    if (count > 200) {
-      pprog = new wxGenericProgressDialog(
-          _("Export GPX file"), _T("0/0"), count, NULL,
-          wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME |
-              wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
-      pprog->SetSize(400, wxDefaultCoord);
-      pprog->Centre();
-    }
-
-    // WPTs
-    int ic = 1;
-
-    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-    RoutePoint *pr;
-    while (node) {
-      if (pprog && !(ic % progStep)) {
-        wxString msg;
-        msg.Printf(_T("%d/%d"), ic, count);
-        pprog->Update(ic, msg);
-      }
-      ic++;
-
-      pr = node->GetData();
-
-      bool b_add = true;
-
-      if (bviz_only && !pr->m_bIsVisible) b_add = false;
-
-      if (pr->m_bIsInLayer && !blayer) b_add = false;
-      if (b_add) {
-        if (pr->IsShared() || !WptIsInRouteList(pr)) pgpx->AddGPXWaypoint(pr);
-      }
-
-      node = node->GetNext();
-    }
-    // RTEs and TRKs
-    wxRouteListNode *node1 = pRouteList->GetFirst();
-    while (node1) {
-      Route *pRoute = node1->GetData();
-
-      bool b_add = true;
-
-      if (bviz_only && !pRoute->IsVisible()) b_add = false;
-
-      if (pRoute->m_bIsInLayer && !blayer) b_add = false;
-
-      if (b_add) pgpx->AddGPXRoute(pRoute);
-
-      node1 = node1->GetNext();
-    }
-
-    for (Track *pTrack : g_TrackList) {
-      bool b_add = true;
-
-      if (bviz_only && !pTrack->IsVisible()) b_add = false;
-
-      if (pTrack->m_bIsInLayer && !blayer) b_add = false;
-
-      if (b_add) pgpx->AddGPXTrack(pTrack);
-    }
-
-    // Android 5+ requires special handling to support native app file writes to
-    // SDCard We need to use a two step copy process using a guaranteed
-    // accessible location for the first step.
-#ifdef __ANDROID__
-    wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
-                   fn.GetFullName();
-    pgpx->SaveFile(fns);
-    AndroidSecureCopyFile(fns, fn.GetFullPath());
+  if (!fn.IsOk()) return;
+  fns = fn.GetFullPath();
 #else
-    pgpx->SaveFile(fn.GetFullPath());
+  // Create the .GPX file, saving it in the OCPN Android cache directory
+  fns =
+      androidGetCacheDir() + wxFileName::GetPathSeparator() + "userobjects.gpx";
+
 #endif
+  ::wxBeginBusyCursor();
 
-    delete pgpx;
-    ::wxEndBusyCursor();
-
-    delete pprog;
+  wxGenericProgressDialog *pprog = nullptr;
+  int count = pWayPointMan->GetWaypointList()->GetCount();
+  int progStep = count / 32;
+  if (count > 200) {
+    pprog = new wxGenericProgressDialog(
+        _("Export GPX file"), _T("0/0"), count, NULL,
+        wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
+            wxPD_REMAINING_TIME);
+    pprog->SetSize(400, wxDefaultCoord);
+    pprog->Centre();
   }
+
+  // WPTs
+  int ic = 1;
+
+  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePoint *pr;
+  while (node) {
+    if (pprog && !(ic % progStep)) {
+      wxString msg;
+      msg.Printf(_T("%d/%d"), ic, count);
+      pprog->Update(ic, msg);
+    }
+    ic++;
+
+    pr = node->GetData();
+
+    bool b_add = true;
+
+    if (bviz_only && !pr->m_bIsVisible) b_add = false;
+
+    if (pr->m_bIsInLayer && !blayer) b_add = false;
+    if (b_add) {
+      if (pr->IsShared() || !WptIsInRouteList(pr)) pgpx->AddGPXWaypoint(pr);
+    }
+
+    node = node->GetNext();
+  }
+  // RTEs and TRKs
+  wxRouteListNode *node1 = pRouteList->GetFirst();
+  while (node1) {
+    Route *pRoute = node1->GetData();
+
+    bool b_add = true;
+
+    if (bviz_only && !pRoute->IsVisible()) b_add = false;
+
+    if (pRoute->m_bIsInLayer && !blayer) b_add = false;
+
+    if (b_add) pgpx->AddGPXRoute(pRoute);
+
+    node1 = node1->GetNext();
+  }
+
+  for (Track *pTrack : g_TrackList) {
+    bool b_add = true;
+
+    if (bviz_only && !pTrack->IsVisible()) b_add = false;
+
+    if (pTrack->m_bIsInLayer && !blayer) b_add = false;
+
+    if (b_add) pgpx->AddGPXTrack(pTrack);
+  }
+
+  pgpx->SaveFile(fns);
+
+#ifdef __ANDROID__
+  // Kick off the Android file chooser activity
+  wxString path;
+  int response = g_Platform->DoFileSelectorDialog(
+      parent, &path, _("Export GPX file"), g_gpx_path, "userobjects.gpx",
+      wxT("*.gpx"));
+  return;
+#endif
+  delete pgpx;
+  ::wxEndBusyCursor();
+  delete pprog;
 }
 
 void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
                   bool isdirectory, bool isPersistent) {
   int response = wxID_CANCEL;
   wxArrayString file_array;
-  Layer *l = NULL;
 
   if (!islayer || dirpath.IsSameAs(_T(""))) {
     //  Platform DoFileSelectorDialog method does not properly handle multiple
@@ -2853,23 +2885,14 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
       }
     }
     delete popenDialog;
-#else
+#else  // Android
     wxString path;
     response = g_Platform->DoFileSelectorDialog(
         NULL, &path, _("Import GPX file"), g_gpx_path, _T(""), wxT("*.gpx"));
 
-    //  Android has trouble with possible UTF-8 chars in filename
-    if (!islayer) {
-      wxFileName new_file = wxFileName(path);
-      new_file.SetName(_T("temp_import"));
-      AndroidSecureCopyFile(path, new_file.GetFullPath());
-      file_array.Add(new_file.GetFullPath());
-    } else {
-      file_array.Add(path);
-    }
-
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
+    return;
 #endif
   } else {
     if (isdirectory) {
@@ -2882,97 +2905,104 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
   }
 
   if (response == wxID_OK) {
-    if (islayer) {
-      l = new Layer();
-      l->m_LayerID = ++g_LayerIdx;
-      l->m_LayerFileName = file_array[0];
-      if (file_array.GetCount() <= 1)
-        wxFileName::SplitPath(file_array[0], NULL, NULL, &(l->m_LayerName),
-                              NULL, NULL);
-      else {
-        if (dirpath.IsSameAs(_T("")))
-          wxFileName::SplitPath(g_gpx_path, NULL, NULL, &(l->m_LayerName), NULL,
-                                NULL);
-        else
-          wxFileName::SplitPath(dirpath, NULL, NULL, &(l->m_LayerName), NULL,
-                                NULL);
-      }
+    ImportFileArray(file_array, islayer, isPersistent, dirpath);
+  }
+}
 
-      bool bLayerViz = g_bShowLayers;
-      if (g_VisibleLayers.Contains(l->m_LayerName)) bLayerViz = true;
-      if (g_InvisibleLayers.Contains(l->m_LayerName)) bLayerViz = false;
-      l->m_bIsVisibleOnChart = bLayerViz;
+void ImportFileArray(const wxArrayString &file_array, bool islayer,
+                     bool isPersistent, wxString dirpath) {
+  Layer *l = NULL;
 
-      // Default for new layers is "Names visible"
-      l->m_bHasVisibleNames = wxCHK_CHECKED;
-
-      wxString laymsg;
-      laymsg.Printf(wxT("New layer %d: %s"), l->m_LayerID,
-                    l->m_LayerName.c_str());
-      wxLogMessage(laymsg);
-
-      pLayerList->Insert(l);
+  if (islayer) {
+    l = new Layer();
+    l->m_LayerID = ++g_LayerIdx;
+    l->m_LayerFileName = file_array[0];
+    if (file_array.GetCount() <= 1)
+      wxFileName::SplitPath(file_array[0], NULL, NULL, &(l->m_LayerName), NULL,
+                            NULL);
+    else {
+      if (dirpath.IsSameAs(_T("")))
+        wxFileName::SplitPath(g_gpx_path, NULL, NULL, &(l->m_LayerName), NULL,
+                              NULL);
+      else
+        wxFileName::SplitPath(dirpath, NULL, NULL, &(l->m_LayerName), NULL,
+                              NULL);
     }
 
-    for (unsigned int i = 0; i < file_array.GetCount(); i++) {
-      wxString path = file_array[i];
+    bool bLayerViz = g_bShowLayers;
+    if (g_VisibleLayers.Contains(l->m_LayerName)) bLayerViz = true;
+    if (g_InvisibleLayers.Contains(l->m_LayerName)) bLayerViz = false;
+    l->m_bIsVisibleOnChart = bLayerViz;
 
-      if (::wxFileExists(path)) {
-        NavObjectCollection1 *pSet = new NavObjectCollection1;
-        if (pSet->load_file(path.fn_str()).status !=
-            pugi::xml_parse_status::status_ok) {
-          wxLogMessage("Error loading GPX file " + path);
-          pSet->reset();
-          delete pSet;
-          continue;
-        }
+    // Default for new layers is "Names visible"
+    l->m_bHasVisibleNames = wxCHK_CHECKED;
 
-        if (islayer) {
-          l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(
-              l->m_LayerID, l->m_bIsVisibleOnChart, l->m_bHasVisibleNames);
-          l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary");
+    wxString laymsg;
+    laymsg.Printf(wxT("New layer %d: %s"), l->m_LayerID,
+                  l->m_LayerName.c_str());
+    wxLogMessage(laymsg);
 
-          if (isPersistent) {
-            // If this is a persistent layer also copy the file to config file
-            // dir /layers
-            wxString destf, f, name, ext;
-            f = l->m_LayerFileName;
-            wxFileName::SplitPath(f, NULL, NULL, &name, &ext);
-            destf = g_Platform->GetPrivateDataDir();
-            appendOSDirSlash(&destf);
-            destf.Append(_T("layers"));
-            appendOSDirSlash(&destf);
-            if (!wxDirExists(destf)) {
-              if (!wxMkdir(destf, wxS_DIR_DEFAULT))
-                wxLogMessage(_T("Error creating layer directory"));
-            }
+    pLayerList->Insert(l);
+  }
 
-            destf << name << _T(".") << ext;
-            wxString msg;
-            if (wxCopyFile(f, destf, true))
-              msg.Printf(_T("File: %s.%s also added to persistent layers"),
-                         name, ext);
-            else
-              msg.Printf(_T("Failed adding %s.%s to persistent layers"), name,
-                         ext);
-            wxLogMessage(msg);
-          }
-        } else {
-          int wpt_dups;
-          pSet->LoadAllGPXObjects(
-              !pSet->IsOpenCPN(),
-              wpt_dups);  // Import with full visibility of names and objects
-          if (wpt_dups > 0) {
-            OCPNMessageBox(
-                parent,
-                wxString::Format(_T("%d ") + _("duplicate waypoints detected "
-                                               "during import and ignored."),
-                                 wpt_dups),
-                _("OpenCPN Info"), wxICON_INFORMATION | wxOK, 10);
-          }
-        }
+  for (unsigned int i = 0; i < file_array.GetCount(); i++) {
+    wxString path = file_array[i];
+
+    if (::wxFileExists(path)) {
+      NavObjectCollection1 *pSet = new NavObjectCollection1;
+      if (pSet->load_file(path.fn_str()).status !=
+          pugi::xml_parse_status::status_ok) {
+        wxLogMessage("Error loading GPX file " + path);
+        pSet->reset();
         delete pSet;
+        continue;
       }
+
+      if (islayer) {
+        l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(
+            l->m_LayerID, l->m_bIsVisibleOnChart, l->m_bHasVisibleNames);
+        l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary");
+
+        if (isPersistent) {
+          // If this is a persistent layer also copy the file to config file
+          // dir /layers
+          wxString destf, f, name, ext;
+          f = l->m_LayerFileName;
+          wxFileName::SplitPath(f, NULL, NULL, &name, &ext);
+          destf = g_Platform->GetPrivateDataDir();
+          appendOSDirSlash(&destf);
+          destf.Append(_T("layers"));
+          appendOSDirSlash(&destf);
+          if (!wxDirExists(destf)) {
+            if (!wxMkdir(destf, wxS_DIR_DEFAULT))
+              wxLogMessage(_T("Error creating layer directory"));
+          }
+
+          destf << name << _T(".") << ext;
+          wxString msg;
+          if (wxCopyFile(f, destf, true))
+            msg.Printf(_T("File: %s.%s also added to persistent layers"), name,
+                       ext);
+          else
+            msg.Printf(_T("Failed adding %s.%s to persistent layers"), name,
+                       ext);
+          wxLogMessage(msg);
+        }
+      } else {
+        int wpt_dups;
+        pSet->LoadAllGPXObjects(
+            !pSet->IsOpenCPN(),
+            wpt_dups);  // Import with full visibility of names and objects
+        if (wpt_dups > 0) {
+          OCPNMessageBox(
+              NULL,
+              wxString::Format(_T("%d ") + _("duplicate waypoints detected "
+                                             "during import and ignored."),
+                               wpt_dups),
+              _("OpenCPN Info"), wxICON_INFORMATION | wxOK, 10);
+        }
+      }
+      delete pSet;
     }
   }
 }
