@@ -743,6 +743,7 @@ if (GTK3_FOUND)
     add_definitions("-DNDEBUG")
     message(STATUS "Forcing -NDEBUG on gtk3 build (#1500).")
   endif ()
+  set(OCPN_WX_VERSION ${_WX_VERSION})
 endif ()
 
 # Make sure that the variable "wxWidgets_VERSION_STRING" is set, even on older
