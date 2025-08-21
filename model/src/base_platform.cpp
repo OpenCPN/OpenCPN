@@ -49,6 +49,7 @@
 #include <wx/apptrait.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
+#include <wx/platinfo.h>
 #include <wx/stdpaths.h>
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
@@ -89,6 +90,10 @@ BasePlatform* g_BasePlatform;
 #ifdef __ANDROID__
 PlatSpec android_plat_spc;
 #endif
+
+static inline bool IsWindows() {
+  return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
+}
 
 static bool checkIfFlatpacked() {
   wxString id;
@@ -955,4 +960,19 @@ bool AbstractPlatform::GetWindowsMonitorSize(int* width, int* height) {
   return bFoundDevice;
 }
 
+#endif  // __WXMSW__
+
+int BasePlatform::GetSvgStdIconSize(const wxWindow* w, bool touch) {
+  double size = w->GetCharHeight() * (IsWindows() ? 1.3 : 1.0);
+#if wxCHECK_VERSION(3, 1, 2)
+  // Apply scale factor, mostly for Windows. Other platforms
+  // does this in the toolkits, ToDIP() is aware of this.
+  size *= static_cast<double>(w->ToDIP(100)) / 100.;
 #endif
+  // Force minimum physical size for touch screens
+  if (touch) {
+    double pixel_per_mm = wxGetDisplaySize().x / GetDisplaySizeMM();
+    size = std::max(size, 7.0 * pixel_per_mm);
+  }
+  return std::round(size);
+}

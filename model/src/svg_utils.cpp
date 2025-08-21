@@ -60,6 +60,8 @@
 #define SVG_CM_TO_PT 28.346456693
 #define SVG_MM_TO_IN 25.4
 
+extern BasePlatform* g_BasePlatform;
+
 wxBitmap LoadSVG(const wxString filename, const unsigned int width,
                  const unsigned int height, wxBitmap* default_bitmap,
                  bool use_cache) {
@@ -203,11 +205,17 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
   return false;
 }
 
-extern BasePlatform* g_BasePlatform;
-
 unsigned int SVGPixelsToDisplay(unsigned int svg_px) {
   return g_BasePlatform->GetDisplayDPmm() * SVG_MM_TO_IN / SVG_IN_TO_PX *
          svg_px * g_ChartScaleFactorExp;
+}
+
+wxBitmap LoadSvgStdIcon(const std::string& svg_file, const wxWindow* w,
+                        bool touch) {
+  auto path = fs::path(g_BasePlatform->GetSharedDataDir().ToStdString()) /
+              "uidata" / "MUI_flat" / svg_file;
+  int size = g_BasePlatform->GetSvgStdIconSize(w, touch);
+  return LoadSVG(path.string(), size, size);
 }
 
 SVGBitmapCache::SVGBitmapCache() {
