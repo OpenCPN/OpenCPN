@@ -69,6 +69,7 @@
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "model/gui.h"
+#include "model/gui_events.h"
 #include "model/idents.h"
 #include "model/local_api.h"
 #include "model/logger.h"
@@ -882,6 +883,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   // Enable native fullscreen on macOS
   EnableFullScreenView();
 #endif
+  int is_day = GetColorScheme() == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 }
 
 MyFrame::~MyFrame() {
@@ -1032,8 +1035,10 @@ void MyFrame::ReloadAllVP() {
 }
 
 void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
-  global_color_scheme = cs;
+  int is_day = cs == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 
+  global_color_scheme = cs;
   wxString SchemeName;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
