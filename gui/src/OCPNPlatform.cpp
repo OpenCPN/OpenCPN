@@ -70,6 +70,7 @@
 #include "model/cutil.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
+#include "model/plugin_cache.h"
 #include "model/plugin_paths.h"
 #include "model/select.h"
 
@@ -1474,10 +1475,16 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
   // Set track default color to magenta
   g_colourTrackLineColour.Set(197, 69, 195);
 
-  // This is ugly hack
-  // TODO
-  // pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );
-  // pConfig->Write( _T ( "bEnabled" ), true );
+  // Manage plugins
+  // Clear the cache, allowing deprecation of obsolete plugins
+  ocpn::cache_clear();
+
+  //  Remove any problematic plugins, so preparing for upgraded versions
+  //  Todo:  Scrub this list from time to time
+
+  //  VersionCode 123 (August, 2025)
+  AndroidRemoveSystemFile(
+      "/data/user/0/org.opencpn.opencpn/manPlug/libchartscale_pi.so");
 
 #endif
 

@@ -4483,6 +4483,10 @@ bool AndroidSecureCopyFile(wxString in, wxString out) {
   return bret;
 }
 
+void AndroidRemoveSystemFile(wxString file) {
+  callActivityMethod_ss("RemoveSystemFile", file);
+}
+
 int doAndroidPersistState() {
   qDebug() << "doAndroidPersistState() starting...";
   wxLogMessage(_T("doAndroidPersistState() starting..."));
