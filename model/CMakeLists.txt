@@ -128,6 +128,7 @@ set(
   ${MODEL_HDR_DIR}/semantic_vers.h
   ${MODEL_HDR_DIR}/serial_io.h
   ${MODEL_HDR_DIR}/ser_ports.h
+  ${MODEL_HDR_DIR}/std_icon.h
   ${MODEL_HDR_DIR}/svg_utils.h
   ${MODEL_HDR_DIR}/sys_events.h
   ${MODEL_HDR_DIR}/thread_ctrl.h
@@ -231,6 +232,7 @@ set(SRC
   ${MODEL_SRC_DIR}/select_item.cpp
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
+  ${MODEL_SRC_DIR}/std_icon.cpp
   ${MODEL_SRC_DIR}/svg_utils.cpp
   ${MODEL_SRC_DIR}/thread_ctrl.cpp
   ${MODEL_SRC_DIR}/track.cpp
