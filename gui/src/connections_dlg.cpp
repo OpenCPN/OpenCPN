@@ -918,54 +918,13 @@ private:
       void Cancel() override { SetValue(g_always_send_rmb_rmc); }
     };
 
-    class HelpButton : public wxButton {
-    public:
-      explicit HelpButton(wxWindow* parent)
-          : wxButton(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
-                     wxBU_EXACTFIT | wxBORDER_NONE),
-            m_icon(parent, "help-info.svg",
-                   GuiEvents::GetInstance().color_scheme_change, g_btouch),
-            m_info_panel(new InfoFrame(parent)) {
-        SetBitmap(m_icon.GetBitmap());
-        Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
-          m_info_panel->Fit();
-          m_info_panel->Show();
-        });
-      }
-
-    private:
-      class InfoFrame : public wxFrame {
-      public:
-        explicit InfoFrame(wxWindow* parent)
-            : wxFrame(parent, wxID_ANY, kInfoHeader) {
-          auto flags = wxSizerFlags().Expand();
-          auto vbox = new wxBoxSizer(wxVERTICAL);
-          vbox->Add(new wxStaticText(this, wxID_ANY, kInfo), flags.Border());
-          vbox->Add(new wxStaticLine(this, wxID_ANY), flags);
-          auto button_sizer = new wxStdDialogButtonSizer();
-          auto ok_btn = new wxButton(this, wxID_OK);
-          ok_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                       [&](wxCommandEvent&) { Hide(); });
-          button_sizer->SetAffirmativeButton(ok_btn);
-          vbox->Add(button_sizer, flags.Border());
-          button_sizer->Realize();
-          SetSizer(vbox);
-          wxWindow::Layout();
-          Hide();
-        }
-      };
-
-    private:
-      StdIcon m_icon;
-      InfoFrame* m_info_panel;
-    };
-
   public:
     explicit ExtraRmbRmcLine(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
       auto hbox = new wxBoxSizer(wxHORIZONTAL);
       hbox->Add(new RmbRmcCheckbox(this), wxSizerFlags().Expand());
       hbox->Add(1, 1, 1, wxEXPAND);
-      hbox->Add(new HelpButton(this), wxSizerFlags().Border());
+      hbox->Add(new InfoButton(this, g_btouch, kInfoHeader, kInfo),
+                wxSizerFlags().Border());
       SetSizer(hbox);
       wxWindow::Layout();
       wxWindow::Show();

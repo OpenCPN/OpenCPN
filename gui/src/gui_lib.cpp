@@ -26,7 +26,9 @@
 #include <wx/dialog.h>
 #include <wx/sizer.h>
 #include <wx/statbmp.h>
+#include <wx/statline.h>
 
+#include "model/gui_events.h"
 #include "gui_lib.h"
 #include "timers.h"
 #include "FontMgr.h"
@@ -315,4 +317,39 @@ void TimedPopupWin::OnPaint(wxPaintEvent& event) {
   wxMemoryDC mdc;
   mdc.SelectObject(*m_pbm);
   dc.Blit(0, 0, width, height, &mdc, 0, 0);
+}
+
+class InfoButton::InfoFrame : public wxFrame {
+public:
+  explicit InfoFrame(wxWindow* parent, const char* header, const char* info)
+      : wxFrame(parent, wxID_ANY, info) {
+    auto flags = wxSizerFlags().Expand();
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    vbox->Add(new wxStaticText(this, wxID_ANY, info), flags.Border());
+    vbox->Add(new wxStaticLine(this, wxID_ANY), flags);
+    auto button_sizer = new wxStdDialogButtonSizer();
+    auto ok_btn = new wxButton(this, wxID_OK);
+    ok_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                 [&](wxCommandEvent&) { Hide(); });
+    button_sizer->SetAffirmativeButton(ok_btn);
+    vbox->Add(button_sizer, flags.Border());
+    button_sizer->Realize();
+    SetSizer(vbox);
+    wxWindow::Layout();
+    Hide();
+  }
+};
+
+InfoButton::InfoButton(wxWindow* parent, bool touch, const char* header,
+                       const char* info)
+    : wxButton(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+               wxBU_EXACTFIT | wxBORDER_NONE),
+      m_icon(parent, "help-info.svg",
+             GuiEvents::GetInstance().color_scheme_change, touch),
+      m_info_frame(new InfoFrame(parent, header, info)) {
+  SetBitmap(m_icon.GetBitmap());
+  Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
+    m_info_frame->Fit();
+    m_info_frame->Show();
+  });
 }
