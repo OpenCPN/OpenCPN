@@ -5280,17 +5280,20 @@ int ChartCanvas::AdjustQuiltRefChart() {
       } else {
         bool brender_ok = IsChartLargeEnoughToRender(pc, VPoint);
 
-        int ref_family = pc->GetChartFamily();
-
         if (!brender_ok) {
-          unsigned int target_stack_index = 0;
-          int target_stack_index_check =
-              m_pQuilt->GetExtendedStackIndexArray()
-                  [m_pQuilt->GetRefChartdbIndex()];  // Lookup
+          int target_stack_index = wxNOT_FOUND;
+          int il = 0;
+          for (auto index : m_pQuilt->GetExtendedStackIndexArray()) {
+            if (index == m_pQuilt->GetRefChartdbIndex()) {
+              target_stack_index = il;
+              break;
+            }
+            il++;
+          }
+          if (wxNOT_FOUND == target_stack_index)  // should never happen...
+            target_stack_index = 0;
 
-          if (wxNOT_FOUND != target_stack_index_check)
-            target_stack_index = target_stack_index_check;
-
+          int ref_family = pc->GetChartFamily();
           int extended_array_count =
               m_pQuilt->GetExtendedStackIndexArray().size();
           while ((!brender_ok) &&
