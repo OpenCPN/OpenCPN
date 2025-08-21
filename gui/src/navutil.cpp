@@ -2680,7 +2680,12 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
       parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
       wxT("*.gpx"));
 
+  if (path.IsEmpty())  // relocation handled by SAF logic in Java
+    return true;
+
+  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
   return true;
+
 #endif
 
   return false;
@@ -2712,6 +2717,10 @@ bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pTracks,
       parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
       wxT("*.gpx"));
 
+  if (path.IsEmpty())  // relocation handled by SAF logic in Java
+    return true;
+
+  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
   return true;
 #endif
 
@@ -2744,7 +2753,12 @@ bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
       parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
       wxT("*.gpx"));
 
+  if (path.IsEmpty())  // relocation handled by SAF logic in Java
+    return true;
+
+  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
   return true;
+
 #endif
 
   return false;
@@ -2838,6 +2852,10 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   int response = g_Platform->DoFileSelectorDialog(
       parent, &path, _("Export GPX file"), g_gpx_path, "userobjects.gpx",
       wxT("*.gpx"));
+  if (path.IsEmpty())  // relocation handled by SAF logic in Java
+    return;
+
+  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
   return;
 #endif
   delete pgpx;
@@ -2892,7 +2910,11 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
 
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
-    return;
+    if (path.IsEmpty())  // Return from SAF processing, expecting callback
+      return;
+    else
+      file_array.Add(path);  // Return from safe app arena access
+
 #endif
   } else {
     if (isdirectory) {
