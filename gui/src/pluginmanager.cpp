@@ -147,7 +147,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "s52utils.h"
 #include "SoundFactory.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "update_mgr.h"

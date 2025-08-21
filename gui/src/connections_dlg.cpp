@@ -55,7 +55,7 @@
 #include "options.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 
 extern OCPNPlatform* g_Platform;
 extern options* g_options;

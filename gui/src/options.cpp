@@ -110,7 +110,7 @@
 #include "s52utils.h"
 #include "SoundFactory.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "SystemCmdSound.h"
 #include "usb_devices.h"
 #include "waypointman_gui.h"

@@ -38,7 +38,7 @@
 #include "chcanv.h"
 #include "glChartCanvas.h"
 #include "gui_lib.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "model/datetime.h"
 #include "navutil.h"
 

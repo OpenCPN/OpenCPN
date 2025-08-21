@@ -51,7 +51,7 @@
 #include "pluginmanager.h"
 #include "model/semantic_vers.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;

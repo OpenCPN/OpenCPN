@@ -68,7 +68,7 @@
 #include "SendToGpsDlg.h"
 #include "SendToPeerDlg.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "TrackPropDlg.h"
 
 #ifdef __ANDROID__

@@ -64,7 +64,7 @@
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "SoundFactory.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "waypointman_gui.h"

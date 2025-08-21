@@ -865,7 +865,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/SendToPeerDlg.h
     ${GUI_HDR_DIR}/Station_Data.h
     ${GUI_HDR_DIR}/styles.h
-    ${GUI_HDR_DIR}/svg_utils.h
     ${GUI_HDR_DIR}/TCDataFactory.h
     ${GUI_HDR_DIR}/TCDataSource.h
     ${GUI_HDR_DIR}/TCDS_Ascii_Harmonic.h
@@ -992,7 +991,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_icons.cpp
-    ${GUI_SRC_DIR}/svg_utils.cpp
     ${GUI_SRC_DIR}/TCDataFactory.cpp
     ${GUI_SRC_DIR}/TCDataSource.cpp
     ${GUI_SRC_DIR}/TCDS_Ascii_Harmonic.cpp

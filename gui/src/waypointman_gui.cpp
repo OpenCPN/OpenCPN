@@ -61,7 +61,7 @@ typedef void (*_GLUfuncptr)();
 #include "model/MarkIcon.h"
 #include "model/route_point.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "waypointman_gui.h"
 #include "ocpn_plugin.h"
 

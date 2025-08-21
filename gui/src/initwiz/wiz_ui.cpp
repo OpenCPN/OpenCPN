@@ -45,7 +45,7 @@
 #include "model/logger.h"
 #include "model/mdns_query.h"
 #include "navutil.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #ifndef __ANDROID__
 #include "serial/serial.h"
 #include "dnet.h"

@@ -26,7 +26,7 @@
  *
  */
 
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 
 #ifdef ocpnUSE_SVG
 #ifndef ocpnUSE_wxBitmapBundle
