@@ -42,7 +42,9 @@
 #include "model/config_vars.h"
 #include "model/conn_params.h"
 #include "model/conn_states.h"
+#include "model/gui_events.h"
 #include "model/notification_manager.h"
+#include "model/std_icon.h"
 
 #include "connections_dlg.h"
 
@@ -173,8 +175,7 @@ public:
         open_circle_proto(LoadIcon("circle-off.svg")),
         exclaim_mark_proto(LoadIcon("exclaim_mark.svg")),
         x_mult_proto(LoadIcon("X_mult.svg")),
-        check_mark_proto(LoadIcon("check_mark.svg")),
-        help_info_proto(LoadIcon("help-info.svg")) {
+        check_mark_proto(LoadIcon("check_mark.svg")) {
     trash_bin = trash_bin_proto;
     settings = settings_proto;
     filled_circle = filled_circle_proto;
@@ -182,7 +183,6 @@ public:
     exclaim_mark = exclaim_mark_proto;
     x_mult = x_mult_proto;
     check_mark = check_mark_proto;
-    help_info = help_info_proto;
   }
 
   void SetColorScheme(const ColorScheme cs) {
@@ -205,7 +205,6 @@ public:
   const wxBitmap exclaim_mark_proto;
   const wxBitmap x_mult_proto;
   const wxBitmap check_mark_proto;
-  const wxBitmap help_info_proto;
 
   wxBitmap trash_bin;
   wxBitmap settings;
@@ -214,7 +213,6 @@ public:
   wxBitmap exclaim_mark;
   wxBitmap x_mult;
   wxBitmap check_mark;
-  wxBitmap help_info;
 };
 
 /** Custom renderer class for rendering bitmap in a grid cell */
@@ -925,8 +923,10 @@ private:
       explicit HelpButton(wxWindow* parent)
           : wxButton(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
                      wxBU_EXACTFIT | wxBORDER_NONE),
+            m_icon(parent, "help-info.svg",
+                   GuiEvents::GetInstance().color_scheme_change, g_btouch),
             m_info_panel(new InfoFrame(parent)) {
-        SetBitmap(StdIcons(parent).help_info);
+        SetBitmap(m_icon.GetBitmap());
         Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
           m_info_panel->Fit();
           m_info_panel->Show();
@@ -955,6 +955,8 @@ private:
         }
       };
 
+    private:
+      StdIcon m_icon;
       InfoFrame* m_info_panel;
     };
 
@@ -1110,7 +1112,7 @@ public:
 
     auto advanced_panel = new AdvancedPanel(this, panel_max_size);
     m_advanced_panel = advanced_panel;
-    auto on_toggle = [&, advanced_panel, conn_grid, vbox](bool show) {
+    auto on_toggle = [&, advanced_panel, vbox](bool show) {
       // FIXME advanced_panel->SetMaxSize({conn_grid->GetSize().x, -1});
       advanced_panel->Show(show);
       vbox->SetSizeHints(this);
