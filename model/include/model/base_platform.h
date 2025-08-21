@@ -140,6 +140,12 @@ public:
    */
   double GetDisplayDIPMult(wxWindow* win);
 
+  /**
+   * Return icon size roughly corresponding to height of a char in w, tweaked
+   * to be "big enough" for touch screens if touch is true.
+   */
+  virtual int GetSvgStdIconSize(const wxWindow* w, bool touch) = 0;
+
   static void ShowBusySpinner();
   static void HideBusySpinner();
 
@@ -183,6 +189,7 @@ public:
   wxSize getDisplaySize() override;
   double GetDisplaySizeMM() override;
   double GetDisplayDPmm() override;
+  int GetSvgStdIconSize(const wxWindow* w, bool touch) override;
 };
 
 #endif  //  BASEPLATFORM_H

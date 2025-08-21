@@ -59,6 +59,14 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
 /** Recalculate the length in standard 96 DPI pixels to actual display pixels */
 unsigned int SVGPixelsToDisplay(unsigned int svg_px);
 
+/**
+ * Load an svg icon from standard path, roughly scaled to the height of a char.
+ *
+ * @param touch If true ensures icon is "big enough" for touch screens
+ */
+wxBitmap LoadSvgStdIcon(const std::string& svg_file, const wxWindow* w,
+                        bool touch);
+
 /** Manage memory and disk cache for rendered bitmaps */
 class SVGBitmapCache {
 public:
