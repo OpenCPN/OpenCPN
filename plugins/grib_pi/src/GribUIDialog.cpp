@@ -213,8 +213,12 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
                 &m_bDataPlot[GribOverlaySettings::WIND_GUST], false);
     pConf->Read(_T ( "PressurePlot" ),
                 &m_bDataPlot[GribOverlaySettings::PRESSURE], false);
-    pConf->Read(_T ( "WavePlot" ), &m_bDataPlot[GribOverlaySettings::WAVE],
-                false);
+    pConf->Read(_T ( "WavePlot" ),
+                &m_bDataPlot[GribOverlaySettings::COMBINED_WAVES], false);
+    pConf->Read(_T ( "WindWavesPlot" ),
+                &m_bDataPlot[GribOverlaySettings::WIND_WAVES], false);
+    pConf->Read(_T ( "SwellWavesPlot" ),
+                &m_bDataPlot[GribOverlaySettings::SWELL_WAVES], false);
     pConf->Read(_T ( "CurrentPlot" ),
                 &m_bDataPlot[GribOverlaySettings::CURRENT], false);
     pConf->Read(_T ( "PrecipitationPlot" ),
@@ -273,6 +277,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
     pConf->Read(_T( "Precipitation" ), &xyGribConfig.precipitation, true);
     pConf->Read(_T( "WaveHeight" ), &xyGribConfig.waveHeight, true);
     pConf->Read(_T( "WindWaves" ), &xyGribConfig.windWaves, true);
+    pConf->Read(_T( "SwellWaves" ), &xyGribConfig.swellWaves, true);
   }
   // init zone selection parameters
   m_ZoneSelMode = m_SavedZoneSelMode;
@@ -320,7 +325,12 @@ GRIBUICtrlBar::~GRIBUICtrlBar() {
                  m_bDataPlot[GribOverlaySettings::WIND_GUST]);
     pConf->Write(_T ( "PressurePlot" ),
                  m_bDataPlot[GribOverlaySettings::PRESSURE]);
-    pConf->Write(_T ( "WavePlot" ), m_bDataPlot[GribOverlaySettings::WAVE]);
+    pConf->Write(_T ( "WavePlot" ),
+                 m_bDataPlot[GribOverlaySettings::COMBINED_WAVES]);
+    pConf->Write(_T ( "WindWavesPlot" ),
+                 m_bDataPlot[GribOverlaySettings::WIND_WAVES]);
+    pConf->Write(_T ( "SwellWavesPlot" ),
+                 m_bDataPlot[GribOverlaySettings::SWELL_WAVES]);
     pConf->Write(_T ( "CurrentPlot" ),
                  m_bDataPlot[GribOverlaySettings::CURRENT]);
     pConf->Write(_T ( "PrecipitationPlot" ),
@@ -375,6 +385,7 @@ GRIBUICtrlBar::~GRIBUICtrlBar() {
     pConf->Write(_T( "Precipitation" ), xyGribConfig.precipitation);
     pConf->Write(_T( "WaveHeight" ), xyGribConfig.waveHeight);
     pConf->Write(_T( "WindWaves" ), xyGribConfig.windWaves);
+    pConf->Write(_T( "SwellWaves" ), xyGribConfig.swellWaves);
   }
   delete m_vpMouse;
   delete m_pTimelineSet;
@@ -561,10 +572,10 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   if (m_bDataPlot[GribOverlaySettings::PRESSURE] &&
       (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND))
     bconfigOK = true;
-  if (m_bDataPlot[GribOverlaySettings::WAVE] &&
+  if (m_bDataPlot[GribOverlaySettings::COMBINED_WAVES] &&
       (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND))
     bconfigOK = true;
-  if (m_bDataPlot[GribOverlaySettings::WAVE] &&
+  if (m_bDataPlot[GribOverlaySettings::COMBINED_WAVES] &&
       (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND))
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::CURRENT] &&
@@ -2161,25 +2172,39 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
               break;
             case GRB_HTSGW:
               sigH = true;
-              idx = Idx_HTSIGW;
+              idx = Idx_HTSIGW;  // Combined significant wave height
               break;
             case GRB_PER:
               sigWave = true;
-              idx = Idx_WVPER;
+              idx = Idx_WVPER;  // Combined wave period
               break;
             case GRB_DIR:
               sigWave = true;
-              idx = Idx_WVDIR;
+              idx = Idx_WVDIR;  // Combined wave direction
               break;
+
+            // Wind wave parameters (sea - locally generated)
             case GRB_WVHGT:
-              idx = Idx_HTSIGW;
-              break;  // Translation from NOAA WW3
-            case GRB_WVPER:
-              idx = Idx_WVPER;
+              idx = Idx_WIND_WAVE_HGT;  // Wind wave height
               break;
             case GRB_WVDIR:
-              idx = Idx_WVDIR;
+              idx = Idx_WIND_WAVE_DIR;  // Wind wave direction
               break;
+            case GRB_WVPER:
+              idx = Idx_WIND_WAVE_PER;  // Wind wave period
+              break;
+
+            // Swell wave parameters (from distant storms)
+            case GRB_SWELL:
+              idx = Idx_SWELL_HGT;  // Swell wave height
+              break;
+            case GRB_SWDIR:
+              idx = Idx_SWELL_DIR;  // Swell wave direction
+              break;
+            case GRB_SWPER:
+              idx = Idx_SWELL_PER;  // Swell wave period
+              break;
+
             case GRB_PRECIP_RATE:
             case GRB_PRECIP_TOT:
               idx = Idx_PRECIP_TOT;

@@ -690,30 +690,74 @@ CursorDataBase::CursorDataBase(wxWindow* parent, wxWindowID id,
 
   m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 5);
 
-  m_cbWave = new wxCheckBox(this, ID_CB_WAVES, _("Waves"), wxDefaultPosition,
-                            wxDefaultSize, 0);
+  // Combined waves
+  m_cbWave = new wxCheckBox(this, ID_CB_WAVES, _("Combined Waves"),
+                            wxDefaultPosition, wxDefaultSize, 0);
   m_fgTrackingControls->Add(m_cbWave, 0, wxALL | wxEXPAND, 5);
 
   m_tcWaveHeight =
       new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxSize(70, -1), wxTE_READONLY);
-  m_tcWaveHeight->SetToolTip(_("Significant Wave Height"));
-
+  m_tcWaveHeight->SetToolTip(_("Combined Wave Height"));
   m_fgTrackingControls->Add(m_tcWaveHeight, 0, 0, 1);
 
   m_tcWavePeriode =
       new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxSize(45, -1), wxTE_READONLY);
-  m_tcWavePeriode->SetToolTip(_("Waves period"));
-
+  m_tcWavePeriode->SetToolTip(_("Wave Period (seconds)"));
   m_fgTrackingControls->Add(m_tcWavePeriode, 0, 0, 1);
 
   m_tcWaveDirection =
       new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxSize(45, -1), wxTE_READONLY);
-  m_tcWaveDirection->SetToolTip(_("Waves Direction"));
-
+  m_tcWaveDirection->SetToolTip(_("Wave Direction (degrees from N)"));
   m_fgTrackingControls->Add(m_tcWaveDirection, 0, 0, 1);
+
+  // Wind Wave Parameters
+  m_cbWindWaves = new wxCheckBox(this, ID_CB_WIND_WAVES, _("Wind Waves"),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_fgTrackingControls->Add(m_cbWindWaves, 0, wxALL | wxEXPAND, 5);
+
+  m_tcWindWaveHeight =
+      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxSize(70, -1), wxTE_READONLY);
+  m_tcWindWaveHeight->SetToolTip(_("Wind Wave Height (m)"));
+  m_fgTrackingControls->Add(m_tcWindWaveHeight, 0, 0, 1);
+
+  m_tcWindWavePeriod =
+      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxSize(45, -1), wxTE_READONLY);
+  m_tcWindWavePeriod->SetToolTip(_("Wind Wave Period (s)"));
+  m_fgTrackingControls->Add(m_tcWindWavePeriod, 0, 0, 1);
+
+  m_tcWindWaveDirection =
+      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxSize(45, -1), wxTE_READONLY);
+  m_tcWindWaveDirection->SetToolTip(_("Wind Wave Direction (degrees from N)"));
+  m_fgTrackingControls->Add(m_tcWindWaveDirection, 0, 0, 1);
+
+  // Swell Wave Parameters
+  m_cbSwellWaves = new wxCheckBox(this, ID_CB_SWELL_WAVES, _("Swell Waves"),
+                                  wxDefaultPosition, wxDefaultSize, 0);
+  m_fgTrackingControls->Add(m_cbSwellWaves, 0, wxALL | wxEXPAND, 5);
+
+  m_tcSwellHeight =
+      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxSize(70, -1), wxTE_READONLY);
+  m_tcSwellHeight->SetToolTip(_("Swell Wave Height (m)"));
+  m_fgTrackingControls->Add(m_tcSwellHeight, 0, 0, 1);
+
+  m_tcSwellPeriod =
+      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxSize(45, -1), wxTE_READONLY);
+  m_tcSwellPeriod->SetToolTip(_("Swell Wave Period (s)"));
+  m_fgTrackingControls->Add(m_tcSwellPeriod, 0, 0, 1);
+
+  m_tcSwellDirection =
+      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxSize(45, -1), wxTE_READONLY);
+  m_tcSwellDirection->SetToolTip(_("Swell Wave Direction (degrees from N)"));
+  m_fgTrackingControls->Add(m_tcSwellDirection, 0, 0, 1);
 
   m_cbCurrent = new wxCheckBox(this, ID_CB_CURRENT, _("Current"),
                                wxDefaultPosition, wxDefaultSize, 0);
@@ -967,6 +1011,18 @@ CursorDataBase::CursorDataBase(wxWindow* parent, wxWindowID id,
   m_cbWave->Connect(wxEVT_RIGHT_DOWN,
                     wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
                     nullptr, this);
+  m_cbWindWaves->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                         wxCommandEventHandler(CursorDataBase::OnCBAny),
+                         nullptr, this);
+  m_cbWindWaves->Connect(wxEVT_RIGHT_DOWN,
+                         wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
+                         nullptr, this);
+  m_cbSwellWaves->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                          wxCommandEventHandler(CursorDataBase::OnCBAny),
+                          nullptr, this);
+  m_cbSwellWaves->Connect(wxEVT_RIGHT_DOWN,
+                          wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
+                          nullptr, this);
   m_cbCurrent->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                        wxCommandEventHandler(CursorDataBase::OnCBAny), nullptr,
                        this);
@@ -1102,6 +1158,18 @@ CursorDataBase::~CursorDataBase() {
   m_cbWave->Disconnect(wxEVT_RIGHT_DOWN,
                        wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
                        nullptr, this);
+  m_cbWindWaves->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                            wxCommandEventHandler(CursorDataBase::OnCBAny),
+                            nullptr, this);
+  m_cbWindWaves->Disconnect(wxEVT_RIGHT_DOWN,
+                            wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
+                            nullptr, this);
+  m_cbSwellWaves->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                             wxCommandEventHandler(CursorDataBase::OnCBAny),
+                             nullptr, this);
+  m_cbSwellWaves->Disconnect(
+      wxEVT_RIGHT_DOWN, wxMouseEventHandler(CursorDataBase::OnMenuCallBack),
+      nullptr, this);
   m_cbCurrent->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                           wxCommandEventHandler(CursorDataBase::OnCBAny),
                           nullptr, this);
@@ -1387,7 +1455,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
   wxString m_cOverlayColorsChoices[] = {
       _("Generic"),  _("Wind"),        _("Air Temp"), _("Sea Temp"),
       _("Rainfall"), _("Cloud Cover"), _("Current"),  _("CAPE"),
-      _("REFC"),     _("Windy")};
+      _("REFC"),     _("Windy"),       _("Waves")};
   int m_cOverlayColorsNChoices =
       sizeof(m_cOverlayColorsChoices) / sizeof(wxString);
   m_cOverlayColors =
@@ -2907,14 +2975,24 @@ void GribRequestSettingBase::createEmailPanel() {
                               wxDefaultPosition, wxDefaultSize, 0);
   fgSizer10->Add(m_pCurrent, 0, wxALL | wxEXPAND, 5);
 
+  // Wave parameters section - like XyGrib
+  m_pWaves =
+      new wxCheckBox(m_sScrolledDialog, wxID_ANY, _("Significant Wave Height"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer10->Add(m_pWaves, 0, wxALL | wxEXPAND, 5);
+
+  m_pWindWaves = new wxCheckBox(m_sScrolledDialog, wxID_ANY, _("Wind Waves"),
+                                wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer10->Add(m_pWindWaves, 0, wxALL | wxEXPAND, 5);
+
+  m_pSwellWaves = new wxCheckBox(m_sScrolledDialog, wxID_ANY, _("Swell Waves"),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer10->Add(m_pSwellWaves, 0, wxALL | wxEXPAND, 5);
+
   wxFlexGridSizer* fgSizer28;
   fgSizer28 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer28->SetFlexibleDirection(wxBOTH);
   fgSizer28->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-  m_pWaves = new wxCheckBox(m_sScrolledDialog, wxID_ANY, _("Waves"),
-                            wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer28->Add(m_pWaves, 0, wxALL, 5);
 
   wxArrayString m_pWModelChoices;
   m_pWModel = new wxChoice(m_sScrolledDialog, wxID_ANY, wxDefaultPosition,
@@ -3213,6 +3291,14 @@ GribRequestSettingBase::GribRequestSettingBase(GRIBUICtrlBarBase* parent,
   m_pWaves->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                     wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
                     nullptr, this);
+  m_pWindWaves->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr,
+      this);
+  m_pSwellWaves->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr,
+      this);
   m_pWModel->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange),
                      nullptr, this);
@@ -3292,6 +3378,10 @@ GribRequestSettingBase::GribRequestSettingBase(GRIBUICtrlBarBase* parent,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
       nullptr, this);
   m_xygribPanel->m_windwave_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      nullptr, this);
+  m_xygribPanel->m_swellwave_cbox->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
       nullptr, this);
@@ -3449,6 +3539,14 @@ GribRequestSettingBase::~GribRequestSettingBase() {
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr,
       this);
+  m_pWindWaves->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr,
+      this);
+  m_pSwellWaves->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr,
+      this);
   m_pWModel->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), nullptr,
@@ -3533,6 +3631,10 @@ GribRequestSettingBase::~GribRequestSettingBase() {
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
       nullptr, this);
   m_xygribPanel->m_windwave_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      nullptr, this);
+  m_xygribPanel->m_swellwave_cbox->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
       nullptr, this);

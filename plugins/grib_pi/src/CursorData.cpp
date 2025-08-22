@@ -32,6 +32,41 @@ extern int m_DialogStyle;
 //---------------------------------------------------------------------------------------
 //               GRIB Cursor Data  implementation
 //---------------------------------------------------------------------------------------
+
+int CursorData::GetSettingsIdFromCheckboxId(int checkboxId) {
+  // Map checkbox IDs to GribOverlaySettings enum values
+  switch (checkboxId) {
+    case ID_CB_WIND:
+      return GribOverlaySettings::WIND;
+    case ID_CB_WIND_GUSTS:
+      return GribOverlaySettings::WIND_GUST;
+    case ID_CB_PRESSURE:
+      return GribOverlaySettings::PRESSURE;
+    case ID_CB_WAVES:
+      return GribOverlaySettings::COMBINED_WAVES;
+    case ID_CB_WIND_WAVES:
+      return GribOverlaySettings::WIND_WAVES;
+    case ID_CB_SWELL_WAVES:
+      return GribOverlaySettings::SWELL_WAVES;
+    case ID_CB_CURRENT:
+      return GribOverlaySettings::CURRENT;
+    case ID_CB_RAINFALL:
+      return GribOverlaySettings::PRECIPITATION;
+    case ID_CB_CLOUD_COVER:
+      return GribOverlaySettings::CLOUD;
+    case ID_CB_AIR_TEMP:
+      return GribOverlaySettings::AIR_TEMPERATURE;
+    case ID_CB_SEA_TEMP:
+      return GribOverlaySettings::SEA_TEMPERATURE;
+    case ID_CB_CAPE:
+      return GribOverlaySettings::CAPE;
+    case ID_CB_COMP_REFL:
+      return GribOverlaySettings::COMP_REFL;
+    default:
+      return -1;  // Invalid/unknown checkbox ID
+  }
+}
+
 CursorData::CursorData(wxWindow *window, GRIBUICtrlBar &parent)
     : CursorDataBase(window), m_gparent(parent) {
   // transform checkboxes ID to have a formal link to data type and set the
@@ -40,10 +75,12 @@ CursorData::CursorData(wxWindow *window, GRIBUICtrlBar &parent)
   while (node) {
     wxWindow *win = node->GetData();
     if (dynamic_cast<wxCheckBox *>(win)) {
-      int winId = dynamic_cast<wxCheckBox *>(win)->GetId() - ID_CB_WIND;
-      if (m_gparent.InDataPlot(winId)) {
-        dynamic_cast<wxCheckBox *>(win)->SetId(winId);
-        dynamic_cast<wxCheckBox *>(win)->SetValue(m_gparent.m_bDataPlot[winId]);
+      int checkboxId = dynamic_cast<wxCheckBox *>(win)->GetId();
+      int settingsId = GetSettingsIdFromCheckboxId(checkboxId);
+      if (settingsId >= 0 && m_gparent.InDataPlot(settingsId)) {
+        dynamic_cast<wxCheckBox *>(win)->SetId(settingsId);
+        dynamic_cast<wxCheckBox *>(win)->SetValue(
+            m_gparent.m_bDataPlot[settingsId]);
       }
     }
     node = node->GetNext();
@@ -96,30 +133,33 @@ void CursorData::AddTrackingControl(wxControl *ctrl1, wxControl *ctrl2,
                                     bool show, bool vertical, int wctrl2,
                                     int wctrl3_4) {
   if (show) {
-    m_fgTrackingControls->Add(ctrl1, 0, wxALL, 1);
+    // Column 1: Checkbox (with parameter name in label)
+    m_fgTrackingControls->Add(ctrl1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 1);
     ctrl1->Show();
+
+    // Column 2: Parameter values - create horizontal sizer for multiple values
+    wxBoxSizer *valuesSizer = new wxBoxSizer(wxHORIZONTAL);
+
     if (ctrl2) {
-      m_fgTrackingControls->Add(ctrl2, 0, wxALL, 0);
       ctrl2->SetMinSize(wxSize(wctrl2, -1));
+      valuesSizer->Add(ctrl2, 0, wxALIGN_CENTER_VERTICAL, 0);
       ctrl2->Show();
-    } else
-      m_fgTrackingControls->Add(0, 0, 1, wxALL, 1); /* spacer */
+    }
 
     if (ctrl3) {
-      long flag1 = wxALIGN_CENTER;
-      long flag = vertical ? flag1 : wxALL;
-      m_fgTrackingControls->Add(ctrl3, 0, flag, 0);
       ctrl3->SetMinSize(wxSize(wctrl3_4, -1));
+      valuesSizer->Add(ctrl3, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 2);
       ctrl3->Show();
-    } else if (!vertical)
-      m_fgTrackingControls->Add(0, 0, 1, wxALL, 1); /* spacer */
+    }
 
     if (ctrl4) {
-      m_fgTrackingControls->Add(ctrl4, 0, wxALL, 0);
       ctrl4->SetMinSize(wxSize(vertical ? wctrl2 : wctrl3_4, -1));
+      valuesSizer->Add(ctrl4, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 2);
       ctrl4->Show();
-    } else if (!vertical)
-      m_fgTrackingControls->Add(0, 0, 1, wxALL, 1); /* spacer */
+    }
+
+    m_fgTrackingControls->Add(valuesSizer, 1,
+                              wxEXPAND | wxALIGN_CENTER_VERTICAL, 0);
 
   } else {
     if (ctrl1) ctrl1->Hide();
@@ -134,16 +174,22 @@ void CursorData::PopulateTrackingControls(bool vertical) {
   if (!vertical) {
     wxFlexGridSizer *ps = (wxFlexGridSizer *)(m_gparent.GetSizer());
     if (ps && (ps->GetCols() == 1))
-      m_fgTrackingControls->SetCols(4);  // compact mode
+      m_fgTrackingControls->SetCols(
+          2);  // compact mode: 2 cols (checkbox, values)
     else
-      m_fgTrackingControls->SetCols(12);
+      m_fgTrackingControls->SetCols(
+          6);  // normal mode: 6 cols (3 parameters per row)
   } else
-    m_fgTrackingControls->SetCols(2);
+    m_fgTrackingControls->SetCols(2);  // vertical: always 2 cols
+
+  // Set minimal spacing between grid cells
+  m_fgTrackingControls->SetHGap(2);
+  m_fgTrackingControls->SetVGap(1);
 
   this->Fit();
   // Get text controls sizing data
   wxFont *font = OCPNGetFont(_("Dialog"));
-  int wn, wd, ws, wl;
+  int wn, wd, ws, wl, wh;
   GetTextExtent(_T("abcdefghihjk"), &wn, nullptr, 0, 0,
                 font);  // normal width text control size
   GetTextExtent(_T("abcdef"), &ws, nullptr, 0, 0,
@@ -154,6 +200,9 @@ void CursorData::PopulateTrackingControls(bool vertical) {
   GetTextExtent(
       _T("abcdefghijklm"), &wl, nullptr, 0, 0,
       font);  // long width text control size for double unit wave display
+  GetTextExtent(
+      _T("abcdefg"), &wh, nullptr, 0, 0,
+      font);  // height width text control size for wave height (7 chars)
   //
   // create a dummy textCtrl to be used as a "space" in vertical display
   wxTextCtrl *dummy =
@@ -192,28 +241,56 @@ void CursorData::PopulateTrackingControls(bool vertical) {
                          m_Altitude == 0,
                      vertical, wn);
 
-  /* tracking for wave is funky */
+  /* Wave tracking with WW3 support */
+
+  // Initialize all wave controls as hidden
   AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWavePeriode,
                      m_tcWaveDirection, false, vertical, 0,
-                     0);  // hide all waves's parameters
+                     0);  // hide wave parameters initially
+
+  AddTrackingControl(m_cbWindWaves, m_tcWindWaveHeight, m_tcWindWavePeriod,
+                     m_tcWindWaveDirection, false, vertical, 0,
+                     0);  // hide wind wave parameters initially
+
+  AddTrackingControl(m_cbSwellWaves, m_tcSwellHeight, m_tcSwellPeriod,
+                     m_tcSwellDirection, false, vertical, 0,
+                     0);  // hide swell wave parameters initially
+
+  // Check for combined wave parameters (GRB_HTSGW)
   if (m_gparent.m_pTimelineSet &&
       m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) !=
           wxNOT_FOUND) {
-    if (m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) !=
-        wxNOT_FOUND)
-      AddTrackingControl(m_cbWave, m_tcWaveHeight,
-                         vertical ? m_tcWavePeriode : m_tcWaveDirection,
-                         vertical ? m_tcWaveDirection : 0, m_Altitude == 0,
-                         vertical, wl, ws);
-    else
-      AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, 0, m_Altitude == 0,
-                         vertical, wn);
-  } else {
-    if (m_gparent.m_pTimelineSet &&
-        m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) !=
-            wxNOT_FOUND)
-      AddTrackingControl(m_cbWave, m_tcWaveDirection, 0, 0, m_Altitude == 0,
-                         vertical, wn);
+    // Show combined wave controls
+    AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWavePeriode,
+                       m_tcWaveDirection, m_Altitude == 0, vertical, wh, ws);
+  }
+
+  // Check for wind wave parameters (WW3 model)
+  if (m_gparent.m_pTimelineSet &&
+      m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_WAVE_HGT) !=
+          wxNOT_FOUND) {
+    AddTrackingControl(m_cbWindWaves, m_tcWindWaveHeight, m_tcWindWavePeriod,
+                       m_tcWindWaveDirection, m_Altitude == 0, vertical, wh,
+                       ws);
+  }
+
+  // Check for swell wave parameters
+  if (m_gparent.m_pTimelineSet &&
+      m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SWELL_HGT) !=
+          wxNOT_FOUND) {
+    AddTrackingControl(m_cbSwellWaves, m_tcSwellHeight, m_tcSwellPeriod,
+                       m_tcSwellDirection, m_Altitude == 0, vertical, wh, ws);
+  }
+
+  // Fallback: If only combined wave direction is available, show combined wave
+  // controls
+  if (m_gparent.m_pTimelineSet &&
+      m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) !=
+          wxNOT_FOUND &&
+      m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) ==
+          wxNOT_FOUND) {
+    AddTrackingControl(m_cbWave, m_tcWaveDirection, 0, 0, m_Altitude == 0,
+                       vertical, wn);
   }
 
   AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection, 0,
@@ -428,39 +505,143 @@ void CursorData::UpdateTrackingControls(void) {
       m_tcPressure->SetValue(_("N/A"));
   }
 
-  //    Update the Sig Wave Height
+  //    Enhanced Wave Data Display with WW3 Support
+
+  // Update Combined Wave Controls (total significant wave height)
+  bool foundCombinedWaveData = false;
   if (RecordArray[Idx_HTSIGW]) {
     double height = RecordArray[Idx_HTSIGW]->getInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (height != GRIB_NOTDEF) {
+      foundCombinedWaveData = true;
       height = m_gparent.m_OverlaySettings.CalibrateValue(
-          GribOverlaySettings::WAVE, height);
+          GribOverlaySettings::COMBINED_WAVES, height);
       wxString w(wxString::Format(
           _T("%4.1f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(
-                             GribOverlaySettings::WAVE),
+                             GribOverlaySettings::COMBINED_WAVES),
           height));
+
+      // Add period if available
       if (RecordArray[Idx_WVPER]) {
         double period = RecordArray[Idx_WVPER]->getInterpolatedValue(
             m_cursor_lon, m_cursor_lat, true);
         if (period != GRIB_NOTDEF) {
-          if (m_DialogStyle == SEPARATED_VERTICAL)
-            m_tcWavePeriode->SetValue(
-                wxString::Format(_T("%01ds"), (int)round(period)));
-          else
-            w.Append(wxString::Format(_T(" - %01ds"), (int)round(period)));
+          m_tcWavePeriode->SetValue(
+              wxString::Format(_T("%01ds"), (int)round(period)));
         } else
           m_tcWavePeriode->SetValue(_("N/A"));
       } else
         m_tcWavePeriode->SetValue(_("N/A"));
 
       m_tcWaveHeight->SetValue(w);
-    } else
-      m_tcWaveHeight->SetValue(_("N/A"));
+    }
   }
 
-  // Update the Wave direction
+  // Update Wave Direction in combined wave controls
   if (RecordArray[Idx_WVDIR]) {
+    double direction = RecordArray[Idx_WVDIR]->getInterpolatedValue(
+        m_cursor_lon, m_cursor_lat, true, true);
+    if (direction != GRIB_NOTDEF) {
+      m_tcWaveDirection->SetValue(
+          wxString::Format(_T("%03d%c"), (int)direction, 0x00B0));
+    } else {
+      m_tcWaveDirection->SetValue(_("N/A"));
+    }
+  } else {
+    m_tcWaveDirection->SetValue(_("N/A"));
+  }
+
+  // Update Wind Wave Category Controls
+  if (RecordArray[Idx_WIND_WAVE_HGT]) {
+    double height = RecordArray[Idx_WIND_WAVE_HGT]->getInterpolatedValue(
+        m_cursor_lon, m_cursor_lat, true);
+    if (height != GRIB_NOTDEF) {
+      height = m_gparent.m_OverlaySettings.CalibrateValue(
+          GribOverlaySettings::COMBINED_WAVES, height);
+      m_tcWindWaveHeight->SetValue(wxString::Format(
+          _T("%4.1f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(
+                             GribOverlaySettings::COMBINED_WAVES),
+          height));
+    } else {
+      m_tcWindWaveHeight->SetValue(_("N/A"));
+    }
+  } else {
+    m_tcWindWaveHeight->SetValue(_("N/A"));
+  }
+
+  if (RecordArray[Idx_WIND_WAVE_PER]) {
+    double period = RecordArray[Idx_WIND_WAVE_PER]->getInterpolatedValue(
+        m_cursor_lon, m_cursor_lat, true);
+    if (period != GRIB_NOTDEF) {
+      m_tcWindWavePeriod->SetValue(
+          wxString::Format(_T("%01ds"), (int)round(period)));
+    } else {
+      m_tcWindWavePeriod->SetValue(_("N/A"));
+    }
+  } else {
+    m_tcWindWavePeriod->SetValue(_("N/A"));
+  }
+
+  if (RecordArray[Idx_WIND_WAVE_DIR]) {
+    double direction = RecordArray[Idx_WIND_WAVE_DIR]->getInterpolatedValue(
+        m_cursor_lon, m_cursor_lat, true, true);
+    if (direction != GRIB_NOTDEF) {
+      m_tcWindWaveDirection->SetValue(
+          wxString::Format(_T("%03d%c"), (int)direction, 0x00B0));
+    } else {
+      m_tcWindWaveDirection->SetValue(_("N/A"));
+    }
+  } else {
+    m_tcWindWaveDirection->SetValue(_("N/A"));
+  }
+
+  // Update Swell Wave Category Controls
+  if (RecordArray[Idx_SWELL_HGT]) {
+    double height = RecordArray[Idx_SWELL_HGT]->getInterpolatedValue(
+        m_cursor_lon, m_cursor_lat, true);
+    if (height != GRIB_NOTDEF) {
+      height = m_gparent.m_OverlaySettings.CalibrateValue(
+          GribOverlaySettings::COMBINED_WAVES, height);
+      m_tcSwellHeight->SetValue(wxString::Format(
+          _T("%4.1f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(
+                             GribOverlaySettings::COMBINED_WAVES),
+          height));
+    } else {
+      m_tcSwellHeight->SetValue(_("N/A"));
+    }
+  } else {
+    m_tcSwellHeight->SetValue(_("N/A"));
+  }
+
+  if (RecordArray[Idx_SWELL_PER]) {
+    double period = RecordArray[Idx_SWELL_PER]->getInterpolatedValue(
+        m_cursor_lon, m_cursor_lat, true);
+    if (period != GRIB_NOTDEF) {
+      m_tcSwellPeriod->SetValue(
+          wxString::Format(_T("%01ds"), (int)round(period)));
+    } else {
+      m_tcSwellPeriod->SetValue(_("N/A"));
+    }
+  } else {
+    m_tcSwellPeriod->SetValue(_("N/A"));
+  }
+
+  if (RecordArray[Idx_SWELL_DIR]) {
+    double direction = RecordArray[Idx_SWELL_DIR]->getInterpolatedValue(
+        m_cursor_lon, m_cursor_lat, true, true);
+    if (direction != GRIB_NOTDEF) {
+      m_tcSwellDirection->SetValue(
+          wxString::Format(_T("%03d%c"), (int)direction, 0x00B0));
+    } else {
+      m_tcSwellDirection->SetValue(_("N/A"));
+    }
+  } else {
+    m_tcSwellDirection->SetValue(_("N/A"));
+  }
+
+  // Fallback for combined wave direction if no specific category is available
+  if (!foundCombinedWaveData && RecordArray[Idx_WVDIR]) {
     double direction = RecordArray[Idx_WVDIR]->getInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true, true);
     if (direction != GRIB_NOTDEF)
@@ -468,6 +649,10 @@ void CursorData::UpdateTrackingControls(void) {
           wxString::Format(_T("%03d%c"), (int)direction, 0x00B0));
     else
       m_tcWaveDirection->SetValue(_("N/A"));
+  } else if (!foundCombinedWaveData) {
+    m_tcWaveHeight->SetValue(_("N/A"));
+    m_tcWavePeriode->SetValue(_("N/A"));
+    m_tcWaveDirection->SetValue(_("N/A"));
   }
 
   //    Update the Current control
@@ -681,7 +866,17 @@ void CursorData::OnMenuCallBack(wxMouseEvent &event) {
       MenuAppend(menu, OVERLAY, _("OverlayMap"), id);
       MenuAppend(menu, NUMBERS, _("Numbers"), id);
       break;
-    case GribOverlaySettings::WAVE:
+    case GribOverlaySettings::COMBINED_WAVES:
+      MenuAppend(menu, D_ARROWS, _("Direction Arrows"), id);
+      MenuAppend(menu, OVERLAY, _("OverlayMap"), id);
+      MenuAppend(menu, NUMBERS, _("Numbers"), id);
+      break;
+    case GribOverlaySettings::WIND_WAVES:
+      MenuAppend(menu, D_ARROWS, _("Direction Arrows"), id);
+      MenuAppend(menu, OVERLAY, _("OverlayMap"), id);
+      MenuAppend(menu, NUMBERS, _("Numbers"), id);
+      break;
+    case GribOverlaySettings::SWELL_WAVES:
       MenuAppend(menu, D_ARROWS, _("Direction Arrows"), id);
       MenuAppend(menu, OVERLAY, _("OverlayMap"), id);
       MenuAppend(menu, NUMBERS, _("Numbers"), id);
