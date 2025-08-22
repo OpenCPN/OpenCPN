@@ -25,49 +25,33 @@
 
 #include "dialog_alert.h"
 
-static void EnsureBtnSize(wxWindow* btn) {
-  if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
-    btn->SetMinSize(btn->GetSize());
-  else
-    btn->SetMinSize(wxSize(-1, btn->GetCharHeight() * 4));
-}
-
 AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
                          const std::string& action)
     : BaseDialog(parent, title, wxSTAY_ON_TOP | wxCAPTION),
       m_action(action),
       m_listener(nullptr) {
   DialogFooter* footer = new DialogFooter();
+  const auto spacing = GUI::GetSpacing(this, kDialogPadding);
 
   if (action.empty()) {
     wxButton* close_button = new wxButton(this, wxID_CLOSE, _("Close"));
-
-    // Fix button height in footer when dialog has no parent.
-    if (!parent) EnsureBtnSize(close_button);
-
     close_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this, wxID_CLOSE);
+    footer->SetMinSize({-1, close_button->GetSize().y + spacing * 3});
     footer->SetCancelButton(close_button);
     footer->Realize();
   } else {
     wxButton* ok_button = new wxButton(this, wxID_OK, m_action);
     wxButton* cancel_button = new wxButton(this, wxID_CANCEL, _("Cancel"));
 
-    // Fix button height in footer when dialog has no parent.
-    if (!parent) {
-      EnsureBtnSize(ok_button);
-      EnsureBtnSize(cancel_button);
-    }
-
     ok_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
     cancel_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
     footer->SetCancelButton(cancel_button);
     footer->SetAffirmativeButton(ok_button);
+    footer->SetMinSize({-1, ok_button->GetSize().y + spacing * 3});
     footer->Realize();
   }
 
-  auto spacing = GUI::GetSpacing(this, kDialogPadding);
   m_layout->Add(footer, wxSizerFlags().Border(wxALL, spacing).Expand());
-
   Bind(wxEVT_TIMER, &AlertDialog::OnTimer, this);
 }
 
