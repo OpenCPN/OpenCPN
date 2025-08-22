@@ -1390,9 +1390,11 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(
   //         evts.SetId( ID_CMD_STOP_RESIZE );
   //             g_androidUtilHandler->AddPendingEvent(evts);
 
-  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-  evt.SetId(ID_CMD_TRIGGER_RESIZE);
-  g_androidUtilHandler->AddPendingEvent(evt);
+  if (g_androidUtilHandler) {
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+    evt.SetId(ID_CMD_TRIGGER_RESIZE);
+    g_androidUtilHandler->AddPendingEvent(evt);
+  }
 
   return 77;
 }
