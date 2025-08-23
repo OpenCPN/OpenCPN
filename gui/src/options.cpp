@@ -3552,6 +3552,11 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
 
+    wxSize item_size = wxSize(-1, -1);
+#ifdef __ANDROID__
+    item_size = wxSize(m_fontHeight * 3, m_fontHeight);
+#endif
+
     // graphics options
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Graphics Style")),
                        labelFlags);
@@ -3560,7 +3565,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("Simplified"),
     };
     pPointStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxDefaultSize, 2, pPointStyleStrings);
+                               item_size, 2, pPointStyleStrings);
     optionsColumn->Add(pPointStyle, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Boundaries")),
@@ -3570,7 +3575,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("Symbolized"),
     };
     pBoundStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxDefaultSize, 2, pBoundStyleStrings);
+                               item_size, 2, pBoundStyleStrings);
     optionsColumn->Add(pBoundStyle, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Colors")),
@@ -3580,21 +3585,25 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("4 Color"),
     };
     p24Color = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                            wxDefaultSize, 2, pColorNumStrings);
+                            item_size, 2, pColorNumStrings);
     optionsColumn->Add(p24Color, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
 
+    item_size = wxSize(60, -1);
+#ifdef __ANDROID__
+    item_size = wxSize(m_fontHeight * 2, m_fontHeight);
+#endif
+
     // depth options
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Shallow Depth")),
                        labelFlags);
     wxBoxSizer* depShalRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depShalRow);
-    m_ShallowCtl =
-        new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
-                       wxSize(60, -1), wxTE_RIGHT);
+    m_ShallowCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
+                                  wxDefaultPosition, item_size, wxTE_RIGHT);
     depShalRow->Add(m_ShallowCtl, inputFlags);
     m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depShalRow->Add(m_depthUnitsShal, inputFlags);
@@ -3604,7 +3613,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     wxBoxSizer* depSafeRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depSafeRow);
     m_SafetyCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                                 wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
+                                 wxDefaultPosition, item_size, wxTE_RIGHT);
     depSafeRow->Add(m_SafetyCtl, inputFlags);
     m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depSafeRow->Add(m_depthUnitsSafe, inputFlags);
@@ -3614,7 +3623,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     wxBoxSizer* depDeepRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depDeepRow);
     m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                               wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
+                               wxDefaultPosition, item_size, wxTE_RIGHT);
     depDeepRow->Add(m_DeepCtl, inputFlags);
     m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depDeepRow->Add(m_depthUnitsDeep, inputFlags);
