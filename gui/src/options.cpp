@@ -4650,6 +4650,11 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     wxFlexGridSizer* unitsSizer = new wxFlexGridSizer(2);
     unitsSizer->SetHGap(border_size);
 
+    int item_h_size = -1;
+#ifdef __ANDROID__
+    item_h_size = m_fontHeight * 4;
+#endif
+
     // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
     // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
@@ -4667,8 +4672,11 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                    _("Kilometers"), _("Meters")};
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
     pDistanceFormat = new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE,
-                                   wxDefaultPosition, wxDefaultSize,
+                                   wxDefaultPosition, wxSize(item_h_size, -1),
                                    m_DistanceFormatsNChoices, pDistanceFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pDistanceFormat, inputFlags);
 
     // speed units
@@ -4676,20 +4684,26 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     labelFlags);
     wxString pSpeedFormats[] = {_("Knots"), _("Mph"), _("km/h"), _("m/s")};
     int m_SpeedFormatsNChoices = sizeof(pSpeedFormats) / sizeof(wxString);
-    pSpeedFormat =
-        new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats);
+    pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
+                                wxDefaultPosition, wxSize(item_h_size, -1),
+                                m_SpeedFormatsNChoices, pSpeedFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pSpeedFormat, inputFlags);
 
-    // windspeed units
-    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("WindSpeed")),
+    //  wind units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Wind speed")),
                     labelFlags);
     wxString pWindSpeedFormats[] = {_("Knots"), _("m/s"), _("Mph"), _("km/h")};
     int m_WindSpeedFormatsNChoices =
         sizeof(pWindSpeedFormats) / sizeof(wxString);
     pWindSpeedFormat = new wxChoice(
-        panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition, wxDefaultSize,
-        m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+        panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
+        wxSize(item_h_size, -1), m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pWindSpeedFormat, inputFlags);
 
     // depth units
@@ -4702,7 +4716,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     };
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, 3, pDepthUnitStrings);
+                     wxSize(item_h_size, -1), 3, pDepthUnitStrings);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
 
     // temperature units
@@ -4715,7 +4732,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     };
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, 3, pTempUnitStrings);
+                     wxSize(item_h_size, -1), 3, pTempUnitStrings);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pTempFormat, inputFlags);
 
     // spacer
@@ -4729,9 +4749,12 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                _("Decimal Degrees"),
                                _("Degrees, Minutes, Seconds")};
     int m_SDMMFormatsNChoices = sizeof(pSDMMFormats) / sizeof(wxString);
-    pSDMMFormat =
-        new wxChoice(panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-                     wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats);
+    pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
+                               wxDefaultPosition, wxSize(item_h_size, -1),
+                               m_SDMMFormatsNChoices, pSDMMFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pSDMMFormat, inputFlags);
 
     // spacer
