@@ -1467,25 +1467,29 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Will get set to e.g. "/storage/emulated/0" later
     pInit_Chart_Dir->Clear();
 
+    // A few popular requests,
+    // which will take effect on next App startup.
     pConfig->SetPath(_T ( "/Settings/WMM" ));
     pConfig->Write(_T ( "ShowIcon" ), true);
     pConfig->Write(_T ( "ShowLiveIcon" ), true);
+
+    pConfig->SetPath("/Canvas/CanvasConfig1");
+    pConfig->Write(_T ( "canvasENCShowVisibleSectorLights" ), 0);
+
+    // Manage plugins
+    // Clear the cache, allowing deprecation of obsolete plugins
+    ocpn::cache_clear();
+
+    //  Remove any problematic plugins, so preparing for upgraded versions
+    //  Todo:  Scrub this list from time to time
+
+    //  VersionCode 123 (August, 2025)
+    AndroidRemoveSystemFile(
+        "/data/user/0/org.opencpn.opencpn/manPlug/libchartscale_pi.so");
   }
 
   // Set track default color to magenta
   g_colourTrackLineColour.Set(197, 69, 195);
-
-  // Manage plugins
-  // Clear the cache, allowing deprecation of obsolete plugins
-  ocpn::cache_clear();
-
-  //  Remove any problematic plugins, so preparing for upgraded versions
-  //  Todo:  Scrub this list from time to time
-
-  //  VersionCode 123 (August, 2025)
-  AndroidRemoveSystemFile(
-      "/data/user/0/org.opencpn.opencpn/manPlug/libchartscale_pi.so");
-
 #endif
 
   // Check for upgrade....
