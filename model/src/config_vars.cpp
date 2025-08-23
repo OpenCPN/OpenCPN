@@ -79,6 +79,7 @@ int g_SOGFilterSec = 0;
 int g_trackFilterMax = 0;
 int g_track_line_width = 0;
 int g_WplAction = 0;
+int g_ais_color_set = 0;
 int sat_watchdog_timeout_ticks = 12;
 
 wxString g_active_route;
