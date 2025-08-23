@@ -1,3 +1,7 @@
 # Epoch added to handle downstream packages with different version scheme.
 # See: https://lists.debian.org/debian-devel/2024/07/msg00007.html
-possible-new-upstream-release-without-new-version [debian/changelog:1]
+epoch-changed-but-upstream-version-did-not-go-backwards * [debian/changelog:1]
+
+# appstream-cli validate wants the name to be org.opencpn.OpenCPN. However,
+# this breaks gui start of the opencpn program. Thus ignoring warning.
+opencpn: appstream-metadata-validation-failed *
