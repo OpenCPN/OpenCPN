@@ -1,3 +1,9 @@
+opencpn (1:5.12.2+dfsg-3~bpo12+2) bookworm-backports; urgency=medium
+
+  * Add missing b-d libunarr-dev.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 24 Aug 2025 16:10:13 +0200
+
 opencpn (1:5.12.2+dfsg-3~bpo12+1) bookworm-backports; urgency=medium
 
   * Backport from new upstream release
