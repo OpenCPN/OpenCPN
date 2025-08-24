@@ -189,6 +189,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
   m_psFullPath = new wxString;
   *m_psFullPath = utf8Path;
   m_fullSystemPath = utf8Path;
+  m_FullPath = std::string(pFullPath);
 
 #ifdef __OCPN__ANDROID__
   m_fullSystemPath = wxString(utf8Path.mb_str(wxConvUTF8));
@@ -492,6 +493,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
     m_psFullPath = new wxString;
     *m_psFullPath = fullfilename;
     m_fullSystemPath = fullfilename;
+    m_FullPath = std::string(pFullPath);
 
 #ifdef __OCPN__ANDROID__
     m_fullSystemPath = wxString(fullfilename.mb_str(wxConvUTF8));
@@ -573,6 +575,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
     *m_pfilename = fn.GetFullName();
     m_psFullPath = new wxString;
     *m_psFullPath = fullfilename;
+    m_FullPath = std::string(pFullPath);
 
     // Read the table entry
     ChartTableEntry_onDisk_17 cte;
@@ -651,6 +654,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
     *m_pfilename = fn.GetFullName();
     m_psFullPath = new wxString;
     *m_psFullPath = fullfilename;
+    m_FullPath = std::string(pFullPath);
 
     // Read the table entry
     ChartTableEntry_onDisk_16 cte;

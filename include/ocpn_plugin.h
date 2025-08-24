@@ -7202,4 +7202,10 @@ typedef struct _PI_PointContext {
 extern DECL_EXP std::shared_ptr<PI_PointContext> GetContextAtPoint(
     int x, int y, int canvas_index);
 
+// Extended Chart table management support
+extern DECL_EXP void AddNoShowDirectory(std::string chart_dir);
+extern DECL_EXP void RemoveNoShowDirectory(std::string chart_dir);
+extern DECL_EXP void ClearNoShowVector();
+extern DECL_EXP const std::vector<std::string> &GetNoShowVector();
+
 #endif  //_PLUGIN_H_

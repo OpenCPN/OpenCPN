@@ -21,7 +21,7 @@
  * \file
  * PlugIn GUI API Functions
  */
-
+#include <vector>
 #include "dychart.h"  // Must be ahead due to buggy GL includes handling
 
 #include <wx/wx.h>
@@ -129,6 +129,8 @@ extern int g_maxzoomin;
 extern bool g_bhide_depth_units;
 extern bool g_bhide_overzoom_flag;
 extern wxString g_androidExtFilesDir;
+
+extern std::vector<std::string> ChartDirectoryExcludedVector;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -3610,3 +3612,18 @@ void CancelMeasure(int canvas_index) {
 void SetDepthUnitVisible(bool bviz) { g_bhide_depth_units = !bviz; }
 
 void SetOverzoomFlagVisible(bool bviz) { g_bhide_overzoom_flag = !bviz; }
+
+// Extended Chart table management support
+void AddNoShowDirectory(std::string chart_dir) {
+  ChartDirectoryExcludedVector.push_back(chart_dir);
+}
+void RemoveNoShowDirectory(std::string chart_dir) {
+  auto it = std::find(ChartDirectoryExcludedVector.begin(),
+                      ChartDirectoryExcludedVector.end(), chart_dir);
+  if (it != ChartDirectoryExcludedVector.end())
+    ChartDirectoryExcludedVector.erase(it);  // Erase the element
+}
+void ClearNoShowVector() { ChartDirectoryExcludedVector.clear(); }
+const std::vector<std::string>& GetNoShowVector() {
+  return ChartDirectoryExcludedVector;
+}

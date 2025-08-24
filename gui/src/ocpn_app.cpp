@@ -514,6 +514,7 @@ bool g_bQuiltEnable;
 bool g_bQuiltStart;
 
 ChartGroupArray *g_pGroupArray;
+std::vector<std::string> ChartDirectoryExcludedVector;
 
 S57QueryDialog *g_pObjectQueryDialog;
 

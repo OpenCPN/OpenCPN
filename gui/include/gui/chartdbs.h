@@ -226,6 +226,7 @@ struct ChartTableEntry {
   const wxString *GetpFileName(void) const { return m_pfilename; }
   wxString *GetpsFullPath(void) const { return m_psFullPath; }
   wxString GetFullSystemPath() const { return m_fullSystemPath; }
+  const std::string &GetFullPath() const { return m_FullPath; }
 
   const std::vector<int> &GetGroupArray(void) const { return m_GroupArray; }
   void ClearGroupArray(void) { m_GroupArray.clear(); }
@@ -271,6 +272,7 @@ private:
   wxString *m_pfilename;  // a helper member, not on disk
   wxString *m_psFullPath;
   wxString m_fullSystemPath;
+  std::string m_FullPath;
 
   LLBBox m_bbox;
   bool m_bavail;
