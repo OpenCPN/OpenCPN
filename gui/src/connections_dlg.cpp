@@ -80,6 +80,10 @@ active waypoint. The talker ID is by default EC.
 In certain cases these messages (ECRMB and ECRMC) are required
 also when there is no active waypoint. This option enables this.
 
+Obviously, this option carries risks for vessels which have an
+autopilot which is not engaged manually -- the "fake" RMB messages
+could possibly initiate the autopilot in dangerous ways.
+
 Devices needing this includes the NASA Clipper GPS Repeater. In this
 case the output must also be filtered so that ECRMB and ECRMC are
 the only transmitted messages.
