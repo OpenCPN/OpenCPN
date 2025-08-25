@@ -2850,17 +2850,19 @@ static int PtsToRegion(int numFullPtBlocks, int iCurPtBlock,
  */
 OGdkRegion *gdk_region_polygon(const OGdkPoint *points, int n_points,
                                OGdkFillRule fill_rule) {
+  // clang-format off: version 20 and 18 gives different results
   OGdkRegion *region;
-  OEdgeTableEntry *pAET;       /* Active Edge Table       */
-  int y;                       /* current scanline        */
-  int iPts = 0;                /* number of pts in buffer */
-  OEdgeTableEntry *pWETE;      /* Winding Edge Table Entry*/
-  OScanLineList *pSLL;         /* current scanLineList    */
-  OGdkPoint *pts;              /* output buffer           */
-  OEdgeTableEntry *pPrevAET;   /* ptr to previous AET     */
-  OEdgeTable ET = {0};         /* header node for ET      */
-  OEdgeTableEntry AET;         /* header node for AET     */
-  OEdgeTableEntry *pETEs;      /* EdgeTableEntries pool   */
+  OEdgeTableEntry *pAET;     /* Active Edge Table       */
+  int y;                     /* current scanline        */
+  int iPts = 0;              /* number of pts in buffer */
+  OEdgeTableEntry *pWETE;    /* Winding Edge Table Entry*/
+  OScanLineList *pSLL;       /* current scanLineList    */
+  OGdkPoint *pts;            /* output buffer           */
+  OEdgeTableEntry *pPrevAET; /* ptr to previous AET     */
+  OEdgeTable ET = {0};       /* header node for ET      */
+  OEdgeTableEntry AET;       /* header node for AET     */
+  OEdgeTableEntry *pETEs;    /* EdgeTableEntries pool   */
+  // clang-format on
 
   /* scanlinelist header */
   OScanLineListBlock SLLBlock = {{{0, nullptr, nullptr}}, nullptr};
