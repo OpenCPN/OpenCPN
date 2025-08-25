@@ -964,7 +964,7 @@ void AnnunText::CalculateMinSize(void) {
   hv *= pdifactor;
 
   wxSize min;
-  min.x = wl + wv;
+  min.x = wxMax(min.x, wl * 1.2);
 
   // Space is tight on Android....
 #ifdef __ANDROID__
