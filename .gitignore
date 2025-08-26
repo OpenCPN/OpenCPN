@@ -24,3 +24,4 @@ tags
 # Ignore Build Dependency files
 *build-deps*
 *.txt.user
+.cache*
