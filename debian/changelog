@@ -1,3 +1,9 @@
+opencpn (1:5.12.2+dfsg-3~bpo13+1) UNRELEASED; urgency=medium
+
+  * Trixie backport of current sid version 
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 26 Aug 2025 19:57:21 +0200
+
 opencpn (1:5.12.2+dfsg-1~bpo13+1~pre2) trixie-backports; urgency=medium
 
   * New patch: Increase test timeout for slow platforms
