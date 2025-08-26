@@ -2571,9 +2571,9 @@ void GribRequestSettingBase::createLocalModelsPanel() {
   bSizerSource = new wxBoxSizer(wxHORIZONTAL);
 
   m_SourcesTreeCtrl1 = new wxTreeCtrl(
-      m_panelLocalModels, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      m_panelLocalModels, wxID_ANY, wxDefaultPosition, wxSize(-1, -1),
       wxTR_DEFAULT_STYLE | wxTR_FULL_ROW_HIGHLIGHT | wxTR_SINGLE);
-  bSizerSource->Add(m_SourcesTreeCtrl1, 1, wxALL | wxEXPAND, 5);
+  bSizerSource->Add(m_SourcesTreeCtrl1, 0, wxALL | wxEXPAND, 5);
 
   m_htmlInfoWin =
       new wxHtmlWindow(m_panelLocalModels, wxID_ANY, wxDefaultPosition,
@@ -2977,20 +2977,24 @@ void GribRequestSettingBase::createEmailPanel() {
   m_MailImage = new wxTextCtrl(m_sScrolledDialog, wxID_ANY, wxEmptyString,
                                wxDefaultPosition, wxDefaultSize,
                                wxTE_MULTILINE | wxTE_READONLY);
-  fgSizer11->Add(m_MailImage, 0, wxALL | wxEXPAND, 5);
+  fgSizer11->Add(m_MailImage, 0, wxALL | wxEXPAND, 3);
 
   sbSizer6->Add(fgSizer11, 1, wxEXPAND, 5);
 
-  m_fgScrollSizer->Add(sbSizer6, 1, wxEXPAND, 5);
+  m_fgScrollSizer->Add(sbSizer6, 1, wxEXPAND, 3);
 
   m_sScrolledDialog->SetSizer(m_fgScrollSizer);
   m_sScrolledDialog->Layout();
   m_fgScrollSizer->Fit(m_sScrolledDialog);
-  fgSizer101->Add(m_sScrolledDialog, 1, 0, 5);
+  fgSizer101->Add(m_sScrolledDialog, 1, 0, 3);
 
-  m_fgFixedSizer = new wxFlexGridSizer(0, 3, 0, 0);
+  m_fgFixedSizer = new wxFlexGridSizer(0, 4, 0, 0);
   m_fgFixedSizer->SetFlexibleDirection(wxBOTH);
   m_fgFixedSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+
+  m_rButtonYes = new wxButton(m_panelEmail, wxID_YES);
+  m_rButtonYes->SetLabel(_("Send"));
+  m_fgFixedSizer->Add(m_rButtonYes, 0, wxALL, 5);
 
   wxStaticText* m_staticText181;
   m_staticText181 =
@@ -3008,14 +3012,7 @@ void GribRequestSettingBase::createEmailPanel() {
                               wxDefaultPosition, wxDefaultSize, 0);
   m_tLimit->Wrap(-1);
   m_fgFixedSizer->Add(m_tLimit, 0, wxALL, 5);
-
   fgSizer101->Add(m_fgFixedSizer, 1, wxEXPAND, 5);
-
-  wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
-  m_rButtonYes = new wxButton(m_panelEmail, wxID_YES);
-  m_rButtonYes->SetLabel(_("Send"));
-  buttonSizer->Add(m_rButtonYes, 0, wxALL, 5);
-  fgSizer101->Add(buttonSizer, 0, wxEXPAND | wxALL, 5);
 
   m_panelEmail->SetSizer(fgSizer101);
   m_panelEmail->Layout();
@@ -3310,6 +3307,7 @@ GribRequestSettingBase::GribRequestSettingBase(GRIBUICtrlBarBase* parent,
 }
 
 GribRequestSettingBase::~GribRequestSettingBase() {
+  return;
   // Disconnect Events
   this->Disconnect(wxEVT_CLOSE_WINDOW,
                    wxCloseEventHandler(GribRequestSettingBase::OnClose));
