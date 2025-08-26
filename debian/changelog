@@ -4,26 +4,4 @@ opencpn (1:5.12.2+dfsg-3~bpo13+1) UNRELEASED; urgency=medium
 
  -- Alec Leamas <leamas.alec@gmail.com>  Tue, 26 Aug 2025 19:57:21 +0200
 
-opencpn (1:5.12.2+dfsg-1~bpo13+1~pre2) trixie-backports; urgency=medium
 
-  * New patch: Increase test timeout for slow platforms
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 11 Aug 2025 11:37:20 +0200
-
-opencpn (1:5.12.2+dfsg-1~bpo13+1~pre1) trixie-backports; urgency=medium
-
-  * New upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 11 Aug 2025 08:35:45 +0200
-
-opencpn (1:5.12.2+dfsg-1) unstable; urgency=medium
-
-  * New upstream release
-  * Drop upstreamed patches:
-     - 0007-chartdldr-Don-t-use-unarr-for-libarchive-3.7.4-4005.patch
-  * Rebase other patches
-  * Update d/copyright to reflect new source
-  * lintian-overrides: drop obsolete entries, add new for appstreamcli
-  * d/opencpn-data-install: Authors.html -> authors.html
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 10 Aug 2025 21:35:45 +0200
