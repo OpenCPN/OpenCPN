@@ -61,7 +61,7 @@ typedef void (*_GLUfuncptr)();
 #include "model/MarkIcon.h"
 #include "model/route_point.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "waypointman_gui.h"
 #include "ocpn_plugin.h"
 
@@ -467,6 +467,19 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
       w = wxMax(wxMax(w, h), 15);
       bm_size = w * g_MarkScaleFactorExp;
       bm_size /= OCPN_GetWinDIPScaleFactor();
+#ifdef __ANDROID__
+      //  Set the onscreen size of the symbol
+      //  Compensate for various display resolutions
+      //  Develop empirically, making a "diamond" symbol about 4 mm square
+      //  Android uses "density buckets", so simple math produces poor results.
+      //  Thus, these factors have been empirically tweaked to provide good
+      //  results on a variety of devices
+      float nominal_legacy_icon_size_pixels =
+          wxMax(4.0, floor(displayDPmm * 12.0));
+      // legacy icon size
+      float pix_factor = nominal_legacy_icon_size_pixels / 68.0;
+      bm_size *= pix_factor;
+#endif
 
       wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
       if (bmp.IsOk()) {

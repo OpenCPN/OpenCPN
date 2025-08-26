@@ -110,7 +110,7 @@
 #include "s52utils.h"
 #include "SoundFactory.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "SystemCmdSound.h"
 #include "usb_devices.h"
 #include "waypointman_gui.h"
@@ -3558,6 +3558,11 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
 
+    wxSize item_size = wxSize(-1, -1);
+#ifdef __ANDROID__
+    item_size = wxSize(m_fontHeight * 3, m_fontHeight);
+#endif
+
     // graphics options
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Graphics Style")),
                        labelFlags);
@@ -3566,7 +3571,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("Simplified"),
     };
     pPointStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxDefaultSize, 2, pPointStyleStrings);
+                               item_size, 2, pPointStyleStrings);
     optionsColumn->Add(pPointStyle, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Boundaries")),
@@ -3576,7 +3581,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("Symbolized"),
     };
     pBoundStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxDefaultSize, 2, pBoundStyleStrings);
+                               item_size, 2, pBoundStyleStrings);
     optionsColumn->Add(pBoundStyle, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Colors")),
@@ -3586,21 +3591,25 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("4 Color"),
     };
     p24Color = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                            wxDefaultSize, 2, pColorNumStrings);
+                            item_size, 2, pColorNumStrings);
     optionsColumn->Add(p24Color, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
 
+    item_size = wxSize(60, -1);
+#ifdef __ANDROID__
+    item_size = wxSize(m_fontHeight * 2, m_fontHeight);
+#endif
+
     // depth options
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Shallow Depth")),
                        labelFlags);
     wxBoxSizer* depShalRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depShalRow);
-    m_ShallowCtl =
-        new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
-                       wxSize(60, -1), wxTE_RIGHT);
+    m_ShallowCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
+                                  wxDefaultPosition, item_size, wxTE_RIGHT);
     depShalRow->Add(m_ShallowCtl, inputFlags);
     m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depShalRow->Add(m_depthUnitsShal, inputFlags);
@@ -3610,7 +3619,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     wxBoxSizer* depSafeRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depSafeRow);
     m_SafetyCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                                 wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
+                                 wxDefaultPosition, item_size, wxTE_RIGHT);
     depSafeRow->Add(m_SafetyCtl, inputFlags);
     m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depSafeRow->Add(m_depthUnitsSafe, inputFlags);
@@ -3620,7 +3629,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     wxBoxSizer* depDeepRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depDeepRow);
     m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                               wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
+                               wxDefaultPosition, item_size, wxTE_RIGHT);
     depDeepRow->Add(m_DeepCtl, inputFlags);
     m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depDeepRow->Add(m_depthUnitsDeep, inputFlags);
@@ -4656,6 +4665,11 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     wxFlexGridSizer* unitsSizer = new wxFlexGridSizer(2);
     unitsSizer->SetHGap(border_size);
 
+    int item_h_size = -1;
+#ifdef __ANDROID__
+    item_h_size = m_fontHeight * 4;
+#endif
+
     // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
     // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
@@ -4673,8 +4687,11 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                    _("Kilometers"), _("Meters")};
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
     pDistanceFormat = new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE,
-                                   wxDefaultPosition, wxDefaultSize,
+                                   wxDefaultPosition, wxSize(item_h_size, -1),
                                    m_DistanceFormatsNChoices, pDistanceFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pDistanceFormat, inputFlags);
 
     // speed units
@@ -4682,20 +4699,26 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     labelFlags);
     wxString pSpeedFormats[] = {_("Knots"), _("Mph"), _("km/h"), _("m/s")};
     int m_SpeedFormatsNChoices = sizeof(pSpeedFormats) / sizeof(wxString);
-    pSpeedFormat =
-        new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats);
+    pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
+                                wxDefaultPosition, wxSize(item_h_size, -1),
+                                m_SpeedFormatsNChoices, pSpeedFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pSpeedFormat, inputFlags);
 
-    // windspeed units
-    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("WindSpeed")),
+    //  wind units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Wind speed")),
                     labelFlags);
     wxString pWindSpeedFormats[] = {_("Knots"), _("m/s"), _("Mph"), _("km/h")};
     int m_WindSpeedFormatsNChoices =
         sizeof(pWindSpeedFormats) / sizeof(wxString);
     pWindSpeedFormat = new wxChoice(
-        panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition, wxDefaultSize,
-        m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+        panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
+        wxSize(item_h_size, -1), m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pWindSpeedFormat, inputFlags);
 
     // depth units
@@ -4708,7 +4731,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     };
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, 3, pDepthUnitStrings);
+                     wxSize(item_h_size, -1), 3, pDepthUnitStrings);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
 
     // temperature units
@@ -4721,7 +4747,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     };
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, 3, pTempUnitStrings);
+                     wxSize(item_h_size, -1), 3, pTempUnitStrings);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pTempFormat, inputFlags);
 
     // spacer
@@ -4735,9 +4764,12 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                _("Decimal Degrees"),
                                _("Degrees, Minutes, Seconds")};
     int m_SDMMFormatsNChoices = sizeof(pSDMMFormats) / sizeof(wxString);
-    pSDMMFormat =
-        new wxChoice(panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-                     wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats);
+    pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
+                               wxDefaultPosition, wxSize(item_h_size, -1),
+                               m_SDMMFormatsNChoices, pSDMMFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pSDMMFormat, inputFlags);
 
     // spacer
@@ -6129,21 +6161,14 @@ void options::CreateControls(void) {
   if (g_Platform->GetDisplayDIPMult(gFrame) < 1) ConnTab = _("Connect");
 
   m_pageConnections = CreatePanel(ConnTab);
-#ifndef __ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
-#else
-  CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
-// CreatePanel_NMEA_Compact(m_pageConnections, border_size, group_item_spacing);
-#endif
 
   //    SetDefaultConnectionParams();
 
   m_pageShips = CreatePanel(_("Ships"));
   CreatePanel_Ownship(m_pageShips, border_size, group_item_spacing);
   CreatePanel_AIS(m_pageShips, border_size, group_item_spacing);
-#ifndef __ANDROID__
   CreatePanel_MMSI(m_pageShips, border_size, group_item_spacing);
-#endif
 
   CreatePanel_Routes(m_pageShips, border_size, group_item_spacing);
 

@@ -21,7 +21,7 @@
  * \file
  * PlugIn GUI API Functions
  */
-
+#include <vector>
 #include "dychart.h"  // Must be ahead due to buggy GL includes handling
 
 #include <wx/wx.h>
@@ -64,7 +64,7 @@
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "SoundFactory.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "waypointman_gui.h"
@@ -126,6 +126,11 @@ extern wxString g_default_wp_icon;
 extern bool g_bhide_route_console;
 extern bool g_bhide_context_menus;
 extern int g_maxzoomin;
+extern bool g_bhide_depth_units;
+extern bool g_bhide_overzoom_flag;
+extern wxString g_androidExtFilesDir;
+
+extern std::vector<std::string> ChartDirectoryExcludedVector;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -1494,8 +1499,18 @@ int PlatformDirSelectorDialog(wxWindow* parent, wxString* file_spec,
 int PlatformFileSelectorDialog(wxWindow* parent, wxString* file_spec,
                                wxString Title, wxString initDir,
                                wxString suggestedName, wxString wildcard) {
+#ifndef __ANDROID__
   return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, initDir,
                                           suggestedName, wildcard);
+#else
+  // Android plugin without special processing are constrained to access
+  // files in the application private directory (and subdirectories) only,
+  //  e.g. /storage/emulated/0/Android/data/org.opencpn.opencpn/files
+
+  wxString ainitDir = g_androidExtFilesDir;
+  return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, ainitDir,
+                                          suggestedName, wildcard);
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -3423,15 +3438,22 @@ void SetBoatPosition(double zlat, double zlon) {
   gFrame->UpdateStatusBar();
 }
 
-void RouteInsertWaypoint(wxString route_guid, double zlat, double zlon) {
+void RouteInsertWaypoint(int canvas_index, wxString route_guid, double zlat,
+                         double zlon) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
   Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
   if (!route) return;
 
   if (route->m_bIsInLayer) return;
+
+  int seltype = parent->PrepareContextSelections(zlat, zlon);
+  if ((seltype & SELTYPE_ROUTESEGMENT) != SELTYPE_ROUTESEGMENT) return;
+
   bool rename = false;
-  // TODO
-  //  route->InsertPointAfter(m_pFoundRoutePoint, zlat, zlon,
-  //                                     rename);
+  route->InsertPointAfter(parent->GetFoundRoutepoint(), zlat, zlon, rename);
 
   pSelect->DeleteAllSelectableRoutePoints(route);
   pSelect->DeleteAllSelectableRouteSegments(route);
@@ -3585,4 +3607,23 @@ void CancelMeasure(int canvas_index) {
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
   parent->CancelMeasureRoute();
+}
+
+void SetDepthUnitVisible(bool bviz) { g_bhide_depth_units = !bviz; }
+
+void SetOverzoomFlagVisible(bool bviz) { g_bhide_overzoom_flag = !bviz; }
+
+// Extended Chart table management support
+void AddNoShowDirectory(std::string chart_dir) {
+  ChartDirectoryExcludedVector.push_back(chart_dir);
+}
+void RemoveNoShowDirectory(std::string chart_dir) {
+  auto it = std::find(ChartDirectoryExcludedVector.begin(),
+                      ChartDirectoryExcludedVector.end(), chart_dir);
+  if (it != ChartDirectoryExcludedVector.end())
+    ChartDirectoryExcludedVector.erase(it);  // Erase the element
+}
+void ClearNoShowVector() { ChartDirectoryExcludedVector.clear(); }
+const std::vector<std::string>& GetNoShowVector() {
+  return ChartDirectoryExcludedVector;
 }

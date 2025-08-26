@@ -742,6 +742,20 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
     }
   }
 
+  // Special case
+  // If no source of satellite count is available (i.e. from GSV or GGA)
+  // Set an inferred satellite count of "3" if RMC position data is valid.
+  // This ensures that the nSats value sent downstream to plugins
+  // will properly reflect a valid position fix, even in the absence of GGA/GSV
+  if ((valid_flag & POS_VALID) == POS_VALID) {
+    if (!g_bSatValid) {
+      if (g_SatsInView < 4) {
+        g_SatsInView = 3;
+        m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+      }
+    }
+  }
+
   SendBasicNavdata(valid_flag, m_log_callbacks);
   return true;
 }

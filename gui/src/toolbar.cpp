@@ -42,7 +42,7 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "gui_lib.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "model/idents.h"
 #include "ocpn_frame.h"
 

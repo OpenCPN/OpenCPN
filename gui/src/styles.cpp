@@ -37,7 +37,7 @@
 
 #include "styles.h"
 #include "model/wx28compat.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "color_handler.h"
 #include "tinyxml.h"
 #ifdef __OCPN__ANDROID__

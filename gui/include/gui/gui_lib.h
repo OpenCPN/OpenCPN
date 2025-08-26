@@ -25,13 +25,15 @@
 #ifndef GUI_LIB_H__
 #define GUI_LIB_H__
 
+#include <wx/button.h>
 #include <wx/font.h>
 #include <wx/html/htmlwin.h>
 #include <wx/msgdlg.h>
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/window.h>
-#include <wx/utils.h>
+
+#include "model/std_icon.h"
 
 /** Non-editable TextCtrl, used like wxStaticText but is copyable. */
 class CopyableText : public wxTextCtrl {
@@ -134,6 +136,25 @@ private:
   bool isActive;
 
   DECLARE_EVENT_TABLE()
+};
+
+/**
+ * Clickable, small info icon which displays a help text
+ * Typical usage:
+ *
+ * auto info_btn = InfoButton(this, g_btouch, "short header"
+ *                            "long, multiline help");
+ */
+class InfoButton : public wxButton {
+public:
+  InfoButton(wxWindow* parent, bool touch, const char* header,
+             const char* info);
+
+private:
+  class InfoFrame;
+
+  StdIcon m_icon;
+  InfoFrame* m_info_frame;
 };
 
 #endif  // GUI_LIB_H__

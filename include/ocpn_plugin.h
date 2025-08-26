@@ -2260,6 +2260,7 @@ public:
 class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
 public:
   opencpn_plugin_121(void *pmgr);
+  virtual void UpdateFollowState(int canvas_index, bool state);
 };
 
 //------------------------------------------------------------------
@@ -7152,11 +7153,14 @@ extern DECL_EXP void SetMaxZoomScale(double max_scale);
 
 extern DECL_EXP wxBitmap GetObjectIcon_PlugIn(const wxString &name);
 
+extern DECL_EXP void SetDepthUnitVisible(bool bviz);
+extern DECL_EXP void SetOverzoomFlagVisible(bool bviz);
+
 extern DECL_EXP bool IsRouteActive(wxString route_guid);
 extern DECL_EXP void SetBoatPosition(double zlat, double zlon);
 
-extern DECL_EXP void RouteInsertWaypoint(wxString route_guid, double zlat,
-                                         double zlon);
+extern DECL_EXP void RouteInsertWaypoint(int canvas_index, wxString route_guid,
+                                         double zlat, double zlon);
 extern DECL_EXP void RouteAppendWaypoint(int canvas_index, wxString route_guid);
 extern DECL_EXP void FinishRoute(int canvas_index);
 extern DECL_EXP bool IsRouteBeingCreated(int canvas_index);
@@ -7197,5 +7201,11 @@ typedef struct _PI_PointContext {
 
 extern DECL_EXP std::shared_ptr<PI_PointContext> GetContextAtPoint(
     int x, int y, int canvas_index);
+
+// Extended Chart table management support
+extern DECL_EXP void AddNoShowDirectory(std::string chart_dir);
+extern DECL_EXP void RemoveNoShowDirectory(std::string chart_dir);
+extern DECL_EXP void ClearNoShowVector();
+extern DECL_EXP const std::vector<std::string> &GetNoShowVector();
 
 #endif  //_PLUGIN_H_

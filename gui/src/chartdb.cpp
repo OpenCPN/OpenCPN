@@ -73,6 +73,7 @@ extern int g_memCacheLimit;
 extern s52plib *ps52plib;
 extern ChartDB *ChartData;
 extern unsigned int g_canvasConfig;
+extern std::vector<std::string> ChartDirectoryExcludedVector;
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y);
 bool GetMemoryStatus(int *mem_total, int *mem_used);
@@ -444,6 +445,13 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath,
   return pch;
 }
 
+bool ChartDB::IsChartDirectoryExcluded(const std::string &chart_file) {
+  for (auto excluded_dir : ChartDirectoryExcludedVector) {
+    if (ocpn::startswith(chart_file, excluded_dir)) return true;
+  }
+  return false;
+}
+
 //      Build a Chart Stack, and add the indicated chart to the stack, even if
 //      the chart does not cover the lat/lon specification
 
@@ -469,6 +477,9 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
 
   for (int db_index = 0; db_index < nEntry; db_index++) {
     const ChartTableEntry &cte = GetChartTableEntry(db_index);
+
+    // Skip any charts in Exclude array
+    if (IsChartDirectoryExcluded(cte.GetFullPath())) continue;
 
     //    Check to see if the candidate chart is in the currently active group
     bool b_group_add = false;

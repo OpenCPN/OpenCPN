@@ -315,6 +315,8 @@ extern wxString g_CmdSoundString;
 ShapeBaseChartSet gShapeBasemap;
 extern bool g_CanvasHideNotificationIcon;
 extern bool g_bhide_context_menus;
+extern bool g_bhide_depth_units;
+extern bool g_bhide_overzoom_flag;
 
 //  TODO why are these static?
 
@@ -4952,6 +4954,24 @@ void ChartCanvas::UpdateFollowButtonState(void) {
       androidSetFollowTool(1);
   }
 #endif
+
+  //        Look for plugin using API-121 or later
+  //        If found, make the follow state callback.
+  if (g_pi_manager) {
+    for (auto pic : *PluginLoader::GetInstance()->GetPlugInArray()) {
+      if (pic->m_enabled && pic->m_init_state) {
+        switch (pic->m_api_version) {
+          case 121: {
+            auto *ppi = dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
+            if (ppi) ppi->UpdateFollowState(m_canvasIndex, m_bFollow);
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+  }
 }
 
 void ChartCanvas::JumpToPosition(double lat, double lon, double scale_ppm) {
@@ -5078,19 +5098,8 @@ void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
 bool ChartCanvas::PanCanvas(double dx, double dy) {
   if (!ChartData) return false;
 
-  if (g_btouch) {
-    // Stop bfollow state, without a refresh
-    m_bFollow = false;  // update the follow flag
-    parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, false);
-    UpdateFollowButtonState();
-    // Clear the bfollow offset
-    m_OSoffsetx = 0;
-    m_OSoffsety = 0;
-  }
-
   extendedSectorLegs.clear();
 
-  // double clat = VPoint.clat, clon = VPoint.clon;
   double dlat, dlon;
   wxPoint2DDouble p(VPoint.pix_width / 2.0, VPoint.pix_height / 2.0);
 
@@ -5271,17 +5280,20 @@ int ChartCanvas::AdjustQuiltRefChart() {
       } else {
         bool brender_ok = IsChartLargeEnoughToRender(pc, VPoint);
 
-        int ref_family = pc->GetChartFamily();
-
         if (!brender_ok) {
-          unsigned int target_stack_index = 0;
-          int target_stack_index_check =
-              m_pQuilt->GetExtendedStackIndexArray()
-                  [m_pQuilt->GetRefChartdbIndex()];  // Lookup
+          int target_stack_index = wxNOT_FOUND;
+          int il = 0;
+          for (auto index : m_pQuilt->GetExtendedStackIndexArray()) {
+            if (index == m_pQuilt->GetRefChartdbIndex()) {
+              target_stack_index = il;
+              break;
+            }
+            il++;
+          }
+          if (wxNOT_FOUND == target_stack_index)  // should never happen...
+            target_stack_index = 0;
 
-          if (wxNOT_FOUND != target_stack_index_check)
-            target_stack_index = target_stack_index_check;
-
+          int ref_family = pc->GetChartFamily();
           int extended_array_count =
               m_pQuilt->GetExtendedStackIndexArray().size();
           while ((!brender_ok) &&
@@ -8058,22 +8070,11 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   return bret;
 }
 
-void ChartCanvas::CallPopupMenu(int x, int y) {
-  int mx, my;
-  mx = x;
-  my = y;
-
-  last_drag.x = mx;
-  last_drag.y = my;
-  if (m_routeState) {  // creating route?
-    InvokeCanvasMenu(x, y, SELTYPE_ROUTECREATE);
-    return;
-  }
-  // General Right Click
+int ChartCanvas::PrepareContextSelections(double lat, double lon) {
+  // On general Right Click
   // Look for selectable objects
-  double slat, slon;
-  slat = m_cursor_lat;
-  slon = m_cursor_lon;
+  double slat = lat;
+  double slon = lon;
 
 #if defined(__WXMAC__) || defined(__ANDROID__)
   wxScreenDC sdc;
@@ -8142,7 +8143,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
       seltype |= SELTYPE_AISTARGET;
   }
 
-  //    Now the various Route Parts
+  //    Now examine the various Route parts
 
   m_pFoundRoutePoint = NULL;
   if (pFindRP) {
@@ -8211,7 +8212,6 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
 
         delete proute_array;
       }
-
       node = node->GetNext();
     }
 
@@ -8280,7 +8280,6 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
 #endif
           RouteGui(*m_pSelectedRoute).Draw(dc, this, GetVP().GetBBox());
       }
-
       seltype |= SELTYPE_ROUTESEGMENT;
     }
   }
@@ -8303,12 +8302,9 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
       }
       node = node->GetNext();
     }
-
     if (m_pSelectedTrack) seltype |= SELTYPE_TRACKSEGMENT;
   }
 
-  bool bseltc = false;
-  //                      if(0 == seltype)
   {
     if (pFindCurrent) {
       // There may be multiple current entries at the same point.
@@ -8321,8 +8317,8 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
 
       SelectItem *pFind = NULL;
       SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
-      SelectableItemList SelList = pSelectTC->FindSelectionList(
-          ctx, m_cursor_lat, m_cursor_lon, SELTYPE_CURRENTPOINT);
+      SelectableItemList SelList =
+          pSelectTC->FindSelectionList(ctx, slat, slon, SELTYPE_CURRENTPOINT);
 
       //      Default is first entry
       wxSelectableItemListNode *node = SelList.GetFirst();
@@ -8348,51 +8344,63 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
       }
 
       m_pIDXCandidate = pIDX_best_candidate;
-
-      if (0 == seltype) {
-        DrawTCWindow(x, y, (void *)pIDX_best_candidate);
-        Refresh(false);
-        bseltc = true;
-      } else
-        seltype |= SELTYPE_CURRENTPOINT;
+      seltype |= SELTYPE_CURRENTPOINT;
     }
 
     else if (pFindTide) {
       m_pIDXCandidate = (IDX_entry *)pFindTide->m_pData1;
-
-      if (0 == seltype) {
-        DrawTCWindow(x, y, (void *)pFindTide->m_pData1);
-        Refresh(false);
-        bseltc = true;
-      } else
-        seltype |= SELTYPE_TIDEPOINT;
+      seltype |= SELTYPE_TIDEPOINT;
     }
   }
 
   if (0 == seltype) seltype |= SELTYPE_UNKNOWN;
 
-  if (!bseltc) {
-    InvokeCanvasMenu(x, y, seltype);
+  return seltype;
+}
 
-    // Clean up if not deleted in InvokeCanvasMenu
-    if (m_pSelectedRoute && g_pRouteMan->IsRouteValid(m_pSelectedRoute)) {
-      m_pSelectedRoute->m_bRtIsSelected = false;
-    }
-
-    m_pSelectedRoute = NULL;
-
-    if (m_pFoundRoutePoint) {
-      if (pSelect->IsSelectableRoutePointValid(m_pFoundRoutePoint))
-        m_pFoundRoutePoint->m_bPtIsSelected = false;
-    }
-    m_pFoundRoutePoint = NULL;
-
-    Refresh(true);
+void ChartCanvas::CallPopupMenu(int x, int y) {
+  last_drag.x = x;
+  last_drag.y = y;
+  if (m_routeState) {  // creating route?
+    InvokeCanvasMenu(x, y, SELTYPE_ROUTECREATE);
+    return;
   }
 
-  // Seth: Is this refresh needed?
-  Refresh(false);  // needed for MSW, not GTK  Why??
+  int seltype = PrepareContextSelections(m_cursor_lat, m_cursor_lon);
+
+  // If tide or current point is selected, then show the TC dialog immediately
+  // without context menu
+  if (SELTYPE_CURRENTPOINT == seltype) {
+    DrawTCWindow(x, y, (void *)m_pIDXCandidate);
+    Refresh(false);
+    return;
+  }
+
+  if (SELTYPE_TIDEPOINT == seltype) {
+    DrawTCWindow(x, y, (void *)m_pIDXCandidate);
+    Refresh(false);
+    return;
+  }
+
+  InvokeCanvasMenu(x, y, seltype);
+
+  // Clean up if not deleted in InvokeCanvasMenu
+  if (m_pSelectedRoute && g_pRouteMan->IsRouteValid(m_pSelectedRoute)) {
+    m_pSelectedRoute->m_bRtIsSelected = false;
+  }
+
+  m_pSelectedRoute = NULL;
+
+  if (m_pFoundRoutePoint) {
+    if (pSelect->IsSelectableRoutePointValid(m_pFoundRoutePoint))
+      m_pFoundRoutePoint->m_bPtIsSelected = false;
+  }
+  m_pFoundRoutePoint = NULL;
+
+  Refresh(true);
+  // Refresh(false);  // needed for MSW, not GTK  Why??
 }
+
 bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
   // For now just bail out completely if the point clicked is not on the chart
   if (std::isnan(m_cursor_lat)) return false;
@@ -12787,8 +12795,9 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
                                                 OVERLAY_OVER_SHIPS);
   }
 
-  DrawEmboss(dc, EmbossDepthScale());
-  DrawEmboss(dc, EmbossOverzoomIndicator(dc));
+  if (!g_bhide_depth_units) DrawEmboss(dc, EmbossDepthScale());
+  if (!g_bhide_overzoom_flag) DrawEmboss(dc, EmbossOverzoomIndicator(dc));
+
   if (g_pi_manager) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex,
                                                 OVERLAY_OVER_EMBOSS);

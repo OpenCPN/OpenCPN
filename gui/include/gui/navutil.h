@@ -141,7 +141,7 @@ RoutePoint *WaypointExists(const wxString &guid);
 Route *RouteExists(const wxString &guid);
 Route *RouteExists(Route *pTentRoute);
 Track *TrackExists(const wxString &guid);
-
+int BackupDatabase(wxWindow *parent);
 void ExportGPX(wxWindow *parent, bool bviz_only = false, bool blayer = false);
 void UI_ImportGPX(wxWindow *parent, bool islayer = false,
                   wxString dirpath = _T(""), bool isdirectory = true,
@@ -153,6 +153,8 @@ bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pRoutes,
                      const wxString suggestedName = _T("tracks"));
 bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
                         const wxString suggestedName = _T("waypoints"));
+void ImportFileArray(const wxArrayString &file_array, bool islayer,
+                     bool isPersistent, wxString dirpath);
 
 class MouseZoom {
 public:

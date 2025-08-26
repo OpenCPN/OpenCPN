@@ -36,13 +36,19 @@
  * NMEA0183 basic parsing common parts:
  *
  *   - Input is processed as lines.
- *   - Lines missing an initial '$' or '!' are considered as garbage and
- *     marked as such.
+ *   - Lines missing an initial '$' or '!' are marked as garbage.
  *   - Anything preceding first '$' or '!', including v4 tags, is
  *     silently dropped.
  *   - Sentences without checksum are allowed.
+ *   - Sentences without checksum longer than 128 chars are marked as
+ *     garbage.
  *   - Sentences with an incorrect checksum are marked as such.
  *   - Sentences filtered by input filters are marked as such.
+ *
+ * For messages which are not garbage the driver guarantees that
+ *
+ * 1. First characted is '$' or '!'-
+ * 2. For messages without checksum: the length is <= 128 chars.
  *
  */
 class CommDriverN0183 : public AbstractCommDriver {

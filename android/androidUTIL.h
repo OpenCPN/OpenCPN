@@ -149,6 +149,7 @@ extern wxString getFontQtStylesheet(wxFont *font);
 extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
+void AndroidRemoveSystemFile(wxString file);
 
 class AndroidSound;
 bool androidPlaySound(const wxString soundfile, AndroidSound *sound);

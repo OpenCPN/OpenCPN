@@ -15,7 +15,7 @@
 #include <wx/jsonval.h>
 #include <wx/timer.h>
 
-#ifndef OCPN_DISTRO_BUILD
+#if wxCHECK_VERSION(3, 2, 0)
 #include <wx/uilocale.h>
 #endif
 

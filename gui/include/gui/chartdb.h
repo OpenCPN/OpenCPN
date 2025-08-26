@@ -132,6 +132,7 @@ public:
   bool IsChartInGroup(const int db_index, const int group);
   bool IsENCInGroup(const int group);
   bool IsNonMBTileInGroup(const int group);
+  bool IsChartDirectoryExcluded(const std::string &chart_file);
 
   ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry,
                                 ChartInitFlag iflag = FULL_INIT);

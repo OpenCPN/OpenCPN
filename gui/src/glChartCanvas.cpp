@@ -231,6 +231,8 @@ extern ChartCanvas *g_focusCanvas;
 extern ChartCanvas *g_overlayCanvas;
 extern BasePlatform *g_BasePlatform;
 extern bool g_PrintingInProgress;
+extern bool g_bhide_depth_units;
+extern bool g_bhide_overzoom_flag;
 
 ocpnGLOptions g_GLOptions;
 
@@ -4528,8 +4530,10 @@ void glChartCanvas::Render() {
   }
 #endif
 
-  DrawEmboss(m_gldc, m_pParentCanvas->EmbossDepthScale());
-  DrawEmboss(m_gldc, m_pParentCanvas->EmbossOverzoomIndicator(gldc));
+  if (!g_bhide_depth_units)
+    DrawEmboss(m_gldc, m_pParentCanvas->EmbossDepthScale());
+  if (!g_bhide_overzoom_flag)
+    DrawEmboss(m_gldc, m_pParentCanvas->EmbossOverzoomIndicator(gldc));
 
   if (g_pi_manager) {
     ViewPort &vp = m_pParentCanvas->GetVP();

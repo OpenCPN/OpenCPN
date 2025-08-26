@@ -56,7 +56,7 @@
 #include "routemanagerdialog.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "TCWin.h"
 #include "ui_utils.h"
 #include "model/navobj_db.h"

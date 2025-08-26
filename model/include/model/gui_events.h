@@ -1,11 +1,5 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Autopilot output support
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2025 by David S. Register                               *
+/**************************************************************************
+ *   Copyright (C) 2025  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,20 +16,37 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _AUTOPILOTOUTPUT_H__
-#define _AUTOPILOTOUTPUT_H__
 
-#include "comm_driver.h"
-#include "model/route.h"
+/**
+ * \file
+ *  Misc  GUI event vars, a singleton.
+ */
 
-bool UpdateAutopilotN0183(Routeman &routeman);
-bool UpdateAutopilotN2K(Routeman &routeman);
+#ifndef GUI_EVENTS_H
+#define GUI_EVENTS_H
 
-/** Send RMC + a faked RMB when there is no active route. */
-bool SendNoRouteRmbRmc(Routeman &routeman);
+#include "observable_evtvar.h"
 
-bool SendPGN129283(Routeman &routeman, AbstractCommDriver *driver);
-bool SendPGN129284(Routeman &routeman, AbstractCommDriver *driver);
-bool SendPGN129285(Routeman &routeman, AbstractCommDriver *driver);
+/** EventVar exchange point, a singleton. */
+class GuiEvents {
+public:
+  static GuiEvents& GetInstance() {
+    static GuiEvents instance;
+    return instance;
+  }
 
-#endif
+  GuiEvents(const GuiEvents&) = delete;
+  GuiEvents& operator=(const GuiEvents&) = delete;
+
+  /**
+   * Notified when the day/dusk/night color scheme changes. GetInt() returns
+   * a boolean "day" value, true if the new scheme uses dark text on light
+   * background.
+   */
+  EventVar color_scheme_change;
+
+private:
+  GuiEvents() = default;
+};
+
+#endif  //  GUI_EVENTS_H

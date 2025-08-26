@@ -26,7 +26,7 @@
  *
  */
 
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 
 #ifdef ocpnUSE_SVG
 #ifndef ocpnUSE_wxBitmapBundle
@@ -47,12 +47,27 @@
 #include "model/base_platform.h"
 #include "model/routeman.h"
 
+#define SVG_IN_TO_PT 72
+#define SVG_IN_TO_PX 96
+#define SVG_PT_TO_IN 1 / 72
+#define SVG_PX_TO_IN 1 / 96
+#define SVG_PT_TO_PX 96 / 72
+#define SVG_MM_TO_PX 3.7795275591
+#define SVG_PX_TO_MM 0.2645833333
+#define SVG_MM_TO_PT 2.8346456693
+#define SVG_PT_TO_MM 0.3527777778
+#define SVG_CM_TO_PX 37.795275591
+#define SVG_CM_TO_PT 28.346456693
+#define SVG_MM_TO_IN 25.4
+
+extern BasePlatform* g_BasePlatform;
+
 wxBitmap LoadSVG(const wxString filename, const unsigned int width,
                  const unsigned int height, wxBitmap* default_bitmap,
                  bool use_cache) {
 #ifdef ocpnUSE_SVG
 #ifndef ocpnUSE_wxBitmapBundle
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return loadAndroidSVG(filename, width, height);
 #else
   wxSVGDocument svgDoc;
@@ -62,7 +77,7 @@ wxBitmap LoadSVG(const wxString filename, const unsigned int width,
     return wxBitmap(width, height);
 #endif
 #else
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return loadAndroidSVG(filename, width, height);
 #else
   wxSize s(width, height);
@@ -190,11 +205,17 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
   return false;
 }
 
-extern BasePlatform* g_BasePlatform;
-
 unsigned int SVGPixelsToDisplay(unsigned int svg_px) {
   return g_BasePlatform->GetDisplayDPmm() * SVG_MM_TO_IN / SVG_IN_TO_PX *
          svg_px * g_ChartScaleFactorExp;
+}
+
+wxBitmap LoadSvgStdIcon(const std::string& svg_file, const wxWindow* w,
+                        bool touch) {
+  auto path = fs::path(g_BasePlatform->GetSharedDataDir().ToStdString()) /
+              "uidata" / "MUI_flat" / svg_file;
+  int size = g_BasePlatform->GetSvgStdIconSize(w, touch);
+  return LoadSVG(path.string(), size, size);
 }
 
 SVGBitmapCache::SVGBitmapCache() {

@@ -40,7 +40,7 @@
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "ocpn_frame.h"
 
 extern s52plib *ps52plib;

@@ -30,6 +30,7 @@
 #include "s52plib.h"
 #include "chcanv.h"
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
+#include "model/ocpn_utils.h"
 #include "chartimg.h"
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1401,6 +1402,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       continue;
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+
+    // Skip any charts in Exclude array
+    if (ChartData->IsChartDirectoryExcluded(cte.GetFullPath())) continue;
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP)
       m_fullscreen_index_array.push_back(i);

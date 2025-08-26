@@ -43,7 +43,7 @@ typedef void (*_GLUfuncptr)();
 #include "ocpn_plugin.h"
 #include "route_point_gui.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "viewport.h"
 #include "waypointman_gui.h"
 

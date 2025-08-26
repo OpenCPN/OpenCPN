@@ -820,7 +820,7 @@ void DataLogger::SetLogfile(const fs::path& path) {
   const auto now = std::chrono::system_clock::now();
   const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
   m_stream << "# Created at: " << std::ctime(&t_c) << " \n";
-  m_stream << "received_at,protocol,msg_type,source,raw_data\n";
+  m_stream << "received_at,protocol,source,msg_type,raw_data\n";
   m_stream << std::flush;
   m_path = path;
   OnNewLogfile.Notify(path.string());

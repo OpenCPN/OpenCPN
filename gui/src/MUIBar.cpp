@@ -43,7 +43,7 @@
 #include "GoToPositionDialog.h"
 #include "styles.h"
 #include "navutil.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #include "model/idents.h"
 #include "color_handler.h"
 #include "navutil.h"

@@ -52,7 +52,7 @@
 #include "model/semantic_vers.h"
 #include "styles.h"
 #include "options.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
