@@ -3,6 +3,7 @@ Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
 Build-Depends: debhelper-compat (= 13),
+ asciidoc-base,
  cmake,
  dbus-daemon,
  git,
@@ -36,7 +37,7 @@ Build-Depends: debhelper-compat (= 13),
  rapidjson-dev
 Standards-Version: 4.7.0
 Vcs-Browser: https://github.com/opencpn/opencpn
-Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/sid
+Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/trixie-backports
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
