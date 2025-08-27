@@ -122,7 +122,6 @@ extern bool g_bquiting;
 extern bool g_disable_main_toolbar;
 extern bool g_btenhertz;
 extern bool g_CanvasHideNotificationIcon;
-extern wxString g_androidExtFilesDir;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -1499,18 +1498,8 @@ int PlatformDirSelectorDialog(wxWindow* parent, wxString* file_spec,
 int PlatformFileSelectorDialog(wxWindow* parent, wxString* file_spec,
                                wxString Title, wxString initDir,
                                wxString suggestedName, wxString wildcard) {
-#ifndef __ANDROID__
   return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, initDir,
                                           suggestedName, wildcard);
-#else
-  // Android plugin without special processing are constrained to access
-  // files in the application private directory (and subdirectories) only,
-  //  e.g. /storage/emulated/0/Android/data/org.opencpn.opencpn/files
-
-  wxString ainitDir = g_androidExtFilesDir;
-  return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, ainitDir,
-                                          suggestedName, wildcard);
-#endif
 }
 
 //---------------------------------------------------------------------------
