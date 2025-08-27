@@ -256,8 +256,8 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   // debug output
   // printf("m_MinAltitude=%7.1f  m_MaxAltitude=%7.1f  m_Range = %5.1f "
   //        " range = %5.1f  att=%d , mean=%7.2f, std=%5.2f\n",
-  //        m_MinAltitude, m_MaxAltitude, m_Range, 
-  //        range, getAttenuation(), m_meanAltitude, sqrt(varAltitude)); 
+  //        m_MinAltitude, m_MaxAltitude, m_Range,
+  //        range, getAttenuation(), m_meanAltitude, sqrt(varAltitude));
 
   wxString label;
   label.Printf(_T("+/-%.1f %8.0f ") + m_AltitudeUnit, sqrt(varAltitude),
