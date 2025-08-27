@@ -4645,9 +4645,6 @@ void CheckMigrateCharts() {
   if (g_Android_SDK_Version < 30)  // Only on Android/11 +
     return;
 
-  // Force access to correct home directory, as a hint....
-  pInit_Chart_Dir->Clear();
-
   // Scan the config file chart directory array.
   wxArrayString chartDirs =
       GetConfigChartDirectories();  // GetChartDirArrayString();
@@ -4672,6 +4669,10 @@ void CheckMigrateCharts() {
   if (!migrateDirs.GetCount()) return;
 
   // Run the chart migration assistant
+
+  // Force access to correct home directory, as a hint....
+  pInit_Chart_Dir->Clear();
+
   g_migrateDialog = new MigrateAssistantDialog(gFrame, false);
   g_migrateDialog->SetSize(gFrame->GetSize());
   g_migrateDialog->Centre();
