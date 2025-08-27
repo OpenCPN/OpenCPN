@@ -5777,12 +5777,19 @@ void DashboardWindow::OnContextMenuSelect(wxCommandEvent &event) {
 
   switch (event.GetId()) {
     case ID_DASH_PREFS: {
+      wxAuiPaneInfo &pane = m_pauimgr->GetPane(this);
       // Capture the dashboard's floating_pos before update.
-      wxPoint fp = m_pauimgr->GetPane(this).floating_pos;
+      wxPoint fp = pane.floating_pos;
       m_plugin->ShowPreferencesDialog(this);
-      // This method sets the correct size of the edited dashboard,
-      // but if it's not specified, also a default floating_pos.
-      ChangePaneOrientation(GetSizerOrientation(), true, fp.x, fp.y);
+
+      /*
+      This function sets the correct size of the edited dashboard with the
+      previous floating position instead of the default that is otherwise used.
+      If the panel is docked the size is instead specified by the docking logic
+       */
+      if (!pane.IsDocked())
+        ChangePaneOrientation(GetSizerOrientation(), true, fp.x, fp.y);
+
       if (g_bUseInternSumLog) m_plugin->UpdateSumLog(false);
       return;  // Does it's own save.
     }
