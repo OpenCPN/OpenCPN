@@ -1,2 +1,0 @@
-# Pre-release opencpn backports
-deb [signed-by=/etc/apt/keyrings/opencpn-trixie.key] http://repo.opencpn.org/trixie-backports ./
