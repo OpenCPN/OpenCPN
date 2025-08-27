@@ -238,7 +238,7 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   // do AGC to adjust scaling
   double range = MaxAltitude - MinAltitude;
   if (range > 1.1 * m_Range) setAttenuation(+1);
-  if (range < 0.3 * m_Range) setAttenuation(-1); // some hysteresis
+  if (range < 0.3 * m_Range) setAttenuation(-1);  // some hysteresis
   double grid = getAttenuation();
   m_Range = grid * c_GridLines;
 
