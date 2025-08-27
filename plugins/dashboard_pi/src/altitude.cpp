@@ -219,7 +219,7 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     dc->SetFont(g_pFontSmall->GetChosenFont());
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
-  
+
   // evaluate buffered data to know its range
   double MaxAltitude = m_ArrayAltitude[0];
   double MinAltitude = m_ArrayAltitude[0];
