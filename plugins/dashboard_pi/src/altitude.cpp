@@ -234,6 +234,8 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   double varAltitude =
       m_sum2Altitude / ALTITUDE_RECORD_COUNT;  // biased estimator, avoid / N-1
   varAltitude -= m_meanAltitude * m_meanAltitude;
+  if(varAltitude<0.0) 
+    varAltitude=0.0;  // avoid nan when calling sqrt().
 
   // do AGC to adjust scaling
   double range = MaxAltitude - MinAltitude;
