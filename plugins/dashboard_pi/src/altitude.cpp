@@ -219,10 +219,11 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     dc->SetFont(g_pFontSmall->GetChosenFont());
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
-  double MaxAltitude = -9999.0;
-  double MinAltitude = 9999999.0;
-  // evaluate buffered data
-  for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
+  
+  // evaluate buffered data to know its range
+  double MaxAltitude = m_ArrayAltitude[0];
+  double MinAltitude = m_ArrayAltitude[0];
+  for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
     if (m_ArrayAltitude[idx] > MaxAltitude)
       MaxAltitude = m_ArrayAltitude[idx];
     else if (m_ArrayAltitude[idx] < MinAltitude)
@@ -237,13 +238,9 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   // do AGC to adjust scaling
   double range = MaxAltitude - MinAltitude;
   if (range > 1.1 * m_Range) setAttenuation(+1);
-  if (range < 0.3 * m_Range)  // some hysteresis
-    setAttenuation(-1);
+  if (range < 0.3 * m_Range) setAttenuation(-1); // some hysteresis
   double grid = getAttenuation();
   m_Range = grid * c_GridLines;
-  // printf("m_Range = %5.1f  range = %5.1f  att=%d , mean=%3.2f, std=%3.2f\n",
-  //   m_Range, range, getAttenuation(), meanAltitude, sqrt(varAltitude));  //
-  //   debug output
 
   // only update axes on major corridor changes
   if ((MaxAltitude - m_MaxAltitude) / grid > 0.25 ||
@@ -256,6 +253,9 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     m_MinAltitude = (round(MinAltitude / grid) - 1) * grid;
     m_MaxAltitude = m_MinAltitude + m_Range;
   }
+  // debug output
+  // printf("m_MinAltitude=%7.1f  m_MaxAltitude=%7.1f  m_Range = %5.1f  range = %5.1f  att=%d , mean=%7.2f, std=%5.2f\n",
+  //    m_MinAltitude, m_MaxAltitude, m_Range, range, getAttenuation(), m_meanAltitude, sqrt(varAltitude)); 
 
   wxString label;
   label.Printf(_T("+/-%.1f %8.0f ") + m_AltitudeUnit, sqrt(varAltitude),
