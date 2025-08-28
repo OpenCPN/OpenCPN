@@ -6479,6 +6479,13 @@ int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
         rules = rzRules->obj->CSrules;
 
         while (NULL != rules) {
+#ifdef __ANDROID__
+          if ((long)rules < 0X1000) {  // Should never happen
+            qDebug() << "Rules NULL";
+            return 1;
+          }
+#endif
+
           switch (rules->ruleType) {
             case RUL_TXT_TX:
               RenderTX(rzRules, rules);
