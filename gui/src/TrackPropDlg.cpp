@@ -1320,9 +1320,11 @@ void TrackPropDlg::OnExtendBtnClick(wxCommandEvent& event) {
     m_pExtendTrack->Clone(m_pTrack, begin, m_pTrack->GetnPoints(), _("_plus"));
     pSelect->AddAllSelectableTrackSegments(m_pExtendTrack);
     pSelect->DeleteAllSelectableTrackSegments(m_pTrack);
+    NavObj_dB::GetInstance().DeleteTrack(m_pTrack);
     RoutemanGui(*g_pRouteMan).DeleteTrack(m_pTrack);
 
     SetTrackAndUpdate(m_pExtendTrack);
+    NavObj_dB::GetInstance().UpdateTrack(m_pTrack);
     UpdateProperties();
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
