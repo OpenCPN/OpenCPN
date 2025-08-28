@@ -457,6 +457,11 @@ void CommBridge::InitCommListeners() {
     HandleN0183_RMC(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
+  // THS
+  m_n0183_ths_lstnr.Init(Nmea0183Msg("THS"), [&](const ObservedEvt& ev) {
+    HandleN0183_THS(UnpackEvtPointer<Nmea0183Msg>(ev));
+  });
+
   // HDT
   m_n0183_hdt_lstnr.Init(Nmea0183Msg("HDT"), [&](const ObservedEvt& ev) {
     HandleN0183_HDT(UnpackEvtPointer<Nmea0183Msg>(ev));
@@ -754,6 +759,24 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
         m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
       }
     }
+  }
+
+  SendBasicNavdata(valid_flag, m_log_callbacks);
+  return true;
+}
+
+bool CommBridge::HandleN0183_THS(const N0183MsgPtr& n0183_msg) {
+  string str = n0183_msg->payload;
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodeTHS(str, temp_data)) return false;
+
+  int valid_flag = 0;
+  if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
+    gHdt = temp_data.gHdt;
+    valid_flag += HDT_UPDATE;
+    m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
   }
 
   SendBasicNavdata(valid_flag, m_log_callbacks);
