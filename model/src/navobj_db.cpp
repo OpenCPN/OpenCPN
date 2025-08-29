@@ -1997,7 +1997,7 @@ bool NavObj_dB::LoadAllPoints() {
       point->m_fWaypointRangeRingsStep = range_ring_step;
       point->m_iWaypointRangeRingsStepUnits = range_ring_units;
       point->SetShowWaypointRangeRings(range_ring_visible == 1);
-      
+
       point->m_wxcWaypointRangeRingsColour.Set(range_ring_color);
 
       point->SetScaMin(scamin);
