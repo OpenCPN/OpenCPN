@@ -60,6 +60,7 @@ public:
   // NMEA0183 decoding, by sentence.
   bool DecodeRMC(std::string s, NavData& temp_data);
   bool DecodeHDM(std::string s, NavData& temp_data);
+  bool DecodeTHS(std::string s, NavData& temp_data);
   bool DecodeHDT(std::string s, NavData& temp_data);
   bool DecodeHDG(std::string s, NavData& temp_data);
   bool DecodeVTG(std::string s, NavData& temp_data);
