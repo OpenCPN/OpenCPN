@@ -6439,110 +6439,126 @@ int s52plib::RenderObjectToGLText(const wxGLContext &glcc, ObjRazRules *rzRules)
 }
 
 int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
-  // TODO  Debugging
-        //if(rzRules->obj->Index == 6775)
-        //  int yyp = 0;
+#ifdef __OCPN__ANDROID__
+  // Catch a difficult to trap SIGSEGV, avoiding app crash
+  sigaction(SIGSEGV, NULL,
+            &sa_all_plib_previous);  // save existing action for this signal
 
-  //        if(!strncmp(rzRules->obj->FeatureName, "berths", 6))
-  //            int yyp = 0;
+  struct sigaction temp;
+  sigaction(SIGSEGV, NULL,
+            &temp);  // inspect existing action for this signal
 
-  //return 0;
-  if (!ObjectRenderCheckRules(rzRules, true)) return 0;
+  temp.sa_handler = catch_signals_plib;  // point to my handler
+  sigemptyset(&temp.sa_mask);             // make the blocking set
+                                         // empty, so that all
+                                         // other signals will be
+                                         // unblocked during my handler
+  temp.sa_flags = 0;
+  sigaction(SIGSEGV, &temp, NULL);
 
-  m_pdc = pdcin;  // use this DC
-  Rules *rules = rzRules->LUP->ruleList;
-
-  while (rules != NULL) {
-    switch (rules->ruleType) {
-      case RUL_TXT_TX:
-        RenderTX(rzRules, rules);
-        break;  // TX
-      case RUL_TXT_TE:
-        RenderTE(rzRules, rules);
-        break;  // TE
-      case RUL_SYM_PT:
-        RenderSY(rzRules, rules);
-        break;  // SY
-      case RUL_SIM_LN:
-        if (m_pdc)
-          RenderLS(rzRules, rules);
-        else
-          RenderGLLS(rzRules, rules);
-        break;  // LS
-      case RUL_COM_LN:
-        RenderLC(rzRules, rules);
-        break;  // LC
-      case RUL_MUL_SG:
-        RenderMPS(rzRules, rules);
-        break;  // MultiPoint Sounding
-      case RUL_ARC_2C:
-        RenderCARC(rzRules, rules);
-        break;  // Circular Arc, 2 colors
-
-      case RUL_CND_SY: {
-        if (!rzRules->obj->bCS_Added) {
-          rzRules->obj->CSrules = NULL;
-          GetAndAddCSRules(rzRules, rules);
-          if (strncmp(rzRules->obj->FeatureName, "SOUNDG", 6))
-            rzRules->obj->bCS_Added = 1;  // mark the object
-        }
-
-        Rules *rules_last = rules;
-        rules = rzRules->obj->CSrules;
-
-        while (NULL != rules) {
-#ifdef __ANDROID__
-          if ((long)rules < 0X1000) {  // Should never happen
-            qDebug() << "Rules NULL";
-            return 1;
-          }
-#endif
-
-          switch (rules->ruleType) {
-            case RUL_TXT_TX:
-              RenderTX(rzRules, rules);
-              break;
-            case RUL_TXT_TE:
-              RenderTE(rzRules, rules);
-              break;
-            case RUL_SYM_PT:
-              RenderSY(rzRules, rules);
-              break;
-            case RUL_SIM_LN:
-              if (m_pdc)
-                RenderLS(rzRules, rules);
-              else
-                RenderGLLS(rzRules, rules);
-              break;  // LS
-            case RUL_COM_LN:
-              RenderLC(rzRules, rules);
-              break;
-            case RUL_MUL_SG:
-              RenderMPS(rzRules, rules);
-              break;  // MultiPoint Sounding
-            case RUL_ARC_2C:
-              RenderCARC(rzRules, rules);
-              break;  // Circular Arc, 2 colors
-            case RUL_NONE:
-            default:
-              break;  // no rule type (init)
-          }
-          rules_last = rules;
-          rules = rules->next;
-        }
-
-        rules = rules_last;
-        break;
-      }
-
-      case RUL_NONE:
-      default:
-        break;  // no rule type (init)
-    }           // switch
-
-    rules = rules->next;
+  if (sigsetjmp(env_plib, 1))  //  Something in the
+                               //  code block below this on caused SIGSEGV...
+  {
+    // reset signal handler
+    sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+    return 0;
   }
+  else
+#endif
+  {
+    if (!ObjectRenderCheckRules(rzRules, true)) return 0;
 
+    m_pdc = pdcin;  // use this DC
+    Rules *rules = rzRules->LUP->ruleList;
+
+    while (rules != NULL) {
+      switch (rules->ruleType) {
+        case RUL_TXT_TX:
+          RenderTX(rzRules, rules);
+          break;  // TX
+        case RUL_TXT_TE:
+          RenderTE(rzRules, rules);
+          break;  // TE
+        case RUL_SYM_PT:
+          RenderSY(rzRules, rules);
+          break;  // SY
+        case RUL_SIM_LN:
+          if (m_pdc)
+            RenderLS(rzRules, rules);
+          else
+            RenderGLLS(rzRules, rules);
+          break;  // LS
+        case RUL_COM_LN:
+          RenderLC(rzRules, rules);
+          break;  // LC
+        case RUL_MUL_SG:
+          RenderMPS(rzRules, rules);
+          break;  // MultiPoint Sounding
+        case RUL_ARC_2C:
+          RenderCARC(rzRules, rules);
+          break;  // Circular Arc, 2 colors
+
+        case RUL_CND_SY: {
+          if (!rzRules->obj->bCS_Added) {
+            rzRules->obj->CSrules = NULL;
+            GetAndAddCSRules(rzRules, rules);
+            if (strncmp(rzRules->obj->FeatureName, "SOUNDG", 6))
+              rzRules->obj->bCS_Added = 1;  // mark the object
+          }
+
+          Rules *rules_last = rules;
+          rules = rzRules->obj->CSrules;
+
+          while (NULL != rules) {
+            switch (rules->ruleType) {
+              case RUL_TXT_TX:
+                RenderTX(rzRules, rules);
+                break;
+              case RUL_TXT_TE:
+                RenderTE(rzRules, rules);
+                break;
+              case RUL_SYM_PT:
+                RenderSY(rzRules, rules);
+                break;
+              case RUL_SIM_LN:
+                if (m_pdc)
+                  RenderLS(rzRules, rules);
+                else
+                  RenderGLLS(rzRules, rules);
+                break;  // LS
+              case RUL_COM_LN:
+                RenderLC(rzRules, rules);
+                break;
+              case RUL_MUL_SG:
+                RenderMPS(rzRules, rules);
+                break;  // MultiPoint Sounding
+              case RUL_ARC_2C:
+                RenderCARC(rzRules, rules);
+                break;  // Circular Arc, 2 colors
+              case RUL_NONE:
+              default:
+                break;  // no rule type (init)
+            }
+            rules_last = rules;
+            rules = rules->next;
+          }
+
+          rules = rules_last;
+          break;
+        }
+
+        case RUL_NONE:
+        default:
+          break;  // no rule type (init)
+      }           // switch
+
+      rules = rules->next;
+    }
+  }
+#ifdef __OCPN__ANDROID__
+  // reset signal handler
+  sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+#endif
   return 1;
 }
 
