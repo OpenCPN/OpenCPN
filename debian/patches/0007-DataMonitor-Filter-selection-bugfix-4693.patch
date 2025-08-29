@@ -1,0 +1,32 @@
+From 7c8f302f1d363d696633aa31ab5d8d59fc173ce0 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 4 Aug 2025 13:46:00 +0200
+Subject: [PATCH] DataMonitor: Filter selection bugfix - #4693
+
+A custom filter selected in the Data Monitor does not become
+active immediately due to a faulty user label -> filter lookup.
+Fix the lookup
+
+Closes: #4693
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/7c8f302f
+---
+ gui/src/data_monitor.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gui/src/data_monitor.cpp b/gui/src/data_monitor.cpp
+index cbb5d1c6b..8040d6170 100644
+--- a/gui/src/data_monitor.cpp
++++ b/gui/src/data_monitor.cpp
+@@ -360,7 +360,7 @@ class FilterChoice : public wxChoice {
+   }
+ 
+   NavmsgFilter FilterByLabel(const std::string& label) {
+-    std::string name;
++    std::string name = label;
+     for (const auto& kv : kLabels) {
+       if (kv.second == label) {
+         name = kv.first;
+-- 
+2.50.0
+

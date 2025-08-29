@@ -1,0 +1,28 @@
+From a0d009a6b5ca5500f774b406fa6e63f776dff164 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Thu, 21 Aug 2025 21:01:12 +0200
+Subject: [PATCH] data_monitor: Fix broken logfile column spec - #4717
+
+Closes: #4717
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/a0d009a6b5
+---
+ gui/src/data_monitor.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gui/src/data_monitor.cpp b/gui/src/data_monitor.cpp
+index 8040d6170..0d3a3fa70 100644
+--- a/gui/src/data_monitor.cpp
++++ b/gui/src/data_monitor.cpp
+@@ -816,7 +816,7 @@ void DataLogger::SetLogfile(const fs::path& path) {
+   const auto now = std::chrono::system_clock::now();
+   const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
+   m_stream << "# Created at: " << std::ctime(&t_c) << " \n";
+-  m_stream << "received_at,protocol,msg_type,source,raw_data\n";
++  m_stream << "received_at,protocol,source,msg_type,raw_data\n";
+   m_stream << std::flush;
+   m_path = path;
+   OnNewLogfile.Notify(path.string());
+-- 
+2.50.0
+

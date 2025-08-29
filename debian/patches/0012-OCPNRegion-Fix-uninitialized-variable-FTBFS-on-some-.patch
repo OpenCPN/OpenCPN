@@ -1,0 +1,31 @@
+From 608fb3dc225b756140adad9fa9029bae69e6a35f Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 25 Aug 2025 10:38:24 +0200
+Subject: [PATCH] OCPNRegion: Fix uninitialized variable (FTBFS on some arches)
+
+Fix FTBFS on some esoteric Debian platforms: mips, i386. But
+actually sound anyway.
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/608fb3dc2
+---
+ gui/src/OCPNRegion.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/gui/src/OCPNRegion.cpp b/gui/src/OCPNRegion.cpp
+index bb57b6579..bdbdb3e8c 100644
+--- a/gui/src/OCPNRegion.cpp
++++ b/gui/src/OCPNRegion.cpp
+@@ -2861,7 +2861,9 @@ OGdkRegion *gdk_region_polygon(const OGdkPoint *points, int n_points,
+   OEdgeTable ET = {0};         /* header node for ET      */
+   OEdgeTableEntry AET;         /* header node for AET     */
+   OEdgeTableEntry *pETEs;      /* EdgeTableEntries pool   */
+-  OScanLineListBlock SLLBlock; /* header for scanlinelist */
++
++  /* scanlinelist header */
++  OScanLineListBlock SLLBlock = {{{0, nullptr, nullptr}}, nullptr};
+   int fixWAET = FALSE;
+   OPOINTBLOCK FirstPtBlock, *curPtBlock; /* PtBlock buffers    */
+   OPOINTBLOCK *tmpPtBlock;
+-- 
+2.50.0
+
