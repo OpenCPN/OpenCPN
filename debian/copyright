@@ -477,8 +477,7 @@ Files: libs/ShapefileCpp/*
 Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-3+
 
-Files: libs/ShapefileCpp/ShapeFileCpp-b2681f8/*
- libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/multiline.shp
+Files: libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/multiline.shp
  libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/multipolygons.shp
  libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/polygons.shp
 Copyright: 2021, Jared Erickson
