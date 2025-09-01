@@ -85,10 +85,6 @@ extern float g_MarkScaleFactorExp;
 
 extern MarkInfoDlg* g_pMarkInfoDialog;
 
-WX_DECLARE_LIST(wxBitmap, BitmapList);
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(BitmapList);
-
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
