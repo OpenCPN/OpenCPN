@@ -24,6 +24,8 @@
  ***************************************************************************
  */
 
+#include <algorithm>
+
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
 #include <wx/wx.h>
@@ -63,7 +65,6 @@
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(JobList);
-WX_DEFINE_LIST(ProgressInfoList);
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
@@ -725,7 +726,7 @@ glTextureManager::glTextureManager() {
 
   m_progDialog = NULL;
 
-  for (int i = 0; i < m_max_jobs; i++) progList.Append(new ProgressInfoItem);
+  for (int i = 0; i < m_max_jobs; i++) progList.push_back(new ProgressInfoItem);
 
   //  Create/connect a dynamic event handler slot for messages from the worker
   //  threads
@@ -747,9 +748,11 @@ glTextureManager::~glTextureManager() {
   //    ClearAllRasterTextures();
   ClearJobList();
   for (int i = 0; i < m_max_jobs; i++) {
-    delete (progList[i]);
+    auto it = progList.begin();
+    std::advance(it, i);
+    delete *it;
   }
-  progList.Clear();
+  progList.clear();
   for (auto hash : m_chart_texfactory_hash) {
     delete hash.second;
   }
@@ -769,27 +772,23 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     // Look for a matching entry...
     bool bfound = false;
     ProgressInfoItem *item;
-    wxProgressInfoListNode *tnode = progList.GetFirst();
-    while (tnode) {
-      item = tnode->GetData();
+    for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
+      item = *tnode;
       if (item->file_path == ticket->m_ChartPath) {
         bfound = true;
         break;
       }
-      tnode = tnode->GetNext();
     }
 
     if (!bfound) {
       // look for an empty slot
-      tnode = progList.GetFirst();
-      while (tnode) {
-        item = tnode->GetData();
+      for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
+        item = *tnode;
         if (item->file_path.IsEmpty()) {
           bfound = true;
           item->file_path = ticket->m_ChartPath;
           break;
         }
-        tnode = tnode->GetNext();
       }
     }
 
@@ -828,11 +827,9 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
 
     // Ready to compose
     wxString msg;
-    tnode = progList.GetFirst();
-    while (tnode) {
-      item = tnode->GetData();
+    for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
+      item = *tnode;
       msg += item->msgx + _T("\n");
-      tnode = tnode->GetNext();
     }
 
     if (m_skipout) m_progMsg = _T("Skipping, please wait...\n\n");
@@ -891,11 +888,9 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     delete ticket->pFact;
   }
 
-  wxProgressInfoListNode *tnode = progList.GetFirst();
-  while (tnode) {
-    ProgressInfoItem *item = tnode->GetData();
-    if (item->file_path == ticket->m_ChartPath) item->file_path = _T("");
-    tnode = tnode->GetNext();
+  for (auto tnode = progList.begin(); tnode != progList.end(); ++tnode) {
+    ProgressInfoItem *item = *tnode;
+    if (item->file_path == ticket->m_ChartPath) item->file_path = "";
   }
 
   if (g_raster_format != GL_COMPRESSED_RGB_FXT1_3DFX) {
