@@ -214,6 +214,11 @@ class wxGLCanvas;
  */
 #define OVERLAY_OVER_UI 128
 
+/**
+ * Lowest priority for overlays to render above all basic charts.
+ */
+#define OVERLAY_CHARTS 256
+
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------

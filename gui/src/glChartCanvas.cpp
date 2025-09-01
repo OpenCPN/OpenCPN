@@ -4452,11 +4452,17 @@ void glChartCanvas::Render() {
     RenderCharts(m_gldc, screen_region);
   }
 
-#if 1
   // Done with base charts.
   // Now the overlays
   RenderS57TextOverlay(VPoint);
   RenderMBTilesOverlay(VPoint);
+
+  g_overlayCanvas = m_pParentCanvas;
+  if (g_pi_manager) {
+    g_pi_manager->SendViewPortToRequestingPlugIns(VPoint);
+    g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
+        m_pcontext, VPoint, m_pParentCanvas->m_canvasIndex, OVERLAY_CHARTS);
+  }
 
   // Render static overlay objects
   for (OCPNRegionIterator upd(screen_region); upd.HaveRects(); upd.NextRect()) {
@@ -4619,7 +4625,6 @@ void glChartCanvas::Render() {
     }
   }
   RenderGLAlertMessage();
-#endif
 
   if (g_pi_manager) {
     ViewPort &vp = m_pParentCanvas->GetVP();
@@ -5964,6 +5969,14 @@ void glChartCanvas::RenderScene(bool bRenderCharts, bool bRenderOverlays) {
   if (bRenderOverlays) {
     RenderS57TextOverlay(m_pParentCanvas->VPoint);
     RenderMBTilesOverlay(m_pParentCanvas->VPoint);
+    g_overlayCanvas = m_pParentCanvas;
+
+    if (g_pi_manager) {
+      g_pi_manager->SendViewPortToRequestingPlugIns(VPoint);
+      g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
+          m_pcontext, VPoint, m_pParentCanvas->m_canvasIndex, OVERLAY_CHARTS);
+    }
+
     DrawStaticRoutesTracksAndWaypoints(m_pParentCanvas->VPoint);
     DrawDynamicRoutesTracksAndWaypoints(VPoint);
     DrawFloatingOverlayObjects(m_gldc);
