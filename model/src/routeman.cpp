@@ -75,15 +75,15 @@ RouteList *pRouteList;
 float g_ChartScaleFactorExp;
 
 //    List definitions for Waypoint Manager Icons
-WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
-WX_DECLARE_LIST(wxString, markicon_key_list_type);
-WX_DECLARE_LIST(wxString, markicon_description_list_type);
+WX_DECLARE_LIST(wxBitmap, MarkiconBitmapListType);
+WX_DECLARE_LIST(wxString, MarkiconKeyListType);
+WX_DECLARE_LIST(wxString, MarkiconDescriptionListType);
 
 //    List implementation for Waypoint Manager Icons
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST(markicon_bitmap_list_type);
-WX_DEFINE_LIST(markicon_key_list_type);
-WX_DEFINE_LIST(markicon_description_list_type);
+WX_DEFINE_LIST(MarkiconBitmapListType);
+WX_DEFINE_LIST(MarkiconKeyListType);
+WX_DEFINE_LIST(MarkiconDescriptionListType);
 
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);
