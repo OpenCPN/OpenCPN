@@ -73,10 +73,6 @@ extern Routeman *g_pRouteMan;
 
 //    List definitions for Waypoint Manager Icons
 
-class MarkiconBitmapListType;
-class MarkiconKeyListType;
-class MarkiconDescriptionListType;
-
 WX_DEFINE_SORTED_ARRAY(MarkIcon *, SortedArrayOfMarkIcon);
 WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
 
