@@ -30,6 +30,7 @@
 #include <windows.h>
 #endif
 
+#include <algorithm>
 #include <stdlib.h>
 #include <time.h>
 #include <locale>
@@ -1590,7 +1591,7 @@ bool MyConfig::LoadLayers(wxString &path) {
                       l->m_LayerName.c_str());
         wxLogMessage(laymsg);
 
-        pLayerList->Insert(l);
+        pLayerList->insert(pLayerList->begin(), l);
 
         //  Load the entire file array as a single layer
 
@@ -3005,7 +3006,7 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
                   l->m_LayerName.c_str());
     wxLogMessage(laymsg);
 
-    pLayerList->Insert(l);
+    pLayerList->insert(pLayerList->begin(), l);
   }
 
   for (unsigned int i = 0; i < file_array.GetCount(); i++) {
