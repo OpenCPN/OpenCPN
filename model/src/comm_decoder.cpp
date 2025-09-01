@@ -131,6 +131,21 @@ bool CommDecoder::DecodeHDM(std::string s, NavData& temp_data) {
   return true;
 }
 
+bool CommDecoder::DecodeTHS(std::string s, NavData& temp_data) {
+  wxString sentence(s.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+  m_NMEA0183 << sentence3;
+
+  if (!m_NMEA0183.PreParse()) return false;
+  if (!m_NMEA0183.Parse()) return false;
+
+  // Handle only valid data A = Autonomous
+  if (!(m_NMEA0183.Ths.ModeInd == "A")) return false;
+  temp_data.gHdt = m_NMEA0183.Ths.TrueHeading;
+
+  return true;
+}
+
 bool CommDecoder::DecodeHDT(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
