@@ -24,8 +24,7 @@
 
 #include "Layer.h"
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(LayerList);
+#include <algorithm>
 
 extern bool g_bShowLayers;
 extern LayerList *pLayerList;
@@ -44,5 +43,8 @@ Layer::Layer(void) {
 
 Layer::~Layer(void) {
   //  Remove this layer from the global layer list
-  if (NULL != pLayerList) pLayerList->DeleteObject(this);
+  if (pLayerList) {
+    auto found = std::find(pLayerList->begin(), pLayerList->end(), this);
+    if (found != pLayerList->end()) pLayerList->erase(found);
+  }
 }

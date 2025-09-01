@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <algorithm>
+
 #include "routemanagerdialog.h"
 #include "route_gui.h"
 
@@ -3095,7 +3097,8 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     g_pMarkInfoDialog->ClearData();
   }
 
-  pLayerList->DeleteObject(layer);
+  auto found = std::find(pLayerList->begin(), pLayerList->end(), layer);
+  if (found != pLayerList->end()) pLayerList->erase(found);
 
   UpdateLists();
 

@@ -1921,10 +1921,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   }
 
   if (pLayerList) {
-    LayerList::iterator it;
-    while (pLayerList->GetCount()) {
-      Layer *lay = pLayerList->GetFirst()->GetData();
-      delete lay;  // automatically removes the layer from list, see Layer dtor
+    for (auto it = pLayerList->begin(); it != pLayerList->end(); ++it) {
+      delete *it;
+      // automatically removes the layer from list, see Layer dtor
     }
   }
 
