@@ -1,3 +1,4 @@
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
@@ -33,8 +34,7 @@ enum { ID_TCWIN_NX, ID_TCWIN_PR };
 
 enum { TIDE_PLOT, CURRENT_PLOT };
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(SplineList);
+using SplineList = std::list<wxPoint *>;
 
 BEGIN_EVENT_TABLE(TCWin, wxWindow)
 EVT_PAINT(TCWin::OnPaint)
@@ -814,8 +814,8 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
       //    Build spline list of points
 
-      m_sList.DeleteContents(true);
-      m_sList.Clear();
+      for (auto it = m_sList.begin(); it != m_sList.end(); it++) delete (*it);
+      m_sList.clear();
 
       for (i = 0; i < 26; i++) {
         wxPoint *pp = new wxPoint;
@@ -823,7 +823,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
         pp->y = m_graph_rect.y + (m_plot_y_offset) -
                 (int)((tcv[i] - val_off) * m_graph_rect.height / im);
 
-        m_sList.Append(pp);
+        m_sList.push_back(pp);
       }
 
       btc_valid = true;
@@ -851,17 +851,14 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     }
 
     //    Draw the Value curve
-#if wxCHECK_VERSION(2, 9, 0)
-    wxPointList *list = (wxPointList *)&m_sList;
-#else
-    wxList *list = (wxList *)&m_sList;
-#endif
+    wxPointList list;
+    for (auto &p : m_sList) list.Append(p);
 
     dc.SetPen(*pgraph);
 #if wxUSE_SPLINES
-    dc.DrawSpline(list);
+    dc.DrawSpline(&list);
 #else
-    dc.DrawLines(list);
+    dc.DrawLines(&list);
 #endif
     //  More Info
 

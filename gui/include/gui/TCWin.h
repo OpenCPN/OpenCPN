@@ -25,6 +25,8 @@
 #ifndef __TCWIN_H__
 #define __TCWIN_H__
 
+#include <list>
+
 #include <wx/frame.h>
 #include <wx/datetime.h>
 #include <wx/timer.h>
@@ -40,8 +42,6 @@ class wxTextCtrl;
 class wxButton;
 class wxListCtrl;
 class wxChoice;
-
-WX_DECLARE_LIST(wxPoint, SplineList);  // for spline curve points
 
 class TCWin : public wxFrame {
 public:
@@ -115,7 +115,7 @@ private:
   wxDateTime m_graphday;
   int m_plot_y_offset;
 
-  SplineList m_sList;
+  std::list<wxPoint *> m_sList;
 
   wxFont *pSFont;
   wxFont *pSMFont;
