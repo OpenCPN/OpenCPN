@@ -22,6 +22,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+#include <algorithm>
 #include <cmath>
 #include <list>
 #include <memory>
@@ -32,7 +34,6 @@
 #include <wx/wxprec.h>
 #include <wx/image.h>
 #include <wx/jsonval.h>
-#include <wx/listimpl.cpp>
 
 #include "model/ais_decoder.h"
 #include "model/autopilot_output.h"
@@ -67,17 +68,6 @@ RoutePoint *pAnchorWatchPoint2;
 RouteList *pRouteList;
 
 float g_ChartScaleFactorExp;
-
-//    List definitions for Waypoint Manager Icons
-WX_DECLARE_LIST(wxBitmap, MarkiconBitmapListType);
-WX_DECLARE_LIST(wxString, MarkiconKeyListType);
-WX_DECLARE_LIST(wxString, MarkiconDescriptionListType);
-
-//    List implementation for Waypoint Manager Icons
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(MarkiconBitmapListType);
-WX_DEFINE_LIST(MarkiconKeyListType);
-WX_DEFINE_LIST(MarkiconDescriptionListType);
 
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);
