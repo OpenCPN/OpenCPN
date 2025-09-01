@@ -35,7 +35,7 @@
 class OCPNConfigCatalog;
 class OCPNConfigObject;
 
-WX_DECLARE_LIST(OCPNConfigObject, ConfigObjectList);
+using ConfigObjectList = std::list<OCPNConfigObject *>;
 
 /**
  * Manages the user configuration matrix. Singleton that handles the creation,
@@ -70,14 +70,14 @@ private:  // private for singleton
   wxString GetUUID(void);
   bool SaveTemplate(wxString fileName);
   wxString GetConfigDir() { return m_configDir; }
-  ConfigObjectList *GetConfigList() { return configList; }
+  std::list<OCPNConfigObject *> *GetConfigList() { return configList; }
   OCPNConfigObject *GetConfig(wxString GUID);
   bool CheckTemplate(wxString fileName);
 
   wxString m_configDir;
   wxString m_configCatalogName;
   OCPNConfigCatalog *m_configCatalog;
-  ConfigObjectList *configList;
+  std::list<OCPNConfigObject *> *configList;
   arrayofCanvasConfigPtr g_canvasConfigArray;
 };
 
