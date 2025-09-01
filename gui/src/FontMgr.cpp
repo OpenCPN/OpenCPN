@@ -20,7 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+#include <algorithm>
 #include <locale>
 #include <set>
 
@@ -95,7 +95,6 @@ void FontMgr::Shutdown() {
 FontMgr::FontMgr() : m_wxFontCache(NULL), m_fontlist(NULL), pDefFont(NULL) {
   //    Create the list of fonts
   m_fontlist = new FontList;
-  m_fontlist->DeleteContents(true);
 
   s_locale = g_locale;
 
@@ -106,7 +105,8 @@ FontMgr::FontMgr() : m_wxFontCache(NULL), m_fontlist(NULL), pDefFont(NULL) {
 }
 
 FontMgr::~FontMgr() {
-  m_fontlist->Clear();
+  for (auto it = m_fontlist->begin(); it != m_fontlist->end(); it++) delete *it;
+  m_fontlist->clear();
   delete m_fontlist;
 
   delete m_wxFontCache;
@@ -187,26 +187,20 @@ bool FontMgr::IsDefaultFontEntry(const MyFontDesc *font_desc) const {
 wxFont *FontMgr::GetFontLegacy(const wxString &TextElement,
                                int user_default_size) {
   //    Look thru the font list for a match
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
+  for (auto node = m_fontlist->begin(); node != m_fontlist->end(); ++node) {
+    MyFontDesc *pmfd = *node;
     if (pmfd->m_dialogstring == TextElement) {
       if (pmfd->m_configstring.BeforeFirst('-') == s_locale)
         return pmfd->m_font;
     }
-    node = node->GetNext();
   }
   return GetFont(TextElement, user_default_size);
 }
 
 wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
   // Look thru the font list for a match
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-
-  while (node) {
-    pmfd = node->GetData();
+  for (auto node = m_fontlist->begin(); node != m_fontlist->end(); ++node) {
+    MyFontDesc *pmfd = *node;
     // Check if the font matches both the text element and the requested size.
     if (pmfd->m_dialogstring == TextElement &&
         (pmfd->m_configstring.BeforeFirst('-') == s_locale)) {
@@ -220,7 +214,6 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
         return pmfd->m_font;
       }
     }
-    node = node->GetNext();
   }
 
   // Found no font, so create a nice one and add to the list
@@ -247,35 +240,29 @@ wxFont *FontMgr::GetFont(const wxString &TextElement, int requested_font_size) {
   bool is_default = (requested_font_size == 0);
   MyFontDesc *pnewfd =
       new MyFontDesc(TextElement, configkey, nf, color, is_default);
-  m_fontlist->Append(pnewfd);
+  m_fontlist->push_back(pnewfd);
 
   return pnewfd->m_font;
 }
 
 MyFontDesc *FontMgr::GetFontDesc(const wxString &TextElement) const {
   // First try to find the default font entry
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
+  for (auto node = m_fontlist->begin(); node != m_fontlist->end(); ++node) {
+    MyFontDesc *pmfd = *node;
     if (pmfd->m_dialogstring == TextElement && pmfd->m_is_default &&
         pmfd->m_configstring.BeforeFirst('-') == s_locale) {
       return pmfd;
     }
-    node = node->GetNext();
   }
 
   // No default entry found, fall back to first matching entry
-  node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
+  for (auto node = m_fontlist->begin(); node != m_fontlist->end(); ++node) {
+    MyFontDesc *pmfd = *node;
     if (pmfd->m_dialogstring == TextElement &&
         pmfd->m_configstring.BeforeFirst('-') == s_locale) {
       return pmfd;
     }
-    node = node->GetNext();
   }
-
   return NULL;
 }
 
@@ -339,28 +326,28 @@ bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont,
   return false;
 }
 
-int FontMgr::GetNumFonts(void) const { return m_fontlist->GetCount(); }
+int FontMgr::GetNumFonts(void) const { return m_fontlist->size(); }
 
 const wxString &FontMgr::GetConfigString(int i) const {
-  MyFontDesc *pfd = m_fontlist->Item(i)->GetData();
-  return pfd->m_configstring;
+  auto it = m_fontlist->begin();
+  std::advance(it, i);
+  return (*it)->m_configstring;
 }
 
 const wxString &FontMgr::GetDialogString(int i) const {
-  MyFontDesc *pfd = m_fontlist->Item(i)->GetData();
-  return pfd->m_dialogstring;
+  auto it = m_fontlist->begin();
+  std::advance(it, i);
+  return (*it)->m_dialogstring;
 }
 
 wxArrayString FontMgr::GetDialogStrings(const wxString &locale) const {
   std::set<wxString> uniqueStrings;
 
-  auto node = m_fontlist->GetFirst();
-  while (node) {
-    MyFontDesc *pmfd = node->GetData();
+  for (auto node = m_fontlist->begin(); node != m_fontlist->end(); ++node) {
+    MyFontDesc *pmfd = *node;
     if (locale.IsEmpty() || pmfd->m_configstring.BeforeFirst('-') == locale) {
       uniqueStrings.insert(pmfd->m_dialogstring);
     }
-    node = node->GetNext();
   }
   wxArrayString strings;
   strings.reserve(uniqueStrings.size());  // Pre-allocate for efficiency
@@ -372,12 +359,15 @@ wxArrayString FontMgr::GetDialogStrings(const wxString &locale) const {
 }
 
 const wxString &FontMgr::GetNativeDesc(int i) const {
-  MyFontDesc *pfd = m_fontlist->Item(i)->GetData();
-  return pfd->m_nativeInfo;
+  auto it = m_fontlist->begin();
+  std::advance(it, i);
+  return (*it)->m_nativeInfo;
 }
 
 wxString FontMgr::GetFullConfigDesc(int i) const {
-  MyFontDesc *pfd = m_fontlist->Item(i)->GetData();
+  auto it = m_fontlist->begin();
+  std::advance(it, i);
+  MyFontDesc *pfd = *it;
   wxString ret = pfd->m_dialogstring;
   ret.Append(_T ( ":" ));
   ret.Append(pfd->m_nativeInfo);
@@ -392,17 +382,12 @@ wxString FontMgr::GetFullConfigDesc(int i) const {
 
 MyFontDesc *FontMgr::FindFontByConfigString(wxString pConfigString) {
   //    Search for a match in the list
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-
-  while (node) {
-    pmfd = node->GetData();
+  for (auto node = m_fontlist->begin(); node != m_fontlist->end(); ++node) {
+    MyFontDesc *pmfd = *node;
     if (pmfd->m_configstring == pConfigString) {
       return pmfd;
     }
-    node = node->GetNext();
   }
-
   return NULL;
 }
 
@@ -417,11 +402,9 @@ void FontMgr::LoadFontNative(wxString *pConfigString, wxString *pNativeDesc) {
   wxColour color(c);  // from string description
 
   //    Search for a match in the list
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-
-  while (node) {
-    pmfd = node->GetData();
+  auto node = m_fontlist->begin();
+  for (; node != m_fontlist->end(); ++node) {
+    MyFontDesc *pmfd = *node;
     if (pmfd->m_configstring == *pConfigString) {
       if (pmfd->m_configstring.BeforeFirst('-') == g_locale) {
         pmfd->m_nativeInfo = nativefont;
@@ -430,11 +413,10 @@ void FontMgr::LoadFontNative(wxString *pConfigString, wxString *pNativeDesc) {
         break;
       }
     }
-    node = node->GetNext();
   }
 
   //    Create and add the font to the list
-  if (!node) {
+  if (node == m_fontlist->end()) {
     wxFont *nf0 = new wxFont();
 
 #ifdef __OCPN__ANDROID__
@@ -460,7 +442,7 @@ void FontMgr::LoadFontNative(wxString *pConfigString, wxString *pNativeDesc) {
 
     MyFontDesc *pnewfd =
         new MyFontDesc(dialogstring, *pConfigString, nf, color);
-    m_fontlist->Append(pnewfd);
+    m_fontlist->push_back(pnewfd);
   }
 }
 
@@ -614,18 +596,14 @@ void FontMgr::ScrubList() {
 
     wxString trans = wxGetTranslation(candidate);
 
-    MyFontDesc *pmfd;
-    auto node = m_fontlist->GetFirst();
-    while (node) {
-      pmfd = node->GetData();
+    for (auto node = m_fontlist->begin(); node != m_fontlist->end(); node++) {
+      MyFontDesc *pmfd = *node;
       wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
       if (tlocale == now_locale) {
         if (trans == pmfd->m_dialogstring) {
           string_array.Add(pmfd->m_dialogstring);
         }
       }
-
-      node = node->GetNext();
     }
   }
 
@@ -634,10 +612,8 @@ void FontMgr::ScrubList() {
   // If a list item's translation is not in the "good" array, mark it for
   // removal
 
-  MyFontDesc *pmfd;
-  auto node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
+  for (auto node = m_fontlist->begin(); node != m_fontlist->end(); node++) {
+    MyFontDesc *pmfd = *node;
     wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
     if (tlocale == now_locale) {
       bool bfound = false;
@@ -652,19 +628,19 @@ void FontMgr::ScrubList() {
         pmfd->m_configstring = _T("");
       }
     }
-
-    node = node->GetNext();
   }
 
   //  Remove the marked list items
-  node = m_fontlist->GetFirst();
-  while (node) {
-    pmfd = node->GetData();
+  auto node = m_fontlist->begin();
+  while (node != m_fontlist->end()) {
+    MyFontDesc *pmfd = *node;
     if (pmfd->m_dialogstring == _T("")) {
-      bool bd = m_fontlist->DeleteObject(pmfd);
-      if (bd) node = m_fontlist->GetFirst();
-    } else
-      node = node->GetNext();
+      auto found = std::find(m_fontlist->begin(), m_fontlist->end(), pmfd);
+      if (found != m_fontlist->end()) m_fontlist->erase(found);
+      node = m_fontlist->begin();
+    } else {
+      ++node;
+    }
   }
 
   //  And finally, for good measure, make sure that everything in the candidate

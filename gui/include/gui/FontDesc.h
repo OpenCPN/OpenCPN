@@ -25,10 +25,11 @@
 #ifndef __FONTDESC_H__
 #define __FONTDESC_H__
 
+#include <list>
+
 #include <wx/string.h>
 #include <wx/font.h>
 #include <wx/colour.h>
-#include <wx/list.h>
 
 class MyFontDesc {
 public:
@@ -64,6 +65,6 @@ public:
   bool m_is_default;
 };
 
-WX_DECLARE_LIST(MyFontDesc, FontList);
+using FontList = std::list<MyFontDesc *>;
 
 #endif
