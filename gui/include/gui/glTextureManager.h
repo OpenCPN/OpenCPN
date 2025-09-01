@@ -27,6 +27,13 @@
 #ifndef __GLTEXTUREMANAGER_H__
 #define __GLTEXTUREMANAGER_H__
 
+#include <list>
+
+#include <wx/event.h>
+#include <wx/string.h>
+#include <wx/thread.h>
+#include <wx/timer.h>
+
 const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
 
 class JobTicket;
@@ -35,7 +42,7 @@ class wxGenericProgressDialog;
 WX_DECLARE_LIST(JobTicket, JobList);
 
 class ProgressInfoItem;
-WX_DECLARE_LIST(ProgressInfoItem, ProgressInfoList);
+using ProgressInfoList = std::list<ProgressInfoItem *>;
 
 class ProgressInfoItem {
 public:
