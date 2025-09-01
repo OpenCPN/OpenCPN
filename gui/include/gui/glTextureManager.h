@@ -39,8 +39,6 @@ const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
 class JobTicket;
 class wxGenericProgressDialog;
 
-WX_DECLARE_LIST(JobTicket, JobList);
-
 class ProgressInfoItem;
 using ProgressInfoList = std::list<ProgressInfoItem *>;
 
@@ -124,8 +122,8 @@ public:
                    bool b_throttle_thread, bool b_nolimit, bool b_postZip,
                    bool b_inplace);
 
-  int GetRunningJobCount() { return running_list.GetCount(); }
-  int GetJobCount() { return GetRunningJobCount() + todo_list.GetCount(); }
+  int GetRunningJobCount() { return running_list.size(); }
+  int GetJobCount() { return GetRunningJobCount() + todo_list.size(); }
   bool AsJob(wxString const &chart_path) const;
   void PurgeJobList(wxString chart_path = wxEmptyString);
   void ClearJobList();
@@ -145,8 +143,8 @@ private:
   bool DoThreadJob(JobTicket *pticket);
   bool StartTopJob();
 
-  JobList running_list;
-  JobList todo_list;
+  std::list<JobTicket *> running_list;
+  std::list<JobTicket *> todo_list;
   int m_max_jobs;
 
   int m_prevMemUsed;
