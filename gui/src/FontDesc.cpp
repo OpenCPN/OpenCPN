@@ -24,9 +24,6 @@
 
 #include "FontDesc.h"
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(FontList);
-
 MyFontDesc::MyFontDesc(wxString DialogString, wxString ConfigString,
                        wxFont *pFont, wxColour color, bool is_default)
     : m_dialogstring(DialogString),
