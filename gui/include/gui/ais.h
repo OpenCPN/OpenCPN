@@ -48,7 +48,7 @@
 #include "navutil.h"
 #include "OCPN_Sound.h"
 #include "model/ais_bitstring.h"
-#include "AISTargetListDialog.h"
+#include "ais_target_list_dlg.h"
 #include "model/ais_target_data.h"
 #include "model/ais_defs.h"
 

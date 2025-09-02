@@ -34,7 +34,7 @@
 #include "model/track.h"
 
 #include "ais.h"
-#include "AISTargetQueryDialog.h"
+#include "ais_target_query_dlg.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "navutil.h"

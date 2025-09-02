@@ -27,7 +27,7 @@
 
 #include <wx/listctrl.h>
 
-#include "AISTargetListDialog.h"
+#include "ais_target_list_dlg.h"
 #include "ais.h"
 
 /**

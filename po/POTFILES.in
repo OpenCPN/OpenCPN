@@ -185,9 +185,9 @@ gui/include/gui/about_frame.h
 gui/include/gui/about_frame_impl.h
 gui/include/gui/ais.h
 gui/include/gui/ais_info_gui.h
-gui/include/gui/AISTargetAlertDialog.h
-gui/include/gui/AISTargetListDialog.h
-gui/include/gui/AISTargetQueryDialog.h
+gui/include/gui/ais_target_alert_dialog.h
+gui/include/gui/ais_target_list_dialog.h
+gui/include/gui/ais_target_query_dialog.h
 gui/include/gui/CanvasConfig.h
 gui/include/gui/canvasMenu.h
 gui/include/gui/CanvasOptions.h

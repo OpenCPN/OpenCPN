@@ -59,9 +59,9 @@
 #include "model/select.h"
 
 #include "about.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetListDialog.h"
-#include "AISTargetQueryDialog.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_list_dlg.h"
+#include "ais_target_query_dlg.h"
 #include "AndroidSound.h"
 #include "androidUTIL.h"
 #include "CanvasOptions.h"
