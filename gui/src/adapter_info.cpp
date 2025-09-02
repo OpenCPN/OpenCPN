@@ -1,4 +1,7 @@
-#include "AdapterInfo.h"
+/* This is currently unused and should go away. */
+
+#include "adapter_info.h"
+
 #include <iostream>
 #include <winsock2.h>
 #include <iphlpapi.h>
