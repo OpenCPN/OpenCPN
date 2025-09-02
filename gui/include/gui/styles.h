@@ -240,4 +240,6 @@ private:
 
 }  // namespace ocpnStyle
 
+extern ocpnStyle::StyleManager* g_StyleManager;
+
 #endif  // _STYLES_H__
