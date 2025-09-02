@@ -48,6 +48,7 @@ extern bool g_bUseWptScaMin;
 extern bool g_bWplUsePosition;
 extern bool g_enable_root_menu_debug;
 extern bool g_persist_active_route;
+extern bool g_bresponsive;
 
 /**
  * Always send RMB and RMC n0183 messages even if there is no active

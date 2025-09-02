@@ -338,8 +338,6 @@ bool g_bCruising;
 
 ChartDummy *pDummyChart;
 
-ocpnStyle::StyleManager *g_StyleManager;
-
 bool g_bShowOutlines;
 bool g_bShowDepthUnits;
 bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
@@ -579,7 +577,6 @@ bool g_bhide_depth_units;
 bool g_bhide_overzoom_flag;
 
 AboutFrameImpl *g_pAboutDlg;
-About *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
@@ -663,7 +660,6 @@ wxString g_CmdSoundString;
  * @note For the most part, the use of this feature is conditionally compiled
  * for Android builds only.
  */
-bool g_bresponsive;
 /** Flag to enable or disable mouse rollover effects in the user interface. */
 bool g_bRollover;
 

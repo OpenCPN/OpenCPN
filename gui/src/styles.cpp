@@ -47,6 +47,8 @@
 
 extern OCPNPlatform* g_Platform;
 
+ocpnStyle::StyleManager* g_StyleManager;
+
 using namespace ocpnStyle;
 
 void bmdump(wxBitmap bm, wxString name) {
