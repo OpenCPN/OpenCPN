@@ -62,7 +62,7 @@
 #include "model/wx28compat.h"
 
 #include "ais.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "CanvasConfig.h"
 #include "canvasMenu.h"
 #include "CanvasOptions.h"

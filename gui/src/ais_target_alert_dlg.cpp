@@ -39,7 +39,7 @@
 #include "model/route_point.h"
 #include "model/select.h"
 
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "navutil.h"

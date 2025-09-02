@@ -49,8 +49,8 @@
 #include "model/wx28compat.h"
 
 #include "ais.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetQueryDialog.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_query_dlg.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "line_clip.h"

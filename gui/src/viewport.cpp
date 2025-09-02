@@ -77,7 +77,7 @@
 #include "FontMgr.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "SendToGpsDlg.h"
 #include "OCPNRegion.h"
 #include "gshhs.h"
