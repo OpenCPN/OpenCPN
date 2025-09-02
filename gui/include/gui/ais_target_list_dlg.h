@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Class AISTargetListDialog
  */
 
 #ifndef __AISTARGETLISTDIALOG_H__
@@ -27,24 +26,24 @@
 
 #include <memory>
 
-#include <wx/panel.h>
+#include <wx/aui/framemanager.h>
+#include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/listctrl.h>
+#include <wx/panel.h>
+#include <wx/spinctrl.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+
+#include "model/ais_target_data.h"
+#include "model/ais_decoder.h"
+
+#include "OCPNListCtrl.h"
 
 #define ID_AIS_TARGET_LIST 10003
 #define ID_RCLK_UNDOCK 7035
 
-class OCPNListCtrl;
-class AisDecoder;
-class AisTargetData;
-class wxWindow;
-class wxAuiManager;
-class wxButton;
-class wxStaticText;
-class wxSpinCtrl;
-class wxTextCtrl;
-class wxListEvent;
-class wxAuiManager;
-class wxAuiManagerEvent;
+class OCPNListCtrl;  // circular
 
 WX_DEFINE_SORTED_ARRAY_INT(int, ArrayOfMMSI);
 

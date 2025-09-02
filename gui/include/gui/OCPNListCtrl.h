@@ -26,9 +26,12 @@
 #define __OCPNLISTCTRL_H__
 
 #include <wx/listctrl.h>
+#include <wx/string.h>
 
 #include "ais_target_list_dlg.h"
 #include "ais.h"
+
+class AISTargetListDialog;  // circular
 
 /**
  * A custom list control for displaying AIS target information. Extends

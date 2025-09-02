@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,24 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 #ifndef __AISTARGETALERTDIALOG_H__
 #define __AISTARGETALERTDIALOG_H__
 
+/**
+ * \file
+ *
+ * Class AISTargetAlertDialog and helpers
+ */
+
 #include <wx/dialog.h>
+#include <wx/html/htmlwin.h>
+
+#include "model/ais_decoder.h"
 
 #define ID_ACKNOWLEDGE 10001
 #define ID_SILENCE 10002
 #define ID_JUMPTO 10004
 #define ID_WPT_CREATE 10005
-
-class AisDecoder;
-class wxHtmlWindow;
 
 class OCPN_AlertDialog : public wxDialog {
   DECLARE_CLASS(OCPN_AlertDialog)
