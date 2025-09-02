@@ -89,6 +89,9 @@ public:
   /** The original in-tree plugin directory, sometimes not user-writable.*/
   wxString& GetPluginDir();
 
+  /** Android license details, otherwise "" */
+  wxString GetSupplementalLicenseString();
+
   wxStandardPaths& GetStdPaths();
 
   /**
