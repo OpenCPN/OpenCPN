@@ -38,7 +38,7 @@
 #include "model/select.h"
 
 #include "ais.h"
-#include "AISTargetListDialog.h"
+#include "ais_target_list_dlg.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
 #include "OCPNListCtrl.h"

@@ -43,7 +43,7 @@
 #include "model/route_point.h"
 
 #include "ais_info_gui.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "chcanv.h"
 #include "navutil.h"
 #include "ocpn_frame.h"

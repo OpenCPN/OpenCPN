@@ -43,7 +43,7 @@
 #include "GoToPositionDialog.h"
 #include "DetailSlider.h"
 #include "RolloverWin.h"
-#include "AISTargetQueryDialog.h"
+#include "ais_target_query_dlg.h"
 #include "timers.h"
 #include "emboss_data.h"
 
