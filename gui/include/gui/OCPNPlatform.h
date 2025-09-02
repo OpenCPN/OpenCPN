@@ -164,7 +164,6 @@ public:
   //--------------------------------------------------------------------------
 
   MyConfig *GetConfigObject();
-  wxString GetSupplementalLicenseString();
 
   int DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
                            wxString Title, wxString initDir,
