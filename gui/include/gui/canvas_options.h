@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Canvas Options Window/Dialog
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,17 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Class CanvasOptions and helpers -- Canvas options Window/Dialog
  */
 
 #ifndef __canvasoption_H__
 #define __canvasoption_H__
 
+#include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/scrolwin.h>
+#include <wx/string.h>
+
 /**
- * Enumeration of control IDs used in the CanvasOptions dialog.
+ * Control IDs used in the CanvasOptions dialog.
  */
 enum {
   /** @brief ID for checkbox to show depth units */
@@ -109,9 +112,6 @@ enum {
   /** @brief ID for checkbox to show ENC data quality indicators */
   IDCO_ENCDATAQUALITY_CHECKBOX,
 };
-
-class MyFrame;
-class ChartCanvas;
 
 /**
  * Represents the Canvas Options dialog. Implements a dialog that allows users

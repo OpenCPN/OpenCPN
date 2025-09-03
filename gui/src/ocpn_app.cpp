@@ -384,7 +384,7 @@ int g_ENCTextScaleFactor;
 bool g_bShowTide;
 bool g_bShowCurrent;
 
-s52plib *ps52plib;
+s52plib *ps52plib;  // s52plib lives in libs/ ...
 s57RegistrarMgr *m_pRegistrarMan;
 
 #ifdef __WXOSX__
