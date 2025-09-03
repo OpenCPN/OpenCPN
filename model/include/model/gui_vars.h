@@ -25,6 +25,7 @@
 #ifndef GUI_VARS_H__
 #define GUI_VARS_H__
 
+extern bool g_btenhertz;
 extern bool g_FlushNavobjChanges;
 
 extern int g_click_stop;

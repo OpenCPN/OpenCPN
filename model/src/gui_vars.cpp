@@ -23,6 +23,8 @@
  */
 
 #include "model/gui_vars.h"
+
+bool g_btenhertz = false;
 bool g_FlushNavobjChanges = false;
 
 int g_click_stop = 0;
