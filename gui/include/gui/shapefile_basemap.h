@@ -408,4 +408,5 @@ private:
   std::map<Quality, ShapeBaseChart> _basemap_map;
 };
 
+extern ShapeBaseChartSet gShapeBasemap; /**< global instance */
 #endif

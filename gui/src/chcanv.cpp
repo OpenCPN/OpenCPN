@@ -313,7 +313,6 @@ extern int g_nAutoHideToolbar;
 extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
-ShapeBaseChartSet gShapeBasemap;
 extern bool g_CanvasHideNotificationIcon;
 extern bool g_bhide_context_menus;
 extern bool g_bhide_depth_units;

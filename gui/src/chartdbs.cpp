@@ -1,11 +1,6 @@
 /**************************************************************************
- *
- * Project:  ChartManager
- * Purpose:  Basic Chart Info Storage
- * Author:   David Register, Mark A Sikes
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010 by Mark A Sikes                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement chartdbs.h -- basic chart info storage
+ */
 
 #include <wx/wxprec.h>
 
@@ -30,19 +29,18 @@
 #endif
 
 #include <wx/arrimpl.cpp>
-#include <wx/encconv.h>
-#include <wx/regex.h>
-#include <wx/progdlg.h>
-#include <wx/tokenzr.h>
 #include <wx/dir.h>
+#include <wx/encconv.h>
+#include <wx/progdlg.h>
+#include <wx/regex.h>
+#include <wx/tokenzr.h>
 
-#include "chartdbs.h"
 #include "chartbase.h"
-#include "pluginmanager.h"
-#include "mbtiles.h"
-#include "mygeom.h"  // For DouglasPeucker();
+#include "chartdbs.h"
 #include "FlexHash.h"
 #include "LOD_reduce.h"
+#include "mbtiles.h"
+#include "pluginmanager.h"
 #include "shapefile_basemap.h"
 
 #ifndef UINT32
@@ -54,11 +52,6 @@
 #endif
 
 ChartGroupArray *g_pGroupArray;
-
-extern PlugInManager *g_pi_manager;
-extern wxString gWorldMapLocation;
-extern wxString gWorldShapefileLocation;
-extern ShapeBaseChartSet gShapeBasemap;
 
 static int s_dbVersion;  //    Database version currently in use at runtime
                          //  Needed for ChartTableEntry::GetChartType() only
@@ -193,7 +186,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
   m_fullSystemPath = utf8Path;
   m_FullPath = std::string(pFullPath);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_fullSystemPath = wxString(utf8Path.mb_str(wxConvUTF8));
 #endif
 
@@ -330,12 +323,12 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
         }
 
         float *pf = (float *)malloc(2 * index_keep.size() * sizeof(float));
-        float *pfe = pf;
+        float *pfe1 = pf;
 
         for (int i = 0; i < nPE; i++) {
           if (DPbuffer[2 * i] > 1000.) {
-            *pfe++ = DPbuffer[2 * i] - 2000.;
-            *pfe++ = DPbuffer[(2 * i) + 1];
+            *pfe1++ = DPbuffer[2 * i] - 2000.;
+            *pfe1++ = DPbuffer[(2 * i) + 1];
           }
         }
 
@@ -497,7 +490,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
     m_fullSystemPath = fullfilename;
     m_FullPath = std::string(pFullPath);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     m_fullSystemPath = wxString(fullfilename.mb_str(wxConvUTF8));
 #endif
     // Read the table entry
@@ -1252,10 +1245,10 @@ bool ChartDatabase::Write(const wxString &filePath) {
   cth.Write(ofs);
 
   for (int iDir = 0; iDir < cth.GetDirEntries(); iDir++) {
-    wxString &dir = m_chartDirs[iDir];
-    int dirlen = dir.length();
+    wxString dir1 = m_chartDirs[iDir];
+    int dirlen = dir1.length();
     char s[200];
-    strncpy(s, dir.mb_str(wxConvUTF8), 199);
+    strncpy(s, dir1.mb_str(wxConvUTF8), 199);
     s[199] = 0;
     dirlen = strlen(s);
     ofs.Write(&dirlen, sizeof(int));
@@ -1540,7 +1533,7 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
     // On Android, with SDK >= 30, traversal of a folder that is
     //  on within the "scoped storage" domain is very slow.
     //  Aviod it....
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     if (!androidIsDirWritable(dir_info.fullpath)) continue;
 #endif
 
@@ -1645,7 +1638,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo &dir_info,
                                            wxString &dir_magic, bool bForce) {
   //    Extract the true dir name and magic number from the compound string
   wxString dir_path = dir_info.fullpath;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   dir_path = wxString(dir_info.fullpath.mb_str(wxConvUTF8));
 #endif
 
@@ -1987,7 +1980,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
 
   wxString dir_name = dir_name_base;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   dir_name = wxString(dir_name_base.mb_str(wxConvUTF8));  // android
 #endif
 
@@ -2023,7 +2016,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     wxDir dir(dir_name);
     dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     if (!FileList.GetCount()) {
       wxArrayString afl = androidTraverseDir(dir_name, filespec);
       for (wxArrayString::const_iterator item = afl.begin(); item != afl.end();
@@ -2038,7 +2031,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       wxArrayString lowerFileList;
       dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       if (!lowerFileList.GetCount()) {
         wxArrayString afl = androidTraverseDir(dir_name, lowerFileSpec);
         for (wxArrayString::const_iterator item = afl.begin();
@@ -2099,7 +2092,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     wxString file_name = file.GetFullName();
     wxString utf8_path = full_name;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     // The full path (full_name) is the broken Android files system
     // interpretation, which does not display well onscreen. So, here we
     // reconstruct a full path spec in UTF-8 encoding for later use in string
