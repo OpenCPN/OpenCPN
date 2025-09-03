@@ -21,7 +21,6 @@
  * Implement canvas_options.h -- Canvas options Window/Dialog
  */
 
-
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -328,7 +327,7 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
                       wxCommandEventHandler(CanvasOptions::OnOptionChange),
                       NULL, this);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
