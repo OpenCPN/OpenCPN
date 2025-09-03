@@ -1290,6 +1290,11 @@ void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
       delete props;
       break;
   }
+  auto parent = GetParent();
+  auto ps = static_cast<MMSI_Props_Panel*>(parent);
+  if (ps) {
+    ps->UpdateMMSIList();
+  }
 }
 
 MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
@@ -1303,85 +1308,43 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topSizer);
 
-  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100;100");
-  //  Parse the global column width string as read from config file
-  wxStringTokenizer tkz(MMSI_props_column_spec, _T(";"));
-  wxString s_width = tkz.GetNextToken();
   int width;
-  long lwidth;
 
-  m_pListCtrlMMSI = new MMSIListCtrl(
-      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, -1),
-      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
-          wxBORDER_SUNKEN | wxLC_VIRTUAL);
-  // wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
+  long lstyle = wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
+                wxBORDER_SUNKEN;
+#ifndef __ANDROID__
+  lstyle |= wxLC_VIRTUAL;
+#endif
+  m_pListCtrlMMSI = new MMSIListCtrl(this, ID_MMSI_PROPS_LIST,
+                                     wxDefaultPosition, wxDefaultSize, lstyle);
 
-  ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  // imglist->Add(style->GetIcon(_T( "sort_asc" )));
-  // imglist->Add(style->GetIcon(_T( "sort_desc" )));
-
-  // m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
   int dx = GetCharWidth();
 
-  width = dx * 5;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 13);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
-
-  s_width = tkz.GetNextToken();
   width = dx * 12;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 25);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlCLASS, _("Track Mode"), wxLIST_FORMAT_CENTER,
+  m_pListCtrlMMSI->InsertColumn(mlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
+
+  width = dx * 10;
+  m_pListCtrlMMSI->InsertColumn(mlTrackMode, _("Track Mode"),
+                                wxLIST_FORMAT_CENTER, width);
+
+  width = dx * 8;
+  m_pListCtrlMMSI->InsertColumn(mlIgnore, _("Ignore"), wxLIST_FORMAT_CENTER,
                                 width);
 
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ignore"), wxLIST_FORMAT_CENTER,
+  width = dx * 6;
+  m_pListCtrlMMSI->InsertColumn(mlMOB, _("MOB"), wxLIST_FORMAT_CENTER, width);
+
+  width = dx * 10;
+  m_pListCtrlMMSI->InsertColumn(mlVDM, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
                                 width);
 
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("MOB"), wxLIST_FORMAT_CENTER, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 15);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ship name"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER,
+  width = dx * 10;
+  m_pListCtrlMMSI->InsertColumn(mlFollower, _("Follower"), wxLIST_FORMAT_CENTER,
                                 width);  // Has
+
+  width = dx * 12;
+  m_pListCtrlMMSI->InsertColumn(mlShipName, _("Ship name"),
+                                wxLIST_FORMAT_CENTER, width);
 
   topSizer->Add(m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0);
 
@@ -1423,6 +1386,9 @@ void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
 }
 
 void MMSI_Props_Panel::UpdateMMSIList(void) {
+  if (m_pListCtrlMMSI && !m_pListCtrlMMSI->IsVirtual())
+    return UpdateNVMMSIList();
+
   // Capture the MMSI of the curently selected list item
   long selItemID = wxNOT_FOUND;
   m_pListCtrlMMSI->GetNextItem(selItemID, wxLIST_NEXT_ALL,
@@ -1452,6 +1418,31 @@ void MMSI_Props_Panel::UpdateMMSIList(void) {
 #ifdef __WXMSW__
   m_pListCtrlMMSI->Refresh(FALSE);
 #endif
+}
+
+void MMSI_Props_Panel::UpdateNVMMSIList(void) {
+  // Capture the MMSI of the currently selected list item
+  long selItemID = wxNOT_FOUND;
+  m_pListCtrlMMSI->GetNextItem(selItemID, wxLIST_NEXT_ALL,
+                               wxLIST_STATE_SELECTED);
+  int selMMSI = wxNOT_FOUND;
+  if (selItemID != wxNOT_FOUND) selMMSI = g_MMSI_Props_Array[selItemID]->MMSI;
+
+  m_pListCtrlMMSI->DeleteAllItems();
+
+  for (size_t i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    wxListItem item;
+    item.SetId(i);
+    m_pListCtrlMMSI->InsertItem(item);
+    for (int j = 0; j < mlShipName + 1; j++) {
+      item.SetColumn(j);
+      item.SetText(m_pListCtrlMMSI->OnGetItemText(i, j));
+      m_pListCtrlMMSI->SetItem(item);
+    }
+  }
+  Refresh();
+
+  return;
 }
 
 void MMSI_Props_Panel::SetColorScheme(ColorScheme cs) { DimeControl(this); }
