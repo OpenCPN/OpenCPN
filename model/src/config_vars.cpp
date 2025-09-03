@@ -31,6 +31,7 @@ bool g_bAISRolloverShowCPA = false;
 bool g_bAllowShipToActive = false;
 bool g_bBasicMenus = false;
 bool g_bConfirmObjectDelete = false;
+bool g_bDebugCM93 = false;
 bool g_benableUDPNullHeader = false;
 bool g_bfilter_cogsog = false;
 bool g_bGarminHostUpload = false;
@@ -62,6 +63,9 @@ float g_selection_radius_mm = 2.0;
 float g_selection_radius_touch_mm = 10.0;
 float g_ShipScaleFactorExp = 0.0;
 
+int g_detailslider_dialog_x = 0;
+int g_detailslider_dialog_y = 0;
+int g_cm93_zoom_factor = 0;
 int g_COGFilterSec = 1;
 int g_iDistanceFormat = 0;
 int g_iSDMMFormat = 0;

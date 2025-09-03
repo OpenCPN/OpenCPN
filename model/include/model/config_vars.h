@@ -35,6 +35,7 @@ extern bool g_bAISRolloverShowCPA;
 extern bool g_bAllowShipToActive;
 extern bool g_bBasicMenus;
 extern bool g_bConfirmObjectDelete;
+extern bool g_bDebugCM93;
 extern bool g_benableUDPNullHeader;
 extern bool g_bfilter_cogsog;
 extern bool g_bGarminHostUpload;
@@ -53,6 +54,7 @@ extern bool g_bUseWptScaMin;
 extern bool g_bWplUsePosition;
 extern bool g_enable_root_menu_debug;
 extern bool g_persist_active_route;
+
 /**
  * Always send RMB and RMC n0183 messages even if there is no active
  * route. One use case is the Nasa Marine instruments Clipper GPS
@@ -71,10 +73,14 @@ extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
 extern float g_ShipScaleFactorExp;
 
+extern int g_cm93_zoom_factor;
 extern int g_COGFilterSec;
 extern int g_NMEAAPBPrecision;
 extern int g_SOGFilterSec;
 extern int g_WplAction;
+
+extern int g_detailslider_dialog_x;
+extern int g_detailslider_dialog_y;
 extern int g_iDistanceFormat;
 extern int g_iSDMMFormat;
 extern int g_iSpeedFormat;
@@ -92,10 +98,10 @@ extern int g_nDepthUnitDisplay;
 extern int g_netmask_bits;
 extern int g_nNMEADebug;
 extern int g_nTrackPrecision;
+extern int gps_watchdog_timeout_ticks;
 extern int g_route_line_width;
 extern int g_trackFilterMax;
 extern int g_track_line_width;
-extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 
 extern wxString g_active_route;
