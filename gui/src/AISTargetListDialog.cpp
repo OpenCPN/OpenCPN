@@ -327,6 +327,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
   m_pdecoder = pdecoder;
   g_bsort_once = false;
   m_bautosort_force = false;
+  m_lockAISTargetList = false;
 
   wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*qFont);
@@ -768,6 +769,15 @@ void AISTargetListDialog::CreateControls() {
       wxCommandEventHandler(AISTargetListDialog::OnCopyMMSI), NULL, this);
   bsRouteButtonsInner->Add(m_pButtonCopyMMSI, 0, wxEXPAND | wxALL, 2);
 
+  m_pButtonLockAISTargetList =
+      new wxButton(winr, wxID_ANY, _("Lock list"), wxDefaultPosition,
+                   wxDefaultSize, wxBU_AUTODRAW);
+
+  m_pButtonLockAISTargetList->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(AISTargetListDialog::OnLockAisTargetList), NULL, this);
+  bsRouteButtonsInner->Add(m_pButtonLockAISTargetList, 0, wxEXPAND | wxALL, 2);
+
   m_pCBAutosort =
       new wxCheckBox(winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
                      wxDefaultSize, wxBU_AUTODRAW);
@@ -1054,6 +1064,16 @@ void AISTargetListDialog::OnCopyMMSI(wxCommandEvent &event) {
   CopyMMSItoClipBoard((int)m_pMMSI_array->Item(selItemID));
 }
 
+void AISTargetListDialog::OnLockAisTargetList(wxCommandEvent &event) {
+  m_lockAISTargetList = !m_lockAISTargetList;
+
+  if (m_lockAISTargetList) {
+    m_pButtonLockAISTargetList->SetLabelText(_("Unlock list"));
+  } else {
+    m_pButtonLockAISTargetList->SetLabelText(_("Lock list"));
+  }
+}
+
 void AISTargetListDialog::CenterToTarget(bool close) {
   long selItemID = -1;
   selItemID = m_pListCtrlAISTargets->GetNextItem(selItemID, wxLIST_NEXT_ALL,
@@ -1108,6 +1128,9 @@ std::shared_ptr<AisTargetData> AISTargetListDialog::GetpTarget(
 }
 
 void AISTargetListDialog::UpdateAISTargetList(void) {
+  if (m_lockAISTargetList)
+    return;
+
   if (m_pListCtrlAISTargets && !m_pListCtrlAISTargets->IsVirtual())
     return UpdateNVAISTargetList();
 
