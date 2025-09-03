@@ -28,6 +28,9 @@
 #endif
 
 #include <wx/aui/aui.h>
+class OCPN_AUIManager;  // forward
+
+extern OCPN_AUIManager* g_pauimgr;  ///< Global instance
 
 class OCPN_AUIManager : public wxAuiManager {
 public:

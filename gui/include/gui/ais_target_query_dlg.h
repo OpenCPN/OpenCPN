@@ -32,6 +32,9 @@
 #include "model/ocpn_types.h"
 #include "color_types.h"
 
+class AISTargetQueryDialog;                               // forward
+extern AISTargetQueryDialog* g_pais_query_dialog_active;  ///< Global instance
+
 #define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT
 
 /**

@@ -1,11 +1,5 @@
 
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Chart Canvas
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,45 +13,72 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ *\file
+ *
+ * Generic %Chart canvas base.
+ */
 
 #ifndef _CHCANV_H__
 #define _CHCANV_H__
 
-// Make sure glew.h is included before GL/gl.h:
-#if defined(__WXQT__) || defined(__WXGTK__) || defined(__MSVC__)
-#include "GL/glew.h"
-#endif
-
-#include "bbox.h"
+#include "gl_headers.h"  // Must go before wx/glcanvas
 
 #include <wx/datetime.h>
-#include <wx/glcanvas.h>
-#include <wx/treectrl.h>
 #include <wx/grid.h>
+#include <wx/treectrl.h>
 
-#include "model/track.h"
+#ifdef ocpnUSE_GL
+#include <wx/glcanvas.h>
+#endif
 
+#include "model/route.h"
+#include "model/route_point.h"
+#include "model/select_item.h"
+
+#include "bbox.h"
+#include "canvas_menu.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "ChInfoWin.h"
+#include "compass.h"
 #include "emboss_data.h"
+#include "gshhs.h"
+#include "gui_lib.h"
 #include "IDX_entry.h"
+#include "MUIBar.h"
 #include "notification_manager_gui.h"
-#include "ocpCursor.h"
-#include "observable.h"
 #include "observable_evtvar.h"
+#include "observable.h"
+#include "ocpCursor.h"
+#include "ocpn_frame.h"
+#include "ocpn_pixel.h"
 #include "ocpn_plugin.h"
+#include "piano.h"
+#include "Quilt.h"
 #include "RolloverWin.h"
 #include "S57Sector.h"
+#include "TCWin.h"
 #include "undo.h"
 
-#include "gshhs.h"
-class ocpnCompass;
-class TimedPopupWin;
+class CanvasMenuHandler;  // circular
+
+class ChartCanvas;  // forward
+extern ChartCanvas *g_overlayCanvas;
+extern ChartCanvas *g_focusCanvas;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
+
+//    Set up the preferred quilt type
+#define QUILT_TYPE_2
+
+//----------------------------------------------------------------------------
+//    Forward Declarations
+//----------------------------------------------------------------------------
 
 //--------------------------------------------------------
 //    Screen Brightness Control Support Routines
@@ -66,37 +87,7 @@ void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
 
 int InitScreenBrightness(void);
 int RestoreScreenBrightness(void);
-int SetScreenBrightness(int brightness);
-
-//    Set up the preferred quilt type
-#define QUILT_TYPE_2
-
-//----------------------------------------------------------------------------
-//    Forward Declarations
-//----------------------------------------------------------------------------
-class Route;
-class TCWin;
-class RoutePoint;
-class SelectItem;
-class BoundingBox;
-class ocpnBitmap;
-class WVSChart;
-class MyFrame;
-class ChartBaseBSB;
-class ChartBase;
-class AisTargetData;
-class S57ObjectTree;
-class S57ObjectDesc;
-class RolloverWin;
-class Quilt;
-class PixelCache;
-class ChInfoWin;
-class glChartCanvas;
-class CanvasMenuHandler;
-class ChartStack;
-class Piano;
-class canvasConfig;
-class MUIBar;
+int SetScreenBrightness(int brig1Ghtness);
 
 enum  //  specify the render behaviour of SetViewPoint()
 {
@@ -135,6 +126,9 @@ extern void pupHandler_PasteRoute();
 extern void pupHandler_PasteWaypoint();
 
 extern void pupHandler_PasteTrack();
+
+class canvasConfig;  // circular
+class Quilt;         // circular
 
 /**
  * ChartCanvas - Main chart display and interaction component

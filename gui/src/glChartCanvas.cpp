@@ -227,7 +227,6 @@ extern int g_nCPUCount;
 extern bool g_running;
 
 extern unsigned int g_canvasConfig;
-extern ChartCanvas *g_focusCanvas;
 extern ChartCanvas *g_overlayCanvas;
 extern BasePlatform *g_BasePlatform;
 extern bool g_PrintingInProgress;
@@ -238,6 +237,8 @@ ocpnGLOptions g_GLOptions;
 
 wxColor s_regionColor;
 extern ShapeBaseChartSet gShapeBasemap;
+
+extern ChartCanvas *g_focusCanvas;  ///< Global instance
 
 //    For VBO(s)
 bool g_b_EnableVBO;

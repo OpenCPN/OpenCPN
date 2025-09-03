@@ -32,13 +32,13 @@
 #include "color_types.h"
 
 extern ColorScheme global_color_scheme;
-extern S57QueryDialog* g_pObjectQueryDialog;
 extern int g_S57_dialog_sx;
 extern int g_S57_dialog_sy;
 extern int g_S57_extradialog_sx;
 extern int g_S57_extradialog_sy;
 extern bool g_bresponsive;
 
+S57QueryDialog* g_pObjectQueryDialog;
 // Private class implementations
 class MessageHardBreakWrapper : public wxTextWrapper {
 public:

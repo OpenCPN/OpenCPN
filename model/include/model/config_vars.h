@@ -53,21 +53,54 @@ extern bool g_bUseWptScaMin;
 extern bool g_bWplUsePosition;
 extern bool g_enable_root_menu_debug;
 extern bool g_persist_active_route;
+extern bool g_bsimplifiedScalebar;
+extern bool g_bShowMenuBar;
+extern bool g_bShowCompassWin;
+extern bool g_bWayPointPreventDragging;
+extern bool g_bEnableZoomToCursor;
+extern bool g_bShowChartBar;
+extern bool g_bShowShipToActive;
+extern bool g_bFullScreenQuilt;
+extern bool g_bsmoothpanzoom;
+extern bool g_bDebugOGL;
+extern bool g_benable_rotate;
+extern bool g_bRollover;  ///<  Enable/disable mouse rollover GUI effects
+extern bool g_bSpaceDropMark;
+extern bool g_bAutoHideToolbar;
+extern bool g_bShowTrackPointTime;
+extern bool g_bShowLiveETA;
+extern bool g_btenhertz;
+extern bool g_useMUI;
+extern bool g_bPreserveScaleOnX;
+
 /**
  * Always send RMB and RMC n0183 messages even if there is no active
  * route. One use case is the Nasa Marine instruments Clipper GPS
  */
 extern bool g_always_send_rmb_rmc;
 
+extern double g_mouse_zoom_sensitivity;
 extern double g_n_arrival_circle_radius;
 extern double g_PlanSpeed;
 extern double g_TrackDeltaDistance;
 extern double g_UserVar;
+extern double g_plus_minus_zoom_factor;
+extern double g_n_ownship_length_meters;
+extern double g_n_ownship_beam_meters;
+extern double g_n_gps_antenna_offset_x;
+extern double g_n_gps_antenna_offset_y;
+extern double g_ownship_predictor_minutes;
+extern double g_ownship_HDTpredictor_miles;
+extern double g_COGAvg;           ///< Debug only usage
+extern double g_display_size_mm;  ///< Physical display width (mm)
+extern double g_defaultBoatSpeed;
 
 extern float g_fWaypointRangeRingsStep;
 extern float g_GLMinSymbolLineWidth;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
+extern float g_ShipScaleFactorExp;
+extern float g_fNavAidRadarRingsStep;
 
 extern int g_COGFilterSec;
 extern int g_NMEAAPBPrecision;
@@ -86,6 +119,7 @@ extern int g_mbtilesMaxLayers;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nCOMPortCheck;
+extern int g_nbrightness;
 extern int g_nDepthUnitDisplay;
 extern int g_netmask_bits;
 extern int g_nNMEADebug;
@@ -97,7 +131,33 @@ extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 extern int g_nCacheLimit;
 extern int g_memCacheLimit;
+extern int g_iNavAidRadarRingsNumberVisible;
+extern int g_pNavAidRadarRingsStepUnits;
+extern int g_ENCSoundingScaleFactor;
+extern int g_ENCTextScaleFactor;
+extern int g_maxzoomin;
+extern int g_shipToActiveStyle;
+extern int g_shipToActiveColor;
+extern int g_S57_dialog_sx;
+extern int g_S57_dialog_sy;
+extern int g_OwnShipIconType;
+extern int g_detailslider_dialog_x;
+extern int g_detailslider_dialog_y;
+extern int g_n_ownship_min_mm;
+extern int g_cog_predictor_style;
+extern int g_cog_predictor_endmarker;
+extern int g_ownship_HDTpredictor_style;
+extern int g_ownship_HDTpredictor_endmarker;
+extern int g_ownship_HDTpredictor_width;
+extern int g_chart_zoom_modifier_raster;
+extern int g_chart_zoom_modifier_vector;
+extern int g_ChartScaleFactor;
+extern int g_cog_predictor_width;
+extern int g_COGAvgSec;  ///< COG average period for Course Up Mode (sec)
+extern int g_GUIScaleFactor;
+
 extern unsigned g_canvasConfig;
+
 extern wxString g_active_route;
 extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
@@ -115,6 +175,12 @@ extern wxString g_TalkerIdText;
 extern wxString g_winPluginDir;  // Base plugin directory on Windows.
 extern wxString gWorldMapLocation;
 extern wxString gWorldShapefileLocation;
+extern wxString g_uploadConnection;
+extern wxString g_cog_predictor_color;
+extern wxString g_ownship_HDTpredictor_color;
+extern wxString g_CmdSoundString;
+extern wxString g_ObjQFileExt;
+
 /**
  * Date/time format to use when formatting date/time strings.
  * This is a global setting that affects all date/time formatting in OpenCPN.

@@ -45,6 +45,9 @@
 
 class OCPNListCtrl;  // circular
 
+class AISTargetListDialog;                     // forward
+extern AISTargetListDialog *g_pAISTargetList;  ///< Global instance
+
 WX_DEFINE_SORTED_ARRAY_INT(int, ArrayOfMMSI);
 
 /**

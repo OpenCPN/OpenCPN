@@ -35,6 +35,8 @@
 
 #define STATE_TIMER 3689
 
+class iENCToolbar;                  // forward
+extern iENCToolbar *g_iENCToolbar;  ///< Global instance
 /**
  * Floating toolbar for iENC (International Electronic Navigational Chart)
  * functionality. Extends ocpnFloatingToolbarDialog to provide iENC-specific

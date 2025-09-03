@@ -47,8 +47,6 @@
 #include "styles.h"
 #include "model/navobj_db.h"
 
-static AisDecoder *s_p_sort_decoder;
-
 extern int g_AisTargetList_count;
 extern bool g_bAisTargetList_autosort;
 extern ocpnStyle::StyleManager *g_StyleManager;
@@ -57,6 +55,10 @@ extern AISTargetListDialog *g_pAISTargetList;
 extern MyFrame *gFrame;
 extern wxString g_default_wp_icon;
 extern RouteManagerDialog *pRouteManagerDialog;
+
+AISTargetListDialog *g_pAISTargetList;
+
+static AisDecoder *s_p_sort_decoder;
 
 IMPLEMENT_CLASS(AISTargetListDialog, wxPanel)
 

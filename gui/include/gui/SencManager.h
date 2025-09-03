@@ -43,6 +43,8 @@
 class s57chart;
 class SENCBuildThread;
 
+class SENCThreadManager;  // forward
+extern SENCThreadManager *g_SencThreadManager;
 typedef enum {
   THREAD_INACTIVE = 0,
   THREAD_PENDING,

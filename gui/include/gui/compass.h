@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,10 +16,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef GUI_COMPASS_H
+#define GUI_COMPASS_H
 
 #include "color_types.h"
-class ocpnDC;
-class ChartCanvas;
+#include "ocpndc.h"
+
+class ChartCanvas;  // circular
 
 /**
  * Represents a compass display in the OpenCPN navigation system.
@@ -100,3 +97,5 @@ private:
   int m_image_width, m_image_height;
 #endif
 };
+
+#endif  //  GUI_COMPASS_H

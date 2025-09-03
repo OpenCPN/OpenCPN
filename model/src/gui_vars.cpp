@@ -22,10 +22,40 @@
  * Implement gui_vars.h
  */
 
+#include <wx/colour.h>
+#include <wx/datetime.h>
+
 #include "model/gui_vars.h"
+
+bool g_bTempShowMenuBar = false;
+bool AnchorAlertOn2 = false;
+bool AnchorAlertOn1 = false;
 bool g_FlushNavobjChanges = false;
+bool bDBUpdateInProgress = false;
+bool g_bNavAidRadarRingsShown = false;
+bool g_b_overzoom_x = true;
+bool g_bquiting = false;
+bool g_b_assume_azerty = false;
+bool g_bDeferredInitDone = false;
+bool g_CanvasHideNotificationIcon = false;
+bool g_bhide_context_menus = false;
+bool g_bhide_depth_units = false;
+bool g_bhide_overzoom_flag = false;
+bool g_bChartBarEx = false;
+bool g_PrintingInProgress = false;
 
-int g_click_stop = 0;
-
+double AnchorPointMinDist;
+double g_ChartNotRenderScaleFactor = 1.0;
 double vLat = 0;
 double vLon = 0;
+double g_defaultBoatSpeedUserUnit = 0;
+double gCog_gt = 0;
+
+float g_compass_scalefactor = 0;
+float g_toolbar_scalefactor = 0;
+
+int g_click_stop = 0;
+int g_sticky_chart = 0;
+
+wxDateTime gTimeSource;
+wxColour g_colourOwnshipRangeRingsColour;

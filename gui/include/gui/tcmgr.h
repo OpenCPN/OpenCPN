@@ -72,6 +72,9 @@
 #define TIDE_TIME_STEP (TIDE_TIME_PREC)
 #define TIDE_BAD_TIME ((time_t) - 1)
 
+class TCMgr;           // forward
+extern TCMgr *ptcmgr;  ///< Global instance
+
 //----------------------------------------------------------------------------
 //   Reference Station Data
 //----------------------------------------------------------------------------

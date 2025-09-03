@@ -51,7 +51,6 @@
 #include "model/navobj_db.h"
 
 WayPointman *pWayPointMan;
-double g_defaultBoatSpeed;
 
 #include <wx/listimpl.cpp>
 

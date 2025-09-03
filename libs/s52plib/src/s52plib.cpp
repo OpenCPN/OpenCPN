@@ -89,6 +89,8 @@ static const double mercator_k0 = 0.9996;
 #define PROJECTION_MERCATOR 1
 #endif
 
+s52plib *ps52plib;  ///< Global instance
+
 // Some methods that are required to be declared differently
 // depending on whether the library is build for core, or plugin
 #ifdef BUILDING_PLUGIN

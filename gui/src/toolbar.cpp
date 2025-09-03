@@ -75,6 +75,8 @@ extern bool g_disable_main_toolbar;
 extern GLenum g_texture_rectangle_format;
 #endif
 
+ocpnFloatingToolbarDialog *g_MainToolbar;
+
 class ocpnToolBarTool : public wxToolBarToolBase {
 public:
   ocpnToolBarTool(ocpnToolBarSimple *tbar, int id, const wxString &label,

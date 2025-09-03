@@ -55,6 +55,7 @@ extern double fromUsrWindSpeed(double usr_wspeed, int unit = -1);
 extern double fromUsrTemp(double usr_temp, int unit = -1);
 extern wxString getUsrTempUnit();
 extern wxString formatAngle(double angle);
+extern wxString GetLayerName(int id);
 
 // User date formats
 #define UTCINPUT 0  //!< Date/time in UTC.

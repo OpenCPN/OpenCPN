@@ -29,7 +29,8 @@
 #include <wx/frame.h>
 #include "chartdb.h"
 
-// #include "chcanv.h"
+class PopUpDSlide;                       // forward
+extern PopUpDSlide* pPopupDetailSlider;  ///< Global instance
 
 /**
  * A popup frame containing a detail slider for chart display.

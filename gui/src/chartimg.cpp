@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  ChartBase, ChartBaseBSB and Friends
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,20 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ *\ file
+ * Implement chartimg.h -- BSB chart
  */
-
-// ============================================================================
-// declarations
-// ============================================================================
-
-// ----------------------------------------------------------------------------
-// headers
-// ----------------------------------------------------------------------------
 
 #include <assert.h>
 
@@ -40,7 +27,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 //  Why are these not in wx/prec.h?
 #include <wx/dir.h>
@@ -50,19 +37,22 @@
 #include <wx/filename.h>
 #include <wx/image.h>
 #include <wx/fileconf.h>
-#include <sys/stat.h>
+
+#include "model/chartdata_input_stream.h"
 
 #include "config.h"
 #include "chartimg.h"
 #include "ocpn_pixel.h"
-#include "model/chartdata_input_stream.h"
 
-#ifndef __WXMSW__
+#ifndef _MSC_VER
 #include <signal.h>
 #include <setjmp.h>
+#include "navutil.h"
 
 #define OCPN_USE_CONFIG 1
+#endif
 
+#ifndef _MSC_VER
 struct sigaction sa_all_chart;
 struct sigaction sa_all_previous;
 
@@ -92,11 +82,6 @@ typedef unsigned __int64 uint64_t;
 // ----------------------------------------------------------------------------
 // Random Prototypes
 // ----------------------------------------------------------------------------
-
-#ifdef OCPN_USE_CONFIG
-class MyConfig;
-extern MyConfig *pConfig;
-#endif
 
 typedef struct {
   float y;
@@ -1542,7 +1527,7 @@ ChartBaseBSB::ChartBaseBSB() {
   n_pwx = 0;
   n_pwy = 0;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bUseLineCache = false;
 #else
   bUseLineCache = true;

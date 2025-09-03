@@ -67,6 +67,8 @@ EVT_SIZE(AISTargetQueryDialog::OnSize)
 EVT_CHAR_HOOK(AISTargetQueryDialog::OnKey)
 END_EVENT_TABLE()
 
+AISTargetQueryDialog *g_pais_query_dialog_active;
+
 AISTargetQueryDialog::AISTargetQueryDialog() { Init(); }
 
 AISTargetQueryDialog::AISTargetQueryDialog(wxWindow *parent, wxWindowID id,
