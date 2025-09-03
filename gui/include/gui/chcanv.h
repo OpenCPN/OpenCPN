@@ -43,7 +43,7 @@
 #include "canvas_menu.h"
 #include "chartdb.h"
 #include "chartimg.h"
-#include "ChInfoWin.h"
+#include "ch_info_win.h"
 #include "compass.h"
 #include "emboss_data.h"
 #include "gshhs.h"

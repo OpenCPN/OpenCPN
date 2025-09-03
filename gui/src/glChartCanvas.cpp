@@ -69,7 +69,7 @@
 #include "chartdb.h"
 #include "chartimg.h"
 #include "chcanv.h"
-#include "ChInfoWin.h"
+#include "ch_info_win.h"
 #include "cm93.h"  // for chart outline draw
 #include "color_handler.h"
 #include "compass.h"

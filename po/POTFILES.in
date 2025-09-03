@@ -199,7 +199,7 @@ gui/include/gui/chartdb.h
 gui/include/gui/chartdbs.h
 gui/include/gui/chartimg.h
 gui/include/gui/chcanv.h
-gui/include/gui/ChInfoWin.h
+gui/include/gui/ch_info_win.h
 gui/include/gui/cm93.h
 gui/include/gui/color_handler.h
 gui/include/gui/compass.h
