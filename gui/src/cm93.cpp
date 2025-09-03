@@ -88,6 +88,8 @@ extern bool g_b_EnableVBO;
 // TODO  These should be gotten from the ctor
 extern MyFrame *gFrame;
 
+CM93OffsetDialog *g_pCM93OffsetDialog;
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(Array_Of_M_COVR_Desc);
 

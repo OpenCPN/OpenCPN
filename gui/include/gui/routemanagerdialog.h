@@ -36,6 +36,10 @@
 #define NAME_COLUMN 2
 #define DISTANCE_COLUMN 3
 
+/** Global instance. */
+class RouteManagerDialog;                       // forward
+extern RouteManagerDialog *pRouteManagerDialog; /**< Global instance */
+
 enum { SORT_ON_DISTANCE = 1, SORT_ON_NAME, SORT_ON_DATE };
 
 enum TrackContextMenu { TRACK_MERGE = 1, TRACK_COPY_TEXT, TRACK_CLEAN };

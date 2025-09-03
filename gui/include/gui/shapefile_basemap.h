@@ -48,6 +48,9 @@ namespace fs = ghc::filesystem;
 namespace fs = std::filesystem;
 #endif
 
+class ShapeBaseChartSet;                 // forward
+extern ShapeBaseChartSet gShapeBasemap;  ///< Global instance
+
 /**
  * A latitude/longitude key for 1x1 or 10x10 degree grid tiles.
  * Used for indexing geographical data in a grid-based system where each tile

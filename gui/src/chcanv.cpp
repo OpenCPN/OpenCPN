@@ -59,10 +59,10 @@
 #include "model/select.h"
 #include "model/select_item.h"
 #include "model/track.h"
-#include "model/wx28compat.h"
 
 #include "ais.h"
 #include "ais_target_alert_dlg.h"
+#include "ais_target_query_dlg.h"
 #include "canvas_config.h"
 #include "canvas_menu.h"
 #include "CanvasOptions.h"
@@ -73,10 +73,12 @@
 #include "cm93.h"  // for chart outline draw
 #include "compass.h"
 #include "concanv.h"
+#include "DetailSlider.h"
 #include "displays.h"
 #include "hotkeys_dlg.h"
 #include "FontMgr.h"
 #include "glTextureDescriptor.h"
+#include "GoToPositionDialog.h"
 #include "gshhs.h"
 #include "iENCToolbar.h"
 #include "kml.h"
@@ -97,12 +99,11 @@
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
-#include "route_validator.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "S57QueryDialog.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
-#include "SendToGpsDlg.h"
 #include "shapefile_basemap.h"
 #include "styles.h"
 #include "SystemCmdSound.h"
@@ -312,7 +313,6 @@ extern int g_nAutoHideToolbar;
 extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
-ShapeBaseChartSet gShapeBasemap;
 extern bool g_CanvasHideNotificationIcon;
 extern bool g_bhide_context_menus;
 extern bool g_bhide_depth_units;

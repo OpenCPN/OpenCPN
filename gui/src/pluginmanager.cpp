@@ -161,6 +161,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
+
 extern MyConfig* pConfig;
 extern OCPN_AUIManager* g_pauimgr;
 
@@ -208,6 +209,8 @@ extern bool g_bquiting;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
+
+PlugInManager* g_pi_manager;
 
 void NotifySetupOptionsPlugin(const PlugInData* pic);
 

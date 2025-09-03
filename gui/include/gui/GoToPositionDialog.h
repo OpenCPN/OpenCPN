@@ -33,6 +33,9 @@
 
 class ChartCanvas;
 
+/** global instance. */
+class GoToPositionDialog;                       // forward
+extern GoToPositionDialog* pGoToPositionDialog; /**< Global instance */
 /*!
  * Control identifiers
  */
