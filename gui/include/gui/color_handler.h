@@ -1,5 +1,10 @@
-#include <wx/string.h>
 #include <wx/colour.h>
+
+/**
+ * \file
+ *
+ * Global color handling by name.
+ */
 
 #ifndef _COLOR_HANDLER_H
 #define _COLOR_HANDLER_H

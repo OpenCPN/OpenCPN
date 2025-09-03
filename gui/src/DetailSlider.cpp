@@ -31,6 +31,7 @@
 
 #include <wx/slider.h>
 
+#include "model/config_vars.h"
 #include "DetailSlider.h"
 #include "chcanv.h"
 #include "OCPNPlatform.h"
@@ -39,12 +40,8 @@
 #include "ocpn_frame.h"
 
 extern bool g_bShowDetailSlider;
-extern PopUpDSlide* pPopupDetailSlider;
-extern int g_cm93_zoom_factor;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
-extern int g_detailslider_dialog_x;
-extern int g_detailslider_dialog_y;
 extern MyFrame* gFrame;
 
 PopUpDSlide* pPopupDetailSlider;

@@ -5,8 +5,14 @@
 #include "model/ocpn_types.h"
 #include "s52plib.h"
 
-extern s52plib* ps52plib;
-extern wxColorHashMap* pcurrent_user_color_hash;
+/**
+ * \file
+ *
+ * Implement color_handler.h -- Global color handling by name.
+ */
+
+extern s52plib* ps52plib;                         // In a library...
+extern wxColorHashMap* pcurrent_user_color_hash;  // FIXME (leamas) find a home
 
 wxColour GetGlobalColor(wxString colorName) {
   wxColour ret_color;

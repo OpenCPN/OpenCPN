@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  cm93 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement cm93.h -- CM93 chart state
+ */
+
+#include <algorithm>
+#include <unordered_map>
+#include <stdio.h>
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -30,63 +32,43 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include <wx/arrstr.h>
+#include <wx/listctrl.h>
+#include <wx/mstream.h>
+#include <wx/regex.h>
+#include <wx/spinctrl.h>
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
-#include <wx/arrstr.h>
-#include <wx/mstream.h>
-#include <wx/spinctrl.h>
-#include <wx/listctrl.h>
-#include <wx/regex.h>
 
-#include <algorithm>
-#include <unordered_map>
-
-#include "gdal/ogr_api.h"
-#include "s52s57.h"
-#include "s57chart.h"
-#include "cm93.h"
-#include "s52plib.h"
-#include "model/georef.h"
-#include "mygeom.h"
-#include "model/cutil.h"
-#include "navutil.h"     // for LogMessageOnce
-#include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
-#include "ocpndc.h"
-#include "pluginmanager.h"  // for PlugInManager
-#include "OCPNPlatform.h"
-#include "model/wx28compat.h"
 #include "model/plugin_comm.h"
 #include "model/chartdata_input_stream.h"
-#include "DetailSlider.h"
-#include "chcanv.h"
-#include "gui_lib.h"
-#include "ocpn_frame.h"
-#include "line_clip.h"
 
-#include <stdio.h>
+#include "chcanv.h"
+#include "cm93.h"
+#include "DetailSlider.h"
+#include "gui_lib.h"
+#include "line_clip.h"
+#include "model/georef.h"
+#include "mygeom.h"
+#include "navutil.h"  // for LogMessageOnce
+#include "ocpndc.h"
+#include "ocpn_frame.h"
+#include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
+#include "OCPNPlatform.h"
+#include "pluginmanager.h"  // for PlugInManager
+#include "s52plib.h"
+#include "s52s57.h"
+#include "s57chart.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
-extern ocpnGLOptions g_GLOptions;
 #endif
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
 
-extern CM93OffsetDialog *g_pCM93OffsetDialog;
-extern OCPNPlatform *g_Platform;
 extern s52plib *ps52plib;
-extern bool g_bDebugCM93;
-extern int g_cm93_zoom_factor;
-extern PopUpDSlide *pPopupDetailSlider;
-extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
-
-extern bool g_bopengl;
-extern bool g_b_EnableVBO;
-
-// TODO  These should be gotten from the ctor
-extern MyFrame *gFrame;
 
 CM93OffsetDialog *g_pCM93OffsetDialog;
 
@@ -95,6 +77,10 @@ WX_DEFINE_OBJARRAY(Array_Of_M_COVR_Desc);
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(List_Of_M_COVR_Desc);
+
+static int Get_CM93_CellIndex(double lat, double lon, int scale);
+
+void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
 
 void appendOSDirSep(wxString *pString) {
   wxChar sep = wxFileName::GetPathSeparator();
@@ -5416,8 +5402,7 @@ bool cm93compchart::DoRenderRegionViewOnDC(wxMemoryDC &dc,
           m_pDummyBM =
               new wxBitmap(VPoint.rv_rect.width, VPoint.rv_rect.height, -1);
 
-          //    Clear the quilt
-#ifdef ocpnUSE_DIBSECTION
+#ifdef ocpnUSE_DIBSECTION  //  Clear the quilt
         ocpnMemDC dumm_dc;
 #else
         wxMemoryDC dumm_dc;
