@@ -50,6 +50,7 @@ bool g_bWplUsePosition = false;
 bool g_enable_root_menu_debug = false;
 bool g_persist_active_route = false;
 
+double g_mouse_zoom_sensitivity = 0.0;
 double g_n_arrival_circle_radius = 0.0;
 double g_PlanSpeed = 0.0;
 double g_TrackDeltaDistance = 0.0;
@@ -59,6 +60,7 @@ float g_fWaypointRangeRingsStep = 0.0;
 float g_GLMinSymbolLineWidth = 0.0;
 float g_selection_radius_mm = 2.0;
 float g_selection_radius_touch_mm = 10.0;
+float g_ShipScaleFactorExp = 0.0;
 
 int g_COGFilterSec = 1;
 int g_iDistanceFormat = 0;

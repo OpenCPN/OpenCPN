@@ -376,7 +376,6 @@ int g_ChartScaleFactor;
 float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
 int g_ShipScaleFactor;
-float g_ShipScaleFactorExp;
 int g_ENCSoundingScaleFactor;
 int g_ENCTextScaleFactor;
 

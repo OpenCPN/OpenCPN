@@ -17,7 +17,7 @@
 
 /**
  *\ file
- * Implement chartimg.h -- class ChartBaseBSB and support
+ * Implement chartimg.h -- BSB chart
  */
 
 #include <assert.h>

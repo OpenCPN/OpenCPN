@@ -24,12 +24,18 @@
 #ifndef __CANVASMENU_H__
 #define __CANVASMENU_H__
 
+#include "gl_headers.h"
+
 #include <wx/glcanvas.h>
 #include <wx/treectrl.h>
 
 #include "model/route.h"
 #include "model/route_point.h"
+
+#include "chcanv.h"
 #include "ocpCursor.h"
+
+class ChartCanvas;  // circular
 
 //----------------------------------------------------------------------------
 //    Forward Declarations

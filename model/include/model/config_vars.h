@@ -59,6 +59,7 @@ extern bool g_persist_active_route;
  */
 extern bool g_always_send_rmb_rmc;
 
+extern double g_mouse_zoom_sensitivity;
 extern double g_n_arrival_circle_radius;
 extern double g_PlanSpeed;
 extern double g_TrackDeltaDistance;
@@ -68,6 +69,7 @@ extern float g_fWaypointRangeRingsStep;
 extern float g_GLMinSymbolLineWidth;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
+extern float g_ShipScaleFactorExp;
 
 extern int g_COGFilterSec;
 extern int g_NMEAAPBPrecision;
