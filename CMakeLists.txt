@@ -781,7 +781,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/ais_target_query_dlg.h
     ${GUI_HDR_DIR}/canvas_config.h
     ${GUI_HDR_DIR}/canvas_menu.h
-    ${GUI_HDR_DIR}/CanvasOptions.h
+    ${GUI_HDR_DIR}/canvas_options.h
     ${GUI_HDR_DIR}/catalog_mgr.h
     ${GUI_HDR_DIR}/cat_settings.h
     ${GUI_HDR_DIR}/chartbase.h
@@ -903,7 +903,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ais_target_query_dlg.cpp
     ${GUI_SRC_DIR}/canvas_config.cpp
     ${GUI_SRC_DIR}/canvas_menu.cpp
-    ${GUI_SRC_DIR}/CanvasOptions.cpp
+    ${GUI_SRC_DIR}/canvas_options.cpp
     ${GUI_SRC_DIR}/catalog_mgr.cpp
     ${GUI_SRC_DIR}/cat_settings.cpp
     ${GUI_SRC_DIR}/chartdb.cpp

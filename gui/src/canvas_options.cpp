@@ -38,7 +38,7 @@
 #include "dychart.h"
 
 #include "chcanv.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "gui_lib.h"
 #include "s52plib.h"
 

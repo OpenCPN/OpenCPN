@@ -38,7 +38,7 @@
 #include "chcanv.h"
 #include "MUIBar.h"
 #include "OCPNPlatform.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "DetailSlider.h"
 #include "GoToPositionDialog.h"
 #include "styles.h"
