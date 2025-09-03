@@ -49,10 +49,13 @@
 //----------------------------------------------------------------------------
 
 class ChartBase;
-
 /**
  * Window for displaying chart thumbnails.
  */
+
+class ThumbWin;              // forward
+extern ThumbWin *pthumbwin;  ///< Global instance
+
 class ThumbWin : public wxWindow {
 public:
   ThumbWin();

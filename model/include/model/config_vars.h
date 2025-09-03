@@ -1,9 +1,4 @@
-/******************************************************************************
- *
- * Project: OpenCPN
- * Purpose: Variables defined in config file, command line etc.
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,7 +15,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \filw
+ *
+ * Global variables stored in configuration file.
  */
 
 #ifndef CONFIG_VARS_H__
@@ -95,7 +95,9 @@ extern int g_trackFilterMax;
 extern int g_track_line_width;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
-
+extern int g_nCacheLimit;
+extern int g_memCacheLimit;
+extern unsigned g_canvasConfig;
 extern wxString g_active_route;
 extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
@@ -111,6 +113,8 @@ extern wxString g_hostname;
 extern wxString g_SART_sound_file;
 extern wxString g_TalkerIdText;
 extern wxString g_winPluginDir;  // Base plugin directory on Windows.
+extern wxString gWorldMapLocation;
+extern wxString gWorldShapefileLocation;
 /**
  * Date/time format to use when formatting date/time strings.
  * This is a global setting that affects all date/time formatting in OpenCPN.
