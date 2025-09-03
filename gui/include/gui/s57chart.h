@@ -46,6 +46,8 @@
 #include "OCPNRegion.h"
 #include "chartbase.h"  // ChartBase
 
+extern bool g_b_EnableVBO;
+
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------

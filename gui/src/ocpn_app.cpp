@@ -321,7 +321,6 @@ bool bVelocityValid;
 
 int gHDx_Watchdog;
 
-bool g_bDebugCM93;
 bool g_bDebugS57;
 
 int g_ChartUpdatePeriod;
@@ -440,7 +439,7 @@ wxColour g_colourTrackLineColour;
 
 double g_TrackIntervalSeconds;
 
-int g_cm93_zoom_factor;
+// int g_cm93_zoom_factor;
 bool g_bShowDetailSlider;
 
 bool g_bUseGreenShip;
