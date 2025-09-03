@@ -12,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ *\file
+ *
+ * Implement canvas_config.h -- canvas configuration
+ */
 
 #include <wx/wxprec.h>
 
@@ -23,10 +27,8 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <wx/fileconf.h>
-
 #include "canvas_config.h"
-#include "ocpn_plugin.h"
+#include "s52s57.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -67,7 +69,7 @@ void canvasConfig::Reset(void) {
   bShowENCLightDescriptions = 1;
 }
 
-void canvasConfig::LoadFromLegacyConfig(wxFileConfig *conf) {
+void canvasConfig::LoadFromLegacyConfig(wxConfigBase *conf) {
   if (!conf) return;
 
   bFollow = false;
