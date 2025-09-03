@@ -65,7 +65,7 @@
 #include "ais_target_query_dlg.h"
 #include "canvas_config.h"
 #include "canvas_menu.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "chartdb.h"
 #include "chartimg.h"
 #include "chcanv.h"

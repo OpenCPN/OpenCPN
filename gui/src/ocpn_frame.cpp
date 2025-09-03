@@ -143,7 +143,7 @@
 #include "toolbar.h"
 #include "TrackPropDlg.h"
 #include "waypointman_gui.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "udev_rule_mgr.h"
 
 #ifdef __ANDROID__

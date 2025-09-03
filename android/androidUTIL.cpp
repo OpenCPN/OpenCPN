@@ -64,7 +64,7 @@
 #include "ais_target_query_dlg.h"
 #include "AndroidSound.h"
 #include "androidUTIL.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
