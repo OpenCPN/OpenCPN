@@ -27,7 +27,7 @@
 #include <wx/dcclient.h>
 
 #include "model/config_vars.h"
-#include "ChInfoWin.h"
+#include "ch_info_win.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 #include "color_handler.h"

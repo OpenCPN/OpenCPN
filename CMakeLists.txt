@@ -790,7 +790,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/chartdbs.h
     ${GUI_HDR_DIR}/chartimg.h
     ${GUI_HDR_DIR}/chcanv.h
-    ${GUI_HDR_DIR}/ChInfoWin.h
+    ${GUI_HDR_DIR}/ch_info_win.h
     ${GUI_HDR_DIR}/color_handler.h
     ${GUI_HDR_DIR}/comm_overflow_dlg.h
     ${GUI_HDR_DIR}/compass.h
@@ -910,7 +910,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/chartdbs.cpp
     ${GUI_SRC_DIR}/chartimg.cpp
     ${GUI_SRC_DIR}/chcanv.cpp
-    ${GUI_SRC_DIR}/ChInfoWin.cpp
+    ${GUI_SRC_DIR}/ch_info_win.cpp
     ${GUI_SRC_DIR}/cm93.cpp
     ${GUI_SRC_DIR}/color_handler.cpp
     ${GUI_SRC_DIR}/comm_overflow_dlg.cpp
