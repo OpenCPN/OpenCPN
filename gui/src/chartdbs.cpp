@@ -49,9 +49,11 @@
 #define UINT32 unsigned int
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
+
+ChartGroupArray *g_pGroupArray;
 
 extern PlugInManager *g_pi_manager;
 extern wxString gWorldMapLocation;

@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  CanvasMenuHandler
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement canvas_menu.h -- Canvas context (right click) menu handler
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -35,20 +33,15 @@
 #include <wx/graphics.h>
 #include <wx/image.h>
 #include <wx/listbook.h>
-#include <wx/listimpl.cpp>
 #include <wx/menu.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/config_vars.h"
-#include "model/cutil.h"
 #include "model/georef.h"
-#include "model/gui.h"
+#include "model/gui_vars.h"
 #include "model/mdns_cache.h"
-#include "model/mdns_query.h"
-#include "model/nav_object_database.h"
-#include "model/own_ship.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
 #include "model/route.h"
@@ -59,13 +52,12 @@
 #include "ais.h"
 #include "canvas_menu.h"
 #include "chartdb.h"
+#include "chartdbs.h"
 #include "chcanv.h"
 #include "cm93.h"  // for chart outline draw
-#include "config.h"
-#include "FontMgr.h"
+#include "GoToPositionDialog.h"
 #include "kml.h"
 #include "MarkInfo.h"
-#include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "peer_client_dlg.h"
@@ -77,14 +69,11 @@
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"
 #include "s52plib.h"
-#include "s52s57.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "SendToGpsDlg.h"
 #include "SendToPeerDlg.h"
 #include "styles.h"
 #include "tcmgr.h"
-#include "TCWin.h"
-#include "tide_time.h"
 #include "track_gui.h"
 #include "TrackPropDlg.h"
 #include "undo.h"
@@ -93,43 +82,6 @@
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
-
-// ----------------------------------------------------------------------------
-// Useful Prototypes
-// ----------------------------------------------------------------------------
-extern void pupHandler_PasteRoute();
-extern void pupHandler_PasteTrack();
-extern void pupHandler_PasteWaypoint();
-
-extern Routeman *g_pRouteMan;
-extern bool g_bskew_comp;
-extern double vLat, vLon;
-extern MyFrame *gFrame;
-extern ChartGroupArray *g_pGroupArray;
-extern PlugInManager *g_pi_manager;
-extern int g_nAWMax;
-extern int g_nAWDefault;
-extern wxString g_AW1GUID;
-extern wxString g_AW2GUID;
-extern int g_click_stop;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern MarkInfoDlg *g_pMarkInfoDialog;
-extern RoutePropDlgImpl *pRoutePropDialog;
-extern ActiveTrack *g_pActiveTrack;
-extern bool g_bConfirmObjectDelete;
-extern MyConfig *pConfig;
-extern OCPNPlatform *g_Platform;
-
-extern CM93OffsetDialog *g_pCM93OffsetDialog;
-
-extern GoToPositionDialog *pGoToPositionDialog;
-extern RouteList *pRouteList;
-extern wxString g_default_wp_icon;
-extern bool g_bBasicMenus;
-extern TrackPropDlg *pTrackPropDialog;
-extern bool g_FlushNavobjChanges;
-extern ColorScheme global_color_scheme;
-extern double g_androidDPmm;
 
 //    Constants for right click menus
 enum {
@@ -142,7 +94,6 @@ enum {
   ID_DEF_MENU_MOVE_BOAT_HERE,
   ID_DEF_MENU_GOTO_HERE,
   ID_DEF_MENU_GOTOPOSITION,
-
   ID_WP_MENU_GOTO,
   ID_WP_MENU_DELPOINT,
   ID_WP_MENU_PROPERTIES,

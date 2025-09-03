@@ -42,6 +42,7 @@
 
 #include <wx/bmpcbox.h>
 #include <wx/dir.h>
+#include "wx/dirctrl.h"
 #include <wx/filename.h>
 #include <wx/graphics.h>
 #include <wx/image.h>
@@ -360,6 +361,7 @@ extern int g_AndroidVersionCode;
 
 extern wxString g_ObjQFileExt;
 
+MyConfig *pConfig;
 wxString g_gpx_path;
 bool g_bLayersLoaded;
 bool g_bShowMuiZoomButtons = true;

@@ -25,6 +25,8 @@
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
+#include "gl_headers.h"
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers

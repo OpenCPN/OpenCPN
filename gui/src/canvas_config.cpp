@@ -27,6 +27,8 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#include "gl_headers.h"
+
 #include "canvas_config.h"
 #include "s52s57.h"
 

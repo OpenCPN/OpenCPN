@@ -27,36 +27,34 @@
 #ifndef _CHCANV_H__
 #define _CHCANV_H__
 
-#include <cstdint>
+// Make sure glew.h is included before GL/gl.h:
+#if defined(__WXQT__) || defined(__WXGTK__) || defined(__MSVC__)
+#include "GL/glew.h"
+#endif
+
 #include "bbox.h"
 
 #include <wx/datetime.h>
+#include <wx/glcanvas.h>
 #include <wx/treectrl.h>
-#include <wx/dirctrl.h>
-#include <wx/sound.h>
 #include <wx/grid.h>
-#include <wx/wxhtml.h>
 
-#include "model/nmea_log.h"
-#include "ocpndc.h"
-#include "undo.h"
+#include "model/track.h"
 
-#include "ocpCursor.h"
-#include "timers.h"
 #include "emboss_data.h"
-#include "S57Sector.h"
-#include "gshhs.h"
+#include "IDX_entry.h"
 #include "notification_manager_gui.h"
+#include "ocpCursor.h"
 #include "observable.h"
 #include "observable_evtvar.h"
 #include "ocpn_plugin.h"
+#include "RolloverWin.h"
+#include "S57Sector.h"
+#include "undo.h"
 
-class wxGLContext;
-class GSHHSChart;
-class IDX_entry;
+#include "gshhs.h"
 class ocpnCompass;
 class TimedPopupWin;
-class Track;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -131,6 +129,12 @@ enum {
 };
 
 enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
+
+extern void pupHandler_PasteRoute();
+
+extern void pupHandler_PasteWaypoint();
+
+extern void pupHandler_PasteTrack();
 
 /**
  * ChartCanvas - Main chart display and interaction component
@@ -223,10 +227,10 @@ public:
   void SetCanvasRangeMeters(double range);
 
   void EnablePaint(bool b_enable);
-  virtual bool SetCursor(const wxCursor &c);
-  virtual void Refresh(bool eraseBackground = true,
-                       const wxRect *rect = (const wxRect *)NULL);
-  virtual void Update();
+  bool SetCursor(const wxCursor &c) override;
+  void Refresh(bool eraseBackground = true,
+               const wxRect *rect = nullptr) override;
+  void Update() override;
 
   void LostMouseCapture(wxMouseCaptureLostEvent &event);
 

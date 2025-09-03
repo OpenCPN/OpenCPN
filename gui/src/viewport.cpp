@@ -107,6 +107,8 @@ extern sigjmp_buf env;  // the context saved by sigsetjmp();
 
 #include <vector>
 
+ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
