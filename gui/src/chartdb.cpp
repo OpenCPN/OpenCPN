@@ -43,7 +43,7 @@
 #include "canvas_config.h"
 #include "ConfigMgr.h"
 #include "ocpn_frame.h"  //FIXME (dave) LoadS57
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -494,7 +494,7 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
     bool b_writable_add = true;
     //  On android, SDK > 29, we require that the directory of charts be
     //  "writable" as determined by Android Java file system
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
     if (!androidIsDirWritable(fn.GetPath())) b_writable_add = false;
 #endif
