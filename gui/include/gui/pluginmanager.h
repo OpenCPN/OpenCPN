@@ -76,6 +76,10 @@ class MyFrame;
 // PlugIn Messaging scheme Event
 //----------------------------------------------------------------------------
 
+class PlugInManager;  // forward
+
+extern PlugInManager* g_pi_manager; /**< Global instance */
+
 class OCPN_MsgEvent : public wxEvent {
 public:
   OCPN_MsgEvent(wxEventType commandType = wxEVT_NULL, int id = 0);

@@ -44,6 +44,9 @@
 int Get_CM93_CellIndex(double lat, double lon, int scale);
 void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
 
+class CM93OffsetDialog;
+extern CM93OffsetDialog *g_pCM93OffsetDialog; /**< Global instance */
+
 //    Fwd definitions
 class covr_set;
 class wxSpinCtrl;

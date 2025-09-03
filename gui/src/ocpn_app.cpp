@@ -252,8 +252,6 @@ wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
-OCPNPlatform *g_Platform;
-
 bool g_bFirstRun;
 bool g_bUpgradeInProcess;
 
@@ -261,11 +259,8 @@ bool g_bPauseTest;
 
 // Files specified on the command line, if any.
 
-MyFrame *gFrame;
-
 APConsole *console;
 
-MyConfig *pConfig;
 ChartDB *ChartData;
 int g_restore_stackindex;
 int g_restore_dbindex;
@@ -274,14 +269,6 @@ double g_ChartNotRenderScaleFactor;
 LayerList *pLayerList;
 
 Select *pSelectTC;
-
-MarkInfoDlg *g_pMarkInfoDialog;
-RoutePropDlgImpl *pRoutePropDialog;
-TrackPropDlg *pTrackPropDialog;
-RouteManagerDialog *pRouteManagerDialog;
-GoToPositionDialog *pGoToPositionDialog;
-
-double vLat, vLon;
 
 int g_nbrightness = 100;
 
@@ -292,7 +279,6 @@ TCMgr *ptcmgr;
 
 bool g_bshowToolbar = true;
 bool g_bexpert = true;
-bool g_bBasicMenus = false;
 
 bool bDrawCurrentValues;
 
@@ -309,7 +295,6 @@ wxString g_VisiNameinLayers;
 wxString g_InVisiNameinLayers;
 
 bool g_bcompression_wait;
-bool g_FlushNavobjChanges;
 int g_FlushNavobjChangesTimeout;
 
 wxString g_uploadConnection;
@@ -344,8 +329,6 @@ bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
                       // displayed
 bool g_bShowChartBar;
 bool g_bShowActiveRouteHighway;
-int g_nAWDefault;
-int g_nAWMax;
 bool g_bPlayShipsBells;
 bool g_bFullscreenToolbar;
 bool g_bShowLayers;
@@ -362,12 +345,8 @@ bool g_bNavAidRadarRingsShown;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
 bool g_bWayPointPreventDragging;
-bool g_bConfirmObjectDelete;
 wxColour g_colourOwnshipRangeRingsColour;
 int g_maxzoomin;
-
-// Set default color scheme
-ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
@@ -407,8 +386,6 @@ bool g_bShowCurrent;
 
 s52plib *ps52plib;
 s57RegistrarMgr *m_pRegistrarMan;
-
-CM93OffsetDialog *g_pCM93OffsetDialog;
 
 #ifdef __WXOSX__
 #include "model/macutils.h"
@@ -470,7 +447,6 @@ bool g_bCourseUp;
 int g_COGAvgSec = 15;  // COG average period (sec.) for Course Up Mode
 double g_COGAvg;
 bool g_bLookAhead;
-bool g_bskew_comp;
 bool g_bopengl;
 bool g_bSoftwareGL;
 /**
@@ -503,15 +479,12 @@ bool g_bChartBarEx;
 bool g_b_legacy_input_filter_behaviour;  // Support original input filter
                                          // process or new process
 
-PlugInManager *g_pi_manager;
-
 bool g_bDebugGPSD;
 
 bool g_bFullScreenQuilt = true;
 bool g_bQuiltEnable;
 bool g_bQuiltStart;
 
-ChartGroupArray *g_pGroupArray;
 std::vector<std::string> ChartDirectoryExcludedVector;
 
 S57QueryDialog *g_pObjectQueryDialog;
@@ -543,9 +516,7 @@ bool g_bTrackActive;
 bool g_bDeferredStartTrack;
 bool g_bHighliteTracks;
 wxColour g_colourTrackLineColour;
-wxString g_default_wp_icon;
 
-ActiveTrack *g_pActiveTrack;
 double g_TrackIntervalSeconds;
 
 int g_cm93_zoom_factor;
@@ -554,9 +525,6 @@ bool g_bShowDetailSlider;
 int g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 bool g_bUseGreenShip;
-
-wxString g_AW1GUID;
-wxString g_AW2GUID;
 
 bool g_b_overzoom_x = true;  // Allow high overzoom
 
@@ -593,8 +561,6 @@ wxLocale *plocale_def_lang = 0;
 wxString g_locale;
 wxString g_localeOverride;
 bool g_b_assume_azerty;
-
-int g_click_stop;
 
 int g_MemFootMB;
 

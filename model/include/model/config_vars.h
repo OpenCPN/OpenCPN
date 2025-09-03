@@ -28,19 +28,24 @@
 
 #include <wx/config.h>
 #include <wx/string.h>
+
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
 extern bool g_bAllowShipToActive;
+extern bool g_bBasicMenus;
+extern bool g_bConfirmObjectDelete;
 extern bool g_benableUDPNullHeader;
 extern bool g_bfilter_cogsog;
 extern bool g_bGarminHostUpload;
 extern bool g_bInlandEcdis;
 extern bool g_bMagneticAPB;
 extern bool g_bOverruleScaMin;
+extern bool g_bresponsive;
 extern bool g_bShowMag;
 extern bool g_bShowTrue;
 extern bool g_bShowWptName;
+extern bool g_bskew_comp;
 extern bool g_btouch;
 extern bool g_bTrackDaily;
 extern bool g_bUserIconsFirst;
@@ -48,8 +53,6 @@ extern bool g_bUseWptScaMin;
 extern bool g_bWplUsePosition;
 extern bool g_enable_root_menu_debug;
 extern bool g_persist_active_route;
-extern bool g_bresponsive;
-
 /**
  * Always send RMB and RMC n0183 messages even if there is no active
  * route. One use case is the Nasa Marine instruments Clipper GPS
@@ -80,6 +83,8 @@ extern int g_iWindSpeedFormat;
 extern int g_iWpt_ScaMin;
 extern int g_maxWPNameLength;
 extern int g_mbtilesMaxLayers;
+extern int g_nAWDefault;
+extern int g_nAWMax;
 extern int g_nCOMPortCheck;
 extern int g_nDepthUnitDisplay;
 extern int g_netmask_bits;
@@ -92,12 +97,15 @@ extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 
 extern wxString g_active_route;
+extern wxString g_AW1GUID;
+extern wxString g_AW2GUID;
 extern wxString g_android_Device_Model;
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
 extern wxString g_default_routepoint_icon;
+extern wxString g_default_wp_icon;
 extern wxString g_GPS_Ident;
 extern wxString g_hostname;
 extern wxString g_SART_sound_file;

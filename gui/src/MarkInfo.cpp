@@ -66,6 +66,8 @@
 #include <QtWidgets/QScroller>
 #endif
 
+MarkInfoDlg* g_pMarkInfoDialog;
+
 extern TCMgr* ptcmgr;
 extern MyConfig* pConfig;
 extern Routeman* g_pRouteMan;

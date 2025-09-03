@@ -71,6 +71,9 @@ extern MyConfig* pConfig;
 extern MyFrame* gFrame;
 
 ///////////////////////////////////////////////////////////////////////////
+
+TrackPropDlg* pTrackPropDialog;
+
 bool TrackPropDlg::instanceFlag = false;
 TrackPropDlg* TrackPropDlg::single = NULL;
 TrackPropDlg* TrackPropDlg::getInstance(wxWindow* parent, wxWindowID id,

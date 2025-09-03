@@ -55,6 +55,9 @@
 
 #include "model/base_platform.h"
 
+class OCPNPlatform;              // forward
+extern OCPNPlatform *g_Platform; /**< Global instance. */
+
 class MyConfig;
 class ArrayOfCDI;
 

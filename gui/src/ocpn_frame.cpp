@@ -329,6 +329,8 @@ extern bool g_disable_main_toolbar;
 extern bool g_btenhertz;
 extern bool g_declutter_anchorage;
 
+MyFrame *gFrame;
+
 #ifdef __WXMSW__
 // System color control support
 

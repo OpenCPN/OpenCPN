@@ -37,6 +37,9 @@
 class wxGenericProgressDialog;
 class ChartBase;
 
+class ChartGroupArray;  // forward
+extern ChartGroupArray *g_pGroupArray;
+
 //    A small class used in an array to describe chart directories
 class ChartDirInfo {
 public:

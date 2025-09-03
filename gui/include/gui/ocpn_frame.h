@@ -124,6 +124,9 @@ class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
 class AisTargetData;
 
+class MyFrame;          // forward
+extern MyFrame* gFrame; /**< Global instance */
+
 bool ShowNavWarning();
 
 bool isSingleChart(ChartBase* chart);

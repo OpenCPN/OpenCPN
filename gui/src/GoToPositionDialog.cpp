@@ -38,6 +38,8 @@
 
 extern MyFrame* gFrame;
 
+GoToPositionDialog* pGoToPositionDialog;
+
 /*!
  * GoToPositionDialog type definition
  */

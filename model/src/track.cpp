@@ -100,6 +100,9 @@ millions of points.
 
 std::vector<Track *> g_TrackList;
 
+class ActiveTrack;  // forward
+ActiveTrack *g_pActiveTrack;
+
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch {

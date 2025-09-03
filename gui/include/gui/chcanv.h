@@ -130,6 +130,12 @@ enum {
 
 enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
 
+extern void pupHandler_PasteRoute();
+
+extern void pupHandler_PasteWaypoint();
+
+extern void pupHandler_PasteTrack();
+
 /**
  * ChartCanvas - Main chart display and interaction component
  *

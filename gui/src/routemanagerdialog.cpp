@@ -79,6 +79,8 @@
 
 #define DIALOG_MARGIN 10
 
+RouteManagerDialog *pRouteManagerDialog;
+
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };  // RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH, colTRKDATE };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };

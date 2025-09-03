@@ -21,6 +21,7 @@
 #define __OCPNVIEWPORT_H__
 
 #include "bbox.h"
+#include "color_types.h"
 class OCPNRegion;
 class LLRegion;
 
@@ -62,6 +63,8 @@ typedef enum ColorScheme
       N_COLOR_SCHEMES
 }_ColorScheme;
 #endif
+
+extern ColorScheme global_color_scheme;
 
 #define INVALID_COORD (-2147483647 - 1)
 

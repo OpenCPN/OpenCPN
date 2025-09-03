@@ -24,19 +24,24 @@
 #include "model/config_vars.h"
 #include "config.h"
 
+bool g_always_send_rmb_rmc = false;
 bool g_bAISRolloverShowClass = false;
 bool g_bAISRolloverShowCOG = false;
 bool g_bAISRolloverShowCPA = false;
 bool g_bAllowShipToActive = false;
+bool g_bBasicMenus = false;
+bool g_bConfirmObjectDelete = false;
 bool g_benableUDPNullHeader = false;
 bool g_bfilter_cogsog = false;
 bool g_bGarminHostUpload = false;
 bool g_bInlandEcdis = false;
 bool g_bMagneticAPB = false;
 bool g_bOverruleScaMin = false;
+bool g_bresponsive = false;
 bool g_bShowMag = false;
 bool g_bShowTrue = false;
 bool g_bShowWptName = false;
+bool g_bskew_comp = false;
 bool g_btouch = false;
 bool g_bTrackDaily = false;
 bool g_bUserIconsFirst = true;
@@ -44,9 +49,6 @@ bool g_bUseWptScaMin = false;
 bool g_bWplUsePosition = false;
 bool g_enable_root_menu_debug = false;
 bool g_persist_active_route = false;
-bool g_bresponsive = false;
-;
-bool g_always_send_rmb_rmc = false;
 
 double g_n_arrival_circle_radius = 0.0;
 double g_PlanSpeed = 0.0;
@@ -69,6 +71,8 @@ int g_iWindSpeedFormat = 0;
 int g_iWpt_ScaMin = 0;
 int g_maxWPNameLength;
 int g_mbtilesMaxLayers = 2;
+int g_nAWDefault = 0;
+int g_nAWMax = 0;
 int g_nCOMPortCheck = 32;
 int g_nDepthUnitDisplay = 0;
 int g_netmask_bits = 24;
@@ -84,18 +88,20 @@ int g_WplAction = 0;
 int sat_watchdog_timeout_ticks = 12;
 
 wxString g_active_route;
+wxString g_AW1GUID;
+wxString g_AW2GUID;
 wxString g_catalog_channel;
 wxString g_catalog_custom_url;
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
 wxString g_default_routepoint_icon;
+wxString g_default_wp_icon;
 wxString g_GPS_Ident;
 wxString g_hostname;
 wxString g_SART_sound_file;
 wxString g_TalkerIdText;
 wxString g_winPluginDir;
 wxString g_datetime_format;
-
 static wxConfigBase* the_base_config = 0;
 
 wxConfigBase* TheBaseConfig() {

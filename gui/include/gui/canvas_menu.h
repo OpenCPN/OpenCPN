@@ -18,7 +18,7 @@
 /**
  * \file
  *
- * Class CanvasMenuHandler -- canvas context menu handler
+ * Canvas context (right click) menu handler
  */
 
 #ifndef __CANVASMENU_H__

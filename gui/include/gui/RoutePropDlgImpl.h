@@ -34,6 +34,10 @@
 #include <cmath>
 #include "LinkPropDlg.h"
 
+class RoutePropDlgImpl;  // forward
+
+extern RoutePropDlgImpl* pRoutePropDialog; /**< Global instance. */
+
 class RoutePropDlgImpl : public RoutePropDlg {
 public:
   ~RoutePropDlgImpl();

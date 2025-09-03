@@ -122,6 +122,8 @@ namespace fs = ghc::filesystem;
 namespace fs = std::filesystem;
 #endif
 
+OCPNPlatform *g_Platform;
+
 class MyApp;
 DECLARE_APP(MyApp)
 

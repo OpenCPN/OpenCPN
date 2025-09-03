@@ -23,3 +23,9 @@
  */
 
 #include "model/gui_vars.h"
+bool g_FlushNavobjChanges = false;
+
+int g_click_stop = 0;
+
+double vLat = 0;
+double vLon = 0;

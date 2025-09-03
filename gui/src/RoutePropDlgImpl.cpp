@@ -57,6 +57,8 @@
 #define COLUMN_PLANNED_SPEED 9
 #define COLUMN_ETD 13
 
+RoutePropDlgImpl* pRoutePropDialog;
+
 extern wxString GetLayerName(int id);
 
 extern Routeman* g_pRouteMan;

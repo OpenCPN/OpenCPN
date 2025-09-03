@@ -25,4 +25,11 @@
 #ifndef GUI_VARS_H__
 #define GUI_VARS_H__
 
+extern bool g_FlushNavobjChanges;
+
+extern int g_click_stop;
+
+extern double vLat; /**< Virtual lat from chcanv popup */
+extern double vLon; /**< Virtual lon from chcanv popup */
+
 #endif  // GUI_VARS_H__

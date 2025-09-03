@@ -45,6 +45,9 @@
 #include "ocpndc.h"
 #include "model/navutil_base.h"
 
+class MyConfig;           // forward
+extern MyConfig *pConfig; /**< Global instance */
+
 extern bool LogMessageOnce(const wxString &msg);
 extern double fromUsrDistance(double usr_distance, int unit = -1);
 extern double fromUsrSpeed(double usr_speed, int unit = -1);
