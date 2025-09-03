@@ -37,7 +37,6 @@
 #include "model/ocpn_types.h"
 #include "model/comm_appmsg_bus.h"
 #include "bbox.h"
-#include "comm_overflow_dlg.h"
 #include "connections_dlg.h"
 #include "color_handler.h"
 #include "data_monitor.h"
@@ -450,7 +449,6 @@ private:
   ObsListener m_routes_update_listener;
   ObsListener m_evt_drv_msg_listener;
 
-  CommOverflowDlg comm_overflow_dlg;
   ConnectionsDlg* m_connections_dlg;
   bool m_need_new_options;
   wxArrayString pathArray;
