@@ -128,7 +128,7 @@ using namespace std::literals::chrono_literals;
 #include "ais_target_alert_dlg.h"
 #include "ais_target_list_dlg.h"
 #include "ais_target_query_dlg.h"
-#include "CanvasConfig.h"
+#include "canvas_config.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"

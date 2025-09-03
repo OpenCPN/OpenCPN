@@ -188,7 +188,7 @@ gui/include/gui/ais_info_gui.h
 gui/include/gui/ais_target_alert_dialog.h
 gui/include/gui/ais_target_list_dialog.h
 gui/include/gui/ais_target_query_dialog.h
-gui/include/gui/CanvasConfig.h
+gui/include/gui/canvas_config.h
 gui/include/gui/canvasMenu.h
 gui/include/gui/CanvasOptions.h
 gui/include/gui/catalog_mgr.h

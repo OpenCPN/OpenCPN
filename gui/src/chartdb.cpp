@@ -42,7 +42,7 @@
 #include "chartimg.h"
 #include "thumbwin.h"
 #include "mbtiles.h"
-#include "CanvasConfig.h"
+#include "canvas_config.h"
 #include "ConfigMgr.h"
 #include "ocpn_frame.h"  //FIXME (dave) LoadS57
 #ifdef __OCPN__ANDROID__
