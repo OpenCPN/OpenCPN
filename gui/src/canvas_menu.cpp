@@ -57,7 +57,7 @@
 #include "model/track.h"
 
 #include "ais.h"
-#include "canvasMenu.h"
+#include "canvas_menu.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"  // for chart outline draw
