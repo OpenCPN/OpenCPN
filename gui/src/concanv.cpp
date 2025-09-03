@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Console Canvas
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ****************************************************************************/
+
+/**
+ * \file
  *
- *
- *
+ * Implement concanv.h  --  Console canvas
  */
+
+#include <stdlib.h>
+#include <time.h>
 
 #include <wx/wxprec.h>
 
@@ -33,16 +30,13 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
 #include <wx/datetime.h>
 
+#include "model/config_vars.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/route.h"
 #include "model/routeman.h"
-#include "model/wx28compat.h"
 
 #include "concanv.h"
 #include "FontMgr.h"
@@ -52,15 +46,6 @@
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 #include "styles.h"
-
-extern Routeman* g_pRouteMan;
-extern MyFrame* gFrame;
-extern bool g_bShowActiveRouteHighway;
-extern BasePlatform* g_BasePlatform;
-
-bool g_bShowRouteTotal;
-
-extern ocpnStyle::StyleManager* g_StyleManager;
 
 enum eMenuItems { ID_NAVLEG = 1, ID_NAVROUTE, ID_NAVHIGHWAY } menuItems;
 
