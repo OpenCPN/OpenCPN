@@ -261,7 +261,6 @@ bool g_bPauseTest;
 
 APConsole *console;
 
-ChartDB *ChartData;
 int g_restore_stackindex;
 int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
@@ -274,7 +273,6 @@ int g_nbrightness = 100;
 
 bool bDBUpdateInProgress;
 
-ThumbWin *pthumbwin;
 TCMgr *ptcmgr;
 
 bool g_bshowToolbar = true;
@@ -283,8 +281,7 @@ bool g_bexpert = true;
 bool bDrawCurrentValues;
 
 wxString ChartListFileName;
-wxString gWorldMapLocation, gDefaultWorldMapLocation;
-wxString gWorldShapefileLocation;
+wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
 wxString g_SENCPrefix;
@@ -439,8 +436,6 @@ wxArrayString *pMessageOnceArray;
 
 bool g_bUseGLL = true;
 
-int g_nCacheLimit;
-int g_memCacheLimit;
 bool g_bGDAL_Debug;
 
 bool g_bCourseUp;
@@ -484,8 +479,6 @@ bool g_bDebugGPSD;
 bool g_bFullScreenQuilt = true;
 bool g_bQuiltEnable;
 bool g_bQuiltStart;
-
-std::vector<std::string> ChartDirectoryExcludedVector;
 
 S57QueryDialog *g_pObjectQueryDialog;
 
@@ -644,7 +637,6 @@ wxArrayString g_locale_catalog_array;
 bool b_reloadForPlugins;
 bool g_btrackContinuous;
 
-unsigned int g_canvasConfig;
 bool g_useMUI;
 bool g_bmasterToolbarFull = true;
 

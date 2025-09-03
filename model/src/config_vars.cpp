@@ -86,6 +86,10 @@ int g_trackFilterMax = 0;
 int g_track_line_width = 0;
 int g_WplAction = 0;
 int sat_watchdog_timeout_ticks = 12;
+int g_nCacheLimit = 0;
+int g_memCacheLimit = 0;
+
+unsigned g_canvasConfig = 0;
 
 wxString g_active_route;
 wxString g_AW1GUID;
@@ -102,6 +106,9 @@ wxString g_SART_sound_file;
 wxString g_TalkerIdText;
 wxString g_winPluginDir;
 wxString g_datetime_format;
+wxString gWorldMapLocation;
+wxString gWorldShapefileLocation;
+
 static wxConfigBase* the_base_config = 0;
 
 wxConfigBase* TheBaseConfig() {

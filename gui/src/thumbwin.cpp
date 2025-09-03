@@ -42,6 +42,9 @@
 #include "chartdb.h"
 #include "model/wx28compat.h"
 #include "color_handler.h"
+
+ThumbWin *pthumbwin;
+
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
 //------------------------------------------------------------------------------
