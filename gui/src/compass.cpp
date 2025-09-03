@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,31 +12,29 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
  *
+ * Implement compass.h -- Compass display state
  */
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
-#include "config.h"
-#include "model/ocpn_types.h"
-#include "model/own_ship.h"
-#include "compass.h"
-#include "chcanv.h"
-#include "styles.h"
+#endif
 
+#include "model/comm_vars.h"
+#include "model/config_vars.h"
+#include "model/own_ship.h"
+
+#include "chcanv.h"
+#include "compass.h"
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"  // FIXME (dave) colorschemes
-
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern bool g_bSatValid;
-extern int g_SatsInView;
-extern bool g_bopengl;
-extern bool g_btenhertz;
+#include "styles.h"
 
 #ifndef GL_RGBA8
 #define GL_RGBA8 0x8058

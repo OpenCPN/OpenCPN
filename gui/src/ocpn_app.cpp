@@ -304,7 +304,6 @@ bool g_bShowOutlines;
 bool g_bShowDepthUnits;
 bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
                       // displayed
-bool g_bShowActiveRouteHighway;
 bool g_bPlayShipsBells;
 bool g_bFullscreenToolbar;
 bool g_bShowLayers;

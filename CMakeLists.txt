@@ -792,7 +792,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/chcanv.h
     ${GUI_HDR_DIR}/ch_info_win.h
     ${GUI_HDR_DIR}/color_handler.h
-    ${GUI_HDR_DIR}/comm_overflow_dlg.h
     ${GUI_HDR_DIR}/compass.h
     ${GUI_HDR_DIR}/concanv.h
     ${GUI_HDR_DIR}/ConfigMgr.h
@@ -913,7 +912,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ch_info_win.cpp
     ${GUI_SRC_DIR}/cm93.cpp
     ${GUI_SRC_DIR}/color_handler.cpp
-    ${GUI_SRC_DIR}/comm_overflow_dlg.cpp
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/ConfigMgr.cpp
