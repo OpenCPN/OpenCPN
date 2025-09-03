@@ -899,6 +899,7 @@ public:
   void OnNewButton(wxCommandEvent &event);
   void SetColorScheme(ColorScheme cs);
   void UpdateMMSIList(void);
+  void UpdateNVMMSIList(void);
 
   MMSIListCtrl *m_pListCtrlMMSI;
   wxButton *m_pButtonNew;
