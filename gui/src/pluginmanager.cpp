@@ -115,7 +115,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "model/track.h"
 
 #include "ais.h"
-#include "canvasMenu.h"
+#include "canvas_menu.h"
 #include "cat_settings.h"
 #include "chartbase.h"  // for ChartPlugInWrapper
 #include "chartdb.h"

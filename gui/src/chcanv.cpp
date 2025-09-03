@@ -64,7 +64,7 @@
 #include "ais.h"
 #include "ais_target_alert_dlg.h"
 #include "canvas_config.h"
-#include "canvasMenu.h"
+#include "canvas_menu.h"
 #include "CanvasOptions.h"
 #include "chartdb.h"
 #include "chartimg.h"
