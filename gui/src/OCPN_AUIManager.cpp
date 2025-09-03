@@ -39,6 +39,8 @@
 
 // -- static utility functions --
 
+OCPN_AUIManager* g_pauimgr;  ///< Global instance
+
 static wxBitmap wxOPaneCreateStippleBitmap() {
   unsigned char data[] = {0, 0, 0, 192, 192, 192, 192, 192, 192, 0, 0, 0};
   wxImage img(2, 2, data, true);

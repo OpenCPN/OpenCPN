@@ -40,6 +40,8 @@ extern MyFrame *gFrame;
 extern int g_nCPUCount;
 extern S57ClassRegistrar *g_poRegistrar;
 
+SENCThreadManager *g_SencThreadManager;
+
 //----------------------------------------------------------------------------------
 //      SENCJobTicket Implementation
 //----------------------------------------------------------------------------------

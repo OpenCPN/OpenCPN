@@ -47,6 +47,8 @@ extern int g_detailslider_dialog_x;
 extern int g_detailslider_dialog_y;
 extern MyFrame* gFrame;
 
+PopUpDSlide* pPopupDetailSlider;
+
 BEGIN_EVENT_TABLE(PopUpDSlide, wxFrame)
 EVT_KEY_DOWN(PopUpDSlide::OnKeyDown)
 EVT_MOVE(PopUpDSlide::OnMove)

@@ -41,6 +41,9 @@ typedef struct {
   float x;
 } MyFlPoint;
 
+class ChartDB;              // forward
+extern ChartDB *ChartData;  ///< Global instance
+
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 

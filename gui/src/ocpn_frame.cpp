@@ -69,6 +69,7 @@
 #include "model/georef.h"
 #include "model/gui.h"
 #include "model/gui_events.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/local_api.h"
 #include "model/logger.h"
@@ -253,7 +254,6 @@ extern wxDateTime g_loglast_time;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern bool g_bDeferredStartTrack;
-extern bool bDBUpdateInProgress;
 extern int quitflag;
 extern int g_tick;
 extern ChartDB *ChartData;
@@ -373,7 +373,7 @@ double gLat_gt_m1, gLon_gt_m1;
 uint64_t fix_time_gt;
 uint64_t fix_time_gt_last;
 
-double gSog_gt, gCog_gt, gHdt_gt;
+double gSog_gt, gHdt_gt;
 double gCog_gt_m1, gHdt_gt_m1;
 uint64_t hdt_time_gt;
 double cog_rate_gt, hdt_rate_gt;
@@ -460,7 +460,6 @@ static void DoHelpDialog(void) {
 //              Fwd Refs
 //------------------------------------------------------------------------------
 
-iENCToolbar *g_iENCToolbar;
 int g_iENCToolbarPosX;
 int g_iENCToolbarPosY;
 
@@ -6504,8 +6503,6 @@ void MyFrame::DoPrint(void) {
   Raise();  // I dunno why...
 #endif
 }
-
-wxDateTime gTimeSource;
 
 void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   wxString message_ID = event.GetID();

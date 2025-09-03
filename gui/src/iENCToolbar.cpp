@@ -47,6 +47,7 @@ extern s52plib *ps52plib;
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 
+iENCToolbar *g_iENCToolbar;
 //---------------------------------------------------------------------------------------
 //          iENCToolbar Implementation
 //---------------------------------------------------------------------------------------

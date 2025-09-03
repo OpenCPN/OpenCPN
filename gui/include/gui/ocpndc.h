@@ -30,11 +30,6 @@
 #ifndef __OCPNDC_H__
 #define __OCPNDC_H__
 
-// Make sure glew.h is included before GL/gl.h:
-#if defined(__WXQT__) || defined(__WXGTK__) || defined(__MSVC__)
-#include "GL/glew.h"
-#endif
-
 #include "linmath.h"
 
 #include "TexFont.h"

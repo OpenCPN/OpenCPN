@@ -31,6 +31,9 @@
 
 class wxHtmlWindow;
 
+class S57QueryDialog;                         // forward
+extern S57QueryDialog* g_pObjectQueryDialog;  ///< Global instance
+
 /**
  * Dialog for displaying query results of S57 objects. Creates a dialog window
  * to display detailed information about queried S57 objects, including an HTML

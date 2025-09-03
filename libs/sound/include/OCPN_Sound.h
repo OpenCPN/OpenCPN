@@ -31,6 +31,9 @@
 
 typedef std::function<void(void* userPtr)> AudioDoneCallback;
 
+class OcpnSound;  // forward
+extern OcpnSound *g_anchorwatch_sound;   ///< Global instance
+
 /**
  * Sound  class supports playing a sound using synchronous or asynchronous
  * mode. Also supports sound device enumeration and various status

@@ -64,6 +64,8 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 
 enum eMenuItems { ID_NAVLEG = 1, ID_NAVROUTE, ID_NAVHIGHWAY } menuItems;
 
+APConsole* console;  ///< Global instance
+
 //------------------------------------------------------------------------------
 //    ConsoleCanvasWin Implementation
 //------------------------------------------------------------------------------

@@ -257,6 +257,9 @@ enum {
 #include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
+class options;              // forward
+extern options *g_options;  ///< Global instance
+
 class Uncopyable {
 protected:
   Uncopyable(void) {}

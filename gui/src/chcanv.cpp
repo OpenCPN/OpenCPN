@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Chart Canvas
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement chcanv.h -- chart canvas
+ */
+
+#include <vector>
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -36,16 +36,14 @@
 
 #include "config.h"
 
-#include <wx/listimpl.cpp>
-
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/cmdline.h"
 #include "model/conn_params.h"
-#include "model/cutil.h"
 #include "model/geodesic.h"
 #include "model/gui.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
 #include "model/notification_manager.h"
@@ -136,13 +134,7 @@
 #ifndef __WXMSW__
 #include <signal.h>
 #include <setjmp.h>
-
 #endif
-
-extern float g_ShipScaleFactorExp;
-extern double g_mouse_zoom_sensitivity;
-
-#include <vector>
 
 #ifdef __WXMSW__
 #define printf printf2
@@ -174,151 +166,11 @@ int __cdecl printf2(const char *format, ...) {
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
-extern bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y);
-extern void catch_signals(int signo);
+extern ColorScheme global_color_scheme;  // library dependence
+extern wxColor GetDimColor(wxColor c);   // library dependence
 
-extern void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
-                          float radius, wxColour color,
-                          unsigned char transparency);
-
-extern double g_ChartNotRenderScaleFactor;
-extern ChartDB *ChartData;
-extern bool bDBUpdateInProgress;
-extern ColorScheme global_color_scheme;
-extern int g_nbrightness;
-
-extern APConsole *console;
-extern OCPNPlatform *g_Platform;
-
-extern RouteList *pRouteList;
-extern std::vector<Track *> g_TrackList;
-extern MyConfig *pConfig;
-extern Routeman *g_pRouteMan;
-extern ThumbWin *pthumbwin;
-extern TCMgr *ptcmgr;
-extern Select *pSelectTC;
-extern MarkInfoDlg *g_pMarkInfoDialog;
-extern RoutePropDlgImpl *pRoutePropDialog;
-extern TrackPropDlg *pTrackPropDialog;
-extern ActiveTrack *g_pActiveTrack;
-
-extern double AnchorPointMinDist;
-extern bool AnchorAlertOn1;
-extern bool AnchorAlertOn2;
-extern int g_nAWMax;
-
-extern RouteManagerDialog *pRouteManagerDialog;
-extern GoToPositionDialog *pGoToPositionDialog;
-extern wxString GetLayerName(int id);
-extern wxString g_uploadConnection;
-extern bool g_bsimplifiedScalebar;
-
-extern bool bDrawCurrentValues;
-
-extern s52plib *ps52plib;
-
-extern bool g_bTempShowMenuBar;
-extern bool g_bShowMenuBar;
-extern bool g_bShowCompassWin;
-
-extern MyFrame *gFrame;
-extern options *g_options;
-
-extern int g_iNavAidRadarRingsNumberVisible;
-extern bool g_bNavAidRadarRingsShown;
-extern float g_fNavAidRadarRingsStep;
-extern int g_pNavAidRadarRingsStepUnits;
-extern bool g_bWayPointPreventDragging;
-extern bool g_bEnableZoomToCursor;
-extern bool g_bShowChartBar;
-extern int g_ENCSoundingScaleFactor;
-extern int g_ENCTextScaleFactor;
-extern int g_maxzoomin;
-
-bool g_bShowShipToActive;
-int g_shipToActiveStyle;
-int g_shipToActiveColor;
-
-extern AISTargetQueryDialog *g_pais_query_dialog_active;
-
-extern int g_S57_dialog_sx, g_S57_dialog_sy;
-
-extern PopUpDSlide *pPopupDetailSlider;
-extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
-
-extern bool g_b_overzoom_x;  // Allow high overzoom
-extern double g_plus_minus_zoom_factor;
-
-extern int g_OwnShipIconType;
-extern double g_n_ownship_length_meters;
-extern double g_n_ownship_beam_meters;
-extern double g_n_gps_antenna_offset_y;
-extern double g_n_gps_antenna_offset_x;
-extern int g_n_ownship_min_mm;
-
-extern double g_COGAvg;  // only needed for debug....
-
-extern int g_click_stop;
-
-extern double g_ownship_predictor_minutes;
-extern int g_cog_predictor_style;
-extern wxString g_cog_predictor_color;
-extern int g_cog_predictor_endmarker;
-extern int g_ownship_HDTpredictor_style;
-extern wxString g_ownship_HDTpredictor_color;
-extern int g_ownship_HDTpredictor_endmarker;
-extern int g_ownship_HDTpredictor_width;
-extern double g_ownship_HDTpredictor_miles;
-
-extern bool g_bquiting;
-extern AISTargetListDialog *g_pAISTargetList;
-
-extern PlugInManager *g_pi_manager;
-
-extern OCPN_AUIManager *g_pauimgr;
-
-extern bool g_bopengl;
-
-extern bool g_bFullScreenQuilt;
-
-extern bool g_bsmoothpanzoom;
-extern bool g_bSmoothRecenter;
-
-bool g_bDebugOGL;
-
-extern bool g_b_assume_azerty;
-
-extern ChartGroupArray *g_pGroupArray;
-
-extern S57QueryDialog *g_pObjectQueryDialog;
-extern ocpnStyle::StyleManager *g_StyleManager;
-
-extern OcpnSound *g_anchorwatch_sound;
-
-extern bool g_bresponsive;
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-extern int g_ChartScaleFactor;
-
-#ifdef ocpnUSE_GL
-#endif
-
-extern double g_gl_ms_per_frame;
-extern bool g_benable_rotate;
-extern bool g_bRollover;
-
-extern bool g_bSpaceDropMark;
-extern bool g_bAutoHideToolbar;
-extern int g_nAutoHideToolbar;
-extern bool g_bDeferredInitDone;
-
-extern wxString g_CmdSoundString;
-extern bool g_CanvasHideNotificationIcon;
-extern bool g_bhide_context_menus;
-extern bool g_bhide_depth_units;
-extern bool g_bhide_overzoom_flag;
-
-//  TODO why are these static?
+static bool g_bSmoothRecenter = true;
+static bool bDrawCurrentValues;
 
 /**
  * The current mouse X position in physical pixels relative to the active
@@ -341,58 +193,22 @@ static int mouse_x;
  */
 static int mouse_y;
 static bool mouse_leftisdown;
+static bool g_brouteCreating;
+static int r_gamma_mult;
+static int g_gamma_mult;
+static int b_gamma_mult;
+static int gamma_state;
+static bool g_brightness_init;
+static int last_brightness;
+static wxGLContext *g_pGLcontext;  // shared common context
 
-bool g_brouteCreating;
-
-bool g_bShowTrackPointTime;
-
-int r_gamma_mult;
-int g_gamma_mult;
-int b_gamma_mult;
-int gamma_state;
-bool g_brightness_init;
-int last_brightness;
-
-int g_cog_predictor_width;
-extern double g_display_size_mm;
-
-extern ocpnFloatingToolbarDialog *g_MainToolbar;
-extern iENCToolbar *g_iENCToolbar;
-extern wxColour g_colourOwnshipRangeRingsColour;
-
-// LIVE ETA OPTION
-bool g_bShowLiveETA;
-extern double g_defaultBoatSpeed;
-double g_defaultBoatSpeedUserUnit;
-
-extern int g_nAIS_activity_timer;
-extern bool g_bskew_comp;
-extern float g_compass_scalefactor;
-extern int g_COGAvgSec;  // COG average period (sec.) for Course Up Mode
-extern bool g_btenhertz;
-
-wxGLContext *g_pGLcontext;  // shared common context
-
-extern bool g_useMUI;
-extern unsigned int g_canvasConfig;
-
-extern ChartCanvas *g_focusCanvas;
-extern ChartCanvas *g_overlayCanvas;
-
-extern float g_toolbar_scalefactor;
-extern SENCThreadManager *g_SencThreadManager;
-
-wxString g_ObjQFileExt;
+// Win DPI scale factor
+static double g_scaler;
 
 // "Curtain" mode parameters
-wxDialog *g_pcurtain;
+static wxDialog *g_pcurtain;
 
-extern int g_GUIScaleFactor;
-// Win DPI scale factor
-double g_scaler;
-wxString g_lastS52PLIBPluginMessage;
-extern bool g_bChartBarEx;
-bool g_PrintingInProgress;
+static wxString g_lastS52PLIBPluginMessage;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -1375,9 +1191,10 @@ void ChartCanvas::ShowCurrents(bool bShow) {
 }
 
 // TODO
-extern bool g_bPreserveScaleOnX;
-extern ChartDummy *pDummyChart;
-extern int g_sticky_chart;
+static ChartDummy *pDummyChart;
+
+ChartCanvas *g_overlayCanvas;
+ChartCanvas *g_focusCanvas;
 
 void ChartCanvas::canvasRefreshGroupIndex(void) { SetGroupIndex(m_groupIndex); }
 
@@ -1637,8 +1454,6 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       double d_north_mod = offset_distance * sin(target_angle);
       fromSM(d_east_mod, d_north_mod, gLat, gLon, &vpLat, &vpLon);
     }
-
-    extern double gCog_gt;
 
     // on lookahead mode, adjust the vp center point
     if (m_bLookAhead && bGPSValid && !m_MouseDragging) {
@@ -6181,7 +5996,6 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                       pow((double)(lGPSPoint.m_y - r.y), 2));
     int pix_radius = (int)lpp;
 
-    extern wxColor GetDimColor(wxColor c);
     wxColor rangeringcolour = GetDimColor(g_colourOwnshipRangeRingsColour);
 
     wxPen ppPen1(rangeringcolour, g_cog_predictor_width);
@@ -13298,8 +13112,6 @@ void ChartCanvas::RebuildTideSelectList(LLBBox &BBox) {
     }
   }
 }
-
-extern wxDateTime gTimeSource;
 
 void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
   if (!ptcmgr) return;

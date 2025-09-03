@@ -25,11 +25,37 @@
 #ifndef GUI_VARS_H__
 #define GUI_VARS_H__
 
+extern bool g_bTempShowMenuBar;
+extern bool AnchorAlertOn2;
+extern bool AnchorAlertOn1;
 extern bool g_FlushNavobjChanges;
+extern bool bDBUpdateInProgress;
+extern bool g_bNavAidRadarRingsShown;
+extern bool g_b_overzoom_x;  ///< Allow high overzoom
+extern bool g_bquiting;
+extern bool g_bopengl;
+extern bool g_b_assume_azerty;
+extern bool g_bDeferredInitDone;
+extern bool g_CanvasHideNotificationIcon;
+extern bool g_bhide_context_menus;
+extern bool g_bhide_depth_units;
+extern bool g_bhide_overzoom_flag;
+extern bool g_bChartBarEx;
+extern bool g_PrintingInProgress;
 
 extern int g_click_stop;
+extern int g_sticky_chart;
 
+extern double AnchorPointMinDist;
 extern double vLat; /**< Virtual lat from chcanv popup */
 extern double vLon; /**< Virtual lon from chcanv popup */
+extern double g_ChartNotRenderScaleFactor;
+extern double g_defaultBoatSpeedUserUnit;
+extern double gCog_gt;
 
+extern float g_compass_scalefactor;
+extern float g_toolbar_scalefactor;
+
+extern wxColour g_colourOwnshipRangeRingsColour;
+extern wxDateTime gTimeSource;
 #endif  // GUI_VARS_H__

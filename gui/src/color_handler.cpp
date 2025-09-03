@@ -1,8 +1,9 @@
 #include <wx/log.h>
 
 #include "color_handler.h"
-#include "s52plib.h"
+#include "model/gui_vars.h"
 #include "model/ocpn_types.h"
+#include "s52plib.h"
 
 extern s52plib* ps52plib;
 extern wxColorHashMap* pcurrent_user_color_hash;

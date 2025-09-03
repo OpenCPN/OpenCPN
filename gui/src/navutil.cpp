@@ -366,7 +366,6 @@ wxString g_gpx_path;
 bool g_bLayersLoaded;
 bool g_bShowMuiZoomButtons = true;
 
-double g_mouse_zoom_sensitivity;
 int g_mouse_zoom_sensitivity_ui;
 
 #ifdef ocpnUSE_GL
