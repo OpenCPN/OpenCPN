@@ -30,7 +30,7 @@
 #endif  // precompiled headers
 
 #include "pugixml.hpp"
-#include "CanvasConfig.h"
+#include "canvas_config.h"
 
 class OCPNConfigCatalog;
 class OCPNConfigObject;
