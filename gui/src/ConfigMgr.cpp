@@ -62,7 +62,7 @@
 #include "model/track.h"
 
 #include "ais.h"
-#include "CanvasConfig.h"
+#include "canvas_config.h"
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chcanv.h"

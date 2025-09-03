@@ -308,7 +308,7 @@ void About::CreateControls(void) {
   mainSizer->Add(pST1, 0, wxALL | wxEXPAND, 8);
 
   bool orient = m_displaySize.x < m_displaySize.y;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   wxBoxSizer* buttonSizer = new wxBoxSizer(orient ? wxVERTICAL : wxHORIZONTAL);
   mainSizer->Add(buttonSizer, 0, wxALL, 0);
 

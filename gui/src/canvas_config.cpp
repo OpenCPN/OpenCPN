@@ -25,7 +25,7 @@
 
 #include <wx/fileconf.h>
 
-#include "CanvasConfig.h"
+#include "canvas_config.h"
 #include "ocpn_plugin.h"
 
 //----------------------------------------------------------------------------

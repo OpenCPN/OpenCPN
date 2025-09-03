@@ -94,7 +94,7 @@
 #include "ais_target_alert_dlg.h"
 #include "ais_target_list_dlg.h"
 #include "ais_target_query_dlg.h"
-#include "CanvasConfig.h"
+#include "canvas_config.h"
 #include "chartbase.h"
 #include "chart_ctx_factory.h"
 #include "chartdb.h"

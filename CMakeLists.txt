@@ -779,7 +779,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/ais_target_alert_dlg.h
     ${GUI_HDR_DIR}/ais_target_list_dlg.h
     ${GUI_HDR_DIR}/ais_target_query_dlg.h
-    ${GUI_HDR_DIR}/CanvasConfig.h
+    ${GUI_HDR_DIR}/canvas_config.h
     ${GUI_HDR_DIR}/canvasMenu.h
     ${GUI_HDR_DIR}/CanvasOptions.h
     ${GUI_HDR_DIR}/catalog_mgr.h
@@ -901,7 +901,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ais_target_alert_dlg.cpp
     ${GUI_SRC_DIR}/ais_target_list_dlg.cpp
     ${GUI_SRC_DIR}/ais_target_query_dlg.cpp
-    ${GUI_SRC_DIR}/CanvasConfig.cpp
+    ${GUI_SRC_DIR}/canvas_config.cpp
     ${GUI_SRC_DIR}/canvasMenu.cpp
     ${GUI_SRC_DIR}/CanvasOptions.cpp
     ${GUI_SRC_DIR}/catalog_mgr.cpp
