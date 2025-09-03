@@ -27,9 +27,9 @@ typedef void (*_GLUfuncptr)();
 #include <wx/brush.h>
 
 #include "model/comm_n0183_output.h"
+#include "model/cutil.h"
 #include "model/georef.h"
 #include "model/multiplexer.h"
-#include "model/own_ship.h"
 #include "model/route.h"
 #include "model/routeman.h"
 

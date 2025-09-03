@@ -34,20 +34,19 @@
 #ifndef GSHHS_H
 #define GSHHS_H
 
-#include <stdio.h>
+// Make sure glew.h is included before GL/gl.h:
+#if defined(__WXQT__) || defined(__WXGTK__) || defined(__MSVC__)
+#include "GL/glew.h"
+#endif
+
 #include <string>
-#include <math.h>
-#include <assert.h>
 #include <vector>
 
-#include <wx/geometry.h>
-
-#include "model/ocpn_types.h"
-// #include "ocpndc.h"
 #include "viewport.h"
-#include "model/cutil.h"
 #include "poly_math.h"
 #include "color_types.h"
+
+#include "ocpndc.h"
 
 #ifdef __MSVC__
 #pragma warning(disable : 4251)  // relates to std::string fpath

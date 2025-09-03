@@ -42,6 +42,7 @@
 
 #include <wx/bmpcbox.h>
 #include <wx/dir.h>
+#include "wx/dirctrl.h"
 #include <wx/filename.h>
 #include <wx/graphics.h>
 #include <wx/image.h>
