@@ -26,6 +26,7 @@
 #define _NOTIFICATION_MANAGER_GUI_H__
 
 #include <memory>
+#include <vector>
 
 #include "wx/wxprec.h"
 #ifndef WX_PRECOMP
