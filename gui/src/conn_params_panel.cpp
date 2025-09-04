@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,21 +12,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement conn_params_panel.h -- panel editing a connection
+ */
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
+#include "conn_params_panel.h"
+
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
-
 #include <wx/statline.h>
-#include "conn_params_panel.h"
 
 #include "ocpn_plugin.h"
 #include "options.h"
@@ -65,8 +65,6 @@ private:
   wxScreenDC dc;
   wxFont font;
 };
-
-extern "C" bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
 BEGIN_EVENT_TABLE(ConnectionParamsPanel, wxPanel)
 EVT_PAINT(ConnectionParamsPanel::OnPaint)
