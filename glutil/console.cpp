@@ -20,6 +20,7 @@
 
 /**
  * \file
+ *
  *  Simple CLI application to check OpenGL capabilities.
  */
 
