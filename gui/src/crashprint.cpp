@@ -3,71 +3,36 @@
 // Purpose:     wxCrashPrint
 // Maintainer:  Wyo
 // Created:     2004-09-28
-// RCS-ID:      $Id: crashprint.cpp,v 1.11 2005-04-14 19:41:33 wyo Exp $
 // Copyright:   (c) 2004 wxCode
 // Licence:     wxWindows
 //////////////////////////////////////////////////////////////////////////////
 
-//----------------------------------------------------------------------------
-// information
-//----------------------------------------------------------------------------
+/**
+ * \file
+ *
+ * Implement crashprint.h  --  dump debug info on crash.
+ */
 
-//----------------------------------------------------------------------------
-// headers
-//----------------------------------------------------------------------------
-
-// For compilers that support precompilation, includes <wx/wx.h>.
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all 'standard' wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
-//! standard header
 #if defined(__linux__)
 #include <execinfo.h>  // Needed for backtrace
 #include <cxxabi.h>    // Needed for __cxa_demangle
 #include <unistd.h>
 #endif
 
-// wxWidgets headers
-#include <wx/string.h>  // strings support
+#include <wx/string.h>
 
-// crashprint headers
 #include "crashprint.h"  // crash print support
-
-//----------------------------------------------------------------------------
-// resources
-//----------------------------------------------------------------------------
-
-//============================================================================
-// declarations
-//============================================================================
-
-//============================================================================
-// implementation
-//============================================================================
-
-//----------------------------------------------------------------------------
-// wxCrashPrint
-//----------------------------------------------------------------------------
 
 wxCrashPrint::wxCrashPrint(int flags, const wxString &fname) {
   m_flags = flags;
   m_fname = fname;
 };
-
-//----------------------------------------------------------------------------
-// settings functions
-
-//----------------------------------------------------------------------------
-// general functions
 
 void wxCrashPrint::Report() {
 #if defined(__linux__)
