@@ -297,6 +297,8 @@ extern arrayofCanvasPtr g_canvasArray;
 
 using CBList = std::list<wxCheckBox*>;
 
+options* g_options;  // global instance
+
 #if wxUSE_XLOCALE
 static int lang_list[] = {
     wxLANGUAGE_DEFAULT, wxLANGUAGE_ABKHAZIAN, wxLANGUAGE_AFAR,

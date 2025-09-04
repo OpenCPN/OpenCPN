@@ -395,7 +395,6 @@ S57QueryDialog *g_pObjectQueryDialog;
 
 std::vector<std::string> TideCurrentDataSet;
 
-options *g_options;
 bool g_bDeferredInitDone;
 int options_lastPage = 0;
 int options_subpage = 0;
