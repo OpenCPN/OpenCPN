@@ -134,7 +134,7 @@ using namespace std::literals::chrono_literals;
 #include "cm93.h"
 #include "concanv.h"
 #include "config.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "DetailSlider.h"
 #include "dychart.h"
 #include "FontMgr.h"

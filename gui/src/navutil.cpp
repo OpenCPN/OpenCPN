@@ -81,7 +81,7 @@
 #include "chcanv.h"
 #include "cm93.h"
 #include "config.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"

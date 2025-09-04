@@ -93,7 +93,7 @@
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "cm93.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "connections_dlg.h"
 #include "displays.h"
 #include "dychart.h"

@@ -41,7 +41,7 @@
 #include "thumbwin.h"
 #include "mbtiles.h"
 #include "canvas_config.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "ocpn_frame.h"  //FIXME (dave) LoadS57
 #ifdef __ANDROID__
 #include "androidUTIL.h"

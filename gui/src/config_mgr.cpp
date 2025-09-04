@@ -32,7 +32,7 @@
 
 #include "config.h"
 #include "model/config_vars.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>

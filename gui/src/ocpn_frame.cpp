@@ -105,7 +105,7 @@
 #include "compass.h"
 #include "concanv.h"
 #include "connections_dlg.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "data_monitor.h"
 #include "displays.h"
 #include "dychart.h"

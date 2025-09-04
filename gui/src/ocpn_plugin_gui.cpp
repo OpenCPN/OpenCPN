@@ -47,7 +47,7 @@
 #include "ais.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "FontMgr.h"
 #include "glChartCanvas.h"
 #include "gui_lib.h"
