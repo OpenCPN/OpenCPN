@@ -26,6 +26,8 @@
 #ifndef CONFIG_VARS_H__
 #define CONFIG_VARS_H__
 
+#include <vector>
+
 #include <wx/config.h>
 #include <wx/string.h>
 

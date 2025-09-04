@@ -27,29 +27,7 @@
 
 // We need to set up our openGL environment before including
 // glcanvas.h which includes GL/gl.h
-#ifdef __ANDROID__
-#include <qopengl.h>
-#include <GL/gl_private.h>  // this is a cut-down version of gl.h
-#include <GLES2/gl2.h>
-
-#elif defined(ocpnUSE_GL)
-#if defined(__MSVC__)
-#include "glew.h"
-
-#elif defined(__WXOSX__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-typedef void (*_GLUfuncptr)();
-#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
-
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glew.h>
-#include <GL/glu.h>
-
-#else
-#error platform not supported.
-#endif  // __ANDROID__
-#endif  // ocpnUSE_GL
+#include "gl_headers.h"
 
 #include <wx/glcanvas.h>
 
@@ -62,6 +40,7 @@ typedef void (*_GLUfuncptr)();
 #include "TexFont.h"
 #include "ocpndc.h"
 #include "chcanv.h"
+#include "ocpn_gl_options.h"
 
 #include <array>
 #include <unordered_map>
@@ -95,34 +74,6 @@ public:
 };
 
 GLboolean QueryExtension(const char *extName);
-
-class ocpnGLOptions {
-public:
-  bool m_bUseAcceleratedPanning;
-  /**
-   * Controls OpenGL canvas hardware-accelerated panning mode.
-   *
-   * When true, uses an OpenGL optimization where the chart is rendered to a
-   * texture (via FBO - Frame Buffer Object) during panning operations.
-   * This texture is then translated/moved using GPU operations rather than
-   * redrawing the entire chart for each pan event, significantly improving
-   * performance during chart panning.
-   *
-   * This is separate from standard chart panning which is enabled by default
-   * and uses left-click + drag. This flag only controls whether that panning
-   * uses hardware acceleration.
-   */
-  bool m_bUseCanvasPanning;
-
-  bool m_bTextureCompression;
-  bool m_bTextureCompressionCaching;
-
-  int m_iTextureDimension;
-  int m_iTextureMemorySize;
-
-  bool m_GLPolygonSmoothing;
-  bool m_GLLineSmoothing;
-};
 
 class glTestCanvas : public wxGLCanvas {
 public:
