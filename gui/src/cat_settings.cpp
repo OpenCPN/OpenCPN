@@ -17,6 +17,7 @@
 
 /**
  * \file
+ *
  * Implement cat_settings.h -- Plugin catalog settings dialog
  */
 
