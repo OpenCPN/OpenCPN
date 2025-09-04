@@ -17,6 +17,7 @@
 
 /**
  * \file
+ *
  * class ChInfoWin -- chart info panel
  */
 

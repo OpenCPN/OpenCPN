@@ -17,6 +17,7 @@
 
 /**
  * \file
+ *
  * Class AboutFrame
  */
 
