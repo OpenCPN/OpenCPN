@@ -233,8 +233,6 @@ extern bool g_PrintingInProgress;
 extern bool g_bhide_depth_units;
 extern bool g_bhide_overzoom_flag;
 
-ocpnGLOptions g_GLOptions;
-
 wxColor s_regionColor;
 extern ShapeBaseChartSet gShapeBasemap;
 

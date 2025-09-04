@@ -93,7 +93,7 @@
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "cm93.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "connections_dlg.h"
 #include "displays.h"
 #include "dychart.h"
@@ -175,7 +175,6 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-extern int g_iNavAidRadarRingsNumberVisible;
 extern bool g_bNavAidRadarRingsShown;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;

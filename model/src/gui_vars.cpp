@@ -43,6 +43,8 @@ bool g_bhide_depth_units = false;
 bool g_bhide_overzoom_flag = false;
 bool g_bChartBarEx = false;
 bool g_PrintingInProgress = false;
+bool g_b_legacy_input_filter_behaviour = false;
+bool g_bAdvanceRouteWaypointOnArrivalOnly = false;
 
 double AnchorPointMinDist;
 double g_ChartNotRenderScaleFactor = 1.0;
@@ -50,6 +52,7 @@ double vLat = 0;
 double vLon = 0;
 double g_defaultBoatSpeedUserUnit = 0;
 double gCog_gt = 0;
+double g_scaler = 0;
 
 float g_compass_scalefactor = 0;
 float g_toolbar_scalefactor = 0;
@@ -59,3 +62,6 @@ int g_sticky_chart = 0;
 
 wxDateTime gTimeSource;
 wxColour g_colourOwnshipRangeRingsColour;
+wxColour g_colourTrackLineColour;
+
+wxString g_SENCPrefix;

@@ -204,7 +204,7 @@ gui/include/gui/cm93.h
 gui/include/gui/color_handler.h
 gui/include/gui/compass.h
 gui/include/gui/concanv.h
-gui/include/gui/ConfigMgr.h
+gui/include/gui/config_mgr.h
 gui/include/gui/connection_edit.h
 gui/include/gui/conn_params_panel.h
 gui/include/gui/crashprint.h

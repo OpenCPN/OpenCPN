@@ -202,9 +202,6 @@ static bool g_brightness_init;
 static int last_brightness;
 static wxGLContext *g_pGLcontext;  // shared common context
 
-// Win DPI scale factor
-static double g_scaler;
-
 // "Curtain" mode parameters
 static wxDialog *g_pcurtain;
 

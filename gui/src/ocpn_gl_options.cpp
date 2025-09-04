@@ -1,5 +1,5 @@
 /**************************************************************************
- *   Copyright (C) 2025 Alec Leamas                                        *
+ *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,31 +17,9 @@
 
 /**
  * \file
- * Platform independent GL includes
+ * Implement ocpn_gl_options.h -- It's silly, but still...
  */
 
-#if defined(__ANDROID__)
-#include <qopengl.h>
-#include <GL/gl_private.h>  // this is a cut-down version of gl.h
-#include <GLES2/gl2.h>
+#include "ocpn_gl_options.h"
 
-#elif defined(ocpnUSE_GL)
-#if defined(_WIN32)
-#include <glew.h>
-
-#elif __APPLE__
-typedef void (*_GLUfuncptr)();
-#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-
-#elif defined(__linux__)
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glext.h>
-
-#else
-#error platform not supported.
-#endif  // _win32
-#endif  // ocpnUSE_GL
+ocpnGLOptions g_GLOptions;
