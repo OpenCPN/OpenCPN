@@ -17,8 +17,10 @@
 
 /**
  * \file
- * Implement connections_dlg.h
+ *
+ * Implement connections_dlg.h --  %Options | %Connections GUI
  */
+
 #include <array>
 #include <algorithm>
 #include <sstream>
@@ -44,7 +46,6 @@
 #include "model/conn_states.h"
 #include "model/gui_events.h"
 #include "model/notification_manager.h"
-#include "model/std_icon.h"
 
 #include "connections_dlg.h"
 
@@ -59,11 +60,6 @@
 #include "priority_gui.h"
 #include "std_filesystem.h"
 #include "model/svg_utils.h"
-
-#include <wx/statline.h>
-
-extern OCPNPlatform* g_Platform;
-extern options* g_options;
 
 static wxString UtfArrowDown() { return wxString::FromUTF8(u8"\u25bc"); }
 static wxString UtfArrowRight() { return wxString::FromUTF8(u8"\u25ba"); }
