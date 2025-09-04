@@ -1,4 +1,4 @@
-/**************************************************************************
+/***************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,19 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 /**
  * \file
+ *
  * Dialog and support code for editing a connection
  */
 
 #ifndef _CONNECT_EDIT_H
 #define _CONNECT_EDIT_H
+
+#include <functional>
 
 #include <wx/checkbox.h>
 #include <wx/listctrl.h>
@@ -33,13 +33,11 @@
 #include <wx/timer.h>
 
 #include "model/conn_params.h"
-#include "model/comm_util.h"
 
 #include "observable.h"
 #include "expand_icon.h"
-
-class options;
-class ConnectionParamsPanel;
+#include "options.h"
+#include "conn_params_panel.h"
 
 /**
  * Dialog for editing connection parameters. Provides an interface for
