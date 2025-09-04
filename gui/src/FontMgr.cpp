@@ -27,6 +27,7 @@
 #include <wx/gdicmn.h>
 #include <wx/tokenzr.h>
 
+#include "model/config_vars.h"
 #include "FontMgr.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
@@ -75,7 +76,6 @@ wxString s_locale;
  * @note Currently only set on the Android platform.
  * @note Can be manually overridden in opencpn.ini (DefaultFontSize parameter).
  */
-int g_default_font_size;
 wxString g_default_font_facename;
 
 FontMgr *FontMgr::instance = NULL;

@@ -25,12 +25,21 @@
 #ifndef GUI_VARS_H__
 #define GUI_VARS_H__
 
+#include <wx/colour.h>
+#include <wx/string.h>
+
 extern bool g_btenhertz;
 extern bool g_FlushNavobjChanges;
+extern bool g_b_legacy_input_filter_behaviour;
+extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 extern int g_click_stop;
 
 extern double vLat; /**< Virtual lat from chcanv popup */
 extern double vLon; /**< Virtual lon from chcanv popup */
 
+extern wxColour g_colourOwnshipRangeRingsColour;
+extern wxColour g_colourTrackLineColour;
+
+extern wxString g_SENCPrefix;
 #endif  // GUI_VARS_H__

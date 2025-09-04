@@ -262,15 +262,11 @@ bool g_bPauseTest;
 APConsole *console;
 
 ChartDB *ChartData;
-int g_restore_stackindex;
-int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
 
 LayerList *pLayerList;
 
 Select *pSelectTC;
-
-int g_nbrightness = 100;
 
 bool bDBUpdateInProgress;
 
@@ -286,8 +282,6 @@ wxString ChartListFileName;
 wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
-wxString g_SENCPrefix;
-wxString g_UserPresLibData;
 wxString g_VisibleLayers;
 wxString g_InvisibleLayers;
 wxString g_VisiNameinLayers;
@@ -296,16 +290,12 @@ wxString g_InVisiNameinLayers;
 bool g_bcompression_wait;
 int g_FlushNavobjChangesTimeout;
 
-wxString g_uploadConnection;
-
 int user_user_id;
 int file_user_id;
 
 int quitflag;
 int g_tick = 0;
 int g_mem_total, g_mem_initial;
-
-bool s_bSetSystemTime;
 
 static unsigned int malloc_max;
 
@@ -322,28 +312,11 @@ bool g_bCruising;
 
 ChartDummy *pDummyChart;
 
-bool g_bShowOutlines;
-bool g_bShowDepthUnits;
-bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
-                      // displayed
-bool g_bShowChartBar;
-bool g_bPlayShipsBells;
-bool g_bFullscreenToolbar;
-bool g_bShowLayers;
 bool g_bTransparentToolbar;
 bool g_bTransparentToolbarInOpenGLOK;
-int g_nAutoHideToolbar;
-bool g_bAutoHideToolbar;
 
-bool g_bPermanentMOBIcon;
 bool g_bTempShowMenuBar;
 
-int g_iNavAidRadarRingsNumberVisible;
-bool g_bNavAidRadarRingsShown;
-float g_fNavAidRadarRingsStep;
-int g_pNavAidRadarRingsStepUnits;
-bool g_bWayPointPreventDragging;
-wxColour g_colourOwnshipRangeRingsColour;
 int g_maxzoomin;
 
 wxArrayPtrVoid *UserColourHashTableArray;
@@ -356,24 +329,9 @@ int gHDx_Watchdog;
 bool g_bDebugS57;
 
 int g_ChartUpdatePeriod;
-int g_SkewCompUpdatePeriod;
 
-int g_lastClientRectx;
-int g_lastClientRecty;
-int g_lastClientRectw;
-int g_lastClientRecth;
-/**
- * The width of the physical screen in millimeters.
- */
-double g_display_size_mm;
-std::vector<size_t> g_config_display_size_mm;
-bool g_config_display_size_manual;
-
-int g_GUIScaleFactor;
-int g_ChartScaleFactor;
 float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
-int g_ShipScaleFactor;
 int g_ENCSoundingScaleFactor;
 int g_ENCTextScaleFactor;
 
@@ -400,8 +358,6 @@ extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
 #endif
 #endif
 
-double g_ownship_predictor_minutes;
-double g_ownship_HDTpredictor_miles;
 int g_cog_predictor_style;
 wxString g_cog_predictor_color;
 int g_cog_predictor_endmarker;
@@ -410,61 +366,20 @@ wxString g_ownship_HDTpredictor_color;
 int g_ownship_HDTpredictor_endmarker;
 int g_ownship_HDTpredictor_width;
 
-bool g_own_ship_sog_cog_calc;
-int g_own_ship_sog_cog_calc_damp_sec;
-
 AisInfoGui *g_pAISGUI;
 
 AISTargetQueryDialog *g_pais_query_dialog_active;
-int g_iSoundDeviceIndex;
-
-int g_S57_dialog_sx, g_S57_dialog_sy;
-
-int g_nframewin_x;
-int g_nframewin_y;
-int g_nframewin_posx;
-int g_nframewin_posy;
-bool g_bframemax;
-
-bool g_bAutoAnchorMark;
 
 int gpIDXn;
 long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
 
-bool g_bUseGLL = true;
-
 int g_nCacheLimit;
 int g_memCacheLimit;
 bool g_bGDAL_Debug;
 
-bool g_bCourseUp;
-int g_COGAvgSec = 15;  // COG average period (sec.) for Course Up Mode
 double g_COGAvg;
-bool g_bLookAhead;
-bool g_bopengl;
-bool g_bSoftwareGL;
-/**
- * Controls how the chart panning and zooming smoothing is done during user
- * interactions.
- *
- * When enabled (true):
- * - Chart panning has inertia, with smooth acceleration and deceleration
- * - Mouse wheel zooming is smoothly animated between zoom levels
- * - Chart overscaled rendering is optimized for smooth transitions
- * - Chart quilting transitions may be smoother
- *
- * When disabled (false):
- * - Chart panning stops immediately when mouse is released
- * - Mouse wheel zooming jumps directly between zoom levels without animation
- * - Rendering may be slightly faster but less visually polished
- *
- * Changed through the Display > Advanced > "Smooth Panning/Zooming" checkbox.
- * Saved to config as user preference.
- */
-bool g_bsmoothpanzoom;
-// toggle for smooth position jumping
 bool g_bSmoothRecenter = true;
 bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
@@ -472,21 +387,13 @@ bool g_oz_vector_scale;
 double g_plus_minus_zoom_factor;
 bool g_bChartBarEx;
 
-bool g_b_legacy_input_filter_behaviour;  // Support original input filter
-                                         // process or new process
-
 bool g_bDebugGPSD;
-
-bool g_bFullScreenQuilt = true;
-bool g_bQuiltEnable;
-bool g_bQuiltStart;
 
 std::vector<std::string> ChartDirectoryExcludedVector;
 
 S57QueryDialog *g_pObjectQueryDialog;
 
 std::vector<std::string> TideCurrentDataSet;
-wxString g_TCData_Dir;
 
 options *g_options;
 bool g_bDeferredInitDone;
@@ -497,7 +404,6 @@ wxPoint options_lastWindowPos(0, 0);
 wxSize options_lastWindowSize(0, 0);
 
 bool g_bSleep;
-bool g_bsimplifiedScalebar;
 
 int osMajor, osMinor;
 
@@ -506,32 +412,16 @@ bool g_bHasHwClock;
 
 int g_nAIS_activity_timer;
 
-bool g_bEnableZoomToCursor;
-
 bool g_bTrackActive;
 bool g_bDeferredStartTrack;
-bool g_bHighliteTracks;
-wxColour g_colourTrackLineColour;
-
-double g_TrackIntervalSeconds;
-
-bool g_bShowDetailSlider;
 
 bool g_bUseGreenShip;
 
 bool g_b_overzoom_x = true;  // Allow high overzoom
 
-int g_OwnShipIconType;
-double g_n_ownship_length_meters;
-double g_n_ownship_beam_meters;
-double g_n_gps_antenna_offset_y;
-double g_n_gps_antenna_offset_x;
-int g_n_ownship_min_mm;
-
 int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
                      // no chart database, inform user, 2 - Start update right
                      // away
-bool g_bPreserveScaleOnX;
 bool g_CanvasHideNotificationIcon;
 
 bool g_bhide_depth_units;
@@ -551,13 +441,7 @@ wxLocale *plocale_def_lang = 0;
  * A valid setting triggers loading the corresponding .mo translation files
  * from the appropriate locale directory.
  */
-wxString g_locale;
-wxString g_localeOverride;
 bool g_b_assume_azerty;
-
-int g_MemFootMB;
-
-bool g_bShowStatusBar;
 
 bool g_bquiting;
 int g_BSBImgDebug;
@@ -566,28 +450,15 @@ AISTargetListDialog *g_pAISTargetList;
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
-bool g_bFullscreen;
-
 OCPN_AUIManager *g_pauimgr;
 wxAuiDefaultDockArt *g_pauidockart;
 
-wxString g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
 ocpnFloatingToolbarDialog *g_MainToolbar;
-int g_maintoolbar_x;
-int g_maintoolbar_y;
-long g_maintoolbar_orient;
 float g_toolbar_scalefactor;
 
 float g_compass_scalefactor;
-bool g_bShowMenuBar;
-bool g_bShowCompassWin;
-
-bool g_benable_rotate;
 
 int g_GPU_MemSize;
-
-wxString g_uiStyle;
 
 // Values returned from WMM_PI for variation computation request.
 // Initialize to invalid so we don't use it if WMM hasn't updated yet
@@ -623,22 +494,11 @@ wxString g_CmdSoundString;
 bool g_bRollover;
 
 bool b_inCompressAllCharts;
-bool g_bGLexpert;
-bool g_bUIexpert;
-
-int g_chart_zoom_modifier_raster;
-int g_chart_zoom_modifier_vector;
-
-bool g_bAdvanceRouteWaypointOnArrivalOnly;
-
-bool g_bSpaceDropMark;
 
 wxArrayString g_locale_catalog_array;
 bool b_reloadForPlugins;
 bool g_btrackContinuous;
 
-unsigned int g_canvasConfig;
-bool g_useMUI;
 bool g_bmasterToolbarFull = true;
 
 int g_AndroidVersionCode;

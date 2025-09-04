@@ -461,8 +461,6 @@ static void DoHelpDialog(void) {
 //------------------------------------------------------------------------------
 
 iENCToolbar *g_iENCToolbar;
-int g_iENCToolbarPosX;
-int g_iENCToolbarPosY;
 
 void BuildiENCToolbar(bool bnew) {
   if (g_bInlandEcdis) {

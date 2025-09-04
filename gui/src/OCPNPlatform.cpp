@@ -193,8 +193,6 @@ extern ocpnGLOptions g_GLOptions;
 extern int g_default_font_size;
 extern wxString g_default_font_facename;
 
-bool g_bEmailCrashReport;
-
 extern double g_ChartNotRenderScaleFactor;
 extern bool g_bRollover;
 

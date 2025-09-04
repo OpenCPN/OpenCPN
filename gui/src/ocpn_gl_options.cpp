@@ -1,5 +1,5 @@
 /**************************************************************************
- *   Copyright (C) 2021 Alec Leamas                                        *
+ *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,29 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement gui_vars.h
+ * Implement ocpn_gl_options.h -- It's silly, but still...
  */
 
-#include "model/gui_vars.h"
+#include "ocpn_gl_options.h"
 
-bool g_btenhertz = false;
-bool g_FlushNavobjChanges = false;
-bool g_b_legacy_input_filter_behaviour = false;
-bool g_bAdvanceRouteWaypointOnArrivalOnly = false;
-
-int g_click_stop = 0;
-
-double vLat = 0;
-double vLon = 0;
-
-wxColour g_colourOwnshipRangeRingsColour;
-wxColour g_colourTrackLineColour;
-
-wxString g_SENCPrefix;
+ocpnGLOptions g_GLOptions;

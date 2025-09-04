@@ -20,6 +20,9 @@
  * Class ocpnGLOptions -- OpenGL runtime options
  */
 
+#ifndef _GUI_OCPN_GL_OPTIONS_H_
+#define _GUI_OCPN_GL_OPTIONS_H_
+
 class ocpnGLOptions {
 public:
   bool m_bUseAcceleratedPanning;
@@ -48,3 +51,7 @@ public:
   bool m_GLPolygonSmoothing;
   bool m_GLLineSmoothing;
 };
+
+extern ocpnGLOptions g_GLOptions;  // global instance
+
+#endif  // _GUI_OCPN_GL_OPTIONS_H_

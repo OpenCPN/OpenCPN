@@ -116,8 +116,6 @@ extern bool g_b_EnableVBO;
 extern OCPNPlatform *g_Platform;
 extern SENCThreadManager *g_SencThreadManager;
 
-int g_SENC_LOD_pixels;
-
 static jmp_buf env_ogrf;  // the context saved by setjmp();
 
 #include <wx/arrimpl.cpp>  // Implement an array of S57 Objects

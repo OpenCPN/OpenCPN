@@ -269,8 +269,6 @@ extern wxString g_CmdSoundString;
 
 extern bool g_bDebugGPSD;
 
-int g_navobjbackups;
-
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltStart;
@@ -362,7 +360,6 @@ extern int g_AndroidVersionCode;
 extern wxString g_ObjQFileExt;
 
 MyConfig *pConfig;
-wxString g_gpx_path;
 bool g_bLayersLoaded;
 bool g_bShowMuiZoomButtons = true;
 

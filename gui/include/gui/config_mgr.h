@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * %Config file user configuration interface.
+ */
 
 #ifndef __CONFIGMGR_H__
 #define __CONFIGMGR_H__
@@ -27,13 +27,16 @@
 #include "wx/wxprec.h"
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif  // precompiled headers
+#endif
 
-#include "pugixml.hpp"
+#include <wx/event.h>
+#include <wx/panel.h>
+#include <wx/string.h>
+
 #include "canvas_config.h"
 
-class OCPNConfigCatalog;
-class OCPNConfigObject;
+class OCPNConfigCatalog;  // forward -- in config_mgr.cpp
+class OCPNConfigObject;   // forward -- in config_mgr.cpp
 
 using ConfigObjectList = std::list<OCPNConfigObject *>;
 

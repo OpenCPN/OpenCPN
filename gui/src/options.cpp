@@ -175,7 +175,6 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-extern int g_iNavAidRadarRingsNumberVisible;
 extern bool g_bNavAidRadarRingsShown;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
