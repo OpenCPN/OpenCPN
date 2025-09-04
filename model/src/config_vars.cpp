@@ -21,6 +21,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+
+#include <vector>
+
 #include "model/config_vars.h"
 #include "config.h"
 
@@ -32,14 +35,19 @@ bool g_bAllowShipToActive = false;
 bool g_bBasicMenus = false;
 bool g_bConfirmObjectDelete = false;
 bool g_bDebugCM93 = false;
+bool g_bDisplayGrid = false;
 bool g_benableUDPNullHeader = false;
 bool g_bfilter_cogsog = false;
+bool g_bFullscreenToolbar = false;
 bool g_bGarminHostUpload = false;
 bool g_bInlandEcdis = false;
 bool g_bMagneticAPB = false;
 bool g_bOverruleScaMin = false;
+bool g_bPermanentMOBIcon = false;
+bool g_bPlayShipsBells = false;
 bool g_bresponsive = false;
 bool g_bShowActiveRouteHighway = false;
+bool g_bShowLayers = false;
 bool g_bShowMag = false;
 bool g_bShowRouteTotal = false;
 bool g_bShowTrue = false;
@@ -47,6 +55,7 @@ bool g_bShowWptName = false;
 bool g_bskew_comp = false;
 bool g_btouch = false;
 bool g_bTrackDaily = false;
+bool g_bUIexpert = false;
 bool g_bUserIconsFirst = true;
 bool g_bUseWptScaMin = false;
 bool g_bWplUsePosition = false;
@@ -72,6 +81,26 @@ bool g_bShowLiveETA = false;
 bool g_btenhertz = false;
 bool g_useMUI = false;
 bool g_bPreserveScaleOnX = false;
+bool s_bSetSystemTime = false;
+bool g_bShowStatusBar = false;
+bool g_bShowDepthUnits = false;
+bool g_bAutoAnchorMark = false;
+bool g_bSoftwareGL = false;
+bool g_bsmoothpanzoo = false;
+bool g_bShowOutlines = false;
+bool g_bframemax = false;
+bool g_own_ship_sog_cog_calc = false;
+bool g_bShowDetailSlider = false;
+bool g_bUseGLL = true;
+bool g_bCourseUp = false;
+bool g_bLookAhead = false;
+bool g_bQuiltEnable = false;
+bool g_bQuiltStart = false;
+bool g_bHighliteTracks = false;
+bool g_bGLexpert = false;
+bool g_config_display_size_manual = false;
+bool g_bEmailCrashReport = false;
+bool g_bFullscreen = false;
 
 double g_mouse_zoom_sensitivity = 0.0;
 double g_n_arrival_circle_radius = 0.0;
@@ -79,15 +108,16 @@ double g_PlanSpeed = 0.0;
 double g_TrackDeltaDistance = 0.0;
 double g_UserVar = 0.0;
 double g_plus_minus_zoom_factor = 0.0;
+double g_defaultBoatSpeed = 0.0;
+double g_TrackIntervalSeconds = 0.0;
+double g_ownship_predictor_minutes = 0.0;
+double g_ownship_HDTpredictor_miles = 0.0;
 double g_n_ownship_length_meters = 0.0;
 double g_n_ownship_beam_meters = 0.0;
 double g_n_gps_antenna_offset_y = 0.0;
 double g_n_gps_antenna_offset_x = 0.0;
-double g_ownship_predictor_minutes = 0.0;
-double g_ownship_HDTpredictor_miles = 0.0;
 double g_COGAvg = 0.0;
 double g_display_size_mm = 0.0;
-double g_defaultBoatSpeed = 0.0;
 
 float g_fWaypointRangeRingsStep = 0.0;
 float g_GLMinSymbolLineWidth = 0.0;
@@ -96,12 +126,13 @@ float g_selection_radius_touch_mm = 10.0;
 float g_ShipScaleFactorExp = 0.0;
 float g_fNavAidRadarRingsStep = 0.0;
 
-int g_detailslider_dialog_x = 0;
-int g_detailslider_dialog_y = 0;
 int g_cm93_zoom_factor = 0;
 int g_COGFilterSec = 1;
+int g_detailslider_dialog_x = 0;
+int g_detailslider_dialog_y = 0;
 int g_iDistanceFormat = 0;
 int g_iSDMMFormat = 0;
+int g_iSoundDeviceIndex = 0;
 int g_iSpeedFormat = 0;
 int g_iTempFormat = 0;
 int g_iWaypointRangeRingsNumber = 0;
@@ -146,10 +177,36 @@ int g_ownship_HDTpredictor_endmarker = 0;
 int g_ownship_HDTpredictor_width = 0;
 int g_chart_zoom_modifier_raster = 0;
 int g_chart_zoom_modifier_vector = 0;
-int g_ChartScaleFactor = 0;
 int g_cog_predictor_width = 0;
 int g_COGAvgSec = 15;
 int g_GUIScaleFactor = 1;
+
+int g_restore_stackindex = 0;
+int g_restore_dbindex = 0;
+int g_nframewin_x = 0;
+int g_nframewin_y = 0;
+int g_nframewin_posx = 0;
+int g_nframewin_posy = 0;
+int g_own_ship_sog_cog_calc_damp_sec = 0;
+int g_MemFootMB = 0;
+int g_navobjbackups = 1;
+int g_SkewCompUpdatePeriod = 0;
+int g_maintoolbar_x = 0;
+int g_maintoolbar_y = 0;
+int g_lastClientRectx = 0;
+int g_lastClientRecty = 0;
+int g_lastClientRectw = 0;
+int g_lastClientRecth = 0;
+int g_ais_cog_predictor_width = 0;
+int g_SENC_LOD_pixels = 0;
+int g_default_font_size = 0;
+int g_nAutoHideToolbar = 0;
+int g_ChartScaleFactor = 0;
+int g_ShipScaleFactor = 0;
+int g_iENCToolbarPosX = 0;
+int g_iENCToolbarPosY = 0;
+
+long g_maintoolbar_orient = 0L;
 
 unsigned g_canvasConfig = 0;
 
@@ -175,6 +232,13 @@ wxString g_cog_predictor_color;
 wxString g_ownship_HDTpredictor_color;
 wxString g_CmdSoundString;
 wxString g_ObjQFileExt;
+wxString g_toolbarConfig = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+wxString g_locale;
+wxString g_localeOverride;
+wxString g_UserPresLibData;
+wxString g_TCData_Dir;
+wxString g_uiStyle;
+wxString g_gpx_path;
 
 static wxConfigBase* the_base_config = 0;
 
@@ -183,3 +247,5 @@ wxConfigBase* TheBaseConfig() {
   return the_base_config;
 }
 void InitBaseConfig(wxConfigBase* cfg) { the_base_config = cfg; }
+
+std::vector<size_t> g_config_display_size_mm;

@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement config_mgr.h -- config file user configuration interface
+ */
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -27,265 +27,43 @@
 #endif
 
 #include <algorithm>
-
-#include <wx/tokenzr.h>
-
-#include "config.h"
-#include "model/config_vars.h"
-#include "ConfigMgr.h"
-
-#include <wx/filename.h>
-#include <wx/fileconf.h>
-#include <wx/statline.h>
-
-#include "dychart.h"
-
-#include <stdlib.h>
-// #include <math.h>
-#include <time.h>
-#include <locale>
 #include <list>
+#include <locale>
+#include <stdlib.h>
 
-#include <wx/listimpl.cpp>
-#include <wx/progdlg.h>
+#include <time.h>
+
+#include <wx/colour.h>
+#include <wx/fileconf.h>
+#include <wx/filename.h>
+#include <wx/log.h>
+#include <wx/statline.h>
+#include <wx/string.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "model/cutil.h"
-#include "model/geodesic.h"
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/georef.h"
 #include "model/multiplexer.h"
-#include "model/nav_object_database.h"
-#include "model/route.h"
-#include "model/routeman.h"
-#include "model/select.h"
-#include "model/track.h"
+#include "model/route_point.h"
 
 #include "ais.h"
-#include "canvas_config.h"
-#include "chartbase.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "cm93.h"
-#include "ocpn_plugin.h"
+#include "config_mgr.h"
 #include "FontMgr.h"
 #include "Layer.h"
 #include "navutil.h"
-#include "nmea0183.h"
-
-#include "ocpndc.h"
 #include "ocpn_frame.h"
+#include "ocpn_gl_options.h"
 #include "OCPNPlatform.h"
+#include "ocpn_plugin.h"
+#include "RoutePropDlgImpl.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "styles.h"
 
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
-
-// Global statics
-//    Statics
-
-extern OCPNPlatform *g_Platform;
-extern MyFrame *gFrame;
-
-extern int g_restore_stackindex;
-extern int g_restore_dbindex;
-extern LayerList *pLayerList;
-extern MyConfig *pConfig;
-extern int g_nbrightness;
-extern bool g_bShowStatusBar;
-extern bool g_bUIexpert;
-extern bool g_bFullscreen;
-
-extern wxString g_SENCPrefix;
-extern wxString g_UserPresLibData;
-
-extern wxString *pInit_Chart_Dir;
-extern wxString gWorldMapLocation;
-extern wxString gWorldShapefileLocation;
-
-extern bool s_bSetSystemTime;
-extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
-extern bool g_bPlayShipsBells;
-extern int g_iSoundDeviceIndex;
-extern bool g_bFullscreenToolbar;
-extern bool g_bShowLayers;
-extern bool g_bTransparentToolbar;
-extern bool g_bPermanentMOBIcon;
-extern bool g_btenhertz;
-
-extern bool g_bShowDepthUnits;
-extern bool g_bAutoAnchorMark;
-extern bool g_bskew_comp;
-extern bool g_bopengl;
-extern bool g_bSoftwareGL;
-extern bool g_bsmoothpanzoom;
-
-extern bool g_bShowOutlines;
-extern bool g_bShowActiveRouteHighway;
-extern bool g_bShowRouteTotal;
-extern int g_nAWDefault;
-extern int g_nAWMax;
-
-extern int g_nframewin_x;
-extern int g_nframewin_y;
-extern int g_nframewin_posx;
-extern int g_nframewin_posy;
-extern bool g_bframemax;
-extern int g_route_prop_x, g_route_prop_y;
-extern int g_route_prop_sx, g_route_prop_sy;
-
-extern wxString g_VisibleLayers;
-extern wxString g_InvisibleLayers;
-
-// LIVE ETA OPTION
-extern bool g_bShowLiveETA;
-extern double g_defaultBoatSpeed;
-
-extern int g_S57_dialog_sx, g_S57_dialog_sy;
-
-extern int g_iNavAidRadarRingsNumberVisible;
-extern bool g_bNavAidRadarRingsShown;
-extern float g_fNavAidRadarRingsStep;
-extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
-extern bool g_bWayPointPreventDragging;
-extern bool g_bConfirmObjectDelete;
-extern wxColour g_colourOwnshipRangeRingsColour;
-
-extern bool g_bEnableZoomToCursor;
-extern wxString g_toolbarConfig;
-extern double g_TrackIntervalSeconds;
-extern double g_TrackDeltaDistance;
-
-extern bool g_bGDAL_Debug;
-extern bool g_bDebugCM93;
-extern bool g_bDebugS57;
-
-extern double g_ownship_predictor_minutes;
-extern double g_ownship_HDTpredictor_miles;
-
-extern bool g_own_ship_sog_cog_calc;
-extern int g_own_ship_sog_cog_calc_damp_sec;
-
-extern s52plib *ps52plib;
-
-extern int g_cm93_zoom_factor;
-extern bool g_b_legacy_input_filter_behaviour;
-extern bool g_bShowDetailSlider;
-extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
-
-extern int g_OwnShipIconType;
-extern double g_n_ownship_length_meters;
-extern double g_n_ownship_beam_meters;
-extern double g_n_gps_antenna_offset_y;
-extern double g_n_gps_antenna_offset_x;
-extern int g_n_ownship_min_mm;
-
-extern bool g_bPreserveScaleOnX;
-extern bool g_bsimplifiedScalebar;
-
-extern bool g_bUseGLL;
-
-extern wxString g_locale;
-extern wxString g_localeOverride;
-
-extern bool g_bCourseUp;
-extern bool g_bLookAhead;
-extern int g_COGAvgSec;
-extern bool g_bShowChartBar;
-
-extern int g_MemFootMB;
-
-extern wxString g_AW1GUID;
-extern wxString g_AW2GUID;
-extern int g_BSBImgDebug;
-
-extern wxString g_config_version_string;
-extern wxString g_config_version_string;
-
-extern bool g_bDebugGPSD;
-
-extern int g_navobjbackups;
-
-extern bool g_bQuiltEnable;
-extern bool g_bFullScreenQuilt;
-extern bool g_bQuiltStart;
-
-extern int g_SkewCompUpdatePeriod;
-
-extern int g_maintoolbar_x;
-extern int g_maintoolbar_y;
-extern long g_maintoolbar_orient;
-
-extern int g_lastClientRectx;
-extern int g_lastClientRecty;
-extern int g_lastClientRectw;
-extern int g_lastClientRecth;
-
-extern bool g_bHighliteTracks;
-extern int g_cog_predictor_width;
-extern int g_ais_cog_predictor_width;
-
-extern wxColour g_colourTrackLineColour;
-extern wxString g_default_wp_icon;
-
-extern ChartGroupArray *g_pGroupArray;
-
-extern bool g_bDebugOGL;
-extern wxString g_uploadConnection;
-
-extern std::vector<std::string> TideCurrentDataSet;
-extern wxString g_TCData_Dir;
-
-extern bool g_bresponsive;
-
-extern bool g_bGLexpert;
-
-extern int g_SENC_LOD_pixels;
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-
-extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
-extern double g_display_size_mm;
-extern std::vector<size_t> g_config_display_size_mm;
-extern bool g_config_display_size_manual;
-
-extern bool g_benable_rotate;
-extern bool g_bEmailCrashReport;
-
-extern int g_default_font_size;
-
-extern bool g_bAutoHideToolbar;
-extern int g_nAutoHideToolbar;
-extern int g_GUIScaleFactor;
-extern int g_ChartScaleFactor;
-extern int g_ShipScaleFactor;
-
-extern int g_iENCToolbarPosX;
-extern int g_iENCToolbarPosY;
-
-extern bool g_bSpaceDropMark;
-
-extern bool g_bShowMenuBar;
-extern bool g_bShowCompassWin;
-
-extern wxString g_uiStyle;
-extern bool g_useMUI;
-extern wxString g_gpx_path;
-
-extern unsigned int g_canvasConfig;
-
-#ifdef ocpnUSE_GL
-extern ocpnGLOptions g_GLOptions;
-#endif
+extern s52plib *ps52plib;  // In a library...
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

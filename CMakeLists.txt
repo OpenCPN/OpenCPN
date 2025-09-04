@@ -794,7 +794,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/color_handler.h
     ${GUI_HDR_DIR}/compass.h
     ${GUI_HDR_DIR}/concanv.h
-    ${GUI_HDR_DIR}/ConfigMgr.h
+    ${GUI_HDR_DIR}/config_mgr.h
     ${GUI_HDR_DIR}/connection_edit.h
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
@@ -827,6 +827,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/ocpndc.h
     ${GUI_HDR_DIR}/ocpn_app.h
     ${GUI_HDR_DIR}/ocpn_frame.h
+    ${GUI_HDR_DIR}/ocpn_gl_options.h
     ${GUI_HDR_DIR}/OCPNListCtrl.h
     ${GUI_HDR_DIR}/ocpn_pixel.h
     ${GUI_HDR_DIR}/OCPNPlatform.h
@@ -914,7 +915,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/color_handler.cpp
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
-    ${GUI_SRC_DIR}/ConfigMgr.cpp
+    ${GUI_SRC_DIR}/config_mgr.cpp
     ${GUI_SRC_DIR}/connection_edit.cpp
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
@@ -957,6 +958,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ocpn_pixel.cpp
     ${GUI_SRC_DIR}/OCPNPlatform.cpp
     ${GUI_SRC_DIR}/OCPNRegion.cpp
+    ${GUI_SRC_DIR}/ocpn_gl_options.cpp
     ${GUI_SRC_DIR}/options.cpp
     ${GUI_SRC_DIR}/Osenc.cpp
     ${GUI_SRC_DIR}/peer_client_dlg.cpp

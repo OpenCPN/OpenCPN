@@ -135,7 +135,7 @@ using namespace std::literals::chrono_literals;
 #include "cm93.h"
 #include "concanv.h"
 #include "config.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "DetailSlider.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -260,9 +260,6 @@ bool g_bPauseTest;
 
 // Files specified on the command line, if any.
 
-int g_restore_stackindex;
-int g_restore_dbindex;
-
 LayerList *pLayerList;
 
 bool g_bshowToolbar = true;
@@ -272,8 +269,6 @@ wxString ChartListFileName;
 wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
-wxString g_SENCPrefix;
-wxString g_UserPresLibData;
 wxString g_VisibleLayers;
 wxString g_InvisibleLayers;
 wxString g_VisiNameinLayers;
@@ -289,8 +284,6 @@ int quitflag;
 int g_tick = 0;
 int g_mem_total, g_mem_initial;
 
-bool s_bSetSystemTime;
-
 static unsigned int malloc_max;
 
 wxDateTime g_start_time;
@@ -300,18 +293,8 @@ std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
 
 bool g_bCruising;
 
-bool g_bShowOutlines;
-bool g_bShowDepthUnits;
-bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
-                      // displayed
-bool g_bPlayShipsBells;
-bool g_bFullscreenToolbar;
-bool g_bShowLayers;
 bool g_bTransparentToolbar;
 bool g_bTransparentToolbarInOpenGLOK;
-int g_nAutoHideToolbar;
-
-bool g_bPermanentMOBIcon;
 
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
@@ -323,18 +306,9 @@ int gHDx_Watchdog;
 bool g_bDebugS57;
 
 int g_ChartUpdatePeriod;
-int g_SkewCompUpdatePeriod;
-
-int g_lastClientRectx;
-int g_lastClientRecty;
-int g_lastClientRectw;
-int g_lastClientRecth;
-std::vector<size_t> g_config_display_size_mm;
-bool g_config_display_size_manual;
 
 float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
-int g_ShipScaleFactor;
 
 bool g_bShowTide;
 bool g_bShowCurrent;
@@ -358,66 +332,19 @@ extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
 #endif
 #endif
 
-bool g_own_ship_sog_cog_calc;
-int g_own_ship_sog_cog_calc_damp_sec;
-
 AisInfoGui *g_pAISGUI;
-
-int g_iSoundDeviceIndex;
-
-int g_nframewin_x;
-int g_nframewin_y;
-int g_nframewin_posx;
-int g_nframewin_posy;
-bool g_bframemax;
-
-bool g_bAutoAnchorMark;
 
 int gpIDXn;
 long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
 
-bool g_bUseGLL = true;
-
 bool g_bGDAL_Debug;
-
-bool g_bCourseUp;
-bool g_bLookAhead;
-bool g_bSoftwareGL;
-/**
- * Controls how the chart panning and zooming smoothing is done during user
- * interactions.
- *
- * When enabled (true):
- * - Chart panning has inertia, with smooth acceleration and deceleration
- * - Mouse wheel zooming is smoothly animated between zoom levels
- * - Chart overscaled rendering is optimized for smooth transitions
- * - Chart quilting transitions may be smoother
- *
- * When disabled (false):
- * - Chart panning stops immediately when mouse is released
- * - Mouse wheel zooming jumps directly between zoom levels without animation
- * - Rendering may be slightly faster but less visually polished
- *
- * Changed through the Display > Advanced > "Smooth Panning/Zooming" checkbox.
- * Saved to config as user preference.
- */
-// toggle for smooth position jumping
 bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
 bool g_oz_vector_scale;
-
-bool g_b_legacy_input_filter_behaviour;  // Support original input filter
-                                         // process or new process
-
 bool g_bDebugGPSD;
-
-bool g_bQuiltEnable;
-bool g_bQuiltStart;
-
 std::vector<std::string> TideCurrentDataSet;
-wxString g_TCData_Dir;
 
 int options_lastPage = 0;
 int options_subpage = 0;
@@ -433,16 +360,8 @@ bool GetMemoryStatus(int *mem_total, int *mem_used);
 bool g_bHasHwClock;
 bool g_bTrackActive;
 bool g_bDeferredStartTrack;
-bool g_bHighliteTracks;
-wxColour g_colourTrackLineColour;
-
-double g_TrackIntervalSeconds;
-
-// int g_cm93_zoom_factor;
-bool g_bShowDetailSlider;
-
 bool g_bUseGreenShip;
-
+//
 int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
                      // no chart database, inform user, 2 - Start update right
                      // away
@@ -461,31 +380,14 @@ wxLocale *plocale_def_lang = 0;
  * A valid setting triggers loading the corresponding .mo translation files
  * from the appropriate locale directory.
  */
-wxString g_locale;
-wxString g_localeOverride;
-
-int g_MemFootMB;
-
-bool g_bShowStatusBar;
 
 int g_BSBImgDebug;
 
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
-bool g_bFullscreen;
-
 wxAuiDefaultDockArt *g_pauidockart;
-
-wxString g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
-int g_maintoolbar_x;
-int g_maintoolbar_y;
-long g_maintoolbar_orient;
-
 int g_GPU_MemSize;
-
-wxString g_uiStyle;
 
 // Values returned from WMM_PI for variation computation request.
 // Initialize to invalid so we don't use it if WMM hasn't updated yet
@@ -516,10 +418,6 @@ wxString g_config_version_string;
  */
 
 bool b_inCompressAllCharts;
-bool g_bGLexpert;
-bool g_bUIexpert;
-
-bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 wxArrayString g_locale_catalog_array;
 bool b_reloadForPlugins;

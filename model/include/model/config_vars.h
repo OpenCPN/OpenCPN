@@ -26,6 +26,8 @@
 #ifndef CONFIG_VARS_H__
 #define CONFIG_VARS_H__
 
+#include <vector>
+
 #include <wx/config.h>
 #include <wx/string.h>
 
@@ -81,6 +83,92 @@ extern bool g_bPreserveScaleOnX;
  * route. One use case is the Nasa Marine instruments Clipper GPS
  */
 extern bool g_always_send_rmb_rmc;
+extern bool g_bAISRolloverShowClass;
+extern bool g_bAISRolloverShowCOG;
+extern bool g_bAISRolloverShowCPA;
+extern bool g_bAllowShipToActive;
+extern bool g_bAutoAnchorMar;
+extern bool g_bBasicMenus;
+extern bool g_bConfirmObjectDelete;
+extern bool g_bDebugCM93;
+extern bool g_bDisplayGrid;  ///< Should  lat/lon grid be displayed ?
+extern bool g_benableUDPNullHeader;
+extern bool g_bfilter_cogsog;
+extern bool g_bFullscreen;
+extern bool g_bFullscreenToolbar;
+extern bool g_bGarminHostUpload;
+extern bool g_bInlandEcdis;
+extern bool g_bMagneticAPB;
+extern bool g_bopengl;
+extern bool g_bOverruleScaMin;
+extern bool g_bPermanentMOBIcon;
+extern bool g_bPlayShipsBell;
+extern bool g_bPlayShipsBells;
+extern bool g_bresponsive;
+extern bool g_bShowActiveRouteHighway;
+extern bool g_bShowDepthUnits;
+extern bool g_bShowLayers;
+extern bool g_bShowMag;
+extern bool g_bShowRouteTotal;
+extern bool g_bShowStatusBar;
+extern bool g_bShowTrue;
+extern bool g_bShowWptName;
+extern bool g_bskew_comp;
+extern bool g_bframemax;
+extern bool g_bAutoAnchorMark;
+extern bool g_bShowLiveETA;
+extern bool g_bShowDetailSlider;
+extern bool g_bPreserveScaleOnX;
+extern bool g_bsimplifiedScalebar;
+extern bool g_bUseGLL;
+extern bool g_bCourseUp;
+extern bool g_bLookAhead;
+extern bool g_bShowChartBar;
+extern bool g_bQuiltEnable;
+extern bool g_bFullScreenQuilt;
+extern bool g_bQuiltStart;  // Not used
+extern bool g_bGLexpert;
+extern bool g_config_display_size_manual;
+extern bool g_benable_rotate;
+extern bool g_bEmailCrashReport;
+extern bool g_bSpaceDropMark;
+extern bool g_bShowMenuBar;
+extern bool g_bShowCompassWin;
+extern bool g_useMUI;
+
+/**
+ * Controls how the chart panning and zooming smoothing is done during user
+ * interactions.
+ *
+ * When enabled (true):
+ * - Chart panning has inertia, with smooth acceleration and deceleration
+ * - Mouse wheel zooming is smoothly animated between zoom levels
+ * - Chart overscaled rendering is optimized for smooth transitions
+ * - Chart quilting transitions may be smoother
+ *
+ * When disabled (false):
+ * - Chart panning stops immediately when mouse is released
+ * - Mouse wheel zooming jumps directly between zoom levels without animation
+ * - Rendering may be slightly faster but less visually polished
+ */
+extern bool g_bsmoothpanzoom;
+
+extern bool g_bSoftwareGL;
+extern bool g_btouch;
+extern bool g_bTrackDaily;
+extern bool g_bUIexpert;
+extern bool g_bUserIconsFirst;
+extern bool g_bUseWptScaMin;
+extern bool g_bWplUsePosition;
+extern bool g_enable_root_menu_debug;
+extern bool g_persist_active_route;
+extern bool s_bSetSystemTime;
+extern bool g_bShowOutlines;
+extern bool g_bWayPointPreventDragging;
+extern bool g_bEnableZoomToCursor;
+extern bool g_own_ship_sog_cog_calc;
+extern bool g_bHighliteTracks;
+extern bool g_bAutoHideToolbar;
 
 extern double g_mouse_zoom_sensitivity;
 extern double g_n_arrival_circle_radius;
@@ -97,6 +185,7 @@ extern double g_ownship_HDTpredictor_miles;
 extern double g_COGAvg;           ///< Debug only usage
 extern double g_display_size_mm;  ///< Physical display width (mm)
 extern double g_defaultBoatSpeed;
+extern double g_TrackIntervalSeconds;
 
 extern float g_fWaypointRangeRingsStep;
 extern float g_GLMinSymbolLineWidth;
@@ -110,11 +199,11 @@ extern int g_COGFilterSec;
 extern int g_NMEAAPBPrecision;
 extern int g_SOGFilterSec;
 extern int g_WplAction;
-
 extern int g_detailslider_dialog_x;
 extern int g_detailslider_dialog_y;
 extern int g_iDistanceFormat;
 extern int g_iSDMMFormat;
+extern int g_iSoundDeviceIndex;
 extern int g_iSpeedFormat;
 extern int g_iTempFormat;
 extern int g_iWaypointRangeRingsNumber;
@@ -163,6 +252,45 @@ extern int g_cog_predictor_width;
 extern int g_COGAvgSec;  ///< COG average period for Course Up Mode (sec)
 extern int g_GUIScaleFactor;
 
+extern int g_nbrightness;
+extern int g_restore_stackindex;
+extern int g_restore_dbindex;
+extern int g_nframewin_x;
+extern int g_nframewin_y;
+extern int g_nframewin_posx;
+extern int g_nframewin_posy;
+extern int g_S57_dialog_sx;
+extern int g_S57_dialog_sy;
+extern int g_iNavAidRadarRingsNumberVisible;
+extern int g_pNavAidRadarRingsStepUnits;
+extern int g_own_ship_sog_cog_calc_damp_sec;
+extern int g_OwnShipIconType;
+extern int g_n_ownship_min_mm;
+extern int g_COGAvgSec;  ///< COG average period (sec.) for Course Up Mode
+extern int g_MemFootMB;
+extern int g_navobjbackups;
+extern int g_SkewCompUpdatePeriod;
+extern int g_maintoolbar_x;
+extern int g_maintoolbar_y;
+extern int g_lastClientRectx;
+extern int g_lastClientRecty;
+extern int g_lastClientRectw;
+extern int g_lastClientRecth;
+extern int g_cog_predictor_width;
+extern int g_ais_cog_predictor_width;
+extern int g_SENC_LOD_pixels;
+extern int g_chart_zoom_modifier_raster;
+extern int g_chart_zoom_modifier_vector;
+extern int g_default_font_size;
+extern int g_nAutoHideToolbar;
+extern int g_GUIScaleFactor;
+extern int g_ChartScaleFactor;
+extern int g_ShipScaleFactor;
+extern int g_iENCToolbarPosX;
+extern int g_iENCToolbarPosY;
+
+extern long g_maintoolbar_orient;
+
 extern unsigned g_canvasConfig;
 
 extern wxString g_active_route;
@@ -187,6 +315,17 @@ extern wxString g_cog_predictor_color;
 extern wxString g_ownship_HDTpredictor_color;
 extern wxString g_CmdSoundString;
 extern wxString g_ObjQFileExt;
+extern wxString g_toolbarConfig;
+extern wxString g_locale;
+extern wxString g_localeOverride;
+extern wxString g_UserPresLibData;
+extern wxString g_uploadConnection;
+extern wxString g_TCData_Dir;
+extern wxString g_uiStyle;  // Not used
+extern wxString g_gpx_path;
+
+/** Size of pysical screen in millimeters. */
+extern std::vector<size_t> g_config_display_size_mm;
 
 /**
  * Date/time format to use when formatting date/time strings.
@@ -212,6 +351,8 @@ extern wxString g_ObjQFileExt;
  * displaying it to the user.
  */
 extern wxString g_datetime_format;
+
+extern unsigned g_canvasConfig;
 
 wxConfigBase* TheBaseConfig();
 void InitBaseConfig(wxConfigBase* cfg);

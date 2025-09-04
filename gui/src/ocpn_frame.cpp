@@ -106,7 +106,7 @@
 #include "compass.h"
 #include "concanv.h"
 #include "connections_dlg.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "data_monitor.h"
 #include "displays.h"
 #include "dychart.h"
@@ -459,9 +459,6 @@ static void DoHelpDialog(void) {
 //------------------------------------------------------------------------------
 //              Fwd Refs
 //------------------------------------------------------------------------------
-
-int g_iENCToolbarPosX;
-int g_iENCToolbarPosY;
 
 void BuildiENCToolbar(bool bnew) {
   if (g_bInlandEcdis) {
