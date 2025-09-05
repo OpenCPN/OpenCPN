@@ -649,6 +649,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+      m_on_activate_cb(pic);
 
       auto pbm0 = pic->m_pplugin->GetPlugInBitmap();
       if (!pbm0->IsOk()) {
@@ -836,6 +837,7 @@ bool PluginLoader::UpdatePlugIns() {
       wxBitmap* pbm0 = pic->m_pplugin->GetPlugInBitmap();
       pic->m_bitmap = wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
+      m_on_activate_cb(pic);
       bret = true;
     } else if (!pic->m_enabled && pic->m_init_state) {
       // Save a local copy of the plugin icon before unloading
@@ -848,6 +850,7 @@ bool PluginLoader::UpdatePlugIns() {
       if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       pic->m_pplugin = nullptr;
       pic->m_init_state = false;
+      pic->m_has_setup_options = false;
     }
   }
   evt_update_chart_types.Notify();

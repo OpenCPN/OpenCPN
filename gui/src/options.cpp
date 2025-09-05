@@ -1741,6 +1741,7 @@ void options::Init(void) {
   pCheck_XLSECTTEXT = NULL;
 
   m_bVisitLang = FALSE;
+  m_bVisitPlugins = FALSE;
   m_itemFontElementListBox = NULL;
   m_textSample = NULL;
   m_topImgList = NULL;
@@ -1879,6 +1880,13 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
 
   int style = wxVSCROLL | wxTAB_TRAVERSAL;
   if ((nb = dynamic_cast<wxNotebook*>(page))) {
+    // Check and avoid adding duplicate
+    for (size_t i_page = 0; i_page < nb->GetPageCount(); i_page++) {
+      wxString candidate_title = nb->GetPageText(i_page);
+      if (candidate_title.IsSameAs(title))
+        return static_cast<wxScrolledWindow*>(nb->GetPage(i_page));
+    }
+
     sw = new wxScrolledWindow(page, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                               style);
     sw->SetScrollRate(m_scrollRate, m_scrollRate);
@@ -7808,6 +7816,8 @@ void options::ApplyChanges(wxCommandEvent& event) {
   // Some layout changes requiring a new options instance?
   if (m_bneedNew) m_returnChanges |= NEED_NEW_OPTIONS;
 
+  if (m_bVisitPlugins) m_returnChanges |= FORCE_RELOAD;
+
   //  Record notice of any changes to last applied template
   UpdateTemplateTitleText();
 
@@ -7836,6 +7846,9 @@ void options::OnXidOkClick(wxCommandEvent& event) {
 
   // And for locale change
   if (m_returnChanges & LOCALE_CHANGED) gFrame->ScheduleDeleteSettingsDialog();
+
+  // Also for FORCE_RELOAD
+  if (m_returnChanges & FORCE_RELOAD) gFrame->ScheduleReloadCharts();
 
   Finish();
   Hide();
@@ -8298,6 +8311,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   androidEnableOptionItems(true);
 #endif
 
+  gFrame->ThawCharts();
   Hide();
 }
 
@@ -8688,6 +8702,9 @@ void options::DoOnPageChange(size_t page) {
     }
 #endif
   } else if (m_pagePlugins == i) {  // 7 is the index of "Plugins" page
+    m_bVisitPlugins = TRUE;
+    gFrame->FreezeCharts();
+
     // load the disabled plugins finally because the user might want to enable
     // them
     auto loader = PluginLoader::GetInstance();
@@ -8726,6 +8743,8 @@ void options::DoOnPageChange(size_t page) {
       GlobalVar<wxString> compat_os(&g_compatOS);
     }
     k_plugins = TOOLBAR_CHANGED;
+    // TODO  Only if o-charts is touched?
+    k_plugins |= FORCE_RELOAD;
   }
 }
 

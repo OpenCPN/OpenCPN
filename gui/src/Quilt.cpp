@@ -1420,6 +1420,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     const LLBBox &chart_box = cte.GetBBox();
     if ((viewbox.IntersectOut(chart_box))) continue;
 
+    if (cte.GetChartType() == CHART_TYPE_PLUGIN) {
+      if (!ChartData->IsChartAvailable(i)) continue;
+    }
+
     m_fullscreen_index_array.push_back(i);
 
     if (reference_family != cte.GetChartFamily()) {

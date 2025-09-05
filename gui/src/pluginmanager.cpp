@@ -557,6 +557,8 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
 
   wxLogMessage("Installing %s", update.name.c_str());
 
+  g_Platform->ShowBusySpinner();
+
   auto pluginHandler = PluginHandler::GetInstance();
   auto path = ocpn::lookup_tarball(update.tarball_url.c_str());
   if (uninstall && path != "") {
@@ -654,6 +656,7 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
   LoadAllPlugIns(false);
 
   parent->ReloadPluginPanels();
+  g_Platform->HideBusySpinner();
 }
 
 static PlugIn_ViewPort CreatePlugInViewport(const ViewPort& vp) {
@@ -790,8 +793,6 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
     }
 
     case ActionVerb::UNINSTALL_MANAGED_VERSION: {
-      PluginLoader::GetInstance()->DeactivatePlugIn(*actionPIC);
-
       // Capture the confirmation dialog contents before the plugin goes away
       wxString message;
       message.Printf("%s %s\n", actionPIC->m_managed_metadata.name.c_str(),
@@ -802,16 +803,13 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
                    actionPIC->m_managed_metadata.name.c_str());
 
       PluginHandler::GetInstance()->Uninstall(
-          actionPIC->m_managed_metadata.name);
+          actionPIC->m_managed_metadata.name);  // embeds Deactivate()
 
       //  Reload all plugins, which will bring in the action results.
-      auto loader = PluginLoader::GetInstance();
       LoadAllPlugIns(false);
       plugin_list_panel->ReloadPluginPanels();
-
       OCPNMessageBox(gFrame, message, _("Un-Installation complete"),
                      wxICON_INFORMATION | wxOK);
-
       break;
     }
 
@@ -1047,8 +1045,11 @@ wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::GetInstance();
 
+  loader->SetOnActivateCb(
+      [&](const PlugInContainer* pic) { OnPluginActivate(pic); });
   loader->SetOnDeactivateCb(
       [&](const PlugInContainer* pic) { OnPluginDeactivate(pic); });
+
   evt_pluglist_change_listener.Listen(loader->evt_pluglist_change, this,
                                       EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
@@ -1159,14 +1160,28 @@ void PlugInManager::ProcessLateInit(const PlugInContainer* pic) {
     if (ppi) ppi->LateInit();
   }
 }
+void PlugInManager::OnPluginActivate(const PlugInContainer* pic) {
+  // Inform Plugin of OpenGL configuration, if enabled
+#ifdef ocpnUSE_GL
+  if (g_bopengl) {
+    if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
+        (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
+      if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
+        gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+        SendS52ConfigToAllPlugIns(true);
+      }
+    }
+  }
+#endif
+}
 
 void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
   // Unload chart cache if this plugin is responsible for any charts
   if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
       (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
-    ChartData->PurgeCachePlugins();
-    gFrame->InvalidateAllQuilts();
+    ChartData->PurgeCachePlugins();  // This will delete the plugin's charts.
   }
+
   //    Deactivate (Remove) any ToolbarTools added by this PlugIn
   for (unsigned int i = 0; i < m_PlugInToolbarTools.GetCount(); i++) {
     PlugInToolbarToolContainer* pttc = m_PlugInToolbarTools[i];
@@ -1224,6 +1239,7 @@ bool PlugInManager::UpDateChartDataTypes() {
         bret = true;
     }
   }
+  bret = true;
 
   if (bret) ChartData->UpdateChartClassDescriptorArray();
 
@@ -3330,6 +3346,7 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent& event) {
 }
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent& event) {
+  g_Platform->ShowBusySpinner();
   SetEnabled(event.IsChecked());
   m_pVersion->SetLabel(
       PluginLoader::GetPluginVersion(m_plugin, GetMetadataByName));
@@ -3338,6 +3355,7 @@ void PluginPanel::OnPluginEnableToggle(wxCommandEvent& event) {
     // the EventVar should really only be notified from within PluginLoader.
     PluginLoader::GetInstance()->evt_pluglist_change.Notify();
   }
+  g_Platform->HideBusySpinner();
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent& event) {
