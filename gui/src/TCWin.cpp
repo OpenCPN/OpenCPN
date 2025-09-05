@@ -87,8 +87,6 @@ enum { ID_TCWIN_NX, ID_TCWIN_PR };
 
 enum { TIDE_PLOT, CURRENT_PLOT };
 
-using SplineList = std::list<wxPoint *>;
-
 BEGIN_EVENT_TABLE(TCWin, wxWindow)
 EVT_PAINT(TCWin::OnPaint)
 EVT_SIZE(TCWin::OnSize)
@@ -628,15 +626,15 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
     }
 
     //    Build spline list of points
-    m_sList.DeleteContents(true);
-    m_sList.Clear();
+    for (auto it = m_sList.begin(); it != m_sList.end(); it++) delete (*it);
+    m_sList.clear();
 
     for (i = 0; i < 26; i++) {
       wxPoint *pp = new wxPoint;
       pp->x = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
       pp->y = m_graph_rect.y + (m_plot_y_offset) -
               (int)((tcv[i] - val_off) * m_graph_rect.height / im);
-      m_sList.Append(pp);
+      m_sList.push_back(pp);
     }
 
     btc_valid = true;
@@ -662,17 +660,14 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
   }
 
   //    Draw the Value curve
-#if wxCHECK_VERSION(2, 9, 0)
-  wxPointList *list = (wxPointList *)&m_sList;
-#else
-  wxList *list = (wxList *)&m_sList;
-#endif
+  wxPointList list;
+  for (auto &p : m_sList) list.Append(p);
 
   dc.SetPen(*pgraph);
 #if wxUSE_SPLINES
-  dc.DrawSpline(list);
+  dc.DrawSpline(&list);
 #else
-  dc.DrawLines(list);
+  dc.DrawLines(&list);
 #endif
 
   //  More Info - positioned below chart panel
@@ -1178,10 +1173,15 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
       }
     }
 
-    wxPointList *list = (wxPointList *)&m_sList;
-    if (list->GetCount() > 0 && idx > 0 && idx < (int)list->GetCount()) {
-      wxPoint *a = list->Item(idx - 1)->GetData();
-      wxPoint *b = list->Item(idx)->GetData();
+    if (m_sList.size() > 0 && idx > 0 && idx < (int)m_sList.size()) {
+      // Use iterator to access elements in std::list
+      auto it_a = m_sList.begin();
+      std::advance(it_a, idx - 1);
+      auto it_b = m_sList.begin();
+      std::advance(it_b, idx);
+
+      wxPoint *a = *it_a;
+      wxPoint *b = *it_b;
 
       float pct = (curs_x - a->x) / (float)((b->x - a->x));
       float dy = pct * (b->y - a->y);
