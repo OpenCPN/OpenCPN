@@ -25,6 +25,8 @@
  *
  */
 
+#include <list>
+
 // Include OCPNPlatform.h before shapefile_basemap.h to prevent obscure syntax
 // error when compiling with VS2022
 #include "OCPNPlatform.h"
@@ -47,6 +49,8 @@
 extern OCPNPlatform *g_Platform;
 extern wxString gWorldShapefileLocation;
 
+ShapeBaseChartSet gShapeBasemap;
+
 #ifdef ocpnUSE_GL
 
 typedef union {
@@ -60,7 +64,6 @@ typedef union {
     GLdouble b;
   } info;
 } GLvertexshp;
-#include <list>
 
 static std::list<float_2Dpt> g_pvshp;
 static std::list<GLvertexshp *> g_vertexesshp;
