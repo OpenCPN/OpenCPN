@@ -912,6 +912,22 @@ MyFrame::~MyFrame() {
   //            (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtTHREADMSG);
 }
 
+void MyFrame::FreezeCharts() {
+  // ..For each canvas,
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) cc->Freeze();
+  }
+}
+
+void MyFrame::ThawCharts() {
+  // ..For each canvas,
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) cc->Thaw();
+  }
+}
+
 void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
   s57chart *chart;
   switch (event.type) {
@@ -2651,6 +2667,11 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_RELOAD_CHARTS: {
+      ReloadAllVP();
+      break;
+    }
+
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
       /// LoadS57();
@@ -2929,6 +2950,12 @@ bool MyFrame::SetGlobalToolbarViz(bool viz) {
   }
 
   return viz_now;
+}
+
+void MyFrame::ScheduleReloadCharts() {
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(ID_RELOAD_CHARTS);
+  GetEventHandler()->AddPendingEvent(evt);
 }
 
 void MyFrame::ScheduleDeleteSettingsDialog() {
@@ -4113,6 +4140,7 @@ void MyFrame::PrepareOptionsClose(options *settings,
   androidRestoreFullScreen();
   androidEnableRotation();
 #endif
+  ThawCharts();
 }
 
 void MyFrame::DoOptionsDialog() {
@@ -4335,7 +4363,8 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
       false;  // since we don't want to pan to an unknown cursor position
 
   //  This is needed to recognise changes in zoom-scale factors
-  GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
+  if (!GetPrimaryCanvas()->IsFrozen())
+    GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
   g_bEnableZoomToCursor = ztc;
 
   //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
@@ -4408,6 +4437,8 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
 
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
+
+  if (rr & FORCE_RELOAD) ScheduleReloadCharts();
 
   return;
 }
