@@ -36,6 +36,8 @@
 #endif
 #endif
 
+#include "model/gui_vars.h"
+
 #include "ocpndc.h"
 #include "RolloverWin.h"
 #include "timers.h"

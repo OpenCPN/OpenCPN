@@ -71,8 +71,7 @@
 #include "cm93.h"  // for chart outline draw
 #include "compass.h"
 #include "concanv.h"
-#include "DetailSlider.h"
-#include "displays.h"
+#include "detail_slider.h"
 #include "hotkeys_dlg.h"
 #include "FontMgr.h"
 #include "glTextureDescriptor.h"

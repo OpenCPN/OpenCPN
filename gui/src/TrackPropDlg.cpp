@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include "model/georef.h"
+#include "model/gui_vars.h"
 #include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
@@ -35,7 +36,6 @@
 #include "model/track.h"
 
 #include "chcanv.h"
-#include "displays.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_frame.h"

@@ -68,6 +68,7 @@
 #include "model/config_vars.h"
 #include "model/conn_params.h"
 #include "model/cutil.h"
+#include "model/gui_vars.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_cache.h"
@@ -76,7 +77,6 @@
 
 #include "about_frame_impl.h"
 #include "about.h"
-#include "displays.h"
 #include "FontMgr.h"
 #include "gui_lib.h"
 #include "navutil.h"

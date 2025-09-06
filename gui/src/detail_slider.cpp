@@ -26,13 +26,13 @@
 #include <windows.h>
 #endif
 
-#include "DetailSlider.h"
+#include "detail_slider.h"
 
 #include <wx/wxprec.h>
 
 #include "model/config_vars.h"
 
-#include "DetailSlider.h"
+#include "detail_slider.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
