@@ -101,6 +101,8 @@ set(SRC_GRIB
     src/CursorData.h
     src/GribSettingsDialog.cpp
     src/GribSettingsDialog.h
+    src/WaveSteepness.cpp
+    src/WaveSteepness.h
     src/GribRequestDialog.cpp
     src/GribRequestDialog.h
     src/XyGribPanel.h
