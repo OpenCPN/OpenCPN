@@ -208,7 +208,7 @@ gui/include/gui/config_mgr.h
 gui/include/gui/connection_edit.h
 gui/include/gui/conn_params_panel.h
 gui/include/gui/crashprint.h
-gui/include/gui/DetailSlider.h
+gui/include/gui/detail_slider.h
 gui/include/gui/displays.h
 gui/include/gui/download_mgr.h
 gui/include/gui/dychart.h

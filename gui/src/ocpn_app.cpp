@@ -136,7 +136,7 @@ using namespace std::literals::chrono_literals;
 #include "concanv.h"
 #include "config.h"
 #include "config_mgr.h"
-#include "DetailSlider.h"
+#include "detail_slider.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "gdal/cpl_csv.h"

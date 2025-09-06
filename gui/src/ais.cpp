@@ -45,6 +45,7 @@
 #include "model/ais_target_data.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui_vars.h"
 #include "model/own_ship.h"
 #include "model/select.h"
 #include "model/wx28compat.h"

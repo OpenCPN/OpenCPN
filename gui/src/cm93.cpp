@@ -45,7 +45,7 @@
 
 #include "chcanv.h"
 #include "cm93.h"
-#include "DetailSlider.h"
+#include "detail_slider.h"
 #include "gui_lib.h"
 #include "line_clip.h"
 #include "model/georef.h"

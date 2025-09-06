@@ -39,7 +39,7 @@
 #include "MUIBar.h"
 #include "OCPNPlatform.h"
 #include "canvas_options.h"
-#include "DetailSlider.h"
+#include "detail_slider.h"
 #include "GoToPositionDialog.h"
 #include "styles.h"
 #include "navutil.h"

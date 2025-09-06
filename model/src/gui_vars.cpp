@@ -53,6 +53,9 @@ double g_defaultBoatSpeedUserUnit = 0;
 double g_scaler = 0;
 double vLat = 0;
 double vLon = 0;
+double g_current_monitor_dip_px_ratio = 1.0;
+
+size_t g_current_monitor = 0;
 
 float g_compass_scalefactor = 0;
 float g_toolbar_scalefactor = 0;
