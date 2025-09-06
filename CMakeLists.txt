@@ -804,7 +804,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
-    ${GUI_HDR_DIR}/FlexHash.h
+    ${GUI_HDR_DIR}/flex_hash.h
     ${GUI_HDR_DIR}/FontDesc.h
     ${GUI_HDR_DIR}/FontMgr.h
     ${GUI_HDR_DIR}/GoToPositionDialog.h
@@ -924,7 +924,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/filter_dlg.cpp
-    ${GUI_SRC_DIR}/FlexHash.cpp
+    ${GUI_SRC_DIR}/flex_hash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
     ${GUI_SRC_DIR}/FontMgr.cpp
     ${GUI_SRC_DIR}/GoToPositionDialog.cpp
