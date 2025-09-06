@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement details_slider.h -- chart display details slider.
  */
 
 #ifdef __MINGW32__
@@ -27,22 +26,18 @@
 #include <windows.h>
 #endif
 
+#include "DetailSlider.h"
+
 #include <wx/wxprec.h>
 
-#include <wx/slider.h>
-
 #include "model/config_vars.h"
+
 #include "DetailSlider.h"
+#include "chartdb.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "options.h"
-#include "chartdb.h"
-#include "ocpn_frame.h"
-
-extern bool g_bShowDetailSlider;
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-extern MyFrame* gFrame;
 
 PopUpDSlide* pPopupDetailSlider;
 
