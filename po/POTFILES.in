@@ -215,7 +215,7 @@ gui/include/gui/dychart.h
 gui/include/gui/emboss_data.h
 gui/include/gui/flex_hash.h
 gui/include/gui/font_desc_h
-gui/include/gui/FontMgr.h
+gui/include/gui/font_mgr.h
 gui/include/gui/glChartCanvas.h
 gui/include/gui/glTexCache.h
 gui/include/gui/glTextureDescriptor.h

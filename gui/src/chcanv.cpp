@@ -73,7 +73,7 @@
 #include "concanv.h"
 #include "detail_slider.h"
 #include "hotkeys_dlg.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "glTextureDescriptor.h"
 #include "GoToPositionDialog.h"
 #include "gshhs.h"

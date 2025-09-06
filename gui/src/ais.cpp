@@ -54,7 +54,7 @@
 #include "ais_target_alert_dlg.h"
 #include "ais_target_query_dlg.h"
 #include "chcanv.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "line_clip.h"
 #include "navutil.h"  // for Select
 #include "ocpn_frame.h"

@@ -26,7 +26,7 @@
 #include "model/config_vars.h"
 #include "ch_info_win.h"
 #include "color_handler.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "OCPNPlatform.h"
 
 #ifdef __ANDROID__

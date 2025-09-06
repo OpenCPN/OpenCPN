@@ -28,7 +28,7 @@
 #include <wx/tokenzr.h>
 
 #include "model/config_vars.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 

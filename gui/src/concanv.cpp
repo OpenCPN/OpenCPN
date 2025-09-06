@@ -39,7 +39,7 @@
 #include "model/routeman.h"
 
 #include "concanv.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_frame.h"

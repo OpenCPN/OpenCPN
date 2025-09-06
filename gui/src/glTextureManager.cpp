@@ -49,7 +49,7 @@
 #include "chartimg.h"
 #include "chartdb.h"
 #include "OCPNPlatform.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "mipmap/mipmap.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"

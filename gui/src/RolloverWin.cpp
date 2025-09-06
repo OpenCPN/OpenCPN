@@ -42,7 +42,7 @@
 #include "RolloverWin.h"
 #include "timers.h"
 #include "navutil.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "ocpn_plugin.h"
 #include "color_handler.h"
 #include "ocpn_frame.h"

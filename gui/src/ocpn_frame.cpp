@@ -110,7 +110,7 @@
 #include "config_mgr.h"
 #include "data_monitor.h"
 #include "dychart.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "glChartCanvas.h"
 #include "GoToPositionDialog.h"
 #include "gui_lib.h"
