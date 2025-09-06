@@ -66,7 +66,7 @@ typedef struct {
 typedef struct {
   wxString name;
   wxString reqName;
-  bool significantHeight;
+  bool significantHeight;  ///< Significant wave height
   bool windWaves;
   bool swellWaves;
 } WaveModelDef_t;

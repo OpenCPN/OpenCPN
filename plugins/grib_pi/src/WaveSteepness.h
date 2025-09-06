@@ -21,8 +21,7 @@
  * Wave Steepness Calculator for GRIB Wave Data
  *
  * Provides functionality to calculate wave steepness (H/L ratio) from
- * wave height and period data. Wave steepness is a critical parameter
- * for determining:
+ * wave height and period data. Wave steepness can be used to determine:
  * - Wave breaking probability
  * - Sea state severity
  * - Navigation safety
