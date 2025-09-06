@@ -28,7 +28,7 @@
 
 #include <vector>
 #include <memory.h>
-#include "FlexHash.h"
+#include "flex_hash.h"
 
 #define FLEXHASH_INTERNAL_SIZE static_cast<size_t>(20)
 
