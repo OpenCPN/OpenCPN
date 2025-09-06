@@ -914,18 +914,22 @@ MyFrame::~MyFrame() {
 
 void MyFrame::FreezeCharts() {
   // ..For each canvas,
+#ifndef __WXMAC__
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) cc->Freeze();
   }
+#endif
 }
 
 void MyFrame::ThawCharts() {
   // ..For each canvas,
+#ifndef __WXMAC__
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) cc->Thaw();
   }
+#endif
 }
 
 void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
