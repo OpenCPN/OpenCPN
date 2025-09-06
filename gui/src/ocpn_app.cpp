@@ -138,7 +138,7 @@ using namespace std::literals::chrono_literals;
 #include "config_mgr.h"
 #include "detail_slider.h"
 #include "dychart.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gdal/cpl_csv.h"
 #include "glTexCache.h"
 #include "GoToPositionDialog.h"

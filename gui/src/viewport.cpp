@@ -74,7 +74,7 @@
 #include "Quilt.h"
 #include "model/select_item.h"
 #include "model/select.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "ais_target_alert_dlg.h"

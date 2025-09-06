@@ -84,7 +84,7 @@
 #include "config.h"
 #include "config_mgr.h"
 #include "dychart.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "Layer.h"
 #include "navutil.h"
 #include "nmea0183.h"

@@ -75,7 +75,7 @@
 #include "compass.h"
 #include "config.h"
 #include "emboss_data.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "glChartCanvas.h"
 #include "glTexCache.h"
 #include "gshhs.h"

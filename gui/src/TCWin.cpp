@@ -14,7 +14,7 @@
 #include "tcmgr.h"
 #include "dychart.h"
 #include "model/cutil.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "model/wx28compat.h"
 #include "OCPNPlatform.h"
 #include "RolloverWin.h"

@@ -124,7 +124,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "config.h"
 #include "download_mgr.h"
 #include "dychart.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gshhs.h"
 #include "model/ais_decoder.h"
 #include "mygeom.h"

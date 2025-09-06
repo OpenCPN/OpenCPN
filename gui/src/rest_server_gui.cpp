@@ -34,7 +34,7 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "rest_server_gui.h"
 #include "routemanagerdialog.h"
 
