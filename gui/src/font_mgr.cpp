@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement font_mgr.h -- font list manager
+ */
+
 #include <algorithm>
 #include <locale>
 #include <set>
@@ -58,8 +59,6 @@ private:
   std::vector<font_cache_record> m_fontVector;
 };
 
-extern wxString g_locale;
-
 /**
  * Static copy of effective UI locale.
  *
@@ -68,7 +67,8 @@ extern wxString g_locale;
  * Updated whenever UI locale changes via platform ChangeLocale().
  * @see g_locale for main locale setting
  */
-wxString s_locale;
+static wxString s_locale;
+
 /**
  * Default font size for user interface elements such as menus, dialogs, etc.
  *
@@ -419,7 +419,7 @@ void FontMgr::LoadFontNative(wxString *pConfigString, wxString *pNativeDesc) {
   if (node == m_fontlist->end()) {
     wxFont *nf0 = new wxFont();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxFont *nf = new wxFont(nativefont);
 #else
     wxFont *nf = nf0->New(nativefont);

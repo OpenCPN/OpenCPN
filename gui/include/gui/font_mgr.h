@@ -12,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Font list manager
+ */
 
 #ifndef __FONTMGR_H__
 #define __FONTMGR_H__
@@ -23,14 +27,19 @@
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
+
+#include <wx/colour.h>
+#include <wx/font.h>
+#include <wx/string.h>
 
 #include "font_desc.h"
+#include "font_mgr.h"
 
-class OCPNwxFontList;
+class OCPNwxFontList;  // forward, in font_mgr.cpp
 
 /**
- * Manages the font list.
+ * Manage the font list.
  *
  * Singleton.
  */
@@ -41,8 +50,9 @@ public:
   wxFont *GetFontLegacy(const wxString &TextElement, int user_default_size);
 
   void SetLocale(wxString &newLocale);
+
   /**
-   * Gets a font object for a UI element.
+   * Get a font object for a UI element.
    *
    * Each UI element (like "AISTargetAlert", "StatusBar") has a font
    * configuration. Returns existing font if found, otherwise creates a new one
@@ -65,6 +75,7 @@ public:
    * @return Pointer to the font to use
    */
   wxFont *GetFont(const wxString &TextElement, int requested_font_size = 0);
+
   /**
    * Gets the text color for a UI element.
    *
@@ -75,6 +86,7 @@ public:
    * @see [GetFont]
    */
   wxColour GetFontColor(const wxString &TextElement) const;
+
   /**
    * Gets the default text color for a UI element.
    *
@@ -87,6 +99,7 @@ public:
    * @see [GetFont]
    */
   wxColour GetDefaultFontColor(const wxString &TextElement);
+
   /**
    * Sets the text color for a UI element.
    *
@@ -107,6 +120,7 @@ public:
    * @see [m_fontlist]
    */
   int GetNumFonts(void) const;
+
   /**
    * Gets the locale-specific configuration key for a font at index i.
    *
@@ -124,6 +138,7 @@ public:
    * @see s_locale for current locale tracking
    */
   const wxString &GetConfigString(int i) const;
+
   /**
    * Gets the UI element identifier string for the font at index i.
    *
@@ -154,12 +169,14 @@ public:
    * @return Native font description string
    */
   const wxString &GetNativeDesc(int i) const;
+
   /**
    * Gets description of font at index i.
    * @param i Font index between 0 and GetNumFonts()-1
    * @return String in format "elementname:nativedesc:color"
    */
   wxString GetFullConfigDesc(int i) const;
+
   /**
    * Creates configuration key from UI element name by combining locale with
    * hash.
@@ -181,6 +198,7 @@ public:
    * identifiers
    */
   wxArrayString &GetAuxKeyArray() { return m_AuxKeyArray; }
+
   /**
    * Adds new plugin-defined font configuration key.
    *
@@ -209,6 +227,7 @@ public:
    * the settings from pNativeDesc. Creates new entry if not found.
    */
   void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
+
   /**
    * Sets the default font properties for a UI element.
    *
@@ -224,6 +243,7 @@ public:
    * found
    */
   bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
+
   /**
    * Cleans up stale font entries after a locale change.
    *
@@ -231,6 +251,7 @@ public:
    * outdated entries that might reference old translations.
    */
   void ScrubList();
+
   /**
    * Finds font descriptor by its configuration key.
    *
@@ -325,6 +346,7 @@ private:  // private for singleton
    * @return true if this is a default font entry, false otherwise
    */
   bool IsDefaultFontEntry(const MyFontDesc *font_desc) const;
+
   /**
    * Gets the system default font size.
    *
@@ -369,6 +391,7 @@ private:  // private for singleton
    * mapping.
    */
   OCPNwxFontList *m_wxFontCache;
+
   /**
    * High-level list mapping text elements to font configurations.
    *
@@ -379,9 +402,11 @@ private:  // private for singleton
    * Used by GetFont() to provide configured fonts for UI elements.
    */
   FontList *m_fontlist;
+
   /** Default wxFont used when no specific font is found. System default in
    * normal weight */
   wxFont *pDefFont;
+
   /** Array of plugin-registered UI element identifiers that supplement standard
    * elements */
   wxArrayString m_AuxKeyArray;
