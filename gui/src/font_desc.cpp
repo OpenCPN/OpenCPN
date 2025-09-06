@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "FontDesc.h"
+#include "font_desc_h"
 
 MyFontDesc::MyFontDesc(wxString DialogString, wxString ConfigString,
                        wxFont *pFont, wxColour color, bool is_default)

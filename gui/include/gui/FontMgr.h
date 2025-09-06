@@ -25,7 +25,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "FontDesc.h"
+#include "font_desc.h"
 
 class OCPNwxFontList;
 
