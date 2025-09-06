@@ -129,6 +129,7 @@ extern bool g_bBasicMenus;
 extern TrackPropDlg *pTrackPropDialog;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
+extern double g_androidDPmm;
 
 //    Constants for right click menus
 enum {
@@ -701,8 +702,21 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
         menuFocus = menuAIS;
       } else {
-        MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST,
-                    _("AIS target list") + _T("..."));
+        bool enable_list = true;
+#ifdef __ANDROID__
+        double char_x = gFrame->GetSize().x / gFrame->GetCharWidth();
+        double char_y = gFrame->GetSize().y / gFrame->GetCharWidth();
+        double char_min = wxMin(char_x, char_y);
+        if (char_min < 100) enable_list = false;
+        // Another filter for phones, especially
+        double size_x = gFrame->GetSize().x / g_androidDPmm;
+        double size_y = gFrame->GetSize().y / g_androidDPmm;
+        if (wxMin(size_x, size_y) < 100)  // it is a phone..
+          enable_list = false;
+#endif
+        if (enable_list)
+          MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST,
+                      _("AIS target list") + _T("..."));
 
         wxString nextCPAstatus = g_bCPAWarn ? _("Hide") : _("Show");
         MenuAppend1(contextMenu, ID_DEF_MENU_AIS_CPAWARNING,
