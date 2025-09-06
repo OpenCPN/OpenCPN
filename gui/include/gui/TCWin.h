@@ -28,20 +28,19 @@
 #include <list>
 
 #include <wx/frame.h>
+#include <wx/button.h>
+#include <wx/choice.h>
 #include <wx/datetime.h>
+#include <wx/event.h>
+#include <wx/panel.h>
+#include <wx/listctrl.h>
+#include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/list.h>
 
 class IDX_entry;
 class ChartCanvas;
 class RolloverWin;
-class wxTimerEvent;
-class wxCommandEvent;
-class wxCloseEvent;
-class wxTextCtrl;
-class wxButton;
-class wxListCtrl;
-class wxChoice;
 
 class TCWin : public wxFrame {
 public:
