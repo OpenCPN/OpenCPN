@@ -516,6 +516,7 @@ public:
    * directions. */
   bool PanCanvas(double dx, double dy);
   void StopAutoPan(void);
+  bool IsOwnshipOnScreen();
 
   /**
    * Perform a smooth zoom operation on the chart canvas by the specified
