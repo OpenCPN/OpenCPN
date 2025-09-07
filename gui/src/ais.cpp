@@ -1315,7 +1315,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     wxPen met(UBLCK, (wxMax(target_outline_pen.GetWidth(), 2.5)));
     dc.SetPen(met);
     dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
-    double met_radius = 1.8 * AIS_ATON_reference;
+    double met_radius = 1.5 * AIS_ATON_reference;
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, met_radius);
 
     /* Inscribed "W" in the circle. */
