@@ -6164,10 +6164,20 @@ GetAttributes(DriverHandle handle);
 /**
  * Send a non-NMEA2000 message. The call is not blocking.
  * @param handle Obtained from GetActiveDrivers()
- * @param payload Message data, for example a complete Nmea0183 message.
+ * @param payload Message data, for example a complete Nmea0183 message.<br/>
  *        From 1.19: if the handle "protocol" attribute is "internal" it is
  *        parsed as <id><space><message> where the id is used when listening/
- *        subscribing to message.
+ *        subscribing to message.<br/>
+ *        From 5.12.4: if handle "protocol" attribute is "loopback" it is
+ *        parsed as one of
+ *          - "signalk" <source> <context_self> <json payload>
+ *          - "nmea0183" <source> <0183id> <n0183 sentence>
+ *          - "nmea2000" <source> <PGN> <hex encoded 2000 payload> <br/><br/>
+ *        <source> is the interface which is tagged as receiving interface.
+ *        must not contain spaces <br/>
+ *        <hex encoded payload> is bytes separated by space e.g. "0f ff 8 3e"
+ *        <br/>
+ *
  * @return value number of bytes queued for transmission.
  */
 extern DECL_EXP CommDriverResult WriteCommDriver(
