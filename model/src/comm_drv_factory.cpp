@@ -36,6 +36,7 @@
 #endif  // precompiled headers
 
 #include "model/comm_util.h"
+#include "model/comm_drv_loopback.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_n2k_serial.h"
 #include "model/comm_drv_n0183_serial.h"
@@ -70,6 +71,11 @@ public:
     }
   }
 };
+
+void MakeLoopbackDriver() {
+  auto driver = std::make_unique<LoopbackDriver>(NavMsgBus::GetInstance());
+  CommDriverRegistry::GetInstance().Activate(std::move(driver));
+}
 
 void MakeCommDriver(const ConnectionParams* params) {
   static N0183Listener listener;

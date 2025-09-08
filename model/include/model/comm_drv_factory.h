@@ -43,6 +43,9 @@ class N0183Listener;
 /** Create and register a driver for given connection. */
 void MakeCommDriver(const ConnectionParams* params);
 
+/** Create and register the loopback driver. */
+void MakeLoopbackDriver();
+
 void initIXNetSystem();
 void uninitIXNetSystem();
 
