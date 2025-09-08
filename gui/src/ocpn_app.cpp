@@ -1012,8 +1012,10 @@ MyApp::MyApp()
       m_exitcode(-2) {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-  if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
-    setenv("GDK_BACKEND", "x11", 1);
+  if (!wxGetEnv("OCPN_DISABLE_X11_GDK_BACKEND", NULL)) {
+    if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
+      setenv("GDK_BACKEND", "x11", 1);
+    }
   }
   setenv(
       "mesa_glthread", "false",
