@@ -207,6 +207,7 @@ Options for starting opencpn
   -f, --fullscreen             	Switch to full screen mode on start.
   -G, --no_opengl              	Disable OpenGL video acceleration. This setting will
                                 be remembered.
+  -X  --no_x11                  Disable x11 GDK Backend override
   -g, --rebuild_gl_raster_cache	Rebuild OpenGL raster cache on start.
   -D, --rebuild_chart_db        Rescan chart directories and rebuild the chart database
   -P, --parse_all_enc          	Convert all S-57 charts to OpenCPN's internal format on start.
@@ -473,6 +474,7 @@ bool g_bLookAhead;
 bool g_bskew_comp;
 bool g_bopengl;
 bool g_bSoftwareGL;
+bool g_disable_x11_gdk_backend;
 /**
  * Controls how the chart panning and zooming smoothing is done during user
  * interactions.
@@ -853,6 +855,7 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
                    wxCMD_LINE_PARAM_OPTIONAL);
   parser.AddSwitch("f", "fullscreen");
   parser.AddSwitch("G", "no_opengl");
+  parser.AddSwitch("X", "no_x11");
   parser.AddSwitch("W", "config_wizard");
   parser.AddSwitch("g", "rebuild_gl_raster_cache");
   parser.AddSwitch("D", "rebuild_chart_db");
@@ -919,6 +922,8 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
     g_unit_test_1 = static_cast<int>(number);
     if (g_unit_test_1 == 0) g_unit_test_1 = -1;
   }
+  g_disable_x11_gdk_backend = parser.Found("no_x11");
+
   safe_mode::set_mode(parser.Found("safe_mode"));
   ParseLoglevel(parser);
   wxString wxstr;
@@ -933,15 +938,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
 
   bool has_start_options = false;
   static const std::vector<std::string> kStartOptions = {
-      "unit_test_2",
-      "p",
-      "fullscreen",
-      "no_opengl",
-      "rebuild_gl_raster_cache",
-      "rebuild_chart_db",
-      "parse_all_enc",
-      "unit_test_1",
-      "safe_mode",
+      "unit_test_2",      "p",
+      "fullscreen",       "no_opengl",
+      "no_x11",           "rebuild_gl_raster_cache",
+      "rebuild_chart_db", "parse_all_enc",
+      "unit_test_1",      "safe_mode",
       "loglevel"};
   for (const auto &opt : kStartOptions) {
     if (parser.Found(opt)) has_start_options = true;
@@ -1011,21 +1012,24 @@ MyApp::MyApp()
       m_rest_server(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
                     g_bportable),
       m_usb_watcher(UsbWatchDaemon::GetInstance()),
-      m_exitcode(-2) {
+      m_exitcode(-2) {}
+
+bool MyApp::OnInit() {
+  if (!wxApp::OnInit()) return false;
+
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-  if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
-    setenv("GDK_BACKEND", "x11", 1);
+  if (!g_disable_x11_gdk_backend) {
+    if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
+      setenv("GDK_BACKEND", "x11", 1);
+    }
   }
   setenv(
       "mesa_glthread", "false",
       1);  // Explicitly disable glthread. This may have some impact on OpenGL
            // performance, but we know it is problematic for us. See #2889
 #endif     // __linux__
-}
 
-bool MyApp::OnInit() {
-  if (!wxApp::OnInit()) return false;
 #ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionItems(false);
