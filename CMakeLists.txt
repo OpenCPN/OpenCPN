@@ -508,9 +508,12 @@ include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
 
 string(TIMESTAMP VERSION_DATE "%Y-%m-%d")
 string(TIMESTAMP UNIX_TIMESTAMP "%s")
+
+# Always include git commit hash for build identification
+include(Utils)
+commit_id(COMMIT)
+
 if (OCPN_CI_BUILD)
-  include(Utils)
-  commit_id(COMMIT)
   build_num(BUILD_NUMBER)
   if (NOT "${OCPN_RELEASE}" STREQUAL "")
     set(BUILD_NUMBER ${OCPN_RELEASE})
@@ -519,6 +522,9 @@ if (OCPN_CI_BUILD)
   if (NOT "${BUILD_NUMBER}" STREQUAL "")
     set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
   endif ()
+else ()
+  # For development builds, just include the commit hash
+  set(VERSION_TAIL "+${COMMIT}")
 endif ()
 
 set(PACKAGE_VERSION
