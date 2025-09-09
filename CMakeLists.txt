@@ -2771,13 +2771,17 @@ endif ()
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
+set( _run_tests "
+  execute_process(COMMAND ./tests)
+  execute_process(COMMAND ./buffer-tests)
+")
+file(WRITE "${CMAKE_BINARY_DIR}/run_tests.cmake" ${_run_tests})
 if (OCPN_BUILD_TEST)
-
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
   add_custom_target(
     run-tests
-    COMMAND ctest -C $<CONFIG> -E tests --timeout 10
+    COMMAND cmake -P "${CMAKE_BINARY_DIR}/run_tests.cmake"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
   )
   add_dependencies(run-tests tests)
