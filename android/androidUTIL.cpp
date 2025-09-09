@@ -2288,6 +2288,8 @@ void androidEnableMulticast(bool benable) {
 
 void androidLastCall(void) {
   CheckMigrateCharts();
+  DoImportGPX();
+
   callActivityMethod_is("lastCallOnInit", 1);
 }
 
@@ -4638,6 +4640,39 @@ Java_org_opencpn_OCPNNativeLib_ScheduleCleanExit(JNIEnv *env, jobject obj) {
 
   return 1;
 }
+}
+
+void DoImportGPX() {
+  //  Look for importable GPX files
+  wxString import_dir = g_androidGetFilesDirs0;
+  import_dir += "/import";
+  wxArrayString file_list;
+  wxDir::GetAllFiles(import_dir, &file_list);
+  for (size_t i = 0; i < file_list.GetCount(); i++) {
+    wxFileName fn(file_list[i]);
+    if ((fn.GetExt().IsSameAs("GPX") || fn.GetExt().IsSameAs("gpx"))) {
+      // Query the user
+      wxString msg(_("Import GPX file:"));
+      msg += "        \n";
+      msg += fn.GetFullName();
+      if (androidShowSimpleYesNoDialog(_T("OpenCPN"), msg)) {
+        NavObjectCollection1 *pSet = new NavObjectCollection1;
+        if (pSet->load_file(fn.GetFullPath().fn_str()).status !=
+            pugi::xml_parse_status::status_ok) {
+          wxLogMessage("Error loading GPX file " + fn.GetFullPath());
+          pSet->reset();
+          delete pSet;
+        } else {
+          int wpt_dups;
+          pSet->LoadAllGPXObjects(
+              !pSet->IsOpenCPN(),
+              wpt_dups);  // Import with full visibility of names and objects
+          delete pSet;
+          ::wxRemoveFile(fn.GetFullPath());
+        }
+      }
+    }
+  }
 }
 
 void CheckMigrateCharts() {
