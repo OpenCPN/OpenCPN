@@ -1790,11 +1790,14 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       double pixlg = fabs(vpLon - m_vLon) * 1852 * 60 * GetVPScale();
       if (wxMax(pixlt, pixlg) > GetCanvasWidth()) super_jump = true;
     }
-    if (m_bFollow && g_btenhertz && !super_jump && !m_bLookAhead && !g_btouch) {
+#if 0
+    if (m_bFollow && g_btenhertz && !super_jump && !m_bLookAhead && !g_btouch && !m_bzooming) {
       int nstep = 5;
       if (blong_jump) nstep = 20;
       StartTimedMovementVP(vpLat, vpLon, nstep);
-    } else {
+    } else
+#endif
+    {
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
     }
 
