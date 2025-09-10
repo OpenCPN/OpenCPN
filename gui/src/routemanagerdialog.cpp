@@ -1438,11 +1438,10 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event) {
 
       Route *proute_to_delete = (Route *)m_pRouteListCtrl->GetItemData(item);
 
-      if (proute_to_delete) list.Append(proute_to_delete);
+      if (proute_to_delete) list.push_back(proute_to_delete);
     }
 
-    for (unsigned int i = 0; i < list.GetCount(); i++) {
-      Route *route = list.Item(i)->GetData();
+    for (Route *route : list) {
       if (route) {
         NavObj_dB::GetInstance().DeleteRoute(route);
         g_pRouteMan->DeleteRoute(route);
@@ -1581,7 +1580,7 @@ void RouteManagerDialog::OnRteExportClick(wxCommandEvent &event) {
     Route *proute_to_export = (Route *)m_pRouteListCtrl->GetItemData(item);
 
     if (proute_to_export) {
-      list.Append(proute_to_export);
+      list.push_back(proute_to_export);
       if (proute_to_export->m_RouteNameString != wxEmptyString)
         suggested_name = proute_to_export->m_RouteNameString;
     }
@@ -2328,7 +2327,7 @@ void RouteManagerDialog::TrackToRoute(Track *track) {
 
   Route *route = track->RouteFromTrack(&pprog);
 
-  pRouteList->Append(route);
+  pRouteList->push_back(route);
 
   pprog.Update(101, _("Done."));
 
@@ -2395,20 +2394,20 @@ void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select,
 
   m_pWptListCtrl->DeleteAllItems();
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  auto node = pWayPointMan->GetWaypointList()->begin();
 
   int index = 0;
   bool b_anyHidden = false;
-  while (node) {
-    RoutePoint *rp = node->GetData();
+  while (node != pWayPointMan->GetWaypointList()->end()) {
+    RoutePoint *rp = *node;
     if (rp && rp->IsListed()) {
       if (rp->m_bIsInRoute && !rp->IsShared()) {
-        node = node->GetNext();
+        ++node;
         continue;
       }
 
       if (!rp->GetName().Upper().Contains(m_tFilterWpt->GetValue().Upper())) {
-        node = node->GetNext();
+        ++node;
         continue;
       }
 
@@ -2450,8 +2449,7 @@ void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select,
 
       index++;
     }
-
-    node = node->GetNext();
+    ++node;
   }
 
   if (!b_retain_sort) {
@@ -2722,12 +2720,13 @@ void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event) {
     item_last_selected = item;
     RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
 
-    if (wp && !wp->m_bIsInLayer) list.Append(wp);
+    if (wp && !wp->m_bIsInLayer) list.push_back(wp);
   }
 
   if (busy) {
-    for (unsigned int i = 0; i < list.GetCount(); i++) {
-      RoutePoint *wp = list.Item(i)->GetData();
+    for (unsigned int i = 0; i < list.size(); i++) {
+      auto it = list.begin() + i;
+      RoutePoint *wp = *it;
       if (wp) {
         if (wp->m_bIsInRoute) {
           if (wxID_YES ==
@@ -2782,7 +2781,7 @@ void RouteManagerDialog::OnWptGoToClick(wxCommandEvent &event) {
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
 
   Route *temp_route = new Route();
-  pRouteList->Append(temp_route);
+  pRouteList->push_back(temp_route);
 
   temp_route->AddPoint(pWP_src);
   temp_route->AddPoint(wp);
@@ -2821,7 +2820,7 @@ void RouteManagerDialog::OnWptExportClick(wxCommandEvent &event) {
     RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
 
     if (wp && !wp->m_bIsInLayer) {
-      list.Append(wp);
+      list.push_back(wp);
       if (wp->GetName() != wxEmptyString) suggested_name = wp->GetName();
     }
   }
@@ -3052,16 +3051,13 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   }
 
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
-    wxRouteListNode *next_node = node1->GetNext();
+  auto next_node = pRouteList->end();
+  for (Route *pRoute : *pRouteList) {
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->m_bIsInLayer = false;
       pRoute->m_LayerID = 0;
       g_pRouteMan->DeleteRoute(pRoute);
     }
-    node1 = next_node;
   }
 
   for (Track *pTrack : g_TrackList) {
@@ -3074,12 +3070,12 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   }
 
   // Process waypoints in this layer
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-  wxRoutePointListNode *node3;
+  auto node = pWayPointMan->GetWaypointList()->begin();
+  auto node3 = node;
 
-  while (node) {
-    node3 = node->GetNext();
-    RoutePoint *rp = node->GetData();
+  while (node != pWayPointMan->GetWaypointList()->end()) {
+    node3 = node + 1;
+    RoutePoint *rp = *node;
     if (rp && (rp->m_LayerID == layer->m_LayerID)) {
       rp->m_bIsInLayer = false;
       rp->m_LayerID = 0;
@@ -3088,7 +3084,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     }
 
     node = node3;
-    node3 = NULL;
+    node3 = pWayPointMan->GetWaypointList()->end();
   }
 
   if (g_pMarkInfoDialog) {
@@ -3124,13 +3120,10 @@ void RouteManagerDialog::OnLayToggleChartClick(wxCommandEvent &event) {
 
 void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
+  for (Route *pRoute : *pRouteList) {
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->SetVisible(layer->IsVisibleOnChart());
     }
-    node1 = node1->GetNext();
   }
 
   for (Track *pTrack : g_TrackList) {
@@ -3141,15 +3134,10 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
   }
 
   // Process waypoints in this layer
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-
-  while (node) {
-    RoutePoint *rp = node->GetData();
+  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
     if (rp && (rp->m_LayerID == layer->m_LayerID)) {
       rp->SetVisible(layer->IsVisibleOnChart());
     }
-
-    node = node->GetNext();
   }
   UpdateLists();
 
@@ -3176,36 +3164,28 @@ void RouteManagerDialog::OnLayToggleNamesClick(wxCommandEvent &event) {
 
 void RouteManagerDialog::ToggleLayerContentsNames(Layer *layer) {
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
+  for (auto it = pRouteList->begin(); it != pRouteList->end(); ++it) {
+    Route *pRoute = *it;
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
-      wxRoutePointListNode *node = pRoute->pRoutePointList->GetFirst();
-      RoutePoint *prp1 = node->GetData();
-      while (node) {
+      auto &list = pRoute->pRoutePointList;
+      RoutePoint *prp1 = *pRoute->pRoutePointList->begin();
+      for (RoutePoint *pRoute : *pRoute->pRoutePointList) {
         if (layer->HasVisibleNames() == wxCHK_UNDETERMINED) {
           prp1->m_bShowName = prp1->m_bShowNameData;
         } else {
           prp1->m_bShowName = (layer->HasVisibleNames() == wxCHK_CHECKED);
         }
-        node = node->GetNext();
       }
     }
-    node1 = node1->GetNext();
   }
 
   // Process waypoints in this layer
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-
-  while (node) {
-    RoutePoint *rp = node->GetData();
+  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
     if (rp && (rp->m_LayerID == layer->m_LayerID)) {
       rp->SetNameShown(layer->HasVisibleNames() == wxCHK_CHECKED ||
                        (rp->m_bShowNameData &&
                         layer->HasVisibleNames() == wxCHK_UNDETERMINED));
     }
-
-    node = node->GetNext();
   }
 
   UpdateLayButtons();
@@ -3233,13 +3213,10 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
   ::wxBeginBusyCursor();
 
   // Process Tracks and Routes in this layer
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
+  for (Route *pRoute : *pRouteList) {
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->SetListed(layer->IsVisibleOnListing());
     }
-    node1 = node1->GetNext();
   }
 
   for (Track *pTrack : g_TrackList) {
@@ -3251,15 +3228,10 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
   //  n.b.  If the waypoint belongs to a track, and is not shared, then do not
   //  list it. This is a performance optimization, allowing large track support.
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-
-  while (node) {
-    RoutePoint *rp = node->GetData();
+  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
     if (rp && rp->m_bIsolatedMark && (rp->m_LayerID == layer->m_LayerID)) {
       rp->SetListed(layer->IsVisibleOnListing());
     }
-
-    node = node->GetNext();
   }
 
   UpdateLists();
