@@ -474,15 +474,9 @@ wxString Kml::MakeKmlFromRoute(Route* route, bool insertSeq) {
   std::stringstream lineStringCoords;
 
   RoutePointList* pointList = route->pRoutePointList;
-  wxRoutePointListNode* pointnode = pointList->GetFirst();
-  RoutePoint* routepoint;
-
-  while (pointnode) {
-    routepoint = pointnode->GetData();
-
+  for (RoutePoint* routepoint : *route->pRoutePointList) {
     lineStringCoords << PointPlacemark(document, routepoint);
     seqCounter++;
-    pointnode = pointnode->GetNext();
   }
 
   TiXmlElement* pmPath = new TiXmlElement("Placemark");

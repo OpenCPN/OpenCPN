@@ -32,7 +32,6 @@
 #include <wx/brush.h>
 #include <wx/dynarray.h>
 #include <wx/imaglist.h>
-#include <wx/pen.h>
 #include <wx/string.h>
 
 #include "model/MarkIcon.h"
@@ -47,6 +46,7 @@
 #include "color_types.h"
 #include "nmea0183.h"
 #include "observable_evtvar.h"
+#include "route.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -54,6 +54,9 @@
 #ifndef PI
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
+
+class Route;                             // circular
+using RouteList = std::vector<Route *>;  // circular
 
 class Routeman;     // forward
 class WayPointman;  // forward

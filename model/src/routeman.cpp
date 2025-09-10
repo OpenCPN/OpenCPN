@@ -109,67 +109,42 @@ Routeman::~Routeman() {
 }
 
 bool Routeman::IsRouteValid(Route *pRoute) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    if (pRoute == node->GetData()) return true;
-    node = node->GetNext();
+  for (Route *r : *pRouteList) {
+    if (pRoute == r) return true;
   }
   return false;
 }
 
 //    Make a 2-D search to find the route containing a given waypoint
 Route *Routeman::FindRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
-
-    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+  for (Route *proute : *pRouteList) {
+    auto &list = proute->pRoutePointList;
+    for (RoutePoint *prp : *list) {
       if (prp == pWP) return proute;
-      pnode = pnode->GetNext();
     }
-
-    node = node->GetNext();
   }
-
   return NULL;  // not found
 }
 
 //    Make a 2-D search to find the route containing a given waypoint, by GUID
 Route *Routeman::FindRouteContainingWaypoint(const std::string &guid) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
-
-    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+  for (Route *proute : *pRouteList) {
+    auto &list = proute->pRoutePointList;
+    for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp->m_GUID == guid) return proute;
-      pnode = pnode->GetNext();
     }
-
-    node = node->GetNext();
   }
-
   return NULL;  // not found
 }
 
 //    Make a 2-D search to find the visual route containing a given waypoint
 Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
+  for (Route *proute : *pRouteList) {
     if (proute->IsVisible()) {
-      wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
-      while (pnode) {
-        RoutePoint *prp = pnode->GetData();
+      for (RoutePoint *prp : *proute->pRoutePointList) {
         if (prp == pWP) return proute;
-        pnode = pnode->GetNext();
       }
     }
-
-    node = node->GetNext();
   }
 
   return NULL;  // not found
@@ -178,32 +153,18 @@ Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
 wxArrayPtrVoid *Routeman::GetRouteArrayContaining(RoutePoint *pWP) {
   wxArrayPtrVoid *pArray = new wxArrayPtrVoid;
 
-  wxRouteListNode *route_node = pRouteList->GetFirst();
-  while (route_node) {
-    Route *proute = route_node->GetData();
-
-    wxRoutePointListNode *waypoint_node = (proute->pRoutePointList)->GetFirst();
-    while (waypoint_node) {
-      RoutePoint *prp = waypoint_node->GetData();
+  for (Route *proute : *pRouteList) {
+    for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp == pWP) {  // success
         pArray->Add((void *)proute);
         break;  // only add a route to the array once, even if there are
                 // duplicate points in the route...See FS#1743
       }
-
-      waypoint_node = waypoint_node->GetNext();  // next waypoint
     }
-
-    route_node = route_node->GetNext();  // next route
   }
-
-  if (pArray->GetCount())
-    return pArray;
-
-  else {
-    delete pArray;
-    return NULL;
-  }
+  if (pArray->GetCount()) return pArray;
+  delete pArray;
+  return NULL;
 }
 
 void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
@@ -237,10 +198,7 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
   RoutePoint *best_point = NULL;
   double min_time_found = 1e6;
 
-  wxRoutePointListNode *node = (pR->pRoutePointList)->GetFirst();
-  while (node) {
-    RoutePoint *pn = node->GetData();
-
+  for (RoutePoint *pn : *pR->pRoutePointList) {
     double brg, dist;
     DistanceBearingMercator(pn->m_lat, pn->m_lon, lat, lon, &brg, &dist);
 
@@ -255,7 +213,6 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
         best_point = pn;
       }
     }
-    node = node->GetNext();
   }
   return best_point;
 }
@@ -307,8 +264,8 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   if (pStartPoint) {
     pActivePoint = pStartPoint;
   } else {
-    wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
-    pActivePoint = node->GetData();  // start at beginning
+    auto node = pActiveRoute->pRoutePointList->begin();
+    pActivePoint = *node;  // start at beginning
   }
 
   ActivateRoutePoint(pRouteToActivate, pActivePoint);
@@ -340,17 +297,13 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   pActivePoint = pRP_target;
   pActiveRoute->m_pRouteActivePoint = pRP_target;
 
-  wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
-  while (node) {
-    RoutePoint *pn = node->GetData();
+  for (RoutePoint *pn : *pActiveRoute->pRoutePointList) {
     pn->m_bBlink = false;  // turn off all blinking points
     pn->m_bIsActive = false;
-
-    node = node->GetNext();
   }
 
-  node = (pActiveRoute->pRoutePointList)->GetFirst();
-  RoutePoint *prp_first = node->GetData();
+  auto it = pActiveRoute->pRoutePointList->begin();
+  RoutePoint *prp_first = *it;
 
   //  If activating first point in route, create a "virtual" waypoint at present
   //  position
@@ -363,21 +316,17 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
     pRouteActivatePoint->m_bShowName = false;
 
     pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
-  }
-
-  else {
+  } else {
     prp_first->m_bBlink = false;
-    node = node->GetNext();
     RoutePoint *np_prev = prp_first;
-    while (node) {
-      RoutePoint *pnext = node->GetData();
+    for (++it; it != pActiveRoute->pRoutePointList->end(); ++it) {
+      RoutePoint *pnext = *it;
       if (pnext == pRP_target) {
         pActiveRouteSegmentBeginPoint = np_prev;
         break;
       }
 
       np_prev = pnext;
-      node = node->GetNext();
     }
   }
 
@@ -748,10 +697,7 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
   if (pRoute) {
     // walk the route, looking at each point to see if it is used by another
     // route or is isolated
-    wxRoutePointListNode *pnode = (pRoute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
-
+    for (RoutePoint *prp : *pRoute->pRoutePointList) {
       // check all other routes to see if this point appears in any other route
       wxArrayPtrVoid *pRA = GetRouteArrayContaining(prp);
 
@@ -765,17 +711,11 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
         }
         delete pRA;
       }
-
-      if (pnode) pnode = pnode->GetNext();
     }
 
     //      Now walk the route again, looking for isolated type shared waypoints
-    pnode = (pRoute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+    for (RoutePoint *prp : *pRoute->pRoutePointList) {
       if (prp->IsShared()) return true;
-
-      if (pnode) pnode = pnode->GetNext();
     }
   }
 
@@ -841,33 +781,35 @@ bool Routeman::DeleteRoute(Route *pRoute) {
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
-    pRouteList->DeleteObject(pRoute);
+    auto found = std::find(pRouteList->begin(), pRouteList->end(), pRoute);
+    if (found != pRouteList->end()) pRouteList->erase(found);
 
     m_route_dlg_ctx.route_mgr_dlg_update_list_ctrl();
 
     // walk the route, tentatively deleting/marking points used only by this
     // route
-    wxRoutePointListNode *pnode = (pRoute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+    auto pnode = (pRoute->pRoutePointList)->begin();
+    while (pnode != (pRoute->pRoutePointList)->end()) {
+      RoutePoint *prp = *pnode;
 
       // check all other routes to see if this point appears in any other route
       Route *pcontainer_route = FindRouteContainingWaypoint(prp);
 
       if (pcontainer_route == NULL && prp->m_bIsInRoute) {
-        prp->m_bIsInRoute =
-            false;  // Take this point out of this (and only) route
+        prp->m_bIsInRoute = false;
+        // Take this point out of this (and only) route
         if (!prp->IsShared()) {
           pSelect->DeleteSelectablePoint(prp, SELTYPE_ROUTEPOINT);
 
           // Remove all instances of this point from the list.
-          wxRoutePointListNode *pdnode = pnode;
-          while (pdnode) {
-            pRoute->pRoutePointList->DeleteNode(pdnode);
-            pdnode = pRoute->pRoutePointList->Find(prp);
+          auto list = *pRoute->pRoutePointList;
+          auto found = std::find(list.begin(), list.end(), prp);
+          while (found != list.end()) {
+            list.erase(found);
+            found = std::find(list.begin(), list.end(), prp);
           }
 
-          pnode = NULL;
+          pnode = list.end();
           NavObj_dB::GetInstance().DeleteRoutePoint(prp);
           delete prp;
         } else {
@@ -876,10 +818,10 @@ bool Routeman::DeleteRoute(Route *pRoute) {
           NavObj_dB::GetInstance().UpdateRoutePoint(prp);
         }
       }
-      if (pnode)
-        pnode = pnode->GetNext();
+      if (pnode != pRoute->pRoutePointList->end())
+        ++pnode;
       else
-        pnode = pRoute->pRoutePointList->GetFirst();  // restart the list
+        pnode = pRoute->pRoutePointList->begin();  // restart the list
     }
 
     NavObj_dB::GetInstance().DeleteRoute(pRoute);
@@ -894,9 +836,9 @@ void Routeman::DeleteAllRoutes() {
   ::wxBeginBusyCursor();
 
   //    Iterate on the RouteList
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
+  auto node = pRouteList->begin();
+  while (node != pRouteList->end()) {
+    Route *proute = *node;
     if (proute == pAISMOBRoute) {
       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
         return;
@@ -905,7 +847,7 @@ void Routeman::DeleteAllRoutes() {
       ::wxBeginBusyCursor();
     }
 
-    node = node->GetNext();
+    ++node;
     if (proute->m_bIsInLayer) continue;
 
     DeleteRoute(proute);
@@ -972,14 +914,9 @@ wxString Routeman::GetRouteResequenceMessage(void) {
 }
 
 Route *Routeman::FindRouteByGUID(const wxString &guid) {
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
-
+  for (Route *pRoute : *pRouteList) {
     if (pRoute->m_GUID == guid) return pRoute;
-    node1 = node1->GetNext();
   }
-
   return NULL;
 }
 
@@ -987,7 +924,6 @@ Track *Routeman::FindTrackByGUID(const wxString &guid) {
   for (Track *pTrack : g_TrackList) {
     if (pTrack->m_GUID == guid) return pTrack;
   }
-
   return NULL;
 }
 
@@ -1033,20 +969,20 @@ WayPointman::~WayPointman() {
 
   RoutePointList temp_list;
 
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
+  auto node = m_pWayPointList->begin();
+  while (node != m_pWayPointList->end()) {
+    RoutePoint *pr = *node;
 
-    temp_list.Append(pr);
-    node = node->GetNext();
+    temp_list.push_back(pr);
+    ++node;
   }
 
-  int a = temp_list.GetCount();
+  int a = temp_list.size();
 
-  temp_list.DeleteContents(true);
-  temp_list.Clear();
+  for (RoutePoint *rp : temp_list) delete rp;
+  temp_list.clear();
 
-  m_pWayPointList->Clear();
+  m_pWayPointList->clear();
   delete m_pWayPointList;
 
   for (unsigned int i = 0; i < m_pIconArray->GetCount(); i++) {
@@ -1069,8 +1005,8 @@ WayPointman::~WayPointman() {
 bool WayPointman::AddRoutePoint(RoutePoint *prp) {
   if (!prp) return false;
 
-  wxRoutePointListNode *prpnode = m_pWayPointList->Append(prp);
-  prp->SetManagerListNode(prpnode);
+  m_pWayPointList->push_back(prp);
+  prp->SetManagerListNode(*m_pWayPointList->end());
 
   return true;
 }
@@ -1078,13 +1014,15 @@ bool WayPointman::AddRoutePoint(RoutePoint *prp) {
 bool WayPointman::RemoveRoutePoint(RoutePoint *prp) {
   if (!prp) return false;
 
-  wxRoutePointListNode *prpnode =
-      (wxRoutePointListNode *)prp->GetManagerListNode();
+  RoutePoint *rp = static_cast<RoutePoint *>(prp->GetManagerListNode());
 
-  if (prpnode)
-    delete prpnode;
-  else
-    m_pWayPointList->DeleteObject(prp);
+  if (rp) {
+    delete rp;
+  } else {
+    auto found =
+        std::find(m_pWayPointList->begin(), m_pWayPointList->end(), prp);
+    if (found != m_pWayPointList->end()) m_pWayPointList->erase(found);
+  }
 
   prp->SetManagerListNode(NULL);
 
@@ -1426,15 +1364,9 @@ wxString WayPointman::CreateGUID(RoutePoint *pRP) {
 }
 
 RoutePoint *WayPointman::FindRoutePointByGUID(const wxString &guid) {
-  wxRoutePointListNode *prpnode = m_pWayPointList->GetFirst();
-  while (prpnode) {
-    RoutePoint *prp = prpnode->GetData();
-
+  for (RoutePoint *prp : *m_pWayPointList) {
     if (prp->m_GUID == guid) return (prp);
-
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
-
   return NULL;
 }
 
@@ -1442,17 +1374,12 @@ RoutePoint *WayPointman::GetNearbyWaypoint(double lat, double lon,
                                            double radius_meters) {
   //    Iterate on the RoutePoint list, checking distance
 
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
+  for (RoutePoint *pr : *m_pWayPointList) {
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
     double l = sqrt((a * a) + (b * b));
 
     if ((l * 60. * 1852.) < radius_meters) return pr;
-
-    node = node->GetNext();
   }
   return NULL;
 }
@@ -1462,35 +1389,29 @@ RoutePoint *WayPointman::GetOtherNearbyWaypoint(double lat, double lon,
                                                 const wxString &guid) {
   //    Iterate on the RoutePoint list, checking distance
 
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
+  for (RoutePoint *pr : *m_pWayPointList) {
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
     double l = sqrt((a * a) + (b * b));
 
     if ((l * 60. * 1852.) < radius_meters)
       if (pr->m_GUID != guid) return pr;
-
-    node = node->GetNext();
   }
   return NULL;
 }
 
 bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
-  if (pWP->m_bIsolatedMark)
+  if (pWP->m_bIsolatedMark) {
     return pWP->IsVisible();  // isolated point
-  else {
-    wxRouteListNode *node = pRouteList->GetFirst();
-    while (node) {
-      Route *proute = node->GetData();
+  } else {
+    for (Route *proute : *pRouteList) {
       if (proute && proute->pRoutePointList) {
-        if (proute->pRoutePointList->IndexOf(pWP) != wxNOT_FOUND) {
+        auto &list = proute->pRoutePointList;
+        auto found = std::find(list->begin(), list->end(), pWP);
+        if (found != list->end()) {
           if (proute->IsVisible()) return true;
         }
       }
-      node = node->GetNext();
     }
   }
   if (pWP->IsShared())  // is not visible as part of route, but still exists as
@@ -1503,33 +1424,25 @@ bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
 void WayPointman::ClearRoutePointFonts(void) {
   //    Iterate on the RoutePoint list, clearing Font pointers
   //    This is typically done globally after a font switch
-
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
+  for (RoutePoint *pr : *m_pWayPointList) {
     pr->m_pMarkFont = NULL;
-    node = node->GetNext();
   }
 }
 
 bool WayPointman::SharedWptsExist() {
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *m_pWayPointList) {
     if (prp->IsShared() && (prp->m_bIsInRoute || prp == pAnchorWatchPoint1 ||
                             prp == pAnchorWatchPoint2))
       return true;
-    node = node->GetNext();
   }
   return false;
 }
 
 void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
   //    Iterate on the RoutePoint list, deleting all
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  auto node = m_pWayPointList->begin();
+  while (node != m_pWayPointList->end()) {
+    RoutePoint *prp = *node;
     // if argument is false, then only delete non-route waypoints
     if (!prp->m_bIsInLayer && (prp->GetIconName() != _T("mob")) &&
         ((b_delete_used && prp->IsShared()) ||
@@ -1537,19 +1450,17 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
           !(prp == pAnchorWatchPoint2)))) {
       DestroyWaypoint(prp);
       delete prp;
-      node = m_pWayPointList->GetFirst();
-    } else
-      node = node->GetNext();
+      node = m_pWayPointList->begin();
+    } else {
+      ++node;
+    }
   }
   return;
 }
 
 RoutePoint *WayPointman::FindWaypointByGuid(const std::string &guid) {
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *rp = node->GetData();
+  for (RoutePoint *rp : *m_pWayPointList) {
     if (guid == rp->m_GUID) return rp;
-    node = node->GetNext();
   }
   return 0;
 }
