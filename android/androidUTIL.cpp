@@ -328,6 +328,10 @@ int g_orientation;
 int g_Android_SDK_Version;
 MigrateAssistantDialog *g_migrateDialog;
 
+bool g_android_import_active;
+bool g_android_import_islayer;
+bool g_android_import_ispersistent;
+
 //      Some dummy devices to ensure plugins have static access to these classes
 //      not used elsewhere
 wxFontPickerEvent g_dummy_wxfpe;
@@ -1053,6 +1057,12 @@ bool androidUtilInit(void) {
   return true;
 }
 
+void PrepareImportAndroid(bool isLayer, bool isPersistent) {
+  g_android_import_active = true;
+  g_android_import_islayer = isLayer;
+  g_android_import_ispersistent = isPersistent;
+}
+
 wxString androidGetIpV4Address(void) {
   wxString ipa = callActivityMethod_vs("getIpAddress");
   return ipa;
@@ -1108,10 +1118,15 @@ extern "C" {
 JNIEXPORT void JNICALL Java_org_opencpn_OCPNNativeLib_ImportTmpGPX(
     JNIEnv *env, jobject obj, jstring filePath, bool isLayer,
     bool isPersistent) {
+  if (!g_android_import_active) return;
   wxArrayString file_array;
   const char *string = env->GetStringUTFChars(filePath, NULL);
   file_array.Add(wxString(string));
-  ImportFileArray(file_array, isLayer, isPersistent, "");
+  ImportFileArray(file_array, g_android_import_islayer,
+                  g_android_import_ispersistent, "");
+  g_android_import_active = false;
+  g_android_import_islayer = false;
+  g_android_import_ispersistent = false;
 
   // Update the RouteManagerDialog on the wx event loop
   wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);

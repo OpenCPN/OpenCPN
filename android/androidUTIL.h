@@ -214,6 +214,7 @@ bool androidIsDirWritable(wxString dir);
 wxArrayString GetConfigChartDirectories();
 wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
                                      wxDateTime time);
+void PrepareImportAndroid(bool isLayer, bool isPersistent);
 
 class InProgressIndicator : public wxGauge {
   DECLARE_EVENT_TABLE()
