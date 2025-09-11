@@ -66,9 +66,9 @@
 
 class CanvasMenuHandler;  // circular
 
-class ChartCanvas;  // forward
-extern ChartCanvas *g_overlayCanvas;
-extern ChartCanvas *g_focusCanvas;
+class ChartCanvas;                    // forward
+extern ChartCanvas *g_overlayCanvas;  ///< Global instance
+extern ChartCanvas *g_focusCanvas;    ///< Global instance
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);

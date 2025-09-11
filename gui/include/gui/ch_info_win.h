@@ -18,7 +18,7 @@
 /**
  * \file
  *
- * class ChInfoWin -- chart info panel
+ * Chart info panel
  */
 
 #ifndef __CHINFOWIN_H__
