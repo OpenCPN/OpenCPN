@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <thread>
 
@@ -13,6 +14,8 @@
 #include <wx/evtloop.h>
 #include <wx/fileconf.h>
 #include <wx/jsonval.h>
+#include <wx/jsonreader.h>
+
 #include <wx/timer.h>
 
 #include <gtest/gtest.h>
@@ -24,7 +27,9 @@
 #include "model/comm_ais.h"
 #include "model/comm_appmsg_bus.h"
 #include "model/comm_bridge.h"
+#include "model/comm_drv_factory.h"
 #include "model/comm_drv_file.h"
+#include "model/comm_drv_loopback.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
@@ -304,6 +309,185 @@ public:
     ProcessPendingEvents();
     EXPECT_EQ(s_result, std::string("bar"));
     EXPECT_EQ(NavAddr::Bus::Plugin, s_bus);
+  }
+};
+
+class Loopback0183App : public BasicTest {
+public:
+  class Source {
+  public:
+    Source() {
+      const auto& handles = GetActiveDrivers();
+      auto found = std::find_if(
+          handles.begin(), handles.end(), [](const DriverHandle& h) {
+            return GetAttributes(h).at("protocol") == "loopback";
+          });
+      EXPECT_TRUE(found != handles.end());
+      auto driver = *found;
+      static const std::string msg =
+          "nmea0183 TCP:signalk.stupan.se:10114 PMCAG $PMCAG,900,3-D,L*5B";
+      auto payload =
+          std::make_shared<std::vector<unsigned char>>(msg.begin(), msg.end());
+      WriteCommDriver(driver, payload);
+    }
+  };
+
+  class Sink : public wxEvtHandler {
+  public:
+    Sink() {
+      auto& t = NavMsgBus::GetInstance();
+      auto msg = Nmea0183Msg("PMCAG");
+      listener.Listen(msg, this, EVT_FOO);
+
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto plugin_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+        s_result = plugin_msg->payload;
+        s_bus = plugin_msg->bus;
+        s_result3 = plugin_msg->source->iface;
+      });
+    }
+    ObservableListener listener;
+  };
+
+  Loopback0183App() : BasicTest() { Work(); }
+
+  void Work() {
+    s_result = "";
+    s_bus = NavAddr::Bus::Undef;
+    Sink sink;
+    Source source;
+    ProcessPendingEvents();
+    EXPECT_EQ(s_result, std::string("$PMCAG,900,3-D,L*5B"));
+    EXPECT_EQ(NavAddr::Bus::N0183, s_bus);
+  }
+};
+
+class Loopback2000App : public BasicTest {
+public:
+  class Source {
+  public:
+    Source() {
+      const auto& handles = GetActiveDrivers();
+      auto found = std::find_if(
+          handles.begin(), handles.end(), [](const DriverHandle& h) {
+            return GetAttributes(h).at("protocol") == "loopback";
+          });
+      EXPECT_TRUE(found != handles.end());
+      auto driver = *found;
+      static const std::string msg =
+          "NMEA2000 TCP:signalk.stupan.se:1455 129026 "
+          "93 13 02 02 f8 01 ff 7f ff ff ff ff 08 00 fc ff ff 00 00 ff ff 55";
+      auto payload =
+          std::make_shared<std::vector<unsigned char>>(msg.begin(), msg.end());
+      WriteCommDriver(driver, payload);
+    }
+  };
+
+  class Sink : public wxEvtHandler {
+  public:
+    Sink() {
+      auto& t = NavMsgBus::GetInstance();
+      auto msg = Nmea2000Msg(129026);
+      listener.Listen(msg, this, EVT_FOO);
+
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        using namespace std;
+        auto ptr = ev.GetSharedPtr();
+        auto plugin_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
+        std::stringstream ss;
+        for (auto byte : plugin_msg->payload) {
+          char buff[4];
+          snprintf(buff, sizeof(buff), "%02x ", byte);
+          ss << buff;
+        }
+        s_result = ss.str();
+        s_bus = plugin_msg->bus;
+        s_result2 = plugin_msg->PGN.to_string();
+        s_result3 = plugin_msg->source->iface;
+      });
+    }
+    ObservableListener listener;
+  };
+
+  Loopback2000App() : BasicTest() { Work(); }
+
+  void Work() {
+    s_result = "";
+    s_bus = NavAddr::Bus::Undef;
+    Sink sink;
+    Source source;
+    ProcessPendingEvents();
+
+    EXPECT_EQ(s_result, std::string("93 13 02 02 f8 01 ff 7f ff ff ff ff 08 00 "
+                                    "fc ff ff 00 00 ff ff 55 "));
+    EXPECT_EQ(NavAddr::Bus::N2000, s_bus);
+  }
+};
+
+static const std::string kSignalkPayload =
+    "SignalK signalk.stupan.se:3000 vessels.urn:mrn:imo:mmsi:265599691 "
+    "{\"updates\":"
+    "[{\"source\":{\"sentence\":\"VHW\",\"talker\":\"VD\",\"type\":"
+    "\"NMEA0183\","
+    "\"label\":\"VDR_halso\"},\"timestamp\":\"2025-08-16T17:50:38.136Z\","
+    "\"values\":[{\"path\":\"navigation.headingMagnetic\",\"value\":3."
+    "671090642898051},"
+    "{\"path\":\"navigation.speedThroughWater\",\"value\":5.144445747704034}],"
+    "\"$source\":\"VDR_halso.VD\"}],\"context\":\"vessels.urn:mrn:imo:mmsi:"
+    "265599691\"}";
+
+class LoopbackSignalkApp : public BasicTest {
+public:
+  class Source {
+  public:
+    Source() {
+      const auto& handles = GetActiveDrivers();
+      auto found = std::find_if(
+          handles.begin(), handles.end(), [](const DriverHandle& h) {
+            return GetAttributes(h).at("protocol") == "loopback";
+          });
+      EXPECT_TRUE(found != handles.end());
+      auto driver = *found;
+      static const std::string msg = kSignalkPayload;
+      auto payload =
+          std::make_shared<std::vector<unsigned char>>(msg.begin(), msg.end());
+      WriteCommDriver(driver, payload);
+    }
+  };
+
+  class Sink : public wxEvtHandler {
+  public:
+    Sink() {
+      auto& t = NavMsgBus::GetInstance();
+      auto msg = SignalkMsg();
+      listener.Listen(msg, this, EVT_FOO);
+
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        using namespace std;
+        auto ptr = ev.GetSharedPtr();
+        auto plugin_msg = std::static_pointer_cast<const SignalkMsg>(ptr);
+        s_bus = plugin_msg->bus;
+
+        s_result = plugin_msg->context_self;
+        s_result2 = plugin_msg->raw_message;
+        s_result3 = plugin_msg->source->iface;
+      });
+    }
+    ObservableListener listener;
+  };
+
+  LoopbackSignalkApp() : BasicTest() { Work(); }
+
+  void Work() {
+    s_result = "";
+    s_bus = NavAddr::Bus::Undef;
+    Sink sink;
+    Source source;
+    ProcessPendingEvents();
+
+    EXPECT_TRUE(s_result == "vessels.urn:mrn:imo:mmsi:265599691");
+    EXPECT_EQ(NavAddr::Bus::Signalk, s_bus);
   }
 };
 
@@ -1107,4 +1291,80 @@ TEST(SemanticVersion, Basic) {
   EXPECT_TRUE(v2 > v1);
   v2 = SemanticVersion::parse("1.2.3").to_string();
   EXPECT_TRUE(v1 == v2);
+}
+
+TEST(Loopback, Exists) {
+  MakeLoopbackDriver();
+  bool found = false;
+  for (const auto& handle : GetActiveDrivers()) {
+    const auto& attributes = GetAttributes(handle);
+    if (attributes.find("protocol") == attributes.end()) continue;
+    if (attributes.at("protocol") != "loopback") continue;
+    found = true;
+    break;
+  }
+  EXPECT_TRUE(found);
+}
+TEST(Loopback, N0183) {
+  Loopback0183App app;
+  EXPECT_TRUE(s_result == "$PMCAG,900,3-D,L*5B");
+  EXPECT_TRUE(s_bus == NavAddr::Bus::N0183);
+  EXPECT_TRUE(s_result3 == "TCP:signalk.stupan.se:10114");
+}
+
+TEST(Loopback, N2000) {
+  s_result = "";
+  int_result0 = -1;
+  Loopback2000App app;
+  EXPECT_TRUE(
+      s_result ==
+      "93 13 02 02 f8 01 ff 7f ff ff ff ff 08 00 fc ff ff 00 00 ff ff 55 ");
+  EXPECT_TRUE(s_bus == NavAddr::Bus::N2000);
+  EXPECT_TRUE(s_result2 == "129026");
+  EXPECT_TRUE(s_result3 == "TCP:signalk.stupan.se:1455");
+}
+
+TEST(Loopback, SignalK) {
+  s_result = "";
+  int_result0 = -1;
+  LoopbackSignalkApp app;
+  EXPECT_TRUE(s_result == "vessels.urn:mrn:imo:mmsi:265599691");
+  EXPECT_TRUE(s_result3 == "signalk.stupan.se:3000");
+  EXPECT_TRUE(s_bus == NavAddr::Bus::Signalk);
+  wxJSONReader reader;
+  wxJSONValue root;
+  int err_count = reader.Parse(s_result2, &root);
+  EXPECT_EQ(err_count, 0);
+}
+
+TEST(Loopback, BadInput) {
+  auto ptr0 = LoopbackDriver::ParsePluginMessage("");
+  ASSERT_FALSE(bool(ptr0));
+  auto ptr1 = LoopbackDriver::ParsePluginMessage("foo bar");
+  ASSERT_FALSE(bool(ptr1));
+  auto ptr2 = LoopbackDriver::ParsePluginMessage("PMCAG,900,3-D,L*5B");
+  ASSERT_FALSE(bool(ptr2));
+  auto ptr3 = LoopbackDriver::ParsePluginMessage("$PMCAG,900,3-D,L*5B");
+  ASSERT_FALSE(bool(ptr3));
+  auto ptr4 = LoopbackDriver::ParsePluginMessage("source $PMCAG,900,3-D,L*5B");
+  ASSERT_FALSE(bool(ptr4));
+  auto ptr5 =
+      LoopbackDriver::ParsePluginMessage("foo type source $PMCAG,900,3-D,L*5B");
+  ASSERT_FALSE(bool(ptr5));
+  auto ptr6 = LoopbackDriver::ParsePluginMessage(
+      "nmea0183 type source $PMCAG,900,3-D,L*5B");
+  ASSERT_TRUE(bool(ptr6));
+}
+
+TEST(Loopback, n2k) {
+  auto ptr0 = LoopbackDriver::ParsePluginMessage(
+      "NMEA2000 foo 12 "
+      "93 13 02 0 f8 6 ff 7f ff");
+  std::vector<unsigned char> expected = {0x93, 0x13, 0x02, 0,   0xf8,
+                                         0x6,  0xff, 0x7f, 0xff};
+  auto n2kptr = std::static_pointer_cast<const Nmea2000Msg>(ptr0);
+  ASSERT_TRUE(n2kptr);
+  ASSERT_TRUE(n2kptr->payload == expected);
+  ASSERT_TRUE(n2kptr->PGN.to_string() == "12");
+  ASSERT_TRUE(n2kptr->source->iface == "foo");
 }
