@@ -2813,8 +2813,11 @@ wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
     tzName = _("UTC");
   }
 
+  // If $ARCH is ARMHF, we cannot reliably use "long" over the JNI bridge
+  // So use "int", and live with it until 2038 rolls around.
+  int epoch_seconds = (int)t.GetTicks();
+
   wxString format = options.format_string;
-  long epoch_seconds = t.GetTicks();
   wxString formattedDate;
 
   wxStringTokenizer tk(format, "$");
@@ -2822,7 +2825,7 @@ wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
     wxString token = tk.GetNextToken();
     if (token.Length()) {
       token.Trim();
-      wxString partial_result = callActivityMethod_ssl(
+      wxString partial_result = callActivityMethod_ssi(
           "getLocalizedDateTime", "$" + token, epoch_seconds);
       if (partial_result.Length()) {
         if (!formattedDate.IsEmpty()) formattedDate += "  ";
