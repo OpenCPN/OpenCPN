@@ -1750,7 +1750,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         dc.SetTextForeground(FontMgr::Get().GetFontColor(_("AIS Target Name")));
 
         int w, h;
-        dc.GetTextExtent(_T("W"), &w, &h);
+        dc.GetTextExtent("W", &w, &h);
         h *= g_Platform->GetDisplayDIPMult(gFrame);
         w *= g_Platform->GetDisplayDIPMult(gFrame);
 

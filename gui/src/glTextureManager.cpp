@@ -104,7 +104,7 @@ wxString CompressedCachePath(wxString path) {
   /* replace path separators with ! */
   wxChar separator = wxFileName::GetPathSeparator();
   for (unsigned int pos = 0; pos < path.size(); pos = path.find(separator, pos))
-    path.replace(pos, 1, _T("!"));
+    path.replace(pos, 1, "!");
 
   //  Obfuscate the compressed chart file name, to (slightly) protect some
   //  encrypted raster chart data.
@@ -115,12 +115,12 @@ wxString CompressedCachePath(wxString path) {
   wxString sha1;
   for (unsigned int i = 0; i < 20; i++) {
     wxString s;
-    s.Printf(_T("%02X"), sha1_out[i]);
+    s.Printf("%02X", sha1_out[i]);
     sha1 += s;
   }
 
-  return g_Platform->GetPrivateDataDir() + separator +
-         _T("raster_texture_cache") + separator + sha1;
+  return g_Platform->GetPrivateDataDir() + separator + "raster_texture_cache" +
+         separator + sha1;
 }
 
 int g_mipmap_max_level = 4;
@@ -799,8 +799,8 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
         int bar_length = NBAR_LENGTH;
         if (m_bcompact) bar_length = 20;
 
-        msgx += _T("\n[");
-        wxString block = wxString::Format(_T("%c"), 0x2588);
+        msgx += "\n[";
+        wxString block = wxString::Format("%c", 0x2588);
         float cutoff = -1.;
         if (event.nstat_max != 0)
           cutoff = ((event.nstat + 1) / (float)event.nstat_max) * bar_length;
@@ -808,20 +808,20 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
           if (i <= cutoff)
             msgx += block;
           else
-            msgx += _T("-");
+            msgx += "-";
         }
-        msgx += _T("]");
+        msgx += "]";
 
         if (!m_bcompact) {
           wxString msgy;
-          msgy.Printf(_T("  [%3d/%3d]  "), event.nstat + 1, event.nstat_max);
+          msgy.Printf("  [%3d/%3d]  ", event.nstat + 1, event.nstat_max);
           msgx += msgy;
 
           wxFileName fn(ticket->m_ChartPath);
           msgx += fn.GetFullName();
         }
       } else
-        msgx.Printf(_T("\n %3d/%3d"), event.nstat + 1, event.nstat_max);
+        msgx.Printf("\n %3d/%3d", event.nstat + 1, event.nstat_max);
 
       item->msgx = msgx;
     }
@@ -830,10 +830,10 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     wxString msg;
     for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
       item = *tnode;
-      msg += item->msgx + _T("\n");
+      msg += item->msgx + "\n";
     }
 
-    if (m_skipout) m_progMsg = _T("Skipping, please wait...\n\n");
+    if (m_skipout) m_progMsg = "Skipping, please wait...\n\n";
 
     if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip)) m_skip = true;
     if (m_skip) m_skipout = true;
@@ -1159,7 +1159,7 @@ void glTextureManager::ClearAllRasterTextures(void) {
   m_chart_texfactory_hash.clear();
 
   if (g_tex_mem_used != 0)
-    wxLogMessage(_T("Texture memory use calculation error\n"));
+    wxLogMessage("Texture memory use calculation error\n");
 }
 
 bool glTextureManager::PurgeChartTextures(ChartBase *pc, bool b_purge_factory) {
@@ -1349,13 +1349,12 @@ void glTextureManager::BuildCompressedCache() {
 
   if (count == 0) return;
 
-  wxLogMessage(
-      wxString::Format(_T("BuildCompressedCache() count = %d"), count));
+  wxLogMessage(wxString::Format("BuildCompressedCache() count = %d", count));
 
   m_timer.Stop();
   PurgeJobList();
   if (GetRunningJobCount()) {
-    wxLogMessage(_T("Starting compressor pool drain"));
+    wxLogMessage("Starting compressor pool drain");
     wxDateTime now = wxDateTime::Now();
     time_t stall = now.GetTicks();
 #define THREAD_WAIT_SECONDS 5
@@ -1367,8 +1366,7 @@ void glTextureManager::BuildCompressedCache() {
       stall = later.GetTicks();
 
       wxString msg;
-      msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop,
-                 GetRunningJobCount());
+      msg.Printf("Time: %d  Job Count: %d", n_comploop, GetRunningJobCount());
       wxLogMessage(msg);
       if (!GetRunningJobCount()) break;
       wxYield();
@@ -1376,7 +1374,7 @@ void glTextureManager::BuildCompressedCache() {
     }
 
     wxString fmsg;
-    fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
+    fmsg.Printf("Finished compressor pool drain..Time: %d  Job Count: %d",
                 n_comploop, GetRunningJobCount());
     wxLogMessage(fmsg);
   }
@@ -1409,18 +1407,18 @@ void glTextureManager::BuildCompressedCache() {
 
   wxString msg0;
   msg0 =
-      _T("                                                                    ")
-      _T("           \n  \n  ");
+      "                                                                    "
+      "           \n  \n  ";
 
 #ifdef __WXQT__
   msg0 =
-      _T("Very ")
-      _T("longgggggggggggggggggggggggggggggggggggggggggggg\ngggggggggggggggggg")
-      _T("gggggggggggggggggggggggggg top line ");
+      "Very "
+      "longgggggggggggggggggggggggggggggggggggggggggggg\ngggggggggggggggggg"
+      "gggggggggggggggggggggggggg top line ";
 #endif
 
   for (int i = 0; i < m_max_jobs + 1; i++)
-    msg0 += _T("\n                                             ");
+    msg0 += "\n                                             ";
 
   m_progDialog = new wxGenericProgressDialog();
 
@@ -1441,8 +1439,8 @@ void glTextureManager::BuildCompressedCache() {
   //  Should we use "compact" screen layout?
   wxScreenDC sdc;
   int height, width;
-  sdc.GetTextExtent(_T("[WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW]"), &width, &height,
-                    NULL, NULL, sFont);
+  sdc.GetTextExtent("[WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW]", &width, &height, NULL,
+                    NULL, sFont);
   if (width > (csz.x / 2)) m_bcompact = true;
 
   m_progDialog->Create(_("OpenCPN Compressed Cache Update"), msg0, count + 1,
@@ -1484,7 +1482,7 @@ void glTextureManager::BuildCompressedCache() {
 
     m_progMsg.Printf(_("Distance from Ownship:  %4.0f NMi"), distance);
     m_progMsg += "\n";
-    m_progMsg.Prepend(_T("Preparing RNC Cache...\n"));
+    m_progMsg.Prepend("Preparing RNC Cache...\n");
 
     if (m_skipout) {
       g_glTextureManager->PurgeJobList();

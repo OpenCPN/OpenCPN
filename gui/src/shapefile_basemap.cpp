@@ -90,7 +90,7 @@ void __CALL_CONVENTION shpscombineCallback(GLdouble coords[3],
 void __CALL_CONVENTION shpserrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+  // wxLogMessage( "OpenGL Tessellation Error: %s", estring );
 }
 
 void __CALL_CONVENTION shpsbeginCallback(GLenum type) {

@@ -168,7 +168,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   wxScreenDC dc;
   int text_height;
   dc.SetFont(*qFont);
-  dc.GetTextExtent(_T("W"), NULL, &text_height);
+  dc.GetTextExtent("W", NULL, &text_height);
   m_refTextHeight = text_height;
   m_button_height = m_tsy;
 
@@ -245,7 +245,7 @@ void TCWin::CreateLayout() {
 
   // Left cell: Station info text control with minimum size
   m_ptextctrl =
-      new wxTextCtrl(m_topPanel, -1, _T(""), wxDefaultPosition, wxDefaultSize,
+      new wxTextCtrl(m_topPanel, -1, "", wxDefaultPosition, wxDefaultSize,
                      wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP);
   m_ptextctrl->SetMinSize(wxSize(200, 120));  // Minimum readable size
 
@@ -257,7 +257,7 @@ void TCWin::CreateLayout() {
   // Add first column to tide list
   wxListItem col0;
   col0.SetId(0);
-  col0.SetText(_T(""));
+  col0.SetText("");
   col0.SetAlign(wxLIST_FORMAT_LEFT);
   col0.SetWidth(140);
   m_tList->InsertColumn(0, col0);
@@ -338,35 +338,35 @@ void TCWin::InitializeStationText() {
   m_ptextctrl->SetDefaultStyle(style);
 
   m_ptextctrl->AppendText(locna);
-  m_ptextctrl->AppendText(_T("\n"));
+  m_ptextctrl->AppendText("\n");
 
   style.SetFont(*pSMFont);
   m_ptextctrl->SetDefaultStyle(style);
 
   if (!locnb.IsEmpty()) m_ptextctrl->AppendText(locnb);
-  m_ptextctrl->AppendText(_T("\n"));
+  m_ptextctrl->AppendText("\n");
 
   // Reference to the master station
   if (('t' == pIDX->IDX_type) || ('c' == pIDX->IDX_type)) {
     wxString mref(pIDX->IDX_reference_name, wxConvUTF8);
-    mref.Prepend(_T(" "));
+    mref.Prepend(" ");
 
     m_ptextctrl->AppendText(_("Reference Station :"));
-    m_ptextctrl->AppendText(_T("\n"));
+    m_ptextctrl->AppendText("\n");
 
     m_ptextctrl->AppendText(mref);
-    m_ptextctrl->AppendText(_T("\n"));
+    m_ptextctrl->AppendText("\n");
 
   } else {
-    m_ptextctrl->AppendText(_T("\n"));
+    m_ptextctrl->AppendText("\n");
   }
 
   //      Show the data source
   wxString dsource(pIDX->source_ident, wxConvUTF8);
-  dsource.Prepend(_T(" "));
+  dsource.Prepend(" ");
 
   m_ptextctrl->AppendText(_("Data Source :"));
-  m_ptextctrl->AppendText(_T("\n"));
+  m_ptextctrl->AppendText("\n");
 
   m_ptextctrl->AppendText(dsource);
 
@@ -447,7 +447,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
       dc.DrawLine(xd, m_graph_rect.y, xd,
                   m_graph_rect.y + m_graph_rect.height + 5);
       wxString sst;
-      sst.Printf(_T("%02d"), i);
+      sst.Printf("%02d", i);
       dc.DrawRotatedText(sst, xd + (m_graph_rect.width / 25) / 2,
                          m_graph_rect.y + m_graph_rect.height + 8, 270.);
     }
@@ -548,12 +548,12 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
             if (m_tzoneDisplay == 0)  // LMT @ Station
               tcd.Set(tctime + (m_stationOffset_mins - m_diff_mins) * 60);
 
-            s.Printf(tcd.Format(_T("%H:%M  ")));
-            s1.Printf(_T("%05.2f "), tcvalue);  // write value
+            s.Printf(tcd.Format("%H:%M  "));
+            s1.Printf("%05.2f ", tcvalue);  // write value
             s.Append(s1);
             Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
             if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
-            s.Append(_T("   "));
+            s.Append("   ");
             (wt) ? s.Append(_("HW")) : s.Append(_("LW"));  // write HW or LT
 
             wxListItem li;
@@ -575,12 +575,12 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
         if (m_tzoneDisplay == 0)  // LMT @ Station
           thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
 
-        s.Printf(thx.Format(_T("%H:%M  ")));
-        s1.Printf(_T("%05.2f "), fabs(tcv[i]));  // write value
+        s.Printf(thx.Format("%H:%M  "));
+        s1.Printf("%05.2f ", fabs(tcv[i]));  // write value
         s.Append(s1);
         Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
         if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
-        s1.Printf(_T("  %03.0f"), dir);  // write direction
+        s1.Printf("  %03.0f", dir);  // write direction
         s.Append(s1);
 
         wxListItem li;
@@ -614,7 +614,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
     // Arrange to skip some lines and legends if there are too many for the
     // vertical space we have
     int height_stext;
-    dc.GetTextExtent(_T("1"), NULL, &height_stext);
+    dc.GetTextExtent("1", NULL, &height_stext);
     float available_lines = (float)m_graph_rect.height / height_stext;
     i_skip = (int)ceil(im / available_lines);
 
@@ -676,7 +676,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
     int h = station_offset / 60;
     int m = station_offset - (h * 60);
     if (m_graphday.IsDST()) h += 1;
-    m_stz.Printf(_T("UTC %+03d:%02d"), h, m);
+    m_stz.Printf("UTC %+03d:%02d", h, m);
 
     //    Make the "nice" (for the US) station time-zone string, brutally by
     //    hand
@@ -685,13 +685,13 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
       wxString mtz;
       switch (ptcmgr->GetStationTimeOffset(pIDX)) {
         case -240:
-          mtz = _T("AST");
+          mtz = "AST";
           break;
         case -300:
-          mtz = _T("EST");
+          mtz = "EST";
           break;
         case -360:
-          mtz = _T("CST");
+          mtz = "CST";
           break;
       }
       if (mtz.Len()) {
@@ -700,7 +700,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
       }
     }
   } else {
-    m_stz = _T("UTC");
+    m_stz = "UTC";
   }
 
   int h;
@@ -711,10 +711,10 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
               m_graph_rect.y + m_graph_rect.height + 35);
 
   wxString sdate;
-  if (g_locale == _T("en_US"))
-    sdate = m_graphday.Format(_T("%A %b %d, %Y"));
+  if (g_locale == "en_US")
+    sdate = m_graphday.Format("%A %b %d, %Y");
   else
-    sdate = m_graphday.Format(_T("%A %d %b %Y"));
+    sdate = m_graphday.Format("%A %d %b %Y");
 
   dc.SetFont(*pMFont);
   dc.GetTextExtent(sdate, &w, &h);
@@ -733,12 +733,12 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
   if ((strchr("c", pIDX->IDX_type)) || (strchr("C", pIDX->IDX_type))) {
     dc.SetFont(*pSFont);
     wxString fdir;
-    fdir.Printf(_T("%03d"), pIDX->IDX_flood_dir);
+    fdir.Printf("%03d", pIDX->IDX_flood_dir);
     dc.DrawText(fdir, m_graph_rect.x + m_graph_rect.width + 4,
                 m_graph_rect.y + m_graph_rect.height * 1 / 4);
 
     wxString edir;
-    edir.Printf(_T("%03d"), pIDX->IDX_ebb_dir);
+    edir.Printf("%03d", pIDX->IDX_ebb_dir);
     dc.DrawText(edir, m_graph_rect.x + m_graph_rect.width + 4,
                 m_graph_rect.y + m_graph_rect.height * 3 / 4);
   }
@@ -767,16 +767,16 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
 
   //  Render "Spot of interest"
   double spotDim = 4 * g_Platform->GetDisplayDPmm();
-  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("YELO1")),
+  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetGlobalColor("YELO1"),
                                                  wxBRUSHSTYLE_SOLID));
-  dc.SetPen(wxPen(GetGlobalColor(_T("URED")),
+  dc.SetPen(wxPen(GetGlobalColor("URED"),
                   wxMax(2, 0.5 * g_Platform->GetDisplayDPmm())));
   dc.DrawRoundedRectangle(xSpot - spotDim / 2, ySpot - spotDim / 2, spotDim,
                           spotDim, spotDim / 2);
 
-  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("UBLCK")),
+  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetGlobalColor("UBLCK"),
                                                  wxBRUSHSTYLE_SOLID));
-  dc.SetPen(wxPen(GetGlobalColor(_T("UBLCK")), 1));
+  dc.SetPen(wxPen(GetGlobalColor("UBLCK"), 1));
   double ispotDim = spotDim / 5.;
   dc.DrawRoundedRectangle(xSpot - ispotDim / 2, ySpot - ispotDim / 2, ispotDim,
                           ispotDim, ispotDim / 2);
@@ -1116,8 +1116,8 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     wxDateTime thd;
     thd.Set(ths);
-    p.Printf(thd.Format(_T("%Hh %Mmn")));
-    p.Append(_T("\n"));
+    p.Printf(thd.Format("%Hh %Mmn"));
+    p.Append("\n");
 
     // The tide/current modules calculate values based on PC local time
     // We want UTC, so adjust accordingly
@@ -1132,9 +1132,9 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     // set tide level or current speed at that time
     ptcmgr->GetTideOrCurrent(tts, pIDX->IDX_rec_num, t, d);
-    s.Printf(_T("%3.2f "), (t < 0 && CURRENT_PLOT == m_plot_type)
-                               ? -t
-                               : t);  // always positive if current
+    s.Printf("%3.2f ", (t < 0 && CURRENT_PLOT == m_plot_type)
+                           ? -t
+                           : t);  // always positive if current
     p.Append(s);
 
     // set unit
@@ -1144,7 +1144,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
     // set current direction
     if (CURRENT_PLOT == m_plot_type) {
       s.Printf("%3.0f%c", d, 0x00B0);
-      p.Append(_T("\n"));
+      p.Append("\n");
       p.Append(s);
     }
 

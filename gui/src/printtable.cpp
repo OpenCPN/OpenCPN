@@ -95,7 +95,7 @@ void PrintCell::Adjust() {
   dc->SetFont(_font);
   vector<wxString> list;
   list.push_back(wxString());
-  wxString separator = wxT(" ");
+  wxString separator = " ";
   wxStringTokenizer tokenizer(content, separator, wxTOKEN_RET_DELIMS);
   int words_number = 0;
   while (tokenizer.HasMoreTokens()) {

@@ -356,7 +356,7 @@ wxString GetActiveStyleName() {
   if (g_StyleManager)
     return g_StyleManager->GetCurrentStyle()->name;
   else
-    return _T("");
+    return "";
 }
 
 wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
@@ -481,7 +481,7 @@ bool UpdateChartDBInplace(wxArrayString dir_array, bool b_force_update,
     wxString dirname = dir_array[i];
     ChartDirInfo cdi;
     cdi.fullpath = dirname;
-    cdi.magic_number = _T("");
+    cdi.magic_number = "";
     ChartDirArray.Add(cdi);
   }
   bool b_ret = gFrame->UpdateChartDatabaseInplace(
@@ -585,8 +585,7 @@ wxScrolledWindow* AddOptionsPage(OptionsParentPI parent, wxString title) {
       parentid = g_pOptions->m_pagePlugins;
       break;
     default:
-      wxLogMessage(
-          _T("Error in PluginManager::AddOptionsPage: Unknown parent"));
+      wxLogMessage("Error in PluginManager::AddOptionsPage: Unknown parent");
       return NULL;
       break;
   }
@@ -642,7 +641,7 @@ bool GetRoutepointGPX(RoutePoint* pRoutePoint, char* buffer,
 
   NavObjectCollection1* pgpx = new NavObjectCollection1;
   pgpx->AddGPXWaypoint(pRoutePoint);
-  wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"));
+  wxString gpxfilename = wxFileName::CreateTempFileName("gpx");
   pgpx->SaveFile(gpxfilename);
   delete pgpx;
 

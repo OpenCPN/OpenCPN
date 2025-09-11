@@ -209,7 +209,7 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 
 void CanvasMenuHandler::PrepareMenuItem(wxMenuItem *item) {
 #if defined(__WXMSW__)
-  wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));  // Control Background
+  wxColour ctrl_back_color = GetGlobalColor("DILG1");  // Control Background
   item->SetBackgroundColour(ctrl_back_color);
   wxColour menu_text_color = GetGlobalColor(_T ( "UITX1" ));
   item->SetTextColour(menu_text_color);
@@ -296,7 +296,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
             contextMenu->AppendSubMenu(subMenuUndo, _("Undo"));
 
         wxString undoItem;
-        undoItem << _("Undo") << _T(" ")
+        undoItem << _("Undo") << " "
                  << parent->undo->GetNextUndoableAction()->Description();
         MenuAppend1(subMenuUndo, ID_UNDO, undoItem);
       }
@@ -306,27 +306,26 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
             contextMenu->AppendSubMenu(subMenuRedo, _("Redo"));
 
         wxString redoItem;
-        redoItem << _("Redo") << _T(" ")
+        redoItem << _("Redo") << " "
                  << parent->undo->GetNextRedoableAction()->Description();
         MenuAppend1(subMenuRedo, ID_REDO, redoItem);
       }
     } else {
       if (parent->undo->AnythingToUndo()) {
         wxString undoItem;
-        undoItem << _("Undo") << _T(" ")
+        undoItem << _("Undo") << " "
                  << parent->undo->GetNextUndoableAction()->Description();
-        MenuAppend1(contextMenu, ID_UNDO, _menuText(undoItem, _T("Ctrl-Z")));
+        MenuAppend1(contextMenu, ID_UNDO, _menuText(undoItem, "Ctrl-Z"));
       }
 
       if (parent->undo->AnythingToRedo()) {
         wxString redoItem;
-        redoItem << _("Redo") << _T(" ")
+        redoItem << _("Redo") << " "
                  << parent->undo->GetNextRedoableAction()->Description();
 #ifdef __WXOSX__
-        MenuAppend1(contextMenu, ID_REDO,
-                    _menuText(redoItem, _T("Shift-Ctrl-Z")));
+        MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, "Shift-Ctrl-Z"));
 #else
-        MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Ctrl-Y")));
+        MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, "Ctrl-Y"));
 #endif
       }
     }
@@ -334,16 +333,16 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   if (seltype == SELTYPE_ROUTECREATE) {
     MenuAppend1(contextMenu, ID_RC_MENU_FINISH,
-                _menuText(_("End Route"), _T("Esc")));
+                _menuText(_("End Route"), "Esc"));
   }
 
   if (!parent->m_pMouseRoute) {
     if (parent->m_bMeasure_Active)
       MenuAppend1(contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE,
-                  _menuText(_("Measure Off"), _T("Esc")));
+                  _menuText(_("Measure Off"), "Esc"));
     else
       MenuAppend1(contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE,
-                  _menuText(_("Measure"), _T("M")));
+                  _menuText(_("Measure"), "M"));
   }
 
   bool ais_areanotice = false;
@@ -425,9 +424,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (nChartStack > 1) {
       MenuAppend1(contextMenu, ID_DEF_MENU_MAX_DETAIL, _("Max Detail Here"));
       MenuAppend1(contextMenu, ID_DEF_MENU_SCALE_IN,
-                  _menuText(_("Scale In"), _T("Ctrl-Left")));
+                  _menuText(_("Scale In"), "Ctrl-Left"));
       MenuAppend1(contextMenu, ID_DEF_MENU_SCALE_OUT,
-                  _menuText(_("Scale Out"), _T("Ctrl-Right")));
+                  _menuText(_("Scale Out"), "Ctrl-Right"));
     }
 
     if ((parent->m_singleChart &&
@@ -448,9 +447,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #ifndef __ANDROID__
       if (!g_bBasicMenus && (nChartStack > 1)) {
         MenuAppend1(contextMenu, ID_DEF_MENU_SCALE_IN,
-                    _menuText(_("Scale In"), _T("Ctrl-Left")));
+                    _menuText(_("Scale In"), "Ctrl-Left"));
         MenuAppend1(contextMenu, ID_DEF_MENU_SCALE_OUT,
-                    _menuText(_("Scale Out"), _T("Ctrl-Right")));
+                    _menuText(_("Scale Out"), "Ctrl-Right"));
       }
 #endif
     }
@@ -462,9 +461,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
     if (b_dm_add) {
       MenuAppend1(contextMenu, ID_DEF_MENU_DROP_WP,
-                  _menuText(_("Drop Mark"), _T("Ctrl-M")));
+                  _menuText(_("Drop Mark"), "Ctrl-M"));
       MenuAppend1(contextMenu, ID_DEF_MENU_NEW_RT,
-                  _menuText(_("New Route..."), _T("Ctrl-R")));
+                  _menuText(_("New Route..."), "Ctrl-R"));
     }
 
     if (!bGPSValid)
@@ -478,7 +477,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   if (!g_bBasicMenus)
     MenuAppend1(contextMenu, ID_DEF_MENU_GOTOPOSITION,
-                _("Center view") + _T("..."));
+                _("Center view") + "...");
 
   if (!g_bBasicMenus) {
     if (parent->GetVP().b_quilt) {
@@ -607,8 +606,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if (!g_bBasicMenus && myptarget) {
           name = myptarget->GetFullName();
-          if (name.IsEmpty()) name.Printf(_T("%d"), m_FoundAIS_MMSI);
-          name.Prepend(_T(" ( ")).Append(_T(" )"));
+          if (name.IsEmpty()) name.Printf("%d", m_FoundAIS_MMSI);
+          name.Prepend(" ( ").Append(" )");
         } else
           name = wxEmptyString;
         menuAIS = new wxMenu(_("AIS") + name);
@@ -667,7 +666,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #endif
         if (enable_list)
           MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST,
-                      _("AIS target list") + _T("..."));
+                      _("AIS target list") + "...");
 
         wxString nextCPAstatus = g_bCPAWarn ? _("Hide") : _("Show");
         MenuAppend1(contextMenu, ID_DEF_MENU_AIS_CPAWARNING,
@@ -686,7 +685,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (!g_bBasicMenus && m_pSelectedRoute) {
       name = m_pSelectedRoute->m_RouteNameString;
       if (name.IsEmpty()) name = _("Unnamed Route");
-      name.Prepend(_T(" ( ")).Append(_T(" )"));
+      name.Prepend(" ( ").Append(" )");
     } else
       name = wxEmptyString;
     bool blay = false;
@@ -755,9 +754,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
       if (!port.IsEmpty()) {
-        item.Append(_T(" ( "));
+        item.Append(" ( ");
         item.Append(port);
-        item.Append(_T(" )"));
+        item.Append(" )");
       }
       MenuAppend1(menuRoute, ID_RT_MENU_SENDTOGPS, item);
 
@@ -776,7 +775,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (seltype & SELTYPE_TRACKSEGMENT) {
     name = wxEmptyString;
     if (!g_bBasicMenus && m_pSelectedTrack)
-      name = _T(" ( ") + m_pSelectedTrack->GetName(true) + _T(" )");
+      name = " ( " + m_pSelectedTrack->GetName(true) + " )";
     else
       name = wxEmptyString;
     bool blay = false;
@@ -805,7 +804,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (!g_bBasicMenus && m_pFoundRoutePoint) {
       name = m_pFoundRoutePoint->GetName();
       if (name.IsEmpty()) name = _("Unnamed Waypoint");
-      name.Prepend(_T(" ( ")).Append(_T(" )"));
+      name.Prepend(" ( ").Append(" )");
     } else
       name = wxEmptyString;
     bool blay = false;
@@ -847,7 +846,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
       MenuAppend1(menuWaypoint, ID_WPT_MENU_COPY, _("Copy as KML"));
 
-      if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob"))
+      if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != "mob")
         MenuAppend1(menuWaypoint, ID_RT_MENU_DELPOINT, _("Delete"));
 
       // #ifndef __ANDROID__
@@ -855,9 +854,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
       if (!port.IsEmpty()) {
-        item.Append(_T(" ( "));
+        item.Append(" ( ");
         item.Append(port);
-        item.Append(_T(" )"));
+        item.Append(" )");
       }
       MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOGPS, item);
 
@@ -878,7 +877,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (!g_bBasicMenus && m_pFoundRoutePoint) {
       name = m_pFoundRoutePoint->GetName();
       if (name.IsEmpty()) name = _("Unnamed Mark");
-      name.Prepend(_T(" ( ")).Append(_T(" )"));
+      name.Prepend(" ( ").Append(" )");
     } else
       name = wxEmptyString;
     bool blay = false;
@@ -898,7 +897,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
       MenuAppend1(menuWaypoint, ID_WPT_MENU_COPY, _("Copy as KML"));
 
-      if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob"))
+      if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != "mob")
         MenuAppend1(menuWaypoint, ID_WP_MENU_DELPOINT, _("Delete"));
 
       // #ifndef __ANDROID__
@@ -906,9 +905,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
       if (!port.IsEmpty()) {
-        item.Append(_T(" ( "));
+        item.Append(" ( ");
         item.Append(port);
-        item.Append(_T(" )"));
+        item.Append(" )");
       }
       MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOGPS, item);
 
@@ -1292,7 +1291,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       }
 
       if (m_pFoundRoutePoint && !(m_pFoundRoutePoint->m_bIsInLayer) &&
-          (m_pFoundRoutePoint->GetIconName() != _T("mob"))) {
+          (m_pFoundRoutePoint->GetIconName() != "mob")) {
         // If the WP belongs to an invisible route, we come here instead of to
         // ID_RT_MENU_DELPOINT
         //  Check it, and if so then remove the point from its routes
@@ -1346,8 +1345,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       }
       if (!guid.IsEmpty()) {
         wxJSONValue v;
-        v[_T("GUID")] = guid;
-        wxString msg_id(_T("OCPN_ANCHOR_WATCH_CLEARED"));
+        v["GUID"] = guid;
+        wxString msg_id("OCPN_ANCHOR_WATCH_CLEARED");
         SendJSONMessageToAllPlugins(msg_id, v);
       }
       break;
@@ -1362,7 +1361,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         wxString nn;
         nn = m_pFoundRoutePoint->GetName();
         if (nn.IsNull()) {
-          nn.Printf(_T("%d m"), g_nAWDefault);
+          nn.Printf("%d m", g_nAWDefault);
           m_pFoundRoutePoint->SetName(nn);
         }
       } else if (pAnchorWatchPoint2 == NULL) {
@@ -1372,14 +1371,14 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         wxString nn;
         nn = m_pFoundRoutePoint->GetName();
         if (nn.IsNull()) {
-          nn.Printf(_T("%d m"), g_nAWDefault);
+          nn.Printf("%d m", g_nAWDefault);
           m_pFoundRoutePoint->SetName(nn);
         }
       }
       if (!guid.IsEmpty()) {
         wxJSONValue v;
-        v[_T("GUID")] = guid;
-        wxString msg_id(_T("OCPN_ANCHOR_WATCH_SET"));
+        v["GUID"] = guid;
+        wxString msg_id("OCPN_ANCHOR_WATCH_SET");
         SendJSONMessageToAllPlugins(msg_id, v);
       }
       break;
@@ -1439,8 +1438,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_DEF_MENU_COPY_MMSI: {
       // Write MMSI # as text to the clipboard
       if (wxTheClipboard->Open()) {
-        wxTheClipboard->SetData(new wxTextDataObject(
-            wxString::Format(wxT("%09d"), m_FoundAIS_MMSI)));
+        wxTheClipboard->SetData(
+            new wxTextDataObject(wxString::Format("%09d", m_FoundAIS_MMSI)));
         wxTheClipboard->Close();
       }
       break;
@@ -1567,8 +1566,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       // as the destination.
       RoutePoint *best_point;
       if (m_pSelectedRoute) {
-        if (wxNOT_FOUND ==
-            m_pSelectedRoute->m_RouteNameString.Find(_T("MOB"))) {
+        if (wxNOT_FOUND == m_pSelectedRoute->m_RouteNameString.Find("MOB")) {
           best_point = g_pRouteMan->FindBestActivatePoint(
               m_pSelectedRoute, gLat, gLon, gCog, gSog);
         } else
@@ -1709,7 +1707,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           wxFont fo = GetOCPNGUIScaledFont(_("Dialog"));
           dlg.SetFont(fo);
 
-          dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
+          dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), "");
           dlg.ShowModal();
         }
       }
@@ -1720,7 +1718,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         SendToGpsDlg dlg;
         dlg.SetWaypoint(m_pFoundRoutePoint);
 
-        dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
+        dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), "");
         dlg.ShowModal();
       }
       break;
@@ -1739,7 +1737,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         dlg.SetScanTime(5);  // seconds
         dlg.Create(NULL, -1, _("Send Waypoint to OpenCPN Peer") + _T( "..." ),
-                   _T(""));
+                   "");
         dlg.ShowModal();
       }
       break;
@@ -1754,7 +1752,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           SendToGpsDlg dlg;
           dlg.SetRoute(m_pSelectedRoute);
 
-          dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
+          dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), "");
           dlg.ShowModal();
         }
       }
@@ -1765,7 +1763,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         SendToGpsDlg dlg;
         dlg.SetRoute(m_pSelectedRoute);
 
-        dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
+        dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), "");
         dlg.ShowModal();
       }
       break;
@@ -1783,8 +1781,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds
-        dlg.Create(NULL, -1, _("Send Route to OpenCPN Peer") + _T( "..." ),
-                   _T(""));
+        dlg.Create(NULL, -1, _("Send Route to OpenCPN Peer") + _T( "..." ), "");
         dlg.ShowModal();
       }
       break;
@@ -1916,8 +1913,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds
-        dlg.Create(NULL, -1, _("Send Track to OpenCPN Peer") + _T( "..." ),
-                   _T(""));
+        dlg.Create(NULL, -1, _("Send Track to OpenCPN Peer") + _T( "..." ), "");
         dlg.ShowModal();
       }
       break;

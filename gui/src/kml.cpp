@@ -56,7 +56,7 @@ bool Kml::insertQtVlmExtendedData = false;
 int Kml::ParseCoordinates(TiXmlNode* node, dPointList& points) {
   TiXmlElement* e = node->FirstChildElement("coordinates");
   if (!e) {
-    wxString msg(_T("KML Parser found no <coordinates> for the element: "));
+    wxString msg("KML Parser found no <coordinates> for the element: ");
     msg << wxString(node->ToElement()->Value(), wxConvUTF8);
     wxLogMessage(msg);
     return 0;
@@ -129,7 +129,7 @@ KmlPastebufferType Kml::ParseTrack(TiXmlNode* node, wxString& name) {
       trackpoint = parsedTrack->GetPoint(i);
       if (!trackpoint) continue;
       whenTime.ParseFormat(wxString(when->GetText(), wxConvUTF8),
-                           _T("%Y-%m-%dT%H:%M:%SZ"));
+                           "%Y-%m-%dT%H:%M:%SZ");
       trackpoint->SetCreateTime(whenTime);
       i++;
     }
@@ -150,7 +150,7 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint(TiXmlNode* node,
   }
 
   if (newLat == 0.0 && newLon == 0.0) {
-    wxString msg(_T("KML Parser failed to convert <Point> coordinates."));
+    wxString msg("KML Parser failed to convert <Point> coordinates.");
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
@@ -208,7 +208,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
   kmlText = data.GetText();
   wxTheClipboard->Close();
 
-  if (kmlText.Find(_T("<kml")) == wxNOT_FOUND) return KML_PASTE_INVALID;
+  if (kmlText.Find("<kml") == wxNOT_FOUND) return KML_PASTE_INVALID;
 
   TiXmlDocument doc;
   if (!doc.Parse(kmlText.mb_str(wxConvUTF8), 0, TIXML_ENCODING_UTF8)) {
@@ -227,7 +227,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
     placemark = docHandle.FirstChild("Placemark").ToElement();
   }
   if (!placemark) {
-    wxString msg(_T("KML Parser found no <Placemark> tag in the KML."));
+    wxString msg("KML Parser found no <Placemark> tag in the KML.");
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
@@ -271,8 +271,8 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
     if (element) return ParseTrack(element, name);
 
     wxString msg(
-        _T("KML Parser found a single <Placemark> in the KML, but no useable ")
-        _T("data in it."));
+        "KML Parser found a single <Placemark> in the KML, but no useable "
+        "data in it.");
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
@@ -313,8 +313,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
   }
 
   if (foundPoints && parsedRoute->GetnPoints() < 2) {
-    wxString msg(
-        _T("KML Parser did not find enough <Point>s to make a route."));
+    wxString msg("KML Parser did not find enough <Point>s to make a route.");
     wxLogMessage(msg);
     foundPoints = false;
   }
@@ -381,7 +380,7 @@ std::string Kml::PointPlacemark(TiXmlElement* document,
         if (!seq) {
           seq = new TiXmlElement("vlm:sequence");
           TiXmlText* snVal = new TiXmlText(
-              wxString::Format(_T("%04d"), seqCounter).mb_str(wxConvUTF8));
+              wxString::Format("%04d", seqCounter).mb_str(wxConvUTF8));
           seq->LinkEndChild(snVal);
           descrDoc.RootElement()->LinkEndChild(seq);
         }
@@ -396,7 +395,7 @@ std::string Kml::PointPlacemark(TiXmlElement* document,
       TiXmlElement* seq = new TiXmlElement("vlm:sequence");
       extendedData->LinkEndChild(seq);
       TiXmlText* snVal = new TiXmlText(
-          wxString::Format(_T("%04d"), seqCounter).mb_str(wxConvUTF8));
+          wxString::Format("%04d", seqCounter).mb_str(wxConvUTF8));
       seq->LinkEndChild(snVal);
 
       if (routepoint->m_MarkDescription.Length()) {
@@ -412,7 +411,7 @@ std::string Kml::PointPlacemark(TiXmlElement* document,
     }
     if (extendedData && seqCounter == 0) {
       const wxCharBuffer ownshipPos =
-          wxString::Format(_T("%f %f"), gLon, gLat).mb_str(wxConvUTF8);
+          wxString::Format("%f %f", gLon, gLat).mb_str(wxConvUTF8);
       TiXmlHandle h(extendedData);
       TiXmlElement* route = h.FirstChild("vlm:route").ToElement();
       TiXmlElement* ownship =
@@ -536,8 +535,8 @@ wxString Kml::MakeKmlFromTrack(Track* track) {
     gxTrack->LinkEndChild(when);
 
     wxDateTime whenTime(trackpoint->GetCreateTime());
-    TiXmlText* whenVal = new TiXmlText(
-        whenTime.Format(_T("%Y-%m-%dT%H:%M:%SZ")).mb_str(wxConvUTF8));
+    TiXmlText* whenVal =
+        new TiXmlText(whenTime.Format("%Y-%m-%dT%H:%M:%SZ").mb_str(wxConvUTF8));
     when->LinkEndChild(whenVal);
   }
 
@@ -547,7 +546,7 @@ wxString Kml::MakeKmlFromTrack(Track* track) {
     TiXmlElement* coord = new TiXmlElement("gx:coord");
     gxTrack->LinkEndChild(coord);
     wxString coordStr =
-        wxString::Format(_T("%f %f 0.0"), trackpoint->m_lon, trackpoint->m_lat);
+        wxString::Format("%f %f 0.0", trackpoint->m_lon, trackpoint->m_lat);
     TiXmlText* coordVal = new TiXmlText(coordStr.mb_str(wxConvUTF8));
     coord->LinkEndChild(coordVal);
   }

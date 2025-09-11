@@ -78,7 +78,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
   if ((abs(r.x) == INVALID_COORD) || (abs(r.y) == INVALID_COORD)) return;
 
   //    Optimization, especially apparent on tracks in normal cases
-  if (m_point.m_IconName == _T("empty") && !m_point.m_bShowName &&
+  if (m_point.m_IconName == "empty" && !m_point.m_bShowName &&
       !m_point.m_bPtIsSelected) {
     return;
   }
@@ -92,7 +92,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
   //  Substitue icon?
   if (m_point.m_IconIsDirty) ReLoadIcon();
   wxBitmap *pbm;
-  if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+  if ((m_point.m_bIsActive) && (m_point.m_IconName != "mob"))
     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
   else
     pbm = m_point.m_pbmIcon;
@@ -236,7 +236,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   if (!RoutePointGui(m_point).IsVisibleSelectable(canvas, bVizOverride)) return;
 
   //    Optimization, especially apparent on tracks in normal cases
-  if (m_point.m_IconName == _T("empty") && !m_point.m_bShowName &&
+  if (m_point.m_IconName == "empty" && !m_point.m_bShowName &&
       !m_point.m_bPtIsSelected)
     return;
 
@@ -280,7 +280,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   //    Substitute icon?
   if (m_point.m_IconIsDirty) ReLoadIcon();
   wxBitmap *pbm;
-  if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+  if ((m_point.m_bIsActive) && (m_point.m_IconName != "mob"))
     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
   else
     pbm = m_point.m_pbmIcon;
@@ -777,7 +777,7 @@ void RoutePointGui::ShowScaleWarningMessage(ChartCanvas *canvas) {
   wxString strC =
       _("Therefore the new waypoint will not be visible at this zoom level.");
   wxString MessStr =
-      wxString::Format(_T("%s %li,\n %s %.0f.\n%s"), strA, m_point.GetScaMin(),
+      wxString::Format("%s %li,\n %s %.0f.\n%s", strA, m_point.GetScaMin(),
                        strB, canvas->GetScaleValue(), strC);
   OCPNMessageBox(canvas, MessStr);
 }
@@ -791,10 +791,10 @@ void RoutePointGui::EnableDragHandle(bool bEnable) {
       int bm_size = g_Platform->GetDisplayDPmm() * 9;  // 9 mm nominal
 
       // What icon?
-      wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") +
+      wxString UserIconPath = g_Platform->GetSharedDataDir() + "uidata" +
                               wxFileName::GetPathSeparator();
 
-      m_point.m_dragIcon = LoadSVG(UserIconPath + _T("DragHandle.svg"), bm_size,
+      m_point.m_dragIcon = LoadSVG(UserIconPath + "DragHandle.svg", bm_size,
                                    bm_size, m_point.m_pbmIcon);
 
       // build a texture
@@ -877,10 +877,10 @@ void RoutePointGui::ReLoadIcon(void) {
     //      Icon name is not in the standard or user lists, so add to the list a
     //      generic placeholder
     else {
-      if (!pWayPointMan->DoesIconExist(_T("tempsub"))) {
+      if (!pWayPointMan->DoesIconExist("tempsub")) {
         ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
         if (style) {
-          wxBitmap bmp = style->GetIcon(_T("circle"));
+          wxBitmap bmp = style->GetIcon("circle");
           if (bmp.IsOk()) {
             wxImage image = bmp.ConvertToImage();
             WayPointmanGui(*pWayPointMan)
@@ -888,7 +888,7 @@ void RoutePointGui::ReLoadIcon(void) {
           }
         }
       }
-      iconUse = _T("tempsub");
+      iconUse = "tempsub";
     }
   }
 

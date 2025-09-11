@@ -65,9 +65,9 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint position, long orient,
   m_bmTemplate = m_bmRMinus;
 
   m_toolDensity =
-      m_ptoolbar->AddTool(ID_DENSITY, _T("Density"), m_bmMinimum, m_bmMinimum);
-  m_ptoolbar->AddTool(ID_RPLUS, _T("RangePlus"), m_bmRPlus, m_bmRPlus);
-  m_ptoolbar->AddTool(ID_RMINUS, _T("RangeMinus"), m_bmRMinus, m_bmRMinus);
+      m_ptoolbar->AddTool(ID_DENSITY, "Density", m_bmMinimum, m_bmMinimum);
+  m_ptoolbar->AddTool(ID_RPLUS, "RangePlus", m_bmRPlus, m_bmRPlus);
+  m_ptoolbar->AddTool(ID_RMINUS, "RangeMinus", m_bmRMinus, m_bmRMinus);
 
   SetCanToggleOrientation(false);
   EnableRolloverBitmaps(false);
@@ -102,21 +102,21 @@ void iENCToolbar::SetColorScheme(ColorScheme cs) {
 }
 
 void iENCToolbar::LoadToolBitmaps() {
-  wxString svgDir = g_Platform->GetSharedDataDir() + _T("uidata") +
+  wxString svgDir = g_Platform->GetSharedDataDir() + "uidata" +
                     wxFileName::GetPathSeparator();
 
   int w = 96;
   int h = 32;
 
-  if (::wxFileExists(svgDir + _T("iENC_All.svg"))) {
-    m_bmAll = LoadSVG(svgDir + _T("iENC_All.svg"), w, h);
-    m_bmMinimum = LoadSVG(svgDir + _T("iENC_Minimum.svg"), w, h);
-    m_bmStandard = LoadSVG(svgDir + _T("iENC_Standard.svg"), w, h);
-    m_bmUStd = LoadSVG(svgDir + _T("iENC_UserStd.svg"), w, h);
-    m_bmRPlus = LoadSVG(svgDir + _T("iENC_RPlus.svg"), w, h);
-    m_bmRMinus = LoadSVG(svgDir + _T("iENC_RMinus.svg"), w, h);
+  if (::wxFileExists(svgDir + "iENC_All.svg")) {
+    m_bmAll = LoadSVG(svgDir + "iENC_All.svg", w, h);
+    m_bmMinimum = LoadSVG(svgDir + "iENC_Minimum.svg", w, h);
+    m_bmStandard = LoadSVG(svgDir + "iENC_Standard.svg", w, h);
+    m_bmUStd = LoadSVG(svgDir + "iENC_UserStd.svg", w, h);
+    m_bmRPlus = LoadSVG(svgDir + "iENC_RPlus.svg", w, h);
+    m_bmRMinus = LoadSVG(svgDir + "iENC_RMinus.svg", w, h);
   } else {
-    wxLogMessage(_T("Cannot find iENC icons at: ") + svgDir);
+    wxLogMessage("Cannot find iENC icons at: " + svgDir);
 
     m_bmMinimum = wxBitmap(96, 32);
     m_bmStandard = wxBitmap(96, 32);
@@ -241,7 +241,7 @@ void iENCToolbar::SetRangeToolBitmap() {
       12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 
   wxString range_string;
-  range_string.Printf(_T("%4.0fm"), m_range);
+  range_string.Printf("%4.0fm", m_range);
 
   dc.SetFont(*m_rangeFont);
 

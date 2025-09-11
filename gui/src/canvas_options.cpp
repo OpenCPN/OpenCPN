@@ -73,7 +73,7 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
   mstyle |= wxSTAY_ON_TOP;
 #endif
 
-  wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
+  wxDialog::Create(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
                    mstyle);
 
   wxBoxSizer* topsizer = new wxBoxSizer(wxVERTICAL);

@@ -227,7 +227,7 @@ void Osenc::init(void) {
   m_ref_lat = 0;
   m_ref_lon = 0;
 
-  m_read_base_edtn = _T("-1");
+  m_read_base_edtn = "-1";
 
   m_nNoCOVREntries = 0;
   m_nCOVREntries = 0;
@@ -367,7 +367,7 @@ int Osenc::ingestHeader(const wxString &senc_file_name) {
           break;
         }
         uint16_t *pint = (uint16_t *)buf;
-        m_read_base_edtn.Printf(_T("%d"), *pint);
+        m_read_base_edtn.Printf("%d", *pint);
         break;
       }
 
@@ -604,7 +604,7 @@ int Osenc::ingest200(const wxString &senc_file_name,
           break;
         }
         uint16_t *pint = (uint16_t *)buf;
-        m_read_base_edtn.Printf(_T("%d"), *pint);
+        m_read_base_edtn.Printf("%d", *pint);
 
         break;
       }
@@ -1043,7 +1043,7 @@ int Osenc::ingestCell(OGRS57DataSource *poS57DS, const wxString &FullPath000,
   //      source directory. We need to keep track of the last sequential update
   //      applied, to look out for new updates
 
-  wxString LastUpdateDate = m_date000.Format(_T("%Y%m%d"));
+  wxString LastUpdateDate = m_date000.Format("%Y%m%d");
 
   int available_updates =
       ValidateAndCountUpdates(FullPath000, working_dir, LastUpdateDate, true);
@@ -1052,9 +1052,8 @@ int Osenc::ingestCell(OGRS57DataSource *poS57DS, const wxString &FullPath000,
 
   if (m_bVerbose && (available_updates > m_UPDN)) {
     wxString msg1;
-    msg1.Printf(
-        _T("Preparing to apply ENC updates, target final update is %3d."),
-        available_updates);
+    msg1.Printf("Preparing to apply ENC updates, target final update is %3d.",
+                available_updates);
     wxLogMessage(msg1);
   }
 
@@ -1135,7 +1134,7 @@ int Osenc::ingestCell(OGRS57DataSource *poS57DS, const wxString &FullPath000,
       DDFModule oUpdateModule;
       wxString LastGoodUpdateDate;
       wxDateTime now = wxDateTime::Now();
-      LastGoodUpdateDate = now.Format(_T("%Y%m%d"));
+      LastGoodUpdateDate = now.Format("%Y%m%d");
 
       bSuccess = !(
           oUpdateModule.Open(last_successful_update_file.mb_str(), TRUE) == 0);
@@ -1160,12 +1159,11 @@ int Osenc::ingestCell(OGRS57DataSource *poS57DS, const wxString &FullPath000,
       }
 
       // Inform the user
-      wxString msg(
-          _T("WARNING---ENC Update failed.  Last valid update file is:"));
+      wxString msg("WARNING---ENC Update failed.  Last valid update file is:");
       msg += last_successful_update_file.mb_str();
       wxLogMessage(msg);
       wxLogMessage(
-          _T("   This ENC exchange set should be updated and SENCs rebuilt."));
+          "   This ENC exchange set should be updated and SENCs rebuilt.");
 
       if (!m_NoErrDialog) {
         OCPNMessageBox(
@@ -1251,7 +1249,7 @@ int Osenc::ValidateAndCountUpdates(const wxFileName file000,
 
         wxFileName ufile(targetFile);
         wxString sext;
-        sext.Printf(_T("%03d"), iff);
+        sext.Printf("%03d", iff);
         ufile.SetExt(sext);
 
         //      Create the target update file name
@@ -1280,9 +1278,9 @@ int Osenc::ValidateAndCountUpdates(const wxFileName file000,
           //      Copy the valid file to the SENC directory
           bool cpok = wxCopyFile(ufile.GetFullPath(), cp_ufile);
           if (!cpok) {
-            wxString msg(_T("   Cannot copy temporary working ENC file "));
+            wxString msg("   Cannot copy temporary working ENC file ");
             msg.Append(ufile.GetFullPath());
-            msg.Append(_T(" to "));
+            msg.Append(" to ");
             msg.Append(cp_ufile);
             wxLogMessage(msg);
           }
@@ -1313,14 +1311,14 @@ int Osenc::ValidateAndCountUpdates(const wxFileName file000,
           //                             }
 
           wxString msg(
-              _T("WARNING---ENC Update chain incomplete. Substituting NULL ")
-              _T("update file: "));
+              "WARNING---ENC Update chain incomplete. Substituting NULL "
+              "update file: ");
           msg += ufile.GetFullName();
           wxLogMessage(msg);
-          wxLogMessage(_T("   Subsequent ENC updates may produce errors."));
+          wxLogMessage("   Subsequent ENC updates may produce errors.");
           wxLogMessage(
-              _T("   This ENC exchange set should be updated and SENCs ")
-              _T("rebuilt."));
+              "   This ENC exchange set should be updated and SENCs "
+              "rebuilt.");
 
           bool bstat;
           DDFModule dupdate;
@@ -1329,7 +1327,7 @@ int Osenc::ValidateAndCountUpdates(const wxFileName file000,
           dupdate.Close();
 
           if (!bstat) {
-            wxString msg(_T("   Error creating dummy update file: "));
+            wxString msg("   Error creating dummy update file: ");
             msg.Append(cp_ufile);
             wxLogMessage(msg);
           }
@@ -1345,7 +1343,7 @@ int Osenc::ValidateAndCountUpdates(const wxFileName file000,
 
     wxFileName lastfile(last_up_added);
     wxString last_sext;
-    last_sext.Printf(_T("%03d"), upmax);
+    last_sext.Printf("%03d", upmax);
     lastfile.SetExt(last_sext);
 
     bool bSuccess;
@@ -1371,7 +1369,7 @@ int Osenc::ValidateAndCountUpdates(const wxFileName file000,
         }
       } else {
         wxDateTime now = wxDateTime::Now();
-        LastUpdateDate = now.Format(_T("%Y%m%d"));
+        LastUpdateDate = now.Format("%Y%m%d");
       }
     }
   }
@@ -1397,8 +1395,7 @@ bool Osenc::GetBaseFileAttr(const wxString &FullPath000) {
   //    Fetch the Geo Feature Count, or something like it....
   m_nGeoRecords = pr->GetIntSubfield("DSSI", 0, "NOGR", 0);
   if (!m_nGeoRecords) {
-    errorMessage =
-        _T("GetBaseFileAttr:  DDFRecord 0 does not contain DSSI:NOGR ");
+    errorMessage = "GetBaseFileAttr:  DDFRecord 0 does not contain DSSI:NOGR ";
 
     m_nGeoRecords = 1;  // backstop
   }
@@ -1410,14 +1407,13 @@ bool Osenc::GetBaseFileAttr(const wxString &FullPath000) {
   if (u)
     date000 = wxString(u, wxConvUTF8);
   else {
-    errorMessage =
-        _T("GetBaseFileAttr:  DDFRecord 0 does not contain DSID:ISDT ");
+    errorMessage = "GetBaseFileAttr:  DDFRecord 0 does not contain DSID:ISDT ";
 
     date000 =
-        _T("20000101");  // backstop, very early, so any new files will update?
+        "20000101";  // backstop, very early, so any new files will update?
   }
-  m_date000.ParseFormat(date000, _T("%Y%m%d"));
-  if (!m_date000.IsValid()) m_date000.ParseFormat(_T("20000101"), _T("%Y%m%d"));
+  m_date000.ParseFormat(date000, "%Y%m%d");
+  if (!m_date000.IsValid()) m_date000.ParseFormat("20000101", "%Y%m%d");
 
   m_date000.ResetTime();
 
@@ -1426,10 +1422,9 @@ bool Osenc::GetBaseFileAttr(const wxString &FullPath000) {
   if (u)
     m_edtn000 = wxString(u, wxConvUTF8);
   else {
-    errorMessage =
-        _T("GetBaseFileAttr:  DDFRecord 0 does not contain DSID:EDTN ");
+    errorMessage = "GetBaseFileAttr:  DDFRecord 0 does not contain DSID:EDTN ";
 
-    m_edtn000 = _T("1");  // backstop
+    m_edtn000 = "1";  // backstop
   }
 
   // m_SE = m_edtn000;
@@ -1442,8 +1437,7 @@ bool Osenc::GetBaseFileAttr(const wxString &FullPath000) {
     if (tmp_updn.ToLong(&updn)) m_UPDN = updn;
 
   } else {
-    errorMessage =
-        _T("GetBaseFileAttr:  DDFRecord 0 does not contain DSID:UPDN ");
+    errorMessage = "GetBaseFileAttr:  DDFRecord 0 does not contain DSID:UPDN ";
 
     m_UPDN = 0;  // backstop
   }
@@ -1457,7 +1451,7 @@ bool Osenc::GetBaseFileAttr(const wxString &FullPath000) {
     }
   }
   if (!m_native_scale) {
-    errorMessage = _T("GetBaseFileAttr:  ENC not contain DSPM:CSCL ");
+    errorMessage = "GetBaseFileAttr:  ENC not contain DSPM:CSCL ";
 
     m_native_scale = 1000;  // backstop
   }
@@ -1483,7 +1477,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
     m_poRegistrar = new S57ClassRegistrar();
     m_poRegistrar->LoadInfo(g_csv_locn.mb_str(), FALSE);
     m_bPrivateRegistrar = true;
-    // errorMessage = _T("S57 Registrar not set.");
+    // errorMessage = "S57 Registrar not set.";
     // return ERROR_REGISTRAR_NOT_SET;
   }
 
@@ -1494,7 +1488,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
   if (true != SENCfile.DirExists(SENCfile.GetPath())) {
     if (!SENCfile.Mkdir(SENCfile.GetPath())) {
       errorMessage =
-          _T("Cannot create SENC file directory for ") + SENCfile.GetFullPath();
+          "Cannot create SENC file directory for " + SENCfile.GetFullPath();
       lockCR.unlock();
       return ERROR_CANNOT_CREATE_SENC_DIR;
     }
@@ -1502,14 +1496,14 @@ int Osenc::createSenc200(const wxString &FullPath000,
 
   //          Make a temp file to create the SENC in
   wxFileName tfn;
-  wxString tmp_file = tfn.CreateTempFileName(_T(""));
+  wxString tmp_file = tfn.CreateTempFileName("");
 
   //     FILE *fps57;
   //     const char *pp = "wb";
   //     fps57 = fopen( tmp_file.mb_str(), pp );
   //
   //     if( fps57 == NULL ) {
-  //         errorMessage = _T("Unable to create temp SENC file: ");
+  //         errorMessage = "Unable to create temp SENC file: ";
   //         errorMessage.Append( tfn.GetFullPath() );
   //         return ERROR_CANNOT_CREATE_TEMP_SENC_FILE;
   //     }
@@ -1523,7 +1517,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
   Osenc_outstream *stream = m_pOutstream;
 
   if (!stream->Open(tmp_file)) {
-    errorMessage = _T("Unable to create temp SENC file: ");
+    errorMessage = "Unable to create temp SENC file: ";
     errorMessage += tmp_file;
     delete m_pOutstream;
     lockCR.unlock();
@@ -1545,7 +1539,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
   //  Ingest the .000 cell, with updates applied
 
   if (ingestCell(poS57DS, FullPath000, SENCfile.GetPath())) {
-    errorMessage = _T("Error ingesting: ") + FullPath000;
+    errorMessage = "Error ingesting: " + FullPath000;
     delete m_pOutstream;
     lockCR.unlock();
     return ERROR_INGESTING000;
@@ -1595,7 +1589,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
     return ERROR_SENCFILE_ABORT;
   }
 
-  wxString date000 = m_date000.Format(_T("%Y%m%d"));
+  wxString date000 = m_date000.Format("%Y%m%d");
   string sdata = date000.ToStdString();
   if (!WriteHeaderRecord200(stream, HEADER_CELL_PUBLISHDATE, sdata)) {
     stream->Close();
@@ -1638,7 +1632,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
   }
 
   wxDateTime now = wxDateTime::Now();
-  wxString dateNow = now.Format(_T("%Y%m%d"));
+  wxString dateNow = now.Format("%Y%m%d");
   sdata = dateNow.ToStdString();
   if (!WriteHeaderRecord200(stream, HEADER_CELL_SENCCREATEDATE, sdata)) {
     stream->Close();
@@ -1672,7 +1666,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
   }
 
   wxString Message = SENCfile.GetFullPath();
-  Message.Append(_T("...Ingesting"));
+  Message.Append("...Ingesting");
 
   wxString Title(_("OpenCPN S57 SENC File Create..."));
   Title.append(SENCfile.GetFullPath());
@@ -1715,7 +1709,7 @@ int Osenc::createSenc200(const wxString &FullPath000,
 
         wxString sobj =
             wxString(objectDef->GetDefnRef()->GetName(), wxConvUTF8);
-        sobj.Append(wxString::Format(_T("  %d/%d       "), iObj, nProg));
+        sobj.Append(wxString::Format("  %d/%d       ", iObj, nProg));
 
         bcont = m_ProgDialog->Update(iObj, sobj);
 #if defined(__WXMSW__) || defined(__WXOSX__)
@@ -1773,9 +1767,9 @@ int Osenc::createSenc200(const wxString &FullPath000,
   if (bcont) {
     bool cpok = wxRenameFile(tmp_file, SENCfile.GetFullPath());
     if (!cpok) {
-      errorMessage = _T("   Cannot rename temporary SENC file ");
+      errorMessage = "   Cannot rename temporary SENC file ";
       errorMessage.Append(tmp_file);
-      errorMessage.Append(_T(" to "));
+      errorMessage.Append(" to ");
       errorMessage.Append(SENCfile.GetFullPath());
       ret_code = ERROR_SENCFILE_ABORT;
     } else
@@ -2259,7 +2253,7 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader,
 
   if (error_code) {
     wxLogMessage(
-        _T("   Warning: S57 SENC Geometry Error %d, Some Features ignored."),
+        "   Warning: S57 SENC Geometry Error %d, Some Features ignored.",
         ppg->ErrorCode);
     delete ppg;
 
@@ -3003,13 +2997,13 @@ bool Osenc::CreateSENCRecord200(OGRFeature *pFeature, Osenc_outstream *stream,
                 wxString att_conv(pAttrVal, conv);
                 att_conv.RemoveLast();  // Remove the \037 that terminates
                                         // UTF-16 strings in S57
-                att_conv.Replace(_T("\n"),
-                                 _T("|"));  // Replace  <new line> with special
-                                            // break character
+                att_conv.Replace("\n",
+                                 "|");  // Replace  <new line> with special
+                                        // break character
                 wxAttrValue = att_conv;
               } else if (poReader->GetNall() ==
                          1) {  // ENC is using Lex level 1 (ISO 8859_1) encoding
-                wxCSConv conv(_T("iso8859-1"));
+                wxCSConv conv("iso8859-1");
                 wxString att_conv(pAttrVal, conv);
                 wxAttrValue = att_conv;
               }
@@ -3017,7 +3011,7 @@ bool Osenc::CreateSENCRecord200(OGRFeature *pFeature, Osenc_outstream *stream,
               if (poReader->GetAall() ==
                   1) {  // ENC is using Lex level 1 (ISO 8859_1) encoding for
                         // "General Text"
-                wxCSConv conv(_T("iso8859-1"));
+                wxCSConv conv("iso8859-1");
                 wxString att_conv(pAttrVal, conv);
                 wxAttrValue = att_conv;
               } else
@@ -3221,7 +3215,7 @@ bool Osenc::CreateSENCRecord200(OGRFeature *pFeature, Osenc_outstream *stream,
 #endif
       //      All others
       default:
-        msg = _T("   Warning: Unimplemented ogr geotype record ");
+        msg = "   Warning: Unimplemented ogr geotype record ";
         wxLogMessage(msg);
 
         break;
@@ -3458,7 +3452,7 @@ bool Osenc::CreateCOVRTables(S57Reader *poReader,
 
   else  // strange case, found no CATCOV=1 M_COVR objects
   {
-    wxString msg(_T("   ENC contains no useable M_COVR, CATCOV=1 features:  "));
+    wxString msg("   ENC contains no useable M_COVR, CATCOV=1 features:  ");
     msg.Append(m_FullPath000);
     wxLogMessage(msg);
   }
@@ -3492,11 +3486,11 @@ bool Osenc::CreateCOVRTables(S57Reader *poReader,
   delete pNoCovrPtrArray;
 
   if (0 == m_nCOVREntries) {  // fallback
-    wxString msg(_T("   ENC contains no M_COVR features:  "));
+    wxString msg("   ENC contains no M_COVR features:  ");
     msg.Append(m_FullPath000);
     wxLogMessage(msg);
 
-    msg = _T("   Calculating Chart Extents as fallback.");
+    msg = "   Calculating Chart Extents as fallback.";
     wxLogMessage(msg);
 
     OGREnvelope Env;
@@ -3528,7 +3522,7 @@ bool Osenc::CreateCOVRTables(S57Reader *poReader,
       *pfe++ = LonMin;
 
     } else {
-      wxString msg(_T("   Cannot calculate Extents for ENC:  "));
+      wxString msg("   Cannot calculate Extents for ENC:  ");
       msg.Append(m_FullPath000);
       wxLogMessage(msg);
 
@@ -3625,7 +3619,7 @@ int Osenc::GetBaseFileInfo(const wxString &FullPath000,
   //  Ingest the .000 cell, with updates applied
 
   if (ingestCell(&oS57DS, FullPath000, SENCfile.GetPath())) {
-    errorMessage = _T("Error ingesting: ") + FullPath000;
+    errorMessage = "Error ingesting: " + FullPath000;
     return ERROR_INGESTING000;
   }
 

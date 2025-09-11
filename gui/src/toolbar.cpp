@@ -92,7 +92,7 @@ public:
     m_btooltip_hiviz = false;
 
     toolname = g_pi_manager->GetToolOwnerCommonName(id);
-    if (toolname == _T("")) {
+    if (toolname == "") {
       isPluginTool = false;
       toolname = label;
       iconName = label;
@@ -108,8 +108,8 @@ public:
                   const wxBitmap &bmpRollover, wxItemKind kind,
                   wxObject *clientData, const wxString &shortHelp,
                   const wxString &longHelp)
-      : wxToolBarToolBase((wxToolBarBase *)tbar, id, _T(""), bmpNormal,
-                          bmpRollover, kind, clientData, shortHelp, longHelp) {
+      : wxToolBarToolBase((wxToolBarBase *)tbar, id, "", bmpNormal, bmpRollover,
+                          kind, clientData, shortHelp, longHelp) {
     m_enabled = true;
     m_toggled = false;
     rollover = false;
@@ -180,8 +180,8 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
   m_bAutoHideToolbar = false;
   m_nAutoHideToolbar = 5;
   m_toolbar_scale_tools_shown = false;
-  m_backcolorString = _T("GREY3");
-  m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
+  m_backcolorString = "GREY3";
+  m_toolShowMask = "XXXXXXXXXXXXXXXX";
   n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
   b_canToggleOrientation = true;
   m_enableRolloverBitmaps = true;
@@ -366,7 +366,7 @@ void ocpnFloatingToolbarDialog::SetColorScheme(ColorScheme cs) {
   wxColour back_color = GetGlobalColor(m_backcolorString);
 
   if (m_ptoolbar) {
-    m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
+    m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor("GREY1"));
     m_ptoolbar->SetColorScheme(cs);
   }
 }
@@ -396,7 +396,7 @@ void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid) {
     m_ptoolbar->SetToolBitmapSize(style_tool_size);
 
     wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
-    int grabber_width = m_style->GetIcon(_T("grabber")).GetWidth();
+    int grabber_width = m_style->GetIcon("grabber").GetWidth();
 
     int max_rows = 10;
     int max_cols = 100;
@@ -710,9 +710,9 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateNewToolbar() {
   m_ptoolbar = new ocpnToolBarSimple(this, -1, wxPoint(-1, -1), wxSize(-1, -1),
                                      winstyle, m_orient);
 
-  // m_ptoolbar->SetBackgroundColour(GetGlobalColor(_T("GREY2")));
+  // m_ptoolbar->SetBackgroundColour(GetGlobalColor("GREY2"));
   // m_ptoolbar->ClearBackground();
-  m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor(_T("GREY1")));
+  m_ptoolbar->SetToggledBackgroundColour(GetGlobalColor("GREY1"));
   m_ptoolbar->SetColorScheme(m_cs);
   m_ptoolbar->EnableRolloverBitmaps(GetEnableRolloverBitmaps());
 
@@ -843,7 +843,7 @@ END_EVENT_TABLE()
 
 // Define a constructor
 ToolTipWin::ToolTipWin(wxWindow *parent)
-    : wxFrame(parent, wxID_ANY, _T(""), wxPoint(0, 0), wxSize(1, 1),
+    : wxFrame(parent, wxID_ANY, "", wxPoint(0, 0), wxSize(1, 1),
               wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR) {
   m_pbm = NULL;
 
@@ -978,7 +978,7 @@ wxToolBarToolBase *ocpnToolBarSimple::CreateTool(
   } else {
     wxString testToolname = g_pi_manager->GetToolOwnerCommonName(id);
 
-    if (testToolname == _T("")) {  // Not a PlugIn tool...
+    if (testToolname == "") {  // Not a PlugIn tool...
       return new ocpnToolBarTool(this, id, bmpNormal, bmpDisabled, kind,
                                  clientData, shortHelp, longHelp);
     } else {
@@ -1009,7 +1009,7 @@ void ocpnToolBarSimple::Init() {
   m_defaultHeight = 15;
 
   m_toggle_bg_color = wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE);
-  m_toolOutlineColour.Set(_T("BLACK"));
+  m_toolOutlineColour.Set("BLACK");
   m_pToolTipWin = NULL;
   m_last_ro_tool = NULL;
 
@@ -1058,7 +1058,7 @@ wxToolBarToolBase *ocpnToolBarSimple::InsertTool(
     const wxBitmap &bmpDisabled, wxItemKind kind, const wxString &shortHelp,
     const wxString &longHelp, wxObject *clientData) {
   wxCHECK_MSG(pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
-              _T("invalid position in wxToolBar::InsertTool()"));
+              "invalid position in wxToolBar::InsertTool()");
 
   wxToolBarToolBase *tool = CreateTool(id, label, bitmap, bmpDisabled, kind,
                                        clientData, shortHelp, longHelp);
@@ -1075,7 +1075,7 @@ wxToolBarToolBase *ocpnToolBarSimple::InsertTool(
 wxToolBarToolBase *ocpnToolBarSimple::InsertTool(size_t pos,
                                                  wxToolBarToolBase *tool) {
   wxCHECK_MSG(pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
-              _T("invalid position in wxToolBar::InsertTool()"));
+              "invalid position in wxToolBar::InsertTool()");
 
   if (!tool || !DoInsertTool(pos, tool)) {
     return NULL;
@@ -1098,7 +1098,7 @@ bool ocpnToolBarSimple::DoInsertTool(size_t WXUNUSED(pos),
     for (unsigned int i = 0; i < GetToolsCount(); i++) {
       if (tool->GetToolname() ==
           ((ocpnToolBarTool *)m_tools.Item(i)->GetData())->GetToolname()) {
-        tool->toolname << _T("1");
+        tool->toolname << "1";
       }
     }
   }
@@ -1224,7 +1224,7 @@ void ocpnToolBarSimple::SetColorScheme(ColorScheme cs) {
     m_pToolTipWin = NULL;
   }
 #endif
-  m_toolOutlineColour = GetGlobalColor(_T("UIBDR"));
+  m_toolOutlineColour = GetGlobalColor("UIBDR");
 
   m_currentColorScheme = cs;
 }
@@ -1806,7 +1806,7 @@ void ocpnToolBarSimple::DrawTool(wxDC &dc, wxToolBarToolBase *toolBase) {
   if ((tool->last_rect.width &&
        (tool->last_rect.x != drawAt.x || tool->last_rect.y != drawAt.y)) ||
       bNeedClear) {
-    wxBrush bb(GetGlobalColor(_T("GREY3")));
+    wxBrush bb(GetGlobalColor("GREY3"));
     dc.SetBrush(bb);
     dc.SetPen(*wxTRANSPARENT_PEN);
     dc.DrawRectangle(tool->last_rect.x, tool->last_rect.y,
@@ -1896,14 +1896,14 @@ void ocpnToolBarSimple::DoToggleTool(wxToolBarToolBase *tool,
 
 wxString ocpnToolBarSimple::GetToolShortHelp(int id) const {
   wxToolBarToolBase *tool = FindById(id);
-  wxCHECK_MSG(tool, wxEmptyString, _T("no such tool"));
+  wxCHECK_MSG(tool, wxEmptyString, "no such tool");
 
   return tool->GetShortHelp();
 }
 
 wxString ocpnToolBarSimple::GetToolLongHelp(int id) const {
   wxToolBarToolBase *tool = FindById(id);
-  wxCHECK_MSG(tool, wxEmptyString, _T("no such tool"));
+  wxCHECK_MSG(tool, wxEmptyString, "no such tool");
 
   return tool->GetLongHelp();
 }
@@ -1936,14 +1936,14 @@ int ocpnToolBarSimple::GetToolPos(int id) const {
 }
 bool ocpnToolBarSimple::GetToolState(int id) const {
   wxToolBarToolBase *tool = FindById(id);
-  wxCHECK_MSG(tool, false, _T("no such tool"));
+  wxCHECK_MSG(tool, false, "no such tool");
 
   return tool->IsToggled();
 }
 
 bool ocpnToolBarSimple::GetToolEnabled(int id) const {
   wxToolBarToolBase *tool = FindById(id);
-  wxCHECK_MSG(tool, false, _T("no such tool"));
+  wxCHECK_MSG(tool, false, "no such tool");
 
   return tool->IsEnabled();
 }
@@ -1966,7 +1966,7 @@ wxObject *ocpnToolBarSimple::GetToolClientData(int id) const {
 void ocpnToolBarSimple::SetToolClientData(int id, wxObject *clientData) {
   wxToolBarToolBase *tool = FindById(id);
 
-  wxCHECK_RET(tool, _T("no such tool in wxToolBar::SetToolClientData"));
+  wxCHECK_RET(tool, "no such tool in wxToolBar::SetToolClientData");
 
   tool->SetClientData(clientData);
 }
@@ -2012,7 +2012,7 @@ int ocpnToolBarSimple::GetVisibleToolCount() {
 
 bool ocpnToolBarSimple::DeleteToolByPos(size_t pos) {
   wxCHECK_MSG(pos < GetToolsCount(), false,
-              _T("invalid position in wxToolBar::DeleteToolByPos()"));
+              "invalid position in wxToolBar::DeleteToolByPos()");
 
   wxToolBarToolsList::compatibility_iterator node = m_tools.Item(pos);
 
@@ -2051,7 +2051,7 @@ wxToolBarToolBase *ocpnToolBarSimple::AddSeparator() {
 
 wxToolBarToolBase *ocpnToolBarSimple::InsertSeparator(size_t pos) {
   wxCHECK_MSG(pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
-              _T("invalid position in wxToolBar::InsertSeparator()"));
+              "invalid position in wxToolBar::InsertSeparator()");
 
   wxToolBarToolBase *tool = CreateTool(
       wxID_SEPARATOR, wxEmptyString, wxNullBitmap, wxNullBitmap,
@@ -2102,7 +2102,7 @@ wxControl *ocpnToolBarSimple::FindControl(int id) {
       wxControl *const control = tool->GetControl();
 
       if (!control) {
-        wxFAIL_MSG(_T("NULL control in toolbar?"));
+        wxFAIL_MSG("NULL control in toolbar?");
       } else if (control->GetId() == id) {
         // found
         return control;
@@ -2159,7 +2159,7 @@ void ocpnToolBarSimple::OnRightClick(int id, long WXUNUSED(x),
   if (m_parentContainer) {
     if (m_parentContainer->m_FloatingToolbarConfigMenu) {
       ToolbarChoicesDialog *dlg =
-          new ToolbarChoicesDialog(NULL, m_parentContainer, -1, _T("OpenCPN"),
+          new ToolbarChoicesDialog(NULL, m_parentContainer, -1, "OpenCPN",
                                    wxDefaultPosition, wxSize(100, 100));
       int rc = dlg->ShowModal();
       delete dlg;
@@ -2402,8 +2402,8 @@ void ToolbarChoicesDialog::CreateControls() {
       int l = label.Len();
       max_width = wxMax(max_width, l);
 
-      wxString windowName = _T("");
-      if (item->GetId() == ID_MOB + 100) windowName = _T("MOBCheck");
+      wxString windowName = "";
+      if (item->GetId() == ID_MOB + 100) windowName = "MOBCheck";
 
       wxCheckBox *cb =
           new wxCheckBox(itemDialog1, -1, label, wxDefaultPosition,
@@ -2463,7 +2463,7 @@ void ToolbarChoicesDialog::OnOkClick(wxCommandEvent &event) {
     wxCheckBox *cb = cboxes[i];
     wxString cbName = cb->GetName();  // Special flag passed into checkbox ctor
                                       // to find the "MOB" item
-    if (cbName.IsSameAs(_T("MOBCheck")) && !cb->IsChecked()) {
+    if (cbName.IsSameAs("MOBCheck") && !cb->IsChecked()) {
       // Ask if really want to disable MOB button
       ToolbarMOBDialog mdlg(this);
       int dialog_ret = mdlg.ShowModal();

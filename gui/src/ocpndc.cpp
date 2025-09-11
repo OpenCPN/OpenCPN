@@ -153,7 +153,7 @@ ocpnDC::~ocpnDC() {
 }
 
 void ocpnDC::Init() {
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = NULL;
   workBufSize = 0;
   m_dpi_factor = 1.0;

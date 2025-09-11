@@ -144,7 +144,7 @@ void Piano::Paint(int y, ocpnDC &dc, wxDC *shapeDC) {
 
   int nKeys = m_composite_array.size();
 
-  wxPen ppPen(GetGlobalColor(_T("CHBLK")), 1, wxPENSTYLE_SOLID);
+  wxPen ppPen(GetGlobalColor("CHBLK"), 1, wxPENSTYLE_SOLID);
   dc.SetPen(ppPen);
 
   for (int i = 0; i < nKeys; i++) {
@@ -295,7 +295,7 @@ void Piano::BuildGLTexture() {
   nominal_line_width_pix = wxMax(1.0, nominal_line_width_pix);
 
   // draw the needed rectangles
-  wxPen ppPen(GetGlobalColor(_T("CHBLK")), nominal_line_width_pix,
+  wxPen ppPen(GetGlobalColor("CHBLK"), nominal_line_width_pix,
               wxPENSTYLE_SOLID);
   dc.SetPen(ppPen);
   for (unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
@@ -554,29 +554,29 @@ void Piano::DrawGLSL(int off) {
 void Piano::SetColorScheme(ColorScheme cs) {
   //    Recreate the local brushes
 
-  m_backBrush = wxBrush(GetGlobalColor(_T("UIBDR")), wxBRUSHSTYLE_SOLID);
+  m_backBrush = wxBrush(GetGlobalColor("UIBDR"), wxBRUSHSTYLE_SOLID);
 
-  m_rBrush = wxBrush(GetGlobalColor(_T("BLUE2")),
+  m_rBrush = wxBrush(GetGlobalColor("BLUE2"),
                      wxBRUSHSTYLE_SOLID);  // Raster Chart unselected
   m_srBrush =
-      wxBrush(GetGlobalColor(_T("BLUE1")), wxBRUSHSTYLE_SOLID);  // and selected
+      wxBrush(GetGlobalColor("BLUE1"), wxBRUSHSTYLE_SOLID);  // and selected
 
-  m_vBrush = wxBrush(GetGlobalColor(_T("GREEN2")),
+  m_vBrush = wxBrush(GetGlobalColor("GREEN2"),
                      wxBRUSHSTYLE_SOLID);  // Vector Chart unselected
-  m_svBrush = wxBrush(GetGlobalColor(_T("GREEN1")),
+  m_svBrush = wxBrush(GetGlobalColor("GREEN1"),
                       wxBRUSHSTYLE_SOLID);  // and selected
 
-  m_utileBrush = wxBrush(GetGlobalColor(_T("VIO01")),
+  m_utileBrush = wxBrush(GetGlobalColor("VIO01"),
                          wxBRUSHSTYLE_SOLID);  // MBTiles Chart unselected
   m_tileBrush =
-      wxBrush(GetGlobalColor(_T("VIO02")), wxBRUSHSTYLE_SOLID);  // and selected
+      wxBrush(GetGlobalColor("VIO02"), wxBRUSHSTYLE_SOLID);  // and selected
 
-  m_cBrush = wxBrush(GetGlobalColor(_T("YELO2")),
+  m_cBrush = wxBrush(GetGlobalColor("YELO2"),
                      wxBRUSHSTYLE_SOLID);  // CM93 Chart unselected
   m_scBrush =
-      wxBrush(GetGlobalColor(_T("YELO1")), wxBRUSHSTYLE_SOLID);  // and selected
+      wxBrush(GetGlobalColor("YELO1"), wxBRUSHSTYLE_SOLID);  // and selected
 
-  m_unavailableBrush = wxBrush(GetGlobalColor(_T("UINFD")),
+  m_unavailableBrush = wxBrush(GetGlobalColor("UINFD"),
                                wxBRUSHSTYLE_SOLID);  // and unavailable
 
   m_tex_piano_height = 0;  // force texture to update
@@ -737,37 +737,37 @@ wxString Piano::GetStateHash() {
 
   for (unsigned int i = 0; i < m_key_array.size(); i++) {
     wxString a;
-    a.Printf(_T("%dK"), m_key_array[i]);
+    a.Printf("%dK", m_key_array[i]);
     hash += a;
   }
   for (unsigned int i = 0; i < m_noshow_index_array.size(); i++) {
     wxString a;
-    a.Printf(_T("%dN"), m_noshow_index_array[i]);
+    a.Printf("%dN", m_noshow_index_array[i]);
     hash += a;
   }
   for (unsigned int i = 0; i < m_active_index_array.size(); i++) {
     wxString a;
-    a.Printf(_T("%dA"), m_active_index_array[i]);
+    a.Printf("%dA", m_active_index_array[i]);
     hash += a;
   }
   for (unsigned int i = 0; i < m_eclipsed_index_array.size(); i++) {
     wxString a;
-    a.Printf(_T("%dE"), m_eclipsed_index_array[i]);
+    a.Printf("%dE", m_eclipsed_index_array[i]);
     hash += a;
   }
   for (unsigned int i = 0; i < m_skew_index_array.size(); i++) {
     wxString a;
-    a.Printf(_T("%dW"), m_skew_index_array[i]);
+    a.Printf("%dW", m_skew_index_array[i]);
     hash += a;
   }
   for (unsigned int i = 0; i < m_tmerc_index_array.size(); i++) {
     wxString a;
-    a.Printf(_T("%dM"), m_tmerc_index_array[i]);
+    a.Printf("%dM", m_tmerc_index_array[i]);
     hash += a;
   }
   for (unsigned int i = 0; i < m_poly_index_array.size(); i++) {
     wxString a;
-    a.Printf(_T("%dP"), m_poly_index_array[i]);
+    a.Printf("%dP", m_poly_index_array[i]);
     hash += a;
   }
 

@@ -965,7 +965,7 @@ bool glTexFactory::LoadHeader(void) {
   bool need_new = false;
 
   if (wxFileName::FileExists(m_CompressedCacheFilePath)) {
-    m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
+    m_fs = new wxFFile(m_CompressedCacheFilePath, "rb+");
     if (m_fs->IsOpened()) {
       CompressedCacheHeader hdr;
 
@@ -1009,13 +1009,13 @@ bool glTexFactory::LoadHeader(void) {
 
   if (need_new) {
     //  Create new file, with empty catalog, and correct header
-    m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
+    m_fs = new wxFFile(m_CompressedCacheFilePath, "wb");
     n_catalog_entries = 0;
     m_catalog_offset = 0;
     WriteCatalogAndHeader();
     delete m_fs;
 
-    m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
+    m_fs = new wxFFile(m_CompressedCacheFilePath, "rb+");
   }
   m_hdrOK = true;
   return true;
@@ -1069,7 +1069,7 @@ bool glTexFactory::LoadCatalog(void) {
 
   free(buf);
   if (bad && !m_catalogCorrupted) {
-    wxLogMessage(_T("Bad cache catalog %s %s"), m_ChartPath.c_str(),
+    wxLogMessage("Bad cache catalog %s %s", m_ChartPath.c_str(),
                  m_CompressedCacheFilePath.c_str());
     m_catalogCorrupted = true;
   }

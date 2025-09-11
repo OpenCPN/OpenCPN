@@ -136,7 +136,7 @@ wxString FontMgr::GetFontConfigKey(const wxString &description) {
 
   wxString configkey;
   configkey = s_locale;
-  configkey.Append(_T("-"));
+  configkey.Append("-");
 
   using namespace std;
   locale loc;
@@ -149,8 +149,8 @@ wxString FontMgr::GetFontConfigKey(const wxString &description) {
 
   int fdLen = strlen(abuf);
 
-  configkey.Append(wxString::Format(
-      _T("%08lx"), coll.hash(abuf.data(), abuf.data() + fdLen)));
+  configkey.Append(
+      wxString::Format("%08lx", coll.hash(abuf.data(), abuf.data() + fdLen)));
   return configkey;
 }
 
@@ -373,7 +373,7 @@ wxString FontMgr::GetFullConfigDesc(int i) const {
   ret.Append(pfd->m_nativeInfo);
   ret.Append(_T ( ":" ));
 
-  wxString cols(_T("rgb(0,0,0)"));
+  wxString cols("rgb(0,0,0)");
   if (pfd->m_color.IsOk()) cols = pfd->m_color.GetAsString(wxC2S_CSS_SYNTAX);
 
   ret.Append(cols);
@@ -434,7 +434,7 @@ void FontMgr::LoadFontNative(wxString *pConfigString, wxString *pNativeDesc) {
     const wxChar *t = face.c_str();
     if (*t > 255) {
       delete nf;
-      wxString substitute_native = GetSimpleNativeFont(12, _T(""));
+      wxString substitute_native = GetSimpleNativeFont(12, "");
       nf = nf0->New(substitute_native);
     }
 #endif
@@ -559,7 +559,7 @@ static wxString FontCandidates[] = {_("AISTargetAlert"),
                                     _("Dialog"),
                                     _("Menu"),
                                     _("GridText"),
-                                    _T("END_OF_LIST")};
+                                    "END_OF_LIST"};
 
 void FontMgr::ScrubList() {
   wxString now_locale = g_locale;
@@ -572,7 +572,7 @@ void FontMgr::ScrubList() {
   // The fixed, static list
   while (true) {
     wxString candidate = FontCandidates[i];
-    if (candidate == _T("END_OF_LIST")) {
+    if (candidate == "END_OF_LIST") {
       break;
     }
 
@@ -624,8 +624,8 @@ void FontMgr::ScrubList() {
         }
       }
       if (!bfound) {  // mark for removal
-        pmfd->m_dialogstring = _T("");
-        pmfd->m_configstring = _T("");
+        pmfd->m_dialogstring = "";
+        pmfd->m_configstring = "";
       }
     }
   }
@@ -634,7 +634,7 @@ void FontMgr::ScrubList() {
   auto node = m_fontlist->begin();
   while (node != m_fontlist->end()) {
     MyFontDesc *pmfd = *node;
-    if (pmfd->m_dialogstring == _T("")) {
+    if (pmfd->m_dialogstring == "") {
       auto found = std::find(m_fontlist->begin(), m_fontlist->end(), pmfd);
       if (found != m_fontlist->end()) m_fontlist->erase(found);
       node = m_fontlist->begin();
@@ -648,7 +648,7 @@ void FontMgr::ScrubList() {
   i = 0;
   while (true) {
     wxString candidate = FontCandidates[i];
-    if (candidate == _T("END_OF_LIST")) {
+    if (candidate == "END_OF_LIST") {
       break;
     }
 
