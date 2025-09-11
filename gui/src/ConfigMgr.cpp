@@ -254,6 +254,8 @@ extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
+extern bool g_bArrivalCircleInsteadOfNormalCrossing;
+
 extern double g_display_size_mm;
 extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
@@ -1401,6 +1403,8 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
   CHECK_INT(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
             &g_bAdvanceRouteWaypointOnArrivalOnly);
+  CHECK_INT(_T( "ArrivalCircleInsteadOfNormalCrossing" ),
+            &g_bArrivalCircleInsteadOfNormalCrossing);
 
   CHECK_INT(_T ( "EnableRotateKeys" ), &g_benable_rotate);
   CHECK_INT(_T ( "EmailCrashReport" ), &g_bEmailCrashReport);

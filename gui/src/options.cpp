@@ -211,6 +211,7 @@ extern bool g_bHighliteTracks;
 extern wxColour g_colourTrackLineColour;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
+extern bool g_bArrivalCircleInsteadOfNormalCrossing;
 
 extern int g_cm93_zoom_factor;
 
@@ -2371,7 +2372,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   routeSizer->Add(pRouteGrid, 0, wxALL | wxEXPAND, border_size);
 
   wxStaticText* raText = new wxStaticText(
-      itemPanelRoutes, wxID_STATIC, _("Waypoint Arrival Circle Radius (NMi)"));
+      itemPanelRoutes, wxID_STATIC, _("Waypoint Arrival Distance (NMi)"));
   pRouteGrid->Add(raText, 1, wxEXPAND | wxALL, group_item_spacing);
 
   m_pText_ACRadius = new wxTextCtrl(itemPanelRoutes, -1, "TEXT  ");
@@ -2379,9 +2380,14 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                   group_item_spacing);
 
   pAdvanceRouteWaypointOnArrivalOnly =
-      new wxCheckBox(itemPanelRoutes, ID_DAILYCHECKBOX,
+      new wxCheckBox(itemPanelRoutes, ID_ADVANCEWAYPOINT,
                      _("Advance route waypoint on arrival only"));
   routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0, wxALL, 5);
+
+  pArrivalCircleInsteadOfNormalCrossing =
+      new wxCheckBox(itemPanelRoutes, ID_ARRIVALCIRCLE,
+                     _("Use arrival circle instead of normal crossing"));
+  routeSizer->Add(pArrivalCircleInsteadOfNormalCrossing, 0, wxALL, 5);
 
 #ifdef __WXGTK__
   Routes->AddSpacer(8 * group_item_spacing);
@@ -6492,6 +6498,8 @@ void options::SetInitialSettings(void) {
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
+  pArrivalCircleInsteadOfNormalCrossing->SetValue(
+      g_bArrivalCircleInsteadOfNormalCrossing);
 
   if (g_datetime_format == "Local Time") {
     pTimezoneLocalTime->SetValue(true);
@@ -7437,6 +7445,8 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
+  g_bArrivalCircleInsteadOfNormalCrossing=
+      pArrivalCircleInsteadOfNormalCrossing->GetValue();
 
   g_colourTrackLineColour = m_colourTrackLineColour->GetColour();
   g_colourTrackLineColour =
