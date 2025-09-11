@@ -54,6 +54,7 @@ extern int g_click_stop;
 extern int g_sticky_chart;
 
 extern double AnchorPointMinDist;
+extern double g_androidDPmm;  ///< Only used used by __ANDROID__
 extern double g_ChartNotRenderScaleFactor;
 extern double gCog_gt;
 extern double g_defaultBoatSpeedUserUnit;
@@ -70,4 +71,5 @@ extern wxColour g_colourTrackLineColour;
 extern wxDateTime gTimeSource;
 
 extern wxString g_SENCPrefix;
+
 #endif  // GUI_VARS_H__
