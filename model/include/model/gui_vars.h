@@ -39,14 +39,12 @@ extern bool g_bhide_context_menus;
 extern bool g_bhide_depth_units;
 extern bool g_bhide_overzoom_flag;
 extern bool g_b_legacy_input_filter_behaviour;
-extern bool g_bNavAidRadarRingsShown;
 extern bool g_bopengl;
 extern bool g_b_overzoom_x;  ///< Allow high overzoom
 extern bool g_bquiting;
 extern bool g_bTempShowMenuBar;
 extern bool g_btenhertz;
 extern bool g_CanvasHideNotificationIcon;
-extern bool g_FlushNavobjChanges;
 extern bool g_FlushNavobjChanges;
 extern bool g_PrintingInProgress;
 

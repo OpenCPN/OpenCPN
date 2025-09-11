@@ -171,7 +171,6 @@ extern wxColor GetDimColor(wxColor c);   // library dependence
 
 static bool g_bSmoothRecenter = true;
 static bool bDrawCurrentValues;
-
 /**
  * The current mouse X position in physical pixels relative to the active
  * canvas.

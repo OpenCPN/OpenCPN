@@ -261,10 +261,6 @@ bool g_bPauseTest;
 // Files specified on the command line, if any.
 
 LayerList *pLayerList;
-
-bool g_bshowToolbar = true;
-bool g_bexpert = true;
-
 wxString ChartListFileName;
 wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
@@ -333,7 +329,6 @@ extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
 #endif
 
 AisInfoGui *g_pAISGUI;
-
 int gpIDXn;
 long gStart_LMT_Offset;
 
@@ -361,25 +356,14 @@ bool g_bHasHwClock;
 bool g_bTrackActive;
 bool g_bDeferredStartTrack;
 bool g_bUseGreenShip;
-//
 int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
                      // no chart database, inform user, 2 - Start update right
                      // away
-
 AboutFrameImpl *g_pAboutDlg;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
 #endif
-
-/**
- * Global locale setting for OpenCPN UI.
- *
- * If not set in config (empty string), uses system default locale.
- * Stores the language/locale name in format "en_US", "fr_FR", etc.
- * A valid setting triggers loading the corresponding .mo translation files
- * from the appropriate locale directory.
- */
 
 int g_BSBImgDebug;
 
