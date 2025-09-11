@@ -341,7 +341,7 @@ void OCPNPlatform::Initialize_1(void) {
   CR_INSTALL_INFO info;
   memset(&info, 0, sizeof(CR_INSTALL_INFO));
   info.cb = sizeof(CR_INSTALL_INFO);
-  info.pszAppName = _T("OpenCPN");
+  info.pszAppName = L"OpenCPN";
 
   info.pszAppVersion = wxString(VERSION_FULL).c_str();
 
@@ -376,7 +376,7 @@ void OCPNPlatform::Initialize_1(void) {
   // URL for sending error reports over HTTP.
 
   if (g_bEmailCrashReport) {
-    info.pszUrl = _T("https://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
+    info.pszUrl = L"https://bigdumboat.com/crashrpt/ocpn_crashrpt.php";
     info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP
   } else {
     info.dwFlags |= CR_INST_DONT_SEND_REPORT;
