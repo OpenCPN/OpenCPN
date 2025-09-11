@@ -34,7 +34,6 @@
 
 class APConsole;            // forward
 extern APConsole *console;  ///< Global instance
-
 /**
  * Course Deviation Indicator display. Provides a visual representation
  * of the vessel's course deviation from the planned route.

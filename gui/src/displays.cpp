@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Display utilities
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement display.h -- display utilities
+ */
 
 #include <iostream>
 #include "config.h"
@@ -44,10 +42,9 @@
 #include <CoreGraphics/CoreGraphics.h>
 #endif
 
-size_t g_num_monitors = 0;
-size_t g_current_monitor = 0;
-double g_current_monitor_dip_px_ratio = 1.0;
 std::vector<OCPN_MonitorInfo> g_monitor_info;
+
+static size_t g_num_monitors = 0;
 
 #if _WIN32
 

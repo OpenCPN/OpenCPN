@@ -71,10 +71,9 @@
 #include "cm93.h"  // for chart outline draw
 #include "compass.h"
 #include "concanv.h"
-#include "DetailSlider.h"
-#include "displays.h"
+#include "detail_slider.h"
 #include "hotkeys_dlg.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "glTextureDescriptor.h"
 #include "GoToPositionDialog.h"
 #include "gshhs.h"
@@ -171,7 +170,6 @@ extern wxColor GetDimColor(wxColor c);   // library dependence
 
 static bool g_bSmoothRecenter = true;
 static bool bDrawCurrentValues;
-
 /**
  * The current mouse X position in physical pixels relative to the active
  * canvas.

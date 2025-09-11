@@ -799,14 +799,14 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/data_monitor.h
-    ${GUI_HDR_DIR}/DetailSlider.h
+    ${GUI_HDR_DIR}/detail_slider.h
     ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
-    ${GUI_HDR_DIR}/FlexHash.h
-    ${GUI_HDR_DIR}/FontDesc.h
-    ${GUI_HDR_DIR}/FontMgr.h
+    ${GUI_HDR_DIR}/flex_hash.h
+    ${GUI_HDR_DIR}/font_desc.h
+    ${GUI_HDR_DIR}/font_mgr.h
     ${GUI_HDR_DIR}/GoToPositionDialog.h
     ${GUI_HDR_DIR}/gshhs.h
     ${GUI_HDR_DIR}/gui_lib.h
@@ -920,13 +920,13 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/data_monitor.cpp
-    ${GUI_SRC_DIR}/DetailSlider.cpp
+    ${GUI_SRC_DIR}/detail_slider.cpp
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/filter_dlg.cpp
-    ${GUI_SRC_DIR}/FlexHash.cpp
-    ${GUI_SRC_DIR}/FontDesc.cpp
-    ${GUI_SRC_DIR}/FontMgr.cpp
+    ${GUI_SRC_DIR}/flex_hash.cpp
+    ${GUI_SRC_DIR}/font_desc.cpp
+    ${GUI_SRC_DIR}/font_mgr.cpp
     ${GUI_SRC_DIR}/GoToPositionDialog.cpp
     ${GUI_SRC_DIR}/gshhs.cpp
     ${GUI_SRC_DIR}/gui_lib.cpp

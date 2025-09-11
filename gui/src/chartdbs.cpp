@@ -37,7 +37,7 @@
 
 #include "chartbase.h"
 #include "chartdbs.h"
-#include "FlexHash.h"
+#include "flex_hash.h"
 #include "LOD_reduce.h"
 #include "mbtiles.h"
 #include "pluginmanager.h"

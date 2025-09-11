@@ -39,14 +39,12 @@ extern bool g_bhide_context_menus;
 extern bool g_bhide_depth_units;
 extern bool g_bhide_overzoom_flag;
 extern bool g_b_legacy_input_filter_behaviour;
-extern bool g_bNavAidRadarRingsShown;
 extern bool g_bopengl;
 extern bool g_b_overzoom_x;  ///< Allow high overzoom
 extern bool g_bquiting;
 extern bool g_bTempShowMenuBar;
 extern bool g_btenhertz;
 extern bool g_CanvasHideNotificationIcon;
-extern bool g_FlushNavobjChanges;
 extern bool g_FlushNavobjChanges;
 extern bool g_PrintingInProgress;
 
@@ -64,6 +62,15 @@ extern double vLon; /**< Virtual lon from chcanv popup */
 
 extern float g_compass_scalefactor;
 extern float g_toolbar_scalefactor;
+
+/**
+ * ratio to convert between DIP and physical pixels. Important while using
+ * OpenGL canvas on macOS with Retina displays where this ratio is 2.0
+ */
+extern double g_current_monitor_dip_px_ratio;
+
+/** Current monitor displaying main application frame */
+extern size_t g_current_monitor;
 
 extern wxColour g_colourOwnshipRangeRingsColour;
 extern wxColour g_colourTrackLineColour;

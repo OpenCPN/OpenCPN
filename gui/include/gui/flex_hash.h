@@ -1,12 +1,6 @@
-
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Hash of arbitrary length
- * Author:   Anton Samsonov
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010 Anton Samsonov                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,11 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * Hash of arbitrary length
  */
 
 #ifndef __FLEXHASH_H__
@@ -33,7 +29,7 @@
 #include "ssl/sha1.h"
 
 /**
- * A class for computing hash of arbitrary length.
+ * Class for computing hash of arbitrary length.
  */
 class FlexHash {
 public:

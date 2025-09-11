@@ -38,7 +38,7 @@
 #include "styles.h"
 #include "toolbar.h"
 #include "pluginmanager.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "gui_lib.h"

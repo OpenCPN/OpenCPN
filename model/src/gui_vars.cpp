@@ -38,7 +38,6 @@ bool g_bhide_context_menus = false;
 bool g_bhide_depth_units = false;
 bool g_bhide_overzoom_flag = false;
 bool g_b_legacy_input_filter_behaviour = false;
-bool g_bNavAidRadarRingsShown = false;
 bool g_b_overzoom_x = true;
 bool g_bquiting = false;
 bool g_bTempShowMenuBar = false;
@@ -54,6 +53,9 @@ double g_defaultBoatSpeedUserUnit = 0;
 double g_scaler = 0;
 double vLat = 0;
 double vLon = 0;
+double g_current_monitor_dip_px_ratio = 1.0;
+
+size_t g_current_monitor = 0;
 
 float g_compass_scalefactor = 0;
 float g_toolbar_scalefactor = 0;

@@ -45,6 +45,7 @@
 #include "model/ais_target_data.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui_vars.h"
 #include "model/own_ship.h"
 #include "model/select.h"
 #include "model/wx28compat.h"
@@ -53,7 +54,7 @@
 #include "ais_target_alert_dlg.h"
 #include "ais_target_query_dlg.h"
 #include "chcanv.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "line_clip.h"
 #include "navutil.h"  // for Select
 #include "ocpn_frame.h"

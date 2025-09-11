@@ -52,7 +52,7 @@
 #include "chartdb.h"
 #include "chcanv.h"
 #include "config_mgr.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "Layer.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
