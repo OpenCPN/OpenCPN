@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  ChartBase Definition
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,16 +12,28 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * General chart base definitions
+ */
 
 #ifndef _CHARTBASE_H_
 #define _CHARTBASE_H_
 
-#include "bbox.h"
+#include "gl_headers.h"
+
+#include <wx/bitmap.h>
+#include <wx/datetime.h>
+#include <wx/dcmemory.h>
+#include <wx/glcanvas.h>
+#include <wx/string.h>
+
 #include "model/ocpn_types.h"
+#include "bbox.h"
 #include "color_types.h"
 #include "LLRegion.h"
 #include "viewport.h"
