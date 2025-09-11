@@ -381,7 +381,7 @@ NotificationButton::NotificationButton(ChartCanvas* parent) {
   m_parent = parent;
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  _img_gpsRed = style->GetIcon(_T("gpsRed"));
+  _img_gpsRed = style->GetIcon("gpsRed");
 
   m_pStatBoxToolStaticBmp = NULL;
 
@@ -654,11 +654,11 @@ void NotificationButton::CreateBmp(bool newColorScheme) {
 
   wxMemoryDC mdc;
   mdc.SelectObject(m_StatBmp);
-  mdc.SetBackground(wxBrush(GetGlobalColor(_T("COMP1")), wxBRUSHSTYLE_SOLID));
+  mdc.SetBackground(wxBrush(GetGlobalColor("COMP1"), wxBRUSHSTYLE_SOLID));
   mdc.Clear();
 
-  mdc.SetPen(wxPen(GetGlobalColor(_T("UITX1")), 1));
-  mdc.SetBrush(wxBrush(GetGlobalColor(_T("UITX1")), wxBRUSHSTYLE_TRANSPARENT));
+  mdc.SetPen(wxPen(GetGlobalColor("UITX1"), 1));
+  mdc.SetBrush(wxBrush(GetGlobalColor("UITX1"), wxBRUSHSTYLE_TRANSPARENT));
 
   if (!style->marginsInvisible)
     mdc.DrawRoundedRectangle(0, 0, m_StatBmp.GetWidth(), m_StatBmp.GetHeight(),

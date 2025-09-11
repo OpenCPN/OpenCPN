@@ -34,10 +34,10 @@ Layer::Layer(void) {
   m_bIsVisibleOnListing = false;
   m_bHasVisibleNames = wxCHK_UNDETERMINED;
   m_NoOfItems = 0;
-  m_LayerType = _T("");
-  m_LayerName = _T("");
-  m_LayerFileName = _T("");
-  m_LayerDescription = _T("");
+  m_LayerType = "";
+  m_LayerName = "";
+  m_LayerFileName = "";
+  m_LayerDescription = "";
   m_CreateTime = wxDateTime::Now();
 }
 

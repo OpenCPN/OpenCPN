@@ -242,9 +242,9 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   wxLongLong t = ::wxGetLocalTimeMillis();
 
   jMsg[wxS("Source")] = wxS("AisDecoder");
-  jMsg[wxT("Type")] = wxT("Information");
-  jMsg[wxT("Msg")] = wxS("AIS Target");
-  jMsg[wxT("MsgId")] = t.GetValue();
+  jMsg["Type"] = "Information";
+  jMsg["Msg"] = wxS("AIS Target");
+  jMsg["MsgId"] = t.GetValue();
   jMsg[wxS("lat")] = pTarget->Lat;
   jMsg[wxS("lon")] = pTarget->Lon;
   jMsg[wxS("sog")] = pTarget->SOG;
@@ -266,7 +266,7 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   }
   jMsg[wxS("callsign")] = l_CallSign;
   jMsg[wxS("removed")] = pTarget->b_removed;
-  SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
+  SendJSONMessageToAllPlugins("AIS", jMsg);
 }
 
 static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
@@ -606,11 +606,11 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
   //  Check the library compatibility of the subject plugin
   //  Find the plugin library file, looking for "_pi.{dll/so/dylib file}
 #ifdef __WXMSW__
-  wxString pispec = _T("_pi.dll");
+  wxString pispec = "_pi.dll";
 #elif defined(__WXOSX__)
-  wxString pispec = _T("_pi.dylib");
+  wxString pispec = "_pi.dylib";
 #else
-  wxString pispec = _T("_pi.so");
+  wxString pispec = "_pi.so";
 #endif
 
   std::string manifestPath = PluginHandler::FileListPath(update.name);
@@ -915,9 +915,9 @@ PlugInManager::PlugInManager(MyFrame* parent) {
   //  Here is where we do that....
   if (pFrame) {
     wxArrayString as;
-    as.Add(_T("Item0"));
+    as.Add("Item0");
     wxRadioBox* box =
-        new wxRadioBox(pFrame, -1, _T(""), wxPoint(0, 0), wxSize(-1, -1), as);
+        new wxRadioBox(pFrame, -1, "", wxPoint(0, 0), wxSize(-1, -1), as);
     delete box;
   }
 
@@ -1027,7 +1027,7 @@ void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   ;
 
   int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors == 0) SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
+  if (errors == 0) SendJSONMessageToAllPlugins("OCPN_CORE_SIGNALK", root);
 }
 
 /**
@@ -1291,8 +1291,8 @@ wxString PlugInManager::GetPluginOrder() {
 }
 
 bool PlugInManager::UpdateConfig() {
-  //    pConfig->SetPath( _T("/PlugIns/") );
-  //    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
+  //    pConfig->SetPath( "/PlugIns/" );
+  //    pConfig->Write( "PluginOrder", GetPluginOrder() );
 
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
@@ -1759,92 +1759,91 @@ void PlugInManager::PrepareAllPluginContextMenus() {
 void PlugInManager::SendSKConfigToAllPlugIns() {
   // Send the current ownship MMSI, encoded as sK,  to all PlugIns
   wxJSONValue v;
-  v[_T("self")] = g_ownshipMMSI_SK;
+  v["self"] = g_ownshipMMSI_SK;
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendMessageToAllPlugins(wxString(_T("OCPN_CORE_SIGNALK")), out);
+  SendMessageToAllPlugins(wxString("OCPN_CORE_SIGNALK"), out);
 }
 
 void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Send the current run-time configuration to all PlugIns
   wxJSONValue v;
-  v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
-  v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
-  v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
-  v[_T("OpenCPN Version Date")] = VERSION_DATE;
-  v[_T("OpenCPN Version Full")] = VERSION_FULL;
+  v["OpenCPN Version Major"] = VERSION_MAJOR;
+  v["OpenCPN Version Minor"] = VERSION_MINOR;
+  v["OpenCPN Version Patch"] = VERSION_PATCH;
+  v["OpenCPN Version Date"] = VERSION_DATE;
+  v["OpenCPN Version Full"] = VERSION_FULL;
 
   // Some useful display metrics
   if (g_MainToolbar) {
-    v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetToolbarRect().width;
-    v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetToolbarRect().height;
-    v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetToolbarRect().x;
-    v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetToolbarRect().y;
+    v["OpenCPN Toolbar Width"] = g_MainToolbar->GetToolbarRect().width;
+    v["OpenCPN Toolbar Height"] = g_MainToolbar->GetToolbarRect().height;
+    v["OpenCPN Toolbar PosnX"] = g_MainToolbar->GetToolbarRect().x;
+    v["OpenCPN Toolbar PosnY"] = g_MainToolbar->GetToolbarRect().y;
   }
 
   // Some rendering parameters
-  v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
-  v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
-  v[_T("OpenCPN Scale Factor Exp")] =
+  v["OpenCPN Zoom Mod Vector"] = g_chart_zoom_modifier_vector;
+  v["OpenCPN Zoom Mod Other"] = g_chart_zoom_modifier_raster;
+  v["OpenCPN Scale Factor Exp"] =
       g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
-  v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
-  v[_T("OpenCPN Content Scale Factor")] = OCPN_GetDisplayContentScaleFactor();
-  v[_T("OpenCPN Display DIP Scale Factor")] = OCPN_GetWinDIPScaleFactor();
+  v["OpenCPN Display Width"] = (int)g_display_size_mm;
+  v["OpenCPN Content Scale Factor"] = OCPN_GetDisplayContentScaleFactor();
+  v["OpenCPN Display DIP Scale Factor"] = OCPN_GetWinDIPScaleFactor();
 
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendMessageToAllPlugins(wxString(_T("OpenCPN Config")), out);
+  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
 }
 
 void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
   // Send the current run-time configuration to all PlugIns
   wxJSONValue v;
-  v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
-  v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
-  v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
-  v[_T("OpenCPN Version Date")] = VERSION_DATE;
-  v[_T("OpenCPN Version Full")] = VERSION_FULL;
+  v["OpenCPN Version Major"] = VERSION_MAJOR;
+  v["OpenCPN Version Minor"] = VERSION_MINOR;
+  v["OpenCPN Version Patch"] = VERSION_PATCH;
+  v["OpenCPN Version Date"] = VERSION_DATE;
+  v["OpenCPN Version Full"] = VERSION_FULL;
 
   //  S52PLIB state
   if (ps52plib) {
-    //         v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
-    //         v[_T("OpenCPN S52PLIB ShowSoundings")] =
-    //         ps52plib->GetShowSoundings(); v[_T("OpenCPN S52PLIB ShowLights")]
+    //         v["OpenCPN S52PLIB ShowText"] = ps52plib->GetShowS57Text();
+    //         v["OpenCPN S52PLIB ShowSoundings"] =
+    //         ps52plib->GetShowSoundings(); v["OpenCPN S52PLIB ShowLights"]
     //         = !ps52plib->GetLightsOff();
-    v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
-    v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
-    //         v[_T("OpenCPN S52PLIB DisplayCategory")] =
+    v["OpenCPN S52PLIB ShowAnchorConditions"] = ps52plib->GetAnchorOn();
+    v["OpenCPN S52PLIB ShowQualityOfData"] = ps52plib->GetQualityOfData();
+    //         v["OpenCPN S52PLIB DisplayCategory"] =
     //         ps52plib->GetDisplayCategory();
 
     // Global parameters
-    v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
-    v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
-    v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
-    v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] =
+    v["OpenCPN S52PLIB MetaDisplay"] = ps52plib->m_bShowMeta;
+    v["OpenCPN S52PLIB DeclutterText"] = ps52plib->m_bDeClutterText;
+    v["OpenCPN S52PLIB ShowNationalText"] = ps52plib->m_bShowNationalTexts;
+    v["OpenCPN S52PLIB ShowImportantTextOnly"] =
         ps52plib->m_bShowS57ImportantTextOnly;
-    v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
-    v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
-    v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
-    v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
-    v[_T("OpenCPN S52PLIB ColorShades")] =
-        S52_getMarinerParam(S52_MAR_TWO_SHADES);
-    v[_T("OpenCPN S52PLIB Safety Depth")] =
+    v["OpenCPN S52PLIB UseSCAMIN"] = ps52plib->m_bUseSCAMIN;
+    v["OpenCPN S52PLIB UseSUPER_SCAMIN"] = ps52plib->m_bUseSUPER_SCAMIN;
+    v["OpenCPN S52PLIB SymbolStyle"] = ps52plib->m_nSymbolStyle;
+    v["OpenCPN S52PLIB BoundaryStyle"] = ps52plib->m_nBoundaryStyle;
+    v["OpenCPN S52PLIB ColorShades"] = S52_getMarinerParam(S52_MAR_TWO_SHADES);
+    v["OpenCPN S52PLIB Safety Depth"] =
         (double)S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
-    v[_T("OpenCPN S52PLIB Shallow Contour")] =
+    v["OpenCPN S52PLIB Shallow Contour"] =
         (double)S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR);
-    v[_T("OpenCPN S52PLIB Deep Contour")] =
+    v["OpenCPN S52PLIB Deep Contour"] =
         (double)S52_getMarinerParam(S52_MAR_DEEP_CONTOUR);
   }
 
   // Notify plugins that S52PLIB may have reconfigured global options
-  v[_T("OpenCPN S52PLIB GlobalReconfig")] = bReconfig;
+  v["OpenCPN S52PLIB GlobalReconfig"] = bReconfig;
 
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendMessageToAllPlugins(wxString(_T("OpenCPN Config")), out);
+  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
 }
 
 void PlugInManager::NotifyAuiPlugIns(void) {
@@ -1867,7 +1866,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap* bitmap,
 
   if (!bitmap->IsOk()) {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    pttc->bitmap_day = new wxBitmap(style->GetIcon(_T("default_pi")));
+    pttc->bitmap_day = new wxBitmap(style->GetIcon("default_pi"));
   } else {
     //  Force a non-reference copy of the bitmap from the PlugIn
     pttc->bitmap_day = new wxBitmap(*bitmap);
@@ -1876,7 +1875,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap* bitmap,
 
   if (!bmpRollover->IsOk()) {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    pttc->bitmap_Rollover_day = new wxBitmap(style->GetIcon(_T("default_pi")));
+    pttc->bitmap_Rollover_day = new wxBitmap(style->GetIcon("default_pi"));
   } else {
     //  Force a non-reference copy of the bitmap from the PlugIn
     pttc->bitmap_Rollover_day = new wxBitmap(*bmpRollover);
@@ -1924,7 +1923,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxString SVGfile,
   // Build a set of bitmaps based on the generic "puzzle piece" icon,
   // In case there is some problem with the SVG file(s) specified.
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  pttc->bitmap_day = new wxBitmap(style->GetIcon(_T("default_pi")));
+  pttc->bitmap_day = new wxBitmap(style->GetIcon("default_pi"));
   pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
   pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
   pttc->bitmap_Rollover_day = new wxBitmap(*pttc->bitmap_day);
@@ -2004,7 +2003,7 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap* bitmap,
 
         if (!bitmap->IsOk()) {
           ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-          pttc->bitmap_day = new wxBitmap(style->GetIcon(_T("default_pi")));
+          pttc->bitmap_day = new wxBitmap(style->GetIcon("default_pi"));
         } else {
           //  Force a non-reference copy of the bitmap from the PlugIn
           pttc->bitmap_day = new wxBitmap(*bitmap);
@@ -2014,7 +2013,7 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap* bitmap,
         if (!bmpRollover->IsOk()) {
           ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
           pttc->bitmap_Rollover_day =
-              new wxBitmap(style->GetIcon(_T("default_pi")));
+              new wxBitmap(style->GetIcon("default_pi"));
         } else {
           //  Force a non-reference copy of the bitmap from the PlugIn
           pttc->bitmap_Rollover_day = new wxBitmap(*bmpRollover);
@@ -2184,7 +2183,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
 
 #ifndef __ANDROID__
   // First line
-  m_catalogText = new wxStaticText(this, wxID_STATIC, _T(""));
+  m_catalogText = new wxStaticText(this, wxID_STATIC, "");
   itemStaticBoxSizer4->Add(m_catalogText,
                            wxSizerFlags().Border().Proportion(1));
   m_catalogText->SetLabel(GetCatalogText(false));
@@ -2326,7 +2325,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   if (!AndroidSecureCopyFile(wxString(filePath.c_str()),
                              g_Platform->GetPrivateDataDir() +
                                  wxFileName::GetPathSeparator() +
-                                 _T("ocpn-plugins.xml"))) {
+                                 "ocpn-plugins.xml")) {
     OCPNMessageBox(this, _("Unable to copy catalog file"),
                    _("OpenCPN Catalog update"), wxICON_ERROR | wxOK);
     return;
@@ -2335,8 +2334,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   // Copy the downloaded file to proper local location
   if (!wxCopyFile(wxString(filePath.c_str()),
                   g_Platform->GetPrivateDataDir() +
-                      wxFileName::GetPathSeparator() +
-                      _T("ocpn-plugins.xml"))) {
+                      wxFileName::GetPathSeparator() + "ocpn-plugins.xml")) {
     OCPNMessageBox(this, _("Unable to copy catalog file"),
                    _("OpenCPN Catalog update"), wxICON_ERROR | wxOK);
     return;
@@ -2353,7 +2351,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   }
 
   // Record in the config file the name of the catalog downloaded
-  pConfig->SetPath(_T("/PlugIns/"));
+  pConfig->SetPath("/PlugIns/");
   pConfig->Write("LatestCatalogDownloaded", catalog.c_str());
   pConfig->Flush();
 
@@ -2447,12 +2445,11 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
 wxString CatalogMgrPanel::GetCatalogText(bool updated) {
   wxString catalog;
   catalog = updated ? _("Active Catalog") : _("Last Catalog");
-  catalog += _T(": ");
+  catalog += ": ";
 
   // Check the config file to learn what was the last catalog downloaded.
-  pConfig->SetPath(_T("/PlugIns/"));
-  wxString latestCatalog =
-      pConfig->Read(_T("LatestCatalogDownloaded"), _T("default"));
+  pConfig->SetPath("/PlugIns/");
+  wxString latestCatalog = pConfig->Read("LatestCatalogDownloaded", "default");
   catalog += latestCatalog;
 
 #ifndef __ANDROID__
@@ -2462,7 +2459,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
   std::string date = pluginHandler->GetCatalogData()->date;
 
   catalog += wxString("  ") + _("Last change: ") + " " + date;
-  if (!updated) catalog += _T("  : ") + _("Please Update Plugin Catalog.");
+  if (!updated) catalog += "  : " + _("Please Update Plugin Catalog.");
 #endif
 
   return catalog;
@@ -2470,7 +2467,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
 
 void CatalogMgrPanel::SetUpdateButtonLabel() {
   wxString label = _("Update Plugin Catalog");
-  label += _T(": ");
+  label += ": ";
   label += g_catalog_channel == "" ? "master" : g_catalog_channel;
   m_updateButton->SetLabel(label);
   Layout();
@@ -2478,10 +2475,10 @@ void CatalogMgrPanel::SetUpdateButtonLabel() {
 
 wxString CatalogMgrPanel::GetImportInitDir() {
   // Check the config file for the last Import path.
-  pConfig->SetPath(_T("/PlugIns/"));
+  pConfig->SetPath("/PlugIns/");
   wxString lastImportDir;
-  lastImportDir = pConfig->Read(_T("LatestImportDir"),
-                                g_Platform->GetWritableDocumentsDir());
+  lastImportDir =
+      pConfig->Read("LatestImportDir", g_Platform->GetWritableDocumentsDir());
   if (wxDirExists(lastImportDir)) {
     return lastImportDir;
   }
@@ -2917,7 +2914,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
     sl1->AddGrowableCol(1);
     itemBoxSizer02->Add(sl1, 0, wxEXPAND);
 
-    m_pVersion = new wxStaticText(this, wxID_ANY, _T("X.YY.ZZ.AA"));
+    m_pVersion = new wxStaticText(this, wxID_ANY, "X.YY.ZZ.AA");
     sl1->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
     if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable) {
       m_pVersion->Hide();
@@ -2967,7 +2964,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
     itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/ wxALL, 10);
 
-    m_pVersion = new wxStaticText(this, wxID_ANY, _T("X.YY.ZZ.AA"));
+    m_pVersion = new wxStaticText(this, wxID_ANY, "X.YY.ZZ.AA");
     itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 10);
     if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable ||
         m_plugin.m_status == PluginStatus::System ||
@@ -3060,7 +3057,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
   }
   if (!ok) {
     auto style = g_StyleManager->GetCurrentStyle();
-    statusBitmap = wxBitmap(style->GetIcon(_T("default_pi"), bmsize, bmsize));
+    statusBitmap = wxBitmap(style->GetIcon("default_pi", bmsize, bmsize));
     wxLogMessage("Icon: %s not found.", path.GetFullPath());
   }
 
@@ -3473,7 +3470,7 @@ PlugInChartBase::PlugInChartBase() { m_Chart_Error_Factor = 0.; }
 
 PlugInChartBase::~PlugInChartBase() {}
 
-wxString PlugInChartBase::GetFileSearchMask(void) { return _T(""); }
+wxString PlugInChartBase::GetFileSearchMask(void) { return ""; }
 
 int PlugInChartBase::Init(const wxString& name, int init_flags) { return 0; }
 
@@ -3556,7 +3553,7 @@ ListOfPI_S57Obj* PlugInChartBaseGL::GetObjRuleListAtLatLon(
 }
 
 wxString PlugInChartBaseGL::CreateObjDescriptions(ListOfPI_S57Obj* obj_list) {
-  return _T("");
+  return "";
 }
 
 int PlugInChartBaseGL::GetNoCOVREntries() { return 0; }
@@ -3612,7 +3609,7 @@ ListOfPI_S57Obj* PlugInChartBaseExtended::GetObjRuleListAtLatLon(
 
 wxString PlugInChartBaseExtended::CreateObjDescriptions(
     ListOfPI_S57Obj* obj_list) {
-  return _T("");
+  return "";
 }
 
 int PlugInChartBaseExtended::GetNoCOVREntries() { return 0; }
@@ -3674,7 +3671,7 @@ wxString ChartPlugInWrapper::GetFileSearchMask(void) {
   if (m_ppicb)
     return m_ppicb->GetFileSearchMask();
   else
-    return _T("");
+    return "";
 }
 
 InitReturn ChartPlugInWrapper::Init(const wxString& name,
@@ -4372,7 +4369,7 @@ wxString PlugInManager::CreateObjDescriptions(ChartPlugInWrapper* target,
 
 //      API 1.11 Access to S52 PLIB
 wxString PI_GetPLIBColorScheme() {
-  return _T("");  // ps52plib->GetPLIBColorScheme()
+  return "";  // ps52plib->GetPLIBColorScheme()
 }
 
 int PI_GetPLIBDepthUnitInt() {
@@ -5150,7 +5147,7 @@ void PI_DLEvtHandler::onTimerEvent(wxTimerEvent& event) {
     ev.setDLEventStatus(OCPN_DL_FAILED);
     ev.setDLEventCondition(OCPN_DL_EVENT_TYPE_END);
   } else {
-    wxStringTokenizer tk(sstat, _T(";"));
+    wxStringTokenizer tk(sstat, ";");
     if (tk.HasMoreTokens()) {
       wxString token = tk.GetNextToken();
       token.ToLong(&state);
@@ -5211,9 +5208,9 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString& url,
                                  long style, int timeout_secs) {
 #ifdef __ANDROID__
 
-  wxString msg = _T("Downloading file synchronously: ");
+  wxString msg = "Downloading file synchronously: ";
   msg += url;
-  msg += _T(" to: ");
+  msg += " to: ";
   msg += outputFile;
   wxLogMessage(msg);
 
@@ -5238,8 +5235,8 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString& url,
 
   // Make sure the outputfile is a file URI
   wxString fURI = outputFile;
-  if (!fURI.StartsWith(_T("file://"))) {
-    fURI.Prepend(_T("file://"));
+  if (!fURI.StartsWith("file://")) {
+    fURI.Prepend("file://");
   }
 
   int res = startAndroidFileDownload(url, fURI, g_piEventHandler, &dl_ID);
@@ -5351,9 +5348,9 @@ _OCPN_DLStatus OCPN_downloadFileBackground(const wxString& url,
                                            wxEvtHandler* handler,
                                            long* handle) {
 #ifdef __ANDROID__
-  wxString msg = _T("Downloading file asynchronously: ");
+  wxString msg = "Downloading file asynchronously: ";
   msg += url;
-  msg += _T(" to: ");
+  msg += " to: ";
   msg += outputFile;
   wxLogMessage(msg);
 
@@ -5467,7 +5464,7 @@ _OCPN_DLStatus OCPN_postDataHttp(const wxString& url,
 #ifdef __ANDROID__
   wxString lparms = parameters;
   wxString postResult = doAndroidPOST(url, lparms, timeout_secs * 1000);
-  if (postResult.IsSameAs(_T("NOK"))) return OCPN_DL_FAILED;
+  if (postResult.IsSameAs("NOK")) return OCPN_DL_FAILED;
 
   result = postResult;
   return OCPN_DL_NO_ERROR;
@@ -5499,7 +5496,7 @@ bool OCPN_isOnline() {
   if (wxDateTime::GetTimeNow() >
       g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY) {
     wxCurlHTTP get;
-    get.Head(_T("http://yahoo.com/"));
+    get.Head("http://yahoo.com/");
     g_pi_manager->m_last_online = get.GetResponseCode() > 0;
 
     g_pi_manager->m_last_online_chk = wxDateTime::GetTimeNow();

@@ -1421,7 +1421,7 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   if (cp->NetworkPort == 0)
     m_tNetPort->SetValue(wxEmptyString);
   else
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    m_tNetPort->SetValue(wxString::Format("%i", cp->NetworkPort));
 
   if (cp->NetProtocol == TCP)
     m_rbNetProtoTCP->SetValue(TRUE);
@@ -1584,7 +1584,7 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
                                           1))  // 1 second scan
   {
     m_tNetAddress->SetValue(ip);
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), port));
+    m_tNetPort->SetValue(wxString::Format("%i", port));
     UpdateDiscoverStatus(_("Signal K server available."));
   } else {
     UpdateDiscoverStatus(_("Signal K server not found."));

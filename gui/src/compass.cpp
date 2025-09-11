@@ -45,8 +45,8 @@ ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
   m_bshowGPS = bShowGPS;
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  _img_compass = style->GetIcon(_T("CompassRose"));
-  _img_gpsRed = style->GetIcon(_T("gpsRed"));
+  _img_compass = style->GetIcon("CompassRose");
+  _img_gpsRed = style->GetIcon("gpsRed");
 
   m_rose_angle = -999;  // force a refresh when first used
 
@@ -310,15 +310,15 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
   if (bGPSValid) {
     if (g_bSatValid) {
-      gpsIconName = _T("gps3Bar");
-      if (g_SatsInView <= 8) gpsIconName = _T("gps2Bar");
-      if (g_SatsInView <= 4) gpsIconName = _T("gps1Bar");
-      if (g_SatsInView < 0) gpsIconName = _T("gpsGry");
+      gpsIconName = "gps3Bar";
+      if (g_SatsInView <= 8) gpsIconName = "gps2Bar";
+      if (g_SatsInView <= 4) gpsIconName = "gps1Bar";
+      if (g_SatsInView < 0) gpsIconName = "gpsGry";
 
     } else
-      gpsIconName = _T("gpsGrn");
+      gpsIconName = "gpsGrn";
   } else
-    gpsIconName = _T("gpsRed");
+    gpsIconName = "gpsRed";
 
   if (m_lastgpsIconName != gpsIconName) b_need_refresh = true;
 
@@ -375,11 +375,11 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
   wxMemoryDC mdc;
   mdc.SelectObject(m_StatBmp);
-  mdc.SetBackground(wxBrush(GetGlobalColor(_T("COMP1")), wxBRUSHSTYLE_SOLID));
+  mdc.SetBackground(wxBrush(GetGlobalColor("COMP1"), wxBRUSHSTYLE_SOLID));
   mdc.Clear();
 
-  mdc.SetPen(wxPen(GetGlobalColor(_T("UITX1")), 1));
-  mdc.SetBrush(wxBrush(GetGlobalColor(_T("UITX1")), wxBRUSHSTYLE_TRANSPARENT));
+  mdc.SetPen(wxPen(GetGlobalColor("UITX1"), 1));
+  mdc.SetBrush(wxBrush(GetGlobalColor("UITX1"), wxBRUSHSTYLE_TRANSPARENT));
 
   if (!style->marginsInvisible)
     mdc.DrawRoundedRectangle(0, 0, m_StatBmp.GetWidth(), m_StatBmp.GetHeight(),
@@ -398,11 +398,11 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
   cheight = cwidth;
 
   if (m_parent->GetUpMode() == COURSE_UP_MODE)
-    BMPRose = style->GetIcon(_T("CompassRose"), cwidth, cheight);
+    BMPRose = style->GetIcon("CompassRose", cwidth, cheight);
   else if (m_parent->GetUpMode() == HEAD_UP_MODE)
-    BMPRose = style->GetIcon(_T("CompassRoseMag"), cwidth, cheight);
+    BMPRose = style->GetIcon("CompassRoseMag", cwidth, cheight);
   else
-    BMPRose = style->GetIcon(_T("CompassRoseBlue"), cwidth, cheight);
+    BMPRose = style->GetIcon("CompassRoseBlue", cwidth, cheight);
   if ((fabs(m_parent->GetVPRotation()) > .01) ||
       (fabs(m_parent->GetVPSkew()) > .01)) {
     wxImage rose_img = BMPRose.ConvertToImage();

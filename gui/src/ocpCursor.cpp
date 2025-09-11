@@ -70,7 +70,7 @@ ocpCursor::ocpCursor(const wxString& cursorName, long type, int hotSpotX,
   Visual* xvisual = DefaultVisual((Display*)wxGlobalDisplay(), xscreen);
 
   M_CURSORDATA->m_display = wxGlobalDisplay();
-  wxASSERT_MSG(M_CURSORDATA->m_display, wxT("No display"));
+  wxASSERT_MSG(M_CURSORDATA->m_display, "No display");
 
   //    Make a pixmap
   Pixmap cpixmap =
@@ -194,7 +194,7 @@ ocpCursor::ocpCursor(const char** xpm_data, long type, int hotSpotX,
   Visual* xvisual = DefaultVisual((Display*)wxGlobalDisplay(), xscreen);
 
   M_CURSORDATA->m_display = wxGlobalDisplay();
-  wxASSERT_MSG(M_CURSORDATA->m_display, wxT("No display"));
+  wxASSERT_MSG(M_CURSORDATA->m_display, "No display");
 
   //    Make a pixmap
   Pixmap cpixmap =

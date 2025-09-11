@@ -40,7 +40,7 @@ OCPNListCtrl::~OCPNListCtrl() {
     wxListItem item;
     GetColumn(i, item);
     wxString sitem;
-    sitem.Printf(_T("%d;"), item.m_width);
+    sitem.Printf("%d;", item.m_width);
     g_AisTargetList_column_spec += sitem;
   }
 
@@ -51,7 +51,7 @@ OCPNListCtrl::~OCPNListCtrl() {
   g_AisTargetList_column_order.Clear();
   for (int i = 0; i < i_columns; i++) {
     wxString sitem;
-    sitem.Printf(_T("%d;"), a_order[i]);
+    sitem.Printf("%d;", a_order[i]);
     g_AisTargetList_column_order += sitem;
   }
 #endif
@@ -94,7 +94,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
           ret = _("-");
         else {
           wxString uret = trimAISField(pAISTarget->ShipName);
-          if (uret == _T("Unknown"))
+          if (uret == "Unknown")
             ret = wxGetTranslation(uret);
           else
             ret = uret;
@@ -110,9 +110,9 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
 
       case tlMMSI:
         if (pAISTarget->Class != AIS_GPSG_BUDDY)
-          ret.Printf(_T("%09d"), abs(pAISTarget->MMSI));
+          ret.Printf("%09d", abs(pAISTarget->MMSI));
         else
-          ret.Printf(_T("   nil   "));
+          ret.Printf("   nil   ");
         break;
 
       case tlCLASS:
@@ -161,7 +161,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
           int brg = (int)wxRound(pAISTarget->Brg);
           if (pAISTarget->Brg > 359.5) brg = 0;
 
-          ret.Printf(_T("%03d"), brg);
+          ret.Printf("%03d", brg);
         } else
           ret = _("-");
         break;
@@ -174,9 +174,9 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
         else {
           int crs = wxRound(pAISTarget->COG);
           if (crs == 360)
-            ret.Printf(_T("  000"));
+            ret.Printf("  000");
           else
-            ret.Printf(_T("  %03d"), crs);
+            ret.Printf("  %03d", crs);
         }
         break;
       }
@@ -188,7 +188,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
             (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else
-          ret.Printf(_T("%5.1f"), toUsrSpeed(pAISTarget->SOG));
+          ret.Printf("%5.1f", toUsrSpeed(pAISTarget->SOG));
         break;
       }
       case tlCPA: {
@@ -196,7 +196,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
             (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else
-          ret.Printf(_T("%5.2f"), toUsrDistance(pAISTarget->CPA));
+          ret.Printf("%5.2f", toUsrDistance(pAISTarget->CPA));
         break;
       }
       case tlTCPA: {
@@ -204,13 +204,13 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
             (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else
-          ret.Printf(_T("%5.0f"), pAISTarget->TCPA);
+          ret.Printf("%5.0f", pAISTarget->TCPA);
         break;
       }
       case tlRNG: {
         if (pAISTarget->b_positionOnceValid && bGPSValid &&
             (pAISTarget->Range_NM >= 0.))
-          ret.Printf(_T("%5.2f"), toUsrDistance(pAISTarget->Range_NM));
+          ret.Printf("%5.2f", toUsrDistance(pAISTarget->Range_NM));
         else
           ret = _("-");
         break;

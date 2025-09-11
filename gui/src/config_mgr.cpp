@@ -187,13 +187,13 @@ bool OCPNConfigCatalog::AddConfig(OCPNConfigObject *config,
   if (abuf.data())
     node.append_attribute("title") = abuf.data();
   else
-    node.append_attribute("title") = _T("Substitute Title");
+    node.append_attribute("title") = "Substitute Title";
 
   abuf = config->m_description.ToUTF8();
   if (abuf.data())
     node.append_attribute("description") = abuf.data();
   else
-    node.append_attribute("description") = _T("Substitute Description");
+    node.append_attribute("description") = "Substitute Description";
 
   node.append_attribute("templateFile") = config->templateFileName.mb_str();
 
@@ -286,7 +286,7 @@ ConfigMgr::~ConfigMgr() {
 void ConfigMgr::Init() {
   m_configDir = g_Platform->GetPrivateDataDir();
   appendOSDirSlash(&m_configDir);
-  m_configDir.append(_T("Configs"));
+  m_configDir.append("Configs");
   appendOSDirSlash(&m_configDir);
   if (!wxFileName::DirExists(m_configDir)) {
     wxFileName::Mkdir(m_configDir);
@@ -294,13 +294,13 @@ void ConfigMgr::Init() {
 
   m_configCatalogName = g_Platform->GetPrivateDataDir();
   appendOSDirSlash(&m_configCatalogName);
-  m_configCatalogName.append(_T("Configs"));
+  m_configCatalogName.append("Configs");
   appendOSDirSlash(&m_configCatalogName);
-  m_configCatalogName.append(_T("configs.xml"));
+  m_configCatalogName.append("configs.xml");
 
   // Create the catalog, if necessary
   if (!wxFileExists(m_configCatalogName)) {
-    wxLogMessage(_T("Creating new Configs catalog: ") + m_configCatalogName);
+    wxLogMessage("Creating new Configs catalog: " + m_configCatalogName);
 
     OCPNConfigCatalog *cat = new OCPNConfigCatalog();
     cat->SetRootConfigNode();
@@ -316,12 +316,11 @@ void ConfigMgr::Init() {
   wxString t_title = _("Recovery Template");
   wxString t_desc =
       _("Apply this template to return to a known safe configuration");
-  CreateNamedConfig(t_title, t_desc,
-                    _T("11111111-1111-1111-1111-111111111111"));
+  CreateNamedConfig(t_title, t_desc, "11111111-1111-1111-1111-111111111111");
 }
 
 bool ConfigMgr::LoadCatalog() {
-  wxLogMessage(_T("Loading Configs catalog: ") + m_configCatalogName);
+  wxLogMessage("Loading Configs catalog: " + m_configCatalogName);
   m_configCatalog->LoadFile(m_configCatalogName);
 
   // Parse the config catalog
@@ -399,23 +398,23 @@ wxString ConfigMgr::CreateNamedConfig(const wxString &title,
 
   if (UUID.IsEmpty()) {
     // create template file name
-    pConfig->templateFileName = _T("OCPNTemplate-") + GUID + _T(".conf");
+    pConfig->templateFileName = "OCPNTemplate-" + GUID + ".conf";
 
     //  Save the template contents
     wxString templateFullFileName = GetConfigDir() + pConfig->templateFileName;
     if (!SaveTemplate(templateFullFileName)) {
-      wxLogMessage(_T("Unable to save template titled: ") + title +
-                   _T(" as file: ") + templateFullFileName);
+      wxLogMessage("Unable to save template titled: " + title +
+                   " as file: " + templateFullFileName);
       delete pConfig;
-      return _T("");
+      return "";
     }
   }
 
   // Add this config to the catalog
   if (!m_configCatalog->AddConfig(pConfig, 0)) {
-    wxLogMessage(_T("Unable to add config to catalog...Title: ") + title);
+    wxLogMessage("Unable to add config to catalog...Title: " + title);
     delete pConfig;
-    return _T("");
+    return "";
   }
 
   // Add to the class list of configs
@@ -502,9 +501,9 @@ bool ConfigMgr::ApplyConfigGUID(wxString GUID) {
     wxString thisConfig = GetConfigDir() + config->templateFileName;
 
     // Special case for Recovery template
-    if (GUID.StartsWith(_T("11111111"))) {
+    if (GUID.StartsWith("11111111")) {
       thisConfig =
-          *GetpSharedDataLocation() + _T("configs/OCPNTemplate-Recovery.conf");
+          *GetpSharedDataLocation() + "configs/OCPNTemplate-Recovery.conf";
     }
 
     MyConfig fconf(thisConfig);
@@ -554,8 +553,8 @@ wxString ConfigMgr::GetUUID(void) {
    * time_hi_and_version field to 4 */
   uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
 
-  str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
-             uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
+  str.Printf("%08x-%04x-%04x-%02x%02x-%04x%08x", uuid.time_low, uuid.time_mid,
+             uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
              uuid.clock_seq_low, uuid.node_hi, uuid.node_low);
 
   return str;
@@ -611,8 +610,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write(_T ( "ShowTrue" ), g_bShowTrue);
   conf->Write(_T ( "ShowMag" ), g_bShowMag);
-  conf->Write(_T ( "UserMagVariation" ),
-              wxString::Format(_T("%.2f"), g_UserVar));
+  conf->Write(_T ( "UserMagVariation" ), wxString::Format("%.2f", g_UserVar));
 
   conf->Write(_T ( "CM93DetailFactor" ), g_cm93_zoom_factor);
   conf->Write(_T ( "CM93DetailZoomPosX" ), g_detailslider_dialog_x);
@@ -647,7 +645,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
               g_own_ship_sog_cog_calc_damp_sec);
 
   conf->Write(_T ( "RouteArrivalCircleRadius" ),
-              wxString::Format(_T("%.3f"), g_n_arrival_circle_radius));
+              wxString::Format("%.3f", g_n_arrival_circle_radius));
   conf->Write(_T ( "ChartQuilting" ), g_bQuiltEnable);
 
   conf->Write(_T ( "StartWithTrackActive" ), g_bTrackCarryOver);
@@ -693,7 +691,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write(_T ( "DisplaySizeMM" ), st0);
   conf->Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
 
-  conf->Write(_T ( "PlanSpeed" ), wxString::Format(_T("%.2f"), g_PlanSpeed));
+  conf->Write(_T ( "PlanSpeed" ), wxString::Format("%.2f", g_PlanSpeed));
 
 #if 0
     wxString vis, invis;
@@ -701,9 +699,9 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     int index = 0;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
         Layer *lay = (Layer *) ( *it );
-        if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
+        if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + ";";
         else
-            invis += ( lay->m_LayerName ) + _T(";");
+            invis += ( lay->m_LayerName ) + ";";
     }
     conf->Write( _T ( "VisibleLayers" ), vis );
     conf->Write( _T ( "InvisibleLayers" ), invis );
@@ -885,7 +883,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
   for (unsigned int i = 0; i < keyArray.GetCount(); i++) {
     wxString key;
-    key.Printf(_T("Key%i"), i);
+    key.Printf("Key%i", i);
     wxString keyval = keyArray[i];
     conf->Write(key, keyval);
   }
@@ -1166,10 +1164,10 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   // We allow 0-99 backups ov navobj.xml
   CHECK_INT(_T ( "KeepNavobjBackups" ), &g_navobjbackups);
 
-  //     NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
-  //     Read(_T("NMEALogWindowSizeY"), 400L));
-  //     NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
-  //     Read(_T("NMEALogWindowPosY"), 10L));
+  //     NMEALogWindow::Get().SetSize(Read("NMEALogWindowSizeX", 600L),
+  //     Read("NMEALogWindowSizeY", 400L));
+  //     NMEALogWindow::Get().SetPos(Read("NMEALogWindowPosX", 10L),
+  //     Read("NMEALogWindowPosY", 10L));
   //     NMEALogWindow::Get().CheckPos(display_width, display_height);
 
   // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg

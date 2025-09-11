@@ -534,7 +534,7 @@ public:
 
   virtual wxDirTraverseResult OnFile(const wxString &filename) {
     wxString name = filename.AfterLast(wxFileName::GetPathSeparator()).Lower();
-    if (name == wxT("cm93obj.dic")) {
+    if (name == "cm93obj.dic") {
       m_path = filename;
       return wxDIR_STOP;
     }
@@ -595,7 +595,7 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
   for (i = 0; i < nline; i++) {
     line = file.GetLine(i);
 
-    wxStringTokenizer tkz(line, wxT("|"));
+    wxStringTokenizer tkz(line, "|");
     //            while ( tkz.HasMoreTokens() )
     {
       //  6 char class name
@@ -626,7 +626,7 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
   for (i = 0; i < nline; i++) {
     line = file.GetLine(i);
 
-    wxStringTokenizer tkz(line, wxT("|"));
+    wxStringTokenizer tkz(line, "|");
     //           while ( tkz.HasMoreTokens() )
     {
       //  6 char class name
@@ -690,8 +690,8 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
           if (a == 0x0a) break;
         }
 
-        if (!line.StartsWith((const wxChar *)wxT(";"))) {
-          wxStringTokenizer tkz(line, wxT("|"));
+        if (!line.StartsWith((const wxChar *)";")) {
+          wxStringTokenizer tkz(line, "|");
           {
             //  6 attribute label
             wxString class_name = tkz.GetNextToken();
@@ -729,8 +729,8 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
           if (a == 0x0a) break;
         }
 
-        if (!line.StartsWith((const wxChar *)wxT(";"))) {
-          wxStringTokenizer tkz(line, wxT("|"));
+        if (!line.StartsWith((const wxChar *)";")) {
+          wxStringTokenizer tkz(line, "|");
           {
             //  6 char class name
             wxString attr_name = tkz.GetNextToken();
@@ -804,8 +804,8 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
             if (a == 0x0a) break;
           }
 
-          if (!line.StartsWith((const wxChar *)wxT(";"))) {
-            wxStringTokenizer tkz(line, wxT("|"));
+          if (!line.StartsWith((const wxChar *)";")) {
+            wxStringTokenizer tkz(line, "|");
             if (tkz.CountTokens()) {
               //  6 attribute label
               wxString class_name = tkz.GetNextToken();
@@ -844,8 +844,8 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
             if (a == 0x0a) break;
           }
 
-          if (!line.StartsWith((const wxChar *)wxT(";"))) {
-            wxStringTokenizer tkz(line, wxT("|\r\n"));
+          if (!line.StartsWith((const wxChar *)";")) {
+            wxStringTokenizer tkz(line, "|\r\n");
             if (tkz.CountTokens() >= 3) {
               //  6 char class name
               wxString attr_name = tkz.GetNextToken();
@@ -1214,8 +1214,7 @@ bool Is_CM93Cell_Present(wxString &fileprefix, double lat, double lon,
     if (n_files1) return true;
 
     // try compressed
-    n_files =
-        dir.GetAllFiles(sdir, &file_array, tfile + _T(".xz"), wxDIR_FILES);
+    n_files = dir.GetAllFiles(sdir, &file_array, tfile + ".xz", wxDIR_FILES);
 
     if (n_files) return true;
   }
@@ -2253,11 +2252,9 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
       if (obj) {
         wxString objnam = obj->GetAttrValueAsString("OBJNAM");
         wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-        if (fe_name == _T("_texto"))
-          objnam = obj->GetAttrValueAsString("_texta");
+        if (fe_name == "_texto") objnam = obj->GetAttrValueAsString("_texta");
         if (objnam.Len() > 0) {
-          wxString cellname =
-              wxString::Format(_T("%i_%i"), cell_index, subcell);
+          wxString cellname = wxString::Format("%i_%i", cell_index, subcell);
           SendVectorChartObjectInfo(cellname, fe_name, objnam, obj->m_lat,
                                     obj->m_lon, scale, nativescale);
         }
@@ -2982,7 +2979,7 @@ wxString ParseSLGTA(wxString &val) {
   char line[30];
 
   wxString s;
-  wxStringTokenizer tkz(val, wxT("|"));
+  wxStringTokenizer tkz(val, "|");
 
   s = tkz.GetNextToken();
   s = tkz.GetNextToken();
@@ -4281,15 +4278,15 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char) {
 
   if (!bfound) {  // try compressed version
     if (b_useNoFind) {
-      if (m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND) {
-        if (::wxFileExists(file + _T(".xz"))) {
-          compfile = file + _T(".xz");
+      if (m_noFindArray.Index(key + ".xz") == wxNOT_FOUND) {
+        if (::wxFileExists(file + ".xz")) {
+          compfile = file + ".xz";
         }
       } else {
-        m_noFindArray.Add(key + _T(".xz"));
+        m_noFindArray.Add(key + ".xz");
       }
     } else {
-      if (::wxFileExists(file + _T(".xz"))) compfile = file + _T(".xz");
+      if (::wxFileExists(file + ".xz")) compfile = file + ".xz";
     }
   }
 
@@ -4332,14 +4329,14 @@ int cm93chart::loadsubcell(int cellindex, wxChar sub_char) {
 
     if (!bfound) {  // try compressed version
       if (b_useNoFind) {
-        if (m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND) {
-          if (::wxFileExists(file1 + _T(".xz")))
-            compfile = file1 + _T(".xz");
+        if (m_noFindArray.Index(key + ".xz") == wxNOT_FOUND) {
+          if (::wxFileExists(file1 + ".xz"))
+            compfile = file1 + ".xz";
           else
-            m_noFindArray.Add(key + _T(".xz"));
+            m_noFindArray.Add(key + ".xz");
         }
       } else {
-        if (::wxFileExists(file1 + _T(".xz"))) compfile = file1 + _T(".xz");
+        if (::wxFileExists(file1 + ".xz")) compfile = file1 + ".xz";
       }
     }
   }
@@ -5962,7 +5959,7 @@ InitReturn cm93compchart::CreateHeaderData() {
 
   wxDir dirt(m_prefixComposite);
   wxString candidate;
-  wxRegEx test(_T("[0-9]+"));
+  wxRegEx test("[0-9]+");
 
   bool b_cont = dirt.GetFirst(&candidate);
 

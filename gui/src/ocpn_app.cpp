@@ -729,7 +729,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
 //  Most probable:  Malloc/new failure
 
 bool MyApp::OnExceptionInMainLoop() {
-  wxLogWarning(_T("Caught MainLoopException, continuing..."));
+  wxLogWarning("Caught MainLoopException, continuing...");
   return true;
 }
 #endif
@@ -781,7 +781,7 @@ bool MyApp::OnInit() {
   wxBitmap bmp(10, 10, -1);
   wxMemoryDC dc;
   dc.SelectObject(bmp);
-  dc.DrawText(_T("X"), 0, 0);
+  dc.DrawText("X", 0, 0);
 #endif
 
   // Instantiate the global OCPNPlatform class
@@ -881,7 +881,7 @@ bool MyApp::OnInit() {
   // Set up default FONT encoding, which should have been done by wxWidgets some
   // time before this......
   wxFont temp_font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                   wxFONTWEIGHT_NORMAL, FALSE, wxString(_T("")),
+                   wxFONTWEIGHT_NORMAL, FALSE, wxString(""),
                    wxFONTENCODING_SYSTEM);
   temp_font.SetDefaultEncoding(wxFONTENCODING_SYSTEM);
 
@@ -902,7 +902,7 @@ bool MyApp::OnInit() {
 #endif
 
   //      Send init message
-  wxLogMessage(_T("\n\n________\n"));
+  wxLogMessage("\n\n________\n");
 
   wxDateTime now = wxDateTime::Now();
   LOG_INFO("------- OpenCPN version %s restarted at %s -------\n", VERSION_FULL,
@@ -911,7 +911,7 @@ bool MyApp::OnInit() {
   LOG_INFO("Using loglevel %s", OcpnLog::level2str(level).c_str());
 
   wxString wxver(wxVERSION_STRING);
-  wxver.Prepend(_T("wxWidgets version: "));
+  wxver.Prepend("wxWidgets version: ");
 
   wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
@@ -922,17 +922,17 @@ bool MyApp::OnInit() {
   os_name = platforminfo.GetOperatingSystemFamilyName();
 #endif
 
-  wxString platform = os_name + _T(" ") + platforminfo.GetArchName() + _T(" ") +
+  wxString platform = os_name + " " + platforminfo.GetArchName() + " " +
                       platforminfo.GetPortIdName();
 
-  wxLogMessage(wxver + _T(" ") + platform);
+  wxLogMessage(wxver + " " + platform);
 
   ::wxGetOsVersion(&osMajor, &osMinor);
   wxString osVersionMsg;
-  osVersionMsg.Printf(_T("OS Version reports as:  %d.%d"), osMajor, osMinor);
+  osVersionMsg.Printf("OS Version reports as:  %d.%d", osMajor, osMinor);
   wxLogMessage(osVersionMsg);
 
-  wxLogMessage(_T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"),
+  wxLogMessage("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb",
                g_mem_total / 1024, g_mem_initial / 1024);
 
   OCPN_OSDetail *detail = g_Platform->GetOSDetail();
@@ -946,7 +946,7 @@ bool MyApp::OnInit() {
                  like0.mb_str());
   wxLogMessage(msgplat);
 
-  wxString imsg = _T("SData_Locn is ");
+  wxString imsg = "SData_Locn is ";
   imsg += g_Platform->GetSharedDataDir();
   wxLogMessage(imsg);
 
@@ -964,7 +964,7 @@ bool MyApp::OnInit() {
   //  Establish an empty ChartCroupArray
   g_pGroupArray = new ChartGroupArray;
 
-  imsg = _T("PrivateDataDir is ");
+  imsg = "PrivateDataDir is ";
   imsg += g_Platform->GetPrivateDataDir();
   wxLogMessage(imsg);
 
@@ -1032,11 +1032,11 @@ bool MyApp::OnInit() {
 
   wxFileName config_test_file_name(g_Platform->GetConfigFileName());
   if (config_test_file_name.FileExists())
-    wxLogMessage(_T("Using existing Config_File: ") +
+    wxLogMessage("Using existing Config_File: " +
                  g_Platform->GetConfigFileName());
   else {
     {
-      wxLogMessage(_T("Creating new Config_File: ") +
+      wxLogMessage("Creating new Config_File: " +
                    g_Platform->GetConfigFileName());
 
       b_initial_load = true;
@@ -1044,7 +1044,7 @@ bool MyApp::OnInit() {
       if (true !=
           config_test_file_name.DirExists(config_test_file_name.GetPath()))
         if (!config_test_file_name.Mkdir(config_test_file_name.GetPath()))
-          wxLogMessage(_T("Cannot create config file directory for ") +
+          wxLogMessage("Cannot create config file directory for " +
                        g_Platform->GetConfigFileName());
     }
   }
@@ -1064,15 +1064,15 @@ bool MyApp::OnInit() {
   g_StyleManager = new ocpnStyle::StyleManager();
 
   //     if(g_useMUI)
-  //         g_uiStyle = _T("MUI_flat");
+  //         g_uiStyle = "MUI_flat";
 
-  g_StyleManager->SetStyle(_T("MUI_flat"));
+  g_StyleManager->SetStyle("MUI_flat");
   if (!g_StyleManager->IsOK()) {
     wxString msg = _("Failed to initialize the user interface. ");
     msg << _("OpenCPN cannot start. ");
     msg << _("The necessary configuration files were not found. ");
     msg << _("See the log file at ") << g_Platform->GetLogFileName()
-        << _(" for details.") << _T("\n\n");
+        << _(" for details.") << "\n\n";
     msg << g_Platform->GetSharedDataDir();
 
     wxMessageDialog w(NULL, msg, _("Failed to initialize the user interface. "),
@@ -1091,7 +1091,7 @@ bool MyApp::OnInit() {
 
   g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   wxString msg;
-  msg.Printf(_T("Detected display size (horizontal): %d mm"),
+  msg.Printf("Detected display size (horizontal): %d mm",
              (int)g_display_size_mm);
   wxLogMessage(msg);
 
@@ -1101,7 +1101,7 @@ bool MyApp::OnInit() {
       g_config_display_size_mm[g_current_monitor] > 0) {
     g_display_size_mm = g_config_display_size_mm[g_current_monitor];
     wxString msg;
-    msg.Printf(_T("Display size (horizontal) config override: %d mm"),
+    msg.Printf("Display size (horizontal) config override: %d mm",
                (int)g_display_size_mm);
     wxLogMessage(msg);
     g_Platform->SetDisplaySizeMM(g_current_monitor, g_display_size_mm);
@@ -1132,37 +1132,36 @@ bool MyApp::OnInit() {
 
   wxString def_lang_canonical = g_Platform->GetDefaultSystemLocale();
 
-  imsg = _T("System default Language:  ") + def_lang_canonical;
+  imsg = "System default Language:  " + def_lang_canonical;
   wxLogMessage(imsg);
 
-  wxString cflmsg = _T("Config file language:  ") + g_locale;
+  wxString cflmsg = "Config file language:  " + g_locale;
   wxLogMessage(cflmsg);
 
   if (g_locale.IsEmpty()) {
     g_locale = def_lang_canonical;
-    cflmsg =
-        _T("Config file language empty, using system default:  ") + g_locale;
+    cflmsg = "Config file language empty, using system default:  " + g_locale;
     wxLogMessage(cflmsg);
   }
 
   //  Make any adjustments necessary
   g_locale = g_Platform->GetAdjustedAppLocale();
-  cflmsg = _T("Adjusted App language:  ") + g_locale;
+  cflmsg = "Adjusted App language:  " + g_locale;
   wxLogMessage(cflmsg);
 
   // Set the desired locale
   g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
 
-  imsg = _T("Opencpn language set to:  ");
+  imsg = "Opencpn language set to:  ";
   imsg += g_locale;
   wxLogMessage(imsg);
 
   //  French language locale is assumed to include the AZERTY keyboard
   //  This applies to either the system language, or to OpenCPN language
   //  selection
-  if (g_locale == _T("fr_FR")) g_b_assume_azerty = true;
+  if (g_locale == "fr_FR") g_b_assume_azerty = true;
 #else
-  wxLogMessage(_T("wxLocale support not available"));
+  wxLogMessage("wxLocale support not available");
 #endif
 
 #ifndef __ANDROID__
@@ -1259,11 +1258,11 @@ bool MyApp::OnInit() {
   //  Check the global Tide/Current data source array
   //  If empty, preset default (US + ROW) data sources
   wxString default_tcdata0 =
-      (g_Platform->GetSharedDataDir() + _T("tcdata") +
-       wxFileName::GetPathSeparator() + _T("harmonics-dwf-20210110-free.tcd"));
+      (g_Platform->GetSharedDataDir() + "tcdata" +
+       wxFileName::GetPathSeparator() + "harmonics-dwf-20210110-free.tcd");
   wxString default_tcdata1 =
-      (g_Platform->GetSharedDataDir() + _T("tcdata") +
-       wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
+      (g_Platform->GetSharedDataDir() + "tcdata" +
+       wxFileName::GetPathSeparator() + "HARMONICS_NO_US.IDX");
 
   if (TideCurrentDataSet.empty()) {
     TideCurrentDataSet.push_back(
@@ -1275,9 +1274,8 @@ bool MyApp::OnInit() {
   //  Check the global AIS alarm sound file
   //  If empty, preset default
   if (g_sAIS_Alert_Sound_File.IsEmpty()) {
-    wxString default_sound =
-        (g_Platform->GetSharedDataDir() + _T("sounds") +
-         wxFileName::GetPathSeparator() + _T("2bells.wav"));
+    wxString default_sound = (g_Platform->GetSharedDataDir() + "sounds" +
+                              wxFileName::GetPathSeparator() + "2bells.wav");
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
   }
 
@@ -1377,17 +1375,16 @@ bool MyApp::OnInit() {
 
   // Strip the commit SHA number from the string to be shown in frame title.
   wxString short_version_name = wxString(PACKAGE_VERSION).BeforeFirst('+');
-  wxString myframe_window_title =
-      wxString(wxT("OpenCPN ") + short_version_name);
+  wxString myframe_window_title = wxString("OpenCPN " + short_version_name);
 
   if (g_bportable) {
     myframe_window_title += _(" -- [Portable(-p) executing from ");
     myframe_window_title += g_Platform->GetHomeDir();
-    myframe_window_title += _T("]");
+    myframe_window_title += "]";
   }
 
   wxString fmsg;
-  fmsg.Printf(_T("Creating MyFrame...size(%d, %d)  position(%d, %d)"),
+  fmsg.Printf("Creating MyFrame...size(%d, %d)  position(%d, %d)",
               new_frame_size.x, new_frame_size.y, position.x, position.y);
   wxLogMessage(fmsg);
 
@@ -1454,20 +1451,20 @@ bool MyApp::OnInit() {
   if (g_bFirstRun && (ChartDirArray.GetCount() == 0)) {
     int ndirs = 0;
 
-    wxRegKey RegKey(wxString(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN")));
+    wxRegKey RegKey(wxString("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN"));
     if (RegKey.Exists()) {
       wxLogMessage(
           _("Retrieving initial Chart Directory set from Windows Registry"));
       wxString dirs;
-      RegKey.QueryValue(wxString(_T("ChartDirs")), dirs);
+      RegKey.QueryValue(wxString("ChartDirs"), dirs);
 
-      wxStringTokenizer tkz(dirs, _T(";"));
+      wxStringTokenizer tkz(dirs, ";");
       while (tkz.HasMoreTokens()) {
         wxString token = tkz.GetNextToken();
 
         ChartDirInfo cdi;
         cdi.fullpath = token.Trim();
-        cdi.magic_number = _T("");
+        cdi.magic_number = "";
 
         ChartDirArray.Add(cdi);
         ndirs++;
@@ -1476,9 +1473,9 @@ bool MyApp::OnInit() {
 
     if (g_bportable) {
       ChartDirInfo cdi;
-      cdi.fullpath = _T("charts");
+      cdi.fullpath = "charts";
       cdi.fullpath.Prepend(g_Platform->GetSharedDataDir());
-      cdi.magic_number = _T("");
+      cdi.magic_number = "";
       ChartDirArray.Add(cdi);
       ndirs++;
     }
@@ -1546,8 +1543,7 @@ bool MyApp::OnInit() {
     gps_watchdog_timeout_ticks = (GPS_TIMEOUT_SECONDS * 1000) / TIMER_GFRAME_1;
 
   wxString dogmsg;
-  dogmsg.Printf(_T("GPS Watchdog Timeout is: %d sec."),
-                gps_watchdog_timeout_ticks);
+  dogmsg.Printf("GPS Watchdog Timeout is: %d sec.", gps_watchdog_timeout_ticks);
   wxLogMessage(dogmsg);
 
   sat_watchdog_timeout_ticks = gps_watchdog_timeout_ticks;
@@ -1586,8 +1582,7 @@ bool MyApp::OnInit() {
   if (!g_bdisable_opengl) {
     glChartCanvas *pgl =
         (glChartCanvas *)gFrame->GetPrimaryCanvas()->GetglCanvas();
-    if (pgl &&
-        (pgl->GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND)) {
+    if (pgl && (pgl->GetRendererString().Find("UniChrome") != wxNOT_FOUND)) {
       gFrame->m_defer_size = gFrame->GetSize();
       gFrame->SetSize(gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y);
       g_pauimgr->Update();
@@ -1634,7 +1629,7 @@ bool MyApp::OnInit() {
   //      Start up the Ten Hz timer....
   gFrame->FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
-  //    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."),
+  //    wxLogMessage( wxString::Format("OpenCPN Initialized in %ld ms.",
   //    init_sw.Time() ) );
 
   OCPNPlatform::Initialize_4();
@@ -1733,7 +1728,7 @@ bool MyApp::OnInit() {
 }
 
 int MyApp::OnExit() {
-  wxLogMessage(_T("opencpn::MyApp starting exit."));
+  wxLogMessage("opencpn::MyApp starting exit.");
   m_checker.OnExit();
   m_usb_watcher.Stop();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
@@ -1742,35 +1737,35 @@ int MyApp::OnExit() {
   lognow.MakeGMT();
   wxString day = lognow.FormatISODate();
   wxString utc = lognow.FormatISOTime();
-  wxString navmsg = _T("LOGBOOK:  ");
+  wxString navmsg = "LOGBOOK:  ";
   navmsg += day;
-  navmsg += _T(" ");
+  navmsg += " ";
   navmsg += utc;
-  navmsg += _T(" UTC ");
+  navmsg += " UTC ";
 
   if (bGPSValid) {
     wxString data;
-    data.Printf(_T("OFF: Lat %10.5f Lon %10.5f "), gLat, gLon);
+    data.Printf("OFF: Lat %10.5f Lon %10.5f ", gLat, gLon);
     navmsg += data;
 
     wxString cog;
     if (std::isnan(gCog))
-      cog.Printf(_T("COG ----- "));
+      cog.Printf("COG ----- ");
     else
-      cog.Printf(_T("COG %10.5f "), gCog);
+      cog.Printf("COG %10.5f ", gCog);
 
     wxString sog;
     if (std::isnan(gSog))
-      sog.Printf(_T("SOG -----  "));
+      sog.Printf("SOG -----  ");
     else
-      sog.Printf(_T("SOG %6.2f ") + getUsrSpeedUnit(), toUsrSpeed(gSog));
+      sog.Printf("SOG %6.2f " + getUsrSpeedUnit(), toUsrSpeed(gSog));
 
     navmsg += cog;
     navmsg += sog;
 
   } else {
     wxString data;
-    data.Printf(_T("OFF: Lat %10.5f Lon %10.5f"), gLat, gLon);
+    data.Printf("OFF: Lat %10.5f Lon %10.5f", gLat, gLon);
     navmsg += data;
   }
   wxLogMessage(navmsg);
@@ -1801,7 +1796,7 @@ int MyApp::OnExit() {
     delete g_pGroupArray;
   }
 
-  wxLogMessage(_T("opencpn::MyApp exiting cleanly...\n"));
+  wxLogMessage("opencpn::MyApp exiting cleanly...\n");
   wxLog::FlushActive();
 
   g_Platform->CloseLogFile();

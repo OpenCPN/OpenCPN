@@ -25,7 +25,7 @@ wxColour GetGlobalColor(wxString colorName) {
   //    Default
   if (!ret_color.Ok()) {
     ret_color.Set(128, 128, 128);  // Simple Grey
-    wxLogMessage(_T("Warning: Color not found ") + colorName);
+    wxLogMessage("Warning: Color not found " + colorName);
     // Avoid duplicate warnings:
     if (pcurrent_user_color_hash)
       (*pcurrent_user_color_hash)[colorName] = ret_color;

@@ -108,14 +108,14 @@ void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
   if (m_MMSI != 0) {  //  Faulty MMSI could be reported as 0
     auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
     if (td) {
-      wxString n0 = wxString::Format(wxT("%s"), td->ShipName);
-      n0.Replace(_T("@"), _T(" "));
+      wxString n0 = wxString::Format("%s", td->ShipName);
+      n0.Replace("@", " ");
       n0.Trim();
-      wxString mmsi = wxString::Format(wxT("%i "), td->MMSI);
-      wxString n = _T("\"") + n0 + _T("\" ") + mmsi;
-      n.append(wxDateTime::Now().Format(wxT("%H:%M")));
-      // wxString n =  wxString::Format(wxT("\"%s\"  %i "),td->ShipName,
-      // td->MMSI).append(wxDateTime::Now().Format(wxT("%H:%M")));
+      wxString mmsi = wxString::Format("%i ", td->MMSI);
+      wxString n = "\"" + n0 + "\" " + mmsi;
+      n.append(wxDateTime::Now().Format("%H:%M"));
+      // wxString n =  wxString::Format("\"%s\"  %i ",td->ShipName,
+      // td->MMSI).append(wxDateTime::Now().Format("%H:%M"));
       RoutePoint *pWP =
           new RoutePoint(td->Lat, td->Lon, g_default_wp_icon, n, wxEmptyString);
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
@@ -150,7 +150,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
 
         Track *t = new Track();
 
-        t->SetName(wxString::Format(_T("AIS %s (%u) %s %s"),
+        t->SetName(wxString::Format("AIS %s (%u) %s %s",
                                     td->GetFullName().c_str(), td->MMSI,
                                     wxDateTime::Now().FormatISODate().c_str(),
                                     wxDateTime::Now().FormatISOTime().c_str()));
@@ -202,7 +202,7 @@ bool AISTargetQueryDialog::Create(wxWindow *parent, wxWindowID id,
   int font_size = wxMax(8, dFont->GetPointSize());
   wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
-  face = _T("Monospace");
+  face = "Monospace";
 #endif
   m_basefont = FontMgr::Get().FindOrCreateFont(font_size, wxFONTFAMILY_MODERN,
                                                wxFONTSTYLE_NORMAL,
@@ -253,7 +253,7 @@ void AISTargetQueryDialog::SetColorScheme(ColorScheme cs) {
   //  wxQT has some trouble clearing the background of HTML window...
   wxBitmap tbm(GetSize().x, GetSize().y, -1);
   wxMemoryDC tdc(tbm);
-  //    wxColour cback = GetGlobalColor( _T("YELO1") );
+  //    wxColour cback = GetGlobalColor( "YELO1" );
   tdc.SetBackground(bg);
   tdc.Clear();
   m_pQueryTextCtl->SetBackgroundImage(tbm);
@@ -465,13 +465,13 @@ void AISTargetQueryDialog::RenderHTMLQuery(AisTargetData *td) {
   wxColor fg = GetForegroundColour();
 
   html.Printf(
-      _T("<html><body bgcolor=#%02x%02x%02x><font ")
-      _T("color=#%02x%02x%02x><center>"),
+      "<html><body bgcolor=#%02x%02x%02x><font "
+      "color=#%02x%02x%02x><center>",
       bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue());
 
   html << td->BuildQueryResult();
 
-  html << _T("</center></font></body></html>");
+  html << "</center></font></body></html>";
 
   m_pQueryTextCtl->SetFonts(fp_font->GetFaceName(), fp_font->GetFaceName(),
                             sizes);

@@ -377,7 +377,7 @@ static const long long lNaN = 0xfff8000000000000;
 // Layer helper function
 
 wxString GetLayerName(int id) {
-  wxString name(_T("unknown layer"));
+  wxString name("unknown layer");
   if (id <= 0) return (name);
   LayerList::iterator it;
   int index = 0;
@@ -409,7 +409,7 @@ int MyConfig::LoadMyConfig() {
 
   //  Set up any defaults not set elsewhere
   g_useMUI = true;
-  g_TalkerIdText = _T("EC");
+  g_TalkerIdText = "EC";
   g_maxWPNameLength = 6;
   g_NMEAAPBPrecision = 3;
 
@@ -521,12 +521,12 @@ int MyConfig::LoadMyConfig() {
   g_colourTrackLineColour = wxColour(243, 229, 47);  // Yellow
 
   g_tcwin_scale = 100;
-  g_default_wp_icon = _T("triangle");
-  g_default_routepoint_icon = _T("diamond");
+  g_default_wp_icon = "triangle";
+  g_default_routepoint_icon = "diamond";
 
   g_nAWDefault = 50;
   g_nAWMax = 1852;
-  g_ObjQFileExt = _T("txt,rtf,png,html,gif,tif,jpg");
+  g_ObjQFileExt = "txt,rtf,png,html,gif,tif,jpg";
 
   // Load the raw value, with no defaults, and no processing
   int ret_Val = LoadMyConfigRaw();
@@ -628,7 +628,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   // Some undocumented values
   Read(_T ( "ConfigVersionString" ), &g_config_version_string);
-  Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(OCPN_SOUND_CMD));
+  Read("CmdSoundString", &g_CmdSoundString, wxString(OCPN_SOUND_CMD));
   if (wxIsEmpty(g_CmdSoundString)) g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Read(_T ( "NavMessageShown" ), &n_NavMessageShown);
 
@@ -972,13 +972,13 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   // Set reasonable defaults
   wxString sound_dir = g_Platform->GetSharedDataDir();
-  sound_dir.Append(_T("sounds"));
+  sound_dir.Append("sounds");
   sound_dir.Append(wxFileName::GetPathSeparator());
 
-  g_AIS_sound_file = sound_dir + _T("beep_ssl.wav");
-  g_DSC_sound_file = sound_dir + _T("phonering1.wav");
-  g_SART_sound_file = sound_dir + _T("beep3.wav");
-  g_anchorwatch_sound_file = sound_dir + _T("beep1.wav");
+  g_AIS_sound_file = sound_dir + "beep_ssl.wav";
+  g_DSC_sound_file = sound_dir + "phonering1.wav";
+  g_SART_sound_file = sound_dir + "beep3.wav";
+  g_anchorwatch_sound_file = sound_dir + "beep1.wav";
 
   Read(_T ( "AISAlertSoundFile" ), &g_AIS_sound_file);
   Read(_T ( "DSCAlertSoundFile" ), &g_DSC_sound_file);
@@ -1056,7 +1056,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "AISScaledNumberWeightRange" ), &g_ScaledNumWeightRange);
   Read(_T ( "AISScaledNumberWeightSizeOfTarget" ), &g_ScaledNumWeightSizeOfT);
   Read(_T ( "AISScaledSizeMinimal" ), &g_ScaledSizeMinimal);
-  Read(_T("AISShowScaled"), &g_bShowScaled);
+  Read("AISShowScaled", &g_bShowScaled);
 
   Read(_T ( "bShowAreaNotices" ), &g_bShowAreaNotices);
   Read(_T ( "bDrawAISSize" ), &g_bDrawAISSize);
@@ -1144,7 +1144,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     wxString connectionconfigs;
     Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
-      wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+      wxArrayString confs = wxStringTokenize(connectionconfigs, "|");
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
@@ -1263,7 +1263,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   while (bCont) {
     pval = Read(str);
 
-    if (str.StartsWith(_T("Font"))) {
+    if (str.StartsWith("Font")) {
       // Convert pre 3.1 setting. Can't delete old entries from inside the
       // GetNextEntry() loop, so we need to save those and delete outside.
       deleteList.Add(str);
@@ -1271,7 +1271,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
       str = FontMgr::GetFontConfigKey(oldKey);
     }
 
-    if (pval.IsEmpty() || pval.StartsWith(_T(":"))) {
+    if (pval.IsEmpty() || pval.StartsWith(":")) {
       deleteList.Add(str);
     } else
       FontMgr::Get().LoadFontNative(&str, &pval);
@@ -1341,13 +1341,12 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T( "WaypointRangeRingsColour" ), &l_wxsWaypointRangeRingsColour);
   g_colourWaypointRangeRingsColour.Set(l_wxsWaypointRangeRingsColour);
 
-  if (!Read(_T("WaypointUseScaMin"), &g_bUseWptScaMin)) g_bUseWptScaMin = false;
-  if (!Read(_T("WaypointScaMinValue"), &g_iWpt_ScaMin))
-    g_iWpt_ScaMin = 2147483646;
-  if (!Read(_T("WaypointUseScaMinOverrule"), &g_bOverruleScaMin))
+  if (!Read("WaypointUseScaMin", &g_bUseWptScaMin)) g_bUseWptScaMin = false;
+  if (!Read("WaypointScaMinValue", &g_iWpt_ScaMin)) g_iWpt_ScaMin = 2147483646;
+  if (!Read("WaypointUseScaMinOverrule", &g_bOverruleScaMin))
     g_bOverruleScaMin = false;
-  if (!Read(_T("WaypointsShowName"), &g_bShowWptName)) g_bShowWptName = true;
-  if (!Read(_T("UserIconsFirst"), &g_bUserIconsFirst)) g_bUserIconsFirst = true;
+  if (!Read("WaypointsShowName", &g_bShowWptName)) g_bShowWptName = true;
+  if (!Read("UserIconsFirst", &g_bUserIconsFirst)) g_bUserIconsFirst = true;
 
   //  Support Version 3.0 and prior config setting for Radar Rings
   bool b300RadarRings = true;
@@ -1548,14 +1547,14 @@ bool MyConfig::LoadLayers(wxString &path) {
       filename.Prepend(path);
       wxFileName f(filename);
       size_t nfiles = 0;
-      if (f.GetExt().IsSameAs(wxT("gpx")))
+      if (f.GetExt().IsSameAs("gpx"))
         file_array.Add(filename);  // single-gpx-file layer
       else {
         if (wxDir::Exists(filename)) {
           wxDir dir(filename);
           if (dir.IsOpened()) {
             nfiles = dir.GetAllFiles(filename, &file_array,
-                                     wxT("*.gpx"));  // layers subdirectory set
+                                     "*.gpx");  // layers subdirectory set
           }
         }
       }
@@ -1585,8 +1584,7 @@ bool MyConfig::LoadLayers(wxString &path) {
         l->m_bIsVisibleOnChart = bLayerViz;
 
         wxString laymsg;
-        laymsg.Printf(wxT("New layer %d: %s"), l->m_LayerID,
-                      l->m_LayerName.c_str());
+        laymsg.Printf("New layer %d: %s", l->m_LayerID, l->m_LayerName.c_str());
         wxLogMessage(laymsg);
 
         pLayerList->insert(pLayerList->begin(), l);
@@ -1609,7 +1607,7 @@ bool MyConfig::LoadLayers(wxString &path) {
             l->m_LayerType = _("Persistent");
 
             wxString objmsg;
-            objmsg.Printf(wxT("Loaded GPX file %s with %ld items."),
+            objmsg.Printf("Loaded GPX file %s with %ld items.",
                           file_path.c_str(), nItems);
             wxLogMessage(objmsg);
 
@@ -1705,7 +1703,7 @@ bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
     ChartDirInfo cdi = dir_array[iDir];
 
     wxString dirn = cdi.fullpath;
-    dirn.Append(_T("^"));
+    dirn.Append("^");
     dirn.Append(cdi.magic_number);
 
     str_buf.Printf(_T ( "ChartDir%d" ), iDir + 1);
@@ -1731,7 +1729,7 @@ void MyConfig::CreateConfigGroups(ChartGroupArray *pGroupArray) {
   for (unsigned int i = 0; i < pGroupArray->GetCount(); i++) {
     ChartGroup *pGroup = pGroupArray->Item(i);
     wxString s;
-    s.Printf(_T("Group%d"), i + 1);
+    s.Printf("Group%d", i + 1);
     s.Prepend(_T ( "/Groups/" ));
     SetPath(s);
 
@@ -1740,7 +1738,7 @@ void MyConfig::CreateConfigGroups(ChartGroupArray *pGroupArray) {
 
     for (unsigned int j = 0; j < pGroup->m_element_array.size(); j++) {
       wxString sg;
-      sg.Printf(_T("Group%d/Item%d"), i + 1, j);
+      sg.Printf("Group%d/Item%d", i + 1, j);
       sg.Prepend(_T ( "/Groups/" ));
       SetPath(sg);
       Write(_T ( "IncludeItem" ), pGroup->m_element_array[j].m_element_name);
@@ -1750,7 +1748,7 @@ void MyConfig::CreateConfigGroups(ChartGroupArray *pGroupArray) {
       if (u.GetCount()) {
         for (unsigned int k = 0; k < u.GetCount(); k++) {
           t += u[k];
-          t += _T(";");
+          t += ";";
         }
         Write(_T ( "ExcludeItems" ), t);
       }
@@ -1770,7 +1768,7 @@ void MyConfig::LoadConfigGroups(ChartGroupArray *pGroupArray) {
   for (unsigned int i = 0; i < group_count; i++) {
     ChartGroup *pGroup = new ChartGroup;
     wxString s;
-    s.Printf(_T("Group%d"), i + 1);
+    s.Printf("Group%d", i + 1);
     s.Prepend(_T ( "/Groups/" ));
     SetPath(s);
 
@@ -1782,7 +1780,7 @@ void MyConfig::LoadConfigGroups(ChartGroupArray *pGroupArray) {
     Read(_T ( "GroupItemCount" ), (int *)&item_count);
     for (unsigned int j = 0; j < item_count; j++) {
       wxString sg;
-      sg.Printf(_T("Group%d/Item%d"), i + 1, j);
+      sg.Printf("Group%d/Item%d", i + 1, j);
       sg.Prepend(_T ( "/Groups/" ));
       SetPath(sg);
 
@@ -1793,7 +1791,7 @@ void MyConfig::LoadConfigGroups(ChartGroupArray *pGroupArray) {
       wxString u;
       if (Read(_T ( "ExcludeItems" ), &u)) {
         if (!u.IsEmpty()) {
-          wxStringTokenizer tk(u, _T(";"));
+          wxStringTokenizer tk(u, ";");
           while (tk.HasMoreTokens()) {
             wxString token = tk.GetNextToken();
             pelement.m_missing_name_array.Add(token);
@@ -1826,30 +1824,30 @@ void MyConfig::LoadCanvasConfigs(bool bApplyAsTemplate) {
 
   // Do not recreate canvasConfigs when applying config dynamically
   if (config_array.GetCount() == 0) {  // This is initial load from startup
-    s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
+    s.Printf("/Canvas/CanvasConfig%d", 1);
     SetPath(s);
     canvasConfig *pcca = new canvasConfig(0);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
     config_array.Add(pcca);
 
-    s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
+    s.Printf("/Canvas/CanvasConfig%d", 2);
     SetPath(s);
     pcca = new canvasConfig(1);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
     config_array.Add(pcca);
   } else {  // This is a dynamic (i.e. Template) load
     canvasConfig *pcca = config_array[0];
-    s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
+    s.Printf("/Canvas/CanvasConfig%d", 1);
     SetPath(s);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
 
     if (config_array.GetCount() > 1) {
       canvasConfig *pcca = config_array[1];
-      s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
+      s.Printf("/Canvas/CanvasConfig%d", 2);
       SetPath(s);
       LoadConfigCanvas(pcca, bApplyAsTemplate);
     } else {
-      s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
+      s.Printf("/Canvas/CanvasConfig%d", 2);
       SetPath(s);
       pcca = new canvasConfig(1);
       LoadConfigCanvas(pcca, bApplyAsTemplate);
@@ -1962,7 +1960,7 @@ void MyConfig::SaveCanvasConfigs() {
     case 0:
     default:
 
-      s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
+      s.Printf("/Canvas/CanvasConfig%d", 1);
       SetPath(s);
 
       if (config_array.GetCount() > 0) {
@@ -1976,14 +1974,14 @@ void MyConfig::SaveCanvasConfigs() {
     case 1:
 
       if (config_array.GetCount() > 1) {
-        s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
+        s.Printf("/Canvas/CanvasConfig%d", 1);
         SetPath(s);
         pcc = config_array.Item(0);
         if (pcc) {
           SaveConfigCanvas(pcc);
         }
 
-        s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
+        s.Printf("/Canvas/CanvasConfig%d", 2);
         SetPath(s);
         pcc = config_array.Item(1);
         if (pcc) {
@@ -2134,7 +2132,7 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "ShowTrue" ), g_bShowTrue);
   Write(_T ( "ShowMag" ), g_bShowMag);
-  Write(_T ( "UserMagVariation" ), wxString::Format(_T("%.2f"), g_UserVar));
+  Write(_T ( "UserMagVariation" ), wxString::Format("%.2f", g_UserVar));
 
   Write(_T ( "CM93DetailFactor" ), g_cm93_zoom_factor);
   Write(_T ( "CM93DetailZoomPosX" ), g_detailslider_dialog_x);
@@ -2209,7 +2207,7 @@ void MyConfig::UpdateSettings() {
   //   racr.Printf( _T ( "%g" ), g_n_arrival_circle_radius );
   //   Write( _T ( "RouteArrivalCircleRadius" ), racr );
   Write(_T ( "RouteArrivalCircleRadius" ),
-        wxString::Format(_T("%.2f"), g_n_arrival_circle_radius));
+        wxString::Format("%.2f", g_n_arrival_circle_radius));
 
   Write(_T ( "ChartQuilting" ), g_bQuiltEnable);
 
@@ -2227,8 +2225,8 @@ void MyConfig::UpdateSettings() {
 
   Write(_T( "NMEAAPBPrecision" ), g_NMEAAPBPrecision);
 
-  Write(_T("TalkerIdText"), g_TalkerIdText);
-  Write(_T("ShowTrackPointTime"), g_bShowTrackPointTime);
+  Write("TalkerIdText", g_TalkerIdText);
+  Write("ShowTrackPointTime", g_bShowTrackPointTime);
 
   Write(_T ( "AnchorWatch1GUID" ), g_AW1GUID);
   Write(_T ( "AnchorWatch2GUID" ), g_AW2GUID);
@@ -2283,14 +2281,14 @@ void MyConfig::UpdateSettings() {
     for (it = (*pLayerList).begin(); it != (*pLayerList).end(); ++it, ++index) {
       Layer *lay = (Layer *)(*it);
       if (lay->IsVisibleOnChart())
-        vis += (lay->m_LayerName) + _T(";");
+        vis += (lay->m_LayerName) + ";";
       else
-        invis += (lay->m_LayerName) + _T(";");
+        invis += (lay->m_LayerName) + ";";
 
       if (lay->HasVisibleNames() == wxCHK_CHECKED) {
-        visnames += (lay->m_LayerName) + _T(";");
+        visnames += (lay->m_LayerName) + ";";
       } else if (lay->HasVisibleNames() == wxCHK_UNCHECKED) {
-        invisnames += (lay->m_LayerName) + _T(";");
+        invisnames += (lay->m_LayerName) + ";";
       }
     }
     Write(_T ( "VisibleLayers" ), vis);
@@ -2490,8 +2488,8 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "ENCTextScaleFactor" ), g_ENCTextScaleFactor);
   }
   SetPath(_T ( "/Directories" ));
-  Write(_T ( "S57DataLocation" ), _T(""));
-  //    Write( _T ( "SENCFileLocation" ), _T("") );
+  Write(_T ( "S57DataLocation" ), "");
+  //    Write( _T ( "SENCFileLocation" ), "" );
 
   SetPath(_T ( "/Directories" ));
   Write(_T ( "InitChartDir" ), *pInit_Chart_Dir);
@@ -2505,7 +2503,7 @@ void MyConfig::UpdateSettings() {
   SetPath(_T ( "/Settings/NMEADataSource" ));
   wxString connectionconfigs;
   for (size_t i = 0; i < TheConnectionParams().size(); i++) {
-    if (i > 0) connectionconfigs.Append(_T("|"));
+    if (i > 0) connectionconfigs.Append("|");
     connectionconfigs.Append(TheConnectionParams()[i]->Serialize());
   }
   Write(_T ( "DataConnections" ), connectionconfigs);
@@ -2518,7 +2516,7 @@ void MyConfig::UpdateSettings() {
   wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
   for (unsigned int i = 0; i < keyArray.GetCount(); i++) {
     wxString key;
-    key.Printf(_T("Key%i"), i);
+    key.Printf("Key%i", i);
     wxString keyval = keyArray[i];
     Write(key, keyval);
   }
@@ -2562,7 +2560,7 @@ void MyConfig::UpdateSettings() {
   unsigned int id = 0;
   for (auto val : TideCurrentDataSet) {
     wxString key;
-    key.Printf(_T("tcds%d"), id);
+    key.Printf("tcds%d", id);
     Write(key, wxString(val));
     ++id;
   }
@@ -2580,8 +2578,8 @@ void MyConfig::UpdateSettings() {
   Write(_T( "WaypointUseScaMin" ), g_bUseWptScaMin);
   Write(_T( "WaypointScaMinValue" ), g_iWpt_ScaMin);
   Write(_T( "WaypointUseScaMinOverrule" ), g_bOverruleScaMin);
-  Write(_T("WaypointsShowName"), g_bShowWptName);
-  Write(_T("UserIconsFirst"), g_bUserIconsFirst);
+  Write("WaypointsShowName", g_bShowWptName);
+  Write("UserIconsFirst", g_bUserIconsFirst);
 
   // Waypoint Radar rings
   Write(_T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber);
@@ -2612,7 +2610,7 @@ void MyConfig::UpdateSettings() {
   SetPath(_T ( "/MmsiProperties" ));
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     wxString p;
-    p.Printf(_T("Props%d"), i);
+    p.Printf("Props%d", i);
     Write(p, g_MMSI_Props_Array[i]->Serialize());
   }
 
@@ -2636,19 +2634,18 @@ static wxFileName exportFileName(wxWindow *parent,
     valid_name = fn.GetFullName();
   }
 #endif
-  int response =
-      g_Platform->DoFileSelectorDialog(parent, &path, _("Export GPX file"),
-                                       g_gpx_path, valid_name, wxT("*.gpx"));
+  int response = g_Platform->DoFileSelectorDialog(
+      parent, &path, _("Export GPX file"), g_gpx_path, valid_name, "*.gpx");
 
   if (response == wxID_OK) {
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
-    if (!fn.GetExt().StartsWith("gpx")) fn.SetExt(_T("gpx"));
+    if (!fn.GetExt().StartsWith("gpx")) fn.SetExt("gpx");
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
     if (wxFileExists(fn.GetFullPath())) {
       int answer = OCPNMessageBox(NULL, _("Overwrite existing file?"),
-                                  _T("Confirm"), wxICON_QUESTION | wxYES_NO);
+                                  "Confirm", wxICON_QUESTION | wxYES_NO);
       if (answer != wxID_YES) return ret;
     }
 #endif
@@ -2666,14 +2663,13 @@ int BackupDatabase(wxWindow *parent) {
   if (wxID_OK ==
       g_Platform->DoFileSelectorDialog(parent, &acceptedName, _("Backup"),
                                        wxStandardPaths::Get().GetDocumentsDir(),
-                                       proposedName, wxT("*.bkp"))) {
+                                       proposedName, "*.bkp")) {
     wxFileName fileName(acceptedName);
     if (fileName.IsOk()) {
 #if defined(__WXMSW__) || defined(__WXGTK__)
       if (fileName.FileExists()) {
         if (wxID_YES != OCPNMessageBox(NULL, _("Overwrite existing file?"),
-                                       _T("Confirm"),
-                                       wxICON_QUESTION | wxYES_NO)) {
+                                       "Confirm", wxICON_QUESTION | wxYES_NO)) {
           return wxID_ABORT;  // We've decided not to overwrite a file, aborting
         }
       }
@@ -2718,7 +2714,7 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
   wxString path;
   int response = g_Platform->DoFileSelectorDialog(
       parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      wxT("*.gpx"));
+      "*.gpx");
 
   if (path.IsEmpty())  // relocation handled by SAF logic in Java
     return true;
@@ -2755,7 +2751,7 @@ bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pTracks,
   wxString path;
   int response = g_Platform->DoFileSelectorDialog(
       parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      wxT("*.gpx"));
+      "*.gpx");
 
   if (path.IsEmpty())  // relocation handled by SAF logic in Java
     return true;
@@ -2791,7 +2787,7 @@ bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
   wxString path;
   int response = g_Platform->DoFileSelectorDialog(
       parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      wxT("*.gpx"));
+      "*.gpx");
 
   if (path.IsEmpty())  // relocation handled by SAF logic in Java
     return true;
@@ -2809,7 +2805,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   wxString fns;
 
 #ifndef __ANDROID__
-  wxFileName fn = exportFileName(parent, _T("userobjects.gpx"));
+  wxFileName fn = exportFileName(parent, "userobjects.gpx");
   if (!fn.IsOk()) return;
   fns = fn.GetFullPath();
 #else
@@ -2825,7 +2821,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   int progStep = count / 32;
   if (count > 200) {
     pprog = new wxGenericProgressDialog(
-        _("Export GPX file"), _T("0/0"), count, NULL,
+        _("Export GPX file"), "0/0", count, NULL,
         wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
             wxPD_REMAINING_TIME);
     pprog->SetSize(400, wxDefaultCoord);
@@ -2840,7 +2836,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   while (node) {
     if (pprog && !(ic % progStep)) {
       wxString msg;
-      msg.Printf(_T("%d/%d"), ic, count);
+      msg.Printf("%d/%d", ic, count);
       pprog->Update(ic, msg);
     }
     ic++;
@@ -2889,9 +2885,9 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
 #ifdef __ANDROID__
   // Kick off the Android file chooser activity
   wxString path;
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, "userobjects.gpx",
-      wxT("*.gpx"));
+  int response =
+      g_Platform->DoFileSelectorDialog(parent, &path, _("Export GPX file"),
+                                       g_gpx_path, "userobjects.gpx", "*.gpx");
   if (path.IsEmpty())  // relocation handled by SAF logic in Java
     return;
 
@@ -2908,14 +2904,14 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
   int response = wxID_CANCEL;
   wxArrayString file_array;
 
-  if (!islayer || dirpath.IsSameAs(_T(""))) {
+  if (!islayer || dirpath.IsSameAs("")) {
     //  Platform DoFileSelectorDialog method does not properly handle multiple
     //  selections So use native method if not Android, which means Android gets
     //  single selection only.
 #ifndef __ANDROID__
     wxFileDialog *popenDialog =
-        new wxFileDialog(NULL, _("Import GPX file"), g_gpx_path, wxT(""),
-                         wxT("GPX files (*.gpx)|*.gpx|All files (*.*)|*.*"),
+        new wxFileDialog(NULL, _("Import GPX file"), g_gpx_path, "",
+                         "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*",
                          wxFD_OPEN | wxFD_MULTIPLE);
 
     if (g_bresponsive && parent)
@@ -2946,7 +2942,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
 #else  // Android
     wxString path;
     response = g_Platform->DoFileSelectorDialog(
-        NULL, &path, _("Import GPX file"), g_gpx_path, _T(""), wxT("*.gpx"));
+        NULL, &path, _("Import GPX file"), g_gpx_path, "", "*.gpx");
 
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
@@ -2959,8 +2955,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
 #endif
   } else {
     if (isdirectory) {
-      if (wxDir::GetAllFiles(dirpath, &file_array, wxT("*.gpx")))
-        response = wxID_OK;
+      if (wxDir::GetAllFiles(dirpath, &file_array, "*.gpx")) response = wxID_OK;
     } else {
       file_array.Add(dirpath);
       response = wxID_OK;
@@ -2984,7 +2979,7 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
       wxFileName::SplitPath(file_array[0], NULL, NULL, &(l->m_LayerName), NULL,
                             NULL);
     else {
-      if (dirpath.IsSameAs(_T("")))
+      if (dirpath.IsSameAs(""))
         wxFileName::SplitPath(g_gpx_path, NULL, NULL, &(l->m_LayerName), NULL,
                               NULL);
       else
@@ -3001,8 +2996,7 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
     l->m_bHasVisibleNames = wxCHK_CHECKED;
 
     wxString laymsg;
-    laymsg.Printf(wxT("New layer %d: %s"), l->m_LayerID,
-                  l->m_LayerName.c_str());
+    laymsg.Printf("New layer %d: %s", l->m_LayerID, l->m_LayerName.c_str());
     wxLogMessage(laymsg);
 
     pLayerList->insert(pLayerList->begin(), l);
@@ -3034,21 +3028,20 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
           wxFileName::SplitPath(f, NULL, NULL, &name, &ext);
           destf = g_Platform->GetPrivateDataDir();
           appendOSDirSlash(&destf);
-          destf.Append(_T("layers"));
+          destf.Append("layers");
           appendOSDirSlash(&destf);
           if (!wxDirExists(destf)) {
             if (!wxMkdir(destf, wxS_DIR_DEFAULT))
-              wxLogMessage(_T("Error creating layer directory"));
+              wxLogMessage("Error creating layer directory");
           }
 
-          destf << name << _T(".") << ext;
+          destf << name << "." << ext;
           wxString msg;
           if (wxCopyFile(f, destf, true))
-            msg.Printf(_T("File: %s.%s also added to persistent layers"), name,
+            msg.Printf("File: %s.%s also added to persistent layers", name,
                        ext);
           else
-            msg.Printf(_T("Failed adding %s.%s to persistent layers"), name,
-                       ext);
+            msg.Printf("Failed adding %s.%s to persistent layers", name, ext);
           wxLogMessage(msg);
         }
       } else {
@@ -3060,8 +3053,8 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
         if (wpt_dups > 0) {
           OCPNMessageBox(
               NULL,
-              wxString::Format(_T("%d ") + _("duplicate waypoints detected "
-                                             "during import and ignored."),
+              wxString::Format("%d " + _("duplicate waypoints detected "
+                                         "during import and ignored."),
                                wpt_dups),
               _("OpenCPN Info"), wxICON_INFORMATION | wxOK, 10);
         }
@@ -3077,7 +3070,7 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
 //-------------------------------------------------------------------------
 void SwitchInlandEcdisMode(bool Switch) {
   if (Switch) {
-    wxLogMessage(_T("Switch InlandEcdis mode On"));
+    wxLogMessage("Switch InlandEcdis mode On");
     LoadS57();
     // Overule some sewttings to comply with InlandEcdis
     // g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
@@ -3088,7 +3081,7 @@ void SwitchInlandEcdisMode(bool Switch) {
     g_bDrawAISSize = false;
     if (gFrame) gFrame->RequestNewToolbars(true);
   } else {
-    wxLogMessage(_T("Switch InlandEcdis mode Off"));
+    wxLogMessage("Switch InlandEcdis mode Off");
     // reread the settings overruled by inlandEcdis
     if (pConfig) {
       pConfig->SetPath(_T ( "/Settings" ));
@@ -3117,8 +3110,8 @@ void SwitchInlandEcdisMode(bool Switch) {
 // time string specified in the UTC time zone.
 
 wxString FormatGPXDateTime(wxDateTime dt) {
-  //      return dt.Format(wxT("%Y-%m-%dT%TZ"), wxDateTime::GMT0);
-  return dt.Format(wxT("%Y-%m-%dT%H:%M:%SZ"));
+  //      return dt.Format("%Y-%m-%dT%TZ", wxDateTime::GMT0);
+  return dt.Format("%Y-%m-%dT%H:%M:%SZ");
 }
 
 /**************************************************************************/
@@ -3315,12 +3308,12 @@ double fromUsrTemp(double usr_temp, int unit) {
 wxString formatAngle(double angle) {
   wxString out;
   if (g_bShowMag && g_bShowTrue) {
-    out.Printf(wxT("%03.0f %cT (%.0f %cM)"), angle, 0x00B0, toMagnetic(angle),
+    out.Printf("%03.0f %cT (%.0f %cM)", angle, 0x00B0, toMagnetic(angle),
                0x00B0);
   } else if (g_bShowTrue) {
-    out.Printf(wxT("%03.0f %cT"), angle, 0x00B0);
+    out.Printf("%03.0f %cT", angle, 0x00B0);
   } else {
-    out.Printf(wxT("%03.0f %cM"), toMagnetic(angle), 0x00B0);
+    out.Printf("%03.0f %cM", toMagnetic(angle), 0x00B0);
   }
   return out;
 }
@@ -3428,13 +3421,13 @@ void DimeControl(wxWindow *ctrl) {
 
   wxColour col, window_back_color, gridline, uitext, udkrd, ctrl_back_color,
       text_color;
-  col = GetGlobalColor(_T("DILG0"));                // Dialog Background white
-  window_back_color = GetGlobalColor(_T("DILG1"));  // Dialog Background
-  ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
-  text_color = GetGlobalColor(_T("DILG3"));         // Text
-  uitext = GetGlobalColor(_T("UITX1"));  // Menu Text, derived from UINFF
-  udkrd = GetGlobalColor(_T("UDKRD"));
-  gridline = GetGlobalColor(_T("GREY2"));
+  col = GetGlobalColor("DILG0");                // Dialog Background white
+  window_back_color = GetGlobalColor("DILG1");  // Dialog Background
+  ctrl_back_color = GetGlobalColor("DILG1");    // Control Background
+  text_color = GetGlobalColor("DILG3");         // Text
+  uitext = GetGlobalColor("UITX1");             // Menu Text, derived from UINFF
+  udkrd = GetGlobalColor("UDKRD");
+  gridline = GetGlobalColor("GREY2");
 
   DimeControl(ctrl, col, window_back_color, ctrl_back_color, text_color, uitext,
               udkrd, gridline);

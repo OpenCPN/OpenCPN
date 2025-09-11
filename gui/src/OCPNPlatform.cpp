@@ -397,7 +397,7 @@ void OCPNPlatform::Initialize_1(void) {
         exec_path_crash.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
   }
 
-  wxString locn = crash_rpt_save_locn + _T("\\CrashReports");
+  wxString locn = crash_rpt_save_locn + "\\CrashReports";
 
   if (!wxDirExists(locn)) wxMkdir(locn);
 
@@ -414,8 +414,8 @@ void OCPNPlatform::Initialize_1(void) {
   wxFileName exec_path_crash(crash_std_path.GetExecutablePath());
   wxString policy_file =
       exec_path_crash.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-  policy_file += _T("PrivacyPolicy.txt");
-  policy_file.Prepend(_T("file:"));
+  policy_file += "PrivacyPolicy.txt";
+  policy_file.Prepend("file:");
 
   info.pszPrivacyPolicyURL = policy_file.c_str();
   ;
@@ -424,7 +424,7 @@ void OCPNPlatform::Initialize_1(void) {
   if (nResult != 0) {
     TCHAR buff[256];
     crGetLastErrorMsg(buff, 256);
-    // MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."),
+    // MessageBox(NULL, buff, "crInstall error, Crash Reporting disabled.",
     // MB_OK);
   }
 
@@ -443,12 +443,12 @@ void OCPNPlatform::Initialize_1(void) {
     }
     appendOSDirSlash(&home_data_crash);
 
-    wxString config_crash = _T("opencpn.ini");
+    wxString config_crash = "opencpn.ini";
     config_crash.Prepend(home_data_crash);
     crAddFile2(config_crash.c_str(), NULL, NULL,
                CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE);
 
-    wxString log_crash = _T("opencpn.log");
+    wxString log_crash = "opencpn.log";
     log_crash.Prepend(home_data_crash);
     crAddFile2(log_crash.c_str(), NULL, NULL,
                CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE);
@@ -786,7 +786,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
   if (pcaps->dGLSL_Version < 1.2) {
     wxString msg;
-    msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
+    msg.Printf("GLCaps Probe: OpenGL-> GLSL Version reported:  ");
     msg += wxString(pcaps->GLSL_Version.c_str());
     msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
     wxLogMessage(msg);
@@ -859,7 +859,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   if (pcaps->dGLSL_Version < 1.2) {
     wxString msg;
-    msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
+    msg.Printf("GLCaps Probe: OpenGL-> GLSL Version reported:  ");
     msg += wxString(pcaps->GLSL_Version.c_str());
     msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
     wxLogMessage(msg);
@@ -972,9 +972,9 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
 
   // Legacy and system plugin location
   wxString locale_location = GetSharedDataDir();
-  locale_location += _T("share\\locale");
+  locale_location += "share\\locale";
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
-  wxString imsg = _T("Adding catalog lookup path:  ");
+  wxString imsg = "Adding catalog lookup path:  ";
   imsg += locale_location;
   wxLogMessage(imsg);
 
@@ -983,13 +983,13 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   usrShare.RemoveLastDir();
   locale_location = usrShare.GetFullPath() + ("share\\locale");
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
-  imsg = _T("Adding catalog lookup path:  ");
+  imsg = "Adding catalog lookup path:  ";
   imsg += locale_location;
   wxLogMessage(imsg);
 
 #elif defined(__ANDROID__)
 
-  wxString locale_location = GetSharedDataDir() + _T("locale");
+  wxString locale_location = GetSharedDataDir() + "locale";
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
 
 #elif defined(__UNIX__) && !defined(__WINE__)
@@ -998,8 +998,8 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   // "/usr". On the other hand, canonical installation prefix for OpenCPN is
   // "/usr/local".
   wxString locale_location;
-  if (!wxGetEnv(_T("OPENCPN_PREFIX"), &locale_location)) {
-    locale_location = _T("/usr/local");
+  if (!wxGetEnv("OPENCPN_PREFIX", &locale_location)) {
+    locale_location = "/usr/local";
   }
 
   if (g_bportable) {
@@ -1008,8 +1008,8 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
 
   wxFileName location;
   location.AssignDir(locale_location);
-  location.AppendDir(_T("share"));
-  location.SetName(_T("locale"));
+  location.AppendDir("share");
+  location.SetName("locale");
   locale_location = location.GetFullPath();
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
 
@@ -1031,9 +1031,9 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
 }
 
 wxString OCPNPlatform::GetDefaultSystemLocale() {
-  wxLogMessage(_T("Getting DefaultSystemLocale..."));
+  wxLogMessage("Getting DefaultSystemLocale...");
 
-  wxString retval = _T("en_US");
+  wxString retval = "en_US";
 
 #if wxUSE_XLOCALE
 
@@ -1052,11 +1052,11 @@ wxString OCPNPlatform::GetDefaultSystemLocale() {
 
     languageInfoW = wxLocale::FindLanguageInfo(lngcp);
     if (languageInfoW)
-      wxLogMessage(_T("Found LanguageInfo for: ") + lstring);
+      wxLogMessage("Found LanguageInfo for: " + lstring);
     else
-      wxLogMessage(_T("Could not find LanguageInfo for: ") + lstring);
+      wxLogMessage("Could not find LanguageInfo for: " + lstring);
   } else {
-    wxLogMessage(_T("Could not get LocaleInfo, using wxLANGUAGE_DEFAULT"));
+    wxLogMessage("Could not get LocaleInfo, using wxLANGUAGE_DEFAULT");
     languageInfoW = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
   }
 
@@ -1081,11 +1081,11 @@ wxString OCPNPlatform::GetAdjustedAppLocale() {
 //  and use this selection for opencpn...
 #if defined(__WXMSW__)
   if (g_bFirstRun || wxIsEmpty(adjLocale)) {
-    wxRegKey RegKey(wxString(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN")));
+    wxRegKey RegKey(wxString("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN"));
     if (RegKey.Exists()) {
       wxLogMessage(
-          _T("Retrieving initial language selection from Windows Registry"));
-      RegKey.QueryValue(wxString(_T("InstallerLanguage")), adjLocale);
+          "Retrieving initial language selection from Windows Registry");
+      RegKey.QueryValue(wxString("InstallerLanguage"), adjLocale);
     }
   }
   if (wxIsEmpty(adjLocale)) {
@@ -1110,7 +1110,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
                                     wxLocale **newLocale) {
   wxString return_val;
 
-  wxString imsg = _T("ChangeLocale: Language load for:  ");
+  wxString imsg = "ChangeLocale: Language load for:  ";
   imsg += newLocaleID;
   wxLogMessage(imsg);
 
@@ -1135,7 +1135,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     // translations of the wxWidgets strings is not present. So try again,
     // without attempting to load defaults wxstd.mo.
     if (!locale->IsOk()) {
-      wxString imsg = _T("ChangeLocale:  could not initialize:  ");
+      wxString imsg = "ChangeLocale:  could not initialize:  ";
       imsg += newLocaleID;
       wxLogMessage(imsg);
 
@@ -1152,7 +1152,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
   }
 
   if (!b_initok) {
-    wxString imsg = _T("ChangeLocale: Fall back to en_US");
+    wxString imsg = "ChangeLocale: Fall back to en_US";
     wxLogMessage(imsg);
 
     delete locale;
@@ -1163,7 +1163,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
   }
 
   if (b_initok) {
-    wxString imsg = _T("ChangeLocale: Locale Init OK for:  ");
+    wxString imsg = "ChangeLocale: Locale Init OK for:  ";
     imsg += loc_lang_canonical;
     wxLogMessage(imsg);
 
@@ -1178,19 +1178,19 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
 
     for (unsigned int i = 0; i < g_locale_catalog_array.GetCount(); i++) {
       if (!locale->AddCatalog(g_locale_catalog_array[i])) {
-        wxString emsg = _T("ERROR Loading translation catalog for:  ");
+        wxString emsg = "ERROR Loading translation catalog for:  ";
         emsg += g_locale_catalog_array[i];
         wxLogMessage(emsg);
       } else {
-        wxString imsg = _T("Loaded translation catalog for:  ");
+        wxString imsg = "Loaded translation catalog for:  ";
         imsg += g_locale_catalog_array[i];
         wxLogMessage(imsg);
       }
     }
 
     // Get core opencpn catalog translation (.mo) file
-    wxLogMessage(_T("Loading catalog for opencpn core."));
-    locale->AddCatalog(_T("opencpn"));
+    wxLogMessage("Loading catalog for opencpn core.");
+    locale->AddCatalog("opencpn");
 
     return_val = locale->GetCanonicalName();
 
@@ -1198,7 +1198,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     if (return_val != GetDefaultSystemLocale())
       g_localeOverride = return_val;
     else
-      g_localeOverride = _T("");
+      g_localeOverride = "";
   }
 
   *newLocale = locale;  // return the new locale
@@ -1360,16 +1360,16 @@ void OCPNPlatform::SetDefaultOptions(void) {
 
   //  Suppress most tools, especially those that appear in the Basic menus.
   //  Of course, they may be re-enabled by experts...
-  g_toolbarConfig = _T("X.....XX.......XX.XXXXXXXXXXX");
+  g_toolbarConfig = "X.....XX.......XX.XXXXXXXXXXX";
   g_bPermanentMOBIcon = false;
 
-  wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");  // 17 parms
+  wxString sGPS = "2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0";  // 17 parms
   ConnectionParams *new_params = new ConnectionParams(sGPS);
 
   new_params->bEnabled = true;
   TheConnectionParams().push_back(new_params);
 
-  g_default_font_facename = _T("Roboto");
+  g_default_font_facename = "Roboto";
 
   //  Enable some default PlugIns, and their default options
 
@@ -1405,20 +1405,20 @@ void OCPNPlatform::SetDefaultOptions(void) {
     pConfig->SetPath(_T ( "/Settings/QTFonts" ));
 
     // Status Bar
-    wxString str = _T("en_US-b25a3899");
-    wxString pval = _T("StatusBar:Roboto,26,-1,5,75,0,0,0,0,0:rgb(0, 0, 0)");
+    wxString str = "en_US-b25a3899";
+    wxString pval = "StatusBar:Roboto,26,-1,5,75,0,0,0,0,0:rgb(0, 0, 0)";
     pConfig->Write(str, pval);
     FontMgr::Get().LoadFontNative(&str, &pval);
 
     // Dialog
-    str = _T("en_US-9c3b3a0d");
-    pval = _T("DialogStatusBar:Roboto,18,-1,5,50,0,0,0,0,0:rgb(0, 0, 0)");
+    str = "en_US-9c3b3a0d";
+    pval = "DialogStatusBar:Roboto,18,-1,5,50,0,0,0,0,0:rgb(0, 0, 0)";
     pConfig->Write(str, pval);
     FontMgr::Get().LoadFontNative(&str, &pval);
 
     // Set track default color to magenta
     pConfig->SetPath(_T ( "/Settings/Others" ));
-    pConfig->Write(_T("TrackLineColour"), _T("#C545C3"));
+    pConfig->Write("TrackLineColour", "#C545C3");
     g_colourTrackLineColour.Set(197, 69, 195);
 
     qDebug() << "SetDefaultOptions.Config";
@@ -1451,12 +1451,12 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
 
     g_ChartNotRenderScaleFactor = 2.0;
     g_n_ownship_min_mm = 8;
-    g_toolbarConfig = _T("X.....XX.......XX.XXXXXXXXXXX");
+    g_toolbarConfig = "X.....XX.......XX.XXXXXXXXXXX";
 
     //  Experience indicates a slightly larger default font size is better
     pConfig->DeleteGroup(_T ( "/Settings/QTFonts" ));
     g_default_font_size = 20;
-    g_default_font_facename = _T("Roboto");
+    g_default_font_facename = "Roboto";
 
     FontMgr::Get().Shutdown();  // Restart the font manager
 
@@ -1501,7 +1501,7 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     wxString UserIconPath = GetPrivateDataDir();
     wxChar sep = wxFileName::GetPathSeparator();
     if (UserIconPath.Last() != sep) UserIconPath.Append(sep);
-    UserIconPath.Append(_T("UserIcons"));
+    UserIconPath.Append("UserIcons");
 
     if (!::wxDirExists(UserIconPath)) {
       ::wxMkdir(UserIconPath);
@@ -1510,7 +1510,7 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // layers
     wxString LayersPath = GetPrivateDataDir();
     if (LayersPath.Last() != sep) LayersPath.Append(sep);
-    LayersPath.Append(_T("layers"));
+    LayersPath.Append("layers");
 
     if (!::wxDirExists(LayersPath)) {
       ::wxMkdir(LayersPath);
@@ -1590,7 +1590,7 @@ int OCPNPlatform::DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
   //  Verify that initDir is traversable, fix it if not...
   wxString idir = initDir;
   if (initDir.StartsWith(
-          _T("/data/data")))  // not good, provokes a crash usually...
+          "/data/data"))  // not good, provokes a crash usually...
     idir = GetWritableDocumentsDir();
 
   result = androidFileChooser(&file, idir, Title, suggestedName, wildcard);
@@ -1602,8 +1602,7 @@ int OCPNPlatform::DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
   }
 
   wxString mask = wildcard;
-  if (wxNOT_FOUND != mask.Find(_T("gpx")))
-    mask.Prepend(_T("GPX files (*.gpx)|"));
+  if (wxNOT_FOUND != mask.Find("gpx")) mask.Prepend("GPX files (*.gpx)|");
 
   wxFileDialog *psaveDialog =
       new wxFileDialog(parent, Title, initDir, suggestedName, mask, flag);
@@ -1641,10 +1640,10 @@ int OCPNPlatform::DoDirSelectorDialog(wxWindow *parent, wxString *file_spec,
   //  Verify that initDir is traversable, fix it if not...
   wxString idir = initDir;
   if (initDir.StartsWith(
-          _T("/data/data")))  // not good, provokes a crash usually...
+          "/data/data"))  // not good, provokes a crash usually...
     idir = GetWritableDocumentsDir();
 
-  result = androidFileChooser(&dir, idir, Title, _T(""), _T(""), true,
+  result = androidFileChooser(&dir, idir, Title, "", "", true,
                               b_addFiles);  // Directories only, maybe add dirs
   if (file_spec) *file_spec = dir;
 #else
@@ -1743,7 +1742,7 @@ int OCPNPlatform::GetStatusBarFieldCount() {
   dc.SetFont(*templateFont);
 
   int width;
-  dc.GetTextExtent(_T("WWWWWW"), &width, NULL, NULL, NULL, templateFont);
+  dc.GetTextExtent("WWWWWW", &width, NULL, NULL, NULL, templateFont);
   double font_size_pix = (double)width / 6.0;
 
   wxSize dispSize = getDisplaySize();
@@ -1783,7 +1782,7 @@ double OCPNPlatform::getFontPointsperPixel(void) {
     dc.SetFont(*f);
 
     int width, height;
-    dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, f);
+    dc.GetTextExtent("H", &width, &height, NULL, NULL, f);
 
     if (height > 0) m_pt_per_pixel = 12.0 / (double)height;
   }
@@ -2172,9 +2171,9 @@ wxArrayString OCPNPlatform::getBluetoothScanResults() {
   return androidGetBluetoothScanResults();
 #else
 
-  ret_val.Add(_T("line 1"));
-  ret_val.Add(_T("line 2"));
-  ret_val.Add(_T("line 3"));
+  ret_val.Add("line 1");
+  ret_val.Add("line 2");
+  ret_val.Add("line 3");
   return ret_val;
 
 #endif
@@ -2301,7 +2300,7 @@ bool OCPNColourPickerCtrl::Create(wxWindow *parent, wxWindowID id,
   // create this button
   if (!wxBitmapButton::Create(parent, id, m_bitmap, pos, size,
                               style | wxBU_AUTODRAW, validator, name)) {
-    wxFAIL_MSG(wxT("OCPNColourPickerCtrl creation failed"));
+    wxFAIL_MSG("OCPNColourPickerCtrl creation failed");
     return false;
   }
 

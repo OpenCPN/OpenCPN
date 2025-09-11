@@ -181,7 +181,7 @@ void S57QueryDialog::SetColorScheme(void) {
   //  wxQT has some trouble clearing the background of HTML window...
   wxBitmap tbm(GetSize().x, GetSize().y, -1);
   wxMemoryDC tdc(tbm);
-  //    wxColour cback = GetGlobalColor( _T("YELO1") );
+  //    wxColour cback = GetGlobalColor( "YELO1" );
   tdc.SetBackground(bg);
   tdc.Clear();
   m_phtml->SetBackgroundImage(tbm);

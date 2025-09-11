@@ -75,7 +75,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
   bSizerAbout->Add(m_staticTextOCPN, 0, wxALL, 5);
 
   m_staticTextVersion =
-      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, _T("5.6.0"),
+      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, "5.6.0",
                        wxDefaultPosition, wxDefaultSize, 0);
   m_staticTextVersion->Wrap(-1);
   m_staticTextVersion->SetFont(wxFont(wxNORMAL_FONT->GetPointSize(),
@@ -95,7 +95,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
   m_hyperlinkAuthors =
       new wxHyperlinkCtrl(m_scrolledWindowAbout, wxID_ANY,
-                          _("The OpenCPN Authors"), wxT("https://opencpn.org"),
+                          _("The OpenCPN Authors"), "https://opencpn.org",
                           wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
   m_hyperlinkAuthors->SetFont(
       wxFont(wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT,
@@ -124,7 +124,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
   m_hyperlinkDonate = new wxHyperlinkCtrl(
       m_scrolledWindowAbout, wxID_ANY, _("Donate"),
-      wxT("https://sourceforge.net/donate/index.php?group_id=180842"),
+      "https://sourceforge.net/donate/index.php?group_id=180842",
       wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
   m_hyperlinkDonate->SetFont(wxFont(wxNORMAL_FONT->GetPointSize(),
                                     wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -139,7 +139,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
   m_hyperlinkGetInvolved =
       new wxHyperlinkCtrl(m_scrolledWindowAbout, wxID_ANY, _("get involved!"),
-                          wxT("https://github.com/OpenCPN/OpenCPN"),
+                          "https://github.com/OpenCPN/OpenCPN",
                           wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
   m_hyperlinkGetInvolved->SetFont(
       wxFont(wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT,
@@ -159,9 +159,8 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
   bSizerLogFile->Add(m_staticTextLogfile, 0, wxALL, 5);
 
   m_hyperlinkLogFile = new wxHyperlinkCtrl(
-      m_scrolledWindowAbout, wxID_ANY,
-      _T("/Users/nohal/Library/Logs/opencpn.log"),
-      wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize,
+      m_scrolledWindowAbout, wxID_ANY, "/Users/nohal/Library/Logs/opencpn.log",
+      "http://www.wxformbuilder.org", wxDefaultPosition, wxDefaultSize,
       wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
   m_hyperlinkLogFile->SetFont(
       wxFont(wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT,
@@ -182,8 +181,8 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
   m_hyperlinkIniFile = new wxHyperlinkCtrl(
       m_scrolledWindowAbout, wxID_ANY,
-      _T("/Users/nohal/Library/Preferences/opencpn/opencpn.ini"),
-      wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize,
+      "/Users/nohal/Library/Preferences/opencpn/opencpn.ini",
+      "http://www.wxformbuilder.org", wxDefaultPosition, wxDefaultSize,
       wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
   m_hyperlinkIniFile->SetFont(
       wxFont(wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT,
@@ -239,10 +238,9 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
   bSizerLinksInner->Add(0, 0, 1, wxEXPAND, 5);
 
-  m_hyperlinkWebsite =
-      new wxHyperlinkCtrl(m_panelMainLinks, wxID_ANY, _("OpenCPN Website"),
-                          wxT("https://opencpn.org"), wxDefaultPosition,
-                          wxDefaultSize, wxHL_DEFAULT_STYLE);
+  m_hyperlinkWebsite = new wxHyperlinkCtrl(
+      m_panelMainLinks, wxID_ANY, _("OpenCPN Website"), "https://opencpn.org",
+      wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
 
   m_hyperlinkWebsite->SetNormalColour(wxColour(255, 255, 255));
   m_hyperlinkWebsite->SetFont(wxFont(wxNORMAL_FONT->GetPointSize(),
@@ -251,9 +249,9 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
   bSizerLinksInner->Add(m_hyperlinkWebsite, 0, wxALL, 20);
 
-  m_hyperlinkHelp = new wxHyperlinkCtrl(
-      m_panelMainLinks, wxID_ANY, _("Help"), wxT("file://index.html"),
-      wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
+  m_hyperlinkHelp = new wxHyperlinkCtrl(m_panelMainLinks, wxID_ANY, _("Help"),
+                                        "file://index.html", wxDefaultPosition,
+                                        wxDefaultSize, wxHL_DEFAULT_STYLE);
 
   m_hyperlinkHelp->SetNormalColour(wxColour(255, 255, 255));
   m_hyperlinkHelp->SetFont(wxFont(wxNORMAL_FONT->GetPointSize(),
@@ -263,7 +261,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
   bSizerLinksInner->Add(m_hyperlinkHelp, 0, wxALL, 20);
 
   m_hyperlinkLicense = new wxHyperlinkCtrl(
-      m_panelMainLinks, wxID_ANY, _("License"), wxT("file://license.html"),
+      m_panelMainLinks, wxID_ANY, _("License"), "file://license.html",
       wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
 
   m_hyperlinkLicense->SetNormalColour(wxColour(255, 255, 255));

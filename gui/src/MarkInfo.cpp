@@ -231,7 +231,7 @@ MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
   QString qsbq = getQtStyleSheet();              // basic scrollbars, etc
   this->GetHandle()->setStyleSheet(qsb + qsbq);  // Concatenated style sheets
   wxScreenDC sdc;
-  if (sdc.IsOk()) sdc.GetTextExtent(_T("W"), NULL, &metric, NULL, NULL, qFont);
+  if (sdc.IsOk()) sdc.GetTextExtent("W", NULL, &metric, NULL, NULL, qFont);
 #endif
   Create();
   m_pMyLinkList = NULL;
@@ -256,12 +256,12 @@ void MarkInfoDlg::OnActivate(wxActivateEvent& event) {
 }
 
 void MarkInfoDlg::initialize_images(void) {
-  wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
-  _img_MUI_settings_svg = LoadSVG(iconDir + _T("MUI_settings.svg"),
+  wxString iconDir = g_Platform->GetSharedDataDir() + "uidata/MUI_flat/";
+  _img_MUI_settings_svg = LoadSVG(iconDir + "MUI_settings.svg",
                                   2 * GetCharHeight(), 2 * GetCharHeight());
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  wxBitmap tide = style->GetIcon(_T("tidesml"));
+  wxBitmap tide = style->GetIcon("tidesml");
   wxImage tide1 = tide.ConvertToImage();
   wxImage tide1s = tide1.Scale(m_sizeMetric * 3 / 2, m_sizeMetric * 3 / 2,
                                wxIMAGE_QUALITY_HIGH);
@@ -288,7 +288,7 @@ void MarkInfoDlg::Create() {
 
   wxScreenDC sdc;
   if (sdc.IsOk())
-    sdc.GetTextExtent(_T("W"), NULL, &m_sizeMetric, NULL, NULL, qFont);
+    sdc.GetTextExtent("W", NULL, &m_sizeMetric, NULL, NULL, qFont);
 
 #endif
 
@@ -378,7 +378,7 @@ void MarkInfoDlg::Create() {
 
   // Description expand button
   m_buttonExtDescription =
-      new wxButton(m_panelBasicProperties, ID_BTN_DESC_BASIC, _T("..."),
+      new wxButton(m_panelBasicProperties, ID_BTN_DESC_BASIC, "...",
                    wxDefaultPosition, wxSize(GetCharHeight() * 15 / 10, -1), 0);
   desc_sizer->Add(m_buttonExtDescription, 0, wxEXPAND);
 
@@ -575,7 +575,7 @@ void MarkInfoDlg::Create() {
                                   wxALIGN_CENTRE_VERTICAL, 5);
 
 #ifdef __ANDROID__
-  m_choiceTideChoices.Add(_T(" "));
+  m_choiceTideChoices.Add(" ");
   m_comboBoxTideStation =
       new wxChoice(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
                    wxDefaultPosition, wxDefaultSize, m_choiceTideChoices);
@@ -916,8 +916,8 @@ void MarkInfoDlg::UpdateHtmlList() {
     wxHyperlinkListNode* linknode = m_pRoutePoint->m_HyperlinkList->GetFirst();
     while (linknode) {
       Hyperlink* link = linknode->GetData();
-      wxString s = wxString::Format(wxT("<a href='%s'>%s</a>"), link->Link,
-                                    link->DescrText);
+      wxString s =
+          wxString::Format("<a href='%s'>%s</a>", link->Link, link->DescrText);
       GetSimpleBox()->AppendString(s);
       linknode = linknode->GetNext();
     }
@@ -974,7 +974,7 @@ void MarkInfoDlg::UpdateHtmlList() {
 
 void MarkInfoDlg::OnHyperLinkClick(wxHyperlinkEvent& event) {
   wxString url = event.GetURL();
-  url.Replace(_T(" "), _T("%20"));
+  url.Replace(" ", "%20");
   if (g_Platform) g_Platform->platformLaunchDefaultBrowser(url);
 }
 
@@ -989,38 +989,37 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
 
 #ifdef __WXMSW__
   wxString cc = event.GetLinkInfo().GetHref().c_str();
-  if (cc.Find(_T("#")) != wxNOT_FOUND) {
-    wxRegKey RegKey(
-        wxString(_T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command")));
+  if (cc.Find("#") != wxNOT_FOUND) {
+    wxRegKey RegKey(wxString("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command"));
     if (RegKey.Exists()) {
       wxString command_line;
-      RegKey.QueryValue(wxString(_T("")), command_line);
+      RegKey.QueryValue(wxString(""), command_line);
 
       //  Remove "
-      command_line.Replace(wxString(_T("\"")), wxString(_T("")));
+      command_line.Replace(wxString("\""), wxString(""));
 
       //  Strip arguments
-      int l = command_line.Find(_T(".exe"));
-      if (wxNOT_FOUND == l) l = command_line.Find(_T(".EXE"));
+      int l = command_line.Find(".exe");
+      if (wxNOT_FOUND == l) l = command_line.Find(".EXE");
 
       if (wxNOT_FOUND != l) {
         wxString cl = command_line.Mid(0, l + 4);
-        cl += _T(" ");
-        cc.Prepend(_T("\""));
-        cc.Append(_T("\""));
+        cl += " ";
+        cc.Prepend("\"");
+        cc.Append("\"");
         cl += cc;
         wxExecute(cl);  // Async, so Fire and Forget...
       }
     }
   } else {
     wxString url = event.GetLinkInfo().GetHref().c_str();
-    url.Replace(_T(" "), _T("%20"));
+    url.Replace(" ", "%20");
     ::wxLaunchDefaultBrowser(url);
     event.Skip();
   }
 #else
   wxString url = event.GetLinkInfo().GetHref().c_str();
-  url.Replace(_T(" "), _T("%20"));
+  url.Replace(" ", "%20");
   if (g_Platform) g_Platform->platformLaunchDefaultBrowser(url);
 
   event.Skip();
@@ -1458,16 +1457,16 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     m_checkBoxVisible->SetValue(m_pRoutePoint->m_bIsVisible);
     m_checkBoxScaMin->SetValue(m_pRoutePoint->GetUseSca());
     m_textScaMin->SetValue(
-        wxString::Format(wxT("%i"), (int)m_pRoutePoint->GetScaMin()));
+        wxString::Format("%i", (int)m_pRoutePoint->GetScaMin()));
     m_textCtrlGuid->SetValue(m_pRoutePoint->m_GUID);
     m_ChoiceWaypointRangeRingsNumber->SetSelection(
         m_pRoutePoint->GetWaypointRangeRingsNumber());
     wxString buf;
-    buf.Printf(_T("%.3f"),
+    buf.Printf("%.3f",
                toUsrDistance(m_pRoutePoint->GetWaypointRangeRingsStep(), -1));
     m_textWaypointRangeRingsStep->SetValue(buf);
     m_staticTextArrivalUnits->SetLabel(getUsrDistanceUnit());
-    buf.Printf(_T("%.3f"),
+    buf.Printf("%.3f",
                toUsrDistance(m_pRoutePoint->GetWaypointArrivalRadius(), -1));
     m_textArrivalRadius->SetValue(buf);
 
@@ -1829,30 +1828,30 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
       new wxCheckBox(this, wxID_ANY, _("Show Waypoint Name"), wxDefaultPosition,
                      wxDefaultSize, 0, wxDefaultValidator);
   fgSizer1->Add(NameCB, 0, wxALL, 5);
-  stName = new wxStaticText(this, wxID_ANY, _T("[") + s + _T("]"),
-                            wxDefaultPosition, wxDefaultSize, 0);
+  stName = new wxStaticText(this, wxID_ANY, "[" + s + "]", wxDefaultPosition,
+                            wxDefaultSize, 0);
   stName->Wrap(-1);
   fgSizer1->Add(stName, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
   s = g_pMarkInfoDialog->m_pRoutePoint->GetIconName();
   IconCB = new wxCheckBox(this, wxID_ANY, _("Icon"));
   fgSizer1->Add(IconCB, 0, wxALL, 5);
-  stIcon = new wxStaticText(this, wxID_ANY, _T("[") + s + _T("]"),
-                            wxDefaultPosition, wxDefaultSize, 0);
+  stIcon = new wxStaticText(this, wxID_ANY, "[" + s + "]", wxDefaultPosition,
+                            wxDefaultSize, 0);
   stIcon->Wrap(-1);
   fgSizer1->Add(stIcon, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
   s = (g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber->GetSelection()
            ? _("Do use") +
                  wxString::Format(
-                     _T(" (%i) "),
+                     " (%i) ",
                      g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber
                          ->GetSelection())
            : _("Don't use"));
   RangRingsCB = new wxCheckBox(this, wxID_ANY, _("Range rings"));
   fgSizer1->Add(RangRingsCB, 0, wxALL, 5);
-  stRR = new wxStaticText(this, wxID_ANY, _T("[") + s + _T("]"),
-                          wxDefaultPosition, wxDefaultSize, 0);
+  stRR = new wxStaticText(this, wxID_ANY, "[" + s + "]", wxDefaultPosition,
+                          wxDefaultSize, 0);
   stRR->Wrap(-1);
   fgSizer1->Add(stRR, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -1861,20 +1860,20 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   fgSizer1->Add(ArrivalRCB, 0, wxALL, 5);
   stArrivalR = new wxStaticText(
       this, wxID_ANY,
-      wxString::Format(_T("[%s %s]"), s.c_str(), getUsrDistanceUnit().c_str()),
+      wxString::Format("[%s %s]", s.c_str(), getUsrDistanceUnit().c_str()),
       wxDefaultPosition, wxDefaultSize, 0);
   stArrivalR->Wrap(-1);
   fgSizer1->Add(stArrivalR, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL,
                 5);
 
   s = (g_pMarkInfoDialog->m_checkBoxScaMin->GetValue()
-           ? _("Show only if") + _T(" < ") +
+           ? _("Show only if") + " < " +
                  g_pMarkInfoDialog->m_textScaMin->GetValue()
            : _("Show always"));
   ScaleCB = new wxCheckBox(this, wxID_ANY, _("Show only at scale"));
   fgSizer1->Add(ScaleCB, 0, wxALL, 5);
-  stScale = new wxStaticText(this, wxID_ANY, _T("[") + s + _T("]"),
-                             wxDefaultPosition, wxDefaultSize, 0);
+  stScale = new wxStaticText(this, wxID_ANY, "[" + s + "]", wxDefaultPosition,
+                             wxDefaultSize, 0);
   stScale->Wrap(-1);
   fgSizer1->Add(stScale, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
@@ -1911,7 +1910,7 @@ void MarkInfoDlg::ShowTidesBtnClicked(wxCommandEvent& event) {
     pCwin->Show();
   } else {
     wxString msg(_("Tide Station not found"));
-    msg += _T(":\n");
+    msg += ":\n";
     msg += m_comboBoxTideStation->GetStringSelection();
     OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxCENTER, 10);
   }
