@@ -48,6 +48,7 @@
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
@@ -271,9 +272,8 @@ wxString callActivityMethod_is(const char *method, int parm);
 
 //      Globals, accessible only to this module
 
-bool b_androidBusyShown;
-double g_androidDPmm;
-double g_androidDensity;
+static bool b_androidBusyShown;
+static double g_androidDensity;
 
 bool g_bExternalApp;
 

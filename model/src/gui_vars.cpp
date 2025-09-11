@@ -47,6 +47,7 @@ bool g_FlushNavobjChanges = false;
 bool g_PrintingInProgress = false;
 
 double AnchorPointMinDist;
+double g_androidDPmm = 0.0;
 double g_ChartNotRenderScaleFactor = 1.0;
 double gCog_gt = 0;
 double g_defaultBoatSpeedUserUnit = 0;
