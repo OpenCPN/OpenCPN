@@ -21,21 +21,23 @@
  * Implement go_to_position_dlg.h -- Go to position dialog...
  */
 
-#include <wx/wxprec.h>
+#include <wx/button.h>
+#include <wx/clipbrd.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
-#include <wx/button.h>
+#include <wx/string.h>
 #include <wx/textctrl.h>
-#include <wx/clipbrd.h>
+#include <wx/wxprec.h>
 
 #include "go_to_position_dlg.h"
+
 #include "model/position_parser.h"
+#include "chcanv.h"
 #include "MarkInfo.h"
 #include "navutil.h"
-#include "chcanv.h"
 #include "ocpn_frame.h"
-
-extern MyFrame* gFrame;
 
 GoToPositionDialog* pGoToPositionDialog;
 
