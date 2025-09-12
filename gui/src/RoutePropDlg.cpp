@@ -466,8 +466,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   m_hyperlink1 =
       new wxHyperlinkCtrl(m_scrolledWindowLinks, wxID_ANY, _("wxFB Website"),
-                          wxT("http://www.wxformbuilder.org"),
-                          wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
+                          "http://www.wxformbuilder.org", wxDefaultPosition,
+                          wxDefaultSize, wxHL_DEFAULT_STYLE);
   m_hyperlink1->Enable(false);
   m_hyperlink1->Hide();
 

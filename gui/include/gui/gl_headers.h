@@ -1,5 +1,5 @@
-/***************************************************************************
- *   Copyright (C) 2024 Alec Leamas                                        *
+/**************************************************************************
+ *   Copyright (C) 2025 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,35 +12,36 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Popup dialog on communication overflows
+ * Platform independent GL includes
  */
 
-#ifndef COMM_OVERFLOW_DLG_H__
-#define COMM_OVERFLOW_DLG_H__
+#if defined(__ANDROID__)
+#include <qopengl.h>
+#include <GL/gl_private.h>  // this is a cut-down version of gl.h
+#include <GLES2/gl2.h>
 
-#include "observable.h"
+#elif defined(ocpnUSE_GL)
+#if defined(_WIN32)
+#include <glew.h>
 
-/**
- * A dialog for handling communication overflow notifications.
- * This class manages a popup dialog that appears when communication overflows
- * occur.
- */
-class CommOverflowDlg {
-public:
-  CommOverflowDlg(wxWindow* parent);
+#elif __APPLE__
+typedef void (*_GLUfuncptr)();
+#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
 
-private:
-  void ShowDialog(const std::string& msg);
+#elif defined(__linux__)
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glext.h>
 
-  ObsListener m_listener;
-  wxWindow* m_parent;
-};
-
-#endif  // COMM_OVERFLOW_DLG_H__
+#else
+#error platform not supported.
+#endif  // _win32
+#endif  // ocpnUSE_GL

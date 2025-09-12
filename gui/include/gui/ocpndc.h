@@ -30,10 +30,6 @@
 #ifndef __OCPNDC_H__
 #define __OCPNDC_H__
 
-#include <vector>
-
-#include "dychart.h"
-
 #include "linmath.h"
 
 #include "TexFont.h"

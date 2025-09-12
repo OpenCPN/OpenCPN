@@ -25,23 +25,22 @@
 #ifndef __TCWIN_H__
 #define __TCWIN_H__
 
+#include <list>
+
 #include <wx/frame.h>
+#include <wx/button.h>
+#include <wx/choice.h>
 #include <wx/datetime.h>
+#include <wx/event.h>
+#include <wx/panel.h>
+#include <wx/listctrl.h>
+#include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/list.h>
 
 class IDX_entry;
 class ChartCanvas;
 class RolloverWin;
-class wxTimerEvent;
-class wxCommandEvent;
-class wxCloseEvent;
-class wxTextCtrl;
-class wxButton;
-class wxListCtrl;
-class wxChoice;
-
-WX_DECLARE_LIST(wxPoint, SplineList);  // for spline curve points
 
 class TCWin : public wxFrame {
 public:
@@ -63,8 +62,24 @@ public:
 
   void RecalculateSize();
   void SetTimeFactors();
+  void CreateLayout();
+  void InitializeStationText();
+  void PaintChart(wxDC &dc, const wxRect &chartRect);
+  void HandleChartMouseMove(int mainWindowX, int mainWindowY,
+                            const wxPoint &chartPanelPos);
+
+  /** @return Pointer to the IDX_entry for the currently displayed tide/current
+   * station */
+  IDX_entry *GetCurrentIDX() const { return pIDX; }
 
 private:
+  // Forward declaration for custom chart panel
+  class TideChartPanel;
+
+  wxPanel *m_topPanel;           // Panel containing station info and tide list
+  TideChartPanel *m_chartPanel;  // Panel for the tide chart
+  wxPanel *m_buttonPanel;        // Panel for buttons and controls
+
   wxTextCtrl *m_ptextctrl;
   wxTimer m_TCWinPopupTimer;
   wxTimer m_TimeIndicatorTimer;
@@ -111,7 +126,7 @@ private:
   wxDateTime m_graphday;
   int m_plot_y_offset;
 
-  SplineList m_sList;
+  std::list<wxPoint *> m_sList;
 
   wxFont *pSFont;
   wxFont *pSMFont;

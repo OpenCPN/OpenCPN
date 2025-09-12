@@ -58,6 +58,10 @@
 
 #include "route_validator.h"
 
+class MarkInfoDlg;  // forward
+
+extern MarkInfoDlg* g_pMarkInfoDialog; /**< global instance */
+
 #ifdef __WXGTK__
 // wxTimePickerCtrl is completely broken in Gnome based desktop environments as
 // of wxGTK 3.0

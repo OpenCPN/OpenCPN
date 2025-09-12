@@ -57,6 +57,8 @@
 #define COLUMN_PLANNED_SPEED 9
 #define COLUMN_ETD 13
 
+RoutePropDlgImpl* pRoutePropDialog;
+
 extern wxString GetLayerName(int id);
 
 extern Routeman* g_pRouteMan;
@@ -93,7 +95,7 @@ int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
 static wxString GetDaylightString(int index) {
   switch (index) {
     case 0:
-      return _T(" - ");
+      return " - ";
     case 1:
       return _("MoTwilight");
     case 2:
@@ -108,7 +110,7 @@ static wxString GetDaylightString(int index) {
       return _("Nighttime");
 
     default:
-      return _T("");
+      return "";
   }
 }
 
@@ -344,7 +346,7 @@ void RoutePropDlgImpl::UpdatePoints() {
   m_pRoute->UpdateSegmentDistances(
       m_pRoute->m_PlannedSpeed);  // to fix ETA properties
   m_tcDistance->SetValue(
-      wxString::Format(wxT("%5.1f ") + getUsrDistanceUnit(),
+      wxString::Format("%5.1f " + getUsrDistanceUnit(),
                        toUsrDistance(m_pRoute->m_route_length)));
   m_tcEnroute->SetValue(formatTimeDelta(wxLongLong(m_pRoute->m_route_time)));
   //  Iterate on Route Points, inserting blank fields starting with index 0
@@ -372,7 +374,7 @@ void RoutePropDlgImpl::UpdatePoints() {
             "Start: %s", ocpn::toUsrDateTimeFormat(
                              m_pRoute->m_PlannedDeparture.FromUTC(), opts));
         eta.Append(wxString::Format(
-            _T(" (%s)"),
+            " (%s)",
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
                                                 pnode->GetData()->m_lon,
                                                 m_pRoute->m_PlannedDeparture))
@@ -397,7 +399,7 @@ void RoutePropDlgImpl::UpdatePoints() {
         eta = ocpn::toUsrDateTimeFormat(pnode->GetData()->GetETA().FromUTC(),
                                         opts);
         eta.Append(wxString::Format(
-            _T(" (%s)"),
+            " (%s)",
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
                                                 pnode->GetData()->m_lon,
                                                 pnode->GetData()->GetETA()))
@@ -425,8 +427,7 @@ void RoutePropDlgImpl::UpdatePoints() {
       etd = ocpn::toUsrDateTimeFormat(rt->GetManualETD().FromUTC(), opts);
       if (rt->GetManualETD().IsValid() && rt->GetETA().IsValid() &&
           rt->GetManualETD() < rt->GetETA()) {
-        etd.Prepend(
-            _T("!! "));  // Manually entered ETD is before we arrive here!
+        etd.Prepend("!! ");  // Manually entered ETD is before we arrive here!
       }
     } else {
       etd = wxEmptyString;
@@ -452,11 +453,10 @@ void RoutePropDlgImpl::UpdatePoints() {
     schar = wxString(" ");
 #endif
     data.push_back(wxVariant(name + schar));  // To
-    slen.Printf(wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance));
+    slen.Printf("%5.1f " + getUsrDistanceUnit(), toUsrDistance(distance));
     data.push_back(wxVariant(schar + slen + schar));          // Distance
     data.push_back(wxVariant(schar + formatAngle(bearing)));  // Bearing
-    slen.Printf(wxT("%5.1f ") + getUsrDistanceUnit(),
-                toUsrDistance(totalDistance));
+    slen.Printf("%5.1f " + getUsrDistanceUnit(), toUsrDistance(totalDistance));
     data.push_back(wxVariant(schar + slen + schar));  // Total Distance
     data.push_back(wxVariant(schar + ::toSDMM(1, lat, FALSE) + schar));  // Lat
     data.push_back(wxVariant(schar + ::toSDMM(2, lon, FALSE) + schar));  // Lon
@@ -497,7 +497,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
   if (!pR->m_bIsInLayer)
     SetTitle(title);
   else {
-    wxString caption(wxString::Format(_T("%s, %s: %s"), title, _("Layer"),
+    wxString caption(wxString::Format("%s, %s: %s", title, _("Layer"),
                                       GetLayerName(pR->m_LayerID)));
     SetTitle(caption);
   }
@@ -785,8 +785,8 @@ void RoutePropDlgImpl::OnRoutepropCopyTxtClick(wxCommandEvent& event) {
             << m_pRoute->m_RouteEndString << eol << _("Total distance") << tab
             << m_tcDistance->GetValue() << eol << _("Speed (Kts)") << tab
             << m_tcPlanSpeed->GetValue() << eol
-            << _("Departure Time") + _T(" (") + _T(ETA_FORMAT_STR) + _T(")")
-            << tab << GetDepartureTS().Format(ETA_FORMAT_STR) << eol
+            << _("Departure Time") + " (" + _T(ETA_FORMAT_STR) + ")" << tab
+            << GetDepartureTS().Format(ETA_FORMAT_STR) << eol
             << _("Time enroute") << tab << m_tcEnroute->GetValue() << eol
             << eol;
 
@@ -905,7 +905,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu(
   wxMenu menu;
   if (!m_pRoute->m_bIsInLayer) {
     wxMenuItem* editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP,
-                                          _("Waypoint Properties") + _T("..."));
+                                          _("Waypoint Properties") + "...");
     wxMenuItem* moveUpItem =
         new wxMenuItem(&menu, ID_RCLK_MENU_MOVEUP_WP, _("Move Up"));
     wxMenuItem* moveDownItem =
@@ -1176,9 +1176,9 @@ wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
   wxString tide_form = wxEmptyString;
 
   if (ev == 1) {
-    tide_form.Append(_T("LW: "));  // High Water
+    tide_form.Append("LW: ");  // High Water
   } else if (ev == 2) {
-    tide_form.Append(_T("HW: "));  // Low Water
+    tide_form.Append("HW: ");  // Low Water
   } else if (ev == 0) {
     tide_form.Append(_("Unavailable: "));
   }
@@ -1373,25 +1373,24 @@ void RoutePropDlgImpl::OnHyperlinkClick(wxHyperlinkEvent& event) {
 
 #ifdef __WXMSW__
   wxString cc = event.GetURL();
-  if (cc.Find(_T("#")) != wxNOT_FOUND) {
-    wxRegKey RegKey(
-        wxString(_T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command")));
+  if (cc.Find("#") != wxNOT_FOUND) {
+    wxRegKey RegKey(wxString("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command"));
     if (RegKey.Exists()) {
       wxString command_line;
-      RegKey.QueryValue(wxString(_T("")), command_line);
+      RegKey.QueryValue(wxString(""), command_line);
 
       //  Remove "
-      command_line.Replace(wxString(_T("\"")), wxString(_T("")));
+      command_line.Replace(wxString("\""), wxString(""));
 
       //  Strip arguments
-      int l = command_line.Find(_T(".exe"));
-      if (wxNOT_FOUND == l) l = command_line.Find(_T(".EXE"));
+      int l = command_line.Find(".exe");
+      if (wxNOT_FOUND == l) l = command_line.Find(".EXE");
 
       if (wxNOT_FOUND != l) {
         wxString cl = command_line.Mid(0, l + 4);
-        cl += _T(" ");
-        cc.Prepend(_T("\""));
-        cc.Append(_T("\""));
+        cl += " ";
+        cc.Prepend("\"");
+        cc.Append("\"");
         cl += cc;
         wxExecute(cl);  // Async, so Fire and Forget...
       }
@@ -1400,7 +1399,7 @@ void RoutePropDlgImpl::OnHyperlinkClick(wxHyperlinkEvent& event) {
     event.Skip();
 #else
   wxString url = event.GetURL();
-  url.Replace(_T(" "), _T("%20"));
+  url.Replace(" ", "%20");
   ::wxLaunchDefaultBrowser(url);
 #endif
 }

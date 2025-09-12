@@ -51,6 +51,7 @@ set(
   ${MODEL_HDR_DIR}/comm_drv_factory.h
   ${MODEL_HDR_DIR}/comm_drv_file.h
   ${MODEL_HDR_DIR}/comm_drv_internal.h
+  ${MODEL_HDR_DIR}/comm_drv_loopback.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_bt.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_int.h
   ${MODEL_HDR_DIR}/comm_drv_n0183.h
@@ -83,6 +84,7 @@ set(
   ${MODEL_HDR_DIR}/geodesic.h
   ${MODEL_HDR_DIR}/georef.h
   ${MODEL_HDR_DIR}/gpx_document.h
+  ${MODEL_HDR_DIR}/gui_vars.h
   ${MODEL_HDR_DIR}/hyperlink.h
   ${MODEL_HDR_DIR}/idents.h
   ${MODEL_HDR_DIR}/instance_check.h
@@ -164,6 +166,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_drv_factory.cpp
   ${MODEL_SRC_DIR}/comm_drv_file.cpp
   ${MODEL_SRC_DIR}/comm_drv_internal.cpp
+  ${MODEL_SRC_DIR}/comm_drv_loopback.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
@@ -193,6 +196,7 @@ set(SRC
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
   ${MODEL_SRC_DIR}/gpx_document.cpp
+  ${MODEL_SRC_DIR}/gui_vars.cpp
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp

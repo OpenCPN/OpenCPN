@@ -24,6 +24,8 @@
 #include "snd_config.h"
 #include "SoundFactory.h"
 
+OcpnSound *g_anchorwatch_sound = SoundFactory();
+
 #if defined(__OCPN__ANDROID__)
 #include "AndroidSound.h"
 

@@ -48,6 +48,7 @@
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
@@ -59,12 +60,12 @@
 #include "model/select.h"
 
 #include "about.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetListDialog.h"
-#include "AISTargetQueryDialog.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_list_dlg.h"
+#include "ais_target_query_dlg.h"
 #include "AndroidSound.h"
 #include "androidUTIL.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
@@ -271,9 +272,8 @@ wxString callActivityMethod_is(const char *method, int parm);
 
 //      Globals, accessible only to this module
 
-bool b_androidBusyShown;
-double g_androidDPmm;
-double g_androidDensity;
+static bool b_androidBusyShown;
+static double g_androidDensity;
 
 bool g_bExternalApp;
 
@@ -327,6 +327,10 @@ bool g_detect_smt590;
 int g_orientation;
 int g_Android_SDK_Version;
 MigrateAssistantDialog *g_migrateDialog;
+
+bool g_android_import_active;
+bool g_android_import_islayer;
+bool g_android_import_ispersistent;
 
 //      Some dummy devices to ensure plugins have static access to these classes
 //      not used elsewhere
@@ -1053,6 +1057,12 @@ bool androidUtilInit(void) {
   return true;
 }
 
+void PrepareImportAndroid(bool isLayer, bool isPersistent) {
+  g_android_import_active = true;
+  g_android_import_islayer = isLayer;
+  g_android_import_ispersistent = isPersistent;
+}
+
 wxString androidGetIpV4Address(void) {
   wxString ipa = callActivityMethod_vs("getIpAddress");
   return ipa;
@@ -1108,10 +1118,15 @@ extern "C" {
 JNIEXPORT void JNICALL Java_org_opencpn_OCPNNativeLib_ImportTmpGPX(
     JNIEnv *env, jobject obj, jstring filePath, bool isLayer,
     bool isPersistent) {
+  if (!g_android_import_active) return;
   wxArrayString file_array;
   const char *string = env->GetStringUTFChars(filePath, NULL);
   file_array.Add(wxString(string));
-  ImportFileArray(file_array, isLayer, isPersistent, "");
+  ImportFileArray(file_array, g_android_import_islayer,
+                  g_android_import_ispersistent, "");
+  g_android_import_active = false;
+  g_android_import_islayer = false;
+  g_android_import_ispersistent = false;
 
   // Update the RouteManagerDialog on the wx event loop
   wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
@@ -2288,6 +2303,8 @@ void androidEnableMulticast(bool benable) {
 
 void androidLastCall(void) {
   CheckMigrateCharts();
+  DoImportGPX();
+
   callActivityMethod_is("lastCallOnInit", 1);
 }
 
@@ -2790,8 +2807,11 @@ wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
     tzName = _("UTC");
   }
 
+  // If $ARCH is ARMHF, we cannot reliably use "long" over the JNI bridge
+  // So use "int", and live with it until 2038 rolls around.
+  int epoch_seconds = (int)t.GetTicks();
+
   wxString format = options.format_string;
-  long epoch_seconds = t.GetTicks();
   wxString formattedDate;
 
   wxStringTokenizer tk(format, "$");
@@ -2799,7 +2819,7 @@ wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
     wxString token = tk.GetNextToken();
     if (token.Length()) {
       token.Trim();
-      wxString partial_result = callActivityMethod_ssl(
+      wxString partial_result = callActivityMethod_ssi(
           "getLocalizedDateTime", "$" + token, epoch_seconds);
       if (partial_result.Length()) {
         if (!formattedDate.IsEmpty()) formattedDate += "  ";
@@ -4638,6 +4658,39 @@ Java_org_opencpn_OCPNNativeLib_ScheduleCleanExit(JNIEnv *env, jobject obj) {
 
   return 1;
 }
+}
+
+void DoImportGPX() {
+  //  Look for importable GPX files
+  wxString import_dir = g_androidGetFilesDirs0;
+  import_dir += "/import";
+  wxArrayString file_list;
+  wxDir::GetAllFiles(import_dir, &file_list);
+  for (size_t i = 0; i < file_list.GetCount(); i++) {
+    wxFileName fn(file_list[i]);
+    if ((fn.GetExt().IsSameAs("GPX") || fn.GetExt().IsSameAs("gpx"))) {
+      // Query the user
+      wxString msg(_("Import GPX file:"));
+      msg += "        \n";
+      msg += fn.GetFullName();
+      if (androidShowSimpleYesNoDialog(_T("OpenCPN"), msg)) {
+        NavObjectCollection1 *pSet = new NavObjectCollection1;
+        if (pSet->load_file(fn.GetFullPath().fn_str()).status !=
+            pugi::xml_parse_status::status_ok) {
+          wxLogMessage("Error loading GPX file " + fn.GetFullPath());
+          pSet->reset();
+          delete pSet;
+        } else {
+          int wpt_dups;
+          pSet->LoadAllGPXObjects(
+              !pSet->IsOpenCPN(),
+              wpt_dups);  // Import with full visibility of names and objects
+          delete pSet;
+          ::wxRemoveFile(fn.GetFullPath());
+        }
+      }
+    }
+  }
 }
 
 void CheckMigrateCharts() {

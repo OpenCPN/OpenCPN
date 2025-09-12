@@ -119,7 +119,7 @@ static void *x_malloc(size_t t) {
 
   //      malloc fails
   if (NULL == pr) {
-    wxLogMessage(_T("x_malloc...malloc fails with request of %d bytes."), t);
+    wxLogMessage("x_malloc...malloc fails with request of %d bytes.", t);
 
     // Cat the /proc/meminfo file
 
@@ -185,7 +185,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
     m_img = XShmCreateImage(xdisplay, xvisual, bpp, ZPixmap, NULL, &shminfo,
                             width, height);
     if (m_img == NULL) {
-      wxLogError(_T("XShmCreateImage failed!"));
+      wxLogError("XShmCreateImage failed!");
       goto after_check;
     }
 
@@ -196,7 +196,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
       XDestroyImage(m_img);
       m_img = NULL;
       wxLogMessage(
-          _T("alloc_back_buffer: Shared memory error (shmget), disabling."));
+          "alloc_back_buffer: Shared memory error (shmget), disabling.");
       goto after_check;
     }
 
@@ -205,7 +205,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
     if (shminfo.shmaddr == (char *)-1) {
       XDestroyImage(m_img);
       m_img = NULL;
-      wxLogMessage(_T("shmat failed"));
+      wxLogMessage("shmat failed");
       goto after_check;
     }
 
@@ -246,7 +246,7 @@ after_check:
     if (m_img->data == NULL) {
       XDestroyImage(m_img);
       m_img = NULL;
-      wxLogError(wxT("ocpn_Bitmap:Cannot malloc for data image."));
+      wxLogError("ocpn_Bitmap:Cannot malloc for data image.");
     }
   }
 }
@@ -729,7 +729,7 @@ bool ocpnBitmap::CreateFromData(void *pPix, int width, int height, int depth) {
   // create a DIB header
   int headersize = sizeof(BITMAPINFOHEADER);
   BITMAPINFO *lpDIBh = (BITMAPINFO *)malloc(headersize);
-  wxCHECK_MSG(lpDIBh, FALSE, wxT("could not allocate memory for DIB header"));
+  wxCHECK_MSG(lpDIBh, FALSE, "could not allocate memory for DIB header");
   // Fill in the DIB header
   lpDIBh->bmiHeader.biSize = headersize;
   lpDIBh->bmiHeader.biWidth = (DWORD)width;
@@ -749,7 +749,7 @@ bool ocpnBitmap::CreateFromData(void *pPix, int width, int height, int depth) {
   unsigned char *lpBits;
   lpBits = (unsigned char *)malloc(lpDIBh->bmiHeader.biSizeImage);
   if (!lpBits) {
-    wxFAIL_MSG(wxT("could not allocate memory for DIB"));
+    wxFAIL_MSG("could not allocate memory for DIB");
     free(lpDIBh);
     return FALSE;
   }
@@ -821,7 +821,7 @@ bool ocpnBitmap::CreateFromData(void *pPix, int width, int height, int depth) {
 // ----------------------------------------------------------------------------
 
 bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
-  //    wxCHECK_MSG( image.Ok(), FALSE, wxT("invalid image") )
+  //    wxCHECK_MSG( image.Ok(), FALSE, "invalid image" )
 
   m_refData = CreateData();  // found in wxBitmap
 
@@ -854,7 +854,7 @@ bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
   }
 
   // set bitmap parameters
-  wxCHECK_MSG(image.Ok(), FALSE, wxT("invalid image"));
+  wxCHECK_MSG(image.Ok(), FALSE, "invalid image");
   SetWidth(width);
   SetHeight(bmpHeight);
   if (depth == -1) depth = wxDisplayDepth();
@@ -868,7 +868,7 @@ bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
   // create a DIB header
   int headersize = sizeof(BITMAPINFOHEADER);
   BITMAPINFO *lpDIBh = (BITMAPINFO *)malloc(headersize);
-  wxCHECK_MSG(lpDIBh, FALSE, wxT("could not allocate memory for DIB header"));
+  wxCHECK_MSG(lpDIBh, FALSE, "could not allocate memory for DIB header");
   // Fill in the DIB header
   lpDIBh->bmiHeader.biSize = headersize;
   lpDIBh->bmiHeader.biWidth = (DWORD)width;
@@ -888,7 +888,7 @@ bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
   unsigned char *lpBits;
   lpBits = (unsigned char *)malloc(lpDIBh->bmiHeader.biSizeImage);
   if (!lpBits) {
-    wxFAIL_MSG(wxT("could not allocate memory for DIB"));
+    wxFAIL_MSG("could not allocate memory for DIB");
     free(lpDIBh);
     return FALSE;
   }
@@ -1079,7 +1079,7 @@ void ocpnMemDC::SelectObject(wxDIB &dib) {
   // check for whether the bitmap is already selected into a device context
   //    wxASSERT_MSG( !bitmap.GetSelectedInto() ||
   //                  (bitmap.GetSelectedInto() == this),
-  //                  wxT("Bitmap is selected in another wxMemoryDC, delete the
+  //                  _T("Bitmap is selected in another wxMemoryDC, delete the
   //                  first wxMemoryDC or use SelectObject(NULL)") );
 
   /*
@@ -1101,9 +1101,9 @@ void ocpnMemDC::SelectObject(wxDIB &dib) {
   hDIB = (HBITMAP)::SelectObject(GetHdc(), hDIB);
 
   if (!hDIB) {
-    wxLogLastError(wxT("SelectObject(ocpnMemDC, DIB)"));
+    wxLogLastError("SelectObject(ocpnMemDC, DIB)");
 
-    wxFAIL_MSG(wxT("Couldn't select a DIB into ocpnMemDC"));
+    wxFAIL_MSG("Couldn't select a DIB into ocpnMemDC");
   }
 
   else if (!m_oldBitmap) {

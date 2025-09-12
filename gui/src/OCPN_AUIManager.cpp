@@ -39,6 +39,8 @@
 
 // -- static utility functions --
 
+OCPN_AUIManager* g_pauimgr;  ///< Global instance
+
 static wxBitmap wxOPaneCreateStippleBitmap() {
   unsigned char data[] = {0, 0, 0, 192, 192, 192, 192, 192, 192, 0, 0, 0};
   wxImage img(2, 2, data, true);
@@ -290,8 +292,7 @@ bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event) {
 
     // determine the pane rectangle by getting the pane part
     wxAuiDockUIPart* pane_part = GetPanePart(pane.window);
-    wxASSERT_MSG(pane_part,
-                 wxT("Pane border part not found -- shouldn't happen"));
+    wxASSERT_MSG(pane_part, "Pane border part not found -- shouldn't happen");
 
     // determine the new pixel size that the user wants;
     // this will help us recalculate the pane's proportion
@@ -351,7 +352,7 @@ bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event) {
 
     // demand that the pane being resized is found in this dock
     // (this assert really never should be raised)
-    wxASSERT_MSG(pane_position != -1, wxT("Pane not found in dock"));
+    wxASSERT_MSG(pane_position != -1, "Pane not found in dock");
 
     // prevent division by zero
     if (dock_pixels == 0 || total_proportion == 0 || borrow_pane == -1) {
@@ -468,7 +469,7 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event) {
         m_frame->ReleaseMouse();
 
         wxAuiPaneInfo& pane = GetPane(m_actionWindow);
-        wxASSERT_MSG(pane.IsOk(), wxT("Pane window not found"));
+        wxASSERT_MSG(pane.IsOk(), "Pane window not found");
 
         // save the new positions
         wxAuiDockInfoPtrArray docks;
@@ -566,7 +567,7 @@ bool OCPN_AUIManager::ProcessDockResult(wxAuiPaneInfo& target,
 
   // If we are docking a Dashboard window, we restrict the spots that can accept
   // the docking action
-  if (new_pos.window->GetName().IsSameAs(_T("panel"))) {
+  if (new_pos.window->GetName().IsSameAs("panel")) {
     // Dashboards can not go on the left( interferes with global toolbar )
     if (/*(new_pos.dock_layer != 1)  ||*/ (new_pos.dock_direction ==
                                            wxAUI_DOCK_LEFT))

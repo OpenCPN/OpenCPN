@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,21 +12,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Implement connection_edit.h -- Dialog and support for editing a connection
  */
 
+#include <memory>
 #include <set>
+#include <string>
+#include <vector>
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "config.h"
 
@@ -54,13 +52,14 @@
 #include "qdebug.h"
 #endif
 
+#include "connection_edit.h"
+
 #include "model/comm_drv_factory.h"
 #include "model/config_vars.h"
 #include "model/ocpn_utils.h"
 #include "model/ser_ports.h"
 #include "model/sys_events.h"
 
-#include "connection_edit.h"
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
@@ -69,8 +68,6 @@
 #include "options.h"
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
-
-extern OCPNPlatform* g_Platform;
 
 static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
@@ -82,7 +79,6 @@ static wxString StringArrayToString(const wxArrayString& arr) {
 }
 
 // Check available SocketCAN interfaces
-
 #if defined(__linux__) && !defined(__ANDROID__)
 static intf_t* intf;
 std::vector<std::string> can_if_candidates;
@@ -1425,7 +1421,7 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   if (cp->NetworkPort == 0)
     m_tNetPort->SetValue(wxEmptyString);
   else
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    m_tNetPort->SetValue(wxString::Format("%i", cp->NetworkPort));
 
   if (cp->NetProtocol == TCP)
     m_rbNetProtoTCP->SetValue(TRUE);
@@ -1588,7 +1584,7 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
                                           1))  // 1 second scan
   {
     m_tNetAddress->SetValue(ip);
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), port));
+    m_tNetPort->SetValue(wxString::Format("%i", port));
     UpdateDiscoverStatus(_("Signal K server available."));
   } else {
     UpdateDiscoverStatus(_("Signal K server not found."));

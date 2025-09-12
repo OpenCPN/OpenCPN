@@ -38,6 +38,7 @@
 #include <wx/datetime.h>
 #include <wx/wfstream.h>
 #include <wx/imaglist.h>
+#include <wx/window.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
@@ -49,8 +50,8 @@
 #include "model/wx28compat.h"
 
 #include "ais.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetQueryDialog.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_query_dlg.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "line_clip.h"
@@ -63,7 +64,6 @@
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 
-int g_ais_cog_predictor_width;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
 int ImportanceSwitchPoint = 100;
@@ -72,6 +72,7 @@ extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern bool g_bopengl;
 
 extern float g_ShipScaleFactorExp;
+extern float g_MarkScaleFactorExp;
 
 float AISImportanceSwitchPoint = 0.0;
 
@@ -430,6 +431,9 @@ static void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
 
 static void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius,
                          AisTargetData *td) {
+  // Apply any specific monitor scaling. e.g. MacOS
+  radius *= gFrame->GetPrimaryCanvas()->GetContentScaleFactor();
+
   //    Constants?
   wxPen pen_save = dc.GetPen();
 
@@ -683,6 +687,7 @@ static void spherical_ll_gc_ll(float lat, float lon, float brg, float dist,
 
 //  Global static AIS target rendering metrics
 float AIS_scale_factor;
+float AIS_ATON_scale_factor;
 float AIS_nominal_target_size_mm;
 float AIS_nominal_icon_size_pixels;
 float AIS_pix_factor;
@@ -697,6 +702,8 @@ float AIS_width_cogpredictor_base;
 float AIS_width_cogpredictor_line;
 float AIS_width_target_outline;
 float AIS_icon_diameter;
+float AIS_ATON_reference;
+
 wxFont *AIS_NameFont;
 
 static void AISSetMetrics() {
@@ -733,8 +740,13 @@ static void AISSetMetrics() {
   if (g_ShipScaleFactorExp > 1.0)
     AIS_user_scale_factor = (log(g_ShipScaleFactorExp) + 1.0) *
                             1.2;  // soften the scale factor a bit
-
   AIS_scale_factor *= AIS_user_scale_factor;
+
+  //  All ATONs, including AIS virtuals, scale with chart objects.
+  AIS_ATON_scale_factor = g_MarkScaleFactorExp;
+  if (g_MarkScaleFactorExp > 1.0)
+    AIS_ATON_scale_factor = (log(g_MarkScaleFactorExp) + 1.0) *
+                            1.2;  // soften the scale factor a bit
 
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
@@ -750,6 +762,10 @@ static void AISSetMetrics() {
   AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
   AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
   AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
+
+  // Reference dimension for AIS ATONs
+  AIS_ATON_reference =
+      AIS_intercept_bar_circle_diameter * AIS_ATON_scale_factor;
 
   wxFont *font = FontMgr::Get().GetFont(_("AIS Target Name"), 0);
   double scaler = DPIscale;
@@ -1298,7 +1314,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     wxPen met(UBLCK, (wxMax(target_outline_pen.GetWidth(), 2.5)));
     dc.SetPen(met);
     dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
-    double met_radius = 1.8 * AIS_icon_diameter;
+    double met_radius = 1.5 * AIS_ATON_reference;
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, met_radius);
 
     /* Inscribed "W" in the circle. */
@@ -1320,18 +1336,18 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
     AtoN_Diamond(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x,
-                 TargetPoint.y, AIS_icon_diameter * 1.5, td);
+                 TargetPoint.y, AIS_ATON_reference * 1.5, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
     Base_Square(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x,
-                TargetPoint.y, AIS_icon_diameter);
+                TargetPoint.y, AIS_ATON_reference);
   } else if (td->Class == AIS_SART) {  // SART Target
     if (td->NavStatus == 14)           // active
       SART_Render(dc, wxPen(URED, AIS_width_target_outline), TargetPoint.x,
-                  TargetPoint.y, AIS_icon_diameter);
+                  TargetPoint.y, AIS_ATON_reference);
     else
       SART_Render(
           dc, wxPen(GetGlobalColor(_T ( "UGREN" )), AIS_width_target_outline),
-          TargetPoint.x, TargetPoint.y, AIS_icon_diameter);
+          TargetPoint.x, TargetPoint.y, AIS_ATON_reference);
 
   } else if (td->b_SarAircraftPosnReport) {
     int airtype = (td->MMSI % 1000) / 100;  // xxxyyy5zz >> helicopter
@@ -1734,7 +1750,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         dc.SetTextForeground(FontMgr::Get().GetFontColor(_("AIS Target Name")));
 
         int w, h;
-        dc.GetTextExtent(_T("W"), &w, &h);
+        dc.GetTextExtent("W", &w, &h);
         h *= g_Platform->GetDisplayDIPMult(gFrame);
         w *= g_Platform->GetDisplayDIPMult(gFrame);
 

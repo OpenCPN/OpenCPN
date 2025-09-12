@@ -421,7 +421,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
       //    Establish Station Type
       wxString caplin(pIDX->IDX_station_name, wxConvUTF8);
       caplin.MakeUpper();
-      if (caplin.Contains(_T("CURRENT")))
+      if (caplin.Contains("CURRENT"))
         pIDX->IDX_type = 'C';
       else
         pIDX->IDX_type = 'T';
@@ -492,7 +492,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
       //    Establish Station Type
       wxString caplin(pIDX->IDX_station_name, wxConvUTF8);
       caplin.MakeUpper();
-      if (caplin.Contains(_T("CURRENT")))
+      if (caplin.Contains("CURRENT"))
         pIDX->IDX_type = 'c';
       else
         pIDX->IDX_type = 't';

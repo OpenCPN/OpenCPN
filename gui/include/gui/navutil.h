@@ -45,6 +45,9 @@
 #include "ocpndc.h"
 #include "model/navutil_base.h"
 
+class MyConfig;           // forward
+extern MyConfig *pConfig; /**< Global instance */
+
 extern bool LogMessageOnce(const wxString &msg);
 extern double fromUsrDistance(double usr_distance, int unit = -1);
 extern double fromUsrSpeed(double usr_speed, int unit = -1);
@@ -52,6 +55,7 @@ extern double fromUsrWindSpeed(double usr_wspeed, int unit = -1);
 extern double fromUsrTemp(double usr_temp, int unit = -1);
 extern wxString getUsrTempUnit();
 extern wxString formatAngle(double angle);
+extern wxString GetLayerName(int id);
 
 // User date formats
 #define UTCINPUT 0  //!< Date/time in UTC.

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,27 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * implement ch_info_win.h -- ChInfoWin chart info panel
  */
-
 #include <wx/wxprec.h>
-
 #include <wx/dcclient.h>
 
 #include "model/config_vars.h"
-#include "ChInfoWin.h"
-#include "OCPNPlatform.h"
-#include "FontMgr.h"
+#include "ch_info_win.h"
 #include "color_handler.h"
+#include "FontMgr.h"
+#include "OCPNPlatform.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
-
-extern OCPNPlatform* g_Platform;
 
 BEGIN_EVENT_TABLE(ChInfoWin, wxPanel)
 EVT_PAINT(ChInfoWin::OnPaint)
@@ -70,7 +65,7 @@ void ChInfoWin::MouseEvent(wxMouseEvent& event) {
     if (event.LeftDown()) {
       Hide();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       androidForceFullRepaint();
 #endif
     }
@@ -112,7 +107,7 @@ void ChInfoWin::FitToChars(int char_width, int char_height) {
   adjust = 2;
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   adjust = 4;
 #endif
 

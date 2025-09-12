@@ -38,7 +38,7 @@ TCDataSource::TCDataSource() {
 }
 
 TCDataSource::~TCDataSource() {
-  wxLogMessage(_T("UnLoading Tide/Current data source: %s"),
+  wxLogMessage("UnLoading Tide/Current data source: %s",
                m_data_source_path.c_str());
 
   delete pTCDS_Ascii_Harmonic;
@@ -47,18 +47,18 @@ TCDataSource::~TCDataSource() {
 
 TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path) {
   m_data_source_path = data_file_path;
-  wxLogMessage(_T("Loading Tide/Current data source: %s"),
+  wxLogMessage("Loading Tide/Current data source: %s",
                m_data_source_path.c_str());
 
   wxFileName fname(data_file_path);
 
   if (!fname.FileExists()) return TC_FILE_NOT_FOUND;
 
-  if (fname.GetExt() == _T("IDX") || fname.GetExt() == _T("idx")) {
+  if (fname.GetExt() == "IDX" || fname.GetExt() == "idx") {
     TCDS_Ascii_Harmonic *pdata = new TCDS_Ascii_Harmonic;
     m_pfactory = dynamic_cast<TCDataFactory *>(pdata);
     pTCDS_Ascii_Harmonic = pdata;
-  } else if (fname.GetExt() == _T("tcd") || fname.GetExt() == _T("TCD")) {
+  } else if (fname.GetExt() == "tcd" || fname.GetExt() == "TCD") {
     TCDS_Binary_Harmonic *pdata = new TCDS_Binary_Harmonic;
     m_pfactory = dynamic_cast<TCDataFactory *>(pdata);
     pTCDS_Binary_Harmonic = pdata;

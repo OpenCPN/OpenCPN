@@ -19,8 +19,10 @@ brew list --versions python3 || {
     brew update-reset
 }
 
+# install cmake if not available
+cmake --version 2> /dev/null || brew install cmake
+
 # Install the build dependencies for OpenCPN
-brew install cmake
 brew install gettext
 brew install lame
 brew install lz4

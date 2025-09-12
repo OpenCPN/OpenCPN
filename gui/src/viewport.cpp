@@ -70,14 +70,14 @@
 #include "timers.h"
 #include "tide_time.h"
 #include "glTextureDescriptor.h"
-#include "ChInfoWin.h"
+#include "ch_info_win.h"
 #include "Quilt.h"
 #include "model/select_item.h"
 #include "model/select.h"
 #include "FontMgr.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "SendToGpsDlg.h"
 #include "OCPNRegion.h"
 #include "gshhs.h"
@@ -106,6 +106,8 @@ extern sigjmp_buf env;  // the context saved by sigsetjmp();
 #endif
 
 #include <vector>
+
+ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes

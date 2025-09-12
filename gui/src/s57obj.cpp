@@ -409,16 +409,16 @@ wxString S57Obj::GetAttrValueAsString(const char *AttrName) {
       }
       case OGR_REAL: {
         double dval = *(double *)(v->value);
-        str.Printf(_T("%g"), dval);
+        str.Printf("%g", dval);
         break;
       }
       case OGR_INT: {
         int ival = *((int *)v->value);
-        str.Printf(_T("%d"), ival);
+        str.Printf("%d", ival);
         break;
       }
       default: {
-        str.Printf(_T("Unknown attribute type"));
+        str.Printf("Unknown attribute type");
         break;
       }
     }

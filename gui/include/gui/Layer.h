@@ -25,9 +25,11 @@
 #ifndef __LAYER_H__
 #define __LAYER_H__
 
-#include <wx/string.h>
-#include <wx/list.h>
+#include <list>
+
+#include <wx/checkbox.h>
 #include <wx/datetime.h>
+#include <wx/string.h>
 
 /**
  * Represents a layer of chart objects in OpenCPN. A Layer in OpenCPN is a
@@ -62,6 +64,6 @@ public:
   wxDateTime m_CreateTime;
 };
 
-WX_DECLARE_LIST(Layer, LayerList);  // establish class as list member
+using LayerList = std::list<Layer*>;
 
 #endif

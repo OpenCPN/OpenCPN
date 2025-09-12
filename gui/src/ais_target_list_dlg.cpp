@@ -38,7 +38,7 @@
 #include "model/select.h"
 
 #include "ais.h"
-#include "AISTargetListDialog.h"
+#include "ais_target_list_dlg.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
 #include "OCPNListCtrl.h"
@@ -46,8 +46,6 @@
 #include "routemanagerdialog.h"
 #include "styles.h"
 #include "model/navobj_db.h"
-
-static AisDecoder *s_p_sort_decoder;
 
 extern int g_AisTargetList_count;
 extern bool g_bAisTargetList_autosort;
@@ -57,6 +55,10 @@ extern AISTargetListDialog *g_pAISTargetList;
 extern MyFrame *gFrame;
 extern wxString g_default_wp_icon;
 extern RouteManagerDialog *pRouteManagerDialog;
+
+AISTargetListDialog *g_pAISTargetList;
+
+static AisDecoder *s_p_sort_decoder;
 
 IMPLEMENT_CLASS(AISTargetListDialog, wxPanel)
 
@@ -103,12 +105,12 @@ static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
       s1 = trimAISField(t1->ShipName);
       if ((!t1->b_nameValid && (t1->Class == AIS_BASE)) ||
           (t1->Class == AIS_SART))
-        s1 = _T("-");
+        s1 = "-";
 
       s2 = trimAISField(t2->ShipName);
       if ((!t2->b_nameValid && (t2->Class == AIS_BASE)) ||
           (t2->Class == AIS_SART))
-        s2 = _T("-");
+        s2 = "-";
       break;
 
     case tlCALL:
@@ -131,12 +133,12 @@ static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
       s1 = t1->Get_vessel_type_string(false);
       if ((t1->Class == AIS_BASE) ||
           (t1->Class == AIS_SART || (t1->Class == AIS_METEO)))
-        s1 = _T("-");
+        s1 = "-";
 
       s2 = t2->Get_vessel_type_string(false);
       if ((t1->Class == AIS_BASE) || (t1->Class == AIS_SART) ||
           (t1->Class == AIS_METEO))
-        s2 = _T("-");
+        s2 = "-";
       break;
 
     case tlFLAG:
@@ -157,7 +159,7 @@ static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
 
       if ((t1->Class == AIS_ATON) || (t1->Class == AIS_BASE) ||
           (t1->Class == AIS_CLASS_B) || (t1->Class == AIS_METEO))
-        s1 = _T("-");
+        s1 = "-";
 
       if ((t2->NavStatus <= 15) && (t2->NavStatus >= 0)) {
         if (t2->Class == AIS_SART) {
@@ -172,7 +174,7 @@ static int ItemCompare(AisTargetData *pAISTarget1, AisTargetData *pAISTarget2) {
 
       if ((t2->Class == AIS_ATON) || (t2->Class == AIS_BASE) ||
           (t2->Class == AIS_CLASS_B) || (t2->Class == AIS_METEO))
-        s2 = _T("-");
+        s2 = "-";
 
       break;
     }
@@ -344,7 +346,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
 
   if (m_pAuiManager) {
     wxAuiPaneInfo paneproto = wxAuiPaneInfo()
-                                  .Name(_T("AISTargetList"))
+                                  .Name("AISTargetList")
                                   .CaptionVisible(true)
                                   .Float()
                                   .FloatingPosition(50, 50)
@@ -354,7 +356,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
     //      Force and/or override any perspective information that is not
     //      applicable
     paneproto.Caption(wxGetTranslation(_("AIS target list")));
-    paneproto.Name(_T("AISTargetList"));
+    paneproto.Name("AISTargetList");
     paneproto.DestroyOnClose(true);
     paneproto.TopDockable(false)
         .BottomDockable(true)
@@ -364,7 +366,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
 
     m_pAuiManager->AddPane(this, paneproto);
 
-    wxAuiPaneInfo &pane = m_pAuiManager->GetPane(_T("AISTargetList"));
+    wxAuiPaneInfo &pane = m_pAuiManager->GetPane("AISTargetList");
 
     if (g_AisTargetList_perspective.IsEmpty()) {
       if (!g_btouch) RecalculateSize();
@@ -373,8 +375,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
       m_pAuiManager->Update();
     }
 
-    pane =
-        m_pAuiManager->GetPane(_T("AISTargetList"));  // Refresh the reference
+    pane = m_pAuiManager->GetPane("AISTargetList");  // Refresh the reference
 
     //  Some special setup for touch screens
     if (g_btouch) {
@@ -481,7 +482,7 @@ void AISTargetListDialog::RecalculateSize() {
   SetSize(fsize);
 
   if (m_pAuiManager) {
-    wxAuiPaneInfo &pane = m_pAuiManager->GetPane(_T("AISTargetList"));
+    wxAuiPaneInfo &pane = m_pAuiManager->GetPane("AISTargetList");
 
     if (pane.IsOk()) {
       pane.FloatingSize(fsize.x, fsize.y);
@@ -502,7 +503,7 @@ void AISTargetListDialog::CreateControls() {
 #endif
 
   //  Parse the global column width string as read from config file
-  wxStringTokenizer tkz(g_AisTargetList_column_spec, _T(";"));
+  wxStringTokenizer tkz(g_AisTargetList_column_spec, ";");
   wxString s_width = tkz.GetNextToken();
   int width;
   long lwidth;
@@ -519,8 +520,8 @@ void AISTargetListDialog::CreateControls() {
   wxImageList *imglist = new wxImageList(16, 16, true, 2);
 
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  imglist->Add(style->GetIcon(_T("sort_asc")));
-  imglist->Add(style->GetIcon(_T("sort_desc")));
+  imglist->Add(style->GetIcon("sort_asc"));
+  imglist->Add(style->GetIcon("sort_desc"));
 
   m_pListCtrlAISTargets->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
   m_pListCtrlAISTargets->Connect(
@@ -669,7 +670,7 @@ void AISTargetListDialog::CreateControls() {
   m_pListCtrlAISTargets->SetColumn(g_AisTargetList_sortColumn, item);
 
 #ifdef wxHAS_LISTCTRL_COLUMN_ORDER
-  wxStringTokenizer tkz_order(g_AisTargetList_column_order, _T(";"));
+  wxStringTokenizer tkz_order(g_AisTargetList_column_order, ";");
   wxString s_order = tkz_order.GetNextToken();
   int i_columns = m_pListCtrlAISTargets->GetColumnCount();
   wxArrayInt a_order(i_columns);
@@ -801,7 +802,7 @@ void AISTargetListDialog::CreateControls() {
   bsRouteButtonsInner->Add(m_pStaticTextCount, 0, wxALL, 2);
 
   bsRouteButtonsInner->AddSpacer(2);
-  m_pTextTargetCount = new wxTextCtrl(winr, wxID_ANY, _T(""), wxDefaultPosition,
+  m_pTextTargetCount = new wxTextCtrl(winr, wxID_ANY, "", wxDefaultPosition,
                                       wxDefaultSize, wxTE_READONLY);
   m_pTextTargetCount->SetMinSize(wxSize(6 * GetCharWidth(), -1));
   bsRouteButtonsInner->Add(m_pTextTargetCount, 0, wxALL, 2);
@@ -833,7 +834,7 @@ void AISTargetListDialog::Disconnect_decoder() { m_pdecoder = NULL; }
 void AISTargetListDialog::SetColorScheme() { DimeControl(this); }
 
 void AISTargetListDialog::OnPaneClose(wxAuiManagerEvent &event) {
-  if (event.pane->name == _T("AISTargetList")) {
+  if (event.pane->name == "AISTargetList") {
     g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo(*event.pane);
   }
   event.Skip();
@@ -1089,7 +1090,7 @@ void AISTargetListDialog::CopyMMSItoClipBoard(int mmsi) {
   // Write MMSI # as text to the clipboard
   if (wxTheClipboard->Open()) {
     wxTheClipboard->SetData(
-        new wxTextDataObject(wxString::Format(wxT("%09d"), mmsi)));
+        new wxTextDataObject(wxString::Format("%09d", mmsi)));
     wxTheClipboard->Close();
   }
 }
@@ -1178,7 +1179,7 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
       m_pListCtrlAISTargets->DeleteAllItems();
 
     wxString count;
-    count.Printf(_T("%lu"), (unsigned long)m_pMMSI_array->GetCount());
+    count.Printf("%lu", (unsigned long)m_pMMSI_array->GetCount());
     m_pTextTargetCount->ChangeValue(count);
 
 #ifdef __WXMSW__
@@ -1263,7 +1264,7 @@ void AISTargetListDialog::UpdateNVAISTargetList(void) {
       m_pListCtrlAISTargets->DeleteAllItems();
 
     wxString count;
-    count.Printf(_T("%lu"), (unsigned long)m_pMMSI_array->GetCount());
+    count.Printf("%lu", (unsigned long)m_pMMSI_array->GetCount());
     m_pTextTargetCount->ChangeValue(count);
 
 #ifdef __WXMSW__
@@ -1273,7 +1274,7 @@ void AISTargetListDialog::UpdateNVAISTargetList(void) {
 }
 
 void AISTargetListDialog::OnRightClickContext(wxCommandEvent &event) {
-  wxAuiPaneInfo &pane = m_pAuiManager->GetPane(_T("AISTargetList"));
+  wxAuiPaneInfo &pane = m_pAuiManager->GetPane("AISTargetList");
   if (pane.IsDocked()) {
     wxMenu *popup = new wxMenu();
     popup->Append(ID_RCLK_UNDOCK, _("Undock Target List"));
@@ -1287,7 +1288,7 @@ void AISTargetListDialog::OnRightClickContext(wxCommandEvent &event) {
 }
 
 void AISTargetListDialog::OnContextUndock(wxCommandEvent &event) {
-  wxAuiPaneInfo &pane = m_pAuiManager->GetPane(_T("AISTargetList"));
+  wxAuiPaneInfo &pane = m_pAuiManager->GetPane("AISTargetList");
   pane.Float();
   m_pAuiManager->Update();
 }

@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,21 +12,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement conn_params_panel.h -- panel editing a connection
+ */
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
+#include "conn_params_panel.h"
+
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
-
 #include <wx/statline.h>
-#include "conn_params_panel.h"
 
 #include "ocpn_plugin.h"
 #include "options.h"
@@ -65,8 +65,6 @@ private:
   wxScreenDC dc;
   wxFont font;
 };
-
-extern "C" bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
 BEGIN_EVENT_TABLE(ConnectionParamsPanel, wxPanel)
 EVT_PAINT(ConnectionParamsPanel::OnPaint)
@@ -172,7 +170,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, "");
     serialGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL);
     t3->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -264,7 +262,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL);
     t3->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -302,7 +300,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    t4 = new wxStaticText(this, wxID_ANY, _T(""));
+    t4 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL);
     t4->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -318,24 +316,24 @@ void ConnectionParamsPanel::CreateControls(void) {
     wxString proto;
     switch (m_pConnectionParams->NetProtocol) {
       case UDP:
-        proto = _T("UDP");
+        proto = "UDP";
         if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
           proto << " N0183";
         else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case TCP:
-        proto = _T("TCP");
+        proto = "TCP";
         if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
           proto << " N0183";
         else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case GPSD:
-        proto = _T("GPSD");
+        proto = "GPSD";
         break;
       case SIGNALK:
-        proto = _T("Signal K");
+        proto = "Signal K";
         break;
       default:
         proto = _("Undefined");
@@ -358,7 +356,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  this);
 
     wxString port;
-    port.Printf(_T("%d"), m_pConnectionParams->NetworkPort);
+    port.Printf("%d", m_pConnectionParams->NetworkPort);
     t16 = new wxStaticText(this, wxID_ANY, port);
     t16->SetFont(*bFont);
     netGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL);
@@ -394,7 +392,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL);
     t3->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -406,19 +404,19 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t11 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL);
     t11->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t13 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL);
     t13->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t15 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL);
     t15->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -432,7 +430,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    t4 = new wxStaticText(this, wxID_ANY, _T(""));
+    t4 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL);
     t4->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -445,7 +443,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxString proto = _T("");
+    wxString proto = "";
 
     t12 = new wxStaticText(this, wxID_ANY, proto);
     t12->SetFont(*bFont);
@@ -497,7 +495,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL);
     t3->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -509,19 +507,19 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t11 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL);
     t11->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t13 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL);
     t13->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t15 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL);
     t15->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -535,7 +533,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    t4 = new wxStaticText(this, wxID_ANY, _T(""));
+    t4 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL);
     t4->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -548,7 +546,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxString proto = _T("");
+    wxString proto = "";
 
     t12 = new wxStaticText(this, wxID_ANY, proto);
     t12->SetFont(*bFont);
@@ -597,7 +595,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t3 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL);
     t3->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -609,19 +607,19 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t11 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL);
     t11->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t13 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL);
     t13->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
+    wxStaticText *t15 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL);
     t15->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -635,7 +633,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    t4 = new wxStaticText(this, wxID_ANY, _T(""));
+    t4 = new wxStaticText(this, wxID_ANY, "");
     netGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL);
     t4->Connect(wxEVT_LEFT_DOWN,
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -648,7 +646,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    wxString proto = _T("");
+    wxString proto = "";
 
     t12 = new wxStaticText(this, wxID_ANY, proto);
     t12->SetFont(*bFont);
@@ -696,15 +694,15 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
 
   if (m_pConnectionParams->Type == SERIAL) {
     wxString baudRate;
-    baudRate.Printf(_T("%d"), m_pConnectionParams->Baudrate);
+    baudRate.Printf("%d", m_pConnectionParams->Baudrate);
 
     wxString proto;
     switch (m_pConnectionParams->Protocol) {
       case PROTO_NMEA0183:
-        proto = _T("NMEA 0183");
+        proto = "NMEA 0183";
         break;
       case PROTO_NMEA2000:
-        proto = _T("NMEA 2000");
+        proto = "NMEA 2000";
         break;
       default:
         proto = _("Undefined");
@@ -722,31 +720,31 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
     wxString proto;
     switch (m_pConnectionParams->NetProtocol) {
       case UDP:
-        proto = _T("UDP");
+        proto = "UDP";
         if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
           proto << " N0183";
         else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case TCP:
-        proto = _T("TCP");
+        proto = "TCP";
         if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
           proto << " N0183";
         else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case GPSD:
-        proto = _T("GPSD");
+        proto = "GPSD";
         break;
       case SIGNALK:
-        proto = _T("Signal K");
+        proto = "Signal K";
         break;
       default:
         proto = _("Undefined");
         break;
     }
     wxString port;
-    port.Printf(_T("%d"), m_pConnectionParams->NetworkPort);
+    port.Printf("%d", m_pConnectionParams->NetworkPort);
 
     t2->SetLabel(_("Network"));
     t6->SetLabel(ioDir);

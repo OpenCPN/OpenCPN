@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * %Config file user configuration interface.
+ */
 
 #ifndef __CONFIGMGR_H__
 #define __CONFIGMGR_H__
@@ -27,15 +27,18 @@
 #include "wx/wxprec.h"
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif  // precompiled headers
+#endif
 
-#include "pugixml.hpp"
-#include "CanvasConfig.h"
+#include <wx/event.h>
+#include <wx/panel.h>
+#include <wx/string.h>
 
-class OCPNConfigCatalog;
-class OCPNConfigObject;
+#include "canvas_config.h"
 
-WX_DECLARE_LIST(OCPNConfigObject, ConfigObjectList);
+class OCPNConfigCatalog;  // forward -- in config_mgr.cpp
+class OCPNConfigObject;   // forward -- in config_mgr.cpp
+
+using ConfigObjectList = std::list<OCPNConfigObject *>;
 
 /**
  * Manages the user configuration matrix. Singleton that handles the creation,
@@ -70,14 +73,14 @@ private:  // private for singleton
   wxString GetUUID(void);
   bool SaveTemplate(wxString fileName);
   wxString GetConfigDir() { return m_configDir; }
-  ConfigObjectList *GetConfigList() { return configList; }
+  std::list<OCPNConfigObject *> *GetConfigList() { return configList; }
   OCPNConfigObject *GetConfig(wxString GUID);
   bool CheckTemplate(wxString fileName);
 
   wxString m_configDir;
   wxString m_configCatalogName;
   OCPNConfigCatalog *m_configCatalog;
-  ConfigObjectList *configList;
+  std::list<OCPNConfigObject *> *configList;
   arrayofCanvasConfigPtr g_canvasConfigArray;
 };
 

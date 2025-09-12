@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,274 +12,58 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement config_mgr.h -- config file user configuration interface
+ */
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#include <wx/tokenzr.h>
-
-#include "config.h"
-#include "model/config_vars.h"
-#include "ConfigMgr.h"
-
-#include <wx/filename.h>
-#include <wx/fileconf.h>
-#include <wx/statline.h>
-
-#include "dychart.h"
-
-#include <stdlib.h>
-// #include <math.h>
-#include <time.h>
-#include <locale>
+#include <algorithm>
 #include <list>
+#include <locale>
+#include <stdlib.h>
 
-#include <wx/listimpl.cpp>
-#include <wx/progdlg.h>
+#include <time.h>
+
+#include <wx/colour.h>
+#include <wx/fileconf.h>
+#include <wx/filename.h>
+#include <wx/log.h>
+#include <wx/statline.h>
+#include <wx/string.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "model/cutil.h"
-#include "model/geodesic.h"
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/georef.h"
 #include "model/multiplexer.h"
-#include "model/nav_object_database.h"
-#include "model/route.h"
-#include "model/routeman.h"
-#include "model/select.h"
-#include "model/track.h"
+#include "model/route_point.h"
 
 #include "ais.h"
-#include "CanvasConfig.h"
-#include "chartbase.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "cm93.h"
-#include "ocpn_plugin.h"
+#include "config_mgr.h"
 #include "FontMgr.h"
 #include "Layer.h"
 #include "navutil.h"
-#include "nmea0183.h"
-
-#include "ocpndc.h"
 #include "ocpn_frame.h"
+#include "ocpn_gl_options.h"
 #include "OCPNPlatform.h"
+#include "ocpn_plugin.h"
+#include "RoutePropDlgImpl.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "styles.h"
 
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
-
-// Global statics
-//    Statics
-
-extern OCPNPlatform *g_Platform;
-extern MyFrame *gFrame;
-
-extern int g_restore_stackindex;
-extern int g_restore_dbindex;
-extern LayerList *pLayerList;
-extern MyConfig *pConfig;
-extern int g_nbrightness;
-extern bool g_bShowStatusBar;
-extern bool g_bUIexpert;
-extern bool g_bFullscreen;
-
-extern wxString g_SENCPrefix;
-extern wxString g_UserPresLibData;
-
-extern wxString *pInit_Chart_Dir;
-extern wxString gWorldMapLocation;
-extern wxString gWorldShapefileLocation;
-
-extern bool s_bSetSystemTime;
-extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
-extern bool g_bPlayShipsBells;
-extern int g_iSoundDeviceIndex;
-extern bool g_bFullscreenToolbar;
-extern bool g_bShowLayers;
-extern bool g_bTransparentToolbar;
-extern bool g_bPermanentMOBIcon;
-extern bool g_btenhertz;
-
-extern bool g_bShowDepthUnits;
-extern bool g_bAutoAnchorMark;
-extern bool g_bskew_comp;
-extern bool g_bopengl;
-extern bool g_bSoftwareGL;
-extern bool g_bsmoothpanzoom;
-
-extern bool g_bShowOutlines;
-extern bool g_bShowActiveRouteHighway;
-extern bool g_bShowRouteTotal;
-extern int g_nAWDefault;
-extern int g_nAWMax;
-
-extern int g_nframewin_x;
-extern int g_nframewin_y;
-extern int g_nframewin_posx;
-extern int g_nframewin_posy;
-extern bool g_bframemax;
-extern int g_route_prop_x, g_route_prop_y;
-extern int g_route_prop_sx, g_route_prop_sy;
-
-extern wxString g_VisibleLayers;
-extern wxString g_InvisibleLayers;
-
-// LIVE ETA OPTION
-extern bool g_bShowLiveETA;
-extern double g_defaultBoatSpeed;
-
-extern int g_S57_dialog_sx, g_S57_dialog_sy;
-
-extern int g_iNavAidRadarRingsNumberVisible;
-extern bool g_bNavAidRadarRingsShown;
-extern float g_fNavAidRadarRingsStep;
-extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
-extern bool g_bWayPointPreventDragging;
-extern bool g_bConfirmObjectDelete;
-extern wxColour g_colourOwnshipRangeRingsColour;
-
-extern bool g_bEnableZoomToCursor;
-extern wxString g_toolbarConfig;
-extern double g_TrackIntervalSeconds;
-extern double g_TrackDeltaDistance;
-
-extern bool g_bGDAL_Debug;
-extern bool g_bDebugCM93;
-extern bool g_bDebugS57;
-
-extern double g_ownship_predictor_minutes;
-extern double g_ownship_HDTpredictor_miles;
-
-extern bool g_own_ship_sog_cog_calc;
-extern int g_own_ship_sog_cog_calc_damp_sec;
-
-extern s52plib *ps52plib;
-
-extern int g_cm93_zoom_factor;
-extern bool g_b_legacy_input_filter_behaviour;
-extern bool g_bShowDetailSlider;
-extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
-
-extern int g_OwnShipIconType;
-extern double g_n_ownship_length_meters;
-extern double g_n_ownship_beam_meters;
-extern double g_n_gps_antenna_offset_y;
-extern double g_n_gps_antenna_offset_x;
-extern int g_n_ownship_min_mm;
-
-extern bool g_bPreserveScaleOnX;
-extern bool g_bsimplifiedScalebar;
-
-extern bool g_bUseGLL;
-
-extern wxString g_locale;
-extern wxString g_localeOverride;
-
-extern bool g_bCourseUp;
-extern bool g_bLookAhead;
-extern int g_COGAvgSec;
-extern bool g_bShowChartBar;
-
-extern int g_MemFootMB;
-
-extern wxString g_AW1GUID;
-extern wxString g_AW2GUID;
-extern int g_BSBImgDebug;
-
-extern wxString g_config_version_string;
-extern wxString g_config_version_string;
-
-extern bool g_bDebugGPSD;
-
-extern int g_navobjbackups;
-
-extern bool g_bQuiltEnable;
-extern bool g_bFullScreenQuilt;
-extern bool g_bQuiltStart;
-
-extern int g_SkewCompUpdatePeriod;
-
-extern int g_maintoolbar_x;
-extern int g_maintoolbar_y;
-extern long g_maintoolbar_orient;
-
-extern int g_lastClientRectx;
-extern int g_lastClientRecty;
-extern int g_lastClientRectw;
-extern int g_lastClientRecth;
-
-extern bool g_bHighliteTracks;
-extern int g_cog_predictor_width;
-extern int g_ais_cog_predictor_width;
-
-extern wxColour g_colourTrackLineColour;
-extern wxString g_default_wp_icon;
-
-extern ChartGroupArray *g_pGroupArray;
-
-extern bool g_bDebugOGL;
-extern wxString g_uploadConnection;
-
-extern std::vector<std::string> TideCurrentDataSet;
-extern wxString g_TCData_Dir;
-
-extern bool g_bresponsive;
-
-extern bool g_bGLexpert;
-
-extern int g_SENC_LOD_pixels;
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-
-extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
-extern double g_display_size_mm;
-extern std::vector<size_t> g_config_display_size_mm;
-extern bool g_config_display_size_manual;
-
-extern bool g_benable_rotate;
-extern bool g_bEmailCrashReport;
-
-extern int g_default_font_size;
-
-extern bool g_bAutoHideToolbar;
-extern int g_nAutoHideToolbar;
-extern int g_GUIScaleFactor;
-extern int g_ChartScaleFactor;
-extern int g_ShipScaleFactor;
-
-extern int g_iENCToolbarPosX;
-extern int g_iENCToolbarPosY;
-
-extern bool g_bSpaceDropMark;
-
-extern bool g_bShowMenuBar;
-extern bool g_bShowCompassWin;
-
-extern wxString g_uiStyle;
-extern bool g_useMUI;
-extern wxString g_gpx_path;
-
-extern unsigned int g_canvasConfig;
-
-#ifdef ocpnUSE_GL
-extern ocpnGLOptions g_GLOptions;
-#endif
+extern s52plib *ps52plib;  // In a library...
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -334,9 +114,6 @@ OCPNConfigObject::OCPNConfigObject(int canvas_config) {
 OCPNConfigObject::~OCPNConfigObject() {}
 
 void OCPNConfigObject::Init() { m_canvasConfig = 0; }
-
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(ConfigObjectList);
 
 //--------------------------------------------------------------------
 //   Private ( XML encoded ) catalog of available configurations
@@ -410,13 +187,13 @@ bool OCPNConfigCatalog::AddConfig(OCPNConfigObject *config,
   if (abuf.data())
     node.append_attribute("title") = abuf.data();
   else
-    node.append_attribute("title") = _T("Substitute Title");
+    node.append_attribute("title") = "Substitute Title";
 
   abuf = config->m_description.ToUTF8();
   if (abuf.data())
     node.append_attribute("description") = abuf.data();
   else
-    node.append_attribute("description") = _T("Substitute Description");
+    node.append_attribute("description") = "Substitute Description";
 
   node.append_attribute("templateFile") = config->templateFileName.mb_str();
 
@@ -502,14 +279,14 @@ ConfigMgr::ConfigMgr() {
 }
 
 ConfigMgr::~ConfigMgr() {
-  configList->Clear();
+  configList->clear();
   delete configList;
 }
 
 void ConfigMgr::Init() {
   m_configDir = g_Platform->GetPrivateDataDir();
   appendOSDirSlash(&m_configDir);
-  m_configDir.append(_T("Configs"));
+  m_configDir.append("Configs");
   appendOSDirSlash(&m_configDir);
   if (!wxFileName::DirExists(m_configDir)) {
     wxFileName::Mkdir(m_configDir);
@@ -517,13 +294,13 @@ void ConfigMgr::Init() {
 
   m_configCatalogName = g_Platform->GetPrivateDataDir();
   appendOSDirSlash(&m_configCatalogName);
-  m_configCatalogName.append(_T("Configs"));
+  m_configCatalogName.append("Configs");
   appendOSDirSlash(&m_configCatalogName);
-  m_configCatalogName.append(_T("configs.xml"));
+  m_configCatalogName.append("configs.xml");
 
   // Create the catalog, if necessary
   if (!wxFileExists(m_configCatalogName)) {
-    wxLogMessage(_T("Creating new Configs catalog: ") + m_configCatalogName);
+    wxLogMessage("Creating new Configs catalog: " + m_configCatalogName);
 
     OCPNConfigCatalog *cat = new OCPNConfigCatalog();
     cat->SetRootConfigNode();
@@ -539,12 +316,11 @@ void ConfigMgr::Init() {
   wxString t_title = _("Recovery Template");
   wxString t_desc =
       _("Apply this template to return to a known safe configuration");
-  CreateNamedConfig(t_title, t_desc,
-                    _T("11111111-1111-1111-1111-111111111111"));
+  CreateNamedConfig(t_title, t_desc, "11111111-1111-1111-1111-111111111111");
 }
 
 bool ConfigMgr::LoadCatalog() {
-  wxLogMessage(_T("Loading Configs catalog: ") + m_configCatalogName);
+  wxLogMessage("Loading Configs catalog: " + m_configCatalogName);
   m_configCatalog->LoadFile(m_configCatalogName);
 
   // Parse the config catalog
@@ -565,9 +341,8 @@ bool ConfigMgr::LoadCatalog() {
           wxString::FromUTF8(object.attribute("GUID").as_string());
 
       bool bFound = false;
-      for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-           node = node->GetNext()) {
-        OCPNConfigObject *look = node->GetData();
+      for (auto it = configList->begin(); it != configList->end(); ++it) {
+        OCPNConfigObject *look = *it;
         if (look->m_GUID == testGUID) {
           bFound = true;
           break;
@@ -587,7 +362,7 @@ bool ConfigMgr::LoadCatalog() {
             wxString::FromUTF8(object.attribute("templateFile").as_string());
 
         // Add to the class list of configs
-        configList->Append(newConfig);
+        configList->push_back(newConfig);
       }
     }
   }
@@ -623,27 +398,27 @@ wxString ConfigMgr::CreateNamedConfig(const wxString &title,
 
   if (UUID.IsEmpty()) {
     // create template file name
-    pConfig->templateFileName = _T("OCPNTemplate-") + GUID + _T(".conf");
+    pConfig->templateFileName = "OCPNTemplate-" + GUID + ".conf";
 
     //  Save the template contents
     wxString templateFullFileName = GetConfigDir() + pConfig->templateFileName;
     if (!SaveTemplate(templateFullFileName)) {
-      wxLogMessage(_T("Unable to save template titled: ") + title +
-                   _T(" as file: ") + templateFullFileName);
+      wxLogMessage("Unable to save template titled: " + title +
+                   " as file: " + templateFullFileName);
       delete pConfig;
-      return _T("");
+      return "";
     }
   }
 
   // Add this config to the catalog
   if (!m_configCatalog->AddConfig(pConfig, 0)) {
-    wxLogMessage(_T("Unable to add config to catalog...Title: ") + title);
+    wxLogMessage("Unable to add config to catalog...Title: " + title);
     delete pConfig;
-    return _T("");
+    return "";
   }
 
   // Add to the class list of configs
-  configList->Append(pConfig);
+  configList->push_back(pConfig);
 
   if (UUID.IsEmpty()) SaveCatalog();
 
@@ -663,9 +438,9 @@ bool ConfigMgr::DeleteConfig(wxString GUID) {
 
   if (rv) SaveCatalog();
 
-  //  Remove the config from the member list
-  bool bDel = configList->DeleteObject(cfg);
-  if (bDel) delete cfg;
+  //  Remove the config from the member list without deleting it
+  auto found = std::find(configList->begin(), configList->end(), cfg);
+  if (found != configList->end()) configList->erase(found);
 
   return rv;
 }
@@ -686,40 +461,34 @@ wxPanel *ConfigMgr::GetConfigPanel(wxWindow *parent, wxString GUID) {
 
 OCPNConfigObject *ConfigMgr::GetConfig(wxString GUID) {
   // Find the GUID-matching config in the member list
-  for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-       node = node->GetNext()) {
-    OCPNConfigObject *look = node->GetData();
+  for (auto it = configList->begin(); it != configList->end(); ++it) {
+    OCPNConfigObject *look = *it;
     if (look->m_GUID == GUID) {
       return look;
       break;
     }
   }
-
   return NULL;
 }
 
 wxString ConfigMgr::GetTemplateTitle(wxString GUID) {
-  for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-       node = node->GetNext()) {
-    OCPNConfigObject *look = node->GetData();
+  for (auto it = configList->begin(); it != configList->end(); ++it) {
+    OCPNConfigObject *look = *it;
     if (look->m_GUID == GUID) {
       return look->m_title;
       break;
     }
   }
-
   return wxEmptyString;
 }
 
 wxArrayString ConfigMgr::GetConfigGUIDArray() {
   wxArrayString ret_val;
 
-  for (ConfigObjectList::Node *node = configList->GetFirst(); node;
-       node = node->GetNext()) {
-    OCPNConfigObject *look = node->GetData();
+  for (auto it = configList->begin(); it != configList->end(); ++it) {
+    OCPNConfigObject *look = *it;
     ret_val.Add(look->m_GUID);
   }
-
   return ret_val;
 }
 
@@ -732,9 +501,9 @@ bool ConfigMgr::ApplyConfigGUID(wxString GUID) {
     wxString thisConfig = GetConfigDir() + config->templateFileName;
 
     // Special case for Recovery template
-    if (GUID.StartsWith(_T("11111111"))) {
+    if (GUID.StartsWith("11111111")) {
       thisConfig =
-          *GetpSharedDataLocation() + _T("configs/OCPNTemplate-Recovery.conf");
+          *GetpSharedDataLocation() + "configs/OCPNTemplate-Recovery.conf";
     }
 
     MyConfig fconf(thisConfig);
@@ -784,8 +553,8 @@ wxString ConfigMgr::GetUUID(void) {
    * time_hi_and_version field to 4 */
   uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
 
-  str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
-             uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
+  str.Printf("%08x-%04x-%04x-%02x%02x-%04x%08x", uuid.time_low, uuid.time_mid,
+             uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
              uuid.clock_seq_low, uuid.node_hi, uuid.node_low);
 
   return str;
@@ -841,8 +610,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write(_T ( "ShowTrue" ), g_bShowTrue);
   conf->Write(_T ( "ShowMag" ), g_bShowMag);
-  conf->Write(_T ( "UserMagVariation" ),
-              wxString::Format(_T("%.2f"), g_UserVar));
+  conf->Write(_T ( "UserMagVariation" ), wxString::Format("%.2f", g_UserVar));
 
   conf->Write(_T ( "CM93DetailFactor" ), g_cm93_zoom_factor);
   conf->Write(_T ( "CM93DetailZoomPosX" ), g_detailslider_dialog_x);
@@ -877,7 +645,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
               g_own_ship_sog_cog_calc_damp_sec);
 
   conf->Write(_T ( "RouteArrivalCircleRadius" ),
-              wxString::Format(_T("%.3f"), g_n_arrival_circle_radius));
+              wxString::Format("%.3f", g_n_arrival_circle_radius));
   conf->Write(_T ( "ChartQuilting" ), g_bQuiltEnable);
 
   conf->Write(_T ( "StartWithTrackActive" ), g_bTrackCarryOver);
@@ -923,7 +691,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write(_T ( "DisplaySizeMM" ), st0);
   conf->Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
 
-  conf->Write(_T ( "PlanSpeed" ), wxString::Format(_T("%.2f"), g_PlanSpeed));
+  conf->Write(_T ( "PlanSpeed" ), wxString::Format("%.2f", g_PlanSpeed));
 
 #if 0
     wxString vis, invis;
@@ -931,9 +699,9 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     int index = 0;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
         Layer *lay = (Layer *) ( *it );
-        if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
+        if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + ";";
         else
-            invis += ( lay->m_LayerName ) + _T(";");
+            invis += ( lay->m_LayerName ) + ";";
     }
     conf->Write( _T ( "VisibleLayers" ), vis );
     conf->Write( _T ( "InvisibleLayers" ), invis );
@@ -1115,7 +883,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
   for (unsigned int i = 0; i < keyArray.GetCount(); i++) {
     wxString key;
-    key.Printf(_T("Key%i"), i);
+    key.Printf("Key%i", i);
     wxString keyval = keyArray[i];
     conf->Write(key, keyval);
   }
@@ -1396,10 +1164,10 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   // We allow 0-99 backups ov navobj.xml
   CHECK_INT(_T ( "KeepNavobjBackups" ), &g_navobjbackups);
 
-  //     NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
-  //     Read(_T("NMEALogWindowSizeY"), 400L));
-  //     NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
-  //     Read(_T("NMEALogWindowPosY"), 10L));
+  //     NMEALogWindow::Get().SetSize(Read("NMEALogWindowSizeX", 600L),
+  //     Read("NMEALogWindowSizeY", 400L));
+  //     NMEALogWindow::Get().SetPos(Read("NMEALogWindowPosX", 10L),
+  //     Read("NMEALogWindowPosY", 10L));
   //     NMEALogWindow::Get().CheckPos(display_width, display_height);
 
   // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg

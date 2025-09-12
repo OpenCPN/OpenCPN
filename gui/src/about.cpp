@@ -12,13 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Implement about.h
  */
 
@@ -31,42 +30,43 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/textfile.h>
-#include <wx/ffile.h>
 #include <wx/clipbrd.h>
+#include <wx/ffile.h>
 #include <wx/html/htmlwin.h>
+#include <wx/textfile.h>
 #include <wx/tokenzr.h>
-#include <config.h>
+
+#include "config.h"
+
+#include "model/base_platform.h"
 
 #include "about.h"
-#include "gui_lib.h"
 #include "chcanv.h"
-#include "styles.h"
-#include "OCPNPlatform.h"
 #include "FontMgr.h"
+#include "gui_lib.h"
 #include "navutil.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 #include "std_filesystem.h"
+#include "styles.h"
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
-#include "ocpn_frame.h"
-
-extern OCPNPlatform* g_Platform;
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern About* g_pAboutDlgLegacy;
-extern bool g_bresponsive;
-
-wxString OpenCPNVersion("\n      Version ");
 
 #define xID_OK 10009
 
+About* g_pAboutDlgLegacy;
+
+static wxString OpenCPNVersion("\n      Version ");
+
 // clang-format off
 
-const wxString AboutText =
+static const wxString AboutText =
     "<br>OpenCPN<br>"
     "(c) 2000-2024  The OpenCPN Authors<br><br>";
 
-const wxString OpenCPNInfo =
+static const wxString OpenCPNInfo =
     "<br><br>"
     "OpenCPN is a Free Software project, built by sailors. "
     "It is freely available to download and distribute "
@@ -75,7 +75,7 @@ const wxString OpenCPNInfo =
     "or donating funds to the project.<br><br>"
     "For more information, visit http://opencpn.org<br><br>";
 
-const wxString OpenCPNInfoAlt =
+static const wxString OpenCPNInfoAlt =
     "<br><br>"
     "OpenCPN is a Free Software project, built by sailors."
     "The complete source code and many other resources "
@@ -135,7 +135,7 @@ bool About::Create(wxWindow* parent, wxWindowID id, const wxString& caption,
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*qFont);
 
-  m_displaySize = g_Platform->getDisplaySize();
+  m_displaySize = g_BasePlatform->getDisplaySize();
   CreateControls();
   Populate();
 
@@ -192,7 +192,7 @@ void About::Populate(void) {
 
   if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) aboutText.Append("<i>");
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxString msg;
   msg.Printf(" [%d]", androidGetVersionCode());
   wxString OpenCPNVersionAndroid =
@@ -204,14 +204,14 @@ void About::Populate(void) {
 #endif
 
   // Show where the log file is going to be placed
-  wxString log_string = "Logfile location: " + g_Platform->GetLogFileName();
+  wxString log_string = "Logfile location: " + g_BasePlatform->GetLogFileName();
   log_string.Replace("/", "/ ");  // allow line breaks, in a cheap way...
 
   aboutText.Append(log_string);
 
   // Show where the config file is going to be placed
   wxString config_string =
-      "<br><br>Config file location: " + g_Platform->GetConfigFileName();
+      "<br><br>Config file location: " + g_BasePlatform->GetConfigFileName();
   config_string.Replace("/", "/ ");  // allow line breaks, in a cheap way...
   aboutText.Append(config_string);
 
@@ -225,7 +225,7 @@ void About::Populate(void) {
   /// Authors page
   // The HTML Header
   //
-  fs::path data_path(g_Platform->GetSharedDataDir().ToStdString());
+  fs::path data_path(g_BasePlatform->GetSharedDataDir().ToStdString());
   std::ifstream istream(data_path / "Authors.html");
   std::stringstream ss;
   ss << istream.rdbuf();
@@ -242,26 +242,26 @@ void About::Populate(void) {
 
     pLicenseHTMLCtl->SetFonts( face, face, sizes );
 
-    wxTextFile license_filea( m_DataLocn + _T("license.txt") );
+    wxTextFile license_filea( m_DataLocn + "license.txt" );
     if ( license_filea.Open() ) {
         for ( wxString str = license_filea.GetFirstLine(); !license_filea.Eof() ; str = license_filea.GetNextLine() )
-            licenseText.Append( str + _T("<br>") );
+            licenseText.Append( str + "<br>" );
         license_filea.Close();
     } else {
-        wxLogMessage( _T("Could not open License file: ") + m_DataLocn );
+        wxLogMessage( "Could not open License file: " + m_DataLocn );
     }
 
     wxString suppLicense = g_Platform->GetSupplementalLicenseString();
 
-    wxStringTokenizer st(suppLicense, _T("\n"), wxTOKEN_DEFAULT);
+    wxStringTokenizer st(suppLicense, "\n", wxTOKEN_DEFAULT);
     while( st.HasMoreTokens() )
     {
         wxString s1 = st.GetNextToken();
-        licenseText.Append( s1 + _T("<br>") );
+        licenseText.Append( s1 + "<br>" );
     }
 
         // The HTML Footer
-    licenseText.Append( _T("</font></body></html>") );
+    licenseText.Append( "</font></body></html>" );
 
     pLicenseHTMLCtl->SetPage( licenseText );
 #endif
@@ -309,7 +309,7 @@ void About::CreateControls(void) {
   mainSizer->Add(pST1, 0, wxALL | wxEXPAND, 8);
 
   bool orient = m_displaySize.x < m_displaySize.y;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   wxBoxSizer* buttonSizer = new wxBoxSizer(orient ? wxVERTICAL : wxHORIZONTAL);
   mainSizer->Add(buttonSizer, 0, wxALL, 0);
 
@@ -426,13 +426,13 @@ void About::OnNBPageChange(wxNotebookEvent& event) {
     ++points;
 #endif
     int sizes[7];
-    for (int i = -2; i < 5; i++) {
-      sizes[i + 2] = points + i + (i > 0 ? i : 0);
+    for (int j = -2; j < 5; j++) {
+      sizes[j + 2] = points + j + (j > 0 ? j : 0);
     }
     wxString face = dFont->GetFaceName();
 
     /// License page
-    g_Platform->ShowBusySpinner();
+    g_BasePlatform->ShowBusySpinner();
 
     // The HTML Header
     wxString licenseText = wxString::Format(
@@ -451,7 +451,7 @@ void About::OnNBPageChange(wxNotebookEvent& event) {
       wxLogMessage("Could not open License file: " + m_DataLocn);
     }
 
-    wxString suppLicense = g_Platform->GetSupplementalLicenseString();
+    wxString suppLicense = g_BasePlatform->GetSupplementalLicenseString();
 
     wxStringTokenizer st(suppLicense, "\n", wxTOKEN_DEFAULT);
     while (st.HasMoreTokens()) {
@@ -464,7 +464,7 @@ void About::OnNBPageChange(wxNotebookEvent& event) {
 
     pLicenseHTMLCtl->SetPage(licenseText);
 
-    g_Platform->HideBusySpinner();
+    g_BasePlatform->HideBusySpinner();
 
     SetColorScheme();
     m_blicensePageSet = true;
@@ -488,8 +488,8 @@ void About::OnDonateClick(wxCommandEvent& event) {
 
 void About::OnCopyClick(wxCommandEvent& event) {
   wxString filename = event.GetId() == ID_COPYLOG
-                          ? g_Platform->GetLogFileName()
-                          : g_Platform->GetConfigFileName();
+                          ? g_BasePlatform->GetLogFileName()
+                          : g_BasePlatform->GetConfigFileName();
 
   wxFFile file(filename);
 

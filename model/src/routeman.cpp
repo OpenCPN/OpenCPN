@@ -22,31 +22,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include <cmath>
-#include <memory>
-#include <vector>
 
-#include <math.h>
+#include <algorithm>
+#include <cmath>
+#include <list>
+#include <memory>
 #include <stdlib.h>
 #include <time.h>
+#include <vector>
 
 #include <wx/wxprec.h>
-
 #include <wx/image.h>
 #include <wx/jsonval.h>
-#include <wx/listimpl.cpp>
-#include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
 #include "model/autopilot_output.h"
 #include "model/base_platform.h"
+#include "model/comm_drv_n0183_serial.h"
 #include "model/comm_n0183_output.h"
-#include "model/comm_vars.h"
 #include "model/config_vars.h"
-#include "model/cutil.h"
 #include "model/georef.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
+#include "model/navobj_db.h"
 #include "model/nmea_ctx_factory.h"
 #include "model/own_ship.h"
 #include "model/route.h"
@@ -54,9 +52,6 @@
 #include "model/track.h"
 
 #include "observable_globvar.h"
-#include "model/comm_drv_registry.h"
-#include "model/comm_drv_n0183_serial.h"
-#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -73,17 +68,6 @@ RoutePoint *pAnchorWatchPoint2;
 RouteList *pRouteList;
 
 float g_ChartScaleFactorExp;
-
-//    List definitions for Waypoint Manager Icons
-WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
-WX_DECLARE_LIST(wxString, markicon_key_list_type);
-WX_DECLARE_LIST(wxString, markicon_description_list_type);
-
-//    List implementation for Waypoint Manager Icons
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(markicon_bitmap_list_type);
-WX_DEFINE_LIST(markicon_key_list_type);
-WX_DEFINE_LIST(markicon_description_list_type);
 
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);

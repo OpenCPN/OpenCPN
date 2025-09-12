@@ -25,8 +25,12 @@
  *
  */
 
+#include <list>
+
 // Include OCPNPlatform.h before shapefile_basemap.h to prevent obscure syntax
 // error when compiling with VS2022
+#include <list>
+
 #include "OCPNPlatform.h"
 #include "shapefile_basemap.h"
 #include "chartbase.h"
@@ -47,6 +51,8 @@
 extern OCPNPlatform *g_Platform;
 extern wxString gWorldShapefileLocation;
 
+ShapeBaseChartSet gShapeBasemap;
+
 #ifdef ocpnUSE_GL
 
 typedef union {
@@ -60,7 +66,6 @@ typedef union {
     GLdouble b;
   } info;
 } GLvertexshp;
-#include <list>
 
 static std::list<float_2Dpt> g_pvshp;
 static std::list<GLvertexshp *> g_vertexesshp;
@@ -85,7 +90,7 @@ void __CALL_CONVENTION shpscombineCallback(GLdouble coords[3],
 void __CALL_CONVENTION shpserrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+  // wxLogMessage( "OpenGL Tessellation Error: %s", estring );
 }
 
 void __CALL_CONVENTION shpsbeginCallback(GLenum type) {

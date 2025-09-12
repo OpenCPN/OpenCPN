@@ -77,6 +77,9 @@
 #define ID_TRK_MENU_EDIT 7015
 #define ID_TRK_MENU_DELETE 7016
 
+class TrackPropDlg;                    // forward
+extern TrackPropDlg* pTrackPropDialog; /**< Global instance. */
+
 /*!
  * Forward declarations
  */

@@ -271,6 +271,14 @@ wxString& AbstractPlatform::GetSharedDataDir() {
   return m_SData_Dir;
 }
 
+wxString AbstractPlatform::GetSupplementalLicenseString() {
+  wxString lic;
+#ifdef __ANDROID__
+  lic = androidGetSupplementalLicense();
+#endif
+  return lic;
+}
+
 wxString GetPluginDataDir(const char* plugin_name) {
   static const wxString sep = wxFileName::GetPathSeparator();
 

@@ -214,6 +214,11 @@ public:
   const wxBitmap* GetPluginDefaultIcon();
   void SetPluginDefaultIcon(const wxBitmap* bitmap);
 
+  /** Callback invoked in late stage on activating a plugin. */
+  void SetOnActivateCb(std::function<void(const PlugInContainer*)> cb) {
+    m_on_activate_cb = cb;
+  }
+
   /** Callback invoked in late stage on deactivating a plugin. */
   void SetOnDeactivateCb(std::function<void(const PlugInContainer*)> cb) {
     m_on_deactivate_cb = cb;
@@ -301,6 +306,7 @@ private:
 #endif
 
   const wxBitmap* m_default_plugin_icon;
+  std::function<void(const PlugInContainer*)> m_on_activate_cb;
   std::function<void(const PlugInContainer*)> m_on_deactivate_cb;
 
   std::vector<LoadError> load_errors;

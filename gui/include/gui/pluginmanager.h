@@ -76,6 +76,10 @@ class MyFrame;
 // PlugIn Messaging scheme Event
 //----------------------------------------------------------------------------
 
+class PlugInManager;  // forward
+
+extern PlugInManager* g_pi_manager; /**< Global instance */
+
 class OCPN_MsgEvent : public wxEvent {
 public:
   OCPN_MsgEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
@@ -307,6 +311,7 @@ private:
                                   unsigned char dim_ratio);
 
   void ProcessLateInit(const PlugInContainer* pic);
+  void OnPluginActivate(const PlugInContainer* pic);
   void OnPluginDeactivate(const PlugInContainer* pic);
   void HandlePluginLoaderEvents();
   void HandlePluginHandlerEvents();

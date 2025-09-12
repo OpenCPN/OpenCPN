@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Console Canvas
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,19 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * Primary navigation console display for route and vessel tracking.
  */
 
-#ifndef __concanv_H__
-#define __concanv_H__
-
-//----------------------------------------------------------------------------
-//   constants
-//----------------------------------------------------------------------------
+#ifndef concanv_H_
+#define concanv_H_
 
 #include "ocpn_frame.h"  //FIXME (dave)  Only needed for colorscheme stuff
 
@@ -40,8 +32,8 @@
 #define ID_LEGROUTE 1000
 #define SECONDS_PER_DAY 86400
 
-// Class declarations
-class Routeman;
+class APConsole;            // forward
+extern APConsole *console;  ///< Global instance
 
 /**
  * Course Deviation Indicator display. Provides a visual representation

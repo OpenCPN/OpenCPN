@@ -1420,6 +1420,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     const LLBBox &chart_box = cte.GetBBox();
     if ((viewbox.IntersectOut(chart_box))) continue;
 
+    if (cte.GetChartType() == CHART_TYPE_PLUGIN) {
+      if (!ChartData->IsChartAvailable(i)) continue;
+    }
+
     m_fullscreen_index_array.push_back(i);
 
     if (reference_family != cte.GetChartFamily()) {
@@ -2459,7 +2463,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   //    Walk the patch list again, checking the depth units
   //    If they are all the same, then the value is usable
 
-  m_quilt_depth_unit = _T("");
+  m_quilt_depth_unit = "";
   ChartBase *pc = ChartData->OpenChartFromDB(m_refchart_dbIndex, FULL_INIT);
   if (pc) {
     m_quilt_depth_unit = pc->GetDepthUnits();
@@ -2468,13 +2472,13 @@ bool Quilt::Compose(const ViewPort &vp_in) {
       int units = ps52plib->m_nDepthUnitDisplay;
       switch (units) {
         case 0:
-          m_quilt_depth_unit = _T("Feet");
+          m_quilt_depth_unit = "Feet";
           break;
         case 1:
-          m_quilt_depth_unit = _T("Meters");
+          m_quilt_depth_unit = "Meters";
           break;
         case 2:
-          m_quilt_depth_unit = _T("Fathoms");
+          m_quilt_depth_unit = "Fathoms";
           break;
       }
     }
@@ -2494,13 +2498,13 @@ bool Quilt::Compose(const ViewPort &vp_in) {
         int units = ps52plib->m_nDepthUnitDisplay;
         switch (units) {
           case 0:
-            du = _T("Feet");
+            du = "Feet";
             break;
           case 1:
-            du = _T("Meters");
+            du = "Meters";
             break;
           case 2:
-            du = _T("Fathoms");
+            du = "Fathoms";
             break;
         }
       }
@@ -2509,17 +2513,17 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
       if (dul != ml) {
         //    Try all the odd cases
-        if (dul.StartsWith(_T("meters")) && ml.StartsWith(_T("meters")))
+        if (dul.StartsWith("meters") && ml.StartsWith("meters"))
           continue;
-        else if (dul.StartsWith(_T("metres")) && ml.StartsWith(_T("metres")))
+        else if (dul.StartsWith("metres") && ml.StartsWith("metres"))
           continue;
-        else if (dul.StartsWith(_T("fathoms")) && ml.StartsWith(_T("fathoms")))
+        else if (dul.StartsWith("fathoms") && ml.StartsWith("fathoms"))
           continue;
-        else if (dul.StartsWith(_T("met")) && ml.StartsWith(_T("met")))
+        else if (dul.StartsWith("met") && ml.StartsWith("met"))
           continue;
 
         //    They really are different
-        m_quilt_depth_unit = _T("");
+        m_quilt_depth_unit = "";
         break;
       }
     }
@@ -2535,10 +2539,10 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
     if (pqp->b_Valid) {
       if (!ChartData->IsChartInCache(pqp->dbIndex)) {
-        wxLogMessage(_T("   Quilt Compose cache miss..."));
+        wxLogMessage("   Quilt Compose cache miss...");
         ChartData->OpenChartFromDB(pqp->dbIndex, FULL_INIT);
         if (!ChartData->IsChartInCache(pqp->dbIndex)) {
-          wxLogMessage(_T("    Oops, removing from quilt..."));
+          wxLogMessage("    Oops, removing from quilt...");
           pqp->b_Valid = false;
         }
       }

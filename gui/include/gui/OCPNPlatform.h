@@ -55,6 +55,9 @@
 
 #include "model/base_platform.h"
 
+class OCPNPlatform;              // forward
+extern OCPNPlatform *g_Platform; /**< Global instance. */
+
 class MyConfig;
 class ArrayOfCDI;
 
@@ -164,7 +167,6 @@ public:
   //--------------------------------------------------------------------------
 
   MyConfig *GetConfigObject();
-  wxString GetSupplementalLicenseString();
 
   int DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
                            wxString Title, wxString initDir,

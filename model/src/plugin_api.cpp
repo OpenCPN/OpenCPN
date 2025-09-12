@@ -35,6 +35,7 @@
 
 #include "model/base_platform.h"
 #include "model/comm_appmsg.h"
+#include "model/comm_drv_loopback.h"
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_n2k.h"
@@ -194,8 +195,12 @@ CommDriverResult WriteCommDriver(
   if (protocol_it == attributes.end()) return RESULT_COMM_INVALID_PARMS;
   std::string protocol = protocol_it->second;
 
+  // This whole thing is a design collapse. If things were as they should,
+  // all drivers should have the same interface and there should be no
+  // need to handle different protocols separately. Part of the problem
+  // is that there is no "internal" driver.
   if (protocol == "nmea0183") {
-    auto d0183 = dynamic_cast<CommDriverN0183*>(found);
+    auto d0183 = dynamic_cast<CommDriverN0183*>(found);  // FIXME (leamas)
 
     std::string msg(payload->begin(), payload->end());
     std::string id = msg.substr(1, 5);
@@ -211,6 +216,11 @@ CommDriverResult WriteCommDriver(
                                                   msg.substr(space_pos + 1));
     NavMsgBus::GetInstance().Notify(static_pointer_cast<NavMsg>(plugin_msg));
     return RESULT_COMM_NO_ERROR;
+  } else if (protocol == "loopback") {
+    std::string msg(payload->begin(), payload->end());
+    auto navmsg = LoopbackDriver::ParsePluginMessage(msg);
+    bool send_ok = found->SendMessage(navmsg, nullptr);
+    return send_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else {
     return RESULT_COMM_INVALID_PARMS;
   }

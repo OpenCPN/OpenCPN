@@ -168,7 +168,7 @@ OCPNMessageDialog::OCPNMessageDialog(wxWindow* parent, const wxString& message,
     wxBitmap bitmap;
     switch (style & wxICON_MASK) {
       default:
-        wxFAIL_MSG(_T("incorrect log style"));
+        wxFAIL_MSG("incorrect log style");
         // fall through
 
       case wxICON_ERROR:

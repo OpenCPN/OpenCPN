@@ -25,6 +25,8 @@
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
+#include "gl_headers.h"
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
@@ -39,7 +41,7 @@
 #include "model/route_point.h"
 #include "model/select.h"
 
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "navutil.h"
@@ -148,7 +150,7 @@ bool AISTargetAlertDialog::Create(int target_mmsi, wxWindow *parent,
   int font_size = wxMax(8, dFont->GetPointSize());
   wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
-  face = _T("Monospace");
+  face = "Monospace";
 #endif
   wxFont *fp_font = FontMgr::Get().FindOrCreateFont(
       font_size, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, dFont->GetWeight(),
@@ -257,12 +259,12 @@ void AISTargetAlertDialog::UpdateText() {
     wxColor fg = GetForegroundColour();
 
     html.Printf(
-        _T("<html><body bgcolor=#%02x%02x%02x><font ")
-        _T("color=#%02x%02x%02x><center>"),
+        "<html><body bgcolor=#%02x%02x%02x><font "
+        "color=#%02x%02x%02x><center>",
         bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue());
 
     html << m_alert_text;
-    html << _T("</center></font></body></html>");
+    html << "</center></font></body></html>";
 
     m_pAlertTextCtl->SetFonts(face, face, sizes);
     m_pAlertTextCtl->SetPage(html);
@@ -329,7 +331,7 @@ void AISTargetAlertDialog::SetColorScheme(void) {
   //  wxQT has some trouble clearing the background of HTML window...
   wxBitmap tbm(GetSize().x, GetSize().y, -1);
   wxMemoryDC tdc(tbm);
-  //    wxColour cback = GetGlobalColor( _T("YELO1") );
+  //    wxColour cback = GetGlobalColor( "YELO1" );
   tdc.SetBackground(bg);
   tdc.Clear();
   m_pAlertTextCtl->SetBackgroundImage(tbm);

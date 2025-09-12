@@ -40,6 +40,9 @@
 
 extern std::vector<Track *> g_TrackList;
 
+class ActiveTrack;                  // forward
+extern ActiveTrack *g_pActiveTrack; /**< global instance */
+
 struct SubTrack {
   SubTrack() {}
 

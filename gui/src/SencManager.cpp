@@ -40,6 +40,8 @@ extern MyFrame *gFrame;
 extern int g_nCPUCount;
 extern S57ClassRegistrar *g_poRegistrar;
 
+SENCThreadManager *g_SencThreadManager;
+
 //----------------------------------------------------------------------------------
 //      SENCJobTicket Implementation
 //----------------------------------------------------------------------------------
@@ -153,7 +155,7 @@ void SENCThreadManager::StartTopJob() {
 
   if (nRunning) {
     wxString count;
-    count.Printf(_T("  %ld"), ticket_list.size());
+    count.Printf("  %ld", ticket_list.size());
     if (gFrame->GetPrimaryCanvas())
       gFrame->GetPrimaryCanvas()->SetAlertString(_("Preparing vector chart  ") +
                                                  count);
@@ -185,13 +187,13 @@ void SENCThreadManager::FinishJob(SENCJobTicket *ticket) {
 
   if (nRunning) {
     wxString count;
-    count.Printf(_T("  %ld"), ticket_list.size());
+    count.Printf("  %ld", ticket_list.size());
     if (gFrame->GetPrimaryCanvas())
       gFrame->GetPrimaryCanvas()->SetAlertString(_("Preparing vector chart  ") +
                                                  count);
   } else {
     if (gFrame->GetPrimaryCanvas())
-      gFrame->GetPrimaryCanvas()->SetAlertString(_T(""));
+      gFrame->GetPrimaryCanvas()->SetAlertString("");
   }
 #endif
 }

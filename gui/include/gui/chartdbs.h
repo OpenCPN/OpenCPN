@@ -1,11 +1,6 @@
 /**************************************************************************
- *
- * Project:  ChartManager
- * Purpose:  Basic Chart Info Storage
- * Author:   David S Register, Mark A Sikes
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register *
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010 by Mark A Sikes                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Basic chart info storage
+ */
 
 #ifndef __CHARTDBS_H__
 #define __CHARTDBS_H__
@@ -30,12 +29,14 @@
 #include <memory>
 #include <vector>
 
+#include <wx/progdlg.h>
+
 #include "model/ocpn_types.h"
 #include "bbox.h"
 #include "LLRegion.h"
 
-class wxGenericProgressDialog;
-class ChartBase;
+class ChartGroupArray;                 // forward
+extern ChartGroupArray *g_pGroupArray; /**< Global instance */
 
 //    A small class used in an array to describe chart directories
 class ChartDirInfo {

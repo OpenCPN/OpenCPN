@@ -167,12 +167,12 @@ void GSHHSChart::RenderViewOnDC(ocpnDC &dc, ViewPort &vp) {
     reader = new GshhsReader();
     if (reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 240) {
       wxLogMessage(
-          _T("GSHHS World chart files have wrong version. Found %d, expected ")
-          _T("210-220."),
+          "GSHHS World chart files have wrong version. Found %d, expected "
+          "210-220.",
           reader->GetPolyVersion());
     } else {
       wxLogMessage(
-          _T("Background world map loaded from GSHHS datafiles found in: ") +
+          "Background world map loaded from GSHHS datafiles found in: " +
           gWorldMapLocation);
     }
   }
@@ -240,7 +240,7 @@ void GshhsPolyCell::ReadPoly(contour_list &poly) {
   return;
 
 fail:
-  wxLogMessage(_T("gshhs ReadPoly failed"));
+  wxLogMessage("gshhs ReadPoly failed");
 }
 
 void GshhsPolyCell::ReadPolygonFile() {
@@ -264,7 +264,7 @@ void GshhsPolyCell::ReadPolygonFile() {
   return;
 
 fail:
-  wxLogMessage(_T("gshhs ReadPolygon failed"));
+  wxLogMessage("gshhs ReadPolygon failed");
 }
 
 wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon) {
@@ -385,7 +385,7 @@ void __CALL_CONVENTION gshhsvertexCallback(GLvoid *arg) {
 void __CALL_CONVENTION gshhserrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+  // wxLogMessage( "OpenGL Tessellation Error: %s", estring );
 }
 
 void __CALL_CONVENTION gshhsbeginCallback(GLenum type) {
@@ -901,7 +901,7 @@ void GshhsPolyReader::readPolygonFileHeader(FILE *polyfile,
                                             PolygonFileHeader *header) {
   fseek(polyfile, 0, SEEK_SET);
   if (fread(header, sizeof(PolygonFileHeader), 1, polyfile) != 1)
-    wxLogMessage(_T("gshhs ReadPolygonFileHeader failed"));
+    wxLogMessage("gshhs ReadPolygonFileHeader failed");
 }
 
 //-------------------------------------------------------------------------
@@ -1145,8 +1145,8 @@ GshhsReader::GshhsReader() {
 
   if (maxQualityAvailable < 0) {
     wxString msg(
-        _T("Unable to initialize background world map. No GSHHS datafiles ")
-        _T("found in "));
+        "Unable to initialize background world map. No GSHHS datafiles "
+        "found in ");
     msg += gWorldMapLocation;
     wxLogMessage(msg);
   }
@@ -1207,22 +1207,22 @@ wxString GshhsReader::getNameExtension(int quality) {
   wxString ext;
   switch (quality) {
     case 0:
-      ext = _T("c");
+      ext = "c";
       break;
     case 1:
-      ext = _T("l");
+      ext = "l";
       break;
     case 2:
-      ext = _T("i");
+      ext = "i";
       break;
     case 3:
-      ext = _T("h");
+      ext = "h";
       break;
     case 4:
-      ext = _T("f");
+      ext = "f";
       break;
     default:
-      ext = _T("l");
+      ext = "l";
       break;
   }
   return ext;
@@ -1231,21 +1231,21 @@ wxString GshhsReader::getNameExtension(int quality) {
 wxString GshhsReader::getFileName_Land(int quality) {
   wxString ext = GshhsReader::getNameExtension(quality);
   wxString fname =
-      gWorldMapLocation + wxString::Format(_T("poly-%c-1.dat"), ext.GetChar(0));
+      gWorldMapLocation + wxString::Format("poly-%c-1.dat", ext.GetChar(0));
   return fname;
 }
 
 wxString GshhsReader::getFileName_boundaries(int quality) {
   wxString ext = GshhsReader::getNameExtension(quality);
-  wxString fname = gWorldMapLocation +
-                   wxString::Format(_T("wdb_borders_%c.b"), ext.GetChar(0));
+  wxString fname =
+      gWorldMapLocation + wxString::Format("wdb_borders_%c.b", ext.GetChar(0));
   return fname;
 }
 
 wxString GshhsReader::getFileName_rivers(int quality) {
   wxString ext = GshhsReader::getNameExtension(quality);
-  wxString fname = gWorldMapLocation +
-                   wxString::Format(_T("wdb_rivers_%c.b"), ext.GetChar(0));
+  wxString fname =
+      gWorldMapLocation + wxString::Format("wdb_rivers_%c.b", ext.GetChar(0));
   return fname;
 }
 
@@ -1316,7 +1316,7 @@ void GshhsReader::LoadQuality(int newQuality)  // 5 levels: 0=low ... 4=full
         }
     }
 #endif
-  wxLogMessage(_T("Loading World Chart Q=%d in %ld ms."), quality,
+  wxLogMessage("Loading World Chart Q=%d in %ld ms.", quality,
                perftimer.Time());
 }
 

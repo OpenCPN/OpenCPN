@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Canvas Options Window/Dialog
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,19 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Implement canvas_options.h -- Canvas options Window/Dialog
  */
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/artprov.h>
 #include <wx/statline.h>
@@ -38,11 +33,11 @@
 #include "dychart.h"
 
 #include "chcanv.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "gui_lib.h"
 #include "s52plib.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -78,7 +73,7 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
   mstyle |= wxSTAY_ON_TOP;
 #endif
 
-  wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
+  wxDialog::Create(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
                    mstyle);
 
   wxBoxSizer* topsizer = new wxBoxSizer(wxVERTICAL);
@@ -332,7 +327,7 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
                       wxCommandEventHandler(CanvasOptions::OnOptionChange),
                       NULL, this);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 

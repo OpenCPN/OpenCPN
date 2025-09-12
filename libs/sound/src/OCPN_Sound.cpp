@@ -24,6 +24,7 @@
 
 #include "OCPN_Sound.h"
 
+
 OcpnSound::OcpnSound() {
   m_OK = false;
   m_deviceIx = -1;

@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,24 +12,30 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Class AISTargetQueryDialog
+ */
 
 #ifndef __AISTARGETQUERYDIALOG_H__
 #define __AISTARGETQUERYDIALOG_H__
 
 #include <wx/frame.h>
+#include <wx/html/htmlwin.h>
 #include <wx/sizer.h>
 
+#include "model/ais_target_data.h"
 #include "model/ocpn_types.h"
 #include "color_types.h"
 
-#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT
+class AISTargetQueryDialog;                               // forward
+extern AISTargetQueryDialog* g_pais_query_dialog_active;  ///< Global instance
 
-class wxHtmlWindow;
-class AisTargetData;
+#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT
 
 /**
  * Dialog for querying detailed information about an AIS target. Displays

@@ -50,6 +50,9 @@
 
 class ChartBase;
 
+class ThumbWin;              // forward
+extern ThumbWin *pthumbwin;  ///< Global instance
+
 /**
  * Window for displaying chart thumbnails.
  */

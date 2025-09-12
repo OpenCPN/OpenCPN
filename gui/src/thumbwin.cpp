@@ -42,6 +42,9 @@
 #include "chartdb.h"
 #include "model/wx28compat.h"
 #include "color_handler.h"
+
+ThumbWin *pthumbwin;
+
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
 //------------------------------------------------------------------------------
@@ -83,9 +86,9 @@ void ThumbWin::OnPaint(wxPaintEvent &event) {
       if (pThumbChart->GetThumbData()->pDIBThumb)
         dc.DrawBitmap(*(pThumbChart->GetThumbData()->pDIBThumb), 0, 0, false);
 
-      wxPen ppPen(GetGlobalColor(_T("CHBLK")), 1, wxPENSTYLE_SOLID);
+      wxPen ppPen(GetGlobalColor("CHBLK"), 1, wxPENSTYLE_SOLID);
       dc.SetPen(ppPen);
-      wxBrush yBrush(GetGlobalColor(_T("CHYLW")), wxBRUSHSTYLE_SOLID);
+      wxBrush yBrush(GetGlobalColor("CHYLW"), wxBRUSHSTYLE_SOLID);
       dc.SetBrush(yBrush);
       dc.DrawCircle(pThumbChart->GetThumbData()->ShipX,
                     pThumbChart->GetThumbData()->ShipY, 6);

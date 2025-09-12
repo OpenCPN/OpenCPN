@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,13 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
-#include "config.h"
+/**
+ * \file
+ *
+ * Implement catalog_mgr.h -- Catalog options dialog, by default disabled.
+ */
 
 #include <fstream>
 #include <sstream>
@@ -45,8 +42,6 @@
 #include "OCPNPlatform.h"
 #include "model/plugin_handler.h"
 #include "download_mgr.h"
-
-extern OCPNPlatform* g_Platform;
 
 /** Posted by Worker() in CatalogLoad, consumed by CatalogLoad::DialogGrid. */
 wxDEFINE_EVENT(CHANNELS_DL_DONE, wxCommandEvent);

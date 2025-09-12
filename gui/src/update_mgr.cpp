@@ -161,7 +161,7 @@ protected:
 
     if (!ok) {
       auto style = g_StyleManager->GetCurrentStyle();
-      bitmap = wxBitmap(style->GetIcon(_T("default_pi"), size, size));
+      bitmap = wxBitmap(style->GetIcon("default_pi", size, size));
       wxLogMessage("Icon: %s not found.", path.GetFullPath());
     }
 
@@ -176,7 +176,7 @@ protected:
                 }
                 if (!ok) {
                     auto style = g_StyleManager->GetCurrentStyle();
-                    bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
+                    bitmap = wxBitmap(style->GetIcon( "default_pi"));
                 }
     */
   }
@@ -292,7 +292,7 @@ public:
 
     // m_summary = staticText(plugin->summary);
     m_summary = new wxStaticText(
-        this, wxID_ANY, _T(""), wxDefaultPosition,
+        this, wxID_ANY, "", wxDefaultPosition,
         wxSize(m_widthDescription, -1) /*, wxST_NO_AUTORESIZE*/);
     m_summaryText = wxString(plugin->summary.c_str());
     m_summary->SetLabel(m_summaryText);
@@ -322,7 +322,7 @@ public:
     auto name = staticText(nameText);
 
     m_descr = new wxStaticText(
-        this, wxID_ANY, _T(""), wxDefaultPosition,
+        this, wxID_ANY, "", wxDefaultPosition,
         wxSize(m_widthDescription, -1) /*, wxST_NO_AUTORESIZE*/);
     m_descText = wxString(plugin->description.c_str());
     m_descr->SetLabel(m_descText);

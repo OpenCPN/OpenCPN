@@ -546,7 +546,7 @@ bool OCPNRegion::ODoUnionWithRect(const wxRect &r) {
 }
 
 bool OCPNRegion::ODoUnionWithRegion(const OCPNRegion &region) {
-  wxCHECK_MSG(region.Ok(), false, _T("invalid region"));
+  wxCHECK_MSG(region.Ok(), false, "invalid region");
 
   if (!m_refData) {
     m_refData = new OCPNRegionRefData();
@@ -561,7 +561,7 @@ bool OCPNRegion::ODoUnionWithRegion(const OCPNRegion &region) {
 }
 
 bool OCPNRegion::ODoIntersect(const OCPNRegion &region) {
-  wxCHECK_MSG(region.Ok(), false, _T("invalid region"));
+  wxCHECK_MSG(region.Ok(), false, "invalid region");
 
   if (!m_refData) {
     // intersecting with invalid region doesn't make sense
@@ -577,7 +577,7 @@ bool OCPNRegion::ODoIntersect(const OCPNRegion &region) {
 }
 
 bool OCPNRegion::ODoSubtract(const OCPNRegion &region) {
-  wxCHECK_MSG(region.Ok(), false, _T("invalid region"));
+  wxCHECK_MSG(region.Ok(), false, "invalid region");
   if (!m_refData) {
     // subtracting from an invalid region doesn't make sense
     return false;
@@ -593,7 +593,7 @@ bool OCPNRegion::ODoSubtract(const OCPNRegion &region) {
 #if 0
 bool OCPNRegion::DoXor( const OCPNRegion& region )
 {
-    wxCHECK_MSG( region.Ok(), false, _T("invalid region") );
+    wxCHECK_MSG( region.Ok(), false, "invalid region" );
 
     if (!m_refData)
     {

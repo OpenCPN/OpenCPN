@@ -40,6 +40,8 @@
 #include "model/georef.h"
 #include "model/logger.h"
 
+TCMgr *ptcmgr;  ///< Global instance
+
 //-----------------------------------------------------------------------------------
 //    TIDELIB
 //-----------------------------------------------------------------------------------
@@ -654,13 +656,12 @@ TC_Error_Code TCMgr::LoadDataSources(std::vector<std::string> &sources) {
     TC_Error_Code r = s->LoadData(src);
     if (r != TC_NO_ERROR) {
       wxString msg;
-      msg.Printf(_T("   Error loading Tide/Currect data source %s "),
-                 src.c_str());
+      msg.Printf("   Error loading Tide/Currect data source %s ", src.c_str());
       if (r == TC_FILE_NOT_FOUND)
-        msg += _T("Error Code: TC_FILE_NOT_FOUND");
+        msg += "Error Code: TC_FILE_NOT_FOUND";
       else {
         wxString msg1;
-        msg1.Printf(_T("Error code: %d"), r);
+        msg1.Printf("Error code: %d", r);
         msg += msg1;
       }
       wxLogMessage(msg);
@@ -1075,8 +1076,8 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
   wxString locn;
   double distx = 100000.;
 
-  // if (prp->m_MarkName.Find(_T("@~~")) != wxNOT_FOUND) {
-  // tide_form = prp->m_MarkName.Mid(prp->m_MarkName.Find(_T("@~~"))+3);
+  // if (prp->m_MarkName.Find("@~~") != wxNOT_FOUND) {
+  // tide_form = prp->m_MarkName.Mid(prp->m_MarkName.Find("@~~")+3);
   int jmax = Get_max_IDX();
 
   for (int j = 1; j < Get_max_IDX() + 1; j++) {

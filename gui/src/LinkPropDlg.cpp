@@ -122,8 +122,8 @@ void LinkPropImpl::OnLocalFileClick(wxCommandEvent& event) {
   wxString filename = wxFileSelector(_("Choose a file"));
   if (!filename.empty()) {
     wxString url = wxFileSystem::FileNameToURL(filename);
-    url.Replace(_T("%3A"), _T(":"));  // The replace hack is a way to make it
-                                      // work on Windows... I hate it.
+    url.Replace("%3A", ":");  // The replace hack is a way to make it
+                              // work on Windows... I hate it.
     m_textCtrlLinkUrl->SetValue(url);
   }
 }

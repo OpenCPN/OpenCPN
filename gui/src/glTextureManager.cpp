@@ -24,6 +24,8 @@
  ***************************************************************************
  */
 
+#include <algorithm>
+
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
 #include <wx/wx.h>
@@ -62,8 +64,8 @@
 #include "lz4hc.h"
 
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST(JobList);
-WX_DEFINE_LIST(ProgressInfoList);
+
+using JobList = std::list<JobTicket *>;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
@@ -102,7 +104,7 @@ wxString CompressedCachePath(wxString path) {
   /* replace path separators with ! */
   wxChar separator = wxFileName::GetPathSeparator();
   for (unsigned int pos = 0; pos < path.size(); pos = path.find(separator, pos))
-    path.replace(pos, 1, _T("!"));
+    path.replace(pos, 1, "!");
 
   //  Obfuscate the compressed chart file name, to (slightly) protect some
   //  encrypted raster chart data.
@@ -113,12 +115,12 @@ wxString CompressedCachePath(wxString path) {
   wxString sha1;
   for (unsigned int i = 0; i < 20; i++) {
     wxString s;
-    s.Printf(_T("%02X"), sha1_out[i]);
+    s.Printf("%02X", sha1_out[i]);
     sha1 += s;
   }
 
-  return g_Platform->GetPrivateDataDir() + separator +
-         _T("raster_texture_cache") + separator + sha1;
+  return g_Platform->GetPrivateDataDir() + separator + "raster_texture_cache" +
+         separator + sha1;
 }
 
 int g_mipmap_max_level = 4;
@@ -725,7 +727,7 @@ glTextureManager::glTextureManager() {
 
   m_progDialog = NULL;
 
-  for (int i = 0; i < m_max_jobs; i++) progList.Append(new ProgressInfoItem);
+  for (int i = 0; i < m_max_jobs; i++) progList.push_back(new ProgressInfoItem);
 
   //  Create/connect a dynamic event handler slot for messages from the worker
   //  threads
@@ -747,9 +749,11 @@ glTextureManager::~glTextureManager() {
   //    ClearAllRasterTextures();
   ClearJobList();
   for (int i = 0; i < m_max_jobs; i++) {
-    delete (progList[i]);
+    auto it = progList.begin();
+    std::advance(it, i);
+    delete *it;
   }
-  progList.Clear();
+  progList.clear();
   for (auto hash : m_chart_texfactory_hash) {
     delete hash.second;
   }
@@ -769,27 +773,23 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     // Look for a matching entry...
     bool bfound = false;
     ProgressInfoItem *item;
-    wxProgressInfoListNode *tnode = progList.GetFirst();
-    while (tnode) {
-      item = tnode->GetData();
+    for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
+      item = *tnode;
       if (item->file_path == ticket->m_ChartPath) {
         bfound = true;
         break;
       }
-      tnode = tnode->GetNext();
     }
 
     if (!bfound) {
       // look for an empty slot
-      tnode = progList.GetFirst();
-      while (tnode) {
-        item = tnode->GetData();
+      for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
+        item = *tnode;
         if (item->file_path.IsEmpty()) {
           bfound = true;
           item->file_path = ticket->m_ChartPath;
           break;
         }
-        tnode = tnode->GetNext();
       }
     }
 
@@ -799,8 +799,8 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
         int bar_length = NBAR_LENGTH;
         if (m_bcompact) bar_length = 20;
 
-        msgx += _T("\n[");
-        wxString block = wxString::Format(_T("%c"), 0x2588);
+        msgx += "\n[";
+        wxString block = wxString::Format("%c", 0x2588);
         float cutoff = -1.;
         if (event.nstat_max != 0)
           cutoff = ((event.nstat + 1) / (float)event.nstat_max) * bar_length;
@@ -808,34 +808,32 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
           if (i <= cutoff)
             msgx += block;
           else
-            msgx += _T("-");
+            msgx += "-";
         }
-        msgx += _T("]");
+        msgx += "]";
 
         if (!m_bcompact) {
           wxString msgy;
-          msgy.Printf(_T("  [%3d/%3d]  "), event.nstat + 1, event.nstat_max);
+          msgy.Printf("  [%3d/%3d]  ", event.nstat + 1, event.nstat_max);
           msgx += msgy;
 
           wxFileName fn(ticket->m_ChartPath);
           msgx += fn.GetFullName();
         }
       } else
-        msgx.Printf(_T("\n %3d/%3d"), event.nstat + 1, event.nstat_max);
+        msgx.Printf("\n %3d/%3d", event.nstat + 1, event.nstat_max);
 
       item->msgx = msgx;
     }
 
     // Ready to compose
     wxString msg;
-    tnode = progList.GetFirst();
-    while (tnode) {
-      item = tnode->GetData();
-      msg += item->msgx + _T("\n");
-      tnode = tnode->GetNext();
+    for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
+      item = *tnode;
+      msg += item->msgx + "\n";
     }
 
-    if (m_skipout) m_progMsg = _T("Skipping, please wait...\n\n");
+    if (m_skipout) m_progMsg = "Skipping, please wait...\n\n";
 
     if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip)) m_skip = true;
     if (m_skip) m_skipout = true;
@@ -852,8 +850,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
       printf(
           "    Abort job: %08X  Jobs running: %d             Job count: %lu   "
           "\n",
-          ticket->ident, GetRunningJobCount(),
-          (unsigned long)todo_list.GetCount());
+          ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.size());
   } else if (!ticket->b_inCompressAll) {
     //   Normal completion from here
     glTextureDescriptor *ptd = ticket->pFact->GetpTD(ticket->m_rect);
@@ -879,8 +876,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
       printf(
           "    Finished job: %08X  Jobs running: %d             Job count: %lu "
           "  \n",
-          ticket->ident, GetRunningJobCount(),
-          (unsigned long)todo_list.GetCount());
+          ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.size());
   }
 
   //      Free all possible memory
@@ -891,15 +887,14 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     delete ticket->pFact;
   }
 
-  wxProgressInfoListNode *tnode = progList.GetFirst();
-  while (tnode) {
-    ProgressInfoItem *item = tnode->GetData();
-    if (item->file_path == ticket->m_ChartPath) item->file_path = _T("");
-    tnode = tnode->GetNext();
+  for (auto tnode = progList.begin(); tnode != progList.end(); ++tnode) {
+    ProgressInfoItem *item = *tnode;
+    if (item->file_path == ticket->m_ChartPath) item->file_path = "";
   }
 
   if (g_raster_format != GL_COMPRESSED_RGB_FXT1_3DFX) {
-    running_list.DeleteObject(ticket);
+    auto found = std::find(running_list.begin(), running_list.end(), ticket);
+    if (found != running_list.end()) running_list.erase(found);
     StartTopJob();
   }
 
@@ -956,38 +951,35 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
                                    bool b_inplace) {
   wxString chart_path = client->GetChartPath();
   if (!b_nolimit) {
-    if (todo_list.GetCount() >= 50) {
+    if (todo_list.size() >= 50) {
       // remove last job which is least important
-      wxJobListNode *node = todo_list.GetLast();
-      JobTicket *ticket = node->GetData();
-      todo_list.DeleteNode(node);
+      auto node = todo_list.rbegin();
+      JobTicket *ticket = *node;
+      auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
+      todo_list.erase(found);
       delete ticket;
     }
 
     //  Avoid adding duplicate jobs, i.e. the same chart_path, and the same
     //  rectangle
-    wxJobListNode *node = todo_list.GetFirst();
-    while (node) {
-      JobTicket *ticket = node->GetData();
+    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+      JobTicket *ticket = *node;
       if ((ticket->m_ChartPath == chart_path) && (ticket->m_rect == rect)) {
         // bump to front
-        todo_list.DeleteNode(node);
-        todo_list.Insert(ticket);
+        auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
+        if (found != todo_list.end()) todo_list.erase(found);
+        todo_list.insert(todo_list.begin(), ticket);
         ticket->level_min_request = level;
         return false;
       }
-
-      node = node->GetNext();
     }
 
     // avoid duplicate worker jobs
-    wxJobListNode *tnode = running_list.GetFirst();
-    while (tnode) {
-      JobTicket *ticket = tnode->GetData();
+    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+      JobTicket *ticket = *node;
       if (ticket->m_rect == rect && ticket->m_ChartPath == chart_path) {
         return false;
       }
-      tnode = tnode->GetNext();
     }
   }
 
@@ -1018,12 +1010,12 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
   we can use multiple threads to take advantage of multiple cores */
 
   if (g_raster_format != GL_COMPRESSED_RGB_FXT1_3DFX) {
-    todo_list.Insert(pt);  // push to front as a stack
+    todo_list.insert(todo_list.begin(), pt);  // push to front as a stack
     if (bthread_debug) {
       int mem_used;
       GetMemoryStatus(0, &mem_used);
       printf("Adding job: %08X  Job Count: %lu  mem_used %d\n", pt->ident,
-             (unsigned long)todo_list.GetCount(), mem_used);
+             (unsigned long)todo_list.size(), mem_used);
     }
 
     StartTopJob();
@@ -1044,16 +1036,16 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
 }
 
 bool glTextureManager::StartTopJob() {
-  wxJobListNode *node = todo_list.GetFirst();
-  if (!node) return false;
+  auto node = todo_list.begin();
+  if (node == todo_list.end()) return false;
 
-  JobTicket *ticket = node->GetData();
+  JobTicket *ticket = *node;
 
   //  Is it possible to start another job?
   if (GetRunningJobCount() >= wxMax(m_max_jobs - ticket->b_throttle, 1))
     return false;
-
-  todo_list.DeleteNode(node);
+  auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
+  if (found != todo_list.end()) todo_list.erase(found);
 
   glTextureDescriptor *ptd = ticket->pFact->GetpTD(ticket->m_rect);
   // don't need the job if we already have the compressed data
@@ -1075,7 +1067,7 @@ bool glTextureManager::StartTopJob() {
     }
   }
 
-  running_list.Append(ticket);
+  running_list.push_back(ticket);
   DoThreadJob(ticket);
 
   return true;
@@ -1085,7 +1077,7 @@ bool glTextureManager::DoThreadJob(JobTicket *pticket) {
   if (bthread_debug)
     printf("  Starting job: %08X  Jobs running: %d Jobs left: %lu\n",
            pticket->ident, GetRunningJobCount(),
-           (unsigned long)todo_list.GetCount());
+           (unsigned long)todo_list.size());
 
   ///    qDebug() << "Starting job" << GetRunningJobCount() <<  (unsigned
   ///    long)todo_list.GetCount() << g_tex_mem_used;
@@ -1099,13 +1091,11 @@ bool glTextureManager::DoThreadJob(JobTicket *pticket) {
 
 bool glTextureManager::AsJob(wxString const &chart_path) const {
   if (chart_path.Len()) {
-    wxJobListNode *tnode = running_list.GetFirst();
-    while (tnode) {
-      JobTicket *ticket = tnode->GetData();
+    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+      JobTicket *ticket = *node;
       if (ticket->m_ChartPath.IsSameAs(chart_path)) {
         return true;
       }
-      tnode = tnode->GetNext();
     }
   }
   return false;
@@ -1114,57 +1104,47 @@ bool glTextureManager::AsJob(wxString const &chart_path) const {
 void glTextureManager::PurgeJobList(wxString chart_path) {
   if (chart_path.Len()) {
     //  Remove all pending jobs relating to the passed chart path
-    wxJobListNode *next, *tnode = todo_list.GetFirst();
-    while (tnode) {
-      JobTicket *ticket = tnode->GetData();
-      next = tnode->GetNext();
+    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+      JobTicket *ticket = *node;
       if (ticket->m_ChartPath.IsSameAs(chart_path)) {
         if (bthread_debug)
           printf("Pool:  Purge pending job for purged chart\n");
-        todo_list.DeleteNode(tnode);
+        auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
+        if (found != todo_list.end()) todo_list.erase(found);
         delete ticket;
       }
-      tnode = next;
     }
 
-    wxJobListNode *node = running_list.GetFirst();
-    while (node) {
-      JobTicket *ticket = node->GetData();
+    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+      JobTicket *ticket = *node;
       if (ticket->m_ChartPath.IsSameAs(chart_path)) {
         ticket->b_abort = true;
       }
-      node = node->GetNext();
     }
 
     if (bthread_debug)
       printf("Pool:  Purge, todo count: %lu\n",
-             (long unsigned)todo_list.GetCount());
+             (long unsigned)todo_list.size());
   } else {
-    wxJobListNode *node = todo_list.GetFirst();
-    while (node) {
-      JobTicket *ticket = node->GetData();
+    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+      JobTicket *ticket = *node;
       delete ticket;
-      node = node->GetNext();
     }
-    todo_list.Clear();
+    todo_list.clear();
     //  Mark all running tasks for "abort"
-    node = running_list.GetFirst();
-    while (node) {
-      JobTicket *ticket = node->GetData();
+    for (auto node = running_list.begin(); node != running_list.end(); ++node) {
+      JobTicket *ticket = *node;
       ticket->b_abort = true;
-      node = node->GetNext();
     }
   }
 }
 
 void glTextureManager::ClearJobList() {
-  wxJobListNode *node = todo_list.GetFirst();
-  while (node) {
-    JobTicket *ticket = node->GetData();
+  for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+    JobTicket *ticket = *node;
     delete ticket;
-    node = node->GetNext();
   }
-  todo_list.Clear();
+  todo_list.clear();
 }
 
 void glTextureManager::ClearAllRasterTextures(void) {
@@ -1179,7 +1159,7 @@ void glTextureManager::ClearAllRasterTextures(void) {
   m_chart_texfactory_hash.clear();
 
   if (g_tex_mem_used != 0)
-    wxLogMessage(_T("Texture memory use calculation error\n"));
+    wxLogMessage("Texture memory use calculation error\n");
 }
 
 bool glTextureManager::PurgeChartTextures(ChartBase *pc, bool b_purge_factory) {
@@ -1369,13 +1349,12 @@ void glTextureManager::BuildCompressedCache() {
 
   if (count == 0) return;
 
-  wxLogMessage(
-      wxString::Format(_T("BuildCompressedCache() count = %d"), count));
+  wxLogMessage(wxString::Format("BuildCompressedCache() count = %d", count));
 
   m_timer.Stop();
   PurgeJobList();
   if (GetRunningJobCount()) {
-    wxLogMessage(_T("Starting compressor pool drain"));
+    wxLogMessage("Starting compressor pool drain");
     wxDateTime now = wxDateTime::Now();
     time_t stall = now.GetTicks();
 #define THREAD_WAIT_SECONDS 5
@@ -1387,8 +1366,7 @@ void glTextureManager::BuildCompressedCache() {
       stall = later.GetTicks();
 
       wxString msg;
-      msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop,
-                 GetRunningJobCount());
+      msg.Printf("Time: %d  Job Count: %d", n_comploop, GetRunningJobCount());
       wxLogMessage(msg);
       if (!GetRunningJobCount()) break;
       wxYield();
@@ -1396,7 +1374,7 @@ void glTextureManager::BuildCompressedCache() {
     }
 
     wxString fmsg;
-    fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
+    fmsg.Printf("Finished compressor pool drain..Time: %d  Job Count: %d",
                 n_comploop, GetRunningJobCount());
     wxLogMessage(fmsg);
   }
@@ -1429,18 +1407,18 @@ void glTextureManager::BuildCompressedCache() {
 
   wxString msg0;
   msg0 =
-      _T("                                                                    ")
-      _T("           \n  \n  ");
+      "                                                                    "
+      "           \n  \n  ";
 
 #ifdef __WXQT__
   msg0 =
-      _T("Very ")
-      _T("longgggggggggggggggggggggggggggggggggggggggggggg\ngggggggggggggggggg")
-      _T("gggggggggggggggggggggggggg top line ");
+      "Very "
+      "longgggggggggggggggggggggggggggggggggggggggggggg\ngggggggggggggggggg"
+      "gggggggggggggggggggggggggg top line ";
 #endif
 
   for (int i = 0; i < m_max_jobs + 1; i++)
-    msg0 += _T("\n                                             ");
+    msg0 += "\n                                             ";
 
   m_progDialog = new wxGenericProgressDialog();
 
@@ -1461,8 +1439,8 @@ void glTextureManager::BuildCompressedCache() {
   //  Should we use "compact" screen layout?
   wxScreenDC sdc;
   int height, width;
-  sdc.GetTextExtent(_T("[WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW]"), &width, &height,
-                    NULL, NULL, sFont);
+  sdc.GetTextExtent("[WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW]", &width, &height, NULL,
+                    NULL, sFont);
   if (width > (csz.x / 2)) m_bcompact = true;
 
   m_progDialog->Create(_("OpenCPN Compressed Cache Update"), msg0, count + 1,
@@ -1504,7 +1482,7 @@ void glTextureManager::BuildCompressedCache() {
 
     m_progMsg.Printf(_("Distance from Ownship:  %4.0f NMi"), distance);
     m_progMsg += "\n";
-    m_progMsg.Prepend(_T("Preparing RNC Cache...\n"));
+    m_progMsg.Prepend("Preparing RNC Cache...\n");
 
     if (m_skipout) {
       g_glTextureManager->PurgeJobList();

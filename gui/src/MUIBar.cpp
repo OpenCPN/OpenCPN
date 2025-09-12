@@ -38,7 +38,7 @@
 #include "chcanv.h"
 #include "MUIBar.h"
 #include "OCPNPlatform.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "DetailSlider.h"
 #include "GoToPositionDialog.h"
 #include "styles.h"
@@ -177,12 +177,12 @@ void SetScaleDialog::CreateControls() {
   itemBoxSizer2->Add(itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5);
 
   wxStaticText* itemStaticText5 = new wxStaticText(
-      itemDialog1, wxID_STATIC, _T(""), wxDefaultPosition, wxDefaultSize, 0);
+      itemDialog1, wxID_STATIC, "", wxDefaultPosition, wxDefaultSize, 0);
   itemStaticBoxSizer4->Add(itemStaticText5, 0,
                            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
 
-  m_ScaleCtl = new wxTextCtrl(itemDialog1, ID_SCALECTRL, _T(""),
-                              wxDefaultPosition, wxSize(180, -1), 0);
+  m_ScaleCtl = new wxTextCtrl(itemDialog1, ID_SCALECTRL, "", wxDefaultPosition,
+                              wxSize(180, -1), 0);
   itemStaticBoxSizer4->Add(
       m_ScaleCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
 
@@ -322,17 +322,17 @@ void MUIButton::Init() {
 void MUIButton::CreateControls() {
   //  this->SetForegroundColour(wxColour(255, 255, 255));
 
-  //  wxColour backColor = GetGlobalColor(_T("GREY3"));
+  //  wxColour backColor = GetGlobalColor("GREY3");
   //  SetBackgroundColour(backColor);
 
   //  this->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-  //                       wxFONTWEIGHT_NORMAL, false, wxT("Tahoma")));
+  //                       wxFONTWEIGHT_NORMAL, false, "Tahoma"));
 }
 
 void MUIButton::SetColorScheme(ColorScheme cs) {
 #if 1
   if (m_cs != cs) {
-    wxColour backColor = GetGlobalColor(_T("GREY3"));
+    wxColour backColor = GetGlobalColor("GREY3");
     // SetBackgroundColour(backColor);
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -668,7 +668,7 @@ void MUITextButton::SetText(const wxString& text) {
 
 void MUITextButton::SetColorScheme(ColorScheme cs) {
   if (m_cs != cs) {
-    // wxColour backColor = GetGlobalColor(_T("GREY3"));
+    // wxColour backColor = GetGlobalColor("GREY3");
     // SetBackgroundColour(backColor);
 
     m_cs = cs;
@@ -902,11 +902,11 @@ void MUIBar::SetCanvasENCAvailable(bool avail) {
 }
 
 void MUIBar::CreateControls() {
-  wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
+  wxString iconDir = g_Platform->GetSharedDataDir() + "uidata/MUI_flat/";
 
   // Build one button to get sizes
   MUIButton* tb = new MUIButton(m_parentCanvas, ID_ZOOMIN, m_scaleFactor,
-                                iconDir + _T("MUI_zoom-in.svg"));
+                                iconDir + "MUI_zoom-in.svg");
   wxSize button_size = tb->m_size;
   delete tb;
 
@@ -916,12 +916,12 @@ void MUIBar::CreateControls() {
     int xoff = 0;
     if (g_bShowMuiZoomButtons) {
       m_zinButton = new MUIButton(m_parentCanvas, ID_ZOOMIN, m_scaleFactor,
-                                  iconDir + _T("MUI_zoom-in.svg"));
+                                  iconDir + "MUI_zoom-in.svg");
       m_zinButton->m_position = wxPoint(xoff, 0);
       xoff += m_zinButton->m_size.x;
 
       m_zoutButton = new MUIButton(m_parentCanvas, ID_ZOOMOUT, m_scaleFactor,
-                                   iconDir + _T("MUI_zoom-out.svg"));
+                                   iconDir + "MUI_zoom-out.svg");
       m_zoutButton->m_position = wxPoint(xoff, 0);
       xoff += m_zoutButton->m_size.x;
     }
@@ -941,16 +941,15 @@ void MUIBar::CreateControls() {
     }
     xoff += m_scaleButton->m_size.x;
 
-    m_followButton = new MUIButton(m_parentCanvas, ID_FOLLOW, m_scaleFactor,
-                                   iconDir + _T("MUI_follow.svg"),
-                                   iconDir + _T("MUI_follow_active.svg"),
-                                   iconDir + _T("MUI_follow_ahead.svg"));
+    m_followButton = new MUIButton(
+        m_parentCanvas, ID_FOLLOW, m_scaleFactor, iconDir + "MUI_follow.svg",
+        iconDir + "MUI_follow_active.svg", iconDir + "MUI_follow_ahead.svg");
     m_followButton->m_position = wxPoint(xoff, 0);
     xoff += m_followButton->m_size.x;
 #endif
 
     m_menuButton = new MUIButton(m_parentCanvas, ID_MUI_MENU, m_scaleFactor,
-                                 iconDir + _T("MUI_menu.svg"));
+                                 iconDir + "MUI_menu.svg");
     m_menuButton->m_position = wxPoint(xoff, 0);
     xoff += m_menuButton->m_size.x;
     m_size.x = xoff;
@@ -962,27 +961,26 @@ void MUIBar::CreateControls() {
     // Buttons
     if (g_bShowMuiZoomButtons) {
       m_zinButton = new MUIButton(m_parentCanvas, ID_ZOOMIN, m_scaleFactor,
-                                  iconDir + _T("MUI_zoom-in.svg"));
+                                  iconDir + "MUI_zoom-in.svg");
       m_zinButton->m_position = wxPoint(0, yoff);
       yoff += m_zinButton->m_size.y;
 
       m_zoutButton = new MUIButton(m_parentCanvas, ID_ZOOMOUT, m_scaleFactor,
-                                   iconDir + _T("MUI_zoom-out.svg"));
+                                   iconDir + "MUI_zoom-out.svg");
       m_zoutButton->m_position = wxPoint(0, yoff);
       yoff += m_zoutButton->m_size.y;
     }
 
 #ifndef __OCPN__ANDROID__
-    m_followButton = new MUIButton(m_parentCanvas, ID_FOLLOW, m_scaleFactor,
-                                   iconDir + _T("MUI_follow.svg"),
-                                   iconDir + _T("MUI_follow_active.svg"),
-                                   iconDir + _T("MUI_follow_ahead.svg"));
+    m_followButton = new MUIButton(
+        m_parentCanvas, ID_FOLLOW, m_scaleFactor, iconDir + "MUI_follow.svg",
+        iconDir + "MUI_follow_active.svg", iconDir + "MUI_follow_ahead.svg");
     m_followButton->m_position = wxPoint(0, yoff);
     yoff += m_followButton->m_size.y;
 #endif
 
     m_menuButton = new MUIButton(m_parentCanvas, ID_MUI_MENU, m_scaleFactor,
-                                 iconDir + _T("MUI_menu.svg"));
+                                 iconDir + "MUI_menu.svg");
     m_menuButton->m_position = wxPoint(0, yoff);
     yoff += m_menuButton->m_size.y;
 
@@ -1021,9 +1019,9 @@ void MUIBar::UpdateDynamicValues() {
   m_scale = scale;
 
   if (scale < 1e6)
-    scaleString.Printf(_T("1:%d"), scale);
+    scaleString.Printf("1:%d", scale);
   else
-    scaleString.Printf(_T("1:%4.1f M"), scale / 1e6);
+    scaleString.Printf("1:%4.1f M", scale / 1e6);
 
   if (m_scaleButton) m_scaleButton->SetText(scaleString);
 }

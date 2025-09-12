@@ -105,6 +105,7 @@ using namespace std::literals::chrono_literals;
 #include "model/comm_n0183_output.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/instance_check.h"
 #include "model/local_api.h"
 #include "model/logger.h"
@@ -125,16 +126,16 @@ using namespace std::literals::chrono_literals;
 #include "about_frame_impl.h"
 #include "about.h"
 #include "ais_info_gui.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetListDialog.h"
-#include "AISTargetQueryDialog.h"
-#include "CanvasConfig.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_list_dlg.h"
+#include "ais_target_query_dlg.h"
+#include "canvas_config.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"
 #include "concanv.h"
 #include "config.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "DetailSlider.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -252,8 +253,6 @@ wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
-OCPNPlatform *g_Platform;
-
 bool g_bFirstRun;
 bool g_bUpgradeInProcess;
 
@@ -261,58 +260,22 @@ bool g_bPauseTest;
 
 // Files specified on the command line, if any.
 
-MyFrame *gFrame;
-
-APConsole *console;
-
-MyConfig *pConfig;
-ChartDB *ChartData;
-int g_restore_stackindex;
-int g_restore_dbindex;
-double g_ChartNotRenderScaleFactor;
-
 LayerList *pLayerList;
-
-Select *pSelectTC;
-
-MarkInfoDlg *g_pMarkInfoDialog;
-RoutePropDlgImpl *pRoutePropDialog;
-TrackPropDlg *pTrackPropDialog;
-RouteManagerDialog *pRouteManagerDialog;
-GoToPositionDialog *pGoToPositionDialog;
-
-double vLat, vLon;
-
-int g_nbrightness = 100;
-
-bool bDBUpdateInProgress;
-
-ThumbWin *pthumbwin;
-TCMgr *ptcmgr;
 
 bool g_bshowToolbar = true;
 bool g_bexpert = true;
-bool g_bBasicMenus = false;
-
-bool bDrawCurrentValues;
 
 wxString ChartListFileName;
-wxString gWorldMapLocation, gDefaultWorldMapLocation;
-wxString gWorldShapefileLocation;
+wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
-wxString g_SENCPrefix;
-wxString g_UserPresLibData;
 wxString g_VisibleLayers;
 wxString g_InvisibleLayers;
 wxString g_VisiNameinLayers;
 wxString g_InVisiNameinLayers;
 
 bool g_bcompression_wait;
-bool g_FlushNavobjChanges;
 int g_FlushNavobjChangesTimeout;
-
-wxString g_uploadConnection;
 
 int user_user_id;
 int file_user_id;
@@ -321,8 +284,6 @@ int quitflag;
 int g_tick = 0;
 int g_mem_total, g_mem_initial;
 
-bool s_bSetSystemTime;
-
 static unsigned int malloc_max;
 
 wxDateTime g_start_time;
@@ -330,46 +291,10 @@ wxDateTime g_loglast_time;
 static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
 std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
 
-OcpnSound *g_anchorwatch_sound = SoundFactory();
-
-double AnchorPointMinDist;
-bool AnchorAlertOn1, AnchorAlertOn2;
 bool g_bCruising;
 
-ChartDummy *pDummyChart;
-
-ocpnStyle::StyleManager *g_StyleManager;
-
-bool g_bShowOutlines;
-bool g_bShowDepthUnits;
-bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
-                      // displayed
-bool g_bShowChartBar;
-bool g_bShowActiveRouteHighway;
-int g_nAWDefault;
-int g_nAWMax;
-bool g_bPlayShipsBells;
-bool g_bFullscreenToolbar;
-bool g_bShowLayers;
 bool g_bTransparentToolbar;
 bool g_bTransparentToolbarInOpenGLOK;
-int g_nAutoHideToolbar;
-bool g_bAutoHideToolbar;
-
-bool g_bPermanentMOBIcon;
-bool g_bTempShowMenuBar;
-
-int g_iNavAidRadarRingsNumberVisible;
-bool g_bNavAidRadarRingsShown;
-float g_fNavAidRadarRingsStep;
-int g_pNavAidRadarRingsStepUnits;
-bool g_bWayPointPreventDragging;
-bool g_bConfirmObjectDelete;
-wxColour g_colourOwnshipRangeRingsColour;
-int g_maxzoomin;
-
-// Set default color scheme
-ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
@@ -378,39 +303,17 @@ bool bVelocityValid;
 
 int gHDx_Watchdog;
 
-bool g_bDebugCM93;
 bool g_bDebugS57;
 
 int g_ChartUpdatePeriod;
-int g_SkewCompUpdatePeriod;
 
-int g_lastClientRectx;
-int g_lastClientRecty;
-int g_lastClientRectw;
-int g_lastClientRecth;
-/**
- * The width of the physical screen in millimeters.
- */
-double g_display_size_mm;
-std::vector<size_t> g_config_display_size_mm;
-bool g_config_display_size_manual;
-
-int g_GUIScaleFactor;
-int g_ChartScaleFactor;
 float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
-int g_ShipScaleFactor;
-float g_ShipScaleFactorExp;
-int g_ENCSoundingScaleFactor;
-int g_ENCTextScaleFactor;
 
 bool g_bShowTide;
 bool g_bShowCurrent;
 
-s52plib *ps52plib;
 s57RegistrarMgr *m_pRegistrarMan;
-
-CM93OffsetDialog *g_pCM93OffsetDialog;
 
 #ifdef __WXOSX__
 #include "model/macutils.h"
@@ -429,100 +332,20 @@ extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
 #endif
 #endif
 
-double g_ownship_predictor_minutes;
-double g_ownship_HDTpredictor_miles;
-int g_cog_predictor_style;
-wxString g_cog_predictor_color;
-int g_cog_predictor_endmarker;
-int g_ownship_HDTpredictor_style;
-wxString g_ownship_HDTpredictor_color;
-int g_ownship_HDTpredictor_endmarker;
-int g_ownship_HDTpredictor_width;
-
-bool g_own_ship_sog_cog_calc;
-int g_own_ship_sog_cog_calc_damp_sec;
-
 AisInfoGui *g_pAISGUI;
-
-AISTargetQueryDialog *g_pais_query_dialog_active;
-int g_iSoundDeviceIndex;
-
-int g_S57_dialog_sx, g_S57_dialog_sy;
-
-int g_nframewin_x;
-int g_nframewin_y;
-int g_nframewin_posx;
-int g_nframewin_posy;
-bool g_bframemax;
-
-bool g_bAutoAnchorMark;
 
 int gpIDXn;
 long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
 
-bool g_bUseGLL = true;
-
-int g_nCacheLimit;
-int g_memCacheLimit;
 bool g_bGDAL_Debug;
-
-bool g_bCourseUp;
-int g_COGAvgSec = 15;  // COG average period (sec.) for Course Up Mode
-double g_COGAvg;
-bool g_bLookAhead;
-bool g_bskew_comp;
-bool g_bopengl;
-bool g_bSoftwareGL;
-/**
- * Controls how the chart panning and zooming smoothing is done during user
- * interactions.
- *
- * When enabled (true):
- * - Chart panning has inertia, with smooth acceleration and deceleration
- * - Mouse wheel zooming is smoothly animated between zoom levels
- * - Chart overscaled rendering is optimized for smooth transitions
- * - Chart quilting transitions may be smoother
- *
- * When disabled (false):
- * - Chart panning stops immediately when mouse is released
- * - Mouse wheel zooming jumps directly between zoom levels without animation
- * - Rendering may be slightly faster but less visually polished
- *
- * Changed through the Display > Advanced > "Smooth Panning/Zooming" checkbox.
- * Saved to config as user preference.
- */
-bool g_bsmoothpanzoom;
-// toggle for smooth position jumping
-bool g_bSmoothRecenter = true;
 bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
 bool g_oz_vector_scale;
-double g_plus_minus_zoom_factor;
-bool g_bChartBarEx;
-
-bool g_b_legacy_input_filter_behaviour;  // Support original input filter
-                                         // process or new process
-
-PlugInManager *g_pi_manager;
-
 bool g_bDebugGPSD;
-
-bool g_bFullScreenQuilt = true;
-bool g_bQuiltEnable;
-bool g_bQuiltStart;
-
-ChartGroupArray *g_pGroupArray;
-std::vector<std::string> ChartDirectoryExcludedVector;
-
-S57QueryDialog *g_pObjectQueryDialog;
-
 std::vector<std::string> TideCurrentDataSet;
-wxString g_TCData_Dir;
 
-options *g_options;
-bool g_bDeferredInitDone;
 int options_lastPage = 0;
 int options_subpage = 0;
 
@@ -530,56 +353,20 @@ wxPoint options_lastWindowPos(0, 0);
 wxSize options_lastWindowSize(0, 0);
 
 bool g_bSleep;
-bool g_bsimplifiedScalebar;
 
 int osMajor, osMinor;
 
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 bool g_bHasHwClock;
-
-int g_nAIS_activity_timer;
-
-bool g_bEnableZoomToCursor;
-
 bool g_bTrackActive;
 bool g_bDeferredStartTrack;
-bool g_bHighliteTracks;
-wxColour g_colourTrackLineColour;
-wxString g_default_wp_icon;
-
-ActiveTrack *g_pActiveTrack;
-double g_TrackIntervalSeconds;
-
-int g_cm93_zoom_factor;
-PopUpDSlide *pPopupDetailSlider;
-bool g_bShowDetailSlider;
-int g_detailslider_dialog_x, g_detailslider_dialog_y;
-
 bool g_bUseGreenShip;
-
-wxString g_AW1GUID;
-wxString g_AW2GUID;
-
-bool g_b_overzoom_x = true;  // Allow high overzoom
-
-int g_OwnShipIconType;
-double g_n_ownship_length_meters;
-double g_n_ownship_beam_meters;
-double g_n_gps_antenna_offset_y;
-double g_n_gps_antenna_offset_x;
-int g_n_ownship_min_mm;
-
+//
 int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
                      // no chart database, inform user, 2 - Start update right
                      // away
-bool g_bPreserveScaleOnX;
-bool g_CanvasHideNotificationIcon;
-
-bool g_bhide_depth_units;
-bool g_bhide_overzoom_flag;
 
 AboutFrameImpl *g_pAboutDlg;
-About *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
@@ -593,45 +380,14 @@ wxLocale *plocale_def_lang = 0;
  * A valid setting triggers loading the corresponding .mo translation files
  * from the appropriate locale directory.
  */
-wxString g_locale;
-wxString g_localeOverride;
-bool g_b_assume_azerty;
 
-int g_click_stop;
-
-int g_MemFootMB;
-
-bool g_bShowStatusBar;
-
-bool g_bquiting;
 int g_BSBImgDebug;
 
-AISTargetListDialog *g_pAISTargetList;
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
-bool g_bFullscreen;
-
-OCPN_AUIManager *g_pauimgr;
 wxAuiDefaultDockArt *g_pauidockart;
-
-wxString g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
-ocpnFloatingToolbarDialog *g_MainToolbar;
-int g_maintoolbar_x;
-int g_maintoolbar_y;
-long g_maintoolbar_orient;
-float g_toolbar_scalefactor;
-
-float g_compass_scalefactor;
-bool g_bShowMenuBar;
-bool g_bShowCompassWin;
-
-bool g_benable_rotate;
-
 int g_GPU_MemSize;
-
-wxString g_uiStyle;
 
 // Values returned from WMM_PI for variation computation request.
 // Initialize to invalid so we don't use it if WMM hasn't updated yet
@@ -643,13 +399,10 @@ int portaudio_initialized;
 
 char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 
-int g_sticky_chart;
 int g_sticky_projection;
 
 int n_NavMessageShown;
 wxString g_config_version_string;
-
-wxString g_CmdSoundString;
 
 /**
  * Flag to control adaptive UI scaling.
@@ -663,48 +416,28 @@ wxString g_CmdSoundString;
  * @note For the most part, the use of this feature is conditionally compiled
  * for Android builds only.
  */
-bool g_bresponsive;
-/** Flag to enable or disable mouse rollover effects in the user interface. */
-bool g_bRollover;
 
 bool b_inCompressAllCharts;
-bool g_bGLexpert;
-bool g_bUIexpert;
-
-int g_chart_zoom_modifier_raster;
-int g_chart_zoom_modifier_vector;
-
-bool g_bAdvanceRouteWaypointOnArrivalOnly;
-
-bool g_bSpaceDropMark;
 
 wxArrayString g_locale_catalog_array;
 bool b_reloadForPlugins;
 bool g_btrackContinuous;
 
-unsigned int g_canvasConfig;
-bool g_useMUI;
 bool g_bmasterToolbarFull = true;
 
 int g_AndroidVersionCode;
 
 int g_memUsed;
-SENCThreadManager *g_SencThreadManager;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
 arrayofCanvasPtr g_canvasArray;
 wxString g_lastAppliedTemplateGUID;
 
-ChartCanvas *g_focusCanvas;
-ChartCanvas *g_overlayCanvas;
-
 bool b_inCloseWindow;
 bool g_disable_main_toolbar;
-bool g_btenhertz;
 bool g_declutter_anchorage;
 bool g_bhide_route_console;
-bool g_bhide_context_menus;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -996,7 +729,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
 //  Most probable:  Malloc/new failure
 
 bool MyApp::OnExceptionInMainLoop() {
-  wxLogWarning(_T("Caught MainLoopException, continuing..."));
+  wxLogWarning("Caught MainLoopException, continuing...");
   return true;
 }
 #endif
@@ -1018,8 +751,10 @@ MyApp::MyApp()
       m_exitcode(-2) {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-  if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
-    setenv("GDK_BACKEND", "x11", 1);
+  if (!wxGetEnv("OCPN_DISABLE_X11_GDK_BACKEND", NULL)) {
+    if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
+      setenv("GDK_BACKEND", "x11", 1);
+    }
   }
   setenv(
       "mesa_glthread", "false",
@@ -1046,7 +781,7 @@ bool MyApp::OnInit() {
   wxBitmap bmp(10, 10, -1);
   wxMemoryDC dc;
   dc.SelectObject(bmp);
-  dc.DrawText(_T("X"), 0, 0);
+  dc.DrawText("X", 0, 0);
 #endif
 
   // Instantiate the global OCPNPlatform class
@@ -1146,7 +881,7 @@ bool MyApp::OnInit() {
   // Set up default FONT encoding, which should have been done by wxWidgets some
   // time before this......
   wxFont temp_font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                   wxFONTWEIGHT_NORMAL, FALSE, wxString(_T("")),
+                   wxFONTWEIGHT_NORMAL, FALSE, wxString(""),
                    wxFONTENCODING_SYSTEM);
   temp_font.SetDefaultEncoding(wxFONTENCODING_SYSTEM);
 
@@ -1167,7 +902,7 @@ bool MyApp::OnInit() {
 #endif
 
   //      Send init message
-  wxLogMessage(_T("\n\n________\n"));
+  wxLogMessage("\n\n________\n");
 
   wxDateTime now = wxDateTime::Now();
   LOG_INFO("------- OpenCPN version %s restarted at %s -------\n", VERSION_FULL,
@@ -1176,7 +911,7 @@ bool MyApp::OnInit() {
   LOG_INFO("Using loglevel %s", OcpnLog::level2str(level).c_str());
 
   wxString wxver(wxVERSION_STRING);
-  wxver.Prepend(_T("wxWidgets version: "));
+  wxver.Prepend("wxWidgets version: ");
 
   wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
@@ -1187,17 +922,17 @@ bool MyApp::OnInit() {
   os_name = platforminfo.GetOperatingSystemFamilyName();
 #endif
 
-  wxString platform = os_name + _T(" ") + platforminfo.GetArchName() + _T(" ") +
+  wxString platform = os_name + " " + platforminfo.GetArchName() + " " +
                       platforminfo.GetPortIdName();
 
-  wxLogMessage(wxver + _T(" ") + platform);
+  wxLogMessage(wxver + " " + platform);
 
   ::wxGetOsVersion(&osMajor, &osMinor);
   wxString osVersionMsg;
-  osVersionMsg.Printf(_T("OS Version reports as:  %d.%d"), osMajor, osMinor);
+  osVersionMsg.Printf("OS Version reports as:  %d.%d", osMajor, osMinor);
   wxLogMessage(osVersionMsg);
 
-  wxLogMessage(_T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"),
+  wxLogMessage("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb",
                g_mem_total / 1024, g_mem_initial / 1024);
 
   OCPN_OSDetail *detail = g_Platform->GetOSDetail();
@@ -1211,7 +946,7 @@ bool MyApp::OnInit() {
                  like0.mb_str());
   wxLogMessage(msgplat);
 
-  wxString imsg = _T("SData_Locn is ");
+  wxString imsg = "SData_Locn is ";
   imsg += g_Platform->GetSharedDataDir();
   wxLogMessage(imsg);
 
@@ -1229,7 +964,7 @@ bool MyApp::OnInit() {
   //  Establish an empty ChartCroupArray
   g_pGroupArray = new ChartGroupArray;
 
-  imsg = _T("PrivateDataDir is ");
+  imsg = "PrivateDataDir is ";
   imsg += g_Platform->GetPrivateDataDir();
   wxLogMessage(imsg);
 
@@ -1297,11 +1032,11 @@ bool MyApp::OnInit() {
 
   wxFileName config_test_file_name(g_Platform->GetConfigFileName());
   if (config_test_file_name.FileExists())
-    wxLogMessage(_T("Using existing Config_File: ") +
+    wxLogMessage("Using existing Config_File: " +
                  g_Platform->GetConfigFileName());
   else {
     {
-      wxLogMessage(_T("Creating new Config_File: ") +
+      wxLogMessage("Creating new Config_File: " +
                    g_Platform->GetConfigFileName());
 
       b_initial_load = true;
@@ -1309,7 +1044,7 @@ bool MyApp::OnInit() {
       if (true !=
           config_test_file_name.DirExists(config_test_file_name.GetPath()))
         if (!config_test_file_name.Mkdir(config_test_file_name.GetPath()))
-          wxLogMessage(_T("Cannot create config file directory for ") +
+          wxLogMessage("Cannot create config file directory for " +
                        g_Platform->GetConfigFileName());
     }
   }
@@ -1329,15 +1064,15 @@ bool MyApp::OnInit() {
   g_StyleManager = new ocpnStyle::StyleManager();
 
   //     if(g_useMUI)
-  //         g_uiStyle = _T("MUI_flat");
+  //         g_uiStyle = "MUI_flat";
 
-  g_StyleManager->SetStyle(_T("MUI_flat"));
+  g_StyleManager->SetStyle("MUI_flat");
   if (!g_StyleManager->IsOK()) {
     wxString msg = _("Failed to initialize the user interface. ");
     msg << _("OpenCPN cannot start. ");
     msg << _("The necessary configuration files were not found. ");
     msg << _("See the log file at ") << g_Platform->GetLogFileName()
-        << _(" for details.") << _T("\n\n");
+        << _(" for details.") << "\n\n";
     msg << g_Platform->GetSharedDataDir();
 
     wxMessageDialog w(NULL, msg, _("Failed to initialize the user interface. "),
@@ -1356,7 +1091,7 @@ bool MyApp::OnInit() {
 
   g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   wxString msg;
-  msg.Printf(_T("Detected display size (horizontal): %d mm"),
+  msg.Printf("Detected display size (horizontal): %d mm",
              (int)g_display_size_mm);
   wxLogMessage(msg);
 
@@ -1366,7 +1101,7 @@ bool MyApp::OnInit() {
       g_config_display_size_mm[g_current_monitor] > 0) {
     g_display_size_mm = g_config_display_size_mm[g_current_monitor];
     wxString msg;
-    msg.Printf(_T("Display size (horizontal) config override: %d mm"),
+    msg.Printf("Display size (horizontal) config override: %d mm",
                (int)g_display_size_mm);
     wxLogMessage(msg);
     g_Platform->SetDisplaySizeMM(g_current_monitor, g_display_size_mm);
@@ -1397,37 +1132,36 @@ bool MyApp::OnInit() {
 
   wxString def_lang_canonical = g_Platform->GetDefaultSystemLocale();
 
-  imsg = _T("System default Language:  ") + def_lang_canonical;
+  imsg = "System default Language:  " + def_lang_canonical;
   wxLogMessage(imsg);
 
-  wxString cflmsg = _T("Config file language:  ") + g_locale;
+  wxString cflmsg = "Config file language:  " + g_locale;
   wxLogMessage(cflmsg);
 
   if (g_locale.IsEmpty()) {
     g_locale = def_lang_canonical;
-    cflmsg =
-        _T("Config file language empty, using system default:  ") + g_locale;
+    cflmsg = "Config file language empty, using system default:  " + g_locale;
     wxLogMessage(cflmsg);
   }
 
   //  Make any adjustments necessary
   g_locale = g_Platform->GetAdjustedAppLocale();
-  cflmsg = _T("Adjusted App language:  ") + g_locale;
+  cflmsg = "Adjusted App language:  " + g_locale;
   wxLogMessage(cflmsg);
 
   // Set the desired locale
   g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
 
-  imsg = _T("Opencpn language set to:  ");
+  imsg = "Opencpn language set to:  ";
   imsg += g_locale;
   wxLogMessage(imsg);
 
   //  French language locale is assumed to include the AZERTY keyboard
   //  This applies to either the system language, or to OpenCPN language
   //  selection
-  if (g_locale == _T("fr_FR")) g_b_assume_azerty = true;
+  if (g_locale == "fr_FR") g_b_assume_azerty = true;
 #else
-  wxLogMessage(_T("wxLocale support not available"));
+  wxLogMessage("wxLocale support not available");
 #endif
 
 #ifndef __ANDROID__
@@ -1524,11 +1258,11 @@ bool MyApp::OnInit() {
   //  Check the global Tide/Current data source array
   //  If empty, preset default (US + ROW) data sources
   wxString default_tcdata0 =
-      (g_Platform->GetSharedDataDir() + _T("tcdata") +
-       wxFileName::GetPathSeparator() + _T("harmonics-dwf-20210110-free.tcd"));
+      (g_Platform->GetSharedDataDir() + "tcdata" +
+       wxFileName::GetPathSeparator() + "harmonics-dwf-20210110-free.tcd");
   wxString default_tcdata1 =
-      (g_Platform->GetSharedDataDir() + _T("tcdata") +
-       wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
+      (g_Platform->GetSharedDataDir() + "tcdata" +
+       wxFileName::GetPathSeparator() + "HARMONICS_NO_US.IDX");
 
   if (TideCurrentDataSet.empty()) {
     TideCurrentDataSet.push_back(
@@ -1540,9 +1274,8 @@ bool MyApp::OnInit() {
   //  Check the global AIS alarm sound file
   //  If empty, preset default
   if (g_sAIS_Alert_Sound_File.IsEmpty()) {
-    wxString default_sound =
-        (g_Platform->GetSharedDataDir() + _T("sounds") +
-         wxFileName::GetPathSeparator() + _T("2bells.wav"));
+    wxString default_sound = (g_Platform->GetSharedDataDir() + "sounds" +
+                              wxFileName::GetPathSeparator() + "2bells.wav");
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
   }
 
@@ -1642,17 +1375,16 @@ bool MyApp::OnInit() {
 
   // Strip the commit SHA number from the string to be shown in frame title.
   wxString short_version_name = wxString(PACKAGE_VERSION).BeforeFirst('+');
-  wxString myframe_window_title =
-      wxString(wxT("OpenCPN ") + short_version_name);
+  wxString myframe_window_title = wxString("OpenCPN " + short_version_name);
 
   if (g_bportable) {
     myframe_window_title += _(" -- [Portable(-p) executing from ");
     myframe_window_title += g_Platform->GetHomeDir();
-    myframe_window_title += _T("]");
+    myframe_window_title += "]";
   }
 
   wxString fmsg;
-  fmsg.Printf(_T("Creating MyFrame...size(%d, %d)  position(%d, %d)"),
+  fmsg.Printf("Creating MyFrame...size(%d, %d)  position(%d, %d)",
               new_frame_size.x, new_frame_size.y, position.x, position.y);
   wxLogMessage(fmsg);
 
@@ -1719,20 +1451,20 @@ bool MyApp::OnInit() {
   if (g_bFirstRun && (ChartDirArray.GetCount() == 0)) {
     int ndirs = 0;
 
-    wxRegKey RegKey(wxString(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN")));
+    wxRegKey RegKey(wxString("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN"));
     if (RegKey.Exists()) {
       wxLogMessage(
           _("Retrieving initial Chart Directory set from Windows Registry"));
       wxString dirs;
-      RegKey.QueryValue(wxString(_T("ChartDirs")), dirs);
+      RegKey.QueryValue(wxString("ChartDirs"), dirs);
 
-      wxStringTokenizer tkz(dirs, _T(";"));
+      wxStringTokenizer tkz(dirs, ";");
       while (tkz.HasMoreTokens()) {
         wxString token = tkz.GetNextToken();
 
         ChartDirInfo cdi;
         cdi.fullpath = token.Trim();
-        cdi.magic_number = _T("");
+        cdi.magic_number = "";
 
         ChartDirArray.Add(cdi);
         ndirs++;
@@ -1741,9 +1473,9 @@ bool MyApp::OnInit() {
 
     if (g_bportable) {
       ChartDirInfo cdi;
-      cdi.fullpath = _T("charts");
+      cdi.fullpath = "charts";
       cdi.fullpath.Prepend(g_Platform->GetSharedDataDir());
-      cdi.magic_number = _T("");
+      cdi.magic_number = "";
       ChartDirArray.Add(cdi);
       ndirs++;
     }
@@ -1811,8 +1543,7 @@ bool MyApp::OnInit() {
     gps_watchdog_timeout_ticks = (GPS_TIMEOUT_SECONDS * 1000) / TIMER_GFRAME_1;
 
   wxString dogmsg;
-  dogmsg.Printf(_T("GPS Watchdog Timeout is: %d sec."),
-                gps_watchdog_timeout_ticks);
+  dogmsg.Printf("GPS Watchdog Timeout is: %d sec.", gps_watchdog_timeout_ticks);
   wxLogMessage(dogmsg);
 
   sat_watchdog_timeout_ticks = gps_watchdog_timeout_ticks;
@@ -1851,8 +1582,7 @@ bool MyApp::OnInit() {
   if (!g_bdisable_opengl) {
     glChartCanvas *pgl =
         (glChartCanvas *)gFrame->GetPrimaryCanvas()->GetglCanvas();
-    if (pgl &&
-        (pgl->GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND)) {
+    if (pgl && (pgl->GetRendererString().Find("UniChrome") != wxNOT_FOUND)) {
       gFrame->m_defer_size = gFrame->GetSize();
       gFrame->SetSize(gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y);
       g_pauimgr->Update();
@@ -1899,7 +1629,7 @@ bool MyApp::OnInit() {
   //      Start up the Ten Hz timer....
   gFrame->FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
-  //    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."),
+  //    wxLogMessage( wxString::Format("OpenCPN Initialized in %ld ms.",
   //    init_sw.Time() ) );
 
   OCPNPlatform::Initialize_4();
@@ -1998,7 +1728,7 @@ bool MyApp::OnInit() {
 }
 
 int MyApp::OnExit() {
-  wxLogMessage(_T("opencpn::MyApp starting exit."));
+  wxLogMessage("opencpn::MyApp starting exit.");
   m_checker.OnExit();
   m_usb_watcher.Stop();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
@@ -2007,35 +1737,35 @@ int MyApp::OnExit() {
   lognow.MakeGMT();
   wxString day = lognow.FormatISODate();
   wxString utc = lognow.FormatISOTime();
-  wxString navmsg = _T("LOGBOOK:  ");
+  wxString navmsg = "LOGBOOK:  ";
   navmsg += day;
-  navmsg += _T(" ");
+  navmsg += " ";
   navmsg += utc;
-  navmsg += _T(" UTC ");
+  navmsg += " UTC ";
 
   if (bGPSValid) {
     wxString data;
-    data.Printf(_T("OFF: Lat %10.5f Lon %10.5f "), gLat, gLon);
+    data.Printf("OFF: Lat %10.5f Lon %10.5f ", gLat, gLon);
     navmsg += data;
 
     wxString cog;
     if (std::isnan(gCog))
-      cog.Printf(_T("COG ----- "));
+      cog.Printf("COG ----- ");
     else
-      cog.Printf(_T("COG %10.5f "), gCog);
+      cog.Printf("COG %10.5f ", gCog);
 
     wxString sog;
     if (std::isnan(gSog))
-      sog.Printf(_T("SOG -----  "));
+      sog.Printf("SOG -----  ");
     else
-      sog.Printf(_T("SOG %6.2f ") + getUsrSpeedUnit(), toUsrSpeed(gSog));
+      sog.Printf("SOG %6.2f " + getUsrSpeedUnit(), toUsrSpeed(gSog));
 
     navmsg += cog;
     navmsg += sog;
 
   } else {
     wxString data;
-    data.Printf(_T("OFF: Lat %10.5f Lon %10.5f"), gLat, gLon);
+    data.Printf("OFF: Lat %10.5f Lon %10.5f", gLat, gLon);
     navmsg += data;
   }
   wxLogMessage(navmsg);
@@ -2066,7 +1796,7 @@ int MyApp::OnExit() {
     delete g_pGroupArray;
   }
 
-  wxLogMessage(_T("opencpn::MyApp exiting cleanly...\n"));
+  wxLogMessage("opencpn::MyApp exiting cleanly...\n");
   wxLog::FlushActive();
 
   g_Platform->CloseLogFile();

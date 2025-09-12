@@ -212,7 +212,7 @@ void PriorityDlg::Populate() {
   m_prioTree->DeleteAllItems();
   m_maxStringLength = 15;  // default width calculation
 
-  //  wxTreeItemId* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"),
+  //  wxTreeItemId* rootData = new wxDirItemData("Dummy", "Dummy",
   //  TRUE);
   wxTreeItemId m_rootId = m_prioTree->AddRoot(_("Priorities"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(m_rootId);
