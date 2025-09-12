@@ -35,7 +35,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include <wx/arrimpl.cpp>
 #include <wx/brush.h>
 #include <wx/colour.h>
 #include <wx/dcmemory.h>
@@ -55,6 +54,8 @@
 #include <wx/utils.h>
 #include <wx/window.h>
 
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
 #include "model/route.h"
@@ -71,15 +72,16 @@
 #include "cm93.h"  // for chart outline draw
 #include "color_handler.h"
 #include "compass.h"
-#include "config.h"
 #include "emboss_data.h"
 #include "font_mgr.h"
 #include "gl_chart_canvas.h"
 #include "gl_tex_cache.h"
 #include "gshhs.h"
+#include "ienc_toolbar.h"
 #include "lz4.h"
 #include "mbtiles.h"
 #include "mipmap/mipmap.h"
+#include "MUIBar.h"
 #include "navutil.h"
 #include "OCPNPlatform.h"
 #include "piano.h"
@@ -90,15 +92,15 @@
 #include "route_point_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
+#include "s57_ocpn_utils.h"
+#include "shapefile_basemap.h"
 #include "tcmgr.h"
+#include "toolbar.h"
 #include "TexFont.h"
 #include "thumbwin.h"
 #include "toolbar.h"
 #include "track_gui.h"
-#include "MUIBar.h"
-#include "ienc_toolbar.h"
-#include "shapefile_basemap.h"
-#include "s57_ocpn_utils.h"
+#include "viewport.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -120,6 +122,38 @@
 #define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
 #endif
 
+#ifdef __WXMSW__
+#define printf printf2
+int __cdecl printf2(const char *format, ...);
+#endif
+
+#if defined(__ANDROID__)
+#include "androidUTIL.h"
+#elif defined(__WXQT__) || defined(__WXGTK__) || defined(FLATPAK)
+#include <GL/glew.h>
+#endif
+
+#ifdef __ANDROID__
+//  arm gcc compiler has a lot of trouble passing doubles as function aruments.
+//  We don't really need double precision here, so fix with a (faster) macro.
+extern "C" void glOrthof(float left, float right, float bottom, float top,
+                         float near, float far);
+#define glOrtho(a, b, c, d, e, f) \
+  ;                               \
+  glOrthof(a, b, c, d, e, f);
+
+#endif
+
+#ifdef USE_ANDROID_GLES2
+#include <GLES2/gl2.h>
+#endif
+
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+#include "linmath.h"
+#include "shaders.h"
+#include "model/notification_manager.h"
+#endif
+
 #if defined(__UNIX__) && !defined(__WXOSX__)
 // high resolution stopwatch for profiling
 class OCPNStopWatch {
@@ -139,107 +173,19 @@ private:
 };
 #endif
 
-#ifdef __WXMSW__
-#define printf printf2
-int __cdecl printf2(const char *format, ...);
-#endif
-
-#if defined(__ANDROID__)
-#include "androidUTIL.h"
-#elif defined(__WXQT__) || defined(__WXGTK__) || defined(FLATPAK)
-#include <GL/glew.h>
-#endif
-
-#ifndef GL_ETC1_RGB8_OES
-#define GL_ETC1_RGB8_OES 0x8D64
-#endif
-
-#include "lz4.h"
-
-#ifdef __ANDROID__
-//  arm gcc compiler has a lot of trouble passing doubles as function aruments.
-//  We don't really need double precision here, so fix with a (faster) macro.
-extern "C" void glOrthof(float left, float right, float bottom, float top,
-                         float near, float far);
-#define glOrtho(a, b, c, d, e, f) \
-  ;                               \
-  glOrthof(a, b, c, d, e, f);
-
-#endif
-
-#include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#ifdef USE_ANDROID_GLES2
-#include <GLES2/gl2.h>
-#endif
-
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-#include "linmath.h"
-#include "shaders.h"
-#include "model/notification_manager.h"
-#endif
-
+// In ocpn_app, we dont want to include that
+// FIXME (leamas) Find a new home
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-extern s52plib *ps52plib;
-extern bool g_bopengl;
-extern bool g_bDebugOGL;
-extern bool g_bSoftwareGL;
-extern ocpnFloatingToolbarDialog *g_MainToolbar;
-extern iENCToolbar *g_iENCToolbar;
-extern bool g_bShowChartBar;
-extern glTextureManager *g_glTextureManager;
-extern bool b_inCompressAllCharts;
-extern bool g_bShowCompassWin;
+// extern GLenum g_texture_rectangle_format;
 
-extern GLenum g_texture_rectangle_format;
-
-extern int g_memCacheLimit;
-extern ColorScheme global_color_scheme;
-extern bool g_bquiting;
-extern ThumbWin *pthumbwin;
-extern int g_mipmap_max_level;
-
-extern int g_OwnShipIconType;
-
-extern ChartDB *ChartData;
-
-extern PlugInManager *g_pi_manager;
-
-extern RouteList *pRouteList;
-extern std::vector<Track *> g_TrackList;
-extern bool b_inCompressAllCharts;
-extern bool g_bGLexpert;
-extern bool g_bcompression_wait;
-extern float g_ShipScaleFactorExp;
-
-float g_GLMinCartographicLineWidth;
-
-extern bool g_fog_overzoom;
-extern double g_overzoom_emphasis_base;
-extern bool g_oz_vector_scale;
-extern TCMgr *ptcmgr;
-extern int g_nCPUCount;
-extern bool g_running;
-
-extern unsigned int g_canvasConfig;
-extern ChartCanvas *g_overlayCanvas;
-extern BasePlatform *g_BasePlatform;
-extern bool g_PrintingInProgress;
-extern bool g_bhide_depth_units;
-extern bool g_bhide_overzoom_flag;
-
-wxColor s_regionColor;
-extern ShapeBaseChartSet gShapeBasemap;
-
-extern ChartCanvas *g_focusCanvas;  ///< Global instance
+extern bool g_running;  ///< Android only
 
 //    For VBO(s)
-bool g_b_EnableVBO;
-bool g_b_needFinish;  // Need glFinish() call on each frame?
+static bool g_b_needFinish;  // Need glFinish() call on each frame?
 
+static wxColor s_regionColor;
+static float g_GLMinCartographicLineWidth;
 // MacOS has some missing parts:
 #ifndef APIENTRY
 #define APIENTRY
@@ -255,6 +201,9 @@ bool g_b_needFinish;  // Need glFinish() call on each frame?
 #define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
 #endif
 
+GLuint g_raster_format = GL_RGB;  ///< Global instance
+
+// OpenGL/GLES  bindings
 PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
@@ -284,45 +233,23 @@ typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
                                                   GLint *data);
 PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
-#include <wx/arrimpl.cpp>
-// WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
-
-GLuint g_raster_format = GL_RGB;
-long g_tex_mem_used;
-
-bool b_timeGL;
-wxStopWatch g_glstopwatch;
-double g_gl_ms_per_frame;
-
-int g_tile_size;
-int g_uncompressed_tile_size;
-
-extern wxProgressDialog *pprog;
-extern bool b_skipout;
-extern wxSize pprog_size;
-extern int pprog_count;
-extern int pprog_threads;
-
-// #if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't
-//  support vla */ const #endif extern int g_mipmap_max_level;
-int panx, pany;
-
-bool glChartCanvas::s_b_useScissorTest;
-bool glChartCanvas::s_b_useStencil;
-bool glChartCanvas::s_b_useStencilAP;
-bool glChartCanvas::s_b_useFBO;
+static bool b_timeGL;
+static int panx, pany;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 static int s_tess_vertex_idx;
 static int s_tess_vertex_idx_this;
 static int s_tess_buf_len;
 static GLfloat *s_tess_work_buf;
-GLenum s_tess_mode;
+static GLenum s_tess_mode;
 static int s_nvertex;
-static vec4 s_tess_color;
-ViewPort s_tessVP;
-static ocpnDC *s_pdc;
+static ViewPort s_tessVP;
 #endif
+
+bool glChartCanvas::s_b_useScissorTest;
+bool glChartCanvas::s_b_useStencil;
+bool glChartCanvas::s_b_useStencilAP;
+bool glChartCanvas::s_b_useFBO;
 
 #if 0
 /* for debugging */

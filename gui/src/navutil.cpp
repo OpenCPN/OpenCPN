@@ -348,8 +348,6 @@ extern wxString g_uiStyle;
 extern bool g_btrackContinuous;
 extern bool g_useMUI;
 
-int g_nCPUCount;
-
 extern unsigned int g_canvasConfig;
 extern wxString g_lastAppliedTemplateGUID;
 
