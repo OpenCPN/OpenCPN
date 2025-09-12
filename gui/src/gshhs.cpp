@@ -1,15 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GSHHS Chart Object (Global Self-consistent, Hierarchical,
- *High-resolution Shoreline) Author:   Jesper Weissglas for the OpenCPN port.
- *
- *           Derived from http://www.zygrib.org/ and
- *http://sourceforge.net/projects/qtvlm/ which has the original copyright:
- *   zUGrib: meteorologic GRIB file data viewer
- *   Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org
- *
- ***************************************************************************
+/**************************************************************************
+ *   Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org        *
+ *   Copyright (C) 2012 Jesper Weissglass                                  *
  *   Copyright (C) 2012 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,12 +14,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
  *
+ * Implement gshhs.h -- Global shoreline
  *
+ * Derived from http://www.zygrib.org/ and
+ *  http://sourceforge.net/projects/qtvlm/ which have the original copyrights
  */
 
 #include <wx/wxprec.h>
@@ -41,7 +36,7 @@
 
 #include "dychart.h"
 
-// #if defined(__OCPN__ANDROID__)
+// #if defined(__ANDROID__)
 // #include <GLES2/gl2.h>
 // #elif defined(__WXQT__) || defined(__WXGTK__)
 // #include <GL/glew.h>
