@@ -34,7 +34,7 @@
 #include "OCPNPlatform.h"
 #include "shapefile_basemap.h"
 #include "chartbase.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 
 #include "model/logger.h"
 

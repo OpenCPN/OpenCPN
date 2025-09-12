@@ -75,7 +75,7 @@
 #endif
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "linmath.h"
 #endif
 

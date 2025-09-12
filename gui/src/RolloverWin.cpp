@@ -49,7 +49,7 @@
 #include "OCPNPlatform.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "chcanv.h"
 #endif
 

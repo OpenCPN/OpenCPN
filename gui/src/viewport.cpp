@@ -69,7 +69,7 @@
 #include "model/multiplexer.h"
 #include "timers.h"
 #include "tide_time.h"
-#include "glTextureDescriptor.h"
+#include "gl_texture_descr.h"
 #include "ch_info_win.h"
 #include "Quilt.h"
 #include "model/select_item.h"
@@ -83,7 +83,7 @@
 #include "gshhs.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #include "cm93.h"      // for chart outline draw

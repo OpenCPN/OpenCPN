@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "IDX_entry.h"
+#include "idx_entry.h"
 
 #include <string.h>
 #include <stdlib.h>

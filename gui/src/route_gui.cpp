@@ -46,7 +46,7 @@
 #include "model/routeman.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "line_clip.h"
 #include "model/route.h"
 

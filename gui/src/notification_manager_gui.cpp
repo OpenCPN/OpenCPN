@@ -36,7 +36,7 @@
 #include "styles.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "gui_lib.h"
 #include "model/svg_utils.h"
 #include "model/datetime.h"

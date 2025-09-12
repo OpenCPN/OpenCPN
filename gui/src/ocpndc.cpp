@@ -57,7 +57,7 @@
 #include "model/config_vars.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 extern ocpnGLOptions g_GLOptions;
 #endif
 

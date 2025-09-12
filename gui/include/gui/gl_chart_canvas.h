@@ -342,7 +342,7 @@ protected:
 
 extern void BuildCompressedCache();
 
-#include "glTextureManager.h"
+#include "gl_texture_mgr.h"
 extern glTextureManager *g_glTextureManager;
 
 #endif

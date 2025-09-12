@@ -55,7 +55,7 @@
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "cm93.h"  // for chart outline draw
-#include "GoToPositionDialog.h"
+#include "go_to_position_dlg.h"
 #include "kml.h"
 #include "MarkInfo.h"
 #include "ocpn_frame.h"

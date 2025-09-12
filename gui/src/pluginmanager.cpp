@@ -159,7 +159,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #endif
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 extern MyConfig* pConfig;

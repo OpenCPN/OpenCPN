@@ -9,7 +9,7 @@
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "track_gui.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 
 extern Routeman *g_pRouteMan;
 extern wxColour g_colourTrackLineColour;
