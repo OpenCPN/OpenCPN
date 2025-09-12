@@ -36,11 +36,11 @@
 #include "config.h"
 
 #include "viewport.h"
-#include "glTexCache.h"
-#include "glTextureDescriptor.h"
+#include "gl_tex_cache.h"
+#include "gl_texture_descr.h"
 
 #include "chcanv.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "Quilt.h"
 #include "chartbase.h"
 #include "chartimg.h"

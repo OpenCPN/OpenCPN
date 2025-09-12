@@ -53,7 +53,7 @@
 #include "ocpndc.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #include "gshhs.h"

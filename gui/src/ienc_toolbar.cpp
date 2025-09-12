@@ -32,7 +32,7 @@
 #endif
 
 #include "toolbar.h"
-#include "iENCToolbar.h"
+#include "ienc_toolbar.h"
 
 #include "chcanv.h"
 #include "s52s57.h"

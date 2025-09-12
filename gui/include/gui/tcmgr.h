@@ -33,7 +33,7 @@
 #include <wx/datetime.h>
 
 #include "Station_Data.h"
-#include "IDX_entry.h"
+#include "idx_entry.h"
 #include "TC_Error_Code.h"
 #include "TCDataSource.h"
 

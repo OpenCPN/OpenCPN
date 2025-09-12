@@ -140,8 +140,8 @@ using namespace std::literals::chrono_literals;
 #include "dychart.h"
 #include "font_mgr.h"
 #include "gdal/cpl_csv.h"
-#include "glTexCache.h"
-#include "GoToPositionDialog.h"
+#include "gl_tex_cache.h"
+#include "go_to_position_dlg.h"
 #include "Layer.h"
 #include "MarkInfo.h"
 #include "navutil.h"
@@ -168,7 +168,7 @@ using namespace std::literals::chrono_literals;
 #include "udev_rule_mgr.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __WXOSX__

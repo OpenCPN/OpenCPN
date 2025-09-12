@@ -29,7 +29,7 @@
 #include <wx/textctrl.h>
 #include <wx/clipbrd.h>
 
-#include "GoToPositionDialog.h"
+#include "go_to_position_dlg.h"
 #include "model/position_parser.h"
 #include "MarkInfo.h"
 #include "navutil.h"

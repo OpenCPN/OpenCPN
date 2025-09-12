@@ -74,10 +74,10 @@
 #include "detail_slider.h"
 #include "hotkeys_dlg.h"
 #include "font_mgr.h"
-#include "glTextureDescriptor.h"
-#include "GoToPositionDialog.h"
+#include "gl_texture_descr.h"
+#include "go_to_position_dlg.h"
 #include "gshhs.h"
-#include "iENCToolbar.h"
+#include "ienc_toolbar.h"
 #include "kml.h"
 #include "line_clip.h"
 #include "MarkInfo.h"
@@ -121,7 +121,7 @@
 #endif
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "notification_manager_gui.h"
 #include "model/notification_manager.h"
 #endif

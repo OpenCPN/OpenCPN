@@ -19,7 +19,7 @@
  **************************************************************************/
 
 #include "chcanv.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "ocpn_frame.h"
 #include "printout_chart.h"
 

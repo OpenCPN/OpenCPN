@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "glTextureDescriptor.h"
+#include "gl_texture_descr.h"
 #include <wx/thread.h>
 
 #if defined(__OCPN__ANDROID__)
