@@ -23,6 +23,7 @@
  */
 
 #include <algorithm>
+#include <list>
 
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
@@ -35,62 +36,64 @@
 #include <GL/glew.h>
 #endif
 
+#include <wx/datetime.h>
+#include <wx/event.h>
+#include <wx/filename.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/log.h>
+#include <wx/progdlg.h>
+#include <wx/stopwatch.h>
+#include <wx/string.h>
+#include <wx/thread.h>
+#include <wx/utils.h>
+
+#include <wx/listimpl.cpp>
+#include <wx/arrimpl.cpp>
+
+#include "mipmap/mipmap.h"
+#include "ssl/sha1.h"
+
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
+#include "model/own_ship.h"
+
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
 #include "dychart.h"
-#include "viewport.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
 #include "gl_tex_cache.h"
 #include "gl_texture_descr.h"
-
-#include "chcanv.h"
-#include "gl_chart_canvas.h"
-#include "Quilt.h"
-#include "chartbase.h"
-#include "chartimg.h"
-#include "chartdb.h"
-#include "OCPNPlatform.h"
-#include "font_mgr.h"
-#include "mipmap/mipmap.h"
 #include "gui_lib.h"
+#include "lz4.h"
+#include "lz4hc.h"
 #include "ocpn_frame.h"
-#include "model/own_ship.h"
+#include "OCPNPlatform.h"
+#include "Quilt.h"
+#include "squish.h"
+#include "viewport.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64
 #endif
 
-#include "squish.h"
-#include "lz4.h"
-#include "lz4hc.h"
-
-#include <wx/listimpl.cpp>
-
 using JobList = std::list<JobTicket *>;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
-extern GLuint g_raster_format;
-extern int g_memCacheLimit;
-extern ChartDB *ChartData;
-extern ocpnGLOptions g_GLOptions;
-extern long g_tex_mem_used;
-extern int g_tile_size;
-extern int g_uncompressed_tile_size;
-extern int g_nCPUCount;
+extern GLuint g_raster_format;  // FIXME (leamas) Find a home
 
-extern bool b_inCompressAllCharts;
-extern MyFrame *gFrame;
-extern arrayofCanvasPtr g_canvasArray;
-
-extern OCPNPlatform *g_Platform;
-extern ColorScheme global_color_scheme;
-
+extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find a home
+                                        //
+// FIXME (leamas) find a home
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-bool bthread_debug;
-bool g_throttle_squish;
+glTextureManager *g_glTextureManager;  ///< Global instance
 
-glTextureManager *g_glTextureManager;
-
-#include "ssl/sha1.h"
+static bool bthread_debug;
 
 wxString CompressedCachePath(wxString path) {
 #if defined(__WXMSW__)
@@ -179,8 +182,6 @@ public:
   wxString chart_path;
   double distance;
 };
-
-#include <wx/arrimpl.cpp>
 
 WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
 // WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
