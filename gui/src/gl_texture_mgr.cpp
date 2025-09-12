@@ -1,11 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Authors:  David Register
- *           Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2016 by David S. Register                               *
+ *   Copyright (C) 2016 Sean D'Epagnier                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement gl_texture_mgr.h -- OpenGL texture management
  */
 
 #include <algorithm>
@@ -31,7 +29,7 @@
 #include <wx/wx.h>
 #include <wx/thread.h>
 
-#if defined(__OCPN__ANDROID__)
+#if defined(__ANDROID__)
 #include <GLES2/gl2.h>
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>

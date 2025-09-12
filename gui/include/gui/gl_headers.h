@@ -17,6 +17,7 @@
 
 /**
  * \file
+ *
  * Platform independent GL includes
  */
 
@@ -43,5 +44,5 @@ typedef void (*_GLUfuncptr)();
 
 #else
 #error platform not supported.
-#endif  // _win32
+#endif  // _WIN32
 #endif  // ocpnUSE_GL
