@@ -24,34 +24,44 @@
 #ifndef __GLCHARTCANVAS_H__
 #define __GLCHARTCANVAS_H__
 
+#include <array>
+#include <string>
+#include <unordered_map>
+
 // We need to set up our openGL environment before including
 // glcanvas.h which includes GL/gl.h
 #include "gl_headers.h"
 
+#include <wx/bitmap.h>
+#include <wx/colour.h>
+#include <wx/event.h>
+#include <wx/gdicmn.h>
 #include <wx/glcanvas.h>
-
-#include "dychart.h"
+#include <wx/pen.h>
+#include <wx/string.h>
+#include <wx/timer.h>
 
 #include "model/ocpn_types.h"
-#include "OCPNRegion.h"
-#include "LLRegion.h"
-#include "viewport.h"
-#include "TexFont.h"
-#include "ocpndc.h"
+#include "model/route.h"
+
+#include "chartimg.h"
 #include "chcanv.h"
+#include "dychart.h"
+#include "emboss_data.h"
+#include "gl_tex_cache.h"
+#include "LLRegion.h"
+#include "ocpndc.h"
 #include "ocpn_gl_options.h"
+#include "ocpndc.h"
+#include "OCPNRegion.h"
+#include "TexFont.h"
+#include "viewport.h"
 
-#include <array>
-#include <unordered_map>
-
-#define FORMAT_BITS GL_RGB
-
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <wx/qt/private/wxQtGesture.h>
 #endif
 
-class glTexFactory;
-class ChartCanvas;
+#define FORMAT_BITS GL_RGB
 
 #define GESTURE_EVENT_TIMER 78334
 #define ZOOM_TIMER 78335
@@ -79,11 +89,6 @@ public:
   glTestCanvas(wxWindow *parent);
   ~glTestCanvas() {};
 };
-
-class ocpnDC;
-class emboss_data;
-class Route;
-class ChartBaseBSB;
 
 /**
  * OpenGL chart rendering canvas. Implements OpenGL-based rendering of charts

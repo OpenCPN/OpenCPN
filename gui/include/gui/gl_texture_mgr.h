@@ -37,6 +37,8 @@ const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
 class JobTicket;
 class wxGenericProgressDialog;
 
+extern int g_mipmap_max_level;  ///< Global instance
+
 class ProgressInfoItem;
 using ProgressInfoList = std::list<ProgressInfoItem *>;
 
