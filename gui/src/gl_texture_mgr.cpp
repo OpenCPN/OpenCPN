@@ -67,7 +67,6 @@ using JobList = std::list<JobTicket *>;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
-extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
 extern int g_memCacheLimit;
 extern ChartDB *ChartData;
@@ -120,8 +119,6 @@ wxString CompressedCachePath(wxString path) {
   return g_Platform->GetPrivateDataDir() + separator + "raster_texture_cache" +
          separator + sha1;
 }
-
-int g_mipmap_max_level = 4;
 
 #if 0
 OCPN_CompressProgressEvent::OCPN_CompressProgressEvent(wxEventType commandType, int id)

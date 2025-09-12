@@ -52,6 +52,7 @@ extern bool g_FlushNavobjChanges;
 extern bool g_PrintingInProgress;
 
 extern int g_click_stop;
+extern int g_mipmap_max_level;
 extern int g_sticky_chart;
 extern int g_tile_size;
 extern int g_uncompressed_tile_size;

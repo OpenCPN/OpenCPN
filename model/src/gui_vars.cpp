@@ -64,6 +64,7 @@ float g_compass_scalefactor = 0;
 float g_toolbar_scalefactor = 0;
 
 int g_click_stop = 0;
+int g_mipmap_max_level = 4;
 int g_sticky_chart = 0;
 int g_tile_size = 0;
 int g_uncompressed_tile_size = 0;

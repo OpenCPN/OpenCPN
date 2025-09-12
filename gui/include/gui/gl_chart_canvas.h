@@ -49,6 +49,7 @@
 #include "dychart.h"
 #include "emboss_data.h"
 #include "gl_tex_cache.h"
+#include "gl_texture_mgr.h"
 #include "LLRegion.h"
 #include "ocpndc.h"
 #include "ocpn_gl_options.h"
@@ -66,6 +67,12 @@
 #define GESTURE_EVENT_TIMER 78334
 #define ZOOM_TIMER 78335
 #define GESTURE_FINISH_TIMER 78336
+
+extern GLuint g_raster_format;  ///< Global instance
+
+extern void BuildCompressedCache();  // FIXME (leamas) find a home
+
+extern glTextureManager *g_glTextureManager;  // FIXME (leamas) find a home
 
 class OCPN_GLCaps {
 public:
@@ -343,10 +350,5 @@ protected:
 
   DECLARE_EVENT_TABLE()
 };
-
-extern void BuildCompressedCache();
-
-#include "gl_texture_mgr.h"
-extern glTextureManager *g_glTextureManager;
 
 #endif
