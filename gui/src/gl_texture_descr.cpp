@@ -21,10 +21,11 @@
  * Implement gl_texture_descr.h -- OpenGL texture container
  */
 
-#include "gl_texture_descr.h"
 #include <wx/thread.h>
 
-#if defined(__OCPN__ANDROID__)
+#include "gl_texture_descr.h"
+
+#if defined(__ANDROID__)
 #include <GLES2/gl2.h>
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>

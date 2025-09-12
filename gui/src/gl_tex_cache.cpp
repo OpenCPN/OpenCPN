@@ -22,37 +22,37 @@
  * Implement gl_tex_cache.h -- OpenGL texture cache
  */
 
+#include <stdint.h>
+
 #include <wx/wxprec.h>
 #include <wx/tokenzr.h>
 #include <wx/filename.h>
 #include <wx/wx.h>
 
-#include <stdint.h>
-
-#include "dychart.h"
-
 #include "config.h"
 
-#include "viewport.h"
+#include "mipmap/mipmap.h"
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
+
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "dychart.h"
+#include "gl_chart_canvas.h"
 #include "gl_tex_cache.h"
 #include "gl_texture_descr.h"
-
-#include "chcanv.h"
-#include "gl_chart_canvas.h"
-#include "Quilt.h"
-#include "chartbase.h"
-#include "chartimg.h"
-#include "chartdb.h"
+#include "lz4.h"
+#include "lz4hc.h"
 #include "OCPNPlatform.h"
-#include "mipmap/mipmap.h"
+#include "Quilt.h"
+#include "squish.h"
+#include "viewport.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64
 #endif
-
-#include "squish.h"
-#include "lz4.h"
-#include "lz4hc.h"
 
 // Correct some deficincies in MacOS OpenGL include files
 #ifdef __WXOSX__
@@ -98,22 +98,15 @@ typedef void (*PFNGLRENDERBUFFERSTORAGEEXTPROC)(GLenum target,
 typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
 #endif
 
-extern long g_tex_mem_used;
-extern int g_mipmap_max_level;
-extern GLuint g_raster_format;
-extern int g_memCacheLimit;
-
 extern ColorScheme global_color_scheme;
 
-extern ChartDB *ChartData;
 extern ocpnGLOptions g_GLOptions;
-
-extern int g_tile_size;
 
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-extern wxString CompressedCachePath(wxString path);
 extern glTextureManager *g_glTextureManager;
+
+extern wxString CompressedCachePath(wxString path);
 
 //      CatalogEntry implementation
 CatalogEntry::CatalogEntry() {}
@@ -298,7 +291,7 @@ bool glTexFactory::OnTimer() {
 }
 
 #if 0
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     // delete any uncompressed textures if texture memory is more than 30
     // on android??   Maybe this should be removed now
     bool bGLMemCrunch = g_tex_mem_used > 30/*g_GLOptions.m_iTextureMemorySize*/ * 1024 * 1024;
@@ -486,7 +479,7 @@ static void CreateTexture(GLuint &tex_name, bool b_use_mipmaps) {
   else
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 #endif
