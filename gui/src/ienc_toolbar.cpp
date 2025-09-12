@@ -29,23 +29,28 @@
 #include <wx/wx.h>
 #endif
 
-#include "toolbar.h"
+#include <wx/bitmap.h>
+#include <wx/brush.h>
+#include <wx/dcmemory.h>
+#include <wx/event.h>
+#include <wx/file.h>
+#include <wx/filename.h>
+#include <wx/log.h>
+
 #include "ienc_toolbar.h"
 
-#include "chcanv.h"
-#include "s52s57.h"
-#include "s52plib.h"
-#include "pluginmanager.h"
-#include "OCPNPlatform.h"
-#include "chcanv.h"
 #include "model/svg_utils.h"
-#include "ocpn_frame.h"
 
-extern s52plib *ps52plib;
-extern MyFrame *gFrame;
-extern OCPNPlatform *g_Platform;
+#include "chcanv.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "pluginmanager.h"
+#include "s52plib.h"
+#include "s52s57.h"
+#include "toolbar.h"
 
 iENCToolbar *g_iENCToolbar;
+
 //---------------------------------------------------------------------------------------
 //          iENCToolbar Implementation
 //---------------------------------------------------------------------------------------
