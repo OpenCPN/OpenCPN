@@ -1,10 +1,11 @@
-opencpn (1:5.12.2+dfsg-4) UNRELEASED; urgency=medium
+opencpn (1:5.12.4+dfsg-1) UNRELEASED; urgency=medium
 
+  * New upstream release
   * Update standards-version to 4.7.2, no changes
   * Verify builds using gcc-15. Closes: #1097517
   * d/patches: Add missing annotations.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 14 Aug 2025 12:24:33 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 13 Sep 2025 10:54:56 +0200
 
 opencpn (1:5.12.2+dfsg-3) unstable; urgency=medium
 
