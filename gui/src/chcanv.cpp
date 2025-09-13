@@ -1592,6 +1592,7 @@ bool ChartCanvas::DoCanvasUpdate(void) {
   if (!ChartData) return false;
 
   if (ChartData->IsBusy()) return false;
+  if (m_chart_drag_inertia_active) return false;
 
   //    Startup case:
   //    Quilting is enabled, but the last chart seen was not quiltable
@@ -1786,11 +1787,14 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       double pixlg = fabs(vpLon - m_vLon) * 1852 * 60 * GetVPScale();
       if (wxMax(pixlt, pixlg) > GetCanvasWidth()) super_jump = true;
     }
-    if (m_bFollow && g_btenhertz && !super_jump && !m_bLookAhead) {
+#if 0
+    if (m_bFollow && g_btenhertz && !super_jump && !m_bLookAhead && !g_btouch && !m_bzooming) {
       int nstep = 5;
       if (blong_jump) nstep = 20;
       StartTimedMovementVP(vpLat, vpLon, nstep);
-    } else {
+    } else
+#endif
+    {
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
     }
 
@@ -3467,8 +3471,6 @@ double easeOutCubic(double t) {
 }
 
 void ChartCanvas::StartChartDragInertia() {
-  //
-  // printf("\nStart ChartDragInertia\n");
   m_bChartDragging = false;
 
   // Set some parameters
@@ -3487,18 +3489,13 @@ void ChartCanvas::StartChartDragInertia() {
     xacc += m_drag_vec_x.at(length - 1 - i);
     yacc += m_drag_vec_y.at(length - 1 - i);
     tacc += m_drag_vec_t.at(length - 1 - i);
-    // printf("%d  %g\n", xacc, tacc);
   }
   m_chart_drag_velocity_x = xacc / tacc;
   m_chart_drag_velocity_y = yacc / tacc;
 
   m_chart_drag_inertia_active = true;
-
   // First callback as fast as possible.
   m_chart_drag_inertia_timer.Start(1, wxTIMER_ONE_SHOT);
-
-  //  printf("  Drag parms  %d  %d  %g\n", m_chart_drag_total_x,
-  //         m_chart_drag_total_y, m_chart_drag_total_time);
 }
 
 void ChartCanvas::OnChartDragInertiaTimer(wxTimerEvent &event) {
@@ -3516,10 +3513,6 @@ void ChartCanvas::OnChartDragInertiaTimer(wxTimerEvent &event) {
   double dy =
       m_chart_drag_velocity_y * ((elapsed - m_last_elapsed) / 1000.) * e;
 
-  // double distance = pow((pow(dx, 2) + pow(dy, 2)), 0.5);
-  //  printf("     %5g  %5g     %5g   %5g pix/sec\n", elapsed,
-  //         elapsed - m_last_elapsed, distance, distance * 1000 / elapsed);
-
   m_last_elapsed = elapsed;
 
   // Ensure that target destination lies on whole-pixel boundary
@@ -3529,19 +3522,31 @@ void ChartCanvas::OnChartDragInertiaTimer(wxTimerEvent &event) {
   double inertia_lat, inertia_lon;
   GetCanvasPixPoint(destination_x, destination_y, inertia_lat, inertia_lon);
   SetViewPoint(inertia_lat, inertia_lon);  // about 1 msec
+  // Check if ownship has moved off-screen
+  if (!IsOwnshipOnScreen()) {
+    m_bFollow = false;  // update the follow flag
+    parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, false);
+    UpdateFollowButtonState();
+    m_OSoffsetx = 0;
+    m_OSoffsety = 0;
+  } else {
+    m_OSoffsetx += dx;
+    m_OSoffsety -= dy;
+  }
 
   Refresh(false);
 
   // Stop condition
   if ((t >= 1) || (fabs(dx) < 1) || (fabs(dy) < 1)) {
     m_chart_drag_inertia_timer.Stop();
-    m_chart_drag_inertia_active = false;
 
     // Disable chart pan movement logic
     m_target_lat = GetVP().clat;
     m_target_lon = GetVP().clon;
     m_pan_drag.x = m_pan_drag.y = 0;
     m_panx = m_pany = 0;
+    m_chart_drag_inertia_active = false;
+    DoCanvasUpdate();
 
   } else {
     int target_redraw_interval = 40;  // msec
@@ -5070,19 +5075,8 @@ void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
 bool ChartCanvas::PanCanvas(double dx, double dy) {
   if (!ChartData) return false;
 
-  if (g_btouch) {
-    // Stop bfollow state, without a refresh
-    m_bFollow = false;  // update the follow flag
-    parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, false);
-    UpdateFollowButtonState();
-    // Clear the bfollow offset
-    m_OSoffsetx = 0;
-    m_OSoffsety = 0;
-  }
-
   extendedSectorLegs.clear();
 
-  // double clat = VPoint.clat, clon = VPoint.clon;
   double dlat, dlon;
   wxPoint2DDouble p(VPoint.pix_width / 2.0, VPoint.pix_height / 2.0);
 
@@ -5195,6 +5189,16 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
   return true;
 }
 
+bool ChartCanvas::IsOwnshipOnScreen() {
+  wxPoint r;
+  GetCanvasPointPix(gLat, gLon, &r);
+  if (((r.x > 0) && r.x < GetCanvasWidth()) &&
+      ((r.y > 0) && r.y < GetCanvasHeight()))
+    return true;
+  else
+    return false;
+}
+
 void ChartCanvas::ReloadVP(bool b_adjust) {
   if (g_brightness_init) SetScreenBrightness(g_nbrightness);
 
@@ -5263,17 +5267,20 @@ int ChartCanvas::AdjustQuiltRefChart() {
       } else {
         bool brender_ok = IsChartLargeEnoughToRender(pc, VPoint);
 
-        int ref_family = pc->GetChartFamily();
-
         if (!brender_ok) {
-          unsigned int target_stack_index = 0;
-          int target_stack_index_check =
-              m_pQuilt->GetExtendedStackIndexArray()
-                  [m_pQuilt->GetRefChartdbIndex()];  // Lookup
+          int target_stack_index = wxNOT_FOUND;
+          int il = 0;
+          for (auto index : m_pQuilt->GetExtendedStackIndexArray()) {
+            if (index == m_pQuilt->GetRefChartdbIndex()) {
+              target_stack_index = il;
+              break;
+            }
+            il++;
+          }
+          if (wxNOT_FOUND == target_stack_index)  // should never happen...
+            target_stack_index = 0;
 
-          if (wxNOT_FOUND != target_stack_index_check)
-            target_stack_index = target_stack_index_check;
-
+          int ref_family = pc->GetChartFamily();
           int extended_array_count =
               m_pQuilt->GetExtendedStackIndexArray().size();
           while ((!brender_ok) &&

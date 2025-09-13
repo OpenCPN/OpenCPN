@@ -101,8 +101,8 @@ ConsoleCanvasWin::ConsoleCanvasWin(wxWindow* parent) {
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
 
   wxFont* pThisLegFont = FontMgr::Get().FindOrCreateFont(
-      10, wxFONTFAMILY_DEFAULT, qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
-      qFont->GetFaceName());
+      qFont->GetPointSize(), wxFONTFAMILY_DEFAULT, qFont->GetStyle(),
+      wxFONTWEIGHT_BOLD, false, qFont->GetFaceName());
   pThisLegText->SetFont(*pThisLegFont);
 
   pXTE = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
@@ -509,8 +509,8 @@ ConsoleCanvasFrame::ConsoleCanvasFrame(wxWindow* parent) {
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
 
   wxFont* pThisLegFont = FontMgr::Get().FindOrCreateFont(
-      10, wxFONTFAMILY_DEFAULT, qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
-      qFont->GetFaceName());
+      qFont->GetPointSize(), wxFONTFAMILY_DEFAULT, qFont->GetStyle(),
+      wxFONTWEIGHT_BOLD, false, qFont->GetFaceName());
   pThisLegText->SetFont(*pThisLegFont);
 
   pXTE = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
@@ -614,6 +614,14 @@ void ConsoleCanvasFrame::OnContextMenu(wxContextMenuEvent& event) {
                                         _("Full Route"), _T(""), wxITEM_RADIO);
   wxMenuItem* btnHighw = new wxMenuItem(
       contextMenu, ID_NAVHIGHWAY, _("Show Highway"), _T(""), wxITEM_CHECK);
+
+#ifdef __ANDROID__
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+  btnLeg->SetFont(sFont);
+  btnRoute->SetFont(sFont);
+  btnHighw->SetFont(sFont);
+#endif
+
   contextMenu->Append(btnLeg);
   contextMenu->Append(btnRoute);
   contextMenu->AppendSeparator();
@@ -912,17 +920,25 @@ AnnunText::AnnunText(wxWindow* parent, wxWindowID id,
 
 AnnunText::~AnnunText() {}
 void AnnunText::MouseEvent(wxMouseEvent& event) {
-  if (event.RightDown()) {
-    wxContextMenuEvent cevt;
-    cevt.SetPosition(event.GetPosition());
-
-    ConsoleCanvasWin* ccp = dynamic_cast<ConsoleCanvasWin*>(GetParent());
-    if (ccp) ccp->OnContextMenu(cevt);
-
-  } else if (event.LeftDown()) {
-    ConsoleCanvasWin* ccp = dynamic_cast<ConsoleCanvasWin*>(GetParent());
-    if (ccp) {
-      ccp->ToggleRouteTotalDisplay();
+  ConsoleCanvasWin* ccpw = dynamic_cast<ConsoleCanvasWin*>(GetParent());
+  if (ccpw) {
+    if (event.RightDown()) {
+      wxContextMenuEvent cevt;
+      cevt.SetPosition(event.GetPosition());
+      ccpw->OnContextMenu(cevt);
+    } else if (event.LeftDown()) {
+      ccpw->ToggleRouteTotalDisplay();
+    }
+  } else {
+    ConsoleCanvasFrame* ccpf = dynamic_cast<ConsoleCanvasFrame*>(GetParent());
+    if (ccpf) {
+      if (event.RightDown()) {
+        wxContextMenuEvent cevt;
+        cevt.SetPosition(event.GetPosition());
+        ccpf->OnContextMenu(cevt);
+      } else if (event.LeftDown()) {
+        ccpf->ToggleRouteTotalDisplay();
+      }
     }
   }
 }
@@ -936,7 +952,7 @@ void AnnunText::CalculateMinSize(void) {
   int hv = 20;
 
   if (m_plabelFont)
-    GetTextExtent(_T("1234"), &wl, &hl, NULL, NULL, m_plabelFont);
+    GetTextExtent(_T("TTG @SOG"), &wl, &hl, NULL, NULL, m_plabelFont);
 
   if (m_pvalueFont)
     GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
@@ -948,13 +964,13 @@ void AnnunText::CalculateMinSize(void) {
   hv *= pdifactor;
 
   wxSize min;
-  min.x = wl + wv;
+  min.x = wxMax(min.x, wl * 1.2);
 
   // Space is tight on Android....
 #ifdef __ANDROID__
   min.x = wv * 1.2;
+  min.x = wxMax(min.x, wl * 1.2);
 #endif
-
   min.y = (int)((hl + hv) * 1.2);
 
   SetMinSize(min);

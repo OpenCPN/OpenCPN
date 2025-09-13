@@ -137,16 +137,16 @@ wxString Route::IsPointNameValid(RoutePoint *pPoint,
                                  const wxString &name) const {
   RoutePoint *point;
   wxRoutePointListNode *node = pRoutePointList->GetFirst();
-  wxString substr = name.SubString(0, 6);
+  wxString substr = name;
 
   while (node) {
     point = node->GetData();
-    wxString exist = point->GetName().SubString(0, 6);
+    wxString exist = point->GetName();
 
     if (pPoint->m_GUID == point->m_GUID) {
       node = node->GetNext();
     } else if (substr == exist) {
-      return wxString("Name is not unique in route");
+      return _("Name is not unique in route");
     } else {
       node = node->GetNext();
     }
