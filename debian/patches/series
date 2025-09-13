@@ -4,9 +4,3 @@
 0004-tests-disable-rest-server-tests-for-now.patch
 0005-build-add-latomic-linkage.patch
 0006-tests-disable-file-driver-tests-on-distro-builders.patch
-0007-DataMonitor-Filter-selection-bugfix-4693.patch
-0008-Correct-RoutePoint-creation-time-loading-from-dB.-47.patch
-0009-data_monitor-Fix-broken-logfile-column-spec-4717.patch
-0010-Dashb.-Don-t-resize-a-docked-panel-after-changed-pre.patch
-0011-Fix-RangeRingColours-for-Isolated-Marks-4727.patch
-0012-OCPNRegion-Fix-uninitialized-variable-FTBFS-on-some-.patch
