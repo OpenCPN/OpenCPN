@@ -14995,8 +14995,8 @@ int SetScreenBrightness(int brightness) {
      int cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
      if (cmcap != CM_GAMMA_RAMP)
      {
-     wxLogMessage(_T("    Video hardware does not support brightness control by
-     gamma ramp adjustment.")); return false;
+     wxLogMessage("    Video hardware does not support brightness control by
+     gamma ramp adjustment."); return false;
      }
      */
 
