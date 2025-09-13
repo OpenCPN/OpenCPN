@@ -901,123 +901,279 @@ MMSIEditDialog::MMSIEditDialog(MmsiProperties* props, wxWindow* parent,
 MMSIEditDialog::~MMSIEditDialog(void) { delete m_MMSICtl; }
 
 void MMSIEditDialog::CreateControls(void) {
+  int char_height = GetCharHeight();
+
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
 
-  wxStaticBox* mmsiBox =
-      new wxStaticBox(this, wxID_ANY, _("MMSI Extended Properties"));
+  if (g_pOptions->GetSize().y > 20 * char_height) {
+    wxBoxSizer* detail_sizer = new wxBoxSizer(wxVERTICAL);
+    mainSizer->Add(detail_sizer, 0);
 
-  wxStaticBoxSizer* mmsiSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
-  mainSizer->Add(mmsiSizer, 0, wxEXPAND | wxALL, 5);
+    wxStaticBox* mmsiBox =
+        new wxStaticBox(this, wxID_ANY, _("MMSI Extended Properties"));
 
-  wxStaticText* mmsiLabel = new wxStaticText(this, wxID_STATIC, _("MMSI"));
-  mmsiLabel->SetToolTip(
-      _("Maritime Mobile Service Identity - A unique 9-digit number assigned "
-        "to a vessel or navigation aid. Used to identify vessels and devices "
-        "in AIS transmissions and DSC calls."));
-  mmsiSizer->Add(mmsiLabel, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+    wxStaticBoxSizer* mmsiSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
+    detail_sizer->Add(mmsiSizer, 0, wxEXPAND | wxALL, 5);
 
-  m_MMSICtl = new wxTextCtrl(this, ID_MMSI_CTL, wxEmptyString,
-                             wxDefaultPosition, wxSize(180, -1), 0);
-  m_MMSICtl->SetToolTip(
-      _("Enter the 9-digit MMSI number for this vessel or station"));
-  mmsiSizer->Add(m_MMSICtl, 0,
-                 wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
-  m_MMSICtl->Bind(wxEVT_TEXT, &MMSIEditDialog::OnMMSIChanged, this);
+    wxStaticText* mmsiLabel = new wxStaticText(this, wxID_STATIC, _("MMSI"));
+    mmsiLabel->SetToolTip(
+        _("Maritime Mobile Service Identity - A unique 9-digit number assigned "
+          "to a vessel or navigation aid. Used to identify vessels and devices "
+          "in AIS transmissions and DSC calls."));
+    mmsiSizer->Add(mmsiLabel, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
 
-  wxStaticText* userLabelText = new wxStaticText(this, wxID_STATIC, _("Name"));
-  userLabelText->SetToolTip(
-      _("Display name for this vessel or device - can override names received "
+    m_MMSICtl = new wxTextCtrl(this, ID_MMSI_CTL, wxEmptyString,
+                               wxDefaultPosition, wxSize(180, -1), 0);
+    m_MMSICtl->SetToolTip(
+        _("Enter the 9-digit MMSI number for this vessel or station"));
+    mmsiSizer->Add(m_MMSICtl, 0,
+                   wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+    m_MMSICtl->Bind(wxEVT_TEXT, &MMSIEditDialog::OnMMSIChanged, this);
+
+    wxStaticText* userLabelText =
+        new wxStaticText(this, wxID_STATIC, _("Name"));
+    userLabelText->SetToolTip(_(
+        "Display name for this vessel or device - can override names received "
         "in AIS messages"));
-  mmsiSizer->Add(userLabelText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+    mmsiSizer->Add(userLabelText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP,
+                   5);
 
-  m_ShipNameCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                 wxDefaultPosition, wxSize(180, -1), 0);
-  m_ShipNameCtl->SetToolTip(_(
-      "Set the name for this vessel or device. If specified, this name takes "
-      "precedence over names received via AIS messages. Note that standard AIS "
-      "only supports uppercase letters (A-Z), numbers, and limited "
-      "punctuation. Your manual entries are stored in the mmsitoname.csv file "
-      "and preserved across sessions."));
-  mmsiSizer->Add(m_ShipNameCtl, 0,
-                 wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+    m_ShipNameCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
+                                   wxDefaultPosition, wxSize(180, -1), 0);
+    m_ShipNameCtl->SetToolTip(_(
+        "Set the name for this vessel or device. If specified, this name takes "
+        "precedence over names received via AIS messages. Note that standard "
+        "AIS "
+        "only supports uppercase letters (A-Z), numbers, and limited "
+        "punctuation. Your manual entries are stored in the mmsitoname.csv "
+        "file "
+        "and preserved across sessions."));
+    mmsiSizer->Add(m_ShipNameCtl, 0,
+                   wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
 
-  wxStaticBox* trackBox = new wxStaticBox(this, wxID_ANY, _("Tracking"));
-  trackBox->SetToolTip(_("Control how tracks are created for this MMSI"));
-  wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(trackBox, wxVERTICAL);
+    wxStaticBox* trackBox = new wxStaticBox(this, wxID_ANY, _("Tracking"));
+    trackBox->SetToolTip(_("Control how tracks are created for this MMSI"));
+    wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(trackBox, wxVERTICAL);
 
-  wxGridSizer* gridSizer = new wxGridSizer(0, 3, 0, 0);
+    wxGridSizer* gridSizer = new wxGridSizer(0, 3, 0, 0);
 
-  m_rbTypeTrackDefault =
-      new wxRadioButton(this, wxID_ANY, _("Default tracking"),
-                        wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-  m_rbTypeTrackDefault->SetToolTip(
-      _("Use the global tracking settings for this vessel"));
-  m_rbTypeTrackDefault->SetValue(TRUE);
-  gridSizer->Add(m_rbTypeTrackDefault, 0, wxALL, 5);
+    m_rbTypeTrackDefault =
+        new wxRadioButton(this, wxID_ANY, _("Default tracking"),
+                          wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    m_rbTypeTrackDefault->SetToolTip(
+        _("Use the global tracking settings for this vessel"));
+    m_rbTypeTrackDefault->SetValue(TRUE);
+    gridSizer->Add(m_rbTypeTrackDefault, 0, wxALL, 5);
 
-  m_rbTypeTrackAlways = new wxRadioButton(this, wxID_ANY, _("Always track"));
-  m_rbTypeTrackAlways->SetToolTip(_(
-      "Always create a track for this vessel, regardless of global settings"));
-  gridSizer->Add(m_rbTypeTrackAlways, 0, wxALL, 5);
+    m_rbTypeTrackAlways = new wxRadioButton(this, wxID_ANY, _("Always track"));
+    m_rbTypeTrackAlways->SetToolTip(
+        _("Always create a track for this vessel, regardless of global "
+          "settings"));
+    gridSizer->Add(m_rbTypeTrackAlways, 0, wxALL, 5);
 
-  m_rbTypeTrackNever = new wxRadioButton(this, wxID_ANY, _(" Never track"));
-  m_rbTypeTrackNever->SetToolTip(
-      _("Never create a track for this vessel, regardless of global settings"));
-  gridSizer->Add(m_rbTypeTrackNever, 0, wxALL, 5);
+    m_rbTypeTrackNever = new wxRadioButton(this, wxID_ANY, _(" Never track"));
+    m_rbTypeTrackNever->SetToolTip(_(
+        "Never create a track for this vessel, regardless of global settings"));
+    gridSizer->Add(m_rbTypeTrackNever, 0, wxALL, 5);
 
-  m_cbTrackPersist = new wxCheckBox(this, wxID_ANY, _("Persistent"));
-  m_cbTrackPersist->SetToolTip(
-      _("Save this vessel's track between OpenCPN sessions. Useful for vessels "
+    m_cbTrackPersist = new wxCheckBox(this, wxID_ANY, _("Persistent"));
+    m_cbTrackPersist->SetToolTip(_(
+        "Save this vessel's track between OpenCPN sessions. Useful for vessels "
         "you want to monitor continuously over time."));
-  gridSizer->Add(m_cbTrackPersist, 0, wxALL, 5);
+    gridSizer->Add(m_cbTrackPersist, 0, wxALL, 5);
 
-  trackSizer->Add(gridSizer, 0, wxEXPAND, 0);
-  mmsiSizer->Add(trackSizer, 0, wxEXPAND, 0);
+    trackSizer->Add(gridSizer, 0, wxEXPAND, 0);
+    mmsiSizer->Add(trackSizer, 0, wxEXPAND, 0);
 
-  m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
-  m_IgnoreButton->SetToolTip(
-      _("When checked, AIS data for this MMSI will be ignored and the vessel "
+    m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
+    m_IgnoreButton->SetToolTip(_(
+        "When checked, AIS data for this MMSI will be ignored and the vessel "
         "will not appear on the chart. Useful for suppressing shore stations, "
         "permanently moored vessels, or duplicate AIS signals that you don't "
         "need to monitor."));
-  mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
+    mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
 
-  m_MOBButton = new wxCheckBox(this, wxID_ANY,
-                               _("Handle this MMSI as SART/PLB(AIS) MOB."));
-  m_MOBButton->SetToolTip(
-      _("When checked, OpenCPN will display a special icon for this device, "
-        "sound a distinctive alarm, and automatically create a temporary MOB "
-        "route from your vessel to this device in emergency. For crew safety "
-        "devices, you can assign the crew member's name using the Name "
-        "field above for quick identification."));
-  mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
+    m_MOBButton = new wxCheckBox(this, wxID_ANY,
+                                 _("Handle this MMSI as SART/PLB(AIS) MOB."));
+    m_MOBButton->SetToolTip(
+        _("When checked, OpenCPN will display a special icon for this device, "
+          "sound a distinctive alarm, and automatically create a temporary MOB "
+          "route from your vessel to this device in emergency. For crew safety "
+          "devices, you can assign the crew member's name using the Name "
+          "field above for quick identification."));
+    mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
 
-  m_VDMButton =
-      new wxCheckBox(this, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI"));
-  m_VDMButton->SetToolTip(
-      _("When checked, converts AIS messages for this vessel from AIVDM (other "
+    m_VDMButton = new wxCheckBox(this, wxID_ANY,
+                                 _("Convert AIVDM to AIVDO for this MMSI"));
+    m_VDMButton->SetToolTip(_(
+        "When checked, converts AIS messages for this vessel from AIVDM (other "
         "vessel) to AIVDO (own vessel) format."));
-  mmsiSizer->Add(m_VDMButton, 0, wxEXPAND, 5);
+    mmsiSizer->Add(m_VDMButton, 0, wxEXPAND, 5);
 
-  m_FollowerButton = new wxCheckBox(
-      this, wxID_ANY, _("This MMSI is my Follower - No CPA Alert"));
-  m_FollowerButton->SetToolTip(
-      _("When checked, disables CPA (Closest Point of Approach) alerts for "
+    m_FollowerButton = new wxCheckBox(
+        this, wxID_ANY, _("This MMSI is my Follower - No CPA Alert"));
+    m_FollowerButton->SetToolTip(_(
+        "When checked, disables CPA (Closest Point of Approach) alerts for "
         "this vessel as it's considered intentionally following your vessel. "
         "Follower vessels are displayed with a special own-ship style icon."));
-  mmsiSizer->Add(m_FollowerButton, 0, wxEXPAND, 5);
+    mmsiSizer->Add(m_FollowerButton, 0, wxEXPAND, 5);
 
-  wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
-  mainSizer->Add(btnSizer, 0, wxALIGN_RIGHT | wxALL, 5);
+    wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+    mainSizer->Add(btnSizer, 0, wxALIGN_LEFT | wxALL, 3);
+    btnSizer->AddSpacer(4 * char_height);
 
-  m_CancelButton = new wxButton(this, ID_MMSIEDIT_CANCEL, _("Cancel"));
-  btnSizer->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+    m_OKButton = new wxButton(this, ID_MMSIEDIT_OK, _("OK"), wxDefaultPosition,
+                              wxSize(-1, 2 * char_height));
+    btnSizer->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 3);
+    btnSizer->AddSpacer(4 * char_height);
+    m_CancelButton =
+        new wxButton(this, ID_MMSIEDIT_CANCEL, _("Cancel"), wxDefaultPosition,
+                     wxSize(-1, 2 * char_height));
+    btnSizer->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 3);
+    m_OKButton->SetDefault();
+  } else {
+    wxBoxSizer* detail_sizer = new wxBoxSizer(wxVERTICAL);
+    mainSizer->Add(detail_sizer, 0);
 
-  m_OKButton = new wxButton(this, ID_MMSIEDIT_OK, _("OK"));
-  btnSizer->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-  m_OKButton->SetDefault();
+    wxStaticBox* mmsiBox =
+        new wxStaticBox(this, wxID_ANY, _("MMSI Extended Properties"));
 
+    wxStaticBoxSizer* mmsiSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
+    detail_sizer->Add(mmsiSizer, 0, wxEXPAND | wxALL, 3);
+
+    wxBoxSizer* dmmsi_sizer = new wxBoxSizer(wxHORIZONTAL);
+    mmsiSizer->Add(dmmsi_sizer, 0);
+
+    wxStaticText* mmsiLabel = new wxStaticText(this, wxID_STATIC, _("MMSI"));
+    mmsiLabel->SetToolTip(
+        _("Maritime Mobile Service Identity - A unique 9-digit number assigned "
+          "to a vessel or navigation aid. Used to identify vessels and devices "
+          "in AIS transmissions and DSC calls."));
+    dmmsi_sizer->Add(mmsiLabel, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 3);
+
+    m_MMSICtl =
+        new wxTextCtrl(this, ID_MMSI_CTL, wxEmptyString, wxDefaultPosition,
+                       wxSize(15 * char_height, -1), 0);
+    m_MMSICtl->SetToolTip(
+        _("Enter the 9-digit MMSI number for this vessel or station"));
+    dmmsi_sizer->Add(m_MMSICtl, 0,
+                     wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 3);
+    m_MMSICtl->Bind(wxEVT_TEXT, &MMSIEditDialog::OnMMSIChanged, this);
+
+    wxBoxSizer* name_sizer = new wxBoxSizer(wxHORIZONTAL);
+    mmsiSizer->Add(name_sizer, 0, wxEXPAND);
+
+    wxStaticText* userLabelText =
+        new wxStaticText(this, wxID_STATIC, _("Name"));
+    userLabelText->SetToolTip(_(
+        "Display name for this vessel or device - can override names received "
+        "in AIS messages"));
+    name_sizer->Add(userLabelText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP,
+                    3);
+
+    m_ShipNameCtl =
+        new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                       wxSize(15 * char_height, -1), 0);
+    m_ShipNameCtl->SetToolTip(_(
+        "Set the name for this vessel or device. If specified, this name takes "
+        "precedence over names received via AIS messages. Note that standard "
+        "AIS "
+        "only supports uppercase letters (A-Z), numbers, and limited "
+        "punctuation. Your manual entries are stored in the mmsitoname.csv "
+        "file "
+        "and preserved across sessions."));
+    name_sizer->Add(m_ShipNameCtl, 0,
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 3);
+
+    // wxStaticBox* trackBox = new wxStaticBox(this, wxID_ANY, _("Tracking"));
+    // trackBox->SetToolTip(_("Control how tracks are created for this MMSI"));
+    // wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(trackBox,
+    // wxVERTICAL);
+
+    wxGridSizer* gridSizer = new wxGridSizer(0, 5, 0, 0);
+
+    wxStaticText* tracking_label_text =
+        new wxStaticText(this, wxID_STATIC, _("Tracking"));
+    gridSizer->Add(tracking_label_text, 0, wxALL, 3);
+
+    m_rbTypeTrackDefault =
+        new wxRadioButton(this, wxID_ANY, _("Default tracking"),
+                          wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    m_rbTypeTrackDefault->SetToolTip(
+        _("Use the global tracking settings for this vessel"));
+    m_rbTypeTrackDefault->SetValue(TRUE);
+    gridSizer->Add(m_rbTypeTrackDefault, 0, wxALL, 3);
+
+    m_rbTypeTrackAlways = new wxRadioButton(this, wxID_ANY, _("Always track"));
+    m_rbTypeTrackAlways->SetToolTip(
+        _("Always create a track for this vessel, regardless of global "
+          "settings"));
+    gridSizer->Add(m_rbTypeTrackAlways, 0, wxALL, 3);
+
+    m_rbTypeTrackNever = new wxRadioButton(this, wxID_ANY, _(" Never track"));
+    m_rbTypeTrackNever->SetToolTip(_(
+        "Never create a track for this vessel, regardless of global settings"));
+    gridSizer->Add(m_rbTypeTrackNever, 0, wxALL, 3);
+
+    m_cbTrackPersist = new wxCheckBox(this, wxID_ANY, _("Persistent"));
+    m_cbTrackPersist->SetToolTip(_(
+        "Save this vessel's track between OpenCPN sessions. Useful for vessels "
+        "you want to monitor continuously over time."));
+    gridSizer->Add(m_cbTrackPersist, 0, wxALL, 3);
+
+    mmsiSizer->Add(gridSizer, 0, wxEXPAND, 0);
+
+    wxGridSizer* checkgridSizer = new wxGridSizer(2, 2, 0, 0);
+    mmsiSizer->Add(checkgridSizer, 0, wxEXPAND, 0);
+
+    m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
+    m_IgnoreButton->SetToolTip(_(
+        "When checked, AIS data for this MMSI will be ignored and the vessel "
+        "will not appear on the chart. Useful for suppressing shore stations, "
+        "permanently moored vessels, or duplicate AIS signals that you don't "
+        "need to monitor."));
+    checkgridSizer->Add(m_IgnoreButton, 0, wxEXPAND, 3);
+
+    m_MOBButton = new wxCheckBox(this, wxID_ANY,
+                                 _("Handle this MMSI as SART/PLB(AIS) MOB."));
+    m_MOBButton->SetToolTip(
+        _("When checked, OpenCPN will display a special icon for this device, "
+          "sound a distinctive alarm, and automatically create a temporary MOB "
+          "route from your vessel to this device in emergency. For crew safety "
+          "devices, you can assign the crew member's name using the Name "
+          "field above for quick identification."));
+    checkgridSizer->Add(m_MOBButton, 0, wxEXPAND, 3);
+
+    m_VDMButton = new wxCheckBox(this, wxID_ANY,
+                                 _("Convert AIVDM to AIVDO for this MMSI"));
+    m_VDMButton->SetToolTip(_(
+        "When checked, converts AIS messages for this vessel from AIVDM (other "
+        "vessel) to AIVDO (own vessel) format."));
+    checkgridSizer->Add(m_VDMButton, 0, wxEXPAND, 3);
+
+    m_FollowerButton = new wxCheckBox(
+        this, wxID_ANY, _("This MMSI is my Follower - No CPA Alert"));
+    m_FollowerButton->SetToolTip(_(
+        "When checked, disables CPA (Closest Point of Approach) alerts for "
+        "this vessel as it's considered intentionally following your vessel. "
+        "Follower vessels are displayed with a special own-ship style icon."));
+    checkgridSizer->Add(m_FollowerButton, 0, wxEXPAND, 3);
+
+    wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+    mainSizer->Add(btnSizer, 0, wxALIGN_LEFT | wxALL, 3);
+    btnSizer->AddSpacer(4 * char_height);
+
+    m_OKButton = new wxButton(this, ID_MMSIEDIT_OK, _("OK"), wxDefaultPosition,
+                              wxSize(-1, 2 * char_height));
+    btnSizer->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 3);
+    btnSizer->AddSpacer(4 * char_height);
+    m_CancelButton =
+        new wxButton(this, ID_MMSIEDIT_CANCEL, _("Cancel"), wxDefaultPosition,
+                     wxSize(-1, 2 * char_height));
+    btnSizer->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 3);
+    m_OKButton->SetDefault();
+  }
   //  Set initial values...
   wxString sMMSI;
   if (m_props->MMSI > 0)
@@ -1049,11 +1205,13 @@ void MMSIEditDialog::CreateControls(void) {
   m_FollowerButton->SetValue(m_props->m_bFollower);
 
   SetColorScheme(GLOBAL_COLOR_SCHEME_RGB);
+  Layout();
 }
 
 void MMSIEditDialog::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
 void MMSIEditDialog::OnMMSIEditCancelClick(wxCommandEvent& event) {
+  SetReturnCode(wxID_CANCEL);
   EndModal(wxID_CANCEL);
 }
 
@@ -1117,9 +1275,11 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
         if (retcode == wxID_OK) {
           Persist();
         }
+        SetReturnCode(retcode);
         EndModal(retcode);
       });
     } else {
+      SetReturnCode(wxID_OK);
       EndModal(wxID_OK);
     }
   }
@@ -1226,8 +1386,10 @@ void MMSIListCtrl::OnListItemActivated(wxListEvent& event) {
   MMSIEditDialog* pd =
       new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
                          wxDefaultPosition, wxSize(200, 200));
-
-  if (pd->ShowModal() == wxID_OK) {
+  DimeControl(pd);
+  pd->ShowModal();
+  int retv = pd->GetReturnCode();
+  if (retv == wxID_OK) {
     g_MMSI_Props_Array.RemoveAt(event.GetIndex());
     delete props;
     g_MMSI_Props_Array.Insert(props_new, event.GetIndex());
@@ -1243,9 +1405,18 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
   wxMenu* menu = new wxMenu(_("MMSI Properties"));
   wxMenuItem* item_edit =
       new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _("Edit") + _T("..."));
+#ifdef __ANDROID__
+  wxFont tFont = GetOCPNGUIScaledFont(_("Menu"));
+  item_edit->SetFont(tFont);
+#endif
+
   menu->Append(item_edit);
   wxMenuItem* item_delete =
       new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _("Delete"));
+#ifdef __ANDROID__
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+  item_delete->SetFont(sFont);
+#endif
   menu->Append(item_delete);
 
 #ifdef __WXMSW__
@@ -1264,7 +1435,6 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
 void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
   int context_item = m_context_item;
   MmsiProperties* props = g_MMSI_Props_Array[context_item];
-
   if (!props) return;
 
   switch (event.GetId()) {
@@ -1273,8 +1443,10 @@ void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
       MMSIEditDialog* pd =
           new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
                              wxDefaultPosition, wxSize(200, 200));
-
-      if (pd->ShowModal() == wxID_OK) {
+      DimeControl(pd);
+      pd->ShowModal();
+      int retv = pd->GetReturnCode();
+      if (retv == wxID_OK) {
         g_MMSI_Props_Array.RemoveAt(context_item);
         delete props;
         props_new->m_ShipName = GetShipNameFromFile(props_new->MMSI);
@@ -1290,6 +1462,11 @@ void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
       delete props;
       break;
   }
+  auto parent = GetParent();
+  auto ps = static_cast<MMSI_Props_Panel*>(parent);
+  if (ps) {
+    ps->UpdateMMSIList();
+  }
 }
 
 MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
@@ -1303,85 +1480,43 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topSizer);
 
-  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100;100");
-  //  Parse the global column width string as read from config file
-  wxStringTokenizer tkz(MMSI_props_column_spec, _T(";"));
-  wxString s_width = tkz.GetNextToken();
   int width;
-  long lwidth;
 
-  m_pListCtrlMMSI = new MMSIListCtrl(
-      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, -1),
-      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
-          wxBORDER_SUNKEN | wxLC_VIRTUAL);
-  // wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
+  long lstyle = wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
+                wxBORDER_SUNKEN;
+#ifndef __ANDROID__
+  lstyle |= wxLC_VIRTUAL;
+#endif
+  m_pListCtrlMMSI = new MMSIListCtrl(this, ID_MMSI_PROPS_LIST,
+                                     wxDefaultPosition, wxDefaultSize, lstyle);
 
-  ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  // imglist->Add(style->GetIcon(_T( "sort_asc" )));
-  // imglist->Add(style->GetIcon(_T( "sort_desc" )));
-
-  // m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
   int dx = GetCharWidth();
 
-  width = dx * 5;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 13);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
-
-  s_width = tkz.GetNextToken();
   width = dx * 12;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 25);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlCLASS, _("Track Mode"), wxLIST_FORMAT_CENTER,
+  m_pListCtrlMMSI->InsertColumn(mlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
+
+  width = dx * 10;
+  m_pListCtrlMMSI->InsertColumn(mlTrackMode, _("Track Mode"),
+                                wxLIST_FORMAT_CENTER, width);
+
+  width = dx * 8;
+  m_pListCtrlMMSI->InsertColumn(mlIgnore, _("Ignore"), wxLIST_FORMAT_CENTER,
                                 width);
 
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ignore"), wxLIST_FORMAT_CENTER,
+  width = dx * 6;
+  m_pListCtrlMMSI->InsertColumn(mlMOB, _("MOB"), wxLIST_FORMAT_CENTER, width);
+
+  width = dx * 10;
+  m_pListCtrlMMSI->InsertColumn(mlVDM, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
                                 width);
 
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("MOB"), wxLIST_FORMAT_CENTER, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 15);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ship name"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER,
+  width = dx * 10;
+  m_pListCtrlMMSI->InsertColumn(mlFollower, _("Follower"), wxLIST_FORMAT_CENTER,
                                 width);  // Has
+
+  width = dx * 12;
+  m_pListCtrlMMSI->InsertColumn(mlShipName, _("Ship name"),
+                                wxLIST_FORMAT_CENTER, width);
 
   topSizer->Add(m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0);
 
@@ -1390,7 +1525,10 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   m_pButtonNew->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(MMSI_Props_Panel::OnNewButton),
                         NULL, this);
-  topSizer->Add(m_pButtonNew, 0, wxALIGN_RIGHT | wxALL, 0);
+  if (g_pOptions->GetSize().y > 20 * wxWindow::GetCharHeight())
+    topSizer->Add(m_pButtonNew, 0, wxALIGN_RIGHT | wxALL, 0);
+  else
+    topSizer->Add(m_pButtonNew, 0, wxALIGN_LEFT | wxALL, 0);
 
   topSizer->Layout();
 
@@ -1408,21 +1546,24 @@ void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
   MmsiProperties* props = new MmsiProperties(-1);
 
   MMSIEditDialog* pd =
-      new MMSIEditDialog(props, m_parent, -1, _("Add MMSI Properties"),
+      new MMSIEditDialog(props, m_parent, -1, _("Edit MMSI Properties"),
                          wxDefaultPosition, wxSize(200, 200));
-
   DimeControl(pd);
-  pd->ShowWindowModalThenDo([this, pd, props](int retcode) {
-    if (retcode == wxID_OK) {
-      g_MMSI_Props_Array.Add(props);
-    } else {
-      delete props;
-    }
-    UpdateMMSIList();
-  });
+  pd->ShowModal();
+  int retv = pd->GetReturnCode();
+  if (retv == wxID_OK) {
+    g_MMSI_Props_Array.Add(props);
+  } else {
+    delete props;
+  }
+  UpdateMMSIList();
+  pd->Destroy();
 }
 
 void MMSI_Props_Panel::UpdateMMSIList(void) {
+  if (m_pListCtrlMMSI && !m_pListCtrlMMSI->IsVirtual())
+    return UpdateNVMMSIList();
+
   // Capture the MMSI of the curently selected list item
   long selItemID = wxNOT_FOUND;
   m_pListCtrlMMSI->GetNextItem(selItemID, wxLIST_NEXT_ALL,
@@ -1452,6 +1593,31 @@ void MMSI_Props_Panel::UpdateMMSIList(void) {
 #ifdef __WXMSW__
   m_pListCtrlMMSI->Refresh(FALSE);
 #endif
+}
+
+void MMSI_Props_Panel::UpdateNVMMSIList(void) {
+  // Capture the MMSI of the currently selected list item
+  long selItemID = wxNOT_FOUND;
+  m_pListCtrlMMSI->GetNextItem(selItemID, wxLIST_NEXT_ALL,
+                               wxLIST_STATE_SELECTED);
+  int selMMSI = wxNOT_FOUND;
+  if (selItemID != wxNOT_FOUND) selMMSI = g_MMSI_Props_Array[selItemID]->MMSI;
+
+  m_pListCtrlMMSI->DeleteAllItems();
+
+  for (size_t i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    wxListItem item;
+    item.SetId(i);
+    m_pListCtrlMMSI->InsertItem(item);
+    for (int j = 0; j < mlShipName + 1; j++) {
+      item.SetColumn(j);
+      item.SetText(m_pListCtrlMMSI->OnGetItemText(i, j));
+      m_pListCtrlMMSI->SetItem(item);
+    }
+  }
+  Refresh();
+
+  return;
 }
 
 void MMSI_Props_Panel::SetColorScheme(ColorScheme cs) { DimeControl(this); }
@@ -1745,6 +1911,7 @@ void options::Init(void) {
   pCheck_XLSECTTEXT = NULL;
 
   m_bVisitLang = FALSE;
+  m_bVisitPlugins = FALSE;
   m_itemFontElementListBox = NULL;
   m_textSample = NULL;
   m_topImgList = NULL;
@@ -1883,6 +2050,13 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
 
   int style = wxVSCROLL | wxTAB_TRAVERSAL;
   if ((nb = dynamic_cast<wxNotebook*>(page))) {
+    // Check and avoid adding duplicate
+    for (size_t i_page = 0; i_page < nb->GetPageCount(); i_page++) {
+      wxString candidate_title = nb->GetPageText(i_page);
+      if (candidate_title.IsSameAs(title))
+        return static_cast<wxScrolledWindow*>(nb->GetPage(i_page));
+    }
+
     sw = new wxScrolledWindow(page, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                               style);
     sw->SetScrollRate(m_scrollRate, m_scrollRate);
@@ -3552,6 +3726,11 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
 
+    wxSize item_size = wxSize(-1, -1);
+#ifdef __ANDROID__
+    item_size = wxSize(m_fontHeight * 3, m_fontHeight);
+#endif
+
     // graphics options
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Graphics Style")),
                        labelFlags);
@@ -3560,7 +3739,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("Simplified"),
     };
     pPointStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxDefaultSize, 2, pPointStyleStrings);
+                               item_size, 2, pPointStyleStrings);
     optionsColumn->Add(pPointStyle, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Boundaries")),
@@ -3570,7 +3749,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("Symbolized"),
     };
     pBoundStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxDefaultSize, 2, pBoundStyleStrings);
+                               item_size, 2, pBoundStyleStrings);
     optionsColumn->Add(pBoundStyle, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Colors")),
@@ -3580,21 +3759,25 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         _("4 Color"),
     };
     p24Color = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                            wxDefaultSize, 2, pColorNumStrings);
+                            item_size, 2, pColorNumStrings);
     optionsColumn->Add(p24Color, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
 
+    item_size = wxSize(60, -1);
+#ifdef __ANDROID__
+    item_size = wxSize(m_fontHeight * 2, m_fontHeight);
+#endif
+
     // depth options
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Shallow Depth")),
                        labelFlags);
     wxBoxSizer* depShalRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depShalRow);
-    m_ShallowCtl =
-        new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
-                       wxSize(60, -1), wxTE_RIGHT);
+    m_ShallowCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
+                                  wxDefaultPosition, item_size, wxTE_RIGHT);
     depShalRow->Add(m_ShallowCtl, inputFlags);
     m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depShalRow->Add(m_depthUnitsShal, inputFlags);
@@ -3604,7 +3787,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     wxBoxSizer* depSafeRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depSafeRow);
     m_SafetyCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                                 wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
+                                 wxDefaultPosition, item_size, wxTE_RIGHT);
     depSafeRow->Add(m_SafetyCtl, inputFlags);
     m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depSafeRow->Add(m_depthUnitsSafe, inputFlags);
@@ -3614,7 +3797,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     wxBoxSizer* depDeepRow = new wxBoxSizer(wxHORIZONTAL);
     optionsColumn->Add(depDeepRow);
     m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                               wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
+                               wxDefaultPosition, item_size, wxTE_RIGHT);
     depDeepRow->Add(m_DeepCtl, inputFlags);
     m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depDeepRow->Add(m_depthUnitsDeep, inputFlags);
@@ -4650,6 +4833,11 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     wxFlexGridSizer* unitsSizer = new wxFlexGridSizer(2);
     unitsSizer->SetHGap(border_size);
 
+    int item_h_size = -1;
+#ifdef __ANDROID__
+    item_h_size = m_fontHeight * 4;
+#endif
+
     // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
     // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
@@ -4667,8 +4855,11 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                    _("Kilometers"), _("Meters")};
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
     pDistanceFormat = new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE,
-                                   wxDefaultPosition, wxDefaultSize,
+                                   wxDefaultPosition, wxSize(item_h_size, -1),
                                    m_DistanceFormatsNChoices, pDistanceFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pDistanceFormat, inputFlags);
 
     // speed units
@@ -4676,20 +4867,26 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     labelFlags);
     wxString pSpeedFormats[] = {_("Knots"), _("Mph"), _("km/h"), _("m/s")};
     int m_SpeedFormatsNChoices = sizeof(pSpeedFormats) / sizeof(wxString);
-    pSpeedFormat =
-        new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats);
+    pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
+                                wxDefaultPosition, wxSize(item_h_size, -1),
+                                m_SpeedFormatsNChoices, pSpeedFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pSpeedFormat, inputFlags);
 
-    // windspeed units
-    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("WindSpeed")),
+    //  wind units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Wind speed")),
                     labelFlags);
     wxString pWindSpeedFormats[] = {_("Knots"), _("m/s"), _("Mph"), _("km/h")};
     int m_WindSpeedFormatsNChoices =
         sizeof(pWindSpeedFormats) / sizeof(wxString);
     pWindSpeedFormat = new wxChoice(
-        panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition, wxDefaultSize,
-        m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+        panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
+        wxSize(item_h_size, -1), m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pWindSpeedFormat, inputFlags);
 
     // depth units
@@ -4702,7 +4899,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     };
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, 3, pDepthUnitStrings);
+                     wxSize(item_h_size, -1), 3, pDepthUnitStrings);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
 
     // temperature units
@@ -4715,7 +4915,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     };
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
-                     wxDefaultSize, 3, pTempUnitStrings);
+                     wxSize(item_h_size, -1), 3, pTempUnitStrings);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pTempFormat, inputFlags);
 
     // spacer
@@ -4729,9 +4932,12 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                _("Decimal Degrees"),
                                _("Degrees, Minutes, Seconds")};
     int m_SDMMFormatsNChoices = sizeof(pSDMMFormats) / sizeof(wxString);
-    pSDMMFormat =
-        new wxChoice(panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-                     wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats);
+    pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
+                               wxDefaultPosition, wxSize(item_h_size, -1),
+                               m_SDMMFormatsNChoices, pSDMMFormats);
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
+#endif
     unitsSizer->Add(pSDMMFormat, inputFlags);
 
     // spacer
@@ -6123,21 +6329,14 @@ void options::CreateControls(void) {
   if (g_Platform->GetDisplayDIPMult(gFrame) < 1) ConnTab = _("Connect");
 
   m_pageConnections = CreatePanel(ConnTab);
-#ifndef __ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
-#else
-  CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
-// CreatePanel_NMEA_Compact(m_pageConnections, border_size, group_item_spacing);
-#endif
 
   //    SetDefaultConnectionParams();
 
   m_pageShips = CreatePanel(_("Ships"));
   CreatePanel_Ownship(m_pageShips, border_size, group_item_spacing);
   CreatePanel_AIS(m_pageShips, border_size, group_item_spacing);
-#ifndef __ANDROID__
   CreatePanel_MMSI(m_pageShips, border_size, group_item_spacing);
-#endif
 
   CreatePanel_Routes(m_pageShips, border_size, group_item_spacing);
 
@@ -7786,6 +7985,8 @@ void options::ApplyChanges(wxCommandEvent& event) {
   // Some layout changes requiring a new options instance?
   if (m_bneedNew) m_returnChanges |= NEED_NEW_OPTIONS;
 
+  if (m_bVisitPlugins) m_returnChanges |= FORCE_RELOAD;
+
   //  Record notice of any changes to last applied template
   UpdateTemplateTitleText();
 
@@ -7814,6 +8015,9 @@ void options::OnXidOkClick(wxCommandEvent& event) {
 
   // And for locale change
   if (m_returnChanges & LOCALE_CHANGED) gFrame->ScheduleDeleteSettingsDialog();
+
+  // Also for FORCE_RELOAD
+  if (m_returnChanges & FORCE_RELOAD) gFrame->ScheduleReloadCharts();
 
   Finish();
   Hide();
@@ -8276,6 +8480,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   androidEnableOptionItems(true);
 #endif
 
+  gFrame->ThawCharts();
   Hide();
 }
 
@@ -8666,6 +8871,9 @@ void options::DoOnPageChange(size_t page) {
     }
 #endif
   } else if (m_pagePlugins == i) {  // 7 is the index of "Plugins" page
+    m_bVisitPlugins = TRUE;
+    gFrame->FreezeCharts();
+
     // load the disabled plugins finally because the user might want to enable
     // them
     auto loader = PluginLoader::GetInstance();
@@ -8704,6 +8912,8 @@ void options::DoOnPageChange(size_t page) {
       GlobalVar<wxString> compat_os(&g_compatOS);
     }
     k_plugins = TOOLBAR_CHANGED;
+    // TODO  Only if o-charts is touched?
+    k_plugins |= FORCE_RELOAD;
   }
 }
 
