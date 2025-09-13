@@ -14,7 +14,7 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 11e429677..e9c772d10 100644
+index 11e4296..e9c772d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1416,8 +1416,10 @@ if (OCPN_USE_SVG)

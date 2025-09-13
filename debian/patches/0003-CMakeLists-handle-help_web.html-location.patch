@@ -10,7 +10,7 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dcb50a8..5b07c0c 100644
+index 44d6e1d..651e654 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1849,7 +1849,7 @@ if (APPLE)
@@ -36,7 +36,7 @@ index dcb50a8..5b07c0c 100644
    endif ()
  
    target_sources(
-@@ -2058,7 +2058,7 @@ if (NOT APPLE)
+@@ -2059,7 +2059,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()
