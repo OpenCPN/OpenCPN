@@ -813,18 +813,16 @@ bool NavObj_dB::InsertTrack(Track* track) {
   }
 
   //  Add HTML links to track
-  int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
+  int NbrOfLinks = track->m_TrackHyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = track->m_TrackHyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = track->m_TrackHyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!TrackHtmlLinkExists(m_db, link->GUID)) {
         InsertTrackHTML(m_db, track->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
                         link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
   sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
@@ -933,11 +931,11 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
   DeleteAllCommentsForTrack(m_db, track->m_GUID.ToStdString());
 
   // Now add all the links to db
-  int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
+  int NbrOfLinks = track->m_TrackHyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = track->m_TrackHyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
+    auto& list = track->m_TrackHyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
 
       if (!TrackHtmlLinkExists(m_db, link->GUID)) {
         InsertTrackHTML(m_db, track->m_GUID.ToStdString(), link->GUID,
@@ -964,11 +962,8 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
           sqlite3_finalize(stmt);
           return false;
         }
-
         sqlite3_finalize(stmt);
       }
-
-      linknode = linknode->GetNext();
     }
   }
 
@@ -1103,7 +1098,7 @@ bool NavObj_dB::LoadAllTracks() {
           h->Link = link_link;
           h->LType = link_type;
 
-          new_trk->m_TrackHyperlinkList->Append(h);
+          new_trk->m_TrackHyperlinkList->push_back(h);
           int yyp = 4;
         }
 
@@ -1187,18 +1182,16 @@ bool NavObj_dB::InsertRoute(Route* route) {
   }
 
   //  Add HTML links to route
-  int NbrOfLinks = route->m_HyperlinkList->GetCount();
+  int NbrOfLinks = route->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = *route->m_HyperlinkList;
+    for (auto it = list.begin(); it != list.end(); ++it) {
+      Hyperlink* link = *it;
       if (!RouteHtmlLinkExists(m_db, link->GUID)) {
         InsertRouteHTML(m_db, route->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
                         link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
 
@@ -1264,18 +1257,16 @@ bool NavObj_dB::UpdateRoute(Route* route) {
   }
 
   //  Add HTML links to route
-  int NbrOfLinks = route->m_HyperlinkList->GetCount();
+  int NbrOfLinks = route->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = *route->m_HyperlinkList;
+    for (auto it = list.begin(); it != list.end(); ++it) {
+      Hyperlink* link = *it;
       if (!RouteHtmlLinkExists(m_db, link->GUID)) {
         InsertRouteHTML(m_db, route->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
                         link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
   sqlite3_exec(m_db, "COMMIT", 0, 0, nullptr);
@@ -1365,12 +1356,11 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
   DeleteAllCommentsForRoute(m_db, route->m_GUID.ToStdString());
 
   // Now add all the links to db
-  int NbrOfLinks = route->m_HyperlinkList->GetCount();
+  int NbrOfLinks = route->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = route->m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!RouteHtmlLinkExists(m_db, link->GUID)) {
         InsertRouteHTML(m_db, route->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
@@ -1399,11 +1389,8 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
           sqlite3_finalize(stmt);
           return false;
         }
-
         sqlite3_finalize(stmt);
       }
-
-      linknode = linknode->GetNext();
     }
   }
   return true;
@@ -1501,12 +1488,11 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
   DeleteAllCommentsForRoutePoint(m_db, point->m_GUID.ToStdString());
 
   // Now add all the links to db
-  int NbrOfLinks = point->m_HyperlinkList->GetCount();
+  int NbrOfLinks = point->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = point->m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!RoutePointHtmlLinkExists(m_db, link->GUID)) {
         InsertRoutePointHTML(m_db, point->m_GUID.ToStdString(), link->GUID,
                              link->DescrText.ToStdString(),
@@ -1536,11 +1522,8 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
           sqlite3_finalize(stmt);
           return false;
         }
-
         sqlite3_finalize(stmt);
       }
-
-      linknode = linknode->GetNext();
     }
   }
 
@@ -1832,7 +1815,7 @@ bool NavObj_dB::LoadAllRoutes() {
             h->Link = link_link;
             h->LType = link_type;
 
-            point->m_HyperlinkList->Append(h);
+            point->m_HyperlinkList->push_back(h);
           }
         }
       }
@@ -1877,7 +1860,7 @@ bool NavObj_dB::LoadAllRoutes() {
           h->Link = link_link;
           h->LType = link_type;
 
-          route->m_HyperlinkList->Append(h);
+          route->m_HyperlinkList->push_back(h);
         }
         if (errcode != SQLITE_DONE) {
           ReportError("LoadAllRoutes-B:step");
@@ -2056,7 +2039,7 @@ bool NavObj_dB::LoadAllPoints() {
         h->Link = link_link;
         h->LType = link_type;
 
-        point->m_HyperlinkList->Append(h);
+        point->m_HyperlinkList->push_back(h);
       }
 
       sqlite3_finalize(stmt);
@@ -2084,19 +2067,17 @@ bool NavObj_dB::InsertRoutePoint(RoutePoint* point) {
   UpdateDBRoutePointAttributes(point);
 
   //  Add HTML links to routepoint
-  int NbrOfLinks = point->m_HyperlinkList->GetCount();
+  int NbrOfLinks = point->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = point->m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!RoutePointHtmlLinkExists(m_db, link->GUID)) {
         InsertRoutePointHTML(m_db, point->m_GUID.ToStdString(), link->GUID,
                              link->DescrText.ToStdString(),
                              link->Link.ToStdString(),
                              link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
 

@@ -88,7 +88,6 @@ class wxListCtrl;
 class OCPNTrackListCtrl;
 class Track;
 class TrackPoint;
-class HyperlinkList;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class TrackPropDlg

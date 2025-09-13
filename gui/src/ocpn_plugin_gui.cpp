@@ -860,7 +860,7 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->Append(h);
+      dst->m_HyperlinkList->push_back(h);
 
       linknode = linknode->GetNext();
     }
@@ -955,7 +955,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->Clear();
+      prp->m_HyperlinkList->clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
         wxPlugin_HyperlinkListNode* linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
@@ -967,7 +967,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
           h->Link = link->Link;
           h->LType = link->Type;
 
-          prp->m_HyperlinkList->Append(h);
+          prp->m_HyperlinkList->push_back(h);
 
           linknode = linknode->GetNext();
         }
@@ -1016,21 +1016,15 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint* dst,
   delete dst->m_HyperlinkList;
   dst->m_HyperlinkList = nullptr;
 
-  if (src->m_HyperlinkList->GetCount() > 0) {
+  if (src->m_HyperlinkList->size() > 0) {
     dst->m_HyperlinkList = new Plugin_HyperlinkList;
-
-    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    for (Hyperlink* link : *src->m_HyperlinkList) {
       Plugin_Hyperlink* h = new Plugin_Hyperlink();
       h->DescrText = link->DescrText;
       h->Link = link->Link;
       h->Type = link->LType;
 
       dst->m_HyperlinkList->Append(h);
-
-      linknode = linknode->GetNext();
     }
   }
 }
@@ -1048,31 +1042,17 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
 
 wxArrayString GetWaypointGUIDArray(void) {
   wxArrayString result;
-  const RoutePointList* list = pWayPointMan->GetWaypointList();
-
-  wxRoutePointListNode* prpnode = list->GetFirst();
-  while (prpnode) {
-    RoutePoint* prp = prpnode->GetData();
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     result.Add(prp->m_GUID);
-
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
-
   return result;
 }
 
 wxArrayString GetRouteGUIDArray(void) {
   wxArrayString result;
-  RouteList* list = pRouteList;
-
-  wxRouteListNode* prpnode = list->GetFirst();
-  while (prpnode) {
-    Route* proute = prpnode->GetData();
+  for (Route* proute : *pRouteList) {
     result.Add(proute->m_GUID);
-
-    prpnode = prpnode->GetNext();  // Route
   }
-
   return result;
 }
 
@@ -1087,11 +1067,7 @@ wxArrayString GetTrackGUIDArray(void) {
 
 wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
-  const RoutePointList* list = pWayPointMan->GetWaypointList();
-
-  wxRoutePointListNode* prpnode = list->GetFirst();
-  while (prpnode) {
-    RoutePoint* prp = prpnode->GetData();
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     switch (req) {
       case OBJECTS_ALL:
         result.Add(prp->m_GUID);
@@ -1103,10 +1079,7 @@ wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
         if (prp->m_bIsInLayer) result.Add(prp->m_GUID);
         break;
     }
-
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
-
   return result;
 }
 
@@ -2027,21 +2000,15 @@ static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
     delete dst->m_HyperlinkList;
     dst->m_HyperlinkList = nullptr;
 
-    if (src->m_HyperlinkList->GetCount() > 0) {
+    if (src->m_HyperlinkList->size() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
-
+      for (Hyperlink* link : *src->m_HyperlinkList) {
         Plugin_Hyperlink* h = new Plugin_Hyperlink();
         h->DescrText = link->DescrText;
         h->Link = link->Link;
         h->Type = link->LType;
-
         dst->m_HyperlinkList->Append(h);
-
-        linknode = linknode->GetNext();
       }
     }
   }
@@ -2092,7 +2059,7 @@ static void cloneHyperlinkListExV2(RoutePoint* dst,
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->Append(h);
+      dst->m_HyperlinkList->push_back(h);
 
       linknode = linknode->GetNext();
     }
@@ -2199,22 +2166,13 @@ bool UpdateSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->Clear();
-      if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
-            pwaypoint->m_HyperlinkList->GetFirst();
-        while (linknode) {
-          Plugin_Hyperlink* link = linknode->GetData();
-
-          Hyperlink* h = new Hyperlink();
-          h->DescrText = link->DescrText;
-          h->Link = link->Link;
-          h->LType = link->Type;
-
-          prp->m_HyperlinkList->Append(h);
-
-          linknode = linknode->GetNext();
-        }
+      prp->m_HyperlinkList->clear();
+      for (Plugin_Hyperlink* link : *pwaypoint->m_HyperlinkList) {
+        Hyperlink* h = new Hyperlink();
+        h->DescrText = link->DescrText;
+        h->Link = link->Link;
+        h->LType = link->Type;
+        prp->m_HyperlinkList->push_back(h);
       }
     }
 
@@ -2410,21 +2368,14 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
     delete dst->m_HyperlinkList;
     dst->m_HyperlinkList = nullptr;
 
-    if (src->m_HyperlinkList->GetCount() > 0) {
+    if (src->m_HyperlinkList->size() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
-
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
-
+      for (Hyperlink* link : *src->m_HyperlinkList) {
         Plugin_Hyperlink* h = new Plugin_Hyperlink();
         h->DescrText = link->DescrText;
         h->Link = link->Link;
         h->Type = link->LType;
-
         dst->m_HyperlinkList->Append(h);
-
-        linknode = linknode->GetNext();
       }
     }
   }
@@ -2456,7 +2407,7 @@ static void cloneHyperlinkListEx(RoutePoint* dst,
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->Append(h);
+      dst->m_HyperlinkList->push_back(h);
 
       linknode = linknode->GetNext();
     }
@@ -2561,7 +2512,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->Clear();
+      prp->m_HyperlinkList->clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
         wxPlugin_HyperlinkListNode* linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
@@ -2573,7 +2524,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
           h->Link = link->Link;
           h->LType = link->Type;
 
-          prp->m_HyperlinkList->Append(h);
+          prp->m_HyperlinkList->push_back(h);
 
           linknode = linknode->GetNext();
         }

@@ -125,7 +125,7 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
         link->Link = HrefString;
         link->DescrText = HrefTextString;
         link->LType = HrefTypeString;
-        linklist->Append(link);
+        linklist->push_back(link);
       }
 
       //    OpenCPN Extensions....
@@ -357,7 +357,7 @@ Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz, bool b_layer,
         link->Link = HrefString;
         link->DescrText = HrefTextString;
         link->LType = HrefTypeString;
-        linklist->Append(link);
+        linklist->push_back(link);
       }
 
       else if (ChildName == _T ( "extensions" )) {
@@ -598,7 +598,7 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
         link->Link = HrefString;
         link->DescrText = HrefTextString;
         link->LType = HrefTypeString;
-        linklist->Append(link);
+        linklist->push_back(link);
       }
 
       else
@@ -691,11 +691,8 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
   // Hyperlinks
   if (flags & OUT_HYPERLINKS) {
     HyperlinkList *linklist = pr->m_HyperlinkList;
-    if (linklist && linklist->GetCount()) {
-      wxHyperlinkListNode *linknode = linklist->GetFirst();
-      while (linknode) {
-        Hyperlink *link = linknode->GetData();
-
+    if (linklist && linklist->size()) {
+      for (Hyperlink *link : *pr->m_HyperlinkList) {
         pugi::xml_node child_link = node.append_child("link");
         ;
         wxCharBuffer buffer = link->Link.ToUTF8();
@@ -712,8 +709,6 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
           child = child_link.append_child("type");
           child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
-
-        linknode = linknode->GetNext();
       }
     }
   }
@@ -865,11 +860,8 @@ static bool GPXCreateTrk(pugi::xml_node node, Track *pTrack,
 
   // Hyperlinks
   HyperlinkList *linklist = pTrack->m_TrackHyperlinkList;
-  if (linklist && linklist->GetCount()) {
-    wxHyperlinkListNode *linknode = linklist->GetFirst();
-    while (linknode) {
-      Hyperlink *link = linknode->GetData();
-
+  if (linklist && linklist->size()) {
+    for (Hyperlink *link : *linklist) {
       pugi::xml_node child_link = node.append_child("link");
       wxCharBuffer buffer = link->Link.ToUTF8();
       if (buffer.data()) child_link.append_attribute("href") = buffer.data();
@@ -885,8 +877,6 @@ static bool GPXCreateTrk(pugi::xml_node node, Track *pTrack,
         child = child_link.append_child("type");
         child.append_child(pugi::node_pcdata).set_value(buffer.data());
       }
-
-      linknode = linknode->GetNext();
     }
   }
 
@@ -978,11 +968,8 @@ static bool GPXCreateRoute(pugi::xml_node node, Route *pRoute) {
 
   // Hyperlinks
   HyperlinkList *linklist = pRoute->m_HyperlinkList;
-  if (linklist && linklist->GetCount()) {
-    wxHyperlinkListNode *linknode = linklist->GetFirst();
-    while (linknode) {
-      Hyperlink *link = linknode->GetData();
-
+  if (linklist && linklist->size()) {
+    for (Hyperlink *link : *linklist) {
       pugi::xml_node child_link = node.append_child("link");
       wxCharBuffer buffer = link->Link.ToUTF8();
       if (buffer.data()) child_link.append_attribute("href") = buffer.data();
@@ -992,14 +979,11 @@ static bool GPXCreateRoute(pugi::xml_node node, Route *pRoute) {
         child = child_link.append_child("text");
         child.append_child(pugi::node_pcdata).set_value(buffer.data());
       }
-
       buffer = link->LType.ToUTF8();
       if (buffer.data() && strlen(buffer.data()) > 0) {
         child = child_link.append_child("type");
         child.append_child(pugi::node_pcdata).set_value(buffer.data());
       }
-
-      linknode = linknode->GetNext();
     }
   }
 

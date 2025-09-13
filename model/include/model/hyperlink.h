@@ -25,11 +25,12 @@
 #ifndef _HYPERLINK_H__
 #define _HYPERLINK_H__
 
-#include <wx/string.h>
-#include <wx/list.h>
+#include <vector>
 
-class Hyperlink  // toh, 2009.02.14
-{
+#include <wx/string.h>
+
+// toh, 2009.02.14
+class Hyperlink {
 public:
   Hyperlink();
   virtual ~Hyperlink();
@@ -39,6 +40,6 @@ public:
   std::string GUID;
 };
 
-WX_DECLARE_LIST(Hyperlink, HyperlinkList);  // establish class as list member
+using HyperlinkList = std::vector<Hyperlink*>;
 
 #endif

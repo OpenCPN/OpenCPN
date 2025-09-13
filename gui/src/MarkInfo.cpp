@@ -887,22 +887,13 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
 
     if (m_pMyLinkList) delete m_pMyLinkList;
     m_pMyLinkList = new HyperlinkList();
-    int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
-    if (NbrOfLinks > 0) {
-      wxHyperlinkListNode* linknode =
-          m_pRoutePoint->m_HyperlinkList->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
+    for (Hyperlink* link : *m_pRoutePoint->m_HyperlinkList) {
+      Hyperlink* h = new Hyperlink();
+      h->DescrText = link->DescrText;
+      h->Link = link->Link;
+      h->LType = link->LType;
 
-        Hyperlink* h = new Hyperlink();
-        h->DescrText = link->DescrText;
-        h->Link = link->Link;
-        h->LType = link->LType;
-
-        m_pMyLinkList->Append(h);
-
-        linknode = linknode->GetNext();
-      }
+      m_pMyLinkList->push_back(h);
     }
   }
 }
@@ -910,16 +901,15 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
 void MarkInfoDlg::UpdateHtmlList() {
 #ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
   GetSimpleBox()->Clear();
-  int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
+  int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->size();
 
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = m_pRoutePoint->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
+    auto& list = m_pRoutePoint->m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       wxString s =
           wxString::Format("<a href='%s'>%s</a>", link->Link, link->DescrText);
       GetSimpleBox()->AppendString(s);
-      linknode = linknode->GetNext();
     }
   }
 #else
@@ -1210,15 +1200,14 @@ void MarkInfoDlg::OnAddLink(wxCommandEvent& event) {
 void MarkInfoDlg::On_html_link_popupmenu_Click(wxCommandEvent& event) {
   switch (event.GetId()) {
     case ID_RCLK_MENU_DELETE_LINK: {
-      wxHyperlinkListNode* node =
-          m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item);
-      m_pRoutePoint->m_HyperlinkList->DeleteNode(node);
+      auto it = m_pRoutePoint->m_HyperlinkList->begin() + i_htmlList_item;
+      m_pRoutePoint->m_HyperlinkList->erase(it);
       UpdateHtmlList();
       break;
     }
     case ID_RCLK_MENU_EDIT_LINK: {
-      Hyperlink* link =
-          m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->GetData();
+      auto it = m_pRoutePoint->m_HyperlinkList->begin() + i_htmlList_item;
+      Hyperlink* link = *it;
       LinkPropImpl* LinkPropDlg = new LinkPropImpl(this);
       LinkPropDlg->m_textCtrlLinkDescription->SetValue(link->DescrText);
       LinkPropDlg->m_textCtrlLinkUrl->SetValue(link->Link);
@@ -1227,8 +1216,9 @@ void MarkInfoDlg::On_html_link_popupmenu_Click(wxCommandEvent& event) {
                                           link](int retcode) {
         if (retcode == wxID_OK) {
           link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+          auto it = m_pRoutePoint->m_HyperlinkList->begin() + i_htmlList_item;
           link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
-          m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->SetData(link);
+          *it = link;
           UpdateHtmlList();
         }
       });
@@ -1251,7 +1241,7 @@ void MarkInfoDlg::On_html_link_popupmenu_Click(wxCommandEvent& event) {
           if (link->Link == wxEmptyString) {
             delete link;
           } else {
-            m_pRoutePoint->m_HyperlinkList->Append(link);
+            m_pRoutePoint->m_HyperlinkList->push_back(link);
           }
           UpdateHtmlList();
         }
@@ -1377,21 +1367,17 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
     m_pRoutePoint->SetUseSca(m_bUseScaMin_save);
     m_pRoutePoint->SetScaMin(m_iScaminVal_save);
 
-    m_pRoutePoint->m_HyperlinkList->Clear();
+    m_pRoutePoint->m_HyperlinkList->clear();
 
-    int NbrOfLinks = m_pMyLinkList->GetCount();
+    int NbrOfLinks = m_pMyLinkList->size();
     if (NbrOfLinks > 0) {
-      wxHyperlinkListNode* linknode = m_pMyLinkList->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
+      for (Hyperlink* link : *m_pMyLinkList) {
         Hyperlink* h = new Hyperlink();
         h->DescrText = link->DescrText;
         h->Link = link->Link;
         h->LType = link->LType;
 
-        m_pRoutePoint->m_HyperlinkList->Append(h);
-
-        linknode = linknode->GetNext();
+        m_pRoutePoint->m_HyperlinkList->push_back(h);
       }
     }
   }

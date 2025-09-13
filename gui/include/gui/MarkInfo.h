@@ -95,7 +95,6 @@ extern MarkInfoDlg* g_pMarkInfoDialog; /**< global instance */
 class wxListCtrl;
 class Route;
 class RoutePoint;
-class HyperlinkList;
 class OCPNIconCombo;
 
 /*!
