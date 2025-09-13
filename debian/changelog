@@ -4,6 +4,7 @@ opencpn (1:5.12.2+dfsg-1~bpo24.04+1) noble; urgency=medium
   * New upstream release
   * d/patches: rebased.
   * d/opencpn-data.install: authors.html file name update
+  * d/control: drop heave b-d asciidoc-base, now not required 
 
  -- dsr <dsr@dsr-VirtualBox>  Fri, 01 Aug 2025 09:08:40 -0400
 
