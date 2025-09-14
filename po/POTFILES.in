@@ -231,7 +231,7 @@ gui/include/gui/link_prop_dlg.h
 gui/include/gui/load_errors_dlg.h
 gui/include/gui/mark_info.h
 gui/include/gui/mbtiles.h
-gui/include/gui/MUIBar.h
+gui/include/gui/mui_bar.h
 gui/include/gui/n0183_ctx_factory.h
 gui/include/gui/navutil.h
 gui/include/gui/ocpCursor.h

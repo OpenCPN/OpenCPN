@@ -82,7 +82,7 @@
 #include "line_clip.h"
 #include "mark_info.h"
 #include "mbtiles.h"
-#include "MUIBar.h"
+#include "mui_bar.h"
 #include "navutil.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"

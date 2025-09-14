@@ -36,7 +36,7 @@
 #include "ssfn.h"
 
 #include "chcanv.h"
-#include "MUIBar.h"
+#include "mui_bar.h"
 #include "OCPNPlatform.h"
 #include "canvas_options.h"
 #include "detail_slider.h"
