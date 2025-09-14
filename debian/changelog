@@ -1,3 +1,9 @@
+opencpn (1:5.12.4+dfsg-1~bpo20.04~ppa1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 14 Sep 2025 09:52:50 +0200
+
 opencpn (1:5.12.2+dfsg-1~bpo20.04+2) focal; urgency=medium
 
   * new upstream release
