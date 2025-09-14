@@ -1,6 +1,8 @@
 opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
 
   * New upstream version
+  * debian/: updated from sid besides changelog, gbp.con,  not-installed
+    and patches.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 14 Sep 2025 09:37:41 +0200
 

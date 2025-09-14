@@ -28,7 +28,6 @@ Build-Depends: debhelper-compat (= 13),
  libssl-dev,
  libtinyxml-dev,
  libudev-dev,
- libunarr-dev,
  libusb-1.0-0-dev,
  libwxsvg-dev (>= 2:1.5.21),
  libwxgtk3.2-dev,
@@ -36,9 +35,9 @@ Build-Depends: debhelper-compat (= 13),
  lsb-release,
  portaudio19-dev,
  rapidjson-dev
-Standards-Version: 4.6.2
-Vcs-Browser: https://gitlab.com/leamas/opencpn
-Vcs-Git: https://gitlab.com/leamas/opencpn.git -b ubuntu/jammy
+Standards-Version: 4.7.0
+Vcs-Browser: https://github.com/opencpn/opencpn
+Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/sid
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
@@ -50,16 +49,14 @@ Depends: opencpn-data (>= ${source:Version}),
  libjs-highlight.js,
  ${shlibs:Depends},
  ${misc:Depends}
-Recommends: wx3.2-i18n,
- xdg-utils,
- libusb-0.1-4,
+Recommends: wx3.2-i18n, xdg-utils, libusb-0.1-4,
  opencpn-sglock-amd64[amd64],
  opencpn-sglock-arm64[arm64],
  opencpn-sglock-arm32[arm32]
 Suggests: binutils
 Breaks: opencpn-plugins (<< 4.8.8~),
  opencpn-gshhs-crude (<< 1:1),
- opencpn-tcdata (<< 1:1),
+ opencpn-tcdata (<< 1:1)
 Replaces: opencpn-plugins (<< 4.8.8~),
  opencpn-gshhs-crude(<< 1:1),
  opencpn-tcdata(<< 1:1)
