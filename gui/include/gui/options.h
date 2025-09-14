@@ -245,6 +245,7 @@ enum {
 #define PARSE_ENC 1 << 15
 #define CONFIG_CHANGED 1 << 16
 #define FONT_CHANGED_SAFE 1 << 17
+#define FORCE_RELOAD 1 << 18
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -567,6 +568,7 @@ public:
   wxChoice *m_itemFontElementListBox, *m_itemStyleListBox, *m_itemLangListBox;
   wxStaticText *m_textSample;
   bool m_bVisitLang;
+  bool m_bVisitPlugins;
 
   // For "AIS Options"
   wxComboBox *m_itemAISListBox;
@@ -899,6 +901,7 @@ public:
   void OnNewButton(wxCommandEvent &event);
   void SetColorScheme(ColorScheme cs);
   void UpdateMMSIList(void);
+  void UpdateNVMMSIList(void);
 
   MMSIListCtrl *m_pListCtrlMMSI;
   wxButton *m_pButtonNew;

@@ -67,6 +67,7 @@ extern bool androidUtilInit(void);
 
 extern wxString androidGetDeviceInfo();
 extern void CheckMigrateCharts();
+extern void DoImportGPX();
 
 extern bool androidGetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -149,6 +150,7 @@ extern wxString getFontQtStylesheet(wxFont *font);
 extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
+void AndroidRemoveSystemFile(wxString file);
 
 class AndroidSound;
 bool androidPlaySound(const wxString soundfile, AndroidSound *sound);
@@ -212,6 +214,7 @@ bool androidIsDirWritable(wxString dir);
 wxArrayString GetConfigChartDirectories();
 wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
                                      wxDateTime time);
+void PrepareImportAndroid(bool isLayer, bool isPersistent);
 
 class InProgressIndicator : public wxGauge {
   DECLARE_EVENT_TABLE()

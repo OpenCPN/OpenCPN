@@ -510,8 +510,8 @@ void service_mdns(const char* hostname, const char* service_name,
       additional[additional_count++] = service.record_a;
     if (service.address_ipv6.sin6_family == AF_INET6)
       additional[additional_count++] = service.record_aaaa;
-    additional[additional_count++] = service.txt_record[0];
-    additional[additional_count++] = service.txt_record[1];
+    // additional[additional_count++] = service.txt_record[0];
+    // additional[additional_count++] = service.txt_record[1];
 
     for (int isock = 0; isock < num_sockets; ++isock)
       mdns_goodbye_multicast(sockets[isock], buffer, capacity,
