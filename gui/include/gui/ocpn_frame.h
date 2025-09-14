@@ -362,6 +362,7 @@ public:
   void ScheduleSettingsDialogNew();
   void ScheduleDeleteSettingsDialog();
   void ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog);
+  void ScheduleReloadCharts();
   static void RebuildChartDatabase();
   void PositionIENCToolbar();
 
@@ -370,6 +371,8 @@ public:
   void ReleaseApiListeners();
   void UpdateStatusBar(void);
   void ConfigureStatusBar();
+  void FreezeCharts();
+  void ThawCharts();
 
 private:
   void ProcessUnitTest();
