@@ -1,4 +1,3 @@
-From a3219d14d3251baa9c25e6e9a582b3916ed49df6 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Fri, 23 May 2025 14:15:58 +0200
 Subject: [PATCH 6/6] libdnet: Handle cmake < 3.20
@@ -8,7 +7,7 @@ Subject: [PATCH 6/6] libdnet: Handle cmake < 3.20
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/libs/libdnet/cmake/PatchFile.cmake b/libs/libdnet/cmake/PatchFile.cmake
-index 70dfec863..f792f1bb0 100644
+index 70dfec8..f792f1b 100644
 --- a/libs/libdnet/cmake/PatchFile.cmake
 +++ b/libs/libdnet/cmake/PatchFile.cmake
 @@ -29,7 +29,11 @@ find_package(Git REQUIRED)
@@ -24,6 +23,3 @@ index 70dfec863..f792f1bb0 100644
  
  execute_process(
    COMMAND ${GIT_EXECUTABLE} --git-dir= apply -p1 --ignore-whitespace "${patch}"
--- 
-2.34.1
-

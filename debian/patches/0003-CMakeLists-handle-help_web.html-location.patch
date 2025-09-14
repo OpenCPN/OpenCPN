@@ -1,4 +1,3 @@
-From 7abaef3839ddffaef45c2651170c82d246b81fa5 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 21 Jul 2024 03:35:57 +0200
 Subject: [PATCH 3/6] CMakeLists: handle help_web.html location3
@@ -11,7 +10,7 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 44d6e1d32..651e654ca 100644
+index 44d6e1d..651e654 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1849,7 +1849,7 @@ if (APPLE)
@@ -46,6 +45,3 @@ index 44d6e1d32..651e654ca 100644
    endif ()
  
    if (UNIX)
--- 
-2.34.1
-

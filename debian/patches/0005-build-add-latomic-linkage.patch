@@ -1,4 +1,3 @@
-From db56539c73bb012bc2b61f1f6fa4e71297caa3cb Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Fri, 16 Aug 2024 20:26:11 +0200
 Subject: [PATCH 5/6] build: add -latomic linkage
@@ -11,7 +10,7 @@ Bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81358
  1 file changed, 1 insertion(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 651e654ca..ce6a11dd2 100644
+index 651e654..ce6a11d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -358,6 +358,7 @@ endif ()
@@ -22,6 +21,3 @@ index 651e654ca..ce6a11dd2 100644
    if (NOT OCPN_PEDANTIC)
      add_compile_options(
        "-Wno-unused" "-fexceptions" "-rdynamic" "-fno-strict-aliasing"
--- 
-2.34.1
-
