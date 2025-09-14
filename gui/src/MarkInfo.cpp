@@ -931,30 +931,22 @@ void MarkInfoDlg::UpdateHtmlList() {
     }
   }
 
-  int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
-  HyperlinkList* hyperlinklist = m_pRoutePoint->m_HyperlinkList;
-  if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-      wxString Link = link->Link;
-      wxString Descr = link->DescrText;
+  for (Hyperlink* link : *m_pRoutePoint->m_HyperlinkList) {
+    wxString Link = link->Link;
+    wxString Descr = link->DescrText;
 
-      wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
-          m_scrolledWindowLinks, wxID_ANY, Descr, Link, wxDefaultPosition,
-          wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
-      ctrl->Connect(wxEVT_COMMAND_HYPERLINK,
-                    wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick),
+    wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
+        m_scrolledWindowLinks, wxID_ANY, Descr, Link, wxDefaultPosition,
+        wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT);
+    ctrl->Connect(wxEVT_COMMAND_HYPERLINK,
+                  wxHyperlinkEventHandler(MarkInfoDlg::OnHyperLinkClick), NULL,
+                  this);
+    if (!m_pRoutePoint->m_bIsInLayer)
+      ctrl->Connect(wxEVT_RIGHT_DOWN,
+                    wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu),
                     NULL, this);
-      if (!m_pRoutePoint->m_bIsInLayer)
-        ctrl->Connect(wxEVT_RIGHT_DOWN,
-                      wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu),
-                      NULL, this);
 
-      bSizerLinks->Add(ctrl, 1, wxALL | wxEXPAND, 5);
-
-      linknode = linknode->GetNext();
-    }
+    bSizerLinks->Add(ctrl, 1, wxALL | wxEXPAND, 5);
   }
 
   // Integrate all of the rebuilt hyperlink controls
@@ -1116,19 +1108,13 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
     wxString label = m_pEditedLink->GetLabel();
     i_htmlList_item = -1;
     HyperlinkList* hyperlinklist = m_pRoutePoint->m_HyperlinkList;
-    if (hyperlinklist->GetCount() > 0) {
-      int i = 0;
-      wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
-        if (link->DescrText == label) {
-          i_htmlList_item = i;
-          break;
-        }
-
-        linknode = linknode->GetNext();
-        i++;
+    int i = 0;
+    for (Hyperlink* link : *hyperlinklist) {
+      if (link->DescrText == label) {
+        i_htmlList_item = i;
+        break;
       }
+      i++;
     }
 
     wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
