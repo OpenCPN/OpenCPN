@@ -59,7 +59,7 @@
 #include "chartbase.h"
 #include "chcanv.h"
 #include "dychart.h"
-#include "Layer.h"
+#include "layer.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "ocpn_frame.h"

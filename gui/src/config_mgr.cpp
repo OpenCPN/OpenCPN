@@ -53,7 +53,7 @@
 #include "chcanv.h"
 #include "config_mgr.h"
 #include "font_mgr.h"
-#include "Layer.h"
+#include "layer.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "ocpn_gl_options.h"

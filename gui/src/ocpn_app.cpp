@@ -142,7 +142,7 @@ using namespace std::literals::chrono_literals;
 #include "gdal/cpl_csv.h"
 #include "gl_tex_cache.h"
 #include "go_to_position_dlg.h"
-#include "Layer.h"
+#include "layer.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "observable.h"
