@@ -161,12 +161,12 @@ class SaveDefaultsDialog;
  */
 class OCPNIconCombo : public wxOwnerDrawnComboBox {
 public:
-  OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
+  OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = "",
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize, int n = 0,
                 const wxString choices[] = NULL, long style = 0,
                 const wxValidator& validator = wxDefaultValidator,
-                const wxString& name = _T("OCPNIconCombo"));
+                const wxString& name = "OCPNIconCombo");
 
   ~OCPNIconCombo();
 
@@ -194,8 +194,7 @@ class LatLonTextCtrl : public wxTextCtrl {
   DECLARE_EVENT_TABLE()
 
 public:
-  LatLonTextCtrl(wxWindow* parent, wxWindowID id,
-                 const wxString& value = _T(""),
+  LatLonTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = "",
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxDefaultSize, long style = 0,
                  const wxValidator& validator = wxDefaultValidator,

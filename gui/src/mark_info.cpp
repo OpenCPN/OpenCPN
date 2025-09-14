@@ -521,9 +521,8 @@ void MarkInfoDlg::Create() {
                                      wxID_ANY, _("Color"));
   gbRRExtProperties->Add(m_staticTextRR4, 0, wxLEFT, 5);
 
-  wxString rrAlt[] = {_("None"), _T( "1" ), _T( "2" ), _T( "3" ),
-                      _T( "4" ), _T( "5" ), _T( "6" ), _T( "7" ),
-                      _T( "8" ), _T( "9" ), _T( "10" )};
+  wxString rrAlt[] = {_("None"), "1", "2", "3", "4", "5",
+                      "6",       "7", "8", "9", "10"};
   m_ChoiceWaypointRangeRingsNumber =
       new wxChoice(sbSizerExtProperties->GetStaticBox(), ID_WPT_RANGERINGS_NO,
                    wxDefaultPosition, wxDefaultSize, 11, rrAlt);
