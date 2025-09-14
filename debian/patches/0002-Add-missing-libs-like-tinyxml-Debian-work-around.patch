@@ -1,4 +1,3 @@
-From 8ee9407bbb60461d110e109f159aaf3c01f22217 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 10 Jun 2024 09:58:18 +0200
 Subject: [PATCH 2/6] Add missing libs like tinyxml Debian work-around
@@ -19,7 +18,7 @@ Forwarded: not-needed
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e9c772d10..44d6e1d32 100644
+index e9c772d..44d6e1d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1494,7 +1494,6 @@ message(STATUS "    Adding local LIBTESS2")
@@ -32,7 +31,7 @@ index e9c772d10..44d6e1d32 100644
  message(STATUS "    Adding local wxserverdisc")
 diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
 new file mode 100644
-index 000000000..473722c1b
+index 0000000..473722c
 --- /dev/null
 +++ b/cmake/SystemLibs.cmake
 @@ -0,0 +1,28 @@
@@ -65,7 +64,7 @@ index 000000000..473722c1b
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 993fcdb52..b80194454 100644
+index 993fcdb..b801944 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
 @@ -47,6 +47,7 @@
@@ -76,6 +75,3 @@ index 993fcdb52..b80194454 100644
  #cmakedefine OCPN_DISTRO_BUILD
  
  // The os compatible plugins are are built for
--- 
-2.25.1
-

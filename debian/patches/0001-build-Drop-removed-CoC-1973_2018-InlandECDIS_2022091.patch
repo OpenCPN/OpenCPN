@@ -1,4 +1,3 @@
-From 10d219dbae8904313b3a393203a44d0545bd0154 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Wed, 17 Apr 2024 14:03:26 +0200
 Subject: [PATCH 1/6] build: Drop removed
@@ -15,7 +14,7 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 11e429677..e9c772d10 100644
+index 11e4296..e9c772d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1416,8 +1416,10 @@ if (OCPN_USE_SVG)
@@ -75,6 +74,3 @@ index 11e429677..e9c772d10 100644
    install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
    install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
    install(FILES ${CMAKE_SOURCE_DIR}/data/authors.html
--- 
-2.25.1
-

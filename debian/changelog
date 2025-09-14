@@ -1,6 +1,8 @@
 opencpn (1:5.12.4+dfsg-1~bpo20.04~ppa1) UNRELEASED; urgency=medium
 
   * New upstream release
+  * d/copyright: Updated from sid
+  * d/patches: rebased, drop upstreamed svg rendering patch
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 14 Sep 2025 09:52:50 +0200
 
