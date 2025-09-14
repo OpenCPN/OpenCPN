@@ -935,7 +935,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ienc_toolbar.cpp
     ${GUI_SRC_DIR}/kml.cpp
     ${GUI_SRC_DIR}/layer.cpp
-    ${GUI_SRC_DIR}/LinkPropDlg.cpp
+    ${GUI_SRC_DIR}/link_prop_dlg.cpp
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp

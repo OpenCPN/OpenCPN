@@ -2527,7 +2527,7 @@ msgstr "Consulta Objetos"
 msgid "Center view"
 msgstr "Centrar Vista"
 
-#: gui/include/gui/LinkPropDlg.h:79 gui/include/gui/LinkPropDlg.h:92
+#: gui/include/gui/link_prop_dlg.h:79 gui/include/gui/LinkPropDlg.h:92
 msgid "Link Properties"
 msgstr "Propiedades Enlace"
 

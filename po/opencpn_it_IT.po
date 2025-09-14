@@ -2527,7 +2527,7 @@ msgstr "Info Oggetti Vettoriali"
 msgid "Center view"
 msgstr "Centra la vista"
 
-#: gui/include/gui/LinkPropDlg.h:79 gui/include/gui/LinkPropDlg.h:92
+#: gui/include/gui/link_prop_dlg.h:79 gui/include/gui/LinkPropDlg.h:92
 msgid "Link Properties"
 msgstr "Propietà Link"
 

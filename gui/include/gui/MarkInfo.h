@@ -43,7 +43,7 @@
 #include <wx/odcombo.h>
 #include <wx/gbsizer.h>
 #include <wx/spinctrl.h>
-#include "LinkPropDlg.h"
+#include "link_prop_dlg.h"
 #include "model/hyperlink.h"
 #include <wx/htmllbox.h>
 #include <wx/datectrl.h>
