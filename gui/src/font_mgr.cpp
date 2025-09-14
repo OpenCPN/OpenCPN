@@ -100,7 +100,7 @@ FontMgr::FontMgr() : m_wxFontCache(NULL), m_fontlist(NULL), pDefFont(NULL) {
 
   //    Get a nice generic font as default
   pDefFont = FindOrCreateFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                              wxFONTWEIGHT_BOLD, FALSE, wxString(_T ( "" )),
+                              wxFONTWEIGHT_BOLD, FALSE, wxString(""),
                               wxFONTENCODING_SYSTEM);
 }
 
@@ -369,9 +369,9 @@ wxString FontMgr::GetFullConfigDesc(int i) const {
   std::advance(it, i);
   MyFontDesc *pfd = *it;
   wxString ret = pfd->m_dialogstring;
-  ret.Append(_T ( ":" ));
+  ret.Append(":");
   ret.Append(pfd->m_nativeInfo);
-  ret.Append(_T ( ":" ));
+  ret.Append(":");
 
   wxString cols("rgb(0,0,0)");
   if (pfd->m_color.IsOk()) cols = pfd->m_color.GetAsString(wxC2S_CSS_SYNTAX);
@@ -394,7 +394,7 @@ MyFontDesc *FontMgr::FindFontByConfigString(wxString pConfigString) {
 void FontMgr::LoadFontNative(wxString *pConfigString, wxString *pNativeDesc) {
   //    Parse the descriptor string
 
-  wxStringTokenizer tk(*pNativeDesc, _T ( ":" ));
+  wxStringTokenizer tk(*pNativeDesc, ":");
   wxString dialogstring = tk.GetNextToken();
   wxString nativefont = tk.GetNextToken();
 
