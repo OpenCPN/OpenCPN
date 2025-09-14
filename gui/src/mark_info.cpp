@@ -41,7 +41,7 @@
 
 #include "chcanv.h"
 #include "gui_lib.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "model/georef.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"

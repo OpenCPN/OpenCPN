@@ -80,7 +80,7 @@
 #include "ienc_toolbar.h"
 #include "kml.h"
 #include "line_clip.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "mbtiles.h"
 #include "MUIBar.h"
 #include "navutil.h"

@@ -815,9 +815,9 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/ienc_toolbar.h
     ${GUI_HDR_DIR}/kml.h
     ${GUI_HDR_DIR}/layer.h
-    ${GUI_HDR_DIR}/LinkPropDlg.h
+    ${GUI_HDR_DIR}/link_prop_dlg.h
     ${GUI_HDR_DIR}/load_errors_dlg.h
-    ${GUI_HDR_DIR}/MarkInfo.h
+    ${GUI_HDR_DIR}/mark_info.h
     ${GUI_HDR_DIR}/mbtiles.h
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
@@ -937,7 +937,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/layer.cpp
     ${GUI_SRC_DIR}/link_prop_dlg.cpp
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
-    ${GUI_SRC_DIR}/MarkInfo.cpp
+    ${GUI_SRC_DIR}/mark_info.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
     ${GUI_SRC_DIR}/mbtiles/tile_thread.cpp
     ${GUI_SRC_DIR}/mbtiles/tile_thread.h

@@ -2530,7 +2530,7 @@ msgstr "Keskitä näkymä"
 msgid "Link Properties"
 msgstr "Tietolinkin ominaisuudet"
 
-#: gui/include/gui/MarkInfo.h:106 gui/include/gui/MarkInfo.h:432
+#: gui/include/gui/mark_info.h:106 gui/include/gui/mark_info.h:432
 #: gui/src/chcanv.cpp:10455 gui/src/routemanagerdialog.cpp:2665
 #: gui/src/RoutePropDlgImpl.cpp:908
 msgid "Waypoint Properties"

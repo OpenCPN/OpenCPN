@@ -98,7 +98,7 @@
 #include "connections_dlg.h"
 #include "dychart.h"
 #include "font_mgr.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"

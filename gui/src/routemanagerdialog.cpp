@@ -60,7 +60,7 @@
 #include "chcanv.h"
 #include "dychart.h"
 #include "layer.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
