@@ -115,7 +115,7 @@
 #include "go_to_position_dlg.h"
 #include "gui_lib.h"
 #include "ienc_toolbar.h"
-#include "Layer.h"
+#include "layer.h"
 #include "load_errors_dlg.h"
 #include "MarkInfo.h"
 #include "MUIBar.h"

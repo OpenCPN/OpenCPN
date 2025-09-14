@@ -814,7 +814,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/idx_entry.h
     ${GUI_HDR_DIR}/ienc_toolbar.h
     ${GUI_HDR_DIR}/kml.h
-    ${GUI_HDR_DIR}/Layer.h
+    ${GUI_HDR_DIR}/layer.h
     ${GUI_HDR_DIR}/LinkPropDlg.h
     ${GUI_HDR_DIR}/load_errors_dlg.h
     ${GUI_HDR_DIR}/MarkInfo.h
@@ -934,7 +934,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/idx_entry.cpp
     ${GUI_SRC_DIR}/ienc_toolbar.cpp
     ${GUI_SRC_DIR}/kml.cpp
-    ${GUI_SRC_DIR}/Layer.cpp
+    ${GUI_SRC_DIR}/layer.cpp
     ${GUI_SRC_DIR}/LinkPropDlg.cpp
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp

@@ -85,7 +85,7 @@
 #include "config_mgr.h"
 #include "dychart.h"
 #include "font_mgr.h"
-#include "Layer.h"
+#include "layer.h"
 #include "navutil.h"
 #include "nmea0183.h"
 #include "observable_globvar.h"
