@@ -2511,7 +2511,7 @@ msgstr "Consulta sobre l'Objecte"
 msgid "Center view"
 msgstr "Centrar la vista"
 
-#: gui/include/gui/LinkPropDlg.h:79 gui/include/gui/LinkPropDlg.h:92
+#: gui/include/gui/link_prop_dlg.h:79 gui/include/gui/LinkPropDlg.h:92
 msgid "Link Properties"
 msgstr "Propietats de la Marca"
 

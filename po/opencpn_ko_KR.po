@@ -2512,7 +2512,7 @@ msgstr "객체 쿼리"
 msgid "Center view"
 msgstr "중앙시점보기"
 
-#: gui/include/gui/LinkPropDlg.h:79 gui/include/gui/LinkPropDlg.h:92
+#: gui/include/gui/link_prop_dlg.h:79 gui/include/gui/LinkPropDlg.h:92
 msgid "Link Properties"
 msgstr "연결 속성"
 

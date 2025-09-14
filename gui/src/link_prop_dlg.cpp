@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "LinkPropDlg.h"
+#include "link_prop_dlg.h"
 #include "navutil.h"
 #include "gui_lib.h"
 

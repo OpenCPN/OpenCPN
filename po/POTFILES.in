@@ -227,7 +227,7 @@ gui/include/gui/idx_entry.h
 gui/include/gui/ienc_toolbar.h
 gui/include/gui/kml.h
 gui/include/gui/layer.h
-gui/include/gui/LinkPropDlg.h
+gui/include/gui/link_prop_dlg.h
 gui/include/gui/load_errors_dlg.h
 gui/include/gui/MarkInfo.h
 gui/include/gui/mbtiles.h

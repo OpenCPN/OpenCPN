@@ -2510,7 +2510,7 @@ msgstr "Информация за обекта"
 msgid "Center view"
 msgstr "Центриране на изгледа"
 
-#: gui/include/gui/LinkPropDlg.h:79 gui/include/gui/LinkPropDlg.h:92
+#: gui/include/gui/link_prop_dlg.h:79 gui/include/gui/LinkPropDlg.h:92
 msgid "Link Properties"
 msgstr "Свойства на връзка"
 

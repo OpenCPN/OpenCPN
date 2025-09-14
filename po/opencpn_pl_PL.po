@@ -2515,7 +2515,7 @@ msgstr "Szczegóły obiektu"
 msgid "Center view"
 msgstr "Ustaw na środku"
 
-#: gui/include/gui/LinkPropDlg.h:79 gui/include/gui/LinkPropDlg.h:92
+#: gui/include/gui/link_prop_dlg.h:79 gui/include/gui/LinkPropDlg.h:92
 msgid "Link Properties"
 msgstr "Właściwości łącza"
 
