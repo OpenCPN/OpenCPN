@@ -1649,11 +1649,11 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
 
   wxColour color;
   if (ChartData->GetDBChartType(dbIndex) == CHART_TYPE_CM93)
-    color = GetGlobalColor(_T ( "YELO1" ));
+    color = GetGlobalColor("YELO1");
   else if (ChartData->GetDBChartFamily(dbIndex) == CHART_FAMILY_VECTOR)
-    color = GetGlobalColor(_T ( "GREEN2" ));
+    color = GetGlobalColor("GREEN2");
   else
-    color = GetGlobalColor(_T ( "UINFR" ));
+    color = GetGlobalColor("UINFR");
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   float plylat, plylon;
@@ -1750,15 +1750,15 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
       wxMax(2.0, floor(m_pParentCanvas->GetPixPerMM() / 4));
 
   if (ChartData->GetDBChartType(dbIndex) == CHART_TYPE_CM93)
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "YELO1" )), nominal_line_width_pix,
+    dc.SetPen(wxPen(GetGlobalColor("YELO1"), nominal_line_width_pix,
                     wxPENSTYLE_SOLID));
 
   else if (ChartData->GetDBChartFamily(dbIndex) == CHART_FAMILY_VECTOR)
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "UINFG" )), nominal_line_width_pix,
+    dc.SetPen(wxPen(GetGlobalColor("UINFG"), nominal_line_width_pix,
                     wxPENSTYLE_SOLID));
 
   else
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "UINFR" )), nominal_line_width_pix,
+    dc.SetPen(wxPen(GetGlobalColor("UINFR"), nominal_line_width_pix,
                     wxPENSTYLE_SOLID));
 
   float plylat1, plylon1;
@@ -1864,7 +1864,7 @@ void glChartCanvas::GridDraw() {
   float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
   wxCoord w, h;
 
-  wxColour GridColor = GetGlobalColor(_T ( "SNDG1" ));
+  wxColour GridColor = GetGlobalColor("SNDG1");
 
   if (!m_gridfont.IsBuilt()) {
     double dpi_factor = g_BasePlatform->GetDisplayDIPMult(this);
@@ -2292,14 +2292,13 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       wxPen ppSmallScaleShip;
       if (SHIP_NORMAL == m_pParentCanvas->m_ownship_state)
         ppSmallScaleShip =
-            wxPen(GetGlobalColor(_T ( "URED" )), v / 5, wxPENSTYLE_SOLID);
+            wxPen(GetGlobalColor("URED"), v / 5, wxPENSTYLE_SOLID);
       else
         ppSmallScaleShip =
-            wxPen(GetGlobalColor(_T ( "YELO1" )), v / 5, wxPENSTYLE_SOLID);
+            wxPen(GetGlobalColor("YELO1"), v / 5, wxPENSTYLE_SOLID);
       dc.SetPen(ppSmallScaleShip);
 
-      dc.SetBrush(
-          wxBrush(GetGlobalColor(_T ( "URED" )), wxBRUSHSTYLE_TRANSPARENT));
+      dc.SetBrush(wxBrush(GetGlobalColor("URED"), wxBRUSHSTYLE_TRANSPARENT));
 
       // start with cross
       dc.DrawLine((-v * 1.2) + lShipMidPoint.m_x, lShipMidPoint.m_y,
@@ -2625,9 +2624,9 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       //      Reference point, where the GPS antenna is
       if (m_pParentCanvas->m_pos_image_user) gps_circle_radius = 1;
 
-      wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
+      wxPen ppPen1(GetGlobalColor("UBLCK"), 1, wxPENSTYLE_SOLID);
       dc.SetPen(ppPen1);
-      dc.SetBrush(wxBrush(GetGlobalColor(_T ( "CHWHT" ))));
+      dc.SetBrush(wxBrush(GetGlobalColor("CHWHT")));
 
       dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, gps_circle_radius);
     }
@@ -3234,8 +3233,7 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
                   if (m_pParentCanvas->GetWorldBackgroundChart()) {
                     SetClipRegion(cvp, get_region);
                     m_pParentCanvas->GetWorldBackgroundChart()->SetColorsDirect(
-                        GetGlobalColor(_T ( "LANDA" )),
-                        GetGlobalColor(_T ( "DEPMS" )));
+                        GetGlobalColor("LANDA"), GetGlobalColor("DEPMS"));
                     RenderWorldChart(gldc, cvp, srect, world);
                     m_pParentCanvas->GetWorldBackgroundChart()->SetColorScheme(
                         global_color_scheme);
@@ -3539,7 +3537,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region,
                                 int transparency) {
-  wxColour color = GetGlobalColor(_T ( "NODTA" ));
+  wxColour color = GetGlobalColor("NODTA");
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (color.IsOk())
     glColor4ub(color.Red(), color.Green(), color.Blue(), transparency);
@@ -3787,9 +3785,9 @@ void glChartCanvas::RenderGLAlertMessage() {
     wxRect sbr = m_pParentCanvas->GetScaleBarRect();
     int xp = sbr.x + sbr.width + 5;
 
-    wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
+    wxPen ppPen1(GetGlobalColor("UBLCK"), 1, wxPENSTYLE_SOLID);
     m_gldc.SetPen(ppPen1);
-    m_gldc.SetBrush(wxBrush(GetGlobalColor(_T ( "YELO1" ))));
+    m_gldc.SetBrush(wxBrush(GetGlobalColor("YELO1")));
 
     m_gldc.DrawRectangle(xp, yp, w, h);
 
@@ -4106,7 +4104,7 @@ void glChartCanvas::Render() {
                                  GL_TEXTURE_2D, m_cache_tex[m_cache_page], 0);
 
           // Before rendering anything, clear the color buffers
-          //           wxColour color = GetGlobalColor(_T ( "NODTA" ));
+          //           wxColour color = GetGlobalColor("NODTA");
           //           glClearColor(color.Red() / 256., color.Green() / 256.,
           //                        color.Blue() / 256., 1.0);
           //           glClear(GL_COLOR_BUFFER_BIT);
@@ -4242,7 +4240,7 @@ void glChartCanvas::Render() {
         //  This can be annoying on Android pinch zoom
 
         // Clear the screen to NODTA color
-        wxColour color = GetGlobalColor(_T ( "NODTA" ));
+        wxColour color = GetGlobalColor("NODTA");
         glClearColor(color.Red() / 256., color.Green() / 256.,
                      color.Blue() / 256., 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -4345,7 +4343,7 @@ void glChartCanvas::Render() {
     coords[6] = 0;
     coords[7] = sy;
 
-    wxColour color = GetGlobalColor(_T ( "NODTA" ));
+    wxColour color = GetGlobalColor("NODTA");
     glClearColor(color.Red() / 256., color.Green() / 256., color.Blue() / 256.,
                  1.0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -4494,11 +4492,11 @@ void glChartCanvas::Render() {
     wxBitmap bmp(width, height, -1);
     wxMemoryDC dc(bmp);
     if (bmp.IsOk()) {
-      dc.SetBackground(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
+      dc.SetBackground(wxBrush(GetGlobalColor("UIBCK")));
       dc.Clear();
 
-      dc.SetTextBackground(GetGlobalColor(_T ( "UIBCK" )));
-      dc.SetTextForeground(GetGlobalColor(_T ( "UITX1" )));
+      dc.SetTextBackground(GetGlobalColor("UIBCK"));
+      dc.SetTextForeground(GetGlobalColor("UITX1"));
 
       int yt = 0;
       int xt = 0;

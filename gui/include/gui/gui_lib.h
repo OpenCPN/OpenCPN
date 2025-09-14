@@ -72,9 +72,8 @@ wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
 wxFont GetOCPNGUIScaledFont(wxString item);
 
 extern int OCPNMessageBox(wxWindow* parent, const wxString& message,
-                          const wxString& caption = _T("Message"),
-                          int style = wxOK, int timout_sec = -1, int x = -1,
-                          int y = -1);
+                          const wxString& caption = "Message", int style = wxOK,
+                          int timout_sec = -1, int x = -1, int y = -1);
 
 class OCPNMessageDialog : public wxDialog {
 public:
@@ -96,7 +95,7 @@ private:
 class TimedMessageBox : public wxEvtHandler {
 public:
   TimedMessageBox(wxWindow* parent, const wxString& message,
-                  const wxString& caption = _T("Message box"),
+                  const wxString& caption = "Message box",
                   long style = wxOK | wxCANCEL, int timeout_sec = -1,
                   const wxPoint& pos = wxDefaultPosition);
   ~TimedMessageBox();
