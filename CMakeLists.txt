@@ -819,7 +819,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/load_errors_dlg.h
     ${GUI_HDR_DIR}/mark_info.h
     ${GUI_HDR_DIR}/mbtiles.h
-    ${GUI_HDR_DIR}/MUIBar.h
+    ${GUI_HDR_DIR}/mui_bar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
     ${GUI_HDR_DIR}/notification_manager_gui.h
@@ -945,7 +945,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/mbtiles/tile_descr.h
     ${GUI_SRC_DIR}/mbtiles/tile_cache.h
     ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
-    ${GUI_SRC_DIR}/MUIBar.cpp
+    ${GUI_SRC_DIR}/mui_bar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
     ${GUI_SRC_DIR}/notification_manager_gui.cpp
     ${GUI_SRC_DIR}/ocpCursor.cpp

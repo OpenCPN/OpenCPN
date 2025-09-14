@@ -118,7 +118,7 @@
 #include "layer.h"
 #include "load_errors_dlg.h"
 #include "mark_info.h"
-#include "MUIBar.h"
+#include "mui_bar.h"
 #include "N2KParser.h"
 #include "navutil.h"
 #include "ocpn_app.h"
