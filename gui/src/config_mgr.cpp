@@ -575,123 +575,122 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 #endif
 
   //    Global options and settings
-  conf->SetPath(_T ( "/Settings" ));
+  conf->SetPath("/Settings");
 
-  conf->Write(_T ( "InlandEcdis" ), g_bInlandEcdis);
-  conf->Write(_T ( "UIexpert" ), g_bUIexpert);
-  conf->Write(_T ( "SpaceDropMark" ), g_bSpaceDropMark);
+  conf->Write("InlandEcdis", g_bInlandEcdis);
+  conf->Write("UIexpert", g_bUIexpert);
+  conf->Write("SpaceDropMark", g_bSpaceDropMark);
 
-  conf->Write(_T ( "ShowStatusBar" ), g_bShowStatusBar);
+  conf->Write("ShowStatusBar", g_bShowStatusBar);
 #ifndef __WXOSX__
-  conf->Write(_T ( "ShowMenuBar" ), g_bShowMenuBar);
+  conf->Write("ShowMenuBar", g_bShowMenuBar);
 #endif
-  conf->Write(_T ( "DefaultFontSize" ), g_default_font_size);
+  conf->Write("DefaultFontSize", g_default_font_size);
 
-  conf->Write(_T ( "Fullscreen" ), g_bFullscreen);
-  conf->Write(_T ( "ShowCompassWindow" ), g_bShowCompassWin);
-  conf->Write(_T ( "SetSystemTime" ), s_bSetSystemTime);
-  conf->Write(_T ( "ShowGrid" ), g_bDisplayGrid);
-  conf->Write(_T ( "PlayShipsBells" ), g_bPlayShipsBells);
-  conf->Write(_T ( "SoundDeviceIndex" ), g_iSoundDeviceIndex);
-  conf->Write(_T ( "FullscreenToolbar" ), g_bFullscreenToolbar);
-  // conf->Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
-  conf->Write(_T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon);
-  conf->Write(_T ( "ShowLayers" ), g_bShowLayers);
-  conf->Write(_T ( "AutoAnchorDrop" ), g_bAutoAnchorMark);
-  conf->Write(_T ( "ShowChartOutlines" ), g_bShowOutlines);
-  conf->Write(_T ( "ShowActiveRouteTotal" ), g_bShowRouteTotal);
-  conf->Write(_T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway);
-  conf->Write(_T ( "SDMMFormat" ), g_iSDMMFormat);
-  conf->Write(_T ( "ShowChartBar" ), g_bShowChartBar);
+  conf->Write("Fullscreen", g_bFullscreen);
+  conf->Write("ShowCompassWindow", g_bShowCompassWin);
+  conf->Write("SetSystemTime", s_bSetSystemTime);
+  conf->Write("ShowGrid", g_bDisplayGrid);
+  conf->Write("PlayShipsBells", g_bPlayShipsBells);
+  conf->Write("SoundDeviceIndex", g_iSoundDeviceIndex);
+  conf->Write("FullscreenToolbar", g_bFullscreenToolbar);
+  // conf->Write( "TransparentToolbar", g_bTransparentToolbar );
+  conf->Write("PermanentMOBIcon", g_bPermanentMOBIcon);
+  conf->Write("ShowLayers", g_bShowLayers);
+  conf->Write("AutoAnchorDrop", g_bAutoAnchorMark);
+  conf->Write("ShowChartOutlines", g_bShowOutlines);
+  conf->Write("ShowActiveRouteTotal", g_bShowRouteTotal);
+  conf->Write("ShowActiveRouteHighway", g_bShowActiveRouteHighway);
+  conf->Write("SDMMFormat", g_iSDMMFormat);
+  conf->Write("ShowChartBar", g_bShowChartBar);
 
-  conf->Write(_T ( "GUIScaleFactor" ), g_GUIScaleFactor);
-  conf->Write(_T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor);
-  conf->Write(_T ( "ShipScaleFactor" ), g_ShipScaleFactor);
+  conf->Write("GUIScaleFactor", g_GUIScaleFactor);
+  conf->Write("ChartObjectScaleFactor", g_ChartScaleFactor);
+  conf->Write("ShipScaleFactor", g_ShipScaleFactor);
 
-  conf->Write(_T ( "ShowTrue" ), g_bShowTrue);
-  conf->Write(_T ( "ShowMag" ), g_bShowMag);
-  conf->Write(_T ( "UserMagVariation" ), wxString::Format("%.2f", g_UserVar));
+  conf->Write("ShowTrue", g_bShowTrue);
+  conf->Write("ShowMag", g_bShowMag);
+  conf->Write("UserMagVariation", wxString::Format("%.2f", g_UserVar));
 
-  conf->Write(_T ( "CM93DetailFactor" ), g_cm93_zoom_factor);
-  conf->Write(_T ( "CM93DetailZoomPosX" ), g_detailslider_dialog_x);
-  conf->Write(_T ( "CM93DetailZoomPosY" ), g_detailslider_dialog_y);
-  conf->Write(_T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider);
+  conf->Write("CM93DetailFactor", g_cm93_zoom_factor);
+  conf->Write("CM93DetailZoomPosX", g_detailslider_dialog_x);
+  conf->Write("CM93DetailZoomPosY", g_detailslider_dialog_y);
+  conf->Write("ShowCM93DetailSlider", g_bShowDetailSlider);
 
-  conf->Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
+  conf->Write("SkewToNorthUp", g_bskew_comp);
 
-  conf->Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
-  conf->Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
+  conf->Write("ZoomDetailFactor", g_chart_zoom_modifier_raster);
+  conf->Write("ZoomDetailFactorVector", g_chart_zoom_modifier_vector);
 
-  conf->Write(_T ( "SmoothPanZoom" ), g_bsmoothpanzoom);
+  conf->Write("SmoothPanZoom", g_bsmoothpanzoom);
 
-  conf->Write(_T ( "CourseUpMode" ), g_bCourseUp);
-  if (!g_bInlandEcdis) conf->Write(_T ( "LookAheadMode" ), g_bLookAhead);
-  conf->Write(_T ( "TenHzUpdate" ), g_btenhertz);
+  conf->Write("CourseUpMode", g_bCourseUp);
+  if (!g_bInlandEcdis) conf->Write("LookAheadMode", g_bLookAhead);
+  conf->Write("TenHzUpdate", g_btenhertz);
 
-  conf->Write(_T ( "COGUPAvgSeconds" ), g_COGAvgSec);
-  conf->Write(_T ( "UseMagAPB" ), g_bMagneticAPB);
+  conf->Write("COGUPAvgSeconds", g_COGAvgSec);
+  conf->Write("UseMagAPB", g_bMagneticAPB);
 
-  conf->Write(_T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes);
-  conf->Write(_T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width);
-  conf->Write(_T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles);
-  conf->Write(_T ( "OwnShipIconType" ), g_OwnShipIconType);
-  conf->Write(_T ( "OwnShipLength" ), g_n_ownship_length_meters);
-  conf->Write(_T ( "OwnShipWidth" ), g_n_ownship_beam_meters);
-  conf->Write(_T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_x);
-  conf->Write(_T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_y);
-  conf->Write(_T ( "OwnShipMinSize" ), g_n_ownship_min_mm);
-  conf->Write(_T ( "OwnShipSogCogCalc" ), g_own_ship_sog_cog_calc);
-  conf->Write(_T ( "OwnShipSogCogCalcDampSec"),
-              g_own_ship_sog_cog_calc_damp_sec);
+  conf->Write("OwnshipCOGPredictorMinutes", g_ownship_predictor_minutes);
+  conf->Write("OwnshipCOGPredictorWidth", g_cog_predictor_width);
+  conf->Write("OwnshipHDTPredictorMiles", g_ownship_HDTpredictor_miles);
+  conf->Write("OwnShipIconType", g_OwnShipIconType);
+  conf->Write("OwnShipLength", g_n_ownship_length_meters);
+  conf->Write("OwnShipWidth", g_n_ownship_beam_meters);
+  conf->Write("OwnShipGPSOffsetX", g_n_gps_antenna_offset_x);
+  conf->Write("OwnShipGPSOffsetY", g_n_gps_antenna_offset_y);
+  conf->Write("OwnShipMinSize", g_n_ownship_min_mm);
+  conf->Write("OwnShipSogCogCalc", g_own_ship_sog_cog_calc);
+  conf->Write("OwnShipSogCogCalcDampSec", g_own_ship_sog_cog_calc_damp_sec);
 
-  conf->Write(_T ( "RouteArrivalCircleRadius" ),
+  conf->Write("RouteArrivalCircleRadius",
               wxString::Format("%.3f", g_n_arrival_circle_radius));
-  conf->Write(_T ( "ChartQuilting" ), g_bQuiltEnable);
+  conf->Write("ChartQuilting", g_bQuiltEnable);
 
-  conf->Write(_T ( "StartWithTrackActive" ), g_bTrackCarryOver);
-  conf->Write(_T ( "AutomaticDailyTracks" ), g_bTrackDaily);
-  conf->Write(_T ( "TrackRotateAt" ), g_track_rotate_time);
-  conf->Write(_T ( "TrackRotateTimeType" ), g_track_rotate_time_type);
-  conf->Write(_T ( "HighlightTracks" ), g_bHighliteTracks);
+  conf->Write("StartWithTrackActive", g_bTrackCarryOver);
+  conf->Write("AutomaticDailyTracks", g_bTrackDaily);
+  conf->Write("TrackRotateAt", g_track_rotate_time);
+  conf->Write("TrackRotateTimeType", g_track_rotate_time_type);
+  conf->Write("HighlightTracks", g_bHighliteTracks);
 
-  conf->Write(_T ( "DateTimeFormat" ), g_datetime_format);
+  conf->Write("DateTimeFormat", g_datetime_format);
 
-  conf->Write(_T ( "InitialStackIndex" ), g_restore_stackindex);
-  conf->Write(_T ( "InitialdBIndex" ), g_restore_dbindex);
+  conf->Write("InitialStackIndex", g_restore_stackindex);
+  conf->Write("InitialdBIndex", g_restore_dbindex);
 
-  conf->Write(_T ( "AnchorWatch1GUID" ), g_AW1GUID);
-  conf->Write(_T ( "AnchorWatch2GUID" ), g_AW2GUID);
+  conf->Write("AnchorWatch1GUID", g_AW1GUID);
+  conf->Write("AnchorWatch2GUID", g_AW2GUID);
 
-  conf->Write(_T ( "ToolbarX" ), g_maintoolbar_x);
-  conf->Write(_T ( "ToolbarY" ), g_maintoolbar_y);
-  conf->Write(_T ( "ToolbarOrient" ), g_maintoolbar_orient);
+  conf->Write("ToolbarX", g_maintoolbar_x);
+  conf->Write("ToolbarY", g_maintoolbar_y);
+  conf->Write("ToolbarOrient", g_maintoolbar_orient);
 
-  conf->Write(_T ( "iENCToolbarX" ), g_iENCToolbarPosX);
-  conf->Write(_T ( "iENCToolbarY" ), g_iENCToolbarPosY);
+  conf->Write("iENCToolbarX", g_iENCToolbarPosX);
+  conf->Write("iENCToolbarY", g_iENCToolbarPosY);
 
   if (!g_bInlandEcdis) {
-    conf->Write(_T ( "GlobalToolbarConfig" ), g_toolbarConfig);
-    conf->Write(_T ( "DistanceFormat" ), g_iDistanceFormat);
-    conf->Write(_T ( "SpeedFormat" ), g_iSpeedFormat);
-    conf->Write(_T ( "WindSpeedFormat" ), g_iWindSpeedFormat);
-    conf->Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
+    conf->Write("GlobalToolbarConfig", g_toolbarConfig);
+    conf->Write("DistanceFormat", g_iDistanceFormat);
+    conf->Write("SpeedFormat", g_iSpeedFormat);
+    conf->Write("WindSpeedFormat", g_iWindSpeedFormat);
+    conf->Write("ShowDepthUnits", g_bShowDepthUnits);
   }
 
-  conf->Write(_T ( "MobileTouch" ), g_btouch);
-  conf->Write(_T ( "ResponsiveGraphics" ), g_bresponsive);
+  conf->Write("MobileTouch", g_btouch);
+  conf->Write("ResponsiveGraphics", g_bresponsive);
 
-  conf->Write(_T ( "AutoHideToolbar" ), g_bAutoHideToolbar);
-  conf->Write(_T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar);
+  conf->Write("AutoHideToolbar", g_bAutoHideToolbar);
+  conf->Write("AutoHideToolbarSecs", g_nAutoHideToolbar);
 
   wxString st0;
   for (const auto &mm : g_config_display_size_mm) {
-    st0.Append(wxString::Format(_T ( "%zu," ), mm));
+    st0.Append(wxString::Format("%zu,", mm));
   }
   st0.RemoveLast();  // Strip last comma
-  conf->Write(_T ( "DisplaySizeMM" ), st0);
-  conf->Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
+  conf->Write("DisplaySizeMM", st0);
+  conf->Write("DisplaySizeManual", g_config_display_size_manual);
 
-  conf->Write(_T ( "PlanSpeed" ), wxString::Format("%.2f", g_PlanSpeed));
+  conf->Write("PlanSpeed", wxString::Format("%.2f", g_PlanSpeed));
 
 #if 0
     wxString vis, invis;
@@ -703,26 +702,26 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
         else
             invis += ( lay->m_LayerName ) + ";";
     }
-    conf->Write( _T ( "VisibleLayers" ), vis );
-    conf->Write( _T ( "InvisibleLayers" ), invis );
+    conf->Write( "VisibleLayers", vis );
+    conf->Write( "InvisibleLayers", invis );
 #endif
 
-  conf->Write(_T ( "Locale" ), g_locale);
-  conf->Write(_T ( "LocaleOverride" ), g_localeOverride);
+  conf->Write("Locale", g_locale);
+  conf->Write("LocaleOverride", g_localeOverride);
 
   // LIVE ETA OPTION
-  conf->Write(_T( "LiveETA" ), g_bShowLiveETA);
-  conf->Write(_T( "DefaultBoatSpeed" ), g_defaultBoatSpeed);
+  conf->Write("LiveETA", g_bShowLiveETA);
+  conf->Write("DefaultBoatSpeed", g_defaultBoatSpeed);
 
   //    S57 Object Filter Settings
-  conf->SetPath(_T ( "/Settings/ObjectFilter" ));
+  conf->SetPath("/Settings/ObjectFilter");
 
   if (ps52plib) {
     for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
          iPtr++) {
       OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
 
-      wxString st1(_T ( "viz" ));
+      wxString st1("viz");
       char name[7];
       strncpy(name, pOLE->OBJLName, 6);
       name[6] = 0;
@@ -733,152 +732,146 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   //    Global State
 
-  conf->SetPath(_T ( "/Settings/GlobalState" ));
+  conf->SetPath("/Settings/GlobalState");
 
   //    Various Options
   if (!g_bInlandEcdis)
-    conf->Write(_T ( "nColorScheme" ), (int)gFrame->GetColorScheme());
+    conf->Write("nColorScheme", (int)gFrame->GetColorScheme());
 
   //    AIS
-  conf->SetPath(_T ( "/Settings/AIS" ));
+  conf->SetPath("/Settings/AIS");
 
-  conf->Write(_T ( "bNoCPAMax" ), g_bCPAMax);
-  conf->Write(_T ( "NoCPAMaxNMi" ), g_CPAMax_NM);
-  conf->Write(_T ( "bCPAWarn" ), g_bCPAWarn);
-  conf->Write(_T ( "CPAWarnNMi" ), g_CPAWarn_NM);
-  conf->Write(_T ( "bTCPAMax" ), g_bTCPA_Max);
-  conf->Write(_T ( "TCPAMaxMinutes" ), g_TCPA_Max);
-  conf->Write(_T ( "bMarkLostTargets" ), g_bMarkLost);
-  conf->Write(_T ( "MarkLost_Minutes" ), g_MarkLost_Mins);
-  conf->Write(_T ( "bRemoveLostTargets" ), g_bRemoveLost);
-  conf->Write(_T ( "RemoveLost_Minutes" ), g_RemoveLost_Mins);
-  conf->Write(_T ( "bShowCOGArrows" ), g_bShowCOG);
-  conf->Write(_T ( "CogArrowMinutes" ), g_ShowCOG_Mins);
-  conf->Write(_T ( "bShowTargetTracks" ), g_bAISShowTracks);
-  conf->Write(_T ( "TargetTracksMinutes" ), g_AISShowTracks_Mins);
+  conf->Write("bNoCPAMax", g_bCPAMax);
+  conf->Write("NoCPAMaxNMi", g_CPAMax_NM);
+  conf->Write("bCPAWarn", g_bCPAWarn);
+  conf->Write("CPAWarnNMi", g_CPAWarn_NM);
+  conf->Write("bTCPAMax", g_bTCPA_Max);
+  conf->Write("TCPAMaxMinutes", g_TCPA_Max);
+  conf->Write("bMarkLostTargets", g_bMarkLost);
+  conf->Write("MarkLost_Minutes", g_MarkLost_Mins);
+  conf->Write("bRemoveLostTargets", g_bRemoveLost);
+  conf->Write("RemoveLost_Minutes", g_RemoveLost_Mins);
+  conf->Write("bShowCOGArrows", g_bShowCOG);
+  conf->Write("CogArrowMinutes", g_ShowCOG_Mins);
+  conf->Write("bShowTargetTracks", g_bAISShowTracks);
+  conf->Write("TargetTracksMinutes", g_AISShowTracks_Mins);
 
-  conf->Write(_T ( "bHideMooredTargets" ), g_bHideMoored);
-  conf->Write(_T ( "MooredTargetMaxSpeedKnots" ), g_ShowMoored_Kts);
+  conf->Write("bHideMooredTargets", g_bHideMoored);
+  conf->Write("MooredTargetMaxSpeedKnots", g_ShowMoored_Kts);
 
-  conf->Write(_T ( "bAISAlertDialog" ), g_bAIS_CPA_Alert);
-  conf->Write(_T ( "bAISAlertAudio" ), g_bAIS_CPA_Alert_Audio);
-  conf->Write(_T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File);
-  conf->Write(_T ( "bAISAlertSuppressMoored" ),
-              g_bAIS_CPA_Alert_Suppress_Moored);
-  conf->Write(_T ( "bShowAreaNotices" ), g_bShowAreaNotices);
-  conf->Write(_T ( "bDrawAISSize" ), g_bDrawAISSize);
-  conf->Write(_T ( "bDrawAISRealtime" ), g_bDrawAISRealtime);
-  conf->Write(_T ( "AISRealtimeMinSpeedKnots" ), g_AIS_RealtPred_Kts);
-  conf->Write(_T ( "bShowAISName" ), g_bShowAISName);
-  conf->Write(_T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale);
-  conf->Write(_T ( "bWplIsAprsPositionReport" ), g_bWplUsePosition);
-  conf->Write(_T ( "WplSelAction" ), g_WplAction);
-  conf->Write(_T ( "AISCOGPredictorWidth" ), g_ais_cog_predictor_width);
-  conf->Write(_T ( "bShowScaledTargets" ), g_bAllowShowScaled);
-  conf->Write(_T ( "AISScaledNumber" ), g_ShowScaled_Num);
-  conf->Write(_T ( "AISScaledNumberWeightSOG" ), g_ScaledNumWeightSOG);
-  conf->Write(_T ( "AISScaledNumberWeightCPA" ), g_ScaledNumWeightCPA);
-  conf->Write(_T ( "AISScaledNumberWeightTCPA" ), g_ScaledNumWeightTCPA);
-  conf->Write(_T ( "AISScaledNumberWeightRange" ), g_ScaledNumWeightRange);
-  conf->Write(_T ( "AISScaledNumberWeightSizeOfTarget" ),
-              g_ScaledNumWeightSizeOfT);
-  conf->Write(_T ( "AISScaledSizeMinimal" ), g_ScaledSizeMinimal);
-  conf->Write(_T ( "AISShowScaled"), g_bShowScaled);
+  conf->Write("bAISAlertDialog", g_bAIS_CPA_Alert);
+  conf->Write("bAISAlertAudio", g_bAIS_CPA_Alert_Audio);
+  conf->Write("AISAlertAudioFile", g_sAIS_Alert_Sound_File);
+  conf->Write("bAISAlertSuppressMoored", g_bAIS_CPA_Alert_Suppress_Moored);
+  conf->Write("bShowAreaNotices", g_bShowAreaNotices);
+  conf->Write("bDrawAISSize", g_bDrawAISSize);
+  conf->Write("bDrawAISRealtime", g_bDrawAISRealtime);
+  conf->Write("AISRealtimeMinSpeedKnots", g_AIS_RealtPred_Kts);
+  conf->Write("bShowAISName", g_bShowAISName);
+  conf->Write("ShowAISTargetNameScale", g_Show_Target_Name_Scale);
+  conf->Write("bWplIsAprsPositionReport", g_bWplUsePosition);
+  conf->Write("WplSelAction", g_WplAction);
+  conf->Write("AISCOGPredictorWidth", g_ais_cog_predictor_width);
+  conf->Write("bShowScaledTargets", g_bAllowShowScaled);
+  conf->Write("AISScaledNumber", g_ShowScaled_Num);
+  conf->Write("AISScaledNumberWeightSOG", g_ScaledNumWeightSOG);
+  conf->Write("AISScaledNumberWeightCPA", g_ScaledNumWeightCPA);
+  conf->Write("AISScaledNumberWeightTCPA", g_ScaledNumWeightTCPA);
+  conf->Write("AISScaledNumberWeightRange", g_ScaledNumWeightRange);
+  conf->Write("AISScaledNumberWeightSizeOfTarget", g_ScaledNumWeightSizeOfT);
+  conf->Write("AISScaledSizeMinimal", g_ScaledSizeMinimal);
+  conf->Write("AISShowScaled", g_bShowScaled);
 
-  conf->Write(_T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx);
-  conf->Write(_T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy);
-  conf->Write(_T ( "AlertDialogPosX" ), g_ais_alert_dialog_x);
-  conf->Write(_T ( "AlertDialogPosY" ), g_ais_alert_dialog_y);
-  conf->Write(_T ( "QueryDialogPosX" ), g_ais_query_dialog_x);
-  conf->Write(_T ( "QueryDialogPosY" ), g_ais_query_dialog_y);
-  conf->Write(_T ( "AISTargetListPerspective" ), g_AisTargetList_perspective);
-  conf->Write(_T ( "AISTargetListRange" ), g_AisTargetList_range);
-  conf->Write(_T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn);
-  conf->Write(_T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse);
-  conf->Write(_T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec);
-  conf->Write(_T ( "AISTargetListColumnOrder" ), g_AisTargetList_column_order);
-  conf->Write(_T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx);
-  conf->Write(_T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy);
-  conf->Write(_T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass);
-  conf->Write(_T ( "bAISRolloverShowCOG" ), g_bAISRolloverShowCOG);
-  conf->Write(_T ( "bAISRolloverShowCPA" ), g_bAISRolloverShowCPA);
-  conf->Write(_T ( "bAISAlertAckTimeout" ), g_bAIS_ACK_Timeout);
-  conf->Write(_T ( "AlertAckTimeoutMinutes" ), g_AckTimeout_Mins);
+  conf->Write("AlertDialogSizeX", g_ais_alert_dialog_sx);
+  conf->Write("AlertDialogSizeY", g_ais_alert_dialog_sy);
+  conf->Write("AlertDialogPosX", g_ais_alert_dialog_x);
+  conf->Write("AlertDialogPosY", g_ais_alert_dialog_y);
+  conf->Write("QueryDialogPosX", g_ais_query_dialog_x);
+  conf->Write("QueryDialogPosY", g_ais_query_dialog_y);
+  conf->Write("AISTargetListPerspective", g_AisTargetList_perspective);
+  conf->Write("AISTargetListRange", g_AisTargetList_range);
+  conf->Write("AISTargetListSortColumn", g_AisTargetList_sortColumn);
+  conf->Write("bAISTargetListSortReverse", g_bAisTargetList_sortReverse);
+  conf->Write("AISTargetListColumnSpec", g_AisTargetList_column_spec);
+  conf->Write("AISTargetListColumnOrder", g_AisTargetList_column_order);
+  conf->Write("S57QueryDialogSizeX", g_S57_dialog_sx);
+  conf->Write("S57QueryDialogSizeY", g_S57_dialog_sy);
+  conf->Write("bAISRolloverShowClass", g_bAISRolloverShowClass);
+  conf->Write("bAISRolloverShowCOG", g_bAISRolloverShowCOG);
+  conf->Write("bAISRolloverShowCPA", g_bAISRolloverShowCPA);
+  conf->Write("bAISAlertAckTimeout", g_bAIS_ACK_Timeout);
+  conf->Write("AlertAckTimeoutMinutes", g_AckTimeout_Mins);
 
-  conf->SetPath(_T ( "/Settings/GlobalState" ));
+  conf->SetPath("/Settings/GlobalState");
   if (ps52plib) {
-    conf->Write(_T ( "bShowS57Text" ), ps52plib->GetShowS57Text());
-    conf->Write(_T ( "bShowS57ImportantTextOnly" ),
+    conf->Write("bShowS57Text", ps52plib->GetShowS57Text());
+    conf->Write("bShowS57ImportantTextOnly",
                 ps52plib->GetShowS57ImportantTextOnly());
     if (!g_bInlandEcdis)
-      conf->Write(_T ( "nDisplayCategory" ),
-                  (long)ps52plib->GetDisplayCategory());
-    conf->Write(_T ( "nSymbolStyle" ), (int)ps52plib->m_nSymbolStyle);
-    conf->Write(_T ( "nBoundaryStyle" ), (int)ps52plib->m_nBoundaryStyle);
+      conf->Write("nDisplayCategory", (long)ps52plib->GetDisplayCategory());
+    conf->Write("nSymbolStyle", (int)ps52plib->m_nSymbolStyle);
+    conf->Write("nBoundaryStyle", (int)ps52plib->m_nBoundaryStyle);
 
-    conf->Write(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
-    conf->Write(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
-    conf->Write(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
-    conf->Write(_T ( "bUseSUPER_SCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
-    conf->Write(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
-    conf->Write(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
-    conf->Write(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);
-    conf->Write(_T ( "bDeClutterText" ), ps52plib->m_bDeClutterText);
-    conf->Write(_T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts);
+    conf->Write("bShowSoundg", ps52plib->m_bShowSoundg);
+    conf->Write("bShowMeta", ps52plib->m_bShowMeta);
+    conf->Write("bUseSCAMIN", ps52plib->m_bUseSCAMIN);
+    conf->Write("bUseSUPER_SCAMIN", ps52plib->m_bUseSUPER_SCAMIN);
+    conf->Write("bShowAtonText", ps52plib->m_bShowAtonText);
+    conf->Write("bShowLightDescription", ps52plib->m_bShowLdisText);
+    conf->Write("bExtendLightSectors", ps52plib->m_bExtendLightSectors);
+    conf->Write("bDeClutterText", ps52plib->m_bDeClutterText);
+    conf->Write("bShowNationalText", ps52plib->m_bShowNationalTexts);
 
-    conf->Write(_T ( "S52_MAR_SAFETY_CONTOUR" ),
+    conf->Write("S52_MAR_SAFETY_CONTOUR",
                 S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR));
-    conf->Write(_T ( "S52_MAR_SHALLOW_CONTOUR" ),
+    conf->Write("S52_MAR_SHALLOW_CONTOUR",
                 S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR));
-    conf->Write(_T ( "S52_MAR_DEEP_CONTOUR" ),
+    conf->Write("S52_MAR_DEEP_CONTOUR",
                 S52_getMarinerParam(S52_MAR_DEEP_CONTOUR));
-    conf->Write(_T ( "S52_MAR_TWO_SHADES" ),
-                S52_getMarinerParam(S52_MAR_TWO_SHADES));
-    conf->Write(_T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay);
+    conf->Write("S52_MAR_TWO_SHADES", S52_getMarinerParam(S52_MAR_TWO_SHADES));
+    conf->Write("S52_DEPTH_UNIT_SHOW", ps52plib->m_nDepthUnitDisplay);
   }
 
-  conf->SetPath(_T ( "/Settings/Others" ));
+  conf->SetPath("/Settings/Others");
 
   // Radar rings
-  conf->Write(_T ( "ShowRadarRings" ), (bool)(g_iNavAidRadarRingsNumberVisible >
-                                              0));  // 3.0.0 config support
-  conf->Write(_T ( "RadarRingsNumberVisible" ),
-              g_iNavAidRadarRingsNumberVisible);
+  conf->Write("ShowRadarRings", (bool)(g_iNavAidRadarRingsNumberVisible >
+                                       0));  // 3.0.0 config support
+  conf->Write("RadarRingsNumberVisible", g_iNavAidRadarRingsNumberVisible);
   g_bNavAidRadarRingsShown = g_iNavAidRadarRingsNumberVisible > 0;
-  conf->Write(_T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep);
-  conf->Write(_T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits);
-  conf->Write(_T ( "RadarRingsColour" ),
+  conf->Write("RadarRingsStep", g_fNavAidRadarRingsStep);
+  conf->Write("RadarRingsStepUnits", g_pNavAidRadarRingsStepUnits);
+  conf->Write("RadarRingsColour",
               g_colourOwnshipRangeRingsColour.GetAsString(wxC2S_HTML_SYNTAX));
 
   // Waypoint Radar rings
-  conf->Write(_T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber);
-  conf->Write(_T ( "WaypointRangeRingsStep" ), g_fWaypointRangeRingsStep);
-  conf->Write(_T ( "WaypointRangeRingsStepUnits" ),
-              g_iWaypointRangeRingsStepUnits);
-  conf->Write(_T ( "WaypointRangeRingsColour" ),
+  conf->Write("WaypointRangeRingsNumber", g_iWaypointRangeRingsNumber);
+  conf->Write("WaypointRangeRingsStep", g_fWaypointRangeRingsStep);
+  conf->Write("WaypointRangeRingsStepUnits", g_iWaypointRangeRingsStepUnits);
+  conf->Write("WaypointRangeRingsColour",
               g_colourWaypointRangeRingsColour.GetAsString(wxC2S_HTML_SYNTAX));
 
-  conf->Write(_T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete);
+  conf->Write("ConfirmObjectDeletion", g_bConfirmObjectDelete);
 
   // Waypoint dragging with mouse
-  conf->Write(_T ( "WaypointPreventDragging" ), g_bWayPointPreventDragging);
+  conf->Write("WaypointPreventDragging", g_bWayPointPreventDragging);
 
-  conf->Write(_T ( "EnableZoomToCursor" ), g_bEnableZoomToCursor);
+  conf->Write("EnableZoomToCursor", g_bEnableZoomToCursor);
 
-  conf->Write(_T ( "TrackIntervalSeconds" ), g_TrackIntervalSeconds);
-  conf->Write(_T ( "TrackDeltaDistance" ), g_TrackDeltaDistance);
-  conf->Write(_T ( "TrackPrecision" ), g_nTrackPrecision);
+  conf->Write("TrackIntervalSeconds", g_TrackIntervalSeconds);
+  conf->Write("TrackDeltaDistance", g_TrackDeltaDistance);
+  conf->Write("TrackPrecision", g_nTrackPrecision);
 
-  conf->Write(_T ( "RouteLineWidth" ), g_route_line_width);
-  conf->Write(_T ( "TrackLineWidth" ), g_track_line_width);
-  conf->Write(_T ( "TrackLineColour" ),
+  conf->Write("RouteLineWidth", g_route_line_width);
+  conf->Write("TrackLineWidth", g_track_line_width);
+  conf->Write("TrackLineColour",
               g_colourTrackLineColour.GetAsString(wxC2S_HTML_SYNTAX));
-  conf->Write(_T ( "DefaultWPIcon" ), g_default_wp_icon);
+  conf->Write("DefaultWPIcon", g_default_wp_icon);
 
   //    Fonts
 
   //  Store the persistent Auxiliary Font descriptor Keys
-  conf->SetPath(_T ( "/Settings/AuxFontKeys" ));
+  conf->SetPath("/Settings/AuxFontKeys");
 
   wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
   for (unsigned int i = 0; i < keyArray.GetCount(); i++) {
@@ -890,23 +883,23 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   wxString font_path;
 #ifdef __WXX11__
-  font_path = (_T ( "/Settings/X11Fonts" ));
+  font_path = ("/Settings/X11Fonts");
 #endif
 
 #ifdef __WXGTK__
-  font_path = (_T ( "/Settings/GTKFonts" ));
+  font_path = ("/Settings/GTKFonts");
 #endif
 
 #ifdef __WXMSW__
-  font_path = (_T ( "/Settings/MSWFonts" ));
+  font_path = ("/Settings/MSWFonts");
 #endif
 
 #ifdef __WXMAC__
-  font_path = (_T ( "/Settings/MacFonts" ));
+  font_path = ("/Settings/MacFonts");
 #endif
 
 #ifdef __WXQT__
-  font_path = (_T ( "/Settings/QTFonts" ));
+  font_path = ("/Settings/QTFonts");
 #endif
 
   conf->DeleteGroup(font_path);
@@ -971,198 +964,196 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   MyConfig conf(fileName);
 
   //    Global options and settings
-  conf.SetPath(_T ( "/Settings" ));
+  conf.SetPath("/Settings");
 
-  CHECK_INT(_T ( "UIexpert" ), &g_bUIexpert);
+  CHECK_INT("UIexpert", &g_bUIexpert);
 
-  /// CHECK_STR( _T ( "UIStyle" ), g_uiStyle  );
+  /// CHECK_STR( "UIStyle", g_uiStyle  );
 
-  CHECK_INT(_T ( "InlandEcdis" ), &g_bInlandEcdis);
+  CHECK_INT("InlandEcdis", &g_bInlandEcdis);
 
-  CHECK_INT(_T( "SpaceDropMark" ), &g_bSpaceDropMark);
+  CHECK_INT("SpaceDropMark", &g_bSpaceDropMark);
 
-  /// CHECK_INT( _T ( "UseModernUI5" ), &g_useMUI );
+  /// CHECK_INT( "UseModernUI5", &g_useMUI );
 
 #if 0
-    CHECK_INT( _T ( "DebugGDAL" ), &g_bGDAL_Debug );
-    CHECK_INT( _T ( "DebugNMEA" ), &g_nNMEADebug );
-    CHECK_INT( _T ( "DebugOpenGL" ), &g_bDebugOGL );
-    ///CHECK_INT( _T ( "AnchorWatchDefault" ), &g_nAWDefault );
-    ///CHECK_INT( _T ( "AnchorWatchMax" ), &g_nAWMax );
-    ///CHECK_INT( _T ( "GPSDogTimeout" ), &gps_watchdog_timeout_ticks );
-    CHECK_INT( _T ( "DebugCM93" ), &g_bDebugCM93 );
-    CHECK_INT( _T ( "DebugS57" ), &g_bDebugS57 );         // Show LUP and Feature info in object query
-    CHECK_INT( _T ( "DebugBSBImg" ), &g_BSBImgDebug );
-    CHECK_INT( _T ( "DebugGPSD" ), &g_bDebugGPSD );
+    CHECK_INT( "DebugGDAL", &g_bGDAL_Debug );
+    CHECK_INT( "DebugNMEA", &g_nNMEADebug );
+    CHECK_INT( "DebugOpenGL", &g_bDebugOGL );
+    ///CHECK_INT( "AnchorWatchDefault", &g_nAWDefault );
+    ///CHECK_INT( "AnchorWatchMax", &g_nAWMax );
+    ///CHECK_INT( "GPSDogTimeout", &gps_watchdog_timeout_ticks );
+    CHECK_INT( "DebugCM93", &g_bDebugCM93 );
+    CHECK_INT( "DebugS57", &g_bDebugS57 );         // Show LUP and Feature info in object query
+    CHECK_INT( "DebugBSBImg", &g_BSBImgDebug );
+    CHECK_INT( "DebugGPSD", &g_bDebugGPSD );
 #endif
 
-  CHECK_INT(_T ( "DefaultFontSize"), &g_default_font_size);
+  CHECK_INT("DefaultFontSize", &g_default_font_size);
 
-  //    Read( _T ( "GPSIdent" ), &g_GPS_Ident );
-  CHECK_INT(_T ( "UseGarminHostUpload" ), &g_bGarminHostUpload);
+  //    Read( "GPSIdent", &g_GPS_Ident );
+  CHECK_INT("UseGarminHostUpload", &g_bGarminHostUpload);
 
-  CHECK_INT(_T ( "UseNMEA_GLL" ), &g_bUseGLL);
+  CHECK_INT("UseNMEA_GLL", &g_bUseGLL);
 
-  CHECK_INT(_T ( "AutoHideToolbar" ), &g_bAutoHideToolbar);
-  CHECK_INT(_T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar);
+  CHECK_INT("AutoHideToolbar", &g_bAutoHideToolbar);
+  CHECK_INT("AutoHideToolbarSecs", &g_nAutoHideToolbar);
 
-  CHECK_INT(_T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar);
+  CHECK_INT("UseSimplifiedScalebar", &g_bsimplifiedScalebar);
 
-  CHECK_INT(_T ( "DisplaySizeMM" ), &g_display_size_mm);
-  CHECK_INT(_T ( "DisplaySizeManual" ), &g_config_display_size_manual);
+  CHECK_INT("DisplaySizeMM", &g_display_size_mm);
+  CHECK_INT("DisplaySizeManual", &g_config_display_size_manual);
 
-  CHECK_INT(_T ( "GUIScaleFactor" ), &g_GUIScaleFactor);
+  CHECK_INT("GUIScaleFactor", &g_GUIScaleFactor);
 
-  CHECK_INT(_T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor);
-  CHECK_INT(_T ( "ShipScaleFactor" ), &g_ShipScaleFactor);
+  CHECK_INT("ChartObjectScaleFactor", &g_ChartScaleFactor);
+  CHECK_INT("ShipScaleFactor", &g_ShipScaleFactor);
 
-  CHECK_INT(_T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog);
-  CHECK_INT(_T ( "FilterNMEA_Sec" ), &g_COGFilterSec);
+  CHECK_INT("FilterNMEA_Avg", &g_bfilter_cogsog);
+  CHECK_INT("FilterNMEA_Sec", &g_COGFilterSec);
 
-  CHECK_INT(_T ( "ShowTrue" ), &g_bShowTrue);
-  CHECK_INT(_T ( "ShowMag" ), &g_bShowMag);
+  CHECK_INT("ShowTrue", &g_bShowTrue);
+  CHECK_INT("ShowMag", &g_bShowMag);
 
-  CHECK_FLT(_T ( "UserMagVariation" ), &g_UserVar, 0.1)
+  CHECK_FLT("UserMagVariation", &g_UserVar, 0.1)
 
-  CHECK_INT(_T ( "UseMagAPB" ), &g_bMagneticAPB);
+  CHECK_INT("UseMagAPB", &g_bMagneticAPB);
 
-  CHECK_INT(_T ( "ScreenBrightness" ), &g_nbrightness);
+  CHECK_INT("ScreenBrightness", &g_nbrightness);
 
-  CHECK_INT(_T ( "MemFootprintTargetMB" ), &g_MemFootMB);
+  CHECK_INT("MemFootprintTargetMB", &g_MemFootMB);
 
-  CHECK_INT(_T ( "WindowsComPortMax" ), &g_nCOMPortCheck);
+  CHECK_INT("WindowsComPortMax", &g_nCOMPortCheck);
 
-  CHECK_INT(_T ( "ChartQuilting" ), &g_bQuiltEnable);
-  CHECK_INT(_T ( "ChartQuiltingInitial" ), &g_bQuiltStart);
+  CHECK_INT("ChartQuilting", &g_bQuiltEnable);
+  CHECK_INT("ChartQuiltingInitial", &g_bQuiltStart);
 
-  CHECK_INT(_T ( "CourseUpMode" ), &g_bCourseUp);
-  CHECK_INT(_T ( "COGUPAvgSeconds" ), &g_COGAvgSec);
-  // CHECK_INT( _T ( "LookAheadMode" ), &g_bLookAhead );
-  // CHECK_INT( _T ( "SkewToNorthUp" ), &g_bskew_comp );
-  CHECK_INT(_T ( "OpenGL" ), &g_bopengl);
-  CHECK_INT(_T ( "SoftwareGL" ), &g_bSoftwareGL);
+  CHECK_INT("CourseUpMode", &g_bCourseUp);
+  CHECK_INT("COGUPAvgSeconds", &g_COGAvgSec);
+  // CHECK_INT( "LookAheadMode", &g_bLookAhead );
+  // CHECK_INT( "SkewToNorthUp", &g_bskew_comp );
+  CHECK_INT("OpenGL", &g_bopengl);
+  CHECK_INT("SoftwareGL", &g_bSoftwareGL);
 
-  CHECK_INT(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
+  CHECK_INT("NMEAAPBPrecision", &g_NMEAAPBPrecision);
 
-  CHECK_STR(_T( "TalkerIdText" ), g_TalkerIdText);
-  CHECK_INT(_T( "MaxWaypointNameLength" ), &g_maxWPNameLength);
-  CHECK_INT(_T( "MbtilesMaxLayers" ), &g_mbtilesMaxLayers);
+  CHECK_STR("TalkerIdText", g_TalkerIdText);
+  CHECK_INT("MaxWaypointNameLength", &g_maxWPNameLength);
+  CHECK_INT("MbtilesMaxLayers", &g_mbtilesMaxLayers);
 
   /* opengl options */
 #ifdef ocpnUSE_GL
-  CHECK_INT(_T ( "OpenGLExpert" ), &g_bGLexpert);
-  CHECK_INT(_T ( "UseAcceleratedPanning" ),
-            &g_GLOptions.m_bUseAcceleratedPanning);
-  CHECK_INT(_T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression);
-  CHECK_INT(_T ( "GPUTextureCompressionCaching" ),
+  CHECK_INT("OpenGLExpert", &g_bGLexpert);
+  CHECK_INT("UseAcceleratedPanning", &g_GLOptions.m_bUseAcceleratedPanning);
+  CHECK_INT("GPUTextureCompression", &g_GLOptions.m_bTextureCompression);
+  CHECK_INT("GPUTextureCompressionCaching",
             &g_GLOptions.m_bTextureCompressionCaching);
-  CHECK_INT(_T ( "PolygonSmoothing" ), &g_GLOptions.m_GLPolygonSmoothing);
-  CHECK_INT(_T ( "LineSmoothing" ), &g_GLOptions.m_GLLineSmoothing);
-  CHECK_INT(_T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension);
-  CHECK_INT(_T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize);
+  CHECK_INT("PolygonSmoothing", &g_GLOptions.m_GLPolygonSmoothing);
+  CHECK_INT("LineSmoothing", &g_GLOptions.m_GLLineSmoothing);
+  CHECK_INT("GPUTextureDimension", &g_GLOptions.m_iTextureDimension);
+  CHECK_INT("GPUTextureMemSize", &g_GLOptions.m_iTextureMemorySize);
 
 #endif
-  CHECK_INT(_T ( "SmoothPanZoom" ), &g_bsmoothpanzoom);
+  CHECK_INT("SmoothPanZoom", &g_bsmoothpanzoom);
 
-  CHECK_INT(_T ( "ToolbarX"), &g_maintoolbar_x);
-  CHECK_INT(_T ( "ToolbarY" ), &g_maintoolbar_y);
-  CHECK_INT(_T ( "ToolbarOrient" ), &g_maintoolbar_orient);
-  CHECK_STR(_T ( "GlobalToolbarConfig" ), g_toolbarConfig);
+  CHECK_INT("ToolbarX", &g_maintoolbar_x);
+  CHECK_INT("ToolbarY", &g_maintoolbar_y);
+  CHECK_INT("ToolbarOrient", &g_maintoolbar_orient);
+  CHECK_STR("GlobalToolbarConfig", g_toolbarConfig);
 
-  CHECK_INT(_T ( "iENCToolbarX"), &g_iENCToolbarPosX);
-  CHECK_INT(_T ( "iENCToolbarY"), &g_iENCToolbarPosY);
+  CHECK_INT("iENCToolbarX", &g_iENCToolbarPosX);
+  CHECK_INT("iENCToolbarY", &g_iENCToolbarPosY);
 
-  CHECK_STR(_T ( "AnchorWatch1GUID" ), g_AW1GUID);
-  CHECK_STR(_T ( "AnchorWatch2GUID" ), g_AW2GUID);
+  CHECK_STR("AnchorWatch1GUID", g_AW1GUID);
+  CHECK_STR("AnchorWatch2GUID", g_AW2GUID);
 
-  CHECK_INT(_T ( "MobileTouch" ), &g_btouch);
-  CHECK_INT(_T ( "ResponsiveGraphics" ), &g_bresponsive);
+  CHECK_INT("MobileTouch", &g_btouch);
+  CHECK_INT("ResponsiveGraphics", &g_bresponsive);
 
-  CHECK_INT(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier_raster);
-  CHECK_INT(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
+  CHECK_INT("ZoomDetailFactor", &g_chart_zoom_modifier_raster);
+  CHECK_INT("ZoomDetailFactorVector", &g_chart_zoom_modifier_vector);
 
-  CHECK_INT(_T ( "CM93DetailFactor" ), &g_cm93_zoom_factor);
-  CHECK_INT(_T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x);
-  CHECK_INT(_T ( "CM93DetailZoomPosY" ), &g_detailslider_dialog_y);
-  CHECK_INT(_T ( "ShowCM93DetailSlider" ), &g_bShowDetailSlider);
+  CHECK_INT("CM93DetailFactor", &g_cm93_zoom_factor);
+  CHECK_INT("CM93DetailZoomPosX", &g_detailslider_dialog_x);
+  CHECK_INT("CM93DetailZoomPosY", &g_detailslider_dialog_y);
+  CHECK_INT("ShowCM93DetailSlider", &g_bShowDetailSlider);
 
-  CHECK_INT(_T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels);
+  CHECK_INT("SENC_LOD_Pixels", &g_SENC_LOD_pixels);
 
-  CHECK_INT(_T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod);
+  CHECK_INT("SkewCompUpdatePeriod", &g_SkewCompUpdatePeriod);
 
-  CHECK_INT(_T ( "ShowStatusBar" ), &g_bShowStatusBar);
+  CHECK_INT("ShowStatusBar", &g_bShowStatusBar);
 #ifndef __WXOSX__
-  CHECK_INT(_T ( "ShowMenuBar" ), &g_bShowMenuBar);
+  CHECK_INT("ShowMenuBar", &g_bShowMenuBar);
 #endif
-  CHECK_INT(_T ( "Fullscreen" ), &g_bFullscreen);
-  CHECK_INT(_T ( "ShowCompassWindow" ), &g_bShowCompassWin);
-  CHECK_INT(_T ( "PlayShipsBells" ), &g_bPlayShipsBells);
-  CHECK_INT(_T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex);
-  CHECK_INT(_T ( "FullscreenToolbar" ), &g_bFullscreenToolbar);
-  // CHECK_INT( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
-  CHECK_INT(_T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon);
-  CHECK_INT(_T ( "ShowLayers" ), &g_bShowLayers);
-  CHECK_INT(_T ( "ShowDepthUnits" ), &g_bShowDepthUnits);
-  CHECK_INT(_T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark);
-  CHECK_INT(_T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway);
-  CHECK_INT(_T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal);
-  CHECK_STR(_T ( "MostRecentGPSUploadConnection" ), g_uploadConnection);
-  CHECK_INT(_T ( "ShowChartBar" ), &g_bShowChartBar);
-  CHECK_INT(_T ( "SDMMFormat" ),
+  CHECK_INT("Fullscreen", &g_bFullscreen);
+  CHECK_INT("ShowCompassWindow", &g_bShowCompassWin);
+  CHECK_INT("PlayShipsBells", &g_bPlayShipsBells);
+  CHECK_INT("SoundDeviceIndex", &g_iSoundDeviceIndex);
+  CHECK_INT("FullscreenToolbar", &g_bFullscreenToolbar);
+  // CHECK_INT( "TransparentToolbar", &g_bTransparentToolbar );
+  CHECK_INT("PermanentMOBIcon", &g_bPermanentMOBIcon);
+  CHECK_INT("ShowLayers", &g_bShowLayers);
+  CHECK_INT("ShowDepthUnits", &g_bShowDepthUnits);
+  CHECK_INT("AutoAnchorDrop", &g_bAutoAnchorMark);
+  CHECK_INT("ShowActiveRouteHighway", &g_bShowActiveRouteHighway);
+  CHECK_INT("ShowActiveRouteTotal", &g_bShowRouteTotal);
+  CHECK_STR("MostRecentGPSUploadConnection", g_uploadConnection);
+  CHECK_INT("ShowChartBar", &g_bShowChartBar);
+  CHECK_INT("SDMMFormat",
             &g_iSDMMFormat);  // 0 = "Degrees, Decimal minutes"), 1 = "Decimal
                               // degrees", 2 = "Degrees,Minutes, Seconds"
 
-  CHECK_INT(_T ( "DistanceFormat" ),
+  CHECK_INT("DistanceFormat",
             &g_iDistanceFormat);  // 0 = "Nautical miles"), 1 = "Statute miles",
                                   // 2 = "Kilometers", 3 = "Meters"
-  CHECK_INT(_T ( "SpeedFormat" ),
+  CHECK_INT("SpeedFormat",
             &g_iSpeedFormat);  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
   CHECK_INT(
-      _T ( "WindSpeedFormat" ),
+      "WindSpeedFormat",
       &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
 
   // LIVE ETA OPTION
-  CHECK_INT(_T ( "LiveETA" ), &g_bShowLiveETA);
-  CHECK_INT(_T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed);
+  CHECK_INT("LiveETA", &g_bShowLiveETA);
+  CHECK_INT("DefaultBoatSpeed", &g_defaultBoatSpeed);
 
-  CHECK_INT(_T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes);
-  CHECK_INT(_T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width);
-  CHECK_INT(_T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles);
+  CHECK_INT("OwnshipCOGPredictorMinutes", &g_ownship_predictor_minutes);
+  CHECK_INT("OwnshipCOGPredictorWidth", &g_cog_predictor_width);
+  CHECK_INT("OwnshipHDTPredictorMiles", &g_ownship_HDTpredictor_miles);
 
-  CHECK_INT(_T ( "OwnShipIconType" ), &g_OwnShipIconType);
-  CHECK_FLT(_T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0.1);
-  CHECK_FLT(_T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0.1);
-  CHECK_FLT(_T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0.1);
-  CHECK_FLT(_T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0.1);
-  CHECK_INT(_T ( "OwnShipMinSize" ), &g_n_ownship_min_mm);
-  CHECK_INT(_T ( "OwnShipSogCogCalc" ), &g_own_ship_sog_cog_calc);
-  CHECK_INT(_T ( "OwnShipSogCogCalcDampSec"),
-            &g_own_ship_sog_cog_calc_damp_sec);
+  CHECK_INT("OwnShipIconType", &g_OwnShipIconType);
+  CHECK_FLT("OwnShipLength", &g_n_ownship_length_meters, 0.1);
+  CHECK_FLT("OwnShipWidth", &g_n_ownship_beam_meters, 0.1);
+  CHECK_FLT("OwnShipGPSOffsetX", &g_n_gps_antenna_offset_x, 0.1);
+  CHECK_FLT("OwnShipGPSOffsetY", &g_n_gps_antenna_offset_y, 0.1);
+  CHECK_INT("OwnShipMinSize", &g_n_ownship_min_mm);
+  CHECK_INT("OwnShipSogCogCalc", &g_own_ship_sog_cog_calc);
+  CHECK_INT("OwnShipSogCogCalcDampSec", &g_own_ship_sog_cog_calc_damp_sec);
 
-  CHECK_FLT(_T ( "RouteArrivalCircleRadius" ), &g_n_arrival_circle_radius, .01);
+  CHECK_FLT("RouteArrivalCircleRadius", &g_n_arrival_circle_radius, .01);
 
-  CHECK_INT(_T ( "FullScreenQuilt" ), &g_bFullScreenQuilt);
+  CHECK_INT("FullScreenQuilt", &g_bFullScreenQuilt);
 
-  CHECK_INT(_T ( "StartWithTrackActive" ), &g_bTrackCarryOver);
-  CHECK_INT(_T ( "AutomaticDailyTracks" ), &g_bTrackDaily);
-  CHECK_INT(_T ( "TrackRotateAt" ), &g_track_rotate_time);
-  CHECK_INT(_T ( "TrackRotateTimeType" ), &g_track_rotate_time_type);
-  CHECK_INT(_T ( "HighlightTracks" ), &g_bHighliteTracks);
+  CHECK_INT("StartWithTrackActive", &g_bTrackCarryOver);
+  CHECK_INT("AutomaticDailyTracks", &g_bTrackDaily);
+  CHECK_INT("TrackRotateAt", &g_track_rotate_time);
+  CHECK_INT("TrackRotateTimeType", &g_track_rotate_time_type);
+  CHECK_INT("HighlightTracks", &g_bHighliteTracks);
 
-  CHECK_STR(_T ( "DateTimeFormat" ), g_datetime_format);
+  CHECK_STR("DateTimeFormat", g_datetime_format);
 
-  CHECK_FLT(_T ( "PlanSpeed" ), &g_PlanSpeed, 0.1)
+  CHECK_FLT("PlanSpeed", &g_PlanSpeed, 0.1)
 
-  /// CHECK_STR( _T ( "VisibleLayers" ), g_VisibleLayers );
-  /// CHECK_STR( _T ( "InvisibleLayers" ), g_InvisibleLayers );
+  /// CHECK_STR( "VisibleLayers", g_VisibleLayers );
+  /// CHECK_STR( "InvisibleLayers", g_InvisibleLayers );
 
-  CHECK_INT(_T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX);
+  CHECK_INT("PreserveScaleOnX", &g_bPreserveScaleOnX);
 
-  CHECK_STR(_T ( "Locale" ), g_locale);
-  CHECK_STR(_T ( "LocaleOverride" ), g_localeOverride);
+  CHECK_STR("Locale", g_locale);
+  CHECK_STR("LocaleOverride", g_localeOverride);
 
   // We allow 0-99 backups ov navobj.xml
-  CHECK_INT(_T ( "KeepNavobjBackups" ), &g_navobjbackups);
+  CHECK_INT("KeepNavobjBackups", &g_navobjbackups);
 
   //     NMEALogWindow::Get().SetSize(Read("NMEALogWindowSizeX", 600L),
   //     Read("NMEALogWindowSizeY", 400L));
@@ -1172,121 +1163,119 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
   // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg
   // filtered but put msg on bus.
-  CHECK_INT(_T ( "LegacyInputCOMPortFilterBehaviour" ),
+  CHECK_INT("LegacyInputCOMPortFilterBehaviour",
             &g_b_legacy_input_filter_behaviour);
 
-  CHECK_INT(_T( "AdvanceRouteWaypointOnArrivalOnly" ),
+  CHECK_INT("AdvanceRouteWaypointOnArrivalOnly",
             &g_bAdvanceRouteWaypointOnArrivalOnly);
 
-  CHECK_INT(_T ( "EnableRotateKeys" ), &g_benable_rotate);
-  CHECK_INT(_T ( "EmailCrashReport" ), &g_bEmailCrashReport);
+  CHECK_INT("EnableRotateKeys", &g_benable_rotate);
+  CHECK_INT("EmailCrashReport", &g_bEmailCrashReport);
 
-  CHECK_INT(_T ( "EnableAISNameCache" ), &g_benableAISNameCache);
+  CHECK_INT("EnableAISNameCache", &g_benableAISNameCache);
 
-  CHECK_INT(_T ( "EnableUDPNullHeader" ), &g_benableUDPNullHeader);
+  CHECK_INT("EnableUDPNullHeader", &g_benableUDPNullHeader);
 
-  conf.SetPath(_T ( "/Settings/GlobalState" ));
+  conf.SetPath("/Settings/GlobalState");
 
-  CHECK_INT(_T ( "FrameWinX" ), &g_nframewin_x);
-  CHECK_INT(_T ( "FrameWinY" ), &g_nframewin_y);
-  CHECK_INT(_T ( "FrameWinPosX" ), &g_nframewin_posx);
-  CHECK_INT(_T ( "FrameWinPosY" ), &g_nframewin_posy);
-  CHECK_INT(_T ( "FrameMax" ), &g_bframemax);
+  CHECK_INT("FrameWinX", &g_nframewin_x);
+  CHECK_INT("FrameWinY", &g_nframewin_y);
+  CHECK_INT("FrameWinPosX", &g_nframewin_posx);
+  CHECK_INT("FrameWinPosY", &g_nframewin_posy);
+  CHECK_INT("FrameMax", &g_bframemax);
 
-  CHECK_INT(_T ( "ClientPosX" ), &g_lastClientRectx);
-  CHECK_INT(_T ( "ClientPosY" ), &g_lastClientRecty);
-  CHECK_INT(_T ( "ClientSzX" ), &g_lastClientRectw);
-  CHECK_INT(_T ( "ClientSzY" ), &g_lastClientRecth);
+  CHECK_INT("ClientPosX", &g_lastClientRectx);
+  CHECK_INT("ClientPosY", &g_lastClientRecty);
+  CHECK_INT("ClientSzX", &g_lastClientRectw);
+  CHECK_INT("ClientSzY", &g_lastClientRecth);
 
-  CHECK_INT(_T( "RoutePropSizeX" ), &g_route_prop_sx);
-  CHECK_INT(_T( "RoutePropSizeY" ), &g_route_prop_sy);
-  CHECK_INT(_T( "RoutePropPosX" ), &g_route_prop_x);
-  CHECK_INT(_T( "RoutePropPosY" ), &g_route_prop_y);
+  CHECK_INT("RoutePropSizeX", &g_route_prop_sx);
+  CHECK_INT("RoutePropSizeY", &g_route_prop_sy);
+  CHECK_INT("RoutePropPosX", &g_route_prop_x);
+  CHECK_INT("RoutePropPosY", &g_route_prop_y);
 
-  CHECK_INT(_T ( "S52_DEPTH_UNIT_SHOW" ),
+  CHECK_INT("S52_DEPTH_UNIT_SHOW",
             &g_nDepthUnitDisplay);  // default is metres
 
   //    AIS
-  conf.SetPath(_T ( "/Settings/AIS" ));
-  CHECK_INT(_T ( "bNoCPAMax" ), &g_bCPAMax);
-  CHECK_FLT(_T ( "NoCPAMaxNMi" ), &g_CPAMax_NM, .01)
-  CHECK_INT(_T ( "bCPAWarn" ), &g_bCPAWarn);
-  CHECK_FLT(_T ( "CPAWarnNMi" ), &g_CPAWarn_NM, .01)
-  CHECK_INT(_T ( "bTCPAMax" ), &g_bTCPA_Max);
-  CHECK_FLT(_T ( "TCPAMaxMinutes" ), &g_TCPA_Max, 1)
-  CHECK_INT(_T ( "bMarkLostTargets" ), &g_bMarkLost);
-  CHECK_FLT(_T ( "MarkLost_Minutes" ), &g_MarkLost_Mins, 1)
-  CHECK_INT(_T ( "bRemoveLostTargets" ), &g_bRemoveLost);
-  CHECK_FLT(_T ( "RemoveLost_Minutes" ), &g_RemoveLost_Mins, 1)
-  CHECK_INT(_T ( "bShowCOGArrows" ), &g_bShowCOG);
-  CHECK_INT(_T ( "bSyncCogPredictors" ), &g_bSyncCogPredictors);
-  CHECK_FLT(_T ( "CogArrowMinutes" ), &g_ShowCOG_Mins, 1);
-  CHECK_INT(_T ( "bShowTargetTracks" ), &g_bAISShowTracks);
-  CHECK_FLT(_T ( "TargetTracksMinutes" ), &g_AISShowTracks_Mins, 1)
-  CHECK_FLT(_T ( "TargetTracksLimit" ), &g_AISShowTracks_Limit, 300)
-  CHECK_INT(_T ( "bHideMooredTargets" ), &g_bHideMoored)
-  CHECK_FLT(_T ( "MooredTargetMaxSpeedKnots" ), &g_ShowMoored_Kts, .1)
-  CHECK_INT(_T ( "bShowScaledTargets"), &g_bAllowShowScaled);
-  CHECK_INT(_T ( "AISScaledNumber" ), &g_ShowScaled_Num);
-  CHECK_INT(_T ( "AISScaledNumberWeightSOG" ), &g_ScaledNumWeightSOG);
-  CHECK_INT(_T ( "AISScaledNumberWeightCPA" ), &g_ScaledNumWeightCPA);
-  CHECK_INT(_T ( "AISScaledNumberWeightTCPA" ), &g_ScaledNumWeightTCPA);
-  CHECK_INT(_T ( "AISScaledNumberWeightRange" ), &g_ScaledNumWeightRange);
-  CHECK_INT(_T ( "AISScaledNumberWeightSizeOfTarget" ),
-            &g_ScaledNumWeightSizeOfT);
-  CHECK_INT(_T ( "AISScaledSizeMinimal" ), &g_ScaledSizeMinimal);
-  CHECK_INT(_T(  "AISShowScaled"), &g_bShowScaled);
-  CHECK_INT(_T ( "bShowAreaNotices" ), &g_bShowAreaNotices);
-  CHECK_INT(_T ( "bDrawAISSize" ), &g_bDrawAISSize);
-  CHECK_INT(_T ( "bDrawAISRealtime" ), &g_bDrawAISRealtime);
-  CHECK_FLT(_T ( "AISRealtimeMinSpeedKnots" ), &g_AIS_RealtPred_Kts, .1);
-  CHECK_INT(_T ( "bShowAISName" ), &g_bShowAISName);
-  CHECK_INT(_T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert);
-  CHECK_INT(_T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale);
-  CHECK_INT(_T ( "bWplIsAprsPositionReport" ), &g_bWplUsePosition);
-  CHECK_INT(_T ( "WplSelAction" ), &g_WplAction);
-  CHECK_INT(_T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width);
-  CHECK_INT(_T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio);
-  CHECK_STR(_T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File);
-  CHECK_INT(_T ( "bAISAlertSuppressMoored" ),
-            &g_bAIS_CPA_Alert_Suppress_Moored);
-  CHECK_INT(_T ( "bAISAlertAckTimeout" ), &g_bAIS_ACK_Timeout);
-  CHECK_FLT(_T ( "AlertAckTimeoutMinutes" ), &g_AckTimeout_Mins, 1)
-  CHECK_STR(_T ( "AISTargetListPerspective" ), g_AisTargetList_perspective);
-  CHECK_INT(_T ( "AISTargetListRange" ), &g_AisTargetList_range);
-  CHECK_INT(_T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn);
-  CHECK_INT(_T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse);
-  CHECK_STR(_T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec);
-  CHECK_STR(_T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
-  CHECK_INT(_T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass);
-  CHECK_INT(_T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG);
-  CHECK_INT(_T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA);
+  conf.SetPath("/Settings/AIS");
+  CHECK_INT("bNoCPAMax", &g_bCPAMax);
+  CHECK_FLT("NoCPAMaxNMi", &g_CPAMax_NM, .01)
+  CHECK_INT("bCPAWarn", &g_bCPAWarn);
+  CHECK_FLT("CPAWarnNMi", &g_CPAWarn_NM, .01)
+  CHECK_INT("bTCPAMax", &g_bTCPA_Max);
+  CHECK_FLT("TCPAMaxMinutes", &g_TCPA_Max, 1)
+  CHECK_INT("bMarkLostTargets", &g_bMarkLost);
+  CHECK_FLT("MarkLost_Minutes", &g_MarkLost_Mins, 1)
+  CHECK_INT("bRemoveLostTargets", &g_bRemoveLost);
+  CHECK_FLT("RemoveLost_Minutes", &g_RemoveLost_Mins, 1)
+  CHECK_INT("bShowCOGArrows", &g_bShowCOG);
+  CHECK_INT("bSyncCogPredictors", &g_bSyncCogPredictors);
+  CHECK_FLT("CogArrowMinutes", &g_ShowCOG_Mins, 1);
+  CHECK_INT("bShowTargetTracks", &g_bAISShowTracks);
+  CHECK_FLT("TargetTracksMinutes", &g_AISShowTracks_Mins, 1)
+  CHECK_FLT("TargetTracksLimit", &g_AISShowTracks_Limit, 300)
+  CHECK_INT("bHideMooredTargets", &g_bHideMoored)
+  CHECK_FLT("MooredTargetMaxSpeedKnots", &g_ShowMoored_Kts, .1)
+  CHECK_INT("bShowScaledTargets", &g_bAllowShowScaled);
+  CHECK_INT("AISScaledNumber", &g_ShowScaled_Num);
+  CHECK_INT("AISScaledNumberWeightSOG", &g_ScaledNumWeightSOG);
+  CHECK_INT("AISScaledNumberWeightCPA", &g_ScaledNumWeightCPA);
+  CHECK_INT("AISScaledNumberWeightTCPA", &g_ScaledNumWeightTCPA);
+  CHECK_INT("AISScaledNumberWeightRange", &g_ScaledNumWeightRange);
+  CHECK_INT("AISScaledNumberWeightSizeOfTarget", &g_ScaledNumWeightSizeOfT);
+  CHECK_INT("AISScaledSizeMinimal", &g_ScaledSizeMinimal);
+  CHECK_INT("AISShowScaled", &g_bShowScaled);
+  CHECK_INT("bShowAreaNotices", &g_bShowAreaNotices);
+  CHECK_INT("bDrawAISSize", &g_bDrawAISSize);
+  CHECK_INT("bDrawAISRealtime", &g_bDrawAISRealtime);
+  CHECK_FLT("AISRealtimeMinSpeedKnots", &g_AIS_RealtPred_Kts, .1);
+  CHECK_INT("bShowAISName", &g_bShowAISName);
+  CHECK_INT("bAISAlertDialog", &g_bAIS_CPA_Alert);
+  CHECK_INT("ShowAISTargetNameScale", &g_Show_Target_Name_Scale);
+  CHECK_INT("bWplIsAprsPositionReport", &g_bWplUsePosition);
+  CHECK_INT("WplSelAction", &g_WplAction);
+  CHECK_INT("AISCOGPredictorWidth", &g_ais_cog_predictor_width);
+  CHECK_INT("bAISAlertAudio", &g_bAIS_CPA_Alert_Audio);
+  CHECK_STR("AISAlertAudioFile", g_sAIS_Alert_Sound_File);
+  CHECK_INT("bAISAlertSuppressMoored", &g_bAIS_CPA_Alert_Suppress_Moored);
+  CHECK_INT("bAISAlertAckTimeout", &g_bAIS_ACK_Timeout);
+  CHECK_FLT("AlertAckTimeoutMinutes", &g_AckTimeout_Mins, 1)
+  CHECK_STR("AISTargetListPerspective", g_AisTargetList_perspective);
+  CHECK_INT("AISTargetListRange", &g_AisTargetList_range);
+  CHECK_INT("AISTargetListSortColumn", &g_AisTargetList_sortColumn);
+  CHECK_INT("bAISTargetListSortReverse", &g_bAisTargetList_sortReverse);
+  CHECK_STR("AISTargetListColumnSpec", g_AisTargetList_column_spec);
+  CHECK_STR("AISTargetListColumnOrder", g_AisTargetList_column_order);
+  CHECK_INT("bAISRolloverShowClass", &g_bAISRolloverShowClass);
+  CHECK_INT("bAISRolloverShowCOG", &g_bAISRolloverShowCOG);
+  CHECK_INT("bAISRolloverShowCPA", &g_bAISRolloverShowCPA);
 
-  CHECK_INT(_T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx);
-  CHECK_INT(_T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy);
-  CHECK_INT(_T ( "AlertDialogSizeX" ), &g_ais_alert_dialog_sx);
-  CHECK_INT(_T ( "AlertDialogSizeY" ), &g_ais_alert_dialog_sy);
-  CHECK_INT(_T ( "AlertDialogPosX" ), &g_ais_alert_dialog_x);
-  CHECK_INT(_T ( "AlertDialogPosY" ), &g_ais_alert_dialog_y);
-  CHECK_INT(_T ( "QueryDialogPosX" ), &g_ais_query_dialog_x);
-  CHECK_INT(_T ( "QueryDialogPosY" ), &g_ais_query_dialog_y);
+  CHECK_INT("S57QueryDialogSizeX", &g_S57_dialog_sx);
+  CHECK_INT("S57QueryDialogSizeY", &g_S57_dialog_sy);
+  CHECK_INT("AlertDialogSizeX", &g_ais_alert_dialog_sx);
+  CHECK_INT("AlertDialogSizeY", &g_ais_alert_dialog_sy);
+  CHECK_INT("AlertDialogPosX", &g_ais_alert_dialog_x);
+  CHECK_INT("AlertDialogPosY", &g_ais_alert_dialog_y);
+  CHECK_INT("QueryDialogPosX", &g_ais_query_dialog_x);
+  CHECK_INT("QueryDialogPosY", &g_ais_query_dialog_y);
 
-  conf.SetPath(_T ( "/Directories" ));
-  CHECK_STR(_T ( "PresentationLibraryData" ), g_UserPresLibData)
-  /// CHECK_STRP( _T ( "InitChartDir" ), pInit_Chart_Dir)
+  conf.SetPath("/Directories");
+  CHECK_STR("PresentationLibraryData", g_UserPresLibData)
+  /// CHECK_STRP( "InitChartDir", pInit_Chart_Dir)
 
-  CHECK_STR(_T ( "SENCFileLocation" ), g_SENCPrefix)
+  CHECK_STR("SENCFileLocation", g_SENCPrefix)
 
-  CHECK_STR(_T ( "GPXIODir" ), g_gpx_path);     // Get the Directory name
-  CHECK_STR(_T ( "TCDataDir" ), g_TCData_Dir);  // Get the Directory name
-  CHECK_STR(_T ( "BasemapDir"), gWorldMapLocation);
-  CHECK_STR(_T ( "BaseShapefileDir"), gWorldShapefileLocation);
+  CHECK_STR("GPXIODir", g_gpx_path);     // Get the Directory name
+  CHECK_STR("TCDataDir", g_TCData_Dir);  // Get the Directory name
+  CHECK_STR("BasemapDir", gWorldMapLocation);
+  CHECK_STR("BaseShapefileDir", gWorldShapefileLocation);
 
   //    Fonts
 
 #if 0
     //  Load the persistent Auxiliary Font descriptor Keys
-    conf.SetPath ( _T ( "/Settings/AuxFontKeys" ) );
+    conf.SetPath ( "/Settings/AuxFontKeys" );
 
     wxString strk;
     long dummyk;
@@ -1305,74 +1294,73 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 #endif
 
 #ifdef __WXX11__
-  conf.SetPath(_T ( "/Settings/X11Fonts" ));
+  conf.SetPath("/Settings/X11Fonts");
 #endif
 
 #ifdef __WXGTK__
-  conf.SetPath(_T ( "/Settings/GTKFonts" ));
+  conf.SetPath("/Settings/GTKFonts");
 #endif
 
 #ifdef __WXMSW__
-  conf.SetPath(_T ( "/Settings/MSWFonts" ));
+  conf.SetPath("/Settings/MSWFonts");
 #endif
 
 #ifdef __WXMAC__
-  conf.SetPath(_T ( "/Settings/MacFonts" ));
+  conf.SetPath("/Settings/MacFonts");
 #endif
 
 #ifdef __WXQT__
-  conf.SetPath(_T ( "/Settings/QTFonts" ));
+  conf.SetPath("/Settings/QTFonts");
 #endif
 
-  conf.SetPath(_T ( "/Settings/Others" ));
+  conf.SetPath("/Settings/Others");
 
   // Radar rings
-  CHECK_INT(_T ( "RadarRingsNumberVisible" ), &g_iNavAidRadarRingsNumberVisible)
-  CHECK_INT(_T ( "RadarRingsStep" ), &g_fNavAidRadarRingsStep)
+  CHECK_INT("RadarRingsNumberVisible", &g_iNavAidRadarRingsNumberVisible)
+  CHECK_INT("RadarRingsStep", &g_fNavAidRadarRingsStep)
 
-  CHECK_INT(_T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits);
+  CHECK_INT("RadarRingsStepUnits", &g_pNavAidRadarRingsStepUnits);
 
   //    wxString l_wxsOwnshipRangeRingsColour;
-  //    CHECK_STR( _T ( "RadarRingsColour" ), &l_wxsOwnshipRangeRingsColour );
+  //    CHECK_STR( "RadarRingsColour", &l_wxsOwnshipRangeRingsColour );
   //    if(l_wxsOwnshipRangeRingsColour.Length())
   //    g_colourOwnshipRangeRingsColour.Set( l_wxsOwnshipRangeRingsColour );
 
   // Waypoint Radar rings
-  CHECK_INT(_T ( "WaypointRangeRingsNumber" ), &g_iWaypointRangeRingsNumber)
+  CHECK_INT("WaypointRangeRingsNumber", &g_iWaypointRangeRingsNumber)
 
-  CHECK_FLT(_T ( "WaypointRangeRingsStep" ), &g_fWaypointRangeRingsStep, .1)
+  CHECK_FLT("WaypointRangeRingsStep", &g_fWaypointRangeRingsStep, .1)
 
-  CHECK_INT(_T ( "WaypointRangeRingsStepUnits" ),
-            &g_iWaypointRangeRingsStepUnits);
+  CHECK_INT("WaypointRangeRingsStepUnits", &g_iWaypointRangeRingsStepUnits);
 
   //    wxString l_wxsWaypointRangeRingsColour;
-  //    CHECK_STR( _T( "WaypointRangeRingsColour" ),
+  //    CHECK_STR( "WaypointRangeRingsColour",
   //    &l_wxsWaypointRangeRingsColour ); g_colourWaypointRangeRingsColour.Set(
   //    l_wxsWaypointRangeRingsColour );
 
-  CHECK_INT(_T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete);
+  CHECK_INT("ConfirmObjectDeletion", &g_bConfirmObjectDelete);
 
   // Waypoint dragging with mouse
-  CHECK_INT(_T ( "WaypointPreventDragging" ), &g_bWayPointPreventDragging);
+  CHECK_INT("WaypointPreventDragging", &g_bWayPointPreventDragging);
 
-  CHECK_INT(_T ( "EnableZoomToCursor" ), &g_bEnableZoomToCursor);
+  CHECK_INT("EnableZoomToCursor", &g_bEnableZoomToCursor);
 
-  CHECK_FLT(_T ( "TrackIntervalSeconds" ), &g_TrackIntervalSeconds, 1)
+  CHECK_FLT("TrackIntervalSeconds", &g_TrackIntervalSeconds, 1)
 
-  CHECK_FLT(_T ( "TrackDeltaDistance" ), &g_TrackDeltaDistance, .1)
+  CHECK_FLT("TrackDeltaDistance", &g_TrackDeltaDistance, .1)
 
-  CHECK_INT(_T ( "TrackPrecision" ), &g_nTrackPrecision);
+  CHECK_INT("TrackPrecision", &g_nTrackPrecision);
 
-  // CHECK_STR( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
+  // CHECK_STR( "NavObjectFileName", m_sNavObjSetFile );
 
-  CHECK_INT(_T ( "RouteLineWidth" ), &g_route_line_width);
-  CHECK_INT(_T ( "TrackLineWidth" ), &g_track_line_width);
+  CHECK_INT("RouteLineWidth", &g_route_line_width);
+  CHECK_INT("TrackLineWidth", &g_track_line_width);
 
   //     wxString l_wxsTrackLineColour;
-  //     CHECK_STR( _T( "TrackLineColour" ), l_wxsTrackLineColour )
+  //     CHECK_STR( "TrackLineColour", l_wxsTrackLineColour )
   //         g_colourTrackLineColour.Set( l_wxsTrackLineColour );
 
-  CHECK_STR(_T ( "DefaultWPIcon" ), g_default_wp_icon)
+  CHECK_STR("DefaultWPIcon", g_default_wp_icon)
 
   // S57 template items
 
@@ -1395,39 +1383,38 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     double dval;
     bool bval, bval0;
 
-    conf.SetPath(_T ( "/Settings/GlobalState" ));
+    conf.SetPath("/Settings/GlobalState");
 
-    CHECK_BFN(_T ( "bShowS57Text" ), ps52plib->GetShowS57Text());
+    CHECK_BFN("bShowS57Text", ps52plib->GetShowS57Text());
 
-    CHECK_BFN(_T ( "bShowS57ImportantTextOnly" ),
+    CHECK_BFN("bShowS57ImportantTextOnly",
               ps52plib->GetShowS57ImportantTextOnly());
-    CHECK_BFN(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
-    CHECK_BFN(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);
-    CHECK_BFN(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
-    CHECK_BFN(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
-    CHECK_BFN(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
-    CHECK_BFN(_T ( "bUseSUPERSCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
-    CHECK_BFN(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
-    CHECK_BFN(_T ( "bDeClutterText" ), ps52plib->m_bDeClutterText);
-    CHECK_BFN(_T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts);
-    CHECK_IFN(_T ( "nDisplayCategory" ), ps52plib->GetDisplayCategory());
-    CHECK_IFN(_T ( "nSymbolStyle" ), ps52plib->m_nSymbolStyle);
-    CHECK_IFN(_T ( "nBoundaryStyle" ), ps52plib->m_nBoundaryStyle);
-    CHECK_FFN(_T ( "S52_MAR_SAFETY_CONTOUR" ),
+    CHECK_BFN("bShowLightDescription", ps52plib->m_bShowLdisText);
+    CHECK_BFN("bExtendLightSectors", ps52plib->m_bExtendLightSectors);
+    CHECK_BFN("bShowSoundg", ps52plib->m_bShowSoundg);
+    CHECK_BFN("bShowMeta", ps52plib->m_bShowMeta);
+    CHECK_BFN("bUseSCAMIN", ps52plib->m_bUseSCAMIN);
+    CHECK_BFN("bUseSUPERSCAMIN", ps52plib->m_bUseSUPER_SCAMIN);
+    CHECK_BFN("bShowAtonText", ps52plib->m_bShowAtonText);
+    CHECK_BFN("bDeClutterText", ps52plib->m_bDeClutterText);
+    CHECK_BFN("bShowNationalText", ps52plib->m_bShowNationalTexts);
+    CHECK_IFN("nDisplayCategory", ps52plib->GetDisplayCategory());
+    CHECK_IFN("nSymbolStyle", ps52plib->m_nSymbolStyle);
+    CHECK_IFN("nBoundaryStyle", ps52plib->m_nBoundaryStyle);
+    CHECK_FFN("S52_MAR_SAFETY_CONTOUR",
               S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR));
-    CHECK_FFN(_T ( "S52_MAR_SHALLOW_CONTOUR" ),
+    CHECK_FFN("S52_MAR_SHALLOW_CONTOUR",
               S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR));
-    CHECK_FFN(_T ( "S52_MAR_DEEP_CONTOUR" ),
+    CHECK_FFN("S52_MAR_DEEP_CONTOUR",
               S52_getMarinerParam(S52_MAR_DEEP_CONTOUR));
-    CHECK_FFN(_T ( "S52_MAR_TWO_SHADES" ),
-              S52_getMarinerParam(S52_MAR_TWO_SHADES));
-    CHECK_INT(_T ( "S52_DEPTH_UNIT_SHOW" ), &g_nDepthUnitDisplay);
+    CHECK_FFN("S52_MAR_TWO_SHADES", S52_getMarinerParam(S52_MAR_TWO_SHADES));
+    CHECK_INT("S52_DEPTH_UNIT_SHOW", &g_nDepthUnitDisplay);
 
     //    S57 Object Class Visibility
 
     OBJLElement *pOLE;
 
-    conf.SetPath(_T ( "/Settings/ObjectFilter" ));
+    conf.SetPath("/Settings/ObjectFilter");
 
     unsigned int iOBJMax = conf.GetNumberOfEntries();
 
@@ -1444,7 +1431,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
         // scan for the same key in the global list
         bool bfound = false;
-        if (str.StartsWith(_T ( "viz" ), &sObj)) {
+        if (str.StartsWith("viz", &sObj)) {
           for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
                iPtr++) {
             pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
@@ -1463,7 +1450,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     }
   }
 
-  conf.SetPath(_T ( "/MmsiProperties" ));
+  conf.SetPath("/MmsiProperties");
   int iPMax = conf.GetNumberOfEntries();
   if (iPMax) {
     wxString str, val;

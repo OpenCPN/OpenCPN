@@ -49,8 +49,8 @@ ChInfoWin::ChInfoWin(wxWindow* parent) {
   SetFont(*dFont);
 
   int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
-  m_pInfoTextCtl = new wxStaticText(this, -1, _T ( "" ), wxDefaultPosition,
-                                    wxDefaultSize, ststyle);
+  m_pInfoTextCtl =
+      new wxStaticText(this, -1, "", wxDefaultPosition, wxDefaultSize, ststyle);
 
   dbIndex = -1;
   Hide();
@@ -77,16 +77,16 @@ void ChInfoWin::OnPaint(wxPaintEvent& event) {
   GetClientSize(&width, &height);
   wxPaintDC dc(this);
 
-  dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
-  dc.SetPen(wxPen(GetGlobalColor(_T ( "UITX1" ))));
+  dc.SetBrush(wxBrush(GetGlobalColor("UIBCK")));
+  dc.SetPen(wxPen(GetGlobalColor("UITX1")));
   dc.DrawRectangle(0, 0, width, height);
 }
 
 void ChInfoWin::SetBitmap() {
-  SetBackgroundColour(GetGlobalColor(_T ( "UIBCK" )));
+  SetBackgroundColour(GetGlobalColor("UIBCK"));
 
-  m_pInfoTextCtl->SetBackgroundColour(GetGlobalColor(_T ( "UIBCK" )));
-  m_pInfoTextCtl->SetForegroundColour(GetGlobalColor(_T ( "UITX1" )));
+  m_pInfoTextCtl->SetBackgroundColour(GetGlobalColor("UIBCK"));
+  m_pInfoTextCtl->SetForegroundColour(GetGlobalColor("UITX1"));
 
   m_pInfoTextCtl->SetSize(GetCharWidth(), 1, m_size.x - 2 * GetCharWidth(),
                           m_size.y - 2);

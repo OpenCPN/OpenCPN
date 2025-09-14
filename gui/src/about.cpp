@@ -237,7 +237,7 @@ void About::Populate(void) {
     // The HTML Header
     wxString licenseText =
     wxString::Format(
-        _T( "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>" ),
+        "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>",
             bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
 
     pLicenseHTMLCtl->SetFonts( face, face, sizes );

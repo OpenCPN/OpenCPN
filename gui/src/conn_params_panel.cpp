@@ -789,7 +789,7 @@ void ConnectionParamsPanel::OnPaint(wxPaintEvent &event) {
   if (m_bSelected) {
     dc.SetBrush(wxBrush(m_boxColour));
 
-    GetGlobalColor(_T ( "UITX1" ), &c);
+    GetGlobalColor("UITX1", &c);
     dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
 
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
@@ -800,7 +800,7 @@ void ConnectionParamsPanel::OnPaint(wxPaintEvent &event) {
   } else {
     dc.SetBrush(wxBrush(m_boxColour));
 
-    GetGlobalColor(_T ( "UITX1" ), &c);
+    GetGlobalColor("UITX1", &c);
     dc.SetPen(wxPen(c, 1));
 
     int offset = height / 10;
