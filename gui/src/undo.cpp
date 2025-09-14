@@ -43,7 +43,7 @@
 #include "model/select.h"
 
 #include "chcanv.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "routemanagerdialog.h"

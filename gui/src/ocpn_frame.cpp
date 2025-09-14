@@ -117,7 +117,7 @@
 #include "ienc_toolbar.h"
 #include "layer.h"
 #include "load_errors_dlg.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "MUIBar.h"
 #include "N2KParser.h"
 #include "navutil.h"

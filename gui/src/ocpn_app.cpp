@@ -143,7 +143,7 @@ using namespace std::literals::chrono_literals;
 #include "gl_tex_cache.h"
 #include "go_to_position_dlg.h"
 #include "layer.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "navutil.h"
 #include "observable.h"
 #include "ocpn_app.h"

@@ -2515,7 +2515,7 @@ msgstr "Tanaw ang Sentro"
 msgid "Link Properties"
 msgstr "I-Link ang mga pag-aari"
 
-#: gui/include/gui/MarkInfo.h:106 gui/include/gui/MarkInfo.h:432
+#: gui/include/gui/mark_info.h:106 gui/include/gui/mark_info.h:432
 #: gui/src/chcanv.cpp:10455 gui/src/routemanagerdialog.cpp:2665
 #: gui/src/RoutePropDlgImpl.cpp:908
 msgid "Waypoint Properties"
