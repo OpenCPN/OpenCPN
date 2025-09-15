@@ -1,10 +1,4 @@
 /**************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  MarkProperties Support
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement mark_info.h -- Waypoint properties dialog.
+ */
+
 #include "config.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -31,6 +30,7 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/arrimpl.cpp>
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
 #include <wx/print.h>
@@ -39,58 +39,41 @@
 #include <wx/clrpicker.h>
 #include <wx/bmpbuttn.h>
 
-#include "chcanv.h"
-#include "gui_lib.h"
-#include "mark_info.h"
+#include "model/config_vars.h"
 #include "model/georef.h"
+#include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/position_parser.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
-#include "navutil.h"  // for Route
+#include "model/svg_utils.h"
+
+#include "chcanv.h"
+#include "gui_lib.h"
+#include "mark_info.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "routemanagerdialog.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
-#include "model/svg_utils.h"
+#include "tcmgr.h"
 #include "TCWin.h"
 #include "ui_utils.h"
-#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <QtWidgets/QScroller>
 #endif
 
-MarkInfoDlg* g_pMarkInfoDialog;
+#define EXTENDED_PROP_PAGE 2  // Index of the extended properties page
 
-extern TCMgr* ptcmgr;
-extern MyConfig* pConfig;
-extern Routeman* g_pRouteMan;
-extern RouteManagerDialog* pRouteManagerDialog;
-extern RoutePropDlgImpl* pRoutePropDialog;
-extern ocpnStyle::StyleManager* g_StyleManager;
-
-extern MyFrame* gFrame;
-extern OCPNPlatform* g_Platform;
-extern wxString g_default_wp_icon;
-
-// Global print data, to remember settings during the session
-
-// Global page setup data
-
-extern float g_MarkScaleFactorExp;
-
-extern MarkInfoDlg* g_pMarkInfoDialog;
-
-#include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
-#define EXTENDED_PROP_PAGE 2  // Index of the extended properties page
+MarkInfoDlg* g_pMarkInfoDialog;
 
 OCPNIconCombo::OCPNIconCombo(wxWindow* parent, wxWindowID id,
                              const wxString& value, const wxPoint& pos,
@@ -1291,7 +1274,7 @@ void MarkInfoDlg::OnCopyPasteLatLon(wxCommandEvent& event) {
       break;
     }
     case ID_RCLK_MENU_COPY_LL: {
-      result << toSDMM(1, lat, true) << _T('\t');
+      result << toSDMM(1, lat, true) << '\t';
       result << toSDMM(2, lon, true);
       break;
     }
