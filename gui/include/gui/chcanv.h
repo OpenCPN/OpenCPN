@@ -64,7 +64,9 @@
 #include "TCWin.h"
 #include "undo.h"
 
-class CanvasMenuHandler;  // circular
+class CanvasMenuHandler;   // circular
+class NotificationsList;   // circular
+class NotificationButton;  // circular
 
 class ChartCanvas;                    // forward
 extern ChartCanvas *g_overlayCanvas;  ///< Global instance
