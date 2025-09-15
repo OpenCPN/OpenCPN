@@ -137,7 +137,6 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
   ReadLocalCatalog();
   m_bLocal_source_selected = false;
   EnableDownloadButtons();
-
   m_selectedAtmModelIndex = 0;
   m_selectedWaveModelIndex = 0;
   InitializeXygribDialog();
@@ -341,42 +340,107 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
 }
 
 void GribRequestSetting::SetRequestDialogSize() {
-  int y;
-  /*first let's size the mail display space*/
-  GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog")));
-  m_MailImage->SetMinSize(
-      wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
+  int display_height = wxGetDisplaySize().y;
 
-  /*then as default sizing do not work with wxScolledWindow let's compute it*/
-  wxSize scroll =
-      m_fgScrollSizer->Fit(m_sScrolledDialog);  // the area size to be scrolled
+  // For smaller physical displays, adjust the dialog sizing algorithm
+  // to work based on the app frame size, adding scrolled windows as necessary.
+  if (display_height < 800) {
+    wxWindow *frame = wxTheApp->GetTopWindow();
+    int w0 = frame->GetSize().x;
+    int h0 = frame->GetSize().y;
+
+    // Get a font metric
+    int font_height;
+    GetTextExtent(_T("ABC"), nullptr, &font_height, 0, 0,
+                  OCPNGetFont(_("Dialog")));
+
+    // Set the height of the mail requests box
+    // by sizing the parameter scrolled window
+    m_MailImage->SetMinSize(
+        wxSize(-1, ((font_height * m_MailImage->GetNumberOfLines()) + 10)));
+
+    // Calculate size available for e-mail page scrolled window
+    int scroll_height = h0;
+    scroll_height -=
+        font_height * 11;  // estimated space required at top
+                           //  including decorations and notebook bar
+
+    scroll_height -= font_height * 3;  // estimated space required at bottom
+                                       //  including  OK/Camcel
+    m_sScrolledDialog->SetMinSize(wxSize(w0 * 8 / 10, scroll_height));
+    m_fgScrollSizer->Fit(m_sScrolledDialog);
+
+    // Preset sizes of other pages that require it
+
+    // XyGrib Panel scroller
+    int xy_scroll_height = h0;
+    xy_scroll_height -=
+        font_height * 11;  // estimated space required at top
+                           //  including decorations and notebook bar
+
+    xy_scroll_height -= font_height * 4;  // estimated space required at bottom
+                                          //  including  OK/Camcel
+    m_xygribPanel->m_xyScrolledDialog->SetMinSize(
+        wxSize(w0 * 8 / 10, xy_scroll_height));
+    m_xygribPanel->m_xyScrollSizer->Fit(m_xygribPanel->m_xyScrolledDialog);
+    m_xygribPanel->Layout();
+
+    // Local Models Tree control
+    int localtree_height = h0;
+    localtree_height -=
+        font_height * 11;  // estimated space required at top
+                           //  including decorations and notebook bar
+
+    localtree_height -= font_height * 4;  // estimated space required at bottom
+                                          //  including  OK/Camcel
+    m_SourcesTreeCtrl1->SetMinSize(wxSize(w0 * 8 / 10, xy_scroll_height));
+
+    // Set overall dialog size
+    SetSize(w0 * 8 / 10, h0);
+    SetMinSize(wxSize(w0 * 8 / 10, h0));
+
+    Layout();
+    Fit();
+
+    Refresh();
+  } else {
+    int y;
+    /*first let's size the mail display space*/
+    GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog")));
+    m_MailImage->SetMinSize(
+        wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
+
+    /*then as default sizing do not work with wxScolledWindow let's compute it*/
+    wxSize scroll = m_fgScrollSizer->Fit(
+        m_sScrolledDialog);  // the area size to be scrolled
 
 #ifdef __WXGTK__
-  SetMinSize(wxSize(0, 0));
+    SetMinSize(wxSize(0, 0));
 #endif
 
-  wxWindow *frame = wxTheApp->GetTopWindow();
+    wxWindow *frame = wxTheApp->GetTopWindow();
 
-  int w = frame->GetClientSize().x;  // the display size
-  int h = frame->GetClientSize().y;
-  int dMargin = 80;  // set a margin
+    int w = frame->GetClientSize().x;  // the display size
+    int h = frame->GetClientSize().y;
+    int dMargin = 80;  // set a margin
 
-  // height available for the scrolled window.
-  h -= (m_rButtonCancel->GetSize().GetY() + dMargin);
-  w -= dMargin;  // width available for the scrolled window
-  m_sScrolledDialog->SetMinSize(
-      wxSize(wxMin(w, scroll.x),
-             wxMin(h, scroll.y)));  // set scrolled area size with margin
+    // height available for the scrolled window.
+    h -= (m_rButtonCancel->GetSize().GetY() + dMargin);
+    w -= dMargin;  // width available for the scrolled window
+    m_sScrolledDialog->SetMinSize(
+        wxSize(wxMin(w, scroll.x),
+               wxMin(h, scroll.y)));  // set scrolled area size with margin
 
-  Layout();
-  Fit();
+    Layout();
+    Fit();
 #ifdef __WXGTK__
-  wxSize sd = GetSize();
-  if (sd.y == GetClientSize().y) sd.y += 30;
-  SetSize(wxSize(sd.x, sd.y));
-  SetMinSize(wxSize(sd.x, sd.y));
+    wxSize sd = GetSize();
+    if (sd.y == GetClientSize().y) sd.y += 30;
+    SetSize(wxSize(sd.x, sd.y));
+    SetMinSize(wxSize(sd.x, sd.y));
 #endif
-  Refresh();
+    Refresh();
+  }
 }
 
 void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {

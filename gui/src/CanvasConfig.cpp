@@ -82,6 +82,9 @@ void canvasConfig::LoadFromLegacyConfig(wxFileConfig *conf) {
   conf->Read(_T ( "bShowSoundg" ), &bShowENCDepths, 1);
   conf->Read(_T ( "bShowAtonText" ), &bShowENCBuoyLabels, 0);
   bShowENCLights = true;
+  bShowENCVisibleSectorLights = false;
+  bShowENCAnchorInfo = false;
+  bShowENCDataQuality = false;
 
   conf->SetPath(_T ( "/Settings/AIS" ));
   conf->Read(_T ( "bShowScaledTargets" ), &bAttenAIS, 0);
