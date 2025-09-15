@@ -1,8 +1,10 @@
-opencpn (1:5.12.4+dfsg-1~bpo12+1) UNRELEASED; urgency=medium
+opencpn (1:5.12.4+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
-  * New upstream release
+  * New upstream maintenance release
+  * d/patches: rebased
+  * d/control: drop heavy b-d asciidoc-base, not needed from 5.12.4
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 15 Sep 2025 21:36:03 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 15 Sep 2025 23:01:17 +0200
 
 opencpn (1:5.12.2+dfsg-3~bpo12+2) bookworm-backports; urgency=medium
 
