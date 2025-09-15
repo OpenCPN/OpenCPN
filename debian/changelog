@@ -1,3 +1,9 @@
+opencpn (1:5.12.4+dfsg-1~bpo13+1) UNRELEASED; urgency=medium
+
+  * New upstream maintenance release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 15 Sep 2025 23:07:50 +0200
+
 opencpn (1:5.12.2+dfsg-3~bpo13+1) trixie-backports; urgency=medium
 
   * Trixie backport of current sid version
