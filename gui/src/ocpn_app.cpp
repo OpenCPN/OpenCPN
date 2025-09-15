@@ -301,7 +301,6 @@ bool g_bDebugS57;
 
 int g_ChartUpdatePeriod;
 
-float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
 
 bool g_bShowTide;

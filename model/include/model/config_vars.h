@@ -131,6 +131,7 @@ extern double g_UserVar;
 extern float g_fNavAidRadarRingsStep;
 extern float g_fWaypointRangeRingsStep;
 extern float g_GLMinSymbolLineWidth;
+extern float g_MarkScaleFactorExp;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
 extern float g_ShipScaleFactorExp;

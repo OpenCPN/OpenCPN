@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Mark Properties Support
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Waypoint properties maintenance dialog.
+ */
 
 #ifndef _MARKINFO_H_
 #define _MARKINFO_H_
@@ -31,42 +29,44 @@
 /*!
  * Includes
  */
-#include <wx/listctrl.h>
-#include "ocpn_frame.h"    //FIXME (dave ) // for ColorScheme
-#include <wx/hyperlink.h>  // toh, 2009.02.08
-#include <wx/choice.h>
-#include <wx/tglbtn.h>
 #include <wx/bmpcbox.h>
-#include <wx/notebook.h>
-#include <wx/filesys.h>
+#include <wx/choice.h>
 #include <wx/clrpicker.h>
-#include <wx/odcombo.h>
-#include <wx/gbsizer.h>
-#include <wx/spinctrl.h>
-#include "link_prop_dlg.h"
-#include "model/hyperlink.h"
-#include <wx/htmllbox.h>
-#include <wx/datectrl.h>
-#include <wx/timectrl.h>
-#include <wx/dateevt.h>
-#include <wx/list.h>
 #include <wx/combobox.h>
-
+#include <wx/datectrl.h>
+#include <wx/dateevt.h>
 #include <wx/dialog.h>
+#include <wx/filesys.h>
+#include <wx/gbsizer.h>
+#include <wx/htmllbox.h>
+#include <wx/hyperlink.h>  // toh, 2009.02.08
+#include <wx/listctrl.h>
+#include <wx/list.h>
+#include <wx/notebook.h>
+#include <wx/odcombo.h>
+#include <wx/spinctrl.h>
+#include <wx/tglbtn.h>
+#include <wx/timectrl.h>
+
+#include "model/hyperlink.h"
+#include "model/route.h"
+
 #include "field_text.h"
 #include "form_grid.h"
-
+#include "link_prop_dlg.h"
+#include "ocpn_frame.h"  //FIXME (dave ) // for ColorScheme
+#include "OCPNPlatform.h"
 #include "route_validator.h"
-
-class MarkInfoDlg;  // forward
-
-extern MarkInfoDlg* g_pMarkInfoDialog; /**< global instance */
+#include "tcmgr.h"
 
 #ifdef __WXGTK__
 // wxTimePickerCtrl is completely broken in Gnome based desktop environments as
 // of wxGTK 3.0
 #include "time_textbox.h"
 #endif
+
+class MarkInfoDlg;                     // forward
+extern MarkInfoDlg* g_pMarkInfoDialog; /**< global instance */
 
 #ifdef __WXOSX__
 #define DIALOG_PARENT wxFrame
@@ -84,18 +84,6 @@ extern MarkInfoDlg* g_pMarkInfoDialog; /**< global instance */
 #define ID_RCLK_MENU_DELETE_LINK 7023
 #define ID_RCLK_MENU_EDIT_LINK 7024
 #define ID_RCLK_MENU_ADD_LINK 7025
-
-#include "tcmgr.h"
-#include "OCPNPlatform.h"
-
-/*!
- * Forward declarations
- */
-
-class wxListCtrl;
-class Route;
-class RoutePoint;
-class OCPNIconCombo;
 
 /*!
  * Control identifiers
@@ -150,9 +138,10 @@ class OCPNIconCombo;
 #define wxFIXED_MINSIZE 0
 #endif
 
-WX_DECLARE_OBJARRAY(wxBitmap, ArrayOfBitmaps);
+class OCPNIconCombo;       // forward
+class SaveDefaultsDialog;  // forward
 
-class SaveDefaultsDialog;
+WX_DECLARE_OBJARRAY(wxBitmap, ArrayOfBitmaps);
 
 /**
  * Custom combobox for selecting waypoint icons. Extends wxOwnerDrawnComboBox to
@@ -348,7 +337,7 @@ protected:
   wxToggleButton* m_toggleBtnEdit;
   wxButton* m_buttonAddLink;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxChoice* m_comboBoxTideStation;
 #else
   wxComboBox* m_comboBoxTideStation;
