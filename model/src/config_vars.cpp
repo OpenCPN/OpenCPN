@@ -125,6 +125,7 @@ double g_UserVar = 0.0;
 float g_fNavAidRadarRingsStep = 0.0;
 float g_fWaypointRangeRingsStep = 0.0;
 float g_GLMinSymbolLineWidth = 0.0;
+float g_MarkScaleFactorExp = 0.0;
 float g_selection_radius_mm = 2.0;
 float g_selection_radius_touch_mm = 10.0;
 float g_ShipScaleFactorExp = 0.0;
