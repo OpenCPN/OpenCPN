@@ -260,7 +260,6 @@ bool g_bPauseTest;
 
 // Files specified on the command line, if any.
 
-LayerList *pLayerList;
 wxString ChartListFileName;
 wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
