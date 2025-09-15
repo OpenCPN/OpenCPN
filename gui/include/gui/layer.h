@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,20 +12,28 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Chart object layer
  */
 
-#ifndef __LAYER_H__
-#define __LAYER_H__
+#ifndef LAYER_H_
+#define LAYER_H_
 
 #include <list>
 
 #include <wx/checkbox.h>
 #include <wx/datetime.h>
 #include <wx/string.h>
+
+class Layer;  // Forward
+
+using LayerList = std::list<Layer *>;
+extern LayerList *pLayerList;  ///< Global instance
 
 /**
  * Represents a layer of chart objects in OpenCPN. A Layer in OpenCPN is a
@@ -63,7 +67,5 @@ public:
   wxString m_LayerType;
   wxDateTime m_CreateTime;
 };
-
-using LayerList = std::list<Layer*>;
 
 #endif
