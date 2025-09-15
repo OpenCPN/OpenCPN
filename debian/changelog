@@ -1,3 +1,9 @@
+opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa2) jammy; urgency=medium
+
+  * Add b-d linunarr-dev, required since libarchive is too old.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 15 Sep 2025 09:31:17 +0200
+
 opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa1) jammy; urgency=medium
 
   [ Alec Leamas ]
