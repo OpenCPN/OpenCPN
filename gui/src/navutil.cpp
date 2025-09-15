@@ -359,7 +359,6 @@ extern wxString g_ObjQFileExt;
 
 MyConfig *pConfig;
 bool g_bLayersLoaded;
-bool g_bShowMuiZoomButtons = true;
 
 int g_mouse_zoom_sensitivity_ui;
 

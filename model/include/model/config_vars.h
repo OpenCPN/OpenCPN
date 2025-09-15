@@ -78,6 +78,7 @@ extern bool g_bShowLayers;
 extern bool g_bShowLiveETA;
 extern bool g_bShowMag;
 extern bool g_bShowMenuBar;
+extern bool g_bShowMuiZoomButtons;
 extern bool g_bShowOutlines;
 extern bool g_bShowRouteTotal;
 extern bool g_bShowShipToActive;

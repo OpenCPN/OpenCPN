@@ -73,6 +73,7 @@ bool g_bShowLayers = false;
 bool g_bShowLiveETA = false;
 bool g_bShowMag = false;
 bool g_bShowMenuBar = false;
+bool g_bShowMuiZoomButtons = true;
 bool g_bShowOutlines = false;
 bool g_bShowRouteTotal = false;
 bool g_bShowShipToActive = false;
