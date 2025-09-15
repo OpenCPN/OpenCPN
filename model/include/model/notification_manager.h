@@ -12,23 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Class NotificationManager.
+ *
+ * User notifications manager
  */
 
 #ifndef _NOTIFICATION_MANAGER_H__
 #define _NOTIFICATION_MANAGER_H__
 
 #include <wx/timer.h>
+
 #include "notification.h"
-#include "observable_evtvar.h"
 #include "comm_appmsg.h"
+#include "observable_evtvar.h"
 
 class NotificationMsg : public AppMsg {
 public:
