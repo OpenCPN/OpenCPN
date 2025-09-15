@@ -1,10 +1,11 @@
-opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
+opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa1) jammy; urgency=medium
 
+  [ Alec Leamas ]
   * New upstream version
   * debian/: updated from sid besides changelog, gbp.con,  not-installed
     and patches.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 14 Sep 2025 09:37:41 +0200
+ -- dsr <dsr@Jammy.myguest.virtualbox.org>  Sun, 14 Sep 2025 22:40:34 -0400
 
 opencpn (1:5.12.2+dfsg-1~bpo22.04+3) jammy; urgency=medium
 
