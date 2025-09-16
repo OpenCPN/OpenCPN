@@ -72,6 +72,8 @@ class ChartCanvas;                    // forward
 extern ChartCanvas *g_overlayCanvas;  ///< Global instance
 extern ChartCanvas *g_focusCanvas;    ///< Global instance
 
+WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
+
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
 

@@ -83,8 +83,6 @@
 
 using JobList = std::list<JobTicket *>;
 
-WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
-
 extern GLuint g_raster_format;  // FIXME (leamas) Find a home
 
 extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find a home

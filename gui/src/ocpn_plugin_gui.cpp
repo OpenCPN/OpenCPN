@@ -19,7 +19,8 @@
 
 /**
  * \file
- * PlugIn GUI API Functions
+ *
+ * ocpn_plugin.h GUI API funtions
  */
 #include <vector>
 #include "dychart.h"  // Must be ahead due to buggy GL includes handling
@@ -36,11 +37,14 @@
 
 #include "model/ais_decoder.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
+#include "model/navobj_db.h"
 #include "model/notification_manager.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
+#include "model/svg_utils.h"
 #include "model/route.h"
 #include "model/track.h"
 
@@ -63,76 +67,23 @@
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "s52plib.h"
+#include "shapefile_basemap.h"
 #include "SoundFactory.h"
-#include "model/svg_utils.h"
 #include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "waypointman_gui.h"
-#include "shapefile_basemap.h"
-#include "model/navobj_db.h"
 
-extern PlugInManager* s_ppim;
-extern MyConfig* pConfig;
-extern OCPN_AUIManager* g_pauimgr;
+unsigned int gs_plib_flags;
+
+extern PlugInManager* s_ppim;  // FIXME (leamas) another name for global mgr
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale* plocale_def_lang;
 #endif
 
-extern OCPNPlatform* g_Platform;
-extern ChartDB* ChartData;
-extern MyFrame* gFrame;
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern options* g_pOptions;
-extern Multiplexer* g_pMUX;
-extern bool g_bShowChartBar;
-extern Routeman* g_pRouteMan;
-extern Select* pSelect;
-extern RouteManagerDialog* pRouteManagerDialog;
-extern RouteList* pRouteList;
-extern std::vector<Track*> g_TrackList;
-extern PlugInManager* g_pi_manager;
-extern s52plib* ps52plib;
-extern wxString ChartListFileName;
-extern options* g_options;
-extern ColorScheme global_color_scheme;
-extern wxArrayString g_locale_catalog_array;
-extern int g_GUIScaleFactor;
-extern int g_ChartScaleFactor;
-extern wxString g_locale;
-extern ocpnFloatingToolbarDialog* g_MainToolbar;
+extern options* g_pOptions;  // FIXME (leamas) merge to g_options
 
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-extern double g_display_size_mm;
-extern bool g_bopengl;
-extern AisDecoder* g_pAIS;
-extern ChartGroupArray* g_pGroupArray;
-extern ShapeBaseChartSet gShapeBasemap;
-
-// extern ChartGroupArray* g_pGroupArray;
-extern unsigned int g_canvasConfig;
-
-extern wxString g_CmdSoundString;
-
-unsigned int gs_plib_flags;
-extern ChartCanvas* g_focusCanvas;
-extern ChartCanvas* g_overlayCanvas;
-extern bool g_bquiting;
-extern bool g_disable_main_toolbar;
-extern bool g_btenhertz;
-extern bool g_CanvasHideNotificationIcon;
-extern wxString g_default_wp_icon;
-extern bool g_bhide_route_console;
-extern bool g_bhide_context_menus;
-extern int g_maxzoomin;
-extern bool g_bhide_depth_units;
-extern bool g_bhide_overzoom_flag;
-
-extern std::vector<std::string> ChartDirectoryExcludedVector;
-
-WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
-extern arrayofCanvasPtr g_canvasArray;
+extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
 
 void NotifySetupOptionsPlugin(const PlugInData* pic);
 

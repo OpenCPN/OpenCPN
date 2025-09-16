@@ -207,7 +207,6 @@ extern ChartCanvas* g_focusCanvas;
 extern ChartCanvas* g_overlayCanvas;
 extern bool g_bquiting;
 
-WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
 PlugInManager* g_pi_manager;
