@@ -27,7 +27,7 @@
 #include <wx/wx.h>
 #endif
 
-#include <OCPN_AUIManager.h>
+#include <ocpn_aui_manager.h>
 #include "ocpn_plugin.h"
 #include "ocpn_frame.h"
 

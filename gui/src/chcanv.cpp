@@ -84,7 +84,7 @@
 #include "mbtiles.h"
 #include "mui_bar.h"
 #include "navutil.h"
-#include "OCPN_AUIManager.h"
+#include "ocpn_aui_manager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
