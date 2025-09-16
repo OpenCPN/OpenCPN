@@ -29,6 +29,11 @@
 #include <string>
 #include <vector>
 
+#ifdef __WXOSX__
+#include <malloc/malloc.h>
+#include <mach/vm_map.h>
+#endif
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
@@ -42,6 +47,7 @@
 #include <windows.h>
 #include <winioctl.h>
 #include <initguid.h>
+#include <psapi.h>
 #include "setupapi.h"  // presently stored in opencpn/src
 #endif
 
@@ -59,6 +65,7 @@
 #include "model/base_platform.h"
 #include "model/cmdline.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 #include "ocpn_plugin.h"
@@ -70,6 +77,11 @@
 
 #ifdef __WXOSX__
 #include "model/macutils.h"
+#endif
+
+#if defined(__linux__)
+#include "sys/types.h"
+#include "sys/sysinfo.h"
 #endif
 
 #ifdef __WXMSW__
@@ -983,4 +995,151 @@ int BasePlatform::GetSvgStdIconSize(const wxWindow* w, bool touch) {
     size = std::max(size, 7.0 * pixel_per_mm);
   }
   return std::round(size);
+}
+
+bool platform::GetMemoryStatus(int* mem_total, int* mem_used) {
+#ifdef __ANDROID__
+  return androidGetMemoryStatus(mem_total, mem_used);
+#endif
+
+#if defined(__linux__)
+  // Use sysinfo to obtain total RAM
+  if (mem_total) {
+    *mem_total = 0;
+    struct sysinfo sys_info;
+    if (sysinfo(&sys_info) != -1)
+      *mem_total = ((uint64_t)sys_info.totalram * sys_info.mem_unit) / 1024;
+  }
+  //      Use filesystem /proc/self/statm to determine memory status
+  //  Provides information about memory usage, measured in pages.  The columns
+  //  are: size       total program size (same as VmSize in /proc/[pid]/status)
+  //  resident   resident set size (same as VmRSS in /proc/[pid]/status)
+  //  share      shared pages (from shared mappings)
+  //  text       text (code)
+  //  lib        library (unused in Linux 2.6)
+  //  data       data + stack
+  //  dt         dirty pages (unused in Linux 2.6)
+
+  if (mem_used) {
+    *mem_used = 0;
+    FILE* file = fopen("/proc/self/statm", "r");
+    if (file) {
+      if (fscanf(file, "%d", mem_used) != 1) {
+        wxLogWarning("Cannot parse /proc/self/statm (!)");
+      }
+      *mem_used *= 4;  // XXX assume 4K page
+      fclose(file);
+    }
+  }
+
+  return true;
+
+#endif /* __linux__ */
+
+#ifdef __WXMSW__
+  HANDLE hProcess;
+  PROCESS_MEMORY_COUNTERS pmc;
+
+  unsigned long processID = wxGetProcessId();
+
+  if (mem_used) {
+    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,
+                           processID);
+
+    if (hProcess && GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
+      /*
+       printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
+       printf( "\tPeakWorkingSetSize: 0x%08X\n",
+       pmc.PeakWorkingSetSize );
+       printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
+       printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaPeakPagedPoolUsage );
+       printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaPagedPoolUsage );
+       printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaPeakNonPagedPoolUsage );
+       printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaNonPagedPoolUsage );
+       printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
+       printf( "\tPeakPagefileUsage: 0x%08X\n",
+       pmc.PeakPagefileUsage );
+       */
+      *mem_used = pmc.WorkingSetSize / 1024;
+    }
+
+    CloseHandle(hProcess);
+  }
+
+  if (mem_total) {
+    MEMORYSTATUSEX statex;
+
+    statex.dwLength = sizeof(statex);
+
+    GlobalMemoryStatusEx(&statex);
+    /*
+     _tprintf (TEXT("There is  %*ld percent of memory in use.\n"),
+     WIDTH, statex.dwMemoryLoad);
+     _tprintf (TEXT("There are %*I64d total Kbytes of physical memory.\n"),
+     WIDTH, statex.ullTotalPhys/DIV);
+     _tprintf (TEXT("There are %*I64d free Kbytes of physical memory.\n"),
+     WIDTH, statex.ullAvailPhys/DIV);
+     _tprintf (TEXT("There are %*I64d total Kbytes of paging file.\n"),
+     WIDTH, statex.ullTotalPageFile/DIV);
+     _tprintf (TEXT("There are %*I64d free Kbytes of paging file.\n"),
+     WIDTH, statex.ullAvailPageFile/DIV);
+     _tprintf (TEXT("There are %*I64d total Kbytes of virtual memory.\n"),
+     WIDTH, statex.ullTotalVirtual/DIV);
+     _tprintf (TEXT("There are %*I64d free Kbytes of virtual memory.\n"),
+     WIDTH, statex.ullAvailVirtual/DIV);
+     */
+
+    *mem_total = statex.ullTotalPhys / 1024;
+  }
+  return true;
+#endif
+
+#ifdef __WXMAC__
+
+  if (g_tick != g_lastMemTick) {
+    malloc_zone_pressure_relief(NULL, 0);
+
+    int bytesInUse = 0;
+    int blocksInUse = 0;
+    int sizeAllocated = 0;
+
+    malloc_statistics_t stats;
+    stats.blocks_in_use = 0;
+    stats.size_in_use = 0;
+    stats.max_size_in_use = 0;
+    stats.size_allocated = 0;
+    malloc_zone_statistics(NULL, &stats);
+    bytesInUse += stats.size_in_use;
+    blocksInUse += stats.blocks_in_use;
+    sizeAllocated += stats.size_allocated;
+
+    g_memUsed = sizeAllocated >> 10;
+
+    // printf("mem_used (Mb):  %d   %d \n", g_tick, g_memUsed / 1024);
+    g_lastMemTick = g_tick;
+  }
+
+  if (mem_used) *mem_used = g_memUsed;
+  if (mem_total) {
+    *mem_total = 4000;
+    FILE* fpIn = popen("sysctl -n hw.memsize", "r");
+    if (fpIn) {
+      double pagesUsed = 0.0, totalPages = 0.0;
+      char buf[64];
+      if (fgets(buf, sizeof(buf), fpIn) != NULL) {
+        *mem_total = atol(buf) >> 10;
+      }
+    }
+  }
+
+  return true;
+#endif
+
+  if (mem_used) *mem_used = 0;
+  if (mem_total) *mem_total = 0;
+  return false;
 }

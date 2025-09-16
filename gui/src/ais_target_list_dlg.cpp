@@ -47,8 +47,6 @@
 #include "styles.h"
 #include "model/navobj_db.h"
 
-extern int g_AisTargetList_count;
-extern bool g_bAisTargetList_autosort;
 extern ocpnStyle::StyleManager *g_StyleManager;
 extern MyConfig *pConfig;
 extern AISTargetListDialog *g_pAISTargetList;
@@ -58,7 +56,9 @@ extern RouteManagerDialog *pRouteManagerDialog;
 
 AISTargetListDialog *g_pAISTargetList;
 
+static int g_AisTargetList_count;
 static AisDecoder *s_p_sort_decoder;
+static bool g_bAisTargetList_autosort;
 
 IMPLEMENT_CLASS(AISTargetListDialog, wxPanel)
 

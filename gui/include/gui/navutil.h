@@ -72,6 +72,16 @@ wxString getUsrTempUnit();
 wxString formatAngle(double angle);
 wxString GetLayerName(int id);
 
+namespace navutil {
+
+extern wxArrayString *pMessageOnceArray;
+
+void InitGlobals();
+
+void DeinitGlobals();
+
+}  // namespace navutil
+
 /**
  * Converts a timestamp from UTC to the user's preferred time format.
  *

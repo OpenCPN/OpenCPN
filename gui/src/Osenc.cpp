@@ -51,7 +51,7 @@
 #include "gui_lib.h"
 #include <mutex>
 
-extern s57RegistrarMgr *m_pRegistrarMan;
+s57RegistrarMgr *m_pRegistrarMan;
 extern wxString g_csv_locn;
 extern bool g_bGDAL_Debug;
 

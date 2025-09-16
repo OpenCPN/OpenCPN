@@ -69,7 +69,8 @@ extern wxString g_CmdSoundString;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame *gFrame;
-extern AisInfoGui *g_pAISGUI;
+
+AisInfoGui *g_pAISGUI;
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {

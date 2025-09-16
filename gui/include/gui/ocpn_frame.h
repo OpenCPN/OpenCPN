@@ -28,6 +28,9 @@
 
 #include <wx/print.h>
 #include <wx/power.h>
+#include <wx/artprov.h>
+#include <wx/aui/aui.h>
+#include <wx/aui/dockart.h>
 
 #include <memory>
 #ifdef __WXMSW__
@@ -138,7 +141,7 @@ bool isSingleChart(ChartBase* chart);
 class MyFrame : public wxFrame {
 public:
   MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, long style);
+          const wxSize& size, long style, wxAuiDefaultDockArt* pauidockart);
 
   ~MyFrame();
 
@@ -442,6 +445,7 @@ private:
 
   std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
 
+private:
   ObservableListener listener_basic_navdata;
   ObservableListener listener_gps_watchdog;
   ObsListener m_on_raise_listener;
@@ -455,6 +459,7 @@ private:
   double restoreScale[4];
   unsigned int last_canvasConfig;
   DataMonitor* m_data_monitor;
+  wxAuiDefaultDockArt* m_pauidockart;
 
   DECLARE_EVENT_TABLE()
 };

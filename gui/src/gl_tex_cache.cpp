@@ -32,6 +32,7 @@
 #include "config.h"
 
 #include "mipmap/mipmap.h"
+#include "model/base_platform.h"
 #include "model/config_vars.h"
 #include "model/gui_vars.h"
 
@@ -101,8 +102,6 @@ typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
 extern ColorScheme global_color_scheme;
 
 extern ocpnGLOptions g_GLOptions;
-
-extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 extern glTextureManager *g_glTextureManager;
 

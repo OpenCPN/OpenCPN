@@ -234,7 +234,7 @@ gui/include/gui/mbtiles.h
 gui/include/gui/mui_bar.h
 gui/include/gui/n0183_ctx_factory.h
 gui/include/gui/navutil.h
-gui/include/gui/ocpCursor.h
+gui/include/gui/ocp_cursor.h
 gui/include/gui/ocpn_app.h
 gui/include/gui/OCPN_AUIManager.h
 gui/include/gui/ocpndc.h

@@ -280,7 +280,7 @@ extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxString g_default_wp_icon;
-extern int osMajor, osMinor;
+// extern int osMajor, osMinor;
 extern bool g_bShowMuiZoomButtons;
 extern MyConfig* pConfig;
 extern bool g_btenhertz;

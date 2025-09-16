@@ -201,11 +201,10 @@ extern wxLocale *plocale_def_lang;
 
 extern wxString g_locale;
 extern wxString g_localeOverride;
-extern wxArrayString g_locale_catalog_array;
+wxArrayString g_locale_catalog_array;
 
 #endif
 extern int options_lastPage;
-extern AboutFrameImpl *g_pAboutDlg;
 extern About *g_pAboutDlgLegacy;
 extern wxColour g_colourTrackLineColour;
 extern int g_n_ownship_min_mm;
