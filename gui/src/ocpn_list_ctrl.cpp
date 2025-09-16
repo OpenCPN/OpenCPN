@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "OCPNListCtrl.h"
+#include "ocpn_list_ctrl.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/navutil_base.h"
