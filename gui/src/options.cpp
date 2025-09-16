@@ -292,7 +292,6 @@ extern MigrateAssistantDialog* g_migrateDialog;
 
 extern wxString GetShipNameFromFile(int);
 
-WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
 using CBList = std::list<wxCheckBox*>;

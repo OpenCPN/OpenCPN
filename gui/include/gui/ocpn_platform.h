@@ -58,6 +58,7 @@
 class OCPNPlatform;              // forward
 extern OCPNPlatform *g_Platform; /**< Global instance. */
 
+extern wxArrayString g_locale_catalog_array; /**< Global instance */
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------

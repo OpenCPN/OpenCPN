@@ -270,8 +270,6 @@ static bool g_bHasHwClock;
 wxLocale *plocale_def_lang = 0;
 #endif
 
-WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
-
 #ifdef LINUX_CRASHRPT
 static wxCrashPrint g_crashprint;
 #endif
