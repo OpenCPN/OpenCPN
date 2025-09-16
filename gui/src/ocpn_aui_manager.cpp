@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OCPN_AUIManager
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ocpn_aui_manager.h -- OCPN_AUIManager
+ */
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -66,7 +64,7 @@ static void ODrawResizeHint(wxDC& dc, const wxRect& rect) {
 }
 
 // Convenience function
-bool OAuiManager_HasLiveResize(wxAuiManager& manager) {
+static bool OAuiManager_HasLiveResize(wxAuiManager& manager) {
   // With Core Graphics on Mac, it's not possible to show sash feedback,
   // so we'll always use live update instead.
 #if defined(__WXMAC__)
