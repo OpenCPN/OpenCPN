@@ -27,7 +27,7 @@
 #include "model/georef.h"  // for GeoRef type
 
 #include "chartbase.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "viewport.h"
 
 typedef enum ScaleTypeEnum {
