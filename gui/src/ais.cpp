@@ -58,7 +58,7 @@
 #include "line_clip.h"
 #include "navutil.h"  // for Select
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "styles.h"
 

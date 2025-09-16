@@ -55,7 +55,7 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "options.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"

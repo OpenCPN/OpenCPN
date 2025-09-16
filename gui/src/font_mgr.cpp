@@ -30,7 +30,7 @@
 
 #include "model/config_vars.h"
 #include "font_mgr.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 
 struct font_cache_record {

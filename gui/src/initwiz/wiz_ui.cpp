@@ -38,7 +38,7 @@
 #include <wx/jsonval.h>
 #include <wx/jsonreader.h>
 #include "wiz_ui.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/conn_params.h"

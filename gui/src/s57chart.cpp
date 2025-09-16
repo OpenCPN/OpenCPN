@@ -36,7 +36,7 @@
 #include <wx/filename.h>
 
 #include "dychart.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 
 #include "s52s57.h"
 #include "s52plib.h"

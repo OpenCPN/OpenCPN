@@ -147,7 +147,7 @@
 #include "ocpn_app.h"
 #include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "Osenc.h"
 #include "options.h"
 #include "rest_server_gui.h"

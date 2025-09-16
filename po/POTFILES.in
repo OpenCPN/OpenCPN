@@ -241,7 +241,7 @@ gui/include/gui/ocpndc.h
 gui/include/gui/ocpn_frame.h
 gui/include/gui/ocpn_list_ctrl.h
 gui/include/gui/ocpn_pixel.h
-gui/include/gui/OCPNPlatform.h
+gui/include/gui/ocpn_platform.h
 gui/include/gui/OCPNRegion.h
 gui/include/gui/options.h
 gui/include/gui/Osenc.h

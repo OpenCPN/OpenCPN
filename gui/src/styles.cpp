@@ -33,7 +33,7 @@
 #include <wx/filename.h>
 #include <wx/dir.h>
 #include <stdlib.h>
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 
 #include "styles.h"
 #include "model/wx28compat.h"

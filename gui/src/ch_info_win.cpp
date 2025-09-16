@@ -27,7 +27,7 @@
 #include "ch_info_win.h"
 #include "color_handler.h"
 #include "font_mgr.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

@@ -49,7 +49,7 @@
 #include "gui_lib.h"
 #include "navutil.h"
 #include "observable_globvar.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "styles.h"
 
 // This window style value has slipped from the headers, but is useful

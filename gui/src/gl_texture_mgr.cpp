@@ -72,7 +72,7 @@
 #include "lz4.h"
 #include "lz4hc.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "Quilt.h"
 #include "squish.h"
 #include "viewport.h"

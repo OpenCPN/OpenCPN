@@ -39,7 +39,7 @@
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "print_dialog.h"
 #include "routemanagerdialog.h"

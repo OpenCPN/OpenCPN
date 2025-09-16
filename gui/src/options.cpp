@@ -103,7 +103,7 @@
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "OCPN_Sound.h"
 #include "options.h"
 #include "s52plib.h"

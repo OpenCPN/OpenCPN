@@ -46,7 +46,7 @@
 #include "ocpn_plugin.h"
 #include "color_handler.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"

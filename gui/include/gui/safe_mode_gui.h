@@ -7,7 +7,7 @@
 
 #include <wx/window.h>
 
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/safe_mode.h"
 
 namespace safe_mode {

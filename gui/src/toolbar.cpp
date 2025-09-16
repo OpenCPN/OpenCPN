@@ -39,7 +39,7 @@
 #include "toolbar.h"
 #include "pluginmanager.h"
 #include "font_mgr.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "model/svg_utils.h"

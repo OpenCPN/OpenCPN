@@ -16,7 +16,7 @@
 #include "model/cutil.h"
 #include "font_mgr.h"
 #include "model/wx28compat.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "RolloverWin.h"
 #include "navutil.h"
 #include "gui_lib.h"
