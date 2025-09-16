@@ -44,7 +44,7 @@
 #include <wx/wxprec.h>
 
 #include <wx/region.h>
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 
 #ifndef WX_PRECOMP
 #include <wx/log.h>

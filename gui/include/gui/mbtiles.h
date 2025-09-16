@@ -25,7 +25,7 @@
 
 #include "chartbase.h"
 #include "model/georef.h"  // for GeoRef type
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "ocpn_pixel.h"
 #include "viewport.h"
 #include "tile_descr.h"

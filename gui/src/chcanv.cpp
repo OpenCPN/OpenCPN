@@ -88,7 +88,7 @@
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "options.h"
 #include "piano.h"
 #include "pluginmanager.h"

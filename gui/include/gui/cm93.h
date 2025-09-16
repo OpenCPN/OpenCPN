@@ -29,7 +29,7 @@
 
 #include "chcanv.h"
 #include "model/cutil.h"  // for types
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "poly_math.h"
 #include "s57chart.h"
 #include "viewport.h"

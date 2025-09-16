@@ -27,7 +27,7 @@
 
 #include <vector>
 #include "LLRegion.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "chcanv.h"
 #include "viewport.h"
 #include "chartdb.h"

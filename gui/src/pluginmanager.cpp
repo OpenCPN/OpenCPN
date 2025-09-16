@@ -137,7 +137,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_platform.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "options.h"
 #include "piano.h"
 #include "pluginmanager.h"

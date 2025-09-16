@@ -23,7 +23,7 @@
 #ifndef S57_OCPN_UTILS_H_GUARD__
 #define S57_OCPN_UTILS_H_GUARD__
 
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "ocpndc.h"
 #include "s57chart.h"
 

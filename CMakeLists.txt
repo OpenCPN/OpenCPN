@@ -832,7 +832,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/ocpn_pixel.h
     ${GUI_HDR_DIR}/ocpn_platform.h
     ${GUI_HDR_DIR}/ocpn_aui_manager.h
-    ${GUI_HDR_DIR}/OCPNRegion.h
+    ${GUI_HDR_DIR}/ocpn_region.h
     ${GUI_HDR_DIR}/options.h
     ${GUI_HDR_DIR}/piano.h
     ${GUI_HDR_DIR}/peer_client_dlg.h
@@ -957,7 +957,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ocpn_list_ctrl.cpp
     ${GUI_SRC_DIR}/ocpn_pixel.cpp
     ${GUI_SRC_DIR}/ocpn_platform.cpp
-    ${GUI_SRC_DIR}/OCPNRegion.cpp
+    ${GUI_SRC_DIR}/ocpn_region.cpp
     ${GUI_SRC_DIR}/ocpn_gl_options.cpp
     ${GUI_SRC_DIR}/options.cpp
     ${GUI_SRC_DIR}/Osenc.cpp
