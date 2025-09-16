@@ -57,6 +57,7 @@
 #define xID_OK 10009
 
 About* g_pAboutDlgLegacy;
+AboutFrameImpl* g_pAboutDlg;
 
 static wxString OpenCPNVersion("\n      Version ");
 

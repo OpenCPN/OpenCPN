@@ -34,6 +34,8 @@
 #include <wx/string.h>
 #include <wx/textctrl.h>
 
+#include "about_frame_impl.h"
+
 //      Constants
 
 #define ID_DIALOG 10001
@@ -48,7 +50,8 @@
 
 class About;  // forward
 
-extern About* g_pAboutDlgLegacy;
+extern About* g_pAboutDlgLegacy;    /**< Global instance */
+extern AboutFrameImpl* g_pAboutDlg; /**< Global instance */
 
 /**
  * The OpenCPN About dialog displaying information including
