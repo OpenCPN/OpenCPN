@@ -42,7 +42,7 @@
 #include "chcanv.h"
 #include "ocpn_frame.h"
 #include "ocpn_list_ctrl.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
 #include "model/navobj_db.h"

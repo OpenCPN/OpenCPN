@@ -43,7 +43,7 @@
 
 #include "chcanv.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "s52plib.h"
 #include "s52s57.h"

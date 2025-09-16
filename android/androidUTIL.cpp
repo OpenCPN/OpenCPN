@@ -79,7 +79,7 @@
 #include "navutil.h"
 #include "nmea0183.h"
 #include "model/nmea_ctx_factory.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "options.h"
 #include "routemanagerdialog.h"
@@ -264,7 +264,6 @@ extern bool g_bAutoAnchorMark;
 extern wxAuiManager *g_pauimgr;
 extern wxString g_AisTargetList_perspective;
 
-WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
 wxString callActivityMethod_vs(const char *method);

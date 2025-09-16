@@ -92,7 +92,7 @@
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "OCPN_Sound.h"
 #include "s52plib.h"
 #include "s52utils.h"

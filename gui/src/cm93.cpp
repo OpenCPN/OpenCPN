@@ -54,7 +54,7 @@
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "pluginmanager.h"  // for PlugInManager
 #include "s52plib.h"
 #include "s52s57.h"

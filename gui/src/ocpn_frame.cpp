@@ -126,7 +126,7 @@
 #include "ocpn_plugin.h"
 #include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "OCPN_Sound.h"
 #include "Osenc.h"
 #include "options.h"

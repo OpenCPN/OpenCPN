@@ -39,7 +39,7 @@
 #include "gui_lib.h"
 #include "timers.h"
 #include "font_mgr.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "displays.h"
 

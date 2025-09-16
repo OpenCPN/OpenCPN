@@ -46,7 +46,7 @@
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "std_filesystem.h"
 #include "styles.h"
 

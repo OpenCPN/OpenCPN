@@ -63,7 +63,7 @@
 #include "mark_info.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"

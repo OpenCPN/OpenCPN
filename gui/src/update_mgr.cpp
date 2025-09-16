@@ -46,7 +46,7 @@
 #include "update_mgr.h"
 #include "model/plugin_loader.h"
 #include "model/downloader.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/plugin_handler.h"
 #include "pluginmanager.h"
 #include "model/semantic_vers.h"

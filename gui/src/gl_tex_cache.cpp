@@ -46,7 +46,7 @@
 #include "gl_texture_descr.h"
 #include "lz4.h"
 #include "lz4hc.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "Quilt.h"
 #include "squish.h"
 #include "viewport.h"

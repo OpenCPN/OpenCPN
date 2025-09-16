@@ -84,7 +84,7 @@
 #include "mipmap/mipmap.h"
 #include "mui_bar.h"
 #include "navutil.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"

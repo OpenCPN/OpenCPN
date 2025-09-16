@@ -37,7 +37,7 @@
 #include "model/route_point.h"
 
 #include "gui_lib.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_frame.h"
 #include "peer_client_dlg.h"
 #include "route_gui.h"

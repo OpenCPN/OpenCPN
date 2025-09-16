@@ -43,7 +43,7 @@
 #include "chartbase.h"
 #include "styles.h"
 #include "ocpndc.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "color_handler.h"
 #include "ocpn_plugin.h"
 #include "ocpn_frame.h"

@@ -27,11 +27,11 @@
 
 #include <list>
 
-// Include OCPNPlatform.h before shapefile_basemap.h to prevent obscure syntax
+// Include ocpn_platform.h before shapefile_basemap.h to prevent obscure syntax
 // error when compiling with VS2022
 #include <list>
 
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "shapefile_basemap.h"
 #include "chartbase.h"
 #include "gl_chart_canvas.h"
