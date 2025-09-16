@@ -239,7 +239,7 @@ gui/include/gui/ocpn_app.h
 gui/include/gui/ocpn_aui_manager.h
 gui/include/gui/ocpndc.h
 gui/include/gui/ocpn_frame.h
-gui/include/gui/OCPNListCtrl.h
+gui/include/gui/ocpn_list_ctrl.h
 gui/include/gui/ocpn_pixel.h
 gui/include/gui/OCPNPlatform.h
 gui/include/gui/OCPNRegion.h

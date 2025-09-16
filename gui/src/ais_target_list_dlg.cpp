@@ -41,7 +41,7 @@
 #include "ais_target_list_dlg.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
-#include "OCPNListCtrl.h"
+#include "ocpn_list_ctrl.h"
 #include "OCPNPlatform.h"
 #include "routemanagerdialog.h"
 #include "styles.h"

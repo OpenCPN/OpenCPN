@@ -38,7 +38,7 @@
 #include "model/ais_target_data.h"
 #include "model/ais_decoder.h"
 
-#include "OCPNListCtrl.h"
+#include "ocpn_list_ctrl.h"
 
 #define ID_AIS_TARGET_LIST 10003
 #define ID_RCLK_UNDOCK 7035
