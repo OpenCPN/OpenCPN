@@ -1,12 +1,20 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ocpn_fontdlg
-// Purpose:     Generic font dialog for OpenCPN
 // Author:      Julian Smart
 // Modified by: David S Register
 // Created:     04/01/98
 // Copyright:   (c) Julian Smart, David S Register
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \file
+ *
+ * Implement ocpn_fontlg.h -- Generic font dialog for OpenCPN
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -15,31 +23,24 @@
        // defined(__WXUNIVERSAL__))
 
 #ifndef WX_PRECOMP
-#include <stdio.h>
-#include "wx/crt.h"
-#include "wx/utils.h"
-#include "wx/dialog.h"
-#include "wx/listbox.h"
-#include "wx/button.h"
-#include "wx/stattext.h"
-#include "wx/layout.h"
-#include "wx/dcclient.h"
-#include "wx/choice.h"
-#include "wx/checkbox.h"
-#include "wx/intl.h"
-#include "wx/settings.h"
-#include "wx/sizer.h"
-#endif
-
-#include <string.h>
-#include <stdlib.h>
-
-#include "wx/fontdlg.h"
-#include "ocpn_fontdlg.h"
-
-#if USE_SPINCTRL_FOR_POINT_SIZE
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/crt.h>
+#include <wx/dcclient.h>
+#include <wx/dialog.h>
+#include <wx/fontdlg.h>
+#include <wx/intl.h>
+#include <wx/layout.h>
+#include <wx/listbox.h>
+#include <wx/settings.h>
+#include <wx/sizer.h>
 #include "wx/spinctrl.h"
+#include <wx/stattext.h>
+#include <wx/utils.h>
 #endif
+
+#include "ocpn_fontdlg.h"
 
 //-----------------------------------------------------------------------------
 // helper class - wxFontPreviewer

@@ -88,6 +88,7 @@
 #include "model/sys_events.h"
 #include "model/track.h"
 
+#include "ais_info_gui.h"
 #include "dialog_alert.h"
 #include "about_frame_impl.h"
 #include "about.h"
@@ -127,6 +128,7 @@
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"
+#include "Osenc.h"
 #include "options.h"
 #include "pluginmanager.h"
 #include "print_dialog.h"
@@ -161,30 +163,11 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 //      Static variable definition
 //------------------------------------------------------------------------------
 //
-extern OCPN_AUIManager *g_pauimgr;
-extern MyConfig *pConfig;
+
 arrayofCanvasPtr g_canvasArray;
-extern MyFrame *gFrame;
-extern AISTargetListDialog *g_pAISTargetList;
-extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern APConsole *console;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern Routeman *g_pRouteMan;
-extern MarkInfoDlg *g_pMarkInfoDialog;
-extern RoutePropDlgImpl *pRoutePropDialog;
-extern TrackPropDlg *pTrackPropDialog;
-extern GoToPositionDialog *pGoToPositionDialog;
-extern CM93OffsetDialog *g_pCM93OffsetDialog;
-extern S57QueryDialog *g_pObjectQueryDialog;
-extern About *g_pAboutDlgLegacy;
 
-static AboutFrameImpl *g_pAboutDlg;
-
-extern double vLat, vLon;
-extern wxString g_locale;
-extern ColorScheme global_color_scheme;
-extern options *g_pOptions;
-extern options *g_options;
+extern options *g_pOptions;  // FIXME (leamas) same as g_options, merge
+MyFrame *gFrame;
 
 #ifdef ocpnUSE_GL
 GLenum g_texture_rectangle_format;
@@ -194,144 +177,19 @@ GLenum g_texture_rectangle_format;
 extern wxLocale *plocale_def_lang;
 #endif
 
-extern OCPNPlatform *g_Platform;
-extern BasePlatform
-    *g_BasePlatform;  // points to g_platform, handles brain-dead MS linker.
+#ifdef ocpnUSE_GL
+extern bool g_b_EnableVBO;
+extern GLenum g_texture_rectangle_format;
+extern OCPN_GLCaps *GL_Caps;
+#endif
 
-extern s52plib *ps52plib;
-extern ocpnFloatingToolbarDialog *g_MainToolbar;
-extern PlugInManager *g_pi_manager;
-
-extern bool g_b_legacy_input_filter_behaviour;
-extern bool g_bTrackActive;
-extern ocpnStyle::StyleManager *g_StyleManager;
-extern bool g_bmasterToolbarFull;
-extern int g_nAutoHideToolbar;
-extern bool g_bAutoHideToolbar;
-extern bool g_bshowToolbar;
-extern int g_maintoolbar_x;
-extern int g_maintoolbar_y;
-extern wxString g_toolbarConfig;
-extern float g_toolbar_scalefactor;
-extern float g_compass_scalefactor;
-extern bool g_bShowMenuBar;
-extern bool g_bShowCompassWin;
-
-extern bool g_benable_rotate;
-extern int g_GUIScaleFactor;
-extern int g_ChartScaleFactor;
 static int g_last_ChartScaleFactor;
-extern int g_ShipScaleFactor;
-extern float g_ShipScaleFactorExp;
-extern int g_ENCTextScaleFactor;
-
-extern bool g_bShowTide;
-extern bool g_bShowCurrent;
-extern bool g_bUIexpert;
-extern RouteList *pRouteList;
-extern wxString g_default_wp_icon;
-extern std::vector<std::string> TideCurrentDataSet;
-extern wxString g_TCData_Dir;
-extern TCMgr *ptcmgr;
-
 static char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
-extern double AnchorPointMinDist;
-extern bool AnchorAlertOn1, AnchorAlertOn2;
-extern wxString g_AW1GUID;
-extern wxString g_AW2GUID;
-extern bool g_bCruising;
-extern double g_COGAvg;
-extern int g_COGAvgSec;
-extern ActiveTrack *g_pActiveTrack;
-extern std::vector<Track *> g_TrackList;
-extern int g_ChartUpdatePeriod;
-extern int g_SkewCompUpdatePeriod;
-extern bool g_bCourseUp;
-extern bool g_bLookAhead;
-extern bool g_bskew_comp;
-extern bool g_bPauseTest;
-extern bool g_bSleep;
-extern bool g_bPlayShipsBells;
-extern wxDateTime g_loglast_time;
-extern int g_nAWDefault;
-extern int g_nAWMax;
-extern bool g_bDeferredStartTrack;
-extern int quitflag;
-extern int g_tick;
-extern ChartDB *ChartData;
-extern bool g_bDeferredInitDone;
-extern int options_lastPage;
 static int options_subpage = 0;
 static bool b_reloadForPlugins;
-extern ChartCanvas *g_focusCanvas;
-extern int g_NeedDBUpdate;
-extern bool g_bFullscreen;
-extern wxString gWorldMapLocation, gDefaultWorldMapLocation;
-extern ChartGroupArray *g_pGroupArray;
-extern bool g_bEnableZoomToCursor;
-extern double g_display_size_mm;
-extern std::vector<size_t> g_config_display_size_mm;
-extern wxString ChartListFileName;
-extern bool g_bFullscreenToolbar;
-extern arrayofCanvasPtr g_canvasArray;
-extern wxString g_lastAppliedTemplateGUID;
 
 static wxSize options_lastWindowSize(0, 0);
 static wxPoint options_lastWindowPos(0, 0);
-
-extern unsigned int g_canvasConfig;
-extern bool g_bFullScreenQuilt;
-extern bool g_bQuiltEnable;
-extern wxString *pInit_Chart_Dir;
-extern bool g_bShowOutlines;
-extern bool g_bTempShowMenuBar;
-extern bool g_bShowStatusBar;
-extern bool g_FlushNavobjChanges;
-extern int g_FlushNavobjChangesTimeout;
-extern bool g_bShowChartBar;
-extern double g_plus_minus_zoom_factor;
-extern int g_nframewin_x;
-extern int g_nframewin_y;
-extern int g_nframewin_posx;
-extern int g_nframewin_posy;
-extern bool g_bframemax;
-extern LayerList *pLayerList;
-extern bool g_bAutoAnchorMark;
-extern wxDateTime g_start_time;
-extern bool g_bcompression_wait;
-extern bool g_bquiting;
-extern bool b_inCloseWindow;
-extern bool b_inCompressAllCharts;
-extern long g_maintoolbar_orient;
-extern int g_click_stop;
-extern wxString g_CmdSoundString;
-extern s57RegistrarMgr *m_pRegistrarMan;
-extern wxString g_UserPresLibData;
-extern wxString g_SENCPrefix;
-extern wxString g_csv_locn;
-extern SENCThreadManager *g_SencThreadManager;
-extern int g_sticky_chart;
-
-extern wxColorHashMap *pcurrent_user_color_hash;
-
-// probable move to ocpn_app
-extern bool g_own_ship_sog_cog_calc;
-extern int g_own_ship_sog_cog_calc_damp_sec;
-// extern bool g_bHasHwClock;
-extern bool s_bSetSystemTime;
-extern bool bVelocityValid;
-extern AisInfoGui *g_pAISGUI;
-
-extern bool g_bUseGLL;
-extern int g_MemFootMB;
-extern Multiplexer *g_pMUX;
-static int g_memUsed;
-extern int g_chart_zoom_modifier_vector;
-extern bool g_config_display_size_manual;
-extern bool g_PrintingInProgress;
-extern bool g_disable_main_toolbar;
-extern bool g_btenhertz;
-extern bool g_declutter_anchorage;
 
 // Values returned from WMM_PI for variation computation request.
 // Initialize to invalid so we don't use it if WMM hasn't updated yet
@@ -343,16 +201,14 @@ static std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
 
 static wxArrayPtrVoid *UserColourHashTableArray;
 
-MyFrame *gFrame;
-
 #ifdef __WXMSW__
 // System color control support
 
 typedef DWORD(WINAPI *SetSysColors_t)(DWORD, DWORD *, DWORD *);
 typedef DWORD(WINAPI *GetSysColor_t)(DWORD);
 
-SetSysColors_t pSetSysColors;
-GetSysColor_t pGetSysColor;
+static SetSysColors_t pSetSysColors;
+static GetSysColor_t pGetSysColor;
 
 void SaveSystemColors();
 void RestoreSystemColors();
@@ -382,18 +238,15 @@ static const long long lNaN = 0xfff8000000000000;
 static wxArrayPtrVoid *UserColorTableArray = 0;
 
 // Latest "ground truth" fix, and auxiliaries
-double gLat_gt, gLon_gt;
-double gLat_gt_m1, gLon_gt_m1;
-uint64_t fix_time_gt;
-uint64_t fix_time_gt_last;
+static double gLat_gt, gLon_gt;
+static double gLat_gt_m1, gLon_gt_m1;
+static uint64_t fix_time_gt;
+static uint64_t fix_time_gt_last;
 
-double gSog_gt, gHdt_gt;
-double gCog_gt_m1, gHdt_gt_m1;
-uint64_t hdt_time_gt;
-double cog_rate_gt, hdt_rate_gt;
-
-//    Some static helpers
-void appendOSDirSlash(wxString *pString);
+static double gSog_gt, gHdt_gt;
+static double gCog_gt_m1, gHdt_gt_m1;
+static uint64_t hdt_time_gt;
+static double cog_rate_gt, hdt_rate_gt;
 
 void InitializeUserColors();
 void DeInitializeUserColors();
@@ -1713,8 +1566,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   //             g_pauimgr->GetPane( cc ).MinSize(10,10);
   //     }
 
-  pConfig->SetPath(_T ( "/AUI" ));
-  pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
+  pConfig->SetPath("/AUI");
+  pConfig->Write("AUIPerspective", g_pauimgr->SavePerspective());
 
   g_bquiting = true;
 
@@ -1834,8 +1687,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   // Remove any leftover Routes and Waypoints from config file as they were
   // saved to navobj before
-  pConfig->DeleteGroup(_T ( "/Routes" ));
-  pConfig->DeleteGroup(_T ( "/Marks" ));
+  pConfig->DeleteGroup("/Routes");
+  pConfig->DeleteGroup("/Marks");
   pConfig->Flush();
 
   if (g_pAboutDlg) g_pAboutDlg->Destroy();
@@ -3203,7 +3056,7 @@ void MyFrame::ActivateMOB() {
   mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
   RoutePoint *pWP_MOB =
-      new RoutePoint(gLat, gLon, _T ( "mob" ), mob_label, wxEmptyString);
+      new RoutePoint(gLat, gLon, "mob", mob_label, wxEmptyString);
   pWP_MOB->SetShared(true);
   pWP_MOB->m_bIsolatedMark = true;
   pWP_MOB->SetWaypointArrivalRadius(
@@ -4846,8 +4699,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, false);
 
       wxString perspective;
-      pConfig->SetPath(_T ( "/AUI" ));
-      pConfig->Read(_T ( "AUIPerspective" ), &perspective);
+      pConfig->SetPath("/AUI");
+      pConfig->Read("AUIPerspective", &perspective);
 
       // Make sure the perspective saved in the config file is "reasonable"
       // In particular, the perspective should have an entry for every
@@ -6731,7 +6584,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   mob_label += _(" on ");
   mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
-  RoutePoint *pWP_MOB = new RoutePoint(ptarget->Lat, ptarget->Lon, _T ( "mob" ),
+  RoutePoint *pWP_MOB = new RoutePoint(ptarget->Lat, ptarget->Lon, "mob",
                                        mob_label, wxEmptyString);
   pWP_MOB->SetShared(true);
   pWP_MOB->m_bIsolatedMark = true;
@@ -7788,8 +7641,8 @@ void ApplyLocale() {
   // Capture a copy of the current perspective
   //  So that we may restore PlugIn window sizes, position, visibility, etc.
   wxString perspective;
-  pConfig->SetPath(_T ( "/AUI" ));
-  pConfig->Read(_T ( "AUIPerspective" ), &perspective);
+  pConfig->SetPath("/AUI");
+  pConfig->Read("AUIPerspective", &perspective);
 
   //  Compliant Plugins will reload their locale message catalog during the
   //  Init() method. So it is sufficient to simply deactivate, and then
@@ -7971,10 +7824,6 @@ void LoadS57() {
 #ifdef ocpnUSE_GL
 
     // Setup PLIB OpenGL options, if enabled
-    extern bool g_b_EnableVBO;
-    extern GLenum g_texture_rectangle_format;
-    extern OCPN_GLCaps *GL_Caps;
-
     if (g_bopengl) {
       if (GL_Caps) {
         wxString renderer = wxString(GL_Caps->Renderer.c_str());
@@ -8113,7 +7962,6 @@ void ParseAllENC(wxWindow *parent) {
   int thread_count = 0;
   ParseENCWorkerThread **workers = NULL;
 
-  extern int g_nCPUCount;
   if (g_nCPUCount > 0)
     thread_count = g_nCPUCount;
   else
