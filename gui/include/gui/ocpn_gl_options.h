@@ -17,7 +17,8 @@
 
 /**
  * \file
- * Class ocpnGLOptions -- OpenGL runtime options
+ *
+ * OpenGL runtime options
  */
 
 #ifndef _GUI_OCPN_GL_OPTIONS_H_
