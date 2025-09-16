@@ -1073,12 +1073,13 @@ void AISTargetListDialog::CenterToTarget(bool close) {
                              pAISTarget->Lon, scale);
     } else {
       // Set a resonable (1:5000) chart scale to see the target.
+      double factor = 1.;
       if (scale < 0.7) {  // Don't zoom if already close.
         ChartCanvas *cc = gFrame->GetFocusCanvas();
-        double factor = cc->GetScaleValue() / 5000.0;
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                               pAISTarget->Lon, scale * factor);
+        factor = cc->GetScaleValue() / 5000.0;
       }
+      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                             pAISTarget->Lon, scale * factor);
       DoTargetQuery(pAISTarget->MMSI);
       // Close AIS target list
       Shutdown();
