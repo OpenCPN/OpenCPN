@@ -43,8 +43,8 @@ extern bool g_bConfirmObjectDelete;
 extern bool g_bCourseUp;
 extern bool g_bDebugCM93;
 extern bool g_bDebugGPSD;
-extern bool g_bDebugS57;
 extern bool g_bDebugOGL;
+extern bool g_bDebugS57;
 extern bool g_bDisplayGrid;  ///< Should  lat/lon grid be displayed ?
 extern bool g_bEmailCrashReport;
 extern bool g_benable_rotate;
@@ -100,26 +100,26 @@ extern bool g_bSoftwareGL;
 extern bool g_bSpaceDropMark;
 extern bool g_btenhertz;
 extern bool g_btouch;
+extern bool g_btrackContinuous;
 extern bool g_bTrackDaily;
 extern bool g_bTransparentToolbar;
 extern bool g_bUIexpert;
 extern bool g_bUseGLL;
 extern bool g_bUseGreenShip;
-extern bool g_bUserIconsFirst;
 extern bool g_bUseOnlyConfirmedAISName;
+extern bool g_bUserIconsFirst;
 extern bool g_bUseWptScaMin;
 extern bool g_bWayPointPreventDragging;
 extern bool g_bWplUsePosition;
 extern bool g_config_display_size_manual;
-extern bool g_enable_root_menu_debug;
 extern bool g_declutter_anchorage;
+extern bool g_enable_root_menu_debug;
 extern bool g_fog_overzoom;
 extern bool g_own_ship_sog_cog_calc;
 extern bool g_oz_vector_scale;
 extern bool g_persist_active_route;
 extern bool g_useMUI;
 extern bool s_bSetSystemTime;
-extern bool g_btrackContinuous;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;
@@ -141,13 +141,13 @@ extern double g_TrackIntervalSeconds;
 extern double g_UserVar;
 
 extern float g_fNavAidRadarRingsStep;
+extern float g_fNavAidRadarRingsStep;
 extern float g_fWaypointRangeRingsStep;
 extern float g_GLMinSymbolLineWidth;
 extern float g_MarkScaleFactorExp;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
 extern float g_ShipScaleFactorExp;
-extern float g_fNavAidRadarRingsStep;
 
 extern int g_ais_cog_predictor_width;
 extern int g_AndroidVersionCode;
@@ -207,7 +207,6 @@ extern int g_nframewin_x;
 extern int g_nframewin_y;
 extern int g_NMEAAPBPrecision;
 extern int g_nNMEADebug;
-extern int n_NavMessageShown;
 extern int g_n_ownship_min_mm;
 extern int g_nTrackPrecision;
 extern int g_ownship_HDTpredictor_endmarker;
@@ -238,6 +237,7 @@ extern int g_tcwin_scale;
 extern int g_trackFilterMax;
 extern int g_track_line_width;
 extern int g_WplAction;
+extern int n_NavMessageShown;
 extern int sat_watchdog_timeout_ticks;
 
 extern long g_maintoolbar_orient;
@@ -245,13 +245,26 @@ extern long g_maintoolbar_orient;
 extern std::vector<std::string> TideCurrentDataSet;
 extern unsigned g_canvasConfig;
 
-extern wxString g_active_route;
-extern wxString g_android_Device_Model;
+extern wxString gWorldMapLocation;
+extern wxString gWorldShapefileLocation;
 extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
+extern wxString g_CmdSoundString;
+extern wxString g_GPS_Ident;
+extern wxString g_InVisiNameinLayers;
+extern wxString g_InvisibleLayer;
+extern wxString g_InvisibleLayers;
+extern wxString g_ObjQFileExt;
+extern wxString g_SART_sound_file;
+extern wxString g_TCData_Dir;
+extern wxString g_TalkerIdText;
+extern wxString g_UserPresLibData;
+extern wxString g_VisiNameinLayers;
+extern wxString g_VisibleLayers;
+extern wxString g_active_route;
+extern wxString g_android_Device_Model;
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;
-extern wxString g_CmdSoundString;
 extern wxString g_cog_predictor_color;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
@@ -261,30 +274,17 @@ extern wxString g_datetime_format;        // See extended docs below
 extern wxString g_default_font_facename;  // See extended docs below
 extern wxString g_default_routepoint_icon;
 extern wxString g_default_wp_icon;
-extern wxString g_GPS_Ident;
 extern wxString g_gpx_path;
 extern wxString g_hostname;
-extern wxString g_InvisibleLayer;
-extern wxString g_InvisibleLayers;
-extern wxString g_InVisiNameinLayers;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxString g_locale;
 extern wxString g_localeOverride;
-extern wxString g_ObjQFileExt;
 extern wxString g_ownship_HDTpredictor_color;
-extern wxString g_SART_sound_file;
-extern wxString g_TalkerIdText;
-extern wxString g_TCData_Dir;
 extern wxString g_toolbarConfig;
 extern wxString g_uiStyle;  // Not used
 extern wxString g_uploadConnection;
-extern wxString g_UserPresLibData;
-extern wxString g_VisibleLayers;
-extern wxString g_VisiNameinLayers;
 extern wxString g_winPluginDir;  // Base plugin directory on Windows.
 extern wxString g_winPluginDir;  ///< Base plugin directory on Windows.
-extern wxString gWorldMapLocation;
-extern wxString gWorldShapefileLocation;
 
 /** Size of pysical screen in millimeters. */
 extern std::vector<size_t> g_config_display_size_mm;

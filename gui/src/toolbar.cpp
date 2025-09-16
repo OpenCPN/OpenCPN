@@ -738,7 +738,7 @@ void ocpnFloatingToolbarDialog::DestroyToolBar() {
 #include "compass.h"
 #include "chartdb.h"
 
-extern bool g_bTrackActive;
+// extern bool g_bTrackActive;
 extern s52plib *ps52plib;
 
 bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool(ocpnToolBarSimple *tb) {

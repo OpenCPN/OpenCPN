@@ -298,6 +298,9 @@ typedef struct _OSENC_EXTENT_Record_Payload {
 
 #define ATTRIBUTE_ID_PRIM 50000
 
+class s57RegistrarMgr;                   // forward
+extern s57RegistrarMgr *m_pRegistrarMan; /**< Global instance */
+
 const char *MyCSVGetField(const char *pszFilename, const char *pszKeyFieldName,
                           const char *pszKeyFieldValue,
                           CSVCompareCriteria eCriteria,
@@ -311,7 +314,6 @@ class VC_Element;
 class PolyTessGeo;
 class LineGeometryDescriptor;
 class wxFFileInputStream;
-
 typedef std::vector<S57Obj *> S57ObjVector;
 typedef std::vector<VE_Element *> VE_ElementVector;
 typedef std::vector<VC_Element *> VC_ElementVector;

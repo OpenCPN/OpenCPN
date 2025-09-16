@@ -34,8 +34,8 @@
  * Implement color_handler.h -- Global color handling by name.
  */
 
-extern s52plib* ps52plib;                         // In a library...
-extern wxColorHashMap* pcurrent_user_color_hash;  // FIXME (leamas) find a home
+extern s52plib* ps52plib;  // In a library...
+wxColorHashMap* pcurrent_user_color_hash;
 
 wxColour GetGlobalColor(wxString colorName) {
   wxColour ret_color;

@@ -21,7 +21,7 @@
  * Implement ocp_cursor.h -- platform specific wcCursor extension
  */
 
-#include "ocpCursor.h"
+#include "ocp_cursor.h"
 
 #ifdef __WXX11__
 

@@ -54,6 +54,7 @@
 #include "mipmap/mipmap.h"
 #include "ssl/sha1.h"
 
+#include "model/base_platform.h"
 #include "model/config_vars.h"
 #include "model/gui_vars.h"
 #include "model/own_ship.h"
@@ -88,10 +89,7 @@ extern GLuint g_raster_format;  // FIXME (leamas) Find a home
 
 extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find a home
                                         //
-// FIXME (leamas) find a home
-extern bool GetMemoryStatus(int *mem_total, int *mem_used);
-
-glTextureManager *g_glTextureManager;  ///< Global instance
+glTextureManager *g_glTextureManager;   ///< Global instance
 
 static bool bthread_debug;
 
@@ -919,7 +917,7 @@ void glTextureManager::OnTimer(wxTimerEvent &event) {
 
     // inventory
     int mem_total, mem_used;
-    GetMemoryStatus(&mem_total, &mem_used);
+    platform::GetMemoryStatus(&mem_total, &mem_used);
 
     int map_size = 0;
     int comp_size = 0;
@@ -1009,7 +1007,7 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
     todo_list.insert(todo_list.begin(), pt);  // push to front as a stack
     if (bthread_debug) {
       int mem_used;
-      GetMemoryStatus(0, &mem_used);
+      platform::GetMemoryStatus(0, &mem_used);
       printf("Adding job: %08X  Job Count: %lu  mem_used %d\n", pt->ident,
              (unsigned long)todo_list.size(), mem_used);
     }
@@ -1236,7 +1234,7 @@ bool glTextureManager::FactoryCrunch(double factor) {
   }
 
   int mem_used;
-  GetMemoryStatus(0, &mem_used);
+  platform::GetMemoryStatus(0, &mem_used);
   double hysteresis = 0.90;
   ChartPathHashTexfactType::iterator it0;
 
@@ -1294,7 +1292,7 @@ bool glTextureManager::FactoryCrunch(double factor) {
 
   ptf_oldest->FreeSome(g_memCacheLimit * factor * hysteresis);
 
-  GetMemoryStatus(0, &mem_used);
+  platform::GetMemoryStatus(0, &mem_used);
 
   bMemCrunch = (g_memCacheLimit &&
                 ((mem_used > (double)(g_memCacheLimit)*factor * hysteresis &&

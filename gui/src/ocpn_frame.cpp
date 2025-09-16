@@ -138,6 +138,7 @@
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
+#include "SoundFactory.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
 #include "timers.h"
@@ -162,7 +163,7 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 //
 extern OCPN_AUIManager *g_pauimgr;
 extern MyConfig *pConfig;
-extern arrayofCanvasPtr g_canvasArray;
+arrayofCanvasPtr g_canvasArray;
 extern MyFrame *gFrame;
 extern AISTargetListDialog *g_pAISTargetList;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
@@ -176,7 +177,8 @@ extern GoToPositionDialog *pGoToPositionDialog;
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
 extern S57QueryDialog *g_pObjectQueryDialog;
 extern About *g_pAboutDlgLegacy;
-extern AboutFrameImpl *g_pAboutDlg;
+
+static AboutFrameImpl *g_pAboutDlg;
 
 extern double vLat, vLon;
 extern wxString g_locale;
@@ -218,7 +220,7 @@ extern bool g_bShowCompassWin;
 extern bool g_benable_rotate;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
-extern int g_last_ChartScaleFactor;
+static int g_last_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
 extern int g_ENCTextScaleFactor;
@@ -231,7 +233,8 @@ extern wxString g_default_wp_icon;
 extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 extern TCMgr *ptcmgr;
-extern char nmea_tick_chars[];
+
+static char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 extern double AnchorPointMinDist;
 extern bool AnchorAlertOn1, AnchorAlertOn2;
 extern wxString g_AW1GUID;
@@ -241,7 +244,6 @@ extern double g_COGAvg;
 extern int g_COGAvgSec;
 extern ActiveTrack *g_pActiveTrack;
 extern std::vector<Track *> g_TrackList;
-extern double gQueryVar;
 extern int g_ChartUpdatePeriod;
 extern int g_SkewCompUpdatePeriod;
 extern bool g_bCourseUp;
@@ -259,8 +261,8 @@ extern int g_tick;
 extern ChartDB *ChartData;
 extern bool g_bDeferredInitDone;
 extern int options_lastPage;
-extern int options_subpage;
-extern bool b_reloadForPlugins;
+static int options_subpage = 0;
+static bool b_reloadForPlugins;
 extern ChartCanvas *g_focusCanvas;
 extern int g_NeedDBUpdate;
 extern bool g_bFullscreen;
@@ -273,8 +275,10 @@ extern wxString ChartListFileName;
 extern bool g_bFullscreenToolbar;
 extern arrayofCanvasPtr g_canvasArray;
 extern wxString g_lastAppliedTemplateGUID;
-extern wxPoint options_lastWindowPos;
-extern wxSize options_lastWindowSize;
+
+static wxSize options_lastWindowSize(0, 0);
+static wxPoint options_lastWindowPos(0, 0);
+
 extern unsigned int g_canvasConfig;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltEnable;
@@ -299,35 +303,45 @@ extern bool g_bquiting;
 extern bool b_inCloseWindow;
 extern bool b_inCompressAllCharts;
 extern long g_maintoolbar_orient;
-extern wxAuiDefaultDockArt *g_pauidockart;
 extern int g_click_stop;
 extern wxString g_CmdSoundString;
-extern std::vector<OcpnSound *> bells_sound;
-extern char bells_sound_file_name[2][12];
+extern s57RegistrarMgr *m_pRegistrarMan;
+extern wxString g_UserPresLibData;
+extern wxString g_SENCPrefix;
+extern wxString g_csv_locn;
+extern SENCThreadManager *g_SencThreadManager;
 extern int g_sticky_chart;
-extern int g_sticky_projection;
-extern wxArrayPtrVoid *UserColourHashTableArray;
+
 extern wxColorHashMap *pcurrent_user_color_hash;
 
 // probable move to ocpn_app
 extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
-extern bool g_bHasHwClock;
+// extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
 extern bool bVelocityValid;
-extern int gHDx_Watchdog;
 extern AisInfoGui *g_pAISGUI;
 
 extern bool g_bUseGLL;
 extern int g_MemFootMB;
 extern Multiplexer *g_pMUX;
-extern int g_memUsed;
+static int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
 extern bool g_config_display_size_manual;
 extern bool g_PrintingInProgress;
 extern bool g_disable_main_toolbar;
 extern bool g_btenhertz;
 extern bool g_declutter_anchorage;
+
+// Values returned from WMM_PI for variation computation request.
+// Initialize to invalid so we don't use it if WMM hasn't updated yet
+static double gQueryVar = 361.0;
+
+static char bells_sound_file_name[2][12] = {"1bells.wav", "2bells.wav"};
+static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
+static std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
+
+static wxArrayPtrVoid *UserColourHashTableArray;
 
 MyFrame *gFrame;
 
@@ -699,10 +713,12 @@ static NmeaLog *GetDataMonitor() {
 
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
-                 const wxSize &size, long style)
+                 const wxSize &size, long style,
+                 wxAuiDefaultDockArt *pauidockart)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
       m_connections_dlg(nullptr),
-      m_data_monitor(new DataMonitor(this)) {
+      m_data_monitor(new DataMonitor(this)),
+      m_pauidockart(pauidockart) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
@@ -864,7 +880,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
   g_sticky_chart = -1;
-  g_sticky_projection = -1;
   m_BellsToPlay = 0;
 
   m_resizeTimer.SetOwner(this, RESIZE_TIMER);
@@ -1067,45 +1082,45 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
       break;
   }
 
-  g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+  m_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
 
-  g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0, 0, 0));
-  g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
-  g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
-  g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
-  g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
+  m_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
+  m_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
+  m_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
                            wxColour(0, 0, 0));
-  g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0, 0, 0));
 
   //    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT )
   //    {
-  //        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
-  //        g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
+  //        m_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+  //        m_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
   //        wxColour(0,0,0));
-  //        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
+  //        m_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
   //        wxColour(0,0,0));
   //    }
 
   //      else{
-  //          g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE,
+  //          m_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE,
   //          g_grad_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
   //          g_border_color_default);
-  //          g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE,
+  //          m_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE,
   //          g_border_size_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR,
   //          g_sash_color_default);
-  //          g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE,
+  //          m_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE,
   //          g_sash_size_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
   //          g_caption_color_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
   //          g_background_color_default);
   //
   //      }
 
-  g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
-  g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);
+  m_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);
 
   g_pauimgr->Update();
 
@@ -6291,156 +6306,7 @@ void MyFrame::MouseEvent(wxMouseEvent &event) {
 
 int g_lastMemTick = -1;
 
-/* Return total system RAM and size of program */
-/* Values returned are in kilobytes            */
-bool GetMemoryStatus(int *mem_total, int *mem_used) {
-#ifdef __ANDROID__
-  return androidGetMemoryStatus(mem_total, mem_used);
-#endif
-
-#if defined(__linux__)
-  // Use sysinfo to obtain total RAM
-  if (mem_total) {
-    *mem_total = 0;
-    struct sysinfo sys_info;
-    if (sysinfo(&sys_info) != -1)
-      *mem_total = ((uint64_t)sys_info.totalram * sys_info.mem_unit) / 1024;
-  }
-  //      Use filesystem /proc/self/statm to determine memory status
-  //  Provides information about memory usage, measured in pages.  The columns
-  //  are: size       total program size (same as VmSize in /proc/[pid]/status)
-  //  resident   resident set size (same as VmRSS in /proc/[pid]/status)
-  //  share      shared pages (from shared mappings)
-  //  text       text (code)
-  //  lib        library (unused in Linux 2.6)
-  //  data       data + stack
-  //  dt         dirty pages (unused in Linux 2.6)
-
-  if (mem_used) {
-    *mem_used = 0;
-    FILE *file = fopen("/proc/self/statm", "r");
-    if (file) {
-      if (fscanf(file, "%d", mem_used) != 1) {
-        wxLogWarning("Cannot parse /proc/self/statm (!)");
-      }
-      *mem_used *= 4;  // XXX assume 4K page
-      fclose(file);
-    }
-  }
-
-  return true;
-
-#endif /* __linux__ */
-
-#ifdef __WXMSW__
-  HANDLE hProcess;
-  PROCESS_MEMORY_COUNTERS pmc;
-
-  unsigned long processID = wxGetProcessId();
-
-  if (mem_used) {
-    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,
-                           processID);
-
-    if (hProcess && GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
-      /*
-       printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
-       printf( "\tPeakWorkingSetSize: 0x%08X\n",
-       pmc.PeakWorkingSetSize );
-       printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
-       printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaPeakPagedPoolUsage );
-       printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaPagedPoolUsage );
-       printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaPeakNonPagedPoolUsage );
-       printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaNonPagedPoolUsage );
-       printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
-       printf( "\tPeakPagefileUsage: 0x%08X\n",
-       pmc.PeakPagefileUsage );
-       */
-      *mem_used = pmc.WorkingSetSize / 1024;
-    }
-
-    CloseHandle(hProcess);
-  }
-
-  if (mem_total) {
-    MEMORYSTATUSEX statex;
-
-    statex.dwLength = sizeof(statex);
-
-    GlobalMemoryStatusEx(&statex);
-    /*
-     _tprintf (TEXT("There is  %*ld percent of memory in use.\n"),
-     WIDTH, statex.dwMemoryLoad);
-     _tprintf (TEXT("There are %*I64d total Kbytes of physical memory.\n"),
-     WIDTH, statex.ullTotalPhys/DIV);
-     _tprintf (TEXT("There are %*I64d free Kbytes of physical memory.\n"),
-     WIDTH, statex.ullAvailPhys/DIV);
-     _tprintf (TEXT("There are %*I64d total Kbytes of paging file.\n"),
-     WIDTH, statex.ullTotalPageFile/DIV);
-     _tprintf (TEXT("There are %*I64d free Kbytes of paging file.\n"),
-     WIDTH, statex.ullAvailPageFile/DIV);
-     _tprintf (TEXT("There are %*I64d total Kbytes of virtual memory.\n"),
-     WIDTH, statex.ullTotalVirtual/DIV);
-     _tprintf (TEXT("There are %*I64d free Kbytes of virtual memory.\n"),
-     WIDTH, statex.ullAvailVirtual/DIV);
-     */
-
-    *mem_total = statex.ullTotalPhys / 1024;
-  }
-  return true;
-#endif
-
-#ifdef __WXMAC__
-
-  if (g_tick != g_lastMemTick) {
-    malloc_zone_pressure_relief(NULL, 0);
-
-    int bytesInUse = 0;
-    int blocksInUse = 0;
-    int sizeAllocated = 0;
-
-    malloc_statistics_t stats;
-    stats.blocks_in_use = 0;
-    stats.size_in_use = 0;
-    stats.max_size_in_use = 0;
-    stats.size_allocated = 0;
-    malloc_zone_statistics(NULL, &stats);
-    bytesInUse += stats.size_in_use;
-    blocksInUse += stats.blocks_in_use;
-    sizeAllocated += stats.size_allocated;
-
-    g_memUsed = sizeAllocated >> 10;
-
-    // printf("mem_used (Mb):  %d   %d \n", g_tick, g_memUsed / 1024);
-    g_lastMemTick = g_tick;
-  }
-
-  if (mem_used) *mem_used = g_memUsed;
-  if (mem_total) {
-    *mem_total = 4000;
-    FILE *fpIn = popen("sysctl -n hw.memsize", "r");
-    if (fpIn) {
-      double pagesUsed = 0.0, totalPages = 0.0;
-      char buf[64];
-      if (fgets(buf, sizeof(buf), fpIn) != NULL) {
-        *mem_total = atol(buf) >> 10;
-      }
-    }
-  }
-
-  return true;
-#endif
-
-  if (mem_used) *mem_used = 0;
-  if (mem_total) *mem_total = 0;
-  return false;
-}
-
-void MyFrame::DoPrint() {
+void MyFrame::DoPrint(void) {
   // avoid toolbars being printed
   g_PrintingInProgress = true;
 #ifdef ocpnUSE_GL
@@ -7957,12 +7823,6 @@ void ApplyLocale() {
     gFrame->RequestNewMasterToolbar(true);
   }
 }
-
-extern s57RegistrarMgr *m_pRegistrarMan;
-extern wxString g_UserPresLibData;
-extern wxString g_SENCPrefix;
-extern wxString g_csv_locn;
-extern SENCThreadManager *g_SencThreadManager;
 
 void LoadS57() {
   if (ps52plib)  // already loaded?

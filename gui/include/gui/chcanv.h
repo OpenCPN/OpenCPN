@@ -53,7 +53,7 @@
 #include "notification_manager_gui.h"
 #include "observable_evtvar.h"
 #include "observable.h"
-#include "ocpCursor.h"
+#include "ocp_cursor.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_plugin.h"

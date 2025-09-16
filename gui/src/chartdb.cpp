@@ -33,8 +33,9 @@
 #include <wx/tokenzr.h>
 #include <wx/dir.h>
 
-#include "dychart.h"
+#include <model/base_platform.h>
 
+#include "dychart.h"
 #include "config.h"
 #include "chartdb.h"
 #include "chartimg.h"
@@ -62,9 +63,6 @@
 #include "cm93.h"
 
 extern ColorScheme GetColorScheme();  // library dependency
-
-// In ocpn_frame, to be moved to a sane location FIXME (leamas)
-extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 class s52plib;
 extern s52plib *ps52plib;  // library dependency
@@ -325,7 +323,7 @@ void ChartDB::PurgeCacheUnusedCharts(double factor) {
     if (wxMUTEX_NO_ERROR == m_cache_mutex.TryLock()) {
       //    Check memory status to see if above limit
       int mem_used;
-      GetMemoryStatus(0, &mem_used);
+      platform::GetMemoryStatus(0, &mem_used);
       int mem_limit = g_memCacheLimit * factor;
 
       int nl = pChartCache->GetCount();  // max loop count, by definition
@@ -347,7 +345,7 @@ void ChartDB::PurgeCacheUnusedCharts(double factor) {
           break;
         }
 
-        GetMemoryStatus(0, &mem_used);
+        platform::GetMemoryStatus(0, &mem_used);
 
         nl--;
       }
@@ -1122,7 +1120,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
         if (g_memCacheLimit) {
           //    Check memory status to see if enough room to open another chart
           int mem_used;
-          GetMemoryStatus(0, &mem_used);
+          platform::GetMemoryStatus(0, &mem_used);
 
           wxString msg;
           msg.Printf("OpenChartUsingCache, NOT in cache:   cache size: %d\n",
@@ -1142,7 +1140,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
               // purge texture cache, really need memory here
               DeleteCacheEntry(pce, true, msg);
 
-              GetMemoryStatus(0, &mem_used);
+              platform::GetMemoryStatus(0, &mem_used);
               if ((mem_used < g_memCacheLimit * 8 / 10) ||
                   (pChartCache->GetCount() <= 2))
                 break;

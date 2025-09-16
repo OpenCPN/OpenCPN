@@ -107,8 +107,6 @@
 #include "androidUTIL.h"
 #endif
 
-wxArrayString *pMessageOnceArray;
-
 MyConfig *pConfig;  ///< Global instance
 static bool g_bLayersLoaded;
 
@@ -120,6 +118,19 @@ extern ocpnGLOptions g_GLOptions;
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
+
+namespace navutil {
+
+wxArrayString *pMessageOnceArray;
+
+void InitGlobals() { pMessageOnceArray = new wxArrayString(); }
+
+void DeinitGlobals() {
+  delete pMessageOnceArray;
+  pMessageOnceArray = nullptr;
+}
+
+}  // namespace navutil
 
 // Layer helper function
 
@@ -2836,12 +2847,12 @@ wxString FormatGPXDateTime(wxDateTime dt) {
 bool LogMessageOnce(const wxString &msg) {
   //    Search the array for a match
 
-  for (unsigned int i = 0; i < pMessageOnceArray->GetCount(); i++) {
-    if (msg.IsSameAs(pMessageOnceArray->Item(i))) return false;
+  for (unsigned int i = 0; i < navutil::pMessageOnceArray->GetCount(); i++) {
+    if (msg.IsSameAs(navutil::pMessageOnceArray->Item(i))) return false;
   }
 
   // Not found, so add to the array
-  pMessageOnceArray->Add(msg);
+  navutil::pMessageOnceArray->Add(msg);
 
   //    And print it
   wxLogMessage(msg);

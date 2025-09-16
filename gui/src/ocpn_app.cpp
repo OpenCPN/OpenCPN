@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,21 +16,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ocpn_app.h -- OpenCPN main program
+ */
+
 #include "config.h"
-
-#ifdef __MINGW32__
-#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
-#include <windows.h>
-#endif
-
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-#ifdef __WXMSW__
-// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
-#endif
 
 #include <algorithm>
 #include <limits.h>
@@ -60,23 +47,34 @@
 #include <X11/Xlib.h>
 #endif
 
-#if (defined(OCPN_GHC_FILESYSTEM) || \
-     (defined(__clang_major__) && (__clang_major__ < 15)))
-// MacOS 1.13
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#else
-#include <filesystem>
-#include <utility>
-namespace fs = std::filesystem;
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
 #endif
 
-using namespace std::literals::chrono_literals;
+#ifdef __MINGW32__
+#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
+#ifdef __WXMSW__
+// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
+#endif
+
+#if defined(__WXMSW__) && defined(__MSVC__LEAK)
+#include "Stackwalker.h"
+#endif
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
 
 #include <wx/apptrait.h>
 #include <wx/arrimpl.cpp>
 #include <wx/artprov.h>
 #include <wx/aui/aui.h>
+#include <wx/aui/dockart.h>
 #include <wx/clrpicker.h>
 #include <wx/cmdline.h>
 #include <wx/dialog.h>
@@ -150,6 +148,7 @@ using namespace std::literals::chrono_literals;
 #include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "Osenc.h"
 #include "options.h"
 #include "rest_server_gui.h"
 #include "route_ctx_factory.h"
@@ -161,11 +160,13 @@ using namespace std::literals::chrono_literals;
 #include "S57QueryDialog.h"
 #include "safe_mode_gui.h"
 #include "SoundFactory.h"
+#include "std_filesystem.h"
 #include "styles.h"
 #include "tcmgr.h"
 #include "thumbwin.h"
 #include "TrackPropDlg.h"
 #include "udev_rule_mgr.h"
+#include "wiz_ui.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
@@ -180,12 +181,12 @@ using namespace std::literals::chrono_literals;
 void RedirectIOToConsole();
 #endif
 
-#if defined(__WXMSW__) && defined(__MSVC__LEAK)
-#include "Stackwalker.h"
-#endif
-
 #ifdef LINUX_CRASHRPT
 #include "crashprint.h"
+#endif
+
+#ifdef __WXOSX__
+#include "model/macutils.h"
 #endif
 
 #ifdef __ANDROID__
@@ -193,7 +194,8 @@ void RedirectIOToConsole();
 #else
 #include "serial/serial.h"
 #endif
-#include "wiz_ui.h"
+
+using namespace std::literals::chrono_literals;
 
 const char *const kUsage =
     R"(Usage:
@@ -253,158 +255,35 @@ wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
-bool g_bFirstRun;
-bool g_bUpgradeInProcess;
+static int user_user_id;
+static int file_user_id;
 
-bool g_bPauseTest;
-
-// Files specified on the command line, if any.
-
-wxString ChartListFileName;
-wxString gDefaultWorldMapLocation;
-wxString g_csv_locn;
-
-int g_FlushNavobjChangesTimeout;
-
-int user_user_id;
-int file_user_id;
-
-int quitflag;
-int g_tick = 0;
-int g_mem_total, g_mem_initial;
+static int g_mem_total, g_mem_initial;
 
 static unsigned int malloc_max;
 
-wxDateTime g_start_time;
-wxDateTime g_loglast_time;
-static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
-std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
+static int osMajor, osMinor;
 
-bool g_bCruising;
-
-bool g_bTransparentToolbarInOpenGLOK;
-
-wxArrayPtrVoid *UserColourHashTableArray;
-wxColorHashMap *pcurrent_user_color_hash;
-
-bool bVelocityValid;
-
-int gHDx_Watchdog;
-
-int g_ChartUpdatePeriod;
-
-int g_last_ChartScaleFactor;
-
-s57RegistrarMgr *m_pRegistrarMan;
-
-#ifdef __WXOSX__
-#include "model/macutils.h"
-#endif
-
-// begin rms
-#ifdef __WXOSX__
-#ifdef __WXMSW__
-#ifdef USE_GLU_TESS
-#ifdef USE_GLU_DLL
-// end rms
-extern bool s_glu_dll_ready;
-extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
-#endif
-#endif
-#endif
-#endif
-
-AisInfoGui *g_pAISGUI;
-int gpIDXn;
-long gStart_LMT_Offset;
-
-extern wxArrayString *pMessageOnceArray;
-
-int options_lastPage = 0;
-int options_subpage = 0;
-
-wxPoint options_lastWindowPos(0, 0);
-wxSize options_lastWindowSize(0, 0);
-
-bool g_bSleep;
-
-int osMajor, osMinor;
-
-bool GetMemoryStatus(int *mem_total, int *mem_used);
-bool g_bHasHwClock;
-bool g_bTrackActive;
-bool g_bDeferredStartTrack;
-int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
-                     // no chart database, inform user, 2 - Start update right
-                     // away
-AboutFrameImpl *g_pAboutDlg;
+static bool g_bHasHwClock;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
 #endif
 
-int g_AisTargetList_count;
-bool g_bAisTargetList_autosort;
-
-wxAuiDefaultDockArt *g_pauidockart;
-int g_GPU_MemSize;
-
-// Values returned from WMM_PI for variation computation request.
-// Initialize to invalid so we don't use it if WMM hasn't updated yet
-double gQueryVar = 361.0;
-
-char bells_sound_file_name[2][12] = {"1bells.wav", "2bells.wav"};
-
-int portaudio_initialized;
-
-char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
-
-int g_sticky_projection;
-
-/**
- * Flag to control adaptive UI scaling.
- *
- * When true, OpenCPN will automatically maximize the application window
- * if the pixel density suggests a touch-friendly device.
- *
- * This helps ensure better usability on mobile and tablet devices by
- * providing a full-screen interface optimized for touch interaction.
- *
- * @note For the most part, the use of this feature is conditionally compiled
- * for Android builds only.
- */
-
-wxArrayString g_locale_catalog_array;
-bool b_reloadForPlugins;
-
-bool g_bmasterToolbarFull = true;
-
-int g_memUsed;
-
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
-arrayofCanvasPtr g_canvasArray;
-
-bool b_inCloseWindow;
-bool g_disable_main_toolbar;
-bool g_bhide_route_console;
-
 #ifdef LINUX_CRASHRPT
-wxCrashPrint g_crashprint;
+static wxCrashPrint g_crashprint;
 #endif
 
 #ifndef __WXMSW__
 sigjmp_buf env;  // the context saved by sigsetjmp();
-#endif
+#endif           // FIXME (leamas)  Use exceptions
 
 // {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
 #ifdef __WXMSW__
 DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
             0x6b, 0xba, 0xe7, 0x22, 0xc0);
-#endif
-
-#ifdef __VISUALC__
-#include <wx/msw/msvcrt.h>
 #endif
 
 #if !defined(NAN)
@@ -826,7 +705,7 @@ bool MyApp::OnInit() {
   malloc_max = 0;
 
   //      Record initial memory status
-  GetMemoryStatus(&g_mem_total, &g_mem_initial);
+  platform::GetMemoryStatus(&g_mem_total, &g_mem_initial);
 
   // Set up default FONT encoding, which should have been done by wxWidgets some
   // time before this......
@@ -920,7 +799,7 @@ bool MyApp::OnInit() {
 
   //      Create an array string to hold repeating messages, so they don't
   //      overwhelm the log
-  pMessageOnceArray = new wxArrayString;
+  navutil::InitGlobals();
 
   //      Init the Route Manager
   g_pRouteMan =
@@ -1338,8 +1217,12 @@ bool MyApp::OnInit() {
               new_frame_size.x, new_frame_size.y, position.x, position.y);
   wxLogMessage(fmsg);
 
+  g_pauimgr = new OCPN_AUIManager;
+  auto dockart = new wxAuiDefaultDockArt;
+  g_pauimgr->SetArtProvider(dockart);
+
   gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size,
-                       app_style);
+                       app_style, dockart);
   wxTheApp->SetTopWindow(gFrame);
 
   //  Do those platform specific initialization things that need gFrame
@@ -1349,9 +1232,6 @@ bool MyApp::OnInit() {
   g_pi_manager = new PlugInManager(gFrame);
 
   // g_pauimgr = new wxAuiManager;
-  g_pauimgr = new OCPN_AUIManager;
-  g_pauidockart = new wxAuiDefaultDockArt;
-  g_pauimgr->SetArtProvider(g_pauidockart);
   g_pauimgr->SetDockSizeConstraint(.9, .9);
 
   // g_pauimgr->SetFlags(g_pauimgr->GetFlags() | wxAUI_MGR_LIVE_RESIZE);
@@ -1761,7 +1641,7 @@ int MyApp::OnExit() {
   delete g_pRouteMan;
   delete pWayPointMan;
 
-  delete pMessageOnceArray;
+  navutil::DeinitGlobals();
 
   DeInitializeUserColors();
 
@@ -1771,16 +1651,6 @@ int MyApp::OnExit() {
   CSVDeaccess(NULL);
 
   delete g_StyleManager;
-
-#ifdef __WXMSW__
-#ifdef USE_GLU_TESS
-#ifdef USE_GLU_DLL
-  if (s_glu_dll_ready) {
-    FreeLibrary(s_hGLU_DLL);
-  }  // free the glu32.dll
-#endif
-#endif
-#endif
 
   // Restore any changed system colors
 
