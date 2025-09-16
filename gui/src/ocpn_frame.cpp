@@ -123,7 +123,7 @@
 #include "navutil.h"
 #include "ocpn_app.h"
 #include "ocpn_plugin.h"
-#include "OCPN_AUIManager.h"
+#include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"

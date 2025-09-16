@@ -831,7 +831,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/OCPNListCtrl.h
     ${GUI_HDR_DIR}/ocpn_pixel.h
     ${GUI_HDR_DIR}/OCPNPlatform.h
-    ${GUI_HDR_DIR}/OCPN_AUIManager.h
+    ${GUI_HDR_DIR}/ocpn_aui_manager.h
     ${GUI_HDR_DIR}/OCPNRegion.h
     ${GUI_HDR_DIR}/options.h
     ${GUI_HDR_DIR}/piano.h
@@ -951,7 +951,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ocp_cursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
     ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
-    ${GUI_SRC_DIR}/OCPN_AUIManager.cpp
+    ${GUI_SRC_DIR}/ocpn_aui_manager.cpp
     ${GUI_SRC_DIR}/ocpndc.cpp
     ${GUI_SRC_DIR}/ocpn_frame.cpp
     ${GUI_SRC_DIR}/OCPNListCtrl.cpp

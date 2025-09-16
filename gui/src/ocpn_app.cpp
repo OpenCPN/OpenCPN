@@ -145,7 +145,7 @@
 #include "navutil.h"
 #include "observable.h"
 #include "ocpn_app.h"
-#include "OCPN_AUIManager.h"
+#include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "Osenc.h"

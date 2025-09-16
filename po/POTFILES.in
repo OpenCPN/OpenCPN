@@ -236,7 +236,7 @@ gui/include/gui/n0183_ctx_factory.h
 gui/include/gui/navutil.h
 gui/include/gui/ocp_cursor.h
 gui/include/gui/ocpn_app.h
-gui/include/gui/OCPN_AUIManager.h
+gui/include/gui/ocpn_aui_manager.h
 gui/include/gui/ocpndc.h
 gui/include/gui/ocpn_frame.h
 gui/include/gui/OCPNListCtrl.h
