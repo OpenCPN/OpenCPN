@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Platform specific support utilities
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * OpenCPN Platform specific support utilities
+ */
 
 #ifndef OCPNPLATFORM_H
 #define OCPNPLATFORM_H
@@ -54,21 +52,15 @@
 #include <wx/window.h>
 
 #include "model/base_platform.h"
+#include "chartdbs.h"
+#include "navutil.h"
 
 class OCPNPlatform;              // forward
 extern OCPNPlatform *g_Platform; /**< Global instance. */
 
-class MyConfig;
-class ArrayOfCDI;
-
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
-
-// #ifdef __WXQT__
-// extern bool LoadQtStyleSheet(wxString &sheet_file);
-// extern QString getQtStyleSheet( void );
-// #endif
 
 /**
  * Provides platform-specific support utilities for OpenCPN. Extends
@@ -82,9 +74,9 @@ public:
   virtual ~OCPNPlatform();
 
   //      Internal Device Support
-  static bool hasInternalGPS(wxString profile = _T(""));  // GPS
+  static bool hasInternalGPS(wxString profile = "");  // GPS
 
-  static bool hasInternalBT(wxString profile = _T(""));  // Bluetooth
+  static bool hasInternalBT(wxString profile = "");  // Bluetooth
   bool startBluetoothScan();
   wxArrayString getBluetoothScanResults();
   bool stopBluetoothScan();
@@ -214,14 +206,14 @@ public:
                        const wxPoint &pos = wxDefaultPosition,
                        const wxSize &size = wxDefaultSize, long style = 0,
                        const wxValidator &validator = wxDefaultValidator,
-                       const wxString &name = _T(""));
+                       const wxString &name = "");
 
   bool Create(wxWindow *parent, wxWindowID id,
               const wxColour &initial = *wxBLACK,
               const wxPoint &pos = wxDefaultPosition,
               const wxSize &size = wxDefaultSize, long style = 0,
               const wxValidator &validator = wxDefaultValidator,
-              const wxString &name = _T(""));
+              const wxString &name = "");
 
   void OnButtonClick(wxCommandEvent &WXUNUSED(ev));
   void InitColourData();
