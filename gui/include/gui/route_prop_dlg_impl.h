@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,29 +12,34 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Route properties dialog.
+ */
 
 #pragma once
 #ifndef _ROUTEPROPDLGIMPL_H_
 #define _ROUTEPROPDLGIMPL_H_
 
-#include "route_prop_dlg.h"
-#include "model/route.h"
+#include <cmath>
+
 #include <wx/dataview.h>
 #include <wx/dvrenderers.h>
+
+#include "model/config_vars.h"
 #include "model/ocpn_types.h"
+#include "model/route.h"
+
 #include "color_types.h"
-#include <cmath>
 #include "link_prop_dlg.h"
+#include "route_prop_dlg.h"
 
-class RoutePropDlgImpl;  // forward
-
+class RoutePropDlgImpl;                    // forward
 extern RoutePropDlgImpl* pRoutePropDialog; /**< Global instance. */
-
-extern int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
 
 class RoutePropDlgImpl : public RoutePropDlg {
 public:
