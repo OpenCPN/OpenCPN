@@ -14,13 +14,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Route UI stuff
  */
 
@@ -32,34 +31,29 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
-#include "dialog_alert.h"
-
-#include "color_handler.h"
-#include "chartbase.h"
 #include "model/comm_n0183_output.h"
 #include "model/georef.h"
-#include "gui_lib.h"
 #include "model/multiplexer.h"
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/routeman.h"
+
+#include "chartbase.h"
+#include "color_handler.h"
+#include "dialog_alert.h"
+#include "gl_chart_canvas.h"
+#include "gui_lib.h"
+#include "line_clip.h"
 #include "n0183_ctx_factory.h"
 #include "navutil.h"
-#include "model/own_ship.h"
-#include "model/routeman.h"
+#include "ocpn_gl_options.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
-#include "gl_chart_canvas.h"
-#include "line_clip.h"
-#include "model/route.h"
 
-extern Routeman *g_pRouteMan;
-extern wxColour g_colourTrackLineColour;
-extern Multiplexer *g_pMUX;
-
+// In ocpn_frame FIXME (leamas) find new home
 extern wxColor GetDimColor(wxColor c);
-extern bool g_bHighliteTracks;
 
-extern ocpnGLOptions g_GLOptions;
-
-extern int s_arrow_icon[];
+static int s_arrow_icon[] = {0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0};
 
 static void TestLongitude(double lon, double min, double max, bool &lonl,
                           bool &lonr) {
@@ -101,7 +95,7 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
     wxPenStyle style = wxPENSTYLE_SOLID;
     wxColour col;
     if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
-    if (m_route.m_Colour == wxEmptyString) {
+    if (m_route.m_Colour == "") {
       col = g_pRouteMan->GetRoutePen()->GetColour();
     } else {
       for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
@@ -224,7 +218,7 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
         cohen_sutherland_line_clip_i(&x0, &y0, &x1, &y1, 0, sx, 0, sy)) {
       wxPen psave = dc.GetPen();
 
-      wxColour y = GetGlobalColor(_T ( "YELO1" ));
+      wxColour y = GetGlobalColor("YELO1");
       wxColour hilt(y.Red(), y.Green(), y.Blue(), 128);
 
       wxPen HiPen(hilt, hilite_width, wxPENSTYLE_SOLID);
@@ -391,7 +385,7 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   //  Hiliting first
   //  Being special case to draw something for a 1 point route....
   if (m_route.m_hiliteWidth) {
-    wxColour y = GetGlobalColor(_T ( "YELO1" ));
+    wxColour y = GetGlobalColor("YELO1");
     wxColour hilt(y.Red(), y.Green(), y.Blue(), 128);
 
     wxPen HiPen(hilt, m_route.m_hiliteWidth, wxPENSTYLE_SOLID);
@@ -412,7 +406,7 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   } else if (m_route.m_bRtIsSelected) {
     col = g_pRouteMan->GetSelectedRoutePen()->GetColour();
   } else {
-    if (m_route.m_Colour == wxEmptyString) {
+    if (m_route.m_Colour == "") {
       col = g_pRouteMan->GetRoutePen()->GetColour();
     } else {
       for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
