@@ -475,9 +475,10 @@ public:
   /**
    * Return the number of logical pixels per meter for the screen.
    *
-   * @todo The name of this function is misleading. It should be renamed to
-   * GetCanvasLogicalPixelsPerMeter() or similar. It looks like some callers
-   * are expecting the physical pixels per meter, which is incorrect.
+   * @todo The name of this function is misleading. It should be renamed
+   * tgui/include/gui/quilt.ho GetCanvasLogicalPixelsPerMeter() or similar. It
+   * looks like some callers are expecting the physical pixels per meter, which
+   * is incorrect.
    */
   double GetCanvasScaleFactor() { return m_canvas_scale_factor; }
   /*chcanv*
