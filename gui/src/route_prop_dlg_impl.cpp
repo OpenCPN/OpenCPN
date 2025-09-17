@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement route_props_dlg_impl.h -- route properties dialog
+ */
 
 #include <wx/clipbrd.h>
 
@@ -28,10 +28,12 @@
 #include "model/routeman.h"
 #include "model/select.h"
 
+#include "model/navobj_db.h"
+#include "model/navutil_base.h"
+
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "mark_info.h"
-#include "model/navutil_base.h"
 #include "navutil.h"
 #include "ocpn_plugin.h"
 #include "print_dialog.h"
@@ -39,7 +41,6 @@
 #include "route_printout.h"
 #include "route_prop_dlg_impl.h"
 #include "tcmgr.h"
-#include "model/navobj_db.h"
 
 #define UTCINPUT 0  //!< Format date/time in UTC.
 #define LTINPUT \
@@ -57,24 +58,6 @@
 #define COLUMN_PLANNED_SPEED 9
 #define COLUMN_ETD 13
 
-RoutePropDlgImpl* pRoutePropDialog;
-
-extern wxString GetLayerName(int id);
-
-extern Routeman* g_pRouteMan;
-extern MyConfig* pConfig;
-extern ColorScheme global_color_scheme;
-extern RouteList* pRouteList;
-extern MyFrame* gFrame;
-extern RouteManagerDialog* pRouteManagerDialog;
-extern TCMgr* ptcmgr;
-
-// Sunrise/twilight calculation for route properties.
-// limitations: latitude below 60, year between 2000 and 2100
-// riset is +1 for rise -1 for set
-// adapted by author's permission from QBASIC source as published at
-//     http://www.stargazing.net/kepler
-
 #ifndef PI
 #define PI (4. * atan(1.0))
 #endif
@@ -89,6 +72,16 @@ extern TCMgr* ptcmgr;
 #define SUNSET 4
 #define EVTWILIGHT 5
 #define NIGHT 6
+
+RoutePropDlgImpl* pRoutePropDialog;
+
+extern wxString GetLayerName(int id);  // in ocpn_frame FIXME leamas)
+
+// Sunrise/twilight calculation for route properties.
+// limitations: latitude below 60, year between 2000 and 2100
+// riset is +1 for rise -1 for set
+// adapted by author's permission from QBASIC source as published at
+//     http://www.stargazing.net/kepler
 
 static wxString GetDaylightString(int index) {
   switch (index) {
@@ -197,7 +190,7 @@ static wxString getDatetimeTimezoneSelector(int selection) {
       return "LMT";
     case GLOBAL_SETTINGS_INPUT:
     default:
-      return wxEmptyString;
+      return "";
   }
 }
 
@@ -400,7 +393,7 @@ void RoutePropDlgImpl::UpdatePoints() {
                          .c_str()));
         eta_dt = (*pnode)->GetETA();
       } else {
-        eta = wxEmptyString;
+        eta = "";
       }
       ete = (*pnode)->GetETE();
       totalDistance += distance;
@@ -424,7 +417,7 @@ void RoutePropDlgImpl::UpdatePoints() {
         etd.Prepend("!! ");  // Manually entered ETD is before we arrive here!
       }
     } else {
-      etd = wxEmptyString;
+      etd = "";
     }
     ++pnode;
     wxString crs;
@@ -442,7 +435,7 @@ void RoutePropDlgImpl::UpdatePoints() {
       data.push_back(wxVariant(stm.str()));
     }
 
-    wxString schar = wxEmptyString;
+    wxString schar = "";
 #ifdef __ANDROID__
     schar = wxString(" ");
 #endif
@@ -463,9 +456,9 @@ void RoutePropDlgImpl::UpdatePoints() {
     data.push_back(wxVariant(desc));                     // Description
     data.push_back(wxVariant(crs));
     data.push_back(wxVariant(etd));
-    data.push_back(wxVariant(
-        wxEmptyString));  // Empty column to fill the remaining space (Usually
-                          // gets squeezed to zero, even if not empty)
+    data.push_back(
+        wxVariant(""));  // Empty column to fill the remaining space (Usually
+                         // gets squeezed to zero, even if not empty)
     m_dvlcWaypoints->AppendItem(data);
     data.clear();
     in++;
@@ -486,8 +479,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
   m_OrigRoute.m_PlannedDeparture = pR->m_PlannedDeparture;
   m_OrigRoute.m_PlannedSpeed = pR->m_PlannedSpeed;
 
-  wxString title =
-      pR->GetName() == wxEmptyString ? _("Route Properties") : pR->GetName();
+  wxString title = pR->GetName() == "" ? _("Route Properties") : pR->GetName();
   if (!pR->m_bIsInLayer)
     SetTitle(title);
   else {
@@ -587,7 +579,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
   m_btnSplit->Enable(false);
   if (!m_pRoute) return;
 
-  if (m_pRoute->m_Colour == wxEmptyString) {
+  if (m_pRoute->m_Colour == "") {
     m_choiceColor->Select(0);
   } else {
     for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
@@ -703,7 +695,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged(
 
     wxString ts = value.GetString();
     if (ts.StartsWith("!")) {
-      ts.Replace("!", wxEmptyString, true);
+      ts.Replace("!", "", true);
     }
     ts.Trim(true);
     ts.Trim(false);
@@ -771,7 +763,7 @@ void RoutePropDlgImpl::OnRoutepropCopyTxtClick(wxCommandEvent& event) {
             << m_pRoute->m_RouteEndString << eol << _("Total distance") << tab
             << m_tcDistance->GetValue() << eol << _("Speed (Kts)") << tab
             << m_tcPlanSpeed->GetValue() << eol
-            << _("Departure Time") + " (" + _T(ETA_FORMAT_STR) + ")" << tab
+            << _("Departure Time") + " (" + ETA_FORMAT_STR + ")" << tab
             << GetDepartureTS().Format(ETA_FORMAT_STR) << eol
             << _("Time enroute") << tab << m_tcEnroute->GetValue() << eol
             << eol;
@@ -964,7 +956,7 @@ void RoutePropDlgImpl::SaveChanges() {
     m_pRoute->m_RouteEndString = m_tcTo->GetValue();
     m_pRoute->m_RouteDescription = m_tcDescription->GetValue();
     if (m_choiceColor->GetSelection() == 0) {
-      m_pRoute->m_Colour = wxEmptyString;
+      m_pRoute->m_Colour = "";
     } else {
       m_pRoute->m_Colour = ::GpxxColorNames[m_choiceColor->GetSelection() - 1];
     }
@@ -1146,7 +1138,7 @@ wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
   if (stationName.Find("lind") != wxNOT_FOUND) int yyp = 4;
 
   if (stationName.IsEmpty()) {
-    return wxEmptyString;
+    return "";
   }
   if (!utcTime.IsValid()) {
     return _("Invalid date/time!");
@@ -1161,7 +1153,7 @@ wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
   wxDateTime dtm;
   dtm.Set(dtmtt).MakeUTC();
 
-  wxString tide_form = wxEmptyString;
+  wxString tide_form = "";
 
   if (ev == 1) {
     tide_form.Append("LW: ");  // High Water
@@ -1203,8 +1195,7 @@ void RoutePropDlgImpl::ItemEditOnMenuSelection(wxCommandEvent& event) {
         wxString Link = link->Link;
         wxString Descr = link->DescrText;
         if (Link == findurl &&
-            (Descr == findlabel ||
-             (Link == findlabel && Descr == wxEmptyString))) {
+            (Descr == findlabel || (Link == findlabel && Descr == ""))) {
           link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
           link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
           wxHyperlinkCtrl* h =
@@ -1262,7 +1253,7 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
       wxString Link = link->Link;
       wxString Descr = link->DescrText;
       if (Link == findurl &&
-          (Descr == findlabel || (Link == findlabel && Descr == wxEmptyString)))
+          (Descr == findlabel || (Link == findlabel && Descr == "")))
         nodeToDelete = it;
       else {
         wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
@@ -1293,14 +1284,13 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
 
 void RoutePropDlgImpl::AddLinkOnButtonClick(wxCommandEvent& event) {
   LinkPropImpl* LinkPropDlg = new LinkPropImpl(this);
-  LinkPropDlg->m_textCtrlLinkDescription->SetValue(wxEmptyString);
-  LinkPropDlg->m_textCtrlLinkUrl->SetValue(wxEmptyString);
+  LinkPropDlg->m_textCtrlLinkDescription->SetValue("");
+  LinkPropDlg->m_textCtrlLinkUrl->SetValue("");
   DimeControl(LinkPropDlg);
   LinkPropDlg->ShowWindowModalThenDo([this, LinkPropDlg](int retcode) {
     if (retcode == wxID_OK) {
       wxString desc = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
-      if (desc == wxEmptyString)
-        desc = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+      if (desc == "") desc = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
       wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
           m_scrolledWindowLinks, wxID_ANY, desc,
           LinkPropDlg->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition,
@@ -1320,7 +1310,7 @@ void RoutePropDlgImpl::AddLinkOnButtonClick(wxCommandEvent& event) {
       Hyperlink* h = new Hyperlink();
       h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
       h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
-      h->LType = wxEmptyString;
+      h->LType = "";
       m_pRoute->m_HyperlinkList->push_back(h);
     }
   });

@@ -83,7 +83,7 @@
 #include "ocpn_plugin.h"
 #include "options.h"
 #include "routemanagerdialog.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s52s57.h"
 #include "s52utils.h"
