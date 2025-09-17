@@ -96,6 +96,8 @@ extern long g_tex_mem_used;
 
 extern size_t g_current_monitor;  // See extended docs below
 
+extern unsigned gs_plib_flags;
+
 extern wxColour g_colourOwnshipRangeRingsColour;
 extern wxColour g_colourTrackLineColour;
 

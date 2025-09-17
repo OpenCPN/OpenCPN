@@ -73,8 +73,6 @@
 #include "toolbar.h"
 #include "waypointman_gui.h"
 
-unsigned int gs_plib_flags;
-
 extern PlugInManager* s_ppim;  // FIXME (leamas) another name for global mgr
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
