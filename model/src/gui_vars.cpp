@@ -94,6 +94,8 @@ int g_NeedDBUpdate = 0;
 
 long g_tex_mem_used = 0;
 
+unsigned gs_plib_flags = 0;
+
 wxDateTime g_loglast_time;
 wxDateTime g_start_time;
 wxDateTime gTimeSource;
