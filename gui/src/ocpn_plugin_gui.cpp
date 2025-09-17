@@ -3566,3 +3566,83 @@ void ClearNoShowVector() { ChartDirectoryExcludedVector.clear(); }
 const std::vector<std::string>& GetNoShowVector() {
   return ChartDirectoryExcludedVector;
 }
+
+// Enhanced AIS Target List support
+
+void CenterToAisTarget(wxString ais_mmsi) {
+  long mmsi = 0;
+  if (ais_mmsi.ToLong(&mmsi)) {
+    std::shared_ptr<AisTargetData> pAISTarget = NULL;
+    if (g_pAIS) pAISTarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+
+    if (pAISTarget) {
+      double scale = gFrame->GetFocusCanvas()->GetVPScale();
+      if (1) {
+        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                               pAISTarget->Lon, scale);
+      } else {
+        // Set a reasonable (1:5000) chart scale to see the target.
+        if (scale < 0.7) {  // Don't zoom if already close.
+          ChartCanvas* cc = gFrame->GetFocusCanvas();
+          double factor = cc->GetScaleValue() / 5000.0;
+          gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                                 pAISTarget->Lon, scale * factor);
+        }
+      }
+    }
+  }
+}  // same as AISTargetListDialog::CenterToTarget ( false )
+
+void AisTargetCreateWpt(wxString ais_mmsi) {
+  long mmsi = 0;
+  if (ais_mmsi.ToLong(&mmsi)) {
+    std::shared_ptr<AisTargetData> pAISTarget = NULL;
+    if (g_pAIS) pAISTarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+
+    if (pAISTarget) {
+      RoutePoint* pWP =
+          new RoutePoint(pAISTarget->Lat, pAISTarget->Lon, g_default_wp_icon,
+                         wxEmptyString, wxEmptyString);
+      pWP->m_bIsolatedMark = true;  // This is an isolated mark
+      pSelect->AddSelectableRoutePoint(pAISTarget->Lat, pAISTarget->Lon, pWP);
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
+      if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+        pRouteManagerDialog->UpdateWptListCtrl();
+    }
+  }
+}  // same as AISTargetListDialog::OnTargetCreateWpt
+
+void AisShowAllTracks(bool show) {
+  if (g_pAIS) {
+    for (const auto& it : g_pAIS->GetTargetList()) {
+      auto pAISTarget = it.second;
+      if (NULL != pAISTarget) {
+        pAISTarget->b_show_track = show;
+
+        // Check for any persistently tracked target, force b_show_track_old
+        std::map<int, Track*>::iterator itt;
+        itt = g_pAIS->m_persistent_tracks.find(pAISTarget->MMSI);
+        if (itt != g_pAIS->m_persistent_tracks.end()) {
+          pAISTarget->b_show_track_old = show;
+        }
+      }
+    }
+  }  // same as AISTargetListDialog::OnHideAllTracks /
+     // AISTargetListDialog::OnShowAllTracks
+}
+
+void AisToggleTrack(wxString ais_mmsi) {
+  long mmsi = 0;
+  if (ais_mmsi.ToLong(&mmsi)) {
+    std::shared_ptr<AisTargetData> pAISTarget = NULL;
+    if (g_pAIS) pAISTarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+
+    if (pAISTarget) {
+      pAISTarget->b_show_track_old =
+          pAISTarget->b_show_track;  // Store current state before toggling
+      pAISTarget->b_show_track =
+          !pAISTarget->b_show_track;  // Toggle visibility
+    }
+  }
+}
