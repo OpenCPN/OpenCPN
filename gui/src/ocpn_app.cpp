@@ -267,6 +267,7 @@ static int osMajor, osMinor;
 static bool g_bHasHwClock;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+// FIXME (leamas) find a new home
 wxLocale *plocale_def_lang = 0;
 #endif
 

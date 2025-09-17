@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Options Dialog
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,8 +16,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement options.h -- Options dialog
+ */
+
 #include <chrono>
+#include <iterator>
+#include <list>
+#include <map>
 #include <memory>
+#include <sstream>
 
 #ifdef __linux__
 #include <unistd.h>
@@ -61,8 +66,6 @@
 #include <wx/textwrapper.h>
 #include <wx/tokenzr.h>
 
-#include "conn_params_panel.h"
-
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include <wx/colordlg.h>
 #endif
@@ -95,6 +98,7 @@
 #include "chcanv.h"
 #include "cm93.h"
 #include "config_mgr.h"
+#include "conn_params_panel.h"
 #include "connections_dlg.h"
 #include "dychart.h"
 #include "font_mgr.h"
@@ -142,161 +146,31 @@ extern GLuint g_raster_format;
 #define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
 #endif
 
-wxString GetOCPNKnownLanguage(const wxString lang_canonical,
-                              wxString& lang_dir);
-wxString GetOCPNKnownLanguage(const wxString lang_canonical);
+#define ID_CHOICE_NMEA wxID_HIGHEST + 1
 
-extern OCPNPlatform* g_Platform;
+using CBList = std::list<wxCheckBox*>;
 
-extern MyFrame* gFrame;
-extern bool g_bSoftwareGL;
-
-extern bool g_bShowOutlines;
-extern bool g_bShowChartBar;
-extern bool g_bShowDepthUnits;
-extern bool g_bskew_comp;
-extern bool g_bopengl;
-extern bool g_bChartBarEx;
-extern bool g_bsmoothpanzoom;
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-extern bool g_bUIexpert;
-
-extern wxString* pInit_Chart_Dir;
-extern Multiplexer* g_pMUX;
-
-extern PlugInManager* g_pi_manager;
-extern ocpnStyle::StyleManager* g_StyleManager;
-
-extern bool g_bDisplayGrid;
-
-// LIVE ETA OPTION
-extern bool g_bShowLiveETA;
-extern double g_defaultBoatSpeed;
-extern double g_defaultBoatSpeedUserUnit;
-
-extern bool g_bNavAidRadarRingsShown;
-extern float g_fNavAidRadarRingsStep;
-extern int g_pNavAidRadarRingsStepUnits;
-extern bool g_bWayPointPreventDragging;
-extern wxColour g_colourOwnshipRangeRingsColour;
-extern bool g_bShowShipToActive;
-extern int g_shipToActiveStyle;
-extern int g_shipToActiveColor;
-
-extern bool g_own_ship_sog_cog_calc;
-extern int g_own_ship_sog_cog_calc_damp_sec;
-
-extern bool g_bPreserveScaleOnX;
-extern bool g_bPlayShipsBells;
-
-extern wxString g_CmdSoundString;
-
-extern int g_iSoundDeviceIndex;
-extern bool g_bFullscreenToolbar;
-extern bool g_bTransparentToolbar;
-extern bool g_bTransparentToolbarInOpenGLOK;
-
-extern unsigned g_OwnShipmmsi;
-extern int g_OwnShipIconType;
-extern double g_n_ownship_length_meters;
-extern double g_n_ownship_beam_meters;
-extern double g_n_gps_antenna_offset_y;
-extern double g_n_gps_antenna_offset_x;
-extern int g_n_ownship_min_mm;
-
-extern bool g_bEnableZoomToCursor;
-extern bool g_bHighliteTracks;
-extern wxColour g_colourTrackLineColour;
-
-extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
-
-extern int g_cm93_zoom_factor;
-
-extern int g_COGAvgSec;
-
-extern bool g_bCourseUp;
-extern bool g_bLookAhead;
-
-extern double g_ownship_predictor_minutes;
-extern double g_ownship_HDTpredictor_miles;
-
-extern bool g_bQuiltEnable;
-extern bool g_bFullScreenQuilt;
-extern bool g_bConfirmObjectDelete;
+options* g_options;   // global instance
+options* g_pOptions;  // Duplicate to be removed FIXME (leamas)
 
 #if wxUSE_XLOCALE
 extern wxLocale* plocale_def_lang;
 #endif
 
-extern double g_mouse_zoom_sensitivity;
-extern int g_mouse_zoom_sensitivity_ui;
-
-extern OcpnSound* g_anchorwatch_sound;
-
-extern bool g_fog_overzoom;
-extern bool g_oz_vector_scale;
-extern bool g_bShowStatusBar;
-
-extern s52plib* ps52plib;
-
-extern wxString g_locale;
-
-extern ChartGroupArray* g_pGroupArray;
-extern ocpnStyle::StyleManager* g_StyleManager;
-
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
-
-extern bool g_bGLexpert;
-//    Some constants
-#define ID_CHOICE_NMEA wxID_HIGHEST + 1
-
-extern std::vector<std::string> TideCurrentDataSet;
-extern wxString g_TCData_Dir;
-
-options* g_pOptions;
-
-extern bool g_bShowMenuBar;
-extern bool g_bShowCompassWin;
-
-extern bool g_bresponsive;
-extern bool g_bAutoHideToolbar;
-extern int g_nAutoHideToolbar;
-extern int g_GUIScaleFactor;
-extern int g_ChartScaleFactor;
-extern float g_MarkScaleFactorExp;
-extern bool g_bRollover;
-extern int g_ShipScaleFactor;
-extern float g_ShipScaleFactorExp;
-extern int g_ENCSoundingScaleFactor;
-extern int g_ENCTextScaleFactor;
-extern bool g_bShowMuiZoomButtons;
-
-extern std::vector<size_t> g_config_display_size_mm;
-extern bool g_config_display_size_manual;
-extern unsigned int g_canvasConfig;
-extern bool g_useMUI;
-extern wxString g_lastAppliedTemplateGUID;
-extern wxString g_default_wp_icon;
-// extern int osMajor, osMinor;
-extern bool g_bShowMuiZoomButtons;
-extern MyConfig* pConfig;
-extern bool g_btenhertz;
 
 #ifdef __ANDROID__
 extern int g_Android_SDK_Version;
 extern MigrateAssistantDialog* g_migrateDialog;
 #endif
 
-extern wxString GetShipNameFromFile(int);
+extern arrayofCanvasPtr g_canvasArray;  // In ocpn_frame FIXME (leamas)
 
-extern arrayofCanvasPtr g_canvasArray;
-
-using CBList = std::list<wxCheckBox*>;
-
-options* g_options;  // global instance
+static wxString GetOCPNKnownLanguage(const wxString lang_canonical,
+                                     wxString& lang_dir);
+static wxString GetOCPNKnownLanguage(const wxString lang_canonical);
 
 #if wxUSE_XLOCALE
 static int lang_list[] = {
@@ -399,30 +273,6 @@ void prepareSlider(wxSlider* slider) {
   slider->GetHandle()->grabGesture(Qt::SwipeGesture);
 }
 #endif
-
-// sort callback for Connections list  Sort by priority.
-int wxCALLBACK SortConnectionOnPriority(wxIntPtr item1, wxIntPtr item2,
-                                        wxIntPtr list) {
-  wxListCtrl* lc = reinterpret_cast<wxListCtrl*>(list);
-
-  wxListItem it1, it2;
-  it1.SetId(lc->FindItem(-1, item1));
-  it1.SetColumn(3);
-  it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
-  it2.SetId(lc->FindItem(-1, item2));
-  it2.SetColumn(3);
-  it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
-
-  lc->GetItem(it1);
-  lc->GetItem(it2);
-
-#ifdef __WXOSX__
-  return it1.GetText().CmpNoCase(it2.GetText());
-#else
-  return it2.GetText().CmpNoCase(it1.GetText());
-#endif
-}
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -1171,7 +1021,7 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
   if (!props) return ret;
   switch (column) {
     case mlMMSI:
-      if (props->MMSI > 0) ret = wxString::Format(_T( "%d" ), props->MMSI);
+      if (props->MMSI > 0) ret = wxString::Format("%d", props->MMSI);
       break;
     case mlTrackMode:
       switch (props->TrackType) {
@@ -1185,19 +1035,18 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
           ret = _("Never");
           break;
         default:
-          ret = _T( "???" );
+          ret = "???";
       }
-      if (props->m_bPersistentTrack)
-        ret.Append(_T( ", " )).Append(_("Persistent"));
+      if (props->m_bPersistentTrack) ret.Append(", ").Append(_("Persistent"));
       break;
     case mlIgnore:
-      if (props->m_bignore) ret = _T( "X" );
+      if (props->m_bignore) ret = "X";
       break;
     case mlMOB:
-      if (props->m_bMOB) ret = _T( "X" );
+      if (props->m_bMOB) ret = "X";
       break;
     case mlVDM:
-      if (props->m_bVDM) ret = _T( "X" );
+      if (props->m_bVDM) ret = "X";
       break;
     case mlFollower:
       if (props->m_bFollower) ret = "X";
@@ -1206,7 +1055,7 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
       ret = props->m_ShipName;
       break;
     default:
-      ret = _T( "??" );
+      ret = "??";
       break;
   }
   return ret;
@@ -1312,8 +1161,8 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   // wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  // imglist->Add(style->GetIcon(_T( "sort_asc" )));
-  // imglist->Add(style->GetIcon(_T( "sort_desc" )));
+  // imglist->Add(style->GetIcon("sort_asc"));
+  // imglist->Add(style->GetIcon("sort_desc"));
 
   // m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
   int dx = GetCharWidth();
@@ -2072,9 +1921,8 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxStaticText(itemPanelShip, wxID_ANY, _("Show range rings"));
   rrSelect->Add(rrTxt, 1, wxEXPAND | wxALL, group_item_spacing);
 
-  wxString rrAlt[] = {_("None"), _T( "1" ), _T( "2" ), _T( "3" ),
-                      _T( "4" ), _T( "5" ), _T( "6" ), _T( "7" ),
-                      _T( "8" ), _T( "9" ), _T( "10" )};
+  wxString rrAlt[] = {_("None"), "1", "2", "3", "4", "5",
+                      "6",       "7", "8", "9", "10"};
   pNavAidRadarRingsNumberVisible =
       new wxChoice(itemPanelShip, ID_RADARRINGS, wxDefaultPosition,
                    m_pShipIconType->GetSize(), 11, rrAlt);
@@ -2109,10 +1957,10 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Color"));
   radarGrid->Add(colourText, 1, wxEXPAND | wxALL, group_item_spacing);
 
-  m_colourOwnshipRangeRingColour = new OCPNColourPickerCtrl(
-      itemPanelShip, wxID_ANY, *wxRED, wxDefaultPosition,
-      m_colourPickerDefaultSize, 0, wxDefaultValidator,
-      _T( "ID_COLOUROSRANGECOLOUR" ));
+  m_colourOwnshipRangeRingColour =
+      new OCPNColourPickerCtrl(itemPanelShip, wxID_ANY, *wxRED,
+                               wxDefaultPosition, m_colourPickerDefaultSize, 0,
+                               wxDefaultValidator, "ID_COLOUROSRANGECOLOUR");
   radarGrid->Add(m_colourOwnshipRangeRingColour, 0, wxALIGN_RIGHT, border_size);
 
   // ship to active
@@ -2252,8 +2100,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                   border_size);
   m_colourTrackLineColour = new OCPNColourPickerCtrl(
       itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition,
-      m_colourPickerDefaultSize, 0, wxDefaultValidator,
-      _T( "ID_COLOURTRACKCOLOUR" ));
+      m_colourPickerDefaultSize, 0, wxDefaultValidator, "ID_COLOURTRACKCOLOUR");
   hTrackGrid->Add(m_colourTrackLineColour, 1, wxALIGN_RIGHT, border_size);
 
   wxFlexGridSizer* pTrackGrid =
@@ -2313,9 +2160,8 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   wxString pDistUnitsStrings[] = {_("Nautical miles"), _("Kilometers")};
 
-  wxString rrAlt[] = {_("None"), _T( "1" ), _T( "2" ), _T( "3" ),
-                      _T( "4" ), _T( "5" ), _T( "6" ), _T( "7" ),
-                      _T( "8" ), _T( "9" ), _T( "10" )};
+  wxString rrAlt[] = {_("None"), "1", "2", "3", "4", "5",
+                      "6",       "7", "8", "9", "10"};
 
   //  Routes
   wxStaticBox* routeText =
@@ -2498,7 +2344,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   m_colourWaypointRangeRingsColour = new OCPNColourPickerCtrl(
       itemPanelRoutes, wxID_ANY, *wxRED, wxDefaultPosition,
       m_colourPickerDefaultSize, 0, wxDefaultValidator,
-      _T( "ID_COLOURWAYPOINTRANGERINGSCOLOUR" ));
+      "ID_COLOURWAYPOINTRANGERINGSCOLOUR");
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
                          wxALIGN_RIGHT | wxALL, 1);
 
@@ -5173,7 +5019,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
     StatBoxSoundConfigSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND,
                                  group_item_spacing);
     pCmdSoundString =
-        new wxTextCtrl(panelSounds, wxID_ANY, _T( "" ), wxDefaultPosition,
+        new wxTextCtrl(panelSounds, wxID_ANY, "", wxDefaultPosition,
                        wxSize(450, -1), wxTE_LEFT);
     pSoundSizer->Add(
         new wxStaticText(panelSounds, wxID_ANY, _("Audio Play command:")), 0,
@@ -6076,7 +5922,7 @@ void options::CreateControls() {
 
   int flags = 0;
 
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
+#ifdef OCPN_OPTIONS_USE_LISTBOOK
   flags = wxLB_TOP;
   m_pListbook = new wxListbook(itemDialog1, ID_NOTEBOOK, wxDefaultPosition,
                                wxSize(-1, -1), flags);
@@ -6138,7 +5984,7 @@ void options::CreateControls() {
   wxNotebook* nb =
       dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
   if (nb) {
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
+#ifdef OCPN_OPTIONS_USE_LISTBOOK
     nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                 wxListbookEventHandler(options::OnChartsPageChange), NULL,
                 this);
@@ -6227,7 +6073,7 @@ void options::SetInitialPage(int page_sel, int sub_page) {
 void options::SetColorScheme(ColorScheme cs) {
   DimeControl(this);
 
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
+#ifdef OCPN_OPTIONS_USE_LISTBOOK
   wxListView* lv = m_pListbook->GetListView();
   lv->SetBackgroundColour(GetBackgroundColour());
 
@@ -6828,15 +6674,15 @@ void options::UpdateOptionsUnits() {
   m_depthUnitsDeep->SetLabel(depthUnitString);
 
   wxString s;
-  s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR) / conv);
+  s.Printf("%6.2f", S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR) / conv);
   s.Trim(FALSE);
   m_ShallowCtl->SetValue(s);
 
-  s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR) / conv);
+  s.Printf("%6.2f", S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR) / conv);
   s.Trim(FALSE);
   m_SafetyCtl->SetValue(s);
 
-  s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_DEEP_CONTOUR) / conv);
+  s.Printf("%6.2f", S52_getMarinerParam(S52_MAR_DEEP_CONTOUR) / conv);
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
   /*
@@ -7300,7 +7146,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   g_bShowChartBar = pShowChartBar->GetValue();
 
   wxString screenmm = pScreenMM->GetValue();
-  wxStringTokenizer tkz(screenmm, _T( "," ));
+  wxStringTokenizer tkz(screenmm, ",");
   g_config_display_size_mm.clear();
   while (tkz.HasMoreTokens()) {
     wxString token = tkz.GetNextToken();
@@ -8632,8 +8478,7 @@ void options::DoOnPageChange(size_t page) {
 #if wxCHECK_VERSION(2, 9, 0)
 #ifdef __WXGTK__
           ltest.AddCatalogLookupPathPrefix(
-              wxStandardPaths::Get().GetInstallPrefix() +
-              _T( "/share/locale" ));
+              wxStandardPaths::Get().GetInstallPrefix() + "/share/locale");
 #endif
 #endif
           ltest.AddCatalog("opencpn");
@@ -9426,7 +9271,7 @@ EVT_BUTTON(ID_BUTTON_CLEAR, OpenGLOptionsDlg::OnButtonClear)
 END_EVENT_TABLE()
 
 OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
-    : wxDialog(parent, wxID_ANY, _T( "OpenGL Options" ), wxDefaultPosition,
+    : wxDialog(parent, wxID_ANY, "OpenGL Options", wxDefaultPosition,
                wxDefaultSize,
                wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
 #ifdef __WXOSX__
@@ -9565,7 +9410,7 @@ void OpenGLOptionsDlg::Populate() {
             ->GetglCanvas()
             ->GetVersionString()
             .Upper()
-            .Find(_T( "MESA" )) != wxNOT_FOUND)
+            .Find("MESA") != wxNOT_FOUND)
       m_cbSoftwareGL->SetValue(g_bSoftwareGL);
   }
 #else
@@ -9635,9 +9480,9 @@ wxString OpenGLOptionsDlg::GetTextureCacheSize() {
       total += wxFile(files[i]).Length();
   }
   double mb = total / (1024.0 * 1024.0);
-  if (mb < 10000.0) return wxString::Format(_T( "%.1f MB" ), mb);
+  if (mb < 10000.0) return wxString::Format("%.1f MB", mb);
   mb = mb / 1024.0;
-  return wxString::Format(_T( "%.1f GB" ), mb);
+  return wxString::Format("%.1f GB", mb);
 }
 #endif
 //-------------------------------------------------------------------------------------------------
