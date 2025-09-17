@@ -853,7 +853,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/route_printout.h
     ${GUI_HDR_DIR}/route_validator.h
     ${GUI_HDR_DIR}/route_prop_dlg.h
-    ${GUI_HDR_DIR}/RoutePropDlgImpl.h
+    ${GUI_HDR_DIR}/route_prop_dlg_impl.h
     ${GUI_HDR_DIR}/s57chart.h
     ${GUI_HDR_DIR}/S57Light.h
     ${GUI_HDR_DIR}/S57ObjectDesc.h
@@ -980,7 +980,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/route_printout.cpp
     ${GUI_SRC_DIR}/route_validator.cpp
     ${GUI_SRC_DIR}/route_prop_dlg.cpp
-    ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
+    ${GUI_SRC_DIR}/route_prop_dlg_impl.cpp
     ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
     ${GUI_SRC_DIR}/S57QueryDialog.cpp

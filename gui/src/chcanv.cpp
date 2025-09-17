@@ -96,7 +96,7 @@
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s52utils.h"
 #include "S57QueryDialog.h"

@@ -37,7 +37,7 @@
 #include "print_dialog.h"
 #include "routemanagerdialog.h"
 #include "route_printout.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "tcmgr.h"
 #include "model/navobj_db.h"
 

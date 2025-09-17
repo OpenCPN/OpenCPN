@@ -70,7 +70,7 @@
 #include "routeman_gui.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "SendToGpsDlg.h"
 #include "SendToPeerDlg.h"
 #include "styles.h"
