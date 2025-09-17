@@ -25,7 +25,7 @@
 #ifndef _ROUTEPROPDLGIMPL_H_
 #define _ROUTEPROPDLGIMPL_H_
 
-#include "RoutePropDlg.h"
+#include "route_prop_dlg.h"
 #include "model/route.h"
 #include <wx/dataview.h>
 #include <wx/dvrenderers.h>
