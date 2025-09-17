@@ -108,6 +108,8 @@
 class MyFrame;          // forward
 extern MyFrame* gFrame; /**< Global instance */
 
+class options;  // circular
+
 // FIXME (leamas) to have utility functions in top window is a realy bad idea.
 bool ShowNavWarning();
 
