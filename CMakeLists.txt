@@ -842,7 +842,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/printout_chart.h
     ${GUI_HDR_DIR}/printtable.h
     ${GUI_HDR_DIR}/priority_gui.h
-    ${GUI_HDR_DIR}/Quilt.h
+    ${GUI_HDR_DIR}/quilt.h
     ${GUI_HDR_DIR}/rest_server_gui.h
     ${GUI_HDR_DIR}/RolloverWin.h
     ${GUI_HDR_DIR}/route_ctx_factory.h
@@ -969,7 +969,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/printout_chart.cpp
     ${GUI_SRC_DIR}/printtable.cpp
     ${GUI_SRC_DIR}/priority_gui.cpp
-    ${GUI_SRC_DIR}/Quilt.cpp
+    ${GUI_SRC_DIR}/quilt.cpp
     ${GUI_SRC_DIR}/rest_server_gui.cpp
     ${GUI_SRC_DIR}/RolloverWin.cpp
     ${GUI_SRC_DIR}/route_gui.cpp

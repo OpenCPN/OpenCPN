@@ -67,7 +67,7 @@
 #include "SencManager.h"
 #include "gui_lib.h"
 #include "model/logger.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "ocpn_frame.h"
 
 #ifdef __VISUALC__

@@ -62,7 +62,7 @@
 #include "ocpn_platform.h"
 #include "peer_client_dlg.h"
 #include "pluginmanager.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"

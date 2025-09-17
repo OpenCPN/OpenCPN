@@ -71,7 +71,7 @@
 #include "tide_time.h"
 #include "gl_texture_descr.h"
 #include "ch_info_win.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "model/select_item.h"
 #include "model/select.h"
 #include "font_mgr.h"

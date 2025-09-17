@@ -58,7 +58,7 @@
 #include "ocpn_pixel.h"
 #include "ocpn_plugin.h"
 #include "piano.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "RolloverWin.h"
 #include "S57Sector.h"
 #include "TCWin.h"
