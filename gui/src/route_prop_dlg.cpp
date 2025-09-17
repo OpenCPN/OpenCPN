@@ -22,12 +22,13 @@
 #include <wx/timectrl.h>
 #include <wx/window.h>
 
-#include "gui_lib.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_types.h"
-#include "routeman_gui.h"
+
+#include "gui_lib.h"
 #include "model/routeman.h"
 #include "routemanagerdialog.h"
+#include "routeman_gui.h"
 #include "route_prop_dlg.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
@@ -40,14 +41,10 @@
 
 ///////////////////////////////////////////////////////////////////////////
 BEGIN_EVENT_TABLE(RoutePropDlg, DIALOG_PARENT)
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 EVT_CHAR(RoutePropDlg::OnKeyChar)
 #endif
 END_EVENT_TABLE()
-
-extern Routeman* g_pRouteMan;
-extern RoutePropDlgImpl* pRoutePropDialog;
-extern RouteManagerDialog* pRouteManagerDialog;
 
 RoutePropDlgCtx RoutePropDlg::GetDlgCtx() {
   struct RoutePropDlgCtx ctx;
@@ -103,8 +100,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stName->Wrap(-1);
   bSizerName->Add(m_stName, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_tcName = new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString,
-                            wxDefaultPosition, wxDefaultSize, 0);
+  m_tcName = new wxTextCtrl(m_pnlBasic, wxID_ANY, "", wxDefaultPosition,
+                            wxDefaultSize, 0);
   bSizerName->Add(m_tcName, 1, wxALL, 5);
 
   bSizerData->Add(bSizerName, 0, wxEXPAND, 5);
@@ -117,8 +114,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stFrom->Wrap(-1);
   bSizerFromTo->Add(m_stFrom, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_tcFrom = new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString,
-                            wxDefaultPosition, wxDefaultSize, 0);
+  m_tcFrom = new wxTextCtrl(m_pnlBasic, wxID_ANY, "", wxDefaultPosition,
+                            wxDefaultSize, 0);
   bSizerFromTo->Add(m_tcFrom, 1, wxALL, 5);
 
   m_stTo = new wxStaticText(m_pnlBasic, wxID_ANY, _("To"), wxDefaultPosition,
@@ -126,8 +123,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stTo->Wrap(-1);
   bSizerFromTo->Add(m_stTo, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_tcTo = new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString,
-                          wxDefaultPosition, wxDefaultSize, 0);
+  m_tcTo = new wxTextCtrl(m_pnlBasic, wxID_ANY, "", wxDefaultPosition,
+                          wxDefaultSize, 0);
   bSizerFromTo->Add(m_tcTo, 1, wxALL, 5);
 
   bSizerData->Add(bSizerFromTo, 0, wxEXPAND, 5);
@@ -147,9 +144,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stDistTotal->Wrap(-1);
   bSizerDistance->Add(m_stDistTotal, 0, wxALL, 5);
 
-  m_tcDistance =
-      new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                     wxDefaultSize, wxTE_READONLY);
+  m_tcDistance = new wxTextCtrl(m_pnlBasic, wxID_ANY, "", wxDefaultPosition,
+                                wxDefaultSize, wxTE_READONLY);
   m_tcDistance->SetToolTip(
       _("Total route distance calculated using rhumb line (Mercator) distances "
         "between waypoints. Rhumb lines maintain a constant bearing but may "
@@ -169,9 +165,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stPlanSpeed->Wrap(-1);
   bSizerSpeed->Add(m_stPlanSpeed, 0, wxALL, 5);
 
-  m_tcPlanSpeed =
-      new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                     wxDefaultSize, wxTE_PROCESS_ENTER);
+  m_tcPlanSpeed = new wxTextCtrl(m_pnlBasic, wxID_ANY, "", wxDefaultPosition,
+                                 wxDefaultSize, wxTE_PROCESS_ENTER);
   m_tcPlanSpeed->SetToolTip(
       _("Default speed in knots used for route time calculations. This speed "
         "is used for all legs unless individual waypoints have their own "
@@ -193,8 +188,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_stEnroute->Wrap(-1);
   bSizerEnroute->Add(m_stEnroute, 0, wxALL, 5);
 
-  m_tcEnroute = new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString,
-                               wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+  m_tcEnroute = new wxTextCtrl(m_pnlBasic, wxID_ANY, "", wxDefaultPosition,
+                               wxDefaultSize, wxTE_READONLY);
   m_tcEnroute->SetToolTip(
       _("Estimated total time to complete the route based on planned speeds "
         "and rhumb line distances. For each leg, the calculation uses the "
@@ -428,7 +423,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       static_cast<wxAlignment>(wxALIGN_LEFT), colFlags);
   m_dataViewListColumnETD->GetRenderer()->EnableEllipsize(wxELLIPSIZE_END);
   m_dataViewListColumnEmpty = m_dvlcWaypoints->AppendTextColumn(
-      wxEmptyString, wxDATAVIEW_CELL_INERT, columWidths[14],
+      "", wxDATAVIEW_CELL_INERT, columWidths[14],
       static_cast<wxAlignment>(wxALIGN_LEFT), colFlags);
   bSizerData->Add(m_dvlcWaypoints, 1, wxALL | wxEXPAND, 5);
 
@@ -447,7 +442,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   bSizerAdvanced->Add(m_stDescription, 0, wxALL, 5);
 
   m_tcDescription =
-      new wxTextCtrl(m_pnlAdvanced, wxID_ANY, wxEmptyString, wxDefaultPosition,
+      new wxTextCtrl(m_pnlAdvanced, wxID_ANY, "", wxDefaultPosition,
                      wxDefaultSize, wxTE_MULTILINE);
   bSizerAdvanced->Add(m_tcDescription, 0, wxALL | wxEXPAND, 5);
 
@@ -473,18 +468,18 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   m_menuLink = new wxMenu();
   wxMenuItem* m_menuItemEdit;
-  m_menuItemEdit = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Edit")),
-                                  wxEmptyString, wxITEM_NORMAL);
+  m_menuItemEdit = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Edit")), "",
+                                  wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemEdit);
 
   wxMenuItem* m_menuItemAdd;
   m_menuItemAdd = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Add new")),
-                                 wxEmptyString, wxITEM_NORMAL);
+                                 "", wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemAdd);
 
   wxMenuItem* m_menuItemDelete;
   m_menuItemDelete = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Delete")),
-                                    wxEmptyString, wxITEM_NORMAL);
+                                    "", wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemDelete);
 
   m_hyperlink1->Connect(
@@ -521,9 +516,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   bSizerLinksWnd->Fit(m_scrolledWindowLinks);
   m_menuLinks = new wxMenu();
   wxMenuItem* m_menuItemAddLink;
-  m_menuItemAddLink =
-      new wxMenuItem(m_menuLinks, wxID_ANY, wxString(_("Add new")),
-                     wxEmptyString, wxITEM_NORMAL);
+  m_menuItemAddLink = new wxMenuItem(m_menuLinks, wxID_ANY,
+                                     wxString(_("Add new")), "", wxITEM_NORMAL);
   m_menuLinks->Append(m_menuItemAddLink);
 
   m_scrolledWindowLinks->Connect(
@@ -549,7 +543,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                             wxDefaultSize, 0);
   wSizerCustomBtns->Add(m_btnPrint, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_btnPrint->Hide();
 #endif
 
