@@ -582,6 +582,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write("SpaceDropMark", g_bSpaceDropMark);
 
   conf->Write("ShowStatusBar", g_bShowStatusBar);
+  conf->Write("ShowTimeline", g_bShowTimeline);
 #ifndef __WXOSX__
   conf->Write("ShowMenuBar", g_bShowMenuBar);
 #endif
@@ -1083,6 +1084,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT("SkewCompUpdatePeriod", &g_SkewCompUpdatePeriod);
 
   CHECK_INT("ShowStatusBar", &g_bShowStatusBar);
+  CHECK_INT("ShowTimeline", &g_bShowTimeline);
 #ifndef __WXOSX__
   CHECK_INT("ShowMenuBar", &g_bShowMenuBar);
 #endif

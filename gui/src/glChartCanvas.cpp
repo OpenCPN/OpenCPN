@@ -83,6 +83,7 @@
 #include "mbtiles.h"
 #include "mipmap/mipmap.h"
 #include "navutil.h"
+#include "ocpn_plugin.h"
 #include "OCPNPlatform.h"
 #include "piano.h"
 #include "pluginmanager.h"
@@ -90,6 +91,7 @@
 #include "RolloverWin.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
+#include "route_timeline_manager.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "tcmgr.h"
@@ -1606,9 +1608,20 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
     /* defer rendering routes being edited until later */
     if (pRouteDraw->m_bIsBeingEdited) continue;
 
-    RouteGui(*pRouteDraw).DrawGL(vp, m_pParentCanvas, dc);
-    //    pRouteDraw->DrawGL(vp, m_pParentCanvas, dc);
+    RouteGui routeGui(*pRouteDraw);
+    routeGui.DrawGL(vp, m_pParentCanvas, dc);
+
+    // Draw timeline position if timeline rendering is enabled
+    if (RouteTimelineManager::GetInstance().IsTimelineRenderingEnabled()) {
+      wxDateTime selectedTime = GetTimelineSelectedTime();
+      if (selectedTime.IsValid()) {
+        routeGui.DrawPositionAtTime(dc, m_pParentCanvas, selectedTime);
+      }
+    }
   }
+
+  // Draw cursor position crosshairs for route tooltips
+  m_pParentCanvas->DrawRouteCursorCrosshairs(dc);
 
   /* Waypoints not drawn as part of routes, and not being edited */
   if (vp.GetBBox().GetValid() && pWayPointMan) {
@@ -1652,9 +1665,19 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
 
     if (drawit) {
       const LLBBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-      if (!vp_box.IntersectOut(test_box))
-        RouteGui(*pRouteDraw).DrawGL(vp, m_pParentCanvas, dc);
-      //        pRouteDraw->DrawGL(vp, m_pParentCanvas, dc);
+      if (!vp_box.IntersectOut(test_box)) {
+        RouteGui routeGui(*pRouteDraw);
+        routeGui.DrawGL(vp, m_pParentCanvas, dc);
+
+        // Draw timeline position for active/selected routes if timeline
+        // rendering is enabled
+        if (RouteTimelineManager::GetInstance().IsTimelineRenderingEnabled()) {
+          wxDateTime selectedTime = GetTimelineSelectedTime();
+          if (selectedTime.IsValid()) {
+            routeGui.DrawPositionAtTime(dc, m_pParentCanvas, selectedTime);
+          }
+        }
+      }
     }
   }
 
@@ -1669,6 +1692,9 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
       //        pWP->DrawGL(vp, m_pParentCanvas, dc);
     }
   }
+
+  // Draw cursor position crosshairs for route rollovers
+  m_pParentCanvas->DrawRouteCursorCrosshairs(dc);
 }
 
 static void GetLatLonCurveDist(const ViewPort &vp, float &lat_dist,
