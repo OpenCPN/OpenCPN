@@ -87,7 +87,7 @@
 #include "ocpn_platform.h"
 #include "piano.h"
 #include "pluginmanager.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "RolloverWin.h"
 #include "route_gui.h"
 #include "route_point_gui.h"

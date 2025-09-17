@@ -26,7 +26,7 @@
 #include "chcanv.h"
 #include "ocpn_plugin.h"
 #include "pluginmanager.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "s52plib.h"
 
 extern PlugInManager *g_pi_manager;  // FIXME: MOve to header

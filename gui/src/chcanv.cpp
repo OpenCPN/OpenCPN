@@ -92,7 +92,7 @@
 #include "options.h"
 #include "piano.h"
 #include "pluginmanager.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"

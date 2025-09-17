@@ -47,7 +47,7 @@
 #include "lz4.h"
 #include "lz4hc.h"
 #include "ocpn_platform.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "squish.h"
 #include "viewport.h"
 

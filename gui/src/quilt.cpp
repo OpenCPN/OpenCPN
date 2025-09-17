@@ -25,7 +25,7 @@
 #include <wx/wxprec.h>
 
 #include "config.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "chartdb.h"
 #include "s52plib.h"
 #include "chcanv.h"
