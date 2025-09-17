@@ -30,7 +30,7 @@
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "route_prop_dlg.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "styles.h"
 
 #if wxCHECK_VERSION(3, 1, 2)

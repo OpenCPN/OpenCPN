@@ -154,7 +154,7 @@
 #include "route_ctx_factory.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
