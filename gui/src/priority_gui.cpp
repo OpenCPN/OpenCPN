@@ -21,6 +21,12 @@
  * Implement priorities_gui.h -- input priorities management dialog
  */
 
+#ifdef __ANDROID__
+#include "qdebug.h"
+#include <QtWidgets/QScroller>
+#include "androidUTIL.h"
+#endif
+
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -32,12 +38,6 @@
 #include <wx/dcscreen.h>
 #include <wx/sizer.h>
 #include <wx/tokenzr.h>
-
-#ifdef __ANDROID__
-#include "androidUTIL.h"
-#include "qdebug.h"
-#include <QtWidgets/QScroller>
-#endif
 
 #include "priority_gui.h"
 
