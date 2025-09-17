@@ -2592,7 +2592,7 @@ msgstr ""
 msgid "Print Waypoint Description"
 msgstr ""
 
-#: gui/include/gui/RoutePropDlg.h:173 gui/include/gui/RoutePropDlgImpl.h:97
+#: gui/include/gui/route_prop_dlg.h:173 gui/include/gui/RoutePropDlgImpl.h:97
 #: gui/src/canvasMenu.cpp:1897 gui/src/chcanv.cpp:8209
 #: gui/src/RoutePropDlgImpl.cpp:496
 msgid "Route Properties"

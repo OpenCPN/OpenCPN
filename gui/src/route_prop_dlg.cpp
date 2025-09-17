@@ -28,7 +28,7 @@
 #include "routeman_gui.h"
 #include "model/routeman.h"
 #include "routemanagerdialog.h"
-#include "RoutePropDlg.h"
+#include "route_prop_dlg.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
 
