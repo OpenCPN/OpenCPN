@@ -18,7 +18,7 @@
 #include "font_mgr.h"
 #include "model/wx28compat.h"
 #include "ocpn_platform.h"
-#include "RolloverWin.h"
+#include "rollover_win.h"
 #include "navutil.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"

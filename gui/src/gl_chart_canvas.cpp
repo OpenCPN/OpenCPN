@@ -88,7 +88,7 @@
 #include "piano.h"
 #include "pluginmanager.h"
 #include "quilt.h"
-#include "RolloverWin.h"
+#include "rollover_win.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
 #include "s52plib.h"
