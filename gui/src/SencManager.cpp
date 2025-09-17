@@ -31,7 +31,7 @@
 #endif  // precompiled headers
 
 #include "s57chart.h"
-#include "Osenc.h"
+#include "o_senc.h"
 #include "chartbase.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"

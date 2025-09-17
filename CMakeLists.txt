@@ -960,7 +960,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ocpn_region.cpp
     ${GUI_SRC_DIR}/ocpn_gl_options.cpp
     ${GUI_SRC_DIR}/options.cpp
-    ${GUI_SRC_DIR}/Osenc.cpp
+    ${GUI_SRC_DIR}/o_senc.cpp
     ${GUI_SRC_DIR}/peer_client_dlg.cpp
     ${GUI_SRC_DIR}/piano.cpp
     ${GUI_SRC_DIR}/pluginmanager.cpp

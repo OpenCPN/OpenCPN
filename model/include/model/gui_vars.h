@@ -80,6 +80,8 @@ extern float g_toolbar_scalefactor;
 extern int g_ChartUpdatePeriod;
 extern int g_click_stop;
 extern int g_FlushNavobjChangesTimeout;
+extern int g_lastMemTick;
+extern int g_memUsed;
 extern int g_mipmap_max_level;
 extern int g_NeedDBUpdate;  // See extended docs below
 extern int gpIDXn;          // Not used

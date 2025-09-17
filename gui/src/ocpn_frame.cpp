@@ -128,7 +128,7 @@
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "OCPN_Sound.h"
-#include "Osenc.h"
+#include "o_senc.h"
 #include "options.h"
 #include "pluginmanager.h"
 #include "print_dialog.h"
@@ -6151,8 +6151,6 @@ void MyFrame::MouseEvent(wxMouseEvent &event) {
 #include "sys/types.h"
 #include "sys/sysinfo.h"
 #endif /* __linux__ */
-
-int g_lastMemTick = -1;
 
 void MyFrame::DoPrint(void) {
   // avoid toolbars being printed

@@ -36,7 +36,7 @@
 #include <wx/filename.h>
 #include <wx/progdlg.h>
 
-#include "Osenc.h"
+#include "o_senc.h"
 #include "s52s57.h"
 #include "s57chart.h"  // for one static method
 #include "model/cutil.h"
