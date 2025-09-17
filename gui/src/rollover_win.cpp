@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement rollover_win.h -- TBD
  */
+
+#include "gl_headers.h"
 
 #include <wx/wxprec.h>
 
@@ -28,14 +29,8 @@
 #include <wx/dcmemory.h>
 #include <wx/dcscreen.h>
 
-#ifdef ocpnUSE_GL
-#if defined(__OCPN__ANDROID__)
-#include <GLES2/gl2.h>
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glew.h>
-#endif
-#endif
-
+#include "model/base_platform.h"
+#include "model/config_vars.h"
 #include "model/gui_vars.h"
 
 #include "ocpndc.h"
@@ -53,11 +48,9 @@
 #include "chcanv.h"
 #endif
 
-extern bool g_bopengl;
 #ifdef ocpnUSE_GL
 extern GLenum g_texture_rectangle_format;
 #endif
-extern BasePlatform *g_BasePlatform;
 
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
 EVT_PAINT(RolloverWin::OnPaint)
@@ -110,7 +103,7 @@ void RolloverWin::SetBitmap(int rollover) {
   m_pbm = new wxBitmap(m_size.x, m_size.y);
   mdc.SelectObject(*m_pbm);
 
-  mdc.SetBackground(wxBrush(GetGlobalColor(_T ( "YELO1" ))));
+  mdc.SetBackground(wxBrush(GetGlobalColor("YELO1")));
   mdc.Clear();
 #ifdef ocpnUSE_GL
   bool usegl = g_bopengl && g_texture_rectangle_format;
@@ -147,8 +140,8 @@ void RolloverWin::SetBitmap(int rollover) {
   }
 
   if (m_bmaincanvas)
-    AlphaBlending(dc, 0, 0, m_size.x, m_size.y, radius,
-                  GetGlobalColor(_T ( "YELO1" )), 172);
+    AlphaBlending(dc, 0, 0, m_size.x, m_size.y, radius, GetGlobalColor("YELO1"),
+                  172);
 
   mdc.SetTextForeground(FontMgr::Get().GetFontColor(text));
 
