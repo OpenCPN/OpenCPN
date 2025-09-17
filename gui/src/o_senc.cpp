@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  S57 SENC File Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ *  Implement o_senc.h -- S57 SENC File Object
+ */
+
+#include <mutex>
+#include <string>
+
+#include <setjmp.h>
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -30,56 +33,53 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include <setjmp.h>
-
-#include <wx/wfstream.h>
+#include <wx/arrimpl.cpp>
 #include <wx/filename.h>
 #include <wx/progdlg.h>
+#include <wx/wfstream.h>
 
 #include "o_senc.h"
+
+#include "gdal/cpl_csv.h"
+#include "gdal/cpl_string.h"
+
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
+
+#include "gui_lib.h"
+#include "LOD_reduce.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "mygeom.h"
+#include "ogr_s57.h"
 #include "s52s57.h"
 #include "s57chart.h"  // for one static method
-#include "model/cutil.h"
 #include "s57registrar_mgr.h"
-#include "gdal/cpl_csv.h"
-#include "ogr_s57.h"
-#include "gdal/cpl_string.h"
-#include "LOD_reduce.h"
 
-#include "mygeom.h"
-#include "model/georef.h"
-#include "gui_lib.h"
-#include <mutex>
+#define MAX_VECTOR_POINTS 1000
+#define ERR_BUF_LEN 2000
 
-s57RegistrarMgr *m_pRegistrarMan;
-extern wxString g_csv_locn;
-extern bool g_bGDAL_Debug;
-
-bool chain_broken_mssage_shown = false;
+s57RegistrarMgr *m_pRegistrarMan; /**< Global instance */
 
 using namespace std;
 
-#include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY(float *, MyFloatPtrArray);
-
-#define MAX_VECTOR_POINTS 1000
 
 #ifndef __WXMSW__
 sigjmp_buf env_osenc_ogrf;  // the context saved by sigsetjmp();
 #endif
 
-std::mutex m;
+static std::mutex m;
+
+static bool g_OsencVerbose;
 
 /************************************************************************/
 /*                       OpenCPN_OGRErrorHandler()                      */
 /*                       Use Global wxLog Class                         */
 /************************************************************************/
-bool g_OsencVerbose;
 
 void OpenCPN_OGR_OSENC_ErrorHandler(CPLErr eErrClass, int nError,
                                     const char *pszErrorMsg) {
-#define ERR_BUF_LEN 2000
-
   char buf[ERR_BUF_LEN + 1];
 
   if (eErrClass == CE_Debug) {
