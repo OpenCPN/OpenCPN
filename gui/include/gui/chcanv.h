@@ -59,7 +59,7 @@
 #include "ocpn_plugin.h"
 #include "piano.h"
 #include "quilt.h"
-#include "RolloverWin.h"
+#include "rollover_win.h"
 #include "S57Sector.h"
 #include "TCWin.h"
 #include "undo.h"

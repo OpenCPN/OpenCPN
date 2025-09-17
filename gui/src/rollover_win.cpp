@@ -39,7 +39,7 @@
 #include "model/gui_vars.h"
 
 #include "ocpndc.h"
-#include "RolloverWin.h"
+#include "rollover_win.h"
 #include "timers.h"
 #include "navutil.h"
 #include "font_mgr.h"
