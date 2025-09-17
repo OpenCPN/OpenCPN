@@ -62,7 +62,7 @@
 
 #include "pluginmanager.h"  // for S57 lights overlay
 
-#include "Osenc.h"
+#include "o_senc.h"
 #include "chcanv.h"
 #include "SencManager.h"
 #include "gui_lib.h"

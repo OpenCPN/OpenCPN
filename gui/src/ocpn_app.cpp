@@ -148,7 +148,7 @@
 #include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
-#include "Osenc.h"
+#include "o_senc.h"
 #include "options.h"
 #include "rest_server_gui.h"
 #include "route_ctx_factory.h"

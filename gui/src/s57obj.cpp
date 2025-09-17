@@ -58,7 +58,7 @@
 
 #include "pluginmanager.h"  // for S57 lights overlay
 
-#include "Osenc.h"
+#include "o_senc.h"
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
