@@ -85,7 +85,7 @@ model/include/model/safe_mode.h
 model/include/model/select.h
 model/include/model/select_item.h
 model/include/model/semantic_vers.h
-model/include/model/SencManager.h
+model/include/model/senc_manager.h
 model/include/model/ser_ports.h
 model/include/model/std_instance_chk.h
 model/include/model/sys_events.h
@@ -269,7 +269,7 @@ gui/include/gui/S57ObjectDesc.h
 gui/include/gui/s57_query_dlg.h
 gui/include/gui/S57Sector.h
 gui/include/gui/safe_mode_gui.h
-gui/include/gui/SencManager.h
+gui/include/gui/senc_manager.h
 gui/include/gui/SendToGpsDlg.h
 gui/include/gui/SendToPeerDlg.h
 gui/include/gui/shaders.h
