@@ -156,11 +156,11 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint(TiXmlNode* node,
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
-  wxString pointName = wxEmptyString;
+  wxString pointName = "";
   TiXmlElement* e = node->Parent()->FirstChild("name")->ToElement();
   if (e) pointName = wxString(e->GetText(), wxConvUTF8);
 
-  wxString pointDescr = wxEmptyString;
+  wxString pointDescr = "";
   e = node->Parent()->FirstChildElement("description");
 
   // If the <description> is an XML element we must convert it to text,
