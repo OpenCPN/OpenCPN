@@ -985,7 +985,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/s57chart.cpp
     ${GUI_SRC_DIR}/s57_query_dlg.cpp
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
-    ${GUI_SRC_DIR}/SencManager.cpp
+    ${GUI_SRC_DIR}/senc_manager.cpp
     ${GUI_SRC_DIR}/SendToGpsDlg.cpp
     ${GUI_SRC_DIR}/SendToPeerDlg.cpp
     ${GUI_SRC_DIR}/shapefile_basemap.cpp

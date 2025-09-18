@@ -80,7 +80,7 @@
 #include "s52utils.h"
 #include "s57chart.h"
 #include "s57class_registrar.h"
-#include "SencManager.h"
+#include "senc_manager.h"
 #include "setjmp.h"
 #include "ssl/sha1.h"
 
