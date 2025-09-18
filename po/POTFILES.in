@@ -273,7 +273,7 @@ gui/include/gui/senc_manager.h
 gui/include/gui/send_to_gps_dlg.h
 gui/include/gui/send_to_peer_dlg.h
 gui/include/gui/shaders.h
-gui/include/gui/Station_Data.h
+gui/include/gui/station_data.h
 gui/include/gui/styles.h
 gui/include/gui/svg_utils.h
 gui/include/gui/TCDataFactory.h

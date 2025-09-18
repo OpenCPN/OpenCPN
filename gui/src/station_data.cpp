@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "Station_Data.h"
+#include "station_data.h"
 #include <stdlib.h>
 
 #include <wx/arrimpl.cpp>
