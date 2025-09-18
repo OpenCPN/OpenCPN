@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement send_to_gps_dlg.h -- Send route/waypoint to GPS dialog
  */
 
 #include <wx/arrstr.h>
@@ -34,18 +33,17 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "model/config_vars.h"
 #include "model/conn_params.h"
-#include "ocpn_platform.h"
 #include "model/rest_server.h"
-#include "route_gui.h"
 #include "model/route.h"
-#include "route_point_gui.h"
 #include "model/route_point.h"
-#include "send_to_gps_dlg.h"
 #include "model/ser_ports.h"
 
-extern OCPNPlatform* g_Platform;
-extern wxString g_uploadConnection;
+#include "ocpn_platform.h"
+#include "route_gui.h"
+#include "route_point_gui.h"
+#include "send_to_gps_dlg.h"
 
 BEGIN_EVENT_TABLE(SendToGpsDlg, wxDialog)
 EVT_BUTTON(ID_STG_CANCEL, SendToGpsDlg::OnCancelClick)
