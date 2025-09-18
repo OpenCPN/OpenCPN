@@ -266,7 +266,7 @@ gui/include/gui/route_prop_dlg_impl.h
 gui/include/gui/s57chart.h
 gui/include/gui/S57Light.h
 gui/include/gui/S57ObjectDesc.h
-gui/include/gui/S57QueryDialog.h
+gui/include/gui/s57_query_dlg.h
 gui/include/gui/S57Sector.h
 gui/include/gui/safe_mode_gui.h
 gui/include/gui/SencManager.h

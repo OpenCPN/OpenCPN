@@ -139,7 +139,7 @@
 #include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s57chart.h"
-#include "S57QueryDialog.h"
+#include "s57_query_dlg.h"
 #include "SoundFactory.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
