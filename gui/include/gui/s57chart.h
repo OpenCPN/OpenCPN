@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  S57 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,13 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __S57CHART_H__
-#define __S57CHART_H__
+/**
+ * \file
+ *
+ * S57 Chart Object
+ */
+
+#ifndef S57CHART_H_
+#define S57CHART_H_
 
 #include <memory>
 #include <unordered_map>
@@ -38,43 +36,23 @@
 
 #include "gdal/ogrsf_frmts.h"
 
-#include "S57Light.h"
-#include "S57Sector.h"
+#include "model/gui_vars.h"
 
-#include "s52s57.h"  // ObjRazRules
-
-#include "ocpn_region.h"
 #include "chartbase.h"  // ChartBase
+#include "chartimg.h"
+#include "ocpn_pixel.h"
+#include "ocpn_region.h"
+#include "ogr_s57.h"
+#include "s52s57.h"  // ObjRazRules
+#include "s57.h"
+#include "S57Light.h"
+#include "S57ObjectDesc.h"
+#include "S57Sector.h"
+#include "viewport.h"
 
-extern bool g_b_EnableVBO;
 extern bool chain_broken_mssage_shown; /**< Global instance */
 
-// ----------------------------------------------------------------------------
-// Useful Prototypes
-// ----------------------------------------------------------------------------
-class ChartCanvas;
-
-// ----------------------------------------------------------------------------
-// S57 Utility Prototypes
-// ----------------------------------------------------------------------------
-extern "C" bool s57_GetChartExtent(const wxString &FullPath, Extent *pext);
-
-bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
-                                   ViewPort &VPoint,
-                                   std::vector<s57Sector_t> &sectorlegs);
-bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
-                                ViewPort &viewport,
-                                std::vector<s57Sector_t> &sectorlegs);
-// bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
-//                                     ChartPlugInWrapper *target_plugin_chart,
-//                                     s57chart *Chs57,
-//                                     ListOfObjRazRules *rule_list,
-//                                     std::list<S57Obj *> *pi_rule_list,
-//                                     std::vector<s57Sector_t> &sectorlegs);
-//
-//----------------------------------------------------------------------------
-// Constants
-//----------------------------------------------------------------------------
+class ChartCanvas;  // circular
 
 enum {
   BUILD_SENC_OK,
@@ -83,26 +61,15 @@ enum {
   BUILD_SENC_PENDING
 };
 
-//----------------------------------------------------------------------------
-// Fwd Defns
-//----------------------------------------------------------------------------
-
-class ChartBase;
-class ViewPort;
-class ocpnBitmap;
-class PixelCache;
-class S57ObjectDesc;
-class S57Reader;
-class OGRS57DataSource;
-class S57ClassRegistrar;
-class S57Obj;
-class VE_Element;
-class VC_Element;
-class connector_segment;
-class ChartPlugInWrapper;
-
-// Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
+
+bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
+                                   ViewPort &VPoint,
+                                   std::vector<s57Sector_t> &sectorlegs);
+
+bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
+                                ViewPort &viewport,
+                                std::vector<s57Sector_t> &sectorlegs);
 
 /**
  * Represents an S57 format electronic navigational chart in OpenCPN.
@@ -399,4 +366,4 @@ protected:
   sm_parms vp_transform;
 };
 
-#endif
+#endif  // S57CHART_H_
