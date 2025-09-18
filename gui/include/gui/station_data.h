@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Amplitude measurement container
  */
 
-#ifndef __STATION_DATA_H__
-#define __STATION_DATA_H__
+#ifndef STATION_DATA_H_
+#define STATION_DATA_H_
 
 #include <wx/defs.h>
 #include <wx/wxchar.h>
@@ -49,4 +48,4 @@ public:
 
 WX_DECLARE_OBJARRAY(Station_Data, ArrayOfStationData);
 
-#endif
+#endif  // STATION_DATA_H_
