@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  S57 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,33 +12,33 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __SENCMGR_H__
-#define __SENCMGR_H__
+/**
+ * \file
+ *
+ * Purpose:  S57 Chart Object
+ */
+
+#ifndef SENCMGR_H_
+#define SENCMGR_H_
 
 #include <vector>
 
-// ----------------------------------------------------------------------------
-// Useful Prototypes
-// ----------------------------------------------------------------------------
+#include <wx/event.h>
+#include <wx/string.h>
+#include <wx/thread.h>
 
-//----------------------------------------------------------------------------
-// Constants
-//----------------------------------------------------------------------------
+#include "s57chart.h"
 
-//----------------------------------------------------------------------------
-// Fwd Defns
-//----------------------------------------------------------------------------
+class SENCThreadManager;                       // forward
+extern SENCThreadManager *g_SencThreadManager; /**< Global instance */
 
-class s57chart;
-class SENCBuildThread;
+extern const wxEventType wxEVT_OCPN_BUILDSENCTHREAD; /**< Global instance */
 
-class SENCThreadManager;  // forward
-extern SENCThreadManager *g_SencThreadManager;
+class SENCBuildThread;  // forward
+
 typedef enum {
   THREAD_INACTIVE = 0,
   THREAD_PENDING,
@@ -59,8 +53,6 @@ typedef enum {
   SENC_BUILD_DONE_NOERROR,
   SENC_BUILD_DONE_ERROR,
 } EVENTSENCResult;
-
-extern const wxEventType wxEVT_OCPN_BUILDSENCTHREAD;
 
 //----------------------------------------------------------------------------
 // s57 Chart Thread based SENC job ticket
@@ -140,4 +132,4 @@ public:
   SENCJobTicket *m_ticket;
 };
 
-#endif
+#endif  // SENCMGR_H_
