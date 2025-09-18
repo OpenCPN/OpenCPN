@@ -25,7 +25,7 @@
 #include <wx/wxprec.h>
 #include <wx/wxhtml.h>
 
-#include "S57QueryDialog.h"
+#include "s57_query_dlg.h"
 #include "navutil.h"
 #include "gui_lib.h"
 #include <wx/textwrapper.h>

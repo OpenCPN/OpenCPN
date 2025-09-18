@@ -2500,8 +2500,8 @@ msgid "OpenCPN AIS Alert"
 msgstr "OpenCPN AIS 警報"
 
 #: gui/include/gui/ais_target_query_dlg.h:50
-#: gui/include/gui/ais_target_query_dlg.h:61 gui/include/gui/S57QueryDialog.h:47
-#: gui/include/gui/S57QueryDialog.h:56 gui/src/canvasMenu.cpp:485
+#: gui/include/gui/ais_target_query_dlg.h:61 gui/include/gui/s57_query_dlg.h:47
+#: gui/include/gui/s57_query_dlg.h:56 gui/src/canvasMenu.cpp:485
 #: gui/src/canvasMenu.cpp:494 gui/src/chcanv.cpp:10292
 msgid "Object Query"
 msgstr "物件查詢"
@@ -2599,7 +2599,7 @@ msgstr ""
 msgid "Route Properties"
 msgstr "航路屬性"
 
-#: gui/include/gui/S57QueryDialog.h:98 gui/include/gui/S57QueryDialog.h:104
+#: gui/include/gui/s57_query_dlg.h:98 gui/include/gui/s57_query_dlg.h:104
 #: gui/src/S57QueryDialog.cpp:218
 msgid "Extra Object Info"
 msgstr ""
