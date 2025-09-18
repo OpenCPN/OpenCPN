@@ -1,9 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Shapefile basemap
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2012-2023 by David S. Register                          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,38 +12,35 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Shapefile basemap
  */
 
 #ifndef SHAPEFILE_BASEMAP_H
 #define SHAPEFILE_BASEMAP_H
 
 #include <functional>
-#include <vector>
+#include <future>
 #include <map>
 #include <thread>
-#include <future>
+#include <vector>
 
 #include "gl_headers.h"
+
+#include <wx/gdicmn.h>
+
 #include "ShapefileReader.hpp"
 #include "poly_math.h"
 #include "ocpndc.h"
+#include "std_filesystem.h"
 
-#if (defined(OCPN_GHC_FILESYSTEM) || \
-     (defined(__clang_major__) && (__clang_major__ < 15)))
-// MacOS 1.13
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#else
-#include <filesystem>
-#include <utility>
-namespace fs = std::filesystem;
-#endif
+typedef std::vector<wxRealPoint> contour;
+typedef std::vector<contour> contour_list;
 
 class ShapeBaseChartSet;                 // forward
 extern ShapeBaseChartSet gShapeBasemap;  ///< Global instance
@@ -124,9 +116,6 @@ enum Quality {
   /// on slow machines is low
   full
 };
-
-typedef std::vector<wxRealPoint> contour;
-typedef std::vector<contour> contour_list;
 
 /**
  * Represents a basemap chart based on shapefile data.
