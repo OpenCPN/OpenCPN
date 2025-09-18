@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Send Route/Waypoint/Track to peer dialog
  */
 
-#ifndef __SENDTOPEERDLG_H__
-#define __SENDTOPEERDLG_H__
+#ifndef SENDTOPEERDLG_H_
+#define SENDTOPEERDLG_H_
 
 #include <vector>
 
@@ -31,8 +30,6 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
-
-#include <vector>
 
 #include <wx/button.h>
 #include <wx/checkbox.h>
@@ -124,4 +121,4 @@ private:
   bool m_bScanOnCreate;
 };
 
-#endif
+#endif  // SENDTOPEERDLG_H_
