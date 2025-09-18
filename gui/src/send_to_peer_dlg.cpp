@@ -43,7 +43,7 @@
 #include "route_gui.h"
 #include "route_point_gui.h"
 
-#include "SendToPeerDlg.h"
+#include "send_to_peer_dlg.h"
 #include "ocpn_plugin.h"
 
 #ifdef __ANDROID__

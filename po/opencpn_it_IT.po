@@ -2620,7 +2620,7 @@ msgstr "Proprietà Rotta"
 msgid "Extra Object Info"
 msgstr "Informazioni supplementari relative all'oggetto"
 
-#: gui/include/gui/SendToPeerDlg.h:60 gui/src/routemanagerdialog.cpp:500
+#: gui/include/gui/send_to_peer_dlg.h:60 gui/src/routemanagerdialog.cpp:500
 msgid "Send to Peer"
 msgstr "Invia al &paio"
 

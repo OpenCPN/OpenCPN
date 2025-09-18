@@ -72,7 +72,7 @@
 #include "route_point_gui.h"
 #include "route_prop_dlg_impl.h"
 #include "send_to_gps_dlg.h"
-#include "SendToPeerDlg.h"
+#include "send_to_peer_dlg.h"
 #include "styles.h"
 #include "model/svg_utils.h"
 #include "TrackPropDlg.h"

@@ -71,7 +71,7 @@
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "send_to_gps_dlg.h"
-#include "SendToPeerDlg.h"
+#include "send_to_peer_dlg.h"
 #include "styles.h"
 #include "tcmgr.h"
 #include "track_gui.h"

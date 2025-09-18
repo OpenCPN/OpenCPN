@@ -2604,7 +2604,7 @@ msgstr "ルートプロパティ"
 msgid "Extra Object Info"
 msgstr "付加情報"
 
-#: gui/include/gui/SendToPeerDlg.h:60 gui/src/routemanagerdialog.cpp:500
+#: gui/include/gui/send_to_peer_dlg.h:60 gui/src/routemanagerdialog.cpp:500
 msgid "Send to Peer"
 msgstr ""
 

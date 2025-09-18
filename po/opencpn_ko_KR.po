@@ -2605,7 +2605,7 @@ msgstr "경로 속성"
 msgid "Extra Object Info"
 msgstr "추가 객체 정보"
 
-#: gui/include/gui/SendToPeerDlg.h:60 gui/src/routemanagerdialog.cpp:500
+#: gui/include/gui/send_to_peer_dlg.h:60 gui/src/routemanagerdialog.cpp:500
 msgid "Send to Peer"
 msgstr ""
 

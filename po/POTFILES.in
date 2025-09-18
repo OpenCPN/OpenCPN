@@ -271,7 +271,7 @@ gui/include/gui/S57Sector.h
 gui/include/gui/safe_mode_gui.h
 gui/include/gui/senc_manager.h
 gui/include/gui/send_to_gps_dlg.h
-gui/include/gui/SendToPeerDlg.h
+gui/include/gui/send_to_peer_dlg.h
 gui/include/gui/shaders.h
 gui/include/gui/Station_Data.h
 gui/include/gui/styles.h
