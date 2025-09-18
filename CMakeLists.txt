@@ -862,7 +862,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/S57Sector.h
     ${GUI_HDR_DIR}/safe_mode_gui.h
     ${GUI_HDR_DIR}/send_to_gps_dlg.h
-    ${GUI_HDR_DIR}/SendToPeerDlg.h
+    ${GUI_HDR_DIR}/send_to_peer_dlg.h
     ${GUI_HDR_DIR}/Station_Data.h
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/TCDataFactory.h
@@ -987,7 +987,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
     ${GUI_SRC_DIR}/senc_manager.cpp
     ${GUI_SRC_DIR}/send_to_gps_dlg.cpp
-    ${GUI_SRC_DIR}/SendToPeerDlg.cpp
+    ${GUI_SRC_DIR}/send_to_peer_dlg.cpp
     ${GUI_SRC_DIR}/shapefile_basemap.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp

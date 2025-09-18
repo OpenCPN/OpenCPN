@@ -2604,7 +2604,7 @@ msgstr "रूट गुण"
 msgid "Extra Object Info"
 msgstr "अतिरिक्त वस्तु की जानकारी"
 
-#: gui/include/gui/SendToPeerDlg.h:60 gui/src/routemanagerdialog.cpp:500
+#: gui/include/gui/send_to_peer_dlg.h:60 gui/src/routemanagerdialog.cpp:500
 msgid "Send to Peer"
 msgstr ""
 
