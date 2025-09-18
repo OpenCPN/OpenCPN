@@ -214,18 +214,16 @@ class MUIButton {
 public:
   MUIButton();
   MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY,
-            float scale_factor = 1.0,
-            const wxString& bitmapState0 = wxEmptyString,
-            const wxString& bitmapState1 = wxEmptyString,
-            const wxString& bitmapState2 = wxEmptyString,
+            float scale_factor = 1.0, const wxString& bitmapState0 = "",
+            const wxString& bitmapState1 = "",
+            const wxString& bitmapState2 = "",
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
   bool Create(wxWindow* parent, wxWindowID id = wxID_ANY,
-              float scale_factor = 1.0,
-              const wxString& bitmapState0 = wxEmptyString,
-              const wxString& bitmapState1 = wxEmptyString,
-              const wxString& bitmapState2 = wxEmptyString,
+              float scale_factor = 1.0, const wxString& bitmapState0 = "",
+              const wxString& bitmapState1 = "",
+              const wxString& bitmapState2 = "",
               const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
@@ -540,13 +538,12 @@ class MUITextButton {
 public:
   MUITextButton();
   MUITextButton(wxWindow* parent, wxWindowID id, float scale_factor,
-                wxColor backColor, const wxString& text = wxEmptyString,
+                wxColor backColor, const wxString& text = "",
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
   bool Create(wxWindow* parent, wxWindowID id, float scale_factor = 1.0,
-              const wxString& text = wxEmptyString,
-              const wxPoint& pos = wxDefaultPosition,
+              const wxString& text = "", const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
   ~MUITextButton();
