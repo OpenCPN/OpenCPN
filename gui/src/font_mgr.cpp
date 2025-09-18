@@ -49,7 +49,7 @@ public:
                            bool underline = false,
                            const wxString &face = wxEmptyString,
                            wxFontEncoding encoding = wxFONTENCODING_DEFAULT);
-  void FreeAll(void);
+  void FreeAll();
 
 private:
   bool isCached(font_cache_record &record, int pointSize, wxFontFamily family,
@@ -326,7 +326,7 @@ bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont,
   return false;
 }
 
-int FontMgr::GetNumFonts(void) const { return m_fontlist->size(); }
+int FontMgr::GetNumFonts() const { return m_fontlist->size(); }
 
 const wxString &FontMgr::GetConfigString(int i) const {
   auto it = m_fontlist->begin();
@@ -531,7 +531,7 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
   return font;
 }
 
-void OCPNwxFontList::FreeAll(void) {
+void OCPNwxFontList::FreeAll() {
   wxFont *font;
   for (size_t i = 0; i < m_fontVector.size(); i++) {
     font_cache_record record = m_fontVector[i];

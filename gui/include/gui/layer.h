@@ -43,9 +43,9 @@ extern LayerList *pLayerList;  ///< Global instance
  */
 class Layer {
 public:
-  Layer(void);
-  ~Layer(void);
-  wxString CreatePropString(void) { return m_LayerFileName; }
+  Layer();
+  ~Layer();
+  wxString CreatePropString() { return m_LayerFileName; }
   bool IsVisibleOnChart() { return m_bIsVisibleOnChart; }
   void SetVisibleOnChart(bool viz = true) { m_bIsVisibleOnChart = viz; }
   bool IsVisibleOnListing() { return m_bIsVisibleOnListing; }

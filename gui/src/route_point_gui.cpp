@@ -860,7 +860,7 @@ void RoutePointGui::EnableDragHandle(bool bEnable) {
   }
 }
 
-void RoutePointGui::ReLoadIcon(void) {
+void RoutePointGui::ReLoadIcon() {
   if (!pWayPointMan) return;
   bool icon_exists = pWayPointMan->DoesIconExist(m_point.m_IconName);
 

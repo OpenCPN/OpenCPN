@@ -71,7 +71,7 @@ public:
 
   void onCanvasOptionsAnimationTimerEvent(wxTimerEvent &event);
 
-  void SetBestPosition(void);
+  void SetBestPosition();
   void UpdateDynamicValues();
   int GetOrientation() { return m_orientation; }
   void ResetCanvasOptions();
@@ -91,7 +91,7 @@ public:
   wxSize m_size;
 
 private:
-  void Init(void);
+  void Init();
   void CreateControls();
   void PullCanvasOptions();
   void HandleMenuClick();

@@ -124,7 +124,7 @@ bool S57QueryDialog::Create(wxWindow* parent, wxWindowID id,
   return true;
 }
 
-void S57QueryDialog::RecalculateSize(void) {
+void S57QueryDialog::RecalculateSize() {
   //  Make an estimate of the dialog size, without scrollbars showing
 
   wxSize esize = m_createsize;
@@ -169,7 +169,7 @@ void S57QueryDialog::CreateControls() {
   topSizer->Add(m_btnOK, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5);
 }
 
-void S57QueryDialog::SetColorScheme(void) {
+void S57QueryDialog::SetColorScheme() {
   DimeControl(this);
   wxColor bg = GetBackgroundColour();
   m_phtml->SetBackgroundColour(bg);

@@ -55,7 +55,7 @@ canvasConfig::canvasConfig(int index) {
 
 canvasConfig::~canvasConfig() {}
 
-void canvasConfig::Reset(void) {
+void canvasConfig::Reset() {
   bFollow = false;
   bShowTides = false;
   bShowCurrents = false;

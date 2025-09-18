@@ -1753,7 +1753,7 @@ void MyConfig::CreateConfigGroups(ChartGroupArray *pGroupArray) {
   }
 }
 
-void MyConfig::DestroyConfigGroups(void) {
+void MyConfig::DestroyConfigGroups() {
   DeleteGroup(_T ( "/Groups" ));  // zap
 }
 

@@ -247,7 +247,7 @@ int AddCanvasContextMenuItemExt(wxMenuItem* pitem, opencpn_plugin* pplugin,
 }
 
 /*  Utility functions  */
-wxFileConfig* GetOCPNConfigObject(void) {
+wxFileConfig* GetOCPNConfigObject() {
   if (s_ppim)
     return reinterpret_cast<wxFileConfig*>(
         pConfig);  // return the global application config object
@@ -381,17 +381,15 @@ wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
   }
 }
 
-bool IsTouchInterface_PlugIn(void) { return g_btouch; }
+bool IsTouchInterface_PlugIn() { return g_btouch; }
 
 wxColour GetFontColour_PlugIn(wxString TextElement) {
   return FontMgr::Get().GetFontColor(TextElement);
 }
 
-wxString* GetpSharedDataLocation(void) {
-  return g_Platform->GetSharedDataDirPtr();
-}
+wxString* GetpSharedDataLocation() { return g_Platform->GetSharedDataDirPtr(); }
 
-ArrayOfPlugIn_AIS_Targets* GetAISTargetArray(void) {
+ArrayOfPlugIn_AIS_Targets* GetAISTargetArray() {
   if (!g_pAIS) return NULL;
 
   ArrayOfPlugIn_AIS_Targets* pret = new ArrayOfPlugIn_AIS_Targets;
@@ -413,7 +411,7 @@ ArrayOfPlugIn_AIS_Targets* GetAISTargetArray(void) {
   return pret;
 }
 
-wxAuiManager* GetFrameAuiManager(void) { return g_pauimgr; }
+wxAuiManager* GetFrameAuiManager() { return g_pauimgr; }
 
 void SendPluginMessage(wxString message_id, wxString message_body) {
   SendMessageToAllPlugins(message_id, message_body);
@@ -624,7 +622,7 @@ bool DecodeSingleVDOMessage(const wxString& str, PlugIn_Position_Fix_Ex* pos,
   return false;
 }
 
-int GetChartbarHeight(void) {
+int GetChartbarHeight() {
   int val = 0;
   if (g_bShowChartBar) {
     ChartCanvas* cc = gFrame->GetPrimaryCanvas();
@@ -818,9 +816,9 @@ PlugIn_Waypoint::PlugIn_Waypoint(double lat, double lon,
 PlugIn_Waypoint::~PlugIn_Waypoint() {}
 
 //      PlugInRoute implementation
-PlugIn_Route::PlugIn_Route(void) { pWaypointList = new Plugin_WaypointList; }
+PlugIn_Route::PlugIn_Route() { pWaypointList = new Plugin_WaypointList; }
 
-PlugIn_Route::~PlugIn_Route(void) {
+PlugIn_Route::~PlugIn_Route() {
   pWaypointList->DeleteContents(false);  // do not delete Waypoints
   pWaypointList->Clear();
 
@@ -828,16 +826,16 @@ PlugIn_Route::~PlugIn_Route(void) {
 }
 
 //      PlugInTrack implementation
-PlugIn_Track::PlugIn_Track(void) { pWaypointList = new Plugin_WaypointList; }
+PlugIn_Track::PlugIn_Track() { pWaypointList = new Plugin_WaypointList; }
 
-PlugIn_Track::~PlugIn_Track(void) {
+PlugIn_Track::~PlugIn_Track() {
   pWaypointList->DeleteContents(false);  // do not delete Waypoints
   pWaypointList->Clear();
 
   delete pWaypointList;
 }
 
-wxString GetNewGUID(void) { return GpxDocument::GetUUID(); }
+wxString GetNewGUID() { return GpxDocument::GetUUID(); }
 
 bool AddCustomWaypointIcon(wxBitmap* pimage, wxString key,
                            wxString description) {
@@ -1040,7 +1038,7 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
   return true;
 }
 
-wxArrayString GetWaypointGUIDArray(void) {
+wxArrayString GetWaypointGUIDArray() {
   wxArrayString result;
   for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     result.Add(prp->m_GUID);
@@ -1048,7 +1046,7 @@ wxArrayString GetWaypointGUIDArray(void) {
   return result;
 }
 
-wxArrayString GetRouteGUIDArray(void) {
+wxArrayString GetRouteGUIDArray() {
   wxArrayString result;
   for (Route* proute : *pRouteList) {
     result.Add(proute->m_GUID);
@@ -1056,7 +1054,7 @@ wxArrayString GetRouteGUIDArray(void) {
   return result;
 }
 
-wxArrayString GetTrackGUIDArray(void) {
+wxArrayString GetTrackGUIDArray() {
   wxArrayString result;
   for (Track* ptrack : g_TrackList) {
     result.Add(ptrack->m_GUID);
@@ -1127,7 +1125,7 @@ wxArrayString GetTrackGUIDArray(OBJECT_LAYER_REQ req) {
   return result;
 }
 
-wxArrayString GetIconNameArray(void) {
+wxArrayString GetIconNameArray() {
   wxArrayString result;
 
   for (int i = 0; i < pWayPointMan->GetNumIcons(); i++) {
@@ -1656,11 +1654,11 @@ void CanvasJumpToPosition(wxWindow* canvas, double lat, double lon,
   if (oCanvas) gFrame->JumpToPosition(oCanvas, lat, lon, scale);
 }
 
-bool ShuttingDown(void) { return g_bquiting; }
+bool ShuttingDown() { return g_bquiting; }
 
-wxWindow* GetCanvasUnderMouse(void) { return gFrame->GetCanvasUnderMouse(); }
+wxWindow* GetCanvasUnderMouse() { return gFrame->GetCanvasUnderMouse(); }
 
-int GetCanvasIndexUnderMouse(void) {
+int GetCanvasIndexUnderMouse() {
   ChartCanvas* l_canvas = gFrame->GetCanvasUnderMouse();
   if (l_canvas) {
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); ++i) {
@@ -2337,11 +2335,11 @@ std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(const wxString& GUID) {
 }
 
 //      PlugInRouteExtended implementation
-PlugIn_Route_Ex::PlugIn_Route_Ex(void) {
+PlugIn_Route_Ex::PlugIn_Route_Ex() {
   pWaypointList = new Plugin_WaypointExList;
 }
 
-PlugIn_Route_Ex::~PlugIn_Route_Ex(void) {
+PlugIn_Route_Ex::~PlugIn_Route_Ex() {
   pWaypointList->DeleteContents(false);  // do not delete Waypoints
   pWaypointList->Clear();
 

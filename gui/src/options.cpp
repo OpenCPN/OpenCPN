@@ -814,9 +814,9 @@ ConfigCreateDialog::ConfigCreateDialog(wxWindow* parent, wxWindowID id,
   Centre();
 }
 
-ConfigCreateDialog::~ConfigCreateDialog(void) {}
+ConfigCreateDialog::~ConfigCreateDialog() {}
 
-void ConfigCreateDialog::CreateControls(void) {
+void ConfigCreateDialog::CreateControls() {
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
 
@@ -894,9 +894,9 @@ MMSIEditDialog::MMSIEditDialog(MmsiProperties* props, wxWindow* parent,
   Centre();
 }
 
-MMSIEditDialog::~MMSIEditDialog(void) { delete m_MMSICtl; }
+MMSIEditDialog::~MMSIEditDialog() { delete m_MMSICtl; }
 
-void MMSIEditDialog::CreateControls(void) {
+void MMSIEditDialog::CreateControls() {
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
 
@@ -1163,7 +1163,7 @@ MMSIListCtrl::MMSIListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   m_parent = parent;
 }
 
-MMSIListCtrl::~MMSIListCtrl(void) {}
+MMSIListCtrl::~MMSIListCtrl() {}
 
 wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
@@ -1398,7 +1398,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   SetColorScheme(GLOBAL_COLOR_SCHEME_RGB);
 }
 
-MMSI_Props_Panel::~MMSI_Props_Panel(void) {}
+MMSI_Props_Panel::~MMSI_Props_Panel() {}
 
 void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
   MmsiProperties* props = new MmsiProperties(-1);
@@ -1418,7 +1418,7 @@ void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
   });
 }
 
-void MMSI_Props_Panel::UpdateMMSIList(void) {
+void MMSI_Props_Panel::UpdateMMSIList() {
   // Capture the MMSI of the curently selected list item
   long selItemID = wxNOT_FOUND;
   m_pListCtrlMMSI->GetNextItem(selItemID, wxLIST_NEXT_ALL,
@@ -1475,7 +1475,7 @@ public:
   bool SetFont(const wxFont& font);
 
   int Append(const wxString& item, wxBitmap bmp);
-  void Clear(void);
+  void Clear();
 
   const wxFont* dfont;
 
@@ -1550,7 +1550,7 @@ int OCPNFatCombo::Append(const wxString& item, wxBitmap bmp) {
   return idx;
 }
 
-void OCPNFatCombo::Clear(void) {
+void OCPNFatCombo::Clear() {
   wxOwnerDrawnComboBox::Clear();
   bmpArray.Clear();
 }
@@ -1622,7 +1622,7 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
   m_persist_active_route_chkbox->SetValue(g_persist_active_route);
 }
 
-options::~options(void) {
+options::~options() {
   wxNotebook* nb =
       dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
   if (nb)
@@ -1694,7 +1694,7 @@ void options::RecalculateSize(int hint_x, int hint_y) {
   m_nCharWidthMax = GetSize().x / GetCharWidth();
 }
 
-void options::Init(void) {
+void options::Init() {
   m_pWorkDirList = NULL;
 
   pShowStatusBar = NULL;
@@ -3964,7 +3964,7 @@ void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
   CompletePanel();
 }
 
-void ChartGroupsUI::CompletePanel(void) {
+void ChartGroupsUI::CompletePanel() {
   m_panel = this;
   m_topSizer = new wxBoxSizer(wxVERTICAL);
   m_panel->SetSizer(m_topSizer);
@@ -5995,7 +5995,7 @@ void options::CreateListbookIcons() {
   }
 }
 
-void options::CreateControls(void) {
+void options::CreateControls() {
   int border_size = 4;
   // use for items within one group, with Add(...wxALL)
   int group_item_spacing = 2;
@@ -6268,7 +6268,7 @@ void options::OnCanvasConfigSelectClick(int ID, bool selected) {
   }
 }
 
-void options::SetInitialSettings(void) {
+void options::SetInitialSettings() {
   wxString s;
 
   m_returnChanges = 0;  // reset the flags
@@ -6716,7 +6716,7 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd) {
   }
 }
 
-void options::SetInitialVectorSettings(void) {
+void options::SetInitialVectorSettings() {
   m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
 
   //    Diplay Category
@@ -6806,7 +6806,7 @@ void options::SetInitialVectorSettings(void) {
   }
 }
 
-void options::UpdateOptionsUnits(void) {
+void options::UpdateOptionsUnits() {
   int depthUnit = pDepthUnitSelect->GetSelection();
 
   depthUnit = wxMax(depthUnit, 0);
@@ -7046,7 +7046,7 @@ void options::OnButtonSetStd(wxCommandEvent& event) {
   event.Skip();
 }
 
-bool options::ShowToolTips(void) { return TRUE; }
+bool options::ShowToolTips() { return TRUE; }
 
 void options::OnCharHook(wxKeyEvent& event) {
   if (event.GetKeyCode() == WXK_RETURN &&
@@ -7106,7 +7106,7 @@ void options::UpdateDisplayedChartDirList(ArrayOfCDI p) {
   UpdateChartDirList();
 }
 
-void options::UpdateWorkArrayFromDisplayPanel(void) {
+void options::UpdateWorkArrayFromDisplayPanel() {
   wxString dirname;
   int n = ActiveChartArray.GetCount();
   if (m_pWorkDirList) {
@@ -7847,7 +7847,7 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   Hide();
 }
 
-void options::Finish(void) {
+void options::Finish() {
   //  Required to avoid intermittent crash on wxGTK
   m_pListbook->ChangeSelection(0);
   for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
@@ -8963,7 +8963,7 @@ ChartGroupsUI::ChartGroupsUI(wxWindow* parent) : wxScrolledWindow(parent) {
   dialogFont = GetOCPNScaledFont(_("Dialog"));
 }
 
-ChartGroupsUI::~ChartGroupsUI(void) {
+ChartGroupsUI::~ChartGroupsUI() {
   m_DirCtrlArray.Clear();
   m_GroupNB->Disconnect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
@@ -8972,12 +8972,12 @@ ChartGroupsUI::~ChartGroupsUI(void) {
   delete iFont;
 }
 
-void ChartGroupsUI::SetInitialSettings(void) {
+void ChartGroupsUI::SetInitialSettings() {
   m_settingscomplete = FALSE;
   m_treespopulated = FALSE;
 }
 
-void ChartGroupsUI::PopulateTrees(void) {
+void ChartGroupsUI::PopulateTrees() {
   //    Fill in the "Active chart" tree control
   //    from the options dialog "Active Chart Directories" list
   wxArrayString dir_array;
@@ -9004,7 +9004,7 @@ void ChartGroupsUI::PopulateTrees(void) {
                    wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), iFont);
 }
 
-void ChartGroupsUI::CompleteInitialSettings(void) {
+void ChartGroupsUI::CompleteInitialSettings() {
   PopulateTrees();
 
   BuildNotebookPages(m_pGroupArray);
@@ -9510,37 +9510,37 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   Centre();
 }
 
-bool OpenGLOptionsDlg::GetAcceleratedPanning(void) const {
+bool OpenGLOptionsDlg::GetAcceleratedPanning() const {
   return m_cbUseAcceleratedPanning->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetTextureCompression(void) const {
+bool OpenGLOptionsDlg::GetTextureCompression() const {
   return m_cbTextureCompression->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetPolygonSmoothing(void) const {
+bool OpenGLOptionsDlg::GetPolygonSmoothing() const {
   return m_cbPolygonSmoothing->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetLineSmoothing(void) const {
+bool OpenGLOptionsDlg::GetLineSmoothing() const {
   return m_cbLineSmoothing->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetSoftwareGL(void) const {
+bool OpenGLOptionsDlg::GetSoftwareGL() const {
   return m_cbSoftwareGL->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetTextureCompressionCaching(void) const {
+bool OpenGLOptionsDlg::GetTextureCompressionCaching() const {
   return m_cbTextureCompressionCaching->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetRebuildCache(void) const { return m_brebuild_cache; }
+bool OpenGLOptionsDlg::GetRebuildCache() const { return m_brebuild_cache; }
 
-int OpenGLOptionsDlg::GetTextureMemorySize(void) const {
+int OpenGLOptionsDlg::GetTextureMemorySize() const {
   return m_sTextureMemorySize->GetValue();
 }
 
-void OpenGLOptionsDlg::Populate(void) {
+void OpenGLOptionsDlg::Populate() {
   m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
   /* disable caching if unsupported */
   //   if (b_glEntryPointsSet && !s_glCompressedTexImage2D) {
@@ -9623,7 +9623,7 @@ void OpenGLOptionsDlg::OnButtonClear(wxCommandEvent& event) {
   }
 }
 
-wxString OpenGLOptionsDlg::GetTextureCacheSize(void) {
+wxString OpenGLOptionsDlg::GetTextureCacheSize() {
   wxString path = g_Platform->GetPrivateDataDir();
   appendOSDirSlash(&path);
   path.append("raster_texture_cache");

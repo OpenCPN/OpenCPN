@@ -1065,7 +1065,7 @@ ChartDatabase::ChartDatabase() {
   UpdateChartClassDescriptorArray();
 }
 
-void ChartDatabase::UpdateChartClassDescriptorArray(void) {
+void ChartDatabase::UpdateChartClassDescriptorArray() {
   if (m_ChartClassDescriptorArray.empty()) {
     m_ChartClassDescriptorArray.push_back(
         ChartClassDescriptor("ChartKAP", "*.kap", BUILTIN_DESCRIPTOR));

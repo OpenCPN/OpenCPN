@@ -317,7 +317,7 @@ void RoutePropDlgImpl::OnActivate(wxActivateEvent& event) {
     pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
-void RoutePropDlgImpl::RecalculateSize(void) {
+void RoutePropDlgImpl::RecalculateSize() {
   wxSize esize;
   esize.x = GetCharWidth() * 110;
   esize.y = GetCharHeight() * 40;
