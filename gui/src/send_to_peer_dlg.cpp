@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,16 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement send_to_peer_dlg.h -- Send Route/Waypoint/Track to peer dialog
  */
+
 #include <memory>
 
 #include <wx/statline.h>
 
 #include <curl/curl.h>
+
+#include "send_to_peer_dlg.h"
 
 #include "model/cmdline.h"
 #include "model/config_vars.h"
@@ -42,8 +44,6 @@
 #include "peer_client_dlg.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
-
-#include "send_to_peer_dlg.h"
 #include "ocpn_plugin.h"
 
 #ifdef __ANDROID__
@@ -52,8 +52,6 @@
 
 #define TIMER_AUTOSCAN 94522
 #define TIMER_SCANTICK 94523
-
-extern OCPNPlatform* g_Platform;
 
 static PeerDlgResult ConfirmWriteDlg() {
   std::string msg(_("Objects exists on server. OK to overwrite?"));
@@ -122,6 +120,19 @@ static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
   return PeerDlgResult::Cancel;  // For the compiler, not reached
 }
 
+/** Dig out server name and ip address from textbox value. */
+static void ParsePeer(const wxString& ui_value, PeerData& peer_data) {
+  wxString server_name = ui_value.BeforeFirst('{').Trim();
+  wxString peer_ip = ui_value;
+  int tail = ui_value.Find('{');
+  if (tail != wxNOT_FOUND) peer_ip = peer_ip.Mid(tail + 1);
+  peer_ip = peer_ip.BeforeFirst('}') + ":";
+  // Is the destination a portable?  Detect by string inspection.
+  peer_ip += server_name.BeforeFirst('-') == "Portable" ? "8444" : "8443";
+  peer_data.server_name = server_name.ToStdString();
+  peer_data.dest_ip_address = peer_ip.ToStdString();
+}
+
 std::pair<PeerDlgResult, std::string> RunPincodeDlg() {
   PinConfirmDlg dlg(wxTheApp->GetTopWindow(), wxID_ANY,
                     _("OpenCPN Server Message"), "", wxDefaultPosition,
@@ -138,19 +149,6 @@ std::pair<PeerDlgResult, std::string> RunPincodeDlg() {
     return {PeerDlgResult::HasPincode, pin.ToStdString()};
   }
   return {PeerDlgResult::Cancel, ""};
-}
-
-/** Dig out server name and ip address from textbox value. */
-static void ParsePeer(const wxString& ui_value, PeerData& peer_data) {
-  wxString server_name = ui_value.BeforeFirst('{').Trim();
-  wxString peer_ip = ui_value;
-  int tail = ui_value.Find('{');
-  if (tail != wxNOT_FOUND) peer_ip = peer_ip.Mid(tail + 1);
-  peer_ip = peer_ip.BeforeFirst('}') + ":";
-  // Is the destination a portable?  Detect by string inspection.
-  peer_ip += server_name.BeforeFirst('-') == "Portable" ? "8444" : "8443";
-  peer_data.server_name = server_name.ToStdString();
-  peer_data.dest_ip_address = peer_ip.ToStdString();
 }
 
 BEGIN_EVENT_TABLE(SendToPeerDlg, wxDialog)
