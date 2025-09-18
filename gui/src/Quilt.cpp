@@ -40,6 +40,7 @@
 #include "s57chart.h"
 
 #include <wx/listimpl.cpp>
+WX_DEFINE_LIST(PatchList);
 
 extern ChartDB *ChartData;
 extern s52plib *ps52plib;
@@ -244,7 +245,7 @@ Quilt::Quilt(ChartCanvas *parent) {
 
   m_lost_refchart_dbIndex = -1;
 
-  cnode = m_PatchList.end();
+  cnode = NULL;
 
   m_pBM = NULL;
   m_bcomposed = false;
@@ -266,8 +267,8 @@ Quilt::Quilt(ChartCanvas *parent) {
 }
 
 Quilt::~Quilt() {
-  for (QuiltPatch *qp : m_PatchList) delete qp;
-  m_PatchList.clear();
+  m_PatchList.DeleteContents(true);
+  m_PatchList.Clear();
 
   EmptyCandidateArray();
   delete m_pcandidate_array;
@@ -389,8 +390,8 @@ std::vector<int> Quilt::GetCandidatedbIndexArray(bool from_ref_chart,
 }
 
 QuiltPatch *Quilt::GetCurrentPatch() {
-  if (cnode != m_PatchList.end())
-    return (*cnode);
+  if (cnode)
+    return (cnode->GetData());
   else
     return NULL;
 }
@@ -416,10 +417,10 @@ ChartBase *Quilt::GetFirstChart() {
 
   m_bbusy = true;
   ChartBase *pret = NULL;
-  cnode = m_PatchList.begin();
-  while (cnode != m_PatchList.end() && !(*cnode)->b_Valid) ++cnode;
-  if (cnode != m_PatchList.end() && (*cnode)->b_Valid)
-    pret = ChartData->OpenChartFromDB((*cnode)->dbIndex, FULL_INIT);
+  cnode = m_PatchList.GetFirst();
+  while (cnode && !cnode->GetData()->b_Valid) cnode = cnode->GetNext();
+  if (cnode && cnode->GetData()->b_Valid)
+    pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
 
   m_bbusy = false;
   return pret;
@@ -434,11 +435,11 @@ ChartBase *Quilt::GetNextChart() {
 
   m_bbusy = true;
   ChartBase *pret = NULL;
-  if (cnode != m_PatchList.end()) {
-    ++cnode;
-    while (cnode != m_PatchList.end() && !(*cnode)->b_Valid) ++cnode;
-    if (cnode != m_PatchList.end() && (*cnode)->b_Valid)
-      pret = ChartData->OpenChartFromDB((*cnode)->dbIndex, FULL_INIT);
+  if (cnode) {
+    cnode = cnode->GetNext();
+    while (cnode && !cnode->GetData()->b_Valid) cnode = cnode->GetNext();
+    if (cnode && cnode->GetData()->b_Valid)
+      pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
   }
 
   m_bbusy = false;
@@ -454,11 +455,11 @@ ChartBase *Quilt::GetNextSmallerScaleChart() {
 
   m_bbusy = true;
   ChartBase *pret = NULL;
-  if (cnode != m_PatchList.begin() && m_PatchList.size()) {
-    --cnode;
-    while (cnode != m_PatchList.begin() && !(*cnode)->b_Valid) --cnode;
-    if (cnode != m_PatchList.begin() && (*cnode)->b_Valid)
-      pret = ChartData->OpenChartFromDB((*cnode)->dbIndex, FULL_INIT);
+  if (cnode) {
+    cnode = cnode->GetPrevious();
+    while (cnode && !cnode->GetData()->b_Valid) cnode = cnode->GetPrevious();
+    if (cnode && cnode->GetData()->b_Valid)
+      pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
   }
 
   m_bbusy = false;
@@ -472,12 +473,11 @@ ChartBase *Quilt::GetLargestScaleChart() {
 
   m_bbusy = true;
   ChartBase *pret = NULL;
-  if (!m_PatchList.empty()) {
-    auto it = m_PatchList.end() - 1;
-    cnode = it;
-    pret = ChartData->OpenChartFromDB((*it)->dbIndex, FULL_INIT);
-    m_bbusy = false;
-  }
+  cnode = m_PatchList.GetLast();
+  if (cnode)
+    pret = ChartData->OpenChartFromDB(cnode->GetData()->dbIndex, FULL_INIT);
+
+  m_bbusy = false;
   return pret;
 }
 
@@ -602,18 +602,24 @@ bool Quilt::IsQuiltVector(void) {
   m_bbusy = true;
 
   bool ret = false;
-  for (QuiltPatch *pqp : m_PatchList) {
-    if (!pqp) continue;
 
-    if ((pqp->b_Valid) && (!pqp->b_eclipsed) &&
-        (pqp->dbIndex < ChartData->GetChartTableEntries())) {
-      const ChartTableEntry &ctei = ChartData->GetChartTableEntry(pqp->dbIndex);
+  wxPatchListNode *cnode = m_PatchList.GetFirst();
+  while (cnode) {
+    if (cnode->GetData()) {
+      QuiltPatch *pqp = cnode->GetData();
 
-      if (ctei.GetChartFamily() == CHART_FAMILY_VECTOR) {
-        ret = true;
-        break;
+      if ((pqp->b_Valid) && (!pqp->b_eclipsed) &&
+          (pqp->dbIndex < ChartData->GetChartTableEntries())) {
+        const ChartTableEntry &ctei =
+            ChartData->GetChartTableEntry(pqp->dbIndex);
+
+        if (ctei.GetChartFamily() == CHART_FAMILY_VECTOR) {
+          ret = true;
+          break;
+        }
       }
     }
+    cnode = cnode->GetNext();
   }
 
   m_bbusy = false;
@@ -627,16 +633,22 @@ bool Quilt::DoesQuiltContainPlugins(void) {
 
   bool ret = false;
 
-  for (QuiltPatch *pqp : m_PatchList) {
-    if (!pqp) continue;
-    if ((pqp->b_Valid) && (!pqp->b_eclipsed)) {
-      const ChartTableEntry &ctei = ChartData->GetChartTableEntry(pqp->dbIndex);
+  wxPatchListNode *cnode = m_PatchList.GetFirst();
+  while (cnode) {
+    if (cnode->GetData()) {
+      QuiltPatch *pqp = cnode->GetData();
 
-      if (ctei.GetChartType() == CHART_TYPE_PLUGIN) {
-        ret = true;
-        break;
+      if ((pqp->b_Valid) && (!pqp->b_eclipsed)) {
+        const ChartTableEntry &ctei =
+            ChartData->GetChartTableEntry(pqp->dbIndex);
+
+        if (ctei.GetChartType() == CHART_TYPE_PLUGIN) {
+          ret = true;
+          break;
+        }
       }
     }
+    cnode = cnode->GetNext();
   }
 
   m_bbusy = false;
@@ -653,14 +665,13 @@ int Quilt::GetChartdbIndexAtPix(ViewPort &VPoint, wxPoint p) {
 
   int ret = -1;
 
-  auto it = m_PatchList.begin();
-  while (it != m_PatchList.end()) {
-    if ((*it)->ActiveRegion.Contains(lat, lon)) {
-      ret = (*it)->dbIndex;
+  wxPatchListNode *cnode = m_PatchList.GetFirst();
+  while (cnode) {
+    if (cnode->GetData()->ActiveRegion.Contains(lat, lon)) {
+      ret = cnode->GetData()->dbIndex;
       break;
-    } else {
-      ++it;
-    }
+    } else
+      cnode = cnode->GetNext();
   }
 
   m_bbusy = false;
@@ -680,11 +691,14 @@ ChartBase *Quilt::GetChartAtPix(ViewPort &VPoint, wxPoint p) {
   //    walk the whole list.  The result will be the last one found, i.e. the
   //    largest scale chart.
   ChartBase *pret = NULL;
-  for (QuiltPatch *pqp : m_PatchList) {
+  wxPatchListNode *cnode = m_PatchList.GetFirst();
+  while (cnode) {
+    QuiltPatch *pqp = cnode->GetData();
     if (!pqp->b_overlay && (pqp->ActiveRegion.Contains(lat, lon)))
       if (ChartData->IsChartInCache(pqp->dbIndex)) {
         pret = ChartData->OpenChartFromDB(pqp->dbIndex, FULL_INIT);
       }
+    cnode = cnode->GetNext();
   }
 
   m_bbusy = false;
@@ -704,9 +718,12 @@ ChartBase *Quilt::GetOverlayChartAtPix(ViewPort &VPoint, wxPoint p) {
   //    walk the whole list.  The result will be the last one found, i.e. the
   //    largest scale chart.
   ChartBase *pret = NULL;
-  for (QuiltPatch *pqp : m_PatchList) {
+  wxPatchListNode *cnode = m_PatchList.GetFirst();
+  while (cnode) {
+    QuiltPatch *pqp = cnode->GetData();
     if (pqp->b_overlay && (pqp->ActiveRegion.Contains(lat, lon)))
       pret = ChartData->OpenChartFromDB(pqp->dbIndex, FULL_INIT);
+    cnode = cnode->GetNext();
   }
 
   m_bbusy = false;
@@ -733,8 +750,10 @@ std::vector<int> Quilt::GetQuiltIndexArray(void) {
 
   m_bbusy = true;
 
-  for (QuiltPatch *pqp : m_PatchList) {
-    ret.push_back(pqp->dbIndex);
+  wxPatchListNode *cnode = m_PatchList.GetFirst();
+  while (cnode) {
+    ret.push_back(cnode->GetData()->dbIndex);
+    cnode = cnode->GetNext();
   }
 
   m_bbusy = false;
@@ -2113,8 +2132,8 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   //    Finally, build a list of "patches" for the quilt.
   //    Smallest scale first, as this will be the natural drawing order
 
-  for (QuiltPatch *qp : m_PatchList) delete qp;
-  m_PatchList.clear();
+  m_PatchList.DeleteContents(true);
+  m_PatchList.Clear();
 
   if (m_pcandidate_array->GetCount()) {
     for (int i = m_pcandidate_array->GetCount() - 1; i >= 0; i--) {
@@ -2140,7 +2159,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
         pqp->b_Valid = true;
 
-        m_PatchList.push_back(pqp);
+        m_PatchList.Append(pqp);
       }
     }
   }
@@ -2158,9 +2177,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   if (!m_bquiltanyproj) {
     //    Walk the PatchList, marking any entries whose projection does not
     //    match the determined quilt projection
-    for (unsigned int i = 0; i < m_PatchList.size(); i++) {
-      auto it = m_PatchList.begin() + i;
-      QuiltPatch *piqp = *it;
+    for (unsigned int i = 0; i < m_PatchList.GetCount(); i++) {
+      wxPatchListNode *pcinode = m_PatchList.Item(i);
+      QuiltPatch *piqp = pcinode->GetData();
       if ((piqp->ProjType != m_quilt_proj) &&
           (piqp->ProjType != PROJECTION_UNKNOWN))
         piqp->b_Valid = false;
@@ -2168,9 +2187,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   }
 
   //    Walk the PatchList, marking any entries which appear in the noshow array
-  for (unsigned int i = 0; i < m_PatchList.size(); i++) {
-    auto it = m_PatchList.begin() + i;
-    QuiltPatch *piqp = *it;
+  for (unsigned int i = 0; i < m_PatchList.GetCount(); i++) {
+    wxPatchListNode *pcinode = m_PatchList.Item(i);
+    QuiltPatch *piqp = pcinode->GetData();
     for (unsigned int ins = 0;
          ins < m_parent->GetQuiltNoshowIindexArray().size(); ins++) {
       if (m_parent->GetQuiltNoshowIindexArray()[ins] ==
@@ -2192,9 +2211,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   bool b_skipCM93 = false;
   if (m_reference_type == CHART_TYPE_CM93COMP) {
     // find cm93 in the list
-    for (int i = m_PatchList.size() - 1; i >= 0; i--) {
-      auto it = m_PatchList.begin() + i;
-      QuiltPatch *piqp = (*it);
+    for (int i = m_PatchList.GetCount() - 1; i >= 0; i--) {
+      wxPatchListNode *pcinode = m_PatchList.Item(i);
+      QuiltPatch *piqp = pcinode->GetData();
       if (!piqp->b_Valid)  // skip invalid entries
         continue;
 
@@ -2217,9 +2236,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
   //  Proceeding from largest scale to smallest....
 
-  for (int i = m_PatchList.size() - 1; i >= 0; i--) {
-    auto it = m_PatchList.begin() + i;
-    QuiltPatch *piqp = *it;
+  for (int i = m_PatchList.GetCount() - 1; i >= 0; i--) {
+    wxPatchListNode *pcinode = m_PatchList.Item(i);
+    QuiltPatch *piqp = pcinode->GetData();
     if (!piqp->b_Valid)  // skip invalid entries
       continue;
 
@@ -2233,7 +2252,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
     piqp->ActiveRegion = piqp->quilt_region;
 
     // this operation becomes expensive with lots of charts
-    if (!b_has_overlays && m_PatchList.size() < 25)
+    if (!b_has_overlays && m_PatchList.GetCount() < 25)
       piqp->ActiveRegion.Subtract(m_covered_region);
 
     piqp->ActiveRegion.Intersect(cvp_region);
@@ -2337,9 +2356,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
   //    Walk the list again, removing any entries marked as eclipsed....
   unsigned int il = 0;
-  while (il < m_PatchList.size()) {
-    auto it = m_PatchList.begin() + il;
-    QuiltPatch *piqp = *it;
+  while (il < m_PatchList.GetCount()) {
+    wxPatchListNode *pcinode = m_PatchList.Item(il);
+    QuiltPatch *piqp = pcinode->GetData();
     if (piqp->b_eclipsed) {
       //    Make sure that this chart appears in the eclipsed list...
       //    This can happen when....
@@ -2352,7 +2371,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
       }
       if (!b_noadd) m_eclipsed_stack_array.push_back(piqp->dbIndex);
 
-      m_PatchList.erase(it);
+      m_PatchList.DeleteNode(pcinode);
       il = 0;  // restart the list walk
     }
 
@@ -2434,11 +2453,11 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   m_index_array.clear();
 
   //    The index array is to be built in reverse, largest scale first
-  unsigned int kl = m_PatchList.size();
+  unsigned int kl = m_PatchList.GetCount();
   for (unsigned int k = 0; k < kl; k++) {
-    auto it = m_PatchList.begin() + kl - k;
-    m_index_array.push_back((*it)->dbIndex);
-    ++cnode;
+    wxPatchListNode *cnode = m_PatchList.Item((kl - k) - 1);
+    m_index_array.push_back(cnode->GetData()->dbIndex);
+    cnode = cnode->GetNext();
   }
 
   //    Walk the patch list again, checking the depth units
@@ -2465,9 +2484,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
     }
   }
 
-  for (unsigned int k = 0; k < m_PatchList.size(); k++) {
-    auto it = m_PatchList.begin() + k;
-    QuiltPatch *pqp = *it;
+  for (unsigned int k = 0; k < m_PatchList.GetCount(); k++) {
+    wxPatchListNode *pnode = m_PatchList.Item(k);
+    QuiltPatch *pqp = pnode->GetData();
 
     if (!pqp->b_Valid)  // skip invalid entries
       continue;
@@ -2514,9 +2533,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   //    If one is missing, try to load it
   //    If still missing, remove its patch from the quilt
   //    This will probably leave a "black hole" in the quilt...
-  for (unsigned int k = 0; k < m_PatchList.size(); k++) {
-    auto it = m_PatchList.begin() + k;
-    QuiltPatch *pqp = *it;
+  for (unsigned int k = 0; k < m_PatchList.GetCount(); k++) {
+    wxPatchListNode *pnode = m_PatchList.Item(k);
+    QuiltPatch *pqp = pnode->GetData();
 
     if (pqp->b_Valid) {
       if (!ChartData->IsChartInCache(pqp->dbIndex)) {
@@ -2540,9 +2559,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
   m_bquilt_has_overlays = false;
   m_max_error_factor = 0.;
-  for (unsigned int k = 0; k < m_PatchList.size(); k++) {
-    auto it = m_PatchList.begin() + k;
-    QuiltPatch *pqp = *it;
+  for (unsigned int k = 0; k < m_PatchList.GetCount(); k++) {
+    wxPatchListNode *pnode = m_PatchList.Item(k);
+    QuiltPatch *pqp = pnode->GetData();
 
     if (!pqp->b_Valid)  // skip invalid entries
       continue;

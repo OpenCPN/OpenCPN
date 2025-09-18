@@ -26,7 +26,6 @@
 #define __QUIT_H__
 
 #include <vector>
-
 #include "LLRegion.h"
 #include "OCPNRegion.h"
 #include "chcanv.h"
@@ -78,8 +77,7 @@ private:
   LLRegion reduced_candidate_region;
 };
 
-using PatchList = std::vector<QuiltPatch *>;
-
+WX_DECLARE_LIST(QuiltPatch, PatchList);
 WX_DEFINE_SORTED_ARRAY(QuiltCandidate *, ArrayOfSortedQuiltCandidates);
 
 class Quilt {
@@ -113,7 +111,7 @@ public:
   int GetExtendedStackCount(void) { return m_extended_stack_array.size(); }
   int GetFullScreenIndexCount(void) { return m_fullscreen_index_array.size(); }
 
-  int GetnCharts() { return m_PatchList.size(); }
+  int GetnCharts() { return m_PatchList.GetCount(); }
   double GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in);
 
   void ComputeRenderRegion(ViewPort &vp, OCPNRegion &chart_region);
@@ -234,7 +232,7 @@ private:
   wxBitmap *m_pBM;
 
   bool m_bcomposed;
-  PatchList::iterator cnode;
+  wxPatchListNode *cnode;
   bool m_bbusy;
   int m_quilt_proj;
 

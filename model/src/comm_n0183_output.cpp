@@ -902,7 +902,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
-    rplist.push_back(prp);
+    rplist.Append(prp);
 
     int ret1 = Garmin_GPS_SendWaypoints(wxString("usb:"), &rplist);
 

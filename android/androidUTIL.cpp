@@ -4557,7 +4557,10 @@ int doAndroidPersistState() {
     {
       //    First, delete any single anchorage waypoint closer than 0.25 NM from
       //    this point This will prevent clutter and database congestion....
-      for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
+
+      wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+      while (node) {
+        RoutePoint *pr = node->GetData();
         if (pr->GetName().StartsWith(_T("Anchorage"))) {
           double a = gLat - pr->m_lat;
           double b = gLon - pr->m_lon;
@@ -4571,6 +4574,8 @@ int doAndroidPersistState() {
             break;
           }
         }
+
+        node = node->GetNext();
       }
 
       wxString name = ocpn::toUsrDateTimeFormat(now);
