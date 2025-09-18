@@ -164,7 +164,7 @@ void AboutFrameImpl::AboutFrameOnActivate(wxActivateEvent& event) {
   m_panelMainLinks->Refresh();
 }
 
-void AboutFrameImpl::RecalculateSize(void) {
+void AboutFrameImpl::RecalculateSize() {
 #ifdef __ANDROID__
   //  Make an estimate of the dialog size, without scrollbars showing
 

@@ -483,7 +483,7 @@ glChartCanvas::~glChartCanvas() {
 #endif
 }
 
-void glChartCanvas::FlushFBO(void) {
+void glChartCanvas::FlushFBO() {
   if (m_bsetup) BuildFBO();
 }
 

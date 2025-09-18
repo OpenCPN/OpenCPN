@@ -340,8 +340,8 @@ typedef DWORD(WINAPI *GetSysColor_t)(DWORD);
 SetSysColors_t pSetSysColors;
 GetSysColor_t pGetSysColor;
 
-void SaveSystemColors(void);
-void RestoreSystemColors(void);
+void SaveSystemColors();
+void RestoreSystemColors();
 
 DWORD color_3dface;
 DWORD color_3dhilite;
@@ -381,8 +381,8 @@ double cog_rate_gt, hdt_rate_gt;
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
 
-void InitializeUserColors(void);
-void DeInitializeUserColors(void);
+void InitializeUserColors();
+void DeInitializeUserColors();
 void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
@@ -392,7 +392,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
   return b;
 }
 
-static void LaunchLocalHelp(void) {
+static void LaunchLocalHelp() {
 #ifdef __ANDROID__
   androidLaunchHelpView();
 #else
@@ -421,7 +421,7 @@ static void LaunchLocalHelp(void) {
 #endif
 }
 
-static void DoHelpDialog(void) {
+static void DoHelpDialog() {
 #ifndef __ANDROID__
   if (!g_pAboutDlg) {
     g_pAboutDlg = new AboutFrameImpl(gFrame);
@@ -594,7 +594,7 @@ static char *get_X11_property(Display *disp, Window win, Atom xa_prop_type,
 #endif
 
 // Determine if a transparent toolbar is possible under linux with opengl
-static bool isTransparentToolbarInOpenGLOK(void) {
+static bool isTransparentToolbarInOpenGLOK() {
 #ifdef __WXOSX__
   return true;
 #else
@@ -1223,7 +1223,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
   if (g_pi_manager) g_pi_manager->SetColorSchemeForAllPlugIns(cs);
 }
 
-void MyFrame::ApplyGlobalColorSchemetoStatusBar(void) {
+void MyFrame::ApplyGlobalColorSchemetoStatusBar() {
   if (m_pStatusBar != NULL) {
     m_pStatusBar->SetBackgroundColour(GetGlobalColor("UIBDR"));  // UINFF
     m_pStatusBar->ClearBackground();
@@ -2074,7 +2074,7 @@ void MyFrame::OnMove(wxMoveEvent &event) {
   g_nframewin_posy = GetPosition().y;
 }
 
-void MyFrame::ProcessCanvasResize(void) {
+void MyFrame::ProcessCanvasResize() {
   UpdateGPSCompassStatusBoxes(true);
 
   if (console && console->IsShown()) PositionConsole();
@@ -2181,7 +2181,7 @@ void MyFrame::OnIconize(wxIconizeEvent &event) {
 
 void MyFrame::OnSize(wxSizeEvent &event) { ODoSetSize(); }
 
-void MyFrame::ODoSetSize(void) {
+void MyFrame::ODoSetSize() {
   int x, y;
   GetClientSize(&x, &y);
   //      Resize the children
@@ -2355,7 +2355,7 @@ void MyFrame::ODoSetSize(void) {
   if (g_pauimgr) g_pauimgr->Update();
 }
 
-void MyFrame::PositionConsole(void) {
+void MyFrame::PositionConsole() {
 #if defined(__WXMSW__) || defined(__WXMAC__)
   if (NULL == GetPrimaryCanvas()) return;
   //    Reposition console based on its size and chartcanvas size
@@ -2489,7 +2489,7 @@ void MyFrame::DestroyPersistentDialogs() {
   }
 }
 
-void MyFrame::RefreshGroupIndices(void) {
+void MyFrame::RefreshGroupIndices() {
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -3190,7 +3190,7 @@ void MyFrame::ToggleFullScreen() {
   TriggerRecaptureTimer();
 }
 
-void MyFrame::ActivateMOB(void) {
+void MyFrame::ActivateMOB() {
   //    The MOB point
   wxDateTime mob_time = wxDateTime::Now();
   wxString mob_label(_("MAN OVERBOARD"));
@@ -3263,7 +3263,7 @@ void MyFrame::ActivateMOB(void) {
   mob_message += toSDMM(2, gLon);
   wxLogMessage(mob_message);
 }
-void MyFrame::TrackOn(void) {
+void MyFrame::TrackOn() {
   g_bTrackActive = true;
   g_pActiveTrack = new ActiveTrack();
 
@@ -3360,7 +3360,7 @@ Track *MyFrame::TrackOff(bool do_add_point) {
   return return_val;
 }
 
-bool MyFrame::ShouldRestartTrack(void) {
+bool MyFrame::ShouldRestartTrack() {
   if (!g_pActiveTrack || !g_bTrackDaily) return false;
   time_t now = wxDateTime::Now().GetTicks();
   time_t today = wxDateTime::Today().GetTicks();
@@ -3397,7 +3397,7 @@ bool MyFrame::ShouldRestartTrack(void) {
   return false;
 }
 
-void MyFrame::TrackDailyRestart(void) {
+void MyFrame::TrackDailyRestart() {
   if (!g_pActiveTrack) return;
   Track *pPreviousTrack = TrackOff(true);
   TrackOn();
@@ -3594,7 +3594,7 @@ void MyFrame::ToggleChartOutlines(ChartCanvas *cc) {
   SetMenubarItemState(ID_MENU_CHART_OUTLINES, cc->GetShowOutlines());
 }
 
-void MyFrame::ToggleTestPause(void) { g_bPauseTest = !g_bPauseTest; }
+void MyFrame::ToggleTestPause() { g_bPauseTest = !g_bPauseTest; }
 
 void MyFrame::SetMenubarItemState(int item_id, bool state) {
   if (m_pMenuBar) {
@@ -3676,7 +3676,7 @@ wxString _menuText(wxString name, wxString shortcut) {
   return menutext;
 }
 
-void MyFrame::BuildMenuBar(void) {
+void MyFrame::BuildMenuBar() {
   /*
    * Menu Bar - add or remove it if necessary, and update the state of the menu
    * items
@@ -4017,7 +4017,7 @@ void MyFrame::InvalidateAllCanvasUndo() {
   }
 }
 #if 0
-void MyFrame::SubmergeAllCanvasToolbars(void) {
+void MyFrame::SubmergeAllCanvasToolbars() {
   // .. for each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -4025,7 +4025,7 @@ void MyFrame::SubmergeAllCanvasToolbars(void) {
   }
 }
 
-void MyFrame::SurfaceAllCanvasToolbars(void) {
+void MyFrame::SurfaceAllCanvasToolbars() {
   if (g_bshowToolbar) {
     // .. for each canvas...
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -6031,7 +6031,7 @@ bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon,
     return false;
 }
 
-void MyFrame::TouchAISActive(void) {
+void MyFrame::TouchAISActive() {
   // .. for each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -6039,7 +6039,7 @@ void MyFrame::TouchAISActive(void) {
   }
 }
 
-void MyFrame::UpdateAISTool(void) {
+void MyFrame::UpdateAISTool() {
   if (!g_pAIS) return;
 
   // .. for each canvas...
@@ -6085,7 +6085,7 @@ void MyFrame::OnFrameCOGTimer(wxTimerEvent &event) {
   FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
 }
 
-void MyFrame::DoCOGSet(void) {
+void MyFrame::DoCOGSet() {
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -6150,7 +6150,7 @@ void MyFrame::UpdateGPSCompassStatusBoxes(bool b_force_new) {
 
 //    Application memory footprint management
 
-int MyFrame::GetApplicationMemoryUse(void) {
+int MyFrame::GetApplicationMemoryUse() {
   int memsize = -1;
 #ifdef __linux__
 
@@ -6263,7 +6263,7 @@ void MyFrame::selectChartDisplay(int type, int family) {
 //      Create a chartstack based on current lat/lon.
 //      Return true if a Refresh(false) was called within.
 //----------------------------------------------------------------------------------
-bool MyFrame::DoChartUpdate(void) {
+bool MyFrame::DoChartUpdate() {
   bool return_val = false;
 
   // ..For each canvas...
@@ -6450,7 +6450,7 @@ bool GetMemoryStatus(int *mem_total, int *mem_used) {
   return false;
 }
 
-void MyFrame::DoPrint(void) {
+void MyFrame::DoPrint() {
   // avoid toolbars being printed
   g_PrintingInProgress = true;
 #ifdef ocpnUSE_GL
@@ -6764,7 +6764,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   }
 }
 
-void MyFrame::FilterCogSog(void) {
+void MyFrame::FilterCogSog() {
   if (g_bfilter_cogsog && !g_own_ship_sog_cog_calc) {
     //    Simple averaging filter for COG
     double cog_last = gCog;  // most recent reported value
@@ -7544,7 +7544,7 @@ int get_static_line(char *d, const char **p, int index, int n) {
   return strlen(d);
 }
 
-void InitializeUserColors(void) {
+void InitializeUserColors() {
   const char **p = usercolors;
   char buf[81];
   int index = 0;
@@ -7630,7 +7630,7 @@ void InitializeUserColors(void) {
       (wxColorHashMap *)UserColourHashTableArray->Item(0);
 }
 
-void DeInitializeUserColors(void) {
+void DeInitializeUserColors() {
   if (!UserColorTableArray) return;
   for (unsigned i = 0; i < UserColorTableArray->GetCount(); i++) {
     colTable *ct = (colTable *)UserColorTableArray->Item(i);

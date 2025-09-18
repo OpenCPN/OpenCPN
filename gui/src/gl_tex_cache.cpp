@@ -330,7 +330,7 @@ void glTexFactory::DeleteTexture(const wxRect &rect) {
   }
 }
 
-void glTexFactory::DeleteAllTextures(void) {
+void glTexFactory::DeleteAllTextures() {
   // iterate over all the textures presently loaded
   // and delete the OpenGL texture from the GPU
   // but keep the private texture descriptor for now
@@ -379,7 +379,7 @@ void glTexFactory::FreeSome(long target) {
   }
 }
 
-void glTexFactory::DeleteAllDescriptors(void) {
+void glTexFactory::DeleteAllDescriptors() {
   // iterate over all the texture descriptors
 
   for (int i = 0; i < m_ntex; i++) {
@@ -950,7 +950,7 @@ int glTexFactory::GetTextureLevel(glTextureDescriptor *ptd, const wxRect &rect,
 // return not used
 // false? never
 // true
-bool glTexFactory::LoadHeader(void) {
+bool glTexFactory::LoadHeader() {
   if (m_hdrOK) return true;
 
   bool need_new = false;
@@ -1031,7 +1031,7 @@ bool glTexFactory::AddCacheEntryValue(const CatalogEntry &p) {
   return true;
 }
 
-bool glTexFactory::LoadCatalog(void) {
+bool glTexFactory::LoadCatalog() {
   m_newCatalog = false;
   if (m_catalogOK) return true;
 

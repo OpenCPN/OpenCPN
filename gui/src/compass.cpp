@@ -190,7 +190,7 @@ void ocpnCompass::SetColorScheme(ColorScheme cs) {
   UpdateStatus(true);
 }
 
-wxRect ocpnCompass::GetLogicalRect(void) const {
+wxRect ocpnCompass::GetLogicalRect() const {
 #ifdef wxHAS_DPI_INDEPENDENT_PIXELS
 #if wxCHECK_VERSION(3, 1, 6)
   wxRect logicalRect = wxRect(m_parent->FromPhys(m_rect.GetPosition()),

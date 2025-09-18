@@ -929,7 +929,7 @@ cm93_dictionary::~cm93_dictionary() {
 
 //    CM93 Decode support routines
 
-void CreateDecodeTable(void) {
+void CreateDecodeTable() {
   int i;
   for (i = 0; i < 256; i++) {
     Encode_table[i] = Table_0[i] ^ 8;
@@ -1762,7 +1762,7 @@ cm93chart::~cm93chart() {
   free(m_pDrawBuffer);
 }
 
-void cm93chart::Unload_CM93_Cell(void) {
+void cm93chart::Unload_CM93_Cell() {
   free(m_CIB.pobject_block);
   //      free(m_CIB.m_2a);
   free(m_CIB.p2dpoint_array);
@@ -2153,7 +2153,7 @@ std::vector<int> cm93chart::GetVPCellArray(const ViewPort &vpt) {
   return vpcells;
 }
 
-void cm93chart::ProcessVectorEdges(void) {
+void cm93chart::ProcessVectorEdges() {
   //    Create the vector(edge) map for this cell, appending to the existing
   //    member hash map
   auto &vehash = Get_ve_hash();
@@ -3890,7 +3890,7 @@ wxPoint2DDouble cm93chart::FindM_COVROffset(double lat, double lon) {
 
 //    Read the cm93 cell file header and create required Chartbase data
 //    structures
-InitReturn cm93chart::CreateHeaderDataFromCM93Cell(void) {
+InitReturn cm93chart::CreateHeaderDataFromCM93Cell() {
   //    Figure out the scale from the file name
   wxFileName fn(m_FullPath);
   wxString ext = fn.GetExt();
@@ -4416,7 +4416,7 @@ wxPoint *cm93chart::GetDrawBuffer(int nSize) {
 //  cm93manager Implementation
 //-----------------------------------------------------------------------------------------------
 
-cm93manager::cm93manager(void) {
+cm93manager::cm93manager() {
   m_pcm93Dict = NULL;
 
   m_bfoundA = false;
@@ -4429,7 +4429,7 @@ cm93manager::cm93manager(void) {
   m_bfoundZ = false;
 }
 
-cm93manager::~cm93manager(void) { delete m_pcm93Dict; }
+cm93manager::~cm93manager() { delete m_pcm93Dict; }
 
 bool cm93manager::Loadcm93Dictionary(const wxString &name) {
   //  Find and load cm93_dictionary
@@ -4605,7 +4605,7 @@ InitReturn cm93compchart::Init(const wxString &name, ChartInitFlag flags) {
   return INIT_OK;
 }
 
-void cm93compchart::Activate(void) {
+void cm93compchart::Activate() {
   //       if ( g_bShowCM93DetailSlider )
   //       {
   //             if ( !pPopupDetailSlider )
@@ -4632,7 +4632,7 @@ void cm93compchart::Activate(void) {
   //       }
 }
 
-void cm93compchart::Deactivate(void) {
+void cm93compchart::Deactivate() {
   if (pPopupDetailSlider) {
     pPopupDetailSlider->Destroy();
     pPopupDetailSlider = NULL;
@@ -5825,7 +5825,7 @@ void cm93compchart::InvalidateCache() {
   }
 }
 
-void cm93compchart::ForceEdgePriorityEvaluate(void) {
+void cm93compchart::ForceEdgePriorityEvaluate() {
   for (int i = 0; i < 8; i++) {
     if (m_pcm93chart_array[i])
       m_pcm93chart_array[i]->ForceEdgePriorityEvaluate();
@@ -5883,11 +5883,11 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon(float lat, float lon,
   }
 }
 
-std::unordered_map<unsigned, VE_Element *> &cm93compchart::Get_ve_hash(void) {
+std::unordered_map<unsigned, VE_Element *> &cm93compchart::Get_ve_hash() {
   return m_pcm93chart_current->Get_ve_hash();
 }
 
-std::unordered_map<unsigned, VC_Element *> &cm93compchart::Get_vc_hash(void) {
+std::unordered_map<unsigned, VC_Element *> &cm93compchart::Get_vc_hash() {
   return m_pcm93chart_current->Get_vc_hash();
 }
 
@@ -6100,7 +6100,7 @@ cm93_dictionary *cm93compchart::FindAndLoadDictFromDir(const wxString &dir) {
   return retval;
 }
 
-void cm93compchart::CloseandReopenCurrentSubchart(void) {
+void cm93compchart::CloseandReopenCurrentSubchart() {
   delete m_pcm93chart_current;
   m_pcm93chart_current = NULL;
   m_pcm93chart_array[m_cmscale] = NULL;
@@ -6381,7 +6381,7 @@ void CM93OffsetDialog::OnOffSetSet(wxCommandEvent &event) {
 #endif
 }
 
-void CM93OffsetDialog::UpdateOffsets(void) {
+void CM93OffsetDialog::UpdateOffsets() {
   if (m_pcompchart && m_selected_cell_index) {
     //    Set the offsets of the selected cell/object
     m_pcompchart->SetSpecialCellIndexOffset(m_selected_cell_index,

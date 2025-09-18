@@ -441,8 +441,8 @@ static const long long lNaN = 0xfff8000000000000;
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
 
-void InitializeUserColors(void);
-void DeInitializeUserColors(void);
+void InitializeUserColors();
+void DeInitializeUserColors();
 void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
@@ -1811,7 +1811,7 @@ int MyApp::OnExit() {
   // Restore any changed system colors
 
 #ifdef __WXMSW__
-  void RestoreSystemColors(void);
+  void RestoreSystemColors();
   RestoreSystemColors();
 #endif
 

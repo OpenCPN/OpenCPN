@@ -64,7 +64,7 @@ ThumbWin::ThumbWin(wxWindow *parent)
 
 ThumbWin::~ThumbWin() {}
 
-void ThumbWin::Resize(void) {
+void ThumbWin::Resize() {
   if (pThumbChart) {
     if (pThumbChart->GetThumbData()->pDIBThumb) {
       int newheight = std::min(
@@ -96,7 +96,7 @@ void ThumbWin::OnPaint(wxPaintEvent &event) {
   }
 }
 
-const wxBitmap &ThumbWin::GetBitmap(void) {
+const wxBitmap &ThumbWin::GetBitmap() {
   if (pThumbChart) {
     if (pThumbChart->GetThumbData()) {
       if (pThumbChart->GetThumbData()->pDIBThumb)

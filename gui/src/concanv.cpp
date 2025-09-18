@@ -423,7 +423,7 @@ void ConsoleCanvasWin::UpdateRouteData() {
   }
 }
 
-void ConsoleCanvasWin::RefreshConsoleData(void) {
+void ConsoleCanvasWin::RefreshConsoleData() {
   UpdateRouteData();
 
   pRNG->Refresh();
@@ -434,14 +434,14 @@ void ConsoleCanvasWin::RefreshConsoleData(void) {
   pCDI->Refresh();
 }
 
-void ConsoleCanvasWin::ShowWithFreshFonts(void) {
+void ConsoleCanvasWin::ShowWithFreshFonts() {
   Hide();
   UpdateFonts();
   gFrame->PositionConsole();
   Show();
 }
 
-void ConsoleCanvasWin::UpdateFonts(void) {
+void ConsoleCanvasWin::UpdateFonts() {
   pBRG->RefreshFonts();
   pXTE->RefreshFonts();
   pTTG->RefreshFonts();
@@ -838,7 +838,7 @@ void ConsoleCanvasFrame::UpdateRouteData() {
   }
 }
 
-void ConsoleCanvasFrame::RefreshConsoleData(void) {
+void ConsoleCanvasFrame::RefreshConsoleData() {
   UpdateRouteData();
 
   pRNG->Refresh();
@@ -849,7 +849,7 @@ void ConsoleCanvasFrame::RefreshConsoleData(void) {
   pCDI->Refresh();
 }
 
-void ConsoleCanvasFrame::ShowWithFreshFonts(void) {
+void ConsoleCanvasFrame::ShowWithFreshFonts() {
   Hide();
   Move(0, 0);
   UpdateFonts();
@@ -857,7 +857,7 @@ void ConsoleCanvasFrame::ShowWithFreshFonts(void) {
   Show();
 }
 
-void ConsoleCanvasFrame::UpdateFonts(void) {
+void ConsoleCanvasFrame::UpdateFonts() {
   pBRG->RefreshFonts();
   pXTE->RefreshFonts();
   pTTG->RefreshFonts();
@@ -924,7 +924,7 @@ void AnnunText::MouseEvent(wxMouseEvent& event) {
   }
 }
 
-void AnnunText::CalculateMinSize(void) {
+void AnnunText::CalculateMinSize() {
   //    Calculate the minimum required size of the window based on text size
 
   int wl = 50;  // reasonable defaults?
@@ -1179,10 +1179,10 @@ void APConsole::SetColorScheme(ColorScheme cs) {
   m_con_frame->SetColorScheme(cs);
 }
 bool APConsole::IsShown() { return m_con_frame->IsShown(); }
-void APConsole::UpdateFonts(void) { m_con_frame->UpdateFonts(); }
-void APConsole::RefreshConsoleData(void) { m_con_frame->RefreshConsoleData(); }
+void APConsole::UpdateFonts() { m_con_frame->UpdateFonts(); }
+void APConsole::RefreshConsoleData() { m_con_frame->RefreshConsoleData(); }
 void APConsole::Raise() { m_con_frame->Raise(); }
-void APConsole::ShowWithFreshFonts(void) { m_con_frame->ShowWithFreshFonts(); }
+void APConsole::ShowWithFreshFonts() { m_con_frame->ShowWithFreshFonts(); }
 void APConsole::Show(bool bshow) { m_con_frame->Show(bshow); }
 CDI* APConsole::GetCDI() { return m_con_frame->pCDI; }
 wxSize APConsole::GetSize() { return m_con_frame->GetSize(); }
@@ -1199,10 +1199,10 @@ void APConsole::SetColorScheme(ColorScheme cs) {
   m_con_win->SetColorScheme(cs);
 }
 bool APConsole::IsShown() { return m_con_win->IsShown(); }
-void APConsole::UpdateFonts(void) { m_con_win->UpdateFonts(); }
-void APConsole::RefreshConsoleData(void) { m_con_win->RefreshConsoleData(); }
+void APConsole::UpdateFonts() { m_con_win->UpdateFonts(); }
+void APConsole::RefreshConsoleData() { m_con_win->RefreshConsoleData(); }
 void APConsole::Raise() {}
-void APConsole::ShowWithFreshFonts(void) { m_con_win->ShowWithFreshFonts(); }
+void APConsole::ShowWithFreshFonts() { m_con_win->ShowWithFreshFonts(); }
 void APConsole::Show(bool bshow) { m_con_win->Show(bshow); }
 CDI* APConsole::GetCDI() { return m_con_win->pCDI; }
 wxSize APConsole::GetSize() { return m_con_win->GetSize(); }

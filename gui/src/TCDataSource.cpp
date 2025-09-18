@@ -89,7 +89,7 @@ TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path) {
   return err_code;
 }
 
-int TCDataSource::GetMaxIndex(void) {
+int TCDataSource::GetMaxIndex() {
   if (m_pfactory)
     return m_pfactory->GetMaxIndex();
   else

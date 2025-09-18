@@ -133,7 +133,7 @@ int OCPNIconCombo::Append(const wxString& item, wxBitmap bmp) {
   return idx;
 }
 
-void OCPNIconCombo::Clear(void) {
+void OCPNIconCombo::Clear() {
   wxOwnerDrawnComboBox::Clear();
   bmpArray.Clear();
 }
@@ -238,7 +238,7 @@ void MarkInfoDlg::OnActivate(wxActivateEvent& event) {
     pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
-void MarkInfoDlg::initialize_images(void) {
+void MarkInfoDlg::initialize_images() {
   wxString iconDir = g_Platform->GetSharedDataDir() + "uidata/MUI_flat/";
   _img_MUI_settings_svg = LoadSVG(iconDir + "MUI_settings.svg",
                                   2 * GetCharHeight(), 2 * GetCharHeight());
@@ -776,7 +776,7 @@ void MarkInfoDlg::OnNotebookPageChanged(wxNotebookEvent& event) {
   }
 }
 
-void MarkInfoDlg::RecalculateSize(void) {
+void MarkInfoDlg::RecalculateSize() {
 #ifdef __ANDROID__
 
   Layout();
@@ -842,7 +842,7 @@ MarkInfoDlg::~MarkInfoDlg() {
 #endif
 }
 
-void MarkInfoDlg::InitialFocus(void) {
+void MarkInfoDlg::InitialFocus() {
   m_textName->SetFocus();
   m_textName->SetInsertionPointEnd();
 }
@@ -1637,7 +1637,7 @@ void MarkInfoDlg::OnBitmapCombClick(wxCommandEvent& event) {
   // pConfig->UpdateWayPoint( m_pRoutePoint );
 }
 
-void MarkInfoDlg::ValidateMark(void) {
+void MarkInfoDlg::ValidateMark() {
   //    Look in the master list of Waypoints to see if the currently selected
   //    waypoint is still valid It may have been deleted as part of a route
   wxRoutePointListNode* node = pWayPointMan->GetWaypointList()->GetFirst();

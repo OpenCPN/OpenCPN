@@ -514,7 +514,7 @@ void NotificationButton::SetColorScheme(ColorScheme cs) {
   UpdateStatus(true);
 }
 
-wxRect NotificationButton::GetLogicalRect(void) const {
+wxRect NotificationButton::GetLogicalRect() const {
 #ifdef wxHAS_DPI_INDEPENDENT_PIXELS
 #if wxCHECK_VERSION(3, 1, 6)
   wxRect logicalRect = wxRect(m_parent->FromPhys(m_rect.GetPosition()),

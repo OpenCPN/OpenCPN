@@ -333,7 +333,7 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO *pInfo) {
 #endif
 
 //  Called from MyApp() immediately upon entry to MyApp::OnInit()
-void OCPNPlatform::Initialize_1(void) {
+void OCPNPlatform::Initialize_1() {
 #ifdef OCPN_USE_CRASHREPORT
 #ifndef _DEBUG
   // Install Windows crash reporting
@@ -556,7 +556,7 @@ void OCPNPlatform::Initialize_1(void) {
 //  Called from MyApp() immediately before creation of MyFrame()
 //  Config is known to be loaded and stable
 //  Log is available
-void OCPNPlatform::Initialize_2(void) {
+void OCPNPlatform::Initialize_2() {
 #ifdef __ANDROID__
   wxLogMessage(androidGetDeviceInfo());
 
@@ -607,7 +607,7 @@ void OCPNPlatform::Initialize_2(void) {
 
 //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is
 //  available
-void OCPNPlatform::Initialize_3(void) {
+void OCPNPlatform::Initialize_3() {
   bool bcapable = IsGLCapable();
 
 #ifdef ocpnARM  // Boot arm* platforms (meaning rPI) without OpenGL on first run
@@ -664,7 +664,7 @@ void OCPNPlatform::Initialize_3(void) {
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
-void OCPNPlatform::Initialize_4(void) {
+void OCPNPlatform::Initialize_4() {
 #ifdef __ANDROID__
   if (pSelect) pSelect->SetSelectPixelRadius(wxMax(25, 6.0 * getAndroidDPmm()));
   if (pSelectTC)
@@ -681,9 +681,9 @@ void OCPNPlatform::Initialize_4(void) {
 #endif
 }
 
-void OCPNPlatform::OnExit_1(void) {}
+void OCPNPlatform::OnExit_1() {}
 
-void OCPNPlatform::OnExit_2(void) {
+void OCPNPlatform::OnExit_2() {
 #ifdef OCPN_USE_CRASHREPORT
 #ifndef _DEBUG
   // Uninstall Windows crash reporting
@@ -965,7 +965,7 @@ bool OCPNPlatform::IsGLCapable() {
 #endif
 }
 
-void OCPNPlatform::SetLocaleSearchPrefixes(void) {
+void OCPNPlatform::SetLocaleSearchPrefixes() {
 #if wxUSE_XLOCALE
 // Add a new prefixes for search order.
 #if defined(__WINDOWS__)
@@ -1215,7 +1215,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
 //      The global config object (pConfig) is available, so direct updates are
 //      also allowed
 
-void OCPNPlatform::SetDefaultOptions(void) {
+void OCPNPlatform::SetDefaultOptions() {
   //  General options, applied to all platforms
   g_bShowOutlines = true;
 
@@ -1708,13 +1708,9 @@ bool OCPNPlatform::hasInternalGPS(wxString profile) {
 //      Platform Display Support
 //--------------------------------------------------------------------------
 
-void OCPNPlatform::ShowBusySpinner(void) {
-  AbstractPlatform::ShowBusySpinner();
-}
+void OCPNPlatform::ShowBusySpinner() { AbstractPlatform::ShowBusySpinner(); }
 
-void OCPNPlatform::HideBusySpinner(void) {
-  AbstractPlatform::HideBusySpinner();
-}
+void OCPNPlatform::HideBusySpinner() { AbstractPlatform::HideBusySpinner(); }
 
 double OCPNPlatform::GetDisplayDensityFactor() {
 #ifdef __ANDROID__
@@ -1761,7 +1757,7 @@ int OCPNPlatform::GetStatusBarFieldCount() {
 #endif
 }
 
-double OCPNPlatform::getFontPointsperPixel(void) {
+double OCPNPlatform::getFontPointsperPixel() {
   double pt_per_pixel = 1.0;
 
   // #ifdef __ANDROID__
@@ -2233,7 +2229,7 @@ bool LoadQtStyleSheet(wxString &sheet_file) {
     return false;
 }
 
-QString getQtStyleSheet(void) { return g_qtStyleSheet; }
+QString getQtStyleSheet() { return g_qtStyleSheet; }
 
 #endif
 
@@ -2383,7 +2379,7 @@ void OCPNColourPickerCtrl::SetColour(wxColour &c) {
   UpdateColour();
 }
 
-wxColour OCPNColourPickerCtrl::GetColour(void) { return m_colour; }
+wxColour OCPNColourPickerCtrl::GetColour() { return m_colour; }
 
 wxSize OCPNColourPickerCtrl::DoGetBestSize() const {
   wxSize sz(wxBitmapButton::DoGetBestSize());

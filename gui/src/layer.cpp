@@ -22,7 +22,7 @@
 
 LayerList *pLayerList;
 
-Layer::Layer(void) {
+Layer::Layer() {
   m_bIsVisibleOnChart = g_bShowLayers;
   m_bIsVisibleOnListing = false;
   m_bHasVisibleNames = wxCHK_UNDETERMINED;
@@ -34,7 +34,7 @@ Layer::Layer(void) {
   m_CreateTime = wxDateTime::Now();
 }
 
-Layer::~Layer(void) {
+Layer::~Layer() {
   //  Remove this layer from the global layer list
   if (pLayerList) {
     auto found = std::find(pLayerList->begin(), pLayerList->end(), this);
