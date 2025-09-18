@@ -863,7 +863,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/safe_mode_gui.h
     ${GUI_HDR_DIR}/send_to_gps_dlg.h
     ${GUI_HDR_DIR}/send_to_peer_dlg.h
-    ${GUI_HDR_DIR}/Station_Data.h
+    ${GUI_HDR_DIR}/station_data.h
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/TCDataFactory.h
     ${GUI_HDR_DIR}/TCDataSource.h
@@ -989,7 +989,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/send_to_gps_dlg.cpp
     ${GUI_SRC_DIR}/send_to_peer_dlg.cpp
     ${GUI_SRC_DIR}/shapefile_basemap.cpp
-    ${GUI_SRC_DIR}/Station_Data.cpp
+    ${GUI_SRC_DIR}/station_data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_icons.cpp
     ${GUI_SRC_DIR}/TCDataFactory.cpp
