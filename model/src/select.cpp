@@ -141,7 +141,10 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
       RoutePoint *ps = (RoutePoint *)pFindSel->m_pData1;
 
       //    inner loop iterates on the route's point list
-      for (RoutePoint *prp : *(pr->pRoutePointList)) {
+      wxRoutePointListNode *pnode = (pr->pRoutePointList)->GetFirst();
+      while (pnode) {
+        RoutePoint *prp = pnode->GetData();
+
         if (prp == ps) {
           delete pFindSel;
           pSelectList->DeleteNode(node);  // delete node;
@@ -151,10 +154,11 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
 
           goto got_next_outer_node;
         }
+        pnode = pnode->GetNext();
       }
     }
-    node = node->GetNext();
 
+    node = node->GetNext();
   got_next_outer_node:
     continue;
   }
@@ -162,9 +166,13 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
 }
 
 bool Select::AddAllSelectableRoutePoints(Route *pr) {
-  if (pr->pRoutePointList->size()) {
-    for (RoutePoint *prp : *(pr->pRoutePointList)) {
+  if (pr->pRoutePointList->GetCount()) {
+    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
+
+    while (node) {
+      RoutePoint *prp = node->GetData();
       AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
+      node = node->GetNext();
     }
     return true;
   } else
@@ -175,15 +183,17 @@ bool Select::AddAllSelectableRouteSegments(Route *pr) {
   wxPoint rpt, rptn;
   float slat1, slon1, slat2, slon2;
 
-  if (pr->pRoutePointList->size()) {
-    auto node = (pr->pRoutePointList)->begin();
+  if (pr->pRoutePointList->GetCount()) {
+    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
 
-    RoutePoint *prp0 = *node;
+    RoutePoint *prp0 = node->GetData();
     slat1 = prp0->m_lat;
     slon1 = prp0->m_lon;
 
-    for (++node; node != (pr->pRoutePointList)->end(); ++node) {
-      RoutePoint *prp = *node;
+    node = node->GetNext();
+
+    while (node) {
+      RoutePoint *prp = node->GetData();
       slat2 = prp->m_lat;
       slon2 = prp->m_lon;
 
@@ -192,6 +202,8 @@ bool Select::AddAllSelectableRouteSegments(Route *pr) {
       slat1 = slat2;
       slon1 = slon2;
       prp0 = prp;
+
+      node = node->GetNext();
     }
     return true;
   } else

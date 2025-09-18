@@ -350,11 +350,17 @@ void ConsoleCanvasWin::UpdateRouteData() {
         float trng = rng;
 
         Route* prt = g_pRouteMan->GetpActiveRoute();
+        wxRoutePointListNode* node = (prt->pRoutePointList)->GetFirst();
+        RoutePoint* prp;
+
         int n_addflag = 0;
-        for (RoutePoint* prp : *prt->pRoutePointList) {
+        while (node) {
+          prp = node->GetData();
           if (n_addflag) trng += prp->m_seg_len;
 
           if (prp == prt->m_pRouteActivePoint) n_addflag++;
+
+          node = node->GetNext();
         }
 
         //                total rng
@@ -759,11 +765,17 @@ void ConsoleCanvasFrame::UpdateRouteData() {
         float trng = rng;
 
         Route* prt = g_pRouteMan->GetpActiveRoute();
+        wxRoutePointListNode* node = (prt->pRoutePointList)->GetFirst();
+        RoutePoint* prp;
 
         int n_addflag = 0;
-        for (RoutePoint* prp : *prt->pRoutePointList) {
+        while (node) {
+          prp = node->GetData();
           if (n_addflag) trng += prp->m_seg_len;
+
           if (prp == prt->m_pRouteActivePoint) n_addflag++;
+
+          node = node->GetNext();
         }
 
         //                total rng

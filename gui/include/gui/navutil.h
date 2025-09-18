@@ -39,7 +39,7 @@
 #include "bbox.h"
 // #include "chcanv.h"
 #include "chartdbs.h"
-#include "model/route_point.h"
+// nclude "RoutePoint.h"
 #include "vector2D.h"
 #include "model/select_item.h"
 #include "ocpndc.h"
@@ -115,11 +115,11 @@ class wxGenericProgressDialog;
 class ocpnDC;
 class NavObjectCollection1;
 class TrackPoint;
+class RouteList;
 class canvasConfig;
+class RoutePointList;
 class RoutePoint;
 class Track;
-
-using RouteList = std::vector<Route *>;  // circular
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers

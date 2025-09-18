@@ -1153,7 +1153,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
 
       Route *temp_route = new Route();
-      pRouteList->push_back(temp_route);
+      pRouteList->Append(temp_route);
 
       temp_route->AddPoint(pWP_src);
       temp_route->AddPoint(pWP_dest);
@@ -1219,7 +1219,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
 
       Route *temp_route = new Route();
-      pRouteList->push_back(temp_route);
+      pRouteList->Append(temp_route);
 
       temp_route->AddPoint(pWP_src);
       temp_route->AddPoint(m_pFoundRoutePoint);
@@ -1649,10 +1649,10 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       m_pHead->CloneRoute(m_pSelectedRoute, 1, m_SelectedIdx, _("_A"));
       m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + splitMode,
                           m_pSelectedRoute->GetnPoints(), _("_B"), dupFirstWpt);
-      pRouteList->push_back(m_pHead);
+      pRouteList->Append(m_pHead);
       NavObj_dB::GetInstance().InsertRoute(m_pHead);
 
-      pRouteList->push_back(m_pTail);
+      pRouteList->Append(m_pTail);
       NavObj_dB::GetInstance().InsertRoute(m_pTail);
 
       NavObj_dB::GetInstance().DeleteRoute(m_pSelectedRoute);

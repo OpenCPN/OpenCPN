@@ -531,7 +531,6 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 
   //  Set the shader viewport transform matrix
   ViewPort *vp = m_pParentCanvas->GetpVP();
-  // clang-format off
   mat4x4 m;
   mat4x4_identity(m);
   mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
@@ -539,7 +538,6 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
                      1.0);
   mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
                             -vp->pix_width / 2, -vp->pix_height / 2, 0);
-  // clang-format on
 }
 
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
@@ -745,11 +743,11 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     // initialize depth renderbuffer
     glRenderbufferStorage(GL_RENDERBUFFER_EXT, depth_format, m_cache_tex_x,
                           m_cache_tex_y);
-    int err_ = glGetError();
-    if (err_) {
+    int err = glGetError();
+    if (err) {
       wxString msg;
       msg.Printf("    OpenGL-> Framebuffer Depth Buffer Storage error:  %08X",
-                 err_);
+                 err);
       wxLogMessage(msg);
       retVal = false;
     }
@@ -757,11 +755,11 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
     glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                               GL_RENDERBUFFER_EXT, m_renderbuffer);
 
-    err_ = glGetError();
-    if (err_) {
+    err = glGetError();
+    if (err) {
       wxString msg;
       msg.Printf("    OpenGL-> Framebuffer Depth Buffer Attach error:  %08X",
-                 err_);
+                 err);
       wxLogMessage(msg);
       retVal = false;
     }
@@ -1116,7 +1114,8 @@ void glChartCanvas::SetupOpenGL() {
   else
     wxLogMessage("OpenGL-> Vertexbuffer Objects unavailable");
 
-#ifdef ocpnUSE_GLES  // Can we use the stencil buffer in an FBO?
+    //      Can we use the stencil buffer in a FBO?
+#ifdef ocpnUSE_GLES
   m_b_useFBOStencil = QueryExtension("GL_OES_packed_depth_stencil");
 #else
   m_b_useFBOStencil = QueryExtension("GL_EXT_packed_depth_stencil") == GL_TRUE;
@@ -1519,7 +1518,11 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
 
     TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
   }
-  for (Route *pRouteDraw : *pRouteList) {
+
+  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
+       node = node->GetNext()) {
+    Route *pRouteDraw = node->GetData();
+
     if (!pRouteDraw) continue;
 
     /* defer rendering active routes until later */
@@ -1534,7 +1537,10 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
 
   /* Waypoints not drawn as part of routes, and not being edited */
   if (vp.GetBBox().GetValid() && pWayPointMan) {
-    for (RoutePoint *pWP : *pWayPointMan->GetWaypointList()) {
+    for (wxRoutePointListNode *pnode =
+             pWayPointMan->GetWaypointList()->GetFirst();
+         pnode; pnode = pnode->GetNext()) {
+      RoutePoint *pWP = pnode->GetData();
       if (pWP && (!pWP->m_bRPIsBeingEdited) && (!pWP->m_bIsInRoute))
         if (vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
           RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas, dc);
@@ -1553,7 +1559,10 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
     // We need Track::Draw() to dynamically render last (ownship) point.
   }
 
-  for (Route *pRouteDraw : *pRouteList) {
+  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
+       node = node->GetNext()) {
+    Route *pRouteDraw = node->GetData();
+
     int drawit = 0;
     if (!pRouteDraw) continue;
 
@@ -1576,7 +1585,10 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
 
   /* Waypoints not drawn as part of routes, which are being edited right now */
   if (vp.GetBBox().GetValid() && pWayPointMan) {
-    for (RoutePoint *pWP : *pWayPointMan->GetWaypointList()) {
+    for (wxRoutePointListNode *pnode =
+             pWayPointMan->GetWaypointList()->GetFirst();
+         pnode; pnode = pnode->GetNext()) {
+      RoutePoint *pWP = pnode->GetData();
       if (pWP && pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute)
         RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas, dc);
       //        pWP->DrawGL(vp, m_pParentCanvas, dc);
@@ -3888,7 +3900,6 @@ void glChartCanvas::Render() {
   //  Set the shader viewport transform matrix
   //  Using the adjusted dimensions
   if (b_odd) {
-    // clang-format off
     ViewPort *vp = m_pParentCanvas->GetpVP();
     mat4x4 m;
     mat4x4_identity(m);
@@ -3897,7 +3908,6 @@ void glChartCanvas::Render() {
                        1.0);
     mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
                               -vp->pix_width / 2, -vp->pix_height / 2, 0);
-    // clang-format on
   }
 
   // @todo: If the intention was to work with the same ViewPort object, use a
@@ -4050,6 +4060,7 @@ void glChartCanvas::Render() {
       //  Especially seen on sparse RNC rendering
       if (fabs(VPoint.rotation) > 0) accelerated_pan = false;
 
+        // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 #else  // GLES2
        // enable rendering to texture in framebuffer object

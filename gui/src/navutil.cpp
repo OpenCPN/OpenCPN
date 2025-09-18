@@ -1288,7 +1288,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     TideCurrentDataSet.clear();
     wxString str, val;
     long dummy;
-    bool bCont_ = GetFirstEntry(str, dummy);
+    bool bCont = GetFirstEntry(str, dummy);
     while (bCont) {
       Read(str, &val);  // Get a file name and add it to the list just in case
                         // it is not repeated
@@ -1551,8 +1551,8 @@ bool MyConfig::LoadLayers(wxString &path) {
         if (wxDir::Exists(filename)) {
           wxDir dir(filename);
           if (dir.IsOpened()) {
-            // layers subdirectory set
-            nfiles = dir.GetAllFiles(filename, &file_array, "*.gpx");
+            nfiles = dir.GetAllFiles(filename, &file_array,
+                                     "*.gpx");  // layers subdirectory set
           }
         }
       }
@@ -2815,7 +2815,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   ::wxBeginBusyCursor();
 
   wxGenericProgressDialog *pprog = nullptr;
-  int count = pWayPointMan->GetWaypointList()->size();
+  int count = pWayPointMan->GetWaypointList()->GetCount();
   int progStep = count / 32;
   if (count > 200) {
     pprog = new wxGenericProgressDialog(
@@ -2829,13 +2829,18 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   // WPTs
   int ic = 1;
 
-  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
+  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  RoutePoint *pr;
+  while (node) {
     if (pprog && !(ic % progStep)) {
       wxString msg;
       msg.Printf("%d/%d", ic, count);
       pprog->Update(ic, msg);
     }
     ic++;
+
+    pr = node->GetData();
+
     bool b_add = true;
 
     if (bviz_only && !pr->m_bIsVisible) b_add = false;
@@ -2844,13 +2849,23 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
     if (b_add) {
       if (pr->IsShared() || !WptIsInRouteList(pr)) pgpx->AddGPXWaypoint(pr);
     }
+
+    node = node->GetNext();
   }
   // RTEs and TRKs
-  for (Route *pRoute : *pRouteList) {
+  wxRouteListNode *node1 = pRouteList->GetFirst();
+  while (node1) {
+    Route *pRoute = node1->GetData();
+
     bool b_add = true;
+
     if (bviz_only && !pRoute->IsVisible()) b_add = false;
+
     if (pRoute->m_bIsInLayer && !blayer) b_add = false;
+
     if (b_add) pgpx->AddGPXRoute(pRoute);
+
+    node1 = node1->GetNext();
   }
 
   for (Track *pTrack : g_TrackList) {

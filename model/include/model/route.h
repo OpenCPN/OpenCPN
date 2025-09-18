@@ -25,7 +25,6 @@
 #define _ROUTE_H__
 
 #include <functional>
-#include <vector>
 
 #include <wx/colour.h>
 #include <wx/datetime.h>
@@ -103,7 +102,7 @@ public:
   Route();
   ~Route();
 
-  virtual int GetnPoints(void) { return pRoutePointList->size(); }
+  virtual int GetnPoints(void) { return pRoutePointList->GetCount(); }
   wxString IsPointNameValid(RoutePoint *pRP, const wxString &name) const;
 
   void AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence = true,
@@ -390,6 +389,6 @@ private:
   bool m_bsharedWPViz;
 };
 
-using RouteList = std::vector<Route *>;
+WX_DECLARE_LIST(Route, RouteList);  // establish class Route as list member
 
 #endif  // _ROUTE_H__

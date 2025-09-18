@@ -25,7 +25,6 @@
 #define _ROUTEPOINT_H__
 
 #include <functional>
-#include <vector>
 
 #include <wx/bitmap.h>
 #include <wx/colour.h>
@@ -611,6 +610,6 @@ private:
   int m_dragIconTextureWidth, m_dragIconTextureHeight;
 };
 
-using RoutePointList = std::vector<RoutePoint *>;
+WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
 
 #endif  //  _ROUTEPOINT_H__

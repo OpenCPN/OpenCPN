@@ -350,33 +350,35 @@ void RoutePropDlgImpl::UpdatePoints() {
                        toUsrDistance(m_pRoute->m_route_length)));
   m_tcEnroute->SetValue(formatTimeDelta(wxLongLong(m_pRoute->m_route_time)));
   //  Iterate on Route Points, inserting blank fields starting with index 0
+  wxRoutePointListNode* pnode = m_pRoute->pRoutePointList->GetFirst();
   int in = 0;
   wxString slen, eta, ete;
   double bearing, distance, speed;
   double totalDistance = 0;
   wxDateTime eta_dt = wxInvalidDateTime;
-  auto pnode = m_pRoute->pRoutePointList->begin();
-  while (pnode != m_pRoute->pRoutePointList->end()) {
-    speed = (*pnode)->GetPlannedSpeed();
+  while (pnode) {
+    speed = pnode->GetData()->GetPlannedSpeed();
     if (speed < .1) {
       speed = m_pRoute->m_PlannedSpeed;
     }
     if (in == 0) {
-      DistanceBearingMercator((*pnode)->GetLatitude(), (*pnode)->GetLongitude(),
-                              gLat, gLon, &bearing, &distance);
+      DistanceBearingMercator(pnode->GetData()->GetLatitude(),
+                              pnode->GetData()->GetLongitude(), gLat, gLon,
+                              &bearing, &distance);
       if (m_pRoute->m_PlannedDeparture.IsValid()) {
         DateTimeFormatOptions opts =
             DateTimeFormatOptions()
                 .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
-                .SetLongitude((*pnode)->m_lon);
+                .SetLongitude(pnode->GetData()->m_lon);
         eta = wxString::Format(
             "Start: %s", ocpn::toUsrDateTimeFormat(
                              m_pRoute->m_PlannedDeparture.FromUTC(), opts));
         eta.Append(wxString::Format(
-            " (%s)", GetDaylightString(
-                         getDaylightStatus((*pnode)->m_lat, (*pnode)->m_lon,
-                                           m_pRoute->m_PlannedDeparture))
-                         .c_str()));
+            " (%s)",
+            GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
+                                                pnode->GetData()->m_lon,
+                                                m_pRoute->m_PlannedDeparture))
+                .c_str()));
         eta_dt = m_pRoute->m_PlannedDeparture;
       } else {
         eta = _("N/A");
@@ -387,35 +389,37 @@ void RoutePropDlgImpl::UpdatePoints() {
         ete = _("N/A");
       }
     } else {
-      distance = (*pnode)->GetDistance();
-      bearing = (*pnode)->GetCourse();
-      if ((*pnode)->GetETA().IsValid()) {
+      distance = pnode->GetData()->GetDistance();
+      bearing = pnode->GetData()->GetCourse();
+      if (pnode->GetData()->GetETA().IsValid()) {
         DateTimeFormatOptions opts =
             DateTimeFormatOptions()
                 .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
-                .SetLongitude((*pnode)->m_lon);
-        eta = ocpn::toUsrDateTimeFormat((*pnode)->GetETA().FromUTC(), opts);
+                .SetLongitude(pnode->GetData()->m_lon);
+        eta = ocpn::toUsrDateTimeFormat(pnode->GetData()->GetETA().FromUTC(),
+                                        opts);
         eta.Append(wxString::Format(
-            " (%s)", GetDaylightString(getDaylightStatus((*pnode)->m_lat,
-                                                         (*pnode)->m_lon,
-                                                         (*pnode)->GetETA()))
-                         .c_str()));
-        eta_dt = (*pnode)->GetETA();
+            " (%s)",
+            GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
+                                                pnode->GetData()->m_lon,
+                                                pnode->GetData()->GetETA()))
+                .c_str()));
+        eta_dt = pnode->GetData()->GetETA();
       } else {
         eta = wxEmptyString;
       }
-      ete = (*pnode)->GetETE();
+      ete = pnode->GetData()->GetETE();
       totalDistance += distance;
     }
-    wxString name = (*pnode)->GetName();
-    double lat = (*pnode)->GetLatitude();
-    double lon = (*pnode)->GetLongitude();
-    wxString tide_station = (*pnode)->m_TideStation;
-    wxString desc = (*pnode)->GetDescription();
+    wxString name = pnode->GetData()->GetName();
+    double lat = pnode->GetData()->GetLatitude();
+    double lon = pnode->GetData()->GetLongitude();
+    wxString tide_station = pnode->GetData()->m_TideStation;
+    wxString desc = pnode->GetData()->GetDescription();
     wxString etd;
-    if ((*pnode)->GetManualETD().IsValid()) {
+    if (pnode->GetData()->GetManualETD().IsValid()) {
       // GetManualETD() returns time in UTC, always. So use it as such.
-      RoutePoint* rt = *pnode;
+      RoutePoint* rt = pnode->GetData();
       DateTimeFormatOptions opts =
           DateTimeFormatOptions()
               .SetTimezone(getDatetimeTimezoneSelector(m_tz_selection))
@@ -428,10 +432,10 @@ void RoutePropDlgImpl::UpdatePoints() {
     } else {
       etd = wxEmptyString;
     }
-    ++pnode;
+    pnode = pnode->GetNext();
     wxString crs;
-    if (pnode != m_pRoute->pRoutePointList->begin()) {
-      crs = formatAngle((*pnode)->GetCourse());
+    if (pnode) {
+      crs = formatAngle(pnode->GetData()->GetCourse());
     } else {
       crs = _("Arrived");
     }
@@ -570,16 +574,17 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     m_tcDescription->SetValue(m_pRoute->m_RouteDescription);
 
     m_tcName->SetFocus();
-    RoutePoint* rp1 = *m_pRoute->pRoutePointList->begin();
     if (m_pRoute->m_PlannedDeparture.IsValid() &&
         m_pRoute->m_PlannedDeparture.GetValue() > 0) {
-      wxDateTime t = toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
-                                   rp1->m_lon);
+      wxDateTime t = toUsrDateTime(
+          m_pRoute->m_PlannedDeparture, m_tz_selection,
+          m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);
       m_dpDepartureDate->SetValue(t.GetDateOnly());
       m_tpDepartureTime->SetValue(t);
     } else {
-      wxDateTime t =
-          toUsrDateTime(wxDateTime::Now().ToUTC(), m_tz_selection, rp1->m_lon);
+      wxDateTime t = toUsrDateTime(
+          wxDateTime::Now().ToUTC(), m_tz_selection,
+          m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);
       m_dpDepartureDate->SetValue(t.GetDateOnly());
       m_tpDepartureTime->SetValue(t);
     }
@@ -636,9 +641,9 @@ void RoutePropDlgImpl::DepartureTimeOnTimeChanged(wxDateEvent& event) {
 void RoutePropDlgImpl::TimezoneOnChoice(wxCommandEvent& event) {
   if (!m_pRoute) return;
   m_tz_selection = m_choiceTimezone->GetSelection();
-  RoutePoint* rp1 = *m_pRoute->pRoutePointList->begin();
   wxDateTime t =
-      toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection, rp1->m_lon);
+      toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
+                    m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);
   m_dpDepartureDate->SetValue(t.GetDateOnly());
   m_tpDepartureTime->SetValue(t);
   UpdatePoints();
@@ -757,8 +762,9 @@ wxDateTime RoutePropDlgImpl::GetDepartureTS() {
   dt.SetHour(m_tpDepartureTime->GetValue().GetHour());
   dt.SetMinute(m_tpDepartureTime->GetValue().GetMinute());
   dt.SetSecond(m_tpDepartureTime->GetValue().GetSecond());
-  RoutePoint* rp1 = *m_pRoute->pRoutePointList->begin();
-  return fromUsrDateTime(dt, m_tz_selection, rp1->m_lon);
+  return fromUsrDateTime(
+      dt, m_tz_selection,
+      m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);
   ;
 }
 
@@ -830,16 +836,13 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
         wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
         RoutePoint* pRP = m_pRoute->GetPoint(
             static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
-        auto& list = m_pRoute->pRoutePointList;
-        auto found = std::find(list->begin(), list->end(), pRP);
+        int nRP = m_pRoute->pRoutePointList->IndexOf(pRP) + (moveup ? -1 : 1);
 
         pSelect->DeleteAllSelectableRoutePoints(m_pRoute);
         pSelect->DeleteAllSelectableRouteSegments(m_pRoute);
 
-        if (found != list->end()) list->erase(found);
-        m_pRoute->pRoutePointList->erase(found);
-        auto newpos = found + (moveup ? -1 : 1);
-        m_pRoute->pRoutePointList->insert(newpos, pRP);
+        m_pRoute->pRoutePointList->DeleteObject(pRP);
+        m_pRoute->pRoutePointList->Insert(nRP, pRP);
 
         pSelect->AddAllSelectableRouteSegments(m_pRoute);
         pSelect->AddAllSelectableRoutePoints(m_pRoute);
@@ -853,7 +856,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
 
         gFrame->InvalidateAllGL();
 
-        m_dvlcWaypoints->SelectRow(newpos - list->begin());
+        m_dvlcWaypoints->SelectRow(nRP);
 
         SetRouteAndUpdate(m_pRoute, true);
       }
@@ -1024,11 +1027,11 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
     m_pHead->CloneRoute(m_pRoute, 1, nSelected, _("_A"));
     m_pTail->CloneRoute(m_pRoute, nSelected, m_pRoute->GetnPoints(), _("_B"),
                         true);
-    pRouteList->push_back(m_pHead);
+    pRouteList->Append(m_pHead);
     // pConfig->AddNewRoute(m_pHead);
     NavObj_dB::GetInstance().InsertRoute(m_pHead);
 
-    pRouteList->push_back(m_pTail);
+    pRouteList->Append(m_pTail);
     // pConfig->AddNewRoute(m_pTail);
     NavObj_dB::GetInstance().InsertRoute(m_pTail);
 
