@@ -78,7 +78,7 @@
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "ais_target_alert_dlg.h"
-#include "SendToGpsDlg.h"
+#include "send_to_gps_dlg.h"
 #include "ocpn_region.h"
 #include "gshhs.h"
 

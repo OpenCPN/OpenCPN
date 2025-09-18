@@ -70,7 +70,7 @@
 #include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
-#include "SendToGpsDlg.h"
+#include "send_to_gps_dlg.h"
 #include "SendToPeerDlg.h"
 #include "styles.h"
 #include "tcmgr.h"

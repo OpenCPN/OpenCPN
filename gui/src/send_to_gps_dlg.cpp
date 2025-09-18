@@ -41,7 +41,7 @@
 #include "model/route.h"
 #include "route_point_gui.h"
 #include "model/route_point.h"
-#include "SendToGpsDlg.h"
+#include "send_to_gps_dlg.h"
 #include "model/ser_ports.h"
 
 extern OCPNPlatform* g_Platform;
