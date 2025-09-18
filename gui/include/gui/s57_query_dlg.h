@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,20 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * S57 object query result window
  */
 
-#ifndef __S57QUERYDIALOG_H__
-#define __S57QUERYDIALOG_H__
+#ifndef S57QUERYDIALOG_H_
+#define S57QUERYDIALOG_H_
 
 #include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/html/htmlwin.h>
-
-class wxHtmlWindow;
+#include <wx/string.h>
 
 class S57QueryDialog;                         // forward
 extern S57QueryDialog* g_pObjectQueryDialog;  ///< Global instance
@@ -61,11 +59,11 @@ public:
               const wxSize& size = wxDefaultSize,
               long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU);
 
-  void SetColorScheme(void);
+  void SetColorScheme();
 
   void CreateControls();
   void OnSize(wxSizeEvent& event);
-  void RecalculateSize(void);
+  void RecalculateSize();
 
   void OnClose(wxCloseEvent& event);
   void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
@@ -112,7 +110,7 @@ public:
   ~S57ExtraQueryInfoDlg();
   void OnClose(wxCloseEvent& event);
   void OnSize(wxSizeEvent& event);
-  void RecalculateSize(void);
+  void RecalculateSize();
 
 private:
   wxButton* m_btnOK;

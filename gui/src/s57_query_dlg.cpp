@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,27 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement s57_query_dlg.h -- S57 object query result window
  */
 
 #include <wx/wxprec.h>
+#include <wx/arrstr.h>
+#include <wx/gdicmn.h>
+#include <wx/textwrapper.h>
 #include <wx/wxhtml.h>
 
+#include "model/config_vars.h"
 #include "s57_query_dlg.h"
 #include "navutil.h"
 #include "gui_lib.h"
-#include <wx/textwrapper.h>
 #include "color_types.h"
-
-extern ColorScheme global_color_scheme;
-extern int g_S57_dialog_sx;
-extern int g_S57_dialog_sy;
-extern int g_S57_extradialog_sx;
-extern int g_S57_extradialog_sy;
-extern bool g_bresponsive;
+#include "viewport.h"
 
 S57QueryDialog* g_pObjectQueryDialog;
 // Private class implementations
@@ -257,7 +253,7 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent& event) {
 
   ExtraObjInfoDlg->SetColorScheme();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   ExtraObjInfoDlg->SetSize(GetSize().x - 40, GetSize().y - 40);
 #endif
 
