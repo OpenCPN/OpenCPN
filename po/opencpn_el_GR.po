@@ -2619,7 +2619,7 @@ msgstr "Ιδιότητες διαδρομής"
 msgid "Extra Object Info"
 msgstr "Έξτρα πλρφ. αντικειμένου"
 
-#: gui/include/gui/SendToPeerDlg.h:60 gui/src/routemanagerdialog.cpp:500
+#: gui/include/gui/send_to_peer_dlg.h:60 gui/src/routemanagerdialog.cpp:500
 msgid "Send to Peer"
 msgstr "Αποστολή στο &peer"
 

@@ -2605,7 +2605,7 @@ msgstr "航线属性"
 msgid "Extra Object Info"
 msgstr "额外目标信息"
 
-#: gui/include/gui/SendToPeerDlg.h:60 gui/src/routemanagerdialog.cpp:500
+#: gui/include/gui/send_to_peer_dlg.h:60 gui/src/routemanagerdialog.cpp:500
 msgid "Send to Peer"
 msgstr "对等传输/点对点传输"
 
