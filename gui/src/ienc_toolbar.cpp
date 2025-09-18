@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN iENCToolbar
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2017 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * implement ienc_toolbar.h -- iENC chart operations toolbar extension
+ */
 
 #include "config.h"
 
@@ -31,23 +29,28 @@
 #include <wx/wx.h>
 #endif
 
-#include "toolbar.h"
-#include "iENCToolbar.h"
+#include <wx/bitmap.h>
+#include <wx/brush.h>
+#include <wx/dcmemory.h>
+#include <wx/event.h>
+#include <wx/file.h>
+#include <wx/filename.h>
+#include <wx/log.h>
 
-#include "chcanv.h"
-#include "s52s57.h"
-#include "s52plib.h"
-#include "pluginmanager.h"
-#include "OCPNPlatform.h"
-#include "chcanv.h"
+#include "ienc_toolbar.h"
+
 #include "model/svg_utils.h"
-#include "ocpn_frame.h"
 
-extern s52plib *ps52plib;
-extern MyFrame *gFrame;
-extern OCPNPlatform *g_Platform;
+#include "chcanv.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "pluginmanager.h"
+#include "s52plib.h"
+#include "s52s57.h"
+#include "toolbar.h"
 
 iENCToolbar *g_iENCToolbar;
+
 //---------------------------------------------------------------------------------------
 //          iENCToolbar Implementation
 //---------------------------------------------------------------------------------------

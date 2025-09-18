@@ -769,6 +769,18 @@ void AISTargetListDialog::CreateControls() {
       wxCommandEventHandler(AISTargetListDialog::OnCopyMMSI), NULL, this);
   bsRouteButtonsInner->Add(m_pButtonCopyMMSI, 0, wxEXPAND | wxALL, 2);
 
+  m_pStaticTextFind = new wxStaticText(winr, wxID_ANY, _("Find target name"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  bsRouteButtonsInner->Add(m_pStaticTextFind, 0, wxALL, 2);
+
+  m_pFindTargetName =
+      new wxTextCtrl(winr, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
+  m_pFindTargetName->SetMinSize(wxSize(15 * GetCharWidth(), -1));
+  m_pFindTargetName->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(AISTargetListDialog::OnEditFindTarget), NULL, this);
+  bsRouteButtonsInner->Add(m_pFindTargetName, 0, wxALL, 2);
+
   m_pCBAutosort =
       new wxCheckBox(winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
                      wxDefaultSize, wxBU_AUTODRAW);
@@ -1055,6 +1067,69 @@ void AISTargetListDialog::OnCopyMMSI(wxCommandEvent &event) {
   CopyMMSItoClipBoard((int)m_pMMSI_array->Item(selItemID));
 }
 
+void AISTargetListDialog::OnEditFindTarget(wxCommandEvent &event) {
+  wxString name = m_pFindTargetName->GetValue().MakeUpper();
+  if (name.size() < 2 || name == " ") return;
+  if (m_pdecoder) {
+    bool found = false;
+    long item_sel = 0;
+
+    // Loop to find the exact match of the searched target name.
+    for (const auto &it : m_pdecoder->GetTargetList()) {
+      auto pAISTarget = it.second;
+      if (NULL != pAISTarget) {
+        wxString s = pAISTarget->GetFullName();
+        if (name == s) {
+          found = true;
+          int selMMSI = pAISTarget->MMSI;
+          if (selMMSI != -1) {
+            // Loop the display list to find position for the MMSI
+            for (unsigned int i = 0; i < m_pMMSI_array->GetCount(); i++) {
+              if (m_pMMSI_array->Item(i) == selMMSI) {
+                item_sel = i;
+                break;
+              }
+            }
+          }
+          break;
+        }
+      }
+    }
+    if (!found) {
+      // Loop again to find parts of the searched target name.
+      for (const auto &it : m_pdecoder->GetTargetList()) {
+        auto pAISTarget = it.second;
+        if (NULL != pAISTarget) {
+          wxString s = pAISTarget->GetFullName();
+          if (s.Find(name) != wxNOT_FOUND) {
+            found = true;
+            int selMMSI = pAISTarget->MMSI;
+            if (selMMSI != -1) {
+              // Loop the display list to find position for the MMSI
+              for (unsigned int i = 0; i < m_pMMSI_array->GetCount(); i++) {
+                if (m_pMMSI_array->Item(i) == selMMSI) {
+                  item_sel = i;
+                  break;
+                }
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
+    if (found) {
+      if (m_pMMSI_array->GetCount())
+        m_pListCtrlAISTargets->SetItemState(
+            item_sel, wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
+            wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
+
+      m_pListCtrlAISTargets->EnsureVisible(item_sel);
+      UpdateAISTargetList();
+    }
+  }
+}
+
 void AISTargetListDialog::CenterToTarget(bool close) {
   long selItemID = -1;
   selItemID = m_pListCtrlAISTargets->GetNextItem(selItemID, wxLIST_NEXT_ALL,
@@ -1073,12 +1148,13 @@ void AISTargetListDialog::CenterToTarget(bool close) {
                              pAISTarget->Lon, scale);
     } else {
       // Set a resonable (1:5000) chart scale to see the target.
+      double factor = 1.;
       if (scale < 0.7) {  // Don't zoom if already close.
         ChartCanvas *cc = gFrame->GetFocusCanvas();
-        double factor = cc->GetScaleValue() / 5000.0;
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                               pAISTarget->Lon, scale * factor);
+        factor = cc->GetScaleValue() / 5000.0;
       }
+      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                             pAISTarget->Lon, scale * factor);
       DoTargetQuery(pAISTarget->MMSI);
       // Close AIS target list
       Shutdown();

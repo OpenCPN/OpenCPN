@@ -61,7 +61,7 @@
 #include "s57chart.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __VISUALC__

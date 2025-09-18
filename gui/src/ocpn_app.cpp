@@ -140,8 +140,8 @@ using namespace std::literals::chrono_literals;
 #include "dychart.h"
 #include "font_mgr.h"
 #include "gdal/cpl_csv.h"
-#include "glTexCache.h"
-#include "GoToPositionDialog.h"
+#include "gl_tex_cache.h"
+#include "go_to_position_dlg.h"
 #include "Layer.h"
 #include "MarkInfo.h"
 #include "navutil.h"
@@ -168,7 +168,7 @@ using namespace std::literals::chrono_literals;
 #include "udev_rule_mgr.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __WXOSX__
@@ -270,7 +270,6 @@ wxString g_InvisibleLayers;
 wxString g_VisiNameinLayers;
 wxString g_InVisiNameinLayers;
 
-bool g_bcompression_wait;
 int g_FlushNavobjChangesTimeout;
 
 int user_user_id;
@@ -335,9 +334,6 @@ long gStart_LMT_Offset;
 wxArrayString *pMessageOnceArray;
 
 bool g_bGDAL_Debug;
-bool g_fog_overzoom;
-double g_overzoom_emphasis_base;
-bool g_oz_vector_scale;
 bool g_bDebugGPSD;
 std::vector<std::string> TideCurrentDataSet;
 
@@ -400,8 +396,6 @@ wxString g_config_version_string;
  * @note For the most part, the use of this feature is conditionally compiled
  * for Android builds only.
  */
-
-bool b_inCompressAllCharts;
 
 wxArrayString g_locale_catalog_array;
 bool b_reloadForPlugins;

@@ -100,7 +100,7 @@
 #include "styles.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __ANDROID__
@@ -347,8 +347,6 @@ extern bool g_bShowCurrent;
 extern wxString g_uiStyle;
 extern bool g_btrackContinuous;
 extern bool g_useMUI;
-
-int g_nCPUCount;
 
 extern unsigned int g_canvasConfig;
 extern wxString g_lastAppliedTemplateGUID;

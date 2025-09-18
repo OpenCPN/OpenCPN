@@ -30,13 +30,16 @@
 bool AnchorAlertOn1 = false;
 bool AnchorAlertOn2 = false;
 bool bDBUpdateInProgress = false;
+bool b_inCompressAllCharts = false;
 bool g_bAdvanceRouteWaypointOnArrivalOnly = false;
 bool g_b_assume_azerty = false;
 bool g_bChartBarEx = false;
+bool g_bcompression_wait = false;
 bool g_bDeferredInitDone = false;
 bool g_bhide_context_menus = false;
 bool g_bhide_depth_units = false;
 bool g_bhide_overzoom_flag = false;
+bool g_b_EnableVBO = false;
 bool g_b_legacy_input_filter_behaviour = false;
 bool g_b_overzoom_x = true;
 bool g_bquiting = false;
@@ -61,8 +64,12 @@ float g_compass_scalefactor = 0;
 float g_toolbar_scalefactor = 0;
 
 int g_click_stop = 0;
+int g_mipmap_max_level = 4;
 int g_sticky_chart = 0;
+int g_tile_size = 0;
+int g_uncompressed_tile_size = 0;
 
+long g_tex_mem_used = 0;
 wxDateTime gTimeSource;
 
 wxColour g_colourOwnshipRangeRingsColour;

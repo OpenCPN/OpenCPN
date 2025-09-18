@@ -31,7 +31,7 @@
 
 #include "TCDataFactory.h"
 #include "Station_Data.h"
-#include "IDX_entry.h"
+#include "idx_entry.h"
 
 #define linelen 300
 

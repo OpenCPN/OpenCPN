@@ -54,7 +54,7 @@
 #endif
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #include <wx/arrimpl.cpp>

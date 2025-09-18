@@ -35,7 +35,7 @@ typedef void (*_GLUfuncptr)();
 
 #include "color_handler.h"
 #include "font_mgr.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "n0183_ctx_factory.h"
 #include "navutil.h"
 #include "ocpn_frame.h"

@@ -49,7 +49,7 @@
 #include "chcanv.h"
 #include "config_mgr.h"
 #include "font_mgr.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_app.h"

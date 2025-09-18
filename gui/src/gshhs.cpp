@@ -1,15 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GSHHS Chart Object (Global Self-consistent, Hierarchical,
- *High-resolution Shoreline) Author:   Jesper Weissglas for the OpenCPN port.
- *
- *           Derived from http://www.zygrib.org/ and
- *http://sourceforge.net/projects/qtvlm/ which has the original copyright:
- *   zUGrib: meteorologic GRIB file data viewer
- *   Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org
- *
- ***************************************************************************
+/**************************************************************************
+ *   Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org        *
+ *   Copyright (C) 2012 Jesper Weissglass                                  *
  *   Copyright (C) 2012 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,13 +14,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
  *
+ * Implement gshhs.h -- Global shoreline
  *
+ * Derived from http://www.zygrib.org/ and
+ *  http://sourceforge.net/projects/qtvlm/ which have the original copyrights
  */
+#include <cmath>
+#include <list>
+#include <vector>
 
 #include <wx/wxprec.h>
 
@@ -37,29 +35,25 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/colour.h>
+#include <wx/debug.h>
 #include <wx/file.h>
+#include <wx/gdicmn.h>
+#include <wx/log.h>
+#include <wx/pen.h>
+#include <wx/utils.h>
 
+#include "model/config_vars.h"
+
+#include "chartbase.h"  // for projections
 #include "dychart.h"
-
-// #if defined(__OCPN__ANDROID__)
-// #include <GLES2/gl2.h>
-// #elif defined(__WXQT__) || defined(__WXGTK__)
-// #include <GL/glew.h>
-// //#define GL_GLEXT_PROTOTYPES
-// //#include <GL/gl.h>
-// //#include <GL/glext.h>
-// #endif
-
+#include "gshhs.h"
+#include "linmath.h"
 #include "ocpndc.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
-
-#include "gshhs.h"
-#include "chartbase.h"  // for projections
-#ifdef ocpnUSE_GL
 #include "shaders.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __WXMSW__
@@ -67,10 +61,6 @@
 #else
 #define __CALL_CONVENTION
 #endif
-
-#include "linmath.h"
-
-extern wxString gWorldMapLocation;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 static const GLchar *vertex_shader_source =
@@ -100,13 +90,12 @@ static const GLfloat vertices3[] = {
 };
 
 enum Consts { INFOLOG_LEN = 512 };
-GLchar infoLog[INFOLOG_LEN];
-GLint fragment_shader;
-// GLint shader_program;
-GLint success;
-GLint vertex_shader;
+static GLchar infoLog[INFOLOG_LEN];
+static GLint fragment_shader;
+static GLint success;
+static GLint vertex_shader;
 
-extern GLint color_tri_shader_program;
+extern GLint color_tri_shader_program;  // FIXME (leamas) find a home
 #endif
 
 //-------------------------------------------------------------------------
@@ -334,8 +323,6 @@ typedef union {
     GLdouble b;
   } info;
 } GLvertex;
-
-#include <list>
 
 static std::list<float_2Dpt> g_pv;
 static std::list<GLvertex *> g_vertexes;

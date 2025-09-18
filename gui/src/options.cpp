@@ -116,7 +116,7 @@
 #include "waypointman_gui.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 extern GLuint g_raster_format;
 #endif
 

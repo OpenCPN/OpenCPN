@@ -1,11 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Authors:  David Register
- *           Sean D'Epagnier
- *
- ***************************************************************************
- *   Copyright (C) 2016 by David S. Register                               *
+/**************************************************************************
+ *   Copyright (C) 2016  David S. Register                                 *
+ *   Copyright (C) 2016  Sean D'Epagnier                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * OpenGL texture management
  */
 
 #ifndef __GLTEXTUREMANAGER_H__
@@ -38,6 +36,8 @@ const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
 
 class JobTicket;
 class wxGenericProgressDialog;
+
+extern int g_mipmap_max_level;  ///< Global instance
 
 class ProgressInfoItem;
 using ProgressInfoList = std::list<ProgressInfoItem *>;

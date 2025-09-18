@@ -96,6 +96,7 @@ private:
   void OnHideAllTracks(wxCommandEvent &event);
   void OnToggleTrack(wxCommandEvent &event);
   void OnCopyMMSI(wxCommandEvent &event);
+  void OnEditFindTarget(wxCommandEvent &event);
   void OnLimitRange(wxCommandEvent &event);
   void OnCloseButton(wxCommandEvent &event);
   void OnAutosortCB(wxCommandEvent &event);
@@ -116,6 +117,8 @@ private:
   wxSpinCtrl *m_pSpinCtrlRange;
   wxStaticText *m_pStaticTextCount;
   wxTextCtrl *m_pTextTargetCount;
+  wxStaticText *m_pStaticTextFind;
+  wxTextCtrl *m_pFindTargetName;
   wxButton *m_pButtonOK;
   wxCheckBox *m_pCBAutosort;
 
