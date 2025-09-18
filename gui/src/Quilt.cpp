@@ -42,6 +42,11 @@
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(PatchList);
 
+#ifdef __WXMSW__
+#define printf printf2
+int __cdecl printf2(const char *format, ...);
+#endif
+
 extern ChartDB *ChartData;
 extern s52plib *ps52plib;
 extern ColorScheme global_color_scheme;
@@ -50,6 +55,7 @@ extern int g_chart_zoom_modifier_vector;
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
 extern bool g_bopengl;
+extern wxStopWatch g_glstopwatch;
 
 //      We define and use this one Macro in this module
 //      Reason:  some compilers refuse to inline "GetChartTableEntry()"
@@ -276,6 +282,15 @@ Quilt::~Quilt() {
   m_extended_stack_array.clear();
 
   delete m_pBM;
+}
+
+void Quilt::SetReferenceChart(int dbIndex) {
+  if (m_parent->m_binPinch) printf("**************SQRF\n");
+
+  m_refchart_dbIndex = dbIndex;
+  if (dbIndex >= 0) {
+    m_zout_family = -1;
+  }
 }
 
 bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy,
@@ -1716,7 +1731,8 @@ void Quilt::UnlockQuilt() {
 
 bool Quilt::Compose(const ViewPort &vp_in) {
   if (!ChartData) return false;
-
+  // printf(" %ld Compose start\n", g_glstopwatch.Time());
+  long startwatch = g_glstopwatch.Time();
   if (ChartData
           ->IsBusy())  // This prevent recursion on chart loads that Yeild()
     return false;
@@ -2593,7 +2609,10 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   }
 
   m_xa_hash = xa_hash;
-
+  long startwatch_end = g_glstopwatch.Time();
+  // printf(" %ld Compose done\n", g_glstopwatch.Time());
+  if ((startwatch_end - startwatch) > 20)  // msec
+    printf("****Long Compose\n");
   m_bbusy = false;
   return true;
 }

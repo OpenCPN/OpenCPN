@@ -4522,26 +4522,28 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
     if (!VPoint.b_quilt) {
       pc = m_singleChart;
     } else {
-      int new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
-      if (new_db_index >= 0)
-        pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
-      else {  // for whatever reason, no reference chart is known
-              // Choose the smallest scale chart on the current stack
-              // and then adjust for scale range
-        int current_ref_stack_index = -1;
-        if (m_pCurrentStack->nEntry) {
-          int trial_index =
-              m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
-          m_pQuilt->SetReferenceChart(trial_index);
-          new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
-          if (new_db_index >= 0)
-            pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+      if (!m_disable_adjust_on_zoom) {
+        int new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
+        if (new_db_index >= 0)
+          pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+        else {  // for whatever reason, no reference chart is known
+                // Choose the smallest scale chart on the current stack
+                // and then adjust for scale range
+          int current_ref_stack_index = -1;
+          if (m_pCurrentStack->nEntry) {
+            int trial_index =
+                m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+            m_pQuilt->SetReferenceChart(trial_index);
+            new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
+            if (new_db_index >= 0)
+              pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+          }
         }
-      }
 
-      if (m_pCurrentStack)
-        m_pCurrentStack->SetCurrentEntryFromdbIndex(
-            new_db_index);  // highlite the correct bar entry
+        if (m_pCurrentStack)
+          m_pCurrentStack->SetCurrentEntryFromdbIndex(
+              new_db_index);  // highlite the correct bar entry
+      }
     }
 
     if (pc) {
@@ -4601,29 +4603,31 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
       }
 
     } else {
-      int new_db_index = m_pQuilt->AdjustRefOnZoomOut(proposed_scale_onscreen);
-      if (new_db_index >= 0)
-        pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+      if (!m_disable_adjust_on_zoom) {
+        int new_db_index =
+            m_pQuilt->AdjustRefOnZoomOut(proposed_scale_onscreen);
+        if (new_db_index >= 0)
+          pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
 
-      if (m_pCurrentStack)
-        m_pCurrentStack->SetCurrentEntryFromdbIndex(
-            new_db_index);  // highlite the correct bar entry
+        if (m_pCurrentStack)
+          m_pCurrentStack->SetCurrentEntryFromdbIndex(
+              new_db_index);  // highlite the correct bar entry
 
-      b_smallest = m_pQuilt->IsChartSmallestScale(new_db_index);
+        b_smallest = m_pQuilt->IsChartSmallestScale(new_db_index);
 
-      if (b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+        if (b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+          proposed_scale_onscreen =
+              wxMin(proposed_scale_onscreen,
+                    GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
+      }
+
+      // set a minimum scale
+      if ((GetCanvasScaleFactor() / proposed_scale_onscreen) <
+          m_absolute_min_scale_ppm)
         proposed_scale_onscreen =
-            wxMin(proposed_scale_onscreen,
-                  GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
+            GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
     }
-
-    // set a minimum scale
-    if ((GetCanvasScaleFactor() / proposed_scale_onscreen) <
-        m_absolute_min_scale_ppm)
-      proposed_scale_onscreen =
-          GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
   }
-
   double new_scale =
       GetVPScale() * (GetVP().chart_scale / proposed_scale_onscreen);
 
@@ -5389,7 +5393,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
       if (!renderable) b_needNewRef = true;
 
       //    Need new refchart?
-      if (b_needNewRef) {
+      if (b_needNewRef && !m_disable_adjust_on_zoom) {
         const ChartTableEntry &cte_ref =
             ChartData->GetChartTableEntry(m_pQuilt->GetRefChartdbIndex());
         int target_scale = cte_ref.GetScale();
@@ -10157,7 +10161,8 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
      * Anyways, guarded it to be active in touch situations only.
      */
 
-    if (g_btouch) {
+    if (g_btouch && !m_binPinch) {
+      printf("Chart Drag:\n");
       struct timespec now;
       clock_gettime(CLOCK_MONOTONIC, &now);
       uint64_t tnow = (1e9 * now.tv_sec) + now.tv_nsec;
@@ -10204,7 +10209,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
           last_drag.x = x, last_drag.y = y;
         }
       }
-    } else {
+    } else if (!g_btouch) {
       if ((last_drag.x != x) || (last_drag.y != y)) {
         if (!m_routeState) {  // Correct fault on wx32/gtk3, uncommanded
                               // dragging on route create.
