@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,23 +12,36 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Send route/waypoint to GPS dialog
  */
 
-#ifndef __SENDTOGPSDLG_H__
-#define __SENDTOGPSDLG_H__
+#ifndef SENDTOGPSDLG_H_
+#define SENDTOGPSDLG_H_
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
+#include <wx/button.h>
+#include <wx/combobox.h>
 #include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/gauge.h>
+#include <wx/gdicmn.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
 
-//    Constants for SendToGps... Dialog
+#include "model/route.h"
+#include "model/route_point.h"
+
+//    Constants for SendToGps.. Dialog
 #define ID_STGDIALOG 10005
 #define SYMBOL_STG_STYLE                                      \
   wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX | \
@@ -41,9 +50,6 @@
 #define SYMBOL_STG_IDNAME ID_STGDIALOG
 #define SYMBOL_STG_SIZE wxSize(500, 500)
 #define SYMBOL_STG_POSITION wxDefaultPosition
-
-class Route;
-class RoutePoint;
 
 /**
  * Dialog for sending routes/waypoints to a GPS device. Allows users to send
@@ -86,4 +92,4 @@ private:
   wxStaticText* premtext;
 };
 
-#endif
+#endif  // SENDTOGPSDLG_H_
