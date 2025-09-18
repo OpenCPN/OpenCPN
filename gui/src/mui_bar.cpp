@@ -979,7 +979,7 @@ void MUIBar::CreateControls() {
   }
 }
 
-void MUIBar::SetBestPosition(void) {
+void MUIBar::SetBestPosition() {
   int x =
       (m_parentCanvas->GetClientSize().x - (m_size.x + (m_end_margin) * 2.00));
 

@@ -196,7 +196,7 @@ unsigned long connector_key::hash() const {
 
 render_canvas_parms::render_canvas_parms() { pix_buff = NULL; }
 
-render_canvas_parms::~render_canvas_parms(void) {}
+render_canvas_parms::~render_canvas_parms() {}
 
 static void PrepareForRender(ViewPort *pvp, s52plib *plib) {
   if (!plib) return;
@@ -739,9 +739,9 @@ void s57chart::SetFullExtent(Extent &ext) {
   m_bExtentSet = true;
 }
 
-void s57chart::ForceEdgePriorityEvaluate(void) { m_bLinePrioritySet = false; }
+void s57chart::ForceEdgePriorityEvaluate() { m_bLinePrioritySet = false; }
 
-void s57chart::SetLinePriorities(void) {
+void s57chart::SetLinePriorities() {
   if (!ps52plib) return;
 
   //      If necessary.....
@@ -977,7 +977,7 @@ typedef struct segment_pair {
   float e0, n0, e1, n1;
 } _segment_pair;
 
-void s57chart::AssembleLineGeometry(void) {
+void s57chart::AssembleLineGeometry() {
   // Walk the hash tables to get the required buffer size
 
   //  Start with the edge hash table
@@ -1384,7 +1384,7 @@ void s57chart::AssembleLineGeometry(void) {
 #endif
 }
 
-void s57chart::BuildLineVBO(void) {
+void s57chart::BuildLineVBO() {
 #ifdef ocpnUSE_GL
   if (!g_b_EnableVBO) return;
 
@@ -2878,7 +2878,7 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
   return INIT_OK;
 }
 
-void s57chart::ClearDepthContourArray(void) {
+void s57chart::ClearDepthContourArray() {
   if (m_nvaldco_alloc) {
     free(m_pvaldco_array);
   }
@@ -2887,7 +2887,7 @@ void s57chart::ClearDepthContourArray(void) {
   m_pvaldco_array = (double *)calloc(m_nvaldco_alloc, sizeof(double));
 }
 
-void s57chart::BuildDepthContourArray(void) {
+void s57chart::BuildDepthContourArray() {
   //    Build array of contour values for later use by conditional symbology
 
   if (0 == m_nvaldco_alloc) {
@@ -2929,7 +2929,7 @@ void s57chart::BuildDepthContourArray(void) {
   SetSafetyContour();
 }
 
-void s57chart::SetSafetyContour(void) {
+void s57chart::SetSafetyContour() {
   // Iterate through the array of contours in this cell, choosing the best one
   // to render as a bold "safety contour" in the PLIB.
 
@@ -3151,7 +3151,7 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
 WX_DEFINE_ARRAY_PTR(float *, MyFloatPtrArray);
 
 //    Read the .000 ENC file and create required Chartbase data structures
-bool s57chart::CreateHeaderDataFromENC(void) {
+bool s57chart::CreateHeaderDataFromENC() {
   if (!InitENCMinimal(m_TempFilePath)) {
     wxString msg("   Cannot initialize ENC file ");
     msg.Append(m_TempFilePath);
@@ -3351,7 +3351,7 @@ bool s57chart::CreateHeaderDataFromENC(void) {
 
 //    Read the .S57 oSENC file (CURRENT_SENC_FORMAT_VERSION >= 200) and create
 //    required Chartbase data structures
-bool s57chart::CreateHeaderDataFromoSENC(void) {
+bool s57chart::CreateHeaderDataFromoSENC() {
   bool ret_val = true;
 
   wxFFileInputStream fpx(m_SENCFileName);
@@ -3446,7 +3446,7 @@ bool s57chart::CreateHeaderDataFromoSENC(void) {
 }
 
 //    Read the .S57 SENC file and create required Chartbase data structures
-bool s57chart::CreateHeaderDataFromSENC(void) {
+bool s57chart::CreateHeaderDataFromSENC() {
   if (CURRENT_SENC_FORMAT_VERSION >= 200) return CreateHeaderDataFromoSENC();
 
   return false;
@@ -3944,7 +3944,7 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
   return retval;
 }
 
-wxString s57chart::GetISDT(void) {
+wxString s57chart::GetISDT() {
   if (m_date000.IsValid())
     return m_date000.Format("%Y%m%d");
   else
@@ -6168,7 +6168,7 @@ OGRFeature *s57chart::GetChartNextM_COVR(int &catcov) {
     return NULL;
 }
 
-int s57chart::GetENCScale(void) {
+int s57chart::GetENCScale() {
   if (NULL == m_pENCDS) return 0;
 
   //    Assume that chart has been initialized for minimal ENC access

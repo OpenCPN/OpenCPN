@@ -77,7 +77,7 @@ void glTextureDescriptor::FreeCompComp() {
   }
 }
 
-size_t glTextureDescriptor::GetMapArrayAlloc(void) {
+size_t glTextureDescriptor::GetMapArrayAlloc() {
   size_t size = 512 * 512 * 3;
   size_t ret = 0;
   for (int i = 0; i < 10; i++) {
@@ -90,7 +90,7 @@ size_t glTextureDescriptor::GetMapArrayAlloc(void) {
   return ret;
 }
 
-size_t glTextureDescriptor::GetCompArrayAlloc(void) {
+size_t glTextureDescriptor::GetCompArrayAlloc() {
   size_t size = (512 * 512 * 3) / 6;
   size_t ret = 0;
   for (int i = 0; i < 10; i++) {
@@ -103,7 +103,7 @@ size_t glTextureDescriptor::GetCompArrayAlloc(void) {
   return ret;
 }
 
-size_t glTextureDescriptor::GetCompCompArrayAlloc(void) {
+size_t glTextureDescriptor::GetCompCompArrayAlloc() {
   size_t ret = 0;
   for (int i = 0; i < 10; i++) {
     if (compcomp_size[i]) ret += compcomp_size[i];

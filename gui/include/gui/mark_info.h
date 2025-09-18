@@ -164,7 +164,7 @@ public:
   wxCoord OnMeasureItemWidth(size_t item) const;
 
   int Append(const wxString& item, wxBitmap bmp);
-  void Clear(void);
+  void Clear();
 
 private:
   int itemHeight;
@@ -387,7 +387,7 @@ protected:
   int m_sizeMetric;
   wxHyperlinkCtrl* m_pEditedLink;
 
-  void initialize_images(void);
+  void initialize_images();
   void OnBitmapCombClick(wxCommandEvent& event);
   void OnPositionCtlUpdated(wxCommandEvent& event);
   void OnFocusEvent(wxFocusEvent& event);
@@ -426,9 +426,9 @@ public:
               long style = FRAME_WITH_LINKS_STYLE);
   ~MarkInfoDlg();
   void Create();
-  void InitialFocus(void);
-  void RecalculateSize(void);
-  RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
+  void InitialFocus();
+  void RecalculateSize();
+  RoutePoint* GetRoutePoint() { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
   void SetRoutePoint(RoutePoint* pRP);
   void ClearData();
@@ -436,7 +436,7 @@ public:
   void UpdateHtmlList();
   void SetDialogTitle(const wxString& title) { SetTitle(title); }
   bool UpdateProperties(bool positionOnly = false);
-  void ValidateMark(void);
+  void ValidateMark();
   bool SaveChanges();
   void OnActivate(wxActivateEvent& event);
 

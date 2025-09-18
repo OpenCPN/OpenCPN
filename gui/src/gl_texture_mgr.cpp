@@ -1143,7 +1143,7 @@ void glTextureManager::ClearJobList() {
   todo_list.clear();
 }
 
-void glTextureManager::ClearAllRasterTextures(void) {
+void glTextureManager::ClearAllRasterTextures() {
   //     Delete all the TexFactory instances
   ChartPathHashTexfactType::iterator itt;
   for (itt = m_chart_texfactory_hash.begin();

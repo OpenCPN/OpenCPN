@@ -369,7 +369,7 @@ PixelCache::~PixelCache() {
 #endif
 }
 
-size_t PixelCache::GetLength(void) {
+size_t PixelCache::GetLength() {
 #ifdef __PIX_CACHE_WXIMAGE__
   return m_width * m_height * 3;
 #else
@@ -377,7 +377,7 @@ size_t PixelCache::GetLength(void) {
 #endif
 }
 
-void PixelCache::Update(void) {
+void PixelCache::Update() {
 #ifdef __PIX_CACHE_WXIMAGE__
   delete m_pbm;  // kill the old one
   m_pbm = NULL;
@@ -417,7 +417,7 @@ void PixelCache::SelectIntoDC(wxMemoryDC &dc) {
 #endif  //__PIX_CACHE_PIXBUF__
 }
 
-unsigned char *PixelCache::GetpData(void) const { return pData; }
+unsigned char *PixelCache::GetpData() const { return pData; }
 
 #ifdef ocpnUSE_ocpnBitmap
 //-----------------------------------------------------------------------------

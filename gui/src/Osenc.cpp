@@ -216,7 +216,7 @@ Osenc::~Osenc() {
   CPLPopErrorHandler();
 }
 
-void Osenc::init(void) {
+void Osenc::init() {
   m_LOD_meters = 0;
   m_poRegistrar = NULL;
   m_bPrivateRegistrar = false;
@@ -3694,7 +3694,7 @@ bool Osenc::CalculateExtent(S57Reader *poReader,
   return true;
 }
 
-void Osenc::InitializePersistentBuffer(void) {
+void Osenc::InitializePersistentBuffer() {
   pBuffer = (unsigned char *)malloc(1024);
   bufferSize = 1024;
 }

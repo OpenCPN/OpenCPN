@@ -781,7 +781,7 @@ wxString &Piano::GenerateAndStoreNewHash() {
 
 wxString &Piano::GetStoredHash() { return m_hash; }
 
-void Piano::FormatKeys(void) {
+void Piano::FormatKeys() {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   int width = m_parentCanvas->GetClientSize().x;
 #ifdef __WXOSX__
@@ -954,7 +954,7 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
    */
 }
 
-void Piano::ResetRollover(void) {
+void Piano::ResetRollover() {
   m_index_last = -1;
   m_hover_icon_last = -1;
   m_hover_last = -1;

@@ -126,7 +126,7 @@ protected:
   bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
   InitReturn PreInit(const wxString& name, ChartInitFlag init_flags,
                      ColorScheme cs);
-  InitReturn PostInit(void);
+  InitReturn PostInit();
 
   void PrepareTiles();
   void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
@@ -140,7 +140,7 @@ protected:
    * @return  true if the tile is ready to be rendered, false else.
    */
   bool GetTileTexture(SharedTilePtr tile);
-  void FlushTiles(void);
+  void FlushTiles();
   bool RenderTile(SharedTilePtr tile, int zoom_level, const ViewPort& vpoint);
 
   //    Protected Data

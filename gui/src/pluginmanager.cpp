@@ -966,7 +966,7 @@ PlugInManager::~PlugInManager() {
   delete m_utilHandler;
 }
 
-void PlugInManager::InitCommListeners(void) {
+void PlugInManager::InitCommListeners() {
   // Initialize the comm listener to support
   // void SetNMEASentence(wxString &sentence);
 
@@ -1125,7 +1125,7 @@ void PlugInManager::HandlePluginHandlerEvents() {
   });
 }
 
-bool PlugInManager::CallLateInit(void) {
+bool PlugInManager::CallLateInit() {
   bool bret = true;
 
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
@@ -1846,7 +1846,7 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
   SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
 }
 
-void PlugInManager::NotifyAuiPlugIns(void) {
+void PlugInManager::NotifyAuiPlugIns() {
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
@@ -2118,7 +2118,7 @@ wxBitmap* PlugInManager::BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
   return ptoolBarBitmap;
 }
 
-wxArrayString PlugInManager::GetPlugInChartClassNameArray(void) {
+wxArrayString PlugInManager::GetPlugInChartClassNameArray() {
   wxArrayString array;
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
@@ -3470,7 +3470,7 @@ PlugInChartBase::PlugInChartBase() { m_Chart_Error_Factor = 0.; }
 
 PlugInChartBase::~PlugInChartBase() {}
 
-wxString PlugInChartBase::GetFileSearchMask(void) { return ""; }
+wxString PlugInChartBase::GetFileSearchMask() { return ""; }
 
 int PlugInChartBase::Init(const wxString& name, int init_flags) { return 0; }
 
@@ -3667,7 +3667,7 @@ ChartPlugInWrapper::~ChartPlugInWrapper() {
   if (m_ppicb) delete m_ppicb;
 }
 
-wxString ChartPlugInWrapper::GetFileSearchMask(void) {
+wxString ChartPlugInWrapper::GetFileSearchMask() {
   if (m_ppicb)
     return m_ppicb->GetFileSearchMask();
   else
@@ -4299,11 +4299,11 @@ int OCPNMessageBox_PlugIn(wxWindow* parent, const wxString& message,
   return OCPNMessageBox(parent, message, caption, style, 100, x, y);
 }
 
-wxString GetOCPN_ExePath(void) { return g_Platform->GetExePath(); }
+wxString GetOCPN_ExePath() { return g_Platform->GetExePath(); }
 
 wxString* GetpPlugInLocation() { return g_Platform->GetPluginDirPtr(); }
 
-wxString GetWritableDocumentsDir(void) {
+wxString GetWritableDocumentsDir() {
   return g_Platform->GetWritableDocumentsDir();
 }
 
@@ -4719,7 +4719,7 @@ void PI_PLIBSetLineFeaturePriority(PI_S57Obj* pObj, int prio) {
   }
 }
 
-void PI_PLIBPrepareForNewRender(void) {
+void PI_PLIBPrepareForNewRender() {
   if (ps52plib) {
     ps52plib->PrepareForRender();
     ps52plib->ClearTextList();

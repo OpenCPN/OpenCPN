@@ -127,7 +127,7 @@ public:
   bool AddConfig(OCPNConfigObject *config, unsigned int flags);
   bool RemoveConfig(wxString GUID);
 
-  void SetRootConfigNode(void);
+  void SetRootConfigNode();
   bool IsOpenCPN();
   bool SaveFile(const wxString filename);
   bool LoadFile(const wxString filename);
@@ -139,7 +139,7 @@ OCPNConfigCatalog::OCPNConfigCatalog() : pugi::xml_document() {}
 
 OCPNConfigCatalog::~OCPNConfigCatalog() {}
 
-void OCPNConfigCatalog::SetRootConfigNode(void) {
+void OCPNConfigCatalog::SetRootConfigNode() {
   if (!strlen(m_config_root.name())) {
     m_config_root = append_child("configs");
     m_config_root.append_attribute("version") = "1.0";
@@ -523,7 +523,7 @@ bool ConfigMgr::ApplyConfigGUID(wxString GUID) {
 }
 
 // RFC4122 version 4 compliant random UUIDs generator.
-wxString ConfigMgr::GetUUID(void) {
+wxString ConfigMgr::GetUUID() {
   wxString str;
   struct {
     int time_low;

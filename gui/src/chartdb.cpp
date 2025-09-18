@@ -79,7 +79,7 @@ bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y);
 // ChartStack implementation
 // ============================================================================
 
-int ChartStack::GetCurrentEntrydbIndex(void) {
+int ChartStack::GetCurrentEntrydbIndex() {
   if (nEntry && (CurrentStackEntry >= 0) /*&& b_valid*/)
     return DBIndex[CurrentStackEntry];
   else
@@ -305,7 +305,7 @@ void ChartDB::PurgeCachePlugins() {
   }
 }
 
-void ChartDB::ClearCacheInUseFlags(void) {
+void ChartDB::ClearCacheInUseFlags() {
   if (wxMUTEX_NO_ERROR == m_cache_mutex.Lock()) {
     unsigned int nCache = pChartCache->GetCount();
     for (unsigned int i = 0; i < nCache; i++) {
