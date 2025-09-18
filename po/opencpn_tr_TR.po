@@ -2536,7 +2536,7 @@ msgid "Options"
 msgstr "Ayarlar"
 
 #: gui/include/gui/peer_client_dlg.h:41 gui/include/gui/rest_server_gui.h:44
-#: gui/include/gui/SendToGpsDlg.h:40 gui/src/canvasMenu.cpp:791
+#: gui/include/gui/send_to_gps_dlg.h:40 gui/src/canvasMenu.cpp:791
 #: gui/src/canvasMenu.cpp:891 gui/src/canvasMenu.cpp:942
 #: gui/src/canvasMenu.cpp:1747 gui/src/canvasMenu.cpp:1758
 #: gui/src/canvasMenu.cpp:1792 gui/src/canvasMenu.cpp:1803

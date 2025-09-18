@@ -33,7 +33,7 @@
 
 #include "chcanv.h"
 #include "ocpndc.h"
-#include "SendToGpsDlg.h"
+#include "send_to_gps_dlg.h"
 #include "viewport.h"
 
 class RoutePointGui {
