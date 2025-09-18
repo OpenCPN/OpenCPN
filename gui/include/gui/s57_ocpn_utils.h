@@ -13,19 +13,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/** \file s57_ocpn_util.h S57 utilities with core opencpn dependencies. */
+/**
+ *  \file.h
+ *
+ *  S57 utilities with core opencpn dependencies.
+ */
 
-#ifndef S57_OCPN_UTILS_H_GUARD__
-#define S57_OCPN_UTILS_H_GUARD__
+#ifndef S57_OCPN_UTILS_H_GUARD_
+#define S57_OCPN_UTILS_H_GUARD_
 
+#include "chartimg.h"
+#include "chcanv.h"
 #include "ocpn_region.h"
 #include "ocpndc.h"
 #include "s57chart.h"
+#include "viewport.h"
+#include "s52s57.h"
 
 bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
                                      ChartPlugInWrapper *target_plugin_chart,
@@ -40,4 +46,4 @@ void s57_DrawExtendedLightSectors(ocpnDC &temp_dc, ViewPort &VPoint,
 void s57_DrawExtendedLightSectorsGL(ocpnDC &temp_dc, ViewPort &VPoint,
                                     std::vector<s57Sector_t> &sectorlegs);
 
-#endif  //  S57_OCPN_UTILS_H_GUARD__
+#endif  //  S57_OCPN_UTILS_H_GUARD_
