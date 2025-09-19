@@ -26,7 +26,7 @@
 
 #include <wx/string.h>
 
-#include "TCDataFactory.h"
+#include "tc_data_factory.h"
 #include "station_data.h"
 #include "idx_entry.h"
 
