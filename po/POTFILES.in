@@ -276,7 +276,7 @@ gui/include/gui/shaders.h
 gui/include/gui/station_data.h
 gui/include/gui/styles.h
 gui/include/gui/svg_utils.h
-gui/include/gui/TCDataFactory.h
+gui/include/gui/tc_data_factory.h
 gui/include/gui/TCDataSource.h
 gui/include/gui/TCDS_Ascii_Harmonic.h
 gui/include/gui/TCDS_Binary_Harmonic.h

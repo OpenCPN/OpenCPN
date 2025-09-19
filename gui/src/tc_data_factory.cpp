@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "TCDataFactory.h"
+#include "tc_data_factory.h"
 
 const unit TCDataFactory::known_units[NUMUNITS] = {
     {"feet", "ft", LENGTH, 0.3048},

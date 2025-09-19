@@ -12,7 +12,7 @@
 #include "chcanv.h"
 #include "tide_time.h"
 #include "tcmgr.h"
-#include "TCDataFactory.h"
+#include "tc_data_factory.h"
 #include "dychart.h"
 #include "model/cutil.h"
 #include "font_mgr.h"
