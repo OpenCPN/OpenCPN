@@ -21,7 +21,7 @@
  *  S57 Chart Object
  */
 
-#include "setjmp.h"
+#include <setjmp.h>
 
 #ifdef __MSVC__
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
