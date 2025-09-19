@@ -267,7 +267,7 @@ gui/include/gui/s57chart.h
 gui/include/gui/s57_light.h
 gui/include/gui/s57_object_desc.h
 gui/include/gui/s57_query_dlg.h
-gui/include/gui/S57Sector.h
+gui/include/gui/s57_sector.h
 gui/include/gui/safe_mode_gui.h
 gui/include/gui/senc_manager.h
 gui/include/gui/send_to_gps_dlg.h

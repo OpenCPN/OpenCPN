@@ -47,7 +47,7 @@
 #include "s57.h"
 #include "s57_light.h"
 #include "s57_object_desc.h"
-#include "S57Sector.h"
+#include "s57_sector.h"
 #include "viewport.h"
 
 extern bool chain_broken_mssage_shown; /**< Global instance */
