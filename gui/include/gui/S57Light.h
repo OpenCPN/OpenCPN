@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,21 +12,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * S57 light encapsulation
  */
 
-#ifndef __S57LIGHT_H__
-#define __S57LIGHT_H__
+#ifndef S57LIGHT_H_
+#define S57LIGHT_H_
 
+#include <wx/arrstr.h>
 #include <wx/string.h>
 
 /**
- * Represents a light feature in an S57 chart. Encapsulates the attributes and
- * properties of a light feature, including its position, attributes, and sector
- * information.
+ * Represents a light feature in an S57 chart. Encapsulates its attributes
+ * including position, attributes, and sector information.
  */
 class S57Light {
 public:
