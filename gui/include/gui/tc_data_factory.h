@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,25 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __TCDATAFACTORY_H__
-#define __TCDATAFACTORY_H__
+/**
+ * \file
+ *
+ * Tide and current data container
+ */
+
+#ifndef TCDATAFACTORY_H_
+#define TCDATAFACTORY_H_
 
 #include <wx/string.h>
-#include <wx/dynarray.h>
+
+#include "idx_entry.h"
 #include "TC_Error_Code.h"
 
 #define NUMUNITS 4
-
 #define REGION 1
 #define COUNTRY 2
 #define STATE 3
-
-class IDX_entry;
 
 typedef enum { LENGTH, VELOCITY, BOGUS } unit_type;
 
