@@ -45,7 +45,7 @@
 #include "ogr_s57.h"
 #include "s52s57.h"  // ObjRazRules
 #include "s57.h"
-#include "S57Light.h"
+#include "s57_light.h"
 #include "S57ObjectDesc.h"
 #include "S57Sector.h"
 #include "viewport.h"
