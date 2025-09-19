@@ -866,7 +866,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/station_data.h
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/tc_data_factory.h
-    ${GUI_HDR_DIR}/TCDataSource.h
+    ${GUI_HDR_DIR}/tc_data_source.h
     ${GUI_HDR_DIR}/TCDS_Ascii_Harmonic.h
     ${GUI_HDR_DIR}/TCDS_Binary_Harmonic.h
     ${GUI_HDR_DIR}/TC_Error_Code.h
@@ -993,7 +993,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_icons.cpp
     ${GUI_SRC_DIR}/tc_data_factory.cpp
-    ${GUI_SRC_DIR}/TCDataSource.cpp
+    ${GUI_SRC_DIR}/tc_data_source.cpp
     ${GUI_SRC_DIR}/TCDS_Ascii_Harmonic.cpp
     ${GUI_SRC_DIR}/TCDS_Binary_Harmonic.cpp
     ${GUI_SRC_DIR}/tcmgr.cpp

@@ -24,7 +24,7 @@
 #include <wx/log.h>
 #include <wx/filename.h>
 
-#include "TCDataSource.h"
+#include "tc_data_source.h"
 #include "TCDS_Ascii_Harmonic.h"
 #include "TCDS_Binary_Harmonic.h"
 
