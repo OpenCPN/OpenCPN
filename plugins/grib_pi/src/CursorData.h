@@ -69,9 +69,20 @@ private:
   void MenuAppend(wxMenu *menu, int id, wxString label, int setting);
   void OnCBAny(wxCommandEvent &event);
   void OnMenuCallBack(wxMouseEvent &event);
+  int GetSettingsIdFromCheckboxId(int checkboxId);
 
   GRIBUICtrlBar &m_gparent;
   bool m_bLeftDown;
+
+  // Wave Steepness Text Controls (dynamically created)
+  wxTextCtrl *m_tcCombinedWaveSteepness;
+  wxTextCtrl *m_tcWindWaveSteepness;
+  wxTextCtrl *m_tcSwellWaveSteepness;
+
+  // Wave Steepness Checkboxes (dynamically created)
+  wxCheckBox *m_cbCombinedWaveSteepness;
+  wxCheckBox *m_cbWindWaveSteepness;
+  wxCheckBox *m_cbSwellWaveSteepness;
 };
 
 #endif

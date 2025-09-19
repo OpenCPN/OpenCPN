@@ -23,6 +23,7 @@
 #include "pi_gl.h"
 
 #include "grib_pi.h"
+#include "GribOverlayFactory.h"
 #include "folder.xpm"
 
 static const wxString units0_names[] = {
@@ -39,14 +40,21 @@ static const wxString units6_names[] = {_("j/kg"), wxEmptyString};
 static const wxString units7_names[] = {_("Knots"), _("m/s"), _("mph"),
                                         _("km/h"), wxEmptyString};
 static const wxString units8_names[] = {_("dBZ"), wxEmptyString};
+static const wxString units9_names[] = {_("Ratio"), _("Percentage"),
+                                        wxEmptyString};
 static const wxString *unit_names[] = {
     units0_names, units1_names, units2_names, units3_names, units4_names,
-    units5_names, units6_names, units7_names, units8_names};
+    units5_names, units6_names, units7_names, units8_names, units9_names};
 
 static const wxString name_from_index[] = {_T("Wind"),
                                            _T("WindGust"),
                                            _T("Pressure"),
-                                           _T("Waves"),
+                                           _T("Waves"),  // Combined waves
+                                           _T("WindWaves"),
+                                           _T("SwellWaves"),
+                                           _T("CombinedWaveSteepness"),
+                                           _T("WindWaveSteepness"),
+                                           _T("SwellWaveSteepness"),
                                            _T("Current"),
                                            _T("Rainfall"),
                                            _T("CloudCover"),
@@ -59,7 +67,12 @@ static const wxString name_from_index[] = {_T("Wind"),
 static const wxString tname_from_index[] = {_("Wind"),
                                             _("Wind Gust"),
                                             _("Pressure"),
-                                            _("Waves"),
+                                            _("Combined Waves"),
+                                            _("Wind Waves"),
+                                            _("Swell Waves"),
+                                            _("Combined Wave Steepness"),
+                                            _("Wind Wave Steepness"),
+                                            _("Swell Wave Steepness"),
                                             _("Current"),
                                             _("Rainfall"),
                                             _("Cloud Cover"),
@@ -71,7 +84,25 @@ static const wxString tname_from_index[] = {_("Wind"),
                                             _("Relative Humidity")};
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {
-    0, 0, 1, 2, 7, 4, 5, 3, 3, 6, 8, 2, 5};
+    GribOverlaySettings::UNIT_TYPE_WIND_SPEED,     // Wind
+    GribOverlaySettings::UNIT_TYPE_WIND_SPEED,     // Wind Gust
+    GribOverlaySettings::UNIT_TYPE_PRESSURE,       // Pressure
+    GribOverlaySettings::UNIT_TYPE_DISTANCE,       // Combined Waves
+    GribOverlaySettings::UNIT_TYPE_DISTANCE,       // Wind Waves
+    GribOverlaySettings::UNIT_TYPE_DISTANCE,       // Swell Waves
+    GribOverlaySettings::UNIT_TYPE_STEEPNESS,      // Combined Wave Steepness
+    GribOverlaySettings::UNIT_TYPE_STEEPNESS,      // Wind Wave Steepness
+    GribOverlaySettings::UNIT_TYPE_STEEPNESS,      // Swell Wave Steepness
+    GribOverlaySettings::UNIT_TYPE_CURRENT_SPEED,  // Current
+    GribOverlaySettings::UNIT_TYPE_PRECIPITATION,  // Rainfall
+    GribOverlaySettings::UNIT_TYPE_PERCENTAGE,     // Cloud Cover
+    GribOverlaySettings::UNIT_TYPE_TEMPERATURE,    // Air Temperature
+    GribOverlaySettings::UNIT_TYPE_TEMPERATURE,    // Sea Temperature
+    GribOverlaySettings::UNIT_TYPE_ENERGY,         // CAPE
+    GribOverlaySettings::UNIT_TYPE_REFLECTIVITY,   // Composite Reflectivity
+    GribOverlaySettings::UNIT_TYPE_DISTANCE,       // Altitude
+    GribOverlaySettings::UNIT_TYPE_PERCENTAGE      // Relative Humidity
+};
 
 static const int minuttes_from_index[] = {2,  5,   10,  20,  30,  60,
                                           90, 180, 360, 720, 1440};
@@ -210,15 +241,36 @@ void GribOverlaySettings::Read() {
     pConf->Read(Name + _T ( "Abbreviated Isobars Numbers" ),
                 &Settings[i].m_bAbbrIsoBarsNumbers, i == PRESSURE);
 
-    double defspacing[SETTINGS_COUNT] = {4, 4, 4, 0, 0, 0, 0, 2, 2, 100};
+    // Default interval between contour lines (0 = no isobars displayed)
+    // Units depend on parameter: millibars for pressure, m/s for wind, etc.
+    double defspacing[SETTINGS_COUNT] = {
+        4,    // Wind
+        4,    // Wind Gust
+        4,    // Pressure
+        0,    // Combined Waves
+        0,    // Wind Waves
+        0,    // Swell Waves
+        0,    // Current
+        0,    // Precipitation
+        0,    // Cloud
+        0,    // Air Temperature
+        0,    // Sea Temperature
+        2,    // CAPE
+        2,    // Composite Reflectivity
+        100,  // Geopotential Altitude
+        0     // Relative Humidity
+    };
     pConf->Read(Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing,
                 defspacing[i]);
     pConf->Read(Name + _T ( "IsoBarVisibility" ),
                 &Settings[i].m_iIsoBarVisibility, i == PRESSURE);
 
     pConf->Read(Name + _T ( "DirectionArrows" ),
-                &Settings[i].m_bDirectionArrows, i == CURRENT || i == WAVE);
-    double defform[SETTINGS_COUNT] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
+                &Settings[i].m_bDirectionArrows,
+                i == CURRENT || i == COMBINED_WAVES || i == WIND_WAVES ||
+                    i == SWELL_WAVES);
+    double defform[SETTINGS_COUNT] = {0, 0, 0, 0, 1, 1, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0};
     pConf->Read(Name + _T ( "DirectionArrowForm" ),
                 &Settings[i].m_iDirectionArrowForm, defform[i]);
     pConf->Read(Name + _T ( "DirectionArrowSize" ),
@@ -230,7 +282,24 @@ void GribOverlaySettings::Read() {
 
     pConf->Read(Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap,
                 i != WIND && i != PRESSURE);
-    int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3, 7};
+    // Default color maps for each weather parameter.
+    int defcolor[SETTINGS_COUNT] = {
+        WIND_GRAPHIC_INDEX,           // Wind
+        WIND_GRAPHIC_INDEX,           // Wind Gust
+        GENERIC_GRAPHIC_INDEX,        // Pressure
+        WAVE_GRAPHIC_INDEX,           // Combined Waves
+        WAVE_GRAPHIC_INDEX,           // Wind Waves
+        WAVE_GRAPHIC_INDEX,           // Swell Waves
+        CURRENT_GRAPHIC_INDEX,        // Current
+        PRECIPITATION_GRAPHIC_INDEX,  // Rainfall
+        CLOUD_GRAPHIC_INDEX,          // Cloud Cover
+        AIRTEMP__GRAPHIC_INDEX,       // Air Temperature
+        SEATEMP_GRAPHIC_INDEX,        // Sea Temperature
+        CAPE_GRAPHIC_INDEX,           // CAPE
+        GENERIC_GRAPHIC_INDEX,        // Altitude
+        GENERIC_GRAPHIC_INDEX,        // Relative Humidity
+        GENERIC_GRAPHIC_INDEX         // Extra entry for future use
+    };
     pConf->Read(Name + _T ( "OverlayMapColors" ),
                 &Settings[i].m_iOverlayMapColors, defcolor[i]);
 
@@ -285,7 +354,7 @@ void GribOverlaySettings::Write() {
       SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
       SaveSettingGroups(pConf, i, ISO_LINE_VISI);
       SaveSettingGroups(pConf, i, NUMBERS);
-    } else if (i == WAVE || i == CURRENT) {
+    } else if (i == COMBINED_WAVES || i == CURRENT) {
       SaveSettingGroups(pConf, i, D_ARROWS);
       SaveSettingGroups(pConf, i, OVERLAY);
       SaveSettingGroups(pConf, i, NUMBERS);
@@ -364,7 +433,7 @@ double GribOverlaySettings::CalibrationOffset(int settings) {
     case 3:
       switch (
           Settings[settings].m_Units) { /* only have offset for temperature */
-        case CELCIUS:
+        case CELSIUS:
           return -273.15;
         case FAHRENHEIT:
           return -273.15 + 32 * 5 / 9.0;
@@ -378,8 +447,8 @@ double GribOverlaySettings::CalibrationOffset(int settings) {
 double GribOverlaySettings::CalibrationFactor(int settings, double input,
                                               bool reverse) {
   switch (unittype[settings]) {
-    case 7:
-    case 0:
+    case UNIT_TYPE_CURRENT_SPEED:
+    case UNIT_TYPE_WIND_SPEED:
       switch (Settings[settings].m_Units) {
         case KNOTS:
           return 3.6 / 1.852;
@@ -393,7 +462,7 @@ double GribOverlaySettings::CalibrationFactor(int settings, double input,
           return (reverse) ? GetbftomsFactor(input) : GetmstobfFactor(input);
       }
       break;
-    case 1:
+    case UNIT_TYPE_PRESSURE:
       switch (Settings[settings].m_Units) {
         case MILLIBARS:
           return 1 / 100.;
@@ -403,7 +472,7 @@ double GribOverlaySettings::CalibrationFactor(int settings, double input,
           return 1 / (100. * 33.864);
       }
       break;
-    case 2:
+    case UNIT_TYPE_DISTANCE:
       switch (Settings[settings].m_Units) {
         case METERS:
           return 1;
@@ -411,15 +480,15 @@ double GribOverlaySettings::CalibrationFactor(int settings, double input,
           return 3.28;
       }
       break;
-    case 3:
+    case UNIT_TYPE_TEMPERATURE:
       switch (Settings[settings].m_Units) {
-        case CELCIUS:
+        case CELSIUS:
           return 1;
         case FAHRENHEIT:
           return 9. / 5;
       }
       break;
-    case 4:
+    case UNIT_TYPE_PRECIPITATION:
       switch (Settings[settings].m_Units) {
         case MILLIMETERS:
           return 1;
@@ -427,10 +496,18 @@ double GribOverlaySettings::CalibrationFactor(int settings, double input,
           return 1. / 25.4;
       }
       break;
-    case 5:
-    case 6:
-    case 8:
+    case UNIT_TYPE_PERCENTAGE:
+    case UNIT_TYPE_ENERGY:
+    case UNIT_TYPE_REFLECTIVITY:
       return 1;
+    case UNIT_TYPE_STEEPNESS:
+      switch (Settings[settings].m_Units) {
+        case RATIO:
+          return 1;
+        case PERCENTAGE_STEEP:
+          return 100;  // Convert ratio to percentage
+      }
+      break;
   }
 
   return 1;
@@ -506,7 +583,7 @@ double GribOverlaySettings::GetbftomsFactor(double input) {
 
 wxString GribOverlaySettings::GetUnitSymbol(int settings) {
   switch (unittype[settings]) {
-    case 0:
+    case UNIT_TYPE_WIND_SPEED:
       switch (Settings[settings].m_Units) {
         case KNOTS:
           return _T("kts");
@@ -520,7 +597,7 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings) {
           return _T("bf");
       }
       break;
-    case 1:
+    case UNIT_TYPE_PRESSURE:
       switch (Settings[settings].m_Units) {
         case MILLIBARS:
           return _T("hPa");
@@ -530,7 +607,7 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings) {
           return _T("inHg");
       }
       break;
-    case 2:
+    case UNIT_TYPE_DISTANCE:
       switch (Settings[settings].m_Units) {
         case METERS:
           return _T("m");
@@ -538,15 +615,15 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings) {
           return _T("ft");
       }
       break;
-    case 3:
+    case UNIT_TYPE_TEMPERATURE:
       switch (Settings[settings].m_Units) {
-        case CELCIUS:
+        case CELSIUS:
           return _T("\u00B0C");
         case FAHRENHEIT:
           return _T("\u00B0F");
       }
       break;
-    case 4:
+    case UNIT_TYPE_PRECIPITATION:
       switch (Settings[settings].m_Units) {
         case MILLIMETERS:
           return _T("mm");
@@ -554,19 +631,19 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings) {
           return _T("in");
       }
       break;
-    case 5:
+    case UNIT_TYPE_PERCENTAGE:
       switch (Settings[settings].m_Units) {
         case PERCENTAGE:
           return _T("%");
       }
       break;
-    case 6:
+    case UNIT_TYPE_ENERGY:
       switch (Settings[settings].m_Units) {
         case JPKG:
           return _T("j/kg");
       }
       break;
-    case 7:
+    case UNIT_TYPE_CURRENT_SPEED:
       switch (Settings[settings].m_Units) {
         case KNOTS:
           return _T("kts");
@@ -578,10 +655,18 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings) {
           return _T("km/h");
       }
       break;
-    case 8:
+    case UNIT_TYPE_REFLECTIVITY:
       switch (Settings[settings].m_Units) {
         case DBZ:
           return _T("dBZ");
+      }
+      break;
+    case UNIT_TYPE_STEEPNESS:
+      switch (Settings[settings].m_Units) {
+        case RATIO:
+          return _T("");
+        case PERCENTAGE_STEEP:
+          return _T("%");
       }
       break;
   }
@@ -616,9 +701,16 @@ double GribOverlaySettings::GetMax(int settings) {
     case PRESSURE:
       max = 112000;
       break; /* 100s of millibars */
-    case WAVE:
+    case COMBINED_WAVES:
+    case WIND_WAVES:
+    case SWELL_WAVES:
       max = 30;
       break; /* meters */
+    case COMBINED_WAVE_STEEPNESS:
+    case WIND_WAVE_STEEPNESS:
+    case SWELL_WAVE_STEEPNESS:
+      max = 0.20;  // 20% steepness (well beyond breaking)
+      break;       /* steepness ratio */
     case CURRENT:
       max = 12;
       break; /* m/s */
@@ -965,7 +1057,9 @@ void GribSettingsDialog::ShowFittingSettings(int settings) {
       break;
     case GribOverlaySettings::CURRENT:
       ShowSettings(PARTICLES);  // should we allow particles for waves?
-    case GribOverlaySettings::WAVE:
+    case GribOverlaySettings::COMBINED_WAVES:
+    case GribOverlaySettings::WIND_WAVES:
+    case GribOverlaySettings::SWELL_WAVES:
       ShowSettings(D_ARROWS);
       ShowSettings(OVERLAY);
       ShowSettings(NUMBERS);
@@ -1208,7 +1302,8 @@ wxString GribOverlaySettings::SettingsToJSON(wxString json) {
       UpdateJSONval(v, i, ISO_LINE_SHORT);
       UpdateJSONval(v, i, ISO_LINE_VISI);
       UpdateJSONval(v, i, NUMBERS);
-    } else if (i == WAVE || i == CURRENT) {
+    } else if (i == COMBINED_WAVES || i == WIND_WAVES || i == SWELL_WAVES ||
+               i == CURRENT) {
       UpdateJSONval(v, i, D_ARROWS);
       UpdateJSONval(v, i, OVERLAY);
       UpdateJSONval(v, i, NUMBERS);
