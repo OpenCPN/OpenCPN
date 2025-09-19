@@ -859,7 +859,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/s57_object_desc.h
     ${GUI_HDR_DIR}/s57_ocpn_utils.h
     ${GUI_HDR_DIR}/s57_query_dlg.h
-    ${GUI_HDR_DIR}/S57Sector.h
+    ${GUI_HDR_DIR}/s57_sector.h
     ${GUI_HDR_DIR}/safe_mode_gui.h
     ${GUI_HDR_DIR}/send_to_gps_dlg.h
     ${GUI_HDR_DIR}/send_to_peer_dlg.h

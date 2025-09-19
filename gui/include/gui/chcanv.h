@@ -60,7 +60,7 @@
 #include "piano.h"
 #include "quilt.h"
 #include "rollover_win.h"
-#include "S57Sector.h"
+#include "s57_sector.h"
 #include "TCWin.h"
 #include "undo.h"
 
