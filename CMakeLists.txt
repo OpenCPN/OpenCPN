@@ -855,7 +855,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/route_prop_dlg.h
     ${GUI_HDR_DIR}/route_prop_dlg_impl.h
     ${GUI_HDR_DIR}/s57chart.h
-    ${GUI_HDR_DIR}/S57Light.h
+    ${GUI_HDR_DIR}/s57_light.h
     ${GUI_HDR_DIR}/S57ObjectDesc.h
     ${GUI_HDR_DIR}/s57_ocpn_utils.h
     ${GUI_HDR_DIR}/s57_query_dlg.h
