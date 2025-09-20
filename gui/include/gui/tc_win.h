@@ -39,7 +39,7 @@
 
 #include "chcanv.h"
 #include "idx_entry.h"
-#include "rolloverwin.h"
+#include "rollover_win.h"
 
 class TCWin : public wxFrame {
 public:
