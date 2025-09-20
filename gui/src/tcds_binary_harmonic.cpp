@@ -21,7 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "TCDS_Binary_Harmonic.h"
+#include "tcds_binary_harmonic.h"
 #include "tcmgr.h"
 #include <string>
 /* Declarations for zoneinfo compatibility */

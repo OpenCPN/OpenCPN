@@ -31,7 +31,7 @@
 #include "idx_entry.h"
 #include "tc_data_factory.h"
 #include "tcds_ascii_harmonic.h"
-#include "TCDS_Binary_Harmonic.h"
+#include "tcds_binary_harmonic.h"
 
 class TCDataSource {
 public:
