@@ -27,7 +27,7 @@
 
 #include "tc_data_source.h"
 #include "tcds_ascii_harmonic.h"
-#include "TCDS_Binary_Harmonic.h"
+#include "tcds_binary_harmonic.h"
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfTCDSources);
