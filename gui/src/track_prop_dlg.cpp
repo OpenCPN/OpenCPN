@@ -1,10 +1,4 @@
-/**************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Track Properties Dialog
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement track_props_dlg.h -- track properties dialog.
+ */
+
 #include "config.h"
 
 #include "model/georef.h"
@@ -62,13 +62,6 @@
 #define INPUT_FORMAT 1
 #define DISPLAY_FORMAT 2
 #define TIMESTAMP_FORMAT 3
-
-extern std::vector<Track*> g_TrackList;
-extern ActiveTrack* g_pActiveTrack;
-extern Routeman* g_pRouteMan;
-extern RouteManagerDialog* pRouteManagerDialog;
-extern MyConfig* pConfig;
-extern MyFrame* gFrame;
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -263,7 +256,7 @@ static wxString getDatetimeTimezoneSelector(int selection) {
       return "LMT";
     case GLOBAL_SETTINGS_INPUT:
     default:
-      return wxEmptyString;
+      return "";
   }
 }
 
@@ -700,8 +693,8 @@ void TrackPropDlg::CreateControls() {
   // m_stName->Wrap( -1 );
   bSizerName->Add(m_stName, 0, wxALL, 5);
 
-  m_tName = new wxTextCtrl(m_panelBasic, wxID_ANY, wxEmptyString,
-                           wxDefaultPosition, wxDefaultSize, 0);
+  m_tName = new wxTextCtrl(m_panelBasic, wxID_ANY, "", wxDefaultPosition,
+                           wxDefaultSize, 0);
   bSizerName->Add(m_tName, 1, 0, 5);
 
   wxBoxSizer* bSizerFromTo;
@@ -713,8 +706,8 @@ void TrackPropDlg::CreateControls() {
   // m_stFrom->Wrap( -1 );
   bSizerFromTo->Add(m_stFrom, 0, wxALL, 5);
 
-  m_tFrom = new wxTextCtrl(m_panelBasic, wxID_ANY, wxEmptyString,
-                           wxDefaultPosition, wxDefaultSize, 0);
+  m_tFrom = new wxTextCtrl(m_panelBasic, wxID_ANY, "", wxDefaultPosition,
+                           wxDefaultSize, 0);
   bSizerFromTo->Add(m_tFrom, 1, 0, 5);
 
   m_stTo = new wxStaticText(m_panelBasic, wxID_ANY, _("To"), wxDefaultPosition,
@@ -722,8 +715,8 @@ void TrackPropDlg::CreateControls() {
   // m_stTo->Wrap( -1 );
   bSizerFromTo->Add(m_stTo, 0, wxALL, 5);
 
-  m_tTo = new wxTextCtrl(m_panelBasic, wxID_ANY, wxEmptyString,
-                         wxDefaultPosition, wxDefaultSize, 0);
+  m_tTo = new wxTextCtrl(m_panelBasic, wxID_ANY, "", wxDefaultPosition,
+                         wxDefaultSize, 0);
   bSizerFromTo->Add(m_tTo, 1, 0, 5);
 
   wxStaticBoxSizer* sbSizerParams;
@@ -795,9 +788,8 @@ void TrackPropDlg::CreateControls() {
   // m_stTotDistance->Wrap( -1 );
   bSizerStats->Add(m_stTotDistance, 0, wxALL, 5);
 
-  m_tTotDistance =
-      new wxTextCtrl(m_panelBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                     wxDefaultSize, wxTE_READONLY);
+  m_tTotDistance = new wxTextCtrl(m_panelBasic, wxID_ANY, "", wxDefaultPosition,
+                                  wxDefaultSize, wxTE_READONLY);
   bSizerStats->Add(m_tTotDistance, 1, 0, 5);
 
   m_stAvgSpeed = new wxStaticText(m_panelBasic, wxID_ANY, _("Avg. speed"),
@@ -805,8 +797,8 @@ void TrackPropDlg::CreateControls() {
   // m_stAvgSpeed->Wrap( -1 );
   bSizerStats->Add(m_stAvgSpeed, 0, wxALL, 5);
 
-  m_tAvgSpeed = new wxTextCtrl(m_panelBasic, wxID_ANY, wxEmptyString,
-                               wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+  m_tAvgSpeed = new wxTextCtrl(m_panelBasic, wxID_ANY, "", wxDefaultPosition,
+                               wxDefaultSize, wxTE_READONLY);
   bSizerStats->Add(m_tAvgSpeed, 1, 0, 5);
 
   m_stTimeEnroute = new wxStaticText(m_panelBasic, wxID_ANY, _("Time enroute"),
@@ -814,9 +806,8 @@ void TrackPropDlg::CreateControls() {
   // m_stTimeEnroute->Wrap( -1 );
   bSizerStats->Add(m_stTimeEnroute, 0, wxALL, 5);
 
-  m_tTimeEnroute =
-      new wxTextCtrl(m_panelBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                     wxDefaultSize, wxTE_READONLY);
+  m_tTimeEnroute = new wxTextCtrl(m_panelBasic, wxID_ANY, "", wxDefaultPosition,
+                                  wxDefaultSize, wxTE_READONLY);
   bSizerStats->Add(m_tTimeEnroute, 2, 0, 5);
 
   sbSizerStats->Add(bSizerStats, 0, wxEXPAND, 5);
@@ -903,8 +894,8 @@ void TrackPropDlg::CreateControls() {
   bSizerAdvanced->Add(m_stDescription, 0, wxALL, 5);
 
   m_tDescription =
-      new wxTextCtrl(m_panelAdvanced, wxID_ANY, wxEmptyString,
-                     wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+      new wxTextCtrl(m_panelAdvanced, wxID_ANY, "", wxDefaultPosition,
+                     wxDefaultSize, wxTE_MULTILINE);
   bSizerAdvanced->Add(m_tDescription, 1, wxALL | wxEXPAND, 5);
 
   sbSizerLinks = new wxStaticBoxSizer(
@@ -921,19 +912,16 @@ void TrackPropDlg::CreateControls() {
                           "http://www.wxformbuilder.org", wxDefaultPosition,
                           wxDefaultSize, wxHL_DEFAULT_STYLE);
   m_menuLink = new wxMenu();
-  m_menuItemEdit =
-      new wxMenuItem(m_menuLink, ID_TRK_MENU_EDIT, wxString(_("Edit")),
-                     wxEmptyString, wxITEM_NORMAL);
+  m_menuItemEdit = new wxMenuItem(m_menuLink, ID_TRK_MENU_EDIT,
+                                  wxString(_("Edit")), "", wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemEdit);
 
-  m_menuItemAdd =
-      new wxMenuItem(m_menuLink, ID_TRK_MENU_ADD, wxString(_("Add new")),
-                     wxEmptyString, wxITEM_NORMAL);
+  m_menuItemAdd = new wxMenuItem(m_menuLink, ID_TRK_MENU_ADD,
+                                 wxString(_("Add new")), "", wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemAdd);
 
-  m_menuItemDelete =
-      new wxMenuItem(m_menuLink, ID_TRK_MENU_DELETE, wxString(_("Delete")),
-                     wxEmptyString, wxITEM_NORMAL);
+  m_menuItemDelete = new wxMenuItem(m_menuLink, ID_TRK_MENU_DELETE,
+                                    wxString(_("Delete")), "", wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemDelete);
 
   m_hyperlink1->Connect(
@@ -1203,7 +1191,7 @@ bool TrackPropDlg::UpdateProperties() {
 
   m_cbShow->SetValue(m_pTrack->IsVisible());
 
-  if (m_pTrack->m_Colour == wxEmptyString)
+  if (m_pTrack->m_Colour == "")
     m_cColor->Select(0);
   else {
     for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
@@ -1481,8 +1469,7 @@ void TrackPropDlg::OnToRouteBtnClick(wxCommandEvent& event) {
 void TrackPropDlg::OnExportBtnClick(wxCommandEvent& event) {
   wxString suggested_name = _("track");
   std::vector<Track*> list = {m_pTrack};
-  if (m_pTrack->GetName() != wxEmptyString)
-    suggested_name = m_pTrack->GetName();
+  if (m_pTrack->GetName() != "") suggested_name = m_pTrack->GetName();
   ExportGPXTracks(this, &list, suggested_name);
 }
 
@@ -1540,7 +1527,7 @@ void TrackPropDlg::OnDeleteLink(wxCommandEvent& event) {
     wxString Link = link->Link;
     wxString Descr = link->DescrText;
     if (Link == findurl &&
-        (Descr == findlabel || (Link == findlabel && Descr == wxEmptyString)))
+        (Descr == findlabel || (Link == findlabel && Descr == "")))
       nodeToDelete = it;
     else {
       wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
@@ -1583,8 +1570,7 @@ void TrackPropDlg::OnEditLink(wxCommandEvent& event) {
           wxString Link = link->Link;
           wxString Descr = link->DescrText;
           if (Link == findurl &&
-              (Descr == findlabel ||
-               (Link == findlabel && Descr == wxEmptyString))) {
+              (Descr == findlabel || (Link == findlabel && Descr == ""))) {
             link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
             link->DescrText =
                 LinkPropDlg->m_textCtrlLinkDescription->GetValue();
@@ -1609,14 +1595,13 @@ void TrackPropDlg::OnEditLink(wxCommandEvent& event) {
 
 void TrackPropDlg::OnAddLink(wxCommandEvent& event) {
   LinkPropImpl* LinkPropDlg = new LinkPropImpl(this);
-  LinkPropDlg->m_textCtrlLinkDescription->SetValue(wxEmptyString);
-  LinkPropDlg->m_textCtrlLinkUrl->SetValue(wxEmptyString);
+  LinkPropDlg->m_textCtrlLinkDescription->SetValue("");
+  LinkPropDlg->m_textCtrlLinkUrl->SetValue("");
   DimeControl(LinkPropDlg);
   LinkPropDlg->ShowWindowModalThenDo([this, LinkPropDlg](int retcode) {
     if (retcode == wxID_OK) {
       wxString desc = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
-      if (desc == wxEmptyString)
-        desc = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+      if (desc == "") desc = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
       wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
           m_scrolledWindowLinks, wxID_ANY, desc,
           LinkPropDlg->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition,
@@ -1635,7 +1620,7 @@ void TrackPropDlg::OnAddLink(wxCommandEvent& event) {
       Hyperlink* h = new Hyperlink();
       h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
       h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
-      h->LType = wxEmptyString;
+      h->LType = "";
       m_pTrack->m_TrackHyperlinkList->push_back(h);
     }
   });
@@ -1732,7 +1717,7 @@ bool TrackPropDlg::SaveChanges() {
       m_pTrack->m_TrackDescription = m_tDescription->GetValue();
     m_pTrack->SetVisible(m_cbShow->GetValue());
     if (m_cColor->GetSelection() == 0)
-      m_pTrack->m_Colour = wxEmptyString;
+      m_pTrack->m_Colour = "";
     else
       m_pTrack->m_Colour = ::GpxxColorNames[m_cColor->GetSelection() - 1];
     m_pTrack->m_style = (wxPenStyle)::StyleValues[m_cStyle->GetSelection()];
@@ -1818,12 +1803,12 @@ double OCPNTrackListCtrl::getStartPointLongitude() const {
 wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
 
-  if (item < 0 || item >= m_pTrack->GetnPoints()) return wxEmptyString;
+  if (item < 0 || item >= m_pTrack->GetnPoints()) return "";
 
   TrackPoint* this_point = m_pTrack->GetPoint(item);
   TrackPoint* prev_point = item > 0 ? m_pTrack->GetPoint(item - 1) : NULL;
 
-  if (!this_point) return wxEmptyString;
+  if (!this_point) return "";
 
   double gt_brg, gt_leg_dist;
   double slat, slon;

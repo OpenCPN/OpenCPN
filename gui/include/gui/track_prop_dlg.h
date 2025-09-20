@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Track Properties Dialog
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,46 +17,48 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __TRACKPROPDLG_H__
-#define __TRACKPROPDLG_H__
+/**
+ * \file
+ *
+ * Track Properties Dialog
+ */
 
-#include <wx/clipbrd.h>
+#ifndef TRACKPROPDLG_H_
+#define TRACKPROPDLG_H_
+
 #include <wx/artprov.h>
-#include <wx/xrc/xmlres.h>
-#include <wx/intl.h>
-#include <wx/string.h>
-#include <wx/stattext.h>
-#include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/colour.h>
-#include <wx/settings.h>
-#include <wx/textctrl.h>
-#include <wx/sizer.h>
+#include <wx/button.h>
 #include <wx/checkbox.h>
 #include <wx/choice.h>
 #include <wx/clipbrd.h>
+#include <wx/clipbrd.h>
 #include <wx/colour.h>
+#include <wx/colour.h>
+#include <wx/dialog.h>
+#include <wx/font.h>
 #include <wx/font.h>
 #include <wx/frame.h>
+#include <wx/gdicmn.h>
 #include <wx/gdicmn.h>
 #include <wx/hyperlink.h>
 #include <wx/icon.h>
 #include <wx/image.h>
 #include <wx/intl.h>
+#include <wx/intl.h>
 #include <wx/listctrl.h>
+#include <wx/notebook.h>
 #include <wx/panel.h>
 #include <wx/radiobut.h>
 #include <wx/scrolwin.h>
-#include <wx/button.h>
+#include <wx/settings.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
 #include <wx/tglbtn.h>
-#include <wx/notebook.h>
+#include <wx/xrc/xmlres.h>
 
-#if wxCHECK_VERSION(2, 9, 0)
-#include <wx/dialog.h>
-#else
-#include "scrollingdialog.h"
-#endif
-
+#include "model/track.h"
 #include "link_prop_dlg.h"
 
 #ifdef __WXOSX__
@@ -80,14 +76,7 @@
 class TrackPropDlg;                    // forward
 extern TrackPropDlg* pTrackPropDialog; /**< Global instance. */
 
-/*!
- * Forward declarations
- */
-
-class wxListCtrl;
-class OCPNTrackListCtrl;
-class Track;
-class TrackPoint;
+class OCPNTrackListCtrl;  // forward
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class TrackPropDlg
@@ -110,7 +99,7 @@ private:
   int m_nSelected;  // index of point selected in Properties dialog row
 
   bool IsThisTrackExtendable();
-  bool SaveChanges(void);
+  bool SaveChanges();
 
   HyperlinkList* m_pMyLinkList;
   void OnHyperLinkClick(wxHyperlinkEvent& event);
@@ -199,8 +188,8 @@ protected:
   void OnAddLink(wxCommandEvent& event);
   void OnEditLinkToggle(wxCommandEvent& event);
   void OnShowTimeTZ(wxCommandEvent& event);
-  void CreateControls(void);
-  void CreateControlsCompact(void);
+  void CreateControls();
+  void CreateControlsCompact();
 
 public:
   static TrackPropDlg* getInstance(
@@ -221,7 +210,7 @@ public:
   void InitializeList();
   Track* GetTrack() { return m_pTrack; }
 
-  void RecalculateSize(void);
+  void RecalculateSize();
 
   Track* m_pTrack;
 
@@ -256,4 +245,4 @@ public:
   int m_LMT_Offset;
 };
 
-#endif  //__TRACKPROPDLG_H__
+#endif  // TRACKPROPDLG_H_
