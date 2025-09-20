@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Tide and currents window
  */
 
-#ifndef __TCWIN_H__
-#define __TCWIN_H__
+#ifndef TCWIN_H_
+#define TCWIN_H_
 
 #include <list>
 
@@ -38,9 +37,9 @@
 #include <wx/timer.h>
 #include <wx/list.h>
 
-class IDX_entry;
-class ChartCanvas;
-class RolloverWin;
+#include "chcanv.h"
+#include "idx_entry.h"
+#include "rollover_win.h"
 
 class TCWin : public wxFrame {
 public:
@@ -58,7 +57,7 @@ public:
   void OnCloseWindow(wxCloseEvent &event);
   void TimezoneOnChoice(wxCommandEvent &event);
 
-  void RePosition(void);
+  void RePosition();
 
   void RecalculateSize();
   void SetTimeFactors();

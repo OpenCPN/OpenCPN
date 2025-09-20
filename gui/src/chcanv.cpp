@@ -105,7 +105,7 @@
 #include "styles.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "thumbwin.h"
 #include "tide_time.h"
 #include "timers.h"
