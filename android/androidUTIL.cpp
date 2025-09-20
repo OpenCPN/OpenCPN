@@ -91,7 +91,7 @@
 #include "tc_win.h"
 #include "toolbar.h"
 #include "toolbar.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
 #endif

@@ -290,7 +290,7 @@ gui/include/gui/time_textbox.h
 gui/include/gui/toolbar.h
 gui/include/gui/track_gui.h
 gui/include/gui/track_printout.h
-gui/include/gui/TrackPropDlg.h
+gui/include/gui/track_prop_dlg.h
 gui/include/gui/track_printout.h
 gui/include/gui/udev_rule_mgr.h
 gui/include/gui/undo.h

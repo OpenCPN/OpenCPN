@@ -59,7 +59,7 @@
 #include "chartdb.h"
 #include "chartimg.h"
 #include "model/cutil.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"

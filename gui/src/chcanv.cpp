@@ -111,7 +111,7 @@
 #include "timers.h"
 #include "toolbar.h"
 #include "track_gui.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "undo.h"
 
 #include "s57_ocpn_utils.h"

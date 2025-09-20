@@ -145,7 +145,7 @@
 #include "tcmgr.h"
 #include "timers.h"
 #include "toolbar.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "waypointman_gui.h"
 #include "canvas_options.h"
 #include "udev_rule_mgr.h"
