@@ -867,7 +867,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/tc_data_factory.h
     ${GUI_HDR_DIR}/tc_data_source.h
-    ${GUI_HDR_DIR}/TCDS_Ascii_Harmonic.h
+    ${GUI_HDR_DIR}/tcds_ascii_harmonic.h
     ${GUI_HDR_DIR}/TCDS_Binary_Harmonic.h
     ${GUI_HDR_DIR}/TC_Error_Code.h
     ${GUI_HDR_DIR}/tcmgr.h
@@ -994,7 +994,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/svg_icons.cpp
     ${GUI_SRC_DIR}/tc_data_factory.cpp
     ${GUI_SRC_DIR}/tc_data_source.cpp
-    ${GUI_SRC_DIR}/TCDS_Ascii_Harmonic.cpp
+    ${GUI_SRC_DIR}/tcds_ascii_harmonic.cpp
     ${GUI_SRC_DIR}/TCDS_Binary_Harmonic.cpp
     ${GUI_SRC_DIR}/tcmgr.cpp
     ${GUI_SRC_DIR}/TCWin.cpp

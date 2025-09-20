@@ -278,7 +278,7 @@ gui/include/gui/styles.h
 gui/include/gui/svg_utils.h
 gui/include/gui/tc_data_factory.h
 gui/include/gui/tc_data_source.h
-gui/include/gui/TCDS_Ascii_Harmonic.h
+gui/include/gui/tcds_ascii_harmonic.h
 gui/include/gui/TCDS_Binary_Harmonic.h
 gui/include/gui/TC_Error_Code.h
 gui/include/gui/tcmgr.h
