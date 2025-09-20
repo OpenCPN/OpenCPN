@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,23 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __TCDATASOURCE_H__
-#define __TCDATASOURCE_H__
+/**
+ * \file
+ *
+ * Tide datasource container on top of TCDataSource
+ */
+
+#ifndef TCDATASOURCE_H_
+#define TCDATASOURCE_H_
 
 #include <wx/string.h>
 #include <wx/dynarray.h>
 
 #include "TC_Error_Code.h"
-
-class IDX_entry;
-class TCDataFactory;
-class TCDS_Ascii_Harmonic;
-class TCDS_Binary_Harmonic;
+#include "idx_entry.h"
+#include "tc_data_factory.h"
+#include "TCDS_Ascii_Harmonic.h"
+#include "TCDS_Binary_Harmonic.h"
 
 class TCDataSource {
 public:
@@ -41,7 +40,7 @@ public:
 
   TC_Error_Code LoadData(const wxString &data_file_path);
 
-  int GetMaxIndex(void);
+  int GetMaxIndex();
   IDX_entry *GetIndexEntry(int n_index);
   TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
 
