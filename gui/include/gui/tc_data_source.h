@@ -30,7 +30,7 @@
 #include "TC_Error_Code.h"
 #include "idx_entry.h"
 #include "tc_data_factory.h"
-#include "TCDS_Ascii_Harmonic.h"
+#include "tcds_ascii_harmonic.h"
 #include "TCDS_Binary_Harmonic.h"
 
 class TCDataSource {

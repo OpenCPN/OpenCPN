@@ -26,7 +26,7 @@
 
 #include <math.h>
 
-#include "TCDS_Ascii_Harmonic.h"
+#include "tcds_ascii_harmonic.h"
 
 #ifndef M_PI
 #define M_PI ((2) * (acos(0.0)))

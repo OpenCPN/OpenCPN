@@ -22,14 +22,14 @@
  * TCDataSource
  */
 
-#include <wx/arrimpl.cpp>
 #include <wx/log.h>
 #include <wx/filename.h>
 
 #include "tc_data_source.h"
-#include "TCDS_Ascii_Harmonic.h"
+#include "tcds_ascii_harmonic.h"
 #include "TCDS_Binary_Harmonic.h"
 
+#include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfTCDSources);
 
 TCDataSource::TCDataSource() {
