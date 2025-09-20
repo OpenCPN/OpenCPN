@@ -69,6 +69,7 @@ class MyFrame;             // circular
 class NotificationsList;   // circular
 class NotificationButton;  // circular
 class TCWin;               // circular
+class Undo;                // circular
 
 class ChartCanvas;                    // forward
 extern ChartCanvas *g_overlayCanvas;  ///< Global instance
