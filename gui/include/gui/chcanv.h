@@ -68,6 +68,7 @@ class CanvasMenuHandler;   // circular
 class MyFrame;             // circular
 class NotificationsList;   // circular
 class NotificationButton;  // circular
+class Undo;                // circular
 
 class ChartCanvas;                    // forward
 extern ChartCanvas *g_overlayCanvas;  ///< Global instance
