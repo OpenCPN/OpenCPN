@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: altitude.cpp, v0.1 $
+ * $Id: altitude.cpp, v0.2 $
  *
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin, display altitude trace
@@ -7,6 +7,7 @@
  *
  * Comment:  since not every vessel is always on sea level, I found it
  *           sometimes intersting to observe the GPS altitude information.
+ *           It can be extracted from the GGA nmea message.
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -220,19 +221,17 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
 
-  // evaluate buffered data to know its range
+  // evaluate buffered data to determine its range
   double MaxAltitude = m_ArrayAltitude[0];
   double MinAltitude = m_ArrayAltitude[0];
   for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
-    if (m_ArrayAltitude[idx] > MaxAltitude)
-      MaxAltitude = m_ArrayAltitude[idx];
-    else if (m_ArrayAltitude[idx] < MinAltitude)
-      MinAltitude = m_ArrayAltitude[idx];
+    MaxAltitude = std::max(MaxAltitude, m_ArrayAltitude[idx]);
+    MinAltitude = std::min(MinAltitude, m_ArrayAltitude[idx]);
   }
 
   // calculate 1st and 2nd Moments
   double varAltitude =
-      m_sum2Altitude / ALTITUDE_RECORD_COUNT;  // biased estimator, avoid / N-1
+      m_sum2Altitude / (ALTITUDE_RECORD_COUNT-1);  // estimator for variance
   varAltitude -= m_meanAltitude * m_meanAltitude;
   if (varAltitude < 0.0) varAltitude = 0.0;  // avoid nan when calling sqrt().
 
