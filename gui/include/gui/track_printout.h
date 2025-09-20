@@ -39,7 +39,7 @@
 #include "navutil.h"
 #include "printout_base.h"
 #include "printtable.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "ui_utils.h"
 
 enum class TrackPrintOptions {

@@ -164,7 +164,7 @@
 #include "styles.h"
 #include "tcmgr.h"
 #include "thumbwin.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "udev_rule_mgr.h"
 #include "wiz_ui.h"
 

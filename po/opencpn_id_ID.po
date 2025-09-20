@@ -2632,7 +2632,7 @@ msgstr ""
 msgid "Print Track Speed"
 msgstr ""
 
-#: gui/include/gui/TrackPropDlg.h:206 gui/src/TrackPropDlg.cpp:1254
+#: gui/include/gui/track_prop_dlg.h:206 gui/src/TrackPropDlg.cpp:1254
 #: gui/src/TrackPropDlg.cpp:1268
 msgid "Track properties"
 msgstr "Melacak properti"

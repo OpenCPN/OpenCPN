@@ -75,7 +75,7 @@
 #include "send_to_peer_dlg.h"
 #include "styles.h"
 #include "model/svg_utils.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
