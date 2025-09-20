@@ -7,7 +7,7 @@
 #include <wx/sizer.h>
 #include <wx/dcbuffer.h>
 
-#include "TCWin.h"
+#include "tc_win.h"
 #include "timers.h"
 #include "chcanv.h"
 #include "tide_time.h"

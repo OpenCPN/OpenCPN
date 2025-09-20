@@ -282,7 +282,7 @@ gui/include/gui/tcds_ascii_harmonic.h
 gui/include/gui/tcds_binary_harmonic.h
 gui/include/gui/tc_error_code.h
 gui/include/gui/tcmgr.h
-gui/include/gui/TCWin.h
+gui/include/gui/tc_win.h
 gui/include/gui/thumbwin.h
 gui/include/gui/tide_time.h
 gui/include/gui/timers.h

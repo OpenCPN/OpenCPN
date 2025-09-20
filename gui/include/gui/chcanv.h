@@ -61,7 +61,7 @@
 #include "quilt.h"
 #include "rollover_win.h"
 #include "s57_sector.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "undo.h"
 
 class CanvasMenuHandler;   // circular

@@ -88,7 +88,7 @@
 #include "s52s57.h"
 #include "s52utils.h"
 #include "s57_query_dlg.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "toolbar.h"
 #include "toolbar.h"
 #include "TrackPropDlg.h"

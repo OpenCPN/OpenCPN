@@ -48,7 +48,7 @@
 #include <wx/listimpl.cpp>
 
 #include "chcanv.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "model/geodesic.h"
 #include "styles.h"
 #include "model/routeman.h"
