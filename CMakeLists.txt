@@ -869,7 +869,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/tc_data_source.h
     ${GUI_HDR_DIR}/tcds_ascii_harmonic.h
     ${GUI_HDR_DIR}/tcds_binary_harmonic.h
-    ${GUI_HDR_DIR}/TC_Error_Code.h
+    ${GUI_HDR_DIR}/tc_error_code.h
     ${GUI_HDR_DIR}/tcmgr.h
     ${GUI_HDR_DIR}/TCWin.h
     ${GUI_HDR_DIR}/thumbwin.h

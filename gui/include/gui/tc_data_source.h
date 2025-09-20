@@ -27,7 +27,7 @@
 #include <wx/string.h>
 #include <wx/dynarray.h>
 
-#include "TC_Error_Code.h"
+#include "tc_error_code.h"
 #include "idx_entry.h"
 #include "tc_data_factory.h"
 #include "tcds_ascii_harmonic.h"
