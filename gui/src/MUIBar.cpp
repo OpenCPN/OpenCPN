@@ -39,8 +39,8 @@
 #include "MUIBar.h"
 #include "OCPNPlatform.h"
 #include "canvas_options.h"
-#include "DetailSlider.h"
-#include "GoToPositionDialog.h"
+#include "detail_slider.h"
+#include "go_to_position_dlg.h"
 #include "styles.h"
 #include "navutil.h"
 #include "model/svg_utils.h"
@@ -50,7 +50,7 @@
 #include "pluginmanager.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __OCPN__ANDROID__

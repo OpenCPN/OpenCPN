@@ -32,7 +32,7 @@
 
 #include "chcanv.h"
 #include "compass.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "ocpn_frame.h"  // FIXME (dave) colorschemes
 #include "styles.h"
 

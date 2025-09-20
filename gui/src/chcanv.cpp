@@ -71,14 +71,13 @@
 #include "cm93.h"  // for chart outline draw
 #include "compass.h"
 #include "concanv.h"
-#include "DetailSlider.h"
-#include "displays.h"
+#include "detail_slider.h"
 #include "hotkeys_dlg.h"
-#include "FontMgr.h"
-#include "glTextureDescriptor.h"
-#include "GoToPositionDialog.h"
+#include "font_mgr.h"
+#include "gl_texture_descr.h"
+#include "go_to_position_dlg.h"
 #include "gshhs.h"
-#include "iENCToolbar.h"
+#include "ienc_toolbar.h"
 #include "kml.h"
 #include "line_clip.h"
 #include "MarkInfo.h"
@@ -122,7 +121,7 @@
 #endif
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "notification_manager_gui.h"
 #include "model/notification_manager.h"
 #endif
@@ -171,7 +170,6 @@ extern wxColor GetDimColor(wxColor c);   // library dependence
 
 static bool g_bSmoothRecenter = true;
 static bool bDrawCurrentValues;
-
 /**
  * The current mouse X position in physical pixels relative to the active
  * canvas.
@@ -747,7 +745,7 @@ void ChartCanvas::SetupGridFont() {
   int gridFontSize = wxMax(10, dFont->GetPointSize() * dpi_factor);
   m_pgridFont = FontMgr::Get().FindOrCreateFont(
       gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
-      FALSE, wxString(_T ( "Arial" )));
+      FALSE, wxString("Arial"));
 }
 
 void ChartCanvas::RebuildCursors() {
@@ -5732,24 +5730,23 @@ wxColour ChartCanvas::PredColor() {
   //  RAdjust predictor color change on LOW_ACCURACY ship state in interests of
   //  visibility.
   if (SHIP_NORMAL == m_ownship_state)
-    return GetGlobalColor(_T ( "URED" ));
+    return GetGlobalColor("URED");
 
   else if (SHIP_LOWACCURACY == m_ownship_state)
-    return GetGlobalColor(_T ( "YELO1" ));
+    return GetGlobalColor("YELO1");
 
-  return GetGlobalColor(_T ( "NODTA" ));
+  return GetGlobalColor("NODTA");
 }
 
 wxColour ChartCanvas::ShipColor() {
   //      Establish ship color
   //     It changes color based on GPS and Chart accuracy/availability
 
-  if (SHIP_NORMAL != m_ownship_state) return GetGlobalColor(_T ( "GREY1" ));
+  if (SHIP_NORMAL != m_ownship_state) return GetGlobalColor("GREY1");
 
-  if (SHIP_LOWACCURACY == m_ownship_state)
-    return GetGlobalColor(_T ( "YELO1" ));
+  if (SHIP_LOWACCURACY == m_ownship_state) return GetGlobalColor("YELO1");
 
-  return GetGlobalColor(_T ( "URED" ));  // default is OK
+  return GetGlobalColor("URED");  // default is OK
 }
 
 void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
@@ -5759,7 +5756,7 @@ void ChartCanvas::ShipDrawLargeScale(ocpnDC &dc,
   if (SHIP_NORMAL == m_ownship_state)
     dc.SetBrush(wxBrush(ShipColor(), wxBRUSHSTYLE_TRANSPARENT));
   else
-    dc.SetBrush(wxBrush(GetGlobalColor(_T ( "YELO1" ))));
+    dc.SetBrush(wxBrush(GetGlobalColor("YELO1")));
 
   dc.DrawEllipse(lShipMidPoint.m_x - 10, lShipMidPoint.m_y - 10, 20, 20);
   dc.DrawEllipse(lShipMidPoint.m_x - 6, lShipMidPoint.m_y - 6, 12, 12);
@@ -5876,7 +5873,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
         dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
 
-        wxPen ppPen3(GetGlobalColor(_T ( "UBLCK" )), wxMax(1, line_width),
+        wxPen ppPen3(GetGlobalColor("UBLCK"), wxMax(1, line_width),
                      (wxPenStyle)g_cog_predictor_style);
         if (g_cog_predictor_style == (wxPenStyle)wxUSER_DASH)
           ppPen3.SetDashes(2, dash_long3);
@@ -5916,7 +5913,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         }
 
         // Render COG endpoint icon
-        wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), g_cog_predictor_width / 2,
+        wxPen ppPen1(GetGlobalColor("UBLCK"), g_cog_predictor_width / 2,
                      wxPENSTYLE_SOLID);
         dc.SetPen(ppPen1);
         dc.SetBrush(wxBrush(cPred));
@@ -5954,7 +5951,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
     wxPen ppPen1(cPred, g_cog_predictor_width / 3, wxPENSTYLE_SOLID);
     dc.SetPen(ppPen1);
-    dc.SetBrush(wxBrush(GetGlobalColor(_T ( "GREY2" ))));
+    dc.SetBrush(wxBrush(GetGlobalColor("GREY2")));
 
     if (g_ownship_HDTpredictor_endmarker) {
       double nominal_circle_size_pixels = wxMax(
@@ -6208,7 +6205,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
             ownship_icon[i].y = (int)(py) + lShipMidPoint.m_y;
           }
 
-          wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
+          wxPen ppPen1(GetGlobalColor("UBLCK"), 1, wxPENSTYLE_SOLID);
           dc.SetPen(ppPen1);
           dc.SetBrush(wxBrush(ShipColor()));
 
@@ -6227,8 +6224,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
         int circle_rad = 3;
         if (m_pos_image_user) circle_rad = 1;
 
-        dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
-        dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
+        dc.SetPen(wxPen(GetGlobalColor("UBLCK"), 1));
+        dc.SetBrush(wxBrush(GetGlobalColor("UIBCK")));
         dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, circle_rad);
       } else {  // Fixed bitmap icon.
         /* non opengl, or suboptimal opengl via ocpndc: */
@@ -6263,8 +6260,8 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
         int circle_rad = 3;
         if (m_pos_image_user) circle_rad = 1;
 
-        dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
-        dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
+        dc.SetPen(wxPen(GetGlobalColor("UBLCK"), 1));
+        dc.SetBrush(wxBrush(GetGlobalColor("UIBCK")));
         dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, circle_rad);
 
         // Maintain dirty box,, missing in __WXMSW__ library
@@ -6384,11 +6381,11 @@ void ChartCanvas::GridDraw(ocpnDC &dc) {
   float dlon;
   float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
   wxCoord w, h;
-  wxPen GridPen(GetGlobalColor(_T ( "SNDG1" )), 1, wxPENSTYLE_SOLID);
+  wxPen GridPen(GetGlobalColor("SNDG1"), 1, wxPENSTYLE_SOLID);
   dc.SetPen(GridPen);
   if (!m_pgridFont) SetupGridFont();
   dc.SetFont(*m_pgridFont);
-  dc.SetTextForeground(GetGlobalColor(_T ( "SNDG1" )));
+  dc.SetTextForeground(GetGlobalColor("SNDG1"));
 
   w = m_canvas_width;
   h = m_canvas_height;
@@ -6487,14 +6484,14 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     {
       dist = 10.0;
       count = 5;
-      pen1 = wxPen(GetGlobalColor(_T ( "SNDG2" )), 3, wxPENSTYLE_SOLID);
-      pen2 = wxPen(GetGlobalColor(_T ( "SNDG1" )), 3, wxPENSTYLE_SOLID);
+      pen1 = wxPen(GetGlobalColor("SNDG2"), 3, wxPENSTYLE_SOLID);
+      pen2 = wxPen(GetGlobalColor("SNDG1"), 3, wxPENSTYLE_SOLID);
     } else  // Draw 1 mile scale as SCALEB10
     {
       dist = 1.0;
       count = 10;
-      pen1 = wxPen(GetGlobalColor(_T ( "SCLBR" )), 3, wxPENSTYLE_SOLID);
-      pen2 = wxPen(GetGlobalColor(_T ( "CHGRD" )), 3, wxPENSTYLE_SOLID);
+      pen1 = wxPen(GetGlobalColor("SCLBR"), 3, wxPENSTYLE_SOLID);
+      pen2 = wxPen(GetGlobalColor("CHGRD"), 3, wxPENSTYLE_SOLID);
     }
 
     GetCanvasPixPoint(x_origin, y_origin, blat, blon);
@@ -6551,7 +6548,7 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
       dist /= 2;
 
     wxString s = wxString::Format("%g ", dist) + getUsrDistanceUnit(unit);
-    wxPen pen1 = wxPen(GetGlobalColor(_T ( "UBLCK" )), 3, wxPENSTYLE_SOLID);
+    wxPen pen1 = wxPen(GetGlobalColor("UBLCK"), 3, wxPENSTYLE_SOLID);
     double rotation = -VPoint.rotation;
 
     ll_gc_ll(blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit),
@@ -6571,7 +6568,7 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
 
     if (!m_pgridFont) SetupGridFont();
     dc.SetFont(*m_pgridFont);
-    dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
+    dc.SetTextForeground(GetGlobalColor("UBLCK"));
     int w, h;
     dc.GetTextExtent(s, &w, &h);
     double dpi_factor = 1. / g_BasePlatform->GetDisplayDIPMult(this);
@@ -8696,9 +8693,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           r_rband.y = y;
         }
 
-        RoutePoint *pMousePoint = new RoutePoint(m_cursor_lat, m_cursor_lon,
-                                                 wxString(_T ( "circle" )),
-                                                 wxEmptyString, wxEmptyString);
+        RoutePoint *pMousePoint =
+            new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
+                           wxEmptyString, wxEmptyString);
         pMousePoint->m_bShowName = false;
         pMousePoint->SetShowWaypointRangeRings(false);
 
@@ -9271,9 +9268,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         }
 
         if (m_pMeasureRoute) {
-          RoutePoint *pMousePoint = new RoutePoint(
-              m_cursor_lat, m_cursor_lon, wxString(_T ( "circle" )),
-              wxEmptyString, wxEmptyString);
+          RoutePoint *pMousePoint =
+              new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
+                             wxEmptyString, wxEmptyString);
           pMousePoint->m_bShowName = false;
 
           m_pMeasureRoute->AddPoint(pMousePoint);
@@ -10471,14 +10468,14 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
 
     for (std::vector<Ais8_001_22 *>::iterator an = area_notices.begin();
          an != area_notices.end(); ++an) {
-      objText << _T( "<b>AIS Area Notice:</b> " );
+      objText << "<b>AIS Area Notice:</b> ";
       objText << ais8_001_22_notice_names[(*an)->notice_type];
       for (std::vector<Ais8_001_22_SubArea>::iterator sa =
                (*an)->sub_areas.begin();
            sa != (*an)->sub_areas.end(); ++sa)
         if (!sa->text.empty()) objText << sa->text;
-      objText << _T( "<br>expires: " ) << (*an)->expiry_time.Format();
-      objText << _T( "<hr noshade>" );
+      objText << "<br>expires: " << (*an)->expiry_time.Format();
+      objText << "<hr noshade>";
     }
 
     if (Chs57)
@@ -11139,13 +11136,13 @@ void ChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
   int nPly = ChartData->GetDBPlyPoint(dbIndex, 0, &plylat, &plylon);
 
   if (ChartData->GetDBChartType(dbIndex) == CHART_TYPE_CM93)
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "YELO1" )), 1, wxPENSTYLE_SOLID));
+    dc.SetPen(wxPen(GetGlobalColor("YELO1"), 1, wxPENSTYLE_SOLID));
 
   else if (ChartData->GetDBChartFamily(dbIndex) == CHART_FAMILY_VECTOR)
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "UINFG" )), 1, wxPENSTYLE_SOLID));
+    dc.SetPen(wxPen(GetGlobalColor("UINFG"), 1, wxPENSTYLE_SOLID));
 
   else
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "UINFR" )), 1, wxPENSTYLE_SOLID));
+    dc.SetPen(wxPen(GetGlobalColor("UINFR"), 1, wxPENSTYLE_SOLID));
 
   //        Are there any aux ply entries?
   int nAuxPlyEntries = ChartData->GetnAuxPlyEntries(dbIndex);
@@ -11322,10 +11319,10 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   yp = ref_point.y;
   yp += hilite_offset;
 
-  AlphaBlending(dc, xp, yp, w, h, 0.0, GetGlobalColor(_T ( "YELO1" )), 172);
+  AlphaBlending(dc, xp, yp, w, h, 0.0, GetGlobalColor("YELO1"), 172);
 
-  dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" ))));
-  dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
+  dc.SetPen(wxPen(GetGlobalColor("UBLCK")));
+  dc.SetTextForeground(GetGlobalColor("UBLCK"));
 
   dc.DrawText(first, xp, yp);
   if (second.Len()) dc.DrawText(second, xp, yp + h1);
@@ -13029,8 +13026,8 @@ void ChartCanvas::DrawAnchorWatchPoints(ocpnDC &dc) {
                         &lAnchorPoint2);
     }
 
-    wxPen ppPeng(GetGlobalColor(_T ( "UGREN" )), 2);
-    wxPen ppPenr(GetGlobalColor(_T ( "URED" )), 2);
+    wxPen ppPeng(GetGlobalColor("UGREN"), 2);
+    wxPen ppPenr(GetGlobalColor("URED"), 2);
 
     wxBrush *ppBrush = wxTheBrushList->FindOrCreateBrush(
         wxColour(0, 0, 0), wxBRUSHSTYLE_TRANSPARENT);
@@ -13115,23 +13112,19 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
   if (cur_time) this_now = wxDateTime::Now();
   time_t t_this_now = this_now.GetTicks();
 
-  wxPen *pblack_pen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T ( "UINFD" )), 1, wxPENSTYLE_SOLID);
+  wxPen *pblack_pen = wxThePenList->FindOrCreatePen(GetGlobalColor("UINFD"), 1,
+                                                    wxPENSTYLE_SOLID);
   wxPen *pyelo_pen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(cur_time ? _T ( "YELO1" ) : _T ( "YELO2" )), 1,
-      wxPENSTYLE_SOLID);
+      GetGlobalColor(cur_time ? "YELO1" : "YELO2"), 1, wxPENSTYLE_SOLID);
   wxPen *pblue_pen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(cur_time ? _T ( "BLUE2" ) : _T ( "BLUE3" )), 1,
-      wxPENSTYLE_SOLID);
+      GetGlobalColor(cur_time ? "BLUE2" : "BLUE3"), 1, wxPENSTYLE_SOLID);
 
   wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T ( "GREEN1" )), wxBRUSHSTYLE_SOLID);
+      GetGlobalColor("GREEN1"), wxBRUSHSTYLE_SOLID);
   wxBrush *pblue_brush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(cur_time ? _T ( "BLUE2" ) : _T ( "BLUE3" )),
-      wxBRUSHSTYLE_SOLID);
+      GetGlobalColor(cur_time ? "BLUE2" : "BLUE3"), wxBRUSHSTYLE_SOLID);
   wxBrush *pyelo_brush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(cur_time ? _T ( "YELO1" ) : _T ( "YELO2" )),
-      wxBRUSHSTYLE_SOLID);
+      GetGlobalColor(cur_time ? "YELO1" : "YELO2"), wxBRUSHSTYLE_SOLID);
 
   wxFont *dFont = FontMgr::Get().GetFont(_("ExtendedTideIcon"));
   dc.SetTextForeground(FontMgr::Get().GetFontColor(_("ExtendedTideIcon")));
@@ -13408,18 +13401,16 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
   double true_scale_display = floor(VPoint.chart_scale / 100.) * 100.;
   bDrawCurrentValues = true_scale_display < g_Show_Target_Name_Scale;
 
-  wxPen *pblack_pen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T ( "UINFD" )), 1, wxPENSTYLE_SOLID);
+  wxPen *pblack_pen = wxThePenList->FindOrCreatePen(GetGlobalColor("UINFD"), 1,
+                                                    wxPENSTYLE_SOLID);
   wxPen *porange_pen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(cur_time ? _T ( "UINFO" ) : _T ( "UINFB" )), 1,
-      wxPENSTYLE_SOLID);
+      GetGlobalColor(cur_time ? "UINFO" : "UINFB"), 1, wxPENSTYLE_SOLID);
   wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(cur_time ? _T ( "UINFO" ) : _T ( "UINFB" )),
-      wxBRUSHSTYLE_SOLID);
+      GetGlobalColor(cur_time ? "UINFO" : "UINFB"), wxBRUSHSTYLE_SOLID);
   wxBrush *pgray_brush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T ( "UIBDR" )), wxBRUSHSTYLE_SOLID);
+      GetGlobalColor("UIBDR"), wxBRUSHSTYLE_SOLID);
   wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T ( "UINFD" )), wxBRUSHSTYLE_SOLID);
+      GetGlobalColor("UINFD"), wxBRUSHSTYLE_SOLID);
 
   double skew_angle = GetVPRotation();
 
@@ -14897,7 +14888,7 @@ int InitScreenBrightness(void) {
   }
 #else
   //    Look for "xcalib" application
-  wxString cmd(_T ( "xcalib -version" ));
+  wxString cmd("xcalib -version");
 
   wxArrayString output;
   long r = wxExecute(cmd, output);
@@ -14997,8 +14988,8 @@ int SetScreenBrightness(int brightness) {
      int cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
      if (cmcap != CM_GAMMA_RAMP)
      {
-     wxLogMessage(_T("    Video hardware does not support brightness control by
-     gamma ramp adjustment.")); return false;
+     wxLogMessage("    Video hardware does not support brightness control by
+     gamma ramp adjustment."); return false;
      }
      */
 
@@ -15070,7 +15061,7 @@ int SetScreenBrightness(int brightness) {
   if (!CreateSimpleICCProfileFile(
           (const char *)temp_file_name.fn_str(), brightness * r_gamma_mult,
           brightness * g_gamma_mult, brightness * b_gamma_mult)) {
-    wxString cmd(_T ( "xcalib " ));
+    wxString cmd("xcalib ");
     cmd += temp_file_name;
 
     wxExecute(cmd, wxEXEC_ASYNC);

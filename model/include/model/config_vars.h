@@ -29,53 +29,6 @@
 #include <wx/config.h>
 #include <wx/string.h>
 
-extern bool g_bAISRolloverShowClass;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
-extern bool g_bAllowShipToActive;
-extern bool g_bAutoHideToolbar;
-extern bool g_bBasicMenus;
-extern bool g_bConfirmObjectDelete;
-extern bool g_bDebugCM93;
-extern bool g_bDebugOGL;
-extern bool g_benable_rotate;
-extern bool g_benableUDPNullHeader;
-extern bool g_bEnableZoomToCursor;
-extern bool g_bfilter_cogsog;
-extern bool g_bFullScreenQuilt;
-extern bool g_bGarminHostUpload;
-extern bool g_bInlandEcdis;
-extern bool g_bMagneticAPB;
-extern bool g_bOverruleScaMin;
-extern bool g_bPreserveScaleOnX;
-extern bool g_bresponsive;
-extern bool g_bRollover;  ///<  Enable/disable mouse rollover GUI effects
-extern bool g_bShowActiveRouteHighway;
-extern bool g_bShowChartBar;
-extern bool g_bShowCompassWin;
-extern bool g_bShowLiveETA;
-extern bool g_bShowMag;
-extern bool g_bShowMenuBar;
-extern bool g_bShowRouteTotal;
-extern bool g_bShowShipToActive;
-extern bool g_bShowTrackPointTime;
-extern bool g_bShowTrue;
-extern bool g_bShowWptName;
-extern bool g_bsimplifiedScalebar;
-extern bool g_bskew_comp;
-extern bool g_bsmoothpanzoom;
-extern bool g_bSpaceDropMark;
-extern bool g_btenhertz;
-extern bool g_btouch;
-extern bool g_bTrackDaily;
-extern bool g_bUserIconsFirst;
-extern bool g_bUseWptScaMin;
-extern bool g_bWayPointPreventDragging;
-extern bool g_bWplUsePosition;
-extern bool g_enable_root_menu_debug;
-extern bool g_persist_active_route;
-extern bool g_useMUI;
-
 extern bool g_always_send_rmb_rmc;  // See extended docs below
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
@@ -83,19 +36,18 @@ extern bool g_bAISRolloverShowCPA;
 extern bool g_bAllowShipToActive;
 extern bool g_bAutoAnchorMar;
 extern bool g_bAutoAnchorMark;
-extern bool g_bAutoAnchorMark;
 extern bool g_bAutoHideToolbar;
 extern bool g_bBasicMenus;
 extern bool g_bConfirmObjectDelete;
 extern bool g_bCourseUp;
 extern bool g_bDebugCM93;
+extern bool g_bDebugOGL;
 extern bool g_bDisplayGrid;  ///< Should  lat/lon grid be displayed ?
 extern bool g_bEmailCrashReport;
 extern bool g_benable_rotate;
 extern bool g_benableUDPNullHeader;
 extern bool g_bEnableZoomToCursor;
 extern bool g_bfilter_cogsog;
-extern bool g_bframemax;
 extern bool g_bframemax;
 extern bool g_bFullscreen;
 extern bool g_bFullScreenQuilt;
@@ -106,38 +58,40 @@ extern bool g_bHighliteTracks;
 extern bool g_bInlandEcdis;
 extern bool g_bLookAhead;
 extern bool g_bMagneticAPB;
+extern bool g_bNavAidRadarRingsShown;
 extern bool g_bopengl;
 extern bool g_bOverruleScaMin;
 extern bool g_bPermanentMOBIcon;
 extern bool g_bPlayShipsBell;
 extern bool g_bPlayShipsBells;
 extern bool g_bPreserveScaleOnX;
-extern bool g_bPreserveScaleOnX;
 extern bool g_bQuiltEnable;
 extern bool g_bQuiltStart;  // Not used
 extern bool g_bresponsive;
+extern bool g_bRollover;  ///<  Enable/disable mouse rollover GUI effects
 extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowChartBar;
 extern bool g_bShowCompassWin;
 extern bool g_bShowDepthUnits;
 extern bool g_bShowDetailSlider;
-extern bool g_bShowDetailSlider;
 extern bool g_bShowLayers;
-extern bool g_bShowLiveETA;
 extern bool g_bShowLiveETA;
 extern bool g_bShowMag;
 extern bool g_bShowMenuBar;
 extern bool g_bShowOutlines;
 extern bool g_bShowRouteTotal;
+extern bool g_bShowShipToActive;
 extern bool g_bShowStatusBar;
+extern bool g_bShowTrackPointTime;
 extern bool g_bShowTrue;
 extern bool g_bShowWptName;
 extern bool g_bsimplifiedScalebar;
 extern bool g_bskew_comp;
-extern bool g_bskew_comp;
+extern bool g_bsmoothpanzoom;
 extern bool g_bsmoothpanzoom;  // see extended docs below
 extern bool g_bSoftwareGL;
 extern bool g_bSpaceDropMark;
+extern bool g_btenhertz;
 extern bool g_btouch;
 extern bool g_bTrackDaily;
 extern bool g_bUIexpert;
@@ -148,35 +102,30 @@ extern bool g_bWayPointPreventDragging;
 extern bool g_bWplUsePosition;
 extern bool g_config_display_size_manual;
 extern bool g_enable_root_menu_debug;
+extern bool g_fog_overzoom;
 extern bool g_own_ship_sog_cog_calc;
+extern bool g_oz_vector_scale;
 extern bool g_persist_active_route;
 extern bool g_useMUI;
 extern bool s_bSetSystemTime;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;
-extern double g_defaultBoatSpeed;
 extern double g_display_size_mm;
 extern double g_display_size_mm;  ///< Physical display width (mm)
 extern double g_mouse_zoom_sensitivity;
 extern double g_n_arrival_circle_radius;
 extern double g_n_gps_antenna_offset_x;
-extern double g_n_gps_antenna_offset_x;
-extern double g_n_gps_antenna_offset_y;
 extern double g_n_gps_antenna_offset_y;
 extern double g_n_ownship_beam_meters;
-extern double g_n_ownship_beam_meters;
 extern double g_n_ownship_length_meters;
-extern double g_n_ownship_length_meters;
+extern double g_overzoom_emphasis_base;
 extern double g_ownship_HDTpredictor_miles;
-extern double g_ownship_HDTpredictor_miles;
-extern double g_ownship_predictor_minutes;
 extern double g_ownship_predictor_minutes;
 extern double g_PlanSpeed;
 extern double g_plus_minus_zoom_factor;
 extern double g_TrackDeltaDistance;
 extern double g_TrackIntervalSeconds;
-extern double g_UserVar;
 extern double g_UserVar;
 
 extern float g_fNavAidRadarRingsStep;
@@ -185,6 +134,7 @@ extern float g_GLMinSymbolLineWidth;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
 extern float g_ShipScaleFactorExp;
+extern float g_fNavAidRadarRingsStep;
 
 extern int g_ais_cog_predictor_width;
 extern int g_ChartScaleFactor;
@@ -232,6 +182,7 @@ extern int g_nAWMax;
 extern int g_nbrightness;
 extern int g_nCacheLimit;
 extern int g_nCOMPortCheck;
+extern int g_nCPUCount;
 extern int g_nDepthUnitDisplay;
 extern int g_netmask_bits;
 extern int g_nframewin_posx;
@@ -275,43 +226,56 @@ extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;
+extern wxString g_CmdSoundString;
+extern wxString g_cog_predictor_color;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
+extern wxString g_datetime_format;
 extern wxString g_datetime_format;  // See extended docs below
 extern wxString g_default_routepoint_icon;
 extern wxString g_default_wp_icon;
 extern wxString g_GPS_Ident;
 extern wxString g_gpx_path;
 extern wxString g_hostname;
-extern wxString g_SART_sound_file;
-extern wxString g_TalkerIdText;
-extern wxString g_winPluginDir;  // Base plugin directory on Windows.
-extern wxString gWorldMapLocation;
-extern wxString gWorldShapefileLocation;
-extern wxString g_uploadConnection;
-extern wxString g_cog_predictor_color;
-extern wxString g_ownship_HDTpredictor_color;
-extern wxString g_CmdSoundString;
-extern wxString g_ObjQFileExt;
-extern wxString g_toolbarConfig;
 extern wxString g_locale;
 extern wxString g_localeOverride;
+extern wxString g_ObjQFileExt;
+extern wxString g_ownship_HDTpredictor_color;
+extern wxString g_SART_sound_file;
+extern wxString g_TalkerIdText;
 extern wxString g_TCData_Dir;
 extern wxString g_toolbarConfig;
 extern wxString g_uiStyle;  // Not used
 extern wxString g_uploadConnection;
 extern wxString g_UserPresLibData;
+extern wxString g_winPluginDir;  // Base plugin directory on Windows.
 extern wxString g_winPluginDir;  ///< Base plugin directory on Windows.
 extern wxString gWorldMapLocation;
 extern wxString gWorldShapefileLocation;
 
-/** g_config_display_size_mm:  Size of pysical screen in millimeters. */
+/** Size of pysical screen in millimeters. */
 extern std::vector<size_t> g_config_display_size_mm;
-
-extern unsigned g_canvasConfig;
 
 wxConfigBase* TheBaseConfig();
 void InitBaseConfig(wxConfigBase* cfg);
+
+/**
+ * \var g_bsmoothpanzoom
+ *
+ * Controls how the chart panning and zooming smoothing is done during user
+ * interactions.
+ *
+ * When enabled (true):
+ * - Chart panning has inertia, with smooth acceleration and deceleration
+ * - Mouse wheel zooming is smoothly animated between zoom levels
+ * - Chart overscaled rendering is optimized for smooth transitions
+ * - Chart quilting transitions may be smoother
+ *
+ * When disabled (false):
+ * - Chart panning stops immediately when mouse is released
+ * - Mouse wheel zooming jumps directly between zoom levels without animation
+ * - Rendering may be slightly faster but less visually polished
+ */
 
 /**
  * \var g_bsmoothpanzoom

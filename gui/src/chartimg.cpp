@@ -1569,8 +1569,8 @@ ChartBaseBSB::ChartBaseBSB() {
 
 #ifdef OCPN_USE_CONFIG
   wxFileConfig *pfc = (wxFileConfig *)pConfig;
-  pfc->SetPath(_T ( "/Settings" ));
-  pfc->Read(_T ( "DebugBSBImg" ), &m_b_cdebug, 0);
+  pfc->SetPath("/Settings");
+  pfc->Read("DebugBSBImg", &m_b_cdebug, 0);
 #endif
 }
 

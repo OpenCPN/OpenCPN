@@ -80,6 +80,7 @@
 #include "model/comm_drv_factory.h"
 #include "model/comm_util.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
 #include "model/navutil_base.h"
@@ -95,9 +96,8 @@
 #include "cm93.h"
 #include "config_mgr.h"
 #include "connections_dlg.h"
-#include "displays.h"
 #include "dychart.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
@@ -116,7 +116,7 @@
 #include "waypointman_gui.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 extern GLuint g_raster_format;
 #endif
 

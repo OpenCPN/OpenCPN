@@ -39,7 +39,7 @@
 #include "model/routeman.h"
 
 #include "concanv.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
@@ -135,8 +135,8 @@ ConsoleCanvasWin::~ConsoleCanvasWin() { delete pCDI; }
 
 void ConsoleCanvasWin::SetColorScheme(ColorScheme cs) {
   pbackBrush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T("DILG1" /*UIBDR*/)), wxBRUSHSTYLE_SOLID);
-  SetBackgroundColour(GetGlobalColor(_T("DILG1" /*"UIBDR"*/)));
+      GetGlobalColor("DILG1" /*UIBDR*/), wxBRUSHSTYLE_SOLID);
+  SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
 
   if (g_bShowRouteTotal)
     pThisLegText->SetLabel(_("Route"));
@@ -145,7 +145,7 @@ void ConsoleCanvasWin::SetColorScheme(ColorScheme cs) {
 
   //  Also apply color scheme to all known children
 
-  pThisLegText->SetBackgroundColour(GetGlobalColor(_T("DILG1" /*"UIBDR"*/)));
+  pThisLegText->SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
 
   pXTE->SetColorScheme(cs);
   pBRG->SetColorScheme(cs);
@@ -540,8 +540,8 @@ ConsoleCanvasFrame::~ConsoleCanvasFrame() { delete pCDI; }
 
 void ConsoleCanvasFrame::SetColorScheme(ColorScheme cs) {
   pbackBrush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T("DILG1" /*UIBDR*/)), wxBRUSHSTYLE_SOLID);
-  SetBackgroundColour(GetGlobalColor(_T("DILG1" /*"UIBDR"*/)));
+      GetGlobalColor("DILG1" /*UIBDR*/), wxBRUSHSTYLE_SOLID);
+  SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
 
   if (g_bShowRouteTotal)
     pThisLegText->SetLabel(_("Route"));
@@ -550,7 +550,7 @@ void ConsoleCanvasFrame::SetColorScheme(ColorScheme cs) {
 
   //  Also apply color scheme to all known children
 
-  pThisLegText->SetBackgroundColour(GetGlobalColor(_T("DILG1" /*"UIBDR"*/)));
+  pThisLegText->SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
 
   pXTE->SetColorScheme(cs);
   pBRG->SetColorScheme(cs);

@@ -1,11 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Authors:  David Register
- *           Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2014 by David S. Register                               *
+ *   Copyright (C) 2014 Sean D'Epagnier
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement gl_chart_canvas.h -- OpenGL chart rendering canvas
  */
 
 // For compilers that support precompilation, includes "wx.h".
@@ -37,7 +35,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include <wx/arrimpl.cpp>
 #include <wx/brush.h>
 #include <wx/colour.h>
 #include <wx/dcmemory.h>
@@ -57,6 +54,8 @@
 #include <wx/utils.h>
 #include <wx/window.h>
 
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
 #include "model/route.h"
@@ -73,15 +72,16 @@
 #include "cm93.h"  // for chart outline draw
 #include "color_handler.h"
 #include "compass.h"
-#include "config.h"
 #include "emboss_data.h"
-#include "FontMgr.h"
-#include "glChartCanvas.h"
-#include "glTexCache.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
+#include "gl_tex_cache.h"
 #include "gshhs.h"
+#include "ienc_toolbar.h"
 #include "lz4.h"
 #include "mbtiles.h"
 #include "mipmap/mipmap.h"
+#include "MUIBar.h"
 #include "navutil.h"
 #include "OCPNPlatform.h"
 #include "piano.h"
@@ -92,15 +92,15 @@
 #include "route_point_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
+#include "s57_ocpn_utils.h"
+#include "shapefile_basemap.h"
 #include "tcmgr.h"
+#include "toolbar.h"
 #include "TexFont.h"
 #include "thumbwin.h"
 #include "toolbar.h"
 #include "track_gui.h"
-#include "MUIBar.h"
-#include "iENCToolbar.h"
-#include "shapefile_basemap.h"
-#include "s57_ocpn_utils.h"
+#include "viewport.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -122,6 +122,38 @@
 #define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
 #endif
 
+#ifdef __WXMSW__
+#define printf printf2
+int __cdecl printf2(const char *format, ...);
+#endif
+
+#if defined(__ANDROID__)
+#include "androidUTIL.h"
+#elif defined(__WXQT__) || defined(__WXGTK__) || defined(FLATPAK)
+#include <GL/glew.h>
+#endif
+
+#ifdef __ANDROID__
+//  arm gcc compiler has a lot of trouble passing doubles as function aruments.
+//  We don't really need double precision here, so fix with a (faster) macro.
+extern "C" void glOrthof(float left, float right, float bottom, float top,
+                         float near, float far);
+#define glOrtho(a, b, c, d, e, f) \
+  ;                               \
+  glOrthof(a, b, c, d, e, f);
+
+#endif
+
+#ifdef USE_ANDROID_GLES2
+#include <GLES2/gl2.h>
+#endif
+
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+#include "linmath.h"
+#include "shaders.h"
+#include "model/notification_manager.h"
+#endif
+
 #if defined(__UNIX__) && !defined(__WXOSX__)
 // high resolution stopwatch for profiling
 class OCPNStopWatch {
@@ -141,107 +173,19 @@ private:
 };
 #endif
 
-#ifdef __WXMSW__
-#define printf printf2
-int __cdecl printf2(const char *format, ...);
-#endif
-
-#if defined(__ANDROID__)
-#include "androidUTIL.h"
-#elif defined(__WXQT__) || defined(__WXGTK__) || defined(FLATPAK)
-#include <GL/glew.h>
-#endif
-
-#ifndef GL_ETC1_RGB8_OES
-#define GL_ETC1_RGB8_OES 0x8D64
-#endif
-
-#include "lz4.h"
-
-#ifdef __ANDROID__
-//  arm gcc compiler has a lot of trouble passing doubles as function aruments.
-//  We don't really need double precision here, so fix with a (faster) macro.
-extern "C" void glOrthof(float left, float right, float bottom, float top,
-                         float near, float far);
-#define glOrtho(a, b, c, d, e, f) \
-  ;                               \
-  glOrthof(a, b, c, d, e, f);
-
-#endif
-
-#include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#ifdef USE_ANDROID_GLES2
-#include <GLES2/gl2.h>
-#endif
-
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-#include "linmath.h"
-#include "shaders.h"
-#include "model/notification_manager.h"
-#endif
-
+// In ocpn_app, we dont want to include that
+// FIXME (leamas) Find a new home
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-extern s52plib *ps52plib;
-extern bool g_bopengl;
-extern bool g_bDebugOGL;
-extern bool g_bSoftwareGL;
-extern ocpnFloatingToolbarDialog *g_MainToolbar;
-extern iENCToolbar *g_iENCToolbar;
-extern bool g_bShowChartBar;
-extern glTextureManager *g_glTextureManager;
-extern bool b_inCompressAllCharts;
-extern bool g_bShowCompassWin;
+// extern GLenum g_texture_rectangle_format;
 
-extern GLenum g_texture_rectangle_format;
-
-extern int g_memCacheLimit;
-extern ColorScheme global_color_scheme;
-extern bool g_bquiting;
-extern ThumbWin *pthumbwin;
-extern int g_mipmap_max_level;
-
-extern int g_OwnShipIconType;
-
-extern ChartDB *ChartData;
-
-extern PlugInManager *g_pi_manager;
-
-extern RouteList *pRouteList;
-extern std::vector<Track *> g_TrackList;
-extern bool b_inCompressAllCharts;
-extern bool g_bGLexpert;
-extern bool g_bcompression_wait;
-extern float g_ShipScaleFactorExp;
-
-float g_GLMinCartographicLineWidth;
-
-extern bool g_fog_overzoom;
-extern double g_overzoom_emphasis_base;
-extern bool g_oz_vector_scale;
-extern TCMgr *ptcmgr;
-extern int g_nCPUCount;
-extern bool g_running;
-
-extern unsigned int g_canvasConfig;
-extern ChartCanvas *g_overlayCanvas;
-extern BasePlatform *g_BasePlatform;
-extern bool g_PrintingInProgress;
-extern bool g_bhide_depth_units;
-extern bool g_bhide_overzoom_flag;
-
-wxColor s_regionColor;
-extern ShapeBaseChartSet gShapeBasemap;
-
-extern ChartCanvas *g_focusCanvas;  ///< Global instance
+extern bool g_running;  ///< Android only
 
 //    For VBO(s)
-bool g_b_EnableVBO;
-bool g_b_needFinish;  // Need glFinish() call on each frame?
+static bool g_b_needFinish;  // Need glFinish() call on each frame?
 
+static wxColor s_regionColor;
+static float g_GLMinCartographicLineWidth;
 // MacOS has some missing parts:
 #ifndef APIENTRY
 #define APIENTRY
@@ -257,6 +201,9 @@ bool g_b_needFinish;  // Need glFinish() call on each frame?
 #define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
 #endif
 
+GLuint g_raster_format = GL_RGB;  ///< Global instance
+
+// OpenGL/GLES  bindings
 PFNGLGENFRAMEBUFFERSEXTPROC s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC s_glGenRenderbuffers;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC s_glFramebufferTexture2D;
@@ -286,45 +233,23 @@ typedef void(APIENTRYP PFNGLGETBUFFERPARAMETERIV)(GLenum target, GLenum value,
                                                   GLint *data);
 PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
-#include <wx/arrimpl.cpp>
-// WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
-
-GLuint g_raster_format = GL_RGB;
-long g_tex_mem_used;
-
-bool b_timeGL;
-wxStopWatch g_glstopwatch;
-double g_gl_ms_per_frame;
-
-int g_tile_size;
-int g_uncompressed_tile_size;
-
-extern wxProgressDialog *pprog;
-extern bool b_skipout;
-extern wxSize pprog_size;
-extern int pprog_count;
-extern int pprog_threads;
-
-// #if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't
-//  support vla */ const #endif extern int g_mipmap_max_level;
-int panx, pany;
-
-bool glChartCanvas::s_b_useScissorTest;
-bool glChartCanvas::s_b_useStencil;
-bool glChartCanvas::s_b_useStencilAP;
-bool glChartCanvas::s_b_useFBO;
+static bool b_timeGL;
+static int panx, pany;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 static int s_tess_vertex_idx;
 static int s_tess_vertex_idx_this;
 static int s_tess_buf_len;
 static GLfloat *s_tess_work_buf;
-GLenum s_tess_mode;
+static GLenum s_tess_mode;
 static int s_nvertex;
-static vec4 s_tess_color;
-ViewPort s_tessVP;
-static ocpnDC *s_pdc;
+static ViewPort s_tessVP;
 #endif
+
+bool glChartCanvas::s_b_useScissorTest;
+bool glChartCanvas::s_b_useStencil;
+bool glChartCanvas::s_b_useStencilAP;
+bool glChartCanvas::s_b_useFBO;
 
 #if 0
 /* for debugging */
@@ -1724,11 +1649,11 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
 
   wxColour color;
   if (ChartData->GetDBChartType(dbIndex) == CHART_TYPE_CM93)
-    color = GetGlobalColor(_T ( "YELO1" ));
+    color = GetGlobalColor("YELO1");
   else if (ChartData->GetDBChartFamily(dbIndex) == CHART_FAMILY_VECTOR)
-    color = GetGlobalColor(_T ( "GREEN2" ));
+    color = GetGlobalColor("GREEN2");
   else
-    color = GetGlobalColor(_T ( "UINFR" ));
+    color = GetGlobalColor("UINFR");
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   float plylat, plylon;
@@ -1825,15 +1750,15 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
       wxMax(2.0, floor(m_pParentCanvas->GetPixPerMM() / 4));
 
   if (ChartData->GetDBChartType(dbIndex) == CHART_TYPE_CM93)
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "YELO1" )), nominal_line_width_pix,
+    dc.SetPen(wxPen(GetGlobalColor("YELO1"), nominal_line_width_pix,
                     wxPENSTYLE_SOLID));
 
   else if (ChartData->GetDBChartFamily(dbIndex) == CHART_FAMILY_VECTOR)
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "UINFG" )), nominal_line_width_pix,
+    dc.SetPen(wxPen(GetGlobalColor("UINFG"), nominal_line_width_pix,
                     wxPENSTYLE_SOLID));
 
   else
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "UINFR" )), nominal_line_width_pix,
+    dc.SetPen(wxPen(GetGlobalColor("UINFR"), nominal_line_width_pix,
                     wxPENSTYLE_SOLID));
 
   float plylat1, plylon1;
@@ -1939,7 +1864,7 @@ void glChartCanvas::GridDraw() {
   float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
   wxCoord w, h;
 
-  wxColour GridColor = GetGlobalColor(_T ( "SNDG1" ));
+  wxColour GridColor = GetGlobalColor("SNDG1");
 
   if (!m_gridfont.IsBuilt()) {
     double dpi_factor = g_BasePlatform->GetDisplayDIPMult(this);
@@ -2367,14 +2292,13 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       wxPen ppSmallScaleShip;
       if (SHIP_NORMAL == m_pParentCanvas->m_ownship_state)
         ppSmallScaleShip =
-            wxPen(GetGlobalColor(_T ( "URED" )), v / 5, wxPENSTYLE_SOLID);
+            wxPen(GetGlobalColor("URED"), v / 5, wxPENSTYLE_SOLID);
       else
         ppSmallScaleShip =
-            wxPen(GetGlobalColor(_T ( "YELO1" )), v / 5, wxPENSTYLE_SOLID);
+            wxPen(GetGlobalColor("YELO1"), v / 5, wxPENSTYLE_SOLID);
       dc.SetPen(ppSmallScaleShip);
 
-      dc.SetBrush(
-          wxBrush(GetGlobalColor(_T ( "URED" )), wxBRUSHSTYLE_TRANSPARENT));
+      dc.SetBrush(wxBrush(GetGlobalColor("URED"), wxBRUSHSTYLE_TRANSPARENT));
 
       // start with cross
       dc.DrawLine((-v * 1.2) + lShipMidPoint.m_x, lShipMidPoint.m_y,
@@ -2700,9 +2624,9 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       //      Reference point, where the GPS antenna is
       if (m_pParentCanvas->m_pos_image_user) gps_circle_radius = 1;
 
-      wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
+      wxPen ppPen1(GetGlobalColor("UBLCK"), 1, wxPENSTYLE_SOLID);
       dc.SetPen(ppPen1);
-      dc.SetBrush(wxBrush(GetGlobalColor(_T ( "CHWHT" ))));
+      dc.SetBrush(wxBrush(GetGlobalColor("CHWHT")));
 
       dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, gps_circle_radius);
     }
@@ -3309,8 +3233,7 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
                   if (m_pParentCanvas->GetWorldBackgroundChart()) {
                     SetClipRegion(cvp, get_region);
                     m_pParentCanvas->GetWorldBackgroundChart()->SetColorsDirect(
-                        GetGlobalColor(_T ( "LANDA" )),
-                        GetGlobalColor(_T ( "DEPMS" )));
+                        GetGlobalColor("LANDA"), GetGlobalColor("DEPMS"));
                     RenderWorldChart(gldc, cvp, srect, world);
                     m_pParentCanvas->GetWorldBackgroundChart()->SetColorScheme(
                         global_color_scheme);
@@ -3614,7 +3537,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region,
                                 int transparency) {
-  wxColour color = GetGlobalColor(_T ( "NODTA" ));
+  wxColour color = GetGlobalColor("NODTA");
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
   if (color.IsOk())
     glColor4ub(color.Red(), color.Green(), color.Blue(), transparency);
@@ -3862,9 +3785,9 @@ void glChartCanvas::RenderGLAlertMessage() {
     wxRect sbr = m_pParentCanvas->GetScaleBarRect();
     int xp = sbr.x + sbr.width + 5;
 
-    wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
+    wxPen ppPen1(GetGlobalColor("UBLCK"), 1, wxPENSTYLE_SOLID);
     m_gldc.SetPen(ppPen1);
-    m_gldc.SetBrush(wxBrush(GetGlobalColor(_T ( "YELO1" ))));
+    m_gldc.SetBrush(wxBrush(GetGlobalColor("YELO1")));
 
     m_gldc.DrawRectangle(xp, yp, w, h);
 
@@ -4181,7 +4104,7 @@ void glChartCanvas::Render() {
                                  GL_TEXTURE_2D, m_cache_tex[m_cache_page], 0);
 
           // Before rendering anything, clear the color buffers
-          //           wxColour color = GetGlobalColor(_T ( "NODTA" ));
+          //           wxColour color = GetGlobalColor("NODTA");
           //           glClearColor(color.Red() / 256., color.Green() / 256.,
           //                        color.Blue() / 256., 1.0);
           //           glClear(GL_COLOR_BUFFER_BIT);
@@ -4317,7 +4240,7 @@ void glChartCanvas::Render() {
         //  This can be annoying on Android pinch zoom
 
         // Clear the screen to NODTA color
-        wxColour color = GetGlobalColor(_T ( "NODTA" ));
+        wxColour color = GetGlobalColor("NODTA");
         glClearColor(color.Red() / 256., color.Green() / 256.,
                      color.Blue() / 256., 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -4420,7 +4343,7 @@ void glChartCanvas::Render() {
     coords[6] = 0;
     coords[7] = sy;
 
-    wxColour color = GetGlobalColor(_T ( "NODTA" ));
+    wxColour color = GetGlobalColor("NODTA");
     glClearColor(color.Red() / 256., color.Green() / 256., color.Blue() / 256.,
                  1.0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -4569,11 +4492,11 @@ void glChartCanvas::Render() {
     wxBitmap bmp(width, height, -1);
     wxMemoryDC dc(bmp);
     if (bmp.IsOk()) {
-      dc.SetBackground(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
+      dc.SetBackground(wxBrush(GetGlobalColor("UIBCK")));
       dc.Clear();
 
-      dc.SetTextBackground(GetGlobalColor(_T ( "UIBCK" )));
-      dc.SetTextForeground(GetGlobalColor(_T ( "UITX1" )));
+      dc.SetTextBackground(GetGlobalColor("UIBCK"));
+      dc.SetTextForeground(GetGlobalColor("UITX1"));
 
       int yt = 0;
       int xt = 0;

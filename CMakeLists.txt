@@ -799,20 +799,20 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/data_monitor.h
-    ${GUI_HDR_DIR}/DetailSlider.h
+    ${GUI_HDR_DIR}/detail_slider.h
     ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
-    ${GUI_HDR_DIR}/FlexHash.h
-    ${GUI_HDR_DIR}/FontDesc.h
-    ${GUI_HDR_DIR}/FontMgr.h
-    ${GUI_HDR_DIR}/GoToPositionDialog.h
+    ${GUI_HDR_DIR}/flex_hash.h
+    ${GUI_HDR_DIR}/font_desc.h
+    ${GUI_HDR_DIR}/font_mgr.h
+    ${GUI_HDR_DIR}/go_to_position_dlg.h
     ${GUI_HDR_DIR}/gshhs.h
     ${GUI_HDR_DIR}/gui_lib.h
     ${GUI_HDR_DIR}/hotkeys_dlg.h
-    ${GUI_HDR_DIR}/IDX_entry.h
-    ${GUI_HDR_DIR}/iENCToolbar.h
+    ${GUI_HDR_DIR}/idx_entry.h
+    ${GUI_HDR_DIR}/ienc_toolbar.h
     ${GUI_HDR_DIR}/kml.h
     ${GUI_HDR_DIR}/Layer.h
     ${GUI_HDR_DIR}/LinkPropDlg.h
@@ -920,19 +920,19 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/data_monitor.cpp
-    ${GUI_SRC_DIR}/DetailSlider.cpp
+    ${GUI_SRC_DIR}/detail_slider.cpp
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/filter_dlg.cpp
-    ${GUI_SRC_DIR}/FlexHash.cpp
-    ${GUI_SRC_DIR}/FontDesc.cpp
-    ${GUI_SRC_DIR}/FontMgr.cpp
-    ${GUI_SRC_DIR}/GoToPositionDialog.cpp
+    ${GUI_SRC_DIR}/flex_hash.cpp
+    ${GUI_SRC_DIR}/font_desc.cpp
+    ${GUI_SRC_DIR}/font_mgr.cpp
+    ${GUI_SRC_DIR}/go_to_position_dlg.cpp
     ${GUI_SRC_DIR}/gshhs.cpp
     ${GUI_SRC_DIR}/gui_lib.cpp
     ${GUI_SRC_DIR}/hotkeys_dlg.cpp
-    ${GUI_SRC_DIR}/IDX_entry.cpp
-    ${GUI_SRC_DIR}/iENCToolbar.cpp
+    ${GUI_SRC_DIR}/idx_entry.cpp
+    ${GUI_SRC_DIR}/ienc_toolbar.cpp
     ${GUI_SRC_DIR}/kml.cpp
     ${GUI_SRC_DIR}/Layer.cpp
     ${GUI_SRC_DIR}/LinkPropDlg.cpp
@@ -1441,14 +1441,14 @@ endif ()
 if (OPENGL_FOUND)
   target_sources(
     ${PACKAGE_NAME}
-    PRIVATE ${GUI_HDR_DIR}/glChartCanvas.h
-            ${GUI_HDR_DIR}/glTextureDescriptor.h
-            ${GUI_HDR_DIR}/glTexCache.h
-            ${GUI_HDR_DIR}/glTextureManager.h
-            ${GUI_SRC_DIR}/glTextureDescriptor.cpp
-            ${GUI_SRC_DIR}/glTexCache.cpp
-            ${GUI_SRC_DIR}/glChartCanvas.cpp
-            ${GUI_SRC_DIR}/glTextureManager.cpp
+    PRIVATE ${GUI_HDR_DIR}/gl_chart_canvas.h
+            ${GUI_HDR_DIR}/gl_texture_descr.h
+            ${GUI_HDR_DIR}/gl_tex_cache.h
+            ${GUI_HDR_DIR}/gl_texture_mgr.h
+            ${GUI_SRC_DIR}/gl_texture_descr.cpp
+            ${GUI_SRC_DIR}/gl_tex_cache.cpp
+            ${GUI_SRC_DIR}/gl_chart_canvas.cpp
+            ${GUI_SRC_DIR}/gl_texture_mgr.cpp
   )
 endif ()
 

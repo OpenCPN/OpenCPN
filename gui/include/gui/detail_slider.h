@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,17 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Chart display details slider
  */
 
 #ifndef __DETAILSLIDE_H
 #define __DETAILSLIDE_H
 
-#include <wx/dialog.h>
+#include <wx/event.h>
 #include <wx/frame.h>
+#include <wx/slider.h>
+#include <wx/string.h>
+
 #include "chartdb.h"
 
 class PopUpDSlide;                      // forward
@@ -40,11 +42,11 @@ public:
   PopUpDSlide(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartType,
               ChartFamilyEnum ChartF, const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxDefaultSize, long style = 0,
-              const wxString& title = _T(""));
+              const wxString& title = "");
 
-  ~PopUpDSlide(void);
+  ~PopUpDSlide();
 
-  void Init(void);
+  void Init();
   bool Create(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartType,
               ChartFamilyEnum ChartF, const wxPoint& pos, const wxSize& size,
               long style, const wxString& title);

@@ -68,6 +68,7 @@
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "model/gui.h"
+#include "model/gui_vars.h"
 #include "model/gui_events.h"
 #include "model/gui_vars.h"
 #include "model/idents.h"
@@ -108,13 +109,12 @@
 #include "connections_dlg.h"
 #include "config_mgr.h"
 #include "data_monitor.h"
-#include "displays.h"
 #include "dychart.h"
-#include "FontMgr.h"
-#include "glChartCanvas.h"
-#include "GoToPositionDialog.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
+#include "go_to_position_dlg.h"
 #include "gui_lib.h"
-#include "iENCToolbar.h"
+#include "ienc_toolbar.h"
 #include "Layer.h"
 #include "load_errors_dlg.h"
 #include "MarkInfo.h"
@@ -6647,8 +6647,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
 
     wxJSONValue v;
     v["GUID"] = guid;
-    for (RouteList::iterator it = pRouteList->begin(); it != pRouteList->end();
-         it++) {
+    for (auto it = pRouteList->begin(); it != pRouteList->end(); ++it) {
       wxString name = wxEmptyString;
 
       if ((*it)->m_GUID == guid) {
@@ -6667,15 +6666,16 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           w[i]["Description"] = (*itp)->GetDescription();
           w[i]["GUID"] = (*itp)->m_GUID;
           w[i]["ArrivalRadius"] = (*itp)->GetWaypointArrivalRadius();
-          wxHyperlinkListNode *node = (*itp)->m_HyperlinkList->GetFirst();
-          if (node) {
+
+          auto node = (*itp)->m_HyperlinkList->begin();
+          if (node != (*itp)->m_HyperlinkList->end()) {
             int n = 1;
-            while (node) {
-              Hyperlink *httpLink = node->GetData();
+            while (node != (*itp)->m_HyperlinkList->end()) {
+              Hyperlink *httpLink = *node;
               v[i]["WPLink" + wxString::Format("%d", n)] = httpLink->Link;
               v[i]["WPLinkDesciption" + wxString::Format("%d", n++)] =
                   httpLink->DescrText;
-              node = node->GetNext();
+              ++node;
             }
           }
           i++;

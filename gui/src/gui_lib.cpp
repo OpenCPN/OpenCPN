@@ -12,26 +12,33 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
- *  Implements gui_lib.h
+ *
+ *  Implement gui_lib.h
  */
 
 #include <wx/artprov.h>
+#include <wx/bitmap.h>
 #include <wx/dialog.h>
+#include <wx/font.h>
+#include <wx/msgdlg.h>
 #include <wx/sizer.h>
 #include <wx/statbmp.h>
 #include <wx/statline.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
+#include <wx/utils.h>
 
+#include "model/config_vars.h"
 #include "model/gui_events.h"
+
 #include "gui_lib.h"
 #include "timers.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 #include "displays.h"
@@ -40,10 +47,6 @@
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
-
-extern bool g_bresponsive;
-extern OCPNPlatform* g_Platform;
-extern int g_GUIScaleFactor;
 
 CopyableText::CopyableText(wxWindow* parent, const char* text)
     : wxTextCtrl(parent, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
@@ -112,7 +115,7 @@ wxFont GetOCPNGUIScaledFont(wxString item) {
 int OCPNMessageBox(wxWindow* parent, const wxString& message,
                    const wxString& caption, int style, int timeout_sec, int x,
                    int y) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
   int style_mod = style;
 

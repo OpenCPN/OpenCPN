@@ -136,12 +136,12 @@ using namespace std::literals::chrono_literals;
 #include "concanv.h"
 #include "config.h"
 #include "config_mgr.h"
-#include "DetailSlider.h"
+#include "detail_slider.h"
 #include "dychart.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gdal/cpl_csv.h"
-#include "glTexCache.h"
-#include "GoToPositionDialog.h"
+#include "gl_tex_cache.h"
+#include "go_to_position_dlg.h"
 #include "Layer.h"
 #include "MarkInfo.h"
 #include "navutil.h"
@@ -168,7 +168,7 @@ using namespace std::literals::chrono_literals;
 #include "udev_rule_mgr.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __WXOSX__
@@ -261,10 +261,6 @@ bool g_bPauseTest;
 // Files specified on the command line, if any.
 
 LayerList *pLayerList;
-
-bool g_bshowToolbar = true;
-bool g_bexpert = true;
-
 wxString ChartListFileName;
 wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
@@ -274,7 +270,6 @@ wxString g_InvisibleLayers;
 wxString g_VisiNameinLayers;
 wxString g_InVisiNameinLayers;
 
-bool g_bcompression_wait;
 int g_FlushNavobjChangesTimeout;
 
 int user_user_id;
@@ -333,16 +328,12 @@ extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
 #endif
 
 AisInfoGui *g_pAISGUI;
-
 int gpIDXn;
 long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
 
 bool g_bGDAL_Debug;
-bool g_fog_overzoom;
-double g_overzoom_emphasis_base;
-bool g_oz_vector_scale;
 bool g_bDebugGPSD;
 std::vector<std::string> TideCurrentDataSet;
 
@@ -361,25 +352,14 @@ bool g_bHasHwClock;
 bool g_bTrackActive;
 bool g_bDeferredStartTrack;
 bool g_bUseGreenShip;
-//
 int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
                      // no chart database, inform user, 2 - Start update right
                      // away
-
 AboutFrameImpl *g_pAboutDlg;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
 #endif
-
-/**
- * Global locale setting for OpenCPN UI.
- *
- * If not set in config (empty string), uses system default locale.
- * Stores the language/locale name in format "en_US", "fr_FR", etc.
- * A valid setting triggers loading the corresponding .mo translation files
- * from the appropriate locale directory.
- */
 
 int g_BSBImgDebug;
 
@@ -416,8 +396,6 @@ wxString g_config_version_string;
  * @note For the most part, the use of this feature is conditionally compiled
  * for Android builds only.
  */
-
-bool b_inCompressAllCharts;
 
 wxArrayString g_locale_catalog_array;
 bool b_reloadForPlugins;

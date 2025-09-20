@@ -1,11 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Authors:  David Register
- *           Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2016 by David S. Register                               *
+ *   Copyright (C) 2016 Sean D'Epagnier                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,82 +13,87 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement gl_texture_mgr.h -- OpenGL texture management
  */
 
 #include <algorithm>
+#include <list>
 
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
 #include <wx/wx.h>
 #include <wx/thread.h>
 
-#if defined(__OCPN__ANDROID__)
+#if defined(__ANDROID__)
 #include <GLES2/gl2.h>
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>
 #endif
 
-#include "dychart.h"
-#include "viewport.h"
-#include "glTexCache.h"
-#include "glTextureDescriptor.h"
+#include <wx/datetime.h>
+#include <wx/event.h>
+#include <wx/filename.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/log.h>
+#include <wx/progdlg.h>
+#include <wx/stopwatch.h>
+#include <wx/string.h>
+#include <wx/thread.h>
+#include <wx/utils.h>
 
-#include "chcanv.h"
-#include "glChartCanvas.h"
-#include "Quilt.h"
-#include "chartbase.h"
-#include "chartimg.h"
-#include "chartdb.h"
-#include "OCPNPlatform.h"
-#include "FontMgr.h"
+#include <wx/listimpl.cpp>
+#include <wx/arrimpl.cpp>
+
 #include "mipmap/mipmap.h"
-#include "gui_lib.h"
-#include "ocpn_frame.h"
+#include "ssl/sha1.h"
+
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/own_ship.h"
+
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "dychart.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
+#include "gl_tex_cache.h"
+#include "gl_texture_descr.h"
+#include "gui_lib.h"
+#include "lz4.h"
+#include "lz4hc.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "Quilt.h"
+#include "squish.h"
+#include "viewport.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64
 #endif
 
-#include "squish.h"
-#include "lz4.h"
-#include "lz4hc.h"
-
-#include <wx/listimpl.cpp>
-
 using JobList = std::list<JobTicket *>;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
-extern int g_mipmap_max_level;
-extern GLuint g_raster_format;
-extern int g_memCacheLimit;
-extern ChartDB *ChartData;
-extern ocpnGLOptions g_GLOptions;
-extern long g_tex_mem_used;
-extern int g_tile_size;
-extern int g_uncompressed_tile_size;
-extern int g_nCPUCount;
+extern GLuint g_raster_format;  // FIXME (leamas) Find a home
 
-extern bool b_inCompressAllCharts;
-extern MyFrame *gFrame;
-extern arrayofCanvasPtr g_canvasArray;
-
-extern OCPNPlatform *g_Platform;
-extern ColorScheme global_color_scheme;
-
+extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find a home
+                                        //
+// FIXME (leamas) find a home
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-bool bthread_debug;
-bool g_throttle_squish;
+glTextureManager *g_glTextureManager;  ///< Global instance
 
-glTextureManager *g_glTextureManager;
-
-#include "ssl/sha1.h"
+static bool bthread_debug;
 
 wxString CompressedCachePath(wxString path) {
 #if defined(__WXMSW__)
@@ -122,8 +122,6 @@ wxString CompressedCachePath(wxString path) {
   return g_Platform->GetPrivateDataDir() + separator + "raster_texture_cache" +
          separator + sha1;
 }
-
-int g_mipmap_max_level = 4;
 
 #if 0
 OCPN_CompressProgressEvent::OCPN_CompressProgressEvent(wxEventType commandType, int id)
@@ -184,8 +182,6 @@ public:
   wxString chart_path;
   double distance;
 };
-
-#include <wx/arrimpl.cpp>
 
 WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
 // WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);

@@ -539,32 +539,26 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
           win->Destroy();
         }
       }
-      int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
-      HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
-      if (NbrOfLinks > 0) {
-        wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
-        while (linknode) {
-          Hyperlink* link = linknode->GetData();
-          wxString Link = link->Link;
-          wxString Descr = link->DescrText;
+      int NbrOfLinks = m_pRoute->m_HyperlinkList->size();
+      HyperlinkList* list = m_pRoute->m_HyperlinkList;
+      for (Hyperlink* link : *m_pRoute->m_HyperlinkList) {
+        wxString Link = link->Link;
+        wxString Descr = link->DescrText;
 
-          wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
-              m_scrolledWindowLinks, wxID_ANY, Descr, Link, wxDefaultPosition,
-              wxDefaultSize, wxHL_DEFAULT_STYLE);
+        wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
+            m_scrolledWindowLinks, wxID_ANY, Descr, Link, wxDefaultPosition,
+            wxDefaultSize, wxHL_DEFAULT_STYLE);
+        ctrl->Connect(
+            wxEVT_COMMAND_HYPERLINK,
+            wxHyperlinkEventHandler(RoutePropDlgImpl::OnHyperlinkClick), NULL,
+            this);
+        if (!m_pRoute->m_bIsInLayer) {
           ctrl->Connect(
-              wxEVT_COMMAND_HYPERLINK,
-              wxHyperlinkEventHandler(RoutePropDlgImpl::OnHyperlinkClick), NULL,
+              wxEVT_RIGHT_DOWN,
+              wxMouseEventHandler(RoutePropDlgImpl::HyperlinkContextMenu), NULL,
               this);
-          if (!m_pRoute->m_bIsInLayer) {
-            ctrl->Connect(
-                wxEVT_RIGHT_DOWN,
-                wxMouseEventHandler(RoutePropDlgImpl::HyperlinkContextMenu),
-                NULL, this);
-          }
-          bSizerLinks->Add(ctrl, 0, wxALL, 5);
-
-          linknode = linknode->GetNext();
         }
+        bSizerLinks->Add(ctrl, 0, wxALL, 5);
       }
       m_scrolledWindowLinks->InvalidateBestSize();
       m_scrolledWindowLinks->Layout();
@@ -1211,30 +1205,21 @@ void RoutePropDlgImpl::ItemEditOnMenuSelection(wxCommandEvent& event) {
   LinkPropDlg->ShowWindowModalThenDo([this, LinkPropDlg, findurl,
                                       findlabel](int retcode) {
     if (retcode == wxID_OK) {
-      int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
-      HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
-      //            int len = 0;
-      if (NbrOfLinks > 0) {
-        wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
-        while (linknode) {
-          Hyperlink* link = linknode->GetData();
-          wxString Link = link->Link;
-          wxString Descr = link->DescrText;
-          if (Link == findurl &&
-              (Descr == findlabel ||
-               (Link == findlabel && Descr == wxEmptyString))) {
-            link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
-            link->DescrText =
-                LinkPropDlg->m_textCtrlLinkDescription->GetValue();
-            wxHyperlinkCtrl* h =
-                (wxHyperlinkCtrl*)m_scrolledWindowLinks->FindWindowByLabel(
-                    findlabel);
-            if (h) {
-              h->SetLabel(LinkPropDlg->m_textCtrlLinkDescription->GetValue());
-              h->SetURL(LinkPropDlg->m_textCtrlLinkUrl->GetValue());
-            }
+      for (Hyperlink* link : *m_pRoute->m_HyperlinkList) {
+        wxString Link = link->Link;
+        wxString Descr = link->DescrText;
+        if (Link == findurl &&
+            (Descr == findlabel ||
+             (Link == findlabel && Descr == wxEmptyString))) {
+          link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+          link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+          wxHyperlinkCtrl* h =
+              (wxHyperlinkCtrl*)m_scrolledWindowLinks->FindWindowByLabel(
+                  findlabel);
+          if (h) {
+            h->SetLabel(LinkPropDlg->m_textCtrlLinkDescription->GetValue());
+            h->SetURL(LinkPropDlg->m_textCtrlLinkUrl->GetValue());
           }
-          linknode = linknode->GetNext();
         }
       }
 
@@ -1251,7 +1236,6 @@ void RoutePropDlgImpl::ItemAddOnMenuSelection(wxCommandEvent& event) {
 }
 
 void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
-  wxHyperlinkListNode* nodeToDelete = NULL;
   wxString findurl = m_pEditedLink->GetURL();
   wxString findlabel = m_pEditedLink->GetLabel();
 
@@ -1273,18 +1257,19 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
   }
 
   ///    m_scrolledWindowLinks->DestroyChildren();
-  int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
+  int NbrOfLinks = m_pRoute->m_HyperlinkList->size();
   HyperlinkList* hyperlinklist = m_pRoute->m_HyperlinkList;
   //      int len = 0;
+  auto nodeToDelete = hyperlinklist->end();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = hyperlinklist->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
+    auto it = hyperlinklist->begin();
+    while (it != hyperlinklist->end()) {
+      Hyperlink* link = *it;
       wxString Link = link->Link;
       wxString Descr = link->DescrText;
       if (Link == findurl &&
           (Descr == findlabel || (Link == findlabel && Descr == wxEmptyString)))
-        nodeToDelete = linknode;
+        nodeToDelete = it;
       else {
         wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl(
             m_scrolledWindowLinks, wxID_ANY, Descr, Link, wxDefaultPosition,
@@ -1300,11 +1285,11 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
 
         bSizerLinks->Add(ctrl, 0, wxALL, 5);
       }
-      linknode = linknode->GetNext();
+      it++;
     }
   }
-  if (nodeToDelete) {
-    hyperlinklist->DeleteNode(nodeToDelete);
+  if (nodeToDelete != hyperlinklist->end()) {
+    hyperlinklist->erase(nodeToDelete);
   }
   m_scrolledWindowLinks->InvalidateBestSize();
   m_scrolledWindowLinks->Layout();
@@ -1342,7 +1327,7 @@ void RoutePropDlgImpl::AddLinkOnButtonClick(wxCommandEvent& event) {
       h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
       h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
       h->LType = wxEmptyString;
-      m_pRoute->m_HyperlinkList->Append(h);
+      m_pRoute->m_HyperlinkList->push_back(h);
     }
   });
 }

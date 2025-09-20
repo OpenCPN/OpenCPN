@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,27 +12,32 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement go_to_position_dlg.h -- Go to position dialog...
  */
 
-#include <wx/wxprec.h>
+#include <wx/button.h>
+#include <wx/clipbrd.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
-#include <wx/button.h>
+#include <wx/string.h>
 #include <wx/textctrl.h>
-#include <wx/clipbrd.h>
+#include <wx/wxprec.h>
 
-#include "GoToPositionDialog.h"
+#include "go_to_position_dlg.h"
+
 #include "model/position_parser.h"
+#include "chcanv.h"
 #include "MarkInfo.h"
 #include "navutil.h"
-#include "chcanv.h"
 #include "ocpn_frame.h"
-
-extern MyFrame* gFrame;
 
 GoToPositionDialog* pGoToPositionDialog;
 

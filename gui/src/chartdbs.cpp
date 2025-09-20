@@ -37,7 +37,7 @@
 
 #include "chartbase.h"
 #include "chartdbs.h"
-#include "FlexHash.h"
+#include "flex_hash.h"
 #include "LOD_reduce.h"
 #include "mbtiles.h"
 #include "pluginmanager.h"
@@ -1922,8 +1922,8 @@ shorten the recursive search
                         dir_luk += candidate_n;
                         if(wxDir::Exists(dir_luk))
                         {
-                              wxString msg(_T("Found probable CM93 database in
-")); msg += dir_name; wxLogMessage(msg);
+                              wxString msg("Found probable CM93 database in
+"); msg += dir_name; wxLogMessage(msg);
 
                               wxString dir_name_plus = dir_luk; // be very
 specific about the dir_name,
@@ -2230,8 +2230,8 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       nDirEntry++;
     } else {
       if (pnewChart) delete pnewChart;
-      //                    wxLogMessage(wxString::Format(_T("   Not adding
-      //                    chart file: %s"), msg_fn.c_str()));
+      //                    wxLogMessage(wxString::Format("   Not adding
+      //                    chart file: %s", msg_fn.c_str()));
     }
   }
 
@@ -2356,8 +2356,8 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
     rv = true;
   } else {
     delete pnewChart;
-    //                  wxLogMessage(wxString::Format(_T("   Not adding chart
-    //                  file: %s"), msg_fn.c_str()));
+    //                  wxLogMessage(wxString::Format("   Not adding chart
+    //                  file: %s", msg_fn.c_str()));
     rv = false;
   }
 

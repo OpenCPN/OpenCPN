@@ -44,7 +44,7 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 
 #include "chcanv.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "ocpn_frame.h"
 #ifdef ocpnUSE_GL
 #include "shaders.h"

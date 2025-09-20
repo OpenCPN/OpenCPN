@@ -48,8 +48,8 @@
 #include "chartdb.h"
 #include "chcanv.h"
 #include "config_mgr.h"
-#include "FontMgr.h"
-#include "glChartCanvas.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_app.h"
@@ -860,7 +860,7 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->Append(h);
+      dst->m_HyperlinkList->push_back(h);
 
       linknode = linknode->GetNext();
     }
@@ -955,7 +955,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->Clear();
+      prp->m_HyperlinkList->clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
         wxPlugin_HyperlinkListNode* linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
@@ -967,7 +967,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
           h->Link = link->Link;
           h->LType = link->Type;
 
-          prp->m_HyperlinkList->Append(h);
+          prp->m_HyperlinkList->push_back(h);
 
           linknode = linknode->GetNext();
         }
@@ -1016,21 +1016,15 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint* dst,
   delete dst->m_HyperlinkList;
   dst->m_HyperlinkList = nullptr;
 
-  if (src->m_HyperlinkList->GetCount() > 0) {
+  if (src->m_HyperlinkList->size() > 0) {
     dst->m_HyperlinkList = new Plugin_HyperlinkList;
-
-    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    for (Hyperlink* link : *src->m_HyperlinkList) {
       Plugin_Hyperlink* h = new Plugin_Hyperlink();
       h->DescrText = link->DescrText;
       h->Link = link->Link;
       h->Type = link->LType;
 
       dst->m_HyperlinkList->Append(h);
-
-      linknode = linknode->GetNext();
     }
   }
 }
@@ -1048,31 +1042,17 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
 
 wxArrayString GetWaypointGUIDArray(void) {
   wxArrayString result;
-  const RoutePointList* list = pWayPointMan->GetWaypointList();
-
-  wxRoutePointListNode* prpnode = list->GetFirst();
-  while (prpnode) {
-    RoutePoint* prp = prpnode->GetData();
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     result.Add(prp->m_GUID);
-
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
-
   return result;
 }
 
 wxArrayString GetRouteGUIDArray(void) {
   wxArrayString result;
-  RouteList* list = pRouteList;
-
-  wxRouteListNode* prpnode = list->GetFirst();
-  while (prpnode) {
-    Route* proute = prpnode->GetData();
+  for (Route* proute : *pRouteList) {
     result.Add(proute->m_GUID);
-
-    prpnode = prpnode->GetNext();  // Route
   }
-
   return result;
 }
 
@@ -1087,11 +1067,7 @@ wxArrayString GetTrackGUIDArray(void) {
 
 wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
-  const RoutePointList* list = pWayPointMan->GetWaypointList();
-
-  wxRoutePointListNode* prpnode = list->GetFirst();
-  while (prpnode) {
-    RoutePoint* prp = prpnode->GetData();
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     switch (req) {
       case OBJECTS_ALL:
         result.Add(prp->m_GUID);
@@ -1103,10 +1079,7 @@ wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
         if (prp->m_bIsInLayer) result.Add(prp->m_GUID);
         break;
     }
-
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
-
   return result;
 }
 
@@ -2027,21 +2000,15 @@ static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
     delete dst->m_HyperlinkList;
     dst->m_HyperlinkList = nullptr;
 
-    if (src->m_HyperlinkList->GetCount() > 0) {
+    if (src->m_HyperlinkList->size() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
-
+      for (Hyperlink* link : *src->m_HyperlinkList) {
         Plugin_Hyperlink* h = new Plugin_Hyperlink();
         h->DescrText = link->DescrText;
         h->Link = link->Link;
         h->Type = link->LType;
-
         dst->m_HyperlinkList->Append(h);
-
-        linknode = linknode->GetNext();
       }
     }
   }
@@ -2092,7 +2059,7 @@ static void cloneHyperlinkListExV2(RoutePoint* dst,
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->Append(h);
+      dst->m_HyperlinkList->push_back(h);
 
       linknode = linknode->GetNext();
     }
@@ -2199,22 +2166,13 @@ bool UpdateSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->Clear();
-      if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
-            pwaypoint->m_HyperlinkList->GetFirst();
-        while (linknode) {
-          Plugin_Hyperlink* link = linknode->GetData();
-
-          Hyperlink* h = new Hyperlink();
-          h->DescrText = link->DescrText;
-          h->Link = link->Link;
-          h->LType = link->Type;
-
-          prp->m_HyperlinkList->Append(h);
-
-          linknode = linknode->GetNext();
-        }
+      prp->m_HyperlinkList->clear();
+      for (Plugin_Hyperlink* link : *pwaypoint->m_HyperlinkList) {
+        Hyperlink* h = new Hyperlink();
+        h->DescrText = link->DescrText;
+        h->Link = link->Link;
+        h->LType = link->Type;
+        prp->m_HyperlinkList->push_back(h);
       }
     }
 
@@ -2410,21 +2368,14 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
     delete dst->m_HyperlinkList;
     dst->m_HyperlinkList = nullptr;
 
-    if (src->m_HyperlinkList->GetCount() > 0) {
+    if (src->m_HyperlinkList->size() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
-
-      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
-      while (linknode) {
-        Hyperlink* link = linknode->GetData();
-
+      for (Hyperlink* link : *src->m_HyperlinkList) {
         Plugin_Hyperlink* h = new Plugin_Hyperlink();
         h->DescrText = link->DescrText;
         h->Link = link->Link;
         h->Type = link->LType;
-
         dst->m_HyperlinkList->Append(h);
-
-        linknode = linknode->GetNext();
       }
     }
   }
@@ -2456,7 +2407,7 @@ static void cloneHyperlinkListEx(RoutePoint* dst,
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->Append(h);
+      dst->m_HyperlinkList->push_back(h);
 
       linknode = linknode->GetNext();
     }
@@ -2561,7 +2512,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->Clear();
+      prp->m_HyperlinkList->clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
         wxPlugin_HyperlinkListNode* linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
@@ -2573,7 +2524,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
           h->Link = link->Link;
           h->LType = link->Type;
 
-          prp->m_HyperlinkList->Append(h);
+          prp->m_HyperlinkList->push_back(h);
 
           linknode = linknode->GetNext();
         }
@@ -3614,4 +3565,84 @@ void RemoveNoShowDirectory(std::string chart_dir) {
 void ClearNoShowVector() { ChartDirectoryExcludedVector.clear(); }
 const std::vector<std::string>& GetNoShowVector() {
   return ChartDirectoryExcludedVector;
+}
+
+// Enhanced AIS Target List support
+
+void CenterToAisTarget(wxString ais_mmsi) {
+  long mmsi = 0;
+  if (ais_mmsi.ToLong(&mmsi)) {
+    std::shared_ptr<AisTargetData> pAISTarget = NULL;
+    if (g_pAIS) pAISTarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+
+    if (pAISTarget) {
+      double scale = gFrame->GetFocusCanvas()->GetVPScale();
+      if (1) {
+        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                               pAISTarget->Lon, scale);
+      } else {
+        // Set a reasonable (1:5000) chart scale to see the target.
+        if (scale < 0.7) {  // Don't zoom if already close.
+          ChartCanvas* cc = gFrame->GetFocusCanvas();
+          double factor = cc->GetScaleValue() / 5000.0;
+          gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
+                                 pAISTarget->Lon, scale * factor);
+        }
+      }
+    }
+  }
+}  // same as AISTargetListDialog::CenterToTarget ( false )
+
+void AisTargetCreateWpt(wxString ais_mmsi) {
+  long mmsi = 0;
+  if (ais_mmsi.ToLong(&mmsi)) {
+    std::shared_ptr<AisTargetData> pAISTarget = NULL;
+    if (g_pAIS) pAISTarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+
+    if (pAISTarget) {
+      RoutePoint* pWP =
+          new RoutePoint(pAISTarget->Lat, pAISTarget->Lon, g_default_wp_icon,
+                         wxEmptyString, wxEmptyString);
+      pWP->m_bIsolatedMark = true;  // This is an isolated mark
+      pSelect->AddSelectableRoutePoint(pAISTarget->Lat, pAISTarget->Lon, pWP);
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
+      if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+        pRouteManagerDialog->UpdateWptListCtrl();
+    }
+  }
+}  // same as AISTargetListDialog::OnTargetCreateWpt
+
+void AisShowAllTracks(bool show) {
+  if (g_pAIS) {
+    for (const auto& it : g_pAIS->GetTargetList()) {
+      auto pAISTarget = it.second;
+      if (NULL != pAISTarget) {
+        pAISTarget->b_show_track = show;
+
+        // Check for any persistently tracked target, force b_show_track_old
+        std::map<int, Track*>::iterator itt;
+        itt = g_pAIS->m_persistent_tracks.find(pAISTarget->MMSI);
+        if (itt != g_pAIS->m_persistent_tracks.end()) {
+          pAISTarget->b_show_track_old = show;
+        }
+      }
+    }
+  }  // same as AISTargetListDialog::OnHideAllTracks /
+     // AISTargetListDialog::OnShowAllTracks
+}
+
+void AisToggleTrack(wxString ais_mmsi) {
+  long mmsi = 0;
+  if (ais_mmsi.ToLong(&mmsi)) {
+    std::shared_ptr<AisTargetData> pAISTarget = NULL;
+    if (g_pAIS) pAISTarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+
+    if (pAISTarget) {
+      pAISTarget->b_show_track_old =
+          pAISTarget->b_show_track;  // Store current state before toggling
+      pAISTarget->b_show_track =
+          !pAISTarget->b_show_track;  // Toggle visibility
+    }
+  }
 }

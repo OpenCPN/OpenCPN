@@ -78,40 +78,39 @@ void canvasConfig::LoadFromLegacyConfig(wxConfigBase *conf) {
   bShowAIS = true;
 
   // S52 stuff
-  conf->SetPath(_T ( "/Settings/GlobalState" ));
-  conf->Read(_T ( "bShowS57Text" ), &bShowENCText, 1);
-  conf->Read(_T ( "bShowLightDescription" ), &bShowENCLightDescriptions, 1);
-  conf->Read(_T ( "nDisplayCategory" ), &nENCDisplayCategory,
-             (enum _DisCat)OTHER);
-  conf->Read(_T ( "bShowSoundg" ), &bShowENCDepths, 1);
-  conf->Read(_T ( "bShowAtonText" ), &bShowENCBuoyLabels, 0);
+  conf->SetPath("/Settings/GlobalState");
+  conf->Read("bShowS57Text", &bShowENCText, 1);
+  conf->Read("bShowLightDescription", &bShowENCLightDescriptions, 1);
+  conf->Read("nDisplayCategory", &nENCDisplayCategory, (enum _DisCat)OTHER);
+  conf->Read("bShowSoundg", &bShowENCDepths, 1);
+  conf->Read("bShowAtonText", &bShowENCBuoyLabels, 0);
   bShowENCLights = true;
   bShowENCVisibleSectorLights = false;
   bShowENCAnchorInfo = false;
   bShowENCDataQuality = false;
 
-  conf->SetPath(_T ( "/Settings/AIS" ));
-  conf->Read(_T ( "bShowScaledTargets" ), &bAttenAIS, 0);
+  conf->SetPath("/Settings/AIS");
+  conf->Read("bShowScaledTargets", &bAttenAIS, 0);
 
-  conf->SetPath(_T ( "/Settings" ));
-  conf->Read(_T ( "ShowTide" ), &bShowTides, 0);
-  conf->Read(_T ( "ShowCurrent" ), &bShowCurrents, 0);
-  conf->Read(_T ( "CourseUpMode" ), &bCourseUp, 0);
-  conf->Read(_T ( "HeadUpMode" ), &bHeadUp, 0);
-  conf->Read(_T ( "LookAheadMode" ), &bLookahead, 0);
+  conf->SetPath("/Settings");
+  conf->Read("ShowTide", &bShowTides, 0);
+  conf->Read("ShowCurrent", &bShowCurrents, 0);
+  conf->Read("CourseUpMode", &bCourseUp, 0);
+  conf->Read("HeadUpMode", &bHeadUp, 0);
+  conf->Read("LookAheadMode", &bLookahead, 0);
 
-  conf->Read(_T ( "ShowGrid" ), &bShowGrid, 0);
-  conf->Read(_T ( "ShowChartOutlines" ), &bShowOutlines, 1);
-  conf->Read(_T ( "ShowDepthUnits" ), &bShowDepthUnits, 1);
-  conf->Read(_T ( "ChartQuilting" ), &bQuilt, 1);
+  conf->Read("ShowGrid", &bShowGrid, 0);
+  conf->Read("ShowChartOutlines", &bShowOutlines, 1);
+  conf->Read("ShowDepthUnits", &bShowDepthUnits, 1);
+  conf->Read("ChartQuilting", &bQuilt, 1);
 
-  conf->Read(_T ( "ActiveChartGroup" ), &GroupID, 0);
-  conf->Read(_T ( "InitialdBIndex" ), &DBindex, -1);
+  conf->Read("ActiveChartGroup", &GroupID, 0);
+  conf->Read("InitialdBIndex", &DBindex, -1);
 
-  conf->SetPath(_T ( "/Settings/GlobalState" ));
+  conf->SetPath("/Settings/GlobalState");
   wxString st;
   double st_view_scale, st_rotation;
-  if (conf->Read(wxString(_T ( "VPScale" )), &st)) {
+  if (conf->Read(wxString("VPScale"), &st)) {
     sscanf(st.mb_str(wxConvUTF8), "%lf", &st_view_scale);
     //    Sanity check the scale
     st_view_scale = fmax(st_view_scale, .001 / 32);
@@ -119,7 +118,7 @@ void canvasConfig::LoadFromLegacyConfig(wxConfigBase *conf) {
     iScale = st_view_scale;
   }
 
-  if (conf->Read(wxString(_T ( "VPRotation" )), &st)) {
+  if (conf->Read(wxString("VPRotation"), &st)) {
     sscanf(st.mb_str(wxConvUTF8), "%lf", &st_rotation);
     //    Sanity check the rotation
     st_rotation = fmin(st_rotation, 360);
@@ -129,7 +128,7 @@ void canvasConfig::LoadFromLegacyConfig(wxConfigBase *conf) {
 
   wxString sll;
   double lat, lon;
-  if (conf->Read(_T ( "VPLatLon" ), &sll)) {
+  if (conf->Read("VPLatLon", &sll)) {
     sscanf(sll.mb_str(wxConvUTF8), "%lf,%lf", &lat, &lon);
 
     //    Sanity check the lat/lon...both have to be reasonable.

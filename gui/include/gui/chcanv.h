@@ -48,7 +48,7 @@
 #include "emboss_data.h"
 #include "gshhs.h"
 #include "gui_lib.h"
-#include "IDX_entry.h"
+#include "idx_entry.h"
 #include "MUIBar.h"
 #include "notification_manager_gui.h"
 #include "observable_evtvar.h"

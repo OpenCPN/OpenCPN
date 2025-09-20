@@ -43,7 +43,7 @@
 
 #include "ais_target_alert_dlg.h"
 #include "chcanv.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"

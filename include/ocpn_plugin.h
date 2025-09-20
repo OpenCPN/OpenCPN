@@ -7223,4 +7223,12 @@ extern DECL_EXP void RemoveNoShowDirectory(std::string chart_dir);
 extern DECL_EXP void ClearNoShowVector();
 extern DECL_EXP const std::vector<std::string> &GetNoShowVector();
 
+// Enhanced AIS Target List support
+// extern DECL_EXP wxString GetAISTargetColumnData(wxString ais_mmsi, int
+// column); // same as OCPNListCtrl::GetTargetColumnData
+extern DECL_EXP void CenterToAisTarget(wxString ais_mmsi);
+extern DECL_EXP void AisTargetCreateWpt(wxString ais_mmsi);
+extern DECL_EXP void AisShowAllTracks(bool show);
+extern DECL_EXP void AisToggleTrack(wxString ais_mmsi);
+
 #endif  //_PLUGIN_H_

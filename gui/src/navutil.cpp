@@ -62,6 +62,7 @@
 #include "model/cutil.h"
 #include "model/geodesic.h"
 #include "model/georef.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
@@ -82,9 +83,8 @@
 #include "cm93.h"
 #include "config.h"
 #include "config_mgr.h"
-#include "displays.h"
 #include "dychart.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "Layer.h"
 #include "navutil.h"
 #include "nmea0183.h"
@@ -100,7 +100,7 @@
 #include "styles.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __ANDROID__
@@ -347,8 +347,6 @@ extern bool g_bShowCurrent;
 extern wxString g_uiStyle;
 extern bool g_btrackContinuous;
 extern bool g_useMUI;
-
-int g_nCPUCount;
 
 extern unsigned int g_canvasConfig;
 extern wxString g_lastAppliedTemplateGUID;

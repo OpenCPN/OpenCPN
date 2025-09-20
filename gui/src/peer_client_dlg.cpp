@@ -41,7 +41,7 @@
 
 #include "peer_client_dlg.h"
 #include "ocpn_frame.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gui_lib.h"
 
 struct MemoryStruct {

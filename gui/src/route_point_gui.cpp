@@ -34,8 +34,8 @@ typedef void (*_GLUfuncptr)();
 #include "model/routeman.h"
 
 #include "color_handler.h"
-#include "FontMgr.h"
-#include "glChartCanvas.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
 #include "n0183_ctx_factory.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
