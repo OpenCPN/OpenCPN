@@ -12,9 +12,6 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
 #include <iomanip>
@@ -43,16 +40,6 @@
  * \file
  * Implement tty_scroll.h
  */
-
-const wxString kUtfCheckMark = wxString::FromUTF8(u8"\u2713");
-const wxString kUtfCircledDivisionSlash = wxString::FromUTF8(u8"\u2298");
-const wxString kUtfFallingDiagonal = wxString::FromUTF8(u8"\u269F");
-const wxString kUtfIdenticalTo = wxString::FromUTF8(u8"\u2261");
-const wxString kUtfLeftArrow = wxString::FromUTF8(u8"\u2190");
-const wxString kUtfLeftRightArrow = wxString::FromUTF8(u8"\u2194");
-const wxString kUtfLeftwardsArrowToBar = wxString::FromUTF8(u8"\u21E4");
-const wxString kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
-const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
 
 /** Return true if s matches ll's source interface or message. */
 static bool IsFilterMatch(const struct Logline& ll, const std::string& s) {
