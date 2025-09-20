@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Plugin update dialog.
  */
 
-#ifndef UPDATE_MGR_H__
-#define UPDATE_MGR_H__
+#ifndef UPDATE_MGR_H_
+#define UPDATE_MGR_H_
 
 #include <vector>
 
@@ -32,7 +31,7 @@
 
 #include "model/catalog_parser.h"
 
-class OcpnUpdateScrolledWindow;
+class OcpnUpdateScrolledWindow;  // Forward in .cpp file
 
 /**
  * Modal dialog, displays available updates (possibly just one) and lets
@@ -53,4 +52,4 @@ private:
   PluginMetadata update;
 };
 
-#endif  // UPDATE_MGR_H__
+#endif  // UPDATE_MGR_H_
