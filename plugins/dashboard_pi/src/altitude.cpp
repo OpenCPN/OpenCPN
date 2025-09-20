@@ -231,7 +231,7 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
 
   // calculate 1st and 2nd Moments
   double varAltitude =
-      m_sum2Altitude / (ALTITUDE_RECORD_COUNT-1);  // estimator for variance
+      m_sum2Altitude / (ALTITUDE_RECORD_COUNT - 1);  // estimator for variance
   varAltitude -= m_meanAltitude * m_meanAltitude;
   if (varAltitude < 0.0) varAltitude = 0.0;  // avoid nan when calling sqrt().
 
