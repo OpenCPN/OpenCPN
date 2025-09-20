@@ -1,23 +1,46 @@
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement track_gui.h --  track and Trackpoint drawing stuff
+ */
+
 #include <list>
 
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
 #include <wx/pen.h>
 
-#include "color_handler.h"
-#include "navutil.h"
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"
+
+#include "color_handler.h"
+#include "navutil.h"
 #include "track_gui.h"
 #include "gl_chart_canvas.h"
 
-extern Routeman *g_pRouteMan;
-extern wxColour g_colourTrackLineColour;
+extern wxColor GetDimColor(wxColor c);  // ocpn_frame: FIXME (leamas) new home
 
-extern wxColor GetDimColor(wxColor c);
-extern bool g_bHighliteTracks;
-
-extern ocpnGLOptions g_GLOptions;
+extern ocpnGLOptions g_GLOptions;  // FIXME (leamas) Fix GL dependency mess
 
 void TrackPointGui::Draw(ChartCanvas *cc, ocpnDC &dc) {
   wxPoint r;
@@ -133,7 +156,7 @@ void TrackGui::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP,
   //  Establish basic colour
   wxColour basic_colour;
   if (m_track.IsRunning())
-    basic_colour = GetGlobalColor(_T ( "URED" ));
+    basic_colour = GetGlobalColor("URED");
   else
     basic_colour = GetDimColor(g_colourTrackLineColour);
 
@@ -142,12 +165,11 @@ void TrackGui::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP,
   wxColour col;
   if (m_track.m_style != wxPENSTYLE_INVALID) style = m_track.m_style;
   if (m_track.m_width != WIDTH_UNDEFINED) width = m_track.m_width;
-  if (m_track.m_Colour == wxEmptyString) {
+  if (m_track.m_Colour == "") {
     col = basic_colour;
     // Render tracks associated with persistent AIS targets as a contrasting
     // color
-    if (m_track.GetName().StartsWith("AIS"))
-      col = GetGlobalColor(_T ( "TEAL1" ));
+    if (m_track.GetName().StartsWith("AIS")) col = GetGlobalColor("TEAL1");
   } else {
     for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
          i++) {
