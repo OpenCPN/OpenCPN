@@ -280,7 +280,7 @@ gui/include/gui/tc_data_factory.h
 gui/include/gui/tc_data_source.h
 gui/include/gui/tcds_ascii_harmonic.h
 gui/include/gui/tcds_binary_harmonic.h
-gui/include/gui/TC_Error_Code.h
+gui/include/gui/tc_error_code.h
 gui/include/gui/tcmgr.h
 gui/include/gui/TCWin.h
 gui/include/gui/thumbwin.h

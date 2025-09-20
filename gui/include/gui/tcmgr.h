@@ -34,7 +34,7 @@
 
 #include "station_data.h"
 #include "idx_entry.h"
-#include "TC_Error_Code.h"
+#include "tc_error_code.h"
 #include "tc_data_source.h"
 
 // ----------------------------------------------------------------------------

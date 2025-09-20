@@ -27,7 +27,7 @@
 #include <wx/string.h>
 
 #include "idx_entry.h"
-#include "TC_Error_Code.h"
+#include "tc_error_code.h"
 
 #define NUMUNITS 4
 #define REGION 1
