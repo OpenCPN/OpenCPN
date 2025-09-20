@@ -1,27 +1,57 @@
+/**************************************************************************
+ *   Copyright (C) 2013 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement tc_win.h -- tide and currents window
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
-#include <wx/listctrl.h>
+#include <wx/button.h>
 #include <wx/choice.h>
-#include <wx/sizer.h>
+#include <wx/font.h>
+#include <wx/panel.h>
 #include <wx/dcbuffer.h>
+#include <wx/listctrl.h>
+#include <wx/utils.h>
 
-#include "TCWin.h"
-#include "timers.h"
-#include "chcanv.h"
-#include "tide_time.h"
-#include "tcmgr.h"
-#include "tc_data_factory.h"
-#include "dychart.h"
+#include "tc_win.h"
+
 #include "model/cutil.h"
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
+
+#include "chcanv.h"
+#include "dychart.h"
 #include "font_mgr.h"
-#include "model/wx28compat.h"
+#include "gui_lib.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "rollover_win.h"
-#include "navutil.h"
-#include "gui_lib.h"
-#include "ocpn_frame.h"
+#include "tc_data_factory.h"
+#include "tcmgr.h"
+#include "tide_time.h"
+#include "timers.h"
+
+extern ColorScheme global_color_scheme;  // library dependence
 
 // Custom chart panel class definition
 class TCWin::TideChartPanel : public wxPanel {
@@ -74,14 +104,6 @@ private:
   TCWin *m_tcWin;
 };
 
-extern ColorScheme global_color_scheme;
-extern int gpIDXn;
-extern TCMgr *ptcmgr;
-extern wxString g_locale;
-extern OCPNPlatform *g_Platform;
-extern MyConfig *pConfig;
-extern OCPNPlatform *g_Platform;
-
 enum { ID_TCWIN_NX, ID_TCWIN_PR };
 
 enum { TIDE_PLOT, CURRENT_PLOT };
@@ -99,7 +121,6 @@ EVT_TIMER(TCWIN_TIME_INDICATOR_TIMER, TCWin::OnTimeIndicatorTimer)
 END_EVENT_TABLE()
 
 // Define a constructor
-extern wxDateTime gTimeSource;
 TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   m_created = false;
   xSpot = 0;
@@ -118,11 +139,11 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   // Read the config file to get the user specified time zone.
   if (pConfig) {
-    pConfig->SetPath(_T ( "/Settings/Others" ));
-    pConfig->Read(_T ( "TCWindowTimeZone" ), &m_tzoneDisplay, 0);
+    pConfig->SetPath("/Settings/Others");
+    pConfig->Read("TCWindowTimeZone", &m_tzoneDisplay, 0);
   }
 
-  wxFrame::Create(parent, wxID_ANY, wxString(_T ( "" )), m_position, m_tc_size,
+  wxFrame::Create(parent, wxID_ANY, wxString(""), m_position, m_tc_size,
                   wstyle);
 
   m_created = true;
@@ -182,16 +203,16 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   pSFont = FontMgr::Get().FindOrCreateFont(
       dlg_font_size - 2, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-      wxFONTWEIGHT_NORMAL, FALSE, wxString(_T ( "Arial" )));
+      wxFONTWEIGHT_NORMAL, FALSE, wxString("Arial"));
   pSMFont = FontMgr::Get().FindOrCreateFont(
       dlg_font_size - 1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-      wxFONTWEIGHT_NORMAL, FALSE, wxString(_T ( "Arial" )));
+      wxFONTWEIGHT_NORMAL, FALSE, wxString("Arial"));
   pMFont = FontMgr::Get().FindOrCreateFont(
       dlg_font_size, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
-      FALSE, wxString(_T ( "Arial" )));
+      FALSE, wxString("Arial"));
   pLFont = FontMgr::Get().FindOrCreateFont(
       dlg_font_size + 1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-      wxFONTWEIGHT_BOLD, FALSE, wxString(_T ( "Arial" )));
+      wxFONTWEIGHT_BOLD, FALSE, wxString("Arial"));
 
   // Secondary grid
   pblack_1 = wxThePenList->FindOrCreatePen(
@@ -325,7 +346,7 @@ void TCWin::InitializeStationText() {
 
   wxString locn(pIDX->IDX_station_name, wxConvUTF8);
   wxString locna, locnb;
-  if (locn.Contains(wxString(_T ( "," )))) {
+  if (locn.Contains(wxString(","))) {
     locna = locn.BeforeFirst(',');
     locnb = locn.AfterFirst(',');
   } else {
@@ -961,8 +982,8 @@ void TCWin::OKEvent(wxCommandEvent &event) {
 
   // Update the config file to set the user specified time zone.
   if (pConfig) {
-    pConfig->SetPath(_T ( "/Settings/Others" ));
-    pConfig->Write(_T ( "TCWindowTimeZone" ), m_tzoneDisplay);
+    pConfig->SetPath("/Settings/Others");
+    pConfig->Write("TCWindowTimeZone", m_tzoneDisplay);
   }
 
   Destroy();  // that hurts
@@ -985,8 +1006,8 @@ void TCWin::OnCloseWindow(wxCloseEvent &event) {
 
   // Update the config file to set the user specified time zone.
   if (pConfig) {
-    pConfig->SetPath(_T ( "/Settings/Others" ));
-    pConfig->Write(_T ( "TCWindowTimeZone" ), m_tzoneDisplay);
+    pConfig->SetPath("/Settings/Others");
+    pConfig->Write("TCWindowTimeZone", m_tzoneDisplay);
   }
 
   Destroy();  // that hurts

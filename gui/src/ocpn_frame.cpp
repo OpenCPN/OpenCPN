@@ -102,7 +102,7 @@
 #include "chart_ctx_factory.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "cm93.h"
 #include "color_handler.h"
 #include "compass.h"

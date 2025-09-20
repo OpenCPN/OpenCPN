@@ -61,7 +61,7 @@
 #include "route_prop_dlg_impl.h"
 #include "styles.h"
 #include "tcmgr.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "ui_utils.h"
 
 #ifdef __ANDROID__

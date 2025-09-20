@@ -871,7 +871,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/tcds_binary_harmonic.h
     ${GUI_HDR_DIR}/tc_error_code.h
     ${GUI_HDR_DIR}/tcmgr.h
-    ${GUI_HDR_DIR}/TCWin.h
+    ${GUI_HDR_DIR}/tc_win.h
     ${GUI_HDR_DIR}/thumbwin.h
     ${GUI_HDR_DIR}/tide_time.h
     ${GUI_HDR_DIR}/timers.h
@@ -997,7 +997,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/tcds_ascii_harmonic.cpp
     ${GUI_SRC_DIR}/tcds_binary_harmonic.cpp
     ${GUI_SRC_DIR}/tcmgr.cpp
-    ${GUI_SRC_DIR}/TCWin.cpp
+    ${GUI_SRC_DIR}/tc_win.cpp
     ${GUI_SRC_DIR}/thumbwin.cpp
     ${GUI_SRC_DIR}/toolbar.cpp
     ${GUI_SRC_DIR}/track_gui.cpp
