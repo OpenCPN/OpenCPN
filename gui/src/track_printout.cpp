@@ -13,32 +13,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
+/**
+ * \file
+ *
+ * Implement track_printout.h -- track print dialog
+ */
+
 #include <iostream>
-using namespace std;
-
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-
-#include <wx/print.h>
-#include <wx/printdlg.h>
-#include <wx/artprov.h>
-#include <wx/stdpaths.h>
-#include <wx/intl.h>
-#include <wx/listctrl.h>
-#include <wx/aui/aui.h>
-#include <wx/dialog.h>
-#include <wx/progdlg.h>
-#include <wx/brush.h>
-#include <wx/colour.h>
-#include <wx/dialog.h>
 
 #ifdef __WXMSW__
 #include <stdlib.h>
@@ -47,13 +31,34 @@ using namespace std;
 #include <psapi.h>
 #endif
 
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include <wx/artprov.h>
+#include <wx/aui/aui.h>
+#include <wx/brush.h>
+#include <wx/colour.h>
+#include <wx/dialog.h>
+#include <wx/intl.h>
+#include <wx/listctrl.h>
+#include <wx/printdlg.h>
+#include <wx/print.h>
+#include <wx/progdlg.h>
+#include <wx/stdpaths.h>
+
+#include "track_printout.h"
+
+#include "model/track.h"
+
 #include "dychart.h"
 #include "gui_lib.h"
-#include "model/track.h"
 #include "ocpn_frame.h"
 #include "print_dialog.h"
 #include "printtable.h"
-#include "track_printout.h"
+
+using namespace std;
 
 TrackPrintout::TrackPrintout(Track* track, OCPNTrackListCtrl* lcPoints,
                              std::set<int> options)
