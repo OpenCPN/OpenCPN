@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,18 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __TCDS_ASCII_HARMONIC_H__
-#define __TCDS_ASCII_HARMONIC_H__
+/**
+ * \file
+ *
+ * Load harmonic data from ascii source TCDataFactory
+ */
 
-#include <wx/string.h>
+#ifndef TCDS_ASCII_HARMONIC_H_
+#define TCDS_ASCII_HARMONIC_H_
 
 #include <stdio.h>
 #include <vector>
+
+#include <wx/string.h>
 
 #include "tc_data_factory.h"
 #include "station_data.h"
@@ -42,9 +42,10 @@ public:
 
   TC_Error_Code LoadData(const wxString &data_file_path);
 
-  int GetMaxIndex(void) { return num_IDX; };
+  int GetMaxIndex() { return num_IDX; };
   IDX_entry *GetIndexEntry(int n_index);
   TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
+
   int pIDX_Ref;
 
 private:
@@ -84,4 +85,4 @@ private:
   int m_first_year;
 };
 
-#endif
+#endif  // TCDS_ASCII_HARMONIC_H_
