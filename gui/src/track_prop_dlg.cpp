@@ -45,7 +45,7 @@
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "track_printout.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

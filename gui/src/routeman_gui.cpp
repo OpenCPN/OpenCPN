@@ -51,7 +51,7 @@
 #include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "vector2D.h"
 
 static bool ConfirmDeleteAisMob() {
