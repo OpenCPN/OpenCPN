@@ -67,7 +67,7 @@ PopUpDSlide::PopUpDSlide(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartT,
 
 PopUpDSlide::~PopUpDSlide() { delete m_p_DetailSlider; }
 
-void PopUpDSlide::Init(void) { m_p_DetailSlider = NULL; }
+void PopUpDSlide::Init() { m_p_DetailSlider = NULL; }
 
 bool PopUpDSlide::Create(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartT,
                          ChartFamilyEnum ChartF, const wxPoint& pos,

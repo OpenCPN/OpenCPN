@@ -302,7 +302,7 @@ void ocpnFloatingToolbarDialog::SetToolShowCount(int count) {
   }
 }
 
-int ocpnFloatingToolbarDialog::GetToolShowCount(void) {
+int ocpnFloatingToolbarDialog::GetToolShowCount() {
   if (m_ptoolbar)
     return m_ptoolbar->GetToolShowCount();
   else
@@ -813,11 +813,11 @@ public:
   void SetColorScheme(ColorScheme cs);
   void SetString(wxString &s) { m_string = s; }
   void SetPosition(wxPoint pt) { m_position = pt; }
-  void SetBitmap(void);
+  void SetBitmap();
 
   void SetHiviz(bool hiviz) { m_hiviz = hiviz; }
 
-  wxSize GetRenderedSize(void);
+  wxSize GetRenderedSize();
 
 private:
   wxString m_string;
@@ -874,7 +874,7 @@ void ToolTipWin::SetColorScheme(ColorScheme cs) {
   m_cs = cs;
 }
 
-wxSize ToolTipWin::GetRenderedSize(void) {
+wxSize ToolTipWin::GetRenderedSize() {
   int h, w;
   wxSize sz;
 
@@ -2511,7 +2511,7 @@ void ToolbarChoicesDialog::OnOkClick(wxCommandEvent &event) {
   EndModal(wxID_OK);
 }
 
-void ToolbarChoicesDialog::RecalculateSize(void) {
+void ToolbarChoicesDialog::RecalculateSize() {
   wxSize esize = GetSize();
 
   if (GetParent()) {

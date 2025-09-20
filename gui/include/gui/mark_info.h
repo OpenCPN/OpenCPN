@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Mark Properties Support
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Waypoint properties maintenance dialog.
+ */
 
 #ifndef _MARKINFO_H_
 #define _MARKINFO_H_
@@ -43,7 +41,7 @@
 #include <wx/odcombo.h>
 #include <wx/gbsizer.h>
 #include <wx/spinctrl.h>
-#include "LinkPropDlg.h"
+#include "link_prop_dlg.h"
 #include "model/hyperlink.h"
 #include <wx/htmllbox.h>
 #include <wx/datectrl.h>
@@ -161,12 +159,12 @@ class SaveDefaultsDialog;
  */
 class OCPNIconCombo : public wxOwnerDrawnComboBox {
 public:
-  OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
+  OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = "",
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize, int n = 0,
                 const wxString choices[] = NULL, long style = 0,
                 const wxValidator& validator = wxDefaultValidator,
-                const wxString& name = _T("OCPNIconCombo"));
+                const wxString& name = "OCPNIconCombo");
 
   ~OCPNIconCombo();
 
@@ -175,7 +173,7 @@ public:
   wxCoord OnMeasureItemWidth(size_t item) const;
 
   int Append(const wxString& item, wxBitmap bmp);
-  void Clear(void);
+  void Clear();
 
 private:
   int itemHeight;
@@ -194,8 +192,7 @@ class LatLonTextCtrl : public wxTextCtrl {
   DECLARE_EVENT_TABLE()
 
 public:
-  LatLonTextCtrl(wxWindow* parent, wxWindowID id,
-                 const wxString& value = _T(""),
+  LatLonTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = "",
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxDefaultSize, long style = 0,
                  const wxValidator& validator = wxDefaultValidator,
@@ -349,7 +346,7 @@ protected:
   wxToggleButton* m_toggleBtnEdit;
   wxButton* m_buttonAddLink;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxChoice* m_comboBoxTideStation;
 #else
   wxComboBox* m_comboBoxTideStation;
@@ -399,7 +396,7 @@ protected:
   int m_sizeMetric;
   wxHyperlinkCtrl* m_pEditedLink;
 
-  void initialize_images(void);
+  void initialize_images();
   void OnBitmapCombClick(wxCommandEvent& event);
   void OnPositionCtlUpdated(wxCommandEvent& event);
   void OnFocusEvent(wxFocusEvent& event);
@@ -438,9 +435,9 @@ public:
               long style = FRAME_WITH_LINKS_STYLE);
   ~MarkInfoDlg();
   void Create();
-  void InitialFocus(void);
-  void RecalculateSize(void);
-  RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
+  void InitialFocus();
+  void RecalculateSize();
+  RoutePoint* GetRoutePoint() { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
   void SetRoutePoint(RoutePoint* pRP);
   void ClearData();
@@ -448,7 +445,7 @@ public:
   void UpdateHtmlList();
   void SetDialogTitle(const wxString& title) { SetTitle(title); }
   bool UpdateProperties(bool positionOnly = false);
-  void ValidateMark(void);
+  void ValidateMark();
   bool SaveChanges();
   void OnActivate(wxActivateEvent& event);
 

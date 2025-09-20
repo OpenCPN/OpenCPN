@@ -30,7 +30,7 @@
 
 #include "chcanv.h"
 #include "gui_lib.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "model/navutil_base.h"
 #include "navutil.h"
 #include "ocpn_plugin.h"
@@ -317,7 +317,7 @@ void RoutePropDlgImpl::OnActivate(wxActivateEvent& event) {
     pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
-void RoutePropDlgImpl::RecalculateSize(void) {
+void RoutePropDlgImpl::RecalculateSize() {
   wxSize esize;
   esize.x = GetCharWidth() * 110;
   esize.y = GetCharHeight() * 40;

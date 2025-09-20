@@ -81,7 +81,7 @@
 #include "lz4.h"
 #include "mbtiles.h"
 #include "mipmap/mipmap.h"
-#include "MUIBar.h"
+#include "mui_bar.h"
 #include "navutil.h"
 #include "OCPNPlatform.h"
 #include "piano.h"
@@ -483,7 +483,7 @@ glChartCanvas::~glChartCanvas() {
 #endif
 }
 
-void glChartCanvas::FlushFBO(void) {
+void glChartCanvas::FlushFBO() {
   if (m_bsetup) BuildFBO();
 }
 

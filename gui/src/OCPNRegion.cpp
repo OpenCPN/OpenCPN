@@ -356,7 +356,7 @@ void gdk_region_intersect(OGdkRegion *source1, const OGdkRegion *source2);
 OGdkRegion *gdk_region_polygon(const OGdkPoint *points, int n_points,
                                OGdkFillRule fill_rule);
 
-OGdkRegion *gdk_region_new(void);
+OGdkRegion *gdk_region_new();
 void gdk_region_subtract(OGdkRegion *source1, const OGdkRegion *source2);
 bool gdk_region_empty(const OGdkRegion *region);
 
@@ -905,7 +905,7 @@ static void miRegionOp(OGdkRegion *newReg, OGdkRegion *reg1,
  *
  * Returns: a new empty #GdkRegion
  */
-OGdkRegion *gdk_region_new(void) {
+OGdkRegion *gdk_region_new() {
   OGdkRegion *temp;
 
   temp = (OGdkRegion *)malloc(sizeof(OGdkRegion));

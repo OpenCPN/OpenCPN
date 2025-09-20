@@ -152,7 +152,7 @@ ChartMbTiles::ChartMbTiles() {
 
   m_Chart_Skew = 0.0;
 
-  m_datum_str = _T("WGS84");  // assume until proven otherwise
+  m_datum_str = "WGS84";  // assume until proven otherwise
   m_projection = PROJECTION_WEB_MERCATOR;
   m_image_type = wxBITMAP_TYPE_ANY;
 
@@ -176,8 +176,8 @@ ChartMbTiles::ChartMbTiles() {
 
 #ifdef OCPN_USE_CONFIG
   wxFileConfig* pfc = (wxFileConfig*)pConfig;
-  pfc->SetPath(_T ( "/Settings" ));
-  pfc->Read(_T ( "DebugMBTiles" ), &m_b_cdebug, 0);
+  pfc->SetPath("/Settings");
+  pfc->Read("DebugMBTiles", &m_b_cdebug, 0);
 #endif
   m_db = NULL;
 }

@@ -57,7 +57,7 @@
 #include "cm93.h"  // for chart outline draw
 #include "go_to_position_dlg.h"
 #include "kml.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "peer_client_dlg.h"

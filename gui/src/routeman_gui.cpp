@@ -319,7 +319,7 @@ void RoutemanGui::DeleteAllTracks() {
   ::wxEndBusyCursor();
 }
 
-void RoutemanGui::DoAdvance(void) {
+void RoutemanGui::DoAdvance() {
   if (!m_routeman.ActivateNextPoint(m_routeman.pActiveRoute,
                                     false))  // at the end?
   {

@@ -822,7 +822,7 @@ wxRect ViewPort::GetVPRectIntersect(size_t n, float *llpoints) {
   return r.GetBox();
 }
 
-void ViewPort::SetBoxes(void) {
+void ViewPort::SetBoxes() {
   // In the case where canvas rotation is applied, we need to define a larger
   // "virtual" pixel window size to ensure that enough chart data is fatched
   // and available to fill the rotated screen.

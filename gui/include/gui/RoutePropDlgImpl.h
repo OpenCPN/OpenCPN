@@ -32,7 +32,7 @@
 #include "model/ocpn_types.h"
 #include "color_types.h"
 #include <cmath>
-#include "LinkPropDlg.h"
+#include "link_prop_dlg.h"
 
 class RoutePropDlgImpl;  // forward
 
