@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,15 +12,21 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement tcds_binary_harmonic.h -- TCDataFactory loading data from
+ * binary file
+ */
+
+/* Declarations for zoneinfo compatibility */
+#include <string>
 
 #include "tcds_binary_harmonic.h"
 #include "tcmgr.h"
-#include <string>
-/* Declarations for zoneinfo compatibility */
 
 /* Most of these entries are loaded from the tzdata.h include file. That
  *   file was generated from tzdata200c.                                  */
