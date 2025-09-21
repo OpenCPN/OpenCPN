@@ -36,6 +36,9 @@
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 enum { WSPEED_KTS = 0, WSPEED_MS, WSPEED_MPH, WSPEED_KMH };
 enum { DEPTH_FT = 0, DEPTH_M, DEPTH_FA };
+/** Height unit format constants for vertical measurements above reference datum
+ */
+enum { HEIGHT_M = 0, HEIGHT_FT };
 enum { TEMPERATURE_C = 0, TEMPERATURE_F = 1, TEMPERATURE_K = 2 };
 
 enum {
@@ -44,6 +47,7 @@ enum {
   DISTANCE_KM,
   DISTANCE_M,
   DISTANCE_FT,
+  DISTANCE_YD,
   DISTANCE_FA,
   DISTANCE_IN,
   DISTANCE_CM
@@ -66,6 +70,13 @@ extern double fromUsrSpeed(double usr_speed, int unit, int default_val);
 extern double toUsrDepth(double cel_depth, int unit = -1);
 extern double fromUsrDepth(double usr_depth, int unit = -1);
 extern wxString getUsrDepthUnit(int unit = -1);
+
+/** Convert height from meters to user-selected height units */
+extern double toUsrHeight(double m_height, int unit = -1);
+/** Convert height from user-selected height units to meters */
+extern double fromUsrHeight(double usr_height, int unit = -1);
+/** Get the abbreviation for the user-selected height unit */
+extern wxString getUsrHeightUnit(int unit = -1);
 
 /**
  * This function parses a string containing a GPX time representation

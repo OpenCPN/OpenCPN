@@ -157,6 +157,7 @@ extern int g_GUIScaleFactor;
 extern int g_iDistanceFormat;
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
+extern int g_iHeightFormat;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern int g_iSDMMFormat;
 extern int g_iSoundDeviceIndex;

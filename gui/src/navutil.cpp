@@ -856,6 +856,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "WindSpeedFormat" ),
        &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
   Read(_T ("TemperatureFormat"), &g_iTempFormat);  // 0 = C, 1 = F, 2 = K
+  Read(_T ("HeightFormat"), &g_iHeightFormat);     // 0 = M, 1 = FT
 
   // LIVE ETA OPTION
   Read(_T ( "LiveETA" ), &g_bShowLiveETA);
@@ -2242,6 +2243,7 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "WindSpeedFormat" ), g_iWindSpeedFormat);
     Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
     Write(_T ( "TemperatureFormat" ), g_iTempFormat);
+    Write(_T ( "HeightFormat" ), g_iHeightFormat);
   }
   Write(_T ( "GPSIdent" ), g_GPS_Ident);
   Write("ActiveRoute", g_active_route);
@@ -3086,6 +3088,7 @@ void SwitchInlandEcdisMode(bool Switch) {
       pConfig->Read(_T ( "DistanceFormat" ), &g_iDistanceFormat);
       pConfig->Read(_T ( "SpeedFormat" ), &g_iSpeedFormat);
       pConfig->Read(_T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1);
+      pConfig->Read(_T ( "HeightFormat" ), &g_iHeightFormat);
       int read_int;
       pConfig->Read(_T ( "nDisplayCategory" ), &read_int,
                     (enum _DisCat)STANDARD);

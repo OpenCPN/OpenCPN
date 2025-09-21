@@ -220,6 +220,9 @@ double toUsrDistance(double nm_distance, int unit) {
     case DISTANCE_FT:
       ret = nm_distance * 6076.12;
       break;
+    case DISTANCE_YD:
+      ret = nm_distance * 2025.37;
+      break;
     case DISTANCE_FA:
       ret = nm_distance * 1012.68591;
       break;
@@ -294,6 +297,9 @@ wxString getUsrDistanceUnit(int unit) {
       break;
     case DISTANCE_FT:
       ret = _("ft");
+      break;
+    case DISTANCE_YD:
+      ret = _("yd");
       break;
     case DISTANCE_FA:
       ret = _("fa");
@@ -423,6 +429,18 @@ double fromUsrDistance(double usr_distance, int unit, int default_val) {
     case DISTANCE_FT:
       ret = usr_distance / 6076.12;
       break;
+    case DISTANCE_YD:
+      ret = usr_distance / 2025.37;
+      break;
+    case DISTANCE_FA:
+      ret = usr_distance / 1012.68591;
+      break;
+    case DISTANCE_IN:
+      ret = usr_distance / 72913.4;
+      break;
+    case DISTANCE_CM:
+      ret = usr_distance / 185200;
+      break;
   }
   return ret;
 }
@@ -482,6 +500,48 @@ wxString getUsrDepthUnit(int unit) {
       break;
     case DEPTH_FA:  // Fathoms
       ret = _("fa");
+      break;
+  }
+  return ret;
+}
+
+double toUsrHeight(double m_height, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = m_height;
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = m_height / 0.3048;
+      break;
+  }
+  return ret;
+}
+
+double fromUsrHeight(double usr_height, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = usr_height;
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = usr_height * 0.3048;
+      break;
+  }
+  return ret;
+}
+
+wxString getUsrHeightUnit(int unit) {
+  wxString ret;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = _("m");
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = _("ft");
       break;
   }
   return ret;

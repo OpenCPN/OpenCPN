@@ -3181,6 +3181,35 @@ extern DECL_EXP double toUsrDepth_Plugin(double m_depth, int unit = -1);
 extern DECL_EXP double fromUsrDepth_Plugin(double usr_depth, int unit = -1);
 
 /**
+ * Gets display string for user's preferred height unit.
+ *
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=meters, 1=feet
+ * @return Localized unit string (e.g. "m", "ft")
+ */
+extern DECL_EXP wxString getUsrHeightUnit_Plugin(int unit = -1);
+
+/**
+ * Converts meters to user's preferred height unit.
+ *
+ * @param m_height Height in meters
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=meters, 1=feet
+ * @return Height in user's preferred unit
+ */
+extern DECL_EXP double toUsrHeight_Plugin(double m_height, int unit = -1);
+
+/**
+ * Converts from user's preferred height unit to meters.
+ *
+ * @param usr_height Height in user's unit
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=meters, 1=feet
+ * @return Height in meters
+ */
+extern DECL_EXP double fromUsrHeight_Plugin(double usr_height, int unit = -1);
+
+/**
  * Parse a formatted coordinate string to get decimal degrees.
  *
  * Attempt to parse a wide variety of formatted coordinate

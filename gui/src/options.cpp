@@ -1583,6 +1583,7 @@ EVT_BUTTON(ID_OPENGLOPTIONS, options::OnOpenGLOptions)
 #endif
 EVT_CHOICE(ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton)
 EVT_CHOICE(ID_DEPTHUNITSCHOICE, options::OnUnitsChoice)
+EVT_CHOICE(ID_HEIGHTUNITSCHOICE, options::OnUnitsChoice)
 EVT_BUTTON(ID_CLEARLIST, options::OnButtonClearClick)
 EVT_BUTTON(ID_SELECTLIST, options::OnButtonSelectClick)
 EVT_BUTTON(ID_SETSTDLIST, options::OnButtonSetStd)
@@ -4490,12 +4491,14 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Distance")),
                     labelFlags);
     wxString pDistanceFormats[] = {_("Nautical miles"), _("Statute miles"),
-                                   _("Kilometers"), _("Meters")};
+                                   _("Kilometers"), _("Meters"), _("Yards")};
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
     pDistanceFormat =
         new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), m_DistanceFormatsNChoices,
                      pDistanceFormats);
+    // Distance between geographic positions, visibility range, radar range.
+    pDistanceFormat->SetToolTip(_("Horizontal measurements and distances"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4509,6 +4512,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
                                 wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
                                 m_SpeedFormatsNChoices, pSpeedFormats);
+    pSpeedFormat->SetToolTip(_("Vessel and surface speed measurements"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4524,6 +4528,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), m_WindSpeedFormatsNChoices,
                      pWindSpeedFormats);
+    pWindSpeedFormat->SetToolTip(_("Wind speed measurements and forecasts"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4540,10 +4545,31 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), 3, pDepthUnitStrings);
+    // Distance below a reference surface (sea level, vessel draft)
+    pDepthUnitSelect->SetToolTip(_("Measurements below the water surface"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
+
+    // height units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Height")),
+                    labelFlags);
+    wxString pHeightUnitStrings[] = {
+        _("Meters"),
+        _("Feet"),
+    };
+    pHeightUnitSelect =
+        new wxChoice(panelUnits, ID_HEIGHTUNITSCHOICE, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), 2, pHeightUnitStrings);
+    // Tide levels, wave heights, air gaps, mast clearance, elevations above
+    // reference datum
+    pHeightUnitSelect->SetToolTip(
+        _("Vertical measurements above reference datum (e.g., tide levels)"));
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pHeightUnitSelect, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pHeightUnitSelect, inputFlags);
 
     // temperature units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Temperature")),
@@ -4556,6 +4582,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), 3, pTempUnitStrings);
+    pTempFormat->SetToolTip(_("Temperature measurements (air, water, engine)"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4575,6 +4602,8 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
                                wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
                                m_SDMMFormatsNChoices, pSDMMFormats);
+    pSDMMFormat->SetToolTip(
+        _("Coordinate display format for latitude and longitude"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4679,11 +4708,12 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Distance")),
                     labelFlags);
     wxString pDistanceFormats[] = {_("Nautical miles"), _("Statute miles"),
-                                   _("Kilometers"), _("Meters")};
+                                   _("Kilometers"), _("Meters"), _("Yards")};
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
     pDistanceFormat = new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE,
                                    wxDefaultPosition, wxSize(item_h_size, -1),
                                    m_DistanceFormatsNChoices, pDistanceFormats);
+    pDistanceFormat->SetToolTip(_("Horizontal measurements and distances"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4697,6 +4727,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
                                 wxDefaultPosition, wxSize(item_h_size, -1),
                                 m_SpeedFormatsNChoices, pSpeedFormats);
+    pSpeedFormat->SetToolTip(_("Vessel and surface speed measurements"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4711,6 +4742,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pWindSpeedFormat = new wxChoice(
         panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
         wxSize(item_h_size, -1), m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+    pWindSpeedFormat->SetToolTip(_("Wind speed measurements and forecasts"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4727,10 +4759,28 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                      wxSize(item_h_size, -1), 3, pDepthUnitStrings);
+    pDepthUnitSelect->SetToolTip(_("Measurements below the water surface"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
+
+    // height units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Height")),
+                    labelFlags);
+    wxString pHeightUnitStrings[] = {
+        _("Meters"),
+        _("Feet"),
+    };
+    pHeightUnitSelect =
+        new wxChoice(panelUnits, ID_HEIGHTUNITSCHOICE, wxDefaultPosition,
+                     wxSize(item_h_size, -1), 2, pHeightUnitStrings);
+    pHeightUnitSelect->SetToolTip(
+        _("Vertical measurements above reference datum (e.g., tide levels)"));
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pHeightUnitSelect, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pHeightUnitSelect, inputFlags);
 
     // temperature units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Temperature")),
@@ -4743,6 +4793,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
                      wxSize(item_h_size, -1), 3, pTempUnitStrings);
+    pTempFormat->SetToolTip(_("Temperature measurements (air, water, engine)"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4762,6 +4813,8 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
                                wxDefaultPosition, wxSize(item_h_size, -1),
                                m_SDMMFormatsNChoices, pSDMMFormats);
+    pSDMMFormat->SetToolTip(
+        _("Coordinate display format for latitude and longitude"));
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
 #endif
@@ -6482,6 +6535,7 @@ void options::SetInitialSettings() {
   pSpeedFormat->Select(g_iSpeedFormat);
   pWindSpeedFormat->Select(g_iWindSpeedFormat);
   pTempFormat->Select(g_iTempFormat);
+  if (pHeightUnitSelect) pHeightUnitSelect->SetSelection(g_iHeightFormat);
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
@@ -7419,6 +7473,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   g_iSpeedFormat = pSpeedFormat->GetSelection();
   g_iWindSpeedFormat = pWindSpeedFormat->GetSelection();
   g_iTempFormat = pTempFormat->GetSelection();
+  if (pHeightUnitSelect) g_iHeightFormat = pHeightUnitSelect->GetSelection();
 
   // LIVE ETA OPTION
   if (pSLiveETA) g_bShowLiveETA = pSLiveETA->GetValue();
