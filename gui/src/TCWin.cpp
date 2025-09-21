@@ -12,6 +12,7 @@
 #include "chcanv.h"
 #include "tide_time.h"
 #include "tcmgr.h"
+#include "TCDataFactory.h"
 #include "dychart.h"
 #include "model/cutil.h"
 #include "font_mgr.h"
@@ -530,6 +531,19 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
       int tt = tt_localtz + (i * FORWARD_ONE_HOUR_STEP);
       ptcmgr->GetTideOrCurrent(tt, pIDX->IDX_rec_num, tcv[i], dir);
       tt_tcv[i] = tt;  // store the corresponding time_t value
+
+      // Convert tide values from station units to user's height units
+      Station_Data *pmsd = pIDX->pref_sta_data;
+      if (pmsd) {
+        // Convert from station units to meters first
+        int unit_c = TCDataFactory::findunit(pmsd->unit);
+        if (unit_c >= 0) {
+          tcv[i] = tcv[i] * TCDataFactory::known_units[unit_c].conv_factor;
+        }
+        // Now convert from meters to user's height units
+        tcv[i] = toUsrHeight(tcv[i]);
+      }
+
       if (tcv[i] > tcmax) tcmax = tcv[i];
       if (tcv[i] < tcmin) tcmin = tcv[i];
 
@@ -549,10 +563,27 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
               tcd.Set(tctime + (m_stationOffset_mins - m_diff_mins) * 60);
 
             s.Printf(tcd.Format("%H:%M  "));
-            s1.Printf("%05.2f ", tcvalue);  // write value
+
+            // Convert tcvalue to user's height units (it comes from
+            // GetHightOrLowTide in station units)
+            double tcvalue_converted = tcvalue;
+            Station_Data *pmsd = pIDX->pref_sta_data;
+            if (pmsd) {
+              // Convert from station units to meters first
+              int unit_c = TCDataFactory::findunit(pmsd->unit);
+              if (unit_c >= 0) {
+                tcvalue_converted =
+                    tcvalue_converted *
+                    TCDataFactory::known_units[unit_c].conv_factor;
+              }
+              // Now convert from meters to user's height units
+              tcvalue_converted = toUsrHeight(tcvalue_converted);
+            }
+
+            s1.Printf("%05.2f ", tcvalue_converted);  // write converted value
             s.Append(s1);
-            Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
-            if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
+            // Use user's height unit abbreviation
+            s.Append(getUsrHeightUnit());
             s.Append("   ");
             (wt) ? s.Append(_("HW")) : s.Append(_("LW"));  // write HW or LT
 
@@ -576,10 +607,11 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
           thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
 
         s.Printf(thx.Format("%H:%M  "));
-        s1.Printf("%05.2f ", fabs(tcv[i]));  // write value
+        s1.Printf("%05.2f ",
+                  fabs(tcv[i]));  // tcv[i] is already converted to height units
         s.Append(s1);
-        Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
-        if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
+        // Use user's height unit abbreviation
+        s.Append(getUsrHeightUnit());
         s1.Printf("  %03.0f", dir);  // write direction
         s.Append(s1);
 
@@ -724,8 +756,10 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
 
   Station_Data *pmsd = pIDX->pref_sta_data;
   if (pmsd) {
-    dc.GetTextExtent(wxString(pmsd->units_conv, wxConvUTF8), &w, &h);
-    dc.DrawRotatedText(wxString(pmsd->units_conv, wxConvUTF8), 5,
+    // Use user's height unit for Y-axis label instead of station units
+    wxString height_unit = getUsrHeightUnit();
+    dc.GetTextExtent(height_unit, &w, &h);
+    dc.DrawRotatedText(height_unit, 5,
                        m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
   }
 
@@ -1132,14 +1166,26 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     // set tide level or current speed at that time
     ptcmgr->GetTideOrCurrent(tts, pIDX->IDX_rec_num, t, d);
-    s.Printf("%3.2f ", (t < 0 && CURRENT_PLOT == m_plot_type)
-                           ? -t
-                           : t);  // always positive if current
+
+    // Convert tide/current value to user's preferred height units
+    double t_converted = (t < 0 && CURRENT_PLOT == m_plot_type) ? -t : t;
+    Station_Data *pmsd = pIDX->pref_sta_data;
+    if (pmsd) {
+      // Convert from station units to meters first
+      int unit_c = TCDataFactory::findunit(pmsd->unit);
+      if (unit_c >= 0) {
+        t_converted =
+            t_converted * TCDataFactory::known_units[unit_c].conv_factor;
+      }
+      // Now convert from meters to user's height units
+      t_converted = toUsrHeight(t_converted);
+    }
+
+    s.Printf("%3.2f ", t_converted);
     p.Append(s);
 
-    // set unit
-    Station_Data *pmsd = pIDX->pref_sta_data;
-    if (pmsd) p.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
+    // set unit - use user's height unit abbreviation
+    p.Append(getUsrHeightUnit());
 
     // set current direction
     if (CURRENT_PLOT == m_plot_type) {
