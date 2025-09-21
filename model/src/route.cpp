@@ -98,7 +98,6 @@ Route::Route() {
 }
 
 Route::~Route() {
-  pRoutePointList->DeleteContents(false);  // do not delete Marks
   delete pRoutePointList;
   delete m_HyperlinkList;
 }
@@ -134,23 +133,20 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
 
 wxString Route::IsPointNameValid(RoutePoint *pPoint,
                                  const wxString &name) const {
-  RoutePoint *point;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
   wxString substr = name;
-
-  while (node) {
-    point = node->GetData();
+  auto it = pRoutePointList->begin();
+  while (it != pRoutePointList->end()) {
+    RoutePoint *point = *it;
     wxString exist = point->GetName();
 
     if (pPoint->m_GUID == point->m_GUID) {
-      node = node->GetNext();
+      ++it;
     } else if (substr == exist) {
       return _("Name is not unique in route");
     } else {
-      node = node->GetNext();
+      ++it;
     }
   }
-
   return wxEmptyString;
 }
 
@@ -163,7 +159,7 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
   pNewPoint->m_bIsInRoute = true;
 
   RoutePoint *prev = GetLastPoint();
-  pRoutePointList->Append(pNewPoint);
+  pRoutePointList->push_back(pNewPoint);
 
   if (!b_deferBoxCalc) FinalizeForRendering();
 
@@ -217,10 +213,10 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
       return;
     }
 
-    int insert = insert_after++;
+    auto pos = pRoutePointList->begin() + insert_after + 1;
     pNewPoint->m_bIsInRoute = true;
     pNewPoint->SetNameShown(false);
-    pRoutePointList->Insert(insert, pNewPoint);
+    pRoutePointList->insert(pos, pNewPoint);
     if (bRenamePoints) RenameRoutePoints();
     m_lastMousePointIndex = GetnPoints();
     FinalizeForRendering();
@@ -230,34 +226,18 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
 }
 
 RoutePoint *Route::GetPoint(int nWhichPoint) {
-  RoutePoint *prp;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-  int i = 1;
-  while (node) {
-    prp = node->GetData();
-    if (i == nWhichPoint) {
-      return prp;
-    }
-    i++;
-    node = node->GetNext();
-  }
-
-  return (NULL);
+  // nWhichPoint is 1-based.
+  if (nWhichPoint < 1) return nullptr;
+  if (nWhichPoint > pRoutePointList->size()) return nullptr;
+  auto pos = pRoutePointList->begin() + nWhichPoint - 1;
+  return *pos;
 }
 
 RoutePoint *Route::GetPoint(const wxString &guid) {
-  RoutePoint *prp;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-  while (node) {
-    prp = node->GetData();
+  for (RoutePoint *prp : *pRoutePointList) {
     if (guid == prp->m_GUID) return prp;
-
-    node = node->GetNext();
   }
-
-  return (NULL);
+  return (nullptr);
 }
 
 static void TestLongitude(double lon, double min, double max, bool &lonl,
@@ -280,9 +260,7 @@ static void TestLongitude(double lon, double min, double max, bool &lonl,
 }
 
 bool Route::ContainsSharedWP() {
-  for (wxRoutePointListNode *node = pRoutePointList->GetFirst(); node;
-       node = node->GetNext()) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *pRoutePointList) {
     if (prp->IsShared()) return true;
   }
   return false;
@@ -290,14 +268,10 @@ bool Route::ContainsSharedWP() {
 
 // FIXME (leamas): can this be moved to GUI?
 int s_arrow_icon[] = {0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0};
-void Route::ClearHighlights(void) {
-  RoutePoint *prp = NULL;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
 
-  while (node) {
-    prp = node->GetData();
+void Route::ClearHighlights() {
+  for (RoutePoint *prp : *pRoutePointList) {
     if (prp) prp->m_bPtIsSelected = false;
-    node = node->GetNext();
   }
 }
 
@@ -308,8 +282,9 @@ RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
   newpoint->m_bIsInRoute = true;
   newpoint->SetNameShown(false);
 
-  int nRP = pRoutePointList->IndexOf(pRP);
-  pRoutePointList->Insert(nRP, newpoint);
+  auto pos = std::find(pRoutePointList->begin(), pRoutePointList->end(), pRP);
+  if (pos == pRoutePointList->end()) pos = pRoutePointList->begin();
+  pRoutePointList->insert(pos, newpoint);
 
   if (bRenamePoints) RenameRoutePoints();
 
@@ -321,16 +296,16 @@ RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
 
 RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
                                     bool bRenamePoints) {
-  int nRP = pRoutePointList->IndexOf(pRP);
-  if (nRP >= GetnPoints() - 1) return NULL;
-  nRP++;
+  auto pos = std::find(pRoutePointList->begin(), pRoutePointList->end(), pRP);
+  if (pos == pRoutePointList->end()) return nullptr;
+  ++pos;
 
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
                                         GetNewMarkSequenced(), wxEmptyString);
   newpoint->m_bIsInRoute = true;
   newpoint->SetNameShown(false);
 
-  pRoutePointList->Insert(nRP, newpoint);
+  pRoutePointList->insert(pos, newpoint);
 
   if (bRenamePoints) RenameRoutePoints();
 
@@ -349,17 +324,15 @@ wxString Route::GetNewMarkSequenced(void) {
 }
 
 RoutePoint *Route::GetLastPoint() {
-  if (pRoutePointList->IsEmpty()) return NULL;
-
-  return pRoutePointList->GetLast()->GetData();
+  if (pRoutePointList->empty()) return nullptr;
+  return *(pRoutePointList->end() - 1);
 }
 
 int Route::GetIndexOf(RoutePoint *prp) {
-  int ret = pRoutePointList->IndexOf(prp) + 1;
-  if (ret == wxNOT_FOUND)
-    return 0;
-  else
-    return ret;
+  auto pos = std::find(pRoutePointList->begin(), pRoutePointList->end(), prp);
+
+  if (pos == pRoutePointList->end()) return 0;
+  return static_cast<int>(pos - pRoutePointList->begin());
 }
 
 void Route::DeletePoint(RoutePoint *rp, bool bRenamePoints) {
@@ -369,9 +342,8 @@ void Route::DeletePoint(RoutePoint *rp, bool bRenamePoints) {
 
   pSelect->DeleteAllSelectableRoutePoints(this);
   pSelect->DeleteAllSelectableRouteSegments(this);
-
-  pRoutePointList->DeleteObject(rp);
-
+  auto pos = std::find(pRoutePointList->begin(), pRoutePointList->end(), rp);
+  if (pos != pRoutePointList->end()) pRoutePointList->erase(pos);
   delete rp;
 
   if (bRenamePoints) RenameRoutePoints();
@@ -394,10 +366,10 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
 
   // Arrange to remove all references to the same routepoint
   // within the route.  This can happen with circular or "round-trip" routes.
-  pRoutePointList->DeleteContents(false);
-  bool deleted = pRoutePointList->DeleteObject(rp);
-  while (deleted) {
-    deleted = pRoutePointList->DeleteObject(rp);
+  auto pos = std::find(pRoutePointList->begin(), pRoutePointList->end(), rp);
+  while (pos != pRoutePointList->end()) {
+    pRoutePointList->erase(pos);
+    pos = std::find(pRoutePointList->begin(), pRoutePointList->end(), rp);
   }
 
   // check all other routes to see if this point appears in any other route
@@ -424,26 +396,14 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
 }
 
 void Route::DeSelectRoute() {
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-  RoutePoint *rp;
-  while (node) {
-    rp = node->GetData();
+  for (RoutePoint *rp : *pRoutePointList) {
     rp->m_bPtIsSelected = false;
-
-    node = node->GetNext();
   }
 }
 
 void Route::ReloadRoutePointIcons() {
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-  RoutePoint *rp;
-  while (node) {
-    rp = node->GetData();
+  for (RoutePoint *rp : *pRoutePointList) {
     rp->ReLoadIcon();
-
-    node = node->GetNext();
   }
 }
 
@@ -454,8 +414,9 @@ LLBBox &Route::GetBBox(void) {
 
   double bbox_lonmin, bbox_lonmax, bbox_latmin, bbox_latmax;
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-  RoutePoint *data = node->GetData();
+  // wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  auto it = pRoutePointList->begin();
+  RoutePoint *data = *it;
 
   if (data->m_wpBBox.GetValid()) {
     bbox_lonmax = data->m_wpBBox.GetMaxLon();
@@ -468,10 +429,8 @@ LLBBox &Route::GetBBox(void) {
   }
 
   double lastlon = data->m_lon, wrap = 0;
-
-  node = node->GetNext();
-  while (node) {
-    data = node->GetData();
+  for (++it; it != pRoutePointList->end(); ++it) {
+    data = *it;
 
     if (lastlon - data->m_lon > 180)
       wrap += 360;
@@ -487,7 +446,6 @@ LLBBox &Route::GetBBox(void) {
     if (data->m_lat < bbox_latmin) bbox_latmin = data->m_lat;
 
     lastlon = data->m_lon;
-    node = node->GetNext();
   }
 
   if (bbox_lonmin < -360)
@@ -570,24 +528,21 @@ void Route::UpdateSegmentDistances(double planspeed) {
   m_route_length = 0.0;
   m_route_time = 0.0;
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  // wxRoutePointListNode *node = pRoutePointList->GetFirst();
+  auto it = pRoutePointList->begin();
 
-  if (node) {
+  if (it != pRoutePointList->end()) {
     //  Route start point
-    RoutePoint *prp0 = node->GetData();
+    RoutePoint *prp0 = *it;
     if (!prp0->m_manual_etd) {
       prp0->m_seg_eta = m_PlannedDeparture;
       prp0->m_seg_etd = m_PlannedDeparture;
     }
-    node = node->GetNext();
-
-    while (node) {
-      RoutePoint *prp = node->GetData();
+    for (++it; it != pRoutePointList->end(); ++it) {
+      RoutePoint *prp = *it;
       UpdateSegmentDistance(prp0, prp, planspeed);
 
       prp0 = prp;
-
-      node = node->GetNext();
     }
   }
 }
@@ -596,28 +551,21 @@ void Route::Reverse(bool bRenamePoints) {
   //    Reverse the GUID list
   wxArrayString RoutePointGUIDList;
 
-  int ncount = pRoutePointList->GetCount();
+  int ncount = pRoutePointList->size();
   for (int i = 0; i < ncount; i++)
     RoutePointGUIDList.Add(GetPoint(ncount - i)->m_GUID);
 
-  pRoutePointList->DeleteContents(false);
-  pRoutePointList->Clear();
+  pRoutePointList->clear();
   m_route_length = 0.0;
 
-  //    iterate over the RoutePointGUIDs
+  //  Iterate over the RoutePointGUIDs
   for (unsigned int ip = 0; ip < RoutePointGUIDList.GetCount(); ip++) {
     wxString GUID = RoutePointGUIDList[ip];
-
-    //    And on the RoutePoints themselves
-    wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
-    while (prpnode) {
-      RoutePoint *prp = prpnode->GetData();
-
+    for (RoutePoint *prp : *pWayPointMan->GetWaypointList()) {
       if (prp->m_GUID == GUID) {
         AddPoint(prp);
         break;
       }
-      prpnode = prpnode->GetNext();  // RoutePoint
     }
   }
 
@@ -634,18 +582,13 @@ void Route::SetVisible(bool visible, bool includeWpts) {
 
   if (!includeWpts) return;
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-  RoutePoint *rp;
-  while (node) {
-    rp = node->GetData();
-
+  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
     // if this is a "shared" point, then do not turn off visibility.
     // This step keeps the point available for selection to other routes,
     // or may be manaully hidden in route-manager dialog.
     if (rp->IsShared()) {
       if (visible) rp->SetVisible(visible);
     }
-    node = node->GetNext();
   }
 }
 
@@ -654,27 +597,16 @@ void Route::SetListed(bool visible) { m_bListed = visible; }
 void Route::AssembleRoute(void) {}
 
 void Route::ShowWaypointNames(bool bshow) {
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *pRoutePointList) {
     prp->SetNameShown(bshow);
-
-    node = node->GetNext();
   }
 }
 
 bool Route::AreWaypointNamesVisible() {
   bool bvis = false;
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *pRoutePointList) {
     if (prp->GetNameShown()) bvis = true;
-
-    node = node->GetNext();
   }
-
   return bvis;
 }
 
@@ -682,11 +614,8 @@ void Route::RenameRoutePoints(void) {
   //    iterate on the route points.
   //    If dynamically named, rename according to current list position
 
-  wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
   int i = 1;
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *pRoutePointList) {
     if (prp->IsNameDynamic()) {
       wxString name = prp->GetName();
       if (name.Len() == 3) {
@@ -702,8 +631,6 @@ void Route::RenameRoutePoints(void) {
       }
       prp->SetName(name);
     }
-
-    node = node->GetNext();
     i++;
   }
 }
@@ -711,20 +638,20 @@ void Route::RenameRoutePoints(void) {
 //    Is this route equal to another, meaning,
 //    Do all routepoint positions and names match?
 bool Route::IsEqualTo(Route *ptargetroute) {
-  wxRoutePointListNode *pthisnode = (this->pRoutePointList)->GetFirst();
-  wxRoutePointListNode *pthatnode = (ptargetroute->pRoutePointList)->GetFirst();
+  auto pthisnode = (this->pRoutePointList)->begin();
+  auto pthatnode = (ptargetroute->pRoutePointList)->begin();
 
-  if (NULL == pthisnode) return false;
+  if (pthisnode == this->pRoutePointList->end()) return false;
 
   if (this->m_bIsInLayer || ptargetroute->m_bIsInLayer) return false;
 
   if (this->GetnPoints() != ptargetroute->GetnPoints()) return false;
 
-  while (pthisnode) {
-    if (NULL == pthatnode) return false;
+  while (pthisnode != this->pRoutePointList->end()) {
+    if (pthatnode == ptargetroute->pRoutePointList->end()) return false;
 
-    RoutePoint *pthisrp = pthisnode->GetData();
-    RoutePoint *pthatrp = pthatnode->GetData();
+    RoutePoint *pthisrp = *pthisnode;
+    RoutePoint *pthatrp = *pthatnode;
 
     if ((fabs(pthisrp->m_lat - pthatrp->m_lat) > 1.0e-6) ||
         (fabs(pthisrp->m_lon - pthatrp->m_lon) > 1.0e-6))
@@ -732,8 +659,8 @@ bool Route::IsEqualTo(Route *ptargetroute) {
 
     if (!pthisrp->GetName().IsSameAs(pthatrp->GetName())) return false;
 
-    pthisnode = pthisnode->GetNext();
-    pthatnode = pthatnode->GetNext();
+    ++pthisnode;
+    ++pthatnode;
   }
 
   return true;  // success, they are the same

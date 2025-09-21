@@ -102,7 +102,7 @@ public:
   Route();
   ~Route();
 
-  virtual int GetnPoints(void) { return pRoutePointList->GetCount(); }
+  virtual int GetnPoints(void) { return pRoutePointList->size(); }
   wxString IsPointNameValid(RoutePoint *pRP, const wxString &name) const;
 
   void AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence = true,

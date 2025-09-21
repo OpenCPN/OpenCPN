@@ -139,12 +139,8 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
     pFindSel = node->GetData();
     if (pFindSel->m_seltype == SELTYPE_ROUTEPOINT) {
       RoutePoint *ps = (RoutePoint *)pFindSel->m_pData1;
-
       //    inner loop iterates on the route's point list
-      wxRoutePointListNode *pnode = (pr->pRoutePointList)->GetFirst();
-      while (pnode) {
-        RoutePoint *prp = pnode->GetData();
-
+      for (RoutePoint *prp : *pr->pRoutePointList) {
         if (prp == ps) {
           delete pFindSel;
           pSelectList->DeleteNode(node);  // delete node;
@@ -154,7 +150,6 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
 
           goto got_next_outer_node;
         }
-        pnode = pnode->GetNext();
       }
     }
 
@@ -166,13 +161,9 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
 }
 
 bool Select::AddAllSelectableRoutePoints(Route *pr) {
-  if (pr->pRoutePointList->GetCount()) {
-    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
-
-    while (node) {
-      RoutePoint *prp = node->GetData();
+  if (pr->pRoutePointList->size()) {
+    for (RoutePoint *prp : *pr->pRoutePointList) {
       AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
-      node = node->GetNext();
     }
     return true;
   } else
@@ -183,17 +174,13 @@ bool Select::AddAllSelectableRouteSegments(Route *pr) {
   wxPoint rpt, rptn;
   float slat1, slon1, slat2, slon2;
 
-  if (pr->pRoutePointList->GetCount()) {
-    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
-
-    RoutePoint *prp0 = node->GetData();
+  if (pr->pRoutePointList->size()) {
+    auto it = pr->pRoutePointList->begin();
+    RoutePoint *prp0 = *it;
     slat1 = prp0->m_lat;
     slon1 = prp0->m_lon;
-
-    node = node->GetNext();
-
-    while (node) {
-      RoutePoint *prp = node->GetData();
+    for (++it; it != pr->pRoutePointList->end(); ++it) {
+      RoutePoint *prp = *it;
       slat2 = prp->m_lat;
       slon2 = prp->m_lon;
 
@@ -202,8 +189,6 @@ bool Select::AddAllSelectableRouteSegments(Route *pr) {
       slat1 = slat2;
       slon1 = slon2;
       prp0 = prp;
-
-      node = node->GetNext();
     }
     return true;
   } else

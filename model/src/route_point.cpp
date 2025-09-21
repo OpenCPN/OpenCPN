@@ -39,8 +39,6 @@
 
 #include <wx/listimpl.cpp>
 
-WX_DEFINE_LIST(RoutePointList);
-
 wxColour g_colourWaypointRangeRingsColour;
 
 int g_LayerIdx;

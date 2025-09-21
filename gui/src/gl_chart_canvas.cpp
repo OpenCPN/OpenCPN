@@ -1537,14 +1537,10 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
 
   /* Waypoints not drawn as part of routes, and not being edited */
   if (vp.GetBBox().GetValid() && pWayPointMan) {
-    for (wxRoutePointListNode *pnode =
-             pWayPointMan->GetWaypointList()->GetFirst();
-         pnode; pnode = pnode->GetNext()) {
-      RoutePoint *pWP = pnode->GetData();
+    for (RoutePoint *pWP : *pWayPointMan->GetWaypointList()) {
       if (pWP && (!pWP->m_bRPIsBeingEdited) && (!pWP->m_bIsInRoute))
         if (vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
           RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas, dc);
-      //          pWP->DrawGL(vp, m_pParentCanvas, dc);
     }
   }
 }
@@ -1585,10 +1581,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
 
   /* Waypoints not drawn as part of routes, which are being edited right now */
   if (vp.GetBBox().GetValid() && pWayPointMan) {
-    for (wxRoutePointListNode *pnode =
-             pWayPointMan->GetWaypointList()->GetFirst();
-         pnode; pnode = pnode->GetNext()) {
-      RoutePoint *pWP = pnode->GetData();
+    for (RoutePoint *pWP : *pWayPointMan->GetWaypointList()) {
       if (pWP && pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute)
         RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas, dc);
       //        pWP->DrawGL(vp, m_pParentCanvas, dc);

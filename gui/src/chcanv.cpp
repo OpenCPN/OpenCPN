@@ -3889,26 +3889,25 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           // point for active route
           double shiptoEndLeg = 0.;
           bool validActive = false;
-          if (pr->IsActive() &&
-              pr->pRoutePointList->GetFirst()->GetData()->m_bIsActive)
+          if (pr->IsActive() && (*pr->pRoutePointList->begin())->m_bIsActive)
             validActive = true;
 
-          if (segShow_point_a != pr->pRoutePointList->GetFirst()->GetData()) {
-            wxRoutePointListNode *node =
-                (pr->pRoutePointList)->GetFirst()->GetNext();
+          if (segShow_point_a != *pr->pRoutePointList->begin()) {
+            auto node = pr->pRoutePointList->begin();
+            ++node;
             RoutePoint *prp;
             float dist_to_endleg = 0;
             wxString t;
 
-            while (node) {
-              prp = node->GetData();
+            while (node != pr->pRoutePointList->end()) {
+              prp = *node;
               if (validActive)
                 shiptoEndLeg += prp->m_seg_len;
               else if (prp->m_bIsActive)
                 validActive = true;
               dist_to_endleg += prp->m_seg_len;
               if (prp->IsSame(segShow_point_a)) break;
-              node = node->GetNext();
+              ++node;
             }
             s << " (+" << FormatDistanceAdaptive(dist_to_endleg) << ")";
           }
@@ -9497,8 +9496,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                      ir++) {
                   Route *pr = (Route *)m_pEditRouteArray->Item(ir);
                   if (pr && pr->pRoutePointList) {
-                    if (pr->pRoutePointList->IndexOf(pNearbyPoint) !=
-                        wxNOT_FOUND) {
+                    auto *list = pr->pRoutePointList;
+                    auto pos =
+                        std::find(list->begin(), list->end(), pNearbyPoint);
+                    if (pos != list->end()) {
                       duplicate = true;
                       break;
                     }
@@ -9610,14 +9611,17 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               if (g_pRouteMan->IsRouteValid(pr)) {
                 if (pMousePoint) {  // remove the dragged point and insert the
                                     // nearby
-                  int nRP =
-                      pr->pRoutePointList->IndexOf(m_pRoutePointEditTarget);
+                  auto *list = pr->pRoutePointList;
+                  auto pos = std::find(list->begin(), list->end(),
+                                       m_pRoutePointEditTarget);
 
                   pSelect->DeleteAllSelectableRoutePoints(pr);
                   pSelect->DeleteAllSelectableRouteSegments(pr);
 
-                  pr->pRoutePointList->Insert(nRP, pMousePoint);
-                  pr->pRoutePointList->DeleteObject(m_pRoutePointEditTarget);
+                  pr->pRoutePointList->insert(pos, pMousePoint);
+                  pos = std::find(list->begin(), list->end(),
+                                  m_pRoutePointEditTarget);
+                  pr->pRoutePointList->erase(pos);
 
                   pSelect->AddAllSelectableRouteSegments(pr);
                   pSelect->AddAllSelectableRoutePoints(pr);
@@ -9764,8 +9768,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                      ir++) {
                   Route *pr = (Route *)m_pEditRouteArray->Item(ir);
                   if (pr && pr->pRoutePointList) {
-                    if (pr->pRoutePointList->IndexOf(pNearbyPoint) !=
-                        wxNOT_FOUND) {
+                    auto *list = pr->pRoutePointList;
+                    auto pos =
+                        std::find(list->begin(), list->end(), pNearbyPoint);
+                    if (pos != list->end()) {
                       duplicate = true;
                       break;
                     }
@@ -9875,14 +9881,18 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               Route *pr = (Route *)m_pEditRouteArray->Item(ir);
               if (g_pRouteMan->IsRouteValid(pr)) {
                 if (pMousePoint) {  // replace dragged point by nearby one
-                  int nRP =
-                      pr->pRoutePointList->IndexOf(m_pRoutePointEditTarget);
+                  auto *list = pr->pRoutePointList;
+                  auto pos = std::find(list->begin(), list->end(),
+                                       m_pRoutePointEditTarget);
 
                   pSelect->DeleteAllSelectableRoutePoints(pr);
                   pSelect->DeleteAllSelectableRouteSegments(pr);
 
-                  pr->pRoutePointList->Insert(nRP, pMousePoint);
-                  pr->pRoutePointList->DeleteObject(m_pRoutePointEditTarget);
+                  pr->pRoutePointList->insert(pos, pMousePoint);
+                  pos = std::find(list->begin(), list->end(),
+                                  m_pRoutePointEditTarget);
+                  if (pos != list->end()) list->erase(pos);
+                  // pr->pRoutePointList->erase(pos + 1);
 
                   pSelect->AddAllSelectableRouteSegments(pr);
                   pSelect->AddAllSelectableRoutePoints(pr);
@@ -12946,13 +12956,13 @@ void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   if (!pWayPointMan) return;
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  auto node = pWayPointMan->GetWaypointList()->begin();
 
-  while (node) {
-    RoutePoint *pWP = node->GetData();
+  while (node != pWayPointMan->GetWaypointList()->end()) {
+    RoutePoint *pWP = *node;
     if (pWP) {
       if (pWP->m_bIsInRoute) {
-        node = node->GetNext();
+        ++node;
         continue;
       }
 
@@ -12982,7 +12992,7 @@ void ChartCanvas::DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox) {
       }
     }
 
-    node = node->GetNext();
+    ++node;
   }
 }
 
@@ -12992,17 +13002,12 @@ void ChartCanvas::DrawBlinkObjects() {
 
   if (!pWayPointMan) return;
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-
-  while (node) {
-    RoutePoint *pWP = node->GetData();
+  for (RoutePoint *pWP : *pWayPointMan->GetWaypointList()) {
     if (pWP) {
       if (pWP->m_bBlink) {
         update_rect.Union(pWP->CurrentRect_in_DC);
       }
     }
-
-    node = node->GetNext();
   }
   if (!update_rect.IsEmpty()) RefreshRect(update_rect);
 }
