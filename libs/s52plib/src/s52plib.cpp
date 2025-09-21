@@ -1794,12 +1794,10 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
     if (ptext->bspecial_char)
       b_force_no_texfont = true;
 
-     //Fixme (dave)
-    // We also do this the hard way for rotation of strings.  Very slow.
-//#ifdef __OCPN__ANDROID__
-    if (fabs(vp_plib.rotation) > .01)
-      b_force_no_texfont = true;
-//#endif
+    //  Extensive profiling has shown that rendering the full text string
+    //  atomically is much faster than rendering glyph-by-glyph.
+    //  Accordingly, switch to this method for all cases.
+    b_force_no_texfont = true;
 
     if (b_force_no_texfont) {
       if (!ptext->texobj){  // is texture ready?
@@ -2071,6 +2069,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
       bdraw = true;
     }
 
+#if 0   // no longer used, see note above re profile results.
     else {  // render using cached texture glyphs
       // rebuild font if needed
       TexFont *f_cache = 0;
@@ -2195,6 +2194,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
 #endif
       }
     }
+#endif
 
 #endif
   } else {                            // Not OpenGL
