@@ -86,5 +86,6 @@ extern wxColour g_colourTrackLineColour;
 extern wxDateTime gTimeSource;
 
 extern wxString g_SENCPrefix;
+extern wxString* pInit_Chart_Dir;
 
 #endif  // GUI_VARS_H__

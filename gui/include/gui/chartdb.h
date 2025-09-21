@@ -29,6 +29,7 @@
 #include "chartbase.h"
 #include "chartbase.h"
 #include "chartdbs.h"
+#include "chartimg.h"
 
 #define MAXSTACK 100
 

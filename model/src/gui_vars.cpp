@@ -76,3 +76,5 @@ wxColour g_colourOwnshipRangeRingsColour;
 wxColour g_colourTrackLineColour;
 
 wxString g_SENCPrefix;
+
+wxString* pInit_Chart_Dir;

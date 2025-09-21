@@ -81,8 +81,6 @@ extern OCPNPlatform *g_Platform;
 extern MyConfig *pConfig;
 extern OCPNPlatform *g_Platform;
 
-int g_tcwin_scale;
-
 enum { ID_TCWIN_NX, ID_TCWIN_PR };
 
 enum { TIDE_PLOT, CURRENT_PLOT };

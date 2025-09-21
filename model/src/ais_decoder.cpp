@@ -80,7 +80,6 @@ wxEvtHandler *g_pais_alert_dialog_active;
 
 AisDecoder *g_pAIS;
 Select *pSelectAIS;
-bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 wxString AISTargetNameFileName;
 

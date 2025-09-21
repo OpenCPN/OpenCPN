@@ -262,12 +262,7 @@ bool g_bPauseTest;
 
 wxString ChartListFileName;
 wxString gDefaultWorldMapLocation;
-wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
-wxString g_VisibleLayers;
-wxString g_InvisibleLayers;
-wxString g_VisiNameinLayers;
-wxString g_InVisiNameinLayers;
 
 int g_FlushNavobjChangesTimeout;
 
@@ -287,7 +282,6 @@ std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
 
 bool g_bCruising;
 
-bool g_bTransparentToolbar;
 bool g_bTransparentToolbarInOpenGLOK;
 
 wxArrayPtrVoid *UserColourHashTableArray;
@@ -297,14 +291,9 @@ bool bVelocityValid;
 
 int gHDx_Watchdog;
 
-bool g_bDebugS57;
-
 int g_ChartUpdatePeriod;
 
 int g_last_ChartScaleFactor;
-
-bool g_bShowTide;
-bool g_bShowCurrent;
 
 s57RegistrarMgr *m_pRegistrarMan;
 
@@ -329,11 +318,7 @@ AisInfoGui *g_pAISGUI;
 int gpIDXn;
 long gStart_LMT_Offset;
 
-wxArrayString *pMessageOnceArray;
-
-bool g_bGDAL_Debug;
-bool g_bDebugGPSD;
-std::vector<std::string> TideCurrentDataSet;
+extern wxArrayString *pMessageOnceArray;
 
 int options_lastPage = 0;
 int options_subpage = 0;
@@ -349,7 +334,6 @@ bool GetMemoryStatus(int *mem_total, int *mem_used);
 bool g_bHasHwClock;
 bool g_bTrackActive;
 bool g_bDeferredStartTrack;
-bool g_bUseGreenShip;
 int g_NeedDBUpdate;  // 0 - No update needed, 1 - Update needed because there is
                      // no chart database, inform user, 2 - Start update right
                      // away
@@ -358,8 +342,6 @@ AboutFrameImpl *g_pAboutDlg;
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 wxLocale *plocale_def_lang = 0;
 #endif
-
-int g_BSBImgDebug;
 
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
@@ -379,9 +361,6 @@ char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 
 int g_sticky_projection;
 
-int n_NavMessageShown;
-wxString g_config_version_string;
-
 /**
  * Flag to control adaptive UI scaling.
  *
@@ -397,22 +376,17 @@ wxString g_config_version_string;
 
 wxArrayString g_locale_catalog_array;
 bool b_reloadForPlugins;
-bool g_btrackContinuous;
 
 bool g_bmasterToolbarFull = true;
-
-int g_AndroidVersionCode;
 
 int g_memUsed;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
 arrayofCanvasPtr g_canvasArray;
-wxString g_lastAppliedTemplateGUID;
 
 bool b_inCloseWindow;
 bool g_disable_main_toolbar;
-bool g_declutter_anchorage;
 bool g_bhide_route_console;
 
 #ifdef LINUX_CRASHRPT
