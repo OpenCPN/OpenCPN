@@ -123,7 +123,6 @@ extern bool s_bSetSystemTime;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;
-extern double g_display_size_mm;
 extern double g_display_size_mm;  ///< Physical display width (mm)
 extern double g_mouse_zoom_sensitivity;
 extern double g_n_arrival_circle_radius;
@@ -232,6 +231,7 @@ extern int g_nframewin_x;
 extern int g_nframewin_y;
 extern int g_NMEAAPBPrecision;
 extern int g_nNMEADebug;
+extern int n_NavMessageShown;
 extern int g_n_ownship_min_mm;
 extern int g_nTrackPrecision;
 extern int g_ownship_HDTpredictor_endmarker;
@@ -301,6 +301,9 @@ extern wxString g_default_routepoint_icon;
 extern wxString g_default_wp_icon;
 extern wxString g_gpx_path;
 extern wxString g_hostname;
+extern wxString g_InvisibleLayer;
+extern wxString g_InvisibleLayers;
+extern wxString g_InVisiNameinLayers;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxString g_locale;
 extern wxString g_localeOverride;
@@ -308,6 +311,9 @@ extern wxString g_ownship_HDTpredictor_color;
 extern wxString g_toolbarConfig;
 extern wxString g_uiStyle;  // Not used
 extern wxString g_uploadConnection;
+extern wxString g_UserPresLibData;
+extern wxString g_VisibleLayers;
+extern wxString g_VisiNameinLayers;
 extern wxString g_winPluginDir;  // Base plugin directory on Windows.
 extern wxString g_winPluginDir;  ///< Base plugin directory on Windows.
 
