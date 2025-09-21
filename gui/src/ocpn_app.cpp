@@ -276,8 +276,8 @@ static wxCrashPrint g_crashprint;
 #endif
 
 #ifndef __WXMSW__
-sigjmp_buf env;  // the context saved by sigsetjmp();
-#endif           // FIXME (leamas)  Use exceptions
+extern sigjmp_buf env;  // the context saved by sigsetjmp();
+#endif                  // FIXME (leamas)  Use exceptions
 
 // {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
 #ifdef __WXMSW__
