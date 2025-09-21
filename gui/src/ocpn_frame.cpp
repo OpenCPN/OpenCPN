@@ -1782,10 +1782,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       //    than 0.25 NM from this point
       //    This will prevent screen clutter and database congestion.
       if (g_declutter_anchorage) {
-        wxRoutePointListNode *node =
-            pWayPointMan->GetWaypointList()->GetFirst();
-        while (node) {
-          RoutePoint *pr = node->GetData();
+        for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
           if (pr->GetName().StartsWith("Anchorage")) {
             double a = gLat - pr->m_lat;
             double b = gLon - pr->m_lon;
@@ -1800,8 +1797,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
               break;
             }
           }
-
-          node = node->GetNext();
         }
       }
 

@@ -871,15 +871,11 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
-  while (prpnode) {
-    RoutePoint* prp = prpnode->GetData();
-
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     if (prp->m_GUID == pwaypoint->m_GUID) {
       b_unique = false;
       break;
     }
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   if (!b_unique) return false;
@@ -1591,17 +1587,10 @@ std::unique_ptr<PlugIn_Route> GetRoute_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
-
-  while (node) {
-    src_wp = node->GetData();
-
+  for (RoutePoint* src_wp : *route->pRoutePointList) {
     PlugIn_Waypoint* dst_wp = new PlugIn_Waypoint();
     PlugInFromRoutePoint(dst_wp, src_wp);
-
     dst_route->pWaypointList->Append(dst_wp);
-
-    node = node->GetNext();
   }
   dst_route->m_NameString = route->m_RouteNameString;
   dst_route->m_StartString = route->m_RouteStartString;
@@ -1852,11 +1841,8 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   wxRouteListNode* node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
-    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint* prp = pnode->GetData();
+    for (RoutePoint* prp : *proute->pRoutePointList) {
       if (prp == pWP) nCount++;
-      pnode = pnode->GetNext();
     }
 
     node = node->GetNext();
@@ -1941,13 +1927,9 @@ int PlugIn_Waypoint_ExV2::GetRouteMembershipCount() {
   wxRouteListNode* node = pRouteList->GetFirst();
   while (node) {
     Route* proute = node->GetData();
-    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint* prp = pnode->GetData();
+    for (RoutePoint* prp : *proute->pRoutePointList) {
       if (prp == pWP) nCount++;
-      pnode = pnode->GetNext();
     }
-
     node = node->GetNext();
   }
 
@@ -2112,15 +2094,11 @@ bool AddSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypointex,
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
-  while (prpnode) {
-    RoutePoint* prp = prpnode->GetData();
-
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     if (prp->m_GUID == pwaypointex->m_GUID) {
       b_unique = false;
       break;
     }
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   if (!b_unique) return false;
@@ -2310,18 +2288,10 @@ std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(const wxString& GUID) {
   r = std::unique_ptr<PlugIn_Route_ExV2>(new PlugIn_Route_ExV2);
   PlugIn_Route_ExV2* dst_route = r.get();
 
-  RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
-
-  while (node) {
-    src_wp = node->GetData();
-
+  for (RoutePoint* src_wp : *route->pRoutePointList) {
     PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
     PlugInExV2FromRoutePoint(dst_wp, src_wp);
-
     dst_route->pWaypointList->Append(dst_wp);
-
-    node = node->GetNext();
   }
   dst_route->m_NameString = route->m_RouteNameString;
   dst_route->m_StartString = route->m_RouteStartString;
@@ -2459,15 +2429,11 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypointex, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
-  while (prpnode) {
-    RoutePoint* prp = prpnode->GetData();
-
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     if (prp->m_GUID == pwaypointex->m_GUID) {
       b_unique = false;
       break;
     }
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   if (!b_unique) return false;
@@ -2654,17 +2620,11 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
-
-  while (node) {
-    src_wp = node->GetData();
-
+  for (RoutePoint* src_wp : *route->pRoutePointList) {
     PlugIn_Waypoint_Ex* dst_wp = new PlugIn_Waypoint_Ex();
     PlugInExFromRoutePoint(dst_wp, src_wp);
 
     dst_route->pWaypointList->Append(dst_wp);
-
-    node = node->GetNext();
   }
   dst_route->m_NameString = route->m_RouteNameString;
   dst_route->m_StartString = route->m_RouteStartString;
