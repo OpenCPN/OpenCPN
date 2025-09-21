@@ -2694,12 +2694,12 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 
   switch (ps52plib->m_nDepthUnitDisplay) {
     case 0:
-      depth_value = depth_value * 3 * 39.37 / 36;  // feet
-      safety_depth = safety_depth * 3 * 39.37 / 36;
+      depth_value = depth_value * (1.0 / 0.3048);  // feet
+      safety_depth = safety_depth * (1.0 / 0.3048);
       break;
     case 2:
-      depth_value = depth_value * 3 * 39.37 / (36 * 6);  // fathoms
-      safety_depth = safety_depth * 3 * 39.37 / (36 * 6);
+      depth_value = depth_value * (1.0 / 0.3048) / 6;  // fathoms
+      safety_depth = safety_depth * (1.0 / 0.3048) / 6;
       break;
     default:
       break;
@@ -3816,14 +3816,10 @@ static wxString _LITDSN01(S57Obj *obj)
 
   if (UNKNOWN != height) {
     wxString s;
-    switch (ps52plib->m_nDepthUnitDisplay) {
-      case 0:  // feet
-      case 2:  // fathoms
-        s.Printf(_T("%3.0fft"), height * 3 * 39.37 / 36);
-        break;
-      default:
-        s.Printf(_T("%3.0fm"), height);
-        break;
+    if (ps52plib->m_nHeightUnitDisplay == 1) { // feet
+      s.Printf(_T("%3.0fft"), height * (1.0 / 0.3048));
+    } else { // meters
+      s.Printf(_T("%3.0fm"), height);
     }
 
     s.Trim(false);  // remove leading spaces
