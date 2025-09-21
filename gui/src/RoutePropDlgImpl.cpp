@@ -69,8 +69,6 @@ extern MyFrame* gFrame;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern TCMgr* ptcmgr;
 
-int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
-
 // Sunrise/twilight calculation for route properties.
 // limitations: latitude below 60, year between 2000 and 2100
 // riset is +1 for rise -1 for set
