@@ -64,7 +64,13 @@ extern double toUsrTemp(double cel_temp, int unit = -1);
 
 extern double toUsrDistance(double nm_distance, int unit = -1);
 extern wxString getUsrDistanceUnit(int unit = -1);
-extern double fromUsrDistance(double usr_distance, int unit, int default_val);
+/** Convert distance from user units to nautical miles.
+ * @param usr_distance Distance in user units
+ * @param unit Unit to convert from, or -1 to use default_val
+ * @param default_val Default unit when unit=-1, or -1 to use g_iDistanceFormat
+ */
+extern double fromUsrDistance(double usr_distance, int unit,
+                              int default_val = -1);
 extern double fromUsrSpeed(double usr_speed, int unit, int default_val);
 
 extern double toUsrDepth(double cel_depth, int unit = -1);

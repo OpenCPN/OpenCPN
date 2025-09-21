@@ -3216,31 +3216,6 @@ wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
 }
 
 /**************************************************************************/
-/*          Converts the distance from the units selected by user to NMi  */
-/**************************************************************************/
-double fromUsrDistance(double usr_distance, int unit) {
-  double ret = NAN;
-  if (unit == -1) unit = g_iDistanceFormat;
-  switch (unit) {
-    case DISTANCE_NMI:  // Nautical miles
-      ret = usr_distance;
-      break;
-    case DISTANCE_MI:  // Statute miles
-      ret = usr_distance / 1.15078;
-      break;
-    case DISTANCE_KM:
-      ret = usr_distance / 1.852;
-      break;
-    case DISTANCE_M:
-      ret = usr_distance / 1852;
-      break;
-    case DISTANCE_FT:
-      ret = usr_distance / 6076.12;
-      break;
-  }
-  return ret;
-}
-/**************************************************************************/
 /*          Converts the speed from the units selected by user to knots   */
 /**************************************************************************/
 double fromUsrSpeed(double usr_speed, int unit) {

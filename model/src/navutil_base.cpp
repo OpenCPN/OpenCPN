@@ -412,7 +412,10 @@ double fromUsrSpeed(double usr_speed, int unit, int default_val) {
 /**************************************************************************/
 double fromUsrDistance(double usr_distance, int unit, int default_val) {
   double ret = NAN;
-  if (unit == -1) unit = default_val;
+  if (unit == -1) {
+    // Use g_iDistanceFormat as default when default_val is -1
+    unit = (default_val == -1) ? g_iDistanceFormat : default_val;
+  }
   switch (unit) {
     case DISTANCE_NMI:  // Nautical miles
       ret = usr_distance;
