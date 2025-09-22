@@ -54,8 +54,6 @@ WayPointman *pWayPointMan;
 
 #include <wx/listimpl.cpp>
 
-WX_DEFINE_LIST(RouteList);
-
 Route::Route() {
   m_bRtIsSelected = false;
   m_bRtIsActive = false;
@@ -228,7 +226,7 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
 RoutePoint *Route::GetPoint(int nWhichPoint) {
   // nWhichPoint is 1-based.
   if (nWhichPoint < 1) return nullptr;
-  if (nWhichPoint > pRoutePointList->size()) return nullptr;
+  if (nWhichPoint > static_cast<int>(pRoutePointList->size())) return nullptr;
   auto pos = pRoutePointList->begin() + nWhichPoint - 1;
   return *pos;
 }

@@ -893,13 +893,8 @@ MyFrame::~MyFrame() {
   // delete pCurrentStack;
 
   //      Free the Route List
-  wxRouteListNode *node = pRouteList->GetFirst();
-
-  while (node) {
-    Route *pRouteDelete = node->GetData();
+  for (Route *pRouteDelete : *pRouteList) {
     delete pRouteDelete;
-
-    node = node->GetNext();
   }
   delete pRouteList;
   pRouteList = NULL;
@@ -3213,7 +3208,7 @@ void MyFrame::ActivateMOB() {
     pSelect->AddSelectableRoutePoint(zlat, zlon, pWP_src);
 
     Route *temp_route = new Route();
-    pRouteList->Append(temp_route);
+    pRouteList->push_back(temp_route);
 
     temp_route->AddPoint(pWP_src);
     temp_route->AddPoint(pWP_MOB);
@@ -6890,7 +6885,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
   pWP_MOB->SetUseSca(false);  // Do not use scaled hiding for MOB
   pAISMOBRoute = new Route();
-  pRouteList->Append(pAISMOBRoute);
+  pRouteList->push_back(pAISMOBRoute);
 
   pAISMOBRoute->AddPoint(pWP_src);
   pAISMOBRoute->AddPoint(pWP_MOB);
