@@ -25,6 +25,7 @@
 #define _ROUTE_H__
 
 #include <functional>
+#include <vector>
 
 #include <wx/colour.h>
 #include <wx/datetime.h>
@@ -389,6 +390,6 @@ private:
   bool m_bsharedWPViz;
 };
 
-WX_DECLARE_LIST(Route, RouteList);  // establish class Route as list member
+using RouteList = std::vector<Route *>;
 
 #endif  // _ROUTE_H__

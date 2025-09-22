@@ -8390,7 +8390,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (m_routeState == 1) {
           m_pMouseRoute = new Route();
           NavObj_dB::GetInstance().InsertRoute(m_pMouseRoute);
-          pRouteList->Append(m_pMouseRoute);
+          pRouteList->push_back(m_pMouseRoute);
           r_rband.x = x;
           r_rband.y = y;
         }
@@ -8684,7 +8684,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         if (!m_pMeasureRoute) {
           m_pMeasureRoute = new Route();
-          pRouteList->Append(m_pMeasureRoute);
+          pRouteList->push_back(m_pMeasureRoute);
         }
 
         if (m_nMeasureState == 1) {
@@ -9008,7 +9008,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (m_routeState == 1) {
           m_pMouseRoute = new Route();
           m_pMouseRoute->SetHiLite(50);
-          pRouteList->Append(m_pMouseRoute);
+          pRouteList->push_back(m_pMouseRoute);
           r_rband.x = x;
           r_rband.y = y;
           NavObj_dB::GetInstance().InsertRoute(m_pMouseRoute);
@@ -9261,7 +9261,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         if (m_nMeasureState == 1) {
           m_pMeasureRoute = new Route();
-          pRouteList->Append(m_pMeasureRoute);
+          pRouteList->push_back(m_pMeasureRoute);
           r_rband.x = x;
           r_rband.y = y;
         }
@@ -10781,15 +10781,11 @@ void pupHandler_PasteRoute() {
   // don't create a new route.
   if (mergepoints && answer == wxID_YES &&
       existingWaypointCounter == pasted->GetnPoints()) {
-    wxRouteListNode *route_node = pRouteList->GetFirst();
-    while (route_node) {
-      Route *proute = route_node->GetData();
-
+    for (Route *proute : *pRouteList) {
       if (pasted->m_RouteNameString == proute->m_RouteNameString) {
         createNewRoute = false;
         break;
       }
-      route_node = route_node->GetNext();
     }
   }
 
@@ -10836,7 +10832,7 @@ void pupHandler_PasteRoute() {
   }
 
   if (createNewRoute) {
-    pRouteList->Append(newRoute);
+    pRouteList->push_back(newRoute);
     // pConfig->AddNewRoute(newRoute);  // use auto next num
     NavObj_dB::GetInstance().InsertRoute(newRoute);
 
@@ -12921,10 +12917,7 @@ void ChartCanvas::DrawActiveTrackInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 
 void ChartCanvas::DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Route *active_route = NULL;
-
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route *pRouteDraw = node->GetData();
+  for (Route *pRouteDraw : *pRouteList) {
     if (pRouteDraw->IsActive() || pRouteDraw->IsSelected()) {
       active_route = pRouteDraw;
       continue;
@@ -12942,9 +12935,7 @@ void ChartCanvas::DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Route *active_route = NULL;
 
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route *pRouteDraw = node->GetData();
+  for (Route *pRouteDraw : *pRouteList) {
     if (pRouteDraw->IsActive() || pRouteDraw->IsSelected()) {
       active_route = pRouteDraw;
       break;

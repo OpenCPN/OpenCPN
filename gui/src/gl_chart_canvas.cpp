@@ -1519,10 +1519,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
     TrackGui(*pTrackDraw).Draw(m_pParentCanvas, dc, vp, vp.GetBBox());
   }
 
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route *pRouteDraw = node->GetData();
-
+  for (Route *pRouteDraw : *pRouteList) {
     if (!pRouteDraw) continue;
 
     /* defer rendering active routes until later */
@@ -1555,10 +1552,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
     // We need Track::Draw() to dynamically render last (ownship) point.
   }
 
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route *pRouteDraw = node->GetData();
-
+  for (Route *pRouteDraw : *pRouteList) {
     int drawit = 0;
     if (!pRouteDraw) continue;
 

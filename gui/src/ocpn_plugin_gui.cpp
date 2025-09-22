@@ -1079,11 +1079,8 @@ wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
 
 wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
-  RouteList* list = pRouteList;
 
-  wxRouteListNode* prpnode = list->GetFirst();
-  while (prpnode) {
-    Route* proute = prpnode->GetData();
+  for (Route* proute : *pRouteList) {
     switch (req) {
       case OBJECTS_ALL:
         result.Add(proute->m_GUID);
@@ -1095,8 +1092,6 @@ wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
         if (proute->m_bIsInLayer) result.Add(proute->m_GUID);
         break;
     }
-
-    prpnode = prpnode->GetNext();  // Route
   }
 
   return result;
@@ -1178,7 +1173,7 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
   }
   route->m_btemp = (b_permanent == false);
 
-  pRouteList->Append(route);
+  pRouteList->push_back(route);
 
   if (b_permanent) {
     // pConfig->AddNewRoute(route);
@@ -1838,16 +1833,11 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  wxRouteListNode* node = pRouteList->GetFirst();
-  while (node) {
-    Route* proute = node->GetData();
+  for (Route* proute : *pRouteList) {
     for (RoutePoint* prp : *proute->pRoutePointList) {
       if (prp == pWP) nCount++;
     }
-
-    node = node->GetNext();
   }
-
   return nCount;
 }
 
@@ -1924,13 +1914,10 @@ int PlugIn_Waypoint_ExV2::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  wxRouteListNode* node = pRouteList->GetFirst();
-  while (node) {
-    Route* proute = node->GetData();
+  for (Route* proute : *pRouteList) {
     for (RoutePoint* prp : *proute->pRoutePointList) {
       if (prp == pWP) nCount++;
     }
-    node = node->GetNext();
   }
 
   return nCount;
@@ -2250,7 +2237,7 @@ bool AddPlugInRouteExV2(PlugIn_Route_ExV2* proute, bool b_permanent) {
   route->SetVisible(proute->m_isVisible);
   route->m_RouteDescription = proute->m_Description;
 
-  pRouteList->Append(route);
+  pRouteList->push_back(route);
 
   if (b_permanent) {
     // pConfig->AddNewRoute(route);
@@ -2575,7 +2562,7 @@ bool AddPlugInRouteEx(PlugIn_Route_Ex* proute, bool b_permanent) {
   route->SetVisible(proute->m_isVisible);
   route->m_RouteDescription = proute->m_Description;
 
-  pRouteList->Append(route);
+  pRouteList->push_back(route);
 
   if (b_permanent) {
     // pConfig->AddNewRoute(route);
@@ -3250,7 +3237,7 @@ wxString NavToHerePI(double lat, double lon) {
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
 
   Route* temp_route = new Route();
-  pRouteList->Append(temp_route);
+  pRouteList->push_back(temp_route);
 
   temp_route->AddPoint(pWP_src);
   temp_route->AddPoint(pWP_dest);
@@ -3418,7 +3405,7 @@ void NavigateToWaypoint(wxString waypoint_guid) {
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
 
   Route* temp_route = new Route();
-  pRouteList->Append(temp_route);
+  pRouteList->push_back(temp_route);
 
   temp_route->AddPoint(pWP_src);
   temp_route->AddPoint(prp);

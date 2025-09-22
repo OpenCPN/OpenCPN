@@ -663,9 +663,7 @@ void NavObj_dB::CountImportNavObjects() {
     }
 
     input_set->LoadAllGPXRouteObjects();
-    for (wxRouteListNode* node = pRouteList->GetFirst(); node;
-         node = node->GetNext()) {
-      Route* route_import = node->GetData();
+    for (Route* route_import : *pRouteList) {
       m_nImportObjects++;
       m_nimportRoutes++;
       m_nImportObjects += route_import->GetnPoints();
@@ -710,9 +708,7 @@ bool NavObj_dB::ImportLegacyRoutes() {
   std::vector<Route*> routes_added;
   //  Add all routes to database
   int nroute = 0;
-  for (wxRouteListNode* node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route* route_import = node->GetData();
+  for (Route* route_import : *pRouteList) {
     if (InsertRoute(route_import)) {
       routes_added.push_back(route_import);
     }

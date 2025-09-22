@@ -109,39 +109,28 @@ Routeman::~Routeman() {
 }
 
 bool Routeman::IsRouteValid(Route *pRoute) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    if (pRoute == node->GetData()) return true;
-    node = node->GetNext();
+  for (Route *route : *pRouteList) {
+    if (pRoute == route) return true;
   }
   return false;
 }
 
 //    Make a 2-D search to find the route containing a given waypoint
 Route *Routeman::FindRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
-
+  for (Route *proute : *pRouteList) {
     for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp == pWP) return proute;
     }
-    node = node->GetNext();
   }
   return NULL;  // not found
 }
 
 //    Make a 2-D search to find the route containing a given waypoint, by GUID
 Route *Routeman::FindRouteContainingWaypoint(const std::string &guid) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
-
+  for (Route *proute : *pRouteList) {
     for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp->m_GUID == guid) return proute;
     }
-
-    node = node->GetNext();
   }
 
   return NULL;  // not found
@@ -149,15 +138,12 @@ Route *Routeman::FindRouteContainingWaypoint(const std::string &guid) {
 
 //    Make a 2-D search to find the visual route containing a given waypoint
 Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
+  for (Route *proute : *pRouteList) {
     if (proute->IsVisible()) {
       for (RoutePoint *prp : *proute->pRoutePointList) {
         if (prp == pWP) return proute;
       }
     }
-    node = node->GetNext();
   }
 
   return NULL;  // not found
@@ -166,10 +152,7 @@ Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
 wxArrayPtrVoid *Routeman::GetRouteArrayContaining(RoutePoint *pWP) {
   wxArrayPtrVoid *pArray = new wxArrayPtrVoid;
 
-  wxRouteListNode *route_node = pRouteList->GetFirst();
-  while (route_node) {
-    Route *proute = route_node->GetData();
-
+  for (Route *proute : *pRouteList) {
     for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp == pWP) {  // success
         pArray->Add((void *)proute);
@@ -177,8 +160,6 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining(RoutePoint *pWP) {
                 // duplicate points in the route...See FS#1743
       }
     }
-
-    route_node = route_node->GetNext();  // next route
   }
 
   if (pArray->GetCount())
@@ -806,7 +787,8 @@ bool Routeman::DeleteRoute(Route *pRoute) {
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
-    pRouteList->DeleteObject(pRoute);
+    auto pos = std::find(pRouteList->begin(), pRouteList->end(), pRoute);
+    if (pos != pRouteList->end()) pRouteList->erase(pos);
 
     m_route_dlg_ctx.route_mgr_dlg_update_list_ctrl();
 
@@ -860,9 +842,7 @@ void Routeman::DeleteAllRoutes() {
   ::wxBeginBusyCursor();
 
   //    Iterate on the RouteList
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
+  for (Route *proute : *pRouteList) {
     if (proute == pAISMOBRoute) {
       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
         return;
@@ -870,8 +850,6 @@ void Routeman::DeleteAllRoutes() {
       pAISMOBRoute = 0;
       ::wxBeginBusyCursor();
     }
-
-    node = node->GetNext();
     if (proute->m_bIsInLayer) continue;
 
     DeleteRoute(proute);
@@ -938,14 +916,9 @@ wxString Routeman::GetRouteResequenceMessage(void) {
 }
 
 Route *Routeman::FindRouteByGUID(const wxString &guid) {
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
-
+  for (Route *pRoute : *pRouteList) {
     if (pRoute->m_GUID == guid) return pRoute;
-    node1 = node1->GetNext();
   }
-
   return NULL;
 }
 
@@ -953,7 +926,6 @@ Track *Routeman::FindTrackByGUID(const wxString &guid) {
   for (Track *pTrack : g_TrackList) {
     if (pTrack->m_GUID == guid) return pTrack;
   }
-
   return NULL;
 }
 
@@ -1427,9 +1399,7 @@ RoutePoint *WayPointman::GetOtherNearbyWaypoint(double lat, double lon,
 
 bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
   if (pWP->m_bIsolatedMark) return pWP->IsVisible();  // isolated point
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
+  for (Route *proute : *pRouteList) {
     if (proute && proute->pRoutePointList) {
       auto &list = proute->pRoutePointList;
       auto pos = std::find(list->begin(), list->end(), pWP);
@@ -1437,7 +1407,6 @@ bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
         if (proute->IsVisible()) return true;
       }
     }
-    node = node->GetNext();
   }
   if (pWP->IsShared())  // is not visible as part of route, but still exists as
                         // a waypoint

@@ -33,15 +33,19 @@
 #include <vector>
 
 #include "model/datetime.h"
+#include "model/route.h"
 #include "bbox.h"
 #include "hyperlink.h"
 #include "route.h"
 #include "vector2D.h"
 
+class Track;  // forward
 extern std::vector<Track *> g_TrackList;
 
 class ActiveTrack;                  // forward
 extern ActiveTrack *g_pActiveTrack; /**< global instance */
+
+class Route;  // circular
 
 struct SubTrack {
   SubTrack() {}

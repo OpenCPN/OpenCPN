@@ -1023,11 +1023,11 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
     m_pHead->CloneRoute(m_pRoute, 1, nSelected, _("_A"));
     m_pTail->CloneRoute(m_pRoute, nSelected, m_pRoute->GetnPoints(), _("_B"),
                         true);
-    pRouteList->Append(m_pHead);
+    pRouteList->push_back(m_pHead);
     // pConfig->AddNewRoute(m_pHead);
     NavObj_dB::GetInstance().InsertRoute(m_pHead);
 
-    pRouteList->Append(m_pTail);
+    pRouteList->push_back(m_pTail);
     // pConfig->AddNewRoute(m_pTail);
     NavObj_dB::GetInstance().InsertRoute(m_pTail);
 

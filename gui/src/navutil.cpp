@@ -2845,19 +2845,12 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
     }
   }
   // RTEs and TRKs
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
-
+  for (Route *pRoute : *pRouteList) {
     bool b_add = true;
-
     if (bviz_only && !pRoute->IsVisible()) b_add = false;
-
     if (pRoute->m_bIsInLayer && !blayer) b_add = false;
 
     if (b_add) pgpx->AddGPXRoute(pRoute);
-
-    node1 = node1->GetNext();
   }
 
   for (Track *pTrack : g_TrackList) {

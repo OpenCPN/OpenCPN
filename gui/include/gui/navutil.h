@@ -41,6 +41,7 @@
 #include "chartdbs.h"
 // nclude "RoutePoint.h"
 #include "vector2D.h"
+#include "model/route.h"
 #include "model/route_point.h"
 #include "model/select_item.h"
 #include "ocpndc.h"
@@ -116,7 +117,6 @@ class wxGenericProgressDialog;
 class ocpnDC;
 class NavObjectCollection1;
 class TrackPoint;
-class RouteList;
 class canvasConfig;
 class RoutePoint;
 class Track;
