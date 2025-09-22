@@ -25,7 +25,7 @@
 #ifndef _SELECTITEM_H__
 #define _SELECTITEM_H__
 
-#include <wx/list.h>
+#include <vector>
 
 class SelectItem {
 public:
@@ -47,7 +47,6 @@ public:
   int m_Data4;
 };
 
-WX_DECLARE_LIST(SelectItem,
-                SelectableItemList);  // establish class as list member
+using SelectableItemList = std::vector<SelectItem *>;
 
 #endif
