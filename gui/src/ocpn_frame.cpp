@@ -5927,8 +5927,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
                 cc->DoCanvasUpdate();
                 if (bnew_view)
                   cc->Refresh(false);  // honor ownship state update
-              } else
-                cc->Refresh(false);
+              }  // else
+                 // cc->Refresh(false);
             } else {
               // Pick up SOG=0, COG=NAN report at 10Hz.
               if (std::isnan(gCog)) cc->Refresh(false);

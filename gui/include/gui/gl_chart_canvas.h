@@ -339,6 +339,7 @@ protected:
 
   float m_total_zoom_val;
   float m_final_zoom_val;
+  float m_step_zoom_val;
 
   bool m_bUseGLSL;
 
