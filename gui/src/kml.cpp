@@ -1,12 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Read and write KML Format
- *(http://en.wikipedia.org/wiki/Keyhole_Markup_Language) Author:   Jesper
- *Weissglas
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2012 by David S. Register                               *
+ *   Copyright (C) 2012 Jesper Weissglass                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,9 +16,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Implement kml.h -- Read and write KML language
  */
 
 #include "config.h"
@@ -36,19 +33,24 @@
 #endif
 
 #include <vector>
+#include <sstream>
+#include <string>
 
-#include <wx/file.h>
-#include <wx/datetime.h>
 #include <wx/clipbrd.h>
+#include <wx/datetime.h>
+#include <wx/file.h>
+#include <wx/log.h>
+#include <wx/string.h>
 
 #include "model/ocpn_types.h"
-#include "navutil.h"
-#include "tinyxml.h"
-#include "kml.h"
-#include "model/track.h"
-#include "model/route.h"
-#include "ocpn_frame.h"
 #include "model/own_ship.h"
+#include "model/route.h"
+#include "model/track.h"
+
+#include "kml.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "tinyxml.h"
 
 int Kml::seqCounter = 0;
 bool Kml::insertQtVlmExtendedData = false;
@@ -154,11 +156,11 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint(TiXmlNode* node,
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
-  wxString pointName = wxEmptyString;
+  wxString pointName = "";
   TiXmlElement* e = node->Parent()->FirstChild("name")->ToElement();
   if (e) pointName = wxString(e->GetText(), wxConvUTF8);
 
-  wxString pointDescr = wxEmptyString;
+  wxString pointDescr = "";
   e = node->Parent()->FirstChildElement("description");
 
   // If the <description> is an XML element we must convert it to text,

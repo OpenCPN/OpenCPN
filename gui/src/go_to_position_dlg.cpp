@@ -35,7 +35,7 @@
 
 #include "model/position_parser.h"
 #include "chcanv.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 

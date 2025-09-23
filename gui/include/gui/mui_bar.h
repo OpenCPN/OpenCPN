@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  MUI Control Bar
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,16 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * MUI (Modern User Interface) Control bar
  */
 
-#ifndef __muibar_H__
-#define __muibar_H__
+#ifndef muibar_H_
+#define muibar_H_
 
 #include <cstdint>
+
+#include "canvas_options.h"
+#include "chcanv.h"
+#include "ocpn_frame.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -49,11 +50,8 @@ enum {
   CO_PUSH                        ///< Push animation
 };
 
-class MyFrame;
-class ChartCanvas;
-class MUIButton;
-class MUITextButton;
-class CanvasOptions;
+class MUIButton;      // forward in mui_bar.cpp
+class MUITextButton;  // forward in mui_bar.cpp
 
 /**
  * Modern User Interface Control Bar for OpenCPN. Provides a customizable
@@ -73,7 +71,7 @@ public:
 
   void onCanvasOptionsAnimationTimerEvent(wxTimerEvent &event);
 
-  void SetBestPosition(void);
+  void SetBestPosition();
   void UpdateDynamicValues();
   int GetOrientation() { return m_orientation; }
   void ResetCanvasOptions();
@@ -93,7 +91,7 @@ public:
   wxSize m_size;
 
 private:
-  void Init(void);
+  void Init();
   void CreateControls();
   void PullCanvasOptions();
   void HandleMenuClick();

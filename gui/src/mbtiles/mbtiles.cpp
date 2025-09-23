@@ -22,12 +22,14 @@
 #include <sstream>
 #include <unordered_map>
 
+#include <sqlite3.h>  //We need some defines
+#include <SQLiteCpp/SQLiteCpp.h>
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 //  Why are these not in wx/prec.h?
 #include <wx/dir.h>
@@ -40,17 +42,17 @@
 #include <wx/mstream.h>
 #include <sys/stat.h>
 
-#include <sqlite3.h>  //We need some defines
-#include <SQLiteCpp/SQLiteCpp.h>
+#include "mbtiles.h"
 
+#include "model/config_vars.h"
 #include "chcanv.h"
 #include "gl_chart_canvas.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
+
 #ifdef ocpnUSE_GL
 #include "shaders.h"
 #endif
-#include "mbtiles.h"
-#include "model/config_vars.h"
 
 //  Missing from MSW include files
 #ifdef _MSC_VER
@@ -69,15 +71,6 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 #endif
 
-#ifdef OCPN_USE_CONFIG
-#include "navutil.h"
-extern MyConfig* pConfig;
-#endif
-
-/// Raster Zoom Modifier value from advanced display preference pane
-/// Physically located in ocpn_app.cpp
-extern int g_chart_zoom_modifier_raster;
-
 #define LON_UNDEF NAN
 #define LAT_UNDEF NAN
 
@@ -87,8 +80,6 @@ static double osm_zoom_scale[22];
 
 //  Meters per pixel, by zoom factor
 static double osm_zoom_mpp[22];
-
-extern MyFrame* gFrame;
 
 // Private tile shader source
 static const GLchar* tile_vertex_shader_source =
@@ -152,7 +143,7 @@ ChartMbTiles::ChartMbTiles() {
 
   m_Chart_Skew = 0.0;
 
-  m_datum_str = _T("WGS84");  // assume until proven otherwise
+  m_datum_str = "WGS84";  // assume until proven otherwise
   m_projection = PROJECTION_WEB_MERCATOR;
   m_image_type = wxBITMAP_TYPE_ANY;
 
@@ -176,8 +167,8 @@ ChartMbTiles::ChartMbTiles() {
 
 #ifdef OCPN_USE_CONFIG
   wxFileConfig* pfc = (wxFileConfig*)pConfig;
-  pfc->SetPath(_T ( "/Settings" ));
-  pfc->Read(_T ( "DebugMBTiles" ), &m_b_cdebug, 0);
+  pfc->SetPath("/Settings");
+  pfc->Read("DebugMBTiles", &m_b_cdebug, 0);
 #endif
   m_db = NULL;
 }
@@ -555,7 +546,7 @@ InitReturn ChartMbTiles::PreInit(const wxString& name, ChartInitFlag init_flags,
   return INIT_OK;
 }
 
-InitReturn ChartMbTiles::PostInit(void) {
+InitReturn ChartMbTiles::PostInit() {
   // Create the persistent MBTiles database file
   const char* name_UTF8 = "";
   wxCharBuffer utf8CB = m_FullPath.ToUTF8();  // the UTF-8 buffer
@@ -636,7 +627,7 @@ bool ChartMbTiles::GetTileTexture(SharedTilePtr tile) {
   } else {
     // The tile has been decompressed to memory : load it into OpenGL texture
     // memory
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     glEnable(GL_COLOR_MATERIAL);
 #endif
     glGenTextures(1, &tile->m_gl_texture_name);

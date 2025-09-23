@@ -12,13 +12,11 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _LOAD_ERRORS_DLG_H__
-#define _LOAD_ERRORS_DLG_H__
+#ifndef LOAD_ERRORS_DLG_H_
+#define LOAD_ERRORS_DLG_H_
 
 #include <wx/event.h>
 #include <wx/window.h>
@@ -37,4 +35,4 @@ private:
   wxWindow* m_parent;
 };
 
-#endif  //  _LOAD_ERRORS_DLG_H__
+#endif  //  LOAD_ERRORS_DLG_H_

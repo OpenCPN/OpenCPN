@@ -63,7 +63,7 @@
 #include "scrollingdialog.h"
 #endif
 
-#include "LinkPropDlg.h"
+#include "link_prop_dlg.h"
 
 #ifdef __WXOSX__
 #define DIALOG_PARENT wxFrame

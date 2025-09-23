@@ -49,7 +49,7 @@
 #include "gshhs.h"
 #include "gui_lib.h"
 #include "idx_entry.h"
-#include "MUIBar.h"
+#include "mui_bar.h"
 #include "notification_manager_gui.h"
 #include "observable_evtvar.h"
 #include "observable.h"

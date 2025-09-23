@@ -1,10 +1,4 @@
 /**************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  MarkProperties Support
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement mark_info.h -- Waypoint properties dialog.
+ */
+
 #include "config.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -31,6 +30,7 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/arrimpl.cpp>
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
 #include <wx/print.h>
@@ -39,58 +39,41 @@
 #include <wx/clrpicker.h>
 #include <wx/bmpbuttn.h>
 
-#include "chcanv.h"
-#include "gui_lib.h"
-#include "MarkInfo.h"
+#include "model/config_vars.h"
 #include "model/georef.h"
+#include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/position_parser.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
-#include "navutil.h"  // for Route
+#include "model/svg_utils.h"
+
+#include "chcanv.h"
+#include "gui_lib.h"
+#include "mark_info.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "routemanagerdialog.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
-#include "model/svg_utils.h"
+#include "tcmgr.h"
 #include "TCWin.h"
 #include "ui_utils.h"
-#include "model/navobj_db.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <QtWidgets/QScroller>
 #endif
 
-MarkInfoDlg* g_pMarkInfoDialog;
+#define EXTENDED_PROP_PAGE 2  // Index of the extended properties page
 
-extern TCMgr* ptcmgr;
-extern MyConfig* pConfig;
-extern Routeman* g_pRouteMan;
-extern RouteManagerDialog* pRouteManagerDialog;
-extern RoutePropDlgImpl* pRoutePropDialog;
-extern ocpnStyle::StyleManager* g_StyleManager;
-
-extern MyFrame* gFrame;
-extern OCPNPlatform* g_Platform;
-extern wxString g_default_wp_icon;
-
-// Global print data, to remember settings during the session
-
-// Global page setup data
-
-extern float g_MarkScaleFactorExp;
-
-extern MarkInfoDlg* g_pMarkInfoDialog;
-
-#include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
-#define EXTENDED_PROP_PAGE 2  // Index of the extended properties page
+MarkInfoDlg* g_pMarkInfoDialog;
 
 OCPNIconCombo::OCPNIconCombo(wxWindow* parent, wxWindowID id,
                              const wxString& value, const wxPoint& pos,
@@ -150,7 +133,7 @@ int OCPNIconCombo::Append(const wxString& item, wxBitmap bmp) {
   return idx;
 }
 
-void OCPNIconCombo::Clear(void) {
+void OCPNIconCombo::Clear() {
   wxOwnerDrawnComboBox::Clear();
   bmpArray.Clear();
 }
@@ -255,7 +238,7 @@ void MarkInfoDlg::OnActivate(wxActivateEvent& event) {
     pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
-void MarkInfoDlg::initialize_images(void) {
+void MarkInfoDlg::initialize_images() {
   wxString iconDir = g_Platform->GetSharedDataDir() + "uidata/MUI_flat/";
   _img_MUI_settings_svg = LoadSVG(iconDir + "MUI_settings.svg",
                                   2 * GetCharHeight(), 2 * GetCharHeight());
@@ -339,7 +322,7 @@ void MarkInfoDlg::Create() {
   wxStaticText* name_cb_label =
       new wxStaticText(props_panel, wxID_ANY, _("Show waypoint name"));
   m_checkBoxShowName =
-      new wxCheckBox(props_panel, wxID_ANY, wxEmptyString, wxDefaultPosition,
+      new wxCheckBox(props_panel, wxID_ANY, "", wxDefaultPosition,
                      wxDefaultSize, wxALIGN_CENTER_VERTICAL);
   m_checkBoxShowName->Bind(wxEVT_CHECKBOX,
                            &MarkInfoDlg::OnShowWaypointNameSelectBasic, this);
@@ -370,9 +353,9 @@ void MarkInfoDlg::Create() {
       new wxStaticBox(m_panelBasicProperties, wxID_ANY, _("Description"));
   wxStaticBoxSizer* desc_sizer = new wxStaticBoxSizer(desc_box, wxHORIZONTAL);
   bSizerBasicProperties->Add(desc_sizer, 1, wxALL | wxEXPAND, 8);
-  m_textDescription = new wxTextCtrl(
-      m_panelBasicProperties, ID_DESCR_CTR_BASIC, wxEmptyString,
-      wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
+  m_textDescription = new wxTextCtrl(m_panelBasicProperties, ID_DESCR_CTR_BASIC,
+                                     "", wxDefaultPosition, wxDefaultSize,
+                                     wxTE_MULTILINE | wxTE_READONLY);
   m_textDescription->SetMinSize(wxSize(-1, 80));
   desc_sizer->Add(m_textDescription, 1, wxEXPAND);
 
@@ -407,17 +390,17 @@ void MarkInfoDlg::Create() {
   m_menuLink = new wxMenu();
   wxMenuItem* m_menuItemDelete;
   m_menuItemDelete = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Delete")),
-                                    wxEmptyString, wxITEM_NORMAL);
+                                    "", wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemDelete);
 
   wxMenuItem* m_menuItemEdit;
-  m_menuItemEdit = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Edit")),
-                                  wxEmptyString, wxITEM_NORMAL);
+  m_menuItemEdit = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Edit")), "",
+                                  wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemEdit);
 
   wxMenuItem* m_menuItemAdd;
   m_menuItemAdd = new wxMenuItem(m_menuLink, wxID_ANY, wxString(_("Add new")),
-                                 wxEmptyString, wxITEM_NORMAL);
+                                 "", wxITEM_NORMAL);
   m_menuLink->Append(m_menuItemAdd);
 
   wxBoxSizer* bSizer9 = new wxBoxSizer(wxHORIZONTAL);
@@ -442,7 +425,7 @@ void MarkInfoDlg::Create() {
   bSizer15 = new wxBoxSizer(wxVERTICAL);
 
   m_textCtrlExtDescription =
-      new wxTextCtrl(m_panelDescription, ID_DESCR_CTR_DESC, wxEmptyString,
+      new wxTextCtrl(m_panelDescription, ID_DESCR_CTR_DESC, "",
                      wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
   bSizer15->Add(m_textCtrlExtDescription, 1, wxALL | wxEXPAND, 5);
 
@@ -475,7 +458,7 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
   m_checkBoxVisible = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
-                                     ID_CHECKBOX_VIS_EXT, wxEmptyString);
+                                     ID_CHECKBOX_VIS_EXT, "");
   gbSizerInnerExtProperties->Add(m_checkBoxVisible);
   wxStaticText* m_staticTextVisible = new wxStaticText(
       sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show on chart"));
@@ -483,7 +466,7 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties->Add(0, 0, 1, wxEXPAND, 0);
 
   m_checkBoxScaMin = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
-                                    ID_CHECKBOX_SCAMIN_VIS, wxEmptyString);
+                                    ID_CHECKBOX_SCAMIN_VIS, "");
   gbSizerInnerExtProperties->Add(m_checkBoxScaMin, 0, wxALIGN_CENTRE_VERTICAL,
                                  0);
   m_staticTextScaMin = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
@@ -493,8 +476,8 @@ void MarkInfoDlg::Create() {
   m_textScaMin = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY);
   gbSizerInnerExtProperties->Add(m_textScaMin, 0, wxALL | wxEXPAND, 5);
 
-  m_checkBoxShowNameExt = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
-                                         wxID_ANY, wxEmptyString);
+  m_checkBoxShowNameExt =
+      new wxCheckBox(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "");
   m_checkBoxShowNameExt->Bind(wxEVT_CHECKBOX,
                               &MarkInfoDlg::OnShowWaypointNameSelectExt, this);
   gbSizerInnerExtProperties->Add(m_checkBoxShowNameExt);
@@ -521,9 +504,8 @@ void MarkInfoDlg::Create() {
                                      wxID_ANY, _("Color"));
   gbRRExtProperties->Add(m_staticTextRR4, 0, wxLEFT, 5);
 
-  wxString rrAlt[] = {_("None"), _T( "1" ), _T( "2" ), _T( "3" ),
-                      _T( "4" ), _T( "5" ), _T( "6" ), _T( "7" ),
-                      _T( "8" ), _T( "9" ), _T( "10" )};
+  wxString rrAlt[] = {_("None"), "1", "2", "3", "4", "5",
+                      "6",       "7", "8", "9", "10"};
   m_ChoiceWaypointRangeRingsNumber =
       new wxChoice(sbSizerExtProperties->GetStaticBox(), ID_WPT_RANGERINGS_NO,
                    wxDefaultPosition, wxDefaultSize, 11, rrAlt);
@@ -559,9 +541,9 @@ void MarkInfoDlg::Create() {
                        _("GUID"), wxDefaultPosition, wxDefaultSize, 0);
   gbSizerInnerExtProperties2->Add(m_staticTextGuid, 0, wxALIGN_CENTRE_VERTICAL,
                                   0);
-  m_textCtrlGuid = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(),
-                                  wxID_ANY, wxEmptyString, wxDefaultPosition,
-                                  wxDefaultSize, wxTE_READONLY);
+  m_textCtrlGuid =
+      new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "",
+                     wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
   m_textCtrlGuid->SetEditable(false);
   gbSizerInnerExtProperties2->Add(m_textCtrlGuid, 0, wxALL | wxEXPAND, 5);
 
@@ -584,9 +566,9 @@ void MarkInfoDlg::Create() {
       m_comboBoxTideStation, 0, wxALL | wxEXPAND | wxALIGN_CENTRE_VERTICAL, 5);
 
 #else
-  m_comboBoxTideStation = new wxComboBox(
-      sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString,
-      wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
+  m_comboBoxTideStation =
+      new wxComboBox(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "",
+                     wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
   gbSizerInnerExtProperties1->Add(
       m_comboBoxTideStation, 0, wxALL | wxEXPAND | wxALIGN_CENTRE_VERTICAL, 5);
 #endif
@@ -606,16 +588,16 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(m_staticTextArrivalRadius, 0,
                                   wxALIGN_CENTRE_VERTICAL, 0);
   m_textArrivalRadius =
-      new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
-                     wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+      new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "",
+                     wxDefaultPosition, wxDefaultSize, 0);
   m_textArrivalRadius->SetToolTip(
       _("Distance from the waypoint at which OpenCPN will consider the "
         "waypoint reached. Used for automatic waypoint advancement during "
         "active navigation."));
   gbSizerInnerExtProperties1->Add(m_textArrivalRadius, 0, wxALL | wxEXPAND, 5);
   m_staticTextArrivalUnits =
-      new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
-                       wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+      new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "",
+                       wxDefaultPosition, wxDefaultSize, 0);
   gbSizerInnerExtProperties1->Add(m_staticTextArrivalUnits, 0,
                                   wxALIGN_CENTRE_VERTICAL, 0);
 
@@ -625,8 +607,8 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(m_staticTextPlSpeed, 0,
                                   wxALIGN_CENTRE_VERTICAL, 0);
   m_textCtrlPlSpeed =
-      new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
-                     wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+      new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "",
+                     wxDefaultPosition, wxDefaultSize, 0);
   m_textCtrlPlSpeed->SetToolTip(_(
       "Enter the planned vessel speed for the leg FOLLOWING this waypoint. "
       "This speed is used when traveling FROM this waypoint TO the next "
@@ -648,8 +630,8 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(m_staticTextEtd, 0, wxALIGN_CENTRE_VERTICAL,
                                   0);
   wxBoxSizer* bsTimestamp = new wxBoxSizer(wxHORIZONTAL);
-  m_cbEtdPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(),
-                                  wxID_ANY, wxEmptyString);
+  m_cbEtdPresent =
+      new wxCheckBox(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "");
   m_cbEtdPresent->SetToolTip(
       _("Enable to manually set a planned departure time (ETD) for this "
         "waypoint.\n"
@@ -775,7 +757,7 @@ void MarkInfoDlg::OnNotebookPageChanged(wxNotebookEvent& event) {
     wxString n;
     int i = 0;
     m_comboBoxTideStation->Clear();
-    m_comboBoxTideStation->Append(wxEmptyString);
+    m_comboBoxTideStation->Append("");
     for (auto ts : m_tss) {
       if (i == TIDESTATION_BATCH_SIZE) {
         break;
@@ -794,7 +776,7 @@ void MarkInfoDlg::OnNotebookPageChanged(wxNotebookEvent& event) {
   }
 }
 
-void MarkInfoDlg::RecalculateSize(void) {
+void MarkInfoDlg::RecalculateSize() {
 #ifdef __ANDROID__
 
   Layout();
@@ -860,7 +842,7 @@ MarkInfoDlg::~MarkInfoDlg() {
 #endif
 }
 
-void MarkInfoDlg::InitialFocus(void) {
+void MarkInfoDlg::InitialFocus() {
   m_textName->SetFocus();
   m_textName->SetInsertionPointEnd();
 }
@@ -1123,15 +1105,15 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
     {
       wxMenuItem* menuItemDelete =
           new wxMenuItem(popup, ID_RCLK_MENU_DELETE_LINK, wxString(_("Delete")),
-                         wxEmptyString, wxITEM_NORMAL);
+                         "", wxITEM_NORMAL);
 #ifdef __WXQT__
       menuItemDelete->SetFont(sFont);
 #endif
       popup->Append(menuItemDelete);
 
       wxMenuItem* menuItemEdit =
-          new wxMenuItem(popup, ID_RCLK_MENU_EDIT_LINK, wxString(_("Edit")),
-                         wxEmptyString, wxITEM_NORMAL);
+          new wxMenuItem(popup, ID_RCLK_MENU_EDIT_LINK, wxString(_("Edit")), "",
+                         wxITEM_NORMAL);
 #ifdef __WXQT__
       menuItemEdit->SetFont(sFont);
 #endif
@@ -1139,8 +1121,8 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
     }
 
     wxMenuItem* menuItemAdd =
-        new wxMenuItem(popup, ID_RCLK_MENU_ADD_LINK, wxString(_("Add New")),
-                       wxEmptyString, wxITEM_NORMAL);
+        new wxMenuItem(popup, ID_RCLK_MENU_ADD_LINK, wxString(_("Add New")), "",
+                       wxITEM_NORMAL);
 #ifdef __WXQT__
     menuItemAdd->SetFont(sFont);
 #endif
@@ -1212,8 +1194,8 @@ void MarkInfoDlg::On_html_link_popupmenu_Click(wxCommandEvent& event) {
     }
     case ID_RCLK_MENU_ADD_LINK: {
       LinkPropImpl* LinkPropDlg = new LinkPropImpl(this);
-      LinkPropDlg->m_textCtrlLinkDescription->SetValue(wxEmptyString);
-      LinkPropDlg->m_textCtrlLinkUrl->SetValue(wxEmptyString);
+      LinkPropDlg->m_textCtrlLinkDescription->SetValue("");
+      LinkPropDlg->m_textCtrlLinkUrl->SetValue("");
       DimeControl(LinkPropDlg);
       LinkPropDlg->ShowWindowModalThenDo([this, LinkPropDlg](int retcode) {
         if (retcode == wxID_OK) {
@@ -1221,10 +1203,10 @@ void MarkInfoDlg::On_html_link_popupmenu_Click(wxCommandEvent& event) {
           link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
           link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
           // Check if decent
-          if (link->DescrText == wxEmptyString) {
+          if (link->DescrText == "") {
             link->DescrText = link->Link;
           }
-          if (link->Link == wxEmptyString) {
+          if (link->Link == "") {
             delete link;
           } else {
             m_pRoutePoint->m_HyperlinkList->push_back(link);
@@ -1292,7 +1274,7 @@ void MarkInfoDlg::OnCopyPasteLatLon(wxCommandEvent& event) {
       break;
     }
     case ID_RCLK_MENU_COPY_LL: {
-      result << toSDMM(1, lat, true) << _T('\t');
+      result << toSDMM(1, lat, true) << '\t';
       result << toSDMM(2, lon, true);
       break;
     }
@@ -1464,7 +1446,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     if (m_comboBoxTideStation->GetStringSelection() !=
         m_pRoutePoint->m_TideStation) {
       m_comboBoxTideStation->Clear();
-      m_comboBoxTideStation->Append(wxEmptyString);
+      m_comboBoxTideStation->Append("");
       if (!m_pRoutePoint->m_TideStation.IsEmpty()) {
         m_comboBoxTideStation->Append(m_pRoutePoint->m_TideStation);
         m_comboBoxTideStation->SetSelection(1);
@@ -1476,7 +1458,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textCtrlPlSpeed->SetValue(wxString::Format(
           "%.1f", toUsrSpeed(m_pRoutePoint->GetPlannedSpeed())));
     } else {
-      m_textCtrlPlSpeed->SetValue(wxEmptyString);
+      m_textCtrlPlSpeed->SetValue("");
     }
 
     bool isLastWaypoint = false;
@@ -1655,7 +1637,7 @@ void MarkInfoDlg::OnBitmapCombClick(wxCommandEvent& event) {
   // pConfig->UpdateWayPoint( m_pRoutePoint );
 }
 
-void MarkInfoDlg::ValidateMark(void) {
+void MarkInfoDlg::ValidateMark() {
   //    Look in the master list of Waypoints to see if the currently selected
   //    waypoint is still valid It may have been deleted as part of a route
   wxRoutePointListNode* node = pWayPointMan->GetWaypointList()->GetFirst();
@@ -1707,7 +1689,7 @@ bool MarkInfoDlg::SaveChanges() {
           m_RangeRingUnits->GetSelection());
 
     m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
-    if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {
+    if (m_textCtrlPlSpeed->GetValue() == "") {
       m_pRoutePoint->SetPlannedSpeed(0.0);
     } else {
       double spd;

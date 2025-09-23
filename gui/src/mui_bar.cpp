@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  MUI Control Bar
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,12 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Implement mui_bar.h -- MUI (Modern User Interface) Control bar
  */
 
 #include <wx/wxprec.h>
@@ -35,25 +30,27 @@
 #include <wx/statline.h>
 #include "ssfn.h"
 
-#include "chcanv.h"
-#include "MUIBar.h"
-#include "OCPNPlatform.h"
+#include "model/config_vars.h"
+#include "model/idents.h"
+#include "model/svg_utils.h"
+
 #include "canvas_options.h"
+#include "chcanv.h"
+#include "color_handler.h"
 #include "detail_slider.h"
 #include "go_to_position_dlg.h"
-#include "styles.h"
+#include "mui_bar.h"
 #include "navutil.h"
-#include "model/svg_utils.h"
-#include "model/idents.h"
-#include "color_handler.h"
 #include "navutil.h"
+#include "OCPNPlatform.h"
 #include "pluginmanager.h"
+#include "styles.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
@@ -62,28 +59,21 @@
 extern GLenum g_texture_rectangle_format;
 #endif
 
-//------------------------------------------------------------------------------
-//    External Static Storage
-//------------------------------------------------------------------------------
-
-extern OCPNPlatform* g_Platform;
-extern ChartCanvas* g_focusCanvas;
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern bool g_bShowMuiZoomButtons;
-extern bool g_bopengl;
-
-ssfn_t ctx;          /* the renderer context */
-ssfn_glyph_t* glyph; /* the returned rasterized bitmap */
-
-double getValue(int animationType, double t);
-
-//  Helper classes
-
 #define ID_SCALE_CANCEL 8301
 #define ID_SCALE_OK 8302
 #define ID_SCALECTRL 8303
 
+//------------------------------------------------------------------------------
+//    External Static Storage
+//------------------------------------------------------------------------------
+
+static ssfn_t ctx;          /* the renderer context */
+static ssfn_glyph_t* glyph; /* the returned rasterized bitmap */
 static inline void IgnoreRetval(size_t n) { (void)n; }
+
+static double getValue(int animationType, double t);
+
+//  Helper classes
 
 class SetScaleDialog : public wxDialog {
   DECLARE_EVENT_TABLE()
@@ -224,18 +214,16 @@ class MUIButton {
 public:
   MUIButton();
   MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY,
-            float scale_factor = 1.0,
-            const wxString& bitmapState0 = wxEmptyString,
-            const wxString& bitmapState1 = wxEmptyString,
-            const wxString& bitmapState2 = wxEmptyString,
+            float scale_factor = 1.0, const wxString& bitmapState0 = "",
+            const wxString& bitmapState1 = "",
+            const wxString& bitmapState2 = "",
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
   bool Create(wxWindow* parent, wxWindowID id = wxID_ANY,
-              float scale_factor = 1.0,
-              const wxString& bitmapState0 = wxEmptyString,
-              const wxString& bitmapState1 = wxEmptyString,
-              const wxString& bitmapState2 = wxEmptyString,
+              float scale_factor = 1.0, const wxString& bitmapState0 = "",
+              const wxString& bitmapState1 = "",
+              const wxString& bitmapState2 = "",
               const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
@@ -550,13 +538,12 @@ class MUITextButton {
 public:
   MUITextButton();
   MUITextButton(wxWindow* parent, wxWindowID id, float scale_factor,
-                wxColor backColor, const wxString& text = wxEmptyString,
+                wxColor backColor, const wxString& text = "",
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
   bool Create(wxWindow* parent, wxWindowID id, float scale_factor = 1.0,
-              const wxString& text = wxEmptyString,
-              const wxPoint& pos = wxDefaultPosition,
+              const wxString& text = "", const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
 
   ~MUITextButton();
@@ -772,7 +759,7 @@ void MUIBar::Init() {
   CanvasOptionTimer.SetOwner(this, CANVAS_OPTIONS_TIMER);
   m_coAnimateByBitmaps = false;
   m_bEffects = false;  // true;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_bEffects = false;
 #endif
   m_texture = 0;
@@ -926,7 +913,7 @@ void MUIBar::CreateControls() {
       xoff += m_zoutButton->m_size.x;
     }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     //  Scale
 
     m_scaleButton = new MUITextButton(m_parentCanvas, wxID_ANY, m_scaleFactor,
@@ -971,7 +958,7 @@ void MUIBar::CreateControls() {
       yoff += m_zoutButton->m_size.y;
     }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     m_followButton = new MUIButton(
         m_parentCanvas, ID_FOLLOW, m_scaleFactor, iconDir + "MUI_follow.svg",
         iconDir + "MUI_follow_active.svg", iconDir + "MUI_follow_ahead.svg");
@@ -989,7 +976,7 @@ void MUIBar::CreateControls() {
   }
 }
 
-void MUIBar::SetBestPosition(void) {
+void MUIBar::SetBestPosition() {
   int x =
       (m_parentCanvas->GetClientSize().x - (m_size.x + (m_end_margin) * 2.00));
 

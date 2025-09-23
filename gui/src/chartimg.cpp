@@ -183,7 +183,7 @@ wxString ChartBase::GetHashKey() const {
 }
 
 /*
-int ChartBase::Continue_BackgroundHiDefRender(void)
+int ChartBase::Continue_BackgroundHiDefRender()
 {
       return BR_DONE_NOP;            // signal "done, no refresh"
 }
@@ -1740,7 +1740,7 @@ void ChartBaseBSB::CreatePaletteEntry(char *buffer, int palette_index) {
   }
 }
 
-InitReturn ChartBaseBSB::PostInit(void) {
+InitReturn ChartBaseBSB::PostInit() {
   // catch undefined shift if not already done in derived classes
   if (nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
     wxString msg("   Invalid nColorSize data, corrupt in PostInit() on chart ");
@@ -2006,7 +2006,7 @@ bool ChartBaseBSB::CreateLineIndex() {
 }
 
 //    Invalidate and Free the line cache contents
-void ChartBaseBSB::InvalidateLineCache(void) {
+void ChartBaseBSB::InvalidateLineCache() {
   if (pLineCache) {
     CachedLine *pt;
     for (int ylc = 0; ylc < Size_Y; ylc++) {
@@ -2031,7 +2031,7 @@ bool ChartBaseBSB::GetChartExtent(Extent *pext) {
   return true;
 }
 
-bool ChartBaseBSB::SetMinMax(void) {
+bool ChartBaseBSB::SetMinMax() {
   //    Calculate the Chart Extents(M_LatMin, M_LonMin, etc.)
   //     from the COVR data, for fast database search
   m_LonMax = -360.0;
@@ -4352,7 +4352,7 @@ int *ChartBaseBSB::GetPalettePtr(BSB_Color_Capability color_index) {
     return NULL;
 }
 
-PaletteDir ChartBaseBSB::GetPaletteDir(void) {
+PaletteDir ChartBaseBSB::GetPaletteDir() {
   // make a pixel cache
   PixelCache *pc = new PixelCache(4, 4, BPP);
   RGBO r = pc->GetRGBO();
@@ -4364,7 +4364,7 @@ PaletteDir ChartBaseBSB::GetPaletteDir(void) {
     return PaletteRev;
 }
 
-bool ChartBaseBSB::AnalyzeSkew(void) {
+bool ChartBaseBSB::AnalyzeSkew() {
   double lonmin = 1000;
   double lonmax = -1000;
   double latmin = 90.;

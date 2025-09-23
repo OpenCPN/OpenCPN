@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Hyperlink properties Support
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,31 +12,29 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Hyperlink properties dialog
+ */
 
 #ifndef _LINKPROPDLG_H_
 #define _LINKPROPDLG_H_
 
-#include <wx/string.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/sizer.h>
-#include <wx/scrolwin.h>
 #include <wx/button.h>
-#include <wx/statbox.h>
-#include <wx/filesys.h>
-#include <wx/filedlg.h>
-#include <wx/msgdlg.h>
-// #include "chcanv.h"
-
-#if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
-#else
-#include "scrollingdialog.h"
-#endif
+#include <wx/filedlg.h>
+#include <wx/filesys.h>
+#include <wx/msgdlg.h>
+#include <wx/scrolwin.h>
+#include <wx/sizer.h>
+#include <wx/statbox.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
 
 #ifdef __WXOSX__
 #define FRAME_WITH_LINKS_STYLE \

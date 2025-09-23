@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,20 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-
-#include "Layer.h"
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 #include <algorithm>
 
-extern bool g_bShowLayers;
-extern LayerList *pLayerList;
+#include "layer.h"
+#include "model/config_vars.h"
 
-Layer::Layer(void) {
+LayerList *pLayerList;
+
+Layer::Layer() {
   m_bIsVisibleOnChart = g_bShowLayers;
   m_bIsVisibleOnListing = false;
   m_bHasVisibleNames = wxCHK_UNDETERMINED;
@@ -41,7 +34,7 @@ Layer::Layer(void) {
   m_CreateTime = wxDateTime::Now();
 }
 
-Layer::~Layer(void) {
+Layer::~Layer() {
   //  Remove this layer from the global layer list
   if (pLayerList) {
     auto found = std::find(pLayerList->begin(), pLayerList->end(), this);

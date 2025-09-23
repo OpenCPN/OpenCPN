@@ -94,7 +94,7 @@ EVT_BUTTON(ID_COPYLOG, About::OnCopyClick)
 EVT_CLOSE(About::OnClose)
 END_EVENT_TABLE()
 
-About::About(void)
+About::About()
     : m_DataLocn(wxEmptyString), m_parent(NULL), m_btips_loaded(FALSE) {
   pAboutHTMLCtl = NULL;
   pLicenseHTMLCtl = NULL;
@@ -144,7 +144,7 @@ bool About::Create(wxWindow* parent, wxWindowID id, const wxString& caption,
   return TRUE;
 }
 
-void About::SetColorScheme(void) {
+void About::SetColorScheme() {
   DimeControl(this);
   wxColor bg = GetBackgroundColour();
   if (pAboutHTMLCtl) pAboutHTMLCtl->SetBackgroundColour(bg);
@@ -167,7 +167,7 @@ void About::SetColorScheme(void) {
 #endif
 }
 
-void About::Populate(void) {
+void About::Populate() {
   wxColor bg = GetBackgroundColour();
   wxColor fg = wxColour(0, 0, 0);
 
@@ -269,7 +269,7 @@ void About::Populate(void) {
   SetColorScheme();
 }
 
-void About::RecalculateSize(void) {
+void About::RecalculateSize() {
   //  Make an estimate of the dialog size, without scrollbars showing
 
   wxSize esize;
@@ -290,7 +290,7 @@ void About::RecalculateSize(void) {
   Centre();
 }
 
-void About::CreateControls(void) {
+void About::CreateControls() {
   //  Set the nominal vertical size of the embedded controls
 
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);

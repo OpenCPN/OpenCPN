@@ -108,12 +108,12 @@ bool RoutemanGui::UpdateProgress() {
          gLon, &east, &north);
     double a = atan(north / east);
     if (fabs(m_routeman.pActivePoint->m_lon - gLon) < 180.) {
-      if (m_routeman.pActivePoint->m_lon > gLon)
+      if (m_routeman.pActivePoint->m_lon >= gLon)
         m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
       else
         m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
     } else {
-      if (m_routeman.pActivePoint->m_lon > gLon)
+      if (m_routeman.pActivePoint->m_lon >= gLon)
         m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
       else
         m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
@@ -319,7 +319,7 @@ void RoutemanGui::DeleteAllTracks() {
   ::wxEndBusyCursor();
 }
 
-void RoutemanGui::DoAdvance(void) {
+void RoutemanGui::DoAdvance() {
   if (!m_routeman.ActivateNextPoint(m_routeman.pActiveRoute,
                                     false))  // at the end?
   {

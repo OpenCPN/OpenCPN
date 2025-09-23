@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Hyperlink properties
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,12 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include "LinkPropDlg.h"
+/**
+ * \file
+ *
+ * Implement link_prop_dlg.h -- Hyperlink properties dialog
+ */
+
+#include "link_prop_dlg.h"
 #include "navutil.h"
 #include "gui_lib.h"
 
@@ -51,8 +49,8 @@ LinkPropDlgDef::LinkPropDlgDef(wxWindow* parent, wxWindowID id,
   m_staticTextLinkDesc->Wrap(-1);
   sbSizerLnkProp->Add(m_staticTextLinkDesc, 0, wxALL, 5);
 
-  m_textCtrlLinkDescription = new wxTextCtrl(
-      this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+  m_textCtrlLinkDescription =
+      new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
   sbSizerLnkProp->Add(m_textCtrlLinkDescription, 0, wxALL | wxEXPAND, 5);
 
   m_staticTextLinkUrl = new wxStaticText(this, wxID_ANY, _("URL"),
@@ -60,8 +58,8 @@ LinkPropDlgDef::LinkPropDlgDef(wxWindow* parent, wxWindowID id,
   m_staticTextLinkUrl->Wrap(-1);
   sbSizerLnkProp->Add(m_staticTextLinkUrl, 0, wxALL, 5);
 
-  m_textCtrlLinkUrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                     wxDefaultPosition, wxDefaultSize, 0);
+  m_textCtrlLinkUrl =
+      new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
   sbSizerLnkProp->Add(m_textCtrlLinkUrl, 0, wxALL | wxEXPAND, 5);
 
   m_buttonBrowseLocal = new wxButton(this, wxID_ANY, _("Local file..."),
@@ -129,7 +127,7 @@ void LinkPropImpl::OnLocalFileClick(wxCommandEvent& event) {
 }
 
 void LinkPropImpl::OnOkClick(wxCommandEvent& event) {
-  if (m_textCtrlLinkUrl->GetValue() == wxEmptyString)
+  if (m_textCtrlLinkUrl->GetValue() == "")
     OCPNMessageBox(NULL, _("Link not complete, can't be saved."),
                    _("OpenCPN Info"), wxICON_HAND);
 

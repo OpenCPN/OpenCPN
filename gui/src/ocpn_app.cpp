@@ -142,8 +142,8 @@ using namespace std::literals::chrono_literals;
 #include "gdal/cpl_csv.h"
 #include "gl_tex_cache.h"
 #include "go_to_position_dlg.h"
-#include "Layer.h"
-#include "MarkInfo.h"
+#include "layer.h"
+#include "mark_info.h"
 #include "navutil.h"
 #include "observable.h"
 #include "ocpn_app.h"
@@ -260,7 +260,6 @@ bool g_bPauseTest;
 
 // Files specified on the command line, if any.
 
-LayerList *pLayerList;
 wxString ChartListFileName;
 wxString gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
@@ -302,7 +301,6 @@ bool g_bDebugS57;
 
 int g_ChartUpdatePeriod;
 
-float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
 
 bool g_bShowTide;
@@ -443,8 +441,8 @@ static const long long lNaN = 0xfff8000000000000;
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
 
-void InitializeUserColors(void);
-void DeInitializeUserColors(void);
+void InitializeUserColors();
+void DeInitializeUserColors();
 void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
@@ -1813,7 +1811,7 @@ int MyApp::OnExit() {
   // Restore any changed system colors
 
 #ifdef __WXMSW__
-  void RestoreSystemColors(void);
+  void RestoreSystemColors();
   RestoreSystemColors();
 #endif
 

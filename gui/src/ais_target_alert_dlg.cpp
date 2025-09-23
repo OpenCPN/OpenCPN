@@ -79,7 +79,7 @@ OCPN_AlertDialog::OCPN_AlertDialog() { Init(); }
 
 OCPN_AlertDialog::~OCPN_AlertDialog() {}
 
-void OCPN_AlertDialog::Init(void) { m_pparent = NULL; }
+void OCPN_AlertDialog::Init() { m_pparent = NULL; }
 
 bool OCPN_AlertDialog::Create(wxWindow *parent, wxWindowID id,
                               const wxString &caption, const wxPoint &pos,
@@ -279,7 +279,7 @@ void AISTargetAlertDialog::UpdateText() {
   if (!g_bopengl && CanSetTransparent()) SetTransparent(192);
 }
 
-void AISTargetAlertDialog::RecalculateSize(void) {
+void AISTargetAlertDialog::RecalculateSize() {
   //  Count the lines in the currently displayed text string
   unsigned int i = 0;
   int nline = 0;
@@ -319,7 +319,7 @@ void AISTargetAlertDialog::RecalculateSize(void) {
   g_Platform->PositionAISAlert(this);
 }
 
-void AISTargetAlertDialog::SetColorScheme(void) {
+void AISTargetAlertDialog::SetColorScheme() {
   DimeControl(this);
   wxColor bg = GetBackgroundColour();
   m_pAlertTextCtl->SetBackgroundColour(bg);
