@@ -917,7 +917,7 @@ void MyFrame::FreezeCharts() {
 #ifndef __WXMAC__
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->Freeze();
+    if (cc && !cc->IsFrozen()) cc->Freeze();
   }
 #endif
 }
@@ -927,7 +927,7 @@ void MyFrame::ThawCharts() {
 #ifndef __WXMAC__
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->Thaw();
+    if (cc && cc->IsFrozen()) cc->Thaw();
   }
 #endif
 }
