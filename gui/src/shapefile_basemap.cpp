@@ -343,10 +343,9 @@ void ShapeBaseChart::DoDrawPolygonFilled(ocpnDC &pnt, ViewPort &vp,
   }
 }
 
+#ifdef ocpnUSE_GL
 void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
                                         GLUtesselator *tobj, bool idl) {
-#ifdef ocpnUSE_GL
-
   wxPoint2DDouble q;
   if (glChartCanvas::HasNormalizedViewPort(vp)) {
     q = ShapeBaseChartSet::GetDoublePixFromLL(vp, point.getY(), point.getX());
@@ -373,8 +372,9 @@ void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
   vertex->info.y = q.m_y;
 
   gluTessVertex(tobj, (GLdouble *)vertex, (GLdouble *)vertex);
-#endif
 }
+
+#endif
 
 void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                                            const shp::Feature &feature) {
