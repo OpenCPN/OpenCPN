@@ -103,6 +103,10 @@ void AlertDialog::SetCancelLabel(const std::string& label) {
   auto* cancel = dynamic_cast<wxButton*>(FindWindowById(wxID_CANCEL));
   assert(cancel && "AlertDialog: Cancel button not found");
   cancel->SetLabel(label);
+  // In case label is larger/smaller that "Cancel"
+  cancel->InvalidateBestSize();
+  cancel->SetMinSize(cancel->GetBestSize());
+  if (auto* s = cancel->GetContainingSizer()) s->Layout();
 }
 
 int AlertDialog::GetConfirmation(wxWindow* parent, const std::string& title,
