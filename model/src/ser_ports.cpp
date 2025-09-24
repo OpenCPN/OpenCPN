@@ -382,43 +382,6 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
       preturn->Add(wxString(s));
   }
 
-#if 0
-    // Method 2:  Use FileOpen()
-    // Try all 255 possible COM ports, check to see if it can be opened, or if
-    // not, that an expected error is returned.
-
-    BOOL bFound;
-    for (int j=1; j<256; j++)
-    {
-        char s[20];
-        sprintf(s, "\\\\.\\COM%d", j);
-
-        // Open the port tentatively
-        BOOL bSuccess = FALSE;
-        HANDLE hComm = ::CreateFile(s, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-
-        //  Check for the error returns that indicate a port is there, but not currently useable
-        if (hComm == INVALID_HANDLE_VALUE)
-        {
-            DWORD dwError = GetLastError();
-
-            if (dwError == ERROR_ACCESS_DENIED ||
-                    dwError == ERROR_GEN_FAILURE ||
-                    dwError == ERROR_SHARING_VIOLATION ||
-                    dwError == ERROR_SEM_TIMEOUT)
-            bFound = TRUE;
-        }
-        else
-        {
-            bFound = TRUE;
-            CloseHandle(hComm);
-        }
-
-        if (bFound)
-        preturn->Add(wxString(s));
-    }
-#endif  // 0
-
   // Method 3:  WDM-Setupapi
   //  This method may not find XPort virtual ports,
   //  but does find Bluetooth SPP ports
@@ -520,21 +483,6 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
     }
   }
 
-#if 0
-    SP_DEVICE_INTERFACE_DATA deviceinterface;
-    deviceinterface.cbSize = sizeof(deviceinterface);
-
-    if (SetupDiEnumDeviceInterfaces(hdeviceinfo,
-                    NULL,
-                    (GUID *) &GARMIN_DETECT_GUID,
-                    0,
-                    &deviceinterface))
-    {
-        wxLogMessage(_T("Found Garmin Device."));
-
-        preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
-    }
-#endif  // 0
   return preturn;
 }
 
