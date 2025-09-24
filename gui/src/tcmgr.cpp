@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Tide and Current Manager
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Tide and Current Manager
+ */
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -33,12 +31,13 @@
 #include <math.h>
 #include <time.h>
 
+#include "model/georef.h"
+#include "model/logger.h"
+
 #include "gui_lib.h"
 #include "dychart.h"
 #include "navutil.h"
 #include "tcmgr.h"
-#include "model/georef.h"
-#include "model/logger.h"
 
 TCMgr *ptcmgr;  ///< Global instance
 
@@ -48,16 +47,18 @@ TCMgr *ptcmgr;  ///< Global instance
 
 //      Static variables for the TIDELIB
 
-time_t s_next_epoch = TIDE_BAD_TIME; /* next years newyears */
-time_t s_this_epoch = TIDE_BAD_TIME; /* this years newyears */
-int s_this_year = -1;
+static time_t s_next_epoch = TIDE_BAD_TIME; /* next years newyears */
+static time_t s_this_epoch = TIDE_BAD_TIME; /* this years newyears */
+static int s_this_year = -1;
 
-double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX);
-int yearoftimet(time_t t);
-void happy_new_year(IDX_entry *pIDX, int new_year);
-void set_epoch(IDX_entry *pIDX, int year);
+static double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX);
+static int yearoftimet(time_t t);
+static void happy_new_year(IDX_entry *pIDX, int new_year);
+static void set_epoch(IDX_entry *pIDX, int year);
 
-double time2tide(time_t t, IDX_entry *pIDX) { return time2dt_tide(t, 0, pIDX); }
+static double time2tide(time_t t, IDX_entry *pIDX) {
+  return time2dt_tide(t, 0, pIDX);
+}
 
 /** BOGUS amplitude stuff - Added mgh
  * For knots^2 current stations, returns square root of (value * amplitude),
@@ -489,7 +490,7 @@ double blend_tide(time_t t, unsigned int deriv, int first_year, double blend,
   return f;
 }
 
-double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX) {
+static double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX) {
   int new_year;
   int yott = yearoftimet(t);
   new_year = yott;
@@ -611,10 +612,10 @@ time_t tm2gmt(struct tm *ht) {
   return guess;
 }
 
-int yearoftimet(time_t t) { return ((gmtime(&t))->tm_year) + 1900; }
+static int yearoftimet(time_t t) { return ((gmtime(&t))->tm_year) + 1900; }
 
 /* Calculate time_t of the epoch. */
-void set_epoch(IDX_entry *pIDX, int year) {
+static void set_epoch(IDX_entry *pIDX, int year) {
   struct tm ht;
 
   ht.tm_year = year - 1900;
@@ -624,7 +625,7 @@ void set_epoch(IDX_entry *pIDX, int year) {
 }
 
 /* Re-initialize for a different year */
-void happy_new_year(IDX_entry *pIDX, int new_year) {
+static void happy_new_year(IDX_entry *pIDX, int new_year) {
   pIDX->epoch_year = new_year;
   figure_multipliers(pIDX, new_year);
   set_epoch(pIDX, new_year);
