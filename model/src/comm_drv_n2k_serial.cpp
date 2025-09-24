@@ -256,50 +256,6 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
 
   //  Initialize the device clearing all rx/tx filterx
   SendMgmtMsg(NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
-
-#if 0
-  // Testing TX of Heartbeat
-  wxSleep(1);
-
-  tN2kMsg N2kMsg;   // automatically sets destination 255
-  //SetHeartbeat(N2kMsg,2000,0);
-      //SetN2kPGN126993(N2kMsg, 2000, 0);
-        N2kMsg.SetPGN(126993L);
-        //N2kMsg.Priority=7;
-        N2kMsg.Source = 2;
-        N2kMsg.Destination = 133;
-        N2kMsg.Add2ByteUInt((uint16_t)(2000));    // Rate, msec
-
-        N2kMsg.AddByte(0);    //Status
-        N2kMsg.AddByte(0xff); // Reserved
-        N2kMsg.Add4ByteUInt(0xffffffff); // Reserved
-
-  const std::vector<unsigned char> mv = BufferToActisenseFormat(N2kMsg);
-
-  size_t len = mv.size();
-
-  wxString comx = m_params.GetDSPort().AfterFirst(':');
-  std::string interface = comx.ToStdString();
-
-  N2kName source_name(1234);
-  auto source_address = std::make_shared<NavAddr2000>(interface, source_name);
-  auto dest_address = std::make_shared<NavAddr2000>(interface, N2kMsg.Destination);
-
-  auto message_to_send = std::make_shared<Nmea2000Msg>(126993L,
-                                  mv, source_address, 3);
-
-    for(size_t i=0; i< mv.size(); i++){
-      printf("%02X ", mv.at(i));
-    }
-    printf("\n\n");
-
-  SetTXPGN(126993);
-  wxSleep(1);
-
-  SendMessage(message_to_send, dest_address);
-
-  int yyp = 4;
-#endif
 }
 
 CommDriverN2KSerial::~CommDriverN2KSerial() { Close(); }
