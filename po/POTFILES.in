@@ -298,7 +298,6 @@ gui/include/gui/update_mgr.h
 gui/include/gui/usb_devices.h
 gui/include/gui/viewport.h
 gui/include/gui/waypointman_gui.h
-gui/include/gui/WindowDestroyListener.h
 gui/include/gui/wiz_ui.h
 gui/include/gui/wiz_ui_proto.h
 gui/src/about.cpp
