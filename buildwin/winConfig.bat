@@ -338,17 +338,17 @@ if [%ocpn_rebuild%]==[1] (
   set "target=%OCPN_DIR%\build\Resources" & call :removeTarget
   set "target=%OCPN_DIR%\build\Win32" & call :removeTarget
   set "target=%OCPN_DIR%\build\_deps" & call :removeTarget
-  where /Q /R "%OCPN_DIR%\build" *.cmake && del /Q /R "%OCPN_DIR%\build\*.cmake"
-  where /Q /R "%OCPN_DIR%\build" *.txt && del /Q /R "%OCPN_DIR%\build\*.txt"
-  where /Q /R "%OCPN_DIR%\build" *.in && del /Q /R "%OCPN_DIR%\build\*.in"
-  where /Q /R "%OCPN_DIR%\build" *.xml && del /Q /R "%OCPN_DIR%\build\*.xml"
-  where /Q /R "%OCPN_DIR%\build" *.rc && del /Q /R "%OCPN_DIR%\build\*.rc"
-  where /Q /R "%OCPN_DIR%\build" *.user && del /Q /R "%OCPN_DIR%\build\*.user"
-  where /Q /R "%OCPN_DIR%\build" *.sln && del /Q /R "%OCPN_DIR%\build\*.sln"
-  where /Q /R "%OCPN_DIR%\build" *.mo && del /Q /R "%OCPN_DIR%\build\*.mo"
-  where /Q /R "%OCPN_DIR%\build" *.vcxproj && del /Q /R "%OCPN_DIR%\build\*.vcxproj"
-  where /Q /R "%OCPN_DIR%\build" *.filters && del /Q /R "%OCPN_DIR%\build\*.filters"
-  where /Q /R "%OCPN_DIR%\build" *.log && del /Q /R "%OCPN_DIR%\build\*.log"
+  where /Q /R "%OCPN_DIR%\build" *.cmake && del /Q /S "%OCPN_DIR%\build\*.cmake"
+  where /Q /R "%OCPN_DIR%\build" *.txt && del /Q /S "%OCPN_DIR%\build\*.txt"
+  where /Q /R "%OCPN_DIR%\build" *.in && del /Q /S "%OCPN_DIR%\build\*.in"
+  where /Q /R "%OCPN_DIR%\build" *.xml && del /Q /S "%OCPN_DIR%\build\*.xml"
+  where /Q /R "%OCPN_DIR%\build" *.rc && del /Q /S "%OCPN_DIR%\build\*.rc"
+  where /Q /R "%OCPN_DIR%\build" *.user && del /Q /S "%OCPN_DIR%\build\*.user"
+  where /Q /R "%OCPN_DIR%\build" *.sln && del /Q /S "%OCPN_DIR%\build\*.sln"
+  where /Q /R "%OCPN_DIR%\build" *.mo && del /Q /S "%OCPN_DIR%\build\*.mo"
+  where /Q /R "%OCPN_DIR%\build" *.vcxproj && del /Q /S "%OCPN_DIR%\build\*.vcxproj"
+  where /Q /R "%OCPN_DIR%\build" *.filters && del /Q /S "%OCPN_DIR%\build\*.filters"
+  where /Q /R "%OCPN_DIR%\build" *.log && del /Q /S "%OCPN_DIR%\build\*.log"
   @echo Finished rebuild cleanout
 )
 ::-------------------------------------------------------------
