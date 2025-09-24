@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: altitude.cpp, v0.1 $
+ * $Id: altitude.cpp, v0.2 $
  *
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin, display altitude trace
@@ -7,6 +7,7 @@
  *
  * Comment:  since not every vessel is always on sea level, I found it
  *           sometimes intersting to observe the GPS altitude information.
+ *           It can be extracted from the GGA nmea message.
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -219,31 +220,27 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     dc->SetFont(g_pFontSmall->GetChosenFont());
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
-  double MaxAltitude = -9999.0;
-  double MinAltitude = 9999999.0;
-  // evaluate buffered data
-  for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
-    if (m_ArrayAltitude[idx] > MaxAltitude)
-      MaxAltitude = m_ArrayAltitude[idx];
-    else if (m_ArrayAltitude[idx] < MinAltitude)
-      MinAltitude = m_ArrayAltitude[idx];
+
+  // evaluate buffered data to determine its range
+  double MaxAltitude = m_ArrayAltitude[0];
+  double MinAltitude = m_ArrayAltitude[0];
+  for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
+    MaxAltitude = std::max(MaxAltitude, m_ArrayAltitude[idx]);
+    MinAltitude = std::min(MinAltitude, m_ArrayAltitude[idx]);
   }
 
   // calculate 1st and 2nd Moments
   double varAltitude =
-      m_sum2Altitude / ALTITUDE_RECORD_COUNT;  // biased estimator, avoid / N-1
+      m_sum2Altitude / (ALTITUDE_RECORD_COUNT - 1);  // estimator for variance
   varAltitude -= m_meanAltitude * m_meanAltitude;
+  if (varAltitude < 0.0) varAltitude = 0.0;  // avoid nan when calling sqrt().
 
   // do AGC to adjust scaling
   double range = MaxAltitude - MinAltitude;
   if (range > 1.1 * m_Range) setAttenuation(+1);
-  if (range < 0.3 * m_Range)  // some hysteresis
-    setAttenuation(-1);
+  if (range < 0.3 * m_Range) setAttenuation(-1);  // some hysteresis
   double grid = getAttenuation();
   m_Range = grid * c_GridLines;
-  // printf("m_Range = %5.1f  range = %5.1f  att=%d , mean=%3.2f, std=%3.2f\n",
-  //   m_Range, range, getAttenuation(), meanAltitude, sqrt(varAltitude));  //
-  //   debug output
 
   // only update axes on major corridor changes
   if ((MaxAltitude - m_MaxAltitude) / grid > 0.25 ||
@@ -256,6 +253,11 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     m_MinAltitude = (round(MinAltitude / grid) - 1) * grid;
     m_MaxAltitude = m_MinAltitude + m_Range;
   }
+  // debug output
+  // printf("m_MinAltitude=%7.1f  m_MaxAltitude=%7.1f  m_Range = %5.1f "
+  //        " range = %5.1f  att=%d , mean=%7.2f, std=%5.2f\n",
+  //        m_MinAltitude, m_MaxAltitude, m_Range,
+  //        range, getAttenuation(), m_meanAltitude, sqrt(varAltitude));
 
   wxString label;
   label.Printf(_T("+/-%.1f %8.0f ") + m_AltitudeUnit, sqrt(varAltitude),
