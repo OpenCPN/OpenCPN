@@ -19,7 +19,7 @@
  * \file
  *
  * Implement tcds_ascii_harmonic.h -- Load harmonic data from ascii source
-   TCDataFactory
+ * TCDataFactory
  */
 
 #include <math.h>
