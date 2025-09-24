@@ -3204,15 +3204,18 @@ bool Osenc::CreateSENCRecord200(OGRFeature *pFeature, Osenc_outstream *stream,
         break;
       }
 
-#if 1
       //      Special case, polygons are handled separately
       case wkbPolygon: {
-        if (!CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream))
+        if (!CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream)) {
+          wxString msga;
+          msga.Printf("Error in S57 cell file: %s\n",
+                      m_FullPath000.ToStdString().c_str());
+          wxLogMessage(msga);
           return false;
-
+        }
         break;
       }
-#endif
+
       //      All others
       default:
         msg = "   Warning: Unimplemented ogr geotype record ";
