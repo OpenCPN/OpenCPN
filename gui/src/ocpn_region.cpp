@@ -1,40 +1,16 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
- *   Portins Copyright (C) 2010 by David S. Register                       *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-
 /////////////////////////////////////////////////////////////////////////////
 // Name:        src/gtk/region.cpp
-// Purpose:
 // Author:      Robert Roebling
-// Modified:    VZ at 05.10.00: use AllocExclusive(), comparison fixed
-// Id:          $Id: region.cpp 42903 2006-11-01 12:56:38Z RR $
 // Copyright:   (c) 1998 Robert Roebling
+// Copyright    (C) 2010 by David S. Register
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-// ============================================================================
-// declarations
-// ============================================================================
+/**
+ * \file
+ *
+ * Implement ocpn_region.h -- Opencpn region handling
+ */
 
 // ----------------------------------------------------------------------------
 // headers
@@ -44,7 +20,7 @@
 #include <wx/wxprec.h>
 
 #include <wx/region.h>
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 
 #ifndef WX_PRECOMP
 #include <wx/log.h>

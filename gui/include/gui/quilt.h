@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,25 +12,28 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Chart quilt support
  */
 
-#ifndef __QUIT_H__
-#define __QUIT_H__
+#ifndef _gui_quilt_h
+#define _gui_quilt_h
 
 #include <vector>
+
+#include "model/config_vars.h"
+
 #include "LLRegion.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "chcanv.h"
 #include "viewport.h"
 #include "chartdb.h"
-
-extern bool g_bopengl;
-
-struct ChartTableEntry;
+#include "chartdbs.h"
 
 class QuiltPatch {
 public:
@@ -273,4 +272,4 @@ private:
   ChartCanvas *m_parent;
 };
 
-#endif
+#endif  // _gui_quilt_h

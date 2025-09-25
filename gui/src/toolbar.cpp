@@ -39,7 +39,7 @@
 #include "toolbar.h"
 #include "pluginmanager.h"
 #include "font_mgr.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "model/svg_utils.h"
@@ -738,7 +738,7 @@ void ocpnFloatingToolbarDialog::DestroyToolBar() {
 #include "compass.h"
 #include "chartdb.h"
 
-extern bool g_bTrackActive;
+// extern bool g_bTrackActive;
 extern s52plib *ps52plib;
 
 bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool(ocpnToolBarSimple *tb) {

@@ -39,7 +39,7 @@ typedef void (*_GLUfuncptr)();
 #include "n0183_ctx_factory.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "route_point_gui.h"
 #include "styles.h"

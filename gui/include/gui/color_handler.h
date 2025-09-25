@@ -25,6 +25,9 @@
 #define _COLOR_HANDLER_H
 
 #include <wx/colour.h>
+#include "color_types.h"
+
+extern wxColorHashMap* pcurrent_user_color_hash; /**< Global instance */
 
 wxColour GetGlobalColor(wxString colorName);
 /**

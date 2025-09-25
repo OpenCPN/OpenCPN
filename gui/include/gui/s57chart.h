@@ -43,10 +43,11 @@
 
 #include "s52s57.h"  // ObjRazRules
 
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "chartbase.h"  // ChartBase
 
 extern bool g_b_EnableVBO;
+extern bool chain_broken_mssage_shown; /**< Global instance */
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes

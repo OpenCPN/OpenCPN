@@ -16,7 +16,7 @@
 #include "model/cutil.h"
 #include "font_mgr.h"
 #include "model/wx28compat.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "RolloverWin.h"
 #include "navutil.h"
 #include "gui_lib.h"
@@ -80,8 +80,6 @@ extern wxString g_locale;
 extern OCPNPlatform *g_Platform;
 extern MyConfig *pConfig;
 extern OCPNPlatform *g_Platform;
-
-int g_tcwin_scale;
 
 enum { ID_TCWIN_NX, ID_TCWIN_PR };
 

@@ -53,22 +53,27 @@
 #include "notification_manager_gui.h"
 #include "observable_evtvar.h"
 #include "observable.h"
-#include "ocpCursor.h"
+#include "ocp_cursor.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_plugin.h"
 #include "piano.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "RolloverWin.h"
 #include "S57Sector.h"
 #include "TCWin.h"
 #include "undo.h"
 
-class CanvasMenuHandler;  // circular
+class CanvasMenuHandler;   // circular
+class MyFrame;             // circular
+class NotificationsList;   // circular
+class NotificationButton;  // circular
 
 class ChartCanvas;                    // forward
 extern ChartCanvas *g_overlayCanvas;  ///< Global instance
 extern ChartCanvas *g_focusCanvas;    ///< Global instance
+
+WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -475,7 +480,7 @@ public:
    * are expecting the physical pixels per meter, which is incorrect.
    */
   double GetCanvasScaleFactor() { return m_canvas_scale_factor; }
-  /**
+  /*chcanv*
    * Return the physical pixels per meter at chart center, accounting for
    * latitude distortion.
    */
@@ -546,7 +551,8 @@ public:
    *
    * @param factor The zoom factor to apply:
    *              - factor > 1: Zoom in, e.g. 2.0 makes objects twice as large
-   *              - factor < 1: Zoom out, e.g. 0.5 makes objects half as large
+   *             chcanv - factor < 1: Zoom out, e.g. 0.5 makes objects half as
+   * large
    */
   void ZoomCanvasSimple(double factor);
 

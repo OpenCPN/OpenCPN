@@ -55,7 +55,7 @@
 #include "mark_info.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "routemanagerdialog.h"
 #include "RoutePropDlgImpl.h"
@@ -1640,16 +1640,12 @@ void MarkInfoDlg::OnBitmapCombClick(wxCommandEvent& event) {
 void MarkInfoDlg::ValidateMark() {
   //    Look in the master list of Waypoints to see if the currently selected
   //    waypoint is still valid It may have been deleted as part of a route
-  wxRoutePointListNode* node = pWayPointMan->GetWaypointList()->GetFirst();
-
   bool b_found = false;
-  while (node) {
-    RoutePoint* rp = node->GetData();
+  for (RoutePoint* rp : *pWayPointMan->GetWaypointList()) {
     if (m_pRoutePoint == rp) {
       b_found = true;
       break;
     }
-    node = node->GetNext();
   }
   if (!b_found) m_pRoutePoint = NULL;
 }

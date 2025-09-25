@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Chart Bar Window
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,37 +12,39 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Purpose:  Chart Bar Window
  */
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
-#include "dychart.h"
+#endif
+#include <wx/arrimpl.cpp>
 
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/cutil.h"
-#include "model/wx28compat.h"
 
-#include "chcanv.h"
-#include "piano.h"
-#include "chartdb.h"
 #include "chartbase.h"
-#include "styles.h"
-#include "ocpndc.h"
-#include "OCPNPlatform.h"
+#include "chartdb.h"
+#include "chcanv.h"
 #include "color_handler.h"
-#include "ocpn_plugin.h"
+#include "dychart.h"
+#include "ocpndc.h"
 #include "ocpn_frame.h"
+#include "ocpn_platform.h"
+#include "ocpn_plugin.h"
+#include "piano.h"
+#include "styles.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "qdebug.h"
 #include "androidUTIL.h"
 #endif
@@ -57,20 +53,12 @@
 #include "gl_chart_canvas.h"
 #endif
 
-#include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(RectArray);
 
-//------------------------------------------------------------------------------
-//    External Static Storage
-//------------------------------------------------------------------------------
-extern ChartDB *ChartData;
-extern ocpnStyle::StyleManager *g_StyleManager;
-extern int g_GUIScaleFactor;
-extern bool g_bopengl;
-extern float g_toolbar_scalefactor;
-
-extern OCPNPlatform *g_Platform;
-extern BasePlatform *g_BasePlatform;
+#define PIANO_EVENT_TIMER 73566
+#define DEFERRED_KEY_CLICK_DOWN 1
+#define DEFERRED_KEY_CLICK_UP 2
+#define INFOWIN_TIMEOUT 3
 
 //------------------------------------------------------------------------------
 //          Piano Window Implementation
@@ -79,7 +67,6 @@ BEGIN_EVENT_TABLE(Piano, wxEvtHandler)
 EVT_TIMER(PIANO_EVENT_TIMER, Piano::onTimerEvent)
 END_EVENT_TABLE()
 
-// Define a constructor
 Piano::Piano(ChartCanvas *parent) {
   m_parentCanvas = parent;
 
@@ -974,7 +961,7 @@ int Piano::GetHeight() {
   }
   height *= g_Platform->GetDisplayDensityFactor();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   height = wxMax(height, 4 * g_Platform->GetDisplayDPmm());
 #endif
 

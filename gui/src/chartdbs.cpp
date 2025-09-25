@@ -22,6 +22,8 @@
  * Implement chartdbs.h -- basic chart info storage
  */
 
+#include "gl_headers.h"
+
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP

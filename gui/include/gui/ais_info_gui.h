@@ -20,10 +20,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef _AIS_INFO_GUI_H
+#define _AIS_INFO_GUI_H
 
 #include "model/ais_target_data.h"
 #include "observable.h"
 #include "OCPN_Sound.h"
+
+class AisInfoGui;             // forward
+extern AisInfoGui* g_pAISGUI; /**< Global instance */
 
 /**
  * Handles the AIS information GUI and sound alerts. Manages the display of AIS
@@ -47,3 +52,4 @@ public:
   ObservableListener ais_new_track_listener;
   ObservableListener ais_del_track_listener;
 };
+#endif  // ais_info_gui

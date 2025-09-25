@@ -33,7 +33,7 @@
 #include "model/route_point.h"
 
 #include "chcanv.h"
-#include "ocpCursor.h"
+#include "ocp_cursor.h"
 
 class ChartCanvas;  // circular
 

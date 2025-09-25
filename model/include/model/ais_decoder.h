@@ -69,6 +69,8 @@ enum AISAudioSoundType {
   AISAUDIO_DSC
 };
 
+wxString GetShipNameFromFile(int);
+
 /** Process incoming AIS messages. */
 class MmsiProperties {
 public:

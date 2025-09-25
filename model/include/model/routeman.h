@@ -55,6 +55,8 @@
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
 
+using RouteList = std::vector<Route *>;
+
 class Routeman;     // forward
 class WayPointman;  // forward
 

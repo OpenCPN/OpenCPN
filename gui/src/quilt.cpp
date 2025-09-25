@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,61 +12,59 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ *  Implement quilt.h -- Chart quilt support
  */
 
-#include <wx/wxprec.h>
-
-#include "config.h"
-#include "Quilt.h"
-#include "chartdb.h"
-#include "s52plib.h"
-#include "chcanv.h"
-#include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
-#include "model/ocpn_utils.h"
-#include "chartimg.h"
-#ifdef __OCPN__ANDROID__
-#include "androidUTIL.h"
-#endif
 #include <algorithm>
 
+#include <wx/wxprec.h>
+#include <wx/list.h>
+#include <wx/listimpl.cpp>
+
+#include "model/config_vars.h"
+#include "model/ocpn_utils.h"
+
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "config.h"
+#include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
+#include "quilt.h"
+#include "s52plib.h"
 #include "s57chart.h"
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(PatchList);
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
 
-extern ChartDB *ChartData;
-extern s52plib *ps52plib;
-extern ColorScheme global_color_scheme;
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-extern bool g_fog_overzoom;
-extern double g_overzoom_emphasis_base;
-extern bool g_bopengl;
+// We define and use this one Macro in this module
+// Reason:  some compilers refuse to inline "GetChartTableEntry()"
+// and so this leads to a push/call sequence for this heavily utilized but
+// short function Note also that in the macor expansion there is no bounds
+// checking on the parameter (i), So it is probably better to confine the
+// macro use to one module, and scrub carefully. Anyway, makes a
+// significant difference with Windows MSVC compiler builds.
 
-//      We define and use this one Macro in this module
-//      Reason:  some compilers refuse to inline "GetChartTableEntry()"
-//      and so this leads to a push/call sequence for this heavily utilized but
-//      short function Note also that in the macor expansion there is no bounds
-//      checking on the parameter (i), So it is probably better to confine the
-//      macro use to one module, and scrub carefully. Anyway, makes a
-//      significant difference with Windows MSVC compiler builds.
-
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #define GetChartTableEntry(i) GetChartTable()[i]
 #endif
 
-//  Calculating the chart coverage region with extremely complicated shape is
-//  very expensive, put a limit on the complefity of "not covered" areas to
-//  prevent the application from slowing down to total unusability. On US ENC
-//  charts, the number of NOCOVR PLYs seems to always be under 300, but on the
-//  SCS ENCs it can get as high as 10000 and make the application totally
-//  unusable with chart quilting enabled while bringing little real effect.
+// Calculating the chart coverage region with extremely complicated shape is
+// very expensive, put a limit on the complefity of "not covered" areas to
+// prevent the application from slowing down to total unusability. On US ENC
+// charts, the number of NOCOVR PLYs seems to always be under 300, but on the
+// SCS ENCs it can get as high as 10000 and make the application totally
+// unusable with chart quilting enabled while bringing little real effect.
 #define NOCOVR_PLY_PERF_LIMIT 500
 #define AUX_PLY_PERF_LIMIT 500
+
+WX_DEFINE_LIST(PatchList);
 
 static int CompareScales(int i1, int i2) {
   if (!ChartData) return 0;
@@ -1411,7 +1405,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
       //  On android, SDK > 29, we require that the directory of charts be
       //  "writable" as determined by Android Java file system
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
     if (!androidIsDirWritable(fn.GetPath())) continue;
 #endif

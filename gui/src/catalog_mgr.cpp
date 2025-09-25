@@ -39,7 +39,7 @@
 #include "catalog_mgr.h"
 #include "model/downloader.h"
 #include "model/ocpn_utils.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/plugin_handler.h"
 #include "download_mgr.h"
 

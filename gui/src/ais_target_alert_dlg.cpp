@@ -46,7 +46,7 @@
 #include "font_mgr.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "routemanagerdialog.h"
 #include "model/navobj_db.h"
 

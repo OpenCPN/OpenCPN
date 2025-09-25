@@ -655,20 +655,15 @@ void NavObj_dB::CountImportNavObjects() {
           pugi::xml_parse_status::status_ok) {
     input_set->LoadAllGPXPointObjects();
     auto pointlist = pWayPointMan->GetWaypointList();
-    wxRoutePointListNode* prpnode = pointlist->GetFirst();
-    while (prpnode) {
-      RoutePoint* point = prpnode->GetData();
+    for (RoutePoint* point : *pointlist) {
       if (point->m_bIsolatedMark) {
         m_nImportObjects++;
         m_nimportPoints++;
       }
-      prpnode = prpnode->GetNext();  // RoutePoint
     }
 
     input_set->LoadAllGPXRouteObjects();
-    for (wxRouteListNode* node = pRouteList->GetFirst(); node;
-         node = node->GetNext()) {
-      Route* route_import = node->GetData();
+    for (Route* route_import : *pRouteList) {
       m_nImportObjects++;
       m_nimportRoutes++;
       m_nImportObjects += route_import->GetnPoints();
@@ -713,9 +708,7 @@ bool NavObj_dB::ImportLegacyRoutes() {
   std::vector<Route*> routes_added;
   //  Add all routes to database
   int nroute = 0;
-  for (wxRouteListNode* node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route* route_import = node->GetData();
+  for (Route* route_import : *pRouteList) {
     if (InsertRoute(route_import)) {
       routes_added.push_back(route_import);
     }
@@ -746,10 +739,7 @@ bool NavObj_dB::ImportLegacyPoints() {
   if (m_nimportPoints > 1000) nmod = 10;
   if (m_nimportPoints > 10000) nmod = 100;
 
-  auto pointlist = pWayPointMan->GetWaypointList();
-  wxRoutePointListNode* prpnode = pointlist->GetFirst();
-  while (prpnode) {
-    RoutePoint* point = prpnode->GetData();
+  for (RoutePoint* point : *pWayPointMan->GetWaypointList()) {
     if (point->m_bIsolatedMark) {
       if (InsertRoutePointDB(m_db, point)) {
         points_added.push_back(point);
@@ -765,7 +755,6 @@ bool NavObj_dB::ImportLegacyPoints() {
       }
       npoint++;
     }
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   //  Delete all points that were successfully added

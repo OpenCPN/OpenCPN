@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Platform specific support utilities
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,25 +12,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ocpn_platform.h --  OpenCPN Platform specific support utilities
+ */
 
 #include <cstdlib>
 #include <string>
 #include <vector>
-
-#include <wx/wxprec.h>
-
-#ifdef __MINGW32__
-#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
-#include <windows.h>
-#endif
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
 
 #ifndef __WXMSW__
 #include <signal.h>
@@ -44,11 +31,18 @@
 #endif
 
 #ifdef __WXMSW__
+#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #include <winioctl.h>
 #include <initguid.h>
 #include "setupapi.h"  // presently stored in opencpn/src
 #endif
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
 
 #include <wx/app.h>
 #include <wx/apptrait.h>
@@ -81,10 +75,11 @@
 #include "gui_lib.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "options.h"
 #include "s52s57.h"
 #include "snd_config.h"
+#include "std_filesystem.h"
 #include "styles.h"
 
 #ifdef __ANDROID__
@@ -111,18 +106,9 @@
 #include "model/macutils.h"
 #endif
 
-#if (defined(OCPN_GHC_FILESYSTEM) || \
-     (defined(__clang_major__) && (__clang_major__ < 15)))
-// MacOS 1.13
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#else
-#include <filesystem>
-#include <utility>
-namespace fs = std::filesystem;
-#endif
-
 OCPNPlatform *g_Platform;
+
+wxArrayString g_locale_catalog_array;
 
 class MyApp;
 DECLARE_APP(MyApp)
@@ -135,92 +121,12 @@ struct sigaction sa_all_old;
 extern sigjmp_buf env;  // the context saved by sigsetjmp();
 #endif
 
-extern OCPNPlatform *g_Platform;
-extern bool g_bFirstRun;
-extern bool g_bUpgradeInProcess;
-
-extern int quitflag;
-extern MyFrame *gFrame;
-
-extern MyConfig *pConfig;
-
-extern ocpnStyle::StyleManager *g_StyleManager;
-
-extern bool g_bshowToolbar;
-extern bool g_bexpert;
-extern bool g_bBasicMenus;
-extern bool g_bUIexpert;
-
-extern bool g_bshowToolbar;
-extern bool g_bBasicMenus;
-
-extern bool g_bShowOutlines;
-extern int g_nAWDefault;
-extern int g_nAWMax;
-extern bool g_bPermanentMOBIcon;
-extern float g_toolbar_scalefactor;
-
-extern options *g_options;
-
-extern wxString *pInit_Chart_Dir;
-
-extern std::vector<size_t> g_config_display_size_mm;
-extern bool g_config_display_size_manual;
-
-extern bool g_bFullScreenQuilt;
-extern bool g_bQuiltEnable;
-extern bool g_bskew_comp;
-
-extern bool g_bopengl;
-extern bool g_bresponsive;
-extern bool g_bShowStatusBar;
-extern int g_cm93_zoom_factor;
-extern int g_GUIScaleFactor;
-extern bool g_fog_overzoom;
-extern bool g_oz_vector_scale;
-extern wxString g_toolbarConfig;
-extern bool g_bPreserveScaleOnX;
-extern bool g_running;
-extern bool g_bEnableZoomToCursor;
-extern bool g_bsmoothpanzoom;
-extern bool g_bShowMenuBar;
-
-extern Select *pSelectTC;
-
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
-extern int g_default_font_size;
-extern wxString g_default_font_facename;
-
-extern double g_ChartNotRenderScaleFactor;
-extern bool g_bRollover;
-
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale *plocale_def_lang;
-
-extern wxString g_locale;
-extern wxString g_localeOverride;
-extern wxArrayString g_locale_catalog_array;
-
 #endif
-extern int options_lastPage;
-extern AboutFrameImpl *g_pAboutDlg;
-extern About *g_pAboutDlgLegacy;
-extern wxColour g_colourTrackLineColour;
-extern int g_n_ownship_min_mm;
-
-extern int g_AndroidVersionCode;
-extern bool g_bShowMuiZoomButtons;
-extern int g_FlushNavobjChangesTimeout;
-extern wxString g_CmdSoundString;
-extern int g_maintoolbar_x;
-extern int g_maintoolbar_y;
-extern std::vector<std::string> TideCurrentDataSet;
-extern int g_Android_SDK_Version;
-extern wxString g_androidDownloadDirectory;
-extern wxString g_gpx_path;
-extern BasePlatform *g_BasePlatform;
 
 #ifdef __ANDROID__
 extern PlatSpec android_plat_spc;
@@ -1253,31 +1159,31 @@ void OCPNPlatform::SetDefaultOptions() {
 
   // Initial S52/S57 options
   if (pConfig) {
-    pConfig->SetPath(_T ( "/Settings/GlobalState" ));
-    pConfig->Write(_T ( "bShowS57Text" ), true);
-    pConfig->Write(_T ( "bShowS57ImportantTextOnly" ), false);
-    pConfig->Write(_T ( "nDisplayCategory" ), (int)(_DisCat)OTHER);
-    pConfig->Write(_T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART);
-    pConfig->Write(_T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES);
+    pConfig->SetPath("/Settings/GlobalState");
+    pConfig->Write("bShowS57Text", true);
+    pConfig->Write("bShowS57ImportantTextOnly", false);
+    pConfig->Write("nDisplayCategory", (int)(_DisCat)OTHER);
+    pConfig->Write("nSymbolStyle", (int)(_LUPname)PAPER_CHART);
+    pConfig->Write("nBoundaryStyle", (int)(_LUPname)PLAIN_BOUNDARIES);
 
-    pConfig->Write(_T ( "bShowSoundg" ), true);
-    pConfig->Write(_T ( "bShowMeta" ), false);
-    pConfig->Write(_T ( "bUseSCAMIN" ), true);
-    pConfig->Write(_T ( "bShowAtonText" ), false);
-    pConfig->Write(_T ( "bShowLightDescription" ), false);
-    pConfig->Write(_T ( "bExtendLightSectors" ), true);
-    pConfig->Write(_T ( "bDeClutterText" ), true);
-    pConfig->Write(_T ( "bShowNationalText" ), true);
+    pConfig->Write("bShowSoundg", true);
+    pConfig->Write("bShowMeta", false);
+    pConfig->Write("bUseSCAMIN", true);
+    pConfig->Write("bShowAtonText", false);
+    pConfig->Write("bShowLightDescription", false);
+    pConfig->Write("bExtendLightSectors", true);
+    pConfig->Write("bDeClutterText", true);
+    pConfig->Write("bShowNationalText", true);
 
-    pConfig->Write(_T ( "S52_MAR_SAFETY_CONTOUR" ), 3);
-    pConfig->Write(_T ( "S52_MAR_SHALLOW_CONTOUR" ), 2);
-    pConfig->Write(_T ( "S52_MAR_DEEP_CONTOUR" ), 6);
-    pConfig->Write(_T ( "S52_MAR_TWO_SHADES" ), 0);
-    pConfig->Write(_T ( "S52_DEPTH_UNIT_SHOW" ), 1);
+    pConfig->Write("S52_MAR_SAFETY_CONTOUR", 3);
+    pConfig->Write("S52_MAR_SHALLOW_CONTOUR", 2);
+    pConfig->Write("S52_MAR_DEEP_CONTOUR", 6);
+    pConfig->Write("S52_MAR_TWO_SHADES", 0);
+    pConfig->Write("S52_DEPTH_UNIT_SHOW", 1);
 
-    pConfig->Write(_T ( "ZoomDetailFactorVector" ), 3);
+    pConfig->Write("ZoomDetailFactorVector", 3);
 
-    pConfig->Write(_T ( "nColorScheme" ), 1);  // higher contrast on NOAA RNCs
+    pConfig->Write("nColorScheme", 1);  // higher contrast on NOAA RNCs
 
 // A few more often requested defaults, not applicable to Android
 #ifndef __ANDROID__
@@ -1290,45 +1196,45 @@ void OCPNPlatform::SetDefaultOptions() {
 #ifdef __WXMSW__
   //  Enable some default PlugIns, and their default options
   if (pConfig) {
-    pConfig->SetPath(_T ( "/PlugIns/chartdldr_pi.dll" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/chartdldr_pi.dll");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/PlugIns/wmm_pi.dll" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/wmm_pi.dll");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/Settings/WMM" ));
-    pConfig->Write(_T ( "ShowIcon" ), true);
-    pConfig->Write(_T ( "ShowLiveIcon" ), true);
+    pConfig->SetPath("/Settings/WMM");
+    pConfig->Write("ShowIcon", true);
+    pConfig->Write("ShowLiveIcon", true);
   }
 #endif
 
 #ifdef __WXOSX__
   //  Enable some default PlugIns, and their default options
   if (pConfig) {
-    pConfig->SetPath(_T ( "/PlugIns/libchartdldr_pi.dylib" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libchartdldr_pi.dylib");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/PlugIns/libwmm_pi.dylib" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libwmm_pi.dylib");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/Settings/WMM" ));
-    pConfig->Write(_T ( "ShowIcon" ), true);
-    pConfig->Write(_T ( "ShowLiveIcon" ), true);
+    pConfig->SetPath("/Settings/WMM");
+    pConfig->Write("ShowIcon", true);
+    pConfig->Write("ShowLiveIcon", true);
   }
 #endif
 
 #ifdef __linux__
   //  Enable some default PlugIns, and their default options
   if (pConfig) {
-    pConfig->SetPath(_T ( "/PlugIns/libchartdldr_pi.so" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libchartdldr_pi.so");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/PlugIns/libwmm_pi.so" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libwmm_pi.so");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/Settings/WMM" ));
-    pConfig->Write(_T ( "ShowIcon" ), true);
-    pConfig->Write(_T ( "ShowLiveIcon" ), true);
+    pConfig->SetPath("/Settings/WMM");
+    pConfig->Write("ShowIcon", true);
+    pConfig->Write("ShowLiveIcon", true);
   }
 #endif
 
@@ -1374,35 +1280,35 @@ void OCPNPlatform::SetDefaultOptions() {
   //  Enable some default PlugIns, and their default options
 
   if (pConfig) {
-    pConfig->SetPath(_T ( "/PlugIns/libchartdldr_pi.so" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libchartdldr_pi.so");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/PlugIns/libwmm_pi.so" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libwmm_pi.so");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/Settings/WMM" ));
-    pConfig->Write(_T ( "ShowIcon" ), true);
-    pConfig->Write(_T ( "ShowLiveIcon" ), true);
+    pConfig->SetPath("/Settings/WMM");
+    pConfig->Write("ShowIcon", true);
+    pConfig->Write("ShowLiveIcon", true);
 
-    pConfig->SetPath(_T ( "/PlugIns/libgrib_pi.so" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libgrib_pi.so");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/PlugIns/libdashboard_pi.so" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/libdashboard_pi.so");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/PlugIns/GRIB" ));
-    pConfig->Write(_T ( "GRIBCtrlBarPosX" ), 100);
-    pConfig->Write(_T ( "GRIBCtrlBarPosY" ), 0);
+    pConfig->SetPath("/PlugIns/GRIB");
+    pConfig->Write("GRIBCtrlBarPosX", 100);
+    pConfig->Write("GRIBCtrlBarPosY", 0);
 
-    pConfig->SetPath(_T ( "/Settings/GRIB" ));
-    pConfig->Write(_T ( "CursorDataShown" ), 0);
+    pConfig->SetPath("/Settings/GRIB");
+    pConfig->Write("CursorDataShown", 0);
 
     // This is ugly hack
     // TODO
-    pConfig->SetPath(_T ( "/PlugIns/liboesenc_pi.so" ));
-    pConfig->Write(_T ( "bEnabled" ), true);
+    pConfig->SetPath("/PlugIns/liboesenc_pi.so");
+    pConfig->Write("bEnabled", true);
 
-    pConfig->SetPath(_T ( "/Settings/QTFonts" ));
+    pConfig->SetPath("/Settings/QTFonts");
 
     // Status Bar
     wxString str = "en_US-b25a3899";
@@ -1417,7 +1323,7 @@ void OCPNPlatform::SetDefaultOptions() {
     FontMgr::Get().LoadFontNative(&str, &pval);
 
     // Set track default color to magenta
-    pConfig->SetPath(_T ( "/Settings/Others" ));
+    pConfig->SetPath("/Settings/Others");
     pConfig->Write("TrackLineColour", "#C545C3");
     g_colourTrackLineColour.Set(197, 69, 195);
 
@@ -1445,8 +1351,8 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
 
     // Set some S52/S57 options
     if (pConfig) {
-      pConfig->SetPath(_T ( "/Settings/GlobalState" ));
-      pConfig->Write(_T ( "bShowS57Text" ), true);
+      pConfig->SetPath("/Settings/GlobalState");
+      pConfig->Write("bShowS57Text", true);
     }
 
     g_ChartNotRenderScaleFactor = 2.0;
@@ -1454,7 +1360,7 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     g_toolbarConfig = "X.....XX.......XX.XXXXXXXXXXX";
 
     //  Experience indicates a slightly larger default font size is better
-    pConfig->DeleteGroup(_T ( "/Settings/QTFonts" ));
+    pConfig->DeleteGroup("/Settings/QTFonts");
     g_default_font_size = 20;
     g_default_font_facename = "Roboto";
 
@@ -1469,12 +1375,12 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
 
     // A few popular requests,
     // which will take effect on next App startup.
-    pConfig->SetPath(_T ( "/Settings/WMM" ));
-    pConfig->Write(_T ( "ShowIcon" ), true);
-    pConfig->Write(_T ( "ShowLiveIcon" ), true);
+    pConfig->SetPath("/Settings/WMM");
+    pConfig->Write("ShowIcon", true);
+    pConfig->Write("ShowLiveIcon", true);
 
     pConfig->SetPath("/Canvas/CanvasConfig1");
-    pConfig->Write(_T ( "canvasENCShowVisibleSectorLights" ), 0);
+    pConfig->Write("canvasENCShowVisibleSectorLights", 0);
 
     // Manage plugins
     // Clear the cache, allowing deprecation of obsolete plugins
@@ -1520,8 +1426,8 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // selection
     //  that may not be available on new build.
     g_CmdSoundString = wxString(OCPN_SOUND_CMD);
-    pConfig->SetPath(_T ( "/Settings" ));
-    pConfig->Write(_T( "CmdSoundString" ), g_CmdSoundString);
+    pConfig->SetPath("/Settings");
+    pConfig->Write("CmdSoundString", g_CmdSoundString);
 
     // Force AIS specific sound effects ON, leaving the master control
     // (g_bAIS_CPA_Alert_Audio) as configured
@@ -1550,9 +1456,9 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // are updated. (e.g. flatpak SDK 22.08->24.08->???)
     g_compatOS = "";
     g_compatOsVersion = "";
-    pConfig->SetPath(_T ( "/Settings" ));
-    pConfig->Write(_T ( "CompatOS" ), g_compatOS);
-    pConfig->Write(_T ( "CompatOsVersion" ), g_compatOsVersion);
+    pConfig->SetPath("/Settings");
+    pConfig->Write("CompatOS", g_compatOS);
+    pConfig->Write("CompatOsVersion", g_compatOsVersion);
   }
 }
 
@@ -1568,7 +1474,8 @@ int OCPNPlatform::platformApplyPrivateSettingsString(wxString settings,
 
 void OCPNPlatform::applyExpertMode(bool mode) {
 #ifdef __ANDROID__
-  g_bexpert = mode;  // toolbar only shows plugin icons if expert mode is false
+  // g_bexpert = mode;  // toolbar only shows plugin icons if expert mode is
+  // false
   g_bBasicMenus = !mode;  //  simplified context menus in basic mode
 #endif
 }
@@ -1774,7 +1681,7 @@ double OCPNPlatform::getFontPointsperPixel() {
 
     wxFont *f = FontMgr::Get().FindOrCreateFont(
         12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
-        wxString(_T ( "" )), wxFONTENCODING_SYSTEM);
+        wxString(""), wxFONTENCODING_SYSTEM);
     dc.SetFont(*f);
 
     int width, height;

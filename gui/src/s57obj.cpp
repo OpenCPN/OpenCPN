@@ -35,7 +35,7 @@
 #include <wx/textfile.h>
 
 #include "dychart.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 
 #include "s52s57.h"
 #include "s52plib.h"
@@ -58,7 +58,7 @@
 
 #include "pluginmanager.h"  // for S57 lights overlay
 
-#include "Osenc.h"
+#include "o_senc.h"
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>

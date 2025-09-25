@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
@@ -43,7 +41,7 @@
 #include <wx/jsonwriter.h>
 #include <wx/tglbtn.h>
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifdef OCPN_USE_CURL
 #include <wx/curl/http.h>
 #include <wx/curl/dialog.h>
@@ -56,6 +54,7 @@
 #include "model/plugin_blacklist.h"
 #include "model/plugin_loader.h"
 #include "model/semantic_vers.h"
+
 #include "chartimg.h"
 #include "observable.h"
 #include "ocpndc.h"
@@ -63,22 +62,19 @@
 #include "OCPN_Sound.h"
 #include "s57chart.h"  // for Object list
 
-//    Assorted static helper routines
-
-PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
-
-class PluginListPanel;
-class PluginPanel;
-class pluginUtilHandler;
-class MyFrame;
-
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
 //----------------------------------------------------------------------------
 
-class PlugInManager;  // forward
-
+class PlugInManager;                // forward
 extern PlugInManager* g_pi_manager; /**< Global instance */
+
+class PluginListPanel;    // forward
+class PluginPanel;        // forward
+class pluginUtilHandler;  // forward in .cpp file
+class MyFrame;            // circular
+
+PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
 
 class OCPN_MsgEvent : public wxEvent {
 public:
@@ -338,7 +334,7 @@ private:
   PluginListPanel* m_listPanel;
   std::unique_ptr<AbstractBlacklist> m_blacklist;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifdef OCPN_USE_CURL
 
 public:

@@ -84,11 +84,6 @@ typedef unsigned __int64 uint64_t;
 // Random Prototypes
 // ----------------------------------------------------------------------------
 
-typedef struct {
-  float y;
-  float x;
-} MyFlPoint;
-
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y);
 
 // ----------------------------------------------------------------------------

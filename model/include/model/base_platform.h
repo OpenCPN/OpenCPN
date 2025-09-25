@@ -56,8 +56,6 @@ typedef struct {
   char msdk[20];
 } PlatSpec;
 
-void appendOSDirSlash(wxString* path);
-
 struct OCPN_OSDetail {
   OCPN_OSDetail() {};
   ~OCPN_OSDetail() {};
@@ -69,6 +67,17 @@ struct OCPN_OSDetail {
   std::string osd_ID;
 };
 
+void appendOSDirSlash(wxString* path);
+
+namespace platform {
+
+/**
+ * Return total system RAM and size of program
+ * Values returned are in kilobytes
+ */
+bool GetMemoryStatus(int* mem_total, int* mem_used);
+
+}  // namespace platform
 class AbstractPlatform {
 public:
   AbstractPlatform() = default;

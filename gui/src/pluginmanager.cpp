@@ -21,60 +21,31 @@
  * \file
  * Implement pluginmanager.h
  */
+
 #include <algorithm>
-#include <archive.h>
 #include <cstdio>
 #include <cstdio>
-#include <errno.h>
-#include <fcntl.h>
 #include <fstream>
-#include <iostream>
 #include <iostream>
 #include <memory>
 #include <set>
 #include <sstream>
-#include <stdint.h>
 #include <string>
+#include <typeinfo>
 #include <unordered_map>
 
-#ifdef __MINGW32__
-#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
+#ifdef _WIN32
+#include <winsock2.h>
 #include <windows.h>
 #endif
 
-#include <typeinfo>
-#if defined(__linux__) && !defined(__ANDROID__)
-#include <wordexp.h>
+#ifdef __MINGW32__
+#undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #endif
-#include <wx/wx.h>
-#include <wx/dir.h>
-#include <wx/event.h>
-#include <wx/filename.h>
-#include <wx/aui/aui.h>
-#include <wx/platinfo.h>
-#include <wx/popupwin.h>
-#include <wx/progdlg.h>
-#include <wx/statline.h>
-#include <wx/tokenzr.h>
-#include <wx/tooltip.h>
-#include <wx/app.h>
-#include <wx/hashset.h>
-#include <wx/hashmap.h>
-#include <wx/jsonval.h>
-#include <wx/jsonreader.h>
-#include <wx/uri.h>
-#include <wx/zipstrm.h>
-#include <wx/zstream.h>
-#include <wx/tarstrm.h>
-#include <wx/textwrapper.h>
-#include <wx/app.h>
 
-#ifndef __WXMSW__
+#ifndef _WIN32
 #include <cxxabi.h>
-#endif  // __WXMSW__
-
-#include <archive_entry.h>
-typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
+#endif
 
 #ifdef USE_LIBELF
 #include <elf.h>
@@ -82,7 +53,41 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include <gelf.h>
 #endif
 
+#if defined(__linux__) && !defined(__ANDROID__)
+#include <wordexp.h>
+#endif
+
+#include <archive.h>
+#include <archive_entry.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdint.h>
+
+#include <wx/app.h>
+#include <wx/aui/aui.h>
+#include <wx/dir.h>
+#include <wx/event.h>
+#include <wx/filename.h>
+#include <wx/hashmap.h>
+#include <wx/hashset.h>
+#include <wx/jsonreader.h>
+#include <wx/jsonval.h>
+#include <wx/listimpl.cpp>
+#include <wx/platinfo.h>
+#include <wx/popupwin.h>
+#include <wx/progdlg.h>
+#include <wx/statline.h>
+#include <wx/tarstrm.h>
+#include <wx/textwrapper.h>
+#include <wx/tokenzr.h>
+#include <wx/tooltip.h>
+#include <wx/uri.h>
+#include <wx/wx.h>
+#include <wx/zipstrm.h>
+#include <wx/zstream.h>
+
 #include "config.h"
+#include "pluginmanager.h"
 
 #include "model/ais_target_data.h"
 #include "model/catalog_handler.h"
@@ -96,6 +101,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "model/datetime.h"
 #include "model/downloader.h"
 #include "model/georef.h"
+#include "model/gui_vars.h"
 #include "model/json_event.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
@@ -132,15 +138,14 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "observable_confvar.h"
 #include "observable_globvar.h"
 #include "ocpn_app.h"
-#include "OCPN_AUIManager.h"
+#include "ocpn_aui_manager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
-#include "OCPNPlatform.h"
-#include "OCPNRegion.h"
+#include "ocpn_platform.h"
+#include "ocpn_region.h"
 #include "options.h"
 #include "piano.h"
-#include "pluginmanager.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "s52plib.h"
@@ -162,61 +167,17 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "gl_chart_canvas.h"
 #endif
 
-extern MyConfig* pConfig;
-extern OCPN_AUIManager* g_pauimgr;
+typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
+enum { CurlThreadId = wxID_HIGHEST + 1 };
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale* plocale_def_lang;
 #endif
 
-extern OCPNPlatform* g_Platform;
-extern ChartDB* ChartData;
-extern MyFrame* gFrame;
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern options* g_pOptions;
-extern Multiplexer* g_pMUX;
-extern bool g_bShowChartBar;
-extern Routeman* g_pRouteMan;
-extern Select* pSelect;
-extern RouteManagerDialog* pRouteManagerDialog;
-extern RouteList* pRouteList;
-extern std::vector<Track*> g_TrackList;
-extern PlugInManager* g_pi_manager;
-extern s52plib* ps52plib;
-extern wxString ChartListFileName;
-extern options* g_options;
-extern ColorScheme global_color_scheme;
-extern wxArrayString g_locale_catalog_array;
-extern int g_GUIScaleFactor;
-extern int g_ChartScaleFactor;
-extern wxString g_locale;
-extern ocpnFloatingToolbarDialog* g_MainToolbar;
-
-extern int g_chart_zoom_modifier_raster;
-extern int g_chart_zoom_modifier_vector;
-extern double g_display_size_mm;
-extern bool g_bopengl;
-
-extern ChartGroupArray* g_pGroupArray;
-extern unsigned int g_canvasConfig;
-
-extern wxString g_CmdSoundString;
-
-extern unsigned int gs_plib_flags;
-extern ChartCanvas* g_focusCanvas;
-extern ChartCanvas* g_overlayCanvas;
-extern bool g_bquiting;
-
-WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
-extern arrayofCanvasPtr g_canvasArray;
-
 PlugInManager* g_pi_manager;
 
 void NotifySetupOptionsPlugin(const PlugInData* pic);
 
-enum { CurlThreadId = wxID_HIGHEST + 1 };
-
-#include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 

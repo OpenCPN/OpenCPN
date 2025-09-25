@@ -54,7 +54,7 @@
 #include "ocpndc.h"
 #include "ocpn_gl_options.h"
 #include "ocpndc.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "TexFont.h"
 #include "viewport.h"
 

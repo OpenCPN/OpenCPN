@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Optimized wxBitmap Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,11 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ *  Implement ocpn_pixmap.h -- Optimized wxBitmap Object
  */
 
 //      Original comment header for xshm test code
@@ -41,53 +37,11 @@
  * Brian Paul  Sep, 20, 1995  brianp@ssec.wisc.edu
  */
 
-// ============================================================================
-// declarations
-// ============================================================================
 // ----------------------------------------------------------------------------
 // headers
 // ----------------------------------------------------------------------------
 
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-#include "dychart.h"
-#include "ocpn_pixel.h"
-
-#ifndef WX_PRECOMP
 #include <stdio.h>
-
-#include <wx/list.h>
-#include <wx/utils.h>
-#include <wx/app.h>
-#include <wx/palette.h>
-#include <wx/dcmemory.h>
-#include <wx/bitmap.h>
-#include <wx/icon.h>
-#endif
-
-#ifdef __WXMSW__
-#include <wx/msw/private.h>
-#include <wx/log.h>
-#include <wx/msw/dib.h>
-#endif
-
-#include <wx/bitmap.h>
-#include <wx/icon.h>
-#include <wx/log.h>
-#include <wx/image.h>
-#include <wx/app.h>
-#include <wx/math.h>
-#include <wx/gdicmn.h>
-#include <wx/palette.h>
-
-// missing from mingw32 header
-#ifndef CLR_INVALID
-#define CLR_INVALID ((COLORREF) - 1)
-#endif  // no CLR_INVALID
 
 #ifdef ocpnUSE_ocpnBitmap
 #ifdef __WXX11__
@@ -96,6 +50,37 @@
 #include <X11/extensions/XShm.h>
 #endif
 #endif
+
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include <wx/app.h>
+#include <wx/bitmap.h>
+#include <wx/dcmemory.h>
+#include <wx/gdicmn.h>
+#include <wx/icon.h>
+#include <wx/image.h>
+#include <wx/list.h>
+#include <wx/log.h>
+#include <wx/math.h>
+#include <wx/palette.h>
+#include <wx/utils.h>
+
+#ifdef __WXMSW__
+#include <wx/msw/private.h>
+#include <wx/msw/dib.h>
+#endif
+
+#include "dychart.h"
+#include "ocpn_pixel.h"
+
+// missing from mingw32 header
+#ifndef CLR_INVALID
+#define CLR_INVALID ((COLORREF) - 1)
+#endif  // no CLR_INVALID
 
 #ifdef __WXX11__
 
@@ -108,7 +93,7 @@ static int HandleXError(Display *dpy, XErrorEvent *event) {
   MITErrorFlag = 1;
   return 0;
 }
-#endif
+#endif  // ocpUSE_MITSHM
 
 //---------------------------------------------------------------------------------------------------------
 //              Private Memory Management

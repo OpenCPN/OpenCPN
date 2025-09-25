@@ -93,7 +93,7 @@ int Garmin_GPS_SendWaypoints(const wxString &port_name,
                              RoutePointList *wplist) {
   int ret_val = 0;
 
-  int nPoints = wplist->GetCount();
+  int nPoints = wplist->size();
 
   // Create the array of GPS_PWays
 
@@ -105,8 +105,8 @@ int Garmin_GPS_SendWaypoints(const wxString &port_name,
   //    Now fill in the useful elements
   for (int i = 0; i < nPoints; i++) {
     GPS_PWay pway = ppway[i];
-    wxRoutePointListNode *node = wplist->Item(i);
-    RoutePoint *prp = node->GetData();
+    auto it = wplist->begin() + i;
+    RoutePoint *prp = *it;
 
     Garmin_GPS_PrepareWptData(pway, prp);
   }
@@ -140,7 +140,7 @@ int Garmin_GPS_SendWaypoints(const wxString &port_name,
 GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
                                         int *size) {
   RoutePointList *wplist = pr->pRoutePointList;
-  int nPoints = wplist->GetCount();
+  int nPoints = wplist->size();
 
   // Create the array of GPS_PWays
   // There will be one extra for the route header
@@ -165,8 +165,8 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
   //    Elements 1..n are waypoints
   for (int i = 1; i < *size; i++) {
     GPS_PWay pway = ppway[i];
-    wxRoutePointListNode *node = wplist->Item(i - 1);
-    RoutePoint *prp = node->GetData();
+    auto it = wplist->begin() + i;
+    RoutePoint *prp = *it;
 
     Garmin_GPS_PrepareWptData(pway, prp);
   }
@@ -192,7 +192,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
 GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
                                         int *size) {
   RoutePointList *wplist = pr->pRoutePointList;
-  int nPoints = wplist->GetCount();
+  int nPoints = wplist->size();
 
   // Create the array of GPS_PWays
   // There will be one for the route header, n for each way point
@@ -221,8 +221,8 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
     if (i % 2 == 1) /* Odd */
     {
       GPS_PWay pway = ppway[i];
-      wxRoutePointListNode *node = wplist->Item((i - 1) / 2);
-      RoutePoint *prp = node->GetData();
+      auto it = wplist->begin() + i;
+      RoutePoint *prp = *it;
 
       Garmin_GPS_PrepareWptData(pway, prp);
     } else /* Even */

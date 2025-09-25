@@ -30,7 +30,7 @@
 
 #include "model/config_vars.h"
 #include "font_mgr.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 
 struct font_cache_record {
@@ -68,15 +68,6 @@ private:
  * @see g_locale for main locale setting
  */
 static wxString s_locale;
-
-/**
- * Default font size for user interface elements such as menus, dialogs, etc.
- *
- * @note Defaults to 0, which falls back to the system default font size.
- * @note Currently only set on the Android platform.
- * @note Can be manually overridden in opencpn.ini (DefaultFontSize parameter).
- */
-wxString g_default_font_facename;
 
 FontMgr *FontMgr::instance = NULL;
 

@@ -84,15 +84,15 @@
 #include "mbtiles.h"
 #include "mui_bar.h"
 #include "navutil.h"
-#include "OCPN_AUIManager.h"
+#include "ocpn_aui_manager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "ocpn_pixel.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "options.h"
 #include "piano.h"
 #include "pluginmanager.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
@@ -3825,9 +3825,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList = pSelect->FindSelectionList(
         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT);
-    wxSelectableItemListNode *node = SelList.GetFirst();
-    while (node) {
-      SelectItem *pFindSel = node->GetData();
+    auto node = SelList.begin();
+    while (node != SelList.end()) {
+      SelectItem *pFindSel = *node;
 
       Route *pr = (Route *)pFindSel->m_pData3;  // candidate
 
@@ -3889,26 +3889,25 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           // point for active route
           double shiptoEndLeg = 0.;
           bool validActive = false;
-          if (pr->IsActive() &&
-              pr->pRoutePointList->GetFirst()->GetData()->m_bIsActive)
+          if (pr->IsActive() && (*pr->pRoutePointList->begin())->m_bIsActive)
             validActive = true;
 
-          if (segShow_point_a != pr->pRoutePointList->GetFirst()->GetData()) {
-            wxRoutePointListNode *node =
-                (pr->pRoutePointList)->GetFirst()->GetNext();
+          if (segShow_point_a != *pr->pRoutePointList->begin()) {
+            auto node = pr->pRoutePointList->begin();
+            ++node;
             RoutePoint *prp;
             float dist_to_endleg = 0;
             wxString t;
 
-            while (node) {
-              prp = node->GetData();
+            while (node != pr->pRoutePointList->end()) {
+              prp = *node;
               if (validActive)
                 shiptoEndLeg += prp->m_seg_len;
               else if (prp->m_bIsActive)
                 validActive = true;
               dist_to_endleg += prp->m_seg_len;
               if (prp->IsSame(segShow_point_a)) break;
-              node = node->GetNext();
+              ++node;
             }
             s << " (+" << FormatDistanceAdaptive(dist_to_endleg) << ")";
           }
@@ -3956,8 +3955,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           showRouteRollover = true;
           break;
         }
-      } else
-        node = node->GetNext();
+      } else {
+        ++node;
+      }
     }
   } else {
     //    Is the cursor still in select radius, and not timed out?
@@ -4001,9 +4001,10 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList = pSelect->FindSelectionList(
         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_TRACKSEGMENT);
-    wxSelectableItemListNode *node = SelList.GetFirst();
-    while (node) {
-      SelectItem *pFindSel = node->GetData();
+
+    auto node = SelList.begin();
+    while (node != SelList.end()) {
+      SelectItem *pFindSel = *node;
 
       Track *pt = (Track *)pFindSel->m_pData3;  // candidate
 
@@ -4106,8 +4107,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           showTrackRollover = true;
           break;
         }
-      } else
-        node = node->GetNext();
+      } else {
+        ++node;
+      }
     }
   } else {
     //    Is the cursor still in select radius, and not timed out?
@@ -7248,10 +7250,7 @@ void ChartCanvas::FindRoutePointsAtCursor(float selectRadius,
   SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
   SelectableItemList SelList = pSelect->FindSelectionList(
       ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTEPOINT);
-  wxSelectableItemListNode *node = SelList.GetFirst();
-  while (node) {
-    pFind = node->GetData();
-
+  for (SelectItem *pFind : SelList) {
     RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
 
     //    Get an array of all routes using this point
@@ -7290,9 +7289,7 @@ void ChartCanvas::FindRoutePointsAtCursor(float selectRadius,
       m_pFoundPoint = pFind;
       break;  // out of the while(node)
     }
-
-    node = node->GetNext();
-  }  // while (node)
+  }  // for (SelectItem...
 }
 std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
                                                                       int y) {
@@ -7350,10 +7347,7 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList =
         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTEPOINT);
-    wxSelectableItemListNode *node = SelList.GetFirst();
-    while (node) {
-      SelectItem *pFindSel = node->GetData();
-
+    for (SelectItem *pFindSel : SelList) {
       RoutePoint *prp = (RoutePoint *)pFindSel->m_pData1;  // candidate
 
       //    Get an array of all routes using this point
@@ -7404,8 +7398,6 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
 
         delete proute_array;
       }
-
-      node = node->GetNext();
     }
 
     //      Now choose the "best" selections
@@ -7448,16 +7440,12 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
     if (NULL == SelectedRoute)  // the case where a segment only is selected
     {
       //  Choose the first visible route containing segment in the list
-      wxSelectableItemListNode *node = SelList.GetFirst();
-      while (node) {
-        SelectItem *pFindSel = node->GetData();
-
+      for (SelectItem *pFindSel : SelList) {
         Route *pr = (Route *)pFindSel->m_pData3;
         if (pr->IsVisible()) {
           SelectedRoute = pr;
           break;
         }
-        node = node->GetNext();
       }
     }
 
@@ -7978,10 +7966,7 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList =
         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTEPOINT);
-    wxSelectableItemListNode *node = SelList.GetFirst();
-    while (node) {
-      SelectItem *pFindSel = node->GetData();
-
+    for (SelectItem *pFindSel : SelList) {
       RoutePoint *prp = (RoutePoint *)pFindSel->m_pData1;  // candidate
 
       //    Get an array of all routes using this point
@@ -8033,7 +8018,6 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
 
         delete proute_array;
       }
-      node = node->GetNext();
     }
 
     //      Now choose the "best" selections
@@ -8074,16 +8058,12 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
     if (NULL == m_pSelectedRoute)  // the case where a segment only is selected
     {
       //  Choose the first visible route containing segment in the list
-      wxSelectableItemListNode *node = SelList.GetFirst();
-      while (node) {
-        SelectItem *pFindSel = node->GetData();
-
+      for (SelectItem *pFindSel : SelList) {
         Route *pr = (Route *)pFindSel->m_pData3;
         if (pr->IsVisible()) {
           m_pSelectedRoute = pr;
           break;
         }
-        node = node->GetNext();
       }
     }
 
@@ -8112,16 +8092,12 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
 
     //  Choose the first visible track containing segment in the list
-    wxSelectableItemListNode *node = SelList.GetFirst();
-    while (node) {
-      SelectItem *pFindSel = node->GetData();
-
+    for (SelectItem *pFindSel : SelList) {
       Track *pt = (Track *)pFindSel->m_pData3;
       if (pt->IsVisible()) {
         m_pSelectedTrack = pt;
         break;
       }
-      node = node->GetNext();
     }
     if (m_pSelectedTrack) seltype |= SELTYPE_TRACKSEGMENT;
   }
@@ -8142,25 +8118,21 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
           pSelectTC->FindSelectionList(ctx, slat, slon, SELTYPE_CURRENTPOINT);
 
       //      Default is first entry
-      wxSelectableItemListNode *node = SelList.GetFirst();
-      pFind = node->GetData();
+      pFind = *SelList.begin();
       pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
 
-      if (SelList.GetCount() > 1) {
-        node = node->GetNext();
-        while (node) {
-          pFind = node->GetData();
+      auto node = SelList.begin();
+      if (SelList.size() > 1) {
+        for (++node; node != SelList.end(); ++node) {
+          pFind = *node;
           IDX_entry *pIDX_candidate = (IDX_entry *)(pFind->m_pData1);
           if (pIDX_candidate->IDX_type == 'c') {
             pIDX_best_candidate = pIDX_candidate;
             break;
           }
-
-          node = node->GetNext();
         }  // while (node)
       } else {
-        wxSelectableItemListNode *node = SelList.GetFirst();
-        pFind = node->GetData();
+        pFind = *SelList.begin();
         pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
       }
 
@@ -8268,16 +8240,13 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
     SelectableItemList rpSelList =
         pSelect->FindSelectionList(ctx, zlat, zlon, SELTYPE_ROUTEPOINT);
-    wxSelectableItemListNode *node = rpSelList.GetFirst();
     bool b_onRPtarget = false;
-    while (node) {
-      SelectItem *pFind = node->GetData();
+    for (SelectItem *pFind : rpSelList) {
       RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
       if (m_pRoutePointEditTarget && (frp == m_pRoutePointEditTarget)) {
         b_onRPtarget = true;
         break;
       }
-      node = node->GetNext();
     }
 
     //      Double tap with selected RoutePoint or Mark
@@ -8299,9 +8268,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         return true;
       }
     } else {
-      node = rpSelList.GetFirst();
-      if (node) {
-        SelectItem *pFind = node->GetData();
+      auto node = rpSelList.begin();
+      if (node != rpSelList.end()) {
+        SelectItem *pFind = *node;
         RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
         if (frp) {
           wxArrayPtrVoid *proute_array =
@@ -8391,7 +8360,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (m_routeState == 1) {
           m_pMouseRoute = new Route();
           NavObj_dB::GetInstance().InsertRoute(m_pMouseRoute);
-          pRouteList->Append(m_pMouseRoute);
+          pRouteList->push_back(m_pMouseRoute);
           r_rband.x = x;
           r_rband.y = y;
         }
@@ -8685,7 +8654,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         if (!m_pMeasureRoute) {
           m_pMeasureRoute = new Route();
-          pRouteList->Append(m_pMeasureRoute);
+          pRouteList->push_back(m_pMeasureRoute);
         }
 
         if (m_nMeasureState == 1) {
@@ -8737,12 +8706,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         SelectItem *pFind = NULL;
         SelectableItemList SelList = pSelect->FindSelectionList(
             ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTEPOINT);
-        wxSelectableItemListNode *node = SelList.GetFirst();
-        while (node) {
-          pFind = node->GetData();
+        for (SelectItem *pFind : SelList) {
           RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
           if (m_pRoutePointEditTarget == frp) m_bIsInRadius = true;
-          node = node->GetNext();
         }
       }
 
@@ -8752,15 +8718,12 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         SelectItem *pFind = NULL;
         SelectableItemList SelList = pSelect->FindSelectionList(
             ctx, m_cursor_lat, m_cursor_lon, SELTYPE_DRAGHANDLE);
-        wxSelectableItemListNode *node = SelList.GetFirst();
-        while (node) {
-          pFind = node->GetData();
+        for (SelectItem *pFind : SelList) {
           RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
           if (m_pRoutePointEditTarget == frp) {
             m_bIsInRadius = true;
             break;
           }
-          node = node->GetNext();
         }
 
         if (!m_dragoffsetSet) {
@@ -9009,7 +8972,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (m_routeState == 1) {
           m_pMouseRoute = new Route();
           m_pMouseRoute->SetHiLite(50);
-          pRouteList->Append(m_pMouseRoute);
+          pRouteList->push_back(m_pMouseRoute);
           r_rband.x = x;
           r_rband.y = y;
           NavObj_dB::GetInstance().InsertRoute(m_pMouseRoute);
@@ -9262,7 +9225,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         if (m_nMeasureState == 1) {
           m_pMeasureRoute = new Route();
-          pRouteList->Append(m_pMeasureRoute);
+          pRouteList->push_back(m_pMeasureRoute);
           r_rband.x = x;
           r_rband.y = y;
         }
@@ -9435,34 +9398,24 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       if (!b_start_rollover && !b_startedit_route) {
         SelectableItemList SelList = pSelect->FindSelectionList(
             ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT);
-        wxSelectableItemListNode *node = SelList.GetFirst();
-        while (node) {
-          SelectItem *pFindSel = node->GetData();
-
+        for (SelectItem *pFindSel : SelList) {
           Route *pr = (Route *)pFindSel->m_pData3;  // candidate
-
           if (pr && pr->IsVisible()) {
             b_start_rollover = true;
             break;
           }
-          node = node->GetNext();
         }  // while
       }
 
       if (!b_start_rollover && !b_startedit_route) {
         SelectableItemList SelList = pSelect->FindSelectionList(
             ctx, m_cursor_lat, m_cursor_lon, SELTYPE_TRACKSEGMENT);
-        wxSelectableItemListNode *node = SelList.GetFirst();
-        while (node) {
-          SelectItem *pFindSel = node->GetData();
-
+        for (SelectItem *pFindSel : SelList) {
           Track *tr = (Track *)pFindSel->m_pData3;  // candidate
-
           if (tr && tr->IsVisible()) {
             b_start_rollover = true;
             break;
           }
-          node = node->GetNext();
         }  // while
       }
 
@@ -9497,8 +9450,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                      ir++) {
                   Route *pr = (Route *)m_pEditRouteArray->Item(ir);
                   if (pr && pr->pRoutePointList) {
-                    if (pr->pRoutePointList->IndexOf(pNearbyPoint) !=
-                        wxNOT_FOUND) {
+                    auto *list = pr->pRoutePointList;
+                    auto pos =
+                        std::find(list->begin(), list->end(), pNearbyPoint);
+                    if (pos != list->end()) {
                       duplicate = true;
                       break;
                     }
@@ -9610,14 +9565,17 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               if (g_pRouteMan->IsRouteValid(pr)) {
                 if (pMousePoint) {  // remove the dragged point and insert the
                                     // nearby
-                  int nRP =
-                      pr->pRoutePointList->IndexOf(m_pRoutePointEditTarget);
+                  auto *list = pr->pRoutePointList;
+                  auto pos = std::find(list->begin(), list->end(),
+                                       m_pRoutePointEditTarget);
 
                   pSelect->DeleteAllSelectableRoutePoints(pr);
                   pSelect->DeleteAllSelectableRouteSegments(pr);
 
-                  pr->pRoutePointList->Insert(nRP, pMousePoint);
-                  pr->pRoutePointList->DeleteObject(m_pRoutePointEditTarget);
+                  pr->pRoutePointList->insert(pos, pMousePoint);
+                  pos = std::find(list->begin(), list->end(),
+                                  m_pRoutePointEditTarget);
+                  pr->pRoutePointList->erase(pos);
 
                   pSelect->AddAllSelectableRouteSegments(pr);
                   pSelect->AddAllSelectableRoutePoints(pr);
@@ -9764,8 +9722,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                      ir++) {
                   Route *pr = (Route *)m_pEditRouteArray->Item(ir);
                   if (pr && pr->pRoutePointList) {
-                    if (pr->pRoutePointList->IndexOf(pNearbyPoint) !=
-                        wxNOT_FOUND) {
+                    auto *list = pr->pRoutePointList;
+                    auto pos =
+                        std::find(list->begin(), list->end(), pNearbyPoint);
+                    if (pos != list->end()) {
                       duplicate = true;
                       break;
                     }
@@ -9875,14 +9835,18 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               Route *pr = (Route *)m_pEditRouteArray->Item(ir);
               if (g_pRouteMan->IsRouteValid(pr)) {
                 if (pMousePoint) {  // replace dragged point by nearby one
-                  int nRP =
-                      pr->pRoutePointList->IndexOf(m_pRoutePointEditTarget);
+                  auto *list = pr->pRoutePointList;
+                  auto pos = std::find(list->begin(), list->end(),
+                                       m_pRoutePointEditTarget);
 
                   pSelect->DeleteAllSelectableRoutePoints(pr);
                   pSelect->DeleteAllSelectableRouteSegments(pr);
 
-                  pr->pRoutePointList->Insert(nRP, pMousePoint);
-                  pr->pRoutePointList->DeleteObject(m_pRoutePointEditTarget);
+                  pr->pRoutePointList->insert(pos, pMousePoint);
+                  pos = std::find(list->begin(), list->end(),
+                                  m_pRoutePointEditTarget);
+                  if (pos != list->end()) list->erase(pos);
+                  // pr->pRoutePointList->erase(pos + 1);
 
                   pSelect->AddAllSelectableRouteSegments(pr);
                   pSelect->AddAllSelectableRoutePoints(pr);
@@ -10771,15 +10735,11 @@ void pupHandler_PasteRoute() {
   // don't create a new route.
   if (mergepoints && answer == wxID_YES &&
       existingWaypointCounter == pasted->GetnPoints()) {
-    wxRouteListNode *route_node = pRouteList->GetFirst();
-    while (route_node) {
-      Route *proute = route_node->GetData();
-
+    for (Route *proute : *pRouteList) {
       if (pasted->m_RouteNameString == proute->m_RouteNameString) {
         createNewRoute = false;
         break;
       }
-      route_node = route_node->GetNext();
     }
   }
 
@@ -10826,7 +10786,7 @@ void pupHandler_PasteRoute() {
   }
 
   if (createNewRoute) {
-    pRouteList->Append(newRoute);
+    pRouteList->push_back(newRoute);
     // pConfig->AddNewRoute(newRoute);  // use auto next num
     NavObj_dB::GetInstance().InsertRoute(newRoute);
 
@@ -12911,10 +12871,7 @@ void ChartCanvas::DrawActiveTrackInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 
 void ChartCanvas::DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Route *active_route = NULL;
-
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route *pRouteDraw = node->GetData();
+  for (Route *pRouteDraw : *pRouteList) {
     if (pRouteDraw->IsActive() || pRouteDraw->IsSelected()) {
       active_route = pRouteDraw;
       continue;
@@ -12932,9 +12889,7 @@ void ChartCanvas::DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   Route *active_route = NULL;
 
-  for (wxRouteListNode *node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route *pRouteDraw = node->GetData();
+  for (Route *pRouteDraw : *pRouteList) {
     if (pRouteDraw->IsActive() || pRouteDraw->IsSelected()) {
       active_route = pRouteDraw;
       break;
@@ -12946,13 +12901,13 @@ void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   if (!pWayPointMan) return;
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+  auto node = pWayPointMan->GetWaypointList()->begin();
 
-  while (node) {
-    RoutePoint *pWP = node->GetData();
+  while (node != pWayPointMan->GetWaypointList()->end()) {
+    RoutePoint *pWP = *node;
     if (pWP) {
       if (pWP->m_bIsInRoute) {
-        node = node->GetNext();
+        ++node;
         continue;
       }
 
@@ -12982,7 +12937,7 @@ void ChartCanvas::DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox) {
       }
     }
 
-    node = node->GetNext();
+    ++node;
   }
 }
 
@@ -12992,17 +12947,12 @@ void ChartCanvas::DrawBlinkObjects() {
 
   if (!pWayPointMan) return;
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-
-  while (node) {
-    RoutePoint *pWP = node->GetData();
+  for (RoutePoint *pWP : *pWayPointMan->GetWaypointList()) {
     if (pWP) {
       if (pWP->m_bBlink) {
         update_rect.Union(pWP->CurrentRect_in_DC);
       }
     }
-
-    node = node->GetNext();
   }
   if (!update_rect.IsEmpty()) RefreshRect(update_rect);
 }

@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  S57 SENC File Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,27 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ *  S57 SENC File Object
+ */
 
 #ifndef OSENC_H
 #define OSENC_H
-
-// For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include <wx/filename.h>
-
-#include "gdal/cpl_csv.h"
-#include "ogr_s57.h"
-#include "s52s57.h"
-#include "chartbase.h"
 
 #include <string.h>
 #include <stdint.h>
@@ -46,7 +30,24 @@
 #include <mutex>
 #include <unordered_map>
 
-WX_DEFINE_ARRAY_PTR(float *, SENCFloatPtrArray);
+// For compilers that support precompilation, includes "wx.h".
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include <wx/filename.h>
+#include <wx/progdlg.h>
+#include <wx/string.h>
+#include <wx/wfstream.h>
+
+#include "gdal/cpl_csv.h"
+
+#include "chartbase.h"
+#include "mygeom.h"
+#include "ogr_s57.h"
+#include "s52s57.h"
 
 //      Various error return enums
 #define SENC_NO_ERROR 0
@@ -83,6 +84,10 @@ WX_DEFINE_ARRAY_PTR(float *, SENCFloatPtrArray);
 #define CELL_COVR_RECORD 98
 #define CELL_NOCOVR_RECORD 99
 #define CELL_EXTENT_RECORD 100
+
+#define ATTRIBUTE_ID_PRIM 50000
+
+WX_DEFINE_ARRAY_PTR(float *, SENCFloatPtrArray);
 
 //--------------------------------------------------------------------------
 //      Utility Structures
@@ -293,28 +298,17 @@ typedef struct _OSENC_EXTENT_Record_Payload {
 
 #pragma pack(pop)
 
-//  Some special defined attribute type codes
-//  Should also be defined in a57attributes.csv
+typedef std::vector<S57Obj *> S57ObjVector;
+typedef std::vector<VE_Element *> VE_ElementVector;
+typedef std::vector<VC_Element *> VC_ElementVector;
 
-#define ATTRIBUTE_ID_PRIM 50000
+class s57RegistrarMgr;                   // forward
+extern s57RegistrarMgr *m_pRegistrarMan; /**< Global instance */
 
 const char *MyCSVGetField(const char *pszFilename, const char *pszKeyFieldName,
                           const char *pszKeyFieldValue,
                           CSVCompareCriteria eCriteria,
                           const char *pszTargetField);
-
-//      Fwd Definitions
-class wxGenericProgressDialog;
-class S57Obj;
-class VE_Element;
-class VC_Element;
-class PolyTessGeo;
-class LineGeometryDescriptor;
-class wxFFileInputStream;
-
-typedef std::vector<S57Obj *> S57ObjVector;
-typedef std::vector<VE_Element *> VE_ElementVector;
-typedef std::vector<VC_Element *> VC_ElementVector;
 
 //--------------------------------------------------------------------------
 //      Osenc_instream definition

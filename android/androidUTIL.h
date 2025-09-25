@@ -38,6 +38,7 @@
 #include "OCPN_Sound.h"
 #include "android_jvm.h"
 #include "model/datetime.h"
+#include "model/base_platform.h"
 
 class ArrayOfCDI;
 
@@ -69,8 +70,6 @@ extern wxString androidGetDeviceInfo();
 extern void CheckMigrateCharts();
 extern void DoImportGPX();
 
-extern bool androidGetMemoryStatus(int *mem_total, int *mem_used);
-
 extern double GetAndroidDisplaySize();
 extern double getAndroidDPmm();
 extern wxSize getAndroidDisplayDimensions(void);
@@ -80,6 +79,9 @@ extern void androidConfirmSizeCorrection();
 extern void androidForceFullRepaint(bool bskipConfirm = false);
 extern int androidGetVersionCode();
 extern wxString androidGetVersionName();
+
+extern int g_Android_SDK_Version;
+extern bool g_running;
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet(void);
@@ -197,6 +199,8 @@ void androidDisplayToast(wxString message);
 void androidEnableRotation(void);
 void androidDisableRotation(void);
 int androidGetScreenOrientation();
+
+bool androidGetMemoryStatus(int *mem_total, int *mem_used);
 
 void androidEnableMulticast(bool benable);
 void androidLastCall();

@@ -35,7 +35,7 @@
 #include <wx/window.h>
 
 #include "model/conn_params.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/rest_server.h"
 #include "route_gui.h"
 #include "model/route.h"

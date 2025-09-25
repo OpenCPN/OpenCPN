@@ -27,11 +27,11 @@
 
 #include <list>
 
-// Include OCPNPlatform.h before shapefile_basemap.h to prevent obscure syntax
+// Include ocpn_platform.h before shapefile_basemap.h to prevent obscure syntax
 // error when compiling with VS2022
 #include <list>
 
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "shapefile_basemap.h"
 #include "chartbase.h"
 #include "gl_chart_canvas.h"
@@ -343,10 +343,9 @@ void ShapeBaseChart::DoDrawPolygonFilled(ocpnDC &pnt, ViewPort &vp,
   }
 }
 
+#ifdef ocpnUSE_GL
 void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
                                         GLUtesselator *tobj, bool idl) {
-#ifdef ocpnUSE_GL
-
   wxPoint2DDouble q;
   if (glChartCanvas::HasNormalizedViewPort(vp)) {
     q = ShapeBaseChartSet::GetDoublePixFromLL(vp, point.getY(), point.getX());
@@ -373,8 +372,9 @@ void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
   vertex->info.y = q.m_y;
 
   gluTessVertex(tobj, (GLdouble *)vertex, (GLdouble *)vertex);
-#endif
 }
+
+#endif
 
 void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                                            const shp::Feature &feature) {

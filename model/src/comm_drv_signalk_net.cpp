@@ -290,25 +290,6 @@ void CommDriverSignalKNet::Open(void) {
   {
     std::string serviceIdent =
         std::string("_signalk-ws._tcp.local.");  // Works for node.js server
-#if 0
-    if (m_params->AutoSKDiscover) {
-      if (DiscoverSKServer(serviceIdent, discoveredIP, discoveredPort,
-                           1)) {  // 1 second scan
-        wxLogDebug(wxString::Format(
-            _T("SK server autodiscovery finds WebSocket service: %s:%d"),
-            discoveredIP.c_str(), discoveredPort));
-        m_addr.Hostname(discoveredIP);
-        m_addr.Service(discoveredPort);
-
-        // Update the connection params, by pointer to item in global params
-        // array
-        ConnectionParams *params = (ConnectionParams *)m_params;  // non-const
-        params->NetworkAddress = discoveredIP;
-        params->NetworkPort = discoveredPort;
-      } else
-        wxLogDebug(_T("SK server autodiscovery finds no WebSocket server."));
-    }
-#endif
     OpenWebSocket();
   }
 }
@@ -408,20 +389,6 @@ void CommDriverSignalKNet::CloseWebSocket() {
     }
 
     wxMilliSleep(100);
-
-#if 0
-      m_thread_run_flag = 0;
-       printf("sending delete\n");
-      m_wsThread->Delete();
-      wxMilliSleep(100);
-
-      int nDeadman = 0;
-      while (IsThreadRunning() && (++nDeadman < 200)) {  // spin for max 2 secs.
-        wxMilliSleep(10);
-      }
-       printf("Closed in %d\n", nDeadman);
-      wxMilliSleep(100);
-#endif
   }
 }
 
@@ -484,130 +451,6 @@ void CommDriverSignalKNet::initIXNetSystem() { ix::initNetSystem(); };
 
 void CommDriverSignalKNet::uninitIXNetSystem() { ix::uninitNetSystem(); };
 
-#if 0
-void CommDriverSignalKNet::handleUpdate(wxJSONValue &update) {
-  wxString sfixtime = "";
-
-  if (update.HasMember("timestamp")) {
-    sfixtime = update["timestamp"].AsString();
-  }
-  if (update.HasMember("values") && update["values"].IsArray()) {
-    for (int j = 0; j < update["values"].Size(); ++j) {
-      wxJSONValue &item = update["values"][j];
-      updateItem(item, sfixtime);
-    }
-  }
-}
-
-void CommDriverSignalKNet::updateItem(wxJSONValue &item,
-                                     wxString &sfixtime) {
-  if (item.HasMember("path") && item.HasMember("value")) {
-    const wxString &update_path = item["path"].AsString();
-    wxJSONValue &value = item["value"];
-
-    if (update_path == _T("navigation.position") && !value.IsNull()) {
-      updateNavigationPosition(value, sfixtime);
-    } else if (update_path == _T("navigation.speedOverGround") &&
-               m_bGPSValid_SK && !value.IsNull()) {
-      updateNavigationSpeedOverGround(value, sfixtime);
-    } else if (update_path == _T("navigation.courseOverGroundTrue") &&
-               m_bGPSValid_SK && !value.IsNull()) {
-      updateNavigationCourseOverGround(value, sfixtime);
-    } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
-    }
-    else if (update_path ==
-             _T("navigation.gnss.satellites"))  // From GGA sats in use
-    {
-      /*if (g_priSats >= 2)*/ updateGnssSatellites(value, sfixtime);
-    } else if (update_path ==
-               _T("navigation.gnss.satellitesInView"))  // From GSV sats in view
-    {
-      /*if (g_priSats >= 3)*/ updateGnssSatellites(value, sfixtime);
-    } else if (update_path == _T("navigation.headingTrue")) {
-      if(!value.IsNull())
-        updateHeadingTrue(value, sfixtime);
-    } else if (update_path == _T("navigation.headingMagnetic")) {
-      if(!value.IsNull())
-        updateHeadingMagnetic(value, sfixtime);
-    } else if (update_path == _T("navigation.magneticVariation")) {
-      if(!value.IsNull())
-        updateMagneticVariance(value, sfixtime);
-    } else {
-      // wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"),
-      // update_path));
-#if 0
-            wxString dbg;
-            wxJSONWriter writer;
-            writer.Write(item, dbg);
-            wxString msg( _T("update: ") );
-            msg.append(dbg);
-            wxLogMessage(msg);
-#endif
-    }
-  }
-}
-
-void CommDriverSignalKNet::updateNavigationPosition(
-    wxJSONValue &value, const wxString &sfixtime) {
-  if ((value.HasMember("latitude" && value["latitude"].IsDouble())) &&
-      (value.HasMember("longitude") && value["longitude"].IsDouble())) {
-    // wxLogMessage(_T(" ***** Position Update"));
-    m_lat = value["latitude"].AsDouble();
-    m_lon = value["longitude"].AsDouble();
-    m_bGPSValid_SK = true;
-  } else {
-    m_bGPSValid_SK = false;
-  }
-}
-
-
-void CommDriverSignalKNet::updateNavigationSpeedOverGround(
-    wxJSONValue &value, const wxString &sfixtime){
-  double sog_ms = value.AsDouble();
-  double sog_knot = sog_ms * ms_to_knot_factor;
-  // wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
-  m_sog = sog_knot;
-}
-
-void CommDriverSignalKNet::updateNavigationCourseOverGround(
-    wxJSONValue &value, const wxString &sfixtime) {
-  double cog_rad = value.AsDouble();
-  double cog_deg = GEODESIC_RAD2DEG(cog_rad);
-  // wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
-  m_cog = cog_deg;
-}
-
-void CommDriverSignalKNet::updateGnssSatellites(wxJSONValue &value,
-                                               const wxString &sfixtime) {
-#if 0
-  if (value.IsInt()) {
-    if (value.AsInt() > 0) {
-      m_frame->setSatelitesInView(value.AsInt());
-      g_priSats = 2;
-    }
-  } else if ((value.HasMember("count") && value["count"].IsInt())) {
-    m_frame->setSatelitesInView(value["count"].AsInt());
-    g_priSats = 3;
-  }
-#endif
-}
-
-void CommDriverSignalKNet::updateHeadingTrue(wxJSONValue &value,
-                                            const wxString &sfixtime) {
-  m_hdt = GEODESIC_RAD2DEG(value.AsDouble());
-}
-
-void CommDriverSignalKNet::updateHeadingMagnetic(
-    wxJSONValue &value, const wxString &sfixtime) {
-  m_hdm = GEODESIC_RAD2DEG(value.AsDouble());
-}
-
-void CommDriverSignalKNet::updateMagneticVariance(
-    wxJSONValue &value, const wxString &sfixtime) {
-  m_var = GEODESIC_RAD2DEG(value.AsDouble());
-}
-
-#endif
 ////////////
 
 //   std::vector<unsigned char>* payload = p.get();

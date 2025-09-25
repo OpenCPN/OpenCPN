@@ -1058,17 +1058,9 @@ static bool GPXCreateRoute(pugi::xml_node node, Route *pRoute) {
   }
 
   RoutePointList *pRoutePointList = pRoute->pRoutePointList;
-  wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
-  RoutePoint *prp;
-
-  while (node2) {
-    prp = node2->GetData();
-
+  for (RoutePoint *prp : *pRoutePointList) {
     GPXCreateWpt(node.append_child("rtept"), prp, OPT_ROUTEPT);
-
-    node2 = node2->GetNext();
   }
-
   return true;
 }
 
@@ -1082,7 +1074,7 @@ bool InsertRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
   //    TODO  All this trouble for a tentative route.......Should make some
   //    Route methods????
   if (bAddroute) {
-    pRouteList->Append(pTentRoute);
+    pRouteList->push_back(pTentRoute);
 
     //    Do the (deferred) calculation of BBox
     pTentRoute->FinalizeForRendering();
@@ -1093,10 +1085,7 @@ bool InsertRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
     float prev_rlat = 0., prev_rlon = 0.;
     RoutePoint *prev_pConfPoint = NULL;
 
-    wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
-    while (node) {
-      RoutePoint *prp = node->GetData();
-
+    for (RoutePoint *prp : *pTentRoute->pRoutePointList) {
       if (ip)
         pSelect->AddSelectableRouteSegment(prev_rlat, prev_rlon, prp->m_lat,
                                            prp->m_lon, prev_pConfPoint, prp,
@@ -1107,29 +1096,21 @@ bool InsertRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
       prev_pConfPoint = prp;
 
       ip++;
-
-      node = node->GetNext();
     }
   } else {
     // walk the route, deleting points used only by this route
-    wxRoutePointListNode *pnode = (pTentRoute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
-
+    for (RoutePoint *prp : *pTentRoute->pRoutePointList) {
       // check all other routes to see if this point appears in any other route
       Route *pcontainer_route = g_pRouteMan->FindRouteContainingWaypoint(prp);
-
       if (pcontainer_route == NULL) {
-        prp->m_bIsInRoute =
-            false;  // Take this point out of this (and only) track/route
+        // Take this point out of this (and only) track/route
+        prp->m_bIsInRoute = false;
         if (!prp->IsShared()) {
           if (navobj) {
             delete prp;
           }
         }
       }
-
-      pnode = pnode->GetNext();
     }
 
     delete pTentRoute;
@@ -1205,7 +1186,7 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
 
   // create a new route
   Route *pChangeRoute = new Route();
-  pRouteList->Append(pChangeRoute);
+  pRouteList->push_back(pChangeRoute);
 
   // update new route keeping the same gui
   pChangeRoute->m_GUID = pTentRoute->m_GUID;
@@ -1219,11 +1200,8 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
   float prev_rlat = 0., prev_rlon = 0.;
   RoutePoint *prev_pConfPoint = NULL;
 
-  wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
-  while (node) {
-    RoutePoint *prp = node->GetData();
-
-    // if some wpts have been not deleted, that meens they should be used in
+  for (RoutePoint *prp : *pTentRoute->pRoutePointList) {
+    // if some wpts have been not deleted, that means they should be used in
     // other routes or are isolated way points so need to be updated
     RoutePoint *ex_rp = ::WaypointExists(prp->m_GUID);
     if (ex_rp) {
@@ -1253,26 +1231,16 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
     prev_pConfPoint = prp;
 
     ip++;
-
-    node = node->GetNext();
   }
   //    Do the (deferred) calculation of BBox
   pChangeRoute->FinalizeForRendering();
 }
 
 Route *FindRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
-
-    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+  for (Route *proute : *pRouteList) {
+    for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp == pWP) return proute;
-      pnode = pnode->GetNext();
     }
-
-    node = node->GetNext();
   }
 
   return NULL;  // not found
@@ -1285,13 +1253,7 @@ bool NavObjectCollection1::CreateNavObjGPXPoints(void) {
 
   if (!pWayPointMan) return false;
 
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-
-  RoutePoint *pr;
-
-  while (node) {
-    pr = node->GetData();
-
+  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if ((pr->m_bIsolatedMark) && !(pr->m_bIsInLayer) && !(pr->m_btemp)) {
       pugi::xml_node doc = root();
       pugi::xml_node gpx = doc.first_child();
@@ -1299,7 +1261,6 @@ bool NavObjectCollection1::CreateNavObjGPXPoints(void) {
 
       GPXCreateWpt(new_node, pr, OPT_WPT);
     }
-    node = node->GetNext();
   }
 
   return true;
@@ -1308,11 +1269,7 @@ bool NavObjectCollection1::CreateNavObjGPXPoints(void) {
 bool NavObjectCollection1::CreateNavObjGPXRoutes(void) {
   // Routes
   if (!pRouteList) return false;
-
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
-
+  for (Route *pRoute : *pRouteList) {
     if (!pRoute->m_bIsInLayer && !pRoute->m_btemp) {
       pugi::xml_node doc = root();
       pugi::xml_node gpx = doc.first_child();
@@ -1320,8 +1277,6 @@ bool NavObjectCollection1::CreateNavObjGPXRoutes(void) {
 
       GPXCreateRoute(new_node, pRoute);
     }
-
-    node1 = node1->GetNext();
   }
 
   return true;
@@ -1387,11 +1342,8 @@ bool NavObjectCollection1::AddGPXWaypoint(RoutePoint *pWP) {
 void NavObjectCollection1::AddGPXRoutesList(RouteList *pRoutes) {
   SetRootGPXNode();
 
-  wxRouteListNode *pRoute = pRoutes->GetFirst();
-  while (pRoute) {
-    Route *pRData = pRoute->GetData();
+  for (Route *pRData : *pRoutes) {
     AddGPXRoute(pRData);
-    pRoute = pRoute->GetNext();
   }
 }
 
@@ -1406,11 +1358,8 @@ void NavObjectCollection1::AddGPXTracksList(std::vector<Track *> *pTracks) {
 bool NavObjectCollection1::AddGPXPointsList(RoutePointList *pRoutePoints) {
   SetRootGPXNode();
 
-  wxRoutePointListNode *pRoutePointNode = pRoutePoints->GetFirst();
-  while (pRoutePointNode) {
-    RoutePoint *pRP = pRoutePointNode->GetData();
+  for (RoutePoint *pRP : *pRoutePoints) {
     AddGPXWaypoint(pRP);
-    pRoutePointNode = pRoutePointNode->GetNext();
   }
 
   return true;
@@ -1582,87 +1531,52 @@ bool NavObjectCollection1::LoadAllGPXPointObjects() {
 RoutePoint *WaypointExists(const wxString &name, double lat, double lon) {
   RoutePoint *pret = NULL;
   //    if( g_bIsNewLayer ) return NULL;
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
-    //        if( pr->m_bIsInLayer ) return NULL;
-
+  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if (name == pr->GetName()) {
       if (fabs(lat - pr->m_lat) < 1.e-6 && fabs(lon - pr->m_lon) < 1.e-6) {
         pret = pr;
         break;
       }
     }
-    node = node->GetNext();
   }
 
   return pret;
 }
 
 RoutePoint *WaypointExists(const wxString &guid) {
-  wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
-    //        if( pr->m_bIsInLayer ) return NULL;
-
+  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if (guid == pr->m_GUID) {
       return pr;
     }
-    node = node->GetNext();
   }
-
   return NULL;
 }
 
 bool WptIsInRouteList(RoutePoint *pr) {
   bool IsInList = false;
 
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
+  for (Route *pRoute : *pRouteList) {
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
-
-    wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
-    RoutePoint *prp;
-
-    while (node2) {
-      prp = node2->GetData();
-
+    for (RoutePoint *prp : *pRoutePointList) {
       if (pr->IsSame(prp)) {
         IsInList = true;
         break;
       }
-
-      node2 = node2->GetNext();
     }
-    node1 = node1->GetNext();
   }
   return IsInList;
 }
 
 Route *RouteExists(const wxString &guid) {
-  wxRouteListNode *route_node = pRouteList->GetFirst();
-
-  while (route_node) {
-    Route *proute = route_node->GetData();
-
+  for (Route *proute : *pRouteList) {
     if (guid == proute->m_GUID) return proute;
-
-    route_node = route_node->GetNext();
   }
   return NULL;
 }
 
 Route *RouteExists(Route *pTentRoute) {
-  wxRouteListNode *route_node = pRouteList->GetFirst();
-  while (route_node) {
-    Route *proute = route_node->GetData();
-
+  for (Route *proute : *pRouteList) {
     if (proute->IsEqualTo(pTentRoute)) return proute;
-
-    route_node = route_node->GetNext();  // next route
   }
   return NULL;
 }

@@ -55,7 +55,7 @@
 #include "form_grid.h"
 #include "link_prop_dlg.h"
 #include "ocpn_frame.h"  //FIXME (dave ) // for ColorScheme
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "route_validator.h"
 #include "tcmgr.h"
 

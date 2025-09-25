@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Notification Manager GUI
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,29 +12,45 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement notification_manager_gui.h  -- Notification Manager GUI
+ */
+
 #include <cmath>
 #include <memory>
 #include <vector>
+
+#include <wx/arrstr.h>
+#include <wx/colour.h>
+#include <wx/datetime.h>
+#include <wx/filename.h>
+#include <wx/image.h>
+#include <wx/sizer.h>
 #include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
 #include <wx/textwrapper.h>
 
 #include "notification_manager_gui.h"
-#include "model/notification_manager.h"
+
+#include "model/datetime.h"
 #include "model/notification.h"
-#include "observable_globvar.h"
-#include "color_handler.h"
-#include "styles.h"
-#include "OCPNPlatform.h"
+#include "model/notification_manager.h"
+#include "model/svg_utils.h"
+
 #include "chcanv.h"
+#include "color_handler.h"
 #include "gl_chart_canvas.h"
 #include "gui_lib.h"
-#include "model/svg_utils.h"
-#include "model/datetime.h"
 #include "navutil.h"
+#include "observable_globvar.h"
+#include "ocpn_platform.h"
+#include "styles.h"
 
 // This window style value has slipped from the headers, but is useful
 //  on MSW...
@@ -49,9 +59,6 @@
 #else
 #define wxFULL_PAINT_ON_RESIZE 0
 #endif
-
-extern OCPNPlatform* g_Platform;
-extern ocpnStyle::StyleManager* g_StyleManager;
 
 class PanelHardBreakWrapper : public wxTextWrapper {
 public:

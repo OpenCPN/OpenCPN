@@ -823,16 +823,16 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
     ${GUI_HDR_DIR}/notification_manager_gui.h
-    ${GUI_HDR_DIR}/ocpCursor.h
+    ${GUI_HDR_DIR}/ocp_cursor.h
     ${GUI_HDR_DIR}/ocpndc.h
     ${GUI_HDR_DIR}/ocpn_app.h
     ${GUI_HDR_DIR}/ocpn_frame.h
     ${GUI_HDR_DIR}/ocpn_gl_options.h
-    ${GUI_HDR_DIR}/OCPNListCtrl.h
+    ${GUI_HDR_DIR}/ocpn_list_ctrl.h
     ${GUI_HDR_DIR}/ocpn_pixel.h
-    ${GUI_HDR_DIR}/OCPNPlatform.h
-    ${GUI_HDR_DIR}/OCPN_AUIManager.h
-    ${GUI_HDR_DIR}/OCPNRegion.h
+    ${GUI_HDR_DIR}/ocpn_platform.h
+    ${GUI_HDR_DIR}/ocpn_aui_manager.h
+    ${GUI_HDR_DIR}/ocpn_region.h
     ${GUI_HDR_DIR}/options.h
     ${GUI_HDR_DIR}/piano.h
     ${GUI_HDR_DIR}/peer_client_dlg.h
@@ -842,7 +842,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/printout_chart.h
     ${GUI_HDR_DIR}/printtable.h
     ${GUI_HDR_DIR}/priority_gui.h
-    ${GUI_HDR_DIR}/Quilt.h
+    ${GUI_HDR_DIR}/quilt.h
     ${GUI_HDR_DIR}/rest_server_gui.h
     ${GUI_HDR_DIR}/RolloverWin.h
     ${GUI_HDR_DIR}/route_ctx_factory.h
@@ -948,19 +948,19 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/mui_bar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
     ${GUI_SRC_DIR}/notification_manager_gui.cpp
-    ${GUI_SRC_DIR}/ocpCursor.cpp
+    ${GUI_SRC_DIR}/ocp_cursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
     ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
-    ${GUI_SRC_DIR}/OCPN_AUIManager.cpp
+    ${GUI_SRC_DIR}/ocpn_aui_manager.cpp
     ${GUI_SRC_DIR}/ocpndc.cpp
     ${GUI_SRC_DIR}/ocpn_frame.cpp
-    ${GUI_SRC_DIR}/OCPNListCtrl.cpp
+    ${GUI_SRC_DIR}/ocpn_list_ctrl.cpp
     ${GUI_SRC_DIR}/ocpn_pixel.cpp
-    ${GUI_SRC_DIR}/OCPNPlatform.cpp
-    ${GUI_SRC_DIR}/OCPNRegion.cpp
+    ${GUI_SRC_DIR}/ocpn_platform.cpp
+    ${GUI_SRC_DIR}/ocpn_region.cpp
     ${GUI_SRC_DIR}/ocpn_gl_options.cpp
     ${GUI_SRC_DIR}/options.cpp
-    ${GUI_SRC_DIR}/Osenc.cpp
+    ${GUI_SRC_DIR}/o_senc.cpp
     ${GUI_SRC_DIR}/peer_client_dlg.cpp
     ${GUI_SRC_DIR}/piano.cpp
     ${GUI_SRC_DIR}/pluginmanager.cpp
@@ -969,7 +969,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/printout_chart.cpp
     ${GUI_SRC_DIR}/printtable.cpp
     ${GUI_SRC_DIR}/priority_gui.cpp
-    ${GUI_SRC_DIR}/Quilt.cpp
+    ${GUI_SRC_DIR}/quilt.cpp
     ${GUI_SRC_DIR}/rest_server_gui.cpp
     ${GUI_SRC_DIR}/RolloverWin.cpp
     ${GUI_SRC_DIR}/route_gui.cpp
