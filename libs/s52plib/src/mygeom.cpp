@@ -548,6 +548,19 @@ int PolyTessGeo::BuildTessGLU() {
 
   double *DPrun = geoPt;
   for (ip = 0; ip < ptValid; ip++) {
+    for( int i = 0; i < 3; ++i ) {
+      x = DPrun[i];
+      if (x < -GLU_TESS_MAX_COORD) {
+        m_bOK = false;
+        ErrorCode = 1;
+        return 1;
+      }
+      if (x > GLU_TESS_MAX_COORD) {
+        m_bOK = false;
+        ErrorCode = 2;
+        return 1;
+      }
+    }
     gluTessVertex(GLUtessobj, DPrun, DPrun);
     DPrun += 3;
   }

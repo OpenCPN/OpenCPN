@@ -520,6 +520,9 @@ public:
   bool PanCanvas(double dx, double dy);
   void StopAutoPan(void);
   bool IsOwnshipOnScreen();
+  void DisableQuiltAdjustOnZoom(bool disable) {
+    m_disable_adjust_on_zoom = disable;
+  }
 
   /**
    * Perform a smooth zoom operation on the chart canvas by the specified
@@ -865,6 +868,8 @@ public:
    * string and a wxJSONValue shared_ptr.
    */
   EventVar json_msg;
+
+  bool m_inPinch;
 
 private:
   /**
@@ -1323,6 +1328,7 @@ private:
   bool m_animationActive;
   void OnJumpEaseTimer(wxTimerEvent &event);
   bool StartSmoothJump(double lat, double lon, double scale_ppm);
+  bool m_disable_adjust_on_zoom;
 
   NotificationButton *m_notification_button;
   NotificationsList *m_NotificationsList;
