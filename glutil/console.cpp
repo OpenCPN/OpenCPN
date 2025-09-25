@@ -20,6 +20,7 @@
 
 /**
  * \file
+ *
  *  Simple CLI application to check OpenGL capabilities.
  */
 
@@ -58,7 +59,7 @@ typedef void (*_GLUfuncptr)();
 #include <wx/tokenzr.h>
 
 static const char* USAGE = R"""(
-Usage: opencpn-cli [options] <command> [arguments]
+Usage: opencpn-glutil [options] <command> [arguments]
 
 Options:
 

@@ -1,11 +1,5 @@
 
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Chart Canvas
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,45 +13,77 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ *\file
+ *
+ * Generic %Chart canvas base.
+ */
 
 #ifndef _CHCANV_H__
 #define _CHCANV_H__
 
-#include <cstdint>
-#include "bbox.h"
+#include "gl_headers.h"  // Must go before wx/glcanvas
 
 #include <wx/datetime.h>
-#include <wx/treectrl.h>
-#include <wx/dirctrl.h>
-#include <wx/sound.h>
 #include <wx/grid.h>
-#include <wx/wxhtml.h>
+#include <wx/treectrl.h>
 
-#include "model/nmea_log.h"
-#include "ocpndc.h"
+#ifdef ocpnUSE_GL
+#include <wx/glcanvas.h>
+#endif
+
+#include "model/route.h"
+#include "model/route_point.h"
+#include "model/select_item.h"
+
+#include "bbox.h"
+#include "canvas_menu.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "ch_info_win.h"
+#include "compass.h"
+#include "emboss_data.h"
+#include "gshhs.h"
+#include "gui_lib.h"
+#include "idx_entry.h"
+#include "mui_bar.h"
+#include "notification_manager_gui.h"
+#include "observable_evtvar.h"
+#include "observable.h"
+#include "ocp_cursor.h"
+#include "ocpn_frame.h"
+#include "ocpn_pixel.h"
+#include "ocpn_plugin.h"
+#include "piano.h"
+#include "quilt.h"
+#include "RolloverWin.h"
+#include "S57Sector.h"
+#include "TCWin.h"
 #include "undo.h"
 
-#include "ocpCursor.h"
-#include "timers.h"
-#include "emboss_data.h"
-#include "S57Sector.h"
-#include "gshhs.h"
-#include "notification_manager_gui.h"
-#include "observable.h"
+class CanvasMenuHandler;   // circular
+class MyFrame;             // circular
+class NotificationsList;   // circular
+class NotificationButton;  // circular
 
-class wxGLContext;
-class GSHHSChart;
-class IDX_entry;
-class ocpnCompass;
-class TimedPopupWin;
-class Track;
+class ChartCanvas;                    // forward
+extern ChartCanvas *g_overlayCanvas;  ///< Global instance
+extern ChartCanvas *g_focusCanvas;    ///< Global instance
+
+WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
+
+//    Set up the preferred quilt type
+#define QUILT_TYPE_2
+
+//----------------------------------------------------------------------------
+//    Forward Declarations
+//----------------------------------------------------------------------------
 
 //--------------------------------------------------------
 //    Screen Brightness Control Support Routines
@@ -66,37 +92,7 @@ void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
 
 int InitScreenBrightness(void);
 int RestoreScreenBrightness(void);
-int SetScreenBrightness(int brightness);
-
-//    Set up the preferred quilt type
-#define QUILT_TYPE_2
-
-//----------------------------------------------------------------------------
-//    Forward Declarations
-//----------------------------------------------------------------------------
-class Route;
-class TCWin;
-class RoutePoint;
-class SelectItem;
-class BoundingBox;
-class ocpnBitmap;
-class WVSChart;
-class MyFrame;
-class ChartBaseBSB;
-class ChartBase;
-class AisTargetData;
-class S57ObjectTree;
-class S57ObjectDesc;
-class RolloverWin;
-class Quilt;
-class PixelCache;
-class ChInfoWin;
-class glChartCanvas;
-class CanvasMenuHandler;
-class ChartStack;
-class Piano;
-class canvasConfig;
-class MUIBar;
+int SetScreenBrightness(int brig1Ghtness);
 
 enum  //  specify the render behaviour of SetViewPoint()
 {
@@ -129,6 +125,15 @@ enum {
 };
 
 enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
+
+extern void pupHandler_PasteRoute();
+
+extern void pupHandler_PasteWaypoint();
+
+extern void pupHandler_PasteTrack();
+
+class canvasConfig;  // circular
+class Quilt;         // circular
 
 /**
  * ChartCanvas - Main chart display and interaction component
@@ -221,10 +226,10 @@ public:
   void SetCanvasRangeMeters(double range);
 
   void EnablePaint(bool b_enable);
-  virtual bool SetCursor(const wxCursor &c);
-  virtual void Refresh(bool eraseBackground = true,
-                       const wxRect *rect = (const wxRect *)NULL);
-  virtual void Update();
+  bool SetCursor(const wxCursor &c) override;
+  void Refresh(bool eraseBackground = true,
+               const wxRect *rect = nullptr) override;
+  void Update() override;
 
   void LostMouseCapture(wxMouseCaptureLostEvent &event);
 
@@ -311,6 +316,8 @@ public:
 
   void JumpToPosition(double lat, double lon, double scale);
   void SetFirstAuto(bool b_auto) { m_bFirstAuto = b_auto; }
+  void SetAbsoluteMinScale(double min_scale);
+  std::shared_ptr<PI_PointContext> GetCanvasContextAtPoint(int x, int y);
 
   /**
    * Convert latitude/longitude to canvas pixel coordinates (physical pixels)
@@ -473,7 +480,7 @@ public:
    * are expecting the physical pixels per meter, which is incorrect.
    */
   double GetCanvasScaleFactor() { return m_canvas_scale_factor; }
-  /**
+  /*chcanv*
    * Return the physical pixels per meter at chart center, accounting for
    * latitude distortion.
    */
@@ -512,6 +519,7 @@ public:
    * directions. */
   bool PanCanvas(double dx, double dy);
   void StopAutoPan(void);
+  bool IsOwnshipOnScreen();
 
   /**
    * Perform a smooth zoom operation on the chart canvas by the specified
@@ -543,7 +551,8 @@ public:
    *
    * @param factor The zoom factor to apply:
    *              - factor > 1: Zoom in, e.g. 2.0 makes objects twice as large
-   *              - factor < 1: Zoom out, e.g. 0.5 makes objects half as large
+   *             chcanv - factor < 1: Zoom out, e.g. 0.5 makes objects half as
+   * large
    */
   void ZoomCanvasSimple(double factor);
 
@@ -655,7 +664,29 @@ public:
   void ShowMarkPropertiesDialog(RoutePoint *markPoint);
   void ShowRoutePropertiesDialog(wxString title, Route *selected);
   void ShowTrackPropertiesDialog(Track *selected);
+  /** Legacy tide dialog creation method. Redirects to ShowSingleTideDialog for
+   * single-instance behavior. */
   void DrawTCWindow(int x, int y, void *pIDX);
+
+  /**
+   * Display tide/current dialog with single-instance management.
+   *
+   * Handles the following scenarios:
+   * - If no dialog exists: Creates new dialog
+   * - If same station clicked: Brings existing dialog to front with visual
+   * feedback
+   * - If different station clicked: Closes current dialog and opens new one
+   * @param x Mouse click x-coordinate in canvas pixels
+   * @param y Mouse click y-coordinate in canvas pixels
+   * @param pvIDX Pointer to IDX_entry for the tide/current station
+   */
+  void ShowSingleTideDialog(int x, int y, void *pvIDX);
+
+  /** @return true if a tide dialog is currently open and visible */
+  bool IsTideDialogOpen() const;
+
+  /** Close any open tide dialog */
+  void CloseTideDialog();
 
   void UpdateGPSCompassStatusBox(bool b_force_new);
   ocpnCompass *GetCompass() { return m_Compass; }
@@ -762,7 +793,7 @@ public:
   void DrawBlinkObjects(void);
 
   void StartRoute(void);
-  void FinishRoute(void);
+  wxString FinishRoute(void);
 
 #ifdef ocpnUSE_GL
   glChartCanvas *GetglCanvas() { return m_glcc; }
@@ -825,6 +856,16 @@ public:
   void ResetOwnshipOffset() { m_OSoffsetx = m_OSoffsety = 0; }
   NotificationsList *GetNotificationsList() { return m_NotificationsList; }
 
+  int PrepareContextSelections(double lat, double lon);
+
+  RoutePoint *GetFoundRoutepoint() { return m_pFoundRoutePoint; }
+
+  /**
+   * Notified with message targeting all plugins. Contains a message type
+   * string and a wxJSONValue shared_ptr.
+   */
+  EventVar json_msg;
+
 private:
   /**
    * Internal function that implements the actual zoom operation.
@@ -842,11 +883,8 @@ private:
   void DoZoomCanvas(double factor, bool can_zoom_to_cursor = true);
 
   int AdjustQuiltRefChart();
-
   bool UpdateS52State();
-
   void CallPopupMenu(int x, int y);
-
   bool IsTempMenuBarEnabled();
   bool InvokeCanvasMenu(int x, int y, int seltype);
 

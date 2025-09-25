@@ -37,6 +37,8 @@
 
 #include "OCPN_Sound.h"
 #include "android_jvm.h"
+#include "model/datetime.h"
+#include "model/base_platform.h"
 
 class ArrayOfCDI;
 
@@ -66,8 +68,7 @@ extern bool androidUtilInit(void);
 
 extern wxString androidGetDeviceInfo();
 extern void CheckMigrateCharts();
-
-extern bool androidGetMemoryStatus(int *mem_total, int *mem_used);
+extern void DoImportGPX();
 
 extern double GetAndroidDisplaySize();
 extern double getAndroidDPmm();
@@ -78,6 +79,9 @@ extern void androidConfirmSizeCorrection();
 extern void androidForceFullRepaint(bool bskipConfirm = false);
 extern int androidGetVersionCode();
 extern wxString androidGetVersionName();
+
+extern int g_Android_SDK_Version;
+extern bool g_running;
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet(void);
@@ -148,6 +152,7 @@ extern wxString getFontQtStylesheet(wxFont *font);
 extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
+void AndroidRemoveSystemFile(wxString file);
 
 class AndroidSound;
 bool androidPlaySound(const wxString soundfile, AndroidSound *sound);
@@ -195,6 +200,8 @@ void androidEnableRotation(void);
 void androidDisableRotation(void);
 int androidGetScreenOrientation();
 
+bool androidGetMemoryStatus(int *mem_total, int *mem_used);
+
 void androidEnableMulticast(bool benable);
 void androidLastCall();
 wxString androidGetIpV4Address(void);
@@ -209,6 +216,9 @@ wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
 wxString androidGetAndroidSystemLocale();
 bool androidIsDirWritable(wxString dir);
 wxArrayString GetConfigChartDirectories();
+wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
+                                     wxDateTime time);
+void PrepareImportAndroid(bool isLayer, bool isPersistent);
 
 class InProgressIndicator : public wxGauge {
   DECLARE_EVENT_TABLE()

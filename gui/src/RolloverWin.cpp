@@ -36,18 +36,20 @@
 #endif
 #endif
 
+#include "model/gui_vars.h"
+
 #include "ocpndc.h"
 #include "RolloverWin.h"
 #include "timers.h"
 #include "navutil.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "ocpn_plugin.h"
 #include "color_handler.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "chcanv.h"
 #endif
 

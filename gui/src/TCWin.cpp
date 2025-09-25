@@ -1,8 +1,11 @@
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #include <wx/listctrl.h>
 #include <wx/choice.h>
+#include <wx/sizer.h>
+#include <wx/dcbuffer.h>
 
 #include "TCWin.h"
 #include "timers.h"
@@ -11,13 +14,64 @@
 #include "tcmgr.h"
 #include "dychart.h"
 #include "model/cutil.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "model/wx28compat.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "RolloverWin.h"
 #include "navutil.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"
+
+// Custom chart panel class definition
+class TCWin::TideChartPanel : public wxPanel {
+public:
+  TideChartPanel(TCWin *parent) : wxPanel(parent, wxID_ANY), m_tcWin(parent) {
+    SetMinSize(wxSize(400, 200));
+    Bind(wxEVT_PAINT, &TideChartPanel::OnPaint, this);
+    Bind(wxEVT_MOTION, &TideChartPanel::OnMouseMove, this);
+    SetBackgroundStyle(wxBG_STYLE_CUSTOM);  // Prevent flicker
+  }
+
+private:
+  void OnPaint(wxPaintEvent &event) {
+    wxPaintDC dc(this);
+
+    // Clear the background
+    dc.SetBackground(wxBrush(GetBackgroundColour()));
+    dc.Clear();
+
+    // Calculate chart rectangle within this panel
+    wxSize panelSize = GetClientSize();
+    if (panelSize.GetWidth() <= 0 || panelSize.GetHeight() <= 0) {
+      return;
+    }
+
+    // Use larger left margin for Y-axis labels and units
+    int left_margin = 50;   // Space for Y-axis numbers and units
+    int other_margins = 5;  // Smaller margins for top, right, bottom
+    int chart_width = panelSize.GetWidth() - left_margin - other_margins;
+    int chart_height = panelSize.GetHeight() - (2 * other_margins);
+
+    // Reserve space at bottom for date/time text
+    int bottom_text_space = 50;
+    chart_height -= bottom_text_space;
+    chart_width = wxMax(chart_width, 300);
+    chart_height = wxMax(chart_height, 150);
+    wxRect chartRect(left_margin, other_margins, chart_width, chart_height);
+
+    // Delegate chart painting to parent TCWin
+    m_tcWin->PaintChart(dc, chartRect);
+  }
+
+  void OnMouseMove(wxMouseEvent &event) {
+    wxPoint panelPos = event.GetPosition();
+    wxPoint mainWindowPos = panelPos + GetPosition();
+    m_tcWin->HandleChartMouseMove(mainWindowPos.x, mainWindowPos.y, panelPos);
+    event.Skip();
+  }
+
+  TCWin *m_tcWin;
+};
 
 extern ColorScheme global_color_scheme;
 extern int gpIDXn;
@@ -27,14 +81,9 @@ extern OCPNPlatform *g_Platform;
 extern MyConfig *pConfig;
 extern OCPNPlatform *g_Platform;
 
-int g_tcwin_scale;
-
 enum { ID_TCWIN_NX, ID_TCWIN_PR };
 
 enum { TIDE_PLOT, CURRENT_PLOT };
-
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(SplineList);
 
 BEGIN_EVENT_TABLE(TCWin, wxWindow)
 EVT_PAINT(TCWin::OnPaint)
@@ -45,6 +94,7 @@ EVT_BUTTON(ID_TCWIN_NX, TCWin::NXEvent)
 EVT_BUTTON(ID_TCWIN_PR, TCWin::PREvent)
 EVT_CLOSE(TCWin::OnCloseWindow)
 EVT_TIMER(TCWININF_TIMER, TCWin::OnTCWinPopupTimerEvent)
+EVT_TIMER(TCWIN_TIME_INDICATOR_TIMER, TCWin::OnTimeIndicatorTimer)
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -97,18 +147,9 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   btc_valid = false;
 
-  wxString *TClist = NULL;
-  m_tList = new wxListCtrl(this, -1, wxPoint(sx * 65 / 100, 11),
-                           wxSize((sx * 32 / 100), (sy * 20 / 100)),
-                           wxLC_REPORT | wxLC_NO_HEADER);
-
-  // Add first column
-  wxListItem col0;
-  col0.SetId(0);
-  col0.SetText(_T(""));
-  col0.SetAlign(wxLIST_FORMAT_LEFT);
-  col0.SetWidth(sx * 30 / 100);
-  m_tList->InsertColumn(0, col0);
+  CreateLayout();
+  Layout();
+  m_graph_rect = wxRect(0, 0, 400, 200);
 
   //  Measure the size of a generic button, with label
   wxButton *test_button =
@@ -116,57 +157,16 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   test_button->GetSize(&m_tsx, &m_tsy);
   delete test_button;
 
-  //  In the interest of readability, if the width of the dialog is too narrow,
-  //  simply skip showing the "Hi/Lo" list control.
-
-  if ((m_tsy * 15) > sx) m_tList->Hide();
-
-  OK_button = new wxButton(this, wxID_OK, _("OK"),
-                           wxPoint(sx - (2 * m_tsy + 10), sy - (m_tsy + 10)),
-                           wxDefaultSize);
-
-  PR_button = new wxButton(this, ID_TCWIN_PR, _("Prev"),
-                           wxPoint(10, sy - (m_tsy + 10)), wxSize(-1, -1));
-
-  wxSize texc_size = wxSize((sx * 60 / 100), (sy * 29 / 100));
-  if (!m_tList->IsShown()) {
-    texc_size = wxSize((sx * 90 / 100), (sy * 29 / 100));
-  }
-
-  m_ptextctrl =
-      new wxTextCtrl(this, -1, _T(""), wxPoint(sx * 3 / 100, 6), texc_size,
-                     wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP);
-  int bsx, bsy, bpx, bpy;
-  PR_button->GetSize(&bsx, &bsy);
-  PR_button->GetPosition(&bpx, &bpy);
-
-  NX_button =
-      new wxButton(this, ID_TCWIN_NX, _("Next"),
-                   wxPoint(bpx + bsx + 5, sy - (m_tsy + 10)), wxSize(-1, -1));
-
-  wxString m_choiceTimezoneChoices[] = {_("LMT@Station"), _("UTC")};
-  int m_choiceTimezoneNChoices =
-      sizeof(m_choiceTimezoneChoices) / sizeof(wxString);
-  m_choiceTimezone = new wxChoice(
-      this, wxID_ANY, wxPoint((sx - (bsx * 2)) / 2, sy - (m_tsy * 12 / 10)),
-      wxSize(2 * bsx, bsy), m_choiceTimezoneNChoices, m_choiceTimezoneChoices,
-      0);
-  m_choiceTimezone->SetToolTip(
-      _("Select whether tide times are shown in UTC or "
-        "Local Mean Time (LMT) at the station"));
-  m_choiceSize_x = bsx * 2;
-
-  m_choiceTimezone->SetSelection(m_tzoneDisplay);
-  m_choiceTimezone->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
-                            wxCommandEventHandler(TCWin::TimezoneOnChoice),
-                            NULL, this);
-
   m_TCWinPopupTimer.SetOwner(this, TCWININF_TIMER);
+
+  // Timer for refreshing time indicators (red line moves with current time)
+  m_TimeIndicatorTimer.SetOwner(this, TCWIN_TIME_INDICATOR_TIMER);
+  m_TimeIndicatorTimer.Start(60000, false);  // Refresh every 60 seconds
 
   wxScreenDC dc;
   int text_height;
   dc.SetFont(*qFont);
-  dc.GetTextExtent(_T("W"), NULL, &text_height);
+  dc.GetTextExtent("W", NULL, &text_height);
   m_refTextHeight = text_height;
   m_button_height = m_tsy;
 
@@ -204,10 +204,14 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   pblack_3 = wxThePenList->FindOrCreatePen(
       wxSystemSettings::GetColour(wxSYS_COLOUR_BTNSHADOW),
       wxMax(1, (int)(m_tcwin_scaler + 0.5)), wxPENSTYLE_SOLID);
-  // Current time vertical line
+  // System time vertical line
   pred_2 = wxThePenList->FindOrCreatePen(
       wxColor(230, 54, 54), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
       wxPENSTYLE_SOLID);
+  // Selected time vertical line (from GRIB plugin or timeline widget)
+  pred_time = wxThePenList->FindOrCreatePen(
+      wxColour(0, 100, 255), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
+      wxPENSTYLE_DOT);
   // Graph background
   pltgray = wxTheBrushList->FindOrCreateBrush(this->GetBackgroundColour(),
                                               wxBRUSHSTYLE_SOLID);
@@ -220,9 +224,100 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   DimeControl(this);
 
-  //  Fill in some static text control information
+  // Initialize the station text now that fonts are available
+  InitializeStationText();
+}
 
-  //  Tide station information
+TCWin::~TCWin() {
+  m_TimeIndicatorTimer.Stop();
+  pParent->Refresh(false);
+}
+
+void TCWin::CreateLayout() {
+  // Create main sizer
+  wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
+
+  // ROW 1: Top panel for station info and tide list (two cells)
+  m_topPanel = new wxPanel(this, wxID_ANY);
+  wxBoxSizer *topSizer = new wxBoxSizer(wxHORIZONTAL);
+
+  // Left cell: Station info text control with minimum size
+  m_ptextctrl =
+      new wxTextCtrl(m_topPanel, -1, "", wxDefaultPosition, wxDefaultSize,
+                     wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP);
+  m_ptextctrl->SetMinSize(wxSize(200, 120));  // Minimum readable size
+
+  // Right cell: Tide list (LW/HW) with minimum size
+  m_tList = new wxListCtrl(m_topPanel, -1, wxDefaultPosition, wxDefaultSize,
+                           wxLC_REPORT | wxLC_NO_HEADER);
+  m_tList->SetMinSize(wxSize(150, 120));  // Minimum to show a few entries
+
+  // Add first column to tide list
+  wxListItem col0;
+  col0.SetId(0);
+  col0.SetText("");
+  col0.SetAlign(wxLIST_FORMAT_LEFT);
+  col0.SetWidth(140);
+  m_tList->InsertColumn(0, col0);
+
+  // Add controls to top sizer (first row: two cells)
+  topSizer->Add(m_ptextctrl, 2, wxEXPAND | wxALL,
+                5);                                // Left cell: 2/3 of width
+  topSizer->Add(m_tList, 1, wxEXPAND | wxALL, 5);  // Right cell: 1/3 of width
+
+  m_topPanel->SetSizer(topSizer);
+
+  // ROW 2: Chart panel (expandable - gets remaining space)
+  m_chartPanel = new TideChartPanel(this);
+
+  // ROW 3: Button panel (fixed height at bottom)
+  m_buttonPanel = new wxPanel(this, wxID_ANY);
+  wxBoxSizer *buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+
+  // Create buttons
+  PR_button = new wxButton(m_buttonPanel, ID_TCWIN_PR, _("Prev"));
+  NX_button = new wxButton(m_buttonPanel, ID_TCWIN_NX, _("Next"));
+  OK_button = new wxButton(m_buttonPanel, wxID_OK, _("OK"));
+
+  // Create timezone choice
+  wxString choiceOptions[] = {_("LMT@Station"), _("UTC")};
+  int numChoices = sizeof(choiceOptions) / sizeof(wxString);
+  m_choiceTimezone = new wxChoice(m_buttonPanel, wxID_ANY, wxDefaultPosition,
+                                  wxDefaultSize, numChoices, choiceOptions);
+  m_choiceTimezone->SetSelection(m_tzoneDisplay);
+  m_choiceTimezone->SetToolTip(
+      _("Select whether tide times are shown in UTC or Local Mean Time (LMT) "
+        "at the station"));
+
+  // Layout buttons: Prev/Next on left, timezone/OK on right
+  buttonSizer->Add(PR_button, 0, wxALL, 5);
+  buttonSizer->Add(NX_button, 0, wxALL, 5);
+  buttonSizer->AddStretchSpacer(1);  // Push timezone and OK to the right
+  buttonSizer->Add(m_choiceTimezone, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  buttonSizer->AddSpacer(10);  // Small space between timezone and OK
+  buttonSizer->Add(OK_button, 0, wxALL, 5);
+
+  m_buttonPanel->SetSizer(buttonSizer);
+
+  // Add all rows to main sizer with proper proportions
+  mainSizer->Add(m_topPanel, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP,
+                 5);  // Row 1: Fixed height, no overlap
+  mainSizer->Add(m_chartPanel, 1, wxEXPAND | wxLEFT | wxRIGHT,
+                 5);  // Row 2: Expandable, gets remaining space
+  mainSizer->Add(m_buttonPanel, 0, wxEXPAND | wxALL,
+                 5);  // Row 3: Fixed height at bottom
+
+  // Set the main sizer
+  SetSizer(mainSizer);
+
+  // Connect timezone choice event
+  m_choiceTimezone->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
+                            wxCommandEventHandler(TCWin::TimezoneOnChoice),
+                            NULL, this);
+}
+
+void TCWin::InitializeStationText() {
+  //  Fill station information in text control
   m_ptextctrl->Clear();
 
   wxString locn(pIDX->IDX_station_name, wxConvUTF8);
@@ -241,42 +336,452 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   m_ptextctrl->SetDefaultStyle(style);
 
   m_ptextctrl->AppendText(locna);
-  m_ptextctrl->AppendText(_T("\n"));
+  m_ptextctrl->AppendText("\n");
 
   style.SetFont(*pSMFont);
   m_ptextctrl->SetDefaultStyle(style);
 
   if (!locnb.IsEmpty()) m_ptextctrl->AppendText(locnb);
-  m_ptextctrl->AppendText(_T("\n"));
+  m_ptextctrl->AppendText("\n");
 
   // Reference to the master station
   if (('t' == pIDX->IDX_type) || ('c' == pIDX->IDX_type)) {
     wxString mref(pIDX->IDX_reference_name, wxConvUTF8);
-    mref.Prepend(_T(" "));
+    mref.Prepend(" ");
 
     m_ptextctrl->AppendText(_("Reference Station :"));
-    m_ptextctrl->AppendText(_T("\n"));
+    m_ptextctrl->AppendText("\n");
 
     m_ptextctrl->AppendText(mref);
-    m_ptextctrl->AppendText(_T("\n"));
+    m_ptextctrl->AppendText("\n");
 
   } else {
-    m_ptextctrl->AppendText(_T("\n"));
+    m_ptextctrl->AppendText("\n");
   }
 
   //      Show the data source
   wxString dsource(pIDX->source_ident, wxConvUTF8);
-  dsource.Prepend(_T(" "));
+  dsource.Prepend(" ");
 
   m_ptextctrl->AppendText(_("Data Source :"));
-  m_ptextctrl->AppendText(_T("\n"));
+  m_ptextctrl->AppendText("\n");
 
   m_ptextctrl->AppendText(dsource);
 
   m_ptextctrl->ShowPosition(0);
 }
 
-TCWin::~TCWin() { pParent->Refresh(false); }
+void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
+  if (!IsShown()) {
+    return;
+  }
+
+  // Store the original graph rectangle and use the provided chartRect
+  wxRect originalGraphRect = m_graph_rect;
+  m_graph_rect = chartRect;
+
+  int i;
+  char sbuf[100];
+  int w;
+  float tcmax, tcmin;
+
+  if (m_graph_rect.x == 0) {
+    m_graph_rect = originalGraphRect;
+    return;
+  }
+
+  // Get client size for positioning date/timezone text below chart
+  int x, y;
+  GetClientSize(&x, &y);
+
+  // Adjust colors with current color scheme
+  pblack_1->SetColour(this->GetForegroundColour());
+  pblack_2->SetColour(this->GetForegroundColour());
+  pltgray->SetColour(this->GetBackgroundColour());
+  pltgray2->SetColour(this->GetBackgroundColour());
+  pred_2->SetColour(GetDimedColor(wxColor(230, 54, 54)));
+  pred_time->SetColour(GetDimedColor(wxColour(0, 100, 255)));
+
+  // Box the graph
+  dc.SetPen(*pblack_1);
+  dc.SetBrush(*pltgray);
+  dc.DrawRectangle(m_graph_rect.x, m_graph_rect.y, m_graph_rect.width,
+                   m_graph_rect.height);
+
+  //  On some platforms, we cannot draw rotated text.
+  //  So, reduce the complexity of horizontal axis time labels
+#ifndef __WXMSW__
+  const int hour_delta = 4;
+#else
+  const int hour_delta = 1;
+#endif
+
+  int hour_start = 0;
+
+  //    Horizontal axis
+  dc.SetFont(*pSFont);
+  for (i = 0; i < 25; i++) {
+    int xd = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
+    if (hour_delta != 1) {
+      if (i % hour_delta == 0) {
+        dc.SetPen(*pblack_2);
+        dc.DrawLine(xd, m_graph_rect.y, xd,
+                    m_graph_rect.y + m_graph_rect.height + 5);
+        char sbuf[16];
+        int hour_show = hour_start + i;
+        if (hour_show >= 24) hour_show -= 24;
+        sprintf(sbuf, "%02d", hour_show);
+        int x_shim = -20;
+        dc.DrawText(wxString(sbuf, wxConvUTF8),
+                    xd + x_shim + (m_graph_rect.width / 25) / 2,
+                    m_graph_rect.y + m_graph_rect.height + 8);
+      } else {
+        dc.SetPen(*pblack_1);
+        dc.DrawLine(xd, m_graph_rect.y, xd,
+                    m_graph_rect.y + m_graph_rect.height + 5);
+      }
+    } else {
+      dc.SetPen(*pblack_1);
+      dc.DrawLine(xd, m_graph_rect.y, xd,
+                  m_graph_rect.y + m_graph_rect.height + 5);
+      wxString sst;
+      sst.Printf("%02d", i);
+      dc.DrawRotatedText(sst, xd + (m_graph_rect.width / 25) / 2,
+                         m_graph_rect.y + m_graph_rect.height + 8, 270.);
+    }
+  }
+
+  // Time indicators - system time and "selected" time (e.g. GRIB time)
+  wxDateTime system_now = wxDateTime::Now();
+  wxDateTime this_now = gTimeSource;
+  bool cur_time = !gTimeSource.IsValid();
+  if (cur_time) this_now = wxDateTime::Now();
+
+  // Always draw system time indicator (solid red line)
+  time_t t_system_now = system_now.GetTicks();
+  t_system_now -= m_diff_mins * 60;
+  if (m_tzoneDisplay == 0)  // LMT @ Station
+    t_system_now += m_stationOffset_mins * 60;
+
+  float t_system_ratio =
+      m_graph_rect.width * (t_system_now - m_t_graphday_GMT) / (25 * 3600.0f);
+  int x_system = (t_system_ratio < 0 || t_system_ratio > m_graph_rect.width)
+                     ? -1
+                     : m_graph_rect.x + (int)t_system_ratio;
+
+  if (x_system >= 0) {
+    dc.SetPen(*pred_2);  // solid red line for system time
+    dc.DrawLine(x_system, m_graph_rect.y, x_system,
+                m_graph_rect.y + m_graph_rect.height);
+  }
+
+  // Draw "selected time" indicator (from timeline widget) if different from
+  // system time.
+  if (gTimeSource.IsValid()) {
+    time_t t_selected_time = gTimeSource.GetTicks();
+    if (abs(t_selected_time - t_system_now) > 300) {
+      t_selected_time -= m_diff_mins * 60;
+      if (m_tzoneDisplay == 0)  // LMT @ Station
+        t_selected_time += m_stationOffset_mins * 60;
+
+      float t_selected_time_ratio = m_graph_rect.width *
+                                    (t_selected_time - m_t_graphday_GMT) /
+                                    (25 * 3600.0f);
+      int x_selected_time = (t_selected_time_ratio < 0 ||
+                             t_selected_time_ratio > m_graph_rect.width)
+                                ? -1
+                                : m_graph_rect.x + (int)t_selected_time_ratio;
+
+      if (x_selected_time >= 0) {
+        dc.SetPen(*pred_time);
+        dc.DrawLine(x_selected_time, m_graph_rect.y, x_selected_time,
+                    m_graph_rect.y + m_graph_rect.height);
+      }
+    }
+  }
+  dc.SetPen(*pblack_1);
+
+  //    Build the array of values, capturing max and min and HW/LW list
+  if (!btc_valid) {
+    float dir;
+    tcmax = -10;
+    tcmin = 10;
+    float val = -100;
+    m_tList->DeleteAllItems();
+    int list_index = 0;
+    bool wt = false;
+
+    wxBeginBusyCursor();
+
+    // The tide/current modules calculate values based on PC local time
+    // We want UTC, so adjust accordingly
+    int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
+    // then eventually we could need LMT at station
+    if (m_tzoneDisplay == 0)
+      tt_localtz -= m_stationOffset_mins * 60;  // LMT at station
+
+    // get tide flow sens ( flood or ebb ? )
+    ptcmgr->GetTideFlowSens(tt_localtz, BACKWARD_TEN_MINUTES_STEP,
+                            pIDX->IDX_rec_num, tcv[0], val, wt);
+
+    for (i = 0; i < 26; i++) {
+      int tt = tt_localtz + (i * FORWARD_ONE_HOUR_STEP);
+      ptcmgr->GetTideOrCurrent(tt, pIDX->IDX_rec_num, tcv[i], dir);
+      tt_tcv[i] = tt;  // store the corresponding time_t value
+      if (tcv[i] > tcmax) tcmax = tcv[i];
+      if (tcv[i] < tcmin) tcmin = tcv[i];
+
+      if (TIDE_PLOT == m_plot_type) {
+        if (!((tcv[i] > val) == wt) && (i > 0)) {  // if tide flow sense change
+          float tcvalue;                           // look backward for HW or LW
+          time_t tctime;
+          ptcmgr->GetHightOrLowTide(tt, BACKWARD_TEN_MINUTES_STEP,
+                                    BACKWARD_ONE_MINUTES_STEP, tcv[i], wt,
+                                    pIDX->IDX_rec_num, tcvalue, tctime);
+          if (tctime > tt_localtz) {  // Only show events visible in graphic
+                                      // presently shown
+            wxDateTime tcd;           // write date
+            wxString s, s1;
+            tcd.Set(tctime - (m_diff_mins * 60));
+            if (m_tzoneDisplay == 0)  // LMT @ Station
+              tcd.Set(tctime + (m_stationOffset_mins - m_diff_mins) * 60);
+
+            s.Printf(tcd.Format("%H:%M  "));
+            s1.Printf("%05.2f ", tcvalue);  // write value
+            s.Append(s1);
+            Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
+            if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
+            s.Append("   ");
+            (wt) ? s.Append(_("HW")) : s.Append(_("LW"));  // write HW or LT
+
+            wxListItem li;
+            li.SetId(list_index);
+            li.SetAlign(wxLIST_FORMAT_LEFT);
+            li.SetText(s);
+            li.SetColumn(0);
+            m_tList->InsertItem(li);
+            list_index++;
+          }
+          wt = !wt;  // change tide flow sens
+        }
+        val = tcv[i];
+      }
+      if (CURRENT_PLOT == m_plot_type) {
+        wxDateTime thx;  // write date
+        wxString s, s1;
+        thx.Set((time_t)tt - (m_diff_mins * 60));
+        if (m_tzoneDisplay == 0)  // LMT @ Station
+          thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
+
+        s.Printf(thx.Format("%H:%M  "));
+        s1.Printf("%05.2f ", fabs(tcv[i]));  // write value
+        s.Append(s1);
+        Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
+        if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
+        s1.Printf("  %03.0f", dir);  // write direction
+        s.Append(s1);
+
+        wxListItem li;
+        li.SetId(list_index);
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(s);
+        li.SetColumn(0);
+        m_tList->InsertItem(li);
+        list_index++;
+      }
+    }
+
+    wxEndBusyCursor();
+
+    //    Set up the vertical parameters based on Tide or Current plot
+    if (CURRENT_PLOT == m_plot_type) {
+      it = std::max(abs((int)tcmin - 1), abs((int)tcmax + 1));
+      ib = -it;
+      im = 2 * it;
+      m_plot_y_offset = m_graph_rect.height / 2;
+      val_off = 0;
+    } else {
+      ib = (int)tcmin;
+      if (tcmin < 0) ib -= 1;
+      it = (int)tcmax + 1;
+      im = it - ib;
+      m_plot_y_offset = (m_graph_rect.height * (it - ib)) / im;
+      val_off = ib;
+    }
+
+    // Arrange to skip some lines and legends if there are too many for the
+    // vertical space we have
+    int height_stext;
+    dc.GetTextExtent("1", NULL, &height_stext);
+    float available_lines = (float)m_graph_rect.height / height_stext;
+    i_skip = (int)ceil(im / available_lines);
+
+    if (CURRENT_PLOT == m_plot_type && i_skip != 1) {
+      // Adjust steps so slack current "0" line is always drawn on graph
+      ib -= it % i_skip;
+      it = -ib;
+      im = 2 * it;
+    }
+
+    //    Build spline list of points
+    for (auto it = m_sList.begin(); it != m_sList.end(); it++) delete (*it);
+    m_sList.clear();
+
+    for (i = 0; i < 26; i++) {
+      wxPoint *pp = new wxPoint;
+      pp->x = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
+      pp->y = m_graph_rect.y + (m_plot_y_offset) -
+              (int)((tcv[i] - val_off) * m_graph_rect.height / im);
+      m_sList.push_back(pp);
+    }
+
+    btc_valid = true;
+  }
+
+  // Graph legend
+  dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+
+  //    Vertical Axis
+  i = ib;
+  while (i < it + 1) {
+    int yd = m_graph_rect.y + (m_plot_y_offset) -
+             ((i - val_off) * m_graph_rect.height / im);
+    if ((m_plot_y_offset + m_graph_rect.y) == yd)
+      dc.SetPen(*pblack_2);
+    else
+      dc.SetPen(*pblack_1);
+
+    dc.DrawLine(m_graph_rect.x, yd, m_graph_rect.x + m_graph_rect.width, yd);
+    snprintf(sbuf, 99, "%d", i);
+    dc.DrawText(wxString(sbuf, wxConvUTF8), m_graph_rect.x - 20, yd - 5);
+    i += i_skip;
+  }
+
+  //    Draw the Value curve
+  wxPointList list;
+  for (auto &p : m_sList) list.Append(p);
+
+  dc.SetPen(*pgraph);
+#if wxUSE_SPLINES
+  dc.DrawSpline(&list);
+#else
+  dc.DrawLines(&list);
+#endif
+
+  //  More Info - positioned below chart panel
+  if (m_tzoneDisplay == 0) {
+    int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
+    int h = station_offset / 60;
+    int m = station_offset - (h * 60);
+    if (m_graphday.IsDST()) h += 1;
+    m_stz.Printf("UTC %+03d:%02d", h, m);
+
+    //    Make the "nice" (for the US) station time-zone string, brutally by
+    //    hand
+    double lat = ptcmgr->GetStationLat(pIDX);
+    if (lat > 20.0) {
+      wxString mtz;
+      switch (ptcmgr->GetStationTimeOffset(pIDX)) {
+        case -240:
+          mtz = "AST";
+          break;
+        case -300:
+          mtz = "EST";
+          break;
+        case -360:
+          mtz = "CST";
+          break;
+      }
+      if (mtz.Len()) {
+        if (m_graphday.IsDST()) mtz[1] = 'D';
+        m_stz = mtz;
+      }
+    }
+  } else {
+    m_stz = "UTC";
+  }
+
+  int h;
+  dc.SetFont(*pSFont);
+  dc.GetTextExtent(m_stz, &w, &h);
+  // Position timezone text below the chart, centered horizontally
+  dc.DrawText(m_stz, m_graph_rect.x + (m_graph_rect.width / 2) - (w / 2),
+              m_graph_rect.y + m_graph_rect.height + 35);
+
+  wxString sdate;
+  if (g_locale == "en_US")
+    sdate = m_graphday.Format("%A %b %d, %Y");
+  else
+    sdate = m_graphday.Format("%A %d %b %Y");
+
+  dc.SetFont(*pMFont);
+  dc.GetTextExtent(sdate, &w, &h);
+  // Position date text below the chart, centered horizontally
+  dc.DrawText(sdate, m_graph_rect.x + (m_graph_rect.width / 2) - (w / 2),
+              m_graph_rect.y + m_graph_rect.height + 15);
+
+  Station_Data *pmsd = pIDX->pref_sta_data;
+  if (pmsd) {
+    dc.GetTextExtent(wxString(pmsd->units_conv, wxConvUTF8), &w, &h);
+    dc.DrawRotatedText(wxString(pmsd->units_conv, wxConvUTF8), 5,
+                       m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
+  }
+
+  //      Show flood and ebb directions
+  if ((strchr("c", pIDX->IDX_type)) || (strchr("C", pIDX->IDX_type))) {
+    dc.SetFont(*pSFont);
+    wxString fdir;
+    fdir.Printf("%03d", pIDX->IDX_flood_dir);
+    dc.DrawText(fdir, m_graph_rect.x + m_graph_rect.width + 4,
+                m_graph_rect.y + m_graph_rect.height * 1 / 4);
+
+    wxString edir;
+    edir.Printf("%03d", pIDX->IDX_ebb_dir);
+    dc.DrawText(edir, m_graph_rect.x + m_graph_rect.width + 4,
+                m_graph_rect.y + m_graph_rect.height * 3 / 4);
+  }
+
+  //    Today or tomorrow
+  if ((m_button_height * 15) < x && cur_time) {  // large enough horizontally?
+    wxString sday;
+    int day = m_graphday.GetDayOfYear();
+    if (m_graphday.GetYear() == this_now.GetYear()) {
+      if (day == this_now.GetDayOfYear())
+        sday.Append(_("Today"));
+      else if (day == this_now.GetDayOfYear() + 1)
+        sday.Append(_("Tomorrow"));
+      else
+        sday.Append(m_graphday.GetWeekDayName(m_graphday.GetWeekDay()));
+    } else if (m_graphday.GetYear() == this_now.GetYear() + 1 &&
+               day == this_now.Add(wxTimeSpan::Day()).GetDayOfYear())
+      sday.Append(_("Tomorrow"));
+
+    dc.SetFont(*pSFont);
+    dc.GetTextExtent(sday, &w, &h);
+    // Position day text at the left side of the chart, below it
+    dc.DrawText(sday, m_graph_rect.x,
+                m_graph_rect.y + m_graph_rect.height + 15);
+  }
+
+  //  Render "Spot of interest"
+  double spotDim = 4 * g_Platform->GetDisplayDPmm();
+  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetGlobalColor("YELO1"),
+                                                 wxBRUSHSTYLE_SOLID));
+  dc.SetPen(wxPen(GetGlobalColor("URED"),
+                  wxMax(2, 0.5 * g_Platform->GetDisplayDPmm())));
+  dc.DrawRoundedRectangle(xSpot - spotDim / 2, ySpot - spotDim / 2, spotDim,
+                          spotDim, spotDim / 2);
+
+  dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetGlobalColor("UBLCK"),
+                                                 wxBRUSHSTYLE_SOLID));
+  dc.SetPen(wxPen(GetGlobalColor("UBLCK"), 1));
+  double ispotDim = spotDim / 5.;
+  dc.DrawRoundedRectangle(xSpot - ispotDim / 2, ySpot - ispotDim / 2, ispotDim,
+                          ispotDim, ispotDim / 2);
+
+  // Restore original graph rectangle
+  m_graph_rect = originalGraphRect;
+}
 
 void TCWin::SetTimeFactors() {
   //    Figure out this computer timezone minute offset
@@ -401,11 +906,22 @@ void TCWin::RecalculateSize() {
 
 void TCWin::OKEvent(wxCommandEvent &event) {
   Hide();
-  pParent->pCwin = NULL;
+
+  // Ensure parent pointer is cleared before any potential deletion
+  if (pParent && pParent->pCwin == this) {
+    pParent->pCwin = NULL;
+  }
+
+  // Clean up global tide window counter and associated resources
   --gpIDXn;
   delete m_pTCRolloverWin;
+  m_pTCRolloverWin = NULL;
   delete m_tList;
-  pParent->Refresh(false);
+  m_tList = NULL;
+
+  if (pParent) {
+    pParent->Refresh(false);
+  }
 
   // Update the config file to set the user specified time zone.
   if (pConfig) {
@@ -418,10 +934,18 @@ void TCWin::OKEvent(wxCommandEvent &event) {
 
 void TCWin::OnCloseWindow(wxCloseEvent &event) {
   Hide();
-  pParent->pCwin = NULL;
+
+  // Ensure parent pointer is cleared before any potential deletion
+  if (pParent && pParent->pCwin == this) {
+    pParent->pCwin = NULL;
+  }
+
+  // Clean up global tide window counter and associated resources
   --gpIDXn;
   delete m_pTCRolloverWin;
+  m_pTCRolloverWin = NULL;
   delete m_tList;
+  m_tList = NULL;
 
   // Update the config file to set the user specified time zone.
   if (pConfig) {
@@ -466,7 +990,7 @@ void TCWin::PREvent(wxCommandEvent &event) {
   Refresh();
 }
 
-void TCWin::RePosition(void) {
+void TCWin::RePosition() {
   //    Position the window
   double lon = pIDX->IDX_lon;
   double lat = pIDX->IDX_lat;
@@ -481,497 +1005,76 @@ void TCWin::OnPaint(wxPaintEvent &event) {
   if (!IsShown()) {
     return;
   }
-  int x, y;
-  int i;
-  char sbuf[100];
-  int w;
-  float tcmax, tcmin;
 
-  if (m_graph_rect.x == 0) return;
-
-  GetClientSize(&x, &y);
-  //    qDebug() << "OnPaint" << x << y;
-
-#if 0
-    //  establish some graphic element sizes/locations
-    int x_graph = x * 1 / 10;
-    int y_graph = y * 32 / 100;
-    int x_graph_w = x * 8 / 10;
-    int y_graph_h = (y * .7)  - (3 * m_button_height);
-    m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
-
-    wxSize texc_size = wxSize( ( x * 60 / 100 ), ( y *29 / 100 ) );
-    if( !m_tList->IsShown()){
-        texc_size = wxSize( ( x * 90 / 100 ), ( y *29 / 100 ) );
-    }
-
-    m_ptextctrl->SetSize(texc_size);
-#endif
+  // With the new sizer-based layout, the main OnPaint method is simplified.
+  // Chart rendering is now handled by the TideChartPanel's OnPaint method,
+  // which delegates to our PaintChart() method.
 
   wxPaintDC dc(this);
 
-  wxString tlocn(pIDX->IDX_station_name, wxConvUTF8);
+  // Clear the background
+  dc.SetBrush(wxBrush(GetBackgroundColour()));
+  dc.SetPen(wxPen(GetBackgroundColour()));
+  wxSize size = GetClientSize();
+  dc.DrawRectangle(0, 0, size.GetWidth(), size.GetHeight());
 
-  // Adjust colors with current color scheme
-  // We use window class colors for that, they are modified by DimeControl
-  // depending on the current color scheme
-  pblack_1->SetColour(this->GetForegroundColour());
-  pblack_2->SetColour(this->GetForegroundColour());
-  pltgray->SetColour(this->GetBackgroundColour());
-  pltgray2->SetColour(this->GetBackgroundColour());
-  pred_2->SetColour(GetDimedColor(wxColor(230, 54, 54)));
-
-  //     if(1/*bForceRedraw*/)
-  {
-    int x_textbox = x * 5 / 100;
-    int y_textbox = 6;
-
-    int x_textbox_w = x * 51 / 100;
-    int y_textbox_h = y * 25 / 100;
-
-    // box the location text & tide-current table
-    dc.SetPen(*pblack_3);
-    dc.SetBrush(*pltgray2);
-    dc.DrawRoundedRectangle(x_textbox, y_textbox, x_textbox_w, y_textbox_h,
-                            4);  // location text box
-
-    if (m_tList->IsShown()) {
-      wxRect tab_rect = m_tList->GetRect();
-      dc.DrawRoundedRectangle(tab_rect.x - 4, y_textbox, tab_rect.width + 8,
-                              y_textbox_h, 4);  // tide-current table box
-    }
-
-    //    Box the graph
-    dc.SetPen(*pblack_1);
-    dc.SetBrush(*pltgray);
-    dc.DrawRectangle(m_graph_rect.x, m_graph_rect.y, m_graph_rect.width,
-                     m_graph_rect.height);
-
-    //  On some platforms, we cannot draw rotated text.
-    //  So, reduce the complexity of horizontal axis time labels
-#ifndef __WXMSW__
-    const int hour_delta = 4;
-#else
-    const int hour_delta = 1;
-#endif
-
-    int hour_start = 0;
-    //        if(m_tzoneDisplay == 1){                // UTC
-    //            hour_start = m_diff_mins / 60;
-    //        }
-
-    //    Horizontal axis
-    dc.SetFont(*pSFont);
-    for (i = 0; i < 25; i++) {
-      int xd = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
-      if (hour_delta != 1) {
-        if (i % hour_delta == 0) {
-          dc.SetPen(*pblack_2);
-          dc.DrawLine(xd, m_graph_rect.y, xd,
-                      m_graph_rect.y + m_graph_rect.height + 5);
-          char sbuf[16];
-          int hour_show = hour_start + i;
-          if (hour_show >= 24) hour_show -= 24;
-          sprintf(sbuf, "%02d", hour_show);
-          int x_shim = -20;
-          dc.DrawText(wxString(sbuf, wxConvUTF8),
-                      xd + x_shim + (m_graph_rect.width / 25) / 2,
-                      m_graph_rect.y + m_graph_rect.height + 8);
-        } else {
-          dc.SetPen(*pblack_1);
-          dc.DrawLine(xd, m_graph_rect.y, xd,
-                      m_graph_rect.y + m_graph_rect.height + 5);
-        }
-      } else {
-        dc.SetPen(*pblack_1);
-        dc.DrawLine(xd, m_graph_rect.y, xd,
-                    m_graph_rect.y + m_graph_rect.height + 5);
-        wxString sst;
-        sst.Printf(_T("%02d"), i);
-        dc.DrawRotatedText(sst, xd + (m_graph_rect.width / 25) / 2,
-                           m_graph_rect.y + m_graph_rect.height + 8, 270.);
-      }
-    }
-
-    //    Make a line for "right now"
-    wxDateTime this_now = gTimeSource;
-    bool cur_time = !gTimeSource.IsValid();
-    if (cur_time) this_now = wxDateTime::Now();
-
-    time_t t_now = this_now.GetTicks();  // now, in ticks
-    t_now -= m_diff_mins * 60;
-    if (m_tzoneDisplay == 0)  // LMT @ Station
-      t_now += m_stationOffset_mins * 60;
-
-    float t_ratio =
-        m_graph_rect.width * (t_now - m_t_graphday_GMT) / (25 * 3600.0f);
-
-    // must eliminate line outside the graph (in that case put it outside the
-    // window)
-    int xnow = (t_ratio < 0 || t_ratio > m_graph_rect.width)
-                   ? -1
-                   : m_graph_rect.x + (int)t_ratio;
-    dc.SetPen(*pred_2);
-    dc.DrawLine(xnow, m_graph_rect.y, xnow,
-                m_graph_rect.y + m_graph_rect.height);
-    dc.SetPen(*pblack_1);
-
-    //    Build the array of values, capturing max and min and HW/LW list
-
-    if (!btc_valid) {
-      float dir;
-      tcmax = -10;
-      tcmin = 10;
-      float val = -100;
-      m_tList->DeleteAllItems();
-      int list_index = 0;
-      bool wt = false;
-
-      wxBeginBusyCursor();
-
-      // The tide/current modules calculate values based on PC local time
-      // We want UTC, so adjust accordingly
-      int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
-      // then eventually we could need LMT at station
-      if (m_tzoneDisplay == 0)
-        tt_localtz -= m_stationOffset_mins * 60;  // LMT at station
-
-      // get tide flow sens ( flood or ebb ? )
-      ptcmgr->GetTideFlowSens(tt_localtz, BACKWARD_TEN_MINUTES_STEP,
-                              pIDX->IDX_rec_num, tcv[0], val, wt);
-
-      for (i = 0; i < 26; i++) {
-        int tt = tt_localtz + (i * FORWARD_ONE_HOUR_STEP);
-
-        ptcmgr->GetTideOrCurrent(tt, pIDX->IDX_rec_num, tcv[i], dir);
-        tt_tcv[i] = tt;  // store the corresponding time_t value
-        if (tcv[i] > tcmax) tcmax = tcv[i];
-
-        if (tcv[i] < tcmin) tcmin = tcv[i];
-        if (TIDE_PLOT == m_plot_type) {
-          if (!((tcv[i] > val) == wt) && (i > 0))  // if tide flow sense change
-          {
-            float tcvalue;  // look backward for HW or LW
-            time_t tctime;
-            ptcmgr->GetHightOrLowTide(tt, BACKWARD_TEN_MINUTES_STEP,
-                                      BACKWARD_ONE_MINUTES_STEP, tcv[i], wt,
-                                      pIDX->IDX_rec_num, tcvalue, tctime);
-            if (tctime > tt_localtz) {  // Only show events visible in graphic
-                                        // presently shown
-              wxDateTime tcd;           // write date
-              wxString s, s1;
-              tcd.Set(tctime - (m_diff_mins * 60));
-              if (m_tzoneDisplay == 0)  // LMT @ Station
-                tcd.Set(tctime + (m_stationOffset_mins - m_diff_mins) * 60);
-
-              s.Printf(tcd.Format(_T("%H:%M  ")));
-              s1.Printf(_T("%05.2f "), tcvalue);  // write value
-              s.Append(s1);
-              Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
-              if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
-              s.Append(_T("   "));
-              (wt) ? s.Append(_("HW")) : s.Append(_("LW"));  // write HW or LT
-
-              wxListItem li;
-              li.SetId(list_index);
-              li.SetAlign(wxLIST_FORMAT_LEFT);
-              li.SetText(s);
-              li.SetColumn(0);
-              m_tList->InsertItem(li);
-              list_index++;
-            }
-            wt = !wt;  // change tide flow sens
-          }
-          val = tcv[i];
-        }
-        if (CURRENT_PLOT == m_plot_type) {
-          wxDateTime thx;  // write date
-          wxString s, s1;
-
-          thx.Set((time_t)tt - (m_diff_mins * 60));
-          if (m_tzoneDisplay == 0)  // LMT @ Station
-            thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
-
-          s.Printf(thx.Format(_T("%H:%M  ")));
-          s1.Printf(_T("%05.2f "), fabs(tcv[i]));  // write value
-          s.Append(s1);
-          Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
-          if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
-          s1.Printf(_T("  %03.0f"), dir);  // write direction
-          s.Append(s1);
-
-          wxListItem li;
-          li.SetId(list_index);
-          li.SetAlign(wxLIST_FORMAT_LEFT);
-          li.SetText(s);
-          li.SetColumn(0);
-          m_tList->InsertItem(li);
-          list_index++;
-        }
-      }
-
-      wxEndBusyCursor();
-
-      //    Set up the vertical parameters based on Tide or Current plot
-      if (CURRENT_PLOT == m_plot_type) {
-        it = std::max(abs((int)tcmin - 1), abs((int)tcmax + 1));
-        ib = -it;
-
-        im = 2 * it;
-        m_plot_y_offset = m_graph_rect.height / 2;
-        val_off = 0;
-      } else {
-        ib = (int)tcmin;
-        if (tcmin < 0) ib -= 1;
-        it = (int)tcmax + 1;
-
-        im = it - ib;  // abs ( ib ) + abs ( it );
-        m_plot_y_offset = (m_graph_rect.height * (it - ib)) / im;
-        val_off = ib;
-      }
-
-      // Arrange to skip some lines and legends if there are too many for the
-      // vertical space we have
-      int height_stext;
-      dc.GetTextExtent(_T("1"), NULL, &height_stext);
-      float available_lines = (float)m_graph_rect.height / height_stext;
-      i_skip = (int)ceil(im / available_lines);
-
-      if (CURRENT_PLOT == m_plot_type && i_skip != 1) {
-        // Adjust steps so slack current "0" line is always drawn on graph
-        ib -= it % i_skip;
-        it = -ib;
-        im = 2 * it;
-      }
-
-      //    Build spline list of points
-
-      m_sList.DeleteContents(true);
-      m_sList.Clear();
-
-      for (i = 0; i < 26; i++) {
-        wxPoint *pp = new wxPoint;
-        pp->x = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
-        pp->y = m_graph_rect.y + (m_plot_y_offset) -
-                (int)((tcv[i] - val_off) * m_graph_rect.height / im);
-
-        m_sList.Append(pp);
-      }
-
-      btc_valid = true;
-    }
-
-    // Graph legend
-    dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-
-    //    Vertical Axis
-
-    i = ib;
-    while (i < it + 1) {
-      int yd = m_graph_rect.y + (m_plot_y_offset) -
-               ((i - val_off) * m_graph_rect.height / im);
-
-      if ((m_plot_y_offset + m_graph_rect.y) == yd)
-        dc.SetPen(*pblack_2);
-      else
-        dc.SetPen(*pblack_1);
-
-      dc.DrawLine(m_graph_rect.x, yd, m_graph_rect.x + m_graph_rect.width, yd);
-      snprintf(sbuf, 99, "%d", i);
-      dc.DrawText(wxString(sbuf, wxConvUTF8), m_graph_rect.x - 20, yd - 5);
-      i += i_skip;
-    }
-
-    //    Draw the Value curve
-#if wxCHECK_VERSION(2, 9, 0)
-    wxPointList *list = (wxPointList *)&m_sList;
-#else
-    wxList *list = (wxList *)&m_sList;
-#endif
-
-    dc.SetPen(*pgraph);
-#if wxUSE_SPLINES
-    dc.DrawSpline(list);
-#else
-    dc.DrawLines(list);
-#endif
-    //  More Info
-
-    if (m_tzoneDisplay == 0) {
-      int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
-      int h = station_offset / 60;
-      int m = station_offset - (h * 60);
-      if (m_graphday.IsDST()) h += 1;
-      m_stz.Printf(_T("UTC %+03d:%02d"), h, m);
-
-      //    Make the "nice" (for the US) station time-zone string, brutally by
-      //    hand
-      double lat = ptcmgr->GetStationLat(pIDX);
-
-      if (lat > 20.0) {
-        wxString mtz;
-        switch (ptcmgr->GetStationTimeOffset(pIDX)) {
-          case -240:
-            mtz = _T( "AST" );
-            break;
-          case -300:
-            mtz = _T( "EST" );
-            break;
-          case -360:
-            mtz = _T( "CST" );
-            break;
-        }
-
-        if (mtz.Len()) {
-          if (m_graphday.IsDST()) mtz[1] = 'D';
-          m_stz = mtz;
-        }
-      }
-    }
-
-    else
-      m_stz = _T("UTC");
-
-    int h;
-    dc.SetFont(*pSFont);
-    dc.GetTextExtent(m_stz, &w, &h);
-    dc.DrawText(m_stz, x / 2 - w / 2,
-                y - (m_button_height * 15 / 10) - (m_refTextHeight * 2));
-
-    wxString sdate;
-    if (g_locale == _T("en_US"))
-      sdate = m_graphday.Format(_T ( "%A %b %d, %Y" ));
-    else
-      sdate = m_graphday.Format(_T ( "%A %d %b %Y" ));
-
-    dc.SetFont(*pMFont);
-    dc.GetTextExtent(sdate, &w, &h);
-    dc.DrawText(sdate, x / 2 - w / 2,
-                y - (m_button_height * 15 / 10) - (m_refTextHeight * 1));
-
-    Station_Data *pmsd = pIDX->pref_sta_data;
-    if (pmsd) {
-      dc.GetTextExtent(wxString(pmsd->units_conv, wxConvUTF8), &w, &h);
-      dc.DrawRotatedText(wxString(pmsd->units_conv, wxConvUTF8), 5,
-                         m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
-    }
-
-    //      Show flood and ebb directions
-    if ((strchr("c", pIDX->IDX_type)) || (strchr("C", pIDX->IDX_type))) {
-      dc.SetFont(*pSFont);
-
-      wxString fdir;
-      fdir.Printf(_T("%03d"), pIDX->IDX_flood_dir);
-      dc.DrawText(fdir, m_graph_rect.x + m_graph_rect.width + 4,
-                  m_graph_rect.y + m_graph_rect.height * 1 / 4);
-
-      wxString edir;
-      edir.Printf(_T("%03d"), pIDX->IDX_ebb_dir);
-      dc.DrawText(edir, m_graph_rect.x + m_graph_rect.width + 4,
-                  m_graph_rect.y + m_graph_rect.height * 3 / 4);
-    }
-
-    //    Today or tomorrow
-    if ((m_button_height * 15) < x && cur_time) {  // large enough horizontally?
-      wxString sday;
-
-      int day = m_graphday.GetDayOfYear();
-      if (m_graphday.GetYear() == this_now.GetYear()) {
-        if (day == this_now.GetDayOfYear())
-          sday.Append(_("Today"));
-        else if (day == this_now.GetDayOfYear() + 1)
-          sday.Append(_("Tomorrow"));
-        else
-          sday.Append(m_graphday.GetWeekDayName(m_graphday.GetWeekDay()));
-      } else if (m_graphday.GetYear() == this_now.GetYear() + 1 &&
-                 day == this_now.Add(wxTimeSpan::Day()).GetDayOfYear())
-        sday.Append(_("Tomorrow"));
-
-      dc.SetFont(*pSFont);
-      dc.GetTextExtent(sday, &w, &h);
-      dc.DrawText(sday, 55 - w / 2,
-                  y - (m_button_height * 15 / 10) - (m_refTextHeight * 1));
-    }
-
-    //  Render "Spot of interest"
-    double spotDim = 4 * g_Platform->GetDisplayDPmm();
-
-    dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(
-        GetGlobalColor(_T ( "YELO1" )), wxBRUSHSTYLE_SOLID));
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "URED" )),
-                    wxMax(2, 0.5 * g_Platform->GetDisplayDPmm())));
-    dc.DrawRoundedRectangle(xSpot - spotDim / 2, ySpot - spotDim / 2, spotDim,
-                            spotDim, spotDim / 2);
-
-    dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(
-        GetGlobalColor(_T ( "UBLCK" )), wxBRUSHSTYLE_SOLID));
-    dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
-
-    double ispotDim = spotDim / 5.;
-    dc.DrawRoundedRectangle(xSpot - ispotDim / 2, ySpot - ispotDim / 2,
-                            ispotDim, ispotDim, ispotDim / 2);
-  }
+  // Note: Chart painting is now handled by TideChartPanel::OnPaint()
+  // which calls our PaintChart() method. This eliminates the need for
 }
 
 void TCWin::OnSize(wxSizeEvent &event) {
   if (!m_created) return;
 
-  int x, y;
-  GetClientSize(&x, &y);
+  // With sizer-based layout, we don't need manual positioning.
+  // The sizers automatically handle layout when the window is resized.
 
-  //  establish some graphic element sizes/locations
-  int x_graph = x * 1 / 10;
-  int y_graph = y * 32 / 100;
-  int x_graph_w = x * 8 / 10;
-  int y_graph_h =
-      (y * 65 / 100) - (m_button_height * 15 / 10) - (m_refTextHeight * 2);
-  y_graph_h =
-      wxMax(y_graph_h, 2);  // ensure minimum size is positive, at least.
-
-  m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
-
-  //  In the interest of readability, if the width of the dialog is too narrow,
-  //  simply skip showing the "Hi/Lo" list control.
-
-  if ((m_tsy * 15) > x)
-    m_tList->Hide();
-  else {
-    m_tList->Move(wxPoint(x * 65 / 100, 11));
-    m_tList->Show();
+  // Force chart panel to refresh with new size
+  if (m_chartPanel) {
+    m_chartPanel->Refresh();
   }
 
-  wxSize texc_size = wxSize((x * 60 / 100), (y * 29 / 100));
-  if (!m_tList->IsShown()) {
-    texc_size = wxSize((x * 90 / 100), (y * 29 / 100));
-  }
-  m_ptextctrl->SetSize(texc_size);
-
-#ifdef __WXOSX__
-  OK_button->Move(
-      wxPoint(x - (4 * m_button_height + 10), y - (m_button_height * 12 / 10)));
-#else
-  OK_button->Move(
-      wxPoint(x - (3 * m_button_height + 10), y - (m_button_height * 12 / 10)));
-#endif
-  PR_button->Move(wxPoint(10, y - (m_button_height + 10)));
-
-  m_choiceTimezone->Move(
-      wxPoint(x / 2 - m_choiceSize_x / 2, y - (m_button_height * 12 / 10)));
-
-  int bsx, bsy, bpx, bpy;
-  PR_button->GetSize(&bsx, &bsy);
-  PR_button->GetPosition(&bpx, &bpy);
-
-  NX_button->Move(wxPoint(bpx + bsx + 5, y - (m_button_height + 10)));
-
+  // Invalidate cached chart data to force recalculation
   btc_valid = false;
 
-  Refresh(true);
-  Update();
+  // Allow sizers to handle the layout
+  event.Skip();
 }
 
 void TCWin::MouseEvent(wxMouseEvent &event) {
+  // This is now mainly for compatibility.
+  // Chart mouse events are handled by HandleChartMouseMove
   event.GetPosition(&curs_x, &curs_y);
+
+  if (!m_TCWinPopupTimer.IsRunning())
+    m_TCWinPopupTimer.Start(20, wxTIMER_ONE_SHOT);
+}
+
+void TCWin::HandleChartMouseMove(int mainWindowX, int mainWindowY,
+                                 const wxPoint &chartPanelPos) {
+  // Store the main window coordinates for compatibility with existing rollover
+  // code
+  curs_x = mainWindowX;
+  curs_y = mainWindowY;
+
+  // Also store the chart panel relative coordinates for calculations
+  if (m_chartPanel) {
+    // Calculate the chart rectangle within the chart panel
+    wxSize panelSize = m_chartPanel->GetClientSize();
+    int left_margin = 50;   // Space for Y-axis numbers and units
+    int other_margins = 5;  // Smaller margins for top, right, bottom
+    int chart_width = panelSize.GetWidth() - left_margin - other_margins;
+    int chart_height = panelSize.GetHeight() - (2 * other_margins);
+    int bottom_text_space = 50;  // Increased space for date display
+    chart_height -= bottom_text_space;
+    chart_width = wxMax(chart_width, 300);
+    chart_height = wxMax(chart_height, 150);
+
+    // Update the graph rectangle to match the current chart panel layout
+    wxPoint chartPanelPos = m_chartPanel->GetPosition();
+    m_graph_rect =
+        wxRect(chartPanelPos.x + left_margin, chartPanelPos.y + other_margins,
+               chart_width, chart_height);
+  }
 
   if (!m_TCWinPopupTimer.IsRunning())
     m_TCWinPopupTimer.Start(20, wxTIMER_ONE_SHOT);
@@ -996,16 +1099,23 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
     }
     float t, d;
     wxString p, s;
-    // set time on x cursor position
-    t = (25 / ((float)x * 8 / 10)) * ((float)curs_x - ((float)x * 1 / 10));
+
+    // Calculate time based on actual chart rectangle position
+    // t represents hours into the 25-hour display (0-25)
+    float relativeX =
+        (float)(curs_x - m_graph_rect.x) / (float)m_graph_rect.width;
+    t = relativeX * 25.0f;  // 25 hours displayed across the width
+
+    // Clamp to valid range
+    t = wxMax(0.0f, wxMin(25.0f, t));
 
     int tt = m_t_graphday_GMT + (int)(t * 3600);
     time_t ths = tt;
 
     wxDateTime thd;
     thd.Set(ths);
-    p.Printf(thd.Format(_T("%Hh %Mmn")));
-    p.Append(_T("\n"));
+    p.Printf(thd.Format("%Hh %Mmn"));
+    p.Append("\n");
 
     // The tide/current modules calculate values based on PC local time
     // We want UTC, so adjust accordingly
@@ -1020,9 +1130,9 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     // set tide level or current speed at that time
     ptcmgr->GetTideOrCurrent(tts, pIDX->IDX_rec_num, t, d);
-    s.Printf(_T("%3.2f "), (t < 0 && CURRENT_PLOT == m_plot_type)
-                               ? -t
-                               : t);  // always positive if current
+    s.Printf("%3.2f ", (t < 0 && CURRENT_PLOT == m_plot_type)
+                           ? -t
+                           : t);  // always positive if current
     p.Append(s);
 
     // set unit
@@ -1032,7 +1142,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
     // set current direction
     if (CURRENT_PLOT == m_plot_type) {
       s.Printf("%3.0f%c", d, 0x00B0);
-      p.Append(_T("\n"));
+      p.Append("\n");
       p.Append(s);
     }
 
@@ -1049,7 +1159,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     //  Mark the actual spot on the curve
     // x value is clear...
-    //  Find the point in the window that is used for the curev rendering,
+    //  Find the point in the window that is used for the curve rendering,
     //  rounding as necessary
 
     int idx = 1;  // in case m_graph_rect.width is weird ie ppx never > curs_x
@@ -1061,15 +1171,26 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
       }
     }
 
-    wxPointList *list = (wxPointList *)&m_sList;
-    wxPoint *a = list->Item(idx - 1)->GetData();
-    wxPoint *b = list->Item(idx)->GetData();
+    if (m_sList.size() > 0 && idx > 0 && idx < (int)m_sList.size()) {
+      // Use iterator to access elements in std::list
+      auto it_a = m_sList.begin();
+      std::advance(it_a, idx - 1);
+      auto it_b = m_sList.begin();
+      std::advance(it_b, idx);
 
-    float pct = (curs_x - a->x) / (float)((b->x - a->x));
-    float dy = pct * (b->y - a->y);
+      wxPoint *a = *it_a;
+      wxPoint *b = *it_b;
 
-    ySpot = a->y + dy;
-    xSpot = curs_x;
+      float pct = (curs_x - a->x) / (float)((b->x - a->x));
+      float dy = pct * (b->y - a->y);
+
+      ySpot = a->y + dy;
+      xSpot = curs_x;
+    } else {
+      // Fallback if we can't find the curve point
+      xSpot = curs_x;
+      ySpot = m_graph_rect.y + m_graph_rect.height / 2;
+    }
 
     Refresh(true);
 
@@ -1081,4 +1202,9 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
   if (m_pTCRolloverWin && m_pTCRolloverWin->IsShown() && !ShowRollover) {
     m_pTCRolloverWin->Hide();
   }
+}
+
+void TCWin::OnTimeIndicatorTimer(wxTimerEvent &event) {
+  // Refresh to update the red line (system time indicator)
+  Refresh(false);
 }

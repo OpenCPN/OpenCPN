@@ -69,21 +69,21 @@
 #include "model/multiplexer.h"
 #include "timers.h"
 #include "tide_time.h"
-#include "glTextureDescriptor.h"
-#include "ChInfoWin.h"
-#include "Quilt.h"
+#include "gl_texture_descr.h"
+#include "ch_info_win.h"
+#include "quilt.h"
 #include "model/select_item.h"
 #include "model/select.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "SendToGpsDlg.h"
-#include "OCPNRegion.h"
+#include "ocpn_region.h"
 #include "gshhs.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #include "cm93.h"      // for chart outline draw
@@ -106,6 +106,8 @@ extern sigjmp_buf env;  // the context saved by sigsetjmp();
 #endif
 
 #include <vector>
+
+ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes
@@ -820,7 +822,7 @@ wxRect ViewPort::GetVPRectIntersect(size_t n, float *llpoints) {
   return r.GetBox();
 }
 
-void ViewPort::SetBoxes(void) {
+void ViewPort::SetBoxes() {
   // In the case where canvas rotation is applied, we need to define a larger
   // "virtual" pixel window size to ensure that enough chart data is fatched
   // and available to fill the rotated screen.

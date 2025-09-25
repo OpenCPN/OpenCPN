@@ -44,10 +44,7 @@ HDM::HDM() {
   Empty();
 }
 
-HDM::~HDM() {
-  Mnemonic.Empty();
-  Empty();
-}
+HDM::~HDM() { Empty(); }
 
 void HDM::Empty(void) { DegreesMagnetic = 0.0; }
 

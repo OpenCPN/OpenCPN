@@ -172,6 +172,9 @@ int grib_pi::Init(void) {
 }
 
 bool grib_pi::DeInit(void) {
+  // Reset timeline to system time before shutting down
+  SendTimelineMessage(wxInvalidDateTime);
+
   if (m_pGribCtrlBar) {
     m_pGribCtrlBar->Close();
     delete m_pGribCtrlBar;
@@ -248,6 +251,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
     pConf->SetPath(_T ( "/Directories" ));
     pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
     Pref->m_grib_dir_sel = l_grib_dir;
+    Pref->m_textDirectory->ChangeValue(l_grib_dir);
   }
 
 #ifdef __WXMSW__

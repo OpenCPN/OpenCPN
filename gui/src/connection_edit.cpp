@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,21 +12,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Implement connection_edit.h -- Dialog and support for editing a connection
  */
 
+#include <memory>
 #include <set>
+#include <string>
+#include <vector>
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "config.h"
 
@@ -54,23 +52,22 @@
 #include "qdebug.h"
 #endif
 
+#include "connection_edit.h"
+
 #include "model/comm_drv_factory.h"
 #include "model/config_vars.h"
 #include "model/ocpn_utils.h"
 #include "model/ser_ports.h"
 #include "model/sys_events.h"
 
-#include "connection_edit.h"
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"  // FIXME for GetOCPNScaledFont_PlugIn
 #include "options.h"
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
-
-extern OCPNPlatform* g_Platform;
 
 static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
@@ -82,7 +79,6 @@ static wxString StringArrayToString(const wxArrayString& arr) {
 }
 
 // Check available SocketCAN interfaces
-
 #if defined(__linux__) && !defined(__ANDROID__)
 static intf_t* intf;
 std::vector<std::string> can_if_candidates;
@@ -189,7 +185,7 @@ ConnectionEditDialog::ConnectionEditDialog(
 
 ConnectionEditDialog::~ConnectionEditDialog() {}
 
-void ConnectionEditDialog::SetInitialSettings(void) {
+void ConnectionEditDialog::SetInitialSettings() {
   LoadSerialPorts(m_comboPort);
 }
 
@@ -902,7 +898,7 @@ void ConnectionEditDialog::onBTScanTimer(wxTimerEvent& event) {
   return;
 }
 
-void ConnectionEditDialog::StopBTScan(void) {
+void ConnectionEditDialog::StopBTScan() {
   m_BTScanTimer.Stop();
 
   g_Platform->stopBluetoothScan();
@@ -1067,7 +1063,7 @@ void ConnectionEditDialog::ShowNMEABT(bool visible) {
   m_cbOutput->Show(visible);
 }
 
-void ConnectionEditDialog::SetNMEAFormToSerial(void) {
+void ConnectionEditDialog::SetNMEAFormToSerial() {
   bool advanced = m_advanced;
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
@@ -1079,7 +1075,7 @@ void ConnectionEditDialog::SetNMEAFormToSerial(void) {
   LayoutDialog();
 }
 
-void ConnectionEditDialog::SetNMEAFormToNet(void) {
+void ConnectionEditDialog::SetNMEAFormToNet() {
   bool advanced = m_advanced;
   ShowNMEACommon(TRUE);
   ShowNMEANet(TRUE);
@@ -1093,7 +1089,7 @@ void ConnectionEditDialog::SetNMEAFormToNet(void) {
   LayoutDialog();
 }
 
-void ConnectionEditDialog::SetNMEAFormToCAN(void) {
+void ConnectionEditDialog::SetNMEAFormToCAN() {
   bool advanced = m_advanced;
   ShowNMEACommon(FALSE);
   ShowNMEANet(FALSE);
@@ -1108,7 +1104,7 @@ void ConnectionEditDialog::SetNMEAFormToCAN(void) {
   LayoutDialog();
 }
 
-void ConnectionEditDialog::SetNMEAFormToGPS(void) {
+void ConnectionEditDialog::SetNMEAFormToGPS() {
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(TRUE);
@@ -1122,7 +1118,7 @@ void ConnectionEditDialog::SetNMEAFormToGPS(void) {
   LayoutDialog();
 }
 
-void ConnectionEditDialog::SetNMEAFormToBT(void) {
+void ConnectionEditDialog::SetNMEAFormToBT() {
   m_rbNetProtoUDP->SetValue(true);
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
@@ -1137,7 +1133,7 @@ void ConnectionEditDialog::SetNMEAFormToBT(void) {
   LayoutDialog();
 }
 
-void ConnectionEditDialog::ClearNMEAForm(void) {
+void ConnectionEditDialog::ClearNMEAForm() {
   ShowNMEACommon(FALSE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
@@ -1149,7 +1145,7 @@ void ConnectionEditDialog::ClearNMEAForm(void) {
   //  Fit();
 }
 
-void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
+void ConnectionEditDialog::SetDSFormOptionVizStates() {
   bool advanced = m_advanced;
   m_collapse_box->ShowItems(true);
   m_cbInput->Show();
@@ -1266,7 +1262,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbCheckSKDiscover->Hide();
       m_cbInput->Hide();
       m_cbOutput->Hide();
-      ShowInFilter(false);
+      ShowInFilter(true);
       ShowOutFilter(false);
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
@@ -1326,7 +1322,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
   }
 }
 
-void ConnectionEditDialog::SetDSFormRWStates(void) {
+void ConnectionEditDialog::SetDSFormRWStates() {
   if (m_rbTypeSerial->GetValue()) {
     m_cbInput->Enable(TRUE);
     m_cbOutput->Enable(TRUE);
@@ -1425,7 +1421,7 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   if (cp->NetworkPort == 0)
     m_tNetPort->SetValue(wxEmptyString);
   else
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    m_tNetPort->SetValue(wxString::Format("%i", cp->NetworkPort));
 
   if (cp->NetProtocol == TCP)
     m_rbNetProtoTCP->SetValue(TRUE);
@@ -1477,7 +1473,7 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   connectionsaved = true;
 }
 
-void ConnectionEditDialog::SetUDPNetAddressVisiblity(void) {
+void ConnectionEditDialog::SetUDPNetAddressVisiblity() {
   if (m_rbNetProtoUDP->GetValue() && !m_cbMultiCast->IsChecked() &&
       !m_cbOutput->IsChecked()) {
     //    m_stNetAddr->Show(FALSE);
@@ -1499,7 +1495,7 @@ void ConnectionEditDialog::SetUDPNetAddressVisiblity(void) {
     m_cbMultiCast->Hide();
 }
 
-void ConnectionEditDialog::SetDefaultConnectionParams(void) {
+void ConnectionEditDialog::SetDefaultConnectionParams() {
   if (m_comboPort && !m_comboPort->IsListEmpty()) {
     m_comboPort->Select(0);
     m_comboPort->SetValue(wxEmptyString);  // These two broke it
@@ -1588,7 +1584,7 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
                                           1))  // 1 second scan
   {
     m_tNetAddress->SetValue(ip);
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), port));
+    m_tNetPort->SetValue(wxString::Format("%i", port));
     UpdateDiscoverStatus(_("Signal K server available."));
   } else {
     UpdateDiscoverStatus(_("Signal K server not found."));
@@ -2410,7 +2406,7 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
   Populate(list);
 }
 
-wxString SentenceListDlg::GetBoxLabel(void) const {
+wxString SentenceListDlg::GetBoxLabel() const {
   if (m_dir == FILTER_OUTPUT)
     return m_type == WHITELIST ? _("Transmit sentences") : _("Drop sentences");
   else
@@ -2458,7 +2454,7 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
   }
 }
 
-wxString SentenceListDlg::GetSentences(void) {
+wxString SentenceListDlg::GetSentences() {
   wxArrayString retString;
   for (size_t i = 0; i < m_clbSentences->GetCount(); i++) {
     if (m_clbSentences->IsChecked(i))

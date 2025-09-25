@@ -477,7 +477,7 @@ msgstr "Häda põhjus:"
 msgid " (Last Known)"
 msgstr " (viimane teadaolev)"
 
-#: model/src/ais_target_data.cpp:695 gui/src/GoToPositionDialog.cpp:112
+#: model/src/ais_target_data.cpp:695 gui/src/go_to_position_dlg.cpp:112
 #: gui/src/priority_gui.cpp:216 gui/src/route_printout.cpp:88
 #: gui/src/track_printout.cpp:71 gui/src/initwiz/wiz_ui_proto.cpp:98
 msgid "Position"
@@ -2503,7 +2503,7 @@ msgstr "Ebaõnnestus NMEA sisendseadme avamine: "
 msgid "About OpenCPN"
 msgstr "Teave OpenCPN'st"
 
-#: gui/include/gui/AISTargetAlertDialog.h:48 gui/src/routemanagerdialog.cpp:1457
+#: gui/include/gui/ais_target_alert_dlg.h:48 gui/src/routemanagerdialog.cpp:1457
 #: gui/src/routemanagerdialog.cpp:2249 gui/src/routemanagerdialog.cpp:2351
 #: gui/src/routemanagerdialog.cpp:2700 gui/src/routemanagerdialog.cpp:2732
 #: gui/src/routemanagerdialog.cpp:2871 gui/src/routemanagerdialog.cpp:3035
@@ -2511,27 +2511,27 @@ msgstr "Teave OpenCPN'st"
 msgid "OpenCPN Alert"
 msgstr "OpenCPN'i häire"
 
-#: gui/include/gui/AISTargetAlertDialog.h:73
+#: gui/include/gui/ais_target_alert_dlg.h:73
 msgid "OpenCPN AIS Alert"
 msgstr "OpenCPN AIS häire"
 
-#: gui/include/gui/AISTargetQueryDialog.h:50
-#: gui/include/gui/AISTargetQueryDialog.h:61 gui/include/gui/S57QueryDialog.h:47
+#: gui/include/gui/ais_target_query_dlg.h:50
+#: gui/include/gui/ais_target_query_dlg.h:61 gui/include/gui/S57QueryDialog.h:47
 #: gui/include/gui/S57QueryDialog.h:56 gui/src/canvasMenu.cpp:485
 #: gui/src/canvasMenu.cpp:494 gui/src/chcanv.cpp:10292
 msgid "Object Query"
 msgstr "Objekti päring"
 
-#: gui/include/gui/GoToPositionDialog.h:44 gui/src/AISTargetListDialog.cpp:714
+#: gui/include/gui/go_to_position_dlg.h:44 gui/src/AISTargetListDialog.cpp:714
 #: gui/src/canvasMenu.cpp:529
 msgid "Center view"
 msgstr "Vaade keskele"
 
-#: gui/include/gui/LinkPropDlg.h:79 gui/include/gui/LinkPropDlg.h:92
+#: gui/include/gui/link_prop_dlg.h:79 gui/include/gui/LinkPropDlg.h:92
 msgid "Link Properties"
 msgstr "Lingi omadused"
 
-#: gui/include/gui/MarkInfo.h:106 gui/include/gui/MarkInfo.h:432
+#: gui/include/gui/mark_info.h:106 gui/include/gui/mark_info.h:432
 #: gui/src/chcanv.cpp:10455 gui/src/routemanagerdialog.cpp:2665
 #: gui/src/RoutePropDlgImpl.cpp:908
 msgid "Waypoint Properties"
@@ -2665,7 +2665,7 @@ msgstr "OpenCPN'i algne seadistus"
 #: gui/src/connection_edit.cpp:285 gui/src/conn_params_panel.cpp:84
 #: gui/src/conn_params_panel.cpp:130 gui/src/conn_params_panel.cpp:789
 #: gui/src/FontMgr.cpp:560 gui/src/glChartCanvas.cpp:3857
-#: gui/src/glTextureManager.cpp:1447 gui/src/gui_lib.cpp:156
+#: gui/src/gl_texture_mgr.cpp:1447 gui/src/gui_lib.cpp:156
 #: gui/src/LinkPropDlg.cpp:37 gui/src/MarkInfo.cpp:224 gui/src/MarkInfo.cpp:276
 #: gui/src/notification_manager_gui.cpp:271 gui/src/ocpn_frame.cpp:4509
 #: gui/src/ocpn_frame.cpp:8187 gui/src/OCPNPlatform.cpp:1644
@@ -3339,7 +3339,7 @@ msgstr "AIS-märgi päring"
 
 #: gui/src/AISTargetQueryDialog.cpp:286 gui/src/catalog_mgr.cpp:192
 #: gui/src/catalog_mgr.cpp:584 gui/src/catalog_mgr.cpp:605 gui/src/cm93.cpp:6326
-#: gui/src/GoToPositionDialog.cpp:149 gui/src/MUIBar.cpp:196
+#: gui/src/go_to_position_dlg.cpp:149 gui/src/MUIBar.cpp:196
 #: gui/src/options.cpp:863 gui/src/options.cpp:1017 gui/src/TCWin.cpp:115
 #: gui/src/TCWin.cpp:124 gui/src/toolbar.cpp:2434 gui/src/TrackPropDlg.cpp:632
 #: gui/src/TrackPropDlg.cpp:1030
@@ -3943,7 +3943,7 @@ msgstr "Viga: "
 
 #: gui/src/catalog_mgr.cpp:603 gui/src/connection_edit.cpp:203
 #: gui/src/connection_edit.cpp:214 gui/src/connection_edit.cpp:2366
-#: gui/src/GoToPositionDialog.cpp:145 gui/src/LinkPropDlg.cpp:76
+#: gui/src/go_to_position_dlg.cpp:145 gui/src/LinkPropDlg.cpp:76
 #: gui/src/MarkInfo.cpp:708 gui/src/MarkInfo.cpp:1888 gui/src/MUIBar.cpp:192
 #: gui/src/options.cpp:860 gui/src/options.cpp:1014 gui/src/options.cpp:6080
 #: gui/src/options.cpp:9466 gui/src/priority_gui.cpp:107
@@ -5187,21 +5187,21 @@ msgstr "võrgustiku tekst"
 msgid "Waiting for raster chart compression thread exit."
 msgstr "Ootan rasterkaardi pakkimislõimest väljumist."
 
-#: gui/src/glTextureManager.cpp:1468
+#: gui/src/gl_texture_mgr.cpp:1468
 msgid "OpenCPN Compressed Cache Update"
 msgstr "OpenCPN'i tihendatud vahemälu uuendamine"
 
-#: gui/src/glTextureManager.cpp:1505 gui/src/ocpn_frame.cpp:8225
+#: gui/src/gl_texture_mgr.cpp:1505 gui/src/ocpn_frame.cpp:8225
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Vahemaa oma laevast: %4.0f Mm"
 
-#: gui/src/GoToPositionDialog.cpp:119 gui/src/MarkInfo.cpp:366
+#: gui/src/go_to_position_dlg.cpp:119 gui/src/MarkInfo.cpp:366
 #: gui/src/RoutePropDlg.cpp:395 gui/src/TrackPropDlg.cpp:310
 msgid "Latitude"
 msgstr "laius"
 
-#: gui/src/GoToPositionDialog.cpp:131 gui/src/MarkInfo.cpp:367
+#: gui/src/go_to_position_dlg.cpp:131 gui/src/MarkInfo.cpp:367
 #: gui/src/RoutePropDlg.cpp:399 gui/src/TrackPropDlg.cpp:311
 msgid "Longitude"
 msgstr "pikkus"

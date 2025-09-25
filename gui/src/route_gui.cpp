@@ -46,7 +46,7 @@
 #include "model/routeman.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "line_clip.h"
 #include "model/route.h"
 
@@ -126,16 +126,15 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
   wxPoint rpt1, rpt2;
   if (m_route.m_bVisible) DrawPointWhich(dc, canvas, 1, &rpt1);
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
-  RoutePoint *prp1 = node->GetData();
-  node = node->GetNext();
+  auto node = m_route.pRoutePointList->begin();
+  RoutePoint *prp1 = *node;
 
   if (m_route.m_bVisible || prp1->IsShared())
     RoutePointGui(*prp1).Draw(dc, canvas,
                               NULL);  // prp1->Draw(dc, canvas, NULL);
 
-  while (node) {
-    RoutePoint *prp2 = node->GetData();
+  for (++node; node != m_route.pRoutePointList->end(); ++node) {
+    RoutePoint *prp2 = *node;
 
     bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
 
@@ -195,8 +194,6 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
 
     rpt1 = rpt2;
     prp1 = prp2;
-
-    node = node->GetNext();
   }
 }
 
@@ -375,9 +372,7 @@ void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
     DrawGLRouteLines(vp, canvas, dc);
 
   /*  Route points  */
-  for (wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst(); node;
-       node = node->GetNext()) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *m_route.pRoutePointList) {
     // Inflate the bounding box a bit to ensure full drawing in accelerated pan
     // mode.
     // TODO this is a little extravagant, assumming a mark is always a large
@@ -450,17 +445,17 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   /* direction arrows.. could probably be further optimized for opengl */
   dc.SetPen(*wxThePenList->FindOrCreatePen(col, 1, wxPENSTYLE_SOLID));
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+  auto node = m_route.pRoutePointList->begin();
   wxPoint rpt1, rpt2;
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  while (node != m_route.pRoutePointList->end()) {
+    RoutePoint *prp = *node;
     canvas->GetCanvasPointPix(prp->m_lat, prp->m_lon, &rpt2);
-    if (node != m_route.pRoutePointList->GetFirst()) {
+    if (node != m_route.pRoutePointList->begin()) {
       if (!prp->m_bIsActive || !g_bAllowShipToActive)
         RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
     }
     rpt1 = rpt2;
-    node = node->GetNext();
+    ++node;
   }
 #endif
 }
@@ -474,8 +469,8 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
   wxPoint2DDouble r1;
   wxPoint2DDouble lastpoint;
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
-  RoutePoint *prp2 = node->GetData();
+  auto node = m_route.pRoutePointList->begin();
+  RoutePoint *prp2 = *node;
   canvas->GetDoubleCanvasPointPix(prp2->m_lat, prp2->m_lon, &lastpoint);
 
   // single point.. make sure it shows up for highlighting
@@ -490,9 +485,9 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
 
   // dc is passed for thicker highlighted lines (performance not very important)
 
-  for (node = node->GetNext(); node; node = node->GetNext()) {
+  for (++node; node != m_route.pRoutePointList->end(); ++node) {
     RoutePoint *prp1 = prp2;
-    prp2 = node->GetData();
+    prp2 = *node;
 
     // Provisional, to properly set status of last point in route
     prp2->m_pos_on_screen = false;
@@ -594,9 +589,7 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
   // always be fully contained within the resulting rectangle.
   // Can we prove this?
   if (m_route.m_bVisible) {
-    wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
-    while (node) {
-      RoutePoint *prp2 = node->GetData();
+    for (RoutePoint *prp2 : *m_route.pRoutePointList) {
       bool blink_save = prp2->m_bBlink;
       prp2->m_bBlink = false;
       ocpnDC odc_route(dc_route);
@@ -609,7 +602,6 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
       r.Inflate(m_route.m_hiliteWidth, m_route.m_hiliteWidth);
 
       update_rect.Union(r);
-      node = node->GetNext();
     }
   }
 

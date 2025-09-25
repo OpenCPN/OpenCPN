@@ -50,7 +50,6 @@ brew install cmake
 brew install gettext
 brew install create-dmg
 brew install gpatch
-brew install asciidoc
 
 for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
@@ -95,7 +94,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
   -DOCPN_RELEASE=${RELEASE} \
   -DOCPN_BUILD_TEST=OFF \
-  -DOCPN_BUILD_SAMPLE=ON \
+  -DOCPN_BUILD_SAMPLE=OFF \
   -DOCPN_USE_DEPS_BUNDLE=ON \
   -DCMAKE_OSX_ARCHITECTURES="${ARCHS}" \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \

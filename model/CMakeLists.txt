@@ -51,6 +51,7 @@ set(
   ${MODEL_HDR_DIR}/comm_drv_factory.h
   ${MODEL_HDR_DIR}/comm_drv_file.h
   ${MODEL_HDR_DIR}/comm_drv_internal.h
+  ${MODEL_HDR_DIR}/comm_drv_loopback.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_bt.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_android_int.h
   ${MODEL_HDR_DIR}/comm_drv_n0183.h
@@ -83,6 +84,7 @@ set(
   ${MODEL_HDR_DIR}/geodesic.h
   ${MODEL_HDR_DIR}/georef.h
   ${MODEL_HDR_DIR}/gpx_document.h
+  ${MODEL_HDR_DIR}/gui_vars.h
   ${MODEL_HDR_DIR}/hyperlink.h
   ${MODEL_HDR_DIR}/idents.h
   ${MODEL_HDR_DIR}/instance_check.h
@@ -128,6 +130,8 @@ set(
   ${MODEL_HDR_DIR}/semantic_vers.h
   ${MODEL_HDR_DIR}/serial_io.h
   ${MODEL_HDR_DIR}/ser_ports.h
+  ${MODEL_HDR_DIR}/std_icon.h
+  ${MODEL_HDR_DIR}/svg_utils.h
   ${MODEL_HDR_DIR}/sys_events.h
   ${MODEL_HDR_DIR}/thread_ctrl.h
   ${MODEL_HDR_DIR}/track.h
@@ -162,6 +166,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_drv_factory.cpp
   ${MODEL_SRC_DIR}/comm_drv_file.cpp
   ${MODEL_SRC_DIR}/comm_drv_internal.cpp
+  ${MODEL_SRC_DIR}/comm_drv_loopback.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
@@ -191,6 +196,7 @@ set(SRC
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
   ${MODEL_SRC_DIR}/gpx_document.cpp
+  ${MODEL_SRC_DIR}/gui_vars.cpp
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
@@ -230,6 +236,8 @@ set(SRC
   ${MODEL_SRC_DIR}/select_item.cpp
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
+  ${MODEL_SRC_DIR}/std_icon.cpp
+  ${MODEL_SRC_DIR}/svg_utils.cpp
   ${MODEL_SRC_DIR}/thread_ctrl.cpp
   ${MODEL_SRC_DIR}/track.cpp
   ${MODEL_SRC_DIR}/usb_watch_factory.cpp
@@ -489,6 +497,9 @@ target_link_libraries(
     ocpn::wxservdisc
     pico_sha2
 )
+if (TARGET ocpn::wxsvg)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::wxsvg)
+endif ()
 
 if (OCPN_USE_NEWSERIAL)
   target_link_libraries(_OCPN_MODEL INTERFACE ocpn::serial)

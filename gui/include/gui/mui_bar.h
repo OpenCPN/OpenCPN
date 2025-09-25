@@ -1,0 +1,148 @@
+/**************************************************************************
+ *   Copyright (C) 2018 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * MUI (Modern User Interface) Control bar
+ */
+
+#ifndef muibar_H_
+#define muibar_H_
+
+#include <cstdint>
+
+#include "canvas_options.h"
+#include "chcanv.h"
+#include "ocpn_frame.h"
+
+//----------------------------------------------------------------------------
+//   constants
+//----------------------------------------------------------------------------
+
+enum { ID_MUI_MENU = 21500 };
+
+/**
+ * Enumeration for animation types
+ */
+enum {
+  CO_ANIMATION_LINEAR = 0,       ///< Linear animation
+  CO_ANIMATION_QUADRATIC,        ///< Quadratic animation
+  CO_ANIMATION_CUBIC,            ///< Cubic animation
+  CO_ANIMATION_CUBIC_BOUNCE_IN,  ///< Cubic animation with bounce-in effect
+  CO_ANIMATION_CUBIC_BACK_IN,    ///< Cubic animation with back-in effect
+  CO_ANIMATION_CUBIC_REVERSE,    ///< Reversed cubic animation
+  CO_PULL,                       ///< Pull animation
+  CO_PUSH                        ///< Push animation
+};
+
+class MUIButton;      // forward in mui_bar.cpp
+class MUITextButton;  // forward in mui_bar.cpp
+
+/**
+ * Modern User Interface Control Bar for OpenCPN. Provides a customizable
+ * control bar with various buttons and options for interacting with the chart
+ * canvas in OpenCPN.
+ */
+class MUIBar : public wxEvtHandler {
+public:
+  MUIBar();
+  MUIBar(ChartCanvas *parent, int orientation = wxHORIZONTAL,
+         float size_factor = 1.0, wxWindowID id = wxID_ANY,
+         const wxPoint &pos = wxDefaultPosition,
+         const wxSize &size = wxDefaultSize, long style = 0,
+         const wxString &name = wxPanelNameStr);
+
+  ~MUIBar();
+
+  void onCanvasOptionsAnimationTimerEvent(wxTimerEvent &event);
+
+  void SetBestPosition();
+  void UpdateDynamicValues();
+  int GetOrientation() { return m_orientation; }
+  void ResetCanvasOptions();
+  void SetFollowButtonState(int state);
+  CanvasOptions *GetCanvasOptions() { return m_canvasOptions; }
+  void SetColorScheme(ColorScheme cs);
+  void SetCanvasENCAvailable(bool avail);
+  void OnScaleSelected(wxMouseEvent &event);
+  void DrawGL(ocpnDC &gldc, double displayScale);
+  void DrawDC(ocpnDC &dc, double displayScale);
+  wxRect GetRect() { return wxRect(m_screenPos, m_size); }
+
+  bool MouseEvent(wxMouseEvent &event);
+  void PushCanvasOptions();
+
+  wxPoint m_screenPos;
+  wxSize m_size;
+
+private:
+  void Init();
+  void CreateControls();
+  void PullCanvasOptions();
+  void HandleMenuClick();
+  wxBitmap &CreateBitmap(double displayScale);
+  void InvalidateBitmap();
+  wxColor &GetBackgroundColor() { return m_backcolor; }
+  void CaptureCanvasOptionsBitmap();
+  void CaptureCanvasOptionsBitmapChain(wxTimerEvent &event);
+
+  ChartCanvas *m_parentCanvas;
+  int m_orientation;
+  float m_scaleFactor;
+
+  MUIButton *m_zinButton;
+  MUIButton *m_zoutButton;
+  MUIButton *m_menuButton;
+  MUIButton *m_followButton;
+  MUITextButton *m_scaleButton;
+
+  CanvasOptions *m_canvasOptions;
+  wxPoint m_targetCOPos;
+  wxPoint m_currentCOPos;
+  wxPoint m_startCOPos;
+  int m_COTopOffset;
+
+  wxSize m_canvasOptionsFullSize;
+
+  wxTimer m_canvasOptionsAnimationTimer;
+  int m_animateStep;
+  int m_animateSteps;
+  int m_animationType;
+  int m_animationTotalTime;
+  int m_pushPull;
+
+  wxColor m_backcolor;
+  wxBitmap m_animateBitmap;
+  wxBitmap m_backingBitmap;
+  wxTimer CanvasOptionTimer;
+  int m_coSequence;
+  int m_capture_size_y;
+  wxPoint m_capturePoint;
+  wxPoint m_backingPoint;
+  bool m_coAnimateByBitmaps;
+  ColorScheme m_cs;
+  bool m_CanvasENCAvail;
+  bool m_bEffects;
+
+  uint32_t m_texture;
+  int m_end_margin;
+  wxBitmap m_bitmap;
+  int m_scale;
+};
+
+#endif

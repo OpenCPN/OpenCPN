@@ -243,7 +243,7 @@ TEST(DriverRegistry, RegisterDriver) {
   N2kTestDriverRegistry app;
   app.OnInit();
   EXPECT_EQ(int0, 1);  // Driver activated and registered
-  EXPECT_EQ(int1, 0);  // Driver closed.
+  EXPECT_EQ(int1, 1);  // Driver closed.
   EXPECT_EQ(int2, 0);  // All drivers closed.
 }
 #endif

@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Chart Database Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,13 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
- *
+ * %Charts database management
  */
 
 #ifndef __CHARTDB_H__
@@ -33,7 +27,9 @@
 #include <wx/xml/xml.h>
 
 #include "chartbase.h"
+#include "chartbase.h"
 #include "chartdbs.h"
+#include "chartimg.h"
 
 #define MAXSTACK 100
 
@@ -46,13 +42,17 @@ typedef struct {
   float x;
 } MyFlPoint;
 
-// ----------------------------------------------------------------------------
-//    Fwd Declarations
-// ----------------------------------------------------------------------------
-class ChartBase;
+class ChartDB;              // forward
+extern ChartDB *ChartData;  ///< Global instance
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
+
+/** Global instance */
+extern std::vector<std::string> ChartDirectoryExcludedVector;
+
+class ChartDB;              // forward
+extern ChartDB *ChartData;  ///< Global instance
 
 class ChartStack {
 public:
@@ -132,6 +132,7 @@ public:
   bool IsChartInGroup(const int db_index, const int group);
   bool IsENCInGroup(const int group);
   bool IsNonMBTileInGroup(const int group);
+  bool IsChartDirectoryExcluded(const std::string &chart_file);
 
   ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry,
                                 ChartInitFlag iflag = FULL_INIT);

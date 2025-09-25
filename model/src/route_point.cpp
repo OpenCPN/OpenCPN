@@ -39,8 +39,6 @@
 
 #include <wx/listimpl.cpp>
 
-WX_DEFINE_LIST(RoutePointList);
-
 wxColour g_colourWaypointRangeRingsColour;
 
 int g_LayerIdx;
@@ -263,7 +261,8 @@ RoutePoint::~RoutePoint() {
   if (NULL != pWayPointMan) pWayPointMan->RemoveRoutePoint(this);
 
   if (m_HyperlinkList) {
-    m_HyperlinkList->DeleteContents(true);
+    auto &list = m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) delete *it;
     delete m_HyperlinkList;
   }
   RoutePoint::delete_gl_textures(1, &m_dragIconTexture);

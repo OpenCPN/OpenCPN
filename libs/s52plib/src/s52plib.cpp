@@ -89,6 +89,8 @@ static const double mercator_k0 = 0.9996;
 #define PROJECTION_MERCATOR 1
 #endif
 
+s52plib *ps52plib;  ///< Global instance
+
 // Some methods that are required to be declared differently
 // depending on whether the library is build for core, or plugin
 #ifdef BUILDING_PLUGIN
@@ -3250,10 +3252,10 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       mdc.SelectObject(wxNullBitmap);
     }
     // Debug
-    // if(m_pdc){
-    // m_pdc->SetPen(wxPen(*wxGREEN, 1));
-    // m_pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
-    // m_pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
+     //if(m_pdc){
+     //m_pdc->SetPen(wxPen(*wxGREEN, 1));
+     //m_pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
+     //m_pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
     //}
   }
 
@@ -3314,9 +3316,7 @@ int s52plib::RenderSY(ObjRazRules *rzRules, Rules *rules) {
   return 0;
 }
 
-bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
-                                   wxPoint &r, wxColor symColor,
-                                   float rot_angle) {
+void s52plib::SetupSoundingFont() {
   double scale_factor = 1.0;
 
   //scale_factor *= m_ChartScaleFactorExp;
@@ -3404,7 +3404,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
     point_size = m_SoundingsPointSize;
     point_size /= m_dipfactor;    // Apply Windows display scaling.
   }
-
   double postmult = m_SoundingsScaleFactor;
   if ((postmult <= 2.0) && (postmult >= 0.5)) {
     point_size *= postmult;
@@ -3419,9 +3418,9 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       m_texSoundings.Delete();
       m_texSoundings.SetContentScaleFactor(m_ContentScaleFactor);
 
-       m_soundFont = FindOrCreateFont_PlugIn(point_size, wxFONTFAMILY_SWISS,
-                                             wxFONTSTYLE_NORMAL, fontWeight,
-                                             false, fontFacename);
+      m_soundFont = FindOrCreateFont_PlugIn(point_size, wxFONTFAMILY_SWISS,
+                                            wxFONTSTYLE_NORMAL, fontWeight,
+                                            false, fontFacename);
       m_texSoundings.Build(m_soundFont,
                            scale_factor, m_dipfactor);  // texSounding owns the font
     }
@@ -3431,6 +3430,18 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                                           fontFacename);
     m_pdc->SetFont(*m_soundFont);
   }
+}
+
+
+bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
+                                   wxPoint &r, wxColor symColor,
+                                   float rot_angle) {
+
+  // Get some metrics
+  int charWidth, charHeight, charDescent;
+  wxScreenDC sdc;
+  sdc.GetTextExtent(_T("0"), &charWidth, &charHeight, &charDescent, NULL,
+                    m_soundFont);  // measure the text
 
   int pivot_x;
   int pivot_y;
@@ -5645,13 +5656,12 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
   //VPointCompat vp_local = *vp;
   //vp_local.SetRotationAngle(0.);
 
-  //  We may be rendering the soundings symbols scaled up, so
-  //  adjust the inclusion test bounding box
-
-  double scale_factor = vp_plib.ref_scale / vp_plib.chart_scale;
-
-  double box_mult = wxMax((scale_factor), 1);
-  int box_dim = 32 * box_mult;
+  SetupSoundingFont();
+  // Measure the size of a character
+  int charWidth, charHeight;
+  wxScreenDC sdc;
+  sdc.GetTextExtent("0", &charWidth, &charHeight, NULL, NULL, m_soundFont);
+  wxRect soundBox = wxRect(0, 0, charWidth * 4, charHeight * 3/2);
 
   // We need a pixel bounding rectangle of the passed ViewPort.
   // Very important for partial screen renders, as with dc mode pans or OpenGL
@@ -5680,16 +5690,13 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
     if (!screen_box.ContainsMarge(lat, lon, box_margin))
       continue;
 
-    wxPoint r = GetPixFromLLROT(lat, lon, 0);
-
     // Some simple inclusion tests
-    if((r.x < -box_dim) || (r.y < -box_dim))
-      continue;
+    wxPoint r = GetPixFromLLROT(lat, lon, 0);
     if ((r.x == INVALID_COORD) || (r.y == INVALID_COORD))
       continue;
 
-    //      Use estimated symbol size
-    wxRect rr(r.x - (box_dim / 2), r.y - (box_dim / 2), box_dim, box_dim);
+    // Use measured symbol size
+    wxRect rr(r.x - (soundBox.width / 2), r.y - (soundBox.height / 2), soundBox.width, soundBox.height);
 
     //      After all the setup, the render inclusion test is trivial....
     if (!clip_rect.Intersects(rr)) continue;
@@ -5726,6 +5733,13 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
         else
           RenderSoundingSymbol(rzRules, rules->razRule, r, symColor, angle);
       }
+
+      // Debug
+      //if(m_pdc){
+        //m_pdc->SetPen(wxPen(*wxRED, 1));
+        //m_pdc->SetBrush(wxBrush(*wxRED, wxTRANSPARENT));
+        //m_pdc->DrawRectangle(rr);
+      //}
 
       rules = rules->next;
     }
@@ -6427,103 +6441,126 @@ int s52plib::RenderObjectToGLText(const wxGLContext &glcc, ObjRazRules *rzRules)
 }
 
 int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
-  // TODO  Debugging
-        //if(rzRules->obj->Index == 6775)
-        //  int yyp = 0;
+#ifdef __OCPN__ANDROID__
+  // Catch a difficult to trap SIGSEGV, avoiding app crash
+  sigaction(SIGSEGV, NULL,
+            &sa_all_plib_previous);  // save existing action for this signal
 
-  //        if(!strncmp(rzRules->obj->FeatureName, "berths", 6))
-  //            int yyp = 0;
+  struct sigaction temp;
+  sigaction(SIGSEGV, NULL,
+            &temp);  // inspect existing action for this signal
 
-  //return 0;
-  if (!ObjectRenderCheckRules(rzRules, true)) return 0;
+  temp.sa_handler = catch_signals_plib;  // point to my handler
+  sigemptyset(&temp.sa_mask);             // make the blocking set
+                                         // empty, so that all
+                                         // other signals will be
+                                         // unblocked during my handler
+  temp.sa_flags = 0;
+  sigaction(SIGSEGV, &temp, NULL);
 
-  m_pdc = pdcin;  // use this DC
-  Rules *rules = rzRules->LUP->ruleList;
-
-  while (rules != NULL) {
-    switch (rules->ruleType) {
-      case RUL_TXT_TX:
-        RenderTX(rzRules, rules);
-        break;  // TX
-      case RUL_TXT_TE:
-        RenderTE(rzRules, rules);
-        break;  // TE
-      case RUL_SYM_PT:
-        RenderSY(rzRules, rules);
-        break;  // SY
-      case RUL_SIM_LN:
-        if (m_pdc)
-          RenderLS(rzRules, rules);
-        else
-          RenderGLLS(rzRules, rules);
-        break;  // LS
-      case RUL_COM_LN:
-        RenderLC(rzRules, rules);
-        break;  // LC
-      case RUL_MUL_SG:
-        RenderMPS(rzRules, rules);
-        break;  // MultiPoint Sounding
-      case RUL_ARC_2C:
-        RenderCARC(rzRules, rules);
-        break;  // Circular Arc, 2 colors
-
-      case RUL_CND_SY: {
-        if (!rzRules->obj->bCS_Added) {
-          rzRules->obj->CSrules = NULL;
-          GetAndAddCSRules(rzRules, rules);
-          if (strncmp(rzRules->obj->FeatureName, "SOUNDG", 6))
-            rzRules->obj->bCS_Added = 1;  // mark the object
-        }
-
-        Rules *rules_last = rules;
-        rules = rzRules->obj->CSrules;
-
-        while (NULL != rules) {
-          switch (rules->ruleType) {
-            case RUL_TXT_TX:
-              RenderTX(rzRules, rules);
-              break;
-            case RUL_TXT_TE:
-              RenderTE(rzRules, rules);
-              break;
-            case RUL_SYM_PT:
-              RenderSY(rzRules, rules);
-              break;
-            case RUL_SIM_LN:
-              if (m_pdc)
-                RenderLS(rzRules, rules);
-              else
-                RenderGLLS(rzRules, rules);
-              break;  // LS
-            case RUL_COM_LN:
-              RenderLC(rzRules, rules);
-              break;
-            case RUL_MUL_SG:
-              RenderMPS(rzRules, rules);
-              break;  // MultiPoint Sounding
-            case RUL_ARC_2C:
-              RenderCARC(rzRules, rules);
-              break;  // Circular Arc, 2 colors
-            case RUL_NONE:
-            default:
-              break;  // no rule type (init)
-          }
-          rules_last = rules;
-          rules = rules->next;
-        }
-
-        rules = rules_last;
-        break;
-      }
-
-      case RUL_NONE:
-      default:
-        break;  // no rule type (init)
-    }           // switch
-
-    rules = rules->next;
+  if (sigsetjmp(env_plib, 1))  //  Something in the
+                               //  code block below this on caused SIGSEGV...
+  {
+    // reset signal handler
+    sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+    return 0;
   }
+  else
+#endif
+  {
+    if (!ObjectRenderCheckRules(rzRules, true)) return 0;
 
+    m_pdc = pdcin;  // use this DC
+    Rules *rules = rzRules->LUP->ruleList;
+
+    while (rules != NULL) {
+      switch (rules->ruleType) {
+        case RUL_TXT_TX:
+          RenderTX(rzRules, rules);
+          break;  // TX
+        case RUL_TXT_TE:
+          RenderTE(rzRules, rules);
+          break;  // TE
+        case RUL_SYM_PT:
+          RenderSY(rzRules, rules);
+          break;  // SY
+        case RUL_SIM_LN:
+          if (m_pdc)
+            RenderLS(rzRules, rules);
+          else
+            RenderGLLS(rzRules, rules);
+          break;  // LS
+        case RUL_COM_LN:
+          RenderLC(rzRules, rules);
+          break;  // LC
+        case RUL_MUL_SG:
+          RenderMPS(rzRules, rules);
+          break;  // MultiPoint Sounding
+        case RUL_ARC_2C:
+          RenderCARC(rzRules, rules);
+          break;  // Circular Arc, 2 colors
+
+        case RUL_CND_SY: {
+          if (!rzRules->obj->bCS_Added) {
+            rzRules->obj->CSrules = NULL;
+            GetAndAddCSRules(rzRules, rules);
+            if (strncmp(rzRules->obj->FeatureName, "SOUNDG", 6))
+              rzRules->obj->bCS_Added = 1;  // mark the object
+          }
+
+          Rules *rules_last = rules;
+          rules = rzRules->obj->CSrules;
+
+          while (NULL != rules) {
+            switch (rules->ruleType) {
+              case RUL_TXT_TX:
+                RenderTX(rzRules, rules);
+                break;
+              case RUL_TXT_TE:
+                RenderTE(rzRules, rules);
+                break;
+              case RUL_SYM_PT:
+                RenderSY(rzRules, rules);
+                break;
+              case RUL_SIM_LN:
+                if (m_pdc)
+                  RenderLS(rzRules, rules);
+                else
+                  RenderGLLS(rzRules, rules);
+                break;  // LS
+              case RUL_COM_LN:
+                RenderLC(rzRules, rules);
+                break;
+              case RUL_MUL_SG:
+                RenderMPS(rzRules, rules);
+                break;  // MultiPoint Sounding
+              case RUL_ARC_2C:
+                RenderCARC(rzRules, rules);
+                break;  // Circular Arc, 2 colors
+              case RUL_NONE:
+              default:
+                break;  // no rule type (init)
+            }
+            rules_last = rules;
+            rules = rules->next;
+          }
+
+          rules = rules_last;
+          break;
+        }
+
+        case RUL_NONE:
+        default:
+          break;  // no rule type (init)
+      }           // switch
+
+      rules = rules->next;
+    }
+  }
+#ifdef __OCPN__ANDROID__
+  // reset signal handler
+  sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+#endif
   return 1;
 }
 
@@ -8702,87 +8739,88 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
 int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules) {
   if (!ObjectRenderCheckRules(rzRules, true)) return 0;
 
-  Rules *rules = rzRules->LUP->ruleList;
-
-  while (rules != NULL) {
-    switch (rules->ruleType) {
-      case RUL_ARE_CO:
-        RenderToGLAC(rzRules, rules);
-        break;  // AC
-
-      case RUL_ARE_PA:
-        RenderToGLAP(rzRules, rules);
-        break;  // AP
-
-      case RUL_CND_SY: {
 #ifdef __OCPN__ANDROID__
-        // Catch a difficult to trap SIGSEGV, avoiding app crash
-        sigaction(SIGSEGV, NULL,
-                  &sa_all_plib_previous);  // save existing action for this signal
+  // Catch a difficult to trap SIGSEGV, avoiding app crash
+  sigaction(SIGSEGV, NULL,
+            &sa_all_plib_previous);  // save existing action for this signal
 
-        struct sigaction temp;
-        sigaction(SIGSEGV, NULL,
-                  &temp);  // inspect existing action for this signal
+  struct sigaction temp;
+  sigaction(SIGSEGV, NULL,
+            &temp);  // inspect existing action for this signal
 
-        temp.sa_handler = catch_signals_plib;  // point to my handler
-        sigemptyset(&temp.sa_mask);             // make the blocking set
-                                                // empty, so that all
-                                                // other signals will be
-                                                // unblocked during my handler
-        temp.sa_flags = 0;
-        sigaction(SIGSEGV, &temp, NULL);
+  temp.sa_handler = catch_signals_plib;  // point to my handler
+  sigemptyset(&temp.sa_mask);             // make the blocking set
+                                         // empty, so that all
+                                         // other signals will be
+                                         // unblocked during my handler
+  temp.sa_flags = 0;
+  sigaction(SIGSEGV, &temp, NULL);
 
-        if (sigsetjmp(env_plib, 1))  //  Something in the
-                                //  code block below this on caused SIGSEGV...
-        {
-          // reset signal handler
-          sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
-          return 0;
-        }
-        else
-#endif
-        {
-          if (!rzRules->obj->bCS_Added) {
-            rzRules->obj->CSrules = NULL;
-            GetAndAddCSRules(rzRules, rules);
-            rzRules->obj->bCS_Added = 1;  // mark the object
-          }
-          Rules *rules_last = rules;
-          rules = rzRules->obj->CSrules;
-
-          while (NULL != rules) {
-            switch (rules->ruleType) {
-              case RUL_ARE_CO:
-                RenderToGLAC(rzRules, rules);
-                break;
-              case RUL_ARE_PA:
-                RenderToGLAP(rzRules, rules);
-                break;
-              case RUL_NONE:
-              default:
-                break;  // no rule type (init)
-            }
-            rules_last = rules;
-            rules = rules->next;
-          }
-
-          rules = rules_last;
-          break;
-        }
-#ifdef __OCPN__ANDROID__
-        // reset signal handler
-        sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
-#endif
-
-      }
-
-      case RUL_NONE:
-      default:
-        break;  // no rule type (init)
-    }           // switch
-
-    rules = rules->next;
+  if (sigsetjmp(env_plib, 1))  //  Something in the
+                               //  code block below this on caused SIGSEGV...
+  {
+    // reset signal handler
+    sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+    return 0;
   }
+  else
+#endif
+  {
+    Rules *rules = rzRules->LUP->ruleList;
+
+    while (rules != NULL) {
+      switch (rules->ruleType) {
+        case RUL_ARE_CO:
+          RenderToGLAC(rzRules, rules);
+          break;  // AC
+
+        case RUL_ARE_PA:
+          RenderToGLAP(rzRules, rules);
+          break;  // AP
+
+        case RUL_CND_SY: {
+          {
+            if (!rzRules->obj->bCS_Added) {
+              rzRules->obj->CSrules = NULL;
+              GetAndAddCSRules(rzRules, rules);
+              rzRules->obj->bCS_Added = 1;  // mark the object
+            }
+            Rules *rules_last = rules;
+            rules = rzRules->obj->CSrules;
+
+            while (NULL != rules) {
+              switch (rules->ruleType) {
+                case RUL_ARE_CO:
+                  RenderToGLAC(rzRules, rules);
+                  break;
+                case RUL_ARE_PA:
+                  RenderToGLAP(rzRules, rules);
+                  break;
+                case RUL_NONE:
+                default:
+                  break;  // no rule type (init)
+              }
+              rules_last = rules;
+              rules = rules->next;
+            }
+
+            rules = rules_last;
+            break;
+          }
+        }
+
+        case RUL_NONE:
+        default:
+          break;  // no rule type (init)
+      }           // switch
+
+      rules = rules->next;
+    }
+  }
+#ifdef __OCPN__ANDROID__
+  // reset signal handler
+  sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+#endif
 
   return 1;
 }

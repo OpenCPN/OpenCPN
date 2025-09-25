@@ -73,25 +73,9 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
 
   for (auto& driver : drivers) {
     if (driver->bus == NavAddr::Bus::N0183) {
-      ConnectionParams params;
-      auto drv_serial = dynamic_cast<CommDriverN0183Serial*>(driver.get());
-      if (drv_serial) {
-        params = drv_serial->GetParams();
-      } else {
-        auto drv_net = dynamic_cast<CommDriverN0183Net*>(driver.get());
-        if (drv_net) {
-          params = drv_net->GetParams();
-        }
-#ifdef __ANDROID__
-        else {
-          auto drv_bluetooth =
-              dynamic_cast<CommDriverN0183AndroidBT*>(driver.get());
-          if (drv_bluetooth) {
-            params = drv_bluetooth->GetParams();
-          }
-        }
-#endif
-      }
+      auto drv_n0183 = dynamic_cast<CommDriverN0183*>(driver.get());
+      assert(drv_n0183);
+      ConnectionParams params = drv_n0183->GetParams();
 
       if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
           params.IOSelect == DS_TYPE_OUTPUT) {
@@ -349,7 +333,7 @@ int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
-    rplist.Append(prp);
+    rplist.push_back(prp);
 
     int ret1 = Garmin_GPS_SendWaypoints(wxString("usb:"), &rplist);
 
@@ -503,23 +487,19 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = _T ( "EC" );
 
-    int nProg = pr->pRoutePointList->GetCount() + 1;
+    int nProg = pr->pRoutePointList->size() + 1;
     dlg_ctx.set_range(100);
 
     int progress_stall = 500;
-    if (pr->pRoutePointList->GetCount() > 10) progress_stall = 200;
+    if (pr->pRoutePointList->size() > 10) progress_stall = 200;
 
     //       if (!dialog) progress_stall = 200;  // 80 chars at 4800 baud is
     //       ~160 msec
 
     // Send out the waypoints, in order
     if (bsend_waypoints) {
-      wxRoutePointListNode* node = pr->pRoutePointList->GetFirst();
-
       int ip = 1;
-      while (node) {
-        RoutePoint* prp = node->GetData();
-
+      for (RoutePoint* prp : *pr->pRoutePointList) {
         if (g_GPS_Ident == "Generic") {
           if (prp->m_lat < 0.)
             oNMEA0183.Wpl.Position.Latitude.Set(-prp->m_lat, _T ( "S" ));
@@ -593,8 +573,6 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         dlg_ctx.set_value((ip * 100) / nProg);
 
         wxMilliSleep(progress_stall);
-
-        node = node->GetNext();
         ip++;
       }
     }
@@ -635,11 +613,8 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     oNMEA0183.Rte.message_number = 1;
 
     // add the waypoints
-    auto node = pr->pRoutePointList->GetFirst();
-    while (node) {
-      RoutePoint* prp = node->GetData();
+    for (RoutePoint* prp : *pr->pRoutePointList) {
       wxString name = prp->GetName().Truncate(g_maxWPNameLength);
-
       if (g_GPS_Ident == "FurunoGP3X") {
         name = prp->GetName();
         name += "000000";
@@ -647,16 +622,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         name.Prepend(" ");  // What Furuno calls "Skip Code", space means
                             // use the WP
       }
-
       oNMEA0183.Rte.AddWaypoint(name);
-      node = node->GetNext();
     }
 
     oNMEA0183.Rte.Write(snt);
 
     if ((snt.Sentence.Len() > max_length) ||
-        (pr->pRoutePointList->GetCount() >
-         max_wp))  // Do we need split sentences?
+        (pr->pRoutePointList->size() > max_wp))  // Do we need split sentences?
     {
       // Make a route with zero waypoints to get tare load.
       NMEA0183 tNMEA0183(NmeaCtxFactory());
@@ -689,9 +661,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       int sent_len = 0;
       unsigned int wp_count = 0;
 
-      auto _node = pr->pRoutePointList->GetFirst();
-      while (_node) {
-        RoutePoint* prp = _node->GetData();
+      auto _node = pr->pRoutePointList->begin();
+      while (_node != pr->pRoutePointList->end()) {
+        RoutePoint* prp = *_node;
         unsigned int name_len =
             prp->GetName().Truncate(g_maxWPNameLength).Len();
         if (g_GPS_Ident == "FurunoGP3X")
@@ -701,7 +673,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           sent_len = tare_length;
           sent_len += name_len + 1;  // with comma
           bnew_sentence = false;
-          _node = _node->GetNext();
+          ++_node;
           wp_count = 1;
 
         } else {
@@ -714,7 +686,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             else
               sent_len += name_len + 1;  // with comma
             wp_count++;
-            _node = _node->GetNext();
+            ++_node;
           }
         }
       }
@@ -725,9 +697,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       int n_run = 1;
       bnew_sentence = true;
 
-      _node = pr->pRoutePointList->GetFirst();
-      while (_node) {
-        RoutePoint* prp = _node->GetData();
+      auto it = pr->pRoutePointList->begin();
+      while (it != pr->pRoutePointList->end()) {
+        RoutePoint* prp = *it;
         wxString name = prp->GetName().Truncate(g_maxWPNameLength);
         if (g_GPS_Ident == "FurunoGP3X") {
           name = prp->GetName();
@@ -762,7 +734,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           wp_count = 1;
 
           oNMEA0183.Rte.AddWaypoint(name);
-          _node = _node->GetNext();
+          ++it;
         } else {
           if ((sent_len + name_len > max_length) || (wp_count >= max_wp)) {
             n_run++;
@@ -775,7 +747,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             sent_len += name_len + 1;  // comma
             oNMEA0183.Rte.AddWaypoint(name);
             wp_count++;
-            _node = _node->GetNext();
+            ++it;
           }
         }
       }
@@ -926,7 +898,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
-    rplist.Append(prp);
+    rplist.push_back(prp);
 
     int ret1 = Garmin_GPS_SendWaypoints(wxString("usb:"), &rplist);
 
@@ -984,7 +956,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     }
 
     // Create a RoutePointList with one item
-    rplist.Append(prp);
+    rplist.push_back(prp);
 
     ret_val = Garmin_GPS_SendWaypoints(short_com, &rplist);
     if (ret_val != 1) {

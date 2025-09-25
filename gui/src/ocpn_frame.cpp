@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
  **************************************************************************/
+
+/*
+ * \file
+ *
+ * OpenCPN top window
+ */
 #include "config.h"
 
 #ifdef __MINGW32__
@@ -59,6 +57,7 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/autopilot_output.h"
 #include "model/cmdline.h"
 #include "model/comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "model/comm_drv_registry.h"
@@ -69,6 +68,9 @@
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "model/gui.h"
+#include "model/gui_vars.h"
+#include "model/gui_events.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/local_api.h"
 #include "model/logger.h"
@@ -82,48 +84,51 @@
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "model/std_icon.h"
 #include "model/sys_events.h"
 #include "model/track.h"
 
+#include "ais_info_gui.h"
 #include "dialog_alert.h"
 #include "about_frame_impl.h"
 #include "about.h"
 #include "ais.h"
 #include "ais_info_gui.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetListDialog.h"
-#include "AISTargetQueryDialog.h"
-#include "CanvasConfig.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_list_dlg.h"
+#include "ais_target_query_dlg.h"
+#include "canvas_config.h"
 #include "chartbase.h"
 #include "chart_ctx_factory.h"
 #include "chartdb.h"
 #include "chcanv.h"
+#include "TCWin.h"
 #include "cm93.h"
 #include "color_handler.h"
 #include "compass.h"
 #include "concanv.h"
 #include "connections_dlg.h"
-#include "ConfigMgr.h"
+#include "config_mgr.h"
 #include "data_monitor.h"
-#include "displays.h"
 #include "dychart.h"
-#include "FontMgr.h"
-#include "glChartCanvas.h"
-#include "GoToPositionDialog.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
+#include "go_to_position_dlg.h"
 #include "gui_lib.h"
-#include "iENCToolbar.h"
-#include "Layer.h"
+#include "ienc_toolbar.h"
+#include "layer.h"
 #include "load_errors_dlg.h"
-#include "MarkInfo.h"
-#include "MUIBar.h"
+#include "mark_info.h"
+#include "mui_bar.h"
 #include "N2KParser.h"
 #include "navutil.h"
 #include "ocpn_app.h"
 #include "ocpn_plugin.h"
-#include "OCPN_AUIManager.h"
+#include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "OCPN_Sound.h"
+#include "o_senc.h"
 #include "options.h"
 #include "pluginmanager.h"
 #include "print_dialog.h"
@@ -135,13 +140,14 @@
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
+#include "SoundFactory.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
 #include "timers.h"
 #include "toolbar.h"
 #include "TrackPropDlg.h"
 #include "waypointman_gui.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "udev_rule_mgr.h"
 
 #ifdef __ANDROID__
@@ -149,37 +155,14 @@
 #endif
 
 //------------------------------------------------------------------------------
-//      Fwd Declarations
-//------------------------------------------------------------------------------
-WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
-
-//------------------------------------------------------------------------------
 //      Static variable definition
 //------------------------------------------------------------------------------
 //
-extern OCPN_AUIManager *g_pauimgr;
-extern MyConfig *pConfig;
-extern arrayofCanvasPtr g_canvasArray;
-extern MyFrame *gFrame;
-extern AISTargetListDialog *g_pAISTargetList;
-extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern APConsole *console;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern Routeman *g_pRouteMan;
-extern MarkInfoDlg *g_pMarkInfoDialog;
-extern RoutePropDlgImpl *pRoutePropDialog;
-extern TrackPropDlg *pTrackPropDialog;
-extern GoToPositionDialog *pGoToPositionDialog;
-extern CM93OffsetDialog *g_pCM93OffsetDialog;
-extern S57QueryDialog *g_pObjectQueryDialog;
-extern About *g_pAboutDlgLegacy;
-extern AboutFrameImpl *g_pAboutDlg;
 
-extern double vLat, vLon;
-extern wxString g_locale;
-extern ColorScheme global_color_scheme;
-extern options *g_pOptions;
-extern options *g_options;
+arrayofCanvasPtr g_canvasArray;
+
+extern options *g_pOptions;  // FIXME (leamas) same as g_options, merge
+MyFrame *gFrame;
 
 #ifdef ocpnUSE_GL
 GLenum g_texture_rectangle_format;
@@ -189,143 +172,29 @@ GLenum g_texture_rectangle_format;
 extern wxLocale *plocale_def_lang;
 #endif
 
-extern OCPNPlatform *g_Platform;
-extern BasePlatform
-    *g_BasePlatform;  // points to g_platform, handles brain-dead MS linker.
+#ifdef ocpnUSE_GL
+extern bool g_b_EnableVBO;
+extern GLenum g_texture_rectangle_format;
+extern OCPN_GLCaps *GL_Caps;
+#endif
 
-extern s52plib *ps52plib;
-extern ocpnFloatingToolbarDialog *g_MainToolbar;
-extern PlugInManager *g_pi_manager;
+static int g_last_ChartScaleFactor;
+static char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
+static int options_subpage = 0;
+static bool b_reloadForPlugins;
 
-extern bool g_b_legacy_input_filter_behaviour;
-extern bool g_bTrackActive;
-extern ocpnStyle::StyleManager *g_StyleManager;
-extern bool g_bmasterToolbarFull;
-extern int g_nAutoHideToolbar;
-extern bool g_bAutoHideToolbar;
-extern bool g_bshowToolbar;
-extern int g_maintoolbar_x;
-extern int g_maintoolbar_y;
-extern wxString g_toolbarConfig;
-extern float g_toolbar_scalefactor;
-extern float g_compass_scalefactor;
-extern bool g_bShowMenuBar;
-extern bool g_bShowCompassWin;
+static wxSize options_lastWindowSize(0, 0);
+static wxPoint options_lastWindowPos(0, 0);
 
-extern bool g_benable_rotate;
-extern int g_GUIScaleFactor;
-extern int g_ChartScaleFactor;
-extern int g_last_ChartScaleFactor;
-extern int g_ShipScaleFactor;
-extern float g_ShipScaleFactorExp;
-extern int g_ENCTextScaleFactor;
+// Values returned from WMM_PI for variation computation request.
+// Initialize to invalid so we don't use it if WMM hasn't updated yet
+static double gQueryVar = 361.0;
 
-extern bool g_bShowTide;
-extern bool g_bShowCurrent;
-extern bool g_bUIexpert;
-extern RouteList *pRouteList;
-extern wxString g_default_wp_icon;
-extern std::vector<std::string> TideCurrentDataSet;
-extern wxString g_TCData_Dir;
-extern TCMgr *ptcmgr;
-extern char nmea_tick_chars[];
-extern double AnchorPointMinDist;
-extern bool AnchorAlertOn1, AnchorAlertOn2;
-extern wxString g_AW1GUID;
-extern wxString g_AW2GUID;
-extern bool g_bCruising;
-extern double g_COGAvg;
-extern int g_COGAvgSec;
-extern ActiveTrack *g_pActiveTrack;
-extern std::vector<Track *> g_TrackList;
-extern double gQueryVar;
-extern int g_ChartUpdatePeriod;
-extern int g_SkewCompUpdatePeriod;
-extern bool g_bCourseUp;
-extern bool g_bLookAhead;
-extern bool g_bskew_comp;
-extern bool g_bPauseTest;
-extern bool g_bSleep;
-extern bool g_bPlayShipsBells;
-extern wxDateTime g_loglast_time;
-extern int g_nAWDefault;
-extern int g_nAWMax;
-extern bool g_bDeferredStartTrack;
-extern bool bDBUpdateInProgress;
-extern int quitflag;
-extern int g_tick;
-extern ChartDB *ChartData;
-extern bool g_bDeferredInitDone;
-extern int options_lastPage;
-extern int options_subpage;
-extern bool b_reloadForPlugins;
-extern ChartCanvas *g_focusCanvas;
-extern int g_NeedDBUpdate;
-extern bool g_bFullscreen;
-extern wxString gWorldMapLocation, gDefaultWorldMapLocation;
-extern ChartGroupArray *g_pGroupArray;
-extern bool g_bEnableZoomToCursor;
-extern double g_display_size_mm;
-extern std::vector<size_t> g_config_display_size_mm;
-extern wxString ChartListFileName;
-extern bool g_bFullscreenToolbar;
-extern arrayofCanvasPtr g_canvasArray;
-extern wxString g_lastAppliedTemplateGUID;
-extern wxPoint options_lastWindowPos;
-extern wxSize options_lastWindowSize;
-extern unsigned int g_canvasConfig;
-extern bool g_bFullScreenQuilt;
-extern bool g_bQuiltEnable;
-extern wxString *pInit_Chart_Dir;
-extern bool g_bShowOutlines;
-extern bool g_bTempShowMenuBar;
-extern bool g_bShowStatusBar;
-extern bool g_FlushNavobjChanges;
-extern int g_FlushNavobjChangesTimeout;
-extern bool g_bShowChartBar;
-extern double g_plus_minus_zoom_factor;
-extern int g_nframewin_x;
-extern int g_nframewin_y;
-extern int g_nframewin_posx;
-extern int g_nframewin_posy;
-extern bool g_bframemax;
-extern LayerList *pLayerList;
-extern bool g_bAutoAnchorMark;
-extern wxDateTime g_start_time;
-extern bool g_bcompression_wait;
-extern bool g_bquiting;
-extern bool b_inCloseWindow;
-extern bool b_inCompressAllCharts;
-extern long g_maintoolbar_orient;
-extern wxAuiDefaultDockArt *g_pauidockart;
-extern int g_click_stop;
-extern wxString g_CmdSoundString;
-extern std::vector<OcpnSound *> bells_sound;
-extern char bells_sound_file_name[2][12];
-extern int g_sticky_chart;
-extern int g_sticky_projection;
-extern wxArrayPtrVoid *UserColourHashTableArray;
-extern wxColorHashMap *pcurrent_user_color_hash;
+static char bells_sound_file_name[2][12] = {"1bells.wav", "2bells.wav"};
+static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
+static std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
 
-// probable move to ocpn_app
-extern bool g_own_ship_sog_cog_calc;
-extern int g_own_ship_sog_cog_calc_damp_sec;
-extern bool g_bHasHwClock;
-extern bool s_bSetSystemTime;
-extern bool bVelocityValid;
-extern int gHDx_Watchdog;
-extern AisInfoGui *g_pAISGUI;
-
-extern bool g_bUseGLL;
-extern int g_MemFootMB;
-extern Multiplexer *g_pMUX;
-extern int g_memUsed;
-extern int g_chart_zoom_modifier_vector;
-extern bool g_config_display_size_manual;
-extern bool g_PrintingInProgress;
-extern bool g_disable_main_toolbar;
-extern bool g_btenhertz;
-extern bool g_declutter_anchorage;
+static wxArrayPtrVoid *UserColourHashTableArray;
 
 #ifdef __WXMSW__
 // System color control support
@@ -333,11 +202,11 @@ extern bool g_declutter_anchorage;
 typedef DWORD(WINAPI *SetSysColors_t)(DWORD, DWORD *, DWORD *);
 typedef DWORD(WINAPI *GetSysColor_t)(DWORD);
 
-SetSysColors_t pSetSysColors;
-GetSysColor_t pGetSysColor;
+static SetSysColors_t pSetSysColors;
+static GetSysColor_t pGetSysColor;
 
-void SaveSystemColors(void);
-void RestoreSystemColors(void);
+void SaveSystemColors();
+void RestoreSystemColors();
 
 DWORD color_3dface;
 DWORD color_3dhilite;
@@ -364,21 +233,18 @@ static const long long lNaN = 0xfff8000000000000;
 static wxArrayPtrVoid *UserColorTableArray = 0;
 
 // Latest "ground truth" fix, and auxiliaries
-double gLat_gt, gLon_gt;
-double gLat_gt_m1, gLon_gt_m1;
-uint64_t fix_time_gt;
-uint64_t fix_time_gt_last;
+static double gLat_gt, gLon_gt;
+static double gLat_gt_m1, gLon_gt_m1;
+static uint64_t fix_time_gt;
+static uint64_t fix_time_gt_last;
 
-double gSog_gt, gCog_gt, gHdt_gt;
-double gCog_gt_m1, gHdt_gt_m1;
-uint64_t hdt_time_gt;
-double cog_rate_gt, hdt_rate_gt;
+static double gSog_gt, gHdt_gt;
+static double gCog_gt_m1, gHdt_gt_m1;
+static uint64_t hdt_time_gt;
+static double cog_rate_gt, hdt_rate_gt;
 
-//    Some static helpers
-void appendOSDirSlash(wxString *pString);
-
-void InitializeUserColors(void);
-void DeInitializeUserColors(void);
+void InitializeUserColors();
+void DeInitializeUserColors();
 void SetSystemColors(ColorScheme cs);
 
 static bool LoadAllPlugIns(bool load_enabled) {
@@ -388,36 +254,36 @@ static bool LoadAllPlugIns(bool load_enabled) {
   return b;
 }
 
-static void LaunchLocalHelp(void) {
+static void LaunchLocalHelp() {
 #ifdef __ANDROID__
   androidLaunchHelpView();
 #else
-  wxString def_lang_canonical = _T("en_US");
+  wxString def_lang_canonical = "en_US";
 
 #if wxUSE_XLOCALE
   if (plocale_def_lang)
     def_lang_canonical = plocale_def_lang->GetCanonicalName();
 #endif
 
-  wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
+  wxString help_locn = g_Platform->GetSharedDataDir() + "doc/help_";
 
-  wxString help_try = help_locn + def_lang_canonical + _T(".html");
+  wxString help_try = help_locn + def_lang_canonical + ".html";
 
   if (!::wxFileExists(help_try)) {
-    help_try = help_locn + _T("en_US") + _T(".html");
+    help_try = help_locn + "en_US" + ".html";
 
     if (!::wxFileExists(help_try)) {
-      help_try = help_locn + _T("web") + _T(".html");
+      help_try = help_locn + "web" + ".html";
     }
 
     if (!::wxFileExists(help_try)) return;
   }
 
-  wxLaunchDefaultBrowser(wxString(_T("file:///")) + help_try);
+  wxLaunchDefaultBrowser(wxString("file:///") + help_try);
 #endif
 }
 
-static void DoHelpDialog(void) {
+static void DoHelpDialog() {
 #ifndef __ANDROID__
   if (!g_pAboutDlg) {
     g_pAboutDlg = new AboutFrameImpl(gFrame);
@@ -455,10 +321,6 @@ static void DoHelpDialog(void) {
 //------------------------------------------------------------------------------
 //              Fwd Refs
 //------------------------------------------------------------------------------
-
-iENCToolbar *g_iENCToolbar;
-int g_iENCToolbarPosX;
-int g_iENCToolbarPosY;
 
 void BuildiENCToolbar(bool bnew) {
   if (g_bInlandEcdis) {
@@ -524,7 +386,7 @@ paper charts and traditional methods of navigation.\n\n\
 DO NOT rely upon OpenCPN for safety of life or property.\n\n\
 Please click \"Agree\" and proceed, or \"Cancel\" to quit.\n"));
 
-  wxString vs = wxString::Format(wxT(" .. Version %s"), VERSION_FULL);
+  wxString vs = wxString::Format(" .. Version %s", VERSION_FULL);
 
 #ifdef __ANDROID__
   androidShowDisclaimer(_("OpenCPN for Android") + vs, msg);
@@ -594,7 +456,7 @@ static char *get_X11_property(Display *disp, Window win, Atom xa_prop_type,
 #endif
 
 // Determine if a transparent toolbar is possible under linux with opengl
-static bool isTransparentToolbarInOpenGLOK(void) {
+static bool isTransparentToolbarInOpenGLOK() {
 #ifdef __WXOSX__
   return true;
 #else
@@ -699,11 +561,12 @@ static NmeaLog *GetDataMonitor() {
 
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
-                 const wxSize &size, long style)
+                 const wxSize &size, long style,
+                 wxAuiDefaultDockArt *pauidockart)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
-      comm_overflow_dlg(this),
       m_connections_dlg(nullptr),
-      m_data_monitor(new DataMonitor(this)) {
+      m_data_monitor(new DataMonitor(this)),
+      m_pauidockart(pauidockart) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
@@ -854,10 +717,10 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   //    Establish the entry points in USER32.DLL for system color control
 
-  wxDynamicLibrary dllUser32(_T("user32.dll"));
+  wxDynamicLibrary dllUser32("user32.dll");
 
-  pSetSysColors = (SetSysColors_t)dllUser32.GetSymbol(wxT("SetSysColors"));
-  pGetSysColor = (GetSysColor_t)dllUser32.GetSymbol(wxT("GetSysColor"));
+  pSetSysColors = (SetSysColors_t)dllUser32.GetSymbol("SetSysColors");
+  pGetSysColor = (GetSysColor_t)dllUser32.GetSymbol("GetSysColor");
 
   SaveSystemColors();
 #endif
@@ -865,7 +728,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
   g_sticky_chart = -1;
-  g_sticky_projection = -1;
   m_BellsToPlay = 0;
 
   m_resizeTimer.SetOwner(this, RESIZE_TIMER);
@@ -881,6 +743,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   // Enable native fullscreen on macOS
   EnableFullScreenView();
 #endif
+  int is_day = GetColorScheme() == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 }
 
 MyFrame::~MyFrame() {
@@ -892,13 +756,8 @@ MyFrame::~MyFrame() {
   // delete pCurrentStack;
 
   //      Free the Route List
-  wxRouteListNode *node = pRouteList->GetFirst();
-
-  while (node) {
-    Route *pRouteDelete = node->GetData();
+  for (Route *pRouteDelete : *pRouteList) {
     delete pRouteDelete;
-
-    node = node->GetNext();
   }
   delete pRouteList;
   pRouteList = NULL;
@@ -909,6 +768,26 @@ MyFrame::~MyFrame() {
   // FIXME (dave)  Was in some datastream file?
   // Disconnect(wxEVT_OCPN_THREADMSG,
   //            (wxObjectEventFunction)(wxEventFunction)&MyFrame::OnEvtTHREADMSG);
+}
+
+void MyFrame::FreezeCharts() {
+  // ..For each canvas,
+#ifndef __WXMAC__
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc && !cc->IsFrozen()) cc->Freeze();
+  }
+#endif
+}
+
+void MyFrame::ThawCharts() {
+  // ..For each canvas,
+#ifndef __WXMAC__
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc && cc->IsFrozen()) cc->Thaw();
+  }
+#endif
 }
 
 void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
@@ -991,11 +870,11 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
   int bells = wxMin(m_BellsToPlay, 2);
   if (bells <= 0) return;
 
-  wxString soundfile = _T("sounds");
+  wxString soundfile = "sounds";
   appendOSDirSlash(&soundfile);
   soundfile += wxString(bells_sound_file_name[bells - 1], wxConvUTF8);
   soundfile.Prepend(g_Platform->GetSharedDataDir());
-  wxLogMessage(_T("Using bells sound file: ") + soundfile);
+  wxLogMessage("Using bells sound file: " + soundfile);
 
   OcpnSound *sound = bells_sound[bells - 1];
   sound->SetFinishedCallback(onBellsFinishedCB, this);
@@ -1003,7 +882,7 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
   sound->Load(soundfile);
   if (!sound->IsOk()) {
-    wxLogMessage(_T("Failed to load bells sound file: ") + soundfile);
+    wxLogMessage("Failed to load bells sound file: " + soundfile);
     return;
   }
   sound->Play();
@@ -1031,63 +910,65 @@ void MyFrame::ReloadAllVP() {
 }
 
 void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
-  global_color_scheme = cs;
+  int is_day = cs == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 
+  global_color_scheme = cs;
   wxString SchemeName;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
-      SchemeName = _T("DAY");
+      SchemeName = "DAY";
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
-      SchemeName = _T("DUSK");
+      SchemeName = "DUSK";
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
-      SchemeName = _T("NIGHT");
+      SchemeName = "NIGHT";
       break;
     default:
-      SchemeName = _T("DAY");
+      SchemeName = "DAY";
       break;
   }
 
-  g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+  m_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
 
-  g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0, 0, 0));
-  g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
-  g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
-  g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
-  g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
+  m_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
+  m_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
+  m_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
                            wxColour(0, 0, 0));
-  g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0, 0, 0));
 
   //    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT )
   //    {
-  //        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
-  //        g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
+  //        m_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+  //        m_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
   //        wxColour(0,0,0));
-  //        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
+  //        m_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
   //        wxColour(0,0,0));
   //    }
 
   //      else{
-  //          g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE,
+  //          m_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE,
   //          g_grad_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR,
   //          g_border_color_default);
-  //          g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE,
+  //          m_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE,
   //          g_border_size_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR,
   //          g_sash_color_default);
-  //          g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE,
+  //          m_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE,
   //          g_sash_size_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR,
   //          g_caption_color_default);
-  //          g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
+  //          m_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR,
   //          g_background_color_default);
   //
   //      }
 
-  g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
-  g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);
+  m_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0, 0, 0));
+  m_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);
 
   g_pauimgr->Update();
 
@@ -1200,9 +1081,9 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
   if (g_pi_manager) g_pi_manager->SetColorSchemeForAllPlugIns(cs);
 }
 
-void MyFrame::ApplyGlobalColorSchemetoStatusBar(void) {
+void MyFrame::ApplyGlobalColorSchemetoStatusBar() {
   if (m_pStatusBar != NULL) {
-    m_pStatusBar->SetBackgroundColour(GetGlobalColor(_T("UIBDR")));  // UINFF
+    m_pStatusBar->SetBackgroundColour(GetGlobalColor("UIBDR"));  // UINFF
     m_pStatusBar->ClearBackground();
   }
 }
@@ -1295,7 +1176,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       cc->SetShowGPS(true);
 
       g_pauimgr->AddPane(cc);
-      g_pauimgr->GetPane(cc).Name(_T("ChartCanvas"));
+      g_pauimgr->GetPane(cc).Name("ChartCanvas");
       g_pauimgr->GetPane(cc).Fixed();
       g_pauimgr->GetPane(cc).CaptionVisible(false);
       g_pauimgr->GetPane(cc).CenterPane();
@@ -1327,7 +1208,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       cc->SetShowGPS(false);
 
       g_pauimgr->AddPane(cc);
-      g_pauimgr->GetPane(cc).Name(_T("ChartCanvas"));
+      g_pauimgr->GetPane(cc).Name("ChartCanvas");
       g_pauimgr->GetPane(cc)
           .CaptionVisible(false)
           .PaneBorder(false)
@@ -1361,7 +1242,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       cc->CreateMUIBar();
 
       g_pauimgr->AddPane(cc);
-      g_pauimgr->GetPane(cc).Name(_T("ChartCanvas2"));
+      g_pauimgr->GetPane(cc).Name("ChartCanvas2");
       g_pauimgr->GetPane(cc)
           .CaptionVisible(false)
           .PaneBorder(false)
@@ -1680,8 +1561,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   //             g_pauimgr->GetPane( cc ).MinSize(10,10);
   //     }
 
-  pConfig->SetPath(_T ( "/AUI" ));
-  pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
+  pConfig->SetPath("/AUI");
+  pConfig->Write("AUIPerspective", g_pauimgr->SavePerspective());
 
   g_bquiting = true;
 
@@ -1744,10 +1625,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     bool watching_anchor = false;  // pjotrc 2010.02.15
     if (pAnchorWatchPoint1)        // pjotrc 2010.02.15
       watching_anchor = (pAnchorWatchPoint1->GetIconName().StartsWith(
-          _T("anchor")));    // pjotrc 2010.02.15
+          "anchor"));        // pjotrc 2010.02.15
     if (pAnchorWatchPoint2)  // pjotrc 2010.02.15
       watching_anchor |= (pAnchorWatchPoint2->GetIconName().StartsWith(
-          _T("anchor")));  // pjotrc 2010.02.15
+          "anchor"));  // pjotrc 2010.02.15
 
     wxDateTime now = wxDateTime::Now();
     wxTimeSpan uptime = now.Subtract(g_start_time);
@@ -1759,11 +1640,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       //    than 0.25 NM from this point
       //    This will prevent screen clutter and database congestion.
       if (g_declutter_anchorage) {
-        wxRoutePointListNode *node =
-            pWayPointMan->GetWaypointList()->GetFirst();
-        while (node) {
-          RoutePoint *pr = node->GetData();
-          if (pr->GetName().StartsWith(_T("Anchorage"))) {
+        for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
+          if (pr->GetName().StartsWith("Anchorage")) {
             double a = gLat - pr->m_lat;
             double b = gLon - pr->m_lon;
             double l = sqrt((a * a) + (b * b));
@@ -1777,15 +1655,13 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
               break;
             }
           }
-
-          node = node->GetNext();
         }
       }
 
       wxString name = now.Format();
       name.Prepend(_("Anchorage created "));
       RoutePoint *pWP =
-          new RoutePoint(gLat, gLon, _T("anchorage"), name, wxEmptyString);
+          new RoutePoint(gLat, gLon, "anchorage", name, wxEmptyString);
       pWP->m_bShowName = false;
       pWP->m_bIsolatedMark = true;
 
@@ -1806,8 +1682,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   // Remove any leftover Routes and Waypoints from config file as they were
   // saved to navobj before
-  pConfig->DeleteGroup(_T ( "/Routes" ));
-  pConfig->DeleteGroup(_T ( "/Marks" ));
+  pConfig->DeleteGroup("/Routes");
+  pConfig->DeleteGroup("/Marks");
   pConfig->Flush();
 
   if (g_pAboutDlg) g_pAboutDlg->Destroy();
@@ -1915,10 +1791,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   }
 
   if (pLayerList) {
-    LayerList::iterator it;
-    while (pLayerList->GetCount()) {
-      Layer *lay = pLayerList->GetFirst()->GetData();
-      delete lay;  // automatically removes the layer from list, see Layer dtor
+    for (auto it = pLayerList->begin(); it != pLayerList->end(); ++it) {
+      delete *it;
+      // automatically removes the layer from list, see Layer dtor
     }
   }
 
@@ -1937,7 +1812,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       g_glTextureManager->GetRunningJobCount()) {
     g_glTextureManager->ClearAllRasterTextures();
 
-    wxLogMessage(_T("Starting compressor pool drain"));
+    wxLogMessage("Starting compressor pool drain");
     wxDateTime now = wxDateTime::Now();
     time_t stall = now.GetTicks();
     time_t end = stall + THREAD_WAIT_SECONDS;
@@ -1948,7 +1823,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       stall = later.GetTicks();
 
       wxString msg;
-      msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop,
+      msg.Printf("Time: %d  Job Count: %d", n_comploop,
                  g_glTextureManager->GetRunningJobCount());
       wxLogMessage(msg);
       if (!g_glTextureManager->GetRunningJobCount()) break;
@@ -1957,7 +1832,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     }
 
     wxString fmsg;
-    fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
+    fmsg.Printf("Finished compressor pool drain..Time: %d  Job Count: %d",
                 n_comploop, g_glTextureManager->GetRunningJobCount());
     wxLogMessage(fmsg);
   }
@@ -1967,7 +1842,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   this->Destroy();
   gFrame = NULL;
 
-  wxLogMessage(_T("gFrame destroyed."));
+  wxLogMessage("gFrame destroyed.");
 
 #ifdef __ANDROID__
 #ifndef USE_ANDROID_GLES2
@@ -2052,7 +1927,7 @@ void MyFrame::OnMove(wxMoveEvent &event) {
   g_nframewin_posy = GetPosition().y;
 }
 
-void MyFrame::ProcessCanvasResize(void) {
+void MyFrame::ProcessCanvasResize() {
   UpdateGPSCompassStatusBoxes(true);
 
   if (console && console->IsShown()) PositionConsole();
@@ -2159,7 +2034,7 @@ void MyFrame::OnIconize(wxIconizeEvent &event) {
 
 void MyFrame::OnSize(wxSizeEvent &event) { ODoSetSize(); }
 
-void MyFrame::ODoSetSize(void) {
+void MyFrame::ODoSetSize() {
   int x, y;
   GetClientSize(&x, &y);
   //      Resize the children
@@ -2202,8 +2077,8 @@ void MyFrame::ODoSetSize(void) {
                       wxSB_FLAT, wxSB_FLAT, wxSB_FLAT};
       m_pStatusBar->SetStatusStyles(m_StatusBarFieldCount, styles);
 
-      wxString sogcog(_T("SOG --- ") + getUsrSpeedUnit() + +_T("     ") +
-                      _T(" COG ---\u00B0"));
+      wxString sogcog("SOG --- " + getUsrSpeedUnit() + +"     " +
+                      " COG ---\u00B0");
       m_pStatusBar->SetStatusText(sogcog, STAT_FIELD_SOGCOG);
     }
   }
@@ -2333,7 +2208,7 @@ void MyFrame::ODoSetSize(void) {
   if (g_pauimgr) g_pauimgr->Update();
 }
 
-void MyFrame::PositionConsole(void) {
+void MyFrame::PositionConsole() {
 #if defined(__WXMSW__) || defined(__WXMAC__)
   if (NULL == GetPrimaryCanvas()) return;
   //    Reposition console based on its size and chartcanvas size
@@ -2467,7 +2342,7 @@ void MyFrame::DestroyPersistentDialogs() {
   }
 }
 
-void MyFrame::RefreshGroupIndices(void) {
+void MyFrame::RefreshGroupIndices() {
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -2647,6 +2522,11 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       delete g_options;
       g_options = nullptr;
       g_pOptions = nullptr;
+      break;
+    }
+
+    case ID_RELOAD_CHARTS: {
+      ReloadAllVP();
       break;
     }
 
@@ -2840,8 +2720,8 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
       int numErrors = reader.Parse(event.GetString(), &root);
       if (numErrors == 0) {
-        if (root[_T("MessageID")].IsString()) {
-          wxString MsgID = root[_T("MessageID")].AsString();
+        if (root["MessageID"].IsString()) {
+          wxString MsgID = root["MessageID"].AsString();
           SendPluginMessage(MsgID, event.GetString());  // Send to all PlugIns
         }
       }
@@ -2928,6 +2808,12 @@ bool MyFrame::SetGlobalToolbarViz(bool viz) {
   }
 
   return viz_now;
+}
+
+void MyFrame::ScheduleReloadCharts() {
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(ID_RELOAD_CHARTS);
+  GetEventHandler()->AddPendingEvent(evt);
 }
 
 void MyFrame::ScheduleDeleteSettingsDialog() {
@@ -3060,7 +2946,7 @@ void MyFrame::setStringVP(wxString VPS) {
 
   if (!cc) return;
 
-  wxStringTokenizer tkz(VPS, _T(";"));
+  wxStringTokenizer tkz(VPS, ";");
 
   wxString token = tkz.GetNextToken();
   double lat = gLat;
@@ -3157,7 +3043,7 @@ void MyFrame::ToggleFullScreen() {
   TriggerRecaptureTimer();
 }
 
-void MyFrame::ActivateMOB(void) {
+void MyFrame::ActivateMOB() {
   //    The MOB point
   wxDateTime mob_time = wxDateTime::Now();
   wxString mob_label(_("MAN OVERBOARD"));
@@ -3165,7 +3051,7 @@ void MyFrame::ActivateMOB(void) {
   mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
   RoutePoint *pWP_MOB =
-      new RoutePoint(gLat, gLon, _T ( "mob" ), mob_label, wxEmptyString);
+      new RoutePoint(gLat, gLon, "mob", mob_label, wxEmptyString);
   pWP_MOB->SetShared(true);
   pWP_MOB->m_bIsolatedMark = true;
   pWP_MOB->SetWaypointArrivalRadius(
@@ -3185,7 +3071,7 @@ void MyFrame::ActivateMOB(void) {
     pSelect->AddSelectableRoutePoint(zlat, zlon, pWP_src);
 
     Route *temp_route = new Route();
-    pRouteList->Append(temp_route);
+    pRouteList->push_back(temp_route);
 
     temp_route->AddPoint(pWP_src);
     temp_route->AddPoint(pWP_MOB);
@@ -3206,8 +3092,8 @@ void MyFrame::ActivateMOB(void) {
     g_pRouteMan->ActivateRoute(temp_route, pWP_MOB);
 
     wxJSONValue v;
-    v[_T("GUID")] = temp_route->m_GUID;
-    wxString msg_id(_T("OCPN_MAN_OVERBOARD"));
+    v["GUID"] = temp_route->m_GUID;
+    wxString msg_id("OCPN_MAN_OVERBOARD");
     SendJSONMessageToAllPlugins(msg_id, v);
   }
 
@@ -3226,11 +3112,11 @@ void MyFrame::ActivateMOB(void) {
   mob_message += ocpn::toUsrDateTimeFormat(mob_time);
   mob_message += _("  Position: ");
   mob_message += toSDMM(1, gLat);
-  mob_message += _T("   ");
+  mob_message += "   ";
   mob_message += toSDMM(2, gLon);
   wxLogMessage(mob_message);
 }
-void MyFrame::TrackOn(void) {
+void MyFrame::TrackOn() {
   g_bTrackActive = true;
   g_pActiveTrack = new ActiveTrack();
 
@@ -3261,14 +3147,14 @@ void MyFrame::TrackOn(void) {
   if (name.IsEmpty()) {
     TrackPoint *tp = g_pActiveTrack->GetPoint(0);
     if (tp->GetCreateTime().IsValid())
-      name = tp->GetCreateTime().FormatISODate() + _T(" ") +
+      name = tp->GetCreateTime().FormatISODate() + " " +
              tp->GetCreateTime().FormatISOTime();
     else
       name = _("(Unnamed Track)");
   }
-  v[_T("Name")] = name;
-  v[_T("GUID")] = g_pActiveTrack->m_GUID;
-  wxString msg_id(_T("OCPN_TRK_ACTIVATED"));
+  v["Name"] = name;
+  v["GUID"] = g_pActiveTrack->m_GUID;
+  wxString msg_id("OCPN_TRK_ACTIVATED");
   SendJSONMessageToAllPlugins(msg_id, v);
   g_FlushNavobjChangesTimeout =
       30;  // Every thirty seconds, consider flushing navob changes
@@ -3279,8 +3165,8 @@ Track *MyFrame::TrackOff(bool do_add_point) {
 
   if (g_pActiveTrack) {
     wxJSONValue v;
-    wxString msg_id(_T("OCPN_TRK_DEACTIVATED"));
-    v[_T("GUID")] = g_pActiveTrack->m_GUID;
+    wxString msg_id("OCPN_TRK_DEACTIVATED");
+    v["GUID"] = g_pActiveTrack->m_GUID;
     SendJSONMessageToAllPlugins(msg_id, v);
 
     g_pActiveTrack->Stop(do_add_point);
@@ -3327,7 +3213,7 @@ Track *MyFrame::TrackOff(bool do_add_point) {
   return return_val;
 }
 
-bool MyFrame::ShouldRestartTrack(void) {
+bool MyFrame::ShouldRestartTrack() {
   if (!g_pActiveTrack || !g_bTrackDaily) return false;
   time_t now = wxDateTime::Now().GetTicks();
   time_t today = wxDateTime::Today().GetTicks();
@@ -3364,7 +3250,7 @@ bool MyFrame::ShouldRestartTrack(void) {
   return false;
 }
 
-void MyFrame::TrackDailyRestart(void) {
+void MyFrame::TrackDailyRestart() {
   if (!g_pActiveTrack) return;
   Track *pPreviousTrack = TrackOff(true);
   TrackOn();
@@ -3561,7 +3447,7 @@ void MyFrame::ToggleChartOutlines(ChartCanvas *cc) {
   SetMenubarItemState(ID_MENU_CHART_OUTLINES, cc->GetShowOutlines());
 }
 
-void MyFrame::ToggleTestPause(void) { g_bPauseTest = !g_bPauseTest; }
+void MyFrame::ToggleTestPause() { g_bPauseTest = !g_bPauseTest; }
 
 void MyFrame::SetMenubarItemState(int item_id, bool state) {
   if (m_pMenuBar) {
@@ -3638,12 +3524,12 @@ wxString _menuText(wxString name, wxString shortcut) {
   wxString menutext;
   menutext << name;
 #ifndef __ANDROID__
-  menutext << _T("\t") << shortcut;
+  menutext << "\t" << shortcut;
 #endif
   return menutext;
 }
 
-void MyFrame::BuildMenuBar(void) {
+void MyFrame::BuildMenuBar() {
   /*
    * Menu Bar - add or remove it if necessary, and update the state of the menu
    * items
@@ -3685,7 +3571,7 @@ void MyFrame::RegisterGlobalMenuItems() {
 
   wxMenu *nav_menu = new wxMenu();
   nav_menu->AppendCheckItem(ID_MENU_NAV_FOLLOW,
-                            _menuText(_("Auto Follow"), _T("Ctrl-A")));
+                            _menuText(_("Auto Follow"), "Ctrl-A"));
   nav_menu->AppendCheckItem(ID_MENU_NAV_TRACK, _("Enable Tracking"));
   nav_menu->AppendSeparator();
   nav_menu->AppendRadioItem(ID_MENU_CHART_NORTHUP, _("North Up Mode"));
@@ -3693,67 +3579,65 @@ void MyFrame::RegisterGlobalMenuItems() {
   nav_menu->AppendRadioItem(ID_MENU_CHART_HEADUP, _("Head Up Mode"));
   nav_menu->AppendSeparator();
 #ifndef __WXOSX__
-  nav_menu->Append(ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")));
-  nav_menu->Append(ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("-")));
+  nav_menu->Append(ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), "+"));
+  nav_menu->Append(ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), "-"));
 #else
-  nav_menu->Append(ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("Alt-+")));
-  nav_menu->Append(ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("Alt--")));
+  nav_menu->Append(ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), "Alt-+"));
+  nav_menu->Append(ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), "Alt--"));
 #endif
   nav_menu->AppendSeparator();
   nav_menu->Append(ID_MENU_SCALE_IN,
-                   _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")));
+                   _menuText(_("Larger Scale Chart"), "Ctrl-Left"));
   nav_menu->Append(ID_MENU_SCALE_OUT,
-                   _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")));
+                   _menuText(_("Smaller Scale Chart"), "Ctrl-Right"));
 #ifndef __WXOSX__
   nav_menu->AppendSeparator();
-  nav_menu->Append(ID_MENU_OQUIT, _menuText(_("Exit OpenCPN"), _T("Ctrl-Q")));
+  nav_menu->Append(ID_MENU_OQUIT, _menuText(_("Exit OpenCPN"), "Ctrl-Q"));
 #endif
   m_pMenuBar->Append(nav_menu, _("&Navigate"));
 
   wxMenu *view_menu = new wxMenu();
 #ifndef __WXOSX__
   view_menu->AppendCheckItem(ID_MENU_CHART_QUILTING,
-                             _menuText(_("Enable Chart Quilting"), _T("Q")));
+                             _menuText(_("Enable Chart Quilting"), "Q"));
   view_menu->AppendCheckItem(ID_MENU_CHART_OUTLINES,
-                             _menuText(_("Show Chart Outlines"), _T("O")));
+                             _menuText(_("Show Chart Outlines"), "O"));
 #else
-  view_menu->AppendCheckItem(
-      ID_MENU_CHART_QUILTING,
-      _menuText(_("Enable Chart Quilting"), _T("Alt-Q")));
+  view_menu->AppendCheckItem(ID_MENU_CHART_QUILTING,
+                             _menuText(_("Enable Chart Quilting"), "Alt-Q"));
   view_menu->AppendCheckItem(ID_MENU_CHART_OUTLINES,
-                             _menuText(_("Show Chart Outlines"), _T("Alt-O")));
+                             _menuText(_("Show Chart Outlines"), "Alt-O"));
 #endif
   view_menu->AppendCheckItem(ID_MENU_UI_CHARTBAR,
-                             _menuText(_("Show Chart Bar"), _T("Ctrl-B")));
+                             _menuText(_("Show Chart Bar"), "Ctrl-B"));
 
   view_menu->AppendSeparator();
 #ifndef __WXOSX__
   view_menu->AppendCheckItem(ID_MENU_ENC_TEXT,
-                             _menuText(_("Show ENC text"), _T("T")));
+                             _menuText(_("Show ENC text"), "T"));
   view_menu->AppendCheckItem(ID_MENU_ENC_LIGHTS,
-                             _menuText(_("Show ENC Lights"), _T("L")));
+                             _menuText(_("Show ENC Lights"), "L"));
   view_menu->AppendCheckItem(ID_MENU_ENC_SOUNDINGS,
-                             _menuText(_("Show ENC Soundings"), _T("S")));
+                             _menuText(_("Show ENC Soundings"), "S"));
   view_menu->AppendCheckItem(ID_MENU_ENC_ANCHOR,
-                             _menuText(_("Show ENC Anchoring Info"), _T("A")));
+                             _menuText(_("Show ENC Anchoring Info"), "A"));
   view_menu->AppendCheckItem(ID_MENU_ENC_DATA_QUALITY,
-                             _menuText(_("Show ENC Data Quality"), _T("U")));
+                             _menuText(_("Show ENC Data Quality"), "U"));
   view_menu->AppendCheckItem(ID_MENU_SHOW_NAVOBJECTS,
-                             _menuText(_("Show Navobjects"), _T("V")));
+                             _menuText(_("Show Navobjects"), "V"));
 #else
   view_menu->AppendCheckItem(ID_MENU_ENC_TEXT,
-                             _menuText(_("Show ENC text"), _T("Alt-T")));
+                             _menuText(_("Show ENC text"), "Alt-T"));
   view_menu->AppendCheckItem(ID_MENU_ENC_LIGHTS,
-                             _menuText(_("Show ENC Lights"), _T("Alt-L")));
+                             _menuText(_("Show ENC Lights"), "Alt-L"));
   view_menu->AppendCheckItem(ID_MENU_ENC_SOUNDINGS,
-                             _menuText(_("Show ENC Soundings"), _T("Alt-S")));
-  view_menu->AppendCheckItem(
-      ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("Alt-A")));
-  view_menu->AppendCheckItem(
-      ID_MENU_ENC_DATA_QUALITY,
-      _menuText(_("Show ENC Data Quality"), _T("Alt-U")));
+                             _menuText(_("Show ENC Soundings"), "Alt-S"));
+  view_menu->AppendCheckItem(ID_MENU_ENC_ANCHOR,
+                             _menuText(_("Show ENC Anchoring Info"), "Alt-A"));
+  view_menu->AppendCheckItem(ID_MENU_ENC_DATA_QUALITY,
+                             _menuText(_("Show ENC Data Quality"), "Alt-U"));
   view_menu->AppendCheckItem(ID_MENU_SHOW_NAVOBJECTS,
-                             _menuText(_("Show Navobjects"), _T("Alt-V")));
+                             _menuText(_("Show Navobjects"), "Alt-V"));
 #endif
   view_menu->AppendSeparator();
   view_menu->AppendCheckItem(ID_MENU_SHOW_TIDES, _("Show Tides"));
@@ -3761,16 +3645,16 @@ void MyFrame::RegisterGlobalMenuItems() {
   view_menu->AppendSeparator();
 #ifndef __WXOSX__
   view_menu->Append(ID_MENU_UI_COLSCHEME,
-                    _menuText(_("Change Color Scheme"), _T("C")));
+                    _menuText(_("Change Color Scheme"), "C"));
 #else
   view_menu->Append(ID_MENU_UI_COLSCHEME,
-                    _menuText(_("Change Color Scheme"), _T("Alt-C")));
+                    _menuText(_("Change Color Scheme"), "Alt-C"));
 #endif
 
   view_menu->AppendSeparator();
 #ifndef __WXOSX__
   view_menu->Append(ID_MENU_UI_FULLSCREEN,
-                    _menuText(_("Toggle Full Screen"), _T("F11")));
+                    _menuText(_("Toggle Full Screen"), "F11"));
 #endif
   m_pMenuBar->Append(view_menu, _("&View"));
 
@@ -3787,14 +3671,14 @@ void MyFrame::RegisterGlobalMenuItems() {
 
 #ifndef __WXOSX__
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPAWARNING,
-                            _menuText(_("Show CPA Warnings"), _T("W")));
+                            _menuText(_("Show CPA Warnings"), "W"));
 #else
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPAWARNING,
-                            _menuText(_("Show CPA Warnings"), _T("Alt-W")));
+                            _menuText(_("Show CPA Warnings"), "Alt-W"));
 #endif
 
   ais_menu->AppendSeparator();
-  ais_menu->Append(ID_MENU_AIS_TARGETLIST, _("AIS target list") + _T("..."));
+  ais_menu->Append(ID_MENU_AIS_TARGETLIST, _("AIS target list") + "...");
   m_pMenuBar->Append(ais_menu, _("&AIS"));
 
   wxMenu *tools_menu = new wxMenu();
@@ -3802,37 +3686,35 @@ void MyFrame::RegisterGlobalMenuItems() {
                      _menuText(_("Data Monitor"), "Alt-C"));
 #ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
-                     _menuText(_("Measure Distance"), _T("M")));
+                     _menuText(_("Measure Distance"), "M"));
 #else
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
-                     _menuText(_("Measure Distance"), _T("Alt-M")));
+                     _menuText(_("Measure Distance"), "Alt-M"));
 #endif
 
   tools_menu->AppendSeparator();
   tools_menu->Append(ID_MENU_ROUTE_MANAGER, _("Route && Mark Manager..."));
-  tools_menu->Append(ID_MENU_ROUTE_NEW,
-                     _menuText(_("Create Route"), _T("Ctrl-R")));
+  tools_menu->Append(ID_MENU_ROUTE_NEW, _menuText(_("Create Route"), "Ctrl-R"));
   tools_menu->AppendSeparator();
   tools_menu->Append(ID_MENU_MARK_BOAT,
-                     _menuText(_("Drop Mark at Boat"), _T("Ctrl-O")));
+                     _menuText(_("Drop Mark at Boat"), "Ctrl-O"));
   tools_menu->Append(ID_MENU_MARK_CURSOR,
-                     _menuText(_("Drop Mark at Cursor"), _T("Ctrl-M")));
+                     _menuText(_("Drop Mark at Cursor"), "Ctrl-M"));
   tools_menu->AppendSeparator();
 #ifdef __WXOSX__
   tools_menu->Append(
       ID_MENU_MARK_MOB,
-      _menuText(
-          _("Drop MOB Marker"),
-          _T("RawCtrl-Space")));  // NOTE Cmd+Space is reserved for Spotlight
+      _menuText(_("Drop MOB Marker"),
+                "RawCtrl-Space"));  // NOTE Cmd+Space is reserved for Spotlight
   tools_menu->AppendSeparator();
   tools_menu->Append(wxID_PREFERENCES,
-                     _menuText(_("Preferences") + _T("..."), _T("Ctrl-,")));
+                     _menuText(_("Preferences") + "...", "Ctrl-,"));
 #else
   tools_menu->Append(ID_MENU_MARK_MOB,
-                     _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")));
+                     _menuText(_("Drop MOB Marker"), "Ctrl-Space"));
   tools_menu->AppendSeparator();
   tools_menu->Append(wxID_PREFERENCES,
-                     _menuText(_("Options") + _T("..."), _T("Ctrl-,")));
+                     _menuText(_("Options") + "...", "Ctrl-,"));
 #endif
   m_pMenuBar->Append(tools_menu, _("&Tools"));
 
@@ -3988,7 +3870,7 @@ void MyFrame::InvalidateAllCanvasUndo() {
   }
 }
 #if 0
-void MyFrame::SubmergeAllCanvasToolbars(void) {
+void MyFrame::SubmergeAllCanvasToolbars() {
   // .. for each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -3996,7 +3878,7 @@ void MyFrame::SubmergeAllCanvasToolbars(void) {
   }
 }
 
-void MyFrame::SurfaceAllCanvasToolbars(void) {
+void MyFrame::SurfaceAllCanvasToolbars() {
   if (g_bshowToolbar) {
     // .. for each canvas...
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -4112,6 +3994,7 @@ void MyFrame::PrepareOptionsClose(options *settings,
   androidRestoreFullScreen();
   androidEnableRotation();
 #endif
+  ThawCharts();
 }
 
 void MyFrame::DoOptionsDialog() {
@@ -4334,7 +4217,8 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
       false;  // since we don't want to pan to an unknown cursor position
 
   //  This is needed to recognise changes in zoom-scale factors
-  GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
+  if (!GetPrimaryCanvas()->IsFrozen())
+    GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
   g_bEnableZoomToCursor = ztc;
 
   //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
@@ -4408,6 +4292,8 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
 
+  if (rr & FORCE_RELOAD) ScheduleReloadCharts();
+
   return;
 }
 
@@ -4459,7 +4345,7 @@ bool MyFrame::ScrubGroupArray() {
 
       // Explicit check to avoid removing a group containing only GSHHS
       if (!b_chart_in_element) {
-        wxString test_string = _T("GSHH");
+        wxString test_string = "GSHH";
         if (element_root.Upper().Contains(test_string))
           b_chart_in_element = true;
       }
@@ -4558,8 +4444,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
   if (b_prog) {
     wxString longmsg = _("OpenCPN Chart Update");
     longmsg +=
-        _T("..................................................................")
-        _T("........");
+        ".................................................................."
+        "........";
 
     pprog = new wxGenericProgressDialog();
 
@@ -4574,16 +4460,16 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
     pprog->Show();
   }
 
-  wxLogMessage(_T("   "));
-  wxLogMessage(_T("Starting chart database Update..."));
+  wxLogMessage("   ");
+  wxLogMessage("Starting chart database Update...");
   wxString gshhg_chart_loc = gWorldMapLocation;
   gWorldMapLocation = wxEmptyString;
   // The Update() function may set gWorldMapLocation if at least one of the
   // directories contains GSHHS files.
   ChartData->Update(DirArray, b_force, pprog);
   ChartData->SaveBinary(ChartListFileName);
-  wxLogMessage(_T("Finished chart database Update"));
-  wxLogMessage(_T("   "));
+  wxLogMessage("Finished chart database Update");
+  wxLogMessage("   ");
   if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
                                     // GSHHG data, but we still might have the
                                     // default dataset distributed with OpenCPN
@@ -4678,7 +4564,7 @@ void MyFrame::PositionIENCToolbar() {
 void MyFrame::OnInitTimer(wxTimerEvent &event) {
   InitTimer.Stop();
   wxString msg;
-  msg.Printf(_T("OnInitTimer...%d"), m_iInitCount);
+  msg.Printf("OnInitTimer...%d", m_iInitCount);
   wxLogMessage(msg);
 
   wxLog::FlushActive();
@@ -4771,12 +4657,11 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       // Import Layer-wise any .gpx files from /layers directory
       wxString layerdir = g_Platform->GetPrivateDataDir();
       appendOSDirSlash(&layerdir);
-      layerdir.Append(_T("layers"));
+      layerdir.Append("layers");
 
       if (wxDir::Exists(layerdir)) {
         wxString laymsg;
-        laymsg.Printf(wxT("Getting .gpx layer files from: %s"),
-                      layerdir.c_str());
+        laymsg.Printf("Getting .gpx layer files from: %s", layerdir.c_str());
         wxLogMessage(laymsg);
         pConfig->LoadLayers(layerdir);
       }
@@ -4785,13 +4670,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     }
     case 1:
       // Connect Datastreams
-
       for (auto *cp : TheConnectionParams()) {
         if (cp->bEnabled) {
           MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
         }
       }
+      MakeLoopbackDriver();
       break;
 
     case 2: {
@@ -4809,8 +4694,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, false);
 
       wxString perspective;
-      pConfig->SetPath(_T ( "/AUI" ));
-      pConfig->Read(_T ( "AUIPerspective" ), &perspective);
+      pConfig->SetPath("/AUI");
+      pConfig->Read("AUIPerspective", &perspective);
 
       // Make sure the perspective saved in the config file is "reasonable"
       // In particular, the perspective should have an entry for every
@@ -4820,10 +4705,10 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       bool bno_load = false;
 
       wxArrayString name_array;
-      wxStringTokenizer st(perspective, _T("|;"));
+      wxStringTokenizer st(perspective, "|;");
       while (st.HasMoreTokens()) {
         wxString s1 = st.GetNextToken();
-        if (s1.StartsWith(_T("name="))) {
+        if (s1.StartsWith("name=")) {
           wxString sc = s1.AfterFirst('=');
           name_array.Add(sc);
         }
@@ -4875,17 +4760,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       g_pi_manager->CallLateInit();
 
-      //  If any PlugIn implements PlugIn Charts, we need to re-run the initial
-      //  chart load logic to select the correct chart as saved from the last
-      //  run of the app. This will be triggered at the next DoChartUpdate()
-      if (g_pi_manager->IsAnyPlugInChartEnabled()) {
-        for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-          ChartCanvas *cc = g_canvasArray.Item(i);
-          if (cc) cc->SetFirstAuto(true);
-        }
-
-        b_reloadForPlugins = true;
-      }
+      if (g_pi_manager->IsAnyPlugInChartEnabled()) b_reloadForPlugins = true;
 
       break;
     }
@@ -4956,7 +4831,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       // if WMM is not in use..
       // set the Mag Variation to the user specified value
       auto loader = PluginLoader::GetInstance();
-      bool b_haveWMM = loader && loader->IsPlugInAvailable(_T("WMM"));
+      bool b_haveWMM = loader && loader->IsPlugInAvailable("WMM");
       if (!b_haveWMM) gVar = g_UserVar;
 
       break;
@@ -4964,7 +4839,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
     default: {
       // Last call....
-      wxLogMessage(_T("OnInitTimer...Last Call"));
+      wxLogMessage("OnInitTimer...Last Call");
 
       PositionIENCToolbar();
 
@@ -4978,11 +4853,22 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #endif
 
       if (b_reloadForPlugins) {
+        //  If any PlugIn implements PlugIn Charts, we need to re-run the
+        //  initial chart load logic to select the correct chart as saved from
+        //  the last run of the app. This will be triggered at the next
+        //  DoChartUpdate()
+        if (g_pi_manager->IsAnyPlugInChartEnabled()) {
+          for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if (cc) cc->SetFirstAuto(true);
+          }
+        }
+
         DoChartUpdate();
         ChartsRefresh();
       }
 
-      wxLogMessage(_T("OnInitTimer...Finalize Canvases"));
+      wxLogMessage("OnInitTimer...Finalize Canvases");
 
       for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
         ChartCanvas *cc = g_canvasArray.Item(i);
@@ -5317,7 +5203,7 @@ void MyFrame::UpdateStatusBar() {
       wxString s1(tick_buf, wxConvUTF8);
       s1 += _(" Ship ");
       s1 += toSDMM(1, gLat);
-      s1 += _T("   ");
+      s1 += "   ";
       s1 += toSDMM(2, gLon);
 
       if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
@@ -5325,10 +5211,9 @@ void MyFrame::UpdateStatusBar() {
 
     wxString sogcog;
     if (!std::isnan(gSog))
-      sogcog.Printf(_T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "),
-                    toUsrSpeed(gSog));
+      sogcog.Printf("SOG %2.2f " + getUsrSpeedUnit() + "  ", toUsrSpeed(gSog));
     else
-      sogcog.Printf(_T("SOG --- "));
+      sogcog.Printf("SOG --- ");
 
     wxString cogs;
     // We show COG only if SOG is > 0.05
@@ -5601,7 +5486,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
 void MyFrame::ProcessQuitFlag() {
   //      Listen for quitflag to be set, requesting application close
   if (quitflag) {
-    wxLogMessage(_T("Got quitflag from SIGNAL"));
+    wxLogMessage("Got quitflag from SIGNAL");
     FrameTimer1.Stop();
     FrameTenHzTimer.Stop();
 
@@ -5719,34 +5604,34 @@ void MyFrame::ProcessLogAndBells() {
     if (logspan.IsLongerThan(wxTimeSpan(0, 1, 0, 0))) {
       wxString day = lognow.FormatISODate();
       wxString utc = lognow.FormatISOTime();
-      wxString navmsg = _T("LOGBOOK:  ");
+      wxString navmsg = "LOGBOOK:  ";
       navmsg += day;
-      navmsg += _T(" ");
+      navmsg += " ";
       navmsg += utc;
-      navmsg += _T(" UTC ");
+      navmsg += " UTC ";
 
       if (bGPSValid) {
         wxString data;
-        data.Printf(_T(" GPS Lat %10.5f Lon %10.5f "), gLat, gLon);
+        data.Printf(" GPS Lat %10.5f Lon %10.5f ", gLat, gLon);
         navmsg += data;
 
         wxString cog;
         if (std::isnan(gCog))
-          cog.Printf(_T("COG ----- "));
+          cog.Printf("COG ----- ");
         else
-          cog.Printf(_T("COG %10.5f "), gCog);
+          cog.Printf("COG %10.5f ", gCog);
 
         wxString sog;
         if (std::isnan(gSog))
-          sog.Printf(_T("SOG -----  "));
+          sog.Printf("SOG -----  ");
         else
-          sog.Printf(_T("SOG %6.2f ") + getUsrSpeedUnit(), toUsrSpeed(gSog));
+          sog.Printf("SOG %6.2f " + getUsrSpeedUnit(), toUsrSpeed(gSog));
 
         navmsg += cog;
         navmsg += sog;
       } else {
         wxString data;
-        data.Printf(_T(" DR Lat %10.5f Lon %10.5f"), gLat, gLon);
+        data.Printf(" DR Lat %10.5f Lon %10.5f", gLat, gLon);
         navmsg += data;
       }
       wxLogMessage(navmsg);
@@ -5799,8 +5684,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   //  just after start of ticks.
 
   if (g_tick == 2) {
-    wxString sogcog(_T("SOG --- ") + getUsrSpeedUnit() + +_T("     ") +
-                    _T(" COG ---\u00B0"));
+    wxString sogcog("SOG --- " + getUsrSpeedUnit() + +"     " +
+                    " COG ---\u00B0");
     if (GetStatusBar()) SetStatusText(sogcog, STAT_FIELD_SOGCOG);
 
     gCog = 0.0;  // say speed is zero to kill ownship predictor
@@ -5811,6 +5696,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (!g_btenhertz) bnew_view = DoChartUpdate();
 
   nBlinkerTick++;
+
+  if (g_always_send_rmb_rmc) SendNoRouteRmbRmc(*g_pRouteMan);
 
   // This call sends autopilot output strings to output ports.
   bool bactiveRouteUpdate = RoutemanGui(*g_pRouteMan).UpdateProgress();
@@ -5966,7 +5853,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 double MyFrame::GetMag(double a, double lat, double lon) {
   double Variance = std::isnan(gVar) ? g_UserVar : gVar;
   auto loader = PluginLoader::GetInstance();
-  if (loader && loader->IsPlugInAvailable(_T("WMM"))) {
+  if (loader && loader->IsPlugInAvailable("WMM")) {
     // Request variation at a specific lat/lon
 
     // Note that the requested value is returned sometime later in the event
@@ -5985,19 +5872,19 @@ bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon,
                                        wxDateTime date) {
   if (g_pi_manager) {
     wxJSONValue v;
-    v[_T("Lat")] = lat;
-    v[_T("Lon")] = lon;
-    v[_T("Year")] = date.GetYear();
-    v[_T("Month")] = date.GetMonth();
-    v[_T("Day")] = date.GetDay();
+    v["Lat"] = lat;
+    v["Lon"] = lon;
+    v["Year"] = date.GetYear();
+    v["Month"] = date.GetMonth();
+    v["Day"] = date.GetDay();
 
-    SendJSONMessageToAllPlugins(_T("WMM_VARIATION_REQUEST"), v);
+    SendJSONMessageToAllPlugins("WMM_VARIATION_REQUEST", v);
     return true;
   } else
     return false;
 }
 
-void MyFrame::TouchAISActive(void) {
+void MyFrame::TouchAISActive() {
   // .. for each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -6005,7 +5892,7 @@ void MyFrame::TouchAISActive(void) {
   }
 }
 
-void MyFrame::UpdateAISTool(void) {
+void MyFrame::UpdateAISTool() {
   if (!g_pAIS) return;
 
   // .. for each canvas...
@@ -6051,7 +5938,7 @@ void MyFrame::OnFrameCOGTimer(wxTimerEvent &event) {
   FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
 }
 
-void MyFrame::DoCOGSet(void) {
+void MyFrame::DoCOGSet() {
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -6068,7 +5955,7 @@ void RenderShadowText(wxDC *pdc, wxFont *pFont, wxString &str, int x, int y) {
   wxFont oldfont = pdc->GetFont();  // save current font
 
   pdc->SetFont(*pFont);
-  pdc->SetTextForeground(GetGlobalColor(_T("CHGRF")));
+  pdc->SetTextForeground(GetGlobalColor("CHGRF"));
   pdc->SetBackgroundMode(wxTRANSPARENT);
 
   pdc->DrawText(str, x, y + 1);
@@ -6076,7 +5963,7 @@ void RenderShadowText(wxDC *pdc, wxFont *pFont, wxString &str, int x, int y) {
   pdc->DrawText(str, x + 1, y);
   pdc->DrawText(str, x - 1, y);
 
-  pdc->SetTextForeground(GetGlobalColor(_T("CHBLK")));
+  pdc->SetTextForeground(GetGlobalColor("CHBLK"));
 
   pdc->DrawText(str, x, y);
 
@@ -6116,7 +6003,7 @@ void MyFrame::UpdateGPSCompassStatusBoxes(bool b_force_new) {
 
 //    Application memory footprint management
 
-int MyFrame::GetApplicationMemoryUse(void) {
+int MyFrame::GetApplicationMemoryUse() {
   int memsize = -1;
 #ifdef __linux__
 
@@ -6125,10 +6012,10 @@ int MyFrame::GetApplicationMemoryUse(void) {
   wxWindow *fWin = wxWindow::FindFocus();
 
   wxArrayString outputArray;
-  wxString cmd(_T("ps --no-headers -o vsize "));
+  wxString cmd("ps --no-headers -o vsize ");
   unsigned long pid = wxGetProcessId();
   wxString cmd1;
-  cmd1.Printf(_T("%ld"), pid);
+  cmd1.Printf("%ld", pid);
   cmd += cmd1;
   wxExecute(cmd, outputArray);
 
@@ -6229,7 +6116,7 @@ void MyFrame::selectChartDisplay(int type, int family) {
 //      Create a chartstack based on current lat/lon.
 //      Return true if a Refresh(false) was called within.
 //----------------------------------------------------------------------------------
-bool MyFrame::DoChartUpdate(void) {
+bool MyFrame::DoChartUpdate() {
   bool return_val = false;
 
   // ..For each canvas...
@@ -6265,157 +6152,6 @@ void MyFrame::MouseEvent(wxMouseEvent &event) {
 #include "sys/sysinfo.h"
 #endif /* __linux__ */
 
-int g_lastMemTick = -1;
-
-/* Return total system RAM and size of program */
-/* Values returned are in kilobytes            */
-bool GetMemoryStatus(int *mem_total, int *mem_used) {
-#ifdef __ANDROID__
-  return androidGetMemoryStatus(mem_total, mem_used);
-#endif
-
-#if defined(__linux__)
-  // Use sysinfo to obtain total RAM
-  if (mem_total) {
-    *mem_total = 0;
-    struct sysinfo sys_info;
-    if (sysinfo(&sys_info) != -1)
-      *mem_total = ((uint64_t)sys_info.totalram * sys_info.mem_unit) / 1024;
-  }
-  //      Use filesystem /proc/self/statm to determine memory status
-  //  Provides information about memory usage, measured in pages.  The columns
-  //  are: size       total program size (same as VmSize in /proc/[pid]/status)
-  //  resident   resident set size (same as VmRSS in /proc/[pid]/status)
-  //  share      shared pages (from shared mappings)
-  //  text       text (code)
-  //  lib        library (unused in Linux 2.6)
-  //  data       data + stack
-  //  dt         dirty pages (unused in Linux 2.6)
-
-  if (mem_used) {
-    *mem_used = 0;
-    FILE *file = fopen("/proc/self/statm", "r");
-    if (file) {
-      if (fscanf(file, "%d", mem_used) != 1) {
-        wxLogWarning("Cannot parse /proc/self/statm (!)");
-      }
-      *mem_used *= 4;  // XXX assume 4K page
-      fclose(file);
-    }
-  }
-
-  return true;
-
-#endif /* __linux__ */
-
-#ifdef __WXMSW__
-  HANDLE hProcess;
-  PROCESS_MEMORY_COUNTERS pmc;
-
-  unsigned long processID = wxGetProcessId();
-
-  if (mem_used) {
-    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,
-                           processID);
-
-    if (hProcess && GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
-      /*
-       printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
-       printf( "\tPeakWorkingSetSize: 0x%08X\n",
-       pmc.PeakWorkingSetSize );
-       printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
-       printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaPeakPagedPoolUsage );
-       printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaPagedPoolUsage );
-       printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaPeakNonPagedPoolUsage );
-       printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
-       pmc.QuotaNonPagedPoolUsage );
-       printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
-       printf( "\tPeakPagefileUsage: 0x%08X\n",
-       pmc.PeakPagefileUsage );
-       */
-      *mem_used = pmc.WorkingSetSize / 1024;
-    }
-
-    CloseHandle(hProcess);
-  }
-
-  if (mem_total) {
-    MEMORYSTATUSEX statex;
-
-    statex.dwLength = sizeof(statex);
-
-    GlobalMemoryStatusEx(&statex);
-    /*
-     _tprintf (TEXT("There is  %*ld percent of memory in use.\n"),
-     WIDTH, statex.dwMemoryLoad);
-     _tprintf (TEXT("There are %*I64d total Kbytes of physical memory.\n"),
-     WIDTH, statex.ullTotalPhys/DIV);
-     _tprintf (TEXT("There are %*I64d free Kbytes of physical memory.\n"),
-     WIDTH, statex.ullAvailPhys/DIV);
-     _tprintf (TEXT("There are %*I64d total Kbytes of paging file.\n"),
-     WIDTH, statex.ullTotalPageFile/DIV);
-     _tprintf (TEXT("There are %*I64d free Kbytes of paging file.\n"),
-     WIDTH, statex.ullAvailPageFile/DIV);
-     _tprintf (TEXT("There are %*I64d total Kbytes of virtual memory.\n"),
-     WIDTH, statex.ullTotalVirtual/DIV);
-     _tprintf (TEXT("There are %*I64d free Kbytes of virtual memory.\n"),
-     WIDTH, statex.ullAvailVirtual/DIV);
-     */
-
-    *mem_total = statex.ullTotalPhys / 1024;
-  }
-  return true;
-#endif
-
-#ifdef __WXMAC__
-
-  if (g_tick != g_lastMemTick) {
-    malloc_zone_pressure_relief(NULL, 0);
-
-    int bytesInUse = 0;
-    int blocksInUse = 0;
-    int sizeAllocated = 0;
-
-    malloc_statistics_t stats;
-    stats.blocks_in_use = 0;
-    stats.size_in_use = 0;
-    stats.max_size_in_use = 0;
-    stats.size_allocated = 0;
-    malloc_zone_statistics(NULL, &stats);
-    bytesInUse += stats.size_in_use;
-    blocksInUse += stats.blocks_in_use;
-    sizeAllocated += stats.size_allocated;
-
-    g_memUsed = sizeAllocated >> 10;
-
-    // printf("mem_used (Mb):  %d   %d \n", g_tick, g_memUsed / 1024);
-    g_lastMemTick = g_tick;
-  }
-
-  if (mem_used) *mem_used = g_memUsed;
-  if (mem_total) {
-    *mem_total = 4000;
-    FILE *fpIn = popen("sysctl -n hw.memsize", "r");
-    if (fpIn) {
-      double pagesUsed = 0.0, totalPages = 0.0;
-      char buf[64];
-      if (fgets(buf, sizeof(buf), fpIn) != NULL) {
-        *mem_total = atol(buf) >> 10;
-      }
-    }
-  }
-
-  return true;
-#endif
-
-  if (mem_used) *mem_used = 0;
-  if (mem_total) *mem_total = 0;
-  return false;
-}
-
 void MyFrame::DoPrint(void) {
   // avoid toolbars being printed
   g_PrintingInProgress = true;
@@ -6444,7 +6180,7 @@ void MyFrame::DoPrint(void) {
    {
    delete preview;
    OCPNMessageBox(_T("There was a problem previewing.\nPerhaps your current
-   printer is not set correctly?"), _T("Previewing"), wxOK); return;
+   printer is not set correctly?"), "Previewing", wxOK); return;
    }
 
    wxPreviewFrame *frame = new wxPreviewFrame(preview, this, _T("Demo Print
@@ -6460,8 +6196,6 @@ void MyFrame::DoPrint(void) {
 #endif
 }
 
-wxDateTime gTimeSource;
-
 void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   wxString message_ID = event.GetID();
   wxString message_JSONText = event.GetJSONText();
@@ -6472,7 +6206,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   //  We can possibly use the estimated magnetic variation if WMM_pi is
   //  present, active, and we have no other source of Variation
   if (!g_bVAR_Rx) {
-    if (message_ID == _T("WMM_VARIATION_BOAT")) {
+    if (message_ID == "WMM_VARIATION_BOAT") {
       // construct the JSON root object
       wxJSONValue root;
       // construct a JSON parser
@@ -6487,7 +6221,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
       }
 
       // get the DECL value from the JSON message
-      wxString decl = root[_T("Decl")].AsString();
+      wxString decl = root["Decl"].AsString();
       double decl_val;
       decl.ToDouble(&decl_val);
 
@@ -6495,7 +6229,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     }
   }
 
-  if (message_ID == _T("WMM_VARIATION")) {
+  if (message_ID == "WMM_VARIATION") {
     // construct the JSON root object
     wxJSONValue root;
     // construct a JSON parser
@@ -6510,26 +6244,52 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     }
 
     // get the DECL value from the JSON message
-    wxString decl = root[_T("Decl")].AsString();
+    wxString decl = root["Decl"].AsString();
     double decl_val;
     decl.ToDouble(&decl_val);
 
     gQueryVar = decl_val;
   }
 
-  if (message_ID == _T("GRIB_TIMELINE")) {
+  if (message_ID == "GRIB_TIMELINE") {
     wxJSONReader r;
     wxJSONValue v;
-    r.Parse(message_JSONText, &v);
-    if (v[_T("Day")].AsInt() == -1)
+    int numErrors = r.Parse(message_JSONText, &v);
+
+    if (numErrors > 0) {
+      wxLogMessage("GRIB_TIMELINE: JSON parse error");
+      return;
+    }
+
+    // Store old time source for comparison
+    wxDateTime oldTimeSource = gTimeSource;
+
+    if (v["Day"].AsInt() == -1) {
       gTimeSource = wxInvalidDateTime;
-    else
-      gTimeSource.Set(v[_T("Day")].AsInt(),
-                      (wxDateTime::Month)v[_T("Month")].AsInt(),
-                      v[_T("Year")].AsInt(), v[_T("Hour")].AsInt(),
-                      v[_T("Minute")].AsInt(), v[_T("Second")].AsInt());
+      wxLogMessage("GRIB_TIMELINE: Reset to system time");
+    } else {
+      gTimeSource.Set(v["Day"].AsInt(), (wxDateTime::Month)v["Month"].AsInt(),
+                      v["Year"].AsInt(), v["Hour"].AsInt(), v["Minute"].AsInt(),
+                      v["Second"].AsInt());
+    }
+
+    // Refresh tide displays if time source changed
+    if (oldTimeSource != gTimeSource) {
+      // Refresh all canvases that might show tide info
+      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if (cc && (cc->GetbShowTide() || cc->GetbShowCurrent())) {
+          cc->Refresh(false);
+
+          // Also refresh any open tide dialog windows
+          if (cc->pCwin) {  // pCwin is the tide window pointer
+            cc->pCwin->Refresh(false);
+          }
+        }
+      }
+    }
   }
-  if (message_ID == _T("OCPN_TRACK_REQUEST")) {
+  if (message_ID == "OCPN_TRACK_REQUEST") {
     wxJSONValue root;
     wxJSONReader reader;
     wxString trk_id = wxEmptyString;
@@ -6537,11 +6297,10 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     int numErrors = reader.Parse(message_JSONText, &root);
     if (numErrors > 0) return;
 
-    if (root.HasMember(_T("Track_ID")))
-      trk_id = root[_T("Track_ID")].AsString();
+    if (root.HasMember("Track_ID")) trk_id = root["Track_ID"].AsString();
 
     wxJSONValue v;
-    v[_T("Track_ID")] = trk_id;
+    v["Track_ID"] = trk_id;
     for (Track *ptrack : g_TrackList) {
       wxString name = wxEmptyString;
       if (ptrack->m_GUID == trk_id) {
@@ -6549,7 +6308,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
         if (name.IsEmpty()) {
           TrackPoint *rp = ptrack->GetPoint(0);
           if (rp && rp->GetCreateTime().IsValid())
-            name = rp->GetCreateTime().FormatISODate() + _T(" ") +
+            name = rp->GetCreateTime().FormatISODate() + " " +
                    rp->GetCreateTime().FormatISOTime();
           else
             name = _("(Unnamed Track)");
@@ -6558,25 +6317,25 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
         /*                To avoid memory problems send a single trackpoint.
          * It's up to the plugin to collect the data. */
         int i = 1;
-        v[_T("error")] = false;
-        v[_T("TotalNodes")] = ptrack->GetnPoints();
+        v["error"] = false;
+        v["TotalNodes"] = ptrack->GetnPoints();
         for (int j = 0; j < ptrack->GetnPoints(); j++) {
           TrackPoint *tp = ptrack->GetPoint(j);
-          v[_T("lat")] = tp->m_lat;
-          v[_T("lon")] = tp->m_lon;
-          v[_T("NodeNr")] = i;
+          v["lat"] = tp->m_lat;
+          v["lon"] = tp->m_lon;
+          v["NodeNr"] = i;
           i++;
-          wxString msg_id(_T("OCPN_TRACKPOINTS_COORDS"));
+          wxString msg_id("OCPN_TRACKPOINTS_COORDS");
           SendJSONMessageToAllPlugins(msg_id, v);
         }
         return;
       }
-      v[_T("error")] = true;
+      v["error"] = true;
 
-      wxString msg_id(_T("OCPN_TRACKPOINTS_COORDS"));
+      wxString msg_id("OCPN_TRACKPOINTS_COORDS");
       SendJSONMessageToAllPlugins(msg_id, v);
     }
-  } else if (message_ID == _T("OCPN_ROUTE_REQUEST")) {
+  } else if (message_ID == "OCPN_ROUTE_REQUEST") {
     wxJSONValue root;
     wxJSONReader reader;
     wxString guid = wxEmptyString;
@@ -6586,56 +6345,55 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
       return;
     }
 
-    if (root.HasMember(_T("GUID"))) guid = root[_T("GUID")].AsString();
+    if (root.HasMember("GUID")) guid = root["GUID"].AsString();
 
     wxJSONValue v;
-    v[_T("GUID")] = guid;
-    for (RouteList::iterator it = pRouteList->begin(); it != pRouteList->end();
-         it++) {
+    v["GUID"] = guid;
+    for (auto it = pRouteList->begin(); it != pRouteList->end(); ++it) {
       wxString name = wxEmptyString;
 
       if ((*it)->m_GUID == guid) {
         name = (*it)->m_RouteNameString;
         if (name.IsEmpty()) name = _("(Unnamed Route)");
 
-        v[_T("Name")] = name;
-        v[_T("error")] = false;
+        v["Name"] = name;
+        v["error"] = false;
         wxJSONValue w;
         int i = 0;
         for (RoutePointList::iterator itp = (*it)->pRoutePointList->begin();
              itp != (*it)->pRoutePointList->end(); itp++) {
-          w[i][_T("lat")] = (*itp)->m_lat;
-          w[i][_T("lon")] = (*itp)->m_lon;
-          w[i][_T("Name")] = (*itp)->GetName();
-          w[i][_T("Description")] = (*itp)->GetDescription();
-          w[i][_T("GUID")] = (*itp)->m_GUID;
-          w[i][_T("ArrivalRadius")] = (*itp)->GetWaypointArrivalRadius();
-          wxHyperlinkListNode *node = (*itp)->m_HyperlinkList->GetFirst();
-          if (node) {
+          w[i]["lat"] = (*itp)->m_lat;
+          w[i]["lon"] = (*itp)->m_lon;
+          w[i]["Name"] = (*itp)->GetName();
+          w[i]["Description"] = (*itp)->GetDescription();
+          w[i]["GUID"] = (*itp)->m_GUID;
+          w[i]["ArrivalRadius"] = (*itp)->GetWaypointArrivalRadius();
+
+          auto node = (*itp)->m_HyperlinkList->begin();
+          if (node != (*itp)->m_HyperlinkList->end()) {
             int n = 1;
-            while (node) {
-              Hyperlink *httpLink = node->GetData();
-              v[i][_T("WPLink") + wxString::Format(_T("%d"), n)] =
-                  httpLink->Link;
-              v[i][_T("WPLinkDesciption") + wxString::Format(_T("%d"), n++)] =
+            while (node != (*itp)->m_HyperlinkList->end()) {
+              Hyperlink *httpLink = *node;
+              v[i]["WPLink" + wxString::Format("%d", n)] = httpLink->Link;
+              v[i]["WPLinkDesciption" + wxString::Format("%d", n++)] =
                   httpLink->DescrText;
-              node = node->GetNext();
+              ++node;
             }
           }
           i++;
         }
-        v[_T("waypoints")] = w;
-        wxString msg_id(_T("OCPN_ROUTE_RESPONSE"));
+        v["waypoints"] = w;
+        wxString msg_id("OCPN_ROUTE_RESPONSE");
         SendJSONMessageToAllPlugins(msg_id, v);
         return;
       }
     }
 
-    v[_T("error")] = true;
+    v["error"] = true;
 
-    wxString msg_id(_T("OCPN_ROUTE_RESPONSE"));
+    wxString msg_id("OCPN_ROUTE_RESPONSE");
     SendJSONMessageToAllPlugins(msg_id, v);
-  } else if (message_ID == _T("OCPN_ROUTELIST_REQUEST")) {
+  } else if (message_ID == "OCPN_ROUTELIST_REQUEST") {
     wxJSONValue root;
     wxJSONReader reader;
     bool route = true;
@@ -6643,9 +6401,9 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     int numErrors = reader.Parse(message_JSONText, &root);
     if (numErrors > 0) return;
 
-    if (root.HasMember(_T("mode"))) {
-      wxString str = root[_T("mode")].AsString();
-      if (str == _T("Track")) route = false;
+    if (root.HasMember("mode")) {
+      wxString str = root["mode"].AsString();
+      if (str == "Track") route = false;
 
       wxJSONValue v;
       int i = 1;
@@ -6655,10 +6413,10 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           wxString name = (*it)->m_RouteNameString;
           if (name.IsEmpty()) name = _("(Unnamed Route)");
 
-          v[i][_T("error")] = false;
-          v[i][_T("name")] = name;
-          v[i][_T("GUID")] = (*it)->m_GUID;
-          v[i][_T("active")] = (*it)->IsActive();
+          v[i]["error"] = false;
+          v[i]["name"] = name;
+          v[i]["GUID"] = (*it)->m_GUID;
+          v[i]["active"] = (*it)->IsActive();
           i++;
         }
       } else {  // track
@@ -6667,49 +6425,48 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           if (name.IsEmpty()) {
             TrackPoint *tp = ptrack->GetPoint(0);
             if (tp && tp->GetCreateTime().IsValid())
-              name = tp->GetCreateTime().FormatISODate() + _T(" ") +
+              name = tp->GetCreateTime().FormatISODate() + " " +
                      tp->GetCreateTime().FormatISOTime();
             else
               name = _("(Unnamed Track)");
           }
-          v[i][_T("error")] = false;
-          v[i][_T("name")] = name;
-          v[i][_T("GUID")] = ptrack->m_GUID;
-          v[i][_T("active")] = g_pActiveTrack == ptrack;
+          v[i]["error"] = false;
+          v[i]["name"] = name;
+          v[i]["GUID"] = ptrack->m_GUID;
+          v[i]["active"] = g_pActiveTrack == ptrack;
           i++;
         }
       }
-      wxString msg_id(_T("OCPN_ROUTELIST_RESPONSE"));
+      wxString msg_id("OCPN_ROUTELIST_RESPONSE");
       SendJSONMessageToAllPlugins(msg_id, v);
     } else {
       wxJSONValue v;
-      v[0][_T("error")] = true;
-      wxString msg_id(_T("OCPN_ROUTELIST_RESPONSE"));
+      v[0]["error"] = true;
+      wxString msg_id("OCPN_ROUTELIST_RESPONSE");
       SendJSONMessageToAllPlugins(msg_id, v);
     }
-  } else if (message_ID == _T("OCPN_ACTIVE_ROUTELEG_REQUEST")) {
+  } else if (message_ID == "OCPN_ACTIVE_ROUTELEG_REQUEST") {
     wxJSONValue v;
-    v[0][_T("error")] = true;
+    v[0]["error"] = true;
     if (g_pRouteMan->GetpActiveRoute()) {
       if (g_pRouteMan->m_bDataValid) {
-        v[0][_T("error")] = false;
-        v[0][_T("range")] = g_pRouteMan->GetCurrentRngToActivePoint();
-        v[0][_T("bearing")] = g_pRouteMan->GetCurrentBrgToActivePoint();
-        v[0][_T("XTE")] = g_pRouteMan->GetCurrentXTEToActivePoint();
-        v[0][_T("active_route_GUID")] =
-            g_pRouteMan->GetpActiveRoute()->GetGUID();
-        v[0][_T("active_waypoint_lat")] =
+        v[0]["error"] = false;
+        v[0]["range"] = g_pRouteMan->GetCurrentRngToActivePoint();
+        v[0]["bearing"] = g_pRouteMan->GetCurrentBrgToActivePoint();
+        v[0]["XTE"] = g_pRouteMan->GetCurrentXTEToActivePoint();
+        v[0]["active_route_GUID"] = g_pRouteMan->GetpActiveRoute()->GetGUID();
+        v[0]["active_waypoint_lat"] =
             g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLatitude();
-        v[0][_T("active_waypoint_lon")] =
+        v[0]["active_waypoint_lon"] =
             g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLongitude();
       }
     }
-    wxString msg_id(_T("OCPN_ACTIVE_ROUTELEG_RESPONSE"));
+    wxString msg_id("OCPN_ACTIVE_ROUTELEG_RESPONSE");
     SendJSONMessageToAllPlugins(msg_id, v);
   }
 }
 
-void MyFrame::FilterCogSog(void) {
+void MyFrame::FilterCogSog() {
   if (g_bfilter_cogsog && !g_own_ship_sog_cog_calc) {
     //    Simple averaging filter for COG
     double cog_last = gCog;  // most recent reported value
@@ -6820,7 +6577,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   mob_label += _(" on ");
   mob_label += ocpn::toUsrDateTimeFormat(mob_time);
 
-  RoutePoint *pWP_MOB = new RoutePoint(ptarget->Lat, ptarget->Lon, _T ( "mob" ),
+  RoutePoint *pWP_MOB = new RoutePoint(ptarget->Lat, ptarget->Lon, "mob",
                                        mob_label, wxEmptyString);
   pWP_MOB->SetShared(true);
   pWP_MOB->m_bIsolatedMark = true;
@@ -6840,7 +6597,7 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
   pWP_MOB->SetUseSca(false);  // Do not use scaled hiding for MOB
   pAISMOBRoute = new Route();
-  pRouteList->Append(pAISMOBRoute);
+  pRouteList->push_back(pAISMOBRoute);
 
   pAISMOBRoute->AddPoint(pWP_src);
   pAISMOBRoute->AddPoint(pWP_MOB);
@@ -6860,8 +6617,8 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   //       g_pRouteMan->ActivateRoute( pAISMOBRoute, pWP_MOB );
 
   wxJSONValue v;
-  v[_T("GUID")] = pAISMOBRoute->m_GUID;
-  wxString msg_id(_T("OCPN_MAN_OVERBOARD"));
+  v["GUID"] = pAISMOBRoute->m_GUID;
+  wxString msg_id("OCPN_MAN_OVERBOARD");
   SendJSONMessageToAllPlugins(msg_id, v);
   //}
 
@@ -6879,11 +6636,11 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   mob_message += ocpn::toUsrDateTimeFormat(mob_time);
   mob_message += _("  Ownship Position: ");
   mob_message += toSDMM(1, gLat);
-  mob_message += _T("   ");
+  mob_message += "   ";
   mob_message += toSDMM(2, gLon);
   mob_message += _("  MOB Position: ");
   mob_message += toSDMM(1, ptarget->Lat);
-  mob_message += _T("   ");
+  mob_message += "   ";
   mob_message += toSDMM(2, ptarget->Lon);
   wxLogMessage(mob_message);
 }
@@ -6920,11 +6677,11 @@ void MyFrame::UpdateAISMOBRoute(const AisTargetData *ptarget) {
     mob_message += ocpn::toUsrDateTimeFormat(mob_time);
     mob_message += _("  Ownship Position: ");
     mob_message += toSDMM(1, gLat);
-    mob_message += _T("   ");
+    mob_message += "   ";
     mob_message += toSDMM(2, gLon);
     mob_message += _("  MOB Position: ");
     mob_message += toSDMM(1, ptarget->Lat);
-    mob_message += _T("   ");
+    mob_message += "   ";
     mob_message += toSDMM(2, ptarget->Lon);
 
     wxLogMessage(mob_message);
@@ -7020,25 +6777,25 @@ void MyFrame::OnSuspending(wxPowerEvent &event) {
   //   wxDateTime now = wxDateTime::Now();
   //   printf("OnSuspending...%d\n", now.GetTicks());
 
-  wxLogMessage(_T("System suspend starting..."));
+  wxLogMessage("System suspend starting...");
 }
 
 void MyFrame::OnSuspended(wxPowerEvent &WXUNUSED(event)) {
   //    wxDateTime now = wxDateTime::Now();
   //    printf("OnSuspended...%d\n", now.GetTicks());
-  wxLogMessage(_T("System is going to suspend."));
+  wxLogMessage("System is going to suspend.");
 }
 
 void MyFrame::OnSuspendCancel(wxPowerEvent &WXUNUSED(event)) {
   //    wxDateTime now = wxDateTime::Now();
   //    printf("OnSuspendCancel...%d\n", now.GetTicks());
-  wxLogMessage(_T("System suspend was cancelled."));
+  wxLogMessage("System suspend was cancelled.");
 }
 
 int g_last_resume_ticks;
 void MyFrame::OnResume(wxPowerEvent &WXUNUSED(event)) {
   wxDateTime now = wxDateTime::Now();
-  wxLogMessage(_T("System resumed from suspend."));
+  wxLogMessage("System resumed from suspend.");
 
   if ((now.GetTicks() - g_last_resume_ticks) > 5) {
     SystemEvents::GetInstance().evt_resume.Notify();
@@ -7101,7 +6858,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
 #endif
     g_MainToolbar = new ocpnFloatingToolbarDialog(
         toolbarParent, wxPoint(-1, -1), orient, g_toolbar_scalefactor);
-    g_MainToolbar->SetBackGroundColorString(_T("GREY3"));
+    g_MainToolbar->SetBackGroundColorString("GREY3");
     g_MainToolbar->SetToolbarHideMethod(TOOLBAR_HIDE_TO_FIRST_TOOL);
     g_MainToolbar->SetToolConfigString(g_toolbarConfig);
     g_MainToolbar->EnableRolloverBitmaps(false);
@@ -7150,42 +6907,42 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
 
   ToolbarItemContainer *tic = new ToolbarItemContainer(
-      ID_MASTERTOGGLE, style->GetToolIcon(_T("MUI_menu"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Hide Toolbar"), _T("MUI_menu"));
+      ID_MASTERTOGGLE, style->GetToolIcon("MUI_menu", TOOLICON_NORMAL),
+      wxITEM_NORMAL, _("Hide Toolbar"), "MUI_menu");
   tic->m_bRequired = true;
 
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
-      ID_SETTINGS, style->GetToolIcon(_T("MUI_settings"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Options"), _T("MUI_settings"));
+      ID_SETTINGS, style->GetToolIcon("MUI_settings", TOOLICON_NORMAL),
+      wxITEM_NORMAL, _("Options"), "MUI_settings");
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
-      ID_MENU_ROUTE_NEW, style->GetToolIcon(_T("MUI_route"), TOOLICON_NORMAL),
-      style->GetToolIcon(_T("MUI_route"), TOOLICON_TOGGLED), wxITEM_CHECK,
-      wxString(_("Create Route")) << _T(" (Ctrl-R)"), _T("MUI_route"));
+      ID_MENU_ROUTE_NEW, style->GetToolIcon("MUI_route", TOOLICON_NORMAL),
+      style->GetToolIcon("MUI_route", TOOLICON_TOGGLED), wxITEM_CHECK,
+      wxString(_("Create Route")) << " (Ctrl-R)", "MUI_route");
 
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
-      ID_ROUTEMANAGER, style->GetToolIcon(_T("MUI_RMD"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Route & Mark Manager"), _T("MUI_RMD"));
+      ID_ROUTEMANAGER, style->GetToolIcon("MUI_RMD", TOOLICON_NORMAL),
+      wxITEM_NORMAL, _("Route & Mark Manager"), "MUI_RMD");
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
-      ID_TRACK, style->GetToolIcon(_T("MUI_track"), TOOLICON_NORMAL),
-      style->GetToolIcon(_T("MUI_track"), TOOLICON_TOGGLED), wxITEM_CHECK,
-      _("Enable Tracking"), _T("MUI_track"));
+      ID_TRACK, style->GetToolIcon("MUI_track", TOOLICON_NORMAL),
+      style->GetToolIcon("MUI_track", TOOLICON_TOGGLED), wxITEM_CHECK,
+      _("Enable Tracking"), "MUI_track");
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
-      ID_COLSCHEME, style->GetToolIcon(_T("MUI_colorscheme"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Change Color Scheme"), _T("MUI_colorscheme"));
+      ID_COLSCHEME, style->GetToolIcon("MUI_colorscheme", TOOLICON_NORMAL),
+      wxITEM_NORMAL, _("Change Color Scheme"), "MUI_colorscheme");
   g_MainToolbar->AddToolItem(tic);
   // if( GetMasterToolItemShow(ID_COLSCHEME) ){
-  //  tb->AddTool( ID_COLSCHEME, _T("MUI_colorscheme"), style->GetToolIcon(
-  //  _T("MUI_colorscheme"), TOOLICON_NORMAL ),
+  //  tb->AddTool( ID_COLSCHEME, "MUI_colorscheme", style->GetToolIcon(
+  //  "MUI_colorscheme", TOOLICON_NORMAL ),
   //    tipString, wxITEM_NORMAL );
   // tb->SetToolTooltipHiViz( ID_COLSCHEME, true );  // cause the Tooltip to
   // always be visible, whatever
@@ -7193,13 +6950,13 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
   //}
 
   tic = new ToolbarItemContainer(
-      ID_PRINT, style->GetToolIcon(_T("MUI_print"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Print Chart"), _T("MUI_print"));
+      ID_PRINT, style->GetToolIcon("MUI_print", TOOLICON_NORMAL), wxITEM_NORMAL,
+      _("Print Chart"), "MUI_print");
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
-      ID_ABOUT, style->GetToolIcon(_T("MUI_help"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("About OpenCPN"), _T("MUI_help"));
+      ID_ABOUT, style->GetToolIcon("MUI_help", TOOLICON_NORMAL), wxITEM_NORMAL,
+      _("About OpenCPN"), "MUI_help");
   g_MainToolbar->AddToolItem(tic);
 
   //      Add any PlugIn toolbar tools that request default positioning
@@ -7207,8 +6964,8 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
 
   //  And finally add the MOB tool
   tic = new ToolbarItemContainer(
-      ID_MOB, style->GetToolIcon(_T("mob_btn"), TOOLICON_NORMAL), wxITEM_NORMAL,
-      wxString(_("Drop MOB Marker")) << _(" (Ctrl-Space)"), _T("mob_btn"));
+      ID_MOB, style->GetToolIcon("mob_btn", TOOLICON_NORMAL), wxITEM_NORMAL,
+      wxString(_("Drop MOB Marker")) << _(" (Ctrl-Space)"), "mob_btn");
   g_MainToolbar->AddToolItem(tic);
 
   // Build the toolbar
@@ -7276,7 +7033,7 @@ bool MyFrame::CheckAndAddPlugInTool() {
       }
 
       ToolbarItemContainer *tic = new ToolbarItemContainer(
-          pttc->id, *(ptool_bmp), pttc->kind, pttc->shortHelp, _T(""));
+          pttc->id, *(ptool_bmp), pttc->kind, pttc->shortHelp, "");
 
       tic->m_NormalIconSVG = pttc->pluginNormalIconSVG;
       tic->m_RolloverIconSVG = pttc->pluginRolloverIconSVG;
@@ -7332,7 +7089,7 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
       }
 
       ToolbarItemContainer *tic = new ToolbarItemContainer(
-          pttc->id, *(ptool_bmp), pttc->kind, pttc->shortHelp, _T(""));
+          pttc->id, *(ptool_bmp), pttc->kind, pttc->shortHelp, "");
 
       tic->m_NormalIconSVG = pttc->pluginNormalIconSVG;
       tic->m_RolloverIconSVG = pttc->pluginRolloverIconSVG;
@@ -7489,7 +7246,7 @@ int get_static_line(char *d, const char **p, int index, int n) {
   return strlen(d);
 }
 
-void InitializeUserColors(void) {
+void InitializeUserColors() {
   const char **p = usercolors;
   char buf[81];
   int index = 0;
@@ -7503,17 +7260,17 @@ void InitializeUserColors(void) {
 
   //    Create 3 color table entries
   ct = new colTable;
-  ct->tableName = new wxString(_T("DAY"));
+  ct->tableName = new wxString("DAY");
   ct->color = new wxArrayPtrVoid;
   UserColorTableArray->Add((void *)ct);
 
   ct = new colTable;
-  ct->tableName = new wxString(_T("DUSK"));
+  ct->tableName = new wxString("DUSK");
   ct->color = new wxArrayPtrVoid;
   UserColorTableArray->Add((void *)ct);
 
   ct = new colTable;
-  ct->tableName = new wxString(_T("NIGHT"));
+  ct->tableName = new wxString("NIGHT");
   ct->color = new wxArrayPtrVoid;
   UserColorTableArray->Add((void *)ct);
 
@@ -7575,7 +7332,7 @@ void InitializeUserColors(void) {
       (wxColorHashMap *)UserColourHashTableArray->Item(0);
 }
 
-void DeInitializeUserColors(void) {
+void DeInitializeUserColors() {
   if (!UserColorTableArray) return;
   for (unsigned i = 0; i < UserColorTableArray->GetCount(); i++) {
     colTable *ct = (colTable *)UserColorTableArray->Item(i);
@@ -7611,10 +7368,10 @@ typedef struct _MSW_COLOR_SPEC {
   int SysRGB_COLOR;
 } MSW_COLOR_SPEC;
 
-MSW_COLOR_SPEC color_spec[] = {{COLOR_MENU, _T("UIBCK"), 0},
-                               {COLOR_MENUTEXT, _T("UITX1"), 0},
-                               {COLOR_BTNSHADOW, _T("UIBCK"), 0},  // Menu Frame
-                               {-1, _T(""), 0}};
+MSW_COLOR_SPEC color_spec[] = {{COLOR_MENU, "UIBCK", 0},
+                               {COLOR_MENUTEXT, "UITX1", 0},
+                               {COLOR_BTNSHADOW, "UIBCK", 0},  // Menu Frame
+                               {-1, "", 0}};
 
 void SaveSystemColors() {
   /*
@@ -7788,7 +7545,7 @@ void RedirectIOToConsole()
 bool TestGLCanvas(wxString prog_dir) {
 #ifdef __MSVC__
   wxString test_app = prog_dir;
-  test_app += _T("ocpn_gltest1.exe");
+  test_app += "ocpn_gltest1.exe";
 
   if (::wxFileExists(test_app)) {
     long proc_return = ::wxExecute(test_app, wxEXEC_SYNC);
@@ -7877,8 +7634,8 @@ void ApplyLocale() {
   // Capture a copy of the current perspective
   //  So that we may restore PlugIn window sizes, position, visibility, etc.
   wxString perspective;
-  pConfig->SetPath(_T ( "/AUI" ));
-  pConfig->Read(_T ( "AUIPerspective" ), &perspective);
+  pConfig->SetPath("/AUI");
+  pConfig->Read("AUIPerspective", &perspective);
 
   //  Compliant Plugins will reload their locale message catalog during the
   //  Init() method. So it is sufficient to simply deactivate, and then
@@ -7913,12 +7670,6 @@ void ApplyLocale() {
   }
 }
 
-extern s57RegistrarMgr *m_pRegistrarMan;
-extern wxString g_UserPresLibData;
-extern wxString g_SENCPrefix;
-extern wxString g_csv_locn;
-extern SENCThreadManager *g_SencThreadManager;
-
 void LoadS57() {
   if (ps52plib)  // already loaded?
     return;
@@ -7933,12 +7684,12 @@ void LoadS57() {
   //      Init the s57 chart object, specifying the location of the required csv
   //      files
   g_csv_locn = g_Platform->GetSharedDataDir();
-  g_csv_locn.Append(_T("s57data"));
+  g_csv_locn.Append("s57data");
 
   if (g_bportable) {
-    g_csv_locn = _T(".");
+    g_csv_locn = ".";
     appendOSDirSlash(&g_csv_locn);
-    g_csv_locn.Append(_T("s57data"));
+    g_csv_locn.Append("s57data");
   }
 
   //      If the config file contains an entry for SENC file prefix, use it.
@@ -7946,7 +7697,7 @@ void LoadS57() {
   if (g_SENCPrefix.IsEmpty()) {
     g_SENCPrefix = g_Platform->GetPrivateDataDir();
     appendOSDirSlash(&g_SENCPrefix);
-    g_SENCPrefix.Append(_T("SENC"));
+    g_SENCPrefix.Append("SENC");
   }
 
   if (g_bportable) {
@@ -7954,7 +7705,7 @@ void LoadS57() {
     if (f.MakeRelativeTo(g_Platform->GetPrivateDataDir()))
       g_SENCPrefix = f.GetFullPath();
     else
-      g_SENCPrefix = _T("SENC");
+      g_SENCPrefix = "SENC";
   }
 
   //      If the config file contains an entry for PresentationLibraryData, use
@@ -7965,7 +7716,7 @@ void LoadS57() {
   if (g_UserPresLibData.IsEmpty()) {
     plib_data = g_csv_locn;
     appendOSDirSlash(&plib_data);
-    plib_data.Append(_T("S52RAZDS.RLE"));
+    plib_data.Append("S52RAZDS.RLE");
   } else {
     plib_data = g_UserPresLibData;
     b_force_legacy = true;
@@ -7995,13 +7746,13 @@ void LoadS57() {
     look_data_dir.Append(std_path.GetUserDataDir());
     appendOSDirSlash(&look_data_dir);
     wxString tentative_SData_Locn = look_data_dir;
-    look_data_dir.Append(_T("s57data"));
+    look_data_dir.Append("s57data");
 
     plib_data = look_data_dir;
     appendOSDirSlash(&plib_data);
-    plib_data.Append(_T("S52RAZDS.RLE"));
+    plib_data.Append("S52RAZDS.RLE");
 
-    wxLogMessage(_T("Looking for s57data in ") + look_data_dir);
+    wxLogMessage("Looking for s57data in " + look_data_dir);
     ps52plib = new s52plib(plib_data);
 
     if (ps52plib->m_bOK) {
@@ -8019,20 +7770,20 @@ void LoadS57() {
 
     wxString look_data_dir;
     look_data_dir = g_Platform->GetSharedDataDir();
-    look_data_dir.Append(_T("s57data"));
+    look_data_dir.Append("s57data");
 
     plib_data = look_data_dir;
     appendOSDirSlash(&plib_data);
-    plib_data.Append(_T("S52RAZDS.RLE"));
+    plib_data.Append("S52RAZDS.RLE");
 
-    wxLogMessage(_T("Looking for s57data in ") + look_data_dir);
+    wxLogMessage("Looking for s57data in " + look_data_dir);
     ps52plib = new s52plib(plib_data);
 
     if (ps52plib->m_bOK) g_csv_locn = look_data_dir;
   }
 
   if (ps52plib->m_bOK) {
-    wxLogMessage(_T("Using s57data in ") + g_csv_locn);
+    wxLogMessage("Using s57data in " + g_csv_locn);
     m_pRegistrarMan =
         new s57RegistrarMgr(g_csv_locn, g_Platform->GetLogFilePtr());
 
@@ -8066,10 +7817,6 @@ void LoadS57() {
 #ifdef ocpnUSE_GL
 
     // Setup PLIB OpenGL options, if enabled
-    extern bool g_b_EnableVBO;
-    extern GLenum g_texture_rectangle_format;
-    extern OCPN_GLCaps *GL_Caps;
-
     if (g_bopengl) {
       if (GL_Caps) {
         wxString renderer = wxString(GL_Caps->Renderer.c_str());
@@ -8084,8 +7831,7 @@ void LoadS57() {
 #endif
 
   } else {
-    wxLogMessage(
-        _T("   S52PLIB Initialization failed, disabling Vector charts."));
+    wxLogMessage("   S52PLIB Initialization failed, disabling Vector charts.");
     delete ps52plib;
     ps52plib = NULL;
   }
@@ -8184,7 +7930,7 @@ void ParseAllENC(wxWindow *parent) {
 
   if (count == 0) return;
 
-  wxLogMessage(wxString::Format(_T("ParseAllENC() count = %d"), count));
+  wxLogMessage(wxString::Format("ParseAllENC() count = %d", count));
 
   //  Build another array of sorted compression targets.
   //  We need to do this, as the chart table will not be invariant
@@ -8209,7 +7955,6 @@ void ParseAllENC(wxWindow *parent) {
   int thread_count = 0;
   ParseENCWorkerThread **workers = NULL;
 
-  extern int g_nCPUCount;
   if (g_nCPUCount > 0)
     thread_count = g_nCPUCount;
   else
@@ -8239,9 +7984,8 @@ void ParseAllENC(wxWindow *parent) {
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     prog->SetFont(*qFont);
 
-    prog->Create(_("OpenCPN ENC Prepare"),
-                 _T("Longgggggggggggggggggggggggggggg"), count + 1, parent,
-                 style);
+    prog->Create(_("OpenCPN ENC Prepare"), "Longgggggggggggggggggggggggggggg",
+                 count + 1, parent, style);
 
     // make wider to show long filenames
     // wxSize sz = prog->GetSize();
@@ -8281,7 +8025,7 @@ void ParseAllENC(wxWindow *parent) {
       if (prog) {
         wxSize sz = prog->GetSize();
         if (sz.x > 600) {
-          msg += _T("   Chart:");
+          msg += "   Chart:";
           msg += filename;
         }
         prog->Update(count, msg, &skip);

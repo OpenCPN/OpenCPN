@@ -43,7 +43,7 @@
 #include "model/select.h"
 
 #include "chcanv.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "routemanagerdialog.h"
@@ -91,7 +91,7 @@ wxString UndoAction::Description() {
       descr = _("Append Waypoint");
       break;
     default:
-      descr = _T("");
+      descr = "";
       break;
   }
   return descr;

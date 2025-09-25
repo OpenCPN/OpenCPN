@@ -66,6 +66,7 @@ extern ActiveTrack *g_pActiveTrack;
 extern TrackPropDlg *pTrackPropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyConfig *pConfig;
+extern bool g_bhide_route_console;
 
 static bool ConfirmDeleteAisMob() {
   int r = OCPNMessageBox(NULL,
@@ -81,7 +82,7 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
   ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
   ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
   ctx.show_with_fresh_fonts = [] {
-    if (console) console->ShowWithFreshFonts();
+    if (console && !g_bhide_route_console) console->ShowWithFreshFonts();
   };
   ctx.clear_console_background = []() {
     console->GetCDI()->ClearBackground();
@@ -107,12 +108,12 @@ bool RoutemanGui::UpdateProgress() {
          gLon, &east, &north);
     double a = atan(north / east);
     if (fabs(m_routeman.pActivePoint->m_lon - gLon) < 180.) {
-      if (m_routeman.pActivePoint->m_lon > gLon)
+      if (m_routeman.pActivePoint->m_lon >= gLon)
         m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
       else
         m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
     } else {
-      if (m_routeman.pActivePoint->m_lon > gLon)
+      if (m_routeman.pActivePoint->m_lon >= gLon)
         m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
       else
         m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
@@ -270,7 +271,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
     int count = pTrack->GetnPoints();
     if (count > 10000) {
       pprog = new wxGenericProgressDialog(
-          _("OpenCPN Track Delete"), _T("0/0"), count, NULL,
+          _("OpenCPN Track Delete"), "0/0", count, NULL,
           wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME |
               wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
       pprog->SetSize(400, wxDefaultCoord);
@@ -318,7 +319,7 @@ void RoutemanGui::DeleteAllTracks() {
   ::wxEndBusyCursor();
 }
 
-void RoutemanGui::DoAdvance(void) {
+void RoutemanGui::DoAdvance() {
   if (!m_routeman.ActivateNextPoint(m_routeman.pActiveRoute,
                                     false))  // at the end?
   {

@@ -12,25 +12,34 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
- *  Implements gui_lib.h
+ *
+ *  Implement gui_lib.h
  */
 
 #include <wx/artprov.h>
+#include <wx/bitmap.h>
 #include <wx/dialog.h>
+#include <wx/font.h>
+#include <wx/msgdlg.h>
 #include <wx/sizer.h>
 #include <wx/statbmp.h>
+#include <wx/statline.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
+#include <wx/utils.h>
+
+#include "model/config_vars.h"
+#include "model/gui_events.h"
 
 #include "gui_lib.h"
 #include "timers.h"
-#include "FontMgr.h"
-#include "OCPNPlatform.h"
+#include "font_mgr.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "displays.h"
 
@@ -38,10 +47,6 @@
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
-
-extern bool g_bresponsive;
-extern OCPNPlatform* g_Platform;
-extern int g_GUIScaleFactor;
 
 CopyableText::CopyableText(wxWindow* parent, const char* text)
     : wxTextCtrl(parent, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
@@ -110,7 +115,7 @@ wxFont GetOCPNGUIScaledFont(wxString item) {
 int OCPNMessageBox(wxWindow* parent, const wxString& message,
                    const wxString& caption, int style, int timeout_sec, int x,
                    int y) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
   int style_mod = style;
 
@@ -166,7 +171,7 @@ OCPNMessageDialog::OCPNMessageDialog(wxWindow* parent, const wxString& message,
     wxBitmap bitmap;
     switch (style & wxICON_MASK) {
       default:
-        wxFAIL_MSG(_T("incorrect log style"));
+        wxFAIL_MSG("incorrect log style");
         // fall through
 
       case wxICON_ERROR:
@@ -315,4 +320,39 @@ void TimedPopupWin::OnPaint(wxPaintEvent& event) {
   wxMemoryDC mdc;
   mdc.SelectObject(*m_pbm);
   dc.Blit(0, 0, width, height, &mdc, 0, 0);
+}
+
+class InfoButton::InfoFrame : public wxFrame {
+public:
+  explicit InfoFrame(wxWindow* parent, const char* header, const char* info)
+      : wxFrame(parent, wxID_ANY, info) {
+    auto flags = wxSizerFlags().Expand();
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    vbox->Add(new wxStaticText(this, wxID_ANY, info), flags.Border());
+    vbox->Add(new wxStaticLine(this, wxID_ANY), flags);
+    auto button_sizer = new wxStdDialogButtonSizer();
+    auto ok_btn = new wxButton(this, wxID_OK);
+    ok_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                 [&](wxCommandEvent&) { Hide(); });
+    button_sizer->SetAffirmativeButton(ok_btn);
+    vbox->Add(button_sizer, flags.Border());
+    button_sizer->Realize();
+    SetSizer(vbox);
+    wxWindow::Layout();
+    Hide();
+  }
+};
+
+InfoButton::InfoButton(wxWindow* parent, bool touch, const char* header,
+                       const char* info)
+    : wxButton(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+               wxBU_EXACTFIT | wxBORDER_NONE),
+      m_icon(parent, "help-info.svg",
+             GuiEvents::GetInstance().color_scheme_change, touch),
+      m_info_frame(new InfoFrame(parent, header, info)) {
+  SetBitmap(m_icon.GetBitmap());
+  Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
+    m_info_frame->Fit();
+    m_info_frame->Show();
+  });
 }

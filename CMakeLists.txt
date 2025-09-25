@@ -475,10 +475,11 @@ if (QT_ANDROID)
   include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/lunasvg-src/include")
 endif ()
 
-if (ARCH STREQUAL armhf)
+if (NOT QT_ANDROID AND (ARCH STREQUAL armhf) )
   # See: https://forums.raspberrypi.com/viewtopic.php?t=144115
   add_compile_options(-mcpu=cortex-a53  -mfpu=neon-fp-armv8)
 endif ()   # Assuming at least RPi 3
+
 
 message(STATUS "Final compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
@@ -742,6 +743,7 @@ if (GTK3_FOUND)
     add_definitions("-DNDEBUG")
     message(STATUS "Forcing -NDEBUG on gtk3 build (#1500).")
   endif ()
+  set(OCPN_WX_VERSION ${_WX_VERSION})
 endif ()
 
 # Make sure that the variable "wxWidgets_VERSION_STRING" is set, even on older
@@ -774,12 +776,12 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/about.h
     ${GUI_HDR_DIR}/ais.h
     ${GUI_HDR_DIR}/ais_info_gui.h
-    ${GUI_HDR_DIR}/AISTargetAlertDialog.h
-    ${GUI_HDR_DIR}/AISTargetListDialog.h
-    ${GUI_HDR_DIR}/AISTargetQueryDialog.h
-    ${GUI_HDR_DIR}/CanvasConfig.h
-    ${GUI_HDR_DIR}/canvasMenu.h
-    ${GUI_HDR_DIR}/CanvasOptions.h
+    ${GUI_HDR_DIR}/ais_target_alert_dlg.h
+    ${GUI_HDR_DIR}/ais_target_list_dlg.h
+    ${GUI_HDR_DIR}/ais_target_query_dlg.h
+    ${GUI_HDR_DIR}/canvas_config.h
+    ${GUI_HDR_DIR}/canvas_menu.h
+    ${GUI_HDR_DIR}/canvas_options.h
     ${GUI_HDR_DIR}/catalog_mgr.h
     ${GUI_HDR_DIR}/cat_settings.h
     ${GUI_HDR_DIR}/chartbase.h
@@ -788,49 +790,49 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/chartdbs.h
     ${GUI_HDR_DIR}/chartimg.h
     ${GUI_HDR_DIR}/chcanv.h
-    ${GUI_HDR_DIR}/ChInfoWin.h
+    ${GUI_HDR_DIR}/ch_info_win.h
     ${GUI_HDR_DIR}/color_handler.h
-    ${GUI_HDR_DIR}/comm_overflow_dlg.h
     ${GUI_HDR_DIR}/compass.h
     ${GUI_HDR_DIR}/concanv.h
-    ${GUI_HDR_DIR}/ConfigMgr.h
+    ${GUI_HDR_DIR}/config_mgr.h
     ${GUI_HDR_DIR}/connection_edit.h
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/data_monitor.h
-    ${GUI_HDR_DIR}/DetailSlider.h
+    ${GUI_HDR_DIR}/detail_slider.h
     ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
-    ${GUI_HDR_DIR}/FlexHash.h
-    ${GUI_HDR_DIR}/FontDesc.h
-    ${GUI_HDR_DIR}/FontMgr.h
-    ${GUI_HDR_DIR}/GoToPositionDialog.h
+    ${GUI_HDR_DIR}/flex_hash.h
+    ${GUI_HDR_DIR}/font_desc.h
+    ${GUI_HDR_DIR}/font_mgr.h
+    ${GUI_HDR_DIR}/go_to_position_dlg.h
     ${GUI_HDR_DIR}/gshhs.h
     ${GUI_HDR_DIR}/gui_lib.h
     ${GUI_HDR_DIR}/hotkeys_dlg.h
-    ${GUI_HDR_DIR}/IDX_entry.h
-    ${GUI_HDR_DIR}/iENCToolbar.h
+    ${GUI_HDR_DIR}/idx_entry.h
+    ${GUI_HDR_DIR}/ienc_toolbar.h
     ${GUI_HDR_DIR}/kml.h
-    ${GUI_HDR_DIR}/Layer.h
-    ${GUI_HDR_DIR}/LinkPropDlg.h
+    ${GUI_HDR_DIR}/layer.h
+    ${GUI_HDR_DIR}/link_prop_dlg.h
     ${GUI_HDR_DIR}/load_errors_dlg.h
-    ${GUI_HDR_DIR}/MarkInfo.h
+    ${GUI_HDR_DIR}/mark_info.h
     ${GUI_HDR_DIR}/mbtiles.h
-    ${GUI_HDR_DIR}/MUIBar.h
+    ${GUI_HDR_DIR}/mui_bar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
     ${GUI_HDR_DIR}/notification_manager_gui.h
-    ${GUI_HDR_DIR}/ocpCursor.h
+    ${GUI_HDR_DIR}/ocp_cursor.h
     ${GUI_HDR_DIR}/ocpndc.h
     ${GUI_HDR_DIR}/ocpn_app.h
     ${GUI_HDR_DIR}/ocpn_frame.h
-    ${GUI_HDR_DIR}/OCPNListCtrl.h
+    ${GUI_HDR_DIR}/ocpn_gl_options.h
+    ${GUI_HDR_DIR}/ocpn_list_ctrl.h
     ${GUI_HDR_DIR}/ocpn_pixel.h
-    ${GUI_HDR_DIR}/OCPNPlatform.h
-    ${GUI_HDR_DIR}/OCPN_AUIManager.h
-    ${GUI_HDR_DIR}/OCPNRegion.h
+    ${GUI_HDR_DIR}/ocpn_platform.h
+    ${GUI_HDR_DIR}/ocpn_aui_manager.h
+    ${GUI_HDR_DIR}/ocpn_region.h
     ${GUI_HDR_DIR}/options.h
     ${GUI_HDR_DIR}/piano.h
     ${GUI_HDR_DIR}/peer_client_dlg.h
@@ -840,7 +842,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/printout_chart.h
     ${GUI_HDR_DIR}/printtable.h
     ${GUI_HDR_DIR}/priority_gui.h
-    ${GUI_HDR_DIR}/Quilt.h
+    ${GUI_HDR_DIR}/quilt.h
     ${GUI_HDR_DIR}/rest_server_gui.h
     ${GUI_HDR_DIR}/RolloverWin.h
     ${GUI_HDR_DIR}/route_ctx_factory.h
@@ -863,7 +865,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/SendToPeerDlg.h
     ${GUI_HDR_DIR}/Station_Data.h
     ${GUI_HDR_DIR}/styles.h
-    ${GUI_HDR_DIR}/svg_utils.h
     ${GUI_HDR_DIR}/TCDataFactory.h
     ${GUI_HDR_DIR}/TCDataSource.h
     ${GUI_HDR_DIR}/TCDS_Ascii_Harmonic.h
@@ -897,47 +898,46 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/about_frame_impl.cpp
     ${GUI_SRC_DIR}/ais.cpp
     ${GUI_SRC_DIR}/ais_info_gui.cpp
-    ${GUI_SRC_DIR}/AISTargetAlertDialog.cpp
-    ${GUI_SRC_DIR}/AISTargetListDialog.cpp
-    ${GUI_SRC_DIR}/AISTargetQueryDialog.cpp
-    ${GUI_SRC_DIR}/CanvasConfig.cpp
-    ${GUI_SRC_DIR}/canvasMenu.cpp
-    ${GUI_SRC_DIR}/CanvasOptions.cpp
+    ${GUI_SRC_DIR}/ais_target_alert_dlg.cpp
+    ${GUI_SRC_DIR}/ais_target_list_dlg.cpp
+    ${GUI_SRC_DIR}/ais_target_query_dlg.cpp
+    ${GUI_SRC_DIR}/canvas_config.cpp
+    ${GUI_SRC_DIR}/canvas_menu.cpp
+    ${GUI_SRC_DIR}/canvas_options.cpp
     ${GUI_SRC_DIR}/catalog_mgr.cpp
     ${GUI_SRC_DIR}/cat_settings.cpp
     ${GUI_SRC_DIR}/chartdb.cpp
     ${GUI_SRC_DIR}/chartdbs.cpp
     ${GUI_SRC_DIR}/chartimg.cpp
     ${GUI_SRC_DIR}/chcanv.cpp
-    ${GUI_SRC_DIR}/ChInfoWin.cpp
+    ${GUI_SRC_DIR}/ch_info_win.cpp
     ${GUI_SRC_DIR}/cm93.cpp
     ${GUI_SRC_DIR}/color_handler.cpp
-    ${GUI_SRC_DIR}/comm_overflow_dlg.cpp
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
-    ${GUI_SRC_DIR}/ConfigMgr.cpp
+    ${GUI_SRC_DIR}/config_mgr.cpp
     ${GUI_SRC_DIR}/connection_edit.cpp
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/data_monitor.cpp
-    ${GUI_SRC_DIR}/DetailSlider.cpp
+    ${GUI_SRC_DIR}/detail_slider.cpp
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/filter_dlg.cpp
-    ${GUI_SRC_DIR}/FlexHash.cpp
-    ${GUI_SRC_DIR}/FontDesc.cpp
-    ${GUI_SRC_DIR}/FontMgr.cpp
-    ${GUI_SRC_DIR}/GoToPositionDialog.cpp
+    ${GUI_SRC_DIR}/flex_hash.cpp
+    ${GUI_SRC_DIR}/font_desc.cpp
+    ${GUI_SRC_DIR}/font_mgr.cpp
+    ${GUI_SRC_DIR}/go_to_position_dlg.cpp
     ${GUI_SRC_DIR}/gshhs.cpp
     ${GUI_SRC_DIR}/gui_lib.cpp
     ${GUI_SRC_DIR}/hotkeys_dlg.cpp
-    ${GUI_SRC_DIR}/IDX_entry.cpp
-    ${GUI_SRC_DIR}/iENCToolbar.cpp
+    ${GUI_SRC_DIR}/idx_entry.cpp
+    ${GUI_SRC_DIR}/ienc_toolbar.cpp
     ${GUI_SRC_DIR}/kml.cpp
-    ${GUI_SRC_DIR}/Layer.cpp
-    ${GUI_SRC_DIR}/LinkPropDlg.cpp
+    ${GUI_SRC_DIR}/layer.cpp
+    ${GUI_SRC_DIR}/link_prop_dlg.cpp
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
-    ${GUI_SRC_DIR}/MarkInfo.cpp
+    ${GUI_SRC_DIR}/mark_info.cpp
     ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
     ${GUI_SRC_DIR}/mbtiles/tile_thread.cpp
     ${GUI_SRC_DIR}/mbtiles/tile_thread.h
@@ -945,21 +945,22 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/mbtiles/tile_descr.h
     ${GUI_SRC_DIR}/mbtiles/tile_cache.h
     ${GUI_SRC_DIR}/mbtiles/tile_cache.cpp
-    ${GUI_SRC_DIR}/MUIBar.cpp
+    ${GUI_SRC_DIR}/mui_bar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
     ${GUI_SRC_DIR}/notification_manager_gui.cpp
-    ${GUI_SRC_DIR}/ocpCursor.cpp
+    ${GUI_SRC_DIR}/ocp_cursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
     ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
-    ${GUI_SRC_DIR}/OCPN_AUIManager.cpp
+    ${GUI_SRC_DIR}/ocpn_aui_manager.cpp
     ${GUI_SRC_DIR}/ocpndc.cpp
     ${GUI_SRC_DIR}/ocpn_frame.cpp
-    ${GUI_SRC_DIR}/OCPNListCtrl.cpp
+    ${GUI_SRC_DIR}/ocpn_list_ctrl.cpp
     ${GUI_SRC_DIR}/ocpn_pixel.cpp
-    ${GUI_SRC_DIR}/OCPNPlatform.cpp
-    ${GUI_SRC_DIR}/OCPNRegion.cpp
+    ${GUI_SRC_DIR}/ocpn_platform.cpp
+    ${GUI_SRC_DIR}/ocpn_region.cpp
+    ${GUI_SRC_DIR}/ocpn_gl_options.cpp
     ${GUI_SRC_DIR}/options.cpp
-    ${GUI_SRC_DIR}/Osenc.cpp
+    ${GUI_SRC_DIR}/o_senc.cpp
     ${GUI_SRC_DIR}/peer_client_dlg.cpp
     ${GUI_SRC_DIR}/piano.cpp
     ${GUI_SRC_DIR}/pluginmanager.cpp
@@ -968,7 +969,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/printout_chart.cpp
     ${GUI_SRC_DIR}/printtable.cpp
     ${GUI_SRC_DIR}/priority_gui.cpp
-    ${GUI_SRC_DIR}/Quilt.cpp
+    ${GUI_SRC_DIR}/quilt.cpp
     ${GUI_SRC_DIR}/rest_server_gui.cpp
     ${GUI_SRC_DIR}/RolloverWin.cpp
     ${GUI_SRC_DIR}/route_gui.cpp
@@ -990,7 +991,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_icons.cpp
-    ${GUI_SRC_DIR}/svg_utils.cpp
     ${GUI_SRC_DIR}/TCDataFactory.cpp
     ${GUI_SRC_DIR}/TCDataSource.cpp
     ${GUI_SRC_DIR}/TCDS_Ascii_Harmonic.cpp
@@ -1441,14 +1441,14 @@ endif ()
 if (OPENGL_FOUND)
   target_sources(
     ${PACKAGE_NAME}
-    PRIVATE ${GUI_HDR_DIR}/glChartCanvas.h
-            ${GUI_HDR_DIR}/glTextureDescriptor.h
-            ${GUI_HDR_DIR}/glTexCache.h
-            ${GUI_HDR_DIR}/glTextureManager.h
-            ${GUI_SRC_DIR}/glTextureDescriptor.cpp
-            ${GUI_SRC_DIR}/glTexCache.cpp
-            ${GUI_SRC_DIR}/glChartCanvas.cpp
-            ${GUI_SRC_DIR}/glTextureManager.cpp
+    PRIVATE ${GUI_HDR_DIR}/gl_chart_canvas.h
+            ${GUI_HDR_DIR}/gl_texture_descr.h
+            ${GUI_HDR_DIR}/gl_tex_cache.h
+            ${GUI_HDR_DIR}/gl_texture_mgr.h
+            ${GUI_SRC_DIR}/gl_texture_descr.cpp
+            ${GUI_SRC_DIR}/gl_tex_cache.cpp
+            ${GUI_SRC_DIR}/gl_chart_canvas.cpp
+            ${GUI_SRC_DIR}/gl_texture_mgr.cpp
   )
 endif ()
 
@@ -1615,12 +1615,7 @@ if (ASCIIDOC_PROG)
     DEPENDS ${CMAKE_BINARY_DIR}/authors.stamp
   )
 else ()
-  add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/data/authors.html
-    COMMAND cmake -E false
-    COMMENT "asciidoc not found, cannot rebuild authors.html"
-    DEPENDS ${CMAKE_BINARY_DIR}/authors.stamp
-  )
+  message(STATUS "asciidoc not found, cannot rebuild authors.html")
 endif ()
 add_custom_target(authors DEPENDS ${CMAKE_SOURCE_DIR}/data/authors.html)
 
@@ -2775,13 +2770,17 @@ endif ()
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
+set( _run_tests "
+  execute_process(COMMAND ./tests)
+  execute_process(COMMAND ./buffer-tests)
+")
+file(WRITE "${CMAKE_BINARY_DIR}/run_tests.cmake" ${_run_tests})
 if (OCPN_BUILD_TEST)
-
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
   add_custom_target(
     run-tests
-    COMMAND ctest -C $<CONFIG> -E tests --timeout 10
+    COMMAND cmake -P "${CMAKE_BINARY_DIR}/run_tests.cmake"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
   )
   add_dependencies(run-tests tests)

@@ -13,21 +13,24 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
+/**
+ * \file
+ *
+ * Implement printout_chart.h -- Print chart canvas mix-in
+ */
+
+#include <wx/dc.h>
+#include <wx/utils.h>
+
+#include "model/config_vars.h"
+
 #include "chcanv.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "ocpn_frame.h"
 #include "printout_chart.h"
-
-extern bool g_bopengl;
-extern MyFrame* gFrame;
-
-class ChartCanvas;
-ChartCanvas* GetFocusCanvas();
 
 void ChartPrintout::DrawPage(wxDC* dc, int page) {
   // Get the Size of the Chart Canvas

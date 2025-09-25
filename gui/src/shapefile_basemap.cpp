@@ -25,12 +25,16 @@
  *
  */
 
-// Include OCPNPlatform.h before shapefile_basemap.h to prevent obscure syntax
+#include <list>
+
+// Include ocpn_platform.h before shapefile_basemap.h to prevent obscure syntax
 // error when compiling with VS2022
-#include "OCPNPlatform.h"
+#include <list>
+
+#include "ocpn_platform.h"
 #include "shapefile_basemap.h"
 #include "chartbase.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 
 #include "model/logger.h"
 
@@ -47,6 +51,8 @@
 extern OCPNPlatform *g_Platform;
 extern wxString gWorldShapefileLocation;
 
+ShapeBaseChartSet gShapeBasemap;
+
 #ifdef ocpnUSE_GL
 
 typedef union {
@@ -60,7 +66,6 @@ typedef union {
     GLdouble b;
   } info;
 } GLvertexshp;
-#include <list>
 
 static std::list<float_2Dpt> g_pvshp;
 static std::list<GLvertexshp *> g_vertexesshp;
@@ -85,7 +90,7 @@ void __CALL_CONVENTION shpscombineCallback(GLdouble coords[3],
 void __CALL_CONVENTION shpserrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+  // wxLogMessage( "OpenGL Tessellation Error: %s", estring );
 }
 
 void __CALL_CONVENTION shpsbeginCallback(GLenum type) {
@@ -338,10 +343,9 @@ void ShapeBaseChart::DoDrawPolygonFilled(ocpnDC &pnt, ViewPort &vp,
   }
 }
 
+#ifdef ocpnUSE_GL
 void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
                                         GLUtesselator *tobj, bool idl) {
-#ifdef ocpnUSE_GL
-
   wxPoint2DDouble q;
   if (glChartCanvas::HasNormalizedViewPort(vp)) {
     q = ShapeBaseChartSet::GetDoublePixFromLL(vp, point.getY(), point.getX());
@@ -368,8 +372,9 @@ void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
   vertex->info.y = q.m_y;
 
   gluTessVertex(tobj, (GLdouble *)vertex, (GLdouble *)vertex);
-#endif
 }
+
+#endif
 
 void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                                            const shp::Feature &feature) {

@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ *  \file
+ *
+ *  Implement multiplexer.h
+ */
 
 #ifdef __MSVC__
 #include "winsock2.h"
@@ -47,314 +47,23 @@
 #include "model/comm_drv_registry.h"
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_n0183_net.h"
-#include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/nmea_log.h"
 
-wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);
-
-wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129025, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
-wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
-
 Multiplexer *g_pMUX;
 
-bool CheckSumCheck(const std::string &sentence) {
-  size_t check_start = sentence.find('*');
-  if (check_start == wxString::npos || check_start > sentence.size() - 3)
-    return false;  // * not found, or it didn't have 2 characters following it.
+/** KeyProvider wrapper for a plain key string. */
+class RawKey : public KeyProvider {
+public:
+  explicit RawKey(const std::string &key) : m_key(key) {}
+  [[nodiscard]] std::string GetKey() const override { return m_key; }
 
-  std::string check_str = sentence.substr(check_start + 1, 2);
-  unsigned long checksum = strtol(check_str.c_str(), 0, 16);
-  if (checksum == 0L && check_str != "00") return false;
+private:
+  std::string m_key;
+};
 
-  unsigned char calculated_checksum = 0;
-  for (std::string::const_iterator i = sentence.begin() + 1;
-       i != sentence.end() && *i != '*'; ++i)
-    calculated_checksum ^= static_cast<unsigned char>(*i);
-
-  return calculated_checksum == checksum;
-}
-
-Multiplexer::Multiplexer(MuxLogCallbacks cb, bool &filter_behaviour)
-    : m_log_callbacks(cb), m_legacy_input_filter_behaviour(filter_behaviour) {
-  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
-                              EVT_N0183_MUX);
-  Bind(EVT_N0183_MUX, [&](ObservedEvt ev) {
-    auto ptr = ev.GetSharedPtr();
-    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-    HandleN0183(n0183_msg);
-  });
-
-  InitN2KCommListeners();
-  n_N2K_repeat = 0;
-
-  if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = wxT("Generic");
-}
-
-Multiplexer::~Multiplexer() {}
-
-void Multiplexer::LogOutputMessage(const std::shared_ptr<const NavMsg> &msg,
-                                   NavmsgStatus ns) {
-  if (m_log_callbacks.log_is_active()) {
-    ns.direction = NavmsgStatus::Direction::kOutput;
-    Logline ll(msg, ns);
-    m_log_callbacks.log_message(ll);
-  }
-}
-
-void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
-                                  bool is_filtered, bool is_error,
-                                  const wxString error_msg) {
-  if (m_log_callbacks.log_is_active()) {
-    NavmsgStatus ns;
-    ns.direction = NavmsgStatus::Direction::kHandled;
-    if (is_error) {
-      ns.status = NavmsgStatus::State::kChecksumError;
-    } else {
-      if (is_filtered) {
-        if (m_legacy_input_filter_behaviour) {
-          ns.accepted = NavmsgStatus::Accepted::kFilteredNoOutput;
-        } else {
-          ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
-        }
-      } else {
-        ns.accepted = NavmsgStatus::Accepted::kOk;
-      }
-    }
-    Logline ll(msg, ns);
-    ll.error_msg = error_msg;
-    m_log_callbacks.log_message(ll);
-  }
-}
-
-void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
-  // Find the driver that originated this message
-
-  const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
-  auto &source_driver = FindDriver(drivers, n0183_msg->source->iface);
-  if (!source_driver) {
-    // might be a message from a "virtual" plugin.
-    if ((n0183_msg->source->iface != "virtual")) {
-      return;
-    }
-  }
-
-  wxString fmsg;
-  bool bpass_input_filter = true;
-
-  // Send to the Debug Window, if open
-  //  Special formatting for non-printable characters helps debugging NMEA
-  //  problems
-  std::string str = n0183_msg->payload;
-
-  // Get the params for the driver sending this message
-  ConnectionParams params;
-  auto drv_serial = dynamic_cast<CommDriverN0183Serial *>(source_driver.get());
-  if (drv_serial) {
-    params = drv_serial->GetParams();
-  } else {
-    auto drv_net = dynamic_cast<CommDriverN0183Net *>(source_driver.get());
-    if (drv_net) {
-      params = drv_net->GetParams();
-    }
-#ifdef __ANDROID__
-    else {
-      auto drv_bluetooth =
-          dynamic_cast<CommDriverN0183AndroidBT *>(source_driver.get());
-
-      if (drv_bluetooth) {
-        params = drv_bluetooth->GetParams();
-      }
-    }
-#endif
-  }
-
-  // Check to see if the message passes the source's input filter
-  bpass_input_filter =
-      params.SentencePassesFilter(n0183_msg->payload.c_str(), FILTER_INPUT);
-
-  bool b_error = false;
-  wxString error_msg;
-  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
-    if (isprint(*it))
-      fmsg += *it;
-    else {
-      wxString bin_print;
-      bin_print.Printf(_T("<0x%02X>"), *it);
-      fmsg += bin_print;
-      if ((*it != 0x0a) && (*it != 0x0d)) {
-        b_error = true;
-        error_msg = _("Non-printable character in NMEA0183 message");
-      }
-    }
-  }
-
-  // Flag checksum errors
-  bool checksumOK = CheckSumCheck(n0183_msg->payload);
-  if (!checksumOK) {
-    b_error = true;
-    error_msg = _("NMEA0183 checksum error");
-  }
-
-  wxString port(n0183_msg->source->iface);
-  LogInputMessage(n0183_msg, !bpass_input_filter, b_error, error_msg);
-
-  // Detect virtual driver, message comes from plugin API
-  // Set such source iface to "" for later test
-  std::string source_iface;
-  if (source_driver)  // NULL for virtual driver
-    source_iface = source_driver->iface;
-
-  // Perform multiplexer output functions
-  for (auto &driver : drivers) {
-    if (!driver) continue;
-    if (driver->bus == NavAddr::Bus::N0183) {
-      ConnectionParams params;
-      auto drv_serial = dynamic_cast<CommDriverN0183Serial *>(driver.get());
-      if (drv_serial) {
-        params = drv_serial->GetParams();
-      } else {
-        auto drv_net = dynamic_cast<CommDriverN0183Net *>(driver.get());
-        if (drv_net) {
-          params = drv_net->GetParams();
-        }
-#ifdef __ANDROID__
-        else {
-          auto drv_bluetooth =
-              dynamic_cast<CommDriverN0183AndroidBT *>(driver.get());
-          if (drv_bluetooth) {
-            params = drv_bluetooth->GetParams();
-          }
-        }
-#endif
-      }
-
-      std::shared_ptr<const Nmea0183Msg> msg = n0183_msg;
-      if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
-          bpass_input_filter) {
-        //  Allow re-transmit on same port (if type is SERIAL),
-        //  or any other NMEA0183 port supporting output
-        //  But, do not echo to the source network interface.  This will likely
-        //  recurse...
-        if ((!params.DisableEcho && params.Type == SERIAL) ||
-            driver->iface != source_iface) {
-          if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
-              params.IOSelect == DS_TYPE_OUTPUT) {
-            bool bout_filter = true;
-            bool bxmit_ok = true;
-            std::string id("XXXXX");
-            size_t comma_pos = n0183_msg->payload.find(",");
-            if (comma_pos != std::string::npos && comma_pos > 5)
-              id = n0183_msg->payload.substr(1, comma_pos - 1);
-            if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
-                                            FILTER_OUTPUT)) {
-              // Reset source address. It's const, so make a modified copy
-
-              auto null_addr = std::make_shared<NavAddr>();
-              msg = std::make_shared<Nmea0183Msg>(id, n0183_msg->payload,
-                                                  null_addr);
-              bxmit_ok = driver->SendMessage(msg, null_addr);
-              bout_filter = false;
-            }
-
-            // Send to the Debug Window, if open
-            if (m_log_callbacks.log_is_active()) {
-              NavmsgStatus ns;
-              ns.direction = NavmsgStatus::Direction::kOutput;
-              if (bout_filter) {
-                ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
-              } else {
-                if (!bxmit_ok) ns.status = NavmsgStatus::State::kTxError;
-              }
-              auto logaddr = std::make_shared<NavAddr0183>(driver->iface);
-              auto logmsg = std::make_shared<Nmea0183Msg>(
-                  id, n0183_msg->payload, logaddr);
-              LogOutputMessage(logmsg, ns);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-void Multiplexer::InitN2KCommListeners() {
-  // Create a series of N2K listeners
-  // to allow minimal N2K Debug window logging
-
-  // All N2K
-  //----------------------------------
-  Nmea2000Msg n2k_msg_All(static_cast<uint64_t>(1));
-  listener_N2K_All.Listen(n2k_msg_All, this, EVT_N2K_ALL);
-  Bind(EVT_N2K_ALL, [&](ObservedEvt ev) {
-    HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
-}
-
-bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-  if (!m_log_callbacks.log_is_active()) return false;
-
-  auto payload = n2k_msg.get()->payload;
-  // extract PGN
-  unsigned int pgn = 0;
-  pgn += n2k_msg.get()->payload.at(3);
-  pgn += n2k_msg.get()->payload.at(4) << 8;
-  pgn += n2k_msg.get()->payload.at(5) << 16;
-
-#if 0
-  printf(" %d: payload\n", pgn);
-  for(size_t i=0; i< payload.size(); i++){
-    printf("%02X ", payload.at(i));
-  }
-  printf("\n");
-  std::string pretty = n2k_msg->to_string();
-  printf("%s\n\n", pretty.c_str());
-#endif
-
-  //  Input, or output?
-  if (payload.at(0) == 0x94) {  // output
-    NavmsgStatus ns;
-    ns.direction = NavmsgStatus::Direction::kOutput;
-    LogOutputMessage(n2k_msg, ns);
-  } else {  // input
-    // extract data source
-    std::string source = n2k_msg.get()->source->to_string();
-
-    // extract source ID
-    unsigned char source_id = n2k_msg.get()->payload.at(7);
-    char ss[4];
-    sprintf(ss, "%d", source_id);
-    std::string ident = std::string(ss);
-
-    if (pgn == last_pgn_logged) {
-      n_N2K_repeat++;
-      return false;
-    } else {
-      if (n_N2K_repeat) {
-        wxString repeat_log_msg;
-        repeat_log_msg.Printf("...Repeated %d times\n", n_N2K_repeat);
-        // LogInputMessage(repeat_log_msg, "N2000", false, false); FIXME(leamas)
-        n_N2K_repeat = 0;
-      }
-    }
-
-    wxString log_msg;
-    log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source, ident,
-                   N2K_LogMessage_Detail(pgn).c_str());
-
-    LogInputMessage(n2k_msg, false, false);
-
-    last_pgn_logged = pgn;
-  }
-  return true;
-}
-
-std::string Multiplexer::N2K_LogMessage_Detail(unsigned int pgn) {
-  std::string notused = "Not used by OCPN, maybe by Plugins";
+static std::string N2K_LogMessage_Detail(unsigned int pgn) {
+  std::string not_used = "Not used by OCPN, maybe by Plugins";
 
   switch (pgn) {
     case 129029:
@@ -397,79 +106,284 @@ std::string Multiplexer::N2K_LogMessage_Detail(unsigned int pgn) {
     case 130306:
       return "DBoard: Wind data";
     case 130310:
-      return "DBoard: Envorinment data";
+      return "DBoard: Environment data";
     // Not used PGNs
     case 126992:
-      return "System time. " + notused;
+      return "System time. " + not_used;
     case 127233:
-      return "Man Overboard Notification. " + notused;
+      return "Man Overboard Notification. " + not_used;
     case 127237:
-      return "Heading/Track control. " + notused;
+      return "Heading/Track control. " + not_used;
     case 127251:
-      return "Rate of turn. " + notused;
+      return "Rate of turn. " + not_used;
     case 127258:
-      return "Magnetic variation. " + notused;
+      return "Magnetic variation. " + not_used;
     case 127488:
-      return "Engine rapid param. " + notused;
+      return "Engine rapid param. " + not_used;
     case 127489:
-      return "Engine parameters dynamic. " + notused;
+      return "Engine parameters dynamic. " + not_used;
     case 127493:
-      return "Transmission parameters dynamic. " + notused;
+      return "Transmission parameters dynamic. " + not_used;
     case 127497:
-      return "Trip Parameters, Engine. " + notused;
+      return "Trip Parameters, Engine. " + not_used;
     case 127501:
-      return "Binary status report. " + notused;
+      return "Binary status report. " + not_used;
     case 127505:
-      return "Fluid level. " + notused;
+      return "Fluid level. " + not_used;
     case 127506:
-      return "DC Detailed Status. " + notused;
+      return "DC Detailed Status. " + not_used;
     case 127507:
-      return "Charger Status. " + notused;
+      return "Charger Status. " + not_used;
     case 127508:
-      return "Battery Status. " + notused;
+      return "Battery Status. " + not_used;
     case 127513:
-      return "Battery Configuration Status. " + notused;
+      return "Battery Configuration Status. " + not_used;
     case 128000:
-      return "Leeway. " + notused;
+      return "Leeway. " + not_used;
     case 128776:
-      return "Windlass Control Status. " + notused;
+      return "Windlass Control Status. " + not_used;
     case 128777:
-      return "Windlass Operating Status. " + notused;
+      return "Windlass Operating Status. " + not_used;
     case 128778:
-      return "Windlass Monitoring Status. " + notused;
+      return "Windlass Monitoring Status. " + not_used;
     case 129033:
-      return "Date,Time & Local offset. " + notused;
+      return "Date,Time & Local offset. " + not_used;
     case 129539:
-      return "GNSS DOP data. " + notused;
+      return "GNSS DOP data. " + not_used;
     case 129283:
-      return "Cross Track Error. " + notused;
+      return "Cross Track Error. " + not_used;
     case 129284:
-      return "Navigation info. " + notused;
+      return "Navigation info. " + not_used;
     case 129285:
-      return "Waypoint list. " + notused;
+      return "Waypoint list. " + not_used;
     case 129802:
-      return "AIS Safety Related Broadcast Message. " + notused;
+      return "AIS Safety Related Broadcast Message. " + not_used;
     case 130074:
-      return "Waypoint list. " + notused;
+      return "Waypoint list. " + not_used;
     case 130311:
-      return "Environmental parameters. " + notused;
+      return "Environmental parameters. " + not_used;
     case 130312:
-      return "Temperature. " + notused;
+      return "Temperature. " + not_used;
     case 130313:
-      return "Humidity. " + notused;
+      return "Humidity. " + not_used;
     case 130314:
-      return "Actual Pressure. " + notused;
+      return "Actual Pressure. " + not_used;
     case 130315:
-      return "Set Pressure. " + notused;
+      return "Set Pressure. " + not_used;
     case 130316:
-      return "Temperature extended range. " + notused;
+      return "Temperature extended range. " + not_used;
     case 130323:
-      return "Meteorological Station Data. " + notused;
+      return "Meteorological Station Data. " + not_used;
     case 130576:
-      return "Trim Tab Position. " + notused;
+      return "Trim Tab Position. " + not_used;
     case 130577:
-      return "Direction Data. " + notused;
+      return "Direction Data. " + not_used;
     default:
       return "No description. Not used by OCPN, maybe passed to plugins";
+  }
+}
+
+Multiplexer::Multiplexer(const MuxLogCallbacks &cb, bool &filter_behaviour)
+
+    : m_log_callbacks(cb),
+      m_legacy_input_filter_behaviour(filter_behaviour),
+      m_new_msgtype_lstnr(NavMsgBus::GetInstance().new_msg_event,
+                          [&](ObservedEvt &) { OnNewMessageType(); }),
+      m_n2k_repeat_count(0),
+      m_last_pgn_logged(0) {
+  if (g_GPS_Ident.IsEmpty()) g_GPS_Ident = "Generic";
+}
+
+Multiplexer::~Multiplexer() = default;
+
+void Multiplexer::LogOutputMessage(const std::shared_ptr<const NavMsg> &msg,
+                                   NavmsgStatus ns) const {
+  if (m_log_callbacks.log_is_active()) {
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    Logline ll(msg, ns);
+    m_log_callbacks.log_message(ll);
+  }
+}
+
+void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
+                                  bool is_filtered, bool is_error,
+                                  const wxString &error_msg) const {
+  if (m_log_callbacks.log_is_active()) {
+    NavmsgStatus ns;
+    ns.direction = NavmsgStatus::Direction::kHandled;
+    if (is_error) {
+      ns.status = NavmsgStatus::State::kChecksumError;
+    } else {
+      if (is_filtered) {
+        if (m_legacy_input_filter_behaviour) {
+          ns.accepted = NavmsgStatus::Accepted::kFilteredNoOutput;
+        } else {
+          ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
+        }
+      } else {
+        ns.accepted = NavmsgStatus::Accepted::kOk;
+      }
+    }
+    Logline ll(msg, ns);
+    ll.error_msg = error_msg;
+    m_log_callbacks.log_message(ll);
+  }
+}
+
+void Multiplexer::HandleN0183(
+    const std::shared_ptr<const Nmea0183Msg> &n0183_msg) const {
+  // Find the driver that originated this message
+  const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
+  auto &source_driver = FindDriver(drivers, n0183_msg->source->iface);
+  if (!source_driver) {
+    // might be a message from a "virtual" plugin.
+    if ((n0183_msg->source->iface != "virtual")) {
+      return;
+    }
+  }
+
+  std::string error_msg;
+  if (n0183_msg->state == NavMsg::State::kCannotParse)
+    error_msg = _("Unparsable NMEA0183 message").ToStdString();
+  else if (n0183_msg->state == NavMsg::State::kBadChecksum)
+    error_msg = _("NMEA0183 checksum error").ToStdString();
+  bool is_filtered = n0183_msg->state == NavMsg::State::kFiltered;
+  bool cs_error = n0183_msg->state == NavMsg::State::kBadChecksum;
+  LogInputMessage(n0183_msg, is_filtered, cs_error, error_msg);
+
+  // Detect virtual driver, message comes from plugin API
+  // Set such source iface to "" for later test
+  std::string source_iface;
+  if (source_driver)  // NULL for virtual driver
+    source_iface = source_driver->iface;
+
+  // Perform multiplexer output functions
+  for (auto &driver : drivers) {
+    if (!driver) continue;
+    if (driver->bus == NavAddr::Bus::N0183) {
+      auto *drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
+      assert(drv_n0183);
+
+      bool passes_input_filter = n0183_msg->state != NavMsg::State::kFiltered;
+
+      ConnectionParams params_ = drv_n0183->GetParams();
+      std::shared_ptr<const Nmea0183Msg> msg = n0183_msg;
+      if ((m_legacy_input_filter_behaviour && !passes_input_filter) ||
+          passes_input_filter) {
+        //  Allow re-transmit on same port (if type is SERIAL),
+        //  or any other NMEA0183 port supporting output
+        //  But, do not echo to the source network interface.  This will
+        //  likely recurse...
+        if ((!params_.DisableEcho && params_.Type == SERIAL) ||
+            driver->iface != source_iface) {
+          if (params_.IOSelect == DS_TYPE_INPUT_OUTPUT ||
+              params_.IOSelect == DS_TYPE_OUTPUT) {
+            bool bout_filter = true;
+            bool bxmit_ok = true;
+            std::string id("XXXXX");
+            size_t comma_pos = n0183_msg->payload.find(',');
+            if (comma_pos != std::string::npos && comma_pos > 5)
+              id = n0183_msg->payload.substr(1, comma_pos - 1);
+            if (params_.SentencePassesFilter(n0183_msg->payload.c_str(),
+                                             FILTER_OUTPUT)) {
+              // Reset source address. It's const, so make a modified copy
+              auto null_addr = std::make_shared<NavAddr>();
+              msg = std::make_shared<Nmea0183Msg>(id, n0183_msg->payload,
+                                                  null_addr);
+              bxmit_ok = driver->SendMessage(msg, null_addr);
+              bout_filter = false;
+            }
+
+            // Send to the Debug Window, if open
+            if (m_log_callbacks.log_is_active()) {
+              NavmsgStatus ns;
+              ns.direction = NavmsgStatus::Direction::kOutput;
+              if (bout_filter) {
+                ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
+              } else {
+                if (!bxmit_ok) ns.status = NavmsgStatus::State::kTxError;
+              }
+              auto logaddr = std::make_shared<NavAddr0183>(driver->iface);
+              auto logmsg = std::make_shared<Nmea0183Msg>(
+                  id, n0183_msg->payload, logaddr);
+              LogOutputMessage(logmsg, ns);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+bool Multiplexer::HandleN2kLog(
+    const std::shared_ptr<const Nmea2000Msg> &n2k_msg) {
+  if (!m_log_callbacks.log_is_active()) return false;
+
+  auto payload = n2k_msg->payload;
+  // extract PGN
+  unsigned int pgn = 0;
+  pgn += n2k_msg->payload.at(3);
+  pgn += n2k_msg->payload.at(4) << 8;
+  pgn += n2k_msg->payload.at(5) << 16;
+
+  //  Input, or output?
+  if (payload.at(0) == 0x94) {  // output
+    NavmsgStatus ns;
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    LogOutputMessage(n2k_msg, ns);
+  } else {  // input
+    // extract data source
+    std::string source = n2k_msg->source->to_string();
+
+    // extract source ID
+    unsigned char source_id = n2k_msg->payload.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
+
+    if (pgn == m_last_pgn_logged) {
+      m_n2k_repeat_count++;
+      return false;
+    }
+    if (m_n2k_repeat_count) {
+      wxString repeat_log_msg;
+      repeat_log_msg.Printf("...Repeated %d times\n", m_n2k_repeat_count);
+      // LogInputMessage(repeat_log_msg, "N2000", false, false); FIXME(leamas)
+      m_n2k_repeat_count = 0;
+    }
+
+    wxString log_msg;
+    log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source, ident,
+                   N2K_LogMessage_Detail(pgn).c_str());
+
+    LogInputMessage(n2k_msg, false, false);
+
+    m_last_pgn_logged = pgn;
+  }
+  return true;
+}
+
+void Multiplexer::OnNewMessageType() {
+  for (auto msg_key : NavMsgBus::GetInstance().GetActiveMessages()) {
+    if (m_listeners.find(msg_key) != m_listeners.end()) continue;
+    auto key_parts = ocpn::split(msg_key, "::");
+    switch (NavMsg::GetBusByKey(msg_key)) {
+      case NavAddr::Bus::N0183:
+        m_listeners[msg_key] =
+            ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+              HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+            });
+        break;
+
+      case NavAddr::Bus::N2000:
+        m_listeners[msg_key] =
+            ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+              HandleN2kLog(UnpackEvtPointer<Nmea2000Msg>(ev));
+            });
+        break;
+
+      default:
+        break;
+    }
   }
 }

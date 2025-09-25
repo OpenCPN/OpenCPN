@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Global Build Options
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,11 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * file
  *
+ * Global build options
  */
 
 //----------------------------------------------------------------------------------
@@ -31,13 +27,26 @@
 #ifndef _DYCHART_H_
 #define _DYCHART_H_
 
-#include "config.h"
-
 #include <cmath>
 #include <algorithm>
 
-//    Profiling support
+#include "gl_headers.h"
 
+#include "config.h"
+
+#ifdef __WXMSW__
+#include "wx/msw/private.h"
+#endif
+
+#ifdef __VISUALC__  // Memory Leak Detection Code
+#include <wx/msw/msvcrt.h>
+#endif
+
+#ifdef __ANDROID__
+#include "qdebug.h"
+#endif
+
+//    Profiling support
 // #include "/usr/include/valgrind/callgrind.h"
 
 //  Chart cacheing policy defaults
@@ -104,21 +113,6 @@
 #define START_LAT 33.358  //  Georgetown, SC (Ver 1.2.4)
 #define START_LON -79.282
 
-//------------------------------------------------------------------------------
-//          Some MSW and MSVCRT Specific Includes
-//------------------------------------------------------------------------------
-#ifdef __WXMSW__
-#include "wx/msw/private.h"
-#endif
-
-//------------------------------------------------------------------------------
-//          Some Memory Leak Detection Code
-//------------------------------------------------------------------------------
-
-#ifdef __VISUALC__
-#include <wx/msw/msvcrt.h>
-#endif
-
 //----------------------------------------------------------------------------
 //          Environment Access functions
 //----------------------------------------------------------------------------
@@ -156,57 +150,6 @@
 
 #ifdef __WXGTK__
 #define __POSIX__
-#endif
-
-#if defined(__OCPN__ANDROID__)
-#include <qopengl.h>
-#include <GL/gl_private.h>  // this is a cut-down version of gl.h
-#include <GLES2/gl2.h>
-#else
-#ifdef ocpnUSE_GL
-#if defined(__MSVC__)
-#include "glew.h"
-#elif defined(__WXOSX__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-typedef void (*_GLUfuncptr)();
-#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glew.h>
-#include <GL/glu.h>
-#endif
-#endif
-#endif
-
-/*
-#if defined(_WIN32) || defined(_WIN64)
-#  include <gl/glew.h>
-#  include <GL/gl.h>
-#  include <GL/glu.h>
-#elif __APPLE__
-#  include "TargetConditionals.h"
-#  if (TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR) || TARGET_OS_IPHONE
-#    include <OpenGLES/ES2/gl.h>
-#    include <OpenGLES/ES2/glext.h>
-#  else
-#    include <OpenGL/gl.h>
-#    include <OpenGL/glu.h>
-#    include <OpenGL/glext.h>
-#  endif
-#elif defined(__ANDROID__) || defined(ANDROID)
-#  include <GLES2/gl2.h>
-#  include <GLES2/gl2ext.h>
-#elif defined(__linux__) || defined(__unix__) || defined(__posix__)
-#  include <GL/gl.h>
-#  include <GL/glu.h>
-#  include <GL/glext.h>
-#else
-#  error platform not supported.
-#endif
-*/
-
-#ifdef __OCPN__ANDROID__
-#include "qdebug.h"
 #endif
 
 #endif  // __FILE__

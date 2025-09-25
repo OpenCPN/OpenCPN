@@ -33,7 +33,7 @@
 #include <wx/datetime.h>
 
 #include "Station_Data.h"
-#include "IDX_entry.h"
+#include "idx_entry.h"
 #include "TC_Error_Code.h"
 #include "TCDataSource.h"
 
@@ -71,6 +71,9 @@
  */
 #define TIDE_TIME_STEP (TIDE_TIME_PREC)
 #define TIDE_BAD_TIME ((time_t) - 1)
+
+class TCMgr;           // forward
+extern TCMgr *ptcmgr;  ///< Global instance
 
 //----------------------------------------------------------------------------
 //   Reference Station Data

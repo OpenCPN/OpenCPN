@@ -63,7 +63,7 @@
 #include "scrollingdialog.h"
 #endif
 
-#include "LinkPropDlg.h"
+#include "link_prop_dlg.h"
 
 #ifdef __WXOSX__
 #define DIALOG_PARENT wxFrame
@@ -77,6 +77,9 @@
 #define ID_TRK_MENU_EDIT 7015
 #define ID_TRK_MENU_DELETE 7016
 
+class TrackPropDlg;                    // forward
+extern TrackPropDlg* pTrackPropDialog; /**< Global instance. */
+
 /*!
  * Forward declarations
  */
@@ -85,7 +88,6 @@ class wxListCtrl;
 class OCPNTrackListCtrl;
 class Track;
 class TrackPoint;
-class HyperlinkList;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class TrackPropDlg

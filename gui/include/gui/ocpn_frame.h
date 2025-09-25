@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,61 +12,53 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * OpenCPN top window
+ */
 
 #ifndef _OFRAME_H
 #define _OFRAME_H
 
 #include <wx/print.h>
 #include <wx/power.h>
+#include <wx/artprov.h>
+#include <wx/socket.h>
+#include <wx/html/htmlwin.h>
+#include <wx/aui/aui.h>
+#include <wx/aui/dockart.h>
 
 #include <memory>
 #ifdef __WXMSW__
 #include <wx/msw/private.h>
 #endif
 
+#include "model/ais_target_data.h"
 #include "model/ocpn_types.h"
+#include "model/track.h"
 #include "model/comm_appmsg_bus.h"
+
 #include "bbox.h"
-#include "comm_overflow_dlg.h"
-#include "connections_dlg.h"
+#include "chartbase.h"
+#include "chartdbs.h"
+#include "chcanv.h"
 #include "color_handler.h"
+#include "connections_dlg.h"
 #include "data_monitor.h"
+#include "displays.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
 #include "observable_evtvar.h"
+#include "options.h"
+#include "pluginmanager.h"
 #include "s52s57.h"
 #include "s57registrar_mgr.h"
 #include "SencManager.h"
-#include "displays.h"
-
-wxColour GetGlobalColor(wxString colorName);
-wxColour GetDialogColor(DialogColor color);
-
-// Helper to create menu label + hotkey string when registering menus
-wxString _menuText(wxString name, wxString shortcut);
-
-// The point for anchor watch should really be a class...
-double AnchorDistFix(double const d, double const AnchorPointMinDist,
-                     double const AnchorPointMaxDist);  //  pjotrc 2010.02.22
-
-bool TestGLCanvas(wxString prog_dir);
-bool ReloadLocale();
-void ApplyLocale(void);
-
-void LoadS57();
-
-//    Fwd definitions
-class ChartCanvas;
-class ocpnFloatingToolbarDialog;
-class OCPN_MsgEvent;
-class options;
-class Track;
-class wxHtmlWindow;
-class ArrayOfCDI;
+#include "toolbar.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -118,15 +104,32 @@ class ArrayOfCDI;
 //----------------------------------------------------------------------------
 // fwd class declarations
 //----------------------------------------------------------------------------
-class ChartBase;
-class wxSocketEvent;
-class ocpnToolBarSimple;
-class OCPN_DataStreamEvent;
-class AisTargetData;
 
+class MyFrame;          // forward
+extern MyFrame* gFrame; /**< Global instance */
+
+class options;  // circular
+
+// FIXME (leamas) to have utility functions in top window is a realy bad idea.
 bool ShowNavWarning();
 
 bool isSingleChart(ChartBase* chart);
+
+wxColour GetGlobalColor(wxString colorName);
+wxColour GetDialogColor(DialogColor color);
+
+// Helper to create menu label + hotkey string when registering menus
+wxString _menuText(wxString name, wxString shortcut);
+
+// The point for anchor watch should really be a class...
+double AnchorDistFix(double const d, double const AnchorPointMinDist,
+                     double const AnchorPointMaxDist);  //  pjotrc 2010.02.22
+
+bool TestGLCanvas(wxString prog_dir);
+bool ReloadLocale();
+void ApplyLocale(void);
+
+void LoadS57();
 
 /**
  * Main application frame. Top-level window frame for OpenCPN that manages
@@ -136,7 +139,7 @@ bool isSingleChart(ChartBase* chart);
 class MyFrame : public wxFrame {
 public:
   MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, long style);
+          const wxSize& size, long style, wxAuiDefaultDockArt* pauidockart);
 
   ~MyFrame();
 
@@ -362,6 +365,7 @@ public:
   void ScheduleSettingsDialogNew();
   void ScheduleDeleteSettingsDialog();
   void ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog);
+  void ScheduleReloadCharts();
   static void RebuildChartDatabase();
   void PositionIENCToolbar();
 
@@ -370,6 +374,8 @@ public:
   void ReleaseApiListeners();
   void UpdateStatusBar(void);
   void ConfigureStatusBar();
+  void FreezeCharts();
+  void ThawCharts();
 
 private:
   void ProcessUnitTest();
@@ -437,6 +443,7 @@ private:
 
   std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
 
+private:
   ObservableListener listener_basic_navdata;
   ObservableListener listener_gps_watchdog;
   ObsListener m_on_raise_listener;
@@ -444,13 +451,13 @@ private:
   ObsListener m_routes_update_listener;
   ObsListener m_evt_drv_msg_listener;
 
-  CommOverflowDlg comm_overflow_dlg;
   ConnectionsDlg* m_connections_dlg;
   bool m_need_new_options;
   wxArrayString pathArray;
   double restoreScale[4];
   unsigned int last_canvasConfig;
   DataMonitor* m_data_monitor;
+  wxAuiDefaultDockArt* m_pauidockart;
 
   DECLARE_EVENT_TABLE()
 };

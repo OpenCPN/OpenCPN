@@ -55,6 +55,8 @@
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
 
+using RouteList = std::vector<Route *>;
+
 class Routeman;     // forward
 class WayPointman;  // forward
 
@@ -72,10 +74,6 @@ extern float g_ChartScaleFactorExp;
 extern Routeman *g_pRouteMan;
 
 //    List definitions for Waypoint Manager Icons
-
-class markicon_bitmap_list_type;
-class markicon_key_list_type;
-class markicon_description_list_type;
 
 WX_DEFINE_SORTED_ARRAY(MarkIcon *, SortedArrayOfMarkIcon);
 WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);

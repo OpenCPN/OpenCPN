@@ -20,20 +20,6 @@ jobs:
       - run: ci/generic-build-debian.sh
       - run: ci/generic-upload.sh
 
-  build-focal:
-    docker:
-      - image: circleci/buildpack-deps:focal-scm
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_PW
-    environment:
-      - OCPN_TARGET: focal
-    steps:
-      - checkout
-      - run: cat /etc/apt/sources.list
-      - run: ci/generic-build-debian.sh
-      - run: ci/generic-upload.sh
-
   build-jammy:
     docker:
       - image: leamas/ubuntu-git:jammy
@@ -167,6 +153,7 @@ std-filters: &std-filters
         - master
         - build
         - flatpak
+        - dpt
 
 
 workflows:
@@ -174,9 +161,6 @@ workflows:
   build_all:
     jobs:
       - build-bookworm:
-          <<: *std-filters
-
-      - build-focal:
           <<: *std-filters
 
       - build-jammy:

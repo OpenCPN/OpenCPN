@@ -32,8 +32,8 @@
 #include <vector>
 #include "ocpndc.h"
 
-class ocpnFloatingToolbarDialog;
-
+class ocpnFloatingToolbarDialog;                  // forward
+extern ocpnFloatingToolbarDialog *g_MainToolbar;  ///< Global instance
 /**
  * Container for toolbar item properties.
  */

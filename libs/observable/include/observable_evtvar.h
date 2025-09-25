@@ -1,9 +1,6 @@
 /*************************************************************************
  *
- * Project:  OpenCPN
- * Purpose: General observable implementation with several specializations.
- *
- * Copyright (C) 2022 Alec Leamas
+ * Copyright (C) 2022 - 2025 Alec Leamas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,15 +18,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
 
-#ifndef _OBSERVABLE_EVTVAR_H
-#define _OBSERVABLE_EVTVAR_H
+/**
+ *\file
+ *
+ * A common variable shared between producer and consumer which supports
+ * Listen() and Notify().
+ */
+
+
+#ifndef OBSERVABLE___EVTVAR__H
+#define OBSERVABLE___EVTVAR__H
 
 #include <atomic>
 #include <memory>
 #include <string>
-#include <vector>
-
-#include <wx/event.h>
 
 #include "observable.h"
 
@@ -73,26 +75,32 @@ public:
   EventVar() : Observable(Autokey()) {}
 
   /** Notify all listeners, no data supplied. */
-  const void Notify() { Observable::Notify("", 0); }
+  void Notify() override { Observable::Notify("", nullptr)
+    ; }
 
   /** Notify all listeners about variable change with ClientData. */
-  const void Notify(void* data) { Observable::Notify("", data); }
+  void Notify(void* data) { Observable::Notify("", data); }
 
   /** Notify all listeners about variable change with a string. */
-  const void Notify(const std::string& s) { Observable::Notify(s, 0); }
+  void Notify(const std::string& s) { Observable::Notify(s, nullptr); }
 
   /** Notify all listeners about variable change with a string and an int */
-  const void Notify(int n, const std::string& s) { Observable::Notify(0, s, n, 0); }
+  void Notify(int n, const std::string& s) { Observable::Notify(nullptr, s, n, nullptr); }
 
   /** Notify all listeners about variable change with an int and ClientData */
-  const void Notify(int n, void* p) { Observable::Notify(0, "", n, p); }
+  void Notify(int n, void* p) { Observable::Notify(nullptr, "", n, p); }
 
   /**
    * Notify all listeners about variable change with shared_ptr,
    * a string and an optional number.
    */
-  const void Notify(std::shared_ptr<void> p, const std::string& s, int n = 0) {
-    Observable::Notify(p, s, n, 0);
+  void Notify(const std::shared_ptr<void>& p, const std::string& s, int n = 0) {
+    Observable::Notify(p, s, n, nullptr);
+  }
+
+  /** Notify all listeners about variable change with const* shared_ptr, */
+  void Notify(const std::shared_ptr<const void>& p) {
+    Observable::Notify(p, "", 0, nullptr);
   }
 
 private:
@@ -102,4 +110,4 @@ private:
   }
 };
 
-#endif  // _OBSERVABLE_EVTVAR_H
+#endif  // OBSERVABLE___EVTVAR__H

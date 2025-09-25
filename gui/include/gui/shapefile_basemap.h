@@ -33,6 +33,8 @@
 #include <map>
 #include <thread>
 #include <future>
+
+#include "gl_headers.h"
 #include "ShapefileReader.hpp"
 #include "poly_math.h"
 #include "ocpndc.h"
@@ -47,6 +49,9 @@ namespace fs = ghc::filesystem;
 #include <utility>
 namespace fs = std::filesystem;
 #endif
+
+class ShapeBaseChartSet;                 // forward
+extern ShapeBaseChartSet gShapeBasemap;  ///< Global instance
 
 /**
  * A latitude/longitude key for 1x1 or 10x10 degree grid tiles.
@@ -241,8 +246,10 @@ private:
   void DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                              const shp::Feature &feature);
   void DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp);
+#ifdef ocpnUSE_GL
   void AddPointToTessList(shp::Point &point, ViewPort &vp, GLUtesselator *tobj,
                           bool idl);
+#endif
 
   /**
    * Path to the shapefile that contains the geographical data for this chart.
@@ -408,4 +415,5 @@ private:
   std::map<Quality, ShapeBaseChart> _basemap_map;
 };
 
+extern ShapeBaseChartSet gShapeBasemap; /**< global instance */
 #endif

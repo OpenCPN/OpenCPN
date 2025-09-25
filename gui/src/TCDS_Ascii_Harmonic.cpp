@@ -145,13 +145,13 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file() {
 
         abbr_entry entry;
 
-        wxStringTokenizer tkz(line, _T(" "));
+        wxStringTokenizer tkz(line, " ");
         wxString token = tkz.GetNextToken();
-        if (token.IsSameAs(_T("REGION"), FALSE))
+        if (token.IsSameAs("REGION", FALSE))
           entry.type = REGION;
-        else if (token.IsSameAs(_T("COUNTRY"), FALSE))
+        else if (token.IsSameAs("COUNTRY", FALSE))
           entry.type = COUNTRY;
-        else if (token.IsSameAs(_T("STATE"), FALSE))
+        else if (token.IsSameAs("STATE", FALSE))
           entry.type = STATE;
 
         token = tkz.GetNextToken();
@@ -469,7 +469,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX) {
     //    Establish Station Type
     wxString caplin(linrec, wxConvUTF8);
     caplin.MakeUpper();
-    if (caplin.Contains(_T("CURRENT")))
+    if (caplin.Contains("CURRENT"))
       psd->station_type = 'C';
     else
       psd->station_type = 'T';

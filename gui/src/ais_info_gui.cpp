@@ -43,11 +43,11 @@
 #include "model/route_point.h"
 
 #include "ais_info_gui.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "chcanv.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "routemanagerdialog.h"
 #include "SoundFactory.h"
 #include "undo.h"
@@ -69,7 +69,8 @@ extern wxString g_CmdSoundString;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame *gFrame;
-extern AisInfoGui *g_pAISGUI;
+
+AisInfoGui *g_pAISGUI;
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {

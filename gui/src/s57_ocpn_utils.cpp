@@ -26,7 +26,7 @@
 #include "chcanv.h"
 #include "ocpn_plugin.h"
 #include "pluginmanager.h"
-#include "Quilt.h"
+#include "quilt.h"
 #include "s52plib.h"
 
 extern PlugInManager *g_pi_manager;  // FIXME: MOve to header
@@ -193,33 +193,33 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
             wxString value =
                 s57chart::GetAttributeValueAsString(pAttrVal, curAttrName);
 
-            if (curAttrName == _T("LITVIS")) {
-              if (value.StartsWith(_T("obsc"))) bviz = false;
+            if (curAttrName == "LITVIS") {
+              if (value.StartsWith("obsc")) bviz = false;
             }
-            if (curAttrName == _T("SECTR1")) value.ToDouble(&sectr1);
-            if (curAttrName == _T("SECTR2")) value.ToDouble(&sectr2);
-            if (curAttrName == _T("VALNMR")) value.ToDouble(&valnmr);
-            if (curAttrName == _T("COLOUR")) {
-              if (value == _T("red(3)")) {
+            if (curAttrName == "SECTR1") value.ToDouble(&sectr1);
+            if (curAttrName == "SECTR2") value.ToDouble(&sectr2);
+            if (curAttrName == "VALNMR") value.ToDouble(&valnmr);
+            if (curAttrName == "COLOUR") {
+              if (value == "red(3)") {
                 color = wxColor(255, 0, 0, opacity);
                 sector.iswhite = false;
                 bhas_red_green = true;
               }
 
-              if (value == _T("green(4)")) {
+              if (value == "green(4)") {
                 color = wxColor(0, 255, 0, opacity);
                 sector.iswhite = false;
                 bhas_red_green = true;
               }
             }
 
-            if (curAttrName == _T("EXCLIT")) {
-              if (value.Find(_T("(3)"))) valnmr = 1.0;  // Fog lights.
+            if (curAttrName == "EXCLIT") {
+              if (value.Find("(3)")) valnmr = 1.0;  // Fog lights.
             }
 
-            if (curAttrName == _T("CATLIT")) {
-              if (value.Upper().StartsWith(_T("DIRECT")) ||
-                  value.Upper().StartsWith(_T("LEAD")))
+            if (curAttrName == "CATLIT") {
+              if (value.Upper().StartsWith("DIRECT") ||
+                  value.Upper().StartsWith("LEAD"))
                 bleading_attribute = true;
             }
 

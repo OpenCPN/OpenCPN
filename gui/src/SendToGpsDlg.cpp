@@ -35,7 +35,7 @@
 #include <wx/window.h>
 
 #include "model/conn_params.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/rest_server.h"
 #include "route_gui.h"
 #include "model/route.h"
@@ -111,7 +111,7 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
   for (unsigned int iPortIndex = 0; iPortIndex < pSerialArray->GetCount();
        iPortIndex++) {
     wxString full_port = pSerialArray->Item(iPortIndex);
-    full_port.Prepend(_T("Serial:"));
+    full_port.Prepend("Serial:");
     m_itemCommListBox->Append(full_port);
   }
 
@@ -124,15 +124,13 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
 
     if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
         (cp->NetProtocol == TCP)) {
-      netident << _T("TCP:") << cp->NetworkAddress << _T(":")
-               << cp->NetworkPort;
+      netident << "TCP:" << cp->NetworkAddress << ":" << cp->NetworkPort;
       m_itemCommListBox->Append(netident);
       netconns.Add(netident);
     }
     if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
         (cp->NetProtocol == UDP)) {
-      netident << _T("UDP:") << cp->NetworkAddress << _T(":")
-               << cp->NetworkPort;
+      netident << "UDP:" << cp->NetworkAddress << ":" << cp->NetworkPort;
       m_itemCommListBox->Append(netident);
       netconns.Add(netident);
     }
@@ -146,10 +144,10 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
 
       unsigned int i = 1;
       while ((i + 1) < btscanResults.GetCount()) {
-        wxString item1 = btscanResults[i] + _T(";");
+        wxString item1 = btscanResults[i] + ";";
         wxString item2 = btscanResults.Item(i + 1);
         wxString port = item1 + item2;
-        port.Prepend(_T("Bluetooth:"));
+        port.Prepend("Bluetooth:");
         m_itemCommListBox->Append(port);
 
         i += 2;
@@ -232,7 +230,7 @@ void SendToGpsDlg::OnSendClick(wxCommandEvent& event) {
   wxString destPort = src.BeforeFirst(' ');  // Serial:
 
   // For Bluetooth, we need the entire string
-  if (src.Lower().Find(_T("bluetooth")) != wxNOT_FOUND) destPort = src;
+  if (src.Lower().Find("bluetooth") != wxNOT_FOUND) destPort = src;
 
   //    And send it out
   if (m_pRoute) RouteGui(*m_pRoute).SendToGPS(destPort, true, this);

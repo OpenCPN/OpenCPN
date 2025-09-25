@@ -56,8 +56,6 @@ typedef struct {
   char msdk[20];
 } PlatSpec;
 
-void appendOSDirSlash(wxString* path);
-
 struct OCPN_OSDetail {
   OCPN_OSDetail() {};
   ~OCPN_OSDetail() {};
@@ -69,6 +67,17 @@ struct OCPN_OSDetail {
   std::string osd_ID;
 };
 
+void appendOSDirSlash(wxString* path);
+
+namespace platform {
+
+/**
+ * Return total system RAM and size of program
+ * Values returned are in kilobytes
+ */
+bool GetMemoryStatus(int* mem_total, int* mem_used);
+
+}  // namespace platform
 class AbstractPlatform {
 public:
   AbstractPlatform() = default;
@@ -88,6 +97,9 @@ public:
 
   /** The original in-tree plugin directory, sometimes not user-writable.*/
   wxString& GetPluginDir();
+
+  /** Android license details, otherwise "" */
+  wxString GetSupplementalLicenseString();
 
   wxStandardPaths& GetStdPaths();
 
@@ -140,6 +152,12 @@ public:
    */
   double GetDisplayDIPMult(wxWindow* win);
 
+  /**
+   * Return icon size roughly corresponding to height of a char in w, tweaked
+   * to be "big enough" for touch screens if touch is true.
+   */
+  virtual int GetSvgStdIconSize(const wxWindow* w, bool touch) = 0;
+
   static void ShowBusySpinner();
   static void HideBusySpinner();
 
@@ -183,6 +201,7 @@ public:
   wxSize getDisplaySize() override;
   double GetDisplaySizeMM() override;
   double GetDisplayDPmm() override;
+  int GetSvgStdIconSize(const wxWindow* w, bool touch) override;
 };
 
 #endif  //  BASEPLATFORM_H

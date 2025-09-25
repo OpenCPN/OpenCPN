@@ -103,6 +103,7 @@ typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
 #include <wx/hashmap.h>
 class RuleHash;
 
+
 WX_DECLARE_HASH_MAP(wxString, Rule *, wxStringHash, wxStringEqual, RuleHash);
 
 WX_DEFINE_SORTED_ARRAY(LUPrec *, wxArrayOfLUPrec);
@@ -142,6 +143,9 @@ typedef struct _LUPHashIndex {
 } LUPHashIndex;
 
 WX_DECLARE_STRING_HASH_MAP(LUPHashIndex *, LUPArrayIndexHash);
+
+class s52plib;   // Forward
+extern s52plib *ps52plib;  ///< Global instance
 
 class LUPArrayContainer {
 public:
@@ -476,6 +480,7 @@ private:
                   float rot_angle = 0., double uScale = 1.0);
   bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                           float rot_angle = 0.);
+  void SetupSoundingFont();
   bool RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                             wxColor symColor,
                             float rot_angle = 0.);

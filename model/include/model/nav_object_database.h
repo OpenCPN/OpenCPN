@@ -31,14 +31,14 @@
 #include <wx/checkbox.h>
 #include <wx/string.h>
 
+#include "model/route.h"
+#include "model/route_point.h"
 #include "pugixml.hpp"
 #include "bbox.h"
 #include "observable_evtvar.h"
 
 class Track;
 class TrackPoint;
-class RouteList;
-class RoutePointList;
 class Route;
 class RoutePoint;
 
@@ -81,6 +81,8 @@ class RoutePoint;
 #define RT_OUT_NO_RTPTS 1 << 4
 
 class NavObjectCollection1;  // forward
+
+using RouteList = std::vector<Route *>;  // circular
 
 bool WptIsInRouteList(RoutePoint *pr);
 RoutePoint *WaypointExists(const wxString &name, double lat, double lon);
