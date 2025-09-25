@@ -155,6 +155,8 @@ extern "C" void glOrthof(float left, float right, float bottom, float top,
 #include "model/notification_manager.h"
 #endif
 
+wxStopWatch g_glstopwatch;
+
 #if defined(__UNIX__) && !defined(__WXOSX__)
 // high resolution stopwatch for profiling
 class OCPNStopWatch {
@@ -232,6 +234,8 @@ PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
 static bool b_timeGL;
 static int panx, pany;
+
+bool g_true_zoom;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 static int s_tess_vertex_idx;
@@ -357,6 +361,8 @@ void glChartCanvas::Init() {
   m_binPan = false;
   m_bpinchGuard = false;
   m_binGesture = false;
+  m_first_zout = false;
+  g_true_zoom = true;
 
   b_timeGL = true;
   m_last_render_time = -1;
@@ -443,6 +449,7 @@ void glChartCanvas::Init() {
 
   m_bgestureGuard = false;
   m_total_zoom_val = 1.0;
+  m_step_zoom_val = 1.0;
 
 //  Gesture support for platforms other than Android
 #ifdef HAVE_WX_GESTURE_EVENTS
@@ -1336,7 +1343,6 @@ no_compression:
 
 void glChartCanvas::OnPaint(wxPaintEvent &event) {
   wxPaintDC dc(this);
-
   if (!m_pcontext) return;
 
   Show(g_bopengl);
@@ -3134,6 +3140,10 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
 
   //  render the quilt
   ChartBase *chart = m_pParentCanvas->m_pQuilt->GetFirstChart();
+  if (!chart) {
+    printf("   Chart NULL\n");
+    chart = m_pParentCanvas->m_pQuilt->GetFirstChart();
+  }
 
   //  Check the first, smallest scale chart
   if (chart) {
@@ -3497,9 +3507,10 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
     }
   }
 
-  if (vp.b_quilt)
+  if (vp.b_quilt) {
     RenderQuiltViewGL(vp, rect_region);
-  else {
+    int yyp = 4;
+  } else {
     LLRegion region = vp.GetLLRegion(rect_region);
     if (m_pParentCanvas->m_singleChart->GetChartFamily() ==
         CHART_FAMILY_RASTER) {
@@ -3795,7 +3806,9 @@ void glChartCanvas::Render() {
     if (!g_PrintingInProgress) return;
   }
 
-  if (m_binPinch) return;
+  if (!g_true_zoom && m_binPinch) return;
+
+  if (m_binPinch) printf("    %ld Render Start\n", g_glstopwatch.Time());
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   loadShaders(GetCanvasIndex());
@@ -4349,6 +4362,9 @@ void glChartCanvas::Render() {
     RenderCharts(m_gldc, screen_region);
   }
 
+  if (m_binPinch)
+    printf("        %ld Render Charts Done\n", g_glstopwatch.Time());
+
   // Done with base charts.
   // Now the overlays
   RenderS57TextOverlay(VPoint);
@@ -4546,12 +4562,10 @@ void glChartCanvas::Render() {
   g_glTextureManager->TextureCrunch(0.8);
   g_glTextureManager->FactoryCrunch(0.6);
 
-  // if (g_in_inertia)
-  // printf("---     Rx %g\n", (wxGetLocalTimeMillis() - s_t0).ToDouble());
-
   m_pParentCanvas->PaintCleanup();
-  // OCPNPlatform::HideBusySpinner();
   m_bforcefull = false;
+
+  if (m_binPinch) printf("    %ld Render Exit\n", g_glstopwatch.Time());
 
   n_render++;
 }
@@ -5128,7 +5142,6 @@ void glChartCanvas::OnEvtPanGesture(wxQT_PanGestureEvent &event) {
 }
 
 float zoom_inc = 1.0;
-bool first_zout = false;
 
 void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
   float zoom_gain = 1.0;
@@ -5174,7 +5187,7 @@ void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
 
   switch (event.GetState()) {
     case GestureStarted:
-      first_zout = false;
+      m_first_zout = false;
       m_binPinch = true;
       m_binPan = false;  // cancel any tentative pan gesture, in case the "pan
                          // cancel" event was lost
@@ -5214,7 +5227,7 @@ void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
         }
       } else {
         // qDebug() << "update totalzoom" << total_zoom_val << projected_scale;
-        if (1 || ((total_zoom_val > 1) && !first_zout)) {  // Zoom in
+        if (1 || ((total_zoom_val > 1) && !m_first_zout)) {  // Zoom in
           wxPoint pinchPoint = event.GetCenterPoint();
 
           float dx = pinchPoint.x - m_lpinchPoint.x;
@@ -5228,7 +5241,7 @@ void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
           m_lpinchPoint = pinchPoint;
 
         } else {
-          first_zout = true;
+          m_first_zout = true;
           zoom_inc *= zoom_val;
           if ((zoom_inc < 0.9) || (zoom_inc > 1.1)) {
             m_pParentCanvas->ZoomCanvas(zoom_inc, false);
@@ -5356,7 +5369,6 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
 void glChartCanvas::OnEvtPanGesture(wxPanGestureEvent &event) {
   // qDebug() << "OnEvtPanGesture" << m_pParentCanvas->m_canvasIndex <<
   // event.cursor_pos.x;
-
   if (m_pParentCanvas->isRouteEditing() || m_pParentCanvas->isMarkEditing())
     return;
 
@@ -5405,169 +5417,290 @@ void glChartCanvas::OnEvtPanGesture(wxPanGestureEvent &event) {
   m_bforcefull = false;
 }
 
-bool first_zout = false;
-
 //  Generic wxWidgets gesture event processor
 void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
-  float zoom_gain = 1.0;
-  float zout_gain = 1.0;
+  if (g_true_zoom) {
+    float zoom_gain = 1.0;
+    float zout_gain = 1.0;
 
-  float last_zoom_val = m_total_zoom_val;
+    float last_zoom_val = m_step_zoom_val;  // m_total_zoom_val;
 
-  float max_zoom_scale = 1000.;
-  float min_zoom_scale = 2e8;
+    float max_zoom_scale = 1000.;
+    float min_zoom_scale = 2e8;
 
-  if (event.GetZoomFactor() > 1)
-    m_total_zoom_val = ((event.GetZoomFactor() - 1.0) * zoom_gain) + 1.0;
-  else
-    m_total_zoom_val = 1.0 - ((1.0 - event.GetZoomFactor()) * zout_gain);
+    if (event.GetZoomFactor() > 1)
+      m_total_zoom_val = ((event.GetZoomFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+      m_total_zoom_val = 1.0 - ((1.0 - event.GetZoomFactor()) * zout_gain);
 
-  float inc_zoom_val =
-      m_total_zoom_val / last_zoom_val;  // the incremental zoom
+    float inc_zoom_val =
+        m_total_zoom_val / last_zoom_val;  // the incremental zoom
 
-  double projected_scale =
-      m_pParentCanvas->GetVP().chart_scale / m_total_zoom_val;
+    double projected_scale = m_cache_vp.chart_scale;
 
-  if (event.IsGestureStart()) {
-    // printf("\nStart--------------\n");
-    first_zout = false;
-    m_binPinch = true;
-    m_binPan = false;  // cancel any tentative pan gesture, in case the "pan
-                       // cancel" event was lost
-    m_binGesture = true;
-    m_pinchStart = event.GetPosition();
-    m_lpinchPoint = m_pinchStart;
-    m_total_zoom_val = 1.0;
-    m_final_zoom_val = 1.0;
+    if (event.IsGestureStart()) {
+      g_glstopwatch.Start();
+      printf("\nStart--------------\n");
+      m_binPinch = true;
+      m_pParentCanvas->m_inPinch = true;
+      m_binPan = false;  // cancel any tentative pan gesture, in case the "pan
+                         // cancel" event was lost
+      m_binGesture = true;
+      m_pinchStart = event.GetPosition();
+      m_lpinchPoint = m_pinchStart;
+      m_total_zoom_val = 1.0;
+      m_final_zoom_val = 1.0;
+      m_step_zoom_val = 1.0;
 
-    m_pParentCanvas->GetCanvasPixPoint(
-        event.GetPosition().x, event.GetPosition().y, m_pinchlat, m_pinchlon);
-    //            qDebug() << "center" << event.GetCenterPoint().x <<
-    //            event.GetCenterPoint().y;
+      // m_pParentCanvas->GetCanvasPixPoint(
+      //     event.GetPosition().x, event.GetPosition().y, m_pinchlat,
+      //     m_pinchlon);
+      //             qDebug() << "center" << event.GetCenterPoint().x <<
+      //             event.GetCenterPoint().y;
 
-    m_cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
-    m_cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
+      // m_cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
+      // m_cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
 
-    // Render the full charts with overlay objects onto the frame buffer.
-    SetCurrent(*m_pcontext);
-    RenderScene();
-#ifndef __ANDROID__
-    ViewPort vpr = m_pParentCanvas->VPoint;
-    m_texVP = vpr;
-    GetTouchBackingBitmap(vpr);
-#endif
-    m_zoom_inc = 1.0;
-  }
+      m_zoom_inc = 1.0;
+    }
 
-  if (event.IsGestureEnd()) {
-    // printf("End--------------\n");
-    //             qDebug() << "finish totalzoom" << total_zoom_val <<
-    //             projected_scale;
+    if (event.IsGestureEnd()) {
+      printf("End--------------\n");
 
-    // Some ptaforms generate spurious gestureEnd events. Guard for this.
-    if (!m_binGesture) return;
+      // Some platforms generate spurious gestureEnd events. Guard for this.
+      if (!m_binGesture) return;
 
-    float cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
-    float cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
-    float dy = 0;
-    float dx = 0;
+      float cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
+      float cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
+      float dy = 0;
+      float dx = 0;
 
-    float tzoom = m_final_zoom_val;
+      float tzoom = m_final_zoom_val;
 
-    dx = (cc_x - m_cc_x) * tzoom;
-    dy = -(cc_y - m_cc_y) * tzoom;
+      dx = (cc_x - m_cc_x) * tzoom;
+      dy = -(cc_y - m_cc_y) * tzoom;
 
-    if (zoomTimer.IsRunning()) {
-      //                qDebug() << "Final zoom";
-      m_zoomFinal = true;
-      m_zoomFinalZoom = tzoom;
-      m_zoomFinaldx = dx;
-      m_zoomFinaldy = dy;
+      if (zoomTimer.IsRunning()) {
+        //                qDebug() << "Final zoom";
+        m_zoomFinal = true;
+        m_zoomFinalZoom = tzoom;
+        m_zoomFinaldx = dx;
+        m_zoomFinaldy = dy;
+      }
+
+      else {
+        {
+          // qDebug() << "zoomit";
+          // m_pParentCanvas->ZoomCanvas(tzoom, false);
+          // m_pParentCanvas->ZoomCanvasSimple(1.);
+          // m_pParentCanvas->PanCanvas(dx, dy);
+          // m_pParentCanvas->m_OSoffsetx = 0;
+          // m_pParentCanvas->m_OSoffsety = 0;
+          // m_pParentCanvas->SetViewPoint(vp_save.clat, vp_save.clon);
+          // m_pParentCanvas->pPanTimer->Stop();
+          Refresh();
+        }
+      }
+
+      // Let the gesture finish timer (500 msec) signal the pinch is done.
+      // this will allow any lingering drag operation to avoid starting the
+      // inertial drag process
+      m_final_zoom_val = 1.0;
+      m_total_zoom_val = 1.0;
+      m_step_zoom_val = 1.0;
+
+      m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
     }
 
     else {
-      double final_projected_scale =
-          m_pParentCanvas->GetVP().chart_scale / tzoom;
-      // qDebug() << "Final pinchB" << tzoom << final_projected_scale;
+      printf("%ld %6g %6g %6g \n", g_glstopwatch.Time(), event.GetZoomFactor(),
+             inc_zoom_val, projected_scale);
+      float zoom_step = 5;
+      float zoom_trigger = 0.05;
+      if (projected_scale > 1e5)
+        zoom_trigger = .1;
+      else if (projected_scale < 3e4)
+        zoom_trigger = .02;
 
-      if (final_projected_scale < min_zoom_scale) {
-        // qDebug() << "zoomit";
-        m_pParentCanvas->ZoomCanvas(tzoom, false);
-        m_pParentCanvas->PanCanvas(dx, dy);
-        m_pParentCanvas->m_pQuilt->Invalidate();
-        m_bforcefull = true;
-
-      } else {
-        double new_scale =
-            m_pParentCanvas->GetCanvasScaleFactor() / min_zoom_scale;
-        // qDebug() << "clampit";
-        m_pParentCanvas->SetVPScale(new_scale);
-        m_pParentCanvas->m_pQuilt->Invalidate();
-        m_bforcefull = true;
+      if (inc_zoom_val != 1.0) {
+        if (inc_zoom_val > 1 + zoom_step) {
+          m_step_zoom_val = m_step_zoom_val * (1 + zoom_step);
+          printf("   Partial zoom: %6g\n", 1 + zoom_step);
+          m_pParentCanvas->ZoomCanvasSimple(1 + zoom_step);
+          Render();
+        } else {
+          if (fabs(inc_zoom_val - 1.) > zoom_trigger) {
+            m_step_zoom_val = m_total_zoom_val;
+            printf("   Zoom: %6g\n", inc_zoom_val);
+            m_pParentCanvas->ZoomCanvasSimple(inc_zoom_val);
+            Render();
+          }
+        }
       }
     }
-
-    m_binPinch = false;
-    m_final_zoom_val = 1.0;
-    m_total_zoom_val = 1.0;
-    m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
-  }
-
+  }  // true-zoom
   else {
-    if (1 /* g_GLOptions.m_bUseCanvasPanning*/) {
-      if (projected_scale < min_zoom_scale) {
-        wxPoint pinchPoint = event.GetPosition();
+    // Legacy zoom behavior
+    float zoom_gain = 1.0;
+    float zout_gain = 1.0;
 
-        float dx = pinchPoint.x - m_lpinchPoint.x;
-        float dy = pinchPoint.y - m_lpinchPoint.y;
+    float last_zoom_val = m_total_zoom_val;
 
-        FastZoom(inc_zoom_val, m_pinchStart.x, m_pinchStart.y,
-                 -dx / m_total_zoom_val, dy / m_total_zoom_val);
+    float max_zoom_scale = 1000.;
+    float min_zoom_scale = 2e8;
 
-        m_lpinchPoint = pinchPoint;
-        m_final_zoom_val *= inc_zoom_val;
+    if (event.GetZoomFactor() > 1)
+      m_total_zoom_val = ((event.GetZoomFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+      m_total_zoom_val = 1.0 - ((1.0 - event.GetZoomFactor()) * zout_gain);
+
+    float inc_zoom_val =
+        m_total_zoom_val / last_zoom_val;  // the incremental zoom
+
+    double projected_scale =
+        m_pParentCanvas->GetVP().chart_scale / m_total_zoom_val;
+
+    if (event.IsGestureStart()) {
+      // printf("\nStart--------------\n");
+      m_first_zout = false;
+      m_binPinch = true;
+      m_binPan = false;  // cancel any tentative pan gesture, in case the "pan
+                         // cancel" event was lost
+      m_binGesture = true;
+      m_pinchStart = event.GetPosition();
+      m_lpinchPoint = m_pinchStart;
+      m_total_zoom_val = 1.0;
+      m_final_zoom_val = 1.0;
+
+      m_pParentCanvas->GetCanvasPixPoint(
+          event.GetPosition().x, event.GetPosition().y, m_pinchlat, m_pinchlon);
+      //            qDebug() << "center" << event.GetCenterPoint().x <<
+      //            event.GetCenterPoint().y;
+
+      m_cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
+      m_cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
+
+      // Render the full charts with overlay objects onto the frame buffer.
+      SetCurrent(*m_pcontext);
+      RenderScene();
+#ifndef __ANDROID__
+      ViewPort vpr = m_pParentCanvas->VPoint;
+      m_texVP = vpr;
+      GetTouchBackingBitmap(vpr);
+#endif
+      m_zoom_inc = 1.0;
+    }
+
+    if (event.IsGestureEnd()) {
+      // printf("End--------------\n");
+      //             qDebug() << "finish totalzoom" << total_zoom_val <<
+      //             projected_scale;
+
+      // Some ptaforms generate spurious gestureEnd events. Guard for this.
+      if (!m_binGesture) return;
+
+      float cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
+      float cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
+      float dy = 0;
+      float dx = 0;
+
+      float tzoom = m_final_zoom_val;
+
+      dx = (cc_x - m_cc_x) * tzoom;
+      dy = -(cc_y - m_cc_y) * tzoom;
+
+      if (zoomTimer.IsRunning()) {
+        //                qDebug() << "Final zoom";
+        m_zoomFinal = true;
+        m_zoomFinalZoom = tzoom;
+        m_zoomFinaldx = dx;
+        m_zoomFinaldy = dy;
       }
-    } else {
-      // qDebug() << "update totalzoom" << total_zoom_val << projected_scale;
-      if (1 || ((m_total_zoom_val > 1) && !first_zout)) {  // Zoom in
-        wxPoint pinchPoint = event.GetPosition();
 
-        float dx = pinchPoint.x - m_lpinchPoint.x;
-        float dy = pinchPoint.y - m_lpinchPoint.y;
+      else {
+        double final_projected_scale =
+            m_pParentCanvas->GetVP().chart_scale / tzoom;
+        // qDebug() << "Final pinchB" << tzoom << final_projected_scale;
 
-        if ((projected_scale > max_zoom_scale) &&
-            (projected_scale < min_zoom_scale))
+        if (final_projected_scale < min_zoom_scale) {
+          // qDebug() << "zoomit";
+          m_pParentCanvas->ZoomCanvas(tzoom, false);
+          m_pParentCanvas->PanCanvas(dx, dy);
+          m_pParentCanvas->m_pQuilt->Invalidate();
+          m_bforcefull = true;
+
+        } else {
+          double new_scale =
+              m_pParentCanvas->GetCanvasScaleFactor() / min_zoom_scale;
+          // qDebug() << "clampit";
+          m_pParentCanvas->SetVPScale(new_scale);
+          m_pParentCanvas->m_pQuilt->Invalidate();
+          m_bforcefull = true;
+        }
+      }
+
+      m_binPinch = false;
+      m_final_zoom_val = 1.0;
+      m_total_zoom_val = 1.0;
+      m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
+    }
+
+    else {
+      if (1 /* g_GLOptions.m_bUseCanvasPanning*/) {
+        if (projected_scale < min_zoom_scale) {
+          wxPoint pinchPoint = event.GetPosition();
+
+          float dx = pinchPoint.x - m_lpinchPoint.x;
+          float dy = pinchPoint.y - m_lpinchPoint.y;
+
           FastZoom(inc_zoom_val, m_pinchStart.x, m_pinchStart.y,
                    -dx / m_total_zoom_val, dy / m_total_zoom_val);
 
-        m_lpinchPoint = pinchPoint;
-        m_final_zoom_val *= inc_zoom_val;
-
-      } else {
-        first_zout = true;
-        m_zoom_inc *= inc_zoom_val;
-        if ((m_zoom_inc < 0.9) || (m_zoom_inc > 1.1)) {
-          m_pParentCanvas->ZoomCanvas(m_zoom_inc, false);
-          m_zoom_inc = 1.0;
+          m_lpinchPoint = pinchPoint;
+          m_final_zoom_val *= inc_zoom_val;
         }
+      } else {
+        // qDebug() << "update totalzoom" << total_zoom_val << projected_scale;
+        if (1 || ((m_total_zoom_val > 1) && !m_first_zout)) {  // Zoom in
+          wxPoint pinchPoint = event.GetPosition();
 
-        wxPoint pinchPoint = event.GetPosition();
-        float dx = pinchPoint.x - m_lpinchPoint.x;
-        float dy = pinchPoint.y - m_lpinchPoint.y;
-        m_pParentCanvas->PanCanvas(-dx, -dy);
-        m_lpinchPoint = pinchPoint;
+          float dx = pinchPoint.x - m_lpinchPoint.x;
+          float dy = pinchPoint.y - m_lpinchPoint.y;
+
+          if ((projected_scale > max_zoom_scale) &&
+              (projected_scale < min_zoom_scale))
+            FastZoom(inc_zoom_val, m_pinchStart.x, m_pinchStart.y,
+                     -dx / m_total_zoom_val, dy / m_total_zoom_val);
+
+          m_lpinchPoint = pinchPoint;
+          m_final_zoom_val *= inc_zoom_val;
+
+        } else {
+          m_first_zout = true;
+          m_zoom_inc *= inc_zoom_val;
+          if ((m_zoom_inc < 0.9) || (m_zoom_inc > 1.1)) {
+            m_pParentCanvas->ZoomCanvas(m_zoom_inc, false);
+            m_zoom_inc = 1.0;
+          }
+
+          wxPoint pinchPoint = event.GetPosition();
+          float dx = pinchPoint.x - m_lpinchPoint.x;
+          float dy = pinchPoint.y - m_lpinchPoint.y;
+          m_pParentCanvas->PanCanvas(-dx, -dy);
+          m_lpinchPoint = pinchPoint;
+        }
       }
     }
+    m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
   }
+
   m_bgestureGuard = true;
   m_bpinchGuard = true;
-  m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
 }
 
 void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event) {
   //  On some devices, the pan GestureFinished event fails to show up
   //  Watch for this case, and fix it.....
-  // qDebug() << "onGestureTimerEvent";
 
   if (m_binPan) {
     m_binPan = false;
@@ -5586,6 +5719,9 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event) {
   // signal gesture is finished after a delay
   m_binGesture = false;
   m_bforcefull = false;
+  m_binPinch = false;
+  m_pParentCanvas->m_inPinch = false;
+  printf("******Finish\n");
 }
 
 #endif

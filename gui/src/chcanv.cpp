@@ -295,6 +295,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_bShowAIS = true;
   m_bShowAISScaled = false;
   m_timed_move_vp_active = false;
+  m_inPinch = false;
 
   m_vLat = 0.;
   m_vLon = 0.;
@@ -3313,7 +3314,6 @@ void ChartCanvas::StartChartDragInertia() {
 
 void ChartCanvas::OnChartDragInertiaTimer(wxTimerEvent &event) {
   if (!m_chart_drag_inertia_active) return;
-
   // Calculate time fraction from 0..1
   wxLongLong now = wxGetLocalTimeMillis();
   double elapsed = (now - m_chart_drag_inertia_start_time).ToDouble();
@@ -3390,7 +3390,6 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
   if (stoptimer) pMovementStopTimer->Start(800, wxTIMER_ONE_SHOT);
 
   if (!pMovementTimer->IsRunning()) {
-    //        printf("timer not running, starting\n");
     pMovementTimer->Start(1, wxTIMER_ONE_SHOT);
   }
 
@@ -3449,7 +3448,6 @@ void ChartCanvas::DoTimedMovementVP() {
   m_run_lat = new_lat;
   m_run_lon = new_lon;
 
-  // printf(" Timed\n");
   SetViewPoint(new_lat, new_lon);  // Embeds a refresh
 }
 
@@ -3462,6 +3460,7 @@ void ChartCanvas::StartTimedMovementTarget() {}
 void ChartCanvas::DoTimedMovementTarget() {}
 
 void ChartCanvas::StopMovementTarget() {}
+int ntm;
 
 void ChartCanvas::DoTimedMovement() {
   if (m_pan_drag == wxPoint(0, 0) && !m_panx && !m_pany && m_zoom_factor == 1 &&
@@ -3488,22 +3487,23 @@ void ChartCanvas::DoMovement(long dt) {
   m_mustmove -= dt;
   if (m_mustmove < 0) m_mustmove = 0;
 
-  if (m_pan_drag.x || m_pan_drag.y) {
-    PanCanvas(m_pan_drag.x, m_pan_drag.y);
-    m_pan_drag.x = m_pan_drag.y = 0;
-  }
-
-  if (m_panx || m_pany) {
-    const double slowpan = .1, maxpan = 2;
-    if (m_modkeys == wxMOD_ALT)
-      m_panspeed = slowpan;
-    else {
-      m_panspeed += (double)dt / 500; /* apply acceleration */
-      m_panspeed = wxMin(maxpan, m_panspeed);
+  if (!m_inPinch) {  // this stops compound zoom/pan
+    if (m_pan_drag.x || m_pan_drag.y) {
+      PanCanvas(m_pan_drag.x, m_pan_drag.y);
+      m_pan_drag.x = m_pan_drag.y = 0;
     }
-    PanCanvas(m_panspeed * m_panx * dt, m_panspeed * m_pany * dt);
-  }
 
+    if (m_panx || m_pany) {
+      const double slowpan = .1, maxpan = 2;
+      if (m_modkeys == wxMOD_ALT)
+        m_panspeed = slowpan;
+      else {
+        m_panspeed += (double)dt / 500; /* apply acceleration */
+        m_panspeed = wxMin(maxpan, m_panspeed);
+      }
+      PanCanvas(m_panspeed * m_panx * dt, m_panspeed * m_pany * dt);
+    }
+  }
   if (m_zoom_factor != 1) {
     double alpha = 400, beta = 1.5;
     double zoom_factor = (exp(dt / alpha) - 1) / beta + 1;
@@ -4524,26 +4524,28 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
     if (!VPoint.b_quilt) {
       pc = m_singleChart;
     } else {
-      int new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
-      if (new_db_index >= 0)
-        pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
-      else {  // for whatever reason, no reference chart is known
-              // Choose the smallest scale chart on the current stack
-              // and then adjust for scale range
-        int current_ref_stack_index = -1;
-        if (m_pCurrentStack->nEntry) {
-          int trial_index =
-              m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
-          m_pQuilt->SetReferenceChart(trial_index);
-          new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
-          if (new_db_index >= 0)
-            pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+      if (!m_disable_adjust_on_zoom) {
+        int new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
+        if (new_db_index >= 0)
+          pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+        else {  // for whatever reason, no reference chart is known
+                // Choose the smallest scale chart on the current stack
+                // and then adjust for scale range
+          int current_ref_stack_index = -1;
+          if (m_pCurrentStack->nEntry) {
+            int trial_index =
+                m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+            m_pQuilt->SetReferenceChart(trial_index);
+            new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
+            if (new_db_index >= 0)
+              pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+          }
         }
-      }
 
-      if (m_pCurrentStack)
-        m_pCurrentStack->SetCurrentEntryFromdbIndex(
-            new_db_index);  // highlite the correct bar entry
+        if (m_pCurrentStack)
+          m_pCurrentStack->SetCurrentEntryFromdbIndex(
+              new_db_index);  // highlite the correct bar entry
+      }
     }
 
     if (pc) {
@@ -4603,29 +4605,31 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
       }
 
     } else {
-      int new_db_index = m_pQuilt->AdjustRefOnZoomOut(proposed_scale_onscreen);
-      if (new_db_index >= 0)
-        pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+      if (!m_disable_adjust_on_zoom) {
+        int new_db_index =
+            m_pQuilt->AdjustRefOnZoomOut(proposed_scale_onscreen);
+        if (new_db_index >= 0)
+          pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
 
-      if (m_pCurrentStack)
-        m_pCurrentStack->SetCurrentEntryFromdbIndex(
-            new_db_index);  // highlite the correct bar entry
+        if (m_pCurrentStack)
+          m_pCurrentStack->SetCurrentEntryFromdbIndex(
+              new_db_index);  // highlite the correct bar entry
 
-      b_smallest = m_pQuilt->IsChartSmallestScale(new_db_index);
+        b_smallest = m_pQuilt->IsChartSmallestScale(new_db_index);
 
-      if (b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+        if (b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+          proposed_scale_onscreen =
+              wxMin(proposed_scale_onscreen,
+                    GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
+      }
+
+      // set a minimum scale
+      if ((GetCanvasScaleFactor() / proposed_scale_onscreen) <
+          m_absolute_min_scale_ppm)
         proposed_scale_onscreen =
-            wxMin(proposed_scale_onscreen,
-                  GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
+            GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
     }
-
-    // set a minimum scale
-    if ((GetCanvasScaleFactor() / proposed_scale_onscreen) <
-        m_absolute_min_scale_ppm)
-      proposed_scale_onscreen =
-          GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
   }
-
   double new_scale =
       GetVPScale() * (GetVP().chart_scale / proposed_scale_onscreen);
 
@@ -4914,7 +4918,6 @@ void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
 
 bool ChartCanvas::PanCanvas(double dx, double dy) {
   if (!ChartData) return false;
-
   extendedSectorLegs.clear();
 
   double dlat, dlon;
@@ -5391,7 +5394,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
       if (!renderable) b_needNewRef = true;
 
       //    Need new refchart?
-      if (b_needNewRef) {
+      if (b_needNewRef && !m_disable_adjust_on_zoom) {
         const ChartTableEntry &cte_ref =
             ChartData->GetChartTableEntry(m_pQuilt->GetRefChartdbIndex());
         int target_scale = cte_ref.GetScale();
@@ -7773,7 +7776,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   // Capture LeftUp's and time them, unless it already came from the timer.
 
   // Detect end of chart dragging
-  if (g_btouch && m_bChartDragging && event.LeftUp()) {
+  if (g_btouch && !m_inPinch && m_bChartDragging && event.LeftUp()) {
     StartChartDragInertia();
   }
 
@@ -10056,7 +10059,6 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
   if (event.LeftDown()) {
     // Skip the first left click if it will cause a canvas focus shift
     if ((GetCanvasCount() > 1) && (this != g_focusCanvas)) {
-      // printf("focus shift\n");
       return false;
     }
 
@@ -10121,7 +10123,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
      * Anyways, guarded it to be active in touch situations only.
      */
 
-    if (g_btouch) {
+    if (g_btouch && !m_inPinch) {
       struct timespec now;
       clock_gettime(CLOCK_MONOTONIC, &now);
       uint64_t tnow = (1e9 * now.tv_sec) + now.tv_nsec;
@@ -10168,7 +10170,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
           last_drag.x = x, last_drag.y = y;
         }
       }
-    } else {
+    } else if (!g_btouch) {
       if ((last_drag.x != x) || (last_drag.y != y)) {
         if (!m_routeState) {  // Correct fault on wx32/gtk3, uncommanded
                               // dragging on route create.
@@ -11610,8 +11612,6 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
   int rx, ry, rwidth, rheight;
   ru.GetBox(rx, ry, rwidth, rheight);
-  // printf("%d Onpaint update region box: %d %d %d %d\n", spaint++, rx, ry,
-  // rwidth, rheight);
 
 #ifdef ocpnUSE_DIBSECTION
   ocpnMemDC temp_dc;
@@ -12208,6 +12208,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
 void ChartCanvas::PaintCleanup() {
   //    Handle the current graphic window, if present
+  if (m_inPinch) return;
 
   if (pCwin) {
     pCwin->Show();
@@ -14565,7 +14566,6 @@ void ChartCanvas::RemoveChartFromQuilt(int dbIndex) {
 
 bool ChartCanvas::UpdateS52State() {
   bool retval = false;
-  //    printf("    update %d\n", IsPrimaryCanvas());
 
   if (ps52plib) {
     ps52plib->SetShowS57Text(m_encShowText);
