@@ -863,7 +863,7 @@ public:
    */
   EventVar json_msg;
 
-  bool m_binPinch;
+  bool m_inPinch;
 
 private:
   /**

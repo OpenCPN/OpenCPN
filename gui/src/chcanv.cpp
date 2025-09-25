@@ -295,7 +295,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_bShowAIS = true;
   m_bShowAISScaled = false;
   m_timed_move_vp_active = false;
-  m_binPinch = false;
+  m_inPinch = false;
 
   m_vLat = 0.;
   m_vLon = 0.;
@@ -3285,7 +3285,6 @@ double easeOutCubic(double t) {
 }
 
 void ChartCanvas::StartChartDragInertia() {
-  printf("----------------Start Inertia Process\n");
   m_bChartDragging = false;
 
   // Set some parameters
@@ -3315,7 +3314,6 @@ void ChartCanvas::StartChartDragInertia() {
 
 void ChartCanvas::OnChartDragInertiaTimer(wxTimerEvent &event) {
   if (!m_chart_drag_inertia_active) return;
-  printf("inertia\n");
   // Calculate time fraction from 0..1
   wxLongLong now = wxGetLocalTimeMillis();
   double elapsed = (now - m_chart_drag_inertia_start_time).ToDouble();
@@ -3389,11 +3387,9 @@ void ChartCanvas::StopMovement() {
    at each render frame based on the time change */
 bool ChartCanvas::StartTimedMovement(bool stoptimer) {
   // Start/restart the stop movement timer
-  printf("StartTimedMovement\n");
   if (stoptimer) pMovementStopTimer->Start(800, wxTIMER_ONE_SHOT);
 
   if (!pMovementTimer->IsRunning()) {
-    //        printf("timer not running, starting\n");
     pMovementTimer->Start(1, wxTIMER_ONE_SHOT);
   }
 
@@ -3408,7 +3404,6 @@ bool ChartCanvas::StartTimedMovement(bool stoptimer) {
 }
 void ChartCanvas::StartTimedMovementVP(double target_lat, double target_lon,
                                        int nstep) {
-  printf("StartTimedMovementVP \n");
   // Save the target
   m_target_lat = target_lat;
   m_target_lon = target_lon;
@@ -3453,7 +3448,6 @@ void ChartCanvas::DoTimedMovementVP() {
   m_run_lat = new_lat;
   m_run_lon = new_lon;
 
-  // printf(" Timed\n");
   SetViewPoint(new_lat, new_lon);  // Embeds a refresh
 }
 
@@ -3469,7 +3463,6 @@ void ChartCanvas::StopMovementTarget() {}
 int ntm;
 
 void ChartCanvas::DoTimedMovement() {
-  printf("DoTimedMovement %d\n", ntm++);
   if (m_pan_drag == wxPoint(0, 0) && !m_panx && !m_pany && m_zoom_factor == 1 &&
       !m_rotation_speed)
     return; /* not moving */
@@ -3494,9 +3487,8 @@ void ChartCanvas::DoMovement(long dt) {
   m_mustmove -= dt;
   if (m_mustmove < 0) m_mustmove = 0;
 
-  if (!m_binPinch) {  // this stops compound zoom/pan
+  if (!m_inPinch) {  // this stops compound zoom/pan
     if (m_pan_drag.x || m_pan_drag.y) {
-      printf("InDoMovement\n");
       PanCanvas(m_pan_drag.x, m_pan_drag.y);
       m_pan_drag.x = m_pan_drag.y = 0;
     }
@@ -4802,7 +4794,6 @@ void ChartCanvas::UpdateFollowButtonState() {
 }
 
 void ChartCanvas::JumpToPosition(double lat, double lon, double scale_ppm) {
-  printf("jump\n");
   if (g_bSmoothRecenter && !m_routeState) {
     if (StartSmoothJump(lat, lon, scale_ppm))
       return;
@@ -4925,7 +4916,6 @@ void ChartCanvas::OnJumpEaseTimer(wxTimerEvent &event) {
 
 bool ChartCanvas::PanCanvas(double dx, double dy) {
   if (!ChartData) return false;
-  printf("PanCanvas\n");
   extendedSectorLegs.clear();
 
   double dlat, dlon;
@@ -5224,7 +5214,6 @@ bool ChartCanvas::SetVPProjection(int projection) {
 }
 
 bool ChartCanvas::SetViewPoint(double lat, double lon) {
-  printf("SetVP1\n");
   return SetViewPoint(lat, lon, VPoint.view_scale_ppm, VPoint.skew,
                       VPoint.rotation);
 }
@@ -7181,7 +7170,6 @@ void ChartCanvas::PanTimerEvent(wxTimerEvent &event) {
 }
 
 void ChartCanvas::MovementTimerEvent(wxTimerEvent &) {
-  printf("MoveTimerEvent\n");
   if ((m_panx_target_final - m_panx_target_now) ||
       (m_pany_target_final - m_pany_target_now)) {
     DoTimedMovementTarget();
@@ -7800,7 +7788,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   // Capture LeftUp's and time them, unless it already came from the timer.
 
   // Detect end of chart dragging
-  if (g_btouch && !m_binPinch && m_bChartDragging && event.LeftUp()) {
+  if (g_btouch && !m_inPinch && m_bChartDragging && event.LeftUp()) {
     StartChartDragInertia();
   }
 
@@ -10107,7 +10095,6 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
   if (event.LeftDown()) {
     // Skip the first left click if it will cause a canvas focus shift
     if ((GetCanvasCount() > 1) && (this != g_focusCanvas)) {
-      // printf("focus shift\n");
       return false;
     }
 
@@ -10172,8 +10159,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
      * Anyways, guarded it to be active in touch situations only.
      */
 
-    if (g_btouch && !m_binPinch) {
-      printf("Chart Drag:\n");
+    if (g_btouch && !m_inPinch) {
       struct timespec now;
       clock_gettime(CLOCK_MONOTONIC, &now);
       uint64_t tnow = (1e9 * now.tv_sec) + now.tv_nsec;
@@ -11666,8 +11652,6 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
   int rx, ry, rwidth, rheight;
   ru.GetBox(rx, ry, rwidth, rheight);
-  // printf("%d Onpaint update region box: %d %d %d %d\n", spaint++, rx, ry,
-  // rwidth, rheight);
 
 #ifdef ocpnUSE_DIBSECTION
   ocpnMemDC temp_dc;
@@ -12264,6 +12248,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
 void ChartCanvas::PaintCleanup() {
   //    Handle the current graphic window, if present
+  if (m_inPinch) return;
 
   if (pCwin) {
     pCwin->Show();
@@ -12285,7 +12270,6 @@ void ChartCanvas::PaintCleanup() {
   // Start movement timers, this runs nearly immediately.
   // the reason we cannot simply call it directly is the
   // refresh events it emits may be blocked from this paint event
-  printf("StartMovementTimer--PaintCleanup\n");
   pMovementTimer->Start(1, wxTIMER_ONE_SHOT);
   m_VPMovementTimer.Start(1, wxTIMER_ONE_SHOT);
 }
@@ -14632,7 +14616,6 @@ void ChartCanvas::RemoveChartFromQuilt(int dbIndex) {
 
 bool ChartCanvas::UpdateS52State() {
   bool retval = false;
-  //    printf("    update %d\n", IsPrimaryCanvas());
 
   if (ps52plib) {
     ps52plib->SetShowS57Text(m_encShowText);
