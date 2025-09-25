@@ -2792,30 +2792,13 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
   double render_angle = rot_angle;
 
-#if 0
-  //  Very special case for ATON flare lights at 135 degrees, the standard
-  //  render angle. We don't want them to rotate with the viewport.
-  if (rzRules->obj->bIsAton &&
-      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6))){
-
-#ifdef __OCPN__ANDROID__
-    //  Due to popular request, we make the flare lights a little bit
-    //  smaller than S52 specifications
-    xscale = xscale * 5. / 7.;
-#endif
-
-    if( fabs(rot_angle - 135.0) < 1.)
-      render_angle -= vp_plib.rotation * 180. / PI;
-  }
-#endif
-
   int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
-  width *= 4;  // Grow the drawing bitmap to allow for rotation of symbols with
-               // highly offset pivot points
+  width *= 6 * xscale;  // Grow the drawing bitmap to allow for rotation
+                        // of symbols with highly offset pivot points
   width = (int)(width / fsf);
 
   int height = prule->pos.symb.bnbox_y.SBXR + prule->pos.symb.bnbox_h.SYVL;
-  height *= 4;
+  height *= 6 * xscale;
   height = (int)(height / fsf);
 
   // Expand width and height to next larger POT
@@ -10406,7 +10389,20 @@ void s52plib::PrepareForRender(VPointCompat *vp) {
   }
 #endif
 
-  m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
+  float ChartScaleFactorExpNew = GetOCPNChartScaleFactor_Plugin();
+
+  if(ChartScaleFactorExpNew != m_ChartScaleFactorExp) {
+    // Clear some cached data to handle new scale value.
+
+    // Cached HPGL Textures
+    for (const auto& pair : vector_symbol_cache) {
+      const GLuint tex = pair.second;
+      glDeleteTextures(1, &tex);
+    }
+    vector_symbol_cache.clear();
+  }
+
+  m_ChartScaleFactorExp = ChartScaleFactorExpNew;
 
   // Reset the LIGHTS declutter machine
   lastLightLat = 0;
