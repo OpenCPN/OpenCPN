@@ -892,9 +892,8 @@ if exist "%target%" (
   @echo "Retrying=%Retrying%"
   if %Retrying% lss 4 goto :retry
   @echo :removeTarget Could not remove "%target%". Continuing...
-  exit /b 0
 )
-exit /b 0
+goto :EOF
 ::-------------------------------------------------------------
 :: Config and build
 ::-------------------------------------------------------------
@@ -936,7 +935,7 @@ if errorlevel 1 (
     -DCMAKE_INSTALL_PREFIX="%~dp0..\build\%build_type%"
   if errorlevel 1 goto :cmakeErr
 )
-exit /b 0
+goto :EOF
 :ocpnBuild
 @echo build_type=%build_type%
 msbuild ^
@@ -959,7 +958,7 @@ del /F "%~dp0..\build\*.mo"
 set buildTarget=
 @echo OpenCPN %build_type% build successful!
 @echo.
-exit /b 0
+goto :EOF
 
 :ocpnPack
 @echo build_type=%build_type%
@@ -985,7 +984,7 @@ del /F "%~dp0..\build\*.mo"
 set buildTarget=
 @echo OpenCPN %build_type% build successful!
 @echo.
-exit /b 0
+goto :EOF
 
 ::-------------------------------------------------------------
 :: CMake failed
@@ -1088,7 +1087,7 @@ if errorlevel 1 (
 :breturn
 @echo Backup returning
 :bexit
-exit /b 0
+goto :EOF
 ::-------------------------------------------------------------
 :: Restore user configuration to build folder
 ::-------------------------------------------------------------
@@ -1096,21 +1095,21 @@ exit /b 0
 :: Called from withing build folder
 if not exist "%~dp0..\tmp\%build_type%" (
   @echo INFO: Did not find "%~dp0..\tmp\%build_type%"
-  exit /b 0
+  goto :EOF
 )
 @echo Restoring %build_type% settings from "%~dp0..\tmp\%build_type%"
 cmake -E copy_directory "%~dp0..\tmp\%build_type%" "%~dp0..\build\%build_type%"
 if errorlevel 1 (
   @echo Restore %build_type% failed
   if not [%quiet%]==[Y] pause
-  exit /b 0
+  goto :EOF
 ) else (
   @echo Restore successful
   rmdir /s /q "%~dp0..\tmp\%build_type%"
 )
 :rreturn
 @echo restore returning
-exit /b 0
+goto :EOF
 ::-------------------------------------------------------------
 :: Download URL to a DEST folder
 ::-------------------------------------------------------------
@@ -1119,14 +1118,14 @@ exit /b 0
 @echo DEST=%DEST%
 if exist ""%DEST%"" (
   echo Download %DEST% already exists.
-  exit /b 0
+  goto :EOF
 )
 "%PSH%" -Command [System.Net.ServicePointManager]::MaxServicePointIdleTime = 5000000; ^
   if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; ^
   Invoke-WebRequest '%URL%' -OutFile '%DEST%'; ^
   exit $LASTEXITCODE
 if errorlevel 1 (echo Download failed && exit /b 1) else (echo Download OK)
-exit /b 0
+goto :EOF
 ::-------------------------------------------------------------
 :: Explode SOURCE zip file to DEST folder
 ::-------------------------------------------------------------
@@ -1136,7 +1135,7 @@ exit /b 0
 :: @echo "%PSH% -Command if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; Expand-Archive -Force -Path '%SOURCE%' -DestinationPath '%DEST%';
 %PSH% -Command if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; Expand-Archive -Force -Path '%SOURCE%' -DestinationPath '%DEST%'; exit $LASTEXITCODE
 if errorlevel 1 (echo Explode failed && exit /b 1) else (echo Unzip OK)
-exit /b 0
+goto :EOF
 ::-------------------------------------------------------------
 :: Execution time measuring functions
 ::-------------------------------------------------------------
@@ -1154,7 +1153,7 @@ for /f "usebackq tokens=1-4 delims=:., " %%f in (`echo %winConfigStopTIME: =0%`)
 if %Stop100S% LSS %Start100S% set /a Stop100S+=8640000
 set /a winConfigTookTime=%Stop100S%-%Start100S%
 set winConfigTookTimePadded=0%winConfigTookTime%
-exit /b 0
+goto :EOF
 
 :DisplayTimerResult
 :: Show timer start/stop/delta
@@ -1165,7 +1164,7 @@ set winConfigStartTime=
 set winConfigStopTime=
 set winConfigTookTime=
 set winConfigTookTimePadded=
-exit /b 0
+goto :EOF
 
 :: Failure exit
 :fail
@@ -1177,7 +1176,7 @@ exit /b 1
 :success
 call :StopTimer
 call :DisplayTimerResult
-exit /b 0
+goto :EOF
 :: ***********
 :: * THE END *
 :: ***********
