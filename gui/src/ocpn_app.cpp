@@ -1224,9 +1224,6 @@ bool MyApp::OnInit() {
                        app_style, dockart);
   wxTheApp->SetTopWindow(gFrame);
 
-  //  Do those platform specific initialization things that need gFrame
-  g_Platform->Initialize_3();
-
   //  Initialize the Plugin Manager
   g_pi_manager = new PlugInManager(gFrame);
 
@@ -1237,6 +1234,9 @@ bool MyApp::OnInit() {
 
   // tell wxAuiManager to manage the frame
   g_pauimgr->SetManagedWindow(gFrame);
+
+  //  Do those platform specific initialization things that need gFrame
+  g_Platform->Initialize_3();
 
   gFrame->CreateCanvasLayout();
 
