@@ -423,6 +423,7 @@ where /Q /R %CACHE_DIR% nuget.exe && "%CACHE_DIR%\nuget.exe" >nul && goto :skipn
 set "URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 set "DEST=%CACHE_DIR%\nuget.exe"
 call :download
+if errorlevel 1 (if not [%quiet%]==[Y] pause)
 where /Q /R %CACHE_DIR% nuget.exe && goto :skipnuget
 @echo Error: Could not download nuget.exe
 goto :usage
@@ -505,6 +506,7 @@ if exist "%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip" (goto :skipbuildwin)
 set "URL=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.5.zip"
 set "DEST=%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip"
 call :download
+if errorlevel 1 (if not [%quiet%]==[Y] pause)
 
 @echo Exploding Windows dependencies
 set "SOURCE=%DEST%"
@@ -525,6 +527,7 @@ set "DEST=%CACHE_DIR%\QuickStartManual.zip"
 if not exist "%DEST%" (
   @echo Downloading quickstart manual
   call :download
+  if errorlevel 1 (if not [%quiet%]==[Y] pause)
   if exist "%CACHE_DIR%\..\data\doc\local" rmdir /s /q "%CACHE_DIR%\..\data\doc\local"
   mkdir "%CACHE_DIR%\..\data\doc\local"
   set "SOURCE=%DEST%"
@@ -554,11 +557,10 @@ if exist "%wxDIR%\build\msw\wx_vc%VCver%.sln" (goto :skipwxDL)
 @echo Downloading wxWidgets sources
 if "[%gitcmd%]"=="[]" (
   if not exist "%wxDIR%" (mkdir "%wxDIR%")
-  :: set "URL=https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip"
   set "URL=https://github.com/wxWidgets/wxWidgets/releases/download/%wxVER%/wxWidgets-%wxVER%.zip"
   set "DEST=%wxDIR%\wxWidgets-%wxVER%.zip"
   call :download
-  if errorlevel 1 (echo [101;93mNOT OK[0m ) else (echo Download %DEST% OK )
+  if errorlevel 1 (echo Download %DEST& [101;93mNOT OK[0m ) else (echo Download %DEST% OK )
 
   @echo exploding wxWidgets
   set "SOURCE=%wxDIR%\wxWidgets-%wxVER%.zip"
@@ -710,6 +712,7 @@ if not exist "%DEST%" (
     set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
     set "URL=%opencpn_support_base%/opencpn-support/raw/files/iphlpapi.lib"
     call :download
+    if errorlevel 1 (if not [%quiet%]==[Y] pause)
   )
   if not exist "%DEST%" (
     echo [101;93mDownload %DEST% failed.[0m
@@ -1118,7 +1121,7 @@ goto :EOF
 @echo DEST=%DEST%
 if exist ""%DEST%"" (
   echo Download %DEST% already exists.
-  goto :EOF
+  exit /b 1
 )
 "%PSH%" -Command [System.Net.ServicePointManager]::MaxServicePointIdleTime = 5000000; ^
   if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; ^
