@@ -2790,6 +2790,12 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   float xscale = 1.0;
   xscale *= uScale;
 
+  // Flare lights are a little large...
+  if (rzRules->obj->bIsAton &&
+      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6))) {
+    xscale = xscale * 5. / 7.;
+  }
+
   double render_angle = rot_angle;
 
   int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;

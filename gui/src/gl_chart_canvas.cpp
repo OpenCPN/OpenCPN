@@ -3809,6 +3809,7 @@ void glChartCanvas::Render() {
   if (!g_true_zoom && m_binPinch) return;
 
   if (m_binPinch) printf("    %ld Render Start\n", g_glstopwatch.Time());
+  long render_start_time = g_glstopwatch.Time();
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   loadShaders(GetCanvasIndex());
@@ -4363,7 +4364,8 @@ void glChartCanvas::Render() {
   }
 
   if (m_binPinch)
-    printf("        %ld Render Charts Done\n", g_glstopwatch.Time());
+    printf("        Render Charts Done  %ld\n",
+           g_glstopwatch.Time() - render_start_time);
 
   // Done with base charts.
   // Now the overlays
@@ -4565,7 +4567,9 @@ void glChartCanvas::Render() {
   m_pParentCanvas->PaintCleanup();
   m_bforcefull = false;
 
-  if (m_binPinch) printf("    %ld Render Exit\n", g_glstopwatch.Time());
+  if (m_binPinch)
+    printf("    Render Finished:  %ld\n",
+           g_glstopwatch.Time() - render_start_time);
 
   n_render++;
 }
@@ -5513,8 +5517,9 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
     }
 
     else {
-      printf("%ld %6g %6g %6g \n", g_glstopwatch.Time(), event.GetZoomFactor(),
-             inc_zoom_val, projected_scale);
+      // printf("%ld %6g %6g %6g \n", g_glstopwatch.Time(),
+      // event.GetZoomFactor(),
+      //        inc_zoom_val, projected_scale);
       float zoom_step = 5;
       float zoom_trigger = 0.05;
       if (projected_scale > 1e5)
