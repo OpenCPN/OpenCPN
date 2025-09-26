@@ -22,10 +22,14 @@
  *  XZ compressed charts support
  */
 
-#include "config.h"
+#ifndef CHARTDATA_INPUT_STREAM_H_
+#define CHARTDATA_INPUT_STREAM_H_
+
 #include <wx/ffile.h>
 #include <wx/string.h>
 #include <wx/wfstream.h>
+
+#include "config.h"
 
 #ifdef OCPN_USE_LZMA
 #include <lzma.h>
@@ -111,3 +115,5 @@ typedef wxFFileInputStream ChartDataNonSeekableInputStream;
 #endif  // OCPN_USE_LZMA
 
 bool DecompressXZFile(const wxString &input_path, const wxString &output_path);
+
+#endif  // CHARTDATA_INPUT_STREAM_H_

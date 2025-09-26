@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,42 +13,45 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Nmea2000 IP network driver
+ */
 
 #ifndef _COMMDRIVERN2KNET_H
 #define _COMMDRIVERN2KNET_H
 
-#include <wx/wxprec.h>
+#ifndef __WXMSW__
+#include <sys/socket.h>  // needed for (some) Mac builds
+#include <netinet/in.h>
+#endif
 
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled header
+#endif
+
+#include <wx/datetime.h>
 
 #include "model/comm_can_util.h"
 #include "model/comm_drv_n2k.h"
+#include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_stats.h"
 #include "model/conn_params.h"
-
-#include <wx/datetime.h>
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
-// #include <gtk/gtk.h>
 #define GSocket GlibGSocket
 #include <wx/socket.h>
 #undef GSocket
 #else
 #include <wx/socket.h>
-#endif
-
-#ifndef __WXMSW__
-#include <sys/socket.h>  // needed for (some) Mac builds
-#include <netinet/in.h>
 #endif
 
 #define RX_BUFFER_SIZE_NET 4096
@@ -79,9 +77,8 @@ typedef enum {
 
 typedef enum { TX_FORMAT_YDEN = 0, TX_FORMAT_ACTISENSE } GW_TX_FORMAT;
 
+class MrqContainer;           // forward in .cpp file
 class CommDriverN2KNetEvent;  // Internal
-class MrqContainer;
-class FastMessageMap;
 
 class circular_buffer {
 public:

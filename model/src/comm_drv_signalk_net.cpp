@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_drv_signalk_net.h -- IP netork SignalK driver
+ */
 
 #include <vector>
 #include <mutex>  // std::mutex
@@ -44,9 +43,10 @@
 #include "ixwebsocket/IXWebSocket.h"
 #include "ixwebsocket/IXUserAgent.h"
 #include "ixwebsocket/IXSocketTLSOptions.h"
+
 using namespace std::literals::chrono_literals;
 
-const int kTimerSocket = 9006;
+static const int kTimerSocket = 9006;
 
 class CommDriverSignalKNetEvent;  // fwd
 
@@ -56,10 +56,10 @@ public:
                              const wxString& PortName,
                              const wxString& strBaudRate);
 
-  ~CommDriverSignalKNetThread(void);
+  ~CommDriverSignalKNetThread();
   void* Entry();
   bool SetOutMsg(const wxString& msg);
-  void OnExit(void);
+  void OnExit();
 
 private:
   void ThreadMessage(const wxString& msg);
@@ -67,7 +67,7 @@ private:
   void CloseComPortPhysical();
   size_t WriteComPortPhysical(std::vector<unsigned char> msg);
   size_t WriteComPortPhysical(unsigned char* msg, size_t length);
-  void SetGatewayOperationMode(void);
+  void SetGatewayOperationMode();
 
   CommDriverSignalKNet* m_pParentDriver;
   wxString m_PortName;
@@ -280,7 +280,7 @@ DriverStats CommDriverSignalKNet::GetDriverStats() const {
     return m_driver_stats;
 }
 
-void CommDriverSignalKNet::Open(void) {
+void CommDriverSignalKNet::Open() {
   wxString discoveredIP;
 #if 0
   int discoveredPort;
@@ -347,14 +347,14 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
 
 void CommDriverSignalKNet::OpenWebSocket() {
   // printf("OpenWebSocket\n");
-  wxLogMessage(wxString::Format(_T("Opening Signal K WebSocket client: %s"),
+  wxLogMessage(wxString::Format("Opening Signal K WebSocket client: %s",
                                 m_params.GetDSPort().c_str()));
 
   // Start a thread to run the client without blocking
 
   m_wsThread = new WebSocketThread(this, GetAddr(), this, m_token);
   if (m_wsThread->Create() != wxTHREAD_NO_ERROR) {
-    wxLogError(wxT("Can't create WebSocketThread!"));
+    wxLogError("Can't create WebSocketThread!");
 
     return;
   }
@@ -370,7 +370,7 @@ void CommDriverSignalKNet::OpenWebSocket() {
 void CommDriverSignalKNet::CloseWebSocket() {
   if (m_wsThread) {
     if (IsThreadRunning()) {
-      wxLogMessage(_T("Stopping Secondary SignalK Thread"));
+      wxLogMessage("Stopping Secondary SignalK Thread");
       m_stats_timer.Stop();
 
       m_Thread_run_flag = 0;
@@ -382,9 +382,9 @@ void CommDriverSignalKNet::CloseWebSocket() {
 
       wxString msg;
       if (m_Thread_run_flag <= 0)
-        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+        msg.Printf("Stopped in %d sec.", 10 - tsec);
       else
-        msg.Printf(_T("Not Stopped after 10 sec."));
+        msg.Printf("Not Stopped after 10 sec.");
       wxLogMessage(msg);
     }
 
@@ -405,14 +405,14 @@ void CommDriverSignalKNet::handle_SK_sentence(
   root.Parse(*msg);
   if (root.HasParseError()) {
     wxLogMessage(wxString::Format(
-        _T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
+        "SignalKDataStream ERROR: the JSON document is not well-formed:%d",
         root.GetParseError()));
     return;
   }
 
   if (!root.IsObject()) {
     wxLogMessage(wxString::Format(
-        _T("SignalKDataStream ERROR: Message is not a JSON Object: %s"),
+        "SignalKDataStream ERROR: Message is not a JSON Object: %s",
         msg->c_str()));
     return;
   }
@@ -420,7 +420,7 @@ void CommDriverSignalKNet::handle_SK_sentence(
   // Decode just enough of string to extract some identifiers
   // such as the sK version, "self" context, and target context
   if (root.HasMember("version")) {
-    wxString msg = _T("Connected to Signal K server version: ");
+    wxString msg = "Connected to Signal K server version: ";
     msg << (root["version"].GetString());
     wxLogMessage(msg);
   }

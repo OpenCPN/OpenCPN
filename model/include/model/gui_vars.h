@@ -12,18 +12,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
 /**
  * \file
- * Miscellaneous globals primarely used by gui layer.
+ *
+ * Miscellaneous globals primarely used by gui layer, not persisted in
+ * configuration file.
  */
 
-#ifndef GUI_VARS_H__
-#define GUI_VARS_H__
+#ifndef GUI_VARS_H_
+#define GUI_VARS_H_
 
 #include <wx/colour.h>
 #include <wx/string.h>
@@ -156,4 +156,4 @@ extern const wxString kUtfRightArrow;
  * 1 - Update needed because there is  no chart database, inform user
  * 2 - Start update right away
  */
-#endif  // GUI_VARS_H__
+#endif  // GUI_VARS_H_

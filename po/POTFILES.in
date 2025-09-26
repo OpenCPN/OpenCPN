@@ -93,7 +93,6 @@ model/include/model/track.h
 model/include/model/usb_watch_daemon.h
 model/include/model/wait_continue.h
 model/include/model/win_usb_watch.h
-model/include/model/wx28compat.h
 model/include/model/wx_instance_chk.h
 model/src/ais_bitstring.cpp
 model/src/ais_decoder.cpp

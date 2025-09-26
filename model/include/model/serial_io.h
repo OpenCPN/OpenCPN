@@ -13,18 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
+ *
  *  Abstract N0183 serial communications interface
  */
 
-#ifndef _N0183_PROTOL_MGR__
-#define _N0183_PROTOL_MGR__
+#ifndef N0183_PROTOL_MGR_
+#define N0183_PROTOL_MGR_
 
 #include "config.h"
 
@@ -35,10 +34,11 @@
 #include <wx/string.h>
 
 #include "comm_buffers.h"
-#include "model/logger.h"
-#include "model/thread_ctrl.h"
-#include "model/ocpn_utils.h"
+
 #include "model/comm_drv_stats.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
+#include "model/thread_ctrl.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -94,4 +94,4 @@ protected:
 __attribute__((used)) static SerialIo* force_clang_to_emit_typeinfo;
 #endif
 
-#endif  //    _N0183_PROTOL_MGR__
+#endif  //    N0183_PROTOL_MGR_

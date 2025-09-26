@@ -13,18 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * mDNS lookup wrappers.
  */
 
-#ifndef _MDNSQUERY_H
-#define _MDNSQUERY_H
+#ifndef MDNSQUERY_H_
+#define MDNSQUERY_H_
 
 #include <string>
 #include <vector>
@@ -43,4 +42,4 @@ extern void FindAllOCPNServers(size_t timeout_secs);
 extern void FindAllSignalKServers(size_t timeout_secs);
 extern std::vector<std::string> get_local_ipv4_addresses();
 
-#endif  // guard
+#endif

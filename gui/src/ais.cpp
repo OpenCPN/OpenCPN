@@ -48,7 +48,6 @@
 #include "model/gui_vars.h"
 #include "model/own_ship.h"
 #include "model/select.h"
-#include "model/wx28compat.h"
 
 #include "ais.h"
 #include "ais_target_alert_dlg.h"

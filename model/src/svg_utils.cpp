@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  SVG Utility functions
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,15 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
+ ***************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Implement svg_utils.h -- SVG Utility functions
  */
 
-#include "model/svg_utils.h"
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#include "qdebug.h"
+#endif
+
+#include <wx/filename.h>
+#include <wx/dir.h>
 
 #ifdef ocpnUSE_SVG
 #ifndef ocpnUSE_wxBitmapBundle
@@ -35,17 +36,12 @@
 #include <wx/bmpbndl.h>
 #endif
 #endif  // ocpnUSE_SVG
-#include <wx/filename.h>
-#include <wx/dir.h>
 
-#ifdef __OCPN__ANDROID__
-#include "androidUTIL.h"
-#include "qdebug.h"
-#endif
+#include "model/svg_utils.h"
 
-#include "pugixml.hpp"
 #include "model/base_platform.h"
 #include "model/routeman.h"
+#include "pugixml.hpp"
 
 #define SVG_IN_TO_PT 72
 #define SVG_IN_TO_PX 96
@@ -59,8 +55,6 @@
 #define SVG_CM_TO_PX 37.795275591
 #define SVG_CM_TO_PT 28.346456693
 #define SVG_MM_TO_IN 25.4
-
-extern BasePlatform* g_BasePlatform;
 
 wxBitmap LoadSVG(const wxString filename, const unsigned int width,
                  const unsigned int height, wxBitmap* default_bitmap,

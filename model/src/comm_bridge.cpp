@@ -13,24 +13,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
  *
- * Implement comm_bridge.h
+ * Implement comm_bridge.h -- handle incoming messages
  */
-
-// For compilers that support precompilation, includes "wx.h".
 
 #include <sstream>
 #include <string>
 
 #include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -59,7 +54,7 @@
 
 using std::string;
 
-bool debug_priority = false;
+static bool debug_priority = false;
 
 void ClearNavData(NavData& d) {
   d.gLat = NAN;
@@ -72,10 +67,12 @@ void ClearNavData(NavData& d) {
   d.n_satellites = -1;
   d.SID = 0;
 }
+
 static NmeaLog* GetDataMonitor() {
   auto w = wxWindow::FindWindowByName(kDataMonitorWindowName);
   return dynamic_cast<NmeaLog*>(w);
 }
+
 static BridgeLogCallbacks GetLogCallbacks() {
   BridgeLogCallbacks log_callbacks;
   log_callbacks.log_is_active = [&]() {
@@ -177,7 +174,7 @@ static void PresetPriorityContainer(PriorityContainer& pc,
   }
 
   wxString this_key(key0.c_str());
-  wxStringTokenizer tkz(this_key, _T(";"));
+  wxStringTokenizer tkz(this_key, ";");
   string source = tkz.GetNextToken().ToStdString();
   string this_identifier = tkz.GetNextToken().ToStdString();
 
@@ -312,8 +309,8 @@ void CommBridge::OnWatchdogTimer() {
 
       if (m_watchdogs.position_watchdog % m_n_log_watchdog_period == 0) {
         wxString logmsg;
-        logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"),
-                      gLat, gLon);
+        logmsg.Printf("   ***GPS Watchdog timeout at Lat:%g   Lon: %g", gLat,
+                      gLon);
         wxLogMessage(logmsg);
       }
     }
@@ -340,7 +337,7 @@ void CommBridge::OnWatchdogTimer() {
     active_priority_velocity.recent_active_time = -1;
 
     if (g_nNMEADebug && (m_watchdogs.velocity_watchdog == 0))
-      wxLogMessage(_T("   ***Velocity Watchdog timeout..."));
+      wxLogMessage("   ***Velocity Watchdog timeout...");
     if (m_watchdogs.velocity_watchdog % 5 == 0) {
       // Send AppMsg telling of watchdog expiry
       auto msg = std::make_shared<GPSWatchdogMsg>(
@@ -359,7 +356,7 @@ void CommBridge::OnWatchdogTimer() {
     gHdt = NAN;
     active_priority_heading.recent_active_time = -1;
     if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
-      wxLogMessage(_T("   ***HDT Watchdog timeout..."));
+      wxLogMessage("   ***HDT Watchdog timeout...");
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -373,7 +370,7 @@ void CommBridge::OnWatchdogTimer() {
     active_priority_variation.recent_active_time = -1;
 
     if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
-      wxLogMessage(_T("   ***VAR Watchdog timeout..."));
+      wxLogMessage("   ***VAR Watchdog timeout...");
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -389,7 +386,7 @@ void CommBridge::OnWatchdogTimer() {
     active_priority_satellites.recent_active_time = -1;
 
     if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0))
-      wxLogMessage(_T("   ***SAT Watchdog timeout..."));
+      wxLogMessage("   ***SAT Watchdog timeout...");
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -1180,13 +1177,13 @@ bool CommBridge::EvalPriority(const NavMsgPtr& msg,
   if (debug_priority) printf("This Key: %s\n", this_key.c_str());
 
   // Pull some identifiers from the unique key
-  wxStringTokenizer tkz(this_key, _T(";"));
+  wxStringTokenizer tkz(this_key, ";");
   wxString wxs_this_source = tkz.GetNextToken();
   string source = wxs_this_source.ToStdString();
   wxString wxs_this_identifier = tkz.GetNextToken();
   string this_identifier = wxs_this_identifier.ToStdString();
 
-  wxStringTokenizer tka(wxs_this_source, _T(":"));
+  wxStringTokenizer tka(wxs_this_source, ":");
   tka.GetNextToken();
   std::stringstream ss;
   ss << tka.GetNextToken();

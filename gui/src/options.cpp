@@ -90,7 +90,6 @@
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "model/ser_ports.h"
-#include "model/wx28compat.h"
 
 #include "ais.h"
 #include "chart_ctx_factory.h"
