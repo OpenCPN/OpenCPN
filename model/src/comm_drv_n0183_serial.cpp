@@ -40,7 +40,6 @@
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_stats.h"
 #include "model/logger.h"
-#include "model/wait_continue.h"
 
 #include "observable.h"
 
