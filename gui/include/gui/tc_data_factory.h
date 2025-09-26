@@ -57,7 +57,7 @@ public:
 
   virtual TC_Error_Code LoadData(const wxString &data_file_path) = 0;
 
-  virtual int GetMaxIndex(void) = 0;
+  virtual int GetMaxIndex() = 0;
   virtual IDX_entry *GetIndexEntry(int n_index) = 0;
 
   static int findunit(const char *unit);

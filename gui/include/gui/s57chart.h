@@ -175,20 +175,20 @@ public:
 
   virtual std::list<S57Obj *> *GetAssociatedObjects(S57Obj *obj);
 
-  virtual std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void) {
+  virtual std::unordered_map<unsigned, VE_Element *> &Get_ve_hash() {
     return m_ve_hash;
   }
-  virtual std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void) {
+  virtual std::unordered_map<unsigned, VC_Element *> &Get_vc_hash() {
     return m_vc_hash;
   }
 
-  virtual void ForceEdgePriorityEvaluate(void);
+  virtual void ForceEdgePriorityEvaluate();
 
-  float *GetLineVertexBuffer(void) { return m_line_vertex_buffer; }
+  float *GetLineVertexBuffer() { return m_line_vertex_buffer; }
 
   void ClearRenderedTextCache();
 
-  double GetCalculatedSafetyContour(void) { return m_next_safe_cnt; }
+  double GetCalculatedSafetyContour() { return m_next_safe_cnt; }
 
   virtual bool RenderRegionViewOnGL(const wxGLContext &glc,
                                     const ViewPort &VPoint,
@@ -231,17 +231,17 @@ public:
   virtual void InvalidateCache();
   virtual bool RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint);
 
-  virtual void ClearDepthContourArray(void);
-  virtual void BuildDepthContourArray(void);
+  virtual void ClearDepthContourArray();
+  virtual void BuildDepthContourArray();
   int ValidateAndCountUpdates(const wxFileName file000, const wxString CopyDir,
                               wxString &LastUpdateDate, bool b_copyfiles);
   static int GetUpdateFileArray(const wxFileName file000,
                                 wxArrayString *UpFiles, wxDateTime date000,
                                 wxString edtn000);
-  wxString GetISDT(void);
+  wxString GetISDT();
   InitReturn PostInit(ChartInitFlag flags, ColorScheme cs);
 
-  char GetUsageChar(void) { return m_usage_char; }
+  char GetUsageChar() { return m_usage_char; }
   static bool IsCellOverlayType(const wxString &pFullPath);
 
   bool m_b2pointLUPS;
@@ -255,14 +255,14 @@ public:
   void EnableBackgroundSENC() { m_disableBackgroundSENC = false; }
 
 protected:
-  void AssembleLineGeometry(void);
+  void AssembleLineGeometry();
 
   ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
   double m_next_safe_cnt;
 
 private:
   int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
-  void SetSafetyContour(void);
+  void SetSafetyContour();
 
   bool DoRenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
                         RenderTypeEnum option, bool force_new_view);
@@ -277,12 +277,12 @@ private:
   int BuildSENCFile(const wxString &FullPath000, const wxString &SENCFileName,
                     bool b_progress = true);
 
-  void SetLinePriorities(void);
+  void SetLinePriorities();
 
   bool BuildThumbnail(const wxString &bmpname);
-  bool CreateHeaderDataFromENC(void);
-  bool CreateHeaderDataFromSENC(void);
-  bool CreateHeaderDataFromoSENC(void);
+  bool CreateHeaderDataFromENC();
+  bool CreateHeaderDataFromSENC();
+  bool CreateHeaderDataFromoSENC();
   bool GetBaseFileAttr(const wxString &file000);
 
   void ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this);
@@ -302,7 +302,7 @@ private:
                               const OCPNRegion &RectRegion,
                               const LLRegion &Region, bool b_overlay);
 
-  void BuildLineVBO(void);
+  void BuildLineVBO();
 
   void ChangeThumbColor(ColorScheme cs);
   void LoadThumb();

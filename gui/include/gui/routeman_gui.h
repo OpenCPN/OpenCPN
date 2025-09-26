@@ -40,7 +40,7 @@ public:
   bool UpdateProgress();
 
 private:
-  void DoAdvance(void);
+  void DoAdvance();
 
   Routeman& m_routeman;
 };

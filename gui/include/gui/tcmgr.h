@@ -92,9 +92,9 @@ public:
   ~TCMgr();
 
   TC_Error_Code LoadDataSources(std::vector<std::string> &sources);
-  std::vector<std::string> GetDataSet(void) { return m_sourcefile_array; }
+  std::vector<std::string> GetDataSet() { return m_sourcefile_array; }
 
-  bool IsReady(void) { return bTCMReady; }
+  bool IsReady() { return bTCMReady; }
 
   bool GetTideOrCurrent(time_t t, int idx, float &value, float &dir);
   bool GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float &dir,
@@ -128,10 +128,10 @@ public:
 private:
   void PurgeData();
 
-  void LoadMRU(void);
-  void SaveMRU(void);
+  void LoadMRU();
+  void SaveMRU();
   void AddMRU(Station_Data *psd);
-  void FreeMRU(void);
+  void FreeMRU();
 
   bool bTCMReady;
   wxString pmru_file_name;
