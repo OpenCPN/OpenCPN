@@ -154,17 +154,17 @@
 #include "route_ctx_factory.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s57chart.h"
-#include "S57QueryDialog.h"
+#include "s57_query_dlg.h"
 #include "safe_mode_gui.h"
 #include "SoundFactory.h"
 #include "std_filesystem.h"
 #include "styles.h"
 #include "tcmgr.h"
 #include "thumbwin.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "udev_rule_mgr.h"
 #include "wiz_ui.h"
 
@@ -276,8 +276,8 @@ static wxCrashPrint g_crashprint;
 #endif
 
 #ifndef __WXMSW__
-sigjmp_buf env;  // the context saved by sigsetjmp();
-#endif           // FIXME (leamas)  Use exceptions
+extern sigjmp_buf env;  // the context saved by sigsetjmp();
+#endif                  // FIXME (leamas)  Use exceptions
 
 // {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
 #ifdef __WXMSW__

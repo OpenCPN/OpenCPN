@@ -1,12 +1,6 @@
-
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  implement waypointman_gui.h: WayPointman drawing stuff
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,33 +13,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ******************A********************************************************/
 
-#if defined(__ANDROID__)
-#include <qopengl.h>
-#include <GL/gl_private.h>  // this is a cut-down version of gl.h
-#include <GLES2/gl2.h>
+/**
+ * \file
+ *
+ * Implement waypointman_gui.h -- WayPointman drawing stuff
+ */
 
-#elif defined(ocpnUSE_GL)
-
-#if defined(__MSVC__)
-#include "glew.h"
-#include <GL/glu.h>
-
-#elif defined(__WXOSX__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-typedef void (*_GLUfuncptr)();
-#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
-
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glew.h>
-#include <GL/glu.h>
-#endif  // ocpnUSE_GL
-#endif
+#include "gl_headers.h"
 
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>
@@ -56,19 +33,17 @@ typedef void (*_GLUfuncptr)();
 #include <wx/string.h>
 #include <wx/utils.h>
 
+#include "waypointman_gui.h"
+
 #include "model/base_platform.h"
+#include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/MarkIcon.h"
 #include "model/route_point.h"
-#include "styles.h"
 #include "model/svg_utils.h"
-#include "waypointman_gui.h"
-#include "ocpn_plugin.h"
 
-extern BasePlatform *g_BasePlatform;
-extern float g_MarkScaleFactorExp;
-extern ocpnStyle::StyleManager *g_StyleManager;
-extern bool g_bUserIconsFirst;
+#include "ocpn_plugin.h"
+#include "styles.h"
 
 static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
   return (mi1->icon_name.CmpNoCase(mi2->icon_name));

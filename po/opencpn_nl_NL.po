@@ -2516,8 +2516,8 @@ msgid "OpenCPN AIS Alert"
 msgstr "OpenCPN AIS-waarschuwing"
 
 #: gui/include/gui/ais_target_query_dlg.h:50
-#: gui/include/gui/ais_target_query_dlg.h:61 gui/include/gui/S57QueryDialog.h:47
-#: gui/include/gui/S57QueryDialog.h:56 gui/src/canvasMenu.cpp:485
+#: gui/include/gui/ais_target_query_dlg.h:61 gui/include/gui/s57_query_dlg.h:47
+#: gui/include/gui/s57_query_dlg.h:56 gui/src/canvasMenu.cpp:485
 #: gui/src/canvasMenu.cpp:494 gui/src/chcanv.cpp:10292
 msgid "Object Query"
 msgstr "Kaartobjectgegevens"
@@ -2552,7 +2552,7 @@ msgid "Options"
 msgstr "Opties"
 
 #: gui/include/gui/peer_client_dlg.h:41 gui/include/gui/rest_server_gui.h:44
-#: gui/include/gui/SendToGpsDlg.h:40 gui/src/canvasMenu.cpp:791
+#: gui/include/gui/send_to_gps_dlg.h:40 gui/src/canvasMenu.cpp:791
 #: gui/src/canvasMenu.cpp:891 gui/src/canvasMenu.cpp:942
 #: gui/src/canvasMenu.cpp:1747 gui/src/canvasMenu.cpp:1758
 #: gui/src/canvasMenu.cpp:1792 gui/src/canvasMenu.cpp:1803
@@ -2609,18 +2609,18 @@ msgstr "Routepunt volgend getij"
 msgid "Print Waypoint Description"
 msgstr "Print omschrijving routepunt"
 
-#: gui/include/gui/RoutePropDlg.h:173 gui/include/gui/RoutePropDlgImpl.h:97
+#: gui/include/gui/route_prop_dlg.h:173 gui/include/gui/route_prop_dlg_impl.h:97
 #: gui/src/canvasMenu.cpp:1897 gui/src/chcanv.cpp:8209
 #: gui/src/RoutePropDlgImpl.cpp:496
 msgid "Route Properties"
 msgstr "Route-eigenschappen"
 
-#: gui/include/gui/S57QueryDialog.h:98 gui/include/gui/S57QueryDialog.h:104
+#: gui/include/gui/s57_query_dlg.h:98 gui/include/gui/s57_query_dlg.h:104
 #: gui/src/S57QueryDialog.cpp:218
 msgid "Extra Object Info"
 msgstr "Extra Object-informatie"
 
-#: gui/include/gui/SendToPeerDlg.h:60 gui/src/routemanagerdialog.cpp:500
+#: gui/include/gui/send_to_peer_dlg.h:60 gui/src/routemanagerdialog.cpp:500
 msgid "Send to Peer"
 msgstr "Verstuur naar 2ᵉ OpenCPN"
 
@@ -2648,7 +2648,7 @@ msgstr "Print Track Tijd"
 msgid "Print Track Speed"
 msgstr "Print Track Snelheid"
 
-#: gui/include/gui/TrackPropDlg.h:206 gui/src/TrackPropDlg.cpp:1254
+#: gui/include/gui/track_prop_dlg.h:206 gui/src/TrackPropDlg.cpp:1254
 #: gui/src/TrackPropDlg.cpp:1268
 msgid "Track properties"
 msgstr "Trackeigenschappen"

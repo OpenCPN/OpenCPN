@@ -1,3 +1,26 @@
+/***************************************************************************
+ *   Copyright (C) 2023 Alec Leamas                                        *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Safe start without plugins dialog.
+ */
+
 #include <cstdio>
 #include <string>
 #include <fstream>
@@ -7,12 +30,12 @@
 #include <wx/filename.h>
 #include <wx/sizer.h>
 
-#include "dialog_alert.h"
 #include "model/cmdline.h"
-#include "gui_lib.h"
 #include "model/ocpn_utils.h"
-
 #include "model/safe_mode.h"
+
+#include "dialog_alert.h"
+#include "gui_lib.h"
 
 namespace safe_mode {
 

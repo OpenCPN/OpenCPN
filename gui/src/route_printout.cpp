@@ -13,34 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include <iostream>
-
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-#ifdef __WXMSW__
-// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
-#endif
-
-#include <wx/print.h>
-#include <wx/printdlg.h>
-#include <wx/artprov.h>
-#include <wx/stdpaths.h>
-#include <wx/intl.h>
-#include <wx/listctrl.h>
-#include <wx/aui/aui.h>
-#include <wx/dialog.h>
-#include <wx/progdlg.h>
-#include <wx/brush.h>
-#include <wx/colour.h>
-#include <wx/dialog.h>
+/**
+ * \file
+ *
+ * Implement route_printout.h .. Route print dialog
+ */
 
 #ifdef __WXMSW__
 #include <stdlib.h>
@@ -54,12 +34,34 @@
 #include <setjmp.h>
 #endif
 
-#include "dychart.h"
-#include "gui_lib.h"
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#ifdef __WXMSW__
+// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
+#endif
+
+#include <wx/artprov.h>
+#include <wx/aui/aui.h>
+#include <wx/brush.h>
+#include <wx/colour.h>
+#include <wx/dialog.h>
+#include <wx/intl.h>
+#include <wx/listctrl.h>
+#include <wx/printdlg.h>
+#include <wx/print.h>
+#include <wx/progdlg.h>
+#include <wx/stdpaths.h>
+
 #include "model/navutil_base.h"
 #include "model/route.h"
 #include "model/track.h"
-#include "model/wx28compat.h"
+
+#include "dychart.h"
+#include "gui_lib.h"
 #include "navutil.h"
 #include "print_dialog.h"
 #include "printtable.h"
@@ -67,8 +69,6 @@
 #include "tcmgr.h"
 
 using namespace std;
-
-extern TCMgr* ptcmgr;
 
 RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
                              const int tz_selection)

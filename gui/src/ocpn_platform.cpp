@@ -118,7 +118,7 @@ void appendOSDirSlash(wxString *pString);
 #ifndef __WXMSW__
 struct sigaction sa_all;
 struct sigaction sa_all_old;
-extern sigjmp_buf env;  // the context saved by sigsetjmp();
+sigjmp_buf env;  // the context saved by sigsetjmp();
 #endif
 
 #ifdef ocpnUSE_GL

@@ -28,6 +28,11 @@
 #include <string>
 #include <vector>
 
+#ifndef __WXMSW__
+#include <signal.h>
+#include <setjmp.h>
+#endif
+
 // if wxWidgets headers have not been included, include them now
 #ifndef _WX_DEFS_H_
 #include <wx/wxprec.h>
@@ -60,7 +65,15 @@ extern OCPNPlatform *g_Platform; /**< Global instance. */
 
 class MyConfig;  // Circular
 
+#ifndef __WXMSW__
+extern sigjmp_buf env;               // global instance
+extern struct sigaction sa_all_old;  // global instance
+#endif
+
 extern wxArrayString g_locale_catalog_array; /**< Global instance */
+
+void catch_signals(int signo);
+
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------

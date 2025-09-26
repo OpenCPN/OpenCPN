@@ -3,6 +3,9 @@
  *
  * Administrate the safe mode state which is true if openpcn should run in
  * safe mode without OpenGL, plugins, etc.
+ *
+ * Copyright (c) 2023 Alec Leamas
+ * License: GPL version 2 or later.
  */
 
 #include <wx/window.h>

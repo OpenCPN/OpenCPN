@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
@@ -24,8 +22,8 @@
  * Only making anything useful on Linux.
  */
 
-#ifndef UDEV_RULE_MGR_H__
-#define UDEV_RULE_MGR_H__
+#ifndef UDEV_RULE_MGR_H_
+#define UDEV_RULE_MGR_H_
 
 #include <string>
 #include <wx/window.h>
@@ -44,4 +42,4 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device);
 /** Destroy all open "Device not found" dialog windows. */
 void DestroyDeviceNotFoundDialogs();
 
-#endif  // UDEV_RULE_MGR_H__
+#endif  // UDEV_RULE_MGR_H_
