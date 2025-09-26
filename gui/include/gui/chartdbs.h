@@ -37,6 +37,7 @@
 
 class ChartGroupArray;                 // forward
 extern ChartGroupArray *g_pGroupArray; /**< Global instance */
+class ChartBase;  // Circular if including chcanv.h in gui...
 
 //    A small class used in an array to describe chart directories
 class ChartDirInfo {

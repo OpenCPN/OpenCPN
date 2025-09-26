@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Partial ocpn_plugin.h implementation -- opencpn_plugin and later versions,
+ * some utilities
+ */
 
 #include "config.h"
 
@@ -41,8 +40,6 @@
 #include <wx/window.h>
 
 #include "ocpn_plugin.h"
-
-extern wxWindow* gFrame;
 
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
@@ -81,9 +78,9 @@ wxBitmap* opencpn_plugin::GetPlugInBitmap() {
 
 opencpn_plugin::~opencpn_plugin() {}
 
-int opencpn_plugin::Init(void) { return 0; }
+int opencpn_plugin::Init() { return 0; }
 
-bool opencpn_plugin::DeInit(void) { return true; }
+bool opencpn_plugin::DeInit() { return true; }
 
 int opencpn_plugin::GetAPIVersionMajor() { return 1; }
 
@@ -110,9 +107,9 @@ void opencpn_plugin::SetNMEASentence(wxString& sentence) {}
 
 void opencpn_plugin::SetAISSentence(wxString& sentence) {}
 
-int opencpn_plugin::GetToolbarToolCount(void) { return 0; }
+int opencpn_plugin::GetToolbarToolCount() { return 0; }
 
-int opencpn_plugin::GetToolboxPanelCount(void) { return 0; }
+int opencpn_plugin::GetToolboxPanelCount() { return 0; }
 
 void opencpn_plugin::SetupToolboxPanel(int page_sel, wxNotebook* pnotebook) {}
 
@@ -132,13 +129,13 @@ void opencpn_plugin::SetCursorLatLon(double lat, double lon) {}
 
 void opencpn_plugin::SetCurrentViewPort(PlugIn_ViewPort& vp) {}
 
-void opencpn_plugin::SetDefaults(void) {}
+void opencpn_plugin::SetDefaults() {}
 
 void opencpn_plugin::ProcessParentResize(int x, int y) {}
 
 void opencpn_plugin::SetColorScheme(PI_ColorScheme cs) {}
 
-void opencpn_plugin::UpdateAuiStatus(void) {}
+void opencpn_plugin::UpdateAuiStatus() {}
 
 wxArrayString opencpn_plugin::GetDynamicChartClassNameArray() {
   wxArrayString array;
@@ -148,7 +145,7 @@ wxArrayString opencpn_plugin::GetDynamicChartClassNameArray() {
 //    Opencpn_Plugin_16 Implementation
 opencpn_plugin_16::opencpn_plugin_16(void* pmgr) : opencpn_plugin(pmgr) {}
 
-opencpn_plugin_16::~opencpn_plugin_16(void) {}
+opencpn_plugin_16::~opencpn_plugin_16() {}
 
 bool opencpn_plugin_16::RenderOverlay(wxDC& dc, PlugIn_ViewPort* vp) {
   return false;
@@ -160,7 +157,7 @@ void opencpn_plugin_16::SetPluginMessage(wxString& message_id,
 //    Opencpn_Plugin_17 Implementation
 opencpn_plugin_17::opencpn_plugin_17(void* pmgr) : opencpn_plugin(pmgr) {}
 
-opencpn_plugin_17::~opencpn_plugin_17(void) {}
+opencpn_plugin_17::~opencpn_plugin_17() {}
 
 bool opencpn_plugin_17::RenderOverlay(wxDC& dc, PlugIn_ViewPort* vp) {
   return false;
@@ -177,7 +174,7 @@ void opencpn_plugin_17::SetPluginMessage(wxString& message_id,
 //    Opencpn_Plugin_18 Implementation
 opencpn_plugin_18::opencpn_plugin_18(void* pmgr) : opencpn_plugin(pmgr) {}
 
-opencpn_plugin_18::~opencpn_plugin_18(void) {}
+opencpn_plugin_18::~opencpn_plugin_18() {}
 
 bool opencpn_plugin_18::RenderOverlay(wxDC& dc, PlugIn_ViewPort* vp) {
   return false;
@@ -196,26 +193,26 @@ void opencpn_plugin_18::SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix) {}
 //    Opencpn_Plugin_19 Implementation
 opencpn_plugin_19::opencpn_plugin_19(void* pmgr) : opencpn_plugin_18(pmgr) {}
 
-opencpn_plugin_19::~opencpn_plugin_19(void) {}
+opencpn_plugin_19::~opencpn_plugin_19() {}
 
-void opencpn_plugin_19::OnSetupOptions(void) {}
+void opencpn_plugin_19::OnSetupOptions() {}
 
 //    Opencpn_Plugin_110 Implementation
 opencpn_plugin_110::opencpn_plugin_110(void* pmgr) : opencpn_plugin_19(pmgr) {}
 
-opencpn_plugin_110::~opencpn_plugin_110(void) {}
+opencpn_plugin_110::~opencpn_plugin_110() {}
 
-void opencpn_plugin_110::LateInit(void) {}
+void opencpn_plugin_110::LateInit() {}
 
 //    Opencpn_Plugin_111 Implementation
 opencpn_plugin_111::opencpn_plugin_111(void* pmgr) : opencpn_plugin_110(pmgr) {}
 
-opencpn_plugin_111::~opencpn_plugin_111(void) {}
+opencpn_plugin_111::~opencpn_plugin_111() {}
 
 //    Opencpn_Plugin_112 Implementation
 opencpn_plugin_112::opencpn_plugin_112(void* pmgr) : opencpn_plugin_111(pmgr) {}
 
-opencpn_plugin_112::~opencpn_plugin_112(void) {}
+opencpn_plugin_112::~opencpn_plugin_112() {}
 
 bool opencpn_plugin_112::MouseEventHook(wxMouseEvent& event) { return false; }
 
@@ -226,7 +223,7 @@ void opencpn_plugin_112::SendVectorChartObjectInfo(
 //    Opencpn_Plugin_113 Implementation
 opencpn_plugin_113::opencpn_plugin_113(void* pmgr) : opencpn_plugin_112(pmgr) {}
 
-opencpn_plugin_113::~opencpn_plugin_113(void) {}
+opencpn_plugin_113::~opencpn_plugin_113() {}
 
 bool opencpn_plugin_113::KeyboardEventHook(wxKeyEvent& event) { return false; }
 
@@ -236,17 +233,17 @@ void opencpn_plugin_113::OnToolbarToolUpCallback(int id) {}
 //    Opencpn_Plugin_114 Implementation
 opencpn_plugin_114::opencpn_plugin_114(void* pmgr) : opencpn_plugin_113(pmgr) {}
 
-opencpn_plugin_114::~opencpn_plugin_114(void) {}
+opencpn_plugin_114::~opencpn_plugin_114() {}
 
 //    Opencpn_Plugin_115 Implementation
 opencpn_plugin_115::opencpn_plugin_115(void* pmgr) : opencpn_plugin_114(pmgr) {}
 
-opencpn_plugin_115::~opencpn_plugin_115(void) {}
+opencpn_plugin_115::~opencpn_plugin_115() {}
 
 //    Opencpn_Plugin_116 Implementation
 opencpn_plugin_116::opencpn_plugin_116(void* pmgr) : opencpn_plugin_115(pmgr) {}
 
-opencpn_plugin_116::~opencpn_plugin_116(void) {}
+opencpn_plugin_116::~opencpn_plugin_116() {}
 
 bool opencpn_plugin_116::RenderGLOverlayMultiCanvas(wxGLContext* pcontext,
                                                     PlugIn_ViewPort* vp,
@@ -310,7 +307,7 @@ void opencpn_plugin_121::UpdateFollowState(int canvas_index, bool state) {}
 
 DateTimeFormatOptions::DateTimeFormatOptions()
     : format_string("$weekday_short_date_time"),
-      time_zone(wxEmptyString),
+      time_zone(""),
       show_timezone(true),
       longitude(NAN),
       version(1) {}

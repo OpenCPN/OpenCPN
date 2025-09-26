@@ -14,10 +14,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * REST API server
+ */
 
 #ifndef RESTSERVER_H_
 #define RESTSERVER_H_
@@ -30,24 +34,12 @@
 #include <thread>
 #include <unordered_map>
 
-#include "observable_evtvar.h"
-
-// MacOS 1.13:
-#if (defined(OCPN_GHC_FILESYSTEM) || \
-     (defined(__clang_major__) && (__clang_major__ < 15)))
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-
-#else
-#include <filesystem>
-#include <utility>
-namespace fs = std::filesystem;
-#endif
-
 #include <wx/event.h>
 #include <wx/string.h>
 #include <wx/thread.h>  // for wxSemaphore, std::semaphore is c++20
 
+#include "observable_evtvar.h"
+#include "std_filesystem.h"
 #include "pugixml.hpp"
 #include "pincode.h"
 #include "route.h"

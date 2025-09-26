@@ -13,18 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Driver registration container, a singleton.
  */
 
-#ifndef _COMMDRIVERREGISTRY_H__
-#define _COMMDRIVERREGISTRY_H__
+#ifndef COMMDRIVERREGISTRY_H_
+#define COMMDRIVERREGISTRY_H_
 
 #include "model/comm_driver.h"
 #include "observable_evtvar.h"
@@ -104,4 +103,4 @@ DriverPtr& FindDriver(const std::vector<DriverPtr>& drivers,
                       const std::string& iface,
                       const NavAddr::Bus _bus = NavAddr::Bus::Undef);
 
-#endif  // guard
+#endif  // COMMDRIVERREGISTRY_H_

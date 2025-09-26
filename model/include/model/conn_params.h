@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,30 +12,36 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _CONNECTIONPARAMS_H__
-#define _CONNECTIONPARAMS_H__
+/**
+ * \file
+ *
+ * Connection parameters
+ */
+
+#ifndef CONNECTIONPARAMS_H_
+#define CONNECTIONPARAMS_H_
 
 #include <wx/wxprec.h>
-
-#ifndef __DSPORTTYPE_H__
-#include "model/ds_porttype.h"
-#endif
 
 #ifndef WX_PRECOMP
 #include <wx/arrstr.h>
 #include <wx/dynarray.h>
 #include <wx/string.h>
-#endif  // precompiled headers
+#endif
 
 #include "model/comm_navmsg.h"
 
-class ConnectionParams;
-class ConnectionsDialog;
+#ifndef __DSPORTTYPE_H__
+#include "model/ds_porttype.h"
+#endif
+
+#define CONN_ENABLE_ID 47621
+
+class ConnectionParams;   // forward
+class ConnectionsDialog;  // Indirectly unused FIXME  (leamas) remove
 
 typedef enum {
   SERIAL = 0,
@@ -67,8 +69,6 @@ typedef enum {
   PROTO_NMEA2000 = 1,
   PROTO_SIGNALK = 2
 } DataProtocol;
-
-#define CONN_ENABLE_ID 47621
 
 class ConnectionParamsPanel;
 

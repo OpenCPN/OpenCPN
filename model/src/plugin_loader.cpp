@@ -13,14 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement config_loader.h
+ *
+ * Implement plugin_loader.h  -- low level code to load plugins from disk,
+ * notably the PluginLoader class
  */
 
 #include "config.h"
@@ -42,6 +42,17 @@
 
 #ifndef WIN32
 #include <cxxabi.h>
+#endif
+
+#ifdef _WIN32
+#include <winsock2.h>
+#include <windows.h>
+#include <psapi.h>
+#endif
+
+#ifdef __ANDROID__
+#include <dlfcn.h>
+#include <crashlytics.h>
 #endif
 
 #include <wx/wx.h>  //  NOLINT
@@ -70,17 +81,12 @@
 #include "model/plugin_paths.h"
 #include "model/safe_mode.h"
 #include "model/semantic_vers.h"
+
 #include "observable_confvar.h"
 #include "std_filesystem.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
-#include <dlfcn.h>
-#include "crashlytics.h"
-#endif
-
-#ifdef __WXMSW__
-#include <Psapi.h>
 #endif
 
 static const std::vector<std::string> SYSTEM_PLUGINS = {

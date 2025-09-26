@@ -12,13 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _INSTANCE_CHK_H__
-#define _INSTANCE_CHK_H__
+/**
+ * \file
+ *
+ * DBUS based instance check
+ */
+
+#ifndef INSTANCE_CHK_H_
+#define INSTANCE_CHK_H_
 
 #include "model/instance_check.h"
 #include "model/dbus_server.h"
@@ -34,4 +38,4 @@ private:
   DBusHandler dbus_server;
 }
 
-#endif  //  _INSTANCE_CHK_H__
+#endif  //  INSTANCE_CHK_H_

@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Route Manager
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement routeman.h -- route manager.
+ */
 
 #include <algorithm>
 #include <cmath>
@@ -224,8 +222,8 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
 bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   g_bAllowShipToActive = false;
   wxJSONValue v;
-  v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
-  v[_T("GUID")] = pRouteToActivate->m_GUID;
+  v["Route_activated"] = pRouteToActivate->m_RouteNameString;
+  v["GUID"] = pRouteToActivate->m_GUID;
   json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ACTIVATED");
   if (g_bPluginHandleAutopilotRoute) return true;
 
@@ -288,8 +286,8 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
 bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   g_bAllowShipToActive = false;
   wxJSONValue v;
-  v[_T("GUID")] = pRP_target->m_GUID;
-  v[_T("WP_activated")] = pRP_target->GetName();
+  v["GUID"] = pRP_target->m_GUID;
+  v["WP_activated"] = pRP_target->GetName();
 
   json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ACTIVATED");
 
@@ -314,8 +312,8 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
     if (pRouteActivatePoint) delete pRouteActivatePoint;
 
     pRouteActivatePoint =
-        new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("Begin")),
-                       wxEmptyString, false);  // Current location
+        new RoutePoint(gLat, gLon, wxString(""), wxString("Begin"), "",
+                       false);  // Current location
     pRouteActivatePoint->m_bShowName = false;
 
     pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
@@ -364,10 +362,10 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     pActivePoint->m_bBlink = false;
     pActivePoint->m_bIsActive = false;
 
-    v[_T("isSkipped")] = skipped;
-    v[_T("GUID")] = pActivePoint->m_GUID;
-    v[_T("GUID_WP_arrived")] = pActivePoint->m_GUID;
-    v[_T("WP_arrived")] = pActivePoint->GetName();
+    v["isSkipped"] = skipped;
+    v["GUID"] = pActivePoint->m_GUID;
+    v["GUID_WP_arrived"] = pActivePoint->m_GUID;
+    v["WP_arrived"] = pActivePoint->GetName();
   }
   int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
   int step = 1;
@@ -385,8 +383,8 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     }
   }
   if (result) {
-    v[_T("Next_WP")] = pActivePoint->GetName();
-    v[_T("GUID_Next_WP")] = pActivePoint->m_GUID;
+    v["Next_WP"] = pActivePoint->GetName();
+    v["GUID_Next_WP"] = pActivePoint->m_GUID;
 
     pActivePoint->m_bBlink = true;
     pActivePoint->m_bIsActive = true;
@@ -421,12 +419,12 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 
     wxJSONValue v;
     if (!b_arrival) {
-      v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
-      v[_T("GUID")] = pActiveRoute->m_GUID;
+      v["Route_deactivated"] = pActiveRoute->m_RouteNameString;
+      v["GUID"] = pActiveRoute->m_GUID;
       json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_DEACTIVATED");
     } else {
-      v[_T("GUID")] = pActiveRoute->m_GUID;
-      v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
+      v["GUID"] = pActiveRoute->m_GUID;
+      v["Route_ended"] = pActiveRoute->m_RouteNameString;
       json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ENDED");
     }
   }
@@ -548,21 +546,21 @@ bool Routeman::UpdateAutopilot() {
 
   // RMC
   {
-    m_NMEA0183.TalkerID = _T("EC");
+    m_NMEA0183.TalkerID = "EC";
 
     SENTENCE snt;
     m_NMEA0183.Rmc.IsDataValid = NTrue;
     if (!bGPSValid) m_NMEA0183.Rmc.IsDataValid = NFalse;
 
     if (gLat < 0.)
-      m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, _T("S"));
+      m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, "S");
     else
-      m_NMEA0183.Rmc.Position.Latitude.Set(gLat, _T("N"));
+      m_NMEA0183.Rmc.Position.Latitude.Set(gLat, "N");
 
     if (gLon < 0.)
-      m_NMEA0183.Rmc.Position.Longitude.Set(-gLon, _T("W"));
+      m_NMEA0183.Rmc.Position.Longitude.Set(-gLon, "W");
     else
-      m_NMEA0183.Rmc.Position.Longitude.Set(gLon, _T("E"));
+      m_NMEA0183.Rmc.Position.Longitude.Set(gLon, "E");
 
     m_NMEA0183.Rmc.SpeedOverGroundKnots = r_Sog;
     m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = r_Cog;
@@ -586,9 +584,9 @@ bool Routeman::UpdateAutopilot() {
     } else {
       wxDateTime now = wxDateTime::Now();
       wxDateTime utc = now.ToUTC();
-      wxString time = utc.Format(_T("%H%M%S"));
+      wxString time = utc.Format("%H%M%S");
       m_NMEA0183.Rmc.UTCTime = time;
-      wxString date = utc.Format(_T("%d%m%y"));
+      wxString date = utc.Format("%d%m%y");
       m_NMEA0183.Rmc.Date = date;
     }
 
@@ -602,7 +600,7 @@ bool Routeman::UpdateAutopilot() {
 
   // APB
   {
-    m_NMEA0183.TalkerID = _T("EC");
+    m_NMEA0183.TalkerID = "EC";
 
     SENTENCE snt;
 
@@ -620,7 +618,7 @@ bool Routeman::UpdateAutopilot() {
     else
       m_NMEA0183.Apb.DirectionToSteer = Right;
 
-    m_NMEA0183.Apb.CrossTrackUnits = _T("N");
+    m_NMEA0183.Apb.CrossTrackUnits = "N";
 
     if (m_bArrival)
       m_NMEA0183.Apb.IsArrivalCircleEntered = NTrue;
@@ -647,23 +645,23 @@ bool Routeman::UpdateAutopilot() {
                         : (CurrentBrgToActivePoint - gVar + 360.);
 
       m_NMEA0183.Apb.BearingOriginToDestination = brg1m;
-      m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("M");
+      m_NMEA0183.Apb.BearingOriginToDestinationUnits = "M";
 
       m_NMEA0183.Apb.BearingPresentPositionToDestination = bapm;
-      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("M");
+      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = "M";
 
       m_NMEA0183.Apb.HeadingToSteer = bapm;
-      m_NMEA0183.Apb.HeadingToSteerUnits = _T("M");
+      m_NMEA0183.Apb.HeadingToSteerUnits = "M";
     } else {
       m_NMEA0183.Apb.BearingOriginToDestination = brg1;
-      m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("T");
+      m_NMEA0183.Apb.BearingOriginToDestinationUnits = "T";
 
       m_NMEA0183.Apb.BearingPresentPositionToDestination =
           CurrentBrgToActivePoint;
-      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("T");
+      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = "T";
 
       m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint;
-      m_NMEA0183.Apb.HeadingToSteerUnits = _T("T");
+      m_NMEA0183.Apb.HeadingToSteerUnits = "T";
     }
 
     m_NMEA0183.Apb.Write(snt);
@@ -672,7 +670,7 @@ bool Routeman::UpdateAutopilot() {
 
   // XTE
   {
-    m_NMEA0183.TalkerID = _T("EC");
+    m_NMEA0183.TalkerID = "EC";
 
     SENTENCE snt;
 
@@ -690,7 +688,7 @@ bool Routeman::UpdateAutopilot() {
     else
       m_NMEA0183.Xte.DirectionToSteer = Right;
 
-    m_NMEA0183.Xte.CrossTrackUnits = _T("N");
+    m_NMEA0183.Xte.CrossTrackUnits = "N";
 
     m_NMEA0183.Xte.Write(snt);
     BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
@@ -737,7 +735,7 @@ bool Routeman::DeleteTrack(Track *pTrack) {
     int count = pTrack->GetnPoints();
     if (count > 10000) {
       pprog = new wxGenericProgressDialog(
-          _("OpenCPN Track Delete"), _T("0/0"), count, NULL,
+          _("OpenCPN Track Delete"), "0/0", count, NULL,
           wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME |
               wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
       pprog->SetSize(400, wxDefaultCoord);
@@ -903,13 +901,13 @@ void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
       m_route_dlg_ctx.get_global_colour("PLRTE"), wxBRUSHSTYLE_SOLID);
 }
 
-wxString Routeman::GetRouteReverseMessage(void) {
+wxString Routeman::GetRouteReverseMessage() {
   return wxString(
       _("Waypoints can be renamed to reflect the new order, the names will be "
         "'001', '002' etc.\n\nDo you want to rename the waypoints?"));
 }
 
-wxString Routeman::GetRouteResequenceMessage(void) {
+wxString Routeman::GetRouteResequenceMessage() {
   return wxString(
       _("Waypoints will be renamed to reflect the natural order, the names "
         "will be '001', '002' etc.\n\nDo you want to rename the waypoints?"));
@@ -932,9 +930,8 @@ Track *Routeman::FindTrackByGUID(const wxString &guid) {
 void Routeman::ZeroCurrentXTEToActivePoint() {
   // When zeroing XTE create a "virtual" waypoint at present position
   if (pRouteActivatePoint) delete pRouteActivatePoint;
-  pRouteActivatePoint =
-      new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")),
-                     wxEmptyString, false);  // Current location
+  pRouteActivatePoint = new RoutePoint(gLat, gLon, wxString(""), wxString(""),
+                                       "", false);  // Current location
   pRouteActivatePoint->m_bShowName = false;
 
   pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
@@ -1113,7 +1110,7 @@ wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) const {
     // find and return bitmap for "circle"
     for (i = 0; i < m_pIconArray->GetCount(); i++) {
       pmi = (MarkIcon *)m_pIconArray->Item(i);
-      //            if( pmi->icon_name.IsSameAs( _T("circle") ) )
+      //            if( pmi->icon_name.IsSameAs( "circle" ) )
       //                break;
     }
   }
@@ -1148,7 +1145,7 @@ bool WayPointman::GetIconPrescaled(const wxString &icon_key) const {
     // find and return bitmap for "circle"
     for (i = 0; i < m_pIconArray->GetCount(); i++) {
       pmi = (MarkIcon *)m_pIconArray->Item(i);
-      //            if( pmi->icon_name.IsSameAs( _T("circle") ) )
+      //            if( pmi->icon_name.IsSameAs( "circle" ) )
       //                break;
     }
   }
@@ -1224,7 +1221,7 @@ wxString WayPointman::GetIconDescription(wxString icon_key) const {
       return wxString(pmi->icon_description);
   }
 
-  return wxEmptyString;
+  return "";
 }
 
 wxString *WayPointman::GetIconKey(int index) const {
@@ -1415,7 +1412,7 @@ bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
   return false;
 }
 
-void WayPointman::ClearRoutePointFonts(void) {
+void WayPointman::ClearRoutePointFonts() {
   //    Iterate on the RoutePoint list, clearing Font pointers
   //    This is typically done globally after a font switch
   for (RoutePoint *pr : *m_pWayPointList) {
@@ -1438,7 +1435,7 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
   while (it != m_pWayPointList->end()) {
     RoutePoint *prp = *it;
     // if argument is false, then only delete non-route waypoints
-    if (!prp->m_bIsInLayer && (prp->GetIconName() != _T("mob")) &&
+    if (!prp->m_bIsInLayer && (prp->GetIconName() != "mob") &&
         ((b_delete_used && prp->IsShared()) ||
          ((!prp->m_bIsInRoute) && !(prp == pAnchorWatchPoint1) &&
           !(prp == pAnchorWatchPoint2)))) {

@@ -12,15 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Listen for Linux DBus  events like suspend/resume and new devices and notify
- * SystemEvents
+ *
+ * Implement linux_usb_watch.h -- iisten for Linux DBus events like
+ * suspend/resume and new devices and notify SystemEvents,
  */
 
 #include "model/linux_usb_watch.h"

@@ -1,9 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Route Point Object
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement route_point.h -- waypoint or mark abstraction
+ */
 
 #include <wx/colour.h>
 #include <wx/datetime.h>
@@ -84,9 +83,9 @@ RoutePoint::RoutePoint() {
 
   m_GUID = pWayPointMan->CreateGUID(this);
 
-  m_IconName = wxEmptyString;
+  m_IconName = "";
 
-  m_MarkName = wxEmptyString;
+  m_MarkName = "";
 
   m_bIsInLayer = false;
   m_LayerID = 0;
@@ -286,7 +285,7 @@ void RoutePoint::SetName(const wxString &name) {
   CalculateNameExtents();
 }
 
-void RoutePoint::CalculateNameExtents(void) {
+void RoutePoint::CalculateNameExtents() {
   if (m_pMarkFont) {
     wxScreenDC dc;
 
@@ -444,15 +443,14 @@ void RoutePoint::SetPlannedSpeed(double spd) {
 
 double RoutePoint::GetPlannedSpeed() {
   if (m_PlannedSpeed < 0.0001 &&
-      m_MarkDescription.Find(_T("VMG=")) != wxNOT_FOUND) {
+      m_MarkDescription.Find("VMG=") != wxNOT_FOUND) {
     // In case there was speed encoded in the name of the waypoint, do the
     // conversion here.
-    wxString s_vmg =
-        (m_MarkDescription.Mid(m_MarkDescription.Find(_T("VMG=")) + 4))
-            .BeforeFirst(';');
+    wxString s_vmg = (m_MarkDescription.Mid(m_MarkDescription.Find("VMG=") + 4))
+                         .BeforeFirst(';');
     double vmg;
     if (!s_vmg.ToDouble(&vmg)) {
-      m_MarkDescription.Replace(_T("VMG=") + s_vmg + ";", wxEmptyString);
+      m_MarkDescription.Replace("VMG=" + s_vmg + ";", "");
       SetPlannedSpeed(vmg);
     }
   }
@@ -467,22 +465,22 @@ wxDateTime RoutePoint::GetETD() {
       return GetETA();
     }
   } else {
-    if (m_MarkDescription.Find(_T("ETD=")) != wxNOT_FOUND) {
+    if (m_MarkDescription.Find("ETD=") != wxNOT_FOUND) {
       wxDateTime etd = wxInvalidDateTime;
       wxString s_etd =
-          (m_MarkDescription.Mid(m_MarkDescription.Find(_T("ETD=")) + 4))
+          (m_MarkDescription.Mid(m_MarkDescription.Find("ETD=") + 4))
               .BeforeFirst(';');
       const wxChar *parse_return = etd.ParseDateTime(s_etd);
       if (parse_return) {
         wxString tz(parse_return);
 
-        if (tz.Find(_T("UT")) != wxNOT_FOUND) {
+        if (tz.Find("UT") != wxNOT_FOUND) {
           // TODO: This is error-prone. It would match any string containing
           // these characters, not just time zone codes For example, "UT" would
           // match "UTC+2".
           m_seg_etd = etd;
         } else {
-          if (tz.Find(_T("LMT")) != wxNOT_FOUND) {
+          if (tz.Find("LMT") != wxNOT_FOUND) {
             m_seg_etd = etd;
             long lmt_offset = (long)((m_lon * 3600.) / 15.);
             wxTimeSpan lmt(0, 0, (int)lmt_offset, 0);
@@ -492,7 +490,7 @@ wxDateTime RoutePoint::GetETD() {
           }
         }
         if (etd.IsValid() && (!GetETA().IsValid() || etd > GetETA())) {
-          m_MarkDescription.Replace(s_etd, wxEmptyString);
+          m_MarkDescription.Replace(s_etd, "");
           m_seg_etd = etd;
           return m_seg_etd;
         } else {
@@ -522,7 +520,7 @@ wxString RoutePoint::GetETE() {
   if (m_seg_ete != 0) {
     return formatTimeDelta(m_seg_ete);
   }
-  return wxEmptyString;
+  return "";
 }
 
 void RoutePoint::SetETE(wxLongLong secs) { m_seg_ete = secs; }

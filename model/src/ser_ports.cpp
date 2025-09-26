@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,15 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifdef __MSVC__
-#include <winsock2.h>
-#include <wx/msw/winundef.h>
-#endif
+/**
+ * \file
+ *
+ * Implement ser_ports.h -- serial ports support, notably enumeration
+ */
 
 #include "config.h"
 
@@ -42,18 +35,19 @@
 #include <unordered_set>
 #include <vector>
 
-#include <wx/arrstr.h>
-#include <wx/log.h>
-#include <wx/utils.h>
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#include "qdebug.h"
+#endif
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#ifdef __ANDROID__
-#include "androidUTIL.h"
-#include "qdebug.h"
+#ifdef __MSVC__
+#include <winsock2.h>
+#include <wx/msw/winundef.h>
 #endif
 
 #ifdef OCPN_USE_NEWSERIAL
@@ -61,15 +55,15 @@
 #endif
 
 #ifdef HAVE_LIBUDEV
-#include "libudev.h"
+#include <libudev.h>
 #endif
 
 #ifdef HAVE_DIRENT_H
-#include "dirent.h"
+#include <dirent.h>
 #endif
 
 #ifdef HAVE_LINUX_SERIAL_H
-#include "linux/serial.h"
+#include <linux/serial.h>
 #endif
 
 #ifdef HAVE_SYS_IOCTL_H
@@ -97,14 +91,19 @@
 #include <linux/serial.h>
 #endif
 
-#ifdef __WXMSW__
+#ifdef _WIN32
+#include <winsock2.h>
 #include <windows.h>
 #include <setupapi.h>
 #endif
 
-#ifdef __WXOSX__
+#ifdef __APPLE__
 #include "model/macutils.h"
 #endif
+
+#include <wx/arrstr.h>
+#include <wx/log.h>
+#include <wx/utils.h>
 
 #include "model/config_vars.h"
 #include "model/garmin_protocol_mgr.h"
@@ -258,7 +257,7 @@ static std::vector<struct symlink> get_all_links() {
 }
 
 /** Return list of full paths to active, serial ports based on /sys files */
-static wxArrayString* EnumerateSysfsSerialPorts(void) {
+static wxArrayString* EnumerateSysfsSerialPorts() {
   std::vector<std::string> ports;
   auto all_ports = get_device_candidates();
   wxLogDebug("Enumerate: found %d candidates", all_ports.size());
@@ -345,7 +344,7 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
 }
 
 #pragma GCC diagnostic pop
-static wxArrayString* EnumerateUdevSerialPorts(void) {
+static wxArrayString* EnumerateUdevSerialPorts() {
   struct udev* udev = udev_new();
   auto dev_items = enumerate_udev_ports(udev);
   wxArrayString* ports = new wxArrayString;
@@ -360,7 +359,7 @@ static wxArrayString* EnumerateUdevSerialPorts(void) {
 #endif  // HAVE_LIBUDEV
 
 #ifdef __WXMSW__
-static wxArrayString* EnumerateWindowsSerialPorts(void) {
+static wxArrayString* EnumerateWindowsSerialPorts() {
   wxArrayString* preturn = new wxArrayString;
   /*************************************************************************
    * Windows provides no system level enumeration of available serial ports
@@ -374,7 +373,7 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
   //  This method will not find some Bluetooth SPP ports
   for (int i = 1; i < g_nCOMPortCheck; i++) {
     wxString s;
-    s.Printf(_T("COM%d"), i);
+    s.Printf("COM%d", i);
 
     COMMCONFIG cc;
     DWORD dwSize = sizeof(COMMCONFIG);
@@ -459,7 +458,7 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
               }
             }
             wxString desc_name(desc, wxConvUTF8);  // append "description"
-            port += _T(" ");
+            port += " ";
             port += desc_name;
 
             preturn->Add(port);
@@ -478,8 +477,8 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
 
   if (hdeviceinfo != INVALID_HANDLE_VALUE) {
     if (GarminProtocolHandler::IsGarminPlugged()) {
-      wxLogMessage(_T("EnumerateSerialPorts() Found Garmin USB Device."));
-      preturn->Add(_T("Garmin-USB"));  // Add generic Garmin selectable device
+      wxLogMessage("EnumerateSerialPorts() Found Garmin USB Device.");
+      preturn->Add("Garmin-USB");  // Add generic Garmin selectable device
     }
   }
 
@@ -490,23 +489,19 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
 
 #if defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
 
-wxArrayString* EnumerateSerialPorts(void) {
-  return EnumerateSysfsSerialPorts();
-}
+wxArrayString* EnumerateSerialPorts() { return EnumerateSysfsSerialPorts(); }
 
 #elif defined(OCPN_USE_UDEV_PORTS) && defined(HAVE_LIBUDEV)
 
-wxArrayString* EnumerateSerialPorts(void) { return EnumerateUdevSerialPorts(); }
+wxArrayString* EnumerateSerialPorts() { return EnumerateUdevSerialPorts(); }
 
 #elif defined(__ANDROID__)
 
-wxArrayString* EnumerateSerialPorts(void) {
-  return androidGetSerialPortsArray();
-}
+wxArrayString* EnumerateSerialPorts() { return androidGetSerialPortsArray(); }
 
 #elif defined(__WXOSX__)
 
-wxArrayString* EnumerateSerialPorts(void) {
+wxArrayString* EnumerateSerialPorts() {
   wxArrayString* preturn = new wxArrayString;
   char* paPortNames[MAX_SERIAL_PORTS];
   int iPortNameCount;
@@ -523,13 +518,11 @@ wxArrayString* EnumerateSerialPorts(void) {
 
 #elif defined(__WXMSW__)
 
-wxArrayString* EnumerateSerialPorts(void) {
-  return EnumerateWindowsSerialPorts();
-}
+wxArrayString* EnumerateSerialPorts() { return EnumerateWindowsSerialPorts(); }
 
 #elif defined(OCPN_USE_NEWSERIAL)
 
-wxArrayString* EnumerateSerialPorts(void) {
+wxArrayString* EnumerateSerialPorts() {
   wxArrayString* preturn = new wxArrayString;
   std::vector<serial::PortInfo> ports = serial::list_ports();
   for (auto it = ports.begin(); it != ports.end(); ++it) {

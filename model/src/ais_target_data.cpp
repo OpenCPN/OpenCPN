@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ais_target_data.h -- AIS target definitions
  */
+
 #include <unordered_map>
 
 #include <wx/datetime.h>
@@ -44,31 +44,31 @@ void clear_hash_ERI() { s_ERI_hash.clear(); }
 static wxString FormatTimeAdaptive(int seconds) {
   int m = seconds / 60;
   if (seconds < 100)
-    return wxString::Format(_T("%3ds"), seconds);
+    return wxString::Format("%3ds", seconds);
   else if (seconds < 3600) {
     int m = seconds / 60;
     int s = seconds % 60;
-    return wxString::Format(_T("%2dmin %02ds"), m, s);
+    return wxString::Format("%2dmin %02ds", m, s);
   }
   int h = seconds / 3600;
   m -= h * 60;
-  return wxString::Format(_T("%2dh %02dmin"), h, m);
+  return wxString::Format("%2dh %02dmin", h, m);
 }
 
 static wxString html_escape(const wxString &src) {
   // Escape &, <, > as well as single and double quotes for HTML.
   wxString ret = src;
 
-  ret.Replace(_T("<"), _T("&lt;"));
-  ret.Replace(_T(">"), _T("&gt;"));
+  ret.Replace("<", "&lt;");
+  ret.Replace(">", "&gt;");
 
   // only < and > in 6 bits AIS ascii
-  // ret.Replace(_T("\""), _T("&quot;"));
-  // ret.Replace(_T("&"), _T("&amp;"));
-  // ret.Replace(_T("'"), _T("&#39;"));
+  // ret.Replace("\"", "&quot;");
+  // ret.Replace("&", "&amp;");
+  // ret.Replace("'", "&#39;");
 
   // Do we care about multiple spaces?
-  //   ret.Replace(_T(" "), _T("&nbsp;"));
+  //   ret.Replace(" ", "&nbsp;");
   return ret;
 }
 
@@ -113,7 +113,7 @@ wxString ais_get_status(int index) {
 }
 
 wxString ais_meteo_get_trend(int tend) {
-  wxString trend = wxEmptyString;
+  wxString trend = "";
   if (tend < 3) {
     if (tend == 0)
       trend = _("steady");
@@ -126,7 +126,7 @@ wxString ais_meteo_get_trend(int tend) {
 }
 
 wxString aisMeteoPrecipType(int precip) {
-  wxString prec = wxEmptyString;
+  wxString prec = "";
   switch (precip) {
     case 0:
       prec = "Reserved";
@@ -154,7 +154,7 @@ wxString aisMeteoPrecipType(int precip) {
 }
 
 wxString aisMeteoWaterLevelRef(int refID) {
-  wxString ref = wxEmptyString;
+  wxString ref = "";
   switch (refID) {
     case 0:
       ref = "MLLW";
@@ -415,11 +415,11 @@ void AisTargetData::CloneFrom(AisTargetData *q) {
 AisTargetData::~AisTargetData() { m_ptrack.clear(); }
 // AisTargetData::~AisTargetData() { m_pMetPoint.clear(); }  //TODO Needed?
 
-wxString AisTargetData::GetFullName(void) {
+wxString AisTargetData::GetFullName() {
   wxString retName;
   if (b_nameValid) {
     wxString shipName = trimAISField(ShipName);
-    if (shipName == _T("Unknown"))
+    if (shipName == "Unknown")
       retName = wxGetTranslation(shipName);
     else
       retName = shipName;
@@ -433,48 +433,48 @@ wxString AisTargetData::GetFullName(void) {
   return retName;
 }
 
-wxString AisTargetData::BuildQueryResult(void) {
+wxString AisTargetData::BuildQueryResult() {
   wxString html;
   wxDateTime now = wxDateTime::Now();
 
-  wxString tableStart = _T("\n<table border=0 cellpadding=1 cellspacing=0>\n");
-  wxString tableEnd = _T("</table>\n\n");
-  wxString rowStart = _T("<tr><td><font size=-2>");
-  wxString rowStartH = _T("<tr><td nowrap>");
-  wxString rowSeparator = _T("</font></td><td></td><td><b>");
-  wxString rowSeparatorH = _T("</td><td></td><td>");
-  wxString colSeparator = _T("<td></td>");
-  wxString rowEnd = _T("</b></td></tr>\n");
+  wxString tableStart = "\n<table border=0 cellpadding=1 cellspacing=0>\n";
+  wxString tableEnd = "</table>\n\n";
+  wxString rowStart = "<tr><td><font size=-2>";
+  wxString rowStartH = "<tr><td nowrap>";
+  wxString rowSeparator = "</font></td><td></td><td><b>";
+  wxString rowSeparatorH = "</td><td></td><td>";
+  wxString colSeparator = "<td></td>";
+  wxString rowEnd = "</b></td></tr>\n";
   wxString vertSpacer =
-      _T("<tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>\n\n");
+      "<tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>\n\n";
 
   wxString IMOstr, MMSIstr, ClassStr;
 
-  html << tableStart << _T("<tr><td nowrap colspan=2>");
+  html << tableStart << "<tr><td nowrap colspan=2>";
   if (b_nameValid) {
-    html << _T("<font size=+2><i><b>") << GetFullName();
-    html << _T("</b></i></font>&nbsp;&nbsp;<b>");
+    html << "<font size=+2><i><b>" << GetFullName();
+    html << "</b></i></font>&nbsp;&nbsp;<b>";
   }
 
   if ((Class != AIS_ATON) && (Class != AIS_BASE) && (Class != AIS_GPSG_BUDDY) &&
       (Class != AIS_SART) && (Class != AIS_METEO)) {
-    html << trimAISField(CallSign) << _T("</b>") << rowEnd;
+    html << trimAISField(CallSign) << "</b>" << rowEnd;
 
     if (Class != AIS_CLASS_B) {
-      if (IMO > 0) IMOstr = wxString::Format(_T("%08d"), abs(IMO));
+      if (IMO > 0) IMOstr = wxString::Format("%08d", abs(IMO));
     }
   } else
-    html << _T("</b>") << rowEnd;
+    html << "</b>" << rowEnd;
 
   html << vertSpacer;
 
   if (Class != AIS_GPSG_BUDDY) {
-    MMSIstr = wxString::Format(_T("%09d"), abs(MMSI));
+    MMSIstr = wxString::Format("%09d", abs(MMSI));
   }
   ClassStr = wxGetTranslation(Get_class_string(false));
 
   if (Class == AIS_ATON) {
-    wxString cls(_T("AtoN: "));
+    wxString cls("AtoN: ");
     cls += Get_vessel_type_string(false);
     ClassStr = wxGetTranslation(cls);
   }
@@ -485,55 +485,54 @@ wxString AisTargetData::BuildQueryResult(void) {
   }
 
   if (IMOstr.Length())
-    html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
-            _T("cellspacing=0>")
+    html << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
+            "cellspacing=0>"
          << rowStart << _("MMSI")
-         << _T("</font></td><td>&nbsp;</td><td><font size=-2>") << _("Class")
-         << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-         << _("IMO") << _T("</font></td></tr>") << rowStartH << _T("<b>")
-         << MMSIstr << _T("</b></td><td>&nbsp;</td><td><b>") << ClassStr
-         << _T("</b></td><td>&nbsp;</td><td align=right><b>") << IMOstr
-         << rowEnd << _T("</table></td></tr>");
+         << "</font></td><td>&nbsp;</td><td><font size=-2>" << _("Class")
+         << "</font></td><td>&nbsp;</td><td align=right><font size=-2>"
+         << _("IMO") << "</font></td></tr>" << rowStartH << "<b>" << MMSIstr
+         << "</b></td><td>&nbsp;</td><td><b>" << ClassStr
+         << "</b></td><td>&nbsp;</td><td align=right><b>" << IMOstr << rowEnd
+         << "</table></td></tr>";
 
   else if (Class == AIS_METEO) {
-    MMSIstr = wxString::Format(_T("%09d"), abs(met_data.original_mmsi));
-    html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
-            _T("cellspacing=0>")
+    MMSIstr = wxString::Format("%09d", abs(met_data.original_mmsi));
+    html << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
+            "cellspacing=0>"
          << rowStart << _("MMSI")
-         << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-         << _("Class") << _T("</font></td></tr>") << rowStartH << _T("<b>")
-         << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart
-         << _T("<b>ID: ") << MMSI;
+         << "</font></td><td>&nbsp;</td><td align=right><font size=-2>"
+         << _("Class") << "</font></td></tr>" << rowStartH << "<b>" << MMSIstr
+         << "</b></td><td>&nbsp;</td><td align=right><b>"
+         << "<font size=-1>" << ClassStr << rowEnd << rowStart
+         << "<b>ID: " << MMSI;
     if (met_data.stationID) {  // Facilitate to find a Meteo target on SignalK
-      wxString SK_ID =
-          wxString::Format(_T("%06d"), (met_data.stationID - 1000000));
+      wxString SK_ID = wxString::Format("%06d", (met_data.stationID - 1000000));
       html << "<td>&nbsp;</td><td align=right>"
            << "SK-ID: " << SK_ID;
     }
-    html << rowEnd << _T("</b></table></td></tr>");
+    html << rowEnd << "</b></table></td></tr>";
   } else
-    html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
-            _T("cellspacing=0>")
+    html << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
+            "cellspacing=0>"
          << rowStart << _("MMSI")
-         << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-         << _("Class") << _T("</font></td></tr>") << rowStartH << _T("<b>")
-         << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-         << ClassStr << rowEnd << _T("</table></td></tr>");
+         << "</font></td><td>&nbsp;</td><td align=right><font size=-2>"
+         << _("Class") << "</font></td></tr>" << rowStartH << "<b>" << MMSIstr
+         << "</b></td><td>&nbsp;</td><td align=right><b>" << ClassStr << rowEnd
+         << "</table></td></tr>";
 
   if ((Class != AIS_SART))  //&& (Class != AIS_DSC))
-    html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
-            _T("cellspacing=0>")
+    html << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
+            "cellspacing=0>"
          << rowStart
          << ((Class == AIS_BASE || Class == AIS_ATON || Class == AIS_METEO)
                  ? _("Nation")
                  : _("Flag"))
-         << rowEnd << _T("</font></td></tr>") << rowStartH
-         << _T("<font size=-1><b>") << GetCountryCode(true);
+         << rowEnd << "</font></td></tr>" << rowStartH << "<font size=-1><b>"
+         << GetCountryCode(true);
   if (Class == AIS_CLASS_B && MMSIstr.StartsWith("8")) {
     html << "<td align=right>" << _("Handheld");
   }
-  html << rowEnd << _T("</font></table></td></tr>");
+  html << rowEnd << "</font></table></td></tr>";
 
   wxString navStatStr;
   if ((Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) &&
@@ -553,13 +552,13 @@ wxString AisTargetData::BuildQueryResult(void) {
     int mmsi_start = MMSI / 1000000;
     switch (mmsi_start) {
       case 970:
-        //                sart_sub_type = _T("SART");
+        //                sart_sub_type = "SART";
         break;
       case 972:
-        sart_sub_type = _T("MOB");
+        sart_sub_type = "MOB";
         break;
       case 974:
-        sart_sub_type = _T("EPIRB");
+        sart_sub_type = "EPIRB";
         break;
       default:
         sart_sub_type = _("Unknown");
@@ -593,7 +592,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     if (Class == AIS_SART) {
       if (MSG_14_text.Len()) {
         html << rowStart << _("Safety Broadcast Message") << rowEnd << rowStartH
-             << _T("<b>") << MSG_14_text << rowEnd;
+             << "<b>" << MSG_14_text << rowEnd;
       }
     }
 
@@ -603,83 +602,83 @@ wxString AisTargetData::BuildQueryResult(void) {
         Class != AIS_BUOY) {
       if ((Class == AIS_CLASS_B) || (Class == AIS_ATON)) {
         sizeString =
-            wxString::Format(_T("%dm x %dm"), (DimA + DimB), (DimC + DimD));
+            wxString::Format("%dm x %dm", (DimA + DimB), (DimC + DimD));
       } else if (!b_SarAircraftPosnReport) {
         if ((DimA + DimB + DimC + DimD) == 0) {
           if (b_isEuroInland) {
             if (Euro_Length == 0.0) {
               if (Euro_Draft > 0.01) {
-                sizeString << wxString::Format(_T("---m x ---m x %4.1fm"),
+                sizeString << wxString::Format("---m x ---m x %4.1fm",
                                                Euro_Draft);
               } else {
-                sizeString << _T("---m x ---m x ---m");
+                sizeString << "---m x ---m x ---m";
               }
             } else {
               if (Euro_Draft > 0.01) {
-                sizeString << wxString::Format(_T("%5.1fm x %4.1fm x %4.1fm"),
+                sizeString << wxString::Format("%5.1fm x %4.1fm x %4.1fm",
                                                Euro_Length, Euro_Beam,
                                                Euro_Draft);
               } else {
-                sizeString << wxString::Format(_T("%5.1fm x %4.1fm x ---m\n\n"),
+                sizeString << wxString::Format("%5.1fm x %4.1fm x ---m\n\n",
                                                Euro_Length, Euro_Beam);
               }
             }
           } else {
             if (Draft > 0.01) {
-              sizeString << wxString::Format(_T("---m x ---m x %4.1fm"), Draft);
+              sizeString << wxString::Format("---m x ---m x %4.1fm", Draft);
             } else {
-              sizeString << _T("---m x ---m x ---m");
+              sizeString << "---m x ---m x ---m";
             }
           }
         } else if (Draft < 0.01) {
-          sizeString << wxString::Format(_T("%dm x %dm x ---m"), (DimA + DimB),
+          sizeString << wxString::Format("%dm x %dm x ---m", (DimA + DimB),
                                          (DimC + DimD));
         } else {
-          sizeString << wxString::Format(_T("%dm x %dm x %4.1fm"),
-                                         (DimA + DimB), (DimC + DimD), Draft);
+          sizeString << wxString::Format("%dm x %dm x %4.1fm", (DimA + DimB),
+                                         (DimC + DimD), Draft);
         }
       }
     }
   }
 
   if (Class == AIS_SART) {
-    html << _T("<tr><td colspan=2>")
-         << _T("<b>") << AISTypeStr;
-    if (sart_sub_type.Length()) html << _T(" (") << sart_sub_type << _T("), ");
+    html << "<tr><td colspan=2>"
+         << "<b>" << AISTypeStr;
+    if (sart_sub_type.Length()) html << " (" << sart_sub_type << "), ";
     html << navStatStr;
-    html << rowEnd << _T("<tr><td colspan=2>")
-         << _T("<b>") << sizeString << rowEnd;
+    html << rowEnd << "<tr><td colspan=2>"
+         << "<b>" << sizeString << rowEnd;
   }
 
   else if (Class == AIS_ATON) {
-    html << _T("<tr><td colspan=2>")
-         << _T("<b>") << navStatStr;
-    html << rowEnd << _T("<tr><td colspan=2>")
-         << _T("<b>") << sizeString << rowEnd;
+    html << "<tr><td colspan=2>"
+         << "<b>" << navStatStr;
+    html << rowEnd << "<tr><td colspan=2>"
+         << "<b>" << sizeString << rowEnd;
   } else if (Class == AIS_DSC && (ShipType == 12 || ShipType == 16)) {
     if (ShipType == 16) {  // Distress relay
-      html << _T("<tr><td colspan=2>")
-           << _T("<b>") << _("Distress relay");
+      html << "<tr><td colspan=2>"
+           << "<b>" << _("Distress relay");
       if (m_dscTXmmsi > 2000000) {
-        wxString mmsirelay = wxString::Format(_T(" %09d"), abs(m_dscTXmmsi));
-        html << _T(" ") << _("by:") << mmsirelay;
+        wxString mmsirelay = wxString::Format(" %09d", abs(m_dscTXmmsi));
+        html << " " << _("by:") << mmsirelay;
       }
-      html << _T("<b>") << sizeString << rowEnd;
+      html << "<b>" << sizeString << rowEnd;
     }
-    html << _T("<tr><td colspan=2>") << _("Nature of distress: ") << rowEnd
-         << _T("<tr><td colspan=2>");
+    html << "<tr><td colspan=2>" << _("Nature of distress: ") << rowEnd
+         << "<tr><td colspan=2>";
     if (m_dscNature < 13) {
-      html << _T("<tr><td colspan=2>")
-           << _T("<b>") << GetNatureofDistress(m_dscNature) << _T("<b>")
-           << sizeString << rowEnd << _T("<tr><td colspan=2>");
+      html << "<tr><td colspan=2>"
+           << "<b>" << GetNatureofDistress(m_dscNature) << "<b>" << sizeString
+           << rowEnd << "<tr><td colspan=2>";
     }
   } else if ((Class != AIS_BASE) && (Class != AIS_DSC)) {
-    html << _T("<tr><td colspan=2>")
-         << _T("<b>") << AISTypeStr;
-    if (navStatStr.Length()) html << _T(", ") << navStatStr;
-    if (UNTypeStr.Length()) html << _T(" (UN Type ") << UNTypeStr << _T(")");
-    html << rowEnd << _T("<tr><td colspan=2>")
-         << _T("<b>") << sizeString << rowEnd;
+    html << "<tr><td colspan=2>"
+         << "<b>" << AISTypeStr;
+    if (navStatStr.Length()) html << ", " << navStatStr;
+    if (UNTypeStr.Length()) html << " (UN Type " << UNTypeStr << ")";
+    html << rowEnd << "<tr><td colspan=2>"
+         << "<b>" << sizeString << rowEnd;
   }
 
   if (b_positionOnceValid) {
@@ -688,17 +687,17 @@ wxString AisTargetData::BuildQueryResult(void) {
 
     now.MakeGMT();
     int target_age = now.GetTicks() - PositionReportTicks;
-    //   wxLogMessage(wxString::Format(_T("** PositionReportTicks %ld %ld %d"),
+    //   wxLogMessage(wxString::Format("** PositionReportTicks %ld %ld %d",
     //                                 now.GetTicks(), PositionReportTicks,
     //                                 target_age));
 
     html << vertSpacer << rowStart << _("Position") << posTypeStr
-         << _T("</font></td><td align=right><font size=-2>") << _("Report Age")
-         << _T("</font></td></tr>")
+         << "</font></td><td align=right><font size=-2>" << _("Report Age")
+         << "</font></td></tr>"
 
-         << rowStartH << _T("<b>") << toSDMM(1, Lat)
-         << _T("</b></td><td align=right><b>") << FormatTimeAdaptive(target_age)
-         << rowEnd << rowStartH << _T("<b>") << toSDMM(2, Lon);
+         << rowStartH << "<b>" << toSDMM(1, Lat)
+         << "</b></td><td align=right><b>" << FormatTimeAdaptive(target_age)
+         << rowEnd << rowStartH << "<b>" << toSDMM(2, Lon);
     if (Class != AIS_METEO)
       html << rowEnd;
     else {
@@ -725,28 +724,29 @@ wxString AisTargetData::BuildQueryResult(void) {
     wxString f_date = date.FormatISODate();
 
     html << vertSpacer << rowStart << _("Report as of") << rowEnd << rowStartH
-         << _T("<b>") << f_date + _T("</b> at <b>")
-         << wxString::Format(_T("%d:%d UTC "), m_utc_hour, m_utc_min) << rowEnd;
+         << "<b>" << f_date + "</b> at <b>"
+         << wxString::Format("%d:%d UTC ", m_utc_hour, m_utc_min) << rowEnd;
   } else {
     if (Class == AIS_CLASS_A && !b_SarAircraftPosnReport) {
       html << vertSpacer << rowStart << _("Destination")
-           << _T("</font></td><td align=right><font size=-2>") << _("ETA (UTC)")
-           << _T("</font></td></tr>\n") << rowStartH << _T("<b>");
+           << "</font></td><td align=right><font size=-2>" << _("ETA (UTC)")
+           << "</font></td></tr>\n"
+           << rowStartH << "<b>";
       wxString dest = trimAISField(Destination);
       if (dest.Length())
         html << html_escape(dest);
       else
-        html << _T("---");
-      html << _T("</b></td><td nowrap align=right><b>");
+        html << "---";
+      html << "</b></td><td nowrap align=right><b>";
 
       if ((ETA_Mo) && (ETA_Hr < 24)) {
         int yearOffset = 0;
         if (now.GetMonth() > (ETA_Mo - 1)) yearOffset = 1;
         wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo - 1),
                        now.GetYear() + yearOffset, ETA_Hr, ETA_Min);
-        html << eta.Format(_T("%b %d %H:%M"));
+        html << eta.Format("%b %d %H:%M");
       } else
-        html << _T("---");
+        html << "---";
       html << rowEnd;
     }
 
@@ -764,57 +764,52 @@ wxString AisTargetData::BuildQueryResult(void) {
 
         courseStr << trueString << magString;
       } else if (COG == 360.0)
-        courseStr = _T("---");
+        courseStr = "---";
       else if (crs == 360)
-        courseStr = _T("0&deg;");
+        courseStr = "0&deg;";
 
       double speed_show = toUsrSpeed(SOG);
 
       if ((SOG <= 102.2) || b_SarAircraftPosnReport) {
         if (speed_show < 10.0)
-          sogStr =
-              wxString::Format(_T("%.2f "), speed_show) + getUsrSpeedUnit();
+          sogStr = wxString::Format("%.2f ", speed_show) + getUsrSpeedUnit();
         else if (speed_show < 100.0)
-          sogStr =
-              wxString::Format(_T("%.1f "), speed_show) + getUsrSpeedUnit();
+          sogStr = wxString::Format("%.1f ", speed_show) + getUsrSpeedUnit();
         else
-          sogStr =
-              wxString::Format(_T("%.0f "), speed_show) + getUsrSpeedUnit();
+          sogStr = wxString::Format("%.0f ", speed_show) + getUsrSpeedUnit();
       }
-      //                sogStr = wxString::Format( _T("%5.2f ") +
+      //                sogStr = wxString::Format( "%5.2f " +
       //                getUsrSpeedUnit(), toUsrSpeed( SOG ) );
       else
-        sogStr = _T("---");
+        sogStr = "---";
 
       if ((int)HDG != 511)
-        hdgStr = wxString::Format(_T("%03d&deg;"), (int)HDG);
+        hdgStr = wxString::Format("%03d&deg;", (int)HDG);
       else
-        hdgStr = _T("---");
+        hdgStr = "---";
 
       if (ROTAIS != -128) {
         if (ROTAIS == 127)
-          rotStr << _T("> 5&deg;/30s ") << _("Right");
+          rotStr << "> 5&deg;/30s " << _("Right");
         else if (ROTAIS == -127)
-          rotStr << _T("> 5&deg;/30s ") << _("Left");
+          rotStr << "> 5&deg;/30s " << _("Left");
         else {
           if (ROTIND > 0)
-            rotStr << wxString::Format(_T("%3d&deg;/Min "), ROTIND)
-                   << _("Right");
+            rotStr << wxString::Format("%3d&deg;/Min ", ROTIND) << _("Right");
           else if (ROTIND < 0)
-            rotStr << wxString::Format(_T("%3d&deg;/Min "), -ROTIND)
-                   << _("Left");
+            rotStr << wxString::Format("%3d&deg;/Min ", -ROTIND) << _("Left");
           else
-            rotStr = _T("0");
+            rotStr = "0";
         }
       } else if (!b_SarAircraftPosnReport)
-        rotStr = _T("---");
+        rotStr = "---";
     }
   }
 
   if (b_positionOnceValid && bGPSValid && (Range_NM >= 0.))
     rngStr = FormatDistanceAdaptive(Range_NM);
   else
-    rngStr = _T("---");
+    rngStr = "---";
 
   int brg = (int)wxRound(Brg);
   if (Brg > 359.5) brg = 0;
@@ -830,71 +825,71 @@ wxString AisTargetData::BuildQueryResult(void) {
 
     brgStr << trueString << magString;
   } else
-    brgStr = _T("---");
+    brgStr = "---";
 
   wxString turnRateHdr;  // Blank if ATON or BASE or Special Position Report (9)
   if ((Class != AIS_ATON) && (Class != AIS_BASE) && (Class != AIS_DSC) &&
       (Class != AIS_METEO)) {
     html << vertSpacer
-         << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
-            _T("cellspacing=0>")
+         << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
+            "cellspacing=0>"
          << rowStart << _("Speed")
-         << _T("</font></td><td>&nbsp;</td><td><font size=-2>") << _("Course")
-         << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>");
+         << "</font></td><td>&nbsp;</td><td><font size=-2>" << _("Course")
+         << "</font></td><td>&nbsp;</td><td align=right><font size=-2>";
     if (!b_SarAircraftPosnReport) html << _("Heading");
 
-    html << _T("</font></td></tr>") << rowStartH << _T("<b>") << sogStr
-         << _T("</b></td><td>&nbsp;</td><td><b>") << courseStr
-         << _T("</b></td><td>&nbsp;</td><td align=right><b>");
+    html << "</font></td></tr>" << rowStartH << "<b>" << sogStr
+         << "</b></td><td>&nbsp;</td><td><b>" << courseStr
+         << "</b></td><td>&nbsp;</td><td align=right><b>";
     if (!b_SarAircraftPosnReport) html << hdgStr;
-    html << rowEnd << _T("</table></td></tr>") << vertSpacer;
+    html << rowEnd << "</table></td></tr>" << vertSpacer;
 
     if (!b_SarAircraftPosnReport) turnRateHdr = _("Turn Rate");
   }
   if (Class != AIS_METEO) {
-    html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
-            _T("cellspacing=0>")
+    html << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
+            "cellspacing=0>"
          << rowStart << _("Range")
-         << _T("</font></td><td>&nbsp;</td><td><font size=-2>") << _("Bearing")
-         << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-         << turnRateHdr << _T("</font></td></tr>") << rowStartH << _T("<b>")
-         << rngStr << _T("</b></td><td>&nbsp;</td><td><b>") << brgStr
-         << _T("</b></td><td>&nbsp;</td><td align=right><b>");
+         << "</font></td><td>&nbsp;</td><td><font size=-2>" << _("Bearing")
+         << "</font></td><td>&nbsp;</td><td align=right><font size=-2>"
+         << turnRateHdr << "</font></td></tr>" << rowStartH << "<b>" << rngStr
+         << "</b></td><td>&nbsp;</td><td><b>" << brgStr
+         << "</b></td><td>&nbsp;</td><td align=right><b>";
     if (!b_SarAircraftPosnReport) html << rotStr;
-    html << rowEnd << _T("</table></td></tr>") << vertSpacer;
+    html << rowEnd << "</table></td></tr>" << vertSpacer;
   }
 
   if (bCPA_Valid && Class != AIS_METEO) {
     wxString tcpaStr;
-    tcpaStr << _T("</b> ") << _("in ") << _T("</td><td align=right><b>")
+    tcpaStr << "</b> " << _("in ") << "</td><td align=right><b>"
             << FormatTimeAdaptive((int)(TCPA * 60.));
 
-    html << /*vertSpacer << */ rowStart << _T("<font size=-2>") << _("CPA")
-         << _T("</font>") << rowEnd << rowStartH << _T("<b>")
+    html << /*vertSpacer << */ rowStart << "<font size=-2>" << _("CPA")
+         << "</font>" << rowEnd << rowStartH << "<b>"
          << FormatDistanceAdaptive(CPA) << tcpaStr << rowEnd;
   }
 
   if (Class != AIS_BASE && Class != AIS_METEO) {
     if (blue_paddle == 1) {
-      html << rowStart << _("Inland Blue Flag") << rowEnd << rowStartH
-           << _T("<b>") << _("Clear") << rowEnd;
+      html << rowStart << _("Inland Blue Flag") << rowEnd << rowStartH << "<b>"
+           << _("Clear") << rowEnd;
     } else if (blue_paddle == 2) {
-      html << rowStart << _("Inland Blue Flag") << rowEnd << rowStartH
-           << _T("<b>") << _("Set") << rowEnd;
+      html << rowStart << _("Inland Blue Flag") << rowEnd << rowStartH << "<b>"
+           << _("Set") << rowEnd;
     }
   }
 
   if (b_SarAircraftPosnReport) {
     wxString altStr;
     if (altitude != 4095)
-      altStr.Printf(_T("%4d m"), altitude);
+      altStr.Printf("%4d m", altitude);
     else
       altStr = _("Unknown");
 
     html << rowStart << _("Altitude")
-         << _T("</font></td><td>&nbsp;</td><td><font size=-0>") << rowStartH
-         << _T("<b>") << altStr << _T("</b></td><td>&nbsp;</td><td><b>")
-         << rowEnd << _T("</table></td></tr>") << vertSpacer;
+         << "</font></td><td>&nbsp;</td><td><font size=-0>" << rowStartH
+         << "<b>" << altStr << "</b></td><td>&nbsp;</td><td><b>" << rowEnd
+         << "</table></td></tr>" << vertSpacer;
   }
 
   if (Class == AIS_METEO) {
@@ -908,12 +903,12 @@ wxString AisTargetData::BuildQueryResult(void) {
       wxString wspeedGust = wxString::Format("%.0f %s %d%c", userwindgustspeed,
                                              getUsrWindSpeedUnit(),
                                              met_data.wind_gust_dir, 0x00B0);
-      if (met_data.wind_gust_kn >= 126) wspeedGust = wxEmptyString;
+      if (met_data.wind_gust_kn >= 126) wspeedGust = "";
 
       html << vertSpacer << rowStart << _("Wind speed")
-           << _T("</font></td><td align=right><font size=-2>") << _("Wind gust")
-           << _T("</font></td></tr>") << rowStartH << _T("<b>") << wspeed
-           << _T("</b></td><td align=right><b>") << wspeedGust << rowEnd;
+           << "</font></td><td align=right><font size=-2>" << _("Wind gust")
+           << "</font></td></tr>" << rowStartH << "<b>" << wspeed
+           << "</b></td><td align=right><b>" << wspeedGust << rowEnd;
     }
 
     if (met_data.water_lev_dev < 30. || met_data.water_level > -32. ||
@@ -930,7 +925,7 @@ wxString AisTargetData::BuildQueryResult(void) {
           wlevel_txt << aisMeteoWaterLevelRef(met_data.vertical_ref);
         }
 
-        if (met_data.water_lev_dev >= 30.) wlevel = wxEmptyString;
+        if (met_data.water_lev_dev >= 30.) wlevel = "";
 
       } else if (met_data.water_level > -32.) {
         double userlevel = toUsrDepth(met_data.water_level);
@@ -938,18 +933,17 @@ wxString AisTargetData::BuildQueryResult(void) {
             wxString::Format("%.1f %s %s", userlevel, getUsrDepthUnit(),
                              ais_meteo_get_trend(met_data.water_lev_trend));
         wlevel_txt = _("Water level");
-        if (met_data.water_level <= -32.) wlevel = wxEmptyString;
+        if (met_data.water_level <= -32.) wlevel = "";
       }
 
       wxString current = wxString::Format("%.1f kts %d%c", met_data.current,
                                           met_data.curr_dir, 0x00B0);
-      if (met_data.current >= 25.5) current = wxEmptyString;
+      if (met_data.current >= 25.5) current = "";
 
       html << vertSpacer << rowStart << wlevel_txt
-           << _T("</font></td><td align=right><font size=-2>")
-           << _("Surface current ") << _T("</font></td></tr>") << rowStartH
-           << _T("<b>") << wlevel << _T("</b></td><td align=right><b>")
-           << current << rowEnd;
+           << "</font></td><td align=right><font size=-2>"
+           << _("Surface current ") << "</font></td></tr>" << rowStartH << "<b>"
+           << wlevel << "</b></td><td align=right><b>" << current << rowEnd;
     }
 
     if (met_data.wave_height < 24.6 || met_data.swell_height < 24.6) {
@@ -957,133 +951,130 @@ wxString AisTargetData::BuildQueryResult(void) {
       wxString wave = wxString::Format("%.1f %s %d%c %d %s ", userwave,
                                        getUsrDepthUnit(), met_data.wave_dir,
                                        0x00B0, met_data.wave_period, _("s"));
-      if (met_data.wave_height >= 24.6) wave = wxEmptyString;
+      if (met_data.wave_height >= 24.6) wave = "";
 
       double userswell = toUsrDepth(met_data.swell_height);
       wxString swell = wxString::Format("%.1f %s %d%c %d %s", userswell,
                                         getUsrDepthUnit(), met_data.swell_dir,
                                         0x00B0, met_data.swell_per, _("s"));
-      if (met_data.swell_height >= 25.) swell = wxEmptyString;
+      if (met_data.swell_height >= 25.) swell = "";
 
       html << vertSpacer << rowStart << _("Waves height & period")
-           << _T("</font></td><td align=right><font size=-2>")
-           << _("Swell height & period ") << _T("</font></td></tr>")
-           << rowStartH << _T("<b>") << wave
-           << _T("</b></td><td align=right><b>") << swell << rowEnd;
+           << "</font></td><td align=right><font size=-2>"
+           << _("Swell height & period ") << "</font></td></tr>" << rowStartH
+           << "<b>" << wave << "</b></td><td align=right><b>" << swell
+           << rowEnd;
     }
 
     if (met_data.air_temp != -102.4 || met_data.airpress < 1310) {
       double usertemp = toUsrTemp(met_data.air_temp);
       wxString airtemp =
           wxString::Format("%.1f%c%s", usertemp, 0x00B0, getUsrTempUnit());
-      if (met_data.air_temp == -102.4) airtemp = wxEmptyString;
+      if (met_data.air_temp == -102.4) airtemp = "";
 
       wxString airpress =
           wxString::Format("%d hPa %s", met_data.airpress,
                            ais_meteo_get_trend(met_data.airpress_tend));
       const int ap = met_data.airpress;
-      if (ap < 800 || ap >= 1310) airpress = wxEmptyString;
+      if (ap < 800 || ap >= 1310) airpress = "";
 
       html << vertSpacer << rowStart << _("Air Temperatur")
-           << _T("</font></td><td align=right><font size=-2>")
-           << _("Air pressure") << _T("</font></td></tr>") << rowStartH
-           << _T("<b>") << airtemp << _T("</b></td><td align=right><b>")
-           << airpress << rowEnd;
+           << "</font></td><td align=right><font size=-2>" << _("Air pressure")
+           << "</font></td></tr>" << rowStartH << "<b>" << airtemp
+           << "</b></td><td align=right><b>" << airpress << rowEnd;
     }
 
     if (met_data.rel_humid < 101 || met_data.dew_point < 50.) {
       wxString humid = wxString::Format("%d%c", met_data.rel_humid, '%');
-      if (met_data.rel_humid >= 101) humid = wxEmptyString;
+      if (met_data.rel_humid >= 101) humid = "";
 
       double usertempDew = toUsrTemp(met_data.dew_point);
       wxString dewpoint =
           wxString::Format("%.1f%c%s", usertempDew, 0x00B0, getUsrTempUnit());
-      if (met_data.dew_point >= 50.) dewpoint = wxEmptyString;
+      if (met_data.dew_point >= 50.) dewpoint = "";
 
       html << vertSpacer << rowStart << _("Relative Humidity")
-           << _T("</font></td><td align=right><font size=-2>")
-           << _("Dew Point ") << _T("</font></td></tr>") << rowStartH
-           << _T("<b>") << humid << _T("</b></td><td align=right><b>")
-           << dewpoint << rowEnd;
+           << "</font></td><td align=right><font size=-2>" << _("Dew Point ")
+           << "</font></td></tr>" << rowStartH << "<b>" << humid
+           << "</b></td><td align=right><b>" << dewpoint << rowEnd;
     }
 
     if (met_data.water_temp < 50.1 || met_data.seastate < 13) {
       double usertemp = toUsrTemp(met_data.water_temp);
       wxString watertemp =
           wxString::Format("%.1f%c%s", usertemp, 0x00B0, getUsrTempUnit());
-      if (met_data.water_temp >= 50.1) watertemp = wxEmptyString;
+      if (met_data.water_temp >= 50.1) watertemp = "";
 
       wxString seastate = wxString::Format("%d Bf ", met_data.seastate);
-      if (met_data.seastate == 13) seastate = wxEmptyString;
+      if (met_data.seastate == 13) seastate = "";
 
       html << vertSpacer << rowStart << _("Water Temperatur")
-           << _T("</font></td><td align=right><font size=-2>") << _("Sea state")
-           << _T("</font></td></tr>") << rowStartH << _T("<b>") << watertemp
-           << _T("</b></td><td align=right><b>") << seastate << rowEnd;
+           << "</font></td><td align=right><font size=-2>" << _("Sea state")
+           << "</font></td></tr>" << rowStartH << "<b>" << watertemp
+           << "</b></td><td align=right><b>" << seastate << rowEnd;
     }
 
     if (met_data.precipitation < 7 || met_data.hor_vis < 12.7) {
       wxString precip =
           wxString::Format("%s", aisMeteoPrecipType(met_data.precipitation));
-      if (met_data.precipitation >= 6) precip = wxEmptyString;
+      if (met_data.precipitation >= 6) precip = "";
 
       double userVisDist = toUsrDistance(met_data.hor_vis);
       wxString horVis =
           wxString::Format("%s%.1f %s", (met_data.hor_vis_GT ? ">" : ""),
                            userVisDist, getUsrDistanceUnit());
-      if (met_data.hor_vis >= 12.7) horVis = wxEmptyString;
+      if (met_data.hor_vis >= 12.7) horVis = "";
       html << vertSpacer << rowStart << _("Precipitation")
-           << _T("</font></td><td align=right><font size=-2>")
-           << _("Horizontal Visibility") << _T("</font></td></tr>") << rowStartH
-           << _T("<b>") << precip << _T("</b></td><td align=right><b>")
-           << horVis << rowEnd;
+           << "</font></td><td align=right><font size=-2>"
+           << _("Horizontal Visibility") << "</font></td></tr>" << rowStartH
+           << "<b>" << precip << "</b></td><td align=right><b>" << horVis
+           << rowEnd;
     }
 
     if (met_data.salinity < 50. || met_data.ice < 2) {
       wxString sal = wxString::Format("%.1f%c", met_data.salinity, 0x2030);
-      if (met_data.salinity >= 50.) sal = wxEmptyString;
+      if (met_data.salinity >= 50.) sal = "";
 
       wxString icestatus = _("No");
       if (met_data.ice == 1) icestatus = _("Yes");
-      if (met_data.ice >= 2) icestatus = wxEmptyString;
+      if (met_data.ice >= 2) icestatus = "";
 
       html << vertSpacer << rowStart << _("Sea salinity")
-           << _T("</font></td><td align=right><font size=-2>")
-           << _("Ice status") << _T("</font></td></tr>") << rowStartH
-           << _T("<b>") << sal << _T("</b></td><td align=right><b>")
-           << icestatus << rowEnd;
+           << "</font></td><td align=right><font size=-2>" << _("Ice status")
+           << "</font></td></tr>" << rowStartH << "<b>" << sal
+           << "</b></td><td align=right><b>" << icestatus << rowEnd;
     }
   }
-  html << _T("</table>");
+  html << "</table>";
   return html;
 }
 
-wxString AisTargetData::GetRolloverString(void) {
+wxString AisTargetData::GetRolloverString() {
   wxString result;
   wxString t;
   if (b_nameValid) {
-    result.Append(_T("\""));
+    result.Append("\"");
     result.Append(GetFullName());
-    result.Append(_T("\" "));
+    result.Append("\" ");
   }
   if (Class != AIS_GPSG_BUDDY) {
-    t.Printf(_T("%09d"), abs(MMSI));
+    t.Printf("%09d", abs(MMSI));
     result.Append(t);
-    result.Append(_T(" "));
+    result.Append(" ");
     result.Append(GetCountryCode(false));
   }
   t = trimAISField(CallSign);
   if (t.Len()) {
-    result.Append(_T(" ("));
+    result.Append(" (");
     result.Append(t);
-    result.Append(_T(")"));
+    result.Append(")");
   }
   if (g_bAISRolloverShowClass || (Class == AIS_SART)) {
-    if (result.Len()) result.Append(_T("\n"));
-    result.Append(_T("["));
+    if (result.Len()) result.Append("\n");
+    result.Append("[");
     if (Class == AIS_ATON) {
       result.Append(wxGetTranslation(Get_class_string(true)));
-      result.Append(_T(": "));
+      result.Append(": ");
       result.Append(wxGetTranslation(Get_vessel_type_string(false)));
     } else if (b_SarAircraftPosnReport) {
       int airtype = (MMSI % 1000) / 100;
@@ -1091,7 +1082,7 @@ wxString AisTargetData::GetRolloverString(void) {
     } else
       result.Append(wxGetTranslation(Get_class_string(false)));
 
-    result.Append(_T("] "));
+    result.Append("] ");
     if ((Class != AIS_ATON) && (Class != AIS_BASE)) {
       if (Class == AIS_SART) {
         int mmsi_start = MMSI / 1000000;
@@ -1099,10 +1090,10 @@ wxString AisTargetData::GetRolloverString(void) {
           case 970:
             break;
           case 972:
-            result += _T("MOB");
+            result += "MOB";
             break;
           case 974:
-            result += _T("EPIRB");
+            result += "EPIRB";
             break;
           default:
             result += _("Unknown");
@@ -1118,39 +1109,39 @@ wxString AisTargetData::GetRolloverString(void) {
       if ((Class != AIS_CLASS_B) && (Class != AIS_SART) && Class != AIS_DSC &&
           Class != AIS_METEO && !b_SarAircraftPosnReport) {
         if ((NavStatus <= 15) && (NavStatus >= 0)) {
-          result.Append(_T(" ("));
+          result.Append(" (");
           result.Append(wxGetTranslation(ais_get_status(NavStatus)));
-          result.Append(_T(")"));
+          result.Append(")");
         }
       } else if (Class == AIS_SART) {
-        result.Append(_T(" ("));
+        result.Append(" (");
         if (NavStatus == RESERVED_14)
           result.Append(_("Active"));
         else if (NavStatus == UNDEFINED)
           result.Append(_("Testing"));
-        result.Append(_T(")"));
+        result.Append(")");
       } else if (Class == AIS_DSC) {
-        result.Append(_T(" ("));
+        result.Append(" (");
         result.Append(GetNatureofDistress(m_dscNature));
-        result.Append(_T(")"));
+        result.Append(")");
       }
     }
   }
 
   if (g_bAISRolloverShowCOG && ((SOG <= 102.2) || b_SarAircraftPosnReport) &&
       !((Class == AIS_ATON) || (Class == AIS_BASE) || (Class == AIS_METEO))) {
-    if (result.Len()) result << _T("\n");
+    if (result.Len()) result << "\n";
 
     double speed_show = toUsrSpeed(SOG);
     if (speed_show < 10.0)
-      result << wxString::Format(_T("SOG %.2f "), speed_show)
-             << getUsrSpeedUnit() << _T(" ");
+      result << wxString::Format("SOG %.2f ", speed_show) << getUsrSpeedUnit()
+             << " ";
     else if (speed_show < 100.0)
-      result << wxString::Format(_T("SOG %.1f "), speed_show)
-             << getUsrSpeedUnit() << _T(" ");
+      result << wxString::Format("SOG %.1f ", speed_show) << getUsrSpeedUnit()
+             << " ";
     else
-      result << wxString::Format(_T("SOG %.0f "), speed_show)
-             << getUsrSpeedUnit() << _T(" ");
+      result << wxString::Format("SOG %.0f ", speed_show) << getUsrSpeedUnit()
+             << " ";
 
     int crs = wxRound(COG);
     if (b_positionOnceValid) {
@@ -1175,10 +1166,9 @@ wxString AisTargetData::GetRolloverString(void) {
   }
 
   if (g_bAISRolloverShowCPA && bCPA_Valid && Class != AIS_METEO) {
-    if (result.Len()) result << _T("\n");
-    result << _("CPA") << _T(" ") << FormatDistanceAdaptive(CPA) << _T(" ")
-           << _("in") << _T(" ") << wxString::Format(_T("%.0f"), TCPA)
-           << _T(" ") << _("min");
+    if (result.Len()) result << "\n";
+    result << _("CPA") << " " << FormatDistanceAdaptive(CPA) << " " << _("in")
+           << " " << wxString::Format("%.0f", TCPA) << " " << _("min");
   }
   if (Class == AIS_METEO) {
     if (met_data.wind_kn < 122) {
@@ -1381,18 +1371,18 @@ wxString AisTargetData::GetNatureofDistress(int dscnature) {
                                 _("Abandoning ship"),
                                 _("Piracy/armed robbery attack"),
                                 _("Man overboard"),
-                                _T("-"),
+                                "-",
                                 _("EPIRB emission")};
   if (dscnature >= 0 && dscnature < 13) return dscDistressType[dscnature];
 
-  return wxEmptyString;
+  return "";
 }
 
-void AisTargetData::Toggle_AIS_CPA(void) {
+void AisTargetData::Toggle_AIS_CPA() {
   b_show_AIS_CPA = !b_show_AIS_CPA ? true : false;
 }
 
-void AisTargetData::ToggleShowTrack(void) {
+void AisTargetData::ToggleShowTrack() {
   b_show_track = !b_show_track ? true : false;
 }
 
@@ -1404,7 +1394,7 @@ bool AisTargetData::IsValidMID(int mid) {
 // Get country name and code according to ITU 2023-02
 // (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
 wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
-  if (Class == AIS_BUOY) return wxEmptyString;
+  if (Class == AIS_BUOY) return "";
   /***** Check for a valid MID *****/
   // Meteo adaption
   int tmpMmsi = met_data.original_mmsi ? met_data.original_mmsi : MMSI;
@@ -1413,7 +1403,7 @@ wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
   if (!IsValidMID(nMID) || Class == AIS_ATON) {
     // SART, MOB, EPIRB starts with 97 and don't use MID (ITU-R M.1371-5)
     // or healthy check
-    if (tmpMmsi < 1000 || 97 == tmpMmsi / 10000000) return wxEmptyString;
+    if (tmpMmsi < 1000 || 97 == tmpMmsi / 10000000) return "";
 
     // Find MID when not in first position like e.g. SAR/ATON
     wxString s_mmsi;
@@ -1428,207 +1418,207 @@ wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
         break;
       }
     }
-    if (!foundMID) return wxEmptyString;
+    if (!foundMID) return "";
   }
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 
   switch (nMID) {
     case 201:
-      return b_CntryLongStr ? _("Albania") : _T("AL");
+      return b_CntryLongStr ? _("Albania") : "AL";
     case 202:
-      return b_CntryLongStr ? _("Andorra") : _T("AD");
+      return b_CntryLongStr ? _("Andorra") : "AD";
     case 203:
-      return b_CntryLongStr ? _("Austria") : _T("AT");
+      return b_CntryLongStr ? _("Austria") : "AT";
     case 204:
-      return b_CntryLongStr ? _("Azores") : _T("AZ");
+      return b_CntryLongStr ? _("Azores") : "AZ";
     case 205:
-      return b_CntryLongStr ? _("Belgium") : _T("BE");
+      return b_CntryLongStr ? _("Belgium") : "BE";
     case 206:
-      return b_CntryLongStr ? _("Belarus") : _T("BY");
+      return b_CntryLongStr ? _("Belarus") : "BY";
     case 207:
-      return b_CntryLongStr ? _("Bulgaria") : _T("BG");
+      return b_CntryLongStr ? _("Bulgaria") : "BG";
     case 208:
-      return b_CntryLongStr ? _("Vatican City State") : _T("VA");
+      return b_CntryLongStr ? _("Vatican City State") : "VA";
     case 209:
     case 210:
-      return b_CntryLongStr ? _("Cyprus") : _T("CY");
+      return b_CntryLongStr ? _("Cyprus") : "CY";
     case 211:
-      return b_CntryLongStr ? _("Germany") : _T("DE");
+      return b_CntryLongStr ? _("Germany") : "DE";
     case 212:
-      return b_CntryLongStr ? _("Cyprus") : _T("CY");
+      return b_CntryLongStr ? _("Cyprus") : "CY";
     case 213:
-      return b_CntryLongStr ? _("Georgia") : _T("GE");
+      return b_CntryLongStr ? _("Georgia") : "GE";
     case 214:
-      return b_CntryLongStr ? _("Moldova") : _T("MD");
+      return b_CntryLongStr ? _("Moldova") : "MD";
     case 215:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : "MT";
     case 216:
-      return b_CntryLongStr ? _("Armenia") : _T("AM");
+      return b_CntryLongStr ? _("Armenia") : "AM";
     case 218:
-      return b_CntryLongStr ? _("Germany") : _T("DE");
+      return b_CntryLongStr ? _("Germany") : "DE";
     case 219:
     case 220:
-      return b_CntryLongStr ? _("Denmark") : _T("DK");
+      return b_CntryLongStr ? _("Denmark") : "DK";
     case 224:
-      return b_CntryLongStr ? _("Spain") : _T("ES");
+      return b_CntryLongStr ? _("Spain") : "ES";
     case 225:
-      return b_CntryLongStr ? _("Spain") : _T("ES");
+      return b_CntryLongStr ? _("Spain") : "ES";
     case 226:
     case 227:
     case 228:
-      return b_CntryLongStr ? _("France") : _T("FR");
+      return b_CntryLongStr ? _("France") : "FR";
     case 229:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : "MT";
     case 230:
-      return b_CntryLongStr ? _("Finland") : _T("FI");
+      return b_CntryLongStr ? _("Finland") : "FI";
     case 231:
-      return b_CntryLongStr ? _("Faroe Islands") : _T("FO");
+      return b_CntryLongStr ? _("Faroe Islands") : "FO";
     case 232:
     case 233:
     case 234:
     case 235:
-      return b_CntryLongStr ? _("Great Britain") : _T("GB");
+      return b_CntryLongStr ? _("Great Britain") : "GB";
     case 236:
-      return b_CntryLongStr ? _("Gibraltar") : _T("GI");
+      return b_CntryLongStr ? _("Gibraltar") : "GI";
     case 237:
-      return b_CntryLongStr ? _("Greece") : _T("GR");
+      return b_CntryLongStr ? _("Greece") : "GR";
     case 238:
-      return b_CntryLongStr ? _("Croatia") : _T("HR");
+      return b_CntryLongStr ? _("Croatia") : "HR";
     case 239:
     case 240:
     case 241:
-      return b_CntryLongStr ? _("Greece") : _T("GR");
+      return b_CntryLongStr ? _("Greece") : "GR";
     case 242:
-      return b_CntryLongStr ? _("Morocco") : _T("MA");
+      return b_CntryLongStr ? _("Morocco") : "MA";
     case 243:
-      return b_CntryLongStr ? _("Hungary") : _T("HU");
+      return b_CntryLongStr ? _("Hungary") : "HU";
     case 244:
     case 245:
     case 246:
-      return b_CntryLongStr ? _("Netherlands") : _T("NL");
+      return b_CntryLongStr ? _("Netherlands") : "NL";
     case 247:
-      return b_CntryLongStr ? _("Italy") : _T("IT");
+      return b_CntryLongStr ? _("Italy") : "IT";
     case 248:
     case 249:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : "MT";
     case 250:
-      return b_CntryLongStr ? _("Ireland") : _T("IE");
+      return b_CntryLongStr ? _("Ireland") : "IE";
     case 251:
-      return b_CntryLongStr ? _("Iceland") : _T("IS");
+      return b_CntryLongStr ? _("Iceland") : "IS";
     case 252:
-      return b_CntryLongStr ? _("Liechtenstein") : _T("LI");
+      return b_CntryLongStr ? _("Liechtenstein") : "LI";
     case 253:
-      return b_CntryLongStr ? _("Luxembourg") : _T("LU");
+      return b_CntryLongStr ? _("Luxembourg") : "LU";
     case 254:
-      return b_CntryLongStr ? _("Monaco") : _T("MC");
+      return b_CntryLongStr ? _("Monaco") : "MC";
     case 255:
-      return b_CntryLongStr ? _("Madeira") : _T("PT");
+      return b_CntryLongStr ? _("Madeira") : "PT";
     case 256:
-      return b_CntryLongStr ? _("Malta") : _T("MT");
+      return b_CntryLongStr ? _("Malta") : "MT";
     case 257:
     case 258:
     case 259:
-      return b_CntryLongStr ? _("Norway") : _T("NO");
+      return b_CntryLongStr ? _("Norway") : "NO";
     case 261:
-      return b_CntryLongStr ? _("Poland") : _T("PL");
+      return b_CntryLongStr ? _("Poland") : "PL";
     case 262:
-      return b_CntryLongStr ? _("Montenegro") : _T("ME");
+      return b_CntryLongStr ? _("Montenegro") : "ME";
     case 263:
-      return b_CntryLongStr ? _("Portugal") : _T("PT");
+      return b_CntryLongStr ? _("Portugal") : "PT";
     case 264:
-      return b_CntryLongStr ? _("Romania") : _T("RO");
+      return b_CntryLongStr ? _("Romania") : "RO";
     case 265:
     case 266:
-      return b_CntryLongStr ? _("Sweden") : _T("SE");
+      return b_CntryLongStr ? _("Sweden") : "SE";
     case 267:
-      return b_CntryLongStr ? _("Slovak Republic") : _T("SK");
+      return b_CntryLongStr ? _("Slovak Republic") : "SK";
     case 268:
-      return b_CntryLongStr ? _("San Marino") : _T("SM");
+      return b_CntryLongStr ? _("San Marino") : "SM";
     case 269:
-      return b_CntryLongStr ? _("Switzerland") : _T("CH");
+      return b_CntryLongStr ? _("Switzerland") : "CH";
     case 270:
-      return b_CntryLongStr ? _("Czech Republic") : _T("CZ");
+      return b_CntryLongStr ? _("Czech Republic") : "CZ";
     case 271:
-      return b_CntryLongStr ? _("Turkey") : _T("TR");
+      return b_CntryLongStr ? _("Turkey") : "TR";
     case 272:
-      return b_CntryLongStr ? _("Ukraine") : _T("UA");
+      return b_CntryLongStr ? _("Ukraine") : "UA";
     case 273:
-      return b_CntryLongStr ? _("Russian") : _T("RU");
+      return b_CntryLongStr ? _("Russian") : "RU";
     case 274:
-      return b_CntryLongStr ? _("Macedonia") : _T("MK");
+      return b_CntryLongStr ? _("Macedonia") : "MK";
     case 275:
-      return b_CntryLongStr ? _("Latvia") : _T("LV");
+      return b_CntryLongStr ? _("Latvia") : "LV";
     case 276:
-      return b_CntryLongStr ? _("Estonia") : _T("EE");
+      return b_CntryLongStr ? _("Estonia") : "EE";
     case 277:
-      return b_CntryLongStr ? _("Lithuania") : _T("LT");
+      return b_CntryLongStr ? _("Lithuania") : "LT";
     case 278:
-      return b_CntryLongStr ? _("Slovenia") : _T("SI");
+      return b_CntryLongStr ? _("Slovenia") : "SI";
     case 279:
-      return b_CntryLongStr ? _("Serbia") : _T("RS");
+      return b_CntryLongStr ? _("Serbia") : "RS";
     case 301:
-      return b_CntryLongStr ? _("Anguilla") : _T("AI");
+      return b_CntryLongStr ? _("Anguilla") : "AI";
     case 303:
-      return b_CntryLongStr ? _("Alaska") : _T("AK");
+      return b_CntryLongStr ? _("Alaska") : "AK";
     case 304:
     case 305:
-      return b_CntryLongStr ? _("Antigua and Barbuda") : _T("AG");
+      return b_CntryLongStr ? _("Antigua and Barbuda") : "AG";
     case 306:
-      return b_CntryLongStr ? _("Antilles") : _T("AN");
+      return b_CntryLongStr ? _("Antilles") : "AN";
     case 307:
-      return b_CntryLongStr ? _("Aruba") : _T("AW");
+      return b_CntryLongStr ? _("Aruba") : "AW";
     case 308:
     case 309:
-      return b_CntryLongStr ? _("Bahamas") : _T("BS");
+      return b_CntryLongStr ? _("Bahamas") : "BS";
     case 310:
-      return b_CntryLongStr ? _("Bermuda") : _T("BM");
+      return b_CntryLongStr ? _("Bermuda") : "BM";
     case 311:
-      return b_CntryLongStr ? _("Bahamas") : _T("BS");
+      return b_CntryLongStr ? _("Bahamas") : "BS";
     case 312:
-      return b_CntryLongStr ? _("Belize") : _T("BZ");
+      return b_CntryLongStr ? _("Belize") : "BZ";
     case 314:
-      return b_CntryLongStr ? _("Barbados") : _T("BB");
+      return b_CntryLongStr ? _("Barbados") : "BB";
     case 316:
-      return b_CntryLongStr ? _("Canada") : _T("CA");
+      return b_CntryLongStr ? _("Canada") : "CA";
     case 319:
-      return b_CntryLongStr ? _("Cayman Islands") : _T("KY");
+      return b_CntryLongStr ? _("Cayman Islands") : "KY";
     case 321:
-      return b_CntryLongStr ? _("Costa Rica") : _T("CR");
+      return b_CntryLongStr ? _("Costa Rica") : "CR";
     case 323:
-      return b_CntryLongStr ? _("Cuba") : _T("CU");
+      return b_CntryLongStr ? _("Cuba") : "CU";
     case 325:
-      return b_CntryLongStr ? _("Dominica") : _T("DM");
+      return b_CntryLongStr ? _("Dominica") : "DM";
     case 327:
-      return b_CntryLongStr ? _("Dominican Republic") : _T("DM");
+      return b_CntryLongStr ? _("Dominican Republic") : "DM";
     case 329:
-      return b_CntryLongStr ? _("Guadeloupe") : _T("GP");
+      return b_CntryLongStr ? _("Guadeloupe") : "GP";
     case 330:
-      return b_CntryLongStr ? _("Grenada") : _T("GD");
+      return b_CntryLongStr ? _("Grenada") : "GD";
     case 331:
-      return b_CntryLongStr ? _("Greenland") : _T("GL");
+      return b_CntryLongStr ? _("Greenland") : "GL";
     case 332:
-      return b_CntryLongStr ? _("Guatemala") : _T("GT");
+      return b_CntryLongStr ? _("Guatemala") : "GT";
     case 334:
-      return b_CntryLongStr ? _("Honduras") : _T("HN");
+      return b_CntryLongStr ? _("Honduras") : "HN";
     case 336:
-      return b_CntryLongStr ? _("Haiti") : _T("HT");
+      return b_CntryLongStr ? _("Haiti") : "HT";
     case 338:
-      return b_CntryLongStr ? _("United States of America") : _T("US");
+      return b_CntryLongStr ? _("United States of America") : "US";
     case 339:
-      return b_CntryLongStr ? _("Jamaica") : _T("JM");
+      return b_CntryLongStr ? _("Jamaica") : "JM";
     case 341:
-      return b_CntryLongStr ? _("Saint Kitts and Nevis") : _T("KN");
+      return b_CntryLongStr ? _("Saint Kitts and Nevis") : "KN";
     case 343:
-      return b_CntryLongStr ? _("Saint Lucia") : _T("LC");
+      return b_CntryLongStr ? _("Saint Lucia") : "LC";
     case 345:
-      return b_CntryLongStr ? _("Mexico") : _T("MX");
+      return b_CntryLongStr ? _("Mexico") : "MX";
     case 347:
-      return b_CntryLongStr ? _("Martinique") : _T("MQ");
+      return b_CntryLongStr ? _("Martinique") : "MQ";
     case 348:
-      return b_CntryLongStr ? _("Montserrat") : _T("MS");
+      return b_CntryLongStr ? _("Montserrat") : "MS";
     case 350:
-      return b_CntryLongStr ? _("Nicaragua") : _T("NI");
+      return b_CntryLongStr ? _("Nicaragua") : "NI";
     case 351:
     case 352:
     case 353:
@@ -1636,351 +1626,351 @@ wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
     case 355:
     case 356:
     case 357:
-      return b_CntryLongStr ? _("Panama") : _T("PA");
+      return b_CntryLongStr ? _("Panama") : "PA";
     case 358:
-      return b_CntryLongStr ? _("Puerto Rico") : _T("PR");
+      return b_CntryLongStr ? _("Puerto Rico") : "PR";
     case 359:
-      return b_CntryLongStr ? _("El Salvador") : _T("SV");
+      return b_CntryLongStr ? _("El Salvador") : "SV";
     case 361:
-      return b_CntryLongStr ? _("Saint Pierre and Miquelon") : _T("PM");
+      return b_CntryLongStr ? _("Saint Pierre and Miquelon") : "PM";
     case 362:
-      return b_CntryLongStr ? _("Trinidad and Tobago") : _T("TT");
+      return b_CntryLongStr ? _("Trinidad and Tobago") : "TT";
     case 364:
-      return b_CntryLongStr ? _("Turks and Caicos Islands") : _T("TC");
+      return b_CntryLongStr ? _("Turks and Caicos Islands") : "TC";
     case 366:
     case 367:
     case 368:
     case 369:
-      return b_CntryLongStr ? _("United States of America") : _T("US");
+      return b_CntryLongStr ? _("United States of America") : "US";
     case 370:
     case 371:
     case 372:
     case 373:
     case 374:
-      return b_CntryLongStr ? _("Panama") : _T("PA");
+      return b_CntryLongStr ? _("Panama") : "PA";
     case 375:
     case 376:
     case 377:
-      return b_CntryLongStr ? _("Saint Vincent and the Grenadines") : _T("VC");
+      return b_CntryLongStr ? _("Saint Vincent and the Grenadines") : "VC";
     case 378:
-      return b_CntryLongStr ? _("British Virgin Islands") : _T("VG");
+      return b_CntryLongStr ? _("British Virgin Islands") : "VG";
     case 379:
-      return b_CntryLongStr ? _("United States Virgin Islands") : _T("AE");
+      return b_CntryLongStr ? _("United States Virgin Islands") : "AE";
     case 401:
-      return b_CntryLongStr ? _("Afghanistan") : _T("AF");
+      return b_CntryLongStr ? _("Afghanistan") : "AF";
     case 403:
-      return b_CntryLongStr ? _("Saudi Arabia") : _T("SA");
+      return b_CntryLongStr ? _("Saudi Arabia") : "SA";
     case 405:
-      return b_CntryLongStr ? _("Bangladesh") : _T("BD");
+      return b_CntryLongStr ? _("Bangladesh") : "BD";
     case 408:
-      return b_CntryLongStr ? _("Bahrain") : _T("BH");
+      return b_CntryLongStr ? _("Bahrain") : "BH";
     case 410:
-      return b_CntryLongStr ? _("Bhutan") : _T("BT");
+      return b_CntryLongStr ? _("Bhutan") : "BT";
     case 412:
     case 413:
     case 414:
-      return b_CntryLongStr ? _("China") : _T("CN");
+      return b_CntryLongStr ? _("China") : "CN";
     case 416:
-      return b_CntryLongStr ? _("Taiwan") : _T("TW");
+      return b_CntryLongStr ? _("Taiwan") : "TW";
     case 417:
-      return b_CntryLongStr ? _("Sri Lanka") : _T("LK");
+      return b_CntryLongStr ? _("Sri Lanka") : "LK";
     case 419:
-      return b_CntryLongStr ? _("India") : _T("IN");
+      return b_CntryLongStr ? _("India") : "IN";
     case 422:
-      return b_CntryLongStr ? _("Iran") : _T("IR");
+      return b_CntryLongStr ? _("Iran") : "IR";
     case 423:
-      return b_CntryLongStr ? _("Azerbaijani Republic") : _T("AZ");
+      return b_CntryLongStr ? _("Azerbaijani Republic") : "AZ";
     case 425:
-      return b_CntryLongStr ? _("Iraq") : _T("IQ");
+      return b_CntryLongStr ? _("Iraq") : "IQ";
     case 428:
-      return b_CntryLongStr ? _("Israel") : _T("IL");
+      return b_CntryLongStr ? _("Israel") : "IL";
     case 431:
-      return b_CntryLongStr ? _("Japan") : _T("JP");
+      return b_CntryLongStr ? _("Japan") : "JP";
     case 432:
-      return b_CntryLongStr ? _("Japan") : _T("JP");
+      return b_CntryLongStr ? _("Japan") : "JP";
     case 434:
-      return b_CntryLongStr ? _("Turkmenistan") : _T("TM");
+      return b_CntryLongStr ? _("Turkmenistan") : "TM";
     case 436:
-      return b_CntryLongStr ? _("Kazakhstan") : _T("KZ");
+      return b_CntryLongStr ? _("Kazakhstan") : "KZ";
     case 437:
-      return b_CntryLongStr ? _("Uzbekistan") : _T("UZ");
+      return b_CntryLongStr ? _("Uzbekistan") : "UZ";
     case 438:
-      return b_CntryLongStr ? _("Jordan") : _T("JO");
+      return b_CntryLongStr ? _("Jordan") : "JO";
     case 440:
     case 441:
-      return b_CntryLongStr ? _("Korea") : _T("KR");
+      return b_CntryLongStr ? _("Korea") : "KR";
     case 443:
-      return b_CntryLongStr ? _("Palestine") : _T("PS");
+      return b_CntryLongStr ? _("Palestine") : "PS";
     case 445:
-      return b_CntryLongStr ? _("People's Rep. of Korea") : _T("KP");
+      return b_CntryLongStr ? _("People's Rep. of Korea") : "KP";
     case 447:
-      return b_CntryLongStr ? _("Kuwait") : _T("KW");
+      return b_CntryLongStr ? _("Kuwait") : "KW";
     case 450:
-      return b_CntryLongStr ? _("Lebanon") : _T("LB");
+      return b_CntryLongStr ? _("Lebanon") : "LB";
     case 451:
-      return b_CntryLongStr ? _("Kyrgyz Republic") : _T("KG");
+      return b_CntryLongStr ? _("Kyrgyz Republic") : "KG";
     case 453:
-      return b_CntryLongStr ? _("Macao") : _T("MO");
+      return b_CntryLongStr ? _("Macao") : "MO";
     case 455:
-      return b_CntryLongStr ? _("Maldives") : _T("MV");
+      return b_CntryLongStr ? _("Maldives") : "MV";
     case 457:
-      return b_CntryLongStr ? _("Mongolia") : _T("MN");
+      return b_CntryLongStr ? _("Mongolia") : "MN";
     case 459:
-      return b_CntryLongStr ? _("Nepal") : _T("NP");
+      return b_CntryLongStr ? _("Nepal") : "NP";
     case 461:
-      return b_CntryLongStr ? _("Oman") : _T("OM");
+      return b_CntryLongStr ? _("Oman") : "OM";
     case 463:
-      return b_CntryLongStr ? _("Pakistan") : _T("PK");
+      return b_CntryLongStr ? _("Pakistan") : "PK";
     case 466:
-      return b_CntryLongStr ? _("Qatar") : _T("QA");
+      return b_CntryLongStr ? _("Qatar") : "QA";
     case 468:
-      return b_CntryLongStr ? _("Syrian Arab Republic") : _T("SY");
+      return b_CntryLongStr ? _("Syrian Arab Republic") : "SY";
     case 470:
     case 471:
-      return b_CntryLongStr ? _("United Arab Emirates") : _T("AE");
+      return b_CntryLongStr ? _("United Arab Emirates") : "AE";
     case 472:
-      return b_CntryLongStr ? _("Tajikistan") : _T("TJ");
+      return b_CntryLongStr ? _("Tajikistan") : "TJ";
     case 473:
     case 475:
-      return b_CntryLongStr ? _("Yemen") : _T("YE");
+      return b_CntryLongStr ? _("Yemen") : "YE";
     case 477:
-      return b_CntryLongStr ? _("Hong Kong") : _T("HK");
+      return b_CntryLongStr ? _("Hong Kong") : "HK";
     case 478:
-      return b_CntryLongStr ? _("Bosnia and Herzegovina") : _T("BA");
+      return b_CntryLongStr ? _("Bosnia and Herzegovina") : "BA";
     case 501:
-      return b_CntryLongStr ? _("Adelie Land") : _T("TF");
+      return b_CntryLongStr ? _("Adelie Land") : "TF";
     case 503:
-      return b_CntryLongStr ? _("Australia") : _T("AU");
+      return b_CntryLongStr ? _("Australia") : "AU";
     case 506:
-      return b_CntryLongStr ? _("Myanmar") : _T("MM");
+      return b_CntryLongStr ? _("Myanmar") : "MM";
     case 508:
-      return b_CntryLongStr ? _("Brunei Darussalam") : _T("BN");
+      return b_CntryLongStr ? _("Brunei Darussalam") : "BN";
     case 510:
-      return b_CntryLongStr ? _("Micronesia") : _T("FM");
+      return b_CntryLongStr ? _("Micronesia") : "FM";
     case 511:
-      return b_CntryLongStr ? _("Palau") : _T("PW");
+      return b_CntryLongStr ? _("Palau") : "PW";
     case 512:
-      return b_CntryLongStr ? _("New Zealand") : _T("NZ");
+      return b_CntryLongStr ? _("New Zealand") : "NZ";
     case 514:
     case 515:
-      return b_CntryLongStr ? _("Cambodia") : _T("KH");
+      return b_CntryLongStr ? _("Cambodia") : "KH";
     case 516:
-      return b_CntryLongStr ? _("Christmas Island") : _T("CX");
+      return b_CntryLongStr ? _("Christmas Island") : "CX";
     case 518:
-      return b_CntryLongStr ? _("Cook Islands") : _T("CK");
+      return b_CntryLongStr ? _("Cook Islands") : "CK";
     case 520:
-      return b_CntryLongStr ? _("Fiji") : _T("FJ");
+      return b_CntryLongStr ? _("Fiji") : "FJ";
     case 523:
-      return b_CntryLongStr ? _("Cocos (Keeling) Islands") : _T("CC");
+      return b_CntryLongStr ? _("Cocos (Keeling) Islands") : "CC";
     case 525:
-      return b_CntryLongStr ? _("Indonesia") : _T("ID");
+      return b_CntryLongStr ? _("Indonesia") : "ID";
     case 529:
-      return b_CntryLongStr ? _("Kiribati") : _T("KI");
+      return b_CntryLongStr ? _("Kiribati") : "KI";
     case 531:
-      return b_CntryLongStr ? _("Lao People's Dem. Rep.") : _T("LA");
+      return b_CntryLongStr ? _("Lao People's Dem. Rep.") : "LA";
     case 533:
-      return b_CntryLongStr ? _("Malaysia") : _T("MY");
+      return b_CntryLongStr ? _("Malaysia") : "MY";
     case 536:
-      return b_CntryLongStr ? _("Northern Mariana Islands") : _T("MP");
+      return b_CntryLongStr ? _("Northern Mariana Islands") : "MP";
     case 538:
-      return b_CntryLongStr ? _("Marshall Islands") : _T("MH");
+      return b_CntryLongStr ? _("Marshall Islands") : "MH";
     case 540:
-      return b_CntryLongStr ? _("New Caledonia") : _T("NC");
+      return b_CntryLongStr ? _("New Caledonia") : "NC";
     case 542:
-      return b_CntryLongStr ? _("Niue") : _T("NU");
+      return b_CntryLongStr ? _("Niue") : "NU";
     case 544:
-      return b_CntryLongStr ? _("Nauru") : _T("NR");
+      return b_CntryLongStr ? _("Nauru") : "NR";
     case 546:
-      return b_CntryLongStr ? _("French Polynesia") : _T("PF");
+      return b_CntryLongStr ? _("French Polynesia") : "PF";
     case 548:
-      return b_CntryLongStr ? _("Philippines") : _T("PH");
+      return b_CntryLongStr ? _("Philippines") : "PH";
     case 550:
-      return b_CntryLongStr ? _("East Timor") : _T("TL");
+      return b_CntryLongStr ? _("East Timor") : "TL";
     case 553:
-      return b_CntryLongStr ? _("Papua New Guinea") : _T("PG");
+      return b_CntryLongStr ? _("Papua New Guinea") : "PG";
     case 555:
-      return b_CntryLongStr ? _("Pitcairn Island") : _T("PN");
+      return b_CntryLongStr ? _("Pitcairn Island") : "PN";
     case 557:
-      return b_CntryLongStr ? _("Solomon Islands") : _T("SB");
+      return b_CntryLongStr ? _("Solomon Islands") : "SB";
     case 559:
-      return b_CntryLongStr ? _("American Samoa") : _T("AS");
+      return b_CntryLongStr ? _("American Samoa") : "AS";
     case 561:
-      return b_CntryLongStr ? _("Samoa") : _T("WS");
+      return b_CntryLongStr ? _("Samoa") : "WS";
     case 563:
     case 564:
     case 565:
     case 566:
-      return b_CntryLongStr ? _("Singapore") : _T("SG");
+      return b_CntryLongStr ? _("Singapore") : "SG";
     case 567:
-      return b_CntryLongStr ? _("Thailand") : _T("TH");
+      return b_CntryLongStr ? _("Thailand") : "TH";
     case 570:
-      return b_CntryLongStr ? _("Tonga") : _T("TO");
+      return b_CntryLongStr ? _("Tonga") : "TO";
     case 572:
-      return b_CntryLongStr ? _("Tuvalu") : _T("TV");
+      return b_CntryLongStr ? _("Tuvalu") : "TV";
     case 574:
-      return b_CntryLongStr ? _("Viet Nam") : _T("VN");
+      return b_CntryLongStr ? _("Viet Nam") : "VN";
     case 576:
     case 577:
-      return b_CntryLongStr ? _("Vanuatu") : _T("VU");
+      return b_CntryLongStr ? _("Vanuatu") : "VU";
     case 578:
-      return b_CntryLongStr ? _("Wallis and Futuna Islands") : _T("WF");
+      return b_CntryLongStr ? _("Wallis and Futuna Islands") : "WF";
     case 601:
-      return b_CntryLongStr ? _("South Africa") : _T("ZA");
+      return b_CntryLongStr ? _("South Africa") : "ZA";
     case 603:
-      return b_CntryLongStr ? _("Angola") : _T("AO");
+      return b_CntryLongStr ? _("Angola") : "AO";
     case 605:
-      return b_CntryLongStr ? _("Algeria") : _T("DZ");
+      return b_CntryLongStr ? _("Algeria") : "DZ";
     case 607:
-      return b_CntryLongStr ? _("Saint Paul") : _T("TF");
+      return b_CntryLongStr ? _("Saint Paul") : "TF";
     case 608:
-      return b_CntryLongStr ? _("Ascension Island") : _T("SH");
+      return b_CntryLongStr ? _("Ascension Island") : "SH";
     case 609:
-      return b_CntryLongStr ? _("Burundi") : _T("BI");
+      return b_CntryLongStr ? _("Burundi") : "BI";
     case 610:
-      return b_CntryLongStr ? _("Benin") : _T("BJ");
+      return b_CntryLongStr ? _("Benin") : "BJ";
     case 611:
-      return b_CntryLongStr ? _("Botswana") : _T("BW");
+      return b_CntryLongStr ? _("Botswana") : "BW";
     case 612:
-      return b_CntryLongStr ? _("Central African Republic") : _T("CF");
+      return b_CntryLongStr ? _("Central African Republic") : "CF";
     case 613:
-      return b_CntryLongStr ? _("Cameroon") : _T("CM");
+      return b_CntryLongStr ? _("Cameroon") : "CM";
     case 615:
-      return b_CntryLongStr ? _("Congo") : _T("CD");
+      return b_CntryLongStr ? _("Congo") : "CD";
     case 616:
-      return b_CntryLongStr ? _("Comoros") : _T("KM");
+      return b_CntryLongStr ? _("Comoros") : "KM";
     case 617:
-      return b_CntryLongStr ? _("Capo Verde") : _T("CV");
+      return b_CntryLongStr ? _("Capo Verde") : "CV";
     case 618:
-      return b_CntryLongStr ? _("Crozet Archipelago") : _T("TF");
+      return b_CntryLongStr ? _("Crozet Archipelago") : "TF";
     case 619:
-      return b_CntryLongStr ? _("Ivory Coast") : _T("CI");
+      return b_CntryLongStr ? _("Ivory Coast") : "CI";
     case 620:
-      return b_CntryLongStr ? _("Comoros (Union of the)") : _T("KM");
+      return b_CntryLongStr ? _("Comoros (Union of the)") : "KM";
     case 621:
-      return b_CntryLongStr ? _("Djibouti") : _T("DJ");
+      return b_CntryLongStr ? _("Djibouti") : "DJ";
     case 622:
-      return b_CntryLongStr ? _("Egypt") : _T("EG");
+      return b_CntryLongStr ? _("Egypt") : "EG";
     case 624:
-      return b_CntryLongStr ? _("Ethiopia") : _T("ET");
+      return b_CntryLongStr ? _("Ethiopia") : "ET";
     case 625:
-      return b_CntryLongStr ? _("Eritrea") : _T("ER");
+      return b_CntryLongStr ? _("Eritrea") : "ER";
     case 626:
-      return b_CntryLongStr ? _("Gabonese Republic") : _T("GA");
+      return b_CntryLongStr ? _("Gabonese Republic") : "GA";
     case 627:
-      return b_CntryLongStr ? _("Ghana") : _T("GH");
+      return b_CntryLongStr ? _("Ghana") : "GH";
     case 629:
-      return b_CntryLongStr ? _("Gambia") : _T("GM");
+      return b_CntryLongStr ? _("Gambia") : "GM";
     case 630:
-      return b_CntryLongStr ? _("Guinea-Bissau") : _T("GW");
+      return b_CntryLongStr ? _("Guinea-Bissau") : "GW";
     case 631:
-      return b_CntryLongStr ? _("Equatorial Guinea") : _T("GQ");
+      return b_CntryLongStr ? _("Equatorial Guinea") : "GQ";
     case 632:
-      return b_CntryLongStr ? _("Guinea") : _T("GN");
+      return b_CntryLongStr ? _("Guinea") : "GN";
     case 633:
-      return b_CntryLongStr ? _("Burkina Faso") : _T("BF");
+      return b_CntryLongStr ? _("Burkina Faso") : "BF";
     case 634:
-      return b_CntryLongStr ? _("Kenya") : _T("KE");
+      return b_CntryLongStr ? _("Kenya") : "KE";
     case 635:
-      return b_CntryLongStr ? _("Kerguelen Islands") : _T("TF");
+      return b_CntryLongStr ? _("Kerguelen Islands") : "TF";
     case 636:
     case 637:
-      return b_CntryLongStr ? _("Liberia") : _T("LR");
+      return b_CntryLongStr ? _("Liberia") : "LR";
     case 638:
-      return b_CntryLongStr ? _("South Sudan (Republic of)") : _T("SS");
+      return b_CntryLongStr ? _("South Sudan (Republic of)") : "SS";
     case 642:
-      return b_CntryLongStr ? _("Libya") : _T("LY");
+      return b_CntryLongStr ? _("Libya") : "LY";
     case 644:
-      return b_CntryLongStr ? _("Lesotho") : _T("LS");
+      return b_CntryLongStr ? _("Lesotho") : "LS";
     case 645:
-      return b_CntryLongStr ? _("Mauritius") : _T("MU");
+      return b_CntryLongStr ? _("Mauritius") : "MU";
     case 647:
-      return b_CntryLongStr ? _("Madagascar") : _T("MG");
+      return b_CntryLongStr ? _("Madagascar") : "MG";
     case 649:
-      return b_CntryLongStr ? _("Mali") : _T("ML");
+      return b_CntryLongStr ? _("Mali") : "ML";
     case 650:
-      return b_CntryLongStr ? _("Mozambique") : _T("MZ");
+      return b_CntryLongStr ? _("Mozambique") : "MZ";
     case 654:
-      return b_CntryLongStr ? _("Mauritania") : _T("MR");
+      return b_CntryLongStr ? _("Mauritania") : "MR";
     case 655:
-      return b_CntryLongStr ? _("Malawi") : _T("MW");
+      return b_CntryLongStr ? _("Malawi") : "MW";
     case 656:
-      return b_CntryLongStr ? _("Niger") : _T("NE");
+      return b_CntryLongStr ? _("Niger") : "NE";
     case 657:
-      return b_CntryLongStr ? _("Nigeria") : _T("NG");
+      return b_CntryLongStr ? _("Nigeria") : "NG";
     case 659:
-      return b_CntryLongStr ? _("Namibia") : _T("NA");
+      return b_CntryLongStr ? _("Namibia") : "NA";
     case 660:
-      return b_CntryLongStr ? _("Reunion") : _T("RE");
+      return b_CntryLongStr ? _("Reunion") : "RE";
     case 661:
-      return b_CntryLongStr ? _("Rwanda") : _T("RW");
+      return b_CntryLongStr ? _("Rwanda") : "RW";
     case 662:
-      return b_CntryLongStr ? _("Sudan") : _T("SD");
+      return b_CntryLongStr ? _("Sudan") : "SD";
     case 663:
-      return b_CntryLongStr ? _("Senegal") : _T("SN");
+      return b_CntryLongStr ? _("Senegal") : "SN";
     case 664:
-      return b_CntryLongStr ? _("Seychelles") : _T("SC");
+      return b_CntryLongStr ? _("Seychelles") : "SC";
     case 665:
-      return b_CntryLongStr ? _("Saint Helena") : _T("SH");
+      return b_CntryLongStr ? _("Saint Helena") : "SH";
     case 666:
-      return b_CntryLongStr ? _("Somalia") : _T("SO");
+      return b_CntryLongStr ? _("Somalia") : "SO";
     case 667:
-      return b_CntryLongStr ? _("Sierra Leone") : _T("SL");
+      return b_CntryLongStr ? _("Sierra Leone") : "SL";
     case 668:
-      return b_CntryLongStr ? _("Sao Tome and Principe") : _T("ST");
+      return b_CntryLongStr ? _("Sao Tome and Principe") : "ST";
     case 669:
-      return b_CntryLongStr ? _("Eswatini") : _T("SZ");
+      return b_CntryLongStr ? _("Eswatini") : "SZ";
     case 670:
-      return b_CntryLongStr ? _("Chad") : _T("TD");
+      return b_CntryLongStr ? _("Chad") : "TD";
     case 671:
-      return b_CntryLongStr ? _("Togolese Republic") : _T("TG");
+      return b_CntryLongStr ? _("Togolese Republic") : "TG";
     case 672:
-      return b_CntryLongStr ? _("Tunisia") : _T("TN");
+      return b_CntryLongStr ? _("Tunisia") : "TN";
     case 674:
-      return b_CntryLongStr ? _("Tanzania") : _T("TZ");
+      return b_CntryLongStr ? _("Tanzania") : "TZ";
     case 675:
-      return b_CntryLongStr ? _("Uganda") : _T("UG");
+      return b_CntryLongStr ? _("Uganda") : "UG";
     case 676:
-      return b_CntryLongStr ? _("Dem Rep.of the Congo") : _T("CD");
+      return b_CntryLongStr ? _("Dem Rep.of the Congo") : "CD";
     case 677:
-      return b_CntryLongStr ? _("Tanzania") : _T("TZ");
+      return b_CntryLongStr ? _("Tanzania") : "TZ";
     case 678:
-      return b_CntryLongStr ? _("Zambia") : _T("ZM");
+      return b_CntryLongStr ? _("Zambia") : "ZM";
     case 679:
-      return b_CntryLongStr ? _("Zimbabwe") : _T("ZW");
+      return b_CntryLongStr ? _("Zimbabwe") : "ZW";
     case 701:
-      return b_CntryLongStr ? _("Argentine Republic") : _T("AR");
+      return b_CntryLongStr ? _("Argentine Republic") : "AR";
     case 710:
-      return b_CntryLongStr ? _("Brazil") : _T("BR");
+      return b_CntryLongStr ? _("Brazil") : "BR";
     case 720:
-      return b_CntryLongStr ? _("Bolivia") : _T("BO");
+      return b_CntryLongStr ? _("Bolivia") : "BO";
     case 725:
-      return b_CntryLongStr ? _("Chile") : _T("CL");
+      return b_CntryLongStr ? _("Chile") : "CL";
     case 730:
-      return b_CntryLongStr ? _("Colombia") : _T("CO");
+      return b_CntryLongStr ? _("Colombia") : "CO";
     case 735:
-      return b_CntryLongStr ? _("Ecuador") : _T("EC");
+      return b_CntryLongStr ? _("Ecuador") : "EC";
     case 740:
-      return b_CntryLongStr ? _("Falkland Islands") : _T("FK");
+      return b_CntryLongStr ? _("Falkland Islands") : "FK";
     case 745:
-      return b_CntryLongStr ? _("France - Guiana") : _T("GY");
+      return b_CntryLongStr ? _("France - Guiana") : "GY";
     case 750:
-      return b_CntryLongStr ? _("Guyana") : _T("GY");
+      return b_CntryLongStr ? _("Guyana") : "GY";
     case 755:
-      return b_CntryLongStr ? _("Paraguay") : _T("PY");
+      return b_CntryLongStr ? _("Paraguay") : "PY";
     case 760:
-      return b_CntryLongStr ? _("Peru") : _T("PE");
+      return b_CntryLongStr ? _("Peru") : "PE";
     case 765:
-      return b_CntryLongStr ? _("Suriname") : _T("SR");
+      return b_CntryLongStr ? _("Suriname") : "SR";
     case 770:
-      return b_CntryLongStr ? _("Uruguay") : _T("UY");
+      return b_CntryLongStr ? _("Uruguay") : "UY";
     case 775:
-      return b_CntryLongStr ? _("Venezuela") : _T("VE");
+      return b_CntryLongStr ? _("Venezuela") : "VE";
 
     default:
-      return wxEmptyString;
+      return "";
   }
 #else
-  return wxEmptyString;
+  return "";
 #endif
 }
 

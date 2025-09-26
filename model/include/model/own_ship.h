@@ -1,9 +1,4 @@
-/******************************************************************************
- *
- * Project: OpenCPN
- * Purpose: Position, course, speed, etc. obtained from instruments.
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Position, course, speed, etc. globals obtained from instruments.
  */
 
-#ifndef OWN_SHIP_H__
-#define OWN_SHIP_H__
+#ifndef OWN_SHIP_H_
+#define OWN_SHIP_H_
 
 /**
  * Vessel's current latitude in decimal degrees.
@@ -85,4 +83,4 @@ extern double gVar;
  */
 extern bool bGPSValid;
 
-#endif  // OWN_SHIP_H__
+#endif  // OWN_SHIP_H_

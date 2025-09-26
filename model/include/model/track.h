@@ -1,11 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Navigation Utility Functions
- * Authors:   David Register
- *            Sean D'Epagnier
- *
- ***************************************************************************
+ *   Copyright (C) 2016 Sean D'Epagnier                                    *
  *   Copyright (C) 2016 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,12 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
-#ifndef _TRACK_H__
-#define _TRACK_H__
+
+/**
+ * \file
+ *
+ * Recorded track abstraction.
+ */
+
+#ifndef TRACK_H_
+#define TRACK_H_
 
 #include <wx/progdlg.h>
 
@@ -39,8 +38,8 @@
 #include "route.h"
 #include "vector2D.h"
 
-class Track;  // forward
-extern std::vector<Track *> g_TrackList;
+class Track;                             // forward
+extern std::vector<Track *> g_TrackList; /**< Global instance */
 
 class ActiveTrack;                  // forward
 extern ActiveTrack *g_pActiveTrack; /**< global instance */
