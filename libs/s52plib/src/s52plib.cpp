@@ -2807,6 +2807,9 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   height *= 6 * xscale;
   height = (int)(height / fsf);
 
+  width /= fsf;
+  height /= fsf;
+
   // Expand width and height to next larger POT
   int xp = width, yp = height;
   int width_pot, height_pot;
@@ -2832,12 +2835,6 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     height_pot = 1 << a;
   }
 
-  width /= fsf;
-  height /= fsf;
-
-  width_pot = width;
-  height_pot = height;
-
   int origin_x = prule->pos.symb.bnbox_x.SBXC;
   int origin_y = prule->pos.symb.bnbox_y.SBXR;
   wxPoint origin(origin_x, origin_y);
@@ -2856,35 +2853,49 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   wxBitmap bmp(width, height, 32);
   mdc.SelectObject(bmp);
   HPGL->SetTargetDC(&mdc);
+#ifdef __WXMSW__
+  mdc.SetBackground(wxBrush(m_unused_wxColor));
+  mdc.Clear();
+#endif
+
   wxPoint rt(0, 0);
   HPGL->Render(str, col, rt, pivot, origin, xscale, render_angle, true);
-
-  //HPGL->SetTargetOpenGl();
-  //HPGL->Render(str, col, r, pivot, origin, xscale, render_angle, true);
-
   mdc.SelectObject(wxNullBitmap);
 
   wxImage image = bmp.ConvertToImage();
   int ws = image.GetWidth(), hs = image.GetHeight();
 
-  //    ptext->RGBA_width = ws;
-  //    ptext->RGBA_height = hs;
-  unsigned char *pRGBA = (unsigned char *)malloc(4 * width_pot * height_pot);
-
   unsigned char *source = image.GetData();
   unsigned char *alpha = image.GetAlpha();
+
+  unsigned char mr, mg, mb;
+  if (!alpha) {
+    image.SetMaskColour(m_unused_wxColor.Red(), m_unused_wxColor.Green(),
+                        m_unused_wxColor.Blue());
+    if (!alpha && !image.GetOrFindMaskColour(&mr, &mg, &mb))
+      printf("trying to use mask to draw a bitmap without alpha or mask\n");
+  }
+
+  unsigned char *pRGBA = (unsigned char *)calloc(1, 4 * width_pot * height_pot);
   unsigned char *dest = pRGBA;
 
-  if (source && alpha) {
+  if (source) {
     for (int y = 0; y < hs; y++) {
       for (int x = 0; x < ws; x++) {
         int offs = (y * ws + x);
         int offd = (y * width_pot + x);
 
+        unsigned int r = source[offs * 3 + 0];
+        unsigned int g = source[offs * 3 + 1];
+        unsigned int b = source[offs * 3 + 2];
+
         dest[offd * 4 + 0] = source[offs * 3 + 0];
         dest[offd * 4 + 1] = source[offs * 3 + 1];
         dest[offd * 4 + 2] = source[offs * 3 + 2];
-        dest[offd * 4 + 3] = alpha[offs];
+        unsigned char a =
+            alpha ? alpha[offs] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+        dest[offd * 4 + 3] = a;
+
       }
     }
   }
@@ -3560,8 +3571,11 @@ int s52plib::RenderSY(ObjRazRules *rzRules, Rules *rules) {
 
     //  Render a raster or vector symbol, as specified by LUP rules
     if (rules->razRule->definition.SYDF == 'V') {
-      if (!m_pdc)   // GL mode
-        RenderCachedVectorSymbol(rzRules, rules->razRule, r, angle, m_ChartScaleFactorExp);
+      if (!m_pdc) {  // GL mode
+        if (!RenderCachedVectorSymbol(rzRules, rules->razRule, r, angle,
+                                     m_ChartScaleFactorExp))
+          RenderHPGL(rzRules, rules->razRule, r, angle, m_ChartScaleFactorExp);
+      }
       else
         RenderHPGL(rzRules, rules->razRule, r, angle, m_ChartScaleFactorExp);
     } else {
@@ -3575,6 +3589,12 @@ int s52plib::RenderSY(ObjRazRules *rzRules, Rules *rules) {
 
 bool s52plib::RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
                               float rot_angle, double uScale) {
+
+  // TODO
+  //  temporarily exclude some symbols
+  //  Only handle ATONs for now
+  if (!rzRules->obj->bIsAton) return false;
+
   int symbol_texture = 0;
   // Build the hash key
   std::string key;
@@ -3630,9 +3650,6 @@ bool s52plib::RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPo
   uv[7] = ty2;
   uv[4] = tx1;
   uv[5] = ty2;
-
-  //w *= scale_factor;
-  //h *= scale_factor;
 
   // pixels
   coords[0] = 0;
@@ -11163,8 +11180,11 @@ void RenderFromHPGL::Circle(wxPoint center, int radius, bool filled) {
 
 void RenderFromHPGL::Polygon() {
   if (renderToDC) {
-    penColor.Set(penColor.Red(), penColor.Green(), penColor.Blue(),
-                 transparency);
+    unsigned char rtrans = transparency;
+#ifdef __WXMSW__
+    rtrans = 255;
+#endif
+    penColor.Set(penColor.Red(), penColor.Green(), penColor.Blue(), rtrans);
     pen = wxThePenList->FindOrCreatePen(penColor, penWidth, wxPENSTYLE_SOLID);
     brush = wxTheBrushList->FindOrCreateBrush(penColor, wxBRUSHSTYLE_SOLID);
     targetDC->SetPen(*pen);
@@ -11184,6 +11204,13 @@ void RenderFromHPGL::Polygon() {
 
 #if wxUSE_GRAPHICS_CONTEXT
   if (renderToGCDC) {
+    penColor.Set(penColor.Red(), penColor.Green(), penColor.Blue(),
+                 transparency);
+    pen = wxThePenList->FindOrCreatePen(penColor, penWidth, wxPENSTYLE_SOLID);
+    brush = wxTheBrushList->FindOrCreateBrush(penColor, wxBRUSHSTYLE_SOLID);
+    targetGCDC->SetPen(*pen);
+    targetGCDC->SetBrush(*brush);
+
     targetGCDC->DrawPolygon(noPoints, polygon);
   }
 #endif
