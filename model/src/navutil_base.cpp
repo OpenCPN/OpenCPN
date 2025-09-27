@@ -198,9 +198,6 @@ double toUsrWindSpeed(double kts_wspeed, int unit) {
   return ret;
 }
 
-/**************************************************************************/
-/*          Converts the distance to the units selected by user           */
-/**************************************************************************/
 double toUsrDistance(double nm_distance, int unit) {
   double ret = NAN;
   if (unit == -1) unit = g_iDistanceFormat;
@@ -406,7 +403,10 @@ double fromUsrSpeed(double usr_speed, int unit, int default_val) {
 /**************************************************************************/
 double fromUsrDistance(double usr_distance, int unit, int default_val) {
   double ret = NAN;
-  if (unit == -1) unit = default_val;
+  if (unit == -1) {
+    // Use g_iDistanceFormat as default when default_val is -1
+    unit = (default_val == -1) ? g_iDistanceFormat : default_val;
+  }
   switch (unit) {
     case DISTANCE_NMI:  // Nautical miles
       ret = usr_distance;
@@ -423,25 +423,31 @@ double fromUsrDistance(double usr_distance, int unit, int default_val) {
     case DISTANCE_FT:
       ret = usr_distance / 6076.12;
       break;
+    case DISTANCE_FA:
+      ret = usr_distance / 1012.68591;
+      break;
+    case DISTANCE_IN:
+      ret = usr_distance / 72913.4;
+      break;
+    case DISTANCE_CM:
+      ret = usr_distance / 185200;
+      break;
   }
   return ret;
 }
 
-/**************************************************************************/
-/*    Converts the depth in meters to the units selected by user          */
-/**************************************************************************/
-double toUsrDepth(double cel_depth, int unit) {
+double toUsrDepth(double m_depth, int unit) {
   double ret = NAN;
   if (unit == -1) unit = g_nDepthUnitDisplay;
   switch (unit) {
     case DEPTH_FT:  // Feet
-      ret = cel_depth / 0.3048;
+      ret = m_depth / 0.3048;
       break;
     case DEPTH_M:  // Meters
-      ret = cel_depth;
+      ret = m_depth;
       break;
     case DEPTH_FA:
-      ret = cel_depth / 0.3048 / 6;
+      ret = m_depth / 0.3048 / 6;
       break;
   }
   return ret;
@@ -482,6 +488,48 @@ wxString getUsrDepthUnit(int unit) {
       break;
     case DEPTH_FA:  // Fathoms
       ret = _("fa");
+      break;
+  }
+  return ret;
+}
+
+double toUsrHeight(double m_height, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = m_height;
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = m_height / 0.3048;
+      break;
+  }
+  return ret;
+}
+
+double fromUsrHeight(double usr_height, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = usr_height;
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = usr_height * 0.3048;
+      break;
+  }
+  return ret;
+}
+
+wxString getUsrHeightUnit(int unit) {
+  wxString ret;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = _("m");
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = _("ft");
       break;
   }
   return ret;

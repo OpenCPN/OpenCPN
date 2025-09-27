@@ -163,6 +163,7 @@ int g_GUIScaleFactor = 0;
 int g_iDistanceFormat = 0;
 int g_iENCToolbarPosX = 0;
 int g_iENCToolbarPosY = 0;
+int g_iHeightFormat = 0;
 int g_iNavAidRadarRingsNumberVisible = 0;
 int g_iSDMMFormat = 0;
 int g_iSoundDeviceIndex = 0;

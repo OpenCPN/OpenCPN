@@ -718,6 +718,19 @@ double fromUsrDepth_Plugin(double usr_depth, int unit) {
 
 wxString getUsrDepthUnit_Plugin(int unit) { return getUsrDepthUnit(unit); }
 
+/**
+ * Height Conversion Functions
+ */
+double toUsrHeight_Plugin(double m_height, int unit) {
+  return toUsrHeight(m_height, unit);
+}
+
+double fromUsrHeight_Plugin(double usr_height, int unit) {
+  return fromUsrHeight(usr_height, unit);
+}
+
+wxString getUsrHeightUnit_Plugin(int unit) { return getUsrHeightUnit(unit); }
+
 double fromDMM_PlugIn(wxString sdms) { return fromDMM(sdms); }
 
 bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,

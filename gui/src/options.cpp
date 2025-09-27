@@ -124,6 +124,33 @@
 extern GLuint g_raster_format;
 #endif
 
+// Centralized tooltip strings to avoid duplication. Keep translatable.
+static inline wxString ttDistance() {
+  return _(
+      "Horizontal measurements and distances. Examples: Distance between "
+      "geographic positions, visibility range, radar range.");
+}
+static inline wxString ttSpeed() {
+  return _("Vessel and surface speed measurements");
+}
+static inline wxString ttWindSpeed() {
+  return _("Wind speed measurements and forecasts");
+}
+static inline wxString ttDepth() {
+  return _("Measurements below the water surface");
+}
+static inline wxString ttHeight() {
+  return _(
+      "Vertical measurements above reference datum. Examples: Tide level, wave "
+      "height, air gap, mast clearance, elevation above reference datum.");
+}
+static inline wxString ttTemp() {
+  return _("Temperature measurements (air, water, engine)");
+}
+static inline wxString ttCoordFormat() {
+  return _("Coordinate display format for latitude and longitude");
+}
+
 #ifdef __linux__
 #include "udev_rule_mgr.h"
 #endif
@@ -1431,6 +1458,7 @@ EVT_BUTTON(ID_OPENGLOPTIONS, options::OnOpenGLOptions)
 #endif
 EVT_CHOICE(ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton)
 EVT_CHOICE(ID_DEPTHUNITSCHOICE, options::OnUnitsChoice)
+EVT_CHOICE(ID_HEIGHTUNITSCHOICE, options::OnUnitsChoice)
 EVT_BUTTON(ID_CLEARLIST, options::OnButtonClearClick)
 EVT_BUTTON(ID_SELECTLIST, options::OnButtonSelectClick)
 EVT_BUTTON(ID_SETSTDLIST, options::OnButtonSetStd)
@@ -1668,6 +1696,39 @@ void options::Init() {
     delete sound;
   };
   m_sound_done_listener.Init(m_on_sound_done, sound_action);
+}
+
+// Distance format mapping helper functions
+struct DistanceFormatMapping {
+  wxString label;
+  int enumValue;
+};
+
+static const DistanceFormatMapping kDistanceFormats[] = {
+    {_("Nautical miles"), DISTANCE_NMI},
+    {_("Statute miles"), DISTANCE_MI},
+    {_("Kilometers"), DISTANCE_KM},
+    {_("Meters"), DISTANCE_M}};
+
+static const int kNumDistanceFormats =
+    sizeof(kDistanceFormats) / sizeof(DistanceFormatMapping);
+
+// Get the index for a given distance format enum value
+static int GetDistanceFormatIndex(int enumValue) {
+  for (int i = 0; i < kNumDistanceFormats; i++) {
+    if (kDistanceFormats[i].enumValue == enumValue) {
+      return i;
+    }
+  }
+  return 0;  // Default to NMi
+}
+
+// Get the enum value for a given index
+static int GetDistanceFormatEnum(int index) {
+  if (index >= 0 && index < kNumDistanceFormats) {
+    return kDistanceFormats[index].enumValue;
+  }
+  return DISTANCE_NMI;  // Default to NMi
 }
 
 #if defined(__GNUC__) && __GNUC__ < 8
@@ -4334,13 +4395,17 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     // distance units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Distance")),
                     labelFlags);
-    wxString pDistanceFormats[] = {_("Nautical miles"), _("Statute miles"),
-                                   _("Kilometers"), _("Meters")};
-    int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
+    wxString pDistanceFormats[kNumDistanceFormats];
+    for (int i = 0; i < kNumDistanceFormats; i++) {
+      pDistanceFormats[i] = kDistanceFormats[i].label;
+    }
+    int m_DistanceFormatsNChoices = kNumDistanceFormats;
     pDistanceFormat =
         new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), m_DistanceFormatsNChoices,
                      pDistanceFormats);
+    // Distance between geographic positions, visibility range, radar range.
+    pDistanceFormat->SetToolTip(ttDistance());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4354,6 +4419,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
                                 wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
                                 m_SpeedFormatsNChoices, pSpeedFormats);
+    pSpeedFormat->SetToolTip(ttSpeed());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4369,6 +4435,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), m_WindSpeedFormatsNChoices,
                      pWindSpeedFormats);
+    pWindSpeedFormat->SetToolTip(ttWindSpeed());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4385,10 +4452,30 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), 3, pDepthUnitStrings);
+    // Distance below a reference surface (sea level, vessel draft)
+    pDepthUnitSelect->SetToolTip(ttDepth());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
+
+    // height units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Height")),
+                    labelFlags);
+    wxString pHeightUnitStrings[] = {
+        _("Meters"),
+        _("Feet"),
+    };
+    pHeightUnitSelect =
+        new wxChoice(panelUnits, ID_HEIGHTUNITSCHOICE, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), 2, pHeightUnitStrings);
+    // Tide level, wave height, air gap, mast clearance, elevations above
+    // reference datum
+    pHeightUnitSelect->SetToolTip(ttHeight());
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pHeightUnitSelect, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pHeightUnitSelect, inputFlags);
 
     // temperature units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Temperature")),
@@ -4401,6 +4488,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), 3, pTempUnitStrings);
+    pTempFormat->SetToolTip(ttTemp());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4420,6 +4508,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
                                wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
                                m_SDMMFormatsNChoices, pSDMMFormats);
+    pSDMMFormat->SetToolTip(ttCoordFormat());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4523,12 +4612,15 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     // distance units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Distance")),
                     labelFlags);
-    wxString pDistanceFormats[] = {_("Nautical miles"), _("Statute miles"),
-                                   _("Kilometers"), _("Meters")};
-    int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
+    wxString pDistanceFormats[kNumDistanceFormats];
+    for (int i = 0; i < kNumDistanceFormats; i++) {
+      pDistanceFormats[i] = kDistanceFormats[i].label;
+    }
+    int m_DistanceFormatsNChoices = kNumDistanceFormats;
     pDistanceFormat = new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE,
                                    wxDefaultPosition, wxSize(item_h_size, -1),
                                    m_DistanceFormatsNChoices, pDistanceFormats);
+    pDistanceFormat->SetToolTip(ttDistance());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4542,6 +4634,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
                                 wxDefaultPosition, wxSize(item_h_size, -1),
                                 m_SpeedFormatsNChoices, pSpeedFormats);
+    pSpeedFormat->SetToolTip(ttSpeed());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4556,6 +4649,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pWindSpeedFormat = new wxChoice(
         panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
         wxSize(item_h_size, -1), m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+    pWindSpeedFormat->SetToolTip(ttWindSpeed());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4572,10 +4666,27 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                      wxSize(item_h_size, -1), 3, pDepthUnitStrings);
+    pDepthUnitSelect->SetToolTip(ttDepth());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
+
+    // height units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Height")),
+                    labelFlags);
+    wxString pHeightUnitStrings[] = {
+        _("Meters"),
+        _("Feet"),
+    };
+    pHeightUnitSelect =
+        new wxChoice(panelUnits, ID_HEIGHTUNITSCHOICE, wxDefaultPosition,
+                     wxSize(item_h_size, -1), 2, pHeightUnitStrings);
+    pHeightUnitSelect->SetToolTip(ttHeight());
+#ifdef __ANDROID__
+    setChoiceStyleSheet(pHeightUnitSelect, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pHeightUnitSelect, inputFlags);
 
     // temperature units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Temperature")),
@@ -4588,6 +4699,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
                      wxSize(item_h_size, -1), 3, pTempUnitStrings);
+    pTempFormat->SetToolTip(ttTemp());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
 #endif
@@ -4607,6 +4719,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
                                wxDefaultPosition, wxSize(item_h_size, -1),
                                m_SDMMFormatsNChoices, pSDMMFormats);
+    pSDMMFormat->SetToolTip(ttCoordFormat());
 #ifdef __ANDROID__
     setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
 #endif
@@ -6323,10 +6436,15 @@ void options::SetInitialSettings() {
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
   // pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
-  pDistanceFormat->Select(g_iDistanceFormat);
+  // Map DISTANCE_* enum to dropdown index using the mapping table
+  {
+    int distance_ui_index = GetDistanceFormatIndex(g_iDistanceFormat);
+    pDistanceFormat->SetSelection(distance_ui_index);
+  }
   pSpeedFormat->Select(g_iSpeedFormat);
   pWindSpeedFormat->Select(g_iWindSpeedFormat);
   pTempFormat->Select(g_iTempFormat);
+  if (pHeightUnitSelect) pHeightUnitSelect->SetSelection(g_iHeightFormat);
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
@@ -7260,10 +7378,15 @@ void options::ApplyChanges(wxCommandEvent& event) {
     g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
   // g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
-  g_iDistanceFormat = pDistanceFormat->GetSelection();
+  // Map dropdown selection index explicitly to DISTANCE_* enum.
+  {
+    int sel = pDistanceFormat->GetSelection();
+    g_iDistanceFormat = GetDistanceFormatEnum(sel);
+  }
   g_iSpeedFormat = pSpeedFormat->GetSelection();
   g_iWindSpeedFormat = pWindSpeedFormat->GetSelection();
   g_iTempFormat = pTempFormat->GetSelection();
+  if (pHeightUnitSelect) g_iHeightFormat = pHeightUnitSelect->GetSelection();
 
   // LIVE ETA OPTION
   if (pSLiveETA) g_bShowLiveETA = pSLiveETA->GetValue();
@@ -7563,6 +7686,8 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
     ps52plib->UpdateMarinerParams();
     ps52plib->m_nDepthUnitDisplay = depthUnit;
+    // Keep s52plib height display in sync with height preference
+    ps52plib->m_nHeightUnitDisplay = g_iHeightFormat;
 
     ps52plib->GenerateStateHash();
 
