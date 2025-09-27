@@ -167,13 +167,33 @@ extern int g_detailslider_dialog_y;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_GUIScaleFactor;
+/**
+ * User-selected distance (horizontal) unit format for display and input.
+ * Values correspond to DISTANCE_* enum (e.g., NMi, mi, km, m, ft, yd, etc.).
+ */
 extern int g_iDistanceFormat;
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
+/**
+ * User-selected height (vertical, above reference datum) unit format for
+ * display and input. Values correspond to HEIGHT_* enum (e.g., meters, feet).
+ * Used for tide levels, bridge clearances, and other height displays.
+ */
+extern int g_iHeightFormat;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern int g_iSDMMFormat;
 extern int g_iSoundDeviceIndex;
+/**
+ * User-selected speed unit format for display and input.
+ * Values correspond to SPEED_* enum (e.g., knots, mph, km/h, m/s).
+ * Used for ownship speed, route planning, and other speed displays.
+ */
 extern int g_iSpeedFormat;
+/**
+ * User-selected temperature unit format for display and input.
+ * Values correspond to TEMPERATURE_* enum (e.g., Celsius, Fahrenheit, Kelvin).
+ * Used for weather overlays, tide info, and other temperature displays.
+ */
 extern int g_iTempFormat;
 extern int g_iWaypointRangeRingsNumber;
 extern int g_iWaypointRangeRingsStepUnits;
@@ -199,6 +219,11 @@ extern int g_nbrightness;
 extern int g_nCacheLimit;
 extern int g_nCOMPortCheck;
 extern int g_nCPUCount;
+/**
+ * User-selected depth (below surface) unit format for display and input.
+ * Values correspond to DEPTH_* enum (e.g., meters, feet, fathoms).
+ * Used for chart soundings, depth contours, and other depth displays.
+ */
 extern int g_nDepthUnitDisplay;
 extern int g_netmask_bits;
 extern int g_nframewin_posx;

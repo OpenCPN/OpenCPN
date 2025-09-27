@@ -5330,37 +5330,44 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
     case OGR_REAL: {
       double dval = *((double *)pval->value);
       wxString val_suffix = " m";
+      bool has_preformatted = false;
+      wxString preformatted;
 
-      //    As a special case, convert some attribute values to feet.....
+      // Unit customizations for height attributes:
+      // - VERCOP: Vertical clearance when bridge/obstruction is in open
+      // position
+      // - VERCLR: Vertical clearance under fixed bridge/cable/pipeline
+      // - VERCCL: Vertical clearance when bridge/obstruction is in closed
+      // position
+      // - HEIGHT: Height of structure/object above chart datum or terrain
+      // - ELEVAT: Elevation of terrain/landmark above chart datum
+      // - VERCSA: Safe vertical clearance for navigation
       if ((curAttrName == "VERCLR") || (curAttrName == "VERCCL") ||
           (curAttrName == "VERCOP") || (curAttrName == "HEIGHT") ||
-          (curAttrName == "HORCLR") || (curAttrName == "ELEVAT")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          default:
-            break;
-        }
+          (curAttrName == "ELEVAT") || (curAttrName == "VERCSA")) {
+        // Vertical attributes: use Height units (meters/feet)
+        double usr = toUsrHeight(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrHeightUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
+      } else if (curAttrName == "HORCLR") {
+        // Horizontal clearance: format adaptively using distance settings
+        // Input ENC value is meters; convert to nautical miles first
+        double nm = dval / 1852.0;  // meters -> nautical miles
+        preformatted = FormatDistanceAdaptive(nm);
+        has_preformatted = true;
       }
 
       else if ((curAttrName == "VALSOU") || (curAttrName == "DRVAL1") ||
                (curAttrName == "DRVAL2") || (curAttrName == "VALDCO")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // fathoms
-            dval /= 6.0;
-            val_suffix = " fathoms";
-            break;
-          default:
-            break;
-        }
+        // VALSOU: Value of sounding - water depth at specific location
+        // DRVAL1: Depth range value 1 - minimum depth in depth area
+        // DRVAL2: Depth range value 2 - maximum depth in depth area
+        // VALDCO: Value of depth contour - depth value of contour line
+        double usr = toUsrDepth(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrDepthUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
       }
 
       else if (curAttrName == "SECTR1")
@@ -5380,12 +5387,15 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
       else if (curAttrName == "CURVEL")
         val_suffix = " kt";
 
-      if (dval - floor(dval) < 0.01)
-        value.Printf("%2.0f", dval);
-      else
-        value.Printf("%4.1f", dval);
-
-      value << val_suffix;
+      if (has_preformatted) {
+        value = preformatted;
+      } else {
+        if (dval - floor(dval) < 0.01)
+          value.Printf("%2.0f", dval);
+        else
+          value.Printf("%4.1f", dval);
+        value << val_suffix;
+      }
 
       break;
     }
@@ -5474,37 +5484,31 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
     case OGR_REAL: {
       double dval = *((double *)pAttrVal->value);
       wxString val_suffix = " m";
+      bool has_preformatted = false;
+      wxString preformatted;
 
-      //    As a special case, convert some attribute values to feet.....
+      // Use unit customizations for special attributes
       if ((AttrName == "VERCLR") || (AttrName == "VERCCL") ||
           (AttrName == "VERCOP") || (AttrName == "HEIGHT") ||
-          (AttrName == "HORCLR") || (AttrName == "ELEVAT")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          default:
-            break;
-        }
+          (AttrName == "ELEVAT")) {
+        // Vertical attributes: use Height units
+        double usr = toUsrHeight(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrHeightUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
+      } else if (AttrName == "HORCLR") {
+        // Horizontal clearance: format adaptively using distance settings
+        double nm = dval / 1852.0;  // meters -> nautical miles
+        preformatted = FormatDistanceAdaptive(nm);
+        has_preformatted = true;
       }
 
       else if ((AttrName == "VALSOU") || (AttrName == "DRVAL1") ||
                (AttrName == "DRVAL2")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // fathoms
-            dval /= 6.0;
-            val_suffix = " fathoms";
-            break;
-          default:
-            break;
-        }
+        double usr = toUsrDepth(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrDepthUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
       }
 
       else if (AttrName == "SECTR1")
@@ -5524,12 +5528,15 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
       else if (AttrName == "CURVEL")
         val_suffix = " kt";
 
-      if (dval - floor(dval) < 0.01)
-        value.Printf("%2.0f", dval);
-      else
-        value.Printf("%4.1f", dval);
-
-      value << val_suffix;
+      if (has_preformatted) {
+        value = preformatted;
+      } else {
+        if (dval - floor(dval) < 0.01)
+          value.Printf("%2.0f", dval);
+        else
+          value.Printf("%4.1f", dval);
+        value << val_suffix;
+      }
 
       break;
     }

@@ -210,6 +210,8 @@ public:
   ChartCanvas *m_pParentCanvas;
   ocpnDC m_gldc;
 
+  wxStopWatch m_glstopwatch;
+
 protected:
   void RenderS57TextOverlay(ViewPort &VPoint);
   void RenderMBTilesOverlay(ViewPort &VPoint);
