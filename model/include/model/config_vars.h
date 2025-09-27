@@ -167,6 +167,7 @@ extern int g_detailslider_dialog_y;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_GUIScaleFactor;
+extern int g_ais_color_set;
 extern int g_iDistanceFormat;
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
